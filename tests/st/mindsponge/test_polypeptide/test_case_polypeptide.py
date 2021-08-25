@@ -16,7 +16,7 @@
 
 import numpy as np
 import pytest
-from mindspore import context, Tensor
+from mindspore import context
 from .simulation_poly import Simulation
 
 context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=0, save_graphs=False)
@@ -31,6 +31,6 @@ def test_case_poly():
                 'device_id': 0, 'i': '/home/workspace/mindspore_dataset/polypeptide/nvt.in',
                 'o': '', 'r': 'restrt', 'u': False, 'x': ''}
     simulation = Simulation(args_opt)
-    sigma_of_bond_ene = simulation(Tensor(0), Tensor(0))
+    sigma_of_bond_ene = simulation()
 
     assert np.allclose(round(float(sigma_of_bond_ene.asnumpy()), 3), 0.037)

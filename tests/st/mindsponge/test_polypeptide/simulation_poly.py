@@ -14,18 +14,17 @@
 # ============================================================================
 '''Simulation'''
 import numpy as np
-
 import mindspore.common.dtype as mstype
 from mindspore import Tensor
 from mindspore import nn
 from mindspore.common.parameter import Parameter
 from mindspore.ops import operations as P
-from mindsponge import Bond
-from mindsponge import md_information
+from .bond import Bond
+from .md_information import Mdinformation as md_information
 
 
-class controller:
-    '''controller'''
+class Controller:
+    '''Controller'''
 
     def __init__(self, args_opt):
         self.input_file = args_opt['i']
@@ -36,7 +35,7 @@ class controller:
         self.mdout = args_opt['o']
         self.mdbox = args_opt['box']
 
-        self.Command_Set = {}
+        self.command_set = {}
         self.md_task = None
         self.commands_from_in_file()
         self.punctuation = ","
@@ -55,8 +54,8 @@ class controller:
                 flag, value = val.strip().split("=")
                 value = value.replace(" ", "")
                 flag = flag.replace(" ", "")
-                if flag not in self.Command_Set:
-                    self.Command_Set[flag] = value
+                if flag not in self.command_set:
+                    self.command_set[flag] = value
                 else:
                     print("ERROR COMMAND FILE")
 
@@ -66,17 +65,17 @@ class Simulation(nn.Cell):
 
     def __init__(self, args_opt):
         super(Simulation, self).__init__()
-        self.control = controller(args_opt)
+        self.control = Controller(args_opt)
         self.md_info = md_information(self.control)
         self.mode = self.md_info.mode
         self.bond = Bond(self.control)
         self.atom_numbers = self.md_info.atom_numbers
         self.residue_numbers = self.md_info.residue_numbers
         self.bond_numbers = self.bond.bond_numbers
-        self.init_Tensor()
+        self.init_tensor()
         self.op_define()
 
-    def init_Tensor(self):
+    def init_tensor(self):
         '''init tensor'''
         self.crd = Parameter(
             Tensor(np.array(self.md_info.coordinate).reshape([self.atom_numbers, 3]), mstype.float32),
@@ -94,13 +93,13 @@ class Simulation(nn.Cell):
         self.crd_to_uint_crd = P.CrdToUintCrd(self.atom_numbers)
         self.bond_energy = P.BondEnergy(self.bond_numbers, self.atom_numbers)
 
-    def Simulation_Beforce_Caculate_Force(self):
+    def simulation_beforce_caculate_force(self):
         '''simulation before calculate force'''
         crd_to_uint_crd_cof = 0.5 * self.crd_to_uint_crd_cof
         uint_crd = self.crd_to_uint_crd(crd_to_uint_crd_cof, self.crd)
         return uint_crd
 
-    def Simulation_Caculate_Energy(self, uint_crd, uint_dr_to_dr_cof):
+    def simulation_caculate_energy(self, uint_crd, uint_dr_to_dr_cof):
         '''simulation calculate energy'''
         bond_energy = self.bond_energy(uint_crd, uint_dr_to_dr_cof, self.bond_atom_a, self.bond_atom_b, self.bond_k,
                                        self.bond_r0)
@@ -108,8 +107,8 @@ class Simulation(nn.Cell):
 
         return bond_energy_sum
 
-    def construct(self, step, print_step):
+    def construct(self):
         '''construct'''
-        uint_crd = self.Simulation_Beforce_Caculate_Force()
-        bond_energy_sum = self.Simulation_Caculate_Energy(uint_crd, self.uint_dr_to_dr_cof)
+        uint_crd = self.simulation_beforce_caculate_force()
+        bond_energy_sum = self.simulation_caculate_energy(uint_crd, self.uint_dr_to_dr_cof)
         return bond_energy_sum

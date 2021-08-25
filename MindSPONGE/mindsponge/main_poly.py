@@ -16,8 +16,8 @@
 import argparse
 import time
 
-from src.simulation_poly import Simulation
-from src.mdnn import Mdnn, TransCrdToCV
+from mindsponge.simulation_poly import Simulation
+from mindsponge.mdnn import Mdnn, TransCrdToCV
 import mindspore.context as context
 from mindspore import Tensor
 from mindspore import load_checkpoint
