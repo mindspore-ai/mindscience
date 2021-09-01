@@ -63,7 +63,7 @@ python main_poly.py --i /path/NVT_290_10ns.in \
         ├── partition
             ├── neighbor_list.py                     # neighbor_list module
         ├── control
-            ├── Langevin_Liujian_md.py               # Langevin_Liujian_md module
+            ├── langevin_liujian_md.py               # langevin_liujian_md module
             ├── mc_baro.py                           # Monte Carlo pressure control method
             ├── bd_baro.py                           # Berendsen pressure control method
             ├── crd_molecular_map.py                 # molecular map module

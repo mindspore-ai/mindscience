@@ -18,14 +18,14 @@ from mindspore import Tensor
 from mindspore.ops import operations as P
 
 
-class Lennard_Jones_Information:
+class LennardJonesInformation:
     '''Lennard Jones'''
 
     def __init__(self, controller, cutoff, box_length):
         self.module_name = "LJ"
         self.is_initialized = 0
-        self.CONSTANT_UINT_MAX_FLOAT = 4294967296.0
-        self.CONSTANT_Pi = 3.1415926535897932
+        self.constant_unit_max_float = 4294967296.0
+        self.constant_pi = 3.1415926535897932
         self.cutoff = cutoff
         self.box_length = box_length
 
@@ -37,24 +37,25 @@ class Lennard_Jones_Information:
             self.read_in_file(controller)
 
         if self.is_initialized:
-            self.read_information(controller)
+            self.totalc6get = P.Totalc6get(self.atom_numbers)
+            self.read_information()
 
     def read_in_file(self, controller):
         """read_in_file"""
         print("START INITIALIZING LENNADR JONES INFORMATION:")
         name = self.module_name + "_in_file"
         # print("read_in_file " + name)
-        if name in controller.Command_Set:
-            path = controller.Command_Set[name]
+        if name in controller.command_set:
+            path = controller.command_set[name]
             file = open(path, 'r')
             context = file.readlines()
             self.atom_numbers, self.atom_type_numbers = map(int, context[0].strip().split())
             print("    atom_numbers is ", self.atom_numbers)
             print("    atom_LJ_type_number is ", self.atom_type_numbers)
             self.pair_type_numbers = self.atom_type_numbers * (self.atom_type_numbers + 1) / 2
-            self.h_LJ_A = []
-            self.h_LJ_B = []
-            self.h_atom_LJ_type = []
+            self.h_lj_a = []
+            self.h_lj_b = []
+            self.h_atom_lj_type = []
             startidx = 1
             count = 0
             print(startidx)
@@ -63,10 +64,10 @@ class Lennard_Jones_Information:
                     val = list(map(float, context[startidx].strip().split()))
                     # print(val)
                     count += 1
-                    self.h_LJ_A.extend(val)
+                    self.h_lj_a.extend(val)
                 startidx += 1
-            assert len(self.h_LJ_A) == self.pair_type_numbers
-            self.h_LJ_A = [x * 12.0 for x in self.h_LJ_A]
+            assert len(self.h_lj_a) == self.pair_type_numbers
+            self.h_lj_a = [x * 12.0 for x in self.h_lj_a]
 
             count = 0
             print(startidx)
@@ -75,32 +76,30 @@ class Lennard_Jones_Information:
                     val = list(map(float, context[startidx].strip().split()))
                     # print(val)
                     count += 1
-                    self.h_LJ_B.extend(val)
+                    self.h_lj_b.extend(val)
                 startidx += 1
-            assert len(self.h_LJ_B) == self.pair_type_numbers
-            self.h_LJ_B = [x * 6.0 for x in self.h_LJ_B]
+            assert len(self.h_lj_b) == self.pair_type_numbers
+            self.h_lj_b = [x * 6.0 for x in self.h_lj_b]
             for idx, val in enumerate(context):
                 if idx > startidx:
-                    self.h_atom_LJ_type.append(int(val.strip()))
+                    self.h_atom_lj_type.append(int(val.strip()))
             file.close()
             self.is_initialized = 1
         print("END INITIALIZING LENNADR JONES INFORMATION")
 
-    def read_information(self, controller):
+    def read_information(self):
         """read_information"""
-        self.uint_dr_to_dr_cof = [1.0 / self.CONSTANT_UINT_MAX_FLOAT * self.box_length[0],
-                                  1.0 / self.CONSTANT_UINT_MAX_FLOAT * self.box_length[1],
-                                  1.0 / self.CONSTANT_UINT_MAX_FLOAT * self.box_length[2]]
+        self.uint_dr_to_dr_cof = [1.0 / self.constant_unit_max_float * self.box_length[0],
+                                  1.0 / self.constant_unit_max_float * self.box_length[1],
+                                  1.0 / self.constant_unit_max_float * self.box_length[2]]
         print("copy lj type to new crd")
-        self.atom_LJ_type = Tensor(self.h_atom_LJ_type, mstype.int32)
-        self.LJ_B = Tensor(self.h_LJ_B, mstype.float32)
-        self.factor = Tensor(1.0, mstype.float32)
-        if 'barostat' in controller.Command_Set:
-            self.factor = P.totalc6get(self.atom_numbers)(self.atom_LJ_type, self.LJ_B)
+        self.atom_lj_type = Tensor(self.h_atom_lj_type, mstype.int32)
+        self.lj_b = Tensor(self.h_lj_b, mstype.float32)
+        self.factor = self.totalc6get(self.atom_lj_type, self.lj_b)
         print("        factor is: ", self.factor)
         self.long_range_factor = float(self.factor.asnumpy())
-        self.long_range_factor *= -2.0 / 3.0 * self.CONSTANT_Pi / self.cutoff / self.cutoff / self.cutoff / 6.0
-        self.volume = self.box_length[0] * self.box_length[1] * self.box_length[1]
+        self.long_range_factor *= -2.0 / 3.0 * self.constant_pi / self.cutoff / self.cutoff / self.cutoff / 6.0
+        self.volume = self.box_length[0] * self.box_length[1] * self.box_length[2]
         print("        long range correction factor is: ", self.long_range_factor)
         print("    End initializing long range LJ correction")
 
@@ -121,7 +120,7 @@ class Lennard_Jones_Information:
                     self.pair_type_numbers = int(
                         self.atom_type_numbers * (self.atom_type_numbers + 1) / 2)  # TODO
                     break
-        self.h_atom_LJ_type = [0] * self.atom_numbers
+        self.h_atom_lj_type = [0] * self.atom_numbers
         for idx, val in enumerate(context):
             if "%FLAG ATOM_TYPE_INDEX" in val:
                 count = 0
@@ -136,9 +135,9 @@ class Lennard_Jones_Information:
                         information.extend(value)
                         count += len(value)
                 for i in range(self.atom_numbers):
-                    self.h_atom_LJ_type[i] = information[i] - 1
+                    self.h_atom_lj_type[i] = information[i] - 1
                 break
-        self.h_LJ_A = [0] * self.pair_type_numbers
+        self.h_lj_a = [0] * self.pair_type_numbers
         for idx, val in enumerate(context):
             if "%FLAG LENNARD_JONES_ACOEF" in val:
                 count = 0
@@ -153,9 +152,9 @@ class Lennard_Jones_Information:
                         information.extend(value)
                         count += len(value)
                 for i in range(self.pair_type_numbers):
-                    self.h_LJ_A[i] = 12.0 * information[i]
+                    self.h_lj_a[i] = 12.0 * information[i]
                 break
-        self.h_LJ_B = [0] * self.pair_type_numbers
+        self.h_lj_b = [0] * self.pair_type_numbers
         for idx, val in enumerate(context):
             if "%FLAG LENNARD_JONES_BCOEF" in val:
                 count = 0
@@ -170,5 +169,5 @@ class Lennard_Jones_Information:
                         information.extend(value)
                         count += len(value)
                 for i in range(self.pair_type_numbers):
-                    self.h_LJ_B[i] = 6.0 * information[i]
+                    self.h_lj_b[i] = 6.0 * information[i]
                 break

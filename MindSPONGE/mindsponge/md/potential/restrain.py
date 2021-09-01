@@ -15,7 +15,7 @@
 '''restrain_information'''
 
 
-class Restrain_Information:
+class RestrainInformation:
     '''restrain_information'''
 
     def __init__(self, controller, atom_numbers, crd):
@@ -23,14 +23,14 @@ class Restrain_Information:
         self.atom_numbers = atom_numbers
         self.crd = crd
         self.controller = controller
-        self.weight = 100.0 if "weight" not in controller.Command_Set else float(
-            controller.Command_Set["weight"])
+        self.weight = 100.0 if "weight" not in controller.command_set else float(
+            controller.command_set["weight"])
         print("    %s_weight is %.0f\n" % (self.module_name, self.weight))
         self.is_initialized = 0
         name = self.module_name + "_in_file"
-        if name in controller.Command_Set:
+        if name in controller.command_set:
             print("START INITIALIZING RESTRAIN\n")
-            path = controller.Command_Set[name]
+            path = controller.command_set[name]
             self.read_in_file(path)
             self.read_crd_ref()
             self.is_initialized = 1
@@ -53,12 +53,12 @@ class Restrain_Information:
     def read_crd_ref(self):
         """read_crd_ref"""
         self.crd_ref = []
-        if "coordinate" not in self.controller.Command_Set:
+        if "coordinate" not in self.controller.command_set:
             print("    restrain reference coordinate copy from input coordinate")
             self.crd_ref = self.crd
         else:
             print("    reading restrain reference coordinate file")
-            file = open(self.controller.Command_Set["coordinate"], 'r')
+            file = open(self.controller.command_set["coordinate"], 'r')
             context = file.readlines()
             atom_numbers = int(context[0].strip())
             print("        atom_numbers is %d", atom_numbers)

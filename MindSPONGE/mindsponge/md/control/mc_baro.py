@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-'''MC_BARO'''
+'''MCBARO'''
 
 
-class MC_BARO:
-    '''MC_BARO'''
+class MCBARO:
+    '''MCBARO'''
 
     def __init__(self, controller, atom_numbers, target_pressure, boxlength, res_is_initialized, mode):
         self.constant_pres_convertion = 6.946827162543585e4
@@ -24,26 +24,26 @@ class MC_BARO:
         self.module_name = "mc_baro"
         self.atom_numbers = atom_numbers
         self.accept_rate = 0
-        self.DeltaV_max = 200.0
+        self.deltav_max = 200.0
         self.is_controller_printf_initialized = 0
         self.is_initialized = 0
         # initial
         self.target_pressure = target_pressure
         print("    The target pressure is %.2f bar\n" % (target_pressure * self.constant_pres_convertion))
-        self.V0 = boxlength[0] * boxlength[1] * boxlength[2]
-        self.newV = self.V0
-        self.mc_baro_initial_ratio = 0.01 if "initial_ratio" not in controller.Command_Set else float(
-            controller.Command_Set["initial_ratio"])
-        self.DeltaV_max = self.mc_baro_initial_ratio * self.V0
-        print("    The initial max volume to change is %f A^3\n" % (self.DeltaV_max))
-        self.update_interval = 100 if "update_interval" not in controller.Command_Set else int(
-            controller.Command_Set["update_interval"])
+        self.v0 = boxlength[0] * boxlength[1] * boxlength[2]
+        self.newv = self.v0
+        self.mc_baro_initial_ratio = 0.01 if "initial_ratio" not in controller.command_set else float(
+            controller.command_set["initial_ratio"])
+        self.deltav_max = self.mc_baro_initial_ratio * self.v0
+        print("    The initial max volume to change is %f A^3\n" % (self.deltav_max))
+        self.update_interval = 100 if "update_interval" not in controller.command_set else int(
+            controller.command_set["update_interval"])
         print("    The update_interval is %d\n" % (self.update_interval))
-        self.check_interval = 20 if "check_interval" not in controller.Command_Set else int(
-            controller.Command_Set["check_interval"])
+        self.check_interval = 20 if "check_interval" not in controller.command_set else int(
+            controller.command_set["check_interval"])
         print("    The check_interval is %d\n" % (self.check_interval))
-        self.scale_coordinate_by_residue = res_is_initialized if "residue_scale" not in controller.Command_Set else int(
-            controller.Command_Set["residue_scale"])
+        self.scale_coordinate_by_residue = res_is_initialized if "residue_scale" not in controller.command_set else int(
+            controller.command_set["residue_scale"])
         if self.scale_coordinate_by_residue == 1 and res_is_initialized == 0:
             print(
                 "    Warning: The residue is not initialized. Atom scale mode is set instead.\n")
@@ -51,15 +51,15 @@ class MC_BARO:
         print("    The residue_scale is %d\n" % (self.scale_coordinate_by_residue))
 
         self.system_reinitializing_count = 0
-        self.accept_rate_low = 30.0 if "accept_rate_low" not in controller.Command_Set else int(
-            controller.Command_Set["accept_rate_low"])
+        self.accept_rate_low = 30.0 if "accept_rate_low" not in controller.command_set else int(
+            controller.command_set["accept_rate_low"])
         print("    The lowest accept rate is %.2f\n" % (self.accept_rate_low))
-        self.accept_rate_high = 40.0 if "accept_rate_high" not in controller.Command_Set else int(
-            controller.Command_Set["accept_rate_high"])
+        self.accept_rate_high = 40.0 if "accept_rate_high" not in controller.command_set else int(
+            controller.command_set["accept_rate_high"])
         print("    The highest accept rate is %.2f\n" % (self.accept_rate_high))
         self.frc_backup = 0  # [atom_numbers, 3]
         self.crd_backup = 0  # [atom_numbers, 3]
-        if mode == 2 and controller.Command_Set["barostat"] == "monte_carlo":
+        if mode == 2 and controller.command_set["barostat"] == "monte_carlo":
             self.is_initialized = 1
         else:
             self.is_initialized = 0

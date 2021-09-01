@@ -27,11 +27,11 @@
 # limitations under the License.
 # ============================================================================
 """control"""
-from .bd_baro import BD_BARO
+from .bd_baro import BDBARO
 from .crd_molecular_map import CoordinateMolecularMap
-from .langevin_liujian_md import Langevin_Liujian
-from .mc_baro import MC_BARO
+from .langevin_liujian_md import LangevinLiujian
+from .mc_baro import MCBARO
 
-__all__ = ['BD_BARO', 'CoordinateMolecularMap', 'Langevin_Liujian', 'MC_BARO']
+__all__ = ['BDBARO', 'CoordinateMolecularMap', 'LangevinLiujian', 'MCBARO']
 
 __all__.sort()

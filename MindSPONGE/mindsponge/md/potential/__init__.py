@@ -16,13 +16,13 @@
 from .angle import Angle
 from .bond import Bond
 from .dihedral import Dihedral
-from .lennard_jones import Lennard_Jones_Information
-from .nb14 import NON_BOND_14
-from .particle_mesh_ewald import Particle_Mesh_Ewald
-from .restrain import Restrain_Information
-from .simple_constrain import Simple_Constarin
-from .vatom import Virtual_Information
+from .lennard_jones import LennardJonesInformation
+from .nb14 import NonBond14
+from .particle_mesh_ewald import ParticleMeshEwald
+from .restrain import RestrainInformation
+from .simple_constrain import SimpleConstarin
+from .vatom import VirtualInformation
 
-__all__ = ['Angle', 'Bond', 'Dihedral', 'Lennard_Jones_Information', 'NON_BOND_14', 'Particle_Mesh_Ewald',
-           'Restrain_Information', 'Simple_Constarin', 'Virtual_Information']
+__all__ = ['Angle', 'Bond', 'Dihedral', 'LennardJonesInformation', 'NonBond14', 'ParticleMeshEwald',
+           'RestrainInformation', 'SimpleConstarin', 'VirtualInformation']
 __all__.sort()

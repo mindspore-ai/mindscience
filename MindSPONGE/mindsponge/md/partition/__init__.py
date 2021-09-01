@@ -28,8 +28,8 @@
 # ============================================================================
 """partition"""
 
-from .neighbor_list import neighbor_list
+from .neighbor_list import NeighborList
 
-__all__ = ['neighbor_list']
+__all__ = ['NeighborList']
 
 __all__.sort()

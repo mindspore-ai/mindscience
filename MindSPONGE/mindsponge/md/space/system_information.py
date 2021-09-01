@@ -16,35 +16,35 @@
 import numpy as np
 
 
-class periodic_box_condition_information:
-    """periodic_box_condition_information"""
+class PeriodicBoxConditionInformation:
+    """PeriodicBoxConditionInformation"""
 
-    def __init__(self, controller, box_length):
-        CONSTANT_UINT_MAX_FLOAT = 4294967296.0
-        self.crd_to_uint_crd_cof = np.array([CONSTANT_UINT_MAX_FLOAT / box_length[0],
-                                             CONSTANT_UINT_MAX_FLOAT / box_length[1],
-                                             CONSTANT_UINT_MAX_FLOAT / box_length[2]])
+    def __init__(self, box_length):
+        constant_unit_max_float = 4294967296.0
+        self.crd_to_uint_crd_cof = np.array([constant_unit_max_float / box_length[0],
+                                             constant_unit_max_float / box_length[1],
+                                             constant_unit_max_float / box_length[2]])
         self.quarter_crd_to_uint_crd_cof = 0.25 * self.crd_to_uint_crd_cof
         self.uint_dr_to_dr_cof = 1.0 / self.crd_to_uint_crd_cof
 
 
-class system_information:
-    """system_information"""
+class SystemInformation:
+    """SystemInformation"""
 
     def __init__(self, controller, md_info):
-        CONSTANT_PRES_CONVERTION_INVERSE = 0.00001439506089041446
+        constant_pres_convertion_inverse = 0.00001439506089041446
         self.md_info = md_info
         self.box_length = self.md_info.box_length
         self.steps = 0
-        self.step_limit = 1000 if "step_limit" not in controller.Command_Set else int(
-            controller.Command_Set["step_limit"])
-        self.target_temperature = 300.0 if "target_temperature" not in controller.Command_Set else float(
-            controller.Command_Set["target_temperature"])
-        if md_info.mode == 2 and "target_pressure" in controller.Command_Set:
-            self.target_pressure = float(controller.Command_Set["target_pressure"])
+        self.step_limit = 1000 if "step_limit" not in controller.command_set else int(
+            controller.command_set["step_limit"])
+        self.target_temperature = 300.0 if "target_temperature" not in controller.command_set else float(
+            controller.command_set["target_temperature"])
+        if md_info.mode == 2 and "target_pressure" in controller.command_set:
+            self.target_pressure = float(controller.command_set["target_pressure"])
         else:
             self.target_pressure = 1
-        self.target_pressure *= CONSTANT_PRES_CONVERTION_INVERSE
+        self.target_pressure *= constant_pres_convertion_inverse
         self.d_virial = 0
         self.d_pressure = 0
         self.d_temperature = 0
@@ -53,14 +53,14 @@ class system_information:
         self.freedom = 3 * md_info.atom_numbers
 
 
-class non_bond_information:
-    """system_information"""
+class NonBondInformation:
+    """NonBondInformation"""
 
     def __init__(self, controller, md_info):
         self.md_info = md_info
-        self.skin = 2.0 if "skin" not in controller.Command_Set else float(controller.Command_Set["skin"])
+        self.skin = 2.0 if "skin" not in controller.command_set else float(controller.command_set["skin"])
         print("    skin set to %.2f Angstram" % (self.skin))
-        self.cutoff = 10.0 if "cutoff" not in controller.Command_Set else float(controller.Command_Set["cutoff"])
+        self.cutoff = 10.0 if "cutoff" not in controller.command_set else float(controller.command_set["cutoff"])
         self.atom_numbers = self.md_info.atom_numbers
         self.excluded_atom_numbers = 0
         self.h_excluded_list_start = []
@@ -74,9 +74,9 @@ class non_bond_information:
 
     def read_exclude_file(self, controller):
         """read_exclude_file"""
-        if "exclude_in_file" in controller.Command_Set:
+        if "exclude_in_file" in controller.command_set:
             print("    Start reading excluded list:")
-            path = controller.Command_Set["exclude_in_file"]
+            path = controller.command_set["exclude_in_file"]
             file = open(path, 'r')
             context = file.readlines()
             atom_numbers, self.excluded_atom_numbers = list(map(int, context[0].strip().split()))
@@ -188,16 +188,16 @@ class non_bond_information:
                 break
 
 
-class NVE_iteration:
-    """NVE_iteration"""
+class NveIteration:
+    """NveIteration"""
 
-    def __init__(self, controller, md_info):
-        self.max_velocity = -1 if "nve_velocity_max" not in controller.Command_Set else float(
-            controller.Command_Set["nve_velocity_max"])
+    def __init__(self, controller):
+        self.max_velocity = -1 if "nve_velocity_max" not in controller.command_set else float(
+            controller.command_set["nve_velocity_max"])
 
 
-class residue_information:
-    """residue_information"""
+class ResidueInformation:
+    """ResidueInformation"""
 
     def __init__(self, controller, md_info):
         self.md_info = md_info
@@ -213,9 +213,10 @@ class residue_information:
         self.sigma_of_res_ek = 0
         self.is_initialized = 0
         print("    Start reading residue list:")
-        if "residue_in_file" in controller.Command_Set:
+        if "residue_in_file" in controller.command_set:
             self.read_residule_file(controller)
-        elif "amber_parm7" in controller.Command_Set:
+        if controller.amber_parm is not None:
+            print("amber_parm7 in residue_information")
             self.residue_numbers = self.md_info.residue_numbers
             self.h_res_start = md_info.h_res_start
             self.h_res_end = md_info.h_res_end
@@ -225,6 +226,7 @@ class residue_information:
             self.residue_numbers = md_info.atom_numbers
             self.h_res_start = list(range(self.residue_numbers))
             self.h_res_end = list(range(1, self.residue_numbers + 1))
+            self.read_res_mass()
             self.is_initialized = 1
         print("    End reading residue list")
 
@@ -246,8 +248,8 @@ class residue_information:
 
     def read_residule_file(self, controller):
         """read_residule_file"""
-        if "residue_in_file" in controller.Command_Set:
-            path = controller.Command_Set["residue_in_file"]
+        if "residue_in_file" in controller.command_set:
+            path = controller.command_set["residue_in_file"]
             file = open(path, 'r')
             context = file.readlines()
             atom_numbers, self.residue_numbers = list(map(int, context[0].strip().split()))
@@ -274,17 +276,17 @@ class residue_information:
                 self.read_res_mass()
 
 
-class trajectory_output:
-    """trajectory_output"""
+class TrajectoryOutput:
+    """TrajectoryOutput"""
 
-    def __init__(self, controller, md_info):
+    def __init__(self, controller):
         self.current_crd_synchronized_step = 0
         self.is_molecule_map_output = 0
-        if "molecule_map_output" in controller.Command_Set:
-            self.is_molecule_map_output = int(controller.Command_Set["molecule_map_output"])
+        if "molecule_map_output" in controller.command_set:
+            self.is_molecule_map_output = int(controller.command_set["molecule_map_output"])
         self.amber_irest = -1
-        self.write_trajectory_interval = 1000 if "write_information_interval" not in controller.Command_Set else int(
-            controller.Command_Set["write_information_interval"])
+        self.write_trajectory_interval = 1000 if "write_information_interval" not in controller.command_set else int(
+            controller.command_set["write_information_interval"])
         self.write_restart_file_interval = self.write_trajectory_interval if "write_restart_file_interval" not in \
-                                                                             controller.Command_Set else \
-            int(controller.Command_Set["write_restart_file_interval"])
+                                                                             controller.command_set else \
+            int(controller.command_set["write_restart_file_interval"])

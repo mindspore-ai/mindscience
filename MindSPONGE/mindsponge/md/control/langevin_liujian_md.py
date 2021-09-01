@@ -18,7 +18,7 @@ import math
 import numpy as np
 
 
-class Langevin_Liujian:
+class LangevinLiujian:
     '''LagevinLiuJian'''
 
     def __init__(self, controller, atom_numbers):
@@ -31,42 +31,42 @@ class Langevin_Liujian:
             self.read_information_from_amberfile(file_path)
         else:
             self.read_mass_file(controller)
-        self.CONSTANT_TIME_CONVERTION = 20.455
-        self.CONSTANT_kB = 0.00198716
+        self.constant_time_convertion = 20.455
+        self.constant_kb = 0.00198716
 
-        self.target_temperature = 300.0 if "target_temperature" not in controller.Command_Set else float(
-            controller.Command_Set["target_temperature"])
+        self.target_temperature = 300.0 if "target_temperature" not in controller.command_set else float(
+            controller.command_set["target_temperature"])
         self.gamma_ln = 1.0
-        if "gamma" in controller.Command_Set:
-            self.gamma_ln = float(controller.Command_Set["gamma"])
-        if "langevin_liu_gamma" in controller.Command_Set:
-            self.gamma_ln = float(controller.Command_Set["langevin_liu_gamma"])
+        if "gamma" in controller.command_set:
+            self.gamma_ln = float(controller.command_set["gamma"])
+        if "langevin_liu_gamma" in controller.command_set:
+            self.gamma_ln = float(controller.command_set["langevin_liu_gamma"])
         print("    langevin_liu_gamma is ", self.gamma_ln)
 
-        self.random_seed = 1 if "seed" not in controller.Command_Set else int(
-            controller.Command_Set["seed"])
+        self.random_seed = 1 if "seed" not in controller.command_set else int(
+            controller.command_set["seed"])
 
         print("    target temperature is {} K".format(self.target_temperature))
         print("    friction coefficient is {} ps^-1".format(self.gamma_ln))
         print("    random seed is ", self.random_seed)
-        self.dt = 0.001 if "dt" not in controller.Command_Set else float(
-            controller.Command_Set["dt"]) * self.CONSTANT_TIME_CONVERTION
+        self.dt = 0.001 if "dt" not in controller.command_set else float(
+            controller.command_set["dt"]) * self.constant_time_convertion
         self.half_dt = 0.5 * self.dt
 
         self.float4_numbers = math.ceil(3 * self.atom_numbers / 4.0)
         self.rand_state = np.float32(np.zeros([self.float4_numbers * 16,]))
-        self.gamma_ln = self.gamma_ln / self.CONSTANT_TIME_CONVERTION
+        self.gamma_ln = self.gamma_ln / self.constant_time_convertion
         self.exp_gamma = math.exp(-1 * self.gamma_ln * self.dt)
-        self.sqrt_gamma = math.sqrt((1. - self.exp_gamma * self.exp_gamma) * self.target_temperature * self.CONSTANT_kB)
+        self.sqrt_gamma = math.sqrt((1. - self.exp_gamma * self.exp_gamma) * self.target_temperature * self.constant_kb)
         self.h_sqrt_mass = [0] * self.atom_numbers
         for i in range(self.atom_numbers):
             self.h_sqrt_mass[i] = self.sqrt_gamma * math.sqrt(1. / self.h_mass[i]) if self.h_mass[i] != 0 else 0
 
         self.max_velocity = 0
-        if "velocity_max" in controller.Command_Set:
-            self.max_velocity = float(controller.Command_Set["velocity_max"])
-        if "langevin_liu_velocity_max" in controller.Command_Set:
-            self.max_velocity = float(controller.Command_Set["langevin_liu_velocity_max"])
+        if "velocity_max" in controller.command_set:
+            self.max_velocity = float(controller.command_set["velocity_max"])
+        if "langevin_liu_velocity_max" in controller.command_set:
+            self.max_velocity = float(controller.command_set["langevin_liu_velocity_max"])
         print("    max velocity is ", self.max_velocity)
 
         self.h_mass_inverse = [0] * self.atom_numbers
@@ -78,8 +78,8 @@ class Langevin_Liujian:
         print("END INITIALIZING LANGEVIN_LIU DYNAMICS")
 
     def read_mass_file(self, controller):
-        if "mass_in_file" in controller.Command_Set:
-            path = controller.Command_Set["mass_in_file"]
+        if "mass_in_file" in controller.command_set:
+            path = controller.command_set["mass_in_file"]
             file = open(path, 'r')
             context = file.readlines()
             for idx, val in enumerate(context):

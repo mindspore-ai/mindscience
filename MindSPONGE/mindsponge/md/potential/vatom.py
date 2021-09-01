@@ -15,25 +15,25 @@
 '''virtual_information'''
 
 
-class VIRTUAL_TYPE_INFROMATION:
-    """VIRTUAL_LAYER_INFORMATION"""
+class VirtualTypeInformation:
+    """VirtualLayerInformation"""
 
     def __init__(self):
         self.virtual_numbers = 0
         self.virtual_type = []
 
 
-class VIRTUAL_LAYER_INFORMATION:
-    '''VIRTUAL_LAYER_INFORMATION'''
+class VirtualLayerInformation:
+    '''VirtualLayerInformation'''
 
     def __init__(self):
-        self.v0_info = VIRTUAL_TYPE_INFROMATION()
-        self.v1_info = VIRTUAL_TYPE_INFROMATION()
-        self.v2_info = VIRTUAL_TYPE_INFROMATION()
-        self.v3_info = VIRTUAL_TYPE_INFROMATION()
+        self.v0_info = VirtualTypeInformation()
+        self.v1_info = VirtualTypeInformation()
+        self.v2_info = VirtualTypeInformation()
+        self.v3_info = VirtualTypeInformation()
 
 
-class Virtual_Information:
+class VirtualInformation:
     '''virtual_information'''
 
     def __init__(self, controller, md_info, system_freedom):
@@ -45,9 +45,9 @@ class Virtual_Information:
         self.max_level = 1
         self.is_initialized = 0
         name = self.module_name + "_in_file"
-        if name in controller.Command_Set:
+        if name in controller.command_set:
             self.virtual_layer_info_2 = []
-            path = controller.Command_Set[name]
+            path = controller.command_set[name]
             print("    Start reading virtual levels\n")
             self.read_in_file(path)
             self.max_level, self.total_virtual_atoms = self.level_init()
@@ -104,7 +104,7 @@ class Virtual_Information:
                 total_virtual_atoms += 1
             if vli > max_level:
                 for _ in range(vli - max_level):
-                    virtual_layer = VIRTUAL_LAYER_INFORMATION()
+                    virtual_layer = VirtualLayerInformation()
                     # v0_info.virtual_numbers, v1_info.virtual_numbers
                     # v2_info.virtual_numbers, v3_info.virtual_numbers
                     self.virtual_layer_info.append(virtual_layer)
@@ -141,7 +141,7 @@ class Virtual_Information:
         context = file.readlines()
         line_numbers = 0
         count0, count1, count2, count3 = 0, 0, 0, 0
-        temp_v = VIRTUAL_LAYER_INFORMATION()
+        temp_v = VirtualLayerInformation()
         self.virtual_layer_info_2 = [0] * len(self.virtual_layer_info)
         for _, val in enumerate(context):
             line_numbers += 1
@@ -179,9 +179,9 @@ class Virtual_Information:
                     start_idx = idx + 2
                     count = 0
                     value = list(map(int, context[start_idx].strip().split()))
-                    self.angle_with_H_numbers = value[4]
-                    self.angle_without_H_numbers = value[5]
-                    self.angle_numbers = self.angle_with_H_numbers + self.angle_without_H_numbers
+                    self.angle_with_h_numbers = value[4]
+                    self.angle_without_h_numbers = value[5]
+                    self.angle_numbers = self.angle_with_h_numbers + self.angle_without_h_numbers
                     information = []
                     information.extend(value)
                     while count < 15:
@@ -203,7 +203,7 @@ class Virtual_Information:
                 count = 0
                 start_idx = idx
                 information = []
-                while count < 4 * self.angle_with_H_numbers:
+                while count < 4 * self.angle_with_h_numbers:
                     start_idx += 1
                     if "%FORMAT" in context[start_idx]:
                         continue
@@ -211,7 +211,7 @@ class Virtual_Information:
                         value = list(map(int, context[start_idx].strip().split()))
                         information.extend(value)
                         count += len(value)
-                for _ in range(self.angle_with_H_numbers):
+                for _ in range(self.angle_with_h_numbers):
                     self.h_atom_a[angle_count] = information[angle_count * 4 + 0] / 3
                     self.h_atom_b[angle_count] = information[angle_count * 4 + 1] / 3
                     self.h_atom_c[angle_count] = information[angle_count * 4 + 2] / 3
@@ -225,7 +225,7 @@ class Virtual_Information:
                 count = 0
                 start_idx = idx
                 information = []
-                while count < 4 * self.angle_without_H_numbers:
+                while count < 4 * self.angle_without_h_numbers:
                     start_idx += 1
                     if "%FORMAT" in context[start_idx]:
                         continue
@@ -233,11 +233,11 @@ class Virtual_Information:
                         value = list(map(int, context[start_idx].strip().split()))
                         information.extend(value)
                         count += len(value)
-                for _ in range(self.angle_without_H_numbers):
-                    self.h_atom_a[angle_count] = information[(angle_count - self.angle_with_H_numbers) * 4 + 0] / 3
-                    self.h_atom_b[angle_count] = information[(angle_count - self.angle_with_H_numbers) * 4 + 1] / 3
-                    self.h_atom_c[angle_count] = information[(angle_count - self.angle_with_H_numbers) * 4 + 2] / 3
-                    self.h_type[angle_count] = information[(angle_count - self.angle_with_H_numbers) * 4 + 3] - 1
+                for _ in range(self.angle_without_h_numbers):
+                    self.h_atom_a[angle_count] = information[(angle_count - self.angle_with_h_numbers) * 4 + 0] / 3
+                    self.h_atom_b[angle_count] = information[(angle_count - self.angle_with_h_numbers) * 4 + 1] / 3
+                    self.h_atom_c[angle_count] = information[(angle_count - self.angle_with_h_numbers) * 4 + 2] / 3
+                    self.h_type[angle_count] = information[(angle_count - self.angle_with_h_numbers) * 4 + 3] - 1
                     angle_count += 1
                 break
         self.processor(context, angle_count)
