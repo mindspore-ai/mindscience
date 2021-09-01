@@ -19,8 +19,8 @@ import time
 import mindspore.context as context
 from mindspore import Tensor
 from mindspore import load_checkpoint
-from src.mdnn import Mdnn, TransCrdToCV
-from src.simulation import Simulation
+from mindsponge.mdnn import Mdnn, TransCrdToCV
+from mindsponge.simulation import Simulation
 
 parser = argparse.ArgumentParser(description='SPONGE Controller')
 parser.add_argument('--i', type=str, default=None, help='Input .in file')

@@ -16,7 +16,7 @@
 import argparse
 import time
 
-from src.simulation_np import Simulation
+from mindsponge.simulation_np import Simulation
 import mindspore.context as context
 from mindspore import Tensor
 
