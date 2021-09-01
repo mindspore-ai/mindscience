@@ -15,22 +15,22 @@
 '''Neighbor List'''
 
 
-class neighbor_list:
+class NeighborList:
     '''Neighbor List'''
 
     def __init__(self, controller, atom_numbers, box_length):
-        self.CONSTANT_UINT_MAX_FLOAT = 4294967296.0
+        self.constant_unit_max_float = 4294967296.0
         print("START INITIALIZING NEIGHBOR LIST:")
-        self.module_name = "neighbor_list"
-        self.refresh_interval = 20 if "refresh_interval" not in controller.Command_Set else int(
-            controller.Command_Set["refresh_interval"])
-        self.max_atom_in_grid_numbers = 64 if "max_atom_in_grid_numbers" not in controller.Command_Set else int(
-            controller.Command_Set["max_atom_in_grid_numbers"])
-        self.max_neighbor_numbers = 800 if "max_neighbor_numbers" not in controller.Command_Set else int(
-            controller.Command_Set["max_neighbor_numbers"])
+        self.module_name = "NeighborList"
+        self.refresh_interval = 20 if "refresh_interval" not in controller.command_set else int(
+            controller.command_set["refresh_interval"])
+        self.max_atom_in_grid_numbers = 64 if "max_atom_in_grid_numbers" not in controller.command_set else int(
+            controller.command_set["max_atom_in_grid_numbers"])
+        self.max_neighbor_numbers = 800 if "max_neighbor_numbers" not in controller.command_set else int(
+            controller.command_set["max_neighbor_numbers"])
 
-        self.skin = 2.0 if "skin" not in controller.Command_Set else float(controller.Command_Set["skin"])
-        self.cutoff = 10.0 if "cutoff" not in controller.Command_Set else float(controller.Command_Set["cutoff"])
+        self.skin = 2.0 if "skin" not in controller.command_set else float(controller.command_set["skin"])
+        self.cutoff = 10.0 if "cutoff" not in controller.command_set else float(controller.command_set["cutoff"])
         self.cutoff_square = self.cutoff * self.cutoff
         self.cutoff_with_skin = self.cutoff + self.skin
         self.half_cutoff_with_skin = 0.5 * self.cutoff_with_skin
@@ -129,54 +129,54 @@ class neighbor_list:
     def initial_neighbor_grid(self):
         '''init neighbor grid'''
         half_cutoff = self.half_cutoff_with_skin
-        self.Nx = int(self.box_length[0] / half_cutoff)
-        self.Ny = int(self.box_length[1] / half_cutoff)
-        self.Nz = int(self.box_length[2] / half_cutoff)
-        self.grid_N = [self.Nx, self.Ny, self.Nz]
-        self.grid_length = [self.box_length[0] / self.Nx,
-                            self.box_length[1] / self.Ny,
-                            self.box_length[2] / self.Nz]
+        self.nx = int(self.box_length[0] / half_cutoff)
+        self.ny = int(self.box_length[1] / half_cutoff)
+        self.nz = int(self.box_length[2] / half_cutoff)
+        self.grid_n = [self.nx, self.ny, self.nz]
+        self.grid_length = [self.box_length[0] / self.nx,
+                            self.box_length[1] / self.ny,
+                            self.box_length[2] / self.nz]
         self.grid_length_inverse = [1.0 / self.grid_length[0], 1.0 / self.grid_length[1], 1.0 / self.grid_length[2]]
 
-        self.Nxy = self.Nx * self.Ny
-        self.grid_numbers = self.Nz * self.Nxy
+        self.nxy = self.nx * self.ny
+        self.grid_numbers = self.nz * self.nxy
         self.atom_numbers_in_grid_bucket = [0] * self.grid_numbers
         self.bucket = [-1] * (self.grid_numbers * self.max_atom_in_grid_numbers)
 
         self.pointer = []
         temp_grid_serial = [0] * 125
         for i in range(self.grid_numbers):
-            Nz = int(i / self.Nxy)
-            Ny = int((i - self.Nxy * Nz) / self.Nx)
-            Nx = i - self.Nxy * Nz - self.Nx * Ny
+            nz = int(i / self.nxy)
+            ny = int((i - self.nxy * nz) / self.nx)
+            nx = i - self.nxy * nz - self.nx * ny
             count = 0
             for l in range(-2, 3):
                 for m in range(-2, 3):
                     for n in range(-2, 3):
-                        xx = Nx + l
+                        xx = nx + l
                         if xx < 0:
-                            xx = xx + self.Nx
-                        elif xx >= self.Nx:
-                            xx = xx - self.Nx
-                        yy = Ny + m
+                            xx = xx + self.nx
+                        elif xx >= self.nx:
+                            xx = xx - self.nx
+                        yy = ny + m
                         if yy < 0:
-                            yy = yy + self.Ny
-                        elif yy >= self.Ny:
-                            yy = yy - self.Ny
-                        zz = Nz + n
+                            yy = yy + self.ny
+                        elif yy >= self.ny:
+                            yy = yy - self.ny
+                        zz = nz + n
                         if zz < 0:
-                            zz = zz + self.Nz
-                        elif zz >= self.Nz:
-                            zz = zz - self.Nz
-                        temp_grid_serial[count] = zz * self.Nxy + yy * self.Nx + xx
+                            zz = zz + self.nz
+                        elif zz >= self.nz:
+                            zz = zz - self.nz
+                        temp_grid_serial[count] = zz * self.nxy + yy * self.nx + xx
                         count += 1
             temp_grid_serial = sorted(temp_grid_serial)
             self.pointer.extend(temp_grid_serial)
 
     def update_volume(self):
-        self.quarter_crd_to_uint_crd_cof = [0.25 * self.CONSTANT_UINT_MAX_FLOAT / self.box_length[0],
-                                            0.25 * self.CONSTANT_UINT_MAX_FLOAT / self.box_length[1],
-                                            0.25 * self.CONSTANT_UINT_MAX_FLOAT / self.box_length[2]]
-        self.uint_dr_to_dr_cof = [1.0 / self.CONSTANT_UINT_MAX_FLOAT * self.box_length[0],
-                                  1.0 / self.CONSTANT_UINT_MAX_FLOAT * self.box_length[1],
-                                  1.0 / self.CONSTANT_UINT_MAX_FLOAT * self.box_length[2]]
+        self.quarter_crd_to_uint_crd_cof = [0.25 * self.constant_unit_max_float / self.box_length[0],
+                                            0.25 * self.constant_unit_max_float / self.box_length[1],
+                                            0.25 * self.constant_unit_max_float / self.box_length[2]]
+        self.uint_dr_to_dr_cof = [1.0 / self.constant_unit_max_float * self.box_length[0],
+                                  1.0 / self.constant_unit_max_float * self.box_length[1],
+                                  1.0 / self.constant_unit_max_float * self.box_length[2]]

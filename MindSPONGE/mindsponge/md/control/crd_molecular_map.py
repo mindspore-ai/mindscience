@@ -14,7 +14,12 @@
 # ============================================================================
 '''Coordinate Molecular Map'''
 import collections
+import math
+
 import numpy as np
+from mindspore.common.parameter import Parameter
+from mindspore import Tensor
+import mindspore.common.dtype as mstype
 
 
 class CoordinateMolecularMap:
@@ -25,7 +30,6 @@ class CoordinateMolecularMap:
         self.atom_numbers = atom_numbers
         self.box_length = box_length
         self.crd = crd
-        # self.coordinate = crd
         self.exclude_numbers = exclude_numbers
         self.exclude_length = exclude_length
         self.exclude_start = exclude_start
@@ -33,6 +37,7 @@ class CoordinateMolecularMap:
         print("START INITIALIZING Coordinate Molecular Map:\n")
         self.h_box_map_times = np.zeros([self.atom_numbers, 3])
         self.h_old_crd = self.crd
+        self.d_old_crd = Parameter(Tensor(self.crd, mstype.float32), requires_grad=False)
         self.h_nowrap_crd = self.crd
         self.move_crd_nearest_from_exclusions_host()
         self.is_initialized = 1
@@ -68,15 +73,12 @@ class CoordinateMolecularMap:
                 while queue:
                     atom = queue[0]
                     queue.popleft()
-                    self.h_box_map_times[atom][0] = int(
-                        (self.crd[atom_front][0] - self.crd[atom][0]) / self.box_length[0] \
-                        + 0.5)
-                    self.h_box_map_times[atom][1] = int(
-                        (self.crd[atom_front][1] - self.crd[atom][1]) / self.box_length[1] \
-                        + 0.5)
-                    self.h_box_map_times[atom][2] = int(
-                        (self.crd[atom_front][2] - self.crd[atom][2]) / self.box_length[1] \
-                        + 0.5)
+                    self.h_box_map_times[atom][0] = math.floor(
+                        (self.crd[atom_front][0] - self.crd[atom][0]) / self.box_length[0] + 0.5)
+                    self.h_box_map_times[atom][1] = math.floor(
+                        (self.crd[atom_front][1] - self.crd[atom][1]) / self.box_length[1] + 0.5)
+                    self.h_box_map_times[atom][2] = math.floor(
+                        (self.crd[atom_front][2] - self.crd[atom][2]) / self.box_length[1] + 0.5)
                     self.crd[atom][0] = self.crd[atom][0] + self.h_box_map_times[atom][0] * self.box_length[0]
                     self.crd[atom][1] = self.crd[atom][1] + self.h_box_map_times[atom][1] * self.box_length[1]
                     self.crd[atom][2] = self.crd[atom][2] + self.h_box_map_times[atom][2] * self.box_length[2]

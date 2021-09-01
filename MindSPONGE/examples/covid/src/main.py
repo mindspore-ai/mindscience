@@ -12,21 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-'''main'''
+"""main"""
+
 import argparse
 import time
 
-from mindsponge.simulation_poly import Simulation
-from mindsponge.mdnn import Mdnn, TransCrdToCV
+from mindsponge.md.simulation import Simulation
 import mindspore.context as context
 from mindspore import Tensor
-from mindspore import load_checkpoint
+
 
 parser = argparse.ArgumentParser(description='SPONGE Controller')
-parser.add_argument('--i', type=str, default=None, help='Input file')
+parser.add_argument('--i', type=str, default=None, help='Input .in file')
 parser.add_argument('--amber_parm', type=str, default=None, help='Paramter file in AMBER type')
 parser.add_argument('--c', type=str, default=None, help='Initial coordinates file')
-parser.add_argument('--r', type=str, default="restrt", help='')
+parser.add_argument('--r', type=str, default=None, help='')
 parser.add_argument('--x', type=str, default="mdcrd", help='')
 parser.add_argument('--o', type=str, default="mdout", help='Output file')
 parser.add_argument('--box', type=str, default="mdbox", help='')
@@ -37,37 +37,30 @@ args_opt = parser.parse_args()
 
 context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=args_opt.device_id, save_graphs=False)
 
+
 if __name__ == "__main__":
     simulation = Simulation(args_opt)
-    if args_opt.u and args_opt.checkpoint:
-        net = Mdnn()
-        load_checkpoint(args_opt.checkpoint, net=net)
-        transcrd = TransCrdToCV(simulation)
 
     start = time.time()
     compiler_time = 0
     save_path = args_opt.o
-    simulation.Main_Initial()
+    simulation.main_initial()
     for steps in range(simulation.md_info.step_limit):
         print_step = steps % simulation.ntwx
         if steps == simulation.md_info.step_limit - 1:
             print_step = 0
         temperature, total_potential_energy, sigma_of_bond_ene, sigma_of_angle_ene, sigma_of_dihedral_ene, \
-        nb14_lj_energy_sum, nb14_cf_energy_sum, LJ_energy_sum, ee_ene, _ = simulation(Tensor(steps), Tensor(print_step))
-
+        nb14_lj_energy_sum, nb14_cf_energy_sum, lj_energy_sum, ee_ene, res, _, _, _ = \
+            simulation(Tensor(steps), Tensor(print_step))
         if steps == 0:
             compiler_time = time.time()
         if steps % simulation.ntwx == 0 or steps == simulation.md_info.step_limit - 1:
-            simulation.Main_Print(steps, temperature, total_potential_energy, sigma_of_bond_ene, sigma_of_angle_ene,
-                                  sigma_of_dihedral_ene, nb14_lj_energy_sum, nb14_cf_energy_sum, LJ_energy_sum, ee_ene)
-
-        if args_opt.u and args_opt.checkpoint and steps % (4 * simulation.ntwx) == 0:
-            print("Update charge!")
-            inputs = transcrd(Tensor(simulation.crd), Tensor(simulation.last_crd))
-            t_charge = net(inputs)
-            simulation.charge = transcrd.updatecharge(t_charge)
-
+            simulation.main_print(steps, temperature, total_potential_energy, sigma_of_bond_ene, sigma_of_angle_ene,
+                                  sigma_of_dihedral_ene, nb14_lj_energy_sum, nb14_cf_energy_sum, lj_energy_sum, ee_ene)
+        if (steps + 1) % simulation.md_info.output.write_restart_file_interval == 0 or \
+                steps == simulation.md_info.step_limit - 1:
+            simulation.export_restart_file()
     end = time.time()
     print("Main time(s):", end - start)
     print("Main time(s) without compiler:", end - compiler_time)
-    simulation.Main_Destroy()
+    simulation.main_destroy()

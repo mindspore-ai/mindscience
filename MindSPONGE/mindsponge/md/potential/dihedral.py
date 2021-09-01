@@ -20,7 +20,7 @@ class Dihedral:
     '''Dihedral'''
 
     def __init__(self, controller):
-        self.CONSTANT_Pi = 3.1415926535897932
+        self.constant_pi = 3.1415926535897932
         self.module_name = "dihedral"
         self.h_atom_a = []
         self.h_atom_b = []
@@ -43,8 +43,8 @@ class Dihedral:
         """read_in_file"""
         print("START INITIALIZING DIHEDRAL:")
         name = self.module_name + "_in_file"
-        if name in controller.Command_Set:
-            path = controller.Command_Set[name]
+        if name in controller.command_set:
+            path = controller.command_set[name]
             file = open(path, 'r')
             context = file.readlines()
             self.dihedral_numbers = int(context[0].strip())
@@ -175,8 +175,8 @@ class Dihedral:
                     tmpi = information[i * 5 + 4] - 1
                     self.h_pk.append(self.pk_type[tmpi])
                     tmpf = self.phase_type[tmpi]
-                    if abs(tmpf - self.CONSTANT_Pi) <= 0.001:
-                        tmpf = self.CONSTANT_Pi
+                    if abs(tmpf - self.constant_pi) <= 0.001:
+                        tmpf = self.constant_pi
                     tmpf2 = math.cos(tmpf)
                     if abs(tmpf2) < 1e-6:
                         tmpf2 = 0
@@ -209,8 +209,8 @@ class Dihedral:
                     tmpi = information[(i - self.dihedral_with_hydrogen) * 5 + 4] - 1
                     self.h_pk.append(self.pk_type[tmpi])
                     tmpf = self.phase_type[tmpi]
-                    if abs(tmpf - self.CONSTANT_Pi) <= 0.001:
-                        tmpf = self.CONSTANT_Pi
+                    if abs(tmpf - self.constant_pi) <= 0.001:
+                        tmpf = self.constant_pi
                     tmpf2 = math.cos(tmpf)
                     if abs(tmpf2) < 1e-6:
                         tmpf2 = 0

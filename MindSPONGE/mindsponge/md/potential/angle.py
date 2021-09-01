@@ -37,8 +37,8 @@ class Angle:
         """read_in_file"""
         print("START INITIALIZING ANGLE:")
         name = self.module_name + "_in_file"
-        if name in controller.Command_Set:
-            path = controller.Command_Set[name]
+        if name in controller.command_set:
+            path = controller.command_set[name]
             file = open(path, 'r')
             context = file.readlines()
             self.angle_numbers = int(context[0].strip())
@@ -65,9 +65,9 @@ class Angle:
                     start_idx = idx + 2
                     count = 0
                     value = list(map(int, context[start_idx].strip().split()))
-                    self.angle_with_H_numbers = value[4]
-                    self.angle_without_H_numbers = value[5]
-                    self.angle_numbers = self.angle_with_H_numbers + self.angle_without_H_numbers
+                    self.angle_with_h_numbers = value[4]
+                    self.angle_without_h_numbers = value[5]
+                    self.angle_numbers = self.angle_with_h_numbers + self.angle_without_h_numbers
                     information = []
                     information.extend(value)
                     while count < 15:
@@ -89,7 +89,7 @@ class Angle:
                 count = 0
                 start_idx = idx
                 information = []
-                while count < 4 * self.angle_with_H_numbers:
+                while count < 4 * self.angle_with_h_numbers:
                     start_idx += 1
                     if "%FORMAT" in context[start_idx]:
                         continue
@@ -97,7 +97,7 @@ class Angle:
                         value = list(map(int, context[start_idx].strip().split()))
                         information.extend(value)
                         count += len(value)
-                for _ in range(self.angle_with_H_numbers):
+                for _ in range(self.angle_with_h_numbers):
                     self.h_atom_a[angle_count] = int(information[angle_count * 4 + 0] / 3)
                     self.h_atom_b[angle_count] = int(information[angle_count * 4 + 1] / 3)
                     self.h_atom_c[angle_count] = int(information[angle_count * 4 + 2] / 3)
@@ -111,7 +111,7 @@ class Angle:
                 count = 0
                 start_idx = idx
                 information = []
-                while count < 4 * self.angle_without_H_numbers:
+                while count < 4 * self.angle_without_h_numbers:
                     start_idx += 1
                     if "%FORMAT" in context[start_idx]:
                         continue
@@ -119,11 +119,11 @@ class Angle:
                         value = list(map(int, context[start_idx].strip().split()))
                         information.extend(value)
                         count += len(value)
-                for _ in range(self.angle_without_H_numbers):
-                    self.h_atom_a[angle_count] = int(information[(angle_count - self.angle_with_H_numbers) * 4 + 0] / 3)
-                    self.h_atom_b[angle_count] = int(information[(angle_count - self.angle_with_H_numbers) * 4 + 1] / 3)
-                    self.h_atom_c[angle_count] = int(information[(angle_count - self.angle_with_H_numbers) * 4 + 2] / 3)
-                    self.h_type[angle_count] = information[(angle_count - self.angle_with_H_numbers) * 4 + 3] - 1
+                for _ in range(self.angle_without_h_numbers):
+                    self.h_atom_a[angle_count] = int(information[(angle_count - self.angle_with_h_numbers) * 4 + 0] / 3)
+                    self.h_atom_b[angle_count] = int(information[(angle_count - self.angle_with_h_numbers) * 4 + 1] / 3)
+                    self.h_atom_c[angle_count] = int(information[(angle_count - self.angle_with_h_numbers) * 4 + 2] / 3)
+                    self.h_type[angle_count] = information[(angle_count - self.angle_with_h_numbers) * 4 + 3] - 1
                     angle_count += 1
                 break
         self.processor(context, angle_count)

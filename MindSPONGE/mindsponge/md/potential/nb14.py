@@ -15,7 +15,7 @@
 '''NON BOND'''
 
 
-class NON_BOND_14:
+class NonBond14:
     '''NON BOND'''
 
     def __init__(self, controller, dihedral, atom_numbers):
@@ -44,8 +44,8 @@ class NON_BOND_14:
     def read_in_file(self, controller):
         """read_in_file"""
         name = self.module_name + "_in_file"
-        if name in controller.Command_Set:
-            path = controller.Command_Set[name]
+        if name in controller.command_set:
+            path = controller.command_set[name]
             file = open(path, 'r')
             context = file.readlines()
             self.nb14_numbers = int(context[0].strip())

@@ -24,12 +24,12 @@ from mindspore.ops import operations as P
 from mindsponge import Angle
 from mindsponge import Bond
 from mindsponge import Dihedral
-from mindsponge import Langevin_Liujian
-from mindsponge import Lennard_Jones_Information
-from mindsponge import md_information
-from mindsponge import NON_BOND_14
-from mindsponge import neighbor_list
-from mindsponge import Particle_Mesh_Ewald
+from mindsponge import LangevinLiujian
+from mindsponge import LennardJonesInformation
+from mindsponge import MdInformation
+from mindsponge import NonBond14
+from mindsponge import NeighborList
+from mindsponge import ParticleMeshEwald
 
 from .functions import angle_energy, angle_force_with_atom_energy, bond_force_with_atom_energy, \
                        crd_to_uint_crd, dihedral_14_ljcf_force_with_atom_energy, lj_energy, \
@@ -39,7 +39,7 @@ from .functions import angle_energy, angle_force_with_atom_energy, bond_force_wi
                        pme_reciprocal_force, reform_excluded_list, get_pme_bc
 
 
-class controller:
+class Controller:
     '''controller'''
 
     def __init__(self, args_opt):
@@ -51,7 +51,7 @@ class controller:
         self.mdout = args_opt.o
         self.mdbox = args_opt.box
 
-        self.Command_Set = {}
+        self.command_set = {}
         self.md_task = None
         self.commands_from_in_file()
 
@@ -67,8 +67,8 @@ class controller:
                 flag, value = val.strip().split("=")
                 value = value.replace(",", '')
                 flag = flag.replace(" ", "")
-                if flag not in self.Command_Set:
-                    self.Command_Set[flag] = value
+                if flag not in self.command_set:
+                    self.command_set[flag] = value
                 else:
                     print("ERROR COMMAND FILE")
 
@@ -78,16 +78,16 @@ class Simulation(nn.Cell):
 
     def __init__(self, args_opt):
         super(Simulation, self).__init__()
-        self.control = controller(args_opt)
-        self.md_info = md_information(self.control)
+        self.control = Controller(args_opt)
+        self.md_info = MdInformation(self.control)
         self.bond = Bond(self.control)
         self.angle = Angle(self.control)
         self.dihedral = Dihedral(self.control)
-        self.nb14 = NON_BOND_14(self.control, self.dihedral, self.md_info.atom_numbers)
-        self.nb_info = neighbor_list(self.control, self.md_info.atom_numbers, self.md_info.box_length)
-        self.LJ_info = Lennard_Jones_Information(self.control, self.md_info.nb.cutoff, self.md_info.sys.box_length)
-        self.liujian_info = Langevin_Liujian(self.control, self.md_info.atom_numbers)
-        self.pme_method = Particle_Mesh_Ewald(self.control, self.md_info)
+        self.nb14 = NonBond14(self.control, self.dihedral, self.md_info.atom_numbers)
+        self.nb_info = NeighborList(self.control, self.md_info.atom_numbers, self.md_info.box_length)
+        self.lj_info = LennardJonesInformation(self.control, self.md_info.nb.cutoff, self.md_info.sys.box_length)
+        self.liujian_info = LangevinLiujian(self.control, self.md_info.atom_numbers)
+        self.pme_method = ParticleMeshEwald(self.control, self.md_info)
         self.bond_energy_sum = Tensor(0, mstype.int32)
         self.angle_energy_sum = Tensor(0, mstype.int32)
         self.dihedral_energy_sum = Tensor(0, mstype.int32)
@@ -129,11 +129,11 @@ class Simulation(nn.Cell):
         self.dt = self.liujian_info.dt
         self.half_dt = self.liujian_info.half_dt
         self.exp_gamma = self.liujian_info.exp_gamma
-        self.init_Tensor()
+        self.init_tensor()
         self.op_define()
         self.update = False
 
-    def init_Tensor(self):
+    def init_tensor(self):
         '''init tensor'''
         self.crd = Parameter(
             Tensor(np.float32(np.asarray(self.md_info.coordinate).reshape([self.atom_numbers, 3])), mstype.float32),
@@ -178,7 +178,7 @@ class Simulation(nn.Cell):
         self.nb14_atom_b = Tensor(np.asarray(self.nb14.h_atom_b, np.int32), mstype.int32)
         self.lj_scale_factor = Tensor(np.asarray(self.nb14.h_lj_scale_factor, np.float32), mstype.float32)
         self.cf_scale_factor = Tensor(np.asarray(self.nb14.h_cf_scale_factor, np.float32), mstype.float32)
-        self.grid_N = Tensor(self.nb_info.grid_N, mstype.int32)
+        self.grid_n = Tensor(self.nb_info.grid_N, mstype.int32)
         self.grid_length_inverse = Tensor(self.nb_info.grid_length_inverse, mstype.float32)
         self.bucket = Parameter(Tensor(
             np.asarray(self.nb_info.bucket, np.int32).reshape([self.grid_numbers, self.max_atom_in_grid_numbers]),
@@ -205,9 +205,9 @@ class Simulation(nn.Cell):
         box = (self.box_length_0, self.box_length_1, self.box_length_2)
         self.pme_bc = Tensor(get_pme_bc(self.fftx, self.ffty, self.fftz, box, self.beta), mstype.float32)
         self.need_refresh_flag = Tensor(np.asarray([0], np.int32), mstype.int32)
-        self.atom_LJ_type = Tensor(self.LJ_info.atom_LJ_type, mstype.int32)
-        self.LJ_A = Tensor(self.LJ_info.h_LJ_A, mstype.float32)
-        self.LJ_B = Tensor(self.LJ_info.h_LJ_B, mstype.float32)
+        self.atom_lj_type = Tensor(self.lj_info.atom_LJ_type, mstype.int32)
+        self.lj_a = Tensor(self.lj_info.h_LJ_A, mstype.float32)
+        self.lj_b = Tensor(self.lj_info.h_LJ_B, mstype.float32)
         self.sqrt_mass = Tensor(self.liujian_info.h_sqrt_mass, mstype.float32)
         self.rand_state = Parameter(Tensor(self.liujian_info.rand_state, mstype.float32))
         self.zero_fp_tensor = Tensor(np.asarray([0,], np.float32))
@@ -268,14 +268,14 @@ class Simulation(nn.Cell):
                                                         self.pn)
 
         nb14_f, _ = dihedral_14_ljcf_force_with_atom_energy(self.atom_numbers, uint_crd,
-                                                            self.atom_LJ_type, self.charge,
+                                                            self.atom_lj_type, self.charge,
                                                             scaler, self.nb14_atom_a, self.nb14_atom_b,
                                                             self.lj_scale_factor, self.cf_scale_factor,
-                                                            self.LJ_A, self.LJ_B)
+                                                            self.lj_a, self.lj_b)
 
         lj_f = lj_force_pme_direct_force(self.atom_numbers, self.cutoff_square, self.beta,
-                                         uint_crd, self.atom_LJ_type, self.charge, scaler,
-                                         nl_atom_numbers, nl_atom_serial, self.LJ_A, self.LJ_B)
+                                         uint_crd, self.atom_lj_type, self.charge, scaler,
+                                         nl_atom_numbers, nl_atom_serial, self.lj_a, self.lj_b)
 
         pme_excluded_f = pme_excluded_force(self.atom_numbers, self.beta, uint_crd, scaler,
                                             self.charge, self.excluded_matrix)
@@ -305,19 +305,19 @@ class Simulation(nn.Cell):
         dihedral_energy_sum = dihedral_e.sum(keepdims=True)
 
         nb14_lj_e = nb14_lj_energy(self.nb14_numbers, self.atom_numbers, uint_crd,
-                                   self.atom_LJ_type, self.charge, uint_dr_to_dr_cof,
-                                   self.nb14_atom_a, self.nb14_atom_b, self.lj_scale_factor, self.LJ_A,
-                                   self.LJ_B)
+                                   self.atom_lj_type, self.charge, uint_dr_to_dr_cof,
+                                   self.nb14_atom_a, self.nb14_atom_b, self.lj_scale_factor, self.lj_a,
+                                   self.lj_b)
         nb14_cf_e = nb14_cf_energy(self.nb14_numbers, self.atom_numbers, uint_crd,
-                                   self.atom_LJ_type, self.charge, uint_dr_to_dr_cof,
+                                   self.atom_lj_type, self.charge, uint_dr_to_dr_cof,
                                    self.nb14_atom_a, self.nb14_atom_b, self.cf_scale_factor)
         nb14_lj_energy_sum = nb14_lj_e.sum(keepdims=True)
         nb14_cf_energy_sum = nb14_cf_e.sum(keepdims=True)
 
         lj_e = lj_energy(self.atom_numbers, self.cutoff_square, uint_crd,
-                         self.atom_LJ_type, self.charge, uint_dr_to_dr_cof,
-                         self.nl_atom_numbers, self.nl_atom_serial, self.LJ_A,
-                         self.LJ_B)
+                         self.atom_lj_type, self.charge, uint_dr_to_dr_cof,
+                         self.nl_atom_numbers, self.nl_atom_serial, self.lj_a,
+                         self.lj_b)
         lj_energy_sum = lj_e.sum(keepdims=True)
         reciprocal_e, self_e, direct_e, correction_e = pme_energy(self.atom_numbers,
                                                                   self.beta, self.fftx,
@@ -349,10 +349,10 @@ class Simulation(nn.Cell):
                                               sqrt_mass_inverse, self.velocity,
                                               crd, frc, self.acc)
 
-    def Main_Print(self, *args):
+    def main_print(self, *args):
         """compute the temperature"""
         steps, temperature, total_potential_energy, sigma_of_bond_ene, sigma_of_angle_ene, sigma_of_dihedral_ene, \
-        nb14_lj_energy_sum, nb14_cf_energy_sum, LJ_energy_sum, ee_ene = list(args)
+        nb14_lj_energy_sum, nb14_cf_energy_sum, lj_energy_sum, ee_ene = list(args)
         if steps == 0:
             print("_steps_ _TEMP_ _TOT_POT_ENE_ _BOND_ENE_ "
                   "_ANGLE_ENE_ _DIHEDRAL_ENE_ _14LJ_ENE_ _14CF_ENE_ _LJ_ENE_ _CF_PME_ENE_")
@@ -374,20 +374,20 @@ class Simulation(nn.Cell):
             nb14_lj_energy_sum = nb14_lj_energy_sum.asnumpy()
             nb14_cf_energy_sum = nb14_cf_energy_sum.asnumpy()
             print("{:>10.3f} {:>10.3f}".format(float(nb14_lj_energy_sum), float(nb14_cf_energy_sum)), end=" ")
-        LJ_energy_sum = LJ_energy_sum.asnumpy()
+        lj_energy_sum = lj_energy_sum.asnumpy()
         ee_ene = ee_ene.asnumpy()
-        print("{:>7.3f}".format(float(LJ_energy_sum)), end=" ")
+        print("{:>7.3f}".format(float(lj_energy_sum)), end=" ")
         print("{:>12.3f}".format(float(ee_ene)))
         if self.file is not None:
             self.file.write("{:>7.0f} {:>7.3f} {:>11.3f} {:>10.3f} {:>11.3f} {:>14.3f} {:>10.3f} {:>10.3f} {:>7.3f}"
                             " {:>12.3f}\n".format(steps, float(temperature), float(total_potential_energy),
                                                   float(sigma_of_bond_ene), float(sigma_of_angle_ene),
                                                   float(sigma_of_dihedral_ene), float(nb14_lj_energy_sum),
-                                                  float(nb14_cf_energy_sum), float(LJ_energy_sum), float(ee_ene)))
+                                                  float(nb14_cf_energy_sum), float(lj_energy_sum), float(ee_ene)))
         if self.datfile is not None:
             self.datfile.write(self.crd.asnumpy())
 
-    def Main_Initial(self):
+    def main_initial(self):
         """main initial"""
         if self.control.mdout:
             self.file = open(self.control.mdout, 'w')
@@ -396,7 +396,7 @@ class Simulation(nn.Cell):
         if self.control.mdcrd:
             self.datfile = open(self.control.mdcrd, 'wb')
 
-    def Main_Destroy(self):
+    def main_destroy(self):
         """main destroy"""
         if self.file is not None:
             self.file.close()
@@ -405,14 +405,14 @@ class Simulation(nn.Cell):
             self.datfile.close()
             print("Save .dat file successfully!")
 
-    def construct(self, step, print_step):
+    def construct(self):
         '''construct'''
         self.last_crd = self.crd
         res = self.neighbor_list_update(self.atom_numbers_in_grid_bucket,
                                         self.bucket,
                                         self.crd,
                                         self.box_length,
-                                        self.grid_N,
+                                        self.grid_n,
                                         self.grid_length_inverse,
                                         self.atom_in_grid_serial,
                                         self.old_crd,

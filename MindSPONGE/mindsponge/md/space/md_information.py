@@ -14,21 +14,21 @@
 # ============================================================================
 '''MD Information'''
 import numpy as np
-from .system_information import (periodic_box_condition_information, system_information,
-                                    non_bond_information, NVE_iteration, residue_information, trajectory_output)
+from .system_information import (PeriodicBoxConditionInformation, SystemInformation,
+                                 NonBondInformation, NveIteration, ResidueInformation, TrajectoryOutput)
 
 
-class md_information:
+class MdInformation:
     '''MD Information'''
 
     def __init__(self, controller):
-        CONSTANT_TIME_CONVERTION = 20.455
+        constant_time_convertion = 20.455
 
         self.md_task = controller.md_task
 
-        self.netfrc = 0 if "net_force" not in controller.Command_Set else int(controller.Command_Set["net_force"])
-        self.ntwx = 1000 if "write_information_interval" not in controller.Command_Set else int(
-            controller.Command_Set["write_information_interval"])
+        self.netfrc = 0 if "net_force" not in controller.command_set else int(controller.command_set["net_force"])
+        self.ntwx = 1000 if "write_information_interval" not in controller.command_set else int(
+            controller.command_set["write_information_interval"])
         self.atom_numbers = 0
         self.residue_numbers = 0
         self.density = 0.0
@@ -48,9 +48,9 @@ class md_information:
 
         self.mode = self.read_mode(controller)
         # read dt
-        self.dt = 0.001 * CONSTANT_TIME_CONVERTION if "dt" not in controller.Command_Set else float(
-            controller.Command_Set["dt"]) * CONSTANT_TIME_CONVERTION
-        self.dt_in_ps = 0.001 if "dt" not in controller.Command_Set else float(controller.Command_Set["dt"])
+        self.dt = 0.001 * constant_time_convertion if "dt" not in controller.command_set else float(
+            controller.command_set["dt"]) * constant_time_convertion
+        self.dt_in_ps = 0.001 if "dt" not in controller.command_set else float(controller.command_set["dt"])
 
         if controller.amber_parm is not None:
             self.read_basic_system_information_from_amber_file(controller.amber_parm)
@@ -62,12 +62,12 @@ class md_information:
             self.read_charge(controller)
         self.crd = self.coordinate
 
-        self.sys = system_information(controller, self)
-        self.nb = non_bond_information(controller, self)
-        self.output = trajectory_output(controller, self)
-        self.nve = NVE_iteration(controller, self)
-        self.res = residue_information(controller, self)
-        self.pbc = periodic_box_condition_information(controller, self.box_length)
+        self.sys = SystemInformation(controller, self)
+        self.nb = NonBondInformation(controller, self)
+        self.output = TrajectoryOutput(controller)
+        self.nve = NveIteration(controller)
+        self.res = ResidueInformation(controller, self)
+        self.pbc = PeriodicBoxConditionInformation(self.box_length)
 
         if not self.h_res_start:
             self.h_res_start = self.res.h_res_start
@@ -85,22 +85,22 @@ class md_information:
 
     def read_mode(self, controller):
         """read_mode"""
-        if "mode" in controller.Command_Set:
-            if controller.Command_Set["mode"] in ["NVT", "nvt", "1"]:
+        if "mode" in controller.command_set:
+            if controller.command_set["mode"] in ["NVT", "nvt", "1"]:
                 print("    Mode set to NVT\n")
                 mode = 1
-            elif controller.Command_Set["mode"] in ["NPT", "npt", "2"]:
+            elif controller.command_set["mode"] in ["NPT", "npt", "2"]:
                 print("    Mode set to NPT\n")
                 mode = 2
-            elif controller.Command_Set["mode"] in ["Minimization", "minimization", "-1"]:
+            elif controller.command_set["mode"] in ["Minimization", "minimization", "-1"]:
                 print("    Mode set to Energy Minimization\n")
                 mode = -1
-            elif controller.Command_Set["mode"] in ["NVE", "nve", "0"]:
+            elif controller.command_set["mode"] in ["NVE", "nve", "0"]:
                 print("    Mode set to NVE\n")
                 mode = 0
             else:
                 print(
-                    "    Warning: Mode {} is not match. Set to NVE as default\n".format(controller.Command_Set["mode"]))
+                    "    Warning: Mode {} is not match. Set to NVE as default\n".format(controller.command_set["mode"]))
                 mode = 0
         else:
             print("    Mode set to NVE as default\n")
@@ -152,10 +152,10 @@ class md_information:
 
     def read_coordinate_and_velocity(self, controller):
         """read_coordinate_and_velocity"""
-        if "coordinate_in_file" in controller.Command_Set:
-            self.read_coordinate_in_file(controller.Command_Set["coordinate_in_file"])
-            if "velocity_in_file" in controller.Command_Set:
-                self.read_velocity_in_file(controller.Command_Set["velocity_in_file"])
+        if "coordinate_in_file" in controller.command_set:
+            self.read_coordinate_in_file(controller.command_set["coordinate_in_file"])
+            if "velocity_in_file" in controller.command_set:
+                self.read_velocity_in_file(controller.command_set["velocity_in_file"])
             else:
                 print("    Velocity is set to zero as default\n")
                 self.velocity = [0] * 3 * self.atom_numbers
@@ -163,8 +163,8 @@ class md_information:
     def read_mass(self, controller):
         """read_mass"""
         print("    Start reading mass:")
-        if "mass_in_file" in controller.Command_Set:
-            path = controller.Command_Set["mass_in_file"]
+        if "mass_in_file" in controller.command_set:
+            path = controller.command_set["mass_in_file"]
             file = open(path, 'r')
             self.total_mass = 0
             context = file.readlines()
@@ -195,9 +195,9 @@ class md_information:
 
     def read_charge(self, controller):
         """read_charge"""
-        if "charge_in_file" in controller.Command_Set:
+        if "charge_in_file" in controller.command_set:
             print("    Start reading charge:")
-            path = controller.Command_Set["charge_in_file"]
+            path = controller.command_set["charge_in_file"]
             file = open(path, 'r')
             context = file.readlines()
             for idx, val in enumerate(context):

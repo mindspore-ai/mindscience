@@ -15,16 +15,16 @@
 '''main'''
 import argparse
 import time
-
-from mindsponge.md.simulation_np import Simulation
+from mindsponge.md.npt import NPT
+import mindspore.common.dtype as mstype
 import mindspore.context as context
 from mindspore import Tensor
 
 parser = argparse.ArgumentParser(description='SPONGE Controller')
-parser.add_argument('--i', type=str, default=None, help='Input file')
+parser.add_argument('--i', type=str, default="./data/covidmdin2.txt", help='Input .in file')
 parser.add_argument('--amber_parm', type=str, default=None, help='Paramter file in AMBER type')
 parser.add_argument('--c', type=str, default=None, help='Initial coordinates file')
-parser.add_argument('--r', type=str, default="restrt", help='')
+parser.add_argument('--r', type=str, default="restrt.rst7", help='')
 parser.add_argument('--x', type=str, default="mdcrd", help='')
 parser.add_argument('--o', type=str, default="mdout", help='Output file')
 parser.add_argument('--box', type=str, default="mdbox", help='')
@@ -33,37 +33,35 @@ parser.add_argument('--u', type=bool, default=False, help='If use mdnn to update
 parser.add_argument('--checkpoint', type=str, default="", help='Checkpoint file')
 args_opt = parser.parse_args()
 
-context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=args_opt.device_id,
-                    save_graphs=False, enable_graph_kernel=True)
-context.set_context(graph_kernel_flags="--enable_expand_ops=Gather \
-                    --enable_cluster_ops=TensorScatterAdd,UnSortedSegmentSum,GatherNd \
-                    --enable_recompute_fusion=false --enable_parallel_fusion=true")
+context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=args_opt.device_id, save_graphs=True,
+                    save_graphs_path="./graph")
 
 if __name__ == "__main__":
-    simulation = Simulation(args_opt)
+    simulation = NPT(args_opt)
 
     start = time.time()
     compiler_time = 0
     save_path = args_opt.o
     simulation.main_initial()
-    for steps in range(simulation.md_info.step_limit):
-        print_step = steps % simulation.ntwx
-        if steps == simulation.md_info.step_limit - 1:
-            print_step = 0
+    for steps in range(1, simulation.md_info.step_limit + 1):
+        print_step = 1 if steps % simulation.ntwx == 0 or steps == 1 or steps == simulation.md_info.step_limit else 0
+        update_step = 0
+        if simulation.mode > 0:
+            update_step = 1 if (steps != 1 and steps % simulation.update_interval == 0) else 0
+
         temperature, total_potential_energy, sigma_of_bond_ene, sigma_of_angle_ene, sigma_of_dihedral_ene, \
-        nb14_lj_energy_sum, nb14_cf_energy_sum, LJ_energy_sum, ee_ene, _ = simulation(Tensor(steps), Tensor(print_step))
+        nb14_lj_energy_sum, nb14_cf_energy_sum, LJ_energy_sum, ee_ene, res, pressure, res1, res2, res3, res4, res5, \
+        test_uint_crd = simulation(Tensor(steps), Tensor(print_step), Tensor(update_step, mstype.int32))
 
         if steps == 0:
             compiler_time = time.time()
-        if steps % simulation.ntwx == 0 or steps == simulation.md_info.step_limit - 1:
+        if steps == 1 or steps % simulation.ntwx == 0 or steps == simulation.md_info.step_limit - 1:
             simulation.main_print(steps, temperature, total_potential_energy, sigma_of_bond_ene, sigma_of_angle_ene,
                                   sigma_of_dihedral_ene, nb14_lj_energy_sum, nb14_cf_energy_sum, LJ_energy_sum, ee_ene)
-
-        if args_opt.u and args_opt.checkpoint and steps % (4 * simulation.ntwx) == 0:
-            print("Update charge!")
-            inputs = transcrd(Tensor(simulation.crd), Tensor(simulation.last_crd))
-            t_charge = net(inputs)
-            simulation.charge = transcrd.updatecharge(t_charge)
+            print("pressure:", pressure.asnumpy())
+        if steps % simulation.md_info.output.write_restart_file_interval == 0 \
+                or steps == simulation.md_info.step_limit - 1:
+            simulation.export_restart_file()
 
     end = time.time()
     print("Main time(s):", end - start)

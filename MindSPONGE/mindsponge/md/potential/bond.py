@@ -37,8 +37,8 @@ class Bond:
         """read_in_file"""
         print("START INITIALIZING BOND:")
         name = self.module_name + "_in_file"
-        if name in controller.Command_Set:
-            path = controller.Command_Set[name]
+        if name in controller.command_set:
+            path = controller.command_set[name]
             file = open(path, 'r')
             context = file.readlines()
             self.bond_numbers = int(context[0].strip())
