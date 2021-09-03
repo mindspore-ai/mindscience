@@ -11,7 +11,7 @@
 
 ## 简介
 
-MindSPONGE包含了分子模拟过程中相关的功能函数以及分子模拟案例集合，其中包含了生物、材料、制药领域中的不同的分子体系的模拟。分子建模中，包含了基于传统分子模拟方法的相关案例，也会在后期包含AI+分子模拟的案例，详情请查看[案例](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/examples)。欢迎大家积极参与和关注。
+MindSPONGE包含了分子模拟过程中相关的功能函数以及分子模拟案例集合，其中包含了生物、材料、制药领域中的不同的分子体系的模拟。分子建模中，包含了基于传统分子模拟方法的相关案例，也会在后期包含AI+分子模拟的案例，详情请查看[案例](https://gitee.com/jialiangyu/mindscience/blob/dev_yjl/MindSPONGE/examples/polypeptide/README_CN.md)。欢迎大家积极参与和关注。
 
 下面的案例将展示如何在`GPU`上，使用MindSPONGE快速进行分子模拟。
 
@@ -21,7 +21,7 @@ MindSPONGE包含了分子模拟过程中相关的功能函数以及分子模拟�
 
 拓扑文件和坐标文件可以由开源工具`AmberTools`中的`tleap`([链接](<http://ambermd.org/GetAmber.php>))生成，更多细节，请查看案例完整教程：
 
-- [MindSPONGE 教程](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/mindsponge/examples/case_polypeptide.md)
+- [MindSPONGE 教程](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/examples/polypeptide/README_CN.md)
 
 ![ALA Aqueous System](https://images.gitee.com/uploads/images/2021/0323/184453_4bd9b1a6_8142020.png "图片1.png")
 
@@ -32,15 +32,15 @@ MindSPONGE包含了分子模拟过程中相关的功能函数以及分子模拟�
 - 框架
     - [MindSpore](https://www.mindspore.cn/install/en)
 - 更多信息，请查看详细介绍:
-    - [MindSPONGE 教程](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/examples)
+    - [MindSPONGE 教程](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/examples/)
     - [MindSpore Python API](https://www.mindspore.cn/docs/api/en/master/index.html)
 
 ## 快速入门
 
-安装完成MindSpore后, 运行如下命令:
+安装完成MindSpore后, 进入目录../examples/polypeptide/src/运行如下命令:
 
 ```shell
-python main_poly.py --i /path/NVT_290_10ns.in \
+python main.py --i /path/NVT_290_10ns.in \
                --amber_parm /path/WATER_ALA.parm7 \
                --c /path/WATER_ALA_350_cool_290.rst7 \
                --o /path/ala_NVT_290_10ns.out
@@ -98,7 +98,7 @@ python main_poly.py --i /path/NVT_290_10ns.in \
 
 ```text
 _steps_ _TEMP_ _TOT_POT_ENE_ _BOND_ENE_ _ANGLE_ENE_ _DIHEDRAL_ENE_ _14LJ_ENE_ _14CF_ENE_ _LJ_ENE_ _CF_PME_ENE_
-      0 0.000   -5713.804         0.037       0.900         14.909      9.072    194.477  765.398    -6698.648
+      1 0.788   -5836.521         48.745       0.891         14.904      9.041    194.479  763.169    -6867.750
    ...
 ```
 
