@@ -20,7 +20,7 @@
 
 MindSPONGE是由`高毅勤`课题组（北京大学、深圳湾实验室）和华为`MindSpore`团队联合开发的分子模拟库，具有高性能、模块化等特性。MindSPONGE是`MindSpore`和`SPONGE`（`S`imulation `P`ackage `O`f `N`ext `GE`neration molecular modeling）的缩写。MindSPONGE是第一个根植于AI计算框架的分子模拟工具，其使用模块化的设计思路，可以快速构建分子模拟流程，并且基于MindSpore自动并行、图算融合等特性，可高效地完成传统分子模拟。同时，MindSPONGE也可以将神经网络等AI方法与传统分子模拟进行结合，应用到生物、材料、医药等领域中。
 
-MindSPONGE中包含了多个传统分子模拟案例，更多详情，请点击查看[案例](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/examples)。
+MindSPONGE中包含了多个传统分子模拟案例，更多详情，请点击查看[案例](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/examples)。
 
 未来，MindSPONGE中将包含更多结合AI算法的分子模拟案例，欢迎大家的关注和支持。
 

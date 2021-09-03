@@ -123,6 +123,7 @@ NVT 290k
 
 ```python
 import argparse
+import time
 from mindspore import context
 
 parser = argparse.ArgumentParser(description='Sponge Controller')
@@ -149,7 +150,11 @@ from mindspore import Tensor
 
 if __name__ == "__main__":
     simulation = Simulation(args_opt)
+
+    start = time.time()
+    compiler = args_opt.o
     save_path = args_opt.o
+    simulation.main_initial()
     for steps in range(simulation.md_info.step_limit):
         print_step = steps % simulation.ntwx
         if steps == simulation.md_info.step_limit - 1:
@@ -164,7 +169,7 @@ if __name__ == "__main__":
 执行以下命令，启动训练脚本`main.py`进行训练：
 
 ```text
-python main_poly.py --i /path/NVT_290_10ns.in \
+python main.py --i /path/NVT_290_10ns.in \
                --amber_parm /path/WATER_ALA.parm7 \
                --c /path/WATER_ALA_350_cool_290.rst7 \
                --o /path/ala_NVT_290_10ns.out
@@ -184,7 +189,7 @@ python main_poly.py --i /path/NVT_290_10ns.in \
 
 ```text
 _steps_ _TEMP_ _TOT_POT_ENE_ _BOND_ENE_ _ANGLE_ENE_ _DIHEDRAL_ENE_ _14LJ_ENE_ _14CF_ENE_ _LJ_ENE_ _CF_PME_ENE_
-      0 0.000   -5713.804         0.037       0.900         14.909      9.072    194.477  765.398    -6698.648
+      1 0.788   -5836.521         48.745       0.891         14.904      9.041    194.479  763.169    -6867.750
    ...
 ```
 
