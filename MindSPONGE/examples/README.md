@@ -53,45 +53,36 @@ python main.py --i /path/NVT_290_10ns.in \
 ### Script and Sample Code
 
 ```shell
-├── sponge
-    ├── README.md
-    ├── main.py                                  # launch Simulation for MindSPONGE
-    ├── main_poly.py                             # launch Simulation for MindSPONGE
-    ├── md
-        ├── space
-            ├── md_information.py                    # save md information module
-            ├── system_information.py                # subclass of md information
-        ├── partition
-            ├── neighbor_list.py                     # neighbor_list module
-        ├── control
-            ├── langevin_liujian_md.py               # langevin_liujian_md module
-            ├── mc_baro.py                           # Monte Carlo pressure control method
-            ├── bd_baro.py                           # Berendsen pressure control method
-            ├── crd_molecular_map.py                 # molecular map module
-        ├── potential
-            ├── bond.py                              # bond module
-            ├── angle.py                             # angle module
-            ├── dihedral.py                          # dihedral module
-            ├── nb14.py                              # nb14 module
-            ├── lennard_jones.py                     # lennard_jones module
-            ├── particle_mesh_ewald.py               # particle_mesh_ewald module
-            ├── restrain.py                          # restrain module
-            ├── simple_constrain.py                  # simple constrain module
-            ├── vatom.py                             # virtual atoms
-        ├── simulation.py                        # MindSPONGE simulation
-        ├── simulation_poly.py                   # MindSPONGE simulation for polypeptide
+|-- README.md
+|-- README_CN.md
+|-- mindsponge_numpy.md
+|-- claisen_rearrangement
+|   |-- data
+|   |-- src
+|       |-- main.py
+|       |-- simulation_cybertron.py
+|-- covid
+|   |-- data
+|   |   |-- deltaace2.parm7
+|   |   |-- deltaace2.rst7
+|   |   |-- s1ace2.parm7
+|   |   |-- s1ace2.rst7
+|   |-- scripts
+|   |   |-- run_covid.sh
+|   |-- src
+|       |-- main.py
+|       |-- run_npt.py
+|-- polypeptide
+    |-- README_CN.md
+    |-- data
+    |   |-- NVT_290_10ns.in
+    |   |-- WATER_ALA.parm7
+    |   |-- WATER_ALA_350_cool_290.rst7
+    |-- scripts
+    |   |-- run.sh
+    |-- src
+        |-- main.py
 ```
-
-### Simulation
-
-```shell
-python main.py --i /path/NVT_290_10ns.in \
-               --amber_parm /path/WATER_ALA.parm7 \
-               --c /path/WATER_ALA_350_cool_290.rst7 \
-               --o /path/ala_NVT_290_10ns.out
-```
-
-Simulation result will be stored in the specified .out file.
 
 ## Result
 
