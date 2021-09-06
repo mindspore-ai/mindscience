@@ -15,12 +15,11 @@
 '''pme energy'''
 import mindspore.numpy as mnp
 from .common import PI, get_zero_tensor, get_full_tensor
-from .pme_common import Scale_List, PME_Atom_Near, PME_Q_Spread, PME_Direct_Energy, PME_Energy_Reciprocal, \
-    PME_Excluded_Energy_Correction, PME_Energy_Product, get_pme_kxyz, PERIODIC_FACTOR_INVERSE, \
+from .pme_common import scale_list, pme_a_near, pme_q_spread, pme_direct_energy, pme_energy_reciprocal, \
+    pme_excluded_energy_correction, pme_energy_product, get_pme_kxyz, PERIODIC_FACTOR_INVERSE, \
     fft3d
 
 cutoff = 10.0
-
 def pme_energy(atom_numbers, beta, fftx, ffty, fftz, pme_bc, uint_crd, charge,
                nl_numbers, nl_serial, scaler, excluded_matrix):
     """
@@ -55,35 +54,34 @@ def pme_energy(atom_numbers, beta, fftx, ffty, fftz, pme_bc, uint_crd, charge,
     Supported Platforms:
         ``GPU``
     """
-    PME_Nin = ffty * fftz
-    PME_Nall = fftx * ffty * fftz
+    pme_nin = ffty * fftz
+    pme_nall = fftx * ffty * fftz
 
-    PME_kxyz = get_pme_kxyz() # (64, 3)
+    pme_kxyz = get_pme_kxyz() # (64, 3)
 
-    PME_uxyz = get_full_tensor((atom_numbers, 3), 2 ** 30, mnp.uint32)
-    PME_atom_near = get_zero_tensor((atom_numbers, 64), mnp.int32)
-    PME_frxyz, PME_uxyz, PME_atom_near = PME_Atom_Near(uint_crd, PME_atom_near, PME_Nin,
-                                                       PERIODIC_FACTOR_INVERSE * fftx,
-                                                       PERIODIC_FACTOR_INVERSE * ffty,
-                                                       PERIODIC_FACTOR_INVERSE * fftz, atom_numbers,
-                                                       fftx, ffty, fftz, PME_kxyz, PME_uxyz)
+    pme_uxyz = get_full_tensor((atom_numbers, 3), 2 ** 30, mnp.uint32)
+    pme_atom_near = get_zero_tensor((atom_numbers, 64), mnp.int32)
+    pme_frxyz, pme_uxyz, pme_atom_near = pme_a_near(uint_crd, pme_atom_near, pme_nin,
+                                                    PERIODIC_FACTOR_INVERSE * fftx,
+                                                    PERIODIC_FACTOR_INVERSE * ffty,
+                                                    PERIODIC_FACTOR_INVERSE * fftz, atom_numbers,
+                                                    fftx, ffty, fftz, pme_kxyz, pme_uxyz)
 
-    PME_Q = get_full_tensor(PME_Nall, 0, mnp.float32)
-    PME_Q = PME_Q_Spread(PME_atom_near, charge, PME_frxyz, PME_Q, PME_kxyz, atom_numbers)
+    pme_q = get_full_tensor(pme_nall, 0, mnp.float32)
+    pme_q = pme_q_spread(pme_atom_near, charge, pme_frxyz, pme_q, pme_kxyz, atom_numbers)
 
-    PME_Q = PME_Q.reshape(fftx, ffty, fftz).astype('float32')
-    real, imag = fft3d(PME_Q)
+    pme_q = pme_q.reshape(fftx, ffty, fftz).astype('float32')
+    pme_fq = fft3d(pme_q)
 
-    reciprocal_ene = PME_Energy_Reciprocal(real.ravel(), imag.ravel(), pme_bc)
+    reciprocal_ene = pme_energy_reciprocal(pme_fq, pme_bc.reshape((fftx, ffty, fftz // 2 + 1)))
 
-    self_ene = PME_Energy_Product(charge, charge)
-    self_ene = Scale_List(1, self_ene, -beta / mnp.sqrt(PI))
+    self_ene = pme_energy_product(charge, charge)
+    self_ene = scale_list(1, self_ene, -beta / mnp.sqrt(PI))
 
-    direct_ene = PME_Direct_Energy(atom_numbers, nl_numbers, nl_serial, uint_crd, scaler, charge, beta,
+    direct_ene = pme_direct_energy(atom_numbers, nl_numbers, nl_serial, uint_crd, scaler, charge, beta,
                                    cutoff * cutoff)
 
-    correction_ene = PME_Excluded_Energy_Correction(atom_numbers, uint_crd, scaler, charge, beta, mnp.sqrt(PI),
-                                                    excluded_matrix)
+    correction_ene = pme_excluded_energy_correction(uint_crd, scaler, charge, beta, excluded_matrix)
 
     return mnp.atleast_1d(reciprocal_ene), mnp.atleast_1d(self_ene), \
            mnp.atleast_1d(direct_ene), mnp.atleast_1d(correction_ene)

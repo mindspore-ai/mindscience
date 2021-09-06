@@ -14,44 +14,44 @@
 # ============================================================================
 '''pme reciprocal force'''
 from mindspore import numpy as np
-
+from mindspore import dtype as mstype
 from .common import get_full_tensor
-from .pme_common import get_pme_kxyz, PME_Atom_Near, PME_Q_Spread, to_tensor, \
-PERIODIC_FACTOR_INVERSE, PME_Ma, PME_Mb, PME_Mc, PME_Md, fft3d, ifft3d
+from .pme_common import get_pme_kxyz, pme_a_near, pme_q_spread, to_tensor, \
+PERIODIC_FACTOR_INVERSE, pme_ma, pme_mb, pme_mc, pme_md, fft3d, ifft3d
 
 
 MAXINT = 1073741824
-PME_dMa = np.array([0.5, -1.5, 1.5, -0.5], np.float32)
-PME_dMb = np.array([0, 1, -2, 1], np.float32)
-PME_dMc = np.array([0, 0.5, 0, -0.5], np.float32)
+pme_dma = np.array([0.5, -1.5, 1.5, -0.5], np.float32)
+pme_dmb = np.array([0, 1, -2, 1], np.float32)
+pme_dmc = np.array([0, 0.5, 0, -0.5], np.float32)
 
 
-def pme_final(pme_atom_near, charge, pme_Q, pme_frxyz, pme_kxyz, pme_inverse_box_vector, atom_numbers):
+def pme_final(pme_atom_near, charge, pme_q, pme_frxyz, pme_kxyz, pme_inverse_box_vector):
     '''pme final'''
-    dQf = -pme_Q[pme_atom_near] * np.expand_dims(charge, -1)     # N * 64
+    dqf = -pme_q[pme_atom_near] * np.expand_dims(charge, -1)     # N * 64
 
     fxyz = np.expand_dims(pme_frxyz, -2)
     fxyz_2 = fxyz ** 2
 
     # N * 64 * 3
     pme_kxyz = pme_kxyz.astype(np.int32)
-    xyz = (PME_Ma[pme_kxyz] * fxyz * fxyz_2 + PME_Mb[pme_kxyz] * fxyz_2 +
-           PME_Mc[pme_kxyz] * fxyz + PME_Md[pme_kxyz])
-    dxyz = PME_dMa[pme_kxyz] * fxyz_2 + PME_dMb[pme_kxyz] * fxyz + PME_dMc[pme_kxyz]
-    Qxyz = dxyz * pme_inverse_box_vector
+    xyz = (pme_ma[pme_kxyz] * fxyz * fxyz_2 + pme_mb[pme_kxyz] * fxyz_2 +
+           pme_mc[pme_kxyz] * fxyz + pme_md[pme_kxyz])
+    dxyz = pme_dma[pme_kxyz] * fxyz_2 + pme_dmb[pme_kxyz] * fxyz + pme_dmc[pme_kxyz]
+    qxyz = dxyz * pme_inverse_box_vector
 
     x, y, z = xyz[..., 0], xyz[..., 1], xyz[..., 2]
-    Qx, Qy, Qz = Qxyz[..., 0], Qxyz[..., 1], Qxyz[..., 2]
+    qx, qy, qz = qxyz[..., 0], qxyz[..., 1], qxyz[..., 2]
 
-    Qx *= y * z * dQf
-    Qy *= x * z * dQf
-    Qz *= x * y * dQf
+    qx *= y * z * dqf
+    qy *= x * z * dqf
+    qz *= x * y * dqf
 
-    force = np.stack((Qx, Qy, Qz), axis=-1)
+    force = np.stack((qx, qy, qz), axis=-1)
     return np.sum(force, axis=1)
 
 
-def pme_reciprocal_force(atom_numbers, beta, fftx, ffty, fftz, box_length_0, box_length_1,
+def pme_reciprocal_force(atom_numbers, fftx, ffty, fftz, box_length_0, box_length_1,
                          box_length_2, pme_bc, uint_crd, charge):
     """
     Calculate the reciprocal part of long-range Coulumb force using
@@ -63,8 +63,6 @@ def pme_reciprocal_force(atom_numbers, beta, fftx, ffty, fftz, box_length_0, box
 
     Args:
         atom_numbers (int): the number of atoms, N.
-        beta (float): the PME beta parameter, determined by the
-                       non-bond cutoff value and simulation precision tolerance.
         fftx (int): the number of points for Fourier transform in dimension X.
         ffty (int): the number of points for Fourier transform in dimension Y.
         fftz (int): the number of points for Fourier transform in dimension Z.
@@ -80,27 +78,25 @@ def pme_reciprocal_force(atom_numbers, beta, fftx, ffty, fftz, box_length_0, box
     Supported Platforms:
         ``GPU``
     """
-    pme_Nall = fftx * ffty * fftz
-    pme_Nin = ffty * fftz
+    pme_nall = fftx * ffty * fftz
+    pme_nin = ffty * fftz
     pme_atom_near = get_full_tensor((atom_numbers, 64), 0, np.int32)
     pme_uxyz = get_full_tensor((atom_numbers, 3), MAXINT, np.uint32)
     pme_kxyz = get_pme_kxyz()
     pme_inverse_box_vector = to_tensor((fftx / box_length_0, ffty / box_length_1, fftz / box_length_2))
 
-    pme_frxyz, pme_uxyz, pme_atom_near = PME_Atom_Near(
-        uint_crd, pme_atom_near, pme_Nin, PERIODIC_FACTOR_INVERSE * fftx, PERIODIC_FACTOR_INVERSE * ffty,
+    pme_frxyz, pme_uxyz, pme_atom_near = pme_a_near(
+        uint_crd, pme_atom_near, pme_nin, PERIODIC_FACTOR_INVERSE * fftx, PERIODIC_FACTOR_INVERSE * ffty,
         PERIODIC_FACTOR_INVERSE * fftz, atom_numbers, fftx, ffty, fftz, pme_kxyz, pme_uxyz)
 
-    pme_Q = get_full_tensor(pme_Nall, 0, np.float32)
-    pme_Q = PME_Q_Spread(pme_atom_near, charge, pme_frxyz, pme_Q, pme_kxyz, atom_numbers)
+    pme_q = get_full_tensor(pme_nall, 0, np.float32)
+    pme_q = pme_q_spread(pme_atom_near, charge, pme_frxyz, pme_q, pme_kxyz, atom_numbers)
 
-    pme_Q = pme_Q.reshape(fftx, ffty, fftz)
+    pme_q = pme_q.reshape(fftx, ffty, fftz)
     pme_bc = pme_bc.reshape(fftx, ffty, fftz // 2 + 1)
-    pme_FQ_real, pme_FQ_imag = fft3d(pme_Q)
-    pme_FQ_real *= pme_bc
-    pme_FQ_imag *= pme_bc
-    pme_Q = ifft3d(pme_FQ_real, pme_FQ_imag)
-    pme_Q = pme_Q.ravel()
+    pme_fq = fft3d(pme_q)
+    pme_fq *= pme_bc.astype(mstype.complex64)
+    pme_q = ifft3d(pme_fq)
+    pme_q = pme_q.ravel()
 
-    return pme_final(
-        pme_atom_near, charge, pme_Q, pme_frxyz, pme_kxyz, pme_inverse_box_vector, atom_numbers)
+    return pme_final(pme_atom_near, charge, pme_q, pme_frxyz, pme_kxyz, pme_inverse_box_vector)

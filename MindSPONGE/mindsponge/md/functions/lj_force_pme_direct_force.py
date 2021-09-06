@@ -21,28 +21,28 @@ from .common import get_neighbour_index, get_periodic_displacement, get_zero_ten
 TWO_DIVIDED_BY_SQRT_PI = 1.1283791670218446
 MAX_NUMBER_OF_NEIGHBOR = 800
 
-def lj_force_pme_direct_force(atom_numbers, cutoff, pme_beta, uint_crd, LJtype, charge,
-                              scalar, nl_numbers, nl_serial, d_LJ_A, d_LJ_B):
+def lj_force_pme_direct_force(atom_numbers, cutoff, pme_beta, uint_crd, lj_type, charge,
+                              scalar, nl_numbers, nl_serial, d_lj_a, d_lj_b):
     """
     Calculate the Lennard-Jones force and PME direct force together.
 
     The calculation formula of Lennard-Jones part is the same as operator
-    LJForce(), and the PME direct part is within PME method.
+    ljForce(), and the PME direct part is within PME method.
 
     Agrs:
         atom_numbers(int): the number of atoms, N.
         cutoff(float): the square value of cutoff.
         pme_beta(float): PME beta parameter, same as operator PMEReciprocalForce().
         uint_crd (Tensor, uint32): [N, 3], the unsigned int coordinate value of each atom.
-        LJtype (Tensor, int32): [N,], the Lennard-Jones type of each atom.
+        lj_type (Tensor, int32): [N,], the Lennard-Jones type of each atom.
         charge (Tensor, float32): [N,], the charge carried by each atom.
         scaler (Tensor, float32): [3,], the scale factor between real
           space coordinate and its unsigned int value.
         nl_numbers (Tensor, int32): [N,], the each atom.
         nl_serial (Tensor, int32): [N, 800], the neighbor list of each atom, the max number is 800.
-        d_LJ_A (Tensor, float32): [Q,], the Lennard-Jones A coefficient of each kind of atom pair.
+        d_lj_a (Tensor, float32): [Q,], the Lennard-Jones A coefficient of each kind of atom pair.
           Q is the number of atom pair.
-        d_LJ_B (Tensor, float32): [Q,], the Lennard-Jones B coefficient of each kind of atom pair.
+        d_lj_b (Tensor, float32): [Q,], the Lennard-Jones B coefficient of each kind of atom pair.
           Q is the number of atom pair.
 
     Outputs:
@@ -51,8 +51,8 @@ def lj_force_pme_direct_force(atom_numbers, cutoff, pme_beta, uint_crd, LJtype, 
     Supported Platforms:
         ``GPU``
     """
-    N = uint_crd.shape[0]
-    frc = get_zero_tensor((N, 3), np.float32)
+    n = uint_crd.shape[0]
+    frc = get_zero_tensor((n, 3), np.float32)
     r1 = np.tile(np.expand_dims(uint_crd, 1), (1, MAX_NUMBER_OF_NEIGHBOR, 1))
     r2 = uint_crd[nl_serial]
 
@@ -67,15 +67,15 @@ def lj_force_pme_direct_force(atom_numbers, cutoff, pme_beta, uint_crd, LJtype, 
     dr_8 = dr_4 * dr_4
     dr_6 = dr_4 * dr_2
 
-    r1_LJ_type = np.expand_dims(LJtype, -1)
-    r2_LJ_type = LJtype[nl_serial]
-    x = r2_LJ_type + r1_LJ_type
-    y = np.absolute(r2_LJ_type - r1_LJ_type)
-    r2_LJ_type = (x + y) // 2
+    r1_lj_type = np.expand_dims(lj_type, -1)
+    r2_lj_type = lj_type[nl_serial]
+    x = r2_lj_type + r1_lj_type
+    y = np.absolute(r2_lj_type - r1_lj_type)
+    r2_lj_type = (x + y) // 2
     x = (x - y) // 2
-    atom_pair_LJ_type = (r2_LJ_type * (r2_LJ_type + 1) // 2) + x
+    atom_pair_lj_type = (r2_lj_type * (r2_lj_type + 1) // 2) + x
 
-    frc_abs = (-d_LJ_A[atom_pair_LJ_type] * dr_6 + d_LJ_B[atom_pair_LJ_type]) * dr_8
+    frc_abs = (-d_lj_a[atom_pair_lj_type] * dr_6 + d_lj_b[atom_pair_lj_type]) * dr_8
     beta_dr = pme_beta * dr_abs
     frc_cf_abs = beta_dr * TWO_DIVIDED_BY_SQRT_PI * np.exp(-beta_dr * beta_dr) + ops.Erfc()(beta_dr)
     frc_cf_abs *= dr_2 * dr_1
@@ -89,7 +89,7 @@ def lj_force_pme_direct_force(atom_numbers, cutoff, pme_beta, uint_crd, LJtype, 
     # apply cutoff mask
     frc_lin = np.where(np.expand_dims(mask, -1), frc_lin, 0)
     frc_record = np.sum(frc_lin, -2)
-
+    nl_serial = np.where(nl_atom_mask >= np.expand_dims(nl_numbers, -1), -1, nl_serial)
     frc = ops.tensor_scatter_add(frc, np.expand_dims(nl_serial, -1), -frc_lin)
     frc += frc_record
     return frc
