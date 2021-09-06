@@ -36,10 +36,8 @@ MindSPONGE中包含了多个传统分子模拟案例，更多详情，请点击�
 #### 安装MindSpore
 
 ```bash
-pip install https://hiq.huaweicloud.com/download/mindspore/cpu/x86_64/mindspore-1.3.0-cp38-cp38-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install mindspore-gpu
 ```
-
-> - 请根据本机的python版本选择合适的安装包，如本机为python 3.7，则可将上面命令中的`cp38-cp38`修改为`cp37-cp37`。
 
 #### 安装MindSPONGE
 
