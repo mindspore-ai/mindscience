@@ -151,7 +151,7 @@ context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=args
 使用SPONGE中定义的计算力模块和计算能量模块，通过多次迭代进行分子动力学过程演化，使得体系达到我们所需要的平衡态，并记录每一个模拟步骤中得到的能量等数据。为了方便起见，本教程的计算迭代次数设置为`1`，其模拟流程构建代码如下：
 
 ```python
-from mindsponge.simulation_poly import Simulation
+from mindsponge.md.simulation import Simulation
 from mindspore import Tensor
 
 if __name__ == "__main__":
