@@ -16,8 +16,14 @@
         - [运行结果](#运行结果)
     - [性能描述](#性能描述)
 
+    - [MindSpore.Numpy方式运行SPONGE](#以MindSpore.Numpy方式运行SPONGE)
+    - [MindSPONGE-Numpy运行机制](#MindSPONGE-Numpy运行机制)
+        - [CUDA核函数与MindSpore的映射及迁移](#CUDA核函数与MindSpore的映射及迁移)
+        - [使用图算融合/算子自动生成进行加速](#使用图算融合/算子自动生成进行加速)
+    - [性能描述](#性能描述)
+
 <!-- /TOC -->
-<a href="https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/scripts" target="_blank"><img src="https://gitee.com/mindspore/docs/raw/master/resource/_static/logo_source.png"></a>&nbsp;&nbsp;
+<a href="https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/examples/polypeptide/README_CN.md" target="_blank"><img src="https://gitee.com/mindspore/docs/raw/master/resource/_static/logo_source.png"></a>&nbsp;&nbsp;
 
 ## 概述
 
@@ -207,3 +213,117 @@ _steps_ _TEMP_ _TOT_POT_ENE_ _BOND_ENE_ _ANGLE_ENE_ _DIHEDRAL_ENE_ _14LJ_ENE_ _1
 | Speed                      | 5.0 ms/step
 | Total time                 | 5.7 s
 | Script                    | [Link](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/scripts)
+
+## MindSpore.Numpy方式运行SPONGE
+
+除了以Cuda核函数执行的方式运行SPONGE之外，现在我们同时支持以MindSpore原生表达的方式运行SPONGE。计算能量，坐标和力的Cuda核函数均被替换成了Numpy的语法表达，同时拥有MindSpore强大的加速能力。
+
+Sponge-Numpy现在同样支持丙氨酸三肽水溶液体系，如果需要运行Sponge-Numpy，可以使用如下命令：
+
+```shell
+python main_numpy.py --i /path/NVT_290_10ns.in \
+               --amber_parm /path/WATER_ALA.parm7 \
+               --c /path/WATER_ALA_350_cool_290.rst7 \
+               --o /path/ala_NVT_290_10ns.out
+```
+
+或者直接在 MindSPONGE / examples / polypeptide / scripts 目录下执行：
+
+```shell
+bash run_numpy.sh
+```
+
+其余步骤均与[丙氨酸三肽水溶液](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/examples/polypeptide/case_polypeptide.md)保持一致。
+
+## MindSPONGE-Numpy运行机制
+
+为了更充分地利用MindSpore的强大特性，以及更好地展示分子动力学算法的运作机制, SPONGE中的Cuda核函数被重构为Numpy语法的脚本，并封装在[md/functions](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/md/functions)模块之中。
+
+MindSpore.Numpy计算套件包含一套完整的符合Numpy规范的接口，使得开发者可以Numpy的原生语法表达MindSpore的模型，同时拥有MindSpore的加速能力。MindSpore.Numpy是建立在MindSpore基础算子(mindspore.ops)之上的一层封装，以MindSpore张量为计算单元,因此可以与其他MindSpore特性完全兼容。更多介绍请参考[这里](https://www.mindspore.cn/docs/programming_guide/en/master/numpy.html)。
+
+### CUDA核函数与MindSpore的映射及迁移
+
+在丙氨酸三肽水溶液案例中，所有的Cuda核函数均完成了MindSpore改写并完成了精度验证。对于Cuda算法的Numpy迁移，现在提供一个计算LJ Energy的案例供参考：
+
+```cuda
+for (int j = threadIdx.y; j < N; j = j + blockDim.y) {
+      atom_j = nl_i.atom_serial[j];
+      r2 = uint_crd[atom_j];
+
+      int_x = r2.uint_x - r1.uint_x;
+      int_y = r2.uint_y - r1.uint_y;
+      int_z = r2.uint_z - r1.uint_z;
+      dr.x = boxlength[0].x * int_x;
+      dr.y = boxlength[0].y * int_y;
+      dr.z = boxlength[0].z * int_z;
+
+      dr2 = dr.x * dr.x + dr.y * dr.y + dr.z * dr.z;
+      if (dr2 < cutoff_square) {
+        dr_2 = 1. / dr2;
+        dr_4 = dr_2 * dr_2;
+        dr_6 = dr_4 * dr_2;
+
+        y = (r2.lj_type - r1.lj_type);
+        x = y >> 31;
+        y = (y ^ x) - x;
+        x = r2.lj_type + r1.lj_type;
+        r2.lj_type = (x + y) >> 1;
+        x = (x - y) >> 1;
+        atom_pair_lj_type = (r2.lj_type * (r2.lj_type + 1) >> 1) + x;
+
+        dr_2 = (0.083333333 * lj_type_A[atom_pair_lj_type] * dr_6 - 0.166666666 * lj_type_B[atom_pair_lj_type]) * dr_6;
+        ene_lin = ene_lin + dr_2;
+      }
+    }
+    atomicAdd(&lj_ene[atom_i], ene_lin);
+```
+
+以上代码首先计算了当前分子与其邻居的距离，对于距离小于`cutoff_square`的分子对，进行后续的能量计算，并且累加到当前分子之上，作为该分子累积能量的一部分。因此，Mindore.Numpy版本的迁移分为两部分：
+
+- 理解Cuda核函数算法
+- 进行Numpy拆分以及映射
+
+重构之后的Numpy脚本如下：
+
+```python
+nl_atom_serial_crd = uint_crd[nl_atom_serial]
+r2_lj_type = atom_lj_type[nl_atom_serial]
+crd_expand = np.expand_dims(uint_crd, 1)
+crd_d = get_periodic_displacement(nl_atom_serial_crd, crd_expand, scaler)
+crd_2 = crd_d ** 2
+crd_2 = np.sum(crd_2, -1)
+nl_atom_mask = get_neighbour_index(atom_numbers, nl_atom_serial.shape[1])
+mask = np.logical_and((crd_2 < cutoff_square), (nl_atom_mask < np.expand_dims(nl_atom_numbers, -1)))
+dr_2 = 1. / crd_2
+dr_6 = np.power(dr_2, 3.)
+r1_lj_type = np.expand_dims(atom_lj_type, -1)
+x = r2_lj_type + r1_lj_type
+y = np.absolute(r2_lj_type - r1_lj_type)
+r2_lj_type = (x + y) // 2
+x = (x - y) // 2
+atom_pair_lj_type = (r2_lj_type * (r2_lj_type + 1) // 2) + x
+dr_2 = (0.083333333 * lj_A[atom_pair_lj_type] * dr_6 - 0.166666666 * lj_B[atom_pair_lj_type]) * dr_6
+ene_lin = np.where(mask, dr_2, zero_tensor)
+ene_lin = np.sum(ene_lin, -1)
+return ene_lin
+```
+
+具体步骤如下：
+
+- 将Cuda中的索引取值改写为Numpy的fancy index索引取值。
+- 建立一个掩码矩阵，将所有距离大于`cutoff_square`的计算屏蔽。
+- 将所有元素级的运算变换为可以广播的Numpy的矩阵计算，中间可能涉及矩阵的形状变换。
+
+### 使用图算融合/算子自动生成进行加速
+
+为了获得成倍的加速收益，MindSPONGE-Numpy默认开启[图算融合](https://www.mindspore.cn/docs/programming_guide/en/master/enable_graph_kernel_fusion.html)以及[自动算子生成] (https://gitee.com/mindspore/akg)。这两个加速组件可以为模型提供3倍（甚至更多）的性能提升, 使得MindSPONGE-Numpy达到与原版本性能相近的程度.
+
+在模型脚本中添加如下两行代码即可获得图算融合加速：
+(examples/polypeptide/src/main_numpy.py):
+
+```python
+# Enable Graph Mode, with GPU as backend, and allow Graph Kernel Fusion
+context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=args_opt.device_id, enable_graph_kernel=True)
+# Make fusion rules for specific operators
+context.set_context(graph_kernel_flags="--enable_expand_ops=Gather --enable_cluster_ops=TensorScatterAdd --enable_recompute_fusion=false")
+```
