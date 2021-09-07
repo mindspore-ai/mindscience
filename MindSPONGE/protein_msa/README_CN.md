@@ -11,6 +11,11 @@
 ## 数据库建立方法
 
  Protein MSA中的目标序列将几乎完全覆盖最新版本（2021.02发布）的[UniRef50数据库](https://www.uniprot.org/uniref/)中的蛋白质序列，而比对序列来自于最新版本的[UniClust30数据库](http://wwwuser.gwdg.de/~compbiol/uniclust/2020_06/)。对于每条来自UniRef50数据库中的目标序列，我们采用HHBlits算法在UniClust30数据库进行搜索和比对，并将检索以文本形式存放于Protein MSA数据仓库下Raw_Data目录下。
+生成命令如下(参考https://github.com/soedinglab/hh-suite)：
+
+```shell
+hhblits -i <input-file>  -d <database-basename> -o <result-file> -oa3m <result-alignment> -cpu 4 -n 3 -v 0
+```
 
 ## 数据库规模
 
