@@ -62,7 +62,7 @@ class LangevinLiujian:
         for i in range(self.atom_numbers):
             self.h_sqrt_mass[i] = self.sqrt_gamma * math.sqrt(1. / self.h_mass[i]) if self.h_mass[i] != 0 else 0
 
-        self.max_velocity = 0
+        self.max_velocity = 0.0
         if "velocity_max" in controller.command_set:
             self.max_velocity = float(controller.command_set["velocity_max"])
         if "langevin_liu_velocity_max" in controller.command_set:

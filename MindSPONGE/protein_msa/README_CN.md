@@ -67,6 +67,87 @@ Browser+的不同账号，与注册的云服务账号无关，也无需一致。
 
 ![1630459406400](../docs/20210903-150630.gif)
 
+#### 使用obsutil命令行工具进行数据集的下载
+
+##### 安装命令行工具
+
+安装详细官方指导，请参考华为云文档资料：[https://support.huaweicloud.com/utiltg-obs/obs_11_0003.html](https://support.huaweicloud.com/utiltg-obs/obs_11_0003.html) 。 此处我们仅提供Ubuntu 18.04的操作系统上安装的流水账步骤:
+
+打开你的Terminal，cd 到你期望的安装目录，依次执行如下四个命令：
+
+```shell
+wget https://obs-community.obs.cn-north-1.myhuaweicloud.com/obsutil/current/obsutil_linux_amd64.tar.gz
+
+tar -xzvf obsutil_linux_amd64.tar.gz
+
+cd obsutil_linux_amd64_*
+
+chmod 755 obsutil
+```
+
+执行成功后，如下图所示：
+
+![1630473600777](../docs/20210903-150615.png)
+
+##### 初始化配置
+
+执行如下命令， 其中ak,  sk是你在之前步骤中已经准备好的账号鉴权信息。 endpoint固定为：https://obs.cn-north-4.myhuaweicloud.com
+
+```shell
+./obsutil config -i=ak -k=sk -e=endpoint
+```
+
+执行成功后，如下图所示：
+
+![1630473997617](../docs/20210903-150619.png)
+
+##### 列表文件
+
+详细官方指导，请参考华为云文档资料：[https://support.huaweicloud.com/utiltg-obs/obs_11_0014.html](https://support.huaweicloud.com/utiltg-obs/obs_11_0014.html)
+
+此处我们仅提供Ubuntu 18.04的操作系统上的流水账步骤:
+
+打开你的Terminal，cd 到你obsutil的安装目录，通过以下命令列表数据集内的文件/文件夹，执行效果如下图所示
+
+```shell
+./obsutil ls obs://cnnorth4-modelhub-datasets-obsfs-d1opw/MSA_Uniref50 -d
+```
+
+![1631067726523](../docs/1631067726523.png)
+
+##### 递归下载目录
+
+详细官方指导，请参考华为云文档资料：[https://support.huaweicloud.com/utiltg-obs/obs_11_0018.html](https://support.huaweicloud.com/utiltg-obs/obs_11_0018.html)
+
+此处我们仅提供Ubuntu 18.04的操作系统上流水账步骤:
+
+打开你的Terminal，cd 到你obsutil的安装目录，通过以下命令递归下载目录，执行效果如下图所示
+
+```shell
+./obsutil cp obs://cnnorth4-modelhub-datasets-obsfs-d1opw/MSA_Uniref50/Example_100G /root/mas_demo_detasets -r -f
+```
+
+![1631069737509](../docs/1631069737509.png)
+
+##### 增量同步递归下载目录
+
+使用场景：
+
+- 当上述递归下载目录出现有些文件下载失败的场景，可以使用这个命令，自动检测缺失的文件，并下载
+- 下载数据的电脑因为意外重启了，需要继续断点续传
+
+详细官方指导，请参考华为云文档资料：[https://support.huaweicloud.com/utiltg-obs/obs_11_0043.html](https://support.huaweicloud.com/utiltg-obs/obs_11_0043.html)
+
+此处我们仅提供Ubuntu 18.04的操作系统上流水账步骤:
+
+打开你的Terminal，cd 到你obsutil的安装目录，通过以下命令增量同步递归下载目录，执行效果如下图所示
+
+```shell
+./obsutil sync obs://cnnorth4-modelhub-datasets-obsfs-d1opw/MSA_Uniref50/Example_100G /root/mas_demo_detasets
+```
+
+![1631069990374](../docs/1631069990374.png)
+
 ## 维护、更新与社区贡献方式
 
 ### 如何贡献数据集
