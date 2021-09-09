@@ -31,7 +31,7 @@ mk_new_dir() {
 
 write_checksum() {
     cd "$OUTPUT_PATH" || exit
-    PACKAGE_LIST=$(ls mindsponge-*.whl) || exit
+    PACKAGE_LIST=$(ls mindscience_mindsponge*.whl) || exit
     for PACKAGE_NAME in $PACKAGE_LIST; do
         echo $PACKAGE_NAME
         sha256sum -b "$PACKAGE_NAME" >"$PACKAGE_NAME.sha256"
