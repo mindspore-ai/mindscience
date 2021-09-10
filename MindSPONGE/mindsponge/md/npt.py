@@ -575,7 +575,7 @@ class NPT(nn.Cell):
                                                                                self.charge,
                                                                                scaler, nl_atom_numbers,
                                                                                nl_atom_serial,
-                                                                               self.lj_a, self.lj_b, self.beta)
+                                                                               self.lj_a, self.lj_b, self.d_beta)
             self.atom_virial += atom_virial
         else:
             lj_force = self.zero_main_force
