@@ -72,7 +72,7 @@ with open('requirements.txt', 'r') as f_requirements:
     requirements = f_requirements.readlines()
 requirements = [r.strip() for r in requirements]
 
-setup(name='mindsponge',
+setup(name='mindscience_mindsponge_gpu',
       version=version,
       author='The MindSpore Authors',
       author_email='contact@mindspore.cn',
