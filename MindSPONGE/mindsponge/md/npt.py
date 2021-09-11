@@ -640,15 +640,7 @@ class NPT(nn.Cell):
         else:
             dihedral_force = self.zero_main_force
 
-        if self.restrain_is_initialized:
-            _, atom_virial, restrain_frc = self.restrain_force_with_atom_energy_and_virial(self.restrain_list,
-                                                                                           self.crd,
-                                                                                           self.crd_ref,
-                                                                                           self.box_length)
-        else:
-            restrain_frc = self.zero_main_force
-
-        force = P.AddN()([lj_force, pme_force, nb14_force, bond_force, angle_force, dihedral_force, restrain_frc])
+        force = P.AddN()([lj_force, pme_force, nb14_force, bond_force, angle_force, dihedral_force])
         return force, self.atom_virial, self.virial, self.need_pressure
 
     def simulation_caculate_energy(self, uint_crd, uint_dr_to_dr_cof):

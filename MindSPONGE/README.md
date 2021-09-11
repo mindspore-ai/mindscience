@@ -24,6 +24,8 @@ MindSPONGE中包含了多个传统分子模拟案例，更多详情，请点击�
 
 未来，MindSPONGE中将包含更多结合AI算法的分子模拟案例，欢迎大家的关注和支持。
 
+<img src="docs/mindsponge-arch.png" alt="MindSPONGE Architecture" width="600"/>
+
 ## 安装教程
 
 ### 确认系统环境信息

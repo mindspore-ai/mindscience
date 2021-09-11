@@ -510,11 +510,6 @@ class Simulation(nn.Cell):
                                                                      self.pn)
             force = force + dihedral_force
 
-        if self.restrain_is_initialized:
-            _, _, restrain_frc = self.restrain_force_with_atom_energy_and_virial(self.restrain_list,
-                                                                                 self.crd, self.crd_ref,
-                                                                                 self.box_length)
-            force = force + restrain_frc
         return force
 
     def simulation_caculate_energy(self, uint_crd, uint_dr_to_dr_cof):
