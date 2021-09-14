@@ -1,4 +1,5 @@
-# Copyright 2021 Huawei Technologies Co., Ltd
+#!/bin/bash
+# Copyright 2020 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +13,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""init"""
 
+if [ $# != 2 ]
+then
+    echo "Usage: sh run_eval.sh [DATA_PATH] [CHECKPOINT_PATH]"
+exit 1
+fi
 
-from .constraints import Constraints
-from .net_with_loss import NetWithLoss, NetWithEval
-from .losses import get_loss_metric
+ulimit -u unlimited
+export DEVICE_NUM=1
+export DEVICE_ID=0
+export RANK_SIZE=$DEVICE_NUM
+export RANK_ID=0
 
-
-__all__ = ['Constraints', 'NetWithLoss', 'NetWithEval', 'get_loss_metric']
+if [ -d "eval" ];
+then
+    rm -rf ./eval
+fi
+mkdir ./eval
+cp ../*.py ./eval
+cp *.sh ./eval
+cp -r ../src ./eval
+cd ./eval || exit
+env > env.log
+echo "start evaluation for device $DEVICE_ID"
+python eval.py --data_path=$1 --checkpoint_path=$2 --device_id=$DEVICE_ID &> log &
+cd ..

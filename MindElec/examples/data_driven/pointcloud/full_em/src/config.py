@@ -12,12 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""init"""
+"""
+network config setting, will be used in train.py and eval.py
+"""
+from easydict import EasyDict as ed
 
-
-from .constraints import Constraints
-from .net_with_loss import NetWithLoss, NetWithEval
-from .losses import get_loss_metric
-
-
-__all__ = ['Constraints', 'NetWithLoss', 'NetWithEval', 'get_loss_metric']
+# config
+config = ed({
+    "epochs": 500,
+    "batch_size": 8,
+    "lr": 0.0001,
+    "t_solution": 162,
+    "x_solution": 50,
+    "y_solution": 50,
+    "z_solution": 8,
+    "save_checkpoint_epochs": 5,
+    "keep_checkpoint_max": 20
+})

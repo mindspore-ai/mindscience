@@ -1,3 +1,4 @@
+#!/bin/bash
 # Copyright 2021 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +13,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""init"""
+
+if [ $# != 1 ]
+then
+    echo "Usage: sh run_train.sh [DATA_PATH]"
+exit 1
+fi
 
 
-from .constraints import Constraints
-from .net_with_loss import NetWithLoss, NetWithEval
-from .losses import get_loss_metric
+ulimit -u unlimited
+export DEVICE_NUM=1
+export DEVICE_ID=0
 
+if [ -d "train" ];
+then
+    rm -rf ./train
+fi
+mkdir ./train
+cp ../*.py ./train
+cp *.sh ./train
+cp -r ../src ./train
+cd ./train || exit
+mkdir ./outputs
+echo "start training for device $DEVICE_ID"
+env > env.log
+python train.py --data_path=$1 --device_id=$DEVICE_ID &> log &
 
-__all__ = ['Constraints', 'NetWithLoss', 'NetWithEval', 'get_loss_metric']
+cd ..
