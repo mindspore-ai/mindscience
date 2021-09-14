@@ -1,0 +1,2859 @@
+OPEN SOURCE SOFTWARE NOTICE
+
+Please note we provide an open source software notice along with this product and/or this product firmware (in the following just “this product”). The open source software licenses are granted by the respective right holders. And the open source licenses prevail all other license information with regard to the respective open source software contained in the product, including but not limited to End User Software Licensing Agreement. This notice is provided on behalf of Huawei Technologies Co. Ltd. and any of its local subsidiaries which may have provided this product to you in your local country. 
+
+Warranty Disclaimer    
+THE OPEN SOURCE SOFTWARE IN THIS PRODUCT IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT WITHOUT ANY WARRANTY, WITHOUT EVEN THE IMPLIED WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. SEE THE APPLICABLE LICENSES FOR MORE DETAILS.
+
+Copyright Notice and License Texts 
+
+Software: pyevtk 1.4.1
+Copyright notice: 
+Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved.
+Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved.
+Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved
+Copyright 2010 - 2016 Paulo Herrera
+Copyright 2010 - 2017 Paulo A. Herrera. All rights reserved.
+
+License: BSD-2-Clause
+
+Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved.                    
+                                                                                 
+Redistribution and use in source and binary forms, with or without              
+modification, are permitted provided that the following conditions are met:     
+                                                                                
+ 1. Redistributions of source code must retain the above copyright notice,      
+ this list of conditions and the following disclaimer.                          
+                                                                                
+ 2. Redistributions in binary form must reproduce the above copyright notice,   
+ this list of conditions and the following disclaimer in the documentation      
+ and/or other materials provided with the distribution.                         
+                                                                                
+THIS SOFTWARE IS PROVIDED BY PAULO A. HERRERA ``AS IS'' AND ANY EXPRESS OR      
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF    
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO      
+EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,        
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,  
+BUT NOT LIMITED TO, PROCUREMEN OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,    
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY           
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING  
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS              
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                    
+
+
+Software: pythonocc-core 7.5.1
+Copyright notice: 
+Copyright 2010-2019 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2018 Martin Siggel (martin.siggel@dlr.de)
+Copyright (C) 2007 Free Software Foundation, Inc. <http:fsf.org/>
+Copyright 2009-2014 Jelle Ferina (jelleferinga@gmail.com)
+Copyright 2011-2019 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2010-2016 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2008-2015 Jelle Feringa (jelleferinga@gmail.com)
+Copyright 2011 Fotios Sioutis (sfotis@gmail.com)
+Copyright 2009-2020 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2009-2013 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2020 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2008-2014 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2008-2017 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2009-2019 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2011-2017 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2009-2016 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2017 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2018 Thomas Paviot (tpaviot@gmail.com)
+Copyright (c) 2011-2020 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2009 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2009-2018 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2016 Thomas Paviot (tpaviot@gmail.com)
+Copyright 2008-2020 Thomas Paviot (tpaviot@gmail.com)
+
+License: LGPL-3.0-only
+
+GNU LESSER GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+
+ Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+
+  This version of the GNU Lesser General Public License incorporates
+the terms and conditions of version 3 of the GNU General Public
+License, supplemented by the additional permissions listed below.
+
+  0. Additional Definitions.
+
+  As used herein, "this License" refers to version 3 of the GNU Lesser
+General Public License, and the "GNU GPL" refers to version 3 of the GNU
+General Public License.
+
+  "The Library" refers to a covered work governed by this License,
+other than an Application or a Combined Work as defined below.
+
+  An "Application" is any work that makes use of an interface provided
+by the Library, but which is not otherwise based on the Library.
+Defining a subclass of a class defined by the Library is deemed a mode
+of using an interface provided by the Library.
+
+  A "Combined Work" is a work produced by combining or linking an
+Application with the Library.  The particular version of the Library
+with which the Combined Work was made is also called the "Linked
+Version".
+
+  The "Minimal Corresponding Source" for a Combined Work means the
+Corresponding Source for the Combined Work, excluding any source code
+for portions of the Combined Work that, considered in isolation, are
+based on the Application, and not on the Linked Version.
+
+  The "Corresponding Application Code" for a Combined Work means the
+object code and/or source code for the Application, including any data
+and utility programs needed for reproducing the Combined Work from the
+Application, but excluding the System Libraries of the Combined Work.
+
+  1. Exception to Section 3 of the GNU GPL.
+
+  You may convey a covered work under sections 3 and 4 of this License
+without being bound by section 3 of the GNU GPL.
+
+  2. Conveying Modified Versions.
+
+  If you modify a copy of the Library, and, in your modifications, a
+facility refers to a function or data to be supplied by an Application
+that uses the facility (other than as an argument passed when the
+facility is invoked), then you may convey a copy of the modified
+version:
+
+   a) under this License, provided that you make a good faith effort to
+   ensure that, in the event an Application does not supply the
+   function or data, the facility still operates, and performs
+   whatever part of its purpose remains meaningful, or
+
+   b) under the GNU GPL, with none of the additional permissions of
+   this License applicable to that copy.
+
+  3. Object Code Incorporating Material from Library Header Files.
+
+  The object code form of an Application may incorporate material from
+a header file that is part of the Library.  You may convey such object
+code under terms of your choice, provided that, if the incorporated
+material is not limited to numerical parameters, data structure
+layouts and accessors, or small macros, inline functions and templates
+(ten or fewer lines in length), you do both of the following:
+
+   a) Give prominent notice with each copy of the object code that the
+   Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the object code with a copy of the GNU GPL and this license
+   document.
+
+  4. Combined Works.
+
+  You may convey a Combined Work under terms of your choice that,
+taken together, effectively do not restrict modification of the
+portions of the Library contained in the Combined Work and reverse
+engineering for debugging such modifications, if you also do each of
+the following:
+
+   a) Give prominent notice with each copy of the Combined Work that
+   the Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the Combined Work with a copy of the GNU GPL and this license
+   document.
+
+   c) For a Combined Work that displays copyright notices during
+   execution, include the copyright notice for the Library among
+   these notices, as well as a reference directing the user to the
+   copies of the GNU GPL and this license document.
+
+   d) Do one of the following:
+
+       0) Convey the Minimal Corresponding Source under the terms of this
+       License, and the Corresponding Application Code in a form
+       suitable for, and under terms that permit, the user to
+       recombine or relink the Application with a modified version of
+       the Linked Version to produce a modified Combined Work, in the
+       manner specified by section 6 of the GNU GPL for conveying
+       Corresponding Source.
+
+       1) Use a suitable shared library mechanism for linking with the
+       Library.  A suitable mechanism is one that (a) uses at run time
+       a copy of the Library already present on the user's computer
+       system, and (b) will operate properly with a modified version
+       of the Library that is interface-compatible with the Linked
+       Version.
+
+   e) Provide Installation Information, but only if you would otherwise
+   be required to provide such information under section 6 of the
+   GNU GPL, and only to the extent that such information is
+   necessary to install and execute a modified version of the
+   Combined Work produced by recombining or relinking the
+   Application with a modified version of the Linked Version. (If
+   you use option 4d0, the Installation Information must accompany
+   the Minimal Corresponding Source and Corresponding Application
+   Code. If you use option 4d1, you must provide the Installation
+   Information in the manner specified by section 6 of the GNU GPL
+   for conveying Corresponding Source.)
+
+  5. Combined Libraries.
+
+  You may place library facilities that are a work based on the
+Library side by side in a single library together with other library
+facilities that are not Applications and are not covered by this
+License, and convey such a combined library under terms of your
+choice, if you do both of the following:
+
+   a) Accompany the combined library with a copy of the same work based
+   on the Library, uncombined with any other library facilities,
+   conveyed under the terms of this License.
+
+   b) Give prominent notice with the combined library that part of it
+   is a work based on the Library, and explaining where to find the
+   accompanying uncombined form of the same work.
+
+  6. Revised Versions of the GNU Lesser General Public License.
+
+  The Free Software Foundation may publish revised and/or new versions
+of the GNU Lesser General Public License from time to time. Such new
+versions will be similar in spirit to the present version, but may
+differ in detail to address new problems or concerns.
+
+  Each version is given a distinguishing version number. If the
+Library as you received it specifies that a certain numbered version
+of the GNU Lesser General Public License "or any later version"
+applies to it, you have the option of following the terms and
+conditions either of that published version or of any later version
+published by the Free Software Foundation. If the Library as you
+received it does not specify a version number of the GNU Lesser
+General Public License, you may choose any version of the GNU Lesser
+General Public License ever published by the Free Software Foundation.
+
+  If the Library as you received it specifies that a proxy can decide
+whether future versions of the GNU Lesser General Public License shall
+apply, that proxy's public statement of acceptance of any version is
+permanent authorization for you to choose that version for the
+Library.
+
+Software: numpy 1.17.0
+Copyright notice:
+Copyright (c) 1995, 1996, 1997 Jim Hugunin, hugunin@mit.edu
+Copyright 2014 Melissa O'Neill <oneill@pcg-random.org>
+Copyright (c) 2006, University of Georgia and Pierre G.F. Gerard-Marchant All rights reserved.
+Copyright 1999-2004 Pearu Peterson all rights reserved, Pearu Peterson <pearu@ioc.ee>
+Copyright (c) 2009-2019: Jeff Bezanson, Stefan Karpinski, Viral B. Shah, and other contributors:
+Copyright (c) 2003-2005, Jean-Sebastien Roy (js@jeannot.org)
+copyright = '2008-2019, The SciPy community'
+Copyright 2002 Pearu Peterson all rights reserved, Pearu Peterson <pearu@cens.ioc.ee>
+Copyright (c) 2019 NumPy Developers
+Copyright (c) 2005-2017, NumPy Developers.
+Copyright (c) 2018 Melissa E. O'Neill
+Copyright (c) 2008 Ian Bicking and Contributors
+Copyright (c) 1992-2013 The University of Tennessee and The University of Tennessee Research Foundation.  All rights reserved.
+Copyright 1999, 2000, 2001 Regents of the University of California.
+Copyright (c) 2005, NumPy Developers
+Copyright (c) 2019 Kevin Sheppard. All rights reserved.
+Copyright 2010-2012, D. E. Shaw Research.
+Copyright (c) 2011 by Mark Wiebe (mwwiebe@gmail.com)
+Copyright 2006, Dean Edwards
+Copyright (c) 2014 Ryan Juckett
+Copyright 2001-2005 Pearu Peterson all rights reserved, Pearu Peterson <pearu@cens.ioc.ee>
+copyright = u'2017-2018, NumPy Developers'
+Copyright (C) 2004-2018 Max-Planck-Society \author Martin Reinecke
+Copyright (c) 2010-2011 by Mark Wiebe (mwwiebe@gmail.com)
+Copyright (c) 2012 Stephen Montgomery-Smith <stephen@FreeBSD.ORG>
+Copyright (c) 2005-2019, NumPy Developers.
+Copyright (c) 2011 Enthought, Inc
+Copyright (c) 2007, 2011 David Schultz <das@FreeBSD.ORG>
+Copyright (c) 2000-2013 The University of California Berkeley. All rights reserved.
+Copyright (c) 2015 Pauli Virtanen All rights reserved.
+Copyright 1999,2000 Pearu Peterson all rights reserved, Pearu Peterson <pearu@ioc.ee>
+Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura, All rights reserved.
+Copyright (c) 2005-2015, NumPy Developers.
+Copyright (c) 2011 by Enthought, Inc.
+Copyright (c) 2010 by Mark Wiebe (mwwiebe@gmail.com)
+Copyright 2000 Pearu Peterson all rights reserved, Pearu Peterson <pearu@ioc.ee>
+f90: Copyright Absoft Corporation 1994-1998 mV2; Cray Research, Inc. 1994-1996 CF90 (2.x.x.x  f36t87) Version 2.3 Wed Apr 19, 2006  13:05:16
+Copyright (c) 2006-2013 The University of Colorado Denver.  All rights reserved.
+f90: Copyright Absoft Corporation 1994-2002; Absoft Pro FORTRAN Version 8.0
+Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+Copyright 1999--2011 Pearu Peterson all rights reserved, Pearu Peterson <pearu@cens.ioc.ee>
+Copyright 1999 - 2011 Pearu Peterson all rights reserved.
+Copyright 2015 Robert Kern <robert.kern@gmail.com>
+Copyright (c) 2015 Melissa E. O'Neill
+
+Copyright (c) 2005-2019, NumPy Developers.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above
+       copyright notice, this list of conditions and the following
+       disclaimer in the documentation and/or other materials provided
+       with the distribution.
+
+    * Neither the name of the NumPy Developers nor the names of any
+       contributors may be used to endorse or promote products derived
+       from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Software: opencv-python 4.1.2.30
+Copyright notice:
+Copyright (C) 2000-2018, Intel Corporation, all rights reserved.
+Copyright (C) 2009-2011, Willow Garage Inc., all rights reserved.
+Copyright (C) 2015-2016, OpenCV Foundation, all rights reserved.
+Copyright (C) 2009-2016, NVIDIA Corporation, all rights reserved.
+Copyright (c) 2010, The WebM Project authors. All rights reserved.
+Copyright (C) 2010-2013, Advanced Micro Devices, Inc., all rights reserved.
+Copyright (C) 2015-2016, Itseez Inc., all rights reserved.
+Copyright (c) 2016-2018 Olli-Pekka Heinisuo and contributors
+Copyright (C) 1991, 1999 Free Software Foundation, Inc.
+
+MIT License
+
+Copyright (c) 2016-2018 Olli-Pekka Heinisuo and contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Software: Scipy 1.6.0
+Copyright notice: 
+Jamfile.v2: Copyright Daryle Walker, Hubert Holin, John Maddock 2006 - 2007
+Copyright 2002 Gary Strangman.  All rights reserved
+testpareto.cpp: Copyright John Maddock 2006.
+testinstances/realconcepttestinstances1.cpp: Copyright John Maddock 2011.
+Copyright (C)  Tyler Reddy, Ross Hemsley, Edd Edmondson, Nikolai Nowaczyk, Joe Pitt-Francis, 2015.
+testellint2.cpp:  Copyright John Maddock 2006, 2007
+jacobinear1.ipp: Copyright John Maddock 2012.
+compiletest/sfellintrdincltest.cpp:  Copyright John Maddock 2006.
+testdigamma.hpp: Copyright John Maddock 2006.
+testbinomial.cpp: Copyright John Maddock 2006.
+testinstances/ldoubletestinstances6.cpp: Copyright John Maddock 2011.
+Copyright 2005 Travis Oliphant Permission to use, copy, modify, and distribute this software without fee is granted under the SciPy License.
+laguerre3.ipp:  (C) Copyright John Maddock 2006-7.
+ibetainvdata.ipp:  (C) Copyright John Maddock 2006-7.
+testconstants.cpp: Copyright John Maddock 2006, 2011.
+testnegativebinomial.cpp: Copyright John Maddock 2006.
+Copyright (C) 2003, 2007-14 Massachusetts Institute of Technology
+testbernoulli.cpp: Copyright John Maddock 2006.
+Copyright (c) 2007, Damian Eads. All rights reserved.
+testremez.cpp:  Copyright John Maddock 2006
+testibeta.hpp: Copyright Paul A. Bristow 2007, 2009
+Copyright 1984, 1987, 1988, 1992 by Stephen L. Moshier Direct inquiries to 30 Frost Street, Cambridge, MA 02140
+Copyright (c) 2006, Systems Optimization Laboratory All rights reserved.
+besseljlargedata.ipp:  Copyright (c) 2007 John Maddock
+ellintrddata.ipp:  Copyright (c) 2006 John Maddock
+testellint2.hpp: Copyright Paul A. Bristow 2007, 2009
+log1pexpm1test.cpp:  Copyright John Maddock 2005.
+pch.hpp:  Copyright John Maddock 2008.
+testlaguerre.hpp: Copyright John Maddock 2006.
+compiletest/instantiate.hpp:  Copyright John Maddock 2006.
+testnccshooks.hpp:  (C) Copyright John Maddock 2008.
+License: New BSD, (C) 2014
+compiletest/sfnextincltest.cpp:  Copyright John Maddock 2006.
+testnonfiniteio.cpp: Copyright 2011 Paul A. Bristow
+acoshtest.hpp:  (C) Copyright Hubert Holin 2003.
+compiletest/main.cpp:  Copyright John Maddock 2009.
+Copyright 1985 by Stephen L. Moshier Direct inquiries to 30 Frost Street, Cambridge, MA 02140 /
+compiletest/sfbinomialincltest.cpp:  Copyright John Maddock 2006.
+compiletest/sfhypotincltest.cpp:  Copyright John Maddock 2006.
+Copyright 2002 Pearu Peterson all rights reserved, Pearu Peterson <pearu@cens.ioc.ee>
+testinstances/doubletestinstances6.cpp: Copyright John Maddock 2011.
+testinstances/doubletestinstances2.cpp: Copyright John Maddock 2011.
+copyright = '2008-%s, The SciPy community' % date.today().year
+Copyright (C) 2014 Eric Moore
+asinhtest.hpp:  (C) Copyright Hubert Holin 2003.
+complextest.cpp:  (C) Copyright John Maddock 2005.
+testbeta.hpp: Copyright Paul A. Bristow 2007, 2009
+testtr1.cpp:  (C) Copyright John Maddock 2008.
+Copyright (c) Donald Stufft and individual contributors.
+testigamma.cpp:  (C) Copyright John Maddock 2006.
+testzeta.cpp:  (C) Copyright John Maddock 2006.
+Copyright (c) 2005-2015, Michele Simionato All rights reserved.
+nctsmalldelta.ipp: Copyright John Maddock 2012.
+ntlconceptcheck.cpp:  Copyright Paul A. Bristow 2009, 2011
+specialfunctionstest.cpp:    BOOSTTESTMESSAGE("(C) Copyright Hubert Holin 2003-2005.");
+Copyright (c) 2010 Thomas P. Robitaille
+Copyright Anne M. Archibald 2008 Released under the scipy license import numpy as np from heapq import heappush, heappop import scipy.sparse
+ibetalargedata.ipp:  (C) Copyright John Maddock 2006.
+testinstances/ldoubletestinstances10.cpp: Copyright John Maddock 2011.
+testinstances/ldoubletestinstances8.cpp: Copyright John Maddock 2011.
+igammabigdata.ipp:  (C) Copyright John Maddock 2006.
+ellinte2data.ipp:  Copyright (c) 2006 John Maddock
+testexpint.hpp: Copyright Paul A. Bristow 2007, 2009
+Copyright (C)  Tyler Reddy, Richard Gowers, and Max Linked, 2016
+s.ipp: Copyright (c) 2006 Johan Rade
+testinstances/ldoubletestinstances9.cpp: Copyright John Maddock 2011.
+compiletest/sfsphharmincltest.cpp:  Copyright John Maddock 2006.
+log1pexpm1data.ipp:  (C) Copyright John Maddock 2006-7.
+jacobiellipticsmall.ipp: Copyright John Maddock 2012.
+atanhtest.hpp:  (C) Copyright Hubert Holin 2003.
+cbrtdata.ipp:  (C) Copyright John Maddock 2006-7.
+testextremevalue.cpp: Copyright John Maddock 2006.
+ntlconceptcheck.cpp:  Copyright John Maddock 2007-8.
+compiletest/sfcospiincltest.cpp:  Copyright John Maddock 2006.
+Copyright (C) 2003-2005 Peter J. Verveer
+Copyright (C) 2013  Pauli Virtanen
+testskewnormal.cpp: Copyright Benjamin Sobotta 2012
+testdigamma.hpp: Copyright Paul A. Bristow 2007, 2009
+binomialquantile.ipp:  (C) Copyright John Maddock 2006-7.
+Copyright (C) 2013 Kenneth L. Ho
+Copyright (c) 1994 by Xerox Corporation.  All rights reserved.
+digammasmalldata.ipp:  (C) Copyright John Maddock 2006-7.
+testrationalinstances/testrationaldouble5.cpp:  (C) Copyright John Maddock 2006-7.
+testrationals.cpp:  (C) Copyright John Maddock 2006.
+testellint1.cpp:  Copyright Xiaogang Zhang 2006
+gammainvsmalldata.ipp:  (C) Copyright John Maddock 2006-7.
+testgeometric.cpp: Copyright John Maddock 2010.
+testbeta.cpp: Copyright John Maddock 2006.
+ibetaintdata.ipp:  (C) Copyright John Maddock 2006-7.
+digammadata.ipp:  (C) Copyright John Maddock 2006-7.
+testgamma.hpp: Copyright John Maddock 2006.
+legendreplarge.ipp:  (C) Copyright John Maddock 2006-7.
+Copyright (c) 2006-2008 Alexander Chemeris
+testbinomialcoeff.hpp: Copyright Paul A. Bristow 2007, 2009
+Copyright (C) 2010 David Fong and Michael Saunders
+testpareto.cpp: Copyright Paul A. Bristow 2007, 2009.
+testtgammaratio.hpp: Copyright Paul A. Bristow 2007, 2009
+testinversegaussian.cpp: Copyright Paul A. Bristow 2010.
+compiletest/toolstestinctest.cpp:  Copyright John Maddock 2006.
+s.ipp: Copyright (c) 2012 Paul A. Bristow
+testlaguerre.cpp:  (C) Copyright John Maddock 2006.
+compiletest/toolsseriesinctest.cpp:  Copyright John Maddock 2006.
+testbasicnonfinite.cpp: Copyright (c) 2006 Johan Rade
+testinstances/doubletestinstances3.cpp: Copyright John Maddock 2011.
+compiletest/complasinincltest.cpp:  Copyright John Maddock 2006.
+testncf.cpp: Copyright John Maddock 2008.
+ellintpi3largedata.ipp:  Copyright (c) 2006 John Maddock
+betasmalldata.ipp:  (C) Copyright John Maddock 2006.
+Copyright J.S. Roy (js@jeannot.org), 2002-2005 See the LICENSE file for copyright information.
+compiletest/sfsinpiincltest.cpp:  Copyright John Maddock 2006.
+testinstances/floattestinstances7.cpp: Copyright John Maddock 2011.
+testellint1.cpp:  Copyright Paul A. Bristow 2007
+Qhull, Copyright (c) 1993-2019
+handletestresult.hpp:  (C) Copyright John Maddock 2006-7.
+testnonfinitetrap.cpp: Copyright (c) 2011 Paul A. Bristow To incorporate into Boost.Math
+Copyright 1985, 1987 by Stephen L. Moshier Direct inquiries to 30 Frost Street, Cambridge, MA 02140 /
+teststudentst.cpp: Copyright John Maddock 2006.
+testarchive.cpp: Copyright (c) 2011 Paul A. Bristow - filename changes for boost-trunk.
+mprealconceptcheck.cpp:  Copyright John Maddock 2007-8.
+sphneumanndata.ipp:  Copyright (c) 2007 John Maddock
+Copyright (C) 2009 Pauli Virtanen Distributed under the same license as Scipy.
+almostequal.ipp: Copyright (c) 2006 Johan Rade
+testinstances/floattestinstances3.cpp: Copyright John Maddock 2011.
+testrationalinstances/testrationalrealconcept3.cpp:  (C) Copyright John Maddock 2006-7.
+Copyright (c) 2004-2005, Jean-Sebastien Roy (js@jeannot.org)
+tgammadeltaratioint.ipp:  (C) Copyright John Maddock 2006-7.
+testround.cpp:  (C) Copyright John Maddock 2007.
+igammainvadata.ipp:  (C) Copyright John Maddock 2006-7.
+testnct.cpp: Copyright Paul A. Bristow 2012.
+compiletest/complatanhincltest.cpp:  Copyright John Maddock 2006.
+erfinvdata.ipp:  (C) Copyright John Maddock 2006-7.
+!   Copyright (C) 2013 Kenneth L. Ho
+testerf.cpp:  Copyright John Maddock 2006.
+Copyright 1985, 1987, 1989 by Stephen L. Moshier Direct inquiries to 30 Frost Street, Cambridge, MA 02140
+testinstances/Jamfile.v2: Copyright ohn Maddock 2012
+Copyright (c) 2003-2009, The Regents of the University of California, through Lawrence Berkeley National Laboratory (subject to receipt of any required approvals from U.S. Dept. of Energy) All rights reserved.
+compiletest/toolsrationalinctest.cpp:  Copyright John Maddock 2006.
+compiletest/sfellintrjincltest.cpp:  Copyright John Maddock 2006.
+log1pexpm1test.hpp:  Copyright John Maddock 2005.
+testexpint.cpp:  (C) Copyright John Maddock 2007.
+testtriangular.cpp: Copyright Paul Bristow 2006, 2007.
+compiletest/toolstoms748inctest.cpp:  Copyright John Maddock 2006.
+Copyright (C)  Pauli Virtanen, 2010.
+testibetainvab.hpp: Copyright Paul A. Bristow 2007, 2009
+compiletest/constantsincltest.cpp:  Copyright John Maddock 2012.
+log1pexpm1test.hpp:  Copyright Paul A. Bristow 2010
+compiletest/sfroundincltest.cpp:  Copyright John Maddock 2006.
+igammameddata.ipp:  (C) Copyright John Maddock 2006.
+testinstances/testinstances.hpp: Copyright John Maddock 2011.
+testcbrt.hpp: Copyright Paul A. Bristow 2007, 2009
+testbesselairyzeros.cpp:  Copyright Paul A. Bristow 2013.
+expintidatadouble.ipp:  Copyright John Maddock 2008.
+testsignedzero.cpp: Copyright 2011 Paul A. Bristow  To incorporate into Boost.Math
+testellint1.cpp:  Copyright John Maddock 2006, 2007
+zeta1belowdata.ipp:  Copyright John Maddock 2008.
+testgammahooks.hpp:  (C) Copyright John Maddock 2006.
+testbesselairyzeros.cpp:  Copyright John Maddock 2013
+testrationalinstances/testrationalfloat2.cpp:  (C) Copyright John Maddock 2006-7.
+compiletest/stdrealconceptcheck.cpp:  Copyright John Maddock 2006.
+License: BSD, (C) 2011
+testnormal.cpp: Copyright John Maddock 2007.
+testtriangular.cpp: Copyright John Maddock 2006, 2007.
+testldoublesimple.cpp: Copyright John Maddock 2013.
+compiletest/sfexpm1incltest.cpp:  Copyright John Maddock 2006.
+testinstances/realconcepttestinstances6.cpp: Copyright John Maddock 2011.
+expintdata.ipp:  Copyright John Maddock 2008.
+Copyright (c) 1998-2003 by the University of Florida.
+testlegacynonfinite.cpp: Copyright (c) 2011 Paul A. Bristow comments
+testinstances/ldoubletestinstances2.cpp: Copyright John Maddock 2011.
+testmathfwd.cpp:  Copyright Paul A. Bristow 2010.
+nccs.ipp:  Copyright John Maddock 2008.
+testjacobi.cpp:  Copyright John Maddock 2012
+nct.ipp: Copyright John Maddock 2008.
+testigamma.hpp: Copyright Paul A. Bristow 2007, 2009
+ibetainvadata.ipp:  (C) Copyright John Maddock 2006-7.
+Copyright (C) 2015, Pauli Virtanen <pav@iki.fi>
+testellint3.cpp:  Copyright John Maddock 2006, 2007
+assoclegendrep.ipp:  (C) Copyright John Maddock 2006-7.
+testibeta.cpp:  (C) Copyright John Maddock 2006.
+betameddata.ipp:  (C) Copyright John Maddock 2006.
+expintsmalldata.ipp:  Copyright John Maddock 2008.
+nctasym.ipp: Copyright John Maddock 2012.
+License: BSD, (C) 2012
+testpolicy3.cpp: Copyright John Maddock 2007.
+Copyright (c) 2001-2011 - Scilab Enterprises Updated by Allan Cornet, Sylvestre Ledru.
+testinstances/doubletestinstances7.cpp: Copyright John Maddock 2011.
+testinstances/realconcepttestinstances4.cpp: Copyright John Maddock 2011.
+testinstances/floattestinstances2.cpp: Copyright John Maddock 2011.
+testbesselj.cpp:  (C) Copyright John Maddock 2007.
+compiletest/sfsqrt1pm1incltest.cpp:  Copyright John Maddock 2006.
+compiletest/toolspolynomialinctest.cpp:  Copyright John Maddock 2006.
+testsign.cpp:#define BOOSTTESTMAIN Copyright John Maddock 2008
+compiletest/sferfincltest.cpp:  Copyright John Maddock 2006.
+powtest.cpp:  (C) Copyright Bruno Lalande 2008.
+sphericalharmonic.ipp:  (C) Copyright John Maddock 2006-7.
+Copyright (c) 2018 Sylvain Gubian <sylvain.gubian@pmi.com>, Yang Xiang <yang.xiang@pmi.com>
+powm1sqrtp1m1test.hpp:  Copyright John Maddock 2006.
+Copyright (c) 2018, Quansight-Labs All rights reserved.
+jacobielliptic.ipp: Copyright John Maddock 2012.
+testbesselhooks.hpp:  (C) Copyright John Maddock 2007.
+testrationalinstances/testrationalldouble5.cpp:  (C) Copyright John Maddock 2006-7.
+compiletest/sfmodfincltest.cpp:  Copyright John Maddock 2006.
+Copyright (c) 1996-2008 Rice University.
+besseliintdata.ipp:  Copyright (c) 2007 John Maddock
+betaexpdata.ipp:  (C) Copyright John Maddock 2006.
+testellint3.hpp: Copyright Paul A. Bristow 2007, 2009
+compiletest/sfhankelincltest.cpp:  Copyright John Maddock 2012.
+testskewnormal.cpp: Copyright Paul A. Bristow 2012.
+negativebinomialquantile.ipp:  (C) Copyright John Maddock 2006-7.
+compiletest/sfhermiteincltest.cpp:  Copyright John Maddock 2006.
+Copyright (c) 2004 David M. Cooke <cookedm@physics.mcmaster.ca>
+gammainvbigdata.ipp:  (C) Copyright John Maddock 2006-7.
+testibetainv.cpp:  (C) Copyright John Maddock 2006.
+compiletest/sfbetaincltest.cpp:  Copyright John Maddock 2006.
+testerf.hpp: Copyright Paul A. Bristow 2007, 2009
+functor.hpp:  (C) Copyright John Maddock 2007.
+testrationalinstances/testrationalldouble4.cpp:  (C) Copyright John Maddock 2006-7.
+compiletest/complatanincltest.cpp:  Copyright John Maddock 2006.
+binomialdata.ipp:  (C) Copyright John Maddock 2006-7.
+erfsmalldata.ipp:  (C) Copyright John Maddock 2006.
+testigammainva.hpp: Copyright Paul A. Bristow 2007, 2009
+compiletest/sfdigammaincltest.cpp:  Copyright John Maddock 2006.
+Copyright (c) 2002 Travis Oliphant all rights reserved oliphant.travis@ieee.org Permission to use, modify, and distribute this software is given under the terms of the SciPy (BSD style) license. See LICENSE.txt that came with this distribution for specifics.
+compiletest/toolsstatsinctest.cpp:  Copyright John Maddock 2006.
+testgeometric.cpp: Copyright Paul A. Bristow 2010.
+compiletest/sfzetaincltest.cpp:  Copyright John Maddock 2007.
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+testinstances/realconcepttestinstances9.cpp: Copyright John Maddock 2011.
+testinstances/floattestinstances9.cpp: Copyright John Maddock 2011.
+compiletest/sfbesselincltest.cpp:  Copyright John Maddock 2006.
+testrationalinstances/testrationalrealconcept1.cpp:  (C) Copyright John Maddock 2006-7.
+Copyright Anne M. Archibald 2008 Released under the scipy license
+testinstances/realconcepttestinstances8.cpp: Copyright John Maddock 2011.
+zetanegdata.ipp:  Copyright John Maddock 2008.
+testnegativebinomial.cpp: Copyright Paul A. Bristow 2007.
+erfdata.ipp:  (C) Copyright John Maddock 2006-7.
+Copyright Anne M. Archibald 2008 Additional contributions by Patrick Varilly and Sturla Molden 2012 Revision by Sturla Molden 2015 Balanced kd-tree construction written by Jake Vanderplas for scikit-learn Released under the scipy license
+hypottest.cpp:  (C) Copyright John Maddock 2005.
+(C) Copyright John Maddock 2006.
+compiletest/sfpowm1incltest.cpp:  Copyright John Maddock 2006.
+testinstances/floattestinstances1.cpp: Copyright John Maddock 2011.
+compiletest/toolssolveinctest.cpp:  Copyright John Maddock 2006.
+igammasmalldata.ipp:  (C) Copyright John Maddock 2006.
+testrationalinstances/testrationalldouble1.cpp:  (C) Copyright John Maddock 2006-7.
+jacobilargephi.ipp: Copyright John Maddock 2012.
+compiletest/tr1incltest.cpp:  Copyright John Maddock 2008.
+igammaintdata.ipp:  (C) Copyright John Maddock 2006-7.
+ellintkdata.ipp:  (C) Copyright John Maddock 2006-7.
+compiletest/sflanczosincltest.cpp:  Copyright John Maddock 2006.
+testellint1.hpp: Copyright John Maddock 2006.
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+testlegendre.hpp: Copyright John Maddock 2006.
+testfindscale.cpp: Copyright Paul A. Bristow 2007.
+ibetadata.ipp:  (C) Copyright John Maddock 2006.
+testbesseli.hpp:  (C) Copyright John Maddock 2007.
+ellintfdata.ipp:  Copyright (c) 2006 John Maddock
+Copyright (c) 2000-2015 The University of California Berkeley. All rights reserved.
+sphbesseldata.ipp:  Copyright (c) 2007 John Maddock
+besselyndata.ipp:  Copyright (c) 2007 John Maddock
+testrealconceptnegbin.cpp: Copyright John Maddock 2010.
+Copyright 1984, 1987, 1989, 1992, 2000 by Stephen L. Moshier
+erfcinvdata.ipp:  (C) Copyright John Maddock 2006-7.
+compiletest/sfellint1incltest.cpp:  Copyright John Maddock 2006.
+Copyright (C) 2013 Kenneth L. Ho Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+testlegendrehooks.hpp:  (C) Copyright John Maddock 2006.
+testlongdoublesupport.cpp: Copyright John Maddock 2009
+compiletest/sfmathfwdincltest.cpp:  Copyright John Maddock 2006.
+testibetainv.hpp: Copyright Paul A. Bristow 2007, 2009
+testbeta.hpp: Copyright John Maddock 2006.
+compiletest/sfsincincltest.cpp:  Copyright John Maddock 2006.
+compiletest/instantiate.hpp:  Copyright Paul A. Bristow 2007, 2010.
+compiletest/toolsminimainctest.cpp:  Copyright John Maddock 2006.
+testinstantiate2.cpp:  Copyright John Maddock 2006.
+testibetainv.hpp: Copyright John Maddock 2006.
+stdrealconceptcheck.cpp:  Copyright John Maddock 2006.
+ellintpi3data.ipp:  Copyright (c) 2006 John Maddock
+testpolicysf.cpp:  (C) Copyright John Maddock 2007.
+Copyright 1985, 1987 by Stephen L. Moshier Direct inquiries to 30 Frost Street, Cambridge, MA 02140
+bessely01data.ipp:  Copyright (c) 2007 John Maddock
+teststudentst.cpp: Copyright Paul A. Bristow 2006.
+testrationalinstances/testrationalldouble3.cpp:  (C) Copyright John Maddock 2006-7.
+Copyright 2002-2016 The SciPy Developers
+compiletest/toolstestdatainctest.cpp:  Copyright John Maddock 2006.
+testerf.hpp: Copyright John Maddock 2006.
+testinstances/realconcepttestinstances5.cpp: Copyright John Maddock 2011.
+testcommonfactorgmpxx.cpp:  (C) Copyright John Maddock 2010.
+testtoms748solve.cpp:  (C) Copyright John Maddock 2006.
+testbesselj.hpp:  (C) Copyright John Maddock 2007.
+testibetainvab.hpp: Copyright John Maddock 2006.
+testbasicnonfinite.cpp: Copyright (c) 2011 Paul A. Bristow comments
+besselyvdata.ipp:  Copyright (c) 2007 John Maddock
+testconstants.cpp: Copyright Paul Bristow 2007, 2011.
+testtr1.c:/  (C) Copyright John Maddock 2008.
+testellint2.hpp: Copyright John Maddock 2006.
+compiletest/toolsrootsinctest.cpp:  Copyright John Maddock 2006.
+testcauchy.cpp: Copyright John Maddock 2006, 2007.
+testerf.cpp:  Copyright Paul A. Bristow 2007
+ztestmaxdigits10.cpp:  Copyright 2010 Paul A. Bristow
+testzeta.hpp: Copyright John Maddock 2006.
+compiletest/sflog1pincltest.cpp:  Copyright John Maddock 2006.
+Copyright (C) 2008 Damian Eads
+testpolicy8.cpp: Copyright John Maddock 2007.
+testcarlson.hpp: Copyright John Maddock 2006.
+testinstances/floattestinstances5.cpp: Copyright John Maddock 2011.
+testminima.cpp:  Copyright Paul A. Bristow 2007.
+compiletest/sfjacobiincltest.cpp:  Copyright John Maddock 2012.
+tgammadeltaratiodata.ipp:  (C) Copyright John Maddock 2006-7.
+testmathfwd.cpp:  Copyright John Maddock 2010.
+testconstantgenerate.cpp: Copyright John Maddock 2010.
+testrayleigh.cpp: Copyright John Maddock 2006.
+digammanegdata.ipp:  (C) Copyright John Maddock 2006-7.
+sinctest.hpp:  (C) Copyright Hubert Holin 2003.
+testcarlson.cpp:  Copyright 2006 John Maddock
+testinstances/longdoubletestinstances1.cpp: Copyright John Maddock 2011.
+Copyright (c) 2006 Xiaogang Zhang Use, modification and distribution are subject to the Boost Software License, Version 1.0.
+ibetasmalldata.ipp:  (C) Copyright John Maddock 2006.
+testcarlson.hpp: Copyright Paul A. Bristow 2007, 2009
+Copyright (c) 2010 - Jordi Gutiérrez Hermoso (Octave patch)
+Copyright 1984, 1996 by Stephen L. Moshier
+ncbetabig.ipp:  Copyright John Maddock 2008.
+testlaplace.cpp:  Copyright Thijs van den Berg, 2008.
+testarchive.cpp: Copyright (c) 2006 Johan Rade
+testigammainva.cpp:  (C) Copyright John Maddock 2006.
+testlaplace.cpp:  Copyright Paul A. Bristow 2008, 2009.
+testbasicnonfinite.cpp: Copyright (c) 2011 John Maddock
+multiprcconceptcheck1.cpp:  Copyright John Maddock 2013.
+besselkdata.ipp:  Copyright (c) 2007 John Maddock
+testuniform.cpp: Copyright John Maddock 2006.
+Copyright 2013 Andrea Gavana Author: <andrea.gavana@gmail.com>
+testinstances/floattestinstances10.cpp: Copyright John Maddock 2011.
+hypergeometrictestdata.ipp: Copyright Gautam Sewani 2008
+Copyright (c) 2016--2017 Felix Lenders
+pchlight.hpp:  Copyright John Maddock 2008.
+hermite.ipp:  (C) Copyright John Maddock 2006-7.
+testrationalinstances/testrationalldouble2.cpp:  (C) Copyright John Maddock 2006-7.
+binomiallargedata.ipp:  (C) Copyright John Maddock 2006-7.
+testibeta.hpp: Copyright John Maddock 2006.
+Copyright 1984, 1995, 2000 by Stephen L. Moshier
+testpolicy5.cpp: Copyright John Maddock 2007.
+testuniform.cpp: Copyright Paul Bristow 2007.
+zetadata.ipp:  Copyright John Maddock 2008.
+tgammaratiodata.ipp:  (C) Copyright John Maddock 2006-7.
+Copyright (c) 2012 Massachusetts Institute of Technology
+testsign.cpp:  (C) Copyright Paul A. Bristow 2011 (added tests for changesign)
+laguerre2.ipp:  (C) Copyright John Maddock 2006-7.
+zeta1updata.ipp:  Copyright John Maddock 2008.
+testlognormal.cpp: Copyright Paul A. Bristow 2007
+testfindlocation.cpp: Copyright John Maddock 2007.
+compiletest/sfcbrtincltest.cpp:  Copyright John Maddock 2006.
+Copyright (c) 2006-2015 The University of Colorado Denver.  All rights reserved.
+compiletest/sfellintrcincltest.cpp:  Copyright John Maddock 2006.
+testlegendre.cpp:  (C) Copyright John Maddock 2006.
+testremez.cpp:  Copyright Paul A. Bristow 2007
+testinstances/doubletestinstances4.cpp: Copyright John Maddock 2011.
+testclassify.cpp:  Copyright John Maddock 2006.
+Copyright 1984, 1987, 1989 by Stephen L. Moshier Direct inquiries to 30 Frost Street, Cambridge, MA 02140
+compiletest/complabsincltest.cpp:  Copyright John Maddock 2006.
+Copyright 1984, 1987, 1995 by Stephen L. Moshier
+testrationalinstances/testrationaldouble1.cpp:  (C) Copyright John Maddock 2006-7.
+testinstances/realconcepttestinstances7.cpp: Copyright John Maddock 2011.
+besselidata.ipp:  Copyright (c) 2007 John Maddock
+testgammadata.ipp:  (C) Copyright John Maddock 2006.
+tgammadeltaratioint2.ipp:  (C) Copyright John Maddock 2006-7.
+specialfunctionstest.cpp:  (C) Copyright Hubert Holin 2003.
+testinstances/doubletestinstances10.cpp: Copyright John Maddock 2011.
+testminima.cpp:  Copyright John Maddock 2006.
+Copyright (c) 2008 Brian M. Clapper <bmc@clapper.org>, Gael Varoquaux Author: Brian M. Clapper, Gael Varoquaux License: 3-clause BSD
+Copyright (C) Damian Eads, 2007-2008. New BSD License.
+Copyright 1999 Travis Oliphant
+testncbetahooks.hpp:  (C) Copyright John Maddock 2008.
+testrationalinstances/testrationalfloat3.cpp:  (C) Copyright John Maddock 2006-7.
+compiletest/sflegendreincltest.cpp:  Copyright John Maddock 2006.
+log1pexpm1test.cpp:  Copyright Paul A. Bristow 2010
+multiprcconceptcheck4.cpp:  Copyright John Maddock 2013.
+ellintedata.ipp:  Copyright (c) 2006 John Maddock
+Copyright 1985, 1987, 2000 by Stephen L. Moshier
+expintidata.ipp:  Copyright John Maddock 2008.
+erflargedata.ipp:  (C) Copyright John Maddock 2006-7.
+License: BSD, (C) 2011 import warnings
+mpfrconceptcheck.cpp:  Copyright John Maddock 2007-8.
+testrationalinstances/testrationaldouble4.cpp:  (C) Copyright John Maddock 2006-7.
+testibetainvab.cpp:  (C) Copyright John Maddock 2006.
+testbetahooks.hpp:  (C) Copyright John Maddock 2006.
+Copyright (c) 2001-2002 Enthought, Inc.  2003-2019, SciPy Developers.
+compiletest/sfexpintincltest.cpp:  Copyright John Maddock 2007.
+testigammainva.hpp: Copyright John Maddock 2006.
+testzeta.hpp: Copyright Paul A. Bristow 2007, 2009
+ellintrjdata.ipp:  Copyright (c) 2006 John Maddock
+erfcinvbigdata.ipp:  (C) Copyright John Maddock 2006-7.
+testinstances/ldoubletestinstances4.cpp: Copyright John Maddock 2011.
+expint1data.ipp:  Copyright John Maddock 2008.
+testigammainv.hpp: Copyright Paul A. Bristow 2007, 2009
+Copyright (C) 2010-2019 Max-Planck-Society
+Copyright (c) 2016 Wenzel Jakob <wenzel.jakob@epfl.ch>, All rights reserved.
+testrationalinstances/testrationalrealconcept5.cpp:  (C) Copyright John Maddock 2006-7.
+testcbrt.cpp:  Copyright John Maddock 2006.
+testpolicy6.cpp: Copyright John Maddock 2007.
+testsphericalharmonic.cpp:  (C) Copyright John Maddock 2006.
+testbesselk.cpp:  Copyright John Maddock 2006, 2007
+testinstances/realconcepttestinstances10.cpp: Copyright John Maddock 2011.
+Copyright (c) 2006-2007, Robert Hetland <hetland@tamu.edu>
+gammainvdata.ipp:  (C) Copyright John Maddock 2006-7.
+testgamma.cpp:  (C) Copyright John Maddock 2006.
+testnct.cpp: Copyright John Maddock 2008, 2012.
+nccsbig.ipp: Copyright John Maddock 2008.
+atanhdata.ipp: Copyright John Maddock 2008.
+testzetahooks.hpp:  (C) Copyright John Maddock 2006.
+testairy.cpp:  Copyright John Maddock 2012
+compiletest/sfgammaincltest.cpp:  Copyright John Maddock 2006.
+testlognormal.cpp: Copyright John Maddock 2006.
+testdigamma.cpp:  (C) Copyright John Maddock 2006.
+testinstances/floattestinstances6.cpp: Copyright John Maddock 2011.
+testerrorhandling.cpp: Copyright John Maddock 2006-7.
+testinstances/pch.hpp:  Copyright John Maddock 2012.
+testrationalinstances/testrationalfloat4.cpp:  (C) Copyright John Maddock 2006-7.
+Copyright (c) 2007, 2008, Damian Eads
+Copyright 2004-2005 by Enthought, Inc.
+Copyright (C) 2003, 2007-14 Matteo Frigo
+testpolicy.cpp: Copyright John Maddock 2007.
+testrationalinstances/testrationalrealconcept4.cpp:  (C) Copyright John Maddock 2006-7.
+testclassify.cpp:  Copyright Paul A. Bristow 2007
+zztestmaxdigits10.cpp: Copyright 2010 Paul A. Bristow
+testrationalinstances/testrationalrealconcept2.cpp:  (C) Copyright John Maddock 2006-7.
+Copyright 1984, 1987, 1988, 2000 by Stephen L. Moshier
+Copyright (c) 1993-2019 The Geometry Center.
+testigammainv.cpp:  (C) Copyright John Maddock 2006.
+expintidatalong.ipp:  Copyright John Maddock 2008.
+compiletest/sfsinhcincltest.cpp:  Copyright John Maddock 2006.
+testroots.cpp:  (C) Copyright John Maddock 2006.
+Copyright (c) 2007, 2008, Damian Eads. All rights reserved.
+efloatconceptcheck.cpp:  Copyright John Maddock 2011.
+testcauchy.cpp: Copyright Paul A. Bristow 2007
+testtgammaratio.cpp:  (C) Copyright John Maddock 2006.
+testellint2.cpp:  Copyright Paul A. Bristow 2007
+testrationalinstances/testrationaldouble2.cpp:  (C) Copyright John Maddock 2006-7.
+testcarlson.cpp: Copyright Paul A. Bristow 2007.
+Copyright (C) 2010 David Fong and Michael Saunders Distributed under the same license as SciPy
+Copyright 1984, 1987 by Stephen L. Moshier Direct inquiries to 30 Frost Street, Cambridge, MA 02140
+compiletest/sfellint2incltest.cpp:  Copyright John Maddock 2006.
+testigamma.hpp: Copyright John Maddock 2006.
+Copyright (c) 2016 Adrian Veres
+testoutofrange.hpp: Copyright John Maddock 2012.
+besselkintdata.ipp:  Copyright (c) 2007 John Maddock
+testinstances/doubletestinstances8.cpp: Copyright John Maddock 2011.
+testlexicalcast.cpp: Copyright (c) 2011 Paul A. Bristow incorporated Boost.Math
+compiletest/sftruncincltest.cpp:  Copyright John Maddock 2006.
+besseljdata.ipp:  Copyright (c) 2007 John Maddock
+Copyright (c) 2009, Motorola, Inc
+testlexicalcast.cpp: Copyright (c) 2006 Johan Rade
+compiletest/toolsfractioninctest.cpp:  Copyright John Maddock 2006.
+compiletest/sffpclassifyincltest.cpp:  Copyright John Maddock 2006.
+Copyright (c) 2007 - Sébastien Fabbro (gentoo patch)
+testinstances/doubletestinstances9.cpp: Copyright John Maddock 2011.
+testbesselk.hpp:  (C) Copyright John Maddock 2007.
+testrealconcept.cpp: Copyright John Maddock 2010
+Copyright (c) 2003, The Regents of the University of California, through Lawrence Berkeley National Laboratory (subject to receipt of any required approvals from U.S. Dept. of Energy)
+testbinomialcoeff.cpp:  (C) Copyright John Maddock 2006.
+testsignedzero.cpp: Copyright 2006 Johan Rade
+testrationalinstances/testrational.hpp:  (C) Copyright John Maddock 2006-7.
+testinstantiate1.cpp:  Copyright John Maddock 2006.
+compiletest/sfellintrfincltest.cpp:  Copyright John Maddock 2006.
+testellint3.hpp: Copyright John Maddock 2006.
+testinversegaussian.cpp: Copyright John Maddock 2010.
+acoshdata.ipp: Copyright John Maddock 2008.
+Copyright (c) 2002 Travis Oliphant all rights reserved Oliphant.Travis@altavista.net Permission to use, modify, and distribute this software is given under the terms of the SciPy (BSD style) license.  See LICENSE.txt that came with this distribution for specifics.
+testjacobi.hpp: Copyright John Maddock 2006.
+Copyright (C) 2019 Peter Bell
+testbesselk.cpp:  Copyright Paul A. Bristow 2007
+multiprcconceptcheck3.cpp:  Copyright John Maddock 2013.
+Copyright (C) 2010-2019 Max-Planck-Society All rights reserved.
+testellint1.hpp: Copyright Paul A. Bristow 2007, 2009
+tabletype.hpp: Copyright John Maddock 2012.
+testfindscale.cpp: Copyright John Maddock 2007.
+testinstances/floattestinstances8.cpp: Copyright John Maddock 2011.
+testskewnormal.cpp: Copyright John Maddock 2012.
+compiletest/testtraits.cpp:  Copyright John Maddock 2007.
+compiletest/complacosincltest.cpp:  Copyright John Maddock 2006.
+testbernoulli.cpp: Copyright  Paul A. Bristow 2007, 2012.
+testpolicy2.cpp: Copyright John Maddock 2007.
+testellint3.cpp:  Copyright Xiaogang Zhang 2006
+testncbeta.cpp: Copyright John Maddock 2008.
+testsignedzero.cpp: Copyright 2012 Paul A. Bristow with new tests.
+ellintrfdata.ipp:  Copyright (c) 2006 John Maddock
+digammarootdata.ipp:  (C) Copyright John Maddock 2006-7.
+multiprcconceptcheck2.cpp:  Copyright John Maddock 2013.
+compiletest/toolsrealcastinctest.cpp:  Copyright John Maddock 2006.
+testinstances/realconcepttestinstances2.cpp: Copyright John Maddock 2011.
+testbesselairyzeros.cpp:  Copyright Christopher Kormanyos 2013.
+powm1sqrtp1m1test.cpp:  (C) Copyright John Maddock 2006.
+testexpinthooks.hpp:  (C) Copyright John Maddock 2006.
+Copyright 1984, 1995 by Stephen L. Moshier
+testexpint.hpp: Copyright John Maddock 2006.
+Copyright (C) 2009, Pauli Virtanen <pav@iki.fi>
+testlaguerre.hpp: Copyright Paul A. Bristow 2007, 2009
+testinstances/ldoubletestinstances7.cpp: Copyright John Maddock 2011.
+testlegendre.hpp: Copyright Paul A. Bristow 2007, 2009
+testcbrt.cpp:  Copyright Paul A. Bristow 2010
+testjacobi.hpp: Copyright Paul A. Bristow 2007, 2009
+Copyright Benjamin Sobotta 2012
+compiletest/sffactorialsincltest.cpp:  Copyright John Maddock 2006.
+testlaplace.cpp:  Copyright John Maddock 2008.
+testbeta.cpp: Copyright Paul A. Bristow 2007, 2009
+testerrorhandling.cpp: Copyright Paul A. Bristow 2006-7.
+testrationalinstances/testrationaldouble3.cpp:  (C) Copyright John Maddock 2006-7.
+testellint2.cpp:  Copyright Xiaogang Zhang 2006
+testrationalinstances/testrationalfloat1.cpp:  (C) Copyright John Maddock 2006-7.
+compiletest/complacoshincltest.cpp:  Copyright John Maddock 2006.
+Copyright (c) 2002-2005, Jean-Sebastien Roy (js@jeannot.org)
+testrealconceptnegbin.cpp: Copyright Paul A. Bristow 2010.
+Copyright 1984, 1987, 1992, 2000 by Stephen L. Moshier
+testcbrt.hpp: Copyright John Maddock 2006.
+compiletest/toolsremezinctest.cpp:  Copyright John Maddock 2006.
+compiletest/sfairyincltest.cpp:  Copyright John Maddock 2012.
+Copyright (c) 2007, John Travers <jtravs@gmail.com>
+compiletest/sflaguerreincltest.cpp:  Copyright John Maddock 2006.
+Copyright 1984, 1987, 1989, 1995 by Stephen L. Moshier
+Copyright 1984, 1991 by Stephen L. Moshier Direct inquiries to 30 Frost Street, Cambridge, MA 02140
+testerfhooks.hpp:  (C) Copyright John Maddock 2006.
+Copyright (C) Piers Lawrence.
+testbessely.cpp:  (C) Copyright John Maddock 2007.
+testnormal.cpp: Copyright Paul A. Bristow 2010.
+testbinomialcoeff.hpp: Copyright John Maddock 2006.
+Copyright (C) 2019 Max-Planck-Society
+testfindlocation.cpp: Copyright Paul A. Bristow 2007.
+testhankel.cpp:  Copyright John Maddock 2012 testhypergeometricdist.cpp: Copyright Paul A. Bristow testhypergeometricdist.cpp: Copyright Gautam Sewani
+compiletest/sfsignincltest.cpp:  Copyright John Maddock 2006.
+testnonfinitetrap.cpp: Copyright (c) 2006 Johan Rade
+testinstances/ldoubletestinstances5.cpp: Copyright John Maddock 2011.
+asinhdata.ipp: Copyright John Maddock 2008.
+testlegacynonfinite.cpp: Copyright (c) 2006 Johan Rade
+testigammainv.hpp: Copyright John Maddock 2006.
+Copyright 1984, 1987, 1988 by Stephen L. Moshier Direct inquiries to 30 Frost Street, Cambridge, MA 02140
+compiletest/sfellint3incltest.cpp:  Copyright John Maddock 2006.
+testfactorials.cpp:  Copyright John Maddock 2006.
+testinstances/doubletestinstances5.cpp: Copyright John Maddock 2011.
+Copyright 2014, Eric W. Moore
+compiletest/generate.sh:  Copyright John Maddock 2006.
+testpolicy7.cpp: Copyright John Maddock 2007.
+legendrep.ipp:  (C) Copyright John Maddock 2006-7.
+testgamma.hpp: Copyright Paul A. Bristow 2007, 2009
+compiletest/toolsconfiginctest.cpp:  Copyright John Maddock 2006.
+compiletest/complasinhincltest.cpp:  Copyright John Maddock 2006.
+testprintinfoontype.cpp: Copyright John Maddock 2010.
+ellintrcdata.ipp:  Copyright (c) 2006 John Maddock
+besseljintdata.ipp:  Copyright (c) 2007 John Maddock
+compiletest/testcompileresult.hpp:  Copyright John Maddock 2007.
+testnext.cpp:  (C) Copyright John Maddock 2008.
+testinstances/realconcepttestinstances3.cpp: Copyright John Maddock 2011.
+testinstances/ldoubletestinstances3.cpp: Copyright John Maddock 2011.
+testinvhyp.cpp:  (C) Copyright John Maddock 2006.
+testinstances/doubletestinstances1.cpp: Copyright John Maddock 2011.
+testtgammaratio.hpp: Copyright John Maddock 2006.
+Copyright 1984, 1987, 1993 by Stephen L. Moshier Direct inquiries to 30 Frost Street, Cambridge, MA 02140
+testbinomial.cpp: Copyright  Paul A. Bristow 2007.
+testpolicy4.cpp: Copyright John Maddock 2007.
+testbesseli.cpp:  (C) Copyright John Maddock 2007.
+testellint3.cpp:  Copyright Paul A. Bristow 2007
+Copyright (C) 2019 Peter Bell \author Martin Reinecke \author Peter Bell
+Copyright 1984, 1987, 1989, 1992 by Stephen L. Moshier Direct inquiries to 30 Frost Street, Cambridge, MA 02140
+Copyright (c) 2001, 2002 Enthought, Inc.
+ncbeta.ipp:  Copyright John Maddock 2008.
+sinhctest.hpp:  (C) Copyright Hubert Holin 2003.
+testbessely.hpp:  (C) Copyright John Maddock 2007.
+testinstances/floattestinstances4.cpp: Copyright John Maddock 2011.
+Copyright (C)  Tyler Reddy, 2016
+Copyright (c) 1993-2019 C.B. Barber.
+commonfactortest.cpp:  (C) Copyright Daryle Walker 2001, 2006.
+ellintpi2data.ipp:  Copyright (c) 2006 John Maddock
+Copyright (c) 1992-2015 The University of Tennessee and The University of Tennessee Research Foundation.  All rights reserved.
+
+License: 
+Copyright (c) 2001-2002 Enthought, Inc.  2003-2019, SciPy Developers.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above
+   copyright notice, this list of conditions and the following
+   disclaimer in the documentation and/or other materials provided
+   with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived
+   from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Software: easydict 1.9
+Copyright notice:
+Copyright (C) 2007 Free Software Foundation, Inc. <http:fsf.org/>
+
+       GNU LESSER GENERAL PUBLIC LICENSE           
+            Version 3, 29 June 2007
+
+ Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+
+  This version of the GNU Lesser General Public License incorporates
+the terms and conditions of version 3 of the GNU General Public
+License, supplemented by the additional permissions listed below.
+
+  0. Additional Definitions.
+
+  As used herein, "this License" refers to version 3 of the GNU Lesser
+General Public License, and the "GNU GPL" refers to version 3 of the GNU
+General Public License.
+
+  "The Library" refers to a covered work governed by this License,
+other than an Application or a Combined Work as defined below.
+
+  An "Application" is any work that makes use of an interface provided
+by the Library, but which is not otherwise based on the Library.
+Defining a subclass of a class defined by the Library is deemed a mode
+of using an interface provided by the Library.
+
+  A "Combined Work" is a work produced by combining or linking an
+Application with the Library.  The particular version of the Library
+with which the Combined Work was made is also called the "Linked
+Version".
+
+  The "Minimal Corresponding Source" for a Combined Work means the
+Corresponding Source for the Combined Work, excluding any source code
+for portions of the Combined Work that, considered in isolation, are
+based on the Application, and not on the Linked Version.
+
+  The "Corresponding Application Code" for a Combined Work means the
+object code and/or source code for the Application, including any data
+and utility programs needed for reproducing the Combined Work from the
+Application, but excluding the System Libraries of the Combined Work.
+
+  1. Exception to Section 3 of the GNU GPL.
+
+  You may convey a covered work under sections 3 and 4 of this License
+without being bound by section 3 of the GNU GPL.
+
+  2. Conveying Modified Versions.
+
+  If you modify a copy of the Library, and, in your modifications, a
+facility refers to a function or data to be supplied by an Application
+that uses the facility (other than as an argument passed when the
+facility is invoked), then you may convey a copy of the modified
+version:
+
+   a) under this License, provided that you make a good faith effort to
+   ensure that, in the event an Application does not supply the
+   function or data, the facility still operates, and performs
+   whatever part of its purpose remains meaningful, or
+
+   b) under the GNU GPL, with none of the additional permissions of
+   this License applicable to that copy.
+
+  3. Object Code Incorporating Material from Library Header Files.
+
+  The object code form of an Application may incorporate material from
+a header file that is part of the Library.  You may convey such object
+code under terms of your choice, provided that, if the incorporated
+material is not limited to numerical parameters, data structure
+layouts and accessors, or small macros, inline functions and templates
+(ten or fewer lines in length), you do both of the following:
+
+   a) Give prominent notice with each copy of the object code that the
+   Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the object code with a copy of the GNU GPL and this license
+   document.
+
+  4. Combined Works.
+
+  You may convey a Combined Work under terms of your choice that,
+taken together, effectively do not restrict modification of the
+portions of the Library contained in the Combined Work and reverse
+engineering for debugging such modifications, if you also do each of
+the following:
+
+   a) Give prominent notice with each copy of the Combined Work that
+   the Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the Combined Work with a copy of the GNU GPL and this license
+   document.
+
+   c) For a Combined Work that displays copyright notices during
+   execution, include the copyright notice for the Library among
+   these notices, as well as a reference directing the user to the
+   copies of the GNU GPL and this license document.
+
+   d) Do one of the following:
+
+       0) Convey the Minimal Corresponding Source under the terms of this
+       License, and the Corresponding Application Code in a form
+       suitable for, and under terms that permit, the user to
+       recombine or relink the Application with a modified version of
+       the Linked Version to produce a modified Combined Work, in the
+       manner specified by section 6 of the GNU GPL for conveying
+       Corresponding Source.
+
+       1) Use a suitable shared library mechanism for linking with the
+       Library.  A suitable mechanism is one that (a) uses at run time
+       a copy of the Library already present on the user's computer
+       system, and (b) will operate properly with a modified version
+       of the Library that is interface-compatible with the Linked
+       Version.
+
+   e) Provide Installation Information, but only if you would otherwise
+   be required to provide such information under section 6 of the
+   GNU GPL, and only to the extent that such information is
+   necessary to install and execute a modified version of the
+   Combined Work produced by recombining or relinking the
+   Application with a modified version of the Linked Version. (If
+   you use option 4d0, the Installation Information must accompany
+   the Minimal Corresponding Source and Corresponding Application
+   Code. If you use option 4d1, you must provide the Installation
+   Information in the manner specified by section 6 of the GNU GPL
+   for conveying Corresponding Source.)
+
+  5. Combined Libraries.
+
+  You may place library facilities that are a work based on the
+Library side by side in a single library together with other library
+facilities that are not Applications and are not covered by this
+License, and convey such a combined library under terms of your
+choice, if you do both of the following:
+
+   a) Accompany the combined library with a copy of the same work based
+   on the Library, uncombined with any other library facilities,
+   conveyed under the terms of this License.
+
+   b) Give prominent notice with the combined library that part of it
+   is a work based on the Library, and explaining where to find the
+   accompanying uncombined form of the same work.
+
+  6. Revised Versions of the GNU Lesser General Public License.
+
+  The Free Software Foundation may publish revised and/or new versions
+of the GNU Lesser General Public License from time to time. Such new
+versions will be similar in spirit to the present version, but may
+differ in detail to address new problems or concerns.
+
+  Each version is given a distinguishing version number. If the
+Library as you received it specifies that a certain numbered version
+of the GNU Lesser General Public License "or any later version"
+applies to it, you have the option of following the terms and
+conditions either of that published version or of any later version
+published by the Free Software Foundation. If the Library as you
+received it does not specify a version number of the GNU Lesser
+General Public License, you may choose any version of the GNU Lesser
+General Public License ever published by the Free Software Foundation.
+
+  If the Library as you received it specifies that a proxy can decide
+whether future versions of the GNU Lesser General Public License shall
+apply, that proxy's public statement of acceptance of any version is
+permanent authorization for you to choose that version for the
+Library.
+
+Software: Pillow 8.2.0
+Copyright notice:
+Copyright (c) 2001-2004 by Fredrik Lundh
+Copyright (c) 1997-2001 by Secret Labs AB
+Copyright (c) Fredrik Lundh 1996-2003.
+Copyright (c) 2004 by Secret Labs.
+Copyright (c) Fredrik Lundh 1999.
+Copyright (c) 2016 Marcin Kurczewski <rr-@sakuya.pl>
+Copyright (c) Secret Labs AB 1997-2004.  All rights reserved.
+Copyright (c) 1997-99 by Secret Labs AB.
+Copyright (c) 2014 by Coriolis Systems Limited
+Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is a trademark of Bitstream, Inc.
+Copyright (c) 2001-2002 by Secret Labs AB
+Copyright (c) 1995-2004 by Fredrik Lundh.
+Copyright (c) 1996 by Fredrik Lundh.
+Copyright (c) Secret Labs AB 1997-2005.  All rights reserved.
+Copyright (c) Fredrik Lundh 1995.
+COPYRIGHT "Copyright (c) 1987 Adobe Systems, Inc., Portions Copyright 1988 Digital Equipment Corp."
+Copyright (c) 1997-2006 by Secret Labs AB.
+Copyright (c) 1997-2004 by Secret Labs AB.  All rights reserved.
+Copyright (c) 1996-1997 by Fredrik Lundh.
+Copyright (c) 1997-2005 by Secret Labs AB
+Copyright (c) Secret Labs AB 1997-98.
+Copyright (c) 1996-2000 Fredrik Lundh
+Copyright (c) 2008 by Karsten Hiddemann.
+Copyright (c) 1995-2003 by Fredrik Lundh
+Copyright (c) 1996-2006 by Fredrik Lundh
+Copyright (c) Fredrik Lundh 1997-2004.
+Copyright (C) 2002-2003 Kevin Cazabon
+Copyright (c) 1997-2003 by Secret Labs AB.
+Copyright (c) 1998-2005 by Secret Labs AB
+Copyright (c) 2014 Coriolis Systems Limited
+Copyright (c) 1995 by Fredrik Lundh.
+Copyright (c) 1997 by Fredrik Lundh.
+Copyright (c) 2002 by Secret Labs AB
+Copyright (c) 1997-2009 by Secret Labs AB.  All rights reserved.
+== "Copyright International Color Consortium, 2009"
+Copyright 2020 Google LLC
+Copyright (c) Fredrik Lundh 1995-97.
+Copyright (c) Secret Labs AB 1997-2002.  All rights reserved.
+Copyright (c) 1997-2002 by Secret Labs AB.
+Copyright (c) 1993-1996 Lucent Technologies.
+Copyright (c) Secret Labs AB 1997-2001.
+Copyright (c) 2004 by Fredrik Lundh.
+Copyright (c) 1995-2001 by Secret Labs AB
+Copyright (c) 2003-2005 by Secret Labs AB
+Copyright (c) Fredrik Lundh 2009.
+Copyright (C) 2020 Free Software Foundation, Inc.
+Copyright (c) 1997-2003 by Secret Labs AB
+Copyright (c) Fredrik Lundh 1997.
+Copyright (c) 2014 by Alastair Houghton
+Copyright (C) 2002-2003 Kevin Cazabon\n\
+Copyright (c) 2002-2004 by Fredrik Lundh
+Copyright (c) 1997-98 by Secret Labs AB.
+Copyright (c) 1996-1997 by Fredrik Lundh
+Copyright (c) Secret Labs AB 2002-2004.  All rights reserved.
+Copyright (c) 1995-2009 by Fredrik Lundh.
+Copyright © 2015 Information Technology Authority (ITA) <foss@ita.gov.om>
+Copyright (c) 1997-2001 by Secret Labs AB.
+Copyright © 1995-2011 by Fredrik Lundh
+==51890== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+Copyright (c) 1998-2000 by Scriptics Corporation.
+Copyright (c) 2002 by Kevin B. Kenny.  All rights reserved.
+Copyright (c) 2004 by Health Research Inc. (HRI) RENSSELAER, NY 12144.
+"Copyright International Color Consortium, 2009",
+Copyright © 1997-2011 by Secret Labs AB
+Copyright (c) 1998-2004 by Secret Labs AB.  All rights reserved.
+Copyright (c) 2004 by Bob Ippolito.
+Copyright (c) 1998 by Secret Labs AB
+Copyright © 2016 Khaled Hosny <khaledhosny@eglug.org>
+Copyright (c) 1995-2002 by Fredrik Lundh.
+Copyright (c) 2006 by Fredrik Lundh
+Copyright (c) 1997-1998 by Secret Labs AB
+Copyright (c) 2003-2005 by Fredrik Lundh
+Copyright (c) 1997-2005 by Secret Labs AB.
+Copyright (c) 1995-1997 by Fredrik Lundh
+Copyright (c) 2005 by Fredrik Lundh
+Copyright (c) 2003 by Fredrik Lundh.
+Copyright (c) 1995-2003 by Fredrik Lundh.
+Copyright (c) 1995-2006 by Fredrik Lundh
+Copyright (c) Eric Soroos 2017.
+Copyright (c) 2013 Eric Soroos
+Copyright (c) Mickael Bonfill 2017.
+Copyright (c) 1997-1998 by Fredrik Lundh
+Copyright (c) 1996 by Fredrik Lundh
+Copyright (c) 2006 by Secret Labs AB.
+Copyright (c) 1998 by Toby J Sergeant
+Copyright (c) 1995-2001 by Fredrik Lundh.
+Copyright (c) Secret Labs AB 2002.  All rights reserved.
+Copyright © 2010-2021 by Alex Clark and contributors
+Copyright (c) 1998-2000 Secret Labs AB
+Copyright (c) 1997-2004 by Secret Labs AB.
+Copyright (c) 2003 by Secret Labs AB
+Copyright (c) 1999 by Secret Labs AB.
+Copyright (c) 1997-2004 by Secret Labs AB
+Copyright (c) 1995-1997 by Fredrik Lundh.
+Copyright (c) 2000-2003 by Fredrik Lundh
+Copyright (c) 2012 by Brian Crowell
+Copyright (c) 1999-2005 by Secret Labs AB
+Copyright (c) Fredrik Lundh 1995-2003.
+Copyright (c) 1997 by Secret Labs AB.
+Copyright (c) 1995-2005 by Fredrik Lundh
+Copyright © 2011  Google, Inc.
+Copyright (c) Secret Labs AB 1999.
+Copyright (c) Eric Soroos 2016.
+Copyright (c) 2001-2004 by Secret Labs AB
+Copyright (c) 1995-1996 by Fredrik Lundh
+Copyright (c) 1995-1996 by Fredrik Lundh.
+Copyright (c) Secret Labs AB 1997-99.
+Copyright (C) 2002-2003 Kevin Cazabon kevin@cazabon.com Adapted/reworked for PIL by Fredrik Lundh
+Copyright (c) Secret Labs AB 1998
+Copyright (c) 1997-2005 by Fredrik Lundh
+Copyright (c) Fredrik Lundh 1995-1997.
+assert p.copyright == "Copyright International Color Consortium, 2009"
+Copyright (c) 1998-2003 by Fredrik Lundh
+Copyright (c) 1995-2001 by Fredrik Lundh
+Copyright (c) Secret Labs AB 1997-2002.
+Copyright (c) Fredrik Lundh 1994.
+Copyright (c) 1995-96 by Fredrik Lundh.
+Copyright (c) 1996-2004 by Fredrik Lundh.
+Copyright (c) 1997-2006 by Secret Labs AB
+Copyright (c) 1987-1994 The Regents of the University of California.
+Copyright (c) 1994-1998 Sun Microsystems, Inc.
+Copyright (c) 1997-2009 by Secret Labs AB
+Copyright (c) 2002 by Fredrik Lundh
+Copyright (c) 2009 Fredrik Lundh Updated to LCMS2
+Copyright (c) 2006 by Secret Labs AB
+Copyright (c) 1997-2005 by Secret Labs AB.  All rights reserved.
+Copyright (c) Secret Labs AB 1997.
+Copyright (c) 1996-2003 by Fredrik Lundh
+Copyright (c) Fredrik Lundh 1996.
+Copyright (c) 1997-2003 by Fredrik Lundh.
+Copyright (c) 2014 Alastair Houghton
+Copyright (c) 1998-2003 by Secret Labs AB.
+Copyright (c) 2004 by William Baxter.
+Copyright (c) 1997-2000 by Secret Labs AB
+Copyright (c) 2001-2002 by Fredrik Lundh
+Copyright (c) 1996-2000 by Fredrik Lundh
+Copyright (c) 2016 by Mickael Bonfill.
+Copyright (c) 2006 by Fredrik Lundh.
+Copyright (c) 2009 by Fredrik Lundh
+Copyright (c) Secret Labs AB 1997-98.  All rights reserved.
+COMMENT  Copyright 1984, 1987 Adobe Systems, Inc.
+Copyright (c) 2013 by Eric Soroos
+Copyright (c) 1997-1999 by Secret Labs AB
+Copyright (c) Secret Labs AB 2008.
+By Kevin Cazabon, copyright 2003 kevincazabon@hotmail.com kevin@cazabon.com /
+Copyright (c) 2014 by Alastair Houghton.
+Copyright (c) 2002-2004 by Secret Labs AB
+Copyright (c) Fredrik Lundh 1996-2001.
+Copyright (c) 1995 by Fredrik Lundh
+Copyright (c) Secret Labs AB 1997-2003.
+Copyright (c) 2006 by Tavmjong Bah. All Rights Reserved.
+Copyright (c) 1995-2004 by Fredrik Lundh
+Copyright (C) 2002-2003 Kevin Cazabon kevin@cazabon.com http:www.cazabon.com
+Copyright (c) 2014 Dov Grobgeld <dov.grobgeld@gmail.com>
+Copyright (c) 1998-2007 by Secret Labs AB
+Copyright (c) Fredrik Lundh 1995-96.
+Copyright (c) Fredrik Lundh 1996-97.
+Copyright (c) 2010 Oliver Tonnhofer <olt@bogosoft.com>, Omniscale
+Copyright (c) 1997-2006 by Secret Labs AB.  All rights reserved.
+copyright = "1995-2011 Fredrik Lundh, 2010-2021 Alex Clark and Contributors"
+Copyright (c) 2004 by Secret Labs AB.
+COMMENT  Portions Copyright 1988 Digital Equipment Corporation COMMENT COMMENT  Adobe is a registered trademark of Adobe Systems, Inc.  Permission COMMENT  to use these trademarks is hereby granted only in association with the COMMENT  images described in this file.
+If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
+
+
+Software: Python 3.7.5
+Copyright notice:
+Copyright (c) 1999-2000 by Secret Labs AB
+Copyright (C) 2005-2007   Gregory P. Smith (greg@krypto.org)
+Copyright (c) 2003.
+.  Copyright (C) 2005-2010   Gregory P. Smith (greg@krypto.org)
+Copyright 1996,1997 by Oliver Andrich, Koblenz, Germany.
+Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006 Python Software Foundation.
+Copyright (c) 1995-2001 Corporation for National Research Initiatives.  All rights reserved.
+Copyright 1994 by Lance Ellinghouse Cathedral City, California Republic, United States of America.
+Copyright (C) 2001 Python Software Foundation Barry Warsaw <barry@python.org>, 2000.
+libffi 2.00-beta - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (c) 2008-2012 Stefan Krah. All rights reserved.
+2001-07-01 fl   added BIGCHARSET support (from Martin von Loewis)
+``'Copyright 1991-1995 Stichting Mathematisch Centrum, Amsterdam'``
+Copyright (C) 2003 Python Software Foundation
+Copyright (C) 2001-2016 Vinay Sajip. All Rights Reserved.
+Copyright 1995-1997, Automatrix, Inc., all rights reserved.
+Copyright (c) 2002 MyCompanyName. All rights reserved.
+<string>%version%, (c) 2001-2019 Python Software Foundation.</string>
+Copyright (c) 2004 by Peter Astrand <astrand@lysator.liu.se>
+Copyright (c) 1999-2002 by Fredrik Lundh.
+Copyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\n\
+AIX ABI support (c) 2002 Free Software Foundation, Inc.
+( Copyright (c) 2011 Stefan Krah. All rights reserved. )
+2013-02-04 mrab added fullmatch primitive
+2003-10-17 gn   implemented non recursive scheme
+2003-04-18 mvl  fully support 4-byte codes
+Copyright (C) 1996-2018 Free Software Foundation, Inc.
+portions copyright 2001, Autonomous Zones Industries, Inc., all rights...
+Copyright (c) 1999-2002 by Secret Labs AB.
+Copyright (C) 1986 Gary S. Brown.  You may use this program, or code or tables extracted from it, as desired without restriction.
+-- Copyright (c) IBM Corporation, 2003, 2008.  All rights reserved.   --
+; Copyright (c) 2008-2016 Stefan Krah. All rights reserved.
+Copyright (c) 2001-2019 Python Software Foundation.\n\
+Copyright 2008 Armin Ronacher.
+Copyright © 2000 BeOpen.com. All rights reserved.
+(c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
+Copyright (c) 2005-2006 ActiveState Software Inc.
+Copyright (C) 1994 Steen Lumholt.
+Copyright (c) 1999 by Fredrik Lundh.
+libffi - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (c) 2006-2008 Alexander Chemeris
+Copyright (C) 2002 Lars Gustaebel <lars@gustaebel.de>
+Copyright (c) 1999-2003 Steve Purcell
+Darwin ABI support (c) 2001 John Hornkvist
+Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
+Copyright (c) 1999-2008 by Fredrik Lundh
+i.e., "Copyright © 1995-2001 Corporation for National Research Initiatives; All Rights Reserved" are retained in Python 1.6.1 alone or in any derivative version prepared by Licensee.  Alternately, in lieu of CNRI's License Agreement, Licensee may substitute the following text (omitting the quotes): "Python 1.6.1
+-- Copyright (c) IBM Corporation, 2005, 2009.  All rights reserved.   --
+Copyright (c) 2001-2017 Expat maintainers
+Copyright (c) 2001-2012 Python Software Foundation. All Rights Reserved.
+Copyright (C) 2002-2006 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+(c) 2002 Gregory P. Ward.  All Rights Reserved.
+Copyright (c) 2000 BeOpen.com.\n\
+Copyright (C) 2001-2007 Python Software Foundation Author: Ben Gertzfield, Barry Warsaw Contact: email-sig@python.org
+Copyright (C) 2003-2004 Federico Di Gregorio <fog@debian.org>
+2001-05-14 fl   fixes for 1.5.2 compatibility
+Copyright © 1995-2000 Corporation for National Research Initiatives. All rights reserved.
+Copyright (C) 1995, 1996, 1997, 1998, and 1999 WIDE Project.
+copyright, i.e., "Copyright © 2001-2019 Python Software Foundation; All Rights Reserved" are retained in Python |release| alone or in any derivative version prepared by Licensee.
+Copyright (C) 2001-2007 Python Software Foundation Author: Barry Warsaw, Thomas Wouters, Anthony Baxter Contact: email-sig@python.org
+Copyright (C) 2005-2010   Gregory P. Smith (greg@krypto.org)
+Copyright 2001-2017 by Vinay Sajip. All Rights Reserved.
+Copyright (c) 2000 Doug White, 2006 James Knight, 2007 Christian Heimes All rights reserved.
+Copyright (C) 1999-2001 Gregory P. Ward.
+Copyright (c) 1999-2002 by Fredrik Lundh
++   Copyright 2007 Python Software Foundation.
+else if (config == (void )2000 && (c) == 0x9B1D) {                 \
+Copyright (c) 1999-2002 by Secret Labs AB
+2002-11-09 fl   fixed empty sub/subn return type
+Copyright 2009 Gabriel A. Genellina
+Copyright (c) 2003-2009 by Fredrik Lundh.  All rights reserved.
+Copyright 2004-2005 Elemental Security, Inc. All Rights Reserved.
+(c) Copyright Guido van Rossum, 2000.
+Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
+Copyright (C) 2011-2012 Vinay Sajip.
+Copyright 2006 Google, Inc. All Rights Reserved.
+(c) Copyright Marc-Andre Lemburg, 2005.
+Copyright (C) YEAR ORGANIZATION FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+Copyright (c) 1999-2000, Marc-Andre Lemburg; mailto:mal@lemburg.com
+Copyright (c) 1995-2000, Corporation for National Research Initiatives.
+Copyright (c) 1999 Toby Dickenson
+Copyright (C) 2001,2002 Python Software Foundation csv package unit tests
+Copyright (C) 2005, 2006 Martin von Löwis Licensed to PSF under a Contributor Agreement.
+Copyright (c) 1997 by Fredrik Lundh
+Copyright (c) 2002-2006 Python Software Foundation.  All rights reserved.
+Copyright (c) 2002  Roger Sayle
+Copyright 1995-1996 by Fred L. Drake, Jr. and Virginia Polytechnic Institute and State University, Blacksburg, Virginia, USA.
+types.c - Copyright (c) 1996, 1998  Red Hat, Inc.
+Copyright 2000, Mojam Media, Inc., all rights reserved.
+Copyright (C) 1994 X Consortium
+Copyright (C) 2002-2004 Python Software Foundation
+Copyright (C) 2004-2006 Python Software Foundation Authors: Baxter, Wouters and Warsaw Contact: email-sig@python.org
+Copyright (c) 2002 Jorge Acereda  <jacereda@users.sourceforge.net> &
+darwin.S - Copyright (c) 1996, 1998, 2001, 2002, 2003  Red Hat, Inc.
+Copyright © 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The Netherlands.  All rights reserved.
+"Copyright 1995-1996 by Virginia Polytechnic Institute & State\n\
+Copyright 2012, Samuel Neves <sneves@dei.uc.pt>.  You may use this under the terms of the CC0, the OpenSSL Licence, or the Apache Public License 2.0, at your option.  The terms of these licenses can be found at:
+Copyright (C) 1995-2011 Jean-loup Gailly and Mark Adler
+x86-ffitarget.h - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright 1991-1995, Stichting Mathematisch Centrum, all rights reserved.
+darwin64.S - Copyright (c) 2006 Free Software Foundation, Inc.
+Copyright (C) 2001-2006 Python Software Foundation Author: Ben Gertzfield Contact: email-sig@python.org
+Copyright (c) 2005 Don Owens All rights reserved.
+win32.S - Copyright (c) 1996, 1998, 2001, 2002  Red Hat, Inc.
+(c) Copyright 2005, Marc-Andre Lemburg (mal@lemburg.com).
+library/xml.etree.elementtree,,:include,  Copyright (c) <xi:include href="year.txt" parse="text" />.
+ffi.c - Copyright (c) 1998 Geoffrey Keating
+Copyright 2006 Georg Brandl.
+Copyright (C) 2005-2010 Gerhard Häring <gh@ghaering.de>
+(c) 2013-2017 Christian Heimes <christian@python.org>
+Copyright 1992-2018 Free Software Foundation, Inc.
+Copyright (c) 1990-1995, Stichting Mathematisch Centrum.
+Copyright (C) 2001-2017 Vinay Sajip. All Rights Reserved.
+i.e., "Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Python Software Foundation;
+2001-10-24 fl   added finditer primitive (for 2.2 only)
+Copyright (C) 2001-2006 Python Software Foundation Author: Keith Dart Contact: email-sig@python.org
+Copyright (c) 1999-2009 by Fredrik Lundh.
+(c) 2000 Peter Bosch.  All Rights Reserved.
+ffitarget.h - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (C) 2012 Free Software Foundation, Inc.
+Copyright (C) 2002-2007 Python Software Foundation Author: Ben Gertzfield Contact: email-sig@python.org
+Copyright 1994 by Lance Ellinghouse, Cathedral City, California Republic, United States of America.
+Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+Copyright (C) 2006 - 2010  Gregor Lingl email: glingl@aon.at
+Copyright © 2001-2019 Python Software Foundation. All rights reserved.
+Copyright (c) 2009,2010 Zmanda Inc. <http://www.zmanda.com/>
+Copyright (c) 1998-2008 The OpenSSL Project.  All rights reserved.
+Copyright 1996 by Sam Rushing
+Copyright (c) 1998-2000 Thai Open Source Software Center Ltd and Clark Cooper
+(c) Craig Reese, Joe Campbell and Jeff Poskanzer 1989 /
+Copyright (c) 1999, 2000, 2001 Steve Purcell This module is free software, and you may redistribute it and/or modify it under the same terms as Python itself, so long as this copyright message and disclaimer are retained in their original form.
+-- Copyright (c) IBM Corporation, 2005, 2008.  All rights reserved.   --
+Copyright (C) 2001-2012 Python Software Foundation. All Rights Reserved.
+dnl Copyright © 2004 Scott James Remnant <scott@netsplit.com>.
+Copyright (C) 2002-2007 Python Software Foundation Contact: email-sig@python.org
+Copyright (c) 1998-2001 by Secret Labs AB.  All rights reserved.
+Copyright (c) 2009,2010 Dustin J. Mitchell <dustin@zmanda.com>
+Copyright (c) 2002  Bo Thorsen
+2001-10-21 fl   added sub/subn primitive
+copyright, i.e., "Copyright © 2001-2018 Python Software Foundation; All Rights Reserved" are retained in Python 3.7 alone or in any derivative version prepared by Licensee.
+Copyright (C) 2011-2013 Vinay Sajip.
+Copyright (c) 1991, 2000, 2001 by Lucent Technologies.
+Copyright (c) 2010 Python Software Foundation. All Rights Reserved.
+Copyright 1992-1994, David Gottner
+" SRE 2.2.2 Copyright (c) 1997-2002 by Secret Labs AB ";
+;   Copyright (c) 2004, Outercurve Foundation.
+Copyright (c) 2003-2005 by Peter Astrand <astrand@lysator.liu.se>
+Copyright (c) 1999 by Secret Labs AB
+libffi PyOBJC - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (c) 1999-2009 by Fredrik Lundh
+Copyright 2007 Google, Inc. All Rights Reserved.
+-- Copyright (c) IBM Corporation, 2004, 2008.  All rights reserved.   --
+Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Python Software Foundation.  All rights reserved.
+Copyright (C) 2001-2007 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+Copyright (c) 2000 BeOpen.com.  All rights reserved.
+Copyright © 1991-1995 Stichting Mathematisch Centrum. All rights reserved.
+Copyright (C) 2000  Luke Kenneth Casson Leighton <lkcl@samba.org>
+2001-12-07 fl   fixed memory leak in sub/subn (Guido van Rossum)
+-- Copyright (c) IBM Corporation, 2001, 2008.  All rights reserved.   --
+Virginia, USA.  Portions copyright 1991-1995 by Stichting Mathematisch\n\
+Copyright (c) 2004 Free Software Foundation, Inc.
+so portions are Copyright (C) 2001,2002 Python Software Foundation, and were written by Barry Warsaw.
+Copyright (C) 2004-2010 Gerhard Häring <gh@ghaering.de>
+Copyright (c) 2004 Python Software Foundation.
+(c) Copyright 2000 Guido van Rossum.
+Copyright 2007 Georg Brandl.
+Copyright (c) 1999 by Secret Labs AB.
+Copyright (c) 2002 Unicode, Inc.  All Rights reserved.
+Copyright 2009 Brian Quinlan. All Rights Reserved.
+Copyright (c) 2008-2009, Google Inc.
+Copyright (c) 2001-2006 Twisted Matrix Laboratories.
+(c) Copyright CNRI, All Rights Reserved. NO WARRANTY.
+License Agreement and CNRI's notice of copyright, i.e., "Copyright (c) 1995-2001 Corporation for National Research Initiatives; All Rights Reserved" are retained in Python 1.6.1 alone or in any derivative version prepared by Licensee.  Alternately, in lieu of CNRI's License Agreement, Licensee may substitute the following text (omitting the quotes): "Python 1.6.1 is made available subject to the terms and conditions in CNRI's License Agreement.  This Agreement together with Python 1.6.1 may be located on the Internet using the following unique, persistent identifier (known as a handle): 1895.22/1013.  This Agreement may also be obtained from a proxy server on the Internet
+Copyright (c) Corporation for National Research Initiatives.
+Copyright (c) 2008-2016 Stefan Krah. All rights reserved.
+Copyright 2001-2016 by Vinay Sajip. All Rights Reserved.
+if (config == (void )2000 && (c) == 0x20B9F) {                     \
+ppc-ffitarget.h - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (c) 2001-2006 Gregory P. Ward.  All rights reserved.
+Copyright (c) 1997-2001 by Secret Labs AB.  All rights reserved.
+Copyright 2000 by Timothy O'Malley <timo@alum.mit.edu>
+Copyright (C) 2007-2012 Michael Foord & the mock team E-mail: fuzzyman AT voidspace DOT org DOT uk
+Copyright (C) 2011-2014 Vinay Sajip.
+Copyright (c) 2002  Ranjit Mathew
+ppc-darwin.h - Copyright (c) 2002, 2003, 2004, Free Software Foundation, Inc.
+ppc64-darwinclosure.S - Copyright (c) 2002, 2003, 2004, Free Software Foundation, Inc. based on ppcclosure.S
+x86-ffi64.c - Copyright (c) 2002  Bo Thorsen <bo@suse.de>
+Copyright (C) 2001-2006 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+﻿Copyright (c) 2004, Outercurve Foundation.
+Copyright (c) 1995-2001 Corporation for National Research Initiatives.\n\
+Copyright 1999, Bioreason, Inc., all rights reserved.
+2001-10-20 fl   added split primitive; re-enable unicode for 1.6/2.0/2.1
+Copyright (C) 2001-2019 Vinay Sajip. All Rights Reserved.
+Copyright (c) 2008 by Christian Heimes <christian@cheimes.de>
+Copyright 2001-2019 by Vinay Sajip. All Rights Reserved.
+Copyright (C) 2005 Martin v. Löwis Licensed to PSF under a contributor agreement.
+ppc-darwin.S - Copyright (c) 2000 John Hornkvist
+Copyright (c) 2000, BeOpen.com.
+Copyright (C) 2001-2010 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+Copyright (C) 2001-2007 Python Software Foundation Author: Anthony Baxter Contact: email-sig@python.org
+Copyright (c) 2004 by Fredrik Lundh <fredrik@pythonware.com>
+Copyright Disney Enterprises, Inc.  All Rights Reserved.
+ffi.c - Copyright (c) 1996, 1998, 1999, 2001  Red Hat, Inc.
+Copyright (C) 2003-2013 Python Software Foundation
+Copyright (c) 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The Netherlands.  All rights reserved.
+Copyright (c) <xi:include href="year.txt" parse="text" />.
+prepcif.c - Copyright (c) 1996, 1998  Red Hat, Inc.
+self.assertEqual(list(c), list(range(2,2000)))
+Copyright (C) 2002-2007 Python Software Foundation Author: Ben Gertzfield, Barry Warsaw Contact: email-sig@python.org
+-- Copyright (c) IBM Corporation, 2000, 2008.  All rights reserved.   --
+Copyright (C) 2012   Christian Heimes (christian@python.org)
+fficommon.h - Copyright (c) 1996  Red Hat, Inc.
+Copyright (C) 2012-2016  Christian Heimes (christian@python.org)
+Copyright (C) 2004-2005 Gerhard Häring <gh@ghaering.de>
+(c) 2002 Python Software Foundation.  All Rights Reserved.
+Copyright (c) 2004 by Secret Labs AB, http://www.pythonware.com
+Copyright (c) 2004, Outercurve Foundation.
+Copyright (c) 2006-2008, R Oudkerk Licensed to PSF under a Contributor Agreement.
+.. Copyright 1995 Virginia Polytechnic Institute and State University and Fred L. Drake, Jr.  This copyright notice must be distributed on all copies, but this document otherwise may be distributed as part of the Python distribution.  No fee may be charged for this document in any representation, either on paper or electronically.  This restriction does not affect other elements in a distributed package in any way.
+Copyright 2012-2013 by Larry Hastings.
+Copyright (C) 2002-2006 Python Software Foundation Contact: email-sig@python.org email package unit tests for (optional) Asian codecs
+Copyright (c) 2002 Peter O'Gorman <ogorman@users.sourceforge.net>
+Copyright 2007 Google Inc.
+Copyright (c) 1999 by Fredrik Lundh
+Copyright (C) 2001-2010 Python Software Foundation Contact: email-sig@python.org email package unit tests
+Copyright (c) 2003-2004 by Fredrik Lundh.  All rights reserved.
+Copyright (c) 1991-1999 Unicode, Inc.  All Rights reserved.
+Copyright (c) 2000-2017 Expat development team Licensed under the MIT license:
+Copyright (c) 1997-2000 Thai Open Source Software Center Ltd
+Copyright (c) 1998 The Open Group
+Copyright (c) 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The Netherlands. All rights reserved.\
+<string>%version%, (c) 2001-2016 Python Software Foundation.</string>
+Copyright (c) 2000-2010, eGenix.com Software GmbH; mailto:info@egenix.com
+Copyright (C) 2005 Gerhard Häring <gh@ghaering.de>
+copyright = '2001-%s, Python Software Foundation' % time.strftime('%Y')
+Copyright (c) 1996-2008  Red Hat, Inc and others.
+Copyright (C) 2005 Martin v. Löwis Licensed to PSF under a Contributor Agreement.
+<string>(c) 2001-2016 Python Software Foundation.</string>
+<string>%VERSION%, (c) 2001-2019 Python Software Foundation.</string>
+Copyright (C) 1997, 2002, 2003, 2007, 2008 Martin von Loewis
+Copyright (c) 2013  Marek Majkowski <marek@popcount.org>
+Copyright (c) 1999-2008 by Fredrik Lundh.  All rights reserved.
+Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura, All rights reserved.
+Copyright (c) 1998, 1999, 2000 Thai Open Source Software Center Ltd and Clark Cooper
+2001-04-15 fl   export copyright as Python attribute, not global 2001-04-28 fl   added copy methods (work in progress)
+Copyright (C) 2002, 2003 Python Software Foundation.
+Copyright (c) 2004, 2005, 2006 Python Software Foundation.
+dnl Copyright © 2012-2015 Dan Nicholson <dbn.lists@gmail.com>
+Copyright (c) 1999-2009 by Secret Labs AB.  All rights reserved.
+Copyright (c) 2003-2010 Python Software Foundation This module is free software, and you may redistribute it and/or modify it under the same terms as Python itself, so long as this copyright message and disclaimer are retained in their original form.
+Copyright (c) 1991-1995 Stichting Mathematisch Centrum.  All rights reserved.
+2001-10-18 fl   fixed group reset issue (from Matthew Mueller)
+Copyright (C) 1992-1996, 1998-2012 Free Software Foundation, Inc.
+-- Copyright (c) IBM Corporation, 1981, 2008.  All rights reserved.   --
+Copyright (C) 2000  Bastian Kleineidam
+ppc-darwinclosure.S - Copyright (c) 2002, 2003, 2004, Free Software Foundation, Inc. based on ppcclosure.S
+Copyright (c) 2001  John Beniton
+Portions copyright 1991-1995 by Stichting Mathematisch Centrum, Amsterdam, The Netherlands.  Copying is permitted under the terms associated with the main Python distribution, with the additional restriction that this additional notice be included and maintained on all distributed copies.
+
+A. HISTORY OF THE SOFTWARE
+==========================
+
+Python was created in the early 1990s by Guido van Rossum at Stichting
+Mathematisch Centrum (CWI, see http://www.cwi.nl) in the Netherlands
+as a successor of a language called ABC.  Guido remains Python's
+principal author, although it includes many contributions from others.
+
+In 1995, Guido continued his work on Python at the Corporation for
+National Research Initiatives (CNRI, see http://www.cnri.reston.va.us)
+in Reston, Virginia where he released several versions of the
+software.
+
+In May 2000, Guido and the Python core development team moved to
+BeOpen.com to form the BeOpen PythonLabs team.  In October of the same
+year, the PythonLabs team moved to Digital Creations, which became
+Zope Corporation.  In 2001, the Python Software Foundation (PSF, see
+https://www.python.org/psf/) was formed, a non-profit organization
+created specifically to own Python-related Intellectual Property.
+Zope Corporation was a sponsoring member of the PSF.
+
+All Python releases are Open Source (see http://www.opensource.org for
+the Open Source Definition).  Historically, most, but not all, Python
+releases have also been GPL-compatible; the table below summarizes
+the various releases.
+
+    Release         Derived     Year        Owner       GPL-
+                    from                                compatible? (1)
+
+    0.9.0 thru 1.2              1991-1995   CWI         yes
+    1.3 thru 1.5.2  1.2         1995-1999   CNRI        yes
+    1.6             1.5.2       2000        CNRI        no
+    2.0             1.6         2000        BeOpen.com  no
+    1.6.1           1.6         2001        CNRI        yes (2)
+    2.1             2.0+1.6.1   2001        PSF         no
+    2.0.1           2.0+1.6.1   2001        PSF         yes
+    2.1.1           2.1+2.0.1   2001        PSF         yes
+    2.1.2           2.1.1       2002        PSF         yes
+    2.1.3           2.1.2       2002        PSF         yes
+    2.2 and above   2.1.1       2001-now    PSF         yes
+
+Footnotes:
+
+(1) GPL-compatible doesn't mean that we're distributing Python under
+    the GPL.  All Python licenses, unlike the GPL, let you distribute
+    a modified version without making your changes open source.  The
+    GPL-compatible licenses make it possible to combine Python with
+    other software that is released under the GPL; the others don't.
+
+(2) According to Richard Stallman, 1.6.1 is not GPL-compatible,
+    because its license has a choice of law clause.  According to
+    CNRI, however, Stallman's lawyer has told CNRI's lawyer that 1.6.1
+    is "not incompatible" with the GPL.
+
+Thanks to the many outside volunteers who have worked under Guido's
+direction to make these releases possible.
+
+
+B. TERMS AND CONDITIONS FOR ACCESSING OR OTHERWISE USING PYTHON
+===============================================================
+
+PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
+--------------------------------------------
+
+1. This LICENSE AGREEMENT is between the Python Software Foundation
+("PSF"), and the Individual or Organization ("Licensee") accessing and
+otherwise using this software ("Python") in source or binary form and
+its associated documentation.
+
+2. Subject to the terms and conditions of this License Agreement, PSF hereby
+grants Licensee a nonexclusive, royalty-free, world-wide license to reproduce,
+analyze, test, perform and/or display publicly, prepare derivative works,
+distribute, and otherwise use Python alone or in any derivative version,
+provided, however, that PSF's License Agreement and PSF's notice of copyright,
+i.e., "Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
+2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Python Software Foundation;
+All Rights Reserved" are retained in Python alone or in any derivative version
+prepared by Licensee.
+
+3. In the event Licensee prepares a derivative work that is based on
+or incorporates Python or any part thereof, and wants to make
+the derivative work available to others as provided herein, then
+Licensee hereby agrees to include in any such work a brief summary of
+the changes made to Python.
+
+4. PSF is making Python available to Licensee on an "AS IS"
+basis.  PSF MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, PSF MAKES NO AND
+DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF PYTHON WILL NOT
+INFRINGE ANY THIRD PARTY RIGHTS.
+
+5. PSF SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON
+FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS
+A RESULT OF MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON,
+OR ANY DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+
+6. This License Agreement will automatically terminate upon a material
+breach of its terms and conditions.
+
+7. Nothing in this License Agreement shall be deemed to create any
+relationship of agency, partnership, or joint venture between PSF and
+Licensee.  This License Agreement does not grant permission to use PSF
+trademarks or trade name in a trademark sense to endorse or promote
+products or services of Licensee, or any third party.
+
+8. By copying, installing or otherwise using Python, Licensee
+agrees to be bound by the terms and conditions of this License
+Agreement.
+
+
+BEOPEN.COM LICENSE AGREEMENT FOR PYTHON 2.0
+-------------------------------------------
+
+BEOPEN PYTHON OPEN SOURCE LICENSE AGREEMENT VERSION 1
+
+1. This LICENSE AGREEMENT is between BeOpen.com ("BeOpen"), having an
+office at 160 Saratoga Avenue, Santa Clara, CA 95051, and the
+Individual or Organization ("Licensee") accessing and otherwise using
+this software in source or binary form and its associated
+documentation ("the Software").
+
+2. Subject to the terms and conditions of this BeOpen Python License
+Agreement, BeOpen hereby grants Licensee a non-exclusive,
+royalty-free, world-wide license to reproduce, analyze, test, perform
+and/or display publicly, prepare derivative works, distribute, and
+otherwise use the Software alone or in any derivative version,
+provided, however, that the BeOpen Python License is retained in the
+Software, alone or in any derivative version prepared by Licensee.
+
+3. BeOpen is making the Software available to Licensee on an "AS IS"
+basis.  BEOPEN MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, BEOPEN MAKES NO AND
+DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE SOFTWARE WILL NOT
+INFRINGE ANY THIRD PARTY RIGHTS.
+
+4. BEOPEN SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF THE
+SOFTWARE FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS
+AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THE SOFTWARE, OR ANY
+DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+
+5. This License Agreement will automatically terminate upon a material
+breach of its terms and conditions.
+
+6. This License Agreement shall be governed by and interpreted in all
+respects by the law of the State of California, excluding conflict of
+law provisions.  Nothing in this License Agreement shall be deemed to
+create any relationship of agency, partnership, or joint venture
+between BeOpen and Licensee.  This License Agreement does not grant
+permission to use BeOpen trademarks or trade names in a trademark
+sense to endorse or promote products or services of Licensee, or any
+third party.  As an exception, the "BeOpen Python" logos available at
+http://www.pythonlabs.com/logos.html may be used according to the
+permissions granted on that web page.
+
+7. By copying, installing or otherwise using the software, Licensee
+agrees to be bound by the terms and conditions of this License
+Agreement.
+
+
+CNRI LICENSE AGREEMENT FOR PYTHON 1.6.1
+---------------------------------------
+
+1. This LICENSE AGREEMENT is between the Corporation for National
+Research Initiatives, having an office at 1895 Preston White Drive,
+Reston, VA 20191 ("CNRI"), and the Individual or Organization
+("Licensee") accessing and otherwise using Python 1.6.1 software in
+source or binary form and its associated documentation.
+
+2. Subject to the terms and conditions of this License Agreement, CNRI
+hereby grants Licensee a nonexclusive, royalty-free, world-wide
+license to reproduce, analyze, test, perform and/or display publicly,
+prepare derivative works, distribute, and otherwise use Python 1.6.1
+alone or in any derivative version, provided, however, that CNRI's
+License Agreement and CNRI's notice of copyright, i.e., "Copyright (c)
+1995-2001 Corporation for National Research Initiatives; All Rights
+Reserved" are retained in Python 1.6.1 alone or in any derivative
+version prepared by Licensee.  Alternately, in lieu of CNRI's License
+Agreement, Licensee may substitute the following text (omitting the
+quotes): "Python 1.6.1 is made available subject to the terms and
+conditions in CNRI's License Agreement.  This Agreement together with
+Python 1.6.1 may be located on the Internet using the following
+unique, persistent identifier (known as a handle): 1895.22/1013.  This
+Agreement may also be obtained from a proxy server on the Internet
+using the following URL: http://hdl.handle.net/1895.22/1013".
+
+3. In the event Licensee prepares a derivative work that is based on
+or incorporates Python 1.6.1 or any part thereof, and wants to make
+the derivative work available to others as provided herein, then
+Licensee hereby agrees to include in any such work a brief summary of
+the changes made to Python 1.6.1.
+
+4. CNRI is making Python 1.6.1 available to Licensee on an "AS IS"
+basis.  CNRI MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, CNRI MAKES NO AND
+DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF PYTHON 1.6.1 WILL NOT
+INFRINGE ANY THIRD PARTY RIGHTS.
+
+5. CNRI SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON
+1.6.1 FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS
+A RESULT OF MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON 1.6.1,
+OR ANY DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+
+6. This License Agreement will automatically terminate upon a material
+breach of its terms and conditions.
+
+7. This License Agreement shall be governed by the federal
+intellectual property law of the United States, including without
+limitation the federal copyright law, and, to the extent such
+U.S. federal law does not apply, by the law of the Commonwealth of
+Virginia, excluding Virginia's conflict of law provisions.
+Notwithstanding the foregoing, with regard to derivative works based
+on Python 1.6.1 that incorporate non-separable material that was
+previously distributed under the GNU General Public License (GPL), the
+law of the Commonwealth of Virginia shall govern this License
+Agreement only as to issues arising under or with respect to
+Paragraphs 4, 5, and 7 of this License Agreement.  Nothing in this
+License Agreement shall be deemed to create any relationship of
+agency, partnership, or joint venture between CNRI and Licensee.  This
+License Agreement does not grant permission to use CNRI trademarks or
+trade name in a trademark sense to endorse or promote products or
+services of Licensee, or any third party.
+
+8. By clicking on the "ACCEPT" button where indicated, or by copying,
+installing or otherwise using Python 1.6.1, Licensee agrees to be
+bound by the terms and conditions of this License Agreement.
+
+        ACCEPT
+
+
+CWI LICENSE AGREEMENT FOR PYTHON 0.9.0 THROUGH 1.2
+--------------------------------------------------
+
+Copyright (c) 1991 - 1995, Stichting Mathematisch Centrum Amsterdam,
+The Netherlands.  All rights reserved.
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of Stichting Mathematisch
+Centrum or CWI not be used in advertising or publicity pertaining to
+distribution of the software without specific, written prior
+permission.
+
+STICHTING MATHEMATISCH CENTRUM DISCLAIMS ALL WARRANTIES WITH REGARD TO
+THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS, IN NO EVENT SHALL STICHTING MATHEMATISCH CENTRUM BE LIABLE
+FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
+OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Software: Python 3.8.5
+Copyright notice:
+copyright, i.e., "Copyright © 2001-2018 Python Software Foundation; All Rights Reserved" are retained in Python 3.8 alone or in any derivative version prepared by Licensee.
+Copyright (c) 1999-2000 by Secret Labs AB
+Copyright (C) 2005-2007   Gregory P. Smith (greg@krypto.org)
+Copyright (c) 2003.
+.  Copyright (C) 2005-2010   Gregory P. Smith (greg@krypto.org)
+Copyright 1996,1997 by Oliver Andrich, Koblenz, Germany.
+Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006 Python Software Foundation.
+Copyright (c) 1995-2001 Corporation for National Research Initiatives.  All rights reserved.
+Copyright 1994 by Lance Ellinghouse Cathedral City, California Republic, United States of America.
+Copyright (C) 2001 Python Software Foundation Barry Warsaw <barry@python.org>, 2000.
+Copyright (c) 2008-2012 Stefan Krah. All rights reserved.
+2001-07-01 fl   added BIGCHARSET support (from Martin von Loewis)
+``'Copyright 1991-1995 Stichting Mathematisch Centrum, Amsterdam'``
+Copyright (C) 2003 Python Software Foundation
+Copyright (C) 2001-2016 Vinay Sajip. All Rights Reserved.
+Copyright 1995-1997, Automatrix, Inc., all rights reserved.
+Copyright (c) 2002 MyCompanyName. All rights reserved.
+Copyright (c) 2004 by Peter Astrand <astrand@lysator.liu.se>
+Copyright (c) 1999-2002 by Fredrik Lundh.
+Copyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\n\
+AIX ABI support (c) 2002 Free Software Foundation, Inc.
+( Copyright (c) 2011 Stefan Krah. All rights reserved. )
+2013-02-04 mrab added fullmatch primitive
+2003-10-17 gn   implemented non recursive scheme
+2003-04-18 mvl  fully support 4-byte codes
+Copyright (c) 1999-2002 by Secret Labs AB.
+portions copyright 2001, Autonomous Zones Industries, Inc., all rights...
+Copyright © 2013 W3C® (MIT, ERCIM, Keio, Beihang), All Rights Reserved.
+Copyright (C) 1986 Gary S. Brown.  You may use this program, or code or tables extracted from it, as desired without restriction.
+-- Copyright (c) IBM Corporation, 2003, 2008.  All rights reserved.   --
+; Copyright (c) 2008-2016 Stefan Krah. All rights reserved.
+Copyright (c) 2001-2020 Python Software Foundation.  All rights reserved.
+Copyright 2008 Armin Ronacher.
+Copyright © 2000 BeOpen.com. All rights reserved.
+(c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
+Copyright (c) 2005-2006 ActiveState Software Inc.
+Copyright (C) 1994 Steen Lumholt.
+Copyright (c) 1999 by Fredrik Lundh.
+libffi - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (c) 2006-2008 Alexander Chemeris
+Copyright (C) 2002 Lars Gustaebel <lars@gustaebel.de>
+Copyright (c) 1999-2003 Steve Purcell
+Darwin ABI support (c) 2001 John Hornkvist
+Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
+Copyright (c) 1999-2008 by Fredrik Lundh
+i.e., "Copyright © 1995-2001 Corporation for National Research Initiatives; All Rights Reserved" are retained in Python 1.6.1 alone or in any derivative version prepared by Licensee.  Alternately, in lieu of CNRI's License Agreement, Licensee may substitute the following text (omitting the quotes): "Python 1.6.1
+-- Copyright (c) IBM Corporation, 2005, 2009.  All rights reserved.   --
+Copyright (c) 2001-2017 Expat maintainers
+Copyright (c) 2001-2012 Python Software Foundation. All Rights Reserved.
+Copyright (C) 2002-2006 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+(c) 2002 Gregory P. Ward.  All Rights Reserved.
+Copyright (c) 2000 BeOpen.com.\n\
+Copyright (C) 2001-2007 Python Software Foundation Author: Ben Gertzfield, Barry Warsaw Contact: email-sig@python.org
+Copyright (C) 2003-2004 Federico Di Gregorio <fog@debian.org>
+2001-05-14 fl   fixes for 1.5.2 compatibility
+Copyright © 1995-2000 Corporation for National Research Initiatives. All rights reserved.
+Copyright (c) 2013 W3C(R) (MIT, ERCIM, Keio, Beihang), All Rights Reserved.
+Copyright (C) 1995, 1996, 1997, 1998, and 1999 WIDE Project.
+Copyright (C) 2001-2007 Python Software Foundation Author: Barry Warsaw, Thomas Wouters, Anthony Baxter Contact: email-sig@python.org
+Copyright (C) 2005-2010   Gregory P. Smith (greg@krypto.org)
+Copyright 2001-2017 by Vinay Sajip. All Rights Reserved.
+Copyright (c) 2000 Doug White, 2006 James Knight, 2007 Christian Heimes All rights reserved.
+Copyright (C) 1999-2001 Gregory P. Ward.
+Copyright (c) 1999-2002 by Fredrik Lundh
++   Copyright 2007 Python Software Foundation.
+else if (config == (void )2000 && (c) == 0x9B1D) {                 \
+Copyright (c) 1999-2002 by Secret Labs AB
+2002-11-09 fl   fixed empty sub/subn return type
+Copyright 2009 Gabriel A. Genellina
+Copyright (c) 2003-2009 by Fredrik Lundh.  All rights reserved.
+Copyright 2004-2005 Elemental Security, Inc. All Rights Reserved.
+(c) Copyright Guido van Rossum, 2000.
+Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
+Copyright (C) 2011-2012 Vinay Sajip.
+Copyright 2006 Google, Inc. All Rights Reserved.
+(c) Copyright Marc-Andre Lemburg, 2005.
+Copyright (C) 1996-2014 Free Software Foundation, Inc.
+Copyright (C) YEAR ORGANIZATION FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+Copyright (c) 1999-2000, Marc-Andre Lemburg; mailto:mal@lemburg.com
+Copyright (c) 1995-2000, Corporation for National Research Initiatives.
+Copyright (c) 1999 Toby Dickenson
+Copyright (C) 2001,2002 Python Software Foundation csv package unit tests
+Copyright (C) 2005, 2006 Martin von Löwis Licensed to PSF under a Contributor Agreement.
+Copyright (c) 1997 by Fredrik Lundh
+Copyright (c) 2002-2006 Python Software Foundation.  All rights reserved.
+Copyright (c) 2002  Roger Sayle
+Copyright 1995-1996 by Fred L. Drake, Jr. and Virginia Polytechnic Institute and State University, Blacksburg, Virginia, USA.
+types.c - Copyright (c) 1996, 1998  Red Hat, Inc.
+Copyright 2000, Mojam Media, Inc., all rights reserved.
+Copyright (C) 1994 X Consortium
+copyright, i.e., "Copyright © 2001-2020 Python Software Foundation; All Rights Reserved" are retained in Python |release| alone or in any derivative version prepared by Licensee.
+Copyright (C) 2004-2006 Python Software Foundation Authors: Baxter, Wouters and Warsaw Contact: email-sig@python.org
+Copyright (C) 2002-2004 Python Software Foundation
+Copyright (c) 2002 Jorge Acereda  <jacereda@users.sourceforge.net> &
+darwin.S - Copyright (c) 1996, 1998, 2001, 2002, 2003  Red Hat, Inc.
+Copyright © 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The Netherlands.  All rights reserved.
+"Copyright 1995-1996 by Virginia Polytechnic Institute & State\n\
+x86-ffitarget.h - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (C) 1995-2011 Jean-loup Gailly and Mark Adler
+Copyright 1991-1995, Stichting Mathematisch Centrum, all rights reserved.
+Copyright © 2001-2020 Python Software Foundation. All rights reserved.
+<string>(c) 2001-2020 Python Software Foundation.</string>
+Copyright (C) 2001-2006 Python Software Foundation Author: Ben Gertzfield Contact: email-sig@python.org
+Copyright (c) 2005 Don Owens All rights reserved.
+darwin64.S - Copyright (c) 2006 Free Software Foundation, Inc.
+(c) Copyright 2005, Marc-Andre Lemburg (mal@lemburg.com).
+library/xml.etree.elementtree,,:include,  Copyright (c) <xi:include href="year.txt" parse="text" />.
+ffi.c - Copyright (c) 1998 Geoffrey Keating
+Copyright 2006 Georg Brandl.
+Copyright (C) 2005-2010 Gerhard Häring <gh@ghaering.de>
+(c) 2013-2017 Christian Heimes <christian@python.org>
+Copyright 1992-2018 Free Software Foundation, Inc.
+Copyright (C) 2003-2013 Python Software Foundation import copy import operator import pickle import unittest import plistlib import os import datetime import codecs import binascii import collections from test import support from io import BytesIO
+Copyright (C) 2001-2017 Vinay Sajip. All Rights Reserved.
+Copyright (c) 1990-1995, Stichting Mathematisch Centrum.
+2001-10-24 fl   added finditer primitive (for 2.2 only)
+Copyright (C) 2001-2006 Python Software Foundation Author: Keith Dart Contact: email-sig@python.org
+Copyright (c) 1999-2009 by Fredrik Lundh.
+(c) 2000 Peter Bosch.  All Rights Reserved.
+Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+Copyright (C) 2012 Free Software Foundation, Inc.
+Copyright (C) 2002-2007 Python Software Foundation Author: Ben Gertzfield Contact: email-sig@python.org
+i.e., "Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Python Software Foundation;
+Copyright 1994 by Lance Ellinghouse, Cathedral City, California Republic, United States of America.
+Copyright (C) 2006 - 2010  Gregor Lingl email: glingl@aon.at
+Copyright (c) 2009,2010 Zmanda Inc. <http://www.zmanda.com/>
+Copyright (c) 1998-2008 The OpenSSL Project.  All rights reserved.
+Copyright 1996 by Sam Rushing
+Copyright (c) 1998-2000 Thai Open Source Software Center Ltd and Clark Cooper
+(c) Craig Reese, Joe Campbell and Jeff Poskanzer 1989 /
+Copyright (c) 1999, 2000, 2001 Steve Purcell This module is free software, and you may redistribute it and/or modify it under the same terms as Python itself, so long as this copyright message and disclaimer are retained in their original form.
+-- Copyright (c) IBM Corporation, 2005, 2008.  All rights reserved.   --
+Copyright (C) 2001-2012 Python Software Foundation. All Rights Reserved.
+dnl Copyright © 2004 Scott James Remnant <scott@netsplit.com>.
+Copyright (C) 2002-2007 Python Software Foundation Contact: email-sig@python.org
+Copyright (c) 1998-2001 by Secret Labs AB.  All rights reserved.
+Copyright (c) 2009,2010 Dustin J. Mitchell <dustin@zmanda.com>
+Copyright (c) 2002  Bo Thorsen
+2001-10-21 fl   added sub/subn primitive
+Copyright 1992-1994, David Gottner
+Copyright (C) 2011-2013 Vinay Sajip.
+Copyright (c) 1991, 2000, 2001 by Lucent Technologies.
+Copyright (c) 2010 Python Software Foundation. All Rights Reserved.
+" SRE 2.2.2 Copyright (c) 1997-2002 by Secret Labs AB ";
+;   Copyright (c) 2004, Outercurve Foundation.
+Copyright (c) 2003-2005 by Peter Astrand <astrand@lysator.liu.se>
+Copyright (c) 1999 by Secret Labs AB
+libffi PyOBJC - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (c) 1999-2009 by Fredrik Lundh
+Copyright 2007 Google, Inc. All Rights Reserved.
+-- Copyright (c) IBM Corporation, 2004, 2008.  All rights reserved.   --
+Copyright (C) 2001-2007 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+Copyright (c) 2000 BeOpen.com.  All rights reserved.
+<string>%version%, (c) 2001-2020 Python Software Foundation.</string>
+Copyright © 1991-1995 Stichting Mathematisch Centrum. All rights reserved.
+Copyright (C) 2000  Luke Kenneth Casson Leighton <lkcl@samba.org>
+Copyright (C) 2005-2007 Gerhard Häring <gh@ghaering.de>
+2001-12-07 fl   fixed memory leak in sub/subn (Guido van Rossum)
+-- Copyright (c) IBM Corporation, 2001, 2008.  All rights reserved.   --
+Virginia, USA.  Portions copyright 1991-1995 by Stichting Mathematisch\n\
+Copyright (c) 2004 Free Software Foundation, Inc.
+so portions are Copyright (C) 2001,2002 Python Software Foundation, and were written by Barry Warsaw.
+Copyright (C) 2004-2010 Gerhard Häring <gh@ghaering.de>
+Copyright (c) 2004 Python Software Foundation.
+(c) Copyright 2000 Guido van Rossum.
+Copyright 2007 Georg Brandl.
+Copyright (c) 1999 by Secret Labs AB.
+Copyright (c) 2002 Unicode, Inc.  All Rights reserved.
+Copyright 2009 Brian Quinlan. All Rights Reserved.
+Copyright (c) 2008-2009, Google Inc.
+Copyright (c) 2001-2006 Twisted Matrix Laboratories.
+(c) Copyright CNRI, All Rights Reserved. NO WARRANTY.
+License Agreement and CNRI's notice of copyright, i.e., "Copyright (c) 1995-2001 Corporation for National Research Initiatives; All Rights Reserved" are retained in Python 1.6.1 alone or in any derivative version prepared by Licensee.  Alternately, in lieu of CNRI's License Agreement, Licensee may substitute the following text (omitting the quotes): "Python 1.6.1 is made available subject to the terms and conditions in CNRI's License Agreement.  This Agreement together with Python 1.6.1 may be located on the Internet using the following unique, persistent identifier (known as a handle): 1895.22/1013.  This Agreement may also be obtained from a proxy server on the Internet
+Copyright (c) Corporation for National Research Initiatives.
+Copyright (c) 2008-2016 Stefan Krah. All rights reserved.
+Copyright 2001-2016 by Vinay Sajip. All Rights Reserved.
+if (config == (void )2000 && (c) == 0x20B9F) {                     \
+ppc-ffitarget.h - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (c) 2001-2006 Gregory P. Ward.  All rights reserved.
+Copyright (c) 1997-2001 by Secret Labs AB.  All rights reserved.
+Copyright 2000 by Timothy O'Malley <timo@alum.mit.edu>
+Copyright (C) 2007-2012 Michael Foord & the mock team E-mail: fuzzyman AT voidspace DOT org DOT uk
+Copyright (C) 2011-2014 Vinay Sajip.
+ppc-darwin.h - Copyright (c) 2002, 2003, 2004, Free Software Foundation, Inc.
+ppc64-darwinclosure.S - Copyright (c) 2002, 2003, 2004, Free Software Foundation, Inc. based on ppcclosure.S
+x86-ffi64.c - Copyright (c) 2002  Bo Thorsen <bo@suse.de>
+Copyright (c) 2002  Ranjit Mathew
+Copyright (C) 2001-2006 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+﻿Copyright (c) 2004, Outercurve Foundation.
+Copyright (c) 1995-2001 Corporation for National Research Initiatives.\n\
+Copyright 1999, Bioreason, Inc., all rights reserved.
+2001-10-20 fl   added split primitive; re-enable unicode for 1.6/2.0/2.1
+Copyright (C) 2001-2019 Vinay Sajip. All Rights Reserved.
+Copyright (c) 2008 by Christian Heimes <christian@cheimes.de>
+Copyright 2001-2019 by Vinay Sajip. All Rights Reserved.
+Copyright (C) 2005 Martin v. Löwis Licensed to PSF under a contributor agreement.
+ppc-darwin.S - Copyright (c) 2000 John Hornkvist
+Copyright (c) 2000, BeOpen.com.
+Copyright (C) 2001-2010 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+Copyright (C) 2001-2007 Python Software Foundation Author: Anthony Baxter Contact: email-sig@python.org
+Copyright (c) 2004 by Fredrik Lundh <fredrik@pythonware.com>
+Copyright Disney Enterprises, Inc.  All Rights Reserved.
+ffi.c - Copyright (c) 1996, 1998, 1999, 2001  Red Hat, Inc.
+Copyright (c) 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The Netherlands.  All rights reserved.
+Copyright (c) <xi:include href="year.txt" parse="text" />.
+prepcif.c - Copyright (c) 1996, 1998  Red Hat, Inc.
+self.assertEqual(list(c), list(range(2,2000)))
+Copyright (C) 2002-2007 Python Software Foundation Author: Ben Gertzfield, Barry Warsaw Contact: email-sig@python.org
+-- Copyright (c) IBM Corporation, 2000, 2008.  All rights reserved.   --
+Copyright (C) 2012   Christian Heimes (christian@python.org)
+fficommon.h - Copyright (c) 1996  Red Hat, Inc.
+Copyright (C) 2012-2016  Christian Heimes (christian@python.org)
+Copyright (C) 2004-2005 Gerhard Häring <gh@ghaering.de>
+(c) 2002 Python Software Foundation.  All Rights Reserved.
+Copyright (c) 2004 by Secret Labs AB, http://www.pythonware.com
+Copyright (c) 2004, Outercurve Foundation.
+Copyright (c) 2006-2008, R Oudkerk Licensed to PSF under a Contributor Agreement.
+.. Copyright 1995 Virginia Polytechnic Institute and State University and Fred L. Drake, Jr.  This copyright notice must be distributed on all copies, but this document otherwise may be distributed as part of the Python distribution.  No fee may be charged for this document in any representation, either on paper or electronically.  This restriction does not affect other elements in a distributed package in any way.
+Copyright 2012-2013 by Larry Hastings.
+Copyright (C) 2002-2006 Python Software Foundation Contact: email-sig@python.org email package unit tests for (optional) Asian codecs
+Copyright (c) 2002 Peter O'Gorman <ogorman@users.sourceforge.net>
+Copyright 2007 Google Inc.
+Copyright (c) 1999 by Fredrik Lundh
+Copyright (C) 2001-2010 Python Software Foundation Contact: email-sig@python.org email package unit tests
+Copyright (c) 2003-2004 by Fredrik Lundh.  All rights reserved.
+Copyright (c) 1991-1999 Unicode, Inc.  All Rights reserved.
+Copyright (c) 2000-2017 Expat development team Licensed under the MIT license:
+Copyright (c) 1997-2000 Thai Open Source Software Center Ltd
+Copyright (c) 2001-2020 Python Software Foundation.\n\
+Copyright (c) 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The Netherlands. All rights reserved.\
+Copyright (c) 1998 The Open Group
+Copyright (c) 2000-2010, eGenix.com Software GmbH; mailto:info@egenix.com
+Copyright (C) 2005 Gerhard Häring <gh@ghaering.de>
+copyright = '2001-%s, Python Software Foundation' % time.strftime('%Y')
+Copyright (c) 1996-2008  Red Hat, Inc and others.
+Copyright (C) 2005 Martin v. Löwis Licensed to PSF under a Contributor Agreement.
+Copyright (C) 1997, 2002, 2003, 2007, 2008 Martin von Loewis
+<string>%VERSION%, (c) 2001-2019 Python Software Foundation.</string>
+Copyright (c) 2013  Marek Majkowski <marek@popcount.org>
+Copyright (c) 2008 Daniel Amelang <dan@amelang.net>
+Copyright (c) 1999-2008 by Fredrik Lundh.  All rights reserved.
+Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura, All rights reserved.
+Copyright (c) 1998, 1999, 2000 Thai Open Source Software Center Ltd and Clark Cooper
+2001-04-15 fl   export copyright as Python attribute, not global 2001-04-28 fl   added copy methods (work in progress)
+Copyright (C) 2002, 2003 Python Software Foundation.
+Copyright (c) 2004, 2005, 2006 Python Software Foundation.
+dnl Copyright © 2012-2015 Dan Nicholson <dbn.lists@gmail.com>
+Copyright (c) 1999-2009 by Secret Labs AB.  All rights reserved.
+Copyright (c) 2003-2010 Python Software Foundation This module is free software, and you may redistribute it and/or modify it under the same terms as Python itself, so long as this copyright message and disclaimer are retained in their original form.
+Copyright (c) 1991-1995 Stichting Mathematisch Centrum.  All rights reserved.
+2001-10-18 fl   fixed group reset issue (from Matthew Mueller)
+Copyright (C) 1992-1996, 1998-2012 Free Software Foundation, Inc.
+-- Copyright (c) IBM Corporation, 1981, 2008.  All rights reserved.   --
+Copyright (C) 2000  Bastian Kleineidam
+ppc-darwinclosure.S - Copyright (c) 2002, 2003, 2004, Free Software Foundation, Inc. based on ppcclosure.S
+Portions copyright 1991-1995 by Stichting Mathematisch Centrum, Amsterdam, The Netherlands.  Copying is permitted under the terms associated with the main Python distribution, with the additional restriction that this additional notice be included and maintained on all distributed copies.
+
+A. HISTORY OF THE SOFTWARE
+==========================
+
+Python was created in the early 1990s by Guido van Rossum at Stichting
+Mathematisch Centrum (CWI, see http://www.cwi.nl) in the Netherlands
+as a successor of a language called ABC.  Guido remains Python's
+principal author, although it includes many contributions from others.
+
+In 1995, Guido continued his work on Python at the Corporation for
+National Research Initiatives (CNRI, see http://www.cnri.reston.va.us)
+in Reston, Virginia where he released several versions of the
+software.
+
+In May 2000, Guido and the Python core development team moved to
+BeOpen.com to form the BeOpen PythonLabs team.  In October of the same
+year, the PythonLabs team moved to Digital Creations, which became
+Zope Corporation.  In 2001, the Python Software Foundation (PSF, see
+https://www.python.org/psf/) was formed, a non-profit organization
+created specifically to own Python-related Intellectual Property.
+Zope Corporation was a sponsoring member of the PSF.
+
+All Python releases are Open Source (see http://www.opensource.org for
+the Open Source Definition).  Historically, most, but not all, Python
+releases have also been GPL-compatible; the table below summarizes
+the various releases.
+
+    Release         Derived     Year        Owner       GPL-
+                    from                                compatible? (1)
+
+    0.9.0 thru 1.2              1991-1995   CWI         yes
+    1.3 thru 1.5.2  1.2         1995-1999   CNRI        yes
+    1.6             1.5.2       2000        CNRI        no
+    2.0             1.6         2000        BeOpen.com  no
+    1.6.1           1.6         2001        CNRI        yes (2)
+    2.1             2.0+1.6.1   2001        PSF         no
+    2.0.1           2.0+1.6.1   2001        PSF         yes
+    2.1.1           2.1+2.0.1   2001        PSF         yes
+    2.1.2           2.1.1       2002        PSF         yes
+    2.1.3           2.1.2       2002        PSF         yes
+    2.2 and above   2.1.1       2001-now    PSF         yes
+
+Footnotes:
+
+(1) GPL-compatible doesn't mean that we're distributing Python under
+    the GPL.  All Python licenses, unlike the GPL, let you distribute
+    a modified version without making your changes open source.  The
+    GPL-compatible licenses make it possible to combine Python with
+    other software that is released under the GPL; the others don't.
+
+(2) According to Richard Stallman, 1.6.1 is not GPL-compatible,
+    because its license has a choice of law clause.  According to
+    CNRI, however, Stallman's lawyer has told CNRI's lawyer that 1.6.1
+    is "not incompatible" with the GPL.
+
+Thanks to the many outside volunteers who have worked under Guido's
+direction to make these releases possible.
+
+
+B. TERMS AND CONDITIONS FOR ACCESSING OR OTHERWISE USING PYTHON
+===============================================================
+
+PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
+--------------------------------------------
+
+1. This LICENSE AGREEMENT is between the Python Software Foundation
+("PSF"), and the Individual or Organization ("Licensee") accessing and
+otherwise using this software ("Python") in source or binary form and
+its associated documentation.
+
+2. Subject to the terms and conditions of this License Agreement, PSF hereby
+grants Licensee a nonexclusive, royalty-free, world-wide license to reproduce,
+analyze, test, perform and/or display publicly, prepare derivative works,
+distribute, and otherwise use Python alone or in any derivative version,
+provided, however, that PSF's License Agreement and PSF's notice of copyright,
+i.e., "Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
+2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Python Software Foundation;
+All Rights Reserved" are retained in Python alone or in any derivative version
+prepared by Licensee.
+
+3. In the event Licensee prepares a derivative work that is based on
+or incorporates Python or any part thereof, and wants to make
+the derivative work available to others as provided herein, then
+Licensee hereby agrees to include in any such work a brief summary of
+the changes made to Python.
+
+4. PSF is making Python available to Licensee on an "AS IS"
+basis.  PSF MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, PSF MAKES NO AND
+DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF PYTHON WILL NOT
+INFRINGE ANY THIRD PARTY RIGHTS.
+
+5. PSF SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON
+FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS
+A RESULT OF MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON,
+OR ANY DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+
+6. This License Agreement will automatically terminate upon a material
+breach of its terms and conditions.
+
+7. Nothing in this License Agreement shall be deemed to create any
+relationship of agency, partnership, or joint venture between PSF and
+Licensee.  This License Agreement does not grant permission to use PSF
+trademarks or trade name in a trademark sense to endorse or promote
+products or services of Licensee, or any third party.
+
+8. By copying, installing or otherwise using Python, Licensee
+agrees to be bound by the terms and conditions of this License
+Agreement.
+
+
+BEOPEN.COM LICENSE AGREEMENT FOR PYTHON 2.0
+-------------------------------------------
+
+BEOPEN PYTHON OPEN SOURCE LICENSE AGREEMENT VERSION 1
+
+1. This LICENSE AGREEMENT is between BeOpen.com ("BeOpen"), having an
+office at 160 Saratoga Avenue, Santa Clara, CA 95051, and the
+Individual or Organization ("Licensee") accessing and otherwise using
+this software in source or binary form and its associated
+documentation ("the Software").
+
+2. Subject to the terms and conditions of this BeOpen Python License
+Agreement, BeOpen hereby grants Licensee a non-exclusive,
+royalty-free, world-wide license to reproduce, analyze, test, perform
+and/or display publicly, prepare derivative works, distribute, and
+otherwise use the Software alone or in any derivative version,
+provided, however, that the BeOpen Python License is retained in the
+Software, alone or in any derivative version prepared by Licensee.
+
+3. BeOpen is making the Software available to Licensee on an "AS IS"
+basis.  BEOPEN MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, BEOPEN MAKES NO AND
+DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE SOFTWARE WILL NOT
+INFRINGE ANY THIRD PARTY RIGHTS.
+
+4. BEOPEN SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF THE
+SOFTWARE FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS
+AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THE SOFTWARE, OR ANY
+DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+
+5. This License Agreement will automatically terminate upon a material
+breach of its terms and conditions.
+
+6. This License Agreement shall be governed by and interpreted in all
+respects by the law of the State of California, excluding conflict of
+law provisions.  Nothing in this License Agreement shall be deemed to
+create any relationship of agency, partnership, or joint venture
+between BeOpen and Licensee.  This License Agreement does not grant
+permission to use BeOpen trademarks or trade names in a trademark
+sense to endorse or promote products or services of Licensee, or any
+third party.  As an exception, the "BeOpen Python" logos available at
+http://www.pythonlabs.com/logos.html may be used according to the
+permissions granted on that web page.
+
+7. By copying, installing or otherwise using the software, Licensee
+agrees to be bound by the terms and conditions of this License
+Agreement.
+
+
+CNRI LICENSE AGREEMENT FOR PYTHON 1.6.1
+---------------------------------------
+
+1. This LICENSE AGREEMENT is between the Corporation for National
+Research Initiatives, having an office at 1895 Preston White Drive,
+Reston, VA 20191 ("CNRI"), and the Individual or Organization
+("Licensee") accessing and otherwise using Python 1.6.1 software in
+source or binary form and its associated documentation.
+
+2. Subject to the terms and conditions of this License Agreement, CNRI
+hereby grants Licensee a nonexclusive, royalty-free, world-wide
+license to reproduce, analyze, test, perform and/or display publicly,
+prepare derivative works, distribute, and otherwise use Python 1.6.1
+alone or in any derivative version, provided, however, that CNRI's
+License Agreement and CNRI's notice of copyright, i.e., "Copyright (c)
+1995-2001 Corporation for National Research Initiatives; All Rights
+Reserved" are retained in Python 1.6.1 alone or in any derivative
+version prepared by Licensee.  Alternately, in lieu of CNRI's License
+Agreement, Licensee may substitute the following text (omitting the
+quotes): "Python 1.6.1 is made available subject to the terms and
+conditions in CNRI's License Agreement.  This Agreement together with
+Python 1.6.1 may be located on the Internet using the following
+unique, persistent identifier (known as a handle): 1895.22/1013.  This
+Agreement may also be obtained from a proxy server on the Internet
+using the following URL: http://hdl.handle.net/1895.22/1013".
+
+3. In the event Licensee prepares a derivative work that is based on
+or incorporates Python 1.6.1 or any part thereof, and wants to make
+the derivative work available to others as provided herein, then
+Licensee hereby agrees to include in any such work a brief summary of
+the changes made to Python 1.6.1.
+
+4. CNRI is making Python 1.6.1 available to Licensee on an "AS IS"
+basis.  CNRI MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, CNRI MAKES NO AND
+DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF PYTHON 1.6.1 WILL NOT
+INFRINGE ANY THIRD PARTY RIGHTS.
+
+5. CNRI SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON
+1.6.1 FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS
+A RESULT OF MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON 1.6.1,
+OR ANY DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+
+6. This License Agreement will automatically terminate upon a material
+breach of its terms and conditions.
+
+7. This License Agreement shall be governed by the federal
+intellectual property law of the United States, including without
+limitation the federal copyright law, and, to the extent such
+U.S. federal law does not apply, by the law of the Commonwealth of
+Virginia, excluding Virginia's conflict of law provisions.
+Notwithstanding the foregoing, with regard to derivative works based
+on Python 1.6.1 that incorporate non-separable material that was
+previously distributed under the GNU General Public License (GPL), the
+law of the Commonwealth of Virginia shall govern this License
+Agreement only as to issues arising under or with respect to
+Paragraphs 4, 5, and 7 of this License Agreement.  Nothing in this
+License Agreement shall be deemed to create any relationship of
+agency, partnership, or joint venture between CNRI and Licensee.  This
+License Agreement does not grant permission to use CNRI trademarks or
+trade name in a trademark sense to endorse or promote products or
+services of Licensee, or any third party.
+
+8. By clicking on the "ACCEPT" button where indicated, or by copying,
+installing or otherwise using Python 1.6.1, Licensee agrees to be
+bound by the terms and conditions of this License Agreement.
+
+        ACCEPT
+
+
+CWI LICENSE AGREEMENT FOR PYTHON 0.9.0 THROUGH 1.2
+--------------------------------------------------
+
+Copyright (c) 1991 - 1995, Stichting Mathematisch Centrum Amsterdam,
+The Netherlands.  All rights reserved.
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of Stichting Mathematisch
+Centrum or CWI not be used in advertising or publicity pertaining to
+distribution of the software without specific, written prior
+permission.
+
+STICHTING MATHEMATISCH CENTRUM DISCLAIMS ALL WARRANTIES WITH REGARD TO
+THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS, IN NO EVENT SHALL STICHTING MATHEMATISCH CENTRUM BE LIABLE
+FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
+OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Software: Python 3.9.2
+Copyright notice:
+Copyright (c) 1999-2000 by Secret Labs AB
+Copyright (C) 2005-2007   Gregory P. Smith (greg@krypto.org)
+Copyright (c) 2003.
+.  Copyright (C) 2005-2010   Gregory P. Smith (greg@krypto.org)
+Copyright 1996,1997 by Oliver Andrich, Koblenz, Germany.
+Copyright (c) 2008-2020 Stefan Krah. All rights reserved.
+Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006 Python Software Foundation.
+Copyright (c) 1995-2001 Corporation for National Research Initiatives.  All rights reserved.
+Copyright 1994 by Lance Ellinghouse Cathedral City, California Republic, United States of America.
+Copyright (C) 2001 Python Software Foundation Barry Warsaw <barry@python.org>, 2000.
+Copyright (c) 2008-2012 Stefan Krah. All rights reserved.
+2001-07-01 fl   added BIGCHARSET support (from Martin von Loewis)
+``'Copyright 1991-1995 Stichting Mathematisch Centrum, Amsterdam'``
+Copyright (C) 2003 Python Software Foundation
+Copyright (C) 2001-2016 Vinay Sajip. All Rights Reserved.
+Copyright 1995-1997, Automatrix, Inc., all rights reserved.
+Copyright (c) 2002 MyCompanyName. All rights reserved.
+Copyright (c) 2004 by Peter Astrand <astrand@lysator.liu.se>
+Copyright (c) 1999-2002 by Fredrik Lundh.
+Copyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.\n\
+AIX ABI support (c) 2002 Free Software Foundation, Inc.
+Copyright (C) 1996-2020 Free Software Foundation, Inc.
+2013-02-04 mrab added fullmatch primitive
+2003-10-17 gn   implemented non recursive scheme
+2003-04-18 mvl  fully support 4-byte codes
+Copyright (c) 1999-2002 by Secret Labs AB.
+portions copyright 2001, Autonomous Zones Industries, Inc., all rights...
+Copyright © 2013 W3C® (MIT, ERCIM, Keio, Beihang), All Rights Reserved.
+Copyright (C) 1986 Gary S. Brown.  You may use this program, or code or tables extracted from it, as desired without restriction.
+-- Copyright (c) IBM Corporation, 2003, 2008.  All rights reserved.   --
+; Copyright (c) 2008-2020 Stefan Krah. All rights reserved.
+Copyright 2008 Armin Ronacher.
+Copyright © 2000 BeOpen.com. All rights reserved.
+(c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
+Copyright (c) 2005-2006 ActiveState Software Inc.
+Copyright (C) 1994 Steen Lumholt.
+Copyright (c) 1999 by Fredrik Lundh.
+libffi - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (C) 2002 Lars Gustaebel <lars@gustaebel.de>
+Copyright (c) 1999-2003 Steve Purcell
+Darwin ABI support (c) 2001 John Hornkvist
+Copyright (c) 2001-2021 Python Software Foundation.\n\
+Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
+Copyright (c) 1999-2008 by Fredrik Lundh
+i.e., "Copyright © 1995-2001 Corporation for National Research Initiatives; All Rights Reserved" are retained in Python 1.6.1 alone or in any derivative version prepared by Licensee.  Alternately, in lieu of CNRI's License Agreement, Licensee may substitute the following text (omitting the quotes): "Python 1.6.1
+-- Copyright (c) IBM Corporation, 2005, 2009.  All rights reserved.   --
+Copyright (c) 2001-2017 Expat maintainers
+Copyright (c) 2001-2012 Python Software Foundation. All Rights Reserved.
+Copyright (C) 2002-2006 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+(c) 2002 Gregory P. Ward.  All Rights Reserved.
+copyright, i.e., "Copyright © 2001-2021 Python Software Foundation; All Rights Reserved" are retained in Python |release| alone or in any derivative version prepared by Licensee.
+Copyright (c) 2000 BeOpen.com.\n\
+Copyright (C) 2001-2007 Python Software Foundation Author: Ben Gertzfield, Barry Warsaw Contact: email-sig@python.org
+Copyright (C) 2003-2004 Federico Di Gregorio <fog@debian.org>
+2001-05-14 fl   fixes for 1.5.2 compatibility
+Copyright (c) 2001-2021 Python Software Foundation.  All rights reserved.
+Copyright © 1995-2000 Corporation for National Research Initiatives. All rights reserved.
+Copyright (c) 2013 W3C(R) (MIT, ERCIM, Keio, Beihang), All Rights Reserved.
+Copyright (C) 1995, 1996, 1997, 1998, and 1999 WIDE Project.
+Copyright (C) 2001-2007 Python Software Foundation Author: Barry Warsaw, Thomas Wouters, Anthony Baxter Contact: email-sig@python.org
+Copyright (C) 2005-2010   Gregory P. Smith (greg@krypto.org)
+Copyright (c) 2000 Doug White, 2006 James Knight, 2007 Christian Heimes All rights reserved.
+Copyright (C) 1999-2001 Gregory P. Ward.
+Copyright (c) 1999-2002 by Fredrik Lundh
++   Copyright 2007 Python Software Foundation.
+else if (config == (void )2000 && (c) == 0x9B1D) {                 \
+Copyright (c) 1999-2002 by Secret Labs AB
+2002-11-09 fl   fixed empty sub/subn return type
+Copyright (C) 2003-2013 Python Software Foundation import copy import operator import pickle import struct import unittest import plistlib import os import datetime import codecs import binascii import collections from test import support from io import BytesIO
+Copyright 2009 Gabriel A. Genellina
+Copyright (c) 2003-2009 by Fredrik Lundh.  All rights reserved.
+Copyright 2004-2005 Elemental Security, Inc. All Rights Reserved.
+(c) Copyright Guido van Rossum, 2000.
+Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
+Copyright (C) 2011-2012 Vinay Sajip.
+Copyright 2006 Google, Inc. All Rights Reserved.
+(c) Copyright Marc-Andre Lemburg, 2005.
+Copyright (C) YEAR ORGANIZATION FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+Copyright (c) 1999-2000, Marc-Andre Lemburg; mailto:mal@lemburg.com
+Copyright (c) 1995-2000, Corporation for National Research Initiatives.
+Copyright (C) 2001 I'O, All Rights Reserved.
+Copyright (c) 1999 Toby Dickenson
+Copyright (C) 2001,2002 Python Software Foundation csv package unit tests
+Copyright (C) 2005, 2006 Martin von Löwis Licensed to PSF under a Contributor Agreement.
+Copyright (c) 1997 by Fredrik Lundh
+Copyright (c) 2002-2006 Python Software Foundation.  All rights reserved.
+Copyright (c) 2002  Roger Sayle
+Copyright 1995-1996 by Fred L. Drake, Jr. and Virginia Polytechnic Institute and State University, Blacksburg, Virginia, USA.
+types.c - Copyright (c) 1996, 1998  Red Hat, Inc.
+Copyright 2000, Mojam Media, Inc., all rights reserved.
+Copyright (C) 1994 X Consortium
+Copyright (C) 2002-2004 Python Software Foundation
+Copyright (C) 2004-2006 Python Software Foundation Authors: Baxter, Wouters and Warsaw Contact: email-sig@python.org
+Copyright (c) 2002 Jorge Acereda  <jacereda@users.sourceforge.net> &
+darwin.S - Copyright (c) 1996, 1998, 2001, 2002, 2003  Red Hat, Inc.
+Copyright © 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The Netherlands.  All rights reserved.
+"Copyright 1995-1996 by Virginia Polytechnic Institute & State\n\
+x86-ffitarget.h - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (C) 1995-2011 Jean-loup Gailly and Mark Adler
+Copyright 1991-1995, Stichting Mathematisch Centrum, all rights reserved.
+<string>(c) 2001-2020 Python Software Foundation.</string>
+darwin64.S - Copyright (c) 2006 Free Software Foundation, Inc.
+Copyright (C) 2001-2006 Python Software Foundation Author: Ben Gertzfield Contact: email-sig@python.org
+Copyright (c) 2005 Don Owens All rights reserved.
+(c) Copyright 2005, Marc-Andre Lemburg (mal@lemburg.com).
+library/xml.etree.elementtree,,:include,  Copyright (c) <xi:include href="year.txt" parse="text" />.
+ffi.c - Copyright (c) 1998 Geoffrey Keating
+Copyright 2006 Georg Brandl.
+Copyright (C) 2005-2010 Gerhard Häring <gh@ghaering.de>
+(c) 2013-2017 Christian Heimes <christian@python.org>
+Copyright 1992-2018 Free Software Foundation, Inc.
+Copyright (c) 1990-1995, Stichting Mathematisch Centrum.
+i.e., "Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Python Software Foundation;
+2001-10-24 fl   added finditer primitive (for 2.2 only)
+Copyright (C) 2001-2006 Python Software Foundation Author: Keith Dart Contact: email-sig@python.org
+Copyright (c) 1999-2009 by Fredrik Lundh.
+(c) 2000 Peter Bosch.  All Rights Reserved.
+<string>%version%, (c) 2001-2021 Python Software Foundation.</string>
+Copyright (C) 2001 earthian@tama.or.jp, All Rights Reserved.
+Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+Copyright (C) 2012 Free Software Foundation, Inc.
+Copyright (C) 2002-2007 Python Software Foundation Author: Ben Gertzfield Contact: email-sig@python.org
+Copyright 1994 by Lance Ellinghouse, Cathedral City, California Republic, United States of America.
+Copyright (C) 2006 - 2010  Gregor Lingl email: glingl@aon.at
+Copyright © 2001-2021 Python Software Foundation. All rights reserved.
+Copyright (c) 2009,2010 Zmanda Inc. <http://www.zmanda.com/>
+Copyright (c) 1998-2008 The OpenSSL Project.  All rights reserved.
+Copyright 1996 by Sam Rushing
+Copyright (c) 1998-2000 Thai Open Source Software Center Ltd and Clark Cooper
+copyright, i.e., "Copyright © 2001-2018 Python Software Foundation; All Rights Reserved" are retained in Python 3.9 alone or in any derivative version prepared by Licensee.
+(c) Craig Reese, Joe Campbell and Jeff Poskanzer 1989 /
+Copyright (c) 1999, 2000, 2001 Steve Purcell This module is free software, and you may redistribute it and/or modify it under the same terms as Python itself, so long as this copyright message and disclaimer are retained in their original form.
+-- Copyright (c) IBM Corporation, 2005, 2008.  All rights reserved.   --
+Copyright (C) 2001-2012 Python Software Foundation. All Rights Reserved.
+dnl Copyright © 2004 Scott James Remnant <scott@netsplit.com>.
+Copyright (C) 2002-2007 Python Software Foundation Contact: email-sig@python.org
+Copyright (c) 1998-2001 by Secret Labs AB.  All rights reserved.
+Copyright (c) 2009,2010 Dustin J. Mitchell <dustin@zmanda.com>
+Copyright (c) 2002  Bo Thorsen
+2001-10-21 fl   added sub/subn primitive
+Copyright 1992-1994, David Gottner
+Copyright (C) 2011-2013 Vinay Sajip.
+Copyright (c) 1991, 2000, 2001 by Lucent Technologies.
+Copyright (c) 2010 Python Software Foundation. All Rights Reserved.
+" SRE 2.2.2 Copyright (c) 1997-2002 by Secret Labs AB ";
+;   Copyright (c) 2004, Outercurve Foundation.
+Copyright (c) 2003-2005 by Peter Astrand <astrand@lysator.liu.se>
+Copyright (c) 1999 by Secret Labs AB
+libffi PyOBJC - Copyright (c) 1996-2003  Red Hat, Inc.
+Copyright (c) 1999-2009 by Fredrik Lundh
+Copyright 2007 Google, Inc. All Rights Reserved.
+-- Copyright (c) IBM Corporation, 2004, 2008.  All rights reserved.   --
+Copyright (C) 2001-2007 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+Copyright (c) 2000 BeOpen.com.  All rights reserved.
+3-2926   U+00A9    COPYRIGHT SIGN    [2000]
+<string>%version%, (c) 2001-2020 Python Software Foundation.</string>
+Copyright © 1991-1995 Stichting Mathematisch Centrum. All rights reserved.
+Copyright (C) 2000  Luke Kenneth Casson Leighton <lkcl@samba.org>
+Copyright (C) 2005-2007 Gerhard Häring <gh@ghaering.de>
+2001-12-07 fl   fixed memory leak in sub/subn (Guido van Rossum)
+-- Copyright (c) IBM Corporation, 2001, 2008.  All rights reserved.   --
+Virginia, USA.  Portions copyright 1991-1995 by Stichting Mathematisch\n\
+Copyright (c) 2004 Free Software Foundation, Inc.
+so portions are Copyright (C) 2001,2002 Python Software Foundation, and were written by Barry Warsaw.
+Copyright (C) 2004-2010 Gerhard Häring <gh@ghaering.de>
+Copyright (c) 2004 Python Software Foundation.
+(c) Copyright 2000 Guido van Rossum.
+Copyright 2007 Georg Brandl.
+Copyright (c) 1999 by Secret Labs AB.
+Copyright (c) 2002 Unicode, Inc.  All Rights reserved.
+Copyright 2009 Brian Quinlan. All Rights Reserved.
+Copyright (c) 2008-2009, Google Inc.
+Copyright (c) 2001-2006 Twisted Matrix Laboratories.
+(c) Copyright CNRI, All Rights Reserved. NO WARRANTY.
+License Agreement and CNRI's notice of copyright, i.e., "Copyright (c) 1995-2001 Corporation for National Research Initiatives; All Rights Reserved" are retained in Python 1.6.1 alone or in any derivative version prepared by Licensee.  Alternately, in lieu of CNRI's License Agreement, Licensee may substitute the following text (omitting the quotes): "Python 1.6.1 is made available subject to the terms and conditions in CNRI's License Agreement.  This Agreement together with Python 1.6.1 may be located on the Internet using the following unique, persistent identifier (known as a handle): 1895.22/1013.  This Agreement may also be obtained from a proxy server on the Internet
+Copyright (c) Corporation for National Research Initiatives.
+if (config == (void )2000 && (c) == 0x20B9F) {                     \
+Copyright 2001-2016 by Vinay Sajip. All Rights Reserved.
+ppc-ffitarget.h - Copyright (c) 1996-2003  Red Hat, Inc.
+ppc-darwin.h - Copyright (c) 2002, 2003, 2004, Free Software Foundation, Inc.
+Copyright (c) 2001-2006 Gregory P. Ward.  All rights reserved.
+Copyright (c) 1997-2001 by Secret Labs AB.  All rights reserved.
+Copyright 2000 by Timothy O'Malley <timo@alum.mit.edu>
+Copyright (C) 2007-2012 Michael Foord & the mock team E-mail: fuzzyman AT voidspace DOT org DOT uk
+Copyright (C) 2011-2014 Vinay Sajip.
+x86-ffi64.c - Copyright (c) 2002  Bo Thorsen <bo@suse.de>
+ppc64-darwinclosure.S - Copyright (c) 2002, 2003, 2004, Free Software Foundation, Inc. based on ppcclosure.S
+Copyright (c) 2002  Ranjit Mathew
+Copyright (C) 2001-2006 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+﻿Copyright (c) 2004, Outercurve Foundation.
+Copyright (c) 1995-2001 Corporation for National Research Initiatives.\n\
+Copyright 1999, Bioreason, Inc., all rights reserved.
+2001-10-20 fl   added split primitive; re-enable unicode for 1.6/2.0/2.1
+Copyright (C) 2001-2019 Vinay Sajip. All Rights Reserved.
+Copyright (c) 2008 by Christian Heimes <christian@cheimes.de>
+Copyright 2001-2019 by Vinay Sajip. All Rights Reserved.
+Copyright (C) 2005 Martin v. Löwis Licensed to PSF under a contributor agreement.
+ppc-darwin.S - Copyright (c) 2000 John Hornkvist
+Copyright (c) 2000, BeOpen.com.
+Copyright (C) 2001-2010 Python Software Foundation Author: Barry Warsaw Contact: email-sig@python.org
+Copyright (C) 2001-2007 Python Software Foundation Author: Anthony Baxter Contact: email-sig@python.org
+Copyright (c) 2004 by Fredrik Lundh <fredrik@pythonware.com>
+Copyright Disney Enterprises, Inc.  All Rights Reserved.
+ffi.c - Copyright (c) 1996, 1998, 1999, 2001  Red Hat, Inc.
+Copyright (c) 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The Netherlands.  All rights reserved.
+Copyright (c) <xi:include href="year.txt" parse="text" />.
+prepcif.c - Copyright (c) 1996, 1998  Red Hat, Inc.
+self.assertEqual(list(c), list(range(2,2000)))
+Copyright (C) 2002-2007 Python Software Foundation Author: Ben Gertzfield, Barry Warsaw Contact: email-sig@python.org
+-- Copyright (c) IBM Corporation, 2000, 2008.  All rights reserved.   --
+Copyright (C) 2012   Christian Heimes (christian@python.org)
+fficommon.h - Copyright (c) 1996  Red Hat, Inc.
+Copyright (C) 2012-2016  Christian Heimes (christian@python.org)
+Copyright (C) 2004-2005 Gerhard Häring <gh@ghaering.de>
+(c) 2002 Python Software Foundation.  All Rights Reserved.
+Copyright (c) 2004 by Secret Labs AB, http://www.pythonware.com
+Copyright (c) 2004, Outercurve Foundation.
+Copyright (c) 2006-2008, R Oudkerk Licensed to PSF under a Contributor Agreement.
+.. Copyright 1995 Virginia Polytechnic Institute and State University and Fred L. Drake, Jr.  This copyright notice must be distributed on all copies, but this document otherwise may be distributed as part of the Python distribution.  No fee may be charged for this document in any representation, either on paper or electronically.  This restriction does not affect other elements in a distributed package in any way.
+Copyright 2012-2013 by Larry Hastings.
+Copyright (C) 2002-2006 Python Software Foundation Contact: email-sig@python.org email package unit tests for (optional) Asian codecs
+Copyright (c) 2002 Peter O'Gorman <ogorman@users.sourceforge.net>
+Copyright 2007 Google Inc.
+Copyright (c) 1999 by Fredrik Lundh
+Copyright (C) 2001-2010 Python Software Foundation Contact: email-sig@python.org email package unit tests
+Copyright (c) 2003-2004 by Fredrik Lundh.  All rights reserved.
+Copyright (c) 1991-1999 Unicode, Inc.  All Rights reserved.
+Copyright (c) 2000-2017 Expat development team Licensed under the MIT license:
+Copyright (c) 1997-2000 Thai Open Source Software Center Ltd
+Copyright (c) 1998 The Open Group
+Copyright (c) 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The Netherlands. All rights reserved.\
+Copyright (c) 2000-2010, eGenix.com Software GmbH; mailto:info@egenix.com
+Copyright (C) 2005 Gerhard Häring <gh@ghaering.de>
+copyright = '2001-%s, Python Software Foundation' % time.strftime('%Y')
+Copyright (c) 1996-2008  Red Hat, Inc and others.
+Copyright (C) 2005 Martin v. Löwis Licensed to PSF under a Contributor Agreement.
+Copyright (C) 1997, 2002, 2003, 2007, 2008 Martin von Loewis
+<string>%VERSION%, (c) 2001-2019 Python Software Foundation.</string>
+( Copyright (c) 2011-2020 Stefan Krah. All rights reserved. )
+Copyright (c) 2013  Marek Majkowski <marek@popcount.org>
+Copyright (c) 2008 Daniel Amelang <dan@amelang.net>
+Copyright (c) 1999-2008 by Fredrik Lundh.  All rights reserved.
+Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura, All rights reserved.
+Copyright (c) 1998, 1999, 2000 Thai Open Source Software Center Ltd and Clark Cooper
+2001-04-15 fl   export copyright as Python attribute, not global 2001-04-28 fl   added copy methods (work in progress)
+Copyright (C) 2002, 2003 Python Software Foundation.
+Copyright (c) 2004, 2005, 2006 Python Software Foundation.
+dnl Copyright © 2012-2015 Dan Nicholson <dbn.lists@gmail.com>
+Copyright (c) 1999-2009 by Secret Labs AB.  All rights reserved.
+Copyright (c) 2003-2010 Python Software Foundation This module is free software, and you may redistribute it and/or modify it under the same terms as Python itself, so long as this copyright message and disclaimer are retained in their original form.
+Copyright (c) 1991-1995 Stichting Mathematisch Centrum.  All rights reserved.
+2001-10-18 fl   fixed group reset issue (from Matthew Mueller)
+Copyright (C) 1992-1996, 1998-2012 Free Software Foundation, Inc.
+-- Copyright (c) IBM Corporation, 1981, 2008.  All rights reserved.   --
+Copyright (C) 2000  Bastian Kleineidam
+ppc-darwinclosure.S - Copyright (c) 2002, 2003, 2004, Free Software Foundation, Inc. based on ppcclosure.S
+Portions copyright 1991-1995 by Stichting Mathematisch Centrum, Amsterdam, The Netherlands.  Copying is permitted under the terms associated with the main Python distribution, with the additional restriction that this additional notice be included and maintained on all distributed copies.
+
+A. HISTORY OF THE SOFTWARE
+==========================
+
+Python was created in the early 1990s by Guido van Rossum at Stichting
+Mathematisch Centrum (CWI, see http://www.cwi.nl) in the Netherlands
+as a successor of a language called ABC.  Guido remains Python's
+principal author, although it includes many contributions from others.
+
+In 1995, Guido continued his work on Python at the Corporation for
+National Research Initiatives (CNRI, see http://www.cnri.reston.va.us)
+in Reston, Virginia where he released several versions of the
+software.
+
+In May 2000, Guido and the Python core development team moved to
+BeOpen.com to form the BeOpen PythonLabs team.  In October of the same
+year, the PythonLabs team moved to Digital Creations, which became
+Zope Corporation.  In 2001, the Python Software Foundation (PSF, see
+https://www.python.org/psf/) was formed, a non-profit organization
+created specifically to own Python-related Intellectual Property.
+Zope Corporation was a sponsoring member of the PSF.
+
+All Python releases are Open Source (see http://www.opensource.org for
+the Open Source Definition).  Historically, most, but not all, Python
+releases have also been GPL-compatible; the table below summarizes
+the various releases.
+
+    Release         Derived     Year        Owner       GPL-
+                    from                                compatible? (1)
+
+    0.9.0 thru 1.2              1991-1995   CWI         yes
+    1.3 thru 1.5.2  1.2         1995-1999   CNRI        yes
+    1.6             1.5.2       2000        CNRI        no
+    2.0             1.6         2000        BeOpen.com  no
+    1.6.1           1.6         2001        CNRI        yes (2)
+    2.1             2.0+1.6.1   2001        PSF         no
+    2.0.1           2.0+1.6.1   2001        PSF         yes
+    2.1.1           2.1+2.0.1   2001        PSF         yes
+    2.1.2           2.1.1       2002        PSF         yes
+    2.1.3           2.1.2       2002        PSF         yes
+    2.2 and above   2.1.1       2001-now    PSF         yes
+
+Footnotes:
+
+(1) GPL-compatible doesn't mean that we're distributing Python under
+    the GPL.  All Python licenses, unlike the GPL, let you distribute
+    a modified version without making your changes open source.  The
+    GPL-compatible licenses make it possible to combine Python with
+    other software that is released under the GPL; the others don't.
+
+(2) According to Richard Stallman, 1.6.1 is not GPL-compatible,
+    because its license has a choice of law clause.  According to
+    CNRI, however, Stallman's lawyer has told CNRI's lawyer that 1.6.1
+    is "not incompatible" with the GPL.
+
+Thanks to the many outside volunteers who have worked under Guido's
+direction to make these releases possible.
+
+
+B. TERMS AND CONDITIONS FOR ACCESSING OR OTHERWISE USING PYTHON
+===============================================================
+
+Python software and documentation are licensed under the
+Python Software Foundation License Version 2.
+
+Starting with Python 3.8.6, examples, recipes, and other code in
+the documentation are dual licensed under the PSF License Version 2
+and the Zero-Clause BSD license.
+
+Some software incorporated into Python is under different licenses.
+The licenses are listed with code falling under that license.
+
+
+PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
+--------------------------------------------
+
+1. This LICENSE AGREEMENT is between the Python Software Foundation
+("PSF"), and the Individual or Organization ("Licensee") accessing and
+otherwise using this software ("Python") in source or binary form and
+its associated documentation.
+
+2. Subject to the terms and conditions of this License Agreement, PSF hereby
+grants Licensee a nonexclusive, royalty-free, world-wide license to reproduce,
+analyze, test, perform and/or display publicly, prepare derivative works,
+distribute, and otherwise use Python alone or in any derivative version,
+provided, however, that PSF's License Agreement and PSF's notice of copyright,
+i.e., "Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
+2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Python Software Foundation;
+All Rights Reserved" are retained in Python alone or in any derivative version
+prepared by Licensee.
+
+3. In the event Licensee prepares a derivative work that is based on
+or incorporates Python or any part thereof, and wants to make
+the derivative work available to others as provided herein, then
+Licensee hereby agrees to include in any such work a brief summary of
+the changes made to Python.
+
+4. PSF is making Python available to Licensee on an "AS IS"
+basis.  PSF MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, PSF MAKES NO AND
+DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF PYTHON WILL NOT
+INFRINGE ANY THIRD PARTY RIGHTS.
+
+5. PSF SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON
+FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS
+A RESULT OF MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON,
+OR ANY DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+
+6. This License Agreement will automatically terminate upon a material
+breach of its terms and conditions.
+
+7. Nothing in this License Agreement shall be deemed to create any
+relationship of agency, partnership, or joint venture between PSF and
+Licensee.  This License Agreement does not grant permission to use PSF
+trademarks or trade name in a trademark sense to endorse or promote
+products or services of Licensee, or any third party.
+
+8. By copying, installing or otherwise using Python, Licensee
+agrees to be bound by the terms and conditions of this License
+Agreement.
+
+
+BEOPEN.COM LICENSE AGREEMENT FOR PYTHON 2.0
+-------------------------------------------
+
+BEOPEN PYTHON OPEN SOURCE LICENSE AGREEMENT VERSION 1
+
+1. This LICENSE AGREEMENT is between BeOpen.com ("BeOpen"), having an
+office at 160 Saratoga Avenue, Santa Clara, CA 95051, and the
+Individual or Organization ("Licensee") accessing and otherwise using
+this software in source or binary form and its associated
+documentation ("the Software").
+
+2. Subject to the terms and conditions of this BeOpen Python License
+Agreement, BeOpen hereby grants Licensee a non-exclusive,
+royalty-free, world-wide license to reproduce, analyze, test, perform
+and/or display publicly, prepare derivative works, distribute, and
+otherwise use the Software alone or in any derivative version,
+provided, however, that the BeOpen Python License is retained in the
+Software, alone or in any derivative version prepared by Licensee.
+
+3. BeOpen is making the Software available to Licensee on an "AS IS"
+basis.  BEOPEN MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, BEOPEN MAKES NO AND
+DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE SOFTWARE WILL NOT
+INFRINGE ANY THIRD PARTY RIGHTS.
+
+4. BEOPEN SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF THE
+SOFTWARE FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS
+AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THE SOFTWARE, OR ANY
+DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+
+5. This License Agreement will automatically terminate upon a material
+breach of its terms and conditions.
+
+6. This License Agreement shall be governed by and interpreted in all
+respects by the law of the State of California, excluding conflict of
+law provisions.  Nothing in this License Agreement shall be deemed to
+create any relationship of agency, partnership, or joint venture
+between BeOpen and Licensee.  This License Agreement does not grant
+permission to use BeOpen trademarks or trade names in a trademark
+sense to endorse or promote products or services of Licensee, or any
+third party.  As an exception, the "BeOpen Python" logos available at
+http://www.pythonlabs.com/logos.html may be used according to the
+permissions granted on that web page.
+
+7. By copying, installing or otherwise using the software, Licensee
+agrees to be bound by the terms and conditions of this License
+Agreement.
+
+
+CNRI LICENSE AGREEMENT FOR PYTHON 1.6.1
+---------------------------------------
+
+1. This LICENSE AGREEMENT is between the Corporation for National
+Research Initiatives, having an office at 1895 Preston White Drive,
+Reston, VA 20191 ("CNRI"), and the Individual or Organization
+("Licensee") accessing and otherwise using Python 1.6.1 software in
+source or binary form and its associated documentation.
+
+2. Subject to the terms and conditions of this License Agreement, CNRI
+hereby grants Licensee a nonexclusive, royalty-free, world-wide
+license to reproduce, analyze, test, perform and/or display publicly,
+prepare derivative works, distribute, and otherwise use Python 1.6.1
+alone or in any derivative version, provided, however, that CNRI's
+License Agreement and CNRI's notice of copyright, i.e., "Copyright (c)
+1995-2001 Corporation for National Research Initiatives; All Rights
+Reserved" are retained in Python 1.6.1 alone or in any derivative
+version prepared by Licensee.  Alternately, in lieu of CNRI's License
+Agreement, Licensee may substitute the following text (omitting the
+quotes): "Python 1.6.1 is made available subject to the terms and
+conditions in CNRI's License Agreement.  This Agreement together with
+Python 1.6.1 may be located on the Internet using the following
+unique, persistent identifier (known as a handle): 1895.22/1013.  This
+Agreement may also be obtained from a proxy server on the Internet
+using the following URL: http://hdl.handle.net/1895.22/1013".
+
+3. In the event Licensee prepares a derivative work that is based on
+or incorporates Python 1.6.1 or any part thereof, and wants to make
+the derivative work available to others as provided herein, then
+Licensee hereby agrees to include in any such work a brief summary of
+the changes made to Python 1.6.1.
+
+4. CNRI is making Python 1.6.1 available to Licensee on an "AS IS"
+basis.  CNRI MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, CNRI MAKES NO AND
+DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF PYTHON 1.6.1 WILL NOT
+INFRINGE ANY THIRD PARTY RIGHTS.
+
+5. CNRI SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON
+1.6.1 FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS
+A RESULT OF MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON 1.6.1,
+OR ANY DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+
+6. This License Agreement will automatically terminate upon a material
+breach of its terms and conditions.
+
+7. This License Agreement shall be governed by the federal
+intellectual property law of the United States, including without
+limitation the federal copyright law, and, to the extent such
+U.S. federal law does not apply, by the law of the Commonwealth of
+Virginia, excluding Virginia's conflict of law provisions.
+Notwithstanding the foregoing, with regard to derivative works based
+on Python 1.6.1 that incorporate non-separable material that was
+previously distributed under the GNU General Public License (GPL), the
+law of the Commonwealth of Virginia shall govern this License
+Agreement only as to issues arising under or with respect to
+Paragraphs 4, 5, and 7 of this License Agreement.  Nothing in this
+License Agreement shall be deemed to create any relationship of
+agency, partnership, or joint venture between CNRI and Licensee.  This
+License Agreement does not grant permission to use CNRI trademarks or
+trade name in a trademark sense to endorse or promote products or
+services of Licensee, or any third party.
+
+8. By clicking on the "ACCEPT" button where indicated, or by copying,
+installing or otherwise using Python 1.6.1, Licensee agrees to be
+bound by the terms and conditions of this License Agreement.
+
+        ACCEPT
+
+
+CWI LICENSE AGREEMENT FOR PYTHON 0.9.0 THROUGH 1.2
+--------------------------------------------------
+
+Copyright (c) 1991 - 1995, Stichting Mathematisch Centrum Amsterdam,
+The Netherlands.  All rights reserved.
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of Stichting Mathematisch
+Centrum or CWI not be used in advertising or publicity pertaining to
+distribution of the software without specific, written prior
+permission.
+
+STICHTING MATHEMATISCH CENTRUM DISCLAIMS ALL WARRANTIES WITH REGARD TO
+THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS, IN NO EVENT SHALL STICHTING MATHEMATISCH CENTRUM BE LIABLE
+FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
+OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+ZERO-CLAUSE BSD LICENSE FOR CODE IN THE PYTHON DOCUMENTATION
+----------------------------------------------------------------------
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
