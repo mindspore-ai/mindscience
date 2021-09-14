@@ -1,10 +1,10 @@
-# MindSPONGE分子模拟实践——丙氨酸三肽水溶液体系
+# 丙氨酸三肽水溶液体系模拟
 
 `Linux` `GPU` `模型开发` `高级`
 
 <!-- TOC -->
 
-- [SPONGE分子模拟实践](#sponge分子模拟实践)
+- [丙氨酸三肽水溶液体系模拟](#丙氨酸三肽水溶液体系模拟)
     - [概述](#概述)
     - [整体执行](#整体执行)
     - [准备环节](#准备环节)
@@ -316,7 +316,7 @@ return ene_lin
 
 ### 使用图算融合/算子自动生成进行加速
 
-为了获得成倍的加速收益，MindSPONGE-Numpy默认开启[图算融合](https://www.mindspore.cn/docs/programming_guide/en/master/enable_graph_kernel_fusion.html)以及[自动算子生成] (https://gitee.com/mindspore/akg)。这两个加速组件可以为模型提供3倍（甚至更多）的性能提升, 使得MindSPONGE-Numpy达到与原版本性能相近的程度.
+为了获得成倍的加速收益，MindSPONGE-Numpy默认开启[图算融合](https://www.mindspore.cn/docs/programming_guide/en/master/enable_graph_kernel_fusion.html)以及[自动算子生成](https://gitee.com/mindspore/akg)。这两个加速组件可以为模型提供3倍（甚至更多）的性能提升, 使得MindSPONGE-Numpy达到与原版本性能相近的程度.
 
 在模型脚本中添加如下两行代码即可获得图算融合加速：
 (examples/polypeptide/src/main_numpy.py):
