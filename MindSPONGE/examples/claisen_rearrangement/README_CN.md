@@ -1,10 +1,10 @@
-# MindSPONGE分子模拟实践——基于Cybertron架构的分子力场进行分子动力学模拟
+# 基于AI分子力场模拟分子动力学
 
 `Linux` `GPU` `模型开发` `高级`
 
 <!-- TOC -->
 
-- [MindSPONGE分子模拟实践](#MindSPONGE分子模拟实践)
+- [基于AI分子力场模拟分子动力学](#基于ai分子力场模拟分子动力学)
     - [概述](#概述)
     - [准备环节](#准备环节)
     - [背景介绍](#背景介绍)
@@ -15,7 +15,8 @@
     - [结果可视化](#结果可视化)
 
 <!-- /TOC -->
-<a href="https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/examples/claisen_rearrangement" target="_blank"><img src="https://gitee.com/mindspore/docs/raw/master/resource/_static/logo_source.png"></a>&nbsp;&nbsp;
+
+<a href="https://gitee.com/mindspore/docs/blob/master/docs/mindscience/docs/source_zh_cn/mindsponge/claisen.md" target="_blank"><img src="https://gitee.com/mindspore/docs/raw/master/resource/_static/logo_source.png"></a>
 
 ## 概述
 
@@ -27,6 +28,8 @@
 
 - [MindSpore安装页面](https://www.mindspore.cn/install)安装MindSpore。
 - [MindSPONGE安装页面](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE)安装MindSPONGE。
+
+教程中的体系结构文件建模由AmberTools中自带的tleap工具（下载地址<http://ambermd.org/GetAmber.php>， 遵守GPL协议）完成。
 
 ## 背景介绍
 
@@ -42,7 +45,9 @@ $$ F(R) = -\frac{\partial U}{\partial R}$$
 
 除了QM方法和MM方法之外，还有一种介于两者之间的半经验（semi-empirical），其速度和精度处于也介于这两者之间。
 
-<div id="jump-img" style="text-align:center;"><img src="./pics/methods.png" style="margin-bottom:0px; max-width:50%;" alt=""><br/>图1: 势能函数获取方法</div>
+![image](./pics/methods.png)
+
+图1: 势能函数获取方法
 
 可以说在传统的计算化学（computational chemistry）领域，“速度”和“精度”总是一对矛盾体，选择更高精度的算法必然意味着计算速度的急剧下降。而通过使用深度学习（deep learning）技术则有可能突破“速度”和“精度”的矛盾，由于人工神经网络（artificial neural network）具备强大的拟合能力，如果使用其用于拟合高精度QM方法计算得到的势能，就有可能以相对较低的计算代价实现较高精度的分子力场。
 
@@ -52,7 +57,9 @@ $$ F(R) = -\frac{\partial U}{\partial R}$$
 
 - 基于GNN的模型则将分子体系看作一张图（graph），每个原子作为点（vertex），原子间的相对距离座位边（edge）。在GNN模型中，每个点和变都用向量进行表示，之后对原子根据其周围的点向量和边向量对中心原子的点向量进行更新，通过几次更新迭代后得到每个原子所感受到的势能，最终将所有原子上的势能进行加和从而得到体系的总势能。相对于基于描述符的模型对于不同类型的描述符使用不同的神经网络进行处理，基于GNN的模型在每次更新迭代的时候，对所有原子都是用相同参数的神经网络进行处理。这类模型有2017年MPNN模型，2018年的SchNet模型，2019年的PhysNet模型，2021年的DeepMoleNet模型以及2021年北京大学和深圳湾实验室高毅勤教授课题组同华为合作开发的“分子CT”（molecular configuration transformer）模型。
 
-<div id="jump-img" style="text-align:center;"><img src="./pics/mct.png" style="margin-bottom:0px; max-width:50%;" alt=""><br/>图2: 势能函数获取方法</div>
+![image](./pics/mct.png)
+
+图2: 模型结构图
 
 2021年8月，高毅勤教授课题组开源了基于MindSpore的GNN深度分子模型框架Cybertron，支持分子CT模型、SchNet模型以及PhysNet模型，且用户可以基于该架构实现自己的GNN深度分子模型。而MindSPONGE则是高毅勤教授课题组同华为MindSpore团队合作开发的全新一代人工智能分子动力学模拟软件， 其原生支持基于深度学习的相关算法。MindSPONGE和Cybertron相配合，可以使用Cybertron训练分子力场，在MindSPONGE中进行分子动力学模拟。
 
@@ -60,7 +67,9 @@ $$ F(R) = -\frac{\partial U}{\partial R}$$
 
 ## 分子构象的抽样
 
-<div id="jump-img" style="text-align:center;"><img src="./pics/claisen.png" style="margin-bottom:0px; max-width:50%;" alt=""><br/>图2: 势能函数获取方法</div>
+![image](./pics/claisen.png)
+
+图3: 分子内可逆克莱森重排反应
 
 如上图所示，该反应是一个典型的在分子内可逆克莱森重排反应，体系可以在七元环（以下简称A分子）和三元环（以下简称B分子）之间进行转化。如果要建立该反应的分子力场，首先需要对该体系的构象进行充足的抽样。在这里我们选择使用半经验的DFTB方法，对该体系进行快速地构想搜索。由于目前版本的MindSPONGE中暂时不支持基于QM的方法，这里我们使用免费的分子动力学模拟软件包`AmberTools`中的`sander`程序运行基于DFTB的MD模拟。运行该程序需要的参数文件为`cba.prmtop`，坐标文件为`cba.rst7`，输入文件为：
 
@@ -88,13 +97,13 @@ MD simulation
  /
 ```
 
-然而该反应的势垒大约在100 kJ/mol（A分子到B分子）和60 kJ/mol （B分子到A分子）左右，如果使用普通的MD进行模型，即使是使用模拟速度较快的半经验方法，在目前可以达到的模拟时间之内几乎无法观察到反应。所以这里我们需要使用增强抽样（enhanced sampling）方法加速反应的发生，在这里我们选择使用埋拓动力学Metadynamics方法。
+然而该反应的势垒大约在100 kJ/mol（A分子到B分子）和60 kJ/mol （B分子到A分子）左右，如果使用普通的MD进行模型，即使是使用模拟速度较快的半经验方法，在目前可以达到的模拟时间之内几乎无法观察到反应。所以这里我们需要使用增强抽样（enhanced sampling）方法加速反应的发生，在这里我们选择使用[埋拓动力学Metadynamics方法](https://people.sissa.it/~laio/Research/Res_metadynamics.php)。
 
-埋拓动力学是一类基于集成变量CV（collective variables）的增强抽样方法。CV有时也被称为“反应坐标”（reaction coordinate）或者“序参量”（order parameter），通常是描述体系中所感兴趣的慢自由度所对应的物理量。例如在本次要研究的克莱森重排反应体系中，可以选择d_3和d_6两个距离的差作为CV。在MD中使用埋拓动力学，会不断地在体系当前状态所对应CV的位置添加高斯形式的偏向势（bias potential），从而将体系推离当前CV所在的位置，从而加快体系对于CV空间的搜索。
+埋拓动力学是一类基于集成变量CV（collective variables）的增强抽样方法。CV有时也被称为“反应坐标”（reaction coordinate）或者“序参量”（order parameter），通常是描述体系中所感兴趣的慢自由度所对应的物理量。例如在本次要研究的克莱森重排反应体系中，可以选择d3和d6两个距离的差作为CV。在MD中使用埋拓动力学，会不断地在体系当前状态所对应CV的位置添加高斯形式的偏向势（bias potential），从而将体系推离当前CV所在的位置，从而加快体系对于CV空间的搜索。
 
-这里我们为了提高采样的效率，使用多重行走（multiple walker）算法，即同时运行多条轨迹，埋拓动力学根据所有的轨迹更新偏向势，并将更新后的偏向势运用到所有的轨迹。这里我们同时运行四条MD轨迹:
+这里我们使用[PLUMED2](https://www.plumed.org/)来实现埋拓动力学的功能。PLUMED2是一种分子动力学插件库，使用其可以在多个MD软件中实现增强抽样效果。在这里我们使用的PLUMED2输入脚本为：
 
-```bath
+```bash
 MOLINFO STRUCTURE=./cba.pdb
 WHOLEMOLECULES STRIDE=1 ENTITY0=1-15
 
@@ -137,7 +146,7 @@ PRINT ...
 
 这里我们为了提高采样的效率，使用多重行走（multiple walker）算法，即同时运行多条轨迹，埋拓动力学根据所有的轨迹更新偏向势，并将更新后的偏向势运用到所有的轨迹。这里我们同时运行四条MD轨迹，执行命令为：
 
-```bath
+```bash
 mpirun -np 4 sander.MPI -groupfile group.dat -ng 4
 ```
 
@@ -150,13 +159,15 @@ mpirun -np 4 sander.MPI -groupfile group.dat -ng 4
 -O -i md.in -o cba_metad_mw3.out  -p cba.prmtop  -c cba_md_mw3.rst7  -r cba_metad_mw3.rst7  -x cba_metad_mw3.nc  -inf cba_metad_mw3.info
 ```
 
-使用该方法可以让体系在A分子和B分子之间实现快速的转变。在`colvar.info.data`文件中记录了体系中各个距离的分布，我们可以用绘图软件查看MD模拟过程中相关原子距离的变化。例如下图展示了其中一条轨迹中的d_3和d_6两个距离随模拟时间的变化，可以看到仅仅在前100ps的模拟中两者数值的相对大小就发生了若干次转变，每次转变都意味着发生了化学反应，说明这种方法可以对该体系进行有效地增强抽样。
+使用该方法可以让体系在A分子和B分子之间实现快速的转变。在`colvar.info.data`文件中记录了体系中各个距离的分布，我们可以用绘图软件查看MD模拟过程中相关原子距离的变化。例如下图展示了其中一条轨迹中的d3和d6两个距离随模拟时间的变化，可以看到仅仅在前100ps的模拟中两者数值的相对大小就发生了若干次转变，每次转变都意味着发生了化学反应，说明这种方法可以对该体系进行有效地增强抽样。
 
-<div id="jump-img" style="text-align:center;"><img src="./pics/colvardata.png" style="margin-bottom:0px; max-width:50%;" alt=""><br/>图3: d_3和d_6两个距离随模拟时间的变化</div>
+![image](./pics/colvardata.png)
+
+图4: d3和d6两个距离随模拟时间的变化
 
 ## 高精度量子化学计算
 
-在对分子构象进了充分的抽样之后，就可以在其中随机抽取若干构象进行高精度量子化学计算。sander程序得到的轨迹文件后缀名是.nc，使用MDAnalysis这个工具包，就可以在python中读取对应的坐标文件。例如，使用下面的脚步就可以将nc文件中的坐标转换为numpy数组：
+在对分子构象进了充分的抽样之后，就可以在其中随机抽取若干构象进行高精度量子化学计算。sander程序得到的轨迹文件后缀名是.nc，使用[MDAnalysis](https://www.mdanalysis.org)这个工具包，就可以在Python中读取对应的坐标文件。例如，使用下面的脚步就可以将nc文件中的坐标转换为numpy数组：
 
 ```python
 import numpy as np
@@ -177,7 +188,7 @@ xyz = np.array(xyz)
 np.savez('cba_metad.npz',R=xyz)
 ```
 
-之后我们需要随机抽取一定数量的构象，我们用python脚本随机选取一定的数量的构象并保存为xyz格式：
+之后我们需要随机抽取一定数量的构象，我们用Python脚本随机选取一定的数量的构象并保存为xyz格式：
 
 ```python
 import os
@@ -208,7 +219,7 @@ for i in range(n):
             ofile.write(line+os.linesep)
 ```
 
-这里为了训练方便，我们选择1024*128个构象作为训练集，1024个构象作为验证集，总共需要生成132096个构象。接下来我们需要使用量子化学软件计算每个构象的单点能及梯度。这里我们选择用面向学术用户免费的量子化学软件ORCA，使用DFT中的B3LYP方法，基组选择6-31+G**。使用ORCA计算单个构象的单点能和能量的脚本文cba_pos0.inp件为：
+这里为了训练方便，我们选择1024*128个构象作为训练集，1024个构象作为验证集，总共需要生成132096个构象。接下来我们需要使用量子化学软件计算每个构象的单点能及梯度。这里我们选择用面向学术用户免费的量子化学软件[ORCA](https://orcaforum.kofo.mpg.de)，使用DFT中的B3LYP方法，基组选择`6-31+G**`。使用ORCA计算单个构象的单点能和能量的脚本文cba_pos0.inp件为：
 
 ```text
 ! B3LYP 6-31+G**
@@ -237,7 +248,7 @@ python load_engrad.py --i output/cba_pos --n 132096 --o cba_orca.npz
 
 这里output/cba_pos为engrad文件的前缀名，132096为文件数目，cba_orca.npz为存储numpy数组的文件名。
 
-在训练之前需要对数据集进行预处理，主要涉及基准能量的扣除和单位转换，由于量子化学计算所获得单点能的数值较大，不便于训练，所以通常需要先对其扣除一个基准能量。基准能量的通常是相同方法下单个原子的单点能的加。同样使用B3LYP方法和6-31+G**基组，计算得到单个C、H以及O原子的能量分别为-0.496862052688，-37.762005387953和-74.935438100380，我们需要在单点能中扣除相应的能量。另一方面，ORCA中默认能量为Hartree，长度单位为Bohr，而通常MD中使用的能量单位为kJ/mol或kcal/mol，长度单位为nm或Angstrom，因此我们需要对此进行预处理。这里我们用python脚本将其单位转换为kcal/mol和Angstrom：
+在训练之前需要对数据集进行预处理，主要涉及基准能量的扣除和单位转换，由于量子化学计算所获得单点能的数值较大，不便于训练，所以通常需要先对其扣除一个基准能量。基准能量的通常是相同方法下单个原子的单点能的加。同样使用B3LYP方法和6-31+G**基组，计算得到单个C、H以及O原子的能量分别为-0.496862052688，-37.762005387953和-74.935438100380，我们需要在单点能中扣除相应的能量。另一方面，ORCA中默认能量为Hartree，长度单位为Bohr，而通常MD中使用的能量单位为kJ/mol或kcal/mol，长度单位为nm或Angstrom，因此我们需要对此进行预处理。这里我们用Python脚本将其单位转换为kcal/mol和Angstrom：
 
 ```python
 import numpy as np
@@ -334,4 +345,6 @@ _steps_ _TEMP_ _TOT_POT_ENE_ _CVariable_ _Bias_Potential_
 
 模拟完成后，可以通过可视化软件观察得到重排反应的变化的过程，可以看到体系在七元环和三元环之间进行转化。可视化结果如下图所示：
 
-<div id="jump-img" style="text-align:center;"><img src="./pics/result.png" style="margin-bottom:0px; max-width:60%;" alt=""><br/>图4: 分子内可逆克莱森重排反应仿真结果</div>
+![image](./pics/result.png)
+
+图5: 分子内可逆克莱森重排反应仿真结果
