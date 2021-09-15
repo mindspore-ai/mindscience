@@ -11,14 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ============================================================================
-"""init"""
-from .dataset import Dataset
-from .boundary import BoundaryBC, BoundaryIC, Boundary
-from .equation import Equation
-from .existed_data import ExistedDataset
-from .data_base import ExistedDataConfig
-from .pointcloud import *
+# ==============================================================================
+"""check context mode"""
+from mindspore import context
 
-__all__ = ["Dataset", "Equation", "BoundaryBC", "BoundaryIC", "ExistedDataset", "ExistedDataConfig"]
-__all__.extend(pointcloud.__all__)
+
+def check_mode(api_name):
+    if context.get_context("mode") == context.PYNATIVE_MODE:
+        raise RuntimeError("{} is only supported GRAPH_MODE now but got PYNATIVE_MODE".format(api_name))

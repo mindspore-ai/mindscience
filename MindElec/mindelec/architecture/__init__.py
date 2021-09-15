@@ -14,11 +14,11 @@
 # ============================================================================
 """init"""
 
-# from .activation import get_activation
-# from .basic_block import LinearBlock, ResBlock, InputScaleNet, FCSequential, MultiScaleFCCell
-# from .mtl_weighted_loss import MTLWeightedLossCell
-#
-# __all__ = []
-# __all__.extend(activation.__all__)
-# __all__.extend(basic_block.__all__)
-# __all__.extend(mtl_weighted_loss.__all__)
+from .activation import get_activation
+from .basic_block import LinearBlock, ResBlock, InputScaleNet, FCSequential, MultiScaleFCCell
+from .mtl_weighted_loss import MTLWeightedLossCell
+
+__all__ = []
+__all__.extend(activation.__all__)
+__all__.extend(basic_block.__all__)
+__all__.extend(mtl_weighted_loss.__all__)
