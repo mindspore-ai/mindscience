@@ -40,12 +40,9 @@ class ExistedDataset(Data):
             is None, the `data_dir` should not be None.
         columns_list (Union[str, list, tuple], optional): list of column names of the dataset (default=None). If
             `data_config` is None, the `columns_list` should not be None.
-        data_format (str, optional): the format of existed data files (default='npy'). If `data_config` is None, the
-            `data_format` should not be None. The format 'npy' is supported now.
-        constraint_type (str, optional): specifies the constraint type of the created dataset (default="Label"). If
-            `data_config` is None, the `constraint_type` should not be None.
-        random_merge (bool, optional): specifies whether randomly merge the given datasets (default=True). If
-            `data_config` is None, the `constraint_type` should not be None.
+        data_format (str, optional): the format of existed data files (default='npy').
+        constraint_type (str, optional): specifies the constraint type of the created dataset (default="Label").
+        random_merge (bool, optional): specifies whether randomly merge the given datasets (default=True).
         data_config (ExistedDataConfig, optional): Instance of ExistedDataConfig which collect the info
             described above (default=None). If it's not None, the dataset class will be create by using it for
             simplified. If it's None, the info of (name, data_dir, columns_list, data_format, constraint_type,
@@ -76,8 +73,9 @@ class ExistedDataset(Data):
                  data_config=None):
         if data_config is None:
             if name is None or data_dir is None or columns_list is None:
-                raise ValueError("If data_config is None, argument: name/data_dir/columns_list should not be None, but"
-                                 "got name: {}, data_dir: {}, columns_list: {}".format(name, data_dir, columns_list))
+                raise ValueError("If data_config is None, argument: name, data_dir and columns_list should not be"
+                                 " None, but got name: {}, data_dir: {}, columns_list: {}"
+                                 .format(name, data_dir, columns_list))
             data_config = ExistedDataConfig(name, data_dir, columns_list, data_format, constraint_type, random_merge)
         elif not isinstance(data_config, ExistedDataConfig):
             raise TypeError("data_config should be instance of ExistedDataConfig but got {}"
