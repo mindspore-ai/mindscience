@@ -12,12 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""init"""
+"""
+network config setting, will be used in train.py and eval.py
+"""
 
-
-from .constraints import Constraints
-from .net_with_loss import NetWithLoss, NetWithEval
-from .losses import get_loss_metric
-
-
-__all__ = ['Constraints', 'NetWithLoss', 'NetWithEval', 'get_loss_metric']
+# Encoder training configuration
+config = {
+    'base_channels': 8,
+    'input_channels': 4,
+    'epochs': 2000,
+    'batch_size': 128,
+    'save_epoch': 100,
+    'lr': 0.001,
+    'lr_decay_milestones': 5,
+    'eval_interval': 20,
+    'patch_shape': [25, 50, 25],
+}
