@@ -15,7 +15,7 @@
 """
 init
 """
-#
-# from .derivatives import Grad, Jacobian, Hessian, SecondOrderGrad
-#
-# __all__ = ["Grad", "SecondOrderGrad"]
+
+from .derivatives import Grad, Jacobian, Hessian, SecondOrderGrad
+
+__all__ = ["Grad", "SecondOrderGrad"]
