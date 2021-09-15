@@ -17,21 +17,21 @@
 init
 """
 
-# from __future__ import absolute_import
-#
-# from .plane import plot_s11, plot_eh
-# from .body import vtk_structure
-# from .video import image_to_video
-# from .mindinsight_vision import MonitorTrain, MonitorEval
-# from .print_scatter import print_graph_1d, print_graph_2d
-#
-# __all__ = [
-#     "plot_s11",
-#     "plot_eh",
-#     "vtk_structure",
-#     "image_to_video",
-#     "MonitorTrain",
-#     "MonitorEval",
-#     "print_graph_1d",
-#     "print_graph_2d"
-# ]
+from __future__ import absolute_import
+
+from .plane import plot_s11, plot_eh
+from .body import vtk_structure
+from .video import image_to_video
+from .mindinsight_vision import MonitorTrain, MonitorEval
+from .print_scatter import print_graph_1d, print_graph_2d
+
+__all__ = [
+    "plot_s11",
+    "plot_eh",
+    "vtk_structure",
+    "image_to_video",
+    "MonitorTrain",
+    "MonitorEval",
+    "print_graph_1d",
+    "print_graph_2d"
+]
