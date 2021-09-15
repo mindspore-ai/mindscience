@@ -104,33 +104,42 @@ class PointCloudSamplingConfig:
         TypeError: if `bbox_type` is not an int.
         TypeError: if `mode_args` is not one of int or tuple.
         TypeError: if `bbox_args` is not a tuple.
-        ValueError:  `mode_args` is not int but sampling mode is 0.
-        ValueError:  `mode_args` is not list of 3 int but sampling mode is 1.
-        ValueError:  `sampling_mode` not in [0(UPPERBOUND), 1(DIMENSIONS)].
-        ValueError:  `bbox_type` not in [0(STATIC), 1(DYNAMIC)].
+        ValueError:  if `sampling mode` is 0 but `mode_args` is not int.
+        ValueError:  if `sampling mode` is 1 but `mode_args` is not a tuple of three integers.
+        ValueError:  if `sampling_mode` not in [0(UPPERBOUND), 1(DIMENSIONS)].
+        ValueError:  if `bbox_type` not in [0(STATIC), 1(DYNAMIC)].
     """
     def __init__(self, sampling_mode, bbox_type, mode_args=None, bbox_args=None):
         if not isinstance(sampling_mode, int):
-            raise TypeError("sampling_mode: {} should be int, but got {}".format(sampling_mode, type(sampling_mode)))
+            raise TypeError("sampling_mode should be int, but got {} with type {}".format(sampling_mode,
+                                                                                          type(sampling_mode)))
         if not isinstance(bbox_type, int):
-            raise TypeError("bbox_type: {} should be int, but got {}".format(bbox_type, type(bbox_type)))
+            raise TypeError("bbox_type should be int, but got {} with type {}".format(bbox_type, type(bbox_type)))
         if mode_args is not None and not isinstance(mode_args, (int, tuple)):
-            raise TypeError("mode_args: {} should be int or tuple, but got {}".format(mode_args, type(mode_args)))
+            raise TypeError("mode_args should be int or tuple, but got {} with type {}".format(mode_args,
+                                                                                               type(mode_args)))
         if bbox_args is not None and not isinstance(bbox_args, tuple):
-            raise TypeError("bbox_args: {} should be tuple, but got {}".format(bbox_args, type(bbox_args)))
-
-        if sampling_mode == 0 and not isinstance(mode_args, int):
-            raise ValueError("mode_args should always be int if sampling mode is \"UPPERBOUND(0)\" , \
-                              but got: {} and {}".format(mode_args, type(mode_args)))
-        if sampling_mode == 1 and not (all(isinstance(x, int) for x in mode_args) and len(mode_args) == 3):
-            raise ValueError("mode_args should always be tuple of 3 ints if sampling mode is \"DIMENSIONS(1)\" , \
-                              but got: {} and {}".format(mode_args, type(mode_args)))
+            raise TypeError("bbox_args should be tuple, but got {} with type {}".format(bbox_args, type(bbox_args)))
         if sampling_mode not in [0, 1]:
             raise ValueError("Only UPPERBOUND(0) and DIMENSIONS(1) are supported values for sampling_mode, \
                               but got: {} ".format(sampling_mode))
         if bbox_type not in [0, 1]:
             raise ValueError("Only STATIC(0) and DYNAMIC(1) are supported values for bbox_type, \
                               but got: {} ".format(bbox_type))
+        if sampling_mode == 0 and not isinstance(mode_args, int):
+            raise ValueError("mode_args should always be int if sampling mode is \"UPPERBOUND(0)\" , \
+                              but got: {} with type {}".format(mode_args, type(mode_args)))
+        if sampling_mode == 1:
+            if not isinstance(mode_args, tuple):
+                raise TypeError("mode_args should always be tuple if sampling mode is \"DIMENSIONS(1)\","
+                                " but got: {} with type {}".format(mode_args, type(mode_args)))
+            if not len(mode_args) == 3:
+                raise ValueError("mode_args should always be tuple with length of 3 if sampling mode is"
+                                 " \"DIMENSIONS(1)\", but got: {} with length of {}".format(mode_args, len(mode_args)))
+            if not all(isinstance(x, int) for x in mode_args):
+                raise TypeError("mode_args should always be tuple of 3 integers if sampling mode is \"DIMENSIONS(1)\","
+                                " but got: {} with type ({}, {}, {})".format(mode_args, type(mode_args[0]),
+                                                                             type(mode_args[1]), type(mode_args[2])))
 
         self.sampling_mode = sampling_mode
         self.bbox_type = bbox_type
@@ -146,12 +155,12 @@ class MaterialConfig:
         json_file (str): Material information for each sub-model json file path
         material_dir (str): Directory path for all material, physical quantities information of each material
             record in a text file.
-        physical_field (dict, option): Standard physical quantities fields that Maxwell equations concern about,
+        physical_field (dict): Standard physical quantities fields that Maxwell equations concern about,
             material solving stage will deal with these standard physical fields. The key of physical_field dict
-            is physical quantity name, the value is default value for this physical quantity. Default: None
+            is physical quantity name, the value is default value for this physical quantity.
         customize_physical_field (dict, option): User can specify physical quantities fields according to their
             demand, similarly, material solving stage will take care of them. Default: None
-        remove_vacuum (bool): Remove sub-solid whose material property is vacuum. Default: True
+        remove_vacuum (bool, option): Remove sub-solid whose material property is vacuum. Default: True
 
     Raises:
         TypeError: if `json_file` is not a str.
@@ -160,20 +169,22 @@ class MaterialConfig:
         TypeError: if `customize_physical_field` is not a dict.
         TypeError: if `remove_vacuum` is not a bool.
     """
-    def __init__(self, json_file, material_dir, physical_field=None, customize_physical_field=None,
+    def __init__(self, json_file, material_dir, physical_field, customize_physical_field=None,
                  remove_vacuum=True):
         if not isinstance(json_file, str):
-            raise TypeError("json_file: {} should be str, but got {}".format(json_file, type(json_file)))
+            raise TypeError("json_file should be str, but got {} with type {}".format(json_file, type(json_file)))
         if not isinstance(material_dir, str):
-            raise TypeError("material_dir: {} should be str, but got {}".format(material_dir, type(material_dir)))
-        if physical_field is not None and not isinstance(physical_field, dict):
-            raise TypeError("physical_field: {} should be dict, but got {}"
+            raise TypeError("material_dir should be str, but got {} with type {}".format(material_dir,
+                                                                                         type(material_dir)))
+        if not isinstance(physical_field, dict):
+            raise TypeError("physical_field should be dict, but got {} with type {}"
                             .format(physical_field, type(physical_field)))
         if customize_physical_field is not None and not isinstance(customize_physical_field, dict):
-            raise TypeError("customize_physical_field: {} should be dict, but got {}"
+            raise TypeError("customize_physical_field should be dict, but got {} with type {}"
                             .format(customize_physical_field, type(customize_physical_field)))
         if not isinstance(remove_vacuum, bool):
-            raise TypeError("remove_vacuum: {} should be bool, but got {}".format(remove_vacuum, type(remove_vacuum)))
+            raise TypeError("remove_vacuum should be bool, but got {} with type {}".format(remove_vacuum,
+                                                                                           type(remove_vacuum)))
         self.json_file = json_file
         self.material_dir = material_dir
         self.physical_field = dict()
@@ -214,10 +225,10 @@ class PointCloud:
     Args:
         data_dir (str): stp files directory, raw data
         sampling_config (PointCloudSamplingConfig): Sampling space config for PointCloud-Tensor generation.
-        material_config (MaterialConfig, optional): Material solution config for PointCloud-Tensor generation, which
-            influence the material solving stage. Default: None
-        num_parallel_workers (int): Parallel workers number, this arguments can take effect on all computing stages,
-            including reading model, section building, space solving and material solving. Default: os.cpu_count()
+        material_config (MaterialConfig): Material solution config for PointCloud-Tensor generation, which
+            influence the material solving stage.
+        num_parallel_workers (int, option): Parallel workers number, this arguments can take effect on all computing
+         stages, including reading model, section building, space solving and material solving. Default: os.cpu_count()
 
     Raises:
         TypeError: if `data_dir` is not a str.
@@ -240,17 +251,17 @@ class PointCloud:
         >>> pointcloud = md.PointCloud(STP_DIR, sampling_config, material_config)
     """
 
-    def __init__(self, data_dir, sampling_config, material_config=None, num_parallel_workers=os.cpu_count()):
+    def __init__(self, data_dir, sampling_config, material_config, num_parallel_workers=os.cpu_count()):
         if not isinstance(data_dir, str):
-            raise TypeError("data_dir: {} should be str, but got {}".format(data_dir, type(data_dir)))
+            raise TypeError("data_dir should be str, but got {} with type {}".format(data_dir, type(data_dir)))
         if not isinstance(sampling_config, PointCloudSamplingConfig):
-            raise TypeError("sampling_config: {} should be an instance of {}, but got {}"
-                            .format(sampling_config, PointCloudSamplingConfig, type(sampling_config)))
-        if material_config is not None and not isinstance(material_config, MaterialConfig):
-            raise TypeError("material_config: {} should be an instance of {}, but got {}"
-                            .format(material_config, MaterialConfig, type(material_config)))
+            raise TypeError("sampling_config should be an instance of {}, but got {} with type {}"
+                            .format(PointCloudSamplingConfig, sampling_config, type(sampling_config)))
+        if not isinstance(material_config, MaterialConfig):
+            raise TypeError("material_config should be an instance of {}, but got {} with type {}"
+                            .format(MaterialConfig, material_config, type(material_config)))
         if not isinstance(num_parallel_workers, int):
-            raise TypeError("num_parallel_workers: {} should be int, but got {}"
+            raise TypeError("num_parallel_workers should be int, but got {} with type {}"
                             .format(num_parallel_workers, type(num_parallel_workers)))
         self._data_dir = data_dir
         self._sampling_config = sampling_config
@@ -471,7 +482,7 @@ class PointCloud:
         in a Global list of dictionary, num_of_workers processes in total will be applied in parallel computing.
 
         Returns:
-            numpy.ndarray, result tensor
+            numpy.ndarray, pointcloud result
         """
         physical_info_dim = 4  # Init with (x, y, z, model_id), so length = 4, if more material needed, we add it
         if self._material_config is not None:
