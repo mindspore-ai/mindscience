@@ -20,11 +20,24 @@ SCRIPT_BASEDIR=$(realpath "$(dirname "$0")")
 PROJECT_DIR=$(realpath "$SCRIPT_BASEDIR/../../")
 ST_PATH="$PROJECT_DIR/tests/st"
 
-run_test() {
-    echo "Start to run test."
+if [ $# -gt 0 ]; then
+  if  [ $1 == "mindelec" ]; then
+    echo "Run st mindelec."
     cd "$PROJECT_DIR" || exit
+    ST_PATH="$PROJECT_DIR/tests/st/mindelec/"
     pytest "$ST_PATH"
-    echo "Test all use cases success."
-}
-
-run_test
+    echo "Test all mindelec use cases success."
+  elif [ $1 == "mindsponge" ]; then
+    echo "Run st mindsponge."
+    cd "$PROJECT_DIR" || exit
+    ST_PATH="$PROJECT_DIR/tests/st/mindsponge/"
+    pytest "$ST_PATH"
+    echo "Test all mindsponge use cases success."
+  fi
+else
+  echo "Run all st."
+  cd "$PROJECT_DIR" || exit
+  ST_PATH="$PROJECT_DIR/tests/st/"
+  pytest "$ST_PATH"
+  echo "Test all use cases success."
+  fi
