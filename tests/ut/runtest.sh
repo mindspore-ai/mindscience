@@ -15,15 +15,30 @@
 set -e
 
 SCRIPT_BASEDIR=$(realpath "$(dirname "$0")")
-
 PROJECT_DIR=$(realpath "$SCRIPT_BASEDIR/../../")
-UT_PATH="$PROJECT_DIR/tests/ut"
 
-run_test() {
-    echo "Start to run test."
+if [ $# -gt 0 ]; then
+  if  [ $1 == "mindelec" ]; then
+    export PYTHONPATH=$PYTHONPATH:${PROJECT_DIR}/MindElec/
+    echo "export PYTHONPATH=$PYTHONPATH"
+    echo "Run ut mindelec."
     cd "$PROJECT_DIR" || exit
+    UT_PATH="$PROJECT_DIR/tests/ut/mindelec/"
     pytest "$UT_PATH"
-    echo "Test all use cases success."
-}
-
-run_test
+    echo "Test all mindelec use cases success."
+  elif [ $1 == "mindsponge" ]; then
+    echo "Run ut mindsponge."
+    cd "$PROJECT_DIR" || exit
+    UT_PATH="$PROJECT_DIR/tests/ut/mindsponge/"
+    pytest "$UT_PATH"
+    echo "Test all mindsponge use cases success."
+  fi
+else
+  export PYTHONPATH=$PYTHONPATH:${PROJECT_DIR}/MindElec/
+  echo "export PYTHONPATH=$PYTHONPATH"
+  echo "Run all ut."
+  cd "$PROJECT_DIR" || exit
+  UT_PATH="$PROJECT_DIR/tests/ut/"
+  pytest "$UT_PATH"
+  echo "Test all use cases success."
+  fi
