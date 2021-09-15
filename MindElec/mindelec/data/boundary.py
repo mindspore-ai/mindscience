@@ -163,7 +163,7 @@ class BoundaryIC(Boundary):
     def __init__(self, geometry):
         super(BoundaryIC, self).__init__(geometry)
         if geometry.sampling_config.ic is None:
-            raise ValueError("BC info for the current geometry: {} was not found".format(geometry.name))
+            raise ValueError("IC info for the current geometry: {} was not found".format(geometry.name))
         self.sampling_config = self.geometry.sampling_config.ic
         self.name = geometry.name + "_IC"
         self.constraint_type = "IC"
