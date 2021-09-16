@@ -42,12 +42,14 @@ class Dataset(Data):
     Combine datasets together.
 
     Parameters:
-        geometry_dict (dict): specifies geometry datasets to be merged (default=None). The key is geometry instance and
-            value is a list of type of geometry. For example, geometry_dict = {geom : ["domain", "BC", "IC"]}
-        existed_data_list (Union[list, tuple]): specifies existed datasets to be merged (default=None). For example,
-            existed_data_list = [ExistedDataConfig_Instance1, ExistedDataConfig_Instance2]
-        dataset_list (Union[list, tuple]): specifies instances of data to be merged. For example,
+        geometry_dict (dict, optional): specifies geometry datasets to be merged. The key is geometry instance and
+            value is a list of type of geometry. For example, geometry_dict = {geom : ["domain", "BC", "IC"]}.
+            Default: None.
+        existed_data_list (Union[list, tuple], optional): specifies existed datasets to be merged. For example,
+            existed_data_list = [ExistedDataConfig_Instance1, ExistedDataConfig_Instance2]. Default: None.
+        dataset_list (Union[list, tuple], optional): specifies instances of data to be merged. For example,
             dataset_list=[BoundaryIC_Instance, Equation_Instance, BoundaryBC_Instance and ExistedData_Instance].
+            Default: None.
 
     Raises:
         ValueError: If geometry_dict, existed_data_list and dataset_list are all None.
