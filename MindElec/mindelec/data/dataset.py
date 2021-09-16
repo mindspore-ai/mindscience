@@ -153,38 +153,38 @@ class Dataset(Data):
                        drop_remainder=True,
                        prebatched_data=False,
                        num_parallel_workers=1,
-                       num_shards=1,
-                       shard_id=0,
+                       num_shards=None,
+                       shard_id=None,
                        python_multiprocessing=False):
         """
         create the final mindspore type dataset to merge all the sub-datasets.
 
         Args:
-            batch_size (int or function): The number of rows each batch is created with. An
-                int or callable object which takes exactly 1 parameter, BatchInfo.
-            preprocess_fn (Union[list[TensorOp], list[functions]]): List of operations to be
-                applied on the dataset. Operations are applied in the order they appear in this list.
-            input_output_columns_map (dict): specifies which columns to replace and to what. The key is the column name
-                to be replaced and the value is the name you want to replace with (default=False).
+            batch_size (int, optional): An int number of rows each batch is created with. Default: 1.
+            preprocess_fn (Union[list[TensorOp], list[functions]], optional): List of operations to be
+                applied on the dataset. Operations are applied in the order they appear in this list. Default: None.
+            input_output_columns_map (dict, optional): specifies which columns to replace and to what.
+                The key is the column name to be replaced and the value is the name you want to replace with.
+                There's no need to set this argument if all columns are not changed after mapping. Default: None.
             shuffle (bool, optional): Whether or not to perform shuffle on the dataset. Random accessible input is
-                required. (default=None, expected order behavior shown in the table).
+                required. Default: True, expected order behavior shown in the table.
             drop_remainder (bool, optional): Determines whether or not to drop the last block
-                whose data row number is less than batch size (default=False). If True, and if there are less
+                whose data row number is less than batch size. If True, and if there are less
                 than batch_size rows available to make the last batch, then those rows will
-                be dropped and not propagated to the child node.
+                be dropped and not propagated to the child node. Default: True.
             prebatched_data (bool, optional): Generate pre-batched data before create mindspore dataset. If True,
                 pre-batched data will be returned when get each sub-dataset data by index. Else, the batch operation
                 will be done by mindspore dataset interface: dataset.batch. When batch_size is very large, it's
-                recommended to set this option to be True in order to improve performance on host.
-            num_parallel_workers (int, optional): Number of workers(threads) to process the dataset in parallel
-                (default=None).
-            num_shards (int, optional): Number of shards that the dataset will be divided into (default=None).
+                recommended to set this option to be True in order to improve performance on host. Default: False.
+            num_parallel_workers (int, optional): Number of workers(threads) to process the dataset in parallel.
+                Default: 1.
+            num_shards (int, optional): Number of shards that the dataset will be divided into.
                 Random accessible input is required. When this argument is specified, `num_samples` reflects the
-                maximum sample number of per shard.
-            shard_id (int, optional): The shard ID within num_shards (default=None). This argument must be specified
-                only when num_shards is also specified. Random accessible input is required.
+                maximum sample number of per shard. Default: None.
+            shard_id (int, optional): The shard ID within num_shards. This argument must be specified
+                only when num_shards is also specified. Random accessible input is required. Default: None.
             python_multiprocessing (bool, optional): Parallelize Python function per_batch_map with multi-processing.
-                This option could be beneficial if the function is computational heavy (default=False).
+                This option could be beneficial if the function is computational heavy. Default: False.
 
         Returns:
             BatchDataset, dataset batched.
@@ -193,6 +193,11 @@ class Dataset(Data):
             >>> data = dataset.create_dataset()
         """
         self._get_all_datasets()
+        _check_type(prebatched_data, "prebatched_data", bool)
+        _check_type(drop_remainder, "drop_remainder", bool)
+        _check_type(shuffle, "shuffle", bool)
+        _check_type(batch_size, "batch_size", int)
+
         if prebatched_data and not drop_remainder:
             raise ValueError("prebatched_data is not supported when drop_remained is set to be False")
         for dataset in self.all_datasets:
@@ -219,6 +224,7 @@ class Dataset(Data):
 
         if preprocess_fn is not None:
             input_columns = copy.deepcopy(self.columns_list)
+            _check_type(input_output_columns_map, "input_output_columns_map", (type(None), dict))
             if input_output_columns_map is not None:
                 new_columns_list, new_dataset_columns_map = self._update_columns_list(input_output_columns_map)
                 self.columns_list = new_columns_list
@@ -282,14 +288,32 @@ class Dataset(Data):
         return dataset_columns_map, dataset_constraint_map, column_index_map
 
     def get_columns_list(self):
-        """get columns list"""
+        """get columns list
+
+        Args:
+
+        Returns:
+            list[str]. column names list of the final unified dataset.
+
+        Examples:
+            >>> columns_list = dataset.get_columns_list()
+        """
         if self.columns_list is None:
             raise ValueError("Please call create_dataset() first before get final columns list to avoid unexpected "
                              "error")
         return self.columns_list
 
     def set_constraint_type(self, constraint_type="Equation"):
-        """set constraint type of dataset"""
+        """set constraint type of dataset
+
+        Args:
+            constraint_type (Union[str, dict): The constraint type of specified dataset. If is string, the constraint
+                type of all subdataset will be set to the same one. If is dict, the subdataset and it's constraint type
+                is specified by the pair (key, value). Default: "Equation".
+
+        Examples:
+            >>> dataset.set_constraint_type("Equation")
+        """
         if isinstance(constraint_type, str):
             logger.warning("Argument constraint_type: {} is str, the same type will be set for all of the sub-datasets"
                            .format(constraint_type))
