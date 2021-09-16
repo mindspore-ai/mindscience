@@ -310,7 +310,7 @@ class Solver:
             This is a pre-compile function. The arguments should be the same with model.predict() function.
 
         Args:
-           predict_data: The predict data can be tensor or tuple of tensor.
+            predict_data: The predict data can be tensor or tuple of tensor.
 
         Returns:
             Tensor, array(s) of predictions.
