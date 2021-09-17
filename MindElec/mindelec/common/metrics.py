@@ -30,7 +30,7 @@ class L2(nn.Metric):
     .. math::
         \text{l2} = \sqrt {\sum_{i=1}^n \frac {(y_i - x_i)^2}{y_i^2}}
 
-    Here :math:`y_i` is the prediction and :math:`x_i` is the true value.
+    Here :math:`y_i` is the true value and :math:`x_i` is the prediction.
 
     Note:
         The method `update` must be called with the form `update(y_pred, y)`.

@@ -42,12 +42,15 @@ from .pointcloud_util import inner_point_generation
 
 class SamplingMode(IntEnum):
     r"""
-    Point sampling method, at present support:
+    Point sampling method, at present support UPPERBOUND(0) and DIMENSIONS(1).
 
-        - 'UPPERBOUND': limit the sampling points number upperbound within whole sampling space, the other space
-          parameters such as sampling number on each axis can be automatically computed according to the space
-          size ratio.
-        - 'DIMENSIONS': users can specify the sampling number in each dimension, the axis order is x:y:z.
+    - 'UPPERBOUND': limit the sampling points number upperbound within whole sampling space, the other space
+      parameters such as sampling number on each axis can be automatically computed according to the space
+      size ratio.
+    - 'DIMENSIONS': users can specify the sampling number in each dimension, the axis order is x:y:z.
+
+    Supported Platforms:
+        ``Ascend``
     """
     UPPERBOUND = 0
     DIMENSIONS = 1
@@ -55,14 +58,18 @@ class SamplingMode(IntEnum):
 
 class BBoxType(IntEnum):
     r"""
-    Bounding box for sampling space, only supports cube-shape sampling space, at present supports:
+    Bounding box for sampling space, only supports cube-shape sampling space, at present supports STATIC(0) and
+    DYNAMIC(1).
 
-        - 'DYNAMIC', generate sampling bbox from the bbox of all 3-D topology models and space extension
-          constants, models bbox can be computed automatically after read all files, then add extension
-          constants on each direction the DYNAMIC sampling bbox can be obtained. Each model is different.
-          Space=(x_min - x_neg, y_min - y_neg, z_min - z_neg, x_max + x_pos, y_max + y_pos, z_max + z_pos)
-        - 'STATIC', users can specify the sampling space on each dimension,
-          in (x_min, y_min, z_min, x_max, y_max, z_max) order.
+    - 'DYNAMIC', generate sampling bbox from the bbox of all 3-D topology models and space extension
+      constants, models bbox can be computed automatically after read all files, then add extension
+      constants on each direction the DYNAMIC sampling bbox can be obtained. Each model is different.
+      Space=(x_min - x_neg, y_min - y_neg, z_min - z_neg, x_max + x_pos, y_max + y_pos, z_max + z_pos)
+    - 'STATIC', users can specify the sampling space on each dimension,
+      in (x_min, y_min, z_min, x_max, y_max, z_max) order.
+
+    Supported Platforms:
+        ``Ascend``
     """
     STATIC = 0
     DYNAMIC = 1
@@ -72,6 +79,9 @@ class StdPhysicalQuantity(IntEnum):
     """
     Standard physical quantities fields that Maxwell equations concern about,
     material solving stage will deal with these standard physical fields.
+
+    Supported Platforms:
+        ``Ascend``
     """
     MU = 0
     EPSILON = 1
@@ -108,6 +118,9 @@ class PointCloudSamplingConfig:
         ValueError:  if `sampling mode` is 1 but `mode_args` is not a tuple of three integers.
         ValueError:  if `sampling_mode` not in [0(UPPERBOUND), 1(DIMENSIONS)].
         ValueError:  if `bbox_type` not in [0(STATIC), 1(DYNAMIC)].
+
+    Supported Platforms:
+        ``Ascend``
     """
     def __init__(self, sampling_mode, bbox_type, mode_args=None, bbox_args=None):
         if not isinstance(sampling_mode, int):
@@ -152,7 +165,7 @@ class MaterialConfig:
     Material solution config for PointCloud-Tensor generation, which influence the material solving stage.
 
     Args:
-        json_file (str): Material information for each sub-model json file path
+        json_file (str): Material information for each sub-model json file path.
         material_dir (str): Directory path for all material, physical quantities information of each material
             record in a text file.
         physical_field (dict): Standard physical quantities fields that Maxwell equations concern about,
@@ -168,6 +181,9 @@ class MaterialConfig:
         TypeError: if `physical_field` is not a dict.
         TypeError: if `customize_physical_field` is not a dict.
         TypeError: if `remove_vacuum` is not a bool.
+
+    Supported Platforms:
+        ``Ascend``
     """
     def __init__(self, json_file, material_dir, physical_field, customize_physical_field=None,
                  remove_vacuum=True):
@@ -235,6 +251,9 @@ class PointCloud:
         TypeError: if `sampling_config` is not an instance of class PointCloudSamplingConfig.
         TypeError: if `material_config` is not an instance of class MaterialConfig.
         TypeError: if `num_parallel_workers` is not an int.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> import mindelec.data as md

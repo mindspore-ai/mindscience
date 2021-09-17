@@ -34,7 +34,7 @@ class Disk(Geometry):
         center (Union[tuple[int, float], list[int, float], numpy.ndarray]): center coordinates of the disk.
         radius (Union[int, float]): radius of the disk.
         dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (geometry_base.SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None
 
     Raises:
         ValueError: If `center` is neither list nor tuple of length 2.
@@ -217,7 +217,7 @@ class Rectangle(HyperCube):
         coord_max (Union[tuple[int, float], list[int, float], numpy.ndarray]): coordinates of the top
             right corner of rectangle.
         dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (geometry_base.SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None
 
     Supported Platforms:
         ``Ascend``

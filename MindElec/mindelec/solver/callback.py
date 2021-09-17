@@ -85,6 +85,9 @@ class LossAndTimeMonitor(Callback):
     Raises:
         ValueError: If data_size is not an integer or less than zero.
         ValueError: If per_print_times is not an integer or less than zero.
+
+    Supported Platforms:
+        ``Ascend``
     """
 
     def __init__(self, data_size, per_print_times=1):
