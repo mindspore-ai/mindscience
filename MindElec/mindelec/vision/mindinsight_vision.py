@@ -49,7 +49,7 @@ class MonitorTrain(Callback):
         if not isinstance(per_print_times, int):
             raise TypeError("per_print_times must be int, but get {}".format(type(per_print_times)))
         if per_print_times <= 0:
-            raise ValueError("per_print_times must be > 0.")
+            raise ValueError("per_print_times must be > 0, but get {}".format(per_print_times))
 
         if not isinstance(summary_dir, str):
             raise TypeError("summary_dir must be str, but get {}".format(type(summary_dir)))
@@ -136,7 +136,8 @@ class MonitorEval(Callback):
         ...         x = self.fc3(x1 + x2)
         ...         return x
         >>> model_net = S11Predictor(3)
-        >>> model = Solver(network=model_net, mode="Data", optimizer=nn.Adam(0.001), loss_fn=nn.MSELoss())
+        >>> model = Solver(network=model_net, mode="Data",
+        >>>                optimizer=nn.Adam(model_net.trainable_params(), 0.001), loss_fn=nn.MSELoss())
         >>> # For details about how to build the dataset, please refer to the tutorial
         >>> # document on the official website.
         >>> eval_ds = Dataset()
@@ -154,21 +155,21 @@ class MonitorEval(Callback):
                  draw_flag=True):
         super(MonitorEval, self).__init__()
         if not isinstance(summary_dir, str):
-            raise ValueError("summary_dir must be str, but get {}".format(type(summary_dir)))
+            raise TypeError("summary_dir must be str, but get {}".format(type(summary_dir)))
 
         if not isinstance(model, Solver):
-            raise ValueError("model must be mindelec solver, but get {}".format(type(model)))
+            raise TypeError("model must be mindelec solver, but get {}".format(type(model)))
 
         if not isinstance(eval_ds, ds):
-            raise ValueError("eval dataset must be mindelec dataset, but get {}".format(type(eval_ds)))
+            raise TypeError("eval_ds must be mindelec dataset, but get {}".format(type(eval_ds)))
 
         if not isinstance(eval_interval, int):
             raise TypeError("eval_interval must be int, but get {}".format(type(eval_interval)))
         if eval_interval <= 0:
-            raise ValueError("eval_interval must be > 0.")
+            raise ValueError("eval_interval must be > 0, but get {}".format(eval_interval))
 
         if not isinstance(draw_flag, bool):
-            raise ValueError("draw_flag must be bool, but get {}".format(type(draw_flag)))
+            raise TypeError("draw_flag must be bool, but get {}".format(type(draw_flag)))
 
         self._summary_dir = summary_dir
         self._model = model

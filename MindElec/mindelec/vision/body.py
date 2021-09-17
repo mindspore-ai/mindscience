@@ -90,7 +90,6 @@ def vtk_structure(grid_tensor, eh_tensor, path_res):
                 z[i, j, k] = z_all[k]
 
     for t in range(dim_t):
-        print(t)
         output_grid_show = output_grid[t]
         ex, ey, ez = output_grid_show[:, :, :, 0], output_grid_show[:, :, :, 1], output_grid_show[:, :, :, 2]
         hx, hy, hz = output_grid_show[:, :, :, 3], output_grid_show[:, :, :, 4], output_grid_show[:, :, :, 5]

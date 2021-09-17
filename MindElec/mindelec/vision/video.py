@@ -48,7 +48,7 @@ def image_to_video(path_image, path_video, video_name, fps):
     if not isinstance(path_image, str):
         raise TypeError("The type of path_image should be str, but get {}".format(type(path_image)))
     if not os.path.exists(path_image):
-        raise Exception("No folder of images found in path_image, please check the path")
+        raise ValueError("path_image folder should exist, but get {}".format(path_image))
 
     if not isinstance(path_video, str):
         raise TypeError("The type of path_video should be str, but get {}".format(type(path_video)))
@@ -58,14 +58,14 @@ def image_to_video(path_image, path_video, video_name, fps):
     if not isinstance(video_name, str):
         raise TypeError("The type of video_name should be str, but get {}".format(type(video_name)))
     if '.avi' not in video_name or len(video_name) <= 4:
-        raise Exception("video_name should be .avi file, like result.avi, please check the video_name")
+        raise ValueError("video_name should be .avi file, like result.avi, but get {}".format(video_name))
     if video_name[-4:] != '.avi':
-        raise Exception("video_name should be .avi file, like result.avi, please check the video_name")
+        raise ValueError("video_name should be .avi file, like result.avi, but get {}".format(video_name))
 
     if not isinstance(fps, int):
         raise TypeError("The type of fps must be int, but get {}".format(type(fps)))
     if fps <= 0:
-        raise ValueError("fps must be > 0.")
+        raise ValueError("fps must be > 0, but get {}".format(fps))
 
     cv2 = import_module("cv2")
     fourcc = cv2.VideoWriter_fourcc(*"MJPG")
