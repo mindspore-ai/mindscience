@@ -73,9 +73,9 @@ def _check_type(net_in, net_out, input_idx=None, output_idx=None):
     """check type of input"""
     if net_in is not None:
         raise TypeError("The Type of network input should be Tensor but got {}".format(type(net_in)))
-    if input_idx is not None and not isinstance(input_idx, int):
+    if input_idx is not None and (not isinstance(input_idx, int) or isinstance(input_idx, bool)):
         raise TypeError("The Type of column index of input should be int but got {}".format(type(input_idx)))
-    if output_idx is not None and not isinstance(output_idx, int):
+    if output_idx is not None and (not isinstance(output_idx, int) or isinstance(output_idx, bool)):
         raise TypeError("The Type of column index of output should be int but got {}".format(type(output_idx)))
     if net_out is not None:
         raise TypeError("The Type of network output should be Tensor but got {}".format(type(net_out)))
@@ -102,7 +102,7 @@ class Grad(nn.Cell):
 
     Args:
         model (Cell): a function or network that takes Tensor inputs.
-        argnum (int): specifies which input the output takes the first derivative of.
+        argnum (int): specifies which input the output takes the first derivative of. Default: 0.
 
     Inputs:
         - **x** - The input is variable-length argument. Notes that the last three inputs are column index of
@@ -121,7 +121,7 @@ class Grad(nn.Cell):
     Examples:
         >>> import numpy as np
         >>> from mindspore import nn, Tensor
-        >>> from mindelec import Grad
+        >>> from mindelec.operators import Grad
         ...
         >>> class Net(nn.Cell):
         ...    def __init__(self):
@@ -200,7 +200,7 @@ class SecondOrderGrad(nn.Cell):
     Examples:
         >>> import numpy as np
         >>> from mindspore import nn, Tensor
-        >>> from mindelec import SecondOrderGrad
+        >>> from mindelec.operators import SecondOrderGrad
         >>> class Net(nn.Cell):
         ...    def __init__(self):
         ...        super(Net, self).__init__()

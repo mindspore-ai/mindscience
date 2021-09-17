@@ -32,7 +32,7 @@ class HyperCube(Geometry):
         coord_min (Union[list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of the hyper cube.
         coord_max (Union[list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of the hyper cube.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
-        sampling_config (geometry_base.SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None
 
     Raises:
         TypeError: sampling_config is not instance of class SamplingConfig.

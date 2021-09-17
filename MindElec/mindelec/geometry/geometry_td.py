@@ -25,14 +25,14 @@ from .geometry_1d import Interval
 
 class TimeDomain(Interval):
     """
-        Definition of Time Domain.
+    Definition of Time Domain.
 
     Args:
         name (str): name of the time domain.
         start (Union[int, float]): start of the time domain.
         end (Union[int, float]): end of the time domain.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
-        sampling_config (geometry_base.SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None
 
     Supported Platforms:
         ``Ascend``
@@ -62,12 +62,12 @@ class TimeDomain(Interval):
 
 class GeometryWithTime(Geometry):
     """
-        Definition of geometry with time.
+    Definition of geometry with time.
 
     Args:
         geometry (Geometry): geometry
         timedomain (TimeDomain): time domain
-        sampling_config (geometry_base.SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None
 
     Raises:
         ValueError: If `sampling_config` is not None but `sampling_config.time` is None .
@@ -158,7 +158,7 @@ class GeometryWithTime(Geometry):
         set sampling info
 
         Args:
-            sampling_config (geometry_base.SamplingConfig): sampling configuration.
+            sampling_config (SamplingConfig): sampling configuration.
 
         Raises:
             TypeError: If `sampling_config` is not instance of SamplingConfig.

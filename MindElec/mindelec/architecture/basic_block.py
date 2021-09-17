@@ -42,7 +42,7 @@ class LinearBlock(nn.Cell):
             same as input x. The values of str refer to the function `initializer`. Default: 'zeros'.
         has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
         activation (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected
-        layer. Default: None.
+            layer. Default: None.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.
@@ -230,9 +230,9 @@ class FCSequential(nn.Cell):
             eg. 'ReLU'.Default: "sin".
         weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
             is same as input x. The values of str refer to the function `initializer`. Default: 'normal'.
+        has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype
             is same as input x. The values of str refer to the function `initializer`. Default: 'default'.
-        has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.
@@ -324,15 +324,15 @@ class MultiScaleFCCell(nn.Cell):
         in_channel (int): The number of channels in the input space.
         out_channel (int): The number of channels in the output space.
         layers (int): The total number of layers, include input/hidden/output layers.
-        residual (bool): full-connected of residual block for the hidden layers. Default: True
         neurons (int): The number of neurons of hidden layers.
-        weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
-            is same as input x. The values of str refer to the function `initializer`. Default: 'normal'.
-        bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype
-            is same as input x. The values of str refer to the function `initializer`. Default: 'default'.
-        has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
+        residual (bool): full-connected of residual block for the hidden layers. Default: True.
         act (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected layer,
             eg. 'ReLU'.Default: "sin".
+        weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
+            is same as input x. The values of str refer to the function `initializer`. Default: 'normal'.
+        has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
+        bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype
+            is same as input x. The values of str refer to the function `initializer`. Default: 'default'.
         num_scales (int): The subnet number of multi-scale network. Default: 4
         amp_factor (Union[int, float]): The amplification factor of input. Default: 1.0
         scale_factor (Union[int, float]): The base scale factor. Default: 2.0

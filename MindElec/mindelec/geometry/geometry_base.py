@@ -110,7 +110,7 @@ class Geometry:
         coord_min (Union[list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of the geometry.
         coord_max (Union[list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of the geometry.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
-        sampling_config (geometry_base.SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None
 
     Supported Platforms:
         ``Ascend``
@@ -186,7 +186,7 @@ class Geometry:
         set sampling info
 
         Args:
-            sampling_config (geometry_base.SamplingConfig): sampling configuration.
+            sampling_config (SamplingConfig): sampling configuration.
 
         Raises:
             TypeError: If `sampling_config` is not instance of SamplingConfig.

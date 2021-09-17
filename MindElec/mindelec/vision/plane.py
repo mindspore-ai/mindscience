@@ -27,7 +27,7 @@ def plot_s11(s11_tensor, path_image_save, legend, dpi=300):
     Draw s11-frequency curve and save it in path_image_save.
 
     Args:
-        s11_tensor (np.array): s11 data (shape: (dim_frequency, 2)).
+        s11_tensor (numpy.array): s11 data (shape: (dim_frequency, 2)).
         path_image_save (str): s11-frequency curve saved path.
         legend (str): the legend of s11, plotting parameters.
         dpi (int): plotting parameters. Default: 300.
@@ -83,7 +83,7 @@ def plot_eh(simu_res_tensor, path_image_save, z_index, dpi=300):
     Draw electric and magnetic field values of every timestep for 2D slices, and save them in path_image_save
 
     Args:
-        simu_res_tensor (np.array): simulation result (shape (dim_t, dim_x, dim_y, dim_z, 6)).
+        simu_res_tensor (numpy..array): simulation result (shape (dim_t, dim_x, dim_y, dim_z, 6)).
         path_image_save (str): images saved path.
         z_index (int): show 2D image for z=z_index.
         dpi (int): plotting parameters. Default: 300.

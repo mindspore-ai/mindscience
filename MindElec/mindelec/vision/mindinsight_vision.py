@@ -28,8 +28,8 @@ class MonitorTrain(Callback):
     Loss monitor for train.
 
     Args:
-        per_print_times (int): print loss interval.
-        summary_dir (str): summary save path.
+        per_print_times (int): print loss interval. Default: 1.
+        summary_dir (str): summary save path. Default: './summary_train'.
 
     Returns:
         Callback monitor.
@@ -105,11 +105,11 @@ class MonitorEval(Callback):
     LossMonitor for eval.
 
     Args:
-        summary_dir (str): summary save path.
-        model (Solver): Model object for eval.
-        eval_ds (Dataset): eval dataset.
-        eval_interval (int): eval interval.
-        draw_flag (bool): specifies if save summary_record.
+        summary_dir (str): summary save path. Default: './summary_eval'.
+        model (Solver): Model object for eval. Default: None.
+        eval_ds (Dataset): eval dataset. Default: None.
+        eval_interval (int): eval interval. Default: 10.
+        draw_flag (bool): specifies if save summary_record. Default: True.
 
     Returns:
         Callback monitor.

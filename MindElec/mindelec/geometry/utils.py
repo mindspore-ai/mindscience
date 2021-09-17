@@ -34,6 +34,9 @@ def create_config_from_edict(edict_config):
     Raises:
         ValueError: If part_config_dict can not be generated from input dict.
 
+    Supported Platforms:
+        ``Ascend``
+
     Examples:
         >>> from easydict import EasyDict as edict
         >>> from mindelec.geometry import create_config_from_edict
