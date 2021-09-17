@@ -37,7 +37,7 @@ class Solver:
             - Data: The model is data_driven.
             - PINNs: The model is physics_informed.
 
-        train_constraints (Constraints): Definition of the loss for train dataset. Default: None. If model
+        train_constraints (Constraints): Definition of the loss for train dataset. Default: None. If mode
             is PINNs, the train_constraints cannot be None.
         test_constraints (Constraints): Definition of the loss for test dataset. Default: None. If mode is
             PINNs and eval is needed, the test_constraints cannot be None.
@@ -58,7 +58,7 @@ class Solver:
         metrics (Union[dict, set]): A Dictionary or a set of metrics to be evaluated by the model during
             training and inference. eg: {'accuracy', 'recall'}. Default: None.
         eval_network (Cell): Network for evaluation. If not defined, `network` and `loss_fn` would be wrapped as
-            `eval_network` . Default: None.
+            `eval_network` . Default: None. Note that eval_network do not need to be set in PINNs mode.
         eval_indexes (list): When defining the `eval_network`, if `eval_indexes` is None, all outputs of the
             `eval_network` would be passed to metrics, otherwise `eval_indexes` must contain three
             elements, including the positions of loss value, predicted value and label. The loss
@@ -81,7 +81,7 @@ class Solver:
         ``Ascend``
 
     Examples:
-        >>> from mindelec import Solver
+        >>> from mindelec.solver import Solver
         >>> import mindspore
         >>> from mindspore import nn
         ...
@@ -118,8 +118,11 @@ class Solver:
         check_mode("Solver")
         if not isinstance(mode, str):
             raise TypeError("the type of mode should be str but got {}".format(type(mode)))
+        self._mode = mode
         self._network = network
         if mode == "PINNs":
+            if train_constraints is None:
+                raise ValueError("train_constraints can not be None when mode is PINNs")
             self._loss_scale_manager = None
             self._loss_scale_manager_set = False
             self._keep_bn_fp32 = True
@@ -144,7 +147,7 @@ class Solver:
                                eval_indexes=eval_indexes)
         elif mode == "Data":
             if not isinstance(loss_fn, (str, nn.Cell)):
-                raise TypeError("For `Data` mode, the type of loss_fn should be int or an instance of Cell but got {}"
+                raise TypeError("For `Data` mode, the type of loss_fn should be str or an instance of Cell but got {}"
                                 .format(type(loss_fn)))
             loss_fn = get_loss_metric(loss_fn) if isinstance(loss_fn, str) else loss_fn
             self.model = Model(self._network, loss_fn=loss_fn, optimizer=optimizer, metrics=metrics,
@@ -260,8 +263,8 @@ class Solver:
             >>> dataset = create_custom_dataset()
             >>> solver.train_with_eval(20, dataset, dataset, 10)
         """
-        if not self._test_constraints:
-            raise ValueError("test_constraints cannot be None while train_with_eval")
+        if self._mode == "PINNs" and not self._test_constraints:
+            raise ValueError("test_constraints cannot be None while train_with_eval in PINNs mode")
         eval_callback = EvalCallback(self.model, test_dataset, eval_interval)
         if not callbacks:
             callbacks = [eval_callback]
@@ -296,8 +299,8 @@ class Solver:
             >>> dataset = create_custom_dataset()
             >>> acc = solver.eval(dataset, dataset_sink_mode=False)
         """
-        if not self._test_constraints:
-            raise ValueError("test_constraints cannot be None while eval")
+        if self._mode == "PINNs" and not self._test_constraints:
+            raise ValueError("test_constraints cannot be None while eval in PINNs mode")
         return self.model.eval(valid_dataset, callbacks=callbacks, dataset_sink_mode=dataset_sink_mode)
 
     def predict(self, *predict_data):
