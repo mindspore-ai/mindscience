@@ -76,7 +76,7 @@ $$L_{total} = \lambda_{src}L_{src} + \lambda_{src_ic}L_{src_ic} + \lambda_{no_sr
 .
 └─Maxwell
   ├─README.md
-  ├─figure                            # README示意图
+  ├─docs                              # README示意图
   ├─src
     ├──dataset.py                     # 数据集配置
     ├──maxwell.py                     # 点源麦克斯韦方程定义

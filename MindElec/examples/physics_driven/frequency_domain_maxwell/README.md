@@ -62,6 +62,7 @@ AI uses self-supervised training to solve the Helmholtz equation. Data sets are 
 .
 └─Helmholtz
   ├─README.md
+  ├─docs                              # schematic diagram of README
   ├─src
     ├──callback.py                    # callback function
     ├──config.py                      # parameter configuration

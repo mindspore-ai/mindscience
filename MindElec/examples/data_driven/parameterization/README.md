@@ -25,7 +25,7 @@ In some scenarios of electromagnetic simulation (such as tolerance evaluation), 
 
 The following figure shows the network architecture of the parametrized electromagnetic simulation model.
 
-![network_architecture](./docs/network_architecture_en.JPG)
+![network_architecture](./docs/network_architecture_en.jpg)
 
 The network inputs are the changed parameters, and the output is the S11 parameter of each frequency.
 
@@ -55,6 +55,7 @@ Use the `generate_data` function in `src/dataset.py` to automatically obtain 25 
 .
 └─parameterization
   ├─README.md
+  ├─docs                              # schematic diagram of README
   ├─src
     ├──dataset.py                     # Dataset config
     ├──loss.py                        # Loss function

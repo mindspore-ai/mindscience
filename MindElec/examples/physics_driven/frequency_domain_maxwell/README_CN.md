@@ -57,6 +57,7 @@ AI求解亥姆霍兹方程时使用自监督方式训练，数据集在运行过
 .
 └─Helmholtz
   ├─README.md
+  ├─docs                              # README示意图
   ├─src
     ├──callback.py                    # 回调函数
     ├──config.py                      # 参数配置

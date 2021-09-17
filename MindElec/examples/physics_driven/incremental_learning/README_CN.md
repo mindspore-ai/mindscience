@@ -80,7 +80,7 @@ $$L_{total} = \lambda_{src}L_{src} + \lambda_{src_ic}L_{src_ic} + \lambda_{no_sr
 .
 └─Maxwell
   ├─README.md
-  ├─figure                            # README示意图
+  ├─docs                              # README示意图
   ├─src
     ├──dataset.py                     # 数据集配置
     ├──maxwell.py                     # 点源麦克斯韦方程定义
@@ -252,6 +252,7 @@ bc_sampling_config = edict({          # 边界区域的采样配置
 本案例采用多通道残差网络结合Sin激活函数的网络架构。
 
 ![network_architecture](./docs/multi-scale-NN.png)
+
 ## 模型预训练
 
 您可以通过piad.py脚本训练参数化电磁仿真模型，训练过程中模型参数会自动保存：
