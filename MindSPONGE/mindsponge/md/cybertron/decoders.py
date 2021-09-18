@@ -25,10 +25,10 @@
 
 from mindspore import nn
 
-from cybertron.blocks import MLP, Dense
-from cybertron.blocks import PreActResidual
-from cybertron.blocks import SeqPreActResidual
-from cybertron.blocks import PreActDense
+from .blocks import MLP, Dense
+from .blocks import PreActResidual
+from .blocks import SeqPreActResidual
+from .blocks import PreActDense
 
 __all__ = [
     "Decoder",

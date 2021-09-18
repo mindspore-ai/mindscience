@@ -17,7 +17,10 @@
 import os
 
 from . import md
-from .md import *
+from .md.potential import *
+from .md.partition import *
+from .md.control import *
+from .md.space import *
 from .version import __version__
 
 __version_info__ = tuple(__version__.split('.'))

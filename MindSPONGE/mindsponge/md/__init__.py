@@ -18,11 +18,6 @@ from . import potential
 from . import control
 from . import space
 from . import partition
-from .functions import *
-from .potential import *
-from .control import *
-from .space import *
-from .partition import *
 
 __all__ = []
 

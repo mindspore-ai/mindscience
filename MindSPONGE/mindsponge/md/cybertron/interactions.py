@@ -32,16 +32,16 @@ from mindspore.ops import functional as F
 from mindspore.common.initializer import initializer
 from mindspore.common.initializer import Normal
 
-from cybertron.blocks import Dense, MLP
-from cybertron.blocks import PreActDense
-from cybertron.blocks import SeqPreActResidual
-from cybertron.neighbors import GatherNeighbors
-from cybertron.base import Aggregate, CFconv
-from cybertron.base import PositionalEmbedding
-from cybertron.base import MultiheadAttention
-from cybertron.base import Pondering, ACTWeight
-from cybertron.base import FeedForward
-from cybertron.activations import get_activation
+from .blocks import Dense, MLP
+from .blocks import PreActDense
+from .blocks import SeqPreActResidual
+from .neighbors import GatherNeighbors
+from .base import Aggregate, CFconv
+from .base import PositionalEmbedding
+from .base import MultiheadAttention
+from .base import Pondering, ACTWeight
+from .base import FeedForward
+from .activations import get_activation
 
 __all__ = [
     "Interaction",

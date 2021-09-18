@@ -30,12 +30,12 @@ from mindspore import Tensor
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
 
-from cybertron.units import units
-from cybertron.neighbors import GatherNeighbors
-from cybertron.base import SmoothReciprocal
-from cybertron.cutoff import get_cutoff
-from cybertron.aggregators import get_aggregator, get_list_aggregator
-from cybertron.decoders import get_decoder
+from .units import units
+from .neighbors import GatherNeighbors
+from .base import SmoothReciprocal
+from .cutoff import get_cutoff
+from .aggregators import get_aggregator, get_list_aggregator
+from .decoders import get_decoder
 
 __all__ = [
     "Readout",

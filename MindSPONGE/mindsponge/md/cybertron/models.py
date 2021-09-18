@@ -31,15 +31,15 @@ from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 from mindspore.common.initializer import Normal
 
-from cybertron.units import units
-from cybertron.blocks import Dense, Residual
-from cybertron.interactions import SchNetInteraction
-from cybertron.interactions import PhysNetModule
-from cybertron.interactions import NeuralInteractionUnit
-from cybertron.base import ResFilter, GraphNorm
-from cybertron.cutoff import get_cutoff
-from cybertron.rbf import GaussianSmearing, LogGaussianDistribution
-from cybertron.activations import ShiftedSoftplus, Swish
+from .units import units
+from .blocks import Dense, Residual
+from .interactions import SchNetInteraction
+from .interactions import PhysNetModule
+from .interactions import NeuralInteractionUnit
+from .base import ResFilter, GraphNorm
+from .cutoff import get_cutoff
+from .rbf import GaussianSmearing, LogGaussianDistribution
+from .activations import ShiftedSoftplus, Swish
 
 __all__ = [
     "DeepGraphMolecularModel",

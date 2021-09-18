@@ -15,22 +15,16 @@
 '''main'''
 import argparse
 import time
-import sys
 
 from mindspore import context
 from mindspore import Tensor
 from mindspore import load_checkpoint
 
-USE_SYS_PATH = True
-
-if USE_SYS_PATH:
-    sys.path.append('..')
-    sys.path.append('../../../mindsponge/md')
-    from simulation_cybertron import SimulationCybertron
-    from cybertron.mdnn import Mdnn, TransCrdToCV
-    from cybertron.models import MolCT
-    from cybertron.readouts import AtomwiseReadout
-    from cybertron.cybertron import Cybertron
+from simulation_cybertron import SimulationCybertron
+from mindsponge.md.cybertron.mdnn import Mdnn, TransCrdToCV
+from mindsponge.md.cybertron.models import MolCT
+from mindsponge.md.cybertron.readouts import AtomwiseReadout
+from mindsponge.md.cybertron.cybertron import Cybertron
 
 parser = argparse.ArgumentParser(description='SPONGE Controller')
 parser.add_argument('--i', type=str, default='md.in', help='Input file')
