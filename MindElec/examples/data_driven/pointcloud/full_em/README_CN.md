@@ -18,17 +18,17 @@
 
 # 数据集
 
-基于[点云数据生成](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/generate_pointcloud)和[点云数据压缩](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/auto_encoder)生成电磁场训练输入数据，再调用`src/inputs_process.py`将训练输入绑定坐标和源位置信息。而训练的标签数据需要使用商业仿真软件或者时域有限差分算法生成，再调用`src/label_process.py`处理得到最终的训练标签。
+基于[点云数据生成](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/generate_pointcloud)和[点云数据压缩](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/data_compression)生成电磁场输入数据，再调用`src/inputs_process.py`将输入数据绑定坐标和源位置信息。而训练的标签数据需要使用商业仿真软件或者时域有限差分算法生成，再调用`src/label_process.py`处理得到最终的标签。
 
 # 环境要求
 
 - 硬件（Ascend）
     - 准备Ascend处理器搭建硬件环境。
 - 框架
-    - [MindELec](https://www.mindspore.cn/install)
+    - [MindELec](https://gitee.com/mindspore/mindscience/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindELec教程](https://www.mindspore.cn/tutorials/zh-CN/master/index.html)
-    - [MindElec Python API](https://www.mindspore.cn/docs/api/zh-CN/master/index.html)
+    - [MindELec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
+    - [MindElec Python API](https://www.mindspore.cn/mindscience/api/zh-CN/master/mindelec.html)
 
 # 快速入门
 

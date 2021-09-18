@@ -49,10 +49,10 @@ AI uses self-supervised training to solve the Helmholtz equation. Data sets are 
 - Hardware (Ascend)
     - Prepare the Ascend AI Processor to set up the hardware environment.
 - Framework
-    - [MindSpore](https://www.mindspore.cn/install/en)
+    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - For more information, see the following resources:
-    - [MindSpore Tutorial](https://www.mindspore.cn/tutorials/en/master/index.html)
-    - [MindSpore Python API](https://www.mindspore.cn/docs/api/en/master/index.html)
+    - [MindElec Tutorial](https://www.mindspore.cn/mindscience/docs/en/master/mindelec/intro_and_install.html)
+    - [MindElec Python API](https://www.mindspore.cn/mindscience/api/en/master/mindelec.html)
 
 ## Script Description
 

@@ -79,10 +79,10 @@ Take the FP16 operator as an example. If the input data type is FP32, the MindSp
 - Hardware (Ascend)
     - Prepare the Ascend AI Processor to set up the hardware environment.
 - Framework
-    - [MindElec](https://www.mindspore.cn/install/en)
-- For more information, refer to the following resources
-    - [MindElec Tutorial](https://www.mindspore.cn/tutorials/en/master/index.html)
-    - [MindElec Python API](https://www.mindspore.cn/docs/api/en/master/index.html)
+    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+- For more information, see the following resources:
+    - [MindElec Tutorial](https://www.mindspore.cn/mindscience/docs/en/master/mindelec/intro_and_install.html)
+    - [MindElec Python API](https://www.mindspore.cn/mindscience/api/en/master/mindelec.html)
 
 ## Script Description
 
