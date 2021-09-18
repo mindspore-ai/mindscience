@@ -92,7 +92,7 @@ Take the FP16 operator as an example. If the input data type is FP32, the MindSp
 .
 └─Maxwell
   ├─README.md
-  ├─figure                            # README diagram
+  ├─docs                              # schematic diagram of README
   ├─src
     ├──dataset.py                     # dataset
     ├──maxwell.py                     # definition of point source Maxwell's equations

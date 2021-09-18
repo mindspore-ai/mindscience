@@ -75,7 +75,7 @@ Take the FP16 operator as an example. If the input data type is FP32, the MindSp
 .
 └─Maxwell
   ├─README.md
-  ├─figure                            # schematic diagram of README
+  ├─docs                              # schematic diagram of README
   ├─src
     ├──dataset.py                     # configuration of dataset
     ├──maxwell.py                     # definitions of Maxwell's Equations with point source

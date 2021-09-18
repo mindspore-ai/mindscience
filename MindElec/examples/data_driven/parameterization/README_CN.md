@@ -21,7 +21,7 @@
 
 参数化电磁仿真模型整体网络架构如下：
 
-![network_architecture](./docs/network_architecture_ch.JPG)
+![network_architecture](./docs/network_architecture_ch.jpg)
 
 网络输入为变化的参数，网络输出为各个频点下的S11参数。
 
@@ -49,6 +49,7 @@
 .
 └─parameterization
   ├─README.md
+  ├─docs                              # README示意图
   ├─src
     ├──dataset.py                     # 数据集配置
     ├──loss.py                        # 损失函数
