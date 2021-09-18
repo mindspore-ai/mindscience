@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 '''Simulation'''
-import sys
 import numpy as np
 
 import mindspore.numpy as msnp
