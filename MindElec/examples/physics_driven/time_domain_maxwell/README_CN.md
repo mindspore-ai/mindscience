@@ -170,7 +170,7 @@ bc_sampling_config = edict({          # 边界区域的采样配置
     "scale_factor" : 2,                                        # 多尺度网络的各子网放大系数
     "save_ckpt" : true,                                        # 训练中是否保存checkpoint信息
     "load_ckpt" : false,                                       # 是否加载权重进行增量训练
-    "train_with_eval": false                                    # 是否边训练边推理
+    "train_with_eval": false                                   # 是否边训练边推理
     "save_ckpt_path" : "./ckpt",                               # checkpoint保存路径
     "load_ckpt_path" : "",                                     # 加载checkpoint的文件路径
     "train_data_path" : "",                                    # 加载离线训练数据集的路径

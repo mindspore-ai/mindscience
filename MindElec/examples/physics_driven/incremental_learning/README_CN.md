@@ -177,8 +177,8 @@ bc_sampling_config = edict({          # 边界区域的采样配置
     "load_ckpt" : false,                                                    # 是否加载权重进行增量训练
     "save_ckpt_path" : "./ckpt",                                            # 权重保存路径
     "load_ckpt_path" : "",                                                  # 权重加载路径
-    "train_with_eval": true,                                                # 是否边训练边验证
-    "test_data_path" : "./benchmark/",                                      # 加载离线测试数据集的路径
+    "train_with_eval": false,                                               # 是否边训练边验证
+    "test_data_path" : "",                                                  # 加载离线测试数据集的路径
     "lr" : 0.001,                                                           # 初始学习率
     "milestones" : [2000],                                                  # 学习率衰减的里程碑
     "lr_gamma" : 0.25,                                                      # 学习率衰减系数

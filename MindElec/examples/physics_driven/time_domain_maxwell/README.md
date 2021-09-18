@@ -172,8 +172,8 @@ Training parameters are configured in config.json as follows:
     "train_with_eval": false                                   # whether evaluation during training
     "save_ckpt_path" : "./ckpt",                               # the path to save checkpoint
     "load_ckpt_path" : "",                                     # the path to load checkpoint
-    "train_data_path" : "./input/",                            # the path to load the offline training dataset
-    "test_data_path" : "./input/benchmark/",                   # the path to loas the offline evaluation dataset
+    "train_data_path" : "",                                    # the path to load the offline training dataset
+    "test_data_path" : "",                                     # the path to loas the offline evaluation dataset
     "lr" : 0.001,                                              # the initial learning rate
     "milestones" : [1000, 1500, 1800],                         # milestones of learning rate decay
     "lr_gamma" : 0.1,                                          # attenuation coefficient of learning rate decay

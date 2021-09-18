@@ -45,7 +45,7 @@ context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="A
 @pytest.mark.platform_arm_ascend_training
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
-def test_maxwell():
+def test_time_domain_maxwell():
     """training process"""
     config = json.load(open("./config.json"))
     print("check config: {}".format(config))

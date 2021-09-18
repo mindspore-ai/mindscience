@@ -16,7 +16,7 @@
 from collections import Counter
 import numpy as np
 
-class _LRScheduler():
+class _LRScheduler:
     """
     Basic class for learning rate scheduler
     """

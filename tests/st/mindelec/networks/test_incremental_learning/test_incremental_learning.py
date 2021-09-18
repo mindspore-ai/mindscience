@@ -14,10 +14,9 @@
 # ==============================================================================
 """reconstruct process."""
 import os
-import argparse
 import json
 import math
-import time
+import pytest
 import numpy as np
 
 from mindspore.common import set_seed
@@ -34,19 +33,26 @@ from mindelec.solver import Solver, LossAndTimeMonitor
 from mindelec.common import L2
 from mindelec.architecture import MultiScaleFCCell, MTLWeightedLossCell
 
-from src import get_test_data, create_random_dataset
-from src import MultiStepLR
-from src import Maxwell2DMur
-from src import PredictCallback
-from src import visual_result
+from src.dataset import create_random_dataset
+from src.lr_scheduler import MultiStepLR
+from src.maxwell import Maxwell2DMur
 
 set_seed(123456)
 np.random.seed(123456)
 
 context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend", save_graphs_path="./solver")
 
-def piad2d(config, mode):
-    """pretraining and reconstruction process"""
+
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend_training
+@pytest.mark.platform_x86_ascend_training
+@pytest.mark.env_onecard
+def test_incremental_learning():
+    """pretraining process"""
+    print("pid:", os.getpid())
+    mode = "pretrain"
+    config = json.load(open("./pretrain.json"))
+    preprocess_config(config)
     elec_train_dataset = create_random_dataset(config)
     train_dataset = elec_train_dataset.create_dataset(batch_size=config["batch_size"],
                                                       shuffle=True,
@@ -146,12 +152,8 @@ def piad2d(config, mode):
                     latent_reg=config["latent_reg"]
                     )
 
-    callbacks = [LossAndTimeMonitor(epoch_steps)]
-    if config.get("train_with_eval", False):
-        input_data, label_data = get_test_data(config["test_data_path"])
-        eval_callback = PredictCallback(network, input_data, label_data, config=config, visual_fn=visual_result)
-        callbacks += [eval_callback]
-
+    loss_time_callback = LossAndTimeMonitor(epoch_steps)
+    callbacks = [loss_time_callback]
     if config["save_ckpt"]:
         config_ck = CheckpointConfig(save_checkpoint_steps=10, keep_checkpoint_max=2)
         prefix = 'pretrain_maxwell_frq1e9' if mode == "pretrain" else 'reconstruct_maxwell_frq1e9'
@@ -159,6 +161,8 @@ def piad2d(config, mode):
         callbacks += [ckpoint_cb]
 
     solver.train(config["train_epoch"], train_dataset, callbacks=callbacks, dataset_sink_mode=True)
+    assert loss_time_callback.get_loss() <= 2.0
+    assert loss_time_callback.get_step_time() <= 115.0
 
 
 def preprocess_config(config):
@@ -170,11 +174,11 @@ def preprocess_config(config):
     config["batch_size"] = batch_size_single_scenario * config["num_scenarios"]
     eps_list = []
     for eps in eps_candidates:
-        eps_list.extend([eps]*(batch_size_single_scenario*len(mu_candidates)))
+        eps_list.extend([eps] * (batch_size_single_scenario * len(mu_candidates)))
     mu_list = []
     for mu in mu_candidates:
-        mu_list.extend([mu]*batch_size_single_scenario)
-    mu_list = mu_list*(len(eps_candidates))
+        mu_list.extend([mu] * batch_size_single_scenario)
+    mu_list = mu_list * (len(eps_candidates))
 
     exp_name = "_" + config["Case"] + '_num_scenarios_' +  str(config["num_scenarios"]) \
                + "_latent_reg_" + str(config["latent_reg"])
@@ -186,21 +190,3 @@ def preprocess_config(config):
     print("check config: {}".format(config))
     config["eps_list"] = eps_list
     config["mu_list"] = mu_list
-
-if __name__ == '__main__':
-    print("pid:", os.getpid())
-    parser = argparse.ArgumentParser(description='Physical-informed Autodecoder Simulation')
-    parser.add_argument('--mode', type=str, default="pretrain", choices=["pretrain", "reconstruct"],
-                        help="Running mode options: pretrain or reconstruct")
-
-    opt = parser.parse_args()
-    if opt.mode == "pretrain":
-        configs = json.load(open("./config/pretrain.json"))
-    else:
-        configs = json.load(open("./config/reconstruct.json"))
-
-    time_beg = time.time()
-    preprocess_config(configs)
-    configs["load_ckpt"] = True if opt.mode == "reconstruct" else configs.get("load_ckpt", False)
-    piad2d(configs, opt.mode)
-    print("End-to-End total time: {} s".format(time.time() - time_beg))

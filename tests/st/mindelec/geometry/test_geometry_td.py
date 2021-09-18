@@ -185,13 +185,13 @@ def check_rect_with_time_init_config(rect_config, time_config):
         print("check domain points: {}".format(domain.shape))
     if config.bc is not None:
         if config.bc.with_normal:
-            bc, bc_normal = rect_with_time.sampling(geom_type="bc")
+            bc, bc_normal = rect_with_time.sampling(geom_type="BC")
             print("check bc points: {}, bc_normal: {}".format(bc.shape, bc_normal.shape))
         else:
-            bc = rect_with_time.sampling(geom_type="bc")
+            bc = rect_with_time.sampling(geom_type="BC")
             print("check bc points: {}".format(bc.shape))
     if config.ic is not None:
-        ic = rect_with_time.sampling(geom_type="ic")
+        ic = rect_with_time.sampling(geom_type="IC")
         print("check ic points: {}".format(ic.shape))
 
 
@@ -228,24 +228,24 @@ def check_rect_with_time_set_config(config):
             print("sampling KeyError")
     if config.bc is not None:
         if config.bc.with_normal:
-            bc, bc_normal = rect_with_time.sampling(geom_type="bc")
+            bc, bc_normal = rect_with_time.sampling(geom_type="BC")
             print("check bc points: {}, bc_normal: {}".format(bc.shape, bc_normal.shape))
             normal = copy.deepcopy(bc)
             normal[:, :2] = bc[:, :2] + bc_normal[:, :]
         else:
-            bc = rect_with_time.sampling(geom_type="bc")
+            bc = rect_with_time.sampling(geom_type="BC")
             print("check bc points: {}".format(bc.shape))
     else:
         try:
-            rect_with_time.sampling(geom_type="bc")
+            rect_with_time.sampling(geom_type="BC")
         except ValueError:
             print("sampling KeyError")
     if config.ic is not None:
-        ic = rect_with_time.sampling(geom_type="ic")
+        ic = rect_with_time.sampling(geom_type="IC")
         print("check ic points: {}".format(ic.shape))
     else:
         try:
-            rect_with_time.sampling(geom_type="ic")
+            rect_with_time.sampling(geom_type="IC")
         except ValueError:
             print("sampling KeyError")
 

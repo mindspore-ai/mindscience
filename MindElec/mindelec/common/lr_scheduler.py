@@ -27,11 +27,14 @@ class LearningRate(LearningRateSchedule):
     Warmup-decay learning rate.
 
     Args:
-        learning_rate (float): basic learning rate.
-        end_learning_rate (float): end learning rate.
-        warmup_steps (int): number of warmup steps.
-        decay_steps (int): A value used to calculate decayed learning rate.
-        power (float): A value used to calculate decayed learning rate. This parameter must be greater than 0.
+        learning_rate (float): positive float type number of basic learning rate.
+        end_learning_rate (float): non-negtive float type number of end learning rate.
+        warmup_steps (int): non-negtive int type number of warmup steps.
+        decay_steps (int): A positive int value used to calculate decayed learning rate.
+        power (float): A positive float value used to calculate decayed learning rate.
+
+    Inputs:
+       Tesnor. The current step number with shape `()`.
 
     Returns:
        Tensor. The learning rate value for the current step with shape `()`.
@@ -41,8 +44,10 @@ class LearningRate(LearningRateSchedule):
 
     Examples:
         >>> from mindelec.common import LearningRate
+        >>> from mindspore.common.tensor import Tensor
+        >>> from mindspore.common import dtype as mstype
         >>> lr = LearningRate(0.1, 0.001, 0, 10, 0.5)
-        >>> print(lr(1000))
+        >>> print(lr(Tensor(1000, mstype.int32)))
         0.001
     """
     def __init__(self, learning_rate, end_learning_rate, warmup_steps, decay_steps, power):
@@ -81,13 +86,13 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
     generate learning rate array
 
     Args:
-       global_step(int): current step
-       lr_init(float): init learning rate
-       lr_end(float): end learning rate
-       lr_max(float): max learning rate
-       warmup_steps(int): number of warmup epochs
-       total_steps(int): total epoch of training
-       poly_power(float): poly learning rate power
+       global_step(int): current step number, non-negtive int value.
+       lr_init(float): init learning rate, positive float value.
+       lr_end(float): end learning rate, non-negtive float value.
+       lr_max(float): max learning rate, positive float value.
+       warmup_steps(int): number of warmup epochs, non-negtive int value.
+       total_steps(int): total epoch of training, positive int value.
+       poly_power(float): poly learning rate power, positive float value.
 
     Returns:
        Numpy.array, learning rate array

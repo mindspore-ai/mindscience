@@ -45,7 +45,7 @@ class PartSamplingConfig:
         >>> partsampling = PartSamplingConfig(100, True, "uniform", True, True)
     """
     def __init__(self, size, random_sampling=True, sampler="uniform", random_merge=True, with_normal=False):
-        if random_sampling and not isinstance(size, int):
+        if random_sampling and (not isinstance(size, int) or isinstance(size, bool)):
             raise TypeError("The sample size: {} should be int number when random sampling, but got: {}"
                             .format(size, type(size)))
         self.random_sampling = random_sampling
@@ -107,8 +107,10 @@ class Geometry:
     Args:
         name (str): name of the geometry.
         dim (int): number of dimensions.
-        coord_min (Union[list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of the geometry.
-        coord_max (Union[list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of the geometry.
+        coord_min (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of
+            the geometry.
+        coord_max (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of
+            the geometry.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: None
 
@@ -129,10 +131,11 @@ class Geometry:
         if not isinstance(name, str):
             raise TypeError("geometry name must be string, but got: {}, type: {}".format(name, type(name)))
         self.name = name
-        if not isinstance(dim, int):
+        if not isinstance(dim, int) or isinstance(dim, bool):
             raise TypeError("dim type should be integer, but got dim: {}, type: {}".format(dim, type(dim)))
         self.dim = dim
-
+        if self.dim <= 0:
+            raise ValueError("dimension should not be non-positive, but got dim: {}".format(self.dim))
         if isinstance(coord_min, (int, float)):
             coord_min = [coord_min]
         if isinstance(coord_max, (int, float)):
@@ -146,8 +149,9 @@ class Geometry:
                 raise TypeError("element for coord should be int or float, but got ele: {}, type: {}".format(
                     ele, type(ele)))
         if len(coord_min) != self.dim or len(coord_max) != self.dim:
-            raise ValueError("Inconsistent dimension info, dim: {}, coord_min: {}, coord_max: {}".format(
-                dim, coord_min, coord_max))
+            raise ValueError("dimension of coordinates array must be equal with dim, but got dim: {},"
+                             "coord_min: {} with length {}, coord_max {} with length {}".format(
+                                 dim, coord_min, len(coord_min), coord_max, len(coord_max)))
         if np.any(self.coord_max - self.coord_min <= 0.0):
             raise ValueError("coord_min should be smaller than coord_max, but got coord_min: {}, coor_max: {}".format(
                 self.coord_min, self.coord_max))
@@ -156,7 +160,7 @@ class Geometry:
             raise TypeError("Unsupported datatype: {}, only: {} are supported".format(dtype, DATA_TYPES))
         self.dtype = dtype
         if sampling_config is not None and not isinstance(sampling_config, SamplingConfig):
-            raise TypeError("sampling_config: {} should be instance of class SamplingConfig, bug got: {}".format(
+            raise TypeError("sampling_config should be instance of SamplingConfig, bug got {} with type {}".format(
                 sampling_config, type(sampling_config)
             ))
         self.sampling_config = sampling_config
@@ -275,7 +279,7 @@ def _check_geom_type(part_sampling_dict):
 def _check_size_type(geom):
     """check size type of specified geometry"""
     if geom is not None and not geom.random_sampling:
-        if isinstance(geom.size, int):
+        if isinstance(geom.size, int) and not isinstance(geom.size, bool):
             geom.size = [geom.size]
         if not isinstance(geom.size, (list, tuple)):
             raise ValueError("The sample size: {} should be type of list/tuple which length equal to the geom's "

@@ -66,11 +66,11 @@ def test_check_csg_union():
             sampling_config_csg.BC.sampler = samplers
 
         union.set_sampling_config(create_config_from_edict(sampling_config_csg2))
-        bc = union.sampling(geom_type="bc")
+        bc = union.sampling(geom_type="BC")
 
         union.set_sampling_config(create_config_from_edict(sampling_config_csg))
         domain = union.sampling(geom_type="domain")
-        bc, bc_normal = union.sampling(geom_type="bc")
+        bc, bc_normal = union.sampling(geom_type="BC")
         print(bc, bc_normal, domain)
 
 @pytest.mark.level0
@@ -92,11 +92,11 @@ def test_check_csg_difference():
             sampling_config_csg.BC.sampler = samplers
 
         difference.set_sampling_config(create_config_from_edict(sampling_config_csg2))
-        bc = difference.sampling(geom_type="bc")
+        bc = difference.sampling(geom_type="BC")
 
         difference.set_sampling_config(create_config_from_edict(sampling_config_csg))
         domain = difference.sampling(geom_type="domain")
-        bc, bc_normal = difference.sampling(geom_type="bc")
+        bc, bc_normal = difference.sampling(geom_type="BC")
         print(bc, bc_normal, domain)
 
 
@@ -119,11 +119,11 @@ def test_check_csg_intersection():
             sampling_config_csg.BC.sampler = samplers
 
         intersec.set_sampling_config(create_config_from_edict(sampling_config_csg2))
-        bc = intersec.sampling(geom_type="bc")
+        bc = intersec.sampling(geom_type="BC")
 
         intersec.set_sampling_config(create_config_from_edict(sampling_config_csg))
         domain = intersec.sampling(geom_type="domain")
-        bc, bc_normal = intersec.sampling(geom_type="bc")
+        bc, bc_normal = intersec.sampling(geom_type="BC")
         print(bc, bc_normal, domain)
 
 
@@ -146,11 +146,11 @@ def test_check_csg_xor():
             sampling_config_csg.BC.sampler = samplers
 
         xor.set_sampling_config(create_config_from_edict(sampling_config_csg2))
-        bc = xor.sampling(geom_type="bc")
+        bc = xor.sampling(geom_type="BC")
 
         xor.set_sampling_config(create_config_from_edict(sampling_config_csg))
         domain = xor.sampling(geom_type="domain")
-        bc, bc_normal = xor.sampling(geom_type="bc")
+        bc, bc_normal = xor.sampling(geom_type="BC")
         print(bc, bc_normal, domain)
 
 
@@ -229,7 +229,7 @@ def test_check_point_src_csg():
 
     no_src_region.set_sampling_config(create_config_from_edict(no_src_sampling_config))
     with pytest.raises(KeyError):
-        no_src_region.sampling(geom_type="bc")
+        no_src_region.sampling(geom_type="BC")
 
     no_src_region.set_sampling_config(create_config_from_edict(no_src_sampling_config1))
     with pytest.raises(KeyError):
@@ -237,4 +237,4 @@ def test_check_point_src_csg():
     with pytest.raises(ValueError):
         no_src_region.sampling(geom_type="test")
 
-    no_src_region.sampling(geom_type="bc")
+    no_src_region.sampling(geom_type="BC")

@@ -20,7 +20,7 @@ import numpy as np
 import numpy.linalg as LA
 from mindspore import log as logger
 
-from .geometry_base import Geometry, DATA_TYPES
+from .geometry_base import Geometry, DATA_TYPES, GEOM_TYPES
 from .geometry_nd import HyperCube
 from .utils import sample, polar_sample, generate_mesh
 
@@ -56,15 +56,19 @@ class Disk(Geometry):
     """
     def __init__(self, name, center, radius, dtype=np.float32, sampling_config=None):
         self.sampling_config = sampling_config
-        if not isinstance(center, (np.ndarray, tuple, list)) or len(center) != 2:
-            raise ValueError("Disk: {}'s center should be tuple or list of length 2, but got: {}".format(name, center))
+        if not isinstance(center, (np.ndarray, tuple, list)):
+            raise TypeError("Disk: {}'s center should be tuple or list, but got: {}, type: {}".format(
+                name, center, type(center)))
         self.center = np.array(center)
+        if len(self.center) != 2:
+            raise ValueError("Disk: {}'s center should be 2D array, but got: {}, dim: {}".format(
+                name, self.center, len(self.center)))
         for ele in self.center:
             if not isinstance(ele, DATA_TYPES):
                 raise TypeError("data type of center should be int/float, but got: {}, type: {}".format(
                     self.center, type(ele)
                 ))
-        if not isinstance(radius, (int, float)):
+        if not isinstance(radius, (int, float)) or isinstance(radius, bool):
             raise TypeError("data type of radius should be int/float, but got: {}, type: {}".format(
                 radius, type(radius)
             ))
@@ -163,6 +167,10 @@ class Disk(Geometry):
         if config is None:
             raise ValueError("Sampling config for {}:{} is None, please call set_sampling_config method to set".format(
                 self.geom_type, self.name))
+        if not isinstance(geom_type, str):
+            raise TypeError("geom type shouild be string, but got {} with type {}".format(geom_type, type(geom_type)))
+        if geom_type not in GEOM_TYPES:
+            raise ValueError("Unknown geom type: {}, only {} are supported now".format(geom_type, GEOM_TYPES))
         if geom_type.lower() == "domain":
             if config.domain is None:
                 raise KeyError("Sampling config for domain of {}:{} should not be none"
