@@ -80,7 +80,6 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 > - `{version}` denotes the version of MindElec. For example, when you are installing MindElec 0.1.0, `{version}` should be 0.1.0.
 > - `{arch}` denotes the system architecture. For example, the Linux system you are using is x86 architecture 64-bit, `{arch}`should be x86_64. If the system is ARM architecture 64-bit, then it should be aarch64.
 > - `{python_version}` specifies the python version of which MindElec is built. If you wish to use Python3.7.5, `{python_version}` should be cp37_cp37m. If Python3.9.0 is used, it should be cp39_cp39.
-> - When the network is connected, dependencies of the MindElec installation package are automatically downloaded during the .whl package installation. For details about dependencies, see [setup.py](https://gitee.com/mindspore/mindscience/blob/master/MindElec/setup.py). In other cases, install the dependencies by yourself.
 
 ### Installing Using Source Code
 
@@ -101,7 +100,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 
 ## API
 
-For details about MindElec APIs, see the [API](https://www.mindspore.cn/mindelec/api/en/master/index.html) page.
+For details about MindElec APIs, see the [API](https://www.mindspore.cn/mindscience/api/en/master/mindelec.html) page.
 
 ## Installation Verification
 
@@ -113,11 +112,11 @@ python -c 'import mindelec'
 
 ## Quick Start
 
-For details about how to quickly use the AI electromagnetic simulation toolkit for training and inference, see [MindElec Guide](https://www.mindspore.cn/mindelec/docs/en/master/index.html).
+For details about how to quickly use the AI electromagnetic simulation toolkit for training and inference, see [MindElec Guide](https://www.mindspore.cn/mindscience/docs/en/master/mindelec/intro_and_install.html).
 
 ## Documents
 
-For more details about the installation guides, tutorials, and APIs, see [MindElec Documents](https://gitee.com/mindspore/docs).
+For more details about the installation guides, tutorials, and APIs, see [MindElec Documents](https://gitee.com/mindspore/docs/tree/master/docs/mindscience).
 
 ## Community
 
