@@ -15,21 +15,9 @@
 """
 init
 """
-from .architecture import *
-from .geometry import *
 from .solver import *
-from .loss import *
-from .data import *
 from .common import *
-from .operators import *
-from .vision import *
 
 __all__ = []
-__all__.extend(architecture.__all__)
-__all__.extend(geometry.__all__)
 __all__.extend(solver.__all__)
-__all__.extend(loss.__all__)
-__all__.extend(data.__all__)
 __all__.extend(common.__all__)
-__all__.extend(operators.__all__)
-__all__.extend(vision.__all__)

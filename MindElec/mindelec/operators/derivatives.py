@@ -263,7 +263,7 @@ class Jacobian(nn.Cell):
 
         Examples:
             >>> import numpy as np
-            >>> from mindelec import Jacobian
+            >>> from mindelec.operators import Jacobian
             >>> from mindspore import Tensor
             >>> def func(x, y):
             >>>     return (x * x * x * y + 3 * y * y * x).sum()
@@ -353,7 +353,7 @@ class Hessian(nn.Cell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindelec import Hessian
+        >>> from mindelec.operators import Hessian
         >>> from mindspore import Tensor
         >>> def func(x, y):
         >>>     return (x * x * x * y + 3 * y * y * x).sum()
