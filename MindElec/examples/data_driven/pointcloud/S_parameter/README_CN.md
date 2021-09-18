@@ -3,6 +3,7 @@
 - [目录](#目录)
 - [点云散射参数预测](#点云散射参数预测)
 - [数据集](#数据集)
+- [环境要求](#环境要求)
 - [脚本说明](#脚本说明)
     - [脚本及样例代码](#脚本及样例代码)
     - [脚本参数](#脚本参数)
@@ -19,7 +20,17 @@
 
 ## 数据集
 
-使用src/dataset.py中的“generate_data”函数可以自动读取点云数据预处理制作用于训练数据数据集。
+基于[点云数据生成](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/generate_pointcloud)和[点云数据压缩](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/data_compression)生成散射参数预测输入数据。而标签数据需要使用商业仿真软件或者时域有限差分算法生成。
+
+## 环境要求
+
+- 硬件（Ascend）
+    - 准备Ascend处理器搭建硬件环境。
+- 框架
+    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+- 如需查看详情，请参见如下资源：
+    - [MindELec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
+    - [MindElec Python API](https://www.mindspore.cn/mindscience/api/zh-CN/master/mindelec.html)
 
 ## 脚本说明
 
@@ -76,11 +87,11 @@ python eval.py  --input_path TEST_INPUT_PATH
                 --output_path OUTPUT_PATH
 ```
 
-评估过程中会实时输出各个结构预测值与真实标签之间的L2误差，同时预测结果也会保存在输出目录下用于进一步的结果可视化。
+评估过程中会实时绘制预测值与真时值的对比图，并保存在输出目录下。
 
 ## 随机情况说明
 
-dataset.py中设置了“create_dataset”函数内的种子，同时还设置了“generate_data”随机划分训练测试集中的随机种子。
+train.py中设置了“create_dataset”函数内的种子。
 
 ## MindScience主页
 
