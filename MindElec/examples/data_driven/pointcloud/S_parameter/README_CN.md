@@ -22,6 +22,8 @@
 
 基于[点云数据生成](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/generate_pointcloud)和[点云数据压缩](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/data_compression)生成散射参数预测输入数据。而标签数据需要使用商业仿真软件或者时域有限差分算法生成。
 
+本示例中模型训练数据涉及商业机密，无法提供下载地址，开发者可以使用`src/sampling.py`生成用于功能验证的伪数据。
+
 ## 环境要求
 
 - 硬件（Ascend）
@@ -46,6 +48,7 @@
     ├─metric.py                      ## 评估指标
     ├─model.py                       ## 网络模型
     ├─lr_generator.py                ## 学习率生成
+    ├─sampling.py                    ## 伪数据生成
   ├──train.py                        ## 训练网络
   ├──eval.py                         ## 评估网络
 ```
@@ -69,7 +72,6 @@
 ``` shell
 python train.py --train_input_path TRAIN_INPUT_PATH
                 --train_label_path TRAIN_LABEL_PATH
-                --data_config_path DATA_CONFIG_PATH
                 --device_num 0
                 --checkpoint_dir CKPT_PATH
 ```

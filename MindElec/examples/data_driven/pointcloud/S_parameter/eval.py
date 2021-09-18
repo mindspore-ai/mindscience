@@ -15,18 +15,20 @@
 """
 eval
 """
-import os
 import argparse
 import numpy as np
 
+import mindspore.nn as nn
 from mindspore.common import set_seed
 from mindspore import context
 from mindspore import load_checkpoint
-import mindspore.dataset as ds
 
 from src.model import S11Predictor
-from src.metric import l2_error_np
+from src.metric import EvalMetric
 from src.config import config
+from src.dataset import create_dataset
+
+from mindelec.solver import Solver
 
 set_seed(0)
 np.random.seed(0)
@@ -37,7 +39,7 @@ parser.add_argument('--label_path', type=str)
 parser.add_argument('--data_config_path', default='./src/data_config.npz', type=str)
 parser.add_argument('--device_num', type=int, default=1)
 parser.add_argument('--model_path', help='checkpoint directory')
-parser.add_argument('--output_path', default="./")
+parser.add_argument('--output_path', default="./eval_result")
 
 opt = parser.parse_args()
 context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend", device_id=opt.device_num)
@@ -51,38 +53,34 @@ def evaluation():
 
     data_config = np.load(opt.data_config_path)
     scale_s11 = data_config["scale_s11"]
-    input_data = np.load(opt.input_path)
-    label_data = np.load(opt.label_path)
-    label_predict = np.zeros(label_data.shape)
 
-    def create_dataset(net_input, net_label, batch_size=16, num_workers=4, shuffle=False):
-        data = (net_input, net_label)
-        dataset = ds.NumpySlicesDataset(data, column_names=["data", "label"], shuffle=shuffle)
-        dataset = dataset.batch(batch_size=batch_size, num_parallel_workers=num_workers)
-        return dataset
-
-    data_loader = create_dataset(input_data, label_data, batch_size=config['batch_size'])
+    eval_dataset = create_dataset(input_path=opt.input_path,
+                                  label_path=opt.label_path,
+                                  batch_size=config["batch_size"],
+                                  shuffle=False)
 
     model_net.set_train(False)
 
-    label_predict = np.zeros(label_data.shape)
-    i = 0
-    for iter_data in data_loader.create_dict_iterator():
-        test_input_space, test_label = iter_data["data"], iter_data["label"]
-        test_predict = model_net(test_input_space).asnumpy()
-        test_label = test_label.asnumpy()
-        for i in range(test_label.shape[0]):
-            predict_tmp = test_predict[i, :]
-            label_tmp = test_label[i, :]
-            label_real_tmp = 1.0 - np.power(10, label_tmp * scale_s11)
-            predict_real_tmp = 1.0 - np.power(10, predict_tmp * scale_s11)
+    eval_ds_size = eval_dataset.get_dataset_size() * config["batch_size"]
 
-            print("error for %i input: %s" %(i, l2_error_np(label_real_tmp, predict_real_tmp)))
-            label_predict[i] = label_real_tmp
-            i += 1
+    eval_error_mrc = EvalMetric(scale_s11=scale_s11,
+                                length=eval_ds_size,
+                                frequency=np.linspace(0, 4*10**8, 1001),
+                                show_pic_number=4,
+                                file_path=opt.output_path)
 
-    np.save(os.path.join(opt.output_path, "predicted_label.npy"), label_predict)
-    print("predicted S parameter saved in %s" %opt.output_path)
+    solver = Solver(network=model_net,
+                    mode="Data",
+                    optimizer=nn.Adam(model_net.trainable_params(), 0.001),
+                    metrics={'eval_mrc': eval_error_mrc},
+                    loss_fn=nn.MSELoss())
+
+    res_eval = solver.model.eval(valid_dataset=eval_dataset, dataset_sink_mode=True)
+
+    loss_mse, l2_s11 = res_eval["eval_mrc"]["loss_error"], res_eval["eval_mrc"]["l2_error"]
+    print(f'Loss_mse: {loss_mse:.10f}  ',
+          f'L2_S11: {l2_s11:.10f}')
+
 
 if __name__ == '__main__':
     evaluation()

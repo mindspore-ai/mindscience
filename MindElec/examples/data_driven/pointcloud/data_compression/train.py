@@ -115,6 +115,5 @@ def train():
                 min_loss = min_l1_error
                 save_checkpoint(model_net, os.path.join(opt.checkpoint_dir, 'model_best.ckpt'))
 
-
 if __name__ == '__main__':
     train()

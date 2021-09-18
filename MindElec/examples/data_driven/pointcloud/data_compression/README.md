@@ -37,6 +37,8 @@ To solve this problem, we propose a neural network-based compression model to co
 
 Use the `generate_data` function in `src/dataset.py` to automatically obtain 25 x 50 x 25 block data from the original point cloud data for training or testing.
 
+The model training data in this example involves commercial secrets and the download address cannot be provided. The developer can use `src/sampling.py` to generate pseudo data for functional verification.
+
 # **Requirements**
 
 - Hardware (Ascend)
@@ -60,6 +62,7 @@ Use the `generate_data` function in `src/dataset.py` to automatically obtain 25 
     ├─metric.py                      # Evaluation Indicator
     ├─model.py                       # Model
     ├─lr_generator.py                # Learning rate generation
+    ├─sampling.py                    # pseudo data generation
   ├──train.py                        # Self-supervised training compression model
   ├──data_compress.py                # Block-wise data compression
 ```
