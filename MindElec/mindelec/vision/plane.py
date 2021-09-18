@@ -27,7 +27,7 @@ def plot_s11(s11_tensor, path_image_save, legend, dpi=300):
     Draw s11-frequency curve and save it in path_image_save.
 
     Args:
-        s11_tensor (numpy.array): s11 data (shape: (dim_frequency, 2)).
+        s11_tensor (numpy.ndarray): s11 data (shape: (dim_frequency, 2)).
         path_image_save (str): s11-frequency curve saved path.
         legend (str): the legend of s11, plotting parameters.
         dpi (int): plotting parameters. Default: 300.
