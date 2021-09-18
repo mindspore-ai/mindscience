@@ -61,7 +61,7 @@ def plot_s11(s11_tensor, path_image_save, legend, dpi=300):
     if not isinstance(dpi, int):
         raise TypeError("The type of dpi must be int, but get {}".format(type(dpi)))
     if dpi <= 0:
-        raise ValueError("dpi must be > 0.")
+        raise ValueError("dpi must be > 0, but get {}".format(dpi))
 
     shape_s11_all = s11_tensor.shape
     if len(shape_s11_all) != 2 or shape_s11_all[-1] != 2:
@@ -111,16 +111,16 @@ def plot_eh(simu_res_tensor, path_image_save, z_index, dpi=300):
     if not isinstance(z_index, int):
         raise TypeError("The type of z_index must be int, but get {}".format(type(z_index)))
     if z_index <= 0:
-        raise ValueError("z_index must be > 0.")
+        raise ValueError("z_index must be > 0, but get {}".format(z_index))
 
     if not isinstance(dpi, int):
         raise TypeError("The type of dpi must be int, but get {}".format(type(dpi)))
     if dpi <= 0:
-        raise ValueError("dpi must be > 0.")
+        raise ValueError("dpi must be > 0, but get {}".format(dpi))
 
     shape_simulation_res = simu_res_tensor.shape
     if len(shape_simulation_res) != 5 or shape_simulation_res[-1] != 6:
-        raise ValueError("path_simu_res shape should be (dim_t, dim_x, dim_y, dim_z, 6), but get {}"
+        raise ValueError("simu_res_tensor shape should be (dim_t, dim_x, dim_y, dim_z, 6), but get {}"
                          .format(shape_simulation_res))
 
     plot_order = ['Ex', 'Ey', 'Ez', 'Hx', 'Hy', 'Hz']
