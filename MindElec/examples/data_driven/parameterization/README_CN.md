@@ -84,9 +84,9 @@
 
 ```shell
 python train.py --input_path INPUT_PATH
-    --label_path LABEL_PATH
-    --device_num 0
-    --checkpoint_dir CKPT_PATH
+                --label_path LABEL_PATH
+                --device_num 0
+                --checkpoint_dir CKPT_PATH
 ```
 
 # 随机情况说明
