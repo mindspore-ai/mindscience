@@ -57,7 +57,7 @@ class NetWithLoss(nn.Cell):
         latent_reg (float): The regularization coefficient of latent vector. Default: 0.01.
 
     Inputs:
-        - **inputs** - The input is variable-length argument which contains network inputs.
+        - **inputs** (Tensor) - The input is variable-length argument which contains network inputs.
 
     Outputs:
         Tensor, a scalar tensor with shape :math:`()`.
@@ -185,7 +185,7 @@ class NetWithEval(nn.Cell):
         dataset_input_map (dict): The input map of the dataset Defaults: None.
 
     Inputs:
-        - **inputs** - The input is variable-length argument which contains network inputs and label.
+        - **inputs** (Tensor) - The input is variable-length argument which contains network inputs and label.
 
     Outputs:
         Tuple, containing a scalar loss Tensor, a network output Tensor of shape :math:`(N, \ldots)` and a label Tensor

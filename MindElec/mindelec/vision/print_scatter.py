@@ -25,7 +25,7 @@ def print_graph_1d(name, x, path, clear=True):
 
     Args:
         name (str): name of the graph.
-        x (numpy.array): data to draw (shape (dim_print,)).
+        x (numpy.ndarray): data to draw (shape (dim_print,)).
         path (str): save path of the graph.
         clear (bool): specifies whether clear the current axes. Default: True.
 
@@ -71,8 +71,8 @@ def print_graph_2d(name, x, y, path, clear=True):
 
     Args:
         name (str): name of the graph.
-        x (numpy.array): data x to draw (shape (dim_print,)).
-        y (numpy.array): data y to draw (shape (dim_print,)).
+        x (numpy.ndarray): data x to draw (shape (dim_print,)).
+        y (numpy.ndarray): data y to draw (shape (dim_print,)).
         path (str): save path of the graph.
         clear (bool): specifies whether clear the current axes. Default: True.
 

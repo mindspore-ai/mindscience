@@ -24,8 +24,8 @@ def vtk_structure(grid_tensor, eh_tensor, path_res):
     Generates 3D vtk file for visualizaiton.
 
     Args:
-        grid_tensor (numpy.array): grid data (shape: (dim_t, dim_x, dim_y, dim_z, 4)).
-        eh_tensor (numpy.array): electric and magnetic data (np.array, shape: (dim_t, dim_x, dim_y, dim_z, 6)).
+        grid_tensor (numpy.ndarray): grid data (shape: (dim_t, dim_x, dim_y, dim_z, 4)).
+        eh_tensor (numpy.ndarray): electric and magnetic data (np.array, shape: (dim_t, dim_x, dim_y, dim_z, 6)).
         path_res (str): save path for the output vtk file.
 
     Supported Platforms:
