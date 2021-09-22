@@ -1,9 +1,9 @@
-# Table of Contents
+# Contents
 
 <!-- TOC -->
 
-- [Table of Contents](#table-of-contents)
-- [Point Cloud Data Scattering Parameters Prediction](#point-cloud-data-scattering-parameters-prediction)
+- [Contents](#contents)
+- [Scattering Parameters Prediction based on Point Cloud Data](#scattering-parameters-prediction-based-on-point-cloud-data)
 - [Dataset](#dataset)
 - [Environment Requirements](#environment-requirements)
 - [Script Description](#script-description)
@@ -16,9 +16,11 @@
 
 <!-- /TOC -->
 
-# Point Cloud Data Scattering Parameters Prediction
+# Scattering Parameters Prediction based on Point Cloud Data
 
-The conventional electromagnetic simulation method is based on finite element method or finite difference method, which requires a lot of iterative calculation, leads to a long time of calculation and cannot meet the requirements of modern product design for simulation efficiency. The AI method directly obtains scattering parameters through end-to-end simulation calculation, skipping iterative calculation, greatly improving the simulation speed and shortening the product R&D period.
+The classic electromagnetic simulation method is based on finite element method or finite difference method, which requires a lot of iterative calculation, leads to a long time of calculation and cannot meet the requirements of modern product design for simulation efficiency. The AI method directly obtains scattering parameters through end-to-end simulation calculation, skipping iterative calculation, greatly improving the simulation speed and shortening the product R&D period.
+
+In certain product design scenarios, the target structure cannot be described by a fixed set of parameters. For these scenarios, we propose a AI calculation method based on point cloud data for , which can predict the scattering parameters of any complex structure (mobile phone, PCB board, etc.).
 
 # Dataset
 
@@ -71,7 +73,7 @@ You can configure training parameters in the `src/config.py` file.
 
 You can train the data compression model through the `train.py`, and the model parameters will be automatically saved after the training.
 
-``` shell
+```shell
 python train.py --train_input_path TRAIN_INPUT_PATH
                 --train_label_path TRAIN_LABEL_PATH
                 --device_num 0
@@ -82,7 +84,7 @@ python train.py --train_input_path TRAIN_INPUT_PATH
 
 After the model training process, you can start the evaluation process through `eval.py`.
 
-``` shell
+```shell
 python eval.py  --input_path TEST_INPUT_PATH
                 --label_path TEST_LABEL_PATH
                 --data_config_path DATA_CONFIG_PATH

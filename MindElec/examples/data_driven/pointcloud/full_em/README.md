@@ -1,8 +1,8 @@
-# Table of Contents
+# Contents
 
 <!-- TOC -->
 
-- [Table of Contents](#table-of-contents)
+- [Contents](#contents)
 - [Point Cloud Data Electromagnetic Simulation](#point-cloud-data-electromagnetic-simulation)
 - [Dataset](#dataset)
 - [Environment Requirements](#environment-requirements)

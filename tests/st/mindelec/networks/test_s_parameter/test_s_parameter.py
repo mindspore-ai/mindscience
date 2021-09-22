@@ -36,8 +36,8 @@ np.random.seed(0)
 
 context.set_context(mode=context.GRAPH_MODE,
                     save_graphs=False,
-                    device_target="Ascend",
-                    device_id=0)
+                    device_target="Ascend")
+
 
 class TimeMonitor(Callback):
     """

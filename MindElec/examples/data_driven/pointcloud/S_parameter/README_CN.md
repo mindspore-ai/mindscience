@@ -14,15 +14,17 @@
 - [随机情况说明](#随机情况说明)
 - [MindScience主页](#mindscience主页)
 
-## 点云散射参数预测
+## 点云预测散射参数
 
-传统电磁仿真计算方法基于有限元或有限差分方法，计算过程中需要进行大量迭代计算，导致计算时间长，无法满足现代产品设计对仿真效率的需求。AI方法通过端到端仿真计算直接计算目标结构散射参数，可以大幅提升仿真速度，缩短产品的研发周期。
+传统电磁仿真计算基于有限元或有限差分方法，计算过程中需要进行大量迭代计算，导致计算时间长，无法满足现代产品设计对仿真效率的需求。AI方法通过端到端仿真计算可以跳过迭代计算直接得出目标结构散射参数，大幅提升仿真速度，缩短产品的研发周期。
+
+某些产品设计场景中目标结构无法用固定的一组参数来描述，针对这些场景我们提出基于点云张量数据的散射参数AI计算方法，该方法可以预测任意复杂结构（手机、PCB板等）的散射参数。
 
 ## 数据集
 
-基于[点云数据生成](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/generate_pointcloud)和[点云数据压缩](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/data_compression)生成散射参数预测输入数据。而标签数据需要使用商业仿真软件或者时域有限差分算法生成。
+基于[点云数据生成](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/generate_pointcloud)和[点云数据压缩](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/data_compression)生成散射参数预测模型的输入数据，对应的标签需要使用商业仿真软件或者时域有限差分算法生成。
 
-本示例中模型训练数据涉及商业机密，无法提供下载地址，开发者可以使用`src/sampling.py`生成用于功能验证的伪数据。
+本示例中模型的训练数据涉及商业机密，无法提供下载地址，开发者可以使用`src/sampling.py`生成用于功能验证的伪数据。
 
 ## 环境要求
 
@@ -31,7 +33,7 @@
 - 框架
     - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindELec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
+    - [MindElec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
     - [MindElec Python API](https://www.mindspore.cn/mindscience/api/zh-CN/master/mindelec.html)
 
 ## 脚本说明
