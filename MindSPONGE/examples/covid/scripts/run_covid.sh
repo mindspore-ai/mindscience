@@ -50,7 +50,6 @@ S2 heat
   mode = nvt
   step_limit = 100000
   dt = 1e-3
-  constrain_mode = simple_constrain
   target_temperature = 300.0
   write_information_interval = 1000
   cutoff = 10.0
