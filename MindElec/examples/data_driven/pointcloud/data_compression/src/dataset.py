@@ -24,7 +24,7 @@ set_seed(0)
 
 PATCH_DIM = [25, 50, 25]
 NUM_SAMPLE = 10000
-INPUT_PATH = "/data2/dataset/phone_data/sampling_output_528.npy"
+INPUT_PATH = ""
 DATA_CONFIG_PATH = "./data_config.npy"
 SAVE_DATA_PATH = "./"
 

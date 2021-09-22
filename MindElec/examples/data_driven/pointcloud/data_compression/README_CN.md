@@ -37,6 +37,8 @@
 
 使用src/dataset.py中的generate_data函数可以自动从原始点云数据中随机取出 25 x 50 x 25 的块数据用于训练或者测试
 
+本示例中模型训练数据涉及商业机密，无法提供下载地址，开发者可以使用`src/sampling.py`生成用于功能验证的伪数据。
+
 # 环境要求
 
 - 硬件（Ascend）
@@ -60,6 +62,7 @@
     ├─metric.py                      # 评估指标
     ├─model.py                       # 网络模型
     ├─lr_generator.py                # 学习率生成
+    ├─sampling.py                    # 伪数据生成
   ├──train.py                        # 自监督训练压缩模型
   ├──data_compress.py                # 数据分块压缩
 ```

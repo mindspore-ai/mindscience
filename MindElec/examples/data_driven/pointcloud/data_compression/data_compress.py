@@ -36,7 +36,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--device_num', type=int, default=1)
 parser.add_argument('--input_path', type=str)
 parser.add_argument('--model_path', type=str)
-parser.add_argument('--data_config_path', type=str)
+parser.add_argument('--data_config_path', type=str, default="./src/data_config.npy")
 parser.add_argument('--output_save_path', type=str, default="./")
 
 

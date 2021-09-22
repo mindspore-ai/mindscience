@@ -16,11 +16,11 @@
 
 import os
 import shutil
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
 import mindspore.nn as nn
 from mindspore.ops import functional as F
+import matplotlib.pyplot as plt
+import numpy as np
+import cv2
 
 class MyMSELoss(nn.LossBase):
     """mse loss function"""
