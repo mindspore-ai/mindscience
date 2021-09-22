@@ -90,9 +90,9 @@ You can use the train.py script to train a parameterized electromagnetic simulat
 
 ```shell
 python train.py --input_path INPUT_PATH
-    --label_path LABEL_PATH
-    --device_num 0
-    --checkpoint_dir CKPT_PATH
+                --label_path LABEL_PATH
+                --device_num 0
+                --checkpoint_dir CKPT_PATH
 ```
 
 # Random Seed Setting

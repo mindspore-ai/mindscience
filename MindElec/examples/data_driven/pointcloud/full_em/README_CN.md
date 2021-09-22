@@ -18,14 +18,14 @@
 
 # 数据集
 
-基于[点云数据生成](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/generate_pointcloud)和[点云数据压缩](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/data_compression)生成电磁场输入数据，再调用`src/inputs_process.py`将输入数据绑定坐标和源位置信息。而训练的标签数据需要使用商业仿真软件或者时域有限差分算法生成，再调用`src/label_process.py`处理得到最终的标签。
+基于[点云数据生成](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/generate_pointcloud)和[点云数据压缩](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/data_compression)生成电磁场输入数据，再调用`src/inputs_process.py`将输入数据绑定坐标和源位置信息。而标签数据需要使用商业仿真软件或者时域有限差分算法生成，再调用`src/label_process.py`处理得到最终的标签。我们训练过程中使用的手机数据涉及商业机密，所以无法对外展示，可以使用`src/sample.py`脚本生成随机数据用于模型功能验证。
 
 # 环境要求
 
 - 硬件（Ascend）
     - 准备Ascend处理器搭建硬件环境。
 - 框架
-    - [MindELec](https://gitee.com/mindspore/mindscience/MindElec)
+    - [MindELec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - 如需查看详情，请参见如下资源：
     - [MindELec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
     - [MindElec Python API](https://www.mindspore.cn/mindscience/api/zh-CN/master/mindelec.html)
