@@ -29,9 +29,9 @@ from mindspore.ops import operations as P
 from mindspore.common.initializer import initializer
 from mindspore.common.initializer import Normal
 
-from cybertron.blocks import MLP, Dense
-from cybertron.base import SoftmaxWithMask
-from cybertron.base import MultiheadAttention
+from .blocks import MLP, Dense
+from .base import SoftmaxWithMask
+from .base import MultiheadAttention
 
 __all__ = [
     "Aggregator",

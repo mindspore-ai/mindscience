@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 '''Simulation'''
-import sys
 import numpy as np
 
 import mindspore.numpy as msnp
@@ -27,19 +26,17 @@ from mindspore.ops import operations as P
 from mindspore.ops import constexpr
 from mindspore.ops import composite as C
 
-from potential.angle import Angle
-from potential.bond import Bond
-from potential.dihedral import Dihedral
-from potential.lennard_jones import LennardJonesInformation
-from potential.nb14 import NonBond14
-from potential.particle_mesh_ewald import ParticleMeshEwald
-from control.langevin_liujian_md import LangevinLiujian
-from space.md_information import MdInformation
-from partition.neighbor_list import NeighborList
-from cybertron.meta_dynamics import Bias
-from cybertron.units import units
-
-sys.path.append('../../../mindsponge/md')
+from mindsponge import Angle
+from mindsponge import Bond
+from mindsponge import Dihedral
+from mindsponge import LennardJonesInformation
+from mindsponge import NonBond14
+from mindsponge import ParticleMeshEwald
+from mindsponge import LangevinLiujian
+from mindsponge import MdInformation
+from mindsponge import NeighborList
+from mindsponge.md.cybertron.meta_dynamics import Bias
+from mindsponge.md.cybertron.units import units
 
 standard_normal = ops.StandardNormal()
 zeros = ops.Zeros()

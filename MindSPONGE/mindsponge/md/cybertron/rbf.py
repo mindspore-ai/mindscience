@@ -31,7 +31,7 @@ from mindspore import Tensor
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
 
-from cybertron.units import units
+from .units import units
 
 __all__ = [
     "GaussianSmearing",

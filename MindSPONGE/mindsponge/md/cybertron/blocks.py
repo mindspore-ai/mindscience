@@ -24,7 +24,7 @@
 """cybertron blocks"""
 
 from mindspore import nn
-from cybertron.activations import get_activation
+from .activations import get_activation
 
 __all__ = [
     "Dense",

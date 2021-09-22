@@ -31,9 +31,9 @@ from mindspore.ops import functional as F
 from mindspore.common.parameter import Parameter
 from mindspore.common.initializer import initializer, Constant
 
-from cybertron.units import units
-from cybertron.blocks import MLP, Dense, Residual
-from cybertron.cutoff import SmoothCutoff
+from .units import units
+from .blocks import MLP, Dense, Residual
+from .cutoff import SmoothCutoff
 
 __all__ = [
     "GraphNorm",

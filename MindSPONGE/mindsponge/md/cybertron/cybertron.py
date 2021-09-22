@@ -29,11 +29,11 @@ from mindspore import Tensor
 from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 
-from cybertron.units import units
-from cybertron.base import Types2FullConnectNeighbors
-from cybertron.readouts import Readout, LongeRangeReadout
-from cybertron.readouts import AtomwiseReadout, GraphReadout
-from cybertron.neighbors import Distances
+from .units import units
+from .base import Types2FullConnectNeighbors
+from .readouts import Readout, LongeRangeReadout
+from .readouts import AtomwiseReadout, GraphReadout
+from .neighbors import Distances
 
 
 class Cybertron(nn.Cell):
