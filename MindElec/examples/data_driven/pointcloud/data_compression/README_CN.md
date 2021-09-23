@@ -44,10 +44,10 @@
 - 硬件（Ascend）
     - 准备Ascend处理器搭建硬件环境。
 - 框架
-    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindElec](https://gitee.com/mindspore/mindscience/tree/r0.1/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindElec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindscience/api/zh-CN/master/mindelec.html)
+    - [MindElec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/r0.1/mindelec/intro_and_install.html)
+    - [MindElec Python API](https://www.mindspore.cn/mindscience/api/zh-CN/r0.1/mindelec.html)
 
 # 脚本说明
 

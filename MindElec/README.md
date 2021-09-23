@@ -67,8 +67,8 @@ The simulation results, such as the S parameters or electromagnetic fields, can 
 |               | CentOS-x86      | ✔️   |
 |               | CentOS-aarch64  | ✔️   |
 
-- Install MindSpore by referring to [MindSpore Installation Guide](https://www.mindspore.cn/install/en). The version must be 1.4.0 or later.
-- For other dependencies, see [requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/MindElec/requirements.txt).
+- Install MindSpore by referring to [MindSpore Installation Guide](https://www.mindspore.cn/install/en). The version must be 1.5.0 or later.
+- For other dependencies, see [requirements.txt](https://gitee.com/mindspore/mindscience/blob/r0.1/MindElec/requirements.txt).
 
 ### Installing Using pip
 
@@ -76,7 +76,7 @@ The simulation results, such as the S parameters or electromagnetic fields, can 
 pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindscience/{arch}/mindscience_mindelec_ascend-{version}-{python_version}-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-> - When the network is connected, dependencies of the MindElec installation package are automatically downloaded during the .whl package installation. For details about dependencies, see [setup.py](https://gitee.com/mindspore/mindscience/blob/master/MindElec/setup.py). Pointcloud data generation depends on [pythonocc](https://github.com/tpaviot/pythonocc-core), please install the dependencies by yourself.
+> - When the network is connected, dependencies of the MindElec installation package are automatically downloaded during the .whl package installation. For details about dependencies, see [setup.py](https://gitee.com/mindspore/mindscience/blob/r0.1/MindElec/setup.py). Pointcloud data generation depends on [pythonocc](https://github.com/tpaviot/pythonocc-core), please install the dependencies by yourself.
 > - `{version}` denotes the version of MindElec. For example, when you are installing MindElec 0.1.0, `{version}` should be 0.1.0.
 > - `{arch}` denotes the system architecture. For example, the Linux system you are using is x86 architecture 64-bit, `{arch}`should be x86_64. If the system is ARM architecture 64-bit, then it should be aarch64.
 > - `{python_version}` specifies the python version of which MindElec is built. If you wish to use Python3.7.5, `{python_version}` should be cp37_cp37m. If Python3.9.0 is used, it should be cp39_cp39.
@@ -100,7 +100,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 
 ## API
 
-For details about MindElec APIs, see the [API](https://www.mindspore.cn/mindscience/api/en/master/mindelec.html) page.
+For details about MindElec APIs, see the [API](https://www.mindspore.cn/mindscience/api/en/r0.1/mindelec.html) page.
 
 ## Installation Verification
 
@@ -112,11 +112,11 @@ python -c 'import mindelec'
 
 ## Quick Start
 
-For details about how to quickly use the AI electromagnetic simulation toolkit for training and inference, see [MindElec Guide](https://www.mindspore.cn/mindscience/docs/en/master/mindelec/intro_and_install.html).
+For details about how to quickly use the AI electromagnetic simulation toolkit for training and inference, see [MindElec Guide](https://www.mindspore.cn/mindscience/docs/en/r0.1/mindelec/intro_and_install.html).
 
 ## Documents
 
-For more details about the installation guides, tutorials, and APIs, see [MindElec Documents](https://gitee.com/mindspore/docs/tree/master/docs/mindscience).
+For more details about the installation guides, tutorials, and APIs, see [MindElec Documents](https://gitee.com/mindspore/docs/tree/r1.5/docs/mindscience).
 
 ## Community
 
@@ -126,11 +126,11 @@ For more details about the installation guides, tutorials, and APIs, see [MindEl
 
 ## Contribution
 
-Make your contribution. For more details, please refer to our [Contributor Wiki](https://gitee.com/mindspore/mindspore/blob/master/CONTRIBUTING.md)
+Make your contribution. For more details, please refer to our [Contributor Wiki](https://gitee.com/mindspore/mindspore/blob/r1.5/CONTRIBUTING.md)
 
 ## Release Notes
 
-[RELEASE](https://gitee.com/mindspore/mindscience/blob/master/MindElec/RELEASE.md)
+[RELEASE](https://gitee.com/mindspore/mindscience/blob/r0.1/MindElec/RELEASE.md)
 
 ## License
 
