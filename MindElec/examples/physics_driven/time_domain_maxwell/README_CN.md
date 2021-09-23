@@ -4,8 +4,6 @@
 - [麦克斯韦方程组](#麦克斯韦方程组)
 - [AI求解点源麦克斯韦方程组](#ai求解点源麦克斯韦方程组)
 - [数据集](#数据集)
-- [特性](#特性)
-    - [混合精度](#混合精度)
 - [环境要求](#环境要求)
 - [脚本说明](#脚本说明)
     - [脚本及样例代码](#脚本及样例代码)
@@ -20,7 +18,7 @@
 
 # 麦克斯韦方程组
 
-麦克斯韦方程组一组描述电场、磁场与电荷密度、电流密度之间关系的偏微分方程，有激励源的控制方程具体描述如下：
+麦克斯韦方程组是一组描述电场、磁场与电荷密度、电流密度之间关系的偏微分方程，有激励源的控制方程具体描述如下：
 
 $$
 \nabla\times E=-\mu \dfrac{\partial H}{\partial t},
@@ -50,22 +48,14 @@ $$L_{total} = \lambda_{src}L_{src} + \lambda_{src_ic}L_{src_ic} + \lambda_{no_sr
 - 评估数据：我们基于传统的时域有限差分算法生成高精度的电磁场。
     - 注：数据在src/dataset.py中处理。
 
-# 特性
-
-## 混合精度
-
-采用[混合精度](https://www.mindspore.cn/docs/programming_guide/zh-CN/master/enable_mixed_precision.html)的训练方法使用支持单精度和半精度数据来提高深度学习神经网络的训练速度，同时保持单精度训练所能达到的网络精度。混合精度训练提高计算速度、减少内存使用的同时，支持在特定硬件上训练更大的模型或实现更大批次的训练。
-
-以FP16算子为例，如果输入数据类型为FP32，MindSpore后台会自动降低精度来处理数据。用户可打开INFO日志，搜索“reduce precision”查看精度降低的算子。
-
 # 环境要求
 
 - 硬件（Ascend）
     - 准备Ascend处理器搭建硬件环境。
 - 框架
-    - [MindELec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindELec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
+    - [MindElec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
     - [MindElec Python API](https://www.mindspore.cn/mindscience/api/zh-CN/master/mindelec.html)
 
 # 脚本说明
@@ -91,7 +81,7 @@ $$L_{total} = \lambda_{src}L_{src} + \lambda_{src_ic}L_{src_ic} + \lambda_{no_sr
 
 ## 脚本参数
 
-数据集采样控制参数在src/sampling_config.py文件中配置如下：
+数据集采样控制参数在`src/sampling_config.py`文件中配置如下：
 
 ```python
 src_sampling_config = edict({         # 有源区域的采样配置
@@ -145,7 +135,7 @@ bc_sampling_config = edict({          # 边界区域的采样配置
 })
 ```
 
-模型训练及控制参数在config.json文件中配置如下：
+模型训练及控制参数在`config.json`文件中配置如下：
 
 ```python
 {
@@ -197,7 +187,7 @@ bc_sampling_config = edict({          # 边界区域的采样配置
 
 您可以通过train.py脚本训练参数化电磁仿真模型，训练过程中模型参数会自动保存：
 
-```python
+```shell
 python train.py
 ```
 
@@ -205,7 +195,7 @@ python train.py
 
 脚本提供了边训练边评估的功能，网络训练的损失函数、性能数据以及精度评估结果如下：
 
-```python
+```log
 epoch: 1 step: 8, loss is 11.496931
 epoch time: 185.432 s, per step time: 23178.955 ms
 epoch: 2 step: 8, loss is 9.000967
@@ -262,13 +252,13 @@ Mindinsight同样提供了实时可视化精度曲线的功能。在网页打开
 
 您可以通过eval.py脚本加载测试数据集进行推理，并获取推理精度：
 
-```python
+```shell
 python eval.py
 ```
 
 ## 推理性能与精度
 
-```python
+```log
 predict total time: 40.59165406227112 s
 l2_error, Ex:  0.03556711707787814 , Ey:  0.03434167989333677 , Hz:  0.022974221345851673
 ```

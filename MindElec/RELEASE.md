@@ -1,6 +1,6 @@
 # MindElec 0.1.0 Release Notes
 
-Initial release of MindELec.
+Initial release of MindElec.
 
 ## Major Features
 

@@ -4,8 +4,6 @@
     - [麦克斯韦方程组](#麦克斯韦方程组)
     - [AI求解点源麦克斯韦方程族](#ai求解点源麦克斯韦方程族)
     - [数据集](#数据集)
-    - [特性](#特性)
-        - [混合精度](#混合精度)
     - [环境要求](#环境要求)
     - [脚本说明](#脚本说明)
         - [脚本及样例代码](#脚本及样例代码)
@@ -20,7 +18,7 @@
 
 ## 麦克斯韦方程组
 
-麦克斯韦方程组一组描述电场、磁场与电荷密度、电流密度之间关系的偏微分方程，有激励源的控制方程具体描述如下：
+麦克斯韦方程组是一组描述电场、磁场与电荷密度、电流密度之间关系的偏微分方程，有激励源的控制方程具体描述如下：
 
 $$
 \nabla\times E=-\mu \dfrac{\partial H}{\partial t},
@@ -29,7 +27,7 @@ $$
 \nabla\times H=\epsilon \dfrac{\partial E}{\partial t} + J(x, t)
 $$
 
-其中$\epsilon,\mu$分别是介质的绝对介电常数、绝对磁导率。$J(x, t)$是电磁仿真过程中的激励源，常用的加源方式包括点源，线源和面源，本案例主要考虑点源的形式，数学上表示为：
+其中$\epsilon,\mu$分别是介质的绝对介电常数、绝对磁导率。$J(x, t)$是电磁仿真过程中的激励源，常用的加源方式包括点源，线源和面源，本案例主要考虑点源的形式，其数学表示为：
 $$
 J(x, t)=\delta(x - x_0)g(t)
 $$
@@ -54,22 +52,14 @@ $$L_{total} = \lambda_{src}L_{src} + \lambda_{src_ic}L_{src_ic} + \lambda_{no_sr
 - 评估数据：我们基于传统的时域有限差分算法生成高精度的电磁场。
     - 注：数据在src/dataset.py中处理。
 
-## 特性
-
-### 混合精度
-
-采用[混合精度](https://www.mindspore.cn/docs/programming_guide/zh-CN/master/enable_mixed_precision.html)的训练方法使用支持单精度和半精度数据来提高深度学习神经网络的训练速度，同时保持单精度训练所能达到的网络精度。混合精度训练提高计算速度、减少内存使用的同时，支持在特定硬件上训练更大的模型或实现更大批次的训练。
-
-以FP16算子为例，如果输入数据类型为FP32，MindSpore后台会自动降低精度来处理数据。用户可打开INFO日志，搜索“reduce precision”查看精度降低的算子。
-
 ## 环境要求
 
 - 硬件（Ascend）
     - 准备Ascend处理器搭建硬件环境。
 - 框架
-    - [MindELec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindELec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
+    - [MindElec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
     - [MindElec Python API](https://www.mindspore.cn/mindscience/api/zh-CN/master/mindelec.html)
 
 ## 脚本说明
@@ -96,7 +86,7 @@ $$L_{total} = \lambda_{src}L_{src} + \lambda_{src_ic}L_{src_ic} + \lambda_{no_sr
 
 ### 脚本参数
 
-数据集采样控制参数在src/sampling_config.py文件中配置如下：
+数据集采样控制参数在`src/sampling_config.py`文件中配置：
 
 ```python
 src_sampling_config = edict({         # 有源区域的采样配置
@@ -150,7 +140,7 @@ bc_sampling_config = edict({          # 边界区域的采样配置
 })
 ```
 
-预模型训练及控制参数在congig/pretrain.json文件中配置如下：
+预模型训练及控制参数在`config/pretrain.json`文件中配置：
 
 ```python
 {
@@ -198,7 +188,7 @@ bc_sampling_config = edict({          # 边界区域的采样配置
 }
 ```
 
-增量训练微调及控制参数在congig/pretrain.json文件中配置如下：
+增量训练微调及控制参数在`config/pretrain.json`文件中配置如下：
 
 ```python
 {
@@ -257,7 +247,7 @@ bc_sampling_config = edict({          # 边界区域的采样配置
 
 您可以通过piad.py脚本训练参数化电磁仿真模型，训练过程中模型参数会自动保存：
 
-```python
+```shell
 python piad.py --mode=pretrain
 ```
 
@@ -265,7 +255,7 @@ python piad.py --mode=pretrain
 
 脚本提供了边训练边评估的功能，网络训练的损失函数、性能数据以及精度评估结果如下：
 
-```python
+```log
 epoch: 1 step: 28, loss is 4.332097
 epoch time: 198849.624 ms, per step time: 7101.772 ms
 epoch: 2 step: 28, loss is 4.150775
@@ -317,13 +307,13 @@ l2_error, Ex:  0.06892983792636541 , Ey:  0.06803824510149464 , Hz:  0.070612441
 
 给定一组新的方程参数，您可以通过piad.py脚本加载预训练模型与测试数据集增量训练，从而快速得到新问题的解：
 
-```python
+```shell
 python piad.py --mode=reconstruct
 ```
 
 ## 增量训练性能与精度
 
-```python
+``` log
 epoch: 1 step: 32, loss is 3.4485734
 epoch time: 207.005 s, per step time: 6468.899 ms
 epoch: 2 step: 32, loss is 3.2356246
