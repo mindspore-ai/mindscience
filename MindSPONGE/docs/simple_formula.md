@@ -8,7 +8,7 @@
 计算 Restrain 产生的回复力：
 
 $$
-\boldsymbol{F}_{\mathrm{restrain}}
+\boldsymbol{F}_{\mathrm{restrain}} = -2k(\boldsymbol{r} - \boldsymbol{r}_{\mathrm{ref}})
 $$
 
 $$
