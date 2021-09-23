@@ -1,11 +1,6 @@
 #! /bin/bash
-if [ "$#" -ne "1" ] ;then
-    echo "Please input a filename: s1ace2 or deltaace2!"
-    exit 0
-else
-    FILENAME=$1
-    echo "The input filename is $FILENAME. Begin the simulation!"
-fi
+
+FILENAME=s1ace2
 
 mkdir -p min1
 cd min1
