@@ -44,9 +44,9 @@ AI求解频域麦克斯韦方程时使用自监督方式训练，数据集在运
 - 硬件（Ascend）
     - 准备Ascend处理器搭建硬件环境。
 - 框架
-    - [MindELec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindELec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
+    - [MindElec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
     - [MindElec Python API](https://www.mindspore.cn/mindscience/api/zh-CN/master/mindelec.html)
 
 ## 脚本说明
@@ -68,7 +68,7 @@ AI求解频域麦克斯韦方程时使用自监督方式训练，数据集在运
 
 ### 脚本参数
 
-在src.config.py里面可以设置训练的参数和采样参数
+在`src/config.py`里面可以设置训练的参数和采样参数
 
 ```python
 Helmholtz2D_config = ed({
@@ -100,13 +100,13 @@ rectangle_sampling_config = ed({
 
 您可以通过solve.py脚本训练求解频域麦克斯韦方程，训练过程中模型参数会自动保存为检查点文件：
 
-```python
+```shell
 python solve.py
 ```
 
 训练过程中会实时显示损失函数值：
 
-```python
+```log
 epoch: 1 step: 79, loss is 630.0
 epoch time: 26461.205 ms, per step time: 334.952 ms
 epoch: 2 step: 79, loss is 196.4

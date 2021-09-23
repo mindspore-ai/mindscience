@@ -11,7 +11,7 @@
 
 # 点云数据生成
 
-为了将电磁仿真的模型转换成神经网络可以识别的模式，我们提供点云生成工具将模型转换成点云数据。该流程分为导出几何/材料信息和点云生成两步：
+为了将电磁仿真的模型转换成神经网络可以识别的模式，我们提供将模型转换成点云数据的点云生成工具。该工具的使用分为导出几何/材料信息和点云生成两步：
 
 ## 导出几何/材料信息
 
@@ -33,9 +33,9 @@ MindElec框架提供将stp文件高效转化为点云张量数据的接口`Point
 - 硬件（Ascend）
     - 准备Ascend处理器搭建硬件环境。
 - 框架
-    - [MindELec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindELec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
+    - [MindElec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
     - [MindElec Python API](https://www.mindspore.cn/mindscience/api/zh-CN/master/mindelec.html)
 
 # 脚本说明
@@ -53,7 +53,7 @@ MindElec框架提供将stp文件高效转化为点云张量数据的接口`Point
 
 ## python导出json文件和stp文件
 
-```python  
+```shell  
 python export_stp.py --cst_path CST_PATH
                      --stp_path STP_PATH
                      --json_path JSON_PATH
@@ -63,7 +63,7 @@ python export_stp.py --cst_path CST_PATH
 
 ## 生成点云数据
 
-```python  
+```shell  
 python generate_cloud_point.py --stp_path STP_PATH
                                --json_path JSON_PATH
                                --material_dir MATERIAL_DIR
@@ -76,4 +76,3 @@ python generate_cloud_point.py --stp_path STP_PATH
 # MindScience主页
 
 请浏览官网[主页](https://gitee.com/mindspore/mindscience)。
-

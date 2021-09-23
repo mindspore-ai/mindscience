@@ -4,8 +4,6 @@
 - [Maxwell's Equations](#maxwells-equations)
 - [AI Solver of Maxwell's Equations with Point Source](#ai-solver-of-maxwells-equations-with-point-source)
 - [Datasets](#datasets)
-- [Features](#features)
-    - [Mixed Precision](#mixed-precision)
 - [Environment Requirements](#environment-requirements)
 - [Script Description](#script-description)
     - [Script and Sample Code](#script-and-sample-code)
@@ -50,13 +48,6 @@ where $\lambda$s indicates the weight of each loss function. In order to reduce 
 - Evaluation data: We generate high-precision electromagnetic fields based on traditional finite-difference time-domain algorithms.
     - Note: Data is processed in src/dataset.py.
 
-# Features
-
-## Mixed Precision
-
-The [mixed precision](https://www.mindspore.cn/docs/programming_guide/en/master/enable_mixed_precision.html) training strategy uses single-precision and semi-precision data to improve the training speed of deep learning neural networks, while maintaining the network precision that can be achieved by single-precision training. Mixed precision training improves computing speed and reduces memory usage while enabling larger models or larger batches of training on specific hardware.
-Take the FP16 operator as an example. If the input data type is FP32, the MindSpore background automatically reduces the precision to process data. You can open the INFO log and search for "reduce precision" to view operators whose precision decreases.
-
 # Environment Requirements
 
 - Hardware (Ascend)
@@ -90,7 +81,7 @@ Take the FP16 operator as an example. If the input data type is FP32, the MindSp
 
 ## Script Parameters
 
-The dataset sampling control parameters are set in the src/sampling_config.py file as follows:
+The dataset sampling control parameters are set in the `src/sampling_config.py` file as follows:
 
 ```python
 src_sampling_config = edict({         # sampling configuration of the near-source region
@@ -144,7 +135,7 @@ bc_sampling_config = edict({          # sampling configuration of boundary point
 })
 ```
 
-Training parameters are configured in config.json as follows:
+Training parameters are configured in `config.json` as follows:
 
 ```python
 {
@@ -196,7 +187,7 @@ In this tutorial, the network architecture of multi-channel residual network com
 
 You can start training by running train.py as follows. The model parameters are automatically saved during training.
 
-```python
+```shell
 python train.py
 ```
 
@@ -204,7 +195,7 @@ python train.py
 
 The script provides the function of evaluation while training. The total loss, performance data, and precision evaluation result of network training are as follows:
 
-```python
+```log
 epoch: 1 step: 8, loss is 11.496931
 epoch time: 185.432 s, per step time: 23178.955 ms
 epoch: 2 step: 8, loss is 9.000967
@@ -261,13 +252,13 @@ MindInsight also provides the ability to visualize accuracy curves in real time.
 
 After training, you can start evaluation by running eval.py as follows:
 
-```python
+```shell
 python eval.py
 ```
 
 ## Evaluation Performance and Accuracy
 
-```python
+```log
 predict total time: 40.59165406227112 s
 l2_error, Ex:  0.03556711707787814 , Ey:  0.03434167989333677 , Hz:  0.022974221345851673
 ```

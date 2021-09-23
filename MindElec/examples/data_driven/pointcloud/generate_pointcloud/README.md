@@ -49,7 +49,7 @@ The STP file cannot be directly used as the input of the neural network. It need
 
 ## **Exporting json and stp Files**
 
-```python  
+```shell  
 python export_stp.py --cst_path CST_PATH
                      --stp_path STP_PATH
                      --json_path JSON_PATH
@@ -59,7 +59,7 @@ In the preceding command, `cst_path` specifies the path of the CST file to be ex
 
 ## **Generating Point Cloud Data**
 
-```python  
+```shell  
 python generate_cloud_point.py --stp_path STP_PATH
                                --json_path JSON_PATH
                                --material_dir MATERIAL_DIR

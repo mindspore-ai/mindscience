@@ -19,7 +19,7 @@
 
 # **Parameterized Electromagnetic Simulation**
 
-In some scenarios of electromagnetic simulation (such as tolerance evaluation), the structure can be described by a set of parameters. These parameters can be used as the input of neural network to simulate the scattering parameters of different structures. This section describes how to use MindElec to simulate the scattering parameters of antennas and mobile phones. For details, see the parametrized electromagnetic simulation tutorial.
+In some scenarios of electromagnetic simulation (such as tolerance evaluation), the structure can be described by a set of parameters. These parameters can be used as the input of neural network to simulate the scattering parameters of different structures. This section describes how to use parameterized electromagnetic simulation method of MindElec to calculate the scattering parameters of antennas and mobile phones. For details, see the parametrized electromagnetic simulation tutorial.
 
 # **Model Architecture**
 
@@ -27,7 +27,7 @@ The following figure shows the network architecture of the parametrized electrom
 
 ![network_architecture](./docs/network_architecture_en.jpg)
 
-The network inputs are the changed parameters, and the output is the S11 parameter of each frequency.
+The network inputs are the changed parameters, and the output is the S11 parameter of each frequency (S11 is the only component of scattering parameter in single port scenario).
 
 # **Datasets**
 

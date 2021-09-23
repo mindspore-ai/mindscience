@@ -73,7 +73,7 @@ AI uses self-supervised training to solve the Maxwell's equations in frequency d
 
 ### Script Parameters
 
-You can set training parameters and sampling parameters in src.config.py.
+You can set training parameters and sampling parameters in `src/config.py`.
 
 ```python
 Helmholtz2D_config = ed({
@@ -105,13 +105,13 @@ rectangle_sampling_config = ed({
 
 You can use the solve.py script to train and solve the Maxwell's equations in frequency domain. During the training, the model parameters are automatically saved as a checkpoint file.
 
-```python
+```shell
 python solve.py
 ```
 
 The loss values are displayed in real time during training:
 
-```python
+```log
 epoch: 1 step: 79, loss is 630.0
 epoch time: 26461.205 ms, per step time: 334.952 ms
 epoch: 2 step: 79, loss is 196.4

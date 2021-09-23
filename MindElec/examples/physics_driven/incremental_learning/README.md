@@ -6,8 +6,6 @@
     - [Maxwell's Equations](#maxwells-equations)
     - [Solving Point Source Maxwell's Equations with AI](#solving-point-source-maxwells-equations-with-ai)
     - [Datasets](#datasets)
-    - [Features](#features)
-        - [Mixed Precision](#mixed-precision)
     - [Environmental Requirements](#environmental-requirements)
     - [Script Description](#script-description)
         - [Script and Sample Code](#script-and-sample-code)
@@ -67,13 +65,6 @@ In the preceding information, $\lambda$s indicates the weight of each loss funct
 - Evaluation data: We generate high-precision electromagnetic fields based on traditional finite-difference time-domain algorithms.
     - Note: Data is processed in src/dataset.py.
 
-## Features
-
-### Mixed Precision
-
-The [mixed precision](https://www.mindspore.cn/docs/programming_guide/en/master/enable_mixed_precision.html) training strategy uses single-precision and semi-precision data to improve the training speed of deep learning neural networks, while maintaining the network precision that can be achieved by single-precision training. Mixed precision training improves computing speed and reduces memory usage while enabling larger models or larger batches of training on specific hardware.
-Take the FP16 operator as an example. If the input data type is FP32, the MindSpore background automatically reduces the precision to process data. You can open the INFO log and search for "reduce precision" to view operators whose precision decreases.
-
 ## Environmental Requirements
 
 - Hardware (Ascend)
@@ -108,7 +99,7 @@ Take the FP16 operator as an example. If the input data type is FP32, the MindSp
 
 ### Script Parameters
 
-The dataset sampling control parameters are set in the src/sampling_config.py file as follows:
+The dataset sampling control parameters are set in the `src/sampling_config.py` file as follows:
 
 ```python
 src_sampling_config = edict({         # src sampling configuration
@@ -162,7 +153,7 @@ bc_sampling_config = edict({          # boundary condition samlping configuratio
 })
 ```
 
-The pre-model training and control parameters are configured in the congig/pretrain.json file as follows:
+The pre-model training and control parameters are configured in the `config/pretrain.json` file as follows:
 
 ```python
 {
@@ -210,7 +201,7 @@ The pre-model training and control parameters are configured in the congig/pretr
 }
 ```
 
-The incremental training fine-tuning and control parameters are configured in the congig/pretrain.json file as follows:
+The incremental training fine-tuning and control parameters are configured in the `config/pretrain.json` file as follows:
 
 ```python
 {
@@ -269,7 +260,7 @@ In this tutorial, the network architecture of multi-channel residual network com
 
 You can use the piad.py script to train a parametric electromagnetic simulation model. During the training, the model parameters are automatically saved.
 
-```python
+```shell
 python piad.py --mode=pretrain
 ```
 
@@ -277,7 +268,7 @@ python piad.py --mode=pretrain
 
 The script provides the function of evaluation while training. The loss function, performance data, and precision evaluation result of network training are as follows:
 
-```python
+``` log
 epoch: 1 step: 28, loss is 4.332097
 epoch time: 198849.624 ms, per step time: 7101.772 ms
 epoch: 2 step: 28, loss is 4.150775
@@ -329,13 +320,13 @@ l2_error, Ex:  0.06892983792636541 , Ey:  0.06803824510149464 , Hz:  0.070612441
 
 Given a new set of equation parameters, you can use the piad.py script to load the pre-trained model and fine-tune the test dataset to quickly obtain a solution to the new problem.
 
-```python
+```shell
 python piad.py --mode=reconstruct
 ```
 
 ## Fine-tuning Performance and Accuracy
 
-```python
+```log
 epoch: 1 step: 32, loss is 3.4485734
 epoch time: 207.005 s, per step time: 6468.899 ms
 epoch: 2 step: 32, loss is 3.2356246
