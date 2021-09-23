@@ -1,89 +1,28 @@
 [TOC]
 
-# Virtual Atom
-
-## v0coordinaterefresh
-
-由父原子的坐标更新第0类虚原子的坐标，更新公式如下：
-$$
-\boldsymbol{r}_{\mathrm{v}} = (\boldsymbol{r}_{1,x},\boldsymbol{r}_{1,y}, 2h-\boldsymbol{r}_{1,z})
-$$
-其中 $\boldsymbol{r}_\mathrm{v}$​​ ​是虚原子的坐标，$\boldsymbol{r}_i$​​​是第 $i$​​ 个父原子的坐标，$\boldsymbol{r}_{i, \alpha} $​​代表第 $i$​​ 个原子坐标的第 $\alpha$ ​​个分量，下同。
-
-## v1coordinaterefresh
-
-由父原子的坐标更新第1类虚原子的坐标，更新公式如下：
-$$
-\boldsymbol{r}_\mathrm{v1} = a\boldsymbol{r}_{21}
-$$
-其中 $\boldsymbol{r}_{ij} = \boldsymbol{r}_i - \boldsymbol{r}_j$​，下同。
-
-## v2coordinaterefresh
-
-由父原子的坐标更新第2类虚原子的坐标，更新公式如下：
-$$
-\boldsymbol{r}_{\mathrm{v}1} = a\boldsymbol{r}_{21} + b\boldsymbol{r}_{31}
-$$
-
-## v3coordinaterefresh
-
-由父原子的坐标更新第3类虚原子的坐标，更新公式如下：
-$$
-\boldsymbol{r}_{\mathrm{v}1} = d\frac{\boldsymbol{r}_{21} + k\boldsymbol{r}_{32}}{|\boldsymbol{r}_{21} + k\boldsymbol{r}_{32}|}
-$$
-
-## v0forceredistribute
-
-将第0类虚原子受到的力分配到父原子上：
-$$
-\boldsymbol{F}_1 = \begin{pmatrix}
-1 & 0 & 0\\
-0 & 1 & 0\\
-0 & 0 & -1
-\end{pmatrix}\boldsymbol{F}_{\mathrm{v}}
-$$
-
-## v1forceredistribute
-
-将第1类虚原子受到的力分配到父原子上：
-$$
-\boldsymbol{F}_1 = (1-a)\boldsymbol{F}_\mathrm{v}\\
-\boldsymbol{F}_2 = a\boldsymbol{F}_{\mathrm{v}}
-$$
-
-## v2forceredistribute
-
-将第2类虚原子受到的力分配到父原子上：
-$$
-\boldsymbol{F}_1 = (1-a-b)\boldsymbol{F}_\mathrm{v}\\
-\boldsymbol{F}_2 = a\boldsymbol{F}_\mathrm{v}\\
-\boldsymbol{F}_3 = b\boldsymbol{F}_\mathrm{v}
-$$
-
-## v3forceredistribute
-
-将第3类虚原子受到的力分配到父原子上：
-$$
-\boldsymbol{F}_{\mathrm{p}} = \frac{d}{|\boldsymbol{r}_{21} + k\boldsymbol{r}_{32}|}\frac{\boldsymbol{r}_{\mathrm{v}1}\cdot \boldsymbol{F}_{\mathrm{v}}}{\boldsymbol{r}_{\mathrm{v}1}\cdot \boldsymbol{r}_{\mathrm{v}1}}\boldsymbol{r}_{\mathrm{v}1}
-$$
 
 # Restrain
 
 ## RestrainForce
 
 计算 Restrain 产生的回复力：
+
+$$
+\boldsymbol{F}
+$$
+
 $$
 \boldsymbol{F}_{\mathrm{restrain}} = -2k(\boldsymbol{r} - \boldsymbol{r}_{\mathrm{ref}})
 $$
 
-## restrainenergy
+## RestrainEnergy
 
 计算 Restrain 产生的能量：
 $$
 E_{\mathrm{restrain}} = k(\boldsymbol{r}-\boldsymbol{r}_{\mathrm{ref}})^2
 $$
 
-## restrainforcewithatomenergyandvirial
+## RestrainForceWithAtomEnergyAndVirial
 
 计算 Restrain 产生的力、能量和维里，计算维里的统一公式为：
 $$
@@ -103,7 +42,7 @@ $$
 
 # Crd Molecular Map
 
-## calculatenowrapcrd
+## CalculateNowrapCrd
 
 计算每个原子在周期性盒子内的周期性映射，即：
 $$
@@ -111,7 +50,7 @@ $$
 $$
 其中 $T_x, T_y, T_z$ 分别是该原子穿越盒子的次数（为整数），$L_x, L_y, L_z$​ 为周期性盒子的大小。
 
-## refreshboxmaptimes
+## RefreshBoxmapTimes
 
 更新每个原子穿越盒子的次数，即：
 $$
@@ -121,7 +60,7 @@ $$
 
 # Long Range Correction
 
-## totalc6get
+## Totalc6get
 
 得到 Lennard-Jones 的 total dispersion constant：
 $$
