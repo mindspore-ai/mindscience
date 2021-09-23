@@ -1,6 +1,5 @@
 [TOC]
 
-
 # Restrain
 
 ## RestrainForce
@@ -10,7 +9,6 @@
 $$
 F_{\mathrm{restrain}} = -2k(r-r_{\mathrm{ref}})
 $$
-
 
 ## RestrainEnergy
 
@@ -25,7 +23,6 @@ $$
 $$
 \Xi = -\frac{1}{2}\sum_{i < j}^N r_{ij} \otimes F_{ij}
 $$
-
 
 下面涉及到维里的部分将不再重复给出。
 
