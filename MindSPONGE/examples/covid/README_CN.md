@@ -1,10 +1,10 @@
-# 模拟新型冠状病毒Delta变异毒株
+# 新型冠状病毒分子动力学模拟
 
 `Linux` `GPU` `模型开发` `高级`
 
 <!-- TOC -->
 
-- [模拟新型冠状病毒Delta变异毒株](#模拟新型冠状病毒delta变异毒株)
+- [新型冠状病毒分子动力学模拟](#新型冠状病毒分子动力学模拟)
     - [概述](#概述)
     - [准备环节](#准备环节)
     - [背景介绍](#背景介绍)
@@ -318,8 +318,8 @@ cutoff = 10.0,
 
 运行完整的[运行脚本](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/examples/covid/scripts/run_covid.sh)后，就可以进行下面的分析步骤。完整运行脚本执行指令如下：
 
-```bath
-bash run_covid.sh s1ace2
+```bash
+bash run_covid.sh
 ```
 
 ### 结果分析

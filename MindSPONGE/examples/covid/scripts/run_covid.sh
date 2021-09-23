@@ -1,11 +1,6 @@
 #! /bin/bash
-if [ "$#" -ne "1" ] ;then
-    echo "Please input a filename: s1ace2 or deltaace2!"
-    exit 0
-else
-    FILENAME=$1
-    echo "The input filename is $FILENAME. Begin the simulation!"
-fi
+
+FILENAME=s1ace2
 
 mkdir -p min1
 cd min1
@@ -50,7 +45,6 @@ S2 heat
   mode = nvt
   step_limit = 100000
   dt = 1e-3
-  constrain_mode = simple_constrain
   target_temperature = 300.0
   write_information_interval = 1000
   cutoff = 10.0
