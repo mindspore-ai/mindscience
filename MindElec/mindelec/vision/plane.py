@@ -60,6 +60,8 @@ def plot_s11(s11_tensor, path_image_save, legend, dpi=300):
 
     if not isinstance(dpi, int):
         raise TypeError("The type of dpi must be int, but get {}".format(type(dpi)))
+    if isinstance(dpi, bool):
+        raise TypeError("The type of dpi must be int, but get {}".format(type(dpi)))
     if dpi <= 0:
         raise ValueError("dpi must be > 0, but get {}".format(dpi))
 
@@ -110,10 +112,14 @@ def plot_eh(simu_res_tensor, path_image_save, z_index, dpi=300):
 
     if not isinstance(z_index, int):
         raise TypeError("The type of z_index must be int, but get {}".format(type(z_index)))
+    if isinstance(z_index, bool):
+        raise TypeError("The type of z_index must be int, but get {}".format(type(z_index)))
     if z_index <= 0:
         raise ValueError("z_index must be > 0, but get {}".format(z_index))
 
     if not isinstance(dpi, int):
+        raise TypeError("The type of dpi must be int, but get {}".format(type(dpi)))
+    if isinstance(dpi, bool):
         raise TypeError("The type of dpi must be int, but get {}".format(type(dpi)))
     if dpi <= 0:
         raise ValueError("dpi must be > 0, but get {}".format(dpi))
