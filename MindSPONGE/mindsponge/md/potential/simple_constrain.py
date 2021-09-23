@@ -14,8 +14,6 @@
 # ============================================================================
 """SimpleConstarin"""
 
-import math
-
 
 class BondInformation:
     def __init__(self):
@@ -78,8 +76,7 @@ class SimpleConstarin:
             print("START INITIALIZING SIMPLE CONSTRAIN:")
             self.constrain_pair_numbers = 0
             self.add_hbond_to_constrain_pair(self.bond_numbers, bond.h_atom_a, bond.h_atom_b, bond.h_r0, md_info.h_mass)
-            self.add_hangle_to_constrain_pair(self.angle_numbers, angle.h_atom_a, angle.h_atom_b,
-                                              angle.h_atom_c, angle.h_angle_theta0, md_info.h_mass)
+            self.add_hangle_to_constrain_pair()
             if liujian_info.is_initialized:
                 self.initial_simple_constrain(md_info.atom_numbers, md_info.dt, md_info.sys.box_length,
                                               liujian_info.exp_gamma, 0, md_info.h_mass, md_info.sys.freedom)
@@ -122,40 +119,11 @@ class SimpleConstarin:
         self.bond_info.atom_b = atom_b
         self.bond_info.bond_r = bond_r
 
-    def add_hangle_to_constrain_pair(self, angle_numbers, atom_a, atom_b, atom_c, angle_theta, atom_mass):
-        """add hangle to constrain_pair
-        :param angle_numbers:
-        :param atom_a:
-        :param atom_b:
-        :param atom_c:
-        :param angle_theta:
-        :param atom_mass:
-        :return: update h_angle_pair and angle_constrain_pair_numbers
-        """
+    def add_hangle_to_constrain_pair(self):
+        """add hangle to constrain_pair"""
 
         self.h_angle_pair = []
-        s = 0
-        for i in range(angle_numbers):
-            mass_a = atom_mass[atom_a[i]]
-            mass_c = atom_mass[atom_c[i]]
-            if (float(mass_a) < self.info.constrain_mass and mass_a > 0) or (
-                    float(mass_c) < self.info.constrain_mass and mass_c > 0):
-                # for the angle with H atom, suppose H atom is not int the center of the angle
-                for j in range(self.bond_info.bond_numbers):
-                    # find a atom and b atom's equilibrium separation
-                    if ((self.bond_info.atom_a[j] == atom_a[i] and self.bond_info.atom_b[j] == atom_b[i])
-                            or (self.bond_info.atom_a[j] == atom_b[i] and self.bond_info.atom_b[j] == atom_a[i])):
-                        rab = self.bond_info.bond_r[j]
-                    if ((self.bond_info.atom_a[j] == atom_c[i] and self.bond_info.atom_b[j] == atom_b[i])
-                            or (self.bond_info.atom_a[j] == atom_b[i] and self.bond_info.atom_b[j] == atom_c[i])):
-                        rbc = self.bond_info.bond_r[j]
-
-                constant_r = math.sqrt(rab * rab + rbc * rbc - 2. * rab * rbc * math.cos(angle_theta[i]))
-                constrain_k = \
-                    atom_mass[atom_a[i]] * atom_mass[atom_c[i]] / (atom_mass[atom_a[i]] + atom_mass[atom_c[i]])
-                self.h_angle_pair.append([atom_a[i], atom_c[i], constant_r, constrain_k])
-                s = s + 1
-        self.angle_constrain_pair_numbers = s
+        self.angle_constrain_pair_numbers = 0
 
     def initial_simple_constrain(self, atom_numbers, dt, box_length, exp_gamma, is_minimization, atom_mass,
                                  system_freedom):
