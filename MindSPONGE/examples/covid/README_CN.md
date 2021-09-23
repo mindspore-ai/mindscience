@@ -319,7 +319,7 @@ cutoff = 10.0,
 运行完整的[运行脚本](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/examples/covid/scripts/run_covid.sh)后，就可以进行下面的分析步骤。完整运行脚本执行指令如下：
 
 ```bash
-bash run_covid.sh 
+bash run_covid.sh
 ```
 
 ### 结果分析
