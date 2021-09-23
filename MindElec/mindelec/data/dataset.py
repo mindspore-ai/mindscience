@@ -45,9 +45,9 @@ class Dataset(Data):
         geometry_dict (dict, optional): specifies geometry datasets to be merged. The key is geometry instance and
             value is a list of type of geometry. For example, geometry_dict = {geom : ["domain", "BC", "IC"]}.
             Default: None.
-        existed_data_list (Union[list, tuple], optional): specifies existed datasets to be merged. For example,
-            existed_data_list = [ExistedDataConfig_Instance1, ExistedDataConfig_Instance2]. Default: None.
-        dataset_list (Union[list, tuple], optional): specifies instances of data to be merged. For example,
+        existed_data_list (Union[list, tuple, ExistedDataConfig], optional): specifies existed datasets to be merged.
+            For example, existed_data_list = [ExistedDataConfig_Instance1, ExistedDataConfig_Instance2]. Default: None.
+        dataset_list (Union[list, tuple, Data], optional): specifies instances of data to be merged. For example,
             dataset_list=[BoundaryIC_Instance, Equation_Instance, BoundaryBC_Instance and ExistedData_Instance].
             Default: None.
 
@@ -55,7 +55,7 @@ class Dataset(Data):
         ValueError: If geometry_dict, existed_data_list and dataset_list are all None.
         TypeError: If the type of geometry_dict is not dict.
         TypeError: If the type of key of geometry_dict is not instance of class Geometry.
-        TypeError: If the type of existed_data_list is list or tuple.
+        TypeError: If the type of existed_data_list is not list, tuple or instance of ExistedDataConfig.
         TypeError: If the element of existed_data_list is not instance of ExistedDataConfig.
         TypeError: If the element of dataset_list is not instance of class Data.
 
@@ -90,7 +90,7 @@ class Dataset(Data):
                 _check_type(data_config, "the element in existed_data_list", ExistedDataConfig)
 
         if dataset_list is not None:
-            if not isinstance(dataset_list, (list, tuple)):
+            if isinstance(dataset_list, Data):
                 dataset_list = [dataset_list]
             _check_type(dataset_list, "dataset_list", (list, tuple))
             for dataset in dataset_list:
@@ -198,7 +198,8 @@ class Dataset(Data):
         _check_type(prebatched_data, "prebatched_data", bool)
         _check_type(drop_remainder, "drop_remainder", bool)
         _check_type(shuffle, "shuffle", bool)
-        _check_type(batch_size, "batch_size", int)
+        if isinstance(batch_size, bool) or not isinstance(batch_size, int):
+            raise TypeError("The type of batch_size should be int, but got {}".format(type(batch_size)))
 
         if prebatched_data and not drop_remainder:
             raise ValueError("prebatched_data is not supported when drop_remained is set to be False")
@@ -328,8 +329,8 @@ class Dataset(Data):
                         dataset, [data.name for data in self.all_datasets]))
                 dataset.set_constraint_type(constraint_type[dataset])
         else:
-            raise ValueError("constraint_type: {} should be dict, the key is the specified dataset"
-                             " and value is the corresponding constraint type".format(constraint_type))
+            raise TypeError("the type of constraint_type should be dict or str but got {}"
+                            .format(type(constraint_type)))
 
     def __getitem__(self, index):
         if self._iterable_datasets is None:
