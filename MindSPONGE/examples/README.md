@@ -10,5 +10,6 @@ MindSPONGE包含了分子模拟过程中相关的功能函数以及分子模拟�
 ## 目录
 
 - [案例](https://gitee.com/jialiangyu/mindscience/blob/dev_yjl/MindSPONGE/examples)
+    - [新型冠状病毒分子动力学模拟](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/examples/covid)
     - [丙氨酸三肽水溶液体系](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/examples/polypeptide)
     - [克莱森重排反应](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/examples/claisen_rearrangement)
