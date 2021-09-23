@@ -90,7 +90,7 @@ $$
 Leap Frog 蛙跳差分算法：
 $$
 r_{i, t+1} = r_{i, t} + v_{t+\frac{1}{2}}\Delta t\\
-v_{i,t+\frac{1}{2}} = v_{i,t-\frac{1}{2}} + \frac{\F_{i,t}}{m_i}
+v_{i,t+\frac{1}{2}} = v_{i,t-\frac{1}{2}} + \frac{F_{i,t}}{m_i}
 $$
 
 # Bond
