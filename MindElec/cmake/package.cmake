@@ -44,7 +44,6 @@ message("===============${CMAKE_INSTALL_LIBDIR}+++++++++++++++")
 install(
         FILES
             ${CMAKE_SOURCE_DIR}/mindelec/__init__.py
-            ${CMAKE_SOURCE_DIR}/mindelec/version.py
             ${CMAKE_SOURCE_DIR}/setup.py
         DESTINATION ${INSTALL_PY_DIR}
         COMPONENT mindelec
