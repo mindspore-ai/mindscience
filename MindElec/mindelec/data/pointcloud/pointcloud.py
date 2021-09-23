@@ -114,8 +114,9 @@ class PointCloudSamplingConfig:
         TypeError: if `bbox_type` is not an int.
         TypeError: if `mode_args` is not one of int or tuple.
         TypeError: if `bbox_args` is not a tuple.
-        ValueError:  if `sampling mode` is 0 but `mode_args` is not int.
-        ValueError:  if `sampling mode` is 1 but `mode_args` is not a tuple of three integers.
+        TypeError:  if `sampling_mode` is 0 but `mode_args` is not int.
+        TypeError:  if `sampling_mode` is 1 but `mode_args` is not a tuple of three integers.
+        ValueError:  if `sampling_mode` is 1 but the length of `mode_args` is not three.
         ValueError:  if `sampling_mode` not in [0(UPPERBOUND), 1(DIMENSIONS)].
         ValueError:  if `bbox_type` not in [0(STATIC), 1(DYNAMIC)].
 
@@ -123,12 +124,12 @@ class PointCloudSamplingConfig:
         ``Ascend``
     """
     def __init__(self, sampling_mode, bbox_type, mode_args=None, bbox_args=None):
-        if not isinstance(sampling_mode, int):
+        if not isinstance(sampling_mode, int) or isinstance(sampling_mode, bool):
             raise TypeError("sampling_mode should be int, but got {} with type {}".format(sampling_mode,
                                                                                           type(sampling_mode)))
-        if not isinstance(bbox_type, int):
+        if not isinstance(bbox_type, int) or isinstance(sampling_mode, bool):
             raise TypeError("bbox_type should be int, but got {} with type {}".format(bbox_type, type(bbox_type)))
-        if mode_args is not None and not isinstance(mode_args, (int, tuple)):
+        if mode_args is not None and not isinstance(mode_args, (int, tuple)) or isinstance(mode_args, bool):
             raise TypeError("mode_args should be int or tuple, but got {} with type {}".format(mode_args,
                                                                                                type(mode_args)))
         if bbox_args is not None and not isinstance(bbox_args, tuple):
@@ -139,20 +140,11 @@ class PointCloudSamplingConfig:
         if bbox_type not in [0, 1]:
             raise ValueError("Only STATIC(0) and DYNAMIC(1) are supported values for bbox_type, \
                               but got: {} ".format(bbox_type))
-        if sampling_mode == 0 and not isinstance(mode_args, int):
-            raise ValueError("mode_args should always be int if sampling mode is \"UPPERBOUND(0)\" , \
+        if sampling_mode == 0 and (not isinstance(mode_args, int) or isinstance(mode_args, bool)):
+            raise TypeError("mode_args should always be int if sampling_mode is \"UPPERBOUND(0)\" , \
                               but got: {} with type {}".format(mode_args, type(mode_args)))
         if sampling_mode == 1:
-            if not isinstance(mode_args, tuple):
-                raise TypeError("mode_args should always be tuple if sampling mode is \"DIMENSIONS(1)\","
-                                " but got: {} with type {}".format(mode_args, type(mode_args)))
-            if not len(mode_args) == 3:
-                raise ValueError("mode_args should always be tuple with length of 3 if sampling mode is"
-                                 " \"DIMENSIONS(1)\", but got: {} with length of {}".format(mode_args, len(mode_args)))
-            if not all(isinstance(x, int) for x in mode_args):
-                raise TypeError("mode_args should always be tuple of 3 integers if sampling mode is \"DIMENSIONS(1)\","
-                                " but got: {} with type ({}, {}, {})".format(mode_args, type(mode_args[0]),
-                                                                             type(mode_args[1]), type(mode_args[2])))
+            _check_mode_args(mode_args)
 
         self.sampling_mode = sampling_mode
         self.bbox_type = bbox_type
@@ -231,6 +223,20 @@ def collect_section_result(group_sections):
 def collect_space_result(space_solution):
     global GLOBAL_ALL_TENSOR_OUTPUTS
     GLOBAL_ALL_TENSOR_OUTPUTS.extend(space_solution)
+
+
+def _check_mode_args(inputs):
+    """check int types"""
+    if not isinstance(inputs, tuple):
+        raise TypeError("mode_args should always be tuple if sampling_mode is \"DIMENSIONS(1)\","
+                        " but got: {} with type {}".format(inputs, type(inputs)))
+    if not len(inputs) == 3:
+        raise ValueError("mode_args should always be tuple with length of 3 if sampling_mode is"
+                         " \"DIMENSIONS(1)\", but got: {} with length of {}".format(inputs, len(inputs)))
+    if not all(isinstance(x, int) and not isinstance(x, bool) for x in inputs):
+        raise TypeError("mode_args should always be tuple of 3 integers if sampling_mode is \"DIMENSIONS(1)\","
+                        " but got: {} with type ({}, {}, {})".format(inputs, type(inputs[0]),
+                                                                     type(inputs[1]), type(inputs[2])))
 
 
 class PointCloud:
