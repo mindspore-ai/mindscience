@@ -27,7 +27,7 @@ $$
 $$
 
 $$
-\Xi = -\frac{1}{2}\sum_{i < j}^N \boldsymbol{r}_{ij} \otimes \boldsymbold{F}_{ij}
+\Xi = -\frac{1}{2}\sum_{i < j}^N \boldsymbol{r}_{ij} \otimes \boldsymbol{F}_{ij}
 $$
 
 下面涉及到维里的部分将不再重复给出。
