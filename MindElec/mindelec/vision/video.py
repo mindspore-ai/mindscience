@@ -64,6 +64,8 @@ def image_to_video(path_image, path_video, video_name, fps):
 
     if not isinstance(fps, int):
         raise TypeError("The type of fps must be int, but get {}".format(type(fps)))
+    if isinstance(fps, bool):
+        raise TypeError("The type of fps must be int, but get {}".format(type(fps)))
     if fps <= 0:
         raise ValueError("fps must be > 0, but get {}".format(fps))
 
