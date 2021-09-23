@@ -25,9 +25,9 @@ package_name = os.getenv('ME_PACKAGE_NAME').replace("\n", "")
 
 def read_version():
     """generate python file"""
-    version_file = os.path.join(cur_dir, 'mindelec/', 'version.py')
+    version_file = os.path.join(cur_dir, '../', 'version.txt')
     with open(version_file, 'r') as f:
-        version_ = f.readlines()[-1].strip().split()[-1][1:-1]
+        version_ = f.readlines()[-1].strip()
     return version_
 
 

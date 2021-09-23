@@ -21,10 +21,7 @@ from .md.potential import *
 from .md.partition import *
 from .md.control import *
 from .md.space import *
-from .version import __version__
 
-__version_info__ = tuple(__version__.split('.'))
-
-__all__ = ['__version__', '__version_info__']
+__all__ = []
 __all__.extend(md.__all__)
 __all__.sort()
