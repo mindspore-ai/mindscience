@@ -85,11 +85,11 @@ class Helmholtz2D(Problem):
         return 100 * (u - test_label)
 
 
-@pytest.mark.level2
+@pytest.mark.level0
 @pytest.mark.platform_arm_ascend_training
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
-def test_helmholtz():
+def test_frequency_domain_maxwell():
     """train process"""
     net = FFNN(input_dim=2, output_dim=1, hidden_layer=64)
 
@@ -131,10 +131,10 @@ def test_helmholtz():
 
     # train
     time_cb = TimeMonitor()
-    loss_cb = PredictCallback(model=net, predict_interval=3, input_data=test_input, label=test_label)
+    loss_cb = PredictCallback(model=net, predict_interval=10, input_data=test_input, label=test_label)
     solver.train(epoch=helmholtz_2d_config.get("epochs", 10),
                  train_dataset=train_data,
-                 callbacks=[LossMonitor(), loss_cb, time_cb])
+                 callbacks=[time_cb, LossMonitor(), loss_cb])
     per_step_time = time_cb.get_step_time()
     l2_error = loss_cb.get_l2_error()
 

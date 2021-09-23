@@ -1,8 +1,8 @@
 # 目录
 
 - [目录](#目录)
-    - [亥姆霍兹方程(Helmholtz equation)](#亥姆霍兹方程helmholtz-equation)
-    - [AI求解亥姆霍兹方程](#ai求解亥姆霍兹方程)
+    - [频域麦克斯韦方程(Maxwell's Equation in Frequency Domain)](#频域麦克斯韦方程maxwells-equation-in-frequency-domain)
+    - [AI求解频域麦克斯韦方程](#ai求解频域麦克斯韦方程)
     - [数据集](#数据集)
     - [环境要求](#环境要求)
     - [脚本说明](#脚本说明)
@@ -12,28 +12,28 @@
     - [随机情况说明](#随机情况说明)
     - [MindScience主页](#mindscience主页)
 
-## 亥姆霍兹方程(Helmholtz equation)
+## 频域麦克斯韦方程(Maxwell's Equation in Frequency Domain)
 
-亥姆霍兹方程是一个描述电磁波的椭圆偏微分方程，其基本形式如下：
+频域麦克斯韦方程是一个描述电磁波的椭圆偏微分方程，其基本形式如下：
 
 $$(\nabla^2 + k^2)u=0$$
 
 其中$k=\omega c$是分离常数波数, $\omega$是频率, $c$是光速。
 
-## AI求解亥姆霍兹方程
+## AI求解频域麦克斯韦方程
 
-AI求解亥姆霍兹方程的整体网络架构如下：
+AI求解频域麦克斯韦方程的整体网络架构如下：
 
-![network_architecture](./docs/PINNs_for_Helmholtz.png)
+![network_architecture](./docs/pinns_for_frequency_domain_maxwell.png)
 
-以二维的亥姆霍兹方程为例，网络输入为$\Omega=(x, y)\in [0,1]^2$, 输出为方程的解$u(x, y)$。基于网络的输出和MindSpore框架的自动微分功能可以构建网络的训练损失函数，该损失函数分为PDE和BC两部分：
+以二维的频域麦克斯韦方程为例，网络输入为$\Omega=(x, y)\in [0,1]^2$, 输出为方程的解$u(x, y)$。基于网络的输出和MindSpore框架的自动微分功能可以构建网络的训练损失函数，该损失函数分为PDE和BC两部分：
 $$L_{pde}= \dfrac{1}{N_1}\sum_{i=1}^{N_1} ||(\nabla^2 + k^2)u(x_i, y_i)||^2$$
 $$L_{bc} = \dfrac{1}{N_2}\sum_{i=1}^{N_2} ||u(x_i, y_i)||^2$$
 为了保证上述方程解的唯一性，我们给定方程的边界条件为$u_{|\partial \Omega}=\sin(kx)$。用户可以自定义分离常数波数$k$，本案例中取值为$k=2$。
 
 ## 数据集
 
-AI求解亥姆霍兹方程时使用自监督方式训练，数据集在运行过程中实时生成，训练与推理数据生成的方式如下：
+AI求解频域麦克斯韦方程时使用自监督方式训练，数据集在运行过程中实时生成，训练与推理数据生成的方式如下：
 
 - 训练数据：每次迭代中，在可行域内部从101*101的均匀网格中选取128个样本点计算损失函数的PDE部分$L_{pde}$；在边界上随机生成128个样本点计算损失函数的BC部分$L_{bc}$。
 - 评估数据：在可行域内生成101*101的均匀网格点，其对应的label为方程解析解$u=\sin(kx)$
@@ -55,7 +55,7 @@ AI求解亥姆霍兹方程时使用自监督方式训练，数据集在运行过
 
 ```path
 .
-└─Helmholtz
+└─FrequencyDomainMaxwell
   ├─README.md
   ├─docs                              # README示意图
   ├─src
@@ -98,7 +98,7 @@ rectangle_sampling_config = ed({
 
 ## 模型训练
 
-您可以通过solve.py脚本训练求解亥姆霍兹方程，训练过程中模型参数会自动保存为检查点文件：
+您可以通过solve.py脚本训练求解频域麦克斯韦方程，训练过程中模型参数会自动保存为检查点文件：
 
 ```python
 python solve.py

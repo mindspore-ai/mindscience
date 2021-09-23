@@ -19,7 +19,7 @@ from __future__ import absolute_import
 import copy
 import numpy as np
 from mindspore import log as logger
-from .geometry_base import Geometry, SamplingConfig
+from .geometry_base import Geometry, SamplingConfig, GEOM_TYPES
 from .geometry_1d import Interval
 
 
@@ -266,6 +266,10 @@ class GeometryWithTime(Geometry):
         if config is None:
             raise ValueError("Sampling config for {}:{} is None, please call set_sampling_config method to set"
                              .format(self.geom_type, self.name))
+        if not isinstance(geom_type, str):
+            raise TypeError("geom type shouild be string, but got {} with type {}".format(geom_type, type(geom_type)))
+        if geom_type not in GEOM_TYPES:
+            raise ValueError("Unknown geom type: {}, only {} are supported now".format(geom_type, GEOM_TYPES))
         if geom_type.lower() == "domain":
             if config.domain is None:
                 raise KeyError("Sampling config for domain of {}:{} should not be none"

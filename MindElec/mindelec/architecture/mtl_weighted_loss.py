@@ -32,7 +32,7 @@ class MTLWeightedLossCell(nn.Cell):
     The MTL strategy weighted multi-task losses automatically.
 
     Args:
-        num_losses (int): The number of multi-task losses.
+        num_losses (int): The number of multi-task losses, should be positive integer.
 
     Inputs:
         - **input** - tuple of Tensors.
@@ -60,6 +60,8 @@ class MTLWeightedLossCell(nn.Cell):
         check_mode("MTLWeightedLossCell")
         if not isinstance(num_losses, int):
             raise TypeError("the type of num_losses should be int, but got {}".format(type(num_losses)))
+        if num_losses <= 0:
+            raise ValueError("the value of num_losses should be positive, but got {}".format(num_losses))
         self.num_losses = num_losses
         self.params = Parameter(Tensor(np.ones(num_losses), mstype.float32), requires_grad=True)
         self.concat = ops.Concat(axis=0)

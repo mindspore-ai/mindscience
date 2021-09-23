@@ -135,7 +135,7 @@ class ResBlock(nn.Cell):
         super(ResBlock, self).__init__()
         check_mode("ResBlock")
         _check_type(in_channels, "in_channels", int)
-        _check_type(out_channels, "in_channels", int)
+        _check_type(out_channels, "out_channels", int)
         if in_channels != out_channels:
             raise ValueError("in_channels of ResBlock should be equal of out_channels, but got in_channels: {}, "
                              "out_channels: {}".format(in_channels, out_channels))

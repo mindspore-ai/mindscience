@@ -189,8 +189,8 @@ The pre-model training and control parameters are configured in the congig/pretr
     "load_ckpt" : false,                                                    # load ckpt or not
     "save_ckpt_path" : "./ckpt",                                            # save ckpt path
     "load_ckpt_path" : "",                                                  # load ckpt path
-    "train_with_eval": true,                                                # train with eval
-    "test_data_path" : "./benchmark/",                                      # benchmark path
+    "train_with_eval": false,                                               # train with eval
+    "test_data_path" : "",                                                  # benchmark path
     "lr" : 0.001,                                                           # lr
     "milestones" : [2000],                                                  # lr milestones
     "lr_gamma" : 0.25,                                                      # lr decay rate
