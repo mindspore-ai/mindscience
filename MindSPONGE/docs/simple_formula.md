@@ -23,7 +23,7 @@ $$
 
 计算 Restrain 产生的力、能量和维里，计算维里的统一公式为：
 $$
-\Xi = -\frac{1}{2}\sum_{i < j}^N \boldsymbol{r}_{ij} \otimes \boldsymbol{F}_{ij}
+\Xi = -\frac{1}{2}\sum_{i < j}^N r_{ij} \otimes F_{ij}
 $$
 
 $$
