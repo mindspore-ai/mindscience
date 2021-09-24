@@ -193,7 +193,7 @@ class MonitorEval(Callback):
     def __exit__(self, *exc_args):
         self.summary_record.close()
 
-    def epoch(self, run_context):
+    def epoch_end(self, run_context):
         """
         Evaluate the model at the end of epoch.
 
