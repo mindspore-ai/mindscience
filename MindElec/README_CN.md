@@ -67,8 +67,8 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 |               | CentOS-x86      | ✔️   |
 |               | CentOS-aarch64  | ✔️   |
 
-- 参考[MindSpore安装指南](https://www.mindspore.cn/install)，完成MindSpore的安装，要求至少1.4.0版本。
-- 其余依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/MindElec/requirements.txt)
+- 参考[MindSpore安装指南](https://www.mindspore.cn/install)，完成MindSpore的安装，要求至少1.5.0版本。
+- 其余依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/blob/r0.1/MindElec/requirements.txt)
 
 ### pip安装
 
@@ -76,7 +76,7 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindscience/{arch}/mindscience_mindelec_ascend-{version}-{python_version}-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-> - 在联网状态下，安装whl包时会自动下载MindElec安装包的依赖项（依赖项详情参见[setup.py](https://gitee.com/mindspore/mindscience/blob/master/MindElec/setup.py)），点云数据采样依赖[pythonocc](https://github.com/tpaviot/pythonocc-core)，需自行安装。
+> - 在联网状态下，安装whl包时会自动下载MindElec安装包的依赖项（依赖项详情参见[setup.py](https://gitee.com/mindspore/mindscience/blob/r0.1/MindElec/setup.py)），点云数据采样依赖[pythonocc](https://github.com/tpaviot/pythonocc-core)，需自行安装。
 > - `{version}`表示MindElec版本号，例如下载0.1.0版本MindElec时，`{version}`应写为0.1.0。
 > - `{arch}`表示系统架构，例如使用的Linux系统是x86架构64位时，`{arch}`应写为x86_64。如果系统是ARM架构64位，则写为aarch64。
 > - `{python_version}`表示用户的Python版本，Python版本为3.7.5时，{python_version}应写为cp37_cp37m。Python版本为3.9.0时，则写为cp39_cp39。
@@ -100,7 +100,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 
 ## API
 
-MindElec API文档请查看[文档链接](https://www.mindspore.cn/mindscience/api/zh-CN/master/mindelec.html)
+MindElec API文档请查看[文档链接](https://www.mindspore.cn/mindscience/api/zh-CN/r0.1/mindelec.html)
 
 ## 验证是否成功安装
 
@@ -112,11 +112,11 @@ python -c 'import mindelec'
 
 ## 快速入门
 
-关于如何快速使用AI电磁仿真工具包，进行训练推理，请点击查看[MindElec使用教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
+关于如何快速使用AI电磁仿真工具包，进行训练推理，请点击查看[MindElec使用教程](https://www.mindspore.cn/mindscience/docs/zh-CN/r0.1/mindelec/intro_and_install.html)
 
 ## 文档
 
-有关安装指南、教程和API的更多详细信息，请参阅[用户文档](https://gitee.com/mindspore/docs/tree/master/docs/mindscience)。
+有关安装指南、教程和API的更多详细信息，请参阅[用户文档](https://gitee.com/mindspore/docs/tree/r1.5/docs/mindscience)。
 
 ## 社区
 
@@ -126,11 +126,11 @@ python -c 'import mindelec'
 
 ## 贡献
 
-欢迎参与贡献。更多详情，请参阅我们的[贡献者Wiki](https://gitee.com/mindspore/mindspore/blob/master/CONTRIBUTING.md)。
+欢迎参与贡献。更多详情，请参阅我们的[贡献者Wiki](https://gitee.com/mindspore/mindspore/blob/r1.5/CONTRIBUTING.md)。
 
 ## 版本说明
 
-版本说明请参阅[RELEASE](https://gitee.com/mindspore/mindscience/blob/master/MindElec/RELEASE.md)。
+版本说明请参阅[RELEASE](https://gitee.com/mindspore/mindscience/blob/r0.1/MindElec/RELEASE.md)。
 
 ## 许可证
 

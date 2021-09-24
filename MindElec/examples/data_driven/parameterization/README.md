@@ -42,10 +42,10 @@ Use the `generate_data` function in `src/dataset.py` to automatically obtain 25 
 - Hardware (Ascend)
     - Prepare the Ascend AI Processor to set up the hardware environment.
 - Framework
-    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindElec](https://gitee.com/mindspore/mindscience/tree/r0.1/MindElec)
 - For more information, see the following resources:
-    - [MindElec Tutorial](https://www.mindspore.cn/mindscience/docs/en/master/mindelec/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindscience/api/en/master/mindelec.html)
+    - [MindElec Tutorial](https://www.mindspore.cn/mindscience/docs/en/r0.1/mindelec/intro_and_install.html)
+    - [MindElec Python API](https://www.mindspore.cn/mindscience/api/en/r0.1/mindelec.html)
 
 # **Script Description**
 
