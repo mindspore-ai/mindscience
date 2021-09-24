@@ -48,6 +48,8 @@ class MonitorTrain(Callback):
         super(MonitorTrain, self).__init__()
         if not isinstance(per_print_times, int):
             raise TypeError("per_print_times must be int, but get {}".format(type(per_print_times)))
+        if isinstance(per_print_times, bool):
+            raise TypeError("per_print_times must be int, but get {}".format(type(per_print_times)))
         if per_print_times <= 0:
             raise ValueError("per_print_times must be > 0, but get {}".format(per_print_times))
 
@@ -164,6 +166,8 @@ class MonitorEval(Callback):
             raise TypeError("eval_ds must be mindelec dataset, but get {}".format(type(eval_ds)))
 
         if not isinstance(eval_interval, int):
+            raise TypeError("eval_interval must be int, but get {}".format(type(eval_interval)))
+        if isinstance(eval_interval, bool):
             raise TypeError("eval_interval must be int, but get {}".format(type(eval_interval)))
         if eval_interval <= 0:
             raise ValueError("eval_interval must be > 0, but get {}".format(eval_interval))
