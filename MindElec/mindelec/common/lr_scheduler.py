@@ -12,14 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+#pylint: disable=C1801
 """lr scheduler"""
 import numpy as np
 
+from mindspore.ops import constexpr
 from mindspore.ops import operations as P
 from mindspore.common.tensor import Tensor
 from mindspore.common import dtype as mstype
 from mindspore.nn.learning_rate_schedule import LearningRateSchedule, PolynomialDecayLR, WarmUpLR
 from ..architecture.util import check_mode
+
+
+@constexpr
+def _check_tensor(is_tensor):
+    """
+    If the input is not a tensor raise TypeError.
+    """
+    if not is_tensor:
+        raise TypeError("The type of global_step should be Tensor")
+
+
+@constexpr
+def _check_dimension(shape):
+    """check dimension of input"""
+    if len(shape) != 0:
+        raise ValueError("The shape of global_step should be `()`, but got shape {} with length {}".format(
+            shape, len(shape)))
 
 
 class LearningRate(LearningRateSchedule):
@@ -34,10 +53,10 @@ class LearningRate(LearningRateSchedule):
         power (float): A positive float value used to calculate decayed learning rate.
 
     Inputs:
-       Tesnor. The current step number with shape `()`.
+       - **global_steps** (Tensor) - The current step number with shape :math:`()`.
 
     Returns:
-       Tensor. The learning rate value for the current step with shape `()`.
+       Tensor. The learning rate value for the current step with shape :math:`()`.
 
     Supported Platforms:
         ``Ascend``
@@ -55,8 +74,8 @@ class LearningRate(LearningRateSchedule):
         check_mode("LearningRate")
         _check_type(learning_rate, "learning_rate", float, thresh_hold=0.0, restrict=True)
         _check_type(end_learning_rate, "end_learning_rate", float, thresh_hold=0.0, restrict=False)
-        _check_type(warmup_steps, "warmup_steps", int, thresh_hold=0, restrict=False)
-        _check_type(decay_steps, "decay_steps", int, thresh_hold=0, restrict=True)
+        _check_type(warmup_steps, "warmup_steps", int, thresh_hold=0, restrict=False, exclude=bool)
+        _check_type(decay_steps, "decay_steps", int, thresh_hold=0, restrict=True, exclude=bool)
         _check_type(power, "power", float, thresh_hold=0.0, restrict=True)
 
         self.warmup_flag = False
@@ -71,6 +90,9 @@ class LearningRate(LearningRateSchedule):
         self.cast = P.Cast()
 
     def construct(self, global_step):
+        """get learning rate of current step"""
+        _check_tensor(isinstance(global_step, Tensor))
+        _check_dimension(global_step.shape)
         decay_lr = self.decay_lr(global_step)
         if self.warmup_flag:
             is_warmup = self.cast(self.greater(self.warmup_steps, global_step), mstype.float32)
@@ -106,12 +128,12 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
         >>> print(learning_rate.shape)
         (9900,)
     """
-    _check_type(global_step, "global_step", int, thresh_hold=0, restrict=False)
+    _check_type(global_step, "global_step", int, thresh_hold=0, restrict=False, exclude=bool)
     _check_type(lr_init, "lr_init", float, thresh_hold=0.0, restrict=True)
     _check_type(lr_end, "lr_end", float, thresh_hold=0.0, restrict=False)
     _check_type(lr_max, "lr_max", float, thresh_hold=0.0, restrict=True)
-    _check_type(warmup_steps, "warmup_steps", int, thresh_hold=0, restrict=False)
-    _check_type(total_steps, "total_steps", int, thresh_hold=0, restrict=True)
+    _check_type(warmup_steps, "warmup_steps", int, thresh_hold=0, restrict=False, exclude=bool)
+    _check_type(total_steps, "total_steps", int, thresh_hold=0, restrict=True, exclude=bool)
     _check_type(poly_power, "poly_power", float, thresh_hold=0.0, restrict=True)
 
     lr_each_step = []
@@ -136,8 +158,8 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
     return learning_rate
 
 
-def _check_type(param, param_name, param_type, thresh_hold=0, restrict=False):
-    if not isinstance(param, param_type):
+def _check_type(param, param_name, param_type, thresh_hold=0, restrict=False, exclude=None):
+    if (exclude and isinstance(param, exclude)) or not isinstance(param, param_type):
         raise TypeError("the type of {} should be {}, but got {}".format(param_name, param_type, type(param)))
     if restrict:
         if param <= thresh_hold:

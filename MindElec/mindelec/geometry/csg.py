@@ -120,9 +120,9 @@ class CSG(Geometry):
         self._check_sampling_config(self.sampling_config)
         config = self.sampling_config
         if not isinstance(geom_type, str):
-            raise TypeError("geom type shouild be string, but got {} with type {}".format(geom_type, type(geom_type)))
+            raise TypeError("geom_type shouild be string, but got {} with type {}".format(geom_type, type(geom_type)))
         if geom_type not in GEOM_TYPES:
-            raise ValueError("Unknown geom type: {}, only {} are supported now".format(geom_type, GEOM_TYPES))
+            raise ValueError("Unsupported geom_type: {}, only {} are supported now".format(geom_type, GEOM_TYPES))
         if geom_type.lower() == "domain":
             if config.domain is None:
                 raise KeyError("Sampling config for domain of {}:{} should not be none"

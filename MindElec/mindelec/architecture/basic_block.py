@@ -24,7 +24,7 @@ import mindspore.common.dtype as mstype
 from mindspore import Tensor, Parameter
 
 from .activation import get_activation
-from .util import check_mode
+from .util import check_mode, check_type
 
 __all__ = ['LinearBlock', 'ResBlock', 'InputScaleNet', 'FCSequential', 'MultiScaleFCCell']
 
@@ -134,8 +134,8 @@ class ResBlock(nn.Cell):
                  activation=None):
         super(ResBlock, self).__init__()
         check_mode("ResBlock")
-        _check_type(in_channels, "in_channels", int)
-        _check_type(out_channels, "out_channels", int)
+        check_type(in_channels, "in_channels", int, exclude=bool)
+        check_type(out_channels, "out_channels", int, exclude=bool)
         if in_channels != out_channels:
             raise ValueError("in_channels of ResBlock should be equal of out_channels, but got in_channels: {}, "
                              "out_channels: {}".format(in_channels, out_channels))
@@ -201,8 +201,8 @@ class InputScaleNet(nn.Cell):
     def __init__(self, input_scale, input_center=None):
         super(InputScaleNet, self).__init__()
         check_mode("InputScaleNet")
-        _check_type(input_scale, "input_scale", list)
-        _check_type(input_center, "input_center", (type(None), list))
+        check_type(input_scale, "input_scale", list)
+        check_type(input_center, "input_center", (type(None), list))
         input_scale = np.array(input_scale)
         self.input_scale = Tensor(input_scale, mstype.float32)
         if input_center is None:
@@ -272,9 +272,9 @@ class FCSequential(nn.Cell):
                  bias_init='default'):
         super(FCSequential, self).__init__()
         check_mode("FCSequential")
-        _check_type(layers, "layers", int)
-        _check_type(neurons, "neurons", int)
-        _check_type(residual, "residual", bool)
+        check_type(layers, "layers", int, exclude=bool)
+        check_type(neurons, "neurons", int, exclude=bool)
+        check_type(residual, "residual", bool)
         if layers < 3:
             raise ValueError("FCSequential have at least 3 layers, but got layers: {}".format(layers))
         self.network = nn.SequentialCell([LinearBlock(in_channel,
@@ -396,9 +396,9 @@ class MultiScaleFCCell(nn.Cell):
                  ):
         super(MultiScaleFCCell, self).__init__()
         check_mode("MultiScaleFCCell")
-        _check_type(num_scales, "num_scales", int)
-        _check_type(amp_factor, "amp_factor", (int, float))
-        _check_type(scale_factor, "scale_factor", (int, float))
+        check_type(num_scales, "num_scales", int, exclude=bool)
+        check_type(amp_factor, "amp_factor", (int, float), exclude=bool)
+        check_type(scale_factor, "scale_factor", (int, float), exclude=bool)
 
         self.cell_list = nn.CellList()
         self.num_scales = num_scales
@@ -406,7 +406,7 @@ class MultiScaleFCCell(nn.Cell):
 
         self.latent_vector = latent_vector
         if self.latent_vector is not None:
-            _check_type(latent_vector, "latent_vector", Parameter)
+            check_type(latent_vector, "latent_vector", Parameter)
             self.num_scenarios = latent_vector.shape[0]
             self.latent_size = latent_vector.shape[1]
             in_channel += self.latent_size
@@ -445,10 +445,3 @@ class MultiScaleFCCell(nn.Cell):
             x_s = x * self.scale_coef[i]
             out = out + self.cast(self.cell_list[i](x_s), mstype.float32)
         return out
-
-
-def _check_type(param, param_name, param_type):
-    """check type"""
-    if not isinstance(param, param_type):
-        raise TypeError("The type of {} should be instance of {}, but got {}".format(
-            param_name, param_type, type(param)))

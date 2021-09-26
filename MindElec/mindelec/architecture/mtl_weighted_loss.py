@@ -22,7 +22,7 @@ import mindspore.nn as nn
 import mindspore.common.dtype as mstype
 from mindspore.common.tensor import Tensor
 from mindspore import Parameter
-from .util import check_mode
+from .util import check_mode, check_type
 
 __all__ = ['MTLWeightedLossCell']
 
@@ -58,8 +58,7 @@ class MTLWeightedLossCell(nn.Cell):
     def __init__(self, num_losses):
         super(MTLWeightedLossCell, self).__init__(auto_prefix=False)
         check_mode("MTLWeightedLossCell")
-        if not isinstance(num_losses, int):
-            raise TypeError("the type of num_losses should be int, but got {}".format(type(num_losses)))
+        check_type(num_losses, "num_losses", int, exclude=bool)
         if num_losses <= 0:
             raise ValueError("the value of num_losses should be positive, but got {}".format(num_losses))
         self.num_losses = num_losses
