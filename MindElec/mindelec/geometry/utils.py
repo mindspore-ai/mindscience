@@ -102,7 +102,7 @@ def generate_mesh(coord_min, coord_max, mesh_size, endpoint=True):
     """generate regularly distributed mesh"""
     dimension = len(coord_min)
     if dimension != len(coord_max) or dimension != len(mesh_size):
-        raise ValueError("Inconsistent dimension info, coord_min: {}, coor_max: {}, mesh_size: {}"
+        raise ValueError("Inconsistent dimension info, coord_min: {}, coord_max: {}, mesh_size: {}"
                          .format(coord_min, coord_max, mesh_size))
 
     axis_x = np.linspace(coord_min[0], coord_max[0], mesh_size[0], endpoint=endpoint)

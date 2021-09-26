@@ -107,10 +107,8 @@ class Geometry:
     Args:
         name (str): name of the geometry.
         dim (int): number of dimensions.
-        coord_min (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of
-            the geometry.
-        coord_max (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of
-            the geometry.
+        coord_min (Union[list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of the geometry.
+        coord_max (Union[list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of the geometry.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: None
 
@@ -136,13 +134,17 @@ class Geometry:
         self.dim = dim
         if self.dim <= 0:
             raise ValueError("dimension should not be non-positive, but got dim: {}".format(self.dim))
+        supported_type = (int, float, np.ndarray, list, tuple)
+        if isinstance(coord_min, bool) or isinstance(coord_max, bool) or \
+            not isinstance(coord_min, supported_type) or not isinstance(coord_max, supported_type):
+            raise TypeError("argument coord_min/max must be {}, but got coord_min: {} with type: {};"
+                            "coord_max: {} with type: {}".format(supported_type, coord_min, type(coord_min),
+                                                                 coord_max, type(coord_max)))
         if isinstance(coord_min, (int, float)):
             coord_min = [coord_min]
         if isinstance(coord_max, (int, float)):
             coord_max = [coord_max]
-        if not isinstance(coord_min, (np.ndarray, list, tuple)) or not isinstance(coord_max, (np.ndarray, list, tuple)):
-            raise TypeError("argument coord_min/max must be np.array or list or tuple, but got coord_min: {}, type: {};"
-                            "coord_max: {}, type: {}".format(coord_min, type(coord_min), coord_max, type(coord_max)))
+
         self.coord_min, self.coord_max = np.array(coord_min), np.array(coord_max)
         for ele in np.concatenate((self.coord_min, self.coord_max), axis=0):
             if not isinstance(ele, DATA_TYPES):
@@ -153,7 +155,7 @@ class Geometry:
                              "coord_min: {} with length {}, coord_max {} with length {}".format(
                                  dim, coord_min, len(coord_min), coord_max, len(coord_max)))
         if np.any(self.coord_max - self.coord_min <= 0.0):
-            raise ValueError("coord_min should be smaller than coord_max, but got coord_min: {}, coor_max: {}".format(
+            raise ValueError("coord_min should be smaller than coord_max, but got coord_min: {}, coord_max: {}".format(
                 self.coord_min, self.coord_max))
 
         if dtype not in DATA_TYPES:
@@ -268,8 +270,7 @@ def _check_geom_type(part_sampling_dict):
     """check key and value of part_sampling_dict"""
     for geom_type in part_sampling_dict.keys():
         if geom_type not in GEOM_TYPES:
-            raise KeyError("Unknown geom types: {}, only {} are supported now"
-                           .format(geom_type, GEOM_TYPES))
+            raise KeyError("Unsupported geom_type: {}, only {} are supported now".format(geom_type, GEOM_TYPES))
         config = part_sampling_dict[geom_type]
         if not isinstance(config, PartSamplingConfig):
             raise TypeError("Wrong type of value: {}, should be inance of class PartSamplingConfig, but got: {}"
