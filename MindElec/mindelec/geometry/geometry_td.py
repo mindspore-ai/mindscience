@@ -29,8 +29,8 @@ class TimeDomain(Interval):
 
     Args:
         name (str): name of the time domain.
-        start (Union[int, float]): start of the time domain.
-        end (Union[int, float]): end of the time domain.
+        start (Union[int, float]): start of the time domain. Default: 0.0.
+        end (Union[int, float]): end of the time domain. Default: 1.0.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: None
 
@@ -53,7 +53,7 @@ class TimeDomain(Interval):
         (100, 1)
     """
 
-    def __init__(self, name, start=0, end=1, dtype=np.float32, sampling_config=None):
+    def __init__(self, name, start=0.0, end=1.0, dtype=np.float32, sampling_config=None):
         self.start = start
         self.end = end
         super(TimeDomain, self).__init__(name, coord_min=start, coord_max=end, dtype=dtype,
@@ -267,9 +267,9 @@ class GeometryWithTime(Geometry):
             raise ValueError("Sampling config for {}:{} is None, please call set_sampling_config method to set"
                              .format(self.geom_type, self.name))
         if not isinstance(geom_type, str):
-            raise TypeError("geom type shouild be string, but got {} with type {}".format(geom_type, type(geom_type)))
+            raise TypeError("geom_type shouild be string, but got {} with type {}".format(geom_type, type(geom_type)))
         if geom_type not in GEOM_TYPES:
-            raise ValueError("Unknown geom type: {}, only {} are supported now".format(geom_type, GEOM_TYPES))
+            raise ValueError("Unsupported geom_type: {}, only {} are supported now".format(geom_type, GEOM_TYPES))
         if geom_type.lower() == "domain":
             if config.domain is None:
                 raise KeyError("Sampling config for domain of {}:{} should not be none"

@@ -51,7 +51,7 @@ class Interval(HyperCube):
     def __init__(self, name, coord_min, coord_max, dtype=np.float32, sampling_config=None):
         if not isinstance(coord_min, (int, float)) or not isinstance(coord_max, (int, float)) or \
             isinstance(coord_min, bool) or isinstance(coord_max, bool):
-            raise ValueError("coord_min and coord_max should be int or float for class Interval, but got "
+            raise ValueError("coord_min and coord_max should be int or float, but got "
                              "coord_min {} with type {}, coord_max {} with type {}".format(
                                  coord_min, type(coord_min), coord_max, type(coord_max)))
         super(Interval, self).__init__(name, 1, [coord_min], [coord_max], dtype=dtype, sampling_config=sampling_config)

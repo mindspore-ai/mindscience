@@ -19,3 +19,9 @@ from mindspore import context
 def check_mode(api_name):
     if context.get_context("mode") == context.PYNATIVE_MODE:
         raise RuntimeError("{} is only supported GRAPH_MODE now but got PYNATIVE_MODE".format(api_name))
+
+
+def check_type(param, param_name, param_type, exclude=None):
+    if (exclude and isinstance(param, exclude)) or not isinstance(param, param_type):
+        raise TypeError("The type of {} should be instance of {}, but got {}".format(
+            param_name, param_type, type(param)))
