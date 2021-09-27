@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Test case polypeptide"""
+"""Test case covid min"""
 
 import time
 import numpy as np
