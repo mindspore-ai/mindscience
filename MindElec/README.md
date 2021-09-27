@@ -67,7 +67,7 @@ The simulation results, such as the S parameters or electromagnetic fields, can 
 |               | CentOS-x86      | ✔️   |
 |               | CentOS-aarch64  | ✔️   |
 
-- Install MindSpore by referring to [MindSpore Installation Guide](https://www.mindspore.cn/install/en). The version must be 1.4.0 or later.
+- Install MindSpore by referring to [MindSpore Installation Guide](https://www.mindspore.cn/install/en). The version must be 1.5.0 or later.
 - For other dependencies, see [requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/MindElec/requirements.txt).
 
 ### Installing Using pip

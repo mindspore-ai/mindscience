@@ -67,7 +67,7 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 |               | CentOS-x86      | ✔️   |
 |               | CentOS-aarch64  | ✔️   |
 
-- 参考[MindSpore安装指南](https://www.mindspore.cn/install)，完成MindSpore的安装，要求至少1.4.0版本。
+- 参考[MindSpore安装指南](https://www.mindspore.cn/install)，完成MindSpore的安装，要求至少1.5.0版本。
 - 其余依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/MindElec/requirements.txt)
 
 ### pip安装
