@@ -15,6 +15,8 @@
 """ test metrics """
 import pytest
 from mindspore import context
+from mindspore.common.tensor import Tensor
+from mindspore.common import dtype as mstype
 from mindelec.common import LearningRate, get_poly_lr
 
 context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
@@ -27,7 +29,7 @@ context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
 def test_learning_rate():
     """test LearningRate"""
     learning_rate = LearningRate(0.1, 0.001, 0, 10, 0.5)
-    res = learning_rate(10000)
+    res = learning_rate(Tensor(10000, mstype.int32))
     assert res == 0.001
 
 
