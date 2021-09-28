@@ -101,6 +101,7 @@ S4 product
   mode = npt
   step_limit = 10000000
   dt = 4e-3
+  constrain_mode = simple_constrain
   target_temperature = 300.0
   write_information_interval = 1000
   write_restart_file_interval = 250000
