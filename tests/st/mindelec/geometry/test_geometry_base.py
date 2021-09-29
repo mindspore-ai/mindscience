@@ -58,11 +58,11 @@ def check_sampling_config_case1():
         SamplingConfig({"test": "test"})
     with pytest.raises(TypeError):
         SamplingConfig({"domain": "test"})
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         part_sampling_config_dict = {"domain": PartSamplingConfig("test", False, True)}
         SamplingConfig(part_sampling_config_dict)
 
-    part_sampling_config_dict = {"domain": PartSamplingConfig([100, 100], False, True),
+    part_sampling_config_dict = {"domain": PartSamplingConfig([100, 100], False, "uniform", True, True),
                                  "BC": PartSamplingConfig(100, True, "uniform", True, True)}
     sampling_config_tmp = SamplingConfig(part_sampling_config_dict)
     for attr, config in sampling_config_tmp.__dict__.items():
