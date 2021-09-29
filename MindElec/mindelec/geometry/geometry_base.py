@@ -28,7 +28,7 @@ class PartSamplingConfig:
     Definition of partial sampling configuration.
 
     Args:
-        size (Union[tuple, list]): number of sampling points.
+        size (Union[int, tuple[int], list[int]): number of sampling points.
         random_sampling (bool): Specifies whether randomly sampling points. Default: True.
         sampler (str): method for random sampling. Default: uniform.
         random_merge (bool): Specifies whether randomly merge coordinates of different dimensions. Default: True.
@@ -45,9 +45,15 @@ class PartSamplingConfig:
         >>> partsampling = PartSamplingConfig(100, True, "uniform", True, True)
     """
     def __init__(self, size, random_sampling=True, sampler="uniform", random_merge=True, with_normal=False):
-        if random_sampling and (not isinstance(size, int) or isinstance(size, bool)):
-            raise TypeError("The sample size: {} should be int number when random sampling, but got: {}"
-                            .format(size, type(size)))
+        if isinstance(size, bool) or not isinstance(size, (tuple, list, int)):
+            raise TypeError("The type of size should be int, tuple or list but got {}".format(type(size)))
+        if isinstance(size, (tuple, list)):
+            for ele in size:
+                _check_param_type(ele, "element in size", int)
+        _check_param_type(random_sampling, "random_sampling", bool)
+        _check_param_type(sampler, "sampler", str)
+        _check_param_type(random_merge, "random_merge", bool)
+        _check_param_type(with_normal, "with_normal", bool)
         self.random_sampling = random_sampling
         self.sampler = sampler
         self.size = size
@@ -107,8 +113,10 @@ class Geometry:
     Args:
         name (str): name of the geometry.
         dim (int): number of dimensions.
-        coord_min (Union[list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of the geometry.
-        coord_max (Union[list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of the geometry.
+        coord_min (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of the
+            geometry.
+        coord_max (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of the
+            geometry.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: None
 
@@ -261,9 +269,9 @@ class Geometry:
 def _check_dict(part_sampling_dict):
     """check whether the type is dict"""
     if not isinstance(part_sampling_dict, dict):
-        raise TypeError("part_sampling_dict: {} should be type of dict, the key is geom_type while the value is "
-                        "instance of class PartSamplinlgConfiwhich describe the sampling info of each part"
-                        .format(part_sampling_dict))
+        raise TypeError("part_sampling_dict should be type of dict, the key is geom_type while the value is "
+                        "instance of class PartSamplinlgConfig which describe the sampling info of each part, but got "
+                        "{} with type {}".format(part_sampling_dict, type(part_sampling_dict)))
 
 
 def _check_geom_type(part_sampling_dict):
@@ -273,7 +281,7 @@ def _check_geom_type(part_sampling_dict):
             raise KeyError("Unsupported geom_type: {}, only {} are supported now".format(geom_type, GEOM_TYPES))
         config = part_sampling_dict[geom_type]
         if not isinstance(config, PartSamplingConfig):
-            raise TypeError("Wrong type of value: {}, should be inance of class PartSamplingConfig, but got: {}"
+            raise TypeError("The type of config should be instance of class PartSamplingConfig, but got {} with type {}"
                             .format(config, type(config)))
 
 
@@ -283,6 +291,16 @@ def _check_size_type(geom):
         if isinstance(geom.size, int) and not isinstance(geom.size, bool):
             geom.size = [geom.size]
         if not isinstance(geom.size, (list, tuple)):
-            raise ValueError("The sample size: {} should be type of list/tuple which length equal to the geom's "
-                             "dimension when sampling on regular mesh".format(geom.size))
+            raise TypeError("The sample size should be type of list/tuple which length equal to the geom's "
+                            "dimension when sampling on regular mesh, but got {} with type {}"
+                            .format(geom.size, type(geom.size)))
         geom.size = np.array(geom.size).astype(np.int64)
+
+def _check_param_type(param, param_name, param_type):
+    """check type of parameter"""
+    if param_type == int:
+        if isinstance(param, bool) or not isinstance(param, int):
+            raise TypeError("The type of {} should be int but got {}".format(param_name, type(param)))
+    else:
+        if not isinstance(param, param_type):
+            raise TypeError("The type of {} should be {} but got {}".format(param_name, param_type, type(param)))
