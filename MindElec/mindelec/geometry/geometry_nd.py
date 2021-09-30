@@ -29,8 +29,10 @@ class HyperCube(Geometry):
     Args:
         name (str): name of the hyper cube.
         dim (int): number of dimensions.
-        coord_min (Union[list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of the hyper cube.
-        coord_max (Union[list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of the hyper cube.
+        coord_min (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of the
+            hyper cube.
+        coord_max (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of the
+            hyper cube.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: None
 
