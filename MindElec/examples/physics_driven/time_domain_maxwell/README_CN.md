@@ -21,10 +21,10 @@
 麦克斯韦方程组是一组描述电场、磁场与电荷密度、电流密度之间关系的偏微分方程，有激励源的控制方程具体描述如下：
 
 $$
-\nabla\times E=-\mu \dfrac{\partial H}{\partial t},
+\nabla\times E=-\mu \dfrac{\partial H}{\partial t} + J(x, t),
 $$
 $$
-\nabla\times H=\epsilon \dfrac{\partial E}{\partial t} + J(x, t)
+\nabla\times H=\epsilon \dfrac{\partial E}{\partial t}
 $$
 
 其中$\epsilon,\mu$分别是介质的绝对介电常数、绝对磁导率。$J(x, t)$是电磁仿真过程中的激励源，常用的加源方式包括点源，线源和面源，本案例主要考虑点源的形式，数学上表示为：
