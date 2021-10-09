@@ -15,17 +15,21 @@
 """dataset utilities"""
 
 import os
+import argparse
 import numpy as np
 
 from mindelec.data import Dataset, ExistedDataConfig
 
-INPUT_PATH = ""
-LABEL_PATH = ""
-DATA_CONFIG_PATH = "./data_config.npz"
-SAVE_DATA_PATH = "./"
+parser = argparse.ArgumentParser()
+parser.add_argument('--input_path', type=str)
+parser.add_argument('--label_path', type=str)
+parser.add_argument('--data_config_path', type=str, default="./data_config.npz")
+parser.add_argument('--save_data_path', default='./', help='checkpoint directory')
+opt = parser.parse_args()
 
 def custom_normalize(dataset, mean=None, std=None):
     """ custom normalization """
+
     ori_shape = dataset.shape
     dataset = dataset.reshape(ori_shape[0], -1)
     dataset = np.transpose(dataset)
@@ -40,16 +44,16 @@ def custom_normalize(dataset, mean=None, std=None):
     dataset = dataset.reshape(ori_shape)
     return dataset, mean, std
 
-def generate_data(input_path, label_path):
+def generate_data():
     """generate dataset for s11 parameter prediction"""
 
-    data_input = np.load(input_path)
-    if os.path.exists(DATA_CONFIG_PATH):
-        data_config = np.load(DATA_CONFIG_PATH)
+    data_input = np.load(opt.input_path)
+    if os.path.exists(opt.data_config_path):
+        data_config = np.load(opt.data_config_path)
         mean = data_config["mean"]
         std = data_config["std"]
     data_input, mean, std = custom_normalize(data_input)
-    data_label = np.load(label_path)
+    data_label = np.load(opt.label_path)
 
     print(data_input.shape)
     print(data_label.shape)
@@ -59,9 +63,9 @@ def generate_data(input_path, label_path):
     scale_s11 = 0.5 * np.max(np.abs(data_label[:, :]))
     data_label[:, :] = data_label[:, :] / scale_s11
 
-    np.savez(DATA_CONFIG_PATH, scale_s11=scale_s11, mean=mean, std=std)
-    np.save(os.path.join(SAVE_DATA_PATH, 'data_input.npy'), data_input)
-    np.save(os.path.join(SAVE_DATA_PATH, 'data_label.npy'), data_label)
+    np.savez(opt.data_config_path, scale_s11=scale_s11, mean=mean, std=std)
+    np.save(os.path.join(opt.save_data_path, 'data_input.npy'), data_input)
+    np.save(os.path.join(opt.save_data_path, 'data_label.npy'), data_label)
     print("data saved in target path")
 
 
@@ -76,4 +80,4 @@ def create_dataset(input_path, label_path, batch_size=8, shuffle=True):
     return data_loader
 
 if __name__ == "__main__":
-    generate_data(input_path=INPUT_PATH, label_path=LABEL_PATH)
+    generate_data()

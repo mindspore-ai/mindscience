@@ -42,7 +42,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--train_input_path', type=str)
 parser.add_argument('--train_label_path', type=str)
 parser.add_argument('--device_num', type=int, default=1)
-parser.add_argument('--checkpoint-dir', default='./ckpt/', help='checkpoint directory')
+parser.add_argument('--checkpoint_dir', default='./ckpt/', help='checkpoint directory')
 
 opt = parser.parse_args()
 context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend", device_id=opt.device_num)

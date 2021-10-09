@@ -24,6 +24,8 @@
 
 基于[点云数据生成](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/generate_pointcloud)和[点云数据压缩](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/data_compression)生成散射参数预测模型的输入数据，对应的标签需要使用商业仿真软件或者时域有限差分算法生成。
 
+生成的数据集需要使用src/dataset.py中的generate_data函数进行归一化与平滑处理，调用方式参见`脚本说明/数据处理`。
+
 本示例中模型的训练数据涉及商业机密，无法提供下载地址，开发者可以使用`src/sampling.py`生成用于功能验证的伪数据。
 
 ## 环境要求
@@ -65,6 +67,16 @@
 'batch_size': 8,                          ## 批数据大小
 'lr': 0.0001,                             ## 基础学习率
 'lr_decay_milestones': 5,                 ## LR衰减次数
+```
+
+### 数据处理
+
+训练或测试数据需要调用`src/dataset.py`来对数据做归一化与平滑处理，调用方式如下。
+
+``` shell
+cd dataset
+python dataset.py --input_path INPUT_PATH
+                  --label_path LABEL_PATH
 ```
 
 ### 训练过程
