@@ -24,7 +24,7 @@
 
 基于[点云数据生成](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/generate_pointcloud)和[点云数据压缩](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud/data_compression)生成散射参数预测模型的输入数据，对应的标签需要使用商业仿真软件或者时域有限差分算法生成。
 
-生成的数据集需要使用src/dataset.py中的generate_data函数进行归一化与平滑处理，调用方式参见`脚本说明/数据处理`。
+生成的数据集需要使用src/data_preprocessing.py中的generate_data函数进行归一化与平滑处理，调用方式参见`脚本说明/数据处理`。
 
 本示例中模型的训练数据涉及商业机密，无法提供下载地址，开发者可以使用`src/sampling.py`生成用于功能验证的伪数据。
 
@@ -48,7 +48,8 @@
   ├─README.md
   ├─src
     ├─config.py                      ## 超参定义
-    ├─dataset.py                     ## 数据集准备与导入
+    ├─dataset.py                     ## 数据集导入接口
+    ├─data_preprocessing.py          ## 数据预处理
     ├─metric.py                      ## 评估指标
     ├─model.py                       ## 网络模型
     ├─lr_generator.py                ## 学习率生成
@@ -71,12 +72,12 @@
 
 ### 数据处理
 
-训练或测试数据需要调用`src/dataset.py`来对数据做归一化与平滑处理，调用方式如下。
+训练或测试数据需要调用`src/data_preprocessing.py`来对数据做归一化与平滑处理，调用方式如下。
 
 ``` shell
-cd dataset
-python dataset.py --input_path INPUT_PATH
-                  --label_path LABEL_PATH
+cd src
+python data_preprocessing.py --input_path INPUT_PATH
+                             --label_path LABEL_PATH
 ```
 
 ### 训练过程
