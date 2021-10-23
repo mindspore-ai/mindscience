@@ -5,7 +5,7 @@
  针对蛋白质的[多序列比对](https://en.wikipedia.org/wiki/Multiple_sequence_alignment)（multiple sequence alignment; MSA）是研究蛋白质的结构、功能和进化关系等问题的重要方法。MSA数据中蕴含了构成蛋白质的氨基酸序列中的保守性质(conservation)、协同突变(co-evolution)和功能与物种进化关系(phylogenetics)的相关信息。
 
 ![MSA与蛋白质性质的关联](../docs/MSA_Figure.png)
-
+(Figure inspired by Sergey Ovchinnikov)
  人类已知的存在于自然界中的蛋白质序列数目已经上亿并在快速增长，但仅凭这些蛋白质单序列的数据很难了解蛋白之间的关系。Protein MSA数据库，就是一个对不同蛋白质序列之间的关系进行了标记的大规模“关系型”数据库，被标记为关联的蛋白质序列之间的相似度、进化关系和突变所在位点的分布等信息对蛋白质结构和功能的预测极为重要。例如在AlphaFold2模型[1]中，目标蛋白序列的MSA信息就是预测结构的必要输入信息之一。
 
 ## 数据库建立方法
