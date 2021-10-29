@@ -152,7 +152,6 @@ class Grad(nn.Cell):
         self.dtype = ops.DType()
 
     def construct(self, *x):
-        """define computation to be performed"""
         x = _transfer_tensor_to_tuple(x)
         input_idx, output_idx, net_out = x[-3], x[-2], x[-1]
         net_in = x[:-3]
