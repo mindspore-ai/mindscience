@@ -53,7 +53,7 @@ class LearningRate(LearningRateSchedule):
         power (float): A positive float value used to calculate decayed learning rate.
 
     Inputs:
-       - **global_steps** (Tensor) - The current step number with shape :math:`()`.
+       - **global_step** (Tensor) - The current step number with shape :math:`()`.
 
     Returns:
        Tensor. The learning rate value for the current step with shape :math:`()`.
@@ -90,7 +90,6 @@ class LearningRate(LearningRateSchedule):
         self.cast = P.Cast()
 
     def construct(self, global_step):
-        """get learning rate of current step"""
         _check_tensor(isinstance(global_step, Tensor))
         _check_dimension(global_step.shape)
         decay_lr = self.decay_lr(global_step)
