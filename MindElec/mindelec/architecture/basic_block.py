@@ -433,7 +433,6 @@ class MultiScaleFCCell(nn.Cell):
         self.concat = ops.Concat(axis=1)
 
     def construct(self, x):
-        """running multi-scale net"""
         x = self.input_scale(x)
         if self.latent_vector is not None:
             batch_size = x.shape[0]
