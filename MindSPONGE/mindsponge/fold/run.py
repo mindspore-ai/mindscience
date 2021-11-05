@@ -26,8 +26,8 @@ from mindspore import load_checkpoint
 
 from data.feature.feature_extraction import process_features
 from data.tools.data_process import data_process
-from common.generate_pdb import to_pdb, from_prediction
-from common.residue_constants import compute_confidence
+from commons.generate_pdb import to_pdb, from_prediction
+from commons.utils import compute_confidence
 from model import AlphaFold
 from config import config, global_config
 
@@ -44,14 +44,14 @@ parser.add_argument('--max_template_date', help='Maximum template release date.'
 parser.add_argument('--kalign_binary_path', help='Path to kalign executable.')
 parser.add_argument('--obsolete_pdbs_path', help='Path to obsolete pdbs path.')
 parser.add_argument('--checkpoint_path', help='Path of the checkpoint.')
-
+parser.add_argument('--device_id', default=0, help='Device id to be used.')
 args = parser.parse_args()
 
 if __name__ == "__main__":
     context.set_context(mode=context.GRAPH_MODE,
                         device_target="Ascend",
                         variable_memory_max_size="31GB",
-                        device_id=5,
+                        device_id=args.device_id,
                         save_graphs=False)
     model_name = "model_1"
     model_config = config.model_config(model_name)

@@ -23,8 +23,8 @@ from mindspore.ops import functional as F
 from mindspore.common.tensor import Tensor
 from mindspore import Parameter
 
-from common import residue_constants
-from common.utils import dgram_from_positions, batch_make_transform_from_reference, batch_quat_affine, \
+from commons import residue_constants
+from commons.utils import dgram_from_positions, batch_make_transform_from_reference, batch_quat_affine, \
     batch_invert_point, batch_rot_to_quat
 from module.basic_module import Attention, MSARowAttentionWithPairBias, MSAColumnAttention, MSAColumnGlobalAttention, \
     Transition, OuterProductMean, TriangleMultiplication, TriangleAttention

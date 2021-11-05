@@ -23,8 +23,8 @@ from mindspore.common.tensor import Tensor
 from mindspore import Parameter
 from mindspore.ops import functional as F
 
-from common import residue_constants
-from common.utils import get_chi_atom_indices, pseudo_beta_fn, dgram_from_positions, atom37_to_torsion_angles
+from commons import residue_constants
+from commons.utils import get_chi_atom_indices, pseudo_beta_fn, dgram_from_positions, atom37_to_torsion_angles
 from module.evoformer_module import TemplateEmbedding, EvoformerIteration
 from module.structure_module import StructureModule, PredictedLDDTHead
 
@@ -118,7 +118,7 @@ class AlphaFold(nn.Cell):
     def construct(self, target_feat, msa_feat, msa_mask, seq_mask, aatype,
                   template_aatype, template_all_atom_masks, template_all_atom_positions,
                   template_mask, template_pseudo_beta_mask, template_pseudo_beta,
-                  template_sum_probs, extra_msa, extra_has_deletion,
+                  _, extra_msa, extra_has_deletion,
                   extra_deletion_value, extra_msa_mask,
                   atom14_atom_exists, atom37_atom_exists, residue_index,
                   prev_pos, prev_msa_first_row, prev_pair):
@@ -157,7 +157,7 @@ class AlphaFold(nn.Cell):
             template_pair_representation = self.template_embedding(pair_activations, template_aatype,
                                                                    template_all_atom_masks, template_all_atom_positions,
                                                                    template_mask, template_pseudo_beta_mask,
-                                                                   template_pseudo_beta, template_sum_probs, mask_2d)
+                                                                   template_pseudo_beta, mask_2d)
             pair_activations += template_pair_representation
 
         msa_1hot = self.extra_msa_one_hot(extra_msa)
@@ -227,7 +227,7 @@ class AlphaFold(nn.Cell):
                                   atom14_atom_exists,
                                   atom37_atom_exists)
 
-        predicted_lddt_logits = self.module_lddt(rp_structure_module, is_training=False)
+        predicted_lddt_logits = self.module_lddt(rp_structure_module)
 
         prev_pos = final_atom_positions.astype(mstype.float16)
         prev_msa_first_row = msa_first_row.astype(mstype.float16)

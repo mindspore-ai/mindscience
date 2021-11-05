@@ -17,7 +17,7 @@ import os
 import hashlib
 import re
 import numpy as np
-from common import residue_constants
+from commons import residue_constants
 from data.tools.parsers import parse_fasta, parse_hhr, parse_a3m
 from data.tools.templates import TemplateHitFeaturizer
 from data.tools.data_tools import HHSearch
@@ -159,11 +159,11 @@ class DataPipeline:
         return {**sequence_features, **msa_features, **templates_result.features}
 
 
-def data_process(seq_index, args):
+def data_process(seq_num, args):
     """data_process"""
 
-    fasta_path = args.input_fasta_path + 'casp14_seq' + str(seq_index) + '.fasta'
-    result_path = args.msa_result_path + "/result_" + str(seq_index)
+    fasta_path = args.input_fasta_path + seq_num + '.fasta'
+    result_path = args.msa_result_path + "/result_" + str(seq_num)
     if args.database_envdb_dir:
         use_env = True
         command = "sh ./data/tools/msa_search.sh mmseqs " + fasta_path + " " + result_path + " " + \

@@ -23,7 +23,7 @@ from mindspore.ops import functional as F
 from mindspore.common.tensor import Tensor
 from mindspore import Parameter
 import numpy as np
-from common.utils import mask_mean
+from commons.utils import mask_mean
 
 
 class Attention(nn.Cell):

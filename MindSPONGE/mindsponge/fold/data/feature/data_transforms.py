@@ -15,7 +15,7 @@
 """data transforms"""
 import numpy as np
 
-from common import residue_constants
+from commons import residue_constants
 
 NUM_RES = 'num residues placeholder'
 NUM_MSA_SEQ = 'msa placeholder'

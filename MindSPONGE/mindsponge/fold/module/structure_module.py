@@ -19,8 +19,11 @@ import mindspore.ops as ops
 import mindspore.common.dtype as mstype
 import mindspore.numpy as mnp
 from mindspore import Parameter, ms_function, Tensor
-from common import residue_constants
-# from common.utils import *
+from mindspore import nn
+from commons import residue_constants
+from commons.utils import generate_new_affine, to_tensor, from_tensor, vecs_to_tensor, atom14_to_atom37, \
+    get_exp_atom_pos, get_exp_frames, pre_compose, scale_translation, to_tensor_new, l2_normalize, \
+    torsion_angles_to_frames, frames_and_literature_positions_to_atom14_pos, apply_to_point, _invert_point
 
 class InvariantPointAttention(nn.Cell):
     """Invariant Point attention module."""
