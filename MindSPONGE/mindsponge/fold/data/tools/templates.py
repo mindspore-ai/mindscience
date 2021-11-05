@@ -22,7 +22,7 @@ from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 from absl import logging
 import numpy as np
 
-import common.residue_constants as residue_constants
+import commons.residue_constants as residue_constants
 import data.tools.mmcif_parsing as mmcif_parsing
 import data.tools.parsers as parsers
 from data.tools.data_tools import Kalign

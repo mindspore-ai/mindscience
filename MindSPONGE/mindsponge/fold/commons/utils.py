@@ -8,8 +8,8 @@ import mindspore.numpy as mnp
 import mindspore.nn as nn
 from mindspore.common.tensor import Tensor
 
-from common import residue_constants
-import common.r3 as r3
+from commons import residue_constants
+import commons.r3 as r3
 
 
 QUAT_TO_ROT = np.zeros((4, 4, 3, 3), dtype=np.float32)
