@@ -25,7 +25,6 @@ NUM_SEQ = "length msa placeholder"
 NUM_TEMPLATES = "num templates placeholder"
 
 FEATURES = {
-    # Static features of a protein sequence
     "aatype": (np.float32, [NUM_RES, 21]),
     "between_segment_residues": (np.int64, [NUM_RES, 1]),
     "deletion_matrix": (np.float32, [NUM_SEQ, NUM_RES, 1]),
@@ -84,16 +83,12 @@ def ensembled_map_fns(data_config):
     map_fns.append(data_transforms.sample_msa(max_msa_clusters, keep_extra=True))
 
     if 'masked_msa' in common_cfg:
-        # Masked MSA should come *before* MSA clustering so that
-        # the clustering and full MSA profile do not leak information about
-        # the masked locations and secret corrupted locations.
         map_fns.append(data_transforms.make_masked_msa(common_cfg.masked_msa, eval_cfg.masked_msa_replace_fraction))
 
     if common_cfg.msa_cluster_features:
         map_fns.append(data_transforms.nearest_neighbor_clusters())
         map_fns.append(data_transforms.summarize_clusters())
 
-    # Crop after creating the cluster profiles.
     if max_extra_msa:
         map_fns.append(data_transforms.crop_extra_msa(max_extra_msa))
     else:
@@ -138,12 +133,10 @@ def process_arrays_from_config(arrays, data_config):
     arrays_0 = wrap_ensemble_fn(arrays, np.array(0, np.int32))
     num_ensemble = eval_cfg.num_ensemble
     if data_config.common.resample_msa_in_recycling:
-        # Separate batch per ensembling & recycling step.
         num_ensemble *= data_config.common.num_recycle + 1
 
     result_array = {x: () for x in arrays_0.keys()}
     if num_ensemble > 1:
-        # todo tobe checked
         for i in range(num_ensemble):
             arrays_t = wrap_ensemble_fn(arrays, np.array(i, np.int32))
             for key in arrays_0.keys():
@@ -183,7 +176,6 @@ def feature_shape(feature_name,
 
 def parse_reshape_logic(parsed_features, features, num_template, key=None):
     """Transforms parsed serial features to the correct shape."""
-    # Find out what is the number of sequences and the number of alignments.
     num_residues = np.reshape(parsed_features['seq_length'].astype(np.int32), (-1,))[0]
 
     if "num_alignments" in parsed_features:
@@ -194,7 +186,6 @@ def parse_reshape_logic(parsed_features, features, num_template, key=None):
     if key is not None and "key" in features:
         parsed_features["key"] = [key]  # Expand dims from () to (1,).
 
-    # Reshape the arrays according to the sequence length and num alignments.
     for k, v in parsed_features.items():
         new_shape = feature_shape(
             feature_name=k,
@@ -211,7 +202,6 @@ def parse_reshape_logic(parsed_features, features, num_template, key=None):
                              "".format(k, np.size(v), new_shape))
 
         if "template" not in k:
-            # Make sure the feature we are reshaping is not empty.
             if np.size(v) <= 0:
                 raise ValueError("The feature {} is not empty.".format(k))
         parsed_features[k] = np.reshape(v, new_shape)
@@ -221,7 +211,6 @@ def parse_reshape_logic(parsed_features, features, num_template, key=None):
 
 def _make_features_metadata(feature_names):
     """Makes a feature name to type and shape mapping from a list of names."""
-    # Make sure these features are always read.
     required_features = ["sequence", "domain_name", "template_domain_names"]
     feature_names = list(set(feature_names) - set(required_features))
 
@@ -230,16 +219,7 @@ def _make_features_metadata(feature_names):
 
 
 def np_to_array_dict(np_example, features):
-    """Creates dict of arrays.
-
-    Args:
-      np_example: A dict of NumPy feature arrays.
-      features: A list of strings of feature names to be returned in the dataset.
-
-    Returns:
-      A dictionary of features mapping feature names to features. Only the given
-      features are returned, all other ones are filtered out.
-    """
+    """Creates dict of arrays."""
     features_metadata = _make_features_metadata(features)
     array_dict = {k: v for k, v in np_example.items() if k in features_metadata}
     if "template_domain_names" in np_example:
@@ -247,8 +227,6 @@ def np_to_array_dict(np_example, features):
     else:
         num_template = 0
 
-    # Ensures shapes are as expected. Needed for setting size of empty features
-    # e.g. when no template hits were found.
     array_dict = parse_reshape_logic(array_dict, features_metadata, num_template)
     array_dict['template_mask'] = np.ones([num_template], np.float32)
     return array_dict

@@ -34,7 +34,7 @@ class SeedMaker:
 
     def __call__(self):
         i = self.next_seed
-        # self.next_seed += 1
+        self.next_seed += 1
         return i
 
 
@@ -126,13 +126,11 @@ def shaped_categorical(probs):
 @curry1
 def make_masked_msa(protein, config, replace_fraction):
     """Create data for BERT on raw MSA."""
-    # Add a random amino acid uniformly
     random_aa = np.array([0.05] * 20 + [0., 0.], dtype=np.float32)
 
     categorical_probs = config.uniform_prob * random_aa + config.profile_prob * protein['hhblits_profile'] + \
                         config.same_prob * one_hot(22, protein['msa'])
 
-    # Put all remaining probability on [MASK] which is a new column
     pad_shapes = [[0, 0] for _ in range(len(categorical_probs.shape))]
     pad_shapes[-1][1] = 1
     mask_prob = 1. - config.profile_prob - config.same_prob - config.uniform_prob
@@ -144,7 +142,6 @@ def make_masked_msa(protein, config, replace_fraction):
     bert_msa = shaped_categorical(categorical_probs)
     bert_msa = np.where(mask_position, bert_msa, protein['msa'])
 
-    # Mix real and masked MSA
     protein['bert_mask'] = mask_position.astype(np.int32)
     protein['true_msa'] = protein['msa']
     protein['msa'] = bert_msa
@@ -155,14 +152,8 @@ def make_masked_msa(protein, config, replace_fraction):
 @curry1
 def nearest_neighbor_clusters(protein, gap_agreement_weight=0.):
     """Assign each extra MSA sequence to its nearest neighbor in sampled MSA."""
-
-    # Determine how much weight we assign to each agreement.  In theory, we could
-    # use a full blosum matrix here, but right now let's just down-weight gap
-    # agreement because it could be spurious.
-    # Never put weight on agreeing on BERT mask
     weights = np.concatenate([np.ones(21), gap_agreement_weight * np.ones(1), np.zeros(1)], 0)
 
-    # Make agreement score as weighted Hamming distance
     sample_one_hot = protein['msa_mask'][:, :, None] * one_hot(23, protein['msa'])
     num_seq, num_res, _ = shape_list(sample_one_hot)
 
@@ -174,7 +165,6 @@ def nearest_neighbor_clusters(protein, gap_agreement_weight=0.):
         agreement = np.matmul(
             np.reshape(extra_one_hot, [extra_num_seq, num_res * 23]),
             np.reshape(sample_one_hot * weights, [num_seq, num_res * 23]).T)
-        # Assign each sequence in the extra sequences to the closest MSA sample
         protein['extra_cluster_assignment'] = np.argmax(agreement, axis=1)
     else:
         protein['extra_cluster_assignment'] = np.array([])
@@ -236,8 +226,6 @@ def delete_extra_msa(protein):
 @curry1
 def make_msa_feat(protein):
     """Create and concatenate MSA features."""
-    # Whether there is a domain break. Always zero for chains, but keeping
-    # for compatibility with domain datasets.
     has_break = np.clip(protein['between_segment_residues'].astype(np.float32), np.array(0), np.array(1))
     aatype_1hot = one_hot(21, protein['aatype'])
 
@@ -280,10 +268,6 @@ def random_crop_to_size(protein, crop_size, max_templates, shape_schema,
     num_res_crop_size = np.minimum(seq_length, crop_size)
     num_res_crop_size_int = int(num_res_crop_size)
 
-    # Ensures that the cropping of residues and templates happens in the same way
-    # across ensembling iterations.
-    # Do not use for randomness that should vary in ensembling.
-
     if subsample_templates:
         templates_crop_start = make_random_seed(size=(), seed_maker_t=seed_maker(), low=0, high=num_templates + 1)
     else:
@@ -301,7 +285,6 @@ def random_crop_to_size(protein, crop_size, max_templates, shape_schema,
         if k not in shape_schema or ('template' not in k and NUM_RES not in shape_schema[k]):
             continue
 
-        # randomly permute the templates before cropping them.
         if k.startswith('template') and subsample_templates:
             v = v[templates_select_indices]
 
@@ -424,7 +407,6 @@ def make_hhblits_profile(protein):
     if 'hhblits_profile' in protein:
         return protein
 
-    # Compute the profile for every residue (over all MSA sequences).
     protein['hhblits_profile'] = np.mean(one_hot(22, protein['msa']), axis=0)
     return protein
 
@@ -437,9 +419,7 @@ def make_random_crop_to_size_seed(protein):
 
 def fix_templates_aatype(protein):
     """Fixes aatype encoding of templates."""
-    # Map one-hot to indices.
     protein['template_aatype'] = np.argmax(protein['template_aatype'], axis=-1).astype(np.int32)
-    # Map hhsearch-aatype to our aatype.
     new_order_list = residue_constants.MAP_HHBLITS_AATYPE_TO_OUR_AATYPE
     new_order = np.array(new_order_list, np.int32)
     protein['template_aatype'] = new_order[protein['template_aatype']]
@@ -476,8 +456,8 @@ def make_pseudo_beta(protein, prefix=''):
 
 def make_atom14_masks(protein):
     """Construct denser atom positions (14 dimensions instead of 37)."""
-    restype_atom14_to_atom37 = []  # mapping (restype, atom14) --> atom37
-    restype_atom37_to_atom14 = []  # mapping (restype, atom37) --> atom14
+    restype_atom14_to_atom37 = []
+    restype_atom37_to_atom14 = []
     restype_atom14_mask = []
 
     for rt in residue_constants.restypes:
@@ -491,7 +471,6 @@ def make_atom14_masks(protein):
 
         restype_atom14_mask.append([(1. if name else 0.) for name in atom_names])
 
-    # Add dummy mapping for restype 'UNK'
     restype_atom14_to_atom37.append([0] * 14)
     restype_atom37_to_atom14.append([0] * 37)
     restype_atom14_mask.append([0.] * 14)
@@ -500,19 +479,15 @@ def make_atom14_masks(protein):
     restype_atom37_to_atom14 = np.array(restype_atom37_to_atom14, np.int32)
     restype_atom14_mask = np.array(restype_atom14_mask, np.float32)
 
-    # create the mapping for (residx, atom14) --> atom37, i.e. an array
-    # with shape (num_res, 14) containing the atom37 indices for this protein
     residx_atom14_to_atom37 = restype_atom14_to_atom37[protein['aatype']]
     residx_atom14_mask = restype_atom14_mask[protein['aatype']]
 
     protein['atom14_atom_exists'] = residx_atom14_mask
     protein['residx_atom14_to_atom37'] = residx_atom14_to_atom37
 
-    # create the gather indices for mapping back
     residx_atom37_to_atom14 = restype_atom37_to_atom14[protein['aatype']]
     protein['residx_atom37_to_atom14'] = residx_atom37_to_atom14
 
-    # create the corresponding mask
     restype_atom37_mask = np.zeros([21, 37], np.float32)
     for restype, restype_letter in enumerate(residue_constants.restypes):
         restype_name = residue_constants.restype_1to3[restype_letter]
@@ -531,7 +506,6 @@ def shape_list(x):
     """Return list of dimensions of an array."""
     x = np.array(x)
 
-    # If unknown rank, return dynamic shape
     if x.ndim is None:
         return x.shape
 
