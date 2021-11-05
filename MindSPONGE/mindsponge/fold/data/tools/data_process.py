@@ -166,11 +166,11 @@ def data_process(seq_index, args):
     result_path = args.msa_result_path + "/result_" + str(seq_index)
     if args.database_envdb_dir:
         use_env = True
-        command = "sh ./data_processor/msa_search.sh mmseqs " + fasta_path + " " + result_path + " " + \
+        command = "sh ./data/tools/msa_search.sh mmseqs " + fasta_path + " " + result_path + " " + \
                   args.database_dir + " " + "\"\"" + " " + args.database_envdb_dir + " \"1\" \"0\" \"1\""
     else:
         use_env = False
-        command = "sh ./data_processor/msa_search.sh mmseqs " + fasta_path + " " + result_path + " " + \
+        command = "sh ./data/tools/msa_search.sh mmseqs " + fasta_path + " " + result_path + " " + \
                   args.database_dir + " " + "\"\"" + " \"\"" + " \"0\" \"0\" \"1\""
     print('start mmseqs2 MSA')
     print('command: ', command)
