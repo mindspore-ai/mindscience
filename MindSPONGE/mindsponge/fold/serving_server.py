@@ -1,4 +1,4 @@
-# Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2020 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,22 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Server script for AlphaFold serving mode"""
+"""server script for serving mode"""
 
 import os
 from mindspore_serving import server
-from fold_service.config import config
+from fold_service.config import config as serving_config
 
 def start():
     servable_dir = os.path.dirname(os.path.realpath(__file__))
 
     servable_config = server.ServableStartConfig(servable_directory=servable_dir, servable_name="fold_service",
-                                                 device_ids=config["device_id"])
+                                                 device_ids=serving_config.device_id)
     server.start_servables(servable_configs=servable_config)
 
-    server.start_grpc_server(address="127.0.0.1:" + config["port"])
-    server.start_restful_server(address="127.0.0.1:" + config["port"])
-
+    server.start_grpc_server(address="127.0.0.1:" + str(serving_config.port))
 
 if __name__ == "__main__":
     start()
