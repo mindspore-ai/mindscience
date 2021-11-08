@@ -44,7 +44,7 @@ parser.add_argument('--max_template_date', help='Maximum template release date.'
 parser.add_argument('--kalign_binary_path', help='Path to kalign executable.')
 parser.add_argument('--obsolete_pdbs_path', help='Path to obsolete pdbs path.')
 parser.add_argument('--checkpoint_path', help='Path of the checkpoint.')
-parser.add_argument('--device_id', default=0, help='Device id to be used.')
+parser.add_argument('--device_id', default=0, type=int, help='Device id to be used.')
 args = parser.parse_args()
 
 if __name__ == "__main__":
@@ -103,7 +103,8 @@ if __name__ == "__main__":
         timings = {"pre_process_time": round(t2 - t1, 2),
                    "model_time": round(t3 - t2, 2),
                    "pos_process_time": round(t4 - t3, 2),
-                   "all_time": round(t4 - t1, 2)}
+                   "all_time": round(t4 - t1, 2),
+                   "confidence": confidence}
         print(timings)
         with open(f'./result/seq_{seq_name}_{seq_length}/timings', 'w') as f:
             f.write(json.dumps(timings))
