@@ -142,8 +142,8 @@ Training parameters are configured in `config.json` as follows:
     "Description" : [ "PINNs for solve Maxwell's equations" ], # case description
     "Case" : "2D_Mur_Src_Gauss_Mscale_MTL",                    # case tag
     "random_sampling" : false,                                 # generate dataset by random sampling or not. If False, offline dataset will be loaded
-    "coord_min" : [0, 0],                                      # minimum coordinates of the rectangular computing domain
-    "coord_max" : [1, 1],                                      # maximum coordinates of the rectangular computing domain
+    "coord_min" : [0.0, 0.0],                                  # minimum coordinates of the rectangular computing domain
+    "coord_max" : [1.0, 1.0],                                  # maximum coordinates of the rectangular computing domain
     "src_pos" : [0.4975, 0.4975],                              # points source location
     "src_frq": 1e+9,                                           # main frequency of the excitation source
     "range_t" : 4e-9,                                          # simulated physical time duration

@@ -10,6 +10,7 @@
         - [AI电磁模型库](#AI电磁模型库)
         - [优化策略](#优化策略)
     - [结果可视化](#结果可视化)
+    - [论文](#论文)
 - [安装教程](#安装教程)
     - [确认系统环境信息](#确认系统环境信息)
     - [pip安装](#pip安装)
@@ -55,6 +56,10 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 
 仿真的结果如S参数或电磁场等可保存在CSV、VTK文件中。MindInsight可以显示训练过程中的损失函数变化，并以图片的形式在网页上展示结果；Paraview是第三方开源软件，具有动态展示切片、翻转等高级功能。
 
+### 论文
+
+如果你对处理时域麦克斯韦方程感兴趣，请阅读我们的[论文](https://arxiv.org/abs/2111.01394): Xiang Huang, Hongsheng Liu, Beiji Shi, Zidong Wang, Kang Yang, Yang Li, Bingya Weng, Min Wang, Haotian Chu, Jing Zhou, Fan Yu, Bei Hua, Lei Chen, Bin Dong, Solving Partial Differential Equations with Point Source Based on Physics-Informed Neural Networks, preprint 2021。
+
 ## 安装教程
 
 ### 确认系统环境信息
@@ -68,7 +73,7 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 |               | CentOS-aarch64  | ✔️   |
 
 - 参考[MindSpore安装指南](https://www.mindspore.cn/install)，完成MindSpore的安装，要求至少1.5.0版本。
-- 其余依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/blob/r0.1/MindElec/requirements.txt)
+- 其余依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/blob/r0.1/MindElec/requirements.txt)。
 
 ### pip安装
 
@@ -100,7 +105,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 
 ## API
 
-MindElec API文档请查看[文档链接](https://www.mindspore.cn/mindscience/api/zh-CN/r0.1/mindelec.html)
+MindElec API文档请查看[文档链接](https://www.mindspore.cn/mindscience/api/zh-CN/r0.1/mindelec.html)。
 
 ## 验证是否成功安装
 
@@ -112,7 +117,7 @@ python -c 'import mindelec'
 
 ## 快速入门
 
-关于如何快速使用AI电磁仿真工具包，进行训练推理，请点击查看[MindElec使用教程](https://www.mindspore.cn/mindscience/docs/zh-CN/r0.1/mindelec/intro_and_install.html)
+关于如何快速使用AI电磁仿真工具包，进行训练推理，请点击查看[MindElec使用教程](https://www.mindspore.cn/mindscience/docs/zh-CN/r0.1/mindelec/intro_and_install.html)。
 
 ## 文档
 
