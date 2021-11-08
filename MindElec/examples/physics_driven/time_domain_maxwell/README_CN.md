@@ -142,8 +142,8 @@ bc_sampling_config = edict({          # 边界区域的采样配置
     "Description" : [ "PINNs for solve Maxwell's equations" ], # 案例描述
     "Case" : "2D_Mur_Src_Gauss_Mscale_MTL",                    # 案例标记
     "random_sampling" : true,                                  # 样本集是否通过随机采样生成，如果为false则加载离线生成的数据集
-    "coord_min" : [0, 0],                                      # 矩形计算域x和y轴最小坐标
-    "coord_max" : [1, 1],                                      # 矩形计算域x和y轴最大坐标
+    "coord_min" : [0.0, 0.0],                                  # 矩形计算域x和y轴最小坐标
+    "coord_max" : [1.0, 1.0],                                  # 矩形计算域x和y轴最大坐标
     "src_pos" : [0.4975, 0.4975],                              # 点源位置坐标
     "src_frq": 1e+9,                                           # 激励源主频率
     "range_t" : 4e-9,                                          # 模拟时长

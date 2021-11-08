@@ -3,8 +3,8 @@
 
     "Case" : "2D_Mur_Src_Gauss_Mscale_MTL",
     "random_sampling" : true,
-    "coord_min" : [0, 0],
-    "coord_max" : [1, 1],
+    "coord_min" : [0.0, 0.0],
+    "coord_max" : [1.0, 1.0],
     "src_pos" : [0.4975, 0.4975],
     "src_frq": 1e+9,
     "range_t" : 4e-9,

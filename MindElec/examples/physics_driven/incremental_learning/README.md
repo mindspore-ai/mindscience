@@ -159,8 +159,8 @@ The pre-model training and control parameters are configured in the `config/pret
 {
     "Description" : ["PINNs for solve Maxwell's equations"],                # Case description
     "Case" : "2D_Mur_Src_Gauss_Mscale_MTL_Physical-Informed Auto Decoder",  # Case name
-    "coord_min" : [0, 0],                                                   # Minimum coordinates of the x and y axes of the rectangular computing domain
-    "coord_max" : [1, 1],                                                   # Maximum coordinates of the x and y axes of the rectangular computing domain
+    "coord_min" : [0.0, 0.0],                                               # Minimum coordinates of the x and y axes of the rectangular computing domain
+    "coord_max" : [1.0, 1.0],                                               # Maximum coordinates of the x and y axes of the rectangular computing domain
     "src_pos" : [0.4975, 0.4975],                                           # Point source location coordinates
     "SrcFrq": 1e+9,                                                         # Excitation source main frequency
     "range_t" : 4e-9,                                                       # Simulation Duration
