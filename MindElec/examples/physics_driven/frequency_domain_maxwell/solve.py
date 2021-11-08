@@ -98,7 +98,7 @@ def train():
     # create dataset for train and test
     train_dataset = Dataset(geom_dict)
     train_data = train_dataset.create_dataset(batch_size=helmholtz_2d_config.get("batch_size", 128),
-                                              shuffle=True, drop_remainder=False)
+                                              shuffle=True, drop_remainder=True)
     test_input, test_label = test_data_prepare(helmholtz_2d_config)
 
     # define problem and constraints
@@ -135,7 +135,6 @@ def train():
     print(f'l2 error: {l2_error:.10f}')
     print(f'per step time: {per_step_time:.10f}')
     assert l2_error <= 0.05
-    assert per_step_time <= 5
 
 if __name__ == '__main__':
     train()

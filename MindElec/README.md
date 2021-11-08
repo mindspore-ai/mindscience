@@ -11,6 +11,7 @@
             - [Electromagnetic Model Library](#electromagnetic-model-library)
             - [Optimization strategy](#optimization-strategy)
         - [Result Visualization](#result-visualization)
+        - [Publications](#publications)
     - [Installation Guide](#installation-guide)
         - [Confirming the System Environment Information](#confirming-the-system-environment-information)
         - [Installing Using pip](#installing-using-pip)
@@ -54,6 +55,10 @@ Provides a series of optimization strategies to improve physical-driven and data
 ### Result Visualization
 
 The simulation results, such as the S parameters or electromagnetic fields, can be saved in the CSV or VTK files. MindInsight can display the loss function changes during the training process and display the results on the web page in the form of images. ParaView is the third-party open-source software and can dynamically display advanced functions such as slicing and flipping.
+
+### Publications
+
+If you are interested in solving time-domain Maxwell's equations, please read our [paper](https://arxiv.org/abs/2111.01394): Xiang Huang, Hongsheng Liu, Beiji Shi, Zidong Wang, Kang Yang, Yang Li, Bingya Weng, Min Wang, Haotian Chu, Jing Zhou, Fan Yu, Bei Hua, Lei Chen, Bin Dong, Solving Partial Differential Equations with Point Source Based on Physics-Informed Neural Networks, preprint 2021
 
 ## Installation Guide
 
