@@ -33,7 +33,8 @@
 
 ### 硬件环境与框架
 
-本代码运行基于Ascend处理器硬件环境与[MindSpore](https://www.mindspore.cn/install)AI框架，MindSpore环境参见[MindSpore教程](https://www.mindspore.cn/tutorials/zh-CN/master/index.html)，环境安装后需要运行以下命令配置环境变量：
+本代码运行基于Ascend处理器硬件环境与[MindSpore](https://www.mindspore.cn/) AI框架，当前版本需基于最新库上master代码（2021-11-08之后的代码）[编译](https://www.mindspore.cn/install/detail?path=install/r1.5/mindspore_ascend_install_source.md&highlight=%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91)，
+MindSpore环境参见[MindSpore教程](https://www.mindspore.cn/tutorials/zh-CN/master/index.html)，环境安装后需要运行以下命令配置环境变量：
 
 ``` shell
 export ENV_SUPPORT_FALLBACK=0
@@ -43,7 +44,7 @@ export ENV_SUPPORT_FALLBACK=0
 
 ### MMseqs2安装
 
-MMseqs2用于生成多序列比对(multiple sequence alignments,MSA), MMseqs2安装和使用可以参考[MMseqs2 User Guide](https://mmseqs.com/latest/userguide.pdf),  安装完成后需要运行以下命令配置环境变量：
+MMseqs2用于生成多序列比对(multiple sequence alignments，MSA)，MMseqs2安装和使用可以参考[MMseqs2 User Guide](https://mmseqs.com/latest/userguide.pdf)，安装完成后需要运行以下命令配置环境变量：
 
 ``` shell
 export PATH=$(pwd)/mmseqs/bin/:$PATH
@@ -51,14 +52,14 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
 
 ### MindSpore Serving安装
 
-我们同时提供以服务模式运行推理，该模式使用MindSpore Serving提供高效推理服务，多条序列推理时避免重复编译，大幅提高推理效率，MindSpore Serving安装和配置可以参考[MindSpore Serving安装页面](https://www.mindspore.cn/serving/docs/zh-CN/r1.5/serving_install.html)。
+我们提供以服务模式运行推理，该模式使用MindSpore Serving提供高效推理服务，多条序列推理时避免重复编译，大幅提高推理效率，MindSpore Serving安装和配置可以参考[MindSpore Serving安装页面](https://www.mindspore.cn/serving/docs/zh-CN/r1.5/serving_install.html)。
 
 ## 数据准备
 
 ### MSA所需数据库
 
-- [uniref30_2103](http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz)：375G（下载68G），
-- [colabfold_envdb_202108](http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz)：949G（下载110G），
+- [uniref30_2103](http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz)：375G（下载68G）
+- [colabfold_envdb_202108](http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz)：949G（下载110G）
 
 数据处理参考[colabfold](http://colabfold.mmseqs.com)。
 
@@ -66,14 +67,14 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
 
 #### 数据
 
-- [pdb70](http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200401.tar.gz)：56G(下载19G)，
-- [mmcif database](https://ftp.rcsb.org/pub/pdb/data/structures/divided/mmCIF/)： 206G（下载48G），
-- [obsolete_pdbs](http://ftp.wwpdb.org/pub/pdb/data/status/obsolete.dat)：140K。
+- [pdb70](http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200401.tar.gz)：56G(下载19G)
+- [mmcif database](https://ftp.rcsb.org/pub/pdb/data/structures/divided/mmCIF/)： 206G（下载48G）
+- [obsolete_pdbs](http://ftp.wwpdb.org/pub/pdb/data/status/obsolete.dat)：140K
 
 #### 工具
 
-- [HHsearch](https://github.com/soedinglab/hh-suite)，
-- [kalign](https://github.com/TimoLassmann/kalign)。
+- [HHsearch](https://github.com/soedinglab/hh-suite)
+- [kalign](https://github.com/TimoLassmann/kalign)
 
 ## 脚本说明
 
@@ -129,24 +130,24 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
 
 
 选项：
-  --seq_length             补零后序列长度，目前支持256/512/1024/2048。
-  --input_fasta_path       FASTA文件，用于预测蛋白质结构的蛋白质序列。
-  --msa_result_path        保存mmseqs2检索得到的msa结果路径。
-  --database_dir           搜索msa时的数据库。
-  --database_envdb_dir     搜索msa时的扩展数据库。
-  --hhsearch_binary_path   hhsearch可执行文件路径。
-  --pdb70_database_path    供hhsearch使用的pdb70数据库路径。
-  --template_mmcif_dir     具有mmcif结构模板的路径。
-  --max_template_date      模板最新发布的时间。
-  --kalign_binary_path     kalign可执行文件路径。
-  --obsolete_pdbs_path     PDB IDs的映射文件路径。
+  --seq_length             补零后序列长度，目前支持256/512/1024/2048
+  --input_fasta_path       FASTA文件，用于预测蛋白质结构的蛋白质序列
+  --msa_result_path        保存mmseqs2检索得到的msa结果路径
+  --database_dir           搜索msa时的数据库
+  --database_envdb_dir     搜索msa时的扩展数据库
+  --hhsearch_binary_path   hhsearch可执行文件路径
+  --pdb70_database_path    供hhsearch使用的pdb70数据库路径
+  --template_mmcif_dir     具有mmcif结构模板的路径
+  --max_template_date      模板最新发布的时间
+  --kalign_binary_path     kalign可执行文件路径
+  --obsolete_pdbs_path     PDB IDs的映射文件路径
 ```
 
 ### 推理过程
 
- 根据自身需求选择合适蛋白质序列配置，当前提供256/512/1024/2048四个标准配置，推理过程如下：
+ 加载alphafold checkpoint，下载地址[点击这里](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/protein_fold_1.ckpt)，根据自身需求选择合适蛋白质序列配置，当前提供256/512/1024/2048四个标准配置，推理过程如下：
 
-1. 输入参数需要通过`folding_service.config.py`配置，参数含义参见[推理示例](#推理示例)。
+1. 输入参数需要通过`folding_service/config.py`配置，参数含义参见[推理示例](#推理示例)
 
 2. 参数配置好后，先使用`serving_server.py`启动服务端进程，进程成功启动时log显示如下：
 
@@ -159,7 +160,7 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
 
 #### 推理结果
 
-推理结果保存在 `./result` 中，共有两个文件， 其中的pdb文件即为蛋白质预测结构结果，timings文件保存了运行过程中的时间信息和confidence信息。
+推理结果保存在 `./result` 中，共有两个文件，其中的pdb文件即为蛋白质结构预测结果，timings文件保存了运行过程中的时间信息和confidence信息。
 
 ```bash
 {"pre_process_time": 418.57, "model_time": 122.86, "pos_process_time": 0.14, "all_time ": 541.56, "confidence ": 94.61789646019058}
@@ -181,19 +182,25 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
 
 ### TMscore对比图
 
-![image](../../docs/all_experiment_data.jpg)
+- 34条CASP14结果与alphafold2对比：
 
-实验数据：34条CASP14结果与alphafold2对比
+<div align=center>
+<img src="../../docs/all_experiment_data.jpg" alt="all_data" width="600"/>
+</div>
 
 ### 预测结果对比图
 
-![image](../../docs/seq_64.gif)
+- T1079(长度505)：
 
-实验数据：T1079(长度505)
+<div align=center>
+<img src="../../docs/seq_64.gif" alt="T1079" width="400"/>
+</div>
 
-![image](../../docs/seq_21.jpg)
+- T1044(长度2180)：
 
-实验数据：T1044(长度2180)
+<div align=center>
+<img src="../../docs/seq_21.jpg" alt="T1044" width="400"/>
+</div>
 
 ## 引用
 
