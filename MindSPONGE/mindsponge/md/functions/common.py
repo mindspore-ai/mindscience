@@ -63,7 +63,17 @@ def reform_excluded_list(excluded_list, excluded_list_start, exlcuded_list_numbe
         excluded_matrix[i, :exlcuded_list_number[i]] = excluded_list[excluded_list_start[i]:excluded_list_end[i]]
     return excluded_matrix
 
-def cuCdiv(real1, imag1, real2, imag2):
+def reform_residual_list(atom_numbers, start, end):
+    """Re-format residual list"""
+    idx = onp.arange(atom_numbers).reshape(1, -1)
+    # (M, 1)
+    start = start.reshape(-1, 1)
+    end = end.reshape(-1, 1)
+    # (M, N)
+    mask = onp.logical_and(idx >= start, idx < end).astype('int32')
+    return mask
+
+def cucdiv(real1, imag1, real2, imag2):
     """
     Compute the quotient of the given complex numbers.
     Assuming that `x` is the complex number composed of
@@ -82,12 +92,12 @@ def expc(real, imag):
     res_imag = math.sin(imag) * t
     return res_real, res_imag
 
-def M_(u, n):
+def m_(u, n):
     if n == 2:
         if u > 2 or u < 0:
             return 0
         return 1 - abs(u - 1)
-    return u / (n - 1) * M_(u, n - 1) + (n - u) / (n - 1) * M_(u - 1, n - 1)
+    return u / (n - 1) * m_(u, n - 1) + (n - u) / (n - 1) * m_(u - 1, n - 1)
 
 def getb(k, nfft, b_order):
     '''getb'''
@@ -100,19 +110,19 @@ def getb(k, nfft, b_order):
         tempc_real = 0
         tempc_imag = 2 * PI * k / nfft * kk
         tempc_real, tempc_imag = expc(tempc_real, tempc_imag)
-        tempf = M_(kk + 1, b_order)
+        tempf = m_(kk + 1, b_order)
         tempc2_real += tempf * tempc_real
         tempc2_imag += tempf * tempc_imag
-    res_real, res_imag = cuCdiv(res_real, res_imag, tempc2_real, tempc2_imag)
+    res_real, res_imag = cucdiv(res_real, res_imag, tempc2_real, tempc2_imag)
     return res_real * res_real + res_imag * res_imag
 
 def get_pme_bc(fftx, ffty, fftz, box, beta):
     '''get pme_bc'''
     z_range = fftz // 2 + 1
 
-    B1 = list(map(lambda i: getb(i, fftx, 4), range(fftx)))
-    B2 = list(map(lambda i: getb(i, ffty, 4), range(ffty)))
-    B3 = list(map(lambda i: getb(i, fftz, 4), range(z_range)))
+    b1 = list(map(lambda i: getb(i, fftx, 4), range(fftx)))
+    b2 = list(map(lambda i: getb(i, ffty, 4), range(ffty)))
+    b3 = list(map(lambda i: getb(i, fftz, 4), range(z_range)))
 
     mprefactor = PI * PI / -beta / beta
     volume = box[0] * box[1] * box[2]
@@ -134,17 +144,17 @@ def get_pme_bc(fftx, ffty, fftz, box, beta):
 
     # (fftx, ffty, fftz / 2 + 1)
     msq = kxrp * kxrp + kyrp * kyrp + kzrp * kzrp
-    B1 = onp.broadcast_to(
-        onp.array(B1).reshape(-1, 1, 1), msq.shape).ravel() # pylint: disable=too-many-function-args
-    B2 = onp.broadcast_to(
-        onp.array(B2).reshape(1, -1, 1), msq.shape).ravel() # pylint: disable=too-many-function-args
-    B3 = onp.broadcast_to(
-        onp.array(B3).reshape(1, 1, -1), msq.shape).ravel() # pylint: disable=too-many-function-args
+    b1 = onp.broadcast_to(
+        onp.array(b1).reshape(-1, 1, 1), msq.shape).ravel() # pylint: disable=too-many-function-args
+    b2 = onp.broadcast_to(
+        onp.array(b2).reshape(1, -1, 1), msq.shape).ravel() # pylint: disable=too-many-function-args
+    b3 = onp.broadcast_to(
+        onp.array(b3).reshape(1, 1, -1), msq.shape).ravel() # pylint: disable=too-many-function-args
     msq = msq.ravel()
 
-    PME_BC = onp.zeros_like(msq)
+    pme_bc = onp.zeros_like(msq)
     msq = msq[1:]
-    PME_BC[1:] = 1.0 / PI / msq * onp.exp(mprefactor * msq) / volume
-    PME_BC = PME_BC * B1 * B2 * B3
+    pme_bc[1:] = 1.0 / PI / msq * onp.exp(mprefactor * msq) / volume
+    pme_bc = pme_bc * b1 * b2 * b3
 
-    return PME_BC
+    return pme_bc

@@ -14,13 +14,12 @@
 # ============================================================================
 '''md temperature'''
 import mindspore.numpy as mnp
-from .common import get_atom_list_tensor
 
 
-CONSTANT_kB = mnp.array(0.00198716, mnp.float64)
+constant_kb = mnp.array(0.00198716, mnp.float64)
 
 
-def md_temperature(residue_numbers, atom_numbers, start, end, atom_vel_f, atom_mass):
+def md_temperature(mask, atom_vel_f, atom_mass):
     """
     Calculate the MD Temperature.
 
@@ -29,17 +28,11 @@ def md_temperature(residue_numbers, atom_numbers, start, end, atom_vel_f, atom_m
     Supported Platforms:
         ``GPU``
     """
-    idx = get_atom_list_tensor(atom_numbers).reshape(1, -1)
-    # (M, 1)
-    start = start.reshape(-1, 1)
-    end = end.reshape(-1, 1)
-    # (M, N)
-    mask = mnp.logical_and(idx >= start, idx < end).astype('int32')
-
+    residue_numbers = mask.shape[0]
     # (1, N, 1)
     res = atom_vel_f * atom_mass.reshape(1, -1, 1)
     res = mnp.tile(res, (residue_numbers, 1, 1))
     momentum = mnp.sum(mnp.expand_dims(mask, -1) * res, 1)
     res_mass = mnp.sum(mask * atom_mass.reshape(1, -1), -1)
-    ek = 2. * mnp.sum(momentum * momentum, -1) / res_mass * 0.5 / 3. / CONSTANT_kB / residue_numbers
+    ek = 2. * mnp.sum(momentum * momentum, -1) / res_mass * 0.5 / 3. / constant_kb / residue_numbers
     return ek.astype(mnp.float32)

@@ -34,12 +34,13 @@ from .pme_excluded_force import pme_excluded_force
 from .pme_energy import pme_energy
 from .pme_reciprocal_force import pme_reciprocal_force
 from .neighbor_list_update import neighbor_list_update, not_excluded_mask
-from .common import reform_excluded_list, get_pme_bc
+from .common import reform_excluded_list, reform_residual_list, get_pme_bc
 
 __all__ = ['angle_energy', 'angle_force_with_atom_energy', 'bond_force_with_atom_energy',
            'crd_to_uint_crd', 'dihedral_14_ljcf_force_with_atom_energy', 'lj_energy',
            'md_iteration_leap_frog_liujian', 'pme_excluded_force', 'lj_force_pme_direct_force',
            'dihedral_energy', 'dihedral_force_with_atom_energy', 'bond_energy', 'pme_energy',
-           'neighbor_list_update', 'not_excluded_mask', 'reform_excluded_list', 'get_pme_bc']
+           'neighbor_list_update', 'not_excluded_mask', 'reform_excluded_list', 'get_pme_bc',
+           'reform_residual_list']
 
 __all__.sort()
