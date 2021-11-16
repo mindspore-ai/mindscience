@@ -36,7 +36,7 @@ from mindsponge.md.functions import angle_energy, angle_force_with_atom_energy, 
     md_iteration_leap_frog_liujian, pme_excluded_force, lj_force_pme_direct_force, \
     dihedral_force_with_atom_energy, bond_energy, nb14_lj_energy, \
     nb14_cf_energy, md_temperature, dihedral_energy, pme_energy, \
-    pme_reciprocal_force, reform_excluded_list, get_pme_bc
+    pme_reciprocal_force, reform_excluded_list, reform_residual_list, get_pme_bc
 
 
 class Controller:
@@ -151,8 +151,10 @@ class Simulation(nn.Cell):
         self.uint_crd = Parameter(Tensor(np.zeros([self.atom_numbers, 3], dtype=np.uint32), mstype.uint32),
                                   requires_grad=False)
         self.mass_inverse = Tensor(self.md_info.h_mass_inverse, mstype.float32)
-        self.res_start = Tensor(self.md_info.h_res_start, mstype.int32)
-        self.res_end = Tensor(self.md_info.h_res_end, mstype.int32)
+        res_start = np.asarray(self.md_info.h_res_start, np.int32)
+        res_end = np.asarray(self.md_info.h_res_end, np.int32)
+        self.res_start = Tensor(res_start)
+        self.res_end = Tensor(res_end)
         self.mass = Tensor(self.md_info.h_mass, mstype.float32)
         self.velocity = Parameter(Tensor(self.md_info.velocity, mstype.float32), requires_grad=False)
         self.acc = Parameter(Tensor(np.zeros([self.atom_numbers, 3], np.float32), mstype.float32), requires_grad=False)
@@ -202,6 +204,7 @@ class Simulation(nn.Cell):
         self.excluded_list = Tensor(excluded_list)
         self.excluded_numbers = Tensor(excluded_numbers)
         self.excluded_matrix = Tensor(reform_excluded_list(excluded_list, excluded_list_start, excluded_numbers))
+        self.residual_matrix = Tensor(reform_residual_list(self.atom_numbers, res_start, res_end))
         box = (self.box_length_0, self.box_length_1, self.box_length_2)
         self.pme_bc = Tensor(get_pme_bc(self.fftx, self.ffty, self.fftz, box, self.beta), mstype.float32)
         self.need_refresh_flag = Tensor(np.asarray([0], np.int32), mstype.int32)
@@ -337,8 +340,7 @@ class Simulation(nn.Cell):
 
     def simulation_temperature(self):
         '''caculate temperature'''
-        res_ek_energy = md_temperature(self.residue_numbers, self.atom_numbers, self.res_start,
-                                       self.res_end, self.velocity, self.mass)
+        res_ek_energy = md_temperature(self.residual_matrix, self.velocity, self.mass)
         temperature = res_ek_energy.sum()
         return temperature
 
