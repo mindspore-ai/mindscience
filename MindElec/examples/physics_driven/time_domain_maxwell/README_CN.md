@@ -21,7 +21,7 @@
 麦克斯韦方程组是一组描述电场、磁场与电荷密度、电流密度之间关系的偏微分方程，有激励源的控制方程具体描述如下：
 
 $$
-\nabla\times E=-\mu \dfrac{\partial H}{\partial t} + J(x, t),
+\nabla\times E=-\mu \dfrac{\partial H}{\partial t} - J(x, t),
 $$
 $$
 \nabla\times H=\epsilon \dfrac{\partial E}{\partial t}
