@@ -110,11 +110,6 @@ class AlphaFold(nn.Cell):
         self.idx_evoformer_block = Parameter(Tensor(0, mstype.int32), requires_grad=False)
         self.evoformer_num_block = Tensor(self.config.evoformer_num_block, mstype.int32)
 
-        self.msa_activations1 = Parameter(Tensor(np.zeros([508, global_config.seq_length, 256]).astype(np.float16)),
-                                          requires_grad=False)
-        self.msa_activations2 = Parameter(Tensor(np.zeros([512, global_config.seq_length, 256]).astype(np.float16)),
-                                          requires_grad=False)
-
     def construct(self, target_feat, msa_feat, msa_mask, seq_mask, aatype,
                   template_aatype, template_all_atom_masks, template_all_atom_positions,
                   template_mask, template_pseudo_beta_mask, template_pseudo_beta,
@@ -126,7 +121,7 @@ class AlphaFold(nn.Cell):
 
         preprocess_1d = self.preprocess_1d(target_feat)
         preprocess_msa = self.preprocess_msa(msa_feat)
-        self.msa_activations1 = mnp.expand_dims(preprocess_1d, axis=0) + preprocess_msa
+        msa_activations1 = mnp.expand_dims(preprocess_1d, axis=0) + preprocess_msa
 
         left_single = self.left_single(target_feat)
         right_single = self.right_single(target_feat)
@@ -138,13 +133,13 @@ class AlphaFold(nn.Cell):
             prev_pseudo_beta = pseudo_beta_fn(aatype, prev_pos, None)
             dgram = dgram_from_positions(prev_pseudo_beta, self.num_bins, self.min_bin, self.max_bin)
             pair_activations += self.prev_pos_linear(dgram)
-        # return pair_activations, self.msa_activations1
+        # return pair_activations, msa_activations1
         prev_msa_first_row = F.depend(prev_msa_first_row, pair_activations)
         if self.recycle_features:
             prev_msa_first_row = self.prev_msa_first_row_norm(prev_msa_first_row)
-            self.msa_activations1 = mnp.concatenate(
-                (mnp.expand_dims(prev_msa_first_row + self.msa_activations1[0, ...], 0),
-                 self.msa_activations1[1:, ...]), 0)
+            msa_activations1 = mnp.concatenate(
+                (mnp.expand_dims(prev_msa_first_row + msa_activations1[0, ...], 0),
+                 msa_activations1[1:, ...]), 0)
             pair_activations += self.prev_pair_norm(prev_pair.astype(mstype.float16)).astype(mstype.float32)
 
         if self.max_relative_feature:
@@ -182,6 +177,7 @@ class AlphaFold(nn.Cell):
             msa_act = F.depend(msa_act, self.idx_extra_msa_stack)
             pair_act = F.depend(pair_act, self.idx_extra_msa_stack)
 
+        msa_activations2 = None
         if self.template_enabled and self.template_embed_torsion_angles:
             num_templ, num_res = template_aatype.shape
             aatype_one_hot = self.template_aatype_one_hot(template_aatype)
@@ -195,28 +191,28 @@ class AlphaFold(nn.Cell):
             template_activations = self.template_single_embedding(template_features)
             template_activations = self.relu(template_activations.astype(mstype.float32))
             template_activations = self.template_projection(template_activations)
-            self.msa_activations2 = mnp.concatenate([self.msa_activations1, template_activations], axis=0)
+            msa_activations2 = mnp.concatenate([msa_activations1, template_activations], axis=0)
             torsion_angle_mask = torsion_angles_mask[:, :, 2]
             torsion_angle_mask = torsion_angle_mask.astype(msa_mask.dtype)
             msa_mask = mnp.concatenate([msa_mask, torsion_angle_mask], axis=0)
 
-        self.msa_activations2 = self.msa_activations2.astype(mstype.float16)
+        msa_activations2 = msa_activations2.astype(mstype.float16)
         pair_activations = pair_act.astype(mstype.float16)
         msa_mask = msa_mask.astype(mstype.float16)
         mask_2d = mask_2d.astype(mstype.float16)
-        # return self.msa_activations2, pair_activations, msa_mask, mask_2d
+        # return msa_activations2, pair_activations, msa_mask, mask_2d
         self.idx_evoformer_block = self.idx_evoformer_block * 0
         while self.idx_evoformer_block < self.evoformer_num_block:
-            self.msa_activations2, pair_activations = \
-            self.evoformer_iteration(self.msa_activations2,
+            msa_activations2, pair_activations = \
+            self.evoformer_iteration(msa_activations2,
                                      pair_activations,
                                      msa_mask,
                                      mask_2d,
                                      self.idx_evoformer_block)
             self.idx_evoformer_block += 1
 
-        single_activations = self.single_activations(self.msa_activations2[0])
-        msa_first_row = self.msa_activations2[0]
+        single_activations = self.single_activations(msa_activations2[0])
+        msa_first_row = msa_activations2[0]
 
         # return single_activations, msa, msa_first_row
         final_atom_positions, final_atom_mask, rp_structure_module = \
