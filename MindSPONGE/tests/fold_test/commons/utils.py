@@ -755,7 +755,7 @@ def torsion_angles_to_frames(aatype, backb_to_global, torsion_angles_sin_cos, re
     backb_to_global_new = reshape_back(backb_to_global)
     # Create the global frames.
     # shape (N, 8)
-    all_frames_to_global = rigids_mul_rigids(all_frames_to_backb, backb_to_global_new)
+    all_frames_to_global = rigids_mul_rigids(backb_to_global_new, all_frames_to_backb)
     # all_frames_to_global = rigids_mul_rigids(all_frames_to_backb, backb_to_global)
     return all_frames_to_global
 
