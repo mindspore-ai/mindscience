@@ -107,7 +107,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 
 ## API
 
-For details about MindElec APIs, see the [API](https://www.mindspore.cn/mindscience/api/en/master/mindelec.html) page.
+For details about MindElec APIs, see the [API](https://www.mindspore.cn/mindscience/docs/en/master/mindelec.html) page.
 
 ## Installation Verification
 
