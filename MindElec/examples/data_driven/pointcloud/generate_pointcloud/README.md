@@ -32,7 +32,7 @@ The STP file cannot be directly used as the input of the neural network. It need
     - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - For more information, see the following resources:
     - [MindElec Tutorial](https://www.mindspore.cn/mindscience/docs/en/master/mindelec/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindscience/api/en/master/mindelec.html)
+    - [MindElec Python API](https://www.mindspore.cn/mindscience/docs/en/master/mindelec.html)
 
 # **Script Description**
 
