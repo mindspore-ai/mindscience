@@ -147,7 +147,7 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
 
  加载alphafold checkpoint，下载地址[点击这里](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/protein_fold_1.ckpt)，根据自身需求选择合适蛋白质序列配置，当前提供256/512/1024/2048四个标准配置，推理过程如下：
 
-1. 输入参数需要通过`folding_service/config.py`配置，参数含义参见[推理示例](#推理示例)
+1. 输入参数需要通过`fold_service/config.py`配置，参数含义参见[推理示例](#推理示例)
 
 2. 参数配置好后，先使用`serving_server.py`启动服务端进程，进程成功启动时log显示如下：
 
@@ -173,7 +173,7 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
 | 模型版本      | AlphaFold                       |
 | 资源        | Ascend 910                  |
 | 上传日期              | 2021-11-05                    |
-| MindSpore版本   | 1.5.0                 |
+| MindSpore版本   | master                 |
 | 数据集 | CASP14 T1079 |
 | seq_length          |      505                     |
 | confidence  | 94.62 |

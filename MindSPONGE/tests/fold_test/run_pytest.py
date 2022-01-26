@@ -50,7 +50,7 @@ def test_fold():
     t1 = time.time()
     with open(f'./features24.pkl', 'rb') as f:
         input_features = pickle.load(f)
-    tensors, atom14_atom_exists, aatype, residue_index, ori_res_length = process_features(
+    tensors, aatype, residue_index, ori_res_length = process_features(
         raw_features=input_features, config=model_config, global_config=global_config)
     prev_pos = Tensor(np.zeros([global_config.seq_length, 37, 3]).astype(np.float16))
     prev_msa_first_row = Tensor(np.zeros([global_config.seq_length, 256]).astype(np.float16))
@@ -74,7 +74,7 @@ def test_fold():
     t4 = time.time()
     right_result = np.load("result24.npy")
     l1_error = np.max(np.abs(final_atom_positions - right_result))
-    l1_error = l1_error + np.sum(atom14_atom_exists) * 0 + np.sum(final_atom_mask) * 0 \
+    l1_error = l1_error + np.sum(final_atom_mask) * 0 \
         + np.sum(aatype) * 0 + np.sum(residue_index) * 0
 
     print('test_res:', f'l1_error: {l1_error:.10f} ')
