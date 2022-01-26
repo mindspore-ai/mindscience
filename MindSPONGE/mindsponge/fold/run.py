@@ -68,7 +68,7 @@ if __name__ == "__main__":
         t1 = time.time()
         seq_name = seq_file.split('.')[0]
         input_features = data_process(seq_name, args)
-        tensors, atom14_atom_exists, aatype, residue_index, ori_res_length = process_features(
+        tensors, aatype, residue_index, ori_res_length = process_features(
             raw_features=input_features, config=model_config, global_config=global_config)
         prev_pos = Tensor(np.zeros([global_config.seq_length, 37, 3]).astype(np.float16))
         prev_msa_first_row = Tensor(np.zeros([global_config.seq_length, 256]).astype(np.float16))
