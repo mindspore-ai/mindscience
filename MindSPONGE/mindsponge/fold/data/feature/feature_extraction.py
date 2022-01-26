@@ -291,4 +291,4 @@ def process_features(raw_features, config, global_config):
     arrays = custom_padding(global_config, arrays, dims)
     arrays = [array.astype(np.float16) if array.dtype == "float64" else array for array in arrays]
     arrays = [array.astype(np.float16) if array.dtype == "float32" else array for array in arrays]
-    return arrays, features["atom14_atom_exists"].astype(np.int32), aatype, residue_index, ori_res_length
+    return arrays, aatype, residue_index, ori_res_length
