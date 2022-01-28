@@ -141,4 +141,4 @@ def test_frequency_domain_maxwell():
     print(f'l2 error: {l2_error:.10f}')
     print(f'per step time: {per_step_time:.10f}')
     assert l2_error <= 0.05
-    assert per_step_time <= 5.0
+    assert per_step_time <= 10.0
