@@ -74,7 +74,7 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
 #### 工具
 
 - [HHsearch](https://github.com/soedinglab/hh-suite)
-- [kalign](https://github.com/TimoLassmann/kalign)
+- [kalign](https://msa.sbc.su.se/downloads/kalign/current.tar.gz)
 
 ## 脚本说明
 
