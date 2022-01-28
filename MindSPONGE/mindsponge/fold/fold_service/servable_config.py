@@ -26,7 +26,7 @@ from mindspore import load_checkpoint
 
 from data.feature.feature_extraction import process_features
 from data.tools.data_process import data_process
-from commons.residue_constants import compute_confidence
+from commons.utils import compute_confidence
 from commons.generate_pdb import to_pdb, from_prediction
 from model import AlphaFold
 from config import config, global_config
