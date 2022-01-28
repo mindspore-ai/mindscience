@@ -159,11 +159,11 @@ class DataPipeline:
         return {**sequence_features, **msa_features, **templates_result.features}
 
 
-def data_process(seq_num, args):
+def data_process(seq_name, args):
     """data_process"""
 
-    fasta_path = args.input_fasta_path + seq_num + '.fasta'
-    result_path = args.msa_result_path + "/result_" + str(seq_num)
+    fasta_path = os.path.join(args.input_fasta_path, seq_name + '.fasta')
+    result_path = os.path.join(args.msa_result_path, "/result_" + str(seq_name))
     if args.database_envdb_dir:
         use_env = True
         command = "sh ./data/tools/msa_search.sh mmseqs " + fasta_path + " " + result_path + " " + \
