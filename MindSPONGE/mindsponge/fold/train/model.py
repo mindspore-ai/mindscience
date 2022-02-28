@@ -261,10 +261,10 @@ class AlphaFold(nn.Cell):
                                   residx_atom37_to_atom14,
                                   atom37_atom_exists)
         if self.train_backward:
-            predicted_lddt_logits = self.module_lddt(rp_structure_module, is_training=False)
-            dist_logits, bin_edges = self.module_distogram(pair_activations, is_training=False)
-            experimentally_logits = self.module_exp_resolved(single_activations, is_training=False)
-            masked_logits = self.module_mask(msa, is_training=False)
+            predicted_lddt_logits = self.module_lddt(rp_structure_module)
+            dist_logits, bin_edges = self.module_distogram(pair_activations)
+            experimentally_logits = self.module_exp_resolved(single_activations)
+            masked_logits = self.module_mask(msa)
             aligned_error_logits, aligned_error_breaks = self.aligned_error(pair_activations.astype(mstype.float32))
 
             final_atom_positions = final_atom_positions.astype(mstype.float32)

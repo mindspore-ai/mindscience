@@ -425,7 +425,7 @@ def load_stereo_chemical_props() -> Tuple[Mapping[str, List[Bond]],
       residue_bond_angles: dict that maps resname --> list of BondAngle tuples
     """
     stereo_chemical_props_path = (
-        '/cache/user-job-dir/Alphafold_MS/common/stereo_chemical_props.txt')
+        './common/stereo_chemical_props.txt')
     with open(stereo_chemical_props_path, 'rt') as f:
         stereo_chemical_props = f.read()
     lines_iter = iter(stereo_chemical_props.splitlines())
@@ -434,6 +434,8 @@ def load_stereo_chemical_props() -> Tuple[Mapping[str, List[Bond]],
     next(lines_iter)  # Skip header line.
     for line in lines_iter:
         if line.strip() == '-':
+            break
+        if line.strip()[0] == '#':
             break
         bond, resname, length, stddev = line.split()
         atom1, atom2 = bond.split('-')

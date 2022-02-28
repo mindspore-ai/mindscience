@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-
 Bond   Residue  Mean  StdDev
 CA-CB   ALA  1.520  0.021
 N-CA   ALA  1.459  0.020

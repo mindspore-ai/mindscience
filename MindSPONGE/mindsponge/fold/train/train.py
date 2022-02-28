@@ -39,23 +39,18 @@ parser.add_argument('--ckpt_url', type=str, default="./", help='ckpt url')
 parser.add_argument('--seq_len', type=int, default=256, help='seq len')
 parser.add_argument('--extra_msa_length', type=int, default=1024, help='extra msa length')
 parser.add_argument('--max_msa_clusters', type=int, default=128, help='max msa clusters')
-parser.add_argument('--warmup_steps', type=int, default=1000, help='warmup steps')
 parser.add_argument('--extra_msa_num', type=int, default=4, help='extra msa number')
 parser.add_argument('--evo_num', type=int, default=48, help='evo number')
 parser.add_argument('--total_steps', type=int, default=9600000, help='total steps')
-parser.add_argument('--lr_decay_steps', type=int, default=75000, help='lr decay steps')
 parser.add_argument('--loss_scale', type=float, default=1024.0, help='loss scale')
-parser.add_argument('--pdbreal_rate', type=float, default=0.25, help='real pdb data rate')
-parser.add_argument('--distillation_rate', type=float, default=0.75, help='distillation data rate')
 parser.add_argument('--gradient_clip', type=float, default=0.1, help='gradient clip value')
-parser.add_argument('--structure_weight', type=float, default=1.0, help='structure weight')
 parser.add_argument('--run_distribute', type=bool, default=False, help='run distribute')
 args_opt = parser.parse_args()
 
 if __name__ == "__main__":
     context.set_context(mode=context.GRAPH_MODE, device_target="Ascend", variable_memory_max_size="29GB",
                         device_id=int(os.getenv('DEVICE_ID')))
-    if args_opt.run_distruibute:
+    if args_opt.run_distribute:
         D.init()
         device_num = D.get_group_size()
         os.environ['HCCL_CONNECT_TIMEOUT'] = "7200"
@@ -74,7 +69,6 @@ if __name__ == "__main__":
     num_recycle = model_config.model.num_recycle
     model_config.data.eval.crop_size = SEQ_LENGTH
     model_config.data.common.max_extra_msa = EXTRA_MSA_LENGTH
-    model_config.model.heads.structure_module.structure_loss_weight = args_opt.structure_weight
     msa_channel = model_config.model.embeddings_and_evoformer.msa_channel
     pair_channel = model_config.model.embeddings_and_evoformer.pair_channel
     model_config.data.eval.max_msa_clusters = MAX_MSA_CLUSTERS
@@ -86,6 +80,7 @@ if __name__ == "__main__":
 
     train_net = TrainOneStepCell(net_with_criterion, opt, sens=args_opt.loss_scale,
                                  gradient_clip_value=args_opt.gradient_clip)
+    train_net.set_train()
     step = 0
     start_time = time.time()
     np.random.seed(1)

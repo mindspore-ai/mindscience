@@ -620,7 +620,7 @@ def get_train_data(train_data_dir, prot_name, config, raw_feature_path, names_al
     try_count = 0
     while flag:
         try:
-            pdb_path = os.path.join(train_data_dir, prot_name + '_renum.pdb')
+            pdb_path = os.path.join(train_data_dir, prot_name + '.pdb')
             with open(pdb_path, 'r') as f:
                 prot_pdb = protein.from_pdb_string(f.read())
             with open(os.path.join(raw_feature_path, prot_name + '.pkl'), "rb") as f:
