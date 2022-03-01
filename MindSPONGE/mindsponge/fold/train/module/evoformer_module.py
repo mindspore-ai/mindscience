@@ -70,7 +70,7 @@ class EvoformerIterationTail(nn.Cell):
     def construct(self, msa_act, pair_act, msa_mask, msa_mask_norm, pair_mask):
         """construct"""
         msa_act = P.Add()(msa_act, self.dropout_attn_mod(self.attn_mod(msa_act, msa_mask)))
-        msa_act = P.Add()(msa_act, self.dropout_msa_transition(self.msa_transition(msa_act, msa_mask)))
+        msa_act = P.Add()(msa_act, self.dropout_msa_transition(self.msa_transition(msa_act)))
         pair_act = P.Add()(pair_act,
                            self.dropout_outer_product_mean(self.outer_product_mean(msa_act, msa_mask, msa_mask_norm)))
         pair_act = P.Add()(pair_act, self.dropout_triangle_multiplication_outgoing(
@@ -192,7 +192,7 @@ class EvoformerIteration(nn.Cell):
         msa_act = P.Add()(msa_act, self.dropout_msa_row_attention_with_pair_bias(
             self.msa_row_attention_with_pair_bias(msa_act, msa_mask, pair_act)))
         msa_act = P.Add()(msa_act, self.dropout_attn_mod(self.attn_mod(msa_act, msa_mask)))
-        msa_act = P.Add()(msa_act, self.dropout_msa_transition(self.msa_transition(msa_act, msa_mask)))
+        msa_act = P.Add()(msa_act, self.dropout_msa_transition(self.msa_transition(msa_act)))
         pair_act = P.Add()(pair_act,
                            self.dropout_outer_product_mean(self.outer_product_mean(msa_act, msa_mask, msa_mask_norm)))
         pair_act = P.Add()(pair_act, self.dropout_triangle_multiplication_outgoing(

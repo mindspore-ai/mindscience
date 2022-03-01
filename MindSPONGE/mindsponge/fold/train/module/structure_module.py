@@ -26,7 +26,7 @@ from mindspore.ops import functional as F
 from common import residue_constants
 from common.utils import apply_to_point, torsion_angles_to_frames, frames_and_literature_positions_to_atom14_pos,\
     pre_compose, scale_translation, to_tensor_new, generate_new_affine, to_tensor, from_tensor, vecs_to_tensor,\
-    atom14_to_atom37, get_exp_atom_pos, get_exp_frames, _distogram_log_loss
+    atom14_to_atom37, get_exp_atom_pos, get_exp_frames
 from common.utils import _invert_point, lecun_init
 
 
@@ -496,8 +496,6 @@ class DistogramHead(nn.Cell):
         Arguments:
           representations: Dictionary of representations, must contain:
             * 'pair': pair representation, shape [N_res, N_res, c_z].
-          batch: Batch, unused.
-          is_training: Whether the module is in training mode.
 
         Returns:
           Dictionary containing:
@@ -510,10 +508,6 @@ class DistogramHead(nn.Cell):
         breaks = mnp.linspace(self.first_break, self.last_break, self.num_bins - 1)
 
         return logits, breaks
-
-    def loss(self, value, batch):
-        return _distogram_log_loss(value['logits'], value['bin_edges'],
-                                   batch, self.config.num_bins)
 
 
 class ExperimentallyResolvedHead(nn.Cell):
@@ -535,8 +529,6 @@ class ExperimentallyResolvedHead(nn.Cell):
         Arguments:
           representations: Dictionary of representations, must contain:
             * 'single': Single representation, shape [N_res, c_s].
-          batch: Batch, unused.
-          is_training: Whether the module is in training mode.
 
         Returns:
           Dictionary containing:
@@ -569,8 +561,6 @@ class MaskedMsaHead(nn.Cell):
         Arguments:
           representations: Dictionary of representations, must contain:
             * 'msa': MSA representation, shape [N_seq, N_res, c_m].
-          batch: Batch, unused.
-          is_training: Whether the module is in training mode.
 
         Returns:
           Dictionary containing:
@@ -602,7 +592,6 @@ class PredictedAlignedErrorHead(nn.Cell):
 
         Arguments:
             * 'pair': pair representation, shape [N_res, N_res, c_z].
-            batch: Batch, unused.
 
         Returns:
             * logits: logits for aligned error, shape [N_res, N_res, N_bins].
