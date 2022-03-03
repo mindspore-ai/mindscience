@@ -34,7 +34,7 @@ MindSpore环境参见[MindSpore教程](https://www.mindspore.cn/tutorials/zh-CN/
 export MS_DEV_ENABLE_FALLBACK=0
 ```
 
-其余python依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/fold/requirements.txt)。
+其余python依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/tree/dev/MindSPONGE/mindsponge/fold/train/requirements.txt)。
 
 ### MMseqs2安装
 
