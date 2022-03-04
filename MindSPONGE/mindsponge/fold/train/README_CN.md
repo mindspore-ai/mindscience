@@ -12,6 +12,7 @@
         - [Template所需工具和数据](#template所需工具和数据)
             - [数据](#数据)
             - [工具](#工具)
+        - [训练数据集](#训练数据集)
     - [脚本说明](#脚本说明)
         - [脚本及样例代码](#脚本及样例代码)
         - [训练示例](#训练示例)
@@ -65,6 +66,10 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
 
 - [HHsearch](https://github.com/soedinglab/hh-suite)
 - [kalign](https://msa.sbc.su.se/downloads/kalign/current.tar.gz)
+
+### 训练数据集
+
+为保证CASP14测试数据集的验证效果，训练使用的结构数据和自蒸馏序列发布时间均在CASP14开始日期（2020/05/21）之前，后续将会开源训练数据集。
 
 ## 脚本说明
 
