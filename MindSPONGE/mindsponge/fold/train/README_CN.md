@@ -141,6 +141,10 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
 
 > 对于分布式训练，需要提前创建JSON格式的HCCL配置文件。关于配置文件，可以参考[HCCL_TOOL](https://gitee.com/mindspore/models/tree/master/utils/hccl_tools)
 
+### CASP14 数据预测结果
+
+据当前训练结果，对CASP14中87条数据集进行推理，其结存放于[CASP14_result](https://gitee.com/mindspore/mindscience/tree/dev/MindSPONGE/examples/CASP14_result)
+
 ### 更多训练细节待补充
 
 ## 引用
