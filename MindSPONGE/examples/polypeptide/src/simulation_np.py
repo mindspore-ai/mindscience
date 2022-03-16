@@ -318,7 +318,7 @@ class Simulation(nn.Cell):
         nb14_cf_energy_sum = nb14_cf_e.sum(keepdims=True)
 
         lj_e = lj_energy(self.atom_numbers, self.cutoff_square, uint_crd,
-                         self.atom_lj_type, self.charge, uint_dr_to_dr_cof,
+                         self.atom_lj_type, uint_dr_to_dr_cof,
                          self.nl_atom_numbers, self.nl_atom_serial, self.lj_a,
                          self.lj_b)
         lj_energy_sum = lj_e.sum(keepdims=True)
@@ -361,7 +361,6 @@ class Simulation(nn.Cell):
 
         temperature = temperature.asnumpy()
         total_potential_energy = total_potential_energy.asnumpy()
-        print("{:>7.0f} {:>7.3f} {:>11.3f}".format(steps, float(temperature), float(total_potential_energy)), end=" ")
         if self.bond.bond_numbers > 0:
             sigma_of_bond_ene = sigma_of_bond_ene.asnumpy()
             print("{:>10.3f}".format(float(sigma_of_bond_ene)), end=" ")

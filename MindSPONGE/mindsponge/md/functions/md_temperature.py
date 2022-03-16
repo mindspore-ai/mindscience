@@ -13,11 +13,12 @@
 # limitations under the License.
 # ============================================================================
 '''md temperature'''
-import mindspore.numpy as mnp
+import mindspore.numpy as np
+from mindspore.ops.operations import _csr_ops
 
 
-constant_kb = mnp.array(0.00198716, mnp.float64)
-
+constant_kb = np.array(0.00198716, np.float64)
+csr_reducesum = _csr_ops.CSRReduceSum()
 
 def md_temperature(mask, atom_vel_f, atom_mass):
     """
@@ -29,10 +30,26 @@ def md_temperature(mask, atom_vel_f, atom_mass):
         ``GPU``
     """
     residue_numbers = mask.shape[0]
-    # (1, N, 1)
-    res = atom_vel_f * atom_mass.reshape(1, -1, 1)
-    res = mnp.tile(res, (residue_numbers, 1, 1))
-    momentum = mnp.sum(mnp.expand_dims(mask, -1) * res, 1)
-    res_mass = mnp.sum(mask * atom_mass.reshape(1, -1), -1)
-    ek = 2. * mnp.sum(momentum * momentum, -1) / res_mass * 0.5 / 3. / constant_kb / residue_numbers
-    return ek.astype(mnp.float32)
+    # (n, 3) * (n, 1) -> (n, 3)
+    res = atom_vel_f * atom_mass.reshape(-1, 1)
+    # (n, 1)
+    res_x, res_y, res_z = np.split(res, 3, axis=1)
+    # sparse(m, n) * dense(1, n) -> sparse(m, n)
+    momentum_x = mask * res_x.reshape(1, -1)
+    momentum_y = mask * res_y.reshape(1, -1)
+    momentum_z = mask * res_z.reshape(1, -1)
+    # sparse(m, n) -> dense(m, 1)
+    momentum_x = csr_reducesum(momentum_x, 1)
+    momentum_y = csr_reducesum(momentum_y, 1)
+    momentum_z = csr_reducesum(momentum_z, 1)
+    # dense(m, 1) -> dense(m, 1)
+    momentum = momentum_x * momentum_x + momentum_y * momentum_y + momentum_z * momentum_z
+
+    # sparse(m, n) * dense(1, n) -> sparse(m, n)
+    res_mass = mask * atom_mass.reshape(1, -1)
+    # sparse(m, n) -> dense(m, 1)
+    res_mass = csr_reducesum(res_mass, 1)
+    n = 3. * residue_numbers
+    ek = momentum / res_mass / n / constant_kb
+
+    return ek.astype(np.float32)

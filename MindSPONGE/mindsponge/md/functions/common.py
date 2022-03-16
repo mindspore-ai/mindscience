@@ -47,31 +47,40 @@ def get_full_tensor(shape, fill_value, dtype=np.float32):
 def get_range_tensor(stop):
     return np.arange(stop)
 
+def get_csr_excluded_index(ele_list, start, num):
+    '''get csr excluded index'''
+    row_idx = [0]
+    col_idx = []
+    value = []
+    for s, n in zip(start, num):
+        if n > 0:
+            col_idx += list(range(n))
+            row_idx.append(len(col_idx))
+            value += ele_list[s : s + n].tolist()
+        else:
+            row_idx.append(len(col_idx))
+    return row_idx, col_idx, value
+
+def broadcast_with_excluded_list(excluded_indptr):
+    atom_excluded_index = []
+    for i, v in enumerate(excluded_indptr[1:]):
+        atom_excluded_index += [i] * (v - excluded_indptr[i])
+    return np.array(atom_excluded_index)
+
 def get_periodic_displacement(x, y, scaler):
     int_dr = x - y
     int_dr = int_dr.astype('int32')
     int_dr = ops.depend(int_dr, int_dr)
     return int_dr * scaler
 
-def reform_excluded_list(excluded_list, excluded_list_start, exlcuded_list_number):
-    """Re-format excluded list: (E,) -> (N, MAX_NEIGHBOUR)"""
-    atom_numbers = excluded_list_start.shape[0]
-    max_neighbour = exlcuded_list_number.max()
-    excluded_list_end = excluded_list_start + exlcuded_list_number
-    excluded_matrix = onp.full((atom_numbers, max_neighbour), -1, onp.int32)
-    for i in range(atom_numbers):
-        excluded_matrix[i, :exlcuded_list_number[i]] = excluded_list[excluded_list_start[i]:excluded_list_end[i]]
-    return excluded_matrix
-
-def reform_residual_list(atom_numbers, start, end):
+def get_csr_residual_index(atom_numbers, start, end):
     """Re-format residual list"""
-    idx = onp.arange(atom_numbers).reshape(1, -1)
-    # (M, 1)
-    start = start.reshape(-1, 1)
-    end = end.reshape(-1, 1)
-    # (M, N)
-    mask = onp.logical_and(idx >= start, idx < end).astype('int32')
-    return mask
+    # (m + 1, )
+    indptr = onp.append(start, end[-1]).astype("int32")
+    # (n,)
+    indices = onp.arange(atom_numbers).astype("int32")
+    data = onp.ones(atom_numbers, dtype="float32")
+    return indptr, indices, data
 
 def cucdiv(real1, imag1, real2, imag2):
     """

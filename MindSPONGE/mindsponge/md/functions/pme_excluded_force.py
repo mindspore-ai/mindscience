@@ -16,16 +16,16 @@
 import math
 import mindspore.numpy as np
 import mindspore.ops as ops
+from mindspore.ops.operations import _csr_ops
+from mindspore.common import CSRTensor
 
 from .common import get_periodic_displacement
 
-excluded_numbers = 2719
 sqrt_pi = 2/math.sqrt(3.141592654)
 zero_tensor = np.array(0, dtype=np.float32)
-zero_indices = np.zeros((excluded_numbers, 1), dtype=np.int32)
-one_indices = zero_indices + 1
-two_indices = one_indices + 1
-def pme_excluded_force(atom_numbers, beta, uint_crd, scaler, charge, excluded_matrix):
+csr_reducesum = _csr_ops.CSRReduceSum()
+
+def pme_excluded_force(atom_numbers, beta, uint_crd, scaler, charge, excluded_csr, excluded_row):
     """
     Calculate the excluded part of long-range Coulumb force using
     PME(Particle Meshed Ewald) method. Assume the number of atoms is
@@ -49,31 +49,36 @@ def pme_excluded_force(atom_numbers, beta, uint_crd, scaler, charge, excluded_ma
     Supported Platforms:
         ``GPU``
     """
-    # (N, M)
-    mask = (excluded_matrix > -1)
-    # (N, 3)[N, M]-> (N, M, 3)
-    excluded_crd = uint_crd[excluded_matrix]
-    # (N, M, 3) - (N, 1, 3) -> (N, M, 3)
-    crd_d = get_periodic_displacement(excluded_crd, np.expand_dims(uint_crd, 1), scaler)
+    # (N, 3)[M]-> (M, 3)
+    excluded_crd = uint_crd[excluded_csr.values]
+    # (N, 3)[M]-> (M, 3)
+    excluded_crd_row = uint_crd[excluded_row]
+    # (M, 3) - (M, 3) -> (M, 3)
+    crd_d = get_periodic_displacement(excluded_crd, excluded_crd_row, scaler)
     crd_2 = crd_d ** 2
-    # (N, M, 3) -> (N, M)
+    # (M, 3) -> (M,)
     crd_sum = np.sum(crd_2, -1)
     crd_abs = np.sqrt(crd_sum)
     crd_beta = crd_abs * beta
     frc_abs = crd_beta * sqrt_pi * np.exp(-crd_beta ** 2) + ops.erfc(crd_beta)
     frc_abs = (frc_abs - 1.) / crd_sum / crd_abs
-    frc_abs = np.where(mask, frc_abs, zero_tensor)
-    # (N,)[N, M] -> (N, M)
-    excluded_charge = charge[excluded_matrix]
-    # (N, 1) * (N, M) -> (N, M)
-    charge_mul = np.expand_dims(charge, 1) * excluded_charge
+    # (N,)[M] -> (M)
+    excluded_charge = charge[excluded_csr.values]
+    excluded_charge_row = charge[excluded_row]
+    # (M)
+    charge_mul = excluded_charge * excluded_charge_row
     frc_abs = -charge_mul * frc_abs
-    # (N, M, 1) * (N, M, 3) -> (N, M, 3)
-    frc_lin = np.expand_dims(frc_abs, 2) * crd_d
-    # (N, M, 3) -> (N, 3)
-    frc_outer = np.sum(frc_lin, axis=1)
-    # (N, M, 3) -> (N*M, 3)
-    frc_inner = -frc_lin.reshape(-1, 3)
-    excluded_list = excluded_matrix.reshape(-1, 1)
-    res = ops.tensor_scatter_add(frc_outer, excluded_list, frc_inner)
+    # (M, 1) * (M, 3) -> (M, 3)
+    frc_lin = np.expand_dims(frc_abs, -1) * crd_d
+    # construct CSRTensors
+    indptr = excluded_csr.indptr
+    indices = excluded_csr.indices
+    shape = (atom_numbers, excluded_row.shape[0])
+    x, y, z = np.split(-frc_lin, 3, -1)
+    # (N, M) -> (N, 1)
+    frc_lin_x = csr_reducesum(CSRTensor(indptr, indices, x.ravel(), shape), 1)
+    frc_lin_y = csr_reducesum(CSRTensor(indptr, indices, y.ravel(), shape), 1)
+    frc_lin_z = csr_reducesum(CSRTensor(indptr, indices, z.ravel(), shape), 1)
+    frc_outer = np.concatenate((frc_lin_x, frc_lin_y, frc_lin_z), -1)
+    res = ops.tensor_scatter_add(frc_outer, excluded_csr.values.reshape(-1, 1), frc_lin)
     return res
