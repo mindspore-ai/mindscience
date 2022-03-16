@@ -24,6 +24,7 @@ import mindspore.nn as nn
 from mindspore.common import set_seed
 from mindspore.common.tensor import Tensor
 from mindspore.context import ParallelMode
+from mindspore import load_checkpoint
 from config import config, global_config
 from data.tools.get_train_data import create_dataset
 from model import AlphaFold
@@ -32,10 +33,10 @@ from src.af_wrapcell import TrainOneStepCell, WithLossCell
 set_seed(1)
 
 parser = argparse.ArgumentParser(description='AlphaFold')
-parser.add_argument('--pdb_data_dir', default=None, help='Location of training pdb file.')
-parser.add_argument('--raw_feature_dir', default=None, help='Location of raw inputs file.')
-parser.add_argument('--resolution_data', default=None, help='Location of resolution data file.')
-parser.add_argument('--ckpt_url', type=str, default="./", help='ckpt url')
+parser.add_argument('--pdb_data_dir', type=str, default=None, help='Location of training pdb file.')
+parser.add_argument('--raw_feature_dir', type=str, default=None, help='Location of raw inputs file.')
+parser.add_argument('--resolution_data', type=str, default=None, help='Location of resolution data file.')
+parser.add_argument('--ckpt_url', type=str, default=None, help='ckpt url')
 parser.add_argument('--seq_len', type=int, default=256, help='seq len')
 parser.add_argument('--extra_msa_length', type=int, default=1024, help='extra msa length')
 parser.add_argument('--max_msa_clusters', type=int, default=128, help='max msa clusters')
@@ -44,6 +45,7 @@ parser.add_argument('--evo_num', type=int, default=48, help='evo number')
 parser.add_argument('--total_steps', type=int, default=9600000, help='total steps')
 parser.add_argument('--loss_scale', type=float, default=1024.0, help='loss scale')
 parser.add_argument('--gradient_clip', type=float, default=0.1, help='gradient clip value')
+parser.add_argument('--train', type=bool, default=False, help='train or eval mode')
 parser.add_argument('--run_distribute', type=bool, default=False, help='run distribute')
 args_opt = parser.parse_args()
 
@@ -80,7 +82,9 @@ if __name__ == "__main__":
 
     train_net = TrainOneStepCell(net_with_criterion, opt, sens=args_opt.loss_scale,
                                  gradient_clip_value=args_opt.gradient_clip)
-    train_net.set_train()
+    if args_opt.ckpt_url:
+        load_checkpoint(args_opt.ckpt_url, train_net)
+    train_net.set_train(args_opt.train)
     step = 0
     start_time = time.time()
     np.random.seed(1)
@@ -131,6 +135,8 @@ if __name__ == "__main__":
         train_net.add_flags_recursive(train_backward=True)
         train_net.phase = 'train_backward'
         loss = train_net(*inputs_feat, prev_pos, prev_msa_first_row, prev_pair, *ground_truth)
-        loss_info = f"step is: {step}, loss is :{loss}"
+        loss_info = f"step is: {step}, total_loss: {loss[0]}, fape_sidechain_loss: {loss[1]}," \
+                    f" fape_backbone_loss: {loss[2]}, angle_norm_loss: {loss[3]}, distogram_loss: {loss[4]}," \
+                    f" masked_loss: {loss[5]}, plddt_loss: {loss[6]}"
         print(loss_info, flush=True)
         step += 1

@@ -635,4 +635,4 @@ class LossNet(nn.Cell):
                predict_lddt_loss
 
         loss = loss * P.Sqrt()(P.ReduceSum()(all_atom_mask[:, 0]))
-        return loss
+        return loss, l_fape_side, l_fape_backbone, l_anglenorm, distogram_loss, masked_loss, predict_lddt_loss
