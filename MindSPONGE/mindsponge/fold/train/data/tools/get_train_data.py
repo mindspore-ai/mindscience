@@ -816,8 +816,10 @@ class DatasetGenerator:
         rigidgroups_alt_gt_frames = features["rigidgroups_alt_gt_frames"]
         torsion_angles_sin_cos_gt = features["torsion_angles_sin_cos"][None, :, 3:, :].astype(np.float32)
         chi_mask = features["chi_mask"].astype(np.float32)
-        use_clamped_fape = np.random.binomial(1, 0.9, size=1).astype(np.int32)
-        filter_by_solution = self.get_solution_flag(prot_name)
+        # use_clamped_fape = np.random.binomial(1, 0.9, size=1).astype(np.int32)//TODO
+        # filter_by_solution = self.get_solution_flag(prot_name) //TODO
+        use_clamped_fape = np.array(0.0).astype(np.float32)
+        filter_by_solution = np.array(1.0).astype(np.float32)
 
         return (target_feat, msa_feat, msa_mask, seq_mask_batch, aatype_batch, template_aatype,
                 template_all_atom_masks, template_all_atom_positions, template_mask,

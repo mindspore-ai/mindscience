@@ -80,9 +80,16 @@ class TrainOneStepCell(nn.Cell):
         """construct"""
         if self.train_backward:
             loss = self.network(*inputs)
+            loss, l_fape_side, l_fape_backbone, l_anglenorm, distogram_loss, masked_loss, predict_lddt_loss = loss
             sens = F.fill(loss.dtype, loss.shape, self.sens)
+            sens1 = F.fill(l_fape_side.dtype, l_fape_side.shape, 0.0)
+            sens2 = F.fill(l_fape_backbone.dtype, l_fape_backbone.shape, 0.0)
+            sens3 = F.fill(l_anglenorm.dtype, l_anglenorm.shape, 0.0)
+            sens4 = F.fill(distogram_loss.dtype, distogram_loss.shape, 0.0)
+            sens5 = F.fill(masked_loss.dtype, masked_loss.shape, 0.0)
+            sens6 = F.fill(predict_lddt_loss.dtype, predict_lddt_loss.shape, 0.0)
 
-            grads = self.grad(self.network, self.weights)(*inputs, sens)
+            grads = self.grad(self.network, self.weights)(*inputs, (sens, sens1, sens2, sens3, sens4, sens5, sens6))
             grads = self.hyper_map(F.partial(grad_scale, F.scalar_to_array(self.sens)), grads)
             grads = self.grad_reducer(grads)
             if self.enable_clip_grad:
@@ -92,7 +99,7 @@ class TrainOneStepCell(nn.Cell):
                     grads = self.hyper_map(ops.partial(clip_grad, GRADIENT_CLIP_TYPE, self.gradient_clip_value), grads)
 
             loss = F.depend(loss, self.optimizer(grads))
-            return loss
+            return loss, l_fape_side, l_fape_backbone, l_anglenorm, distogram_loss, masked_loss, predict_lddt_loss
 
         out = self.network(*inputs)
         return out

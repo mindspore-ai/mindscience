@@ -47,8 +47,10 @@ def one_hot(depth, indices):
 
 
 def make_random_seed(size, seed_maker_t, low=MS_MIN32, high=MS_MAX32):
-    r = np.random.RandomState(seed_maker_t)
-    return r.uniform(size=size, low=low, high=high)
+    # r = np.random.RandomState(seed_maker_t)
+    # return r.uniform(size=size, low=low, high=high)
+    np.random.seed(seed_maker_t)
+    return np.random.uniform(size=size, low=low, high=high)
 
 
 def curry1(f):
