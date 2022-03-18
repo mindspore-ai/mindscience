@@ -12,16 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-'''pme energy'''
+'''pme energy update'''
 import mindspore.numpy as mnp
-from .common import PI, get_zero_tensor, get_full_tensor
-from .pme_common import scale_list, pme_a_near, pme_q_spread, pme_direct_energy, pme_energy_reciprocal, \
-    pme_excluded_energy_correction, pme_energy_product, get_pme_kxyz, PERIODIC_FACTOR_INVERSE, \
-    fft3d
+from .pme_energy import pme_energy
 
-cutoff = 10.0
-def pme_energy(atom_numbers, beta, fftx, ffty, fftz, pme_bc, uint_crd, charge,
-               nl_numbers, nl_serial, scaler, excluded_list, atom_excluded_index):
+def pme_energy_update(atom_numbers, beta, fftx, ffty, fftz, pme_bc, uint_crd, charge,
+                      nl_numbers, nl_serial, scaler, excluded_list, atom_excluded_index, neutralizing_factor):
     """
     Calculate the Coulumb energy of the system using PME method.
 
@@ -46,6 +42,7 @@ def pme_energy(atom_numbers, beta, fftx, ffty, fftz, pme_bc, uint_crd, charge,
           E is the number of excluded atoms.
         atom_excluded_index (Tensor, int32):[E,] containing the row indices corresponding excluded_list,
         i.e. each CSR format row index is replicated to map to one CSR format column index.
+        neutralizing_factor -(Tensor, float32): [1, ] the factor parameter to be updated in pressure calculation.
 
     Outputs:
         reciprocal_ene  (float) - the reciprocal term of PME energy.
@@ -56,34 +53,13 @@ def pme_energy(atom_numbers, beta, fftx, ffty, fftz, pme_bc, uint_crd, charge,
     Supported Platforms:
         ``GPU``
     """
-    pme_nin = ffty * fftz
-    pme_nall = fftx * ffty * fftz
+    reciprocal_ene, self_ene, direct_ene, correction_ene = pme_energy(atom_numbers, beta, fftx, ffty, fftz,
+                                                                      pme_bc, uint_crd, charge, nl_numbers,
+                                                                      nl_serial, scaler, excluded_list,
+                                                                      atom_excluded_index)
 
-    pme_kxyz = get_pme_kxyz() # (64, 3)
-
-    pme_uxyz = get_full_tensor((atom_numbers, 3), 2 ** 30, mnp.uint32)
-    pme_atom_near = get_zero_tensor((atom_numbers, 64), mnp.int32)
-    pme_frxyz, pme_uxyz, pme_atom_near = pme_a_near(uint_crd, pme_atom_near, pme_nin,
-                                                    PERIODIC_FACTOR_INVERSE * fftx,
-                                                    PERIODIC_FACTOR_INVERSE * ffty,
-                                                    PERIODIC_FACTOR_INVERSE * fftz, atom_numbers,
-                                                    fftx, ffty, fftz, pme_kxyz, pme_uxyz)
-
-    pme_q = get_full_tensor(pme_nall, 0, mnp.float32)
-    pme_q = pme_q_spread(pme_atom_near, charge, pme_frxyz, pme_q, pme_kxyz, atom_numbers)
-
-    pme_q = pme_q.reshape(fftx, ffty, fftz).astype('float32')
-    pme_fq = fft3d(pme_q)
-
-    reciprocal_ene = pme_energy_reciprocal(pme_fq, pme_bc.reshape((fftx, ffty, fftz // 2 + 1)))
-
-    self_ene = pme_energy_product(charge, charge)
-    self_ene = scale_list(1, self_ene, -beta / mnp.sqrt(PI))
-
-    direct_ene = pme_direct_energy(atom_numbers, nl_numbers, nl_serial, uint_crd, scaler, charge, beta,
-                                   cutoff * cutoff)
-
-    correction_ene = pme_excluded_energy_correction(uint_crd, scaler, charge, beta, excluded_list, atom_excluded_index)
+    d_beta = mnp.sum(charge, -1)
+    self_ene += neutralizing_factor * d_beta * d_beta
 
     return mnp.atleast_1d(reciprocal_ene), mnp.atleast_1d(self_ene), \
            mnp.atleast_1d(direct_ene), mnp.atleast_1d(correction_ene)

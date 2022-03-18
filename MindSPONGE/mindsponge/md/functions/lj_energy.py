@@ -20,8 +20,8 @@ from .common import get_neighbour_index, get_periodic_displacement
 
 zero_tensor = Tensor(0).astype("float32")
 
-def lj_energy(atom_numbers, cutoff_square, uint_crd, atom_LJ_type, charge, scaler,
-              nl_atom_numbers, nl_atom_serial, LJ_A, LJ_B):
+def lj_energy(atom_numbers, cutoff_square, uint_crd, atom_lj_type, scaler,
+              nl_atom_numbers, nl_atom_serial, lj_a, lj_b):
     """
     Calculate the Van der Waals interaction energy described by Lennard-Jones
     potential for each atom. Assume the number of atoms is N, and the number
@@ -41,15 +41,14 @@ def lj_energy(atom_numbers, cutoff_square, uint_crd, atom_LJ_type, charge, scale
         atom_numbers(int): the number of atoms, N.
         cutoff_square(float): the square value of cutoff.
         uint_crd (Tensor, uint32): [N, 3], the unsigned int coordinate value of each atom.
-        atom_LJ_type (Tensor, int32): [N,], the Lennard-Jones type of each atom.
-        charge (Tensor, float32): [N,], the charge carried by each atom.
+        atom_lj_type (Tensor, int32): [N,], the Lennard-Jones type of each atom.
         scaler (Tensor, float32): [3,], the scale factor between real
           space coordinate and its unsigned int value.
         nl_atom_numbers - (Tensor, int32): [N,], the each atom.
         nl_atom_serial - (Tensor, int32): [N, 800], the neighbor list of each atom, the max number is 800.
-        LJ_A (Tensor, float32): [Q,], the Lennard-Jones A coefficient of each kind of atom pair.
+        lj_a (Tensor, float32): [Q,], the Lennard-Jones A coefficient of each kind of atom pair.
           Q is the number of atom pair.
-        LJ_B (Tensor, float32): [Q,], the Lennard-Jones B coefficient of each kind of atom pair.
+        lj_b (Tensor, float32): [Q,], the Lennard-Jones B coefficient of each kind of atom pair.
           Q is the number of atom pair.
 
     Outputs:
@@ -62,7 +61,7 @@ def lj_energy(atom_numbers, cutoff_square, uint_crd, atom_LJ_type, charge, scale
     # (N,3)[(N,800)] -> (N,800,3)
     nl_atom_serial_crd = uint_crd[nl_atom_serial]
     # (N,1)[(N,800)] -> N*800
-    r2_LJ_type = atom_LJ_type[nl_atom_serial]
+    r2_lj_type = atom_lj_type[nl_atom_serial]
     # (N,3) -> (N,1,3)
     crd_expand = np.expand_dims(uint_crd, 1)
     # (N,1,3) - (N,800,3) -> (N,800,3)
@@ -74,14 +73,14 @@ def lj_energy(atom_numbers, cutoff_square, uint_crd, atom_LJ_type, charge, scale
     mask = np.logical_and((crd_2 < cutoff_square), (nl_atom_mask < np.expand_dims(nl_atom_numbers, -1)))
     dr_2 = 1. / crd_2
     dr_6 = np.power(dr_2, 3.)
-    r1_LJ_type = np.expand_dims(atom_LJ_type, -1)
-    x = r2_LJ_type + r1_LJ_type
-    y = np.absolute(r2_LJ_type - r1_LJ_type)
-    r2_LJ_type = (x + y) // 2
+    r1_lj_type = np.expand_dims(atom_lj_type, -1)
+    x = r2_lj_type + r1_lj_type
+    y = np.absolute(r2_lj_type - r1_lj_type)
+    r2_lj_type = (x + y) // 2
     x = (x - y) // 2
-    atom_pair_LJ_type = (r2_LJ_type * (r2_LJ_type + 1) // 2) + x
+    atom_pair_lj_type = (r2_lj_type * (r2_lj_type + 1) // 2) + x
     # (N, 800)
-    dr_2 = (0.083333333 * LJ_A[atom_pair_LJ_type] * dr_6 - 0.166666666 * LJ_B[atom_pair_LJ_type]) * dr_6
-    ene_lin = np.where(mask, dr_2, zero_tensor)
+    dr_2 = (0.083333333 * lj_a[atom_pair_lj_type] * dr_6 - 0.166666666 * lj_b[atom_pair_lj_type]) * dr_6
+    ene_lin = mask * dr_2
     ene_lin = np.sum(ene_lin, -1)
     return ene_lin

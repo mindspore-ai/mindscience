@@ -59,6 +59,5 @@ def md_iteration_leap_frog_liujian(atom_numbers, half_dt, dt, exp_gamma, inverse
     velocity = velocity + get_full_tensor((atom_numbers, 3), dt) * acc
     updated_crd = crd + get_full_tensor((atom_numbers, 3), half_dt) * velocity
     velocity = exp_gamma * velocity + np.expand_dims(sqrt_mass_inverse, 1) * standard_normal((atom_numbers, 3))
-    # velocity = get_full_tensor((atom_numbers, 3), exp_gamma) * velocity + np.tile(np.expand_dims(sqrt_mass_inverse, 1), (1, 3))
     updated_crd = updated_crd + half_dt * velocity
     return velocity, updated_crd, acc

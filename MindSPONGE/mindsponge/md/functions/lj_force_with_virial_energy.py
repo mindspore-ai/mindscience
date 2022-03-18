@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-'''lj force pme direct force'''
+'''lj force with virial energy'''
 from mindspore import numpy as np
 from mindspore import ops
 
@@ -21,8 +21,8 @@ from .common import get_neighbour_index, get_periodic_displacement, get_zero_ten
 TWO_DIVIDED_BY_SQRT_PI = 1.1283791670218446
 MAX_NUMBER_OF_NEIGHBOR = 800
 
-def lj_force_pme_direct_force(atom_numbers, cutoff, pme_beta, uint_crd, lj_type, charge,
-                              scalar, nl_numbers, nl_serial, d_lj_a, d_lj_b):
+def lj_force_with_virial_energy(atom_numbers, cutoff, pme_beta, uint_crd, lj_type, charge,
+                                scalar, nl_numbers, nl_serial, d_lj_a, d_lj_b):
     """
     Calculate the Lennard-Jones force and PME direct force together.
 
@@ -54,11 +54,13 @@ def lj_force_pme_direct_force(atom_numbers, cutoff, pme_beta, uint_crd, lj_type,
     n = uint_crd.shape[0]
     frc = get_zero_tensor((n, 3), np.float32)
     r1 = np.tile(np.expand_dims(uint_crd, 1), (1, MAX_NUMBER_OF_NEIGHBOR, 1))
+    nl_atom_mask = get_neighbour_index(atom_numbers, nl_serial.shape[1])
+    nl_serial = np.where(nl_atom_mask >= np.expand_dims(nl_numbers, -1), -1, nl_serial)
     r2 = uint_crd[nl_serial]
 
     dr = get_periodic_displacement(r2, r1, scalar)
     dr_abs = np.norm(dr, axis=-1)
-    nl_atom_mask = get_neighbour_index(atom_numbers, nl_serial.shape[1])
+
     mask = np.logical_and((dr_abs < cutoff), (nl_atom_mask < np.expand_dims(nl_numbers, -1)))
 
     dr_1 = 1. / dr_abs
@@ -84,12 +86,16 @@ def lj_force_pme_direct_force(atom_numbers, cutoff, pme_beta, uint_crd, lj_type,
     charge2 = charge[nl_serial]
     frc_cf_abs *= charge1 * charge2
 
+    energy_lin = mask * charge1 * charge2 * ops.Erfc()(beta_dr) *dr_1
+    virial_lin = -1 * (mask * frc_abs *dr_abs * dr_abs)
+
     frc_abs -= frc_cf_abs
     frc_lin = np.expand_dims(frc_abs, -1) * dr
     # apply cutoff mask
     frc_lin = np.expand_dims(mask, -1) * frc_lin
     frc_record = np.sum(frc_lin, -2)
-    nl_serial = np.where(nl_atom_mask >= np.expand_dims(nl_numbers, -1), -1, nl_serial)
     frc = ops.tensor_scatter_add(frc, np.expand_dims(nl_serial, -1), -frc_lin)
     frc += frc_record
-    return frc
+    direct_cf_energy = np.sum(energy_lin, -1)
+    lj_virial = np.sum(virial_lin, -1)
+    return frc, lj_virial, direct_cf_energy

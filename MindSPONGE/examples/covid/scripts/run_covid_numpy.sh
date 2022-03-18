@@ -16,7 +16,7 @@ S1 minimization
   write_information_interval = 1000
   dt = 1e-7
 EOF
-python ../../src/original/main.py --i ./min1.in --amber_parm ../../data/$FILENAME.parm7 --c ../../data/$FILENAME.rst7  --r $FILENAME\_min1.rst7
+python ../../src/numpy/main_numpy.py --i ./min1.in --amber_parm ../../data/$FILENAME.parm7 --c ../../data/$FILENAME.rst7  --r $FILENAME\_min1.rst7
 cd ..
 
 mkdir -p min2
@@ -28,7 +28,7 @@ S1 minimization
   write_information_interval = 1000
   dt = 1e-5
 EOF
-python ../../src/original/main.py --i ./min2.in --amber_parm ../../data/$FILENAME.parm7 --c ../min1/$FILENAME\_min1.rst7  --r $FILENAME\_min2.rst7
+python ../../src/numpy/main_numpy.py --i ./min2.in --amber_parm ../../data/$FILENAME.parm7 --c ../min1/$FILENAME\_min1.rst7  --r $FILENAME\_min2.rst7
 cd ..
 
 mkdir -p min3
@@ -40,7 +40,7 @@ S1 minimization
   write_information_interval = 1000
   dt = 1e-3
 EOF
-python ../../src/original/main.py --i ./min3.in --amber_parm ../../data/$FILENAME.parm7 --c ../min2/$FILENAME\_min2.rst7  --r $FILENAME\_min3.rst7
+python ../../src/numpy/main_numpy.py --i ./min3.in --amber_parm ../../data/$FILENAME.parm7 --c ../min2/$FILENAME\_min2.rst7  --r $FILENAME\_min3.rst7
 cd ..
 
 mkdir -p heat
@@ -55,7 +55,7 @@ S2 heat
   cutoff = 10.0
   thermostat = langevin_liu
 EOF
-python ../../src/original/main.py --i ./heat.in --amber_parm ../../data/$FILENAME.parm7 --c ../min3/$FILENAME\_min3.rst7  --r $FILENAME\_heat.rst7
+python ../../src/numpy/main_numpy.py --i ./heat.in --amber_parm ../../data/$FILENAME.parm7 --c ../min3/$FILENAME\_min3.rst7  --r $FILENAME\_heat.rst7
 cd ..
 
 mkdir -p pres
@@ -73,7 +73,7 @@ S3 press
   thermostat = langevin_liu
   barostat = berendsen
 EOF
-python ../../src/original/run_npt.py --i ./pres.in --amber_parm ../../data/$FILENAME.parm7 --c ../heat/$FILENAME\_heat.rst7  --r $FILENAME\_press.rst7
+python ../../src/numpy/run_npt_numpy.py --i ./pres.in --amber_parm ../../data/$FILENAME.parm7 --c ../heat/$FILENAME\_heat.rst7  --r $FILENAME\_press.rst7
 cd ..
 
 mkdir -p eq
@@ -91,7 +91,7 @@ S4 eq
   thermostat = langevin_liu
   barostat = berendsen
 EOF
-python ../../src/original/run_npt.py --i ./eq.in --amber_parm ../../data/$FILENAME.parm7 --c ../pres/$FILENAME\_press.rst7  --r $FILENAME\_eq.rst7
+python ../../src/numpy/run_npt_numpy.py --i ./eq.in --amber_parm ../../data/$FILENAME.parm7 --c ../pres/$FILENAME\_press.rst7  --r $FILENAME\_eq.rst7
 cd ..
 
 mkdir -p product
@@ -110,5 +110,5 @@ S4 product
   cutoff = 10.0
   barostat = berendsen
 EOF
-python ../../src/original/run_npt.py --i ./md.in --amber_parm ../../data/$FILENAME.parm7 --c ../eq/$FILENAME\_eq.rst7  --r $FILENAME\_md1.rst7
+python ../../src/numpy/run_npt_numpy.py --i ./md.in --amber_parm ../../data/$FILENAME.parm7 --c ../eq/$FILENAME\_eq.rst7  --r $FILENAME\_md1.rst7
 cd ..
