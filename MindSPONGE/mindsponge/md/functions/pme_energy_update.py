@@ -55,8 +55,8 @@ def pme_energy_update(atom_numbers, beta, fftx, ffty, fftz, pme_bc, uint_crd, ch
     """
     reciprocal_ene, self_ene, direct_ene, correction_ene = pme_energy(atom_numbers, beta, fftx, ffty, fftz,
                                                                       pme_bc, uint_crd, charge, nl_numbers,
-                                                                      nl_serial, scaler, excluded_list,
-                                                                      atom_excluded_index)
+                                                                      nl_serial, scaler, excluded_list=excluded_list,
+                                                                      atom_excluded_index=atom_excluded_index)
 
     d_beta = mnp.sum(charge, -1)
     self_ene += neutralizing_factor * d_beta * d_beta
