@@ -134,7 +134,34 @@ def pme_energy_reciprocal(pme_fq, bc):
 def pme_energy_product(tensor1, tensor2):
     return mnp.sum(tensor1 * tensor2)
 
-def pme_excluded_energy_correction(uint_crd, scaler, charge, pme_beta, excluded_list, atom_excluded_index):
+def pme_excluded_energy_correction_dense(uint_crd, scaler, charge, pme_beta, excluded_matrix):
+    '''pme excluded energy correction'''
+    mask = (excluded_matrix > -1)
+    # (N, 3)[N, M]-> (N, M, 3)
+    excluded_crd = uint_crd[excluded_matrix]
+
+    # (N, M, 3)
+    dr_xyz = get_periodic_displacement(excluded_crd, mnp.expand_dims(uint_crd, 1), scaler)
+    # (N, M)
+    dr2 = mnp.sum(dr_xyz * dr_xyz, -1)
+    dr_abs = mnp.sqrt(dr2)
+    beta_dr = pme_beta * dr_abs
+
+    # (N,)[N, M] -> (N, M)
+    excluded_charge = charge[excluded_matrix]
+    # (N, 1) * (N, M) -> (N, M)
+    charge_mul = mnp.expand_dims(charge, 1) * excluded_charge
+
+    # (N, M)
+    ene_lin = charge_mul * ops.erf(beta_dr)
+    where_zeros = dr_abs == 0.
+    dr_abs[where_zeros] = 1.
+    ene_lin = ene_lin / dr_abs * mask
+
+    return 0. - mnp.sum(ene_lin * mask)
+
+
+def pme_excluded_energy_correction_sparse(uint_crd, scaler, charge, pme_beta, excluded_list, atom_excluded_index):
     '''pme excluded energy correction'''
     charge_mul = charge[atom_excluded_index] * charge[excluded_list]
 

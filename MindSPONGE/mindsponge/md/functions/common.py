@@ -125,6 +125,26 @@ def getb(k, nfft, b_order):
     res_real, res_imag = cucdiv(res_real, res_imag, tempc2_real, tempc2_imag)
     return res_real * res_real + res_imag * res_imag
 
+def reform_residual_list(atom_numbers, start, end):
+    """Re-format residual list"""
+    idx = onp.arange(atom_numbers).reshape(1, -1)
+    # (M, 1)
+    start = start.reshape(-1, 1)
+    end = end.reshape(-1, 1)
+    # (M, N)
+    mask = onp.logical_and(idx >= start, idx < end).astype('int32')
+    return mask
+
+def reform_excluded_list(excluded_list, excluded_list_start, exlcuded_list_number):
+    """Re-format excluded list: (E,) -> (N, MAX_NEIGHBOUR)"""
+    atom_numbers = excluded_list_start.shape[0]
+    max_neighbour = exlcuded_list_number.max()
+    excluded_list_end = excluded_list_start + exlcuded_list_number
+    excluded_matrix = onp.full((atom_numbers, max_neighbour), -1, onp.int32)
+    for i in range(atom_numbers):
+        excluded_matrix[i, :exlcuded_list_number[i]] = excluded_list[excluded_list_start[i]:excluded_list_end[i]]
+    return excluded_matrix
+
 def get_pme_bc(fftx, ffty, fftz, box, beta):
     '''get pme_bc'''
     z_range = fftz // 2 + 1

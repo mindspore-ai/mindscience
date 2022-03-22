@@ -45,6 +45,7 @@ from mindsponge.md.functions import dihedral_force_with_atom_energy
 from mindsponge.md.functions import nb14_cf_energy
 from mindsponge.md.functions import nb14_lj_energy
 from mindsponge.md.functions import lj_energy
+from mindsponge.md.functions import constrain
 from mindsponge.md.functions import last_crd_to_dr
 from mindsponge.md.functions import md_temperature
 from mindsponge.md.functions import md_iteration_leap_frog_liujian
@@ -507,8 +508,6 @@ class NPT(nn.Cell):
                 [self.atom_numbers, 3], np.float32), mstype.float32), requires_grad=False)
             self.iteration_numbers = self.simple_constrain.info.iteration_numbers
             self.half_exp_gamma_plus_half = self.simple_constrain.half_exp_gamma_plus_half
-            self.constrain = P.Constrain(self.atom_numbers, self.constrain_pair_numbers,
-                                         self.iteration_numbers, self.half_exp_gamma_plus_half, 10)
             self.dt_inverse = self.simple_constrain.dt_inverse
         if self.mol_map_is_initialized:
             self.box_map_times = Parameter(
@@ -540,7 +539,8 @@ class NPT(nn.Cell):
 
         if self.pme_is_initialized:
             pme_excluded_force_res = pme_excluded_force(self.atom_numbers, self.beta, uint_crd, scaler, self.charge,
-                                                        self.csr_excluded_list, self.atom_excluded_index)
+                                                        excluded_csr=self.csr_excluded_list,
+                                                        excluded_row=self.atom_excluded_index)
             pme_reciprocal_force_res = pme_reciprocal_force(self.atom_numbers, self.fftx, self.ffty, self.fftz,
                                                             self.box_length_0, self.box_length_1, self.box_length_2,
                                                             self.pme_bc, uint_crd, self.charge)
@@ -651,7 +651,7 @@ class NPT(nn.Cell):
     def simulation_temperature(self):
         '''caculate temperature'''
 
-        res_ek_energy = md_temperature(self.csr_residual_mask, self.velocity, self.mass)
+        res_ek_energy = md_temperature(self.csr_residual_mask, self.velocity, self.mass, sparse=True)
         temperature = res_ek_energy.sum()
         return temperature
 
@@ -809,12 +809,13 @@ class NPT(nn.Cell):
     def Constrain(self, constrain_frc, pair_virial_sum, update_step):
         "SIMPLE_CONSTARIN Constrain"
         test_uint_crd = self.uint_crd
-        test_uint_crd, constrain_frc, pair_virial_sum = self.constrain(self.crd, self.quarter_crd_to_uint_crd_cof,
-                                                                       self.mass_inverse,
-                                                                       self.uint_dr_to_dr_cof, self.last_pair_dr,
-                                                                       self.atom_i_serials,
-                                                                       self.atom_j_serials, self.constant_rs,
-                                                                       self.constrain_ks, update_step)
+        test_uint_crd, constrain_frc, pair_virial_sum = constrain(self.atom_numbers, self.constrain_pair_numbers,
+                                                                  self.iteration_numbers, self.half_exp_gamma_plus_half,
+                                                                  self.crd, self.quarter_crd_to_uint_crd_cof,
+                                                                  self.mass_inverse, self.uint_dr_to_dr_cof,
+                                                                  self.last_pair_dr, self.atom_i_serials,
+                                                                  self.atom_j_serials, self.constant_rs,
+                                                                  self.constrain_ks, update_step)
 
         pair_virial_sum = self.depend(pair_virial_sum, test_uint_crd)
         virial = P.ReduceSum(True)(pair_virial_sum)

@@ -55,7 +55,7 @@ if __name__ == "__main__":
         nb14_lj_energy_sum, nb14_cf_energy_sum, LJ_energy_sum, ee_ene, res, pressure, res1, res2, res3, res4, res5, \
         test_uint_crd = simulation(Tensor(steps), Tensor(print_step), Tensor(update_step, mstype.int32))
 
-        if steps == 0:
+        if steps == 1:
             compiler_time = time.time()
         if steps == 1 or steps % simulation.ntwx == 0 or steps == simulation.md_info.step_limit - 1:
             simulation.main_print(steps, temperature, total_potential_energy, sigma_of_bond_ene, sigma_of_angle_ene,

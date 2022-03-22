@@ -16,12 +16,12 @@
 import mindspore.numpy as mnp
 from .common import PI, get_zero_tensor, get_full_tensor
 from .pme_common import scale_list, pme_a_near, pme_q_spread, pme_direct_energy, pme_energy_reciprocal, \
-    pme_excluded_energy_correction, pme_energy_product, get_pme_kxyz, PERIODIC_FACTOR_INVERSE, \
-    fft3d
+    pme_excluded_energy_correction_sparse, pme_excluded_energy_correction_dense, pme_energy_product,\
+    get_pme_kxyz, PERIODIC_FACTOR_INVERSE, fft3d
 
 cutoff = 10.0
 def pme_energy(atom_numbers, beta, fftx, ffty, fftz, pme_bc, uint_crd, charge,
-               nl_numbers, nl_serial, scaler, excluded_list, atom_excluded_index):
+               nl_numbers, nl_serial, scaler, **kargs):
     """
     Calculate the Coulumb energy of the system using PME method.
 
@@ -42,6 +42,9 @@ def pme_energy(atom_numbers, beta, fftx, ffty, fftz, pme_bc, uint_crd, charge,
         nl_serial - (Tensor, int32): [N, 800], the neighbor list of each atom, the max number is 800.
         scaler (Tensor, float32): [3,], the scale factor between real space
           coordinates and its unsigned int value.
+        Keyword Arguments:
+        excluded_matrix (Tensor, int32): [N, k] containing the excluded atoms for each atom, where k
+          is the maximum number of excluded atoms for all atoms.
         excluded_list (Tensor, int32):[E,] containing the CSR format column indices of excluded atom.
           E is the number of excluded atoms.
         atom_excluded_index (Tensor, int32):[E,] containing the row indices corresponding excluded_list,
@@ -83,7 +86,10 @@ def pme_energy(atom_numbers, beta, fftx, ffty, fftz, pme_bc, uint_crd, charge,
     direct_ene = pme_direct_energy(atom_numbers, nl_numbers, nl_serial, uint_crd, scaler, charge, beta,
                                    cutoff * cutoff)
 
-    correction_ene = pme_excluded_energy_correction(uint_crd, scaler, charge, beta, excluded_list, atom_excluded_index)
-
+    if "excluded_matrix" in kargs.keys():
+        correction_ene = pme_excluded_energy_correction_dense(uint_crd, scaler, charge, beta, kargs["excluded_matrix"])
+    else:
+        correction_ene = pme_excluded_energy_correction_sparse(uint_crd, scaler, charge, beta,
+                                                               kargs["excluded_list"], kargs["atom_excluded_index"])
     return mnp.atleast_1d(reciprocal_ene), mnp.atleast_1d(self_ene), \
            mnp.atleast_1d(direct_ene), mnp.atleast_1d(correction_ene)

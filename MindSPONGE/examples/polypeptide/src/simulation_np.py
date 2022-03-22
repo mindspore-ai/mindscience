@@ -281,7 +281,7 @@ class Simulation(nn.Cell):
                                          nl_atom_numbers, nl_atom_serial, self.lj_a, self.lj_b)
 
         pme_excluded_f = pme_excluded_force(self.atom_numbers, self.beta, uint_crd, scaler,
-                                            self.charge, self.excluded_matrix)
+                                            self.charge, excluded_matrix=self.excluded_matrix)
 
         pme_reciprocal_f = pme_reciprocal_force(self.atom_numbers, self.fftx, self.ffty,
                                                 self.fftz, self.box_length_0, self.box_length_1,
@@ -330,7 +330,7 @@ class Simulation(nn.Cell):
                                                                   self.nl_atom_numbers,
                                                                   self.nl_atom_serial,
                                                                   uint_dr_to_dr_cof,
-                                                                  self.excluded_matrix)
+                                                                  excluded_matrix=self.excluded_matrix)
 
         ee_ene = reciprocal_e + self_e + direct_e + correction_e
         total_energy = bond_energy_sum + angle_energy_sum + dihedral_energy_sum + \
@@ -340,7 +340,7 @@ class Simulation(nn.Cell):
 
     def simulation_temperature(self):
         '''caculate temperature'''
-        res_ek_energy = md_temperature(self.residual_matrix, self.velocity, self.mass)
+        res_ek_energy = md_temperature(self.residual_matrix, self.velocity, self.mass, sparse=False)
         temperature = res_ek_energy.sum()
         return temperature
 
@@ -361,6 +361,7 @@ class Simulation(nn.Cell):
 
         temperature = temperature.asnumpy()
         total_potential_energy = total_potential_energy.asnumpy()
+        print("{:>7.0f} {:>7.3f} {:>11.3f}".format(steps, float(temperature), float(total_potential_energy)), end=" ")
         if self.bond.bond_numbers > 0:
             sigma_of_bond_ene = sigma_of_bond_ene.asnumpy()
             print("{:>10.3f}".format(float(sigma_of_bond_ene)), end=" ")

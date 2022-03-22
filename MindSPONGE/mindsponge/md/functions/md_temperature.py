@@ -20,14 +20,21 @@ from mindspore.ops.operations import _csr_ops
 constant_kb = np.array(0.00198716, np.float64)
 csr_reducesum = _csr_ops.CSRReduceSum()
 
-def md_temperature(mask, atom_vel_f, atom_mass):
+def md_temperature_dense(mask, atom_vel_f, atom_mass):
     """
-    Calculate the MD Temperature.
+    Calculate the MD Temperature without sparse
+    """
+    residue_numbers = mask.shape[0]
+    res = atom_vel_f * atom_mass.reshape(1, -1, 1)
+    res = np.tile(res, (residue_numbers, 1, 1))
+    momentum = np.sum(np.expand_dims(mask, -1) * res, 1)
+    res_mass = np.sum(mask * atom_mass.reshape(1, -1), -1)
+    ek = 2. * np.sum(momentum * momentum, -1) / res_mass * 0.5 / 3. / constant_kb / residue_numbers
+    return ek.astype(np.float32)
 
-    Calculate the temperature.
-
-    Supported Platforms:
-        ``GPU``
+def md_temperature_sparse(mask, atom_vel_f, atom_mass):
+    """
+    Calculate the MD Temperature with sparse
     """
     residue_numbers = mask.shape[0]
     # (n, 3) * (n, 1) -> (n, 3)
@@ -53,3 +60,16 @@ def md_temperature(mask, atom_vel_f, atom_mass):
     ek = momentum / res_mass / n / constant_kb
 
     return ek.astype(np.float32)
+
+def md_temperature(mask, atom_vel_f, atom_mass, sparse=True):
+    """
+    Calculate the MD Temperature.
+
+    Calculate the temperature.
+
+    Supported Platforms:
+        ``GPU``
+    """
+    if sparse:
+        return md_temperature_sparse(mask, atom_vel_f, atom_mass)
+    return md_temperature_dense(mask, atom_vel_f, atom_mass)

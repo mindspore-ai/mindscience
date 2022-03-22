@@ -48,6 +48,8 @@ from .lj_force_with_virial_energy import lj_force_with_virial_energy
 from .pme_energy_update import pme_energy_update
 from .dihedral_14_ljcf_force_with_atom_energy_with_virial import dihedral_14_ljcf_force_with_atom_energy_with_virial
 from .bond_force_with_atom_energy_with_virial import bond_force_with_atom_energy_with_virial
+from .common import reform_excluded_list, reform_residual_list
+from .constrain import constrain
 __all__ = ['angle_energy', 'angle_force_with_atom_energy', 'bond_force_with_atom_energy',
            'crd_to_uint_crd', 'dihedral_14_ljcf_force_with_atom_energy', 'lj_energy',
            'md_iteration_leap_frog_liujian', 'pme_excluded_force', 'lj_force_pme_direct_force',
@@ -58,6 +60,6 @@ __all__ = ['angle_energy', 'angle_force_with_atom_energy', 'bond_force_with_atom
            'broadcast_with_excluded_list', 'md_temperature', 'refresh_boxmap_times', 'md_iteration_leap_frog',
            'refresh_crd_vel', 'refresh_uint_crd', 'constrain_force_cycle', 'md_iteration_gradient_descent',
            'lj_force_with_virial_energy', 'pme_energy_update', 'dihedral_14_ljcf_force_with_atom_energy_with_virial',
-           'bond_force_with_atom_energy_with_virial']
+           'bond_force_with_atom_energy_with_virial', 'reform_excluded_list', 'reform_residual_list', 'constrain']
 
 __all__.sort()

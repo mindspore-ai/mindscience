@@ -492,7 +492,8 @@ class Simulation(nn.Cell):
 
         if self.pme_is_initialized:
             pme_excluded_f = pme_excluded_force(self.atom_numbers, self.beta, uint_crd, scaler,
-                                                self.charge, self.csr_excluded_list, self.atom_excluded_index)
+                                                self.charge, excluded_csr=self.csr_excluded_list,
+                                                excluded_row=self.atom_excluded_index)
 
             pme_reciprocal_f = pme_reciprocal_force(self.atom_numbers, self.fftx, self.ffty,
                                                     self.fftz, self.box_length_0, self.box_length_1,
@@ -573,8 +574,8 @@ class Simulation(nn.Cell):
                                                                   self.nl_atom_numbers,
                                                                   self.nl_atom_serial,
                                                                   uint_dr_to_dr_cof,
-                                                                  self.csr_excluded_value,
-                                                                  self.atom_excluded_index)
+                                                                  excluded_list=self.csr_excluded_value,
+                                                                  atom_excluded_index=self.atom_excluded_index)
 
         ee_ene = reciprocal_e + self_e + direct_e + correction_e
         total_energy = bond_energy_sum + angle_energy_sum + dihedral_energy_sum + \
@@ -584,7 +585,7 @@ class Simulation(nn.Cell):
 
     def simulation_temperature(self):
         '''caculate temperature'''
-        res_ek_energy = md_temperature(self.csr_residual_mask, self.velocity, self.mass)
+        res_ek_energy = md_temperature(self.csr_residual_mask, self.velocity, self.mass, sparse=True)
         temperature = res_ek_energy.sum()
         return temperature
 
