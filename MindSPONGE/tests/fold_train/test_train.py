@@ -78,7 +78,7 @@ if __name__ == "__main__":
     fold_net = AlphaFold(model_config, global_config, args_opt.extra_msa_num, args_opt.evo_num)
     net_with_criterion = WithLossCell(fold_net)
 
-    opt = nn.Adam(params=fold_net.trainable_params(), learning_rate=Tensor(1e-4), eps=1e-6)
+    opt = nn.Adam(params=fold_net.trainable_params(), learning_rate=1e-4, eps=1e-6)
 
     train_net = TrainOneStepCell(net_with_criterion, opt, sens=args_opt.loss_scale,
                                  gradient_clip_value=args_opt.gradient_clip)
