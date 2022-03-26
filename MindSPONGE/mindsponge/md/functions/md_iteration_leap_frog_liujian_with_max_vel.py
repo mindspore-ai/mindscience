@@ -19,7 +19,7 @@ import mindspore.ops as ops
 from .common import get_full_tensor
 
 standard_normal = ops.StandardNormal()
-
+standard_normal.add_prim_attr("use_curand", True)
 
 def md_iteration_leap_frog_liujian_with_max_vel(atom_numbers, half_dt, dt, exp_gamma, inverse_mass,
                                                 sqrt_mass_inverse, velocity, crd, frc, acc, max_vel):
