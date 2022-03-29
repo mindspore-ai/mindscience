@@ -21,7 +21,7 @@ from mindspore.common.initializer import initializer
 from mindspore.common.tensor import Tensor
 from mindspore.ops import functional as F
 from mindspore.ops import operations as P
-from common.utils import lecun_init
+from commons.utils import lecun_init
 
 
 def glorot_uniform(fan_in, fan_out, weight_shape):

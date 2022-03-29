@@ -18,7 +18,7 @@
 import dataclasses
 
 import numpy as np
-from common import residue_constants
+from commons import residue_constants
 
 
 @dataclasses.dataclass(frozen=True)

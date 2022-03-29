@@ -26,7 +26,7 @@ import data.tools.quat_affine_np as quat_affine
 import data.tools.r3_np as r3
 from data.feature import data_transforms
 from data.feature.feature_extraction import process_features_train
-from common import residue_constants, protein
+from commons import residue_constants, protein
 
 # Internal import (7716).
 MAX_TEMPLATE_HITS = 20

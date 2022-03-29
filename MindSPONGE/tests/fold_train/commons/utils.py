@@ -23,8 +23,8 @@ from mindspore.common.initializer import TruncatedNormal
 from mindspore.common.tensor import Tensor
 from mindspore.ops import operations as P
 
-import common.r3 as r3
-from common import residue_constants
+import commons.r3 as r3
+from commons import residue_constants
 
 QUAT_TO_ROT = np.zeros((4, 4, 3, 3), dtype=np.float32)
 

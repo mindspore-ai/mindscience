@@ -16,7 +16,7 @@
 import copy
 
 import numpy as np
-from common import residue_constants
+from commons import residue_constants
 from data.feature import data_transforms
 
 NUM_RES = "num residues placeholder"
