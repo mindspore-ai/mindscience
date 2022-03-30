@@ -23,11 +23,11 @@ from mindspore import Tensor
 from mindspore import ms_function
 from mindspore.ops import functional as F
 
-from common import residue_constants
-from common.utils import apply_to_point, torsion_angles_to_frames, frames_and_literature_positions_to_atom14_pos,\
+from commons import residue_constants
+from commons.utils import apply_to_point, torsion_angles_to_frames, frames_and_literature_positions_to_atom14_pos,\
     pre_compose, scale_translation, to_tensor_new, generate_new_affine, to_tensor, from_tensor, vecs_to_tensor,\
     atom14_to_atom37, get_exp_atom_pos, get_exp_frames
-from common.utils import _invert_point, lecun_init
+from commons.utils import _invert_point, lecun_init
 
 
 

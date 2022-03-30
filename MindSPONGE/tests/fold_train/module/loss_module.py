@@ -21,8 +21,8 @@ from mindspore import Tensor
 from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 from module import all_atom
-from common import residue_constants
-from common.utils import invert_point, mask_mean, from_tensor
+from commons import residue_constants
+from commons.utils import invert_point, mask_mean, from_tensor
 
 def softmax_cross_entropy(logits, labels):
     """Computes softmax cross entropy given logits and one-hot class labels."""

@@ -21,9 +21,9 @@ from mindspore.common.tensor import Tensor
 from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 
-from common import residue_constants
-from common.utils import get_chi_atom_indices, lecun_init
-from common.utils import pseudo_beta_fn, dgram_from_positions, atom37_to_torsion_angles
+from commons import residue_constants
+from commons.utils import get_chi_atom_indices, lecun_init
+from commons.utils import pseudo_beta_fn, dgram_from_positions, atom37_to_torsion_angles
 
 from module.evoformer_module import TemplateEmbedding, EvoformerIteration, EvoformerIterationMSA
 from module.loss_module import LossNet

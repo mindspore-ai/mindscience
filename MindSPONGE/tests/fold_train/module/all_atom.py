@@ -18,8 +18,8 @@ import mindspore as ms
 import mindspore.numpy as mnp
 from mindspore import nn
 from mindspore.ops import operations as P
-from common import residue_constants
-from common.utils import mask_mean
+from commons import residue_constants
+from commons.utils import mask_mean
 
 def find_optimal_renaming(
         atom14_gt_positions,  # (N, 14, 3)
