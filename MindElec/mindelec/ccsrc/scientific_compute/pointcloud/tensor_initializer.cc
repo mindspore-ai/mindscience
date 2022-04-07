@@ -68,9 +68,7 @@ Status TensorInitializer::TensorInitImpl(const std::vector<double> &sample_x, co
 
   unsigned int thread_num = 2 * need_process_column;
 
-  auto real_thread_num = std::min(thread_num, std::thread::hardware_concurrency());
-
-  std::vector<std::future<Status>> thread_exc_rc(real_thread_num);
+  std::vector<std::future<Status>> thread_exc_rc(thread_num);
   size_t half_number = need_process_column;
   LOG(INFO) << "Exist " << half_number << " columns to be processed";
 

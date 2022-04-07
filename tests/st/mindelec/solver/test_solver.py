@@ -86,11 +86,6 @@ def test_solver():
     prob_dict = {exist_train.name: RectPde(domain_name="existed_data_inputs")}
     train_constraints = Constraints(dataset, prob_dict)
 
-    test_data = Dataset(existed_data_list=[exist_train])
-    test_dataset = test_data.create_dataset(batch_size=500, shuffle=False)
-    test_prob_dict = {exist_train.name: RectPde(domain_name="existed_data_inputs")}
-    test_constraints = Constraints(test_data, test_prob_dict)
-
     model = NetWithoutLoss(3, 3)
     optim = nn.Adam(model.trainable_params(), learning_rate=1e-4)
 
@@ -98,13 +93,11 @@ def test_solver():
                     mode="PINNs",
                     optimizer=optim,
                     train_constraints=train_constraints,
-                    test_constraints=test_constraints,
                     train_input_map={"existed_data": ["existed_data_inputs"]},
-                    test_input_map={"existed_data": ["existed_data_inputs"]},
                     metrics={'l2': L2(), 'distance': nn.MAE()})
 
     loss_time_callback = LossAndTimeMonitor(steps_per_epoch)
-    solver.train_with_eval(1, train_dataset, test_dataset, 1, callbacks=[loss_time_callback])
+    solver.train(5, train_dataset, callbacks=[loss_time_callback])
 
     pred_input = Tensor(np.random.randn(20, 3), mstype.float32)
     pred_output = solver.predict(pred_input)
