@@ -239,7 +239,7 @@ bash run_numpy.sh
 
 为了更充分地利用MindSpore的强大特性，以及更好地展示分子动力学算法的运作机制, SPONGE中的Cuda核函数被重构为Numpy语法的脚本，并封装在[md/functions](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/md/functions)模块之中。
 
-MindSpore.Numpy计算套件包含一套完整的符合Numpy规范的接口，使得开发者可以Numpy的原生语法表达MindSpore的模型，同时拥有MindSpore的加速能力。MindSpore.Numpy是建立在MindSpore基础算子(mindspore.ops)之上的一层封装，以MindSpore张量为计算单元,因此可以与其他MindSpore特性完全兼容。更多介绍请参考[这里](https://www.mindspore.cn/docs/programming_guide/en/master/numpy.html)。
+MindSpore.Numpy计算套件包含一套完整的符合Numpy规范的接口，使得开发者可以Numpy的原生语法表达MindSpore的模型，同时拥有MindSpore的加速能力。MindSpore.Numpy是建立在MindSpore基础算子(mindspore.ops)之上的一层封装，以MindSpore张量为计算单元,因此可以与其他MindSpore特性完全兼容。更多介绍请参考[这里](https://www.mindspore.cn/docs/zh-CN/master/api_python/mindspore.numpy.html)。
 
 ### CUDA核函数与MindSpore的映射及迁移
 
@@ -316,7 +316,7 @@ return ene_lin
 
 ### 使用图算融合/算子自动生成进行加速
 
-为了获得成倍的加速收益，MindSPONGE-Numpy默认开启[图算融合](https://www.mindspore.cn/docs/programming_guide/en/master/enable_graph_kernel_fusion.html)以及[自动算子生成](https://gitee.com/mindspore/akg)。这两个加速组件可以为模型提供3倍（甚至更多）的性能提升, 使得MindSPONGE-Numpy达到与原版本性能相近的程度.
+为了获得成倍的加速收益，MindSPONGE-Numpy默认开启[图算融合](https://www.mindspore.cn/docs/zh-CN/master/design/enable_graph_kernel_fusion.html)以及[自动算子生成](https://gitee.com/mindspore/akg)。这两个加速组件可以为模型提供3倍（甚至更多）的性能提升, 使得MindSPONGE-Numpy达到与原版本性能相近的程度.
 
 在模型脚本中添加如下两行代码即可获得图算融合加速：
 (examples/polypeptide/src/main_numpy.py):
