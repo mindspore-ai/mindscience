@@ -52,8 +52,8 @@ def pme_excluded_force_sparse(atom_numbers, beta, uint_crd, scaler, charge, excl
     # (M, 1) * (M, 3) -> (M, 3)
     frc_lin = np.expand_dims(frc_abs, -1) * crd_d
     # construct CSRTensors
-    indptr = excluded_csr.indptr
-    indices = excluded_csr.indices
+    indptr = excluded_csr.indptr.astype(np.int32)
+    indices = excluded_csr.indices.astype(np.int32)
     shape = (atom_numbers, excluded_row.shape[0])
     x, y, z = np.split(frc_lin, 3, -1)
     # (N, M) -> (N, 1)
