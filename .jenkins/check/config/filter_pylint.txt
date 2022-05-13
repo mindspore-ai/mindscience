@@ -2,3 +2,9 @@
 "mindscience/MindElec/mindelec/architecture/basic_block.py"                                 "missing-docstring"
 "mindscience/MindElec/mindelec/common/lr_scheduler.py"                                      "missing-docstring"
 "mindscience/MindElec/mindelec/operators/derivatives.py"                                    "missing-docstring"
+# MindSPONGE
+"mindscience/MindSPONGE/examples/structure_prediction/"                                   "bad-whitespace"
+"mindscience/MindSPONGE/examples/structure_prediction/"                                   "line-too-long"
+"mindscience/MindSPONGE/examples/structure_prediction/"                                   "wrong-import-position"
+"mindscience/MindSPONGE/examples/structure_prediction/"                                   "invalid-name"
+"mindscience/MindSPONGE/examples/structure_prediction/"                                   "too-many-function-args"
