@@ -140,7 +140,7 @@ class AlphaFold(nn.Cell):
             msa_activations1 = mnp.concatenate(
                 (mnp.expand_dims(prev_msa_first_row + msa_activations1[0, ...], 0),
                  msa_activations1[1:, ...]), 0)
-            pair_activations += self.prev_pair_norm(prev_pair.astype(mstype.float16)).astype(mstype.float32)
+            pair_activations += self.prev_pair_norm(prev_pair.astype(mstype.float32))
 
         if self.max_relative_feature:
             offset = residue_index[:, None] - residue_index[None, :]
