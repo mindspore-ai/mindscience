@@ -61,11 +61,10 @@ class MonitorTrain(Callback):
         self.final_loss = 0
 
     def __enter__(self):
-        self.summary_record = SummaryRecord(self._summary_dir)
         return self
 
     def __exit__(self, *exc_args):
-        self.summary_record.close()
+        return
 
     def step_end(self, run_context):
         """
@@ -94,8 +93,6 @@ class MonitorTrain(Callback):
 
         if self._per_print_times != 0 and params.cur_step_num % self._per_print_times == 0:
             print("epoch: %s step: %s, loss is %s" % (params.cur_epoch_num, cur_step, loss), flush=True)
-            self.summary_record.add_value('scalar', 'train_loss', Tensor(loss))
-            self.summary_record.record(self._step_counter)
             self.final_loss = loss
 
 
