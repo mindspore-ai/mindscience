@@ -14,11 +14,10 @@
 # ============================================================================
 '''md temperature'''
 import mindspore.numpy as np
-from mindspore.ops.operations import _csr_ops
+from mindspore.ops import functional as F
 
 
 constant_kb = np.array(0.00198716, np.float64)
-csr_reducesum = _csr_ops.CSRReduceSum()
 
 def md_temperature_dense(mask, atom_vel_f, atom_mass):
     """
@@ -46,16 +45,16 @@ def md_temperature_sparse(mask, atom_vel_f, atom_mass):
     momentum_y = mask * res_y.reshape(1, -1)
     momentum_z = mask * res_z.reshape(1, -1)
     # sparse(m, n) -> dense(m, 1)
-    momentum_x = csr_reducesum(momentum_x, 1)
-    momentum_y = csr_reducesum(momentum_y, 1)
-    momentum_z = csr_reducesum(momentum_z, 1)
+    momentum_x = F.csr_reduce_sum(momentum_x, 1)
+    momentum_y = F.csr_reduce_sum(momentum_y, 1)
+    momentum_z = F.csr_reduce_sum(momentum_z, 1)
     # dense(m, 1) -> dense(m, 1)
     momentum = momentum_x * momentum_x + momentum_y * momentum_y + momentum_z * momentum_z
 
     # sparse(m, n) * dense(1, n) -> sparse(m, n)
     res_mass = mask * atom_mass.reshape(1, -1)
     # sparse(m, n) -> dense(m, 1)
-    res_mass = csr_reducesum(res_mass, 1)
+    res_mass = F.csr_reduce_sum(res_mass, 1)
     n = 3. * residue_numbers
     ek = momentum / res_mass / n / constant_kb
 

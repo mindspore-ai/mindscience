@@ -16,14 +16,13 @@
 import math
 import mindspore.numpy as np
 import mindspore.ops as ops
-from mindspore.ops.operations import _csr_ops
 from mindspore.common import CSRTensor
+from mindspore.ops import functional as F
 
 from .common import get_periodic_displacement
 
 sqrt_pi = 2/math.sqrt(3.141592654)
 zero_tensor = np.array(0, dtype=np.float32)
-csr_reducesum = _csr_ops.CSRReduceSum()
 
 def pme_excluded_force_sparse(atom_numbers, beta, uint_crd, scaler, charge, excluded_csr, excluded_row):
     """
@@ -57,9 +56,9 @@ def pme_excluded_force_sparse(atom_numbers, beta, uint_crd, scaler, charge, excl
     shape = (atom_numbers, excluded_row.shape[0])
     x, y, z = np.split(frc_lin, 3, -1)
     # (N, M) -> (N, 1)
-    frc_lin_x = csr_reducesum(CSRTensor(indptr, indices, x.ravel(), shape), 1)
-    frc_lin_y = csr_reducesum(CSRTensor(indptr, indices, y.ravel(), shape), 1)
-    frc_lin_z = csr_reducesum(CSRTensor(indptr, indices, z.ravel(), shape), 1)
+    frc_lin_x = F.csr_reduce_sum(CSRTensor(indptr, indices, x.ravel(), shape), 1)
+    frc_lin_y = F.csr_reduce_sum(CSRTensor(indptr, indices, y.ravel(), shape), 1)
+    frc_lin_z = F.csr_reduce_sum(CSRTensor(indptr, indices, z.ravel(), shape), 1)
     frc_outer = np.concatenate((frc_lin_x, frc_lin_y, frc_lin_z), -1)
     res = ops.tensor_scatter_add(frc_outer, excluded_csr.values.reshape(-1, 1), -frc_lin)
     return res
