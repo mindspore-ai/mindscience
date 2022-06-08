@@ -87,7 +87,8 @@ def lj_force_pme_direct_force(atom_numbers, cutoff, pme_beta, uint_crd, lj_type,
     frc_abs -= frc_cf_abs
     frc_lin = np.expand_dims(frc_abs, -1) * dr
     # apply cutoff mask
-    frc_lin = np.expand_dims(mask, -1) * frc_lin
+    mask = np.expand_dims(mask, -1)
+    frc_lin = np.where(mask, frc_lin, 0)
     frc_record = np.sum(frc_lin, -2)
     nl_serial = np.where(nl_atom_mask >= np.expand_dims(nl_numbers, -1), -1, nl_serial)
     frc = ops.tensor_scatter_add(frc, np.expand_dims(nl_serial, -1), -frc_lin)

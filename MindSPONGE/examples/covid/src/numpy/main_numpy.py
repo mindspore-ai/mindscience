@@ -37,7 +37,7 @@ args_opt = parser.parse_args()
 
 context.set_context(mode=context.GRAPH_MODE, device_target="GPU", enable_graph_kernel=True)
 context.set_context(graph_kernel_flags="--enable_cluster_ops=TensorScatterAdd,UnSortedSegmentSum,GatherNd,Gather \
-                    --enable_parallel_fusion=true --disable_expand_ops=StandardNormal \
+                    --enable_parallel_fusion=false --disable_expand_ops=StandardNormal \
                     --enable_recompute_fusion=false")
 
 
