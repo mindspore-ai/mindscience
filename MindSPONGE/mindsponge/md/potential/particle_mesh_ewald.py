@@ -87,7 +87,7 @@ class ParticleMeshEwald():
         while number > 0:
             if number == 1:
                 return 1
-            tempn = number / 3
+            tempn = number // 3
             if tempn * 3 != number:
                 break
             number = tempn
