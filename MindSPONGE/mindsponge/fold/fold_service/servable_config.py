@@ -17,6 +17,7 @@
 import time
 import os
 import json
+import stat
 import numpy as np
 
 from mindspore_serving.server import register
@@ -78,15 +79,24 @@ def fold_model(input_fasta_path):
         final_atom_mask = final_atom_mask.asnumpy()[:ori_res_length]
         predicted_lddt_logits = predicted_lddt_logits.asnumpy()[:ori_res_length]
 
-        confidence = compute_confidence(predicted_lddt_logits)
-        unrelaxed_protein = from_prediction(final_atom_mask, aatype[0], final_atom_positions, residue_index[0])
+        confidence, plddt = compute_confidence(predicted_lddt_logits)
+        b_factors = plddt[:, None] * final_atom_mask
+        unrelaxed_protein = from_prediction(final_atom_mask,
+                                            aatype[0],
+                                            final_atom_positions,
+                                            residue_index[0],
+                                            b_factors)
         pdb_file = to_pdb(unrelaxed_protein)
+
+        os_flags = os.O_WRONLY
+        os_modes = stat.S_IWUSR
 
         seq_length = aatype.shape[-1]
         os.makedirs(f'./result/seq_{seq_name}_{seq_length}', exist_ok=True)
-
-        with open(os.path.join(f'./result/seq_{seq_name}_{seq_length}/', f'unrelaxed_model_{seq_name}.pdb'), 'w') as f:
-            f.write(pdb_file)
+        pdb_path = os.path.join(f'./result/seq_{seq_name}_{seq_length}/',
+                                f'unrelaxed_model_{seq_name}.pdb')
+        with os.fdopen(os.open(pdb_path, os_flags, os_modes), 'w') as fout:
+            fout.write(pdb_file)
         t4 = time.time()
         timings = {"pre_process_time": round(t2 - t1, 2),
                    "model_time": round(t3 - t2, 2),
@@ -94,8 +104,10 @@ def fold_model(input_fasta_path):
                    "all_time": round(t4 - t1, 2),
                    "confidence": confidence}
         print(timings)
-        with open(f'./result/seq_{seq_name}_{seq_length}/timings', 'w') as f:
+        timeing_path = f'./result/seq_{seq_name}_{seq_length}/timings'
+        with os.fdopen(os.open(timeing_path, os_flags, os_modes), 'w') as f:
             f.write(json.dumps(timings))
+
     return True
 
 @register.register_method(output_names=["res"])

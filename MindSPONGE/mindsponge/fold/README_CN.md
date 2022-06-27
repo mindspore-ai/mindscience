@@ -6,13 +6,10 @@
     - [模型描述](#模型描述)
     - [环境要求](#环境要求)
         - [硬件环境与框架](#硬件环境与框架)
-        - [MMseqs2安装](#mmseqs2安装)
-        - [MindSpore Serving安装](#mindspore_serving安装)
-    - [数据准备](#数据准备)
-        - [MSA所需数据库](#msa所需数据库)
-        - [Template所需工具和数据](#template所需工具和数据)
-            - [数据](#数据)
-            - [工具](#工具)
+        - [Serving模式](#Serving模式)
+    - [配置数据库检索](#配置数据库检索)
+        - [配置MSA检索](#配置MSA检索)
+        - [配置模板检索](#配置模板检索)
     - [脚本说明](#脚本说明)
         - [脚本及样例代码](#脚本及样例代码)
         - [推理示例](#推理示例)
@@ -33,48 +30,58 @@
 
 ### 硬件环境与框架
 
-本代码运行基于Ascend处理器硬件环境与[MindSpore](https://www.mindspore.cn/) AI框架，当前版本需基于最新库上master代码（2021-11-08之后的代码）[编译](https://www.mindspore.cn/install/detail?path=install/r1.5/mindspore_ascend_install_source.md&highlight=%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91)，
+本代码运行基于Ascend910处理器硬件环境与[MindSpore](https://www.mindspore.cn/) AI框架，当前版本需基于最新库上master代码（2021-11-08之后的代码）[编译](https://www.mindspore.cn/install/detail?path=install/r1.5/mindspore_ascend_install_source.md&highlight=%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91)，
 MindSpore环境参见[MindSpore教程](https://www.mindspore.cn/tutorials/zh-CN/master/index.html)，环境安装后需要运行以下命令配置环境变量：
 
 ``` shell
-export MS_DEV_ENABLE_FALLBACK=0
+export MS_DEV_ENABLE_CLOSURE=0
 ```
 
 其余python依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/fold/requirements.txt)。
 
-### MMseqs2安装
+本蛋白质结构预测推理工具依赖多序列比对(MSA，multiple sequence alignments)与模板检索生成等传统数据库搜索工具提供的共进化与模板信息，配置数据库搜索需**2.5T硬盘**（推荐SSD）和与Kunpeng920性能持平的CPU。
 
-MMseqs2用于生成多序列比对(multiple sequence alignments，MSA)，MMseqs2安装和使用可以参考[MMseqs2 User Guide](https://mmseqs.com/latest/userguide.pdf)，安装完成后需要运行以下命令配置环境变量：
+### Serving模式
+
+我们提供以服务模式运行推理，该模式使用MindSpore Serving提供高效推理服务，多条序列推理时避免重复编译，大幅提高推理效率，MindSpore Serving安装和配置可以参考[MindSpore Serving安装页面](https://www.mindspore.cn/serving/docs/zh-CN/r1.5/serving_install.html)。
+
+## 配置数据库检索
+
+### 配置MSA检索
+
+首先安装MSA搜索工具**MMseqs2**，该工具的安装和使用可以参考[MMseqs2 User Guide](https://mmseqs.com/latest/userguide.pdf)，安装完成后运行以下命令配置环境变量：
 
 ``` shell
 export PATH=$(pwd)/mmseqs/bin/:$PATH
 ```
 
-### MindSpore Serving安装
+然后下载MSA所需数据库：
 
-我们提供以服务模式运行推理，该模式使用MindSpore Serving提供高效推理服务，多条序列推理时避免重复编译，大幅提高推理效率，MindSpore Serving安装和配置可以参考[MindSpore Serving安装页面](https://www.mindspore.cn/serving/docs/zh-CN/r1.5/serving_install.html)。
+- [uniref30_2103](http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz)：压缩包68G，解压后375G
+- [colabfold_envdb_202108](http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz)：压缩包110G，解压后949G
 
-## 数据准备
+下载完成后需解压并使用MMseqs2处理数据库，数据处理参考[colabfold](http://colabfold.mmseqs.com)，主要命令如下：
 
-### MSA所需数据库
+``` bash
+tar xzvf "uniref30_2103.tar.gz"
+mmseqs tsv2exprofiledb "uniref30_2103" "uniref30_2103_db"
+mmseqs createindex "uniref30_2103_db" tmp1 --remove-tmp-files 1
 
-- [uniref30_2103](http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz)：375G（下载68G）
-- [colabfold_envdb_202108](http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz)：949G（下载110G）
+tar xzvf "colabfold_envdb_202108.tar.gz"
+mmseqs tsv2exprofiledb "colabfold_envdb_202108" "colabfold_envdb_202108_db"
+mmseqs createindex "colabfold_envdb_202108_db" tmp2 --remove-tmp-files 1
+```
 
-数据处理参考[colabfold](http://colabfold.mmseqs.com)。
+### 配置模板检索
 
-### Template所需工具和数据
+首先安装模板搜索工具[**HHsearch**](https://github.com/soedinglab/hh-suite)
+与[**kalign**](https://msa.sbc.su.se/downloads/kalign/current.tar.gz)，然后下载模板检索所需数据库：
 
-#### 数据
-
-- [pdb70](http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200401.tar.gz)：56G(下载19G)
-- [mmcif database](https://ftp.rcsb.org/pub/pdb/data/structures/divided/mmCIF/)： 206G（下载48G）
+- [pdb70](http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200401.tar.gz)：压缩包19G，解压后56G
+- [mmcif database](https://ftp.rcsb.org/pub/pdb/data/structures/divided/mmCIF/)： 零散压缩文件～50G，解压后～200G，需使用爬虫脚本下载，下载链接爬取脚本参考`scripts/download_mmcif.py`，下载后需解压所有mmcif文件放在同一个文件夹内。
 - [obsolete_pdbs](http://ftp.wwpdb.org/pub/pdb/data/status/obsolete.dat)：140K
 
-#### 工具
-
-- [HHsearch](https://github.com/soedinglab/hh-suite)
-- [kalign](https://msa.sbc.su.se/downloads/kalign/current.tar.gz)
+*数据库下载网站均为国外网站，下载速度可能较慢，需要自行配置VPN*。
 
 ## 脚本说明
 
@@ -133,11 +140,11 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
   --seq_length             补零后序列长度，目前支持256/512/1024/2048
   --input_fasta_path       FASTA文件，用于预测蛋白质结构的蛋白质序列
   --msa_result_path        保存mmseqs2检索得到的msa结果路径
-  --database_dir           搜索msa时的数据库
-  --database_envdb_dir     搜索msa时的扩展数据库
-  --hhsearch_binary_path   hhsearch可执行文件路径
-  --pdb70_database_path    供hhsearch使用的pdb70数据库路径
-  --template_mmcif_dir     具有mmcif结构模板的路径
+  --database_dir           uniref30文件夹路径
+  --database_envdb_dir     colabfold_envdb_202108文件夹路径
+  --hhsearch_binary_path   HHsearch可执行文件路径
+  --pdb70_database_path    pdb70文件夹路径
+  --template_mmcif_dir     mmcif文件夹路径
   --max_template_date      模板最新发布的时间
   --kalign_binary_path     kalign可执行文件路径
   --obsolete_pdbs_path     PDB IDs的映射文件路径
@@ -145,7 +152,7 @@ export PATH=$(pwd)/mmseqs/bin/:$PATH
 
 ### 推理过程
 
- 加载alphafold checkpoint，下载地址[点击这里](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/protein_fold_1.ckpt)，根据自身需求选择合适蛋白质序列配置，当前提供256/512/1024/2048四个标准配置，推理过程如下：
+ 加载已经训好的checkpoint，下载地址[点击这里](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MFold_1.ckpt)，根据自身需求选择合适蛋白质序列配置，当前提供256/512/1024/2048四个标准配置，推理过程如下：
 
 1. 输入参数需要通过`fold_service/config.py`配置，参数含义参见[推理示例](#推理示例)
 

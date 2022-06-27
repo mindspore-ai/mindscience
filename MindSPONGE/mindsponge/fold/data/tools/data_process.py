@@ -40,8 +40,10 @@ def run_mmseqs2(x, path, use_env=False):
                     line = line.replace("\x00", "")
                     update_m = True
                 if line.startswith(">") and update_m:
-
-                    m = int(line[2:6].rstrip())
+                    try:
+                        m = int(line.strip()[-1])
+                    except ValueError:
+                        m = str(line.strip()[-1])
                     update_m = False
                     if m not in a3m_lines: a3m_lines[m] = []
                 a3m_lines[m].append(line)
