@@ -40,8 +40,10 @@ def run_mmseqs2(x, path, use_env=False):
                     line = line.replace("\x00", "")
                     update_m = True
                 if line.startswith(">") and update_m:
-
-                    m = int(line[2:6].rstrip())
+                    try:
+                        m = int(line.strip()[-1])
+                    except ValueError:
+                        m = str(line.strip()[-1])
                     update_m = False
                     if m not in a3m_lines: a3m_lines[m] = []
                 a3m_lines[m].append(line)
@@ -159,11 +161,11 @@ class DataPipeline:
         return {**sequence_features, **msa_features, **templates_result.features}
 
 
-def data_process(seq_num, args):
+def data_process(seq_name, args):
     """data_process"""
 
-    fasta_path = args.input_fasta_path + seq_num + '.fasta'
-    result_path = args.msa_result_path + "/result_" + str(seq_num)
+    fasta_path = os.path.join(args.input_fasta_path, seq_name + '.fasta')
+    result_path = os.path.join(args.msa_result_path, "/result_" + str(seq_name))
     if args.database_envdb_dir:
         use_env = True
         command = "sh ./data/tools/msa_search.sh mmseqs " + fasta_path + " " + result_path + " " + \

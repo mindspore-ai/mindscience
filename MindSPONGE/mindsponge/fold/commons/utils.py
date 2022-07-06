@@ -1020,7 +1020,7 @@ def compute_confidence(predicted_lddt_logits):
     start_n = bin_width / 2
     plddt = compute_plddt(predicted_lddt_logits, start_n, bin_width)
     confidence = np.mean(plddt)
-    return confidence
+    return confidence, plddt
 
 
 def compute_plddt(logits, start_n, bin_width):

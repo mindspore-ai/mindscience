@@ -31,7 +31,7 @@ class Protein:
     b_factors: np.ndarray  # [num_res, num_atom_type]
 
 
-def from_prediction(final_atom_mask, aatype, final_atom_positions, residue_index):
+def from_prediction(final_atom_mask, aatype, final_atom_positions, residue_index, b_factors=None):
     """Assembles a protein from a prediction.
 
     Args:
@@ -43,14 +43,15 @@ def from_prediction(final_atom_mask, aatype, final_atom_positions, residue_index
     Returns:
       A protein instance.
     """
-    dist_per_residue = np.zeros_like(final_atom_mask)
+    if b_factors is None:
+        b_factors = np.zeros_like(final_atom_mask)
 
     return Protein(
         aatype=aatype,
         atom_positions=final_atom_positions,
         atom_mask=final_atom_mask,
         residue_index=residue_index + 1,
-        b_factors=dist_per_residue)
+        b_factors=b_factors)
 
 
 def to_pdb(prot: Protein):
