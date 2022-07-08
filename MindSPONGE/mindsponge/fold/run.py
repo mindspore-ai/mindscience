@@ -100,8 +100,8 @@ if __name__ == "__main__":
                                             b_factors)
         pdb_file = to_pdb(unrelaxed_protein)
 
-        FLAG = os.O_WRONLY
-        MODE = stat.S_IWUSR
+        FLAG = os.O_RDWR | os.O_CREAT
+        MODE = stat.S_IRWXU
 
         seq_length = aatype.shape[-1]
         os.makedirs(f'./result/seq_{seq_name}_{seq_length}', exist_ok=True)
