@@ -23,8 +23,8 @@ if __name__ == "__main__":
     URL = 'https://ftp.rcsb.org/pub/pdb/data/structures/divided/mmCIF/'
     body = requests.get(URL)
     body.encoding = 'gbk'
-    FLAGS = os.O_WRONLY
-    MODES = stat.S_IWUSR
+    FLAG = os.O_RDWR | os.O_CREAT
+    MODE = stat.S_IRWXU
 
     html = etree.HTML(body.text)
     divs = html.xpath('//pre/a/text()')

@@ -78,7 +78,7 @@ def test_fold():
         + np.sum(aatype) * 0 + np.sum(residue_index) * 0
 
     print('test_res:', f'l1_error: {l1_error:.10f} ')
-    print(f'confidence===: {confidence:.10f} ')
+    print(f'confidence===: {confidence[0]:.10f} ')
     print(f'total time===: {t4 - t1:.10f} ')
     assert l1_error <= 5
     assert (t4 - t1) <= 1800

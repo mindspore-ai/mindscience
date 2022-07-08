@@ -88,8 +88,8 @@ def fold_model(input_fasta_path):
                                             b_factors)
         pdb_file = to_pdb(unrelaxed_protein)
 
-        os_flags = os.O_WRONLY
-        os_modes = stat.S_IWUSR
+        os_flags = os.O_RDWR | os.O_CREAT
+        os_modes = stat.S_IRWXU
 
         seq_length = aatype.shape[-1]
         os.makedirs(f'./result/seq_{seq_name}_{seq_length}', exist_ok=True)
