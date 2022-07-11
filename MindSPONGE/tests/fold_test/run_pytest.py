@@ -82,4 +82,4 @@ def test_fold():
     print(f'total time===: {t4 - t1:.10f} ')
     assert l1_error <= 5
     assert (t4 - t1) <= 1800
-    assert confidence >= 90
+    assert confidence[0] >= 90
