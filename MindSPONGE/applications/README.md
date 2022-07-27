@@ -15,6 +15,6 @@ Application底层依托计算生物工具包MindSPONGE以及昇思MindSpore构�
     - [to be updated]()
 - [分子体系建模]()
     - [to be updated]()
-- [蛋白质结构预测](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/applications/strucutre_prediction/)
-    - [MEGA-Fold]()
+- [MEGA-Protein](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
+    - [MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/fold.py)
     - [to be updated]()

@@ -35,7 +35,7 @@ MindSPONGE(Simulation Package tOwards Next GEneration molecular modelling)是基
 
 - 2022.07.18 论文"SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"发表于期刊Chinese Journal of Chemistry。详情参见[论文](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456)和[代码](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
 - 2022.07.09 MEGA-Assessment在CAMEO-QE月榜取得第一名
-- 2022.06.27 [发布首个百万级开源蛋白质结构训练数据集PSP](https://arxiv.org/pdf/2206.12240v1.pdf)
+- 2022.06.27 论文"PSP: Million-level Protein Sequence Dataset for Protein Structure Prediction"预稿收录于Arxiv。详情参见[论文](https://arxiv.org/pdf/2206.12240v1.pdf)
 - 2022.04.21 [CAMEO竞赛月榜第一](https://www.huawei.com/cn/news/2022/4/mindspore-cameo-protein-ascend)
 
 ## **初体验**
