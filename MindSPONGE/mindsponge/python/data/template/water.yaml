@@ -1,0 +1,20 @@
+H2O:
+  atoms:
+    OW: 0
+    HW1: 1
+    HW2: 2
+  atom_mass:
+  - 16.00000
+  - 1.00800
+  - 1.00800
+  atomic_number:
+  - 8
+  - 1
+  - 1
+  bond:
+  - - 0
+    - 1
+  - - 0
+    - 2
+  head_atom: null
+  tail_atom: null

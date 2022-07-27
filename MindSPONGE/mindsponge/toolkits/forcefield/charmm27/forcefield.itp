@@ -1,0 +1,17 @@
+*******************************************************************************
+*                    CHARMM port writted by                                   *
+*                    Par Bjelkmar, Per Larsson, Michel Cuendet,               *
+*                    Berk Hess and Erik Lindahl.                              *
+*                    Correspondence:                                          *
+*                    bjelkmar@cbr.su.se or lindahl@cbr.su.se                  *
+*******************************************************************************
+
+
+#define _FF_CHARMM
+[ defaults ]
+; nbfunc    comb-rule    gen-pairs    fudgeLJ    fudgeQQ
+1    2    yes    1.0    1.0
+
+#include "ffnonbonded.itp"
+#include "ffbonded.itp"
+#include "cmap.itp"

@@ -1,0 +1,6 @@
+file(GLOB_RECURSE CURRENT_HEADERS *.h)
+file(GLOB_RECURSE CURRENT_SOURCES *.cc)
+source_group("Include" FILES ${CURRENT_HEADERS})
+source_group("Source" FILES ${CURRENT_SOURCES})
+message("File is ${CURRENT_SOURCES}")
+add_library(neighborlist SHARED ${CURRENT_HEADERS} ${CURRENT_SOURCES})

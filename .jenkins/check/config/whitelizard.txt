@@ -1,2 +1,0 @@
-mindscience/MindSPONGE/examples/structure_prediction/module/basic_module.py:construct
-mindscience/MindSPONGE/examples/structure_prediction/model.py:__init__

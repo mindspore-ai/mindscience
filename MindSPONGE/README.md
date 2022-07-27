@@ -1,80 +1,161 @@
-# MindSPONGE
+![MindSPONGE标志](docs/MindSPONGE.png "MindSPONGE logo")
 
-- [MindSPONGE介绍](#MindSPONGE介绍)
-- [安装教程](#安装教程)
-    - [确认系统环境信息](#确认系统环境信息)
-    - [安装](#安装)
-        - [安装MindSpore](#安装mindspore)
-        - [安装MindSPONGE](#安装MindSPONGE)
-    - [源码安装](#源码安装)
-- [社区](#社区)
-    - [治理](#治理)
-- [贡献](#贡献)
-- [许可证](#许可证)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mindspore.svg)](https://pypi.org/project/mindspore)
+[![PyPI](https://badge.fury.io/py/mindspore.svg)](https://badge.fury.io/py/mindspore)
+[![LICENSE](https://img.shields.io/github/license/mindspore-ai/mindspore.svg?style=flat-square)](https://github.com/mindspore-ai/mindspore/blob/master/LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://gitee.com/mindspore/mindscience/pulls)
 
-## MindSPONGE介绍
+# **MindSPONGE**
 
-分子模拟是指利用计算机以原子水平的分子模型来模拟分子结构与行为，进而模拟分子体系的各种物理、化学性质的方法。它是在实验基础上，通过基本原理，构筑起一套模型和算法，从而计算出合理的分子结构与分子行为。
+<!-- TOC -->
 
-近年来，分子模拟技术发展迅速并且在多个学科领域得到了广泛的应用。在药物设计领域，可用于研究病毒、药物的作用机理等；在生物科学领域，可用于表征蛋白质的多级结构与性质；在材料学领域，可用于研究结构与力学性能、材料的优化设计等；在化学领域，可用于研究表面催化及机理；在石油化工领域，可用于分子筛催化剂结构表征、合成设计、吸附扩散，可构建和表征高分子链以及晶态或非晶态本体聚合物的结构，预测包括共混行为、机械性质、扩散、内聚等重要性质。
+- [MindSPONGE](#mindsponge)
+    - [MindSPONGE介绍](#mindsponge介绍)
+    - [最新消息](#最新消息)
+    - [初体验](#初体验)
+    - [安装教程](#安装教程)
+        - [硬件支持情况](#硬件支持情况)
+        - [pip安装](#pip安装)
+        - [源码安装](#源码安装)
+    - [社区](#社区)
+        - [CO-CHAIR](#co-chair)
+        - [SIG](#sig)
+        - [核心贡献者](#核心贡献者)
+    - [许可证](#许可证)
 
-MindSPONGE是由`高毅勤`课题组（北京大学、深圳湾实验室）和华为`MindSpore`团队联合开发的分子模拟库，具有高性能、模块化等特性。MindSPONGE是`MindSpore`和`SPONGE`（`S`imulation `P`ackage `O`f `N`ext `GE`neration molecular modeling）的缩写。MindSPONGE是第一个根植于AI计算框架的分子模拟工具，其使用模块化的设计思路，可以快速构建分子模拟流程，并且基于MindSpore自动并行、图算融合等特性，可高效地完成传统分子模拟。同时，MindSPONGE也可以将神经网络等AI方法与传统分子模拟进行结合，应用到生物、材料、医药等领域中。
+<!-- TOC -->
 
-MindSPONGE中包含了多个传统分子模拟案例，更多详情，请点击查看[案例](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/examples)。
+## **MindSPONGE介绍**
 
-未来，MindSPONGE中将包含更多结合AI算法的分子模拟案例，欢迎大家的关注和支持。
+MindSPONGE(Simulation Package tOwards Next GEneration molecular modelling)是基于[昇思MindSpore](https://www.mindspore.cn/)的计算生物领域套件，支持分子动力学、蛋白质折叠等常用功能，旨在于为广大的科研人员、老师及学生提供高效易用的AI计算生物软件。
 
-<img src="docs/mindsponge-arch.png" alt="MindSPONGE Architecture" width="600"/>
+<img src="docs/archi.png" alt="MindSPONGE Architecture" width="600"/>
 
-## 安装教程
+## **最新消息**
 
-### 确认系统环境信息
+- 2022.07.18 论文"SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"发表于期刊Chinese Journal of Chemistry。详情参见[论文](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456)和[代码](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
+- 2022.07.09 MEGA-Assessment在CAMEO-QE月榜取得第一名
+- 2022.06.27 [发布首个百万级开源蛋白质结构训练数据集PSP](https://arxiv.org/pdf/2206.12240v1.pdf)
+- 2022.04.21 [CAMEO竞赛月榜第一](https://www.huawei.com/cn/news/2022/4/mindspore-cameo-protein-ascend)
 
-- 硬件平台确认为Linux系统下的GPU。
-- 参考[MindSpore安装指南](https://www.mindspore.cn/install)，完成MindSpore的安装，要求至少1.2.0版本。
+## **初体验**
+
+- 蛋白质 violation 计算
+
+    ##### 使蛋白质推理模型预测的pdb虽然在绝大多数原子上都准确预测出理想的键长和键角，然而原子间是否存在冲突以及肽键信息对于真实结构也尤为重要，violation 则计算了预测pdb的总原子间冲突程度以及肽键键长键角是否满足一定的限制条件。该计算数值对于评估预测蛋白质结构是否合理以及后续做蛋白质relax尤其重要
+
+```bash
+from mindsponge.loss import get_violation_loss
+violation, _ = get_violation_loss(pdb_path)
+```
+
+- 四元数与旋转矩阵转换
+
+    ##### geometry模块提供基础四元数、旋转矩阵、向量操作
+
+```bash
+from mindsponge.common.geometry import initial_affine
+from mindsponge.common.geometry import quat_to_rot, rot_to_quat
+# quaternion is a mindspore tensor
+# rotation_matrix is a tuple of mindspore tensor, length is 9
+# translation is a tuple of mindsproe tensor, length is 3
+quat, rot, trans = initial_affine(128) # 128 is the num of residues
+transformed_rot = quat_to_rot(quat)
+transformed_quat = rot_to_quat(rot)
+```
+
+- 简单体系分子模拟
+
+```bash
+```
+
+**更多应用案例请见**：
+
+- [蛋白质结构松弛](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/applications/molecular_dynamics/protein_relax/)
+- [蛋白质结构预测 MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/applications/MEGAProtein/)
+- [蛋白质结构评估 MEGA-Assessment](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/applications/MEGAProtein/)
+- [共进化数据引擎 MEGA-EvoGen](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/applications/MEGAProtein/)
+- 基于功能的蛋白设计(TO BE DONE)
+- 基于结构的蛋白设计(TO BE DONE)
+- 蛋白质功能预测(TO BE DONE)
+- 化合物分子表征模型(TO BE DONE)
+
+## **安装教程**
+
+### 依赖安装
+
+```bash
+pip install -r requirements
+```
+
+### 硬件支持情况
+
+| 硬件平台      | 操作系统        | 状态 |
+| :------------ | :-------------- | :--- |
+| Ascend 910    | Ubuntu-x86      | ✔️ |
+|               | Ubuntu-aarch64  | ✔️ |
+|               | EulerOS-aarch64 | ✔️ |
+|               | CentOS-x86      | ✔️ |
+|               | CentOS-aarch64  | ✔️ |
+| GPU CUDA 10.1 | Ubuntu-x86      | ✔️ |
 
 ### pip安装
 
-#### 安装MindSpore
-
 ```bash
-pip install mindspore-gpu
-```
-
-#### 安装MindSPONGE
-
-```bash
-cd ~/MindScience/MindSPONGE
-bash build.sh
-pip install ./output/mindsponge-*.whl
+pip install mindscience_sponge_[gpu|ascend]
 ```
 
 ### 源码安装
 
-1. 从代码仓下载源码
+```bash
+git clone https://gitee.com/mindspore/mindscience.git
+cd {PATH}/mindscience/MindSPONGE
+```
 
-    ```bash
-    cd ~
-    git clone https://gitee.com/mindspore/mindscience.git
-    ```
+#### 昇腾后端
 
-2. 编译安装MindSPONGE
+```bash
+bash build.sh -e ascend
+```
 
-    ```bash
-    cd ~/MindScience/MindSPONGE
-    python setup.py install --user
-    ```
+#### GPU后端 (若使用传统分子动力学sponge，开启编译选项 `t` )
 
-## 社区
+```bash
+export CUDA_PATH={your_cuda_path}
+bash build.sh -e gpu -t on -j32
+```
 
-### 治理
+#### 安装编译所得whl包
 
-查看MindSpore如何进行[开放治理](https://gitee.com/mindspore/community/blob/master/governance.md)。
+```bash
+cd {PATH}/mindscience/MindSPONGE/output
+pip install mindscience_sponge*.whl
+```
 
-## 贡献
+## **社区**
 
-欢迎参与贡献MindSPONGE。更多详情，请参阅我们的[贡献者Wiki](https://gitee.com/mindspore/mindspore/blob/master/CONTRIBUTING.md)。
+### CO-CHAIR
 
-## 许可证
+- 深圳湾实验室杨奕
+
+- 北京昌平实验室张骏
+
+### SIG
+
+MindSPONGE SIG(Special Interesting Group)是由一群有兴趣，有使命，旨在AI×生物计算领域做出一番成就的人组成的团队。
+
+MindSPONGE SIG小组为广大科研人员，老师和学生提供高效易用的AI计算生物软件的同时，为在这个领域有着强大的能力或者浓厚的兴趣的人们提供了一个能够共同交流合作的平台。
+
+在SIG小组中，我们会举办各种活动，其中最为隆重的暑期学校活动即将到来，活动时间为8月11日-8月15日，我们将会邀请到六位MindSPONGE SIG的老师进行一场为期五天的授课，授课主题主要包括MindSpore基础，分子动力学以及AI × Science进阶课程三大主题，还会提供四次上机课时让学生们亲自动手体验。如果想要报名暑期学校，请将自己的简历发送至邮箱dingyahao@huawei.com，我们随时欢迎你的到来。
+
+在SIG小组中，我们还会发布众智任务和[开源实习任务](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue)，欢迎大家来认领。
+
+如果想加入我们，成为我们小组的成员，请将自己的简历发送至邮箱dingyahao@huawei.com，我们无时无刻不在期待着你的到来。
+
+### 核心贡献者
+
+- [高毅勤课题组](https://www.chem.pku.edu.cn/gaoyq/) : [杨奕](https://gitee.com/helloyesterday)，[张骏](https://gitee.com/jz_90)，[刘思睿](https://gitee.com/sirui63)，[夏义杰](https://gitee.com/gao_hyp_xyj_admin)，[陈迪青](https://gitee.com/dechin)，[黄渝鹏](https://gitee.com/gao_hyp_xyj_admin)
+
+## **许可证**
 
 [Apache License 2.0](LICENSE)

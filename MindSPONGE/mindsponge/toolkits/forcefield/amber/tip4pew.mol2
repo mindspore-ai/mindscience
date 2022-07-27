@@ -1,0 +1,16 @@
+@<TRIPOS>MOLECULE
+T4E
+    4     3     1     0     1 
+SMALL
+USER_CHARGES
+@<TRIPOS>ATOM
+  1 O       0.000000    0.000000    0.000000 OW    1 WAT     0.0000 ****
+  2 H1      0.957200    0.000000    0.000000 HW    1 WAT     0.5242 ****
+  3 H2     -0.239988    0.926627    0.000000 HW    1 WAT     0.5242 ****
+  4 EPW     0.076510    0.098850    0.000000 EP    1 WAT    -1.0484 ****
+@<TRIPOS>BOND
+    1     1     2 1
+    2     1     3 1
+    3     2     3 1
+@<TRIPOS>SUBSTRUCTURE
+      1  WAT              1 ****               0 ****  **** 
