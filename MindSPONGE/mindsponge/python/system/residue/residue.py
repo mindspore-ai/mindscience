@@ -337,7 +337,7 @@ class Residue:
                 for serial in atom_index:
                     serial: list = serial.tolist()
                     b = np.array([serial.index(idx)
-                                 for idx in bond_list]).reshape(bond.shape)
+                                  for idx in bond_list]).reshape(bond.shape)
                     bond_.append(b)
                 bond = np.stack(bond_, axis=0)
             else:
