@@ -25,6 +25,7 @@ Collective variables
 """
 
 import mindspore as ms
+from mindspore import ops
 from mindspore.ops import functional as F
 from mindspore.nn import Cell
 from mindspore.common import Tensor
@@ -90,6 +91,8 @@ class Colvar(Cell):
 
         self.any_periodic = self.periodic.any()
         self.all_periodic = self.periodic.all()
+
+        self.identity = ops.Identity()
 
     @property
     def length_unit(self):

@@ -23,9 +23,9 @@
 """
 Molecule
 """
-import numpy as np
 from mindspore import ms_class
 from .residue import Residue
+from ...data.template import get_template_index
 
 
 @ms_class
@@ -65,5 +65,4 @@ class AminoAcid(Residue):
             name=(name.replace('HIE', 'HIS') if 'HIE' in name else name),
             template=template,
         )
-        self.atom_index = np.where(
-            np.array(list(template[self.name]['atom_name'])) == self.atom_name[0][:, None])[-1]
+        self.atom_index = get_template_index(template[self.name], self.atom_name)

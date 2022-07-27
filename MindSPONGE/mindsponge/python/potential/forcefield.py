@@ -259,15 +259,17 @@ class ForceField(ForceFieldBase):
 
         # Generate Forcefield Parameters
         ff_dict = get_forcefield_parameters(parameters)
+        template = ff_dict.get('template')
+        parameters = ff_dict.get('parameters')
         for residue in system.residue:
-            residue.build_atom_type(ff_dict['template'])
-            residue.build_atom_charge(ff_dict['template'])
+            residue.build_atom_type(template.get(residue.name))
+            residue.build_atom_charge(template.get(residue.name))
 
         system.build_system()
 
         ff_params = ForceFieldParameters(
-            system.atom_type, copy.deepcopy(ff_dict), atom_names=system.atom_name[0],
-            atom_charges=self.identity(system.atom_charge).asnumpy()[None, :])
+            system.atom_type[0], copy.deepcopy(ff_dict), atom_names=system.atom_name[0],
+            atom_charges=self.identity(system.atom_charge).asnumpy())
 
         if isinstance(system.bond, np.ndarray):
             force_params = ff_params(system.bond[0])
@@ -282,8 +284,9 @@ class ForceField(ForceFieldBase):
             bond_force_constant = Tensor(force_params.bond_params[:, 2][None, :], ms.float32)
             bond_length = Tensor(force_params.bond_params[:, 3][None, :], ms.float32)
 
-            length_unit = ff_dict['parameters']['bond_energy']['length_unit']
-            energy_unit = ff_dict['parameters']['bond_energy']['energy_unit']
+            bond_params: dict = parameters.get('bond_energy')
+            length_unit = bond_params.get('length_unit')
+            energy_unit = bond_params.get('energy_unit')
             bond_energy = BondEnergy(bond_index, force_constant=bond_force_constant,
                                      bond_length=bond_length, use_pbc=use_pbc,
                                      length_unit=length_unit, energy_unit=energy_unit)
@@ -295,7 +298,8 @@ class ForceField(ForceFieldBase):
             angle_force_constant = Tensor(force_params.angle_params[:, 3][None, :], ms.float32)
             bond_angle = Tensor(force_params.angle_params[:, 4][None, :], ms.float32)
 
-            energy_unit = ff_dict['parameters']['angle_energy']['energy_unit']
+            angle_params: dict = parameters.get('angle_energy')
+            energy_unit = angle_params.get('energy_unit')
             angle_energy = AngleEnergy(angle_index, force_constant=angle_force_constant,
                                        bond_angle=bond_angle, use_pbc=use_pbc, energy_unit=energy_unit)
             energy.append(angle_energy)
@@ -322,7 +326,8 @@ class ForceField(ForceFieldBase):
             phase = msnp.append(phase, Tensor(
                 force_params.improper_dihedral_params[:, 6][None, :], ms.float32), axis=1)
 
-            energy_unit = ff_dict['parameters']['dihedral_energy']['energy_unit']
+            dihedral_params: dict = parameters.get('dihedral_energy')
+            energy_unit = dihedral_params.get('energy_unit')
             dihedral_energy = DihedralEnergy(dihedral_index, force_constant=dihe_force_constant,
                                              periodicity=periodicity, phase=phase, use_pbc=use_pbc,
                                              energy_unit=energy_unit)
@@ -330,8 +335,9 @@ class ForceField(ForceFieldBase):
 
         # Electronic energy
         if system.atom_charge is not None:
-            length_unit = ff_dict['parameters']['coulomb_energy']['length_unit']
-            energy_unit = ff_dict['parameters']['coulomb_energy']['energy_unit']
+            coulomb_params: dict = parameters.get('coulomb_energy')
+            length_unit = coulomb_params.get('length_unit')
+            energy_unit = coulomb_params.get('energy_unit')
             ele_energy = CoulombEnergy(atom_charge=system.atom_charge, use_pbc=use_pbc,
                                        length_unit=length_unit, energy_unit=energy_unit)
             energy.append(ele_energy)
@@ -343,8 +349,9 @@ class ForceField(ForceFieldBase):
             epsilon = Tensor(force_params.vdw_param[:, 0][None, :], ms.float32)
             sigma = Tensor(force_params.vdw_param[:, 1][None, :], ms.float32)
 
-            length_unit = ff_dict['parameters']['vdw_energy']['length_unit']
-            energy_unit = ff_dict['parameters']['vdw_energy']['energy_unit']
+            vdw_params: dict = parameters.get('vdw_energy')
+            length_unit = vdw_params.get('length_unit')
+            energy_unit = vdw_params.get('energy_unit')
             vdw_energy = LennardJonesEnergy(epsilon=epsilon, sigma=sigma, use_pbc=use_pbc,
                                             length_unit=length_unit, energy_unit=energy_unit)
             energy.append(vdw_energy)
@@ -356,11 +363,12 @@ class ForceField(ForceFieldBase):
             epsilon_ij = Tensor(force_params.pair_params[:, 1][None, :], ms.float32)
             sigma_ij = Tensor(force_params.pair_params[:, 2][None, :], ms.float32)
 
-            r_scale = ff_dict['parameters']['nb_pair_energy']['r_scale']
-            r6_scale = ff_dict['parameters']['nb_pair_energy']['r6_scale']
-            r12_scale = ff_dict['parameters']['nb_pair_energy']['r12_scale']
-            length_unit = ff_dict['parameters']['nb_pair_energy']['length_unit']
-            energy_unit = ff_dict['parameters']['nb_pair_energy']['energy_unit']
+            pair_params: dict = parameters.get('nb_pair_energy')
+            length_unit = pair_params.get('length_unit')
+            energy_unit = pair_params.get('energy_unit')
+            r_scale = pair_params.get('r_scale')
+            r6_scale = pair_params.get('r6_scale')
+            r12_scale = pair_params.get('r12_scale')
             pair_energy = NonbondPairwiseEnergy(pair_index, qiqj=qiqj, epsilon_ij=epsilon_ij, sigma_ij=sigma_ij,
                                                 r_scale=r_scale, r6_scale=r6_scale, r12_scale=r12_scale,
                                                 length_unit=length_unit, energy_unit=energy_unit, use_pbc=use_pbc)

@@ -87,10 +87,11 @@ class Protein(Molecule):
                 _, _, _, _, _ = read_pdb(
                     pdb, ignore_hydrogen)
 
-            if residue_name[0] != 'ACE' and residue_name[0] != 'NME':
-                residue_name[0] = 'N' + residue_name[0]
-            if residue_name[-1] != 'ACE' and residue_name[-1] != 'NME':
-                residue_name[-1] = 'C' + residue_name[-1]
+            if len(residue_name) > 1:
+                if residue_name[0] != 'ACE' and residue_name[0] != 'NME':
+                    residue_name[0] = 'N' + residue_name[0]
+                if residue_name[-1] != 'ACE' and residue_name[-1] != 'NME':
+                    residue_name[-1] = 'C' + residue_name[-1]
 
             self.init_resname = init_res_names
             self.init_resid = init_res_ids

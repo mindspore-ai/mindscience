@@ -98,8 +98,13 @@ class AngleEnergy(EnergyCell):
 
         # (1,a,3)
         index = Tensor(index, ms.int32)
+        if index.shape[-1] != 3:
+            raise ValueError('The last dimension of index in AngleEnergy must be 3 but got: ' +
+                             str(index.shape[-1]))
         if index.ndim == 2:
             index = F.expand_dims(index, 0)
+        if index.ndim != 3:
+            raise ValueError('The rank of index must be 2 or 3 but got shape: '+str(index.shape))
         self.index = Parameter(index, name='angle_index', requires_grad=False)
 
         self.num_angles = index.shape[-2]

@@ -186,6 +186,25 @@ class Molecule(Cell):
         if self.residue is not None:
             self.build_space(coordinate, pbc_box)
 
+    @property
+    def length_unit(self):
+        return self.units.length_unit
+
+    def _check_pbc_box(self, pbc_box: Tensor):
+        """check PBC box"""
+        pbc_box = Tensor(pbc_box, ms.float32)
+        if pbc_box.ndim == 1:
+            pbc_box = F.expand_dims(pbc_box, 0)
+        if pbc_box.ndim != 2:
+            raise ValueError('The rank of pbc_box must be 1 or 2!')
+        if pbc_box.shape[-1] != self.dimension:
+            raise ValueError('The last dimension of "pbc_box" ('+str(pbc_box.shape[-1]) +
+                             ') must be equal to the dimension of "coordinate" ('+str(self.dimension)+')!')
+        if pbc_box.shape[0] > 1 and pbc_box.shape[0] != self.num_walker:
+            raise ValueError('The first dimension of "pbc_box" ('+str(pbc_box.shape[0]) +
+                             ') does not match the first dimension of "coordinate" ('+str(self.dimension)+')!')
+        return Parameter(pbc_box, name='pbc_box', requires_grad=True)
+
     def move(self, shift: Tensor = None):
         """move the coordinate of the system"""
         if shift is not None:
@@ -512,21 +531,6 @@ class Molecule(Cell):
             self.num_walker = self.coordinate.shape[0]
         return self
 
-    def _check_pbc_box(self, pbc_box: Tensor):
-        """check PBC box"""
-        pbc_box = Tensor(pbc_box, ms.float32)
-        if pbc_box.ndim == 1:
-            pbc_box = F.expand_dims(pbc_box, 0)
-        if pbc_box.ndim != 2:
-            raise ValueError('The rank of pbc_box must be 1 or 2!')
-        if pbc_box.shape[-1] != self.dimension:
-            raise ValueError('The last dimension of "pbc_box" ('+str(pbc_box.shape[-1]) +
-                             ') must be equal to the dimension of "coordinate" ('+str(self.dimension)+')!')
-        if pbc_box.shape[0] > 1 and pbc_box.shape[0] != self.num_walker:
-            raise ValueError('The first dimension of "pbc_box" ('+str(pbc_box.shape[0]) +
-                             ') does not match the first dimension of "coordinate" ('+str(self.dimension)+')!')
-        return Parameter(pbc_box, name='pbc_box', requires_grad=True)
-
     def update_pbc_box(self, pbc_box: Tensor, success: bool = True):
         """update PBC box"""
         success = F.depend(True, F.assign(self.pbc_box, pbc_box))
@@ -586,10 +590,6 @@ class Molecule(Cell):
             self.update_pbc_box(pbc_box)
         self.units.set_length_unit(unit)
         return self
-
-    @property
-    def length_unit(self):
-        return self.units.length_unit
 
     def get_coordinate(self) -> Tensor:
         """get Tensor of coordinate"""

@@ -635,7 +635,7 @@ class ForceFieldParameters:
          'C4','CT','CX','C','N','N3','S','SH','P','MG',
          'C0','F','Cl','Br','I','2C','3C','C8','CO']
         """
-        atom_names_count = np.zeros(39)
+        atom_names_count = np.zeros(41)
         for i in range(self.atom_nums):
             this_id = np.where(
                 np.isin(self.vdw_params["atoms"], atom_names[i]))[0]
@@ -706,7 +706,7 @@ class ForceFieldParameters:
     def __call__(self, bonds):
         # pylint: disable=unused-argument
         hbonds, non_hbonds = self.get_hbonds(bonds)
-        atoms_types = self.atom_types
+        atoms_types = self.atom_types.copy()
         self.get_vdw_params(atoms_types)
         atom_types = np.append(atoms_types, self._wildcard)
         this_bond_params = self.get_bond_params(bonds, atoms_types)
@@ -722,17 +722,21 @@ class ForceFieldParameters:
             np.where(np.isin(bonds, middle_id).sum(axis=1) == 2)[0]
         ]
         dihedrals = self.get_dihedrals(angles, dihedral_middle_id)
-        self.dihedral_params = self.get_dihedral_params(dihedrals, atom_types)
+        if dihedrals is not None:
+            self.dihedral_params = self.get_dihedral_params(dihedrals, atom_types)
         core_id = np.where(np.bincount(bonds.flatten()) > 2)[0]
         checked_core_id = self.check_idihedral(bonds, core_id)
         idihedrals, third_id = self.get_idihedrals(bonds, checked_core_id)
         self.improper_dihedral_params = self.get_idihedral_params(
             idihedrals, atom_types, third_id
         )
-        self.pair_index = self.get_pair_index(dihedrals, angles, bonds)
-        pair_params = self.get_pair_params(self.pair_index, self.vdw_param[:, 0][None, :],
-                                           self.vdw_param[:, 1][None, :])
-        self.excludes = self.get_excludes(bonds, angles, dihedrals, idihedrals)
+        if dihedrals is not None:
+            self.pair_index = self.get_pair_index(dihedrals, angles, bonds)
+            pair_params = self.get_pair_params(self.pair_index, self.vdw_param[:, 0][None, :],
+                                               self.vdw_param[:, 1][None, :])
+            self.excludes = self.get_excludes(bonds, angles, dihedrals, idihedrals)
+        else:
+            pair_params = None
         return ForceConstants(
             self.bond_params,
             self.angle_params,

@@ -2691,6 +2691,15 @@ template:
     - H1
     - H1
     - H1
+  WAT:
+    atom_charge:
+    - -0.834
+    - 0.417
+    - 0.417
+    atom_type:
+    - OW
+    - HW
+    - HW
 parameters:
   bond_energy:
     length_unit: nm
@@ -9404,6 +9413,8 @@ parameters:
     - 3C
     - C8
     - CO
+    - HW
+    - OW
     epsilon:
     - 0.06568879751861095
     - 0.0
@@ -9444,6 +9455,8 @@ parameters:
     - 0.4577295861840248
     - 0.4577295861840248
     - 0.35982401221990584
+    - 0.0
+    - 0.315061
     sigma:
     - 0.10690785042497683
     - 0.0
@@ -9484,6 +9497,8 @@ parameters:
     - 0.3399669494829499
     - 0.3399669494829499
     - 0.3399669494829499
+    - 0.0
+    - 0.636386
   nb_pair_energy:
     length_unit: nm
     energy_unit: kj/mol

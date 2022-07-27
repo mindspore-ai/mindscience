@@ -140,6 +140,26 @@ class DistanceNeighbours(Cell):
     def print_info(self):
         return self
 
+    def check_neighbours_number(self, neighbour_mask: Tensor):
+        """check number of neighbours in neighbour list"""
+        max_neighbours = F.cast(msnp.max(F.cast(msnp.sum(neighbour_mask, -1), ms.float32)), ms.int32)
+        if max_neighbours > self.num_neighbours:
+            print(
+                '================================================================================')
+            print(
+                'Warning! Warning! Warning! Warning! Warning! Warning! Warning! Warning! Warning!')
+            print(
+                '--------------------------------------------------------------------------------')
+            print('The max number of neighbour atoms is larger than that in neighbour list!')
+            print('The max number of neighbour atoms:')
+            print(max_neighbours)
+            print('The number of neighbour atoms in neighbour list:')
+            print(self.num_neighbours)
+            print('Please increase the value of grid_num_scale or num_neighbours!')
+            print(
+                '================================================================================')
+        return self
+
     def construct(self,
                   coordinate: Tensor,
                   pbc_box: Tensor = None,
@@ -201,24 +221,7 @@ class DistanceNeighbours(Cell):
             num_neighbours = num_atoms - 1
         else:
             num_neighbours = self.num_neighbours
-            max_neighbours = F.cast(
-                msnp.max(F.cast(msnp.sum(neighbour_mask, -1), ms.float32)), ms.int32)
-            if max_neighbours > num_neighbours:
-                print(
-                    '================================================================================')
-                print(
-                    'Warning! Warning! Warning! Warning! Warning! Warning! Warning! Warning! Warning!')
-                print(
-                    '--------------------------------------------------------------------------------')
-                print('The max number of neighbour atoms '
-                      'is larger than that in neighbour list!')
-                print('The max number of neighbour atoms:')
-                print(max_neighbours)
-                print('The number of neighbour atoms in neighbour list:')
-                print(num_neighbours)
-                print('Please increase the value of grid_num_scale or num_neighbours!')
-                print(
-                    '================================================================================')
+            self.check_neighbours_number(neighbour_mask)
 
         distances = distances[..., 1:num_neighbours+1]
         neighbours = neighbours[..., 1:num_neighbours+1]

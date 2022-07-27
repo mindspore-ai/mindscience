@@ -28,9 +28,9 @@ import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import Tensor, ms_function
 from mindspore import Parameter
-from mindspore.nn import Cell
 from mindspore import ops
 from mindspore.ops import functional as F
+from mindspore.nn import Cell
 
 from . import FullConnectNeighbours, DistanceNeighbours, GridNeighbours
 from ..system import Molecule

@@ -28,6 +28,7 @@ import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import Tensor
 from mindspore import Parameter
+from mindspore import context
 from mindspore import ops
 from mindspore.ops import functional as F
 from mindspore.nn import Cell, CellList
@@ -85,8 +86,7 @@ class SimulationCell(Cell):
                 self.num_bias = 1
                 self.bias_network = CellList([bias])
             else:
-                raise TypeError(
-                    'The "bias" must be Cell or list but got: '+str(type(bias)))
+                raise TypeError('The "bias" must be Cell or list but got: '+str(type(bias)))
 
         self.num_walker = self.system.num_walker
         self.num_atoms = self.system.num_atoms
@@ -113,7 +113,10 @@ class SimulationCell(Cell):
 
         self.neighbour_index = self.neighbour_list.neighbours
         self.neighbour_mask = self.neighbour_list.neighbour_mask
-        self.get_neighbour_list = self.neighbour_list.get_neighbour_list
+
+        self.no_mask = False
+        if context.get_context("mode") == context.PYNATIVE_MODE and self.neighbour_list.no_mask:
+            self.no_mask = True
 
         self.num_neighbours = self.neighbour_list.num_neighbours
 
@@ -153,6 +156,14 @@ class SimulationCell(Cell):
             self.bias = Parameter(msnp.zeros((self.num_walker, self.num_bias), dtype=ms.float32),
                                   name='bias_potential', requires_grad=False)
 
+    @property
+    def length_unit(self):
+        return self.units.length_unit
+
+    @property
+    def energy_unit(self):
+        return self.units.energy_unit
+
     def set_pbc_grad(self, grad_box: bool):
         """set whether to calculate the gradient of PBC box"""
         self.system.set_pbc_grad(grad_box)
@@ -163,13 +174,14 @@ class SimulationCell(Cell):
         coordinate, pbc_box = self.system()
         return self.neighbour_list(coordinate, pbc_box)
 
-    @property
-    def length_unit(self):
-        return self.units.length_unit
-
-    @property
-    def energy_unit(self):
-        return self.units.energy_unit
+    def get_neighbour_list(self):
+        """get neighbour list"""
+        if self.no_mask:
+            (neighbour_index,) = self.neighbour_list.get_neighbour_list()
+            neighbour_mask = None
+        else:
+            neighbour_index, neighbour_mask = self.neighbour_list.get_neighbour_list()
+        return neighbour_index, neighbour_mask
 
     def construct(self, *inputs):
         """calculate the energy of system"""

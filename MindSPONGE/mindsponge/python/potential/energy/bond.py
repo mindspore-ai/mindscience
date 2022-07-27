@@ -100,10 +100,15 @@ class BondEnergy(EnergyCell):
             force_constant = parameters.get('force_constant')
             bond_length = parameters.get('bond_length')
 
-        # (1,b,2)
+        # (B,b,2)
         index = Tensor(index, ms.int32)
+        if index.shape[-1] != 2:
+            raise ValueError('The last dimension of index in BondEnergy must be 2 but got: ' +
+                             str(index.shape[-1]))
         if index.ndim == 2:
             index = F.expand_dims(index, 0)
+        if index.ndim != 3:
+            raise ValueError('The rank of index must be 2 or 3 but got shape: '+str(index.shape))
         self.index = Parameter(index, name='bond_index', requires_grad=False)
 
         # (B,b)
@@ -175,16 +180,16 @@ class BondEnergy(EnergyCell):
 
         """
 
-        # (B,M)
+        # (B,b)
         dis = self.get_bond_length(coordinate, pbc_box) * self.input_unit_scale
 
-        # (B,M) = (B,M) - (1,M)
+        # (B,b) = (B,b) - (B,b)
         diff = dis - self.bond_length
-        # (B,M)
+        # (B,b)
         diff2 = F.square(diff)
 
-        # (B,M) = (1,M) * (B,M) * k
+        # (B,b) = (1,b) * (B,b) * k
         energy = 0.5 * self.force_constant * diff2
 
-        # (B,1) <- (B,M)
+        # (B,1) <- (B,b)
         return func.keepdim_sum(energy, -1)
