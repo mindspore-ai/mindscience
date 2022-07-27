@@ -1,0 +1,34 @@
+template:
+  water.yaml
+amino_dict:
+  H2O:
+    OW: O
+    HW1: H
+    HW2: H
+restype_name_to_atom14_names:
+  H2O:
+  - OW
+  - HW1
+  - HW2
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+bond_pairs:
+  H2O:
+  - - 0
+    - 1
+  - - 0
+    - 2
+charge_dict:
+  H2O:
+  - -0.834
+  - 0.417
+  - 0.417
