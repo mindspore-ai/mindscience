@@ -126,8 +126,13 @@ class NonbondPairwiseEnergy(EnergyCell):
 
         # (1,p,2)
         index = Tensor(index, ms.int32)
+        if index.shape[-1] != 2:
+            raise ValueError('The last dimension of index in NonbondPairwiseEnergy must be 2 but got: ' +
+                             str(index.shape[-1]))
         if index.ndim == 2:
             index = F.expand_dims(index, 0)
+        if index.ndim != 3:
+            raise ValueError('The rank of index must be 2 or 3 but got shape: '+str(index.shape))
         self.index = Parameter(index, name='pairs_index', requires_grad=False)
 
         self.num_pairs = index.shape[-2]

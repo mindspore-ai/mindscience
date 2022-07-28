@@ -296,6 +296,31 @@ class GridNeighbours(Cell):
             self.exclude_index = F.expand_dims(self.exclude_index, 0)
         return self
 
+    def check_neighbours_number(self, grid_neigh_atoms: Tensor, num_neighbours: int = None):
+        """check number of neighbours in neighbour list"""
+        if num_neighbours is None:
+            num_neighbours = self.num_neighbours
+        max_neighbours = msnp.sum(grid_neigh_atoms != self.num_atoms, axis=-1)
+        max_neighbours = F.cast(
+            msnp.max(F.cast(max_neighbours, ms.float32)), ms.int32)
+        if max_neighbours > num_neighbours:
+            print(
+                '================================================================================')
+            print(
+                'Warning! Warning! Warning! Warning! Warning! Warning! Warning! Warning! Warning!')
+            print(
+                '--------------------------------------------------------------------------------')
+            print('The max number of neighbour atoms '
+                  'is larger than that in neighbour list!')
+            print('The max number of neighbour atoms:')
+            print(max_neighbours)
+            print('The number of neighbour atoms in neighbour list:')
+            print(num_neighbours)
+            print('Please increase the value of grid_num_scale or num_neighbours!')
+            print(
+                '================================================================================')
+        return self
+
     def print_info(self):
         """print information of neighbour list"""
         print('Calculate neighbour list from grids')
@@ -355,26 +380,8 @@ class GridNeighbours(Cell):
         grid_neigh_atoms, _ = self.sort(F.cast(grid_neigh_atoms, ms.float32))
         grid_neigh_atoms = F.cast(grid_neigh_atoms, ms.int32)
 
-        # max_neighbours = msnp.sum(grid_neigh_atoms != self.num_atoms, axis=-1)
-        # max_neighbours = F.cast(
-        #     msnp.max(F.cast(max_neighbours, ms.float32)), ms.int32)
-        # if num_neighbours < max_neighbours:
-        #     print(
-        #         '================================================================================')
-        #     print(
-        #         'Warning! Warning! Warning! Warning! Warning! Warning! Warning! Warning! Warning!')
-        #     print(
-        #         '--------------------------------------------------------------------------------')
-        #     print('The max number of neighbour atoms '
-        #           'is larger than that in neighbour list!')
-        #     print('The max number of neighbour atoms:')
-        #     print(max_neighbours)
-        #     print('The number of neighbour atoms in neighbour list:')
-        #     print(num_neighbours)
-        #     print('Please increase the value of grid_num_scale or num_neighbours!')
-        #     print(
-        #         '================================================================================')
-        # grid_neigh_atoms = grid_neigh_atoms[..., :num_neighbours]
+        self.check_neigbours_number(grid_neigh_atoms, num_neighbours)
+        grid_neigh_atoms = grid_neigh_atoms[..., :num_neighbours]
 
         # neighbour atoms for each atom
         # (B,A,N)

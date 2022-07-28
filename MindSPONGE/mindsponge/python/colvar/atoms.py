@@ -58,7 +58,7 @@ class AtomDistances(Colvar):
             length_unit=length_unit,
         )
 
-        # (1,b,2)
+        # (B,b,2)
         self.index = index
         self.identity = ops.Identity()
 
@@ -75,8 +75,9 @@ class AtomDistances(Colvar):
 
         """
 
-        # (B,b,2,D)
+        # (B,b,2)
         index = self.identity(self.index)
+        # (B,b,2,D)
         atoms = func.gather_vectors(coordinate, index)
 
         # (B,b,D)
@@ -120,8 +121,10 @@ class AtomAngles(Colvar):
 
         """
 
+        # (B,a,3)
+        index = self.identity(self.index)
         # (B,a,3,D)
-        atoms = func.gather_vectors(coordinate, self.index)
+        atoms = func.gather_vectors(coordinate, index)
 
         # (B,a,1,D)
         atom0, atom1, atom2 = self.split(atoms)
@@ -163,7 +166,7 @@ class AtomTorsions(Colvar):
             use_pbc=use_pbc,
         )
 
-        # (1,d,4)
+        # (B,d,4)
         self.index = index
         self.split = ops.Split(-2, 4)
 
@@ -180,8 +183,10 @@ class AtomTorsions(Colvar):
 
         """
 
+        # (B,d,4)
+        index = self.identity(self.index)
         # (B,d,4,D)
-        atoms = func.gather_vectors(coordinate, self.index)
+        atoms = func.gather_vectors(coordinate, index)
 
         # (B,d,1,D)
         atom_a, atom_b, atom_c, atom_d = self.split(atoms)
