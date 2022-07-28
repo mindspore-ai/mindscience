@@ -33,7 +33,7 @@ MindSPONGE(Simulation Package tOwards Next GEneration molecular modelling)是基
 
 ## **最新消息**
 
-- 2022.07.18 论文"SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"发表于期刊Chinese Journal of Chemistry。详情参见[论文](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456)和[代码](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
+- 2022.07.18 论文"SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"发表于期刊Chinese Journal of Chemistry。详情参见[论文](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
 - 2022.07.09 MEGA-Assessment在CAMEO-QE月榜取得第一名
 - 2022.06.27 [发布首个百万级开源蛋白质结构训练数据集PSP](https://arxiv.org/pdf/2206.12240v1.pdf)
 - 2022.04.21 [CAMEO竞赛月榜第一](https://www.huawei.com/cn/news/2022/4/mindspore-cameo-protein-ascend)
@@ -120,10 +120,10 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 
 **更多应用案例请见**：
 
-- [蛋白质结构弛豫](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/applications/molecular_dynamics/protein_relax/)
-- [蛋白质结构预测 MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/applications/MEGAProtein/)
-- [蛋白质结构评估 MEGA-Assessment](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/applications/MEGAProtein/)
-- [共进化数据引擎 MEGA-EvoGen](https://gitee.com/mindspore/mindscience/tree/dev-md/MindSPONGE/applications/MEGAProtein/)
+- [蛋白质结构弛豫](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/protein_relax/)
+- [蛋白质结构预测 MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
+- [蛋白质结构评估 MEGA-Assessment](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
+- [共进化数据引擎 MEGA-EvoGen](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
 - 基于功能的蛋白设计(TO BE DONE)
 - 基于结构的蛋白设计(TO BE DONE)
 - 蛋白质功能预测(TO BE DONE)

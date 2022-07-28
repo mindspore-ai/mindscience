@@ -120,6 +120,7 @@ build_mindsponge()
   fi
   mk_new_dir "${OUTPUT_PATH}"
   cp -r "${BASEPATH}/mindsponge/python/" "${BASEPATH}/build/mindsponge/"
+  cp -r "${BASEPATH}/mindsponge/toolkits/" "${BASEPATH}/build/mindsponge/"
   cp "${BASEPATH}/setup.py" "${BASEPATH}/build/"
   cd "${BASEPATH}/build/"
   echo ${CMAKE_FLAG}
