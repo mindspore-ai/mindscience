@@ -29,8 +29,7 @@ from .initializer import lecun_init
 class TriangleAttention(nn.Cell):
     '''triangle attention'''
 
-    def __init__(self, orientation, num_head, key_dim, value_dim, gating, layer_norm_dim, batch_size=None, slice_num=0,
-                 mixed_precision=True):
+    def __init__(self, orientation, num_head, key_dim, gating, layer_norm_dim, batch_size=None, slice_num=0):
         super(TriangleAttention, self).__init__()
         self.num_head = num_head
         self.orientation = orientation
@@ -39,16 +38,12 @@ class TriangleAttention(nn.Cell):
         self.query_norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
         self.matmul = P.MatMul(transpose_b=True)
         self.batchmatmul_b = P.BatchMatMul(transpose_b=True)
-        self.attn_mod = Attention(num_head, key_dim, value_dim, gating, layer_norm_dim, layer_norm_dim, layer_norm_dim,
-                                  batch_size, mixed_precision)
+        self.attn_mod = Attention(num_head, key_dim, gating, layer_norm_dim, layer_norm_dim, layer_norm_dim,
+                                  batch_size)
         self.batch_size = batch_size
         self.slice_num = slice_num
         self.layer_norm_dim = layer_norm_dim
         self.idx = Tensor(0, mstype.int32)
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self._init_parameter()
 
     def construct(self, pair_act, pair_mask, index):
@@ -132,7 +127,7 @@ class TriangleAttention(nn.Cell):
 class TriangleMultiplication(nn.Cell):
     '''triangle multiplication'''
 
-    def __init__(self, num_intermediate_channel, equation, layer_norm_dim, batch_size, mixed_precision=True):
+    def __init__(self, num_intermediate_channel, equation, layer_norm_dim, batch_size):
         super(TriangleMultiplication, self).__init__()
         self.num_intermediate_channel = num_intermediate_channel
         self.equation = equation
@@ -151,10 +146,6 @@ class TriangleMultiplication(nn.Cell):
             self.equation = None
         self.batch_size = batch_size
         self.layer_norm_dim = layer_norm_dim
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self._init_parameter()
 
     def construct(self, act, mask, index):
@@ -317,8 +308,7 @@ class TriangleMultiplication(nn.Cell):
 class OuterProductMean(nn.Cell):
     '''outerproduct mean'''
 
-    def __init__(self, num_outer_channel, act_dim, num_output_channel, batch_size=None, slice_num=0,
-                 mixed_precision=True):
+    def __init__(self, num_outer_channel, act_dim, num_output_channel, batch_size=None, slice_num=0):
         super(OuterProductMean, self).__init__()
         self.num_output_channel = num_output_channel
         self.num_outer_channel = num_outer_channel
@@ -330,10 +320,6 @@ class OuterProductMean(nn.Cell):
         self.batch_size = batch_size
         self.slice_num = slice_num
         self.idx = Tensor(0, mstype.int32)
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self._init_parameter()
 
     def construct(self, act, mask, extra_msa_norm, index):

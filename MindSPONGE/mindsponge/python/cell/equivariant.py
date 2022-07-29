@@ -27,8 +27,7 @@ from .initializer import lecun_init
 class InvariantPointAttention(nn.Cell):
     """Invariant Point attention module."""
 
-    def __init__(self, num_head, num_scalar_qk, num_scalar_v, num_point_v, num_point_qk, num_channel, pair_dim,
-                 mixed_precision=True):
+    def __init__(self, num_head, num_scalar_qk, num_scalar_v, num_point_v, num_point_qk, num_channel, pair_dim):
         """
 
         Args:
@@ -46,11 +45,6 @@ class InvariantPointAttention(nn.Cell):
         self.num_channel = num_channel
         self.projection_num = self.num_head * self.num_scalar_v + self.num_head * self.num_point_v * 4 + \
                               self.num_head * pair_dim
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
-
         self.q_scalar = nn.Dense(self.num_channel, self.num_head * self.num_scalar_qk,
                                  weight_init=lecun_init(self.num_channel))
         self.kv_scalar = nn.Dense(self.num_channel, self.num_head * (self.num_scalar_qk + self.num_scalar_v),

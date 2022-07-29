@@ -32,13 +32,9 @@ from mindsponge.common.geometry import initial_affine, quaternion_to_tensor, pre
 class MultiRigidSidechain(nn.Cell):
     """Class to make side chain atoms."""
 
-    def __init__(self, config, single_repr_dim, mixed_precision):
+    def __init__(self, config, single_repr_dim):
         super().__init__()
         self.config = config
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self.input_projection = nn.Dense(single_repr_dim, self.config.num_channel,
                                          weight_init=lecun_init(single_repr_dim))
         self.input_projection_1 = nn.Dense(single_repr_dim, self.config.num_channel,
@@ -119,13 +115,9 @@ class MultiRigidSidechain(nn.Cell):
 class FoldIteration(nn.Cell):
     """A single iteration of the main structure module loop."""
 
-    def __init__(self, config, pair_dim, single_repr_dim, mixed_precision):
+    def __init__(self, config, pair_dim, single_repr_dim):
         super().__init__()
         self.config = config
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self.drop_out = nn.Dropout(keep_prob=0.9)
         self.attention_layer_norm = nn.LayerNorm([self.config.num_channel,], epsilon=1e-5)
         self.transition_layer_norm = nn.LayerNorm([self.config.num_channel,], epsilon=1e-5)
@@ -142,9 +134,8 @@ class FoldIteration(nn.Cell):
                                                         self.config.num_point_v,
                                                         self.config.num_point_qk,
                                                         self.config.num_channel,
-                                                        pair_dim,
-                                                        mixed_precision)
-        self.mu_side_chain = MultiRigidSidechain(self.config.sidechain, single_repr_dim, mixed_precision)
+                                                        pair_dim)
+        self.mu_side_chain = MultiRigidSidechain(self.config.sidechain, single_repr_dim)
         self.print = ops.Print()
 
     def construct(self, act, static_feat_2d, sequence_mask, quaternion, rotation, translation, initial_act, aatype):
@@ -186,15 +177,11 @@ class FoldIteration(nn.Cell):
 class StructureModule(nn.Cell):
     """StructureModule as a network head."""
 
-    def __init__(self, config, single_repr_dim, pair_dim, mixed_precision):
+    def __init__(self, config, single_repr_dim, pair_dim):
         super(StructureModule, self).__init__()
         self.config = config.structure_module
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self.seq_length = config.seq_length
-        self.fold_iteration = FoldIteration(self.config, pair_dim, single_repr_dim, mixed_precision)
+        self.fold_iteration = FoldIteration(self.config, pair_dim, single_repr_dim)
         self.single_layer_norm = nn.LayerNorm([single_repr_dim,], epsilon=1e-5)
         self.initial_projection = nn.Dense(single_repr_dim, self.config.num_channel,
                                            weight_init=lecun_init(single_repr_dim))

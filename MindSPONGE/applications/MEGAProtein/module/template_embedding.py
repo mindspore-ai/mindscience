@@ -30,13 +30,9 @@ from mindsponge.cell import Attention, TriangleAttention, Transition, TriangleMu
 class TemplatePairStack(nn.Cell):
     '''template pair stack'''
 
-    def __init__(self, config, mixed_precision):
+    def __init__(self, config):
         super(TemplatePairStack, self).__init__()
         self.config = config.template.template_pair_stack
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self.num_block = self.config.num_block
         batch_size = 0
         self.slice = config.slice.template_pair_stack
@@ -44,22 +40,18 @@ class TemplatePairStack(nn.Cell):
         self.triangle_attention_starting_node = TriangleAttention(start_node_cfg.orientation,
                                                                   start_node_cfg.num_head,
                                                                   start_node_cfg.key_dim,
-                                                                  start_node_cfg.value_dim,
                                                                   start_node_cfg.gating,
                                                                   64,
                                                                   batch_size,
-                                                                  self.slice.triangle_attention_starting_node,
-                                                                  mixed_precision)
+                                                                  self.slice.triangle_attention_starting_node)
         end_node_cfg = self.config.triangle_attention_ending_node
         self.triangle_attention_ending_node = TriangleAttention(end_node_cfg.orientation,
                                                                 end_node_cfg.num_head,
                                                                 end_node_cfg.key_dim,
-                                                                end_node_cfg.value_dim,
                                                                 end_node_cfg.gating,
                                                                 64,
                                                                 batch_size,
-                                                                self.slice.triangle_attention_ending_node,
-                                                                mixed_precision)
+                                                                self.slice.triangle_attention_ending_node)
         # Hard Code
         self.pair_transition = Transition(self.config.pair_transition.num_intermediate_factor,
                                           64,
@@ -70,14 +62,12 @@ class TemplatePairStack(nn.Cell):
         self.triangle_multiplication_outgoing = TriangleMultiplication(mul_outgoing_cfg.num_intermediate_channel,
                                                                        mul_outgoing_cfg.equation,
                                                                        layer_norm_dim=64,
-                                                                       batch_size=batch_size,
-                                                                       mixed_precision=mixed_precision)
+                                                                       batch_size=batch_size)
         mul_incoming_cfg = self.config.triangle_multiplication_incoming
         self.triangle_multiplication_incoming = TriangleMultiplication(mul_incoming_cfg.num_intermediate_channel,
                                                                        mul_incoming_cfg.equation,
                                                                        layer_norm_dim=64,
-                                                                       batch_size=batch_size,
-                                                                       mixed_precision=mixed_precision)
+                                                                       batch_size=batch_size)
 
     def construct(self, pair_act, pair_mask, index=None):
         if not self.num_block:
@@ -111,7 +101,7 @@ class SingleTemplateEmbedding(nn.Cell):
         # if is_training:
         template_layers = nn.CellList()
         for _ in range(self.config.template_pair_stack.num_block):
-            template_pair_stack_block = TemplatePairStack(config, mixed_precision)
+            template_pair_stack_block = TemplatePairStack(config)
             template_layers.append(template_pair_stack_block)
         self.template_pair_stack = template_layers
 
@@ -204,8 +194,7 @@ class TemplateEmbedding(nn.Cell):
                                                       self.config.attention.value_dim,
                                                       self.config.attention.gating,
                                                       q_data_dim=128, m_data_dim=64,
-                                                      output_dim=128, batch_size=None,
-                                                      mixed_precision=mixed_precision)
+                                                      output_dim=128, batch_size=None)
         self.slice_num = config.slice.template_embedding
         if self.slice_num == 0:
             slice_num = 1

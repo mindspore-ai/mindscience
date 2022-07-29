@@ -85,7 +85,7 @@ def compute_plddt(logits, start_n, bin_width):
 class MegaFold(nn.Cell):
     """MegaFold"""
 
-    def __init__(self, config, mixed_precision=True):
+    def __init__(self, config, mixed_precision):
         super(MegaFold, self).__init__()
 
         self.cfg = config
@@ -145,8 +145,7 @@ class MegaFold(nn.Cell):
                                         msa_act_dim=64,
                                         pair_act_dim=128,
                                         is_extra_msa=True,
-                                        batch_size=None,
-                                        mixed_precision=mixed_precision)
+                                        batch_size=None)
             if self.is_training:
                 extra_msa_block.recompute()
             extra_msa_stack.append(extra_msa_block)
@@ -158,8 +157,7 @@ class MegaFold(nn.Cell):
                                       msa_act_dim=256,
                                       pair_act_dim=128,
                                       is_extra_msa=False,
-                                      batch_size=None,
-                                      mixed_precision=mixed_precision)
+                                      batch_size=None)
                 msa_block.recompute()
                 msa_stack.append(msa_block)
             self.msa_stack = msa_stack
@@ -176,15 +174,13 @@ class MegaFold(nn.Cell):
                                        msa_act_dim=256,
                                        pair_act_dim=128,
                                        is_extra_msa=False,
-                                       batch_size=self.msa_stack_num,
-                                       mixed_precision=mixed_precision)
+                                       batch_size=self.msa_stack_num)
         self.idx_evoformer_block = Parameter(Tensor(0, mstype.int32), requires_grad=False)
         self.evoformer_num_block_eval = Tensor(self.msa_stack_num, mstype.int32)
 
         self.structure_module = StructureModule(self.cfg,
                                                 self.cfg.seq_channel,
-                                                self.cfg.pair_channel,
-                                                mixed_precision)
+                                                self.cfg.pair_channel)
 
         self.module_lddt = PredictedLDDTHead(self.cfg.heads.predicted_lddt,
                                              self.cfg.seq_channel)

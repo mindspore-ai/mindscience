@@ -25,28 +25,22 @@ from .initializer import glorot_uniform
 class Attention(nn.Cell):
     '''attention module'''
 
-    def __init__(self, num_head, key_dim, value_dim, gating, q_data_dim, m_data_dim, output_dim, batch_size=None,
-                 mixed_precision=True):
+    def __init__(self, num_head, hidden_size, gating, q_data_dim, m_data_dim, output_dim,
+                 batch_size=None):
         super(Attention, self).__init__()
         self.q_data_dim = q_data_dim
         self.m_data_dim = m_data_dim
         self.output_dim = output_dim
         self.num_head = num_head
         self.gating = gating
-        self.key_dim = key_dim if key_dim else int(q_data_dim)
-        self.value_dim = value_dim if value_dim else int(m_data_dim)
-        self.key_dim = self.key_dim // self.num_head
-        self.value_dim = self.value_dim // self.num_head
+        self.hidden_size = hidden_size
+        self.dim_per_head = self.hidden_size // self.num_head
         self.batch_size = batch_size
         self.matmul = P.MatMul(transpose_b=True)
         self.batch_matmul_trans_b = P.BatchMatMul(transpose_b=True)
         self.softmax = nn.Softmax()
         self.sigmoid = nn.Sigmoid()
         self.batch_size = batch_size
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self._init_parameter()
 
     def construct(self, q_data, m_data, bias, index=None, nonbatched_bias=None):
@@ -81,7 +75,7 @@ class Attention(nn.Cell):
         q_data = P.Reshape()(q_data, (-1, dim_a))
         m_data = P.Reshape()(m_data, (-1, dim_c))
 
-        q = self.matmul(q_data, linear_q_weight) * self.key_dim ** (-0.5)
+        q = self.matmul(q_data, linear_q_weight) * self.dim_per_head ** (-0.5)
         k = self.matmul(m_data, linear_k_weight)
         v = self.matmul(m_data, linear_v_weight)
 
@@ -103,65 +97,82 @@ class Attention(nn.Cell):
 
         if self.gating:
             gating_bias = P.ExpandDims()(P.ExpandDims()(gating_bias, 0), 0)
-            gate_values = P.Add()(P.Reshape()(self.matmul(q_data, linear_gating_weight), (dim_b, dim_q, dim_h, -1)),
+            gate_values = P.Add()(P.Reshape()(self.matmul(q_data, linear_gating_weight),
+                                              (dim_b, dim_q, dim_h, -1)),
                                   gating_bias)
             gate_values = self.sigmoid(gate_values)
             weighted_avg = P.Reshape()(weighted_avg * gate_values, (dim_b * dim_q, -1))
 
         weighted_avg = P.Reshape()(weighted_avg, (dim_b * dim_q, -1))
-        output = P.Add()(P.Reshape()(self.matmul(weighted_avg, linear_output_weight), (dim_b, dim_q, -1)),
+        output = P.Add()(P.Reshape()(self.matmul(weighted_avg, linear_output_weight),
+                                     (dim_b, dim_q, -1)),
                          P.ExpandDims()(o_bias, 0))
         return output
 
     def _init_parameter(self):
         '''init parameter'''
         if self.batch_size:
-            self.linear_q_weights = Parameter(Tensor(np.zeros([self.batch_size, self.num_head * self.key_dim,
+            self.linear_q_weights = Parameter(Tensor(np.zeros([self.batch_size,
+                                                               self.num_head * self.dim_per_head,
                                                                self.q_data_dim]), mstype.float32))
-            self.linear_k_weights = Parameter(Tensor(np.zeros([self.batch_size, self.num_head * self.key_dim,
+            self.linear_k_weights = Parameter(Tensor(np.zeros([self.batch_size,
+                                                               self.num_head * self.dim_per_head,
                                                                self.m_data_dim]), mstype.float32))
-            self.linear_v_weights = Parameter(Tensor(np.zeros([self.batch_size, self.num_head * self.value_dim,
+            self.linear_v_weights = Parameter(Tensor(np.zeros([self.batch_size,
+                                                               self.num_head * self.dim_per_head,
                                                                self.m_data_dim]), mstype.float32))
-            self.linear_output_weights = Parameter(Tensor(np.zeros([self.batch_size, self.output_dim,
-                                                                    self.num_head * self.value_dim]), mstype.float32))
-            self.o_biases = Parameter(Tensor(np.zeros([self.batch_size, self.output_dim]), mstype.float32))
+            self.linear_output_weights = Parameter(Tensor(np.zeros([self.batch_size,
+                                                                    self.output_dim,
+                                                                    self.num_head * \
+                                                                        self.dim_per_head]),
+                                                          mstype.float32))
+            self.o_biases = Parameter(Tensor(np.zeros([self.batch_size, self.output_dim]),
+                                             mstype.float32))
             if self.gating:
-                self.linear_gating_weights = Parameter(Tensor(np.zeros([self.batch_size, self.num_head * self.value_dim,
-                                                                        self.q_data_dim]), mstype.float32))
-                self.gating_biases = Parameter(Tensor(np.zeros((self.batch_size, self.num_head, self.value_dim)),
+                self.linear_gating_weights = Parameter(Tensor(np.zeros([self.batch_size,
+                                                                        self.num_head * \
+                                                                            self.dim_per_head,
+                                                                        self.q_data_dim]),
+                                                              mstype.float32))
+                self.gating_biases = Parameter(Tensor(np.zeros((self.batch_size,
+                                                                self.num_head,
+                                                                self.dim_per_head)),
                                                       mstype.float32), name="gating_b")
         else:
             self.linear_q_weights = Parameter(Tensor(
-                glorot_uniform(self.num_head * self.q_data_dim, self.key_dim * self.q_data_dim,
-                               [self.num_head * self.key_dim, self.q_data_dim]), mstype.float32))
+                glorot_uniform(self.num_head * self.q_data_dim, self.dim_per_head * self.q_data_dim,
+                               [self.num_head * self.dim_per_head, self.q_data_dim]),
+                mstype.float32))
             self.linear_k_weights = Parameter(Tensor(
-                glorot_uniform(self.num_head * self.m_data_dim, self.key_dim * self.m_data_dim,
-                               [self.num_head * self.key_dim, self.m_data_dim]), mstype.float32))
+                glorot_uniform(self.num_head * self.m_data_dim, self.dim_per_head * self.m_data_dim,
+                               [self.num_head * self.dim_per_head, self.m_data_dim]),
+                mstype.float32))
             self.linear_v_weights = Parameter(Tensor(
-                glorot_uniform(self.num_head * self.m_data_dim, self.value_dim * self.m_data_dim,
-                               [self.num_head * self.value_dim, self.m_data_dim]), mstype.float32))
+                glorot_uniform(self.num_head * self.m_data_dim, self.dim_per_head * self.m_data_dim,
+                               [self.num_head * self.dim_per_head, self.m_data_dim]),
+                mstype.float32))
             self.linear_output_weights = Parameter(
-                Tensor(np.zeros([self.output_dim, self.num_head * self.value_dim]), mstype.float32))
+                Tensor(np.zeros([self.output_dim, self.num_head * self.dim_per_head]),
+                       mstype.float32))
             self.o_biases = Parameter(Tensor(np.zeros([self.output_dim]), mstype.float32))
             if self.gating:
                 self.linear_gating_weights = Parameter(
-                    Tensor(np.zeros([self.num_head * self.value_dim, self.q_data_dim]), mstype.float32))
-                self.gating_biases = Parameter(Tensor(np.ones((self.num_head, self.value_dim)), mstype.float32),
+                    Tensor(np.zeros([self.num_head * self.dim_per_head, self.q_data_dim]),
+                           mstype.float32))
+                self.gating_biases = Parameter(Tensor(np.ones((self.num_head, self.dim_per_head)),
+                                                      mstype.float32),
                                                name="gating_b")
 
 
 class GlobalAttention(nn.Cell):
     '''global attention'''
 
-    def __init__(self, num_head, gating, key_dim, value_dim, output_dim, batch_size=None, mixed_precision=True):
+    def __init__(self, num_head, gating, hidden_size, output_dim, batch_size=None):
         super(GlobalAttention, self).__init__()
-        self.key_dim = key_dim
-        self.ori_key_dim = key_dim
-        self.value_dim = value_dim
-        self.ori_value_dim = value_dim
+
+        self.hidden_size = hidden_size
         self.num_head = num_head
-        self.key_dim = self.key_dim // self.num_head
-        self.value_dim = self.value_dim // self.num_head
+        self.dim_per_head = self.hidden_size // self.num_head
         self.output_dim = output_dim
         self.matmul_trans_b = P.MatMul(transpose_b=True)
         self.batch_matmul = P.BatchMatMul()
@@ -170,10 +181,6 @@ class GlobalAttention(nn.Cell):
         self.softmax = nn.Softmax()
         self.sigmoid = nn.Sigmoid()
         self.gating = gating
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self.batch_size = batch_size
         self._init_parameter()
 
@@ -204,7 +211,9 @@ class GlobalAttention(nn.Cell):
 
         b, _, _ = m_data.shape
 
-        v_weights = P.BroadcastTo((b, self.value_dim * self.num_head, self.value_dim))(v_weights)
+        v_weights = P.BroadcastTo((b,
+                                   self.dim_per_head * self.num_head,
+                                   self.dim_per_head))(v_weights)
         v = self.batch_matmul(m_data, v_weights)
 
         mask_shape = q_mask.shape
@@ -219,9 +228,11 @@ class GlobalAttention(nn.Cell):
         q_avg = P.RealDiv()(qa, qb)
 
         q = P.Reshape()(self.matmul(q_avg, q_weights),
-                        (-1, self.num_head, self.key_dim)) * (self.key_dim ** (-0.5))
+                        (-1, self.num_head, self.dim_per_head)) * (self.dim_per_head ** (-0.5))
 
-        k_weights = P.BroadcastTo((b, self.value_dim * self.num_head, self.key_dim))(k_weights)
+        k_weights = P.BroadcastTo((b,
+                                   self.dim_per_head * self.num_head,
+                                   self.dim_per_head))(k_weights)
         k = self.batch_matmul(m_data, k_weights)
 
         bias = 1e9 * (P.Transpose()(q_mask, (0, 2, 1)) - 1.0)
@@ -235,11 +246,13 @@ class GlobalAttention(nn.Cell):
             if len(q_data_shape) != 2:
                 q_data = P.Reshape()(q_data, (-1, q_data_shape[-1]))
             out_shape = q_data_shape[:-1] + (-1,)
-            gate_values = P.Reshape()(self.matmul_trans_b(q_data, gating_weights) + gating_bias, out_shape)
+            gate_values = P.Reshape()(self.matmul_trans_b(q_data, gating_weights) + gating_bias,
+                                      out_shape)
 
-            gate_values = P.Reshape()(self.sigmoid(gate_values), (b, -1, self.num_head, self.value_dim))
+            gate_values = P.Reshape()(self.sigmoid(gate_values),
+                                      (b, -1, self.num_head, self.dim_per_head))
             weighted_avg = P.Reshape()(P.ExpandDims()(weighted_avg, 1) * gate_values,
-                                       (-1, self.num_head * self.value_dim))
+                                       (-1, self.num_head * self.dim_per_head))
             weighted_avg_shape = P.Shape()(weighted_avg)
             if len(weighted_avg_shape) != 2:
                 weighted_avg = P.Reshape()(weighted_avg, (-1, weighted_avg_shape[-1]))
@@ -247,13 +260,13 @@ class GlobalAttention(nn.Cell):
                                                              output_weights), output_bias),
                                  (b, -1, self.output_dim))
         else:
-            weighted_avg = P.Reshape()(weighted_avg, (-1, self.num_head * self.value_dim))
+            weighted_avg = P.Reshape()(weighted_avg, (-1, self.num_head * self.dim_per_head))
             weighted_avg_shape = P.Shape()(weighted_avg)
             if len(weighted_avg_shape) != 2:
                 weighted_avg = P.Reshape()(weighted_avg, (-1, weighted_avg_shape[-1]))
             out_shape = weighted_avg_shape[:-1] + (-1,)
-            output = P.Reshape()(P.Add()(self.matmul_trans_b(weighted_avg,
-                                                             output_weights), output_bias), out_shape)
+            output = P.Reshape()(P.Add()(self.matmul_trans_b(weighted_avg, output_weights),
+                                         output_bias), out_shape)
             output = P.ExpandDims()(output, -1)
         return output
 
@@ -261,33 +274,55 @@ class GlobalAttention(nn.Cell):
         '''init parameter'''
         if self.batch_size:
             self.linear_q_weights = Parameter(
-                Tensor(np.zeros((self.batch_size, self.ori_key_dim, self.num_head, self.key_dim)), mstype.float32))
+                Tensor(np.zeros((self.batch_size,
+                                 self.hidden_size,
+                                 self.num_head,
+                                 self.dim_per_head)),
+                       mstype.float32))
             self.linear_k_weights = Parameter(
-                Tensor(np.zeros((self.batch_size, self.ori_value_dim, self.key_dim)), mstype.float32))
+                Tensor(np.zeros((self.batch_size, self.hidden_size, self.dim_per_head)),
+                       mstype.float32))
             self.linear_v_weights = Parameter(
-                Tensor(np.zeros((self.batch_size, self.ori_value_dim, self.value_dim)), mstype.float32))
+                Tensor(np.zeros((self.batch_size, self.hidden_size, self.dim_per_head)),
+                       mstype.float32))
             self.linear_output_weights = Parameter(
-                Tensor(np.zeros((self.batch_size, self.output_dim, self.num_head * self.value_dim)), mstype.float32))
-            self.o_biases = Parameter(Tensor(np.zeros((self.batch_size, self.output_dim)), mstype.float32))
+                Tensor(np.zeros((self.batch_size,
+                                 self.output_dim,
+                                 self.num_head * self.dim_per_head)),
+                       mstype.float32))
+            self.o_biases = Parameter(Tensor(np.zeros((self.batch_size, self.output_dim)),
+                                             mstype.float32))
             if self.gating:
                 self.linear_gating_weights = Parameter(
-                    Tensor(np.zeros((self.batch_size, self.num_head * self.value_dim, self.ori_key_dim)),
+                    Tensor(np.zeros((self.batch_size,
+                                     self.num_head * self.dim_per_head,
+                                     self.hidden_size)),
                            mstype.float32))
-                self.gating_biases = Parameter(Tensor(np.zeros((self.batch_size, self.ori_key_dim)), mstype.float32))
+                self.gating_biases = Parameter(Tensor(np.zeros((self.batch_size, self.hidden_size)),
+                                                      mstype.float32))
         else:
             self.linear_q_weights = Parameter(Tensor(
-                glorot_uniform(self.num_head * self.ori_key_dim, self.key_dim * self.ori_key_dim,
-                               (self.ori_key_dim, self.num_head*self.key_dim)), mstype.float32))
+                glorot_uniform(self.num_head * self.hidden_size,
+                               self.dim_per_head * self.hidden_size,
+                               (self.hidden_size, self.num_head*self.dim_per_head)),
+                mstype.float32))
             self.linear_k_weights = Parameter(
-                Tensor(glorot_uniform(self.ori_value_dim, self.key_dim, (1, self.ori_value_dim, self.key_dim)),
+                Tensor(glorot_uniform(self.hidden_size,
+                                      self.dim_per_head,
+                                      (1, self.hidden_size, self.dim_per_head)),
                        mstype.float32))
             self.linear_v_weights = Parameter(
-                Tensor(glorot_uniform(self.ori_value_dim, self.value_dim, (1, self.ori_value_dim, self.value_dim)),
+                Tensor(glorot_uniform(self.hidden_size,
+                                      self.dim_per_head,
+                                      (1, self.hidden_size, self.dim_per_head)),
                        mstype.float32))
             self.linear_output_weights = Parameter(
-                Tensor(np.zeros((self.output_dim, self.num_head * self.value_dim)), mstype.float32))
-            self.o_biases = Parameter(Tensor(np.zeros((self.output_dim)), mstype.float32))
+                Tensor(np.zeros((self.output_dim, self.num_head * self.dim_per_head)),
+                       mstype.float32))
+            self.o_biases = Parameter(Tensor(np.zeros((self.output_dim)),
+                                             mstype.float32))
             if self.gating:
                 self.linear_gating_weights = Parameter(
-                    Tensor(np.zeros((self.num_head * self.value_dim, self.ori_key_dim)), mstype.float32))
-                self.gating_biases = Parameter(Tensor(np.ones((self.ori_key_dim)), mstype.float32))
+                    Tensor(np.zeros((self.num_head * self.dim_per_head, self.hidden_size)),
+                           mstype.float32))
+                self.gating_biases = Parameter(Tensor(np.ones((self.hidden_size)), mstype.float32))
