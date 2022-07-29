@@ -32,16 +32,16 @@ def get_nb14_extra_lj(atom1, atom2):
     a = 0
     b = 0
 
-    lj_i = lj_type.types[atom1.LJtype + "-" + atom1.LJtype]
-    lj_j = lj_type.types[atom2.LJtype + "-" + atom2.LJtype]
+    lj_i = lj_type.get_type(atom1.LJtype + "-" + atom1.LJtype)
+    lj_j = lj_type.get_type(atom2.LJtype + "-" + atom2.LJtype)
     finded = False
     findnames = [atom1.LJtype + "-" + atom2.LJtype,
                  atom2.LJtype + "-" + atom1.LJtype]
 
     for findname in findnames:
-        if findname in lj_type.types.keys():
+        if findname in lj_type.get_all_types():
             finded = True
-            lj_ij = lj_type.types[findname]
+            lj_ij = lj_type.get_type(findname)
             a = lj_type.combining_method_A(lj_ij.epsilon, lj_ij.rmin, lj_ij.epsilon, lj_ij.rmin)
             b = lj_type.combining_method_B(lj_ij.epsilon, lj_ij.rmin, lj_ij.epsilon, lj_ij.rmin)
             break
@@ -62,7 +62,7 @@ def exclude_to_nb14_extra(molecule, atom1, atom2):
     :param atom2:
     :return:
     """
-    new_force = NB14Type.entity([atom1, atom2], NB14Type.types["UNKNOWNS"])
+    new_force = NB14Type.entity([atom1, atom2], NB14Type.get_type("UNKNOWNS"))
     a, b = Get_NB14EXTRA_AB(new_force.atoms[0], new_force.atoms[1])
     new_force.A = nb14_bond.kLJ * a
     new_force.B = nb14_bond.kLJ * b
@@ -85,7 +85,7 @@ def nb14_to_nb14_extra(molecule):
     # A、B中的nb14全部变为nb14_extra
     while molecule.bonded_forces.get("nb14", []):
         nb14_bond = molecule.bonded_forces["nb14"].pop()
-        new_force = NB14Type.entity(nb14_bond.atoms, NB14Type.types["UNKNOWNS"], nb14_bond.name)
+        new_force = NB14Type.entity(nb14_bond.atoms, NB14Type.get_type("UNKNOWNS"), nb14_bond.name)
 
         a, b = get_nb14_extra_lj(new_force.atoms[0], new_force.atoms[1])
 

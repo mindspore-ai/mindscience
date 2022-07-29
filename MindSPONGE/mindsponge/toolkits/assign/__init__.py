@@ -4,12 +4,15 @@ This **package** is used to assign the properties for atoms, residues and molecu
 from collections import OrderedDict
 from itertools import groupby
 import numpy as np
-from ..helper import set_attribute_alternative_names, AtomType, ResidueType, Xopen, Xdict, set_real_global_variable
+from ..helper import AtomType, ResidueType, Xopen, Xdict, set_real_global_variable, set_attribute_alternative_names, \
+    set_global_alternative_names
 
 
 class AssignRule:
     """
     This **class** is to be the rule to determine the atom type for one atom
+
+    :param name: the name of the rule
     """
     all = Xdict(not_found_message="AssignRule {} not found. Did you import the proper force field?")
 
@@ -21,12 +24,14 @@ class AssignRule:
 
     def add_rule(self, atomtype):
         """
-        This **function** is used as an **decorator** to add the atom type - judge function
-        :param atomtype:
-        :return:
+        This **function** is used as a **decorator** to add the atom type - judge function
+
+        :param atomtype: a string or an AtomType instance
+        :return: a **function**, which wraps a judge function (receiving the Assign instance and the atom index \
+and giving True or False as a result)
         """
         if isinstance(atomtype, str):
-            atomtype = AtomType.types[atomtype]
+            atomtype = AtomType.get_type(atomtype)
         elif not isinstance(atomtype, AtomType):
             raise TypeError("atomtype should be a string or AtomType")
 
@@ -220,6 +225,8 @@ class _RING():
 class Assign():
     """
     This **class** is used to assign properties for atoms, which is called an "assignment"
+
+    :param name: the name of the molecule
     """
     XX = set("CNOPS")
     XA = set("OS")
@@ -246,17 +253,20 @@ class Assign():
 
     def add_index_to_name(self):
         """
+        This **function** adds the atom index to the atom name
 
-        :return:
+        :return: None
         """
         for i in range(self.atom_numbers):
             self.names[i] += str(i)
 
     def atom_judge(self, atom, string):
         """
+        This **function** helps judge whether the atom belongs to the mask. For example, "O2" means an oxygen atom \
+connected to two other atoms, "N4" means a nitrogen atom connected to four other atoms.
 
-        :param atom:
-        :param string:
+        :param atom: the index of the atom
+        :param string: a string mask  of a list of string masks.
         :return:
         """
         assert isinstance(string, (list, str))
@@ -274,14 +284,15 @@ class Assign():
 
     def add_atom(self, element, x, y, z, name="", charge=0.0):
         """
+        This **function** adds an atom to the Assign
 
-        :param element:
-        :param x:
-        :param y:
-        :param z:
-        :param name:
-        :param charge:
-        :return:
+        :param element: the chemical symbol for the element. "O" - oxygen, "H" - hydrogen for example.
+        :param x: the x coordinate
+        :param y: the y coordinate
+        :param z: the z coordinate
+        :param name: the name of the atom
+        :param charge: the charge of the atom
+        :return: None
         """
         if "." in element:
             element, element_detail = element.split(".")
@@ -307,10 +318,11 @@ class Assign():
 
     def add_atom_marker(self, atom, marker):
         """
+        This **function** adds a marker to an atom
 
-        :param atom:
-        :param marker:
-        :return:
+        :param atom: the atom index
+        :param marker: the marker
+        :return: None
         """
         if marker in self.atom_marker[atom].keys():
             self.atom_marker[atom][marker] += 1
@@ -319,11 +331,12 @@ class Assign():
 
     def add_bond(self, atom1, atom2, order=-1):
         """
+        This **function** adds a bond to two atoms
 
-        :param atom1:
-        :param atom2:
-        :param order:
-        :return:
+        :param atom1: the index of the first atom
+        :param atom2: the index of the the second atom
+        :param order: the bond order
+        :return: None
         """
         self.bonds[atom1][atom2] = order
         self.bond_marker[atom1][atom2] = set([])
@@ -332,12 +345,13 @@ class Assign():
 
     def add_bond_marker(self, atom1, atom2, marker, only1=False):
         """
+        This **function** adds a marker to a bond
 
-        :param atom1:
-        :param atom2:
-        :param marker:
-        :param only1:
-        :return:
+        :param atom1: the index of the first atom
+        :param atom2: the index of the the second atom
+        :param marker: the marker
+        :param only1: only add the marker to the atom1 - atom2 bond instead of the atom2 - atom1 bond
+        :return: None
         """
         self.bond_marker[atom1][atom2].add(marker)
         if marker in self.atom_marker[atom1]:
@@ -353,16 +367,22 @@ class Assign():
 
     def determine_equal_atoms(self):
         """
+        This **function** dertermines the chemical equalvalent atoms
 
-        :return:
+        .. NOTE::
+
+            The pyckage RDKit is needed for this **function**
+
+        :return: a list of equalvalent atom index lists
         """
         from ..helper.rdkit import Find_Equal_Atoms
         return Find_Equal_Atoms(self)
 
     def determine_ring_and_bond_type(self):
         """
+        This **function** determine the ring and the bond type
 
-        :return:
+        :return: None
         """
         have_found_rings = _RING.get_rings(self)
         _RING.add_rings_basic_marker(self, have_found_rings)
@@ -397,9 +417,16 @@ class Assign():
 
     def determine_atom_type(self, rule):
         """
+        This **function** determines the atom type.
 
-        :param rule:
-        :return:
+        .. ATTENTION::
+
+            Before determining the atom type, the ring and bond type should be determined. If you use the function \
+``Get_Assignment_From_XXX``, the ring and bond type has been determined by the function, but when you build the Assign \
+instance yourself, remember to determine the ring and bond type!
+
+        :param rule: a string or an AssignRule instance
+        :return: None
         """
         if isinstance(rule, str):
             rule = AssignRule.all[rule]
@@ -416,10 +443,11 @@ class Assign():
 
     def to_residuetype(self, name, charge=None):
         """
+        This **function** converts the Assign instance to the ResidueType instance
 
-        :param name:
-        :param charge:
-        :return:
+        :param name: the name of the ResidueType instance
+        :param charge: the charge of atoms. If set to None, internal charge will be used
+        :return: the ResidueType instance
         """
         temp = ResidueType(name=name)
         if not charge:
@@ -451,10 +479,11 @@ class Assign():
 
     def calculate_charge(self, method, **parameters):
         """
+        This **function** calculates the partial charge for every atom
 
-        :param method:
-        :param parameters:
-        :return:
+        :param method: the method to calculate the charge
+        :param parameters: the parameters to calculate the charge
+        :return: None
         """
         method = method.upper()
         if method == "RESP":
@@ -473,9 +502,10 @@ class Assign():
 
     def save_as_pdb(self, filename):
         """
+        This **function** saves the instance as a pdb file
 
-        :param filename:
-        :return:
+        :param filename: the name of the output file
+        :return: None
         """
         if not isinstance(filename, str):
             raise TypeError("filename needed to save an assignment to a pdb file")
@@ -516,9 +546,10 @@ class Assign():
 
     def save_as_mol2(self, filename):
         """
+        This **function** saves the instance as a mol2 file
 
-        :param filename:
-        :return:
+        :param filename: the name of the output file
+        :return: None
         """
         if not isinstance(filename, str):
             raise TypeError("filename needed to save an assignment as a mol2 file")
@@ -566,10 +597,16 @@ class Assign():
 
 def get_assignment_from_pubchem(parameter, keyword):
     """
+    This **function** gets an Assign instance from PubChem
 
-    :param parameter:
-    :param keyword:
-    :return:
+    usage example::
+
+        a1 = Get_Assignment_From_PubChem("ethane", "name")
+        a2 = Get_Assignment_From_PubChem("CC", "smiles")
+
+    :param parameter: the parameter to search on PubChem
+    :param keyword: the keyword to search on PubChem
+    :return: the Assign instance
     """
     import pubchempy as pcp
     cs = pcp.get_compounds(parameter, keyword, record_type='3d')
@@ -589,11 +626,13 @@ def get_assignment_from_pubchem(parameter, keyword):
 
 def get_assignment_from_pdb(filename, determine_bond_order=True, only_residue=""):
     """
+    This **function** gets an Assign instance from a pdb file
 
-    :param filename:
-    :param determine_bond_order:
-    :param only_residue:
-    :return:
+    :param filename: the name of the input file
+    :param determine_bond_order: whether determine the bond order automatically
+    :param only_residue: only get the residue with the name same as ``only_residue``
+    :return: the Assign instance
+    :raise NotImplementedError: it has not been implemented when determine_bond_order is True
     """
     assign = Assign()
     index_atom_map = Xdict()
@@ -631,9 +670,10 @@ def get_assignment_from_pdb(filename, determine_bond_order=True, only_residue=""
 
 def get_assignment_from_residuetype(restype):
     """
+    This **function** gets an Assign instance from a ResidueType instance
 
-    :param restype:
-    :return:
+    :param restype: the ResidueType instance
+    :return: the Assign instance
     """
     assign = Assign()
     for atom in restype.atoms:
@@ -684,9 +724,10 @@ def _deal_with_ar_bonds(assign):
 
 def get_assignment_from_mol2(filename):
     """
+    This **function** gets an Assign instance from a mol2 file
 
-    :param filename:
-    :return:
+    :param filename: the name of the input file
+    :return: the Assign instance
     """
     with open(filename) as f:
         flag = None
@@ -745,3 +786,5 @@ def get_assignment_from_mol2(filename):
     _deal_with_ar_bonds(assign)
     assign.Determine_Ring_And_Bond_Type()
     return assign
+
+set_global_alternative_names(globals())

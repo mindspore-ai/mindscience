@@ -77,9 +77,10 @@ def _charmm27_test(args):
 
 def test(args):
     """
+    This **function** does the tests for Xponge
 
-    :param args:
-    :return:
+    :param args: arguments from argparse
+    :return: None
     """
     GlobalSetting.verbose = args.verbose
     if not args.do:
@@ -97,9 +98,10 @@ def test(args):
 
 def maskgen(args):
     """
+    This **function** uses VMD to generate mask
 
-    :param args:
-    :return:
+    :param args: arguments from argparse
+    :return: None
     """
     import os
 
@@ -133,9 +135,10 @@ quit
 
 def exgen(args):
     """
+    This **function** reads the SPONGE input files for bonded interactions and generate a exclude file
 
-    :param args:
-    :return:
+    :param args: arguments from argparse
+    :return: None
     """
     partners = [set([]) for i in range(args.n)]
 
@@ -217,9 +220,10 @@ def exgen(args):
 
 def name2name(args):
     """
+    This **function** change the atom names from one file to another file
 
-    :param args:
-    :return:
+    :param args: arguments from argparse
+    :return: None
     """
     from rdkit import Chem
     from rdkit.Chem import rdFMCS
@@ -285,23 +289,23 @@ def _mol2rfe_build(args, merged_from, merged_to):
     :return:
     """
     import os
-    import Xponge
-    import Xponge.forcefield.special.fep as FEP
-    import Xponge.forcefield.special.min as MIN
+    source("..")
+    fep = source("..forcefield.special.fep")
+    min_ = source("..forcefield.special.min")
 
     if "build" in args.do:
         print("\nBUILDING TOPOLOGY\n")
-        FEP.Save_Soft_Core_LJ()
+        fep.Save_Soft_Core_LJ()
 
         for i in range(args.nl + 1):
             if os.path.exists("%d" % i):
                 os.system("rm -rf %d" % i)
             os.mkdir("%d" % i)
-            tt = FEP.Merge_Force_Field(merged_from, merged_to, i / args.nl)
+            tt = fep.Merge_Force_Field(merged_from, merged_to, i / args.nl)
             if i == 0:
-                MIN.save_min_bonded_parameters()
+                min_.save_min_bonded_parameters()
             elif i == 1:
-                MIN.do_not_save_min_bonded_parameters()
+                min_.do_not_save_min_bonded_parameters()
             Xponge.BUILD.Save_SPONGE_Input(tt, "%d/%s" % (i, args.temp))
 
 
@@ -468,9 +472,10 @@ def _mol2rfe_analysis(args, merged_from):
 
 def mol2rfe(args):
     """
+    This **function** helps with the relative free energy calculation
 
-    :param args:
-    :return:
+    :param args: arguments from argparse
+    :return: None
     """
     source("..")
     source("..forcefield.special.fep")

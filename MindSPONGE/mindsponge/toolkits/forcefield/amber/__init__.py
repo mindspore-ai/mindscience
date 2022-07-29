@@ -24,8 +24,9 @@ exclude_base.Exclude(4)
 def load_parameters_from_parmdat(filename, prefix=True):
     """
     This **function** is used to get amber force field parameters from parmdat files
-    :param filename:
-    :param prefix:
+
+    :param filename: the name of the input file
+    :param prefix: whether add the AMBER_DATA_DIR to the filename
     :return:
     """
     if prefix:
@@ -42,9 +43,11 @@ def load_parameters_from_parmdat(filename, prefix=True):
 def load_parameters_from_frcmod(filename, include_cmap=False, prefix=True):
     """
     This **function** is used to get amber force field parameters from frcmod files
-    :param filename:
-    :param include_cmap:
-    :return:
+
+    :param filename: the name of the input file
+    :param include_cmap: whether include cmap
+    :param prefix: whether add the AMBER_DATA_DIR to the filename
+    :return: None
     """
     if prefix:
         filename = os.path.join(AMBER_DATA_DIR, filename)

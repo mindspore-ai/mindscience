@@ -427,7 +427,7 @@ def intramolecule_nb_to_nb14(mol_a, perturbing_residues):
                     if atom_a2 not in a_exclude[atom_a1]:
                         temp_a, temp_b = nb14_extra_base.Get_NB14EXTRA_AB(atom_a1, atom_a2)
                         new_force = nb14_extra_base.NB14Type.entity([atom_a1, atom_a2],
-                                                                    nb14_extra_base.NB14Type.types["UNKNOWNS"])
+                                                                    nb14_extra_base.NB14Type.get_type("UNKNOWNS"))
                         new_force.A = temp_a
                         new_force.B = temp_b
                         new_force.kee = 1

@@ -98,7 +98,7 @@ def _rule_cq(i, assign):
         for bonded_atom in assign.bonds[i]:
             if tofind:
                 break
-            if (assign.atom_types[bonded_atom] == AtomType.types["cp"] and \
+            if (assign.atom_types[bonded_atom] == AtomType.get_type("cp") and \
                     "AB" in assign.bond_marker[bonded_atom][i]):
                 tofind = True
                 break
@@ -147,8 +147,8 @@ def _single_double_name(i, assign, name1, name2):
     for bonded_atom, bond_order in assign.bonds[i].items():
         if tofind:
             break
-        if ((assign.atom_types[bonded_atom] == AtomType.types[name1] and bond_order == 2) or
-                (assign.atom_types[bonded_atom] == AtomType.types[name2] and bond_order == 1)):
+        if ((assign.atom_types[bonded_atom] == AtomType.get_type(name1) and bond_order == 2) or
+                (assign.atom_types[bonded_atom] == AtomType.get_type(name2) and bond_order == 1)):
             tofind = True
             break
     return tofind
@@ -1273,20 +1273,25 @@ def _rule_p5(i, assign):
 def parmchk2_gaff(ifname, ofname, direct_load=True, keep=True):
     """
     This **function** is to do parmchk2 for gaff
-    :param ifname:
-    :param ofname:
-    :param direct_load:
-    :param keep:
-    :return:
+
+    :param ifname: a string of mol2 file name, a ResidueType, Residue or Molecule instance
+    :param ofname: the output file name
+    :param direct_load: directly load the output file after writing it
+    :param keep: do not delete the output file after loading it
+    :return: None
     """
     import XpongeLib as xlib
     datapath = os.path.split(xlib.__file__)[0]
+    if isinstance(ifname, (ResidueType, Residue, Molecule)):
+        Save_Mol2(ifname, "temp.mol2")
+        ifname = "temp.mol2"
     parmchk2_func = getattr(xlib, "_parmchk2")
     parmchk2_func(ifname, "mol2", ofname, datapath, 0, 1, 1)
     if direct_load:
-        amber.load_parameters_from_frcmod(ofname)
+        amber.load_parameters_from_frcmod(ofname, prefix=False)
     if not keep:
         os.remove(ofname)
+    os.remove("temp.mol2")
 
 
 set_real_global_variable("parmchk2_gaff", parmchk2_gaff)

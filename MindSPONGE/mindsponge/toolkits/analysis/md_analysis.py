@@ -3,18 +3,27 @@ This **module** gives functions and classes to use MDAnalysis to analyze the tra
 """
 import os.path
 import numpy as np
-from ..helper import set_global_alternative_names
+from ..helper import Xopen, set_global_alternative_names
 try:
     from MDAnalysis.coordinates import base
     from MDAnalysis.lib import util
 except ModuleNotFoundError as exc:
     raise ModuleNotFoundError(
-        "'MDAnalysis' package needed. Maybe you need 'pip install MDANalysis'") from exc
+        "'MDAnalysis' package needed. Maybe you need 'pip install MDAnalysis'") from exc
 
 
-class SpongeTrajectoryReader(base.ReaderBase):
+class _SpongeTrajectoryReader(base.ReaderBase):
     """
-    This **class** is the interface to MDAnalysis
+    This **class** is the interface to MDAnalysis.
+
+    .. TIP::
+
+        You do not need to call the class yourself. Use the function set_universe_sponge_trajectory.
+
+    :param dat_file_name: the name of the SPONGE dat trajectory file
+    :param box: the name of the box file or a list of 6 ``int`` or ``float`` \
+representing the 3 box lengths and 3 box angles.
+    :param n_atoms: the number of atoms
     """
     def __init__(self, dat_file_name, box, n_atoms, **kwargs):
         super().__init__(dat_file_name, **kwargs)
@@ -34,16 +43,23 @@ class SpongeTrajectoryReader(base.ReaderBase):
 
     @property
     def n_frames(self):
+        """
+        The total number of frames in the trajectory file
+        """
         return self._n_frames
 
     @property
     def n_atoms(self):
+        """
+        The total number of atoms in the trajectory file
+        """
         return self._n_atoms
 
     def close(self):
         """
+        Close all the opened file
 
-        :return:
+        :return: None
         """
         if self.trajfile is not None:
             self.trajfile.close()
@@ -54,8 +70,9 @@ class SpongeTrajectoryReader(base.ReaderBase):
 
     def open_trajectory(self):
         """
+        Open the trajectory file
 
-        :return:
+        :return: trajectory file and box file
         """
         self.trajfile = util.anyopen(self.filename, "rb")
         if self.box is None:
@@ -116,20 +133,79 @@ class SpongeTrajectoryReader(base.ReaderBase):
         self._offsets.pop()
 
 
-def universe(topname, trajname, box, **kwargs):
+def set_universe_sponge_trajectory(universe, trajname, box, **kwargs):
     """
-    This **function** gives an interface to MDAnalysis.Universe
-    :param topname:
-    :param trajname:
-    :param box:
-    :param kwargs:
-    :return:
+    This **function** sets the trajectory to an MDAnalysis.Universe instance
+
+    :param universe: the MDAnalysis.Universe object
+    :param trajname: the name of the trajectory file
+    :param box: the name of the box file or a list of 6 ``int`` or ``float`` \
+representing the 3 box lengths and 3 box angles.
+    :return: None
     """
-    import warnings
-    warnings.filterwarnings("ignore", message='No coordinate reader found for')
-    u = mda.Universe(topname)
-    warnings.filterwarnings("default", message='No coordinate reader found for')
-    setattr(u, "_trajectory", SPONGE_Trajectory_Reader(trajname, box, len(u.atoms), **kwargs))
-    return u
+    setattr(universe, "_trajectory", _SpongeTrajectoryReader(trajname, box, len(u.atoms), **kwargs))
+
+
+class TrajWriter():
+    """
+    This **class** is used to write the SPONGE trajectory (xxx.dat and xxx.box)
+
+    usage example::
+
+        import Xponge.analysis.md_analysis as xmda
+        import MDAnalysis as mda
+        from MDAnalysis.tests.datafiles import PDB, XTC
+
+        u = mda.Universe(PDB, XTC)
+
+        with xmda.TrajWriter("mda_test") as W:
+            for ts in u.trajectory:
+                W.write(u)
+
+    :param prefix: the prefix of the output files
+    """
+    def __init__(self, prefix):
+        self.datname = prefix + ".dat"
+        self.boxname = prefix + ".box"
+        self.datfile = None
+        self.boxfile = None
+        set_attribute_alternative_name(self, self.open)
+        set_attribute_alternative_name(self, self.close)
+        set_attribute_alternative_name(self, self.write)
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def open(self):
+        """
+        This **function** opens the trajectory files
+
+        :return: None
+        """
+        self.datfile = Xopen(self.datname, "wb")
+        self.boxfile = Xopen(self.boxname, "w")
+
+    def close(self):
+        """
+        This **function** closes the trajectory files
+
+        :return: None
+        """
+        self.datfile.close()
+        self.boxfile.close()
+
+    def write(self, u):
+        """
+        This **function** writes the coordinates of the Universe to the output files
+
+        :param u: an MDAnalysis.Universe instance
+        :return: None
+        """
+        self.datfile.write(u.coord.positions.astype(np.float32).tobytes())
+        self.boxfile.write(" ".join([f"{i}" for i in u.coord.dimensions]) + "\n")
 
 set_global_alternative_names(globals())

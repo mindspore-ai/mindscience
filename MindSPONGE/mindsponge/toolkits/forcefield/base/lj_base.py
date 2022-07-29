@@ -80,19 +80,19 @@ def _find_ab_lj(ljtypes, stat=True):
     coefficients_b = []
 
     for i, lj_single_i in enumerate(ljtypes):
-        lj_i = LJType.types[lj_single_i + "-" + lj_single_i]
+        lj_i = LJType.get_type(lj_single_i + "-" + lj_single_i)
         if stat:
             j_max = len(ljtypes)
         else:
             j_max = i + 1
         for j in range(j_max):
-            lj_j = LJType.types[ljtypes[j] + "-" + ljtypes[j]]
+            lj_j = LJType.get_type(ljtypes[j] + "-" + ljtypes[j])
             finded = False
             findnames = [lj_single_i + "-" + ljtypes[j], ljtypes[j] + "-" + lj_single_i]
             for findname in findnames:
-                if findname in LJType.types.keys():
+                if findname in LJType.get_all_types():
                     finded = True
-                    lj_ij = LJType.types[findname]
+                    lj_ij = LJType.get_type(findname)
                     coefficients_a.append(
                         LJType.combining_method_A(lj_ij.epsilon, lj_ij.rmin, lj_ij.epsilon, lj_ij.rmin))
                     coefficients_b.append(

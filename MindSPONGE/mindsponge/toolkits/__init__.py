@@ -14,6 +14,62 @@
 # ============================================================================
 """
 Xponge, a lightweight and easy-customizing python package for pre- and post- process of molecular modelling
+
+.. TIP::
+
+    When you use this **package** as an independent package, this package is called ``Xponge``; when you use it as \
+a part of mindsponge, it is called ``mindsponge.toolkits``. The documatation is all written as ``Xponge``, but \
+remember to change your codes for importing according to your environment!
+
+name style
+============
+
+All modules follow the lower snake case such as ``forcefield.amber.ff14sb``
+
+All classes follow the upper camel case such as ``ResidueType``, ``Molecule``, ``GromacsTopologyIterator``.
+
+All functions can be used in four name styles. Take the function ``impose_bond`` as example::
+
+    impose_bond == Impose_Bond == ImposeBond == imposeBond
+
+For some abbreviations, all upper letters are also acceptable. Take the function ``load_pdb`` as example::
+
+    load_pdb == Load_Pdb == Load_PDB == LoadPdb == LoadPDB == loadPdb == loadPDB
+
+Functions in a Python class, no matter it is called a class method, a instance method or a static method follow the \
+same name styles as the usual functions do. Take the function ``Residue.add_atom`` as  example::
+
+    Residue.add_atom == Residue.Add_Atom == Residue.addAtom == Residue.AddAtom
+
+name space
+============
+
+The submodules in ``forcefield`` will do some global configure settings after loading. For example, after the code::
+
+    import Xponge.forcefield.amber.ff14sb
+
+you can use all ``ResidueType`` instances in ff14sb then.
+
+The names of all ``ResidueType`` instances will be loaded into the main dict, which means you can directly use it::
+
+    import Xponge.forcefield.amber.ff14sb
+    print(ALA)
+    # output:
+    # Type of Residue: ALA
+
+All functions in the base module is also loaded into the main dict, \
+which means you can directly use it without the module name. For example, you can use::
+
+    import Xponge
+    load_mol2("example.mol2")
+    # This is the same as
+    # Xponge.load_mol2("example.mol2")
+
+The atoms in a ``Residue`` or a ``ResidueType`` can be obtained by their names. For example::
+
+    import Xponge.forcefield.amber.ff14sb
+    print(ALA.CA)
+
 """
 __version__ = "stable-1.2.6"
 
@@ -26,10 +82,12 @@ from itertools import product, permutations
 import numpy as np
 
 from . import assign
+from .assign import Assign, get_assignment_from_pdb, get_assignment_from_mol2, get_assignment_from_pubchem, \
+    get_assignment_from_residuetype
 from .helper import GlobalSetting, Type, ResidueType, Entity, Atom, Residue, ResidueLink, Molecule, AtomType, \
     set_global_alternative_names, generate_new_pairwise_force_type, generate_new_bonded_force_type
 from .load import load_ffitp, load_mol2, load_rst7, load_frcmod, load_pdb, load_parmdat
-from .build import save_mol2, save_pdb, save_sponge_input, save_gro
+from .build import save_mol2, save_pdb, save_sponge_input, save_gro, build_bonded_force
 from .process import impose_bond, impose_angle, impose_dihedral, add_solvent_box, h_mass_repartition, solvent_replace, \
     main_axis_rotate
 

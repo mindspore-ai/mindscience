@@ -2,8 +2,8 @@
 This **module** is used to load and read
 """
 import os
-from .helper import Molecule, Residue, ResidueType, AtomType, set_attribute_alternative_name, GlobalSetting, \
-    set_real_global_variable, Xdict
+from .helper import Molecule, Residue, ResidueType, AtomType, GlobalSetting, Xdict, Xopen, \
+    set_real_global_variable, set_global_alternative_names
 
 
 ##########################################################################
@@ -25,18 +25,18 @@ def _mol2_atom(line, current_residue_index, current_residue, ignore_atom_type, t
     words = line.split()
     if current_residue_index is None or int(words[6]) != current_residue_index:
         current_residue_index = int(words[6])
-        if words[7] not in ResidueType.types.keys():
+        if words[7] not in ResidueType.get_all_types():
             set_real_global_variable(words[7], ResidueType(name=words[7]))
             temp = True
         else:
             temp = False
         if current_residue:
             current_molecule.Add_Residue(current_residue)
-        current_residue = Residue(ResidueType.types[words[7]])
+        current_residue = Residue(ResidueType.get_type(words[7]))
     if ignore_atom_type:
-        temp_atom_type = AtomType.types["UNKNOWN"]
+        temp_atom_type = AtomType.get_type("UNKNOWN")
     else:
-        temp_atom_type = AtomType.types[words[5]]
+        temp_atom_type = AtomType.get_type(words[5])
 
     if temp:
         current_residue.type.Add_Atom(words[1], temp_atom_type, *words[2:5])
@@ -80,10 +80,11 @@ def _mol2_bond(line, current_molecule, atom_residue_map):
 
 def load_mol2(filename, ignore_atom_type=False):
     """
+    This **function** is used to load a mol2 file
 
-    :param filename:
-    :param ignore_atom_type:
-    :return:
+    :param filename: the name of the file to load
+    :param ignore_atom_type: ignore the atom types in the mol2 file
+    :return: a Molecule instance
     """
     with open(filename) as f:
         # 存储读的时候的临时信息，key是编号
@@ -214,12 +215,13 @@ def _pdb_judge_histone(judge_histone, residue_type_map, current_histone_informat
 
 def load_pdb(filename, judge_histone=True, position_need="A", ignore_hydrogen=False):
     """
+    This **function** is used to load a pdb file
 
-    :param filename:
-    :param judge_histone:
-    :param position_need:
-    :param ignore_hydrogen:
-    :return:
+    :param filename: the name of the file to load
+    :param judge_histone: judge the protonized state of the histone residues
+    :param position_need: the position character to read
+    :param ignore_hydrogen: do not read the atom with a name beginning with "H"
+    :return: a Molecule instance
     """
     molecule = Molecule(os.path.splitext(os.path.basename(filename))[0])
     chain = Xdict()
@@ -326,10 +328,11 @@ def _frcmod_atoms_words(line, n):
 
 def load_frcmod(filename, nbtype="RE"):
     """
+    This **function** is used to load a frcmod file
 
-    :param filename:
-    :param nbtype:
-    :return:
+    :param filename: the name of the file to load
+    :param nbtype: the non-bonded interaction recording type in the frcmod file.
+    :return: a list of strings, including atoms, bonds, angles, propers, impropers, ljs, cmap information respectively
     """
     with open(filename) as f:
         f.readline()
@@ -402,17 +405,17 @@ def _parmdat_read_harmonic_bonds(f, bonds, n):
     for line in f:
         if not line.strip():
             break
-        else:
-            atoms, words = _frcmod_atoms_words(line, n)
-            bonds += "-".join(atoms) + "\t" + words[0] + "\t" + words[1] + "\n"
+        atoms, words = _frcmod_atoms_words(line, n)
+        bonds += "-".join(atoms) + "\t" + words[0] + "\t" + words[1] + "\n"
     return bonds
 
 
 def load_parmdat(filename):
     """
+    This **function** is used to load a parmdat file
 
-    :param filename:
-    :return:
+    :param filename: the name of the file to load
+    :return: a list of strings, including atoms, bonds, angles, propers, impropers, ljs information respectively
     """
     with open(filename) as f:
         f.readline()
@@ -422,10 +425,10 @@ def load_parmdat(filename):
         for line in f:
             if not line.strip():
                 break
-            else:
-                words = line.split()
-                atom_types[words[0]] = words[1]
-                lj_types[words[0]] = words[0]
+
+            words = line.split()
+            atom_types[words[0]] = words[1]
+            lj_types[words[0]] = words[0]
         f.readline()
         # 读键长
         bonds = "name  k[kcal/mol·A^-2]    b[A]\n"
@@ -441,23 +444,21 @@ def load_parmdat(filename):
         for line in f:
             if not line.strip():
                 break
+            atoms, words = _frcmod_atoms_words(line, 11)
+            propers += "-".join(atoms) + "\t" + str(float(words[1]) / int(words[0])) + "\t" + words[2] + "\t" + str(
+                abs(int(float(words[3])))) + "\t" + str(reset) + "\n"
+            if int(float(words[3])) < 0:
+                reset = 0
             else:
-                atoms, words = _frcmod_atoms_words(line, 11)
-                propers += "-".join(atoms) + "\t" + str(float(words[1]) / int(words[0])) + "\t" + words[2] + "\t" + str(
-                    abs(int(float(words[3])))) + "\t" + str(reset) + "\n"
-                if int(float(words[3])) < 0:
-                    reset = 0
-                else:
-                    reset = 1
+                reset = 1
         # 读非恰当二面角
         impropers = "name  k[kcal/mol]    phi0[degree]    periodicity\n"
         for line in f:
             if not line.strip():
                 break
-            else:
-                atoms, words = _frcmod_atoms_words(line, 11)
-                impropers += "-".join(atoms) + "\t" + words[0] + "\t" + words[1] + "\t" + str(
-                    int(float(words[2]))) + "\n"
+            atoms, words = _frcmod_atoms_words(line, 11)
+            impropers += "-".join(atoms) + "\t" + words[0] + "\t" + words[1] + "\t" + str(
+                int(float(words[2]))) + "\n"
 
         # 跳过水的信息
         f.readline()
@@ -467,11 +468,10 @@ def load_parmdat(filename):
         for line in f:
             if not line.strip():
                 break
-            else:
-                atoms = line.split()
-                atom0 = atoms.pop(0)
-                for atom in atoms:
-                    lj_types[atom] = atom0
+            atoms = line.split()
+            atom0 = atoms.pop(0)
+            for atom in atoms:
+                lj_types[atom] = atom0
 
         # 读LJ信息
         word = f.readline().split()[1]
@@ -485,9 +485,8 @@ def load_parmdat(filename):
         for line in f:
             if not line.strip():
                 break
-            else:
-                words = line.split()
-                ljs += words[0] + "-" + words[0] + "\t" + words[1] + "\t" + words[2] + "\n"
+            words = line.split()
+            ljs += words[0] + "-" + words[0] + "\t" + words[1] + "\t" + words[2] + "\n"
 
     atoms = "name  mass  LJtype\n"
     for atom, mass in atom_types.items():
@@ -498,10 +497,11 @@ def load_parmdat(filename):
 
 def load_rst7(filename, mol=None):
     """
+    This **function** is used to load a rst7 file
 
-    :param filename:
-    :param mol:
-    :return:
+    :param filename: the name of the file to load
+    :param mol: the molecule to load the coordinates
+    :return: a tuple including coordinates and box information
     """
     crds = []
     with open(filename) as f:
@@ -532,17 +532,20 @@ def load_rst7(filename, mol=None):
 ##########################################################################
 class GromacsTopologyIterator():
     """
-    This **class** is used to read GROMACS topology
+    This **class** is used to read a GROMACS topology file
+
+    usage example::
+
+        f = GromacsTopologyIterator("example.itp")
+        for line in f:
+            print(line)
+
+    :param filename: the name of the file to read
+    :param macros: the macros used to read the Gromacs topology file
+
     """
 
     def __init__(self, filename=None, macros=None):
-        """
-
-        :param filename:
-        :param macros:
-        """
-        set_attribute_alternative_name(self, self.add_iterator_file)
-
         self.files = []
         self.filenames = []
 
@@ -554,7 +557,7 @@ class GromacsTopologyIterator():
         else:
             self.defined_macros = {}
         if filename:
-            self.add_iterator_file(filename)
+            self._add_iterator_file(filename)
 
     def __iter__(self):
         self.flag = ""
@@ -584,7 +587,7 @@ class GromacsTopologyIterator():
 
         raise StopIteration
 
-    def add_iterator_file(self, filename):
+    def _add_iterator_file(self, filename):
         """
 
         :param filename:
@@ -595,7 +598,7 @@ class GromacsTopologyIterator():
         else:
             filename = os.path.abspath(filename.replace('"', ''))
 
-        f = open(filename)
+        f = Xopen(filename, "r")
         self.files.append(f)
         self.filenames.append(filename)
 
@@ -643,7 +646,7 @@ class GromacsTopologyIterator():
             else:
                 self.defined_macros[words[1]] = ""
         elif words[0] == "#include":
-            self.add_iterator_file(words[1])
+            self._add_iterator_file(words[1])
         elif words[0] == "#undef":
             self.defined_macros.pop(words[1])
         elif words[0] == "#error":
@@ -679,10 +682,15 @@ def _ffitp_dihedrals(line, output):
 
 def load_ffitp(filename, macros=None):
     """
+    This **function** is used to load a fftip file
 
-    :param filename:
-    :param macros:
-    :return:
+    .. ATTENTION::
+
+        This is used to read a force field itp (ffitp) file instead of a simple itp file for a molecule.
+
+    :param filename: the name of the file to load
+    :param macros: the macros used to read the Gromacs topology file
+    :return: a dict, which stores the name of the forcefield term - the corresponding information mapping
     """
     iterator = GromacsTopologyIterator(filename, macros)
     output = Xdict()
@@ -697,7 +705,7 @@ def load_ffitp(filename, macros=None):
     for line in iterator:
         if iterator.flag == "":
             continue
-        elif iterator.flag == "defaults":
+        if iterator.flag == "defaults":
             words = line.split()
             assert int(words[0]) == 1, "SPONGE Only supports Lennard-Jones now"
             if int(words[1]) == 1:
@@ -761,3 +769,5 @@ def load_ffitp(filename, macros=None):
             output["LJ"] += "{type1}-{type2} {V} {W}\n".format(type1=words[0], type2=words[1], V=float(words[3]),
                                                                W=float(words[4]))
     return output
+
+set_global_alternative_names(globals())
