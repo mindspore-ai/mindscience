@@ -20,6 +20,7 @@ import mindspore.common.dtype as mstype
 from mindspore import Parameter
 from mindspore.common.tensor import Tensor
 from mindspore.ops import operations as P
+from mindspore.ops import function as F
 from .basic import Attention, GlobalAttention
 
 
@@ -85,6 +86,7 @@ class MSARowAttentionWithPairBias(nn.Cell):
 
             while slice_idx < self.slice_num:
                 msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
+                msa_act_slice = F.depend(msa_act_slice, msa_act_tuple[-1])
                 bias_slice = P.Gather()(bias, slice_idx_tensor, 0)
                 msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, bias_slice, index, nonbatched_bias)
                 msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
@@ -169,6 +171,7 @@ class MSAColumnAttention(nn.Cell):
 
             while slice_idx < self.slice_num:
                 msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
+                msa_act_slice = F.depend(msa_act_slice, msa_act_tuple[-1])
                 bias_slice = P.Gather()(bias, slice_idx_tensor, 0)
                 msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, bias_slice, index)
                 msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
@@ -252,6 +255,7 @@ class MSAColumnGlobalAttention(nn.Cell):
 
             while slice_idx < self.slice_num:
                 msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
+                msa_act_slice = F.depend(msa_act_slice, msa_act_tuple[-1])
                 msa_mask_slice = P.Gather()(msa_mask, slice_idx_tensor, 0)
                 bias_slice = P.Gather()(bias, slice_idx_tensor, 0)
 

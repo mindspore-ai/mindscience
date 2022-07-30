@@ -196,6 +196,7 @@ class TemplateEmbedding(nn.Cell):
                                                       q_data_dim=128, m_data_dim=64,
                                                       output_dim=128, batch_size=None)
         self.slice_num = config.slice.template_embedding
+        slice_num = self.slice_num
         if self.slice_num == 0:
             slice_num = 1
         self._flat_query_slice = Parameter(
