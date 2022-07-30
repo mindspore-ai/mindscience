@@ -21,8 +21,7 @@ import stat
 import subprocess
 
 from absl import logging
-from mindsponge.data.utils import timing
-from data.utils import tmpdir_manager
+from data.utils import tmpdir_manager, timing
 
 
 class Kalign:

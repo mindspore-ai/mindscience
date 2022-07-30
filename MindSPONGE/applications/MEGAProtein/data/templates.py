@@ -22,9 +22,9 @@ from typing import Any, Mapping, Optional, Sequence, Tuple
 from absl import logging
 import numpy as np
 
-from mindsponge.data.parsers import parse_mmcif, parse_a3m
 from mindsponge.common import residue_constants
 from data.kalign import Kalign
+from data.parsers import parse_mmcif, parse_a3m
 
 
 class Error(Exception):

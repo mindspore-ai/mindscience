@@ -26,7 +26,7 @@ from mindspore import load_checkpoint
 from mindsponge.cell.initializer import do_keep_cell_fp32
 from mindsponge.common.config_load import load_config
 from mindsponge.common.protein import to_pdb, from_prediction
-from data import Feature
+from data import Feature, RawFeatureGenerator
 from data.dataset import create_dataset
 from model import MegaFold, compute_confidence
 from module.fold_wrapcell import TrainOneStepCell, WithLossCell
@@ -34,7 +34,8 @@ from module.fold_wrapcell import TrainOneStepCell, WithLossCell
 parser = argparse.ArgumentParser(description='Inputs for eval.py')
 parser.add_argument('--data_config', help='data process config')
 parser.add_argument('--model_config', help='model config')
-parser.add_argument('--pkl_path', help='processed raw feature path')
+parser.add_argument('--input_path', help='processed raw feature path')
+parser.add_argument('--use_pkl', default=True, help="use pkl as input or fasta file as input, in default use pkl")
 parser.add_argument('--checkpoint_path', help='checkpoint path')
 parser.add_argument('--device_id', default=1, type=int, help='DEVICE_ID')
 parser.add_argument('--mixed_precision', default=0, type=int,
@@ -48,15 +49,30 @@ parser.add_argument('--gradient_clip', type=float, default=0.1, help='gradient c
 parser.add_argument('--total_steps', type=int, default=9600000, help='total steps')
 parser.add_argument('--run_platform', default='Ascend', type=str, help='which platform to use, Ascend or GPU')
 parser.add_argument('--run_distribute', type=bool, default=False, help='run distribute')
+parser.add_argument('--template_mmcif_dir', help="path of template mmCIF structures, each named <pdb>.cif")
+parser.add_argument('--max_template_date', default="2100-01-01", help="maximum template release date to consider")
+parser.add_argument('--kalign_binary_path', help="path of executable path of Kalign")
+parser.add_argument('--hhsearch_binary_path', help="path of executable path of HHsearch")
+parser.add_argument('--mmseqs_binary', help="path of executable path of mmseqs")
+parser.add_argument('--pdb70_database_path', help="database use for HHsearch")
+parser.add_argument('--database_envdb_dir', help="database use for mmseqs")
+parser.add_argument('--obsolete_pdbs_path', help="path to a file containing a mapping from obsolete PDB IDs to the"
+                                                 " replacement files")
+parser.add_argument('--uniref30_path', help="database used for searching msa by mmseqs")
+parser.add_argument('--a3m_result_path', help="result path for saving msa file of target input")
+
+
 arguments = parser.parse_args()
 
 
-def load_pkl(pickle_path):
-    '''load pkl'''
-    f = open(pickle_path, "rb")
-    data = pickle.load(f)
-    f.close()
-    return data
+def get_raw_feature(input_path, feature_generator, use_pkl):
+    '''get raw feature of protein by loading pkl file or searching from database'''
+    if use_pkl:
+        f = open(input_path, "rb")
+        data = pickle.load(f)
+        f.close()
+        return data
+    return feature_generator.monomer_feature_generate(input_path)
 
 
 def fold_infer(args):
@@ -76,11 +92,26 @@ def fold_infer(args):
     else:
         megafold.to_float(mstype.float32)
 
-    seq_files = os.listdir(args.pkl_path)
+    seq_files = os.listdir(args.input_path)
+
+    if not args.use_pkl:
+        feature_generator = RawFeatureGenerator(template_mmcif_dir=args.template_mmcif_dir,
+                                                max_template_date=args.max_template_date,
+                                                kalign_binary_path=args.kalign_binary_path,
+                                                obsolete_pdbs_path=args.obsolete_pdbs_path,
+                                                hhsearch_binary_path=args.hhsearch_binary_path,
+                                                pdb70_database_path=args.pdb70_database_path,
+                                                database_envdb_dir=args.database_envdb_dir,
+                                                mmseqs_binary=args.mmseqs_binary,
+                                                uniref30_path=args.uniref30_path,
+                                                a3m_result_path=args.a3m_result_path,
+                                                )
+    else:
+        feature_generator = None
     for seq_file in seq_files:
         t1 = time.time()
         seq_name = seq_file.split('.')[0]
-        raw_feature = load_pkl(args.pkl_path + seq_file)
+        raw_feature = get_raw_feature(os.path.join(args.input_path, seq_file), feature_generator, args.use_pkl)
         ori_res_length = raw_feature['msa'].shape[1]
         processed_feature = Feature(data_cfg, raw_feature)
         feat, prev_pos, prev_msa_first_row, prev_pair = processed_feature.pipeline(data_cfg,
