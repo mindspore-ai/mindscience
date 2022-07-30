@@ -20,8 +20,8 @@ import json
 import time
 import mindspore.context as context
 import mindspore.common.dtype as mstype
-from mindspore import Tensor, Parameter
-from mindspore import load_checkpoint, load_param_into_net
+from mindspore import Tensor
+from mindspore import load_checkpoint
 from mindsponge.cell.initializer import do_keep_cell_fp32
 from mindsponge.common.config_load import load_config
 from mindsponge.common.protein import to_pdb, from_prediction
@@ -58,17 +58,7 @@ def fold_infer(args):
     model_cfg.slice = slice_val
 
     megafold = MegaFold(model_cfg, mixed_precision=args.mixed_precision)
-    param_dict = load_checkpoint(args.checkpoint_path)
-    new_param_dict = {}
-    for key in param_dict.keys():
-        if 'template_embedding._flat_templates_slice' in key or           \
-           'template_embedding._flag_query_slice' in key or               \
-           'template_embedding.template_embedder.idx_num_block' in key or \
-           'template_embedding.template_embedder.idx_batch_loop' in key:
-            continue
-        else:
-            new_param_dict[key] = Parameter(Tensor(param_dict[key]), name=key)
-    load_param_into_net(megafold, new_param_dict)
+    load_checkpoint(args.checkpoint_path, megafold)
     if args.mixed_precision:
         megafold.to_float(mstype.float16)
         do_keep_cell_fp32(megafold)
