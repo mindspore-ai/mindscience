@@ -153,7 +153,7 @@ MEGA-Protein主要由三部分组成：
 
 ### MEGA-Fold蛋白质结构预测
 
-加载已经训好的checkpoint，下载地址[点击这里](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MFold_1.ckpt)，根据数据库安装情况配置启动命令：
+加载已经训好的checkpoint，下载地址[点击这里](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)，根据数据库安装情况配置启动命令：
 
 ```bash
 用法：run.py [--seq_length PADDING_SEQENCE_LENGTH]
@@ -220,7 +220,7 @@ To be released
 
 | 所属模块      | 文件名        | 大小 | 描述  |Model URL  |
 |-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
-| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 355MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 |  [下载链接](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)  |
+| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 |  [下载链接](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)  |
 | PSP          | `PSP`         | 2TB(解压后25TB)    | PSP蛋白质结构数据集，可用于MEGA-Fold训练 |  [下载链接](To be released)  |
 
 ## 引用

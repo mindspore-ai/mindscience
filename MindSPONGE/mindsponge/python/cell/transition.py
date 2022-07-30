@@ -26,7 +26,7 @@ from .initializer import lecun_init
 class Transition(nn.Cell):
     '''transition'''
 
-    def __init__(self, num_intermediate_factor, layer_norm_dim, batch_size=None, slice_num=0, mixed_precision=True):
+    def __init__(self, num_intermediate_factor, layer_norm_dim, batch_size=None, slice_num=0):
         super(Transition, self).__init__()
         self.input_layer_norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
         self.matmul = P.MatMul(transpose_b=True)
@@ -36,10 +36,6 @@ class Transition(nn.Cell):
         self.slice_num = slice_num
         self.relu = nn.ReLU()
         self.idx = Tensor(0, mstype.int32)
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self._init_parameter()
 
     def construct(self, act, index):

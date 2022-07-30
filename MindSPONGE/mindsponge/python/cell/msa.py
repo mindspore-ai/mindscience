@@ -26,24 +26,18 @@ from .basic import Attention, GlobalAttention
 class MSARowAttentionWithPairBias(nn.Cell):
     '''MSA row attention'''
 
-    def __init__(self, num_head, key_dim, value_dim, gating, msa_act_dim, pair_act_dim, batch_size=None, slice_num=0,
-                 mixed_precision=True):
+    def __init__(self, num_head, key_dim, gating, msa_act_dim, pair_act_dim, batch_size=None, slice_num=0):
         super(MSARowAttentionWithPairBias, self).__init__()
         self.num_head = num_head
         self.batch_size = batch_size
         self.norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
         self.matmul = P.MatMul(transpose_b=True)
-        self.attn_mod = Attention(num_head, key_dim, value_dim, gating, msa_act_dim, msa_act_dim, msa_act_dim,
-                                  batch_size, mixed_precision)
+        self.attn_mod = Attention(num_head, key_dim, gating, msa_act_dim, msa_act_dim, msa_act_dim, batch_size)
         self.msa_act_dim = msa_act_dim
         self.pair_act_dim = pair_act_dim
         self.batch_size = batch_size
         self.slice_num = slice_num
         self.idx = Tensor(0, mstype.int32)
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self._init_parameter()
 
     def construct(self, msa_act, msa_mask, pair_act, index):
@@ -129,20 +123,14 @@ class MSARowAttentionWithPairBias(nn.Cell):
 class MSAColumnAttention(nn.Cell):
     '''MSA column attention'''
 
-    def __init__(self, num_head, key_dim, value_dim, gating, msa_act_dim, batch_size=None, slice_num=0,
-                 mixed_precision=True):
+    def __init__(self, num_head, key_dim, gating, msa_act_dim, batch_size=None, slice_num=0):
         super(MSAColumnAttention, self).__init__()
         self.query_norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
-        self.attn_mod = Attention(num_head, key_dim, value_dim, gating, msa_act_dim, msa_act_dim, msa_act_dim,
-                                  batch_size, mixed_precision)
+        self.attn_mod = Attention(num_head, key_dim, gating, msa_act_dim, msa_act_dim, msa_act_dim, batch_size)
         self.batch_size = batch_size
         self.slice_num = slice_num
         self.msa_act_dim = msa_act_dim
         self.idx = Tensor(0, mstype.int32)
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self._init_parameter()
 
     def construct(self, msa_act, msa_mask, index):
@@ -209,19 +197,14 @@ class MSAColumnAttention(nn.Cell):
 class MSAColumnGlobalAttention(nn.Cell):
     '''MSA column global attention'''
 
-    def __init__(self, num_head, gating, msa_act_dim, batch_size=None, slice_num=0, mixed_precision=True):
+    def __init__(self, num_head, gating, msa_act_dim, batch_size=None, slice_num=0):
         super(MSAColumnGlobalAttention, self).__init__()
-        self.attn_mod = GlobalAttention(num_head, gating, msa_act_dim, msa_act_dim, msa_act_dim, batch_size,
-                                        mixed_precision)
+        self.attn_mod = GlobalAttention(num_head, gating, msa_act_dim, msa_act_dim, batch_size)
         self.query_norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
         self.batch_size = batch_size
         self.slice_num = slice_num
         self.msa_act_dim = msa_act_dim
         self.idx = Tensor(0, mstype.int32)
-        if mixed_precision:
-            self._type = mstype.float16
-        else:
-            self._type = mstype.float32
         self._init_parameter()
 
     def construct(self, msa_act, msa_mask, index):
