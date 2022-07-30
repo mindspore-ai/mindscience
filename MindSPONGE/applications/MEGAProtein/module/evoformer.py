@@ -34,7 +34,6 @@ class Evoformer(nn.Cell):
         self.msa_row_attention_with_pair_bias = MSARowAttentionWithPairBias(
             self.config.msa_row_attention_with_pair_bias.num_head,
             msa_act_dim,
-            msa_act_dim,
             self.config.msa_row_attention_with_pair_bias.gating,
             msa_act_dim,
             pair_act_dim,
