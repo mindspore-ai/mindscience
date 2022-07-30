@@ -23,8 +23,7 @@ import mindspore as ms
 from mindspore import context, nn, ops
 from mindspore import numpy as mnp
 from mindspore.common import Tensor
-from mindsponge.common import residue_constants
-from mindsponge.common.callback import RunInfo
+from mindsponge.callback import RunInfo
 from mindsponge.common.units import set_global_units
 from mindsponge.common.utils import get_pdb_info
 from mindsponge.data.hyperparam import ReconstructProtein as Protein
@@ -52,23 +51,6 @@ args = parser.parse_args()
 pdb_name = args.i
 save_pdb_name = args.o
 addh = args.addh
-
-VIOLATION_TOLERANCE_ACTOR = 12.0
-CLASH_OVERLAP_TOLERANCE = 1.5
-C_ONE_HOT = nn.OneHot(depth=14)(Tensor(2, ms.int32))
-N_ONE_HOT = nn.OneHot(depth=14)(Tensor(0, ms.int32))
-DISTS_MASK_I = mnp.eye(14, 14)
-CYS_SG_IDX = Tensor(5, ms.int32)
-ATOMTYPE_RADIUS = Tensor(np.array(
-    [1.55, 1.7, 1.7, 1.7, 1.52, 1.7, 1.7, 1.7, 1.52, 1.52, 1.8, 1.7, 1.7, 1.7, 1.55, 1.55,
-     1.52, 1.52, 1.8, 1.7, 1.7, 1.7, 1.7, 1.55, 1.55, 1.55, 1.52, 1.52, 1.7, 1.55, 1.55,
-     1.52, 1.7, 1.7, 1.7, 1.55, 1.52]), ms.float32)
-LOWER_BOUND, UPPER_BOUND, RESTYPE_ATOM14_BOUND_STDDEV = \
-    residue_constants.make_atom14_dists_bounds(overlap_tolerance=1.5, bond_length_tolerance_factor=12.0)
-LOWER_BOUND = Tensor(LOWER_BOUND, ms.float32)
-UPPER_BOUND = Tensor(UPPER_BOUND, ms.float32)
-RESTYPE_ATOM14_BOUND_STDDEV = Tensor(RESTYPE_ATOM14_BOUND_STDDEV, ms.float32)
-
 
 ms.set_seed(2333)
 _, res_names, _, _, res_pointer, flatten_atoms, flatten_crds, init_res_names, init_res_ids, \
@@ -276,15 +258,10 @@ def main(loops, steps, clip_by_value, grad_clip, warmup_fraction, lr_init, lr_ma
         atom14_positions_t = Tensor(features.get("atom14_gt_positions")).astype(ms.float32)
         aatype_t = Tensor(features.get("aatype")).astype(ms.int32)
         violations = get_structural_violations(atom14_atom_exists_t, residue_index_t, aatype_t,
-                                               residx_atom14_to_atom37_t, atom14_positions_t,
-                                               VIOLATION_TOLERANCE_ACTOR, CLASH_OVERLAP_TOLERANCE,
-                                               LOWER_BOUND, UPPER_BOUND, ATOMTYPE_RADIUS, C_ONE_HOT, N_ONE_HOT,
-                                               DISTS_MASK_I, CYS_SG_IDX)
+                                               residx_atom14_to_atom37_t, atom14_positions_t)
     except AttributeError:
         violations = get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_atom14_to_atom37,
-                                               atom14_positions, VIOLATION_TOLERANCE_ACTOR, CLASH_OVERLAP_TOLERANCE,
-                                               LOWER_BOUND, UPPER_BOUND, ATOMTYPE_RADIUS, C_ONE_HOT, N_ONE_HOT,
-                                               DISTS_MASK_I, CYS_SG_IDX)
+                                               atom14_positions)
 
     violation_loss = violations[-1]
     residue_violations_mask = violations[-2]
@@ -327,10 +304,7 @@ def main(loops, steps, clip_by_value, grad_clip, warmup_fraction, lr_init, lr_ma
             atom14_positions_t = Tensor(features.get("atom14_gt_positions")).astype(ms.float32)
             aatype_t = Tensor(features.get("aatype")).astype(ms.int32)
             violations = get_structural_violations(atom14_atom_exists_t, residue_index_t, aatype_t,
-                                                   residx_atom14_to_atom37_t, atom14_positions_t,
-                                                   VIOLATION_TOLERANCE_ACTOR, CLASH_OVERLAP_TOLERANCE,
-                                                   LOWER_BOUND, UPPER_BOUND, ATOMTYPE_RADIUS, C_ONE_HOT, N_ONE_HOT,
-                                                   DISTS_MASK_I, CYS_SG_IDX)
+                                                   residx_atom14_to_atom37_t, atom14_positions_t)
             violation_loss = violations[-1]
             print(f"The violation loss value is: {violation_loss}; atomic energy is {atomic_energy}")
         except AttributeError:

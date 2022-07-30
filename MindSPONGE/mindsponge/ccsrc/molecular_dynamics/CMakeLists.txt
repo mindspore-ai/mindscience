@@ -1,5 +1,5 @@
 project(sponge_traditional)
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.10.2)
 set(backend gpu)
 find_package(CUDA)
 if(NOT CUDA_FOUND)

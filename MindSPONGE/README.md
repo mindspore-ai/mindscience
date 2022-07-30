@@ -29,29 +29,50 @@
 
 MindSPONGE(Simulation Package tOwards Next GEneration molecular modelling)是基于[昇思MindSpore](https://www.mindspore.cn/)的计算生物领域套件，支持分子动力学、蛋白质折叠等常用功能，旨在于为广大的科研人员、老师及学生提供高效易用的AI计算生物软件。
 
-<img src="docs/archi.png" alt="MindSPONGE Architecture" width="600"/>
+<div align=center><img src="docs/archi.png" alt="MindSPONGE Architecture" width="600"/></div>
 
-## **最新消息**
+## **最新消息** 📰
 
 - 2022.07.18 论文"SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"发表于期刊Chinese Journal of Chemistry。详情参见[论文](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
 - 2022.07.09 MEGA-Assessment在CAMEO-QE月榜取得第一名
 - 2022.06.27 论文"PSP: Million-level Protein Sequence Dataset for Protein Structure Prediction"预稿收录于Arxiv。详情参见[论文](https://arxiv.org/pdf/2206.12240v1.pdf)
 - 2022.04.21 [CAMEO竞赛月榜第一](https://www.huawei.com/cn/news/2022/4/mindspore-cameo-protein-ascend)
 
+## **即将到来** 🚀
+
+- 🔥2022.8.11—2022.8.15 MindSpore SPONGE SIG[暑期学校活动](#sig)
+
 ## **初体验**
 
-- 蛋白质 violation 计算
+### 蛋白质 violation 计算
 
-    ##### 使蛋白质推理模型预测的pdb虽然在绝大多数原子上都准确预测出理想的键长和键角，然而原子间是否存在冲突以及肽键信息对于真实结构也尤为重要，violation 则计算了预测pdb的总原子间冲突程度以及肽键键长键角是否满足一定的限制条件。该计算数值对于评估预测蛋白质结构是否合理以及后续做蛋白质relax尤其重要
+- 蛋白质推理模型预测的pdb虽然在绝大多数原子上都准确预测出理想的键长和键角，然而原子间是否存在冲突以及肽键信息对于真实结构也尤为重要，violation 则计算了预测pdb的总原子间冲突程度以及肽键键长键角是否满足一定的限制条件。该计算数值对于评估预测蛋白质结构是否合理以及后续做蛋白质relax尤其重要
 
 ```bash
-from mindsponge.loss import get_violation_loss
-violation, _ = get_violation_loss(pdb_path)
+import mindspore as ms
+from mindspore import context
+from mindspore.common import Tensor
+from mindsponge.common.utils import get_pdb_info
+from mindsponge.metrics.structure_violations import get_structural_violations
+
+# set which gpu to use, in default use 0 card
+context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=0)
+input_pdb = "xxx.pdb"
+
+# extract features from pdb
+features = get_pdb_info(input_pdb)
+
+violations = get_structural_violations(Tensor(features.get("atom14_gt_exists")).astype(ms.float32),
+                                       Tensor(features.get("residue_index")).astype(ms.float32),
+                                       Tensor(features.get("aatype")).astype(ms.int32),
+                                       Tensor(features.get("residx_atom14_to_atom37")).astype(ms.int32),
+                                       Tensor(features.get("atom14_gt_positions")).astype(ms.float32))
+violation_all = violations[-1]
 ```
 
-- 四元数与旋转矩阵转换
+### 四元数与旋转矩阵转换
 
-    ##### geometry模块提供基础四元数、旋转矩阵、向量操作
+- geometry模块提供基础四元数、旋转矩阵、向量操作
 
 ```bash
 from mindsponge.common.geometry import initial_affine
@@ -64,7 +85,7 @@ transformed_rot = quat_to_rot(quat)
 transformed_quat = rot_to_quat(rot)
 ```
 
-- 一个简单的分子动力学模拟案例
+### 一个简单的分子动力学模拟案例
 
 ```bash
 import numpy as np
@@ -118,7 +139,7 @@ cb_h5md = WriteH5MD(system, 'test.h5md', save_freq=10, write_velocity=True, writ
 md.run(1000, callbacks=[run_info, cb_h5md])
 ```
 
-**更多应用案例请见**：
+**更多应用案例请见**：👀
 
 - [蛋白质结构弛豫](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/protein_relax/)
 - [蛋白质结构预测 MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
@@ -134,7 +155,7 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 ### 依赖安装
 
 ```bash
-pip install -r requirements
+pip install -r requirements.txt
 ```
 
 ### 硬件支持情况
@@ -186,22 +207,24 @@ pip install mindscience_sponge*.whl
 ### CO-CHAIR
 
 - 深圳湾实验室[杨奕](https://gitee.com/helloyesterday)
-
 - 北京昌平实验室[张骏](https://gitee.com/jz_90)
+- 北京昌平实验室[刘思睿](https://gitee.com/sirui63)
 
-### SIG
+### SIG 🏠
 
-MindSPONGE SIG(Special Interesting Group)是由一群有兴趣，有使命，旨在AI×生物计算领域做出一番成就的人组成的团队。
+MindSpore SPONGE SIG(Special Interesting Group)是由一群有兴趣，有使命，旨在AI×生物计算领域做出一番成就的人组成的团队。
 
-MindSPONGE SIG小组为广大科研人员，老师和学生提供高效易用的AI计算生物软件的同时，为在这个领域有着强大的能力或者浓厚的兴趣的人们提供了一个能够共同交流合作的平台。
+MindSpore SPONGE SIG小组为广大科研人员，老师和学生提供高效易用的AI计算生物软件的同时，为在这个领域有着强大的能力或者浓厚的兴趣的人们提供了一个能够共同交流合作的平台。
 
-在SIG小组中，我们会举办各种活动，其中最为隆重的暑期学校活动即将到来，活动时间为8月11日-8月15日，我们将会邀请到六位MindSPONGE SIG的老师进行一场为期五天的授课，授课主题主要包括MindSpore基础，分子动力学以及AI × Science进阶课程三大主题，还会提供四次上机课时让学生们亲自动手体验。如果想要报名暑期学校，请将自己的简历发送至邮箱dingyahao@huawei.com，我们随时欢迎你的到来。
+在SIG小组中，我们会举办各种活动，其中最为隆重的暑期学校活动即将到来，活动时间为8月11日-8月15日，我们将会邀请到六位MindSpore SPONGE SIG的老师进行一场为期五天的授课，授课主题主要包括MindSpore基础，分子动力学以及AI × Science进阶课程三大主题，还会提供四次上机课时让学生们亲自动手体验。如果想要报名暑期学校，请扫描下图二维码，我们随时欢迎你的到来。
+
+<div align=center><img src="docs/暑期学校.png" width="150"/></div>
 
 在SIG小组中，我们还会发布众智任务和[开源实习任务](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue)，欢迎大家来认领。
 
 如果想加入我们，成为我们小组的成员，请将自己的简历发送至邮箱dingyahao@huawei.com，我们无时无刻不在期待着你的到来。
 
-### 核心贡献者
+### 核心贡献者 🧑‍🤝‍🧑
 
 - [高毅勤课题组](https://www.chem.pku.edu.cn/gaoyq/):  [杨奕](https://gitee.com/helloyesterday)，[张骏](https://gitee.com/jz_90)，[刘思睿](https://gitee.com/sirui63)，[夏义杰](https://gitee.com/gao_hyp_xyj_admin)，[陈迪青](https://gitee.com/dechin)，[黄渝鹏](https://gitee.com/gao_hyp_xyj_admin)
 

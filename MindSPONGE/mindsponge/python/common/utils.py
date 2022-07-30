@@ -502,7 +502,7 @@ def get_pdb_info(pdb_path):
                 'all_atom_mask': atom37_mask}
     atom14_atom_exists, atom14_gt_exists, atom14_gt_positions, residx_atom14_to_atom37, residx_atom37_to_atom14, \
     atom37_atom_exists, atom14_alt_gt_positions, atom14_alt_gt_exists, atom14_atom_is_ambiguous = \
-        make_atom14_positions(aatype, atom37_positions, atom37_mask)
+        make_atom14_positions(aatype, atom37_mask, atom37_positions)
     features.update({"atom14_atom_exists": atom14_atom_exists,
                      "atom14_gt_exists": atom14_gt_exists,
                      "atom14_gt_positions": atom14_gt_positions,
