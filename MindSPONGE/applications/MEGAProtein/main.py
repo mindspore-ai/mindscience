@@ -28,14 +28,14 @@ from mindsponge.common.protein import to_pdb, from_prediction
 from data import Feature
 from model import MegaFold, compute_confidence
 
-
 parser = argparse.ArgumentParser(description='Inputs for eval.py')
 parser.add_argument('--data_config', help='data process config')
 parser.add_argument('--model_config', help='model config')
 parser.add_argument('--pkl_path', help='processed raw feature path')
 parser.add_argument('--checkpoint_path', help='checkpoint path')
 parser.add_argument('--device_id', default=1, type=int, help='DEVICE_ID')
-parser.add_argument('--mixed_precision', default=1, type=int, help='whether to use mixed precision')
+parser.add_argument('--mixed_precision', default=0, type=int,
+                    help='whether to use mixed precision, only Ascend supports mixed precision, GPU should use fp32')
 parser.add_argument('--run_platform', default='Ascend', type=str, help='which platform to use, Ascend or GPU')
 arguments = parser.parse_args()
 
@@ -102,6 +102,7 @@ def fold_infer(args):
         print(timings)
         with open(f'./result/seq_{seq_name}_{model_cfg.seq_length}/timings', 'w') as f:
             f.write(json.dumps(timings))
+
 
 if __name__ == "__main__":
     if arguments.run_platform == 'Ascend':
