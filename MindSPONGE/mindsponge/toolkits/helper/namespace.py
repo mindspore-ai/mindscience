@@ -8,22 +8,28 @@ from types import MethodType, FunctionType
 from functools import partial
 
 
-def source(module):
+def source(module, into_global=True):
     """
-    This **function** import the module and merge all the global variables into the caller module globals()
+    This **function** import the module and merge all the global variables into the caller module globals().
+    In fact, this is similar to the python "import", but it is more convenient to relatively import
+
+    usage example::
+
     :param module:
+    :param into_global:
     :return:
     """
     global_ = currentframe().f_back.f_globals
     module_ = import_module(module, package=global_["__name__"])
-    for key, value in module_.__dict__.items():
-        if not key.startswith("_"):
-            global_[key] = value
+    if into_global:
+        for key, value in module_.__dict__.items():
+            if not key.startswith("_"):
+                global_[key] = value
     return module_
 
 
 # for the special alternative name
-SPECIAL_STRINGS = {"Pdb": "PDB", "Sponge": "SPONGE", "Nb14": "NB14", "Lj": "LJ",
+SPECIAL_STRINGS = {"Pdb": "PDB", "Sponge": "SPONGE", "Nb14": "NB14", "Lj": "LJ", "Gb": "GB",
                    "Residuetype": "ResidueType", "Pubchem": "PubChem", "Resp": "RESP", "Name2atom": "Name2Atom"}
 
 
@@ -62,6 +68,8 @@ def set_alternative_name(obj, func, set_method):
     third_new_name = second_new_name[0].lower() + second_new_name[1:]
 
     set_method(obj, new_name, func)
+    set_method(obj, second_new_name, func)
+    set_method(obj, third_new_name, func)
     new_new_name = new_name
     for t, newt in SPECIAL_STRINGS.items():
         new_new_name = new_new_name.replace(t, newt)

@@ -34,7 +34,7 @@ def improper_same_force(_, atom_list):
             atom_permutation.insert(2, center_atom)
             temp.append("-".join(atom_permutation))
     else:
-        atom_list_temp = [atom for atom in atom_list]
+        atom_list_temp = list(atom_list)
         center_atom = atom_list_temp.pop(2)
         for atom_permutation in permutations(atom_list_temp):
             atom_permutation = list(atom_permutation)

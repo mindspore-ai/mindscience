@@ -2,7 +2,7 @@
 COMMON_COMMAND=-arch=sm_50 -rdc=true -lcudadevrt -lcufft --use_fast_math -O4 -std=c++11
 compiler=nvcc
 
-all: SPONGE SPONGE_FEP SPONGE_TI
+all: SPONGE SPONGE_FEP SPONGE_TI SPONGE_NOPBC
 	
 install: all
 	
@@ -12,6 +12,11 @@ include $(MD_OBJECTS:.o=.d)
 SPONGE: $(MD_OBJECTS)
 	$(compiler) -o $@  $^ $(COMMON_COMMAND)
 		
+MD_NOPBC_OBJECTS = main_nopbc.o common.o control.o MD_core/MD_core.o bond/bond.o angle/angle.o angle/Urey_Bradley_force.o dihedral/dihedral.o dihedral/improper_dihedral.o cmap/cmap.o nb14/nb14.o  thermostats/Langevin_MD.o thermostats/Middle_Langevin_MD.o thermostats/Andersen_thermostat.o thermostats/Berendsen_thermostat.o thermostats/nose_hoover_chain.o restrain/restrain.o constrain/constrain.o constrain/simple_constrain.o constrain/SETTLE.o constrain/SHAKE.o virtual_atoms/virtual_atoms.o crd_molecular_map/crd_molecular_map.o No_PBC/Coulomb_Force_No_PBC.o No_PBC/generalized_Born.o No_PBC/Lennard_Jones_force_No_PBC.o
+include $(MD_NOPBC_OBJECTS:.o=.d)
+  
+SPONGE_NOPBC: $(MD_NOPBC_OBJECTS)
+	$(compiler) -o $@  $^ $(COMMON_COMMAND)
 
 FEP_OBJECTS = main_fep.o common.o control.o FEP_core/FEP_core.o bond/bond.o bond/bond_soft.o angle/angle.o dihedral/dihedral.o nb14/nb14.o neighbor_list/neighbor_list.o  Lennard_Jones_force/LJ_soft_core.o PME_force/PME_force.o
 include $(FEP_OBJECTS:.o=.d)

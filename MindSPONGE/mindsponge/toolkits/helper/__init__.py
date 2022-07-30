@@ -49,9 +49,9 @@ def xopen(filename, flag, mode=None):
     """
     if mode is None:
         mode = stat.S_IRWXO | stat.S_IRWXG | stat.S_IRWXU
-    if flag == "w":
+    if flag in ("w", "wb"):
         real_flags = os.O_RDWR | os.O_CREAT | os.O_TRUNC
-    elif flag == "r":
+    elif flag in ("r", "rb"):
         real_flags = os.O_RDONLY
     else:
         raise NotImplementedError
@@ -183,29 +183,29 @@ class Type:
     """
     This **class** is the abstract class of the types (atom types, bonded force types and so on).
     """
-    name = None
-    parameters = {"name": str}
-    types = Xdict(not_found_message="Type {} not found. Did you import the proper force field?")
-    types_different_name = Xdict(not_found_message="Type {} not found. Did you import the proper force field?")
+    _name = None
+    _parameters = {"name": str}
+    _types = Xdict(not_found_message="Type {} not found. Did you import the proper force field?")
+    _types_different_name = Xdict(not_found_message="Type {} not found. Did you import the proper force field?")
 
     def __init__(self, **kwargs):
 
-        prop_fmt = Xdict(type(self).parameters)
+        prop_fmt = Xdict(type(self)._parameters)
 
         self.contents = Xdict().fromkeys(prop_fmt.keys())
         self.name = kwargs.pop("name")
-        assert self.name not in type(self).types.keys(), "The name '%s' has already existed in '%sType'" % (
-            self.name, type(self).name)
-        type(self).types[self.name] = self
-        type(self).types_different_name[self.name] = self
+        assert self.name not in type(self)._types.keys(), "The name '%s' has already existed in '%sType'" % (
+            self.name, self.get_class_name())
+        type(self)._types[self.name] = self
+        type(self)._types_different_name[self.name] = self
         for key, value in kwargs.items():
             assert key in self.contents.keys(), "The parameter '%s' is not one of the parameters of '%sType'" % (
-                key, type(self).name)
+                key, self.get_class_name())
             self.contents[key] = prop_fmt[key](value)
         type(self)._unit_transfer(self)
 
     def __repr__(self):
-        return "Type of " + type(self).name + ": " + self.name
+        return "Type of " + self.get_class_name() + ": " + self.name
 
     def __hash__(self):
         return hash(repr(self))
@@ -229,10 +229,10 @@ class Type:
         :param parm_default:
         :return:
         """
-        cls.parameters.update(parm_fmt)
+        cls._parameters.update(parm_fmt)
         if parm_default is None:
             parm_default = Xdict()
-        for type_ in cls.types.values():
+        for type_ in cls._types.values():
             type_.contents.update({key: parm_default.get(key, None) for key in parm_fmt.keys()})
 
     @classmethod
@@ -244,7 +244,7 @@ class Type:
         :param base_unit:
         :return:
         """
-        assert prop in cls.parameters.keys(), "Unknown property '%s' for type '%s'" % (prop, cls.name)
+        assert prop in cls._parameters.keys(), "Unknown property '%s' for type '%s'" % (prop, cls.name)
         temp_unit_lists = unit_type.split("·")
         temp_unit_power = []
 
@@ -309,15 +309,15 @@ class Type:
                     i += 1
                 type_already_have = False
 
-                if tempkw["name"] in cls.types_different_name.keys():
-                    tempkw["name"] = cls.types_different_name[tempkw["name"]].name
+                if tempkw["name"] in cls._types_different_name.keys():
+                    tempkw["name"] = cls._types_different_name[tempkw["name"]].name
                     type_already_have = True
                 if not type_already_have:
                     if "reset" in tempkw.keys():
                         tempkw.pop("reset")
                     cls(**tempkw)
                 else:
-                    temp = cls.types[tempkw.pop("name")]
+                    temp = cls._types[tempkw.pop("name")]
                     temp.Update(**tempkw)
 
     @classmethod
@@ -340,8 +340,8 @@ class Type:
         """
         for name, values in dic.items():
             type_already_have = False
-            if name in cls.types_different_name.keys():
-                name = cls.types_different_name[name].name
+            if name in cls._types_different_name.keys():
+                name = cls._types_different_name[name].name
                 type_already_have = True
             if not type_already_have:
                 if "reset" in values.keys():
@@ -349,8 +349,57 @@ class Type:
                 values["name"] = name
                 cls(**values)
             else:
-                temp = cls.types[name]
+                temp = cls._types[name]
                 temp.Update(**values)
+
+    @classmethod
+    def get_class_name(cls):
+        """
+
+        :param name:
+        :return:
+        """
+        return cls._name
+
+    @classmethod
+    def clear_type(cls, name=None):
+        """
+
+        :param name:
+        :return:
+        """
+        if name is None:
+            cls._types.clear()
+            cls._types_different_name.clear()
+        else:
+            cls._types.pop(name)
+
+    @classmethod
+    def set_type(cls, name, toset):
+        """
+
+        :param name:
+        :param toset:
+        :return:
+        """
+        cls._types[name] = toset
+
+    @classmethod
+    def get_type(cls, name):
+        """
+
+        :param name:
+        :return:
+        """
+        return cls._types[name]
+
+    @classmethod
+    def get_all_types(cls):
+        """
+
+        :return:
+        """
+        return cls._types
 
     @staticmethod
     def _unit_transfer(instance):
@@ -372,9 +421,9 @@ class Type:
         :return:
         """
         for key, value in kwargs.items():
-            type_func = type(self).parameters.get(key, None)
+            type_func = type(self)._parameters.get(key, None)
             if not type_func:
-                raise KeyError(f"{key} is not a property of {type(self).name}")
+                raise KeyError(f"{key} is not a property of {type(self)._name}")
             self.contents[key] = type_func(value)
         type(self)._unit_transfer(self)
 
@@ -383,10 +432,10 @@ class AtomType(Type):
     """
     This **class** is a subclass of Type, for atom types
     """
-    name = "Atom"
-    parameters = {"name": str, "x": float, "y": float, "z": float}
-    types = Xdict(not_found_message="Atom Type {} not found. Did you import the proper force field?")
-    types_different_name = Xdict(not_found_message="Atom Type {} not found. Did you import the proper force field?")
+    _name = "Atom"
+    _parameters = {"name": str, "x": float, "y": float, "z": float}
+    _types = Xdict(not_found_message="Atom Type {} not found. Did you import the proper force field?")
+    _types_different_name = Xdict(not_found_message="Atom Type {} not found. Did you import the proper force field?")
 
 
 set_classmethod_alternative_names(AtomType)
@@ -398,17 +447,17 @@ class ResidueType(Type):
     """
     This **class** is a subclass of Type, for residue types
     """
-    name = "Residue"
-    parameters = {"name": str}
-    types = Xdict(not_found_message="Residue Type {} not found. Did you import the proper force field?")
-    types_different_name = Xdict(not_found_message="Residue Type {} not found. Did you import the proper force field?")
+    _name = "Residue"
+    _parameters = {"name": str}
+    _types = Xdict(not_found_message="Residue Type {} not found. Did you import the proper force field?")
+    _types_different_name = Xdict(not_found_message="Residue Type {} not found. Did you import the proper force field?")
 
     def __init__(self, **kwargs):
         # 力场构建相关
         self.contents = Xdict()
         self.connectivity = Xdict()
         self.built = False
-        self.bonded_forces = {frc.name: [] for frc in GlobalSetting.BondedForces}
+        self.bonded_forces = {getattr(frc, "_name"): [] for frc in GlobalSetting.BondedForces}
 
         # 索引相关
         self._name2atom = Xdict()
@@ -428,7 +477,7 @@ class ResidueType(Type):
     def __getattribute__(self, attr):
         if attr not in ("_name2atom", "contents") and attr in self._name2atom.keys():
             return self._name2atom[attr]
-        if AtomType.parameters.get(attr, None) == float:
+        if getattr(AtomType, "_parameters").get(attr, None) == float:
             return np.sum([getattr(atom, attr) for atom in self.atoms])
         return super().__getattribute__(attr)
 
@@ -556,7 +605,7 @@ class ResidueType(Type):
         :return:
         """
         if typename is None:
-            typename = type(bonded_force_entity).name
+            typename = bonded_force_entity.get_class_name()
         if typename not in self.bonded_forces.keys():
             self.bonded_forces[typename] = []
         self.bonded_forces[typename].append(bonded_force_entity)
@@ -607,20 +656,20 @@ class Entity:
     """
     This **class** is the abstract class of the entities (atoms, bonded forces, residues and so on).
     """
-    count = 0
-    name = None
+    _count = 0
+    _name = None
 
     def __init__(self, entity_type, name=None):
         self.contents = {**entity_type.contents}
-        self.count = type(self).count
+        self._count = type(self)._count
         if not name:
             name = entity_type.name
-        type(self).count += 1
+        type(self)._count += 1
         self.name = name
         self.type = entity_type
 
     def __repr__(self):
-        return "Entity of " + type(self).name + ": " + self.name + "(" + str(self.count) + ")"
+        return "Entity of " + type(self)._name + ": " + self.name + "(" + str(self._count) + ")"
 
     def __hash__(self):
         return hash(repr(self))
@@ -636,6 +685,14 @@ class Entity:
         else:
             super().__setattr__(attr, value)
 
+    @classmethod
+    def get_class_name(cls):
+        """
+
+        :return:
+        """
+        return cls._name
+
     def update(self, **kwargs):
         """
         This **function** is used to update the properties of the instance
@@ -644,7 +701,7 @@ class Entity:
         """
         for key, value in kwargs.items():
             assert key in self.contents.keys()
-            self.contents[key] = type(self.type).parameters[key](value)
+            self.contents[key] = getattr(type(self.type), "_parameters")[key](value)
         unit_transfer = getattr(type(self.type), "_unit_transfer")
         unit_transfer(self)
 
@@ -654,11 +711,13 @@ class Atom(Entity):
     This **class** is a subclass of Entity, for atoms
 
     """
-    name = "Atom"
-    count = 0
+    _name = "Atom"
+    _count = 0
 
     def __init__(self, entity_type, name=None):
         # 力场基本信息
+        if isinstance(entity_type, str):
+            entity_type = AtomType.get_type(entity_type)
         super().__init__(entity_type, name)
         self.x = None
         self.y = None
@@ -729,8 +788,8 @@ class Residue(Entity):
     """
     This **class** is a subclass of Entity, for residues
     """
-    name = "Residue"
-    count = 0
+    _name = "Residue"
+    _count = 0
 
     def __init__(self, entity_type, name=None, directly_copy=False):
         super().__init__(entity_type, name)
@@ -740,7 +799,7 @@ class Residue(Entity):
         self._atom2index = Xdict()
         self._name2index = Xdict()
         self.connectivity = Xdict()
-        self.bonded_forces = {frc.name: [] for frc in GlobalSetting.BondedForces}
+        self.bonded_forces = {getattr(frc, "_name"): [] for frc in GlobalSetting.BondedForces}
         self.built = False
         if directly_copy:
             forcopy = hash(int(time.time()))
@@ -756,7 +815,7 @@ class Residue(Entity):
     def __getattribute__(self, attr):
         if attr not in ("_name2atom", "contents") and attr in self._name2atom.keys():
             return self._name2atom[attr]
-        if AtomType.parameters.get(attr, None) == float:
+        if getattr(AtomType, "_parameters").get(attr, None) == float:
             return np.sum([getattr(atom, attr) for atom in self.atoms])
         return super().__getattribute__(attr)
 
@@ -844,9 +903,9 @@ class Residue(Entity):
         :param bonded_force_entity:
         :return:
         """
-        if type(bonded_force_entity).name not in self.bonded_forces.keys():
-            self.bonded_forces[type(bonded_force_entity).name] = []
-        self.bonded_forces[type(bonded_force_entity).name].append(bonded_force_entity)
+        if bonded_force_entity.get_class_name() not in self.bonded_forces.keys():
+            self.bonded_forces[bonded_force_entity.get_class_name()] = []
+        self.bonded_forces[bonded_force_entity.get_class_name()].append(bonded_force_entity)
 
     def add_missing_atoms(self):
         """
@@ -903,7 +962,7 @@ class ResidueLink:
         self.atom1 = atom1
         self.atom2 = atom2
         self.built = False
-        self.bonded_forces = {frc.name: [] for frc in GlobalSetting.BondedForces}
+        self.bonded_forces = {getattr(frc, "_name"): [] for frc in GlobalSetting.BondedForces}
         set_attribute_alternative_names(self)
 
     def __repr__(self):
@@ -918,9 +977,9 @@ class ResidueLink:
         :param bonded_force_entity:
         :return:
         """
-        if type(bonded_force_entity).name not in self.bonded_forces.keys():
-            self.bonded_forces[type(bonded_force_entity).name] = []
-        self.bonded_forces[type(bonded_force_entity).name].append(bonded_force_entity)
+        if bonded_force_entity.get_class_name() not in self.bonded_forces.keys():
+            self.bonded_forces[bonded_force_entity.get_class_name()] = []
+        self.bonded_forces[bonded_force_entity.get_class_name()].append(bonded_force_entity)
 
     def deepcopy(self, forcopy):
         """
@@ -937,15 +996,15 @@ class Molecule:
     """
     This **class** is a class for molecules
     """
-    all = Xdict()
-    save_functions = Xdict()
+    _all = Xdict()
+    _save_functions = Xdict()
 
     def __init__(self, name):
         if isinstance(name, ResidueType):
             self.name = name.name
         else:
             self.name = name
-        Molecule.all[self.name] = self
+        Molecule._all[self.name] = self
         self.residues = []
         self.atoms = []
         self.atom_index = []
@@ -966,7 +1025,7 @@ class Molecule:
         return "Entity of Molecule: " + self.name
 
     def __getattribute__(self, attr):
-        if AtomType.parameters.get(attr, None) == float:
+        if getattr(AtomType, "_parameters").get(attr, None) == float:
             return np.sum([getattr(atom, attr) for res in self.residues for atom in res.atoms])
         return super().__getattribute__(attr)
 
@@ -980,7 +1039,7 @@ class Molecule:
         """
 
         def wrapper(func):
-            cls.save_functions[keyname] = func
+            cls._save_functions[keyname] = func
             return func
 
         return wrapper
@@ -992,7 +1051,7 @@ class Molecule:
         :param keyname:
         :return:
         """
-        cls.save_functions.pop(keyname)
+        cls._save_functions.pop(keyname)
 
     @staticmethod
     def _set_friends_in_different_residue(molecule, atom1, atom2):
@@ -1068,9 +1127,9 @@ class Molecule:
         :param bonded_force_entity:
         :return:
         """
-        if type(bonded_force_entity).name not in self.bonded_forces.keys():
-            self.bonded_forces[type(bonded_force_entity).name] = []
-        self.bonded_forces[type(bonded_force_entity).name].append(bonded_force_entity)
+        if bonded_force_entity.get_class_name() not in self.bonded_forces.keys():
+            self.bonded_forces[bonded_force_entity.get_class_name()] = []
+        self.bonded_forces[bonded_force_entity.get_class_name()].append(bonded_force_entity)
 
     def add_residue_link(self, atom1, atom2):
         """
@@ -1595,8 +1654,8 @@ def generate_new_bonded_force_type(type_name, atoms, properties, is_compulsory, 
         """
         This **class** is a subclass of Entity, for bonded forces
         """
-        name = type_name
-        count = 0
+        _name = type_name
+        _count = 0
 
         def __init__(self, atoms, entity_type, name=None):
             super().__init__(entity_type, name)
@@ -1618,26 +1677,25 @@ def generate_new_bonded_force_type(type_name, atoms, properties, is_compulsory, 
         """
         This **class** is a subclass of Type, for bonded force types
         """
-        name = type_name
+        _name = type_name
         topology_like = temp
         compulsory = is_compulsory
         multiple = is_multiple
         atom_numbers = len(atoms.split("-"))
         topology_matrix = [[temp[i] - j if i > j else 1 for i in range(len(atoms.split("-")))] for j in
                            range(len(atoms.split("-")))]
-        parameters = {
+        _parameters = {
             "name": str,
         }
         entity = BondedForceEntity
-        types = Xdict(not_found_message="Bonded Force Type {} not found. Did you import the proper force field?")
-        types_different_name = Xdict(not_found_message="Bonded Force Type {} not found.\
+        _types = Xdict(not_found_message="Bonded Force Type {} not found. Did you import the proper force field?")
+        _types_different_name = Xdict(not_found_message="Bonded Force Type {} not found.\
  Did you import the proper force field?")
 
         def __init__(self, **kwargs):
             super().__init__(**kwargs)
-
             for name in type(self).Same_Force(self.name):
-                type(self).types_different_name[name] = self
+                type(self)._types_different_name[name] = self
 
             if type(self).multiple:
                 for key in self.multiple:
@@ -1689,7 +1747,7 @@ def generate_new_bonded_force_type(type_name, atoms, properties, is_compulsory, 
     UNKNOWNS""")
 
     GlobalSetting.BondedForces.append(BondedForceType)
-    GlobalSetting.BondedForcesMap[BondedForceType.name] = BondedForceType
+    GlobalSetting.BondedForcesMap[getattr(BondedForceType, "_name")] = BondedForceType
     for i in atoms.split("-"):
         if int(i) > GlobalSetting.farthest_bonded_force:
             GlobalSetting.farthest_bonded_force = int(i)
@@ -1709,11 +1767,11 @@ def generate_new_pairwise_force_type(type_name, properties):
         """
         This **class** is a subclass of Type, for pairwise force types
         """
-        name = type_name
-        parameters = {
+        _name = type_name
+        _parameters = {
             "name": str,
         }
-        types = Xdict(not_found_message="{} not found. Did you import the proper force field?")
+        _types = Xdict(not_found_message="{} not found. Did you import the proper force field?")
 
     set_classmethod_alternative_names(PairwiseForceType)
     PairwiseForceType.Add_Property(properties)

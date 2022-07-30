@@ -2,17 +2,29 @@
 This **module** is used to process topology and conformations
 """
 import numpy as np
-from .helper import get_rotate_matrix, ResidueType, Molecule, Residue
+from .helper import get_rotate_matrix, ResidueType, Molecule, Residue, set_global_alternative_names
 
 
 def impose_bond(molecule, atom1, atom2, length):
     """
+    This **function** is used to impose the distance in ``molecule`` between ``atom1`` and ``atom2`` to ``length``
 
-    :param molecule:
-    :param atom1:
-    :param atom2:
-    :param length:
-    :return:
+    usage example::
+
+        import Xponge
+        import Xponge.forcefield.amber.ff14sb
+        mol = ALA*10
+        Impose_Bond(mol, mol.residues[0].CA, mol.residues[0].C, 1.2)
+
+    .. ATTENTION::
+
+        `atom1` and `atom2` should be bonded if they are in one residue
+
+    :param molecule: a ``Molecule`` instance
+    :param atom1: the base atom, which will not change its coordinate
+    :param atom2: the atom to change its coordinate to fit the length
+    :param length: distance in the unit of angstrom
+    :return: None
     """
     crd = molecule.get_atom_coordinates()
     _, atom2_friends = molecule.divide_into_two_parts(atom1, atom2)
@@ -33,13 +45,19 @@ def impose_bond(molecule, atom1, atom2, length):
 
 def impose_angle(molecule, atom1, atom2, atom3, angle):
     """
+    This **function** is used to impose the angle in ``molecule`` between ``atom1``, ``atom2`` and ``atom3`` \
+ to ``angle``.
 
-    :param molecule:
-    :param atom1:
-    :param atom2:
-    :param atom3:
-    :param angle:
-    :return:
+    .. ATTENTION::
+
+        The pairs of ``atom1`` - ``atom2`` and ``atom2`` - ``atom3``  should be bonded.
+
+    :param molecule: a ``Molecule`` instance
+    :param atom1: the base atom, which will not change its coordinate
+    :param atom2: the base atom, which will not change its coordinate
+    :param atom3: the atom to change its coordinate to fit the angle
+    :param angle: angle in the unit of rad
+    :return: None
     """
     crd = molecule.get_atom_coordinates()
     _, atom3_friends = molecule.divide_into_two_parts(atom2, atom3)
@@ -58,14 +76,20 @@ def impose_angle(molecule, atom1, atom2, atom3, angle):
 
 def impose_dihedral(molecule, atom1, atom2, atom3, atom4, dihedral):
     """
+    This **function** is used to impose the dihedral in ``molecule`` between ``atom1``, ``atom2``, ``atom3`` \
+ and ``atom4`` to ``dihedral``.
 
-    :param molecule:
-    :param atom1:
-    :param atom2:
-    :param atom3:
-    :param atom4:
-    :param dihedral:
-    :return:
+    .. ATTENTION::
+
+        The pairs of ``atom1`` - ``atom2``,  ``atom2`` - ``atom3``  and ``atom3`` - ``atom4`` should be bonded.
+
+    :param molecule: a ``Molecule`` instance
+    :param atom1: the base atom, which will not change its coordinate
+    :param atom2: the base atom, which will not change its coordinate
+    :param atom3: the atom to change its coordinate to fit the angle
+    :param atom4: the atom to change its coordinate to fit the angle
+    :param dihedral: dihedral angle in the unit of rad
+    :return: None
     """
     crd = molecule.get_atom_coordinates()
     _, atom4_friends = molecule.divide_into_two_parts(atom2, atom3)
@@ -125,12 +149,15 @@ def _add_solvent_box(molecule, new_molecule, molmin, molmax, solshape, distance,
 
 def add_solvent_box(molecule, solvent, distance, tolerance=3):
     """
+    This **function** add a box full of solvents to a molecule
 
-    :param molecule:
-    :param solvent:
-    :param distance:
-    :param tolerance:
-    :return:
+    :param molecule: the molecule to add the box, either a ``Molecule`` or a ``ResidueType``
+    :param solvent: the solvent molecule, either a ``Molecule`` or a ``ResidueType``
+    :param distance: the distance between the ``molecule`` and the box in the unit of Angstrom. \
+ This can be an ``int`` or a ``float``, and it can be also a list of them with the length 3 or 6, \
+ which represents the 3 or 6 directions respectively.
+    :param tolerance: the distance between two molecules. 3 for default.
+    :return: None
     """
     if isinstance(distance, (float, int)):
         distance = [distance] * 6
@@ -174,12 +201,20 @@ def add_solvent_box(molecule, solvent, distance, tolerance=3):
 
 def h_mass_repartition(molecules, repartition_mass=1.1, repartition_rate=3, exclude_residue_name="WAT"):
     """
+    This **function** repartition the mass of light atoms to the connected heavy atoms. \
+ This can help the simulation run with a time step of 4 fs.
 
-    :param molecules:
-    :param repartition_mass:
-    :param repartition_rate:
-    :param exclude_residue_name:
-    :return:
+    .. ATTENTION::
+
+        Many functions use mass to guess the element, the mass repartition may cause error. So call this function \
+ at the final step please unless you know what you are doing.
+
+    :param molecules: a ``Molecule``
+    :param repartition_mass: if the mass of the atom is not greater than this value, it will be seen as a light atom. \
+ 1.1 for default and in the unit of Dalton.
+    :param repartition_rate: The mass of the light atom will multiplied by this value.
+    :param exclude_residue_name: the residue name which will not do the repartition. "WAT" for default.
+    :return: None
     """
     for res in molecules.residues:
         if res.name == exclude_residue_name:
@@ -197,15 +232,26 @@ def h_mass_repartition(molecules, repartition_mass=1.1, repartition_rate=3, excl
 
 def solvent_replace(molecule, select, toreplace):
     """
+    This **function** replaces the solvent to some other molecules randomly.
 
-    :param molecule:
-    :param select:
-    :param toreplace:
-    :return:
+    usage example::
+
+        import Xponge
+        import Xponge.forcefield.amber.ff14sb
+        import Xponge.forcefield.amber.tip3p
+        mol = ALA*10
+        Add_Solvent_Box(mol, WAT, 10)
+        Solvent_Replace(mol, lambda res:res.name == "WAT", {K:10, CL:10})
+
+    :param molecule: a ``Molecule`` instance
+    :param select: a **function** to decide which residues should be replaced
+    :param toreplace: a dict, which stores the mapping of molecules to replace and the number of molecules. \
+ Every molecule should be a ``ResidueType``, a ``Residue`` or a ``Molecule`` with only one ``Residue``.
+    :return: None
     """
     solvents = []
-    for i in range(len(molecule.residues)):
-        if select(molecule.residues[i]):
+    for i, resi in enumerate(molecule.residues):
+        if select(resi):
             solvents.append(i)
 
     np.random.shuffle(solvents)
@@ -229,12 +275,16 @@ def solvent_replace(molecule, select, toreplace):
 
 def main_axis_rotate(molecule, direction_long=None, direction_middle=None, direction_short=None):
     """
+    This **function** rotates the main axis of the molecule to the desired direction
 
-    :param molecule:
-    :param direction_long:
-    :param direction_middle:
-    :param direction_short:
-    :return:
+    :param molecule: a ``Molecule`` instance
+    :param direction_long: a list of three ``int`` or ``float`` to represent the direction vector. \
+The long main axis will rotate to this direction.
+    :param direction_middle: a list of three ``int`` or ``float`` to represent the direction vector. \
+The middle main axis will rotate to this direction.
+    :param direction_short: a list of three ``int`` or ``float`` to represent the direction vector. \
+The short main axis will rotate to this direction.
+    :return: None
     """
     if direction_long is None:
         direction_long = [0, 0, 1]
@@ -267,3 +317,5 @@ def main_axis_rotate(molecule, direction_long=None, direction_middle=None, direc
         atom.x = molcrd[i][0]
         atom.y = molcrd[i][1]
         atom.z = molcrd[i][2]
+
+set_global_alternative_names(globals())
