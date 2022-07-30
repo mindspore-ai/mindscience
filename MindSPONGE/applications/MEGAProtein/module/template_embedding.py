@@ -191,7 +191,6 @@ class TemplateEmbedding(nn.Cell):
         self.template_embedder = SingleTemplateEmbedding(config, mixed_precision)
         self.template_pointwise_attention = Attention(self.config.attention.num_head,
                                                       self.config.attention.key_dim,
-                                                      self.config.attention.value_dim,
                                                       self.config.attention.gating,
                                                       q_data_dim=128, m_data_dim=64,
                                                       output_dim=128, batch_size=None)
