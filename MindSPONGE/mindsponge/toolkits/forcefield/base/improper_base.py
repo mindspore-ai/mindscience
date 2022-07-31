@@ -3,7 +3,7 @@ This **module** is the basic setting for the force field format of periodic prop
 """
 from itertools import permutations
 from ... import Generate_New_Bonded_Force_Type
-from ...helper import Molecule
+from ...helper import Molecule, set_global_alternative_names
 
 # pylint: disable=invalid-name
 ImproperType = Generate_New_Bonded_Force_Type("harmonic_improper", "1-3-2-3", {"k": float, "phi0": float}, False)
@@ -47,8 +47,9 @@ def improper_same_force(_, atom_list):
 def write_dihedral(self):
     """
     This **function** is used to write SPONGE input file
-    :param self:
-    :return:
+
+    :param self: the Molecule instance
+    :return: the string to write
     """
     dihedrals = []
 
@@ -68,3 +69,5 @@ def write_dihedral(self):
 
         return towrite
     return None
+
+set_global_alternative_names()

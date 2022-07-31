@@ -9,8 +9,9 @@ source("....")
 def write_zero_mass_for_hydrogen(self):
     """
     This **function** sets the mass of hydrogen and no lj atoms to zero, to freeze them
-    :param self:
-    :return:
+
+    :param self: the Molecule instance
+    :return: the string to write
     """
     towrite = "%d\n" % (len(self.atoms))
     towrite += "\n".join(
@@ -21,8 +22,9 @@ def write_zero_mass_for_hydrogen(self):
 def write_zero_lj(self):
     """
     This **function** sets all the lj parameters to zero
-    :param self:
-    :return:
+
+    :param self: the Molecule instance
+    :return: the string to write
     """
     towrite = "%d %d\n\n" % (len(self.atoms), 1)
     for _ in range(1):
@@ -43,8 +45,9 @@ def write_zero_lj(self):
 def write_zero_charge(self):
     """
     This **function** sets all the charge parameters to zero
-    :param self:
-    :return:
+
+    :param self: the Molecule instance
+    :return: the string to write
     """
     towrite = "%d\n" % (len(self.atoms))
     towrite += "\n".join(["%.6f" % (0) for _ in self.atoms])
@@ -54,7 +57,8 @@ def write_zero_charge(self):
 def save_min_bonded_parameters():
     """
     This **function** saves parameters to only minimize bonded force when saving SPONGE inputs
-    :return:
+
+    :return: None
     """
     Molecule.Set_Save_SPONGE_Input("fake_mass")(write_zero_mass_for_hydrogen)
     Molecule.Set_Save_SPONGE_Input("fake_LJ")(write_zero_lj)
@@ -64,11 +68,12 @@ def save_min_bonded_parameters():
 def do_not_save_min_bonded_parameters():
     """
     This **function** does not save parameters to only minimize bonded force when saving SPONGE inputs
-    :return:
+
+    :return: None
     """
     Molecule.Del_Save_SPONGE_Input("fake_mass")
     Molecule.Del_Save_SPONGE_Input("fake_LJ")
     Molecule.Del_Save_SPONGE_Input("fake_charge")
 
 
-set_global_alternative_names(globals())
+set_global_alternative_names()

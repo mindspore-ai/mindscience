@@ -208,4 +208,4 @@ class TrajWriter():
         self.datfile.write(u.coord.positions.astype(np.float32).tobytes())
         self.boxfile.write(" ".join([f"{i}" for i in u.coord.dimensions]) + "\n")
 
-set_global_alternative_names(globals())
+set_global_alternative_names()

@@ -2,7 +2,7 @@
 This **module** is the basic setting for the force field format of virtual atoms
 """
 from ... import Generate_New_Bonded_Force_Type
-from ...helper import Molecule, GlobalSetting
+from ...helper import Molecule, GlobalSetting, set_global_alternative_names
 
 # pylint: disable=invalid-name
 VirtualType2 = Generate_New_Bonded_Force_Type("vatom2", "1",
@@ -15,8 +15,9 @@ GlobalSetting.VirtualAtomTypes["vatom2"] = 3
 def write_virtual_atoms(self):
     """
     This **function** is used to write SPONGE input file
-    :param self:
-    :return:
+
+    :param self: the Molecule instance
+    :return: the string to write
     """
     vatoms = []
     for vatom in self.bonded_forces.get("vatom2", []):
@@ -32,3 +33,5 @@ def write_virtual_atoms(self):
 
         return towrite
     return None
+
+set_global_alternative_names()

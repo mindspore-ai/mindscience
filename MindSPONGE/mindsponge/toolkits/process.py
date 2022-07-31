@@ -318,4 +318,4 @@ The short main axis will rotate to this direction.
         atom.y = molcrd[i][1]
         atom.z = molcrd[i][2]
 
-set_global_alternative_names(globals())
+set_global_alternative_names()

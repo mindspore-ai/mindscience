@@ -787,4 +787,4 @@ def get_assignment_from_mol2(filename):
     assign.Determine_Ring_And_Bond_Type()
     return assign
 
-set_global_alternative_names(globals())
+set_global_alternative_names()

@@ -3,7 +3,7 @@ This **package** helps to run the molecular dynamics simulation
 """
 import os
 import sys
-from ..helper import Xopen
+from ..helper import Xopen, set_global_alternative_names
 
 
 def run(args):
@@ -47,3 +47,5 @@ def run(args):
         cmd += " " + " ".join(args[2:])
 
     os.system(cmd)
+
+set_global_alternative_names()

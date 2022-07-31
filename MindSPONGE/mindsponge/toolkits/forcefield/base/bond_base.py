@@ -2,7 +2,7 @@
 This **module** is the basic setting for the force field format of harmonic bond
 """
 from ... import Generate_New_Bonded_Force_Type
-from ...helper import Molecule
+from ...helper import Molecule, set_global_alternative_names
 
 # pylint: disable=invalid-name
 BondType = Generate_New_Bonded_Force_Type("bond", "1-2", {"k": float, "b": float}, True)
@@ -15,8 +15,9 @@ BondType.Set_Property_Unit("b", "distance", "A")
 def write_bond(self):
     """
     This **function** is used to write SPONGE input file
-    :param self:
-    :return:
+
+    :param self: the Molecule instance
+    :return: the string to write
     """
     bonds = []
     for bond in self.bonded_forces.get("bond", []):
@@ -36,3 +37,5 @@ def write_bond(self):
 
         return towrite
     return None
+
+set_global_alternative_names()

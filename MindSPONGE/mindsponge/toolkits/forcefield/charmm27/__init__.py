@@ -2,7 +2,7 @@
 This **package** sets the basic configuration of charmm27 force field
 """
 import os
-from ... import GlobalSetting, load_ffitp, AtomType, ResidueType
+from ... import GlobalSetting, load_ffitp, AtomType, ResidueType, set_global_alternative_names
 from ..base import charge_base, mass_base, lj_base, bond_base, ub_angle_base, \
     dihedral_base, nb14_base, nb14_extra_base, improper_base, \
     virtual_atom_base, atom_cmap_base, exclude_base
@@ -24,9 +24,10 @@ exclude_base.Exclude(4)
 def load_parameter_from_ffitp(filename, prefix=True):
     """
     This **function** is used to get amber force field parameters from GROMACS ffitp
-    :param filename:
-    :param prefix:
-    :return:
+
+    :param filename: the name of the input file
+    :param prefix: whether add the CHARMM27_DATA_DIR to the filename
+    :return: None
     """
     if prefix:
         filename = os.path.join(CHARMM27_DATA_DIR, filename)
@@ -44,3 +45,5 @@ def load_parameter_from_ffitp(filename, prefix=True):
 
 
 load_parameter_from_ffitp("forcefield.itp")
+
+set_global_alternative_names()

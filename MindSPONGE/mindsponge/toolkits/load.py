@@ -119,13 +119,12 @@ def load_mol2(filename, ignore_atom_type=False):
     return current_molecule
 
 
-def _pdb_ssbond(chain, residue_type_map, ssbonds, molecule):
+def _pdb_ssbond_before(chain, residue_type_map, ssbonds):
     """
 
     :param chain:
     :param residue_type_map:
     :param ssbonds:
-    :param molecule:
     :return:
     """
     for ssbond in ssbonds:
@@ -133,6 +132,19 @@ def _pdb_ssbond(chain, residue_type_map, ssbonds, molecule):
         residue_type_map[res_a_index] = "CYX"
         res_b_index = chain[ssbond[29]][int(ssbond[31:35])]
         residue_type_map[res_b_index] = "CYX"
+
+
+def _pdb_ssbond_after(chain, ssbonds, molecule):
+    """
+
+    :param chain:
+    :param ssbonds:
+    :param molecule:
+    :return:
+    """
+    for ssbond in ssbonds:
+        res_a_index = chain[ssbond[15]][int(ssbond[17:21])]
+        res_b_index = chain[ssbond[29]][int(ssbond[31:35])]
         if res_a_index > res_b_index:
             res_a_index, res_b_index = (res_b_index, res_a_index)
         res_a = molecule.residues[res_a_index]
@@ -171,10 +183,10 @@ def _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore
                     current_residue_count += 1
                     if current_residue:
                         molecule.Add_Residue(current_residue)
-                        if current_residue_index is not None and current_residue.type.tail and ResidueType.types[
-                                residue_type_map[current_residue_count]].head:
+                        if current_residue_index is not None and current_residue.type.tail and ResidueType.get_type(
+                                residue_type_map[current_residue_count]).head:
                             links.append(len(molecule.residues))
-                    current_residue = Residue(ResidueType.types[residue_type_map[current_residue_count]])
+                    current_residue = Residue(ResidueType.get_type(residue_type_map[current_residue_count]))
                     current_residue_index = resindex
                     current_resname = resname
                 if extra not in (" ", position_need):
@@ -275,8 +287,9 @@ def load_pdb(filename, judge_histone=True, position_need="A", ignore_hydrogen=Fa
     if residue_type_map[-1] in GlobalSetting.PDBResidueNameMap["tail"].keys():
         residue_type_map[-1] = GlobalSetting.PDBResidueNameMap["tail"][residue_type_map[-1]]
 
+    _pdb_ssbond_before(chain, residue_type_map, ssbonds)
     _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore_hydrogen)
-    _pdb_ssbond(chain, residue_type_map, ssbonds, molecule)
+    _pdb_ssbond_after(chain, ssbonds, molecule)
 
     return molecule
 
@@ -770,4 +783,4 @@ def load_ffitp(filename, macros=None):
                                                                W=float(words[4]))
     return output
 
-set_global_alternative_names(globals())
+set_global_alternative_names()

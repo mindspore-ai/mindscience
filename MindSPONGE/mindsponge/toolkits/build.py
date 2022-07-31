@@ -554,4 +554,4 @@ def save_gro(cls, filename):
     f.write(towrite)
     f.close()
 
-set_global_alternative_names(globals())
+set_global_alternative_names()

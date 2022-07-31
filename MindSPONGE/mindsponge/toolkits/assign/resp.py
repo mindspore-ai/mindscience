@@ -8,7 +8,7 @@ except ModuleNotFoundError as exc:
         "To calculate RESP charge, 'pyscf' package needed. Maybe you need 'pip install pyscf'") from exc
 
 import numpy as np
-from ..helper import get_fibonacci_grid, Xprint, set_dict_value_alternative_name, Xdict
+from ..helper import get_fibonacci_grid, Xprint, Xdict, set_global_alternative_names
 
 # Pay Attention To !!!UNIT!!!
 default_radius = {"H": 1.2, "C": 1.5, "N": 1.5,
@@ -378,7 +378,7 @@ def resp_fit(assign, basis="6-31g*", opt=False, charge=None, spin=0, extra_equiv
     return _force_equivalence_q(q, extra_equivalence)
 
 
-set_dict_value_alternative_name(globals(), resp_fit)
+set_global_alternative_names()
 
 Xprint("""Reference for resp.py:
 1. pyscf
