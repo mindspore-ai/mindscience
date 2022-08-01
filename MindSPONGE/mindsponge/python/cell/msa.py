@@ -57,8 +57,8 @@ class MSARowAttentionWithPairBias(nn.Cell):
             feat_2d_weight = self.feat_2d_weights
 
         q, k, _ = pair_act.shape
-        bias = 1e9 * (msa_mask - 1.0)
-        bias = P.ExpandDims()(P.ExpandDims()(bias, 1), 2)
+        input_mask = 1e9 * (msa_mask - 1.0)
+        input_mask = P.ExpandDims()(P.ExpandDims()(input_mask, 1), 2)
 
         msa_act, _, _ = self.norm(msa_act, query_norm_gamma, query_norm_beta)
         pair_act, _, _ = self.norm(pair_act, feat_2d_norm_gamma, feat_2d_norm_beta)
@@ -70,15 +70,16 @@ class MSARowAttentionWithPairBias(nn.Cell):
             msa_act_ori_shape = P.Shape()(msa_act)
             slice_shape = (self.slice_num, -1) + msa_act_ori_shape[1:]
             msa_act = P.Reshape()(msa_act, slice_shape)
-            bias_shape = P.Shape()(bias)
-            bias = P.Reshape()(bias, slice_shape[:2] + bias_shape[1:])
+            input_mask_shape = P.Shape()(input_mask)
+            input_mask = P.Reshape()(input_mask, slice_shape[:2] + input_mask_shape[1:])
             slice_idx = 0
             slice_idx_tensor = self.idx
             msa_act_tuple = ()
 
             msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
-            bias_slice = P.Gather()(bias, slice_idx_tensor, 0)
-            msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, bias_slice, index, nonbatched_bias)
+            input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
+            msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, input_mask_slice,
+                                          index, nonbatched_bias)
             msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
             msa_act_tuple = msa_act_tuple + (msa_act_slice,)
             slice_idx += 1
@@ -87,8 +88,8 @@ class MSARowAttentionWithPairBias(nn.Cell):
             while slice_idx < self.slice_num:
                 msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
                 msa_act_slice = F.depend(msa_act_slice, msa_act_tuple[-1])
-                bias_slice = P.Gather()(bias, slice_idx_tensor, 0)
-                msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, bias_slice, index, nonbatched_bias)
+                input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
+                msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, input_mask_slice, index, nonbatched_bias)
                 msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
                 msa_act_tuple = msa_act_tuple + (msa_act_slice,)
                 slice_idx += 1
@@ -98,7 +99,7 @@ class MSARowAttentionWithPairBias(nn.Cell):
             msa_act = P.Reshape()(msa_act, msa_act_ori_shape)
             return msa_act
 
-        msa_act = self.attn_mod(msa_act, msa_act, bias, index, nonbatched_bias)
+        msa_act = self.attn_mod(msa_act, msa_act, input_mask, index, nonbatched_bias)
         return msa_act
 
     def _init_parameter(self):
@@ -146,24 +147,24 @@ class MSAColumnAttention(nn.Cell):
         msa_act = P.Transpose()(msa_act, (1, 0, 2))
         msa_mask = P.Transpose()(msa_mask, (1, 0))
 
-        bias = 1e9 * (msa_mask - 1.)
-        bias = P.ExpandDims()(P.ExpandDims()(bias, 1), 2)
+        input_mask = 1e9 * (msa_mask - 1.)
+        input_mask = P.ExpandDims()(P.ExpandDims()(input_mask, 1), 2)
         msa_act, _, _ = self.query_norm(msa_act, query_norm_gamma, query_norm_beta)
 
         if self.slice_num:
             msa_act_ori_shape = P.Shape()(msa_act)
             slice_shape = (self.slice_num, -1) + msa_act_ori_shape[1:]
             msa_act = P.Reshape()(msa_act, slice_shape)
-            bias_shape = P.Shape()(bias)
-            bias = P.Reshape()(bias, slice_shape[:2] + bias_shape[1:])
+            input_mask_shape = P.Shape()(input_mask)
+            input_mask = P.Reshape()(input_mask, slice_shape[:2] + input_mask_shape[1:])
 
             slice_idx = 0
             slice_idx_tensor = self.idx
             msa_act_tuple = ()
 
             msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
-            bias_slice = P.Gather()(bias, slice_idx_tensor, 0)
-            msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, bias_slice, index)
+            input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
+            msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, input_mask_slice, index)
             msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
             msa_act_tuple = msa_act_tuple + (msa_act_slice,)
             slice_idx += 1
@@ -172,8 +173,8 @@ class MSAColumnAttention(nn.Cell):
             while slice_idx < self.slice_num:
                 msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
                 msa_act_slice = F.depend(msa_act_slice, msa_act_tuple[-1])
-                bias_slice = P.Gather()(bias, slice_idx_tensor, 0)
-                msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, bias_slice, index)
+                input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
+                msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, input_mask_slice, index)
                 msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
                 msa_act_tuple = msa_act_tuple + (msa_act_slice,)
                 slice_idx += 1
@@ -184,7 +185,7 @@ class MSAColumnAttention(nn.Cell):
             msa_act = mnp.swapaxes(msa_act, -2, -3)
             return msa_act
 
-        msa_act = self.attn_mod(msa_act, msa_act, bias, index)
+        msa_act = self.attn_mod(msa_act, msa_act, input_mask, index)
         msa_act = P.Transpose()(msa_act, (1, 0, 2))
         return msa_act
 
@@ -223,8 +224,8 @@ class MSAColumnGlobalAttention(nn.Cell):
             msa_act = P.Transpose()(msa_act, (1, 0, 2))
             msa_mask = P.Transpose()(msa_mask, (1, 0))
 
-        bias = 1e9 * (msa_mask - 1.)
-        bias = P.ExpandDims()(P.ExpandDims()(bias, 1), 2)
+        input_mask = 1e9 * (msa_mask - 1.)
+        input_mask = P.ExpandDims()(P.ExpandDims()(input_mask, 1), 2)
 
         msa_act, _, _ = self.query_norm(msa_act,
                                         query_norm_gamma,
@@ -235,8 +236,8 @@ class MSAColumnGlobalAttention(nn.Cell):
             msa_act_ori_shape = P.Shape()(msa_act)
             slice_shape = (self.slice_num, -1) + msa_act_ori_shape[1:]
             msa_act = P.Reshape()(msa_act, slice_shape)
-            bias_shape = P.Shape()(bias)
-            bias = P.Reshape()(bias, slice_shape[:2] + bias_shape[1:])
+            input_mask_shape = P.Shape()(input_mask)
+            input_mask = P.Reshape()(input_mask, slice_shape[:2] + input_mask_shape[1:])
             msa_mask_shape = P.Shape()(msa_mask)
             msa_mask = P.Reshape()(msa_mask, slice_shape[:2] + msa_mask_shape[1:])
 
@@ -246,8 +247,9 @@ class MSAColumnGlobalAttention(nn.Cell):
 
             msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
             msa_mask_slice = P.Gather()(msa_mask, slice_idx_tensor, 0)
-            bias_slice = P.Gather()(bias, slice_idx_tensor, 0)
-            msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, msa_mask_slice, bias_slice, index)
+            input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
+            msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, msa_mask_slice,
+                                          input_mask_slice, index)
             msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
             msa_act_tuple = msa_act_tuple + (msa_act_slice,)
             slice_idx += 1
@@ -257,9 +259,10 @@ class MSAColumnGlobalAttention(nn.Cell):
                 msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
                 msa_act_slice = F.depend(msa_act_slice, msa_act_tuple[-1])
                 msa_mask_slice = P.Gather()(msa_mask, slice_idx_tensor, 0)
-                bias_slice = P.Gather()(bias, slice_idx_tensor, 0)
+                input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
 
-                msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, msa_mask_slice, bias_slice, index)
+                msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, msa_mask_slice,
+                                              input_mask_slice, index)
                 msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
                 msa_act_tuple = msa_act_tuple + (msa_act_slice,)
                 slice_idx += 1
@@ -270,7 +273,7 @@ class MSAColumnGlobalAttention(nn.Cell):
             msa_act = mnp.swapaxes(msa_act, -2, -3)
             return msa_act
 
-        msa_act = self.attn_mod(msa_act, msa_act, msa_mask, bias, index)
+        msa_act = self.attn_mod(msa_act, msa_act, msa_mask, input_mask, index)
         msa_act = P.Transpose()(msa_act, (1, 0, 2))
         return msa_act
 

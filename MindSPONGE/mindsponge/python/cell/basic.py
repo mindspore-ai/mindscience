@@ -23,7 +23,64 @@ from .initializer import glorot_uniform
 
 
 class Attention(nn.Cell):
-    '''attention module'''
+    r"""
+        This is an implementation of multihead attention in the paper `Attention is all you need
+        <https://arxiv.org/pdf/1706.03762v5.pdf>`_. Given the query vector with source length,
+        and the key with key length and the target length, the attention will be performed as
+        the following
+
+        .. math::
+               Attention(query, key, vector) = Concat(head_1, \dots, head_h)W^O
+
+        where :math:`head_i = Attention(QW_i^Q, KW_i^K, VW_i^V)`. The default is with a bias.
+
+        if query, key and value tensor is same, then it will be modified version of self
+        attention.
+
+        Args:
+            num_heads(int): The number of the heads.
+            hidden_size(int): The hidden size of the input.
+            gating(bool): Indicator of if the attention is gated.
+            q_data_dim(int): The last dimension length of the query tensor.
+            m_data_dim(int): The last dimension length of the key and value tensor.
+            output_dim(int): The last dimension length of the output tensor.
+            batch_size(int): The batch size of parameters in attention, used in while control
+                flow. Default None.
+
+        Inputs:
+            - **q_data** (Tensor) - The query tensor with shape (batch_size,
+              query_seq_length, q_data_dim) with query_seq_length the query sequence length.
+            - **m_data** (Tensor) - The key/value tensor with shape (batch_size,
+              value_seq_length, m_data_dim) with value_seq_length the value sequence length.
+            - **attention_mask** (Tensor) - The mask for attention matrix with shape
+              (batch_size, num_heads, query_seq_length, value_seq_length)(or broadcastable
+              to this shape).
+            - **index** (Tensor) - The index of while loop, only used in case of while control
+              flow. Default None.
+            - **nonbatched_bias** (Tensor) - Non-batched bias for the attention matrix with
+              shape(num_heads, query_seq_length, value_seq_length). Default None.
+
+        Outputs:
+            - **output** (Tensor) - Tensor, the float tensor of the output of the layer with
+              shape (batch_size, query_seq_length, hidden_size).
+
+        Supported Platforms:
+            ``Ascend`` ``GPU``
+
+        Examples:
+            >>> import numpy as np
+            >>> from mindsponge.cell import Attention
+            >>> from mindspore import dtype as mstype
+            >>> from mindspore import Tensor
+            >>> model = Attention(num_head=4, hidden_size=64, gating=True, q_data_dim=64,
+                                  m_data_dim=64, output_dim=64)
+            >>> q_data = Tensor(np.ones((32, 128, 64)), mstype.float32)
+            >>> m_data = Tensor(np.ones((32, 256, 64)), mstype.float16)
+            >>> attention_mask = Tensor(np.ones((32, 4, 128, 256)), mstype.float16)
+            >>> attn_out= model(q_data, m_data, attention_mask)
+            >>> print(attn_out.shape)
+            (32, 128, 64)
+    """
 
     def __init__(self, num_head, hidden_size, gating, q_data_dim, m_data_dim, output_dim,
                  batch_size=None):
@@ -43,7 +100,7 @@ class Attention(nn.Cell):
         self.batch_size = batch_size
         self._init_parameter()
 
-    def construct(self, q_data, m_data, bias, index=None, nonbatched_bias=None):
+    def construct(self, q_data, m_data, attention_mask, index=None, nonbatched_bias=None):
         '''construct'''
         if self.batch_size:
             linear_q_weight = P.Gather()(self.linear_q_weights, index, 0)
@@ -85,7 +142,7 @@ class Attention(nn.Cell):
 
         tmp_q = P.Transpose()(q, (0, 2, 1, 3))
         tmp_k = P.Transpose()(k, (0, 2, 1, 3))
-        logits = P.Add()(self.batch_matmul_trans_b(tmp_q, tmp_k), bias)
+        logits = P.Add()(self.batch_matmul_trans_b(tmp_q, tmp_k), attention_mask)
 
         if nonbatched_bias is not None:
             bias = P.ExpandDims()(nonbatched_bias, 0)
@@ -165,7 +222,58 @@ class Attention(nn.Cell):
 
 
 class GlobalAttention(nn.Cell):
-    '''global attention'''
+    r"""
+        This is an implementation of global gated self attention in the paper `Highly accurate
+        protein structure prediction with AlphaFold
+        <https://www.nature.com/articles/s41586-021-03819-2.pdf>`_. For this attention, the
+        last dimensions for the key tensor, value tensor and the output tensor should be the
+        same.
+
+        Args:
+            num_heads(int): The number of the heads.
+            gating(bool): Indicator of if the attention is gated.
+            hidden_size(int): The hidden size of the input.
+            output_dim(int): The last dimension length of the output tensor.
+            batch_size(int): The batch size of parameters in attention, used in while control
+                flow. Default None.
+
+        Inputs:
+            - **q_data** (Tensor) - The query tensor with shape (batch_size,
+              query_seq_length, q_data_dim) with query_seq_length the query sequence length.
+            - **m_data** (Tensor) - The key/value tensor with shape (batch_size,
+              value_seq_length, m_data_dim) with value_seq_length the value sequence length.
+            - **q_mask** (Tensor) - A binary mask for q_data with zeros in the padded
+              sequence elements and ones otherwise. Size (batch_size, query_seq_length,
+              q_data_dim)(or broadcastable to this shape).
+            - **attention_mask** (Tensor) - The mask for attention matrix with shape
+              (batch_size, query_seq_length, value_seq_length)(or broadcastable to this
+              shape).
+            - **bias** (Tensor) - Bias for the attention matrix.
+              Default None.
+            - **index** (Tensor) - The index of while loop, only used in case of while control
+              flow. Default None.
+
+        Outputs:
+            - **output** (Tensor) - Tensor, the float tensor of the output of the layer with
+              shape (batch_size, query_seq_length, hidden_size).
+
+        Supported Platforms:
+            ``Ascend`` ``GPU``
+
+        Examples:
+            >>> import numpy as np
+            >>> from mindsponge.cell import GlobalAttention
+            >>> from mindspore import dtype as mstype
+            >>> from mindspore import Tensor
+            >>> model = GlobalAttention(num_head=4, hidden_size=64, gating=True, output_dim=64)
+            >>> q_data = Tensor(np.ones((32, 128, 64)), mstype.float32)
+            >>> m_data = Tensor(np.ones((32, 256, 64)), mstype.float16)
+            >>> q_mask = Tensor(np.ones((4, 128, 256)), mstype.float16)
+            >>> attention_mask = Tensor(np.ones((32, 4, 128, 256)), mstype.float16)
+            >>> attn_out= model(q_data, m_data, q_mask, attention_mask)
+            >>> print(attn_out.shape)
+            (32, 128, 64)
+    """
 
     def __init__(self, num_head, gating, hidden_size, output_dim, batch_size=None):
         super(GlobalAttention, self).__init__()
@@ -184,7 +292,7 @@ class GlobalAttention(nn.Cell):
         self.batch_size = batch_size
         self._init_parameter()
 
-    def construct(self, q_data, m_data, q_mask, bias, index):
+    def construct(self, q_data, m_data, q_mask, attention_mask, index=None):
         '''construct'''
         if self.batch_size:
             q_weights = P.Gather()(self.linear_q_weights, index, 0)
@@ -235,8 +343,8 @@ class GlobalAttention(nn.Cell):
                                    self.dim_per_head))(k_weights)
         k = self.batch_matmul(m_data, k_weights)
 
-        bias = 1e9 * (P.Transpose()(q_mask, (0, 2, 1)) - 1.0)
-        logits = P.Add()(self.batch_matmul_trans_b(q, k), bias)
+        attention_mask = 1e9 * (P.Transpose()(q_mask, (0, 2, 1)) - 1.0)
+        logits = P.Add()(self.batch_matmul_trans_b(q, k), attention_mask)
 
         weights = self.softmax(logits)
         weighted_avg = self.batch_matmul(weights, v)

@@ -220,7 +220,7 @@ class TemplateEmbedding(nn.Cell):
             P.Transpose()(template_pair_representation, (1, 2, 0, 3)),
             (num_res * num_res, num_templates, num_channels))
         template_mask_bias = P.ExpandDims()(P.ExpandDims()(P.ExpandDims()(template_mask, 0), 1), 2) - 1.0
-        bias = 1e4 * template_mask_bias
+        input_mask = 1e4 * template_mask_bias
         if self.slice_num:
             slice_shape = (self.slice_num, -1)
             flat_query_shape = P.Shape()(flat_query)
@@ -233,7 +233,7 @@ class TemplateEmbedding(nn.Cell):
                 self._flat_query_slice = flat_query[slice_idx]
                 self._flat_templates_slice = flat_templates[slice_idx]
                 embedding_slice = self.template_pointwise_attention(self._flat_query_slice, self._flat_templates_slice,
-                                                                    bias, index=None, nonbatched_bias=None)
+                                                                    input_mask, index=None, nonbatched_bias=None)
                 embedding_slice = P.Reshape()(embedding_slice, ((1,) + P.Shape()(embedding_slice)))
                 embedding_tuple = embedding_tuple + (embedding_slice,)
                 slice_idx += 1
@@ -243,7 +243,7 @@ class TemplateEmbedding(nn.Cell):
             # No gradients if no templates.
             embedding = embedding * (P.ReduceSum()(template_mask) > 0.)
             return embedding
-        embedding = self.template_pointwise_attention(flat_query, flat_templates, bias, index=None,
+        embedding = self.template_pointwise_attention(flat_query, flat_templates, input_mask, index=None,
                                                       nonbatched_bias=None)
         embedding = P.Reshape()(embedding, (num_res, num_res, query_num_channels))
         # No gradients if no templates.
