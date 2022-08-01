@@ -61,7 +61,7 @@ class TriangleAttention(nn.Cell):
             pair_mask = P.Transpose()(pair_mask, (1, 0))
 
         pair_mask = 1e9 * (pair_mask - 1.)
-        bias = P.ExpandDims()(P.ExpandDims()(pair_mask, 1), 2)
+        input_mask = P.ExpandDims()(P.ExpandDims()(pair_mask, 1), 2)
 
         pair_act, _, _ = self.query_norm(pair_act,
                                          query_norm_gamma,
@@ -74,16 +74,17 @@ class TriangleAttention(nn.Cell):
             pair_act_ori_shape = P.Shape()(pair_act)
             slice_shape = (self.slice_num, -1) + pair_act_ori_shape[1:]
             pair_act = P.Reshape()(pair_act, slice_shape)
-            bias_shape = P.Shape()(bias)
-            bias = P.Reshape()(bias, slice_shape[:2] + bias_shape[1:])
+            input_mask_shape = P.Shape()(input_mask)
+            input_mask = P.Reshape()(input_mask, slice_shape[:2] + input_mask_shape[1:])
 
             slice_idx = 0
             slice_idx_tensor = self.idx
             pair_act_tuple = ()
 
             pair_act_slice = P.Gather()(pair_act, slice_idx_tensor, 0)
-            bias_slice = P.Gather()(bias, slice_idx_tensor, 0)
-            pair_act_slice = self.attn_mod(pair_act_slice, pair_act_slice, bias_slice, index, nonbatched_bias)
+            input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
+            pair_act_slice = self.attn_mod(pair_act_slice, pair_act_slice, input_mask_slice,
+                                           index, nonbatched_bias)
             pair_act_slice = P.Reshape()(pair_act_slice, ((1,) + P.Shape()(pair_act_slice)))
             pair_act_tuple = pair_act_tuple + (pair_act_slice,)
             slice_idx += 1
@@ -92,8 +93,9 @@ class TriangleAttention(nn.Cell):
             while slice_idx < self.slice_num:
                 pair_act_slice = P.Gather()(pair_act, slice_idx_tensor, 0)
                 pair_act_slice = F.depend(pair_act_slice, pair_act_tuple[-1])
-                bias_slice = P.Gather()(bias, slice_idx_tensor, 0)
-                pair_act_slice = self.attn_mod(pair_act_slice, pair_act_slice, bias_slice, index, nonbatched_bias)
+                input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
+                pair_act_slice = self.attn_mod(pair_act_slice, pair_act_slice, input_mask_slice,
+                                               index, nonbatched_bias)
                 pair_act_slice = P.Reshape()(pair_act_slice, ((1,) + P.Shape()(pair_act_slice)))
                 pair_act_tuple = pair_act_tuple + (pair_act_slice,)
                 slice_idx += 1
@@ -104,7 +106,7 @@ class TriangleAttention(nn.Cell):
             if self.orientation_is_per_column:
                 pair_act = mnp.swapaxes(pair_act, -2, -3)
             return pair_act
-        pair_act = self.attn_mod(pair_act, pair_act, bias, index, nonbatched_bias)
+        pair_act = self.attn_mod(pair_act, pair_act, input_mask, index, nonbatched_bias)
         if self.orientation_is_per_column:
             pair_act = P.Transpose()(pair_act, (1, 0, 2))
         return pair_act
