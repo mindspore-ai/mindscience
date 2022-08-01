@@ -20,7 +20,7 @@ import mindspore.common.dtype as mstype
 from mindspore import Parameter
 from mindspore.common.tensor import Tensor
 from mindspore.ops import operations as P
-from mindspore.ops import function as F
+from mindspore.ops import functional as F
 from .basic import Attention, GlobalAttention
 
 
