@@ -11,7 +11,7 @@ common:
     profile_prob: 0.1
     same_prob: 0.1
     uniform_prob: 0.1
-  max_extra_msa: 1024
+  max_extra_msa: 5120
   msa_cluster_features: true
   num_recycle: 4
   reduce_msa_clusters_by_max_templates: true
@@ -69,7 +69,7 @@ eval:
   crop_size: 256
   fixed_size: true
   masked_msa_replace_fraction: 0.15
-  max_msa_clusters: 128
+  max_msa_clusters: 512
   max_templates: 4
   num_ensemble: 1
   subsample_templates: true
