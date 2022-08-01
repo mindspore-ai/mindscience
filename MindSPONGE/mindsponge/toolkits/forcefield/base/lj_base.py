@@ -3,7 +3,7 @@ This **module** is the basic setting for the force field property of charge
 """
 import numpy as np
 from ... import Generate_New_Pairwise_Force_Type
-from ...helper import Molecule, AtomType, GlobalSetting, set_dict_value_alternative_name, Xdict
+from ...helper import Molecule, AtomType, GlobalSetting, set_global_alternative_names, Xdict
 
 AtomType.Add_Property({"LJtype": str})
 
@@ -19,9 +19,10 @@ LJType.Set_Property_Unit("B", "energy·distance^12", "kcal/mol·A^12")
 
 
 @GlobalSetting.Add_Unit_Transfer_Function(LJType)
-def lj_unit_transfer(self):
+def _lj_unit_transfer(self):
     """
     This **function** is used to transfer the units of lj
+
     :param self:
     :return:
     """
@@ -42,31 +43,27 @@ def lj_unit_transfer(self):
 def lorentz_berthelot_for_a(epsilon1, rmin1, epsilon2, rmin2):
     """
     This **function** is used to calculate the A coefficient for Lorentz_Berthelot mix rule
-    :param epsilon1:
-    :param rmin1:
-    :param epsilon2:
-    :param rmin2:
-    :return:
+
+    :param epsilon1: the epsilon parameter of the first atom
+    :param rmin1: the rmin parameter of the first atom
+    :param epsilon2: the epsilon parameter of the second atom
+    :param rmin2: the rmin parameter of the second atom
+    :return: the A coefficient for the atom pair
     """
     return np.sqrt(epsilon1 * epsilon2) * ((rmin1 + rmin2) ** 12)
 
 
-set_dict_value_alternative_name(globals(), lorentz_berthelot_for_a)
-
-
 def lorentz_berthelot_for_b(epsilon1, rmin1, epsilon2, rmin2):
     """
-    This **function** is used to calculate the A coefficient for Lorentz_Berthelot mix rule
-    :param epsilon1:
-    :param rmin1:
-    :param epsilon2:
-    :param rmin2:
-    :return:
+    This **function** is used to calculate the B coefficient for Lorentz_Berthelot mix rule
+
+    :param epsilon1: the epsilon parameter of the first atom
+    :param rmin1: the rmin parameter of the first atom
+    :param epsilon2: the epsilon parameter of the second atom
+    :param rmin2: the rmin parameter of the second atom
+    :return: the B coefficient for the atom pair
     """
     return np.sqrt(epsilon1 * epsilon2) * 2 * ((rmin1 + rmin2) ** 6)
-
-
-set_dict_value_alternative_name(globals(), lorentz_berthelot_for_b)
 
 
 def _find_ab_lj(ljtypes, stat=True):
@@ -163,8 +160,9 @@ def _get_real_lj(ljtypes, same_type):
 def write_lj(self):
     """
     This **function** is used to write SPONGE input file
-    :param self:
-    :return:
+
+    :param self: the Molecule instance
+    :return: the string to write
     """
     ljtypes = []
     ljtypemap = Xdict()
@@ -204,3 +202,5 @@ def write_lj(self):
 
 
 Molecule.Set_Save_SPONGE_Input("LJ")(write_lj)
+
+set_global_alternative_names()

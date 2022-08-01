@@ -2,7 +2,7 @@
 This **module** is the basic setting for the force field format of 3-parameter non bonded 1-4 interactions
 """
 from ... import Generate_New_Bonded_Force_Type
-from ...helper import Molecule, set_dict_value_alternative_name, GlobalSetting
+from ...helper import Molecule, GlobalSetting, set_global_alternative_names
 
 # pylint: disable=invalid-name
 NB14Type = Generate_New_Bonded_Force_Type("nb14_extra", "1-4",
@@ -21,10 +21,11 @@ NB14Type.topology_matrix = [[1, -4],
 
 def get_nb14_extra_lj(atom1, atom2):
     """
-    This **function** is used to get the LJ parameters for NB14EXTRA
-    :param atom1:
-    :param atom2:
-    :return:
+    This **function** is used to get the LJ parameters for the extra nb14 interactions
+
+    :param atom1: the Atom instance
+    :param atom2: the Atom instance
+    :return: the A and B coefficients of LJ
     """
     from . import lj_base
     lj_type = lj_base.LJType
@@ -51,16 +52,14 @@ def get_nb14_extra_lj(atom1, atom2):
     return a, b
 
 
-set_dict_value_alternative_name(globals(), get_nb14_extra_lj)
-
-
 def exclude_to_nb14_extra(molecule, atom1, atom2):
     """
     This **function** is used to calculate nb14_extra instead of non-bonded interactions for atom1 and atom2
-    :param molecule:
-    :param atom1:
-    :param atom2:
-    :return:
+
+    :param molecule: the Molecule instance
+    :param atom1: the Atom instance
+    :param atom2: the Atom instance
+    :return: None
     """
     new_force = NB14Type.entity([atom1, atom2], NB14Type.get_type("UNKNOWNS"))
     a, b = Get_NB14EXTRA_AB(new_force.atoms[0], new_force.atoms[1])
@@ -72,14 +71,12 @@ def exclude_to_nb14_extra(molecule, atom1, atom2):
     molecule.Add_Bonded_Force(new_force)
 
 
-set_dict_value_alternative_name(globals(), exclude_to_nb14_extra)
-
-
 def nb14_to_nb14_extra(molecule):
     """
     This **function** is used to convert nb14 to nb14_extra
-    :param molecule:
-    :return:
+
+    :param molecule: the Molecule instance
+    :return: None
     """
     # 处理nb14
     # A、B中的nb14全部变为nb14_extra
@@ -96,13 +93,11 @@ def nb14_to_nb14_extra(molecule):
         molecule.Add_Bonded_Force(new_force)
 
 
-set_dict_value_alternative_name(globals(), nb14_to_nb14_extra)
-
-
 @GlobalSetting.Add_Unit_Transfer_Function(NB14Type)
-def lj_unit_transfer(self):
+def _lj_unit_transfer(self):
     """
     This **function** is used to transfer the units of lj
+
     :param self:
     :return:
     """
@@ -120,8 +115,9 @@ def lj_unit_transfer(self):
 def write_nb14(self):
     """
     This **function** is used to write SPONGE input file
-    :param self:
-    :return:
+
+    :param self: the Molecule instance
+    :return: the string to write
     """
     bonds = []
     for bond in self.bonded_forces.get("nb14_extra", []):
@@ -143,3 +139,5 @@ def write_nb14(self):
 
         return towrite
     return None
+
+set_global_alternative_names()

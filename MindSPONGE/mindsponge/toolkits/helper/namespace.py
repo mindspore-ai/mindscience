@@ -15,9 +15,16 @@ def source(module, into_global=True):
 
     usage example::
 
-    :param module:
-    :param into_global:
-    :return:
+        #import numpy as np
+        np = source("numpy", False)
+
+        # from .. import forcefield import amber as ff
+        # from ..forcefield.amber import *
+        ff = source("..forcefield.amber")
+
+    :param module: the module name to import
+    :param into_global: whether to merge the global variables
+    :return: the module to import
     """
     global_ = currentframe().f_back.f_globals
     module_ = import_module(module, package=global_["__name__"])
@@ -36,9 +43,15 @@ SPECIAL_STRINGS = {"Pdb": "PDB", "Sponge": "SPONGE", "Nb14": "NB14", "Lj": "LJ",
 def set_real_global_variable(name, value):
     """
     This **function** is used to set the variable to real global variable
-    :param name:
-    :param value:
-    :return:
+
+    usage::
+
+        set_real_global_variable(hello, lambda: print(”hello“))
+        hello()
+
+    :param name: the name to the use as a global variable
+    :param value: the value corresponding to the variable
+    :return: None
     """
     sys.modules.get("__main__").__dict__[name] = value
 
@@ -46,20 +59,29 @@ def set_real_global_variable(name, value):
 def remove_real_global_variable(name):
     """
     This **function** is used to remove the variable from real global variable
-    :param name:
-    :param value:
-    :return:
+
+    usage::
+
+        x = 1
+        remove_real_global_variable("x")
+        x
+        # NameError: name 'x' is not defined
+
+    :param name: the global variable to remove
+    :return: None
     """
     sys.modules.get("__main__").__dict__.pop(name)
 
 
 def set_alternative_name(obj, func, set_method):
     """
-    This **function** is used to set the alternative name for a function and an object
-    :param obj:
-    :param func:
-    :param set_method:
-    :return:
+    This **function** is used to set the alternative names for a function to an object.
+    This is the basic function, and some other partial functions with specific ``set_method`` is more useful.
+
+    :param obj: the object
+    :param func: the function
+    :param set_method: the method to set
+    :return: None
     """
     name = func.__name__
     set_method(obj, name, func)
@@ -87,8 +109,21 @@ set_attribute_alternative_name = partial(set_alternative_name, set_method=setatt
 def set_classmethod_alternative_names(cls):
     """
     This **function** is used to set the attribute/method alternative names for a class
-    :param cls:
-    :return:
+    usage example::
+
+        class A:
+            #@staticmethod
+            @classmethod
+            def hello_world(cls):
+                print("hello")
+        set_classmethod_alternative_names(A)
+        A.hello_world()
+        A.helloWorld()
+        A.Hello_World()
+        A.HelloWorld()
+
+    :param cls: the class to set alternative names
+    :return: None
     """
     types = list(cls.__bases__)
     types.append(cls)
@@ -105,8 +140,21 @@ def set_classmethod_alternative_names(cls):
 def set_attribute_alternative_names(instance):
     """
     This **function** is used to set the attribute/method alternative names for an instance
-    :param instance:
-    :return:
+    usage example::
+
+        class A:
+            def __init__(self):
+                set_attribute_alternative_names(self)
+            def hello_world():
+                print("hello")
+        a = A()
+        a.hello_world()
+        a.helloWorld()
+        a.Hello_World()
+        a.HelloWorld()
+
+    :param instance: the instance to set names
+    :return: None
     """
     types = list(type(instance).__bases__)
     types.append(type(instance))
@@ -132,13 +180,23 @@ def _dict_set_method(obj, name, func):
 set_dict_value_alternative_name = partial(set_alternative_name, set_method=_dict_set_method)
 
 
-def set_global_alternative_names(dic, real_global=False):
+def set_global_alternative_names(real_global=False):
     """
-    This **function** is used to set the variables to be global
-    :param dic:
-    :param real_global:
-    :return:
+    This **function** is used to set the alternative names of the functions in the module to be global
+    usage example::
+
+        def hello_world():
+            print("hello")
+        set_global_alternative_names()
+        hello_world()
+        helloWorld()
+        Hello_World()
+        HelloWorld()
+
+    :param real_global: make the variable to real global, which can be used without the module name
+    :return: None
     """
+    dic = currentframe().f_back.f_globals
     new_dict = {}
     for value in dic.values():
         if not isinstance(value, FunctionType) or value.__name__.startswith("_"):
@@ -153,3 +211,5 @@ def set_global_alternative_names(dic, real_global=False):
         else:
             set_dict_value_alternative_name(new_dict, value)
     dic.update(new_dict)
+
+set_global_alternative_names()

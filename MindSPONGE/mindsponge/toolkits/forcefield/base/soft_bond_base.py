@@ -1,7 +1,7 @@
 """
 This **module** is the basic setting for the force field format of soft bond
 """
-from ...helper import Molecule
+from ...helper import Molecule, set_global_alternative_names
 from . import bond_base
 
 bond_base.BondType.Add_Property({"from_AorB": int})
@@ -11,8 +11,9 @@ bond_base.BondType.Add_Property({"from_AorB": int})
 def write_bond(self):
     """
     This **function** is used to write SPONGE input file
-    :param self:
-    :return:
+
+    :param self: the Molecule instance
+    :return: the string to write
     """
     bonds = []
     for bond in self.bonded_forces.get("bond_soft", []):
@@ -33,3 +34,5 @@ def write_bond(self):
 
         return towrite
     return None
+
+set_global_alternative_names()

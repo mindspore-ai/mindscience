@@ -12,9 +12,10 @@ AtomType.Add_Property({"GB_scaler": float})
 
 def bondi_radii(atom):
     """
-    This **function** receives an atom and returns the Bondi radii
-    :param atom:
-    :return:
+    This **function** receives an atom and sets the Bondi radii
+
+    :param atom: the Atom instance
+    :return: None
     """
     temp_dict = {"H": 1.2, "C": 1.7, "N": 1.55, "O": 1.52, "F": 1.47,
                  "P": 1.8, "S": 1.8, "Cl": 1.75, "Br": 1.85, "I": 1.98}
@@ -27,9 +28,10 @@ def bondi_radii(atom):
 
 def modified_bondi_radii(atom):
     """
-    This **function** receives an atom and returns the modified Bondi radii
-    :param atom:
-    :return:
+    This **function** receives an atom and sets the modified Bondi radii
+
+    :param atom: the Atom instance
+    :return: None
     """
     temp_dict = {"H": 1.2, "C": 1.7, "N": 1.55, "O": 1.5, "F": 1.5,
                  "Si": 2.1, "P": 1.85, "S": 1.8, "Cl": 1.7, "Br": 1.85, "I": 1.98}
@@ -78,8 +80,9 @@ def _show_reference(radius_set):
 def write_gb_radii_and_scaler(self):
     """
     This **function** is used to write gb radii and scaler when saving SPONGE inputs
-    :param self:
-    :return:
+
+    :param self: the Molecule instance
+    :return: the string to write
     """
     towrite = "%d\n" % (len(self.atoms))
     towrite += "\n".join(["%.4f %.4f" % (atom.GB_radii, atom.GB_scaler) for atom in self.atoms])
@@ -89,9 +92,10 @@ def write_gb_radii_and_scaler(self):
 def set_gb_radius(mol, radius_set=modified_bondi_radii):
     """
     This **function** is used to set GB radius for the molecule
-    :param mol:
-    :param radius_set:
-    :return:
+
+    :param mol: the molecule, either a Molecule instance, a ResidueType instance or a Residue instance
+    :param radius_set: a function, which receives an Atom instance and sets the radius
+    :return: None
     """
     _show_reference(radius_set)
     if isinstance(mol, Molecule):
@@ -105,4 +109,4 @@ def set_gb_radius(mol, radius_set=modified_bondi_radii):
     Molecule.Set_Save_SPONGE_Input("gb")(write_gb_radii_and_scaler)
 
 
-set_global_alternative_names(globals())
+set_global_alternative_names()

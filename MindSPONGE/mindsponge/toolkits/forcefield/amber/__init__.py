@@ -65,4 +65,4 @@ def load_parameters_from_frcmod(filename, include_cmap=False, prefix=True):
         residue_cmap_base.CMapType.Residue_Map.update(cmap)
 
 
-set_global_alternative_names(globals())
+set_global_alternative_names()

@@ -2,14 +2,16 @@
 This **module** is used to provide basic common math functions
 """
 import numpy as np
+from .namespace import  set_global_alternative_names
 
 
 def get_rotate_matrix(r0, angle):
     """
     This **function** is used to get the rotation matrix
-    :param r0:
-    :param angle:
-    :return:
+
+    :param r0: the axis to rotate around
+    :param angle: the angle to rotate
+    :return: the rotation matrix
     """
     cost = np.cos(angle)
     cost_one = 1 - cost
@@ -26,10 +28,11 @@ def get_rotate_matrix(r0, angle):
 def get_fibonacci_grid(n, origin, radius):
     """
     This **function** is used to get the sphere grid by fibonacci algorithm
-    :param n:
-    :param origin:
-    :param radius:
-    :return:
+
+    :param n: the number of grids
+    :param origin: the origin of the sphere
+    :param radius: the radius of the sphere
+    :return: a numpy array of grid coordinates
     """
     n_ = np.arange(1, n + 1)
     factorn = (np.sqrt(5) - 1) * np.pi * n_
@@ -46,8 +49,9 @@ def get_fibonacci_grid(n, origin, radius):
 def guess_element_from_mass(mass):
     """
     This **function** is used to guess element from its mass
-    :param mass:
-    :return:
+
+    :param mass: an int or a float, the mass
+    :return: the element name
     """
     elements = ["X", "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne",
                 "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca", "Sc",
@@ -92,3 +96,5 @@ def guess_element_from_mass(mass):
                 index = j
                 break
     return elements[index]
+
+set_global_alternative_names()

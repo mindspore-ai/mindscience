@@ -308,7 +308,8 @@ FEP_BONDED_FORCE_MERGE_RULE["improper"] = {"lambda_name": "dihedral", "merge_fun
 def save_hard_core_lj():
     """
     This **function** is used to save hard core lj
-    :return:
+
+    :return: None
     """
     Molecule.Set_Save_SPONGE_Input("LJ")(LJ.write_zero_lj)
     Molecule.Del_Save_SPONGE_Input("LJ_soft_core")
@@ -318,7 +319,8 @@ def save_hard_core_lj():
 def save_soft_core_lj():
     """
     This **function** is used to save soft core lj
-    :return:
+
+    :return: None
     """
     Molecule.Del_Save_SPONGE_Input("LJ")
 
@@ -407,20 +409,21 @@ def save_soft_core_lj():
     Molecule.Set_Save_SPONGE_Input("LJ_soft_core")(write_soft_lj)
 
 
-def intramolecule_nb_to_nb14(mol_a, perturbing_residues):
+def intramolecule_nb_to_nb14(mol_a, perturbating_residues):
     """
+    This **function** convert the non bonded interactions to nb14 interactions within the molecule
 
-    :param mol_a:
-    :param perturbing_residues:
+    :param mol_a: the Molecule instance
+    :param perturbating_residues: the residue(s) to be perturbed
     :return:
     """
-    if isinstance(perturbing_residues, Residue):
-        perturbing_residues = [perturbing_residues]
+    if isinstance(perturbating_residues, Residue):
+        perturbating_residues = [perturbating_residues]
     BUILD.Build_Bonded_Force(mol_a)
     a_exclude = exclude_base.Exclude.current.Get_Excluded_Atoms(mol_a)
-    for residue1 in perturbing_residues:
+    for residue1 in perturbating_residues:
         for atom_a1 in residue1.atoms:
-            for residue2 in perturbing_residues:
+            for residue2 in perturbating_residues:
                 for atom_a2 in residue2.atoms:
                     if atom_a1 == atom_a2:
                         continue
@@ -438,16 +441,17 @@ def intramolecule_nb_to_nb14(mol_a, perturbing_residues):
                         a_exclude[atom_a2].add(atom_a1)
 
 
-def get_free_molecule(mol_a, perturbing_residues, intra_fep=False):
+def get_free_molecule(mol_a, perturbating_residues, intra_fep=False):
     """
+    This **function** makes the molecule to be "free", having no interaction with other molecules
 
-    :param mol_a:
-    :param perturbing_residues:
-    :param intra_fep:
-    :return:
+    :param mol_a: the Molecule instance
+    :param perturbating_residues: the residues to be perturbed
+    :param intra_fep: whether clear intramolecular non bonded interactions
+    :return: a new Molecule instance
     """
-    if isinstance(perturbing_residues, Residue):
-        perturbing_residues = [perturbing_residues]
+    if isinstance(perturbating_residues, Residue):
+        perturbating_residues = [perturbating_residues]
     BUILD.Build_Bonded_Force(mol_a)
     nb14_extra_base.NB14_To_NB14EXTRA(mol_a)
     mol_b = mol_a.deepcopy()
@@ -455,7 +459,7 @@ def get_free_molecule(mol_a, perturbing_residues, intra_fep=False):
     for i, atom_a in enumerate(mol_a.atoms):
         mol_a2mol_b[atom_a] = mol_b.atoms[i]
 
-    for residue in perturbing_residues:
+    for residue in perturbating_residues:
         for atom_a in residue.atoms:
             atom = mol_a2mol_b[atom_a]
             atom.charge = 0
@@ -604,14 +608,15 @@ def _get_residue_ab(residue_type_a, residue_type_b, residue_a, forcopy, matchmap
 
 def merge_dual_topology(mol, residue_a, residue_b, assign_a, assign_b, tmcs=60):
     """
+    This **function** perturbs a residue in the molecule into another type in the dual topology way
 
-    :param mol:
-    :param residue_a:
-    :param residue_b:
-    :param assign_a:
-    :param assign_b:
-    :param tmcs:
-    :return:
+    :param mol: the Molecule instance
+    :param residue_a: the Residue which needs to be perturbed
+    :param residue_b: the Residue which is perturbed to
+    :param assign_a: the Assign instance corresponding to ``residue_a``
+    :param assign_b: the Assign instance corresponding to ``residue_b``
+    :param tmcs: the max time to find the max common structure
+    :return: two molecules in the initial and final lambda stat respectively
     """
     BUILD.Build_Bonded_Force(mol)
     BUILD.Build_Bonded_Force(residue_b)
@@ -700,13 +705,14 @@ def merge_dual_topology(mol, residue_a, residue_b, assign_a, assign_b, tmcs=60):
 
 def merge_force_field(mol_a, mol_b, default_lambda, specific_lambda=None, intra_fep=False):
     """
+    This **function** merges one molecule in two different force fields (two Molecule instances) into one
 
-    :param mol_a:
-    :param mol_b:
-    :param default_lambda:
-    :param specific_lambda:
-    :param intra_fep:
-    :return:
+    :param mol_a: the Molecule instance in the initial lambda stat
+    :param mol_b: the Molecule instance in the final lambda stat
+    :param default_lambda: the lambda to scale the force if no ``specific_lambda`` is set for the force
+    :param specific_lambda: a dict to map the force to its special scale factor lambda
+    :param intra_fep: whether clear intramolecular non bonded interactions
+    :return: the Molecule instance merged
     """
     if specific_lambda is None:
         specific_lambda = Xdict()
@@ -757,4 +763,4 @@ def merge_force_field(mol_a, mol_b, default_lambda, specific_lambda=None, intra_
     return mol_r
 
 
-set_global_alternative_names(globals())
+set_global_alternative_names()

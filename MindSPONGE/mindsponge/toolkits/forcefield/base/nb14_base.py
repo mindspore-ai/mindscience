@@ -2,7 +2,7 @@
 This **module** is the basic setting for the force field format of 2-parameter non bonded 1-4 interactions
 """
 from ... import Generate_New_Bonded_Force_Type
-from ...helper import Molecule
+from ...helper import Molecule, set_global_alternative_names
 
 # pylint: disable=invalid-name
 NB14Type = Generate_New_Bonded_Force_Type("nb14", "1-4", {"kLJ": float, "kee": float}, True)
@@ -15,8 +15,9 @@ NB14Type.topology_matrix = [[1, -4],
 def write_nb14(self):
     """
     This **function** is used to write SPONGE input file
-    :param self:
-    :return:
+
+    :param self: the Molecule instance
+    :return: the string to write
     """
     bonds = []
     for bond in self.bonded_forces.get("nb14", []):
@@ -36,3 +37,5 @@ def write_nb14(self):
 
         return towrite
     return None
+
+set_global_alternative_names()
