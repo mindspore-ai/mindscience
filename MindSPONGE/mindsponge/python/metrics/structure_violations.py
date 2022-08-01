@@ -13,13 +13,37 @@
 # limitations under the License.
 # ============================================================================
 """Modules and utilities for the structure module."""
+import numpy as np
 import mindspore as ms
 import mindspore.numpy as mnp
-from mindspore import nn
+from mindspore import nn, Tensor
 from mindspore.ops import operations as P
 from mindsponge.common.geometry import quaternion_from_tensor
 from mindsponge.common.utils import find_optimal_renaming
 from ..common import residue_constants
+
+
+VIOLATION_TOLERANCE_ACTOR = 12.0
+CLASH_OVERLAP_TOLERANCE = 1.5
+
+# one hot encoding for C and N atoms (using atom14 representation)
+C_ONE_HOT = Tensor(np.array([0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
+N_ONE_HOT = Tensor(np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
+
+# Van der Waals radii for each atom
+ATOMTYPE_RADIUS = \
+    np.array([residue_constants.van_der_waals_radius.get(name[0]) for name in residue_constants.atom_types])
+ATOMTYPE_RADIUS = Tensor(ATOMTYPE_RADIUS, ms.float32)
+DISTS_MASK_I = Tensor(np.eye(14, 14), ms.int32)
+
+# lower bound and upper bound between each atoms used for clashes calculation
+LOWER_BOUND, UPPER_BOUND, _ = \
+    residue_constants.make_atom14_dists_bounds(overlap_tolerance=CLASH_OVERLAP_TOLERANCE,
+                                               bond_length_tolerance_factor=VIOLATION_TOLERANCE_ACTOR)
+LOWER_BOUND = Tensor(LOWER_BOUND, ms.float32)
+UPPER_BOUND = Tensor(UPPER_BOUND, ms.float32)
+
+CYS_SG_IDX = Tensor(5, ms.int32)
 
 
 def softmax_cross_entropy(logits, labels):
@@ -181,9 +205,11 @@ def within_residue_violations(
 
 
 def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_atom14_to_atom37,
-                              atom14_pred_positions, violation_tolerance_factor, clash_overlap_tolerance,
-                              lower_bound, upper_bound, atomtype_radius, c_one_hot, n_one_hot, dists_mask_i,
-                              cys_sg_idx):
+                              atom14_pred_positions, violation_tolerance_factor=VIOLATION_TOLERANCE_ACTOR,
+                              clash_overlap_tolerance=CLASH_OVERLAP_TOLERANCE, lower_bound=LOWER_BOUND,
+                              upper_bound=UPPER_BOUND, atomtype_radius=ATOMTYPE_RADIUS,
+                              c_one_hot=C_ONE_HOT, n_one_hot=N_ONE_HOT, dists_mask_i=DISTS_MASK_I,
+                              cys_sg_idx=CYS_SG_IDX):
     """Computes several checks for structural violations."""
 
     # Compute between residue backbone violations of bonds and angles.
