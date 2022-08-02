@@ -25,7 +25,7 @@ from mindsponge.common.residue_constants import make_atom14_dists_bounds
 from mindsponge.common.protein import from_pdb_string
 from mindsponge.common.utils import make_atom14_positions
 from mindsponge.data.data_transform import pseudo_beta_fn, atom37_to_frames, atom37_to_torsion_angles
-from preprocess import Feature
+from .preprocess import Feature
 
 
 def create_dataset(train_data_dir, raw_feature_dir, names, data_cfg, center_name_path, shuffle=False,

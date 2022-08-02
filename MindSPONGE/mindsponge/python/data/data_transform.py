@@ -586,7 +586,7 @@ def atom37_to_frames(
                 [gt_frames[0][3], gt_frames[0][4], gt_frames[0][5]],
                 [gt_frames[0][6], gt_frames[0][7], gt_frames[0][8]]]
     translation = [gt_frames[1][0], gt_frames[1][1], gt_frames[1][2]]
-    backbone_affine_tensor = to_tensor(rotation[0], translation)[:, 0, :]
+    backbone_affine_tensor = to_tensor(rotation, translation)[:, 0, :]
     return {
         'rigidgroups_gt_frames': gt_frames_flat12,  # shape (..., 8, 12)
         'rigidgroups_gt_exists': gt_masks,  # shape (..., 8)

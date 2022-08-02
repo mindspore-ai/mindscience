@@ -14,7 +14,6 @@
 # ============================================================================
 """data process"""
 import numpy as np
-from mindspore import Tensor
 
 from mindsponge.data.data_transform import one_hot, correct_msa_restypes, randomly_replace_msa_with_unknown, \
     fix_templates_aatype, pseudo_beta_fn, make_atom14_masks, \
@@ -515,9 +514,9 @@ class Feature:
         arrays = [features[key] for key in input_keys]
         arrays = [array.astype(dtype) if array.dtype == "float64" else array for array in arrays]
         arrays = [array.astype(dtype) if array.dtype == "float32" else array for array in arrays]
-        prev_pos = Tensor(np.zeros([cfg.eval.crop_size, 37, 3]).astype(dtype))
-        prev_msa_first_row = Tensor(np.zeros([cfg.eval.crop_size, 256]).astype(dtype))
-        prev_pair = Tensor(np.zeros([cfg.eval.crop_size, cfg.eval.crop_size, 128]).astype(dtype))
+        prev_pos = np.zeros([cfg.eval.crop_size, 37, 3]).astype(dtype)
+        prev_msa_first_row = np.zeros([cfg.eval.crop_size, 256]).astype(dtype)
+        prev_pair = np.zeros([cfg.eval.crop_size, cfg.eval.crop_size, 128]).astype(dtype)
         res = [arrays, prev_pos, prev_msa_first_row, prev_pair]
         res = self.process_res(features, res, dtype)
         return res
