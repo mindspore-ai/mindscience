@@ -19,13 +19,13 @@ protein feature generation module.
 import numpy as np
 from absl import logging
 
-from mindsponge.data.parsers import parse_fasta, parse_hhr, parse_a3m
 from mindsponge.data.data_transform import convert_monomer_features, convert_unnecessary_leading_dim_feats
 from mindsponge.common import residue_constants
 from data.templates import TemplateHitFeaturizer
 from data.hhsearch import HHSearch
 from data.msa_query import MmseqQuery
 from data.multimer_pipeline import add_assembly_features, pair_and_merge, pad_msa
+from data.parsers import parse_fasta, parse_hhr, parse_a3m
 
 
 def make_msa_features(msas, deletion_matrices):
@@ -82,7 +82,7 @@ class RawFeatureGenerator:
                  pdb70_database_path,
                  database_envdb_dir,
                  mmseqs_binary,
-                 database_dir,
+                 uniref30_path,
                  a3m_result_path,
                  max_hits=20,
                  msa_length=512):
@@ -98,7 +98,7 @@ class RawFeatureGenerator:
         self.max_hits = max_hits
         self.msa_length = msa_length
         self.msa_query = MmseqQuery(database_envdb_dir=database_envdb_dir, mmseqs_binary=mmseqs_binary,
-                                    database_dir=database_dir, result_path=a3m_result_path)
+                                    uniref30_path=uniref30_path, result_path=a3m_result_path)
         self.hhsearch_pdb70_runner = HHSearch(binary_path=hhsearch_binary_path, databases=[pdb70_database_path])
 
 

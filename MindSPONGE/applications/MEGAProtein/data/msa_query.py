@@ -25,7 +25,7 @@ class MmseqQuery:
     def __init__(self,
                  database_envdb_dir,
                  mmseqs_binary,
-                 database_dir,
+                 uniref30_path,
                  result_path,
                  msa_search_sh=os.path.join(os.path.dirname(__file__),
                                             "msa_search.sh")):
@@ -33,7 +33,7 @@ class MmseqQuery:
 
         self.database_envdb_dir = database_envdb_dir
         self.mmseqs_binary = mmseqs_binary
-        self.database_dir = database_dir
+        self.uniref30_path = uniref30_path
         self.result_path = result_path
         self.msa_search_sh = msa_search_sh
 
@@ -67,10 +67,10 @@ class MmseqQuery:
         os.makedirs(result_path, exist_ok=True)
         if self.database_envdb_dir:
             command = f"sh {self.msa_search_sh} {self.mmseqs_binary} " + fasta_path + " " + result_path + " " + \
-                      self.database_dir + " " + "\"\"" + " " + self.database_envdb_dir + " \"1\" \"0\" \"1\""
+                      self.uniref30_path + " " + "\"\"" + " " + self.database_envdb_dir + " \"1\" \"0\" \"1\""
         else:
             command = f"sh {self.msa_search_sh} {self.mmseqs_binary} " + fasta_path + " " + result_path + " " + \
-                      self.database_dir + " " + "\"\"" + " \"\"" + " \"0\" \"0\" \"1\""
+                      self.uniref30_path + " " + "\"\"" + " \"\"" + " \"0\" \"0\" \"1\""
         os.system(command)
         a3m_file_path = os.listdir(result_path)
         a3m_file_path = [os.path.join(result_path, x) for x in a3m_file_path if x.endswith("a3m")]

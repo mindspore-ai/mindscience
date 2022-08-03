@@ -14,3 +14,4 @@
 # ============================================================================
 '''init'''
 from .preprocess import Feature
+from .protein_feature import RawFeatureGenerator

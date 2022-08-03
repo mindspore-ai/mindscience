@@ -15,10 +15,12 @@
 """
 utils module used for tmpdir generation.
 """
-
+import time
 import contextlib
 import tempfile
 import shutil
+
+from absl import logging
 
 
 @contextlib.contextmanager
@@ -38,3 +40,12 @@ def tmpdir_manager(base_dir: str):
         yield tmpdir
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
+
+
+@contextlib.contextmanager
+def timing(msg: str):
+    logging.info('Started %s', msg)
+    tic = time.time()
+    yield
+    toc = time.time()
+    logging.info('Finished %s in %.3f seconds', msg, toc - tic)
