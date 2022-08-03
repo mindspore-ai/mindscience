@@ -203,4 +203,31 @@ def write_lj(self):
 
 Molecule.Set_Save_SPONGE_Input("LJ")(write_lj)
 
+
+#pylint: disable=unused-argument
+def lj_todo(self, sys_kwarg, ene_kwarg):
+    """
+    This **function** is used to get MindSponge system and energy
+
+    :param self: the Molecule instance
+    :param sys_kwarg: a dict, the kwarg for system
+    :param ene_kwarg: a dict, the kwarg for force field
+    :return: None
+    """
+    from mindsponge.potential import LennardJonesEnergy
+    if "lj" not in ene_kwarg:
+        ene_kwarg["lj"] = Xdict()
+        ene_kwarg["lj"]["function"] = lambda system, ene_kwarg: LennardJonesEnergy(
+            epsilon=ene_kwarg["lj"]["epsilon"],
+            sigma=ene_kwarg["lj"]["sigma"],
+            length_unit='A', energy_unit='kcal/mol')
+        ene_kwarg["lj"]["epsilon"] = []
+        ene_kwarg["lj"]["sigma"] = []
+    ljtypes = [LJType.get_type(atom.LJtype + "-" + atom.LJtype) for atom in self.atoms]
+    ene_kwarg["lj"]["epsilon"].append([ljtype.epsilon for ljtype in ljtypes])
+    ene_kwarg["lj"]["sigma"].append([ljtype.rmin / (4 ** (1 / 12) / 2) for ljtype in ljtypes])
+
+
+Molecule.Set_MindSponge_Todo("LJ")(lj_todo)
+
 set_global_alternative_names()

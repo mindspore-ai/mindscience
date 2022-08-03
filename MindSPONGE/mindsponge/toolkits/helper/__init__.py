@@ -1150,6 +1150,7 @@ class Molecule:
     """
     _all = Xdict()
     _save_functions = Xdict()
+    _mindsponge_todo = Xdict()
 
     def __init__(self, name):
         self.name = ""
@@ -1222,6 +1223,32 @@ class Molecule:
         :return: None
         """
         cls._save_functions.pop(keyname)
+
+    @classmethod
+    def set_mindsponge_todo(cls, keyname):
+        """
+        This **function** is used to set the function when ``Save_SPONGE_Input``.
+        It is recommended used as a **decorator**.
+
+        :param keyname: the file prefix to save
+        :return: the decorator
+        """
+
+        def wrapper(func):
+            cls._mindsponge_todo[keyname] = func
+            return func
+
+        return wrapper
+
+    @classmethod
+    def del_mindsponge_todo(cls, keyname):
+        """
+        This **function** is used to delete the function when ``Save_SPONGE_Input``.
+
+        :param keyname: the file prefix to save
+        :return: None
+        """
+        cls._mindsponge_todo.pop(keyname)
 
     @staticmethod
     def _set_friends_in_different_residue(molecule, atom1, atom2):

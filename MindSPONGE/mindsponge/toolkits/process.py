@@ -2,7 +2,7 @@
 This **module** is used to process topology and conformations
 """
 import numpy as np
-from .helper import get_rotate_matrix, ResidueType, Molecule, Residue, set_global_alternative_names
+from .helper import get_rotate_matrix, ResidueType, Molecule, Residue, set_global_alternative_names, Xdict
 
 
 def impose_bond(molecule, atom1, atom2, length):
@@ -317,5 +317,36 @@ The short main axis will rotate to this direction.
         atom.x = molcrd[i][0]
         atom.y = molcrd[i][1]
         atom.z = molcrd[i][2]
+
+
+def get_peptide_from_sequence(sequence, charged_terminal=True):
+    """
+    This **function** is used to get a peptide from the sequence
+
+    :param sequence: a string, the serial
+    :param charged_terminal: whether to change the terminal residues to the corresponding charged residue
+    :return: a Molecule instance, the peptide
+    """
+    assert isinstance(sequence, str) and len(sequence) > 1
+    temp_dict = Xdict({"A": "ALA", "G": "GLY", "V": "VAL", "L": "LEU", "I": "ILE", "P": "PRO",
+                       "F": "PHE", "Y": "TYR", "W": "TRP", "S": "SER", "T": "THR", "C": "CYS",
+                       "M": "MET", "N": "ASN", "Q": "GLN", "D": "ASP", "E": "GLU", "K": "LYS",
+                       "R": "ARG", "H": "HIS"}, not_found_message="{} is not an abbreviation for an amino acid")
+    temp_dict2 = Xdict({key: ResidueType.get_type(value) for key, value in temp_dict.items()},
+                       not_found_message="{} is not an abbreviation for an amino acid")
+    if charged_terminal:
+        head = "N" + temp_dict[sequence[0]]
+        tail = "C" + temp_dict[sequence[-1]]
+    else:
+        head = temp_dict[sequence[0]]
+        tail = temp_dict[sequence[-1]]
+
+    toret = ResidueType.get_type(head)
+
+    for i in sequence[1:-1]:
+        toret = toret + temp_dict2[i]
+    toret += ResidueType.get_type(tail)
+    return toret
+
 
 set_global_alternative_names()

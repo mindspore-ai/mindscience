@@ -321,6 +321,59 @@ def build_bonded_force(cls):
         raise NotImplementedError
 
 
+def _get_single_system_energy(scls, sys_kwarg, ene_kwarg):
+    """
+
+    :param scls:
+    :return:
+    """
+    for todo in getattr(scls, "_mindsponge_todo").values():
+        todo(scls, sys_kwarg, ene_kwarg)
+
+
+def get_mindsponge_system_energy(cls):
+    """
+    This **function** gets the system and energy for mindsponge
+
+    :param cls: the object to save, or a list of object to save
+    :return: a tuple, including the system and energy for mindsponge
+    """
+    from mindsponge import set_global_units
+    from mindsponge import Molecule as mMolecule
+    from mindsponge import ForceFieldBase
+    from collections import Sequence
+    if not isinstance(cls, Sequence):
+        cls = [cls]
+    sys_kwarg = Xdict()
+    ene_kwarg = Xdict()
+    for scls in cls:
+        if isinstance(scls, Molecule):
+            build_bonded_force(scls)
+            _get_single_system_energy(scls, sys_kwarg, ene_kwarg)
+
+        elif isinstance(scls, Residue):
+            mol = Molecule(name=scls.name)
+            mol.Add_Residue(scls)
+            _get_single_system_energy(scls, sys_kwarg, ene_kwarg)
+
+        elif isinstance(scls, ResidueType):
+            residue = Residue(scls, name=cls.name)
+            for atom in cls.atoms:
+                residue.Add_Atom(atom)
+            _get_single_system_energy(scls, sys_kwarg, ene_kwarg)
+        else:
+            raise TypeError(f"The type should be a Molecule, Residue, ResidueType, but we get {str(type(scls))}")
+    set_global_units("A", "kcal/mol")
+    system = mMolecule(**sys_kwarg)
+    system.multi_system = len(cls)
+    energies = []
+    exclude = ene_kwarg.pop("exclude")
+    for todo in ene_kwarg.values():
+        energies.append(todo["function"](system, ene_kwarg))
+    energy = ForceFieldBase(energy=energies, exclude_index=exclude)
+    return system, energy
+
+
 def save_sponge_input(cls, prefix=None, dirname="."):
     """
     This **function** saves the iput object as SPONGE inputs

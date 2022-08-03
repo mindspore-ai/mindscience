@@ -3,7 +3,7 @@ This **module** is the basic setting for the force field format of periodic prop
 """
 from itertools import permutations
 from ... import Generate_New_Bonded_Force_Type
-from ...helper import Molecule, set_global_alternative_names
+from ...helper import Molecule, set_global_alternative_names, Xdict
 
 # pylint: disable=invalid-name
 ProperType = Generate_New_Bonded_Force_Type("dihedral", "1-2-3-4", {"k": float, "phi0": float, "periodicity": int},
@@ -93,5 +93,48 @@ def write_dihedral(self):
 
         return towrite
     return None
+
+
+#pylint: disable=unused-argument
+@Molecule.Set_MindSponge_Todo("dihedral")
+def _do(self, sys_kwarg, ene_kwarg):
+    """
+
+    :return:
+    """
+    from mindsponge.potential import DihedralEnergy
+    if "dihedral" not in ene_kwarg:
+        ene_kwarg["dihedral"] = Xdict()
+        ene_kwarg["dihedral"]["function"] = lambda system, ene_kwarg: DihedralEnergy(
+            index=ene_kwarg["dihedral"]["index"],
+            force_constant=ene_kwarg["dihedral"]["force_constant"],
+            periodicity=ene_kwarg["dihedral"]["periodicity"],
+            phase=ene_kwarg["dihedral"]["phase"],
+            energy_unit="kcal/mol")
+        ene_kwarg["dihedral"]["index"] = []
+        ene_kwarg["dihedral"]["force_constant"] = []
+        ene_kwarg["dihedral"]["periodicity"] = []
+        ene_kwarg["dihedral"]["phase"] = []
+    dihedrals = []
+    force_constants = []
+    periodicitys = []
+    phases = []
+    for dihedral in self.bonded_forces.get("dihedral", []):
+        for i in range(dihedral.multiple_numbers):
+            if dihedral.ks[i] != 0:
+                dihedrals.append([self.atom_index[atom] for atom in dihedral.atoms])
+                force_constants.append(dihedral.ks[i] * 2)
+                periodicitys.append(dihedral.periodicitys[i])
+                phases.append(dihedral.phi0s[i])
+    for dihedral in self.bonded_forces.get("improper", []):
+        if dihedral.k != 0:
+            dihedrals.append([self.atom_index[atom] for atom in dihedral.atoms])
+            force_constants.append(dihedral.k * 2)
+            periodicitys.append(dihedral.periodicity)
+            phases.append(dihedral.phi0)
+    ene_kwarg["dihedral"]["index"].append(dihedrals)
+    ene_kwarg["dihedral"]["force_constant"].append(force_constants)
+    ene_kwarg["dihedral"]["periodicity"].append(periodicitys)
+    ene_kwarg["dihedral"]["phase"].append(phases)
 
 set_global_alternative_names()

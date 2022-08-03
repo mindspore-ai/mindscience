@@ -1,7 +1,7 @@
 """
 This **module** is the basic setting for the force field property of charge
 """
-from ...helper import Molecule, AtomType, set_global_alternative_names
+from ...helper import Molecule, AtomType, set_global_alternative_names, Xdict
 
 AtomType.Add_Property({"charge": float})
 
@@ -19,5 +19,22 @@ def write_charge(self):
     towrite = "%d\n" % (len(self.atoms))
     towrite += "\n".join(["%.6f" % (atom.charge * 18.2223) for atom in self.atoms])
     return towrite
+
+
+@Molecule.Set_MindSponge_Todo("charge")
+def _do(self, sys_kwarg, ene_kwarg):
+    """
+
+    :return:
+    """
+    from mindsponge.potential import CoulombEnergy
+    if "atom_charge" not in sys_kwarg:
+        sys_kwarg["atom_charge"] = []
+    sys_kwarg["atom_charge"].append([atom.charge for atom in self.atoms])
+    if "charge" not in ene_kwarg:
+        ene_kwarg["charge"] = Xdict()
+        ene_kwarg["charge"]["function"] = lambda system, ene_kwarg: CoulombEnergy(
+            atom_charge=system.atom_charge, length_unit='A', energy_unit='kcal/mol')
+
 
 set_global_alternative_names()

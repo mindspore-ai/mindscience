@@ -87,9 +87,9 @@ from .assign import Assign, get_assignment_from_pdb, get_assignment_from_mol2, g
 from .helper import GlobalSetting, Type, ResidueType, Entity, Atom, Residue, ResidueLink, Molecule, AtomType, \
     set_global_alternative_names, generate_new_pairwise_force_type, generate_new_bonded_force_type, source
 from .load import load_ffitp, load_mol2, load_rst7, load_frcmod, load_pdb, load_parmdat
-from .build import save_mol2, save_pdb, save_sponge_input, save_gro, build_bonded_force
+from .build import save_mol2, save_pdb, save_sponge_input, save_gro, build_bonded_force, get_mindsponge_system_energy
 from .process import impose_bond, impose_angle, impose_dihedral, add_solvent_box, h_mass_repartition, solvent_replace, \
-    main_axis_rotate
+    main_axis_rotate, get_peptide_from_sequence
 
 
 def _initialize():
@@ -145,6 +145,17 @@ def _initialize():
         return towrite
 
     Molecule.Set_Save_SPONGE_Input("coordinate")(write_coordinate)
+
+    #pylint: disable=unused-argument
+    def _do_initial(self, sys_kwarg, ene_kwarg):
+        if "coordinate" not in sys_kwarg:
+            sys_kwarg["coordinate"] = [self.get_atom_coordinates().tolist()]
+            sys_kwarg["atoms"] = [[atom.name for atom in self.atoms]]
+        else:
+            sys_kwarg["coordinate"].append(self.get_atom_coordinates().tolist())
+            sys_kwarg["atoms"].append([atom.name for atom in self.atoms])
+
+    Molecule.Set_MindSponge_Todo("coordinate")(_do_initial)
 
 
 _initialize()
