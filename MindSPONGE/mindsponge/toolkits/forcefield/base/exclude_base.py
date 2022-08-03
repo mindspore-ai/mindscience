@@ -54,6 +54,23 @@ class Exclude:
 
         Molecule.Set_Save_SPONGE_Input("exclude")(write_exclude)
 
+        # pylint: disable=unused-argument
+        def todo(mol, sys_kwarg, ene_kwarg):
+            if "exclude" not in ene_kwarg:
+                ene_kwarg["exclude"] = []
+            temp_dict = self.get_excluded_atoms(mol)
+            temp_dict = {atom: list(set_) for atom, set_ in temp_dict.items()}
+            exclude_max = max([len(atoms) for atoms in temp_dict.values()])
+
+            ene_kwarg["exclude"].append([[mol.atom_index[temp_dict[atom][j]]
+                                          if j < len(temp_dict[atom]) else len(mol.atoms)
+                                          for j in range(exclude_max)] for i, atom in enumerate(mol.atoms)])
+            for li in ene_kwarg["exclude"][-1]:
+                li.sort()
+
+
+        Molecule.Set_MindSponge_Todo("exclude")(todo)
+
     def get_excluded_atoms(self, molecule):
         """
         This **function** gives the excluded atoms of a molecule

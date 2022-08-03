@@ -2,7 +2,7 @@
 This **module** is the basic setting for the force field format of harmonic angle
 """
 from ... import Generate_New_Bonded_Force_Type
-from ...helper import Molecule, set_global_alternative_names
+from ...helper import Molecule, set_global_alternative_names, Xdict
 
 # pylint: disable=invalid-name
 AngleType = Generate_New_Bonded_Force_Type("angle", "1-2-3", {"k": float, "b": float}, True)
@@ -38,5 +38,37 @@ def write_angle(self):
         return towrite
 
     return None
+
+
+#pylint: disable=unused-argument
+@Molecule.Set_MindSponge_Todo("angle")
+def _do(self, sys_kwarg, ene_kwarg):
+    """
+
+    :return:
+    """
+    from mindsponge.potential import AngleEnergy
+    if "angle" not in ene_kwarg:
+        ene_kwarg["angle"] = Xdict()
+        ene_kwarg["angle"]["function"] = lambda system, ene_kwarg: AngleEnergy(
+            index=ene_kwarg["angle"]["index"],
+            force_constant=ene_kwarg["angle"]["force_constant"],
+            bond_angle=ene_kwarg["angle"]["bond_angle"],
+            energy_unit="kcal/mol")
+        ene_kwarg["angle"]["index"] = []
+        ene_kwarg["angle"]["force_constant"] = []
+        ene_kwarg["angle"]["bond_angle"] = []
+    bonds = []
+    force_constants = []
+    bond_angles = []
+    for bond in self.bonded_forces.get("angle", []):
+        if bond.k == 0:
+            continue
+        bonds.append([self.atom_index[atom] for atom in bond.atoms])
+        force_constants.append(bond.k * 2)
+        bond_angles.append(bond.b)
+    ene_kwarg["angle"]["index"].append(bonds)
+    ene_kwarg["angle"]["force_constant"].append(force_constants)
+    ene_kwarg["angle"]["bond_angle"].append(bond_angles)
 
 set_global_alternative_names()

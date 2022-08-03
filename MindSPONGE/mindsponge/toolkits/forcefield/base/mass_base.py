@@ -18,4 +18,16 @@ def write_mass(self):
     towrite += "\n".join(["%.3f" % (atom.mass) for atom in self.atoms])
     return towrite
 
+
+#pylint: disable=unused-argument
+@Molecule.Set_MindSponge_Todo("mass")
+def _do_mass(self, sys_kwarg, ene_kwarg):
+    """
+
+    :return:
+    """
+    if "atom_mass" not in sys_kwarg:
+        sys_kwarg["atom_mass"] = []
+    sys_kwarg["atom_mass"].append([atom.mass for atom in self.atoms])
+
 set_global_alternative_names()

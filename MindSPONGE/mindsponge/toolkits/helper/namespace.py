@@ -36,7 +36,7 @@ def source(module, into_global=True):
 
 
 # for the special alternative name
-SPECIAL_STRINGS = {"Pdb": "PDB", "Sponge": "SPONGE", "Nb14": "NB14", "Lj": "LJ", "Gb": "GB",
+SPECIAL_STRINGS = {"Pdb": "PDB", "Sponge": "SPONGE", "Nb14": "NB14", "Lj": "LJ", "Gb": "GB", "Mindsponge": "MindSponge",
                    "Residuetype": "ResidueType", "Pubchem": "PubChem", "Resp": "RESP", "Name2atom": "Name2Atom"}
 
 
