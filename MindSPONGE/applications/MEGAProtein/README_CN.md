@@ -1,3 +1,4 @@
+[ENGLISH](README_EN.md)|简体中文
 
 # MEGA-Protein
 
@@ -45,7 +46,7 @@ MEGA-Protein主要由三部分组成：
 
 <!-- TOC -->
 
-- [MEGA-Protein](#MEGA-Protein)
+- [MEGA-Protein](#mega-protein)
   - [环境配置](#环境配置)
     - [硬件环境与框架](#硬件环境与框架)
     - [配置数据库检索](#配置数据库检索)
