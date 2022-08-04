@@ -1,4 +1,4 @@
-# Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2022 Huawei Technologies Co., Ltd & CPL YiQin GAO Research Group
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,18 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Test case polypeptide"""
-
-import numpy as np
-import pytest
-from mindspore import context
-
-context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=0, save_graphs=False)
-
-
-@pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
-@pytest.mark.env_onecard
-def test_case_poly():
-    """test_case_poly"""
-    assert np.allclose(2, 1+1)
+'''init'''
+from .preprocess import Feature
+from .protein_feature import RawFeatureGenerator
+from .utils import get_crop_size, get_raw_feature
+from .dataset import create_dataset
