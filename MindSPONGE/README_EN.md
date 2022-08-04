@@ -9,34 +9,11 @@
 
 # **MindSpore SPONGE**
 
-<!-- TOC -->
-
-- [**MindSpore SPONGE**](#mindspore-sponge)
-    - [**Introduction**](#introduction)
-    - [**Latest News**](#latest-news-)
-    - [**Coming Soon**](#coming-soon-)
-    - [**Quick Start**](#quick-start)
-        - [Protein Violation Computation](#protein-violation-computation)
-        - [Transfer between rotation matrix and quaternion](#transfer-between-rotation-matrix-and-quaternion)
-        - [A simple example for molecular dynamics](#a-simple-example-for-molecular-dynamics)
-    - [**Installation**](#installation)
-        - [Dependency](#dependency)
-        - [Hardware](#hardware)
-        - [pip install](#pip-install)
-        - [source code install](#source-code-install)
-    - [**Community**](#community)
-        - [CO-CHAIR](#co-chair)
-        - [Special Interesting Group](#special-interesting-group-)
-        - [Core Contributor](#core-contributor-)
-    - [**License**](#license)
-
-<!-- TOC -->
-
 ## **Introduction**
 
 MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling) is a toolkit for Computational Biology based on AI framework [MindSpore](https://www.mindspore.cn/)，which supports MD, folding and so on. It aims to provide efficient AI computational biology software for a wide range of scientific researchers, staff, teachers and students.
 
-<div align=center><img src="docs/archi.png" alt="MindSPONGE Architecture" width="600"/></div>
+<div align=center><img src="docs/archi.png" alt="MindSPONGE Architecture" width="700"/></div>
 
 ## **Latest News** 📰
 
@@ -47,7 +24,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **Coming Soon** 🚀
 
-- 🔥2022.8.11—2022.8.15 MindSpore SPONGE SIG [Summer School](#sig)
+- 🔥2022.8.11—2022.8.15 MindSpore SPONGE SIG [Summer School](#special-interesting-group-)
 
 ## **Quick Start**
 
@@ -240,7 +217,7 @@ If you want to join us and become a member of our group, please send your resume
 
 ### Core Contributor 🧑‍🤝‍🧑
 
-- [Yi Qin Gao Research Group](https://www.chem.pku.edu.cn/gaoyq/):  [Yi Isaac Yang](https://gitee.com/helloyesterday)，[Jun Zhang](https://gitee.com/jz_90)，[Sirui Liu](https://gitee.com/sirui63)，[Yijie Xia](https://gitee.com/gao_hyp_xyj_admin)，[Diqing Chen](https://gitee.com/dechin)，[Yu-Peng Huang](https://gitee.com/gao_hyp_xyj_admin)
+- [Yi Qin Gao Research Group](https://www.chem.pku.edu.cn/gaoyq/):  [Yi Isaac Yang](https://gitee.com/helloyesterday)，[Jun Zhang](https://gitee.com/jz_90)，[Sirui Liu](https://gitee.com/sirui63)，[Yijie Xia](https://gitee.com/xiayijie)，[Diqing Chen](https://gitee.com/dechin)，[Yu-Peng Huang](https://gitee.com/gao_hyp_xyj_admin)
 
 ## **License**
 
