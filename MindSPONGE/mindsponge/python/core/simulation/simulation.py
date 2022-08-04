@@ -121,6 +121,8 @@ class SimulationCell(Cell):
         self.num_neighbours = self.neighbour_list.num_neighbours
 
         self.cutoff = self.neighbour_list.cutoff
+        if self.cutoff is not None:
+            self.potential.set_cutoff(self.cutoff)
         self.nl_update_steps = self.neighbour_list.update_steps
 
         self.coordinate = self.system.coordinate

@@ -37,19 +37,18 @@ from ...function.units import Units
 
 
 @ms_function
-def coulomb_law(atom_charge: Tensor,
-                neighbour_index: Tensor,
-                inv_neigh_dis: Tensor,
-                ):
+def coulomb_interaction(qi: Tensor, qj: Tensor, inv_dis: Tensor, mask: Tensor = None):
     """calculate Coulomb interaction using Coulomb's law"""
-    # (B,A,1)
-    qi = F.expand_dims(atom_charge, -1)
-    # (B,A,N)
-    qj = gather_values(atom_charge, neighbour_index)
+
     # (B,A,N) = (B,A,1) * (B,A,N)
     qiqj = qi * qj
 
-    energy = qiqj * inv_neigh_dis
+    # (B,A,N)
+    energy = qiqj * inv_dis
+
+    if mask is not None:
+        # (B,A,N) * (B,A,N)
+        energy *= mask
 
     # (B,A)
     energy = F.reduce_sum(energy, -1)
@@ -121,16 +120,26 @@ class CoulombEnergy(NonbondEnergy):
         if self.use_pme and (not self.use_pbc):
             raise ValueError('PME cannot be used at vacuum')
 
-        if self.use_pbc and self.cutoff is None:
-            raise ValueError(
-                'Cutoff cannot be None when using periodic boundary condition')
-
-        self.dsf_coulomb = None
         self.pme_coulomb = None
-        if self.use_pbc and self.use_pme:
+        self.dsf_coulomb = None
+        if self.use_pme:
             self.pme_coulomb = ParticleEeshEwaldCoulomb(self.cutoff)
-        elif self.cutoff is not None:
+        else:
             self.dsf_coulomb = DampedShiftedForceCoulomb(self.cutoff, alpha)
+
+    def set_cutoff(self, cutoff: Tensor):
+        """set cutoff distance"""
+        if cutoff is None:
+            if self.use_pbc:
+                raise ValueError('cutoff cannot be none when using periodic boundary condition')
+            self.cutoff = None
+        else:
+            self.cutoff = Tensor(cutoff, ms.float32)
+            if self.dsf_coulomb is not None:
+                self.dsf_coulomb.set_cutoff(cutoff)
+            if self.pme_coulomb is not None:
+                self.pme_coulomb.set_cutoff(cutoff)
+        return self
 
     def construct(self,
                   coordinate: Tensor,
@@ -171,27 +180,21 @@ class CoulombEnergy(NonbondEnergy):
 
         inv_neigh_dis *= self.inverse_input_scale
 
+        # (B,A,1)
+        qi = F.expand_dims(self.atom_charge, -1)
+        # (B,A,N)
+        qj = gather_values(self.atom_charge, neighbour_index)
+
         if self.cutoff is None:
-            energy = coulomb_law(
-                self.atom_charge, neighbour_index, inv_neigh_dis)
+            energy = coulomb_interaction(qi, qj, inv_neigh_dis, neighbour_mask)
         else:
             neighbour_distance *= self.input_unit_scale
             if self.use_pme:
-                energy = self.pme_coulomb(self.atom_charge,
-                                          coordinate,
-                                          neighbour_index,
-                                          neighbour_mask,
-                                          neighbour_coord,
-                                          neighbour_distance,
-                                          inv_neigh_dis,
-                                          pbc_box
-                                          )
+                energy = self.pme_coulomb(
+                    qi, qj, neighbour_distance, inv_neigh_dis, neighbour_mask, pbc_box)
             else:
-                energy = self.dsf_coulomb(self.atom_charge,
-                                          neighbour_index,
-                                          neighbour_distance,
-                                          inv_neigh_dis
-                                          )
+                energy = self.dsf_coulomb(
+                    qi, qj, neighbour_distance, inv_neigh_dis, neighbour_mask)
 
         return energy * self.coulomb_const
 
@@ -219,30 +222,37 @@ class DampedShiftedForceCoulomb(Cell):
     """
 
     def __init__(self,
-                 cutoff: float,
+                 cutoff: float = None,
                  alpha: float = 0.25,
                  ):
 
         super().__init__()
 
-        self.cutoff = cutoff
-        self.alpha = Parameter(Tensor(alpha, ms.float32),
-                               name='alpha', requires_grad=False)
+        self.alpha = Parameter(Tensor(alpha, ms.float32), name='alpha', requires_grad=False)
 
         self.erfc = ops.Erfc()
-        cutoffsq = self.cutoff * self.cutoff
-        erfcc = self.erfc(self.alpha * self.cutoff)
-        erfcd = msnp.exp(-self.alpha * self.alpha * cutoffsq)
+        self.f_shift = None
+        self.e_shift = None
+        if cutoff is not None:
+            self.set_cutoff(cutoff)
 
-        self.f_shift = -(erfcc / cutoffsq + 2 / msnp.sqrt(msnp.pi)
+    def set_cutoff(self, cutoff: Tensor):
+        """set cutoff distance"""
+        self.cutoff = Tensor(cutoff, ms.float32)
+        cutoff2 = F.square(self.cutoff)
+        erfcc = self.erfc(self.alpha * self.cutoff)
+        erfcd = msnp.exp(-F.square(self.alpha) * cutoff2)
+
+        self.f_shift = -(erfcc / cutoff2 + 2 / msnp.sqrt(msnp.pi)
                          * self.alpha * erfcd / self.cutoff)
         self.e_shift = erfcc / self.cutoff - self.f_shift * self.cutoff
 
     def construct(self,
-                  atom_charge: Tensor = None,
-                  neighbour_index: Tensor = None,
-                  neighbour_distance: Tensor = None,
-                  inv_neigh_dis: Tensor = None,
+                  qi: Tensor,
+                  qj: Tensor,
+                  dis: Tensor,
+                  inv_dis: Tensor,
+                  mask: Tensor = None,
                   ):
         r"""Calculate energy term.
 
@@ -272,16 +282,17 @@ class DampedShiftedForceCoulomb(Cell):
 
         """
 
-        # (B,A,1)
-        qi = F.expand_dims(atom_charge, -1)
-        # (B,A,N)
-        qj = gather_values(atom_charge, neighbour_index)
         # (B,A,N) = (B,A,1) * (B,A,N)
         qiqj = qi*qj
-        energy = qiqj * inv_neigh_dis * \
-            (self.erfc(self.alpha * neighbour_distance) - neighbour_distance *
-             self.e_shift - neighbour_distance * neighbour_distance * self.f_shift)
-        energy = msnp.where(neighbour_distance < self.cutoff, energy, 0.0)
+        energy = qiqj * inv_dis * (self.erfc(self.alpha * dis) -
+                                   dis * self.e_shift - F.square(dis) * self.f_shift)
+
+        if mask is None:
+            mask = dis < self.cutoff
+        else:
+            mask = F.logical_and(mask, dis < self.cutoff)
+
+        energy = msnp.where(mask, energy, 0.0)
 
         # (B,A)
         energy = F.reduce_sum(energy, -1)
@@ -319,13 +330,16 @@ class ParticleEeshEwaldCoulomb(Cell):
 
         self.cutoff = cutoff
 
+    def set_cutoff(self, cutoff: Tensor):
+        """set cutoff distance"""
+        self.cutoff = Tensor(cutoff, ms.float32)
+
     def construct(self,
-                  coordinate: Tensor,
-                  neighbour_index: Tensor = None,
-                  neighbour_mask: Tensor = None,
-                  neighbour_coord: Tensor = None,
-                  neighbour_distance: Tensor = None,
-                  inv_neigh_dis: Tensor = None,
+                  qi: Tensor,
+                  qj: Tensor,
+                  dis: Tensor,
+                  inv_dis: Tensor,
+                  mask: Tensor = None,
                   pbc_box: Tensor = None,
                   ):
         r"""Calculate energy term.

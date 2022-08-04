@@ -25,11 +25,11 @@ Core engine of MindSPONGE
 """
 
 import os
+from typing import Union
 import time
 from collections.abc import Iterable
 
 from mindspore import nn
-from mindspore.nn import Cell
 from mindspore.ops import functional as F
 from mindspore.common import Tensor
 from mindspore.nn.optim import Optimizer
@@ -70,11 +70,11 @@ class Sponge():
     """
 
     def __init__(self,
-                 network: Cell,
-                 potential: Cell = None,
+                 network: Union[Molecule, SimulationCell, RunOneStepCell],
+                 potential: PotentialCell = None,
                  optimizer: Optimizer = None,
                  metrics: Metric = None,
-                 analyse_network: Cell = None,
+                 analyse_network: AnalyseCell = None,
                  ):
 
         self._potential = potential

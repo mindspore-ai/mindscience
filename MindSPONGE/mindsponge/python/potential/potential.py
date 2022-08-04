@@ -29,7 +29,7 @@ from mindspore.nn import Cell
 from mindspore.ops import functional as F
 
 from ..function.functions import gather_vectors
-from ..function.operations import GetVector
+from ..function.operations import GetDistance, GetVector
 from ..function.units import Units, global_units
 
 
@@ -83,6 +83,7 @@ class PotentialCell(Cell):
         self._exclude_index = self._check_exclude_index(exclude_index)
 
         self.get_vector = GetVector(use_pbc)
+        self.get_distance = GetDistance(use_pbc)
         self.gather_atoms = gather_vectors
 
         self.identity = ops.Identity()
@@ -124,7 +125,16 @@ class PotentialCell(Cell):
         """set PBC box"""
         self.use_pbc = use_pbc
         self.get_vector.set_pbc(use_pbc)
+        self.get_distance.set_pbc(use_pbc)
         return self
+
+    def set_cutoff(self, cutoff: Tensor = None):
+        """set cutoff distance"""
+        self.cutoff = None
+        if cutoff is not None:
+            self.cutoff = Tensor(cutoff, ms.float32)
+        return self
+
 
     def construct(self,
                   coordinate: Tensor,

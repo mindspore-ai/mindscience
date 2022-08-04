@@ -24,24 +24,29 @@
 Force field parameters
 """
 import os
-import yaml
+from typing import Union, Tuple
+
+from ..data import read_yaml, update_dict
+from ..template import get_template
 
 
-def get_forcefield_parameters(forcefield: str) -> dict:
+def get_forcefield(forcefield: Union[str, dict, list]) -> Tuple[dict, dict]:
     """ Get force field parameters from YAML file.
 
     Args:
 
-        forcefield (str or dict):   The file name of force field parameters.
+        forcefield (str, dict or list): The file name of force field parameters.
 
     Returns:
 
         parameters (dict):  Force field parameters
 
+        template (dict):    Molecular template
+
     """
 
-    if isinstance(forcefield, dict):
-        return forcefield
+    if forcefield is None:
+        return None, None
 
     if isinstance(forcefield, str):
         if os.path.exists(forcefield):
@@ -53,13 +58,28 @@ def get_forcefield_parameters(forcefield: str) -> dict:
 
             directory, _ = os.path.split(os.path.realpath(__file__))
             filename = os.path.join(directory, filename)
-
         if not os.path.exists(filename):
             raise ValueError('Cannot find force field parameters file: "'+forcefield+'".')
 
-        with open(filename, 'r', encoding="utf-8") as file:
-            parameters = yaml.safe_load(file.read())
+        forcefield: dict = read_yaml(filename)
+    elif isinstance(forcefield, (list, tuple)):
+        parameters = {}
+        template = []
+        for ff in forcefield:
+            params, temp = get_forcefield(ff)
+            template.append(temp)
+            parameters = update_dict(parameters, params)
+        template = get_template(template)
+    elif not isinstance(forcefield, dict):
+        raise TypeError('The type of forcefield must be str or dict but got: '+str(type(forcefield)))
 
-        return parameters
+    template = None
+    if 'template' in forcefield.keys():
+        template = get_template(forcefield.pop('template'))
 
-    raise TypeError('The type of forcefield must be str or dict but got: '+str(type(forcefield)))
+    if 'parameters' in forcefield.keys():
+        parameters = forcefield.get('parameters')
+    else:
+        parameters = forcefield
+
+    return parameters, template

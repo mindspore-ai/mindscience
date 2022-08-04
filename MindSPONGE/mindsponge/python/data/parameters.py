@@ -23,11 +23,15 @@
 """
 Modeling Module.
 """
-import itertools
+import re
+from operator import itemgetter
 from itertools import product
 from pathlib import Path
 from typing import NamedTuple
 import numpy as np
+from numpy import ndarray
+
+from .data import get_bonded_types, get_dihedral_types, get_improper_types
 
 this_directory = Path(__file__).parent
 
@@ -38,427 +42,245 @@ include_backbone_atoms = np.array(["OXT"], np.str_)
 class ForceConstants(NamedTuple):
     """ The structured object for return force field parameters.
     """
-    bond_params: np.ndarray
-    angle_params: np.ndarray
-    dihedral_params: np.ndarray
-    improper_dihedral_params: np.ndarray
-    angles: np.ndarray
-    dihedrals: np.ndarray
-    idihedrals: np.ndarray
-    excludes: np.ndarray
-    vdw_param: np.ndarray
-    hbonds: np.ndarray
-    non_hbonds: np.ndarray
-    pair_params: np.ndarray
+    bond_params: dict = None
+    angle_params: dict = None
+    dihedral_params: dict = None
+    improper_params: dict = None
+    angles: np.ndarray = None
+    dihedrals: np.ndarray = None
+    improper: np.ndarray = None
+    excludes: np.ndarray = None
+    vdw_param: dict = None
+    hbonds: np.ndarray = None
+    non_hbonds: np.ndarray = None
+    pair_params: dict = None
 
 
 class ForceFieldParameters:
     """ Getting parameters for given bonds and atom types.
     Args:
         atom_types(np.str_): The atom types defined in forcefields.
-        force_constants(dict): A dictionary stores all force field constants.
+        parameters(dict): A dictionary stores all force field constants.
         atom_names(np.str_): Unique atom names in an amino acid.
     Parameters:
         bonds(np.int32): The bond pairs defined for a given molecule.
     """
 
-    def __init__(self, atom_types, force_constants, atom_names=None, atom_charges=None):
-        self.atom_types = atom_types
-        self.atom_names = atom_names
+    def __init__(self, atom_types, parameters, atom_names=None, atom_charges=None):
+        self.atom_types = atom_types[0]
+        self.atom_names = atom_names[0]
         atom_nums = atom_types.shape[-1]
         assert atom_nums > 0
         self.atom_charges = atom_charges
         self.atom_nums = atom_nums
 
         # Load force field parameters.
-        self.vdw_params = force_constants['parameters']["vdw_energy"]
-        for key in self.vdw_params:
-            self.vdw_params[key] = np.array(self.vdw_params[key])
-        self._bonds = force_constants['parameters']["bond_energy"]
-        for key in self._bonds:
-            self._bonds[key] = np.array(self._bonds[key])
-        self._angles = force_constants['parameters']["angle_energy"]
-        for key in self._angles:
-            self._angles[key] = np.array(self._angles[key])
-        self._dihedrals = force_constants['parameters']["dihedral_energy"]['dihedral']
-        for key in self._dihedrals:
-            self._dihedrals[key] = np.array(self._dihedrals[key])
-        self._idihedrals = force_constants['parameters']["dihedral_energy"]['idihedral']
-        for key in self._idihedrals:
-            self._idihedrals[key] = np.array(self._idihedrals[key])
+        self.vdw_params = None
+        if 'vdw_energy' in parameters.keys():
+            self.vdw_params = parameters["vdw_energy"]
+
+        self.bond_params = None
+        if 'bond_energy' in parameters.keys():
+            self.bond_params = parameters["bond_energy"]
+
+        self.angle_params = None
+        if 'angle_energy' in parameters.keys():
+            self.angle_params = parameters["angle_energy"]
+
+        self._dihedrals = None
+        if 'dihedral_energy' in parameters.keys():
+            self._dihedrals = parameters["dihedral_energy"]
+
+        self._improper = None
+        if 'improper_energy' in parameters.keys():
+            self._improper = parameters["improper_energy"]
+
+        self.pair_params = None
+        if 'nb_pair_energy' in parameters.keys():
+            self.pair_params = parameters["nb_pair_energy"]
+
         self._wildcard = np.array(["X"], dtype=np.str_)
 
         self.htypes = np.array(
             ["H", "HC", "H1", "HS", "H5", "H4", "HP", "HA", "HO"], np.str_
         )
 
-        self.bond_params = None
-        self.angle_params = None
         self.dihedral_params = None
-        self.improper_dihedral_params = None
+        self.improper_params = None
         self.excludes = np.empty(atom_nums)[:, None]
-        self.vdw_param = np.empty((atom_nums, 2))
+        self.vdw_param = {}
         self.pair_index = None
 
-    def get_bond_params(self, bonds, atom_types):
+    def get_bond_params(self, bonds, atom_type):
         """ Get the force field bond parameters. """
-        names = atom_types[bonds]
-        bond_types = np.append(
-            np.char.add(np.char.add(names[:, 0], "-"), names[:, 1])[None, :],
-            np.char.add(np.char.add(names[:, 1], "-"), names[:, 0])[None, :],
-            axis=0,
-        )
-        bond_id = -1 * np.ones(bonds.shape[0], dtype=np.int32)
-        mask_id = np.where(
-            bond_types.reshape(bonds.shape[-2] * 2, 1) == self._bonds["atoms"]
-        )
+        bond_atoms = np.take(atom_type, bonds, -1)
 
-        if mask_id[0].shape[0] < bonds.shape[0]:
-            raise ValueError("Elements in atom types not recognized!")
+        k_index = self.bond_params['parameter_names']["pattern"].index('force_constant')
+        r_index = self.bond_params['parameter_names']["pattern"].index('bond_length')
 
-        left_id = np.where(mask_id[0] < bonds.shape[0])[0]
-        bond_id[mask_id[0][left_id]] = mask_id[1][left_id]
-        right_id = np.where(mask_id[0] >= bonds.shape[0])[0]
-        bond_id[mask_id[0][right_id] - bonds.shape[0]] = mask_id[1][right_id]
-        return np.append(
-            self._bonds["force_constant"][bond_id][None, :],
-            self._bonds["bond_length"][bond_id][None, :],
-            axis=0,
-        ).T
+        bond_params: dict = self.bond_params['parameters']
+        params = {}
+        for k, v in bond_params.items():
+            [a, b] = k.split('-')
+            if a != b:
+                params[b + '-' + a] = v
+        bond_params.update(params)
 
-    def get_angle_params(self, angles, atom_types):
+        bond_type = get_bonded_types(bond_atoms)
+        type_list: list = bond_type.reshape(-1).tolist()
+
+        if len(type_list) == 1:
+            bond_length = [bond_params[type_list[0]][r_index]]
+            force_constant = [bond_params[type_list[0]][k_index]]
+        else:
+            bond_length = []
+            force_constant = []
+            for params in itemgetter(*type_list)(bond_params):
+                bond_length.append(params[r_index])
+                force_constant.append(params[k_index])
+
+        params = {'bond_index': bonds}
+        params['force_constant'] = np.array(force_constant, np.float32).reshape(bond_type.shape)
+        params['bond_length'] = np.array(bond_length, np.float32).reshape(bond_type.shape)
+
+        return params
+
+    def get_angle_params(self, angles, atom_type):
         """ Get the force field angle parameters. """
-        names = atom_types[angles]
-        angle_types = np.append(
-            np.char.add(
-                np.char.add(
-                    np.char.add(np.char.add(
-                        names[:, 0], "-"), names[:, 1]), "-"
-                ),
-                names[:, 2],
-            )[None, :],
-            np.char.add(
-                np.char.add(
-                    np.char.add(np.char.add(
-                        names[:, 2], "-"), names[:, 1]), "-"
-                ),
-                names[:, 0],
-            )[None, :],
-            axis=0,
-        )
-        angle_id = -1 * np.ones(angles.shape[0], dtype=np.int32)
-        mask_id = np.where(
-            angle_types.reshape(angles.shape[0] * 2, 1) == self._angles["atoms"]
-        )
+        angle_atoms = np.take(atom_type, angles, -1)
 
-        left_id = np.where(mask_id[0] < angles.shape[0])[0]
-        angle_id[mask_id[0][left_id]] = mask_id[1][left_id]
-        right_id = np.where(mask_id[0] >= angles.shape[0])[0]
-        angle_id[mask_id[0][right_id] - angles.shape[0]] = mask_id[1][right_id]
-        return np.append(
-            self._angles["force_constant"][angle_id][None, :],
-            self._angles["bond_angle"][angle_id][None, :],
-            axis=0,
-        ).T
+        k_index = self.angle_params['parameter_names']["pattern"].index('force_constant')
+        t_index = self.angle_params['parameter_names']["pattern"].index('bond_angle')
 
-    def addchar(self, n0, n1, n2, n3):
-        """ The multi atom name constructor. """
-        return np.append(
-            np.char.add(
-                np.char.add(
-                    np.char.add(
-                        np.char.add(
-                            np.char.add(np.char.add(
-                                n0, "-"), n1), "-"
-                        ),
-                        n2,
-                    ),
-                    "-",
-                ),
-                n3,
-            )[None, :],
-            np.char.add(
-                np.char.add(
-                    np.char.add(
-                        np.char.add(
-                            np.char.add(np.char.add(
-                                n3, "-"), n2), "-"
-                        ),
-                        n1,
-                    ),
-                    "-",
-                ),
-                n0,
-            )[None, :],
-            axis=0,
-        )
+        angle_params: dict = self.angle_params['parameters']
+        params = {}
+        for k, v in angle_params.items():
+            [a, b, c] = k.split('-')
+            if a != c:
+                params[c + '-' + b + '-' + a] = v
+        angle_params.update(params)
 
-    def get_dihedral_params(self, dihedrals_in, atom_types, return_includes=False):
+        angle_type = get_bonded_types(angle_atoms)
+        type_list: list = angle_type.reshape(-1).tolist()
+
+        if len(type_list) == 1:
+            bond_angle = [angle_params[type_list[0]][t_index]]
+            force_constant = [angle_params[type_list[0]][k_index]]
+        else:
+            bond_angle = []
+            force_constant = []
+            for params in itemgetter(*type_list)(angle_params):
+                bond_angle.append(params[t_index])
+                force_constant.append(params[k_index])
+
+        params = {'angle_index': angles}
+        params['force_constant'] = np.array(force_constant, np.float32).reshape(angle_type.shape)
+        params['bond_angle'] = np.array(bond_angle, np.float32).reshape(angle_type.shape)
+
+        return params
+
+    def get_dihedral_params(self, dihedrals_in, atom_types):
         """ Get the force field dihedral parameters. """
-        # pylint: disable=redefined-outer-name
-        dihedrals = dihedrals_in.copy()
-        standar_dihedrals = dihedrals.copy()
-        names = atom_types[dihedrals]
-        dihedral_types = self.addchar(names[:, 0], names[:, 1], names[:, 2], names[:, 3])
-        dihedral_id = -1 * np.ones(dihedrals.shape[0], dtype=np.int32)
-        mask_id = np.where(dihedral_types.reshape(dihedrals.shape[0] * 2, 1) == self._dihedrals["atoms"])
+        dihedral_atoms = np.take(atom_types, dihedrals_in, -1)
 
-        # Constructing A-B-C-D
-        left_id = np.where(mask_id[0] < dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][left_id]] = mask_id[1][left_id]
-        right_id = np.where(mask_id[0] >= dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][right_id] - dihedrals.shape[0]] = mask_id[1][right_id]
-        include_1 = np.pad(np.where(dihedral_id > -1, 1, 0)[None, :],
-                           ((0, self._dihedrals["force_constant"].shape[1] - 1), (0, 0)),
-                           mode="edge").T.flatten()[:, None]
-        exclude_1 = include_1 - 1 < 0
+        k_index = self._dihedrals['parameter_names']["pattern"][0].index('force_constant')
+        phi_index = self._dihedrals['parameter_names']["pattern"][0].index('phase')
+        t_index = self._dihedrals['parameter_names']["pattern"][0].index('periodicity')
 
-        dihedral_params = np.pad(
-            dihedrals[:, None, :],
-            ((0, 0), (0, self._dihedrals["force_constant"].shape[1] - 1), (0, 0)),
-            mode="edge",
-        ).reshape(dihedrals.shape[0] * 4, self._dihedrals["force_constant"].shape[1])
-        dihedral_params = np.concatenate((dihedral_params,
-                                          self._dihedrals["periodicity"][dihedral_id].flatten()[:, None],
-                                          self._dihedrals["force_constant"][dihedral_id].flatten()[:, None],
-                                          self._dihedrals["phase"][dihedral_id].flatten()[:, None]), axis=1)
-        dihedral_params *= include_1
+        dihedral_params: dict = self._dihedrals['parameters']
 
-        # Constructing X-B-C-D and D-C-B-X
-        dihedrals[:, 0] = -1 * np.ones_like(dihedrals[:, 0])
-        names = atom_types[dihedrals]
-        dihedral_types = self.addchar(names[:, 0], names[:, 1], names[:, 2], names[:, 3])
-        mask_id = np.where(dihedral_types.reshape(dihedrals.shape[0] * 2, 1) == self._dihedrals["atoms"])
-        left_id = np.where(mask_id[0] < dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][left_id]] = mask_id[1][left_id]
-        right_id = np.where(mask_id[0] >= dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][right_id] - dihedrals.shape[0]] = mask_id[1][right_id]
-        include_2 = np.pad(np.where(dihedral_id > -1, 1, 0)[None, :],
-                           ((0, self._dihedrals["force_constant"].shape[1] - 1), (0, 0)),
-                           mode="edge").T.flatten()[:, None]
-        exclude_2 = include_2 - 1 < 0
-        dihedral_params_1 = np.pad(standar_dihedrals[:, None, :],
-                                   ((0, 0), (0, self._dihedrals["force_constant"].shape[1] - 1), (0, 0)),
-                                   mode="edge",
-                                   ).reshape(dihedrals.shape[0] * 4, self._dihedrals["force_constant"].shape[1])
-        dihedral_params_1 = np.concatenate((dihedral_params_1,
-                                            self._dihedrals["periodicity"][dihedral_id].flatten()[:, None],
-                                            self._dihedrals["force_constant"][dihedral_id].flatten()[:, None],
-                                            self._dihedrals["phase"][dihedral_id].flatten()[:, None]), axis=1)
-        dihedral_params_1 *= include_2 * exclude_1
+        key_types_ndarray = np.array([specific_name.split('-') for specific_name in dihedral_params.keys()], np.str_)
+        types_sorted_args = np.argsort((key_types_ndarray == '?').sum(axis=-1))
+        sorted_key_types = key_types_ndarray[types_sorted_args]
+        transformed_key_types = ['-'.join(specific_name).replace('?', '.+').replace('*', '\\*') for
+                                 specific_name in sorted_key_types]
 
-        # Constructing A-B-C-X and X-C-B-A
-        dihedrals = dihedrals_in.copy()
-        dihedrals[:, -1] = -1 * np.ones_like(dihedrals[:, -1])
-        names = atom_types[dihedrals]
-        dihedral_types = self.addchar(names[:, 0], names[:, 1], names[:, 2], names[:, 3])
-        mask_id = np.where(dihedral_types.reshape(dihedrals.shape[0] * 2, 1) == self._dihedrals["atoms"])
-        left_id = np.where(mask_id[0] < dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][left_id]] = mask_id[1][left_id]
-        right_id = np.where(mask_id[0] >= dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][right_id] - dihedrals.shape[0]] = mask_id[1][right_id]
-        include_4 = np.pad(np.where(dihedral_id > -1, 1, 0)[None, :],
-                           ((0, self._dihedrals["force_constant"].shape[1] - 1), (0, 0)),
-                           mode="edge").T.flatten()[:, None]
-        exclude_4 = include_4 - 1 < 0
-        dihedral_params_3 = np.pad(standar_dihedrals[:, None, :],
-                                   ((0, 0), (0, self._dihedrals["force_constant"].shape[1] - 1), (0, 0)),
-                                   mode="edge",
-                                   ).reshape(dihedrals.shape[0] * 4, self._dihedrals["force_constant"].shape[1])
-        dihedral_params_3 = np.concatenate((dihedral_params_3,
-                                            self._dihedrals["periodicity"][dihedral_id].flatten()[:, None],
-                                            self._dihedrals["force_constant"][dihedral_id].flatten()[:, None],
-                                            self._dihedrals["phase"][dihedral_id].flatten()[:, None]), axis=1)
-        dihedral_params_3 *= include_2 * exclude_1 * exclude_4
+        dihedral_types, inverse_dihedral_types = get_dihedral_types(dihedral_atoms)
+        type_list: list = dihedral_types.reshape(-1).tolist()
+        inverse_type_list: list = inverse_dihedral_types.reshape(-1).tolist()
 
-        # Constructing X-A-B-X
-        dihedrals[:, 0] = -1 * np.ones_like(dihedrals[:, 0])
-        dihedrals[:, -1] = -1 * np.ones_like(dihedrals[:, -1])
-        names = atom_types[dihedrals]
-        dihedral_types = self.addchar(names[:, 0], names[:, 1], names[:, 2], names[:, 3])
-        mask_id = np.where(dihedral_types.reshape(dihedrals.shape[0] * 2, 1) == self._dihedrals["atoms"])
-        left_id = np.where(mask_id[0] < dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][left_id]] = mask_id[1][left_id]
-        right_id = np.where(mask_id[0] >= dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][right_id] -
-                    dihedrals.shape[0]] = mask_id[1][right_id]
-        include_3 = np.pad(
-            np.where(dihedral_id > -1, 1, 0)[None, :],
-            ((0, self._dihedrals["force_constant"].shape[1] - 1), (0, 0)),
-            mode="edge",
-        ).T.flatten()[:, None]
-        dihedral_params_2 = np.pad(
-            standar_dihedrals[:, None, :],
-            ((0, 0), (0, self._dihedrals["force_constant"].shape[1] - 1), (0, 0)),
-            mode="edge",
-        ).reshape(dihedrals.shape[0] * 4, self._dihedrals["force_constant"].shape[1])
-        dihedral_params_2 = np.concatenate((dihedral_params_2,
-                                            self._dihedrals["periodicity"][dihedral_id].flatten()[:, None],
-                                            self._dihedrals["force_constant"][dihedral_id].flatten()[:, None],
-                                            self._dihedrals["phase"][dihedral_id].flatten()[:, None]), axis=1)
-        dihedral_params_2 *= include_3 * exclude_1 * exclude_2 * exclude_4
+        for i, _ in enumerate(type_list):
+            for key_type in transformed_key_types:
+                if re.match('^'+key_type+'$', type_list[i]) or re.match('^'+key_type+'$', inverse_type_list[i]):
+                    type_list[i] = key_type.replace('.+', '?').replace('\\', '')
+                    break
 
-        dihedral_params += dihedral_params_1 + dihedral_params_2 + dihedral_params_3
-        ks0_condition = dihedral_params[:, -2] != 0
+        force_constant = []
+        phase = []
+        periodicity = []
+        dihedral_index = []
+        for i, params in enumerate(itemgetter(*type_list)(dihedral_params)):
+            for _, lastd_params in enumerate(params):
+                dihedral_index.append(dihedrals_in[i])
+                force_constant.append(lastd_params[k_index])
+                phase.append(lastd_params[phi_index])
+                periodicity.append(lastd_params[t_index])
 
-        if not return_includes:
-            return dihedral_params[np.where(ks0_condition)[0]]
+        params = {}
+        params['force_constant'] = np.array(force_constant, np.float32)
+        ks0_filter = np.where(params['force_constant'] != 0)[0]
+        params['force_constant'] = params['force_constant'][ks0_filter]
+        params['dihedral_index'] = np.array(dihedral_index, np.int32)[ks0_filter]
+        params['phase'] = np.array(phase, np.float32)[ks0_filter]
+        params['periodicity'] = np.array(periodicity, np.float32)[ks0_filter]
 
-        return dihedral_params, (include_1, include_2, include_4, include_3)
+        return params
 
-    def _get_idihedral_params(self, dihedrals_in, atom_types, return_includes=False):
+    def get_improper_params(self, improper_in, atom_types, third_id):
         """ Pre-processing of getting improper dihedrals. """
-        # pylint: disable=redefined-outer-name
-        dihedrals = dihedrals_in.copy()
-        standar_dihedrals = dihedrals.copy()
-        names = atom_types[dihedrals]
-        dihedral_types = self.addchar(names[:, 0], names[:, 1], names[:, 2], names[:, 3])
-        dihedral_id = -1 * np.ones(dihedrals.shape[0], dtype=np.int32)
-        mask_id = np.where(dihedral_types.reshape(dihedrals.shape[0] * 2, 1)
-                           == self._idihedrals["atoms"])
+        improper_atoms = np.take(atom_types, improper_in, -1)
 
-        # Constructing A-B-C-D
-        left_id = np.where(mask_id[0] < dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][left_id]] = mask_id[1][left_id]
-        right_id = np.where(mask_id[0] >= dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][right_id] - dihedrals.shape[0]] = mask_id[1][right_id]
-        include_1 = np.where(dihedral_id > -1, 1, 0)
-        exclude_1 = include_1 - 1 < 0
+        k_index = self._improper['parameter_names']["pattern"][0].index('force_constant')
+        phi_index = self._improper['parameter_names']["pattern"][0].index('phase')
+        t_index = self._improper['parameter_names']["pattern"][0].index('periodicity')
 
-        dihedral_params = standar_dihedrals
-        dihedral_params = np.concatenate((dihedral_params,
-                                          self._idihedrals["periodicity"][dihedral_id].flatten()[:, None],
-                                          self._idihedrals["force_constant"][dihedral_id].flatten()[:, None],
-                                          self._idihedrals["phase"][dihedral_id].flatten()[:, None]), axis=1)
-        dihedral_params *= include_1[:, None]
+        improper_params: dict = self._improper['parameters']
 
-        # Constructing X-B-C-D and D-C-B-X
-        dihedrals[:, 0] = -1 * np.ones_like(dihedrals[:, 0])
-        names = atom_types[dihedrals]
-        dihedral_types = self.addchar(names[:, 0], names[:, 1], names[:, 2], names[:, 3])
-        mask_id = np.where(dihedral_types.reshape(dihedrals.shape[0] * 2, 1)
-                           == self._idihedrals["atoms"])
-        left_id = np.where(mask_id[0] < dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][left_id]] = mask_id[1][left_id]
-        right_id = np.where(mask_id[0] >= dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][right_id] - dihedrals.shape[0]] = mask_id[1][right_id]
-        include_2 = np.where(dihedral_id > -1, 1, 0)
-        exclude_2 = include_2 - 1 < 0
-        dihedral_params_1 = standar_dihedrals
-        dihedral_params_1 = np.concatenate((dihedral_params_1,
-                                            self._idihedrals["periodicity"][dihedral_id].flatten()[:, None],
-                                            self._idihedrals["force_constant"][dihedral_id].flatten()[:, None],
-                                            self._idihedrals["phase"][dihedral_id].flatten()[:, None]), axis=1)
-        dihedral_params_1 *= include_2[:, None] * exclude_1[:, None]
+        key_types_ndarray = np.array([specific_name.split('-') for specific_name in improper_params.keys()], np.str_)
+        types_sorted_args = np.argsort((key_types_ndarray == '?').sum(axis=-1))
+        sorted_key_types = key_types_ndarray[types_sorted_args]
+        transformed_key_types = ['-'.join(specific_name).replace('?', '.+').replace('*', '\\*') for specific_name in
+                                 sorted_key_types]
 
-        # Constructing A-B-C-X and X-C-B-A
-        dihedrals = dihedrals_in.copy()
-        dihedrals[:, -1] = -1 * np.ones_like(dihedrals[:, -1])
-        names = atom_types[dihedrals]
-        dihedral_types = self.addchar(names[:, 0], names[:, 1], names[:, 2], names[:, 3])
-        mask_id = np.where(dihedral_types.reshape(dihedrals.shape[0] * 2, 1) == self._idihedrals["atoms"])
-        left_id = np.where(mask_id[0] < dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][left_id]] = mask_id[1][left_id]
-        right_id = np.where(mask_id[0] >= dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][right_id] - dihedrals.shape[0]] = mask_id[1][right_id]
-        include_4 = np.where(dihedral_id > -1, 1, 0)
-        exclude_4 = include_4 - 1 < 0
-        dihedral_params_3 = standar_dihedrals
-        dihedral_params_3 = np.concatenate((dihedral_params_3,
-                                            self._idihedrals["periodicity"][dihedral_id].flatten()[:, None],
-                                            self._idihedrals["force_constant"][dihedral_id].flatten()[:, None],
-                                            self._idihedrals["phase"][dihedral_id].flatten()[:, None]), axis=1)
-        dihedral_params_3 *= (include_2[:, None] * exclude_1[:, None] * exclude_4[:, None])
+        improper_types, orders = get_improper_types(improper_atoms)
+        type_list = improper_types[0].reshape(-1)
 
-        # Constructing X-A-B-X
-        dihedrals = dihedrals_in.copy()
-        dihedrals[:, 0] = -1 * np.ones_like(dihedrals[:, 0])
-        dihedrals[:, -1] = -1 * np.ones_like(dihedrals[:, -1])
-        names = atom_types[dihedrals]
-        dihedral_types = self.addchar(names[:, 0], names[:, 1], names[:, 2], names[:, 3])
-        mask_id = np.where(dihedral_types.reshape(dihedrals.shape[0] * 2, 1) == self._idihedrals["atoms"])
-        left_id = np.where(mask_id[0] < dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][left_id]] = mask_id[1][left_id]
-        right_id = np.where(mask_id[0] >= dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][right_id] - dihedrals.shape[0]] = mask_id[1][right_id]
-        include_3 = np.where(dihedral_id > -1, 1, 0)
-        exclude_3 = include_3 - 1 < 0
-        dihedral_params_2 = standar_dihedrals
-        dihedral_params_2 = np.concatenate((dihedral_params_2,
-                                            self._idihedrals["periodicity"][dihedral_id].flatten()[:, None],
-                                            self._idihedrals["force_constant"][dihedral_id].flatten()[:, None],
-                                            self._idihedrals["phase"][dihedral_id].flatten()[:, None]), axis=1)
-        dihedral_params_2 *= (include_3[:, None] * exclude_1[:, None] * exclude_2[:, None] * exclude_4[:, None])
+        not_defined_mask = np.zeros(type_list.shape).astype(np.int32)
+        for i, _ in enumerate(type_list):
+            for key_type in transformed_key_types:
+                for j, itypes in enumerate(improper_types):
+                    if re.match('^'+key_type+'$', itypes[i]):
+                        this_improper = improper_in[i][np.array(list(orders[j]))]
+                        if this_improper[2] != third_id[i]:
+                            continue
+                        improper_in[i] = this_improper
+                        not_defined_mask[i] = 1
+                        type_list[i] = key_type.replace('.+', '?').replace('\\', '')
+                        break
+                else:
+                    continue
+                break
 
-        # Constructing X-X-C-D and D-C-X-X
-        dihedrals = dihedrals_in.copy()
-        dihedrals[:, 0] = -1 * np.ones_like(dihedrals[:, 0])
-        dihedrals[:, 1] = -1 * np.ones_like(dihedrals[:, 1])
-        names = atom_types[dihedrals]
-        dihedral_types = self.addchar(names[:, 0], names[:, 1], names[:, 2], names[:, 3])
-        mask_id = np.where(dihedral_types.reshape(dihedrals.shape[0] * 2, 1) == self._idihedrals["atoms"])
-        left_id = np.where(mask_id[0] < dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][left_id]] = mask_id[1][left_id]
-        right_id = np.where(mask_id[0] >= dihedrals.shape[0])[0]
-        dihedral_id[mask_id[0][right_id] - dihedrals.shape[0]] = mask_id[1][right_id]
-        include_5 = np.where(dihedral_id > -1, 1, 0)
-        dihedral_params_4 = standar_dihedrals
-        dihedral_params_4 = np.concatenate((dihedral_params_4,
-                                            self._idihedrals["periodicity"][dihedral_id].flatten()[:, None],
-                                            self._idihedrals["force_constant"][dihedral_id].flatten()[:, None],
-                                            self._idihedrals["phase"][dihedral_id].flatten()[:, None]), axis=1)
-        dihedral_params_4 *= (include_5[:, None]
-                              * exclude_1[:, None]
-                              * exclude_2[:, None]
-                              * exclude_4[:, None]
-                              * exclude_3[:, None])
+        type_list = type_list[np.where(not_defined_mask > 0)[0]]
 
-        dihedral_params += (dihedral_params_1 + dihedral_params_2 + dihedral_params_3 + dihedral_params_4)
-        ks0_condition = dihedral_params[:, -2] != 0
+        force_constant = []
+        phase = []
+        periodicity = []
+        improper_index = []
+        improper = improper_in[np.where(not_defined_mask > 0)[0]]
+        for i, params in enumerate(itemgetter(*type_list)(improper_params)):
+            for _, lastd_params in enumerate(params):
+                improper_index.append(improper[i])
+                force_constant.append(lastd_params[k_index])
+                phase.append(lastd_params[phi_index])
+                periodicity.append(lastd_params[t_index])
 
-        if not return_includes:
-            return dihedral_params[np.where(ks0_condition)[0]]
+        params = {'improper_index': np.array(improper_index, np.int32)}
+        params['force_constant'] = np.array(force_constant, np.float32)
+        params['phase'] = np.array(phase, np.float32)
+        params['periodicity'] = np.array(periodicity, np.float32)
 
-        return dihedral_params, (include_1, include_2, include_4, include_3, include_5)
-
-    def get_idihedral_params(self, idihedrals_in, atom_types, third_id):
-        """ Get the force field improper dihedral parameters. """
-        try:
-            idihedral_params, includes = self._get_idihedral_params(
-                idihedrals_in.copy(), atom_types, return_includes=True
-            )
-        except AttributeError:
-            return None
-
-        priorities = (
-            includes[0] * 16
-            + includes[1] * 8
-            + includes[2] * 4
-            + includes[3] * 2
-            + includes[4] * 1
-        )
-        for i, j, k, l in itertools.permutations(range(4), 4):
-            idihedrals = np.ones_like(idihedrals_in.copy())
-            idihedrals[:, 0] = idihedrals_in[:, i].copy()
-            idihedrals[:, 1] = idihedrals_in[:, j].copy()
-            idihedrals[:, 2] = idihedrals_in[:, k].copy()
-            idihedrals[:, 3] = idihedrals_in[:, l].copy()
-            this_idihedral_params, includes = self._get_idihedral_params(
-                idihedrals, atom_types, return_includes=True
-            )
-            this_priorities = (
-                includes[0] * 16
-                + includes[1] * 8
-                + includes[2] * 4
-                + includes[3] * 2
-                + includes[4] * 1
-            )
-            this_priorities *= idihedrals[:, 2] == third_id
-            this_id = np.where(this_priorities >= priorities)[0]
-            idihedral_params[this_id] = this_idihedral_params[this_id]
-            priorities[this_id] = this_priorities[this_id]
-        ks0_id = np.where(idihedral_params[:, -2] != 0)[0]
-        return idihedral_params[ks0_id]
+        return params
 
     def construct_angles(self, bonds, bonds_for_angle, middle_id):
         for idx in middle_id:
@@ -549,7 +371,7 @@ class ForceFieldParameters:
                 dihedrals = np.append(dihedrals, this_sides, axis=0)
         return dihedrals
 
-    def check_idihedral(self, bonds, core_id):
+    def check_improper(self, bonds, core_id):
         """ Check if there are same improper dihedrals. """
         # pylint: disable=pointless-statement
         checked_core_id = core_id.copy()
@@ -570,9 +392,9 @@ class ForceFieldParameters:
                 checked_core_id[i] == -1
         return checked_core_id[np.where(checked_core_id > -1)[0]]
 
-    def get_idihedrals(self, bonds, core_id):
+    def get_improper(self, bonds, core_id):
         """ Get the improper dihedrals indexes. """
-        idihedrals = None
+        improper = None
         new_id = None
         for i in range(core_id.shape[0]):
             ids_for_idihedral = np.where(
@@ -581,18 +403,18 @@ class ForceFieldParameters:
             bonds_for_idihedral = bonds[ids_for_idihedral]
             if bonds_for_idihedral.shape[0] == 3:
                 idihedral = np.unique(bonds_for_idihedral.flatten())[None, :]
-                if idihedrals is None:
-                    idihedrals = idihedral
+                if improper is None:
+                    improper = idihedral
                     new_id = core_id[i]
                 else:
-                    idihedrals = np.append(idihedrals, idihedral, axis=0)
+                    improper = np.append(improper, idihedral, axis=0)
                     new_id = np.append(new_id, core_id[i])
             else:
                 # Only SP2 is considered.
                 continue
-        return idihedrals, new_id
+        return improper, new_id
 
-    def get_excludes(self, bonds, angles, dihedrals, idihedrals):
+    def get_excludes(self, bonds, angles, dihedrals, improper):
         """ Get the exclude atoms index. """
         excludes = []
         for i in range(self.atom_nums):
@@ -604,13 +426,13 @@ class ForceFieldParameters:
             dihedral_excludes = dihedrals[
                 np.where(np.isin(dihedrals, i).sum(axis=1))[0]
             ].flatten()
-            if idihedrals is not None:
-                idihedral_excludes = idihedrals[
-                    np.where(np.isin(idihedrals, i).sum(axis=1))[0]
+            if improper is not None:
+                idihedral_excludes = improper[
+                    np.where(np.isin(improper, i).sum(axis=1))[0]
                 ].flatten()
             this_excludes = np.append(bond_excludes, angle_excludes)
             this_excludes = np.append(this_excludes, dihedral_excludes)
-            if idihedrals is not None:
+            if improper is not None:
                 this_excludes = np.append(this_excludes, idihedral_excludes)
             this_excludes = np.unique(this_excludes)
             excludes.append(this_excludes[np.where(
@@ -628,24 +450,50 @@ class ForceFieldParameters:
             )
         return self.excludes
 
-    def get_vdw_params(self, atom_names):
+    def get_vdw_params(self, atom_type: ndarray):
         """
         ['H','HO','HS','HC','H1','H2','H3','HP','HA','H4',
          'H5','HZ','O','O2','OH','OS','OP','C*','CI','C5',
          'C4','CT','CX','C','N','N3','S','SH','P','MG',
          'C0','F','Cl','Br','I','2C','3C','C8','CO']
         """
-        atom_names_count = np.zeros(41)
-        for i in range(self.atom_nums):
-            this_id = np.where(
-                np.isin(self.vdw_params["atoms"], atom_names[i]))[0]
-            if atom_names[i] in ["N2", "NA", "NB"]:
-                this_id = [24]
-            if atom_names[i] in ["CA", "CC", "CR", "CW", "CN", "CB", "CV"]:
-                this_id = [17]
-            self.vdw_param[i][0] = self.vdw_params["epsilon"][this_id]
-            self.vdw_param[i][1] = self.vdw_params["sigma"][this_id]
-            atom_names_count[this_id] += 1
+
+        sigma_index = self.vdw_params['parameter_names']["pattern"].index('sigma')
+        eps_index = self.vdw_params['parameter_names']["pattern"].index('epsilon')
+
+        vdw_params = self.vdw_params['parameters']
+        type_list: list = atom_type.reshape(-1).tolist()
+        sigma = []
+        epsilon = []
+        for params in itemgetter(*type_list)(vdw_params):
+            sigma.append(params[sigma_index])
+            epsilon.append(params[eps_index])
+
+        if atom_type.ndim == 2 and atom_type.shape[0] > 1:
+            #TODO
+            type_list: list = atom_type[0].tolist()
+
+        type_set = list(set(type_list))
+        count = np.array([type_list.count(i) for i in type_set], np.int32)
+
+        sigma_set = []
+        eps_set = []
+        for params in itemgetter(*type_set)(vdw_params):
+            sigma_set.append(params[sigma_index])
+            eps_set.append(params[eps_index])
+
+        sigma_set = np.array(sigma_set)
+        eps_set = np.array(eps_set)
+        c6_set = 4 * eps_set * np.power(sigma_set, 6)
+        param_count = count.reshape(1, -1) * count.reshape(-1, 1) - np.diag(count)
+        mean_c6 = np.sum(c6_set * param_count) / param_count.sum()
+
+        params = {}
+        params['sigma'] = np.array(sigma, np.float32).reshape(atom_type.shape)
+        params['epsilon'] = np.array(epsilon, np.float32).reshape(atom_type.shape)
+        params['mean_c6'] = mean_c6.astype(np.float32)
+
+        return params
 
     def get_pairwise_c6(self, e0, e1, r0, r1):
         """ Calculate the B coefficient in vdw potential. """
@@ -691,63 +539,95 @@ class ForceFieldParameters:
 
     def get_pair_params(self, pair_index, epsilon, sigma):
         """ Return all the pair parameters. """
+
+        r_index = self.pair_params['parameter_names']["pattern"].index('r_scale')
+        r6_index = self.pair_params['parameter_names']["pattern"].index('r6_scale')
+        r12_index = self.pair_params['parameter_names']["pattern"].index('r12_scale')
+
+        pair_params = self.pair_params['parameters']
+        if len(pair_params) == 1 and '?' in pair_params.keys():
+            r_scale = pair_params['?'][r_index]
+            r6_scale = pair_params['?'][r6_index]
+            r12_scale = pair_params['?'][r12_index]
+        else:
+            #TODO
+            r_scale = 0
+            r6_scale = 0
+            r12_scale = 0
+
         qiqj = np.take_along_axis(self.atom_charges, pair_index, axis=1)
-        qiqj = np.prod(qiqj, -1)[:, None]
+        qiqj = np.prod(qiqj, -1)
 
-        epsilon_ij = np.take_along_axis(epsilon, pair_index, axis=1)
-        epsilon_ij = np.sqrt(np.prod(epsilon_ij, -1)[:, None])
+        epsilon_ij = epsilon[pair_index]
+        epsilon_ij = np.sqrt(np.prod(epsilon_ij, -1))
 
-        sigma_ij = np.take_along_axis(sigma, pair_index, axis=1)
-        sigma_ij = np.mean(sigma_ij, -1)[:, None]
+        sigma_ij = sigma[pair_index]
+        sigma_ij = np.mean(sigma_ij, -1)
 
-        pair_params = np.concatenate((qiqj, epsilon_ij, sigma_ij), axis=-1)
+        pair_params = {}
+        pair_params['qiqj'] = qiqj
+        pair_params['epsilon_ij'] = epsilon_ij
+        pair_params['sigma_ij'] = sigma_ij
+        pair_params['r_scale'] = r_scale
+        pair_params['r6_scale'] = r6_scale
+        pair_params['r12_scale'] = r12_scale
+
         return pair_params
 
     def __call__(self, bonds):
         # pylint: disable=unused-argument
-        hbonds, non_hbonds = self.get_hbonds(bonds)
+        bonds = bonds[0]
         atoms_types = self.atom_types.copy()
-        self.get_vdw_params(atoms_types)
+        vdw_params = self.get_vdw_params(atoms_types)
         atom_types = np.append(atoms_types, self._wildcard)
-        this_bond_params = self.get_bond_params(bonds, atoms_types)
-        self.bond_params = np.append(bonds, this_bond_params, axis=1)
-        middle_id = np.where(np.bincount(bonds.flatten()) > 1)[0]
-        ids_for_angle = np.where(
-            np.sum(np.isin(bonds, middle_id), axis=1) > 0)[0]
-        bonds_for_angle = bonds[ids_for_angle]
-        angles = self.combinations(bonds, bonds_for_angle, middle_id)
-        this_angle_params = self.get_angle_params(angles, atoms_types)
-        self.angle_params = np.append(angles, this_angle_params, axis=1)
-        dihedral_middle_id = bonds[
-            np.where(np.isin(bonds, middle_id).sum(axis=1) == 2)[0]
-        ]
-        dihedrals = self.get_dihedrals(angles, dihedral_middle_id)
-        if dihedrals is not None:
-            self.dihedral_params = self.get_dihedral_params(dihedrals, atom_types)
-        core_id = np.where(np.bincount(bonds.flatten()) > 2)[0]
-        checked_core_id = self.check_idihedral(bonds, core_id)
-        idihedrals, third_id = self.get_idihedrals(bonds, checked_core_id)
-        self.improper_dihedral_params = self.get_idihedral_params(
-            idihedrals, atom_types, third_id
-        )
-        if dihedrals is not None:
-            self.pair_index = self.get_pair_index(dihedrals, angles, bonds)
-            pair_params = self.get_pair_params(self.pair_index, self.vdw_param[:, 0][None, :],
-                                               self.vdw_param[:, 1][None, :])
-            self.excludes = self.get_excludes(bonds, angles, dihedrals, idihedrals)
-        else:
-            pair_params = None
-        return ForceConstants(
-            self.bond_params,
-            self.angle_params,
-            self.dihedral_params,
-            self.improper_dihedral_params,
-            angles,
-            dihedrals,
-            idihedrals,
-            self.excludes,
-            self.vdw_param,
-            hbonds,
-            non_hbonds,
-            pair_params,
-        )
+
+        bond_params = None
+        angle_params = None
+        if bonds is not None:
+            hbonds, non_hbonds = self.get_hbonds(bonds)
+            bond_params = self.get_bond_params(bonds, atoms_types)
+            middle_id = np.where(np.bincount(bonds.flatten()) > 1)[0]
+            ids_for_angle = np.where(
+                np.sum(np.isin(bonds, middle_id), axis=1) > 0)[0]
+            bonds_for_angle = bonds[ids_for_angle]
+            angles = self.combinations(bonds, bonds_for_angle, middle_id)
+
+            if angles is not None:
+                angle_params = self.get_angle_params(angles, atoms_types)
+            dihedral_middle_id = bonds[
+                np.where(np.isin(bonds, middle_id).sum(axis=1) == 2)[0]
+            ]
+            dihedrals = self.get_dihedrals(angles, dihedral_middle_id)
+            dihedral_params = None
+            if dihedrals is not None:
+                dihedral_params = self.get_dihedral_params(dihedrals, atom_types)
+            core_id = np.where(np.bincount(bonds.flatten()) > 2)[0]
+            improper = None
+            improper_params = None
+            if self._improper is not None:
+                checked_core_id = self.check_improper(bonds, core_id)
+                improper, third_id = self.get_improper(bonds, checked_core_id)
+                improper_params = self.get_improper_params(improper, atom_types, third_id)
+            if dihedrals is not None:
+                self.pair_index = self.get_pair_index(dihedrals, angles, bonds)
+                pair_params = self.get_pair_params(self.pair_index, vdw_params['epsilon'],
+                                                   vdw_params['sigma'])
+                self.excludes = self.get_excludes(bonds, angles, dihedrals, improper)
+            else:
+                pair_params = None
+            return ForceConstants(
+                bond_params,
+                angle_params,
+                dihedral_params,
+                improper_params,
+                angles,
+                dihedrals,
+                improper,
+                self.excludes,
+                vdw_params,
+                hbonds,
+                non_hbonds,
+                pair_params,
+            )
+
+        return ForceConstants(excludes=self.excludes, vdw_param=self.vdw_param)

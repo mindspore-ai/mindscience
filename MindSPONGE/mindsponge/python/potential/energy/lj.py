@@ -136,6 +136,13 @@ class LennardJonesEnergy(NonbondEnergy):
 
         self.mean_c6 = None
         if mean_c6 is not None:
+            mean_c6 = Tensor(mean_c6, ms.float32)
+            if mean_c6.ndim == 0:
+                mean_c6 = mean_c6.reshape(1, 1)
+            elif mean_c6.ndim == 1:
+                mean_c6 = F.expand_dims(mean_c6, 0)
+            elif mean_c6.ndim > 2:
+                raise ValueError('The rank of mean_c6 cannot be larger than 2!')
             self.mean_c6 = Parameter(Tensor(mean_c6, ms.float32), name='average_dispersion', requires_grad=False)
 
         self.disp_corr = self._calc_disp_corr()
@@ -229,10 +236,10 @@ class LennardJonesEnergy(NonbondEnergy):
         if self.cutoff is not None and pbc_box is not None:
             # (B,1) <- (B,D)
             volume = func.keepdim_prod(pbc_box, -1)
-            # E_corr = -2 / 3 * pi * N * \rho * C_6 * r_c^-3
-            #        = -2 / 3 * pi * N * (N / V) * C_6 * r_c^-3
-            #        = -2 / 3 * pi * N^2 * C_6 / V
-            #        = k_corr * C_6 / V
+            # E_corr = -2 / 3 * pi * N * \rho * <C_6> * r_c^-3
+            #        = -2 / 3 * pi * N * (N / V) * <C_6> * r_c^-3
+            #        = -2 / 3 * pi * N^2 * <C_6> / V
+            #        = k_corr * <C_6> / V
             ene_corr = self.disp_corr * self.mean_c6 * msnp.reciprocal(volume)
             energy += ene_corr
 

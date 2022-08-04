@@ -22,34 +22,46 @@
 # ============================================================================
 """Base cell for bais potential"""
 
+import mindspore as ms
 from mindspore import Tensor
+from mindspore.ops import functional as F
 
-from ..potential import PotentialCell
-from ...colvar import Colvar
-from ...function.units import Units, global_units
+from .bias import Bias
+from ...function.units import Units, global_units, Length, Energy
+from ...function import functions as func
 
 
-class Bias(PotentialCell):
+class SphericalRestrict(Bias):
     r"""Basic cell for bias potential
+
+    Math:
+
+        V(R) = k * log(1 + exp((|R - R_0| - r_0) / \sigma))
 
     Args:
 
-        colvar (Colvar):            Collective variables.
+        radius (float):         Radius of sphere (r_0).
 
-        multiple_walkers (bool):    Whether to use multiple walkers.
+        center (Tensor):        Coordinate of the center of sphere (R_0).
 
-        length_unit (str):          Length unit for position coordinates. Default: None
+        force_constant (float): Force constant of the bias potential(k). Default: Energy(500, 'kj/mol')
 
-        energy_unit (str):          Energy unit. Default: None
+        depth (float):          Wall depth of the restriction (\sigma). Default: Length(0.01, 'nm')
 
-        units (Units):              Units of length and energy. Default: None
+        length_unit (str):      Length unit for position coordinates. Default: None
 
-        use_pbc (bool):             Whether to use periodic boundary condition.
+        energy_unit (str):      Energy unit. Default: None
+
+        units (Units):          Units of length and energy. Default: None
+
+        use_pbc (bool):         Whether to use periodic boundary condition.
 
     """
     def __init__(self,
-                 colvar: Colvar = None,
-                 multiple_walkers: bool = False,
+                 radius: float,
+                 center: Tensor = 0,
+                 force_constant: float = Energy(500, 'kj/mol'),
+                 depth: float = Length(0.01, 'nm'),
                  length_unit: str = None,
                  energy_unit: str = None,
                  units: Units = global_units,
@@ -63,19 +75,16 @@ class Bias(PotentialCell):
             use_pbc=use_pbc,
         )
 
-        if units is None:
-            self.units.set_length_unit(length_unit)
-            self.units.set_energy_unit(energy_unit)
-        else:
-            self.units = units
+        self.radius = Tensor(radius, ms.float32)
+        self.center = Tensor(center, ms.float32)
 
-        self.colvar = colvar
-        self.multiple_walkers = multiple_walkers
+        if isinstance(force_constant, Energy):
+            force_constant = force_constant(self.units)
+        self.force_constant = Tensor(force_constant, ms.float32)
 
-    def update(self, coordinates: Tensor, pbc_box: Tensor = None):
-        """update parameter of bias potential"""
-        #pylint: disable = unused-argument
-        return self
+        if isinstance(depth, Length):
+            depth = depth(self.units)
+        self.depth = Tensor(depth, ms.float32)
 
     def construct(self,
                   coordinate: Tensor,
@@ -112,4 +121,10 @@ class Bias(PotentialCell):
 
         """
 
-        raise NotImplementedError
+        # (B, A) <- (B, A, D)
+        distance = func.norm_last_dim(coordinate - self.center)
+        diff = distance - self.radius
+        bias = self.force_constant * F.log(1.0 + F.exp(diff/self.depth))
+
+        # (B, 1) <- (B, A)
+        return func.keepdim_sum(bias, -1)

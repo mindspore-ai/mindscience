@@ -24,7 +24,7 @@
 
 from .system import Molecule, Protein
 from .potential import PotentialCell, ForceFieldBase, ForceField
-from .optimizer import Updater, DynamicUpdater, GradientDescent
+from .optimizer import Updater, DynamicUpdater, SteepestDescent
 from .core import Sponge, SimulationCell, RunOneStepCell, AnalyseCell
 
 from .function.units import global_units, set_global_units

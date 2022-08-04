@@ -25,41 +25,62 @@ Read template
 """
 
 import os
-import yaml
+from typing import Union, Tuple
 import numpy as np
 from numpy import ndarray
 
+from ..data import update_dict, read_yaml
 
-def get_template(template: str) -> dict:
+
+def get_template(template: Union[str, dict, list], residue_name: str = None) -> dict:
     """ Get molecular template.
 
     Args:
 
-        template (str or dict): The file name of template.
+        template (str, dict or list):   The file name of template.
+
+        residue_name (str):             Residue name
 
     Returns:
 
-        template (dict):  Force field parameters
+        template (dict):  Molecular template
 
     """
 
-    if isinstance(template, dict):
-        return template
+    if template is None or not template:
+        return None
 
-    if not isinstance(template, str):
-        raise TypeError('The type of template must be dict or str but got: ' +
-                        str(type(template)))
+    if isinstance(template, str):
+        if os.path.exists(template):
+            filename = template
+        else:
+            directory, _ = os.path.split(os.path.realpath(__file__))
+            filename = os.path.join(directory, template)
+            if not os.path.exists(filename):
+                raise ValueError('Cannot find template file: "'+template+'".')
+        template: dict = read_yaml(filename)
+    elif isinstance(template, (list, tuple)):
+        template_ = {}
+        for temp in template:
+            temp = get_template(temp)
+            template_ = update_dict(template_, temp)
+        template = template_
+    elif not isinstance(template, dict):
+        raise TypeError('The type of template must be str, dict or list but got: ' + str(type(template)))
 
-    if os.path.exists(template):
-        filename = template
-    else:
-        directory, _ = os.path.split(os.path.realpath(__file__))
-        filename = os.path.join(directory, template)
-        if not os.path.exists(filename):
-            raise ValueError('Cannot find template file: "'+template+'".')
+    if 'template' in template.keys():
+        template = get_template(template.get('template'))
 
-    with open(filename, 'r', encoding="utf-8") as file:
-        template = yaml.safe_load(file.read())
+    if 'base' in template.keys():
+        base = get_template(template.pop('base'))
+        template = update_dict(base, template)
+
+    if residue_name is not None:
+        if residue_name in template.keys():
+            template = template.get(residue_name)
+        else:
+            raise ValueError('Cannot find the residue name "' + str(residue_name) +
+                             '" in template.')
 
     return template
 
@@ -72,3 +93,42 @@ def get_template_index(template: dict, names: ndarray, key: str = 'atom_name') -
     if unknown_name.any():
         raise ValueError('Unknown name: ' + str(names[unknown_name]))
     return index
+
+
+def get_molecule(template: str) -> Tuple[dict, dict]:
+    """ Get molecular template.
+
+    Args:
+
+        template (str or dict): The file name of template.
+
+    Returns:
+
+        template (dict):  Molecular template
+
+    """
+
+    if isinstance(template, str):
+        if os.path.exists(template):
+            filename = template
+        else:
+            directory, _ = os.path.split(os.path.realpath(__file__))
+            filename = os.path.join(directory, template)
+            if not os.path.exists(filename):
+                raise ValueError('Cannot find template file: "'+template+'".')
+        template: dict = read_yaml(filename)
+    elif not isinstance(template, dict):
+        raise TypeError('The type of template must be str or dict but got :' +
+                        str(type(template)))
+
+    if 'molecule' in template.keys():
+        molecule: dict = template.get('molecule')
+        template: dict = get_template(template)
+    else:
+        raise ValueError('Cannot find "molecule" in template')
+
+    for res in molecule.get('residue'):
+        if res not in template.keys():
+            raise ValueError('Cannot find residue name "'+str(res)+'" in template!')
+
+    return molecule, template

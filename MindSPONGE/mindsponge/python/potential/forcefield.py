@@ -23,6 +23,7 @@
 """Force filed"""
 import os
 import copy
+from typing import Union
 import numpy as np
 import mindspore as ms
 import mindspore.numpy as msnp
@@ -34,7 +35,7 @@ from .energy import EnergyCell, BondEnergy, AngleEnergy, DihedralEnergy, Nonbond
 from .energy import CoulombEnergy, LennardJonesEnergy
 from .potential import PotentialCell
 from ..data.parameters import ForceFieldParameters
-from ..data.forcefield import get_forcefield_parameters
+from ..data.forcefield import get_forcefield
 from ..system import Molecule
 from ..function.units import Units
 
@@ -67,7 +68,7 @@ class ForceFieldBase(PotentialCell):
     """
 
     def __init__(self,
-                 energy: EnergyCell = None,
+                 energy: Union[EnergyCell, list] = None,
                  cutoff: float = None,
                  exclude_index: Tensor = None,
                  length_unit: str = None,
@@ -153,10 +154,19 @@ class ForceFieldBase(PotentialCell):
 
         return self
 
-    def set_pbc(self, use_pbc: Tensor = None):
+    def set_pbc(self, use_pbc: bool = None):
         """set whether to use periodic boundary condition."""
         for i in range(self.num_energy):
             self.energy_network[i].set_pbc(use_pbc)
+        return self
+
+    def set_cutoff(self, cutoff: Tensor = None):
+        """set cutoff distance"""
+        self.cutoff = None
+        if cutoff is not None:
+            self.cutoff = Tensor(cutoff, ms.float32)
+        for i in range(self.num_energy):
+            self.energy_network[i].set_cutoff(self.cutoff)
         return self
 
     def construct(self,
@@ -222,28 +232,28 @@ class ForceField(ForceFieldBase):
 
     Args:
 
-        system (Molecule):  Simulation system.
+        system (Molecule):          Simulation system.
 
-        cutoff (float):     Cutoff distance. Default: None
+        cutoff (float):             Cutoff distance. Default: None
 
-        length_unit (str):  Length unit for position coordinate. Default: None
+        parameters (dict or str):   Force field parameters.
 
-        energy_unit (str):  Energy unit. Default: None
+        length_unit (str):          Length unit for position coordinate. Default: None
 
-        units (Units):      Units of length and energy. Default: None
+        energy_unit (str):          Energy unit. Default: None
 
-        use_pbc (bool):     Whether to use periodic boundary condition.
+        units (Units):              Units of length and energy. Default: None
+
 
     """
 
     def __init__(self,
                  system: Molecule,
-                 parameters: dict,
+                 parameters: Union[dict, str],
                  cutoff: float = None,
                  length_unit: str = None,
                  energy_unit: str = None,
                  units: Units = None,
-                 use_pbc: bool = None,
                  ):
 
         super().__init__(
@@ -252,15 +262,12 @@ class ForceField(ForceFieldBase):
             length_unit=length_unit,
             energy_unit=energy_unit,
             units=units,
-            use_pbc=use_pbc,
         )
-        # Check Parameters
-        self.check_params(system)
+
+        use_pbc = system.use_pbc
 
         # Generate Forcefield Parameters
-        ff_dict = get_forcefield_parameters(parameters)
-        template = ff_dict.get('template')
-        parameters = ff_dict.get('parameters')
+        parameters, template = get_forcefield(parameters)
         for residue in system.residue:
             residue.build_atom_type(template.get(residue.name))
             residue.build_atom_charge(template.get(residue.name))
@@ -268,21 +275,21 @@ class ForceField(ForceFieldBase):
         system.build_system()
 
         ff_params = ForceFieldParameters(
-            system.atom_type[0], copy.deepcopy(ff_dict), atom_names=system.atom_name[0],
+            system.atom_type, copy.deepcopy(parameters), atom_names=system.atom_name,
             atom_charges=self.identity(system.atom_charge).asnumpy())
 
         if isinstance(system.bond, np.ndarray):
-            force_params = ff_params(system.bond[0])
+            system_params = ff_params(system.bond)
         if isinstance(system.bond, Tensor):
-            force_params = ff_params(system.bond[0].asnumpy())
+            system_params = ff_params(system.bond.asnumpy())
 
         energy = []
 
         # Bond energy
-        if system.bond is not None:
-            bond_index = Tensor(system.bond[0], ms.int32)
-            bond_force_constant = Tensor(force_params.bond_params[:, 2][None, :], ms.float32)
-            bond_length = Tensor(force_params.bond_params[:, 3][None, :], ms.float32)
+        if system_params.bond_params is not None:
+            bond_index = system_params.bond_params['bond_index']
+            bond_force_constant = system_params.bond_params['force_constant']
+            bond_length = system_params.bond_params['bond_length']
 
             bond_params: dict = parameters.get('bond_energy')
             length_unit = bond_params.get('length_unit')
@@ -293,10 +300,10 @@ class ForceField(ForceFieldBase):
             energy.append(bond_energy)
 
         # Angle energy
-        if force_params.angles is not None:
-            angle_index = Tensor(force_params.angles[None, :], ms.int32)
-            angle_force_constant = Tensor(force_params.angle_params[:, 3][None, :], ms.float32)
-            bond_angle = Tensor(force_params.angle_params[:, 4][None, :], ms.float32)
+        if system_params.angle_params is not None:
+            angle_index = system_params.angle_params['angle_index']
+            angle_force_constant = system_params.angle_params['force_constant']
+            bond_angle = system_params.angle_params['bond_angle']
 
             angle_params: dict = parameters.get('angle_energy')
             energy_unit = angle_params.get('energy_unit')
@@ -305,26 +312,23 @@ class ForceField(ForceFieldBase):
             energy.append(angle_energy)
 
         # Dihedral energy
-        if force_params.dihedral_params is not None:
-            dihedral_index = Tensor(
-                force_params.dihedral_params[:, [0, 1, 2, 3]][None, :], ms.int32)
-            dihe_force_constant = Tensor(force_params.dihedral_params[:, 5][None, :], ms.float32)
-            periodicity = Tensor(force_params.dihedral_params[:, 4][None, :], ms.int32)
-            phase = Tensor(force_params.dihedral_params[:, 6][None, :], ms.float32)
+        if system_params.dihedral_params is not None:
+            dihedral_index = Tensor(system_params.dihedral_params['dihedral_index'][None, :], ms.int32)
+            dihe_force_constant = Tensor(system_params.dihedral_params['force_constant'][None, :], ms.float32)
+            periodicity = Tensor(system_params.dihedral_params['periodicity'][None, :], ms.int32)
+            phase = Tensor(system_params.dihedral_params['phase'][None, :], ms.float32)
 
-            # Idihedral Parameters
-            idihedral_index = Tensor(
-                force_params.improper_dihedral_params[:, [0, 1, 2, 3]][None, :], ms.int32)
+            # improper Parameters
+            improper_index = Tensor(system_params.improper_params['improper_index'][None, :], ms.int32)
 
             # Appending dihedral parameters and improper dihedral parameters.
-            dihedral_index = msnp.append(
-                dihedral_index, idihedral_index, axis=1)
+            dihedral_index = msnp.append(dihedral_index, improper_index, axis=1)
             dihe_force_constant = msnp.append(dihe_force_constant, Tensor(
-                force_params.improper_dihedral_params[:, 5][None, :], ms.float32), axis=1)
+                system_params.improper_params['force_constant'][None, :], ms.float32), axis=1)
             periodicity = msnp.append(periodicity, Tensor(
-                force_params.improper_dihedral_params[:, 4][None, :], ms.int32), axis=1)
+                system_params.improper_params['periodicity'][None, :], ms.int32), axis=1)
             phase = msnp.append(phase, Tensor(
-                force_params.improper_dihedral_params[:, 6][None, :], ms.float32), axis=1)
+                system_params.improper_params['phase'][None, :], ms.float32), axis=1)
 
             dihedral_params: dict = parameters.get('dihedral_energy')
             energy_unit = dihedral_params.get('energy_unit')
@@ -345,70 +349,38 @@ class ForceField(ForceFieldBase):
         # VDW energy
         epsilon = None
         sigma = None
-        if force_params.vdw_param is not None:
-            epsilon = Tensor(force_params.vdw_param[:, 0][None, :], ms.float32)
-            sigma = Tensor(force_params.vdw_param[:, 1][None, :], ms.float32)
+        if system_params.vdw_param is not None:
+            epsilon = system_params.vdw_param['epsilon']
+            sigma = system_params.vdw_param['sigma']
+            mean_c6 = system_params.vdw_param['mean_c6']
 
             vdw_params: dict = parameters.get('vdw_energy')
             length_unit = vdw_params.get('length_unit')
             energy_unit = vdw_params.get('energy_unit')
-            vdw_energy = LennardJonesEnergy(epsilon=epsilon, sigma=sigma, use_pbc=use_pbc,
+            vdw_energy = LennardJonesEnergy(epsilon=epsilon, sigma=sigma, mean_c6=mean_c6, use_pbc=use_pbc,
                                             length_unit=length_unit, energy_unit=energy_unit)
             energy.append(vdw_energy)
 
         # Non-bonded pairwise energy
-        if ff_params.pair_index is not None:
+        if system_params.pair_params is not None and system_params.pair_params is not None:
             pair_index = Tensor(ff_params.pair_index[None, :], ms.int32)
-            qiqj = Tensor(force_params.pair_params[:, 0][None, :], ms.float32)
-            epsilon_ij = Tensor(force_params.pair_params[:, 1][None, :], ms.float32)
-            sigma_ij = Tensor(force_params.pair_params[:, 2][None, :], ms.float32)
+            qiqj = system_params.pair_params['qiqj']
+            epsilon_ij = system_params.pair_params['epsilon_ij']
+            sigma_ij = system_params.pair_params['sigma_ij']
+            r_scale = system_params.pair_params['r_scale']
+            r6_scale = system_params.pair_params['r6_scale']
+            r12_scale = system_params.pair_params['r12_scale']
 
             pair_params: dict = parameters.get('nb_pair_energy')
             length_unit = pair_params.get('length_unit')
             energy_unit = pair_params.get('energy_unit')
-            r_scale = pair_params.get('r_scale')
-            r6_scale = pair_params.get('r6_scale')
-            r12_scale = pair_params.get('r12_scale')
             pair_energy = NonbondPairwiseEnergy(pair_index, qiqj=qiqj, epsilon_ij=epsilon_ij, sigma_ij=sigma_ij,
                                                 r_scale=r_scale, r6_scale=r6_scale, r12_scale=r12_scale,
                                                 length_unit=length_unit, energy_unit=energy_unit, use_pbc=use_pbc)
             energy.append(pair_energy)
 
         # Exclude Parameters
-        self._exclude_index = Tensor(force_params.excludes[None, :], ms.int32)
+        self._exclude_index = Tensor(system_params.excludes[None, :], ms.int32)
 
         self.energy_network = self.set_energy_network(energy)
         self.output_unit_scale = self.set_unit_scale()
-
-    def check_params(self, system: Molecule):
-        """Check if the input parameters for force field is legal.
-        """
-        # Dimension Checking
-        if system.atom_mass.shape[0] != 1:
-            raise ValueError('The first dimension of atom mass should be 1.')
-
-        if system.atom_type.shape[0] != 1:
-            raise ValueError('The first dimension of atom type should be 1.')
-
-        if system.atom_name.shape[0] != 1:
-            raise ValueError('The first dimension of atom name should be 1.')
-
-        if system.bond.shape[0] != 1:
-            raise ValueError('The first dimension of bond should be 1.')
-
-        # Type Checking
-        if not isinstance(system.atom_name, np.ndarray):
-            raise ValueError(
-                'The data type of atom name should be numpy.ndarray.')
-
-        if not isinstance(system.atom_type, np.ndarray):
-            raise ValueError(
-                'The data type of atom type should be numpy.ndarray.')
-
-        if not isinstance(system.atom_mass, np.ndarray) and not isinstance(system.atom_mass, Tensor):
-            raise ValueError(
-                'The data type of atom mass should be numpy.ndarray or Tensor.')
-
-        if not isinstance(system.bond, np.ndarray) and not isinstance(system.bond, Tensor):
-            raise ValueError(
-                'The data type of bond should be numpy.ndarray or Tensor.')
