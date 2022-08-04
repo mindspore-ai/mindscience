@@ -617,7 +617,7 @@ class Molecule(Cell):
             product_.append(list(range(l)))
 
         shift_num = tuple(itertools.product(*product_))[1:]
-        if len(shift_num) > 0:
+        if shift_num:
             shift_box = Tensor(shift_num, ms.float32) * self.pbc_box
             box = self.copy()
             coord = box.get_coordinate()

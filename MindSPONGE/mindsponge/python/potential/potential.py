@@ -135,7 +135,6 @@ class PotentialCell(Cell):
             self.cutoff = Tensor(cutoff, ms.float32)
         return self
 
-
     def construct(self,
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,

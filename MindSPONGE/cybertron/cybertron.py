@@ -745,7 +745,7 @@ class CybertronFF(PotentialCell):
             if energy_unit is not None:
                 self.units.set_energy_unit(energy_unit)
         else:
-            self.units = units
+            self.units.set_units(units=units)
             self.length_unit = self.units.length_unit
             self.energy_unit = self.units.energy_unit
             self.input_unit_scale = self.units.convert_energy_to(
@@ -861,6 +861,7 @@ class CybertronFF(PotentialCell):
             D:  Dimension of the simulation system. Usually is 3.
 
         """
+        #pylint: disable=unused-argument
 
         x, xlist = self.model(neighbour_distance, self.atom_types, self.atom_mask,
                               neighbour_index, neighbour_mask)

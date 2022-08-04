@@ -25,9 +25,9 @@ Base function for yaml
 """
 
 from itertools import permutations
+import yaml
 import numpy as np
 from numpy import ndarray
-import yaml
 
 
 def update_dict(origin_dict: dict, new_dict: dict) -> dict:
