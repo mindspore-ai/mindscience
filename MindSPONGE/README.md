@@ -6,36 +6,13 @@
 [![LICENSE](https://img.shields.io/github/license/mindspore-ai/mindspore.svg?style=flat-square)](https://github.com/mindspore-ai/mindspore/blob/master/LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://gitee.com/mindspore/mindscience/pulls)
 
-# **MindSPONGE**
-
-<!-- TOC -->
-
-- [MindSpore SPONGE](#mindspore-sponge)
-    - [MindSpore SPONGE介绍](#mindspore-sponge介绍)
-    - [最新消息](#最新消息-)
-    - [即将到来](#即将到来-)
-    - [初体验](#初体验)
-        - [蛋白质 violation 计算](#蛋白质-violation-计算)
-        - [四元数与旋转矩阵转换](#四元数与旋转矩阵转换)
-        - [一个简单的分子动力学模拟案例](#一个简单的分子动力学模拟案例)
-    - [安装教程](#安装教程)
-        - [依赖安装](#依赖安装)
-        - [硬件支持情况](#硬件支持情况)
-        - [pip安装](#pip安装)
-        - [源码安装](#源码安装)
-    - [社区](#社区)
-        - [CO-CHAIR](#co-chair)
-        - [SIG](#sig-)
-        - [核心贡献者](#核心贡献者-)
-    - [许可证](#许可证)
-
-<!-- TOC -->
+# **MindSpore SPONGE**
 
 ## **MindSpore SPONGE介绍**
 
 MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)是基于[昇思MindSpore](https://www.mindspore.cn/)的计算生物领域套件，支持分子动力学、蛋白质折叠等常用功能，旨在于为广大的科研人员、老师及学生提供高效易用的AI计算生物软件。
 
-<div align=center><img src="docs/archi.png" alt="MindSPONGE Architecture" width="600"/></div>
+<div align=center><img src="docs/archi_cn.png" alt="MindSPONGE Architecture" width="700"/></div>
 
 ## **最新消息** 📰
 
@@ -46,7 +23,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **即将到来** 🚀
 
-- 🔥2022.8.11—2022.8.15 MindSpore SPONGE SIG[暑期学校活动](#sig)
+- 🔥2022.8.11—2022.8.15 MindSpore SPONGE SIG[暑期学校活动](#sig-)
 
 ## **初体验**
 
@@ -239,7 +216,7 @@ MindSpore SPONGE SIG小组为广大科研人员，老师和学生提供高效易
 
 ### 核心贡献者 🧑‍🤝‍🧑
 
-- [高毅勤课题组](https://www.chem.pku.edu.cn/gaoyq/):  [杨奕](https://gitee.com/helloyesterday)，[张骏](https://gitee.com/jz_90)，[刘思睿](https://gitee.com/sirui63)，[夏义杰](https://gitee.com/gao_hyp_xyj_admin)，[陈迪青](https://gitee.com/dechin)，[黄渝鹏](https://gitee.com/gao_hyp_xyj_admin)
+- [高毅勤课题组](https://www.chem.pku.edu.cn/gaoyq/):  [杨奕](https://gitee.com/helloyesterday)，[张骏](https://gitee.com/jz_90)，[刘思睿](https://gitee.com/sirui63)，[夏义杰](https://gitee.com/xiayijie)，[陈迪青](https://gitee.com/dechin)，[黄渝鹏](https://gitee.com/gao_hyp_xyj_admin)
 
 ## **许可证**
 
