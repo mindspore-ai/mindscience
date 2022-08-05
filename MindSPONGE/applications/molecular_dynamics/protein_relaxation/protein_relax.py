@@ -35,7 +35,6 @@ from mindsponge.potential.bias import OscillatorBias
 from mindsponge.system.modeling.pdb_generator import gen_pdb
 
 from mindsponge.common.utils import get_pdb_info
-from mindsponge.common import residue_constants
 from mindsponge.metrics.structure_violations import get_structural_violations
 
 parser = argparse.ArgumentParser()
@@ -50,67 +49,6 @@ save_pdb_name = args.o
 addh = args.addh
 context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=1)
 
-VIOLATION_TOLERANCE_ACTOR = 12.0
-CLASH_OVERLAP_TOLERANCE = 1.5
-C_ONE_HOT = nn.OneHot(depth=14)(Tensor(2, ms.int32))
-N_ONE_HOT = nn.OneHot(depth=14)(Tensor(0, ms.int32))
-DISTS_MASK_I = msnp.eye(14, 14)
-CYS_SG_IDX = Tensor(5, ms.int32)
-ATOMTYPE_RADIUS = Tensor(
-    np.array(
-        [
-            1.55,
-            1.7,
-            1.7,
-            1.7,
-            1.52,
-            1.7,
-            1.7,
-            1.7,
-            1.52,
-            1.52,
-            1.8,
-            1.7,
-            1.7,
-            1.7,
-            1.55,
-            1.55,
-            1.52,
-            1.52,
-            1.8,
-            1.7,
-            1.7,
-            1.7,
-            1.7,
-            1.55,
-            1.55,
-            1.55,
-            1.52,
-            1.52,
-            1.7,
-            1.55,
-            1.55,
-            1.52,
-            1.7,
-            1.7,
-            1.7,
-            1.55,
-            1.52,
-        ]
-    ),
-    ms.float32,
-)
-(
-    LOWER_BOUND,
-    UPPER_BOUND,
-    RESTYPE_ATOM14_BOUND_STDDEV,
-) = residue_constants.make_atom14_dists_bounds(
-    overlap_tolerance=1.5, bond_length_tolerance_factor=12.0
-)
-LOWER_BOUND = Tensor(LOWER_BOUND, ms.float32)
-UPPER_BOUND = Tensor(UPPER_BOUND, ms.float32)
-RESTYPE_ATOM14_BOUND_STDDEV = Tensor(RESTYPE_ATOM14_BOUND_STDDEV, ms.float32)
-
 
 def get_violation_loss(system):
     """ Package the violation loss calculation module. """
@@ -122,33 +60,13 @@ def get_violation_loss(system):
         pdb_name=save_pdb_name,
     )
     features = get_pdb_info(save_pdb_name)
-    atom14_atom_exists_t = Tensor(features.get("atom14_gt_exists")).astype(
-        ms.float32
-    )
+    atom14_atom_exists_t = Tensor(features.get("atom14_gt_exists")).astype(ms.float32)
     residue_index_t = Tensor(features.get("residue_index")).astype(ms.float32)
-    residx_atom14_to_atom37_t = Tensor(
-        features.get("residx_atom14_to_atom37")
-    ).astype(ms.int32)
-    atom14_positions_t = Tensor(features.get("atom14_gt_positions")).astype(
-        ms.float32
-    )
+    residx_atom14_to_atom37_t = Tensor(features.get("residx_atom14_to_atom37")).astype(ms.int32)
+    atom14_positions_t = Tensor(features.get("atom14_gt_positions")).astype(ms.float32)
     aatype_t = Tensor(features.get("aatype")).astype(ms.int32)
-    violations = get_structural_violations(
-        atom14_atom_exists_t,
-        residue_index_t,
-        aatype_t,
-        residx_atom14_to_atom37_t,
-        atom14_positions_t,
-        VIOLATION_TOLERANCE_ACTOR,
-        CLASH_OVERLAP_TOLERANCE,
-        LOWER_BOUND,
-        UPPER_BOUND,
-        ATOMTYPE_RADIUS,
-        C_ONE_HOT,
-        N_ONE_HOT,
-        DISTS_MASK_I,
-        CYS_SG_IDX,
-    )
+    violations = get_structural_violations(atom14_atom_exists_t, residue_index_t, aatype_t,
+                                           residx_atom14_to_atom37_t, atom14_positions_t)
     return violations
 
 
