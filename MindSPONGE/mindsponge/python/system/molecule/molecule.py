@@ -25,7 +25,10 @@ Molecule
 """
 
 import copy
+import itertools
+from typing import Union, Tuple
 import numpy as np
+from numpy import ndarray
 import mindspore as ms
 from mindspore import Parameter
 from mindspore import ops
@@ -35,6 +38,7 @@ from mindspore.common import Tensor
 from mindspore import numpy as msnp
 
 from ..residue import Residue
+from ...data.template import get_molecule
 from ...function import functions as func
 from ...function.units import Units, global_units
 from ...function.functions import get_ndarray
@@ -93,7 +97,8 @@ class Molecule(Cell):
                  bond: Tensor = None,
                  coordinate: Tensor = None,
                  pbc_box: Tensor = None,
-                 residue: Residue = None,
+                 template: Union[dict, str] = None,
+                 residue: Union[Residue, list] = None,
                  length_unit: str = None,
                  ):
 
@@ -104,8 +109,17 @@ class Molecule(Cell):
         else:
             self.units = Units(length_unit)
 
+        if template is not None:
+            molecule, template = get_molecule(template)
+            residue: list = []
+            for res in molecule.get('residue'):
+                residue.append(Residue(name=res, template=template))
+            if coordinate is None:
+                coordinate = np.array(molecule.get('coordinate'), np.float32)
+                coordinate *= self.units.convert_length_from(molecule.get('length_unit'))
+
         self.num_residue = 1
-        if residue is None:
+        if residue is None or not residue:
             if atoms is not None:
                 atoms = get_ndarray(atoms)
                 if np.issubdtype(atoms.dtype, np.integer):
@@ -159,6 +173,9 @@ class Molecule(Cell):
         self.res_natom_tensor = None
         # (R)
         self.residue_pointer = None
+        # (A)
+        self.atom_resid = None
+        self.image_index = None
 
         # (B,C,2)
         self.bond = None
@@ -213,13 +230,13 @@ class Molecule(Cell):
 
     def copy(self, shift: Tensor = None):
         """return a Molecule that copy the parameters of this molecule"""
-        coordinate = self.coordinate
+        coordinate = self.get_coordinate()
         if shift is not None:
             coordinate += Tensor(shift, ms.float32)
         return Molecule(
-            residue=self.residue,
+            residue=copy.deepcopy(self.residue),
             coordinate=coordinate,
-            pbc_box=self.pbc_box,
+            pbc_box=self.get_pbc_box(),
             length_unit=self.length_unit,
         )
 
@@ -231,13 +248,15 @@ class Molecule(Cell):
             else:
                 raise TypeError('The type of residue must be Residue or list but got: ' +
                                 str(type(residue)))
-        self.residue.extend(residue)
+
+        self.residue.extend(copy.deepcopy(residue))
         self.build_system()
         if coordinate is None:
             natoms = 0
             for res in residue:
                 natoms += res.num_atoms
             coordinate = msnp.ones((self.num_walker, natoms, self.dimension), ms.float32)
+
         coordinate = msnp.concatenate((self.coordinate, coordinate), axis=-2)
         self.build_space(coordinate, self.pbc_box)
         return self
@@ -247,7 +266,7 @@ class Molecule(Cell):
         if not isinstance(system, Molecule):
             raise TypeError('For add, the type of system must be "Molecule" but got: ' +
                             str(type(system)))
-        self.add_residue(copy.deepcopy(system.residue), self.identity(system.coordinate))
+        self.add_residue(system.residue, system.get_coordinate())
         return self
 
     def reduplicate(self, shift: Tensor):
@@ -314,6 +333,9 @@ class Molecule(Cell):
         atomic_number = ()
         inv_mass = ()
 
+        atom_resid = ()
+        image_index = ()
+
         residue_mass = ()
         res_natom_tensor = ()
 
@@ -324,6 +346,7 @@ class Molecule(Cell):
         pointer = 0
         residue_pointer = []
         residue_name = []
+
         for i in range(self.num_residue):
             if self.residue[i].multi_system != self.multi_system:
                 self.residue[i].broadcast_multiplicity(self.multi_system)
@@ -331,6 +354,10 @@ class Molecule(Cell):
             self.residue[i].set_start_index(pointer)
             residue_pointer.append(pointer)
             residue_name.append(self.residue[i].name)
+
+            # (A')
+            atom_resid += (msnp.full((self.residue[i].num_atoms,), i, ms.int32),)
+            image_index += (msnp.full((self.residue[i].num_atoms,), pointer, ms.int32),)
 
             # (B,A')
             atom_name += (self.residue[i].atom_name,)
@@ -384,6 +411,10 @@ class Molecule(Cell):
         self.atom_charge = None
         if any_charge:
             self.atom_charge = msnp.concatenate(atom_charge, axis=-1)
+
+        # (A)
+        self.atom_resid = msnp.concatenate(atom_resid)
+        self.image_index = msnp.concatenate(image_index)
 
         # (B,R)
         self.residue_mass = msnp.concatenate(residue_mass, axis=-1)
@@ -562,6 +593,47 @@ class Molecule(Cell):
                 self.update_pbc_box(pbc_box)
         return self
 
+    def repeat_box(self, lattices: list):
+        """repeat the system according to the lattices of PBC box"""
+        if self.pbc_box is None:
+            raise RuntimeError('repeat_box() cannot be used without pbc_box, '
+                               'please use set_pbc_box() to set pbc_box first '
+                               'before using this function.')
+
+        if isinstance(lattices, Tensor):
+            lattices = lattices.asnumpy()
+        if isinstance(lattices, ndarray):
+            lattices = lattices.tolist()
+        if not isinstance(lattices, list):
+            raise TypeError('The type of lattices must be list, ndarry or Tensor but got: ' +
+                            str(type(lattices)))
+        if len(lattices) != self.dimension:
+            raise ValueError('The number of lattics ('+str(len(lattices))+') must be equal to '
+                             'the dimension of system ('+str(self.dimension)+')')
+        product_ = []
+        for l in lattices:
+            if l <= 0:
+                raise ValueError('The number in lattices must larger than 0!')
+            product_.append(list(range(l)))
+
+        shift_num = tuple(itertools.product(*product_))[1:]
+        if shift_num:
+            shift_box = Tensor(shift_num, ms.float32) * self.pbc_box
+            box = self.copy()
+            coord = box.get_coordinate()
+            coordinate = (coord,)
+            for shift in shift_box:
+                self.residue.extend(copy.deepcopy(box.residue))
+                coordinate += (coord+shift,)
+
+            self.build_system()
+            coordinate = msnp.concatenate(coordinate, axis=-2)
+            self.build_space(coordinate, self.pbc_box)
+            new_box = Tensor(lattices, ms.int32) * self.pbc_box
+            self.update_pbc_box(new_box)
+
+        return self
+
     def coordinate_in_box(self, shift: float = 0) -> Tensor:
         """get the coordinate in a whole PBC box"""
         coordinate = self.identity(self.coordinate)
@@ -572,7 +644,10 @@ class Molecule(Cell):
         """calculate the image of coordinate"""
         coordinate = self.identity(self.coordinate)
         pbc_box = self.identity(self.pbc_box)
-        return func.periodic_image(coordinate, pbc_box, shift)
+        image = func.periodic_image(coordinate, pbc_box, shift)
+        if self.image_index is not None:
+            image = image[:, self.image_index, :]
+        return image
 
     def update_image(self, image: Tensor = None, success: bool = True) -> bool:
         """update the image of coordinate"""
@@ -601,7 +676,7 @@ class Molecule(Cell):
             return None
         return self.identity(self.pbc_box)
 
-    def construct(self):
+    def construct(self) -> Tuple[Tensor, Tensor]:
         r"""Get space information of system.
 
         Returns:

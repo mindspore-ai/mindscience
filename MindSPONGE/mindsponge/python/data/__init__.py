@@ -27,5 +27,8 @@ from .hyperparam import str_to_tensor, tensor_to_str
 from .hyperparam import get_class_parameters, get_hyper_parameter, get_hyper_string
 from .hyperparam import set_class_parameters, set_hyper_parameter, set_class_into_hyper_param
 from .hyperparam import load_checkpoint, load_hyperparam, load_hyper_param_into_class
-from .template import get_template, get_template_index
+from .template import get_template, get_template_index, get_molecule
 from .parameters import ForceFieldParameters
+from .forcefield import get_forcefield
+from .data import read_yaml, write_yaml, update_dict
+from .data import get_bonded_types, get_dihedral_types, get_improper_types

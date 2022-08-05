@@ -91,9 +91,7 @@ class DistanceNeighbours(Cell):
         self.cutoff_scale = Tensor(cutoff_scale, ms.float32)
         self.scaled_cutoff = self.cutoff * self.cutoff_scale
 
-        self.num_neighbours = num_neighbours
-        if num_neighbours is not None:
-            self.num_neighbours = get_integer(num_neighbours)
+        self.num_neighbours = get_integer(num_neighbours)
 
         self.large_dis = Tensor(large_dis, ms.float32)
 
@@ -221,11 +219,12 @@ class DistanceNeighbours(Cell):
             num_neighbours = num_atoms - 1
         else:
             num_neighbours = self.num_neighbours
-            self.check_neighbours_number(neighbour_mask)
 
         distances = distances[..., 1:num_neighbours+1]
         neighbours = neighbours[..., 1:num_neighbours+1]
         neighbour_mask = neighbour_mask[..., 1:num_neighbours+1]
+        if self.num_neighbours is not None:
+            self.check_neighbours_number(neighbour_mask)
 
         if exclude_index is None:
             exclude_index = self.exclude_index

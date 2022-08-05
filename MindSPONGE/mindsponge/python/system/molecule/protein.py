@@ -59,8 +59,6 @@ class Protein(Molecule):
 
         A:  Number of atoms.
 
-        b:  Number of bonds.
-
         D:  Dimension of the simulation system. Usually is 3.
 
     """

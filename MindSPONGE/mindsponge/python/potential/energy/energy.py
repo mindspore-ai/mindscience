@@ -49,8 +49,6 @@ class EnergyCell(Cell):
 
         use_pbc (bool):             Whether to use periodic boundary condition.
 
-        use_neighbour_list (bool):  Whether to use neighbour list. Default: False
-
     """
     def __init__(self,
                  label: str,
@@ -59,7 +57,6 @@ class EnergyCell(Cell):
                  energy_unit: str = 'kj/mol',
                  units: Units = None,
                  use_pbc: bool = None,
-                 use_neighbour_list: bool = False,
                  ):
 
         super().__init__()
@@ -68,7 +65,6 @@ class EnergyCell(Cell):
         self.output_dim = func.get_integer(output_dim)
 
         self.use_pbc = use_pbc
-        self.use_neighbour_list = use_neighbour_list
 
         if units is None:
             self.units = Units(length_unit, energy_unit)
@@ -82,6 +78,7 @@ class EnergyCell(Cell):
         self.gather_vectors = func.gather_vectors
 
         self.input_unit_scale = 1
+        self.cutoff = None
         self.identity = ops.Identity()
 
     def set_input_unit(self, units: Units):
@@ -93,6 +90,14 @@ class EnergyCell(Cell):
                 self.units.convert_length_from(units), ms.float32)
         else:
             raise TypeError('Unsupported type: '+str(type(units)))
+        return self
+
+    def set_cutoff(self, cutoff: float):
+        """set cutoff distances"""
+        if cutoff is None:
+            self.cutoff = None
+        else:
+            self.cutoff = Tensor(cutoff, ms.float32)
         return self
 
     def set_pbc(self, use_pbc: bool = None):
@@ -192,7 +197,6 @@ class NonbondEnergy(EnergyCell):
             energy_unit=energy_unit,
             units=units,
             use_pbc=use_pbc,
-            use_neighbour_list=True,
         )
 
         self.cutoff = None
@@ -200,14 +204,6 @@ class NonbondEnergy(EnergyCell):
             self.cutoff = Tensor(cutoff, ms.float32)
 
         self.inverse_input_scale = 1
-
-    def set_cutoff(self, cutoff: float):
-        """set cutoff distances"""
-        if cutoff is None:
-            self.cutoff = None
-        else:
-            self.cutoff = Tensor(cutoff, ms.float32)
-        return self
 
     def set_input_unit(self, units: Units):
         """set the length unit for the input coordinates"""

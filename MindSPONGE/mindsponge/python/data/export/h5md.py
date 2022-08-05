@@ -104,7 +104,7 @@ class H5MD:
 
         self.h5md_creator = self.h5md.create_group('creator')
         self.h5md_creator.attrs['name'] = 'MindSPONGE'
-        self.h5md_creator.attrs['version'] = '1.0'
+        self.h5md_creator.attrs['version'] = '0.5'
 
         if length_unit is None:
             length_unit = system.length_unit
@@ -129,10 +129,7 @@ class H5MD:
 
         atomic_number = None
         if system.atomic_number is not None:
-            atomic_number = system.atomic_number.asnumpy()
-            if self.num_walker > 1 and atomic_number.shape[0] == 1:
-                atomic_number = np.broadcast_to(
-                    atomic_number, (self.num_walker, self.num_atoms))
+            atomic_number = system.atomic_number.asnumpy()[0]
 
         self.length_unit_scale = self.units.convert_length_from(
             system.units)
@@ -157,14 +154,8 @@ class H5MD:
                        for s in system.residue_name.tolist()]
 
         resid = None
-        if system.residue_pointer is not None:
-            res_begin = system.residue_pointer.asnumpy()
-            res_end = res_begin.copy()
-            res_end[:-1] = res_end[1:]
-            res_end[..., -1] = self.num_atoms
-            resid = np.zeros([self.num_atoms])
-            for i, (b, e) in enumerate(zip(res_begin, res_end)):
-                resid[b:e] = i
+        if system.atom_resid is not None:
+            resid = system.atom_resid.asnumpy()
 
         bond_from = None
         bond_to = None

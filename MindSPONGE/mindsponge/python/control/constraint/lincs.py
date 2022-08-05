@@ -121,7 +121,6 @@ class Lincs(Constraint):
                   ):
         """ Construct function of Lincs"""
         #pylint: disable=invalid-name
-        #pylint: disable=unused-argument
 
         # (B,A,D)
         coordinate_old = self._coordinate

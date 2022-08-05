@@ -25,6 +25,7 @@ Residue
 """
 
 from operator import itemgetter
+from typing import Union
 import numpy as np
 from numpy import ndarray
 import mindspore as ms
@@ -93,7 +94,7 @@ class Residue:
                  tail_atom: int = None,
                  start_index: int = 0,
                  name: str = 'MOL',
-                 template: dict = None,
+                 template: Union[dict, str] = None,
                  ):
 
         self._name = name
@@ -108,13 +109,17 @@ class Residue:
 
         if template is not None:
             template = get_template(template)
-            if 'residue' in template.keys():
-                self._name = template.get('residue')
-            elif name in template.keys():
-                template = template.get(name)
-                self._name = name
-            else:
-                raise ValueError('Cannot find residue name "' + name + '" in template.')
+            if self._name is None:
+                if len(template) == 1:
+                    self._name = list(template.keys())[0]
+                    template = template.get(self._name)
+                else:
+                    raise ValueError('The name cannot be None when the number of '
+                                     'keys in template is larger than 1!')
+            elif self._name not in template.keys():
+                raise ValueError('Cannot found the key "' + str(self._name) + ' in template."')
+
+            template = template.get(self._name)
 
             atom_mass = np.array(template.get('atom_mass'), np.float32)
             atomic_number = np.array(template.get('atom_mass'), np.int32)
@@ -135,7 +140,7 @@ class Residue:
             tail_atom = template.get('tail_atom')
 
             if self.atom_name is None:
-                self.atom_name = np.array(template.get('atom_name'), np.str_)
+                self.atom_name = np.array(template.get('atom_name'), np.str_).reshape(1, -1)
             else:
                 atom_index = get_template_index(template, self.atom_name)
                 atom_mass = atom_mass[atom_index]
@@ -169,7 +174,7 @@ class Residue:
                 raise ValueError('The rank of "atomic_number" must be 1 or 2!')
 
         if self.atom_name is None:
-            self.atom_name = elements[self.atomic_number.asnumpy()]
+            self.atom_name = np.array(elements[self.atomic_number.asnumpy()], np.str_)
 
         if atomic_number is None:
             atom_name_list = self.atom_name.reshape(-1).tolist()
@@ -288,8 +293,6 @@ class Residue:
                 raise ValueError(
                     'The value of tail_atom has exceeds the number of atoms.')
 
-        self.atom_index = None
-
     @property
     def name(self) -> str:
         return str(self._name)
@@ -347,27 +350,32 @@ class Residue:
 
     def build_atom_mass(self, template: dict):
         """build atom mass"""
-        self.atom_mass = Tensor(self._get_atom_mass(template, self.atom_index), ms.float32)
+        atom_index = get_template_index(template, self.atom_name)
+        self.atom_mass = Tensor(self._get_atom_mass(template, atom_index), ms.float32)
         return self
 
     def build_atomic_number(self, template: dict):
         """build atomic number"""
-        self.atomic_number = Tensor(self._get_atomic_number(template, self.atom_index), ms.int32)
+        atom_index = get_template_index(template, self.atom_name)
+        self.atomic_number = Tensor(self._get_atomic_number(template, atom_index), ms.int32)
         return self
 
     def build_atom_type(self, template: dict):
         """build atom type"""
-        self.atom_type = self._get_atom_type(template, self.atom_index)
+        atom_index = get_template_index(template, self.atom_name)
+        self.atom_type = self._get_atom_type(template, atom_index)
         return self
 
     def build_atom_charge(self, template: dict):
         """build atom type"""
-        self.atom_charge = Tensor(self._get_atom_charge(template, self.atom_index), ms.float32)
+        atom_index = get_template_index(template, self.atom_name)
+        self.atom_charge = Tensor(self._get_atom_charge(template, atom_index), ms.float32)
         return self
 
     def build_bond(self, template: dict):
         """build bond"""
-        self.bond = Tensor(self._get_bond(template, self.atom_index), ms.int32)
+        atom_index = get_template_index(template, self.atom_name)
+        self.bond = Tensor(self._get_bond(template, atom_index), ms.int32)
         return self
 
     def add_atom(self,
@@ -441,7 +449,6 @@ class Residue:
 
         self.atom_name = np.concatenate((self.atom_name, atom_name), axis=-1)
         self.atom_type = np.concatenate((self.atom_type, atom_type), axis=-1)
-        self.atom_index = None
         self.atom_mass = F.concat((self.atom_mass, atom_mass), -1)
         self.atom_mask = F.concat((self.atom_mask, atom_mask), -1)
         self.atomic_number = F.concat((self.atomic_number, atomic_number), -1)

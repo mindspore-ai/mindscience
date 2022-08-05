@@ -24,4 +24,4 @@
 
 from .updater import Updater
 from .dynamics import DynamicUpdater
-from .gd import GradientDescent
+from .steepest import SteepestDescent

@@ -28,7 +28,6 @@ from .energy import EnergyCell, NonbondEnergy
 from .bond import BondEnergy
 from .angle import AngleEnergy
 from .dihedral import DihedralEnergy
-from .coulomb import CoulombEnergy, coulomb_law
-from .coulomb import DampedShiftedForceCoulomb, ParticleEeshEwaldCoulomb
+from .coulomb import CoulombEnergy
 from .lj import LennardJonesEnergy
 from .paris import NonbondPairwiseEnergy

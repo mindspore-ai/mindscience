@@ -24,4 +24,4 @@
 Force field parameters
 """
 
-from .forcefield import get_forcefield_parameters
+from .forcefield import get_forcefield

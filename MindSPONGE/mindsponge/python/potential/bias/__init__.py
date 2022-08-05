@@ -24,3 +24,4 @@
 
 from .bias import Bias
 from .oscillator import OscillatorBias
+from .spherical import SphericalRestrict

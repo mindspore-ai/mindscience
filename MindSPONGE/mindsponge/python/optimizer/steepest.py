@@ -6,8 +6,8 @@ from mindspore import nn, Parameter, Tensor
 from mindspore import numpy as msnp
 
 
-class GradientDescent(nn.Optimizer):
-    """The gradient descent optimizer with growing learning rate.
+class SteepestDescent(nn.Optimizer):
+    """The steepest descent (gradient descent) optimizer with growing learning rate.
     Args:
         crd(tuple): Usually a tuple of parameters is given and the first element is coordinates.
         learning_rate(float): A factor of each optimize step size.
@@ -17,7 +17,7 @@ class GradientDescent(nn.Optimizer):
     """
 
     def __init__(self, crd, learning_rate=1e-03, factor=1.001, nonh_mask=None, max_shift=1.0):
-        super(GradientDescent, self).__init__(learning_rate, crd)
+        super(SteepestDescent, self).__init__(learning_rate, crd)
         self.crd = crd[0]
         self.learning_rate = Parameter(Tensor(learning_rate, ms.float32))
         self.factor = Parameter(Tensor(factor, ms.float32))

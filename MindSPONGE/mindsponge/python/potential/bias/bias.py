@@ -48,7 +48,7 @@ class Bias(PotentialCell):
 
     """
     def __init__(self,
-                 colvar: Colvar,
+                 colvar: Colvar = None,
                  multiple_walkers: bool = False,
                  length_unit: str = None,
                  energy_unit: str = None,
@@ -59,7 +59,7 @@ class Bias(PotentialCell):
         super().__init__(
             length_unit=length_unit,
             energy_unit=energy_unit,
-            units=colvar.units,
+            units=units,
             use_pbc=use_pbc,
         )
 
@@ -71,8 +71,6 @@ class Bias(PotentialCell):
 
         self.colvar = colvar
         self.multiple_walkers = multiple_walkers
-
-        self.periodic = self.colvar.periodic
 
     def update(self, coordinates: Tensor, pbc_box: Tensor = None):
         """update parameter of bias potential"""
@@ -87,7 +85,7 @@ class Bias(PotentialCell):
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
-        r"""Calculate potential energy.
+        r"""Calculate bias potential.
 
         Args:
             coordinate (Tensor):           Tensor of shape (B, A, D). Data type is float.

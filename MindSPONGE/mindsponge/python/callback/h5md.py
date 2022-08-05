@@ -48,6 +48,9 @@ class WriteH5MD(Callback):
         write_force (bool):     Whether to write the forece of the system to the H5MD file.
                                 Default: False
 
+        wiite_image (bool):     Whether to write the image of the position of system to the H5MD file.
+                                Default: False
+
         compression (str):      Compression strategy for HDF5. Default: 'gzip'
 
         compression_opts (int): Compression settings for HDF5. Default: 4
@@ -65,6 +68,7 @@ class WriteH5MD(Callback):
                  directory: str = None,
                  write_velocity: bool = False,
                  write_force: bool = False,
+                 write_image: bool = True,
                  length_unit: str = None,
                  energy_unit: str = None,
                  ):
@@ -77,7 +81,8 @@ class WriteH5MD(Callback):
         self.use_pbc = system.pbc_box is not None
         self.const_volume = True
 
-        if self.use_pbc:
+        self.write_image = write_image
+        if self.use_pbc and self.write_image:
             self.h5md.set_image()
 
         self.save_freq = save_freq
@@ -195,7 +200,6 @@ class WriteH5MD(Callback):
         """
 
         if self.count % self.save_freq == 0:
-
             cb_params = run_context.original_args()
             if self.use_updater:
                 self.kinetics = cb_params.kinetics.asnumpy().squeeze()
@@ -207,11 +211,12 @@ class WriteH5MD(Callback):
             self.h5md.write_position(step, time, coordinate)
 
             if self.use_pbc:
-                image = self.system.calc_image().asnumpy()
-                self.h5md.write_image(step, time, image)
                 if not self.const_volume:
                     pbc_box = cb_params.pbc_box.asnumpy()
                     self.h5md.write_box(step, time, pbc_box)
+                if self.write_image:
+                    image = self.system.calc_image().asnumpy()
+                    self.h5md.write_image(step, time, image)
 
     def step_end(self, run_context: RunContext):
         """
@@ -242,11 +247,7 @@ class WriteH5MD(Callback):
                 self.volume,
             ]
 
-            self.h5md.write_observables(
-                self.observables, step, time, obs_values)
-
-            if not self.write_velocity and not self.write_force:
-                return
+            self.h5md.write_observables(self.observables, step, time, obs_values)
 
             if self.write_velocity:
                 velocity = cb_params.velocity[0].asnumpy()
