@@ -39,7 +39,7 @@ from ...potential import PotentialCell
 from ...potential.bias import Bias
 from ...function.functions import norm_last_dim, gather_vectors
 from ...function.operations import GetVector
-from ..processor import EnergyProcessor, get_energy_processor
+from ..wrapper import EnergyWrapper, get_energy_wrapper
 
 
 class SimulationCell(Cell):
@@ -47,18 +47,18 @@ class SimulationCell(Cell):
 
     Args:
 
-        system (Molecule):                  Simulation system.
+        system (Molecule):              Simulation system.
 
-        potential (PotentialCell):          Potential energy.
+        potential (PotentialCell):      Potential energy.
 
-        cutoff (float):                     Cutoff distance. Defulat: None
+        cutoff (float):                 Cutoff distance. Defulat: None
 
-        neighbour_list (NeighbourList):     Neighbour list. Default: None
+        neighbour_list (NeighbourList): Neighbour list. Default: None
 
-        energy_processor (EnergyProcessor): Network to process and merge potential and bias.
-                                            Default: 'sum'
+        wrapper (EnergyWrapper):        Network to wrap and process potential and bias.
+                                        Default: 'sum'
 
-        bias (Bias):                        Bias potential: Default: None
+        bias (Bias):                    Bias potential: Default: None
 
     """
 
@@ -67,7 +67,7 @@ class SimulationCell(Cell):
                  potential: PotentialCell,
                  cutoff: float = None,
                  neighbour_list: NeighbourList = None,
-                 energy_processor: EnergyProcessor = 'sum',
+                 wrapper: EnergyWrapper = 'sum',
                  bias: Bias = None,
                  ):
 
@@ -96,8 +96,8 @@ class SimulationCell(Cell):
         if self.bias_network is not None:
             self.dim_bias = len(self.bias_network)
 
-        self.energy_processor = get_energy_processor(
-            energy_processor,
+        self.energy_wrapper = get_energy_wrapper(
+            wrapper,
             num_walker=self.num_walker,
             dim_potential=self.dim_potential,
             dim_bias=self.dim_bias,
@@ -247,4 +247,4 @@ class SimulationCell(Cell):
             bias = msnp.concatenate(bias, axis=-1) * self.output_unit_scale
             F.depend(potential, F.assign(self.bias, bias))
 
-        return self.energy_processor(potential, bias)
+        return self.energy_wrapper(potential, bias)
