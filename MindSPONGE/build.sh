@@ -44,6 +44,7 @@ usage()
   echo "    -e Use gpu or ascend. Currently only support ascend, later will support GPU"
   echo "    -j[n] Set the threads when building (Default: -j8)"
   echo "    -t whether to compile traditional sponge(GPU platform)"
+  echo "    -c whether to build Cybertron(A basic Molecular Representation NN toolkit)"
 }
 
 # check value of input is 'on' or 'off'
@@ -63,9 +64,10 @@ checkopts()
   ENABLE_D="off"
   ENABLE_GPU="off"
   ENABLE_MD="off"
+  ENABLE_CYBERTRON="off"
   THREAD_NUM=8
   # Process the options
-  while getopts 'drvj:e:t:s:S' opt
+  while getopts 'drvj:e:t:c:s:S' opt
   do
     OPTARG=$(echo ${OPTARG} | tr '[A-Z]' '[a-z]')
     case "${opt}" in
@@ -77,6 +79,9 @@ checkopts()
             ;;
         t)
             ENABLE_MD=$OPTARG
+            ;;
+        c)
+            ENABLE_CYBERTRON=$OPTARG
             ;;
         *)
             echo "Unknown option ${opt}"
@@ -105,10 +110,23 @@ build_mindsponge()
 {
   echo "---------------- MindSPONGE: build start ----------------"
   mk_new_dir "${BASEPATH}/build/"
+  mk_new_dir "${OUTPUT_PATH}"
   if [[ "X$ENABLE_D" = "Xon" ]]; then
     echo "build ascend backend"
     export SPONGE_PACKAGE_NAME=mindscience_sponge_ascend
     CMAKE_FLAG="-DENABLE_D=ON"
+  fi
+  if [[ "X$ENABLE_CYBERTRON" = "Xon" ]]; then
+    echo "build Cybertron"
+    cp -r "${BASEPATH}/cybertron/" "${BASEPATH}/build/"
+    mv "${BASEPATH}/build/cybertron/setup.py" "${BASEPATH}/build/"
+    mv "${BASEPATH}/build/cybertron/requirements.txt" "${BASEPATH}/build/"
+    export CYBERTRON_PACKAGE_NAME=mindscience_cybertron
+    cd ${BASEPATH}/build/
+    ${PYTHON} ./setup.py bdist_wheel
+    cd ..
+    mv ${BASEPATH}/build/dist/mindscience_cybertron*.whl ${OUTPUT_PATH}
+    rm -rf ${BASEPATH}/build/*
   fi
   if [[ "X$ENABLE_GPU" = "Xon" ]]; then
     echo "build gpu backend"
@@ -118,7 +136,6 @@ build_mindsponge()
       CMAKE_FLAG="${CMAKE_FLAG} -DENABLE_MD=ON"
     fi
   fi
-  mk_new_dir "${OUTPUT_PATH}"
   cp -r "${BASEPATH}/mindsponge/python/" "${BASEPATH}/build/mindsponge/"
   cp -r "${BASEPATH}/mindsponge/toolkits/" "${BASEPATH}/build/mindsponge/"
   cp "${BASEPATH}/setup.py" "${BASEPATH}/build/"
@@ -129,7 +146,6 @@ build_mindsponge()
   ${PYTHON} ./setup.py bdist_wheel
   cd ..
   mv ${BASEPATH}/build/dist/*whl ${OUTPUT_PATH}
-  write_checksum
   echo "---------------- MindSPONGE: build end ----------------"
 }
 
