@@ -27,6 +27,10 @@
 
 <!-- /TOC -->
 
+## **最新消息** 📰
+
+- `2022.07` 论文"A Universal PINNs Method for Solving Partial Differential Equations with a Point Source" 被AI领域顶会 IJCAI 2022接收，详情参见[论文](https://www.ijcai.org/proceedings/2022/533)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/time_domain_maxwell)
+
 ## MindElec介绍
 
 电磁仿真是指通过计算的方式模拟电磁波在物体或空间中的传播特性，其在手机容差、天线优化和芯片设计等场景中应用广泛。传统数值方法如有限差分、有限元等需网格剖分、迭代计算，仿真流程复杂、计算时间长，无法满足产品的设计需求。AI方法具有万能逼近和高效推理能力，可有效提升仿真效率。
