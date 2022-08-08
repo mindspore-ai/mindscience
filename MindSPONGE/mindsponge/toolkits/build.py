@@ -157,7 +157,8 @@ def _build_residue(cls):
     if not cls.type.built:
         _build_residue_type(cls.type)
 
-    res_type_atom_map = Xdict()
+    res_type_atom_map = Xdict(not_found_message="{} in the ResidueType is not in the Residue. \
+You need to add the missing atoms before building.")
     res_type_atom_map_inverse = Xdict()
     clsatoms = {atom: None for atom in cls.atoms}
     for atom0 in cls.type.atoms:
@@ -321,21 +322,22 @@ def build_bonded_force(cls):
         raise NotImplementedError
 
 
-def _get_single_system_energy(scls, sys_kwarg, ene_kwarg):
+def _get_single_system_energy(scls, sys_kwarg, ene_kwarg, use_pbc):
     """
 
     :param scls:
     :return:
     """
     for todo in getattr(scls, "_mindsponge_todo").values():
-        todo(scls, sys_kwarg, ene_kwarg)
+        todo(scls, sys_kwarg, ene_kwarg, use_pbc)
 
 
-def get_mindsponge_system_energy(cls):
+def get_mindsponge_system_energy(cls, use_pbc=False):
     """
     This **function** gets the system and energy for mindsponge
 
     :param cls: the object to save, or a list of object to save
+    :param use_pbc: whether to use the periodic box conditions
     :return: a tuple, including the system and energy for mindsponge
     """
     from mindsponge import set_global_units
@@ -349,18 +351,20 @@ def get_mindsponge_system_energy(cls):
     for scls in cls:
         if isinstance(scls, Molecule):
             build_bonded_force(scls)
-            _get_single_system_energy(scls, sys_kwarg, ene_kwarg)
+            _get_single_system_energy(scls, sys_kwarg, ene_kwarg, use_pbc)
 
         elif isinstance(scls, Residue):
             mol = Molecule(name=scls.name)
             mol.Add_Residue(scls)
-            _get_single_system_energy(scls, sys_kwarg, ene_kwarg)
+            _get_single_system_energy(mol, sys_kwarg, ene_kwarg, use_pbc)
 
         elif isinstance(scls, ResidueType):
             residue = Residue(scls, name=cls.name)
             for atom in cls.atoms:
                 residue.Add_Atom(atom)
-            _get_single_system_energy(scls, sys_kwarg, ene_kwarg)
+            mol = Molecule(name=residue.name)
+            mol.Add_Residue(residue)
+            _get_single_system_energy(mol, sys_kwarg, ene_kwarg, use_pbc)
         else:
             raise TypeError(f"The type should be a Molecule, Residue, ResidueType, but we get {str(type(scls))}")
     set_global_units("A", "kcal/mol")

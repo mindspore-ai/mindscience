@@ -230,7 +230,7 @@ def h_mass_repartition(molecules, repartition_mass=1.1, repartition_rate=3, excl
                     res.name2atom(heavy_atom.name).mass -= delta_mass
 
 
-def solvent_replace(molecule, select, toreplace):
+def solvent_replace(molecule, select, toreplace, sort=True):
     """
     This **function** replaces the solvent to some other molecules randomly.
 
@@ -241,18 +241,31 @@ def solvent_replace(molecule, select, toreplace):
         import Xponge.forcefield.amber.tip3p
         mol = ALA*10
         Add_Solvent_Box(mol, WAT, 10)
-        Solvent_Replace(mol, lambda res:res.name == "WAT", {K:10, CL:10})
+        Solvent_Replace(mol, WAT, {K:10, CL:10})
+        #Solvent_Replace(mol, lambda res:res.name == "WAT", {K:10, CL:10})
 
     :param molecule: a ``Molecule`` instance
-    :param select: a **function** to decide which residues should be replaced
+    :param select: a **function** to decide which residues should be replaced, \
+or a Residue, a ResidueType or a Molecule with only one Residue, \
+which the residues to be replaced have the same name
     :param toreplace: a dict, which stores the mapping of molecules to replace and the number of molecules. \
  Every molecule should be a ``ResidueType``, a ``Residue`` or a ``Molecule`` with only one ``Residue``.
+    :param sort: whether to sort the residues after replacing
     :return: None
     """
     solvents = []
+    for_sort = Xdict()
+    if not callable(select):
+        if isinstance(select, Molecule):
+            select = select.residues[0]
+        resname = select.name
+        select = lambda res: res.name == resname
     for i, resi in enumerate(molecule.residues):
         if select(resi):
             solvents.append(i)
+            for_sort[resi] = float("inf")
+        else:
+            for_sort[resi] = float("-inf")
 
     np.random.shuffle(solvents)
     count = 0
@@ -271,6 +284,9 @@ def solvent_replace(molecule, select, toreplace):
                 new_residue.Add_Atom(atom, x=atom.x + crd_o[0] - crd0[0],
                                      y=atom.y + crd_o[1] - crd0[1], z=atom.z + crd_o[2] - crd0[2])
             molecule.residues[i] = new_residue
+            for_sort[new_residue] = count
+    if sort:
+        molecule.residues.sort(key=lambda res: for_sort[res])
 
 
 def main_axis_rotate(molecule, direction_long=None, direction_middle=None, direction_short=None):

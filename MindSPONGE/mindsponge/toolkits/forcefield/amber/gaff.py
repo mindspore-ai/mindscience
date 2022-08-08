@@ -1291,7 +1291,8 @@ def parmchk2_gaff(ifname, ofname, direct_load=True, keep=True):
         amber.load_parameters_from_frcmod(ofname, prefix=False)
     if not keep:
         os.remove(ofname)
-    os.remove("temp.mol2")
+    if os.path.exists("temp.mol2"):
+        os.remove("temp.mol2")
 
 
 set_real_global_variable("parmchk2_gaff", parmchk2_gaff)

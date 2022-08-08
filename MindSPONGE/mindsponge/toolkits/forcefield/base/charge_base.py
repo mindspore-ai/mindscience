@@ -22,7 +22,7 @@ def write_charge(self):
 
 
 @Molecule.Set_MindSponge_Todo("charge")
-def _do(self, sys_kwarg, ene_kwarg):
+def _do(self, sys_kwarg, ene_kwarg, use_pbc):
     """
 
     :return:
@@ -34,7 +34,7 @@ def _do(self, sys_kwarg, ene_kwarg):
     if "charge" not in ene_kwarg:
         ene_kwarg["charge"] = Xdict()
         ene_kwarg["charge"]["function"] = lambda system, ene_kwarg: CoulombEnergy(
-            atom_charge=system.atom_charge, length_unit='A', energy_unit='kcal/mol')
+            atom_charge=system.atom_charge, length_unit='A', energy_unit='kcal/mol', use_pbc=use_pbc)
 
 
 set_global_alternative_names()

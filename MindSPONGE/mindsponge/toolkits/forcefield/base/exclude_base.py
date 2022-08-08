@@ -29,7 +29,7 @@ class Exclude:
             for atom in mol.atoms:
                 temp = atom.extra_excluded_atoms.copy()
                 atom_self_index = mol.atom_index[atom]
-                filter_func = partial(lambda x, y: x > y, y=atom_self_index)
+                filter_func = partial(lambda x, y: mol.atom_index[x] > y, y=atom_self_index)
                 excludes.append(
                     list(map(lambda x: mol.atom_index[x], filter(filter_func, temp))))
                 exclude_numbers += len(excludes[-1])
@@ -55,7 +55,7 @@ class Exclude:
         Molecule.Set_Save_SPONGE_Input("exclude")(write_exclude)
 
         # pylint: disable=unused-argument
-        def todo(mol, sys_kwarg, ene_kwarg):
+        def todo(mol, sys_kwarg, ene_kwarg, use_pbc):
             if "exclude" not in ene_kwarg:
                 ene_kwarg["exclude"] = []
             temp_dict = self.get_excluded_atoms(mol)
