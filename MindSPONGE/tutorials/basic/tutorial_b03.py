@@ -21,7 +21,7 @@
 # limitations under the License.
 # ============================================================================
 """
-MindSPONGE basic tutorial 03: Reduplicate system and do minimization.
+MindSPONGE basic tutorial 03: Edit system and minimization.
 """
 
 from mindspore import context

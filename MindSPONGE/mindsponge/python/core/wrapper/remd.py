@@ -24,12 +24,12 @@
 
 from mindspore import Tensor
 
-from .processor import EnergyProcessor
-from .processor import _energy_processor_register
+from .wrapper import EnergyWrapper
+from .wrapper import _energy_wrapper_register
 
 
-@_energy_processor_register('remd')
-class ReplicaExchange(EnergyProcessor):
+@_energy_wrapper_register('remd')
+class ReplicaExchange(EnergyWrapper):
     r"""TODO: Replica exchange molecular dynamics (REMD).
 
     Args:

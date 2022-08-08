@@ -25,4 +25,4 @@
 from .sponge import Sponge
 from .simulation import SimulationCell, RunOneStepCell
 from .analysis import AnalyseCell
-from .processor import EnergyProcessor, EnergySummation
+from .wrapper import EnergySummation

@@ -20,17 +20,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Energy processor"""
+"""Integrated tempering sampling (ITS)"""
 
 from mindspore import Tensor
 
-from .processor import EnergyProcessor
-from .processor import _energy_processor_register
+from .wrapper import EnergyWrapper
+from .wrapper import _energy_wrapper_register
 
 
-@_energy_processor_register('sum')
-class EnergySummation(EnergyProcessor):
-    r"""A network to sum the potential and bias directly.
+@_energy_wrapper_register('its')
+class IntegratedTemperingSampling(EnergyWrapper):
+    r"""TODO: Integrated tempering sampling (ITS).
 
     Args:
 
@@ -41,6 +41,7 @@ class EnergySummation(EnergyProcessor):
         dim_bias (int):         Dimension of bias potential (V). Default: 1
 
     """
+
     def __init__(self,
                  num_walker: int = 1,
                  dim_potential: int = 1,
@@ -51,7 +52,7 @@ class EnergySummation(EnergyProcessor):
             num_walker=num_walker,
             dim_potential=dim_potential,
             dim_bias=dim_bias,
-            )
+        )
 
     def construct(self, potential: Tensor, bias: Tensor = None):
         """merge the potential and bias.
@@ -73,9 +74,4 @@ class EnergySummation(EnergyProcessor):
 
         """
 
-        potential = self.sum_last_dim(potential)
-        if bias is None:
-            return potential
-
-        bias = self.sum_last_dim(bias)
-        return potential + bias
+        raise NotImplementedError

@@ -30,4 +30,4 @@ from .angle import AngleEnergy
 from .dihedral import DihedralEnergy
 from .coulomb import CoulombEnergy
 from .lj import LennardJonesEnergy
-from .paris import NonbondPairwiseEnergy
+from .pairs import NonbondPairwiseEnergy

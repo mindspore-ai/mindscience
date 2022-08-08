@@ -87,7 +87,7 @@ class ForceFieldBase(PotentialCell):
         )
 
         self.num_energy = 0
-        self.energy_network = self.set_energy_network(energy)
+        self.energy_cell = self.set_energy_cell(energy)
 
         self.energy_scale = 1
 
@@ -106,7 +106,7 @@ class ForceFieldBase(PotentialCell):
         self.energy_scale = scale
         return self
 
-    def set_energy_network(self, energy: EnergyCell) -> CellList:
+    def set_energy_cell(self, energy: EnergyCell) -> CellList:
         """set energy"""
         if energy is None:
             return None
@@ -128,14 +128,14 @@ class ForceFieldBase(PotentialCell):
 
     def set_unit_scale(self) -> Tensor:
         """set unit scale"""
-        if self.energy_network is None:
+        if self.energy_cell is None:
             return 1
         output_unit_scale = ()
         for i in range(self.num_energy):
-            self.energy_network[i].set_input_unit(self.units)
-            dim = self.energy_network[i].output_dim
+            self.energy_cell[i].set_input_unit(self.units)
+            dim = self.energy_cell[i].output_dim
             scale = np.ones((dim,), np.float32) * \
-                self.energy_network[i].convert_energy_to(self.units)
+                self.energy_cell[i].convert_energy_to(self.units)
             output_unit_scale += (scale,)
         output_unit_scale = np.concatenate(output_unit_scale, axis=-1)
         return Tensor(output_unit_scale, ms.float32)
@@ -157,7 +157,7 @@ class ForceFieldBase(PotentialCell):
     def set_pbc(self, use_pbc: bool = None):
         """set whether to use periodic boundary condition."""
         for i in range(self.num_energy):
-            self.energy_network[i].set_pbc(use_pbc)
+            self.energy_cell[i].set_pbc(use_pbc)
         return self
 
     def set_cutoff(self, cutoff: Tensor = None):
@@ -166,7 +166,7 @@ class ForceFieldBase(PotentialCell):
         if cutoff is not None:
             self.cutoff = Tensor(cutoff, ms.float32)
         for i in range(self.num_energy):
-            self.energy_network[i].set_cutoff(self.cutoff)
+            self.energy_cell[i].set_cutoff(self.cutoff)
         return self
 
     def construct(self,
@@ -211,7 +211,7 @@ class ForceFieldBase(PotentialCell):
 
         potential = ()
         for i in range(self.num_energy):
-            ene = self.energy_network[i](
+            ene = self.energy_cell[i](
                 coordinate=coordinate,
                 neighbour_index=neighbour_index,
                 neighbour_mask=neighbour_mask,
@@ -382,5 +382,5 @@ class ForceField(ForceFieldBase):
         # Exclude Parameters
         self._exclude_index = Tensor(system_params.excludes[None, :], ms.int32)
 
-        self.energy_network = self.set_energy_network(energy)
+        self.energy_cell = self.set_energy_cell(energy)
         self.output_unit_scale = self.set_unit_scale()

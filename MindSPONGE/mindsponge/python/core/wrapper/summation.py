@@ -20,36 +20,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Energy processor"""
+"""Energy wrapper"""
 
 from mindspore import Tensor
-from mindspore import ops
-from mindspore.nn import Cell
 
-from ...function import get_integer
-
-_ENERGY_PROCESSOR_BY_KEY = dict()
+from .wrapper import EnergyWrapper
+from .wrapper import _energy_wrapper_register
 
 
-def _energy_processor_register(*aliases):
-    """Return the alias register."""
-    def alias_reg(cls):
-        name = cls.__name__
-        name = name.lower()
-        if name not in _ENERGY_PROCESSOR_BY_KEY:
-            _ENERGY_PROCESSOR_BY_KEY[name] = cls
-
-        for alias in aliases:
-            if alias not in _ENERGY_PROCESSOR_BY_KEY:
-                _ENERGY_PROCESSOR_BY_KEY[alias] = cls
-
-        return cls
-
-    return alias_reg
-
-
-class EnergyProcessor(Cell):
-    r"""A network to process and merge the potential and bias during the simulation.
+@_energy_wrapper_register('sum')
+class EnergySummation(EnergyWrapper):
+    r"""A network to sum the potential and bias directly.
 
     Args:
 
@@ -66,14 +47,11 @@ class EnergyProcessor(Cell):
                  dim_bias: int = 1,
                  ):
 
-        super().__init__(auto_prefix=False)
-
-        self.num_walker = get_integer(num_walker)
-        self.dim_potential = get_integer(dim_potential)
-        self.dim_bias = get_integer(dim_bias)
-
-        self.concat_last_dim = ops.Concat(-1)
-        self.sum_last_dim = ops.ReduceSum(keep_dims=True)
+        super().__init__(
+            num_walker=num_walker,
+            dim_potential=dim_potential,
+            dim_bias=dim_bias,
+            )
 
     def construct(self, potential: Tensor, bias: Tensor = None):
         """merge the potential and bias.
@@ -94,27 +72,10 @@ class EnergyProcessor(Cell):
             V:  Dimension of bias potential.
 
         """
-        raise NotImplementedError
 
+        potential = self.sum_last_dim(potential)
+        if bias is None:
+            return potential
 
-def get_energy_processor(processor: str,
-                         num_walker: int,
-                         dim_potential: int,
-                         dim_bias: int,
-                         ) -> EnergyProcessor:
-    """get energy processor by name"""
-    if processor is None or isinstance(processor, EnergyProcessor):
-        return processor
-    if isinstance(processor, str):
-        if processor.lower() == 'none':
-            return None
-        if processor.lower() in _ENERGY_PROCESSOR_BY_KEY.keys():
-            return _ENERGY_PROCESSOR_BY_KEY.get(processor.lower())(
-                num_walker=num_walker,
-                dim_potential=dim_potential,
-                dim_bias=dim_bias,
-                )
-        raise ValueError(
-            "The energy processor corresponding to '{}' was not found.".format(processor))
-    raise TypeError(
-        "Unsupported energy processor type '{}'.".format(type(processor)))
+        bias = self.sum_last_dim(bias)
+        return potential + bias

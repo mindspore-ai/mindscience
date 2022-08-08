@@ -20,7 +20,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Energy processor"""
+"""Energy wrapper"""
 
-from .processor import EnergyProcessor, get_energy_processor
+from .wrapper import EnergyWrapper, get_energy_wrapper
 from .summation import EnergySummation

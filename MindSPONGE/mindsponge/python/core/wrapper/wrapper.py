@@ -20,17 +20,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Integrated tempering sampling (ITS)"""
+"""Energy wrapper"""
 
 from mindspore import Tensor
+from mindspore import ops
+from mindspore.nn import Cell
 
-from .processor import EnergyProcessor
-from .processor import _energy_processor_register
+from ...function import get_integer
+
+_ENERGY_WRAPPER_BY_KEY = dict()
 
 
-@_energy_processor_register('its')
-class IntegratedTemperingSampling(EnergyProcessor):
-    r"""TODO: Integrated tempering sampling (ITS).
+def _energy_wrapper_register(*aliases):
+    """Return the alias register."""
+    def alias_reg(cls):
+        name = cls.__name__
+        name = name.lower()
+        if name not in _ENERGY_WRAPPER_BY_KEY:
+            _ENERGY_WRAPPER_BY_KEY[name] = cls
+
+        for alias in aliases:
+            if alias not in _ENERGY_WRAPPER_BY_KEY:
+                _ENERGY_WRAPPER_BY_KEY[alias] = cls
+
+        return cls
+
+    return alias_reg
+
+
+class EnergyWrapper(Cell):
+    r"""A network to process and merge the potential and bias during the simulation.
 
     Args:
 
@@ -41,18 +60,20 @@ class IntegratedTemperingSampling(EnergyProcessor):
         dim_bias (int):         Dimension of bias potential (V). Default: 1
 
     """
-
     def __init__(self,
                  num_walker: int = 1,
                  dim_potential: int = 1,
                  dim_bias: int = 1,
                  ):
 
-        super().__init__(
-            num_walker=num_walker,
-            dim_potential=dim_potential,
-            dim_bias=dim_bias,
-        )
+        super().__init__(auto_prefix=False)
+
+        self.num_walker = get_integer(num_walker)
+        self.dim_potential = get_integer(dim_potential)
+        self.dim_bias = get_integer(dim_bias)
+
+        self.concat_last_dim = ops.Concat(-1)
+        self.sum_last_dim = ops.ReduceSum(keep_dims=True)
 
     def construct(self, potential: Tensor, bias: Tensor = None):
         """merge the potential and bias.
@@ -73,5 +94,27 @@ class IntegratedTemperingSampling(EnergyProcessor):
             V:  Dimension of bias potential.
 
         """
-
         raise NotImplementedError
+
+
+def get_energy_wrapper(wrapper: str,
+                       num_walker: int,
+                       dim_potential: int,
+                       dim_bias: int,
+                       ) -> EnergyWrapper:
+    """get energy wrapper by name"""
+    if wrapper is None or isinstance(wrapper, EnergyWrapper):
+        return wrapper
+    if isinstance(wrapper, str):
+        if wrapper.lower() == 'none':
+            return None
+        if wrapper.lower() in _ENERGY_WRAPPER_BY_KEY.keys():
+            return _ENERGY_WRAPPER_BY_KEY.get(wrapper.lower())(
+                num_walker=num_walker,
+                dim_potential=dim_potential,
+                dim_bias=dim_bias,
+                )
+        raise ValueError(
+            "The energy wrapper corresponding to '{}' was not found.".format(wrapper))
+    raise TypeError(
+        "Unsupported energy wrapper type '{}'.".format(type(wrapper)))
