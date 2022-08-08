@@ -42,7 +42,7 @@ def write_angle(self):
 
 #pylint: disable=unused-argument
 @Molecule.Set_MindSponge_Todo("angle")
-def _do(self, sys_kwarg, ene_kwarg):
+def _do(self, sys_kwarg, ene_kwarg, use_pbc):
     """
 
     :return:
@@ -51,7 +51,7 @@ def _do(self, sys_kwarg, ene_kwarg):
     if "angle" not in ene_kwarg:
         ene_kwarg["angle"] = Xdict()
         ene_kwarg["angle"]["function"] = lambda system, ene_kwarg: AngleEnergy(
-            index=ene_kwarg["angle"]["index"],
+            index=ene_kwarg["angle"]["index"], use_pbc=use_pbc,
             force_constant=ene_kwarg["angle"]["force_constant"],
             bond_angle=ene_kwarg["angle"]["bond_angle"],
             energy_unit="kcal/mol")

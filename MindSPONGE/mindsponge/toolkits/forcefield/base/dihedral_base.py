@@ -97,7 +97,7 @@ def write_dihedral(self):
 
 #pylint: disable=unused-argument
 @Molecule.Set_MindSponge_Todo("dihedral")
-def _do(self, sys_kwarg, ene_kwarg):
+def _do(self, sys_kwarg, ene_kwarg, use_pbc):
     """
 
     :return:
@@ -106,7 +106,7 @@ def _do(self, sys_kwarg, ene_kwarg):
     if "dihedral" not in ene_kwarg:
         ene_kwarg["dihedral"] = Xdict()
         ene_kwarg["dihedral"]["function"] = lambda system, ene_kwarg: DihedralEnergy(
-            index=ene_kwarg["dihedral"]["index"],
+            index=ene_kwarg["dihedral"]["index"], use_pbc=use_pbc,
             force_constant=ene_kwarg["dihedral"]["force_constant"],
             periodicity=ene_kwarg["dihedral"]["periodicity"],
             phase=ene_kwarg["dihedral"]["phase"],

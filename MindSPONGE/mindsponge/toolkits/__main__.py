@@ -20,6 +20,23 @@ def _mytest(subparsers):
     mytest.set_defaults(func=tools.test)
 
 
+def _converter(subparsers):
+    """
+
+    :param subparsers:
+    :return:
+    """
+    converter = subparsers.add_parser("converter", help="convert the format of coordinate file")
+    converter.add_argument("-p", required=True, metavar="TOP", help="the name of the topology file")
+    converter.add_argument("-c", metavar="CRD", help="the name of the coordinate file")
+    converter.add_argument("-o", required=True, metavar="OUT", help="the name of the output file")
+    converter.add_argument("-cf", metavar="GUESS", default="guess", choices=["guess", "sponge_crd", "sponge_traj"],
+                           help='''the format of the topology file, can be "guess", "sponge_crd" or "sponge_traj"''')
+    converter.add_argument("-of", metavar="GUESS", default="guess", choices=["guess", "sponge_crd", "sponge_traj"],
+                           help='''the format of the output file, can be "guess", "sponge_crd" or "sponge_traj"''')
+    converter.set_defaults(func=tools.converter)
+
+
 def _maskgen(subparsers):
     """
 
@@ -98,8 +115,8 @@ def _mol2rfe(subparsers):
     mol2rfe = subparsers.add_parser("mol2rfe",
                                     help='calculate the relative free energy of a small molecule using SPONGE')
     mol2rfe.add_argument("-do", metavar="todo", nargs="*", action="append", help="""the things need to do,
- should be one or more of 'build', 'min', 'prebalance', 'balance', 'analysis'""",
-                         choices=["build", "min", "prebalance", "balance", "analysis"])
+ should be one or more of 'build', 'min', 'pre_equilibrium', 'equilibrium', 'analysis'""",
+                         choices=["build", "min", "pre_equilibrium", "equilibrium", "analysis"])
 
     mol2rfe.add_argument("-pdb", required=True, help="the initial conformation given by the pdb file")
     mol2rfe.add_argument("-r2", "-residuetype2", required=True,
@@ -114,40 +131,30 @@ def _mol2rfe(subparsers):
 
     mol2rfe.add_argument("-dohmr", "-do_hydrogen_mass_repartition", action="store_true",
                          help="use the hydrogen mass repartition method")
-    mol2rfe.add_argument("-mlast", "-min_from_last_lambda_stat", action="store_true",
-                         help="minimization from the last lambda stat")
     mol2rfe.add_argument("-ff", "-forcefield", help="Use this force field file instead of the default ff14SB and gaff")
-    mol2rfe.add_argument("-pi", "-prebalance_mdin", help="Use this prebalance mdin file instead of the default one")
-    mol2rfe.add_argument("-bi", "-balance_mdin", help="Use this balance mdin file instead of the default one")
+    mol2rfe.add_argument("-mi", "-min_mdin", nargs="*", help="Use the minimization mdin file(s) here \
+instead of the default ones")
+    mol2rfe.add_argument("-pi", "-pre_equilibrium_mdin", help="Use this pre-equilibrium mdin file \
+instead of the default one")
+    mol2rfe.add_argument("-ei", "-equilibrium_mdin", help="Use this equilibrium mdin file instead of the default one")
     mol2rfe.add_argument("-ai", "-analysis_mdin", help="Use this analysis mdin file instead of the default one")
 
     mol2rfe.add_argument("-method", default="TI", choices=["TI"], help="the method to calculate the free energy")
-    mol2rfe.add_argument("-sponge", default="SPONGE", help="SPONGE program command")
-    mol2rfe.add_argument("-sponge_ti", default="SPONGE_TI", help="SPONGE_TI program command")
-    mol2rfe.add_argument("-sponge_fep", default="SPONGE_FEP", help="SPONGE_FEP program command")
     mol2rfe.add_argument("-temp", default="TMP", metavar="TMP", help="the temporary file name prefix")
 
     mol2rfe.add_argument("-tmcs", default=10, type=int, metavar="10",
                          help="the timeout parameter for max common structure in unit of second")
     mol2rfe.add_argument("-dt", default=2e-3, type=float, metavar="dt",
                          help="the dt used for simulation when mdin is not provided")
-    mol2rfe.add_argument("-m1steps", type=int, nargs=5,
-                         help="""the first-stage minimization steps for the 0th lambda.
- Default 5000 for each minimization simulation. There are 5 minimization simulations.""",
-                         default=[5000, 5000, 5000, 5000, 5000])
-    mol2rfe.add_argument("-m2steps", type=int, nargs=5,
-                         help="""the second-stage minimization steps for the 0th lambda.
- Default 5000 for each minimization simulation. There are 5 minimization simulations.""",
-                         default=[5000, 5000, 5000, 5000, 5000])
-    mol2rfe.add_argument("-msteps", type=int, nargs=2,
+    mol2rfe.add_argument("-msteps", type=int, nargs=6,
                          help="""the minimization steps for all the lambda.
- Default 5000 for each minimization simulation. There are 2 minimization simulations.""",
-                         default=[5000, 5000])
-    mol2rfe.add_argument("-pstep", "-prebalance_step", dest="prebalance_step", default=50000, type=int,
-                         metavar="prebalance_step",
-                         help="the prebalance step used for simulation when mdin is not provided")
-    mol2rfe.add_argument("-bstep", "-balance_step", dest="balance_step", default=500000, type=int,
-                         metavar="balance_step", help="the balance step used for simulation when mdin is not provided")
+ Default 5000 for each minimization simulation. There are 6 minimization simulations.""",
+                         default=[5000, 5000, 5000, 5000, 5000, 5000])
+    mol2rfe.add_argument("-pstep", "-pre_equilibrium_step", dest="pre_equilibrium_step", default=50000, type=int,
+                         metavar="pre_equilibrium_step",
+                         help="the pre-equilibrium step used for simulation when mdin is not provided")
+    mol2rfe.add_argument("-estep", "-equilibrium_step", dest="equilibrium_step", default=500000, type=int,
+                         metavar="500000", help="the equilibrium step used for simulation when mdin is not provided")
     mol2rfe.add_argument("-thermostat", default="middle_langevin", metavar="middle_langevin",
                          help="the thermostat used for simulation when mdin is not provided")
     mol2rfe.add_argument("-barostat", default="andersen_barostat", metavar="andersen_barostat",
@@ -170,6 +177,7 @@ def main():
     _exgen(subparsers)
     _name2name(subparsers)
     _mol2rfe(subparsers)
+    _converter(subparsers)
 
     args = parser.parse_args()
 

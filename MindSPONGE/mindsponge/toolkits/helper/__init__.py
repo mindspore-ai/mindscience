@@ -42,7 +42,7 @@ class Xdict(dict):
             return toget
         if self.not_found_message:
             raise KeyError(self.not_found_message.format(key))
-        raise KeyError
+        raise KeyError(f"{key}")
 
 
 def xopen(filename, flag, mode=None):

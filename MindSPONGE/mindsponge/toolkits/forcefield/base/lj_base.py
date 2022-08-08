@@ -205,7 +205,7 @@ Molecule.Set_Save_SPONGE_Input("LJ")(write_lj)
 
 
 #pylint: disable=unused-argument
-def lj_todo(self, sys_kwarg, ene_kwarg):
+def lj_todo(self, sys_kwarg, ene_kwarg, use_pbc):
     """
     This **function** is used to get MindSponge system and energy
 
@@ -218,7 +218,7 @@ def lj_todo(self, sys_kwarg, ene_kwarg):
     if "lj" not in ene_kwarg:
         ene_kwarg["lj"] = Xdict()
         ene_kwarg["lj"]["function"] = lambda system, ene_kwarg: LennardJonesEnergy(
-            epsilon=ene_kwarg["lj"]["epsilon"],
+            epsilon=ene_kwarg["lj"]["epsilon"], use_pbc=use_pbc,
             sigma=ene_kwarg["lj"]["sigma"],
             length_unit='A', energy_unit='kcal/mol')
         ene_kwarg["lj"]["epsilon"] = []

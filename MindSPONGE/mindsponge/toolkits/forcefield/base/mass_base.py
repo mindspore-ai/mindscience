@@ -21,7 +21,7 @@ def write_mass(self):
 
 #pylint: disable=unused-argument
 @Molecule.Set_MindSponge_Todo("mass")
-def _do_mass(self, sys_kwarg, ene_kwarg):
+def _do_mass(self, sys_kwarg, ene_kwarg, use_pbc):
     """
 
     :return:

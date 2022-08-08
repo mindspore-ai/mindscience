@@ -5,7 +5,7 @@ from collections import OrderedDict
 from itertools import groupby
 import numpy as np
 from ..helper import AtomType, ResidueType, Xopen, Xdict, set_real_global_variable, set_attribute_alternative_names, \
-    set_global_alternative_names
+    set_global_alternative_names, Guess_Element_From_Mass
 
 
 class AssignRule:

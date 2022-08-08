@@ -41,7 +41,7 @@ def write_nb14(self):
 
 #pylint: disable=unused-argument, relative-beyond-top-level
 @Molecule.Set_MindSponge_Todo("nb14")
-def _do(self, sys_kwarg, ene_kwarg):
+def _do(self, sys_kwarg, ene_kwarg, use_pbc):
     """
 
     :return:
@@ -51,7 +51,7 @@ def _do(self, sys_kwarg, ene_kwarg):
     if "nb14" not in ene_kwarg:
         ene_kwarg["nb14"] = Xdict()
         ene_kwarg["nb14"]["function"] = lambda sys_kwarg, ene_kwarg: NonbondPairwiseEnergy(
-            index=ene_kwarg["nb14"]["index"],
+            index=ene_kwarg["nb14"]["index"], use_pbc=use_pbc,
             qiqj=ene_kwarg["nb14"]["qiqj"],
             epsilon_ij=ene_kwarg["nb14"]["epsilon_ij"],
             sigma_ij=ene_kwarg["nb14"]["sigma_ij"],
@@ -79,8 +79,12 @@ def _do(self, sys_kwarg, ene_kwarg):
             a, b = get_nb14_extra_lj(atom1, atom2)
             nb14s.append([self.atom_index[atom] for atom in bond.atoms])
             qiqj.append(atom1.charge * atom2.charge)
-            sigma_ij.append((a/b)**(1/6))
-            epsilon_ij.append(b*b/a/4)
+            if a != 0:
+                sigma_ij.append((a/b)**(1/6))
+                epsilon_ij.append(b*b/a/4)
+            else:
+                sigma_ij.append(0)
+                epsilon_ij.append(0)
             r_scales.append(bond.kee)
             r6_scales.append(bond.kLJ)
             r12_scales.append(bond.kLJ)

@@ -40,7 +40,7 @@ def write_bond(self):
 
 
 @Molecule.Set_MindSponge_Todo("bond")
-def _do(self, sys_kwarg, ene_kwarg):
+def _do(self, sys_kwarg, ene_kwarg, use_pbc):
     """
 
     :return:
@@ -51,7 +51,7 @@ def _do(self, sys_kwarg, ene_kwarg):
     if "bond" not in ene_kwarg:
         ene_kwarg["bond"] = Xdict()
         ene_kwarg["bond"]["function"] = lambda system, ene_kwarg: BondEnergy(
-            index=system.bond,
+            index=system.bond, use_pbc=use_pbc,
             force_constant=ene_kwarg["bond"]["force_constant"],
             bond_length=ene_kwarg["bond"]["bond_length"],
             length_unit="A", energy_unit="kcal/mol")

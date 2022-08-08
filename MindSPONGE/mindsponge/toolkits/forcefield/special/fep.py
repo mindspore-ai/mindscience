@@ -144,7 +144,7 @@ def _bond_base_merge_rule(mol_r, mol_a, mol_b, forcetype, rforces, bforces, lamb
     forcepair = _find_common_forces(forcetype, rforces, bforces, mol_b2mol_r)
     for f_r, f_b in forcepair:
         if f_b is None:
-            mol_r.bond_baseed_forces["bond_base"].remove(f_r)
+            mol_r.bonded_forces["bond_base"].remove(f_r)
             f_r.from_AorB = 0
             mol_r.Add_Bonded_Force(f_r, "soft_bond_base")
         elif f_r is None:
@@ -163,7 +163,7 @@ def _bond_base_merge_rule(mol_r, mol_a, mol_b, forcetype, rforces, bforces, lamb
             mol_r.Add_Bonded_Force(f_r2)
 
 
-FEP_BONDED_FORCE_MERGE_RULE["bond_base"] = {"lambda_name": "bond_base", "merge_function": _bond_base_merge_rule}
+FEP_BONDED_FORCE_MERGE_RULE["bond"] = {"lambda_name": "bond_base", "merge_function": _bond_base_merge_rule}
 
 
 def _angle_merge_rule(mol_r, mol_a, mol_b, forcetype, rforces, bforces, lambda_, mol_r2mol_a, mol_a2mol_r, mol_r2mol_b,
@@ -311,7 +311,7 @@ def save_hard_core_lj():
 
     :return: None
     """
-    Molecule.Set_Save_SPONGE_Input("LJ")(LJ.write_zero_lj)
+    Molecule.Set_Save_SPONGE_Input("LJ")(lj_base.write_zero_lj)
     Molecule.Del_Save_SPONGE_Input("LJ_soft_core")
     Molecule.Del_Save_SPONGE_Input("subsys_division")
 
@@ -355,18 +355,18 @@ def save_soft_core_lj():
                 lj_typemapb[atom.LJtypeB] = len(lj_typeb)
                 lj_typeb.append(atom.LJtypeB)
 
-        lj_as, lj_bs = LJ.find_AB_LJ(lj_types)
-        lj_asb, lj_bsb = LJ.find_AB_LJ(lj_typeb)
+        # pylint: disable=protected-access
+        lj_as, lj_bs = lj_base._find_ab_lj(lj_types)
+        lj_asb, lj_bsb = lj_base._find_ab_lj(lj_typeb)
+        checks = lj_base._get_checks(lj_types, lj_as, lj_bs)
+        same_type = lj_base._judge_same_type(lj_types, checks)
+        real_lj_types = lj_base._get_real_lj(lj_types, same_type)
+        real_as, real_bs = lj_base._find_ab_lj(real_lj_types, False)
 
-        checks = LJ.get_checks(lj_types, lj_as, lj_bs)
-        same_type = LJ.judge_same_type(lj_types, checks)
-        real_lj_types = LJ.get_real_LJ(lj_types, same_type)
-        real_as, real_bs = LJ.find_AB_LJ(real_lj_types, False)
-
-        checks = LJ.get_checks(lj_typeb, lj_asb, lj_bsb)
-        same_typeb = LJ.judge_same_type(lj_typeb, checks)
-        real_lj_typesb = LJ.get_real_LJ(lj_typeb, same_typeb)
-        real_asb, real_bsb = LJ.find_AB_LJ(real_lj_typesb, False)
+        checks = lj_base._get_checks(lj_typeb, lj_asb, lj_bsb)
+        same_typeb = lj_base._judge_same_type(lj_typeb, checks)
+        real_lj_typesb = lj_base._get_real_lj(lj_typeb, same_typeb)
+        real_asb, real_bsb = lj_base._find_ab_lj(real_lj_typesb, False)
 
         towrite = "%d %d %d\n\n" % (len(self.atoms), len(real_lj_types), len(real_lj_typesb))
         count = 0
@@ -419,7 +419,7 @@ def intramolecule_nb_to_nb14(mol_a, perturbating_residues):
     """
     if isinstance(perturbating_residues, Residue):
         perturbating_residues = [perturbating_residues]
-    BUILD.Build_Bonded_Force(mol_a)
+    build.Build_Bonded_Force(mol_a)
     a_exclude = exclude_base.Exclude.current.Get_Excluded_Atoms(mol_a)
     for residue1 in perturbating_residues:
         for atom_a1 in residue1.atoms:
@@ -452,7 +452,7 @@ def get_free_molecule(mol_a, perturbating_residues, intra_fep=False):
     """
     if isinstance(perturbating_residues, Residue):
         perturbating_residues = [perturbating_residues]
-    BUILD.Build_Bonded_Force(mol_a)
+    build.Build_Bonded_Force(mol_a)
     nb14_extra_base.NB14_To_NB14EXTRA(mol_a)
     mol_b = mol_a.deepcopy()
     mol_a2mol_b = Xdict()
@@ -530,10 +530,9 @@ def _get_extra_atoms_and_rbmap(restype_ab, residue_type_a, residue_type_b, resid
             extra_a.append(atom.copied[forcopy])
             extra_a[-1].subsys = 1
 
-    for i in enumerate(residue_type_b.atoms):
+    for i, atom in enumerate(residue_type_b.atoms):
         if i not in match_b:
             rbmap[len(restype_ab.atoms)] = i
-            atom = residue_type_b.atoms[i]
             restype_ab.Add_Atom(atom.name + "R2", atom.type, atom.x, atom.y, atom.z)
             atom.copied[forcopy] = restype_ab.atoms[-1]
             atom.copied[forcopy].contents = dict(atom.contents.items())
@@ -586,15 +585,15 @@ def _get_residue_ab(residue_type_a, residue_type_b, residue_a, forcopy, matchmap
         for aton in connect_set:
             restype_ab.Add_Connectivity(atom.copied[forcopy], aton.copied[forcopy])
 
-    for bond_base_entities in residue_type_b.bond_baseed_forces.values():
-        for bond_base_entity in bond_base_entities:
+    for bond_entities in residue_type_b.bonded_forces.values():
+        for bond_entity in bond_entities:
             tocopy = False
-            for atom in bond_base_entity.atoms:
+            for atom in bond_entity.atoms:
                 if residue_type_b.atom2index(atom) not in matchmap.keys():
                     tocopy = True
                     break
             if tocopy:
-                restype_ab.Add_Bonded_Force(bond_base_entity.deepcopy(forcopy))
+                restype_ab.Add_Bonded_Force(bond_entity.deepcopy(forcopy))
 
     _link_restypeb_atoms(residue_type_b, forcopy, matchmap)
 
@@ -618,10 +617,10 @@ def merge_dual_topology(mol, residue_a, residue_b, assign_a, assign_b, tmcs=60):
     :param tmcs: the max time to find the max common structure
     :return: two molecules in the initial and final lambda stat respectively
     """
-    BUILD.Build_Bonded_Force(mol)
-    BUILD.Build_Bonded_Force(residue_b)
+    build.Build_Bonded_Force(mol)
+    build.Build_Bonded_Force(residue_b)
 
-    from helper.rdkit import assign_to_rdmol, insert_atom_type_to_rdmol
+    from ...helper.rdkit import assign_to_rdmol, insert_atom_type_to_rdmol
     from rdkit.Chem import rdFMCS as MCS
 
     rdmol_a = assign_to_rdmol(assign_a, True)
@@ -658,11 +657,11 @@ def merge_dual_topology(mol, residue_a, residue_b, assign_a, assign_b, tmcs=60):
 
     restype_ba = restype_ab.deepcopy(residue_type_b.name + "_" + residue_type_a.name)
 
-    BUILD.Build_Bonded_Force(restype_ba)
-    BUILD.Build_Bonded_Force(restype_ab)
+    build.Build_Bonded_Force(restype_ba)
+    build.Build_Bonded_Force(restype_ab)
 
-    nb14_extra_base.NB14_To_NB14EXTRA(restype_ba)
-    nb14_extra_base.NB14_To_NB14EXTRA(restype_ab)
+    nb14_extra_base.nb14_to_nb14_extra(restype_ba)
+    nb14_extra_base.nb14_to_nb14_extra(restype_ab)
     for i, atomi in enumerate(restype_ab.atoms):
         if i < len(residue_type_a.atoms):
             atomi.contents.update(
@@ -697,8 +696,8 @@ def merge_dual_topology(mol, residue_a, residue_b, assign_a, assign_b, tmcs=60):
         mol_a.residue_links.append(reslink)
         mol_b.residue_links.append(reslink)
 
-    BUILD.Build_Bonded_Force(mol_a)
-    BUILD.Build_Bonded_Force(mol_b)
+    build.Build_Bonded_Force(mol_a)
+    build.Build_Bonded_Force(mol_b)
 
     return mol_a, mol_b
 
@@ -716,11 +715,11 @@ def merge_force_field(mol_a, mol_b, default_lambda, specific_lambda=None, intra_
     """
     if specific_lambda is None:
         specific_lambda = Xdict()
-    BUILD.Build_Bonded_Force(mol_a)
-    BUILD.Build_Bonded_Force(mol_b)
+    build.Build_Bonded_Force(mol_a)
+    build.Build_Bonded_Force(mol_b)
 
-    nb14_extra_base.NB14_To_NB14EXTRA(mol_a)
-    nb14_extra_base.NB14_To_NB14EXTRA(mol_b)
+    nb14_extra_base.nb14_to_nb14_extra(mol_a)
+    nb14_extra_base.nb14_to_nb14_extra(mol_b)
 
     assert len(mol_a.atoms) == len(mol_b.atoms)
     mol_a2mol_b = Xdict()
@@ -745,11 +744,11 @@ def merge_force_field(mol_a, mol_b, default_lambda, specific_lambda=None, intra_
         atom.mass = mol_r2mol_a[atom].mass * (1 - mass_lambda) + mol_r2mol_b[atom].mass * mass_lambda
         atom.LJtypeB = mol_r2mol_b[atom].LJtype
 
-    for forcename, rforces in mol_r.bond_baseed_forces.items():
+    for forcename, rforces in mol_r.bonded_forces.items():
         if forcename in FEP_BONDED_FORCE_MERGE_RULE.keys():
             temp_lambda = specific_lambda.get(FEP_BONDED_FORCE_MERGE_RULE[forcename].get("lambda_name"),
                                               default_lambda)
-            bforces = mol_b.bond_baseed_forces.get(forcename, [])
+            bforces = mol_b.bonded_forces.get(forcename, [])
             FEP_BONDED_FORCE_MERGE_RULE[forcename].get("merge_function")(mol_r, mol_a, mol_b,
                                                                          GlobalSetting.BondedForcesMap[forcename],
                                                                          rforces, bforces, temp_lambda, mol_r2mol_a,
