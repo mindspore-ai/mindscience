@@ -12,6 +12,7 @@
 import mindspore.common.dtype as mstype
 import mindspore.nn as nn
 import mindspore.numpy as mnp
+from mindspore import Tensor
 from mindsponge.cell.initializer import lecun_init
 
 
@@ -164,3 +165,79 @@ class PredictedAlignedErrorHead(nn.Cell):
         logits = self.logits(pair)
         breaks = mnp.linspace(0, self.max_error_bin, self.num_bins - 1)
         return logits, breaks
+
+
+class EstogramHead(nn.Cell):
+    """Head to predict estogram."""
+
+    def __init__(self, first_break, last_break, num_bins):
+        super().__init__()
+        self.first_break = first_break
+        self.last_break = last_break
+        self.num_bins = num_bins
+
+        self.breaks = mnp.linspace(self.first_break, self.last_break, self.num_bins)
+        self.width = self.breaks[1] - self.breaks[0]
+
+        self.centers = self.breaks + 0.5 * self.width
+
+        self.softmax = nn.Softmax(-1)
+        self.zero = Tensor([0.])
+
+    def compute_estogram(self, distogram_logits, decoy_distance_mat):
+        """compute estogram matrix.
+        Arguments:
+            distogram_logits: [N_res, N_res, N_bins].
+            decoy_distance_mat: [N_res, N_res]
+        Returns:
+            estogram: shape [N_res, N_res, N_bins].
+            esto_centers: shape [N_res, N_res, N_bins].
+        """
+        square_centers = mnp.reshape(self.centers, (1, 1, -1))
+        estogram = self.softmax(distogram_logits)
+        esto_centers = square_centers - mnp.expand_dims(decoy_distance_mat, -1)
+        return estogram, esto_centers
+
+    def construct(self, distogram_logits, pseudo_beta, pseudo_beta_mask, cutoff=15.):
+        """construct"""
+        positions = pseudo_beta
+        pad_mask = mnp.expand_dims(pseudo_beta_mask, 1)
+        pad_mask_2d = pad_mask * mnp.transpose(pad_mask, (1, 0))
+        pad_mask_2d *= (1. - mnp.eye(pad_mask_2d.shape[1]))
+
+        dist_xyz = mnp.square(mnp.expand_dims(positions, axis=1) - mnp.expand_dims(positions, axis=0))
+        dmat_decoy = mnp.sqrt(1e-10 + mnp.sum(dist_xyz.astype(mstype.float32), -1))
+
+        estogram, esto_centers = self.compute_estogram(distogram_logits, dmat_decoy)
+        pair_errors = mnp.sum(estogram * esto_centers, -1)
+
+        p1 = self._integrate(distogram_logits, mnp.abs(esto_centers) < 0.5).astype(mnp.float32)
+        p2 = self._integrate(distogram_logits, mnp.abs(esto_centers) < 1.0).astype(mnp.float32)
+        p3 = self._integrate(distogram_logits, mnp.abs(esto_centers) < 2.0).astype(mnp.float32)
+        p4 = self._integrate(distogram_logits, mnp.abs(esto_centers) < 4.0).astype(mnp.float32)
+
+        p0 = self._integrate(distogram_logits, self.centers < cutoff).astype(mnp.float32)
+        pred_mask2d = p0 * pad_mask_2d
+
+        norm = mnp.sum(pred_mask2d, -1) + 1e-6
+        p1 = mnp.sum(p1 * pred_mask2d, -1)
+        p2 = mnp.sum(p2 * pred_mask2d, -1)
+        p3 = mnp.sum(p3 * pred_mask2d, -1)
+        p4 = mnp.sum(p4 * pred_mask2d, -1)
+
+        plddt = 0.25 * (p1 + p2 + p3 + p4) / norm
+
+        return plddt, pred_mask2d, pair_errors
+
+    def _integrate(self, distogram_logits, integrate_masks):
+        """compute estogram matrix.
+        Arguments:
+            distogram_logits: [N_res, N_res, N_bins].
+            integrate_masks: [N_res, N_res, N_bins]
+        Returns:
+            v: shape [N_res, N_res].
+        """
+        probs = self.softmax(distogram_logits)
+        integrate_masks = F.cast(integrate_masks, mnp.float32)
+        v = mnp.sum(probs * integrate_masks, -1)
+        return v
