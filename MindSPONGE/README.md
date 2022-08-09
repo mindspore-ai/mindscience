@@ -179,6 +179,7 @@ bash build.sh -e ascend
 - GPU后端
 
 若使用Cybetron，开启编译选项 `c`
+
 若使用传统分子动力学sponge，开启编译选项 `t`
 
 ```bash

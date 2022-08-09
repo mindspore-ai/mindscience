@@ -179,8 +179,9 @@ bash build.sh -e ascend
 
 - GPU backend
 
-Enable `c` if you want to use Cybertron
-Enable `t` if you want to use traditional MD
+Enable `c` if you want to use Cybertron.
+
+Enable `t` if you want to use traditional MD.
 
 ```bash
 export CUDA_PATH={your_cuda_path}
