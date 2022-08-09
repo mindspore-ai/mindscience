@@ -14,7 +14,7 @@ parameters:
     parameter_names:
       pattern: [bond_angle, force_constant]
     parameters:
-      HW-OW-HW: [1.910612, 383]
+      HW-OW-HW: [109.47, 383]
   coulomb_energy:
     length_unit: nm
     energy_unit: kj/mol

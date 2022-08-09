@@ -175,7 +175,7 @@ class ForceFieldParameters:
 
         params = {'angle_index': angles}
         params['force_constant'] = np.array(force_constant, np.float32).reshape(angle_type.shape)
-        params['bond_angle'] = np.array(bond_angle, np.float32).reshape(angle_type.shape)
+        params['bond_angle'] = np.array(bond_angle, np.float32).reshape(angle_type.shape) / 180 * np.pi
 
         return params
 
@@ -221,7 +221,7 @@ class ForceFieldParameters:
         ks0_filter = np.where(params['force_constant'] != 0)[0]
         params['force_constant'] = params['force_constant'][ks0_filter]
         params['dihedral_index'] = np.array(dihedral_index, np.int32)[ks0_filter]
-        params['phase'] = np.array(phase, np.float32)[ks0_filter]
+        params['phase'] = np.array(phase, np.float32)[ks0_filter] / 180 * np.pi
         params['periodicity'] = np.array(periodicity, np.float32)[ks0_filter]
 
         return params
@@ -277,7 +277,7 @@ class ForceFieldParameters:
 
         params = {'improper_index': np.array(improper_index, np.int32)}
         params['force_constant'] = np.array(force_constant, np.float32)
-        params['phase'] = np.array(phase, np.float32)
+        params['phase'] = np.array(phase, np.float32) / 180 * np.pi
         params['periodicity'] = np.array(periodicity, np.float32)
 
         return params
