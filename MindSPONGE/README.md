@@ -178,11 +178,12 @@ bash build.sh -e ascend
 
 - GPU后端
 
+若使用Cybetron，开启编译选项 `c`
 若使用传统分子动力学sponge，开启编译选项 `t`
 
 ```bash
 export CUDA_PATH={your_cuda_path}
-bash build.sh -e gpu -t on -j32
+bash build.sh -e gpu -j32 -t on -c on
 ```
 
 - 安装编译所得whl包
