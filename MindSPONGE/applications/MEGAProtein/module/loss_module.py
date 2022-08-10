@@ -26,7 +26,7 @@ from mindsponge.common.geometry import invert_point, quaternion_from_tensor, vec
 from mindsponge.metrics.structure_violations import softmax_cross_entropy, sigmoid_cross_entropy, \
     get_structural_violations, compute_renamed_ground_truth, backbone, sidechain, supervised_chi, \
     local_distance_difference_test
-from mindsponge.metrics.metric import BalancedMSE, BinaryFocal, MultiClassFocal
+from mindsponge.metrics import BalancedMSE, BinaryFocal, MultiClassFocal
 
 
 class LossNet(nn.Cell):

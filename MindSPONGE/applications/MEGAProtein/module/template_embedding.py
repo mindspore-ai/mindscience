@@ -13,15 +13,12 @@
 # limitations under the License.
 # ============================================================================
 '''TEMPLATE'''
-import numpy as np
 import mindspore.common.dtype as mstype
 import mindspore.nn as nn
-from mindspore.common.tensor import Tensor
 from mindspore.ops import functional as F
 from mindspore.ops import operations as P
-from mindspore import Parameter
 from mindsponge.cell.initializer import lecun_init
-from mindsponge.common.utils import dgram_from_positions
+from mindsponge.common.utils import dgram_from_positions, _memory_reduce
 from mindsponge.common.geometry import make_transform_from_reference, rot_to_quat, quat_affine, invert_point
 from mindsponge.common.residue_constants import atom_order
 from mindsponge.cell import Attention, TriangleAttention, Transition, TriangleMultiplication
@@ -180,7 +177,7 @@ class SingleTemplateEmbedding(nn.Cell):
 class TemplateEmbedding(nn.Cell):
     '''template embedding'''
 
-    def __init__(self, config, seq_len, mixed_precision=True):
+    def __init__(self, config, mixed_precision=True):
         super(TemplateEmbedding, self).__init__()
         self.config = config.template
         if mixed_precision:
@@ -195,13 +192,13 @@ class TemplateEmbedding(nn.Cell):
                                                       q_data_dim=128, m_data_dim=64,
                                                       output_dim=128, batch_size=None)
         self.slice_num = config.slice.template_embedding
-        slice_num = self.slice_num
-        if self.slice_num == 0:
-            slice_num = 1
-        self._flat_query_slice = Parameter(
-            Tensor(np.zeros((int(seq_len * seq_len / slice_num), 1, 128)), dtype=mstype.float32), requires_grad=False)
-        self._flat_templates_slice = Parameter(
-            Tensor(np.zeros((int(seq_len * seq_len / slice_num), 4, 64)), dtype=mstype.float32), requires_grad=False)
+
+
+    def compute(self, flat_query, flat_templates, input_mask):
+        embedding = self.template_pointwise_attention(flat_query, flat_templates, input_mask, index=None,
+                                                      nonbatched_bias=None)
+        return embedding
+
 
     def construct(self, query_embedding, template_aatype, template_all_atom_masks, template_all_atom_positions,
                   template_mask, template_pseudo_beta_mask, template_pseudo_beta, mask_2d):
@@ -221,30 +218,9 @@ class TemplateEmbedding(nn.Cell):
             (num_res * num_res, num_templates, num_channels))
         template_mask_bias = P.ExpandDims()(P.ExpandDims()(P.ExpandDims()(template_mask, 0), 1), 2) - 1.0
         input_mask = 1e4 * template_mask_bias
-        if self.slice_num:
-            slice_shape = (self.slice_num, -1)
-            flat_query_shape = P.Shape()(flat_query)
-            flat_query = P.Reshape()(flat_query, slice_shape + flat_query_shape[1:])
-            flat_templates_shape = P.Shape()(flat_templates)
-            flat_templates = P.Reshape()(flat_templates, slice_shape + flat_templates_shape[1:])
-            slice_idx = 0
-            embedding_tuple = ()
-            while slice_idx < self.slice_num:
-                self._flat_query_slice = flat_query[slice_idx]
-                self._flat_templates_slice = flat_templates[slice_idx]
-                embedding_slice = self.template_pointwise_attention(self._flat_query_slice, self._flat_templates_slice,
-                                                                    input_mask, index=None, nonbatched_bias=None)
-                embedding_slice = P.Reshape()(embedding_slice, ((1,) + P.Shape()(embedding_slice)))
-                embedding_tuple = embedding_tuple + (embedding_slice,)
-                slice_idx += 1
-            embedding = P.Concat()(embedding_tuple)
-
-            embedding = P.Reshape()(embedding, (num_res, num_res, query_num_channels))
-            # No gradients if no templates.
-            embedding = embedding * (P.ReduceSum()(template_mask) > 0.)
-            return embedding
-        embedding = self.template_pointwise_attention(flat_query, flat_templates, input_mask, index=None,
-                                                      nonbatched_bias=None)
+        batched_inputs = (flat_query, flat_templates)
+        nonbatched_inputs = (input_mask,)
+        embedding = _memory_reduce(self.compute, batched_inputs, nonbatched_inputs, self.slice_num)
         embedding = P.Reshape()(embedding, (num_res, num_res, query_num_channels))
         # No gradients if no templates.
         embedding = embedding * (P.ReduceSum()(template_mask) > 0.)

@@ -19,11 +19,10 @@ import mindspore.common.dtype as mstype
 from mindspore import Parameter
 from mindspore.common.tensor import Tensor
 from mindspore.ops import operations as P
-from mindspore.ops import functional as F
 from mindspore.common.initializer import initializer
-import mindspore.numpy as mnp
 from .basic import Attention
 from .initializer import lecun_init
+from ..common.utils import _memory_reduce
 
 
 class TriangleAttention(nn.Cell):
@@ -45,6 +44,10 @@ class TriangleAttention(nn.Cell):
         self.layer_norm_dim = layer_norm_dim
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
+
+    def compute(self, pair_act, input_mask, index, nonbatched_bias):
+        pair_act = self.attn_mod(pair_act, pair_act, input_mask, index, nonbatched_bias)
+        return pair_act
 
     def construct(self, pair_act, pair_mask, index):
         '''construct'''
@@ -70,43 +73,9 @@ class TriangleAttention(nn.Cell):
         nonbatched_bias = self.matmul(P.Reshape()(pair_act, (-1, pair_act.shape[-1])), feat_2d_weight)
         nonbatched_bias = P.Transpose()(P.Reshape()(nonbatched_bias, (q, k, -1)), (2, 0, 1))
 
-        if self.slice_num:
-            pair_act_ori_shape = P.Shape()(pair_act)
-            slice_shape = (self.slice_num, -1) + pair_act_ori_shape[1:]
-            pair_act = P.Reshape()(pair_act, slice_shape)
-            input_mask_shape = P.Shape()(input_mask)
-            input_mask = P.Reshape()(input_mask, slice_shape[:2] + input_mask_shape[1:])
-
-            slice_idx = 0
-            slice_idx_tensor = self.idx
-            pair_act_tuple = ()
-
-            pair_act_slice = P.Gather()(pair_act, slice_idx_tensor, 0)
-            input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
-            pair_act_slice = self.attn_mod(pair_act_slice, pair_act_slice, input_mask_slice,
-                                           index, nonbatched_bias)
-            pair_act_slice = P.Reshape()(pair_act_slice, ((1,) + P.Shape()(pair_act_slice)))
-            pair_act_tuple = pair_act_tuple + (pair_act_slice,)
-            slice_idx += 1
-            slice_idx_tensor += 1
-
-            while slice_idx < self.slice_num:
-                pair_act_slice = P.Gather()(pair_act, slice_idx_tensor, 0)
-                pair_act_slice = F.depend(pair_act_slice, pair_act_tuple[-1])
-                input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
-                pair_act_slice = self.attn_mod(pair_act_slice, pair_act_slice, input_mask_slice,
-                                               index, nonbatched_bias)
-                pair_act_slice = P.Reshape()(pair_act_slice, ((1,) + P.Shape()(pair_act_slice)))
-                pair_act_tuple = pair_act_tuple + (pair_act_slice,)
-                slice_idx += 1
-                slice_idx_tensor += 1
-            pair_act = P.Concat()(pair_act_tuple)
-            pair_act = P.Reshape()(pair_act, pair_act_ori_shape)
-
-            if self.orientation_is_per_column:
-                pair_act = mnp.swapaxes(pair_act, -2, -3)
-            return pair_act
-        pair_act = self.attn_mod(pair_act, pair_act, input_mask, index, nonbatched_bias)
+        batched_inputs = (pair_act, input_mask)
+        nonbatched_inputs = (index, nonbatched_bias)
+        pair_act = _memory_reduce(self.compute, batched_inputs, nonbatched_inputs, self.slice_num)
         if self.orientation_is_per_column:
             pair_act = P.Transpose()(pair_act, (1, 0, 2))
         return pair_act
@@ -324,6 +293,20 @@ class OuterProductMean(nn.Cell):
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
 
+    def compute(self, left_act, right_act, linear_output_weight, linear_output_bias, d, e):
+        """core compute"""
+        a, b, c = left_act.shape
+        left_act = P.Reshape()(P.Transpose()(left_act, (2, 1, 0)), (-1, a))
+        act = P.Reshape()(P.Transpose()(P.Reshape()(self.matmul(left_act, right_act),
+                                                    (c, b, d, e)), (2, 1, 0, 3)), (d, b, c * e))
+        act_shape = P.Shape()(act)
+        if len(act_shape) != 2:
+            act = P.Reshape()(act, (-1, act_shape[-1]))
+        act = P.Reshape()(P.BiasAdd()(self.matmul_trans_b(act, linear_output_weight),
+                                      linear_output_bias), (d, b, -1))
+        act = P.Transpose()(act, (1, 0, 2))
+        return act
+
     def construct(self, act, mask, extra_msa_norm, index):
         '''construct'''
         if self.batch_size:
@@ -354,67 +337,11 @@ class OuterProductMean(nn.Cell):
             P.BiasAdd()(self.matmul_trans_b(act, left_projection_weight), left_projection_bias), out_shape)
         right_act = mask * P.Reshape()(
             P.BiasAdd()(self.matmul_trans_b(act, right_projection_weight), right_projection_bias), out_shape)
-        _, d, e = right_act.shape
-        if self.slice_num:
-            left_act_shape = P.Shape()(left_act)
-            slice_shape = (left_act_shape[0],) + (self.slice_num, -1) + (left_act_shape[-1],)
-            left_act = P.Reshape()(left_act, slice_shape)
-            slice_idx = 0
-            slice_idx_tensor = self.idx
-            act_tuple = ()
-            left_act_slice = P.Gather()(left_act, slice_idx_tensor, 1)
-            a, b, c = left_act_slice.shape
-            left_act_slice = P.Reshape()(mnp.transpose(left_act_slice, [2, 1, 0]), (-1, a))
-            right_act = P.Reshape()(right_act, (a, -1))
-            act_slice = P.Reshape()(P.Transpose()(P.Reshape()(self.matmul(left_act_slice, right_act),
-                                                              (c, b, d, e)), (2, 1, 0, 3)), (d, b, c * e))
-            act_slice_shape = P.Shape()(act_slice)
-            if len(act_shape) != 2:
-                act_slice = P.Reshape()(act_slice, (-1, act_slice_shape[-1]))
-            act_slice = P.Reshape()(P.BiasAdd()(self.matmul_trans_b(act_slice, linear_output_weight),
-                                                linear_output_bias), (d, b, -1))
-            act_slice = mnp.transpose(act_slice, [1, 0, 2])
-            act_slice = P.Reshape()(act_slice, ((1,) + P.Shape()(act_slice)))
-            act_tuple = act_tuple + (act_slice,)
-            slice_idx += 1
-            slice_idx_tensor += 1
-            while slice_idx < self.slice_num:
-                left_act_slice = P.Gather()(left_act, slice_idx_tensor, 1)
-                left_act_slice = F.depend(left_act_slice, act_tuple[-1])
-                a, b, c = left_act_slice.shape
-                left_act_slice = P.Reshape()(mnp.transpose(left_act_slice, [2, 1, 0]), (-1, a))
-                right_act = P.Reshape()(right_act, (a, -1))
-                act_slice = P.Reshape()(P.Transpose()(P.Reshape()(self.matmul(left_act_slice, right_act),
-                                                                  (c, b, d, e)), (2, 1, 0, 3)), (d, b, c * e))
-                act_slice_shape = P.Shape()(act_slice)
-                if len(act_shape) != 2:
-                    act_slice = P.Reshape()(act_slice, (-1, act_slice_shape[-1]))
-                act_slice = P.Reshape()(P.BiasAdd()(self.matmul_trans_b(act_slice, linear_output_weight),
-                                                    linear_output_bias), (d, b, -1))
-                act_slice = mnp.transpose(act_slice, [1, 0, 2])
-                act_slice = P.Reshape()(act_slice, ((1,) + P.Shape()(act_slice)))
-                act_tuple = act_tuple + (act_slice,)
-                slice_idx += 1
-                slice_idx_tensor += 1
-            act = P.Concat()(act_tuple)
-            act_shape = P.Shape()(act)
-            act = P.Reshape()(act, (-1, act_shape[-2], act_shape[-1]))
-            epsilon = 1e-3
-            tmp_mask = P.Transpose()(mask, (2, 1, 0))
-            norm = P.Transpose()(self.batch_matmul_trans_b(tmp_mask, tmp_mask), (1, 2, 0))
-            act = P.RealDiv()(act, epsilon + norm)
-            return act
-        a, b, c = left_act.shape
-        left_act = P.Reshape()(P.Transpose()(left_act, (2, 1, 0)), (-1, a))
+        a, d, e = right_act.shape
         right_act = P.Reshape()(right_act, (a, -1))
-        act = P.Reshape()(P.Transpose()(P.Reshape()(self.matmul(left_act, right_act),
-                                                    (c, b, d, e)), (2, 1, 0, 3)), (d, b, c * e))
-        act_shape = P.Shape()(act)
-        if len(act_shape) != 2:
-            act = P.Reshape()(act, (-1, act_shape[-1]))
-        act = P.Reshape()(P.BiasAdd()(self.matmul_trans_b(act, linear_output_weight),
-                                      linear_output_bias), (d, b, -1))
-        act = P.Transpose()(act, (1, 0, 2))
+        batched_inputs = (left_act,)
+        nonbatched_inputs = (right_act, linear_output_weight, linear_output_bias, d, e)
+        act = _memory_reduce(self.compute, batched_inputs, nonbatched_inputs, self.slice_num, 1)
         epsilon = 1e-3
         act = P.RealDiv()(act, epsilon + extra_msa_norm)
         return act

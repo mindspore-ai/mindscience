@@ -159,7 +159,7 @@ slice:
       pair_transition: 0
     extra_msa_stack:
       msa_transition: 0
-      msa_row_attention_with_pair_bias: 0
+      msa_row_attention_with_pair_bias: 4
       msa_column_global_attention: 0
       outer_product_mean: 0
       triangle_attention_starting_node: 0
@@ -181,7 +181,7 @@ slice:
       pair_transition: 0
     extra_msa_stack:
       msa_transition: 0
-      msa_row_attention_with_pair_bias: 4
+      msa_row_attention_with_pair_bias: 64
       msa_column_global_attention: 0
       outer_product_mean: 0
       triangle_attention_starting_node: 0
@@ -195,16 +195,24 @@ slice:
       triangle_attention_starting_node: 0
       triangle_attention_ending_node: 0
       pair_transition: 0
-  seq_672:
-    template_embedding: 0
+  seq_768:
+    template_embedding: 8
     template_pair_stack:
-      triangle_attention_starting_node: 4
-      triangle_attention_ending_node: 4
-      pair_transition: 0
+      triangle_attention_starting_node: 8
+      triangle_attention_ending_node: 8
+      pair_transition: 8
     extra_msa_stack:
       msa_transition: 0
-      msa_row_attention_with_pair_bias: 8
+      msa_row_attention_with_pair_bias: 128
       msa_column_global_attention: 0
+      outer_product_mean: 0
+      triangle_attention_starting_node: 0
+      triangle_attention_ending_node: 0
+      pair_transition: 0
+    msa_stack:
+      msa_transition: 0
+      msa_row_attention_with_pair_bias: 0
+      msa_column_attention: 0
       outer_product_mean: 0
       triangle_attention_starting_node: 0
       triangle_attention_ending_node: 0
@@ -218,27 +226,137 @@ slice:
       triangle_attention_ending_node: 0
       pair_transition: 0
   seq_1024:
-    template_embedding: 4
+    template_embedding: 8 # seq len * seq len
     template_pair_stack:
-      triangle_attention_starting_node: 4
-      triangle_attention_ending_node: 4
-      pair_transition: 4
+      triangle_attention_starting_node: 8 # seq len
+      triangle_attention_ending_node: 8 # seq len
+      pair_transition: 8 # seq len
     extra_msa_stack:
-      msa_transition: 0
-      msa_row_attention_with_pair_bias: 16
-      msa_column_global_attention: 4
-      outer_product_mean: 0
-      triangle_attention_starting_node: 4
-      triangle_attention_ending_node: 4
-      pair_transition: 0
+      msa_transition: 0 # 5120
+      msa_row_attention_with_pair_bias: 128 # 5120
+      msa_column_global_attention: 8 # seq len
+      outer_product_mean: 0 # seq len
+      triangle_attention_starting_node: 8 # seq len
+      triangle_attention_ending_node: 8 # seq len
+      pair_transition: 0 # seq len
     msa_stack:
       msa_transition: 0
-      msa_row_attention_with_pair_bias: 4
-      msa_column_attention: 4
+      msa_row_attention_with_pair_bias: 8
+      msa_column_attention: 8
       outer_product_mean: 0
-      triangle_attention_starting_node: 4
-      triangle_attention_ending_node: 4
+      triangle_attention_starting_node: 8
+      triangle_attention_ending_node: 8
       pair_transition: 0
+  seq_1280:
+    template_embedding: 8 # seq len * seq len
+    template_pair_stack:
+      triangle_attention_starting_node: 32 # seq len
+      triangle_attention_ending_node: 32 # seq len
+      pair_transition: 8 # seq len
+    extra_msa_stack:
+      msa_transition: 0 # 5120
+      msa_row_attention_with_pair_bias: 128 # 5120
+      msa_column_global_attention: 8 # seq len
+      outer_product_mean: 0 # seq len
+      triangle_attention_starting_node: 8 # seq len
+      triangle_attention_ending_node: 8 # seq len
+      pair_transition: 0 # seq len
+    msa_stack:
+      msa_transition: 0
+      msa_row_attention_with_pair_bias: 8
+      msa_column_attention: 8
+      outer_product_mean: 0
+      triangle_attention_starting_node: 8
+      triangle_attention_ending_node: 8
+      pair_transition: 0
+  seq_1536:
+    template_embedding: 16 # seq len * seq len
+    template_pair_stack:
+      triangle_attention_starting_node: 32 # seq len
+      triangle_attention_ending_node: 32 # seq len
+      pair_transition: 8 # seq len
+    extra_msa_stack:
+      msa_transition: 8 # 5120
+      msa_row_attention_with_pair_bias: 256 # 5120
+      msa_column_global_attention: 32 # seq len
+      outer_product_mean: 8 # seq len
+      triangle_attention_starting_node: 32 # seq len
+      triangle_attention_ending_node: 32 # seq len
+      pair_transition: 8 # seq len
+    msa_stack:
+      msa_transition: 8
+      msa_row_attention_with_pair_bias: 32
+      msa_column_attention: 32
+      outer_product_mean: 8
+      triangle_attention_starting_node: 32
+      triangle_attention_ending_node: 32
+      pair_transition: 8
+  seq_1792:
+    template_embedding: 64 # seq len * seq len
+    template_pair_stack:
+      triangle_attention_starting_node: 64 # seq len
+      triangle_attention_ending_node: 64 # seq len
+      pair_transition: 8 # seq len
+    extra_msa_stack:
+      msa_transition: 8 # 5120
+      msa_row_attention_with_pair_bias: 512 # 5120
+      msa_column_global_attention: 64 # seq len
+      outer_product_mean: 8 # seq len
+      triangle_attention_starting_node: 64 # seq len
+      triangle_attention_ending_node: 64 # seq len
+      pair_transition: 8 # seq len
+    msa_stack:
+      msa_transition: 8
+      msa_row_attention_with_pair_bias: 64
+      msa_column_attention: 64
+      outer_product_mean: 8
+      triangle_attention_starting_node: 64
+      triangle_attention_ending_node: 64
+      pair_transition: 8
+  seq_2048:
+    template_embedding: 128 # seq len * seq len
+    template_pair_stack:
+      triangle_attention_starting_node: 128 # seq len
+      triangle_attention_ending_node: 128 # seq len
+      pair_transition: 128 # seq len
+    extra_msa_stack:
+      msa_transition: 128 # 5120
+      msa_row_attention_with_pair_bias: 512 # 5120
+      msa_column_global_attention: 128 # seq len
+      outer_product_mean: 128 # seq len
+      triangle_attention_starting_node: 128 # seq len
+      triangle_attention_ending_node: 128 # seq len
+      pair_transition: 128 # seq len
+    msa_stack:
+      msa_transition: 128
+      msa_row_attention_with_pair_bias: 128
+      msa_column_attention: 128
+      outer_product_mean: 128
+      triangle_attention_starting_node: 128
+      triangle_attention_ending_node: 128
+      pair_transition: 128
+  seq_2304:
+    template_embedding: 128 # seq len * seq len
+    template_pair_stack:
+      triangle_attention_starting_node: 256 # seq len
+      triangle_attention_ending_node: 256 # seq len
+      pair_transition: 128 # seq len
+    extra_msa_stack:
+      msa_transition: 128 # 5120
+      msa_row_attention_with_pair_bias: 512 # 5120
+      msa_column_global_attention: 256 # seq len
+      outer_product_mean: 128 # seq len
+      triangle_attention_starting_node: 256 # seq len
+      triangle_attention_ending_node: 256 # seq len
+      pair_transition: 128 # seq len
+    msa_stack:
+      msa_transition: 128
+      msa_row_attention_with_pair_bias: 256
+      msa_column_attention: 256
+      outer_product_mean: 256
+      triangle_attention_starting_node: 256
+      triangle_attention_ending_node: 256
+      pair_transition: 128
 heads:
   resolution: 1
   predicted_lddt:

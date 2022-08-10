@@ -126,7 +126,7 @@ class MegaFold(nn.Cell):
         self.prev_pair_norm = nn.LayerNorm([128,], epsilon=1e-5)
         self.one_hot = nn.OneHot(depth=self.cfg.max_relative_feature * 2 + 1, axis=-1)
         self.extra_msa_activations = nn.Dense(25, self.cfg.extra_msa_channel, weight_init=lecun_init(25))
-        self.template_embedding = TemplateEmbedding(self.cfg, self.cfg.seq_length, mixed_precision)
+        self.template_embedding = TemplateEmbedding(self.cfg, mixed_precision)
 
         self.matmul_trans_b = P.MatMul(transpose_b=True)
         self.batch_matmul_trans_b = P.BatchMatMul(transpose_b=True)

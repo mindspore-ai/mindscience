@@ -14,14 +14,13 @@
 # ============================================================================
 """MSA"""
 import numpy as np
-import mindspore.numpy as mnp
 import mindspore.nn as nn
 import mindspore.common.dtype as mstype
 from mindspore import Parameter
 from mindspore.common.tensor import Tensor
 from mindspore.ops import operations as P
-from mindspore.ops import functional as F
 from .basic import Attention, GlobalAttention
+from ..common.utils import _memory_reduce
 
 
 class MSARowAttentionWithPairBias(nn.Cell):
@@ -40,6 +39,10 @@ class MSARowAttentionWithPairBias(nn.Cell):
         self.slice_num = slice_num
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
+
+    def compute(self, msa_act, mask, index, nonbatched_bias):
+        msa_act = self.attn_mod(msa_act, msa_act, mask, index, nonbatched_bias)
+        return msa_act
 
     def construct(self, msa_act, msa_mask, pair_act, index):
         '''construct'''
@@ -65,41 +68,9 @@ class MSARowAttentionWithPairBias(nn.Cell):
         pair_act = P.Reshape()(pair_act, (-1, pair_act.shape[-1]))
         nonbatched_bias = P.Transpose()(P.Reshape()(self.matmul(pair_act, feat_2d_weight), (q, k, self.num_head)),
                                         (2, 0, 1))
-
-        if self.slice_num:
-            msa_act_ori_shape = P.Shape()(msa_act)
-            slice_shape = (self.slice_num, -1) + msa_act_ori_shape[1:]
-            msa_act = P.Reshape()(msa_act, slice_shape)
-            input_mask_shape = P.Shape()(input_mask)
-            input_mask = P.Reshape()(input_mask, slice_shape[:2] + input_mask_shape[1:])
-            slice_idx = 0
-            slice_idx_tensor = self.idx
-            msa_act_tuple = ()
-
-            msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
-            input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
-            msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, input_mask_slice,
-                                          index, nonbatched_bias)
-            msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
-            msa_act_tuple = msa_act_tuple + (msa_act_slice,)
-            slice_idx += 1
-            slice_idx_tensor += 1
-
-            while slice_idx < self.slice_num:
-                msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
-                msa_act_slice = F.depend(msa_act_slice, msa_act_tuple[-1])
-                input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
-                msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, input_mask_slice, index, nonbatched_bias)
-                msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
-                msa_act_tuple = msa_act_tuple + (msa_act_slice,)
-                slice_idx += 1
-                slice_idx_tensor += 1
-
-            msa_act = P.Concat()(msa_act_tuple)
-            msa_act = P.Reshape()(msa_act, msa_act_ori_shape)
-            return msa_act
-
-        msa_act = self.attn_mod(msa_act, msa_act, input_mask, index, nonbatched_bias)
+        batched_inputs = (msa_act, input_mask)
+        nonbatched_inputs = (index, nonbatched_bias)
+        msa_act = _memory_reduce(self.compute, batched_inputs, nonbatched_inputs, self.slice_num)
         return msa_act
 
     def _init_parameter(self):
@@ -136,6 +107,10 @@ class MSAColumnAttention(nn.Cell):
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
 
+    def compute(self, msa_act, input_mask, index):
+        msa_act = self.attn_mod(msa_act, msa_act, input_mask, index)
+        return msa_act
+
     def construct(self, msa_act, msa_mask, index):
         '''construct'''
         if self.batch_size:
@@ -150,42 +125,9 @@ class MSAColumnAttention(nn.Cell):
         input_mask = 1e9 * (msa_mask - 1.)
         input_mask = P.ExpandDims()(P.ExpandDims()(input_mask, 1), 2)
         msa_act, _, _ = self.query_norm(msa_act, query_norm_gamma, query_norm_beta)
-
-        if self.slice_num:
-            msa_act_ori_shape = P.Shape()(msa_act)
-            slice_shape = (self.slice_num, -1) + msa_act_ori_shape[1:]
-            msa_act = P.Reshape()(msa_act, slice_shape)
-            input_mask_shape = P.Shape()(input_mask)
-            input_mask = P.Reshape()(input_mask, slice_shape[:2] + input_mask_shape[1:])
-
-            slice_idx = 0
-            slice_idx_tensor = self.idx
-            msa_act_tuple = ()
-
-            msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
-            input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
-            msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, input_mask_slice, index)
-            msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
-            msa_act_tuple = msa_act_tuple + (msa_act_slice,)
-            slice_idx += 1
-            slice_idx_tensor += 1
-
-            while slice_idx < self.slice_num:
-                msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
-                msa_act_slice = F.depend(msa_act_slice, msa_act_tuple[-1])
-                input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
-                msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, input_mask_slice, index)
-                msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
-                msa_act_tuple = msa_act_tuple + (msa_act_slice,)
-                slice_idx += 1
-                slice_idx_tensor += 1
-
-            msa_act = P.Concat()(msa_act_tuple)
-            msa_act = P.Reshape()(msa_act, msa_act_ori_shape)
-            msa_act = mnp.swapaxes(msa_act, -2, -3)
-            return msa_act
-
-        msa_act = self.attn_mod(msa_act, msa_act, input_mask, index)
+        batched_inputs = (msa_act, input_mask)
+        nonbatched_inputs = (index,)
+        msa_act = _memory_reduce(self.compute, batched_inputs, nonbatched_inputs, self.slice_num)
         msa_act = P.Transpose()(msa_act, (1, 0, 2))
         return msa_act
 
@@ -211,6 +153,10 @@ class MSAColumnGlobalAttention(nn.Cell):
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
 
+    def compute(self, msa_act, msa_mask, input_mask, index):
+        msa_act = self.attn_mod(msa_act, msa_act, msa_mask, input_mask, index)
+        return msa_act
+
     def construct(self, msa_act, msa_mask, index):
         '''construct'''
         if self.batch_size:
@@ -231,49 +177,9 @@ class MSAColumnGlobalAttention(nn.Cell):
                                         query_norm_gamma,
                                         query_norm_beta)
         msa_mask = P.ExpandDims()(msa_mask, -1)
-
-        if self.slice_num:
-            msa_act_ori_shape = P.Shape()(msa_act)
-            slice_shape = (self.slice_num, -1) + msa_act_ori_shape[1:]
-            msa_act = P.Reshape()(msa_act, slice_shape)
-            input_mask_shape = P.Shape()(input_mask)
-            input_mask = P.Reshape()(input_mask, slice_shape[:2] + input_mask_shape[1:])
-            msa_mask_shape = P.Shape()(msa_mask)
-            msa_mask = P.Reshape()(msa_mask, slice_shape[:2] + msa_mask_shape[1:])
-
-            slice_idx = 0
-            slice_idx_tensor = self.idx
-            msa_act_tuple = ()
-
-            msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
-            msa_mask_slice = P.Gather()(msa_mask, slice_idx_tensor, 0)
-            input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
-            msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, msa_mask_slice,
-                                          input_mask_slice, index)
-            msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
-            msa_act_tuple = msa_act_tuple + (msa_act_slice,)
-            slice_idx += 1
-            slice_idx_tensor += 1
-
-            while slice_idx < self.slice_num:
-                msa_act_slice = P.Gather()(msa_act, slice_idx_tensor, 0)
-                msa_act_slice = F.depend(msa_act_slice, msa_act_tuple[-1])
-                msa_mask_slice = P.Gather()(msa_mask, slice_idx_tensor, 0)
-                input_mask_slice = P.Gather()(input_mask, slice_idx_tensor, 0)
-
-                msa_act_slice = self.attn_mod(msa_act_slice, msa_act_slice, msa_mask_slice,
-                                              input_mask_slice, index)
-                msa_act_slice = P.Reshape()(msa_act_slice, ((1,) + P.Shape()(msa_act_slice)))
-                msa_act_tuple = msa_act_tuple + (msa_act_slice,)
-                slice_idx += 1
-                slice_idx_tensor += 1
-
-            msa_act = P.Concat()(msa_act_tuple)
-            msa_act = P.Reshape()(msa_act, msa_act_ori_shape)
-            msa_act = mnp.swapaxes(msa_act, -2, -3)
-            return msa_act
-
-        msa_act = self.attn_mod(msa_act, msa_act, msa_mask, input_mask, index)
+        batched_inputs = (msa_act, msa_mask, input_mask)
+        nonbatched_inputs = (index,)
+        msa_act = _memory_reduce(self.compute, batched_inputs, nonbatched_inputs, self.slice_num)
         msa_act = P.Transpose()(msa_act, (1, 0, 2))
         return msa_act
 
