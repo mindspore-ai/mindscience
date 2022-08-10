@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """
-Read information from a pdb format file.
+Read information from a mmcif format file.
 """
 import re
 import string
@@ -21,10 +21,10 @@ import collections
 import io
 import dataclasses
 from typing import Any, Mapping, Optional, Sequence, Tuple, List
-
 from absl import logging
 from Bio import PDB
 from Bio.Data import SCOPData
+
 
 
 @dataclasses.dataclass(frozen=True)

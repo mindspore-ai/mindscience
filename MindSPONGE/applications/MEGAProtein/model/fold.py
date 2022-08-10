@@ -56,7 +56,7 @@ def caculate_constant_array(seq_length):
     return constant_array
 
 
-def compute_confidence(predicted_lddt_logits):
+def compute_confidence(predicted_lddt_logits, return_lddt=False):
     """compute confidence"""
 
     num_bins = predicted_lddt_logits.shape[-1]
@@ -64,6 +64,9 @@ def compute_confidence(predicted_lddt_logits):
     start_n = bin_width / 2
     plddt = compute_plddt(predicted_lddt_logits, start_n, bin_width)
     confidence = np.mean(plddt)
+    if return_lddt:
+        return confidence, plddt
+
     return confidence
 
 

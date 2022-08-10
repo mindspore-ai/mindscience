@@ -19,8 +19,12 @@ import time
 import contextlib
 import tempfile
 import shutil
+import pickle
+import os
 
 from absl import logging
+
+from .parsers import parse_fasta
 
 
 @contextlib.contextmanager
@@ -49,3 +53,34 @@ def timing(msg: str):
     yield
     toc = time.time()
     logging.info('Finished %s in %.3f seconds', msg, toc - tic)
+
+
+def get_raw_feature(input_path, feature_generator, use_pkl):
+    '''get raw feature of protein by loading pkl file or searching from database'''
+    if use_pkl:
+        f = open(input_path, "rb")
+        data = pickle.load(f)
+        f.close()
+        return data
+    return feature_generator.monomer_feature_generate(input_path)
+
+
+def get_crop_size(input_path, use_pkl):
+    '''get crop size of sequence by comparing all input sequences\' length'''
+    filenames = os.listdir(input_path)
+    max_length = 0
+    for filename in filenames:
+        file_full_path = os.path.join(input_path, filename)
+        if use_pkl:
+            with open(file_full_path, "rb") as f:
+                data = pickle.load(f)
+            current_crop_size = (data["msa"].shape[1] // 256 + 1) * 256
+            max_length = max(max_length, current_crop_size)
+        else:
+            with open(file_full_path, "r") as f:
+                input_fasta_str = f.read()
+            input_seqs, _ = parse_fasta(input_fasta_str)
+            current_crop_size = (len(input_seqs[0]) // 256 + 1) * 256
+            max_length = max(max_length, current_crop_size)
+
+    return max_length

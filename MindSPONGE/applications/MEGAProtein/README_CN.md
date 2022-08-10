@@ -6,7 +6,11 @@
 
 MEGA-Protein主要由三部分组成：
 
-- **蛋白质结构预测工具MEGA-Fold**，网络模型部分与AlphaFold2相同，在数据预处理的多序列对比环节采用了[MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup>进行序列检索，相比于原版端到端速度提升2-3倍。
+- **蛋白质结构预测工具MEGA-Fold**，网络模型部分与AlphaFold2相同，在数据预处理的多序列对比环节采用了[MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup>进行序列检索，相比于原版端到端速度提升2-3倍。同时我们提供结构预测模型训练能力，我们自己训练得到的权重获得了CAMEO-3D蛋白质结构预测赛道22年4月月榜第一
+
+<div align=center>
+<img src="../../docs/megafold_contest.png" alt="MEGA-Fold获得CAMEO-3D蛋白质结构预测赛道月榜第一" width="600"/>
+</div>
 
 - **MSA生成工具MEGA-EvoGen**，能显著提升单序列的预测速度，并且能够在MSA较少（few shot）甚至没有MSA（zero-shot，即单序列）的情况下，帮助MEGA-Fold/AlphaFold2等模型维持甚至提高推理精度，突破了在「孤儿序列」、高异变序列和人造蛋白等MSA匮乏场景下无法做出准确预测的限制，该方法获得了CAMEO-3D蛋白质结构预测赛道22年7月月榜第一
 
@@ -75,9 +79,7 @@ MEGA-Protein主要由三部分组成：
 
 ### 硬件环境与框架
 
-本工具基于[MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE)生物计算库与[MindSpore](https://www.mindspore.cn/)AI框架开发，MindSpore 1.8及以后的版本均可运行，MindSpore安装和配置可以参考[MindSpore安装页面](https://www.mindspore.cn/install)，其余python依赖请参见[requirements.txt](to_add)。
-
-本工具可以Ascend910或GPU上运行：基于Ascend910运行时需配置环境变量`export MS_DEV_ENABLE_CLOSURE=0`，运行时默认调用混合精度推理；基于GPU运行时默认使用全精度推理。
+本工具基于[MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE)生物计算库与[MindSpore](https://www.mindspore.cn/)AI框架开发，MindSpore 1.8及以后的版本均可运行，MindSpore安装和配置可以参考[MindSpore安装页面](https://www.mindspore.cn/install)。本工具可以Ascend910或32G以上内存的GPU上运行，默认使用全精度推理，基于Ascend910运行时推荐调用混合精度推理。
 
 蛋白质结构预测工具MEGA-Fold依赖多序列比对(MSA，multiple sequence alignments)与模板检索生成等传统数据库搜索工具提供的共进化与模板信息，配置数据库搜索需**2.5T硬盘**（推荐SSD）和与Kunpeng920性能持平的CPU。
 
@@ -119,7 +121,35 @@ MEGA-Protein主要由三部分组成：
 
   *数据库下载网站均为国外网站，下载速度可能较慢，需要自行配置VPN*。
 
-## 代码目录
+    - 配置数据库检索config
+
+- 根据数据库安装情况配置`config/data.yaml`中数据库搜索的相关配置`database_search`，相关参数含义如下：
+
+    ```bash
+    # configuration for template search
+    hhsearch_binary_path   HHsearch可执行文件路径
+    kalign_binary_path     MMseqs2可执行文件路径
+    pdb70_database_path    pdb70文件夹路径
+    mmcif_dir              mmcif文件夹路径
+    obsolete_pdbs_path     PDB IDs的映射文件路径
+    max_template_date      模板搜索截止时间，该时间点之后的模板会被过滤掉，默认值"2100-01-01"
+    # configuration for Multiple Sequence Alignment
+    mmseqs_binary          HHsearch可执行文件路径
+    uniref30_path          uniref30文件夹路径
+    database_envdb_dir     colabfold_envdb_202108文件夹路径
+    a3m_result_path        mmseqs2检索结果(msa)的保存路径，默认值"./a3m_result/"
+    ```
+
+## 可用的模型和数据集
+
+| 所属模块      | 文件名        | 大小 | 描述  |Model URL  |
+|-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
+| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 |  [下载链接](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)  |
+| PSP          | `PSP`         | 1.6TB(解压后25TB)    | PSP蛋白质结构数据集，可用于MEGA-Fold训练 |  [下载链接](http://ftp.cbi.pku.edu.cn/psp/)  |
+
+## 代码示例
+
+<details><summary><font size=4 color="blue">代码目录</font></summary>
 
 ```bash
 ├── MEGA-Protein
@@ -135,10 +165,14 @@ MEGA-Protein主要由三部分组成：
         ├── msa_query.py                // python封装的MSA搜索及处理工具
         ├── msa_search.sh               // 调用MMseqs2搜索MSA的shell脚本
         ├── multimer_pipeline.py        // 复合物数据预处理脚本
+        ├── parsers.py                  // mmcif文件读取脚本
         ├── preprocess.py               // 数据预处理脚本
         ├── protein_feature.py          // MSA与template特征搜索与整合脚本
         ├── templates.py                // 模板搜索脚本
         ├── utils.py                    // 数据处理所需功能函数
+    ├── examples
+        ├── pdb                         //样例输入数据（.pkl文件）
+        ├── pkl                         //样例输出数据（.pdb文件）
     ├── model
         ├── fold.py                     // MEGA-Fold主模型脚本
     ├── module
@@ -148,62 +182,64 @@ MEGA-Protein主要由三部分组成：
         ├── loss_module.py              // MEGA-Fold训练loss模块
         ├── structure.py                // 3D结构生成模块
         ├── template_embedding.py       // 模板信息提取模块
+    ├── scripts
+        ├── run_fold_infer_gpu.sh       // GPU运行MEGA-Fold推理示例
+        ├── run_fold_train_ascend.sh    // Ascend运行MEGA-Fold推理示例
 ```
 
-## 运行示例
+</details>
 
-### MEGA-Fold蛋白质结构预测
+### MEGA-Fold蛋白质结构预测推理
 
-加载已经训好的checkpoint，下载地址[点击这里](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)，根据数据库安装情况配置启动命令：
+配置数据库搜索与`config/data.yaml`中的相关参数，下载已经训好的模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)，运行以下命令启动推理。
 
 ```bash
-用法：run.py [--seq_length PADDING_SEQENCE_LENGTH]
-             [--input_fasta_path INPUT_PATH][--msa_result_path MSA_RESULT_PATH]
-             [--database_dir DATABASE_PATH][--database_envdb_dir DATABASE_ENVDB_PATH]
-             [--hhsearch_binary_path HHSEARCH_PATH][--pdb70_database_path PDB70_PATH]
-             [--template_mmcif_dir TEMPLATE_PATH][--max_template_date TRMPLATE_DATE]
-             [--kalign_binary_path KALIGN_PATH][--obsolete_pdbs_path OBSOLETE_PATH]
-
+用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --run_platform PLATFORM
+            --input_path INPUT_FILE_PATH --checkpoint_path CHECKPOINT_PATH
 
 选项：
-  --seq_length             补零后序列长度，目前支持256/512/1024/2048
-  --input_fasta_path       FASTA文件，用于预测蛋白质结构的蛋白质序列
-  --msa_result_path        保存mmseqs2检索得到的msa结果路径
-  --database_dir           uniref30文件夹路径
-  --database_envdb_dir     colabfold_envdb_202108文件夹路径
-  --hhsearch_binary_path   HHsearch可执行文件路径
-  --pdb70_database_path    pdb70文件夹路径
-  --template_mmcif_dir     mmcif文件夹路径
-  --max_template_date      模板最新发布的时间
-  --kalign_binary_path     kalign可执行文件路径
-  --obsolete_pdbs_path     PDB IDs的映射文件路径
+--data_config        数据预处理参数配置
+--model_config       模型超参配置
+--run_platform       运行后端，Ascend或者GPU，默认Ascend
+--use_pkl            使用pkl数据作为输入，默认False
+--input_path         输入文件目录，可包含多个.fasta/.pkl文件
+--checkpoint_path    模型权重文件路径
 ```
 
-推理结果保存在 `./result` 中，共有两个文件，pdb文件即为蛋白质结构预测结果，文件中导数第二列为单个残基的预测置信度，timings文件保存了运行过程中的时间信息。
+对于多条序列推理，MEGA-Fold会基于所有序列的最长长度自动选择编译配置，避免重复编译。如需推理的序列较多，建议根据序列长度分类放入不同文件夹中分批推理。由于数据库搜索硬件要求较高，MEGA-Fold支持先做数据库搜索生成`raw_feature`并保存为pkl文件，然后使用`raw_feature`作为预测工具的输入，此时须将`use_pkl`选项置为True，`examples`文件夹中提供了样例pkl文件与对应的真实结构，供测试运行，测试命令参考`scripts/run_fold_infer_gpu.sh`。
 
-```bash
-{"pre_process_time": 418.57, "model_time": 122.86, "pos_process_time": 0.14, "all_time ": 541.56, "confidence ": 94.61789646019058}
+推理结果保存在 `./result/` 目录下，每条序列的结果存储在独立文件夹中，以序列名称命名，文件夹中共有两个文件，pdb文件即为蛋白质结构预测结果，其中倒数第二列为氨基酸残基的预测置信度；timings文件保存了推理不同阶段时间信息以及推理结果整体的置信度。
+
+```log
+{"pre_process_time": 0.61, "model_time": 87.5, "pos_process_time": 0.02, "all_time ": 88.12, "confidence ": 93.5}
 ```
-
-34条CASP14序列MEGA-Fold与AlphaFold2预测TMscore对比：
-
-<div align=center>
-<img src="../../docs/all_experiment_data.jpg" alt="all_data" width="300"/>
-</div>
 
 MEGA-Fold预测结果与真实结果对比：
 
-- T1079(长度505)：
+- 7VGB_A，长度711，lDDT 92.3：
 
 <div align=center>
-<img src="../../docs/seq_64.gif" alt="T1079" width="300"/>
+<img src="../../docs/7VGB_A.png" alt="7VGB_A" width="400"/>
 </div>
 
-- T1044(长度2180)：
+### MEGA-Fold蛋白质结构预测训练
 
-<div align=center>
-<img src="../../docs/seq_21.jpg" alt="T1044" width="300"/>
-</div>
+下载开源结构训练数据集[PSP dataset](http://ftp.cbi.pku.edu.cn/psp/)，使用以下命令启动训练：
+
+```bash
+用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --is_training True
+            --input_path INPUT_PATH --pdb_path PDB_PATH --run_platform PLATFORM
+
+选项：
+--data_config        数据预处理参数配置
+--model_config       模型超参配置
+--is_training        设置为训练模式
+--input_path         训练输入数据（pkl文件，包含MSA与模板信息）路径
+--pdb_path           训练标签数据（pdb文件，真实结构或知识蒸馏结构）路径
+--run_platform       运行后端，Ascend或者GPU，默认Ascend
+```
+
+代码默认每50次迭代保存一次权重，权重保存在`./ckpt`目录下。数据集下载及测试命令参考参考`scripts/run_fold_train.sh`。
 
 ### MEGA-EvoGen MSA生成/增强
 
@@ -216,13 +252,6 @@ To be released
 ### MEGA-Protein整体使用
 
 To be released
-
-## 可用的模型和数据集
-
-| 所属模块      | 文件名        | 大小 | 描述  |Model URL  |
-|-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
-| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 |  [下载链接](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)  |
-| PSP          | `PSP`         | 2TB(解压后25TB)    | PSP蛋白质结构数据集，可用于MEGA-Fold训练 |  [下载链接](To be released)  |
 
 ## 引用
 
