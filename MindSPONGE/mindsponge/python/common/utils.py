@@ -20,9 +20,37 @@ from Bio.Align import substitution_matrices
 from mindspore import nn
 import mindspore.numpy as mnp
 from mindspore.ops import operations as P
-
+from mindspore.ops import functional as F
 from . import geometry
 from . import residue_constants, protein
+
+
+def _memory_reduce(body, batched_inputs, nonbatched_inputs, slice_num, dim=0):
+    """memory reduce function"""
+    if slice_num <= 1:
+        inputs = batched_inputs + nonbatched_inputs
+        return body(*inputs)
+    inner_batched_inputs = []
+    for val in batched_inputs:
+        inner_val = P.Split(dim, slice_num)(val)
+        inner_batched_inputs.append(inner_val)
+    # for depend
+    inner_split_batched_inputs = ()
+    for j in range(len(inner_batched_inputs)):
+        inner_split_batched_inputs = inner_split_batched_inputs + (inner_batched_inputs[j][0],)
+    inner_split_inputs = inner_split_batched_inputs + nonbatched_inputs
+    inner_split_res = body(*inner_split_inputs)
+    res = (inner_split_res,)
+    for i in range(1, slice_num):
+        inner_split_batched_inputs = ()
+        for j in range(len(inner_batched_inputs)):
+            inner_split_batched_inputs = inner_split_batched_inputs + (inner_batched_inputs[j][i],)
+        inner_split_inputs = inner_split_batched_inputs + nonbatched_inputs
+        inner_split_inputs = F.depend(inner_split_inputs, res[-1])
+        inner_split_res = body(*inner_split_inputs)
+        res = res + (inner_split_res,)
+    res = P.Concat()(res)
+    return res
 
 
 def pseudo_beta_fn(aatype, all_atom_positions, all_atom_masks):

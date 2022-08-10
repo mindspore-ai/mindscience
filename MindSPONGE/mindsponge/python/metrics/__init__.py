@@ -22,4 +22,4 @@
 # ============================================================================
 """Metrics"""
 
-from .metrics import CV
+from .metrics import CV, BalancedMSE, BinaryFocal, MultiClassFocal
