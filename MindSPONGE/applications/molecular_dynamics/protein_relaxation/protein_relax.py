@@ -30,7 +30,7 @@ from mindsponge import Protein
 from mindsponge import ForceField
 from mindsponge import SimulationCell
 from mindsponge.callback import RunInfo
-from mindsponge.optimizer import GradientDescent
+from mindsponge.optimizer import SteepestDescent
 from mindsponge.potential.bias import OscillatorBias
 from mindsponge.system.modeling.pdb_generator import gen_pdb
 
@@ -47,7 +47,7 @@ args = parser.parse_args()
 pdb_name = args.i
 save_pdb_name = args.o
 addh = args.addh
-context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=1)
+context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=0)
 
 
 def get_violation_loss(system):
@@ -87,7 +87,7 @@ def optimize_strategy(system, gds, loops, ads, adm, nonh_mask, mode=1):
     energy = ForceField(system, "AMBER.FF14SB")
     learning_rate = 1e-07
     factor = 1.003
-    opt = GradientDescent(
+    opt = SteepestDescent(
         system.trainable_params(),
         learning_rate=learning_rate,
         factor=factor,
