@@ -1,28 +1,33 @@
-ENGLISH|[简体中文](README_CN.md)
-
 # MEGA-Protein
 
-The process of using computers to efficiently calculate the 3D-structure of proteins is called protein structure prediction. Traditional structure prediction tools have always had the problem of insufficient accuracy until the Google DeepMind team proposed [AlphaFold2](https://www.nature.com/articles/s41586-021-03819-2)<sup>[1,2]</sup> in 2020.
+The process of predicting 3D-structure of proteins from their one-dimensional sequences is called protein structure prediction, and has been regarded as a key problem in computational biology. In order to solve this, the DeepMind team proposed [AlphaFold2](https://www.nature.com/articles/s41586-021-03819-2)<sup>[1,2]</sup> in 2020. The prediction accuracy of this model is greatly improved compared to previous methods, with prediction resolution close to that of experimental methods in CASP14 evaluation. However, there are still problems such as time-consuming data preprocessing, inaccurate prediction accuracy in the absence of MSA, and lack of general evaluation tools for structural quality.
 
-Compared with traditional tools, the prediction accuracy of this model is greatly improved, and the error between the obtained structure and the real structure is close to the experimental method. However, there are still problems such as time-consuming data preprocessing, inaccurate prediction accuracy in the absence of MSA, and lack of general evaluation tools for structural quality. In response to these problems.
-
-Yi Qin Gao Reasearh Group cooperated with the MindScience team to conduct a series of innovative research, and developed a more accurate and efficient protein structure prediction tool **MEGA-Protein**, this directory is the open source code of MEGA-Protein.
+In response to these problems, Yi Qin Gao Lab cooperated with the MindScience team to conduct a series of innovative research, and developed a more accurate and efficient protein structure prediction toolkit **MEGA-Protein**. This directory is the open source code of MEGA-Protein.
 
 MEGA-Protein mainly consists of three parts：
 
-- **Protein Structure Prediction Tool MEGA-Fold**, we have the same nerual network architecture to AlphaFold and we use [MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup> to query MSA data(refer to ColabFold),and the end-to-end speed is increased by 2-3 times compared with the original version。
+- **Protein Structure Prediction Tool MEGA-Fold** The nerual network architecture of this tool is the same as AlphaFold, and [MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup> is applied to query MSA data(refer to ColabFold). The end-to-end speed is increased by 2-3 times compared with the original version. This model won the first place in the CAMEO-3D contest in April 2022.
 
-- **MSA Generation Tool MEGA-EvoGen**, which can significantly improve the prediction speed of a single sequence, and can help models such as MEGA-Fold/AlphaFold2 maintain or even improve the accuracy when there is less MSA (few shot) or even no MSA (zero-shot). Breaking through the limitation of inability to make accurate predictions in MSA-deficient scenarios such as "orphan sequences", highly mutated sequences and artificial proteins. This method won the first place in the CAMEO-3D in July 2022.
+- **MSA Generation Tool MEGA-EvoGen** This tool significantly improves the prediction speed of single sequence, and can help predictive models such as MEGA-Fold/AlphaFold2 to maintain/improve the accuracy when there is less MSA (few shot) or even no MSA (zero-shot). This model aims to make accurate predictions in MSA-deficient scenarios such as "orphan sequences", highly mutated sequences and artificial proteins. It won the first place in the CAMEO-3D contest in July 2022.
 
 <div align=center>
 <img src="../../docs/evogen_contest.jpg" alt="MEGA-EvoGen wins CAMEO-3D monthly 1st" width="600"/>
 </div>
 
-- **Protein Structure Assessment Tool MEGA-Assessement**, which evaluate the accuracy of each residue in the protein structure and the distance error between residues and residues, and further optimize the protein structure based on the evaluation results. This method obtains the CAMEO-QE No. 1 on the monthly list in July 2022.
+- **Protein Structure Assessment Tool MEGA-Assessement** This tool evaluates the prediction accuracy of each residue in the protein structure and the inter-residue distance error. It further optimizes the protein structure based on the evaluation results. This method obtains the CAMEO-QE No. 1 on the monthly list in July 2022.
 
 <div align=center>
 <img src="../../docs/assess_contest.png" alt="MEGA-Assessement wins CAMEO-QE monthly 1st" width="600"/>
 </div>
+
+**Model and Data Availability**
+
+This directory is the open source code of MEGA-Protein (including MEGA-fold, MEGA-EvoGen, and mega-Accessment). The available checkpoints and datasets are listed in the following chart:
+
+| Model & Dataset      | Name        | Size | Description  |Model URL  |
+|-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
+| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | model checkpoint |  [download](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)  |
+| PSP          | `PSP`         | 2TB(25TB after decompressed)    | multimodal dataset for protein |  [download](http://ftp.cbi.pku.edu.cn/psp/)  |
 
 <details><summary>Cite us</summary>
 
@@ -60,7 +65,6 @@ MEGA-Protein mainly consists of three parts：
     - [MEGA-EvoGen](#mega-evogen)
     - [MEGA-Assessement](#mega-assessement)
     - [MEGA-Protein](#mega-protein-1)
-  - [Available Checkpoint and Dataset](#available-checkpoint-and-dataset)
   - [Reference](#reference)
   - [Acknowledgement](#acknowledgement)
 
@@ -68,7 +72,7 @@ MEGA-Protein mainly consists of three parts：
 
 </details>
 
-<details><summary>Updated</summary>
+<details><summary>Updates</summary>
 
 - 2022.04: MEGA-Fold training codes released.
 - 2021.11: MEGA-Fold inference codes released.
@@ -79,27 +83,28 @@ MEGA-Protein mainly consists of three parts：
 
 ### Hardware & Framework
 
-This tool is developed based on [MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) and [MindSpore](https://www.mindspore.cn/).MindSpore 1.8 and later versions can be run.
+This tool is developed based on [MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) computational biology/chemistry package and [MindSpore](https://www.mindspore.cn/) AI framework. It requires MindSpore 1.8 or later versions.
 
-This tool can be run on Ascend910 or GPU: when running on Ascend910, you need to configure the environment variable `export MS_DEV_ENABLE_CLOSURE=0`, and mixed-precision inference is called by default; when running on GPU, full-precision inference is used by default.
+This tool can be run on Ascend910 or GPU: when running on Ascend910, you need to configure the environment variable `export MS_DEV_ENABLE_CLOSURE=0`, and mixed-precision inference is called by default. When running on GPU, full-precision inference is used by default.
 
-The protein structure prediction tool MEGA-Fold relies on the co-evolution and template information provided by traditional database search tools such as multiple sequence alignments (MSA, multiple sequence alignments) and template search generation. The configuration database search requires **2.5T hard disk** (SSD recommended ) and a CPU on par with the Kunpeng920.
+The protein structure prediction tool MEGA-Fold relies on the co-evolution and template information provided by database search tools for multiple sequence alignments (MSA, multiple sequence alignments) and template search generation. The searching database requires **2.5T hard disk** (SSD recommended) and a CPU with equal or higher performance than Kunpeng920.
 
 ### DataBase Setting
 
 - MSA Search
 
-    Install **MMseqs2**, refer to [MMseqs2 User Guide](https://mmseqs.com/latest/userguide.pdf)，after installation run the following command：
+    Installation of **MMseqs2** is required. Please refer to [MMseqs2 User Guide](https://mmseqs.com/latest/userguide.pdf) for installation details. After installation run the following command:
 
     ``` shell
     export PATH=$(pwd)/mmseqs/bin/:$PATH
     ```
 
-    Download the database ：
+    And download the following databases:
 
-    - [uniref30_2103](http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz)：68G tar.gz file, 375G after decompression
-    - [colabfold_envdb_202108](http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz)：110G tar.gz file, 949G after decompression
-    Unzip and use MMseqs2 to process the database，refer to [colabfold](http://colabfold.mmseqs.com)，main commands as below：
+    - [uniref30_2103](http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz): 68G tar.gz file, 375G after decompression
+    - [colabfold_envdb_202108](http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz): 110G tar.gz file, 949G after decompression
+
+    Then unzip and use MMseqs2 to process the database. Please refer to [colabfold](http://colabfold.mmseqs.com)for detains. The main commands are as below:
 
     ``` bash
     tar xzvf "uniref30_2103.tar.gz"
@@ -113,14 +118,14 @@ The protein structure prediction tool MEGA-Fold relies on the co-evolution and t
 
 - Template Search
 
-    Install [**HHsearch**](https://github.com/soedinglab/hh-suite)
-    and [**kalign**](https://msa.sbc.su.se/downloads/kalign/current.tar.gz)，download the following database：
+    Installation of [**HHsearch**](https://github.com/soedinglab/hh-suite)
+    and [**kalign**](https://msa.sbc.su.se/downloads/kalign/current.tar.gz) and download of the following database is needed:
 
     - [pdb70](http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200401.tar.gz)：19G tar.gz file, 56G after decompression
-    - [mmcif database](https://ftp.rcsb.org/pub/pdb/data/structures/divided/mmCIF/)： Scattered compressed files ~ 50G, after decompression ~ 200G, you need to use crawler script to download, after downloading, you need to decompress all mmcif files and put them in the same folder.
+    - [mmcif database](https://ftp.rcsb.org/pub/pdb/data/structures/divided/mmCIF/)： ~ 50G compressed files, ~200G after decompression. After downloading all mmcif files need to be decompressed and put in the same folder.
     - [obsolete_pdbs](http://ftp.wwpdb.org/pub/pdb/data/status/obsolete.dat)：140K
 
-  *The download speed may be slow, and you need to configure your own VPN*。
+  *The download speed may be slow, and VPN configuration might be needed.*
 
 ## Code Contents
 
@@ -158,7 +163,7 @@ The protein structure prediction tool MEGA-Fold relies on the co-evolution and t
 
 ### MEGA-Fold
 
-load pretrained checkpoint，download url [click here](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)，and start running by following command：
+Download pretrained checkpoint [click here](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt) and run the following command:
 
 ```bash
 Usage：run.py [--seq_length PADDING_SEQENCE_LENGTH]
@@ -183,13 +188,13 @@ option：
   --obsolete_pdbs_path     PDB IDs's map file path
 ```
 
-The result is saved in `./result`. You have two files，pdb file is the 3d structure coordinates of your protein, the second column of the derivative in the file is the prediction confidence of a single residue, and the timings file saves the time information during the run.
+The result is saved in `./result..pdb file saves the 3d structure coordinates of your protein, and the .timings file saves the time information for the run.
 
 ```bash
 {"pre_process_time": 418.57, "model_time": 122.86, "pos_process_time": 0.14, "all_time ": 541.56, "confidence ": 94.61789646019058}
 ```
 
-TMscore comparison between MEGA-Fold and AlphaFold2 based on 34 CASP14 sequences:
+TMscore comparison between MEGA-Fold and AlphaFold2 for CASP14 samples:
 
 <div align=center>
 <img src="../../docs/all_experiment_data.jpg" alt="all_data" width="300"/>
@@ -221,13 +226,6 @@ To be released
 
 To be released
 
-## Available Checkpoint and Dataset
-
-| Model & Dataset      | Name        | Size | Description  |Model URL  |
-|-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
-| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | model checkpoint |  [download](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)  |
-| PSP          | `PSP`         | 2TB(25TB after decompressed)    | multimodal dataset for protein |  [download](To be released)  |
-
 ## Reference
 
 [1] Jumper J, Evans R, Pritzel A, et al. Applying and improving AlphaFold at CASP14[J].  Proteins: Structure, Function, and Bioinformatics, 2021.
@@ -250,3 +248,4 @@ MEGA-Fold referred or used following tools：
 - [OpenMM](https://github.com/openmm/openmm)
 
 We thank all the contributors and maintainers of these open source tools！
+
