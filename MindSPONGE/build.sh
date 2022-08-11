@@ -146,6 +146,7 @@ build_mindsponge()
   ${PYTHON} ./setup.py bdist_wheel
   cd ..
   mv ${BASEPATH}/build/dist/*whl ${OUTPUT_PATH}
+  write_checksum
   echo "---------------- MindSPONGE: build end ----------------"
 }
 
