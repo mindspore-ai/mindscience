@@ -178,11 +178,7 @@ class SimulationCell(Cell):
 
     def get_neighbour_list(self):
         """get neighbour list"""
-        if self.no_mask:
-            (neighbour_index,) = self.neighbour_list.get_neighbour_list()
-            neighbour_mask = None
-        else:
-            neighbour_index, neighbour_mask = self.neighbour_list.get_neighbour_list()
+        neighbour_index, neighbour_mask = self.neighbour_list.get_neighbour_list()
         return neighbour_index, neighbour_mask
 
     def construct(self, *inputs):

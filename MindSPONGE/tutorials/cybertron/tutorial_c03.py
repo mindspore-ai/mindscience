@@ -68,19 +68,9 @@ if __name__ == '__main__':
         length_unit='nm',
     )
 
-    # readout = AtomwiseReadout(
-    #     mod, dim_output=1, scale=scale, shift=shift, type_ref=ref, energy_unit='kj/mol')
     readout = AtomwiseReadout(mod, dim_output=1)
     net = Cybertron(model=mod, readout=readout, dim_output=1,
                     num_atoms=num_atom, length_unit='nm')
-
-    # lr = 1e-3
-    lr = nn.ExponentialDecayLR(
-        learning_rate=1e-3, decay_rate=0.96, decay_steps=4, is_stair=True)
-    optim = nn.Adam(params=net.trainable_params(), learning_rate=lr)
-
-    outdir = 'Tutorial_C03'
-    outname = outdir + '_' + net.model_name
 
     net.print_info()
 
@@ -105,15 +95,22 @@ if __name__ == '__main__':
     ds_valid = ds_valid.repeat(1)
 
     loss_network = WithLabelLossCell('RZE', net, nn.MAELoss())
-    # eval_network = WithLabelEvalCell('RZE', net, nn.MAELoss())
     eval_network = WithLabelEvalCell(
         'RZE', net, nn.MAELoss(), scale=scale, shift=shift, type_ref=ref)
+
+    # lr = 1e-3
+    lr = nn.ExponentialDecayLR(
+        learning_rate=1e-3, decay_rate=0.96, decay_steps=4, is_stair=True)
+    optim = nn.Adam(params=net.trainable_params(), learning_rate=lr)
 
     eval_mae = 'EvalMAE'
     atom_mae = 'AtomMAE'
     eval_loss = 'Evalloss'
     model = Model(loss_network, optimizer=optim, eval_network=eval_network, metrics={
         eval_mae: MAE([1, 2]), atom_mae: MAE([1, 2, 3], averaged_by_atoms=True), eval_loss: MLoss(0)})
+
+    outdir = 'Tutorial_C03'
+    outname = outdir + '_' + net.model_name
 
     record_cb = TrainMonitor(model, outname, per_step=16, avg_steps=16,
                              directory=outdir, eval_dataset=ds_valid, best_ckpt_metrics=eval_loss)

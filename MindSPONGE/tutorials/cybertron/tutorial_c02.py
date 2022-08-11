@@ -69,9 +69,6 @@ if __name__ == '__main__':
     readout = AtomwiseReadout(
         mod, dim_output=1, scale=scale, shift=shift, type_ref=ref, energy_unit='kj/mol')
 
-    # net = Cybertron(model='schnet', readout='graph',
-    #                 dim_output=1, num_atoms=num_atom, length_unit='nm')
-    # net.set_scaleshift(scale, shift)
     net = Cybertron(model=mod, readout=readout, dim_output=1,
                     num_atoms=num_atom, length_unit='nm', energy_unit='kj/mol')
 

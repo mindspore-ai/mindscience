@@ -220,7 +220,6 @@ class NeighbourList(Cell):
 
         return index, mask
 
-    @ms_function
     def get_neighbour_list(self):
         """get neighbour list"""
         index = self.identity(self.neighbours)
@@ -246,6 +245,5 @@ class NeighbourList(Cell):
         success = True
         success = F.depend(success, F.assign(self.neighbours, neighbours))
         if self.neighbour_mask is not None:
-            success = F.depend(success, F.assign(
-                self.neighbour_mask, neighbour_mask))
+            success = F.depend(success, F.assign(self.neighbour_mask, neighbour_mask))
         return success

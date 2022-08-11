@@ -71,8 +71,8 @@ if __name__ == '__main__':
     )
 
     readout = AtomwiseReadout(mod, dim_output=1)
-    net = Cybertron(mod, readout=readout,
-                    atom_types=atom_types, length_unit='nm')
+
+    net = Cybertron(mod, readout=readout, atom_types=atom_types, length_unit='nm')
 
     net.print_info()
 
@@ -99,14 +99,10 @@ if __name__ == '__main__':
     force_dis = train_data['avg_force_dis']
     loss_fn = MSELoss(ratio_energy=1, ratio_forces=100, force_dis=force_dis)
     loss_network = WithForceLossCell('RFE', net, loss_fn)
-    eval_network = WithForceEvalCell(
-        'RFE', net, loss_fn, scale=scale, shift=shift)
+    eval_network = WithForceEvalCell('RFE', net, loss_fn, scale=scale, shift=shift)
 
     lr = TransformerLR(learning_rate=1., warmup_steps=4000, dimension=128)
     optim = nn.Adam(params=net.trainable_params(), learning_rate=lr)
-
-    outdir = 'Tutorial_C07'
-    outname = outdir + '_' + net.model_name
 
     energy_mae = 'EnergyMAE'
     forces_mae = 'ForcesMAE'
@@ -116,6 +112,8 @@ if __name__ == '__main__':
                   metrics={eval_loss: MLoss(), energy_mae: MAE([1, 2]), forces_mae: MAE([3, 4]),
                            forces_rmse: RMSE([3, 4], atom_aggregate='sum')})
 
+    outdir = 'Tutorial_C07'
+    outname = outdir + '_' + net.model_name
     record_cb = TrainMonitor(model, outname, per_epoch=1, avg_steps=32,
                              directory=outdir, eval_dataset=ds_valid, best_ckpt_metrics=forces_rmse)
 

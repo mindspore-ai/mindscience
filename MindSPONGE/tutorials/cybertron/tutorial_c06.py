@@ -45,9 +45,6 @@ if __name__ == '__main__':
     from cybertron.train import TrainMonitor
     from cybertron.train import TransformerLR
 
-    seed = 1111
-    ms.set_seed(seed)
-
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 
     data_name = sys.path[0] + '/dataset_qm9_normed_'
@@ -107,9 +104,6 @@ if __name__ == '__main__':
     lr = TransformerLR(learning_rate=1., warmup_steps=4000, dimension=128)
     optim = nn.Adam(params=net.trainable_params(), learning_rate=lr)
 
-    outdir = 'Tutorial_C06'
-    outname = outdir + '_' + net.model_name
-
     eval_mae = 'EvalMAE'
     atom_mae = 'AtomMAE'
     eval_loss = 'Evalloss'
@@ -118,6 +112,8 @@ if __name__ == '__main__':
                            atom_mae: MAE([1, 2, 3], reduce_all_dims=False, averaged_by_atoms=True),
                            eval_loss: MLoss(0)},)
 
+    outdir = 'Tutorial_C06'
+    outname = outdir + '_' + net.model_name
     record_cb = TrainMonitor(model, outname, per_step=32, avg_steps=32,
                              directory=outdir, eval_dataset=ds_valid, best_ckpt_metrics=eval_loss)
 
