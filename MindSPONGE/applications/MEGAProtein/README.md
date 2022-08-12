@@ -1,12 +1,18 @@
+ENGLISH|[简体中文](README_CN.md)
+
 # MEGA-Protein
 
 The process of predicting 3D-structure of proteins from their one-dimensional sequences is called protein structure prediction, and has been regarded as a key problem in computational biology. In order to solve this, the DeepMind team proposed [AlphaFold2](https://www.nature.com/articles/s41586-021-03819-2)<sup>[1,2]</sup> in 2020. The prediction accuracy of this model is greatly improved compared to previous methods, with prediction resolution close to that of experimental methods in CASP14 evaluation. However, there are still problems such as time-consuming data preprocessing, inaccurate prediction accuracy in the absence of MSA, and lack of general evaluation tools for structural quality.
 
 In response to these problems, Yi Qin Gao Lab cooperated with the MindScience team to conduct a series of innovative research, and developed a more accurate and efficient protein structure prediction toolkit **MEGA-Protein**. This directory is the open source code of MEGA-Protein.
 
-MEGA-Protein mainly consists of three parts：
+MEGA-Protein mainly consists of three parts:
 
-- **Protein Structure Prediction Tool MEGA-Fold** The nerual network architecture of this tool is the same as AlphaFold, and [MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup> is applied to query MSA data(refer to ColabFold). The end-to-end speed is increased by 2-3 times compared with the original version. This model won the first place in the CAMEO-3D contest in April 2022.
+- **Protein Structure Prediction Tool MEGA-Fold** The nerual network architecture of this tool is the same as AlphaFold, and [MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup> is applied to query MSA data(refer to ColabFold). The end-to-end speed is increased by 2-3 times compared with the original version. MEGA-Fold is also trainable, models trained on our PSP training dataset won the first place in the CAMEO-3D contest in April 2022.
+
+<div align=center>
+<img src="../../docs/megafold_contest.png" alt="MEGA-Fold won the first place in the CAMEO-3D contest in April 2022" width="600"/>
+</div>
 
 - **MSA Generation Tool MEGA-EvoGen** This tool significantly improves the prediction speed of single sequence, and can help predictive models such as MEGA-Fold/AlphaFold2 to maintain/improve the accuracy when there is less MSA (few shot) or even no MSA (zero-shot). This model aims to make accurate predictions in MSA-deficient scenarios such as "orphan sequences", highly mutated sequences and artificial proteins. It won the first place in the CAMEO-3D contest in July 2022.
 
@@ -83,9 +89,7 @@ This directory is the open source code of MEGA-Protein (including MEGA-fold, MEG
 
 ### Hardware & Framework
 
-This tool is developed based on [MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) computational biology/chemistry package and [MindSpore](https://www.mindspore.cn/) AI framework. It requires MindSpore 1.8 or later versions.
-
-This tool can be run on Ascend910 or GPU: when running on Ascend910, you need to configure the environment variable `export MS_DEV_ENABLE_CLOSURE=0`, and mixed-precision inference is called by default. When running on GPU, full-precision inference is used by default.
+This tool is developed based on [MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) computational biology/chemistry package and [MindSpore](https://www.mindspore.cn/) AI framework. It requires MindSpore 1.8 or later versions. This tool can be run on Ascend910 or GPU. Full fp32 precision inference is called by default. When running on Ascend, mixed-precision inference is required.
 
 The protein structure prediction tool MEGA-Fold relies on the co-evolution and template information provided by database search tools for multiple sequence alignments (MSA, multiple sequence alignments) and template search generation. The searching database requires **2.5T hard disk** (SSD recommended) and a CPU with equal or higher performance than Kunpeng920.
 
@@ -121,19 +125,40 @@ The protein structure prediction tool MEGA-Fold relies on the co-evolution and t
     Installation of [**HHsearch**](https://github.com/soedinglab/hh-suite)
     and [**kalign**](https://msa.sbc.su.se/downloads/kalign/current.tar.gz) and download of the following database is needed:
 
-    - [pdb70](http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200401.tar.gz)：19G tar.gz file, 56G after decompression
-    - [mmcif database](https://ftp.rcsb.org/pub/pdb/data/structures/divided/mmCIF/)： ~ 50G compressed files, ~200G after decompression. After downloading all mmcif files need to be decompressed and put in the same folder.
-    - [obsolete_pdbs](http://ftp.wwpdb.org/pub/pdb/data/status/obsolete.dat)：140K
+    - [pdb70](http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/old-releases/pdb70_from_mmcif_200401.tar.gz):19G tar.gz file, 56G after decompression
+    - [mmcif database](https://ftp.rcsb.org/pub/pdb/data/structures/divided/mmCIF/): ~ 50G compressed files, ~200G after decompression. After downloading all mmcif files need to be decompressed and put in the same folder.
+    - [obsolete_pdbs](http://ftp.wwpdb.org/pub/pdb/data/status/obsolete.dat):140K
 
   *The download speed may be slow, and VPN configuration might be needed.*
 
-## Code Contents
+    - Configuration of database search
+
+    Configuration for database search should be set in  `database_search` part of `config/data.yaml` according to dataBase setting, meaning of different parameters are as follows:
+
+    ```bash
+    # configuration for template search
+    hhsearch_binary_path   HHsearch exe path
+    kalign_binary_path     kalign exe path
+    pdb70_database_path    pdb70 folder path
+    mmcif_dir              mmcif folder path
+    obsolete_pdbs_path     PDB IDs\'s map file path
+    max_template_date      the published time of template, default value "2100-01-01"
+    # configuration for Multiple Sequence Alignment
+    mmseqs_binary          MMseqs2 exe path
+    uniref30_path          uniref30 path
+    database_envdb_dir     colabfold_envdb_202108 path
+    a3m_result_path        msa path, default value "./a3m_result/"
+    ```
+
+## Code and Running Examples
+
+<details><summary><font size=4 color="blue">Code Contents</font></summary>
 
 ```bash
 ├── MEGA-Protein
     ├── main.py                         // MEGA-Protein main scripts
+    ├── README.md                       // MEGA-Protein README English version
     ├── README_CN.md                    // MEGA-Protein README Chinese version
-    ├── README_EN.md                    // MEGA-Protein README English version
     ├── config
         ├── data.yaml                   //data process config
         ├── model.yaml                  //model config
@@ -145,9 +170,13 @@ The protein structure prediction tool MEGA-Fold relies on the co-evolution and t
         ├── msa_search.sh               // Shell script that calls MMseqs2 to search for MSA
         ├── multimer_pipeline.py        // Multimer protein data process
         ├── preprocess.py               // data process
+        ├── parsers.py                  // mmcif process
         ├── protein_feature.py          // MSA and template feature search and integration script
         ├── templates.py                // Template search scripts
         ├── utils.py                    // common func scripts
+    ├── examples
+        ├── pdb                         //example input data (.pkl file)
+        ├── pkl                         //example output data (.pdb file)
     ├── model
         ├── fold.py                     // MEGA-Fold model scripts
     ├── module
@@ -159,60 +188,63 @@ The protein structure prediction tool MEGA-Fold relies on the co-evolution and t
         ├── template_embedding.py       // template module
 ```
 
-## Example
+</details>
 
-### MEGA-Fold
+### MEGA-Fold inference
 
-Download pretrained checkpoint [click here](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt) and run the following command:
-
-```bash
-Usage：run.py [--seq_length PADDING_SEQENCE_LENGTH]
-             [--input_fasta_path INPUT_PATH][--msa_result_path MSA_RESULT_PATH]
-             [--database_dir DATABASE_PATH][--database_envdb_dir DATABASE_ENVDB_PATH]
-             [--hhsearch_binary_path HHSEARCH_PATH][--pdb70_database_path PDB70_PATH]
-             [--template_mmcif_dir TEMPLATE_PATH][--max_template_date TRMPLATE_DATE]
-             [--kalign_binary_path KALIGN_PATH][--obsolete_pdbs_path OBSOLETE_PATH]
-
-
-option：
-  --seq_length             padding sequence，current support 256/512/1024/2048
-  --input_fasta_path       input FASTA file
-  --msa_result_path        msa path
-  --database_dir           uniref30 path
-  --database_envdb_dir     colabfold_envdb_202108 path
-  --hhsearch_binary_path   HHsearch exe path
-  --pdb70_database_path    pdb70 path
-  --template_mmcif_dir     mmcif path
-  --max_template_date      the published time of template
-  --kalign_binary_path     kalign exe path
-  --obsolete_pdbs_path     PDB IDs's map file path
-```
-
-The result is saved in `./result..pdb file saves the 3d structure coordinates of your protein, and the .timings file saves the time information for the run.
+First configuring the database search and related hyper-parameters in `config/data.yaml`, then downloading weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt). Finally running following command to start inference.
 
 ```bash
-{"pre_process_time": 418.57, "model_time": 122.86, "pos_process_time": 0.14, "all_time ": 541.56, "confidence ": 94.61789646019058}
+Usage:python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --run_platform PLATFORM
+            --input_path INPUT_FILE_PATH --checkpoint_path CHECKPOINT_PATH
+
+
+option:
+--data_config        configuration for data preprocessing
+--model_config       hyperparameters for the model
+--input_path         input folder，multiple .pkl or .fasta files can be included
+--checkpoint_path    model weights path
+--use_pkl            using pkl file as input, default False
+--run_platform       running platform ，Ascend or GPU，default Ascend
+--mixed_precision    using mixed precision, default 0, full fp32.
+
 ```
 
-TMscore comparison between MEGA-Fold and AlphaFold2 for CASP14 samples:
+For structure prediction of multiple sequences , MEGA-Fold will automatically decide the padding length according to the largest length of all sequences. If sequences to predict is nemerous, it's recommended to cluster sequences to different folders according to their sequence length and run inference separately. Also, Since the database search hardware requirements are high, MEGA-Fold supports running database search first and save the result in the intermediate "raw_feature" file, then running inference on another machine, wich `use_pkl` argument set to True. We offer examples of pkl and according ground truth pdb file in the `examples` folder for quick test. The test command refers to `scripts/run_fold_infer_gpu.sh`.
+
+The result is saved in `./result`folder, result for sequences are stored in separate folder named by the sequence name. pdb file saves the 3d structure coordinates of your protein in which second to last column is the confidence per residue. and the timings file saves the time information for the run and the overall prediction confidence for the sequence.
+
+```log
+{"pre_process_time": 0.61, "model_time": 87.5, "pos_process_time": 0.02, "all_time ": 88.12, "confidence ": 93.5}
+```
+
+TMscore comparison between MEGA-Fold inference and groud truth :
+
+- 7VGB_A(Length 711, lDDT 92.3):
 
 <div align=center>
-<img src="../../docs/all_experiment_data.jpg" alt="all_data" width="300"/>
+<img src="../../docs/7VGB_A.png" alt="7VGB_A" width="400"/>
 </div>
 
-MEGA-Fold Inference Result：
+### MEGA-Fold蛋白质结构预测训练
 
-- T1079(Length 505)：
+Downloading our open source protein structure training dataset [PSP dataset](http://ftp.cbi.pku.edu.cn/psp/), using follow command to start training:
 
-<div align=center>
-<img src="../../docs/seq_64.gif" alt="T1079" width="300"/>
-</div>
+```bash
+Usage:python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --is_training True
+            --input_path INPUT_PATH --pdb_path PDB_PATH --run_platform PLATFORM
 
-- T1044(Length 2180)：
+option:
+--data_config        configuration for data preprocessing
+--model_config       hyperparameters for the model
+--is_training        setting to training mode
+--input_path         training input folder，pkl format file is required, see PSP dataset for more details
+--pdb_path           output folder，pdb format file is required
+--run_platform       running platform ，Ascend or GPU，default Ascend
+--mixed_precision    using mixed precision, default 0, full fp32.
+```
 
-<div align=center>
-<img src="../../docs/seq_21.jpg" alt="T1044" width="300"/>
-</div>
+Checkpoints are saved in `./ckpt` folder every 50 iterations. Dataset downloading and setting can refer to `scripts/run_fold_train.sh`.
 
 ### MEGA-EvoGen
 
@@ -236,7 +268,7 @@ To be released
 
 ## Acknowledgement
 
-MEGA-Fold referred or used following tools：
+MEGA-Fold referred or used following tools:
 
 - [AlphaFold2](https://github.com/deepmind/alphafold)
 - [Biopython](https://biopython.org)
@@ -248,4 +280,3 @@ MEGA-Fold referred or used following tools：
 - [OpenMM](https://github.com/openmm/openmm)
 
 We thank all the contributors and maintainers of these open source tools！
-
