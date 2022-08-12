@@ -74,3 +74,15 @@ eval:
   num_ensemble: 1
   subsample_templates: true
   keep_extra: True
+
+database_search:
+  hhsearch_binary_path: None
+  kalign_binary_path: None
+  pdb70_database_path: None
+  mmcif_dir: None
+  obsolete_pdbs_path: None
+  max_template_date: "2100-01-01"
+  mmseqs_binary: None
+  uniref30_path: None
+  database_envdb_dir: None
+  a3m_result_path: "./a3m_result/"

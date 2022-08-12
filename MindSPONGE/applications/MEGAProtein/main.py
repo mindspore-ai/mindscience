@@ -14,20 +14,20 @@
 # ============================================================================
 """eval script"""
 import argparse
-import pickle
 import os
+import stat
 import json
 import time
 import numpy as np
+
 import mindspore.context as context
 import mindspore.common.dtype as mstype
-from mindspore import Tensor, nn
-from mindspore import load_checkpoint
+from mindspore import Tensor, nn, save_checkpoint, load_checkpoint
 from mindsponge.cell.initializer import do_keep_cell_fp32
 from mindsponge.common.config_load import load_config
 from mindsponge.common.protein import to_pdb, from_prediction
-from data import Feature, RawFeatureGenerator
-from data.dataset import create_dataset
+
+from data import Feature, RawFeatureGenerator, create_dataset, get_crop_size, get_raw_feature
 from model import MegaFold, compute_confidence
 from module.fold_wrapcell import TrainOneStepCell, WithLossCell
 
@@ -35,50 +35,27 @@ parser = argparse.ArgumentParser(description='Inputs for eval.py')
 parser.add_argument('--data_config', help='data process config')
 parser.add_argument('--model_config', help='model config')
 parser.add_argument('--input_path', help='processed raw feature path')
-parser.add_argument('--use_pkl', default=True, help="use pkl as input or fasta file as input, in default use pkl")
+parser.add_argument('--pdb_path', type=str, help='Location of training pdb file.')
+parser.add_argument('--use_pkl', default=False, help="use pkl as input or fasta file as input, in default use fasta")
 parser.add_argument('--checkpoint_path', help='checkpoint path')
 parser.add_argument('--device_id', default=1, type=int, help='DEVICE_ID')
 parser.add_argument('--mixed_precision', default=0, type=int,
                     help='whether to use mixed precision, only Ascend supports mixed precision, GPU should use fp32')
 parser.add_argument('--is_training', type=bool, default=False, help='is training or not')
-parser.add_argument('--pdb_data_dir', type=str, help='Location of training pdb file.')
-parser.add_argument('--raw_feature_dir', type=str, help='Location of raw inputs file.')
+parser.add_argument('--run_platform', default='Ascend', type=str, help='which platform to use, Ascend or GPU')
+parser.add_argument('--run_distribute', type=bool, default=False, help='run distribute')
 parser.add_argument('--resolution_data', type=str, default=None, help='Location of resolution data file.')
 parser.add_argument('--loss_scale', type=float, default=1024.0, help='loss scale')
 parser.add_argument('--gradient_clip', type=float, default=0.1, help='gradient clip value')
 parser.add_argument('--total_steps', type=int, default=9600000, help='total steps')
-parser.add_argument('--run_platform', default='Ascend', type=str, help='which platform to use, Ascend or GPU')
-parser.add_argument('--run_distribute', type=bool, default=False, help='run distribute')
-parser.add_argument('--template_mmcif_dir', help="path of template mmCIF structures, each named <pdb>.cif")
-parser.add_argument('--max_template_date', default="2100-01-01", help="maximum template release date to consider")
-parser.add_argument('--kalign_binary_path', help="path of executable path of Kalign")
-parser.add_argument('--hhsearch_binary_path', help="path of executable path of HHsearch")
-parser.add_argument('--mmseqs_binary', help="path of executable path of mmseqs")
-parser.add_argument('--pdb70_database_path', help="database use for HHsearch")
-parser.add_argument('--database_envdb_dir', help="database use for mmseqs")
-parser.add_argument('--obsolete_pdbs_path', help="path to a file containing a mapping from obsolete PDB IDs to the"
-                                                 " replacement files")
-parser.add_argument('--uniref30_path', help="database used for searching msa by mmseqs")
-parser.add_argument('--a3m_result_path', help="result path for saving msa file of target input")
-
-
 arguments = parser.parse_args()
-
-
-def get_raw_feature(input_path, feature_generator, use_pkl):
-    '''get raw feature of protein by loading pkl file or searching from database'''
-    if use_pkl:
-        f = open(input_path, "rb")
-        data = pickle.load(f)
-        f.close()
-        return data
-    return feature_generator.monomer_feature_generate(input_path)
 
 
 def fold_infer(args):
     '''mega fold inference'''
     data_cfg = load_config(args.data_config)
     model_cfg = load_config(args.model_config)
+    data_cfg.eval.crop_size = get_crop_size(args.input_path, args.use_pkl)
     model_cfg.seq_length = data_cfg.eval.crop_size
     slice_key = "seq_" + str(model_cfg.seq_length)
     slice_val = vars(model_cfg.slice)[slice_key]
@@ -95,17 +72,7 @@ def fold_infer(args):
     seq_files = os.listdir(args.input_path)
 
     if not args.use_pkl:
-        feature_generator = RawFeatureGenerator(template_mmcif_dir=args.template_mmcif_dir,
-                                                max_template_date=args.max_template_date,
-                                                kalign_binary_path=args.kalign_binary_path,
-                                                obsolete_pdbs_path=args.obsolete_pdbs_path,
-                                                hhsearch_binary_path=args.hhsearch_binary_path,
-                                                pdb70_database_path=args.pdb70_database_path,
-                                                database_envdb_dir=args.database_envdb_dir,
-                                                mmseqs_binary=args.mmseqs_binary,
-                                                uniref30_path=args.uniref30_path,
-                                                a3m_result_path=args.a3m_result_path,
-                                                )
+        feature_generator = RawFeatureGenerator(database_search_config=data_cfg.database_search)
     else:
         feature_generator = None
     for seq_file in seq_files:
@@ -130,23 +97,32 @@ def fold_infer(args):
         final_atom_positions = prev_pos.asnumpy()[:ori_res_length]
         final_atom_mask = feat[16][0][:ori_res_length]
         predicted_lddt_logits = predicted_lddt_logits.asnumpy()[:ori_res_length]
-        confidence = compute_confidence(predicted_lddt_logits)
-        unrelaxed_protein = from_prediction(final_atom_positions, final_atom_mask,
-                                            feat[4][0][:ori_res_length], feat[17][0][:ori_res_length])
+        confidence, plddt = compute_confidence(predicted_lddt_logits, return_lddt=True)
+
+        b_factors = plddt[:, None] * final_atom_mask
+
+        unrelaxed_protein = from_prediction(final_atom_positions,
+                                            final_atom_mask,
+                                            feat[4][0][:ori_res_length],
+                                            feat[17][0][:ori_res_length],
+                                            b_factors)
         pdb_file = to_pdb(unrelaxed_protein)
-        os.makedirs(f'./result/seq_{seq_name}_{model_cfg.seq_length}', exist_ok=True)
-        with open(os.path.join(f'./result/seq_{seq_name}_{model_cfg.seq_length}',
-                               f'unrelaxed_model_{seq_name}.pdb'), 'w') as file:
-            file.write(pdb_file)
+        os.makedirs(f'./result/{seq_name}', exist_ok=True)
+        os_flags = os.O_RDWR | os.O_CREAT
+        os_modes = stat.S_IRWXU
+        pdb_path = f'./result/{seq_name}/unrelaxed_{seq_name}.pdb'
+        with os.fdopen(os.open(pdb_path, os_flags, os_modes), 'w') as fout:
+            fout.write(pdb_file)
         t4 = time.time()
         timings = {"pre_process_time": round(t2 - t1, 2),
                    "predict time ": round(t3 - t2, 2),
                    "pos_process_time": round(t4 - t3, 2),
                    "all_time": round(t4 - t1, 2),
-                   "confidence": confidence}
+                   "confidence": round(confidence, 2)}
+
         print(timings)
-        with open(f'./result/seq_{seq_name}_{model_cfg.seq_length}/timings', 'w') as f:
-            f.write(json.dumps(timings))
+        with os.fdopen(os.open(f'./result/{seq_name}/timings', os_flags, os_modes), 'w') as fout:
+            fout.write(json.dumps(timings))
 
 
 def fold_train(args):
@@ -177,11 +153,11 @@ def fold_train(args):
     max_recycles = [int(np.random.uniform(size=1, low=0, high=4)) for _ in range(args.total_steps)]
     max_recycles[step] = 0
     np.random.seed()
-    names = os.listdir(args.pdb_data_dir)
+    names = os.listdir(args.pdb_path)
     names_list = []
     for name in names:
         names_list.append(name.split(".pdb")[0])
-    train_dataset = create_dataset(args.pdb_data_dir, args.raw_feature_dir, names_list, data_cfg,
+    train_dataset = create_dataset(args.pdb_path, args.input_path, names_list, data_cfg,
                                    args.resolution_data, num_parallel_worker=4, is_parallel=args.run_distribute,
                                    shuffle=True)
     dataset_iter = train_dataset.create_dict_iterator(num_epochs=1, output_numpy=True)
@@ -223,7 +199,11 @@ def fold_train(args):
                     f" masked_loss: {loss[5]}, plddt_loss: {loss[6]}"
         print(loss_info, flush=True)
         step += 1
-
+        ckpt_path = './ckpt/'
+        if step % 50 == 0:
+            ckpt_name = f"{ckpt_path}/step_{step}.ckpt"
+            save_checkpoint(train_net, ckpt_name)
+            print(f"checkpoint of step {step} is saved in ./ckpt folder")
 
 if __name__ == "__main__":
     if arguments.run_platform == 'Ascend':

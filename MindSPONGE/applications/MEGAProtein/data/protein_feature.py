@@ -73,33 +73,28 @@ def make_sequence_features(sequence: str, description: str, num_res: int):
 class RawFeatureGenerator:
     """Runs the alignment tools"""
 
-    def __init__(self,
-                 template_mmcif_dir,
-                 max_template_date,
-                 kalign_binary_path,
-                 obsolete_pdbs_path,
-                 hhsearch_binary_path,
-                 pdb70_database_path,
-                 database_envdb_dir,
-                 mmseqs_binary,
-                 uniref30_path,
-                 a3m_result_path,
-                 max_hits=20,
-                 msa_length=512):
+    def __init__(self, database_search_config, max_hits=20, msa_length=512):
         """Search the a3m info for a given FASTA file."""
 
-        self.template_mmcif_dir = template_mmcif_dir
-        self.max_template_date = max_template_date
-        self.kalign_binary_path = kalign_binary_path
-        self.obsolete_pdbs_path = obsolete_pdbs_path
-        self.hhsearch_binary_path = hhsearch_binary_path
-        self.pdb70_database_path = pdb70_database_path
-        self.a3m_result_path = a3m_result_path
+
+        self.template_mmcif_dir = database_search_config.mmcif_dir
+        self.max_template_date = database_search_config.max_template_date
+        self.kalign_binary_path = database_search_config.kalign_binary_path
+        self.obsolete_pdbs_path = database_search_config.obsolete_pdbs_path
+        self.hhsearch_binary_path = database_search_config.hhsearch_binary_path
+        self.pdb70_database_path = database_search_config.pdb70_database_path
+        self.a3m_result_path = database_search_config.a3m_result_path
+        self.database_envdb_dir = database_search_config.database_envdb_dir
+        self.mmseqs_binary = database_search_config.mmseqs_binary
+        self.uniref30_path = database_search_config.uniref30_path
         self.max_hits = max_hits
         self.msa_length = msa_length
-        self.msa_query = MmseqQuery(database_envdb_dir=database_envdb_dir, mmseqs_binary=mmseqs_binary,
-                                    uniref30_path=uniref30_path, result_path=a3m_result_path)
-        self.hhsearch_pdb70_runner = HHSearch(binary_path=hhsearch_binary_path, databases=[pdb70_database_path])
+        self.msa_query = MmseqQuery(database_envdb_dir=self.database_envdb_dir,
+                                    mmseqs_binary=self.mmseqs_binary,
+                                    uniref30_path=self.uniref30_path,
+                                    result_path=self.a3m_result_path)
+        self.hhsearch_pdb70_runner = HHSearch(binary_path=self.hhsearch_binary_path,
+                                              databases=[self.pdb70_database_path])
 
 
     def monomer_feature_generate(self, fasta_path):
