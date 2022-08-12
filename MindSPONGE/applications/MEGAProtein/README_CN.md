@@ -1,4 +1,4 @@
-[ENGLISH](README_EN.md)|简体中文
+[ENGLISH](README.md)|简体中文
 
 # MEGA-Protein
 
@@ -23,6 +23,13 @@ MEGA-Protein主要由三部分组成：
 <div align=center>
 <img src="../../docs/assess_contest.png" alt="MEGA-Assessement方法获得CAMEO-QE结构质量评估赛道月榜第一" width="600"/>
 </div>
+
+## 可用的模型和数据集
+
+| 所属模块      | 文件名        | 大小 | 描述  |Model URL  |
+|-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
+| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 |  [下载链接](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)  |
+| PSP          | `PSP`         | 1.6TB(解压后25TB)    | PSP蛋白质结构数据集，可用于MEGA-Fold训练 |  [下载链接](http://ftp.cbi.pku.edu.cn/psp/)  |
 
 <details><summary>引用我们</summary>
 
@@ -79,7 +86,7 @@ MEGA-Protein主要由三部分组成：
 
 ### 硬件环境与框架
 
-本工具基于[MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE)生物计算库与[MindSpore](https://www.mindspore.cn/)AI框架开发，MindSpore 1.8及以后的版本均可运行，MindSpore安装和配置可以参考[MindSpore安装页面](https://www.mindspore.cn/install)。本工具可以Ascend910或32G以上内存的GPU上运行，默认使用全精度推理，基于Ascend910运行时推荐调用混合精度推理。
+本工具基于[MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE)生物计算库与[MindSpore](https://www.mindspore.cn/)AI框架开发，MindSpore 1.8及以后的版本均可运行，MindSpore安装和配置可以参考[MindSpore安装页面](https://www.mindspore.cn/install)。本工具可以Ascend910或32G以上内存的GPU上运行，默认使用全精度推理，基于Ascend运行时需调用混合精度。
 
 蛋白质结构预测工具MEGA-Fold依赖多序列比对(MSA，multiple sequence alignments)与模板检索生成等传统数据库搜索工具提供的共进化与模板信息，配置数据库搜索需**2.5T硬盘**（推荐SSD）和与Kunpeng920性能持平的CPU。
 
@@ -123,29 +130,22 @@ MEGA-Protein主要由三部分组成：
 
     - 配置数据库检索config
 
-- 根据数据库安装情况配置`config/data.yaml`中数据库搜索的相关配置`database_search`，相关参数含义如下：
+    根据数据库安装情况配置`config/data.yaml`中数据库搜索的相关配置`database_search`，相关参数含义如下：
 
     ```bash
     # configuration for template search
     hhsearch_binary_path   HHsearch可执行文件路径
-    kalign_binary_path     MMseqs2可执行文件路径
+    kalign_binary_path     kalign可执行文件路径
     pdb70_database_path    pdb70文件夹路径
     mmcif_dir              mmcif文件夹路径
     obsolete_pdbs_path     PDB IDs的映射文件路径
     max_template_date      模板搜索截止时间，该时间点之后的模板会被过滤掉，默认值"2100-01-01"
     # configuration for Multiple Sequence Alignment
-    mmseqs_binary          HHsearch可执行文件路径
+    mmseqs_binary          MMseqs2可执行文件路径
     uniref30_path          uniref30文件夹路径
     database_envdb_dir     colabfold_envdb_202108文件夹路径
     a3m_result_path        mmseqs2检索结果(msa)的保存路径，默认值"./a3m_result/"
     ```
-
-## 可用的模型和数据集
-
-| 所属模块      | 文件名        | 大小 | 描述  |Model URL  |
-|-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
-| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 |  [下载链接](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)  |
-| PSP          | `PSP`         | 1.6TB(解压后25TB)    | PSP蛋白质结构数据集，可用于MEGA-Fold训练 |  [下载链接](http://ftp.cbi.pku.edu.cn/psp/)  |
 
 ## 代码示例
 
@@ -154,6 +154,7 @@ MEGA-Protein主要由三部分组成：
 ```bash
 ├── MEGA-Protein
     ├── main.py                         // MEGA-Protein主脚本
+    ├── README.md                       // MEGA-Protein相关英文说明
     ├── README_CN.md                    // MEGA-Protein相关中文说明
     ├── config
         ├── data.yaml                   //数据处理参数配置
@@ -200,10 +201,11 @@ MEGA-Protein主要由三部分组成：
 选项：
 --data_config        数据预处理参数配置
 --model_config       模型超参配置
---run_platform       运行后端，Ascend或者GPU，默认Ascend
---use_pkl            使用pkl数据作为输入，默认False
 --input_path         输入文件目录，可包含多个.fasta/.pkl文件
 --checkpoint_path    模型权重文件路径
+--use_pkl            使用pkl数据作为输入，默认False
+--run_platform       运行后端，Ascend或者GPU，默认Ascend
+--mixed_precision    调用混合精度推理，默认0，全精度推理
 ```
 
 对于多条序列推理，MEGA-Fold会基于所有序列的最长长度自动选择编译配置，避免重复编译。如需推理的序列较多，建议根据序列长度分类放入不同文件夹中分批推理。由于数据库搜索硬件要求较高，MEGA-Fold支持先做数据库搜索生成`raw_feature`并保存为pkl文件，然后使用`raw_feature`作为预测工具的输入，此时须将`use_pkl`选项置为True，`examples`文件夹中提供了样例pkl文件与对应的真实结构，供测试运行，测试命令参考`scripts/run_fold_infer_gpu.sh`。

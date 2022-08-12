@@ -40,7 +40,8 @@ parser.add_argument('--use_pkl', default=False, help="use pkl as input or fasta 
 parser.add_argument('--checkpoint_path', help='checkpoint path')
 parser.add_argument('--device_id', default=1, type=int, help='DEVICE_ID')
 parser.add_argument('--mixed_precision', default=0, type=int,
-                    help='whether to use mixed precision, only Ascend supports mixed precision, GPU should use fp32')
+                    help='whether to use mixed precision, 0 for full fp32 and 1 for fp32/fp16 mixed,\
+                          only Ascend supports mixed precision, GPU should use fp32')
 parser.add_argument('--is_training', type=bool, default=False, help='is training or not')
 parser.add_argument('--run_platform', default='Ascend', type=str, help='which platform to use, Ascend or GPU')
 parser.add_argument('--run_distribute', type=bool, default=False, help='run distribute')
