@@ -163,7 +163,7 @@ def main():
         traceback.print_exc()
 
     while system == 0:
-        system = Protein(pdb_name=pdb_name)
+        system = Protein(pdb=pdb_name)
         gds = int(0.5 * gds)
         ads = int(0.8 * ads)
         system = optimize_strategy(system, gds, loops, ads, adm, nonh_mask, mode=1)
@@ -176,7 +176,7 @@ def main():
 
     if violation_loss > 0:
         gds = 200
-        system = Protein(pdb_name=pdb_name)
+        system = Protein(pdb=pdb_name)
         loops, ads, adm = 6, 200, 1
         system = optimize_strategy(system, gds, loops, ads, adm, nonh_mask, mode=2)
 
@@ -186,7 +186,7 @@ def main():
 
     if violation_loss > 0:
         gds = 200
-        system = Protein(pdb_name=pdb_name)
+        system = Protein(pdb=pdb_name)
         loops, ads, adm = 6, 200, 1
         system = optimize_strategy(system, gds, loops, ads, adm, nonh_mask, mode=3)
 
@@ -196,7 +196,7 @@ def main():
 
     if violation_loss > 0:
         gds = 100
-        system = Protein(pdb_name=pdb_name)
+        system = Protein(pdb=pdb_name)
         loops, ads, adm = 8, 100, 1
         system = optimize_strategy(system, gds, loops, ads, adm, nonh_mask, mode=3)
 
@@ -205,7 +205,7 @@ def main():
         print("The forth try violation loss value is: {}".format(violation_loss))
 
     if violation_loss > 0:
-        system = Protein(pdb_name=pdb_name)
+        system = Protein(pdb=pdb_name)
         gds, loops, ads, adm = 30, 2, 150, 2
         system = optimize_strategy(system, gds, loops, ads, adm, nonh_mask, mode=1)
 
