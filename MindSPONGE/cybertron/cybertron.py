@@ -696,7 +696,7 @@ class CybertronFF(PotentialCell):
 
         # (1,A)
         self.atom_types = Tensor(atom_types, ms.int32).reshape(1, -1)
-        self.atom_mask = atom_types > 0
+        self.atom_mask = self.atom_types > 0
         natoms = self.atom_types.shape[-1]
         if self.atom_mask.all():
             self.num_atoms = natoms
@@ -707,8 +707,7 @@ class CybertronFF(PotentialCell):
         self.bond_types = None
         self.bond_mask = None
         if bond_types is not None:
-            self.bond_types = Tensor(
-                bond_types, ms.int32).reshape(1, natoms, -1)
+            self.bond_types = Tensor(bond_types, ms.int32).reshape(1, natoms, -1)
             self.bond_mask = bond_types > 0
 
         self.pbc_box = None
