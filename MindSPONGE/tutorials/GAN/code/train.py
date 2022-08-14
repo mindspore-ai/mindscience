@@ -28,7 +28,6 @@ import mindspore.dataset as ds
 import mindspore.numpy as mnp
 from mindspore import (Tensor, context,
                        nn, save_checkpoint, set_seed)
-from mindspore import load_checkpoint, load_param_into_net
 from mnist import MNIST
 
 from model import GAN, Discriminator, Generator, WithLossCellD, WithLossCellG
@@ -69,10 +68,6 @@ fixed_noise_int = Tensor(np.repeat(np.arange(10), 5), dtype=mnp.int32)
 
 # 实例化GAN网络
 infogan = GAN(myTrainOneStepCellForD, myTrainOneStepCellForG)
-
-### Load Checkpoint for further training:
-param_dict = load_checkpoint("../ckpts/" + "train_epoch_10000.ckpt")
-load_param_into_net(infogan, param_dict)
 
 infogan.set_train(True)  # Setup BatchNorm
 

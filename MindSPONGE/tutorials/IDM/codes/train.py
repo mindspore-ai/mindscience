@@ -30,7 +30,6 @@ import numpy as np
 import mindspore.dataset as ds
 import mindspore.numpy as mnp
 from mindspore import Tensor, context, nn, save_checkpoint, set_seed
-from mindspore import load_checkpoint, load_param_into_net
 
 from model import (TrainOneStepCell, WithLossCell, beta_schedule, cos_decay_lr,
                    temporal_proximal_sampling)
@@ -80,10 +79,6 @@ opt = nn.Adam(params=all_parameters, learning_rate=Tensor(lr), eps=1e-6)
 
 train_net = TrainOneStepCell(
     idm_model, opt, sens=1.0, enable_clip_grad=True, clip_value=5.0)
-
-# ### Load Checkpoint:
-param_dict = load_checkpoint("../ckpts/" + "model_epoch_10000.ckpt")
-load_param_into_net(train_net, param_dict)
 
 train_net.set_train(True)  # Setup BatchNorm
 
