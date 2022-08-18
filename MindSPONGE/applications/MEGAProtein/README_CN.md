@@ -6,7 +6,7 @@
 
 MEGA-Protein主要由三部分组成：
 
-- **蛋白质结构预测工具MEGA-Fold**，网络模型部分与AlphaFold2相同，在数据预处理的多序列对比环节采用了[MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup>进行序列检索，相比于原版端到端速度提升2-3倍。同时我们提供结构预测模型训练能力，我们自己训练得到的权重获得了CAMEO-3D蛋白质结构预测赛道22年4月月榜第一
+- **蛋白质结构预测工具MEGA-Fold**，网络模型部分与AlphaFold2相同，在数据预处理的多序列对比环节采用了[MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup>进行序列检索，相比于原版端到端速度提升2-3倍；同时借助内存复用大幅提升内存利用效率，同硬件条件下支持更长序列的推理（基于32GB内存的Ascend910运行时最长支持3072长度序列推理）；我们还提供了结构预测模型训练能力，我们自己训练的权重获得了CAMEO-3D蛋白质结构预测赛道22年4月月榜第一。
 
 <div align=center>
 <img src="../../docs/megafold_contest.png" alt="MEGA-Fold获得CAMEO-3D蛋白质结构预测赛道月榜第一" width="600"/>
