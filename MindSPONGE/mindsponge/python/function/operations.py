@@ -296,15 +296,15 @@ class GetDistanceShift(Cell):
         bond0 = self.bonds[..., 0].reshape(1, -1, 1).asnumpy()
         # (B,C,A) <- (B,A,1)
         mask0 = np.zeros(shape)
-        np.put_along_axis(mask0, bond0, -2, axis=-1)
+        np.put_along_axis(mask0, bond0, 1, axis=-1)
         # (B,C,A,1)
         self.mask0 = F.expand_dims(Tensor(mask0, ms.int32), -1)
 
         # (1,C,1)
-        bond1 = self.bonds[..., 0].reshape(1, -1, 1).asnumpy()
+        bond1 = self.bonds[..., 1].reshape(1, -1, 1).asnumpy()
         # (B,C,A) <- (B,A,1)
         mask1 = np.zeros(shape)
-        np.put_along_axis(mask1, bond1, -2, axis=-1)
+        np.put_along_axis(mask1, bond1, 1, axis=-1)
         # (B,C,A,1)
         self.mask1 = F.expand_dims(Tensor(mask1, ms.int32), -1)
 
@@ -376,6 +376,7 @@ class GetShiftGrad(Cell):
         )
 
         self.grad = ops.GradOperation()
+        self.zero_shift = ops.Zeros()((num_walkers, num_atoms - 1, num_atoms, dimension), ms.float32)
 
     def construct(self, coordinate_new: Tensor, coordinate_old: Tensor, pbc_box: Tensor = None):
         """Module for calculating the differentiation of B matrix whose dimensions are: K*N*D.
@@ -394,4 +395,7 @@ class GetShiftGrad(Cell):
         # (B,C,A,D)
         coordinate_new = self.broadcast(coordinate_new[:, None, :, :])
         coordinate_old = self.broadcast(coordinate_old[:, None, :, :])
-        return self.grad(self.net)(coordinate_new, coordinate_old, pbc_box)
+        shift_grad = self.grad(self.net)(coordinate_new, coordinate_old, pbc_box)
+        if msnp.isnan(shift_grad.sum()):
+            shift_grad = self.zero_shift
+        return shift_grad

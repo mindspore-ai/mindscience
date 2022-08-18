@@ -179,6 +179,7 @@ class Molecule(Cell):
 
         # (B,C,2)
         self.bond = None
+        self.hydrogen_bond = None
         # (B,C): bond length for constraint
         self.bond_length = None
 
