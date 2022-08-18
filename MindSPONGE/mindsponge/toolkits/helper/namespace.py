@@ -3,15 +3,15 @@ This **module** is used to provide help functions and classes about namespace
 """
 import sys
 from inspect import currentframe
-from importlib import import_module
+from importlib import import_module, reload
 from types import MethodType, FunctionType
 from functools import partial
 
 
-def source(module, into_global=True):
+def source(module, into_global=True, reload_module=False):
     """
     This **function** import the module and merge all the global variables into the caller module globals().
-    In fact, this is similar to the python "import", but it is more convenient to relatively import
+    In fact, this is similar to the python "import", but it is more convenient to relatively import and reload.
 
     usage example::
 
@@ -24,10 +24,13 @@ def source(module, into_global=True):
 
     :param module: the module name to import
     :param into_global: whether to merge the global variables
+    :param reload_module: whether to reload the module
     :return: the module to import
     """
     global_ = currentframe().f_back.f_globals
     module_ = import_module(module, package=global_["__name__"])
+    if reload_module:
+        reload(module_)
     if into_global:
         for key, value in module_.__dict__.items():
             if not key.startswith("_"):

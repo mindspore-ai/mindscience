@@ -15,7 +15,8 @@ def write_zero_mass_for_hydrogen(self):
     """
     towrite = "%d\n" % (len(self.atoms))
     towrite += "\n".join(
-        ["%.3f" % (1) if (atom.mass < 3.999 or atom.LJtype == "ZERO_LJ_ATOM") else "%.3f" % (0) for atom in self.atoms])
+        ["%.3f" % (1) if (atom.mass < 3.999 or atom.LJtype == "ZERO_LJ_ATOM" or
+                          atom.bad_coordinate) else "%.3f" % (0) for atom in self.atoms])
     return towrite
 
 
