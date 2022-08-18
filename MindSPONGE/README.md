@@ -17,6 +17,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **Latest News** 📰
 
+- 🔥`2022.8.11—2022.8.15` MindSpore SPONGE SIG [Summer School](#special-interesting-group-), [replay](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453)
 - `2022.07.18` Paper "SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"is published in Chinese Journal of Chemistry. Please refer to [paper](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456) and [codes](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
 - `2022.07.09` MEGA-Assessment wins CAMEO-QE monthly 1st.
 - `2022.06.27` Paper "PSP: Million-level Protein Sequence Dataset for Protein Structure Prediction" is preprinted in arxiv. Please refer to [Paper](https://arxiv.org/pdf/2206.12240v1.pdf) and [codes](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein).
@@ -24,7 +25,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **Coming Soon** 🚀
 
-- 🔥2022.8.11—2022.8.15 MindSpore SPONGE SIG [Summer School](#special-interesting-group-)
+- Everything is coming soon, don't worry~
 
 ## **Quick Start**
 
@@ -130,7 +131,7 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 
 **More Cases**：👀
 
-- [Protein Relaxation](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/protein_relax/)
+- [Protein Relaxation](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/protein_relaxation)
 - [Protein Structure Prediction MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
 - [Protein Structure Assessment MEGA-Assessment](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
 - [Evolution Engine MEGA-EvoGen](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
@@ -158,7 +159,7 @@ pip install -r requirements.txt
 |               | CentOS-aarch64  | ✔️ |
 | GPU CUDA 10.1 | Ubuntu-x86      | ✔️ |
 
-### **pip install**
+### **pip install**(not support temporarily)
 
 ```bash
 pip install mindscience_sponge_[gpu|ascend]

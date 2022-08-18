@@ -16,6 +16,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **最新消息** 📰
 
+- 🔥`2022.8.11—2022.8.15` MindSpore SPONGE SIG[暑期学校活动](#sig-)，[活动回放](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453)
 - `2022.07.18` 论文"SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"发表于期刊Chinese Journal of Chemistry，详情参见[论文](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
 - `2022.07.09` MEGA-Assessment在CAMEO-QE月榜取得第一名。
 - `2022.06.27` 论文"PSP: Million-level Protein Sequence Dataset for Protein Structure Prediction" arxiv 预印，详情参见[论文](https://arxiv.org/pdf/2206.12240v1.pdf)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)。
@@ -23,7 +24,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **即将到来** 🚀
 
-- 🔥2022.8.11—2022.8.15 MindSpore SPONGE SIG[暑期学校活动](#sig-)
+- 不要着急，精彩即将到来~
 
 ## **初体验**
 
@@ -129,7 +130,7 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 
 **更多应用案例请见**：👀
 
-- [蛋白质结构弛豫](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/protein_relax/)
+- [蛋白质结构弛豫](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/protein_relaxation)
 - [蛋白质结构预测 MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
 - [蛋白质结构评估 MEGA-Assessment](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
 - [共进化数据引擎 MEGA-EvoGen](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
@@ -157,7 +158,7 @@ pip install -r requirements.txt
 |               | CentOS-aarch64  | ✔️ |
 | GPU CUDA 10.1 | Ubuntu-x86      | ✔️ |
 
-### pip安装
+### pip安装(暂不可用)
 
 ```bash
 pip install mindscience_sponge_[gpu|ascend]
