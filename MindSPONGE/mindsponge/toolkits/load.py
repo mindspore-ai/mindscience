@@ -2,6 +2,9 @@
 This **module** is used to load and read
 """
 import os
+
+import numpy as np
+
 from .helper import Molecule, Residue, ResidueType, AtomType, GlobalSetting, Xdict, Xopen, \
     set_real_global_variable, set_global_alternative_names
 
@@ -153,7 +156,7 @@ def _pdb_ssbond_after(chain, ssbonds, molecule):
                                   res_b.name2atom(res_b.type.connect_atoms["ssbond"]))
 
 
-def _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore_hydrogen):
+def _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore_hydrogen, ignore_unknown_name):
     """
 
     :param filename:
@@ -161,6 +164,7 @@ def _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore
     :param position_need:
     :param residue_type_map:
     :param ignore_hydrogen:
+    :param ignore_unknown_name:
     :return:
     """
     current_residue_count = -1
@@ -193,7 +197,12 @@ def _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore
                     continue
                 if ignore_hydrogen and atomname.startswith("H"):
                     continue
-                current_residue.Add_Atom(atomname, x=x, y=y, z=z)
+                try:
+                    current_residue.Add_Atom(atomname, x=x, y=y, z=z)
+                except KeyError as ke:
+                    if ignore_unknown_name:
+                        continue
+                    raise ke
             elif line.startswith("TER"):
                 current_residue_index = None
                 current_resname = None
@@ -225,7 +234,7 @@ def _pdb_judge_histone(judge_histone, residue_type_map, current_histone_informat
         current_histone_information = {"DeltaH": False, "EpsilonH": False}
 
 
-def load_pdb(filename, judge_histone=True, position_need="A", ignore_hydrogen=False):
+def load_pdb(filename, judge_histone=True, position_need="A", ignore_hydrogen=False, ignore_unknown_name=False):
     """
     This **function** is used to load a pdb file
 
@@ -233,6 +242,7 @@ def load_pdb(filename, judge_histone=True, position_need="A", ignore_hydrogen=Fa
     :param judge_histone: judge the protonized state of the histone residues
     :param position_need: the position character to read
     :param ignore_hydrogen: do not read the atom with a name beginning with "H"
+    :param ignore_unknown_name: do not read the atom with an unknown name **New From 1.2.6.4**
     :return: a Molecule instance
     """
     molecule = Molecule(os.path.splitext(os.path.basename(filename))[0])
@@ -288,10 +298,38 @@ def load_pdb(filename, judge_histone=True, position_need="A", ignore_hydrogen=Fa
         residue_type_map[-1] = GlobalSetting.PDBResidueNameMap["tail"][residue_type_map[-1]]
 
     _pdb_ssbond_before(chain, residue_type_map, ssbonds)
-    _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore_hydrogen)
+    _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore_hydrogen, ignore_unknown_name)
     _pdb_ssbond_after(chain, ssbonds, molecule)
 
     return molecule
+
+
+##########################################################################
+# SPONGE Format
+##########################################################################
+def load_coordinate(filename, mol=None):
+    """
+    This **function** is used to read the SPONGE coordinate in file
+
+    :param filename: the coordinate file to load
+    :param mol: the molecule or residue to load the coordinate into
+    :return: two numpy arrays, representing the coordinates and the box information respectively
+    """
+    with Xopen(filename, "r") as f:
+        atom_numbers = int(f.readline().split()[0])
+        crd = np.zeros((atom_numbers, 3), dtype=np.float32)
+        box = np.zeros(6, dtype=np.float32)
+        for i in range(atom_numbers):
+            crd[i][:] = np.array([float(x) for x in f.readline().split()])
+        box = np.array(f.readline().split(), dtype=np.float32)
+    if mol:
+        for i, atom in enumerate(mol.atoms):
+            atom.x = crd[i][0]
+            atom.y = crd[i][1]
+            atom.z = crd[i][2]
+        if isinstance(mol, Molecule):
+            mol.box_length = box
+    return crd, box
 
 
 ##########################################################################

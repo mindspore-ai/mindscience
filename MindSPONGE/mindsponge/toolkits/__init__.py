@@ -71,7 +71,7 @@ The atoms in a ``Residue`` or a ``ResidueType`` can be obtained by their names. 
     print(ALA.CA)
 
 """
-__version__ = "stable-1.2.6"
+__version__ = "1.2.6.4"
 
 import os
 import time
@@ -86,10 +86,10 @@ from .assign import Assign, get_assignment_from_pdb, get_assignment_from_mol2, g
     get_assignment_from_residuetype
 from .helper import GlobalSetting, Type, ResidueType, Entity, Atom, Residue, ResidueLink, Molecule, AtomType, \
     set_global_alternative_names, generate_new_pairwise_force_type, generate_new_bonded_force_type, source
-from .load import load_ffitp, load_mol2, load_rst7, load_frcmod, load_pdb, load_parmdat
+from .load import load_ffitp, load_mol2, load_rst7, load_frcmod, load_pdb, load_parmdat, load_coordinate
 from .build import save_mol2, save_pdb, save_sponge_input, save_gro, build_bonded_force, get_mindsponge_system_energy
 from .process import impose_bond, impose_angle, impose_dihedral, add_solvent_box, h_mass_repartition, solvent_replace, \
-    main_axis_rotate, get_peptide_from_sequence
+    main_axis_rotate, get_peptide_from_sequence, optimize, Region, BlockRegion, SphereRegion, Lattice
 
 
 def _initialize():

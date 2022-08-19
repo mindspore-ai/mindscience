@@ -5,4 +5,8 @@ import sys
 from . import run
 
 
-run(sys.argv)
+def main():
+    run(sys.argv)
+
+if __name__ == "__main__":
+    main()

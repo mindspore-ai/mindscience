@@ -13,10 +13,12 @@ def _mytest(subparsers):
     """
     mytest = subparsers.add_parser("test", help="test the basic function of Xponge")
     mytest.add_argument("-o", metavar="test", default="test", help="the prefix for the output files")
-    mytest.add_argument("-verbose", metavar="0", default=0, type=int, help="the verbose level for output")
-    mytest.add_argument("-do", metavar="todo", nargs="*", action="append",
-                        default=None, choices=["base", "assign", "charmm27"],
-                        help="the things need to test, should be one or more of 'base', 'assign', 'charmm27'")
+    mytest.add_argument("-v", "--verbose", metavar="-1", default=-1, type=int,
+                        help="the verbose level for output, 1 or -1")
+    mytest.add_argument("-d", "--do", metavar="todo", nargs="*", action="append",
+                        default=None, choices=["all", "base", "assign", "charmm27", "lattice"],
+                        help="the unit tests need to do, should be 'all', \
+or one or more of 'base', 'assign', 'charmm27', 'lattice'")
     mytest.set_defaults(func=tools.test)
 
 

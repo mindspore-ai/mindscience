@@ -60,7 +60,7 @@ class Exclude:
                 ene_kwarg["exclude"] = []
             temp_dict = self.get_excluded_atoms(mol)
             temp_dict = {atom: list(set_) for atom, set_ in temp_dict.items()}
-            exclude_max = max([len(atoms) for atoms in temp_dict.values()])
+            exclude_max = max(len(atoms) for atoms in temp_dict.values())
 
             ene_kwarg["exclude"].append([[mol.atom_index[temp_dict[atom][j]]
                                           if j < len(temp_dict[atom]) else len(mol.atoms)

@@ -1,79 +1,182 @@
 """
 This **module** implements the terminal commands
 """
+import os
+import sys
+import unittest
+import multiprocessing as mpc
 from ..helper import source, GlobalSetting, Xopen, Xprint
 from ..mdrun import run
 
 
-def _basic_test(args):
+class TestMyPackage(unittest.TestCase):
+    """
+    This **class** does the unit tests for Xponge
+
+    :param methodName: the method name of the unit test
+    :param args: arguments from argparse
+    :return: None
+    """
+    def __init__(self, methodName='runTest', args=None):
+        super().__init__(methodName)
+        self.args = args
+
+    @classmethod
+    def get_test_suite(cls, name, args):
+        suite = unittest.TestSuite()
+        test_name = "test_" + name
+        suite.addTest(cls(test_name, args))
+        return suite
+
+    def test_base(self):
+        """
+        This **function** does the basic test for Xponge
+
+        :param args: arguments from argparse
+        :return: None
+        """
+        args = self.args
+        source("..")
+        source("..forcefield.amber.ff14sb")
+        source("..forcefield.amber.tip3p")
+        source("__main__")
+
+        t = ACE + ALA * 10 + NME
+
+        for i in range(1, len(t.residues) - 1):
+            head = t.residues[i - 1]
+            res = t.residues[i]
+            tail = t.residues[i + 1]
+            Impose_Dihedral(t, head.C, res.N, res.CA, res.C, -3.1415926 / 3)
+            Impose_Dihedral(t, res.N, res.CA, res.C, tail.N, -3.1415926 / 3)
+
+        Save_Mol2(t, f"{args.o}.mol2")
+        c = int(round(t.charge))
+        Add_Solvent_Box(t, WAT, 10)
+        Solvent_Replace(t, lambda res: res.type.name == "WAT", {CL: 30 + c, K: 30})
+        t.residues.sort(key=lambda residue: {"CL": 2, "K": 1, "WAT": 3}.get(residue.type.name, 0))
+        Save_PDB(t, f"{args.o}.pdb")
+        Save_SPONGE_Input(t, f"{args.o}")
+
+        f = Xopen(f"{args.o}_LJ.txt", "r")
+        atom_number, lj_number = [int(i) for i in f.readline().split()]
+        self.assertEqual(atom_number, 4357, "LJ_in_file wrong")
+        self.assertEqual(lj_number, 11, "LJ_in_file wrong")
+        f.close()
+
+        f = Xopen(f"{args.o}_dihedral.txt", "r")
+        dihedral_number, = [int(i) for i in f.readline().split()]
+        self.assertEqual(dihedral_number, 303, "dihedral_in_file wrong")
+        f.close()
+
+        f = Xopen(f"{args.o}_exclude.txt", "r")
+        atom_number, exclude_number = [int(i) for i in f.readline().split()]
+        self.assertEqual(atom_number, 4357, "exclude_in_file wrong")
+        self.assertEqual(exclude_number, 4760, "exclude_in_file wrong")
+        f.close()
+
+    def test_charmm27(self):
+        """
+        This **function** does the CHARMM27 test for Xponge
+
+        :param args: arguments from argparse
+        :return: None
+        """
+        args = self.args
+        source("..")
+        AtomType.clear_type()
+        ResidueType.clear_type()
+        for frc in GlobalSetting.BondedForces:
+            frc.clear_type()
+        source("..forcefield.charmm27.protein")
+        source("__main__")
+
+        t = ACE + ALA * 10 + NME
+        Save_SPONGE_Input(t, f"{args.o}")
+
+    def test_assign(self):
+        """
+        This **function** does the assignment test for Xponge
+
+        :param args: arguments from argparse
+        :return: None
+        """
+        args = self.args
+        source("..")
+        source("..forcefield.amber.gaff")
+        source("__main__")
+
+        t = assign.Assign()
+        t.add_atom("O", 0, 0, 0)
+        t.add_atom("H", 1, 0, 0)
+        t.add_atom("H", 0, 1, 0)
+        t.add_bond(0, 1, 1)
+        t.add_bond(0, 2, 1)
+        t.determine_ring_and_bond_type()
+        t.determine_atom_type("gaff")
+        equal_atoms = t.Determine_Equal_Atoms()
+        t.calculate_charge("resp", opt=True, extra_equivalence=equal_atoms)
+        Save_PDB(t, f"{args.o}.pdb")
+        Save_Mol2(t, f"{args.o}.mol2")
+        wat = t.to_residuetype("WAT")
+        Save_PDB(wat, f"{args.o}_Residue.pdb")
+        Save_Mol2(wat, f"{args.o}_Residue.mol2")
+        Save_SPONGE_Input(wat, f"{args.o}")
+
+        t = load_mol2(f"{args.o}_Residue.mol2")
+        wat_ = t.residues[0]
+        diff = abs(wat_.O.charge + 0.8)
+        self.assertLess(diff, 0.02)
+        diff = abs(wat_.H.charge - 0.4)
+        self.assertLess(diff, 0.02)
+        diff = abs(wat_.H.charge - wat_.H1.charge)
+        self.assertLess(diff, 0.01)
+
+    def test_lattice(self):
+        """
+        This **function** does the assignment test for the lattice functions
+
+        :param args: arguments from argparse
+        :return: None
+        """
+        args = self.args
+        source("..")
+        source("..forcefield.amber.tip3p")
+        source("__main__")
+        box = BlockRegion(0, 0, 0, 60, 60, 60)
+        region_1 = BlockRegion(0, 0, 20, 20, 20, 40)
+        region_2 = BlockRegion(0, 0, 40, 20, 20, 60)
+        region_3 = BlockRegion(0, 0, 0, 20, 20, 20)
+        region_4 = SphereRegion(20, 10, 30, 10)
+        region_5 = BlockRegion(20, 0, 20, 60, 60, 60)
+        region_2or3 = Region(region_2, region_3, do="union")
+        region_4and5 = Region(region_4, region_5, do="intersect")
+        t = Lattice("bcc", basis_molecule=CL, scale=4)
+        t2 = Lattice("fcc", basis_molecule=K, scale=3)
+        t3 = Lattice("sc", basis_molecule=NA, scale=3)
+        mol = t.Create(box, region_1)
+        mol = t2.create(box, region_2or3, mol)
+        mol = t3.create(box, region_4and5, mol)
+        Save_PDB(mol, f"{args.o}.pdb")
+
+
+def _one_test(ccon, name, args):
     """
 
+    :param ccon:
+    :param name:
     :param args:
     :return:
     """
-    source("..")
-    source("..forcefield.amber.ff14sb")
-    source("..forcefield.amber.tip3p")
-    source("__main__")
-
-    t = ACE + ALA * 10 + NME
-
-    for i in range(1, len(t.residues) - 1):
-        head = t.residues[i - 1]
-        res = t.residues[i]
-        tail = t.residues[i + 1]
-        Impose_Dihedral(t, head.C, res.N, res.CA, res.C, -3.1415926 / 3)
-        Impose_Dihedral(t, res.N, res.CA, res.C, tail.N, -3.1415926 / 3)
-
-    Save_Mol2(t, f"{args.o}.mol2")
-    c = int(round(t.charge))
-    Add_Solvent_Box(t, WAT, 10)
-    Solvent_Replace(t, lambda res: res.type.name == "WAT", {CL: 30 + c, K: 30})
-    t.residues.sort(key=lambda residue: {"CL": 2, "K": 1, "WAT": 3}.get(residue.type.name, 0))
-    Save_PDB(t, f"{args.o}.pdb")
-    Save_SPONGE_Input(t, f"{args.o}")
-
-
-def _assign_test(args):
-    """
-
-    :param args:
-    :return:
-    """
-    source("..")
-    source("..forcefield.amber.gaff")
-    source("__main__")
-
-    t = assign.Assign()
-    t.add_atom("O", 0, 0, 0)
-    t.add_atom("H", 1, 0, 0)
-    t.add_atom("H", 0, 1, 0)
-    t.add_bond(0, 1, 1)
-    t.add_bond(0, 2, 1)
-    t.determine_ring_and_bond_type()
-    t.determine_atom_type("gaff")
-    equal_atoms = t.Determine_Equal_Atoms()
-    t.calculate_charge("resp", opt=True, extra_equivalence=equal_atoms)
-    Save_PDB(t, f"{args.o}.pdb")
-    Save_Mol2(t, f"{args.o}.mol2")
-    wat = t.to_residuetype("WAT")
-    Save_PDB(wat, f"{args.o}_Residue.pdb")
-    Save_Mol2(wat, f"{args.o}_Residue.pdb")
-    Save_SPONGE_Input(wat, f"{args.o}")
-
-
-def _charmm27_test(args):
-    """
-
-    :param args:
-    :return:
-    """
-    source("..")
-    source("..forcefield.charmm27.protein")
-    source("__main__")
-
-    t = ACE + ALA * 10 + NME
-    Save_SPONGE_Input(t, f"{args.o}")
+    devnull = Xopen(os.devnull, 'w')
+    sys.stdout = devnull
+    sys.stderr = devnull
+    runner = unittest.TextTestRunner(stream=devnull)
+    t = runner.run(TestMyPackage.get_test_suite(name, args))
+    ccon.send([t.errors, t.failures])
+    devnull.close()
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
 
 
 def test(args):
@@ -87,14 +190,34 @@ def test(args):
     if not args.do:
         args.do = [["base"]]
     args.do = args.do[0]
-    if "base" in args.do:
-        _basic_test(args)
-
-    if "assign" in args.do:
-        _assign_test(args)
-
-    if "charmm27" in args.do:
-        _charmm27_test(args)
+    if "all" in args.do:
+        args.do = ["base", "charmm27", "assign", "lattice"]
+    fcon, ccon = mpc.Pipe()
+    errors = []
+    failures = []
+    Xprint("Test(s): " + " ".join(args.do), verbose=-1)
+    Xprint("======================================================", verbose=-1)
+    for name in args.do:
+        p = mpc.Process(target=_one_test, args=(ccon, name, args))
+        p.start()
+        p.join()
+        new_errors, new_failures = fcon.recv()
+        errors.extend(new_errors)
+        failures.extend(new_failures)
+        this_correct = f"{len(new_errors)} error(s) and {len(new_failures)} failure(s)"
+        for ei, error in enumerate(new_errors):
+            Xprint(f"Error {ei+1} for {name}", verbose=1)
+            Xprint(f"{error[1]}", verbose=1)
+        for ei, error in enumerate(new_failures):
+            Xprint(f"Failure {ei+1} for {name}", verbose=1)
+            Xprint(f"{error[1]}", verbose=1)
+        Xprint(f"{name}: {this_correct}", verbose=-1)
+    Xprint("======================================================", verbose=-1)
+    if not errors and not failures:
+        Xprint("No error or failure", verbose=-1)
+    else:
+        Xprint(f"{len(errors)} error(s) and {len(failures)} failure(s) found", verbose=-1)
+        sys.exit(1)
 
 
 def converter(args):
@@ -113,7 +236,16 @@ def converter(args):
         elif args.cf == "sponge_crd":
             u = mda.Universe(args.p, args.c, format=xmda.SpongeCoordinateReader)
         elif args.cf == "sponge_traj":
-            u = mda.Universe(args.p, args.c, format=xmda.SpongeTrajectoryReader)
+            dirname, basename = os.path.split(args.c)
+            if basename == "mdcrd.dat":
+                box = "mdbox.txt"
+            else:
+                box = basename.replace(".dat", ".box")
+            box = os.path.join(dirname, box)
+            if box and os.path.exists(box):
+                u = mda.Universe(args.p, args.c, box=box, format=xmda.SpongeTrajectoryReader)
+            else:
+                u = mda.Universe(args.p, args.c, format=xmda.SpongeTrajectoryReader)
     else:
         u = mda.Universe(args.p)
 
@@ -137,8 +269,6 @@ def maskgen(args):
     :param args: arguments from argparse
     :return: None
     """
-    import os
-
     s = input("Please Enter Your Selection Mask:\n")
 
     p = args.p.split(os.path.sep)
@@ -322,7 +452,6 @@ def _mol2rfe_build(args, merged_from, merged_to):
     :param merged_to:
     :return:
     """
-    import os
     source("..")
     fep = source("..forcefield.special.fep")
     min_ = source("..forcefield.special.min")

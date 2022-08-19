@@ -128,7 +128,7 @@ def _find_the_force(frc, frc_all_final, cls):
                         break
 
         assert (not frc.compulsory or len(finded) == 1), "None of %s type found for %s" % (
-            frc.name, "-".join([atom.type.name for atom in frc_one]))
+            frc.get_class_name(), "-".join([atom.type.name for atom in frc_one]))
 
         if finded:
             for finded_type, finded_atoms in finded.values():
@@ -343,6 +343,7 @@ def get_mindsponge_system_energy(cls, use_pbc=False):
     from mindsponge import set_global_units
     from mindsponge import Molecule as mMolecule
     from mindsponge import ForceFieldBase
+    #pylint: disable=deprecated-class
     from collections import Sequence
     if not isinstance(cls, Sequence):
         cls = [cls]
