@@ -18,3 +18,8 @@ from .msa import MSARowAttentionWithPairBias, MSAColumnAttention, MSAColumnGloba
 from .triangle import TriangleAttention, TriangleMultiplication, OuterProductMean
 from .equivariant import InvariantPointAttention
 from .transition import Transition
+
+__all__ = ['Attention', 'GlobalAttention', 'MSARowAttentionWithPairBias',
+           'MSAColumnAttention', 'MSAColumnGlobalAttention',
+           'TriangleAttention', 'TriangleMultiplication', 'OuterProductMean',
+           'InvariantPointAttention', 'Transition']

@@ -28,3 +28,5 @@ from .fullconnect import FullConnectNeighbours
 from .distance import DistanceNeighbours
 from .grids import GridNeighbours
 from .neighbourlist import NeighbourList
+
+__all__ = ['FullConnectNeighbours', 'DistanceNeighbours', 'GridNeighbours', 'NeighbourList']

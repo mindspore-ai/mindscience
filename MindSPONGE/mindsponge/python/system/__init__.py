@@ -24,3 +24,5 @@
 
 from .molecule import Molecule, Protein
 from .residue import Residue, AminoAcid
+
+__all__ = ['Molecule', 'Protein', 'Residue', 'AminoAcid']

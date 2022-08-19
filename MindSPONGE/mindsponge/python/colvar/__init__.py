@@ -28,3 +28,8 @@ from .position import Atom, Position
 from .atoms import AtomDistances, AtomAngles, AtomTorsions
 from .bonded import BondedColvar, BondedDistances, BondedTorsions, BondedAngles
 from .index import IndexColvar, IndexVectors, IndexDistances
+
+__all__ = ['Colvar', 'Distance', 'Angle', 'Torsion', 'Atom', 'Position',
+           'AtomDistances', 'AtomAngles', 'AtomTorsions', 'BondedColvar',
+           'BondedDistances', 'BondedTorsions', 'BondedAngles', 'IndexColvar',
+           'IndexVectors', 'IndexDistances']

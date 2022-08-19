@@ -25,3 +25,5 @@ Force field parameters
 """
 
 from .forcefield import get_forcefield
+
+__all__ = ['get_forcefield']

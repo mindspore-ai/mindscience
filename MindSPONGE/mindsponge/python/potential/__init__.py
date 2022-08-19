@@ -26,3 +26,7 @@ from .potential import PotentialCell
 from .forcefield import ForceFieldBase, ForceField
 from .energy import *
 from .bias import *
+
+__all__ = ['PotentialCell', 'ForceFieldBase', 'ForceField']
+__all__.extend(energy.__all__)
+__all__.extend(bias.__all__)
