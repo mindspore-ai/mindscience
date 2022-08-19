@@ -97,15 +97,15 @@ class Lincs(Constraint):
         bond0 = self.bonds[..., 0].reshape(1, -1, 1).asnumpy()
         # (B,C,A) <- (B,A,1)
         mask0 = np.zeros(shape)
-        np.put_along_axis(mask0, bond0, -2, axis=-1)
+        np.put_along_axis(mask0, bond0, 1, axis=-1)
         # (B,C,A,1)
         self.mask0 = F.expand_dims(Tensor(mask0, ms.int32), -1)
 
         # (1,C,1)
-        bond1 = self.bonds[..., 0].reshape(1, -1, 1).asnumpy()
+        bond1 = self.bonds[..., 1].reshape(1, -1, 1).asnumpy()
         # (B,C,A) <- (B,A,1)
         mask1 = np.zeros(shape)
-        np.put_along_axis(mask1, bond1, -2, axis=-1)
+        np.put_along_axis(mask1, bond1, 1, axis=-1)
         # (B,C,A,1)
         self.mask1 = F.expand_dims(Tensor(mask1, ms.int32), -1)
 

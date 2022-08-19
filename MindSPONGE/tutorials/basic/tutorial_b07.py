@@ -34,7 +34,7 @@ if __name__ == "__main__":
     from mindsponge import Sponge
     from mindsponge import ForceField
     from mindsponge.optimizer import SteepestDescent
-    from mindsponge.control import VelocityVerlet
+    from mindsponge.control import VelocityVerlet, Lincs
     from mindsponge.callback import WriteH5MD, RunInfo
     from mindsponge.control import Langevin
     from mindsponge import set_global_units
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     set_global_units('nm', 'kj/mol')
 
-    PDB_NAME = 'case2.pdb'
+    PDB_NAME = 'case1.pdb'
     system = Protein(pdb=PDB_NAME)
 
     energy = ForceField(system, 'AMBER.FF14SB')
@@ -65,13 +65,14 @@ if __name__ == "__main__":
         system,
         integrator=VelocityVerlet(system),
         thermostat=Langevin(system, 300),
+        constraint=Lincs(system, bonds='all-bonds'),
         time_step=1e-3,
         velocity=velocity
     )
 
     md = Sponge(system, energy, min_opt)
 
-    cb_h5md = WriteH5MD(system, 'tutorial_b06.h5md', save_freq=10, write_velocity=True, write_force=True)
+    cb_h5md = WriteH5MD(system, 'tutorial_b07.h5md', save_freq=10, write_velocity=True, write_force=True)
 
     md.change_optimizer(opt)
     md.run(2000, callbacks=[run_info, cb_h5md])

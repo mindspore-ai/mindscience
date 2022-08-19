@@ -19,3 +19,4 @@ output
 .ipynb_checkpoints
 somas_meta
 analyze_fail.dat
+*.h5md
