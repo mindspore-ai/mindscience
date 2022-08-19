@@ -8,7 +8,7 @@ In response to these problems, Yi Qin Gao Lab cooperated with the MindScience te
 
 MEGA-Protein mainly consists of three parts:
 
-- **Protein Structure Prediction Tool MEGA-Fold** The nerual network architecture of this tool is the same as AlphaFold, and [MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup> is applied to query MSA data(refer to ColabFold). The end-to-end speed is increased by 2-3 times compared with the original version. MEGA-Fold is also trainable, models trained on our PSP training dataset won the first place in the CAMEO-3D contest in April 2022.
+- **Protein Structure Prediction Tool MEGA-Fold** The nerual network architecture of this tool is the same as AlphaFold, and [MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup> is applied to query MSA data(refer to ColabFold). The end-to-end speed is increased by 2-3 times compared with the original version. With memory optimization, MEGA-Fold supports longer sequence prediction (up to 3072 with 32GB RAM Ascend910). MEGA-Fold is also trainable, models trained on our PSP training dataset won the first place in the CAMEO-3D contest in April 2022.
 
 <div align=center>
 <img src="../../docs/megafold_contest.png" alt="MEGA-Fold won the first place in the CAMEO-3D contest in April 2022" width="600"/>
@@ -226,7 +226,7 @@ TMscore comparison between MEGA-Fold inference and groud truth :
 <img src="../../docs/7VGB_A.png" alt="7VGB_A" width="400"/>
 </div>
 
-### MEGA-Fold蛋白质结构预测训练
+### MEGA-Fold training
 
 Downloading our open source protein structure training dataset [PSP dataset](http://ftp.cbi.pku.edu.cn/psp/), using follow command to start training:
 

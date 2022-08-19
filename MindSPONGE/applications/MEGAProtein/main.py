@@ -38,7 +38,7 @@ parser.add_argument('--input_path', help='processed raw feature path')
 parser.add_argument('--pdb_path', type=str, help='Location of training pdb file.')
 parser.add_argument('--use_pkl', default=False, help="use pkl as input or fasta file as input, in default use fasta")
 parser.add_argument('--checkpoint_path', help='checkpoint path')
-parser.add_argument('--device_id', default=1, type=int, help='DEVICE_ID')
+parser.add_argument('--device_id', default=0, type=int, help='DEVICE_ID')
 parser.add_argument('--mixed_precision', default=0, type=int,
                     help='whether to use mixed precision, 0 for full fp32 and 1 for fp32/fp16 mixed,\
                           only Ascend supports mixed precision, GPU should use fp32')
