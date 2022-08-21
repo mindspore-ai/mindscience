@@ -221,6 +221,10 @@ MindSpore SPONGE SIG小组为广大科研人员，老师和学生提供高效易
 
 - [高毅勤课题组](https://www.chem.pku.edu.cn/gaoyq/):  [杨奕](https://gitee.com/helloyesterday)，[张骏](https://gitee.com/jz_90)，[刘思睿](https://gitee.com/sirui63)，[夏义杰](https://gitee.com/xiayijie)，[陈迪青](https://gitee.com/dechin)，[黄渝鹏](https://gitee.com/gao_hyp_xyj_admin)
 
+## **贡献指南**
+
+- 如何贡献您的代码，请点击此处查看：[贡献指南](https://gitee.com/mindspore/mindscience/blob/master/CONTRIBUTION.md)
+
 ## **许可证**
 
 [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
