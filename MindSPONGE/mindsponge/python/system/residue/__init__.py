@@ -26,3 +26,5 @@ Residues
 
 from .residue import Residue
 from .amino import AminoAcid
+
+__all__ = ['Residue', 'AminoAcid']

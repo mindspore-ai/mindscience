@@ -24,3 +24,5 @@
 
 from .h5md import WriteH5MD
 from .information import RunInfo
+
+__all__ = ['WriteH5MD', 'RunInfo']

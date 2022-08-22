@@ -23,3 +23,5 @@
 """Analysis"""
 
 from .analyse import AnalyseCell
+
+__all__ = ['AnalyseCell']

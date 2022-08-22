@@ -26,3 +26,5 @@ Molecules
 
 from .molecule import Molecule
 from .protein import Protein
+
+__all__ = ['Molecule', 'Protein']

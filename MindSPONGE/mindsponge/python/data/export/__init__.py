@@ -26,3 +26,5 @@ Export coordinate and trajectory files
 
 from .h5md import H5MD
 from .xyz import export_xyz
+
+__all__ = ['H5MD', 'export_xyz']

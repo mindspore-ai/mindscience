@@ -24,3 +24,5 @@
 
 from .barostat import Barostat
 from .berendsen import BerendsenBarostat
+
+__all__ = ['Barostat', 'BerendsenBarostat']

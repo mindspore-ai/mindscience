@@ -25,3 +25,5 @@ Molecular templates
 """
 
 from .template import get_template, get_template_index, get_molecule
+
+__all__ = ['get_template', 'get_template_index', 'get_molecule']
