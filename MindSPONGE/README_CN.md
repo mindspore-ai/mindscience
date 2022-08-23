@@ -16,10 +16,11 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **最新消息** 📰
 
-- 🔥`2022.8.11—2022.8.15` MindSpore SPONGE SIG[暑期学校活动](#sig-)，[活动回放](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453)
+- 🔥`2022.8.23` 论文"Few-Shot Learning of Accurate Folding Landscape for Protein Structure Prediction" arxiv预印，详情参见[论文](https://arxiv.org/abs/2208.09652)
+- `2022.8.11—2022.8.15` MindSpore SPONGE SIG[暑期学校活动](#sig-)，[活动回放](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453)
 - `2022.07.18` 论文"SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"发表于期刊Chinese Journal of Chemistry，详情参见[论文](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
-- `2022.07.09` MEGA-Assessment在CAMEO-QE月榜取得第一名。
-- `2022.06.27` 论文"PSP: Million-level Protein Sequence Dataset for Protein Structure Prediction" arxiv 预印，详情参见[论文](https://arxiv.org/pdf/2206.12240v1.pdf)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)。
+- `2022.07.09` MEGA-Assessment在CAMEO-QE月榜取得第一名
+- `2022.06.27` 论文"PSP: Million-level Protein Sequence Dataset for Protein Structure Prediction" arxiv 预印，详情参见[论文](https://arxiv.org/pdf/2206.12240v1.pdf)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
 - `2022.04.21` MEGA-Fold CAMEO竞赛月榜第一, [相关新闻](https://www.huawei.com/cn/news/2022/4/mindspore-cameo-protein-ascend)
 
 ## **即将到来** 🚀
@@ -209,9 +210,9 @@ MindSpore SPONGE SIG(Special Interesting Group)是由一群有兴趣，有使命
 
 MindSpore SPONGE SIG小组为广大科研人员，老师和学生提供高效易用的AI计算生物软件的同时，为在这个领域有着强大的能力或者浓厚的兴趣的人们提供了一个能够共同交流合作的平台。
 
-在SIG小组中，我们会举办各种活动，其中最为隆重的暑期学校活动即将到来，活动时间为8月11日-8月15日，我们将会邀请到六位MindSpore SPONGE SIG的老师进行一场为期五天的授课，授课主题主要包括MindSpore基础，分子动力学以及AI × Science进阶课程三大主题，还会提供四次上机课时让学生们亲自动手体验。如果想要报名暑期学校，请扫描下图二维码，我们随时欢迎你的到来。
+SIG小组目前有着六位核心专家老师，加入SIG小组之后可以由老师带领团队进行科技调研以及代码仓功能的开发，当然也十分欢迎组员们使用MindSPONGE来进行自己的课题的调研。
 
-<div align=center><img src="docs/暑期学校.png" width="150"/></div>
+在SIG小组中，我们会举办各种活动，包括暑期学校、公开课宣讲、科技分享会等大型活动，也有组内分享、知乎博文编写等多种小型活动，积极参与组内活动，能够获得非常多与老师们沟通交流的机会。在8月15日结束的暑期学校活动中，我们邀请到了13位专家老师进行一场为期五天的授课，授课主题主要包括MindSpore基础，分子动力学以及AI × Science进阶课程三大主题，可以在[这里](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453)获取活动回放。
 
 在SIG小组中，我们还会发布众智任务和[开源实习任务](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue)，欢迎大家来认领。
 
