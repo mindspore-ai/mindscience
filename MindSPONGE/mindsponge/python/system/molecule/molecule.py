@@ -444,7 +444,7 @@ class Molecule(Cell):
         self.system_mass = msnp.sum(self.atom_mass, -1, keepdims=True)
         self.has_empty_atom = (not self.atom_mask.all())
         # (B,1) <- (B,A)
-        self.system_natom = msnp.sum(self.atom_mask, -1, keepdims=True)
+        self.system_natom = msnp.sum(F.cast(self.atom_mask, ms.float32), -1, keepdims=True)
 
         self.keep_prod = ops.ReduceProd(keep_dims=True)
         self.identity = ops.Identity()

@@ -241,7 +241,7 @@ class Residue:
             self.atom_mask, msnp.reciprocal(self.atom_mass), 0)
         # (B,1)
         self.natom_tensor = msnp.sum(
-            F.cast(self.atom_mask, ms.int32), -1, keepdims=True)
+            F.cast(self.atom_mask, ms.float32), -1, keepdims=True)
         self.total_mass = msnp.sum(self.atom_mass, -1, keepdims=True)
 
         # (B,A')
@@ -274,7 +274,7 @@ class Residue:
         # (B,1)
         self.head_atom = head_atom
         if head_atom is not None:
-            self.head_atom = Tensor(head_atom, ms.int32).reshape(-1, 1)
+            self.head_atom = Tensor([head_atom,], ms.int32).reshape(-1, 1)
             if self.head_atom.shape[0] != self.multi_system and self.head_atom.shape[0] != 1:
                 raise ValueError('The first dimension of head_atom (' + str(self.head_atom.shape[0]) +
                                  ') does not match the number of system multi_system (' + str(self.multi_system) + ')!')
@@ -285,7 +285,7 @@ class Residue:
         # (B,1)
         self.tail_atom = tail_atom
         if tail_atom is not None:
-            self.tail_atom = Tensor(tail_atom, ms.int32).reshape(-1, 1)
+            self.tail_atom = Tensor([tail_atom,], ms.int32).reshape(-1, 1)
             if self.tail_atom.shape[0] != self.multi_system and self.tail_atom.shape[0] != 1:
                 raise ValueError('The first dimension of tail_atom (' + str(self.tail_atom.shape[0]) +
                                  ') does not match the number of system multi_system (' + str(self.multi_system) + ')!')
