@@ -17,11 +17,12 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **Latest News** 📰
 
-- 🔥`2022.8.11—2022.8.15` MindSpore SPONGE SIG [Summer School](#special-interesting-group-), [replay](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453)
+- 🔥`2022.8.23` Paper "Few-Shot Learning of Accurate Folding Landscape for Protein Structure Prediction" is preprinted in arxiv, Please refer to [Paper](https://arxiv.org/abs/2208.09652)
+- `2022.8.11—2022.8.15` MindSpore SPONGE SIG [Summer School](#special-interesting-group-), [replay](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453)
 - `2022.07.18` Paper "SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"is published in Chinese Journal of Chemistry. Please refer to [paper](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456) and [codes](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
-- `2022.07.09` MEGA-Assessment wins CAMEO-QE monthly 1st.
+- `2022.07.09` MEGA-Assessment wins CAMEO-QE monthly 1st
 - `2022.06.27` Paper "PSP: Million-level Protein Sequence Dataset for Protein Structure Prediction" is preprinted in arxiv. Please refer to [Paper](https://arxiv.org/pdf/2206.12240v1.pdf) and [codes](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein).
-- `2022.04.21` MEGA-Fold wins CAMEO-3D monthly 1st. [Related News](https://www.huawei.com/cn/news/2022/4/mindspore-cameo-protein-ascend).
+- `2022.04.21` MEGA-Fold wins CAMEO-3D monthly 1st. [Related News](https://www.huawei.com/cn/news/2022/4/mindspore-cameo-protein-ascend)
 
 ## **Coming Soon** 🚀
 
@@ -210,9 +211,9 @@ MindSpore SPONGE SIG (Special Interesting Group) is a team composed of a group o
 
 MindSpore SPONGE SIG group provides efficient and easy-to-use AI computational biology software for researchers, teachers and students, and provides a platform for people with strong abilities or strong interests in this field to communicate and cooperate together.
 
-In the SIG group, we will hold various activities, among which the most grand summer school activity is coming soon, from August 11th to August 15th, we will invite six teachers from MindSpore SPONGE SIG to have a The five-day lecture mainly includes three themes of MindSpore basics, molecular dynamics and advanced AI × Science courses. Four computer classes will be provided for students to experience hands-on. If you want to register for the summer school, please scan the QR code below, we welcome you at any time.
+At present, the SIG group has six core teachers. After members joining the SIG group, our teachers will lead the team to carry out scientific research and develop the software function development. Of course, members are also welcome to do research on their own topics using MindSPONGE.
 
-<div align=center><img src="docs/暑期学校.png" width="150"/></div>
+In the SIG group, we will hold various activities, including summer school, public lecture, technology communication meeting and other large-scale activities. Small-scale activities like weekly meetings, blogs writing will also be held in the group. By joining the activities, there will be lots of chances to communicate with our experts. During the summer school program ended on August 15th, we invited 13 teachers to have a five-day lecture mainly including three themes of MindSpore basics, molecular dynamics and advanced AI × Science courses. You can get the replay [here](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453).
 
 In the SIG group, we will also release the public intelligence task and [open source internship task](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue), welcome everyone to claim it.
 
