@@ -2,6 +2,7 @@
 This **module** is used to process topology and conformations
 """
 import os.path
+from abc import ABC, abstractmethod
 
 import numpy as np
 from .helper import get_rotate_matrix, ResidueType, Molecule, Residue, set_global_alternative_names, Xdict, \
@@ -403,32 +404,22 @@ def optimize(mol, step=5000, only_bad_coordinate=True):
         load_coordinate(temp_out+"_coordinate.txt", mol)
 
 
-class Region:
+class Region(ABC):
     """
-    This **class** is used to define a region
+    This **abstract class** is used to define a region
     **New From 1.2.6.4**
 
     :param *regions: the regions
     :param do: eigher 'union' or 'intersect'
     """
-    def __init__(self, *regions, do="union"):
-        self.regions = regions
-        self.do = do
-        assert self.do in ("union", "intersect")
+    def __init__(self):
         self.side = "in"
         self._side = True
         set_attribute_alternative_names(self)
 
+    @abstractmethod
     def __contains__(self, item):
-        if self.do == "union":
-            for region in self.regions:
-                if item in region:
-                    return True
-            return False
-        for region in self.regions:
-            if item not in region:
-                return False
-        return True
+        pass
 
     def set_side(self, side):
         """
@@ -437,16 +428,54 @@ class Region:
         :param side: either "in" or "out"
         :return: None
         """
+        self.side = side
         if side == "in":
             self._side = True
         elif side == "out":
             self._side = False
         else:
             raise ValueError("side should be 'in' or 'out'")
-        self.side = side
 
 
-# pylint: disable=super-init-not-called
+
+class IntersectRegion:
+    """
+    This **class** is used to get the interset region of some regions
+    **New From 1.2.6.4**
+
+    :param *regions: the regions
+    """
+    def __init__(self, *regions):
+        self.regions = regions
+
+    def __contains__(self, item):
+        for region in self.regions:
+            if item not in region:
+                return False
+        return True
+
+
+class UnionRegion:
+    """
+    This **class** is used to get the union region of some regions
+    **New From 1.2.6.4**
+
+    :param *regions: the regions
+    """
+    def __init__(self, *regions):
+        self.regions = regions
+
+    def __contains__(self, item):
+        for region in self.regions:
+            if item in region:
+                return True
+        return False
+
+
+Region.register(UnionRegion)
+Region.register(IntersectRegion)
+
+
 class BlockRegion(Region):
     """
     This **class** is used to define a block region
@@ -467,10 +496,8 @@ class BlockRegion(Region):
         self.x_high = x_high
         self.y_high = y_high
         self.z_high = z_high
-        self._side = True
-        self.side = "in"
-        super().set_side(side)
-        set_attribute_alternative_names(self)
+        super().__init__()
+        self.set_side(side)
 
     def __contains__(self, item):
         ans = self.x_low < item[0] < self.x_high and self.y_low < item[1] < self.y_high \
@@ -478,7 +505,6 @@ class BlockRegion(Region):
         return ans if self._side else not ans
 
 
-# pylint: disable=super-init-not-called
 class SphereRegion(Region):
     """
     This **class** is used to define a sphere region
@@ -495,24 +521,93 @@ class SphereRegion(Region):
         self.y = y
         self.z = z
         self._r2 = r * r
-        self._side = True
-        self.side = "in"
-        super().set_side(side)
-        set_attribute_alternative_names(self)
+        super().__init__()
+        self.set_side(side)
 
     def __contains__(self, item):
         ans = (item[0] - self.x) ** 2 + (item[1] - self.y) ** 2 + (item[2] - self.z) ** 2
         ans = ans < self._r2
         return ans if self._side else not ans
 
-    def set_radius(self, radius):
-        """
-        This **function** is used to set the radius of the region"
 
-        :param side: either "in" or "out"
-        :return: None
-        """
-        self._r2 = radius * radius
+class FrustumRegion(Region):
+    """
+    This **class** is used to define a frustum region
+    **New From 1.2.6.4**
+
+    :param x1: the x coordinate of the first circle origin
+    :param y1: the y coordinate of the first circle origin
+    :param z1: the z coordinate of the first circle origin
+    :param r1: the radius of the first circle origin
+    :param x2: the x coordinate of the second circle origin
+    :param y2: the y coordinate of the second circle origin
+    :param z2: the z coordinate of the second circle origin
+    :param r2: the radius of the second circle origin
+    :param side: either "in" or "out"
+    """
+    def __init__(self, x1, y1, z1, r1, x2, y2, z2, r2, side="in"):
+        self.r1 = r1
+        self.r2 = r2
+        self.o1 = np.array([x1, y1, z1], dtype=np.float32)
+        self.o2 = np.array([x2, y2, z2], dtype=np.float32)
+        self.axis = self.o2 - self.o1
+        self.length = np.linalg.norm(self.axis)
+        self.axis /= self.length
+        self.k = (r2 - r1) / self.length
+        super().__init__()
+        self.set_side(side)
+
+    def __contains__(self, item):
+        crd = np.array(item) - self.o1
+        length = np.linalg.norm(crd)
+        projection = np.dot(crd, self.axis)
+        distance = length * length - projection * projection
+        r = self.r1 + self.k * projection
+        ans = self.length > projection > 0 and distance < r * r
+        return ans if self._side else not ans
+
+
+class PrismRegion(Region):
+    """
+    This **class** is used to define a prism (parallelepiped) region
+    **New From 1.2.6.4**
+
+    :param x0: the x coordinate of the origin
+    :param y0: the y coordinate of the origin
+    :param z0: the z coordinate of the origin
+    :param x1: the x coordinate of the first basis vector
+    :param y1: the y coordinate of the first basis vector
+    :param z1: the z coordinate of the first basis vector
+    :param x2: the x coordinate of the second basis vector
+    :param y2: the y coordinate of the second basis vector
+    :param zz: the z coordinate of the second basis vector
+    :param x3: the x coordinate of the third basis vector
+    :param y3: the y coordinate of the third basis vector
+    :param z3: the z coordinate of the third basis vector
+    :param side: either "in" or "out"
+    """
+    def __init__(self, x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3, side="in"):
+        self.l0 = np.array([x0, y0, z0], dtype=np.float32)
+        self.l1 = np.array([x1, y1, z1], dtype=np.float32)
+        self.l2 = np.array([x2, y2, z2], dtype=np.float32)
+        self.l3 = np.array([x3, y3, z3], dtype=np.float32)
+        self.n3 = np.cross(self.l1, self.l2)
+        self.n3 /= np.linalg.norm(self.n3)
+        self.n2 = np.cross(self.l3, self.l1)
+        self.n2 /= np.linalg.norm(self.n2)
+        self.n1 = np.cross(self.l2, self.l3)
+        self.n1 /= np.linalg.norm(self.n1)
+        self.length = np.array([np.dot(self.l1, self.n1), np.dot(self.l2, self.n2), np.dot(self.l3, self.n3)])
+        assert np.all(self.length > 0), "The basis vectors should mmet the right-handed axis system requirements"
+        super().__init__()
+        self.set_side(side)
+
+    def __contains__(self, item):
+        crd = np.array(item) - self.l0
+        ans = 0 <= np.dot(crd, self.n1) < self.length[0] and 0 <= np.dot(crd, self.n2) < self.length[1] and \
+              0 <= np.dot(crd, self.n3) < self.length[2]
+
+        return ans if self._side else not ans
 
 
 class Lattice:
@@ -520,8 +615,9 @@ class Lattice:
     This **class** is used to help with the process of the lattice
     **New From 1.2.6.4**
 
-    :param style: the style of the lattice. "fcc"
-    :param basis_molecule: the unit to repeat, a Residue, a ResidueType or a Molecule.
+    :param style: the style of the lattice. "custom", "template:NAME" or the key values in Lattice.styles
+        "sc", "fcc", "bcc", "hcp", "diamond" are in the default template styles.
+    :param basis_molecule: the unit to repeat, a Residue, a ResidueType or a Molecule
     :param scale: the scale of the lattice
     :param origin: a list with 3 numbers, the origin of the lattice. [0,0,0] for default.
     :param cell_length: the length of the unit cell. [1,1,1] for default.
@@ -538,7 +634,7 @@ class Lattice:
             self.scale = 1
             self.origin = [0, 0, 0]
             self.cell_length = [1, 1, 1]
-            self.cell_angle = [90, 90, 90]
+            self.cell_angle = np.array([90, 90, 90], dtype=float)
             self.spacing = [0, 0, 0]
             self.basis_position = []
             if self.scale is not None:
@@ -548,7 +644,8 @@ class Lattice:
             if cell_length is not None:
                 self.cell_length = cell_length
             if cell_angle is not None:
-                raise NotImplementedError("The angles of the unit cell can not be customized now")
+                self.cell_angle = np.array(cell_angle)
+            assert np.all(self.cell_angle <= 90), "the cell angle should be not greater than 90 degree"
             if spacing is not None:
                 self.spacing = spacing
             if basis_position is not None:
@@ -608,34 +705,70 @@ class Lattice:
             raise ValueError("Box should only be a BlockRegion with side == 'in' !")
         if not mol:
             mol = Molecule("unnamed")
+        mol.box_length = [box.x_high - box.x_low, box.y_high - box.y_low, box.z_high - box.z_low]
+        cell_angle = self.cell_angle * np.pi / 180.0
+        c0, c1, c2 = np.cos(cell_angle)
+        _, _, s2 = np.sin(cell_angle)
         basis_mol = self.basis_molecule
         res_len = -1
         if isinstance(basis_mol, Molecule):
             basis_mol.atoms = [atom for residue in basis_mol.residues for atom in residue.atoms]
             res_len = -len(basis_mol.residues)
-        x0 = box.x_low + self.origin[0]
-        while x0 < box.x_high:
-            y0 = box.y_low + self.origin[1]
+        dl1x = self.scale * (self.cell_length[0] + self.spacing[0])
+
+        dl2x = self.scale * (self.cell_length[1] + self.spacing[1])
+        dl2y = dl2x * s2
+        dl2x *= c2
+
+        dl3x = self.scale * (self.cell_length[2] + self.spacing[2])
+        dl3y = dl3x * (c0 - c2 * c1) / s2
+        dl3z = dl3x * np.sqrt(1 - c2 * c2 - c1 * c1 - c0 * c0 + 2 * c0 * c1 * c2) / s2
+        dl3x *= c1
+        bps = np.array([[dl1x * basis[0] + dl2x * basis[1] + dl3x * basis[2],
+                         dl2y * basis[1] + dl3y * basis[2], dl3z * basis[2]] for basis in self.basis_position])
+        x_init = 0
+        y_init = 0
+        z0 = box.z_low + self.origin[2]
+        x1 = basis_mol.atoms[0].x
+        y1 = basis_mol.atoms[0].y
+        z1 = basis_mol.atoms[0].z
+        while z0 < box.z_high:
+            y0 = box.y_low + self.origin[1] + y_init
             while y0 < box.y_high:
-                z0 = box.z_low + self.origin[2]
-                while z0 < box.z_high:
-                    for basis in self.basis_position:
-                        x1 = basis_mol.atoms[0].x
-                        y1 = basis_mol.atoms[0].y
-                        z1 = basis_mol.atoms[0].z
-                        x2 = self.scale * basis[0] + x0 + x1
-                        y2 = self.scale * basis[1] + y0 + y1
-                        z2 = self.scale * basis[2] + z0 + z1
+                x0 = box.x_low + self.origin[0] + x_init
+                while x0 < box.x_high:
+                    for basis in bps:
+                        x2 = basis[0] + x0
+                        y2 = basis[1] + y0
+                        z2 = basis[2] + z0
                         self._judge_region(x1, y1, z1, x2, y2, z2, region, mol, basis_mol, res_len)
-                    z0 += self.scale * self.cell_length[2] + self.spacing[2]
-                y0 += self.scale * self.cell_length[1] + self.spacing[1]
-            x0 += self.scale * self.cell_length[0] + self.spacing[0]
+                    x0 += dl1x
+                x_init += dl2x
+                x_init %= dl1x
+                y0 += dl2y
+            x_init += dl3x
+            x_init %= dl1x
+            y_init += dl3y
+            y_init %= dl2y
+            z0 += dl3z
         return mol
 
 
 SIMPLE_CUBIC_LATTICE = Lattice("template:sc", basis_position=[[0, 0, 0]])
+
 BODY_CENTERED_CUBIC_LATTICE = Lattice("template:bcc", basis_position=[[0, 0, 0], [0.5, 0.5, 0.5]])
+
 FACE_CENTERED_CUBIC_LATTICE = Lattice("template:fcc", basis_position=[[0, 0, 0], [0.5, 0, 0.5],
                                                                       [0, 0.5, 0.5], [0.5, 0.5, 0]])
+
+HEXAGONAL_CLOSE_PACKED_LATTICE = Lattice("template:hcp",
+                                         basis_position=[[0, 0, 0], [1/3, 1/3, 0.5]],
+                                         cell_angle=[90, 90, 60],
+                                         cell_length=[1, 1, 2/3*np.sqrt(6)])
+
+DIAMOND_LATTICE = Lattice("template:diamond", basis_position=[[0, 0, 0], [0, 0.5, 0.5],
+                                                              [0.5, 0, 0.5], [0.5, 0.5, 0],
+                                                              [0.25, 0.25, 0.25], [0.25, 0.75, 0.75],
+                                                              [0.75, 0.25, 0.75], [0.75, 0.75, 0.25]])
 
 set_global_alternative_names()
