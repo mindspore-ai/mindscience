@@ -23,6 +23,45 @@
 Cybertron
 """
 
+import time
 from .cybertron import *
 from .model import *
 from .readout import *
+
+
+def _mindspore_version_check():
+    """
+       Do the MindSpore version check for Cybertron. If the
+       MindSpore can not be imported, it will raise ImportError. If its
+       version is not compatibale with current Cybertron verision,
+       it will print a warning.
+
+       Raise:
+           ImportError: If the MindSpore can not be imported.
+       """
+
+    try:
+        import mindspore
+        from mindspore import log as logger
+    except ImportError:
+        raise ImportError("Can not find MindSpore in current environment. Please install "
+                          "MindSpore before using MindSpore Cybertron, by following "
+                          "the instruction at https://www.mindspore.cn/install")
+
+    ms_version = mindspore.__version__[:5]
+    required_mindspore_verision = '1.8.1'
+
+    if ms_version < required_mindspore_verision:
+        logger.warning("Current version of MindSpore is not compatible with Cybertron. "
+                       "Some functions might not work or even raise error. Please install MindSpore "
+                       "version >= {} For more details about dependency setting, please check "
+                       "the instructions at MindSpore official website https://www.mindspore.cn/install "
+                       "or check the README.md at https://gitee.com/mindspore/mindscience"
+                       .format(required_mindspore_verision))
+        warning_countdown = 3
+        for i in range(warning_countdown, 0, -1):
+            logger.warning(
+                f"Please pay attention to the above warning, countdown: {i}")
+            time.sleep(1)
+
+_mindspore_version_check()
