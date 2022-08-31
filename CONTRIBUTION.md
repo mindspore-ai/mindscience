@@ -1,5 +1,22 @@
 # **Mindscience贡献指南**
 
+<!-- TOC -->
+
+- [Mindscience贡献指南](#Mindscience贡献指南)
+    - [如何成为mindscience仓的贡献者](#如何成为mindscience仓的贡献者)
+        - [一、提交合并请求，为mindscience仓贡献自己的力量](#一提交合并请求为mindscience仓贡献自己的力量)
+        - [二、新增测试用例，看护代码功能](#二新增测试用例看护代码功能)
+    - [本地代码操作](#本地代码操作)
+        - [一、信息配置](#一信息配置)
+        - [二、拉取目标仓代码](#二拉取目标仓代码)
+        - [三、查看仓及分支信息](#三查看仓及分支信息)
+        - [四、修改代码后提交commit以及多个commit合并](#四修改代码后提交commit以及多个commit合并)
+        - [五、更新本地代码，同步仓代码——冲突解决](#五更新本地代码同步仓代码冲突解决)
+        - [六、将本地修改代码推到远端仓，提起向主仓合并请求的PR](#六将本地修改代码推到远端仓提起向主仓合并请求的pr)
+        - [七、附加](#七附加)
+
+<!-- /TOC -->
+
 ## **如何成为mindscience仓的贡献者**
 
 - 在gitee上输入mindscience的主仓网站:https://gitee.com/mindspore/mindscience
@@ -114,10 +131,6 @@ git clone -b 分支名 代码仓链接
 - 代码拉取完成后，进入代码目录内部便可以使用git操作（ **注意：拉取代码时的目录是无法使用类似git pull/push/remote/log等命令，必须进入其下一级目录才可以使用git pull/push等命令** ）
 
 <div align=center>
-<img src="./docs/contribution_guide/git_user_config.png" alt="git_user_config" width="600"/>
-</div>
-
-<div align=center>
 <img src="./docs/contribution_guide/git_clone.png" alt="git_clone" width="600"/>
 </div>
 
@@ -195,7 +208,7 @@ git rebase -i commit_id
 <img src="./docs/contribution_guide/commit_result.png" alt="commit_result" width="600"/>
 </div>
 
-### **五、更新本地代码，同步仓代码————冲突解决**
+### **五、更新本地代码，同步仓代码——冲突解决**
 
 - 本地代码想同步仓代码时，如果本地没有修改也没有新增commit_id的话，此时直接用git pull 仓名 仓分支名即可
 
