@@ -43,6 +43,7 @@ def fold_infer(crop_size, predict_confidence):
     model_cfg.slice = slice_val
 
     megafold = MegaFold(model_cfg, mixed_precision=False)
+    megafold.add_flags_recursive(train_backward=False)
     load_checkpoint("/home/workspace/mindspore_ckpt/ckpt/megafold.ckpt", megafold)
     seq_files = os.listdir("./feature/")
     feature_generator = None

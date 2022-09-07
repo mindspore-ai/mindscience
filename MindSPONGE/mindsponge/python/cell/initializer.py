@@ -57,7 +57,7 @@ def do_keep_cell_fp32(network):
         subcell = cells[name]
         if subcell == network:
             continue
-        elif isinstance(subcell, (nn.BatchNorm2d, nn.BatchNorm1d, nn.Softmax, nn.LayerNorm)):
+        elif isinstance(subcell, (nn.Softmax, nn.LayerNorm)):
             network._cells[name] = OutputTo16(subcell.to_float(mstype.float32))
             change = True
         else:
