@@ -34,22 +34,23 @@ from ..function.units import Units, global_units
 
 
 class PotentialCell(Cell):
-    r"""Basic cell for potential energy
+    r"""
+    Basic cell for potential energy.
 
     Args:
-
         exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int.
                                 Index of the atoms should be excluded from non-bond interaction.
                                 Default: None
-
         length_unit (str):      Length unit for position coordinates. Default: None
-
         energy_unit (str):      Energy unit. Default: None
-
         units (Units):          Units of length and energy. Default: None
-
         use_pbc (bool):         Whether to use periodic boundary condition.
 
+    Returns:
+        potential (Tensor), Tensor of shape (B, 1). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -90,13 +91,18 @@ class PotentialCell(Cell):
 
     @property
     def exclude_index(self) -> Tensor:
-        """exclude index"""
+        """
+        exclude index.
+
+        Returns:
+            Tensor, exclude index.
+        """
         if self._exclude_index is None:
             return None
         return self.identity(self._exclude_index)
 
     def _check_exclude_index(self, exclude_index: Tensor):
-        """check excluded index"""
+        """check excluded index."""
         if exclude_index is None:
             return None
         exclude_index = Tensor(exclude_index, ms.int32)
@@ -109,7 +115,7 @@ class PotentialCell(Cell):
         return Parameter(exclude_index, name='exclude_index', requires_grad=False)
 
     def set_exclude_index(self, exclude_index: Tensor):
-        """set excluded index"""
+        """set excluded index."""
         self._exclude_index = self._check_exclude_index(exclude_index)
         return self
 
@@ -122,14 +128,14 @@ class PotentialCell(Cell):
         return self.units.energy_unit
 
     def set_pbc(self, use_pbc: bool = None):
-        """set PBC box"""
+        """set PBC box."""
         self.use_pbc = use_pbc
         self.get_vector.set_pbc(use_pbc)
         self.get_distance.set_pbc(use_pbc)
         return self
 
     def set_cutoff(self, cutoff: Tensor = None):
-        """set cutoff distance"""
+        """set cutoff distance."""
         self.cutoff = None
         if cutoff is not None:
             self.cutoff = Tensor(cutoff, ms.float32)
@@ -160,7 +166,7 @@ class PotentialCell(Cell):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            potential (Tensor): Tensor of shape (B, 1). Data type is float.
+            potential (Tensor), Tensor of shape (B, 1). Data type is float.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers in simulation

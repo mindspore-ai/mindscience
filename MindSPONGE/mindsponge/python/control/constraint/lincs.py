@@ -38,15 +38,22 @@ from ...function.operations import GetShiftGrad
 
 
 class Lincs(Constraint):
-    """LINCS (LINear Constraint Solver) constraint controller
+    """
+    LINCS (LINear Constraint Solver) constraint controller.
+
     Args:
-        bonds(Tensor,B*2): All the bonds need to optimize.
-        Mii(Tensor,B*N): All the inverse mass of atoms in the diagonal elements.
-        coordinate(Tensor,B*N*D): The old coordinates of the system.
-    Input:
-        new_crd(Tensor,B*N*D): The new coordinates of the system.
+        bonds(Tensor,B*2):          All the bonds need to optimize.
+        Mii(Tensor,B*N):            All the inverse mass of atoms in the diagonal elements.
+        coordinate(Tensor,B*N*D):   The old coordinates of the system.
+
+    Inputs:
+        - **new_crd** (Tensor,B*N*D) - The new coordinates of the system.
+
     Return:
-        coordinate(Tensor,B*N*D): Constraint coordinates..
+        coordinate(Tensor,B*N*D), Constraint coordinates.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,

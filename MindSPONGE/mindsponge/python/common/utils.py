@@ -261,7 +261,7 @@ def frames_and_literature_positions_to_atom14_pos(aatype, all_frames_to_global, 
 
 
 def rigids_concate_all(xall, x5, x6, x7):
-    """rigids concate all"""
+    """rigids concate all."""
     x5 = (geometry.rots_expend_dims(x5[0], -1), geometry.vecs_expend_dims(x5[1], -1))
     x6 = (geometry.rots_expend_dims(x6[0], -1), geometry.vecs_expend_dims(x6[1], -1))
     x7 = (geometry.rots_expend_dims(x7[0], -1), geometry.vecs_expend_dims(x7[1], -1))
@@ -346,7 +346,7 @@ def torsion_angles_to_frames(aatype, backb_to_global, torsion_angles_sin_cos, re
 
 
 def map_atoms_to_global_func(all_frames, group_mask):
-    """map atoms to global"""
+    """map atoms to global."""
     all_frames_rot = all_frames[0]
     all_frames_trans = all_frames[1]
     rot = geometry.rots_scale(geometry.rots_expend_dims(all_frames_rot, 1), group_mask)
@@ -378,22 +378,28 @@ def atom14_to_atom37(atom14_data, residx_atom37_to_atom14, atom37_atom_exists, i
 
 
 def make_atom14_positions(aatype, all_atom_mask, all_atom_positions):
-    """Constructs denser atom positions (14 dimensions instead of 37).
+    """
+    Constructs denser atom positions (14 dimensions instead of 37).
+
     Args:
-        input with "aatype", "all_atom_positions" and "all_atom_mask"
+        aatype:             numpy.array.
+        all_atom_positions: numpy.array.
+        all_atom_mask:      numpy.array.
 
     Returns:
-        * 'atom14_atom_exists': atom14 position exists mask
-        * 'atom14_gt_exists': ground truth atom14 position exists mask
-        * 'atom14_gt_positions': ground truth atom14 positions
-        * 'residx_atom14_to_atom37': mapping for (residx, atom14) --> atom37, i.e. an array
-        * 'residx_atom37_to_atom14': gather indices for mapping back
-        * 'atom37_atom_exists': atom37 exists mask
-        * 'atom14_alt_gt_positions': apply transformation matrices for the given residue sequence to the ground
-         truth positions
-        * 'atom14_alt_gt_exists': the mask for the alternative ground truth
-        * 'atom14_atom_is_ambiguous': create an ambiguous_mask for the given sequence
+        - 'atom14_atom_exists', atom14 position exists mask.
+        - 'atom14_gt_exists', ground truth atom14 position exists mask.
+        - 'atom14_gt_positions', ground truth atom14 positions.
+        - 'residx_atom14_to_atom37', mapping for (residx, atom14) --> atom37, i.e. an array.
+        - 'residx_atom37_to_atom14', gather indices for mapping back.
+        - 'atom37_atom_exists', atom37 exists mask.
+        - 'atom14_alt_gt_positions', apply transformation matrices for the given residue sequence to the ground
+          truth positions.
+        - 'atom14_alt_gt_exists', the mask for the alternative ground truth.
+        - 'atom14_atom_is_ambiguous', create an ambiguous_mask for the given sequence.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     restype_atom14_to_atom37 = []  # mapping (restype, atom14) --> atom37
     restype_atom37_to_atom14 = []  # mapping (restype, atom37) --> atom14
@@ -515,8 +521,17 @@ def make_atom14_positions(aatype, all_atom_mask, all_atom_positions):
 
 
 def get_pdb_info(pdb_path):
-    """get atom positions, residue index etc. info from pdb file
+    """
+    get atom positions, residue index etc. info from pdb file.
 
+    Args:
+        pdb_path(str): the path of the input pdb.
+
+    Returns:
+        features(dict), the information of pdb.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     with open(pdb_path, 'r', encoding="UTF-8") as f:
         prot_pdb = protein.from_pdb_string(f.read())
@@ -547,7 +562,18 @@ def get_pdb_info(pdb_path):
 
 
 def get_fasta_info(pdb_path):
-    # get fasta info from pdb
+    """
+    get fasta info from pdb.
+
+    Args:
+        pdb_path(str): path of the input pdb.
+
+    Returns:
+        fasta(str), fasta of input pdb.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     with open(pdb_path, 'r', encoding='UTF-8') as f:
         prot_pdb = protein.from_pdb_string(f.read())
     aatype = prot_pdb.aatype
@@ -557,7 +583,21 @@ def get_fasta_info(pdb_path):
 
 
 def get_aligned_seq(gt_seq, pr_seq):
-    """align two protein fasta sequence"""
+    """
+    align two protein fasta sequence.
+
+    Args:
+        gt_seq(str): one protein fasta sequence.
+        pr_seq(str): another protein fasta sequence.
+
+    Returns:
+        - target(str), one protein fasta sequence.
+        - align_relationship(str), the differences of the two sequences.
+        - query(str), another protein fasta sequence.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     aligner = Align.PairwiseAligner()
     substitution_matrices.load()
     matrix = substitution_matrices.load("BLOSUM62")

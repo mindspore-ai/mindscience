@@ -34,41 +34,36 @@ from ...function.units import Units
 
 
 class BondEnergy(EnergyCell):
-    r"""Energy term of bond length
+    r"""
+    Energy term of bond length.
 
-    Math:
+    .. Math::
 
         E_bond(b_{ij}) = 1 / 2 * k_{ij}^b * (b_{ij} - b_{ij}^0) ^ 2
 
     Args:
-
         index (Tensor):             Tensor of shape (B, b, 2). Data type is int.
                                     Atom index of bond.
-
         force_constant (Tensor):    Tensor of shape (1, b). Data type is float.
                                     The harmonic force constants of bond length (k^b).
-
         bond_length (Tensor):       Tensor of shape (1, b). Data type is float.
                                     The equilibrium value of bond length (b^0).
-
         parameters (dict):          Force field parameters. Default: None
-
         use_pbc (bool):             Whether to use periodic boundary condition.
-
         length_unit (str):          Length unit for position coordinates. Default: None
-
         energy_unit (str):          Energy unit. Default: None
-
         units (Units):              Units of length and energy. Default: None
 
+    Returns:
+        energy (Tensor), Tensor of shape (B, 1). Data type is float.
+
     Symbols:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
+        B:  Batchsize, i.e. number of walkers in simulation.
         b:  Number of bonds.
-
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -152,11 +147,12 @@ class BondEnergy(EnergyCell):
                   inv_neigh_dis: Tensor = None,
                   pbc_box: Tensor = None,
                   ):
-        r"""Calculate energy term.
+        r"""
+        Calculate energy term.
 
         Args:
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
-                                            Position coordinate of atoms in system
+                                            Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
                                             Index of neighbour atoms.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
@@ -171,10 +167,10 @@ class BondEnergy(EnergyCell):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
+            energy (Tensor), Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
+            B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             D:  Dimension of the simulation system. Usually is 3.
 

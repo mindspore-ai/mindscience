@@ -141,7 +141,16 @@ _BAR_DEFAULT_REF = 16.6053906717384685
 
 
 class Length:
-    """Length"""
+    """
+    Length.
+
+    Args:
+        value (float):   length value.
+        unit (str):      length value unit.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
 
     def __init__(self, value: float, unit: str = 'nm'):
         if isinstance(value, Length):
@@ -183,27 +192,52 @@ class Length:
 
     @property
     def abs_size(self):
-        """absolute size of length"""
+        """
+        absolute size of length.
+
+        Returns:
+            float, the absolute size of length.        
+        """
         return self.__abs_size
 
     @property
     def value(self):
-        """value of length"""
+        """
+        value of length.
+
+        Returns:
+            float, the value of length.
+        """
         return self.__value
 
     @property
     def ref(self):
-        """reference value"""
+        """
+        reference value.
+
+        Returns:
+            float, a reference value.
+        """
         return self.__ref
 
     @property
     def unit(self):
-        """length unit"""
+        """
+        length unit.
+
+        Returns:
+            str, the length unit.
+        """
         return self.__unit
 
     @property
     def unit_name(self):
-        """name of length unit"""
+        """
+        name of length unit.
+
+        Returns:
+            str, the name of length unit.
+        """
         return self.__unit_name
 
     def __call__(self, unit=None):
@@ -239,7 +273,16 @@ class Length:
 
 
 class Energy:
-    """Energy"""
+    """
+    Energy.
+    
+    Args:
+        value (float):   energy value.
+        unit (str):      energy value unit.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
 
     def __init__(self, value: float, unit: str = 'kj/mol'):
         if isinstance(value, Energy):
@@ -311,32 +354,68 @@ class Energy:
 
     @property
     def abs_size(self):
-        """absolute size of energy"""
+        """
+        absolute size of energy.
+
+        Returns:
+            float, the absolute size of energy.
+        """
         return self.__abs_size
 
     @property
     def value(self):
-        """value of length"""
+        """
+        value of energy.
+
+        Returns:
+            float, the value of energy.
+        """
         return self.__value
 
     @property
     def ref(self):
-        """reference value"""
+        """
+        reference value.
+
+        Returns:
+            float, the reference value of energy.
+        """
         return self.__ref
 
     @property
     def unit(self):
-        """energy unit"""
+        """
+        energy unit.
+
+        Returns:
+            str, the unit of energy value.
+        """
         return self.__unit
 
     @property
     def unit_name(self):
-        """name of energy unit"""
+        """
+        name of energy unit.
+
+        Returns:
+            str, the name of energy unit.
+        """
         return self.__unit_name
 
 
 def get_length_ref(unit):
-    """return length reference"""
+    """
+    get length reference.
+
+    Args:
+        unit (Union[str, Units, Length, float, int]).
+
+    Returns:
+        length reference(Union[str, float, int]).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     if unit is None:
         return None
     if isinstance(unit, str):
@@ -353,7 +432,18 @@ def get_length_ref(unit):
 
 
 def get_length_unit(unit):
-    """return length unit"""
+    """
+    get length unit.
+
+    Args:
+        unit (Union[str, Units, Length, float, int]).
+
+    Returns:
+        length unit(Union[str, float, int]).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``  
+    """
     if unit is None:
         return 'none'
     if isinstance(unit, str):
@@ -370,7 +460,18 @@ def get_length_unit(unit):
 
 
 def get_length_unit_name(unit):
-    """return name of length unit"""
+    """
+    get name of length unit.
+
+    Args:
+        unit (Union[str, Units, Length, float, int]).
+
+    Returns:
+        length unit(str).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     if unit is None:
         return 'None'
     if isinstance(unit, str):
@@ -387,7 +488,18 @@ def get_length_unit_name(unit):
 
 
 def get_energy_ref(unit):
-    """return energy reference"""
+    """
+    get energy reference.
+
+    Args:
+        unit (Union[str, Units, Length, float, int]).
+
+    Returns:
+        energy reference(Union[str, float, int]).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     if unit is None:
         return None
     if isinstance(unit, str):
@@ -404,7 +516,18 @@ def get_energy_ref(unit):
 
 
 def get_energy_unit(unit):
-    """return energy unit"""
+    """
+    get energy unit.
+
+    Args:
+        unit (Union[str, Units, Length, float, int]).
+
+    Returns:
+        energy unit(str).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     if unit is None:
         return 'none'
     if isinstance(unit, str):
@@ -421,7 +544,18 @@ def get_energy_unit(unit):
 
 
 def get_energy_unit_name(unit):
-    """return name of energy unit"""
+    """
+    get the name of energy unit.
+
+    Args:
+        unit (Union[str, Units, Length, float, int]).
+
+    Returns:
+        name of energy unit(str).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     if unit is None:
         return 'None'
     if isinstance(unit, str):
@@ -438,7 +572,19 @@ def get_energy_unit_name(unit):
 
 
 def length_convert(unit_in, unit_out):
-    """convert length according to difference units"""
+    """
+    convert length according to different units.
+
+    Args:
+        unit_in (Union[str, Units, Length, float, int]):    input unit of length.
+        unit_out (Union[str, Units, Length, float, int]):   output unit of length.
+
+    Returns:
+        float, length according to different units.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     length_in = get_length_ref(unit_in)
     length_out = get_length_ref(unit_out)
     if length_in is None or length_out is None:
@@ -447,7 +593,19 @@ def length_convert(unit_in, unit_out):
 
 
 def energy_convert(unit_in, unit_out):
-    """convert energy according to difference units"""
+    """
+    convert energy according to difference units.
+
+    Args:
+        unit_in (Union[str, Units, Length, float, int]):    input unit of length.
+        unit_out (Union[str, Units, Length, float, int]):   output unit of length.
+
+    Returns:
+        float, energy according to different units.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``    
+    """
     energy_in = get_energy_ref(unit_in)
     energy_out = get_energy_ref(unit_out)
     if energy_in is None or energy_out is None:
@@ -456,12 +614,15 @@ def energy_convert(unit_in, unit_out):
 
 
 class Units:
-    r"""Unit class to record and convert the length and energy units.
+    r"""
+    Unit class to record and convert the length and energy units.
 
     Args:
         length_unit (str):  Length unit. Default: None
         energy_unit (str):  Energy unit. Default: None
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``   
     """
 
     def __init__(self,
@@ -537,131 +698,260 @@ class Units:
         return self
 
     def length(self, value, unit=None):
-        """return the length value of the specified unit"""
+        """
+        return the length value of the specified unit.
+
+        Returns:
+            float, the length value.
+        """
         return value * self.convert_length_from(unit)
 
     def energy(self, value, unit=None):
-        """return the energy value of the specified unit"""
+        """
+        return the energy value of the specified unit.
+
+        Returns:
+            float, the energy value.
+        """
         return value * self.convert_energy_from(unit)
 
     def convert_length_to(self, unit):
-        """convert length to a specified units"""
+        """
+        convert length to a specified units.
+
+        Returns:
+            float, length according to a specified units.
+        """
         return length_convert(self.__length_unit, unit)
 
     def convert_energy_to(self, unit):
-        """convert energy to a specified units"""
+        """
+        convert energy to a specified units.
+
+        Returns:
+            float, energy according to a specified units.
+        """
         return energy_convert(self.__energy_unit, unit)
 
     def convert_length_from(self, unit):
-        """convert length from a specified units"""
+        """convert length from a specified units.
+
+        Returns:
+            float, length according from a specified units.
+        """
         return length_convert(unit, self.__length_unit)
 
     def convert_energy_from(self, unit):
-        """convert energy from a specified units"""
+        """
+        convert energy from a specified units.
+
+        Returns:
+            float, energy according from a specified units.
+        """
         return energy_convert(unit, self.__energy_unit)
 
     @property
     def boltzmann_def(self):
-        """Boltzmann constant in kJ/mol"""
+        """
+        Boltzmann constant in kJ/mol.
+
+        Returns:
+            float, Boltzmann constant in kJ/mol.
+        """
         return _BOLTZMANN_DEFAULT_REF
 
     @property
     def boltzmann(self):
-        """Boltzmann constant in current unit"""
+        """
+        Boltzmann constant in current unit.
+
+        Returns:
+            float, Boltzmann constant in current unit.
+        """
         return self.__boltzmann
 
     @property
     def coulomb(self):
-        """Coulomb constant in current unit"""
+        """
+        Coulomb constant in current unit.
+
+        Returns:
+            float, Coulomb constant in current unit.
+        """
         return self.__coulomb
 
     @property
     def avogadro(self):
-        """Avogadro number"""
+        """
+        Avogadro number.
+
+        Returns:
+            float, Avogadro number.
+        """
         return AVOGADRO_NUMBER
 
     @property
     def gas_constant(self):
-        """gas constant"""
+        """
+        gas constant.
+
+        Returns:
+            float, gas constant.
+        """
         return GAS_CONSTANT
 
     @property
     def length_unit(self):
-        """length unit"""
+        """
+        length unit.
+
+        Returns:
+            length unit (Union[str, float, int]).
+        """
         return self.__length_unit
 
     @property
     def energy_unit(self):
-        """energy unit"""
+        """
+        energy unit.
+
+        Returns:
+            energy unit (Union[str, float, int]).
+        """
         return self.__energy_unit
 
     @property
     def length_unit_name(self):
-        """name of length unit"""
+        """
+        name of length unit.
+
+        Returns:
+            str, name of length unit.
+        """
         return self.__length_unit_name
 
     @property
     def energy_unit_name(self):
-        """name of energy unit"""
+        """
+        name of energy unit.
+
+        Returns:
+            str, name of energy unit.
+        """
         return self.__energy_unit_name
 
     @property
     def volume_unit(self):
-        """velocity unit"""
+        """
+        velocity unit.
+
+        Returns:
+            str, velocity unit.
+        """
         return self.__length_unit + "^3"
 
     @property
     def volume_unit_name(self):
-        """velocity unit"""
+        """
+        velocity unit name.
+
+        Returns:
+            str, velocity unit name.
+        """
         return self.__length_unit + "+3"
 
     @property
     def force_unit(self):
-        """force unit"""
+        """
+        force unit.
+
+        Returns:
+            str, force unit.
+        """
         return self.__energy_unit + '/' + self.__length_unit
 
     @property
     def force_unit_name(self):
-        """name of force unit"""
+        """
+        name of force unit.
+
+        Returns:
+            str, name of force unit.
+        """
         return self.__energy_unit_name + ' ' + self.__length_unit_name + '-1'
 
     @property
     def velocity_unit(self):
-        """velocity unit"""
+        """
+        velocity unit.
+
+        Returns:
+            str, velocity unit.
+        """
         return self.__length_unit + "/" + self.time_unit
 
     @property
     def velocity_unit_name(self):
-        """name of velocity unit"""
+        """
+        name of velocity unit.
+
+        Returns:
+            str, name of velocity unit.
+        """
         return self.__length_unit_name + ' ' + self.time_unit + '-1'
 
     @property
     def length_ref(self):
-        """reference value of length"""
+        """
+        reference value of length.
+
+        Returns:
+            float, reference value of length.
+        """
         return self.__length_ref
 
     @property
     def energy_ref(self):
-        """reference value of energy"""
+        """
+        reference value of energy.
+
+        Returns:
+            float, reference value of energy.
+        """
         return self.__energy_ref
 
     @property
     def force_ref(self):
-        """reference value of force"""
+        """
+        reference value of force.
+
+        Returns:
+            float, reference value of force.
+        """
         if self.__energy_ref is None:
             return None
         return self.__energy_ref / self.__length_ref
 
     @property
     def acceleration_ref(self):
-        """reference value of acceleration"""
+        """
+        reference value of acceleration.
+
+        Returns:
+            float, reference value of acceleration.
+        """
         if self.__energy_ref is None or self.__length_ref is None:
             return None
         return self.__energy_ref / self.__length_ref / self.__length_ref
 
     @property
     def kinetic_ref(self):
-        """reference value of kinetic"""
+        """
+        reference value of kinetic.
+
+        Returns:
+            float, reference value of kinetic.
+        """
         if self.__energy_ref is None or self.__length_ref is None:
             return None
         return self.__length_ref * self.__length_ref / self.__energy_ref
@@ -677,15 +967,41 @@ global_units = Units('nm', 'kj/mol')
 
 
 def set_global_length_unit(unit):
-    """set length unit for global_units"""
+    """
+    set length unit for global_units.
+
+    Args:
+        unit (str):  Length unit. Default: None
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     global_units.set_length_unit(unit)
 
 
 def set_global_energy_unit(unit):
-    """set energy unit for global_units"""
+    """
+    set energy unit for global_units.
+
+    Args:
+        unit (str):  Energy unit. Default: None
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     global_units.set_energy_unit(unit)
 
 
 def set_global_units(length_unit, energy_unit, units=None):
-    """set units for global_units"""
+    """
+    set units for global_units.
+
+    Args:
+        length_unit (str):  Length unit. Default: None
+        energy_unit (str):  Energy unit. Default: None
+        units (str):        units. Default: None
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     global_units.set_units(length_unit, energy_unit, units)

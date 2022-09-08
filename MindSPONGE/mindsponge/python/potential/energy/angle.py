@@ -34,39 +34,35 @@ from ...function.units import Units
 
 
 class AngleEnergy(EnergyCell):
-    r"""Energy term of bond angles
+    r"""
+    Energy term of bond angles.
 
-    Math:
+    .. Math::
 
         E_angle({\theta}_{ijk}) = 1 / 2 * k_{ijk}^{\theta} * ({\theta}_{ijk} - \theta}_{ijk}^0) ^ 2
 
     Args:
-
         index (Tensor):             Tensor of shape (B, a, 3). Data type is int.
                                     Atom index of bond angles.
-
         force_constant (Tensor):    Tensor of shape (1, a). Data type is float.
                                     The harmonic force constants for angle (k^{\theta}).
-
         bond_angle (Tensor):        Tensor of shape (1, a). Data type is float.
                                     The equilibrium value of bond angle ({\theta}^0).
-
         parameters (dict):          Force field parameters. Default: None
-
         use_pbc (bool):             Whether to use periodic boundary condition.
-
         energy_unit (str):          Energy unit. Default: None
-
         units (Units):              Units of length and energy. Default: None
 
+    Returns:
+        energy (Tensor), Tensor of shape (B, 1). Data type is float.
+
     Symbols:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
+        B:  Batchsize, i.e. number of walkers in simulation.
         a:  Number of angles.
-
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -146,11 +142,12 @@ class AngleEnergy(EnergyCell):
                   inv_neigh_dis: Tensor = None,
                   pbc_box: Tensor = None,
                   ):
-        r"""Calculate energy term.
+        r"""
+        Calculate energy term.
 
         Args:
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
-                                            Position coordinate of atoms in system
+                                            Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
                                             Index of neighbour atoms.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
@@ -165,10 +162,10 @@ class AngleEnergy(EnergyCell):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
+            energy (Tensor), Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
+            B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             D:  Dimension of the simulation system. Usually is 3.
 

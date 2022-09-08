@@ -35,22 +35,25 @@ from ...partition import NeighbourList
 
 
 class AnalyseCell(Cell):
-    r"""Core cell for analysis
+    r"""
+    Core cell for analysis.
 
     Args:
-
         system (Molecule):              Simulation system.
-
         potential (PotentialCell):      Potential energy.
-
         neighbour_list (NeighbourList): Neighbour list. Default: None
-
         bias (Bias):                    Bias potential: Default: None
-
         calc_energy (bool):             Whether to calculate the energy. Default: False
-
         calc_forces (bool):             Whether to calculate the forces. Default: False
 
+    Returns:
+        - energy.
+        - forces.
+        - coordinates.
+        - pbc_box.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  system: Molecule,
@@ -86,7 +89,7 @@ class AnalyseCell(Cell):
         self.grad = ops.GradOperation()
 
     def construct(self, coordinates=None, pbc_box=None):
-        """analyse the system"""
+        """analyse the system."""
         if coordinates is None:
             coordinates, pbc_box = self.system()
 

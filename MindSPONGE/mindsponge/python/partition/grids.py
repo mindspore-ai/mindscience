@@ -38,55 +38,42 @@ from ..function.functions import get_integer, displace_in_box
 
 
 class GridNeighbours(Cell):
-    r"""Neighbour list calculated by grids
+    r"""
+    Neighbour list calculated by grids.
 
     Args:
-
         cutoff (float):         Cutoff distance.
-
         coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float32.
                                 position coordinates of atoms in the simulation system.
-
         pbc_box (Tensor):       Tensor of shape (B, A, D). Data type is float32.
                                 Box size of periodic boundary condition. Default: None
-
         atom_mask (Tensor):     Tensor of shape (B, A). Data type is bool_.
                                 Mask of atoms in the system.
                                 Default: None
-
         exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int32.
                                 Index of neighbour atoms which could be excluded from the neighbour list.
                                 Default: None
-
         num_neighbours (int):   Number of neighbours. If input "None", this value will be calculated by
                                 the ratio of the number of neighbouring grids to the total number of grids.
                                 Default: None
-
         cell_capacity (int):    Capacity number of atoms in grid cell. If input "None", this value will be multiplied
                                 by a factor of the maximum number of atoms in the grid cell at the initial coordinate.
                                 Default: None
-
         num_cell_cut (int):     Number of subdivision of grid cells according to the cutoff. Default: 1
-
         cutoff_scale (float):   Factor to scale the cutoff distance. Default: 1.2
-
         cell_cap_scale (float): Factor to scale "cell_capacity". Default: 1.25
-
         grid_num_scale (float): Scale factor to calculate "num_neighbours" by the ratio of grids.
                                 If "num_neighbours" is not None, it will not be used. Default: 1.5
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
     Symbols:
-
         B:  Number of simulation walker.
-
         A:  Number of atoms in system.
-
         N:  Number of neighbour atoms.
-
         D:  Dimension of position coordinates.
-
         Ex: Maximum number of excluded neighbour atoms.
-
     """
 
     def __init__(self,
@@ -336,7 +323,12 @@ class GridNeighbours(Cell):
         return self
 
     def get_neighbours_from_grids(self, atom_grid_idx: Tensor, num_neighbours: int):
-        """get neighbour list from grids"""
+        """
+        get neighbour list from grids
+
+        Returns:
+            list, neighbour list from grids.
+        """
         #pylint: disable=unused-argument
         # Sorted grid index
         # (B,A)
@@ -395,7 +387,8 @@ class GridNeighbours(Cell):
                   atom_mask: Tensor = None,
                   exclude_index: Tensor = None,
                   ):
-        """Calculate neighbour list.
+        """
+        Calculate neighbour list.
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
@@ -408,16 +401,15 @@ class GridNeighbours(Cell):
                                     Index of atoms that should be exclude from neighbour list.
                                     Default: None
 
+        Returns:
+            - neighbours(Tensor).
+            - mask(Tensor).
+
         Sysmbols:
-
             B:  Number of simulation walker.
-
             A:  Number of atoms in system.
-
             D:  Dimension of position coordinates.
-
             Ex: Maximum number of excluded neighbour atoms.
-
         """
 
         if self.use_pbc:

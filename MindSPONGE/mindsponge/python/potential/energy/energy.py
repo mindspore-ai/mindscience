@@ -33,22 +33,22 @@ from ...function.units import Units
 
 
 class EnergyCell(Cell):
-    r"""Basic cell for energy term
+    r"""
+    Basic cell for energy term.
 
     Args:
+        label (str):        Label (name) of energy.
+        output_dim (int):   Output dimension. Default: 1
+        length_unit (str):  Length unit for position coordinates. Default: None
+        energy_unit (str):  Energy unit. Default: None
+        units (Units):      Units of length and energy. Default: None
+        use_pbc (bool):     Whether to use periodic boundary condition.
 
-        label (str):                Label (name) of energy.
+    Returns:
+        energy (Tensor), Tensor of shape (B, 1). Data type is float.
 
-        output_dim (int):           Output dimension. Default: 1
-
-        length_unit (str):          Length unit for position coordinates. Default: None
-
-        energy_unit (str):          Energy unit. Default: None
-
-        units (Units):              Units of length and energy. Default: None
-
-        use_pbc (bool):             Whether to use periodic boundary condition.
-
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  label: str,
@@ -82,7 +82,7 @@ class EnergyCell(Cell):
         self.identity = ops.Identity()
 
     def set_input_unit(self, units: Units):
-        """set the length unit for the input coordinates"""
+        """set the length unit for the input coordinates."""
         if units is None:
             self.input_unit_scale = 1
         elif isinstance(units, Units):
@@ -93,7 +93,7 @@ class EnergyCell(Cell):
         return self
 
     def set_cutoff(self, cutoff: float):
-        """set cutoff distances"""
+        """set cutoff distances."""
         if cutoff is None:
             self.cutoff = None
         else:
@@ -106,11 +106,21 @@ class EnergyCell(Cell):
         return self
 
     def convert_energy_from(self, unit: str) -> float:
-        """convert energy from outside unit to inside unit"""
+        """
+        convert energy from outside unit to inside unit.
+
+        Returns:
+            float, energy from outside unit to inside unit.
+        """
         return self.units.convert_energy_from(unit)
 
     def convert_energy_to(self, unit: str) -> float:
-        """convert energy from inside unit to outside unit"""
+        """
+        convert energy from inside unit to outside unit.
+
+        Returns:
+            float, energy from inside unit to outside unit.
+        """
         return self.units.convert_energy_to(unit)
 
     @property
@@ -130,7 +140,8 @@ class EnergyCell(Cell):
                   inv_neigh_dis: Tensor = None,
                   pbc_box: Tensor = None
                   ):
-        r"""Calculate energy term.
+        r"""
+        Calculate energy term.
 
         Args:
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
@@ -149,10 +160,10 @@ class EnergyCell(Cell):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
+            energy (Tensor), Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
+            B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             D:  Dimension of the simulation system. Usually is 3.
 
@@ -161,24 +172,23 @@ class EnergyCell(Cell):
 
 
 class NonbondEnergy(EnergyCell):
-    r"""Basic cell for non-bonded energy term
+    r"""
+    Basic cell for non-bonded energy term
 
     Args:
-
-        label (str):                Label (name) of energy.
-
+        label (str):            Label (name) of energy.
         cutoff (float):         cutoff distance. Default: None
-
         num_atoms (int):        Number of atoms. Default: None
-
         use_pbc (bool):         Whether to use periodic boundary condition. Default: None
-
         length_unit (str):      Length unit for position coordinates. Default: None
-
         energy_unit (str):      Energy unit. Default: None
-
         units (Units):          Units of length and energy. Default: None
 
+    Returns:
+        energy (Tensor), Tensor of shape (B, 1). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  label: str,
@@ -220,11 +230,11 @@ class NonbondEnergy(EnergyCell):
                   inv_neigh_dis: Tensor = None,
                   pbc_box: Tensor = None,
                   ):
-        r"""Calculate energy term.
+        r"""Calculate energy term
 
         Args:
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
-                                            Position coordinate of atoms in system
+                                            Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
                                             Index of neighbour atoms.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
@@ -239,10 +249,10 @@ class NonbondEnergy(EnergyCell):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
+            energy (Tensor), Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
+            B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             D:  Dimension of the simulation system. Usually is 3.
 

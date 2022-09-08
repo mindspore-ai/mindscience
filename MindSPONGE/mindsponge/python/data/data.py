@@ -31,7 +31,19 @@ from numpy import ndarray
 
 
 def update_dict(origin_dict: dict, new_dict: dict) -> dict:
-    """update complex dict"""
+    """
+    update complex dict.
+
+    Args:
+        origin_dict(dict).
+        new_dict(dict).
+
+    Returns:
+        dict, update complex dict.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     if new_dict is None:
         return origin_dict
     dictionary = origin_dict.copy()
@@ -45,20 +57,52 @@ def update_dict(origin_dict: dict, new_dict: dict) -> dict:
 
 
 def write_yaml(filename: str, data: dict):
-    """write yaml file"""
+    """
+    write yaml file.
+
+    Args:
+        filename(str): name of yaml file.
+        data(dict).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     with open(filename, 'w', encoding="utf-8") as file:
         yaml.dump(data, file, sort_keys=False)
 
 
 def read_yaml(filename: str) -> dict:
-    """read yaml file"""
+    """
+    read yaml file.
+
+    Args:
+        filename(str): the name of yaml file.
+
+    Returns:
+        data(dict), data in the yaml file.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     with open(filename, 'r', encoding="utf-8") as file:
         data = yaml.safe_load(file.read())
     return data
 
 
 def get_bonded_types(atom_types: ndarray, symbol: str = '-'):
-    """get the types of bonded terms including bond, angle and dihedral"""
+    """
+    get the types of bonded terms including bond, angle and dihedral.
+
+    Args:
+        atom_types(ndarray): types of atoms.
+        symbol(str): a symbol.
+
+    Returns:
+        types(ndarray), types of bonded terms including bond, angle and dihedral.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     num_atoms = atom_types.shape[-1]
 
     if num_atoms == 1:
@@ -73,7 +117,20 @@ def get_bonded_types(atom_types: ndarray, symbol: str = '-'):
 
 
 def get_dihedral_types(atom_types: ndarray, symbol: str = '-'):
-    """ The multi atom name constructor. """
+    """
+    The multi atom name constructor.
+
+    Args:
+        atom_types(ndarray): types of atoms.
+        symbol(str): a symbol.
+
+    Returns:
+        - types, ndarray.
+        - inverse_types, ndarray.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     num_atoms = atom_types.shape[-1]
 
     if num_atoms == 1:
@@ -93,7 +150,20 @@ def get_dihedral_types(atom_types: ndarray, symbol: str = '-'):
 
 
 def get_improper_types(atom_types: ndarray, symbol: str = '-'):
-    """ The multi atom name constructor. """
+    """
+    The multi atom name constructor.
+
+    Args:
+        atom_types(ndarray): types of atoms.
+        symbol(str): a symbol.
+
+    Returns:
+        - permuation_types, tuple.
+        - orders, tuple.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     num_atoms = atom_types.shape[-1]
 
     if num_atoms == 1:

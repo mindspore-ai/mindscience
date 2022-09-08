@@ -37,50 +37,36 @@ from ..system import Molecule
 
 
 class NeighbourList(Cell):
-    r"""Neighbour list
+    r"""
+    Neighbour list.
 
     Args:
-
         system (Molecule):      Simulation system.
-
         cutoff (float):         Cutoff distance. Default: None
-
-        update_steps (int):     Steps of update frequency. Default: 20
-
+                                update_steps (int): Steps of update frequency. Default: 20
         exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int.
                                 Index of neighbour atoms which could be excluded from the neighbour list.
                                 Default: None
-
         num_neighbours (int):   Number of neighbours. If input "None", this value will be calculated by
                                 the ratio of the number of neighbouring grids to the total number of grids.
                                 Default: None
-
         num_cell_cut (int):     Number of subdivision of grid cells according to cutoff. Default: 1
-
         cutoff_scale (float):   Factor to scale cutoff distance. Default: 1.2
-
         cell_cap_scale (float): Scale factor for "cell_capacity". Default: 1.25
-
         grid_num_scale (float): Scale factor to calculate "num_neighbours" by ratio of grids.
                                 If "num_neighbours" is not None, it will not be used. Default: 1.5
-
         large_dis (float):      A large number of distance to fill the default atoms. Default: 1e4
-
         use_grids (bool):       Whether to use grids to calculate the neighbour list. Default: None
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
 
     Symbols:
-
         B:  Number of simulation walker.
-
         A:  Number of atoms in system.
-
         N:  Number of neighbour atoms.
-
         D:  Dimension of position coordinates.
-
         Ex: Maximum number of excluded neighbour atoms.
-
     """
 
     def __init__(self,
@@ -184,7 +170,12 @@ class NeighbourList(Cell):
         self.identity = ops.Identity()
 
     def set_exclude_index(self, exclude_index: Tensor):
-        """set exclude index"""
+        """
+        set exclude index.
+
+        Returns:
+            bool.
+        """
         if exclude_index is None:
             return True
         self.exclude_index = Tensor(exclude_index, ms.int32)
@@ -206,7 +197,13 @@ class NeighbourList(Cell):
 
     @ms_function
     def calcaulate(self, coordinate: Tensor, pbc_box: Tensor = None):
-        """calculate neighbour list"""
+        """
+        calculate neighbour list.
+
+        Returns:
+            - index(Tensor).
+            - mask(Tensor).
+        """
         coordinate = F.stop_gradient(coordinate)
         pbc_box = F.stop_gradient(pbc_box)
         if self.cutoff is None:
@@ -221,7 +218,13 @@ class NeighbourList(Cell):
         return index, mask
 
     def get_neighbour_list(self):
-        """get neighbour list"""
+        """
+        get neighbour list.
+
+        Returns:
+            - index(Tensor).
+            - mask(Tensor).
+        """
         index = self.identity(self.neighbours)
         mask = None
         if self.neighbour_mask is not None:
@@ -229,16 +232,16 @@ class NeighbourList(Cell):
         return index, mask
 
     def construct(self, coordinate: Tensor, pbc_box: Tensor = None) -> bool:
-        r"""Gather coordinate of neighbours atoms.
+        r"""
+        Gather coordinate of neighbours atoms.
 
         Args:
-            coordinate (Tensor): Tensor of shape (B,A,D). Data type is float.
-            pbc_box (Tensor):    Tensor of shape (B,D). Data type is float.
+            coordinate (Tensor):    Tensor of shape (B,A,D). Data type is float.
+            pbc_box (Tensor):       Tensor of shape (B,D). Data type is float.
 
         Returns:
-            neighbours (Tensor):             Tensor of shape (B,A,N). Data type is int.
-            neighbour_mask (Tensor or None): Tensor of shape (B,A,N). Data type is bool.
-
+            - neighbours (Tensor), Tensor of shape (B,A,N). Data type is int.
+            - neighbour_mask (Tensor or None), Tensor of shape (B,A,N). Data type is bool.
         """
 
         neighbours, neighbour_mask = self.calcaulate(coordinate, pbc_box)

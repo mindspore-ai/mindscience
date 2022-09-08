@@ -34,9 +34,10 @@ from ...function.units import Units
 
 
 class LennardJonesEnergy(NonbondEnergy):
-    r"""Lennard-Jones potential
+    r"""
+    Lennard-Jones potential
 
-    Math:
+    .. Math::
 
         E_lj(r_ij) = 4 * \epsilon_ij * [(\sigma_ij / r_ij) ^ 12 - (\sigma_ij / r_ij) ^ 6]
 
@@ -44,42 +45,34 @@ class LennardJonesEnergy(NonbondEnergy):
 
         \sigma_ij = 1 / 2 * (\sigma_i + \sigma_j)
 
+    ...
+
     Args:
-
-
         epsilon (Tensor):   Tensor of shape (B, A). Data type is float.
                             Parameter \epsilon for LJ potential.
-
         sigma (Tensor):     Tensor of shape (B, A). Data type is float.
                             Parameter \sigma in LJ potential.
-
         mean_c6 (Tensor):   Tensor of shape (B, A). Data type is float.
                             Average dispersion (<C6>) of the system used for
-                            long range correction of dispersion interaction.
-                            Default: None
-
+                            long range correction of dispersion interaction.Default: None
         parameters (dict):  Force field parameters. Default: None
-
         cutoff (float):     Cutoff distance. Default: None
+        use_pbc (bool):     Whether to use periodic boundary condition. Default: None
+        length_unit (str):  Length unit for position coordinates. Default: None
+        energy_unit (str):  Energy unit. Default: None
+        units (Units):      Units of length and energy. Default: None
 
-        use_pbc (bool):         Whether to use periodic boundary condition. Default: None
-
-        length_unit (str):      Length unit for position coordinates. Default: None
-
-        energy_unit (str):      Energy unit. Default: None
-
-        units (Units):          Units of length and energy. Default: None
+    Returns:
+        energy (Tensor), Tensor of shape (B, 1). Data type is float.
 
     Symbols:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
+        B:  Batchsize, i.e. number of walkers in simulation.
         A:  Number of atoms.
-
         N:  Maximum number of neighbour atoms.
-
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -154,7 +147,13 @@ class LennardJonesEnergy(NonbondEnergy):
         return self
 
     def _calc_disp_corr(self) -> Tensor:
-        """calculate the long range correct factor for dispersion"""
+        """
+        calculate the long range correct factor for dispersion
+
+        Returns:
+            Tensor, the long range correct factor for dispersion.
+        """
+
         if self.cutoff is None:
             return 0
         return -2.0 / 3.0 * msnp.pi * self.num_atoms**2 / msnp.power(self.cutoff, 3)
@@ -168,11 +167,12 @@ class LennardJonesEnergy(NonbondEnergy):
                   inv_neigh_dis: Tensor = None,
                   pbc_box: Tensor = None,
                   ):
-        r"""Calculate energy term.
+        r"""
+        Calculate energy term
 
         Args:
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
-                                            Position coordinate of atoms in system
+                                            Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
                                             Index of neighbour atoms.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
@@ -187,10 +187,10 @@ class LennardJonesEnergy(NonbondEnergy):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
+            energy (Tensor), Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
+            B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             D:  Dimension of the simulation system. Usually is 3.
 

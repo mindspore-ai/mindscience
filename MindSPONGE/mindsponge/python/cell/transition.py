@@ -25,7 +25,19 @@ from ..common.utils import _memory_reduce
 
 
 class Transition(nn.Cell):
-    '''transition'''
+    '''
+    Transition layer.
+
+    Args:
+        num_intermediate_factor (float):    The number of intermediate factor.
+        layer_norm_dim (int):               The last dimension length of the layer norm.
+        batch_size (int):                   The batch size of parameters in transition layer. Default: None.
+        slice_num (int):                    The slice num used in transition layer
+                                            when the memory is overflow. Default: 0.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    '''
 
     def __init__(self, num_intermediate_factor, layer_norm_dim, batch_size=None, slice_num=0):
         super(Transition, self).__init__()
@@ -40,6 +52,20 @@ class Transition(nn.Cell):
         self._init_parameter()
 
     def compute(self, act, transition1_weight, transition1_bias, transition2_weight, transition2_bias):
+        r"""
+        Compute pair activation.
+
+        Args:
+            act (Tensor):               Pair activations. Data type is float.
+            transition1_weight (float): The transition1 weight parameter.
+            transition1_bias (float):   The transition1 bias parameter.
+            transition2_weight (float): The transition2 weight parameter.
+            transition2_bias (float):   The transition2 bias parameter.
+
+        Returns:
+            act(Tensor), pair activations. Data type is float.
+        """
+
         act_shape = P.Shape()(act)
         if len(act_shape) != 2:
             act = P.Reshape()(act, (-1, act_shape[-1]))
@@ -49,7 +75,16 @@ class Transition(nn.Cell):
         return act
 
     def construct(self, act, index):
-        '''construct'''
+        '''
+        Builds transition module.
+
+        Args:
+            act (Tensor):   Pair activations. Data type is float.
+            index (int):    The index of the batch size when batch size is not none.
+
+        Returns:
+            act(Tensor), Pair activations. Data type is float.
+        '''
         if self.batch_size:
             input_layer_norm_gamma = P.Gather()(self.input_layer_norm_gammas, index, 0)
             input_layer_norm_beta = P.Gather()(self.input_layer_norm_betas, index, 0)

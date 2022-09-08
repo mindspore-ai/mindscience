@@ -126,22 +126,24 @@ def keep_norm_last_dim(vector: Tensor) -> Tensor:
     """
     return msnp.norm(vector, axis=-1, keep_dims=True)
 
-
 @ms_function
 def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
-    r"""Reshape the pbc_box as the same ndim.
+    r"""
+    Reshape the pbc_box as the same ndim.
 
     Args:
         pbc_box (Tensor):   Tensor of shape (B,D). Data type is float.
-        ndim (int):         The rank (ndim) of the pbc_box
+        ndim (int):         The rank (ndim) of the pbc_box.
 
     Returns:
-        pbc_box (Tensor):   Tensor of shape (B,1,..,1,D). Data type is float.
+        pbc_box (Tensor), Tensor of shape (B,1,..,1,D). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     if ndim <= 2:
@@ -152,7 +154,8 @@ def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
 
 @ms_function
 def periodic_image(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tensor:
-    r"""calculate the periodic image of the PBC box
+    r"""
+    calculate the periodic image of the PBC box.
 
     Args:
         position (Tensor):  Tensor of shape (B, ..., D). Data type is float.
@@ -160,12 +163,14 @@ def periodic_image(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tenso
         shift (float):      Shift of PBC box. Default: 0
 
     Returns:
-        image (Tensor): Tensor of shape (B, ..., D). Data type is int32.
+        image (Tensor), Tensor of shape (B, ..., D). Data type is int32.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     pbc_box = pbc_box_reshape(F.stop_gradient(pbc_box), position.ndim)
@@ -175,7 +180,8 @@ def periodic_image(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tenso
 
 @ms_function
 def displace_in_box(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tensor:
-    r"""displace the positions of system in a PBC box
+    r"""
+    displace the positions of system in a PBC box.
 
     Args:
         position (Tensor):  Tensor of shape (B, ..., D). Data type is float.
@@ -183,12 +189,14 @@ def displace_in_box(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tens
         shift (float):      Shift of PBC box. Default: 0
 
     Returns:
-        position_in box (Tensor):   Tensor of shape (B, ..., D). Data type is float.
+        position_in box (Tensor), Tensor of shape (B, ..., D). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     pbc_box = pbc_box_reshape(F.stop_gradient(pbc_box), position.ndim)
@@ -198,20 +206,23 @@ def displace_in_box(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tens
 
 @ms_function
 def vector_in_box(vector: Tensor, pbc_box: Tensor) -> Tensor:
-    r"""Make the vector at the range from -0.5 box to 0.5 box
-        at perodic bundary condition. (-0.5box < difference < 0.5box)
+    r"""
+    Make the vector at the range from -0.5 box to 0.5 box
+    at perodic bundary condition. (-0.5box < difference < 0.5box)
 
     Args:
-        vector (Tensor):        Tensor of shape (B, ..., D). Data type is float.
-        pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+        vector (Tensor):    Tensor of shape (B, ..., D). Data type is float.
+        pbc_box (Tensor):   Tensor of shape (B, D). Data type is float.
 
     Returns:
-        diff_in_box (Tensor):   Tensor of shape (B, ..., D). Data type is float.
+        diff_in_box (Tensor), Tensor of shape (B, ..., D). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     pbc_box = pbc_box_reshape(pbc_box, vector.ndim)
@@ -222,22 +233,25 @@ def vector_in_box(vector: Tensor, pbc_box: Tensor) -> Tensor:
 
 @ms_function
 def get_vector_without_pbc(initial: Tensor, terminal: Tensor, _pbc_box=None) -> Tensor:
-    r"""Compute vector from initial point to terminal point without perodic bundary condition.
+    r"""
+    Compute vector from initial point to terminal point without perodic bundary condition.
 
     Args:
         initial (Tensor):   Tensor of shape (B, ..., D). Data type is float.
-                            Coordinate of initial point
+                            Coordinate of initial point.
         terminal (Tensor):  Tensor of shape (B, ..., D). Data type is float.
-                            Coordinate of terminal point
+                            Coordinate of terminal point.
         _pbc_box (None):    Dummy.
 
     Returns:
-        vector (Tensor):    Tensor of shape (B, ..., D). Data type is float.
+        vector (Tensor), Tensor of shape (B, ..., D). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     #pylint: disable=invalid-name
 
@@ -246,45 +260,51 @@ def get_vector_without_pbc(initial: Tensor, terminal: Tensor, _pbc_box=None) -> 
 
 @ms_function
 def get_vector_with_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor) -> Tensor:
-    r"""Compute vector from initial point to terminal point at perodic bundary condition.
+    r"""
+    Compute vector from initial point to terminal point at perodic bundary condition.
 
     Args:
         initial (Tensor):   Tensor of shape (B, ..., D). Data type is float.
-                            Coordinate of initial point
+                            Coordinate of initial point.
         terminal (Tensor):  Tensor of shape (B, ..., D). Data type is float.
-                            Coordinate of terminal point
+                            Coordinate of terminal point.
         pbc_box (Tensor):   Tensor of shape (B, D). Data type is float.
 
     Returns:
-        vector (Tensor):    Tensor of shape (B, ..., D). Data type is float.
+        vector (Tensor), Tensor of shape (B, ..., D). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     return vector_in_box(terminal-initial, pbc_box)
 
 @ms_function
 def get_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Tensor:
-    r"""Compute vector from initial point to terminal point.
+    r"""
+    Compute vector from initial point to terminal point.
 
     Args:
         initial (Tensor):   Tensor of shape (B, ..., D). Data type is float.
-                            Coordinate of initial point
+                            Coordinate of initial point.
         terminal (Tensor):  Tensor of shape (B, ..., D). Data type is float.
-                            Coordinate of terminal point
+                            Coordinate of terminal point.
         pbc_box (Tensor):   Tensor of shape (B, D). Data type is float.
                             Default: None
 
     Returns:
-        vector (Tensor):    Tensor of shape (B, ..., D). Data type is float.
+        vector (Tensor), Tensor of shape (B, ..., D). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     vector = terminal - initial
@@ -295,15 +315,18 @@ def get_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Ten
 
 @ms_function
 def gather_vectors(tensor: Tensor, index: Tensor) -> Tensor:
-    r"""Gather vectors from the penultimate axis (axis=-2) of the tensor according to index.
+    r"""
+    Gather vectors from the penultimate axis (axis=-2) of the tensor according to index.
 
     Args:
         tensor (Tensor):    Tensor of shape (B, A, D).
         index (Tensor):     Tensor of shape (B, ...,). Data type is int.
 
     Returns:
-        vector (Tensor):    Tensor of shape (B, ..., D).
+        vector (Tensor), Tensor of shape (B, ..., D).
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     if index.shape[0] == 1:
@@ -326,15 +349,18 @@ def gather_vectors(tensor: Tensor, index: Tensor) -> Tensor:
 
 @ms_function
 def gather_values(tensor: Tensor, index: Tensor) -> Tensor:
-    r"""Gather values from the last axis (axis=-1) of the tensor according to index.
+    r"""
+    Gather values from the last axis (axis=-1) of the tensor according to index.
 
     Args:
         tensor (Tensor):    Tensor of shape (B, X).
         index (Tensor):     Tensor of shape (B, ...,). Data type is int.
 
     Returns:
-        value (Tensor): Tensor of shape (B, ...,).
+        value (Tensor), Tensor of shape (B, ...,).
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     if index.shape[0] == 1:
@@ -356,7 +382,8 @@ def gather_values(tensor: Tensor, index: Tensor) -> Tensor:
 
 @ms_function
 def calc_distance_without_pbc(position_a: Tensor, position_b: Tensor, _pbc_box=None) -> Tensor:
-    r"""Compute distance between position A and B without perodic bundary condition.
+    r"""
+    Compute distance between position A and B without perodic bundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape (..., D). Data type is float.
@@ -364,11 +391,13 @@ def calc_distance_without_pbc(position_a: Tensor, position_b: Tensor, _pbc_box=N
         _pbc_box (None):        Dummy.
 
     Returns:
-        distance (Tensor):  Tensor of shape (..., 1). Data type is float.
+        distance (Tensor), Tensor of shape (..., 1). Data type is float.
 
     Symbols:
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     #pylint: disable=invalid-name
 
@@ -378,7 +407,8 @@ def calc_distance_without_pbc(position_a: Tensor, position_b: Tensor, _pbc_box=N
 
 @ms_function
 def calc_distance_with_pbc(position_a: Tensor, position_b: Tensor, pbc_box: Tensor) -> Tensor:
-    r"""Compute distance between position A and B at perodic bundary condition.
+    r"""
+    Compute distance between position A and B at perodic bundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape (B, ..., D). Data type is float.
@@ -386,12 +416,14 @@ def calc_distance_with_pbc(position_a: Tensor, position_b: Tensor, pbc_box: Tens
         pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
 
     Returns:
-        distance (Tensor):  Tensor of shape (B, ..., 1). Data type is float.
+        distance (Tensor), Tensor of shape (B, ..., 1). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     vec = get_vector_with_pbc(position_a, position_b, pbc_box)
@@ -400,7 +432,8 @@ def calc_distance_with_pbc(position_a: Tensor, position_b: Tensor, pbc_box: Tens
 
 @ms_function
 def calc_distance(position_a: Tensor, position_b: Tensor, pbc_box: Tensor = None) -> Tensor:
-    r"""Compute distance between position A and B
+    r"""
+    Compute distance between position A and B.
 
     Args:
         position_a (Tensor):    Tensor of shape (B, ..., D). Data type is float.
@@ -408,12 +441,14 @@ def calc_distance(position_a: Tensor, position_b: Tensor, pbc_box: Tensor = None
         pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
 
     Returns:
-        distance (Tensor):  Tensor of shape (B, ..., 1). Data type is float.
+        distance (Tensor), Tensor of shape (B, ..., 1). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     vec = get_vector_without_pbc(position_a, position_b)
@@ -424,18 +459,21 @@ def calc_distance(position_a: Tensor, position_b: Tensor, pbc_box: Tensor = None
 
 @ms_function
 def calc_angle_between_vectors(vector1: Tensor, vector2: Tensor) -> Tensor:
-    r"""Compute angle between two vectors.
+    r"""
+    Compute angle between two vectors.
 
     Args:
         vector1 (Tensor):    Tensor of shape (..., D). Data type is float.
         vector1 (Tensor):    Tensor of shape (..., D). Data type is float.
 
     Returns:
-        angle (Tensor):  Tensor of shape (..., 1). Data type is float.
+        angle (Tensor), Tensor of shape (..., 1). Data type is float.
 
     Symbols:
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     # [..., 1] <- [..., D]
@@ -449,7 +487,8 @@ def calc_angle_between_vectors(vector1: Tensor, vector2: Tensor) -> Tensor:
 
 @ms_function
 def calc_angle_without_pbc(position_a: Tensor, position_b: Tensor, position_c: Tensor) -> Tensor:
-    r"""Compute angle formed by three positions A-B-C without periodic boundary condition.
+    r"""
+    Compute angle formed by three positions A-B-C without periodic boundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape (..., D). Data type is float.
@@ -457,11 +496,13 @@ def calc_angle_without_pbc(position_a: Tensor, position_b: Tensor, position_c: T
         position_c (Tensor):    Tensor of shape (..., D). Data type is float.
 
     Returns:
-        angle (Tensor):  Tensor of shape (..., 1). Data type is float.
+        angle (Tensor), Tensor of shape (..., 1). Data type is float.
 
     Symbols:
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     # (...,D)
@@ -472,7 +513,8 @@ def calc_angle_without_pbc(position_a: Tensor, position_b: Tensor, position_c: T
 
 @ms_function
 def calc_angle_with_pbc(position_a: Tensor, position_b: Tensor, position_c: Tensor, pbc_box: Tensor) -> Tensor:
-    r"""Compute angle formed by three positions A-B-C at periodic boundary condition.
+    r"""
+    Compute angle formed by three positions A-B-C at periodic boundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape (B, ..., D). Data type is float.
@@ -481,12 +523,14 @@ def calc_angle_with_pbc(position_a: Tensor, position_b: Tensor, position_c: Tens
         pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
 
     Returns:
-        angle (Tensor):  Tensor of shape (B, ..., 1). Data type is float.
+        angle (Tensor), Tensor of shape (B, ..., 1). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     # (B, ..., D)
@@ -497,9 +541,8 @@ def calc_angle_with_pbc(position_a: Tensor, position_b: Tensor, position_c: Tens
 
 @ms_function
 def calc_angle(position_a, position_b: Tensor, position_c: Tensor, pbc_box: Tensor = None) -> Tensor:
-    r"""Compute angle formed by three positions A-B-C.
-
-        D (int): Dimension of the simulation system. Usually is 3.
+    r"""
+    Compute angle formed by three positions A-B-C.
 
     Args:
         position_a (Tensor):    Tensor of shape (B, ..., D). Data type is float.
@@ -508,12 +551,14 @@ def calc_angle(position_a, position_b: Tensor, position_c: Tensor, pbc_box: Tens
         pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
 
     Returns:
-        angle (Tensor):  Tensor of shape (B, ..., 1). Data type is float.
+        angle (Tensor), Tensor of shape (B, ..., 1). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     # (B, ..., D)
@@ -528,7 +573,8 @@ def calc_angle(position_a, position_b: Tensor, position_c: Tensor, pbc_box: Tens
 
 @ms_function
 def calc_torsion_for_vectors(vector1: Tensor, vector2: Tensor, vector3: Tensor) -> Tensor:
-    r"""Compute torsion angle formed by three vectors.
+    r"""
+    Compute torsion angle formed by three vectors.
 
     Args:
         vector1 (Tensor):   Tensor of shape (..., D). Data type is float.
@@ -536,11 +582,13 @@ def calc_torsion_for_vectors(vector1: Tensor, vector2: Tensor, vector3: Tensor) 
         vector3 (Tensor):   Tensor of shape (..., D). Data type is float.
 
     Returns:
-        torsion (Tensor):   Tensor of shape (..., 1). Data type is float.
+        torsion (Tensor), Tensor of shape (..., 1). Data type is float.
 
     Symbols:
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     # (B, ..., D) <- (B,...,1)
@@ -566,7 +614,8 @@ def calc_torsion_without_pbc(position_a: Tensor,
                              position_c: Tensor,
                              position_d: Tensor
                              ) -> Tensor:
-    r"""Compute torsion angle formed by four positions A-B-C-D without periodic boundary condition.
+    r"""
+    Compute torsion angle formed by four positions A-B-C-D without periodic boundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape (..., D). Data type is float.
@@ -575,11 +624,13 @@ def calc_torsion_without_pbc(position_a: Tensor,
         position_d (Tensor):    Tensor of shape (..., D). Data type is float.
 
     Returns:
-        torsion (Tensor):   Tensor of shape (..., 1). Data type is float.
+        torsion (Tensor), Tensor of shape (..., 1). Data type is float.
 
     Symbols:
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     vec_ba = get_vector_without_pbc(position_b, position_a)
@@ -595,7 +646,8 @@ def calc_torsion_with_pbc(position_a: Tensor,
                           position_d: Tensor,
                           pbc_box: Tensor
                           ) -> Tensor:
-    r"""Compute torsion angle formed by four positions A-B-C-D at periodic boundary condition.
+    r"""
+    Compute torsion angle formed by four positions A-B-C-D at periodic boundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape (B, ..., D). Data type is float.
@@ -605,12 +657,14 @@ def calc_torsion_with_pbc(position_a: Tensor,
         pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
 
     Returns:
-        torsion (Tensor):   Tensor of shape (B, ..., 1). Data type is float.
+        torsion (Tensor), Tensor of shape (B, ..., 1). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     vec_ba = get_vector_with_pbc(position_b, position_a, pbc_box)
@@ -626,7 +680,8 @@ def calc_torsion(position_a: Tensor,
                  position_d: Tensor,
                  pbc_box: Tensor = None
                  ) -> Tensor:
-    r"""Compute torsion angle formed by four positions A-B-C-D.
+    r"""
+    Compute torsion angle formed by four positions A-B-C-D.
 
     Args:
         position_a (Tensor):    Tensor of shape (B, ..., D). Data type is float.
@@ -636,12 +691,14 @@ def calc_torsion(position_a: Tensor,
         pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
 
     Returns:
-        torsion (Tensor):   Tensor of shape (B, ..., 1). Data type is float.
+        torsion (Tensor), Tensor of shape (B, ..., 1). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     if pbc_box is None:
@@ -658,7 +715,8 @@ def calc_torsion(position_a: Tensor,
 
 @ms_function
 def get_kinetic_energy(mass: Tensor, velocity: Tensor) -> Tensor:
-    r"""Compute kinectic energy of the simulation system.
+    r"""
+    Compute kinectic energy of the simulation system.
 
     Args:
         mass (Tensor):      Tensor of shape (B, A). Data type is float.
@@ -667,13 +725,15 @@ def get_kinetic_energy(mass: Tensor, velocity: Tensor) -> Tensor:
                             Velocities of the atoms in system.
 
     Returns:
-        kinectics (Tensor): Tensor of shape (B). Data type is float.
+        kinectics (Tensor), Tensor of shape (B). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation
-        A:  Number of atoms in the simulation system
+        B:  Batchsize, i.e. number of walkers in simulation.
+        A:  Number of atoms in the simulation system.
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     # (B, A) <- (B, A, D)
@@ -685,14 +745,17 @@ def get_kinetic_energy(mass: Tensor, velocity: Tensor) -> Tensor:
 
 
 def get_integer(value: Union[int, Tensor, Parameter, ndarray]) -> int:
-    r"""get integer type of the input value
+    r"""
+    get integer type of the input value.
 
     Args:
-        value (Union[int, Tensor, Parameter, ndarray]): Input value
+        value (Union[int, Tensor, Parameter, ndarray]): Input value.
 
     Returns:
-        integer (int)
+        integer (int).
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     if value is None:
         return None
@@ -702,15 +765,18 @@ def get_integer(value: Union[int, Tensor, Parameter, ndarray]) -> int:
 
 
 def get_ndarray(value: Union[Tensor, Parameter, ndarray, list, tuple], dtype: type = None) -> ndarray:
-    r"""get ndarray type of the input value
+    r"""
+    get ndarray type of the input value.
 
     Args:
-        value (Union[Tensor, Parameter, ndarray]):  Input value
+        value (Union[Tensor, Parameter, ndarray]):  Input value.
         dtype (type):                               Data type. Default: None
 
     Returns:
-        array (ndarray)
+        array (ndarray).
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     if value is None:
         return None
@@ -724,7 +790,8 @@ def get_ndarray(value: Union[Tensor, Parameter, ndarray, list, tuple], dtype: ty
 
 
 def get_tensor(value: Union[Tensor, Parameter, ndarray, list, tuple], dtype: type = None) -> Tensor:
-    r"""get mindspore.Tensor type of the input value
+    r"""
+    get mindspore.Tensor type of the input value.
 
     Args:
         value (Union[Tensor, Parameter, ndarray, list, tuple]):  Input value
@@ -752,7 +819,8 @@ def get_tensor(value: Union[Tensor, Parameter, ndarray, list, tuple], dtype: typ
 
 
 def get_ms_array(value: Union[Tensor, Parameter, ndarray, list, tuple], dtype: type = None) -> Union[Tensor, Parameter]:
-    r"""get mindspore.Tensor type of the input value
+    r"""
+    get mindspore.Tensor type of the input value.
 
     Args:
         value (Union[Tensor, Parameter, ndarray, list, tuple]):  Input value

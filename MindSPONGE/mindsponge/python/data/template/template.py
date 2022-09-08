@@ -33,18 +33,18 @@ from ..data import update_dict, read_yaml
 
 
 def get_template(template: Union[str, dict, list], residue_name: str = None) -> dict:
-    """ Get molecular template.
+    """
+    Get molecular template.
 
     Args:
-
         template (str, dict or list):   The file name of template.
-
-        residue_name (str):             Residue name
+        residue_name (str):             Residue name.
 
     Returns:
+        template (dict), Molecular template.
 
-        template (dict):  Molecular template
-
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     if template is None or not template:
@@ -85,7 +85,20 @@ def get_template(template: Union[str, dict, list], residue_name: str = None) -> 
     return template
 
 def get_template_index(template: dict, names: ndarray, key: str = 'atom_name') -> ndarray:
-    """get atom index of system according to atom names"""
+    """
+    get atom index of system according to atom names.
+
+    Args:
+        template (dict).
+        names (ndarray).
+        key (str): atom_name.
+
+    Returns:
+        index (ndarray), atom index of system.
+
+    Supported Platforms:
+    ``Ascend`` ``GPU``
+    """
     reference: list = template.get(key)
     index = [reference.index(name) for name in names.reshape(-1).tolist()]
     index = np.array(index, np.int32).reshape(names.shape)
@@ -96,16 +109,17 @@ def get_template_index(template: dict, names: ndarray, key: str = 'atom_name') -
 
 
 def get_molecule(template: str) -> Tuple[dict, dict]:
-    """ Get molecular template.
+    """
+    Get molecular template.
 
     Args:
-
         template (str or dict): The file name of template.
 
     Returns:
+        template (dict), Molecular template.
 
-        template (dict):  Molecular template
-
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     if isinstance(template, str):

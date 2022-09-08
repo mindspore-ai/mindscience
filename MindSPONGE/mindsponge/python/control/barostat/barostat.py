@@ -34,25 +34,31 @@ from ...system import Molecule
 
 
 class Barostat(Controller):
-    r"""Barostat controller for pressure coupling.
+    r"""
+    Barostat controller for pressure coupling.
 
     Args:
-
-        system (Molecule):          Simulation system
-
+        system (Molecule):          Simulation system.
         pressure (float):           Reference pressure P_ref (bar) for pressure coupling.
                                     Default: 1
-
         anisotropic (bool):         Whether to perform anisotropic pressure control.
                                     Default: False
-
         control_step (int):         Step interval for controller execution. Default: 1
-
         compressibility (float):    Isothermal compressibility \beta (bar^-1). Default: 4.6e-5
-
         time_constant (float)       Time constant \tau_p (ps) for pressure coupling.
                                     Default: 1
 
+    Returns:
+        coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+        velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+        force (Tensor), Tensor of shape (B, A, D). Data type is float.
+        energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+        virial (Tensor), Tensor of shape (B, D). Data type is float.
+        pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  system: Molecule,
@@ -96,16 +102,16 @@ class Barostat(Controller):
 
     @property
     def pressure(self):
-        """reference pressure"""
+        """reference pressure."""
         return self.ref_press
 
     @property
     def compressibility(self):
-        """isothermal compressibility"""
+        """isothermal compressibility."""
         return self.beta
 
     def pressure_scale(self, sim_press: Tensor, ref_press: Tensor, ratio: float = 1) -> Tensor:
-        """calculate the coordinate scale factor for pressure coupling"""
+        """calculate the coordinate scale factor for pressure coupling."""
         delta_p = ref_press - sim_press
         change = - ratio * self.beta * delta_p
 
@@ -132,7 +138,8 @@ class Barostat(Controller):
                   step: int = 0,
                   ):
 
-        r"""Control the pressure of the simulation system.
+        r"""
+        Control the pressure of the simulation system.
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
@@ -145,13 +152,13 @@ class Barostat(Controller):
             step (int):             Simulation step. Default: 0
 
         Returns:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor):      Tensor of shape (B, A, D). Data type is float.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor):      Tensor of shape (B, D). Data type is float.
-            virial (Tensor):        Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+            velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+            force (Tensor), Tensor of shape (B, A, D). Data type is float.
+            energy (Tensor), Tensor of shape (B, 1). Data type is float.
+            kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+            virial (Tensor), Tensor of shape (B, D). Data type is float.
+            pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
         Symbols:
             B:  Number of walkers in simulation.

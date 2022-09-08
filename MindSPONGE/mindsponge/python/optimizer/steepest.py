@@ -7,13 +7,21 @@ from mindspore import numpy as msnp
 
 
 class SteepestDescent(nn.Optimizer):
-    """The steepest descent (gradient descent) optimizer with growing learning rate.
+    """
+    The steepest descent (gradient descent) optimizer with growing learning rate.
+
     Args:
-        crd(tuple): Usually a tuple of parameters is given and the first element is coordinates.
-        learning_rate(float): A factor of each optimize step size.
-        factor(float): A growing factor of learning rate.
-        nonh_mask(Tensor): The mask of atoms which are not Hydrogen.
-        max_shift(float): The max step size each atom can move.
+        crd(tuple):             Usually a tuple of parameters is given and the first element is coordinates.
+        learning_rate(float):   A factor of each optimize step size.
+        factor(float):          A growing factor of learning rate.
+        nonh_mask(Tensor):      The mask of atoms which are not Hydrogen.
+        max_shift(float):       The max step size each atom can move.
+
+    Returns:
+        float, the first element of parameters.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self, crd, learning_rate=1e-03, factor=1.001, nonh_mask=None, max_shift=1.0):

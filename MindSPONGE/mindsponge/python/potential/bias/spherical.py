@@ -33,30 +33,34 @@ from ...function import functions as func
 
 
 class SphericalRestrict(Bias):
-    r"""Basic cell for bias potential
+    r"""
+    Basic cell for bias potential.
 
-    Math:
+    .. Math::
 
         V(R) = k * log(1 + exp((|R - R_0| - r_0) / \sigma))
 
     Args:
-
         radius (float):         Radius of sphere (r_0).
-
         center (Tensor):        Coordinate of the center of sphere (R_0).
-
         force_constant (float): Force constant of the bias potential(k). Default: Energy(500, 'kj/mol')
-
         depth (float):          Wall depth of the restriction (\sigma). Default: Length(0.01, 'nm')
-
         length_unit (str):      Length unit for position coordinates. Default: None
-
         energy_unit (str):      Energy unit. Default: None
-
         units (Units):          Units of length and energy. Default: None
-
         use_pbc (bool):         Whether to use periodic boundary condition.
 
+    Returns:
+        potential (Tensor), Tensor of shape (B, 1). Data type is float.
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation.
+        A:  Number of atoms.
+        N:  Maximum number of neighbour atoms.
+        D:  Dimension of the simulation system. Usually is 3.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  radius: float,
@@ -97,10 +101,11 @@ class SphericalRestrict(Bias):
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
-        r"""Calculate bias potential.
+        r"""
+        Calculate bias potential.
 
         Args:
-            coordinate (Tensor):           Tensor of shape (B, A, D). Data type is float.
+            coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
                                             Index of neighbour atoms. Default: None
@@ -108,20 +113,19 @@ class SphericalRestrict(Bias):
                                             Mask for neighbour atoms. Default: None
             neighbour_coord (Tensor):       Tensor of shape (B, A, N). Data type is bool.
                                             Position coorindates of neighbour atoms.
-            neighbour_distance (Tensor):   Tensor of shape (B, A, N). Data type is float.
+            neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
                                             Tensor of PBC box. Default: None
 
         Returns:
-            potential (Tensor): Tensor of shape (B, 1). Data type is float.
+            potential (Tensor), Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
+            B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.
             D:  Dimension of the simulation system. Usually is 3.
-
         """
 
         # (B, A) <- (B, A, D)

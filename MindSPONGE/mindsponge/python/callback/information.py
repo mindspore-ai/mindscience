@@ -30,12 +30,14 @@ from ..optimizer import Updater
 
 
 class RunInfo(Callback):
-    r"""Callback to print the information of MD simulation
+    r"""
+    Callback to print the information of MD simulation.
 
     Args:
-
         print_freq (int):   Frequency to print out the information
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self, print_freq: int = 1):

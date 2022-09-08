@@ -36,25 +36,32 @@ from ...system import Molecule
 
 
 class VelocityVerlet(Integrator):
-    r"""A velocity verlet integrator based on "middle scheme" developed by Jian Liu, et al.
+    r"""
+    A velocity verlet integrator based on "middle scheme" developed by Jian Liu, et al.
 
     Reference:
-
         Zhang, Z.; Liu, X.; Chen, Z.; Zheng, H.; Yan, K.; Liu, J.
         A Unified Thermostat Scheme for Efficient Configurational Sampling for
             Classical/Quantum Canonical Ensembles via Molecular Dynamics [J].
         The Journal of Chemical Physics, 2017, 147(3): 034109.
 
     Args:
-
-        system (Molecule):          Simulation system
-
+        system (Molecule):          Simulation system.
         thermostat (Thermostat):    Thermostat for temperature coupling. Default: None
-
         barostat (Barostat):        Barostat for pressure coupling. Default: None
-
         constraint (Constraint):    Constraint algorithm. Default: None
 
+    Returns:
+        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+        - virial (Tensor), Tensor of shape (B, D). Data type is float.
+        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,

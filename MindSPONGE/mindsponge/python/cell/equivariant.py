@@ -25,15 +25,23 @@ from .initializer import lecun_init
 
 
 class InvariantPointAttention(nn.Cell):
-    """Invariant Point attention module."""
+    r"""
+    Invariant Point attention module.
+
+    Args:
+        num_head (int):         The number of the heads.
+        num_scalar_qk (int):    The number of the scalar query/key.
+        num_scalar_v (int):     The number of the scalar value.
+        num_point_v (int):      The number of the point value.
+        num_point_qk (int):     The number of the point query/key.
+        num_channel (int):      The number of the channel.
+        pair_dim (int):         The last dimension length of pair.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
 
     def __init__(self, num_head, num_scalar_qk, num_scalar_v, num_point_v, num_point_qk, num_channel, pair_dim):
-        """
-
-        Args:
-          pair_dim: pair representation dimension.
-        """
-
         super(InvariantPointAttention, self).__init__()
 
         self._dist_epsilon = 1e-8
@@ -65,19 +73,18 @@ class InvariantPointAttention(nn.Cell):
         self.attention_2d_weights = np.sqrt(1.0 / 3)
 
     def construct(self, inputs_1d, inputs_2d, mask, rotation, translation):
-        """Compute geometry-aware attention.
+        """
+        Compute geometry-aware attention.
 
         Args:
-          inputs_1d: (N, C) 1D input embedding that is the basis for the
-            scalar queries.
-          inputs_2d: (N, M, C') 2D input embedding, used for biases and values.
-          mask: (N, 1) mask to indicate which elements of inputs_1d participate
-            in the attention.
-          rotation: describe the orientation of every element in inputs_1d
-          translation: describe the position of every element in inputs_1d
+            inputs_1d (N, C):       1D input embedding that is the basis for thescalar queries.
+            inputs_2d (N, M, C'):   2D input embedding, used for biases and values.
+            mask (N, 1):            mask to indicate which elements of inputs_1d participate in the attention.
+            rotation:               describe the orientation of every element in inputs_1d.
+            translation:            describe the position of every element in inputs_1d.
 
         Returns:
-          Transformation of the input embedding.
+            Transformation of the input embedding.
         """
 
         num_residues, _ = inputs_1d.shape

@@ -34,24 +34,31 @@ from ...system import Molecule
 
 
 class LeapFrog(Integrator):
-    r"""A leap-frog integrator based on "middle scheme" developed by Jian Liu, et al.
+    r"""
+    A leap-frog integrator based on "middle scheme" developed by Jian Liu, et al.
 
     Reference:
-
         Zhang, Z.; Yan, K; Liu, X.; Liu, J..
         A Leap-Frog Algorithm-based Efficient Unified Thermostat Scheme for Molecular Dynamics [J].
         Chinese Science Bulletin, 2018, 63(33): 3467-3483.
 
     Args:
-
-        system (Molecule):          Simulation system
-
+        system (Molecule):          Simulation system.
         thermostat (Thermostat):    Thermostat for temperature coupling. Default: None
-
         barostat (Barostat):        Barostat for pressure coupling. Default: None
-
         constraint (Constraint):    Constraint algorithm. Default: None
 
+    Returns:
+        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - velocity_half (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+        - virial (Tensor), Tensor of shape (B, D). Data type is float.
+        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  system: Molecule,

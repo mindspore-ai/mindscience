@@ -32,14 +32,36 @@ from ..function.functions import get_integer
 
 
 def str_to_tensor(string: str) -> Tensor:
-    """encode string to Tensor[int]"""
+    """
+    encode string to Tensor[int]
+
+    Args:
+        string(string).
+
+    Returns:
+        Tensor[int].
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     if isinstance(string, (list, tuple)):
         string = ' '.join(string)
     return Tensor(np.fromstring(string, dtype=np.int8))
 
 
 def tensor_to_str(tensor: Tensor) -> str:
-    """decode to Tensor[int] to string"""
+    """
+    decode to Tensor[int] to string
+
+    Args:
+        tensor(Tensor[int]).
+
+    Returns:
+        string(str).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     tensor = Tensor(tensor).asnumpy()
     string = tensor.tostring().decode()
     string = string.split()
@@ -49,7 +71,20 @@ def tensor_to_str(tensor: Tensor) -> str:
 
 
 def get_class_parameters(hyper_param: dict, prefix: str, num_class: int = 1) -> dict:
-    """get hyperparameter from Cell class"""
+    """
+    get hyperparameter from Cell class.
+
+    Args:
+        hyper_param (dict).
+        prefix (str).
+        num_class (int).
+
+    Returns:
+        hyperparameters, dict.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     def _get_class_parameters(hyper_param: dict, prefix: str) -> dict:
         new_params = {}
         idx = len(prefix) + 1
@@ -77,14 +112,38 @@ def get_class_parameters(hyper_param: dict, prefix: str, num_class: int = 1) -> 
 
 
 def get_hyper_parameter(hyper_param: dict, prefix: str):
-    """get hyperparameter"""
+    """
+    get hyperparameter.
+
+    Args:
+        hyper_param (dict).
+        prefix (str).
+
+    Returns:
+        hyper_param[prefix], Tensor.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     if prefix in hyper_param.keys():
         return Tensor(hyper_param[prefix])
     return None
 
 
 def get_hyper_string(hyper_param: dict, prefix: str):
-    """get string type hyperparameter"""
+    """
+    get string type hyperparameter.
+
+    Args:
+        hyper_param (dict).
+        prefix (str).
+
+    Returns:
+        str.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     if prefix in hyper_param.keys():
         string = hyper_param[prefix]
         if isinstance(string, str):
@@ -94,7 +153,17 @@ def get_hyper_string(hyper_param: dict, prefix: str):
 
 
 def set_hyper_parameter(hyper_param: dict, prefix: str, param: None):
-    """put param into hyper_param"""
+    """
+    put param into hyper_param.
+
+    Args:
+        hyper_param (dict).
+        prefix (str).
+        param (Union[str, Tensor]).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     if param is None:
         if prefix in hyper_param.keys():
             hyper_param.pop(prefix)
@@ -106,7 +175,17 @@ def set_hyper_parameter(hyper_param: dict, prefix: str, param: None):
 
 
 def set_class_parameters(hyper_param: list, prefix: str, cell: Cell):
-    """put hyperparameters into Cell class"""
+    """
+    put hyperparameters into Cell class.
+
+    Args:
+        hyper_param (dict).
+        prefix (str).
+        cell (Cell).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     def _set_class_parameters(hyper_param: dict, prefix: str, cell: Cell):
         if isinstance(cell, Cell):
             if 'hyper_param' in cell.__dict__.keys():
@@ -129,7 +208,18 @@ def set_class_parameters(hyper_param: list, prefix: str, cell: Cell):
 
 
 def load_hyper_param_into_class(cls_dict: dict, hyper_param: dict, types: dict, prefix: str = ''):
-    """load hyperparameter into Cell class"""
+    """
+    load hyperparameter into Cell class.
+
+    Args:
+        cls_dict (dict).
+        hyper_param (dict).
+        types (dict).
+        prefix (str).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     if prefix:
         prefix = prefix + '.'
     for key, value_type in types.items():
@@ -150,7 +240,18 @@ def load_hyper_param_into_class(cls_dict: dict, hyper_param: dict, types: dict, 
 
 
 def set_class_into_hyper_param(hyper_param: dict, types: dict, cls: Cell, prefix: str = ''):
-    """take hyperparameter from Cell class"""
+    """
+    take hyperparameter from Cell class.
+
+    Args:
+        hyper_param (dict).
+        types (dict).
+        cls (Cell).
+        prefix (str).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
     #pylint: disable=protected-access
     if prefix:
         prefix = prefix + '.'
@@ -173,19 +274,23 @@ def load_hyperparam(ckpt_file_name, prefix='hyperparam', dec_key=None, dec_mode=
     Load hyperparam from checkpoint file (.ckpt).
 
     Args:
-        ckpt_file_name (str): Checkpoint file name.
+        ckpt_file_name (str):                       Checkpoint file name.
         prefix (Union[str, list[str], tuple[str]]): Only parameters starting with the prefix
-            will be loaded. Default: '_hyperparam'.
-        dec_key (Union[None, bytes]): Byte type key used for decryption. If the value is None, the decryption
-                                      is not required. Default: None.
-        dec_mode (str): This parameter is valid only when dec_key is not set to None. Specifies the decryption
-                        mode, currently supports 'AES-GCM' and 'AES-CBC'. Default: 'AES-GCM'.
+                                                    will be loaded. Default: '_hyperparam'
+        dec_key (Union[None, bytes]):               Byte type key used for decryption. If the value is None,
+                                                    the decryption is not required. Default: None
+        dec_mode (str):                             This parameter is valid only when dec_key is not set to None.
+                                                    Specifies the decryption mode, currently supports 'AES-GCM'
+                                                    and 'AES-CBC'. Default: 'AES-GCM'
 
     Returns:
         Dict, key is parameter name, value is a Parameter.
 
     Raises:
         ValueError: Checkpoint file is incorrect.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
 
     Examples:
         >>> from mindspore import load_hyperparam

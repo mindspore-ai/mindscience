@@ -40,7 +40,7 @@ from ...function.units import Units
 
 @ms_function
 def coulomb_interaction(qi: Tensor, qj: Tensor, inv_dis: Tensor, mask: Tensor = None):
-    """calculate Coulomb interaction using Coulomb's law"""
+    """calculate Coulomb interaction using Coulomb's law."""
 
     # (B,A,N) = (B,A,1) * (B,A,N)
     qiqj = qi * qj
@@ -61,35 +61,32 @@ def coulomb_interaction(qi: Tensor, qj: Tensor, inv_dis: Tensor, mask: Tensor = 
 
 
 class CoulombEnergy(NonbondEnergy):
-    r"""Coulomb interaction
+    r"""
+    Coulomb interaction.
 
-    Math:
+    .. Math::
 
         E_ele(r_ij) = \sum_ij k_coulomb * q_i * q_j / r_ij
 
     Args:
-
         atom_charge (Tensor):   Tensor of shape (B, A). Data type is float.
                                 Atom charge.
-
         parameters (dict):      Force field parameters. Default: None
-
         cutoff (float):         Cutoff distance. Default: None
-
         use_pbc (bool):         Whether to use periodic boundary condition. Default: None
-
-        alpha (float):          Alpha for DSF and PME coulomb interaction. Default: 0.25 for DSF and 0.276501 for PME
-
-        nfft (Tensor):       Parameter of FFT, required by PME. Default: None
-
-        exclude_index (Tensor):   Tensor of the exclude index, required by PME. Default: None
-
+        alpha (float):          Alpha for DSF and PME coulomb interaction.
+                                Default: 0.25 for DSF and 0.276501 for PME
+        nfft (Tensor):          Parameter of FFT, required by PME. Default: None
+        exclude_index (Tensor): Tensor of the exclude index, required by PME. Default: None
         length_unit (str):      Length unit for position coordinates. Default: None
-
         energy_unit (str):      Energy unit. Default: None
-
         units (Units):          Units of length and energy. Default: None
 
+    Returns:
+        energy (Tensor), Tensor of shape (B, 1). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -158,11 +155,12 @@ class CoulombEnergy(NonbondEnergy):
                   inv_neigh_dis: Tensor = None,
                   pbc_box: Tensor = None,
                   ):
-        r"""Calculate energy term.
+        r"""
+        Calculate energy term.
 
         Args:
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
-                                            Position coordinate of atoms in system
+                                            Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
                                             Index of neighbour atoms.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
@@ -177,13 +175,12 @@ class CoulombEnergy(NonbondEnergy):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
+            energy (Tensor), Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
+            B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             D:  Dimension of the simulation system. Usually is 3.
-
         """
 
         inv_neigh_dis *= self.inverse_input_scale
@@ -210,7 +207,7 @@ class CoulombEnergy(NonbondEnergy):
 
 
 class DampedShiftedForceCoulomb(Cell):
-    r"""Damped shifted force coulomb potential
+    r"""Damped shifted force coulomb potential.
 
     Args:
 
@@ -547,11 +544,11 @@ class ParticleMeshEwaldCoulomb(Cell):
         if self.exclude_index is not None:
             # (B,b)
             dis = self.get_exclude_distance(coordinate, pbc_box) * self.input_unit_scale
-            # (B,A) <- (B,A,1)
+            # (B,A) <- (B,A,1)：
             qi = F.reshape(qi, (qi.shape[0], -1))
-            # (B,b,2) <- (B,A)
+            # (B,b,2) <- (B,A)：
             qi = gather_values(qi, self.exclude_pairs)
-            # (B,b) <- (B,b,2)
+            # (B,b) <- (B,b,2)：
             qiqj = F.reduce_prod(qi, -1)
             energy = -qiqj * F.erf(self.alpha * dis) / dis
             energy = func.keepdim_sum(energy, -1)
@@ -574,9 +571,9 @@ class ParticleMeshEwaldCoulomb(Cell):
         neibor_q = frac * frac * frac * self.ma + frac * frac * self.mb + frac * self.mc + self.md
         # (B,A,64) <- (B,A,1) * reduce (B,A,64,3)
         neibor_q = qi * F.reduce_prod(neibor_q, -1)
-        # (B,A,64,4) <- concat (B,A,64,1) (B,A,64,3)
+        # (B,A,64,4) <- concat (B,A,64,1) (B,A,64,3)：
         neibor_grids = F.concat((self.batch_constant, neibor_grids), -1)
-        # (B, fftx, ffty, fftz)
+        # (B, fftx, ffty, fftz)：
         q_matrix = msnp.zeros([1, self.fftx, self.ffty, self.fftz], ms.float32)
         q_matrix = F.tensor_scatter_add(q_matrix, neibor_grids.reshape(-1, 4), neibor_q.reshape(-1))
 

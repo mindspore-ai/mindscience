@@ -30,16 +30,19 @@ from .wrapper import _energy_wrapper_register
 
 @_energy_wrapper_register('sum')
 class EnergySummation(EnergyWrapper):
-    r"""A network to sum the potential and bias directly.
+    r"""
+    A network to sum the potential and bias directly.
 
     Args:
-
         num_walker (int):       Number of multiple walker (B). Default: 1
-
         dim_potential (int):    Dimension of potential energy (U). Default: 1
-
         dim_bias (int):         Dimension of bias potential (V). Default: 1
 
+    Returns:
+        energy (Tensor), Tensor of shape (B, 1). Data type is float. Total energy.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  num_walker: int = 1,
@@ -63,14 +66,12 @@ class EnergySummation(EnergyWrapper):
                                 Bias potential. Default: None
 
         Return:
-            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
-                                Total energy.
+            energy (Tensor), Tensor of shape (B, 1). Data type is float. Total energy.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers in simulation.
             U:  Dimension of potential energy.
             V:  Dimension of bias potential.
-
         """
 
         potential = self.sum_last_dim(potential)

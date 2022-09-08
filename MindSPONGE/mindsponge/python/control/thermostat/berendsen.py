@@ -30,30 +30,35 @@ from ...system import Molecule
 
 
 class BerendsenThermostat(Thermostat):
-    r"""A Berendsen (weak coupling) thermostat controller.
+    r"""
+    A Berendsen (weak coupling) thermostat controller.
 
     Reference:
-
         Berendsen, H. J. C.; Postma, J. P. M.; van Gunsteren, W. F.; DiNola, A.; Haak, J. R..
         Molecular Dynamics with Coupling to an External Bath [J].
         The Journal of Chemical Physics, 1984, 81(8): 3684.
 
     Args:
-
-        system (Molecule):      Simulation system
-
+        system (Molecule):      Simulation system.
         temperature (float):    Reference temperature T_ref (K) for temperature coupling.
                                 Default: 300
-
         control_step (int):     Step interval for controller execution. Default: 1
-
         time_constant (float)   Time constant \tau_T (ps) for temperature coupling.
                                 Default: 4
-
         scale_min (float):      The minimum value to clip the velocity scale factor. Default: 0.8
-
         scale_max (float):      The maximum value to clip the velocity scale factor. Default: 1.25
 
+    Returns:
+        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+        - virial (Tensor), Tensor of shape (B, D). Data type is float.
+        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  system: Molecule,
@@ -77,7 +82,7 @@ class BerendsenThermostat(Thermostat):
         self.ratio = self.control_step * self.time_step / self.time_constant
 
     def set_time_step(self, dt):
-        """set simulation time step"""
+        """set simulation time step."""
         self.time_step = dt
         self.ratio = self.control_step * self.time_step / self.time_constant
         return self
