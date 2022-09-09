@@ -1282,7 +1282,7 @@ def parmchk2_gaff(ifname, ofname, direct_load=True, keep=True):
     """
     import XpongeLib as xlib
     datapath = os.path.split(xlib.__file__)[0]
-    if isinstance(ifname, (ResidueType, Residue, Molecule)):
+    if isinstance(ifname, AbstractMolecule):
         Save_Mol2(ifname, "temp.mol2")
         ifname = "temp.mol2"
     parmchk2_func = getattr(xlib, "_parmchk2")

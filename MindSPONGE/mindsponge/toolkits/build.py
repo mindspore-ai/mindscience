@@ -3,8 +3,9 @@ This **module** is used to build and save
 """
 import os
 from itertools import product
+from warnings import warn
 from . import assign
-from .helper import ResidueType, Molecule, Residue, ResidueLink, GlobalSetting, Xopen, Xdict, \
+from .helper import AbstractMolecule, ResidueType, Molecule, Residue, ResidueLink, GlobalSetting, Xopen, Xdict, \
     set_global_alternative_names
 
 
@@ -343,39 +344,42 @@ def get_mindsponge_system_energy(cls, use_pbc=False):
     from mindsponge import set_global_units
     from mindsponge import Molecule as mMolecule
     from mindsponge import ForceFieldBase
-    #pylint: disable=deprecated-class
-    from collections import Sequence
-    if not isinstance(cls, Sequence):
+    from collections.abc import Iterable
+    if not isinstance(cls, Iterable):
         cls = [cls]
     sys_kwarg = Xdict()
     ene_kwarg = Xdict()
     for scls in cls:
-        if isinstance(scls, Molecule):
-            build_bonded_force(scls)
-            _get_single_system_energy(scls, sys_kwarg, ene_kwarg, use_pbc)
-
-        elif isinstance(scls, Residue):
-            mol = Molecule(name=scls.name)
-            mol.Add_Residue(scls)
-            _get_single_system_energy(mol, sys_kwarg, ene_kwarg, use_pbc)
-
-        elif isinstance(scls, ResidueType):
-            residue = Residue(scls, name=cls.name)
-            for atom in cls.atoms:
-                residue.Add_Atom(atom)
-            mol = Molecule(name=residue.name)
-            mol.Add_Residue(residue)
+        if isinstance(scls, AbstractMolecule):
+            mol = Molecule.cast(scls, deepcopy=False)
             _get_single_system_energy(mol, sys_kwarg, ene_kwarg, use_pbc)
         else:
             raise TypeError(f"The type should be a Molecule, Residue, ResidueType, but we get {str(type(scls))}")
     set_global_units("A", "kcal/mol")
+    toremove = []
+    for key, value in sys_kwarg.items():
+        if not value[0]:
+            toremove.append(key)
+    for key in toremove:
+        sys_kwarg.pop(key)
     system = mMolecule(**sys_kwarg)
     system.multi_system = len(cls)
     energies = []
-    exclude = ene_kwarg.pop("exclude")
+    sys_kwarg["exclude"] = ene_kwarg.pop("exclude")
     for todo in ene_kwarg.values():
-        energies.append(todo["function"](system, ene_kwarg))
-    energy = ForceFieldBase(energy=energies, exclude_index=exclude)
+        try:
+            energies.append(todo["function"](system, ene_kwarg))
+        except (TypeError, ValueError) as e:
+            if 'NoneType' not in e.args[0] and 'zero dimension' not in e.args[0]:
+                raise e
+
+    try:
+        energy = ForceFieldBase(energy=energies, exclude_index=sys_kwarg["exclude"])
+    except ValueError as e:
+        if 'zero dimension' not in e.args[0]:
+            raise e
+        energy = ForceFieldBase(energy=energies)
+
     return system, energy
 
 
@@ -413,6 +417,132 @@ def save_sponge_input(cls, prefix=None, dirname="."):
         save_sponge_input(residue, prefix, dirname)
 
 
+def _pdb_chain(cls: Molecule):
+    """
+
+    :param cls:
+    :return:
+    """
+    chains = Xdict()
+    chain_ids = [" "] * len(cls.residues)
+    start = 0
+    alphabet = "A"
+    i = 0
+    for i, res in enumerate(cls.residues):
+        if i == start:
+            continue
+        if not cls.get_residue_link(cls.residues[i-1], res, "residue"):
+            length = i - start
+            if length > 1:
+                chains[alphabet] = {j + 1: start + j for j in range(length)}
+                chain_ids[start: start + length] = alphabet * length
+                alphabet = chr(ord(alphabet) + 1)
+            start = i
+    length = i - start
+    if length > 1:
+        chains[alphabet] = {j + 1: start + j for j in range(length)}
+        chain_ids[start: start + length] = alphabet * length
+    return chains, chain_ids
+
+
+def _pdb_connection(connects):
+    """
+
+    :param connects:
+    :return:
+    """
+    templist = []
+    for connect, atoms in connects.items():
+        atoms.sort()
+        atom_groups = [atoms[i:i + 4] for i in range(0, len(atoms), 4)]
+        for four_atoms in atom_groups:
+            templist.append("CONECT" + "{:5d}".format(connect + 1)
+                            + "".join(["{:5d}".format(i + 1) for i in four_atoms]) + "\n")
+    templist.sort()
+    return "".join(templist)
+
+
+def _pdb_sequence(cls: Molecule, chains: Xdict):
+    """
+
+    :param cls:
+    :param towrite:
+    :return:
+    """
+    towrite = ""
+    chain_ids = list(chains.keys())
+    chain_ids.sort()
+    for chain_id in chain_ids:
+        index_map = chains[chain_id]
+        pdb_index = list(index_map.keys())
+        pdb_index.sort()
+        names = []
+        for i in pdb_index:
+            mol_index = index_map[i]
+            name = cls.residues[mol_index].name
+            name = GlobalSetting.PDBResidueNameMap["save"][name] \
+                if name in GlobalSetting.PDBResidueNameMap["save"] else name
+            if len(name) > 3:
+                warn(f"The residue name {name} is more than 3 characters.")
+            names.append(name)
+        lines = [" ".join(["{:3s}".format(name) for name in names[j:j+13]])  for j in range(0, len(names), 13)]
+        lines = ["SEQRES {0:3d} {1:1s} {2:4d}  {3:s}\n".format(
+            i + 1, chain_id, len(names), line) for i, line in enumerate(lines)]
+        towrite += "".join(lines)
+    return towrite
+
+
+def _pdb_residue_link(cls: Molecule, chain_ids: Xdict, chains: Xdict):
+    """
+
+    :param cls:
+    :param chain_ids:
+    :param chains:
+    :return:
+    """
+    towrite = ""
+    connects = Xdict(not_found_method=lambda key: [])
+    ssbonds = []
+    links = []
+    chains_inverse = Xdict({chain_id: Xdict({value: key for key, value in chains[chain_id].items()})
+                            for chain_id in chains})
+    for reslink in cls.residue_links:
+        a, b = reslink.atom1, reslink.atom2
+        index_a = cls.atom_index[a]
+        index_b = cls.atom_index[b]
+        if index_a > index_b:
+            a, b = b, a
+            index_a, index_b = index_b, index_a
+        res_a, res_b = a.residue, b.residue
+        res_index_a, res_index_b = cls.residue_index[res_a], cls.residue_index[res_b]
+        chain_a, chain_b = chain_ids[res_index_a], chain_ids[res_index_b]
+        if res_index_b - res_index_a == 1:
+            continue
+        if chain_a == " " or chain_b == " ":
+            connects[index_a].append(index_b)
+            connects[index_b].append(index_a)
+        elif res_a.name == "CYX" and res_b.name == "CYX" and \
+                a.name == res_a.type.connect_atoms["ssbond"] and \
+                b.name == res_b.type.connect_atoms["ssbond"]:
+            ssbonds.append("CYX {0:1s} {1:4d}    CYX {2:1s} {3:4d}\n".format(
+                chain_a, chains_inverse[chain_a][res_index_a], chain_b, chains_inverse[chain_b][res_index_b]))
+        else:
+            save_names = GlobalSetting.PDBResidueNameMap["save"]
+            name_a = save_names[res_a.name] if res_a.name in save_names else res_a.name
+            name_b = save_names[res_b.name] if res_b.name in save_names else res_b.name
+            links.append("LINK        {0:^4s} {1:3s} {2:1s}{3:4d}                \
+{4:^4s} {5:3s} {6:1s}{7:4d}\n".format(
+    a.name, name_a, chain_a, chains_inverse[chain_a][res_index_a],
+    b.name, name_b, chain_b, chains_inverse[chain_b][res_index_b]))
+    if ssbonds:
+        ssbonds.sort()
+        towrite += "".join(["SSBOND {0:3d} ".format(i + 1) + ssbond for i, ssbond in enumerate(ssbonds)])
+    if links:
+        links.sort(key=lambda line: (line[21], int(line[22:26]), line[51], int(line[52:56])))
+        towrite += "".join(links)
+    return connects, towrite
+
+
 def save_pdb(cls, filename=None):
     """
     This **function** saves the iput object as a pdb file
@@ -421,7 +551,8 @@ def save_pdb(cls, filename=None):
     :param filename: the name of the output file
     :return: None
     """
-    if isinstance(cls, Molecule):
+    if isinstance(cls, AbstractMolecule):
+        cls = Molecule.cast(cls, deepcopy=False)
         cls.atoms = []
         for res in cls.residues:
             cls.atoms.extend(res.atoms)
@@ -435,9 +566,12 @@ def save_pdb(cls, filename=None):
             elif cls.residue_index[link.atom2.residue] - cls.residue_index[link.atom1.residue] == 1:
                 cls.link_to_next[cls.residue_index[link.atom1.residue]] = True
 
-        towrite = "REMARK   Generated By Xponge (Molecule)\n"
+        chains, chain_ids = _pdb_chain(cls)
 
-        chain_atom0 = -1
+        towrite = "REMARK   Generated By Xponge (Molecule)\n"
+        towrite += _pdb_sequence(cls, chains)
+        connects, temp_towrite = _pdb_residue_link(cls, chain_ids, chains)
+        towrite += temp_towrite
         chain_residue0 = -1
         real_chain_residue0 = -1
         for atom in cls.atoms:
@@ -445,12 +579,12 @@ def save_pdb(cls, filename=None):
             if resname in GlobalSetting.PDBResidueNameMap["save"].keys():
                 resname = GlobalSetting.PDBResidueNameMap["save"][resname]
             towrite += "ATOM  %5d %4s %3s %1s%4d    %8.3f%8.3f%8.3f%17s%2s\n" % (
-                cls.atom_index[atom] - chain_atom0, atom.name,
-                resname, " ", (cls.residue_index[atom.residue] - chain_residue0) % 10000,
+                (cls.atom_index[atom] + 1) % 100000, atom.name,
+                resname, chain_ids[cls.residue_index[atom.residue]],
+                (cls.residue_index[atom.residue] - chain_residue0) % 10000,
                 atom.x, atom.y, atom.z, " ", " ")
             if atom == atom.residue.atoms[-1] and not cls.link_to_next[cls.residue_index[atom.residue]]:
                 towrite += "TER\n"
-                chain_atom0 = cls.atom_index[atom]
                 if cls.residue_index[atom.residue] - real_chain_residue0 != 1:
                     chain_residue0 = cls.residue_index[atom.residue]
                     real_chain_residue0 = chain_residue0
@@ -458,23 +592,15 @@ def save_pdb(cls, filename=None):
                     real_chain_residue0 = cls.residue_index[atom.residue]
         if not filename:
             filename = cls.name + ".pdb"
-
+        towrite += _pdb_connection(connects)
+        towrite += "END\n"
         f = Xopen(filename, "w")
         f.write(towrite)
         f.close()
-    elif isinstance(cls, Residue):
-        mol = Molecule(name=cls.name)
-        mol.Add_Residue(cls)
-        save_pdb(mol, filename)
-    elif isinstance(cls, ResidueType):
-        residue = Residue(cls, name=cls.name)
-        for atom in cls.atoms:
-            residue.Add_Atom(atom)
-        save_pdb(residue, filename)
     elif isinstance(cls, assign.Assign):
         cls.Save_As_PDB(filename)
     else:
-        raise NotImplementedError
+        raise TypeError("Only Molecule, Residue, ResidueType and Assign can be saved as a pdb file")
 
 
 def save_mol2(cls, filename=None):
@@ -485,7 +611,8 @@ def save_mol2(cls, filename=None):
     :param filename: the name of the output file
     :return: None
     """
-    if isinstance(cls, Molecule):
+    if isinstance(cls, AbstractMolecule):
+        cls = Molecule.cast(cls, deepcopy=False)
         cls.atoms = []
         for res in cls.residues:
             cls.atoms.extend(res.atoms)
@@ -539,19 +666,10 @@ def save_mol2(cls, filename=None):
         f = Xopen(filename, "w")
         f.write(towrite)
         f.close()
-    elif isinstance(cls, Residue):
-        mol = Molecule(name=cls.name)
-        mol.Add_Residue(cls)
-        save_mol2(mol, filename)
-    elif isinstance(cls, ResidueType):
-        residue = Residue(cls, name=cls.name)
-        for atom in cls.atoms:
-            residue.Add_Atom(atom)
-        save_mol2(residue, filename)
     elif isinstance(cls, assign.Assign):
         cls.Save_As_Mol2(filename)
     else:
-        raise NotImplementedError
+        raise TypeError("Only Molecule, Residue, ResidueType and Assign can be saved as a pdb file")
 
 
 def save_gro(cls, filename):
@@ -563,6 +681,7 @@ def save_gro(cls, filename):
     :return: None
     """
     towrite = "Generated By Xponge\n"
+    cls = Molecule.cast(cls, deepcopy=False)
     cls.atoms = []
     for res in cls.residues:
         cls.atoms.extend(res.atoms)

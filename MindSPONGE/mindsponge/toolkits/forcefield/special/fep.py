@@ -693,8 +693,8 @@ def merge_dual_topology(mol, residue_a, residue_b, assign_a, assign_b, tmcs=60):
             mol_b.Add_Residue(res)
 
     for reslink in mol.residue_links:
-        mol_a.residue_links.append(reslink)
-        mol_b.residue_links.append(reslink)
+        mol_a.residue_links.add(reslink)
+        mol_b.residue_links.add(reslink)
 
     build.Build_Bonded_Force(mol_a)
     build.Build_Bonded_Force(mol_b)

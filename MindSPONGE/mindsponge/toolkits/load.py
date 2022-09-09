@@ -2,6 +2,7 @@
 This **module** is used to load and read
 """
 import os
+import warnings
 
 import numpy as np
 
@@ -149,11 +150,55 @@ def _pdb_ssbond_after(chain, ssbonds, molecule):
         res_a_index = chain[ssbond[15]][int(ssbond[17:21])]
         res_b_index = chain[ssbond[29]][int(ssbond[31:35])]
         if res_a_index > res_b_index:
-            res_a_index, res_b_index = (res_b_index, res_a_index)
+            res_a_index, res_b_index = res_b_index, res_a_index
         res_a = molecule.residues[res_a_index]
         res_b = molecule.residues[res_b_index]
         molecule.Add_Residue_Link(res_a.name2atom(res_a.type.connect_atoms["ssbond"]),
                                   res_b.name2atom(res_b.type.connect_atoms["ssbond"]))
+
+
+def _pdb_link_after(chain, links, molecule):
+    """
+
+    :param chain:
+    :param links:
+    :param molecule:
+    :return:
+    """
+    for link in links:
+        chain_a, chain_b = link[21], link[51]
+        res_a_pdb, res_b_pdb = int(link[22:26]), int(link[52:56])
+        if chain_a not in chain or chain_b not in chain or \
+                res_a_pdb not in chain[chain_a] or res_b_pdb not in chain[chain_a]:
+            warnings.warn(f"The link between {chain_a}{res_a_pdb} and {chain_b}{res_b_pdb} is not valid")
+            continue
+        res_a_index = chain[link[21]][int(link[22:26])]
+        res_b_index = chain[link[51]][int(link[52:56])]
+        if res_a_index > res_b_index:
+            res_a_index, res_b_index = res_b_index, res_a_index
+        res_a = molecule.residues[res_a_index]
+        res_b = molecule.residues[res_b_index]
+        molecule.Add_Residue_Link(res_a.name2atom(link[12:16].strip()),
+                                  res_b.name2atom(link[42:46].strip()))
+
+
+def _pdb_add_atom(current_residue, atomname, x, y, z,
+                  ignore_hydrogen, ignore_unknown_name, atom_map, atom_index):
+    """
+    add the atom to the residue
+    """
+    if ignore_hydrogen and (atomname.startswith("H") or
+                            (len(atomname) > 1 and atomname[0] in "123" and atomname[1] == "H")):
+        return False
+    try:
+        current_residue.Add_Atom(atomname, x=x, y=y, z=z)
+        if atom_index not in atom_map:
+            atom_map[atom_index] = current_residue.atoms[-1]
+        return True
+    except KeyError as ke:
+        if ignore_unknown_name:
+            return False
+        raise ke
 
 
 def _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore_hydrogen, ignore_unknown_name):
@@ -167,8 +212,10 @@ def _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore
     :param ignore_unknown_name:
     :return:
     """
+    atom_map = Xdict()
     current_residue_count = -1
     current_residue_index = None
+    current_insertion_code = None
     current_residue = None
     current_resname = None
     links = []
@@ -176,14 +223,16 @@ def _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore
         for line in f:
             if line.startswith("ATOM") or line.startswith("HETATM"):
                 extra = line[16]
+                insertion_code = line[26]
                 resindex = int(line[22:26])
                 resname = line[17:20].strip()
                 atomname = line[12:16].strip()
+                atom_index = int(line[6:11])
                 x = float(line[30:38])
                 y = float(line[38:46])
                 z = float(line[46:54])
                 if current_residue_index is None or current_residue_index != resindex or \
-                        current_resname != resname:
+                        current_resname != resname or current_insertion_code != insertion_code:
                     current_residue_count += 1
                     if current_residue:
                         molecule.Add_Residue(current_residue)
@@ -192,17 +241,12 @@ def _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore
                             links.append(len(molecule.residues))
                     current_residue = Residue(ResidueType.get_type(residue_type_map[current_residue_count]))
                     current_residue_index = resindex
+                    current_insertion_code = insertion_code
                     current_resname = resname
                 if extra not in (" ", position_need):
                     continue
-                if ignore_hydrogen and atomname.startswith("H"):
-                    continue
-                try:
-                    current_residue.Add_Atom(atomname, x=x, y=y, z=z)
-                except KeyError as ke:
-                    if ignore_unknown_name:
-                        continue
-                    raise ke
+                _pdb_add_atom(current_residue, atomname, x, y, z,
+                              ignore_hydrogen, ignore_unknown_name, atom_map, atom_index)
             elif line.startswith("TER"):
                 current_residue_index = None
                 current_resname = None
@@ -213,6 +257,7 @@ def _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore
         res_a = molecule.residues[count]
         res_b = molecule.residues[count - 1]
         molecule.Add_Residue_Link(res_a.name2atom(res_a.type.head), res_b.name2atom(res_b.type.tail))
+    return atom_map
 
 
 def _pdb_judge_histone(judge_histone, residue_type_map, current_histone_information):
@@ -234,58 +279,157 @@ def _pdb_judge_histone(judge_histone, residue_type_map, current_histone_informat
         current_histone_information = {"DeltaH": False, "EpsilonH": False}
 
 
-def load_pdb(filename, judge_histone=True, position_need="A", ignore_hydrogen=False, ignore_unknown_name=False):
+def _pdb_read_sequences(line, sequences):
+    """
+
+    :param line:
+    :param sequences:
+    :return:
+    """
+    chain_id = line[11]
+    if chain_id not in sequences:
+        sequences[chain_id] = []
+    sequence = sequences[chain_id]
+    sequence.extend(line[19:].split())
+
+
+def _pdb_find_missing_residues(mol, sequences, chain, residue_type_map):
+    """
+
+    :param filename:
+    :param sequences:
+    :return:
+    """
+    if sequences:
+        original_residue_names = [GlobalSetting.PDBResidueNameMap["save"].get(name, name) for name in residue_type_map]
+        for chain_id, sequence in sequences.items():
+            pdb_index_to_mol_index = chain[chain_id]
+            name_index_to_mol_index = Xdict()
+            pdb_index = list(pdb_index_to_mol_index.keys())
+            pdb_index.sort()
+            names_with_none = [None] * (pdb_index[-1] - pdb_index[0] + 1)
+            for i in pdb_index:
+                names_with_none[i - pdb_index[0]] = original_residue_names[pdb_index_to_mol_index[i]]
+                name_index_to_mol_index[i - pdb_index[0]] = pdb_index_to_mol_index[i]
+            offset = 0
+            for offset in range(len(sequence) - len(names_with_none) + 1):
+                if all(b in (a, None) for a, b in zip(sequence[offset:], names_with_none)):
+                    break
+            if offset:
+                mol.set_missing_residues_info(None, name_index_to_mol_index[offset], sequence[:offset])
+            tail_offset = len(sequence) - offset - len(names_with_none)
+            if tail_offset:
+                tail_index = name_index_to_mol_index[len(names_with_none) - 1]
+                mol.set_missing_residues_info(tail_index, None, sequence[-tail_offset:])
+            find_none_index = None
+            for i, name in enumerate(names_with_none):
+                if find_none_index is None and name is None:
+                    find_none_index = i
+                elif find_none_index is not None and name is not None:
+                    start = name_index_to_mol_index[find_none_index - 1]
+                    end = name_index_to_mol_index[i]
+                    mol.set_missing_residues_info(start, end, sequence[find_none_index:i])
+                    find_none_index = None
+
+
+def _pdb_connects(mol, connects, atom_map):
+    """
+
+    :param mol:
+    :param connects:
+    :param atom_map:
+    :return:
+    """
+    for connect in connects:
+        atom = int(connect[6:11])
+        if atom not in atom_map:
+            continue
+        atom_ = atom_map[atom]
+        connect = connect[11:]
+        for i in range(0, len(connect), 5):
+            to_connect = connect[i:i+5]
+            if not to_connect.strip():
+                break
+            to_connect = int(to_connect)
+            if to_connect not in atom_map:
+                continue
+            to_connect_ = atom_map[to_connect]
+            if atom > to_connect or atom_.residue == to_connect_.residue or mol.get_residue_link(atom_, to_connect_):
+                continue
+            mol.add_residue_link(atom_, to_connect_)
+            print(atom_, atom, to_connect_, to_connect)
+
+
+def load_pdb(filename, judge_histone=True, position_need="A", ignore_hydrogen=False,
+             ignore_unknown_name=False, ignore_seqres=True, ignore_conect=True):
     """
     This **function** is used to load a pdb file
 
     :param filename: the name of the file to load
     :param judge_histone: judge the protonized state of the histone residues
     :param position_need: the position character to read
-    :param ignore_hydrogen: do not read the atom with a name beginning with "H"
+    :param ignore_hydrogen: do not read the atom with a name beginning with "H" or "[123]H"
     :param ignore_unknown_name: do not read the atom with an unknown name **New From 1.2.6.4**
+    :param ignore_seqres: do not read the SEQRES lines **New From 1.2.6.7**
+    :param ignore_conect: do not read the CONECT lines **New From 1.2.6.7**
     :return: a Molecule instance
     """
     molecule = Molecule(os.path.splitext(os.path.basename(filename))[0])
     chain = Xdict()
+    sequences = Xdict()
     ssbonds = []
+    links = []
+    connects = []
     residue_type_map = []
+    insertion_count = 0
     current_residue_count = -1
+    current_insertion_code = None
     current_residue_index = None
     current_resname = None
     current_histone_information = {"DeltaH": False, "EpsilonH": False}
     with open(filename) as f:
         for line in f:
             if line.startswith("ATOM") or line.startswith("HETATM"):
-                resindex = int(line[22:26])
+                resindex = int(line[22:26]) + insertion_count
+                insertion_code = line[26]
+                chain_id = line[21]
+                if not chain_id.strip():
+                    chain_id = 0
                 resname = line[17:20].strip()
                 atomname = line[12:16].strip()
                 if current_residue_index is None:
                     _pdb_judge_histone(judge_histone, residue_type_map, current_histone_information)
                     current_residue_count += 1
                     current_resname = resname
-                    residue_type_map.append(resname)
-                    current_residue_index = resindex
-                    chain[chr(ord("A") + len(chain.keys()))] = Xdict()
-                    chain[chr(ord("A") + len(chain.keys())-1)][resindex] = current_residue_count
+                    current_insertion_code = insertion_code
                     if resname in GlobalSetting.PDBResidueNameMap["head"].keys():
                         resname = GlobalSetting.PDBResidueNameMap["head"][resname]
-                elif current_residue_index != resindex or current_resname != resname:
+                    residue_type_map.append(resname)
+                    current_residue_index = resindex
+                    chain[chain_id] = Xdict()
+                    chain[chain_id][resindex] = current_residue_count
+                elif (current_residue_index != resindex or current_insertion_code != insertion_code) or \
+                        current_resname != resname:
                     _pdb_judge_histone(judge_histone, residue_type_map, current_histone_information)
                     current_residue_count += 1
                     current_resname = resname
+                    current_insertion_code = insertion_code
+                    if insertion_code != " ":
+                        insertion_count += 1
                     current_residue_index = resindex
-                    chain[chr(ord("A") + len(chain.keys()) - 1)][resindex] = current_residue_count
-
+                    chain[chain_id][resindex] = current_residue_count
                     residue_type_map.append(resname)
-
                 if judge_histone and resname in GlobalSetting.HISMap["HIS"].keys():
                     if atomname == GlobalSetting.HISMap["DeltaH"]:
                         current_histone_information["DeltaH"] = True
                     elif atomname == GlobalSetting.HISMap["EpsilonH"]:
                         current_histone_information["EpsilonH"] = True
+
             elif line.startswith("TER"):
                 current_residue_index = None
                 current_resname = None
+                current_insertion_code = None
+                insertion_count = 0
                 if residue_type_map[-1] in GlobalSetting.PDBResidueNameMap["tail"].keys():
                     residue_type_map[-1] = GlobalSetting.PDBResidueNameMap["tail"][residue_type_map[-1]]
                 _pdb_judge_histone(judge_histone, residue_type_map, current_histone_information)
@@ -293,13 +437,26 @@ def load_pdb(filename, judge_histone=True, position_need="A", ignore_hydrogen=Fa
             elif line.startswith("SSBOND"):
                 ssbonds.append(line)
 
+            elif line.startswith("LINK"):
+                links.append(line)
+
+            elif line.startswith("SEQRES") and not ignore_seqres:
+                _pdb_read_sequences(line, sequences)
+
+            elif line.startswith("CONECT") and not ignore_conect:
+                connects.append(line)
+
     current_residue_index = None
     if residue_type_map[-1] in GlobalSetting.PDBResidueNameMap["tail"].keys():
         residue_type_map[-1] = GlobalSetting.PDBResidueNameMap["tail"][residue_type_map[-1]]
 
     _pdb_ssbond_before(chain, residue_type_map, ssbonds)
-    _pdb_add_residue(filename, molecule, position_need, residue_type_map, ignore_hydrogen, ignore_unknown_name)
+    atom_map = _pdb_add_residue(filename, molecule, position_need,
+                                residue_type_map, ignore_hydrogen, ignore_unknown_name)
     _pdb_ssbond_after(chain, ssbonds, molecule)
+    _pdb_link_after(chain, links, molecule)
+    _pdb_find_missing_residues(molecule, sequences, chain, residue_type_map)
+    _pdb_connects(molecule, connects, atom_map)
 
     return molecule
 

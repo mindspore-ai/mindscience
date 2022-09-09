@@ -202,15 +202,18 @@ def set_global_alternative_names(real_global=False):
     dic = currentframe().f_back.f_globals
     new_dict = {}
     for value in dic.values():
-        if not isinstance(value, FunctionType) or value.__name__.startswith("_"):
+        if not isinstance(value, (FunctionType, type)) or value.__name__.startswith("_"):
             continue
 
         if real_global:
-            def _global_set_method(obj, name, func):
-                obj[name] = func
-                set_real_global_variable(name, func)
+            if isinstance(value, FunctionType):
+                def _global_set_method(obj, name, func):
+                    obj[name] = func
+                    set_real_global_variable(name, func)
 
-            set_alternative_name(new_dict, value, _global_set_method)
+                set_alternative_name(new_dict, value, _global_set_method)
+            else:
+                set_real_global_variable(value.__name__, value)
         else:
             set_dict_value_alternative_name(new_dict, value)
     dic.update(new_dict)

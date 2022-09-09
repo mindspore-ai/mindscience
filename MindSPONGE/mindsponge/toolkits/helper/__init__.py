@@ -9,9 +9,11 @@ import os
 import time
 import stat
 from types import MethodType, FunctionType
-from functools import partial, wraps
+from functools import partial, partialmethod, wraps
 from collections import OrderedDict
+from collections.abc import Iterable
 from itertools import product
+from abc import ABC
 
 import numpy as np
 
@@ -19,16 +21,22 @@ from .namespace import set_real_global_variable, remove_real_global_variable, se
     set_attribute_alternative_name, set_classmethod_alternative_names, set_attribute_alternative_names, \
     set_dict_value_alternative_name, set_global_alternative_names, source
 
-from .math import get_rotate_matrix, get_fibonacci_grid, guess_element_from_mass
+from .math import get_rotate_matrix, get_fibonacci_grid, guess_element_from_mass, kabsch
 
 
 class Xdict(dict):
     """
     This **class** is used to be a dict which can give not_found_message
 
+    :param not_found_method: the method (function) which will accept the key and return the value \
+when the key is not found. **New From 1.2.6.7**
     :param not_found_message: the string to print when the key is not found
     """
     def __init__(self, *args, **kwargs):
+        if "not_found_method" in kwargs:
+            self.not_found_method = kwargs.pop("not_found_method")
+        else:
+            self.not_found_method = None
         if "not_found_message" in kwargs:
             self.not_found_message = kwargs.pop("not_found_message")
         else:
@@ -40,6 +48,10 @@ class Xdict(dict):
         toget = self.get(key, self.id)
         if toget != self.id:
             return toget
+        if self.not_found_method:
+            value = self.not_found_method(key)
+            self[key] = value
+            return self[key]
         if self.not_found_message:
             raise KeyError(self.not_found_message.format(key))
         raise KeyError(f"{key}")
@@ -199,7 +211,7 @@ class _GlobalSetting():
 globals()["GlobalSetting"] = _GlobalSetting()
 
 
-class Type:
+class Type(ABC):
     """
     This **class** is the abstract class of the types (atom types, bonded force types and so on).
 
@@ -483,6 +495,10 @@ class Type:
         type(self)._unit_transfer(self)
 
 
+class AbstractMolecule(ABC):
+    """This abstract **class** is used to judge whether a class can be treated as a molecule """
+
+
 class AtomType(Type):
     """
     This **class** is a subclass of Type, for atom types
@@ -754,7 +770,7 @@ class ResidueType(Type):
         return new_restype
 
 
-class Entity:
+class Entity(ABC):
     """
     This **class** is the abstract class of the entities (atoms, bonded forces, residues and so on).
 
@@ -954,6 +970,41 @@ class Residue(Entity):
             return np.sum([getattr(atom, attr) for atom in self.atoms])
         return super().__getattribute__(attr)
 
+    def unterminal(self, add_missing_atoms=False):
+        """
+        This **function** is used to turn the terminal residue to be unterminal
+        **New From 1.2.6.7**
+
+        :param add_missing_atoms: whether to add missing atoms after deleting the terminal atoms
+        :return: 1 for success, 0 for failure
+        """
+        if self.type.name in GlobalSetting.PDBResidueNameMap["save"]:
+            new_type = ResidueType.get_type(GlobalSetting.PDBResidueNameMap["save"][self.type.name])
+        else:
+            return 0
+        new_type_atom = Xdict({atom.name: atom for atom in new_type.atoms})
+        to_remove = set()
+        for atom in self.atoms:
+            if atom.name not in new_type_atom:
+                to_remove.add(atom)
+            else:
+                atom.type = new_type_atom[atom.name].type
+                atom.charge = new_type_atom[atom.name].charge
+                self._name2index[atom.name] -= len(to_remove)
+                self._atom2index[atom] -= len(to_remove)
+        for atom in to_remove:
+            self._name2index.pop(atom.name)
+            self._atom2index.pop(atom)
+            self._atom2name.pop(atom)
+            self._name2atom.pop(atom.name)
+            self.atoms.remove(atom)
+            atom.residue = None
+        self.type = new_type
+        self.name = new_type.name
+        if add_missing_atoms:
+            self.add_missing_atoms()
+        return 1
+
     def name2atom(self, name):
         """
         This **function** convert an atom name to an Atom instance
@@ -1056,19 +1107,30 @@ class Residue(Entity):
         """
         t = {atom.name for atom in self.atoms}
         uncertified = {atom.name for atom in self.type.atoms}
+        certified_positions = []
+        template_positions = []
         for atom in self.type.atoms:
             if atom.name in t:
                 uncertified.remove(atom.name)
+                template_positions.append([atom.x, atom.y, atom.z])
+                self_atom = self.name2atom(atom.name)
+                certified_positions.append([self_atom.x, self_atom.y, self_atom.z])
+        rotation, center1, center2 = kabsch(template_positions, certified_positions)
+
         while uncertified:
             movedlist = []
             for atom_name in uncertified:
                 temp_atom = getattr(self.type, atom_name)
+                self_position = np.array([getattr(temp_atom, i) for i in "xyz"])
+                self_position = np.dot(rotation, (self_position - center1)) + center2
                 for connected_atom in self.type.connectivity[temp_atom]:
                     if connected_atom.name in t:
+                        connected_position = np.array([getattr(connected_atom, i) for i in "xyz"])
+                        connected_position = np.dot(rotation, (connected_position - center1)) + center2
                         fact_connected_atom = self._name2atom[connected_atom.name]
-                        x_ = temp_atom.x - connected_atom.x + fact_connected_atom.x
-                        y_ = temp_atom.y - connected_atom.y + fact_connected_atom.y
-                        z_ = temp_atom.z - connected_atom.z + fact_connected_atom.z
+                        x_ = self_position[0] - connected_position[0] + fact_connected_atom.x
+                        y_ = self_position[1] - connected_position[1] + fact_connected_atom.y
+                        z_ = self_position[2] - connected_position[2] + fact_connected_atom.z
                         t.add(atom_name)
                         movedlist.append(atom_name)
                         self.Add_Atom(atom_name, x=x_, y=y_, z=z_)
@@ -1114,13 +1176,37 @@ class ResidueLink:
         """indicates the instance built or not"""
         self.bonded_forces = {frc.get_class_name(): [] for frc in GlobalSetting.BondedForces}
         """the bonded forces after building"""
+        self.tohash = ResidueLink.get_hash(atom1, atom2, "atom")
+        self.residue_tohash = ResidueLink.get_hash(atom1.residue, atom2.residue, "residue")
         set_attribute_alternative_names(self)
 
     def __repr__(self):
         return "Entity of ResidueLink: " + repr(self.atom1) + "-" + repr(self.atom2)
 
     def __hash__(self):
-        return hash(repr(self))
+        return self.tohash
+
+    def __eq__(self, other):
+        return isinstance(other, ResidueLink) and self.tohash == other.tohash
+
+    @staticmethod
+    def get_hash(one, other, key="atom"):
+        """
+        This **function** is used to get the hash value of the ResidueLink
+
+        :param one: one Atom or Residue of the link
+        :param other: the other Atom or Residue of the link
+        :param key: "atom" or "residue", to specify the key
+        :return: the hash value
+        """
+        if key == "atom":
+            tohash = [f"{one}-{other}", f"{other}-{one}"]
+        elif key == "residue":
+            tohash = [f"{one}-{other}", f"{other}-{one}"]
+        else:
+            raise ValueError(f'key should be "atom" or "residue", but got {key}')
+        tohash.sort()
+        return hash(tohash[0])
 
     def add_bonded_force(self, bonded_force_entity):
         """
@@ -1145,7 +1231,7 @@ class ResidueLink:
         raise Exception("Not Right forcopy")
 
 
-class Molecule:
+class Molecule():
     """
     This **class** is a class for molecules
 
@@ -1175,8 +1261,11 @@ class Molecule:
         """
         self.atom_index = []
         """the atom index"""
-        self.residue_links = []
+        self.residue_links = set()
         """the residue links in the molecule"""
+        self._residue_links_map = Xdict(atom=Xdict(), residue=Xdict(),
+                                        not_found_message='key should be "atom" or "residue", but got {}')
+
         self.bonded_forces = Xdict()
         """the bonded forces after building"""
         self.built = False
@@ -1185,6 +1274,7 @@ class Molecule:
         """the box length of the molecule"""
         self.box_angle = [90.0, 90.0, 90.0]
         """the box angle of the molecule"""
+        self._missing_residues = Xdict(not_found_message="These are no missing residues between {}")
         if isinstance(name, ResidueType):
             new_residue = Residue(name)
             for i in name.atoms:
@@ -1200,6 +1290,35 @@ class Molecule:
         if getattr(AtomType, "_parameters").get(attr, None) == float:
             return np.sum([getattr(atom, attr) for res in self.residues for atom in res.atoms])
         return super().__getattribute__(attr)
+
+    @classmethod
+    def cast(cls, other, deepcopy=False):
+        """
+        This **function** casts a Residue, a ResidueType or a Molecule to a Molecule
+        **New From 1.2.6.6**
+
+        :param other: a Residue, a ResidueType or a Molecule instance
+        :param deepcopy: whether to deepcopy the other instance
+        :return: a Molecule instance
+        """
+        if isinstance(other, Molecule):
+            if deepcopy:
+                return other.deepcopy()
+            return other
+        if isinstance(other, Residue):
+            new_molecule = Molecule(other.name)
+            if deepcopy:
+                other = other.deepcopy()
+            new_molecule.Add_Residue(other)
+            return new_molecule
+        if isinstance(other, ResidueType):
+            new_molecule = Molecule(other.name)
+            res_b = Residue(other)
+            for atom in other.atoms:
+                res_b.Add_Atom(atom)
+            new_molecule.Add_Residue(res_b)
+            return new_molecule
+        raise TypeError(f"Only Residue, ResidueType or Molecule can be cast to Molecule, but {type(other)} found")
 
     @classmethod
     def set_save_sponge_input(cls, keyname):
@@ -1288,25 +1407,49 @@ class Molecule:
         :return:
         """
         assert typeatom2 in restype.connectivity[typeatom1]
-        index_dict = Xdict().fromkeys(restype.connectivity[typeatom1], typeatom1)
-        if typeatom2 in index_dict.keys():
-            index_dict.pop(typeatom2)
+        to_search = set(restype.connectivity[typeatom1])
+        to_search.remove(typeatom2)
 
-        while index_dict:
-            index_next = Xdict()
-            for atom0, from_atom in index_dict.items():
-                if atom0.name == restype.head:
-                    head = toset
-                elif atom0.name == restype.tail:
-                    tail = toset
-                atom1_friends.append(molecule.atom_index[resatom_(atom0)])
-                index_temp = Xdict().fromkeys(restype.connectivity[atom0], atom0)
-                index_temp.pop(from_atom)
-                if typeatom2 in index_temp.keys():
-                    index_temp.pop(typeatom2)
-                index_next.update(index_temp)
-            index_dict = index_next
+        searched = set()
+        searched.add(typeatom2)
+        while to_search:
+            atom0 = to_search.pop()
+            if atom0 in searched:
+                continue
+            if atom0.name == restype.head:
+                head = toset
+            elif atom0.name == restype.tail:
+                tail = toset
+            searched.add(atom0)
+            atom1_friends.append(molecule.atom_index[resatom_(atom0)])
+            to_search |= set(restype.connectivity[atom0]) - searched
         return head, tail
+
+    def find_spacious_direction(self, point, atom_positions=None):
+        """
+        This **function** is used to find the most spacious (lowest atom density) direction of \
+the givin point around the atom positions
+        **New From 1.2.6.7**
+
+        :param point: a list of 3 numbers, the point to find the most spacious direction
+        :param atom_positions: the atom positions around the point. If None, this will use the positions of the atoms \
+in this Molecule
+        :return: a numpy array with the shape (3,), the most spacious direction
+        """
+        point = np.array(point, dtype=np.float32).reshape(3)
+        direction = np.zeros_like(point)
+        if atom_positions is None:
+            atom_positions = np.array([[getattr(atom, i) for i in "xyz"]
+                                       for residue in self.residues for atom in residue.atoms],
+                                      dtype=np.float32)
+        displace = atom_positions - point
+        distance = np.linalg.norm(displace, axis=1, keepdims=True)
+        filter_ = distance > 1
+        displace = displace[np.broadcast_to(filter_, (len(filter_), 3))].reshape(-1, 3)
+        distance = distance[distance > 1]
+        direction -= np.sum(displace * np.power(distance, -4).reshape(-1, 1))
+        direction /= np.linalg.norm(direction)
+        return direction
 
     def add_residue(self, residue):
         """
@@ -1342,7 +1485,37 @@ class Molecule:
         :return: None
         """
         self.built = False
-        self.residue_links.append(ResidueLink(atom1, atom2))
+        reslink = ResidueLink(atom1, atom2)
+        self.residue_links.add(reslink)
+        self._residue_links_map["atom"][reslink.tohash] = reslink
+        self._residue_links_map["residue"][reslink.residue_tohash] = reslink
+
+    def get_residue_link(self, one, other, key="atom"):
+        """
+        This **function** is used to get the ResidueLink between two residues
+
+        :param one: one Atom or Residue of the ResidueLink
+        :param other: the other Atom or Residue of the ResidueLink
+        :param key: "atom" or "residue", to specify the key
+        :return: the ResidueLink or None if not found
+        """
+        tohash = ResidueLink.get_hash(one, other, key)
+        return self._residue_links_map[key].get(tohash, None)
+
+    def del_residue_link(self, one, other, key="atom"):
+        """
+        This **function** is used to delete the ResidueLink between two residues
+
+        :param one: one Atom or Residue of the ResidueLink
+        :param other: the other Atom or Residue of the ResidueLink
+        :param key: "atom" or "residue", to specify the key
+        :return: None
+        """
+        tohash = ResidueLink.get_hash(one, other, key)
+        reslink = self._residue_links_map[key][tohash]
+        self.residue_links.remove(reslink)
+        self._residue_links_map["atom"].pop(reslink.tohash)
+        self._residue_links_map["residue"].pop(reslink.residue_tohash)
 
     def add_missing_atoms(self):
         """
@@ -1352,6 +1525,106 @@ class Molecule:
         """
         for residue in self.residues:
             residue.Add_Missing_Atoms()
+
+    def set_missing_residues_info(self, start, end, missing_residues):
+        """
+        This **function** is used to set the information about the missing residues
+        **New From 1.2.6.7**
+
+        :param start: the residue or the residue index where the missing residues start. `None` for no starting residue.
+        :param end: the residue  or the residue index where the missing residues end. `None` for no ending residue.
+        :param missing_residues: the missing residues. The parameter can be a string separated by space, \
+or a list of residue names, or a list of ResidueType or None. \
+If None, the information will be deleted between start and end
+        :return: True for success, False for failure to set
+        """
+        if start is not None and isinstance(start, int):
+            start = self.residues[start]
+        if end is not None and isinstance(end, int):
+            end = self.residues[end]
+        if start is None and end is None:
+            raise ValueError("starting and ending residues can not be None at the same time")
+        key = (start, end)
+        if missing_residues is None:
+            if key in self._missing_residues:
+                self._missing_residues.pop(key)
+                return True
+            return False
+        if isinstance(missing_residues, str):
+            missing_residues = [ResidueType.get_type(res) for res in missing_residues.split()]
+        elif isinstance(missing_residues, Iterable):
+            for i, res in enumerate(missing_residues):
+                if isinstance(res, str):
+                    res = ResidueType.get_type(res)
+                missing_residues[i] = res
+        res = missing_residues[0]
+        if start is None and res.name in GlobalSetting.PDBResidueNameMap["head"]:
+            missing_residues[0] = ResidueType.get_type(GlobalSetting.PDBResidueNameMap["head"][res.name])
+        res = missing_residues[-1]
+        if end is None and res.name in GlobalSetting.PDBResidueNameMap["tail"]:
+            missing_residues[-1] = ResidueType.get_type(GlobalSetting.PDBResidueNameMap["tail"][res.name])
+        self._missing_residues[key] = missing_residues
+        return True
+
+    def clear_missing_residues_info(self):
+        """
+        This **function** is used to clear the information about the missing residues
+        **New From 1.2.6.7**
+
+        :return: None
+        """
+        self._missing_residues.clear()
+
+    def add_missing_residues(self):
+        """
+        This **function** is used to add the missing residues according to the information of the missing residues.
+        The information of the missing residues may be set by `set_missing_residues_info` or `load_pdb`
+        **New From 1.2.6.7**
+
+        :return: None
+        """
+        for (start, end), to_insert in self._missing_residues.items():
+            if start is not None and end is not None:
+                ref_res = start
+                tail = start.name2atom(start.type.tail)
+                link_to_tail = end.name2atom(end.type.head)
+                insert_index = self.residues.index(start) + 1
+                start_position = np.array([getattr(tail, i) for i in "xyz"])
+                end_position = np.array([getattr(link_to_tail, i) for i in "xyz"])
+                loop_direction = self.find_spacious_direction(start_position)
+                self.del_residue_link(tail, link_to_tail)
+            elif start is not None and end is None:
+                ref_res = start
+                start.unterminal()
+                tail = start.name2atom(start.type.tail)
+                link_to_tail = None
+                insert_index = self.residues.index(start) + 1
+                start_position = np.array([getattr(tail, i) for i in "xyz"])
+                end_position = self.find_spacious_direction(start_position)
+                norm = np.linalg.norm(end_position)
+                if norm != 0:
+                    end_position /= norm
+                end_position *= len(to_insert) * 5
+                end_position += start_position
+                loop_direction = np.zeros_like(start_position)
+            elif start is None and end is not None:
+                tail = None
+                ref_res = end
+                end.unterminal()
+                link_to_tail = end.name2atom(end.type.head)
+                insert_index = 0
+                end_position = np.array([getattr(link_to_tail, i) for i in "xyz"])
+                start_position = self.find_spacious_direction(end_position)
+                norm = np.linalg.norm(start_position)
+                if norm != 0:
+                    start_position /= norm
+                start_position *= len(to_insert) * 5
+                start_position += end_position
+                loop_direction = np.zeros_like(end_position)
+            else:
+                raise ValueError("starting and ending residues can not be None at the same time")
+            self._add_one_missing_residue(start_position, end_position, to_insert, ref_res,
+                                          loop_direction, insert_index, tail, link_to_tail)
 
     def deepcopy(self):
         """
@@ -1365,7 +1638,8 @@ class Molecule:
             new_molecule.Add_Residue(res.deepcopy(forcopy))
 
         for link in self.residue_links:
-            new_molecule.residue_links.append(link.deepcopy(forcopy))
+            new_link = link.deepcopy(forcopy)
+            new_molecule.add_residue_link(new_link.atom1, new_link.atom2)
 
         for res in self.residues:
             for atom in res.atoms:
@@ -1392,7 +1666,7 @@ class Molecule:
         """
         This **function** is used to get the atom coordinates
 
-        :return: a numpy array, the coordinates or atoms
+        :return: a numpy array, the coordinates of atoms
         """
         self.atoms = []
         for res in self.residues:
@@ -1464,8 +1738,41 @@ class Molecule:
             atom2_friends_np = np.array(list(atom2_friends_set))
         return atom1_friends_np, atom2_friends_np
 
-
-set_classmethod_alternative_names(Molecule)
+    def _add_one_missing_residue(self, start_position, end_position, to_insert,
+                                 ref_res, loop_direction, insert_index, tail, link_to_tail):
+        """
+        add one missing residue
+        """
+        distance = np.linalg.norm(start_position - end_position)
+        height = np.max((0, len(to_insert) * 3 - distance)) / 2
+        ref_res = Xdict({atom.name: [atom.x, atom.y, atom.z] for atom in ref_res.atoms})
+        for i, restype in enumerate(to_insert):
+            res = Residue(restype, directly_copy=True)
+            positions = [[getattr(atom, j) for j in "xyz"] for atom in res.atoms]
+            p1, p2 = [], []
+            for j, atom in enumerate(res.atoms):
+                if atom.name in ref_res:
+                    p1.append(ref_res[atom.name])
+                    p2.append(positions[j])
+            rotate_matrix, _, res_center = kabsch(p1, p2)
+            fraction = i / len(to_insert)
+            translate = start_position + (end_position - start_position) * fraction + \
+                        height * np.sin(fraction * np.pi) * loop_direction - res_center
+            positions = np.dot(rotate_matrix, np.array(positions).transpose()).transpose() + translate
+            for j, atom in enumerate(res.atoms):
+                atom.x = positions[j][0]
+                atom.y = positions[j][1]
+                atom.z = positions[j][2]
+                atom.bad_coordinate = True
+            self.residues.insert(insert_index + i, res)
+            if tail is not None:
+                self.add_residue_link(tail, res.name2atom(restype.head))
+            if restype.tail is not None:
+                tail = res.name2atom(restype.tail)
+            else:
+                tail = None
+        if link_to_tail is not None and tail is not None:
+            self.add_residue_link(tail, link_to_tail)
 
 
 def _link_residue_process_coordinate(molecule, atom1, atom2):
@@ -1476,6 +1783,8 @@ def _link_residue_process_coordinate(molecule, atom1, atom2):
     :param atom2:
     :return:
     """
+    molecule.atoms = [atom for residue in molecule.residues for atom in residue.atoms]
+    molecule.atom_index = {atom: i for i, atom in enumerate(molecule.atoms)}
     res_a = atom1.residue
     res_b = atom2.residue
     crd = molecule.get_atom_coordinates()
@@ -1579,51 +1888,34 @@ def _link_residue_process_coordinate(molecule, atom1, atom2):
         atom.z = crd[i][2]
 
 
-def _residuetype_add(self, other):
+set_classmethod_alternative_names(Molecule)
+set_classmethod_alternative_names(ResidueLink)
+Entity.register(ResidueLink)
+Entity.register(Molecule)
+AbstractMolecule.register(Residue)
+AbstractMolecule.register(ResidueType)
+AbstractMolecule.register(Molecule)
+
+
+def _add(self, other, deepcopy, link):
     """
 
     :param self:
     :param other:
     :return:
     """
-    if isinstance(other, Residue):
-        new_molecule = Molecule(self.name)
-        res_a = Residue(self)
-        res_b = other.deepcopy()
-        for atom in self.atoms:
-            res_a.Add_Atom(atom)
-        new_molecule.Add_Residue(res_a)
-        new_molecule.Add_Residue(res_b)
-        if res_a.type.tail and res_b.type.head:
-            atom1 = res_a.name2atom(self.tail)
-            atom2 = res_b.name2atom(res_b.type.head)
-            new_molecule.Add_Residue_Link(atom1, atom2)
-            _link_residue_process_coordinate(new_molecule, atom1, atom2)
-        return new_molecule
-    if isinstance(other, ResidueType):
-        new_molecule = Molecule(self.name)
-        res_a = Residue(self)
-        res_b = Residue(other)
-        for atom in self.atoms:
-            res_a.Add_Atom(atom)
-        for atom in other.atoms:
-            res_b.Add_Atom(atom)
-        new_molecule.Add_Residue(res_a)
-        new_molecule.Add_Residue(res_b)
-        if res_a.type.tail and res_b.type.head:
-            atom1 = res_a.name2atom(self.tail)
-            atom2 = res_b.name2atom(other.head)
-            new_molecule.Add_Residue_Link(atom1, atom2)
-            _link_residue_process_coordinate(new_molecule, atom1, atom2)
-        return new_molecule
-    if isinstance(other, Molecule):
-        new_molecule = other.deepcopy()
-        res_a = Residue(self)
-        res_b = new_molecule.residues[0]
-        for atom in self.atoms:
-            res_a.Add_Atom(atom)
-        new_molecule.residues.insert(0, res_a)
-        if res_a.type.tail and res_b.type.head:
+    if isinstance(other, AbstractMolecule):
+        new_molecule = Molecule.cast(self, deepcopy=deepcopy)
+        new_molecule.built = False
+        other_molecule = Molecule.cast(other, deepcopy=True)
+        try:
+            res_a = new_molecule.residues[-1]
+        except IndexError:
+            res_a = None
+        res_b = other_molecule.residues[0]
+        new_molecule.residues += other_molecule.residues
+        new_molecule.residue_links |= other_molecule.residue_links
+        if link and res_a and res_a.type.tail and res_b.type.head:
             atom1 = res_a.name2atom(res_a.type.tail)
             atom2 = res_b.name2atom(res_b.type.head)
             new_molecule.Add_Residue_Link(atom1, atom2)
@@ -1635,106 +1927,7 @@ def _residuetype_add(self, other):
     raise TypeError("unsupported operand type(s) for +: '%s' and '%s'" % (type(self), type(other)))
 
 
-def _molecule_add(self, other):
-    """
-
-    :param self:
-    :param other:
-    :return:
-    """
-    if isinstance(other, Residue):
-        new_molecule = self.deepcopy()
-        res_a = new_molecule.residues[-1]
-        res_b = other.deepcopy()
-        new_molecule.Add_Residue(res_b)
-        if res_a.type.tail and res_b.type.head:
-            atom1 = res_a.name2atom(res_a.type.tail)
-            atom2 = res_b.name2atom(res_b.type.head)
-            new_molecule.Add_Residue_Link(atom1, atom2)
-            _link_residue_process_coordinate(new_molecule, atom1, atom2)
-        return new_molecule
-    if isinstance(other, ResidueType):
-        new_molecule = self.deepcopy()
-        res_a = new_molecule.residues[-1]
-        res_b = Residue(other)
-        for atom in other.atoms:
-            res_b.Add_Atom(atom)
-        new_molecule.Add_Residue(res_b)
-        if res_a.type.tail and res_b.type.head:
-            atom1 = res_a.name2atom(res_a.type.tail)
-            atom2 = res_b.name2atom(res_b.type.head)
-            new_molecule.Add_Residue_Link(atom1, atom2)
-            _link_residue_process_coordinate(new_molecule, atom1, atom2)
-        return new_molecule
-    if isinstance(other, Molecule):
-        new_molecule = self.deepcopy()
-        new_molecule2 = other.deepcopy()
-        res_a = new_molecule.residues[-1]
-        res_b = new_molecule2.residues[0]
-        for res in new_molecule2.residues:
-            new_molecule.Add_Residue(res)
-        for reslink in new_molecule2.residue_links:
-            new_molecule.Add_Residue_Link(reslink.atom1, reslink.atom2)
-        if res_a.type.tail and res_b.type.head:
-            atom1 = res_a.name2atom(res_a.type.tail)
-            atom2 = res_b.name2atom(res_b.type.head)
-            new_molecule.Add_Residue_Link(atom1, atom2)
-            _link_residue_process_coordinate(new_molecule, atom1, atom2)
-        return new_molecule
-    if other is None:
-        return self
-    raise TypeError("unsupported operand type(s) for +: '%s' and '%s'" % (type(self), type(other)))
-
-
-def _imolecule_add(self, other):
-    """
-
-    :param self:
-    :param other:
-    :return:
-    """
-    if isinstance(other, Residue):
-        res_a = self.residues[-1]
-        res_b = other.deepcopy()
-        self.Add_Residue(res_b)
-        if res_a.type.tail and res_b.type.head:
-            atom1 = res_a.name2atom(res_a.type.tail)
-            atom2 = res_b.name2atom(res_b.type.head)
-            self.Add_Residue_Link(atom1, atom2)
-            _link_residue_process_coordinate(self, atom1, atom2)
-        return self
-    if isinstance(other, ResidueType):
-        res_a = self.residues[-1]
-        res_b = Residue(other)
-        for atom in other.atoms:
-            res_b.Add_Atom(atom)
-        self.Add_Residue(res_b)
-        if res_a.type.tail and res_b.type.head:
-            atom1 = res_a.name2atom(res_a.type.tail)
-            atom2 = res_b.name2atom(other.head)
-            self.Add_Residue_Link(atom1, atom2)
-            _link_residue_process_coordinate(self, atom1, atom2)
-        return self
-    if isinstance(other, Molecule):
-        new_molecule2 = other.deepcopy()
-        res_a = self.residues[-1]
-        res_b = new_molecule2.residues[0]
-        for res in new_molecule2.residues:
-            self.Add_Residue(res)
-        for reslink in new_molecule2.residue_links:
-            self.Add_Residue_Link(reslink.atom1, reslink.atom2)
-        if res_a.type.tail and res_b.type.head:
-            atom1 = res_a.name2atom(res_a.type.tail)
-            atom2 = res_b.name2atom(res_b.type.head)
-            self.Add_Residue_Link(atom1, atom2)
-            _link_residue_process_coordinate(self, atom1, atom2)
-        return self
-    if other is None:
-        return self
-    raise TypeError("unsupported operand type(s) for +: '%s' and '%s'" % (type(self), type(other)))
-
-
-def _muls(self, other):
+def _mul(self, other, deepcopy):
     """
 
     :param self:
@@ -1742,8 +1935,9 @@ def _muls(self, other):
     :return:
     """
     if isinstance(other, int):
-        assert other >= 1
-        if isinstance(self, ResidueType):
+        if other < 1:
+            raise ValueError("multiple should be not less than 1")
+        if isinstance(self, ResidueType) or deepcopy:
             t = self
         else:
             t = self.deepcopy()
@@ -1753,148 +1947,21 @@ def _muls(self, other):
     raise TypeError("unsupported operand type(s) for *: '%s' and '%s'" % (type(self), type(other)))
 
 
-def _imuls(self, other):
-    """
-
-    :param self:
-    :param other:
-    :return:
-    """
-    if isinstance(other, int):
-        assert other >= 1
-        for _ in range(other - 1):
-            self += self
-        return self
-    raise TypeError("unsupported operand type(s) for *: '%s' and '%s'" % (type(self), type(other)))
-
-
-ResidueType.__add__ = _residuetype_add
-ResidueType.__radd__ = _residuetype_add
-ResidueType.__mul__ = _muls
-ResidueType.__rmul__ = _muls
-Molecule.__add__ = _molecule_add
-Molecule.__radd__ = _molecule_add
-Molecule.__iadd__ = _imolecule_add
-Molecule.__mul__ = _muls
-Molecule.__rmul__ = _muls
-Molecule.__imul__ = _imuls
-
-del _residuetype_add
-del _molecule_add
-del _muls
-del _imuls
-del _imolecule_add
-
-
-def _residuetype_or(self, other):
-    """
-
-    :param self:
-    :param other:
-    :return:
-    """
-    if isinstance(other, Residue):
-        new_molecule = Molecule(self.name)
-        res_a = Residue(self)
-        res_b = other.deepcopy()
-        for atom in self.atoms:
-            res_a.Add_Atom(atom)
-        new_molecule.Add_Residue(res_a)
-        new_molecule.Add_Residue(res_b)
-        return new_molecule
-    if isinstance(other, ResidueType):
-        new_molecule = Molecule(self.name)
-        res_a = Residue(self)
-        res_b = Residue(other)
-        for atom in self.atoms:
-            res_a.Add_Atom(atom)
-        for atom in other.atoms:
-            res_b.Add_Atom(atom)
-        new_molecule.Add_Residue(res_a)
-        new_molecule.Add_Residue(res_b)
-        return new_molecule
-    if isinstance(other, Molecule):
-        new_molecule = other.deepcopy()
-        res_a = Residue(self)
-        res_b = new_molecule.residues[0]
-        for atom in self.atoms:
-            res_a.Add_Atom(atom)
-        new_molecule.residues.insert(0, res_a)
-        return new_molecule
-    if other is None:
-        return self
-    raise TypeError("unsupported operand type(s) for |: '%s' and '%s'" % (type(self), type(other)))
-
-
-def _molecule_or(self, other):
-    """
-
-    :param self:
-    :param other:
-    :return:
-    """
-    if isinstance(other, Residue):
-        new_molecule = self.deepcopy()
-        new_molecule.Add_Residue(other.deepcopy())
-        return new_molecule
-    if isinstance(other, ResidueType):
-        new_molecule = self.deepcopy()
-        res_b = Residue(other)
-        for atom in other.atoms:
-            res_b.Add_Atom(atom)
-        new_molecule.Add_Residue(res_b)
-        return new_molecule
-    if isinstance(other, Molecule):
-        new_molecule = self.deepcopy()
-        new_molecule2 = other.deepcopy()
-        res_b = new_molecule2.residues[0]
-        for res in new_molecule2.residues:
-            new_molecule.Add_Residue(res)
-        new_molecule.residue_links.extend(new_molecule2.residue_links)
-        return new_molecule
-    if other is None:
-        return self
-    raise TypeError("unsupported operand type(s) for +: '%s' and '%s'" % (type(self), type(other)))
-
-
-def _imolecule_or(self, other):
-    """
-
-    :param self:
-    :param other:
-    :return:
-    """
-    if isinstance(other, Residue):
-        self.Add_Residue(other.deepcopy())
-        return self
-    if isinstance(other, ResidueType):
-        res_b = Residue(other)
-        for atom in other.atoms:
-            res_b.Add_Atom(atom)
-        self.Add_Residue(res_b)
-        return self
-    if isinstance(other, Molecule):
-        new_molecule2 = other.deepcopy()
-        res_b = new_molecule2.residues[0]
-        for res in new_molecule2.residues:
-            self.Add_Residue(res)
-        self.residue_links.extend(new_molecule2.residue_links)
-        return self
-    if other is None:
-        return self
-    raise TypeError("unsupported operand type(s) for +: '%s' and '%s'" % (type(self), type(other)))
-
-
-ResidueType.__or__ = _residuetype_or
-ResidueType.__ror__ = _residuetype_or
-
-Molecule.__or__ = _molecule_or
-Molecule.__ror__ = _molecule_or
-Molecule.__ior__ = _imolecule_or
-
-del _residuetype_or
-del _molecule_or
-del _imolecule_or
+ResidueType.__add__ = partialmethod(_add, deepcopy=True, link=True)
+ResidueType.__radd__ = partialmethod(_add, deepcopy=True, link=True)
+ResidueType.__or__ = partialmethod(_add, deepcopy=True, link=False)
+ResidueType.__ror__ = partialmethod(_add, deepcopy=True, link=False)
+ResidueType.__mul__ = partialmethod(_mul, deepcopy=True)
+ResidueType.__rmul__ = partialmethod(_mul, deepcopy=True)
+Molecule.__add__ = partialmethod(_add, deepcopy=True, link=True)
+Molecule.__radd__ = partialmethod(_add, deepcopy=True, link=True)
+Molecule.__iadd__ = partialmethod(_add, deepcopy=False, link=True)
+Molecule.__mul__ = partialmethod(_mul, deepcopy=True)
+Molecule.__rmul__ = partialmethod(_mul, deepcopy=True)
+Molecule.__imul__ = partialmethod(_mul, deepcopy=False)
+Molecule.__or__ = partialmethod(_add, deepcopy=True, link=False)
+Molecule.__ror__ = partialmethod(_add, deepcopy=True, link=False)
+Molecule.__ior__ = partialmethod(_add, deepcopy=False, link=False)
 
 
 def generate_new_bonded_force_type(type_name, atoms, properties, is_compulsory, is_multiple=False):

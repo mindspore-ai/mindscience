@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 from .helper import get_rotate_matrix, ResidueType, Molecule, Residue, set_global_alternative_names, Xdict, \
-    GlobalSetting, set_attribute_alternative_names
+    GlobalSetting, set_attribute_alternative_names, Xopen, Xprint
 from .build import save_sponge_input
 from .load import load_coordinate
 from .forcefield.special.min import save_min_bonded_parameters, do_not_save_min_bonded_parameters
@@ -371,46 +371,80 @@ def get_peptide_from_sequence(sequence, charged_terminal=True):
     return toret
 
 
-def optimize(mol, step=5000, only_bad_coordinate=True):
+def optimize(mol, step=2000, only_bad_coordinate=True, dt=1e-8, force_limit=50, epoch_limit=10):
     """
     This **function** is used to optimize the structure of the Molecule instance
 
     :param mol: the molecule to optimize
-    :param step: the step to minimize
+    :param step: the limited step for each epoch for minimization, 2000 for default
     :param only_bad_coordinate: whether to optimize all the atoms or the atoms whose coordinates are bad
+    :param dt: the start dt for minimization
+    :param force_limit: the minimization will stop if the largest difference in unit of `kcal/mol/A` \
+between forces in two steps is not more than this value.
+    :param epoch_limit: the minimization will stop if the epoch is not less than this value.
     :return: None
     """
     from tempfile import TemporaryDirectory
+    Xprint("Optimizing", verbose=0)
     with TemporaryDirectory() as tempdir:
         temp_prefix = os.path.join(tempdir, "temp")
         temp_out = os.path.join(tempdir, "min")
+        Xprint("    Parametering", verbose=0)
         save_min_bonded_parameters()
         save_sponge_input(mol, temp_prefix)
         do_not_save_min_bonded_parameters()
-        all_to_use = f"""SPONGE_NOPBC -default_in_file_prefix {temp_prefix} -rst {temp_out} -crd {temp_prefix}.dat
-        -box {temp_prefix}.box -mdout {temp_out}.out -mdinfo {temp_out}.info -mode minimization 
-        -step_limit {step} """
+        temp_mdin_name = os.path.join(tempdir, "mdin.txt")
+        mdin = Xopen(temp_mdin_name, "w")
+        mdin.write(f"""temp
+default_in_file_prefix = {temp_prefix}
+rst = {temp_out}
+crd = {temp_prefix}.dat
+box = {temp_prefix}.box
+mdout = {temp_out}.out
+mdinfo = {temp_out}.info
+mode = minimization
+step_limit = {step}
+write_information_interval = {step}
+""")
+        mdin.close()
+        all_to_use = f"SPONGE -mdin {temp_mdin_name} "
+        if force_limit > 0:
+            all_to_use += f"-frc {temp_out}.frc "
         if only_bad_coordinate:
             all_to_use += f"-mass_in_file {temp_prefix + '_fake_mass.txt'} "
         if GlobalSetting.verbose < 2:
             print_to = f" > {os.devnull}"
         else:
             print_to = ""
-        run(all_to_use + "-dt 1e-8" + print_to)
-
+        Xprint("    Running", verbose=0)
+        run(all_to_use + f"-dt {dt} {print_to}")
         all_to_use += f"-coordinate_in_file {temp_out+'_coordinate.txt'} "
-        for i in [7, 6, 5, 4, 3]:
-            run(all_to_use + f"-dt 1e-{i} {print_to}")
-        load_coordinate(temp_out+"_coordinate.txt", mol)
+        start_dt = dt
+        if force_limit > 0:
+            frc = np.fromfile(f"{temp_out}.frc", dtype=np.float32).reshape(-1, 3)
+            frc = np.linalg.norm(frc, axis=1)
+            last_frc = np.zeros_like(frc)
+            epoch = 0
+            Xprint("Epoch    Max Force Difference    Force Limit    Epoch Limit", verbose=0)
+            while not np.all(np.abs(frc - last_frc) < force_limit) and epoch < epoch_limit:
+                epoch += 1
+                dt = np.max((np.min((1e-3, np.sqrt(1e-4 / np.max(frc)))), start_dt))
+                run(all_to_use + f"-dt {dt} {print_to}")
+                last_frc = frc
+                frc = np.fromfile(f"{temp_out}.frc", dtype=np.float32).reshape(-1, 3)
+                frc = np.linalg.norm(frc, axis=1)
+                Xprint("{0:5d}{1:>24.4f}{2:15.4f}{3:15d}".format(epoch,
+                                                                 np.max(np.abs(frc - last_frc)),
+                                                                 force_limit,
+                                                                 epoch_limit), verbose=0)
+        load_coordinate(temp_out+'_coordinate.txt', mol)
+        Xprint("Optimization Finished", verbose=0)
 
 
 class Region(ABC):
     """
     This **abstract class** is used to define a region
     **New From 1.2.6.4**
-
-    :param *regions: the regions
-    :param do: eigher 'union' or 'intersect'
     """
     def __init__(self):
         self.side = "in"

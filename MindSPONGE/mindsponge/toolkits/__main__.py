@@ -16,9 +16,9 @@ def _mytest(subparsers):
     mytest.add_argument("-v", "--verbose", metavar="-1", default=-1, type=int,
                         help="the verbose level for output, 1 or -1")
     mytest.add_argument("-d", "--do", metavar="todo", nargs="*", action="append",
-                        default=None, choices=["all", "base", "assign", "charmm27", "lattice"],
+                        default=None, choices=["all", "base", "assign", "charmm27", "lattice", "fep"],
                         help="the unit tests need to do, should be 'all', \
-or one or more of 'base', 'assign', 'charmm27', 'lattice'")
+or one or more of 'base', 'assign', 'charmm27', 'lattice', 'fep'")
     mytest.set_defaults(func=tools.test)
 
 

@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """
-Xponge, a lightweight and easy-customizing python package for pre- and post- process of molecular modelling
+Xponge, a lightweight and easy to customize python package for pre- and post- process of molecular modelling
 
 .. TIP::
 
@@ -71,7 +71,7 @@ The atoms in a ``Residue`` or a ``ResidueType`` can be obtained by their names. 
     print(ALA.CA)
 
 """
-__version__ = "1.2.6.5"
+__version__ = "1.2.6.7.1"
 
 import os
 import time
@@ -84,8 +84,8 @@ import numpy as np
 from . import assign
 from .assign import Assign, get_assignment_from_pdb, get_assignment_from_mol2, get_assignment_from_pubchem, \
     get_assignment_from_residuetype
-from .helper import GlobalSetting, Type, ResidueType, Entity, Atom, Residue, ResidueLink, Molecule, AtomType, \
-    set_global_alternative_names, generate_new_pairwise_force_type, generate_new_bonded_force_type, source
+from .helper import GlobalSetting, Type, AbstractMolecule, ResidueType, Entity, Atom, Residue, ResidueLink, Molecule, \
+    AtomType, set_global_alternative_names, generate_new_pairwise_force_type, generate_new_bonded_force_type, source
 from .load import load_ffitp, load_mol2, load_rst7, load_frcmod, load_pdb, load_parmdat, load_coordinate
 from .build import save_mol2, save_pdb, save_sponge_input, save_gro, build_bonded_force, get_mindsponge_system_energy
 from .process import impose_bond, impose_angle, impose_dihedral, add_solvent_box, h_mass_repartition, solvent_replace, \
@@ -149,12 +149,19 @@ def _initialize():
 
     #pylint: disable=unused-argument
     def _do_initial(self, sys_kwarg, ene_kwarg, use_pbc):
+        if self.box_length is not None:
+            box_length = self.box_length
+        else:
+            crd = self.get_atom_coordinates()
+            box_length = list(np.max(crd, axis=0) - np.min(crd, axis=0) + 6)
         if "coordinate" not in sys_kwarg:
             sys_kwarg["coordinate"] = [self.get_atom_coordinates().tolist()]
             sys_kwarg["atoms"] = [[atom.name for atom in self.atoms]]
+            sys_kwarg["pbc_box"] = [box_length]
         else:
             sys_kwarg["coordinate"].append(self.get_atom_coordinates().tolist())
             sys_kwarg["atoms"].append([atom.name for atom in self.atoms])
+            sys_kwarg["pbc_box"].append(box_length)
 
     Molecule.Set_MindSponge_Todo("coordinate")(_do_initial)
 

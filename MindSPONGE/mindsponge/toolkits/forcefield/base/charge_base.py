@@ -1,6 +1,7 @@
 """
 This **module** is the basic setting for the force field property of charge
 """
+import numpy as np
 from ...helper import Molecule, AtomType, set_global_alternative_names, Xdict
 
 AtomType.Add_Property({"charge": float})
@@ -34,7 +35,10 @@ def _do(self, sys_kwarg, ene_kwarg, use_pbc):
     if "charge" not in ene_kwarg:
         ene_kwarg["charge"] = Xdict()
         ene_kwarg["charge"]["function"] = lambda system, ene_kwarg: CoulombEnergy(
-            atom_charge=system.atom_charge, length_unit='A', energy_unit='kcal/mol', use_pbc=use_pbc)
+            atom_charge=system.atom_charge, length_unit='A', energy_unit='kcal/mol',
+            use_pbc=use_pbc, use_pme=use_pbc,
+            nfft=system.pbc_box.asnumpy().astype(int)//4*4,
+            exclude_index=np.array(sys_kwarg["exclude"]))
 
 
 set_global_alternative_names()

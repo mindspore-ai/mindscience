@@ -7,7 +7,7 @@ from .namespace import  set_global_alternative_names
 
 def get_rotate_matrix(r0, angle):
     """
-    This **function** is used to get the rotation matrix
+    This **function** is used to get the rotation matrix by the axis and the angle
 
     :param r0: the axis to rotate around
     :param angle: the angle to rotate
@@ -23,6 +23,32 @@ def get_rotate_matrix(r0, angle):
                       r0[1] * r0[2] * cost_one - r0[0] * sint],
                      [r0[0] * r0[2] * cost_one - r0[1] * sint, r0[1] * r0[2] * cost_one + r0[0] * sint,
                       r0[2] * r0[2] * cost_one + cost]]).transpose()
+
+
+def kabsch(positions1, positions2):
+    """
+    This **function** uses Kabsch algorithm to align two sets of positions
+
+    :param positions1: the first set of positions, a numpy array with shape (N,3)
+    :param positions2: the second set of positions, a numpy array with shape (N,3)
+    :return: a tuple of 3 numpy arrays
+             The first is the rotation matrix
+             The second is the center of positions1.
+             The third is the center of positions2.
+    """
+    positions1 = np.array(positions1, dtype=np.float32).reshape(-1, 3)
+    positions2 = np.array(positions2, dtype=np.float32).reshape(-1, 3)
+    if positions1.shape[0] == 0:
+        return np.array([0, 0, 0], dtype=np.float32), np.identity(3)
+    if positions1.shape[0] == 1:
+        return positions1[0], np.identity(3)
+    center1 = np.mean(positions1, axis=0, keepdims=True)
+    center2 = np.mean(positions2, axis=0, keepdims=True)
+    x = positions1 - center1
+    y = positions2 - center2
+    r = np.einsum("kj,ki->ij", x, y)
+    u, _, v = np.linalg.svd(r)
+    return np.dot(u, v).transpose(), center1.reshape(-1), center2.reshape(-1)
 
 
 def get_fibonacci_grid(n, origin, radius):
