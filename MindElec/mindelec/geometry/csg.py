@@ -161,9 +161,9 @@ class CSGDifference(CSG):
     CSG class for difference of geometry.
 
     Args:
-        geom1 (Geometry): a geometry object
-        geom2 (Geometry): a geometry object to be subtracted from geom1
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        geom1 (Geometry): a geometry object.
+        geom2 (Geometry): a geometry object to be subtracted from geom1.
+        sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Supported Platforms:
         ``Ascend``
@@ -284,9 +284,9 @@ class CSGUnion(CSG):
     CSG class for union of geometries.
 
     Args:
-        geom1 (Geometry): a geometry object
-        geom2 (Geometry): a geometry object to be subtracted from geom1
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        geom1 (Geometry): a geometry object.
+        geom2 (Geometry): a geometry object to be subtracted from geom1.
+        sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Supported Platforms:
         ``Ascend``
@@ -402,9 +402,9 @@ class CSGIntersection(CSG):
     CSG class for intersection of geometries.
 
     Args:
-        geom1 (Geometry): a geometry object
-        geom2 (Geometry): a geometry object to be subtracted from geom1
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        geom1 (Geometry): a geometry object.
+        geom2 (Geometry): a geometry object to be subtracted from geom1.
+        sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Supported Platforms:
         ``Ascend``
@@ -522,9 +522,9 @@ class CSGXOR(CSG):
     CSG class for xor of geometries.
 
     Args:
-        geom1 (Geometry): a geometry object
-        geom2 (Geometry): a geometry object to be subtracted from geom1
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        geom1 (Geometry): a geometry object.
+        geom2 (Geometry): a geometry object to be subtracted from geom1.
+        sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Supported Platforms:
         ``Ascend``

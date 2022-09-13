@@ -104,7 +104,7 @@ class LearningRate(LearningRateSchedule):
 
 def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps, poly_power):
     """
-    generate learning rate array
+    generate learning rate array.
 
     Args:
        global_step(int): current step number, non-negtive int value.
@@ -116,7 +116,7 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
        poly_power(float): poly learning rate power, positive float value.
 
     Returns:
-       Numpy.array, learning rate array
+       Numpy.array, learning rate array.
 
     Supported Platforms:
         ``Ascend``

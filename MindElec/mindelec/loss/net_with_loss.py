@@ -47,8 +47,8 @@ class NetWithLoss(nn.Cell):
     Args:
         net_without_loss (Cell): The training network without loss definition.
         constraints (Constraints): The constraints function of pde problem.
-        loss (Union[str, dict, Cell]): The name of loss function. Defaults: "l2".
-        dataset_input_map (dict): The input map of the dataset Defaults: None.
+        loss (Union[str, dict, Cell]): The name of loss function. Default: "l2".
+        dataset_input_map (dict): The input map of the dataset Default: None.
         mtl_weighted_cell (Cell): Losses weighting algorithms based on multi-task learning uncertainty evaluation.
             Default: None.
         latent_vector (Parameter): Tensor of Parameter. The latent vector to encodes the variational parameters in
@@ -181,8 +181,8 @@ class NetWithEval(nn.Cell):
     Args:
         net_without_loss (Cell): The training network without loss definition.
         constraints (Constraints): The constraints function of pde problem.
-        loss(Union[str, dict, Cell]): The name of loss function. Defaults: "l2".
-        dataset_input_map (dict): The input map of the dataset Defaults: None.
+        loss(Union[str, dict, Cell]): The name of loss function. Default: "l2".
+        dataset_input_map (dict): The input map of the dataset Default: None.
 
     Inputs:
         - **inputs** (Tensor) - The input is variable-length argument which contains network inputs and label.

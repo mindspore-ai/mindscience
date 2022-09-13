@@ -291,7 +291,7 @@ class Dataset(Data):
         return dataset_columns_map, dataset_constraint_map, column_index_map
 
     def get_columns_list(self):
-        """get columns list
+        """get columns list.
 
         Args:
 
@@ -307,12 +307,12 @@ class Dataset(Data):
         return self.columns_list
 
     def set_constraint_type(self, constraint_type="Equation"):
-        """set constraint type of dataset
+        """set constraint type of dataset.
 
         Args:
-            constraint_type (Union[str, dict): The constraint type of specified dataset. If is string, the constraint
-                type of all subdataset will be set to the same one. If is dict, the subdataset and it's constraint type
-                is specified by the pair (key, value). Default: "Equation".
+            constraint_type (Union[str, dict): The constraint type of specified dataset. If it is string, the constraint
+            type of all subdataset will be set to the same one. If it is dict, the subdataset and it's constraint
+            type is specified by the pair (key, value). Default: "Equation".
 
         Examples:
             >>> dataset.set_constraint_type("Equation")
