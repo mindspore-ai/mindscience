@@ -32,7 +32,7 @@ class _Instance(nn.Cell):
 
     Args:
         problem (Problem): The pde problem.
-        constraint_type (str): The pde equation and constraint type of pde problem. Defaults: "Equation"
+        constraint_type (str): The pde equation and constraint type of pde problem. Default: "Equation"
 
     Returns:
         Function, the constraint function of the problem.

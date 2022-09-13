@@ -178,10 +178,10 @@ class Geometry:
 
     def set_name(self, name):
         """
-        set geometry instance name
+        set geometry instance name.
 
         Args:
-            name (str): name of geometry instance
+            name (str): name of geometry instance.
 
         Raises:
             TypeError: If `name` is not string.
@@ -197,7 +197,7 @@ class Geometry:
 
     def set_sampling_config(self, sampling_config: SamplingConfig):
         """
-        set sampling info
+        set sampling info.
 
         Args:
             sampling_config (SamplingConfig): sampling configuration.

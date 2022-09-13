@@ -149,13 +149,13 @@ class Disk(Geometry):
 
     def sampling(self, geom_type="domain"):
         """
-        sampling domain and boundary points
+        sampling domain and boundary points.
 
         Args:
-            geom_type (str): geometry type
+            geom_type (str): geometry type.
 
         Returns:
-            Numpy.array, 2D numpy array with or without boundary normal vectors
+            Numpy.array, 2D numpy array with or without boundary normal vectors.
 
         Raises:
             ValueError: If `config` is None.

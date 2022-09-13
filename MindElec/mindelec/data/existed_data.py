@@ -45,7 +45,7 @@ class ExistedDataset(Data):
         random_merge (bool, optional): specifies whether randomly merge the given datasets (default=True).
         data_config (ExistedDataConfig, optional): Instance of ExistedDataConfig which collect the info
             described above (default=None). If it's not None, the dataset class will be create by using it for
-            simplified. If it's None, the info of (name, data_dir, columns_list, data_format, constraint_type,
+            simplifying. If it's None, the info of (name, data_dir, columns_list, data_format, constraint_type,
             random_merge) will be used for replacement.
 
     Raises:

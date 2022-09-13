@@ -107,7 +107,7 @@ class PointCloudSamplingConfig:
             1(DYNAMIC) are supported.
         mode_args (Union[int, tuple]): sampling upperbound number for SamplingMode. Default: None
         bbox_args (tuple): bounding_box arguments for sampling, has different definition in different bbox_type.
-            Default: None
+            Default: None.
 
     Raises:
         TypeError: if `sampling_mode` is not an int.
@@ -164,8 +164,8 @@ class MaterialConfig:
             material solving stage will deal with these standard physical fields. The key of physical_field dict
             is physical quantity name, the value is default value for this physical quantity.
         customize_physical_field (dict, option): User can specify physical quantities fields according to their
-            demand, similarly, material solving stage will take care of them. Default: None
-        remove_vacuum (bool, option): Remove sub-solid whose material property is vacuum. Default: True
+            demand, similarly, material solving stage will take care of them. Default: None.
+        remove_vacuum (bool, option): Remove sub-solid whose material property is vacuum. Default: True.
 
     Raises:
         TypeError: if `json_file` is not a str.
@@ -245,12 +245,12 @@ class PointCloud:
     analyse the space topological information for any 3-D model in stp format. (The most popular format in CAD)
 
     Args:
-        data_dir (str): stp files directory, raw data
+        data_dir (str): stp files directory, raw data.
         sampling_config (PointCloudSamplingConfig): Sampling space config for PointCloud-Tensor generation.
         material_config (MaterialConfig): Material solution config for PointCloud-Tensor generation, which
             influence the material solving stage.
         num_parallel_workers (int, option): Parallel workers number, this arguments can take effect on all computing
-         stages, including reading model, section building, space solving and material solving. Default: os.cpu_count()
+         stages, including reading model, section building, space solving and material solving. Default: os.cpu_count().
 
     Raises:
         TypeError: if `data_dir` is not a str.
@@ -472,10 +472,10 @@ class PointCloud:
 
     def model_list(self):
         """
-        Get model list
+        Get model list.
 
         Returns:
-            list, model list
+            list, model list.
         """
         return self._model_list
 
@@ -507,7 +507,7 @@ class PointCloud:
         in a Global list of dictionary, num_of_workers processes in total will be applied in parallel computing.
 
         Returns:
-            numpy.ndarray, pointcloud result
+            numpy.ndarray, pointcloud result.
         """
         physical_info_dim = 4  # Init with (x, y, z, model_id), so length = 4, if more material needed, we add it
         if self._material_config is not None:
