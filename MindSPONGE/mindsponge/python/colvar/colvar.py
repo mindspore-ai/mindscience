@@ -54,7 +54,7 @@ class Colvar(Cell):
    """
 
     def __init__(self,
-                 dim_output: int,
+                 dim_output: int = 1,
                  periodic: bool = False,
                  use_pbc: bool = None,
                  length_unit: str = None,

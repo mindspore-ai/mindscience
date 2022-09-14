@@ -26,6 +26,7 @@ Collective variables by bonds
 
 import mindspore.numpy as msnp
 from mindspore import Tensor
+from mindspore import nn
 from mindspore.ops import functional as F
 
 from ..function import functions as func
@@ -134,6 +135,7 @@ class BondedTorsions(BondedColvar):
         super().__init__(
             bond_index=bond_index,
         )
+        self.keep_norm_last_dim = nn.Norm(axis=-1, keep_dims=True)
 
     def construct(self, bond_vectors: Tensor, bond_distances: Tensor):
         r"""Compute torision angles formed by four atoms.
@@ -154,7 +156,7 @@ class BondedTorsions(BondedColvar):
         vec_3 = vectors[:, :, 2, :]
 
         # (B,d,1) <- (B,M,D)
-        v2norm = func.keep_norm_last_dim(vec_2)
+        v2norm = self.keep_norm_last_dim(vec_2)
         # (B,d,D) = (B,d,D) / (B,d,1)
         norm_vec2 = vec_2 * msnp.reciprocal(v2norm)
 

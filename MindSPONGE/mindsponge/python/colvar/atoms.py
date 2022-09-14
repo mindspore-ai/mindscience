@@ -24,13 +24,14 @@
 Collective variables for fixed atoms
 """
 
-
-from mindspore import ops
+import mindspore as ms
+from mindspore import ops, nn
 from mindspore import Tensor
 from mindspore.ops import functional as F
 from mindspore import numpy as msnp
 
 from ..function import functions as func
+from ..function import get_ms_array
 from .colvar import Colvar
 
 
@@ -59,8 +60,12 @@ class AtomDistances(Colvar):
         )
 
         # (B,b,2)
-        self.index = index
+        self.index = get_ms_array(index, ms.int32)
+        if self.index.shape[-1] != 2:
+            raise ValueError('The last dimension of index in AtomDistances must be 2!')
+        self.dim_output = self.index.shape[-2]
         self.identity = ops.Identity()
+        self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
 
     def construct(self, coordinate: Tensor, pbc_box: Tensor = None):
         r"""Compute distances.
@@ -83,7 +88,7 @@ class AtomDistances(Colvar):
         # (B,b,D)
         vec = self.get_vector(atoms[..., 0, :], atoms[..., 1, :], pbc_box)
         # (B,b)
-        return func.norm_last_dim(vec)
+        return self.norm_last_dim(vec)
 
 
 class AtomAngles(Colvar):
@@ -100,13 +105,17 @@ class AtomAngles(Colvar):
                  ):
 
         super().__init__(
-            dim_output=1,
             periodic=False,
             use_pbc=use_pbc,
         )
 
-        self.index = index
+        # (B,a,3)
+        self.index = get_ms_array(index, ms.int32)
+        if self.index.shape[-1] != 3:
+            raise ValueError('The last dimension of index in AtomAngles must be 3!')
+        self.dim_output = self.index.shape[-2]
         self.split = ops.Split(-2, 3)
+        self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
 
     def construct(self, coordinate: Tensor, pbc_box: Tensor = None):
         r"""Compute angles.
@@ -133,8 +142,8 @@ class AtomAngles(Colvar):
         vec2 = self.get_vector(atom1, atom2, pbc_box).squeeze(-2)
 
         # (B,a) <- (B,a,D)
-        dis1 = func.norm_last_dim(vec1)
-        dis2 = func.norm_last_dim(vec2)
+        dis1 = self.norm_last_dim(vec1)
+        dis2 = self.norm_last_dim(vec2)
 
         # (B,a) <- (B,a,D)
         vec1vec2 = F.reduce_sum(vec1*vec2, -1)
@@ -161,14 +170,17 @@ class AtomTorsions(Colvar):
                  ):
 
         super().__init__(
-            dim_output=1,
             periodic=True,
             use_pbc=use_pbc,
         )
 
         # (B,d,4)
-        self.index = index
+        self.index = get_ms_array(index, ms.int32)
+        if self.index.shape[-1] != 4:
+            raise ValueError('The last dimension of index in AtomTorsions must be 4!')
+        self.dim_output = self.index.shape[-2]
         self.split = ops.Split(-2, 4)
+        self.keep_norm_last_dim = nn.Norm(axis=-1, keep_dims=True)
 
     def construct(self, coordinate: Tensor, pbc_box: Tensor = None):
         r"""Compute torsions.
@@ -197,7 +209,7 @@ class AtomTorsions(Colvar):
         vec_3 = self.get_vector(atom_d, atom_c, pbc_box).squeeze(-2)
 
         # (B,d,1) <- (B,M,D)
-        v2norm = func.keep_norm_last_dim(vec_2)
+        v2norm = self.keep_norm_last_dim(vec_2)
         # (B,d,D) = (B,d,D) / (B,d,1)
         norm_vec2 = vec_2 * msnp.reciprocal(v2norm)
 

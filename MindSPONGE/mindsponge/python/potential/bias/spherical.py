@@ -24,6 +24,7 @@
 
 import mindspore as ms
 from mindspore import Tensor
+from mindspore import nn
 from mindspore.ops import functional as F
 
 from .bias import Bias
@@ -86,6 +87,8 @@ class SphericalRestrict(Bias):
             depth = depth(self.units)
         self.depth = Tensor(depth, ms.float32)
 
+        self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
+
     def construct(self,
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,
@@ -122,7 +125,7 @@ class SphericalRestrict(Bias):
         """
 
         # (B, A) <- (B, A, D)
-        distance = func.norm_last_dim(coordinate - self.center)
+        distance = self.norm_last_dim(coordinate - self.center)
         diff = distance - self.radius
         bias = self.force_constant * F.log(1.0 + F.exp(diff/self.depth))
 
