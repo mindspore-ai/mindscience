@@ -14,3 +14,4 @@
 # ============================================================================
 '''init'''
 from .fold import MegaFold, compute_confidence
+from .assessment import MegaAssessment

@@ -27,9 +27,9 @@ from mindsponge.cell.initializer import do_keep_cell_fp32
 from mindsponge.common.config_load import load_config
 from mindsponge.common.protein import to_pdb, from_prediction
 
-from data import Feature, RawFeatureGenerator, create_dataset, get_crop_size, get_raw_feature
-from model import MegaFold, compute_confidence
-from module.fold_wrapcell import TrainOneStepCell, WithLossCell
+from data import Feature, RawFeatureGenerator, create_dataset, get_crop_size, get_raw_feature, process_pdb
+from model import MegaFold, compute_confidence, MegaAssessment
+from module.fold_wrapcell import TrainOneStepCell, WithLossCell, WithLossCellAssessment
 
 parser = argparse.ArgumentParser(description='Inputs for eval.py')
 parser.add_argument('--data_config', help='data process config')
@@ -38,6 +38,7 @@ parser.add_argument('--input_path', help='processed raw feature path')
 parser.add_argument('--pdb_path', type=str, help='Location of training pdb file.')
 parser.add_argument('--use_pkl', default=False, help="use pkl as input or fasta file as input, in default use fasta")
 parser.add_argument('--checkpoint_path', help='checkpoint path')
+parser.add_argument('--checkpoint_path_assessment', help='assessment model checkpoint path')
 parser.add_argument('--device_id', default=0, type=int, help='DEVICE_ID')
 parser.add_argument('--mixed_precision', default=0, type=int,
                     help='whether to use mixed precision, 0 for full fp32 and 1 for fp32/fp16 mixed,\
@@ -49,6 +50,7 @@ parser.add_argument('--resolution_data', type=str, default=None, help='Location 
 parser.add_argument('--loss_scale', type=float, default=1024.0, help='loss scale')
 parser.add_argument('--gradient_clip', type=float, default=0.1, help='gradient clip value')
 parser.add_argument('--total_steps', type=int, default=9600000, help='total steps')
+parser.add_argument('--decoy_pdb_path', type=str, help='Location of decoy pdb file.')
 arguments = parser.parse_args()
 
 
@@ -205,6 +207,166 @@ def fold_train(args):
             ckpt_name = f"{ckpt_path}/step_{step}.ckpt"
             save_checkpoint(train_net, ckpt_name)
             print(f"checkpoint of step {step} is saved in ./ckpt folder")
+
+
+def assessment_infer(args):
+    '''mega fold inference'''
+    data_cfg = load_config(args.data_config)
+    model_cfg = load_config(args.model_config)
+    model_cfg.seq_length = data_cfg.eval.crop_size
+    slice_key = "seq_" + str(model_cfg.seq_length)
+    slice_val = vars(model_cfg.slice)[slice_key]
+    model_cfg.slice = slice_val
+
+    megafold = MegaFold(model_cfg, mixed_precision=args.mixed_precision)
+    model_cfg.max_extra_msa = 2
+    model_cfg.max_msa_clusters = 2
+    model_cfg.slice.extra_msa_stack.msa_row_attention_with_pair_bias = 0
+    megaassessment = MegaAssessment(model_cfg, mixed_precision=args.mixed_precision)
+    megafold.add_flags_recursive(train_backward=False)
+    megaassessment.add_flags_recursive(train_backward=False)
+    load_checkpoint(args.checkpoint_path, megafold)
+    load_checkpoint(args.checkpoint_path_assessment, megaassessment)
+    if args.mixed_precision:
+        megafold.to_float(mstype.float16)
+        do_keep_cell_fp32(megafold)
+        megaassessment.to_float(mstype.float16)
+        do_keep_cell_fp32(megaassessment)
+    else:
+        megafold.to_float(mstype.float32)
+        megaassessment.to_float(mstype.float32)
+
+    seq_files = os.listdir(args.input_path)
+
+    if not args.use_pkl:
+        feature_generator = RawFeatureGenerator(database_search_config=data_cfg.database_search)
+    else:
+        feature_generator = None
+    for seq_file in seq_files:
+        t1 = time.time()
+        raw_feature = get_raw_feature(os.path.join(args.input_path, seq_file), feature_generator, args.use_pkl)
+        ori_res_length = raw_feature['msa'].shape[1]
+        processed_feature = Feature(data_cfg, raw_feature)
+        feat, prev_pos, prev_msa_first_row, prev_pair = processed_feature.pipeline(data_cfg,
+                                                                                   mixed_precision=args.mixed_precision)
+        prev_pos = Tensor(prev_pos)
+        prev_msa_first_row = Tensor(prev_msa_first_row)
+        prev_pair = Tensor(prev_pair)
+        t2 = time.time()
+        for i in range(data_cfg.common.num_recycle):
+            feat_i = [Tensor(x[i]) for x in feat]
+            prev_pos, prev_msa_first_row, prev_pair, _ = megafold(*feat_i,
+                                                                  prev_pos,
+                                                                  prev_msa_first_row,
+                                                                  prev_pair)
+        for pdb_name in os.listdir(args.decoy_pdb_path):
+            decoy_atom_positions, decoy_atom_mask, align_mask = \
+            process_pdb(feat[4][0], ori_res_length, os.path.join(args.decoy_pdb_path, pdb_name))
+            plddt = megaassessment(*feat_i, prev_pos, prev_msa_first_row, prev_pair,
+                                   Tensor(decoy_atom_positions), Tensor(decoy_atom_mask))
+            t3 = time.time()
+            plddt = plddt.asnumpy()[align_mask == 1]
+            confidence = np.mean(plddt)
+            t4 = time.time()
+            timings = {"seq_name": seq_file,
+                       "decoy_pdb_name": pdb_name,
+                       "pre_process_time": round(t2 - t1, 2),
+                       "predict time ": round(t3 - t2, 2),
+                       "pos_process_time": round(t4 - t3, 2),
+                       "all_time": round(t4 - t1, 2),
+                       "confidence": confidence}
+            print(timings)
+
+
+def assessment_train(args):
+    """megafold train"""
+    data_cfg = load_config(args.data_config)
+    model_cfg = load_config(args.model_config)
+    model_cfg.is_training = True
+    model_cfg.seq_length = data_cfg.eval.crop_size
+    slice_key = "seq_" + str(model_cfg.seq_length)
+    slice_val = vars(model_cfg.slice)[slice_key]
+    model_cfg.slice = slice_val
+
+    megafold = MegaFold(model_cfg, mixed_precision=args.mixed_precision)
+    model_cfg.max_extra_msa = 2
+    model_cfg.max_msa_clusters = 2
+    model_cfg.slice.extra_msa_stack.msa_row_attention_with_pair_bias = 0
+    megaassessment = MegaAssessment(model_cfg, mixed_precision=args.mixed_precision)
+    load_checkpoint(args.checkpoint_path, megafold)
+    if args.mixed_precision:
+        megafold.to_float(mstype.float16)
+        do_keep_cell_fp32(megafold)
+        megaassessment.to_float(mstype.float16)
+        do_keep_cell_fp32(megaassessment)
+    else:
+        megafold.to_float(mstype.float32)
+        megaassessment.to_float(mstype.float32)
+
+    net_with_criterion = WithLossCellAssessment(megaassessment, model_cfg)
+    opt = nn.Adam(params=megaassessment.trainable_params(), learning_rate=1e-4, eps=1e-6)
+    train_net = TrainOneStepCell(net_with_criterion, opt, sens=args.loss_scale,
+                                 gradient_clip_value=args.gradient_clip, train_fold=False,
+                                 train_assessment=True)
+
+    train_net.set_train(False)
+    step = 0
+    np.random.seed(1)
+    max_recycles = [int(np.random.uniform(size=1, low=0, high=4)) for _ in range(args.total_steps)]
+    max_recycles[step] = 0
+    np.random.seed()
+    names = os.listdir(args.pdb_data_dir)
+    names_list = []
+    for name in names:
+        names_list.append(name.split(".pdb")[0])
+    train_dataset = create_dataset(args.pdb_path, args.input_path, names_list, data_cfg,
+                                   args.resolution_data, num_parallel_worker=4, is_parallel=args.run_distribute,
+                                   shuffle=True)
+    dataset_iter = train_dataset.create_dict_iterator(num_epochs=1, output_numpy=True)
+
+    for d in dataset_iter:
+        max_recycle = max_recycles[step]
+        inputs_feats = d["target_feat"], d["msa_feat"], d["msa_mask"], d["seq_mask_batch"], d["aatype_batch"], \
+                       d["template_aatype"], d["template_all_atom_masks"], d["template_all_atom_positions"], \
+                       d["template_mask"], d["template_pseudo_beta_mask"], d["template_pseudo_beta"], \
+                       d["extra_msa"], d["extra_has_deletion"], \
+                       d["extra_deletion_value"], d["extra_msa_mask"], d["residx_atom37_to_atom14"], \
+                       d["atom37_atom_exists_batch"], d["residue_index_batch"]
+        prev_pos, prev_msa_first_row, prev_pair = Tensor(d["prev_pos"]), Tensor(d["prev_msa_first_row"]), \
+                                                  Tensor(d["prev_pair"])
+        ground_truth = d["pseudo_beta_gt"], d["pseudo_beta_mask_gt"], d["all_atom_mask_gt"], \
+                       d["true_msa"], d["bert_mask"], d["residx_atom14_to_atom37"], \
+                       d["restype_atom14_bond_lower_bound"], d["restype_atom14_bond_upper_bound"], \
+                       d["atomtype_radius"], d["backbone_affine_tensor"], d["backbone_affine_mask"], \
+                       d["atom14_gt_positions"], d["atom14_alt_gt_positions"], d["atom14_atom_is_ambiguous"], \
+                       d["atom14_gt_exists"], d["atom14_atom_exists"], d["atom14_alt_gt_exists"], \
+                       d["all_atom_positions"], d["rigidgroups_gt_frames"], d["rigidgroups_gt_exists"], \
+                       d["rigidgroups_alt_gt_frames"], d["torsion_angles_sin_cos_gt"], d["chi_mask"]
+        # forward recycle 4 steps
+        megafold.add_flags_recursive(train_backward=False)
+        megafold.phase = 'train_forward'
+        ground_truth = [Tensor(gt) for gt in ground_truth]
+        for i in range(4):
+            inputs_feat = [Tensor(feat[i]) for feat in inputs_feats]
+            ground_truth = [Tensor(gt) for gt in ground_truth]
+            prev_pos, prev_msa_first_row, prev_pair = megafold(*inputs_feat, prev_pos, prev_msa_first_row, prev_pair)
+            if i == max_recycle:
+                final_atom_positions_recycle, final_atom_mask_recycle = prev_pos, \
+                                                                        Tensor(d["atom37_atom_exists_batch"][0])
+
+        # forward + backward
+        train_net.add_flags_recursive(train_backward=True)
+        train_net.phase = 'train_backward'
+        inputs_feat = [Tensor(feat[max_recycle]) for feat in inputs_feats]
+        loss = train_net(*inputs_feat, prev_pos, prev_msa_first_row, prev_pair, *ground_truth,
+                         final_atom_positions_recycle, final_atom_mask_recycle)
+        loss_info = f"step is: {step}, total loss is :{loss[0]}, fape_side: {loss[1]}, fape_backbone: {loss[2]}," \
+                    f"anglenorm: {loss[3]}, predict_lddt_loss: {loss[4]}, distogram_focal_loss: {loss[5]}," \
+                    f"distogram_regression_loss: {loss[6]}, plddt2_loss: {loss[7]}, mask_loss: {loss[8]}," \
+                    f"confidence_loss: {loss[9]}, cameo_loss: {loss[10]}"
+        print(loss_info, flush=True)
+        step += 1
+
 
 if __name__ == "__main__":
     if arguments.run_platform == 'Ascend':

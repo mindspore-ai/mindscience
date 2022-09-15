@@ -75,7 +75,7 @@ class BalancedMSE(nn.Cell):
       A float tensor representing balanced error
     """
 
-    def __init__(self, first_break, last_break, num_bins, beta=0.99):
+    def __init__(self, first_break, last_break, num_bins, beta=0.99, reducer_flag=False):
         super(BalancedMSE, self).__init__()
         self.beta = beta
         self.first_break = first_break
@@ -84,6 +84,11 @@ class BalancedMSE(nn.Cell):
 
         self.breaks = mnp.linspace(self.first_break, self.last_break, self.num_bins)
         self.width = self.breaks[1] - self.breaks[0]
+        bin_width = 2
+        start_n = 1
+        stop = self.num_bins * 2
+        centers = mnp.divide(mnp.arange(start=start_n, stop=stop, step=bin_width), num_bins * 2.0)
+        self.centers = centers/(self.last_break-self.first_break) + self.first_break
 
         self.log_noise_scale = Parameter(Tensor([0.], mstype.float32))
         self.p_bins = Parameter(Tensor(np.ones((self.num_bins)) / self.num_bins, dtype=mstype.float32), \
@@ -93,8 +98,10 @@ class BalancedMSE(nn.Cell):
         self.zero = Tensor([0.])
 
         self.onehot = nn.OneHot(depth=self.num_bins)
-        self.allreduce = P.AllReduce()
-        self.device_num = D.get_group_size()
+        self.reducer_flag = reducer_flag
+        if self.reducer_flag:
+            self.allreduce = P.AllReduce()
+            self.device_num = D.get_group_size()
 
     def construct(self, prediction, target, p_bins=None):
         """construct"""
@@ -133,7 +140,8 @@ class BalancedMSE(nn.Cell):
 
         p_gt = P.Reshape()(p_gt, (-1, self.num_bins))
         p_bins = P.ReduceMean()(p_gt, 0)
-        p_bins = self.allreduce(p_bins) / self.device_num
+        if self.reducer_flag:
+            p_bins = self.allreduce(p_bins) / self.device_num
 
         p_bins = self.beta * self.p_bins + (1 - self.beta) * p_bins
         P.Assign()(self.p_bins, p_bins)
@@ -156,7 +164,7 @@ class MultiClassFocal(nn.Cell):
       A scalar representing normalized total error.
     """
 
-    def __init__(self, num_class=10, beta=0.99, gamma=2., e=0.1, neighbors=2, not_focal=False):
+    def __init__(self, num_class=10, beta=0.99, gamma=2., e=0.1, neighbors=2, not_focal=False, reducer_flag=False):
         super(MultiClassFocal, self).__init__()
         self.num_class = num_class
         self.beta = beta
@@ -177,8 +185,9 @@ class MultiClassFocal(nn.Cell):
         self.cross_entropy = P.SoftmaxCrossEntropyWithLogits()
         self.zero = Tensor([0.])
 
-        self.allreduce = P.AllReduce()
-        self.device_num = D.get_group_size()
+        self.reducer_flag = reducer_flag
+        if self.reducer_flag:
+            self.allreduce = P.AllReduce()
 
     def construct(self, prediction, target):
         """construct"""
@@ -219,7 +228,8 @@ class MultiClassFocal(nn.Cell):
     def _compute_classes_num(self, target):
         "get global classes number"
         classes_num = mnp.sum(target, 0)
-        classes_num = self.allreduce(classes_num)
+        if self.reducer_flag:
+            classes_num = self.allreduce(classes_num)
         classes_num = F.cast(classes_num, mstype.float32)
         classes_num += 1.
         return classes_num
