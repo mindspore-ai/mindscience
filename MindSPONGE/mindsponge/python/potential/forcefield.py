@@ -381,6 +381,5 @@ class ForceField(ForceFieldBase):
 
         # Exclude Parameters
         self._exclude_index = Tensor(system_params.excludes[None, :], ms.int32)
-
         self.energy_cell = self.set_energy_cell(energy)
         self.output_unit_scale = self.set_unit_scale()
