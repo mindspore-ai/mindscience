@@ -29,7 +29,7 @@ import mindspore.numpy as msnp
 from mindspore import Tensor
 from mindspore import Parameter
 from mindspore import context
-from mindspore import ops
+from mindspore import ops, nn
 from mindspore.ops import functional as F
 from mindspore.nn import Cell, CellList
 
@@ -37,7 +37,7 @@ from ...partition import NeighbourList
 from ...system import Molecule
 from ...potential import PotentialCell
 from ...potential.bias import Bias
-from ...function.functions import norm_last_dim, gather_vectors
+from ...function.functions import gather_vectors
 from ...function.operations import GetVector
 from ..wrapper import EnergyWrapper, get_energy_wrapper
 
@@ -158,6 +158,8 @@ class SimulationCell(Cell):
             self.bias = Parameter(msnp.zeros((self.num_walker, self.num_bias), dtype=ms.float32),
                                   name='bias_potential', requires_grad=False)
 
+        self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
+
     @property
     def length_unit(self):
         return self.units.length_unit
@@ -208,7 +210,7 @@ class SimulationCell(Cell):
             neighbour_vector += F.expand_dims(mask_fill, -1)
 
         # (B,A,N) = (B,A,N,D)
-        neighbour_distance = norm_last_dim(neighbour_vector)
+        neighbour_distance = self.norm_last_dim(neighbour_vector)
 
         if self.cutoff is not None:
             distance_mask = neighbour_distance < self.cutoff

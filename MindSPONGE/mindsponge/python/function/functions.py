@@ -24,11 +24,12 @@
 Common functions
 """
 
+from typing import Union
 import numpy as np
+from numpy import ndarray
 import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import ops
-from mindspore import nn
 from mindspore import ms_function
 from mindspore import Tensor, Parameter
 from mindspore.ops import functional as F
@@ -45,6 +46,7 @@ __all__ = [
     'reduce_all',
     'concat_last_dim',
     'concat_penulti',
+    'identity',
     'pbc_box_reshape',
     'periodic_image',
     'displace_in_box',
@@ -68,6 +70,8 @@ __all__ = [
     'get_kinetic_energy',
     'get_integer',
     'get_ndarray',
+    'get_tensor',
+    'get_ms_array',
 ]
 
 PI = 3.141592653589793238462643383279502884197169399375105820974944592307
@@ -76,12 +80,51 @@ inv = ops.Inv()
 keepdim_sum = ops.ReduceSum(keep_dims=True)
 keepdim_mean = ops.ReduceMean(keep_dims=True)
 keepdim_prod = ops.ReduceProd(keep_dims=True)
-keep_norm_last_dim = nn.Norm(axis=-1, keep_dims=True)
-norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
 reduce_any = ops.ReduceAny()
 reduce_all = ops.ReduceAll()
 concat_last_dim = ops.Concat(-1)
 concat_penulti = ops.Concat(-2)
+identity = ops.Identity()
+
+
+@ms_function
+def norm_last_dim(vector: Tensor) -> Tensor:
+    r"""Compute the norm of vector, delete the last dims
+
+    Args:
+        vector (Tensor):    Tensor of shape (..., D). Data type is float.
+
+    Returns:
+        Tensor of shape (...,). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Symbols:
+        D:  Dimension of the simulation system. Usually is 3.
+
+    """
+    return msnp.norm(vector, axis=-1)
+
+
+@ms_function
+def keep_norm_last_dim(vector: Tensor) -> Tensor:
+    r"""Compute the norm of vector, keep the last dims
+
+    Args:
+        vector (Tensor):    Tensor of shape (..., D). Data type is float.
+
+    Returns:
+        Tensor of shape (..., 1). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Symbols:
+        D:  Dimension of the simulation system. Usually is 3.
+
+    """
+    return msnp.norm(vector, axis=-1, keep_dims=True)
 
 
 @ms_function
@@ -330,7 +373,7 @@ def calc_distance_without_pbc(position_a: Tensor, position_b: Tensor, _pbc_box=N
     #pylint: disable=invalid-name
 
     vec = get_vector_without_pbc(position_a, position_b)
-    return keep_norm_last_dim(vec)
+    return msnp.norm(vec, axis=-1, keepdims=True)
 
 
 @ms_function
@@ -352,7 +395,7 @@ def calc_distance_with_pbc(position_a: Tensor, position_b: Tensor, pbc_box: Tens
     """
 
     vec = get_vector_with_pbc(position_a, position_b, pbc_box)
-    return keep_norm_last_dim(vec)
+    return msnp.norm(vec, axis=-1, keepdims=True)
 
 
 @ms_function
@@ -376,7 +419,7 @@ def calc_distance(position_a: Tensor, position_b: Tensor, pbc_box: Tensor = None
     vec = get_vector_without_pbc(position_a, position_b)
     if pbc_box is not None:
         vec = vector_in_box(vec, pbc_box)
-    return keep_norm_last_dim(vec)
+    return msnp.norm(vec, axis=-1, keepdims=True)
 
 
 @ms_function
@@ -396,8 +439,8 @@ def calc_angle_between_vectors(vector1: Tensor, vector2: Tensor) -> Tensor:
     """
 
     # [..., 1] <- [..., D]
-    dis1 = keep_norm_last_dim(vector1)
-    dis2 = keep_norm_last_dim(vector2)
+    dis1 = msnp.norm(vector1, axis=-1, keepdims=True)
+    dis2 = msnp.norm(vector2, axis=-1, keepdims=True)
     dot12 = keepdim_sum(vector1 * vector2, -1)
     # [..., 1]
     cos_theta = dot12 / dis1 / dis2
@@ -501,7 +544,7 @@ def calc_torsion_for_vectors(vector1: Tensor, vector2: Tensor, vector3: Tensor) 
     """
 
     # (B, ..., D) <- (B,...,1)
-    v2norm = keep_norm_last_dim(vector2)
+    v2norm = msnp.norm(vector2, axis=-1, keepdims=True)
     # (B, ..., D) = (B, ..., D) / (...,1)
     norm_vec2 = vector2 / v2norm
 
@@ -641,14 +684,14 @@ def get_kinetic_energy(mass: Tensor, velocity: Tensor) -> Tensor:
     return F.reduce_sum(kinectics, -1)
 
 
-def get_integer(value) -> int:
+def get_integer(value: Union[int, Tensor, Parameter, ndarray]) -> int:
     r"""get integer type of the input value
 
     Args:
         value (Union[int, Tensor, Parameter, ndarray]): Input value
 
     Returns:
-        int_value (int)
+        integer (int)
 
     """
     if value is None:
@@ -658,7 +701,7 @@ def get_integer(value) -> int:
     return int(value)
 
 
-def get_ndarray(value, dtype: type = None) -> np.ndarray:
+def get_ndarray(value: Union[Tensor, Parameter, ndarray, list, tuple], dtype: type = None) -> ndarray:
     r"""get ndarray type of the input value
 
     Args:
@@ -666,7 +709,7 @@ def get_ndarray(value, dtype: type = None) -> np.ndarray:
         dtype (type):                               Data type. Default: None
 
     Returns:
-        int_value (int)
+        array (ndarray)
 
     """
     if value is None:
@@ -678,3 +721,56 @@ def get_ndarray(value, dtype: type = None) -> np.ndarray:
     else:
         value = np.array(value, dtype)
     return value
+
+
+def get_tensor(value: Union[Tensor, Parameter, ndarray, list, tuple], dtype: type = None) -> Tensor:
+    r"""get mindspore.Tensor type of the input value
+
+    Args:
+        value (Union[Tensor, Parameter, ndarray, list, tuple]):  Input value
+        dtype (type):                                            Data type. Default: None
+
+    Returns:
+        tensor (Tensor)
+
+    """
+    if value is None:
+        return None
+
+    if isinstance(value, (list, tuple, ndarray)):
+        value = Tensor(value, dtype)
+    else:
+        if isinstance(value, Parameter):
+            value = identity(value)
+        elif not isinstance(value, Tensor):
+            raise TypeError('The type of input value must be Tensor, Parameter, '
+                            'ndarray, list or tuple but got: ' + str(type(value)))
+        if dtype is not None:
+            value = F.cast(value, dtype)
+
+    return value
+
+
+def get_ms_array(value: Union[Tensor, Parameter, ndarray, list, tuple], dtype: type = None) -> Union[Tensor, Parameter]:
+    r"""get mindspore.Tensor type of the input value
+
+    Args:
+        value (Union[Tensor, Parameter, ndarray, list, tuple]):  Input value
+
+    Returns:
+        array (Tensor or Parameter)
+
+    """
+
+    if value is None:
+        return None
+
+    if isinstance(value, (Tensor, Parameter)):
+        if dtype is not None and value.dtype != dtype:
+            value = F.cast(value, dtype)
+        return value
+
+    if isinstance(value, (list, tuple, np.ndarray)):
+        return Tensor(value, dtype)
+
+    return None

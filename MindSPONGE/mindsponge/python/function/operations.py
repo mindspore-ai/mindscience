@@ -126,6 +126,7 @@ class GetDistance(Cell):
         super().__init__()
 
         self.get_vector = GetVector(use_pbc)
+        self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
 
     def set_pbc(self, use_pbc):
         """set whether to use periodic boundary condition"""
@@ -152,7 +153,7 @@ class GetDistance(Cell):
 
         """
         vector = self.get_vector(initial, terminal, pbc_box)
-        return func.norm_last_dim(vector)
+        return self.norm_last_dim(vector)
 
 
 class VelocityGenerator(Cell):

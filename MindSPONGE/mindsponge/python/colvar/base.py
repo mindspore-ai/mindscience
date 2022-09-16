@@ -25,8 +25,9 @@ Collective variables by position
 """
 
 from mindspore import Tensor
+from mindspore import nn
 
-from ..function import functions as func
+from ..function import calc_angle_between_vectors, calc_torsion_for_vectors
 from .colvar import Colvar
 from .position import Position
 
@@ -64,6 +65,7 @@ class Distance(Colvar):
 
         self.position0 = position0
         self.position1 = position1
+        self.keep_norm_last_dim = nn.Norm(axis=-1, keep_dims=True)
 
     def construct(self, coordinate: Tensor, pbc_box: bool = None):
         r"""Compute distance between two atoms.
@@ -80,7 +82,7 @@ class Distance(Colvar):
         pos1 = self.position1(coordinate)
 
         vec = self.get_vector(pos0, pos1, pbc_box)
-        return func.keep_norm_last_dim(vec)
+        return self.keep_norm_last_dim(vec)
 
 
 class Angle(Colvar):
@@ -124,7 +126,7 @@ class Angle(Colvar):
         vec_ba = self.get_vector(pos_b, pos_a, pbc_box)
         vec_bc = self.get_vector(pos_b, pos_c, pbc_box)
 
-        return func.calc_angle_between_vectors(vec_ba, vec_bc)
+        return calc_angle_between_vectors(vec_ba, vec_bc)
 
 
 class Torsion(Colvar):
@@ -172,4 +174,4 @@ class Torsion(Colvar):
         vec_cb = self.get_vector(pos_c, pos_b, pbc_box)
         vec_dc = self.get_vector(pos_d, pos_c, pbc_box)
 
-        return func.calc_torsion_for_vectors(vec_ba, vec_cb, vec_dc)
+        return calc_torsion_for_vectors(vec_ba, vec_cb, vec_dc)
