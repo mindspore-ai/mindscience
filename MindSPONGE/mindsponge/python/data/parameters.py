@@ -420,20 +420,25 @@ class ForceFieldParameters:
         for i in range(self.atom_nums):
             bond_excludes = bonds[np.where(
                 np.isin(bonds, i).sum(axis=1))[0]].flatten()
-            angle_excludes = angles[
-                np.where(np.isin(angles, i).sum(axis=1))[0]
-            ].flatten()
-            dihedral_excludes = dihedrals[
-                np.where(np.isin(dihedrals, i).sum(axis=1))[0]
-            ].flatten()
+            this_excludes = bond_excludes
+
+            if angles is not None:
+                angle_excludes = angles[
+                    np.where(np.isin(angles, i).sum(axis=1))[0]
+                ].flatten()
+                this_excludes = np.append(this_excludes, angle_excludes)
+
+            if dihedrals is not None:
+                dihedral_excludes = dihedrals[
+                    np.where(np.isin(dihedrals, i).sum(axis=1))[0]
+                ].flatten()
+                this_excludes = np.append(this_excludes, dihedral_excludes)
             if improper is not None:
                 idihedral_excludes = improper[
                     np.where(np.isin(improper, i).sum(axis=1))[0]
                 ].flatten()
-            this_excludes = np.append(bond_excludes, angle_excludes)
-            this_excludes = np.append(this_excludes, dihedral_excludes)
-            if improper is not None:
                 this_excludes = np.append(this_excludes, idihedral_excludes)
+
             this_excludes = np.unique(this_excludes)
             excludes.append(this_excludes[np.where(
                 this_excludes != i)[0]].tolist())
@@ -612,9 +617,10 @@ class ForceFieldParameters:
                 self.pair_index = self.get_pair_index(dihedrals, angles, bonds)
                 pair_params = self.get_pair_params(self.pair_index, vdw_params['epsilon'],
                                                    vdw_params['sigma'])
-                self.excludes = self.get_excludes(bonds, angles, dihedrals, improper)
             else:
                 pair_params = None
+            self.excludes = self.get_excludes(bonds, angles, dihedrals, improper)
+
             return ForceConstants(
                 bond_params,
                 angle_params,
