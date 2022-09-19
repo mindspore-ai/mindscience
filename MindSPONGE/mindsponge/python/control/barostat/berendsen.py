@@ -32,7 +32,8 @@ from ...system import Molecule
 
 
 class BerendsenBarostat(Barostat):
-    r"""A Berendsen (weak coupling) barostat controller.
+    r"""
+    A Berendsen (weak coupling) barostat controller.
 
     Reference:
 
@@ -41,22 +42,27 @@ class BerendsenBarostat(Barostat):
         The Journal of Chemical Physics, 1984, 81(8): 3684.
 
     Args:
-
-        system (Molecule):          Simulation system
-
+        system (Molecule):          Simulation system.
         pressure (float):           Reference pressure P_ref (bar) for pressure coupling.
                                     Default: 1
-
         anisotropic (bool):         Whether to perform anisotropic pressure control.
                                     Default: False
-
         control_step (int):         Step interval for controller execution. Default: 1
-
         compressibility (float):    Isothermal compressibility \beta (bar^-1). Default: 4.6e-5
-
         time_constant (float)       Time constant \tau_p (ps) for pressure coupling.
                                     Default: 1
 
+    Returns:
+        coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+        velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+        force (Tensor), Tensor of shape (B, A, D). Data type is float.
+        energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+        virial (Tensor), Tensor of shape (B, D). Data type is float.
+        pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  system: Molecule,
@@ -79,7 +85,7 @@ class BerendsenBarostat(Barostat):
         self.ratio = self.control_step * self.time_step / self.time_constant / 3.
 
     def set_time_step(self, dt: float):
-        """set simulation time step"""
+        """set simulation time step."""
         self.time_step = Tensor(dt, ms.float32)
         self.ratio = self.control_step * self.time_step / self.time_constant / 3.
         return self

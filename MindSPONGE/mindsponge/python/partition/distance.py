@@ -38,41 +38,31 @@ from ..function.functions import calc_distance_without_pbc
 
 
 class DistanceNeighbours(Cell):
-    r"""Neighbour list calculated by distance
+    r"""
+    Neighbour list calculated by distance.
 
     Args:
-
         cutoff (float):         Cutoff distance.
-
         num_neighbours (int):   Number of neighbours. If input "None", this value will be calculated by
                                 the ratio of the number of neighbouring grids to the total number of grids.
                                 Default: None
-
         atom_mask (Tensor):     Tensor of shape (B, A). Data type is bool_.
-                                Mask of atoms in the system.
-                                Default: None
-
+                                Mask of atoms in the system. Default: None
         exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int32.
                                 Index of neighbour atoms which could be excluded from the neighbour list.
                                 Default: None
-
         use_pbc (bool):         Whether to use periodic boundary condition. Default: None
-
         cutoff_scale (float):   Factor to scale the cutoff distance. Default: 1.2
-
         large_dis (float):      A large number of distance to fill the default atoms. Default: 1e4
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
 
     Symbols:
-
         B:  Number of simulation walker.
-
         A:  Number of atoms in system.
-
         N:  Number of neighbour atoms.
-
         Ex: Maximum number of excluded neighbour atoms.
-
     """
 
     def __init__(self,
@@ -164,24 +154,24 @@ class DistanceNeighbours(Cell):
                   atom_mask: Tensor = None,
                   exclude_index: Tensor = None
                   ):
-        r"""Calculate distances and neighbours.
+        r"""
+        Calculate distances and neighbours.
 
         Args:
             coordinate (Tensor):    Tensor of (B, A, D). Data type is float.
-                                    Position coordinates of atoms
+                                    Position coordinates of atoms.
             pbc_box (Tensor):       Tensor of (B, D). Data type is bool.
-                                    Periodic boundary condition box.
-                                    Default: None
+                                    Periodic boundary condition box. Default: None
             atom_mask (Tensor):     Tensor of (B, A). Data type is bool.
-                                    Atomic mask
+                                    Atomic mask.
             exclude_index (Tensor): Tensor of (B, A, Ex). Data type is int.
                                     Index of the atoms that should be excluded from the neighbour list.
                                     Default: None
 
         Returns:
-            distances (Tensor):         Tensor of (B, A, N). Data type is float.
-            neighbours (Tensor):        Tensor of (B, A, N). Data type is int.
-            neighbour_mask (Tensor):    Tensor of (B, A, N). Data type is bool.
+            - distances (Tensor), Tensor of (B, A, N). Data type is float.
+            - neighbours (Tensor), Tensor of (B, A, N). Data type is int.
+            - neighbour_mask (Tensor), Tensor of (B, A, N). Data type is bool.
 
         Symbols:
             B:  Batch size.
@@ -189,7 +179,6 @@ class DistanceNeighbours(Cell):
             N:  Number of neighbour atoms.
             D:  Dimension of position coordinates.
             Ex: Maximum number of excluded neighbour atoms.
-
         """
 
         # A

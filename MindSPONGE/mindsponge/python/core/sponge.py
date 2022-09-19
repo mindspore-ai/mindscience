@@ -53,20 +53,18 @@ from ..system.molecule import Molecule
 
 
 class Sponge():
-    r"""Core engine of MindSPONGE
+    r"""
+    Core engine of MindSPONGE.
 
     Args:
-
         network (Cell):         Function or neural netork for simulation system.
+        potential (Cell):       Potential energy. Default: None
+        optimizer (Optimizer):  Optimizer. Default: None
+        metrics (Metric):       Metrics. Default: None
+        analyse_network (Cell): Analyse network. Default: None
 
-        potential (Cell):       Potential energy. Defulat: None
-
-        optimizer (Optimizer):  Optimizer. Defulat: None
-
-        metrics (Metric):       Metrics. Defulat: None
-
-        analyse_network (Cell): Analyse network. Defulat: None
-
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -148,7 +146,7 @@ class Sponge():
         self.sim_time = 0.0
 
     def change_optimizer(self, optimizer: Optimizer):
-        """change optimizer"""
+        """change optimizer."""
         if self._optimizer is None:
             raise ValueError('Cannot change the optimizer, because the initial optimizer is None '
                              'or the network is not a RunOneStepCell type.')
@@ -168,7 +166,7 @@ class Sponge():
         return self
 
     def change_potential(self, potential: PotentialCell):
-        """change potential energy"""
+        """change potential energy."""
         if self._potential is None:
             raise ValueError('Cannot change the potential, because the initial potential is None '
                              'or the network is not a SimulationCell type.')
@@ -188,7 +186,8 @@ class Sponge():
             callbacks: Callback = None,
             dataset: Dataset = None
             ):
-        """Run simulation
+        """
+        Run simulation.
 
         Args:
             steps (int):            Simulation steps.

@@ -36,15 +36,16 @@ from ..function.functions import get_integer
 
 
 class Controller(Cell):
-    r"""The controller for control the parameters in the simulation process,
-        including integrator, thermostat, barostat, constraint, etc.
+    r"""
+    The controller for control the parameters in the simulation process,
+    including integrator, thermostat, barostat, constraint, etc.
 
     Args:
-
-        system (Molecule):  Simulation system
-
+        system (Molecule):  Simulation system.
         control_step (int): Step interval for controller execution. Default: 1
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  system: Molecule,
@@ -102,18 +103,33 @@ class Controller(Cell):
         return self
 
     def update_coordinate(self, coordinate: Tensor, success: bool = True) -> bool:
-        """update the parameter of coordinate"""
+        """
+        update the parameter of coordinate.
+
+        Returns:
+            bool.
+        """
         success = F.depend(success, F.assign(self._coordinate, coordinate))
         return success
 
     def update_pbc_box(self, pbc_box: Tensor, success: bool = True) -> bool:
-        """update the parameter of PBC box"""
+        """
+        update the parameter of PBC box.
+
+        Returns:
+            bool.
+        """
         if self._pbc_box is None:
             return success
         return F.depend(success, F.assign(self._pbc_box, pbc_box))
 
     def get_kinetics(self, velocity: Tensor) -> Tensor:
-        """calculate kinetics according to velocity"""
+        """
+        calculate kinetics according to velocity.
+
+        Returns:
+            Tensor, kinetics according to velocity.
+        """
         if velocity is None:
             return None
         # (B,A,D) * (B,A,1)
@@ -123,7 +139,12 @@ class Controller(Cell):
         return kinetics * self.kinetic_unit_scale
 
     def get_temperature(self, kinetics: Tensor = None) -> Tensor:
-        """calculate temperature according to velocity"""
+        """
+        calculate temperature according to velocity.
+
+        Returns:
+            Tensor, temperature according to velocity.
+        """
         if kinetics is None:
             return None
         # (B) <- (B,D)
@@ -131,19 +152,29 @@ class Controller(Cell):
         return 2 * kinetics / self.degrees_of_freedom / self.boltzmann
 
     def get_volume(self, pbc_box: Tensor) -> Tensor:
-        """calculate volume according to PBC box"""
+        """
+        calculate volume according to PBC box.
+
+        Returns:
+            Tensor, volume according to PBC box.
+        """
         if self._pbc_box is None:
             return None
         # (B,1) <- (B,D)
         return func.keepdim_prod(pbc_box, -1)
 
     def get_virial(self, pbc_grad, pbc_box):
-        """calculate virial according to the PBC box and its gradients"""
+        """calculate virial according to the PBC box and its gradients."""
         # (B,D)
         return 0.5 * pbc_grad * pbc_box
 
     def get_pressure(self, kinetics: Tensor, virial: Tensor, pbc_box: Tensor) -> Tensor:
-        """calculate pressure according to kinetics, viral and PBC box"""
+        """
+        calculate pressure according to kinetics, viral and PBC box.
+
+        Returns:
+            Tensor, pressure according to kinetics, viral and PBC box.
+        """
         if self._pbc_box is None:
             return None
         volume = func.keepdim_prod(pbc_box, -1)
@@ -152,11 +183,21 @@ class Controller(Cell):
         return pressure * self.press_unit_scale
 
     def get_com(self, coordinate: Tensor) -> Tensor:
-        """get coordinate of center of mass"""
+        """
+        get coordinate of center of mass.
+
+        Returns:
+            Tensor, coordinate of center of mass.
+        """
         return self.keepdim_sum(coordinate * self._atom_mass, -2) / F.expand_dims(self.system_mass, -1)
 
     def get_com_velocity(self, velocity: Tensor) -> Tensor:
-        """calculate velocity of center of mass"""
+        """
+        calculate velocity of center of mass.
+
+        Returns:
+            Tensor, velocity of center of mass.
+        """
         # (B,A,D) * (B,A,1) -> (B,1,D)
         # (B,1,D) / (B,1,1)
         return self.keepdim_sum(velocity * self._atom_mass, -2) / F.expand_dims(self.system_mass, -1)
@@ -172,7 +213,8 @@ class Controller(Cell):
                   step: int = 0,
                   ):
 
-        r"""Control the parameters during the simulation
+        r"""
+        Control the parameters during the simulation.
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
@@ -185,19 +227,18 @@ class Controller(Cell):
             step (int):             Simulation step. Default: 0
 
         Returns:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor):      Tensor of shape (B, A, D). Data type is float.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor):      Tensor of shape (B, D). Data type is float.
-            virial (Tensor):        Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+            - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+            - force (Tensor), Tensor of shape (B, A, D). Data type is float.
+            - energy (Tensor), Tensor of shape (B, 1). Data type is float.
+            - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+            - virial (Tensor), Tensor of shape (B, D). Data type is float.
+            - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
         Symbols:
             B:  Number of walkers in simulation.
             A:  Number of atoms.
             D:  Dimension of the simulation system. Usually is 3.
-
         """
         #pylint: disable=unused-argument
 

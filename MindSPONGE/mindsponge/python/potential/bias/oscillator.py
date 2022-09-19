@@ -29,11 +29,19 @@ from ..potential import PotentialCell
 
 
 class OscillatorBias(PotentialCell):
-    """ Add a restraint for heavy atoms in a molecule.
+    """
+    Add a restraint for heavy atoms in a molecule.
+
     Args:
-        old_crd(Tensor): The origin coordinates of all atoms.
-        k(float): The elasticity coefficient of all atoms, assuming to be the same.
-        nonh_mask(Tensor): A mask to distinguish H atoms and heavy atoms.
+        old_crd(Tensor):    The origin coordinates of all atoms.
+        k(float):           The elasticity coefficient of all atoms, assuming to be the same.
+        nonh_mask(Tensor):  A mask to distinguish H atoms and heavy atoms.
+
+    Returns:
+        potential (Tensor).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  old_crd,

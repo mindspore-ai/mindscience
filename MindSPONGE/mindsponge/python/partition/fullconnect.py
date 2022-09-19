@@ -33,9 +33,14 @@ from mindspore.ops import functional as F
 
 
 class FullConnectNeighbours(Cell):
-    r"""Full connected neighbour list
+    r"""
+    Full connected neighbour list.
+
     Args:
-        num_atoms (int):    Number of atoms
+        num_atoms (int): Number of atoms.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self, num_atoms: int):
@@ -81,15 +86,16 @@ class FullConnectNeighbours(Cell):
         return self
 
     def construct(self, atom_mask: Tensor = None, exclude_index: Tensor = None):
-        r"""Calculate the full connected neighbour list.
+        r"""
+        Calculate the full connected neighbour list.
 
         Args:
             atom_mask (Tensor):     Tensor of shape (B, A). Data type is bool.
             exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int.
 
         Returns:
-            neighbours (Tensor):    Tensor of shape (B, A, N). Data type is int.
-            neighbour_mask (Tensor) Tensor of shape (B, A, N). Data type is bool.
+            - neighbours (Tensor), Tensor of shape (B, A, N). Data type is int.
+            - neighbour_mask (Tensor), Tensor of shape (B, A, N). Data type is bool.
 
         Symbols:
             B:  Batch size.

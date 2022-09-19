@@ -35,16 +35,25 @@ from ...system import Molecule
 
 
 class Brownian(Integrator):
-    r"""Brownian integrator.
+    r"""
+    Brownian integrator.
 
     Args:
-
-        system (Molecule):              Simulation system
-
+        system (Molecule):              Simulation system.
         temperature (float):            Simulation temperature T (K). Default: 300
-
         friction_coefficient (float):   Friction coefficient g (amu/ps). Default: 1e3
 
+    Returns:
+        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+        - virial (Tensor), Tensor of shape (B, D). Data type is float.
+        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  system: Molecule,

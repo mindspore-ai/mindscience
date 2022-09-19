@@ -31,18 +31,18 @@ from ..template import get_template
 
 
 def get_forcefield(forcefield: Union[str, dict, list]) -> Tuple[dict, dict]:
-    """ Get force field parameters from YAML file.
+    """
+    Get force field parameters from YAML file.
 
     Args:
-
         forcefield (str, dict or list): The file name of force field parameters.
 
     Returns:
+        parameters (dict), Force field parameters.
+        template (dict), Molecular template.
 
-        parameters (dict):  Force field parameters
-
-        template (dict):    Molecular template
-
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     if forcefield is None:

@@ -29,26 +29,19 @@ from .residue import Residue
 
 @ms_class
 class AminoAcid(Residue):
-    r"""Residue of amino acid
+    r"""
+    Residue of amino acid.
 
     Args:
-
         name (str):             Name of the residue. Default: ''
-
         template (dict or str): Template of Residue. Default: None
-
-        atom_name (list):       Atom name. Can be ndarray or list of str. Defulat: None
-
+        atom_name (list):       Atom name. Can be ndarray or list of str. Default: None
         start_index (int):      The start index of the first atom in this residue.
 
     Symbols:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
+        B:  Batchsize, i.e. number of walkers in simulation.
         A:  Number of atoms.
-
         b:  Number of bonds.
-
     """
 
     def __init__(self,

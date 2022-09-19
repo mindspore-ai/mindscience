@@ -57,13 +57,19 @@ class ForceConstants(NamedTuple):
 
 
 class ForceFieldParameters:
-    """ Getting parameters for given bonds and atom types.
+    """
+    Getting parameters for given bonds and atom types.
+
     Args:
-        atom_types(np.str_): The atom types defined in forcefields.
-        parameters(dict): A dictionary stores all force field constants.
-        atom_names(np.str_): Unique atom names in an amino acid.
+        atom_types(np.str_):    The atom types defined in forcefields.
+        parameters(dict):       A dictionary stores all force field constants.
+        atom_names(np.str_):    Unique atom names in an amino acid.
+
     Parameters:
         bonds(np.int32): The bond pairs defined for a given molecule.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self, atom_types, parameters, atom_names=None, atom_charges=None):
@@ -112,7 +118,12 @@ class ForceFieldParameters:
         self.pair_index = None
 
     def get_bond_params(self, bonds, atom_type):
-        """ Get the force field bond parameters. """
+        """
+        Get the force field bond parameters.
+
+        Returns:
+            dict, params.
+        """
         bond_atoms = np.take(atom_type, bonds, -1)
 
         k_index = self.bond_params['parameter_names']["pattern"].index('force_constant')
@@ -146,7 +157,12 @@ class ForceFieldParameters:
         return params
 
     def get_angle_params(self, angles, atom_type):
-        """ Get the force field angle parameters. """
+        """
+        Get the force field angle parameters.
+
+        Returns:
+            dict, params.
+        """
         angle_atoms = np.take(atom_type, angles, -1)
 
         k_index = self.angle_params['parameter_names']["pattern"].index('force_constant')
@@ -180,7 +196,12 @@ class ForceFieldParameters:
         return params
 
     def get_dihedral_params(self, dihedrals_in, atom_types):
-        """ Get the force field dihedral parameters. """
+        """
+        Get the force field dihedral parameters.
+
+        Returns:
+            dict, params.
+        """
         dihedral_atoms = np.take(atom_types, dihedrals_in, -1)
 
         k_index = self._dihedrals['parameter_names']["pattern"][0].index('force_constant')
@@ -227,7 +248,12 @@ class ForceFieldParameters:
         return params
 
     def get_improper_params(self, improper_in, atom_types, third_id):
-        """ Pre-processing of getting improper dihedrals. """
+        """
+        Pre-processing of getting improper dihedrals.
+
+        Returns:
+            dict, params.
+        """
         improper_atoms = np.take(atom_types, improper_in, -1)
 
         k_index = self._improper['parameter_names']["pattern"][0].index('force_constant')
@@ -290,7 +316,12 @@ class ForceFieldParameters:
             yield this_idx
 
     def combinations(self, bonds, bonds_for_angle, middle_id):
-        """ Get all the combinations of 3 atoms. """
+        """
+        Get all the combinations of 3 atoms.
+
+        Returns:
+            np.ndarray, angles.
+        """
         this_idx = self.construct_angles(bonds, bonds_for_angle, middle_id)
         id_selections = [
             [[0, 1]],
@@ -316,6 +347,10 @@ class ForceFieldParameters:
         return angles
 
     def construct_hash(self, bonds):
+        """
+        Returns:
+            dict, hash map.
+        """
         hash_map = {}
         for i, b in enumerate(bonds):
             bond = tuple(b)
@@ -323,7 +358,12 @@ class ForceFieldParameters:
         return hash_map
 
     def trans_dangles(self, dangles, middle_id):
-        """ Construct the dihedrals. """
+        """
+        Construct the dihedrals.
+
+        Returns:
+            np.ndarray, dihedrals.
+        """
         left_id = np.isin(dangles[:, 0], middle_id[0])
         left_ele = dangles[:, 2][left_id]
         left_id = np.isin(dangles[:, 2], middle_id[0])
@@ -350,7 +390,12 @@ class ForceFieldParameters:
         return dihedrals
 
     def get_dihedrals(self, angles, dihedral_middle_id):
-        """ Get the dihedrals indexes. """
+        """
+        Get the dihedrals indexes.
+
+        Returns:
+            np.ndarray, dihedrals.
+        """
         dihedrals = None
         for i in range(dihedral_middle_id.shape[0]):
             dangles = angles[
@@ -372,7 +417,12 @@ class ForceFieldParameters:
         return dihedrals
 
     def check_improper(self, bonds, core_id):
-        """ Check if there are same improper dihedrals. """
+        """
+        Check if there are same improper dihedrals.
+
+        Returns:
+            int, core id of same improper dihedrals.
+        """
         # pylint: disable=pointless-statement
         checked_core_id = core_id.copy()
         bonds_hash = [hash(tuple(x)) for x in bonds]
@@ -393,7 +443,13 @@ class ForceFieldParameters:
         return checked_core_id[np.where(checked_core_id > -1)[0]]
 
     def get_improper(self, bonds, core_id):
-        """ Get the improper dihedrals indexes. """
+        """
+        Get the improper dihedrals indexes.
+
+        Returns:
+            - improper (np.ndarray).
+            - new_id (np.ndarray).
+        """
         improper = None
         new_id = None
         for i in range(core_id.shape[0]):
@@ -415,7 +471,12 @@ class ForceFieldParameters:
         return improper, new_id
 
     def get_excludes(self, bonds, angles, dihedrals, improper):
-        """ Get the exclude atoms index. """
+        """
+        Get the exclude atoms index.
+
+        Returns:
+            np.ndarray, the index of exclude atoms.
+        """
         excludes = []
         for i in range(self.atom_nums):
             bond_excludes = bonds[np.where(
@@ -461,6 +522,9 @@ class ForceFieldParameters:
          'H5','HZ','O','O2','OH','OS','OP','C*','CI','C5',
          'C4','CT','CX','C','N','N3','S','SH','P','MG',
          'C0','F','Cl','Br','I','2C','3C','C8','CO']
+
+        Returns:
+            dict, parameters.
         """
 
         sigma_index = self.vdw_params['parameter_names']["pattern"].index('sigma')
@@ -501,20 +565,36 @@ class ForceFieldParameters:
         return params
 
     def get_pairwise_c6(self, e0, e1, r0, r1):
-        """ Calculate the B coefficient in vdw potential. """
+        """
+        Calculate the B coefficient in vdw potential.
+
+        Returns:
+            np.ndarray, the B coefficient in vdw potential.
+        """
         e01 = np.sqrt(e0 * e1)
         r01 = r0 + r1
         return 2 * e01 * r01 ** 6
 
     def get_hbonds(self, bonds):
-        """ Get hydrogen bonds. """
+        """
+        Get hydrogen bonds.
+
+        Returns:
+            - bonds (np.ndarray), bonds with H.
+            - bonds (np.ndarray), non H bonds.
+        """
         hatoms = np.where(np.isin(self.atom_types, self.htypes))[0]
         bonds_with_h = np.where(np.isin(bonds, hatoms).sum(axis=-1))[0]
         non_hbonds = np.where(np.isin(bonds, hatoms).sum(axis=-1) == 0)[0]
         return bonds[bonds_with_h], bonds[non_hbonds]
 
     def get_pair_index(self, dihedrals, angles, bonds):
-        """ Get the non-bonded atom pairs index. """
+        """
+        Get the non-bonded atom pairs index.
+
+        Returns:
+            np.ndarray, non-bonded atom pairs index.
+        """
         pairs = dihedrals[:, [0, -1]]
         pairs.sort()
         pair_index = np.unique(pairs, axis=0)
@@ -543,7 +623,12 @@ class ForceFieldParameters:
         return pair_index[include_index]
 
     def get_pair_params(self, pair_index, epsilon, sigma):
-        """ Return all the pair parameters. """
+        """
+        Return all the pair parameters.
+
+        Returns:
+            dict, pair parameters.
+        """
 
         r_index = self.pair_params['parameter_names']["pattern"].index('r_scale')
         r6_index = self.pair_params['parameter_names']["pattern"].index('r6_scale')

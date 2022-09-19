@@ -45,46 +45,35 @@ from ...function.functions import get_ndarray
 
 
 class Molecule(Cell):
-    r"""Cell for molecular system
+    r"""
+    Cell for molecular system.
 
     Args:
-
-        atoms (list):           Atoms in system. Can be list of str or int. Defulat: None
-
-        atom_name (list):       Atom name. Can be ndarray or list of str. Defulat: None
-
-        atom_type (list):       Atom type. Can be ndarray or list of str. Defulat: None
-
+        atoms (list):           Atoms in system. Can be list of str or int. Default: None
+        atom_name (list):       Atom name. Can be ndarray or list of str. Default: None
+        atom_type (list):       Atom type. Can be ndarray or list of str. Default: None
         atom_mass (Tensor):     Tensor of shape (B, A). Data type is float.
-                                Atom mass. Defulat: None
-
+                                Atom mass. Default: None
         atom_charge (Tensor):   Tensor of shape (B, A). Data type is float.
-                                Atom charge. Defulat: None
-
+                                Atom charge. Default: None
         atomic_number (Tensor): Tensor of shape (B, A). Data type is float.
-                                Atomic number. Defulat: None
-
+                                Atomic number. Default: None
         bond (Tensor):          Tensor of shape (B, b, 2) or (1, b, 2). Data type is int.
-                                Bond index. Defulat: None
-
+                                Bond index. Default: None
         coordinate (Tensor):    Tensor of shape (B, A, D) or (1, A, D). Data type is float.
                                 Position coordinates of atoms. Default: None
-
         pbc_box (Tensor):       Tensor of shape (B, D) or (1, D). Data type is float.
                                 Box of periodic boundary condition. Default: None
-
         length_unit (str):      Length unit for position coordinates. Default: None
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
     Symbols:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
+        B:  Batchsize, i.e. number of walkers in simulation.
         A:  Number of atoms.
-
         b:  Number of bonds.
-
         D:  Dimension of the simulation system. Usually is 3.
-
     """
 
     def __init__(self,
@@ -209,7 +198,7 @@ class Molecule(Cell):
         return self.units.length_unit
 
     def _check_pbc_box(self, pbc_box: Tensor):
-        """check PBC box"""
+        """check PBC box."""
         pbc_box = Tensor(pbc_box, ms.float32)
         if pbc_box.ndim == 1:
             pbc_box = F.expand_dims(pbc_box, 0)
@@ -224,13 +213,13 @@ class Molecule(Cell):
         return Parameter(pbc_box, name='pbc_box', requires_grad=True)
 
     def move(self, shift: Tensor = None):
-        """move the coordinate of the system"""
+        """move the coordinate of the system."""
         if shift is not None:
             self.update_coordinate(self.coordinate + Tensor(shift, ms.float32))
         return self
 
     def copy(self, shift: Tensor = None):
-        """return a Molecule that copy the parameters of this molecule"""
+        """return a Molecule that copy the parameters of this molecule."""
         coordinate = self.get_coordinate()
         if shift is not None:
             coordinate += Tensor(shift, ms.float32)
@@ -242,7 +231,7 @@ class Molecule(Cell):
         )
 
     def add_residue(self, residue: Residue, coordinate: Tensor = None):
-        """add residue"""
+        """add residue."""
         if not isinstance(residue, list):
             if isinstance(residue, Residue):
                 residue = [residue]
@@ -263,7 +252,7 @@ class Molecule(Cell):
         return self
 
     def append(self, system):
-        """append the system"""
+        """append the system."""
         if not isinstance(system, Molecule):
             raise TypeError('For add, the type of system must be "Molecule" but got: ' +
                             str(type(system)))
@@ -271,7 +260,7 @@ class Molecule(Cell):
         return self
 
     def reduplicate(self, shift: Tensor):
-        """duplicate the system to double of the origin size"""
+        """duplicate the system to double of the origin size."""
         shift = Tensor(shift, ms.float32)
         self.residue.extend(copy.deepcopy(self.residue))
         self.build_system()
@@ -280,7 +269,7 @@ class Molecule(Cell):
         return self
 
     def build_atom_type(self):
-        """build atom type"""
+        """build atom type."""
         atom_type = ()
         for i in range(self.num_residue):
             atom_type += (self.residue[i].atom_type,)
@@ -288,7 +277,7 @@ class Molecule(Cell):
         return self
 
     def build_atom_charge(self):
-        """build atom charge"""
+        """build atom charge."""
         charges = []
         for i in range(self.num_residue):
             charges.append(self.residue[i].atom_charge is not None)
@@ -304,7 +293,7 @@ class Molecule(Cell):
         return self
 
     def build_system(self):
-        """build the system by residues"""
+        """build the system by residues."""
         if self.residue is None:
             self.residue = None
             return self
@@ -429,7 +418,7 @@ class Molecule(Cell):
         return self
 
     def build_space(self, coordinate: Tensor, pbc_box: Tensor = None):
-        """build coordinate and PBC box"""
+        """build coordinate and PBC box."""
         # (B,A,D)
         if coordinate is None:
             coordinate = np.random.uniform(0, self.units.length(
@@ -479,7 +468,7 @@ class Molecule(Cell):
         return self
 
     def set_bond_length(self, bond_length: Tensor):
-        """set bond length"""
+        """set bond length."""
         if self.bond is None:
             raise ValueError('Cannot setup bond_length because bond is None')
         bond_length = Tensor(bond_length, ms.float32)
@@ -490,48 +479,92 @@ class Molecule(Cell):
         return self
 
     def residue_index(self, res_id: int) -> Tensor:
-        """get index of residue"""
+        """
+        get index of residue.
+
+        Returns:
+            Tensor, the index of residue.
+        """
         return self.residue[res_id].system_index
 
     def residue_bond(self, res_id: int) -> Tensor:
-        """get bond index of residue"""
+        """
+        get bond index of residue.
+
+        Returns:
+            Tensor, the bond index of residue.
+        """
         if self.residue[res_id].bond is None:
             return None
         return self.residue[res_id].bond + self.residue[res_id].start_index
 
     def residue_head(self, res_id: int) -> Tensor:
-        """get head index of residue"""
+        """
+        get head index of residue.
+
+        Returns:
+            Tensor, the head index of residue.
+        """
         if self.residue[res_id].head_atom is None:
             return None
         return self.residue[res_id].head_atom + self.residue[res_id].start_index
 
     def residue_tail(self, res_id: int) -> Tensor:
-        """get tail index of residue"""
+        """
+        get tail index of residue.
+
+        Returns:
+            Tensor, the tail index of residue.
+        """
         if self.residue[res_id].tail_atom is None:
             return None
         return self.residue[res_id].tail_atom + self.residue[res_id].start_index
 
     def residue_coordinate(self, res_id: int) -> Tensor:
-        """get residue coordinate"""
+        """
+        get residue coordinate.
+
+        Returns:
+            Tensor, the residue coordinate.
+        """
         return F.gather_d(self.coordinate, -2, self.residue[res_id].system_index)
 
     def get_volume(self) -> Tensor:
-        """get volume of system"""
+        """
+        get volume of system.
+
+        Returns:
+            Tensor, volume of system.
+        """
         if self.pbc_box is None:
             return None
         return self.keep_prod(self.pbc_box, -1)
 
     def space_parameters(self) -> list:
-        """get the parameter of space (coordinates and pbc box)"""
+        """
+        get the parameter of space (coordinates and pbc box).
+
+        Returns:
+            list, a list of parameter of space.
+        """
         if self.pbc_box is None:
             return [self.coordinate]
         return [self.coordinate, self.pbc_box]
 
     def trainable_params(self, recurse=True) -> list:
+        """
+        Returns:
+            list, a list of trainable_params.
+        """
         return list(filter(lambda x: x.name.split('.')[-1] == 'coordinate', self.get_parameters(expand=recurse)))
 
     def _check_coordianate(self, coordinate: Tensor) -> Tensor:
-        """check coordinate"""
+        """
+        check coordinate.
+
+        Returns:
+            Tensor, a Tensor of coordinate.
+        """
         coordinate = Tensor(coordinate, ms.float32)
         if coordinate.ndim == 2:
             coordinate = F.expand_dims(coordinate, 0)
@@ -546,14 +579,19 @@ class Molecule(Cell):
         return coordinate
 
     def update_coordinate(self, coordinate: Tensor, success: bool = True) -> bool:
-        """update the parameter of coordinate"""
+        """
+        update the parameter of coordinate.
+
+        Returns:
+            bool, whether update the parameter of coordinate.
+        """
         success = F.depend(success, F.assign(self.coordinate, coordinate))
         if self.pbc_box is not None:
             success = self.update_image(success=success)
         return success
 
     def set_coordianate(self, coordinate: Tensor):
-        """set the value of coordinate"""
+        """set the value of coordinate."""
         coordinate = self._check_coordianate(coordinate)
         if coordinate is not None and coordinate.shape == self.coordinate.shape:
             self.update_coordinate(coordinate)
@@ -564,20 +602,25 @@ class Molecule(Cell):
         return self
 
     def update_pbc_box(self, pbc_box: Tensor, success: bool = True):
-        """update PBC box"""
+        """
+        update PBC box.
+
+        Returns:
+            bool, whether update PBC box.
+        """
         success = F.depend(True, F.assign(self.pbc_box, pbc_box))
         if self.pbc_box is not None:
             success = self.update_image(success=success)
         return success
 
     def set_pbc_grad(self, grad_box: bool):
-        """set whether to calculate the gradient of PBC box"""
+        """set whether to calculate the gradient of PBC box."""
         if self.pbc_box is not None:
             self.pbc_box.requires_grad = grad_box
         return self
 
     def set_pbc_box(self, pbc_box: Tensor = None):
-        """set PBC box"""
+        """set PBC box."""
         if pbc_box is None:
             self.pbc_box = None
             self.use_pbc = False
@@ -595,7 +638,7 @@ class Molecule(Cell):
         return self
 
     def repeat_box(self, lattices: list):
-        """repeat the system according to the lattices of PBC box"""
+        """repeat the system according to the lattices of PBC box."""
         if self.pbc_box is None:
             raise RuntimeError('repeat_box() cannot be used without pbc_box, '
                                'please use set_pbc_box() to set pbc_box first '
@@ -636,13 +679,23 @@ class Molecule(Cell):
         return self
 
     def coordinate_in_box(self, shift: float = 0) -> Tensor:
-        """get the coordinate in a whole PBC box"""
+        """
+        get the coordinate in a whole PBC box.
+
+        Returns:
+            Tensor, the coordinate in a whole PBC box.
+        """
         coordinate = self.identity(self.coordinate)
         pbc_box = self.identity(self.pbc_box)
         return func.displace_in_box(coordinate, pbc_box, shift)
 
     def calc_image(self, shift: float = 0) -> Tensor:
-        """calculate the image of coordinate"""
+        """
+        calculate the image of coordinate.
+
+        Returns:
+            Tensor, a Tensor  of the image of coordinate.
+        """
         coordinate = self.identity(self.coordinate)
         pbc_box = self.identity(self.pbc_box)
         image = func.periodic_image(coordinate, pbc_box, shift)
@@ -651,13 +704,18 @@ class Molecule(Cell):
         return image
 
     def update_image(self, image: Tensor = None, success: bool = True) -> bool:
-        """update the image of coordinate"""
+        """
+        update the image of coordinate.
+
+        Returns:
+            bool.
+        """
         if image is None:
             image = self.calc_image()
         return F.depend(success, F.assign(self.image, image))
 
     def set_length_unit(self, unit):
-        """set the length unit of system"""
+        """set the length unit of system."""
         scale = self.units.convert_length_to(unit)
         coordinate = self.coordinate * scale
         self.update_coordinate(coordinate)
@@ -668,27 +726,37 @@ class Molecule(Cell):
         return self
 
     def get_coordinate(self) -> Tensor:
-        """get Tensor of coordinate"""
+        """
+        get Tensor of coordinate.
+
+        Returns:
+            Tensor, a Tensor of coordinate.
+        """
         return self.identity(self.coordinate)
 
     def get_pbc_box(self) -> Tensor:
-        """get Tensor of PBC box"""
+        """
+        get Tensor of PBC box.
+
+        Returns:
+            Tensor, a Tensor of PBC box.
+        """
         if self.pbc_box is None:
             return None
         return self.identity(self.pbc_box)
 
     def construct(self) -> Tuple[Tensor, Tensor]:
-        r"""Get space information of system.
+        r"""
+        Get space information of system.
 
         Returns:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+            - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
+            B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             D:  Dimension of the simulation system. Usually is 3.
-
         """
         coordinate = self.identity(self.coordinate)
         pbc_box = None

@@ -37,18 +37,17 @@ from ...function.functions import get_integer
 
 
 class Integrator(Controller):
-    r"""Integrator for simulation.
+    r"""
+    Integrator for simulation.
 
     Args:
-
-        system (Molecule):          Simulation system
-
+        system (Molecule):          Simulation system.
         thermostat (Thermostat):    Thermostat for temperature coupling. Default: None
-
         barostat (Barostat):        Barostat for pressure coupling. Default: None
-
         constraint (Constraint):    Constraint algorithm. Default: None
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -191,7 +190,8 @@ class Integrator(Controller):
                   pbc_box: Tensor = None,
                   step: int = 0,
                   ):
-        r"""update simulation step.
+        r"""
+        update simulation step
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
@@ -204,19 +204,18 @@ class Integrator(Controller):
             step (int):             Simulation step. Default: 0
 
         Returns:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor):      Tensor of shape (B, A, D). Data type is float.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor):      Tensor of shape (B, D). Data type is float.
-            virial (Tensor):        Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+            - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+            - force (Tensor), Tensor of shape (B, A, D). Data type is float.
+            - energy (Tensor), Tensor of shape (B, 1). Data type is float.
+            - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+            - virial (Tensor), Tensor of shape (B, D). Data type is float.
+            - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
         Symbols:
             B:  Number of walkers in simulation.
             A:  Number of atoms.
             D:  Dimension of the simulation system. Usually is 3.
-
         """
 
         raise NotImplementedError

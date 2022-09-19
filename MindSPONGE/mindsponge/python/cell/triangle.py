@@ -26,7 +26,33 @@ from ..common.utils import _memory_reduce
 
 
 class TriangleAttention(nn.Cell):
-    '''triangle attention'''
+    '''
+    triangle attention.
+
+    Args:
+        orientation (int):      Decide on the dimension of Triangle.
+        num_heads (int):        The number of the heads.
+        key_dim (int):          The dimension of the input.
+        gating (bool):          Indicator of if the attention is gated.
+        layer_norm_dim (int):   The dimension of the layer_norm.
+        batch_size (int):       The batch size of parameters in MSA row attention, used in while control flow.
+        slice_num (int):        The number of slices to be made to reduce memory.
+    
+    Inputs:
+        - **pair_act** (Tensor) - Tensor of pair_act. Data type is float.
+        - **pair_mask** (Tensor) - The mask for TriangleAttention matrix with shape.
+          (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
+          to this shape).
+        - **index** (Tensor) - The index of while loop, only used in case of while control
+          flow. Default: None
+
+    Outputs:
+        - **pair_act** (Tensor) - Tensor, the float tensor of the pair_act of the layer with
+          shape (batch_size, query_seq_length, hidden_size).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    '''
 
     def __init__(self, orientation, num_head, key_dim, gating, layer_norm_dim, batch_size=None, slice_num=0):
         super(TriangleAttention, self).__init__()
@@ -46,6 +72,22 @@ class TriangleAttention(nn.Cell):
         self._init_parameter()
 
     def compute(self, pair_act, input_mask, index, nonbatched_bias):
+        """
+        compute.
+
+        Inputs:
+            - **pair_act** (Tensor) - Tensor of pair_act. Data type is float.
+            - **input_mask** (Tensor) - The mask for TriangleAttention matrix with shape
+              (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
+              to this shape).
+            - **index** (Tensor) - The index of while loop, only used in case of while control
+              flow. Default: None
+            - **nonbatched_bias** (Tensor) - The bias of nonbatched.
+
+        Outputs:
+            - **pair_act** (Tensor) - Tensor, the float tensor of the pair_act of the layer with
+              shape (batch_size, query_seq_length, hidden_size).
+        """
         pair_act = self.attn_mod(pair_act, pair_act, input_mask, index, nonbatched_bias)
         return pair_act
 
@@ -96,7 +138,18 @@ class TriangleAttention(nn.Cell):
 
 
 class TriangleMultiplication(nn.Cell):
-    '''triangle multiplication'''
+    r"""
+    Triangle multiplication layer.
+
+    Args:
+        num_intermediate_channel (float):   The number of intermediate channel.
+        equation (str):                     The equation used in triangle multiplication layer.
+        layer_norm_dim (int):               The last dimension length of the layer norm.
+        batch_size (int):                   The batch size of parameters in triangle multiplication. Default: None.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
 
     def __init__(self, num_intermediate_channel, equation, layer_norm_dim, batch_size):
         super(TriangleMultiplication, self).__init__()
@@ -120,7 +173,18 @@ class TriangleMultiplication(nn.Cell):
         self._init_parameter()
 
     def construct(self, act, mask, index):
-        '''construct'''
+        r"""
+        Builds triangle multiplication module.
+
+        Args:
+            act(Tensor):     Pair activations. Data type is float.
+            mask(Tensor):    Pair mask. Data type is float.
+            index(int):      The index of the batch size when batch size is not none.
+
+        Returns:
+            act(Tensor), the shape is same as act_shape[:-1].
+        """
+
         if self.batch_size:
             layer_norm_input_gamma = P.Gather()(self.layer_norm_input_gammas, index, 0)
             layer_norm_input_beta = P.Gather()(self.layer_norm_input_betas, index, 0)
@@ -277,7 +341,19 @@ class TriangleMultiplication(nn.Cell):
 
 
 class OuterProductMean(nn.Cell):
-    '''outerproduct mean'''
+    r"""
+    Computes outer product mean.
+
+    Args:
+        num_outer_channel (float):  The number of outer channel.
+        act_dim (int):              The last dimension length of the act.
+        batch_size (int):           The batch size of parameters in outer product mean. Default: None.
+        slice_num (int):            The slice num used in outer product mean
+                                    when the memory is overflow. Default: 0.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
 
     def __init__(self, num_outer_channel, act_dim, num_output_channel, batch_size=None, slice_num=0):
         super(OuterProductMean, self).__init__()
@@ -294,7 +370,21 @@ class OuterProductMean(nn.Cell):
         self._init_parameter()
 
     def compute(self, left_act, right_act, linear_output_weight, linear_output_bias, d, e):
-        """core compute"""
+        r"""
+        Compute pair activation.
+
+        Args:
+            left_act (Tensor):              The left part of pair activation.
+            right_act (Tensor):             The right part of pair activation.
+            linear_output_weight (Tensor):  The parameter of output weight.
+            linear_output_bias (Tensor):    The parameter of output bias.
+            d (int):                        second axis of right pair activation shape.
+            e (int):                        third axis of right pair activation shape.
+
+        Returns:
+            act(Tensor), Pair activations.
+        """
+
         a, b, c = left_act.shape
         left_act = P.Reshape()(P.Transpose()(left_act, (2, 1, 0)), (-1, a))
         act = P.Reshape()(P.Transpose()(P.Reshape()(self.matmul(left_act, right_act),
@@ -308,7 +398,19 @@ class OuterProductMean(nn.Cell):
         return act
 
     def construct(self, act, mask, extra_msa_norm, index):
-        '''construct'''
+        r"""
+        Builds outer product module.
+
+        Args:
+            act (Tensor):               Pair activations. Data type is float.
+            mask (Tensor):              Pair mask. Data type is float.
+            extra_msa_norm (Tensor):    The norm of extra msa. Data type is float.
+            index (int):                The index of the batch size when batch size is not none.
+
+        Returns:
+            act(Tensor), Pair activations.
+        """
+
         if self.batch_size:
             layer_norm_input_gamma = P.Gather()(self.layer_norm_input_gammas, index, 0)
             layer_norm_input_beta = P.Gather()(self.layer_norm_input_betas, index, 0)

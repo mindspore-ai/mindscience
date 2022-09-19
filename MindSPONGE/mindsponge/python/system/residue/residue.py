@@ -41,46 +41,32 @@ from ...data.template import get_template, get_template_index
 
 @ms_class
 class Residue:
-    r"""Class for residue in molecule
+    r"""
+    Class for residue in molecule.
 
     Args:
-
-        atom_name (list):       Atom name. Can be ndarray or list of str. Defulat: None
-
-        atom_type (list):       Atom type. Can be ndarray or list of str. Defulat: None
-
+        atom_name (list):       Atom name. Can be ndarray or list of str. Default: None
+        atom_type (list):       Atom type. Can be ndarray or list of str. Default: None
         atom_mass (Tensor):     Tensor of shape (B, A). Data type is float.
-                                Atom mass. Defulat: None
-
+                                Atom mass. Default: None
         atom_charge (Tensor):   Tensor of shape (B, A). Data type is float.
-                                Atom charge. Defulat: None
-
+                                Atom charge. Default: None
         atomic_number (Tensor): Tensor of shape (B, A). Data type is float.
-                                Atomic number. Defulat: None
-
+                                Atomic number. Default: None
         bond (Tensor):          Tensor of shape (B, b, 2) or (1, b, 2). Data type is int.
-                                Bond index. Defulat: None
-
+                                Bond index. Default: None
         head_atom (int):        Index of the head atom to connect with the previous residue.
                                 Default: None
-
         tail_atom (int):        Index of the tail atom to connect with the next residue.
                                 Default: None
-
         start_index (int):      The start index of the first atom in this residue.
-
         template (dict or str): Template of Residue. Default: None
-
         name (str):             Name of the residue. Default: 'MOL'
 
     Symbols:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
+        B:  Batchsize, i.e. number of walkers in simulation.
         A:  Number of atoms.
-
         b:  Number of bonds.
-
     """
 
     def __init__(self,
@@ -349,31 +335,31 @@ class Residue:
         return bond
 
     def build_atom_mass(self, template: dict):
-        """build atom mass"""
+        """build atom mass."""
         atom_index = get_template_index(template, self.atom_name)
         self.atom_mass = Tensor(self._get_atom_mass(template, atom_index), ms.float32)
         return self
 
     def build_atomic_number(self, template: dict):
-        """build atomic number"""
+        """build atomic number."""
         atom_index = get_template_index(template, self.atom_name)
         self.atomic_number = Tensor(self._get_atomic_number(template, atom_index), ms.int32)
         return self
 
     def build_atom_type(self, template: dict):
-        """build atom type"""
+        """build atom type."""
         atom_index = get_template_index(template, self.atom_name)
         self.atom_type = self._get_atom_type(template, atom_index)
         return self
 
     def build_atom_charge(self, template: dict):
-        """build atom type"""
+        """build atom type."""
         atom_index = get_template_index(template, self.atom_name)
         self.atom_charge = Tensor(self._get_atom_charge(template, atom_index), ms.float32)
         return self
 
     def build_bond(self, template: dict):
-        """build bond"""
+        """build bond."""
         atom_index = get_template_index(template, self.atom_name)
         self.bond = Tensor(self._get_bond(template, atom_index), ms.int32)
         return self
@@ -385,7 +371,7 @@ class Residue:
                  atom_charge: float = None,
                  atomic_number: str = None,
                  ):
-        """set atom"""
+        """set atom."""
 
         if atom_name is None and atomic_number is None:
             raise ValueError('atom_name and atomic_number cannot both be None')
@@ -471,7 +457,7 @@ class Residue:
         return self
 
     def broadcast_multiplicity(self, multi_system: int):
-        """broadcast the information to the number of multiple system"""
+        """broadcast the information to the number of multiple system."""
         if multi_system <= 0:
             raise ValueError('multi_system must be larger than 0!')
         if self.multi_system > 1:
@@ -503,12 +489,12 @@ class Residue:
         return self
 
     def set_name(self, name: str):
-        """set residue name"""
+        """set residue name."""
         self._name = name
         return self
 
     def set_start_index(self, start_index: int):
-        """set the start index"""
+        """set the start index."""
         if start_index < 0:
             raise ValueError('The start_index cannot be smaller than 0!')
         self.start_index = get_integer(start_index)

@@ -32,33 +32,26 @@ from ..data.export import H5MD
 
 
 class WriteH5MD(Callback):
-    r"""Callback to write HDF5 molecular data (H5MD) file
+    r"""
+    Callback to write HDF5 molecular data (H5MD) file.
 
     Args:
-
         system (Molecule):      Simulation system
-
         filename (str):         Name of output H5MD file.
-
         directory (str):        Directory of the output file. Default: None
-
         write_velocity (bool):  Whether to write the velocity of the system to the H5MD file.
                                 Default:  False
-
         write_force (bool):     Whether to write the forece of the system to the H5MD file.
                                 Default: False
-
         wiite_image (bool):     Whether to write the image of the position of system to the H5MD file.
                                 Default: False
-
         compression (str):      Compression strategy for HDF5. Default: 'gzip'
-
         compression_opts (int): Compression settings for HDF5. Default: 4
-
         length_unit (str):      Length unit for coordinates. Default: None.
-
         energy_unit (str):      Energy unit. Default: None.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,

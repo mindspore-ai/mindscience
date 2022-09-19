@@ -38,29 +38,24 @@ from ..function import functions as func
 
 
 class Updater(Optimizer):
-    r"""Optimizer to update parameters of space (coordinates and PBC box)
+    r"""
+    Optimizer to update parameters of space (coordinates and PBC box).
 
     Args:
-
         system (Molecule):          Simulation system.
-
         controller (Controller):    Controller.
-
         time_step (float):          Time step. Defulat: 1e-3
-
         velocity (Tensor):          Tensor of shape (B, A, D). Data type is float.
                                     Default: None
-
-        weight_decay (float):       An value for the weight decay. Default: 0
-
+        weight_decay (float):       A value for the weight decay. Default: 0
         loss_scale (float):         A value for the loss scale. Default: 1
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
     Symbols:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
+        B:  Batchsize, i.e. number of walkers in simulation.
         A:  Number of atoms.
-
         D:  Dimension of the simulation system. Usually is 3.
 
     """
@@ -169,52 +164,97 @@ class Updater(Optimizer):
         return self
 
     def update_coordinate(self, coordinate: Tensor, success: bool = True) -> bool:
-        """update the parameters of coordinate"""
+        """
+        update the parameters of coordinate.
+
+        Returns:
+            bool.
+        """
         success = F.depend(success, F.assign(self.coordinate, coordinate))
         return success
 
     def update_pbc_box(self, pbc_box: Tensor, success: bool = True) -> bool:
-        """update the parameters of PBC box"""
+        """
+        update the parameters of PBC box.
+
+        Returns:
+            bool.
+        """
         if self.pbc_box is None:
             return success
         return F.depend(success, F.assign(self.pbc_box, pbc_box))
 
     def update_velocity(self, velocity: Tensor, success: bool = True) -> bool:
-        """update the parameters of velocity"""
+        """
+        update the parameters of velocity.
+
+        Returns:
+            bool.
+        """
         return F.depend(success, F.assign(self.velocity, velocity))
 
     def update_kinetics(self, kinetics: Tensor, success: bool = True) -> bool:
-        """update the parameters of kinects"""
+        """
+        update the parameters of kinects.
+
+        Returns:
+            bool.
+        """
         if self.kinetics is None:
             return success
         return F.depend(success, F.assign(self.kinetics, kinetics))
 
     def update_temperature(self, temperature: Tensor, success: bool = True) -> bool:
-        """update the parameters of temperature"""
+        """
+        update the parameters of temperature.
+
+        Returns:
+            bool.
+        """
         if self.temperature is None:
             return success
         return F.depend(success, F.assign(self.temperature, temperature))
 
     def update_virial(self, virial: Tensor, success: bool = True) -> bool:
-        """update the parameters of virial"""
+        """
+        update the parameters of virial.
+
+        Returns:
+            bool.
+        """
         if self.pbc_box is None:
             return success
         return F.depend(success, F.assign(self.virial, virial))
 
     def update_pressure(self, pressure: Tensor, success: bool = True) -> bool:
-        """update the parameters of pressure"""
+        """
+        update the parameters of pressure.
+
+        Returns:
+            bool.
+        """
         if self.pbc_box is None:
             return success
         return F.depend(success, F.assign(self.pressure, pressure))
 
     def get_velocity(self) -> Tensor:
-        """get velocity"""
+        """
+        get velocity.
+
+        Returns:
+            Tensor, a Tensor of velocity.
+        """
         if self.velocity is None:
             return None
         return self.identity(self.velocity)
 
     def get_kinetics(self, velocity: Tensor) -> Tensor:
-        """get kinectics"""
+        """
+        get kinectics.
+
+        Returns:
+            Tensor, a Tensor of kinetics.
+        """
         # (B,A,D)
         kinetics = 0.5 * self._atom_mass * velocity**2
         # (B,D) <- (B,A,D)
@@ -222,13 +262,23 @@ class Updater(Optimizer):
         return kinetics * self.kinetic_unit_scale
 
     def get_temperature(self, kinetics: Tensor = None) -> Tensor:
-        """get temperature"""
+        """
+        get temperature.
+
+        Returns:
+            Tensor, a Tensor of temperature.
+        """
         # (B) <- (B,D)
         kinetics = F.reduce_sum(kinetics, -1)
         return 2 * kinetics / self.degrees_of_freedom / self.boltzmann
 
     def get_pressure(self, kinetics: Tensor, virial: Tensor, pbc_box: Tensor) -> Tensor:
-        """get pressure"""
+        """
+        get pressure.
+
+        Returns:
+            Tensor, a Tensor of pressure.
+        """
         if self.pbc_box is None:
             return None
         # (B,D) = ((B,D) - (B, D)) / (B,1)
@@ -237,20 +287,40 @@ class Updater(Optimizer):
         return pressure * self.press_unit_scale
 
     def get_virial(self, pbc_grad, pbc_box):
-        """get virial"""
+        """
+        get virial.
+
+        Returns:
+            Tensor, a Tensor of virial.
+        """
         # (B,D)
         return 0.5 * pbc_grad * pbc_box
 
     def get_dt(self):
-        """get time step"""
+        """
+        get time step.
+
+        Returns:
+            float, the learning rate of current step.
+        """
         return self.get_lr()
 
     def next_step(self, success: bool = True) -> bool:
-        """finish the current optimization step and move to next step"""
+        """
+        finish the current optimization step and move to next step.
+
+        Returns:
+            bool.
+        """
         return F.depend(success, F.assign(self.step, self.step+1))
 
     def construct(self, gradients: tuple, loss: Tensor = None):
-        """update the parameters of system"""
+        """
+        update the parameters of system.
+
+        Returns:
+            bool.
+        """
 
         gradients = self.decay_weight(gradients)
         gradients = self.scale_grad(gradients)

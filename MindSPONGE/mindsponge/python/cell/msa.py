@@ -24,7 +24,33 @@ from ..common.utils import _memory_reduce
 
 
 class MSARowAttentionWithPairBias(nn.Cell):
-    '''MSA row attention'''
+    """
+    MSA row attention.
+
+    Args:
+        num_heads (int):        The number of the heads.
+        key_dim (int):          The dimension of the input.
+        gating (bool):          Indicator of if the attention is gated.
+        msa_act_dim (int):      The dimension of the msa_act.
+        pair_act_dim (int):     The dimension of the pair_act.
+        batch_size (int):       The batch size of parameters in MSA row attention, used in while control flow.
+        slice_num (int):        The number of slices to be made to reduce memory.
+
+    Inputs:
+        - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
+        - **msa_mask** (Tensor) - The mask for MSA row attention matrix with shape.
+          (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
+          to this shape).
+        - **pair_act** (Tensor) - Tensor of pair_act. Data type is float.
+        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None
+
+    Outputs:
+        - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
+          with shape (batch_size, query_seq_length, hidden_size).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
 
     def __init__(self, num_head, key_dim, gating, msa_act_dim, pair_act_dim, batch_size=None, slice_num=0):
         super(MSARowAttentionWithPairBias, self).__init__()
@@ -41,6 +67,20 @@ class MSARowAttentionWithPairBias(nn.Cell):
         self._init_parameter()
 
     def compute(self, msa_act, mask, index, nonbatched_bias):
+        """
+        compute.
+
+        Inputs:
+            - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
+            - **mask** (Tensor) - The mask for MSA row attention matrix with shape.
+            (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
+            to this shape).
+            - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None
+
+        Outputs:
+            - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
+            with shape (batch_size, query_seq_length, hidden_size).
+        """
         msa_act = self.attn_mod(msa_act, msa_act, mask, index, nonbatched_bias)
         return msa_act
 
@@ -95,7 +135,32 @@ class MSARowAttentionWithPairBias(nn.Cell):
 
 
 class MSAColumnAttention(nn.Cell):
-    '''MSA column attention'''
+    """
+    MSA column attention.
+
+    Args:
+        num_heads (int):        The number of the heads.
+        key_dim (int):          The dimension of the input.
+        gating (bool):          Indicator of if the attention is gated.
+        msa_act_dim (int):      The dimension of the msa_act.
+        pair_act_dim (int):     The dimension of the pair_act.
+        batch_size (int):       The batch size of parameters in MSAColumnAttention, used in while control flow.
+        slice_num (int):        The number of slices to be made to reduce memory.
+
+    Inputs:
+        - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
+        - **msa_mask** (Tensor) - The mask for MSAColumnAttention matrix with shape
+          (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
+          to this shape).
+        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None
+
+    Outputs:
+        - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
+          with shape (batch_size, query_seq_length, hidden_size).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
 
     def __init__(self, num_head, key_dim, gating, msa_act_dim, batch_size=None, slice_num=0):
         super(MSAColumnAttention, self).__init__()
@@ -108,6 +173,21 @@ class MSAColumnAttention(nn.Cell):
         self._init_parameter()
 
     def compute(self, msa_act, input_mask, index):
+        """
+        compute.
+
+        Inputs:
+            - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
+            - **input_mask** (Tensor) - The mask for MSAColumnAttention matrix with shape
+              (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
+              to this shape).
+            - **index** (Tensor) - The index of while loop, only used in case of while
+              control flow. Default: None
+
+        Outputs:
+            - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
+              with shape (batch_size, query_seq_length, hidden_size).
+        """
         msa_act = self.attn_mod(msa_act, msa_act, input_mask, index)
         return msa_act
 
@@ -141,7 +221,34 @@ class MSAColumnAttention(nn.Cell):
 
 
 class MSAColumnGlobalAttention(nn.Cell):
-    '''MSA column global attention'''
+    """
+    MSA column global attention
+
+    Args:
+        num_heads (int):        The number of the heads.
+        key_dim (int):          The dimension of the input.
+        gating (bool):          Indicator of if the attention is gated.
+        msa_act_dim (int):      The dimension of the msa_act.
+        pair_act_dim (int):     The dimension of the pair_act.
+        batch_size (int):       The batch size of parameters in MSAColumnGlobalAttention, used
+                                in while control flow.
+        slice_num (int):        The number of slices to be made to reduce memory.
+
+    Inputs:
+        - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
+        - **msa_mask** (Tensor) - The mask for MSAColumnGlobalAttention matrix with shape
+          (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
+          to this shape).
+        - **pair_act** (Tensor) - Tensor of pair_act. Data type is float.
+        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None
+
+    Outputs:
+        - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
+          with shape (batch_size, query_seq_length, hidden_size).
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
 
     def __init__(self, num_head, gating, msa_act_dim, batch_size=None, slice_num=0):
         super(MSAColumnGlobalAttention, self).__init__()
@@ -154,6 +261,23 @@ class MSAColumnGlobalAttention(nn.Cell):
         self._init_parameter()
 
     def compute(self, msa_act, msa_mask, input_mask, index):
+        """
+        compute.
+
+        Inputs:
+            - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
+            - **msa_mask** (Tensor) - The mask for MSAColumnGlobalAttention matrix with shape
+              (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
+              to this shape).
+            - **input_mask** (Tensor) - The mask for input matrix with shape(batch_size, num_heads,
+              query_seq_length,  value_seq_length)(or broadcastable to this shape).
+            - **index** (Tensor) - The index of while loop, only used in case of while
+              control flow. Default: None
+
+        Outputs:
+            - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
+              with shape (batch_size, query_seq_length, hidden_size).
+        """
         msa_act = self.attn_mod(msa_act, msa_act, msa_mask, input_mask, index)
         return msa_act
 

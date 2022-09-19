@@ -35,18 +35,27 @@ from ...function.operations import GetVector, GetDistance
 
 
 class Constraint(Controller):
-    r"""Constraint for bonds.
+    r"""
+    Constraint for bonds.
 
     Args:
-
         system (Molecule):          Simulation system.
-
         bonds (Tensor or str):      Bonds to be constraint.
                                     Tensor of shape (K, 2). Data type is int.
                                     Alternative: "h-bonds" or "all-bonds".
-
         potential (PotentialCell):  Potential Cell. Default: None
 
+    Returns:
+        coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+        velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+        force (Tensor), Tensor of shape (B, A, D). Data type is float.
+        energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+        virial (Tensor), Tensor of shape (B, D). Data type is float.
+        pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -113,7 +122,8 @@ class Constraint(Controller):
                   pbc_box: Tensor = None,
                   step: int = 0,
                   ):
-        """ constraint the bonds.
+        """
+        constraint the bonds.
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
@@ -126,13 +136,13 @@ class Constraint(Controller):
             step (int):             Simulation step. Default: 0
 
         Returns:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor):      Tensor of shape (B, A, D). Data type is float.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor):      Tensor of shape (B, D). Data type is float.
-            virial (Tensor):        Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+            velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+            force (Tensor), Tensor of shape (B, A, D). Data type is float.
+            energy (Tensor), Tensor of shape (B, 1). Data type is float.
+            kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+            virial (Tensor), Tensor of shape (B, D). Data type is float.
+            pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
         Symbols:
             B:  Number of walkers in simulation.

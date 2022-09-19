@@ -34,20 +34,28 @@ from ...function import functions as func
 
 
 class Thermostat(Controller):
-    r"""Thermostat controller for temperature coupling.
+    r"""
+    Thermostat controller for temperature coupling.
 
     Args:
-
-        system (Molecule):      Simulation system
-
+        system (Molecule):      Simulation system.
         temperature (float):    Reference temperature T_ref (K) for temperature coupling.
                                 Default: 300
-
         control_step (int):     Step interval for controller execution. Default: 1
-
         time_constant (float)   Time constant \tau_T (ps) for temperature coupling.
                                 Default: 4
 
+    Returns:
+        coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+        velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+        force (Tensor), Tensor of shape (B, A, D). Data type is float.
+        energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+        virial (Tensor), Tensor of shape (B, D). Data type is float.
+        pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  system: Molecule,
@@ -75,7 +83,7 @@ class Thermostat(Controller):
 
     @property
     def temperature(self):
-        """reference temperature"""
+        """reference temperature."""
         return self.ref_temp
 
     @property
@@ -84,13 +92,13 @@ class Thermostat(Controller):
         return self.ref_kinetics
 
     def set_degrees_of_freedom(self, dofs: int):
-        """set degrees of freedom (DOFs)"""
+        """set degrees of freedom (DOFs)."""
         self.degrees_of_freedom = dofs
         self.ref_kinetics = 0.5 * self.degrees_of_freedom * self.boltzmann * self.ref_temp
         return self
 
     def velocity_scale(self, sim_kinetics: Tensor, ref_kinetics: Tensor, ratio: float = 1) -> Tensor:
-        """calculate the velocity scale factor for temperature coupling"""
+        """calculate the velocity scale factor for temperature coupling."""
         sim_kinetics = func.keepdim_sum(sim_kinetics, -1)
         lambda_ = 1. + ratio * (ref_kinetics / sim_kinetics - 1)
         return F.sqrt(lambda_)
@@ -106,7 +114,8 @@ class Thermostat(Controller):
                   step: int = 0,
                   ):
 
-        r"""Control the temperature of the simulation system
+        r"""
+        Control the temperature of the simulation system.
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
@@ -119,19 +128,18 @@ class Thermostat(Controller):
             step (int):             Simulation step. Default: 0
 
         Returns:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor):      Tensor of shape (B, A, D). Data type is float.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor):      Tensor of shape (B, D). Data type is float.
-            virial (Tensor):        Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+            velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+            force (Tensor), Tensor of shape (B, A, D). Data type is float.
+            energy (Tensor), Tensor of shape (B, 1). Data type is float.
+            kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+            virial (Tensor), Tensor of shape (B, D). Data type is float.
+            pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
         Symbols:
             B:  Number of walkers in simulation.
             A:  Number of atoms.
             D:  Dimension of the simulation system. Usually is 3.
-
         """
 
         raise NotImplementedError

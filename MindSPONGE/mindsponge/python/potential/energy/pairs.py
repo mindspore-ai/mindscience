@@ -36,54 +36,47 @@ from ...function.functions import get_integer, keepdim_sum
 
 
 class NonbondPairwiseEnergy(EnergyCell):
-    r"""Energy of non-bonded atom paris.
+    r"""
+    Energy of non-bonded atom paris
 
-    Math:
+    .. Math::
 
         E_pairs(r_{ij}) = A_{ij}^p * E_r(r_{ij}) + B_{ij}^p * E_r6(r_{ij}) + C_{ij}^p * E_r12(r_{ij})
                         = A_{ij}^p * k_coulomb * q_i * q_j / r_{ij} -
                           B_{ij}^p * 4 * \epsilon_{ij} * (\sigma_{ij} / r_{ij}) ^ 6  +
                           C_{ij}^p * 4 * \epsilon_{ij} * (\sigma_{ij} / r_{ij}) ^ 12
+    ...
 
     Args:
+        index (Tensor):         Tensor of shape (B, p, 2). Data type is int.
+                                Atom index of dihedral angles.
+        qiqj (Tensor):          Tensor of shape (B, p). Data type is float.
+                                Products of charges of non-bonded atom pairs.
+        epsilon_ij (Tensor):    Tensor of shape (B, p). Data type is float.
+                                \epsilon of non-bonded atom pairs.
+        sigma_ij (Tensor):      Tensor of shape (B, p). Data type is float.
+                                \sigma of non-bonded atom pairs.
+        r_scale (Tensor):       Tensor of shape (1, p). Data type is float.
+                                Scaling constant for r^-1 terms (A^p) in non-bond interaction.
+        r6_scale (Tensor):      Tensor of shape (1, p). Data type is float.
+                                Scaling constant for r^-6 terms (B^p) in non-bond interaction.
+        r12_scale (Tensor):     Tensor of shape (1, p). Data type is float.
+                                Scaling constant for r^-12 terms (C^p) in non-bond interaction.
+        use_pbc (bool):         Whether to use periodic boundary condition.
+        length_unit (str):      Length unit for position coordinates. Default: None
+        energy_unit (str):      Energy unit. Default: None
+        units (Units):          Units of length and energy. Default: None
 
-        index (Tensor):             Tensor of shape (B, p, 2). Data type is int.
-                                    Atom index of dihedral angles.
-
-        qiqj (Tensor):              Tensor of shape (B, p). Data type is float.
-                                    Products of charges of non-bonded atom pairs.
-
-        epsilon_ij (Tensor):        Tensor of shape (B, p). Data type is float.
-                                    \epsilon of non-bonded atom pairs.
-
-        sigma_ij (Tensor):          Tensor of shape (B, p). Data type is float.
-                                    \sigma of non-bonded atom pairs.
-
-        r_scale (Tensor):           Tensor of shape (1, p). Data type is float.
-                                    Scaling constant for r^-1 terms (A^p) in non-bond interaction.
-
-        r6_scale (Tensor):          Tensor of shape (1, p). Data type is float.
-                                    Scaling constant for r^-6 terms (B^p) in non-bond interaction.
-
-        r12_scale (Tensor):         Tensor of shape (1, p). Data type is float.
-                                    Scaling constant for r^-12 terms (C^p) in non-bond interaction.
-
-        use_pbc (bool):             Whether to use periodic boundary condition.
-
-        length_unit (str):          Length unit for position coordinates. Default: None
-
-        energy_unit (str):          Energy unit. Default: None
-
-        units (Units):              Units of length and energy. Default: None
+    Returns:
+        energy (Tensor), Tensor of shape (B, 1). Data type is float.
 
     Symbols:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
+        B:  Batchsize, i.e. number of walkers in simulation.
         p:  Number of non-bonded atom pairs.
-
         D:  Dimension of the simulation system. Usually is 3.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -215,7 +208,7 @@ class NonbondPairwiseEnergy(EnergyCell):
         self.concat = ops.Concat(-1)
 
     def set_pbc(self, use_pbc=None):
-        """set whether to use periodic boundary condition."""
+        """set whether to use periodic boundary condition"""
         self.use_pbc = use_pbc
         self.get_pairs_distance.set_pbc(use_pbc)
         return self
@@ -237,11 +230,12 @@ class NonbondPairwiseEnergy(EnergyCell):
                   inv_neigh_dis: Tensor = None,
                   pbc_box: Tensor = None,
                   ):
-        r"""Calculate energy term.
+        r"""
+        Calculate energy term
 
         Args:
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
-                                            Position coordinate of atoms in system
+                                            Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
                                             Index of neighbour atoms.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
@@ -256,14 +250,13 @@ class NonbondPairwiseEnergy(EnergyCell):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
+            energy (Tensor), Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
+            B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             p:  Number of non-bonded atom pairs.
             D:  Dimension of the simulation system. Usually is 3.
-
         """
 
         distance = self.get_pairs_distance(coordinate, pbc_box) * self.input_unit_scale

@@ -41,19 +41,18 @@ from ...optimizer import Updater
 
 
 class RunOneStepCell(Cell):
-    r"""Core cell to run one step simulation.
+    r"""
+    Core cell to run one step simulation.
 
     Args:
-
         network (SimulationCell):   Network for simulation system.
-
         optimizer (Optimizer):      Optimizer for simulation.
-
         steps (int):                Steps for JIT. Default: 1
-
         sens (float):               The scaling number to be filled as the input of backpropagation.
                                     Default: 1.0
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     def __init__(self,
                  network: SimulationCell,
@@ -92,18 +91,24 @@ class RunOneStepCell(Cell):
         self.steps = get_integer(steps)
 
     def set_pbc_grad(self, value: bool):
-        """set whether to calculate the gradient of PBC box"""
+        """set whether to calculate the gradient of PBC box."""
         self.network.set_pbc_grad(value)
         return self
 
     def set_steps(self, steps: int):
-        """set steps for JIT"""
+        """set steps for JIT."""
         self.steps = get_integer(steps)
         return self
 
     @ms_function
     def get_energy_and_force(self, *inputs):
-        """get energy and force of the system"""
+        """
+        get energy and force of the system.
+
+        Returns:
+            - energy (Tensor).
+            - force (Tensor).
+        """
         energy = self.network(*inputs)
         sens = F.fill(energy.dtype, energy.shape, self.sens)
         force = - self.grad(self.network, self.coordinate)(*inputs, sens)
@@ -111,7 +116,13 @@ class RunOneStepCell(Cell):
 
     # @ms_function
     def run_one_step(self, *inputs):
-        """run one step simulation"""
+        """
+        run one step simulation.
+
+        Returns:
+            - energy (Tensor), the result of simulation cell.
+            - force (Tensor), the result of simulation cell.
+        """
         energy = self.network(*inputs)
 
         sens = F.fill(energy.dtype, energy.shape, self.sens)
@@ -127,7 +138,13 @@ class RunOneStepCell(Cell):
         return energy, force
 
     def construct(self, *inputs):
-        """run simulation"""
+        """
+        run simulation
+
+        Returns:
+            - energy (Tensor), the result of simulation cell.
+            - force (Tensor), the result of simulation cell.
+        """
         if self.steps == 1:
             return self.run_one_step(*inputs)
 

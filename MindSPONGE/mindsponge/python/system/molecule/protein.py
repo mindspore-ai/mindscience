@@ -37,30 +37,25 @@ include_backbone_atoms = np.array(['OXT'], np.str_)
 
 
 class Protein(Molecule):
-    r"""Protein molecule
+    r"""
+    Protein molecule.
 
     Args:
-
-        pdb (str):           Atoms in system. Can be list of str or int. Defulat: None
-
-        sequence (list):       Atom type. Can be ndarray or list of str. Defulat: None
-
+        pdb (str):              Atoms in system. Can be list of str or int. Default: None
+        sequence (list):        Atom type. Can be ndarray or list of str. Default: None
         coordinate (Tensor):    Tensor of shape (B, A, D) or (1, A, D). Data type is float.
                                 Position coordinates of atoms. Default: None
-
         pbc_box (Tensor):       Tensor of shape (B, D) or (1, D). Data type is float.
                                 Box of periodic boundary condition. Default: None
-
         length_unit (str):      Length unit for position coordinates. Default: None
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
     Symbols:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
+        B:  Batchsize, i.e. number of walkers in simulation.
         A:  Number of atoms.
-
         D:  Dimension of the simulation system. Usually is 3.
-
     """
 
     def __init__(self,

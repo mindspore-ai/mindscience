@@ -43,23 +43,20 @@ from ..wrapper import EnergyWrapper, get_energy_wrapper
 
 
 class SimulationCell(Cell):
-    r"""Core cell for simulation
+    r"""
+    Core cell for simulation.
 
     Args:
-
         system (Molecule):              Simulation system.
-
         potential (PotentialCell):      Potential energy.
-
-        cutoff (float):                 Cutoff distance. Defulat: None
-
+        cutoff (float):                 Cutoff distance. Default: None
         neighbour_list (NeighbourList): Neighbour list. Default: None
-
         wrapper (EnergyWrapper):        Network to wrap and process potential and bias.
                                         Default: 'sum'
-
         bias (Bias):                    Bias potential: Default: None
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -157,6 +154,8 @@ class SimulationCell(Cell):
         if self.bias_network is not None:
             self.bias = Parameter(msnp.zeros((self.num_walker, self.num_bias), dtype=ms.float32),
                                   name='bias_potential', requires_grad=False)
+        
+        self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
 
         self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
 
@@ -169,22 +168,34 @@ class SimulationCell(Cell):
         return self.units.energy_unit
 
     def set_pbc_grad(self, grad_box: bool):
-        """set whether to calculate the gradient of PBC box"""
+        """set whether to calculate the gradient of PBC box."""
         self.system.set_pbc_grad(grad_box)
         return self
 
     def update_neighbour_list(self):
-        """update neighbour list"""
+        """update neighbour list."""
         coordinate, pbc_box = self.system()
         return self.neighbour_list(coordinate, pbc_box)
 
     def get_neighbour_list(self):
-        """get neighbour list"""
+        """
+        get neighbour list.
+
+        Returns:
+            - neighbour_index (Tensor).
+            - neighbour_mask (Tensor).
+        """
         neighbour_index, neighbour_mask = self.neighbour_list.get_neighbour_list()
         return neighbour_index, neighbour_mask
 
     def construct(self, *inputs):
-        """calculate the energy of system"""
+        """
+        calculate the energy of system.
+
+        Returns:
+            - energy (Tensor).
+            - force (Tensor).
+        """
         #pylint: disable=unused-argument
         coordinate, pbc_box = self.system()
 

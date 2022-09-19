@@ -32,7 +32,8 @@ from ...system import Molecule
 
 
 class Langevin(Thermostat):
-    r"""A Langevin thermostat controller.
+    r"""
+    A Langevin thermostat controller.
 
     Reference:
 
@@ -42,20 +43,26 @@ class Langevin(Thermostat):
 
     Args:
 
-        system (Molecule):      Simulation system
-
+        system (Molecule):      Simulation system.
         temperature (float):    Reference temperature T_ref (K) for temperature coupling.
                                 Default: 300
-
         control_step (int):     Step interval for controller execution. Default: 1
-
-        time_constant (float)   Time constant \tau_T (ps) for temperature coupling.
+        time_constant (float):  Time constant \tau_T (ps) for temperature coupling.
                                 Default: 4
-
         seed (int):             Random seed for standard normal. Default: 0
-
         seed2 (int):            Random seed2 for standard normal. Default: 0
 
+    Returns:
+        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+        - virial (Tensor), Tensor of shape (B, D). Data type is float.
+        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -90,7 +97,7 @@ class Langevin(Thermostat):
         self.standard_normal = ops.StandardNormal(seed, seed2)
 
     def set_time_step(self, dt):
-        """set simulation time step"""
+        """set simulation time step."""
         self.time_step = dt
         # \f = 1 - exp(-\gamma * dt)
         self.friction = 1.0 - \

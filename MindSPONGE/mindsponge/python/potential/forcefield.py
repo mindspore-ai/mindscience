@@ -45,26 +45,25 @@ BUILTIN_FF_PATH = THIS_PATH.replace('potential/forcefield.py', 'data/forcefield/
 
 
 class ForceFieldBase(PotentialCell):
-    r"""Basic cell for force filed
+    r"""
+    Basic cell for force filed.
 
     Args:
-
         Energy (EnergyCell or list):    Energy terms. Default: None
-
         cutoff (float):                 Cutoff distance. Default: None
-
-        exclude_index (Tensor):         Tensor of shape (B, A, Ex). Data type is int
+        exclude_index (Tensor):         Tensor of shape (B, A, Ex). Data type is int.
                                         The indexes of atoms that should be excluded from neighbour list.
                                         Default: None
-
         length_unit (str):              Length unit for position coordinate. Default: None
-
         energy_unit (str):              Energy unit. Default: None
-
         units (Units):                  Units of length and energy. Default: None
-
         use_pbc (bool):                 Whether to use periodic boundary condition.
 
+    Returns:
+        potential (Tensor), Tensor of shape (B, 1). Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -96,7 +95,7 @@ class ForceFieldBase(PotentialCell):
         self.concat = ops.Concat(-1)
 
     def set_energy_scale(self, scale: Tensor):
-        """set energy scale"""
+        """set energy scale."""
         scale = Tensor(scale, ms.float32)
         if scale.ndim != 1 and scale.ndim != 0:
             raise ValueError('The rank of energy scale must be 0 or 1.')
@@ -107,7 +106,12 @@ class ForceFieldBase(PotentialCell):
         return self
 
     def set_energy_cell(self, energy: EnergyCell) -> CellList:
-        """set energy"""
+        """
+        set energy.
+
+        Returns:
+            CellList.
+        """
         if energy is None:
             return None
         if isinstance(energy, EnergyCell):
@@ -127,7 +131,12 @@ class ForceFieldBase(PotentialCell):
         return energy
 
     def set_unit_scale(self) -> Tensor:
-        """set unit scale"""
+        """
+        set unit scale.
+
+        Returns:
+            Tensor, output unit scale.
+        """
         if self.energy_cell is None:
             return 1
         output_unit_scale = ()
@@ -141,7 +150,7 @@ class ForceFieldBase(PotentialCell):
         return Tensor(output_unit_scale, ms.float32)
 
     def set_units(self, length_unit: str = None, energy_unit: str = None, units: Units = None):
-        """set units"""
+        """set units."""
         if units is not None:
             self.units.set_units(units=units)
         else:
@@ -161,7 +170,7 @@ class ForceFieldBase(PotentialCell):
         return self
 
     def set_cutoff(self, cutoff: Tensor = None):
-        """set cutoff distance"""
+        """set cutoff distance."""
         self.cutoff = None
         if cutoff is not None:
             self.cutoff = Tensor(cutoff, ms.float32)
@@ -177,7 +186,8 @@ class ForceFieldBase(PotentialCell):
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
-        r"""Calculate potential energy.
+        r"""
+        Calculate potential energy.
 
         Args:
             coordinate (Tensor):           Tensor of shape (B, A, D). Data type is float.
@@ -194,14 +204,13 @@ class ForceFieldBase(PotentialCell):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            potential (Tensor): Tensor of shape (B, 1). Data type is float.
+            potential (Tensor), Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
+            B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.
             D:  Dimension of the simulation system. Usually is 3.
-
         """
 
         inv_neigh_dis = 0
@@ -228,23 +237,19 @@ class ForceFieldBase(PotentialCell):
 
 
 class ForceField(ForceFieldBase):
-    r"""Potential of classical force field
+    r"""
+    Potential of classical force field.
 
     Args:
-
         system (Molecule):          Simulation system.
-
         cutoff (float):             Cutoff distance. Default: None
-
         parameters (dict or str):   Force field parameters.
-
         length_unit (str):          Length unit for position coordinate. Default: None
-
         energy_unit (str):          Energy unit. Default: None
-
         units (Units):              Units of length and energy. Default: None
 
-
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
