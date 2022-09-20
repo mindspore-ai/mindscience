@@ -284,7 +284,7 @@ class MegaFold(nn.Cell):
                                   residx_atom37_to_atom14,
                                   atom37_atom_exists)
         predicted_lddt_logits = self.module_lddt(rp_structure_module)
-        if self.train_backward:
+        if self.is_training and self.train_backward:
             predicted_lddt_logits = self.module_lddt(rp_structure_module)
             dist_logits, bin_edges = self.module_distogram(pair_activations)
             experimentally_logits = self.module_exp_resolved(single_activations)

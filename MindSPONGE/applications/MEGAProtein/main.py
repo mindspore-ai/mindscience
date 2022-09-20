@@ -369,21 +369,27 @@ def assessment_train(args):
 
 
 if __name__ == "__main__":
-    if arguments.run_platform == 'Ascend':
+    if arguments.run_platform == 'Ascend' and not arguments.is_training:
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="Ascend",
-                            max_device_memory="31GB",
+                            mempool_block_size='31GB',
+                            memory_optimize_level="O1",
+                            max_call_depth=6000,
+                            device_id=arguments.device_id)
+    elif arguments.run_platform == 'Ascend' and arguments.is_training:
+        context.set_context(mode=context.GRAPH_MODE,
+                            device_target="Ascend",
+                            max_device_memory="29GB",
                             device_id=arguments.device_id)
     elif arguments.run_platform == 'GPU':
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="GPU",
-                            max_device_memory="31GB",
+                            mempool_block_size='31GB',
+                            max_call_depth=6000,
                             device_id=arguments.device_id,
-                            enable_graph_kernel=True,
-                            graph_kernel_flags="--enable_expand_ops_only=Softmax --enable_cluster_ops_only=Add")
+                            enable_graph_kernel=True)
     else:
         raise Exception("Only support GPU or Ascend")
-
     if not arguments.is_training:
         fold_infer(arguments)
     else:
