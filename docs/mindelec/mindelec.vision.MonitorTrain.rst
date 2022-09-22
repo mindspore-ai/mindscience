@@ -1,0 +1,17 @@
+mindelec.vision.MonitorTrain
+============================
+
+.. py:class:: mindelec.vision.MonitorTrain(per_print_times=1, summary_dir='./summary_train')
+
+    训练损失监测器。
+
+    参数：
+        - **per_print_times** (int) - 打印loss间隔。默认值：1。
+        - **summary_dir** (str) - 摘要保存路径。默认值：'./summary_t'。
+
+    .. py:method:: mindelec.vision.MonitorTrain.step_end(run_context)
+
+        在epoch结束时评估模型。
+
+        参数：
+            - **run_context** (RunContext) - 训练运行的上下文。
