@@ -1,7 +1,7 @@
 """
 This **module** set the basic configuration for ff14sb
 """
-from ...helper import source, Xprint, set_real_global_variable
+from ...helper import source, Xprint
 
 source("....")
 amber = source("...amber")
@@ -31,15 +31,13 @@ OW-OW   0.152               1.7683
 HW-HW   0                   0
 """)
 
-TIP3P = load_mol2(os.path.join(AMBER_DATA_DIR, "tip3p.mol2"))
+load_mol2(os.path.join(AMBER_DATA_DIR, "tip3p.mol2"), as_template=True)
 
 amber.load_parameters_from_frcmod("ions1lm_126_tip3p.frcmod")
 amber.load_parameters_from_frcmod("ionsjc_tip3p.frcmod")
 amber.load_parameters_from_frcmod("ions234lm_126_tip3p.frcmod")
 
-load_mol2(os.path.join(AMBER_DATA_DIR, "atomic_ions.mol2"))
-
-set_real_global_variable("WAT", TIP3P)
+load_mol2(os.path.join(AMBER_DATA_DIR, "atomic_ions.mol2"), as_template=True)
 
 Xprint("""Reference for tip3p:
 1. Water:

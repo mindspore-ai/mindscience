@@ -60,7 +60,7 @@ class TestMyPackage(unittest.TestCase):
 
         f = Xopen(f"{args.o}_LJ.txt", "r")
         atom_number, lj_number = [int(i) for i in f.readline().split()]
-        self.assertEqual(atom_number, 4357, "LJ_in_file wrong")
+        self.assertEqual(atom_number, 2923, "LJ_in_file wrong")
         self.assertEqual(lj_number, 11, "LJ_in_file wrong")
         f.close()
 
@@ -71,8 +71,8 @@ class TestMyPackage(unittest.TestCase):
 
         f = Xopen(f"{args.o}_exclude.txt", "r")
         atom_number, exclude_number = [int(i) for i in f.readline().split()]
-        self.assertEqual(atom_number, 4357, "exclude_in_file wrong")
-        self.assertEqual(exclude_number, 4760, "exclude_in_file wrong")
+        self.assertEqual(atom_number, 2923, "exclude_in_file wrong")
+        self.assertEqual(exclude_number, 3326, "exclude_in_file wrong")
         f.close()
 
     def test_charmm27(self):
@@ -176,11 +176,14 @@ class TestMyPackage(unittest.TestCase):
         source("..forcefield.amber.ff14sb")
         source("__main__")
         args = self.args
-        Save_PDB(ALA, f"{args.o}.pdb")
-        Save_Mol2(ALA, f"{args.o}_r1.mol2")
-        Save_Mol2(NALA, f"{args.o}_r2.mol2")
+        t = NALA | ACE + ALA + NME
+        for atom in t.residues[0].atoms:
+            atom.x += 10
+        Save_PDB(t, f"{args.o}.pdb")
+        Save_Mol2(NALA, f"{args.o}_r1.mol2")
+        Save_Mol2(NGLY, f"{args.o}_r2.mol2")
         error = os.system(f"Xponge mol2rfe -nl 1 -pdb {args.o}.pdb -r1 {args.o}_r1.mol2 \
--r2 {args.o}_r2.mol2 > {os.devnull}")
+-r2 {args.o}_r2.mol2 -pstep 1000 -estep 1000 > {os.devnull}")
         self.assertEqual(error, 0)
 
 
@@ -589,7 +592,7 @@ def _mol2rfe_equilibrium(args):
             command += f" -lambda_lj {lambda_}"
             command += _mol2rfe_output_path("equilibrium", i, args.temp)
             command += f" -coordinate_in_file {i}/pre_equilibrium/{args.temp}_coordinate.txt"
-            if not args.bi:
+            if not args.ei:
                 command += f" -mode NPT -step_limit {args.equilibrium_step} -dt {args.dt} -constrain_mode SHAKE"
                 command += f" -barostat {args.barostat} -thermostat {args.thermostat}"
                 run(command)
@@ -629,7 +632,7 @@ def _mol2rfe_analysis(args, merged_from):
                 inprefix = f"{i}/equilibrium/{args.temp}"
                 command += f" -crd {inprefix}.dat -box {inprefix}.box -TI dh_dlambda.txt"
                 command += f" -atom_numbers {len(merged_from.atoms)}"
-                command += f" -frame_numbers {args.equilibrium // 100}"
+                command += f" -frame_numbers {args.equilibrium_step // 100}"
                 if not args.ai:
                     run(command)
                 else:

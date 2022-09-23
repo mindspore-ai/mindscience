@@ -1,5 +1,6 @@
 """
-This **module** is used to calculate the RESP charge
+This **module** is used to calculate the RESP charge.
+The **module** is not available on Windows.
 """
 try:
     from pyscf import gto, scf
@@ -263,6 +264,7 @@ def resp_fit(assign, basis="6-31g*", opt=False, charge=None, spin=0, extra_equiv
              radius=None, a1=0.0005, a2=0.001, two_stage=True, only_esp=False):
     """
     This **function** fits the RESP partial charge for an Assign instance
+    The **function** is not available on Windows.
 
     :param assign: the Assign instance
     :param basis: the basis for Hartree-Fock calculation

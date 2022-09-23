@@ -434,14 +434,14 @@ def _pdb_chain(cls: Molecule):
         if not cls.get_residue_link(cls.residues[i-1], res, "residue"):
             length = i - start
             if length > 1:
-                chains[alphabet] = {j + 1: start + j for j in range(length)}
-                chain_ids[start: start + length] = alphabet * length
+                chains[alphabet] = {j + 1: start + j + 1 for j in range(length + 1)}
+                chain_ids[start: start + length + 1] = alphabet * (length + 1)
                 alphabet = chr(ord(alphabet) + 1)
             start = i
     length = i - start
     if length > 1:
-        chains[alphabet] = {j + 1: start + j for j in range(length)}
-        chain_ids[start: start + length] = alphabet * length
+        chains[alphabet] = {j + 1: start + j for j in range(length + 1)}
+        chain_ids[start: start + length + 1] = alphabet * (length + 1)
     return chains, chain_ids
 
 

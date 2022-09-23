@@ -56,6 +56,8 @@ def set_real_global_variable(name, value):
     :param value: the value corresponding to the variable
     :return: None
     """
+    if name[0].isdigit():
+        name = "_" + name
     sys.modules.get("__main__").__dict__[name] = value
 
 
@@ -201,8 +203,8 @@ def set_global_alternative_names(real_global=False):
     """
     dic = currentframe().f_back.f_globals
     new_dict = {}
-    for value in dic.values():
-        if not isinstance(value, (FunctionType, type)) or value.__name__.startswith("_"):
+    for key, value in dic.items():
+        if not isinstance(value, (FunctionType, type)) or value.__name__.startswith("_") or not key.islower():
             continue
 
         if real_global:
