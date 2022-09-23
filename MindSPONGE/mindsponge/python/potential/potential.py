@@ -38,13 +38,16 @@ class PotentialCell(Cell):
     Basic cell for potential energy.
 
     Args:
-        exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int.
-                                Index of the atoms should be excluded from non-bond interaction.
-                                Default: None
-        length_unit (str):      Length unit for position coordinates. Default: None
-        energy_unit (str):      Energy unit. Default: None
-        units (Units):          Units of length and energy. Default: None
-        use_pbc (bool):         Whether to use periodic boundary condition.
+        cutoff (float):              Cutoff distance. Default: None.
+        exclude_index (Tensor):      Tensor of shape (B, A, Ex). Data type is int.
+                                     Index of the atoms should be excluded from non-bond interaction.
+                                     Default: None.
+        length_unit (str):           Length unit for position coordinates. Default: None.
+        energy_unit (str):           Energy unit. Default: None.
+        units (Units):               Units of length and energy. Default: None.
+        use_pbc (bool, optional):    Whether to use periodic boundary condition.
+                                     If this is None, that means do not use periodic boundary condition.
+                                     Default: None.
 
     Returns:
         potential (Tensor), Tensor of shape (B, 1). Data type is float.
@@ -115,7 +118,14 @@ class PotentialCell(Cell):
         return Parameter(exclude_index, name='exclude_index', requires_grad=False)
 
     def set_exclude_index(self, exclude_index: Tensor):
-        """set excluded index."""
+        """
+        Set excluded index.
+
+        Args:
+            exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int.
+                                    Index of the atoms should be excluded from non-bond interaction.
+                                    Default: None.
+        """
         self._exclude_index = self._check_exclude_index(exclude_index)
         return self
 
@@ -128,14 +138,26 @@ class PotentialCell(Cell):
         return self.units.energy_unit
 
     def set_pbc(self, use_pbc: bool = None):
-        """set PBC box."""
+        """
+        Set PBC box.
+
+        Args:
+            use_pbc (bool, optional):    Whether to use periodic boundary condition.
+                                         If this is None, that means do not use periodic boundary condition.
+                                         Default: None.
+        """
         self.use_pbc = use_pbc
         self.get_vector.set_pbc(use_pbc)
         self.get_distance.set_pbc(use_pbc)
         return self
 
     def set_cutoff(self, cutoff: Tensor = None):
-        """set cutoff distance."""
+        """
+        Set cutoff distance.
+
+        Args:
+            cutoff (Tensor):         Cutoff distance. Default: None
+        """
         self.cutoff = None
         if cutoff is not None:
             self.cutoff = Tensor(cutoff, ms.float32)

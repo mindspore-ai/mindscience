@@ -82,7 +82,12 @@ class EnergyCell(Cell):
         self.identity = ops.Identity()
 
     def set_input_unit(self, units: Units):
-        """set the length unit for the input coordinates."""
+        """
+        Set the length unit for the input coordinates.
+
+        Args:
+            units (Units):      Units of length and energy. Default: None.
+        """
         if units is None:
             self.input_unit_scale = 1
         elif isinstance(units, Units):
@@ -93,7 +98,12 @@ class EnergyCell(Cell):
         return self
 
     def set_cutoff(self, cutoff: float):
-        """set cutoff distances."""
+        """
+        Set cutoff distances.
+
+        Args:
+            cutoff (float):         Cutoff distance. Default: None.
+        """
         if cutoff is None:
             self.cutoff = None
         else:
@@ -101,13 +111,21 @@ class EnergyCell(Cell):
         return self
 
     def set_pbc(self, use_pbc: bool = None):
-        """set whether to use periodic boundary condition."""
+        """
+        Set whether to use periodic boundary condition.
+
+        Args:
+            use_pbc (bool, optional):     Whether to use periodic boundary condition. Default: None.
+        """
         self.use_pbc = use_pbc
         return self
 
     def convert_energy_from(self, unit: str) -> float:
         """
-        convert energy from outside unit to inside unit.
+        Convert energy from outside unit to inside unit.
+
+        Args:
+            unit (str):      Units of length and energy. Examples: 'nm', 'kj/mol'.
 
         Returns:
             float, energy from outside unit to inside unit.
@@ -116,7 +134,10 @@ class EnergyCell(Cell):
 
     def convert_energy_to(self, unit: str) -> float:
         """
-        convert energy from inside unit to outside unit.
+        Convert energy from inside unit to outside unit.
+
+        Args:
+            unit (str):      Units of length and energy. Examples: 'nm', 'kj/mol'.
 
         Returns:
             float, energy from inside unit to outside unit.
@@ -216,7 +237,12 @@ class NonbondEnergy(EnergyCell):
         self.inverse_input_scale = 1
 
     def set_input_unit(self, units: Units):
-        """set the length unit for the input coordinates"""
+        """
+        Set the length unit for the input coordinates.
+
+        Args:
+            units (Units):          Units of length and energy. Default: None.
+        """
         super().set_input_unit(units)
         self.inverse_input_scale = msnp.reciprocal(self.input_unit_scale)
         return self

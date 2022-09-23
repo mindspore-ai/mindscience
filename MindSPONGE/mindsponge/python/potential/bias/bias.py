@@ -73,7 +73,15 @@ class Bias(PotentialCell):
         self.multiple_walkers = multiple_walkers
 
     def update(self, coordinates: Tensor, pbc_box: Tensor = None):
-        """update parameter of bias potential."""
+        """
+        Update parameter of bias potential.
+
+        Args:
+            coordinate (Tensor):              Tensor of shape (B, A, D). Data type is float.
+                                              Position coordinate of atoms in system.
+            pbc_box (Tensor, optional):       Tensor of shape (B, D) or (1, D). Data type is float.
+                                              Box of periodic boundary condition. Default: None.
+        """
         #pylint: disable = unused-argument
         return self
 
@@ -92,15 +100,15 @@ class Bias(PotentialCell):
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: None
+                                            Index of neighbour atoms. Default: None.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
                                             Mask for neighbour atoms. Default: None
             neighbour_coord (Tensor):       Tensor of shape (B, A, N). Data type is bool.
                                             Position coorindates of neighbour atoms.
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: None
-            pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: None
+                                            Distance between neighbours atoms. Default: None.
+            pbc_box (Tensor, optional):     Tensor of shape (B, D) or (1, D). Data type is float.
+                                            Box of periodic boundary condition. Default: None.
 
         Returns:
             potential (Tensor), Tensor of shape (B, 1). Data type is float.
