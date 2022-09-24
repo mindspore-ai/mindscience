@@ -120,6 +120,12 @@ The protein structure prediction tool MEGA-Fold relies on the co-evolution and t
     mmseqs createindex "colabfold_envdb_202108_db" tmp2 --remove-tmp-files 1
     ```
 
+- MSA Search Accelerator(Optional)
+
+    Download the following accelerator in need:
+
+    - [FoldMSA](https://download.mindspore.cn/mindscience/mindsponge/msa_tools/Fold_MSA.tar.gz): install this tool according to the README in the tar.gz file
+
 - Template Search
 
     Installation of [**HHsearch**](https://github.com/soedinglab/hh-suite)
@@ -237,7 +243,7 @@ Usage:python main.py --data_config ./config/data.yaml --model_config ./config/mo
 option:
 --data_config        configuration for data preprocessing
 --model_config       hyperparameters for the model
---is_training        setting to training mode
+--is_training        setting to training mode, inference does not need to add this parameter
 --input_path         training input folder，pkl format file is required, see PSP dataset for more details
 --pdb_path           output folder，pdb format file is required
 --run_platform       running platform ，Ascend or GPU，default Ascend

@@ -117,6 +117,11 @@ MEGA-Protein主要由三部分组成：
     mmseqs createindex "colabfold_envdb_202108_db" tmp2 --remove-tmp-files 1
     ```
 
+- 配置MSA检索加速(可选)
+
+    下载MSA加速缓存工具：
+    - [FoldMSA.tar.gz](https://download.mindspore.cn/mindscience/mindsponge/msa_tools/Fold_MSA.tar.gz)：按照工具内说明操作进行MSA搜索加速。
+
 - 配置模板检索
 
     首先安装模板搜索工具[**HHsearch**](https://github.com/soedinglab/hh-suite)
@@ -235,7 +240,7 @@ MEGA-Fold预测结果与真实结果对比：
 选项：
 --data_config        数据预处理参数配置
 --model_config       模型超参配置
---is_training        设置为训练模式
+--is_training        设置为训练模式 (推理无需添加此参数)
 --input_path         训练输入数据（pkl文件，包含MSA与模板信息）路径
 --pdb_path           训练标签数据（pdb文件，真实结构或知识蒸馏结构）路径
 --run_platform       运行后端，Ascend或者GPU，默认Ascend
