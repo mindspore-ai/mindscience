@@ -105,11 +105,11 @@ def impose_dihedral(molecule, atom1, atom2, atom3, atom4, dihedral):
     r23 = crd[molecule.atom_index[atom3]] - crd[molecule.atom_index[atom2]]
     r34 = crd[molecule.atom_index[atom3]] - crd[molecule.atom_index[atom4]]
     r12xr23 = np.cross(r12, r23)
-    r23xr34 = np.cross(r23, r34)
-    cos = np.dot(r12xr23, r23xr34) / np.linalg.norm(r12xr23) / np.linalg.norm(r23xr34)
+    r34xr23 = np.cross(r34, r23)
+    cos = np.dot(r12xr23, r34xr23) / np.linalg.norm(r12xr23) / np.linalg.norm(r34xr23)
     cos = max(-0.999999, min(cos, 0.999999))
     dihedral0 = np.arccos(cos)
-    dihedral0 = np.pi - np.copysign(dihedral0, np.cross(r23xr34, r12xr23).dot(r23))
+    dihedral0 = np.pi - np.copysign(dihedral0, np.cross(r34xr23, r12xr23).dot(r23))
     delta_angle = dihedral - dihedral0
     crd[atom4_friends] = np.dot(crd[atom4_friends] - crd[molecule.atom_index[atom3]],
                                 get_rotate_matrix(r23, delta_angle)) + crd[molecule.atom_index[atom3]]

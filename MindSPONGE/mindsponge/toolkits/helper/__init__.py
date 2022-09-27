@@ -8,6 +8,7 @@ This **module** is used to provide help functions and classes
 import os
 import time
 import stat
+import copy
 from types import MethodType, FunctionType
 from functools import partial, partialmethod, wraps
 from collections import OrderedDict
@@ -698,6 +699,41 @@ class ResidueType(Type):
         self._name2index[name] = len(self.atoms) - 1
         self.connectivity[new_atom] = set([])
 
+    def omit_atoms(self, atoms, charge):
+        """
+        This **function** omits some atoms from the ResidueType
+
+        :param atoms: the atom(s) to omit
+        :param charge: the total charge of the residue type after the omission. \
+None to use the charge sum of the unomitted atoms
+        :return: None
+        """
+        if not isinstance(atoms, Iterable):
+            atoms = [atoms]
+        atoms = set(getattr(self, atom) if isinstance(atom, str) else atom for atom in atoms)
+
+        charges = np.array([atom.charge for atom in self.atoms])
+        positive_charge = np.sum(charges[charges > 0])
+        negative_charge = np.sum(charges[charges < 0])
+        if charge is None:
+            charge = positive_charge + negative_charge - np.sum([atom.charge for atom in atoms])
+        factor = (charge - positive_charge - negative_charge) / (positive_charge - negative_charge)
+        for atom in atoms:
+            self.atoms.remove(atom)
+            atom.residue = None
+            self.connectivity.pop(atom)
+        self._name2atom.clear()
+        self._atom2name.clear()
+        self._atom2index.clear()
+        self._name2index.clear()
+        for index, atom in enumerate(self.atoms):
+            self._name2atom[atom.name] = atom
+            self._atom2name[atom] = atom.name
+            self._atom2index[atom] = index
+            self._name2index[atom.name] = index
+            self.connectivity[atom] -= atoms
+            self.charge += np.sign(self.charge) * factor
+
     def add_connectivity(self, atom0, atom1):
         """
         This **function** is used to add the connectivity between two atoms to the residue type.
@@ -736,6 +772,7 @@ class ResidueType(Type):
         :return: the new instance
         """
         new_restype = ResidueType(name=name)
+        new_restype.link = copy.deepcopy(self.link)
         donot_delete = True
         if forcopy is None:
             donot_delete = False
@@ -943,6 +980,7 @@ class Residue(Entity):
         self.atoms = []
         """the atoms in the instance"""
         self._name2atom = Xdict()
+        self._name2atom.not_found_message = "There is no atom named {} in %s" % self.name
         self._atom2name = Xdict()
         self._atom2index = Xdict()
         self._name2index = Xdict()
@@ -970,18 +1008,17 @@ class Residue(Entity):
             return np.sum([getattr(atom, attr) for atom in self.atoms])
         return super().__getattribute__(attr)
 
-    def unterminal(self, add_missing_atoms=False):
+    def set_type(self, new_type, add_missing_atoms=False):
         """
-        This **function** is used to turn the terminal residue to be unterminal
-        **New From 1.2.6.7**
+        This **function** is used to change the type of the residue to a new type
+        **New From 1.2.6.8**
 
+        :param new_type: the instance or the name of the new residue type
         :param add_missing_atoms: whether to add missing atoms after deleting the terminal atoms
         :return: 1 for success, 0 for failure
         """
-        if self.type.name in GlobalSetting.PDBResidueNameMap["save"]:
-            new_type = ResidueType.get_type(GlobalSetting.PDBResidueNameMap["save"][self.type.name])
-        else:
-            return 0
+        if isinstance(new_type, str):
+            new_type = ResidueType.get_type(new_type)
         new_type_atom = Xdict({atom.name: atom for atom in new_type.atoms})
         to_remove = set()
         for atom in self.atoms:
@@ -1004,6 +1041,20 @@ class Residue(Entity):
         if add_missing_atoms:
             self.add_missing_atoms()
         return 1
+
+    def unterminal(self, add_missing_atoms=False):
+        """
+        This **function** is used to turn the terminal residue to be unterminal
+        **New From 1.2.6.7**
+
+        :param add_missing_atoms: whether to add missing atoms after deleting the terminal atoms
+        :return: 1 for success, 0 for failure
+        """
+        if self.type.name in GlobalSetting.PDBResidueNameMap["save"]:
+            new_type = GlobalSetting.PDBResidueNameMap["save"][self.type.name]
+        else:
+            return 0
+        return self.set_type(new_type, add_missing_atoms)
 
     def name2atom(self, name):
         """
@@ -1818,18 +1869,18 @@ def _link_residue_process_coordinate(molecule, atom1, atom2):
                                          get_rotate_matrix(np.cross(r_ao, r_ob), delta_angle)) + \
                                          crd[molecule.atom_index[atoms[1]]]
         elif len(atoms) == 3:
-            r_oo = crd[molecule.atom_index[atoms[0]]] - crd[molecule.atom_index[atoms[1]]]
-            r_oa = crd[molecule.atom_index[atoms[1]]] - crd[molecule.atom_index[atoms[2]]]
-            r_ab = crd[molecule.atom_index[atoms[1]]] - crd[molecule.atom_index[atom_b]]
-            r12xr23 = np.cross(r_oo, r_oa)
-            r23xr34 = np.cross(r_ab, r_oa)
-            cos = np.dot(r12xr23, r23xr34) / np.linalg.norm(r12xr23) / np.linalg.norm(r23xr34)
+            r12 = crd[molecule.atom_index[atoms[0]]] - crd[molecule.atom_index[atoms[1]]]
+            r23 = crd[molecule.atom_index[atoms[2]]] - crd[molecule.atom_index[atoms[1]]]
+            r34 = crd[molecule.atom_index[atoms[2]]] - crd[molecule.atom_index[atom_b]]
+            r12xr23 = np.cross(r12, r23)
+            r34xr23 = np.cross(r34, r23)
+            cos = np.dot(r12xr23, r34xr23) / np.linalg.norm(r12xr23) / np.linalg.norm(r34xr23)
             cos = max(-0.999999, min(cos, 0.999999))
             dihedral0 = np.arccos(cos)
-            dihedral0 = np.pi - np.copysign(dihedral0, np.cross(r23xr34, r12xr23).dot(r_oa))
+            dihedral0 = np.pi - np.copysign(dihedral0, np.cross(r34xr23, r12xr23).dot(r23))
             delta_angle = parameter - dihedral0
             crd[atom_b_friends] = np.dot(crd[atom_b_friends] - crd[molecule.atom_index[atoms[2]]],
-                                         get_rotate_matrix(r_oa, delta_angle)) + crd[molecule.atom_index[atoms[2]]]
+                                         get_rotate_matrix(r23, delta_angle)) + crd[molecule.atom_index[atoms[2]]]
 
     res = res_b
     atom_a = atom2
@@ -1856,11 +1907,11 @@ def _link_residue_process_coordinate(molecule, atom1, atom2):
             r_oa = crd[molecule.atom_index[atoms[1]]] - crd[molecule.atom_index[atoms[2]]]
             r_ab = crd[molecule.atom_index[atoms[2]]] - crd[molecule.atom_index[atom_b]]
             r12xr23 = np.cross(r_oo, r_oa)
-            r23xr34 = np.cross(r_ab, r_oa)
-            cos = np.dot(r12xr23, r23xr34) / np.linalg.norm(r12xr23) / np.linalg.norm(r23xr34)
+            r34xr23 = np.cross(r_ab, r_oa)
+            cos = np.dot(r12xr23, r34xr23) / np.linalg.norm(r12xr23) / np.linalg.norm(r34xr23)
             cos = max(-0.999999, min(cos, 0.999999))
             dihedral0 = np.arccos(cos)
-            dihedral0 = np.pi - np.copysign(dihedral0, np.cross(r23xr34, r12xr23).dot(r_oa))
+            dihedral0 = np.pi - np.copysign(dihedral0, np.cross(r34xr23, r12xr23).dot(r_oa))
             delta_angle = parameter - dihedral0
             crd[atom_b_friends] = np.dot(crd[atom_b_friends] - crd[molecule.atom_index[atoms[2]]],
                                          get_rotate_matrix(r_oa, delta_angle)) + crd[molecule.atom_index[atoms[2]]]
@@ -1872,11 +1923,11 @@ def _link_residue_process_coordinate(molecule, atom1, atom2):
         r_oa = crd[molecule.atom_index[atom1]] - crd[molecule.atom_index[atom2]]
         r_ab = crd[molecule.atom_index[atom2]] - crd[molecule.atom_index[atom_b]]
         r12xr23 = np.cross(r_oo, r_oa)
-        r23xr34 = np.cross(r_ab, r_oa)
-        cos = np.dot(r12xr23, r23xr34) / np.linalg.norm(r12xr23) / np.linalg.norm(r23xr34)
+        r34xr23 = np.cross(r_ab, r_oa)
+        cos = np.dot(r12xr23, r34xr23) / np.linalg.norm(r12xr23) / np.linalg.norm(r34xr23)
         cos = max(-0.999999, min(cos, 0.999999))
         dihedral0 = np.arccos(cos)
-        dihedral0 = np.pi - np.copysign(dihedral0, np.cross(r23xr34, r12xr23).dot(r_oa))
+        dihedral0 = np.pi - np.copysign(dihedral0, np.cross(r34xr23, r12xr23).dot(r_oa))
         delta_angle = np.pi - dihedral0
         crd[atom2_friends] = np.dot(crd[atom2_friends] - crd[molecule.atom_index[atom2]],
                                     get_rotate_matrix(r_oa, delta_angle)) + crd[molecule.atom_index[atom2]]

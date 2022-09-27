@@ -31,9 +31,9 @@ OW-OW   0.315057422683    0.6363864
 HW-HW   0.0400013524445 0.192464
 """)
 
-TIPS3P = load_mol2(os.path.join(CHARMM27_DATA_DIR, "tip3p.mol2"))
+TIPS3P = load_mol2(os.path.join(CHARMM27_DATA_DIR, "tip3p.mol2"), as_template=True)
 
-load_mol2(os.path.join(CHARMM27_DATA_DIR, "atomic_ions.mol2"))
+load_mol2(os.path.join(CHARMM27_DATA_DIR, "atomic_ions.mol2"), as_template=True)
 
 set_real_global_variable("WAT", TIPS3P)
 

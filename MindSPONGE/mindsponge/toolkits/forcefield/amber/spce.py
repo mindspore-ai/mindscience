@@ -1,7 +1,7 @@
 """
 This **module** set the basic configuration for ff14sb
 """
-from ...helper import source, Xprint, set_real_global_variable
+from ...helper import source, Xprint
 
 source("....")
 amber = source("...amber")
@@ -31,15 +31,13 @@ OW-OW   0.1553              1.7767
 HW-HW   0                   0
 """)
 
-SPCE = load_mol2(os.path.join(AMBER_DATA_DIR, "spce.mol2"))
+load_mol2(os.path.join(AMBER_DATA_DIR, "spce.mol2"), as_template=True)
 
 amber.load_parameters_from_frcmod("ions1lm_126_spce.frcmod")
 amber.load_parameters_from_frcmod("ionsjc_spce.frcmod")
 amber.load_parameters_from_frcmod("ions234lm_126_spce.frcmod")
 
-load_mol2(os.path.join(AMBER_DATA_DIR, "atomic_ions.mol2"))
-
-set_real_global_variable("WAT", SPCE)
+load_mol2(os.path.join(AMBER_DATA_DIR, "atomic_ions.mol2"), as_template=True)
 
 Xprint("""Reference for spce:
 1. Water:

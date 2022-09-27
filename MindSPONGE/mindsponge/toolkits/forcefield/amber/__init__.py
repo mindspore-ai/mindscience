@@ -31,13 +31,14 @@ def load_parameters_from_parmdat(filename, prefix=True):
     """
     if prefix:
         filename = os.path.join(AMBER_DATA_DIR, filename)
-    atoms, bonds, angles, propers, impropers, ljs = load_parmdat(filename)
+    atoms, bonds, angles, propers, impropers, ljs, nb14s = load_parmdat(filename)
     AtomType.New_From_String(atoms)
     bond_base.BondType.New_From_String(bonds)
     angle_base.AngleType.New_From_String(angles)
     dihedral_base.ProperType.New_From_String(propers)
     dihedral_base.ImproperType.New_From_String(impropers)
     lj_base.LJType.New_From_String(ljs)
+    nb14_base.NB14Type.New_From_String(nb14s)
 
 
 def load_parameters_from_frcmod(filename, include_cmap=False, prefix=True):

@@ -3,6 +3,7 @@ This **module** is used to load and read
 """
 import os
 import warnings
+import re
 
 import numpy as np
 
@@ -82,14 +83,103 @@ def _mol2_bond(line, current_molecule, atom_residue_map):
                     atom_residue_map[words[2]][1].type.tail = atom_residue_map[words[2]][0]
 
 
-def load_mol2(filename, ignore_atom_type=False):
+def _mol2_template_atom(line, current_residue_index, temp, current_residue, atom_residue_map):
+    """
+
+    :param line:
+    :param current_residue_index:
+    :param current_residue:
+    :param ignore_atom_type:
+    :param temp:
+    :param current_molecule:
+    :param atom_residue_map:
+    :return:
+    """
+    words = line.split()
+    if current_residue_index is None or int(words[6]) != current_residue_index:
+        current_residue_index = int(words[6])
+        if words[7] not in ResidueType.get_all_types():
+            set_real_global_variable(words[7], ResidueType(name=words[7]))
+            temp = True
+        else:
+            temp = False
+        current_residue = ResidueType.get_type(words[7])
+
+    temp_atom_type = AtomType.get_type(words[5])
+
+    if temp:
+        current_residue.Add_Atom(words[1], temp_atom_type, *words[2:5])
+        current_residue.atoms[-1].Update(**{"charge[e]": float(words[8])})
+    atom_residue_map[words[0]] = [words[1], current_residue, current_residue_index, temp]
+    return current_residue_index, current_residue, temp
+
+
+def _mol2_template_bond(line, atom_residue_map):
+    """
+
+    :param line:
+    :param current_molecule:
+    :param atom_residue_map:
+    :return:
+    """
+    words = line.split()
+    atom1_index, atom2_index = words[1], words[2]
+    atom_name, residue_type, residue_index, is_new = 0, 1, 2, 3
+    atom1_info, atom2_info = atom_residue_map[atom1_index], atom_residue_map[atom2_index]
+    if atom1_info[residue_type] == atom2_info[residue_type] and atom1_info[is_new]:
+        atom1_info[residue_type].Add_Connectivity(atom1_info[atom_name], atom2_info[atom_name])
+    else:
+        index_diff = atom1_info[residue_index] - atom2_info[residue_index]
+        if abs(index_diff) == 1:
+            if atom1_info[is_new]:
+                if index_diff < 0:
+                    atom1_info[residue_type].tail = atom1_info[atom_name]
+                else:
+                    atom1_info[residue_type].head = atom1_info[atom_name]
+            if atom2_info[is_new]:
+                if index_diff < 0:
+                    atom2_info[residue_type].head = atom2_info[atom_name]
+                else:
+                    atom2_info[residue_type].tail = atom2_info[atom_name]
+
+
+def _mol2_template(filename):
+    """
+    This is used to make loading more efficient when importing the force fields
+
+    :param filename:
+    :return:
+    """
+    current_residue_index = None
+    current_residue = None
+    atom_residue_map = Xdict()
+    temp = None
+    with open(filename) as f:
+        flag = None
+        for line in f:
+            if not line.strip():
+                continue
+            if line.startswith("@<TRIPOS>"):
+                flag = line[9:].strip()
+            elif flag == "ATOM":
+                current_residue_index, current_residue, temp = _mol2_template_atom(line, current_residue_index, temp,
+                                                                                   current_residue, atom_residue_map)
+            elif flag == "BOND":
+                _mol2_template_bond(line, atom_residue_map)
+
+
+def load_mol2(filename, ignore_atom_type=False, as_template=False):
     """
     This **function** is used to load a mol2 file
 
     :param filename: the name of the file to load
     :param ignore_atom_type: ignore the atom types in the mol2 file
-    :return: a Molecule instance
+    :param as_template: only read the mol2 file as some residue types and no molecule will created
+        **New From 1.2.6.8**
+    :return: a Molecule instance if as_template is False
     """
+    if as_template:
+        return _mol2_template(filename)
     with open(filename) as f:
         # 存储读的时候的临时信息，key是编号
         # value是list：原子名(0)、residue(1)、residue编号(2)、是否是新的residue type(3)、该原子(4)、residue type的最新原子(5)
@@ -375,7 +465,7 @@ def load_pdb(filename, judge_histone=True, position_need="A", ignore_hydrogen=Fa
     :return: a Molecule instance
     """
     molecule = Molecule(os.path.splitext(os.path.basename(filename))[0])
-    chain = Xdict()
+    chain = Xdict(not_found_method=lambda key: Xdict())
     sequences = Xdict()
     ssbonds = []
     links = []
@@ -406,7 +496,6 @@ def load_pdb(filename, judge_histone=True, position_need="A", ignore_hydrogen=Fa
                         resname = GlobalSetting.PDBResidueNameMap["head"][resname]
                     residue_type_map.append(resname)
                     current_residue_index = resindex
-                    chain[chain_id] = Xdict()
                     chain[chain_id][resindex] = current_residue_count
                 elif (current_residue_index != resindex or current_insertion_code != insertion_code) or \
                         current_resname != resname:
@@ -492,6 +581,16 @@ def load_coordinate(filename, mol=None):
 ##########################################################################
 # amber Format
 ##########################################################################
+def _frcmod_nb14(line, atoms):
+    nb14ee = re.findall(r"SCEE=[\d+\.]+", line)
+    nb14lj = re.findall(r"SCNB=[\d+\.]+", line)
+    if not nb14ee and not nb14lj:
+        return ""
+    nb14ee = 1.0 / float(nb14ee[0].split("=")[1]) if nb14ee else 1.0 / 1.2
+    nb14lj = 1.0 / float(nb14lj[0].split("=")[1]) if nb14lj else 1.0 / 2.0
+    return f"{atoms[0]}-{atoms[3]} {nb14ee} {nb14lj}\n"
+
+
 def _frcmod_cmap(line, cmap, temp_cmp, cmap_flag):
     """
 
@@ -524,14 +623,16 @@ def _frcmod_cmap(line, cmap, temp_cmp, cmap_flag):
     return temp_cmp, cmap_flag
 
 
-def _frcmod_atoms_words(line, n):
+def _frcmod_atoms_words(line, n, last_atoms=None):
     """
 
     :param line:
     :param n:
     :return:
     """
-    return [word.strip() for word in line[:n].split("-")], line[n:].split()
+    if line[0] != " ":
+        return [word.strip() for word in line[:n].split("-")], line[n:].split()
+    return [last_atoms, line[n:].split()]
 
 
 def load_frcmod(filename, nbtype="RE"):
@@ -623,7 +724,7 @@ def load_parmdat(filename):
     This **function** is used to load a parmdat file
 
     :param filename: the name of the file to load
-    :return: a list of strings, including atoms, bonds, angles, propers, impropers, ljs information respectively
+    :return: a list of strings, including atoms, bonds, angles, propers, impropers, ljs, nb14s information respectively
     """
     with open(filename) as f:
         f.readline()
@@ -649,16 +750,21 @@ def load_parmdat(filename):
         # 读恰当二面角
         reset = 1
         propers = "name  k[kcal/mol]    phi0[degree]    periodicity    reset\n"
+        nb14s = "name    kLJ     kee\n"
+        atoms = None
         for line in f:
             if not line.strip():
                 break
-            atoms, words = _frcmod_atoms_words(line, 11)
+            last_atoms = atoms
+            atoms, words = _frcmod_atoms_words(line, 11, last_atoms)
+            nb14s += _frcmod_nb14(line, atoms)
             propers += "-".join(atoms) + "\t" + str(float(words[1]) / int(words[0])) + "\t" + words[2] + "\t" + str(
                 abs(int(float(words[3])))) + "\t" + str(reset) + "\n"
             if int(float(words[3])) < 0:
                 reset = 0
             else:
                 reset = 1
+
         # 读非恰当二面角
         impropers = "name  k[kcal/mol]    phi0[degree]    periodicity\n"
         for line in f:
@@ -699,7 +805,7 @@ def load_parmdat(filename):
     atoms = "name  mass  LJtype\n"
     for atom, mass in atom_types.items():
         atoms += atom + "\t" + mass + "\t" + lj_types[atom] + "\n"
-    toret = [atoms, bonds, angles, propers, impropers, ljs]
+    toret = [atoms, bonds, angles, propers, impropers, ljs, nb14s]
     return toret
 
 

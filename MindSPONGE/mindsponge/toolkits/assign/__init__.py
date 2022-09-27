@@ -479,7 +479,8 @@ instance yourself, remember to determine the ring and bond type!
 
     def calculate_charge(self, method, **parameters):
         """
-        This **function** calculates the partial charge for every atom
+        This **function** calculates the partial charge for every atom.
+        the method "RESP" to calculate the partial charge is not available on Windows.
 
         :param method: the method to calculate the charge
         :param parameters: the parameters to calculate the charge

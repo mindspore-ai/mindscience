@@ -71,7 +71,8 @@ The atoms in a ``Residue`` or a ``ResidueType`` can be obtained by their names. 
     print(ALA.CA)
 
 """
-__version__ = "1.2.6.7.1"
+
+__version__ = "1.2.6.9"
 
 import os
 import time
@@ -85,7 +86,8 @@ from . import assign
 from .assign import Assign, get_assignment_from_pdb, get_assignment_from_mol2, get_assignment_from_pubchem, \
     get_assignment_from_residuetype
 from .helper import GlobalSetting, Type, AbstractMolecule, ResidueType, Entity, Atom, Residue, ResidueLink, Molecule, \
-    AtomType, set_global_alternative_names, generate_new_pairwise_force_type, generate_new_bonded_force_type, source
+    AtomType, set_global_alternative_names, generate_new_pairwise_force_type, generate_new_bonded_force_type, source, \
+    Xprint
 from .load import load_ffitp, load_mol2, load_rst7, load_frcmod, load_pdb, load_parmdat, load_coordinate
 from .build import save_mol2, save_pdb, save_sponge_input, save_gro, build_bonded_force, get_mindsponge_system_energy
 from .process import impose_bond, impose_angle, impose_dihedral, add_solvent_box, h_mass_repartition, solvent_replace, \
@@ -164,6 +166,13 @@ def _initialize():
             sys_kwarg["pbc_box"].append(box_length)
 
     Molecule.Set_MindSponge_Todo("coordinate")(_do_initial)
+
+    Xprint("""Reference for Xponge:
+  Xia, Y., Gao, Y. Q.
+    Xponge: A Python package to perform pre- and post-processing of molecular simulations
+    Journal of Open Source Software, 2022 7(77) 4467
+    DOI: 10.21105/joss.04467
+""")
 
 
 _initialize()

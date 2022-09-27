@@ -6,7 +6,7 @@ from ...helper import source, Xprint
 source("....")
 amber = source("...amber")
 amber.load_parameters_from_parmdat("lipid17.dat")
-load_mol2(os.path.join(AMBER_DATA_DIR, "lipid17.mol2"))
+load_mol2(os.path.join(AMBER_DATA_DIR, "lipid17.mol2"), as_template=True)
 
 for res in "LAL PA MY OL ST AR DHA".split():
     ResidueType.get_type(res).head = "C12"

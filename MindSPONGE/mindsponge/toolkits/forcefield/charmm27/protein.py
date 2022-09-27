@@ -6,7 +6,7 @@ from ...helper import remove_real_global_variable, source, Xprint
 source("....")
 source("...charmm27")
 
-load_mol2(os.path.join(CHARMM27_DATA_DIR, "protein.mol2"))
+load_mol2(os.path.join(CHARMM27_DATA_DIR, "protein.mol2"), as_template=True)
 
 ResidueType.clear_type("HYP")
 ResidueType.clear_type("CHYP")
@@ -18,28 +18,34 @@ remove_real_global_variable("NHE")
 
 residues = "ALA ARG ASN ASP CYS CYX GLN GLU GLY HID HIE HIP ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL".split()
 
-for res in residues:
-    ResidueType.get_type(res).head_next = "CA"
-    ResidueType.get_type(res).head_length = 1.3
-    ResidueType.get_type(res).tail_next = "CA"
-    ResidueType.get_type(res).tail_length = 1.3
-    ResidueType.get_type(res).head_link_conditions.append({"atoms": ["CA", "N"], "parameter": 120 / 180 * np.pi})
-    ResidueType.get_type(res).head_link_conditions.append({"atoms": ["H", "CA", "N"], "parameter": -np.pi})
-    ResidueType.get_type(res).tail_link_conditions.append({"atoms": ["CA", "C"], "parameter": 120 / 180 * np.pi})
-    ResidueType.get_type(res).tail_link_conditions.append({"atoms": ["O", "CA", "C"], "parameter": -np.pi})
+for resname in residues:
+    res = ResidueType.get_type(resname)
+    nres = ResidueType.get_type("N" + resname)
+    cres = ResidueType.get_type("C" + resname)
+    res.head, cres.head = "N", "N"
+    res.head_length, cres.head_length = 1.3, 1.3
+    res.head_next, cres.head_next = "CA", "CA"
+    res.tail, nres.tail = "C", "C"
+    res.tail_next, nres.tail_next = "CA", "CA"
+    res.tail_length, nres.tail_length = 1.3, 1.3
 
-    ResidueType.get_type("N" + res).tail_next = "CA"
-    ResidueType.get_type("N" + res).tail_length = 1.3
-    ResidueType.get_type("N" + res).tail_link_conditions.append({"atoms": ["CA", "C"], "parameter": 120 / 180 * np.pi})
-    ResidueType.get_type("N" + res).tail_link_conditions.append({"atoms": ["O", "CA", "C"], "parameter": -np.pi})
+    res.head_link_conditions.append({"atoms": ["CA", "N"], "parameter": 120 / 180 * np.pi})
+    cres.head_link_conditions.append({"atoms": ["CA", "N"], "parameter": 120 / 180 * np.pi})
 
-    ResidueType.get_type("C" + res).head_next = "CA"
-    ResidueType.get_type("C" + res).head_length = 1.3
-    ResidueType.get_type("C" + res).head_link_conditions.append({"atoms": ["CA", "N"], "parameter": 120 / 180 * np.pi})
-    ResidueType.get_type("C" + res).head_link_conditions.append({"atoms": ["H", "CA", "N"], "parameter": -np.pi})
+    if resname != "PRO":
+        res.head_link_conditions.append({"atoms": ["H", "CA", "N"], "parameter": -np.pi})
+        cres.head_link_conditions.append({"atoms": ["H", "CA", "N"], "parameter": -np.pi})
+    else:
+        res.head_link_conditions.append({"atoms": ["HA", "CA", "N"], "parameter": 0})
+        cres.head_link_conditions.append({"atoms": ["HA", "CA", "N"], "parameter": 0})
 
-    GlobalSetting.Add_PDB_Residue_Name_Mapping("head", res, "N" + res)
-    GlobalSetting.Add_PDB_Residue_Name_Mapping("tail", res, "C" + res)
+    res.tail_link_conditions.append({"atoms": ["CA", "C"], "parameter": 120 / 180 * np.pi})
+    res.tail_link_conditions.append({"atoms": ["O", "CA", "C"], "parameter": -np.pi})
+    nres.tail_link_conditions.append({"atoms": ["CA", "C"], "parameter": 120 / 180 * np.pi})
+    nres.tail_link_conditions.append({"atoms": ["O", "CA", "C"], "parameter": -np.pi})
+
+    GlobalSetting.Add_PDB_Residue_Name_Mapping("head", resname, "N" + resname)
+    GlobalSetting.Add_PDB_Residue_Name_Mapping("tail", resname, "C" + resname)
 
 ResidueType.get_type("ACE").tail_next = "CH3"
 ResidueType.get_type("ACE").tail_length = 1.3

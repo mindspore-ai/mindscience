@@ -7,7 +7,7 @@ source("....")
 amber = source("...amber")
 
 amber.load_parameters_from_parmdat("lipid14.dat")
-load_mol2(os.path.join(AMBER_DATA_DIR, "lipid14.mol2"))
+load_mol2(os.path.join(AMBER_DATA_DIR, "lipid14.mol2"), as_template=True)
 
 for res in "LA PA MY OL".split():
     ResidueType.get_type(res).head = "C12"
