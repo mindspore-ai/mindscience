@@ -141,7 +141,12 @@ class LennardJonesEnergy(NonbondEnergy):
         self.disp_corr = self._calc_disp_corr()
 
     def set_cutoff(self, cutoff: float):
-        """set cutoff distance"""
+        """
+        Set cutoff distance.
+
+        Args:
+            cutoff (float):     Cutoff distance. Default: None.
+        """
         super().set_cutoff(cutoff)
         self.disp_corr = self._calc_disp_corr()
         return self

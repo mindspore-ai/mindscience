@@ -69,18 +69,19 @@ class CoulombEnergy(NonbondEnergy):
         E_ele(r_ij) = \sum_ij k_coulomb * q_i * q_j / r_ij
 
     Args:
-        atom_charge (Tensor):   Tensor of shape (B, A). Data type is float.
-                                Atom charge.
-        parameters (dict):      Force field parameters. Default: None
-        cutoff (float):         Cutoff distance. Default: None
-        use_pbc (bool):         Whether to use periodic boundary condition. Default: None
-        alpha (float):          Alpha for DSF and PME coulomb interaction.
-                                Default: 0.25 for DSF and 0.276501 for PME
-        nfft (Tensor):          Parameter of FFT, required by PME. Default: None
-        exclude_index (Tensor): Tensor of the exclude index, required by PME. Default: None
-        length_unit (str):      Length unit for position coordinates. Default: None
-        energy_unit (str):      Energy unit. Default: None
-        units (Units):          Units of length and energy. Default: None
+        atom_charge (Tensor):       Tensor of shape (B, A). Data type is float.
+                                    Atom charge.
+        parameters (dict):          Force field parameters. Default: None.
+        cutoff (float):             Cutoff distance. Default: None.
+        use_pbc (bool, optional):   Whether to use periodic boundary condition. Default: None.
+        use_pme (bool, optional):   Whether to use particle mesh ewald condition. Default: None.
+        alpha (float):              Alpha for DSF and PME coulomb interaction.
+                                    Default: 0.25 for DSF and 0.276501 for PME.
+        nfft (Tensor):              Parameter of FFT, required by PME. Default: None.
+        exclude_index (Tensor):     Tensor of the exclude index, required by PME. Default: None.
+        length_unit (str):          Length unit for position coordinates. Default: None.
+        energy_unit (str):          Energy unit. Default: None.
+        units (Units):              Units of length and energy. Default: None.
 
     Returns:
         energy (Tensor), Tensor of shape (B, 1). Data type is float.
@@ -133,7 +134,12 @@ class CoulombEnergy(NonbondEnergy):
             self.dsf_coulomb = DampedShiftedForceCoulomb(self.cutoff, alpha)
 
     def set_cutoff(self, cutoff: Tensor):
-        """set cutoff distance"""
+        """
+        Set cutoff distance.
+
+        Args:
+            cutoff (Tensor):         Cutoff distance. Default: None.
+        """
         if cutoff is None:
             if self.use_pbc:
                 raise ValueError('cutoff cannot be none when using periodic boundary condition')
@@ -558,12 +564,12 @@ class ParticleMeshEwaldCoulomb(Cell):
     def calculate_reciprocal_energy(self, coordinate: Tensor, qi: Tensor, pbc_box: Tensor):
         """Calculate the reciprocal energy term."""
         # the batch dimension in the following part is ignored due to the limitation of the operator FFT3D
-        # (B,A,3) <- (B,A,3) / (B,1,3) * (B,1,3)
+        # (B,A,3) <- (B,A,3) / (B,1,3) * (B,1,3):
         pbc_box = pbc_box.reshape((-1, 1, 3))
         frac = coordinate / F.stop_gradient(pbc_box) % 1.0 * self.nfft
         grid = self.cast(frac, ms.int32)
         frac = frac - F.floor(frac)
-        # (B,A,64,3) <- (B,A,1,3) + (1,1,64,3)
+        # (B,A,64,3) <- (B,A,1,3) + (1,1,64,3):
         neibor_grids = F.expand_dims(grid, 2) - self.base_grid
         neibor_grids %= F.expand_dims(self.nfft, 2)
         # (B,A,64,3) <- (B,A,1,3) * (1,1,64,3)

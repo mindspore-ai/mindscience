@@ -37,9 +37,9 @@ from ...function.functions import get_integer, keepdim_sum
 
 class NonbondPairwiseEnergy(EnergyCell):
     r"""
-    Energy of non-bonded atom paris
+    Energy of non-bonded atom paris.
 
-    .. Math::
+    .. math::
 
         E_pairs(r_{ij}) = A_{ij}^p * E_r(r_{ij}) + B_{ij}^p * E_r6(r_{ij}) + C_{ij}^p * E_r12(r_{ij})
                         = A_{ij}^p * k_coulomb * q_i * q_j / r_{ij} -
@@ -48,24 +48,28 @@ class NonbondPairwiseEnergy(EnergyCell):
     ...
 
     Args:
-        index (Tensor):         Tensor of shape (B, p, 2). Data type is int.
-                                Atom index of dihedral angles.
-        qiqj (Tensor):          Tensor of shape (B, p). Data type is float.
-                                Products of charges of non-bonded atom pairs.
-        epsilon_ij (Tensor):    Tensor of shape (B, p). Data type is float.
-                                \epsilon of non-bonded atom pairs.
-        sigma_ij (Tensor):      Tensor of shape (B, p). Data type is float.
-                                \sigma of non-bonded atom pairs.
-        r_scale (Tensor):       Tensor of shape (1, p). Data type is float.
-                                Scaling constant for r^-1 terms (A^p) in non-bond interaction.
-        r6_scale (Tensor):      Tensor of shape (1, p). Data type is float.
-                                Scaling constant for r^-6 terms (B^p) in non-bond interaction.
-        r12_scale (Tensor):     Tensor of shape (1, p). Data type is float.
-                                Scaling constant for r^-12 terms (C^p) in non-bond interaction.
-        use_pbc (bool):         Whether to use periodic boundary condition.
-        length_unit (str):      Length unit for position coordinates. Default: None
-        energy_unit (str):      Energy unit. Default: None
-        units (Units):          Units of length and energy. Default: None
+        index (Tensor):              Tensor of shape (B, p, 2). Data type is int.
+                                     Atom index of dihedral angles.
+        qiqj (Tensor):               Tensor of shape (B, p). Data type is float.
+                                     Products of charges of non-bonded atom pairs.
+        epsilon_ij (Tensor):         Tensor of shape (B, p). Data type is float.
+                                     \epsilon of non-bonded atom pairs.
+        sigma_ij (Tensor):           Tensor of shape (B, p). Data type is float.
+                                     \sigma of non-bonded atom pairs.
+        r_scale (Tensor):            Tensor of shape (1, p). Data type is float.
+                                     Scaling constant for r^-1 terms (A^p) in non-bond interaction.
+        r6_scale (Tensor):           Tensor of shape (1, p). Data type is float.
+                                     Scaling constant for r^-6 terms (B^p) in non-bond interaction.
+        r12_scale (Tensor):          Tensor of shape (1, p). Data type is float.
+                                     Scaling constant for r^-12 terms (C^p) in non-bond interaction.
+        parameters (dict):           Force field parameters. Default: None.
+        cutoff (float):              Cutoff distance. Default: None.
+        use_pbc (bool, optional):    Whether to use periodic boundary condition.
+                                     If this is None, that means do not use periodic boundary condition.
+                                     Default: None.
+        length_unit (str):           Length unit for position coordinates. Default: None.
+        energy_unit (str):           Energy unit. Default: None.
+        units (Units):               Units of length and energy. Default: None.
 
     Returns:
         energy (Tensor), Tensor of shape (B, 1). Data type is float.
@@ -208,13 +212,25 @@ class NonbondPairwiseEnergy(EnergyCell):
         self.concat = ops.Concat(-1)
 
     def set_pbc(self, use_pbc=None):
-        """set whether to use periodic boundary condition"""
+        """
+        Set whether to use periodic boundary condition.
+
+        Args:
+            use_pbc (bool, optional):    Whether to use periodic boundary condition.
+                                         If this is None, that means do not use periodic boundary condition.
+                                         Default: None.
+        """
         self.use_pbc = use_pbc
         self.get_pairs_distance.set_pbc(use_pbc)
         return self
 
     def set_cutoff(self, cutoff: float):
-        """set cutoff distance"""
+        """
+        Set cutoff distance.
+
+        Args:
+            cutoff (float):         Cutoff distance. Default: None.
+        """
         if cutoff is None:
             self.cutoff = None
         else:

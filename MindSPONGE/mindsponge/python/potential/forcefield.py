@@ -49,15 +49,18 @@ class ForceFieldBase(PotentialCell):
     Basic cell for force filed.
 
     Args:
-        Energy (EnergyCell or list):    Energy terms. Default: None
-        cutoff (float):                 Cutoff distance. Default: None
-        exclude_index (Tensor):         Tensor of shape (B, A, Ex). Data type is int.
-                                        The indexes of atoms that should be excluded from neighbour list.
-                                        Default: None
-        length_unit (str):              Length unit for position coordinate. Default: None
-        energy_unit (str):              Energy unit. Default: None
-        units (Units):                  Units of length and energy. Default: None
-        use_pbc (bool):                 Whether to use periodic boundary condition.
+        energy (Union[EnergyCell, list]):    Energy terms. The type of energy parameter can be list or EnergyCell.
+                                             Default: None.
+        cutoff (float):                      Cutoff distance. Default: None.
+        exclude_index (Tensor):              Tensor of shape (B, A, Ex). Data type is int.
+                                             The indexes of atoms that should be excluded from neighbour list.
+                                             Default: None.
+        length_unit (str):                   Length unit for position coordinate. Default: None.
+        energy_unit (str):                   Energy unit. Default: None.
+        units (Units):                       Units of length and energy. Default: None.
+        use_pbc (bool, optional):            Whether to use periodic boundary condition.
+                                             If this is "None", that means do not use periodic boundary condition.
+                                             Default: None.
 
     Returns:
         potential (Tensor), Tensor of shape (B, 1). Data type is float.
@@ -95,7 +98,12 @@ class ForceFieldBase(PotentialCell):
         self.concat = ops.Concat(-1)
 
     def set_energy_scale(self, scale: Tensor):
-        """set energy scale."""
+        """
+        Set energy scale.
+
+        Args:
+            scale (Tensor):                 Tensor of shape(B, 1). The scale parameter is used to set energy scale.
+        """
         scale = Tensor(scale, ms.float32)
         if scale.ndim != 1 and scale.ndim != 0:
             raise ValueError('The rank of energy scale must be 0 or 1.')
@@ -107,7 +115,11 @@ class ForceFieldBase(PotentialCell):
 
     def set_energy_cell(self, energy: EnergyCell) -> CellList:
         """
-        set energy.
+        Set energy.
+
+        Args:
+            energy (Union[EnergyCell, list]):    Energy terms. The type of energy parameter can be list or EnergyCell.
+                                                 Default: None.
 
         Returns:
             CellList.
@@ -150,7 +162,14 @@ class ForceFieldBase(PotentialCell):
         return Tensor(output_unit_scale, ms.float32)
 
     def set_units(self, length_unit: str = None, energy_unit: str = None, units: Units = None):
-        """set units."""
+        """
+        Set units.
+
+        Args:
+            length_unit (str):              Length unit for position coordinate. Default: None.
+            energy_unit (str):              Energy unit. Default: None.
+            units (Units):                  Units of length and energy. Default: None.
+        """
         if units is not None:
             self.units.set_units(units=units)
         else:
@@ -164,13 +183,25 @@ class ForceFieldBase(PotentialCell):
         return self
 
     def set_pbc(self, use_pbc: bool = None):
-        """set whether to use periodic boundary condition."""
+        """
+        Set whether to use periodic boundary condition.
+
+        Args:
+            use_pbc (bool, optional):       Whether to use periodic boundary condition.
+                                            If this is "None", that means do not use periodic boundary condition.
+                                            Default: None.
+        """
         for i in range(self.num_energy):
             self.energy_cell[i].set_pbc(use_pbc)
         return self
 
     def set_cutoff(self, cutoff: Tensor = None):
-        """set cutoff distance."""
+        """
+        Set cutoff distance.
+
+        Args:
+            cutoff (Tensor):                 Cutoff distance. Default: None.
+        """
         self.cutoff = None
         if cutoff is not None:
             self.cutoff = Tensor(cutoff, ms.float32)
@@ -241,12 +272,12 @@ class ForceField(ForceFieldBase):
     Potential of classical force field.
 
     Args:
-        system (Molecule):          Simulation system.
-        cutoff (float):             Cutoff distance. Default: None
-        parameters (dict or str):   Force field parameters.
-        length_unit (str):          Length unit for position coordinate. Default: None
-        energy_unit (str):          Energy unit. Default: None
-        units (Units):              Units of length and energy. Default: None
+        system (Molecule):               Simulation system.
+        parameters (Union[dict, str]):   Force field parameters.
+        cutoff (float):                  Cutoff distance. Default: None.
+        length_unit (str):               Length unit for position coordinate. Default: None.
+        energy_unit (str):               Energy unit. Default: None.
+        units (Units):                   Units of length and energy. Default: None.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

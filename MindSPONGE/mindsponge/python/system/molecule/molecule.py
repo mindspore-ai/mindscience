@@ -49,22 +49,27 @@ class Molecule(Cell):
     Cell for molecular system.
 
     Args:
-        atoms (list):           Atoms in system. Can be list of str or int. Default: None
-        atom_name (list):       Atom name. Can be ndarray or list of str. Default: None
-        atom_type (list):       Atom type. Can be ndarray or list of str. Default: None
-        atom_mass (Tensor):     Tensor of shape (B, A). Data type is float.
-                                Atom mass. Default: None
-        atom_charge (Tensor):   Tensor of shape (B, A). Data type is float.
-                                Atom charge. Default: None
-        atomic_number (Tensor): Tensor of shape (B, A). Data type is float.
-                                Atomic number. Default: None
-        bond (Tensor):          Tensor of shape (B, b, 2) or (1, b, 2). Data type is int.
-                                Bond index. Default: None
-        coordinate (Tensor):    Tensor of shape (B, A, D) or (1, A, D). Data type is float.
-                                Position coordinates of atoms. Default: None
-        pbc_box (Tensor):       Tensor of shape (B, D) or (1, D). Data type is float.
-                                Box of periodic boundary condition. Default: None
-        length_unit (str):      Length unit for position coordinates. Default: None
+        atoms (list):                    Atoms in system. Can be list of str or int. Default: None.
+        atom_name (list):                Atom name. Can be ndarray or list of str. Default: None.
+        atom_type (list):                Atom type. Can be ndarray or list of str. Default: None.
+        atom_mass (Tensor):              Tensor of shape (B, A). Data type is float.
+                                         Atom mass. Default: None.
+        atom_charge (Tensor):            Tensor of shape (B, A). Data type is float.
+                                         Atom charge. Default: None.
+        atomic_number (Tensor):          Tensor of shape (B, A). Data type is float.
+                                         Atomic number. Default: None.
+        bond (Tensor):                   Tensor of shape (B, b, 2) or (1, b, 2). Data type is int.
+                                         Bond index. Default: None.
+        coordinate (Tensor):             Tensor of shape (B, A, D) or (1, A, D). Data type is float.
+                                         Position coordinates of atoms. Default: None.
+        pbc_box (Tensor):                Tensor of shape (B, D) or (1, D). Data type is float.
+                                         Box of periodic boundary condition. Default: None.
+        template (Union[dict, str]):     Template of residue.
+                                         The key of the dict are base, template, the name of molecule and so on.
+                                         The value of the dict is file name.
+                                         Default: None.
+        residue (Union[Residue, list]):  Residue parameter.
+        length_unit (str):               Length unit for position coordinates. Default: None.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -213,13 +218,23 @@ class Molecule(Cell):
         return Parameter(pbc_box, name='pbc_box', requires_grad=True)
 
     def move(self, shift: Tensor = None):
-        """move the coordinate of the system."""
+        """
+        Move the coordinate of the system.
+
+        Args:
+            shift (Tensor):         Shift parameter. Default: None.
+        """
         if shift is not None:
             self.update_coordinate(self.coordinate + Tensor(shift, ms.float32))
         return self
 
     def copy(self, shift: Tensor = None):
-        """return a Molecule that copy the parameters of this molecule."""
+        """
+        Return a Molecule that copy the parameters of this molecule.
+
+        Args:
+            shift (Tensor):         Shift parameter. Default: None.
+        """
         coordinate = self.get_coordinate()
         if shift is not None:
             coordinate += Tensor(shift, ms.float32)
@@ -231,7 +246,14 @@ class Molecule(Cell):
         )
 
     def add_residue(self, residue: Residue, coordinate: Tensor = None):
-        """add residue."""
+        """
+        Add residue.
+
+        Args:
+            residue (Union[Residue, list]):  Residue parameter.
+            coordinate (Tensor):             Tensor of shape (B, A, D) or (1, A, D). Data type is float.
+                                             Position coordinates of atoms. Default: None.
+        """
         if not isinstance(residue, list):
             if isinstance(residue, Residue):
                 residue = [residue]
@@ -252,7 +274,12 @@ class Molecule(Cell):
         return self
 
     def append(self, system):
-        """append the system."""
+        """
+        Append the system.
+
+        Args:
+            system (Molecule):    System parameter.
+        """
         if not isinstance(system, Molecule):
             raise TypeError('For add, the type of system must be "Molecule" but got: ' +
                             str(type(system)))
@@ -260,7 +287,12 @@ class Molecule(Cell):
         return self
 
     def reduplicate(self, shift: Tensor):
-        """duplicate the system to double of the origin size."""
+        """
+        Duplicate the system to double of the origin size.
+
+        Args:
+            shift (Tensor):         Shift parameter. Default: Tensor.
+        """
         shift = Tensor(shift, ms.float32)
         self.residue.extend(copy.deepcopy(self.residue))
         self.build_system()
@@ -418,7 +450,15 @@ class Molecule(Cell):
         return self
 
     def build_space(self, coordinate: Tensor, pbc_box: Tensor = None):
-        """build coordinate and PBC box."""
+        """
+        Build coordinate and PBC box.
+
+        Args:
+            coordinate (Tensor):    Tensor of shape (B, A, D) or (1, A, D). Data type is float.
+                                    Position coordinates of atoms. Default: None.
+            pbc_box (Tensor):       Tensor of shape (B, D) or (1, D). Data type is float.
+                                    Box of periodic boundary condition. Default: None.
+        """
         # (B,A,D)
         if coordinate is None:
             coordinate = np.random.uniform(0, self.units.length(
@@ -468,7 +508,12 @@ class Molecule(Cell):
         return self
 
     def set_bond_length(self, bond_length: Tensor):
-        """set bond length."""
+        """
+        Set bond length.
+
+        Args:
+            bond_length (Tensor):   Length of bond.
+        """
         if self.bond is None:
             raise ValueError('Cannot setup bond_length because bond is None')
         bond_length = Tensor(bond_length, ms.float32)
@@ -480,7 +525,10 @@ class Molecule(Cell):
 
     def residue_index(self, res_id: int) -> Tensor:
         """
-        get index of residue.
+        Get index of residue.
+
+        Args:
+            res_id (int):         Residue ID parameter.
 
         Returns:
             Tensor, the index of residue.
@@ -489,7 +537,10 @@ class Molecule(Cell):
 
     def residue_bond(self, res_id: int) -> Tensor:
         """
-        get bond index of residue.
+        Get bond index of residue.
+
+        Args:
+            res_id (int):          Residue ID parameter.
 
         Returns:
             Tensor, the bond index of residue.
@@ -500,7 +551,10 @@ class Molecule(Cell):
 
     def residue_head(self, res_id: int) -> Tensor:
         """
-        get head index of residue.
+        Get head index of residue.
+
+        Args:
+            res_id (int):        Residue ID parameter.
 
         Returns:
             Tensor, the head index of residue.
@@ -511,7 +565,10 @@ class Molecule(Cell):
 
     def residue_tail(self, res_id: int) -> Tensor:
         """
-        get tail index of residue.
+        Get tail index of residue.
+
+        Args:
+            res_id (int):     Residue ID parameter.
 
         Returns:
             Tensor, the tail index of residue.
@@ -522,7 +579,10 @@ class Molecule(Cell):
 
     def residue_coordinate(self, res_id: int) -> Tensor:
         """
-        get residue coordinate.
+        Get residue coordinate.
+
+        Args:
+            res_id (int):     Residue ID parameter.
 
         Returns:
             Tensor, the residue coordinate.
@@ -553,6 +613,9 @@ class Molecule(Cell):
 
     def trainable_params(self, recurse=True) -> list:
         """
+        Args:
+            recurse (bool, optional):      Recurse parameter. Default: True.
+
         Returns:
             list, a list of trainable_params.
         """
@@ -580,7 +643,12 @@ class Molecule(Cell):
 
     def update_coordinate(self, coordinate: Tensor, success: bool = True) -> bool:
         """
-        update the parameter of coordinate.
+        Update the parameter of coordinate.
+
+        Args:
+            coordinate (Tensor):        Tensor of shape (B, A, D) or (1, A, D). Data type is float.
+                                        Position coordinates of atoms.
+            success (bool, optional):   Success parameter. Default: True.
 
         Returns:
             bool, whether update the parameter of coordinate.
@@ -591,7 +659,13 @@ class Molecule(Cell):
         return success
 
     def set_coordianate(self, coordinate: Tensor):
-        """set the value of coordinate."""
+        """
+        Set the value of coordinate.
+
+        Args:
+            coordinate (Tensor):    Tensor of shape (B, A, D) or (1, A, D). Data type is float.
+                                    Position coordinates of atoms. Default: None.
+        """
         coordinate = self._check_coordianate(coordinate)
         if coordinate is not None and coordinate.shape == self.coordinate.shape:
             self.update_coordinate(coordinate)
@@ -603,7 +677,12 @@ class Molecule(Cell):
 
     def update_pbc_box(self, pbc_box: Tensor, success: bool = True):
         """
-        update PBC box.
+        Update PBC box.
+
+        Args:
+            pbc_box (Tensor):           Tensor of shape (B, D) or (1, D). Data type is float.
+                                        Box of periodic boundary condition. Default: None.
+            success (bool, optional):   Success parameter. Default: True.
 
         Returns:
             bool, whether update PBC box.
@@ -614,13 +693,24 @@ class Molecule(Cell):
         return success
 
     def set_pbc_grad(self, grad_box: bool):
-        """set whether to calculate the gradient of PBC box."""
+        """
+        Set whether to calculate the gradient of PBC box.
+
+        Args:
+            grad_box (bool):        Whether to calculate the gradient of PBC box.
+        """
         if self.pbc_box is not None:
             self.pbc_box.requires_grad = grad_box
         return self
 
     def set_pbc_box(self, pbc_box: Tensor = None):
-        """set PBC box."""
+        """
+        Set PBC box.
+
+        Args:
+            pbc_box (Tensor):       Tensor of shape (B, D) or (1, D). Data type is float.
+                                    Box of periodic boundary condition. Default: None.
+        """
         if pbc_box is None:
             self.pbc_box = None
             self.use_pbc = False
@@ -638,7 +728,12 @@ class Molecule(Cell):
         return self
 
     def repeat_box(self, lattices: list):
-        """repeat the system according to the lattices of PBC box."""
+        """
+        Repeat the system according to the lattices of PBC box.
+
+        Args:
+            lattices (list):        Lattices parameter.
+        """
         if self.pbc_box is None:
             raise RuntimeError('repeat_box() cannot be used without pbc_box, '
                                'please use set_pbc_box() to set pbc_box first '
@@ -680,7 +775,10 @@ class Molecule(Cell):
 
     def coordinate_in_box(self, shift: float = 0) -> Tensor:
         """
-        get the coordinate in a whole PBC box.
+        Get the coordinate in a whole PBC box.
+
+        Args:
+            shift (float):         Shift parameter. Default: 0.
 
         Returns:
             Tensor, the coordinate in a whole PBC box.
@@ -691,7 +789,10 @@ class Molecule(Cell):
 
     def calc_image(self, shift: float = 0) -> Tensor:
         """
-        calculate the image of coordinate.
+        Calculate the image of coordinate.
+
+        Args:
+            shift (float):         Shift parameter. Default: 0.
 
         Returns:
             Tensor, a Tensor  of the image of coordinate.
@@ -705,7 +806,11 @@ class Molecule(Cell):
 
     def update_image(self, image: Tensor = None, success: bool = True) -> bool:
         """
-        update the image of coordinate.
+        Update the image of coordinate.
+
+        Args:
+            image (Tensor):           Image parameter. Default: None.
+            success (bool, optional): Success parameter. Default: True.
 
         Returns:
             bool.
@@ -715,7 +820,12 @@ class Molecule(Cell):
         return F.depend(success, F.assign(self.image, image))
 
     def set_length_unit(self, unit):
-        """set the length unit of system."""
+        """
+        Set the length unit of system.
+
+        Args:
+            unit (Units):          Units of length and energy.
+        """
         scale = self.units.convert_length_to(unit)
         coordinate = self.coordinate * scale
         self.update_coordinate(coordinate)

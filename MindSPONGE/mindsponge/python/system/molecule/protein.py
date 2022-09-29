@@ -41,13 +41,18 @@ class Protein(Molecule):
     Protein molecule.
 
     Args:
-        pdb (str):              Atoms in system. Can be list of str or int. Default: None
-        sequence (list):        Atom type. Can be ndarray or list of str. Default: None
-        coordinate (Tensor):    Tensor of shape (B, A, D) or (1, A, D). Data type is float.
-                                Position coordinates of atoms. Default: None
-        pbc_box (Tensor):       Tensor of shape (B, D) or (1, D). Data type is float.
-                                Box of periodic boundary condition. Default: None
-        length_unit (str):      Length unit for position coordinates. Default: None
+        pdb (str):                         Atoms in system. Can be list of str or int. Default: None.
+        sequence (list):                   Atom type. Can be ndarray or list of str. Default: None.
+        coordinate (Tensor):               Tensor of shape (B, A, D) or (1, A, D). Data type is float.
+                                           Position coordinates of atoms. Default: None.
+        pbc_box (Tensor):                  Tensor of shape (B, D) or (1, D). Data type is float.
+                                           Box of periodic boundary condition. Default: None.
+        template (Union[dict, str]):       Template of residue.
+                                           The key of the dict are base, template, the name of molecule and so on.
+                                           The value of the dict is file name.
+                                           Default: None.
+        ignore_hydrogen (bool, optional):  Ignore hydrogen. Default: True.
+        length_unit (str):                 Length unit for position coordinates. Default: None.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
