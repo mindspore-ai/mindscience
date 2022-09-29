@@ -326,7 +326,7 @@ def make_msa_feat(between_segment_residues, aatype, msa, deletion_matrix, cluste
 def make_random_seed(size, seed_maker_t, low=MS_MIN32, high=MS_MAX32, random_recycle=False):
     if random_recycle:
         r = np.random.RandomState(seed_maker_t)
-        return r.random.uniform(size=size, low=low, high=high)
+        return r.uniform(size=size, low=low, high=high)
     np.random.seed(seed_maker_t)
     return np.random.uniform(size=size, low=low, high=high)
 
