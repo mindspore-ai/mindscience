@@ -28,7 +28,7 @@ package_name = os.getenv('CYBERTRON_PACKAGE_NAME').replace("\n", "")
 
 def read_version():
     """generate python file"""
-    version_file = os.path.join(cur_dir, '../../', 'version.txt')
+    version_file = os.path.join(cur_dir, '../cybertron/', 'version.txt')
     with open(version_file, 'r') as f:
         version_ = f.readlines()[-1].strip()
     return version_
