@@ -36,13 +36,11 @@ class Langevin(Thermostat):
     A Langevin thermostat controller.
 
     Reference:
-
         Goga, N.; Rzepiela, A. J.; de Vries, A. H.; Marrink, S. J.; Berendsen, H. J. C..
         Efficient Algorithms for Langevin and DPD Dynamics [J].
         Journal of Chemical Theory and Computation, 2012, 8(10): 3637-3649.
 
     Args:
-
         system (Molecule):      Simulation system.
         temperature (float):    Reference temperature T_ref (K) for temperature coupling.
                                 Default: 300
@@ -97,7 +95,12 @@ class Langevin(Thermostat):
         self.standard_normal = ops.StandardNormal(seed, seed2)
 
     def set_time_step(self, dt):
-        """set simulation time step."""
+        """
+        set simulation time step.
+
+        Args:
+            dt (float): Time of a time step.
+        """
         self.time_step = dt
         # \f = 1 - exp(-\gamma * dt)
         self.friction = 1.0 - \

@@ -92,13 +92,28 @@ class Thermostat(Controller):
         return self.ref_kinetics
 
     def set_degrees_of_freedom(self, dofs: int):
-        """set degrees of freedom (DOFs)."""
+        """
+        set degrees of freedom (DOFs).
+
+        Args:
+            dofs (int): Degrees of freedom.
+        """
         self.degrees_of_freedom = dofs
         self.ref_kinetics = 0.5 * self.degrees_of_freedom * self.boltzmann * self.ref_temp
         return self
 
     def velocity_scale(self, sim_kinetics: Tensor, ref_kinetics: Tensor, ratio: float = 1) -> Tensor:
-        """calculate the velocity scale factor for temperature coupling."""
+        """
+        calculate the velocity scale factor for temperature coupling.
+
+        Args:
+            sim_kinetics (Tensor):  Tensor of simulation kinetics.
+            ref_kinetics (Tensor):  Tensor of reference kinetics.
+            ratio (float):          The degree of change lambda_.
+
+        Returns:
+            Tensor, teh velocity scale factor.
+        """
         sim_kinetics = func.keepdim_sum(sim_kinetics, -1)
         lambda_ = 1. + ratio * (ref_kinetics / sim_kinetics - 1)
         return F.sqrt(lambda_)

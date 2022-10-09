@@ -77,7 +77,11 @@ class FullConnectNeighbours(Cell):
         self.reduce_all = ops.ReduceAll()
 
     def set_exclude_index(self, _exclude_index: Tensor):
-        """Dummy"""
+        """
+        Dummy.
+
+        _exclude_index (Tensor):    Tensor of exclude indexes.
+        """
         # pylint: disable=invalid-name
         return self
 

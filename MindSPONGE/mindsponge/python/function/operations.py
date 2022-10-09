@@ -70,19 +70,45 @@ class GetVector(Cell):
         self.set_pbc(use_pbc)
 
     def get_vector_without_pbc(self, position0, position1, pbc_box=None):
-        """get vector without periodic boundary condition"""
+        """
+        get vector without periodic boundary condition.
+
+        Args:
+            position0 (Tensor): Tensor of coordinate of initial point.
+            position1 (Tensor): Tensor of coordinate of terminal point.
+            pbc_box (Any):      Dummy.
+        """
         return func.get_vector_without_pbc(position0, position1, pbc_box)
 
     def get_vector_with_pbc(self, position0, position1, pbc_box):
-        """get vector with periodic boundary condition"""
+        """
+        get vector with periodic boundary condition.
+
+        Args:
+            position0 (Tensor): Tensor of coordinate of initial point.
+            position1 (Tensor): Tensor of coordinate of terminal point.
+            pbc_box (Any):      Dummy.
+        """
         return func.get_vector_with_pbc(position0, position1, pbc_box)
 
     def get_vector_default(self, position0, position1, pbc_box=None):
-        """get vector"""
+        """
+        get vector.
+
+        Args:
+            position0 (Tensor): Tensor of coordinate of initial point.
+            position1 (Tensor): Tensor of coordinate of terminal point.
+            pbc_box (Any):      Dummy.
+        """
         return func.get_vector(position0, position1, pbc_box)
 
     def set_pbc(self, use_pbc=None):
-        """set whether to use periodic boundary condition"""
+        """
+        set whether to use periodic boundary condition.
+
+        Args:
+            use_pbc (bool): Whether use periodic boundary condition.
+        """
         self.use_pbc = use_pbc
         if use_pbc is None:
             self.get_vector = self.get_vector_default
@@ -139,7 +165,12 @@ class GetDistance(Cell):
         self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
 
     def set_pbc(self, use_pbc):
-        """set whether to use periodic boundary condition"""
+        """
+        set whether to use periodic boundary condition.
+
+        Args:
+            use_pbc (bool): Whether use periodic boundary condition.
+        """
         self.get_vector.set_pbc(use_pbc)
         return self
 
@@ -216,7 +247,12 @@ class VelocityGenerator(Cell):
         self.multi_temp = False
 
     def set_temperature(self, temperature: float):
-        """set temperature"""
+        """
+        set temperature.
+
+        Args:
+            temperature (float):    Temperature value.
+        """
         self.temperature = Tensor(temperature, ms.float32).reshape(-1, 1, 1)
         self.multi_temp = False
         if self.temperature is not None and self.temperature.size > 1:
@@ -297,27 +333,27 @@ class GetDistanceShift(Cell):
 
         super().__init__(auto_prefix=False)
 
-        # (C,2)
+        # (C,2):
         self.bonds = bonds
         self.norm = nn.Norm(-1)
 
-        # (B,C,A)
+        # (B,C,A):
         shape = (num_walkers, bonds.shape[-2], num_atoms)
 
-        # (1,C,1)
+        # (1,C,1):
         bond0 = self.bonds[..., 0].reshape(1, -1, 1).asnumpy()
-        # (B,C,A) <- (B,A,1)
+        # (B,C,A) <- (B,A,1):
         mask0 = np.zeros(shape)
         np.put_along_axis(mask0, bond0, 1, axis=-1)
-        # (B,C,A,1)
+        # (B,C,A,1):
         self.mask0 = F.expand_dims(Tensor(mask0, ms.int32), -1)
 
-        # (1,C,1)
+        # (1,C,1):
         bond1 = self.bonds[..., 1].reshape(1, -1, 1).asnumpy()
-        # (B,C,A) <- (B,A,1)
+        # (B,C,A) <- (B,A,1):
         mask1 = np.zeros(shape)
         np.put_along_axis(mask1, bond1, 1, axis=-1)
-        # (B,C,A,1)
+        # (B,C,A,1):
         self.mask1 = F.expand_dims(Tensor(mask1, ms.int32), -1)
 
         self.get_distance = GetDistance(use_pbc)
@@ -361,6 +397,7 @@ class GetShiftGrad(Cell):
                             Bonds need to be constraint.
         num_atoms (int):    Number of atoms in system.
         num_walkers (int):  Number of multiple walkers.
+        dimension (int):    Number of dimension.
         use_pbc (bool):     Whether to use periodic boundary condition.
 
     Return:

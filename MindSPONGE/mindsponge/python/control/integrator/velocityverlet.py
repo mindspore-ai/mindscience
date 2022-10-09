@@ -83,7 +83,13 @@ class VelocityVerlet(Integrator):
         self.velocity_half = Parameter(velocity_half, name='velocity_half')
 
     def set_velocity_half(self, velocity_half: Tensor, success: bool = True) -> bool:
-        """set the veloctiy before half step"""
+        """
+        set the veloctiy before half step.
+
+        Args:
+            velocity_half (Tensor): Tensor of velocity before half step.
+            success (Tensor):       Whether the velocity has been set successfully.
+        """
         return F.depend(success, F.assign(self.velocity_half, velocity_half))
 
     def construct(self,

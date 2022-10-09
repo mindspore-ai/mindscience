@@ -129,7 +129,12 @@ class DistanceNeighbours(Cell):
         return self
 
     def check_neighbours_number(self, neighbour_mask: Tensor):
-        """check number of neighbours in neighbour list"""
+        """
+        check number of neighbours in neighbour list.
+
+        Args:
+            neighbour_mask (Tensor):    The neighbour list mask.
+        """
         max_neighbours = F.cast(msnp.max(F.cast(msnp.sum(neighbour_mask, -1), ms.float32)), ms.int32)
         if max_neighbours > self.num_neighbours:
             print(

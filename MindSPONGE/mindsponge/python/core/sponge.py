@@ -146,7 +146,12 @@ class Sponge():
         self.sim_time = 0.0
 
     def change_optimizer(self, optimizer: Optimizer):
-        """change optimizer."""
+        """
+        change optimizer.
+
+        Args:
+            optimizer (Optimizer): Optimizer will be used.
+        """
         if self._optimizer is None:
             raise ValueError('Cannot change the optimizer, because the initial optimizer is None '
                              'or the network is not a RunOneStepCell type.')
@@ -166,7 +171,12 @@ class Sponge():
         return self
 
     def change_potential(self, potential: PotentialCell):
-        """change potential energy."""
+        """
+        change potential energy.
+
+        Args:
+            potential (PotentialCell):  Potential energy will be used.
+        """
         if self._potential is None:
             raise ValueError('Cannot change the potential, because the initial potential is None '
                              'or the network is not a SimulationCell type.')
@@ -279,11 +289,9 @@ class Sponge():
             the epoch_end method is called.
 
         Args:
-            valid_dataset (Dataset): Dataset to evaluate the model.
-            callbacks (Optional[list(Callback)]): List of callback objects which should be executed
-                while training. Default: None.
-            dataset_sink_mode (bool): Determines whether to pass the data through dataset channel.
-                Default: True.
+            dataset (Dataset):                      Dataset to evaluate the model.
+            callbacks (Optional[list(Callback)]):   List of callback objects which should be executed
+                                                    while training. Default: None.
 
         Returns:
             Dict, the key is the metric name defined by users and the value is the metrics value for

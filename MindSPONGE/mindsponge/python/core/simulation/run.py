@@ -91,12 +91,22 @@ class RunOneStepCell(Cell):
         self.steps = get_integer(steps)
 
     def set_pbc_grad(self, value: bool):
-        """set whether to calculate the gradient of PBC box."""
+        """
+        set whether to calculate the gradient of PBC box.
+
+        Args:
+            value (bool):   Use to judge whether to calculate the gradient of PBC box.
+        """
         self.network.set_pbc_grad(value)
         return self
 
     def set_steps(self, steps: int):
-        """set steps for JIT."""
+        """
+        set steps for JIT.
+
+        Args:
+            steps (int):    steps of JIT.
+        """
         self.steps = get_integer(steps)
         return self
 

@@ -177,7 +177,12 @@ class Length:
                 'Unsupported length value type: ' + str(type(value)))
 
     def change_unit(self, unit):
-        """change unit"""
+        """
+        change unit.
+
+        Args:
+            unit (str): Energy unit.
+        """
         if isinstance(unit, (str, Units)):
             self.__unit = get_length_unit(unit)
             self.__ref = get_length_ref(unit)
@@ -196,7 +201,7 @@ class Length:
         absolute size of length.
 
         Returns:
-            float, the absolute size of length.        
+            float, the absolute size of length.
         """
         return self.__abs_size
 
@@ -275,7 +280,7 @@ class Length:
 class Energy:
     """
     Energy.
-    
+
     Args:
         value (float):   energy value.
         unit (str):      energy value unit.
@@ -308,7 +313,12 @@ class Energy:
                 'Unsupported energy value type: ' + str(type(value)))
 
     def change_unit(self, unit):
-        """change unit"""
+        """
+        change unit.
+
+        Args:
+            unit (str): Energy unit.
+        """
         if isinstance(unit, (str, Units)):
             self.__unit = get_energy_unit(unit)
             self.__ref = get_energy_ref(unit)
@@ -408,7 +418,7 @@ def get_length_ref(unit):
     get length reference.
 
     Args:
-        unit (Union[str, Units, Length, float, int]).
+        unit (Union[str, Units, Length, float, int]):   Length unit.
 
     Returns:
         length reference(Union[str, float, int]).
@@ -436,13 +446,13 @@ def get_length_unit(unit):
     get length unit.
 
     Args:
-        unit (Union[str, Units, Length, float, int]).
+        unit (Union[str, Units, Length, float, int]):   Length unit.
 
     Returns:
         length unit(Union[str, float, int]).
 
     Supported Platforms:
-        ``Ascend`` ``GPU``  
+        ``Ascend`` ``GPU``
     """
     if unit is None:
         return 'none'
@@ -464,7 +474,7 @@ def get_length_unit_name(unit):
     get name of length unit.
 
     Args:
-        unit (Union[str, Units, Length, float, int]).
+        unit (Union[str, Units, Length, float, int]):   Length unit.
 
     Returns:
         length unit(str).
@@ -492,7 +502,7 @@ def get_energy_ref(unit):
     get energy reference.
 
     Args:
-        unit (Union[str, Units, Length, float, int]).
+        unit (Union[str, Units, Length, float, int]):   Energy unit.
 
     Returns:
         energy reference(Union[str, float, int]).
@@ -520,7 +530,7 @@ def get_energy_unit(unit):
     get energy unit.
 
     Args:
-        unit (Union[str, Units, Length, float, int]).
+        unit (Union[str, Units, Length, float, int]):   Energy unit.
 
     Returns:
         energy unit(str).
@@ -548,7 +558,7 @@ def get_energy_unit_name(unit):
     get the name of energy unit.
 
     Args:
-        unit (Union[str, Units, Length, float, int]).
+        unit (Union[str, Units, Length, float, int]):   Energy unit.
 
     Returns:
         name of energy unit(str).
@@ -604,7 +614,7 @@ def energy_convert(unit_in, unit_out):
         float, energy according to different units.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``    
+        ``Ascend`` ``GPU``
     """
     energy_in = get_energy_ref(unit_in)
     energy_out = get_energy_ref(unit_out)
@@ -622,7 +632,7 @@ class Units:
         energy_unit (str):  Energy unit. Default: None
 
     Supported Platforms:
-        ``Ascend`` ``GPU``   
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -648,7 +658,12 @@ class Units:
         self.time_unit = 'ps'
 
     def set_length_unit(self, unit=None):
-        """set length unit"""
+        """
+        set length unit.
+
+        Args:
+            unit (str): Length unit.
+        """
         if unit is not None:
             self.__length_unit = get_length_unit(unit)
             self.__length_unit_name = get_length_unit_name(unit)
@@ -657,7 +672,12 @@ class Units:
         return self
 
     def set_energy_unit(self, unit=None):
-        """set energy unit"""
+        """
+        set energy unit.
+
+        Args:
+            unit (str): Energy unit.
+        """
         if unit is not None:
             self.__energy_unit = get_energy_unit(unit)
             self.__energy_unit_name = get_energy_unit_name(unit)
@@ -666,7 +686,14 @@ class Units:
         return self
 
     def set_units(self, length_unit, energy_unit, units=None):
-        """set unit"""
+        """
+        set unit.
+
+        Args:
+            length_unit (str):  Length unit.
+            energy_unit (str):  Energy unit.
+            units (str):        Units.
+        """
         if units is None:
             if length_unit is not None:
                 self.__length_unit = get_length_unit(length_unit)
@@ -701,6 +728,10 @@ class Units:
         """
         return the length value of the specified unit.
 
+        Args:
+            value (float):  Length value.
+            unit (str):     Length unit.
+
         Returns:
             float, the length value.
         """
@@ -709,6 +740,10 @@ class Units:
     def energy(self, value, unit=None):
         """
         return the energy value of the specified unit.
+
+        Args:
+            value (float):  Energy value.
+            unit (str):     Energy unit.
 
         Returns:
             float, the energy value.
@@ -719,6 +754,9 @@ class Units:
         """
         convert length to a specified units.
 
+        Args:
+            unit (str): Length unit.
+
         Returns:
             float, length according to a specified units.
         """
@@ -728,6 +766,9 @@ class Units:
         """
         convert energy to a specified units.
 
+        Args:
+            unit (str): Energy unit.
+
         Returns:
             float, energy according to a specified units.
         """
@@ -735,6 +776,9 @@ class Units:
 
     def convert_length_from(self, unit):
         """convert length from a specified units.
+
+        Args:
+            unit (str): Length unit.
 
         Returns:
             float, length according from a specified units.
@@ -744,6 +788,9 @@ class Units:
     def convert_energy_from(self, unit):
         """
         convert energy from a specified units.
+
+        Args:
+            unit (str): Energy unit.
 
         Returns:
             float, energy according from a specified units.

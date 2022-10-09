@@ -70,12 +70,12 @@ class MSARowAttentionWithPairBias(nn.Cell):
         """
         compute.
 
-        Inputs:
-            - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
-            - **mask** (Tensor) - The mask for MSA row attention matrix with shape.
-            (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
-            to this shape).
-            - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None
+        Args:
+            msa_act (Tensor):           Tensor of msa_act. Data type is float.
+            mask (Tensor):              The mask for MSA row attention matrix with shape. (batch_size, num_heads,
+                                        query_seq_length,  value_seq_length)(or broadcastable to this shape).
+            index (Tensor):             The index of while loop, only used in case of while control flow. Default: None
+            nonbatched_bias(Tensor):    Tensor of non batched bias.
 
         Outputs:
             - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
@@ -143,7 +143,6 @@ class MSAColumnAttention(nn.Cell):
         key_dim (int):          The dimension of the input.
         gating (bool):          Indicator of if the attention is gated.
         msa_act_dim (int):      The dimension of the msa_act.
-        pair_act_dim (int):     The dimension of the pair_act.
         batch_size (int):       The batch size of parameters in MSAColumnAttention, used in while control flow.
         slice_num (int):        The number of slices to be made to reduce memory.
 
@@ -176,13 +175,13 @@ class MSAColumnAttention(nn.Cell):
         """
         compute.
 
-        Inputs:
-            - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
-            - **input_mask** (Tensor) - The mask for MSAColumnAttention matrix with shape
-              (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
-              to this shape).
-            - **index** (Tensor) - The index of while loop, only used in case of while
-              control flow. Default: None
+        Args:
+            msa_act (Tensor):       Tensor of msa_act. Data type is float.
+            input_mask (Tensor):    The mask for MSAColumnAttention matrix with shape(batch_size,
+                                    num_heads, query_seq_length,  value_seq_length)
+                                    (or broadcastable to this shape).
+            index (Tensor):         The index of while loop, only used in case of while
+                                    control flow. Default: None
 
         Outputs:
             - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
@@ -226,10 +225,8 @@ class MSAColumnGlobalAttention(nn.Cell):
 
     Args:
         num_heads (int):        The number of the heads.
-        key_dim (int):          The dimension of the input.
         gating (bool):          Indicator of if the attention is gated.
         msa_act_dim (int):      The dimension of the msa_act.
-        pair_act_dim (int):     The dimension of the pair_act.
         batch_size (int):       The batch size of parameters in MSAColumnGlobalAttention, used
                                 in while control flow.
         slice_num (int):        The number of slices to be made to reduce memory.
@@ -264,15 +261,15 @@ class MSAColumnGlobalAttention(nn.Cell):
         """
         compute.
 
-        Inputs:
-            - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
-            - **msa_mask** (Tensor) - The mask for MSAColumnGlobalAttention matrix with shape
-              (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
-              to this shape).
-            - **input_mask** (Tensor) - The mask for input matrix with shape(batch_size, num_heads,
-              query_seq_length,  value_seq_length)(or broadcastable to this shape).
-            - **index** (Tensor) - The index of while loop, only used in case of while
-              control flow. Default: None
+        Args:
+            msa_act (Tensor):       Tensor of msa_act. Data type is float.
+            msa_mask (Tensor):      The mask for MSAColumnGlobalAttention matrix with shape (batch_size,
+                                    num_heads, query_seq_length, value_seq_length)(or broadcastable
+                                    to this shape).
+            input_mask (Tensor):    The mask for input matrix with shape(batch_size, num_heads,
+                                    query_seq_length,  value_seq_length)(or broadcastable to this shape).
+            index (Tensor):         The index of while loop, only used in case of while
+                                    control flow. Default: None
 
         Outputs:
             - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer

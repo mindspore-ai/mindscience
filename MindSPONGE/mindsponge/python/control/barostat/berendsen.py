@@ -36,7 +36,6 @@ class BerendsenBarostat(Barostat):
     A Berendsen (weak coupling) barostat controller.
 
     Reference:
-
         Berendsen, H. J. C.; Postma, J. P. M.; van Gunsteren, W. F.; DiNola, A.; Haak, J. R..
         Molecular Dynamics with Coupling to an External Bath [J].
         The Journal of Chemical Physics, 1984, 81(8): 3684.
@@ -85,7 +84,12 @@ class BerendsenBarostat(Barostat):
         self.ratio = self.control_step * self.time_step / self.time_constant / 3.
 
     def set_time_step(self, dt: float):
-        """set simulation time step."""
+        """
+        set simulation time step.
+
+        Args:
+            dt (float): Time of a time step.
+        """
         self.time_step = Tensor(dt, ms.float32)
         self.ratio = self.control_step * self.time_step / self.time_constant / 3.
         return self
@@ -104,16 +108,16 @@ class BerendsenBarostat(Barostat):
         if self.control_step == 1 or step % self.control_step == 0:
             pressure = self.get_pressure(kinetics, virial, pbc_box)
             if not self.anisotropic:
-                # (B,1) <- (B,D)
+                # (B,1) <- (B,D):
                 pressure = msnp.mean(pressure, axis=-1, keepdims=True)
-                # (B,D) <- (B,1)
+                # (B,D) <- (B,1):
                 pressure = msnp.broadcast_to(pressure, self.shape)
-            # (B,D)
+            # (B,D):
             scale = self.pressure_scale(pressure, self.ref_press, self.ratio)
 
-            # (B,A,D) * (B,1,D)
+            # (B,A,D) * (B,1,D):
             coordinate *= scale * F.expand_dims(scale, -2)
-            # (B,D)
+            # (B,D):
             pbc_box *= scale
 
         return coordinate, velocity, force, energy, kinetics, virial, pbc_box

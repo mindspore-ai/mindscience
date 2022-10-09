@@ -6,15 +6,9 @@ mindsponge.function
     :nosignatures:
     :template: classtemplate.rst
 
-    mindsponge.function.PI
     mindsponge.function.inv
-    mindsponge.function.keepdim_sum
-    mindsponge.function.keepdim_mean
-    mindsponge.function.keepdim_prod
     mindsponge.function.keep_norm_last_dim
     mindsponge.function.norm_last_dim
-    mindsponge.function.reduce_any
-    mindsponge.function.reduce_all
     mindsponge.function.concat_last_dim
     mindsponge.function.concat_penulti
     mindsponge.function.pbc_box_reshape
@@ -63,7 +57,6 @@ mindsponge.function
     mindsponge.function.length_convert
     mindsponge.function.energy_convert
     mindsponge.function.Units
-    mindsponge.function.global_units
     mindsponge.function.set_global_length_unit
     mindsponge.function.set_global_energy_unit
     mindsponge.function.set_global_units

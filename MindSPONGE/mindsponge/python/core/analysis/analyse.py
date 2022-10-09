@@ -42,7 +42,6 @@ class AnalyseCell(Cell):
         system (Molecule):              Simulation system.
         potential (PotentialCell):      Potential energy.
         neighbour_list (NeighbourList): Neighbour list. Default: None
-        bias (Bias):                    Bias potential: Default: None
         calc_energy (bool):             Whether to calculate the energy. Default: False
         calc_forces (bool):             Whether to calculate the forces. Default: False
 

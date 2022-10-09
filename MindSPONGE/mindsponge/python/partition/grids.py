@@ -273,7 +273,12 @@ class GridNeighbours(Cell):
         self.reduce_all = ops.ReduceAll()
 
     def set_exclude_index(self, exclude_index: Tensor):
-        """set excluded neighbour index"""
+        """
+        set excluded neighbour index.
+
+        Args:
+            exclude_index (Tensor): Tensor of excluded neighbour indexes.
+        """
         # (B,A,Ex)
         self.exclude_index = Tensor(exclude_index, ms.int32)
         if self.exclude_index.shape[-2] != self.num_atoms:
@@ -284,7 +289,13 @@ class GridNeighbours(Cell):
         return self
 
     def check_neighbours_number(self, grid_neigh_atoms: Tensor, num_neighbours: int = None):
-        """check number of neighbours in neighbour list"""
+        """
+        check number of neighbours in neighbour list.
+
+        Args:
+            grid_neigh_atoms (Tensor):  Tensor of grid of neighbour atoms.
+            num_neighbours (int):       Number of neighbours.
+        """
         if num_neighbours is None:
             num_neighbours = self.num_neighbours
         max_neighbours = msnp.sum(grid_neigh_atoms != self.num_atoms, axis=-1)
@@ -325,6 +336,10 @@ class GridNeighbours(Cell):
     def get_neighbours_from_grids(self, atom_grid_idx: Tensor, num_neighbours: int):
         """
         get neighbour list from grids
+
+        Args:
+            atom_grid_idx (Tensor): Tensor of atoms grid indexes.
+            num_neighbours (int):   Number of neighbours.
 
         Returns:
             list, neighbour list from grids.

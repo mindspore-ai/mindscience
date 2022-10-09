@@ -158,7 +158,12 @@ class Updater(Optimizer):
                 self.controller[i].set_degrees_of_freedom(self.degrees_of_freedom)
 
     def set_step(self, step: int = 0):
-        """set time step"""
+        """
+        set time step.
+
+        Args:
+            step (int): Time steps.
+        """
         step = Tensor(step, ms.int32)
         F.depend(True, F.assign(self.step, step))
         return self
@@ -166,6 +171,10 @@ class Updater(Optimizer):
     def update_coordinate(self, coordinate: Tensor, success: bool = True) -> bool:
         """
         update the parameters of coordinate.
+
+        Args:
+            coordinate (Tensor):    Tensor of coordinates.
+            success (bool):         Whether successfully update the parameters.
 
         Returns:
             bool.
@@ -176,6 +185,10 @@ class Updater(Optimizer):
     def update_pbc_box(self, pbc_box: Tensor, success: bool = True) -> bool:
         """
         update the parameters of PBC box.
+
+        Args:
+            pbc_box (Tensor):   Tensor of PBC box.
+            success (bool):     Whether successfully update the parameters.
 
         Returns:
             bool.
@@ -188,6 +201,10 @@ class Updater(Optimizer):
         """
         update the parameters of velocity.
 
+        Args:
+            velocity (Tensor):  Tensor of velocity.
+            success (bool):     Whether successfully update the parameters.
+
         Returns:
             bool.
         """
@@ -196,6 +213,10 @@ class Updater(Optimizer):
     def update_kinetics(self, kinetics: Tensor, success: bool = True) -> bool:
         """
         update the parameters of kinects.
+
+        Args:
+            kinetics (Tensor):  Tensor of kinetics.
+            success (bool):     Whether successfully update the parameters.
 
         Returns:
             bool.
@@ -208,6 +229,10 @@ class Updater(Optimizer):
         """
         update the parameters of temperature.
 
+        Args:
+            temperature (Tensor):   Tensor of temperature.
+            success (bool):         Whether successfully update the parameters.
+
         Returns:
             bool.
         """
@@ -219,6 +244,10 @@ class Updater(Optimizer):
         """
         update the parameters of virial.
 
+        Args:
+            virial (Tensor):    Tensor of virial.
+            success (bool):     Whether successfully update the parameters.
+
         Returns:
             bool.
         """
@@ -229,6 +258,10 @@ class Updater(Optimizer):
     def update_pressure(self, pressure: Tensor, success: bool = True) -> bool:
         """
         update the parameters of pressure.
+
+        Args:
+            pressure (Tensor):  Tensor of pressure.
+            success (bool):     Whether successfully update the parameters.
 
         Returns:
             bool.
@@ -252,6 +285,9 @@ class Updater(Optimizer):
         """
         get kinectics.
 
+        Args:
+            velocity (Tensor):  Tensor of velocity.
+
         Returns:
             Tensor, a Tensor of kinetics.
         """
@@ -265,6 +301,9 @@ class Updater(Optimizer):
         """
         get temperature.
 
+        Args:
+            kinetics (Tensor):  Tensor of kinetics.
+
         Returns:
             Tensor, a Tensor of temperature.
         """
@@ -275,6 +314,11 @@ class Updater(Optimizer):
     def get_pressure(self, kinetics: Tensor, virial: Tensor, pbc_box: Tensor) -> Tensor:
         """
         get pressure.
+
+        Args:
+            kinetics (Tensor):  Tensor of kinetics.
+            virial (Tensor):    Tensor of virial.
+            pbc_box (Tensor):   Tensor of PBC box.
 
         Returns:
             Tensor, a Tensor of pressure.
@@ -289,6 +333,10 @@ class Updater(Optimizer):
     def get_virial(self, pbc_grad, pbc_box):
         """
         get virial.
+
+        Args:
+            pbc_grad (Tensor):  Tensor of the grad of PBC box.
+            pbc_box (Tensor):    Tensor of PBC box.
 
         Returns:
             Tensor, a Tensor of virial.
@@ -308,6 +356,9 @@ class Updater(Optimizer):
     def next_step(self, success: bool = True) -> bool:
         """
         finish the current optimization step and move to next step.
+
+        Args:
+            success (bool): Whether move to next step.
 
         Returns:
             bool.

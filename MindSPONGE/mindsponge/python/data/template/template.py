@@ -89,9 +89,9 @@ def get_template_index(template: dict, names: ndarray, key: str = 'atom_name') -
     get atom index of system according to atom names.
 
     Args:
-        template (dict).
-        names (ndarray).
-        key (str): atom_name.
+        template (dict):    The file name of template.
+        names (ndarray):    Residue names.
+        key (str):          atom_name.
 
     Returns:
         index (ndarray), atom index of system.

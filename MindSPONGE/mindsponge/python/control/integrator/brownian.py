@@ -91,25 +91,45 @@ class Brownian(Integrator):
         return self.ref_temp
 
     def set_thermostat(self, thermostat: None = None):
-        """set thermostat algorithm for integrator"""
+        """
+        set thermostat algorithm for integrator.
+
+        Args:
+            thermostat (None):  Set thermostat algorithm. Default: None
+        """
         if thermostat is not None:
             raise ValueError('The Brownian integrator cannot accept thermostat')
         return self
 
     def set_barostat(self, barostat: None = None):
-        """set barostat algorithm for integrator"""
+        """
+        set barostat algorithm for integrator.
+
+        Args:
+            barostat (None):    Set barostat algorithm. Default: None
+        """
         if barostat is not None:
             raise ValueError('The Brownian integrator cannot accept barostat')
         return self
 
     def set_constraint(self, constraint: None = None):
-        """set constraint algorithm for integrator"""
+        """
+        set constraint algorithm for integrator.
+
+        Args:
+            constraint (None):  Set constraint algorithm. Default: None
+        """
         if constraint is not None:
             raise ValueError('The Brownian integrator cannot accept constraint')
         return self
 
     def set_time_step(self, dt: float):
-        """set simulation time step"""
+        """
+        set simulation time step.
+
+        Args:
+            dt (float): Time of a time step.
+        """
         self.time_step = Tensor(dt, ms.float32)
         self.random_scale = F.sqrt(2 * self.boltzmann * self.ref_temp * self.time_step * self.inv_gamma)
         return self

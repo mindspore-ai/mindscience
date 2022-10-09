@@ -79,7 +79,12 @@ class Integrator(Controller):
         self.set_constraint(constraint)
 
     def set_time_step(self, dt: float):
-        """set simulation time step"""
+        """
+        set simulation time step.
+
+        Args:
+            dt (float): Time of a time step.
+        """
         self.time_step = Tensor(dt, ms.float32)
         if self.thermostat is not None:
             self.thermostat.set_time_step(dt)
@@ -91,7 +96,12 @@ class Integrator(Controller):
         return self
 
     def set_degrees_of_freedom(self, dofs: int):
-        """set degrees of freedom (DOFs)"""
+        """
+        set degrees of freedom (DOFs)
+
+        Args:
+            dofs (int): Degrees of freedom.
+        """
         self.degrees_of_freedom = get_integer(dofs)
         if self.thermostat is not None:
             self.thermostat.set_degrees_of_freedom(dofs)
@@ -103,7 +113,12 @@ class Integrator(Controller):
         return self
 
     def set_thermostat(self, thermostat: Thermostat):
-        """set thermostat algorithm for integrator"""
+        """
+        set thermostat algorithm for integrator.
+
+        Args:
+            thermostat (Thermostat):    The thermostat.
+        """
         if self.thermostat is not None:
             print('Warning! The thermostat for this integrator has already been set to "' +
                   str(self.thermostat.cls_name)+'" but will now be changed to "'+str(thermostat.cls_name)+'".')
@@ -116,7 +131,12 @@ class Integrator(Controller):
         return self
 
     def set_barostat(self, barostat: Barostat):
-        """set barostat algorithm for integrator"""
+        """
+        set barostat algorithm for integrator.
+
+        Args:
+            barostat (Barostat):    The barostat.
+        """
         if self.barostat is not None:
             print('Warning! The barostat for this integrator has already been set to "' +
                   str(self.barostat.cls_name)+'" but will now be changed to "'+str(barostat.cls_name)+'".')
@@ -129,7 +149,12 @@ class Integrator(Controller):
         return self
 
     def set_constraint(self, constraint: Constraint):
-        """set constraint algorithm for integrator"""
+        """
+        set constraint algorithm for integrator.
+
+        Args:
+            constraint (Constraint):    The constraints.
+        """
         if self.constraint is not None:
             print('Warning! The constraint for this integrator has already been set to "' +
                   str(self.constraint.cls_name)+'" but will now be changed to "'+str(constraint.cls_name)+'".')
@@ -157,7 +182,12 @@ class Integrator(Controller):
         return self
 
     def add_constraint(self, constraint: Constraint):
-        """add constraint algorithm for integrator"""
+        """
+        add constraint algorithm for integrator.
+
+        Args:
+            constraint (Constraint):    The constraints.
+        """
         if isinstance(constraint, Controller):
             constraint = [constraint]
             num_constraint_controller = 1

@@ -93,18 +93,32 @@ class Controller(Cell):
         self.keepdim_sum = ops.ReduceSum(keep_dims=True)
 
     def set_time_step(self, dt: float):
-        """set simulation time step"""
+        """
+        set simulation time step.
+
+        Args:
+            dt (float): Time of a time step.
+        """
         self.time_step = Tensor(dt, ms.float32)
         return self
 
     def set_degrees_of_freedom(self, dofs: int):
-        """set degrees of freedom (DOFs)"""
+        """
+        set degrees of freedom (DOFs).
+
+        Args:
+            dofs (int): degrees of freedom.
+        """
         self.degrees_of_freedom = get_integer(dofs)
         return self
 
     def update_coordinate(self, coordinate: Tensor, success: bool = True) -> bool:
         """
         update the parameter of coordinate.
+
+        Args:
+            coordinate (Tensor):    A tensor of parameters of coordinate.
+            success (bool):         Whether update the parameters successfully.
 
         Returns:
             bool.
@@ -116,6 +130,10 @@ class Controller(Cell):
         """
         update the parameter of PBC box.
 
+        Args:
+            pbc_box (Tensor):   A tensor of parameters of PBC box.
+            success (bool):     Whether update the parameters successfully.
+
         Returns:
             bool.
         """
@@ -126,6 +144,9 @@ class Controller(Cell):
     def get_kinetics(self, velocity: Tensor) -> Tensor:
         """
         calculate kinetics according to velocity.
+
+        Args:
+            velocity (Tensor):  A tensor of velocity.
 
         Returns:
             Tensor, kinetics according to velocity.
@@ -142,6 +163,9 @@ class Controller(Cell):
         """
         calculate temperature according to velocity.
 
+        Args:
+            kinetics (Tensor):  A tensor of kinetics.
+
         Returns:
             Tensor, temperature according to velocity.
         """
@@ -155,6 +179,9 @@ class Controller(Cell):
         """
         calculate volume according to PBC box.
 
+        Args:
+            pbc_box (Tensor):   A PBC box tensor used to calculate volume.
+
         Returns:
             Tensor, volume according to PBC box.
         """
@@ -164,13 +191,27 @@ class Controller(Cell):
         return func.keepdim_prod(pbc_box, -1)
 
     def get_virial(self, pbc_grad, pbc_box):
-        """calculate virial according to the PBC box and its gradients."""
+        """
+        calculate virial according to the PBC box and its gradients.
+
+        Args:
+            pbc_grad (Tensor):  Tensor of PBC box's gradients.
+            pbc_box (Tensor):   Tensor of PBC box
+
+        Returns:
+            Tensor, virial.
+        """
         # (B,D)
         return 0.5 * pbc_grad * pbc_box
 
     def get_pressure(self, kinetics: Tensor, virial: Tensor, pbc_box: Tensor) -> Tensor:
         """
-        calculate pressure according to kinetics, viral and PBC box.
+        calculate pressure according to kinetics, virial and PBC box.
+
+        Args:
+            kinetics (Tensor):  Tensor of kinetics.
+            virials (Tensor):   Tensor of virials.
+            pbc_box (Tensor):   Tensor of PBC box.
 
         Returns:
             Tensor, pressure according to kinetics, viral and PBC box.
@@ -186,6 +227,9 @@ class Controller(Cell):
         """
         get coordinate of center of mass.
 
+        Args:
+            coordinate (Tensor):    Tensor of coordinate.
+
         Returns:
             Tensor, coordinate of center of mass.
         """
@@ -194,6 +238,9 @@ class Controller(Cell):
     def get_com_velocity(self, velocity: Tensor) -> Tensor:
         """
         calculate velocity of center of mass.
+
+        Args:
+            velocity (Tensor):  Tensor of velocity.
 
         Returns:
             Tensor, velocity of center of mass.
