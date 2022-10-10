@@ -154,7 +154,7 @@ class SimulationCell(Cell):
         if self.bias_network is not None:
             self.bias = Parameter(msnp.zeros((self.num_walker, self.num_bias), dtype=ms.float32),
                                   name='bias_potential', requires_grad=False)
-        
+
         self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
 
         self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
@@ -168,7 +168,12 @@ class SimulationCell(Cell):
         return self.units.energy_unit
 
     def set_pbc_grad(self, grad_box: bool):
-        """set whether to calculate the gradient of PBC box."""
+        """
+        set whether to calculate the gradient of PBC box.
+
+        Args:
+            grad_box (bool):    Whether to calculate the gradient of PBC box.
+        """
         self.system.set_pbc_grad(grad_box)
         return self
 
@@ -205,9 +210,9 @@ class SimulationCell(Cell):
 
         neighbour_index, neighbour_mask = self.get_neighbour_list()
 
-        # (B,A,1,D) <- (B,A,D)
+        # (B,A,1,D) <- (B,A,D):
         atoms = F.expand_dims(coordinate, -2)
-        # (B,A,N,D) <- (B,A,D)
+        # (B,A,N,D) <- (B,A,D):
         neighbour_coord = gather_vectors(coordinate, neighbour_index)
         neighbour_vector = self.get_vector(atoms, neighbour_coord, pbc_box)
 
@@ -215,12 +220,12 @@ class SimulationCell(Cell):
         # to prevent them from becoming zero values after Norm operation,
         # which could lead to auto-differentiation errors
         if neighbour_mask is not None:
-            # (B,A,N)
+            # (B,A,N):
             mask_fill = msnp.where(neighbour_mask, 0, self.mask_fill)
             # (B,A,N,D) = (B,A,N,D) + (B,A,N,1)
             neighbour_vector += F.expand_dims(mask_fill, -1)
 
-        # (B,A,N) = (B,A,N,D)
+        # (B,A,N) = (B,A,N,D):
         neighbour_distance = self.norm_last_dim(neighbour_vector)
 
         if self.cutoff is not None:

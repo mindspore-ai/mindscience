@@ -173,6 +173,8 @@ class NeighbourList(Cell):
         """
         set exclude index.
 
+        exclude_index (Tensor): Tensor of exclude indexes.
+
         Returns:
             bool.
         """
@@ -199,6 +201,10 @@ class NeighbourList(Cell):
     def calcaulate(self, coordinate: Tensor, pbc_box: Tensor = None):
         """
         calculate neighbour list.
+
+        Args:
+            coordinate (Tensor):    Tensor of coordinates.
+            pbc_box (Tensor):       Tensor of PBC box.
 
         Returns:
             - index(Tensor).

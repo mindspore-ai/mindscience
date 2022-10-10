@@ -82,7 +82,12 @@ class BerendsenThermostat(Thermostat):
         self.ratio = self.control_step * self.time_step / self.time_constant
 
     def set_time_step(self, dt):
-        """set simulation time step."""
+        """
+        set simulation time step.
+
+        Args:
+            dt (float): Time of a time step.
+        """
         self.time_step = dt
         self.ratio = self.control_step * self.time_step / self.time_constant
         return self

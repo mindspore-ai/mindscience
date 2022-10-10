@@ -121,6 +121,10 @@ class ForceFieldParameters:
         """
         Get the force field bond parameters.
 
+        Args:
+            bonds (ndarray):        Array of bonds between two atoms.
+            atom_type (ndarray):    Array of the types of atoms.
+
         Returns:
             dict, params.
         """
@@ -160,6 +164,10 @@ class ForceFieldParameters:
         """
         Get the force field angle parameters.
 
+        Args:
+            angles (ndarray):       Array of angles.
+            atom_type (ndarray):    Array of the types of atoms.
+
         Returns:
             dict, params.
         """
@@ -198,6 +206,10 @@ class ForceFieldParameters:
     def get_dihedral_params(self, dihedrals_in, atom_types):
         """
         Get the force field dihedral parameters.
+
+        Args:
+            dihedrals_in (ndarray): Array of input dihedrals.
+            atom_type (ndarray):    Array of the types of atoms.
 
         Returns:
             dict, params.
@@ -250,6 +262,11 @@ class ForceFieldParameters:
     def get_improper_params(self, improper_in, atom_types, third_id):
         """
         Pre-processing of getting improper dihedrals.
+
+        Args:
+            improper_in (ndarray):  Array of input improper dihedrals.
+            atom_types (ndarray):   Array of the types of atoms.
+            third_id (ndarray):     Array of the third IDs.
 
         Returns:
             dict, params.
@@ -319,6 +336,11 @@ class ForceFieldParameters:
         """
         Get all the combinations of 3 atoms.
 
+        Args:
+            bonds (ndarray):            Array of bonds.
+            bonds_for_angle (ndarray):  Array of bonds for angles.
+            middle_id (ndarray):        Array of middle IDs.
+
         Returns:
             np.ndarray, angles.
         """
@@ -348,6 +370,9 @@ class ForceFieldParameters:
 
     def construct_hash(self, bonds):
         """
+        Args:
+            bonds (ndarray):    Array of bonds.
+
         Returns:
             dict, hash map.
         """
@@ -360,6 +385,10 @@ class ForceFieldParameters:
     def trans_dangles(self, dangles, middle_id):
         """
         Construct the dihedrals.
+
+        Args:
+            dangles (ndarray):      Array of dangles.
+            middle_id (ndarray):    Array of middle IDs.
 
         Returns:
             np.ndarray, dihedrals.
@@ -393,6 +422,10 @@ class ForceFieldParameters:
         """
         Get the dihedrals indexes.
 
+        Args:
+            angles (ndarray):               Array of angles.
+            dihedral_middle_id (ndarray):   Array of dihedrals middle indexes.
+
         Returns:
             np.ndarray, dihedrals.
         """
@@ -420,6 +453,10 @@ class ForceFieldParameters:
         """
         Check if there are same improper dihedrals.
 
+        Args:
+            bonds (ndarray):    Array of bonds.
+            core_id (ndarray):  Array of core indexes.
+
         Returns:
             int, core id of same improper dihedrals.
         """
@@ -445,6 +482,10 @@ class ForceFieldParameters:
     def get_improper(self, bonds, core_id):
         """
         Get the improper dihedrals indexes.
+
+        Args:
+            bonds (ndarray):    Array of bonds.
+            core_id (ndarray):  Array of core indexes.
 
         Returns:
             - improper (np.ndarray).
@@ -473,6 +514,12 @@ class ForceFieldParameters:
     def get_excludes(self, bonds, angles, dihedrals, improper):
         """
         Get the exclude atoms index.
+
+        Args:
+            bonds (ndarray):        Array of bonds.
+            angles (ndarray):       Array of angles.
+            dihedrals (ndarray):    Array of dihedrals.
+            improper (ndarray):     Array of improper.
 
         Returns:
             np.ndarray, the index of exclude atoms.
@@ -523,6 +570,9 @@ class ForceFieldParameters:
          'C4','CT','CX','C','N','N3','S','SH','P','MG',
          'C0','F','Cl','Br','I','2C','3C','C8','CO']
 
+        Args:
+            atom_type (ndarray):    Array of atoms.
+
         Returns:
             dict, parameters.
         """
@@ -568,6 +618,12 @@ class ForceFieldParameters:
         """
         Calculate the B coefficient in vdw potential.
 
+        Args:
+            e0 (ndarray):   Coefficient one.
+            e1 (ndarray):   Coefficient two.
+            r0 (ndarray):   Coefficient three.
+            r1 (ndarray):   Coefficient four.
+
         Returns:
             np.ndarray, the B coefficient in vdw potential.
         """
@@ -578,6 +634,9 @@ class ForceFieldParameters:
     def get_hbonds(self, bonds):
         """
         Get hydrogen bonds.
+
+        Args:
+            atom_type (ndarray):    Array of atoms.
 
         Returns:
             - bonds (np.ndarray), bonds with H.
@@ -591,6 +650,11 @@ class ForceFieldParameters:
     def get_pair_index(self, dihedrals, angles, bonds):
         """
         Get the non-bonded atom pairs index.
+
+        Args:
+            dihedrals (ndarray):    Array of dihedrals.
+            angles (ndarray):       Array of angles.
+            bonds (ndarray):        Array of bonds.
 
         Returns:
             np.ndarray, non-bonded atom pairs index.
@@ -625,6 +689,11 @@ class ForceFieldParameters:
     def get_pair_params(self, pair_index, epsilon, sigma):
         """
         Return all the pair parameters.
+
+        Args:
+            pair_index (ndarray):   Array of pair indexes.
+            epsilon (ndarray):      Array of epsilon.
+            sigma (ndarray):        Array of sigma.
 
         Returns:
             dict, pair parameters.

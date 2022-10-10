@@ -111,7 +111,14 @@ class Barostat(Controller):
         return self.beta
 
     def pressure_scale(self, sim_press: Tensor, ref_press: Tensor, ratio: float = 1) -> Tensor:
-        """calculate the coordinate scale factor for pressure coupling."""
+        """
+        calculate the coordinate scale factor for pressure coupling.
+
+        Args:
+            sim_press (Tensor): The tensor of simulation pressure.
+            ref_press (Tensor): The tensor of reference pressure.
+            ratio (float):      The ratio used to change the difference of two pressures. Default: 1
+        """
         delta_p = ref_press - sim_press
         change = - ratio * self.beta * delta_p
 

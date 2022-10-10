@@ -61,8 +61,8 @@ def write_yaml(filename: str, data: dict):
     write yaml file.
 
     Args:
-        filename(str): name of yaml file.
-        data(dict).
+        filename(str):  name of yaml file.
+        data(dict):     A dict of data.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

@@ -38,6 +38,7 @@ class WriteH5MD(Callback):
     Args:
         system (Molecule):      Simulation system
         filename (str):         Name of output H5MD file.
+        save_freq(int):         Saved frequency. Default: 1
         directory (str):        Directory of the output file. Default: None
         write_velocity (bool):  Whether to write the velocity of the system to the H5MD file.
                                 Default:  False
@@ -45,8 +46,6 @@ class WriteH5MD(Callback):
                                 Default: False
         wiite_image (bool):     Whether to write the image of the position of system to the H5MD file.
                                 Default: False
-        compression (str):      Compression strategy for HDF5. Default: 'gzip'
-        compression_opts (int): Compression settings for HDF5. Default: 4
         length_unit (str):      Length unit for coordinates. Default: None.
         energy_unit (str):      Energy unit. Default: None.
 

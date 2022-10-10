@@ -36,7 +36,7 @@ def str_to_tensor(string: str) -> Tensor:
     encode string to Tensor[int]
 
     Args:
-        string(string).
+        string (str):    The input string.
 
     Returns:
         Tensor[int].
@@ -54,7 +54,7 @@ def tensor_to_str(tensor: Tensor) -> str:
     decode to Tensor[int] to string
 
     Args:
-        tensor(Tensor[int]).
+        tensor (Tensor[int]):   The input tensor.
 
     Returns:
         string(str).
@@ -75,9 +75,10 @@ def get_class_parameters(hyper_param: dict, prefix: str, num_class: int = 1) -> 
     get hyperparameter from Cell class.
 
     Args:
-        hyper_param (dict).
-        prefix (str).
-        num_class (int).
+        hyper_param (dict): A dict of hyperparameters.
+        prefix (str):       Only parameters starting with the prefix
+                            will be loaded. Default: '_hyperparam'
+        num_class (int):    The number of the class.
 
     Returns:
         hyperparameters, dict.
@@ -116,8 +117,9 @@ def get_hyper_parameter(hyper_param: dict, prefix: str):
     get hyperparameter.
 
     Args:
-        hyper_param (dict).
-        prefix (str).
+        hyper_param (dict): A dict of hyperparameters.
+        prefix (str):       Only parameters starting with the prefix
+                            will be loaded. Default: '_hyperparam'
 
     Returns:
         hyper_param[prefix], Tensor.
@@ -135,8 +137,9 @@ def get_hyper_string(hyper_param: dict, prefix: str):
     get string type hyperparameter.
 
     Args:
-        hyper_param (dict).
-        prefix (str).
+        hyper_param (dict): A dict of hyperparameters.
+        prefix (str):       Only parameters starting with the prefix
+                            will be loaded. Default: '_hyperparam'
 
     Returns:
         str.
@@ -157,9 +160,10 @@ def set_hyper_parameter(hyper_param: dict, prefix: str, param: None):
     put param into hyper_param.
 
     Args:
-        hyper_param (dict).
-        prefix (str).
-        param (Union[str, Tensor]).
+        hyper_param (dict):         A dict of hyperparameters.
+        prefix (str):               Only parameters starting with the prefix
+                                    will be loaded. Default: '_hyperparam'
+        param (Union[str, Tensor]): Parameters need to be put into the hyperparameter dict.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -179,9 +183,10 @@ def set_class_parameters(hyper_param: list, prefix: str, cell: Cell):
     put hyperparameters into Cell class.
 
     Args:
-        hyper_param (dict).
-        prefix (str).
-        cell (Cell).
+        hyper_param (dict): A dict of hyperparameters.
+        prefix (str):       Only parameters starting with the prefix
+                            will be loaded. Default: '_hyperparam'
+        cell (Cell):        A neural network cell.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -212,10 +217,11 @@ def load_hyper_param_into_class(cls_dict: dict, hyper_param: dict, types: dict, 
     load hyperparameter into Cell class.
 
     Args:
-        cls_dict (dict).
-        hyper_param (dict).
-        types (dict).
-        prefix (str).
+        cls_dict (dict):    A dict of cls.
+        hyper_param (dict): A dict of hyperparameters.
+        types (dict):       A dict of types of values.
+        prefix (str):       Only parameters starting with the prefix
+                            will be loaded. Default: '_hyperparam'
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -244,10 +250,11 @@ def set_class_into_hyper_param(hyper_param: dict, types: dict, cls: Cell, prefix
     take hyperparameter from Cell class.
 
     Args:
-        hyper_param (dict).
-        types (dict).
-        cls (Cell).
-        prefix (str).
+        hyper_param (dict): A dict of hyperparameters.
+        types (dict):       A dict of types of values.
+        cls (Cell):         A neural network cell.
+        prefix (str):       Only parameters starting with the prefix
+                            will be loaded. Default: '_hyperparam'
 
     Supported Platforms:
         ``Ascend`` ``GPU``

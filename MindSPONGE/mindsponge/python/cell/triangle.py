@@ -37,7 +37,7 @@ class TriangleAttention(nn.Cell):
         layer_norm_dim (int):   The dimension of the layer_norm.
         batch_size (int):       The batch size of parameters in MSA row attention, used in while control flow.
         slice_num (int):        The number of slices to be made to reduce memory.
-    
+
     Inputs:
         - **pair_act** (Tensor) - Tensor of pair_act. Data type is float.
         - **pair_mask** (Tensor) - The mask for TriangleAttention matrix with shape.
@@ -75,14 +75,13 @@ class TriangleAttention(nn.Cell):
         """
         compute.
 
-        Inputs:
-            - **pair_act** (Tensor) - Tensor of pair_act. Data type is float.
-            - **input_mask** (Tensor) - The mask for TriangleAttention matrix with shape
-              (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
-              to this shape).
-            - **index** (Tensor) - The index of while loop, only used in case of while control
-              flow. Default: None
-            - **nonbatched_bias** (Tensor) - The bias of nonbatched.
+        Args:
+            pair_act (Tensor):          Tensor of pair_act. Data type is float.
+            input_mask (Tensor):        The mask for TriangleAttention matrix with shape (batch_size, num_heads,
+                                        query_seq_length,  value_seq_length)(or broadcastable to this shape).
+            index (Tensor):             The index of while loop, only used in case of while control
+                                        flow. Default: None
+            nonbatched_bias (Tensor):   The bias of nonbatched.
 
         Outputs:
             - **pair_act** (Tensor) - Tensor, the float tensor of the pair_act of the layer with
@@ -347,6 +346,7 @@ class OuterProductMean(nn.Cell):
     Args:
         num_outer_channel (float):  The number of outer channel.
         act_dim (int):              The last dimension length of the act.
+        num_output_channel (int):   The number of output channels.
         batch_size (int):           The batch size of parameters in outer product mean. Default: None.
         slice_num (int):            The slice num used in outer product mean
                                     when the memory is overflow. Default: 0.
