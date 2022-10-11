@@ -27,6 +27,9 @@ class MonitorTrain(Callback):
     r"""
     Loss monitor for train.
 
+    Note:
+        If `per_print_times` is 0, do not print loss.
+
     Args:
         per_print_times (int): print loss interval. Default: 1.
         summary_dir (str): summary save path. Default: './summary_train'.
