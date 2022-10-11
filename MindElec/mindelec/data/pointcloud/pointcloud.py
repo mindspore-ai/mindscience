@@ -64,7 +64,11 @@ class BBoxType(IntEnum):
     - 'DYNAMIC', generate sampling bbox from the bbox of all 3-D topology models and space extension
       constants, models bbox can be computed automatically after read all files, then add extension
       constants on each direction the DYNAMIC sampling bbox can be obtained. Each model is different.
-      Space=(x_min - x_neg, y_min - y_neg, z_min - z_neg, x_max + x_pos, y_max + y_pos, z_max + z_pos)
+
+    .. math::
+        \text{Space} = (x_{min} - x_{neg}, y_{min} - y_{neg}, z_{min} - z_{neg},
+        x_{max} + x_{pos}, y_{max} + y_{pos}, z_{max} + z_{pos}).
+
     - 'STATIC', users can specify the sampling space on each dimension,
       in (x_min, y_min, z_min, x_max, y_max, z_max) order.
 
@@ -154,7 +158,7 @@ class PointCloudSamplingConfig:
 
 class MaterialConfig:
     r"""
-    Material solution config for PointCloud-Tensor generation, which influence the material solving stage.
+    Material properties config for PointCloud-Tensor generation, which influence the material solving stage.
 
     Args:
         json_file (str): Material information for each sub-model json file path.

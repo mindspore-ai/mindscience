@@ -26,7 +26,7 @@ mindelec.data.PointCloud
 
     .. py:method:: mindelec.data.PointCloud.tensor_build()
 
-        使用topology_solving模块中获取的信息构建PointCloud张量。如果PointCloud对象使用材料配置初始化，将考虑所有的材料物理信息。所有结果将存储在全局字典列表中，总进程数量num_of_workers用于并行计算。
+        使用topology_solving模块中获取的信息构建PointCloud Tensor。如果PointCloud对象使用材料配置初始化，将考虑所有的材料物理信息。所有结果将存储在全局字典列表中，总进程数量num_of_workers用于并行计算。
 
         返回：
             numpy.ndarray，PointCloud结果。

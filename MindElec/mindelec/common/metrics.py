@@ -64,12 +64,13 @@ class L2(nn.Metric):
         self.square_label_sum = 0
 
     def update(self, *inputs):
-        """
-        Updates the internal evaluation result :math:`y_{pred}` and :math:`y`.
+        r"""
+        Updates the internal evaluation result :math:`\text{y_pred}` and :math:`y`.
 
         Args:
-            inputs: Input `y_pred` and `y` for calculating L2 where the shape of
-                `y_pred` and `y` are same. The input data type must be tensor, list or numpy.array.
+            inputs (Union[Tensor, list, numpy.array]): `y_pred` and `y` can be retrieved from `input`. `y_pred` is
+            the predicted value while `y` the ground truth value.
+            They are used for calculating L2 where the shape of them are the same.
 
         Raises:
             ValueError: if the length of inputs is not 2.

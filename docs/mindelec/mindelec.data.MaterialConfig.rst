@@ -3,7 +3,7 @@ mindelec.data.MaterialConfig
 
 .. py:class:: mindelec.data.MaterialConfig(json_file, material_dir, physical_field, customize_physical_field=None, remove_vacuum=True)
 
-    PointCloud-Tensor生成的材料解的配置，影响材料求解阶段。
+    PointCloud-Tensor生成的材料属性值，影响材料求解阶段。
 
     参数：
         - **json_file** (str) - 每个子模型json文件路径的物料信息。
