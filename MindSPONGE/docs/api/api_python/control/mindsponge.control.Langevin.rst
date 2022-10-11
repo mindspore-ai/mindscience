@@ -1,0 +1,30 @@
+mindsponge.control.Langevin
+===========================
+
+.. py:class:: mindsponge.control.Langevin(system, temperature=300, control_step=1, time_constant=2, seed=0, seed2=0)
+
+    Langevin恒温控制器。
+
+    参数：
+        - **system** (Molecule) - 模拟系统。
+        - **temperature** (float) - 温度耦合的参考温度 T_ref，单位为K。默认值：300。
+        - **control_step** (int) - 控制器执行的步骤间隔。默认值：1。
+        - **time_constant** (float) - 温度耦合的时间常数 \tau_T。单位为ps。默认值：4。
+        - **seed** (int) - 标准常态的随机种子。默认值：0。
+        - **seed2** (int) - 标准常态的随机种子2。默认值：0。
+
+    输出：
+        - Tensor。坐标，shape(B, A, D)。
+        - Tensor。速度，shape(B, A, D)。
+        - Tensor。力，shape(B, A, D)。
+        - Tensor。能量，shape(B, 1)。
+        - Tensor。动力学，shape(B, D)。
+        - Tensor。维里，shape(B, D)。
+        - Tensor。周期性边界条件box，shape(B, D)。
+
+    .. py:method:: set_time_step(dt)
+
+        设置模拟单步时间。
+
+        参数：
+            - **dt** (float) - 单步时间所需时间。

@@ -35,8 +35,8 @@ def update_dict(origin_dict: dict, new_dict: dict) -> dict:
     update complex dict.
 
     Args:
-        origin_dict(dict).
-        new_dict(dict).
+        origin_dict(dict):  The original input dict need to be updated.
+        new_dict(dict):     Complex dict will be updated according to new dict.
 
     Returns:
         dict, update complex dict.

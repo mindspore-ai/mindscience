@@ -43,7 +43,7 @@ class NeighbourList(Cell):
     Args:
         system (Molecule):      Simulation system.
         cutoff (float):         Cutoff distance. Default: None
-                                update_steps (int): Steps of update frequency. Default: 20
+        update_steps (int):     Steps of update frequency. Default: 20
         exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int.
                                 Index of neighbour atoms which could be excluded from the neighbour list.
                                 Default: None
@@ -173,7 +173,8 @@ class NeighbourList(Cell):
         """
         set exclude index.
 
-        exclude_index (Tensor): Tensor of exclude indexes.
+        Args:
+            exclude_index (Tensor): Tensor of exclude indexes.
 
         Returns:
             bool.

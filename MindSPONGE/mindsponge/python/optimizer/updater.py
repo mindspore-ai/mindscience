@@ -346,7 +346,7 @@ class Updater(Optimizer):
 
     def get_dt(self):
         """
-        get time step.
+        get the learning rate of current step.
 
         Returns:
             float, the learning rate of current step.

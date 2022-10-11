@@ -42,7 +42,7 @@ class VelocityVerlet(Integrator):
     Reference:
         Zhang, Z.; Liu, X.; Chen, Z.; Zheng, H.; Yan, K.; Liu, J.
         A Unified Thermostat Scheme for Efficient Configurational Sampling for
-            Classical/Quantum Canonical Ensembles via Molecular Dynamics [J].
+        Classical/Quantum Canonical Ensembles via Molecular Dynamics [J].
         The Journal of Chemical Physics, 2017, 147(3): 034109.
 
     Args:
