@@ -7,9 +7,9 @@ mindelec.operators.SecondOrderGrad
 
     参数：
         - **model** (Cell) - 接受单个Tensor输入并返回单个Tensor的函数或网络。
-        - **input_idx1** (int) - 指定输入的列索引，以生成一阶导数。
-        - **input_idx2** (int) - 指定输入的列索引，以生成二阶导数。
-        - **output_idx** (int) - 指定输出的列索引。
+        - **input_idx1** (int) - 指定输入的列索引，取值属于0到网络输入维度-1，以生成一阶导数。
+        - **input_idx2** (int) - 指定输入的列索引，取值属于0到网络输入维度-1，以生成二阶导数。
+        - **output_idx** (int) - 指定输出的列索引，取值属于0到网络输出维度-1，。
 
     输入：
         - **input** - 给定函数或网络 `model` 的输入。

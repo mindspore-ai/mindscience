@@ -7,7 +7,7 @@ mindelec.geometry.Rectangle
 
     参数：
         - **name** (str) - 矩形的名称。
-        - **coord_min** (Union[tuple[int, float], list[int, float], numpy.ndarray]) - 矩形的左底部的坐标。
-        - **coord_max** (Union[tuple[int, float], list[int, float], numpy.ndarray]) - 矩形的右顶部的坐标。
+        - **coord_min** (Union[tuple[float, float], tuple[int, int], list[float, float], list[int, int], numpy.ndarray]) - 矩形的左底部的坐标。
+        - **coord_max** (Union[tuple[float, float], tuple[int, int], list[float, float], list[int, int], numpy.ndarray]) - 矩形的右顶部的坐标。
         - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：numpy.float32。
         - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。

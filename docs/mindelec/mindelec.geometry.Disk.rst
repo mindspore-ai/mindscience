@@ -7,7 +7,7 @@ mindelec.geometry.Disk
 
     参数：
         - **name** (str) - 圆盘的名称。
-        - **center** (Union[tuple[int, float], list[int, float], numpy.ndarray]) - 圆盘的中心坐标。
+        - **center** (Union[tuple[float, float], tuple[int, int], list[float, float], list[int, int], numpy.ndarray]) - 圆盘的中心坐标。
         - **radius** (Union[int, float]) - 圆盘的半径。
         - **dtype** (numpy.dtype) - 采样点的数据类型。默认值：numpy.float32。
         - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
@@ -21,10 +21,11 @@ mindelec.geometry.Disk
         采样域和边界点。
 
         参数：
-            - **geom_type** (str) - 几何类型。
+            - **geom_type** (str) - 几何类型，可以是"domain"或者"BC"。默认值："domain"。
 
         返回：
-            Numpy.array，带或不带边界法向向量的二维numpy数组。
+            Numpy.array，如果配置选择包括法向向量，返回带边界法向向量的二维numpy数组。否则返回不带边界法向向量的二维numpy数组。
+
 
         异常：
             - **ValueError** - 如果 `config` 为None。

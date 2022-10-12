@@ -8,8 +8,8 @@ mindelec.geometry.Geometry
     参数：
         - **name** (str) - 几何体的名称。
         - **dim** (int) - 维数。
-        - **coord_min** (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]) - 几何体的最小坐标。
-        - **coord_max** (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]) - 几何体的最大坐标。
+        - **coord_min** (Union[tuple[float, float], tuple[int, int], list[float, float], list[int, int], numpy.ndarray])- 几何体的最小坐标。
+        - **coord_max** (Union[tuple[float, float], tuple[int, int], list[float, float], list[int, int], numpy.ndarray]) - 几何体的最大坐标。
         - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：numpy.float32。
         - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
 
