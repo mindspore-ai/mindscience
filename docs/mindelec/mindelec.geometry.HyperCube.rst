@@ -24,6 +24,9 @@ mindelec.geometry.HyperCube
         参数：
             - **geom_type** (str) - 几何类型，可以是"domain"或者"BC"。默认值："domain"。
 
+              - "domain": 问题的可行域。
+              - "BC": 问题的边界条件。
+
         返回：
             Numpy.array，如果配置选择包括法向向量，返回带边界法向向量的二维numpy数组。否则返回不带边界法向向量的二维numpy数组。
 

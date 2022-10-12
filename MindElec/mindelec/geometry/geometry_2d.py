@@ -31,10 +31,11 @@ class Disk(Geometry):
 
     Args:
         name (str): name of the disk.
-        center (Union[tuple[int, float], list[int, float], numpy.ndarray]): center coordinates of the disk.
+        center (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]): center
+            coordinates of the disk.
         radius (Union[int, float]): radius of the disk.
         dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Raises:
         ValueError: If `center` is neither list nor tuple of length 2.
@@ -152,10 +153,14 @@ class Disk(Geometry):
         sampling domain and boundary points.
 
         Args:
-            geom_type (str): geometry type.
+            geom_type (str): geometry type: can be 'domain' or 'BC'. Default: 'domain'.
+
+                - 'domain', feasible domain of the problem.
+                - 'BC', boundary of the problem.
 
         Returns:
-            Numpy.array, 2D numpy array with or without boundary normal vectors.
+            Numpy.array. If the with_normal property of boundary configuration is true, returns 2D numpy array with
+            boundary normal vectors. Otherwise, returns 2D numpy array without boundary normal vectors.
 
         Raises:
             ValueError: If `config` is None.
@@ -220,12 +225,12 @@ class Rectangle(HyperCube):
 
     Args:
         name (str): name of the rectangle.
-        coord_min (Union[tuple[int, float], list[int, float], numpy.ndarray]): coordinates of the bottom
-            left corner of rectangle.
-        coord_max (Union[tuple[int, float], list[int, float], numpy.ndarray]): coordinates of the top
-            right corner of rectangle.
+        coord_min (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
+            coordinates of the bottom left corner of rectangle.
+        coord_max (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
+            coordinates of the top right corner of rectangle.
         dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Supported Platforms:
         ``Ascend``
