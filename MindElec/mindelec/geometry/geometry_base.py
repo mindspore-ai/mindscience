@@ -113,12 +113,12 @@ class Geometry:
     Args:
         name (str): name of the geometry.
         dim (int): number of dimensions.
-        coord_min (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of the
-            geometry.
-        coord_max (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of the
-            geometry.
+        coord_min (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
+            minimal coordinate of the geometry.
+        coord_max (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
+            maximal coordinate of the geometry.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Supported Platforms:
         ``Ascend``

@@ -32,7 +32,7 @@ class TimeDomain(Interval):
         start (Union[int, float]): start of the time domain. Default: 0.0.
         end (Union[int, float]): end of the time domain. Default: 1.0.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Supported Platforms:
         ``Ascend``
@@ -67,10 +67,10 @@ class GeometryWithTime(Geometry):
     Args:
         geometry (Geometry): geometry
         timedomain (TimeDomain): time domain
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Raises:
-        ValueError: If `sampling_config` is not None but `sampling_config.time` is None .
+        ValueError: If `sampling_config` is not None but `sampling_config.time` is None.
 
     Supported Platforms:
         ``Ascend``
@@ -250,10 +250,15 @@ class GeometryWithTime(Geometry):
         sampling points
 
         Args:
-            geom_type (str): geometry type
+            geom_type (str): geometry type: can be 'domain' or 'BC' or 'IC'. Default: 'domain'.
+
+                - 'domain', feasible domain of the problem.
+                - 'BC', boundary of the problem.
+                - 'IC', initial condition of the problem.
 
         Returns:
-            Numpy.array, 2D numpy array with or without boundary normal vectors
+            Numpy.array, if the with_normal property of boundary configuration is true, returns 2D numpy array with
+                         boundary normal vectors. Otherwise, returns 2D numpy array without boundary normal vectors.
 
         Raises:
             ValueError: If `config` is None.

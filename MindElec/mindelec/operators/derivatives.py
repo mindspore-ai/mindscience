@@ -105,9 +105,9 @@ class Grad(nn.Cell):
         argnum (int): specifies which input the output takes the first derivative of. Default: 0.
 
     Inputs:
-        - **x** - The input is variable-length argument. Notes that the last three inputs are column index of
-          input (int), column index of output (int) and output of network (Tensor). Besides these inputs, the
-          first is the network inputs (Tensor), which should be two dimensions.
+        - **x** (list) - The input is variable-length argument. The first input is a 2D network inputs (Tensor),
+          the last three inputs are column index of input (int), column index of output (int) and output of
+          network (Tensor).
 
     Outputs:
         Tensor.
@@ -180,9 +180,11 @@ class SecondOrderGrad(nn.Cell):
 
     Args:
         model (Cell): a function or network that takes a single Tensor input and returns a single Tensor.
-        input_idx1 (int): specifies the column index of input to take the first derivative of.
-        input_idx2 (int): specifies the column index of input to take the second derivative of.
-        output_idx (int): specifies the column index of output.
+        input_idx1 (int): specifies the column index of input to take the first derivative,
+            takes values in [0, model input size - 1].
+        input_idx2 (int): specifies the column index of input to take the second derivative,
+            takes values in [0, model input size - 1].
+        output_idx (int): specifies the column index of output, takes values in [0, model output size - 1].
 
     Inputs:
         - **input** - The input of given function or network `model`.
@@ -252,7 +254,7 @@ class Jacobian(nn.Cell):
             Tensor or tuple of Tensors. If `arg_nums` is int, output will be a Tensor whose shape is the shape of
             specified output * the shape of specified input. If `arg_nums` is None, output will be a tuple of Tensors
             where output[i] will contain the Jacobian of the specified output and ith input and will have as size the
-            concatenation of the sizes of the corresponding output and the corresponding input
+            concatenation of the sizes of the corresponding output and the corresponding input.
 
         Raises:
             TypeError: if the type of `arg_nums` or `out_idx` is not int.

@@ -148,5 +148,5 @@ def test_full_em():
     l2_s11 = res['evl_mrc']['l2_error']
     print('test_res:', f'l2_error: {l2_s11:.10f} ')
     print(f'per step time: {per_step_time:.10f} ')
-    assert l2_s11 <= 0.05
+    assert l2_s11 <= 0.1
     assert per_step_time <= 150

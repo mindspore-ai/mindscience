@@ -29,12 +29,12 @@ class HyperCube(Geometry):
     Args:
         name (str): name of the hyper cube.
         dim (int): number of dimensions.
-        coord_min (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): minimal coordinate of the
-            hyper cube.
-        coord_max (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]): maximal coordinate of the
-            hyper cube.
+        coord_min (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float],
+            numpy.ndarray]): minimal coordinate of the hyper cube.
+        coord_max (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float],
+            numpy.ndarray]): maximal coordinate of the hyper cube.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Raises:
         TypeError: sampling_config is not instance of class SamplingConfig.
@@ -166,10 +166,14 @@ class HyperCube(Geometry):
         sampling points
 
         Args:
-            geom_type (str): geometry type
+            geom_type (str): geometry type: can be 'domain' or 'BC'. Default: 'domain'.
+
+                - 'domain', feasible domain of the problem.
+                - 'BC', boundary of the problem.
 
         Returns:
-            Numpy.array, 2D numpy array with or without boundary normal vectors
+            Numpy.array, if the with_normal property of boundary configuration is true, returns 2D numpy array with
+                         boundary normal vectors. Otherwise, returns 2D numpy array without boundary normal vectors.
 
         Raises:
             ValueError: If `config` is None.

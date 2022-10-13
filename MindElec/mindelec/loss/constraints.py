@@ -32,7 +32,7 @@ class _Instance(nn.Cell):
 
     Args:
         problem (Problem): The pde problem.
-        constraint_type (str): The pde equation and constraint type of pde problem. Default: "Equation"
+        constraint_type (str): The pde equation and constraint type of pde problem. Default: "Equation".
 
     Returns:
         Function, the constraint function of the problem.
@@ -72,8 +72,8 @@ class Constraints:
     Definition of the loss for all sub-dataset.
 
     Args:
-        dataset (Dataset): The dataset including pde equation, boundary condition and initial condition.
-        pde_dict(dict): The dict of pde problem.
+        dataset (Dataset): The dataset includes partial differential equation, boundary condition and initial condition.
+        pde_dict(dict): The dict of partial differential equation problem.
 
     Supported Platforms:
         ``Ascend``
