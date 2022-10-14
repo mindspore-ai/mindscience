@@ -752,7 +752,7 @@ def get_integer(value: Union[int, Tensor, Parameter, ndarray]) -> int:
         value (Union[int, Tensor, Parameter, ndarray]): Input value.
 
     Returns:
-        integer (int).
+        integer, the integer type of the input value.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

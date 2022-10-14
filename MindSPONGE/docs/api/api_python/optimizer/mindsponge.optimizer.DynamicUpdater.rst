@@ -1,3 +1,6 @@
+mindsponge.optimizer.DynamicUpdater
+===================================
+
 .. py:class:: mindsponge.optimizer.DynamicUpdater(system, integrator, thermostat, barostat, constraint, controller, time_step=1e-3, velocity, weight_decay=0.0, loss_scale=1.0)
 
     分子动力学模拟更新器。

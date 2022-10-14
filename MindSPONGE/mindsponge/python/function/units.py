@@ -146,7 +146,7 @@ class Length:
 
     Args:
         value (float):   length value.
-        unit (str):      length value unit.
+        unit (str):      length value unit. Default: 'nm'
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -283,7 +283,7 @@ class Energy:
 
     Args:
         value (float):   energy value.
-        unit (str):      energy value unit.
+        unit (str):      energy value unit. Default: 'kl/mol'
 
     Supported Platforms:
         ``Ascend`` ``GPU``
