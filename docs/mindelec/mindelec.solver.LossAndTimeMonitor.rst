@@ -12,7 +12,7 @@ mindelec.solver.LossAndTimeMonitor
 
     参数：
         - **data_size** (int) - 每个epoch数据集的批次数。
-        - **per_print_times** (int) - 每秒钟打印loss的次数。默认值：1。
+        - **per_print_times** (int) - 表示每隔多少个step打印一次loss。默认值：1。
 
     异常：
         - **ValueError** - 如果 `data_size` 不是整数或小于零。

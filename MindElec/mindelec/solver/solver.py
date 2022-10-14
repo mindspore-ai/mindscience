@@ -40,7 +40,8 @@ class Solver:
         train_constraints (Constraints): Definition of the loss for train dataset. Default: None. If mode
             is PINNs, the train_constraints cannot be None.
         test_constraints (Constraints): Definition of the loss for test dataset. Default: None. If mode is
-            PINNs and eval is needed, the test_constraints cannot be None.
+            PINNs and eval is needed(see train_with_eval and eval functions in the class), the test_constraints
+            cannot be None.
         train_input_map (dict): Specifies the column names of the data in the corresponding dataset to enter
             into the network while training. The key is name of dataset and the value is column names of the data
             in the  corresponding dataset to enter into the network. Default: None. If the input of model is not
@@ -202,7 +203,7 @@ class Solver:
                                      loss_fn, a tuple with multiple data (data1, data2, data3, ...) should be
                                      returned and passed to the network. Otherwise, a tuple (data, label) should
                                      be returned.
-            callbacks (Optional[list[Callback], Callback]): List of callback objects or callback object,
+            callbacks (Union[list[Callback], Callback]): List of callback objects or callback object,
                                                             which should be executed while training.
                                                             Default: None.
             dataset_sink_mode (bool): Determines whether to pass the data through dataset channel.
@@ -236,16 +237,16 @@ class Solver:
 
         Args:
             epoch (int): Generally, total number of iterations on the data per epoch.
-                         When dataset_sink_mode is set to true and sink_size>0, each epoch sink sink_size
+                         When `dataset_sink_mode` is set to true and `sink_size`>0, each epoch sink `sink_size`
                          steps on the data instead of total number of iterations.
             train_dataset (Dataset): A training dataset iterator. If there is no
-                                     loss_fn, a tuple with multiple data (data1, data2, data3, ...) should be
+                                     `loss_fn`, a tuple with multiple data (data1, data2, data3, ...) should be
                                      returned and passed to the network. Otherwise, a tuple (data, label) should
                                      be returned. The data and label would be passed to the network and loss
                                      function respectively.
             test_dataset (Dataset): Dataset to evaluate the model.
             eval_interval (int): Specifies eval interval.
-            callbacks (Optional[list[Callback], Callback]): List of callback objects or callback object,
+            callbacks (Union[list[Callback], Callback]): List of callback objects or callback object,
                                                             which should be executed while training.
                                                             Default: None.
             dataset_sink_mode (bool): Determines whether to pass the data through dataset channel. Default: True.
@@ -307,19 +308,17 @@ class Solver:
         """
         Calculate model predictions based on input.
 
-        Data could be a single tensor, a list of tensor, or a tuple of tensor.
-
         Note:
             This is a pre-compile function. The arguments should be the same with model.predict() function.
 
         Args:
-            predict_data: The predict data can be tensor or tuple of tensor.
+            predict_data (Union[Tensor, tuple(Tensor)]): The predict data can be tensor or tuple of tensor.
 
         Returns:
             Tensor, array(s) of predictions.
 
         Raises:
-            TypeError: if predict_data is not Tensor of tuple of tensor.
+            TypeError: if predict_data is not Tensor or tuple of tensor.
 
         Examples:
             >>> input_data = Tensor(np.random.randint(0, 255, [1, 1, 32, 32]), mindspore.float32)
@@ -333,6 +332,6 @@ class Solver:
                     raise TypeError("The element of predict_data should be tensor, but got {}".format(type(item)))
         else:
             if not isinstance(predict_data, Tensor):
-                raise TypeError("predict_data should be Tensor of tuple of tensor but got {}"
+                raise TypeError("predict_data should be Tensor or tuple of tensor but got {}"
                                 .format(type(predict_data)))
         return self._network(*predict_data)

@@ -17,7 +17,7 @@ mindelec.solver.Solver
           - PINNs：模型是physics_informed。
 
         - **train_constraints** (Constraints) - 训练数据集损失的定义。默认值：None。如果模式是PINNs，则 `train_constraints` 不能为None。
-        - **test_constraints** (Constraints) - 测试数据集损失的定义。默认值：None。如果模式为PINNs，也需要 `eval` ， `test_constraints` 不能为None。
+        - **test_constraints** (Constraints) - 测试数据集损失的定义。默认值：None。如果模式为PINNs，且需要执行 `eval`（见类中的 `train_with_eval` 和 `eval` 函数）时， `test_constraints` 不能为None。
         - **train_input_map** (dict) - 在训练时，指定相应数据集中数据的列名进入网络。key为数据集的名称，value为在相应的数据集中的数据列名进入网络。默认值：None。如果模型的输入不是单个， `train_input_map` 不能为None。
         - **test_input_map** (dict) - 在执行评估时，指定相应数据集中数据的列名进入网络。key为数据集的名称，value为进入网络数据集中的列名。默认值：None。如果模型的输入不是单个且需要eval，则 `test_input_map` 不能为None。
         - **mtl_weighted_cell** (Cell) - 基于多任务学习不确定性评估的损失加权算法。默认值：None。
@@ -53,7 +53,6 @@ mindelec.solver.Solver
     .. py:method:: mindelec.solver.Solver.predict(*predict_data)
 
         根据输入计算模型预测。
-        数据可以是单个张量、张量列表或张量元组。
 
         .. note::
             这是一个预编译函数。参数应与model.predict()函数相同。
@@ -91,7 +90,7 @@ mindelec.solver.Solver
             如果 `sink_size` > 0，则数据集的每个epoch都可以无限次遍历，直到从数据集中获取到 `sink_size` 个数的元素。下一个epoch继续从上一个遍历的结束位置遍历。
 
         参数：
-            - **epoch** (t) - 通常为每个epoch数据上的迭代总数。当 `dataset_sink_mode` 设置为true且接 `sink_size` > 0时，每个epoch接收 `sink_size` 步数，而不是迭代总数。
+            - **epoch** (int) - 通常为每个epoch数据上的迭代总数。当 `dataset_sink_mode` 设置为true且接 `sink_size` > 0时，每个epoch接收 `sink_size` 步数，而不是迭代总数。
             - **train_dataset** (Dataset) - 训练数据集迭代器。如果没有 `loss_fn` ，将会返回具有多个数据[data1, data2, data3, ...]的tuple并传递到网络。否则返回tuple[data, label]。数据和标签将分别传到网络和loss函数。
             - **test_dataset** (Dataset) - 用于评估模型的数据集。
             - **eval_interval** (int) - 指定eval间隔。

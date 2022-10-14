@@ -9,4 +9,4 @@ mindelec.vision.plot_eh
         - **simu_res_tensor** (numpy.ndarray) - 模拟结果。shape为 (dim_t, dim_x, dim_y, dim_z, 6)。
         - **path_image_save** (str) - 图像保存路径。
         - **z_index** (int) - 显示z=z_index的2D图像。
-        - **dpi** (int) - 打印参数。默认值：300。
+        - **dpi** (int) - 图形每英寸的点数。默认值：300。

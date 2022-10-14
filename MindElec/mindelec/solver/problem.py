@@ -42,11 +42,11 @@ class Problem:
         """
         governing equation, abstract method.
         this function must be overloaded, if the corresponding constraint type is "Equation".
-        if equation is f(inputs) = 0, the residual f will be returned.
+        if equation is f(inputs) = 0, the residual f will be returned, inputs are data in governing domain.
 
         Args:
-            output (tuple): output of the model.
-            kwargs (input): input to the model.
+            output (tuple): output of surrogate model, such as electric field and magnetic field,etc.
+            kwargs (dict): input of surrogate model, such as time and space coordinates,etc.
         """
         return
 
@@ -54,11 +54,12 @@ class Problem:
         """
         boundary condition, abstract method.
         this function must be overloaded, if the corresponding constraint type is "BC".
-        if boundary condition can be expressed as f(bc_points) = 0, the residual f will be returned.
+        if boundary condition can be expressed as f(bc_points) = 0, the residual f will be returned,
+        bc_points are data on the boundary.
 
         Args:
-            output (tuple): output of the model.
-            kwargs (input): input to the model.
+            output (tuple): output of surrogate model, such as electric field and magnetic field,etc.
+            kwargs (dict): input of surrogate model, such as time and space coordinates,etc.
         """
         return
 
@@ -66,11 +67,12 @@ class Problem:
         """
         initial condition, abstract method.
         this function must be overloaded, if the corresponding constraint type is "IC"
-        if initial condition can be expressed f(ic_points) = 0, the residual f will be returned.
+        if initial condition can be expressed f(ic_points) = 0, the residual f will be returned,
+        ic_points are data at initial time.
 
         Args:
-            output (tuple): output of the model.
-            kwargs (input): input to the model.
+            output (tuple): output of surrogate model, such as electric field and magnetic field,etc.
+            kwargs (dict): input of surrogate model, such as time and space coordinates,etc.
         """
         return
 
@@ -78,10 +80,11 @@ class Problem:
         """
         general case of functional constraint, abstract method.
         this function must be overloaded, if the corresponding constraint type is "Label" or "Function".
-        It's more general case of constraint types which can be expressed as f(inputs) = 0.
-        The residual f will be returned.
+        It's more general case of constraint types which can be expressed as f(inputs) = 0,
+        inputs are data corresponding to general function. The residual f will be returned.
+
         Args:
-            output (tuple): output of the model.
-            kwargs (input): input to the model.
+            output (tuple): output of surrogate model, such as electric field and magnetic field,etc.
+            kwargs (dict): input of surrogate model, such as time and space coordinates,etc.
         """
         return
