@@ -103,13 +103,13 @@ class Thermostat(Controller):
         return self
 
     def velocity_scale(self, sim_kinetics: Tensor, ref_kinetics: Tensor, ratio: float = 1) -> Tensor:
-        """
+        r"""
         calculate the velocity scale factor for temperature coupling.
 
         Args:
             sim_kinetics (Tensor):  Tensor of simulation kinetics.
             ref_kinetics (Tensor):  Tensor of reference kinetics.
-            ratio (float):          The degree of change lambda_.
+            ratio (float):          The degree of change lambda\_.
 
         Returns:
             Tensor, teh velocity scale factor.

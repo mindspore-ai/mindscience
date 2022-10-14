@@ -79,7 +79,7 @@ class MSARowAttentionWithPairBias(nn.Cell):
 
         Outputs:
             - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
-            with shape (batch_size, query_seq_length, hidden_size).
+              with shape (batch_size, query_seq_length, hidden_size).
         """
         msa_act = self.attn_mod(msa_act, msa_act, mask, index, nonbatched_bias)
         return msa_act

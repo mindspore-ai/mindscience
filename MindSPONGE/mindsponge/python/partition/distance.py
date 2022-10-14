@@ -46,7 +46,7 @@ class DistanceNeighbours(Cell):
         num_neighbours (int):   Number of neighbours. If input "None", this value will be calculated by
                                 the ratio of the number of neighbouring grids to the total number of grids.
                                 Default: None
-        atom_mask (Tensor):     Tensor of shape (B, A). Data type is bool_.
+        atom_mask (Tensor):     Tensor of shape (B, A). Data type is bool\_.
                                 Mask of atoms in the system. Default: None
         exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int32.
                                 Index of neighbour atoms which could be excluded from the neighbour list.
