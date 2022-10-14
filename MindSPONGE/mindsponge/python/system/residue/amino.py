@@ -38,6 +38,9 @@ class AminoAcid(Residue):
         atom_name (list):       Atom name. Can be ndarray or list of str. Default: None
         start_index (int):      The start index of the first atom in this residue.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
     Symbols:
         B:  Batchsize, i.e. number of walkers in simulation.
         A:  Number of atoms.

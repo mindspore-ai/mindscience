@@ -97,7 +97,7 @@ def get_template_index(template: dict, names: ndarray, key: str = 'atom_name') -
         index (ndarray), atom index of system.
 
     Supported Platforms:
-    ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU``
     """
     reference: list = template.get(key)
     index = [reference.index(name) for name in names.reshape(-1).tolist()]

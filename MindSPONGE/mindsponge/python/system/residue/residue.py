@@ -69,6 +69,9 @@ class Residue:
                                         The value of the dict is file name.
                                         Default: None.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
     Symbols:
         B:  Batchsize, i.e. number of walkers in simulation.
         A:  Number of atoms.

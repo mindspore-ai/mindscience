@@ -80,7 +80,8 @@ class FullConnectNeighbours(Cell):
         """
         Dummy.
 
-        _exclude_index (Tensor):    Tensor of exclude indexes.
+        Args:
+            _exclude_index (Tensor):    Tensor of exclude indexes.
         """
         # pylint: disable=invalid-name
         return self
