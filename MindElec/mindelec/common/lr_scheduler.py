@@ -43,7 +43,8 @@ def _check_dimension(shape):
 
 class LearningRate(LearningRateSchedule):
     r"""
-    Warmup-decay learning rate.
+    Warmup learning rate and decay learning rate. Return warmup learning rate
+    when warmup_steps is greater than 0. Otherwise, return decay learning rate.
 
     Args:
         learning_rate (float): positive float type number of basic learning rate.
@@ -104,7 +105,8 @@ class LearningRate(LearningRateSchedule):
 
 def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps, poly_power):
     """
-    generate learning rate array.
+    Generate polynomial decay learning rate array.
+    The learning rate decays in a polynomial manner as training goes along.
 
     Args:
        global_step(int): current step number, non-negtive int value.

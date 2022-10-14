@@ -3,7 +3,7 @@ mindelec.common.LearningRate
 
 .. py:class:: mindelec.common.LearningRate(learning_rate, end_learning_rate, warmup_steps, decay_steps, power)
 
-    预热-衰减学习率。
+    构建学习率，包括预热学习率和衰减学习率。热身步骤大于0时，返回预热学习率，否则返回衰减学习率。
 
     参数：
         - **learning_rate** (float) - 基本学习速率，正数。

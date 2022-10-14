@@ -12,4 +12,4 @@ mindelec.geometry.create_config_from_edict
         geometry_base.SamplingConfig，采样配置。
 
     异常：
-        - **ValueError** - 如果无法从输入dict生成part_config_dict。
+        - **ValueError** - 如果输入与GEOM_TYPES完全无法匹配，则无法从输入dict生成part_config_dict。

@@ -3,7 +3,7 @@ mindelec.architecture.MultiScaleFCCell
 
 .. py:class:: mindelec.architecture.MultiScaleFCCell(in_channel, out_channel, layers, neurons, residual=True, act='sin', weight_init='normal', has_bias=True, bias_init='default', num_scales=4, amp_factor=1.0, scale_factor=2.0, input_scale=None, input_center=None, latent_vector=None)
 
-    多规模网络。
+    多尺度神经网络。
 
     参数：
         - **in_channel** (int) - 输入空间中的通道数。
@@ -12,9 +12,9 @@ mindelec.architecture.MultiScaleFCCell
         - **neurons** (int) - 隐藏层的神经元数量。
         - **residual** (bool) - 隐藏层的残差块是否为全连接。默认值：True。
         - **act** (Union[str, Cell, Primitive, None]) - 应用于全连接层输出的激活函数，例如'ReLU'。默认值："sin"。
-        - **weight_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的weight_init参数。dtype与输入 `input` 相同。str的值可参考函数 `initializer`。默认值：'normal'。
+        - **weight_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始权重值。dtype与输入 `input` 相同。str的值可参考函数 `mindspore.common.initializer`。默认值：'normal'。
         - **has_bias** (bool) - 指定图层是否使用偏置向量。默认值：True。
-        - **bias_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的bias_init参数。dtype与输入 `input` 相同。str的值可参考函数 `initializer`。默认值：'default'。
+        - **bias_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始偏差值。dtype为与输入 `input` 相同。str的值可参考函数 `mindspore.common.initializer`。默认值：'zeros'。
         - **num_scales** (int) - 多规模网络的子网号。默认值：4。
         - **amp_factor** (Union[int, float]) - 输入的放大系数。默认值：1.0。
         - **scale_factor** (Union[int, float]) - 基本比例因子。默认值：2.0。

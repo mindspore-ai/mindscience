@@ -30,6 +30,7 @@ __all__ = ['MTLWeightedLossCell']
 class MTLWeightedLossCell(nn.Cell):
     r"""
     The MTL strategy weighted multi-task losses automatically.
+    For more information, please refer to `MTL weighted losses <https://arxiv.org/pdf/1805.06334.pdf>`_ .
 
     Args:
         num_losses (int): The number of multi-task losses, should be positive integer.
