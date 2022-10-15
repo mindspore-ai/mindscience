@@ -47,7 +47,7 @@ class GridNeighbours(Cell):
                                 position coordinates of atoms in the simulation system.
         pbc_box (Tensor):       Tensor of shape (B, A, D). Data type is float32.
                                 Box size of periodic boundary condition. Default: None
-        atom_mask (Tensor):     Tensor of shape (B, A). Data type is bool_.
+        atom_mask (Tensor):     Tensor of shape (B, A). Data type is bool\_.
                                 Mask of atoms in the system.
                                 Default: None
         exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int32.

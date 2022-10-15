@@ -45,7 +45,6 @@ class NonbondPairwiseEnergy(EnergyCell):
                         = A_{ij}^p * k_coulomb * q_i * q_j / r_{ij} -
                           B_{ij}^p * 4 * \epsilon_{ij} * (\sigma_{ij} / r_{ij}) ^ 6  +
                           C_{ij}^p * 4 * \epsilon_{ij} * (\sigma_{ij} / r_{ij}) ^ 12
-    ...
 
     Args:
         index (Tensor):              Tensor of shape (B, p, 2). Data type is int.

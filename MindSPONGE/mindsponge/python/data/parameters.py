@@ -57,13 +57,13 @@ class ForceConstants(NamedTuple):
 
 
 class ForceFieldParameters:
-    """
+    r"""
     Getting parameters for given bonds and atom types.
 
     Args:
-        atom_types(np.str_):    The atom types defined in forcefields.
+        atom_types(np.str\_):    The atom types defined in forcefields.
         parameters(dict):       A dictionary stores all force field constants.
-        atom_names(np.str_):    Unique atom names in an amino acid.
+        atom_names(np.str\_):    Unique atom names in an amino acid.
 
     Parameters:
         bonds(np.int32): The bond pairs defined for a given molecule.
