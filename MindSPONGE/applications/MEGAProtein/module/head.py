@@ -13,6 +13,7 @@ import mindspore.common.dtype as mstype
 import mindspore.nn as nn
 import mindspore.numpy as mnp
 from mindspore import Tensor
+from mindspore.ops import functional as F
 from mindsponge.cell.initializer import lecun_init
 
 

@@ -49,8 +49,8 @@ class MegaAssessment(nn.Cell):
         self.max_bin = self.cfg.prev_pos.max_bin
         self.template_enabled = self.cfg.template.enabled
         self.template_embed_torsion_angles = self.cfg.template.embed_torsion_angles
-        self.extra_msa_stack_num = self.cfg.evoformer.extra_msa_stack_num
-        self.msa_stack_num = self.cfg.evoformer.msa_stack_num
+        self.extra_msa_stack_num = self.cfg.evoformer.extra_msa_stack_num_assessment
+        self.msa_stack_num = self.cfg.evoformer.msa_stack_num_assessment
         self.chi_atom_indices, self.chi_angles_mask, self.mirror_psi_mask, self.chi_pi_periodic, \
         self.indices0, self.indices1 = caculate_constant_array(self.cfg.seq_length)
 
