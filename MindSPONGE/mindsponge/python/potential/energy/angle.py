@@ -50,7 +50,7 @@ class AngleEnergy(EnergyCell):
                                     The equilibrium value of bond angle ({\theta}^0).
         parameters (dict):          Force field parameters. Default: None
         use_pbc (bool):             Whether to use periodic boundary condition.
-        energy_unit (str):          Energy unit. Default: None
+        energy_unit (str):          Energy unit. Default: 'kj/mol'
         units (Units):              Units of length and energy. Default: None
 
     Returns:

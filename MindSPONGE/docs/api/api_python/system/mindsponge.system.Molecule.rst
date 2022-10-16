@@ -207,7 +207,7 @@ mindsponge.system.Molecule
         参数：
             - **pbc_box** (Tensor) - 周期性边界条件box。
 
-    .. py:method:: set_pbc_grad(grad_box）
+    .. py:method:: set_pbc_grad(grad_box)
 
         设置是否计算周期性边界条件box的梯度。
 

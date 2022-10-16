@@ -50,8 +50,8 @@ class BondEnergy(EnergyCell):
                                     The equilibrium value of bond length (b^0).
         parameters (dict):          Force field parameters. Default: None
         use_pbc (bool):             Whether to use periodic boundary condition.
-        length_unit (str):          Length unit for position coordinates. Default: None
-        energy_unit (str):          Energy unit. Default: None
+        length_unit (str):          Length unit for position coordinates. Default: 'nm'
+        energy_unit (str):          Energy unit. Default: 'kj/mol'
         units (Units):              Units of length and energy. Default: None
 
     Returns:

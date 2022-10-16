@@ -42,7 +42,7 @@ class SphericalRestrict(Bias):
 
     Args:
         radius (float):         Radius of sphere (r_0).
-        center (Tensor):        Coordinate of the center of sphere (R_0).
+        center (Tensor):        Coordinate of the center of sphere (R_0). Default: 0
         force_constant (float): Force constant of the bias potential(k). Default: Energy(500, 'kj/mol')
         depth (float):          Wall depth of the restriction (\sigma). Default: Length(0.01, 'nm')
         length_unit (str):      Length unit for position coordinates. Default: None

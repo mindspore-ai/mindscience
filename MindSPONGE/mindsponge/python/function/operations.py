@@ -203,7 +203,7 @@ class VelocityGenerator(Cell):
     A class to generate velocities for atoms in system according to temperature.
 
     Args:
-        temperature (float):        Temperature.
+        temperature (float):        Temperature. Default: 300
         remove_translation (bool):  Whether to calculate distance under periodic boundary condition.
                                     Default: True
         seed (int):                 Random seed for standard normal. Default: 0
@@ -314,7 +314,7 @@ class GetDistanceShift(Cell):
         bonds (Tensor):     Tensor of shape (C, 2). Data type is int.
                             Bonds need to be constraint.
         num_atoms (int):    Number of atoms in system.
-        num_walkers (int):  Number of multiple walkers.
+        num_walkers (int):  Number of multiple walkers. Default: 1
         use_pbc (bool):     Whether to use periodic boundary condition.
 
     Return:
@@ -396,8 +396,8 @@ class GetShiftGrad(Cell):
         bonds (Tensor):     Tensor of shape (C, 2). Data type is int.
                             Bonds need to be constraint.
         num_atoms (int):    Number of atoms in system.
-        num_walkers (int):  Number of multiple walkers.
-        dimension (int):    Number of dimension.
+        num_walkers (int):  Number of multiple walkers. Default: 1
+        dimension (int):    Number of dimension. Default: 3
         use_pbc (bool):     Whether to use periodic boundary condition.
 
     Return:
