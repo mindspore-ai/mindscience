@@ -1,4 +1,6 @@
 mindsponge.potential.PotentialCell
+==================================
+
 .. py:class:: mindsponge.potential.PotentialCell(cutoff, exclude_index, length_unit, energy_unit, units, use_pbc)
 
     势能的基础单元。
