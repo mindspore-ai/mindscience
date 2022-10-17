@@ -1,4 +1,6 @@
 mindsponge.potential.SphericalRestrict
+======================================
+
 .. py:class:: mindsponge.potential.SphericalRestrict(radius, center=0, force_constant=Energy(500, "kj/mol"), depth=Length(0.01, "nm"), length_unit, energy_unit, units, use_pbc)
 
     偏置势的基础单元。

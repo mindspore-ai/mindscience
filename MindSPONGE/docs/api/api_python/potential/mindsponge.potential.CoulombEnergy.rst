@@ -1,4 +1,6 @@
 mindsponge.potential.CoulombEnergy
+==================================
+
 .. py:class:: mindsponge.potential.CoulombEnergy(atom_charge, parameters, cutoff, use_pbc, use_pme=True, alpha, nfft, exclude_index, length_unit="nm", energy_unit="kj/mol", units)
 
     库伦相互作用。
