@@ -29,7 +29,7 @@ mk_new_dir() {
 
 write_checksum() {
     cd "$OUTPUT_PATH" || exit
-    PACKAGE_LIST=$(ls mindscience_sponge*.whl) || exit
+    PACKAGE_LIST=$(ls mindsponge*.whl) || exit
     for PACKAGE_NAME in $PACKAGE_LIST; do
         echo $PACKAGE_NAME
         sha256sum -b "$PACKAGE_NAME" >"$PACKAGE_NAME.sha256"
@@ -113,7 +113,7 @@ build_mindsponge()
   mk_new_dir "${OUTPUT_PATH}"
   if [[ "X$ENABLE_D" = "Xon" ]]; then
     echo "build ascend backend"
-    export SPONGE_PACKAGE_NAME=mindscience_sponge_ascend
+    export SPONGE_PACKAGE_NAME=mindsponge_ascend
     CMAKE_FLAG="-DENABLE_D=ON"
   fi
   if [[ "X$ENABLE_CYBERTRON" = "Xon" ]]; then
@@ -121,16 +121,16 @@ build_mindsponge()
     cp -r "${BASEPATH}/cybertron/" "${BASEPATH}/build/"
     mv "${BASEPATH}/build/cybertron/setup.py" "${BASEPATH}/build/"
     mv "${BASEPATH}/build/cybertron/requirements.txt" "${BASEPATH}/build/"
-    export CYBERTRON_PACKAGE_NAME=mindscience_cybertron
+    export CYBERTRON_PACKAGE_NAME=cybertron
     cd ${BASEPATH}/build/
     ${PYTHON} ./setup.py bdist_wheel
     cd ..
-    mv ${BASEPATH}/build/dist/mindscience_cybertron*.whl ${OUTPUT_PATH}
+    mv ${BASEPATH}/build/dist/cybertron*.whl ${OUTPUT_PATH}
     rm -rf ${BASEPATH}/build/*
   fi
   if [[ "X$ENABLE_GPU" = "Xon" ]]; then
     echo "build gpu backend"
-    export SPONGE_PACKAGE_NAME=mindscience_sponge_gpu
+    export SPONGE_PACKAGE_NAME=mindsponge_gpu
     CMAKE_FLAG="-DENABLE_GPU=ON"
     if [[ "X$ENABLE_MD" = "Xon" ]]; then
       CMAKE_FLAG="${CMAKE_FLAG} -DENABLE_MD=ON"

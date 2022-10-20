@@ -28,14 +28,16 @@ package_data = {
     '': ["*.txt", "libs/*.so", "bin/*", "*.yaml", "*.mol2", "*.frcmod", "*.dat", "*.itp"]
 }
 
+
 def read_version():
     """generate python file"""
-    version_file = os.path.join(cur_dir, '../../', 'version.txt')
+    version_file = os.path.join(cur_dir, '../', 'version.txt')
     with open(version_file, 'r') as f:
         version_ = f.readlines()[-1].strip()
     return version_
 
 version = read_version()
+
 
 def update_permissions(path):
     """
