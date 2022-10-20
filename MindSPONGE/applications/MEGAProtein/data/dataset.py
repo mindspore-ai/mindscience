@@ -21,7 +21,7 @@ import numpy as np
 from mindspore import dataset as ds
 from mindspore.communication import get_rank
 
-from mindsponge.common.residue_constants import make_atom14_dists_bounds, restype_order_with_x
+from mindsponge.common.residue_constants import make_atom14_dists_bounds, order_restype_with_x
 from mindsponge.common.protein import from_pdb_string
 from mindsponge.common.utils import make_atom14_positions, get_aligned_seq
 from mindsponge.data.data_transform import pseudo_beta_fn, atom37_to_frames, atom37_to_torsion_angles
@@ -212,9 +212,10 @@ def process_pdb(true_aatype, ori_res_length, decoy_pdb_path):
 def align_with_aatype(true_aatype, aatype, atom37_positions, atom37_mask):
     """align pdb with aatype"""
     if len(true_aatype) == len(aatype):
-        return atom37_positions, atom37_mask, np.ones((aatype.shape[0])).astype(np.float32)
-    seq1 = [restype_order_with_x.get(x) for x in aatype]
-    seq2 = [restype_order_with_x.get(x) for x in true_aatype]
+        out = aatype, atom37_positions, atom37_mask, np.ones((aatype.shape[0])).astype(np.float32)
+        return out
+    seq1 = [order_restype_with_x.get(x) for x in aatype]
+    seq2 = [order_restype_with_x.get(x) for x in true_aatype]
     seq1 = ''.join(seq1)
     seq2 = ''.join(seq2)
     _, align_relationship, _ = get_aligned_seq(seq1, seq2)

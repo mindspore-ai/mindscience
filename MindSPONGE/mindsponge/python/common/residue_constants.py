@@ -558,6 +558,7 @@ restypes_with_x = restypes + ['X']
 restype_order_with_x = {
     restype: i for i,
     restype in enumerate(restypes_with_x)}
+order_restype_with_x = {i: restype for i, restype in enumerate(restypes_with_x)}
 
 
 def sequence_to_onehot(

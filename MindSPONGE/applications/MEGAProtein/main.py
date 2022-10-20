@@ -32,8 +32,8 @@ from model import MegaFold, compute_confidence, MegaAssessment
 from module.fold_wrapcell import TrainOneStepCell, WithLossCell, WithLossCellAssessment
 
 parser = argparse.ArgumentParser(description='Inputs for eval.py')
-parser.add_argument('--data_config', help='data process config')
-parser.add_argument('--model_config', help='model config')
+parser.add_argument('--data_config', default="./config/data.yaml", help='data process config')
+parser.add_argument('--model_config', default="./config/model.yaml", help='model config')
 parser.add_argument('--input_path', help='processed raw feature path')
 parser.add_argument('--pdb_path', type=str, help='Location of training pdb file.')
 parser.add_argument('--use_pkl', default=False, help="use pkl as input or fasta file as input, in default use fasta")
@@ -51,6 +51,7 @@ parser.add_argument('--loss_scale', type=float, default=1024.0, help='loss scale
 parser.add_argument('--gradient_clip', type=float, default=0.1, help='gradient clip value')
 parser.add_argument('--total_steps', type=int, default=9600000, help='total steps')
 parser.add_argument('--decoy_pdb_path', type=str, help='Location of decoy pdb file.')
+parser.add_argument('--run_assessment', type=int, default=0, help='Run pdb assessment.')
 arguments = parser.parse_args()
 
 
@@ -217,6 +218,7 @@ def assessment_infer(args):
     slice_key = "seq_" + str(model_cfg.seq_length)
     slice_val = vars(model_cfg.slice)[slice_key]
     model_cfg.slice = slice_val
+    data_cfg.eval.subsample_templates = False
 
     megafold = MegaFold(model_cfg, mixed_precision=args.mixed_precision)
     model_cfg.max_extra_msa = 2
@@ -315,7 +317,7 @@ def assessment_train(args):
     max_recycles = [int(np.random.uniform(size=1, low=0, high=4)) for _ in range(args.total_steps)]
     max_recycles[step] = 0
     np.random.seed()
-    names = os.listdir(args.pdb_data_dir)
+    names = os.listdir(args.pdb_path)
     names_list = []
     for name in names:
         names_list.append(name.split(".pdb")[0])
@@ -390,7 +392,13 @@ if __name__ == "__main__":
                             enable_graph_kernel=True)
     else:
         raise Exception("Only support GPU or Ascend")
-    if not arguments.is_training:
-        fold_infer(arguments)
+    if arguments.run_assessment:
+        if not arguments.is_training:
+            assessment_infer(arguments)
+        else:
+            assessment_train(arguments)
     else:
-        fold_train(arguments)
+        if not arguments.is_training:
+            fold_infer(arguments)
+        else:
+            fold_train(arguments)
