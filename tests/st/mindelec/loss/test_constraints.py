@@ -14,6 +14,7 @@
 # ============================================================================
 """Test constraints"""
 import pytest
+import mindspore.context as context
 from mindelec.data import Dataset
 from mindelec.loss import Constraints
 from mindelec.geometry import Rectangle
@@ -24,6 +25,7 @@ from mindelec.geometry import Rectangle
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
 def test_constraints_dataset_type_error():
+    context.set_context(mode=context.GRAPH_MODE)
     with pytest.raises(TypeError):
         Constraints(1, 1)
 
@@ -32,6 +34,12 @@ def test_constraints_dataset_type_error():
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
 def test_existed_data_config_type_error():
+    """
+    Feature: test existed data config type_error
+    Description: error test
+    Expectation: raise a type error.
+    """
+    context.set_context(mode=context.GRAPH_MODE)
     rectangle = Rectangle("rect", (-1, -1), (1, 1))
     geom_dict = {rectangle: ["domain"]}
     dataset = Dataset(geom_dict)
