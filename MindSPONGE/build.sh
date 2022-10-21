@@ -45,6 +45,7 @@ usage()
   echo "    -j[n] Set the threads when building (Default: -j8)"
   echo "    -t whether to compile traditional sponge(GPU platform)"
   echo "    -c whether to build Cybertron(A basic Molecular Representation NN toolkit)"
+  echo "    -d whether to create time in the package"
 }
 
 # check value of input is 'on' or 'off'
@@ -65,9 +66,10 @@ checkopts()
   ENABLE_GPU="off"
   ENABLE_MD="off"
   ENABLE_CYBERTRON="off"
+  ENABLE_DAILY="off"
   THREAD_NUM=8
   # Process the options
-  while getopts 'drvj:e:t:c:s:S' opt
+  while getopts 'rvj:e:t:c:d:s:S' opt
   do
     OPTARG=$(echo ${OPTARG} | tr '[A-Z]' '[a-z]')
     case "${opt}" in
@@ -82,6 +84,9 @@ checkopts()
             ;;
         c)
             ENABLE_CYBERTRON=$OPTARG
+            ;;
+        d)
+            ENABLE_DAILY=$OPTARG
             ;;
         *)
             echo "Unknown option ${opt}"
@@ -111,6 +116,23 @@ build_mindsponge()
   echo "---------------- MindSPONGE: build start ----------------"
   mk_new_dir "${BASEPATH}/build/"
   mk_new_dir "${OUTPUT_PATH}"
+  if [[ "X$ENABLE_DAILY" = "Xon" ]]; then
+    names=$(cat ./version.txt)
+    time2=$(date "+%Y%m%d")
+    for line in $names
+    do
+      rm -rf ./version.txt
+      echo $line'.'$time2 >>./version.txt
+      break
+    done
+    names=$(cat ./cybertron/version.txt)
+    time2=$(date "+%Y%m%d")
+    for line in $names
+    do
+      rm -rf ./cybertron/version.txt
+      echo $line'.'$time2 >>./cybertron/version.txt
+    done
+  fi
   if [[ "X$ENABLE_D" = "Xon" ]]; then
     echo "build ascend backend"
     export SPONGE_PACKAGE_NAME=mindsponge_ascend
