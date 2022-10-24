@@ -1,12 +1,12 @@
-mindsponge.data.tensor_to_str
+mindsponge.data.str_to_tensor
 =============================
 
-.. py:class:: mindsponge.data.tensor_to_str(tensor)
+.. py:class:: mindsponge.data.str_to_tensor(string)
 
-    把Tensor解码为字符串。
+    把字符串编码为Tensor。
 
     参数：
-        - **tensor** (Tensor) - 输入的Tensor。
+        - **string** (str) - 输入的字符串。
 
     输出：
-        str。解码后的字符串。
+        Tensor。转换后的Tensor。
