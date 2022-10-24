@@ -243,9 +243,9 @@ class Dataset(Data):
             dataset = dataset.map(operations=preprocess_fn,
                                   input_columns=input_columns,
                                   output_columns=output_columns,
-                                  column_order=output_columns,
                                   num_parallel_workers=num_parallel_workers,
                                   python_multiprocessing=python_multiprocessing)
+            dataset = dataset.project(output_columns)
             logger.info("Get all dataset columns names after preprocess: {}".format(self.columns_list))
 
         if not prebatched_data:
