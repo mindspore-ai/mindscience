@@ -47,7 +47,11 @@ args = parser.parse_args()
 pdb_name = args.i
 save_pdb_name = args.o
 addh = args.addh
-context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=0)
+if context.get_context("device_target") == "Ascend":
+    context.set_context(mode=context.GRAPH_MODE, enable_graph_kernel=True,
+                        graph_kernel_flags="--enable_cluster_ops=ReduceSum --reduce_fuse_depth=10")
+else:
+    context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=0)
 
 
 def get_violation_loss(system):

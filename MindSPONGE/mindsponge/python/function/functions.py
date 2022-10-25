@@ -31,8 +31,10 @@ import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import ops
 from mindspore import ms_function
-from mindspore import Tensor, Parameter
-from mindspore.ops import functional as F
+from mindspore import Tensor, Parameter, context
+from mindspore.ops._grad.grad_base import bprop_getters
+from mindspore.ops._utils.utils import generate_shape_index, is_shape_unknown
+from mindspore.ops.composite.multitype_ops.zeros_like_impl import zeros_like
 
 __all__ = [
     'PI',
@@ -85,6 +87,82 @@ reduce_all = ops.ReduceAll()
 concat_last_dim = ops.Concat(-1)
 concat_penulti = ops.Concat(-2)
 identity = ops.Identity()
+dyn_shape_op = ops.TensorShape()
+unsorted_segment_sum = ops.UnsortedSegmentSum()
+
+
+@bprop_getters.register(ops.Slice)
+def get_bprop_slice(self):
+    """Bprop for slice"""
+    # pylint: disable=W0613
+    concat = ops.Concat(axis=2)
+    def bprop(x, begin, size, out, dout):
+        # pylint: disable=W0613
+        dtype = x.dtype
+        begin = begin[-1]
+        size = size[-1]
+        if begin != 0:
+            left_tensor = ops.zeros(x.shape[:-1] + (begin,), dtype)
+            dout = concat((left_tensor, dout))
+        shape = x.shape[-1]
+        if shape != begin + size:
+            right_tensor = ops.zeros(x.shape[:-1] + (shape - begin - size,), dtype)
+            dout = concat((dout, right_tensor))
+        return (dout, zeros_like(begin), zeros_like(size))
+
+    return bprop
+
+
+def _generate_inverse_index(x_shape, axis):
+    x_rank = len(x_shape)
+    index = tuple(range(x_rank))
+    if axis < 0:
+        axis += x_rank
+    perm = index[1:1 + axis] + (0,) + index[1 + axis:]
+    return perm
+
+
+def _regenerate_output_shape(x_shp, ind_shp, axis):
+    rank = len(x_shp)
+    if axis < 0:
+        axis += rank
+    out_shape = x_shp[:axis] + ind_shp + x_shp[axis + 1:]
+    return out_shape
+
+
+class GatherNet(ms.nn.Cell):
+    """Redefine bprop for gather to run unsorted_segment_sum on aicpu"""
+    def construct(self, data, indices, axis):
+        return ops.gather(data, indices, axis)
+
+    def bprop(x, indices, axis, out, dout):
+        """bprop for gather"""
+        # pylint: disable=E0213, W0613
+        orig_indices = indices
+        if ops.rank(dout) == 0:
+            dout = ops.ExpandDims()(dout, -1)
+        if ops.rank(indices) == 0:
+            indices = ops.ExpandDims()(indices, -1)
+            x_shp = ops.shape(x)
+            ind_shp = ops.shape(indices)
+            out_shp = _regenerate_output_shape(x_shp, ind_shp, axis)
+            dout = ops.reshape(dout, out_shp)
+
+        x_shp = ops.shape(x)
+        out_shp = ops.shape(dout)
+        ind_shp = ops.shape(indices)
+        perm_1 = generate_shape_index(out_shp, ind_shp, axis)
+        values_transpose = ops.transpose(dout, perm_1)
+        if is_shape_unknown(ops.shape(x)):
+            params_grad = unsorted_segment_sum(values_transpose, indices, dyn_shape_op(x)[axis])
+        else:
+            params_grad = unsorted_segment_sum(values_transpose, indices, ops.shape(x)[axis])
+        perm_2 = _generate_inverse_index(x_shp, axis)
+        params_grad = ops.transpose(params_grad, perm_2)
+        return params_grad, zeros_like(orig_indices), zeros_like(axis)
+
+
+gather = GatherNet() if context.get_context("device_target") == "Ascend" else ops.Gather()
 
 
 @ms_function
@@ -149,7 +227,7 @@ def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
     if ndim <= 2:
         return pbc_box
     shape = pbc_box.shape[:1] + (1,) * (ndim - 2) + pbc_box.shape[-1:]
-    return F.reshape(pbc_box, shape)
+    return ops.reshape(pbc_box, shape)
 
 
 @ms_function
@@ -173,9 +251,9 @@ def periodic_image(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tenso
         ``Ascend`` ``GPU``
     """
 
-    pbc_box = pbc_box_reshape(F.stop_gradient(pbc_box), position.ndim)
-    image = -F.floor(position / pbc_box - shift)
-    return F.cast(image, ms.int32)
+    pbc_box = pbc_box_reshape(ops.stop_gradient(pbc_box), position.ndim)
+    image = -ops.floor(position / pbc_box - shift)
+    return ops.cast(image, ms.int32)
 
 
 @ms_function
@@ -199,8 +277,8 @@ def displace_in_box(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tens
         ``Ascend`` ``GPU``
     """
 
-    pbc_box = pbc_box_reshape(F.stop_gradient(pbc_box), position.ndim)
-    image = -F.floor(position / pbc_box - shift)
+    pbc_box = pbc_box_reshape(ops.stop_gradient(pbc_box), position.ndim)
+    image = -ops.floor(position / pbc_box - shift)
     return position + pbc_box * image
 
 
@@ -226,9 +304,9 @@ def vector_in_box(vector: Tensor, pbc_box: Tensor) -> Tensor:
     """
 
     pbc_box = pbc_box_reshape(pbc_box, vector.ndim)
-    box_nograd = F.stop_gradient(pbc_box)
+    box_nograd = ops.stop_gradient(pbc_box)
     inv_box = msnp.reciprocal(box_nograd)
-    vector -= box_nograd * F.floor(vector * inv_box + 0.5)
+    vector -= box_nograd * ops.floor(vector * inv_box + 0.5)
     return  vector * inv_box * pbc_box
 
 @ms_function
@@ -330,21 +408,28 @@ def gather_vectors(tensor: Tensor, index: Tensor) -> Tensor:
     """
 
     if index.shape[0] == 1:
-        return F.gather(tensor, index[0], -2)
+        index1 = ops.reshape(index, index.shape[1:])
+        if tensor.shape[0] == 1:
+            tensor1 = ops.reshape(tensor, tensor.shape[1:])
+            res = gather(tensor1, index1, len(tensor1.shape) - 2)
+            res = ops.reshape(res, (1,) + res.shape)
+            return res
+        return gather(tensor, index1, len(tensor.shape) - 2)
     if tensor.shape[0] == 1:
-        return F.gather(tensor[0], index, -2)
+        tensor1 = ops.reshape(tensor, tensor.shape[1:])
+        return gather(tensor1, index, len(tensor1.shape) - 2)
 
     # (B, N, M)
     shape0 = index.shape
     # (B, N*M, 1) <- (B, N, M)
-    index = F.reshape(index, (shape0[0], -1, 1))
+    index = ops.reshape(index, (shape0[0], -1, 1))
     # (B, N*M, D) <- (B, N, D)
     neigh_atoms = msnp.take_along_axis(tensor, index, axis=-2)
     # (B, N, M, D) <- (B, N, M) + (D,)
     output_shape = shape0 + tensor.shape[-1:]
 
     # (B, N, M, D)
-    return F.reshape(neigh_atoms, output_shape)
+    return ops.reshape(neigh_atoms, output_shape)
 
 
 @ms_function
@@ -364,20 +449,27 @@ def gather_values(tensor: Tensor, index: Tensor) -> Tensor:
     """
 
     if index.shape[0] == 1:
-        return F.gather(tensor, index[0], -1)
+        index1 = ops.reshape(index, index.shape[1:])
+        if tensor.shape[0] == 1:
+            tensor1 = ops.reshape(tensor, tensor.shape[1:])
+            res = gather(tensor1, index1, len(tensor1.shape) - 1)
+            res = ops.reshape(res, (1,) + res.shape)
+            return res
+        return gather(tensor, index1, len(tensor.shape) - 1)
     if tensor.shape[0] == 1:
-        return F.gather(tensor[0], index, -1)
+        tensor1 = ops.reshape(tensor, tensor.shape[1:])
+        return gather(tensor1, index, len(tensor1.shape) - 1)
 
     # (B, N, M)
     origin_shape = index.shape
     # (B, N*M) <- (B, N, M)
-    index = F.reshape(index, (origin_shape[0], -1))
+    index = ops.reshape(index, (origin_shape[0], -1))
 
     # (B, N*M)
-    neigh_values = F.gather_d(tensor, -1, index)
+    neigh_values = ops.gather_d(tensor, -1, index)
 
     # (B, N, M)
-    return F.reshape(neigh_values, origin_shape)
+    return ops.reshape(neigh_values, origin_shape)
 
 
 @ms_function
@@ -482,7 +574,7 @@ def calc_angle_between_vectors(vector1: Tensor, vector2: Tensor) -> Tensor:
     dot12 = keepdim_sum(vector1 * vector2, -1)
     # [..., 1]
     cos_theta = dot12 / dis1 / dis2
-    return F.acos(cos_theta)
+    return ops.acos(cos_theta)
 
 
 @ms_function
@@ -605,7 +697,7 @@ def calc_torsion_for_vectors(vector1: Tensor, vector2: Tensor, vector3: Tensor) 
     sin_phi = keepdim_sum(cross_ab*norm_vec2, -1)
     cos_phi = keepdim_sum(vec_a*vec_b, -1)
 
-    return F.atan2(-sin_phi, cos_phi)
+    return ops.atan2(-sin_phi, cos_phi)
 
 
 @ms_function
@@ -737,11 +829,11 @@ def get_kinetic_energy(mass: Tensor, velocity: Tensor) -> Tensor:
     """
 
     # (B, A) <- (B, A, D)
-    v2 = F.reduce_sum(velocity*velocity, -1)
+    v2 = ops.reduce_sum(velocity*velocity, -1)
     # (B, A) * (B, A)
     kinectics = 0.5 * mass * v2
     # (B) <- (B, A)
-    return F.reduce_sum(kinectics, -1)
+    return ops.reduce_sum(kinectics, -1)
 
 
 def get_integer(value: Union[int, Tensor, Parameter, ndarray]) -> int:
@@ -813,7 +905,7 @@ def get_tensor(value: Union[Tensor, Parameter, ndarray, list, tuple], dtype: typ
             raise TypeError('The type of input value must be Tensor, Parameter, '
                             'ndarray, list or tuple but got: ' + str(type(value)))
         if dtype is not None:
-            value = F.cast(value, dtype)
+            value = ops.cast(value, dtype)
 
     return value
 
@@ -835,7 +927,7 @@ def get_ms_array(value: Union[Tensor, Parameter, ndarray, list, tuple], dtype: t
 
     if isinstance(value, (Tensor, Parameter)):
         if dtype is not None and value.dtype != dtype:
-            value = F.cast(value, dtype)
+            value = ops.cast(value, dtype)
         return value
 
     if isinstance(value, (list, tuple, np.ndarray)):
