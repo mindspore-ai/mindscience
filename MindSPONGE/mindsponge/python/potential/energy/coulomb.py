@@ -76,7 +76,7 @@ class CoulombEnergy(NonbondEnergy):
         use_pbc (bool, optional):   Whether to use periodic boundary condition. Default: None.
         use_pme (bool, optional):   Whether to use particle mesh ewald condition. Default: None.
         alpha (float):              Alpha for DSF and PME coulomb interaction.
-                                    Default: 0.25 for DSF and 0.276501 for PME.
+                                    Default: 0.25.
         nfft (Tensor):              Parameter of FFT, required by PME. Default: None.
         exclude_index (Tensor):     Tensor of the exclude index, required by PME. Default: None.
         length_unit (str):          Length unit for position coordinates. Default: None.
@@ -95,8 +95,8 @@ class CoulombEnergy(NonbondEnergy):
                  parameters: dict = None,
                  cutoff: float = None,
                  use_pbc: bool = None,
-                 use_pme: bool = True,
-                 alpha: float = None,
+                 use_pme: bool = None,
+                 alpha: float = 0.25,
                  nfft: Tensor = None,
                  exclude_index: Tensor = None,
                  length_unit: str = 'nm',
@@ -122,6 +122,8 @@ class CoulombEnergy(NonbondEnergy):
         self.atom_charge = self.identity(atom_charge)
         self.coulomb_const = Tensor(self.units.coulomb, ms.float32)
 
+        if use_pme is None:
+            use_pme = use_pbc
         self.use_pme = use_pme
         if self.use_pme and (not self.use_pbc):
             raise ValueError('PME cannot be used without periodic box conditions')
