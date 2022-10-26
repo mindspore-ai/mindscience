@@ -1,0 +1,213 @@
+# Copyright 2022 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+"""Constructing decoder in transformer network"""
+
+import math
+from typing import Dict, List, Optional
+
+import mindspore as ms
+import mindspore.ops as ops
+import mindspore.nn as nn
+from mindspore.common.initializer import Normal, initializer
+
+from modules import SinusoidalPositionalEmbedding
+from transformer_layer import TransformerDecoderLayer
+
+
+def ms_transpose(x, index_a, index_b):
+    """Transpose"""
+    index = list(i for i in range(len(x.shape)))
+    index[index_a] = index_b
+    index[index_b] = index_a
+    input_trans = x.transpose(index)
+    return input_trans
+
+
+def fill_with_neg_inf(t):
+    """FP16-compatible function that fills a tensor with -inf."""
+    return ops.Fill()(ms.float32, t.shape, float("-inf"))
+
+
+class TransformerDecoder(nn.Cell):
+    """Transformer decoder"""
+
+    def __init__(
+            self,
+            args,
+            dictionary,
+            embed_tokens,
+    ):
+        super().__init__()
+        self.args = args
+        self.dictionary = dictionary
+        self._future_mask = ms.numpy.empty((0))
+
+        self.dropout_module = nn.Dropout(1 - args.dropout)
+
+        input_embed_dim = embed_tokens.embedding_size
+        embed_dim = args.decoder_embed_dim
+        self.embed_dim = embed_dim
+
+        self.padding_idx = embed_tokens.padding_idx
+
+        self.embed_tokens = embed_tokens
+        self.embed_scale = math.sqrt(embed_dim)
+
+        self.project_in_dim = (
+            nn.Dense(input_embed_dim, embed_dim, has_bias=False)
+            if embed_dim != input_embed_dim
+            else None
+        )
+        self.embed_positions = SinusoidalPositionalEmbedding(
+            embed_dim,
+            self.padding_idx,
+        )
+
+        self.layers = nn.CellList([])
+        self.layers.extend(
+            [
+                self.build_decoder_layer(args)
+                for _ in range(args.decoder_layers)
+            ]
+        )
+        self.num_layers = len(self.layers)
+        self.layer_norm = nn.LayerNorm([embed_dim])
+
+        self.build_output_projection(args, dictionary)
+
+    def build_output_projection(self, args, dictionary):
+        self.output_projection = nn.Dense(
+            args.decoder_embed_dim, len(dictionary), has_bias=False
+        )
+        self.output_projection.weight = initializer(Normal(sigma=args.decoder_embed_dim ** -0.5, mean=0),
+                                                    shape=self.output_projection.weight.shape,
+                                                    dtype=self.output_projection.weight.dtype)
+
+    def build_decoder_layer(self, args):
+        return TransformerDecoderLayer(args)
+
+    def construct(
+            self,
+            prev_output_tokens,
+            encoder_out: Optional[Dict[str, List[ms.Tensor]]] = None,
+            incremental_state: Optional[Dict[str, Dict[str, Optional[ms.Tensor]]]] = None,
+            features_only: bool = False,
+            return_all_hiddens: bool = False,
+    ):
+        """Transformer decoder construction"""
+
+        x, extra = self.extract_features(
+            prev_output_tokens,
+            encoder_out=encoder_out,
+            incremental_state=incremental_state,
+        )
+        _ = return_all_hiddens
+        if not features_only:
+            x = self.output_layer(x)
+        x = ms_transpose(x, 1, 2) # B x T x C -> B x C x T
+        return x, extra
+
+    def extract_features(
+            self,
+            prev_output_tokens,
+            encoder_out: Optional[Dict[str, List[ms.Tensor]]],
+            incremental_state: Optional[Dict[str, Dict[str, Optional[ms.Tensor]]]] = None,
+    ):
+        """Extract features"""
+
+        bs, _ = prev_output_tokens.shape
+
+        enc: Optional[ms.float32] = None
+        padding_mask: Optional[ms.float32] = None
+        if encoder_out is not None and encoder_out["encoder_out"]:
+            enc = encoder_out["encoder_out"][0]
+            assert (
+                enc.shape[1] == bs
+            ), f"Expected enc.shape == (t, {bs}, c) got {enc.shape}"
+        if encoder_out is not None and encoder_out["encoder_padding_mask"]:
+            padding_mask = encoder_out["encoder_padding_mask"][0]
+
+        # embed positions
+        positions = self.embed_positions(
+            prev_output_tokens
+        )
+
+        if incremental_state is not None:
+            prev_output_tokens = prev_output_tokens[:, -1:]
+            positions = positions[:, -1:]
+
+        # embed tokens and positions
+        x = self.embed_scale * self.embed_tokens(prev_output_tokens)
+
+        if self.project_in_dim is not None:
+            x = self.project_in_dim(x)
+
+        x += positions
+
+        x = self.dropout_module(x)
+
+        # B x T x C -> T x B x C
+        x = ms_transpose(x, 0, 1)
+
+        self_attn_padding_mask: Optional[ms.Tensor] = None
+        if ops.Equal()(prev_output_tokens, self.padding_idx).any():
+            self_attn_padding_mask = ops.Equal()(prev_output_tokens, self.padding_idx)
+
+        # decoder layers
+        inner_states: List[Optional[ms.Tensor]] = [x]
+        for _, layer in enumerate(self.layers):
+            if incremental_state is None:
+                self_attn_mask = self.buffered_future_mask(x)
+            else:
+                self_attn_mask = None
+
+            x, _, _ = layer(
+                x,
+                enc,
+                padding_mask,
+                incremental_state,
+                self_attn_mask=self_attn_mask,
+                self_attn_padding_mask=self_attn_padding_mask,
+                need_attn=False,
+                need_head_weights=False,
+            )
+            inner_states.append(x)
+
+        if self.layer_norm is not None:
+            x = self.layer_norm(x)
+
+        # T x B x C -> B x C x T
+        x = ms_transpose(x, 0, 1)
+
+        return x, {"inner_states": inner_states}
+
+    def output_layer(self, features):
+        """Project features to the vocabulary size."""
+        return self.output_projection(features)
+
+    def buffered_future_mask(self, tensor):
+        """Buffered future mask"""
+
+        dim = tensor.shape[0]
+        if (
+                self._future_mask.shape[0] == 0
+                or self._future_mask.shape[0] < dim
+        ):
+            self._future_mask = fill_with_neg_inf(ops.Zeros()((dim, dim), ms.float32))
+            mask = ms.nn.Triu()(ms.ops.ones(self._future_mask.shape, ms.bool_), 1)
+            self._future_mask[ms.numpy.logical_not(mask)] = 0
+
+        self._future_mask = self._future_mask.astype(tensor.dtype)
+        return self._future_mask[:dim, :dim]
