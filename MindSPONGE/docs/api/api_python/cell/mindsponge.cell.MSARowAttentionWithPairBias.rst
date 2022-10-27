@@ -9,10 +9,10 @@ mindsponge.cell.MSARowAttentionWithPairBias
         - **num_head** (int) - 头的数量。
         - **key_dim** (int) - 输入的维度。
         - **gating** (bool) - 判断attention是否经过gating的指示器。
-        - **msa_act_dim** (int) - `msa_act` 的维度。msa_act为AlphaFold模型中MSA检索后所使用的中间变量。
+        - **msa_act_dim** (int) - msa_act的维度。msa_act为AlphaFold模型中MSA检索后所使用的中间变量。
         - **pair_act_dim** (int) - pair_act的维度。
         - **batch_size** (int) - MSAColumnAttention中参数的batch size。
-        - **slice_num** (int) - 为了减少内存所制作的切分的数量。默认值：0。
+        - **slice_num** (int) - 为了减少内存需要进行切分的数量。默认值：0。
 
     输入：
         - **msa_act** (Tensor) - msa_act，AlphaFold模型中MSA检索后所使用的中间变量。
@@ -25,7 +25,7 @@ mindsponge.cell.MSARowAttentionWithPairBias
 
     .. py:method:: compute(msa_act, mask, index, nonbatched_bias)
 
-        将 `msa_act` 经过attention层，进行计算。
+        将msa_act经过attention层，进行计算。
 
         参数：
             - **msa_act** (Tensor) - msa_act，AlphaFold模型中MSA检索后所使用的中间变量。

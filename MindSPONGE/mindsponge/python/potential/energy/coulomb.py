@@ -66,7 +66,7 @@ class CoulombEnergy(NonbondEnergy):
 
     .. Math::
 
-        E_ele(r_ij) = \sum_ij k_coulomb * q_i * q_j / r_ij
+        E_{ele}(r_{ij}) = \sum_{ij} k_{coulomb} \times q_i \times q_j / r_{ij}
 
     Args:
         atom_charge (Tensor):       Tensor of shape (B, A). Data type is float.
@@ -79,8 +79,8 @@ class CoulombEnergy(NonbondEnergy):
                                     Default: 0.25.
         nfft (Tensor):              Parameter of FFT, required by PME. Default: None.
         exclude_index (Tensor):     Tensor of the exclude index, required by PME. Default: None.
-        length_unit (str):          Length unit for position coordinates. Default: None.
-        energy_unit (str):          Energy unit. Default: None.
+        length_unit (str):          Length unit for position coordinates. Default: 'nm'.
+        energy_unit (str):          Energy unit. Default: 'kj/mol'.
         units (Units):              Units of length and energy. Default: None.
 
     Returns:

@@ -10,8 +10,8 @@ mindsponge.control.BerendsenThermostat
         - **temperature** (float) - 压力耦合参考压力P_ref (bar)。默认值：300。
         - **control_step** (int) - 控制器执行的步骤间隔。默认值：1。
         - **time_constant** (float) - 压力耦合的时间常数。默认值：4。
-        - **scale_min** (float) - 剪裁速度范围因子的最小值。
-        - **scale_max** (float) - 剪裁速度范围因子的最大值。
+        - **scale_min** (float) - 剪裁速度范围因子的最小值。默认值：0.8。
+        - **scale_max** (float) - 剪裁速度范围因子的最大值。默认值：1.25。
 
     输出：
         - Tensor。坐标，shape(B, A, D)。

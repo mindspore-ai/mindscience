@@ -10,7 +10,7 @@ mindsponge.cell.MSAColumnGlobalAttention
         - **gating** (bool) - 判断attention是否经过gating的指示器。
         - **msa_act_dim** (int) - `msa_act` 的维度。msa_act为AlphaFold模型中MSA检索后所使用的中间变量。
         - **batch_size** (int) - MSAColumnAttention中参数的batch size。
-        - **slice_num** (int) - 为了减少内存所制作的切分的数量。默认值0。
+        - **slice_num** (int) - 为了减少内存需要进行切分的数量。默认值0。
 
     输入：
         - **msa_act** (Tensor) - msa_act，AlphaFold模型中MSA检索后所使用的中间变量。

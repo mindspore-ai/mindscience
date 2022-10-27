@@ -1,29 +1,29 @@
 mindsponge.potential.CoulombEnergy
 ==================================
 
-.. py:class:: mindsponge.potential.CoulombEnergy(atom_charge, parameters, cutoff, use_pbc, use_pme=True, alpha, nfft, exclude_index, length_unit="nm", energy_unit="kj/mol", units)
+.. py:class:: mindsponge.potential.CoulombEnergy(atom_charge=None, parameters=None, cutoff=None, use_pbc=None, use_pme=True, alpha=None, nfft=None, exclude_index=None, length_unit="nm", energy_unit="kj/mol", units=None)
 
     库伦相互作用。
 
     .. math::
 
-        E_ele(r_ij) = \sum_ij k_coulomb * q_i * q_j / r_ij
+        E_{ele}(r_{ij}) = \sum_{ij} k_{coulomb} \times q_i \times q_j / r_{ij}
 
     参数：
-        - **atom_charge** (Tensor) - 原子电荷。
-        - **parameters** (dict) - 力场参数。
-        - **cutoff** (float) - 中断距离。
-        - **use_pbc** (bool, 可选) - 是否使用PBC。
-        - **use_pme** (bool, 可选) - 是否使用粒子网格生成条件(PME)。
+        - **atom_charge** (Tensor) - 原子电荷。默认值："None"。
+        - **parameters** (dict) - 力场参数。默认值："None"。
+        - **cutoff** (float) - 中断距离。默认值："None"。
+        - **use_pbc** (bool, 可选) - 是否使用PBC。默认值："None"。
+        - **use_pme** (bool, 可选) - 是否使用粒子网格生成条件(PME)。默认值："True"。
         - **alpha** (float) - DSF和PME库伦相互作用中的Alpha。DSF默认值：0.25，PME默认值：0.276501。
-        - **nfft** (Tensor) - 由PME要求的FFT的参数。
-        - **exclude_index** (Tensor) - 由PME要求的排除索引。
-        - **length_unit** (str) - 位置坐标的长度单位。
-        - **energy_unit** (str) - 能量单位。
-        - **units** (Units) - 长度和能量单位。
+        - **nfft** (Tensor) - 由PME要求的FFT的参数。默认值："None"。
+        - **exclude_index** (Tensor) - 由PME要求的排除索引。默认值："None"。
+        - **length_unit** (str) - 位置坐标的长度单位。默认值："nm"。
+        - **energy_unit** (str) - 能量单位。默认值："kj/mol"。
+        - **units** (Units) - 长度和能量单位。默认值："None"。
 
     输出：
-        Tensor。能量，shape为(B, 1)。
+        Tensor。能量，shape为(B, 1)。B为batch size。
 
     .. py:method:: set_cutoff(cutoff)
 

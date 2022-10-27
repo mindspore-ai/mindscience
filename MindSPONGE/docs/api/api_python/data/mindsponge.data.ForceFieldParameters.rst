@@ -175,6 +175,7 @@ mindsponge.data.ForceFieldParameters
 
     .. py:method:: get_vdw_params(atom_type)
 
+        原子种类列表：
         ['H', 'HO', 'HS', 'HC', 'H1', 'H2', 'H3', 'HP', 'HA', 'H4', 'H5', 'HZ', 'O', 'O2', 'OH', 'OS', 'OP', 'C*', 'CI', 'C5', 'C4', 'CT', 'CX', 'C', 'N', 'N3', 'S', 'SH', 'P', 'MG', 'C0', 'F', 'Cl', 'Br', 'I', '2C', '3C', 'C8', 'CO']
 
         参数：

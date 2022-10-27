@@ -3,7 +3,7 @@ mindsponge.function.pbc_box_reshape
 
 .. py:class:: mindsponge.function.pbc_box_reshape(pbc_box, ndim)
 
-    把PBC box改变shape，变成相同的ndim。
+    把PBC box改变shape，使它的维度与ndim相同。
 
     参数：
         - **pbc_box** (Tensor) - 输入的PBC box。shape为(B, D)。

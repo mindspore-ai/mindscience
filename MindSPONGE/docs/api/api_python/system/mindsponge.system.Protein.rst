@@ -8,10 +8,10 @@ mindsponge.system.Protein
     参数：
         - **pdb** (str) - 系统中的原子。
         - **sequence** (list) - 原子种类。
-        - **coordinate** (Tensor) - 原子的位置坐标。
-        - **pbc_box** (Tensor) - 周期性边界条件的box。
-        - **template** (Union[dict, str]) - 残基的模板。
-        - **ignore_hydrogen** (bool, 可选) - 是否无视氢原子。
+        - **coordinate** (Tensor) - 原子的位置坐标，shape为(B, A, D)或者(1, A, D)。
+        - **pbc_box** (Tensor) - 周期性边界条件的box，shape为(B, D)或者(1, D)。
+        - **template** (Union[dict, str]) - 残基的模板。默认文件：'protein0.yaml'。
+        - **ignore_hydrogen** (bool, 可选) - 是否无视氢原子。默认值：""True。
         - **length_unit** (str) - 位置坐标的长度单位。
 
     符号：

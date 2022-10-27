@@ -76,7 +76,7 @@ class GetVector(Cell):
         Args:
             position0 (Tensor): Tensor of coordinate of initial point.
             position1 (Tensor): Tensor of coordinate of terminal point.
-            pbc_box (Any):      Dummy.
+            pbc_box (Any):      Dummy. Default: None
         """
         return func.get_vector_without_pbc(position0, position1, pbc_box)
 
@@ -87,7 +87,7 @@ class GetVector(Cell):
         Args:
             position0 (Tensor): Tensor of coordinate of initial point.
             position1 (Tensor): Tensor of coordinate of terminal point.
-            pbc_box (Any):      Dummy.
+            pbc_box (Any):      Dummy. Default: None
         """
         return func.get_vector_with_pbc(position0, position1, pbc_box)
 
@@ -98,7 +98,7 @@ class GetVector(Cell):
         Args:
             position0 (Tensor): Tensor of coordinate of initial point.
             position1 (Tensor): Tensor of coordinate of terminal point.
-            pbc_box (Any):      Dummy.
+            pbc_box (Any):      Dummy. Default: None
         """
         return func.get_vector(position0, position1, pbc_box)
 
@@ -107,7 +107,7 @@ class GetVector(Cell):
         set whether to use periodic boundary condition.
 
         Args:
-            use_pbc (bool): Whether use periodic boundary condition.
+            use_pbc (bool): Whether use periodic boundary condition. Default: None
         """
         self.use_pbc = use_pbc
         if use_pbc is None:
@@ -315,10 +315,15 @@ class GetDistanceShift(Cell):
                             Bonds need to be constraint.
         num_atoms (int):    Number of atoms in system.
         num_walkers (int):  Number of multiple walkers. Default: 1
-        use_pbc (bool):     Whether to use periodic boundary condition.
+        use_pbc (bool):     Whether to use periodic boundary condition. Default: None
 
     Return:
         shift (Tensor), Tensor of shape (B,A,D). Data type is float.
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation.
+        A:  Number of atoms.
+        D:  Dimension of the simulation system. Usually is 3.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -373,13 +378,13 @@ class GetDistanceShift(Cell):
         Return:
             shift (Tensor), Tensor of shape (B,A,D). Data type is float.
         """
-        # (B,C,A,D) = (B,C,A,1) * (B,1,A,D)
+        # (B,C,A,D) = (B,C,A,1) * (B,1,A,D):
         pos_new_0 = F.reduce_sum(self.mask0 * coordinate_new, -2)
         pos_new_1 = F.reduce_sum(self.mask1 * coordinate_new, -2)
         # (B,C,A)
         dis_new = self.get_distance(pos_new_0, pos_new_1, pbc_box)
 
-        # (B,C,A,D) = (B,C,A,1) * (B,1,A,D)
+        # (B,C,A,D) = (B,C,A,1) * (B,1,A,D):
         pos_old_0 = F.reduce_sum(self.mask0 * coordinate_old, -2)
         pos_old_1 = F.reduce_sum(self.mask1 * coordinate_old, -2)
         dis_old = self.get_distance(pos_old_0, pos_old_1, pbc_box)
@@ -393,7 +398,7 @@ class GetShiftGrad(Cell):
     Module for calculating the differentiation of B matrix whose dimensions are: K*N*D.
 
     Args:
-        bonds (Tensor):     Tensor of shape (C, 2). Data type is int.
+        bonds (Tensor):     Tensor of shape (K, N, D). Data type is int.
                             Bonds need to be constraint.
         num_atoms (int):    Number of atoms in system.
         num_walkers (int):  Number of multiple walkers. Default: 1
@@ -402,6 +407,12 @@ class GetShiftGrad(Cell):
 
     Return:
         shift (Tensor), Tensor of shape (B,A,D). Data type is float.
+
+    Symbol:
+        B:  Batchsize, i.e. number of walkers in simulation.
+        A:  Number of atoms in system.
+        N:  Number of neighbour atoms.
+        D:  Dimension of the simulation system. Usually is 3.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -417,7 +428,7 @@ class GetShiftGrad(Cell):
 
         super().__init__(auto_prefix=False)
 
-        # (B,K,A,D)
+        # (B,K,A,D):
         shape = (num_walkers, bonds.shape[-2], num_atoms, dimension)
         self.broadcast = ops.BroadcastTo(shape)
         self.net = GetDistanceShift(
@@ -445,7 +456,7 @@ class GetShiftGrad(Cell):
         Return:
             shift (Tensor), Tensor of shape (B,A,D). Data type is float.
         """
-        # (B,C,A,D)
+        # (B,C,A,D):
         coordinate_new = self.broadcast(coordinate_new[:, None, :, :])
         coordinate_old = self.broadcast(coordinate_old[:, None, :, :])
         shift_grad = self.grad(self.net)(coordinate_new, coordinate_old, pbc_box)

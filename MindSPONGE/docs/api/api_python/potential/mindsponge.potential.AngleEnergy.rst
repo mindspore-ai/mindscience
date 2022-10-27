@@ -7,7 +7,7 @@ mindsponge.potential.AngleEnergy
 
     .. math::
 
-        E_angle({\theta}_{ijk}) = 1 / 2 * k_{ijk}^{\theta} * ({\theta}_{ijk} - \theta}_{ijk}^0) ^ 2
+        E_{angle}(\theta_{ijk}) = 1 / 2 \times k_{ijk}^\theta \times (\theta_{ijk} - \theta_{ijk}^0) ^ 2
         
     参数：
         - **index** (Tensor) - 键角的原子索引。

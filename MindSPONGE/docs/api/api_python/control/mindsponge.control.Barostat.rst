@@ -10,7 +10,7 @@ mindsponge.control.Barostat
         - **pressure** (float) - 压力耦合参考压力P_ref (bar)。默认值：1。
         - **anisotropic** (bool) - 是否执行各向异性压力控制。默认值：False。
         - **control_step** (int) - 控制器执行的步骤间隔。默认值：1。
-        - **compressibility** (float) - 等温压缩率。默认值：4。
+        - **compressibility** (float) - 等温压缩率。默认值：4.6e-5。
         - **time_constant** (float) - 压力耦合的时间常数。默认值：1。
 
     输出：

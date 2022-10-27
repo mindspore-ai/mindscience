@@ -14,12 +14,17 @@ mindsponge.potential.Bias
         - **use_pbc** (bool) - 是否使用PBC。
     
     输出：
-        Tensor。势能。
+        Tensor。势能，shape为(B, 1)。
 
-    .. py:method:: update(coordinates, pbc_box)
+    符号：
+        - **B** - Batch size。
+        - **A** - 原子数量。
+        - **D** - 模拟系统的维度。
+
+    .. py:method:: update(coordinates, pbc_box=None)
 
         更新偏置势场的参数。
 
         参数：
-            - **coordinates** (Tensor) - 系统中原子的位置坐标。
-            - **pbc_box** (Tensor, 可选) - PBC box。
+            - **coordinates** (Tensor) - 系统中原子的位置坐标，shape为(B, A, D)。
+            - **pbc_box** (Tensor, 可选) - PBC box，shape为(B, D)或(1, D)。默认值："None"。

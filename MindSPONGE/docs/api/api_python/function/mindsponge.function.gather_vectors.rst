@@ -11,3 +11,8 @@ mindsponge.function.gather_vectors
 
     输出：
         Tensor。取出的向量。
+
+    符号：
+        - **B** - Batch size。
+        - **A** - 原子总数。
+        - **D** - 模拟系统的维度，通常为3。

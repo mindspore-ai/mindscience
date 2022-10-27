@@ -6,7 +6,7 @@ mindsponge.data.get_molecule
     获取分子模板。
 
     参数：
-        - **template** () - 模板的文件名称。
+        - **template** (Union[str, dict]) - 模板的文件名称。
 
     输出：
         dict。分子模板。

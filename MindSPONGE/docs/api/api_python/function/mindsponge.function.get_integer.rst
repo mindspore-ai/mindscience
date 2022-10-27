@@ -9,4 +9,4 @@ mindsponge.function.get_integer
         - **value** (Union[int, Tensor, Parameter, ndarray]) - 输入的值。
 
     输出：
-        int。整数。
+        int。输入value的整型类型。

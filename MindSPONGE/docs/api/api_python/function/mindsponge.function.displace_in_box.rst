@@ -15,4 +15,4 @@ mindsponge.function.displace_in_box
 
     符号：
         - **B** - Batch size。
-        - **D** - 模拟系统的维度。
+        - **D** - 模拟系统的维度，shape为(B, ..., D)。
