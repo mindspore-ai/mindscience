@@ -64,8 +64,6 @@ class NeighbourList(Cell):
     Symbols:
         B:  Number of simulation walker.
         A:  Number of atoms in system.
-        N:  Number of neighbour atoms.
-        D:  Dimension of position coordinates.
         Ex: Maximum number of excluded neighbour atoms.
     """
 
@@ -249,6 +247,13 @@ class NeighbourList(Cell):
         Returns:
             - neighbours (Tensor), Tensor of shape (B,A,N). Data type is int.
             - neighbour_mask (Tensor or None), Tensor of shape (B,A,N). Data type is bool.
+
+        Symbols:
+            B:  Number of simulation walker.
+            A:  Number of atoms in system.
+            N:  Number of neighbour atoms.
+            D:  Dimension of position coordinates.
+            Ex: Maximum number of excluded neighbour atoms.
         """
 
         neighbours, neighbour_mask = self.calcaulate(coordinate, pbc_box)

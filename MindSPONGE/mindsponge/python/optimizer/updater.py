@@ -43,8 +43,8 @@ class Updater(Optimizer):
 
     Args:
         system (Molecule):          Simulation system.
-        controller (Controller):    Controller.
-        time_step (float):          Time step. Defulat: 1e-3
+        controller (Controller):    Controller. Default: None
+        time_step (float):          Time step. Default: 1e-3
         velocity (Tensor):          Tensor of shape (B, A, D). Data type is float.
                                     Default: None
         weight_decay (float):       A value for the weight decay. Default: 0

@@ -78,7 +78,7 @@ def get_class_parameters(hyper_param: dict, prefix: str, num_class: int = 1) -> 
         hyper_param (dict): A dict of hyperparameters.
         prefix (str):       Only parameters starting with the prefix
                             will be loaded. Default: '_hyperparam'
-        num_class (int):    The number of the class.
+        num_class (int):    The number of the class. Default: 1
 
     Returns:
         hyperparameters, dict.

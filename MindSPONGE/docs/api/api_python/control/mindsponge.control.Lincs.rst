@@ -7,7 +7,7 @@ mindsponge.control.Lincs
 
     参数：
         - **system** (Molecule) - 模拟系统。
-        - **bonds** (Tensor) - 需要优化的所有边。
+        - **bonds** (Tensor) - 需要优化的所有键。默认类型为氢键类型。
         - **potential** (PotentialCell) - 系统的势能函数。
 
     输出：

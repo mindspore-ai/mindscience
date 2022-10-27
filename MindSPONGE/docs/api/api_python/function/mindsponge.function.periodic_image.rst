@@ -1,7 +1,7 @@
 mindsponge.function.periodic_image
 ==================================
 
-.. py:class:: mindsponge.function.periodic_image(position, pbc_box:, shift=0)
+.. py:class:: mindsponge.function.periodic_image(position, pbc_box, shift=0)
 
     计算PBC box的周期图。
 
@@ -11,7 +11,7 @@ mindsponge.function.periodic_image
         - **shift** (float) - PBC box的转换。默认值：0。
 
     输出：
-        Tensor。周期图。
+        Tensor。周期图，shape为(B, ..., D)。
 
     符号：
         - **B** - Batch size。

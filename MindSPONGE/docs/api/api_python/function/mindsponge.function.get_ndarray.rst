@@ -10,4 +10,4 @@ mindsponge.function.get_ndarray
         - **dtype** (type) - 数据类型。默认值：None。
 
     输出：
-        ndarray。array类型的输入。
+        ndarray。把输入转换为ndarray类型并返回。

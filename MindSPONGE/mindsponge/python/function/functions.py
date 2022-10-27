@@ -403,6 +403,11 @@ def gather_vectors(tensor: Tensor, index: Tensor) -> Tensor:
     Returns:
         vector (Tensor), Tensor of shape (B, ..., D).
 
+    Symbols:
+        B:  Batch size.
+        A:  Atom nums.
+        D:  Dimension of the simulation system. Usually is 3.
+
     Supported Platforms:
         ``Ascend`` ``GPU``
     """
@@ -419,16 +424,16 @@ def gather_vectors(tensor: Tensor, index: Tensor) -> Tensor:
         tensor1 = ops.reshape(tensor, tensor.shape[1:])
         return gather(tensor1, index, len(tensor1.shape) - 2)
 
-    # (B, N, M)
+    # (B, N, M):
     shape0 = index.shape
-    # (B, N*M, 1) <- (B, N, M)
+    # (B, N*M, 1) <- (B, N, M):
     index = ops.reshape(index, (shape0[0], -1, 1))
-    # (B, N*M, D) <- (B, N, D)
+    # (B, N*M, D) <- (B, N, D):
     neigh_atoms = msnp.take_along_axis(tensor, index, axis=-2)
-    # (B, N, M, D) <- (B, N, M) + (D,)
+    # (B, N, M, D) <- (B, N, M) + (D,):
     output_shape = shape0 + tensor.shape[-1:]
 
-    # (B, N, M, D)
+    # (B, N, M, D):
     return ops.reshape(neigh_atoms, output_shape)
 
 
@@ -443,6 +448,10 @@ def gather_values(tensor: Tensor, index: Tensor) -> Tensor:
 
     Returns:
         value (Tensor), Tensor of shape (B, ...,).
+
+    Symbols:
+        B:  Batch size.
+        X:  Any value.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -460,15 +469,15 @@ def gather_values(tensor: Tensor, index: Tensor) -> Tensor:
         tensor1 = ops.reshape(tensor, tensor.shape[1:])
         return gather(tensor1, index, len(tensor1.shape) - 1)
 
-    # (B, N, M)
+    # (B, N, M):
     origin_shape = index.shape
-    # (B, N*M) <- (B, N, M)
+    # (B, N*M) <- (B, N, M):
     index = ops.reshape(index, (origin_shape[0], -1))
 
-    # (B, N*M)
+    # (B, N*M):
     neigh_values = ops.gather_d(tensor, -1, index)
 
-    # (B, N, M)
+    # (B, N, M):
     return ops.reshape(neigh_values, origin_shape)
 
 

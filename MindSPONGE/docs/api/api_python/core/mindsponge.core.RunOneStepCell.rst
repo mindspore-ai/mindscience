@@ -16,16 +16,16 @@ mindsponge.core.RunOneStepCell
         获取系统的能量和力。
 
         返回：
-            Tensor。能量。
-            Tensor。力。
+            - Tensor。能量。
+            - Tensor。力。
 
     .. py:method:: run_one_step(*inputs)
 
         运行单步模拟。
 
         返回：
-            Tensor。模拟层结果的能量。
-            Tensor。模拟层结果的力。
+            - Tensor。模拟层结果输出的能量的大小。
+            - Tensor。模拟层结果输出的力的大小。
 
     .. py:method:: set_pbc_grad(value)
 

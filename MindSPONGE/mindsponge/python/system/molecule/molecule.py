@@ -68,7 +68,7 @@ class Molecule(Cell):
                                          The key of the dict are base, template, the name of molecule and so on.
                                          The value of the dict is file name.
                                          Default: None.
-        residue (Union[Residue, list]):  Residue parameter.
+        residue (Union[Residue, list]):  Residue parameter. Default: None.
         length_unit (str):               Length unit for position coordinates. Default: None.
 
     Supported Platforms:
@@ -455,7 +455,7 @@ class Molecule(Cell):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D) or (1, A, D). Data type is float.
-                                    Position coordinates of atoms. Default: None.
+                                    Position coordinates of atoms.
             pbc_box (Tensor):       Tensor of shape (B, D) or (1, D). Data type is float.
                                     Box of periodic boundary condition. Default: None.
         """

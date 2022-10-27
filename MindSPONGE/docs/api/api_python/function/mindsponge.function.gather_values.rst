@@ -10,4 +10,8 @@ mindsponge.function.gather_values
         - **index** (Tensor) - 索引，shape为(B, ...,)。
 
     输出：
-        Tensor。取出的值。
+        Tensor。取出的值，shape为(B, ...,)。
+
+    符号：
+        - **B** - Batch size。
+        - **X** - 输入张量第二维的任意大小。

@@ -71,7 +71,6 @@ class GridNeighbours(Cell):
     Symbols:
         B:  Number of simulation walker.
         A:  Number of atoms in system.
-        N:  Number of neighbour atoms.
         D:  Dimension of position coordinates.
         Ex: Maximum number of excluded neighbour atoms.
     """

@@ -7,9 +7,9 @@ mindsponge.control.Thermostat
 
     参数：
         - **system** (Molecule) - 模拟体系。
-        - **thermostat** (Thermostat) - 用于温度耦合的恒温器。
-        - **barostat** (Barostat) - 用于压力耦合的气压调节器。
-        - **constraint** (Constraint) - 约束算法。
+        - **thermostat** (Thermostat) - 用于温度耦合的恒温器。默认值：300。
+        - **barostat** (Barostat) - 用于压力耦合的气压调节器。默认值：1。
+        - **constraint** (Constraint) - 约束算法。默认值：4。
 
     输出：
         - Tensor。坐标，shape(B, A, D)。

@@ -39,7 +39,7 @@ class DihedralEnergy(EnergyCell):
 
     .. Math::
 
-        E_dihedral(\omega) = \sum_n 1 / 2 * V_n * [1 - cos(n * \omega - {\gamma}_n)]
+        E_{dihedral}(\omega) = \sum_n 1 / 2 \times V_n \times [1 - cos(n \times \omega - {\gamma}_n)]
 
     Args:
         index (Tensor):             Tensor of shape (B, d, 4) or (1, d, 4). Data type is int.
@@ -51,8 +51,8 @@ class DihedralEnergy(EnergyCell):
         phase (Tensor):             Tensor of shape (B, d) or (1, d). Data type is float.
                                     The phase shift in the torsional function ({\gamma}_n).
         parameters (dict):          Force field parameters. Default: None
-        use_pbc (bool):             Whether to use periodic boundary condition.
-        energy_unit (str):          Energy unit. Default: None
+        use_pbc (bool):             Whether to use periodic boundary condition. Default: None
+        energy_unit (str):          Energy unit. Default: 'kj/mol'
         units (Units):              Units of length and energy. Default: None
 
     Returns:

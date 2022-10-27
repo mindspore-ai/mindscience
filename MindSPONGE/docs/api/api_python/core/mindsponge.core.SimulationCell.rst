@@ -18,8 +18,8 @@ mindsponge.core.SimulationCell
         获得邻居列表。
 
         返回：
-            Tensor。邻居的索引。
-            Tensor。邻居的mask。
+            - Tensor。邻居的索引。
+            - Tensor。邻居的mask。
 
     .. py:method:: set_pbc_grad(grad_box)
 

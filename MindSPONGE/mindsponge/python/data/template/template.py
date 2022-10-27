@@ -37,8 +37,8 @@ def get_template(template: Union[str, dict, list], residue_name: str = None) -> 
     Get molecular template.
 
     Args:
-        template (str, dict or list):   The file name of template.
-        residue_name (str):             Residue name.
+        template (Union[str, dict, list]):  The file name of template.
+        residue_name (str):                 Residue name.
 
     Returns:
         template (dict), Molecular template.

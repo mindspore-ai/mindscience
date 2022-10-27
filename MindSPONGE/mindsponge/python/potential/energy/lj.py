@@ -39,27 +39,27 @@ class LennardJonesEnergy(NonbondEnergy):
 
     .. Math::
 
-        E_lj(r_ij) = 4 * \epsilon_ij * [(\sigma_ij / r_ij) ^ 12 - (\sigma_ij / r_ij) ^ 6]
+        E_{lj}(r_{ij}) = 4 * \epsilon_{ij} * [(\sigma_{ij} / r_{ij}) ^ {12} - (\sigma_{ij} / r_{ij}) ^ 6]
 
-        \epsilon_ij = /sqrt(\epsilon_i * \epsilon_j)
+        \epsilon_{ij} = \sqrt(\epsilon_i * \epsilon_j)
 
-        \sigma_ij = 1 / 2 * (\sigma_i + \sigma_j)
+        \sigma_{ij} = 1 / 2 * (\sigma_i + \sigma_j)
 
     ...
 
     Args:
         epsilon (Tensor):   Tensor of shape (B, A). Data type is float.
-                            Parameter \epsilon for LJ potential.
+                            Parameter \epsilon for LJ potential. Default: None
         sigma (Tensor):     Tensor of shape (B, A). Data type is float.
-                            Parameter \sigma in LJ potential.
+                            Parameter \sigma in LJ potential. Default: None
         mean_c6 (Tensor):   Tensor of shape (B, A). Data type is float.
                             Average dispersion (<C6>) of the system used for
-                            long range correction of dispersion interaction.Default: None
+                            long range correction of dispersion interaction. Default: 0
         parameters (dict):  Force field parameters. Default: None
         cutoff (float):     Cutoff distance. Default: None
         use_pbc (bool):     Whether to use periodic boundary condition. Default: None
-        length_unit (str):  Length unit for position coordinates. Default: None
-        energy_unit (str):  Energy unit. Default: None
+        length_unit (str):  Length unit for position coordinates. Default: 'nm'
+        energy_unit (str):  Energy unit. Default: 'kj/mol'
         units (Units):      Units of length and energy. Default: None
 
     Returns:

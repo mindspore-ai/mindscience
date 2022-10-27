@@ -12,7 +12,7 @@ mindsponge.cell.TriangleAttention
         - **gating** (bool) - 判断attention是否经过gating的指示器。
         - **layer_norm_dim** (int) - 归一层的维度。
         - **batch_size** (int) - 三角注意力机制中的batch size参数。
-        - **slice_num** (int) - 为了减少内存所制作的切分的数量。默认值：0。
+        - **slice_num** (int) - 为了减少内存需要进行切分的数量。默认值：0。
 
     输入：
         - **pair_act** (Tensor) - pair_act。

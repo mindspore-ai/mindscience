@@ -12,7 +12,7 @@ mindsponge.callback.WriteH5MD
         - **directory** (str) - 输出文件的目录。
         - **write_velocity** (bool) - 是否把系统的速度写入H5MD文件中。默认值：False。
         - **write_force** (bool) - 是否把系统的力写入H5MD文件中。默认值：False。
-        - **write_image** (bool) - 是否把系统的位置图片写入H5MD文件中。默认值：False。
+        - **write_image** (bool) - 是否把系统的位置图片写入H5MD文件中。默认值：True。
         - **length_unit** (str) - 坐标的长度单位。
         - **energy_unit** (str) - 能量单位。
 

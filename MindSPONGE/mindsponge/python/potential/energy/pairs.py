@@ -41,10 +41,10 @@ class NonbondPairwiseEnergy(EnergyCell):
 
     .. math::
 
-        E_pairs(r_{ij}) = A_{ij}^p * E_r(r_{ij}) + B_{ij}^p * E_r6(r_{ij}) + C_{ij}^p * E_r12(r_{ij})
-                        = A_{ij}^p * k_coulomb * q_i * q_j / r_{ij} -
-                          B_{ij}^p * 4 * \epsilon_{ij} * (\sigma_{ij} / r_{ij}) ^ 6  +
-                          C_{ij}^p * 4 * \epsilon_{ij} * (\sigma_{ij} / r_{ij}) ^ 12
+        E_{pairs}(r_{ij}) = A_{ij}^p \cdot E_r(r_{ij}) + B_{ij}^p \cdot E_{r6}(r_{ij}) + C_{ij}^p \cdot E_{r12}(r_{ij})
+                        = A_{ij}^p \cdot k_{coulomb} \cdot q_i \cdot q_j / r_{ij} -
+                          B_{ij}^p \cdot 4 \cdot \epsilon_{ij} \cdot (\sigma_{ij} / r_{ij}) ^ 6  +
+                          C_{ij}^p \cdot 4 \cdot \epsilon_{ij} \cdot (\sigma_{ij} / r_{ij}) ^ {12}
 
     Args:
         index (Tensor):              Tensor of shape (B, p, 2). Data type is int.
@@ -76,7 +76,6 @@ class NonbondPairwiseEnergy(EnergyCell):
     Symbols:
         B:  Batchsize, i.e. number of walkers in simulation.
         p:  Number of non-bonded atom pairs.
-        D:  Dimension of the simulation system. Usually is 3.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
