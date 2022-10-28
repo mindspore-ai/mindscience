@@ -1,7 +1,7 @@
 mindelec.data.SamplingMode
 ==========================
 
-.. py:class:: mindelec.data.SamplingMode(value, names=None, *, module=None, qualname=None, type=None, start=1)
+.. py:class:: mindelec.data.SamplingMode
 
     点采样方法，目前支持UPPERBOUND(0)和DIMENSIONS(1)。
 

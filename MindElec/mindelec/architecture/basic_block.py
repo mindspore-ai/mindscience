@@ -37,9 +37,9 @@ class LinearBlock(nn.Cell):
         in_channels (int): The number of channels in the input space.
         out_channels (int): The number of channels in the output space.
         weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
-            is same as input `input` . For the values of str, refer to the function `initializer`. Default: 'normal'.
+            is same as input `input` . For the values of str, refer to the function `initializer`. Default: "normal".
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype is
-            same as input `input` . The values of str refer to the function `initializer`. Default: 'zeros'.
+            same as input `input` . The values of str refer to the function `initializer`. Default: "zeros".
         has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
         activation (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected
             layer. Default: None.
@@ -94,9 +94,9 @@ class ResBlock(nn.Cell):
         in_channels (int): The number of channels in the input space.
         out_channels (int): The number of channels in the output space.
         weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
-            is same as input x. The values of str refer to the function `initializer`. Default: 'normal'.
+            is same as input x. The values of str refer to the function `initializer`. Default: "normal".
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype is
-            same as input x. The values of str refer to the function `initializer`. Default: 'zeros'.
+            same as input x. The values of str refer to the function `initializer`. Default: "zeros".
         has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
         activation (Union[str, Cell, Primitive, None]): activate function applied to the output of the dense layer.
             Default: None.
@@ -228,14 +228,14 @@ class FCSequential(nn.Cell):
         neurons (int): The number of neurons of hidden layers.
         residual (bool): full-connected of residual block for the hidden layers. Default: True.
         act (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected layer,
-            eg. 'ReLU'.Default: "sin".
+            eg. "ReLU". Default: "sin".
         weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
             is same as input x. The values of str refer to the function
-            :func:`mindspore.common.initializer`. Default: 'normal'.
+            :func:`mindspore.common.initializer`. Default: "normal".
         has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype
             is same as input x. The values of str refer to the function
-            :func:`mindspore.common.initializer`. Default: 'default'.
+            :func:`mindspore.common.initializer`. Default: "default".
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.

@@ -65,7 +65,7 @@ class L2(nn.Metric):
 
     def update(self, *inputs):
         r"""
-        Updates the internal evaluation result :math:`\text{y_pred}` and :math:`y`.
+        Updates the internal evaluation result :math:`\text{y_pred}` and :math:`\text{y}`.
 
         Args:
             inputs (Union[Tensor, list, numpy.array]): `y_pred` and `y` can be retrieved from `input`. `y_pred` is

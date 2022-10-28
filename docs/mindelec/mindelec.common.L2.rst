@@ -28,12 +28,12 @@ mindelec.common.L2
 
     .. py:method:: mindelec.common.L2.update(*inputs)
 
-        更新内部评估结果 :math:`\text{y_pred}` 和 :math:`y`。输入 `y_pred` 和 `y` 用于计算L2。
+        更新内部评估结果 :math:`\text{y_pred}` 和 :math:`\text{y}`。输入 `\text{y_pred}` 和 `\text{y}` 用于计算L2。
 
         参数：
-            - **inputs** (Union[Tensor, list, numpy.array]) - `y_pred` 和 `y` 是输入 `input` 中位置为0和1的元素，用于计算L2的预测值和真实值。两者有相同的shape。
+            - **inputs** (Union[Tensor, list, numpy.array]) - `\text{y_pred}` 和 `\text{y}` 是输入 `input` 中位置为0和1的元素，用于计算L2的预测值和真实值。两者有相同的shape。
 
         异常：
             - **ValueError** - 如果输入的长度不是2。
-            - **ValueError** - 如果y_pred和y的不相同。
+            - **ValueError** - 如果 `\text{y_pred}` 和 `\text{y}` 的不相同。
 

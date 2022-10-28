@@ -13,7 +13,7 @@ mindflow.operators.Grad
         - **x** (list) - 输入是可变长度参数。第一个输入是二维的网络输入（Tensor），最后三个输入是输入（int）、输出的列索引（int）和网络的输出（Tensor）的列索引。
 
     输出：
-        Tensor。
+        Tensor。指定输出列相对于指定输入列的梯度。
 
     异常：
         - **TypeError** - 如果 `argnum` 的类型不是int。

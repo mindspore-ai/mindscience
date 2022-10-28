@@ -39,7 +39,7 @@ class MTLWeightedLossCell(nn.Cell):
         - **input** - tuple of Tensors.
 
     Outputs:
-        Tensor.
+        Scalar.
 
     Supported Platforms:
         ``Ascend``

@@ -12,4 +12,4 @@ mindelec.architecture.MTLWeightedLossCell
         - **input** (tuple[Tensor]) - 输入数据。
 
     输出：
-        Tensor。多任务学习自动加权计算出的损失。
+        Scalar。多任务学习自动加权计算出的损失。
