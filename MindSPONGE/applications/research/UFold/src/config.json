@@ -1,0 +1,4 @@
+{
+    "batch_size_stage_1": 1,
+    "epoches_first": 100
+}
