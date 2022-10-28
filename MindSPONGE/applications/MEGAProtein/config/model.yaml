@@ -6,6 +6,14 @@ max_relative_feature: 32
 recycle_features: True
 recycle_pos: True
 seq_channel: 384
+ascend:
+  lr: 0.0001
+GPU:
+  lr_max: 0.001
+  lr_min: 0.0001
+  warmup_steps: 1000
+  start_step: 0
+  lr_decay_steps: 75000
 prev_pos:
   min_bin: 3.25
   max_bin: 20.75

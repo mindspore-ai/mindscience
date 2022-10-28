@@ -30,6 +30,7 @@ from mindsponge.common.protein import to_pdb, from_prediction
 from data import Feature, RawFeatureGenerator, create_dataset, get_crop_size, get_raw_feature, process_pdb
 from model import MegaFold, compute_confidence, MegaAssessment
 from module.fold_wrapcell import TrainOneStepCell, WithLossCell, WithLossCellAssessment
+from module.lr import cos_decay_lr
 
 parser = argparse.ArgumentParser(description='Inputs for eval.py')
 parser.add_argument('--data_config', default="./config/data.yaml", help='data process config')
@@ -147,7 +148,14 @@ def fold_train(args):
         megafold.to_float(mstype.float32)
 
     net_with_criterion = WithLossCell(megafold, model_cfg)
-    opt = nn.Adam(params=megafold.trainable_params(), learning_rate=1e-4, eps=1e-6)
+    if args.run_platform == 'GPU':
+        lr = cos_decay_lr(start_step=model_cfg.GPU.start_step, lr_init=0.0,
+                          lr_min=model_cfg.GPU.lr_min, lr_max=model_cfg.GPU.lr_max,
+                          decay_steps=model_cfg.GPU.lr_decay_steps,
+                          warmup_steps=model_cfg.GPU.warmup_steps)
+    else:
+        lr = model_cfg.ascend.lr
+    opt = nn.Adam(params=megafold.trainable_params(), learning_rate=lr, eps=1e-6)
     train_net = TrainOneStepCell(net_with_criterion, opt, sens=args.loss_scale,
                                  gradient_clip_value=args.gradient_clip)
 
