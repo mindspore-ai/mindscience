@@ -1,0 +1,29 @@
+model:
+  work_space: /path/to/work_space
+  name: FNO2D_time
+  input_dims: 1
+  output_dims: 1
+  input_resolution: 64
+  modes: 12
+  width: 20
+  depth: 4
+data:
+  name: "navier_stoke_2d"
+  path: "/path/to/data"
+  train_size: 19000
+  test_size: 3800
+  batch_size: 19
+  resolution: 64
+  sub: 2
+optimizer:
+  initial_lr: 0.001
+  warmup_epochs: 1
+  weight_decay: 0.0
+  gamma: 0.5
+  train_epochs: 150
+callback:
+  summary_dir: "/path/to/summary"
+  ckpt_dir: "/path/to/ckpt"
+  save_checkpoint_steps: 50
+  keep_checkpoint_max: 10
+  eval_interval: 10
