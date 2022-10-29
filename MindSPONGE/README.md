@@ -145,6 +145,9 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 
 ### Dependency
 
+- python >= 3.7
+- MindSpore >= 1.8.0
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -160,10 +163,13 @@ pip install -r requirements.txt
 |               | CentOS-aarch64  | ✔️ |
 | GPU CUDA 10.1 | Ubuntu-x86      | ✔️ |
 
+- CUDA>=10.1
+- Ubuntu>=16.04
+
 ### **pip install**(not support temporarily)
 
 ```bash
-pip install mindscience_sponge_[gpu|ascend]
+pip install mindsponge_[gpu|ascend]
 ```
 
 ### **source code install**
@@ -194,7 +200,8 @@ bash build.sh -e gpu -j32 -t on -c on
 
 ```bash
 cd {PATH}/mindscience/MindSPONGE/output
-pip install mindscience_sponge*.whl
+pip install mindsponge*.whl
+pip install cybertron*.whl # if "-c on" is used
 ```
 
 ## **Community**
