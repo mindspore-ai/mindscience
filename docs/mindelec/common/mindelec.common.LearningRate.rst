@@ -9,8 +9,8 @@ mindelec.common.LearningRate
         - **learning_rate** (float) - 基本学习速率，正数。
         - **end_learning_rate** (float) - 结束学习速率，非负数。
         - **warmup_steps** (int) - 热身步骤，非负数。
-        - **decay_steps** (int) - 用于计算衰变学习率，正数。
-        - **power** (float) - 用于计算衰减学习率，正数。
+        - **decay_steps** (int) - 衰变步数，用于计算衰变学习率，正数。
+        - **power** (float) - 衰变次方，用于计算衰减学习率，正数。
 
     输入：
        - **global_step** (Tensor) - 具有 :math:`()` 形状的当前步骤数。

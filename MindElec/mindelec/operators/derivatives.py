@@ -110,7 +110,8 @@ class Grad(nn.Cell):
           network (Tensor).
 
     Outputs:
-        Tensor.
+        Tensor. The gradients of the specified column of outputs with respect to the specified column of
+            inputs.
 
     Raises:
         TypeError: If the type of `argnum` is not int.

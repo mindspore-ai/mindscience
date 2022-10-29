@@ -1,7 +1,7 @@
 mindelec.data.BBoxType
 ======================
 
-.. py:class:: mindelec.data.BBoxType(value, names=None, *, module=None, qualname=None, type=None, start=1)
+.. py:class:: mindelec.data.BBoxType
 
     采样空间边界框，仅支持立方体形状采样空间，目前支持STATIC(0)和DYNAMIC(1)。
 

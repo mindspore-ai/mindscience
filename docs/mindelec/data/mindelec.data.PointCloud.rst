@@ -1,7 +1,7 @@
 mindelec.data.PointCloud
 ========================
 
-.. py:class:: mindelec.data.PointCloud(data_dir, sampling_config, material_config, num_parallel_workers=4)
+.. py:class:: mindelec.data.PointCloud(data_dir, sampling_config, material_config, num_parallel_workers=os.cpu_count())
 
     读取stp文件以生成PointCloud数据，用于physical-equation模拟。此外，可以分析stp格式的任何三维模型的空间拓扑信息。（CAD中最流行的格式。）
 
