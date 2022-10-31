@@ -128,7 +128,6 @@ if __name__ == "__main__":
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="Ascend",
                             mempool_block_size="31GB",
-                            memory_optimize_level="O1",
                             max_call_depth=6000,
                             device_id=arguments.device_id)
     else:

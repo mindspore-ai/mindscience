@@ -171,7 +171,7 @@ def fold_train(args):
         names_list.append(name.split(".pdb")[0])
     train_dataset = create_dataset(args.pdb_path, args.input_path, names_list, data_cfg,
                                    args.resolution_data, num_parallel_worker=4, is_parallel=args.run_distribute,
-                                   shuffle=True)
+                                   shuffle=True, mixed_precision=args.mixed_precision)
     dataset_iter = train_dataset.create_dict_iterator(num_epochs=1, output_numpy=True)
 
     for d in dataset_iter:
