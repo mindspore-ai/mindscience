@@ -68,7 +68,7 @@ template:
       orientation: 'per_row'
       shared_dropout: True
 evoformer:
-  msa_stack_num: 47
+  msa_stack_num: 48
   extra_msa_stack_num: 4
   msa_row_attention_with_pair_bias:
     dropout_rate: 0.15  # 0.15
