@@ -1,0 +1,25 @@
+model:
+  name: FNO1D
+  input_dims: 1
+  output_dims: 1
+  resolution: 1024
+  modes: 16
+  width: 64
+  depth: 4
+data:
+  name: "burgers1d"
+  path: "/path/to/data"
+  train_size: 1000
+  test_size: 200
+  batch_size: 8
+  sub: 8
+optimizer:
+  initial_lr: 0.001
+  weight_decay: 0.0
+  gamma: 0.5
+  train_epochs: 100
+  valid_epochs: 10
+callback:
+  summary_dir: "/path/to/summary"
+  save_checkpoint_steps: 20
+  keep_checkpoint_max: 10
