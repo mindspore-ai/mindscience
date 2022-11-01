@@ -14,21 +14,15 @@
 纳维-斯托克斯方程（Navier-Stokes equation），简称`N-S`方程，是流体力学领域的经典偏微分方程，在粘性不可压缩情况下，无量纲`N-S`方程的形式如下：
 
 $$
-
 \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0
-
 $$
 
 $$
-
 \frac{\partial u} {\partial t} + u \frac{\partial u}{\partial x} + v \frac{\partial u}{\partial y} = - \frac{\partial p}{\partial x} + \frac{1} {Re} (\frac{\partial^2u}{\partial x^2} + \frac{\partial^2u}{\partial y^2})
-
 $$
 
 $$
-
 \frac{\partial v} {\partial t} + u \frac{\partial v}{\partial x} + v \frac{\partial v}{\partial y} = - \frac{\partial p}{\partial y} + \frac{1} {Re} (\frac{\partial^2v}{\partial x^2} + \frac{\partial^2v}{\partial y^2})
-
 $$
 
 其中，`Re`表示雷诺数。
@@ -36,11 +30,11 @@ $$
 ## 问题描述
 
 本案例利用PINNs方法学习位置和时间到相应流场物理量的映射，实现`N-S`方程的求解：
-$$
 
+$$
 (x, y, t) \mapsto (u, v, p)
-
 $$
+
 MindFlow求解该问题的具体流程如下：
 
 1. 对求解域以及初边值条件进行随机采样，创建训练数据集。

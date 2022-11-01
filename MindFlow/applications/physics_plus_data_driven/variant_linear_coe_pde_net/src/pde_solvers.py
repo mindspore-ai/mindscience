@@ -139,10 +139,6 @@ class VariantCoeLinear2d(_PDESolver):
                 _coe_modify(tmp, tmp_fourier, m)
                 self.a_smooth[j, k - j] = np.fft.fft2(tmp).real
 
-    @property
-    def spectral_size(self):
-        return self.spectral_size
-
     def vc_conv(self, order, coe):
         m = self.spectral_size // 2
         vc_smooth = self.a_smooth[order[0], order[1]]

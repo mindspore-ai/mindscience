@@ -13,31 +13,23 @@ This case solves the inverse problem of convection-diffusion partial differentia
 In this study, the convection-diffusion equation is of the form:
 
 $$
-
 u_t = a(x,y) u_x + b(x,y) u_y + c u_{xx} + d u_{yy}, \quad (x,y) \in[0,2 \pi] \times[0,2 \pi]
-
 $$
 
 $$
-
 u|_{t=0} = u_0(x,y)
-
 $$
 
 The coefficients of each derivative are:
 
 $$
-
 a(x,y)=0.5(cos(y)+x(2\pi-x)sin(x))+0.6 \quad
 b(x,y)=2(cos(y)+sin(x))+0.8
-
 $$
 
 $$
-
 c=0.2 \quad
 d=0.3
-
 $$
 
 ### Model Structure of the PDE-Net
