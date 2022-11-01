@@ -1,7 +1,7 @@
 mindsponge.data.get_template
 ============================
 
-.. py:class:: mindsponge.data.get_template(template, residue_name=None)
+.. py:function:: mindsponge.data.get_template(template, residue_name=None)
 
     获取分子模板。
 

@@ -1,7 +1,7 @@
 mindsponge.function.get_vector_without_pbc
 ==========================================
 
-.. py:class:: mindsponge.function.get_vector_without_pbc(initial, terminal, _pbc_box)
+.. py:function:: mindsponge.function.get_vector_without_pbc(initial, terminal, _pbc_box)
 
     在没有周期性边界条件的情况下，计算从起点到终点的向量。
 

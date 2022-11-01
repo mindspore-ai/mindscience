@@ -1,7 +1,7 @@
 mindsponge.data.update_dict
 ===========================
 
-.. py:class:: mindsponge.data.update_dict(origin_dict, new_dict)
+.. py:function:: mindsponge.data.update_dict(origin_dict, new_dict)
 
     更新复合字典。
 

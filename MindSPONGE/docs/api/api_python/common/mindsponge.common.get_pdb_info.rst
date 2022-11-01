@@ -1,7 +1,7 @@
 mindsponge.common.get_pdb_info
 ==============================
 
-.. py:class:: mindsponge.common.get_pdb_info(pdb_path)
+.. py:function:: mindsponge.common.get_pdb_info(pdb_path)
 
     从pdb文件中获取原子坐标，残基序号等信息。
 

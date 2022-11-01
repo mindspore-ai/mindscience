@@ -1,7 +1,7 @@
 mindsponge.common.get_aligned_seq
 =================================
 
-.. py:class:: mindsponge.common.get_aligned_seq(gt_seq, pr_seq)
+.. py:function:: mindsponge.common.get_aligned_seq(gt_seq, pr_seq)
 
     对比两个蛋白质序列。
 

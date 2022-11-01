@@ -1,7 +1,7 @@
 mindsponge.function.displace_in_box
 ===================================
 
-.. py:class:: mindsponge.function.displace_in_box(position, pbc_box, shift=0)
+.. py:function:: mindsponge.function.displace_in_box(position, pbc_box, shift=0)
 
     在PBC box中展示系统的位置。
 

@@ -1,7 +1,7 @@
 mindsponge.function.get_vector
 ==============================
 
-.. py:class:: mindsponge.function.get_vector(initial, terminal, pbc_box)
+.. py:function:: mindsponge.function.get_vector(initial, terminal, pbc_box)
 
     计算从起点到终点的向量。
 

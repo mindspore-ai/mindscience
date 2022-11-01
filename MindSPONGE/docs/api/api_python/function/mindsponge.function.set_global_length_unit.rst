@@ -1,7 +1,7 @@
 mindsponge.function.set_global_length_unit
 ==========================================
 
-.. py:class:: mindsponge.function.set_global_length_unit(unit)
+.. py:function:: mindsponge.function.set_global_length_unit(unit)
 
     给全局单位设置长度单位。
 

@@ -1,7 +1,7 @@
 mindsponge.data.set_hyper_parameter
 ===================================
 
-.. py:class:: mindsponge.data.set_hyper_parameter(hyper_param, prefix, param)
+.. py:function:: mindsponge.data.set_hyper_parameter(hyper_param, prefix, param)
 
     把参数放入超参数中。
 

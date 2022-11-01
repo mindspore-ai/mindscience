@@ -1,7 +1,7 @@
 mindsponge.function.calc_distance
 =================================
 
-.. py:class:: mindsponge.function.calc_distance(position_a, position_b, pbc_box)
+.. py:function:: mindsponge.function.calc_distance(position_a, position_b, pbc_box)
 
     计算位置A和B之间的距离。
 

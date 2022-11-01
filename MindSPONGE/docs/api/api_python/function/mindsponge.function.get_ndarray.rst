@@ -1,7 +1,7 @@
 mindsponge.function.get_ndarray
 ===============================
 
-.. py:class:: mindsponge.function.get_ndarray(value, dtype=None)
+.. py:function:: mindsponge.function.get_ndarray(value, dtype=None)
 
     获取输入的ndarray类型。
 

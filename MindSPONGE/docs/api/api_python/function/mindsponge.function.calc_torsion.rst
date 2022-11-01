@@ -1,7 +1,7 @@
 mindsponge.function.calc_torsion
 ================================
 
-.. py:class:: mindsponge.function.calc_torsion(position_a, position_b, position_c, position_d, pbc_box)
+.. py:function:: mindsponge.function.calc_torsion(position_a, position_b, position_c, position_d, pbc_box)
 
     计算由四个位置A，B，C，D形成的扭转角。
 

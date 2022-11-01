@@ -1,7 +1,7 @@
 mindsponge.common.get_fasta_info
 ================================
 
-.. py:class:: mindsponge.common.get_fasta_info(pdb_path)
+.. py:function:: mindsponge.common.get_fasta_info(pdb_path)
 
     从pdb文件中获取序列信息。
 

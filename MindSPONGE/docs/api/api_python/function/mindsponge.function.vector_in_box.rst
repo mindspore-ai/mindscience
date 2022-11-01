@@ -1,7 +1,7 @@
 mindsponge.function.vector_in_box
 =================================
 
-.. py:class:: mindsponge.function.vector_in_box(vector, pbc_box)
+.. py:function:: mindsponge.function.vector_in_box(vector, pbc_box)
 
     在周期性边界条件下，使向量在 :math:`-0.5 \times box` 到 :math:`0.5 \times box` 的范围内。
 

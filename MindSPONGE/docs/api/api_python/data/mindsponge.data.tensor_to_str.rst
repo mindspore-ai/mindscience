@@ -1,7 +1,7 @@
 mindsponge.data.tensor_to_str
 =============================
 
-.. py:class:: mindsponge.data.tensor_to_str(tensor)
+.. py:function:: mindsponge.data.tensor_to_str(tensor)
 
     把Tensor解码为字符串。
 

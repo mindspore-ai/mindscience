@@ -1,7 +1,7 @@
 mindsponge.data.get_template_index
 ==================================
 
-.. py:class:: mindsponge.data.get_template_index(template, names, key="atom_name")
+.. py:function:: mindsponge.data.get_template_index(template, names, key="atom_name")
 
     根据原子名称获取系统中的原子序号。
 

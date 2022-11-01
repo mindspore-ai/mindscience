@@ -1,7 +1,7 @@
 mindsponge.data.get_hyper_parameter
 ===================================
 
-.. py:class:: mindsponge.data.get_hyper_parameter(hyper_param, prefix)
+.. py:function:: mindsponge.data.get_hyper_parameter(hyper_param, prefix)
 
     获取超参数。
 

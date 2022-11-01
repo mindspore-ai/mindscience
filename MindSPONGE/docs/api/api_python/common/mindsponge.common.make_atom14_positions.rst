@@ -1,7 +1,7 @@
 mindsponge.common.make_atom14_positions
 =======================================
 
-.. py:class:: mindsponge.common.make_atom14_positions(aatype, all_atom_mask, all_atom_positions)
+.. py:function:: mindsponge.common.make_atom14_positions(aatype, all_atom_mask, all_atom_positions)
 
     构建更稠密的原子位置(14维度而不是37维)。
 

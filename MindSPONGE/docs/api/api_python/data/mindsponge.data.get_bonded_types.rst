@@ -1,7 +1,7 @@
 mindsponge.data.get_bonded_types
 ================================
 
-.. py:class:: mindsponge.data.get_bonded_types(atom_types, symbol="-")
+.. py:function:: mindsponge.data.get_bonded_types(atom_types, symbol="-")
 
     得到键、角、二面体等键项的类型。
 

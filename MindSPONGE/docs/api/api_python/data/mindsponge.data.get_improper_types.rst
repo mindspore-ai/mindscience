@@ -1,7 +1,7 @@
 mindsponge.data.get_improper_types
 ==================================
 
-.. py:class:: mindsponge.data.get_improper_types(atom_types, symbol="-")
+.. py:function:: mindsponge.data.get_improper_types(atom_types, symbol="-")
 
     多原子名称构造函数。
 

@@ -1,7 +1,7 @@
 mindsponge.function.calc_torsion_for_vectors
 ============================================
 
-.. py:class:: mindsponge.function.calc_torsion_for_vectors(vector1, vector2, vector3)
+.. py:function:: mindsponge.function.calc_torsion_for_vectors(vector1, vector2, vector3)
 
     计算由三个向量形成的扭转角。
 

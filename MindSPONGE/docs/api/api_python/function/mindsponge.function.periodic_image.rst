@@ -1,7 +1,7 @@
 mindsponge.function.periodic_image
 ==================================
 
-.. py:class:: mindsponge.function.periodic_image(position, pbc_box, shift=0)
+.. py:function:: mindsponge.function.periodic_image(position, pbc_box, shift=0)
 
     计算PBC box的周期图。
 

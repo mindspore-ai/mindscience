@@ -1,7 +1,7 @@
 mindsponge.function.calc_angle_between_vectors
 ==============================================
 
-.. py:class:: mindsponge.function.calc_angle_between_vectors(vector1, vector2)
+.. py:function:: mindsponge.function.calc_angle_between_vectors(vector1, vector2)
 
     计算两个向量之间的角。
 

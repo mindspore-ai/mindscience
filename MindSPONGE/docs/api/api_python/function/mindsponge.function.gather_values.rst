@@ -1,7 +1,7 @@
 mindsponge.function.gather_values
 =================================
 
-.. py:class:: mindsponge.function.gather_values(tensor, index)
+.. py:function:: mindsponge.function.gather_values(tensor, index)
 
     根据指标从张量的最后一根轴收集值。
 
