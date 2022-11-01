@@ -73,7 +73,7 @@ def train_with_eval():
                   output_dims=model_params["output_dims"],
                   resolution=model_params["input_resolution"],
                   modes=model_params["modes"],
-                  width=model_params["width"],
+                  channels=model_params["width"],
                   depth=model_params["depth"]
                   )
 

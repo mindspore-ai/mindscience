@@ -181,7 +181,7 @@ class FNO2D(nn.Cell):
                  output_dims,
                  resolution,
                  modes,
-                 width=20,
+                 channels=20,
                  depth=4,
                  mlp_ratio=4,
                  compute_dtype=mstype.float32):
@@ -194,8 +194,8 @@ class FNO2D(nn.Cell):
             raise ValueError("modes must at least 1, but got mode: {}".format(modes))
 
         self.modes1 = modes
-        self.channels = width
-        self.fc_channel = mlp_ratio * width
+        self.channels = channels
+        self.fc_channel = mlp_ratio * channels
         self.fc0 = nn.Dense(input_dims + 2, self.channels, has_bias=False).to_float(compute_dtype)
         self.layers = depth
 
@@ -239,7 +239,7 @@ model = FNO2D(input_dims=model_params["input_dims"],
               output_dims=model_params["output_dims"],
               resolution=model_params["input_resolution"],
               modes=model_params["modes"],
-              width=model_params["width"],
+              channels=model_params["width"],
               depth=model_params["depth"]
              )
 ```
