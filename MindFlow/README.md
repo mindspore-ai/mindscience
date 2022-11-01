@@ -36,10 +36,10 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 **More Cases**：👀
 
-- [DongFang.YuFeng](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/protein_relaxation)
-- [PDENet](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
-- [Flow around a cylinder](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
-- [`N-S` equation](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
+- [DongFang.YuFeng](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/airfoil)
+- [PDENet](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_plus_data_driven/)
+- [Flow around a cylinder](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/flow_past_cylinder)
+- [`N-S` equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier-stokes)
 
 ## **Installation**
 

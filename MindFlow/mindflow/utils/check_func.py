@@ -26,7 +26,7 @@ def _convert_to_tuple(params):
     if not isinstance(params, (list, tuple)):
         params = (params,)
     if isinstance(params, list):
-        params = (param for param in params)
+        params = tuple(params)
     return params
 
 
