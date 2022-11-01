@@ -382,7 +382,6 @@ if __name__ == "__main__":
     if arguments.run_platform == 'Ascend' and not arguments.is_training:
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="Ascend",
-                            mempool_block_size='31GB',
                             memory_optimize_level="O1",
                             max_call_depth=6000,
                             device_id=arguments.device_id)
@@ -394,7 +393,6 @@ if __name__ == "__main__":
     elif arguments.run_platform == 'GPU':
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="GPU",
-                            mempool_block_size='31GB',
                             max_call_depth=6000,
                             device_id=arguments.device_id,
                             enable_graph_kernel=True)
