@@ -1,7 +1,7 @@
 mindsponge.data.load_hyper_param_into_class
 ===========================================
 
-.. py:class:: mindsponge.data.load_hyper_param_into_class(cls_dict, hyper_param, types, prefix)
+.. py:function:: mindsponge.data.load_hyper_param_into_class(cls_dict, hyper_param, types, prefix)
 
     把超参数加载到Cell类中。
 

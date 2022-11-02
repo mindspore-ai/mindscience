@@ -1,7 +1,7 @@
 mindsponge.data.set_class_parameters
 ====================================
 
-.. py:class:: mindsponge.data.set_class_parameters(hyper_param, prefix, cell)
+.. py:function:: mindsponge.data.set_class_parameters(hyper_param, prefix, cell)
 
     把超参数放入Cell类中。
 

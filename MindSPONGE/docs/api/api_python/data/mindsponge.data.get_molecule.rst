@@ -1,7 +1,7 @@
 mindsponge.data.get_molecule
 ============================
 
-.. py:class:: mindsponge.data.get_molecule(template)
+.. py:function:: mindsponge.data.get_molecule(template)
 
     获取分子模板。
 

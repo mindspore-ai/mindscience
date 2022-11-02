@@ -1,7 +1,7 @@
 mindsponge.function.get_length_unit_name
 ========================================
 
-.. py:class:: mindsponge.function.get_length_unit_name(unit)
+.. py:function:: mindsponge.function.get_length_unit_name(unit)
 
     获得长度单位的名称。
 

@@ -1,7 +1,7 @@
 mindsponge.function.pbc_box_reshape
 ===================================
 
-.. py:class:: mindsponge.function.pbc_box_reshape(pbc_box, ndim)
+.. py:function:: mindsponge.function.pbc_box_reshape(pbc_box, ndim)
 
     把PBC box改变shape，使它的维度与ndim相同。
 

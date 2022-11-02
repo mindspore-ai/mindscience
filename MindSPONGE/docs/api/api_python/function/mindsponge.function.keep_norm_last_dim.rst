@@ -1,7 +1,7 @@
 mindsponge.function.keep_norm_last_dim
 ======================================
 
-.. py:class:: mindsponge.function.keep_norm_last_dim(vector)
+.. py:function:: mindsponge.function.keep_norm_last_dim(vector)
 
     计算向量的归一化且保持最后输出的维度不变。
 

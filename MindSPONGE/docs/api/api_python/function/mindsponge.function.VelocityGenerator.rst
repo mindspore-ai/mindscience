@@ -1,7 +1,7 @@
 mindsponge.function.VelocityGenerator
 =====================================
 
-.. py:class:: mindsponge.function.VelocityGenerator(temperature=300, remove_translation=True, seed=0, seed2=0, length_unit, energy_unit)
+.. py:function:: mindsponge.function.VelocityGenerator(temperature=300, remove_translation=True, seed=0, seed2=0, length_unit, energy_unit)
 
     根据温度产生系统中原子的速度。
 

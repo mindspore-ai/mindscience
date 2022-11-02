@@ -1,7 +1,7 @@
 mindsponge.function.gather_vectors
 ==================================
 
-.. py:class:: mindsponge.function.gather_vectors(tensor, index)
+.. py:function:: mindsponge.function.gather_vectors(tensor, index)
 
     根据指标从张量的倒数第二轴收集向量。
 

@@ -1,7 +1,7 @@
 mindsponge.data.get_class_parameters
 ====================================
 
-.. py:class:: mindsponge.data.get_class_parameters(hyper_param, prefix, num_class=1)
+.. py:function:: mindsponge.data.get_class_parameters(hyper_param, prefix, num_class=1)
 
     从Cell类中获取超参数。
 

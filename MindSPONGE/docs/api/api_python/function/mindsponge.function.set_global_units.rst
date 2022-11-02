@@ -1,7 +1,7 @@
 mindsponge.function.set_global_units
 ====================================
 
-.. py:class:: mindsponge.function.set_global_units(length_unit, energy_unit, units)
+.. py:function:: mindsponge.function.set_global_units(length_unit, energy_unit, units)
 
     给全局单位设置单位。
 

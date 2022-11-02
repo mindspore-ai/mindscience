@@ -1,7 +1,7 @@
 mindsponge.function.get_energy_unit
 ===================================
 
-.. py:class:: mindsponge.function.get_energy_unit(unit)
+.. py:function:: mindsponge.function.get_energy_unit(unit)
 
     获得能量单位。
 

@@ -1,7 +1,7 @@
 mindsponge.data.write_yaml
 ==========================
 
-.. py:class:: mindsponge.data.write_yaml(filename, data)
+.. py:function:: mindsponge.data.write_yaml(filename, data)
 
     写入yaml文件。
 

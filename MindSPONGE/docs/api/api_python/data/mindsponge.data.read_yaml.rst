@@ -1,7 +1,7 @@
 mindsponge.data.read_yaml
 =========================
 
-.. py:class:: mindsponge.data.read_yaml(filename)
+.. py:function:: mindsponge.data.read_yaml(filename)
 
     读取yaml文件。
 

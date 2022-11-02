@@ -1,7 +1,7 @@
 mindsponge.data.get_forcefield
 ==============================
 
-.. py:class:: mindsponge.data.get_forcefield(forcefield)
+.. py:function:: mindsponge.data.get_forcefield(forcefield)
 
     从YAML文件中获取力场参数。
 

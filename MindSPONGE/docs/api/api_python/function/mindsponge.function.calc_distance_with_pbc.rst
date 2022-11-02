@@ -1,7 +1,7 @@
 mindsponge.function.calc_distance_with_pbc
 ==========================================
 
-.. py:class:: mindsponge.function.calc_distance_with_pbc(position_a, position_b, pbc_box)
+.. py:function:: mindsponge.function.calc_distance_with_pbc(position_a, position_b, pbc_box)
 
     在有周期性边界条件的情况下计算位置A和B之间的距离。
 

@@ -1,7 +1,7 @@
 mindsponge.function.get_integer
 ===============================
 
-.. py:class:: mindsponge.function.get_integer(value)
+.. py:function:: mindsponge.function.get_integer(value)
 
     获取输入的整数类型。
 

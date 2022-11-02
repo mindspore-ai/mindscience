@@ -1,7 +1,7 @@
 mindsponge.function.get_energy_ref
 ==================================
 
-.. py:class:: mindsponge.function.get_energy_ref(unit)
+.. py:function:: mindsponge.function.get_energy_ref(unit)
 
     获得参考能量。
 

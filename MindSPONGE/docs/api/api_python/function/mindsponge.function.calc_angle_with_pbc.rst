@@ -1,7 +1,7 @@
 mindsponge.function.calc_angle_with_pbc
 =======================================
 
-.. py:class:: mindsponge.function.calc_angle_with_pbc(position_a, position_b, position_c, pbc_box)
+.. py:function:: mindsponge.function.calc_angle_with_pbc(position_a, position_b, position_c, pbc_box)
 
     在有周期性边界条件的情况下计算由A，B，C三个位置形成的角。
 

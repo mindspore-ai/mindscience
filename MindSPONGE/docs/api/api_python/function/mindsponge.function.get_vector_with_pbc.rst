@@ -1,7 +1,7 @@
 mindsponge.function.get_vector_with_pbc
 =======================================
 
-.. py:class:: mindsponge.function.get_vector_with_pbc(initial, terminal, pbc_box)
+.. py:function:: mindsponge.function.get_vector_with_pbc(initial, terminal, pbc_box)
 
     在有周期性边界条件的情况下，计算从起点到终点的向量。
 

@@ -1,7 +1,7 @@
 mindsponge.data.str_to_tensor
 =============================
 
-.. py:class:: mindsponge.data.str_to_tensor(string)
+.. py:function:: mindsponge.data.str_to_tensor(string)
 
     把字符串编码为Tensor。
 

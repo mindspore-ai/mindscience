@@ -1,7 +1,7 @@
 mindsponge.function.norm_last_dim
 =================================
 
-.. py:class:: mindsponge.function.norm_last_dim(vector)
+.. py:function:: mindsponge.function.norm_last_dim(vector)
 
     计算向量的归一化且删除最后的维度。
 

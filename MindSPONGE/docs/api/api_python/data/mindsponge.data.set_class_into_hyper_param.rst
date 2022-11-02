@@ -1,7 +1,7 @@
 mindsponge.data.set_class_into_hyper_param
 ==========================================
 
-.. py:class:: mindsponge.data.set_class_into_hyper_param(hyper_param, types, cls, prefix)
+.. py:function:: mindsponge.data.set_class_into_hyper_param(hyper_param, types, cls, prefix)
 
     从Cell类中取出超参数。
 

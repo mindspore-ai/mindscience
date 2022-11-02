@@ -1,7 +1,7 @@
 mindsponge.data.load_hyperparam
 ===============================
 
-.. py:class:: mindsponge.data.load_hyperparam(ckpt_file_name, prefix="hyperparam", dec_key, dec_mode="AES-GCM")
+.. py:function:: mindsponge.data.load_hyperparam(ckpt_file_name, prefix="hyperparam", dec_key, dec_mode="AES-GCM")
 
     从checkpoint文件中加载超参数。
 

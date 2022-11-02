@@ -1,7 +1,7 @@
 mindsponge.data.get_hyper_string
 ================================
 
-.. py:class:: mindsponge.data.get_hyper_string(hyper_param, prefix)
+.. py:function:: mindsponge.data.get_hyper_string(hyper_param, prefix)
 
     获取字符串类型的超参数。
 

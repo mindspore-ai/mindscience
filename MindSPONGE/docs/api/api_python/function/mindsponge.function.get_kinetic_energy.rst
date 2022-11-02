@@ -1,7 +1,7 @@
 mindsponge.function.get_kinetic_energy
 ======================================
 
-.. py:class:: mindsponge.function.get_kinetic_energy(mass, velocity)
+.. py:function:: mindsponge.function.get_kinetic_energy(mass, velocity)
 
     获取计算模拟系统的动能。
 

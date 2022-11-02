@@ -1,7 +1,7 @@
 mindsponge.function.length_convert
 ==================================
 
-.. py:class:: mindsponge.function.length_convert(unit_in, unit_out)
+.. py:function:: mindsponge.function.length_convert(unit_in, unit_out)
 
     根据不同的单位换算长度。
 

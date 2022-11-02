@@ -1,7 +1,7 @@
 mindsponge.function.calc_angle
 ==============================
 
-.. py:class:: mindsponge.function.calc_angle(position_a, position_b: Tensor, position_c: Tensor, pbc_box: Tensor = None)
+.. py:function:: mindsponge.function.calc_angle(position_a, position_b: Tensor, position_c: Tensor, pbc_box: Tensor = None)
 
     计算由A，B，C三个位置形成的角。
 
