@@ -13,21 +13,15 @@ Physics-informed Neural Networks (PINNs) provides a new method for quickly solvi
 The Navier-Stokes equation, referred to as `N-S` equation, is a classical partial differential equation in the field of fluid mechanics. In the case of viscous incompressibility, the dimensionless `N-S` equation has the following form:
 
 $$
-
 \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0
-
 $$
 
 $$
-
 \frac{\partial u} {\partial t} + u \frac{\partial u}{\partial x} + v \frac{\partial u}{\partial y} = - \frac{\partial p}{\partial x} + \frac{1} {Re} (\frac{\partial^2u}{\partial x^2} + \frac{\partial^2u}{\partial y^2})
-
 $$
 
 $$
-
 \frac{\partial v} {\partial t} + u \frac{\partial v}{\partial x} + v \frac{\partial v}{\partial y} = - \frac{\partial p}{\partial y} + \frac{1} {Re} (\frac{\partial^2v}{\partial x^2} + \frac{\partial^2v}{\partial y^2})
-
 $$
 
 where `Re` stands for Reynolds number.
@@ -37,9 +31,7 @@ where `Re` stands for Reynolds number.
 In this case, the PINNs method is used to learn the mapping from the location and time to flow field quantities to solve the `N-S` equation.
 
 $$
-
 (x, y, t) \mapsto (u, v, p)
-
 $$
 
 MindFlow solves the problem as follows:

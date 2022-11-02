@@ -13,23 +13,17 @@ Burgers' equation is a nonlinear partial differential equation that simulates th
 The form of Burgers' equation is as follows:
 
 $$
-
 u_t + uu_x = \epsilon u_{xx}, \quad x \in[-1,1], t \in[0, T],
-
 $$
 
 where $\epsilon=0.01/\pi$, the left of the equal sign is the convection term, and the right is the dissipation term. In this case, the Dirichlet boundary condition and the initial condition of the sine function are used. The format is as follows:
 
 $$
-
 u(t, -1) = u(t, 1) = 0,
-
 $$
 
 $$
-
 u(0, x) = -sin(\pi x),
-
 $$
 
 In this case, the PINNs method is used to learn the mapping $(x, t) \mapsto u$ from position and time to corresponding physical quantities. So that the solution of Burgers' equation is realized.
