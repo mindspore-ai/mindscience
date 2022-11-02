@@ -189,16 +189,16 @@ class NetWithLoss(nn.Cell):
             for column_name in columns_list:
                 input_data[column_name] = data[self.column_index_map[column_name]]
             net_input = ()
-            for column_name in self.dataset_input_map.get(name):
-                net_input += (data.get(self.column_index_map.get(column_name)),)
+            for column_name in self.dataset_input_map[name]:
+                net_input += (data[self.column_index_map[column_name]],)
             loss[name] = self.loss_nets[name](input_data, net_input)
-            total_loss += loss.get(name)
+            total_loss += loss[name]
             if self.mtl_weighted_cell is not None and self.weight_with_grad:
-                grad_fn = self.grad(self.loss_nets.get(name), self.params)
+                grad_fn = self.grad(self.loss_nets[name], self.params)
                 grads[name] = grad_fn(input_data, net_input)
                 grads_list = []
-                for i in range(len(grads.get(name))):
-                    grads_list.append(self.one * self.reduce_mean(self.abs(self.reshape(grads.get(name)[i], (-1, 1)))))
+                for i in range(len(grads[name])):
+                    grads_list.append(self.one * self.reduce_mean(self.abs(self.reshape(grads[name][i], (-1, 1)))))
                 grads_mean[name] = self.reduce_mean(self.concat(grads_list)) * self.one
 
         if self.mtl_weighted_cell is not None:
@@ -330,8 +330,8 @@ class NetWithEval(nn.Cell):
             out = self.net_without_loss(*net_input)
             out = _transfer_tensor_to_tuple(out)
             base = self.fn_cell_list[self.dataset_cell_index_map[name]](*out, **input_data)
-            temp_loss = self.reduce_mean(self.loss_fn_dict.get(name)(base, self.zeros_like(base)))
+            temp_loss = self.reduce_mean(self.loss_fn_dict[name](base, self.zeros_like(base)))
             loss[name] = temp_loss
             total_loss += temp_loss
         loss["total_loss"] = total_loss
-        return loss.get("total_loss"), out.get(0), data.get(self.column_index_map[self.label_key])
+        return loss["total_loss"], out[0], data[self.column_index_map[self.label_key]]
