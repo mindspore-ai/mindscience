@@ -36,7 +36,7 @@ from src import visual_result
 set_seed(123456)
 np.random.seed(123456)
 
-context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend", device_id=0)
+context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="GPU", device_id=0)
 
 
 def train(config):

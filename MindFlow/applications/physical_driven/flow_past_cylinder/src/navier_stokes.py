@@ -32,7 +32,7 @@ class NavierStokes2D(Problem):
         """governing equation"""
         flow_vars = output[0]
         u, v, _ = self.split(flow_vars)
-        domain_data = kwargs.get(self.domain_points)
+        domain_data = kwargs[self.domain_points]
 
         du_dx, du_dy, du_dt = self.split(self.grad(domain_data, None, 0, flow_vars))
         dv_dx, dv_dy, dv_dt = self.split(self.grad(domain_data, None, 1, flow_vars))
@@ -51,13 +51,13 @@ class NavierStokes2D(Problem):
     def boundary_condition(self, *output, **kwargs):
         """boundary condition"""
         flow_vars = output[0][:, :2]
-        bc_label = kwargs.get(self.bc_label)
+        bc_label = kwargs[self.bc_label]
         bc_r = flow_vars - bc_label
         return bc_r
 
     def initial_condition(self, *output, **kwargs):
         """initial condition"""
         flow_vars = output[0]
-        ic_label = kwargs.get(self.ic_label)
+        ic_label = kwargs[self.ic_label]
         ic_r = flow_vars - ic_label
         return ic_r

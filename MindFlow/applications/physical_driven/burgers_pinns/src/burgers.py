@@ -41,7 +41,7 @@ class Burgers1D(Problem):
     def governing_equation(self, *output, **kwargs):
         """Burgers equation"""
         u = output[0]
-        data = kwargs.get(self.domain_name)
+        data = kwargs[self.domain_name]
 
         du_dxt = self.first_grad(data)
         du_dx, du_dt = self.split(du_dxt)
@@ -60,6 +60,6 @@ class Burgers1D(Problem):
     def initial_condition(self, *output, **kwargs):
         """initial condition: u = - sin(x)"""
         u = output[0]
-        data = kwargs.get(self.ic_name)
+        data = kwargs[self.ic_name]
         x = self.reshape(data[:, 0], (-1, 1))
         return u + ops.sin(self.pi * x)
