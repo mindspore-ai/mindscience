@@ -3,8 +3,8 @@
     连接层。
 
     参数：
-        - **in_channel** (int) - 输入中的通道数。
-        - **out_channel** (int) - 输出中的通道数。
+        - **in_channels** (int) - 输入中的通道数。
+        - **out_channels** (int) - 输出中的通道数。
         - **weight_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始权重值。数据类型与输入 `input` 相同。str的值引用函数 `initializer` 。默认值："normal"。
         - **bias_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始偏差值。数据类型与输入 `input` 相同。str的值引用函数 `initializer` 。默认值："zeros"。
         - **has_bias** (bool) - 指定图层是否使用偏置向量。默认值：True。

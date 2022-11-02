@@ -17,6 +17,7 @@ mindflow.geometry.GeometryWithTime
 
         采样点。
 
+        参数：
             - **geom_type** (str) - 几何类型，可以是"domain"或者"BC"或者"IC"。默认值："domain"。
 
               - "domain": 问题的可行域。

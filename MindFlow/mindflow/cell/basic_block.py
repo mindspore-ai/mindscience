@@ -115,12 +115,12 @@ class ResBlock(nn.Cell):
     Outputs:
         Tensor of shape :math:`(*, out\_channels)`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Raises:
         ValueError: If `in_channels` not equal out_channels.
         TypeError: If `activation` is not in str or Cell or Primitive.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> import numpy as np
@@ -186,12 +186,12 @@ class InputScaleNet(nn.Cell):
     Outputs:
         Tensor of shape :math:`(*, channels)`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Raises:
         TypeError: If `input_scale` is not a list.
         TypeError: If `input_center` is not a list or None.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> import numpy as np
@@ -249,14 +249,14 @@ class FCSequential(nn.Cell):
     Outputs:
         Tensor of shape :math:`(*, out\_channels)`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Raises:
         TypeError: If `layers` is not an int.
         TypeError: If `neurons` is not an int.
         TypeError: If `residual` is not a bool.
         ValueError: If `layers` is less than 3.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> import numpy as np
@@ -359,14 +359,14 @@ class MultiScaleFCCell(nn.Cell):
     Outputs:
         Tensor of shape :math:`(*, out\_channels)`.
 
-    Supported Platforms:
-        ``Ascend``
-
     Raises:
         TypeError: If `num_scales` is not an int.
         TypeError: If `amp_factor` is neither int nor float.
         TypeError: If `scale_factor` is neither int nor float.
         TypeError: If `latent_vector` is neither a Parameter nor None.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> import numpy as np
