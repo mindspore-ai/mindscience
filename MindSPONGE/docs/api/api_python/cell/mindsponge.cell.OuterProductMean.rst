@@ -3,26 +3,23 @@ mindsponge.cell.OuterProductMean
 
 .. py:class:: mindsponge.cell.OuterProductMean(num_outer_channel, act_dim, num_output_channel, batch_size, slice_num=0)
 
-    计算外积平均。
+    通过外积平均计算输入张量（act）在第二维上的相关性，得到的相关性可以用于更新相关特征（如Pair特征）。
+
+    .. math::
+        OuterProductMean(\mathbf{act}) = Linear(flatten(mean(\mathbf{act}\otimes\mathbf{act})))
 
     参数：
-        - **num_outer_channel** (float) - outer的通道数量。
-        - **act_dim** (int) - act的最后一维的长度。
+        - **num_outer_channel** (float) - OuterProductMean中间层的通道数量。
+        - **act_dim** (int) - 输入act的最后一维的长度。
         - **num_output_channel** (int) - 输出的通道数量。
-        - **batch_size** (int) - 在outer product mean中的参数的batch size。
+        - **batch_size** (int) - OuterProductMean中的参数的batch size，应用while控制流时需要设置该变量， 默认值None。
         - **slice_num** (int) - 当内存超出上限时使用的切分数量。默认值：0。
 
-    .. py:method:: compute(left_act, right_act, linear_output_weight, linear_output_bias, d, e)
+    输入：
+        - **act** (Tensor) - 维度为:math:`(dim_1, dim_2, act\_dim)`。
+        - **mask** (Tensor) - OuterProductMean的mask，shape为:math:`(dim_1, dim_2)`。
+        - **mask_norm** (Tensor) - mask沿第一根轴的L2-norm的平方，预先计算避免在循环重复计算。shape为:math:`(dim_2, dim_2, 1)`。
+        - **index** (Tensor) - 在循环中的索引。默认值："None"。
 
-        计算 pair activation。
-
-        参数：
-            - **left_act** (Tensor) - pair activation的左半。
-            - **right_act** (Tensor) - pair activation的右半。
-            - **linear_output_weight** (Tensor) - 输出权重的参数。
-            - **linear_output_bias** (Tensor) - 输出偏置的参数。
-            - **d** (int) - 右半pair activationshape的第二根轴。
-            - **e** (int) - 右半pair activationshape的第三根轴。
-
-        返回：
-            Tensor。Pair activations。
+    输出：
+        Tensor。OuterProductMean的输出，shape是:math:`(dim_2, dim_2, num\_output\_channel)`。

@@ -230,8 +230,7 @@ class MegaFold(nn.Cell):
         extra_msa_feat = mnp.concatenate((msa_1hot, extra_has_deletion[..., None], extra_deletion_value[..., None]),
                                          axis=-1)
         extra_msa_activations = self.extra_msa_activations(extra_msa_feat)
-        extra_msa_mask_tmp = P.Transpose()(P.ExpandDims()(extra_msa_mask, -1), (2, 1, 0))
-        extra_msa_norm = P.Transpose()(self.batch_matmul_trans_b(extra_msa_mask_tmp, extra_msa_mask_tmp), (1, 2, 0))
+        extra_msa_norm = P.ExpandDims()(P.MatMul(transpose_a=True)(extra_msa_mask, extra_msa_mask), -1)
         for i in range(self.extra_msa_stack_num):
             extra_msa_activations, pair_activations = \
                 self.extra_msa_stack[i](extra_msa_activations, pair_activations, extra_msa_mask, extra_msa_norm,
@@ -254,8 +253,7 @@ class MegaFold(nn.Cell):
             torsion_angle_mask = torsion_angles_mask[:, :, 2]
             msa_mask = mnp.concatenate([msa_mask, torsion_angle_mask], axis=0)
 
-        msa_mask_tmp = P.Transpose()(P.ExpandDims()(msa_mask, -1), (2, 1, 0))
-        msa_mask_norm = P.Transpose()(self.batch_matmul_trans_b(msa_mask_tmp, msa_mask_tmp), (1, 2, 0))
+        msa_mask_norm = P.ExpandDims()(P.MatMul(transpose_a=True)(msa_mask, msa_mask), -1)
         if self.is_training:
             for i in range(self.msa_stack_num):
                 msa_activations, pair_activations = self.msa_stack[i](msa_activations, pair_activations, msa_mask,
