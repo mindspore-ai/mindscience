@@ -50,7 +50,7 @@ Fourier layers: Start from input V. On top: apply the Fourier transform $\mathca
 
 ![Fourier Layer structure](images/FNO-2.png)
 
-## [Example](https://gitee.com/mindspore/mindscience/tree/master/)
+## Example
 
 ### Configuration file
 
@@ -90,8 +90,9 @@ Import the modules and interfaces on which this tutorial depends:
 
 ```python
 import mindspore.nn as nn
-from mindspore.common import set_seed
+from mindspore import set_seed
 from mindspore import Tensor
+from mindspore import context
 from mindspore.train import LossMonitor, TimeMonitor
 from mindspore.train import DynamicLossScaleManager
 
@@ -107,7 +108,7 @@ from src.loss import RelativeRMSELoss
 
 In this case, training datasets and test data sets are generated according to Zongyi Li's data set in Fourier Neural Operator for Parametric Partial Differential Equations(https://arxiv.org/pdf/2010.08895.pdf) . The settings are as follows:
 
-The initial condition $w_0(x)$ is generated according to periodic boundary conditions:
+the initial condition $w_0(x)$ is generated according to periodic boundary conditions:
 
 $$
 w_0 \sim \mu, \mu=\mathcal{N}\left(0,7^{3 / 2}(-\Delta+49 I)^{-2.5}\right)
@@ -162,7 +163,6 @@ import mindspore
 import mindspore.nn as nn
 from mindspore import ops
 
-
 class RelativeRMSELoss(nn.LossBase):
     def __init__(self, reduction="sum"):
         super(RelativeRMSELoss, self).__init__(reduction=reduction)
@@ -184,24 +184,12 @@ The customised PredictCallback function is used to implement inference during tr
 import time
 
 import numpy as np
-from mindspore.train import Callback
-from mindspore.train import SummaryRecord
+from mindspore.train.callback import Callback
+from mindspore.train.summary import SummaryRecord
 from mindspore import Tensor
 from mindspore import dtype as mstype
 
-
 class PredictCallback(Callback):
-    """
-    Monitor the prediction accuracy in training.
-
-    Args:
-        model (Cell): Prediction network cell.
-        inputs (Array): Input data of prediction.
-        label (Array): Label data of prediction.
-        config (dict): config info of prediction.
-        visual_fn (dict): Visualization function. Default: None.
-    """
-
     def __init__(self, model, inputs, label, config, summary_dir):
         super(PredictCallback, self).__init__()
         self.model = model
@@ -306,7 +294,6 @@ solver.train(epoch=optimizer_params["train_epochs"],
 ## Training Result
 
 The model training result is as follows:
-    With only 100 training epochs, the loss is reduced to 0.029131107032299042 and the relative mean square error is only 0.029131107032299042.
 
 ```python
 ......
@@ -335,4 +322,3 @@ mean rms_error: 0.003944212107453496
 =================================End Evaluation=================================
 ......
 ```
-

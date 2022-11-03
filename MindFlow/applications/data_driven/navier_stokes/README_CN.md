@@ -1,4 +1,4 @@
-# 基于Fourier Neural Operator的Navier-Stokes方程求解
+# 基于Fourier Neural Operator的Navier-Stokes equation求解
 
 ## 概述
 
@@ -6,7 +6,7 @@
 
 近年来，随着神经网络的迅猛发展，为科学计算提供了新的范式。经典的神经网络是在有限维度的空间进行映射，只能学习与特定离散化相关的解。与经典神经网络不同，傅里叶神经算子（Fourier Neural Operator，FNO）是一种能够学习无限维函数空间映射的新型深度学习架构。该架构可直接学习从任意函数参数到解的映射，用于解决一类偏微分方程的求解问题，具有更强的泛化能力。更多信息可参考[原文](https://arxiv.org/abs/2010.08895)。
 
-本案例教程介绍利用傅里叶神经算子的Navier-Stokes方程求解方法。
+本案例教程介绍利用傅里叶神经算子的纳维-斯托克斯方程（Navier-Stokes equation）求解方法。
 
 ## 纳维-斯托克斯方程（Navier-Stokes equation）
 
@@ -28,10 +28,10 @@ $$
 
 ## 问题描述
 
-本案例利用Fourier Neural Operator学习初始涡度到下一时刻涡度的映射，实现二维不可压缩Navier-Stokes方程的求解：
+本案例利用Fourier Neural Operator学习某一个时刻对应涡度到下一时刻涡度的映射，实现二维不可压缩N-S方程的求解：
 
 $$
-w_0 \mapsto w(\cdot, 1)
+w_t \mapsto w(\cdot, t+1)
 $$
 
 MindFlow求解该问题的具体流程如下：
@@ -55,47 +55,9 @@ Fourier Layer网络结构如下图所示。图中V表示输入向量，上框表
 
 ![Fourier Layer网络结构](images/FNO-2.png)
 
-## [训练示例](https://gitee.com/mindspore/mindscience/tree/master/)
-
-### 配置文件
-
-配置文件包括四类参数，分别为模型相关参数（model）、数据相关参数（data）、优化器相关参数（optimizer）、输出相关参数（callback）。其中FNO模型最重要的参数为modes、width与depth，分别控制模型中频率保留数量、通道数以及Fourier Layer叠加数量。具体参数配置含义默认值如下：
-
-```python
-model:
-  work_space: /path/to/work_space   # 代码工作空间
-  name: FNO2D                       # 模型名称
-  input_dims: 1                     # 输入向量空间维度
-  output_dims: 1                    # 输出向量空间维度
-  input_resolution: 64              # 输入向量分辨率
-  modes: 12                         # 低频分量的保留数目
-  width: 20                         # 输入向量升维后隐藏层的空间维度
-  depth: 4                          # Fourier Layer的叠加层数
-data:
-  name: "navier_stoke_2d"           # 数据名称
-  path: "/path/to/data"             # 数据路径
-  train_size: 19000                 # 训练集样本量
-  test_size: 3800                   # 测试集样本量
-  batch_size: 19                    # 批数据大小
-  resolution: 64                    # 输入向量分辨率
-  sub: 2                            # 创建数据集时的采样间隔
-optimizer:
-  initial_lr: 0.001                 # 初始学习率
-  warmup_epochs: 1                  # 学习率warmup所需迭代次数
-  weight_decay: 0.0                 # 权重衰减率
-  gamma: 0.5                        # 优化器gamma值
-  train_epochs: 150                 # 迭代训练数据集的次数
-callback:
-  summary_dir: "/path/to/summary"   # Summary输出路径
-  ckpt_dir: "/path/to/ckpt"         # Checkpoint输出路径
-  save_checkpoint_steps: 50         # 保存checkpoint的迭代间隔数
-  keep_checkpoint_max: 10           # 保存checkpoint的最大数目
-  eval_interval: 10                 # 边训练边推理的迭代间隔步数
-```
-
 ### 导入依赖
 
-导入本教程所依赖模块与接口:
+导入本教程所依赖模块与接口：
 
 ```python
 import os
@@ -106,8 +68,8 @@ import numpy as np
 import mindspore.nn as nn
 from mindspore.common import set_seed
 from mindspore import Tensor, context
-from mindspore.train.callback import LossMonitor, TimeMonitor, CheckpointConfig, ModelCheckpoint
-from mindspore.train.loss_scale_manager import DynamicLossScaleManager
+from mindspore.train import LossMonitor, TimeMonitor, CheckpointConfig, ModelCheckpoint
+from mindspore.train import DynamicLossScaleManager
 
 from mindflow.cell.neural_operators import FNO2D
 from mindflow.solver import Solver
@@ -176,14 +138,13 @@ class FNOBlock(nn.Cell):
     def construct(self, x):
         return self.act(self.conv(x) + self.w(x))
 
-
 class FNO2D(nn.Cell):
     def __init__(self,
                  input_dims,
                  output_dims,
                  resolution,
                  modes,
-                 channels=20,
+                 width=20,
                  depth=4,
                  mlp_ratio=4,
                  compute_dtype=mstype.float32):
@@ -196,8 +157,8 @@ class FNO2D(nn.Cell):
             raise ValueError("modes must at least 1, but got mode: {}".format(modes))
 
         self.modes1 = modes
-        self.channels = channels
-        self.fc_channel = mlp_ratio * channels
+        self.channels = width
+        self.fc_channel = mlp_ratio * width
         self.fc0 = nn.Dense(input_dims + 2, self.channels, has_bias=False).to_float(compute_dtype)
         self.layers = depth
 
@@ -241,7 +202,7 @@ model = FNO2D(input_dims=model_params["input_dims"],
               output_dims=model_params["output_dims"],
               resolution=model_params["input_resolution"],
               modes=model_params["modes"],
-              channels=model_params["width"],
+              width=model_params["width"],
               depth=model_params["depth"]
              )
 ```
@@ -251,16 +212,20 @@ model = FNO2D(input_dims=model_params["input_dims"],
 使用相对均方根误差作为网络训练损失函数：
 
 ```python
+import mindspore
+import mindspore.nn as nn
+from mindspore import ops
+
 class RelativeRMSELoss(nn.LossBase):
     def __init__(self, reduction="sum"):
         super(RelativeRMSELoss, self).__init__(reduction=reduction)
 
     def construct(self, prediction, label):
-        prediction = P.Cast()(prediction, mindspore.float32)
-        batch_size = prediction.shape[0]
-        diff_norms = F.square(prediction.reshape(batch_size, -1) - label.reshape(batch_size, -1)).sum(axis=1)
-        label_norms = F.square(label.reshape(batch_size, -1)).sum(axis=1)
-        rel_error = ops.div(F.sqrt(diff_norms), F.sqrt(label_norms))
+        prediction = ops.Cast()(prediction, mindspore.float32)
+        batch_size = ops.shape[0]
+        diff_norms = ops.square(prediction.reshape(batch_size, -1) - label.reshape(batch_size, -1)).sum(axis=1)
+        label_norms = ops.square(label.reshape(batch_size, -1)).sum(axis=1)
+        rel_error = ops.div(ops.sqrt(diff_norms), ops.sqrt(label_norms))
         return self.get_loss(rel_error)
 ```
 
@@ -305,7 +270,10 @@ class PredictCallback(Callback):
             for i in range(self.length):
                 for j in range(self.T - 1, self.T + 9):
                     label = self.label[i:i + 1, j]
-                    test_batch = Tensor(self.inputs[i:i + 1, j], dtype=mstype.float32)
+                    if j == self.T - 1:
+                        test_batch = Tensor(self.inputs[i:i + 1, j], dtype=mstype.float32)
+                    else:
+                        test_batch = Tensor(prediction)
                     prediction = self.model(test_batch)
                     prediction = prediction.asnumpy()
                     rel_rmse_error_step = self._calculate_error(label, prediction)
@@ -374,7 +342,7 @@ solver.train(epoch=optimizer_params["train_epochs"],
 
 ## 网络训练结果
 
-运行结果如下：
+运行结果如下，训练50个迭代轮次后，网络损失函数值降至1.475，在测试集上的相对均方根误差为0.110。
 
 ```python
 ......
