@@ -1,4 +1,4 @@
-# 基于PINNs的伯格斯方程（Burgers' equation）求解
+# 基于PINNs的Burgers' equation求解
 
 ## 概述
 
@@ -16,7 +16,7 @@ $$
 u_t + uu_x = \epsilon u_{xx}, \quad x \in[-1,1], t \in[0, T],
 $$
 
-其中$\epsilon=0.01/\pi$，等号左边为对流项，右边为耗散项，本案例使用迪利克雷边界条件和正弦函数的初始条件，形式如下：
+其中 $\epsilon=0.01/\pi$ ，等号左边为对流项，右边为耗散项，本案例使用迪利克雷边界条件和正弦函数的初始条件，形式如下：
 
 $$
 u(t, -1) = u(t, 1) = 0,
@@ -96,7 +96,7 @@ model = FCSequential(in_channel=2, out_channel=1, layers=6, neurons=20, residual
 from math import pi as PI
 from mindspore import ops
 from mindspore import Tensor
-import mindspore.common.dtype as mstype
+from mindspore import dtype as mstype
 from mindflow.solver import Problem
 from mindflow.operators import Grad, SecondOrderGrad
 

@@ -42,29 +42,7 @@ The PDE-Net consists of multiple $\delta T$ Blocks in series to implement predic
 
 ## Script Description
 
-### Script and Code Sample
-
-```path
-.
-├── config.py                                   # parameter configuration
-├── docs                                        # schematic diagram of README
-├── extrapolation_error.py                      # long term prediction
-├── README_CN.md
-├── README.md
-├── src
-│   ├── callbacks.py                            # callback functions
-│   ├── data_generator.py                       # data generate
-│   ├── dataset.py                              # dataset
-│   ├── loss.py                                 # loss function
-│   ├── pde_solvers.py                          # pde solver
-│   └── utils.py                                # utils
-├── train.py                                    # model training
-└── visualization.py                            # output visualization
-```
-
-### Script Parameters
-
-You can set training parameters and sampling parameters in `config.py`
+You can set training parameters and sampling parameters in `config.py`.
 
 ```python
 train_config = ed({
@@ -271,13 +249,19 @@ predict total time: 0.5544295310974121 s
 ### Model Evaluation and Visualization
 
 After the model training is complete, run the visualization.py file to test and visualize the model training result. The following figure shows the comparison between the prediction result and label.
+
 ![](images/result.jpg)
+
 The coefficient regression results of the partial differential equation are as follows:
+
 ![](images/coe_trained_step-1.png)
+
 The data labels for the coefficients of the partial differential equation are as follows:
+
 ![](images/coe_label_benchmark.png)
 
 ### Long-Term Prediction
 
 Further, the trained PDE-Net can be used for longer predictions. Perform multiple sets of tests and plot 25% and 75% of the error as banded curves, as shown in the figure:
+
 ![](images/extrapolation.jpg)

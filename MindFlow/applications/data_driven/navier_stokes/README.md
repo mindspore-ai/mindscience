@@ -28,10 +28,10 @@ where $u$ is the velocity field, $w=\nabla \times u$ is the vorticity, $w_0(x)$ 
 
 ## Description
 
-We aim to solve two-dimensional incompressible Navier-Stokes equation by learning the operator mapping the initial condition to the solution at time one:
+We aim to solve two-dimensional incompressible N-S equation by learning the operator mapping from each time step to the next time step:
 
 $$
-w_0 \mapsto w(\cdot, 1)
+w_t \mapsto w(\cdot, t+1)
 $$
 
 The process for MindFlow to solve the problem is as follows:
@@ -55,44 +55,6 @@ Fourier layers: Start from input V. On top: apply the Fourier transform $\mathca
 
 ![Fourier Layer structure](images/FNO-2.png)
 
-## [Example](https://gitee.com/mindspore/mindscience/tree/master/)
-
-### Configuration file
-
-The configuration file contains four types of parameters: model parameters, data parameters, optimizer parameters, and output parameters. The most important parameters of the FNO model are modes, width, and depth, which control the number of reserved frequencies, the number of lifting channels, and the number of Fourier layers in the model, respectively. The default values of the parameters are as follows:
-
-```python
-model:
-  work_space: /path/to/work_space   # Work space path
-  name: FNO2D                       # Model name
-  input_dims: 1                     # Input data channel
-  output_dims: 1                    # Output data channel
-  input_resolution: 64              # Column resolution
-  modes: 12                         # Number of frequency to keep
-  width: 20                         # The number of channels after dimension lifting of the input
-  depth: 4                          # The number of Fourier layers
-data:
-  name: "navier_stoke_2d"           # Data name
-  path: "/path/to/data"             # Path to data
-  train_size: 19000                 # Size of train set
-  test_size: 3800                   # Size of test set
-  batch_size: 19                    # Batch size
-  resolution: 64                    # Data resolution
-  sub: 2                            # Sampling interval when creating a dataset
-optimizer:
-  initial_lr: 0.001                 # Initial learning rate
-  warmup_epochs: 1                  # Number of epochs required for warmup
-  weight_decay: 0.0                 # Weight decay of the optimizer
-  gamma: 0.5                        # The gamma value of the optimizer
-  train_epochs: 150                 # The number of train epoch
-callback:
-  summary_dir: "/path/to/summary"   # Path to Summary
-  ckpt_dir: "/path/to/ckpt"         # Path to Checkpoint
-  save_checkpoint_steps: 50         # Frequency of checkpoint results
-  keep_checkpoint_max: 10           # Maximum number of checkpoint files can be saved
-  eval_interval: 10                 # TestSet Accuracy Test Frequency
-```
-
 ### Import dependencies
 
 Import the modules and interfaces on which this tutorial depends:
@@ -104,10 +66,10 @@ import datetime
 import numpy as np
 
 import mindspore.nn as nn
-from mindspore.common import set_seed
+from mindspore import set_seed
 from mindspore import Tensor, context
-from mindspore.train.callback import LossMonitor, TimeMonitor, CheckpointConfig, ModelCheckpoint
-from mindspore.train.loss_scale_manager import DynamicLossScaleManager
+from mindspore.train import LossMonitor, TimeMonitor, CheckpointConfig, ModelCheckpoint
+from mindspore.train import DynamicLossScaleManager
 
 from mindflow.cell.neural_operators import FNO2D
 from mindflow.solver import Solver
@@ -181,7 +143,7 @@ class FNO2D(nn.Cell):
                  output_dims,
                  resolution,
                  modes,
-                 channels=20,
+                 width=20,
                  depth=4,
                  mlp_ratio=4,
                  compute_dtype=mstype.float32):
@@ -194,8 +156,8 @@ class FNO2D(nn.Cell):
             raise ValueError("modes must at least 1, but got mode: {}".format(modes))
 
         self.modes1 = modes
-        self.channels = channels
-        self.fc_channel = mlp_ratio * channels
+        self.channels = width
+        self.fc_channel = mlp_ratio * width
         self.fc0 = nn.Dense(input_dims + 2, self.channels, has_bias=False).to_float(compute_dtype)
         self.layers = depth
 
@@ -239,7 +201,7 @@ model = FNO2D(input_dims=model_params["input_dims"],
               output_dims=model_params["output_dims"],
               resolution=model_params["input_resolution"],
               modes=model_params["modes"],
-              channels=model_params["width"],
+              width=model_params["width"],
               depth=model_params["depth"]
              )
 ```
@@ -303,7 +265,10 @@ class PredictCallback(Callback):
             for i in range(self.length):
                 for j in range(self.T - 1, self.T + 9):
                     label = self.label[i:i + 1, j]
-                    test_batch = Tensor(self.inputs[i:i + 1, j], dtype=mstype.float32)
+                    if j == self.T - 1:
+                        test_batch = Tensor(self.inputs[i:i + 1, j], dtype=mstype.float32)
+                    else:
+                        test_batch = Tensor(prediction)
                     prediction = self.model(test_batch)
                     prediction = prediction.asnumpy()
                     rel_rmse_error_step = self._calculate_error(label, prediction)
@@ -356,7 +321,7 @@ optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
 
 # prepare loss function
 loss_scale = DynamicLossScaleManager()
-loss_fn = RelativeRMSELoss(input_resolution=model_params["input_resolution"])
+loss_fn = RelativeRMSELoss()
 
 # define solver
 solver = Solver(model,
@@ -401,6 +366,3 @@ mean rel_rmse_error: 0.11016936695948243
 =================================End Evaluation=================================
 ......
 ```
-
-
-

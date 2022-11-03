@@ -42,29 +42,7 @@ PDE-Net由多个$\delta T$ Block串联构成，以实现长序列信息的预测
 
 ## 脚本说明
 
-### 脚本及样例代码
-
-```path
-.
-├── config.py                                   # 参数配置
-├── docs                                        # README示意图
-├── extrapolation_error.py                      # 长期预测
-├── README_CN.md
-├── README.md
-├── src
-│   ├── callbacks.py                            # 回调函数
-│   ├── data_generator.py                       # 数据生成
-│   ├── dataset.py                              # 训练数据集建立
-│   ├── loss.py                                 # 损失函数
-│   ├── pde_solvers.py                          # pde求解器
-│   └── utils.py                                # 工具
-├── train.py                                    # 模型训练
-└── visualization.py                            # 结果可视化
-```
-
-### 脚本参数
-
-在`config.py`里面可以设置训练的参数和采样参数
+在`config.py`里面可以设置训练的参数和采样参数。
 
 ```python
 train_config = ed({
@@ -271,14 +249,20 @@ predict total time: 0.5544295310974121 s
 ### 模型测试和可视化
 
 模型训练结束后即可运行visualization.py文件对模型训练的结果进行测试和可视化，流场预测结果和label对比如下：
+
 ![](images/result.jpg)
+
 偏微分方程的系数回归结果如下：
+
 ![](images/coe_trained_step-1.png)
+
 偏微分方程系数的数据标签如下：
+
 ![](images/coe_label_benchmark.png)
 
 ### 长时间预测
 
 更进一步，可以将训练好的PDE-Net用于更长时间的预测，
 进行多组测试，将误差的25%和75%绘制为带状曲线，如图所示：
+
 ![](images/extrapolation.jpg)

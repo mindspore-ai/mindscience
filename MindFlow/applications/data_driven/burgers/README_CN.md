@@ -51,8 +51,6 @@ Fourier Layer网络结构如下图所示。图中V表示输入向量，上框表
 
 ![Fourier Layer网络结构](images/FNO-2.png)
 
-## [训练示例](https://gitee.com/mindspore/mindscience/tree/master/)
-
 ### 配置文件
 
 配置文件包括四类参数，分别为模型相关参数（model）、数据相关参数（data）、优化器相关参数（optimizer）、输出相关参数（callback）。其中FNO模型最重要的参数为modes、width与depth，分别控制模型中频率保留数量、通道数以及FNO模块叠加数量。具体参数配置含义默认值如下：
@@ -93,6 +91,7 @@ callback:
 import mindspore.nn as nn
 from mindspore import set_seed
 from mindspore import Tensor
+from mindspore import context
 from mindspore.train import LossMonitor, TimeMonitor
 from mindspore.train import DynamicLossScaleManager
 
@@ -108,7 +107,6 @@ from src.loss import RelativeRMSELoss
 ### 创建数据集
 
 本案例根据Zongyi Li在 [Fourier Neural Operator for Parametric Partial Differential Equations](https://arxiv.org/pdf/2010.08895.pdf) 一文中对数据集的设置生成训练数据集与测试数据集。具体设置如下：
-
 基于周期性边界，生成满足如下分布的初始条件$w_0(x)$：
 
 $$
@@ -166,14 +164,13 @@ import mindspore
 import mindspore.nn as nn
 from mindspore import ops
 
-
 class RelativeRMSELoss(nn.LossBase):
     def __init__(self, reduction="sum"):
         super(RelativeRMSELoss, self).__init__(reduction=reduction)
 
     def construct(self, prediction, label):
         prediction = ops.Cast()(prediction, mindspore.float32)
-        batch_size = prediction.shape[0]
+        batch_size = ops.shape[0]
         diff_norms = ops.square(prediction.reshape(batch_size, -1) - label.reshape(batch_size, -1)).sum(axis=1)
         label_norms = ops.square(label.reshape(batch_size, -1)).sum(axis=1)
         rel_error = ops.div(ops.sqrt(diff_norms), ops.sqrt(label_norms))
@@ -186,14 +183,12 @@ class RelativeRMSELoss(nn.LossBase):
 
 ```python
 import time
-
 import numpy as np
 
 from mindspore import Tensor
 from mindspore.train import Callback
-from mindspore.train import SummaryRecord
+from mindspore.train.summary import SummaryRecord
 from mindspore import dtype as mstype
-
 
 class PredictCallback(Callback):
     """
@@ -244,7 +239,6 @@ class PredictCallback(Callback):
                 test_batch = Tensor(self.inputs[i:i + 1], dtype=mstype.float32)
                 prediction = self.model(test_batch)
                 prediction = prediction.asnumpy()
-
                 rms_error_step = self._calculate_error(label, prediction)
                 rms_error += rms_error_step
 
@@ -311,7 +305,6 @@ solver.train(epoch=optimizer_params["train_epochs"],
 ## 网络训练结果
 
 运行结果如下：
-    仅需100个训练周期，损失函数已降至0.029131107032299042，相对均方根误差仅为0.003944212107453496。
 
 ```python
 ......
@@ -340,4 +333,3 @@ mean rms_error: 0.003944212107453496
 =================================End Evaluation=================================
 ......
 ```
-

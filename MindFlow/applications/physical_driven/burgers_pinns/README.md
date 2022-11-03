@@ -16,7 +16,7 @@ $$
 u_t + uu_x = \epsilon u_{xx}, \quad x \in[-1,1], t \in[0, T],
 $$
 
-where $\epsilon=0.01/\pi$, the left of the equal sign is the convection term, and the right is the dissipation term. In this case, the Dirichlet boundary condition and the initial condition of the sine function are used. The format is as follows:
+where $\epsilon=0.01/\pi$ , the left of the equal sign is the convection term, and the right is the dissipation term. In this case, the Dirichlet boundary condition and the initial condition of the sine function are used. The format is as follows:
 
 $$
 u(t, -1) = u(t, 1) = 0,
@@ -96,7 +96,7 @@ model = FCSequential(in_channel=2, out_channel=1, layers=6, neurons=20, residual
 from math import pi as PI
 from mindspore import ops
 from mindspore import Tensor
-import mindspore.common.dtype as mstype
+from mindspore import dtype as mstype
 from mindflow.solver import Problem
 from mindflow.operators import Grad, SecondOrderGrad
 

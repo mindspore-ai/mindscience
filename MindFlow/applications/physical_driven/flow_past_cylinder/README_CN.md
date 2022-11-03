@@ -1,5 +1,5 @@
 
-# 基于PINNs的圆柱绕流
+# 基于PINNs关于圆柱绕流的Navier-Stokes equation求解
 
 ## 概述
 
@@ -92,12 +92,12 @@ import json
 import time
 import numpy as np
 
-from mindspore.common import set_seed
+from mindspore import set_seed
 from mindspore import context, Tensor, nn
 from mindspore.train import DynamicLossScaleManager
-from mindspore.train.callback import ModelCheckpoint, CheckpointConfig
+from mindspore.train import ModelCheckpoint, CheckpointConfig
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
-import mindspore.common.dtype as mstype
+from mindspore import dtype as mstype
 
 from mindflow.loss import Constraints
 from mindflow.solver import Solver, LossAndTimeMonitor
