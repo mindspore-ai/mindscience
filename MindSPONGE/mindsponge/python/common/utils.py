@@ -532,6 +532,27 @@ def get_pdb_info(pdb_path):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+    Examples:
+        >>> from mindsponge.common import get_pdb_info
+        >>> pdb_path = "YOUR PDB PATH"
+        >>> pdb_feature = get_pdb_info(pdb_path)
+        >>> for feature in pdb_feature:
+        >>>     print(feature, pdb_feature[feature])
+        # Nres represents the Amino acid num of the input pdb.
+        aatype (Nres,)
+        all_atom_positions (Nres, 37, 3)
+        all_atom_mask (Nres, 37)
+        atom14_atom_exists (Nres, 14)
+        atom14_gt_exists (Nres, 14)
+        atom14_gt_positions (Nres, 14, 3)
+        residx_atom14_to_atom37 (Nres, 14)
+        residx_atom37_to_atom14 (Nres, 37)
+        atom37_atom_exists (Nres, 37)
+        atom14_alt_gt_positions (Nres, 14, 3)
+        atom14_alt_gt_exists (Nres, 14)
+        atom14_atom_is_ambiguous (Nres, 14)
+        residue_index (Nres, )
+
     """
     with open(pdb_path, 'r', encoding="UTF-8") as f:
         prot_pdb = protein.from_pdb_string(f.read())
@@ -573,6 +594,14 @@ def get_fasta_info(pdb_path):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindsponge.common import get_fasta_info
+        >>> pdb_path = "YOUR PDB PATH"
+        >>> fasta = get_fasta_info(pdb_path)
+        >>> print(fasta)
+        "GSHMGVQ"
+
     """
     with open(pdb_path, 'r', encoding='UTF-8') as f:
         prot_pdb = protein.from_pdb_string(f.read())
@@ -597,6 +626,19 @@ def get_aligned_seq(gt_seq, pr_seq):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindsponge.common import get_aligned_seq
+        >>> gt_seq = "ABAAABAA"
+        >>> pr_seq = "AAABBBA"
+        >>> aligned_gt_seq, aligned_info, aligned_pr_seq = get_aligned_seq(gt_seq, pr_seq)
+        >>> print(aligned_gt_seq)
+        ABAAABAA
+        >>> print(aligned_info)
+        |-||.|.|
+        >>> print(aligned_pr_seq)
+        A-AABBBA
+
     """
     aligner = Align.PairwiseAligner()
     substitution_matrices.load()
