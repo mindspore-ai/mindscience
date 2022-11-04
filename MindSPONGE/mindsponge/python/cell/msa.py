@@ -28,28 +28,43 @@ class MSARowAttentionWithPairBias(nn.Cell):
     MSA row attention.
 
     Args:
-        num_heads (int):        The number of the heads.
-        key_dim (int):          The dimension of the input.
+        num_heads (int):        The number of the attention heads.
+        key_dim (int):          The dimension of the attention hidden layer.
         gating (bool):          Indicator of if the attention is gated.
         msa_act_dim (int):      The dimension of the msa_act.
         pair_act_dim (int):     The dimension of the pair_act.
         batch_size (int):       The batch size of parameters in MSA row attention, used in while control flow.
-        slice_num (int):        The number of slices to be made to reduce memory.
+        slice_num (int):        The number of slices to be made to reduce memory. Default: 0
 
     Inputs:
-        - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
-        - **msa_mask** (Tensor) - The mask for MSA row attention matrix with shape.
-          (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
-          to this shape).
-        - **pair_act** (Tensor) - Tensor of pair_act. Data type is float.
+        - **msa_act** (Tensor) - Tensor of msa_act with shape (Nseqs, Nres, msa_act_dim).
+        - **msa_mask** (Tensor) - The mask for MSA row attention matrix with shape (Nseqs, Nres).
+        - **pair_act** (Tensor) - Tensor of pair_act with shape (Nres, Nres, msa_act_dim).
+          Data type is float.
         - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None
 
     Outputs:
         - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
-          with shape (batch_size, query_seq_length, hidden_size).
+          with shape (Nseqs, Nres, msa_act_dim).
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.cell import MSARowAttentionWithPairBias
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
+        >>> model = MSARowAttentionWithPairBias(num_head=4, key_dim=4, gating=True,
+        ...                                     msa_act_dim=64, pair_act_dim=128,
+        ...                                     batch_size=None)
+        >>> msa_act = Tensor(np.ones((4, 256, 64)), mstype.float32)
+        >>> msa_mask = Tensor(np.ones((4, 256)), mstype.float16)
+        >>> pair_act = Tensor(np.ones((256, 256, 128)), mstype.float32)
+        >>> index = None
+        >>> msa_out = model(msa_act, msa_mask, pair_act, index)
+        >>> print(msa_out.shape)
+        (4, 256, 64)
     """
 
     def __init__(self, num_head, key_dim, gating, msa_act_dim, pair_act_dim, batch_size=None, slice_num=0):
@@ -71,15 +86,13 @@ class MSARowAttentionWithPairBias(nn.Cell):
         compute.
 
         Args:
-            msa_act (Tensor):           Tensor of msa_act. Data type is float.
-            mask (Tensor):              The mask for MSA row attention matrix with shape. (batch_size, num_heads,
-                                        query_seq_length,  value_seq_length)(or broadcastable to this shape).
+            msa_act (Tensor):           Tensor of msa_act.
+            mask (Tensor):              The mask for MSA row attention matrix.
             index (Tensor):             The index of while loop, only used in case of while control flow. Default: None
-            nonbatched_bias(Tensor):    Tensor of non batched bias.
+            nonbatched_bias(Tensor):    Tensor of non batched bias matrix.
 
         Outputs:
-            - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
-              with shape (batch_size, query_seq_length, hidden_size).
+            - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the attention layer.
         """
         msa_act = self.attn_mod(msa_act, msa_act, mask, index, nonbatched_bias)
         return msa_act
@@ -224,27 +237,37 @@ class MSAColumnGlobalAttention(nn.Cell):
     MSA column global attention
 
     Args:
-        num_heads (int):        The number of the heads.
+        num_heads (int):        The number of the attention heads.
         gating (bool):          Indicator of if the attention is gated.
         msa_act_dim (int):      The dimension of the msa_act.
         batch_size (int):       The batch size of parameters in MSAColumnGlobalAttention, used
                                 in while control flow.
-        slice_num (int):        The number of slices to be made to reduce memory.
+        slice_num (int):        The number of slices to be made to reduce memory. Default: 0
 
     Inputs:
-        - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
-        - **msa_mask** (Tensor) - The mask for MSAColumnGlobalAttention matrix with shape
-          (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
-          to this shape).
-        - **pair_act** (Tensor) - Tensor of pair_act. Data type is float.
+        - **msa_act** (Tensor) - Tensor of msa_act with shape (Nseqs, Nres, msa_act_dim).
+        - **msa_mask** (Tensor) - The mask for msa_act matrix with shape (Nseqs, nres).
         - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None
 
     Outputs:
         - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
-          with shape (batch_size, query_seq_length, hidden_size).
+          with shape (Nseqs, Nres, msa_act_dim).
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.cell import MSAColumnGlobalAttention
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
+        >>> model = MSAColumnGlobalAttention(num_head=4, gating=True, msa_act_dim=64, batch_size=None)
+        >>> msa_act = Tensor(np.ones((4, 256, 64)), mstype.float32)
+        >>> msa_mask = Tensor(np.ones((4, 256)), mstype.float16)
+        >>> index = None
+        >>> msa_out = model(msa_act, msa_mask, index)
+        >>> print(msa_out.shape)
+        (4, 256, 64)
     """
 
     def __init__(self, num_head, gating, msa_act_dim, batch_size=None, slice_num=0):
@@ -257,25 +280,20 @@ class MSAColumnGlobalAttention(nn.Cell):
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
 
-    def compute(self, msa_act, msa_mask, input_mask, index):
+    def compute(self, msa_act, msa_mask, index):
         """
         compute.
 
         Args:
-            msa_act (Tensor):       Tensor of msa_act. Data type is float.
-            msa_mask (Tensor):      The mask for MSAColumnGlobalAttention matrix with shape (batch_size,
-                                    num_heads, query_seq_length, value_seq_length)(or broadcastable
-                                    to this shape).
-            input_mask (Tensor):    The mask for input matrix with shape(batch_size, num_heads,
-                                    query_seq_length,  value_seq_length)(or broadcastable to this shape).
+            msa_act (Tensor):       Tensor of msa_act.
+            msa_mask (Tensor):      The mask for msa_act matrix.
             index (Tensor):         The index of while loop, only used in case of while
                                     control flow. Default: None
 
         Outputs:
-            - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
-              with shape (batch_size, query_seq_length, hidden_size).
+            - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the attention layer.
         """
-        msa_act = self.attn_mod(msa_act, msa_act, msa_mask, input_mask, index)
+        msa_act = self.attn_mod(msa_act, msa_act, msa_mask, index)
         return msa_act
 
     def construct(self, msa_act, msa_mask, index):
@@ -298,7 +316,7 @@ class MSAColumnGlobalAttention(nn.Cell):
                                         query_norm_gamma,
                                         query_norm_beta)
         msa_mask = P.ExpandDims()(msa_mask, -1)
-        batched_inputs = (msa_act, msa_mask, input_mask)
+        batched_inputs = (msa_act, msa_mask)
         nonbatched_inputs = (index,)
         msa_act = _memory_reduce(self.compute, batched_inputs, nonbatched_inputs, self.slice_num)
         msa_act = P.Transpose()(msa_act, (1, 0, 2))
