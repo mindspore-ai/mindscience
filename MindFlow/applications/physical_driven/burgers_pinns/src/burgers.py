@@ -19,6 +19,8 @@ from mindspore import Tensor
 import mindspore.common.dtype as mstype
 from mindflow.solver import Problem
 
+from mindflow.operator import SecondOrderGrad
+
 
 class Burgers1D(Problem):
     """The 1D Burger's equations with constant boundary condition."""
@@ -30,7 +32,7 @@ class Burgers1D(Problem):
         self.ic_name = ic_name
         self.model = model
         self.first_grad = ops.grad(self.model)
-        self.second_grad = ops.grad(self.first_grad)
+        self.u_xx_cell = SecondOrderGrad(self.model, input_idx1=0, input_idx2=0, output_idx=0)
         self.reshape = ops.Reshape()
         self.split = ops.Split(1, 2)
         self.mu = Tensor(0.01 / PI, mstype.float32)
@@ -45,8 +47,7 @@ class Burgers1D(Problem):
 
         du_dxt = self.first_grad(data)
         du_dx, du_dt = self.split(du_dxt)
-        second_grad = self.second_grad(data)
-        du_dxx, _ = self.split(second_grad)
+        du_dxx = self.u_xx_cell(data)
 
         pde_r = du_dt + u * du_dx - self.mu * du_dxx
 
