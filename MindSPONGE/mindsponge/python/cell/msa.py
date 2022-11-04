@@ -116,19 +116,19 @@ class MSARowAttentionWithPairBias(nn.Cell):
     def _init_parameter(self):
         '''init parameter'''
         if self.batch_size:
-            self.query_norm_gammas = Parameter(Tensor(np.zeros([self.batch_size, self.msa_act_dim,]), mstype.float32))
-            self.query_norm_betas = Parameter(Tensor(np.zeros([self.batch_size, self.msa_act_dim,]), mstype.float32))
+            self.query_norm_gammas = Parameter(Tensor(np.zeros([self.batch_size, self.msa_act_dim]), mstype.float32))
+            self.query_norm_betas = Parameter(Tensor(np.zeros([self.batch_size, self.msa_act_dim]), mstype.float32))
             self.feat_2d_norm_gammas = Parameter(
-                Tensor(np.zeros([self.batch_size, self.pair_act_dim,]), mstype.float32))
+                Tensor(np.zeros([self.batch_size, self.pair_act_dim]), mstype.float32))
             self.feat_2d_norm_betas = Parameter(
-                Tensor(np.zeros([self.batch_size, self.pair_act_dim,]), mstype.float32))
+                Tensor(np.zeros([self.batch_size, self.pair_act_dim]), mstype.float32))
             self.feat_2d_weights = Parameter(
                 Tensor(np.zeros([self.batch_size, self.num_head, self.pair_act_dim]), mstype.float32))
         else:
-            self.query_norm_gammas = Parameter(Tensor(np.ones([self.msa_act_dim,]), mstype.float32))
-            self.query_norm_betas = Parameter(Tensor(np.zeros([self.msa_act_dim,]), mstype.float32))
-            self.feat_2d_norm_gammas = Parameter(Tensor(np.ones([self.pair_act_dim,]), mstype.float32))
-            self.feat_2d_norm_betas = Parameter(Tensor(np.zeros([self.pair_act_dim,]), mstype.float32))
+            self.query_norm_gammas = Parameter(Tensor(np.ones([self.msa_act_dim]), mstype.float32))
+            self.query_norm_betas = Parameter(Tensor(np.zeros([self.msa_act_dim]), mstype.float32))
+            self.feat_2d_norm_gammas = Parameter(Tensor(np.ones([self.pair_act_dim]), mstype.float32))
+            self.feat_2d_norm_betas = Parameter(Tensor(np.zeros([self.pair_act_dim]), mstype.float32))
             self.feat_2d_weights = Parameter(
                 Tensor(np.random.normal(scale=1 / np.sqrt(self.pair_act_dim), size=[self.num_head, self.pair_act_dim]),
                        mstype.float32))
@@ -136,7 +136,9 @@ class MSARowAttentionWithPairBias(nn.Cell):
 
 class MSAColumnAttention(nn.Cell):
     """
-    MSA column attention.
+    MSA column-wise gated self attention。
+    The column-wise attention lets the elements that belong to the same target residue exchange information。
+    Reference：Jumper et al. (2021) Suppl. Alg. 8 "MSAColumnAttention"。
 
     Args:
         num_heads (int):        The number of the heads.
@@ -147,18 +149,26 @@ class MSAColumnAttention(nn.Cell):
         slice_num (int):        The number of slices to be made to reduce memory.
 
     Inputs:
-        - **msa_act** (Tensor) - Tensor of msa_act. Data type is float.
-        - **msa_mask** (Tensor) - The mask for MSAColumnAttention matrix with shape
-          (batch_size, num_heads, query_seq_length,  value_seq_length)(or broadcastable
-          to this shape).
-        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None
+        - **msa_act** (Tensor) - Tensor of msa_act. Data type is float, shape :math:`[N_{seqs}, N_{res}, C_m]` .
+        - **msa_mask** (Tensor) - The mask for MSAColumnAttention matrix, shape :math:`[N_{seqs}, N_{res}]`.
+        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None.
 
     Outputs:
-        - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
-          with shape (batch_size, query_seq_length, hidden_size).
+        - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer,
+          shape :math:`[N_{seqs}, N_{res}, C_m]`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Example:
+        >>> model = MSAColumnAttention(num_head=8, key_dim=256, gating=True,
+                                    msa_act_dim=256, batch_size=1, slice_num=0)
+        >>> msa_act = Tensor(np.ones((512, 256, 256)), mstype.float32)
+        >>> msa_mask = Tensor(np.ones((512, 256)), mstype.float32)
+        >>> index = Tensor(0, mstype.int32)
+        >>> attn_out = model(msa_act, msa_mask, index)
+        >>> print(attn_out.shape)
+        (512, 256, 256)
     """
 
     def __init__(self, num_head, key_dim, gating, msa_act_dim, batch_size=None, slice_num=0):
