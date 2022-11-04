@@ -113,7 +113,7 @@ class TrainOneStepCell(nn.Cell):
                 sens10 = F.fill(cameo_loss.dtype, cameo_loss.shape, 0.0)
                 grads = self.grad(self.network, self.weights)(*inputs, (sens, sens1, sens2, sens3, sens4,
                                                                         sens5, sens6, sens7, sens8, sens9, sens10))
-            grads = self.hyper_map(F.partial(grad_scale, F.scalar_to_array(self.sens)), grads)
+            grads = self.hyper_map(F.partial(grad_scale, F.scalar_to_tensor(self.sens)), grads)
             grads = self.grad_reducer(grads)
             if self.enable_clip_grad:
                 if self.use_global_norm:
