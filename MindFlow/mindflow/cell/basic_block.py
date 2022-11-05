@@ -147,13 +147,12 @@ class ResBlock(nn.Cell):
         if in_channels != out_channels:
             raise ValueError("in_channels of ResBlock should be equal of out_channels, but got in_channels: {}, "
                              "out_channels: {}".format(in_channels, out_channels))
-        self.dense = Linear(in_channels,
+        self.dense = LinearBlock(in_channels,
                             out_channels,
                             weight_init=weight_init,
                             bias_init=bias_init,
                             has_bias=has_bias,
-                            activation=None,
-                            weight_norm=weight_norm)
+                            activation=None)
         self.activation = get_activation(activation) if isinstance(activation, str) else activation
         if activation is not None and not isinstance(self.activation, (nn.Cell, ops.Primitive)):
             raise TypeError("The activation must be str or Cell or Primitive,"" but got {}.".format(type(activation)))
