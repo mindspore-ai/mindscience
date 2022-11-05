@@ -18,8 +18,7 @@ from mindspore import ops
 from mindspore import Tensor
 import mindspore.common.dtype as mstype
 from mindflow.solver import Problem
-
-from mindflow.operator import SecondOrderGrad
+from mindflow.operators import SecondOrderGrad
 
 
 class Burgers1D(Problem):
