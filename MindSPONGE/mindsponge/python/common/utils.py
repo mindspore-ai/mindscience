@@ -401,7 +401,7 @@ def make_atom14_positions(aatype, all_atom_mask, all_atom_positions):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Example:
+    Examples:
         >>> from mindsponge.common import make_atom14_positions
         >>> from mindsponge.common import protein
         >>> import numpy as np
@@ -412,15 +412,15 @@ def make_atom14_positions(aatype, all_atom_mask, all_atom_positions):
         >>>                                prot_pdb.atom_positions.astype(np.float32))
         >>> for val in result:
         >>>     print(val.shape)
-        >>> (Nres, 14)
-        >>> (Nres, 14)
-        >>> (Nres, 14, 3)
-        >>> (Nres, 14)
-        >>> (Nres, 37)
-        >>> (Nres, 37)
-        >>> (Nres, 14, 3)
-        >>> (Nres, 14)
-        >>> (Nres, 14)
+        (Nres, 14)
+        (Nres, 14)
+        (Nres, 14, 3)
+        (Nres, 14)
+        (Nres, 37)
+        (Nres, 37)
+        (Nres, 14, 3)
+        (Nres, 14)
+        (Nres, 14)
     """
     restype_atom14_to_atom37 = []  # mapping (restype, atom14) --> atom37
     restype_atom37_to_atom14 = []  # mapping (restype, atom37) --> atom14
