@@ -551,13 +551,10 @@ restypes = [
     'S', 'T', 'W', 'Y', 'V'
 ]
 restype_order = {restype: i for i, restype in enumerate(restypes)}
-order_restype = {i: restype for i, restype in enumerate(restypes)}
 restype_num = len(restypes)  # := 20.
 
 restypes_with_x = restypes + ['X']
-restype_order_with_x = {
-    restype: i for i,
-    restype in enumerate(restypes_with_x)}
+restype_order_with_x = {restype: i for i, restype in enumerate(restypes_with_x)}
 order_restype_with_x = {i: restype for i, restype in enumerate(restypes_with_x)}
 
 

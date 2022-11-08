@@ -598,7 +598,7 @@ def get_fasta_info(pdb_path):
     with open(pdb_path, 'r', encoding='UTF-8') as f:
         prot_pdb = protein.from_pdb_string(f.read())
     aatype = prot_pdb.aatype
-    fasta = [residue_constants.order_restype.get(x) for x in aatype]
+    fasta = [residue_constants.order_restype_with_x.get(x, "X") for x in aatype]
 
     return ''.join(fasta)
 
