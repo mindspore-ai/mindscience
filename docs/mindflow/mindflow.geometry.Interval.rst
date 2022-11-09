@@ -1,6 +1,3 @@
-mindflow.geometry.Interval
-==========================
-
 .. py:class:: mindflow.geometry.Interval(name, coord_min, coord_max, dtype=<class 'numpy.float32'>, sampling_config=None)
 
     区间对象的定义。

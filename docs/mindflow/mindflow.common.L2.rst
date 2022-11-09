@@ -1,6 +1,3 @@
-mindflow.common.L2
-===================
-
 .. py:class:: mindflow.common.L2
 
     计算L2距离度量，即计算欧式距离。

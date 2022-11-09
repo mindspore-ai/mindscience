@@ -1,6 +1,3 @@
-mindflow.common.LearningRate
-============================
-
 .. py:class:: mindflow.common.LearningRate(learning_rate, end_learning_rate, warmup_steps, decay_steps, power)
 
     构建学习率，包括预热学习率和衰减学习率。热身步骤大于0时，返回预热学习率，否则返回衰减学习率。

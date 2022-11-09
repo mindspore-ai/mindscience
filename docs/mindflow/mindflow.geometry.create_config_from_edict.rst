@@ -1,6 +1,3 @@
-mindflow.geometry.create_config_from_edict
-==========================================
-
 .. py:function:: mindflow.geometry.create_config_from_edict(edict_config)
 
     从dict转换为SamplingConfig。

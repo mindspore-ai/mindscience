@@ -1,6 +1,3 @@
-mindflow.geometry.HyperCube
-===========================
-
 .. py:class:: mindflow.geometry.HyperCube(name, dim, coord_min, coord_max, dtype=<class 'numpy.float32'>, sampling_config=None)
 
     超立方体对象的定义。

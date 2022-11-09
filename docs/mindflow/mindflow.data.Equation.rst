@@ -1,6 +1,3 @@
-mindflow.data.Equation
-======================
-
 .. py:class:: mindflow.data.Equation(geometry)
 
     方程域的采样数据。

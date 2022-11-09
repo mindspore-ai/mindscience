@@ -1,6 +1,3 @@
-mindflow.geometry.CSGXOR
-========================
-
 .. py:class:: mindflow.geometry.CSGXOR(geom1, geom2, sampling_config=None)
 
     用于几何异或计算的CSG类。

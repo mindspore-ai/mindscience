@@ -1,6 +1,3 @@
-mindflow.operators.Grad
-=======================
-
 .. py:class:: mindflow.operators.Grad(model, argnum=0)
 
     计算并返回指定输出列相对于指定输入列的梯度。

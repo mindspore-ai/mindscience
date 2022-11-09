@@ -1,6 +1,3 @@
-mindflow.data.ExistedDataset
-============================
-
 .. py:class:: mindflow.data.ExistedDataset(name=None, data_dir=None, columns_list=None, data_format="npy", constraint_type="npy", random_merge=True, data_config=None)
 
     使用给定的数据路径创建数据集。

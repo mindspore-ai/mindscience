@@ -1,6 +1,3 @@
-mindflow.loss.NetWithEval
-=========================
-
 .. py:class:: mindflow.loss.NetWithEval(net_without_loss, constraints, loss="l2", dataset_input_map=None)
 
     具有评估损失的网络封装类。

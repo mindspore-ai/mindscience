@@ -1,6 +1,3 @@
-mindflow.data.Dataset
-=====================
-
 .. py:class:: mindflow.data.Dataset(geometry_dict=None, existed_data_list=None, dataset_list=None)
 
     将数据集合并在一起。

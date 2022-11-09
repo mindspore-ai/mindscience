@@ -164,7 +164,9 @@ class MindDataset(Data):
             batch_size (int, optional): An int number of rows each batch is created with. Default: 1.
             preprocess_fn (Union[list[TensorOp], list[functions]], optional): List of operations to be
                 applied on the dataset. Operations are applied in the order they appear in this list. Default: None.
-            drop_remainder (bool, optional): Determines whether or not to drop the last block
+            updated_columns_list (Union[str, list[str]], optional): List of names assigned to the columns
+                outputted by the last operation.
+            drop_remainder (bool, optional): Determines whether to drop the last block
                 whose data row number is less than batch size. If True, and if there are less
                 than batch_size rows available to make the last batch, then those rows will
                 be dropped and not propagated to the child node. Default: True.

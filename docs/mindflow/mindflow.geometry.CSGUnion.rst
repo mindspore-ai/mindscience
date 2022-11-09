@@ -1,6 +1,3 @@
-mindflow.geometry.CSGUnion
-==========================
-
 .. py:class:: mindflow.geometry.CSGUnion(geom1, geom2, sampling_config=None)
 
     用于几何合并的CSG类。

@@ -1,6 +1,3 @@
-mindflow.loss.NetWithLoss
-=========================
-
 .. py:class:: mindflow.loss.NetWithLoss(net_without_loss, constraints, loss="l2", dataset_input_map=None, mtl_weighted_cell=None, latent_vector=None, latent_reg=0.01)
 
     带损失的网络封装类。

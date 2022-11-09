@@ -1,6 +1,3 @@
-mindflow.data.ExistedDataConfig
-===============================
-
 .. py:class:: mindflow.data.ExistedDataConfig(name, data_dir, columns_list, data_format="npy", constraint_type="Label", random_merge=True)
 
     设置ExistedDataset的参数。

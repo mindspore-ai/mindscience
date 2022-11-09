@@ -1,6 +1,3 @@
-mindflow.data.BoundaryIC
-========================
-
 .. py:class:: mindflow.data.BoundaryIC(geometry)
 
     初始条件的采样数据。

@@ -1,6 +1,3 @@
-mindflow.solver.EvalCallback
-============================
-
 .. py:class:: mindflow.solver.EvalCallback(model, eval_ds, eval_interval)
 
     在训练期间评估模型。

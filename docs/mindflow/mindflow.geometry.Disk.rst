@@ -1,6 +1,3 @@
-mindflow.geometry.Disk
-======================
-
 .. py:class:: mindflow.geometry.Disk(name, center, radius, dtype=<class 'numpy.float32'>, sampling_config=None)
 
     圆盘对象的定义。

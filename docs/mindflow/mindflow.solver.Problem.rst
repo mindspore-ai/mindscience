@@ -1,6 +1,3 @@
-mindflow.solver.Problem
-=======================
-
 .. py:class:: mindflow.solver.Problem
 
     用户定义问题的基类。

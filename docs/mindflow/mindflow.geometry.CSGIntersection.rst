@@ -1,6 +1,3 @@
-mindflow.geometry.CSGIntersection
-=================================
-
 .. py:class:: mindflow.geometry.CSGIntersection(geom1, geom2, sampling_config=None)
 
     几何相交的CSG类。

@@ -1,6 +1,3 @@
-mindflow.loss.get_loss_metric
-=============================
-
 .. py:function:: mindflow.loss.get_loss_metric(name)
 
     获取损失函数。

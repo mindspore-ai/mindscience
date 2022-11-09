@@ -1,6 +1,3 @@
-mindflow.solver.LossAndTimeMonitor
-==================================
-
 .. py:class:: mindflow.solver.LossAndTimeMonitor(data_size, per_print_times=1)
 
     监控训练中的loss。

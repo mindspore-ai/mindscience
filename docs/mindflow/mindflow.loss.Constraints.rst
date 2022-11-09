@@ -1,6 +1,3 @@
-mindflow.loss.Constraints
-=========================
-
 .. py:class:: mindflow.loss.Constraints(dataset, pde_dict)
 
     所有子数据集的损失定义。
