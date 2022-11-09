@@ -1,6 +1,3 @@
-mindflow.geometry.Geometry
-==========================
-
 .. py:class:: mindflow.geometry.Geometry(name, dim, coord_min, coord_max, dtype=<class 'numpy.float32'>, sampling_config=None)
 
     几何对象的定义。

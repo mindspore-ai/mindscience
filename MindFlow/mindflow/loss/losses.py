@@ -162,6 +162,8 @@ class MTLWeightedLossCell(WeightedLossCell):
 
     Args:
         num_losses (int): The number of multi-task losses, should be positive integer.
+        bound_param (float): The square addition to weight and regression when the mere bound
+            is higher than certain constant given.
 
     Inputs:
         - **input** - tuple of Tensors.

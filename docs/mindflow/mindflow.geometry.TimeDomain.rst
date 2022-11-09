@@ -1,6 +1,3 @@
-mindflow.geometry.TimeDomain
-============================
-
 .. py:class:: mindflow.geometry.TimeDomain(name, start=0.0, end=1.0, dtype=<class 'numpy.float32'>, sampling_config=None)
 
     时域的定义。

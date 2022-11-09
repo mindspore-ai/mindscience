@@ -1,6 +1,3 @@
-mindflow.operators.SecondOrderGrad
-==================================
-
 .. py:class:: mindflow.operators.SecondOrderGrad(model, input_idx1, input_idx2, output_idx)
 
     计算并返回指定输出列相对于指定输入列的二阶梯度。

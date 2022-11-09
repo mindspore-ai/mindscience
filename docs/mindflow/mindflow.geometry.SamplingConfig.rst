@@ -1,6 +1,3 @@
-mindflow.geometry.SamplingConfig
-================================
-
 .. py:class:: mindflow.geometry.SamplingConfig(part_sampling_dict)
 
     全局采样配置定义。

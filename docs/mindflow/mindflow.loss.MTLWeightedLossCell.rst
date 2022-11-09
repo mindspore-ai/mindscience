@@ -1,6 +1,3 @@
-mindflow.loss.MTLWeightedLossCell
-=========================================
-
 .. py:class:: mindflow.loss.MTLWeightedLossCell(num_losses)
 
     计算MTL策略自动加权多任务损失。请参考 `自动加权进行多任务学习 <https://arxiv.org/pdf/1805.06334.pdf>`_ 。

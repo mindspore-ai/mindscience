@@ -1,6 +1,3 @@
-mindflow.geometry.PartSamplingConfig
-====================================
-
 .. py:class:: mindflow.geometry.PartSamplingConfig(size, random_sampling=True, sampler="uniform", random_merge=True, with_normal=False)
 
     部分采样配置的定义。

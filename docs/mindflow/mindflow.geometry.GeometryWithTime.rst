@@ -1,6 +1,3 @@
-mindflow.geometry.GeometryWithTime
-==================================
-
 .. py:class:: mindflow.geometry.GeometryWithTime(geometry, timedomain, sampling_config=None)
 
     含时域几何体的定义。

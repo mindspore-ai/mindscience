@@ -1,6 +1,3 @@
-mindflow.data.BoundaryBC
-========================
-
 .. py:class:: mindflow.data.BoundaryBC(geometry)
 
     边界条件采样数据。

@@ -1,6 +1,3 @@
-mindflow.solver.Solver
-======================
-
 .. py:class:: mindflow.solver.Solver(network, optimizer, loss_fn="l2", mode="Data", train_constraints=None, test_constraints=None, train_input_map=None, test_input_map=None, mtl_weighted_cell=None, latent_vector=None, latent_reg=0.01, metrics=None, eval_network=None, eval_indexes=None, amp_level="O0", **kwargs)
 
     用于训练或推理的高级API。
