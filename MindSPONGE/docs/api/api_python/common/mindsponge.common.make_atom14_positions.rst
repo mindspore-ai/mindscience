@@ -3,11 +3,11 @@ mindsponge.common.make_atom14_positions
 
 .. py:function:: mindsponge.common.make_atom14_positions(aatype, all_atom_mask, all_atom_positions)
 
-    针对蛋白质全原子坐标编码分为两种形式,
+    针对蛋白质全原子坐标编码分为两种形式
 
-        - 稀疏编码：20种氨基酸包含原子种类共计37种，详见 `common.residue_constants.atom_types` ，故可将蛋白质全原子坐标编码为 :math:`(N_{res}, 37, 3)` 的张量。
+    - 稀疏编码：20种氨基酸包含原子种类共计37种，详见 `common.residue_constants.atom_types` ，故可将蛋白质全原子坐标编码为 :math:`(N_{res}, 37, 3)` 的张量。
 
-        - 稠密编码：单氨基酸最多包含14种不同的原子类型，详见 `common.residue_constants.restype_name_to_atom14_names` ，故可将蛋白质全原子坐标编码为 :math:`(N_{res}, 14, 3)` 的张量。
+    - 稠密编码：单氨基酸最多包含14种不同的原子类型，详见 `common.residue_constants.restype_name_to_atom14_names` ，故可将蛋白质全原子坐标编码为 :math:`(N_{res}, 14, 3)` 的张量。
 
     本函数提供将上述稀疏编码方式转为稠密编码方式的功能。
 

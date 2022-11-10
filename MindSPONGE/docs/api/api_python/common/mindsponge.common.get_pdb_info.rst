@@ -10,7 +10,6 @@ mindsponge.common.get_pdb_info
         - **pdb_path** (str) - 输入pdb文件的路径。
   
     输出：
-        dict。包含pdb文件中抽取的多种特征信息。:math:`N_{res}`: 序列长度。
         - **aatype** (numpy.array) 蛋白质一级序列编码，编码方式参考 `common.residue_constants.restype_order`， 取值范围:math:`[0,20]`，若为20表示该氨基酸为unkown`(UNK)`。 shape:math:`(N_{res}, )`。
         - **all_atom_positions** (numpy.array) pdb文件对应蛋白质序列所有原子坐标。 shape:math:`(N_{res}，37)`。
         - **all_atom_mask** (numpy.array) 蛋白质所有原子坐标掩码。shape:math:`(N_{res}，37)`，若对应位置为0则表示该氨基酸不含该原子坐标。
@@ -24,3 +23,6 @@ mindsponge.common.get_pdb_info
         - **atom14_alt_gt_exists** (numpy.array) 按照稀疏编码方式编码，对应手性蛋白全原子掩码。shape:math:`(N_{res}, 14)`。
         - **atom14_atom_is_ambiguous** (numpy.array) 由于部分氨基酸结构具有局部对称性，其对称原子编码可调换，具体原子参考`common.residue_atom_renaming_swaps` 该特征记录了原子不确定的编码位置。shape:math:`(N_{res}, 14)`。
         - **residue_index** (numpy.array) 蛋白质序列编码index信息，大小从1到:math:`N_{res}`。shape:math:`(N_{res}, )`。
+
+    符号:
+        - :math:`N_{res}` - 蛋白质中氨基酸个数，按蛋白质一级序列排列。
