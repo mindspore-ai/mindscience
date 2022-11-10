@@ -36,9 +36,10 @@ class Langevin(Thermostat):
     A Langevin thermostat controller.
 
     Reference:
-        Goga, N.; Rzepiela, A. J.; de Vries, A. H.; Marrink, S. J.; Berendsen, H. J. C..
+        `Goga, N.; Rzepiela, A. J.; de Vries, A. H.; Marrink, S. J.; Berendsen, H. J. C..
         Efficient Algorithms for Langevin and DPD Dynamics [J].
         Journal of Chemical Theory and Computation, 2012, 8(10): 3637-3649.
+        <pubs.acs.org/doi/full/10.1021/ct3000876>`_.
 
     Args:
         system (Molecule):      Simulation system.
@@ -46,7 +47,7 @@ class Langevin(Thermostat):
                                 Default: 300
         control_step (int):     Step interval for controller execution. Default: 1
         time_constant (float):  Time constant \tau_T (ps) for temperature coupling.
-                                Default: 4
+                                Default: 2
         seed (int):             Random seed for standard normal. Default: 0
         seed2 (int):            Random seed2 for standard normal. Default: 0
 

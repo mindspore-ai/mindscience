@@ -34,9 +34,10 @@ class BerendsenThermostat(Thermostat):
     A Berendsen (weak coupling) thermostat controller.
 
     Reference:
-        Berendsen, H. J. C.; Postma, J. P. M.; van Gunsteren, W. F.; DiNola, A.; Haak, J. R..
+        `Berendsen, H. J. C.; Postma, J. P. M.; van Gunsteren, W. F.; DiNola, A.; Haak, J. R..
         Molecular Dynamics with Coupling to an External Bath [J].
         The Journal of Chemical Physics, 1984, 81(8): 3684.
+        <pure.rug.nl/ws/portalfiles/portal/64380902/1.448118>`_.
 
     Args:
         system (Molecule):      Simulation system.

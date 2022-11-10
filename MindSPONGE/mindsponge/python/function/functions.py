@@ -244,8 +244,8 @@ def periodic_image(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tenso
         image (Tensor), Tensor of shape (B, ..., D). Data type is int32.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation.
-        D:  Dimension of the simulation system. Usually is 3.
+        - B:  Batchsize, i.e. number of walkers in simulation.
+        - D:  Dimension of the simulation system. Usually is 3.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -296,8 +296,8 @@ def vector_in_box(vector: Tensor, pbc_box: Tensor) -> Tensor:
         diff_in_box (Tensor), Tensor of shape (B, ..., D). Data type is float.
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation.
-        D:  Dimension of the simulation system. Usually is 3.
+        - B:  Batchsize, i.e. number of walkers in simulation.
+        - D:  Dimension of the simulation system. Usually is 3.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

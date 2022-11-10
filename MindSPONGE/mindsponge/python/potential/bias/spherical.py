@@ -47,8 +47,8 @@ class SphericalRestrict(Bias):
         depth (float):          Wall depth of the restriction (\sigma). Default: Length(0.01, 'nm')
         length_unit (str):      Length unit for position coordinates. Default: None
         energy_unit (str):      Energy unit. Default: None
-        units (Units):          Units of length and energy. Default: None
-        use_pbc (bool):         Whether to use periodic boundary condition.
+        units (Units):          Units of length and energy. Default: global_units
+        use_pbc (bool):         Whether to use periodic boundary condition. Default: None
 
     Returns:
         potential (Tensor), Tensor of shape (B, 1). Data type is float.

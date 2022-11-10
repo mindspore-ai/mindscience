@@ -60,12 +60,12 @@ mindsponge.system.Molecule
 
         通过残基构建系统。
 
-    .. py:method:: calc_image(shift=0)
+    .. py:method:: calc_image(shift=0.0)
 
         计算坐标图。
 
         参数：
-            - **shift** (float) - 转换参数。默认值：0。
+            - **shift** (float) - 转换参数。默认值：0.0。
 
         返回：
             Tensor。坐标图。
@@ -75,7 +75,7 @@ mindsponge.system.Molecule
         获取整个周期性边界条件box中的坐标。
 
         参数：
-            - **shift** (float) - 转换参数。
+            - **shift** (float) - 转换参数。默认值：0.0。
 
         返回：
             Tensor。整个周期性边界条件box中的坐标。

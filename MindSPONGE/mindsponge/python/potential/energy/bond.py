@@ -39,7 +39,7 @@ class BondEnergy(EnergyCell):
 
     .. Math::
 
-        E_bond(b_{ij}) = 1 / 2 * k_{ij}^b * (b_{ij} - b_{ij}^0) ^ 2
+        E_{bond}(b_{ij}) = 1 / 2 * k_{ij}^b * (b_{ij} - b_{ij}^0) ^ 2
 
     Args:
         index (Tensor):             Tensor of shape (B, b, 2). Data type is int.

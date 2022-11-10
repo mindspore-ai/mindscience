@@ -57,11 +57,11 @@ class Sponge():
     Core engine of MindSPONGE.
 
     Args:
-        network (Cell):         Function or neural netork for simulation system.
-        potential (Cell):       Potential energy. Default: None
-        optimizer (Optimizer):  Optimizer. Default: None
-        metrics (Metric):       Metrics. Default: None
-        analyse_network (Cell): Analyse network. Default: None
+        network (Union[Molecule, SimulationCell, RunOneStepCell]):  Function or neural netork for simulation system.
+        potential (Cell):                                           Potential energy. Default: None
+        optimizer (Optimizer):                                      Optimizer. Default: None
+        metrics (Metric):                                           Metrics. Default: None
+        analyse_network (Cell):                                     Analyse network. Default: None
 
     Supported Platforms:
         ``Ascend`` ``GPU``

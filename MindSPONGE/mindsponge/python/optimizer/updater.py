@@ -47,8 +47,8 @@ class Updater(Optimizer):
         time_step (float):          Time step. Default: 1e-3
         velocity (Tensor):          Tensor of shape (B, A, D). Data type is float.
                                     Default: None
-        weight_decay (float):       A value for the weight decay. Default: 0
-        loss_scale (float):         A value for the loss scale. Default: 1
+        weight_decay (float):       A value for the weight decay. Default: 0.0
+        loss_scale (float):         A value for the loss scale. Default: 1.0
 
     Supported Platforms:
         ``Ascend`` ``GPU``

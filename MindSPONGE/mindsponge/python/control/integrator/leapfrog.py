@@ -38,9 +38,10 @@ class LeapFrog(Integrator):
     A leap-frog integrator based on "middle scheme" developed by Jian Liu, et al.
 
     Reference:
-        Zhang, Z.; Yan, K; Liu, X.; Liu, J..
+        `Zhang, Z.; Yan, K; Liu, X.; Liu, J..
         A Leap-Frog Algorithm-based Efficient Unified Thermostat Scheme for Molecular Dynamics [J].
         Chinese Science Bulletin, 2018, 63(33): 3467-3483.
+        <https://www.sciengine.com/CSB/doi/10.1360/N972018-00908;JSESSIONID=ef65e0fb-a95f-4ba0-be14-a10b68b08aff>`_.
 
     Args:
         system (Molecule):          Simulation system.

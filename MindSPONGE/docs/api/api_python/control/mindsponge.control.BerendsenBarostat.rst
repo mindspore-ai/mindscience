@@ -1,17 +1,17 @@
 mindsponge.control.BerendsenBarostat
 ====================================
 
-.. py:class:: mindsponge.control.BerendsenBarostat(system, pressure=1, anisotropic=False, control_step=1, compressibility=4.6e-5, time_constant=1)
+.. py:class:: mindsponge.control.BerendsenBarostat(system, pressure=1.0, anisotropic=False, control_step=1, compressibility=4.6e-5, time_constant=1.0)
 
     Berendsen(弱耦合)气压调节器。
 
     参数：
         - **system** (Molecule) - 模拟系统。
-        - **pressure** (float) - 压力耦合参考压力P_ref (bar)。默认值：1。
+        - **pressure** (float) - 压力耦合参考压力P_ref (bar)。默认值：1.0。
         - **anisotropic** (bool) - 是否执行各向异性压力控制。默认值：False。
         - **control_step** (int) - 控制器执行的步骤间隔。默认值：1。
         - **compressibility** (float) - 等温压缩率。默认值：4.6e-5。
-        - **time_constant** (float) - 压力耦合的时间常数。默认值：1。
+        - **time_constant** (float) - 压力耦合的时间常数。默认值：1.0。
 
     输出：
         - Tensor。坐标，shape(B, A, D)。

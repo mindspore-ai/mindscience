@@ -1,21 +1,21 @@
 mindsponge.potential.ForceFieldBase
 ===================================
 
-.. py:class:: mindsponge.potential.ForceFieldBase(energy, cutoff, exclude_index, length_unit, energy_unit, units, use_pbc)
+.. py:class:: mindsponge.potential.ForceFieldBase(energy=None, cutoff=None, exclude_index=None, length_unit=None, energy_unit=None, units=None, use_pbc=None)
 
     力场的基础层。
 
     参数：
-        - **energy** (Union[EnergyCell, list]) - 能量项。
-        - **cutoff** (float) - 中断距离。
-        - **exclude_index** (Tensor) - 需要从邻居列表中排除的原子的索引。
-        - **length_unit** (str) - 位置坐标的长度单位。
-        - **energy_unit** (str) - 能量单位。
-        - **units** (Units) - 长度和能量单位。
-        - **use_pbc** (bool, 可选) - 是否使用PBC。
+        - **energy** (Union[EnergyCell, list]) - 能量项。默认值："None"。
+        - **cutoff** (float) - 中断距离。默认值："None"。
+        - **exclude_index** (Tensor) - 需要从邻居列表中排除的原子的索引。默认值："None"。
+        - **length_unit** (str) - 位置坐标的长度单位。默认值："None"。
+        - **energy_unit** (str) - 能量单位。默认值："None"。
+        - **units** (Units) - 长度和能量单位。默认值："None"。
+        - **use_pbc** (bool, 可选) - 是否使用PBC。默认值："None"。
 
     输出：
-        Tensor。势，shape为(B, 1)。
+        Tensor。势，shape为(B, 1)。数据类型为float。
 
     .. py:method:: set_cutoff(cutoff)
 
@@ -41,12 +41,12 @@ mindsponge.potential.ForceFieldBase
         参数：
             - **scale** (Tensor) - 用于设置能量范围。
 
-    .. py:method:: set_pbc(use_pbc)
+    .. py:method:: set_pbc(use_pbc=None)
 
         设置是否使用周期性边界条件PBC。
 
         参数：
-            - **use_pbc** (bool, 可选) - 是否使用PBC。
+            - **use_pbc** (bool, 可选) - 是否使用PBC。默认值："None"。
 
     .. py:method:: set_unit_scale()
 
@@ -55,11 +55,11 @@ mindsponge.potential.ForceFieldBase
         返回：
             Tensor。输出单位范围。
 
-    .. py:method:: set_units(length_unit, energy_unit, units)
+    .. py:method:: set_units(length_unit=None, energy_unit=None, units=None)
 
         设置单位。
 
         参数：
-            - **length_unit** (str) - 位置坐标的长度单位。
-            - **energy_unit** (str) - 能量单位。
-            - **units** (Units) - 长度和能量单位。
+            - **length_unit** (str) - 位置坐标的长度单位。默认值："None"。
+            - **energy_unit** (str) - 能量单位。默认值："None"。
+            - **units** (Units) - 长度和能量单位。默认值："None"。

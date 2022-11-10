@@ -1,23 +1,23 @@
 mindsponge.control.Brownian
 ===========================
 
-.. py:class:: mindsponge.control.Brownian(system, temperature=300, friction_coefficient=1e3)
+.. py:class:: mindsponge.control.Brownian(system, temperature=300.0, friction_coefficient=1e3)
 
     布朗积分器。
 
     参数：
         - **system** (Molecule) - 模拟系统。
-        - **temperature** (float) - 模拟温度 T，单位K。默认值：300。
+        - **temperature** (float) - 模拟温度 T，单位K。默认值：300.0。
         - **friction_coefficient** (float) - 摩擦系数g，单位(amu/ps)。默认值：1e3。
 
     输出：
-        - Tensor。坐标，shape(B, A, D)。
-        - Tensor。速度，shape(B, A, D)。
-        - Tensor。力，shape(B, A, D)。
-        - Tensor。能量，shape(B, 1)。
-        - Tensor。动力学，shape(B, D)。
-        - Tensor。维里，shape(B, D)。
-        - Tensor。周期性边界条件box，shape(B, D)。
+        - Tensor。坐标，shape(B, A, D)，数据类型为float。
+        - Tensor。速度，shape(B, A, D)，数据类型为float。
+        - Tensor。力，shape(B, A, D)，数据类型为float。
+        - Tensor。能量，shape(B, 1)，数据类型为float。
+        - Tensor。动力学，shape(B, D)，数据类型为float。
+        - Tensor。维里，shape(B, D)，数据类型为float。
+        - Tensor。周期性边界条件box，shape(B, D)，数据类型为float。
 
     .. py:method:: set_thermostat(thermostat)
 

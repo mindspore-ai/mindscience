@@ -7,7 +7,7 @@ mindsponge.data.get_class_parameters
 
     参数：
         - **hyper_param** (dict) - 超参数字典。
-        - **prefix** (str) - 只有开头带有prefix的参数才会被加载。默认值："_hyperparam"。
+        - **prefix** (str) - 只有开头带有prefix的参数才会被加载。
         - **num_class** (int) - 类的数量。默认值：1。
 
     输出：
