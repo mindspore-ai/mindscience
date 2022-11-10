@@ -32,9 +32,9 @@ from model import MegaFoldMultimer, compute_confidence
 
 
 parser = argparse.ArgumentParser(description='Inputs for eval.py')
-parser.add_argument('--data_config', help='data process config')
-parser.add_argument('--model_config', help='model config')
-parser.add_argument('--multimer_input_path', type=list, help='Multimer processed raw feature path')
+parser.add_argument('--data_config', default='./config/data.yaml', help='data process config')
+parser.add_argument('--model_config', default='./config/model.yaml', help='model config')
+parser.add_argument('--multimer_input_path', nargs='+', help='Multimer processed raw feature path')
 parser.add_argument('--use_pkl', default=False, help="use pkl as input or fasta file as input, in default use fasta")
 parser.add_argument('--checkpoint_path', help='checkpoint path')
 parser.add_argument('--device_id', default=0, type=int, help='DEVICE_ID')
