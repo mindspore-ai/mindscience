@@ -1,7 +1,7 @@
 mindsponge.potential.EnergyCell
 ===============================
 
-.. py:class:: mindsponge.potential.EnergyCell(label, output_dim=1, length_unit="nm", energy_unit="kj/mol", units, use_pbc)
+.. py:class:: mindsponge.potential.EnergyCell(label, output_dim=1, length_unit="nm", energy_unit="kj/mol", units=None, use_pbc=None)
 
     能量项的基础层。
 
@@ -10,11 +10,11 @@ mindsponge.potential.EnergyCell
         - **output_dim** (int) - 输出维度。默认值：1。
         - **length_unit** (str) - 位置坐标的长度单位。默认值："nm"。
         - **energy_unit** (str) - 能量单位。默认值："kj/mol"。
-        - **units** (Units) - 长度和能量单位。
-        - **use_pbc** (bool) - 是否使用PBC。
+        - **units** (Units) - 长度和能量单位。默认值："None"。
+        - **use_pbc** (bool) - 是否使用PBC。默认值："None"。
 
     输出：
-        Tensor。能量，shape为(B, 1)。
+        Tensor。能量，shape为(B, 1)，数据类型为float。
 
     .. py:method:: convert_energy_from(unit)
 

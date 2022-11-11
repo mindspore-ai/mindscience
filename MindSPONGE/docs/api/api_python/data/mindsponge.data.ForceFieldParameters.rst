@@ -1,7 +1,7 @@
 mindsponge.data.ForceFieldParameters
 ====================================
 
-.. py:class:: mindsponge.data.ForceFieldParameters(atom_types, parameters, atom_names, atom_charges)
+.. py:class:: mindsponge.data.ForceFieldParameters(atom_types, parameters, atom_names=None, atom_charges=None)
 
     获取原子和边的种类的参数。
 

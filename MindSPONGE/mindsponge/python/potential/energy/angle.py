@@ -39,17 +39,17 @@ class AngleEnergy(EnergyCell):
 
     .. Math::
 
-        E_angle({\theta}_{ijk}) = 1 / 2 * k_{ijk}^{\theta} * ({\theta}_{ijk} - \theta}_{ijk}^0) ^ 2
+        E_{angle}(\theta_{ijk}) = 1 / 2 \times k_{ijk}^\theta \times (\theta_{ijk} - \theta_{ijk}^0) ^ 2
 
     Args:
         index (Tensor):             Tensor of shape (B, a, 3). Data type is int.
-                                    Atom index of bond angles.
+                                    Atom index of bond angles. Default: None
         force_constant (Tensor):    Tensor of shape (1, a). Data type is float.
-                                    The harmonic force constants for angle (k^{\theta}).
+                                    The harmonic force constants for angle :math:`(k^{\theta})`. Default: None
         bond_angle (Tensor):        Tensor of shape (1, a). Data type is float.
-                                    The equilibrium value of bond angle ({\theta}^0).
+                                    The equilibrium value of bond angle :math:`({\theta}^0)`. Default: None
         parameters (dict):          Force field parameters. Default: None
-        use_pbc (bool):             Whether to use periodic boundary condition.
+        use_pbc (bool):             Whether to use periodic boundary condition. Default: None
         energy_unit (str):          Energy unit. Default: 'kj/mol'
         units (Units):              Units of length and energy. Default: None
 

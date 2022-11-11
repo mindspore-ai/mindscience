@@ -42,15 +42,30 @@ class Lincs(Constraint):
     LINCS (LINear Constraint Solver) constraint controller.
 
     Args:
-        bonds(Tensor,B*2):          All the bonds need to optimize.
-        Mii(Tensor,B*N):            All the inverse mass of atoms in the diagonal elements.
-        coordinate(Tensor,B*N*D):   The old coordinates of the system.
+        system (Molecule):          Simulation system.
+        bonds (Tensor):             Bonds to be constraint.
+                                    Tensor of shape (B, 2). Data type is int.
+                                    Default: "h-bonds".
+        potential (PotentialCell):  Potential Cell. Default: None
 
     Inputs:
-        - **new_crd** (Tensor,B*N*D) - The new coordinates of the system.
+        - **coordinate** (Tensor) - The coordinates of the system.
+        - **velocity** (Tensor) - The velocity of the system.
+        - **force** (Tensor) - The force of the system.
+        - **energy** (Tensor) - The energy of the system.
+        - **kinetics** (Tensor) - The kinetics of the system.
+        - **virial** (Tensor) - The virial of the system. Default: None
+        - **pbc_box** (Tensor) - PBC box of the system. Default: None
+        - **step** (int) - The step of the system. Default: 0
 
     Return:
-        coordinate(Tensor,B*N*D), Constraint coordinates.
+        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+        - virial (Tensor), Tensor of shape (B, D). Data type is float.
+        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

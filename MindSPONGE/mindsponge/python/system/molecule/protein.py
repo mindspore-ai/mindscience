@@ -50,7 +50,7 @@ class Protein(Molecule):
         template (Union[dict, str]):       Template of residue.
                                            The key of the dict are base, template, the name of molecule and so on.
                                            The value of the dict is file name.
-                                           Default: None.
+                                           Default: 'protein0.yaml'
         ignore_hydrogen (bool, optional):  Ignore hydrogen. Default: True.
         length_unit (str):                 Length unit for position coordinates. Default: None.
 

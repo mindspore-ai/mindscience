@@ -40,13 +40,13 @@ class DynamicUpdater(Updater):
         integrator (Integrator):    MD integrator.
         thermostat (Controller):    Thermostat for temperature coupling. Default: None
         barostat (Controller):      Barostat for pressure coupling. Default: None
-        constraint (Controller):    Constraint for bond.
-        controller (Controller):    Other controllers.
+        constraint (Controller):    Constraint for bond. Default: None
+        controller (Controller):    Other controllers. Default: None
         time_step (float):          Time step. Default: 1e-3
         velocity (Tensor):          Tensor of shape (B, A, D). Data type is float.
                                     Default: None
-        weight_decay (float):       A value for the weight decay. Default: 0
-        loss_scale (float):         A value for the loss scale. Default: 1
+        weight_decay (float):       A value for the weight decay. Default: 0.0
+        loss_scale (float):         A value for the loss scale. Default: 1.0
 
     Returns:
         bool, update the parameters of system.

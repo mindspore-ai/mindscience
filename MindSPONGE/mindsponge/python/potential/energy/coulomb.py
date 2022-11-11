@@ -70,7 +70,7 @@ class CoulombEnergy(NonbondEnergy):
 
     Args:
         atom_charge (Tensor):       Tensor of shape (B, A). Data type is float.
-                                    Atom charge.
+                                    Atom charge. Default: None.
         parameters (dict):          Force field parameters. Default: None.
         cutoff (float):             Cutoff distance. Default: None.
         use_pbc (bool, optional):   Whether to use periodic boundary condition. Default: None.

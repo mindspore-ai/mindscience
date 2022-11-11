@@ -46,13 +46,13 @@ class Thermostat(Controller):
                                 Default: 4
 
     Returns:
-        coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-        velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-        force (Tensor), Tensor of shape (B, A, D). Data type is float.
-        energy (Tensor), Tensor of shape (B, 1). Data type is float.
-        kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-        virial (Tensor), Tensor of shape (B, D). Data type is float.
-        pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
+        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
+        - virial (Tensor), Tensor of shape (B, D). Data type is float.
+        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

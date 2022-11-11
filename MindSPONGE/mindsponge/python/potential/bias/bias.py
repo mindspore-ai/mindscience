@@ -34,12 +34,12 @@ class Bias(PotentialCell):
     Basic cell for bias potential.
 
     Args:
-        colvar (Colvar):            Collective variables.
-        multiple_walkers (bool):    Whether to use multiple walkers.
+        colvar (Colvar):            Collective variables. Default: None
+        multiple_walkers (bool):    Whether to use multiple walkers. Default: False
         length_unit (str):          Length unit for position coordinates. Default: None
         energy_unit (str):          Energy unit. Default: None
-        units (Units):              Units of length and energy. Default: None
-        use_pbc (bool):             Whether to use periodic boundary condition.
+        units (Units):              Units of length and energy. Default: global_units
+        use_pbc (bool):             Whether to use periodic boundary condition. Default: None
 
     Returns:
         potential (Tensor), Tensor of shape (B, 1). Data type is float.

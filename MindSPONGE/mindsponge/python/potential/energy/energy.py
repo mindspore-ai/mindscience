@@ -39,10 +39,10 @@ class EnergyCell(Cell):
     Args:
         label (str):        Label (name) of energy.
         output_dim (int):   Output dimension. Default: 1
-        length_unit (str):  Length unit for position coordinates. Default: None
-        energy_unit (str):  Energy unit. Default: None
+        length_unit (str):  Length unit for position coordinates. Default: 'nm'
+        energy_unit (str):  Energy unit. Default: 'kj/mol'
         units (Units):      Units of length and energy. Default: None
-        use_pbc (bool):     Whether to use periodic boundary condition.
+        use_pbc (bool):     Whether to use periodic boundary condition. Default: None
 
     Returns:
         energy (Tensor), Tensor of shape (B, 1). Data type is float.
@@ -198,11 +198,11 @@ class NonbondEnergy(EnergyCell):
 
     Args:
         label (str):            Label (name) of energy.
+        output_dim (int):       Dimension of the output. Default: 1
         cutoff (float):         cutoff distance. Default: None
-        num_atoms (int):        Number of atoms. Default: None
-        use_pbc (bool):         Whether to use periodic boundary condition. Default: None
         length_unit (str):      Length unit for position coordinates. Default: None
         energy_unit (str):      Energy unit. Default: None
+        use_pbc (bool):         Whether to use periodic boundary condition. Default: None
         units (Units):          Units of length and energy. Default: None
 
     Returns:

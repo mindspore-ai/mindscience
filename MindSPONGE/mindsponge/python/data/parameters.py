@@ -61,12 +61,10 @@ class ForceFieldParameters:
     Getting parameters for given bonds and atom types.
 
     Args:
-        atom_types(np.str\_):    The atom types defined in forcefields.
+        atom_types(str):        The atom types defined in forcefields.
         parameters(dict):       A dictionary stores all force field constants.
-        atom_names(np.str\_):    Unique atom names in an amino acid.
-
-    Parameters:
-        bonds(np.int32): The bond pairs defined for a given molecule.
+        atom_names(str):        Unique atom names in an amino acid. Default: None
+        atom_charges(ndarray):  The charge of the atoms. Default: None
 
     Supported Platforms:
         ``Ascend`` ``GPU``

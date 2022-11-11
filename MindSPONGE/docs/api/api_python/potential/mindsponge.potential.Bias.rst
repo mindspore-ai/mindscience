@@ -1,20 +1,20 @@
 mindsponge.potential.Bias
 =========================
 
-.. py:class:: mindsponge.potential.Bias(colvar, multiple_walkers=False, length_unit, energy_unit, units, use_pbc)
+.. py:class:: mindsponge.potential.Bias(colvar=None, multiple_walkers=False, length_unit=None, energy_unit=None, units=global_units, use_pbc=None)
 
     偏置势场的基础层。
 
     参数：
-        - **colvar** (Colvar) - 可收集变量。
-        - **multiple_walkers** (bool) - 是否使用多线程。
-        - **length_unit** (str) - 长度单位。
-        - **energy_unit** (str) - 能量单位。
-        - **units** (Units) - 长度和能量单位。
-        - **use_pbc** (bool) - 是否使用PBC。
+        - **colvar** (Colvar) - 可收集变量。默认值："None"。
+        - **multiple_walkers** (bool) - 是否使用多线程。默认值：False。
+        - **length_unit** (str) - 长度单位。默认值："None"。
+        - **energy_unit** (str) - 能量单位。默认值："None"。
+        - **units** (Units) - 长度和能量单位。默认值：global_units。
+        - **use_pbc** (bool) - 是否使用PBC。默认值："None"。
     
     输出：
-        Tensor。势能，shape为(B, 1)。
+        Tensor。势能，shape为(B, 1)，数据类型为float。
 
     符号：
         - **B** - Batch size。

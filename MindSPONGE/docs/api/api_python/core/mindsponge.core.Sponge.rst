@@ -1,24 +1,29 @@
 mindsponge.core.Sponge
 ======================
 
-.. py:class:: mindsponge.core.Sponge(network, potential, optimizer, metrics, analyse_network)
+.. py:class:: mindsponge.core.Sponge(network, potential=None, optimizer=None, metrics=None, analyse_network=None)
 
     MindSPONGE的核心引擎。
 
-    参数：
-        - **network** (Cell) - 模拟系统的公式或者神经网络。
-        - **potential** (Cell) - 势能函数。
-        - **optimizer** (Optimizer) - 优化器。
-        - **metrics** (Metric) - 矩阵。
-        - **analyse_network** (Cell) - 分析网络。
 
-    .. py:method:: analyse(dataset， callbacks)
+    参数：
+        - **network** (Union[Molecule, SimulationCell, RunOneStepCell]) - 模拟系统的公式或者神经网络。
+        - **potential** (Cell) - 势能函数。默认值："None"。
+        - **optimizer** (Optimizer) - 优化器。默认值："None"。
+        - **metrics** (Metric) - 矩阵。默认值："None"。
+        - **analyse_network** (Cell) - 分析网络。默认值："None"。
+
+    .. py:method:: analyse(dataset=None， callbacks=None)
 
         计算API，其中迭代由python前端控制。配置为pynative模式或CPU，计算过程将以数据集非下沉模式执行。
 
+        .. note::
+            如果dataset_sink_mode是True，数据将会被传输到device侧。如果端侧为Ascend，数据迁移将会依次进行。每次数据发送的最大限制为256M。当dataset_sink_mode为True时，Callback类的epoch_end方法被调用时，step_end方法将会被执行。
+
+
         参数：
-            - **callbacks** (Callback) - 回调函数。
-            - **dataset** (Dataset) - 评估模型的数据集。
+            - **callbacks** (Callback) - 回调函数。默认值："None"。
+            - **dataset** (Dataset) - 评估模型的数据集。默认值："None"。
 
         返回：
             Dict。key是用户定义的矩阵名称。value是测试模式中的模型的矩阵。
@@ -51,11 +56,11 @@ mindsponge.core.Sponge
         返回：
             系统的能量和力。
 
-    .. py:method:: run(steps, callbacks, dataset)
+    .. py:method:: run(steps, callbacks=None, dataset=None)
 
         运行模拟。
 
         参数：
             - **steps** (int) - 模拟步数。
-            - **callbacks** (Callback) - 回调函数。
-            - **dataset** (Dataset) - 在模拟过程中的数据集。
+            - **callbacks** (Callback) - 回调函数。默认值："None"。
+            - **dataset** (Dataset) - 在模拟过程中的数据集。默认值："None"。

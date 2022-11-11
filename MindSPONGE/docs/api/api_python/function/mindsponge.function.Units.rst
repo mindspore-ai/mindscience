@@ -1,13 +1,13 @@
 mindsponge.function.Units
 =========================
 
-.. py:class:: mindsponge.function.Units(length_unit, energy_unit)
+.. py:class:: mindsponge.function.Units(length_unit=None, energy_unit=None)
 
     记录和转换长度和能量单位。
 
     参数：
-        - **length_unit** (str) - 长度单位。
-        - **energy_unit** (str) - 能量单位。
+        - **length_unit** (str) - 长度单位。默认值："None"。
+        - **energy_unit** (str) - 能量单位。默认值："None"。
 
     .. py:method:: acceleration_ref()
 

@@ -16,7 +16,7 @@ mindsponge.optimizer.Updater
     符号：
         - **B** - Batch size。
         - **A** - 原子总数。
-        - **D** - 模拟系统的维度。
+        - **D** - 模拟系统的维度，一般为3。
 
     .. py:method:: get_dt()
 

@@ -23,4 +23,4 @@ mindsponge.optimizer.DynamicUpdater
     符号：
         - **B** - Batch size。
         - **A** - 原子总数。
-        - **D** - 模拟系统的维度。
+        - **D** - 模拟系统的维度，一般为3。
