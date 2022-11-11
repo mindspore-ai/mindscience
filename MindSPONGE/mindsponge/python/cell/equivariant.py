@@ -27,6 +27,20 @@ from .initializer import lecun_init
 class InvariantPointAttention(nn.Cell):
     r"""
     Invariant Point attention module.
+    This module is used to update the sequence representation ,which is the first input--inputs_1d,
+    adding location information to the sequence representation.
+
+    The attention consists of three parts, namely, q, k, v obtained by the sequence representation,
+    q'k'v' obtained by the interaction between the sequence representation and the rigid body group,
+    and b , which is th bias,  obtained  from the pair representation(the second inputs -- inputs_2d).
+
+    .. math::
+        a_{ij} = Softmax(w_l(c_1{q_i}^Tk_j+b{ij}-c_2\sum {\left \| T_i\circ q'_i-T_j\circ k'_j \right \| ^{2 } })
+
+    where i and j represent the ith and jth amino acids in the sequence, respectively,
+    and T is the rotation and translation in the input.
+
+    Jumper et al. (2021) Suppl. Alg. 22 "InvariantPointAttention"。
 
     Args:
         num_head (int):         The number of the heads.
@@ -37,8 +51,37 @@ class InvariantPointAttention(nn.Cell):
         num_channel (int):      The number of the channel.
         pair_dim (int):         The last dimension length of pair.
 
+    Inputs:
+        - **inputs_1d** (Tensor) - The first row of msa representation which is the output of evoformer module,
+          also called the sequence representation, shape :math:`[N_{res}, num_channel]`.
+        - **inputs_2d** (Tensor) - The pair representation which is the output of evoformer module,
+          shape :math:`[N_{res}, N_{res}, pair_dim]`.
+        - **mask** (Tensor) - A mask that determines which elements of inputs_1d are involved in the
+          attention calculation, shape :math:`[N_{res}, 1]`
+        - **rotation** (tuple) - A rotation term in a rigid body group T(r,t),
+          A tuple of length 9, The shape of each elements in the tuple is :math: `[N_{res}]`.
+        - **translation** (tuple) - A translation term in a rigid body group T(r,t),
+          A tuple of length 3, The shape of each elements in the tuple is :math: `[N_{res}]`.
+
+    Outputs:
+        - **output** (Tensor) - Tensor, the update of inputs_1d,
+          shape :math:`[N_{res}, channel]`.
+
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Example:
+        >>> model = InvariantPointAttention(num_head=12, num_scalar_qk=16, num_scalar_v=16,
+                                            num_point_v=8, num_point_qk=4,
+                                            num_channel=384, pair_dim=128)
+        >>> inputs_1d = Tensor(np.ones((256, 384)), mstype.float32)
+        >>> inputs_2d = Tensor(np.ones((256, 256, 128)), mstype.float32)
+        >>> mask = Tensor(np.ones((256, 1)), mstype.float32)
+        >>> rotation = tuple([Tensor(np.ones(256), mstype.float16) for _ in range(9)])
+        >>> translation = tuple([Tensor(np.ones(256), mstype.float16) for _ in range(3)])
+        >>> attn_out = model(inputs_1d, inputs_2d, mask, rotation, translation)
+        >>> print(len(attn_out))
+        (256, 384)
     """
 
     def __init__(self, num_head, num_scalar_qk, num_scalar_v, num_point_v, num_point_qk, num_channel, pair_dim):
@@ -73,20 +116,7 @@ class InvariantPointAttention(nn.Cell):
         self.attention_2d_weights = np.sqrt(1.0 / 3)
 
     def construct(self, inputs_1d, inputs_2d, mask, rotation, translation):
-        """
-        Compute geometry-aware attention.
-
-        Args:
-            inputs_1d (N, C):       1D input embedding that is the basis for thescalar queries.
-            inputs_2d (N, M, C'):   2D input embedding, used for biases and values.
-            mask (N, 1):            mask to indicate which elements of inputs_1d participate in the attention.
-            rotation:               describe the orientation of every element in inputs_1d.
-            translation:            describe the position of every element in inputs_1d.
-
-        Returns:
-            Transformation of the input embedding.
-        """
-
+        '''construct'''
         num_residues, _ = inputs_1d.shape
 
         # Improve readability by removing a large number of 'self's.
@@ -138,9 +168,9 @@ class InvariantPointAttention(nn.Cell):
         kv_point_global2 = mnp.reshape(kv_point_global[2], (num_residues, num_head, (num_point_qk + num_point_v)))
 
         # Split key and value points.
-        k_point0, v_point0 = mnp.split(kv_point_global0, [num_point_qk,], axis=-1)
-        k_point1, v_point1 = mnp.split(kv_point_global1, [num_point_qk,], axis=-1)
-        k_point2, v_point2 = mnp.split(kv_point_global2, [num_point_qk,], axis=-1)
+        k_point0, v_point0 = mnp.split(kv_point_global0, [num_point_qk], axis=-1)
+        k_point1, v_point1 = mnp.split(kv_point_global1, [num_point_qk], axis=-1)
+        k_point2, v_point2 = mnp.split(kv_point_global2, [num_point_qk], axis=-1)
 
         trainable_point_weights = self.soft_plus(self.trainable_point_weights)
         point_weights = self.point_weights * mnp.expand_dims(trainable_point_weights, axis=1)
