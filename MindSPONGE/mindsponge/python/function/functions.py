@@ -499,6 +499,15 @@ def calc_distance_without_pbc(position_a: Tensor, position_b: Tensor, _pbc_box=N
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindspore
+        >>> from mindsponge.function import calc_distance_without_pbc
+        >>> from mindspore.common.tensor import Tensor
+        >>> A = Tensor([[1.,2.,3.]])
+        >>> B = Tensor([[1.,1.,1.]])
+        >>> print (calc_distance_with_pbc(A,B))
+        tensor(shape=[1,1],dtype = Float32, value = [[2.236060801]])
     """
     #pylint: disable=invalid-name
 
@@ -525,6 +534,16 @@ def calc_distance_with_pbc(position_a: Tensor, position_b: Tensor, pbc_box: Tens
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindspore
+        >>> from mindsponge.function import calc_distance_with_pbc
+        >>> from mindspore.common.tensor import Tensor
+        >>> A = Tensor([[1.,2.,3.]])
+        >>> B = Tensor([[1.,1.,1.]])
+        >>> pbc_box = Tensor([[0.7,0.7,0.7]])
+        >>> print (calc_distance_with_pbc(A,B,pbc_box))
+        tensor(shape=[1,1],dtype = Float32, value = [[3.16227734e-01]])
     """
 
     vec = get_vector_with_pbc(position_a, position_b, pbc_box)
@@ -550,6 +569,18 @@ def calc_distance(position_a: Tensor, position_b: Tensor, pbc_box: Tensor = None
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindspore
+        >>> from mindsponge.function import calc_distance
+        >>> from mindspore.common.tensor import Tensor
+        >>> A = Tensor([[1.,2.,3.]])
+        >>> B = Tensor([[1.,1.,1.]])
+        >>> pbc_box = Tensor([[0.7,0.7,0.7]])
+        >>> print (calc_distance(A,B,pbc_box))
+        tensor(shape=[1,1],dtype = Float32, value = [[3.16227734e-01]])
+        >>> print (calc_distance(A,B))
+        tensor(shape=[1,1],dtype = Float32, value = [[2.236060801]])
     """
 
     vec = get_vector_without_pbc(position_a, position_b)
