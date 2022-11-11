@@ -1,24 +1,23 @@
 mindsponge.cell.GlobalAttention
 ===============================
 
-.. py:class:: mindsponge.cell.GlobalAttention(num_head, gating, hidden_size, output_dim, batch_size=None)
+.. py:class:: mindsponge.cell.GlobalAttention(num_head, gating, input_dim, output_dim, batch_size=None)
 
-    global gated自注意力机制，具体实现请参考 `Highly accurate protein structure prediction with AlphaFold <https://www.nature.com/articles/s41586-021-03819-2>`_ 。
+    global gated自注意力机制，具体实现请参考 `Highly accurate protein structure prediction with AlphaFold <https://www.nature.com/articles/s41586-021-03819-2>`_ 。对于GlobalAttention模块，query/key/value tensor的shape需保持一致。
 
     参数：
         - **num_head** (int) - 头的数量。
         - **gating** (bool) - 判断attention是否经过gating的指示器。
-        - **hidden_size** (int) - 输入的隐藏尺寸。
-        - **output_dim** (int) - 输出的最后一维度的长度。
-        - **batch_size** (int) - attention中参数的batch size。默认值："None"。
+        - **input_dim** (int) - 输入的最后一维的长度。
+        - **output_dim** (int) - 输出的最后一维的长度。
+        - **batch_size** (int) - attention中权重的batch size，仅在有while控制流时使用，默认值None。
 
     输入：
-        - **q_data** (Tensor) - shape为(batch_size, query_seq_length, q_data_dim)的Q Tensor。
-        - **m_data** (Tensor) - shape为(batch_size, value_seq_length, m_data_dim)的K和V。
-        - **q_mask** (Tensor) - q_data的二元mask，在长度元素中padded的位置为0，其他的位置为1。
-        - **attention_mask** (Tensor) - 注意力矩阵的mask。shape为(batch_size, query_seq_length, value_seq_length)。
+        - **q_data** (Tensor) - shape为(batch_size, seq_length, input_dim)的query tensor，其中seq_length是query向量的序列长度。
+        - **m_data** (Tensor) - shape为(batch_size, seq_length, input_dim)的key和value tensor。
+        - **q_mask** (Tensor) - shape为(batch_size, seq_length, 1)的q_data的mask。
         - **bias** (Tensor) - attention矩阵的偏置。默认值："None"。
-        - **index** (Tensor) - 在循环中的索引。
+        - **index** (Tensor) - 在while循环中的索引，仅在有while控制流时使用。默认值："None"。
 
     输出：
-        Tensor。Attention层的输出，shape是(batch_size, query_seq_length, hidden_size)。
+        Tensor。Attention层的输出tensor，shape是(batch_size, seq_length, output_dim)。

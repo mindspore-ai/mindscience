@@ -25,65 +25,68 @@ from ..common.utils import _memory_reduce
 
 
 class Transition(nn.Cell):
-    '''
-    Transition layer.
+    r"""
+    This is 2-layer MLP where the intermediate layer expands number of channels
+    of the input by a factor(num_intermediate_factor).
+
+    .. math::
+        Transition(\mathbf{act}) = Linear(Linear(\mathbf{act}))
 
     Args:
-        num_intermediate_factor (float):    The number of intermediate factor.
-        layer_norm_dim (int):               The last dimension length of the layer norm.
-        batch_size (int):                   The batch size of parameters in transition layer. Default: None.
-        slice_num (int):                    The slice num used in transition layer
-                                            when the memory is overflow. Default: 0.
+        num_intermediate_factor(float):    The expand factor of intermediate output
+                                           channels compared to the input.
+        input_dim(int):                    The channels of the input.
+        batch_size(int):                   The batch size of parameters in Transition,
+                                           used in while control flow. Default None.
+        slice_num (int):                   The slice num used in transition layer
+                                           when the memory is overflow. Default: 0.
+
+    Inputs:
+        - **act** (Tensor) - The input with channels equal to input_dim.
+        - **index** (Tensor) - The index of while loop, only used in case of while control
+          flow. Default None.
+
+    Outputs:
+        - **output** (Tensor) - Tensor, the float tensor of the output of the layer with
+          shape same as the input.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
-    '''
 
-    def __init__(self, num_intermediate_factor, layer_norm_dim, batch_size=None, slice_num=0):
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.cell import Transition
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
+        >>> model = Transition(num_intermediate_factor=4, input_dim=128)
+        >>> input = Tensor(np.ones((32, 128, 128)), mstype.float32)
+        >>> output= model(input)
+        >>> print(output.shape)
+        (32, 128, 128)
+    """
+
+    def __init__(self, num_intermediate_factor, input_dim, batch_size=None, slice_num=0):
         super(Transition, self).__init__()
         self.input_layer_norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
         self.matmul = P.MatMul(transpose_b=True)
-        self.layer_norm_dim = layer_norm_dim
-        self.num_intermediate = int(layer_norm_dim * num_intermediate_factor)
+        self.input_dim = input_dim
+        self.num_intermediate = int(input_dim * num_intermediate_factor)
         self.batch_size = batch_size
         self.slice_num = slice_num
         self.relu = nn.ReLU()
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
 
-    def compute(self, act, transition1_weight, transition1_bias, transition2_weight, transition2_bias):
-        r"""
-        Compute pair activation.
-
-        Args:
-            act (Tensor):               Pair activations. Data type is float.
-            transition1_weight (float): The transition1 weight parameter.
-            transition1_bias (float):   The transition1 bias parameter.
-            transition2_weight (float): The transition2 weight parameter.
-            transition2_bias (float):   The transition2 bias parameter.
-
-        Returns:
-            act(Tensor), pair activations. Data type is float.
-        """
-
-        act_shape = P.Shape()(act)
-        if len(act_shape) != 2:
-            act = P.Reshape()(act, (-1, act_shape[-1]))
-        act = self.relu(P.BiasAdd()(self.matmul(act, transition1_weight), transition1_bias))
-        act = P.BiasAdd()(self.matmul(act, transition2_weight), transition2_bias)
-        act = P.Reshape()(act, act_shape)
-        return act
-
     def construct(self, act, index):
         '''
         Builds transition module.
 
         Args:
-            act (Tensor):   Pair activations. Data type is float.
+            act (Tensor):   Input tensor. Data type is float.
             index (int):    The index of the batch size when batch size is not none.
 
         Returns:
-            act(Tensor), Pair activations. Data type is float.
+            act(Tensor), Input tensor. Data type is float.
         '''
         if self.batch_size:
             input_layer_norm_gamma = P.Gather()(self.input_layer_norm_gammas, index, 0)
@@ -102,30 +105,41 @@ class Transition(nn.Cell):
         act, _, _ = self.input_layer_norm(act, input_layer_norm_gamma, input_layer_norm_beta)
         batched_inputs = (act,)
         nonbatched_inputs = (transition1_weight, transition1_bias, transition2_weight, transition2_bias)
-        act = _memory_reduce(self.compute, batched_inputs, nonbatched_inputs, self.slice_num)
+        act = _memory_reduce(self._compute, batched_inputs, nonbatched_inputs, self.slice_num)
         return act
 
     def _init_parameter(self):
         '''init parameter'''
         if self.batch_size:
             self.input_layer_norm_gammas = Parameter(
-                Tensor(np.zeros((self.batch_size, self.layer_norm_dim)), mstype.float32))
+                Tensor(np.zeros((self.batch_size, self.input_dim)), mstype.float32))
             self.input_layer_norm_betas = Parameter(
-                Tensor(np.zeros((self.batch_size, self.layer_norm_dim)), mstype.float32))
+                Tensor(np.zeros((self.batch_size, self.input_dim)), mstype.float32))
             self.transition1_weights = Parameter(
-                Tensor(np.zeros((self.batch_size, self.num_intermediate, self.layer_norm_dim)), mstype.float32))
+                Tensor(np.zeros((self.batch_size, self.num_intermediate, self.input_dim)), mstype.float32))
             self.transition1_biases = Parameter(
                 Tensor(np.zeros((self.batch_size, self.num_intermediate)), mstype.float32))
             self.transition2_weights = Parameter(
-                Tensor(np.zeros((self.batch_size, self.layer_norm_dim, self.num_intermediate)), mstype.float32))
+                Tensor(np.zeros((self.batch_size, self.input_dim, self.num_intermediate)), mstype.float32))
             self.transition2_biases = Parameter(
-                Tensor(np.zeros((self.batch_size, self.layer_norm_dim)), mstype.float32))
+                Tensor(np.zeros((self.batch_size, self.input_dim)), mstype.float32))
         else:
-            self.input_layer_norm_gammas = Parameter(Tensor(np.ones((self.layer_norm_dim)), mstype.float32))
-            self.input_layer_norm_betas = Parameter(Tensor(np.zeros((self.layer_norm_dim)), mstype.float32))
-            self.transition1_weights = Parameter(initializer(lecun_init(self.layer_norm_dim, initializer_name='relu'),
-                                                             [self.num_intermediate, self.layer_norm_dim]))
+            self.input_layer_norm_gammas = Parameter(Tensor(np.ones((self.input_dim)), mstype.float32))
+            self.input_layer_norm_betas = Parameter(Tensor(np.zeros((self.input_dim)), mstype.float32))
+            self.transition1_weights = Parameter(initializer(lecun_init(self.input_dim, initializer_name='relu'),
+                                                             [self.num_intermediate, self.input_dim]))
             self.transition1_biases = Parameter(Tensor(np.zeros((self.num_intermediate)), mstype.float32))
             self.transition2_weights = Parameter(
-                Tensor(np.zeros((self.layer_norm_dim, self.num_intermediate)), mstype.float32))
-            self.transition2_biases = Parameter(Tensor(np.zeros((self.layer_norm_dim)), mstype.float32))
+                Tensor(np.zeros((self.input_dim, self.num_intermediate)), mstype.float32))
+            self.transition2_biases = Parameter(Tensor(np.zeros((self.input_dim)), mstype.float32))
+
+    def _compute(self, act, transition1_weight, transition1_bias, transition2_weight, transition2_bias):
+        '''compute transition.'''
+
+        act_shape = P.Shape()(act)
+        if len(act_shape) != 2:
+            act = P.Reshape()(act, (-1, act_shape[-1]))
+        act = self.relu(P.BiasAdd()(self.matmul(act, transition1_weight), transition1_bias))
+        act = P.BiasAdd()(self.matmul(act, transition2_weight), transition2_bias)
+        act = P.Reshape()(act, act_shape)
+        return act

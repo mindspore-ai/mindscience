@@ -341,18 +341,49 @@ class TriangleMultiplication(nn.Cell):
 
 class OuterProductMean(nn.Cell):
     r"""
-    Computes outer product mean.
+    Computing the correlation of the input tensor along its second dimension, the computed correlation
+    could be used to update the correlation features(e.g. the Pair representation).
+
+    .. math::
+        OuterProductMean(\mathbf{output}) = Linear(flatten(mean(\mathbf{act}\otimes\mathbf{act})))
 
     Args:
-        num_outer_channel (float):  The number of outer channel.
-        act_dim (int):              The last dimension length of the act.
-        num_output_channel (int):   The number of output channels.
-        batch_size (int):           The batch size of parameters in outer product mean. Default: None.
-        slice_num (int):            The slice num used in outer product mean
+        num_outer_channel (float):  The last dimension size of intermediate layer in OuterProductMean.
+        act_dim (int):              The last dimension size of the input act.
+        num_output_channel (int):   The last dimension size of output.
+        batch_size(int):            The batch size of parameters in OuterProductMean,
+                                    used in while control flow. Default None.
+        slice_num (int):            The slice num used in OuterProductMean layer
                                     when the memory is overflow. Default: 0.
+
+    Inputs:
+        - **act** (Tensor) - The input tensor with shape :math:`(dim_1, dim_2, act\_dim)`.
+        - **mask** (Tensor) - The mask for OuterProductMean with shape :math:`(dim_1, dim_2)`.
+        - **mask_norm** (Tensor) - Squared L2-norm along the first dimension of **mask**,
+          pre-computed to avoid re-computing, its shape is:math:`(dim_2, dim_2, 1)`.
+        - **index** (Tensor) - The index of while loop, only used in case of while control
+          flow. Default None.
+
+    Outputs:
+        - **output** (Tensor) - Tensor, the float tensor of the output of the layer with
+          shape :math:`(dim_2, dim_2, num\_output\_channel)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.cell import OuterProductMean
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
+        >>> from mindspore.ops import operations as P
+        >>> model = OuterProductMean(num_outer_channel=32, act_dim=128, num_output_channel=256)
+        >>> act = Tensor(np.ones((32, 64, 128)), mstype.float32)
+        >>> mask = Tensor(np.ones((32, 64)), mstype.float32)
+        >>> mask_tmp = P.ExpandDims()(P.MatMul(transpose_a=True)(mask, mask), -1)
+        >>> output= model(act, mask, mask_norm)
+        >>> print(output.shape)
+        (64, 64, 256)
     """
 
     def __init__(self, num_outer_channel, act_dim, num_output_channel, batch_size=None, slice_num=0):
@@ -369,42 +400,14 @@ class OuterProductMean(nn.Cell):
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
 
-    def compute(self, left_act, right_act, linear_output_weight, linear_output_bias, d, e):
+    def construct(self, act, mask, mask_norm, index):
         r"""
-        Compute pair activation.
-
-        Args:
-            left_act (Tensor):              The left part of pair activation.
-            right_act (Tensor):             The right part of pair activation.
-            linear_output_weight (Tensor):  The parameter of output weight.
-            linear_output_bias (Tensor):    The parameter of output bias.
-            d (int):                        second axis of right pair activation shape.
-            e (int):                        third axis of right pair activation shape.
-
-        Returns:
-            act(Tensor), Pair activations.
-        """
-
-        a, b, c = left_act.shape
-        left_act = P.Reshape()(P.Transpose()(left_act, (2, 1, 0)), (-1, a))
-        act = P.Reshape()(P.Transpose()(P.Reshape()(self.matmul(left_act, right_act),
-                                                    (c, b, d, e)), (2, 1, 0, 3)), (d, b, c * e))
-        act_shape = P.Shape()(act)
-        if len(act_shape) != 2:
-            act = P.Reshape()(act, (-1, act_shape[-1]))
-        act = P.Reshape()(P.BiasAdd()(self.matmul_trans_b(act, linear_output_weight),
-                                      linear_output_bias), (d, b, -1))
-        act = P.Transpose()(act, (1, 0, 2))
-        return act
-
-    def construct(self, act, mask, extra_msa_norm, index):
-        r"""
-        Builds outer product module.
+        Builds outer product mean module.
 
         Args:
             act (Tensor):               Pair activations. Data type is float.
             mask (Tensor):              Pair mask. Data type is float.
-            extra_msa_norm (Tensor):    The norm of extra msa. Data type is float.
+            mask_norm (Tensor):    The norm of extra msa. Data type is float.
             index (int):                The index of the batch size when batch size is not none.
 
         Returns:
@@ -443,9 +446,9 @@ class OuterProductMean(nn.Cell):
         right_act = P.Reshape()(right_act, (a, -1))
         batched_inputs = (left_act,)
         nonbatched_inputs = (right_act, linear_output_weight, linear_output_bias, d, e)
-        act = _memory_reduce(self.compute, batched_inputs, nonbatched_inputs, self.slice_num, 1)
+        act = _memory_reduce(self._compute, batched_inputs, nonbatched_inputs, self.slice_num, 1)
         epsilon = 1e-3
-        act = P.RealDiv()(act, epsilon + extra_msa_norm)
+        act = P.RealDiv()(act, epsilon + mask_norm)
         return act
 
     def _init_parameter(self):
@@ -478,3 +481,18 @@ class OuterProductMean(nn.Cell):
                 Tensor(np.zeros((self.num_output_channel, self.num_outer_channel * self.num_outer_channel)),
                        mstype.float32))
             self.o_biases = Parameter(Tensor(np.zeros((self.num_output_channel)), mstype.float32))
+
+    def _compute(self, left_act, right_act, linear_output_weight, linear_output_bias, d, e):
+        '''compute outer product mean'''
+
+        a, b, c = left_act.shape
+        left_act = P.Reshape()(P.Transpose()(left_act, (2, 1, 0)), (-1, a))
+        act = P.Reshape()(P.Transpose()(P.Reshape()(self.matmul(left_act, right_act),
+                                                    (c, b, d, e)), (2, 1, 0, 3)), (d, b, c * e))
+        act_shape = P.Shape()(act)
+        if len(act_shape) != 2:
+            act = P.Reshape()(act, (-1, act_shape[-1]))
+        act = P.Reshape()(P.BiasAdd()(self.matmul_trans_b(act, linear_output_weight),
+                                      linear_output_bias), (d, b, -1))
+        act = P.Transpose()(act, (1, 0, 2))
+        return act
