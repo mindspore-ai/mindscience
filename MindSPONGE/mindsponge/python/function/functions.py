@@ -575,6 +575,17 @@ def calc_angle_between_vectors(vector1: Tensor, vector2: Tensor) -> Tensor:
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> import mindspore
+        >>> from mindspore import Tensor
+        >>> a = Tensor([[1., 2., 3.], [1., 2., 3.]])
+        >>> b = Tensor([[1., 1., 1.], [2., 2., 2.]])
+        >>> print(mindsponge.function.calc_angle_between_vectors(a, b))
+        Tensor(shape=[2, 1], dtype=Float64, value=
+        [[3.87596687e-01],
+         [3.87596687e-01]])
     """
 
     # [..., 1] <- [..., D]
@@ -604,6 +615,17 @@ def calc_angle_without_pbc(position_a: Tensor, position_b: Tensor, position_c: T
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> import mindspore
+        >>> from mindspore import Tensor
+        >>> A = Tensor([[1., 2., 3.]])
+        >>> B = Tensor([[1., 1., 1.]])
+        >>> C = Tensor([[4., 5., 6.]])
+        >>> print(mindsponge.function.calc_angle_without_pbc(A, B, C))
+        Tensor(shape=[1, 1], dtype=Float32, value=
+        [[ 4.83361423e-01]])
     """
 
     # (...,D)
@@ -632,6 +654,18 @@ def calc_angle_with_pbc(position_a: Tensor, position_b: Tensor, position_c: Tens
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> import mindspore
+        >>> from mindspore import Tensor
+        >>> A = Tensor([[1., 2., 3.]])
+        >>> B = Tensor([[1., 1., 1.]])
+        >>> C = Tensor([[4., 5., 6.]])
+        >>> pbc_box = Tensor([[0.7, 0.7, 0.7]])
+        >>> print(mindsponge.function.calc_angle_with_pbc(A, B, C, pbc_box=pbc_box))
+        Tensor(shape=[1, 1], dtype=Float32, value=
+        [[ 2.40069723e+00]])
     """
 
     # (B, ..., D)
@@ -660,6 +694,25 @@ def calc_angle(position_a, position_b: Tensor, position_c: Tensor, pbc_box: Tens
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> import mindspore
+        >>> from mindspore import Tensor
+        >>> from mindsponge.function import calc_angle
+        >>> A = Tensor([[1., 2., 3.]])
+        >>> B = Tensor([[1., 1., 1.]])
+        >>> C = Tensor([[4., 5., 6.]])
+        >>> print(calc_angle(A, B, C, pbc_box=None))
+        Tensor(shape=[1, 1], dtype=Float32, value=
+        [[ 4.83361423e-01]])
+        >>> A = Tensor([[1., 2., 3.]])
+        >>> B = Tensor([[1., 1., 1.]])
+        >>> C = Tensor([[4., 5., 6.]])
+        >>> pbc_box = Tensor([[0.7, 0.7, 0.7]])
+        >>> print(calc_angle(A, B, C, pbc_box=pbc_box))
+        Tensor(shape=[1, 1], dtype=Float32, value=
+        [[ 2.40069723e+00]])
     """
 
     # (B, ..., D)

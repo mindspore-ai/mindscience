@@ -3,15 +3,19 @@ mindsponge.function.calc_angle_without_pbc
 
 .. py:function:: mindsponge.function.calc_angle_without_pbc(position_a, position_b, position_c)
 
-    在没有周期性边界条件的情况下计算由A，B，C三个位置形成的角。
+    计算非周期性边界条件下三个空间位点A，B，C所形成的角度 :math:`\angle ABC`。
+
+    根据非周期性边界条件下A，B，C三点坐标计算向量 :math:`\vec{BA}` 和 :math:`\vec{BC}` 的坐标，再计算两向量间夹角。
+
+    最后返回 :math:`\vec{BA}` 向量与 :math:`\vec{BC}` 向量间夹角。
 
     参数：
-        - **position_a** (Tensor) - 位置a，shape为(..., D)。
-        - **position_b** (Tensor) - 位置b，shape为(..., D)。
-        - **position_c** (Tensor) - 位置c，shape为(..., D)。
+        - **position_a** (Tensor) - 位置a，shape为 :math:`(..., D)` 。
+        - **position_b** (Tensor) - 位置b，shape为 :math:`(..., D)` 。
+        - **position_c** (Tensor) - 位置c，shape为 :math:`(..., D)` 。
 
     输出：
-        Tensor。计算所得角。shape为(..., 1)。
+        Tensor。计算所得角。shape为 :math:`(..., 1)` 。
 
     符号：
-        - **D** - 模拟系统的维度。
+        - **D** - 模拟系统的维度, 一般为3。
