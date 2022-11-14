@@ -97,8 +97,8 @@ class FNO1D(nn.Cell):
         depth (int): The number of FNO layers. Default: 4.
         mlp_ratio (int): The number of channels lifting ratio of the decoder layer. Default: 4.
         compute_dtype (dtype.Number): The computation type of dense. Default mstype.float16.
-        Should be mstype.float32 or mstype.float16. mstype.float32 is recommended for
-        the GPU backend, mstype.float16 is recommended for the Ascend backend.
+            Should be mstype.float32 or mstype.float16. mstype.float32 is recommended for
+            the GPU backend, mstype.float16 is recommended for the Ascend backend.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, input\_dims)`.

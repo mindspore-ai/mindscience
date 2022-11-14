@@ -402,7 +402,7 @@ class OuterProductMean(nn.Cell):
         - **act** (Tensor) - The input tensor with shape :math:`(dim_1, dim_2, act\_dim)`.
         - **mask** (Tensor) - The mask for OuterProductMean with shape :math:`(dim_1, dim_2)`.
         - **mask_norm** (Tensor) - Squared L2-norm along the first dimension of **mask**,
-          pre-computed to avoid re-computing, its shape is:math:`(dim_2, dim_2, 1)`.
+          pre-computed to avoid re-computing, its shape is :math:`(dim_2, dim_2, 1)`.
         - **index** (Tensor) - The index of while loop, only used in case of while control
           flow. Default None.
 

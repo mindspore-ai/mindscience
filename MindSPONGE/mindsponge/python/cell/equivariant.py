@@ -53,15 +53,15 @@ class InvariantPointAttention(nn.Cell):
 
     Inputs:
         - **inputs_1d** (Tensor) - The first row of msa representation which is the output of evoformer module,
-          also called the sequence representation, shape :math:`[N_{res}, num_channel]`.
+          also called the sequence representation, shape :math:`[N_{res}, num\_channel]`.
         - **inputs_2d** (Tensor) - The pair representation which is the output of evoformer module,
-          shape :math:`[N_{res}, N_{res}, pair_dim]`.
+          shape :math:`[N_{res}, N_{res}, pair\_dim]`.
         - **mask** (Tensor) - A mask that determines which elements of inputs_1d are involved in the
           attention calculation, shape :math:`[N_{res}, 1]`
         - **rotation** (tuple) - A rotation term in a rigid body group T(r,t),
-          A tuple of length 9, The shape of each elements in the tuple is :math: `[N_{res}]`.
+          A tuple of length 9, The shape of each elements in the tuple is :math:`[N_{res}]`.
         - **translation** (tuple) - A translation term in a rigid body group T(r,t),
-          A tuple of length 3, The shape of each elements in the tuple is :math: `[N_{res}]`.
+          A tuple of length 3, The shape of each elements in the tuple is :math:`[N_{res}]`.
 
     Outputs:
         - **output** (Tensor) - Tensor, the update of inputs_1d,
