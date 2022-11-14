@@ -25,9 +25,8 @@ from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 from mindsponge.common import residue_constants
 from mindsponge.common.geometry import invert_point, quaternion_from_tensor, vecs_expend_dims
-from mindsponge.metrics.structure_violations import softmax_cross_entropy, sigmoid_cross_entropy, \
-    get_structural_violations, compute_renamed_ground_truth, backbone, sidechain, supervised_chi, \
-    local_distance_difference_test
+from mindsponge.metrics.structure_violations import get_structural_violations, compute_renamed_ground_truth, backbone,\
+    sidechain, supervised_chi, local_distance_difference_test
 from mindsponge.metrics import BalancedMSE, BinaryFocal, MultiClassFocal
 
 
@@ -87,6 +86,8 @@ class LossNet(nn.Cell):
         self.dists_mask_i = mnp.eye(14, 14)
         self.cys_sg_idx = Tensor(5, ms.int32)
         self.train_fold = train_fold
+        self.softmax_cross_entropy = nn.SoftmaxCrossEntropyWithLogits(sparse=False)
+        self.sigmoid_cross_entropy = P.SigmoidCrossEntropyWithLogits()
 
     def distogram_loss(self, logits, bin_edges, pseudo_beta, pseudo_beta_mask):
         """Log loss of a distogram."""
@@ -100,7 +101,7 @@ class LossNet(nn.Cell):
 
         true_bins = P.ReduceSum()(aa, -1)
         true_bins = true_bins.astype(ms.int32)
-        errors = softmax_cross_entropy(labels=self.distogram_one_hot(true_bins), logits=logits)
+        errors = self.softmax_cross_entropy(labels=self.distogram_one_hot(true_bins), logits=logits)
         square_mask = mnp.expand_dims(mask, axis=-2) * mnp.expand_dims(mask, axis=-1)
         avg_error = (P.ReduceSum()(errors * square_mask, (-2, -1)) /
                      (1e-6 + P.ReduceSum()(square_mask.astype(ms.float32), (-2, -1))))
@@ -121,7 +122,7 @@ class LossNet(nn.Cell):
         # *except for OXT*
         all_atom_mask = all_atom_mask.astype(mnp.float32)
 
-        xent = sigmoid_cross_entropy(logits, all_atom_mask)
+        xent = self.sigmoid_cross_entropy(logits, all_atom_mask)
         loss = P.ReduceSum()(xent * atom_exists) / (1e-8 + P.ReduceSum()(atom_exists.astype(ms.float32)))
         loss = loss * filter_by_solution
         loss *= self.exp_res_mask
@@ -129,7 +130,7 @@ class LossNet(nn.Cell):
 
     def masked_head_loss(self, true_msa, logits, bert_mask):
         """masked_head_loss"""
-        errors = softmax_cross_entropy(logits=logits, labels=self.masked_one_hot(true_msa))
+        errors = self.softmax_cross_entropy(logits=logits, labels=self.masked_one_hot(true_msa))
         loss = (P.ReduceSum()(errors * bert_mask, (-2, -1)) /
                 (1e-8 + P.ReduceSum()(bert_mask.astype(ms.float32), (-2, -1))))
         return loss
@@ -196,7 +197,7 @@ class LossNet(nn.Cell):
         lddt_ca_one_hot = nn.OneHot(depth=self.predicted_lddt_num_bins)(bin_index)
 
         logits = predicted_lddt_logits
-        errors = softmax_cross_entropy(labels=lddt_ca_one_hot, logits=logits)
+        errors = self.softmax_cross_entropy(labels=lddt_ca_one_hot, logits=logits)
 
         mask_ca = all_atom_mask[:, 1]
         mask_ca = mask_ca.astype(mnp.float32)
@@ -232,7 +233,7 @@ class LossNet(nn.Cell):
         sq_breaks = mnp.square(breaks)
         true_bins = P.ReduceSum()((error_dist2[..., None] > sq_breaks).astype(mnp.float32), -1)
 
-        errors = softmax_cross_entropy(labels=self.aligned_one_hot(true_bins.astype(ms.int32)), logits=logits)
+        errors = self.softmax_cross_entropy(labels=self.aligned_one_hot(true_bins.astype(ms.int32)), logits=logits)
 
         loss = (P.ReduceSum()(errors * square_mask, (-2, -1)) /
                 (1e-8 + P.ReduceSum()(square_mask, (-2, -1))))
