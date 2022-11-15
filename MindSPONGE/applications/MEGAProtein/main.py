@@ -394,6 +394,7 @@ if __name__ == "__main__":
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="GPU",
                             max_call_depth=6000,
+                            graph_kernel_flags="--disable_expand_ops=Softmax --disable_cluster_ops=ReduceSum",
                             device_id=arguments.device_id,
                             enable_graph_kernel=True)
     else:
