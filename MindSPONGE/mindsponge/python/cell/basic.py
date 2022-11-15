@@ -46,7 +46,7 @@ class Attention(nn.Cell):
         m_data_dim(int):    The last dimension length of the key and value tensor.
         output_dim(int):    The last dimension length of the output tensor.
         batch_size(int):    The batch size of parameters in attention, used in while
-                            control flow. Default None.
+                            control flow. Default: "None".
 
     Inputs:
         - **q_data** (Tensor) - The query tensor with shape (batch_size,
@@ -56,9 +56,9 @@ class Attention(nn.Cell):
         - **attention_mask** (Tensor) - The mask for attention matrix with shape
           (batch_size, num_heads, query_seq_length, value_seq_length).
         - **index** (Tensor) - The index of while loop, only used in case of while
-          control flow. Default None.
+          control flow. Default: "None".
         - **nonbatched_bias** (Tensor) - Non-batched bias for the attention matrix with
-          shape(num_heads, query_seq_length, value_seq_length). Default None.
+          shape(num_heads, query_seq_length, value_seq_length). Default: "None".
 
     Outputs:
         - **output** (Tensor) - Output tensor of the layer with shape (batch_size,
@@ -75,8 +75,8 @@ class Attention(nn.Cell):
         >>> model = Attention(num_head=4, hidden_size=64, gating=True, q_data_dim=64,
         ...                   m_data_dim=64, output_dim=64)
         >>> q_data = Tensor(np.ones((32, 128, 64)), mstype.float32)
-        >>> m_data = Tensor(np.ones((32, 256, 64)), mstype.float16)
-        >>> attention_mask = Tensor(np.ones((32, 4, 128, 256)), mstype.float16)
+        >>> m_data = Tensor(np.ones((32, 256, 64)), mstype.float32)
+        >>> attention_mask = Tensor(np.ones((32, 4, 128, 256)), mstype.float32)
         >>> attn_out= model(q_data, m_data, attention_mask)
         >>> print(attn_out.shape)
         (32, 128, 64)
@@ -234,7 +234,7 @@ class GlobalAttention(nn.Cell):
         input_dim(int):     The last dimension length of the input tensor.
         output_dim(int):    The last dimension length of the output tensor.
         batch_size(int):    The batch size of parameters in attention, used in while control
-                            flow. Default None.
+                            flow. Default: "None".
 
     Inputs:
         - **q_data** (Tensor) - The query tensor with shape (batch_size, seq_length,
@@ -243,9 +243,9 @@ class GlobalAttention(nn.Cell):
           input_dim).
         - **q_mask** (Tensor) - A binary mask for q_data of shape (batch_size,
           seq_length, 1).
-        - **bias** (Tensor) - Bias for the attention matrix. Default None.
+        - **bias** (Tensor) - Bias for the attention matrix. Default: "None".
         - **index** (Tensor) - The index of while loop, only used in case of while control
-          flow. Default None.
+          flow. Default: "None".
 
     Outputs:
         - **output** (Tensor) - Output tensor of the layer with
@@ -261,8 +261,8 @@ class GlobalAttention(nn.Cell):
         >>> from mindspore import Tensor
         >>> model = GlobalAttention(num_head=4, input_dim=64, gating=True, output_dim=256)
         >>> q_data = Tensor(np.ones((32, 128, 64)), mstype.float32)
-        >>> m_data = Tensor(np.ones((32, 128, 64)), mstype.float16)
-        >>> q_mask = Tensor(np.ones((32, 128, 1)), mstype.float16)
+        >>> m_data = Tensor(np.ones((32, 128, 64)), mstype.float32)
+        >>> q_mask = Tensor(np.ones((32, 128, 1)), mstype.float32)
         >>> attn_out= model(q_data, m_data, q_mask)
         >>> print(attn_out.shape)
         (32, 128, 256)

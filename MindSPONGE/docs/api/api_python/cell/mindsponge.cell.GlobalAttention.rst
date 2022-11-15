@@ -10,7 +10,7 @@ mindsponge.cell.GlobalAttention
         - **gating** (bool) - 判断attention是否经过gating的指示器。
         - **input_dim** (int) - 输入的最后一维的长度。
         - **output_dim** (int) - 输出的最后一维的长度。
-        - **batch_size** (int) - attention中权重的batch size，仅在有while控制流时使用，默认值None。
+        - **batch_size** (int) - attention中权重的batch size，仅在有while控制流时使用，默认值："None"。
 
     输入：
         - **q_data** (Tensor) - shape为(batch_size, seq_length, input_dim)的query tensor，其中seq_length是query向量的序列长度。
