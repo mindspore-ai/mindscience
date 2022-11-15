@@ -20,3 +20,4 @@ output
 somas_meta
 analyze_fail.dat
 *.h5md
+.markdownlint.json
