@@ -3,7 +3,7 @@ mindsponge.cell.MSARowAttentionWithPairBias
 
 .. py:class:: mindsponge.cell.MSARowAttentionWithPairBias(num_head, key_dim, gating, msa_act_dim, pair_act_dim, batch_size, slice_num=0)
 
-    MSA行注意力层。具体实现参考 `Jumper et al. (2021) Suppl. Alg. 7 'MSARowAttentionWithPairBias' <https://www.nature.com/articles/s41586-021-03819-2>`。来自pair激活值的信息作为MSARowAttention的注意力矩阵的偏置项，这样可以利用pair信息更新msa表示的状态。
+    MSA行注意力层。具体实现参考 `Jumper et al. (2021) Suppl. Alg. 7 'MSARowAttentionWithPairBias' <https://www.nature.com/articles/s41586-021-03819-2>`_ 。来自pair激活值的信息作为MSARowAttention的注意力矩阵的偏置项，这样可以利用pair信息更新msa表示的状态。
 
     参数：
         - **num_head** (int) - attention头的数量。
@@ -18,20 +18,7 @@ mindsponge.cell.MSARowAttentionWithPairBias
         - **msa_act** (Tensor) - shape为 :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` 。
         - **msa_mask** (Tensor) - msa_act矩阵的mask，shape为 :math:`(N_{seqs}, N_{res})` 。
         - **pair_act** (Tensor) - shape为 :math:`(N_{res}, N_{res}, pair\_act\_dim)` 。
-        - **index** (Tensor) - 在循环中的索引，只会在有控制流的时候使用。
+        - **index** (Tensor) - 在循环中的索引，只会在有控制流的时候使用。默认值："None"。 
 
     输出：
         Tensor。本层输出的msa_act，shape是 :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` 。
-
-    .. py:method:: compute(msa_act, mask, index, nonbatched_bias)
-
-        将msa_act经过attention层，进行计算。
-
-        参数：
-            - **msa_act** (Tensor) - msa_act矩阵。
-            - **mask** (Tensor) - msa_act矩阵的mask。
-            - **index** (Tensor) - 在循环中的索引，只会在有控制流的时候使用。
-            - **nonbatched_bias** (Tensor) - 偏置矩阵。
-
-        返回：
-            Tensor。Attention层的输出msa_act。
