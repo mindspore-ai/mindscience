@@ -5,6 +5,12 @@ mindsponge.control.BerendsenBarostat
 
     Berendsen(弱耦合)气压调节器。
 
+    参考文献：
+        `Berendsen, H. J. C.; Postma, J. P. M.; van Gunsteren, W. F.; DiNola, A.; Haak, J. R..
+        Molecular Dynamics with Coupling to an External Bath [J].
+        The Journal of Chemical Physics, 1984, 81(8): 3684.
+        <https://aip.scitation.org/doi/abs/10.1063/1.448118>`_。
+
     参数：
         - **system** (Molecule) - 模拟系统。
         - **pressure** (float) - 压力耦合参考压力P_ref (bar)。默认值：1.0。

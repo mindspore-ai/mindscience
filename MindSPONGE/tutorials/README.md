@@ -10,6 +10,13 @@ dataset_qm9.npz: http://gofile.me/6Utp7/tJ5hoDIAo
 
 ethanol_dft.npz: http://gofile.me/6Utp7/hbQBofAFM
 
+或者可执行如下命令下载:
+
+```bash
+wget https://download.mindspore.cn/mindscience/mindsponge/dataset/dataset_qm9.npz
+wget https://download.mindspore.cn/mindscience/mindsponge/dataset/ethanol_dft.npz
+```
+
 ### **获取Cybertron checkpoint**
 
 ```bash
@@ -40,5 +47,5 @@ cd mindscience/MindSPONGE/tutorials/IDM/ckpts/resolutions/
 wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/IDM/resolutions_4_model_epoch_5000.ckpt
 wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/IDM/resolutions_50_model_epoch_5000.ckpt
 wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/IDM/resolutions_200_model_epoch_5000.ckpt
-wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/IDM/resolutions_5000_model_epoch_5000.ckpt
+wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/IDM/resolutions_400_model_epoch_5000.ckpt
 ```

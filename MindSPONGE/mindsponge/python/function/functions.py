@@ -592,14 +592,20 @@ def calc_distance(position_a: Tensor, position_b: Tensor, pbc_box: Tensor = None
 @ms_function
 def calc_angle_between_vectors(vector1: Tensor, vector2: Tensor) -> Tensor:
     r"""
-    Compute angle between two vectors.
+    Compute angle between two vectors. For vector :math:`\vec {V_1} = (x_1, x_2, x_3, ..., x_n)`
+    and :math:`\vec {V_2} = (y_1, y_2, y_3, ..., y_n)` , the formula is
+
+    .. math::
+
+        \theta = \arccos {\frac{|x_1y_1 + x_2y_2 + \cdots + x_ny_n|}{\sqrt{x_1^2 + x_2^2 +
+                 \cdots + x_n^2}\sqrt{y_1^2 + y_2^2 + \cdots + y_n^2}}}
 
     Args:
-        vector1 (Tensor):    Tensor of shape (..., D). Data type is float.
-        vector1 (Tensor):    Tensor of shape (..., D). Data type is float.
+        vector1 (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
+        vector1 (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
 
     Returns:
-        angle (Tensor), Tensor of shape (..., 1). Data type is float.
+        angle (Tensor), Tensor of shape :math:`(..., 1)`. Data type is float.
 
     Symbols:
         D:  Dimension of the simulation system. Usually is 3.
@@ -631,12 +637,15 @@ def calc_angle_between_vectors(vector1: Tensor, vector2: Tensor) -> Tensor:
 @ms_function
 def calc_angle_without_pbc(position_a: Tensor, position_b: Tensor, position_c: Tensor) -> Tensor:
     r"""
-    Compute angle formed by three positions A-B-C without periodic boundary condition.
+    Compute angle :math:`\angle ABC` formed by three positions A, B, C without periodic boundary condition.
+
+    Calculate the coordinates of vectors :math:`\vec{BA}` and :math:`\vec{BC}` according to the coordinates of A, B, C
+    without periodic boundary condition, then use the vectors to calculate the angle.
 
     Args:
-        position_a (Tensor):    Tensor of shape (..., D). Data type is float.
-        position_b (Tensor):    Tensor of shape (..., D). Data type is float.
-        position_c (Tensor):    Tensor of shape (..., D). Data type is float.
+        position_a (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
+        position_b (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
+        position_c (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
 
     Returns:
         angle (Tensor), Tensor of shape (..., 1). Data type is float.
@@ -668,16 +677,20 @@ def calc_angle_without_pbc(position_a: Tensor, position_b: Tensor, position_c: T
 @ms_function
 def calc_angle_with_pbc(position_a: Tensor, position_b: Tensor, position_c: Tensor, pbc_box: Tensor) -> Tensor:
     r"""
-    Compute angle formed by three positions A-B-C at periodic boundary condition.
+    Compute angle :math:`\angle ABC` formed by three positions A, B, C with periodic boundary condition.
+    Put in the coordinates of A, B, C and pbc_box, and get the angle :math:`\angle ABC` .
+
+    Calculate the coordinates of vectors :math:`\vec{BA}` and :math:`\vec{BC}` according to the coordinates of A, B, C
+    with periodic boundary condition, then use the vectors to calculate the angle.
 
     Args:
-        position_a (Tensor):    Tensor of shape (B, ..., D). Data type is float.
-        position_b (Tensor):    Tensor of shape (B, ..., D). Data type is float.
-        position_c (Tensor):    Tensor of shape (B, ..., D). Data type is float.
-        pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+        position_a (Tensor):    Tensor of shape :math:`(B, ..., D)` . Data type is float.
+        position_b (Tensor):    Tensor of shape :math:`(B, ..., D)` . Data type is float.
+        position_c (Tensor):    Tensor of shape :math:`(B, ..., D)` . Data type is float.
+        pbc_box (Tensor):       Tensor of shape :math:`(B, D)` . Data type is float.
 
     Returns:
-        angle (Tensor), Tensor of shape (B, ..., 1). Data type is float.
+        angle (Tensor), Tensor of shape :math:`(B, ..., 1)` . Data type is float.
 
     Symbols:
         B:  Batchsize, i.e. number of walkers in simulation.
@@ -708,13 +721,18 @@ def calc_angle_with_pbc(position_a: Tensor, position_b: Tensor, position_c: Tens
 @ms_function
 def calc_angle(position_a, position_b: Tensor, position_c: Tensor, pbc_box: Tensor = None) -> Tensor:
     r"""
-    Compute angle formed by three positions A-B-C.
+    Compute angle :math:`\angle ABC` formed by three positions A, B, C.
+
+    If pbc_box is provided, calculate the angle according to the coordinates with periodic boundary condition.
+    If pbc_box is None, calculate the angle according to the coordinates without periodic boundary condition.
+
+    Finally return the angle between vector :math:`\vec{BA}` and vector :math:`\vec{BC}` .
 
     Args:
         position_a (Tensor):    Tensor of shape (B, ..., D). Data type is float.
         position_b (Tensor):    Tensor of shape (B, ..., D). Data type is float.
         position_c (Tensor):    Tensor of shape (B, ..., D). Data type is float.
-        pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+        pbc_box (Tensor):       Tensor of shape (B, D). Data type is float. Default: None
 
     Returns:
         angle (Tensor), Tensor of shape (B, ..., 1). Data type is float.

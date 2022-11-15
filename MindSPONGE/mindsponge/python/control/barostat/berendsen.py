@@ -36,10 +36,10 @@ class BerendsenBarostat(Barostat):
     A Berendsen (weak coupling) barostat controller.
 
     Reference:
-        Berendsen, H. J. C.; Postma, J. P. M.; van Gunsteren, W. F.; DiNola, A.; Haak, J. R..
+        `Berendsen, H. J. C.; Postma, J. P. M.; van Gunsteren, W. F.; DiNola, A.; Haak, J. R..
         Molecular Dynamics with Coupling to an External Bath [J].
         The Journal of Chemical Physics, 1984, 81(8): 3684.
-
+        <https://aip.scitation.org/doi/abs/10.1063/1.448118>`_.
     Args:
         system (Molecule):          Simulation system.
         pressure (float):           Reference pressure P_ref (bar) for pressure coupling.

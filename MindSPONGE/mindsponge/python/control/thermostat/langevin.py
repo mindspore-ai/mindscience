@@ -39,7 +39,7 @@ class Langevin(Thermostat):
         `Goga, N.; Rzepiela, A. J.; de Vries, A. H.; Marrink, S. J.; Berendsen, H. J. C..
         Efficient Algorithms for Langevin and DPD Dynamics [J].
         Journal of Chemical Theory and Computation, 2012, 8(10): 3637-3649.
-        <pubs.acs.org/doi/full/10.1021/ct3000876>`_.
+        <https://pubs.acs.org/doi/full/10.1021/ct3000876>`_.
 
     Args:
         system (Molecule):      Simulation system.
