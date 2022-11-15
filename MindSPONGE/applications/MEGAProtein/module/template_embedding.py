@@ -99,6 +99,7 @@ class SingleTemplateEmbedding(nn.Cell):
         template_layers = nn.CellList()
         for _ in range(self.config.template_pair_stack.num_block):
             template_pair_stack_block = TemplatePairStack(config)
+            template_pair_stack_block.recompute()
             template_layers.append(template_pair_stack_block)
         self.template_pair_stack = template_layers
 
@@ -193,12 +194,10 @@ class TemplateEmbedding(nn.Cell):
                                                       output_dim=128, batch_size=None)
         self.slice_num = config.slice.template_embedding
 
-
     def compute(self, flat_query, flat_templates, input_mask):
         embedding = self.template_pointwise_attention(flat_query, flat_templates, input_mask, index=None,
                                                       nonbatched_bias=None)
         return embedding
-
 
     def construct(self, query_embedding, template_aatype, template_all_atom_masks, template_all_atom_positions,
                   template_mask, template_pseudo_beta_mask, template_pseudo_beta, mask_2d):
