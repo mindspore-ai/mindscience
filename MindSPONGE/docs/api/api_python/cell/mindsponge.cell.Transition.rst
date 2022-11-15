@@ -1,7 +1,7 @@
 mindsponge.cell.Transition
 ==========================
 
-.. py:class:: mindsponge.cell.Transition(num_intermediate_factor, layer_norm_dim, batch_size, slice_num=0)
+.. py:class:: mindsponge.cell.Transition(num_intermediate_factor, input_dim, batch_size, slice_num=0)
 
     两层全连接层，中间输出特征数为输入特征数的倍数。
 
@@ -11,7 +11,7 @@ mindsponge.cell.Transition
     参数：
         - **num_intermediate_factor** (float) - 中间输出的特征数相对于输入特征数的膨胀倍数。
         - **input_dim** (int) - 输入的特征数。
-        - **batch_size** (int) - 转换层权重的batch size，应用控制流时需设置该变量，默认值None。
+        - **batch_size** (int) - 转换层权重的batch size，应用控制流时需设置该变量，默认值："None"。
         - **slice_num** (int) - 当内存超出上限时在转换层使用的切分数量。默认值：0。
 
     输入：

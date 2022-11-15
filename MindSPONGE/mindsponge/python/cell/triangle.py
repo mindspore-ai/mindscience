@@ -352,7 +352,7 @@ class OuterProductMean(nn.Cell):
         act_dim (int):              The last dimension size of the input act.
         num_output_channel (int):   The last dimension size of output.
         batch_size(int):            The batch size of parameters in OuterProductMean,
-                                    used in while control flow. Default None.
+                                    used in while control flow. Default: "None".
         slice_num (int):            The slice num used in OuterProductMean layer
                                     when the memory is overflow. Default: 0.
 
@@ -360,9 +360,9 @@ class OuterProductMean(nn.Cell):
         - **act** (Tensor) - The input tensor with shape :math:`(dim_1, dim_2, act\_dim)`.
         - **mask** (Tensor) - The mask for OuterProductMean with shape :math:`(dim_1, dim_2)`.
         - **mask_norm** (Tensor) - Squared L2-norm along the first dimension of **mask**,
-          pre-computed to avoid re-computing, its shape is:math:`(dim_2, dim_2, 1)`.
+          pre-computed to avoid re-computing, its shape is :math:`(dim_2, dim_2, 1)`.
         - **index** (Tensor) - The index of while loop, only used in case of while control
-          flow. Default None.
+          flow. Default: "None".
 
     Outputs:
         - **output** (Tensor) - Tensor, the float tensor of the output of the layer with
@@ -380,7 +380,7 @@ class OuterProductMean(nn.Cell):
         >>> model = OuterProductMean(num_outer_channel=32, act_dim=128, num_output_channel=256)
         >>> act = Tensor(np.ones((32, 64, 128)), mstype.float32)
         >>> mask = Tensor(np.ones((32, 64)), mstype.float32)
-        >>> mask_tmp = P.ExpandDims()(P.MatMul(transpose_a=True)(mask, mask), -1)
+        >>> mask_norm = P.ExpandDims()(P.MatMul(transpose_a=True)(mask, mask), -1)
         >>> output= model(act, mask, mask_norm)
         >>> print(output.shape)
         (64, 64, 256)
@@ -400,19 +400,8 @@ class OuterProductMean(nn.Cell):
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
 
-    def construct(self, act, mask, mask_norm, index):
-        r"""
-        Builds outer product mean module.
-
-        Args:
-            act (Tensor):               Pair activations. Data type is float.
-            mask (Tensor):              Pair mask. Data type is float.
-            mask_norm (Tensor):    The norm of extra msa. Data type is float.
-            index (int):                The index of the batch size when batch size is not none.
-
-        Returns:
-            act(Tensor), Pair activations.
-        """
+    def construct(self, act, mask, mask_norm, index=None):
+        """Compute outer product mean."""
 
         if self.batch_size:
             layer_norm_input_gamma = P.Gather()(self.layer_norm_input_gammas, index, 0)

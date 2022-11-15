@@ -37,14 +37,14 @@ class Transition(nn.Cell):
                                            channels compared to the input.
         input_dim(int):                    The channels of the input.
         batch_size(int):                   The batch size of parameters in Transition,
-                                           used in while control flow. Default None.
+                                           used in while control flow. Default: "None".
         slice_num (int):                   The slice num used in transition layer
                                            when the memory is overflow. Default: 0.
 
     Inputs:
         - **act** (Tensor) - The input with channels equal to input_dim.
         - **index** (Tensor) - The index of while loop, only used in case of while control
-          flow. Default None.
+          flow. Default: "None".
 
     Outputs:
         - **output** (Tensor) - Tensor, the float tensor of the output of the layer with
@@ -77,17 +77,8 @@ class Transition(nn.Cell):
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
 
-    def construct(self, act, index):
-        '''
-        Builds transition module.
-
-        Args:
-            act (Tensor):   Input tensor. Data type is float.
-            index (int):    The index of the batch size when batch size is not none.
-
-        Returns:
-            act(Tensor), Input tensor. Data type is float.
-        '''
+    def construct(self, act, index=None):
+        '''Compute transition'''
         if self.batch_size:
             input_layer_norm_gamma = P.Gather()(self.input_layer_norm_gammas, index, 0)
             input_layer_norm_beta = P.Gather()(self.input_layer_norm_betas, index, 0)
