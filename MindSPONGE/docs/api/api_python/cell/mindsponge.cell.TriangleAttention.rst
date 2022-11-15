@@ -1,9 +1,9 @@
 mindsponge.cell.TriangleAttention
 =================================
 
-.. py:class:: mindsponge.cell.TriangleAttention(orientation, num_head, key_dim, gating, layer_norm_dim, batch_size, slice_num=0)
+.. py:class:: mindsponge.cell.TriangleAttention(orientation, num_head, key_dim, gating, layer_norm_dim, batch_size=None, slice_num=0)
 
-    三角注意力机制。详细实现过程参考 `Jumper et al. (2021) Suppl. Alg. 19 'TriangleAttention' <https://www.nature.com/articles/s41586-021-03819-2>`。
+    三角注意力机制。详细实现过程参考 `TriangleAttention <https://www.nature.com/articles/s41586-021-03819-2>`_ 。
 
     氨基酸对ij之间的信息通过ij,ik,jk三条边的信息整合，具体分为投影、自注意力和输出三个步骤，首先进行氨基酸对i,j,k输入的投影，获取i,j,k两两之间的q,k,v，然后通过经典多头自注意机制，在ij氨基酸对之间的信息中添加上i，j，k三角形边之间的关系，最后输出。
 
@@ -13,26 +13,13 @@ mindsponge.cell.TriangleAttention
         - **key_dim** (int) - Attention隐藏层的维度。
         - **gating** (bool) - 判断attention是否经过gating的指示器。
         - **layer_norm_dim** (int) - 归一层的维度。
-        - **batch_size** (int) - 三角注意力机制中的batch size参数。默认值：None。
+        - **batch_size** (int) - 三角注意力机制中的batch size参数。默认值："None"。
         - **slice_num** (int) - 为了减少内存需要进行切分的数量。默认值：0。
 
     输入：
-        - **pair_act** (Tensor) - pair_act。氨基酸对之间的信息，shape为 :math:'(N_{res}, N_{res}, layer\_norm\_dim)' 。
-        - **pair_mask** (Tensor) - 三角注意力层矩阵的mask。shape为 :math:'(N_{res}, N_{res})' 。
+        - **pair_act** (Tensor) - pair_act。氨基酸对之间的信息，shape为 :math:`(N_{res}, N_{res}, layer\_norm\_dim)` 。
+        - **pair_mask** (Tensor) - 三角注意力层矩阵的mask。shape为 :math:`(N_{res}, N_{res})` 。
         - **index** (Tensor) - 在循环中的索引，只会在有控制流的时候使用。
 
     输出：
-        Tensor。三角注意力层中的pair_act。shape为 :math:'(N_{res}, N_{res}, layer\_norm\_dim)' 。
-
-    .. py:method:: compute(pair_act, input_mask, index, nonbatched_bias)
-
-        将pair_act经过attention层，计算pair_act。
-
-        参数：
-            - **pair_act** (Tensor) - pair_act。shape为 :math:'(N_{res}, N_{res}, layer\_norm\_dim)' 。
-            - **input_mask** (Tensor) - 三角注意力层矩阵的mask。shape为 :math:'(N_{res}, N_{res})' 。
-            - **index** (Tensor) - 在循环中的索引，只会在有控制流的时候使用。
-            - **nonbatched_bias** (Tensor) - 没有batch size维的偏置参数。
-
-        返回：
-            Tensor。三角注意力层中的pair_act。shape为 :math:'(N_{res}, N_{res}, layer\_norm\_dim)' 。
+        Tensor。三角注意力层中的pair_act。shape为 :math:`(N_{res}, N_{res}, layer\_norm\_dim)` 。
