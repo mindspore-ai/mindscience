@@ -44,7 +44,7 @@ class VelocityVerlet(Integrator):
         A Unified Thermostat Scheme for Efficient Configurational Sampling for
         Classical/Quantum Canonical Ensembles via Molecular Dynamics [J].
         The Journal of Chemical Physics, 2017, 147(3): 034109.
-        <aip.scitation.org/doi/abs/10.1063/1.4991621>`_.
+        <https://aip.scitation.org/doi/abs/10.1063/1.4991621>`_.
 
     Args:
         system (Molecule):          Simulation system.

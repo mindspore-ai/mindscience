@@ -10,13 +10,13 @@ mindsponge.function.calc_angle_with_pbc
     最后返回 :math:`\vec{BA}` 向量与 :math:`\vec{BC}` 向量间夹角。
 
     参数：
-        - **position_a** (Tensor) - 位置a，shape为 :math:`(B, ..., D)` 。
-        - **position_b** (Tensor) - 位置b，shape为 :math:`(B, ..., D)` 。
-        - **position_c** (Tensor) - 位置c，shape为 :math:`(B, ..., D)` 。
-        - **pbc_box** (Tensor) - PBC box，shape为 :math:`(B, D)` 。
+        - **position_a** (Tensor) - 位置a，shape为 :math:`(B, ..., D)` ，数据类型为float。
+        - **position_b** (Tensor) - 位置b，shape为 :math:`(B, ..., D)` ，数据类型为float。
+        - **position_c** (Tensor) - 位置c，shape为 :math:`(B, ..., D)` ，数据类型为float。
+        - **pbc_box** (Tensor) - PBC box，shape为 :math:`(B, D)` ，数据类型为float。
 
     输出：
-        Tensor。计算所得角。shape为 :math:`(B, ..., 1)` 。
+        Tensor。计算所得角。shape为 :math:`(B, ..., 1)` ，数据类型为float。
 
     符号：
         - **B** - Batch size。
