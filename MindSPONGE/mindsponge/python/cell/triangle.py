@@ -26,9 +26,9 @@ from ..common.utils import _memory_reduce
 
 
 class TriangleAttention(nn.Cell):
-    """
-    triangle attention. for the detailed implementation process, refer to
-    `Jumper et al. (2021) Suppl. Alg. 19 'TriangleAttention' <https://www.nature.com/articles/s41586-021-03819-2>`.
+    r"""
+    Triangle attention. for the detailed implementation process, refer to
+    `TriangleAttention <https://www.nature.com/articles/s41586-021-03819-2>`_.
 
     the information between the amino acid pair is integrated through the information of three edges ij, ik, jk,
     which is divided into three parts: projection, self-attention and output. firstly, the amino acid pair is projected
@@ -41,29 +41,29 @@ class TriangleAttention(nn.Cell):
         key_dim (int):          The dimension of the hidden layer.
         gating (bool):          Indicator of if the attention is gated.
         layer_norm_dim (int):   The dimension of the layer_norm.
-        batch_size (int):       The batch size of triangle attention, default: None.
-        slice_num (int):        The number of slices to be made to reduce memory, default: zero.
+        batch_size (int):       The batch size of triangle attention, default: "None".
+        slice_num (int):        The number of slices to be made to reduce memory, default: 0.
 
     Inputs:
-        - **pair_act** (Tensor) - Tensor of pair_act. shape (Nres, Nres, layer_norm_dim)
-        - **pair_mask** (Tensor) - The mask for TriangleAttention matrix with shape. shape (Nres, Nres).
+        - **pair_act** (Tensor) - Tensor of pair_act. shape :math:`(N{res}, N{res}, layer\_norm\_dim)`
+        - **pair_mask** (Tensor) - The mask for TriangleAttention matrix with shape. shape :math:`(N{res}, N{res})`.
         - **index** (Tensor) - The index of while loop, only used in case of while control flow.
 
     Outputs:
         - **pair_act** (Tensor) - Tensor, the float tensor of the pair_act of the layer with
-          shape (Nres, Nres, layer_norm_dim).
+          shape :math:`(N{res}, N{res}, layer\_norm\_dim)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Examples
+    Examples:
         >>> import numpy as np
         >>> from mindsponge.cell import TriangleAttention
         >>> from mindspore import dtype as mstype
         >>> from mindspore import Tensor
         >>> model = TriangleAttention(orientation="per_row", num_head=4, key_dim=64, gating=True, layer_norm_dim=64)
-        >>> inpurt_0 = Tensor(np.ones((256, 256, 64)), mstype.float32)
-        >>> inpurt_1 = Tensor(np.ones((256, 256)), mstype.float32)
+        >>> input_0 = Tensor(np.ones((256, 256, 64)), mstype.float32)
+        >>> input_1 = Tensor(np.ones((256, 256)), mstype.float32)
         >>> out = model(input_0, input_1, index=0)
         >>> print(out.shape)
         (256, 256, 64)
@@ -85,24 +85,6 @@ class TriangleAttention(nn.Cell):
         self.layer_norm_dim = layer_norm_dim
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
-
-    def compute(self, pair_act, input_mask, index, nonbatched_bias):
-        """
-        compute.
-
-        Args:
-            pair_act (Tensor):          Tensor of pair_act. shape (Nres, Nres, layer_norm_dim)
-            input_mask (Tensor):        The mask for TriangleAttention matrix with shape (Nres, Nres).
-            index (Tensor):             The index of while loop, only used in case of while control
-                                        flow.
-            nonbatched_bias (Tensor):   The bias of nonbatched.
-
-        Outputs:
-            - **pair_act** (Tensor) - Tensor, the float tensor of the pair_act of the layer with
-              shape (Nres, Nres, layer_norm_dim).
-        """
-        pair_act = self.attn_mod(pair_act, pair_act, input_mask, index, nonbatched_bias)
-        return pair_act
 
     def construct(self, pair_act, pair_mask, index):
         '''construct'''
@@ -130,7 +112,7 @@ class TriangleAttention(nn.Cell):
 
         batched_inputs = (pair_act, input_mask)
         nonbatched_inputs = (index, nonbatched_bias)
-        pair_act = _memory_reduce(self.compute, batched_inputs, nonbatched_inputs, self.slice_num)
+        pair_act = _memory_reduce(self._compute, batched_inputs, nonbatched_inputs, self.slice_num)
         if self.orientation_is_per_column:
             pair_act = P.Transpose()(pair_act, (1, 0, 2))
         return pair_act
@@ -149,11 +131,16 @@ class TriangleAttention(nn.Cell):
                 np.random.normal(scale=1 / np.sqrt(self.layer_norm_dim), size=(self.num_head, self.layer_norm_dim)),
                 mstype.float32))
 
+    def _compute(self, pair_act, input_mask, index, nonbatched_bias):
+        '''compute traiangle'''
+        pair_act = self.attn_mod(pair_act, pair_act, input_mask, index, nonbatched_bias)
+        return pair_act
+
 
 class TriangleMultiplication(nn.Cell):
-    """
+    r"""
     Triangle multiplication layer. for the detailed implementation process, refer to
-    `Jumper et al. (2021) Suppl. Alg. 19 'TriangleMultiplication' <https://www.nature.com/articles/s41586-021-03819-2>`.
+    `TriangleMultiplication <https://www.nature.com/articles/s41586-021-03819-2>`_.
 
     the information between the amino acid pair is integrated through the information of three edges ij, ik, jk, and
     the result of the dot product between ik and jk is added to the edge of ij.
@@ -161,38 +148,39 @@ class TriangleMultiplication(nn.Cell):
     Args:
         num_intermediate_channel (float):   The number of intermediate channel.
         equation (str):                     The equation used in triangle multiplication layer. edge update forms
-                                            corresponding to 'incoming' and 'outgoing', (ikc,jkc->ijc， kjc,kic->ijc).
+                                            corresponding to 'incoming' and 'outgoing',
+                                            :math:`(ikc,jkc->ijc， kjc,kic->ijc)`.
         layer_norm_dim (int):               The last dimension length of the layer norm.
         batch_size (int):                   The batch size of parameters in triangle multiplication. Default: None.
 
     Inputs:
-        - **pair_act** (Tensor) - Tensor of pair_act. shape (Nres, Nres, layer_norm_dim).
-        - **pair_mask** (Tensor) - The mask for TriangleAttention matrix with shape. shape (Nres, Nres).
+        - **pair_act** (Tensor) - Tensor of pair_act. shape :math:`(N{res}, N{res}, layer\_norm\_dim)`.
+        - **pair_mask** (Tensor) - The mask for TriangleAttention matrix with shape. shape :math:`(N{res}, N{res})`.
         - **index** (Tensor) - The index of while loop, only used in case of while control
           flow.
 
     Outputs:
         - **pair_act** (Tensor) - Tensor, the float tensor of the pair_act of the layer with
-          shape (Nres, Nres, layer_norm_dim).
+          shape :math:`(N{res}, N{res}, layer\_norm\_dim)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Examples
+    Examples:
         >>> import numpy as np
         >>> from mindsponge.cell import TriangleMultiplication
         >>> from mindspore import dtype as mstype
         >>> from mindspore import Tensor
         >>> model = TriangleMultiplication(num_intermediate_channel=64,
         >>>                                equation="ikc,jkc->ijc", layer_norm_dim=64, batch_size=0)
-        >>> inpurt_0 = Tensor(np.ones((256, 256, 64)), mstype.float32)
-        >>> inpurt_1 = Tensor(np.ones((256, 256)), mstype.float32)
+        >>> input_0 = Tensor(np.ones((256, 256, 64)), mstype.float32)
+        >>> input_1 = Tensor(np.ones((256, 256)), mstype.float32)
         >>> out = model(input_0, input_1, index=0)
         >>> print(out.shape)
         (256, 256, 64)
     """
 
-    def __init__(self, num_intermediate_channel, equation, layer_norm_dim, batch_size):
+    def __init__(self, num_intermediate_channel, equation, layer_norm_dim, batch_size=None):
         super(TriangleMultiplication, self).__init__()
         self.num_intermediate_channel = num_intermediate_channel
         self.equation = equation
