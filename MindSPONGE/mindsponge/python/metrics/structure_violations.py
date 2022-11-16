@@ -46,20 +46,6 @@ UPPER_BOUND = Tensor(UPPER_BOUND, ms.float32)
 CYS_SG_IDX = Tensor(5, ms.int32)
 
 
-def softmax_cross_entropy(logits, labels):
-    """Computes softmax cross entropy given logits and one-hot class labels."""
-    loss = -mnp.sum(labels * nn.LogSoftmax()(logits), axis=-1)
-    return mnp.asarray(loss)
-
-
-def sigmoid_cross_entropy(logits, labels):
-    """Computes sigmoid cross entropy given logits and multiple class labels."""
-    log_p = nn.LogSigmoid()(logits)
-    log_not_p = nn.LogSigmoid()(-logits)
-    loss = -labels * log_p - (1. - labels) * log_not_p
-    return mnp.asarray(loss)
-
-
 def between_residue_bond(
         pred_atom_positions,  # (N, 37(14), 3)
         pred_atom_mask,  # (N, 37(14))
