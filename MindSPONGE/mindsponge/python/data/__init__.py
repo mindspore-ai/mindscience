@@ -32,6 +32,7 @@ from .parameters import ForceFieldParameters
 from .forcefield import get_forcefield
 from .data import read_yaml, write_yaml, update_dict
 from .data import get_bonded_types, get_dihedral_types, get_improper_types
+from .data_transform import atom37_to_frames, atom37_to_torsion_angles
 
 __all__ = ['elements', 'element_dict', 'element_name', 'element_set', 'atomic_mass',
            'str_to_tensor', 'tensor_to_str', 'get_class_parameters', 'get_hyper_parameter',
@@ -40,4 +41,4 @@ __all__ = ['elements', 'element_dict', 'element_name', 'element_set', 'atomic_ma
            'load_hyper_param_into_class', 'get_template', 'get_template_index',
            'get_molecule', 'ForceFieldParameters', 'get_forcefield', 'read_yaml',
            'write_yaml', 'update_dict', 'get_bonded_types', 'get_dihedral_types',
-           'get_improper_types']
+           'get_improper_types', "atom37_to_frames", "atom37_to_torsion_angles"]

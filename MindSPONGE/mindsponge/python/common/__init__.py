@@ -14,7 +14,23 @@
 # ============================================================================
 """init"""
 
+from .geometry import vecs_scale, rots_scale, vecs_sub, vecs_robust_norm, vecs_robust_normalize
+from .geometry import vecs_cross_vecs, rots_from_two_vecs, rigids_from_3_points, invert_rots
+from .geometry import vecs_dot_vecs, rots_mul_vecs, invert_rigids, rigids_mul_vecs, rigids_mul_rots
+from .geometry import rigids_mul_rigids, rots_mul_rots, vecs_from_tensor, vecs_to_tensor
+from .geometry import make_transform_from_reference, rots_from_tensor, rots_to_tensor
+from .geometry import rot_to_quat, quat_affine, quat_to_rot, initial_affine, vecs_expend_dims
+from .geometry import rots_expend_dims, invert_point, quat_multiply_by_vec, quaternion_to_tensor
+from .geometry import quaternion_from_tensor, apply_to_point, pre_compose
 from .utils import get_pdb_info, make_atom14_positions, get_fasta_info, get_aligned_seq
-__all__ = ["get_pdb_info", "make_atom14_positions", "get_fasta_info", "get_aligned_seq"]
+__all__ = ["get_pdb_info", "make_atom14_positions", "get_fasta_info", "get_aligned_seq",
+           "vecs_scale", "rots_scale", "vecs_sub", "vecs_robust_norm", "vecs_robust_normalize",
+           "vecs_cross_vecs", "rots_from_two_vecs", "rigids_from_3_points", "invert_rots",
+           "vecs_dot_vecs", "rots_mul_vecs", "invert_rigids", "rigids_mul_vecs", "rigids_mul_rots",
+           "rigids_mul_rigids", "rots_mul_rots", "vecs_from_tensor", "vecs_to_tensor",
+           "make_transform_from_reference", "rots_from_tensor", "rots_to_tensor",
+           "rot_to_quat", "quat_affine", "quat_to_rot", "initial_affine", "vecs_expend_dims",
+           "rots_expend_dims", "invert_point", "quat_multiply_by_vec", "quaternion_to_tensor",
+           "quaternion_from_tensor", "apply_to_point", "pre_compose"]
 
 __all__.sort()
