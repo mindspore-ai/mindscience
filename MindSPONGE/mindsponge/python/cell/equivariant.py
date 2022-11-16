@@ -40,7 +40,8 @@ class InvariantPointAttention(nn.Cell):
     where i and j represent the ith and jth amino acids in the sequence, respectively,
     and T is the rotation and translation in the input.
 
-    Jumper et al. (2021) Suppl. Alg. 22 "InvariantPointAttention"。
+    `Jumper et al. (2021) Suppl. Alg. 22 "InvariantPointAttention"
+      <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 
     Args:
         num_head (int):         The number of the heads.
@@ -70,7 +71,11 @@ class InvariantPointAttention(nn.Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Example:
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.cell import InvariantPointAttention
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
         >>> model = InvariantPointAttention(num_head=12, num_scalar_qk=16, num_scalar_v=16,
                                             num_point_v=8, num_point_qk=4,
                                             num_channel=384, pair_dim=128)
@@ -80,7 +85,7 @@ class InvariantPointAttention(nn.Cell):
         >>> rotation = tuple([Tensor(np.ones(256), mstype.float16) for _ in range(9)])
         >>> translation = tuple([Tensor(np.ones(256), mstype.float16) for _ in range(3)])
         >>> attn_out = model(inputs_1d, inputs_2d, mask, rotation, translation)
-        >>> print(len(attn_out))
+        >>> print(attn_out.shape)
         (256, 384)
     """
 

@@ -151,20 +151,22 @@ class MSAColumnAttention(nn.Cell):
     """
     MSA column-wise gated self attention。
     The column-wise attention lets the elements that belong to the same target residue exchange information。
-    Reference：Jumper et al. (2021) Suppl. Alg. 8 "MSAColumnAttention"。
+    Reference：`Jumper et al. (2021) Suppl. Alg. 8 "MSAColumnAttention"
+    <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 
     Args:
-        num_heads (int):        The number of the heads.
+        num_head (int):         The number of the heads.
         key_dim (int):          The dimension of the input.
         gating (bool):          Indicator of if the attention is gated.
         msa_act_dim (int):      The dimension of the msa_act.
-        batch_size (int):       The batch size of parameters in MSAColumnAttention, used in while control flow.
-        slice_num (int):        The number of slices to be made to reduce memory.
+        batch_size (int):       The batch size of parameters in MSAColumnAttention, used in while control flow,
+        Default: "None".
+        slice_num (int):        The number of slices to be made to reduce memory, Default: 0
 
     Inputs:
         - **msa_act** (Tensor) - Tensor of msa_act. Data type is float, shape :math:`[N_{seqs}, N_{res}, C_m]` .
         - **msa_mask** (Tensor) - The mask for MSAColumnAttention matrix, shape :math:`[N_{seqs}, N_{res}]`.
-        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None.
+        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: "None".
 
     Outputs:
         - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer,
@@ -173,7 +175,11 @@ class MSAColumnAttention(nn.Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Example:
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.cell import MSAColumnAttention
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
         >>> model = MSAColumnAttention(num_head=8, key_dim=256, gating=True,
                                     msa_act_dim=256, batch_size=1, slice_num=0)
         >>> msa_act = Tensor(np.ones((512, 256, 256)), mstype.float32)
@@ -194,26 +200,7 @@ class MSAColumnAttention(nn.Cell):
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
 
-    def compute(self, msa_act, input_mask, index):
-        """
-        compute.
-
-        Args:
-            msa_act (Tensor):       Tensor of msa_act. Data type is float.
-            input_mask (Tensor):    The mask for MSAColumnAttention matrix with shape(batch_size,
-                                    num_heads, query_seq_length,  value_seq_length)
-                                    (or broadcastable to this shape).
-            index (Tensor):         The index of while loop, only used in case of while
-                                    control flow. Default: None
-
-        Outputs:
-            - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
-              with shape (batch_size, query_seq_length, hidden_size).
-        """
-        msa_act = self.attn_mod(msa_act, msa_act, input_mask, index)
-        return msa_act
-
-    def construct(self, msa_act, msa_mask, index):
+    def construct(self, msa_act, msa_mask, index=None):
         '''construct'''
         if self.batch_size:
             query_norm_gamma = P.Gather()(self.query_norm_gammas, index, 0)
@@ -229,7 +216,7 @@ class MSAColumnAttention(nn.Cell):
         msa_act, _, _ = self.query_norm(msa_act, query_norm_gamma, query_norm_beta)
         batched_inputs = (msa_act, input_mask)
         nonbatched_inputs = (index,)
-        msa_act = _memory_reduce(self.compute, batched_inputs, nonbatched_inputs, self.slice_num)
+        msa_act = _memory_reduce(self._compute, batched_inputs, nonbatched_inputs, self.slice_num)
         msa_act = P.Transpose()(msa_act, (1, 0, 2))
         return msa_act
 
@@ -240,6 +227,11 @@ class MSAColumnAttention(nn.Cell):
         else:
             self.query_norm_gammas = Parameter(Tensor(np.ones([self.msa_act_dim]), mstype.float32))
             self.query_norm_betas = Parameter(Tensor(np.zeros([self.msa_act_dim]), mstype.float32))
+
+    def _compute(self, msa_act, input_mask, index):
+        '''compute'''
+        msa_act = self.attn_mod(msa_act, msa_act, input_mask, index)
+        return msa_act
 
 
 class MSAColumnGlobalAttention(nn.Cell):

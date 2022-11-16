@@ -12,7 +12,7 @@ mindsponge.cell.InvariantPointAttention
 
     其中i，j分别表示序列中第i，第j个氨基酸，T即输入中的rotation和translation。
 
-    参考文献：Jumper et al. (2021) Suppl. Alg. 22 "InvariantPointAttention"。
+    参考文献：`Jumper et al. (2021) Suppl. Alg. 22 InvariantPointAttention <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_。
 
     参数：
         - **num_head** (int) - 头的数量。
