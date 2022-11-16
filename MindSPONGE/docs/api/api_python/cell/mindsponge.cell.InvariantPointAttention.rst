@@ -24,8 +24,8 @@ mindsponge.cell.InvariantPointAttention
         - **pair_dim** (int) - pair的最后一维长度。
 
     输入：
-        - **inputs_1d** (Tensor) - Evoformer模块的输出msa表示矩阵中的第一行，也即序列表示, :math:`[N_{res}, num_channel]` 。
-        - **inputs_2d** (Tensor) - Evoformor模块的输出氨基酸对表示矩阵, :math:`[N_{res}, N_{res}, pair_dim]` 。
+        - **inputs_1d** (Tensor) - Evoformer模块的输出msa表示矩阵中的第一行，也即序列表示, :math:`[N_{res}, num\_channel]` 。
+        - **inputs_2d** (Tensor) - Evoformor模块的输出氨基酸对表示矩阵, :math:`[N_{res}, N_{res}, pair\_dim]` 。
         - **mask** (Tensor) - 掩码，表示inputs_1d的哪些元素参与了attention, :math:`[N_{res}, 1]` 。
         - **rotation** (tuple) - 刚体群T(r,t)中的旋转信息, 长度为9的元组，每个元素shape为 :math:`[N_{res}]` 。
         - **translation** (tuple) - 刚体群T(r,t)中的旋转信息的偏移信息, 长度为3的元组，每个元素shape为 :math:`[N_{res}]` 。

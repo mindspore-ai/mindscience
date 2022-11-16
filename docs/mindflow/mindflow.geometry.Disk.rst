@@ -4,7 +4,7 @@
 
     参数：
         - **name** (str) - 圆盘的名称。
-        - **center** (Union[tuple[float, float], tuple[int, int], list[float, float], list[int, int], numpy.ndarray]) - 圆盘的中心坐标。
+        - **center** (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]) - 圆盘的中心坐标。
         - **radius** (Union[int, float]) - 圆盘的半径。
         - **dtype** (numpy.dtype) - 采样点的数据类型。默认值：numpy.float32。
         - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
