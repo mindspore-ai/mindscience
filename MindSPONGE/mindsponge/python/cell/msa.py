@@ -20,6 +20,7 @@ from mindspore import Parameter
 from mindspore.common.tensor import Tensor
 from mindspore.ops import operations as P
 from .basic import Attention, GlobalAttention
+from .mask import MaskedLayerNorm
 from ..common.utils import _memory_reduce
 
 
@@ -41,7 +42,13 @@ class MSARowAttentionWithPairBias(nn.Cell):
         - **msa_mask** (Tensor) - The mask for MSA row attention matrix with shape :math:`(N_{seqs}, N_{res})` .
         - **pair_act** (Tensor) - Tensor of pair_act with shape :math:`(N_{res}, N_{res}, pair\_act\_dim)` .
           Data type is float.
-        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None
+        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: "None".
+        - **norm_msa_mask** (Tensor) - The mask of msa_act when to do layernorm with shape :math:`(N_{seqs}, N_{res})`,
+          Default: "None".
+        - **norm_pair_mask** (Tensor) - The mask of pair_act when to do layernorm with shape :math:`(N_{res}, N_{res})`,
+          Default: "None".
+        - **res_idx** (Tensor) - The residue index used to perform ROPE with shape :math:`(N_{res})`, Default: "None".
+
 
     Outputs:
         - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
@@ -71,7 +78,6 @@ class MSARowAttentionWithPairBias(nn.Cell):
         super(MSARowAttentionWithPairBias, self).__init__()
         self.num_head = num_head
         self.batch_size = batch_size
-        self.norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
         self.matmul = P.MatMul(transpose_b=True)
         self.attn_mod = Attention(num_head, key_dim, gating, msa_act_dim, msa_act_dim, msa_act_dim, batch_size)
         self.msa_act_dim = msa_act_dim
@@ -79,9 +85,10 @@ class MSARowAttentionWithPairBias(nn.Cell):
         self.batch_size = batch_size
         self.slice_num = slice_num
         self.idx = Tensor(0, mstype.int32)
+        self.masked_layer_norm = MaskedLayerNorm()
         self._init_parameter()
 
-    def construct(self, msa_act, msa_mask, pair_act, index):
+    def construct(self, msa_act, msa_mask, pair_act, index=None, norm_msa_mask=None, norm_pair_mask=None, res_idx=None):
         '''construct'''
         if self.batch_size:
             query_norm_gamma = P.Gather()(self.query_norm_gammas, index, 0)
@@ -97,16 +104,19 @@ class MSARowAttentionWithPairBias(nn.Cell):
             feat_2d_weight = self.feat_2d_weights
 
         q, k, _ = pair_act.shape
-        input_mask = 1e9 * (msa_mask - 1.0)
-        input_mask = P.ExpandDims()(P.ExpandDims()(input_mask, 1), 2)
+        input_bias = 1e9 * (msa_mask - 1.0)
+        input_bias = P.ExpandDims()(P.ExpandDims()(input_bias, 1), 2)
 
-        msa_act, _, _ = self.norm(msa_act, query_norm_gamma, query_norm_beta)
-        pair_act, _, _ = self.norm(pair_act, feat_2d_norm_gamma, feat_2d_norm_beta)
+        msa_act = self.masked_layer_norm(msa_act, query_norm_gamma, query_norm_beta, mask=norm_msa_mask)
+        pair_act = self.masked_layer_norm(pair_act, feat_2d_norm_gamma, feat_2d_norm_beta, mask=norm_pair_mask)
         pair_act = P.Reshape()(pair_act, (-1, pair_act.shape[-1]))
         nonbatched_bias = P.Transpose()(P.Reshape()(self.matmul(pair_act, feat_2d_weight), (q, k, self.num_head)),
                                         (2, 0, 1))
-        batched_inputs = (msa_act, input_mask)
-        nonbatched_inputs = (index, nonbatched_bias)
+        batched_inputs = (msa_act, input_bias)
+        if res_idx is not None:
+            nonbatched_inputs = (nonbatched_bias, res_idx)
+        else:
+            nonbatched_inputs = (index, nonbatched_bias)
         msa_act = _memory_reduce(self._compute, batched_inputs, nonbatched_inputs, self.slice_num)
         return msa_act
 
@@ -249,7 +259,7 @@ class MSAColumnGlobalAttention(nn.Cell):
     Inputs:
         - **msa_act** (Tensor) - Tensor of msa_act with shape :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` .
         - **msa_mask** (Tensor) - The mask for msa_act matrix with shape :math:`(N_{seqs}, N_{res})` .
-        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: None
+        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: "None".
 
     Outputs:
         - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
@@ -282,7 +292,7 @@ class MSAColumnGlobalAttention(nn.Cell):
         self.idx = Tensor(0, mstype.int32)
         self._init_parameter()
 
-    def construct(self, msa_act, msa_mask, index):
+    def construct(self, msa_act, msa_mask, index=None):
         '''construct'''
         if self.batch_size:
             query_norm_gamma = P.Gather()(self.query_norm_gammas, index, 0)

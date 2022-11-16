@@ -15,9 +15,9 @@
 """data transform MSA TEMPLATE"""
 import numpy as np
 import mindsponge.common.geometry as geometry
-from mindsponge.common.residue_constants import chi_angles_mask, chi_pi_periodic, restype_1to3, chi_angles_atoms,\
-    atom_order, residue_atom_renaming_swaps, restype_3to1, MAP_HHBLITS_AATYPE_TO_OUR_AATYPE, restype_order,\
-    restypes, restype_name_to_atom14_names, atom_types, residue_atoms, STANDARD_ATOM_MASK, restypes_with_x_and_gap,\
+from mindsponge.common.residue_constants import chi_angles_mask, chi_pi_periodic, restype_1to3, chi_angles_atoms, \
+    atom_order, residue_atom_renaming_swaps, restype_3to1, MAP_HHBLITS_AATYPE_TO_OUR_AATYPE, restype_order, \
+    restypes, restype_name_to_atom14_names, atom_types, residue_atoms, STANDARD_ATOM_MASK, restypes_with_x_and_gap, \
     MSA_PAD_VALUES
 
 MS_MIN32 = -2147483648
@@ -30,12 +30,17 @@ def one_hot(depth, indices):
     return res.reshape(list(indices.shape) + [depth])
 
 
-def correct_msa_restypes(msa):
+def correct_msa_restypes(msa, deletion_matrix=None, is_evogen=False):
     """Correct MSA restype to have the same order as residue_constants."""
     new_order_list = MAP_HHBLITS_AATYPE_TO_OUR_AATYPE
     new_order = np.array(new_order_list, dtype=msa.dtype)
     msa = new_order[msa]
-    return msa
+    if is_evogen:
+        msa_input = np.concatenate((msa, deletion_matrix), axis=-1).astype(np.int32)
+        result = msa, msa_input
+    else:
+        result = msa
+    return result
 
 
 def randomly_replace_msa_with_unknown(msa, aatype, replace_proportion):
@@ -67,7 +72,7 @@ def pseudo_beta_fn(aatype, all_atom_positions, all_atom_masks):
     ca_idx = atom_order['CA']
     cb_idx = atom_order['CB']
     pseudo_beta = np.where(
-        np.tile(is_gly[..., None].astype("int32"), [1,] * len(is_gly.shape) + [3,]).astype("bool"),
+        np.tile(is_gly[..., None].astype("int32"), [1] * len(is_gly.shape) + [3]).astype("bool"),
         all_atom_positions[..., ca_idx, :],
         all_atom_positions[..., cb_idx, :])
     if all_atom_masks is not None:
@@ -201,8 +206,10 @@ def shaped_categorical(probability):
     return np.reshape(np.array(res, np.int32), ds[:-1])
 
 
-def make_masked_msa(msa, hhblits_profile, uniform_prob, profile_prob, same_prob, replace_fraction):
+def make_masked_msa(msa, hhblits_profile, uniform_prob, profile_prob, same_prob, replace_fraction, residue_index=None,
+                    msa_mask=None, is_evogen=False):
     """create masked msa for BERT on raw MSA features"""
+
     random_aatype = np.array([0.05] * 20 + [0., 0.], dtype=np.float32)
 
     probability = uniform_prob * random_aatype + profile_prob * hhblits_profile + same_prob * one_hot(22, msa)
@@ -221,7 +228,16 @@ def make_masked_msa(msa, hhblits_profile, uniform_prob, profile_prob, same_prob,
     bert_mask = masked_aatype.astype(np.int32)
     true_msa = msa
     msa = bert_msa
-    return bert_mask, true_msa, msa
+    if is_evogen:
+        additional_input = np.concatenate((bert_msa[0][:, None], np.asarray(residue_index)[:, None],
+                                           msa_mask[0][:, None],
+                                           bert_mask[0][:, None]),
+                                          axis=-1).astype(np.int32)
+        make_masked_msa_result = bert_mask, true_msa, msa, additional_input
+
+    else:
+        make_masked_msa_result = bert_mask, true_msa, msa
+    return make_masked_msa_result
 
 
 def nearest_neighbor_clusters(msa_mask, msa, extra_msa_mask, extra_msa, gap_agreement_weight=0.):
@@ -645,10 +661,10 @@ def rot_to_quat(rot, unstack_inputs=False):
         rot = [np.moveaxis(x, -1, 0) for x in np.moveaxis(rot, -2, 0)]
     [[xx, xy, xz], [yx, yy, yz], [zx, zy, zz]] = rot
 
-    k = [[xx + yy + zz, zy - yz, xz - zx, yx - xy,],
-         [zy - yz, xx - yy - zz, xy + yx, xz + zx,],
-         [xz - zx, xy + yx, yy - xx - zz, yz + zy,],
-         [yx - xy, xz + zx, yz + zy, zz - xx - yy,]]
+    k = [[xx + yy + zz, zy - yz, xz - zx, yx - xy],
+         [zy - yz, xx - yy - zz, xy + yx, xz + zx],
+         [xz - zx, xy + yx, yy - xx - zz, yz + zy],
+         [yx - xy, xz + zx, yz + zy, zz - xx - yy]]
 
     k = (1. / 3.) * np.stack([np.stack(x, axis=-1) for x in k],
                              axis=-2)
@@ -767,3 +783,36 @@ def add_padding(feature_name, feature):
     num_res = feature.shape[1]
     padding = MSA_PAD_VALUES.get(feature_name) * np.ones([1, num_res], feature.dtype)
     return padding
+
+
+def generate_random_sample(cfg, model_config):
+    '''generate_random_sample'''
+    np.random.seed(0)
+    num_noise = model_config.model.latent.num_noise
+    latent_dim = model_config.model.latent.latent_dim
+
+    context_true_prob = np.absolute(model_config.train.context_true_prob)
+    keep_prob = np.absolute(model_config.train.keep_prob)
+
+    available_msa = int(model_config.train.available_msa_fraction * model_config.train.max_msa_clusters)
+    available_msa = min(available_msa, model_config.train.max_msa_clusters)
+
+    evogen_random_data = np.random.normal(
+        size=(num_noise, model_config.train.max_msa_clusters, cfg.eval.crop_size, latent_dim)).astype(np.float32)
+
+    # (Nseq,):
+    context_mask = np.zeros((model_config.train.max_msa_clusters,), np.int32)
+    z1 = np.random.random(model_config.train.max_msa_clusters)
+    context_mask = np.asarray([1 if x < context_true_prob else 0 for x in z1], np.int32)
+    context_mask[available_msa:] *= 0
+
+    # (Nseq,):
+    target_mask = np.zeros((model_config.train.max_msa_clusters,), np.int32)
+    z2 = np.random.random(model_config.train.max_msa_clusters)
+    target_mask = np.asarray([1 if x < keep_prob else 0 for x in z2], np.int32)
+
+    context_mask[0] = 1
+    target_mask[0] = 1
+
+    evogen_context_mask = np.stack((context_mask, target_mask), -1)
+    return evogen_random_data, evogen_context_mask

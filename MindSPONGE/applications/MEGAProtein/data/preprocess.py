@@ -19,7 +19,7 @@ from mindsponge.data.data_transform import one_hot, correct_msa_restypes, random
     fix_templates_aatype, pseudo_beta_fn, make_atom14_masks, \
     block_delete_msa_indices, sample_msa, make_masked_msa, \
     nearest_neighbor_clusters, summarize_clusters, crop_extra_msa, \
-    make_msa_feat, random_crop_to_size
+    make_msa_feat, random_crop_to_size, generate_random_sample
 from mindsponge.common.residue_constants import atom_type_num
 
 NUM_RES = 'num residues placeholder'
@@ -27,7 +27,9 @@ NUM_MSA_SEQ = 'msa placeholder'
 NUM_EXTRA_SEQ = 'extra msa placeholder'
 NUM_TEMPLATES = 'num templates placeholder'
 NUM_SEQ = "length msa placeholder"
-_MSA_FEATURE_NAMES = ['msa', 'deletion_matrix', 'msa_mask', 'msa_row_mask', 'bert_mask', 'true_msa']
+NUM_NOISE = 'num noise placeholder'
+NUM_LATENT_DIM = "num latent placeholder"
+_MSA_FEATURE_NAMES = ['msa', 'deletion_matrix', 'msa_mask', 'msa_row_mask', 'bert_mask', 'true_msa', 'msa_input']
 
 FEATURES = {
     # Static features of a protein sequence
@@ -64,9 +66,9 @@ FEATURES = {
     "torsion_angles_sin_cos": (np.float32, [NUM_RES, 4, 2]),
     "torsion_angles_mask": (np.float32, [NUM_RES, 7]),
     "pseudo_beta": (np.float32, [NUM_RES, 3]),
-    "pseudo_beta_mask": (np.float32, [NUM_RES,]),
+    "pseudo_beta_mask": (np.float32, [NUM_RES]),
     "chi_mask": (np.float32, [NUM_RES, 4]),
-    "backbone_affine_mask": (np.float32, [NUM_RES,]),
+    "backbone_affine_mask": (np.float32, [NUM_RES]),
 }
 
 feature_list = {
@@ -122,7 +124,12 @@ feature_list = {
     'template_pseudo_beta_mask': [NUM_TEMPLATES, NUM_RES],
     'template_sum_probs': [NUM_TEMPLATES, None],
     'true_msa': [NUM_MSA_SEQ, NUM_RES],
-    'torsion_angles_sin_cos': [NUM_RES, None, None]
+    'torsion_angles_sin_cos': [NUM_RES, None, None],
+    'msa_input': [NUM_MSA_SEQ, NUM_RES, 2],
+    'query_input': [NUM_RES, 2],
+    'additional_input': [NUM_RES, 4],
+    'random_data': [NUM_NOISE, NUM_MSA_SEQ, NUM_RES, NUM_LATENT_DIM],
+    'context_mask': [NUM_MSA_SEQ, 2]
 }
 
 
@@ -223,15 +230,18 @@ def np_to_array_dict(np_example, features):
 class Feature:
     """feature process"""
 
-    def __init__(self, cfg, raw_feature=None, is_training=False):
+    def __init__(self, cfg, raw_feature=None, is_training=False, model_cfg=None, is_evogen=False):
         if raw_feature and isinstance(raw_feature, dict):
             self.ensemble_num = 0
+            self.cfg = cfg
+            self.model_cfg = model_cfg
             if 'deletion_matrix_int' in raw_feature:
                 raw_feature['deletion_matrix'] = (raw_feature.pop('deletion_matrix_int').astype(np.float32))
             feature_names = cfg.common.unsupervised_features
             if cfg.common.use_templates:
                 feature_names += cfg.common.template_features
             self.is_training = is_training
+            self.is_evogen = is_evogen
             if self.is_training:
                 feature_names += cfg.common.supervised_features
             raw_feature = np_to_array_dict(np_example=raw_feature, features=feature_names)
@@ -241,15 +251,24 @@ class Feature:
 
     def non_ensemble(self, distillation=False, replace_proportion=0.0, use_templates=True):
         """non ensemble"""
-        setattr(self, "msa", correct_msa_restypes(self.msa))
+        if self.is_evogen:
+            msa, msa_input = correct_msa_restypes(self.msa, self.deletion_matrix, self.is_evogen)
+            setattr(self, "msa", msa)
+            setattr(self, "msa_input", msa_input.astype(np.float32))
+        else:
+            setattr(self, "msa", correct_msa_restypes(self.msa))
         setattr(self, "is_distillation", np.array(float(distillation), dtype=np.float32))
         # convert int64 to int32
         for k, v in vars(self).items():
-            if k not in ("ensemble_num", "is_training"):
+            if k not in ("ensemble_num", "is_training", "is_evogen", "cfg", "model_cfg"):
                 if v.dtype == np.int64:
                     setattr(self, k, v.astype(np.int32))
         aatype = np.argmax(self.aatype, axis=-1)
         setattr(self, "aatype", aatype.astype(np.int32))
+        if self.is_evogen:
+            query_input = np.concatenate((aatype[:, None], self.deletion_matrix[0]),
+                                         axis=-1).astype(np.int32)
+            setattr(self, "query_input", query_input.astype(np.float32))
         data = vars(self)
         for k in ['msa', 'num_alignments', 'seq_length', 'sequence', 'superfamily', 'deletion_matrix',
                   'resolution', 'between_segment_residues', 'residue_index', 'template_all_atom_masks']:
@@ -319,9 +338,21 @@ class Feature:
                     data['extra_msa'] = data['extra_msa'].astype(np.int32)
                 data[k] = data[k][sel_seq]
         if masked_msa:
-            data["bert_mask"], data["true_msa"], data["msa"] = make_masked_msa(data["msa"], data["hhblits_profile"],
-                                                                               uniform_prob, profile_prob, same_prob,
-                                                                               replace_fraction)
+            if self.is_evogen:
+                make_masked_msa_result = make_masked_msa(
+                    data["msa"], data["hhblits_profile"],
+                    uniform_prob, profile_prob,
+                    same_prob,
+                    replace_fraction,
+                    data['residue_index'], data['msa_mask'], self.is_evogen)
+                data["bert_mask"], data["true_msa"], data["msa"], data["additional_input"] = make_masked_msa_result
+                data["additional_input"] = data["additional_input"].astype(np.float32)
+            else:
+                data["bert_mask"], data["true_msa"], data["msa"] = make_masked_msa(data["msa"], data["hhblits_profile"],
+                                                                                   uniform_prob, profile_prob,
+                                                                                   same_prob,
+                                                                                   replace_fraction)
+
         if msa_cluster_features:
             data["extra_cluster_assignment"] = nearest_neighbor_clusters(data["msa_mask"], data["msa"],
                                                                          data["extra_msa_mask"], data["extra_msa"])
@@ -346,6 +377,7 @@ class Feature:
         data["extra_has_deletion"], data["extra_deletion_value"], data["msa_feat"], data["target_feat"] = make_msa_feat(
             data["between_segment_residues"], data["aatype"], data["msa"], data["deletion_matrix"],
             data["cluster_deletion_mean"], data["cluster_profile"], data["extra_deletion_matrix"])
+
         if fixed_size:
             data = {k: v for k, v in data.items() if k in feature_list}
 
@@ -414,11 +446,23 @@ class Feature:
             for k, v in data.items():
                 if k.startswith('template_'):
                     data[k] = v[:max_templates]
+        if self.is_evogen:
+            data["random_data"], data["context_mask"] = generate_random_sample(self.cfg, self.model_cfg)
+            data["context_mask"] = data["context_mask"].astype(np.float32)
         return data
 
     def process_res(self, features, res, dtype):
         """process result"""
         arrays, prev_pos, prev_msa_first_row, prev_pair = res
+        if self.is_evogen:
+            evogen_keys = ["target_feat", "seq_mask", "aatype", "residx_atom37_to_atom14", "atom37_atom_exists",
+                           "residue_index", "msa_mask", "msa_input", "query_input", "additional_input", "random_data",
+                           "context_mask"]
+            arrays = [features[key] for key in evogen_keys]
+            arrays = [array.astype(dtype) if array.dtype == "float64" else array for array in arrays]
+            arrays = [array.astype(dtype) if array.dtype == "float32" else array for array in arrays]
+            res = [arrays, prev_pos, prev_msa_first_row, prev_pair]
+            return res
         if self.is_training:
             label_keys = ["pseudo_beta", "pseudo_beta_mask", "all_atom_mask",
                           "true_msa", "bert_mask", "residue_index", "seq_mask",
@@ -441,7 +485,7 @@ class Feature:
         self.non_ensemble(cfg.common.distillation, cfg.common.replace_proportion, cfg.common.use_templates)
         non_ensemble_data = vars(self).copy()
         max_msa_clusters = cfg.eval.max_msa_clusters
-        if cfg.common.reduce_msa_clusters_by_max_templates:
+        if cfg.common.reduce_msa_clusters_by_max_templates and not self.is_evogen:
             max_msa_clusters = cfg.eval.max_msa_clusters - cfg.eval.max_templates
         random_recycle = cfg.common.random_recycle
         non_ensemble_data_copy = non_ensemble_data.copy()
@@ -461,13 +505,11 @@ class Feature:
                                 cfg.eval.crop_size,
                                 cfg.eval.max_templates,
                                 cfg.eval.subsample_templates,
-                                cfg.eval.fixed_size,
-                                seed,
-                                random_recycle)
+                                cfg.eval.fixed_size, seed, random_recycle)
+
         num_ensemble = cfg.eval.num_ensemble
         num_recycle = cfg.common.num_recycle
         if cfg.common.resample_msa_in_recycling:
-            # Separate batch per ensembling & recycling step.
             num_ensemble *= num_recycle
         result_array = {x: () for x in protein.keys()}
         if num_ensemble > 1:
@@ -476,22 +518,13 @@ class Feature:
                 data_t = self.ensemble(non_ensemble_data_copy,
                                        cfg.block_deletion.msa_fraction_per_block,
                                        cfg.block_deletion.randomize_num_blocks,
-                                       cfg.block_deletion.num_blocks,
-                                       cfg.eval.keep_extra,
-                                       max_msa_clusters,
-                                       cfg.common.masked_msa.use_masked_msa,
-                                       cfg.common.masked_msa.uniform_prob,
-                                       cfg.common.masked_msa.profile_prob,
-                                       cfg.common.masked_msa.same_prob,
-                                       cfg.eval.masked_msa_replace_fraction,
-                                       cfg.common.msa_cluster_features,
-                                       cfg.common.max_extra_msa,
-                                       cfg.eval.crop_size,
-                                       cfg.eval.max_templates,
-                                       cfg.eval.subsample_templates,
-                                       cfg.eval.fixed_size,
-                                       seed,
-                                       random_recycle)
+                                       cfg.block_deletion.num_blocks, cfg.eval.keep_extra,
+                                       max_msa_clusters, cfg.common.masked_msa.use_masked_msa,
+                                       cfg.common.masked_msa.uniform_prob, cfg.common.masked_msa.profile_prob,
+                                       cfg.common.masked_msa.same_prob, cfg.eval.masked_msa_replace_fraction,
+                                       cfg.common.msa_cluster_features, cfg.common.max_extra_msa,
+                                       cfg.eval.crop_size, cfg.eval.max_templates, cfg.eval.subsample_templates,
+                                       cfg.eval.fixed_size, seed, random_recycle)
                 for key in protein.keys():
                     result_array[key] += (data_t[key][None],)
             for key in protein.keys():

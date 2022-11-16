@@ -28,13 +28,15 @@ from mindsponge.common.config_load import load_config
 from mindsponge.common.protein import to_pdb, from_prediction
 
 from data import Feature, RawFeatureGenerator, create_dataset, get_crop_size, get_raw_feature, process_pdb
-from model import MegaFold, compute_confidence, MegaAssessment
+from model import MegaFold, compute_confidence, MegaAssessment, MegaEvogen
 from module.fold_wrapcell import TrainOneStepCell, WithLossCell, WithLossCellAssessment
+from module.evogen_block import absolute_position_embedding
 from module.lr import cos_decay_lr
 
 parser = argparse.ArgumentParser(description='Inputs for eval.py')
 parser.add_argument('--data_config', default="./config/data.yaml", help='data process config')
 parser.add_argument('--model_config', default="./config/model.yaml", help='model config')
+parser.add_argument('--evogen_config', default="./config/evogen.yaml", help='evogen config')
 parser.add_argument('--input_path', help='processed raw feature path')
 parser.add_argument('--pdb_path', type=str, help='Location of training pdb file.')
 parser.add_argument('--use_pkl', default=False, help="use pkl as input or fasta file as input, in default use fasta")
@@ -53,6 +55,7 @@ parser.add_argument('--gradient_clip', type=float, default=0.1, help='gradient c
 parser.add_argument('--total_steps', type=int, default=9600000, help='total steps')
 parser.add_argument('--decoy_pdb_path', type=str, help='Location of decoy pdb file.')
 parser.add_argument('--run_assessment', type=int, default=0, help='Run pdb assessment.')
+parser.add_argument('--run_evogen', type=int, default=0, help='Run pdb assessment.')
 arguments = parser.parse_args()
 
 
@@ -94,10 +97,11 @@ def fold_infer(args):
         t2 = time.time()
         for i in range(data_cfg.common.num_recycle):
             feat_i = [Tensor(x[i]) for x in feat]
-            prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits = megafold(*feat_i,
-                                                                                      prev_pos,
-                                                                                      prev_msa_first_row,
-                                                                                      prev_pair)
+            result = megafold(*feat_i,
+                              prev_pos,
+                              prev_msa_first_row,
+                              prev_pair)
+            prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits = result
         t3 = time.time()
         final_atom_positions = prev_pos.asnumpy()[:ori_res_length]
         final_atom_mask = feat[16][0][:ori_res_length]
@@ -271,7 +275,7 @@ def assessment_infer(args):
                                                                   prev_pair)
         for pdb_name in os.listdir(args.decoy_pdb_path):
             decoy_atom_positions, decoy_atom_mask, align_mask = \
-            process_pdb(feat[4][0], ori_res_length, os.path.join(args.decoy_pdb_path, pdb_name))
+                process_pdb(feat[4][0], ori_res_length, os.path.join(args.decoy_pdb_path, pdb_name))
             plddt = megaassessment(*feat_i, prev_pos, prev_msa_first_row, prev_pair,
                                    Tensor(decoy_atom_positions), Tensor(decoy_atom_mask))
             t3 = time.time()
@@ -378,6 +382,108 @@ def assessment_train(args):
         step += 1
 
 
+def evogen_augmentation(args):
+    '''evogen_augmentation'''
+
+    data_cfg = load_config(args.data_config)
+    model_cfg = load_config(args.model_config)
+    evogen_model_cfg = load_config(args.evogen_config)
+
+    data_cfg.eval.crop_size = get_crop_size(args.input_path, args.use_pkl)
+    model_cfg.seq_length = data_cfg.eval.crop_size
+    slice_key = "seq_" + str(model_cfg.seq_length)
+    slice_val = vars(model_cfg.slice)[slice_key]
+    model_cfg.slice = slice_val
+    model_cfg.slice.extra_msa_stack.msa_row_attention_with_pair_bias = 0
+    model_cfg.is_training = False
+    model_cfg.template.enabled = False
+
+    ape_table = absolute_position_embedding(1024, 256, min_timescale=1, max_timescale=1e4)
+
+    evogen_model_cfg.model.embeddings_and_evoformer.evoformer.msa_row_attention_with_pair_bias.ape_table = ape_table
+    data_cfg.max_extra_msa = 2
+    data_cfg.num_recycle = 1
+    data_cfg.eval.max_msa_clusters = 128
+    megaevogen = MegaEvogen(evogen_model_cfg, model_cfg, mixed_precision=args.mixed_precision)
+    if args.mixed_precision:
+        megaevogen.to_float(mstype.float16)
+        do_keep_cell_fp32(megaevogen)
+    else:
+        megaevogen.to_float(mstype.float32)
+
+    data_cfg.common.num_recycle = 1
+    load_checkpoint(args.checkpoint_path, megaevogen)
+    seq_files = os.listdir(args.input_path)
+
+    if not args.use_pkl:
+        feature_generator = RawFeatureGenerator(database_search_config=data_cfg.database_search)
+    else:
+        feature_generator = None
+    for seq_file in seq_files:
+        t1 = time.time()
+        seq_name = seq_file.split('.')[0]
+        raw_feature = get_raw_feature(os.path.join(args.input_path, seq_file), feature_generator, args.use_pkl)
+        ori_res_length = raw_feature['msa'].shape[1]
+        processed_feature = Feature(data_cfg, raw_feature, model_cfg=evogen_model_cfg, is_evogen=True)
+        feat, prev_pos, prev_msa_first_row, prev_pair = processed_feature.pipeline(data_cfg,
+                                                                                   mixed_precision=args.mixed_precision)
+        prev_pos = Tensor(prev_pos)
+        prev_msa_first_row = Tensor(prev_msa_first_row)
+        prev_pair = Tensor(prev_pair)
+        t2 = time.time()
+
+        # fake data
+        fake_template_aatype = Tensor(0, dtype=mstype.int32)
+        fake_template_all_atom_masks = Tensor(0, dtype=mstype.int32)
+        fake_template_all_atom_positions = Tensor(0, dtype=mstype.int32)
+        fake_template_mask = Tensor(0, dtype=mstype.int32)
+        fake_template_pseudo_beta_mask = Tensor(0, dtype=mstype.int32)
+        fake_template_pseudo_beta = Tensor(0, dtype=mstype.int32)
+        extra_msa_length = 2
+        fake_extra_msa = Tensor(np.zeros((extra_msa_length, data_cfg.eval.crop_size), dtype=np.int32))
+        fake_extra_has_deletion = Tensor(np.zeros((extra_msa_length, data_cfg.eval.crop_size), dtype=np.float32))
+        fake_extra_deletion_value = Tensor(np.zeros((extra_msa_length, data_cfg.eval.crop_size), dtype=np.float32))
+        fake_extra_msa_mask = Tensor(np.zeros((extra_msa_length, data_cfg.eval.crop_size), dtype=np.float32))
+        fake_data = [fake_template_aatype, fake_template_all_atom_masks, fake_template_all_atom_positions,
+                     fake_template_mask, fake_template_pseudo_beta_mask, fake_template_pseudo_beta, fake_extra_msa,
+                     fake_extra_has_deletion, fake_extra_deletion_value, fake_extra_msa_mask]
+
+        for i in range(data_cfg.common.num_recycle):
+            feat_i = [Tensor(x[i]) for x in feat]
+            prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits = megaevogen(
+                *feat_i, *fake_data, prev_pos, prev_msa_first_row, prev_pair)
+
+        t3 = time.time()
+        final_atom_positions = prev_pos.asnumpy()[:ori_res_length]
+        final_atom_mask = feat[4][0][:ori_res_length]
+        predicted_lddt_logits = predicted_lddt_logits.asnumpy()[:ori_res_length]
+        confidence, plddt = compute_confidence(predicted_lddt_logits, return_lddt=True)
+
+        b_factors = plddt[:, None] * final_atom_mask
+
+        unrelaxed_protein = from_prediction(final_atom_positions,
+                                            final_atom_mask,
+                                            feat[2][0][:ori_res_length],
+                                            feat[5][0][:ori_res_length],
+                                            b_factors)
+
+        pdb_file = to_pdb(unrelaxed_protein)
+        os.makedirs(f'./result/{seq_name}', exist_ok=True)
+        os_flags = os.O_RDWR | os.O_CREAT
+        os_modes = stat.S_IRWXU
+        pdb_path = f'./result/{seq_name}/unrelaxed_{seq_name}.pdb'
+        with os.fdopen(os.open(pdb_path, os_flags, os_modes), 'w') as fout:
+            fout.write(pdb_file)
+        t4 = time.time()
+        timings = {"pre_process_time": round(t2 - t1, 2),
+                   "predict time ": round(t3 - t2, 2),
+                   "pos_process_time": round(t4 - t3, 2),
+                   "all_time": round(t4 - t1, 2),
+                   "confidence": round(confidence, 2)}
+
+        print(timings)
+
+
 if __name__ == "__main__":
     if arguments.run_platform == 'Ascend' and not arguments.is_training:
         context.set_context(mode=context.GRAPH_MODE,
@@ -404,6 +510,9 @@ if __name__ == "__main__":
             assessment_infer(arguments)
         else:
             assessment_train(arguments)
+    elif arguments.run_evogen:
+        evogen_augmentation(arguments)
+
     else:
         if not arguments.is_training:
             fold_infer(arguments)

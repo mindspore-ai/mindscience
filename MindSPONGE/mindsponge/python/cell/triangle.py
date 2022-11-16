@@ -22,6 +22,7 @@ from mindspore.ops import operations as P
 from mindspore.common.initializer import initializer
 from .basic import Attention
 from .initializer import lecun_init
+from .mask import MaskedLayerNorm
 from ..common.utils import _memory_reduce
 
 
@@ -45,9 +46,10 @@ class TriangleAttention(nn.Cell):
         slice_num (int):        The number of slices to be made to reduce memory, default: 0.
 
     Inputs:
-        - **pair_act** (Tensor) - Tensor of pair_act. shape :math:`(N{res}, N{res}, layer\_norm\_dim)`
-        - **pair_mask** (Tensor) - The mask for TriangleAttention matrix with shape. shape :math:`(N{res}, N{res})`.
-        - **index** (Tensor) - The index of while loop, only used in case of while control flow.
+        - **pair_act** (Tensor) - Tensor of pair_act. shape :math:`(N_{res}, N_{res}, layer\_norm\_dim)`
+        - **pair_mask** (Tensor) - The mask for TriangleAttention matrix with shape. shape :math:`(N_{res}, N_{res})`.
+        - **index** (Tensor) - The index of while loop, only used in case of while control flow, Default: "None".
+        - **mask** (Tensor) - The mask of pair_act when to do layernorm with shape (N_{res}, N_{res}), Default: "None".
 
     Outputs:
         - **pair_act** (Tensor) - Tensor, the float tensor of the pair_act of the layer with
@@ -75,7 +77,6 @@ class TriangleAttention(nn.Cell):
         self.orientation = orientation
         self.orientation_is_per_column = (self.orientation == 'per_column')
         self.init_factor = Tensor(1. / np.sqrt(layer_norm_dim), mstype.float32)
-        self.query_norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
         self.matmul = P.MatMul(transpose_b=True)
         self.batchmatmul_b = P.BatchMatMul(transpose_b=True)
         self.attn_mod = Attention(num_head, key_dim, gating, layer_norm_dim, layer_norm_dim, layer_norm_dim,
@@ -84,9 +85,10 @@ class TriangleAttention(nn.Cell):
         self.slice_num = slice_num
         self.layer_norm_dim = layer_norm_dim
         self.idx = Tensor(0, mstype.int32)
+        self.masked_layer_norm = MaskedLayerNorm()
         self._init_parameter()
 
-    def construct(self, pair_act, pair_mask, index):
+    def construct(self, pair_act, pair_mask, index=None, mask=None):
         '''construct'''
         if self.batch_size:
             query_norm_gamma = P.Gather()(self.query_norm_gammas, index, 0)
@@ -103,9 +105,8 @@ class TriangleAttention(nn.Cell):
         pair_mask = 1e9 * (pair_mask - 1.)
         input_mask = P.ExpandDims()(P.ExpandDims()(pair_mask, 1), 2)
 
-        pair_act, _, _ = self.query_norm(pair_act,
-                                         query_norm_gamma,
-                                         query_norm_beta)
+        pair_act = self.masked_layer_norm(pair_act, query_norm_gamma, query_norm_beta, mask)
+
         q, k, _ = pair_act.shape
         nonbatched_bias = self.matmul(P.Reshape()(pair_act, (-1, pair_act.shape[-1])), feat_2d_weight)
         nonbatched_bias = P.Transpose()(P.Reshape()(nonbatched_bias, (q, k, -1)), (2, 0, 1))
@@ -201,7 +202,7 @@ class TriangleMultiplication(nn.Cell):
         self.layer_norm_dim = layer_norm_dim
         self._init_parameter()
 
-    def construct(self, act, mask, index):
+    def construct(self, act, mask, index=None):
         r"""
         Builds triangle multiplication module.
 
@@ -253,7 +254,6 @@ class TriangleMultiplication(nn.Cell):
         act, _, _ = self.layer_norm(act,
                                     layer_norm_input_gamma,
                                     layer_norm_input_beta)
-
 
         act_shape = P.Shape()(act)
         if len(act_shape) != 2:
