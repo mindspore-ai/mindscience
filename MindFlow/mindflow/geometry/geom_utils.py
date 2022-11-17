@@ -21,51 +21,50 @@ from .geometry_base import PartSamplingConfig, SamplingConfig, GEOM_TYPES, SAMPL
 from ..utils.check_func import check_param_type
 
 
-def create_config_from_edict(edict_config):
+def generate_sampling_config(dict_config):
     """
     Convert from dict to SamplingConfig.
 
     Args:
-        edict_config (dict): dict containing configuration info.
+        dict_config (dict): dict containing configuration info.
 
     Returns:
         geometry_base.SamplingConfig, sampling configuration.
 
     Raises:
-        ValueError: If part_config_dict can not be generated from input dict.
+        ValueError: If part_dict_config can not be generated from input dict.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
-        >>> from mindflow.geometry import create_config_from_edict
-        >>> rect_config = edict({
-        ...     'domain': edict({
+        >>> from mindflow.geometry import generate_sampling_config
+        >>> rect_config = dict({
+        ...     'domain': dict({
         ...         'random_sampling': True,
         ...         'size': 200,
         ...         'with_sdf': False,
         ...     }),
-        ...     'BC': edict({
+        ...     'BC': dict({
         ...         'random_sampling': True,
         ...         'size': 50,
         ...         'with_normal': True,
         ...     })
         ... })
-        >>> sampling_config = create_config_from_edict(rect_config)
+        >>> sampling_config = generate_sampling_config(rect_config)
     """
-    check_param_type(edict_config, "edict_config", data_type=dict)
-    part_config_dict = {}
-    for geom_type in edict_config.keys():
-        if geom_type in GEOM_TYPES and edict_config[geom_type]:
-            part_config_dict[geom_type] = PartSamplingConfig(edict_config[geom_type].get("size", 1),
-                                                             edict_config[geom_type].get("random_sampling", True),
-                                                             edict_config[geom_type].get("sampler", "uniform"),
-                                                             edict_config[geom_type].get("random_merge", True),
-                                                             edict_config[geom_type].get("with_normal", False),
-                                                             edict_config[geom_type].get("with_sdf", False))
-    if part_config_dict:
-        return SamplingConfig(part_config_dict)
+    check_param_type(dict_config, "dict_config", data_type=dict)
+    part_dict_config = {}
+    for geom_type in dict_config.keys():
+        if geom_type in GEOM_TYPES and dict_config[geom_type]:
+            part_dict_config[geom_type] = PartSamplingConfig(dict_config[geom_type].get("size", 1),
+                                                             dict_config[geom_type].get("random_sampling", True),
+                                                             dict_config[geom_type].get("sampler", "uniform"),
+                                                             dict_config[geom_type].get("random_merge", True),
+                                                             dict_config[geom_type].get("with_normal", False),
+                                                             dict_config[geom_type].get("with_sdf", False))
+    if part_dict_config:
+        return SamplingConfig(part_dict_config)
     raise ValueError("Unknown sampling info, please check your config")
 
 

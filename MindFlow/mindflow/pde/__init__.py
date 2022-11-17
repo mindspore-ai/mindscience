@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2021 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +13,8 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .dataset import create_random_dataset
+from .problem import Problem
 from .burgers import Burgers1D
-from .utils import visual_result
+from .navier_stokes import NavierStokes2D
 
-__all__ = [
-    "create_random_dataset",
-    "Burgers1D",
-    "visual_result",
-]
+__all__ = ["Problem", "Burgers1D", "NavierStokes2D"]

@@ -49,10 +49,10 @@ class Disk(Geometry):
 
     Examples:
         >>> from easydict import EasyDict as edict
-        >>> from mindflow.geometry import create_config_from_edict, Disk
+        >>> from mindflow.geometry import generate_sampling_config, Disk
         >>> disk_mesh = edict({'domain': edict({'random_sampling': False, 'size' : [100, 180]}),
         ...                    'BC': edict({'random_sampling': False, 'size': 200, 'with_normal' : True,})})
-        >>> disk = Disk("disk", (-1.0, 0), 2.0, sampling_config=create_config_from_edict(disk_mesh))
+        >>> disk = Disk("disk", (-1.0, 0), 2.0, sampling_config=generate_sampling_config(disk_mesh))
         >>> domain = disk.sampling(geom_type="domain")
         >>> bc, bc_normal = disk.sampling(geom_type="BC")
         >>> print(bc.shape)
@@ -241,11 +241,11 @@ class Rectangle(HyperCube):
 
     Examples:
         >>> from easydict import EasyDict as edict
-        >>> from mindflow.geometry import create_config_from_edict, Rectangle
+        >>> from mindflow.geometry import generate_sampling_config, Rectangle
         >>> rectangle_mesh = edict({'domain': edict({'random_sampling': False, 'size': [50, 25]}),
         ...                         'BC': edict({'random_sampling': False, 'size': 300, 'with_normal': True,}),})
         >>> rectangle = Rectangle("rectangle", (-3.0, 1), (1, 2),
-        ...                       sampling_config=create_config_from_edict(rectangle_mesh))
+        ...                       sampling_config=generate_sampling_config(rectangle_mesh))
         >>> domain = rectangle.sampling(geom_type="domain")
         >>> bc, bc_normal = rectangle.sampling(geom_type="BC")
         >>> print(domain.shape)

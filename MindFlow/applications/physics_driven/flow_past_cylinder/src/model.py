@@ -26,7 +26,7 @@ from mindflow.cell import get_activation, LinearBlock
 class FlowNetwork(nn.Cell):
     """Full-connect networks."""
 
-    def __init__(self, input_dim, output_dim, coord_min, coord_max,
+    def __init__(self, in_channels, out_channels, coord_min, coord_max,
                  num_layers=10, neurons=64, activation="tanh", residual=False):
         super(FlowNetwork, self).__init__()
         self.activation = get_activation(activation)
@@ -34,8 +34,8 @@ class FlowNetwork(nn.Cell):
         self.upper_x = Tensor(np.array(coord_max).astype(np.float32))
         self.residual = residual
 
-        self.fc1 = LinearBlock(input_dim, neurons,
-                               weight_init=TruncatedNormal(sigma=np.sqrt(2.0 / (input_dim + neurons))))
+        self.fc1 = LinearBlock(in_channels, neurons,
+                               weight_init=TruncatedNormal(sigma=np.sqrt(2.0 / (in_channels + neurons))))
         self.cell_list = nn.CellList()
         if num_layers < 2:
             raise ValueError("Total layers number should be at least 2, but got: {}".format(num_layers))
@@ -43,8 +43,8 @@ class FlowNetwork(nn.Cell):
         for _ in range(self.num_hidden_layers):
             linear = LinearBlock(neurons, neurons, weight_init=TruncatedNormal(sigma=np.sqrt(1.0 / neurons)))
             self.cell_list.append(linear)
-        self.fc2 = LinearBlock(neurons, output_dim,
-                               weight_init=TruncatedNormal(sigma=np.sqrt(2.0 / (neurons + output_dim))))
+        self.fc2 = LinearBlock(neurons, out_channels,
+                               weight_init=TruncatedNormal(sigma=np.sqrt(2.0 / (neurons + out_channels))))
 
     def construct(self, *inputs):
         """fc network"""

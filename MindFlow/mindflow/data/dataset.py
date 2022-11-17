@@ -65,11 +65,11 @@ class Dataset(Data):
 
     Examples:
         >>> from easydict import EasyDict as edict
-        >>> from mindflow.geometry import Rectangle, create_config_from_edict
+        >>> from mindflow.geometry import Rectangle, generate_sampling_config
         >>> from mindflow.data import Dataset
         >>> rectangle_mesh = edict({'domain': edict({'random_sampling': False, 'size': [50, 25]})})
         >>> rect_space = Rectangle("rectangle", coord_min=[0, 0], coord_max=[5, 5],
-        ...                        sampling_config=create_config_from_edict(rectangle_mesh))
+        ...                        sampling_config=generate_sampling_config(rectangle_mesh))
         >>> geom_dict = {rect_space: ["domain"]}
         >>> dataset = Dataset(geometry_dict=geom_dict)
     """
@@ -315,7 +315,7 @@ class Dataset(Data):
         """set constraint type of dataset
 
         Args:
-            constraint_type (Union[str, dict]): The constraint type of specified dataset. If is string, the constraint
+            constraint_type (Union[str, dict): The constraint type of specified dataset. If is string, the constraint
                 type of all subdataset will be set to the same one. If is dict, the subdataset and it's constraint type
                 is specified by the pair (key, value). Default: "Equation".
 

@@ -14,7 +14,6 @@
 # ============================================================================
 """train process"""
 import os
-import json
 import time
 import numpy as np
 
@@ -26,75 +25,71 @@ from mindspore.train.serialization import load_checkpoint, load_param_into_net
 import mindspore.common.dtype as mstype
 
 from mindflow.loss import Constraints
-from mindflow.solver import Solver, LossAndTimeMonitor
+from mindflow.solver import Solver
+from mindflow.common import LossAndTimeMonitor
 from mindflow.cell import FCSequential
+from mindflow.pde import Burgers1D
+from mindflow.utils import load_yaml_config
 
-from src import create_random_dataset
-from src import Burgers1D
+from src.dataset import create_random_dataset
 from src import visual_result
 
 set_seed(123456)
 np.random.seed(123456)
 
-context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="GPU", device_id=0)
+context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="GPU", device_id=6)
 
 
-def train(config):
+def train():
     """training process"""
+    # load configurations
+    config = load_yaml_config('burgers_cfg.yaml')
 
+    # create dataset
     burgers_train_dataset = create_random_dataset(config)
     train_dataset = burgers_train_dataset.create_dataset(batch_size=config["train_batch_size"],
                                                          shuffle=True,
                                                          prebatched_data=True,
                                                          drop_remainder=True)
-    steps_per_epoch = len(burgers_train_dataset)
-    print("check train dataset size: {}".format(len(burgers_train_dataset)))
-
-    model = FCSequential(in_channel=2, out_channel=1, layers=6, neurons=20, residual=False, act="tanh")
-
-    if context.get_context(attr_key='device_target') == "Ascend":
-        model.to_float(mstype.float16)
-
-    train_prob = {}
-    for dataset in burgers_train_dataset.all_datasets:
-        train_prob[dataset.name] = Burgers1D(model=model, config=config,
-                                             domain_name="{}_points".format(dataset.name),
-                                             ic_name="{}_points".format(dataset.name),
-                                             bc_name="{}_points".format(dataset.name))
-    print("check problem: ", train_prob)
-    train_constraints = Constraints(burgers_train_dataset, train_prob)
-
-    params = model.trainable_params()
-    optim = nn.Adam(params, 5e-3)
-
+    # define models and optimizers
+    model = FCSequential(in_channels=config["model"]["in_channels"],
+                         out_channels=config["model"]["out_channels"],
+                         layers=config["model"]["layers"],
+                         neurons=config["model"]["neurons"],
+                         residual=config["model"]["residual"],
+                         act=config["model"]["activation"])
     if config["load_ckpt"]:
         param_dict = load_checkpoint(config["load_ckpt_path"])
         load_param_into_net(model, param_dict)
+    if context.get_context(attr_key='device_target') == "Ascend":
+        model.to_float(mstype.float16)
+    optimizer = nn.Adam(model.trainable_params(), config["optimizer"]["initial_lr"])
 
+    # define constraints
+    burgers_problems = [Burgers1D(model=model) for _ in range(burgers_train_dataset.num_dataset)]
+    train_constraints = Constraints(burgers_train_dataset, burgers_problems)
+
+    # define solvers
     solver = Solver(model,
-                    optimizer=optim,
+                    optimizer=optimizer,
                     train_constraints=train_constraints,
-                    test_constraints=None,
                     loss_scale_manager=DynamicLossScaleManager(),
                     )
-
-    loss_time_callback = LossAndTimeMonitor(steps_per_epoch)
-    callbacks = [loss_time_callback]
-
+    # define callbacks
+    callbacks = [LossAndTimeMonitor(len(burgers_train_dataset))]
     if config["save_ckpt"]:
         config_ck = CheckpointConfig(save_checkpoint_steps=10, keep_checkpoint_max=2)
         ckpoint_cb = ModelCheckpoint(prefix='burgers_1d', directory=config["save_ckpt_path"], config=config_ck)
         callbacks += [ckpoint_cb]
 
-    solver.train(config["train_epoch"], train_dataset, callbacks=callbacks, dataset_sink_mode=True)
-
+    # run the solver to train the model with callbacks
+    solver.train(config["train_epochs"], train_dataset, callbacks=callbacks, dataset_sink_mode=True)
+    # visualization
     visual_result(model, resolution=config["visual_resolution"])
 
 
 if __name__ == '__main__':
     print("pid:", os.getpid())
-    configs = json.load(open("./config.json"))
-    print("check config: {}".format(configs))
     time_beg = time.time()
-    train(configs)
+    train()
     print("End-to-End total time: {} s".format(time.time() - time_beg))

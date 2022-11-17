@@ -16,7 +16,6 @@
 import time
 import numpy as np
 from mindspore.train.callback import Callback
-from mindspore.train.summary import SummaryRecord
 from mindspore import Tensor
 import mindspore.common.dtype as mstype
 
@@ -36,24 +35,16 @@ class PredictCallback(Callback):
 
         self.output_size = config.get("output_size", 3)
         self.input_size = config.get("input_size", 3)
-        self.predict_interval = config.get("predict_interval", 10)
+        self.eval_interval_epochs = config.get("eval_interval_epochs", 10)
         self.batch_size = config.get("test_batch_size", 8192 * 4)
-        self.summary_record = None
 
         self._step_counter = 0
         self.l2_error = (1.0, 1.0, 1.0)
 
-    def __enter__(self):
-        self.summary_record = SummaryRecord(self.summary_dir)
-        return self
-
-    def __exit__(self, *exc_args):
-        self.summary_record.close()
-
     def epoch_end(self, run_context):
         """Evaluate the model at the end of epoch."""
         cb_params = run_context.original_args()
-        if cb_params.cur_epoch_num % self.predict_interval == 0:
+        if cb_params.cur_epoch_num % self.eval_interval_epochs == 0:
             # predict each quantity
             index = 0
             prediction = np.zeros(self.label_shape)
@@ -89,8 +80,4 @@ class PredictCallback(Callback):
         l2_error_p = np.sqrt(np.sum(np.square(error[..., 2]))) / np.sqrt(np.sum(np.square(label[..., 2])))
         l2_error = np.sqrt(np.sum(np.square(error))) / np.sqrt(np.sum(np.square(label)))
         print("l2_error, U: ", l2_error_u, ", V: ", l2_error_v, ", P: ", l2_error_p, ", Total: ", l2_error)
-        self.summary_record.add_value('scalar', 'l2_u', Tensor(l2_error_u))
-        self.summary_record.add_value('scalar', 'l2_v', Tensor(l2_error_v))
-        self.summary_record.add_value('scalar', 'l2_p', Tensor(l2_error_p))
-        self.summary_record.add_value('scalar', 'l2_all', Tensor(l2_error))
         return l2_error_u, l2_error_v, l2_error_p, l2_error

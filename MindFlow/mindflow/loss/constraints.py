@@ -16,11 +16,10 @@
 get constraints function map.
 """
 from __future__ import absolute_import
-
 from mindspore import log as logger
 from mindspore import nn
-
 from ..data import Dataset, CONSTRAINT_TYPES
+from ..pde import Problem
 from ..utils.check_func import check_mode
 
 
@@ -74,24 +73,35 @@ class Constraints:
 
     Args:
         dataset (Dataset): The dataset includes partial differential equation, boundary condition and initial condition.
-        pde_dict(dict): The dict of partial differential equation problem.
+        problem_list (list): A list of problems related to domain, BC, IC and others.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
     """
-    def __init__(self, dataset, pde_dict):
+    def __init__(self, dataset, problem_list):
         check_mode("Constraints")
         if not isinstance(dataset, Dataset):
             raise TypeError("dataset should be an instance of Dataset")
-        if not isinstance(pde_dict, dict):
-            raise TypeError("pde_dict: {} should be dictionary, but got: {}".format(pde_dict, type(pde_dict)))
+        for problem in problem_list:
+            if not isinstance(problem, Problem):
+                raise TypeError("{} should be Problem, but got: {}".format(problem, type(problem)))
         self.dataset_columns_map = dataset.dataset_columns_map
         self.column_index_map = dataset.column_index_map
         self.dataset_constraint_map = dataset.dataset_constraint_map
         if not self.dataset_columns_map or not self.column_index_map or not self.dataset_constraint_map:
             raise ValueError("Maps info for dataset should not be none, please call create_dataset() first to "
                              "avoid unexpected error")
-        self.pde_dict = pde_dict
+        self.pde_dict = {}
+        index = 0
+        for dataset in dataset.all_datasets:
+            problem_list[index].set_name("domain", "{}_points".format(dataset.name))
+            problem_list[index].set_name("ic", "{}_points".format(dataset.name))
+            problem_list[index].set_name("bc", "{}_points".format(dataset.name))
+            problem_list[index].set_name("ic_label", "{}_label".format(dataset.name))
+            problem_list[index].set_name("bc_label", "{}_label".format(dataset.name))
+            self.pde_dict[dataset.name] = problem_list[index]
+            index += 1
+
         self.dataset_cell_index_map = {}
         self.fn_cell_list = nn.CellList()
         self._get_loss_func()
@@ -101,11 +111,12 @@ class Constraints:
         logger.info("check dataset_cell_index_map: {}".format(self.dataset_cell_index_map))
         logger.info("check fn_cell_list: {}".format(self.fn_cell_list))
 
+
     def _get_loss_func(self):
         """Get the loss fn map."""
         index = -1
         for dataset_name in self.dataset_columns_map.keys():
-            for name in self.pde_dict.keys():
+            for name in self.pde_dict:
                 if name is None:
                     raise ValueError("pde_dict should not be None")
                 if dataset_name in [name, name + "_BC", name + "_IC", name + "_domain"]:

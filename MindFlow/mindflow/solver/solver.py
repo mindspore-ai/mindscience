@@ -16,7 +16,7 @@
 from mindspore.train import Model, amp
 from mindspore import nn, Tensor
 
-from .callback import EvalCallback
+from ..common import EvalCallback
 from ..loss import NetWithLoss, NetWithEval, get_loss_metric
 from ..utils.check_func import check_param_type
 

@@ -98,3 +98,8 @@
 "mindscience/MindFlow/mindflow/utils/check_func.py"                                            "unidiomatic-typecheck"
 "mindscience/MindFlow/applications/physical_driven/burgers_pinns/src/burgers.py"               "unused-argument"
 "mindscience/MindFlow/mindflow/cell/basic_block.py"                                            "unused-argument"
+"mindscience/MindFlow/applications/physics_driven/burgers_pinns/src/burgers.py"     "unused-argument"
+"mindscience/MindFlow/mindflow/loss/constraints.py"                                            "redefined-argument-from-local"
+"mindscience/MindFlow/mindflow/operators/derivatives.py"                                       "trailing-whitespace"
+"mindscience/MindFlow/mindflow/cell/basic_block.py"                                            "bad-continuation"
+

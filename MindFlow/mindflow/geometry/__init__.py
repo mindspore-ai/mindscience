@@ -20,7 +20,7 @@ from .geometry_3d import Cuboid
 from .geometry_nd import FixedPoint, HyperCube
 from .geometry_td import TimeDomain, GeometryWithTime
 from .csg import CSGIntersection, CSGDifference, CSGUnion, CSGXOR, CSG
-from .geom_utils import create_config_from_edict
+from .geom_utils import generate_sampling_config
 
 __all__ = [
     "Geometry",
@@ -38,5 +38,5 @@ __all__ = [
     "CSGDifference",
     "CSGUnion",
     "CSGXOR",
-    "create_config_from_edict"
+    "generate_sampling_config"
 ]

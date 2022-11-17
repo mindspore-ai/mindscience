@@ -32,11 +32,33 @@ class Problem():
     the equation residual.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
     """
+
     def __init__(self):
         super(Problem, self).__init__()
         self.problem_type = type(self).__name__
+        self.domain_name = None
+        self.bc_name = None
+        self.ic_name = None
+        self.bc_label_name = None
+        self.ic_label_name = None
+
+    def set_name(self, key, value):
+        """Set name for the problem"""
+        if key == "domain":
+            self.domain_name = value
+        elif key == "bc":
+            self.bc_name = value
+        elif key == "ic":
+            self.ic_name = value
+        elif key == "bc_label":
+            self.bc_label_name = value
+        elif key == "ic_label":
+            self.ic_label_name = value
+        else:
+            raise ValueError("the value of {} should be domain, bc, ic, bc_label or ic_label, \
+                             but got: {}".format(key, value))
 
     def governing_equation(self, *output, **kwargs):
         """

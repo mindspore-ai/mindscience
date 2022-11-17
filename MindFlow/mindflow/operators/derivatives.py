@@ -66,8 +66,8 @@ class _MergeOutput(nn.Cell):
 
 
 @constexpr
-def _generate_sens(batch_size, out_chanel, i):
-    sens = np.zeros((batch_size, out_chanel), np.float32)
+def _generate_sens(batch_size, out_channels, i):
+    sens = np.zeros((batch_size, out_channels), np.float32)
     sens[:, i] = 1
     return Tensor(sens)
 
@@ -169,8 +169,8 @@ class Grad(nn.Cell):
             net_out = self.model(*net_in)
         net_out = _transfer_tensor_to_tuple(net_out)[0]
         _check_dimension(net_in[self.argnum].shape, net_out.shape, input_idx, output_idx)
-        batch_size, out_chanel = net_out.shape
-        sens = _generate_sens(batch_size, out_chanel, output_idx)
+        batch_size, out_channels = net_out.shape
+        sens = _generate_sens(batch_size, out_channels, output_idx)
         gradient_function = self.grad(self.model)
         sens = self.cast(sens, self.dtype(net_out))
         gradient = gradient_function(*net_in, sens)
@@ -244,185 +244,97 @@ class SecondOrderGrad(nn.Cell):
         return hes
 
 
-class Jacobian(nn.Cell):
-    r"""
-    Computes the Jacobian of a given function or network.
+@constexpr
+def get_vmap_sens_list(batch_size, out_channel, output_idxs):
+    sens = []
+    for output_idx in output_idxs:
+        sen = _generate_sens(batch_size, out_channel, output_idx)
+        sens.append(sen)
+    return sens
 
-    Note:
-        The output of the given function or network should be a single Tensor.
+
+class GradVmap(nn.Cell):
+    """
+    Computes and returns the gradients of the specified column of outputs with respect to the specified column of
+    inputs using Vmap.
 
     Args:
-        net (Union[function, Cell]): a function or network that takes Tensor inputs.
-        arg_nums (int): specifies which input the output takes the first derivative of.
-        out_idx (int): specifies which output to take the first derivative of.
+        model (Cell): a function or network that takes Tensor inputs.
+        argnum (int): specifies which input the output takes the first derivative of. Default: 0.
 
     Inputs:
-        - **x** (Tensor) - The inputs of the function or network `net`.
+        - **x** (list) - The input is variable-length argument. The first input is a 2D network inputs (Tensor),
+          the last three inputs are column index of input (int), column index of output (int) and output of
+          network (Tensor).
 
     Outputs:
-        Tensor or tuple of Tensors. If `arg_nums` is int, output will be a Tensor whose shape is the shape of
-        specified output * the shape of specified input. If `arg_nums` is None, output will be a tuple of Tensors
-        where output[i] will contain the Jacobian of the specified output and ith input and will have as size the
-        concatenation of the sizes of the corresponding output and the corresponding input
+        Tensor.
 
     Raises:
-        TypeError: if the type of `arg_nums` or `out_idx` is not int.
+        TypeError: If the type of `argnum` is not int.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.operators import Jacobian
-        >>> from mindspore import Tensor
-        >>> def func(x, y):
-        >>>     return (x * x * x * y + 3 * y * y * x).sum()
+        >>> from mindspore import nn, Tensor
+        >>> from mindflow.operators import Grad
         ...
-        >>> a = Tensor(np.array([[1, 3], [5, 9], [8, 2]], np.float32))
-        >>> b = Tensor(np.array([[4, 6], [7, 2], [2, 1]], np.float32))
-        >>> jac = Jacobian(func, 0, 0)
-        >>> output = jac(a, b)
-        >>> print(output.shape)
-        (3, 2)
+        >>> class Net(nn.Cell):
+        ...    def __init__(self):
+        ...        super(Net, self).__init__()
+        ...    def construct(self, x):
+        ...        return x * x
+        ...
+        >>> x = Tensor(np.array([[1.0, -2.0], [-3.0, 4.0]]).astype(np.float32))
+        >>> net = Net()
+        >>> out = net(x)
+        >>> grad = Grad(net)
+        >>> print(grad(x, 0, 0, out).asnumpy())
+        [[ 2.]
+         [-6.]]
     """
-    def __init__(self, net, argnums=0, out_idx=0):
-        super(Jacobian, self).__init__()
-        if not (isinstance(argnums, int) or argnums is None) or not isinstance(out_idx, int):
-            raise TypeError("The type of argnums should be int or None and out_idx should be int.")
-        self.net = net
-        self.argnums = argnums
-        self.out_idx = out_idx
-        self.grad_op = ops.GradOperation(get_all=True, sens_param=True)
-        self.eye = ops.Eye()
-        self.concat = ops.Concat()
-        self.reshape = ops.Reshape()
-        self.tuple_len = ops.Primitive("tuple_len")
-        self.make_list = ops.Primitive("make_list")
-        self._merge_output = _MergeOutput()
-        self._generate_multi_sens = _GenerateMultiSens()
+    def __init__(self, model, argnum=0):
+        super(GradVmap, self).__init__()
+        if not isinstance(model, nn.Cell) and not isfunction(model):
+            raise TypeError("The type of model should be a function or network, but got {}".format(type(model)))
+        self.model = model
+        if isinstance(argnum, bool) or not isinstance(argnum, int):
+            raise TypeError("The type of argnum should be int, but get {}".format(type(argnum)))
         self.hyper_map = C.HyperMap()
+        self.argnum = argnum
+        self.grad = ops.GradOperation(get_all=True, sens_param=True)
+        self.gather = ops.Gather()
+        self.cast = ops.Cast()
+        self.dtype = ops.DType()
+        self.stack_op = ops.Stack(axis=0)
 
     def construct(self, *x):
-        """
-        forward
+        x = _transfer_tensor_to_tuple(x)
+        input_idx, output_idxs, net_out = x[-3], x[-2], x[-1]
+        net_in = x[:-3]
 
-        Args:
-            inputs (tuple): input tensor.
-        """
-        net_out = _transfer_tensor_to_tuple(self.net(*x))
-        net_out_target = net_out[self.out_idx]
-        grad_fn = self.grad_op(self.net)
-        input_len = self.tuple_len(x)
+        if net_out is None:
+            net_out = self.model(*net_in)
+        net_out = _transfer_tensor_to_tuple(net_out)[0]
 
-        identity_matrix = self.eye(net_out_target.size, net_out_target.size, mstype.float32)
-        identity_matrix = ops.Split(0, net_out_target.size)(identity_matrix)
-        if self.argnums is None:
-            out_tmp = [()] * input_len
-            for line in identity_matrix:
-                sens = self.reshape(line, net_out_target.shape)
-                grad_wrt_output = self._generate_multi_sens(self.out_idx, net_out, sens)
-                grad = grad_fn(*x, grad_wrt_output)
-                grad = self.hyper_map(cast_grad, grad)
-                out_tmp = self._merge_output(out_tmp, grad, input_len)
-            output = ()
-            for i in range(input_len):
-                out_tmp[i] = self.concat(out_tmp[i])
-                output = output + (self.reshape(out_tmp[i], net_out_target.shape + x[i].shape),)
-            return output
-        output = ()
-        for line in identity_matrix:
-            sens = self.reshape(line, net_out_target.shape)
-            grad_wrt_output = self._generate_multi_sens(self.out_idx, net_out, sens)
-            grad = grad_fn(*x, grad_wrt_output)
-            grad = self.hyper_map(cast_grad, grad)
-            output = output + (grad[self.argnums],)
-        output = self.concat(output)
-        return self.reshape(output, net_out_target.shape + x[self.argnums].shape)
+        batch_size, out_channels = net_out.shape
+        sens = get_vmap_sens_list(batch_size, out_channels, output_idxs)
+        sens = self.stack_op(sens)
+        sens = self.cast(sens, self.dtype(net_out))
+        gradient_function = self.grad(self.model)
+        gradient_function_vmap = F.vmap(gradient_function, in_axes=(None, 0), out_axes=0)
+        gradient = gradient_function_vmap(*net_in, sens)
+        gradient = self.hyper_map(cast_grad, gradient)
 
+        if input_idx is None:
+            output = gradient[self.argnum]
+        else:
+            out_indices = _generate_indices(input_idx)
+            output = self.gather(gradient[self.argnum], out_indices, 2)
 
-class Hessian(nn.Cell):
-    r"""
-    Computes the Hessian of a given function or network.
-
-    Note:
-        The output of the given function or network should be a single Tensor.
-
-    Args:
-        net (Union[function, Cell]): a function or network that takes Tensor inputs and returns a single Tensor.
-        diff1_idx (int): specifies which input the output takes the first derivative of.
-        diff2_idx (int): specifies which input the output takes the second derivative of.
-
-    Inputs:
-        - **x** (Tensor) - The inputs of the function or network `net`.
-
-    Outputs:
-        Tensor, the shape is the shape output * shape of specified input * the shape of specified input.
-
-    Raises:
-        TypeError: if the type of `diff1_idx` or `diff2_idx` is not int.
-
-    Supported Platforms:
-        ``Ascend``
-
-    Examples:
-        >>> import numpy as np
-        >>> from mindflow.operators import Hessian
-        >>> from mindspore import Tensor
-        >>> def func(x, y):
-        >>>     return (x * x * x * y + 3 * y * y * x).sum()
-        >>> a = Tensor(np.array([[1, 3], [5, 9], [8, 2]], np.float32))
-        >>> b = Tensor(np.array([[4, 6], [7, 2], [2, 1]], np.float32))
-        >>> hes = Hessian(func, 0, 0)
-        >>> output = hes(a, b)
-        >>> print(output.shape)
-        (3, 2, 3, 2)
-    """
-    def __init__(self, net, diff1_idx, diff2_idx, out_idx=0):
-        super(Hessian, self).__init__()
-        if not isinstance(diff1_idx, int) or not (isinstance(diff2_idx, int) or diff2_idx is None):
-            raise TypeError("The type of diff1 should be int and diff2 should be int or None.")
-        self.jac1 = Jacobian(net, argnums=None, out_idx=out_idx)
-        self.jac2 = Jacobian(self.jac1, argnums=diff2_idx, out_idx=diff1_idx)
-
-    def construct(self, *x):
-        return self.jac2(*x)
-
-
-def jacobian(func, inputs):
-    r"""
-    Function that computes the Jacobian of a given function or network.
-
-    Parameters:
-        func: a function or network that takes Tensor inputs.
-        inputs: The inputs of the function or network `net`.
-    """
-    inputs = _transfer_tensor_to_tuple(inputs)
-    func_out = _transfer_tensor_to_tuple(func(*inputs))
-    output = ()
-    for i in range(len(func_out)):
-        jac = Jacobian(func, argnums=None, out_idx=i)
-        output = output + _transfer_tensor_to_tuple(jac(*inputs))
-    return output
-
-
-def hessian(func, inputs):
-    r"""
-    Function that computes the Hessian of a given function or network.
-
-    Parameters:
-        func: a function or network that takes Tensor inputs.
-        inputs: The inputs of the function or network `net`.
-    """
-    inputs = _transfer_tensor_to_tuple(inputs)
-    func_out = _transfer_tensor_to_tuple(func(*inputs))
-    output = ()
-    for i in range(len(func_out)):
-        out_tmp = ()
-        for j in range(len(inputs)):
-            hes = Hessian(func, diff1_idx=j, diff2_idx=None, out_idx=i)
-            out_tmp = out_tmp + _transfer_tensor_to_tuple(hes(*inputs))
-        output = output + out_tmp
-    return output
+        return output
 
 
 class _FirstOrderGrad(nn.Cell):
@@ -446,8 +358,8 @@ class _FirstOrderGrad(nn.Cell):
         net_out = self.model(*x)
         net_out = _transfer_tensor_to_tuple(net_out)[0]
         _check_dimension(x[self.argnums].shape, net_out.shape, self.input_idx, self.output_idx)
-        batch_size, out_chanel = net_out.shape
-        sens = _generate_sens(batch_size, out_chanel, self.output_idx)
+        batch_size, out_channels = net_out.shape
+        sens = _generate_sens(batch_size, out_channels, self.output_idx)
         gradient_function = self.grad(self.model)
         sens = self.cast(sens, self.dtype(net_out))
         gradient = gradient_function(*x, sens)
@@ -455,12 +367,4 @@ class _FirstOrderGrad(nn.Cell):
         outout_indices = _generate_indices(self.input_idx)
         output = self.gather(gradient[self.argnums], outout_indices, 1)
         return output
-
-
-@constexpr
-def get_vmap_sens_list(batch_size, out_channel, output_idxs):
-    sens = []
-    for output_idx in output_idxs:
-        sen = _generate_sens(batch_size, out_channel, output_idx)
-        sens.append(sen)
-    return sens
+        
