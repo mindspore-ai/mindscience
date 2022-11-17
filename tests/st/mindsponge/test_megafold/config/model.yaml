@@ -6,6 +6,14 @@ max_relative_feature: 32
 recycle_features: True
 recycle_pos: True
 seq_channel: 384
+ascend:
+  lr: 0.0001
+GPU:
+  lr_max: 0.001
+  lr_min: 0.0001
+  warmup_steps: 1000
+  start_step: 0
+  lr_decay_steps: 75000
 prev_pos:
   min_bin: 3.25
   max_bin: 20.75
@@ -70,6 +78,8 @@ template:
 evoformer:
   msa_stack_num: 48
   extra_msa_stack_num: 4
+  msa_stack_num_assessment: 8
+  extra_msa_stack_num_assessment: 4
   msa_row_attention_with_pair_bias:
     dropout_rate: 0.15  # 0.15
     gating: True

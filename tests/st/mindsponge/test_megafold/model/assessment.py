@@ -13,83 +13,26 @@
 # limitations under the License.
 # ============================================================================
 """model"""
-import numpy as np
 import mindspore.common.dtype as mstype
 import mindspore.nn as nn
 import mindspore.numpy as mnp
 from mindspore.ops import operations as P
 from mindspore.common.tensor import Tensor
 from mindspore import Parameter
-import mindsponge.common.residue_constants as residue_constants
 from mindsponge.common.utils import dgram_from_positions, pseudo_beta_fn, atom37_to_torsion_angles
-from mindsponge.data.data_transform import get_chi_atom_pos_indices
 from mindsponge.cell.initializer import lecun_init
 from module.template_embedding import TemplateEmbedding
 from module.evoformer import Evoformer
 from module.structure import StructureModule
-from module.head import DistogramHead, ExperimentallyResolvedHead, MaskedMsaHead, \
-    PredictedLDDTHead, PredictedAlignedErrorHead
-from scipy.special import softmax
+from module.head import DistogramHead, PredictedLDDTHead, EstogramHead
+from model.fold import caculate_constant_array
 
 
-def caculate_constant_array(seq_length):
-    '''constant array'''
-    chi_atom_indices = np.array(get_chi_atom_pos_indices()).astype(np.int32)
-    chi_angles_mask = list(residue_constants.chi_angles_mask)
-    chi_angles_mask.append([0.0, 0.0, 0.0, 0.0])
-    chi_angles_mask = np.array(chi_angles_mask).astype(np.float32)
-    mirror_psi_mask = np.float32(np.asarray([1., 1., -1., 1., 1., 1., 1.])[None, None, :, None])
-    chi_pi_periodic = np.float32(np.array(residue_constants.chi_pi_periodic))
-
-    indices0 = np.arange(4).reshape((-1, 1, 1, 1, 1)).astype("int32")  # 4 batch
-    indices0 = indices0.repeat(seq_length, axis=1)  # seq_length sequence length
-    indices0 = indices0.repeat(4, axis=2)  # 4 chis
-    indices0 = indices0.repeat(4, axis=3)  # 4 atoms
-
-    indices1 = np.arange(seq_length).reshape((1, -1, 1, 1, 1)).astype("int32")
-    indices1 = indices1.repeat(4, axis=0)
-    indices1 = indices1.repeat(4, axis=2)
-    indices1 = indices1.repeat(4, axis=3)
-
-    constant_array = [chi_atom_indices, chi_angles_mask, mirror_psi_mask, chi_pi_periodic, indices0, indices1]
-    constant_array = [Tensor(val) for val in constant_array]
-    return constant_array
-
-
-def compute_confidence(predicted_lddt_logits, return_lddt=False):
-    """compute confidence"""
-
-    num_bins = predicted_lddt_logits.shape[-1]
-    bin_width = 1 / num_bins
-    start_n = bin_width / 2
-    plddt = compute_plddt(predicted_lddt_logits, start_n, bin_width)
-    confidence = np.mean(plddt)
-    if return_lddt:
-        return confidence, plddt
-
-    return confidence
-
-
-def compute_plddt(logits, start_n, bin_width):
-    """Computes per-residue pLDDT from logits.
-
-    Args:
-      logits: [num_res, num_bins] output from the PredictedLDDTHead.
-
-    Returns:
-      plddt: [num_res] per-residue pLDDT.
-    """
-    bin_centers = np.arange(start=start_n, stop=1.0, step=bin_width)
-    probs = softmax(logits, axis=-1)
-    predicted_lddt_ca = np.sum(probs * bin_centers[None, :], axis=-1)
-    return predicted_lddt_ca * 100
-
-
-class MegaFold(nn.Cell):
+class MegaAssessment(nn.Cell):
     """MegaFold"""
 
     def __init__(self, config, mixed_precision):
-        super(MegaFold, self).__init__()
+        super(MegaAssessment, self).__init__()
 
         self.cfg = config
 
@@ -106,8 +49,8 @@ class MegaFold(nn.Cell):
         self.max_bin = self.cfg.prev_pos.max_bin
         self.template_enabled = self.cfg.template.enabled
         self.template_embed_torsion_angles = self.cfg.template.embed_torsion_angles
-        self.extra_msa_stack_num = self.cfg.evoformer.extra_msa_stack_num
-        self.msa_stack_num = self.cfg.evoformer.msa_stack_num
+        self.extra_msa_stack_num = self.cfg.evoformer.extra_msa_stack_num_assessment
+        self.msa_stack_num = self.cfg.evoformer.msa_stack_num_assessment
         self.chi_atom_indices, self.chi_angles_mask, self.mirror_psi_mask, self.chi_pi_periodic, \
         self.indices0, self.indices1 = caculate_constant_array(self.cfg.seq_length)
 
@@ -164,14 +107,6 @@ class MegaFold(nn.Cell):
                 msa_block.recompute()
                 msa_stack.append(msa_block)
             self.msa_stack = msa_stack
-
-            self.module_distogram = DistogramHead(self.cfg.heads.distogram,
-                                                  self.cfg.pair_channel)
-            self.module_exp_resolved = ExperimentallyResolvedHead(self.cfg.seq_channel)
-            self.module_mask = MaskedMsaHead(self.cfg.heads.masked_msa,
-                                             self.cfg.msa_channel)
-            self.aligned_error = PredictedAlignedErrorHead(self.cfg.heads.predicted_aligned_error,
-                                                           self.cfg.pair_channel)
         else:
             self.msa_stack = Evoformer(self.cfg,
                                        msa_act_dim=256,
@@ -187,14 +122,50 @@ class MegaFold(nn.Cell):
 
         self.module_lddt = PredictedLDDTHead(self.cfg.heads.predicted_lddt,
                                              self.cfg.seq_channel)
+        self.module_distogram = DistogramHead(self.cfg.heads.distogram,
+                                              self.cfg.pair_channel)
+
+        self.module_lddt_decoy = PredictedLDDTHead(self.cfg.heads.predicted_lddt,
+                                                   self.cfg.seq_channel * 3)
+        self.module_estogram = EstogramHead(first_break=self.cfg.heads.distogram.first_break,
+                                            last_break=self.cfg.heads.distogram.last_break,
+                                            num_bins=self.cfg.heads.distogram.num_bins)
+
+        self.norm_0 = LayerNormDense(self.cfg.msa_channel, self.cfg.seq_channel)
+        self.norm_1 = LayerNormDense(self.cfg.msa_channel, self.cfg.seq_channel)
+        self.norm_2 = LayerNormDense(self.cfg.msa_channel, self.cfg.seq_channel)
+        self.extra_msa_length = self.cfg.max_extra_msa
+        self.msa_cluster_length = self.cfg.max_msa_clusters
 
     def construct(self, target_feat, msa_feat, msa_mask, seq_mask, aatype,
                   template_aatype, template_all_atom_masks, template_all_atom_positions,
                   template_mask, template_pseudo_beta_mask, template_pseudo_beta, extra_msa, extra_has_deletion,
                   extra_deletion_value, extra_msa_mask,
                   residx_atom37_to_atom14, atom37_atom_exists, residue_index,
-                  prev_pos, prev_msa_first_row, prev_pair):
+                  prev_pos, prev_msa_first_row, prev_pair, final_atom_positions_recycle, final_atom_mask_recycle):
         """construct"""
+        decoy_pseudo_beta, decoy_pseudo_beta_mask = pseudo_beta_fn(aatype, final_atom_positions_recycle,
+                                                                   final_atom_mask_recycle)
+        extra_msa = mnp.zeros_like(extra_msa[:self.extra_msa_length])
+        extra_has_deletion = mnp.zeros_like(extra_has_deletion[:self.extra_msa_length])
+        extra_deletion_value = mnp.zeros_like(extra_deletion_value[:self.extra_msa_length])
+        extra_msa_mask = mnp.zeros_like(extra_msa_mask[:self.extra_msa_length])
+        msa_feat = msa_feat[:self.msa_cluster_length]
+        msa_mask = msa_mask[:self.msa_cluster_length]
+        msa_feat[1:self.msa_cluster_length] = mnp.zeros_like(msa_feat[1:self.msa_cluster_length])
+        msa_mask[1:self.msa_cluster_length] = mnp.zeros_like(msa_mask[1:self.msa_cluster_length])
+        template_aatype[0:1] = aatype[None]
+        template_all_atom_masks[0] = final_atom_mask_recycle
+        template_all_atom_positions[0] = final_atom_positions_recycle
+        template_mask[0] = mnp.ones_like(template_mask[0])
+        template_pseudo_beta_mask[0] = decoy_pseudo_beta_mask
+        template_pseudo_beta[0] = decoy_pseudo_beta
+        template_aatype[1:] = mnp.zeros_like(template_aatype[1:])
+        template_all_atom_masks[1:] = mnp.zeros_like(template_all_atom_masks[1:])
+        template_all_atom_positions[1:] = mnp.zeros_like(template_all_atom_positions[1:])
+        template_mask[1:] = mnp.zeros_like(template_mask[1:])
+        template_pseudo_beta_mask[1:] = mnp.zeros_like(template_pseudo_beta_mask[1:])
+        template_pseudo_beta[1:] = mnp.zeros_like(template_pseudo_beta[1:])
 
         preprocess_1d = self.preprocess_1d(target_feat)
         preprocess_msa = self.preprocess_msa(msa_feat)
@@ -230,12 +201,13 @@ class MegaFold(nn.Cell):
         extra_msa_feat = mnp.concatenate((msa_1hot, extra_has_deletion[..., None], extra_deletion_value[..., None]),
                                          axis=-1)
         extra_msa_activations = self.extra_msa_activations(extra_msa_feat)
-        extra_msa_norm = P.ExpandDims()(P.MatMul(transpose_a=True)(extra_msa_mask, extra_msa_mask), -1)
+        extra_msa_mask_tmp = P.Transpose()(P.ExpandDims()(extra_msa_mask, -1), (2, 1, 0))
+        extra_msa_norm = P.Transpose()(self.batch_matmul_trans_b(extra_msa_mask_tmp, extra_msa_mask_tmp), (1, 2, 0))
         for i in range(self.extra_msa_stack_num):
             extra_msa_activations, pair_activations = \
                 self.extra_msa_stack[i](extra_msa_activations, pair_activations, extra_msa_mask, extra_msa_norm,
                                         mask_2d)
-
+        template_activations = None
         if self.template_enabled and self.template_embed_torsion_angles:
             num_templ, num_res = template_aatype.shape
             aatype_one_hot = self.template_aatype_one_hot(template_aatype)
@@ -253,7 +225,12 @@ class MegaFold(nn.Cell):
             torsion_angle_mask = torsion_angles_mask[:, :, 2]
             msa_mask = mnp.concatenate([msa_mask, torsion_angle_mask], axis=0)
 
-        msa_mask_norm = P.ExpandDims()(P.MatMul(transpose_a=True)(msa_mask, msa_mask), -1)
+        msa_mask_tmp = P.Transpose()(P.ExpandDims()(msa_mask, -1), (2, 1, 0))
+        msa_mask_norm = P.Transpose()(self.batch_matmul_trans_b(msa_mask_tmp, msa_mask_tmp), (1, 2, 0))
+
+        msa_decoy = []
+        msa_decoy += [self.norm_0(template_activations[0]),]
+
         if self.is_training:
             for i in range(self.msa_stack_num):
                 msa_activations, pair_activations = self.msa_stack[i](msa_activations, pair_activations, msa_mask,
@@ -268,10 +245,11 @@ class MegaFold(nn.Cell):
                                                                    mask_2d,
                                                                    self.idx_evoformer_block)
                 self.idx_evoformer_block += 1
+
+        msa_decoy += [self.norm_1(msa_activations[0]),]
+        msa_decoy += [self.norm_2(msa_activations[-4]),]
+
         single_activations = self.single_activations(msa_activations[0])
-        num_sequences = msa_feat.shape[0]
-        msa = msa_activations[:num_sequences, :, :]
-        msa_first_row = msa_activations[0]
 
         final_atom_positions, _, rp_structure_module, atom14_pred_positions, final_affines, \
         angles_sin_cos_new, um_angles_sin_cos_new, sidechain_frames, sidechain_atom_pos, structure_traj = \
@@ -282,20 +260,29 @@ class MegaFold(nn.Cell):
                                   residx_atom37_to_atom14,
                                   atom37_atom_exists)
         predicted_lddt_logits = self.module_lddt(rp_structure_module)
-        if self.is_training and self.train_backward:
-            predicted_lddt_logits = self.module_lddt(rp_structure_module)
-            dist_logits, bin_edges = self.module_distogram(pair_activations)
-            experimentally_logits = self.module_exp_resolved(single_activations)
-            masked_logits = self.module_mask(msa)
-            aligned_error_logits, aligned_error_breaks = self.aligned_error(pair_activations)
-            return dist_logits, bin_edges, experimentally_logits, masked_logits, aligned_error_logits, \
-                   aligned_error_breaks, atom14_pred_positions, final_affines, angles_sin_cos_new, \
-                   predicted_lddt_logits, structure_traj, sidechain_frames, sidechain_atom_pos, \
-                   um_angles_sin_cos_new, final_atom_positions
-        final_atom_positions = P.Cast()(final_atom_positions, self._type)
-        prev_pos = final_atom_positions
-        prev_msa_first_row = msa_first_row
-        prev_pair = pair_activations
+        dist_logits, bin_edges = self.module_distogram(pair_activations)
+        plddt_dist, pred_mask2d, _ = self.module_estogram(dist_logits, decoy_pseudo_beta, decoy_pseudo_beta_mask)
         if self.is_training:
-            return prev_pos, prev_msa_first_row, prev_pair
-        return prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits
+            msa_decoy = mnp.concatenate(msa_decoy, axis=-1)
+            decoy_logits = self.module_lddt_decoy(msa_decoy)
+            out = dist_logits, bin_edges, atom14_pred_positions, final_affines, angles_sin_cos_new,\
+                  predicted_lddt_logits, structure_traj, sidechain_frames, sidechain_atom_pos,\
+                  um_angles_sin_cos_new, final_atom_positions, decoy_pseudo_beta, decoy_pseudo_beta_mask, \
+                  decoy_logits, plddt_dist, pred_mask2d
+            return out
+        return plddt_dist
+
+
+class LayerNormDense(nn.Cell):
+    """layernorm and dense layer"""
+    def __init__(self, inchannel, out_channel):
+        super(LayerNormDense, self).__init__()
+        self.norm = nn.LayerNorm([inchannel,], epsilon=1e-5)
+        self.act = nn.Dense(inchannel, out_channel, weight_init=lecun_init(inchannel)).to_float(mstype.float16)
+
+    def construct(self, single_act):
+        """construct"""
+        out = self.norm(single_act.astype(mstype.float32)).astype(mstype.float16)
+        out = self.act(out)
+
+        return out

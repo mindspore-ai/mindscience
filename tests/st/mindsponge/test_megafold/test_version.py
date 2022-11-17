@@ -12,18 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Test mindsponge ascend."""
+"""Test mindsponge version."""
 import pytest
+import mindspore as ms
+from mindsponge import _mindspore_version_check
 
 
 @pytest.mark.level0
+@pytest.mark.platform_x86_gpu_training
 @pytest.mark.platform_arm_ascend_training
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
-def test_ascend():
+def test_version():
     """
-    Feature: test ascend
+    Feature: check mindspore version
     Description: None
-    Expectation: assert 1 < 2
+    Expectation: ms_version >= required_mindspore_version
     """
-    assert 1 < 2
+    ms_version = ms.__version__[:5]
+    required_mindspore_version = '1.8.1'
+    print(ms_version)
+    _mindspore_version_check()
+    assert ms_version >= required_mindspore_version
