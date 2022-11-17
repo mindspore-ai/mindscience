@@ -20,10 +20,10 @@ MEGA-Protein mainly consists of three parts:
 <img src="../../docs/evogen_contest.jpg" alt="MEGA-EvoGen wins CAMEO-3D monthly 1st" width="600"/>
 </div>
 
-- **Protein Structure Assessment Tool MEGA-Assessement** This tool evaluates the prediction accuracy of each residue in the protein structure and the inter-residue distance error. It further optimizes the protein structure based on the evaluation results. This method obtains the CAMEO-QE No. 1 on the monthly list in July 2022.
+- **Protein Structure Assessment Tool MEGA-Assessment** This tool evaluates the prediction accuracy of each residue in the protein structure and the inter-residue distance error. It further optimizes the protein structure based on the evaluation results. This method obtains the CAMEO-QE No. 1 on the monthly list in July 2022.
 
 <div align=center>
-<img src="../../docs/assess_contest.png" alt="MEGA-Assessement wins CAMEO-QE monthly 1st" width="600"/>
+<img src="../../docs/assess_contest.png" alt="MEGA-Assessment wins CAMEO-QE monthly 1st" width="600"/>
 </div>
 
 **Model and Data Availability**
@@ -32,7 +32,7 @@ This directory is the open source code of MEGA-Protein (including MEGA-fold, MEG
 
 | Model & Dataset      | Name        | Size | Description  |Model URL  |
 |-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
-| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | model checkpoint |  [download](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)  |
+| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | model checkpoint |  [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)  |
 | PSP          | `PSP`         | 2TB(25TB after decompressed)    | multimodal dataset for protein |  [download](http://ftp.cbi.pku.edu.cn/psp/)  |
 
 <details><summary>Cite us</summary>
@@ -53,7 +53,7 @@ This directory is the open source code of MEGA-Protein (including MEGA-fold, MEG
 
 - MEGA-EvoGen:
 
-- MEGA-Assessement:
+- MEGA-Assessment:
 
 </details>
 
@@ -69,7 +69,7 @@ This directory is the open source code of MEGA-Protein (including MEGA-fold, MEG
   - [Example](#example)
     - [MEGA-Fold](#mega-fold)
     - [MEGA-EvoGen](#mega-evogen)
-    - [MEGA-Assessement](#mega-assessement)
+    - [MEGA-Assessment](#mega-assessment)
     - [MEGA-Protein](#mega-protein-1)
   - [Reference](#reference)
   - [Acknowledgement](#acknowledgement)
@@ -198,7 +198,7 @@ The protein structure prediction tool MEGA-Fold relies on the co-evolution and t
 
 ### MEGA-Fold inference
 
-First configuring the database search and related hyper-parameters in `config/data.yaml`, then downloading weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt). Finally running following command to start inference.
+First configuring the database search and related hyper-parameters in `config/data.yaml`, then downloading weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt). Finally running following command to start inference.
 
 ```bash
 Usage:python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --run_platform PLATFORM
@@ -256,9 +256,9 @@ Checkpoints are saved in `./ckpt` folder every 50 iterations. Dataset downloadin
 
 To be released
 
-### MEGA-Assessement inference
+### MEGA-Assessment inference
 
-Downloading MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt) and MEGA_Assessment weights [MEGA_Assessment.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Assessment.ckpt). Finally running following command to start inference.
+Downloading MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt) and MEGA_Assessment weights [MEGA_Assessment.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Assessment.ckpt). Finally running following command to start inference.
 
 ```bash
 Usage: python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --input_path INPUT_FILE_PATH
@@ -271,13 +271,13 @@ option:
 --input_path                    input folder, multiple .pkl or .fasta files can be included
 --decoy_pdb_path                decoy pdb folder, multiple _decoy.pdb files can be included
 --checkpoint_path               MEGA-Fold model weights path
---checkpoint_path_assessment    MEGA-Assessement model weights path
+--checkpoint_path_assessment    MEGA-Assessment model weights path
 --run_assessment                run pdb assessment
 ```
 
 ### MEGA-Assessment training
 
-Downloading our open source protein structure training dataset [PSP dataset](http://ftp.cbi.pku.edu.cn/psp/) and MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt), using follow command to start training:
+Downloading our open source protein structure training dataset [PSP dataset](http://ftp.cbi.pku.edu.cn/psp/) and MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt), using follow command to start training:
 
 ```bash
 Usage:python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --is_training True
