@@ -11,3 +11,8 @@
 
     输出：
         shape为 :math:`(*, channels)` 的Tensor。
+    
+    异常：
+        - **TypeError** - 如果 `input_scale` 不是list类型。
+        - **TypeError** - 如果 `input_center` 不是list或者None类型。
+        

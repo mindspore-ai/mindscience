@@ -1,12 +1,12 @@
-.. py:class:: mindflow.geometry.HyperCube(name, dim, coord_min, coord_max, dtype=<class 'numpy.float32'>, sampling_config=None)
+.. py:class:: mindflow.geometry.HyperCube(name, dim, coord_min, coord_max, dtype=np.float32, sampling_config=None)
 
     超立方体对象的定义。
 
     参数：
         - **name** (str) - 超立方体的名称。
         - **dim** (int) - 维数。
-        - **coord_min** (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]) - 超立方体的最小坐标。
-        - **coord_max** (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]) - 超立方体的最大坐标。
+        - **coord_min** (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float]]) - 超立方体的最小坐标。
+        - **coord_max** (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float]]) - 超立方体的最大坐标。
         - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：numpy.float32。
         - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
 

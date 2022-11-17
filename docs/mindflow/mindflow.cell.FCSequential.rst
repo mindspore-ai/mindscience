@@ -19,3 +19,10 @@
 
     输出：
         shape为 :math:`(*, out\_channels)` 的Tensor。
+    
+    异常：
+        - **TypeError** - 如果 `layers` 不是int类型。
+        - **TypeError** - 如果 `neurons` 不是int类型。
+        - **TypeError** - 如果 `residual` 不是bool类型。
+        - **ValueError** - 如果 `layers` 小于3。
+

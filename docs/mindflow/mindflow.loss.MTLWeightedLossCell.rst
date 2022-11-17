@@ -4,6 +4,7 @@
 
     参数：
         - **num_losses** (int) - 多任务损失的数量，应为正整数。
+        - **bound_param** (float) - 当边界值大于某个给定常数时，对权重和正则项的增加。
 
     输入：
         - **input** (tuple[Tensor]) - 输入数据。

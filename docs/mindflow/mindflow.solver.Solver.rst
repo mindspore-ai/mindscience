@@ -1,4 +1,4 @@
-.. py:class:: mindflow.solver.Solver(network, optimizer, loss_fn="l2", mode="Data", train_constraints=None, test_constraints=None, train_input_map=None, test_input_map=None, mtl_weighted_cell=None, latent_vector=None, latent_reg=0.01, metrics=None, eval_network=None, eval_indexes=None, amp_level="O0", **kwargs)
+.. py:class:: mindflow.solver.Solver(network, optimizer, loss_fn="l2", train_constraints=None, test_constraints=None, train_input_map=None, test_input_map=None, mtl_weighted_cell=None, regular_loss_cell=None, metrics=None, eval_network=None, eval_indexes=None, amp_level="O0", **kwargs)
 
     用于训练或推理的高级API。
     `Solver` 将图层分组到具有训练和推理功能的对象中。
@@ -18,8 +18,7 @@
         - **train_input_map** (dict) - 在训练时，指定相应数据集中数据的列名进入网络。key为数据集的名称，value为在相应的数据集中的数据列名进入网络。默认值：None。如果模型的输入不是单个， `train_input_map` 不能为None。
         - **test_input_map** (dict) - 在执行评估时，指定相应数据集中数据的列名进入网络。key为数据集的名称，value为进入网络数据集中的列名。默认值：None。如果模型的输入不是单个且需要eval，则 `test_input_map` 不能为None。
         - **mtl_weighted_cell** (Cell) - 基于多任务学习不确定性评估的损失加权算法。默认值：None。
-        - **latent_vector** (Parameter) - 参数的Tensor。控制方程中，用于编码变分参数的潜在向量。它将与采样数据连接在一起，作为最终网络输入。默认值：None。
-        - **latent_reg** (float) - 潜在向量的正则化系数。默认值：1e-2。
+        - **regular_loss_cell** (Cell) - 正则化损失函数单元。默认值：None。
         - **metrics** (Union[dict, set]) - 在训练和推理时，由模型评估的字典或metrics集。例如：{"accuracy", "recall"}。默认值：None。
         - **eval_network** (Cell) - 评估网络。如果未定义，`network` 和 `loss_fn` 将包装为 `eval_network`。默认值：None。注：在PINNs模式下不需要设置 `eval_network` 。
         - **eval_indexes** (list) - 定义 `eval_network` 时，如果 `eval_indexes` 为None，则 `eval_network` 将传递给metrics，否则 `eval_indexes` 必须包含三个元素：损失值、预测值和标签的位置。损失值将传递给 `Loss` metrics，预测值和标签将传递到其他metric。默认值：None。
@@ -74,7 +73,7 @@
         参数：
             - **epoch** (int) - 通常为每个epoch数据上的迭代总数。当 `dataset_sink_mode` 设置为true且接 `sink_size` > 0时，每个epoch接收 `sink_size` 步数，而不是迭代总数。
             - **train_dataset** (Dataset) - 训练数据集迭代器。如果没有 `loss_fn` ，将会返回具有多个数据[data1, data2, data3, ...]的tuple并传递到网络。否则返回tuple[data, label]。
-            - **callbacks** (Union[list[Callback], Callback]) - 回调对象或回调对象的列表，会在训练时被执行。默认值：None。
+            - **callbacks** (Optional[list[Callback], Callback]) - 回调对象或回调对象的列表，会在训练时被执行。默认值：None。
             - **dataset_sink_mode** (bool) - 确定是否通过数据集通道传递数据。配置PyNative模式或CPU，训练过程中数据集将不会被下沉。默认值：True。
             - **sink_size** (int) - 控制每个下沉集中的数据量。如果 `sink_size` = -1，则接收每个epoch的完整数据集。如果 `sink_size` > 0，则每个epoch下沉 `sink_size` 的数据。如果 `dataset_sink_mode` 为False，则 `sink_size` 将失效。默认值：-1。
 

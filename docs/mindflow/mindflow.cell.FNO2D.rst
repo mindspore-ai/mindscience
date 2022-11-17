@@ -1,4 +1,4 @@
-.. py:class:: mindflow.cell.FNO2D(input_dims, output_dims, resolution, modes, channels=20, depth=4, mlp_ratio=4, compute_dtype=mindspore.float32)
+.. py:class:: mindflow.cell.FNO2D(input_dims, output_dims, resolution, modes, channels=20, depth=4, mlp_ratio=4, compute_dtype=mstype.float32)
 
     二维傅里叶神经算子（FNO2D）包含一个提升层、多个傅里叶层和一个解码器层。
     有关更多详细信息，请参考论文 `Fouriwe Neural Operator for Parametric Partial Differential Equations <https://arxiv.org/pdf/2010.08895.pdf>`_ 。
