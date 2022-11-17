@@ -89,7 +89,7 @@ This directory is the open source code of MEGA-Protein (including MEGA-fold, MEG
 
 ### Hardware & Framework
 
-This tool is developed based on [MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) computational biology/chemistry package and [MindSpore](https://www.mindspore.cn/) AI framework. It requires MindSpore 1.8 or later versions. This tool can be run on Ascend910 or GPU. Full fp32 precision inference is called by default. When running on Ascend, mixed-precision inference is required.
+This tool is developed based on [MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) computational biology/chemistry package and [MindSpore](https://www.mindspore.cn/) AI framework. It requires MindSpore 1.8 or later versions. This tool can be run on Ascend910 or GPU. Full fp32 precision inference is called by default. When running on Ascend, mixed-precision inference is required. Since the recompute function is used in training, the current training mode only supports graph mode.
 
 The protein structure prediction tool MEGA-Fold relies on the co-evolution and template information provided by database search tools for multiple sequence alignments (MSA, multiple sequence alignments) and template search generation. The searching database requires **2.5T hard disk** (SSD recommended) and a CPU with equal or higher performance than Kunpeng920.
 
@@ -256,9 +256,43 @@ Checkpoints are saved in `./ckpt` folder every 50 iterations. Dataset downloadin
 
 To be released
 
-### MEGA-Assessement
+### MEGA-Assessement inference
 
-To be released
+Downloading MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt) and MEGA_Assessment weights [MEGA_Assessment.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Assessment.ckpt). Finally running following command to start inference.
+
+```bash
+Usage: python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --input_path INPUT_FILE_PATH
+            --decoy_pdb_path INPUT_FILE_PATH --checkpoint_path CHECKPOINT_PATH --checkpoint_path_assessment CHECKPOINT_PATH_ASSESSMENT
+            --run_assessment=1
+
+option:
+--data_config                   configuration for data preprocessing
+--model_config                  hyperparameters for the model
+--input_path                    input folder, multiple .pkl or .fasta files can be included
+--decoy_pdb_path                decoy pdb folder, multiple _decoy.pdb files can be included
+--checkpoint_path               MEGA-Fold model weights path
+--checkpoint_path_assessment    MEGA-Assessement model weights path
+--run_assessment                run pdb assessment
+```
+
+### MEGA-Assessment training
+
+Downloading our open source protein structure training dataset [PSP dataset](http://ftp.cbi.pku.edu.cn/psp/) and MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt), using follow command to start training:
+
+```bash
+Usage:python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --is_training True
+            --input_path INPUT_PATH --pdb_path PDB_PATH --checkpoint_path CHECKPOINT_PATH --run_assessment 1 --mixed_precision 1
+
+option:
+--data_config        configuration for data preprocessing
+--model_config       hyperparameters for the model
+--is_training        setting to training mode, inference does not need to add this parameter
+--input_path         training input folder, pkl format file is required, see PSP dataset for more details
+--pdb_path           output folder, pdb format file is required
+--checkpoint_path    MEGA-Fold model weights path
+--run_assessment     run pdb assessment
+--mixed_precision    using mixed precision, default 0, full fp32.
+```
 
 ### MEGA-Protein
 
