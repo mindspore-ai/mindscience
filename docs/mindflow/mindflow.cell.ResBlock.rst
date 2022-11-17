@@ -16,3 +16,8 @@
 
     输出：
         shape为 :math:`(*, out\_channels)` 的Tensor。
+    
+    异常：
+        - **ValueError** - 如果 `in_channels` 不等于 `out_channels` 。
+        - **TypeError** - 如果 `activation` 类型不是str或者Cell或者Primitive。
+        

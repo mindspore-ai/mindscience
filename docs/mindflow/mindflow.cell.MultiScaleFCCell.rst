@@ -3,8 +3,8 @@
     多尺度神经网络。
 
     参数：
-        - **in_channels** (int) - 输入中的通道数。
-        - **out_channels** (int) - 输出中的通道数。
+        - **in_channel** (int) - 输入中的通道数。
+        - **out_channel** (int) - 输出中的通道数。
         - **layers** (int) - 层总数，包括输入/隐藏/输出层。
         - **neurons** (int) - 隐藏层的神经元数量。
         - **residual** (bool) - 隐藏层的残差块的全连接。默认值：True。
@@ -25,3 +25,10 @@
 
     输出：
         shape为 :math:`(*, out\_channels)` 的Tensor。
+    
+    异常：
+        - **TypeError** - 如果 `num_scales` 不是int类型。
+        - **TypeError** - 如果 `amp_factor` 不是int及或者float类型。
+        - **TypeError** - 如果 `scale_factor` 不是int及或者float类型。
+        - **TypeError** - 如果 `latent_vector` 不是Parameter或者None类型。
+        
