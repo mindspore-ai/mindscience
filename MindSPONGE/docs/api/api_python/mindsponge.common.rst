@@ -7,6 +7,7 @@ mindsponge.common
     :template: classtemplate.rst
 
     mindsponge.common.apply_to_point
+    mindsponge.common.find_optimal_renaming
     mindsponge.common.get_aligned_seq
     mindsponge.common.get_fasta_info
     mindsponge.common.get_pdb_info

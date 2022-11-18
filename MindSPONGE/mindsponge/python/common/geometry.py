@@ -92,13 +92,66 @@ def vecs_robust_normalize(v, epsilon=1e-8):
 
 
 def vecs_dot_vecs(v1, v2):
-    """Dot product of vectors 'v1' and 'v2'."""
+    """
+    Dot product of vectors :math:`v_1 = (x_1, x_2, x_3)`
+    and :math:`v_2 = (y_1, y_2, y_3)`.
+
+    .. math::
+        res = x_1 * y_1 + x_2 * y_2 + x_3 * y_3
+
+    Args:
+        v1 (tuple): vectors :math:`\vec v_1` , length is 3.
+                    Data type is constant or Tensor with same shape.
+        v2 (tuple): vectors :math:`\vec v_2` , length is 3.
+                    Data type is constant or Tensor with same shape.
+
+    Returns:
+        float or Tensor with the same shape as the Tensor in input, dot product result of two vectors .
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> v1 = (1, 2, 3)
+        >>> v2 = (3, 4, 5)
+        >>> ans = mindsponge.common.vecs_dot_vecs(v1, v2)
+        >>> print(ans)
+        26
+    """
     res = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
     return res
 
 
 def vecs_cross_vecs(v1, v2):
-    """Cross product of vectors 'v1' and 'v2'."""
+    """
+    Cross product of vectors :math:`v_1 = (x_1, x_2, x_3)`
+    and :math:`v_2 = (y_1, y_2, y_3)`.
+
+    .. math::
+        cross_res = (x_2 * y_3 - x_3 * y_2, x_3 * y_1 - x_1 * y_3, x_1 * y_2 - x_2 * y_1)
+
+    Args:
+        v1 (tuple): vectors :math:`\vec v_1` , length is 3.
+                    Data type is constant or Tensor with same shape.
+        v2 (tuple): vectors :math:`\vec v_2` , length is 3.
+                    Data type is constant or Tensor with same shape.
+
+    Returns:
+        tuple, cross product result of two vectors, length is 3.
+            Data type is constant or Tensor with same shape.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> v1 = (1, 2, 3)
+        >>> v2 = (3, 4, 5)
+        >>> ans = mindsponge.common.vecs_cross_vecs(v1, v2)
+        >>> print(ans)
+        (2, -4, 2)
+    """
     cross_res = (v1[1] * v2[2] - v1[2] * v2[1],
                  v1[2] * v2[0] - v1[0] * v2[2],
                  v1[0] * v2[1] - v1[1] * v2[0])
@@ -106,7 +159,49 @@ def vecs_cross_vecs(v1, v2):
 
 
 def rots_from_two_vecs(e0_unnormalized, e1_unnormalized):
-    """Create rotation matrices from unnormalized vectors for the x and y-axes."""
+    r"""
+    Put in two vectors :math:`\vec a = (a_x, a_y, a_z)` and :math:`\vec b = (b_x, b_y, b_z)`.
+    Calculate the rotation matrix between local coordinate system, in which the x-y plane
+    consists of two input vectors and global coordinate system.
+
+    Calculate the unit vector :math:`\vec e_0 = \frac{\vec a}{|\vec a|}`
+    as the unit vector of x axis.
+
+    Then calculate the projected length of :math:`\vec b` on a axis.
+    :math:`c = |\vec b| \cos\theta = \vec b \cdot \frac{\vec a}{|\vec a|}` .
+
+    So the projected vector of :math:`b` on a axis is :math:`c\vec e_0 `.
+    The vector perpendicular to e0 is :math:`\vec e_1' = \vec b - c\vec e_0` .
+
+    The unit vector of :math:`\vec e_1'` is :math:`\vec e_1 = \frac{\vec e_1'}{|\vec e_1'|}`,
+    which is the y axis of the local coordinate system.
+
+    Finally get the unit vector of z axis :math:`\vec e_2` by calculating cross product of
+    :math:`\vec e_1` and :math:`\vec e_0`.
+
+    Args:
+        e0_unnormalized (tuple):    vectors :math:`\vec a` as x-axis of x-y plane,
+                                    length is 3. Data type is constant or Tensor with same shape.
+        e1_unnormalized (tuple):    vectors :math:`\vec b` forming x-y plane,
+                                    length is 3. Data type is constant or Tensor with same shape.
+
+    Returns:
+        tuple, rotation matrix :math:`(e_0_x, e_1_x, e_2_x, e_0_y, e_1_y, e_2_y, e_0_z, e_1_z, e_2_z)`.
+            Data type is constant or Tensor with same shape.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> v1 = (1, 2, 3)
+        >>> v2 = (3, 4, 5)
+        >>> ans = mindsponge.common.rots_from_two_vecs(v1, v2)
+        >>> print(ans)
+        (0.4242640686695021, -0.808290367995452, 0.40824828617045156, 0.5656854248926695,
+         -0.1154700520346678, -0.8164965723409039, 0.7071067811158369, 0.5773502639261153,
+         0.4082482861704521)
+    """
 
     # Normalize the unit vector for the x-axis, e0.
     e0 = vecs_robust_normalize(e0_unnormalized)
@@ -125,7 +220,60 @@ def rots_from_two_vecs(e0_unnormalized, e1_unnormalized):
 
 
 def rigids_from_3_points(point_on_neg_x_axis, origin, point_on_xy_plane):
-    """Create Rigids from 3 points. """
+    r"""
+    Gram-Schmidt process. Create rigids representation of 3 points local coordination system,
+    point on negative x axis A, origin point O and point on x-y plane P.
+
+    First calculate the coordinations of vector :math:`\vec AO` and :math:`\vec OP`. Then
+    use `rots_from_two_vecs` get the rotation matrix.
+
+    Distance between origin point O and the origin point of global coordinate system is
+    the translations of rigid.
+
+    Finally return the rotations and translations of rigid.
+
+    Reference:
+        `Jumper et al. (2021) Suppl. Alg. 21 'Gram-Schmidt process'
+            <https://www.nature.com/articles/s41586-021-03819-2>`_.
+
+    .. math::
+        \begin{split}
+        &\vec v_1 = \vec x_3 - \vec x_2 \\
+        &\vec v_2 = \vec x_1 - \vec x_2 \\
+        &\vec e_1 = \vec v_1 / ||\vec v_1|| \\
+        &\vec u_2 = \vec v_2 - \vec  e_1(\vec e_1^T\vec v_2) \\
+        &\vec e_2 = \vec u_2 / ||\vec u_2|| \\
+        &\vec e_3 = \vec e_1 \times \vec e_2 \\
+        &rotation = (\vec e_1, \vec e_2, \vec e_3) \\
+        &translation = (\vec x_2) \\
+        \end{split}
+
+    Args:
+        point_on_neg_x_axis (tuple):    point on negative x axis A, length is 3.
+                                        Data type is constant or Tensor with same shape.
+        origin (tuple):                 origin point O, length is 3.
+                                        Data type is constant or Tensor with same shape.
+        point_on_xy_plane (tuple):      point on x-y plane P, length is 3.
+                                        Data type is constant or Tensor with same shape.
+
+    Returns:
+        tuple(rots, trans), rigid, length is 2. Include rots :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`
+            and trans :math:`(x, y, z)` . Data type is constant or Tensor with same shape.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> A = (1, 2, 3)
+        >>> O = (4, 6, 8)
+        >>> P = (5, 8, 11)
+        >>> ans = mindsponge.common.rigids_from_3_points(A, O, P)
+        >>> print(ans)
+        ((0.4242640686695021, -0.808290367995452, 0.40824828617045156, 0.5656854248926695,
+         -0.1154700520346678, -0.8164965723409039, 0.7071067811158369, 0.5773502639261153,
+         0.4082482861704521), (4,6,8))
+    """
     m = rots_from_two_vecs(
         e0_unnormalized=vecs_sub(origin, point_on_neg_x_axis),
         e1_unnormalized=vecs_sub(point_on_xy_plane, origin))
@@ -134,7 +282,29 @@ def rigids_from_3_points(point_on_neg_x_axis, origin, point_on_xy_plane):
 
 
 def invert_rots(m):
-    """Computes inverse of rotations 'm'."""
+    """
+    Computes inverse of rotations :math:`m`.
+
+    rotations :math:`m = (xx, xy, xz, yx, yy, yz, zx, zy, zz)` and
+    inverse of :math:`m` is :math:`m^{T} = (xx, yx, zx, xy, yy, zy, xz, yz, zz)` .
+
+    Args:
+        m (tuple):  rotations :math:`m` , length is 9.
+                    Data type is constant or Tensor with same shape.
+
+    Returns:
+        tuple, inverse of rotations :math:`m` , length is 9. Data type is constant or Tensor with same shape.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> m = (1, 2, 3, 4, 5, 6, 7, 8, 9)
+        >>> inv_m = mindsponge.common.invert_rots(m)
+        >>> print(inv_m)
+        (1, 4, 7, 2, 5, 8, 3, 6, 9)
+    """
     invert = (m[0], m[3], m[6],
               m[1], m[4], m[7],
               m[2], m[5], m[8])
@@ -142,7 +312,35 @@ def invert_rots(m):
 
 
 def rots_mul_vecs(m, v):
-    """Apply rotations 'm' to vectors 'v'."""
+    r"""
+    Apply rotations :math:`\vec m = (m_0, m_1, m_2, m_3, m_4, m_5, m_6, m_7, m_8)`
+    to vectors :math:`\vec v = (v_0, v_1, v_2)`.
+
+    .. math::
+        out = m \cdot v^T = (m_0 \times v_0 + m_1 \times v_1 + m_2 \times v_2,
+                             m_3 \times v_0 + m_4 \times v_1 + m_5 \times v_2,
+                             m_6 \times v_0 + m_7 \times v_1 + m_8 \times v_2)
+
+    Args:
+        m (tuple):  rotations :math:`\vec m` , length is 9.
+                    Data type is constant or Tensor with same shape.
+        v (tuple):  vectors :math:`\vec v` , length is 3.
+                    Data type is constant or Tensor with same shape.
+
+    Returns:
+        tuple, vectors after rotations.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> m = (1, 2, 3, 4, 5, 6, 7, 8, 9)
+        >>> v = (1, 2, 3)
+        >>> v1 = mindsponge.common.rots_mul_vecs(m, v)
+        >>> print(v1)
+        (14, 32, 50)
+    """
     out = (m[0] * v[0] + m[1] * v[1] + m[2] * v[2],
            m[3] * v[0] + m[4] * v[1] + m[5] * v[2],
            m[6] * v[0] + m[7] * v[1] + m[8] * v[2])
@@ -150,7 +348,40 @@ def rots_mul_vecs(m, v):
 
 
 def invert_rigids(rigids):
-    """Computes group inverse of rigid transformations 'r'."""
+    r"""
+    Computes group inverse of rigid transformations. Change rigid from
+    local coordinate system to global coordinate system.
+
+    Use `invert_rots` to calculate the invert rotations of rigid. Then use
+    `rots_mul_vecs` to rotate the translations of rigid. The opposite of the
+    result is the translations of invert rigid.
+
+    .. math::
+        inv\_rots = r_r^T = (r_0, r_3, r_6, r_1, r_4, r_7, r_2, r_5, r_8)
+
+        inv\_trans = -r_r^T \cdot r_t^T = (- (r_0 \times t_0 + r_3 \times t_0 + r_6 \times t_0),
+                                           - (r_1 \times t_1 + r_4 \times t_1 + r_7 \times t_1),
+                                           - (r_2 \times t_2 + r_5 \times t_2 + r_8 \times t_2))
+
+    Args:
+        rigids (tuple): rigids, including the rots and trans changing rigids
+                        from global coordinate system to local coordinate system.
+
+    Returns:
+        tuple(rots, trans), group inverse of rigid transformations, length is 2. Include rots
+            :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` and trans :math:`(x, y, z)` .
+            Data type is constant or Tensor with same shape.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> a = ((1, 2, 3, 4, 5, 6, 7, 8, 9), (3, 4, 5))
+        >>> inv_a = mindsponge.common.invert_rigids(a)
+        >>> print(inv_a)
+        ((1, 4, 7, 2, 5, 8, 3, 6, 9), (-54.0, -66.0, -78.0))
+    """
     rot, trans = rigids
     inv_rots = invert_rots(rot)
     t = rots_mul_vecs(inv_rots, trans)
@@ -165,18 +396,109 @@ def vecs_add(v1, v2):
 
 
 def rigids_mul_vecs(rigids, v):
-    """Apply rigid transforms 'r' to points 'v'."""
+    """
+    Transform vector :math:`v` to rigid' local coordinate system.
+
+    Multiply vector :math:`v` and the rotations of rigid together
+    and add the translations of rigid. The result is the output vector.
+
+    .. math::
+        v = r_rv+r_t
+
+    Args:
+        rigids (tuple): rigid.
+        v (tuple):      vector :math:`\vec v` , length is 3. Data type is constant or Tensor with same shape.
+
+    Returns:
+        tuple, changed vector, length is 3. Data type is constant or Tensor with same shape.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> a = ((1, 2, 3, 4, 5, 6, 7, 8, 9), (3, 4, 5))
+        >>> b = (1, 2, 3)
+        >>> b1 = mindsponge.common.rigids_mul_vecs(a,b)
+        >>> print(b1)
+        (17, 36, 55)
+    """
     return vecs_add(rots_mul_vecs(rigids[0], v), rigids[1])
 
 
 def rigids_mul_rots(x, y):
-    """numpy version of getting results rigids x multiply rots y"""
+    """
+    Numpy version of getting results rigid :math:`x` multiply rotations :math:`\vec y` .
+
+    Multiply rotations of rigid :math:`x` with rotations :math:`y`,
+    the result is rigids new rotations. Translations of rigid will not changed.
+
+    .. math::
+        (r, t) = (x_ry, x_t)
+
+    Args:
+        x (tuple):  rigid :math:`x` . Length is 2. Include rots :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`
+                    and trans :math:`(x, y, z)` . Data type is constant or Tensor with same shape.
+        y (tuple):  rotations :math:`\vec y` , length is 9. Data type is constant or Tensor with same shape.
+
+    Returns:
+        tuple(rots, trans), length is 2, rigid whose rotations are changed.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> a = ((1, 2, 3, 4, 5, 6, 7, 8, 9), (3, 4, 5))
+        >>> b = (2, 3, 4, 1, 5, 6, 3, 8, 7)
+        >>> b1 = mindsponge.common.rigids_mul_rots(a,b)
+        >>> print(b1)
+        ((13, 37, 37, 31, 85, 88, 49, 133, 139), (3, 4, 5))
+    """
     rigids = (rots_mul_rots(x[0], y), x[1])
     return rigids
 
 
 def rigids_mul_rigids(a, b):
-    """rigids mul rigids"""
+    r"""
+    Change rigid :math:`b` from its local coordinate system to rigid :math:`a`
+    local coordinate system, using rigid :math:`a` rotations and translations.
+
+    Use the rotations calculated by multiplying rotations of rigid :math:`b`
+    and rigid :math:`a` as new rotations of rigid :math:`b` .
+
+    Multiply the translations of rigid :math:`b` with rotations of rigid :math:`a` ,
+    then add translations of rigid :math:`a` . The translations got is new translations
+    of rigid :math:`b`.
+
+    .. math::
+        \begin{split}
+        &r = a_rb_r \\
+        &t = a_rb_t +a_t \\
+        \end{split}
+
+    Args:
+        a (tuple):  rigid :math:`a` . Length is 2. Include rots :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`
+                    and trans :math:`(x, y, z)` . Data type is constant or Tensor with same shape.
+        b (tuple):  rigid :math:`b` . Length is 2. Include rots :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`
+                    and trans :math:`(x, y, z)` . Data type is constant or Tensor with same shape.
+
+    Returns:
+        tuple(rots, trans), rigid :math:`b` changed. Length is 2.
+            Include rots :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`
+            and trans :math:`(x, y, z)` . Data type is constant or Tensor with same shape.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import mindsponge
+        >>> a = ((1, 2, 3, 4, 5, 6, 7, 8, 9), (3, 4, 5))
+        >>> b = ((2, 3, 4, 1, 5, 6, 3, 8, 7), (1, 2, 3))
+        >>> b1 = mindsponge.common.rigids_mul_rigids(a,b)
+        >>> print(b1)
+        ((13, 37, 37, 31, 85, 88, 49, 133, 139), (17, 36, 55))
+    """
     rot = rots_mul_rots(a[0], b[0])
     trans = vecs_add(a[1], rots_mul_vecs(a[0], b[1]))
     return (rot, trans)
