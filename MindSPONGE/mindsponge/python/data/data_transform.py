@@ -373,7 +373,44 @@ def atom37_to_torsion_angles(
         all_atom_mask: np.ndarray,  # inputs3 shape (N, 37)
         alt_torsions=False,
 ):
-    """get the torsion angles of each residue"""
+
+    r"""
+    This function calculates the seven torsion angles of each residue and encodes them in sine and cosine.
+    The order of the seven torsion angles is [pre_omega, phi, psi, chi_1, chi_2, chi_3, chi_4]
+    Here, pre_omega represents the twist angle between a given amino acid and the previous amino acid.
+    The phi represents twist angle between `C-CA-N-(C+1)`, psi represents twist angle between `(N-1)-C-CA-N`.
+
+    Args:
+      aatype (numpy.array):         amino acid type with shape :math:`(batch\_size, N_{res})`.
+      all_atom_pos (numpy.array):   atom37 representation of all atomic coordinates with
+                                    shape :math:`(batch\_size, N_{res}, 37, 3)`.
+      all_atom_mask (numpy.array):  atom37 representation of the mask on all atomic coordinates with
+                                    shape :math:`(batch\_size, N_{res})`.
+      alt_torsions (bool):          indicates whether to set the sign angle of shielding torsion to zero.
+
+    Outputs:
+      - Dict containing
+        - torsion_angles_sin_cos (numpy.array), with shape :math:`(batch\_size, N_{res}, 37, 3)` where
+         the final 2 dimensions denote sin and cos respectively.
+        - alt_torsion_angles_sin_cos (numpy.array), same as 'torsion_angles_sin_cos', but with the angle shifted
+         by pi for all chi angles affected by the naming ambiguities.
+        - torsion_angles_mask (numpy.array), Mask for which chi angles are present.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.data.data_transform import atom37_to_torsion_angles
+        >>> n_res = 16
+        >>> bs = 1
+        >>> aatype = np.random.randn(bs, n_res).astype(np.int32)
+        >>> all_atom_pos = np.random.randn(bs, n_res, 37, 3).astype(np.float32)
+        >>> all_atom_mask = np.random.randn(bs, n_res, 37).astype(np.float32)
+        >>> angle_label_feature = atom37_to_torsion_angles(aatype, all_atom_pos, all_atom_mask)
+        >>> print(angle_label_feature.keys())
+        dict_keys(['torsion_angles_sin_cos', 'alt_torsion_angles_sin_cos', 'torsion_angles_mask'])
+    """
 
     true_aatype = np.minimum(aatype, 20)
 

@@ -62,17 +62,45 @@ class CV(Metric):
 
 
 class BalancedMSE(nn.Cell):
-    """Balanced MSE error
+    r"""Balanced MSE error
     Compute Balanced MSE error between the prediction and the ground truth
      to solve unbalanced labels in regression task.
-    Ren, Jiawei, et al. "Balanced MSE for Imbalanced Visual Regression."
+    Reference:
+    `Ren, Jiawei, et al. 'Balanced MSE for Imbalanced Visual Regression' <https://arxiv.org/abs/2203.16427>`_ .
+    .. math::
+        L =-\log \mathcal{N}\left(\boldsymbol{y} ; \boldsymbol{y}_{\text {pred }},
+        \sigma_{\text {noise }}^{2} \mathrm{I}\right)
+        +\log \sum_{i=1}^{N} p_{\text {train }}\left(\boldsymbol{y}_{(i)}\right)
+        \cdot \mathcal{N}\left(\boldsymbol{y}_{(i)} ; \boldsymbol{y}_{\text {pred }},
+        \sigma_{\text {noise }}^{2} \mathrm{I}\right)
 
     Args:
-      prediction: A float tensor of size [batch, ...].
-      target: A float tensor of size [batch, ...].
+        first_break (float):    The begin value of bin.
+        last_break (float):     The end value of bin.
+        num_bins (int):         The bin numbers.
+        beta (float):           The moving average coefficient, default: 0.99.
+        reducer_flag (bool):    Whether to aggregate the label values of multiple devices, default: "False".
 
-    Returns:
-      A float tensor representing balanced error
+    Inputs:
+        - **prediction** (Tensor) - Predict values, shape is :math:`(batch\_size, ndim)`.
+        - **target** (Tensor) - Label values, shape is :math:`(batch\_size, ndim)`.
+
+    Outputs:
+        Tensor, shape is :math:`(batch\_size, ndim)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.metrics import BalancedMSE
+        >>> from mindspore import Tensor
+        >>> net = BalancedMSE(0, 1, 20)
+        >>> prediction = Tensor(np.random.randn(32, 10).astype(np.float32))
+        >>> target = Tensor(np.random.randn(32, 10).astype(np.float32))
+        >>> out = net(prediction, target, None)
+        >>> print(out.shape)
+        (32, 10)
     """
 
     def __init__(self, first_break, last_break, num_bins, beta=0.99, reducer_flag=False):
@@ -103,10 +131,9 @@ class BalancedMSE(nn.Cell):
             self.allreduce = P.AllReduce()
             self.device_num = D.get_group_size()
 
-    def construct(self, prediction, target, p_bins=None):
+    def construct(self, prediction, target):
         """construct"""
-        if p_bins is None:
-            p_bins = self._compute_p_bins(prediction)
+        p_bins = self._compute_p_bins(prediction)
 
         log_sigma2 = self.log_noise_scale * 1.
         log_sigma2 = 5. * P.Tanh()(log_sigma2 / 5.)
@@ -150,21 +177,43 @@ class BalancedMSE(nn.Cell):
 
 
 class MultiClassFocal(nn.Cell):
-    """Focal error for multi-class classifications.
-
+    r"""Focal error for multi-class classifications.
     Compute the multiple classes focal error between `prediction` and the ground truth `target`.
-
-    Lin, Tsung-Yi, et al. "Focal loss for dense object detection."
+    Reference:
+    `Lin, Tsung-Yi, et al. 'Focal loss for dense object detection' <https://arxiv.org/abs/1708.02002>`_ .
 
     Args:
-      prediction: A float tensor of size [batch, ...].
-      target: A float tensor of size [batch, ...].
+        num_class (int):        The class numbers.
+        beta (float):           The moving average coefficient, default: 0.99.
+        gamma (float):          The hyperparameters, default: 2.0.
+        e (float):              The proportion of focal loss, default: 0.1.
+        neighbors(int):         The neighbors to be mask in the target, default 2.
+        not_focal (bool):       Whether focal loss, default: "False".
+        reducer_flag (bool):    Whether to aggregate the label values of multiple devices, default: "False".
 
-    Returns:
-      A scalar representing normalized total error.
+    Inputs:
+        - **prediction** (Tensor) - Predict values, shape is :math:`(batch\_size, ndim)`.
+        - **target** (Tensor) - Label values, shape is :math:`(batch\_size, ndim)`.
+
+    Outputs:
+        Tensor, shape is :math:`(batch\_size,)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from mindsponge.metrics import MultiClassFocal
+        >>> net = MultiClassFocal(10)
+        >>> prediction = Tensor(np.random.randn(32, 10).astype(np.float32))
+        >>> target = Tensor(np.random.randn(32, 10).astype(np.float32))
+        >>> out = net(prediction, target)
+        >>> print(out.shape)
+        (32,)
     """
 
-    def __init__(self, num_class=10, beta=0.99, gamma=2., e=0.1, neighbors=2, not_focal=False, reducer_flag=False):
+    def __init__(self, num_class, beta=0.99, gamma=2., e=0.1, neighbors=2, not_focal=False, reducer_flag=False):
         super(MultiClassFocal, self).__init__()
         self.num_class = num_class
         self.beta = beta
@@ -236,23 +285,40 @@ class MultiClassFocal(nn.Cell):
 
 
 class BinaryFocal(nn.Cell):
-    """Focal error for Binary classifications.
+    r"""Focal error for Binary classifications.
     Compute the binary classes focal error between `prediction` and the ground truth `target`.
-
-    Lin, Tsung-Yi, et al. "Focal loss for dense object detection."
-
-    Focal error = -alpha_t * (1-pt)^gamma * log(pt)
-    where pt is the probability of being classified to the true class.
-    pt = p (if true class), otherwise pt = 1 - p.
+    Reference:
+    `Lin, Tsung-Yi, et al. 'Focal loss for dense object detection' <https://arxiv.org/abs/1708.02002>`_ .
+    .. math::
+        \mathrm{FL}\left(p_{\mathrm{t}}\right)=-\alpha_{\mathrm{t}}\left(1-p_{\mathrm{t}}\right)^{\gamma}
+        \log \left(p_{\mathrm{t}}\right)
 
     Args:
-      prediction: A float tensor of size [batch, ...].
-      target: A float tensor of size [batch, ...].
-      alpha: A float tensor specifying per-example weight for balanced cross entropy.
-      gamma: A float scalar modulating loss from hard and easy examples.
+        alpha (int):            The weight of cross entropy, default: 0.25.
+        gamma (float):          The hyperparameters, modulating loss from hard to easy, default: 2.0.
+        feed_in (bool):         Whether to covert prediction, default: "False".
+        not_focal (bool):       Whether focal loss, default: "False".
 
-    Returns:
-      A scalar representing normalized total error.
+    Inputs:
+        - **prediction** (Tensor) - Predict values, shape is :math:`(batch\_size, ndim)`.
+        - **target** (Tensor) - Label values, shape is :math:`(batch\_size, ndim)`.
+
+    Outputs:
+        Tensor, shape is :math:`(batch\_size,)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from mindsponge.metrics import BinaryFocal
+        >>> net = BinaryFocal()
+        >>> prediction = Tensor(np.random.randn(32, 10).astype(np.float32))
+        >>> target = Tensor(np.random.randn(32, 10).astype(np.float32))
+        >>> out = net(prediction, target)
+        >>> print(out.shape)
+        (32,)
     """
 
     def __init__(self, alpha=0.25, gamma=2., feed_in=False, not_focal=False):

@@ -701,26 +701,43 @@ def find_optimal_renaming(
 ):  # (N):
     """Find optimal renaming for ground truth that maximizes LDDT.
 
-    Jumper et al. (2021) Suppl. Alg. 26
-    "renameSymmetricGroundTruthAtoms" lines 1-5
+    Reference:
+    `Jumper et al. (2021) Suppl. Alg. 26 "renameSymmetricGroundTruthAtoms"
+     <https://www.nature.com/articles/s41586-021-03819-2>`_
 
     Args:
-      atom14_gt_positions: Ground truth positions in global frame of ground truth.
-      atom14_alt_gt_positions: Alternate ground truth positions in global frame of
-        ground truth with coordinates of ambiguous atoms swapped relative to
-        'atom14_gt_positions'.
-      atom14_atom_is_ambiguous: Mask denoting whether atom is among ambiguous
-        atoms, see Jumper et al. (2021) Suppl. Table 3
-      atom14_gt_exists: Mask denoting whether atom at positions exists in ground
-        truth.
-      atom14_pred_positions: Predicted positions of atoms in
-        global prediction frame
-      atom14_atom_exists: Mask denoting whether atom at positions exists for given
-        amino acid type
+      atom14_gt_positions (Tensor):      Ground truth positions in global frame with shape :math:`(N_{res}, 14, 3)`.
+      atom14_alt_gt_positions (Tensor):  Alternate ground truth positions in global frame with coordinates of
+                                         ambiguous atoms swapped relative to 'atom14_gt_positions'.
+                                         The shape is :math:`(N_{res}, 14, 3)`.
+      atom14_atom_is_ambiguous (Tensor): Mask denoting whether atom is among ambiguous atoms,
+                                         see Jumper et al. (2021) Suppl. Table 3. The shape is :math:`(N_{res}, 14)`.
+      atom14_gt_exists (Tensor):         Mask denoting whether atom at positions exists in ground truth with
+                                         shape :math:`(N_{res}, 14)`.
+      atom14_pred_positions(Tensor):     Predicted positions of atoms in global prediction frame with
+                                         shape :math:`(N_{res}, 14, 3)`.
 
-    Returns:
-      Float array of shape [N] with 1. where atom14_alt_gt_positions is closer to
-      prediction and 0. otherwise
+    Outputs:
+      Tensor, shape is :math:`(N_{res},)` with 1.0 where atom14_alt_gt_positions is closer to
+      prediction and otherwise 0.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.common.utils import find_optimal_renaming
+        >>> from mindspore import Tensor
+        >>> n_res = 16
+        >>> atom14_gt_positions = Tensor(np.random.randn(n_res, 14, 3).astype(np.float32))
+        >>> atom14_alt_gt_positions = Tensor(np.random.randn(n_res, 14, 3).astype(np.float32))
+        >>> atom14_atom_is_ambiguous = Tensor(np.random.randn(n_res, 14).astype(np.float32))
+        >>> atom14_gt_exists = Tensor(np.random.randn(n_res, 14).astype(np.float32))
+        >>> atom14_pred_positions = Tensor(np.random.randn(n_res, 14, 3).astype(np.float32))
+        >>> out = find_optimal_renaming(atom14_gt_positions, atom14_alt_gt_positions,
+        ...                             atom14_atom_is_ambiguous, atom14_gt_exists, atom14_pred_positions)
+        >>> print(out.shape)
+        (16,)
     """
 
     # Create the pred distance matrix.
