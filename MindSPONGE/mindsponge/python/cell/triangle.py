@@ -172,7 +172,7 @@ class TriangleMultiplication(nn.Cell):
         >>> from mindspore import dtype as mstype
         >>> from mindspore import Tensor
         >>> model = TriangleMultiplication(num_intermediate_channel=64,
-        >>>                                equation="ikc,jkc->ijc", layer_norm_dim=64, batch_size=0)
+        ...                                equation="ikc,jkc->ijc", layer_norm_dim=64, batch_size=0)
         >>> input_0 = Tensor(np.ones((256, 256, 64)), mstype.float32)
         >>> input_1 = Tensor(np.ones((256, 256)), mstype.float32)
         >>> out = model(input_0, input_1, index=0)
