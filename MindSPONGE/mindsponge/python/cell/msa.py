@@ -181,7 +181,7 @@ class MSAColumnAttention(nn.Cell):
         >>> from mindspore import dtype as mstype
         >>> from mindspore import Tensor
         >>> model = MSAColumnAttention(num_head=8, key_dim=256, gating=True,
-                                    msa_act_dim=256, batch_size=1, slice_num=0)
+        ...                         msa_act_dim=256, batch_size=1, slice_num=0)
         >>> msa_act = Tensor(np.ones((512, 256, 256)), mstype.float32)
         >>> msa_mask = Tensor(np.ones((512, 256)), mstype.float32)
         >>> index = Tensor(0, mstype.int32)

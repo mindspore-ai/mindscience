@@ -22,15 +22,3 @@ mindsponge.cell.MSAColumnAttention
 
     输出：
         Tensor。MSAColumnAttention层的输出msa_act，shape为 :math:`[N_{seqs}, N_{res}, C_m]` 。
-
-    .. py:method:: compute(msa_act, input_mask, index)
-
-        将msa_act经过attention层，进行计算。
-
-        参数：
-            - **msa_act** (Tensor) - msa_act，AlphaFold模型中MSA检索后所使用的中间变量。
-            - **input_mask** (Tensor) - MSAColumnAttention矩阵的mask，shape为(batch_size, num_heads, query_seq_length, value_seq_length)。
-            - **index** (Tensor) - 在循环中的索引，只会在有控制流的时候使用。
-
-        返回：
-            Tensor。Attention层的输出msa_act，shape是(batch_size, query_seq_length, hidden_size)。
