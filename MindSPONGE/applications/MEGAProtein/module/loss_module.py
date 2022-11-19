@@ -67,17 +67,17 @@ class LossNet(nn.Cell):
 
         self.masked_one_hot = nn.OneHot(depth=23, axis=-1)
         self.masked_weight = config.heads.masked_msa.weight
-        self.sidechain_weight_frac = config.heads.structure_module.sidechain.weight_frac
-        self.angle_norm_weight = config.heads.structure_module.angle_norm_weight
-        self.chi_weight = config.heads.structure_module.chi_weight
+        self.sidechain_weight_frac = config.structure_module.sidechain.weight_frac
+        self.angle_norm_weight = config.structure_module.angle_norm_weight
+        self.chi_weight = config.structure_module.chi_weight
         self.chi_pi_periodic = mnp.asarray(residue_constants.chi_pi_periodic, ms.float32)
 
-        self.violation_tolerance_factor = config.heads.structure_module.violation_tolerance_factor
-        self.clash_overlap_tolerance = config.heads.structure_module.clash_overlap_tolerance
-        self.sidechain_atom_clamp_distance = config.heads.structure_module.sidechain.atom_clamp_distance
-        self.sidechain_length_scale = config.heads.structure_module.sidechain.length_scale
-        self.fape_clamp_distance = config.heads.structure_module.fape.clamp_distance
-        self.fape_loss_unit_distance = config.heads.structure_module.fape.loss_unit_distance
+        self.violation_tolerance_factor = config.structure_module.violation_tolerance_factor
+        self.clash_overlap_tolerance = config.structure_module.clash_overlap_tolerance
+        self.sidechain_atom_clamp_distance = config.structure_module.sidechain.atom_clamp_distance
+        self.sidechain_length_scale = config.structure_module.sidechain.length_scale
+        self.fape_clamp_distance = config.structure_module.fape.clamp_distance
+        self.fape_loss_unit_distance = config.structure_module.fape.loss_unit_distance
         self.predicted_lddt_num_bins = config.heads.predicted_lddt.num_bins
         self.c_one_hot = nn.OneHot(depth=14)
         self.n_one_hot = nn.OneHot(depth=14)
