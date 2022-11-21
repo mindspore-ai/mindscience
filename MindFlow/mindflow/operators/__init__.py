@@ -13,6 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .derivatives import Grad, Jacobian, Hessian, SecondOrderGrad
+from .derivatives import Grad, SecondOrderGrad, GradVmap
 
-__all__ = ["Grad", "SecondOrderGrad"]
+__all__ = ["Grad", "GradVmap", "SecondOrderGrad"]

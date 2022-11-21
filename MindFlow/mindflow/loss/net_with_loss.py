@@ -109,7 +109,7 @@ class NetWithLoss(nn.Cell):
         >>> net = Net(3, 3)
         >>> # For details about how to build the Constraints, please refer to the tutorial
         >>> # document on the official website.
-        >>> constraints = Constraints(dataset, pde_dict)
+        >>> constraints = Constraints(dataset, problem_list)
         >>> loss_network = NetWithLoss(net, constraints)
         >>> input = Tensor(np.ones([1000, 3]).astype(np.float32) * 0.01)
         >>> label = Tensor(np.ones([1000, 3]).astype(np.float32))
@@ -254,7 +254,7 @@ class NetWithEval(nn.Cell):
         >>> net = Net(3, 3)
         >>> # For details about how to build the Constraints, please refer to the tutorial
         >>> # document on the official website.
-        >>> constraints = Constraints(dataset, pde_dict)
+        >>> constraints = Constraints(dataset, problem_list)
         >>> loss_network = NetWithEval(net, constraints)
         >>> input = Tensor(np.ones([1000, 3]).astype(np.float32) * 0.01)
         >>> label = Tensor(np.ones([1000, 3]).astype(np.float32))

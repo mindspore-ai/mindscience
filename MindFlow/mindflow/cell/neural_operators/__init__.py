@@ -16,3 +16,5 @@
 from .fno1d import FNO1D
 from .fno2d import FNO2D
 from .pdenet import PDENet
+
+__all__ = ["FNO1D", "FNO2D", "PDENet"]

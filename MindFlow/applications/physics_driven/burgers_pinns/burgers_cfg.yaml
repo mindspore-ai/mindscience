@@ -1,0 +1,47 @@
+geometry:
+  coord_dim: 1
+  time_dim: 1
+  coord_min: -1.0
+  coord_max: 1.0
+  time_min: 0.0
+  time_max: 1.0
+data:
+  domain:
+    size: 65536
+    random_sampling: true
+    sampler: "uniform"
+  BC:
+    size: 65536
+    random_sampling: true
+    sampler: "uniform"
+  IC:
+    size: 65536
+    random_sampling: true
+    sampler: "uniform"
+  time:
+    size: 65536
+    random_sampling: true
+    sampler: "uniform"
+model:
+  name: MLP_with_Residual
+  in_channels: 2
+  out_channels: 1
+  activation: "tanh"
+  layers: 6
+  neurons: 128
+  residual: true
+optimizer:
+  initial_lr: 0.001
+  warmup_epochs: 1
+  weight_decay: 0.0
+  gamma: 0.5
+name: Burgers1D
+train_batch_size: 8192
+train_epochs: 10
+eval_interval_epochs: 10
+save_checkpoint_steps: 50
+keep_checkpoint_max: 10
+load_ckpt: false
+save_ckpt: false
+save_ckpt_path: "path/to/ckpt"
+visual_resolution: 100

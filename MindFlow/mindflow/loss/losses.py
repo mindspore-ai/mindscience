@@ -80,7 +80,7 @@ def get_loss_metric(name):
     return _loss_metric.get(name)()
 
 
-class RegularLossCell(nn.Cell):
+class RegularizedLossCell(nn.Cell):
     r"""
     L1/L2 regularized loss.
 
@@ -99,19 +99,19 @@ class RegularLossCell(nn.Cell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.loss import RegularLossCell
+        >>> from mindflow.loss import RegularizedLossCell
         >>> from mindspore import Parameter, Tensor
         >>> import mindspore.common.dtype as ms_type
         >>> latent_init = np.ones((2, 3))
         >>> latent_vector = Parameter(Tensor(latent_init, ms_type.float32), requires_grad=True)
-        >>> net = RegularLossCell(latent_vector)
+        >>> net = RegularizedLossCell(latent_vector)
         >>> output = net()
         >>> print(output)
         1.0
     """
 
     def __init__(self, reg_params, reg_factor=0.01, reg_mode="l2"):
-        super(RegularLossCell, self).__init__()
+        super(RegularizedLossCell, self).__init__()
         check_param_type(reg_params, "reg_params", data_type=Parameter)
         check_param_type_value(reg_mode, "reg_mode", data_type=str, valid_value=["l1", "l2"])
         check_param_type(reg_factor, "reg_factor", data_type=float)
@@ -228,8 +228,8 @@ class WaveletTransformLoss(nn.LossBase):
 
     Inputs:
         - **input** - tuple of Tensors. Tensor of shape :math:`(B H*W/(P*P) P*P*C)`, where B denotes the batch size.
-          H, W denotes the height and the width of the image, respectively.
-          P denotes the patch size. C denots the feature channels.
+        H, W denotes the height and the width of the image, respectively.
+        P denotes the patch size. C denots the feature channels.
 
     Outputs:
         Tensor.

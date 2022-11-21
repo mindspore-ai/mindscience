@@ -15,5 +15,6 @@
 """init"""
 from .metrics import L2
 from .lr_scheduler import LearningRate, get_poly_lr
+from .callback import EvalCallback, LossAndTimeMonitor
 
-__all__ = ["L2", "LearningRate", "get_poly_lr"]
+__all__ = ["L2", "LearningRate", "get_poly_lr", "EvalCallback", "LossAndTimeMonitor"]

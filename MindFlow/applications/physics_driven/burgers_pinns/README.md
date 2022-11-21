@@ -1,22 +1,22 @@
-# 基于PINNs的Burgers' equation求解
+# Solve Burgers' Equation based on PINNs
 
-## 概述
+## Overview
 
-计算流体力学是21世纪流体力学领域的重要技术之一，其通过使用数值方法在计算机中对流体力学的控制方程进行求解，从而实现流动的分析、预测和控制。传统的有限元法（finite element method，FEM）和有限差分法（finite difference method，FDM）常囿于复杂的仿真流程（物理建模，网格划分，数值离散，迭代求解等）和较高的计算成本，往往效率低下。因此，借助AI提升流体仿真效率是十分必要的。
+Computational fluid dynamics is one of the most important techniques in the field of fluid mechanics in the 21st century. The flow analysis, prediction and control can be realized by solving the governing equations of fluid mechanics by numerical method. Traditional finite element method (FEM) and finite difference method (FDM) are inefficient because of the complex simulation process (physical modeling, meshing, numerical discretization, iterative solution, etc.) and high computing costs. Therefore, it is necessary to improve the efficiency of fluid simulation with AI.
 
-在经典理论与结合计算机性能的数值求解方法的发展趋于平缓的时候，近年来机器学习方法通过神经网络结合大量数据，实现流场的快速仿真，获得了接近传统方法的求解精度，为流场求解提供了新思路。
+In recent years, while the development of classical theories and numerical methods with computer performance tends to be smooth, machine learning methods combine a large amount of data with neural networks realize the flow field's fast simulation. These methods can obtain the accuracy close to the traditional methods, which provides a new idea for flow field solution.
 
-伯格斯方程（Burgers' equation）是一个模拟冲击波的传播和反射的非线性偏微分方程，被广泛应用于流体力学，非线性声学，气体动力学等领域，它以约翰内斯·马丁斯汉堡（1895-1981）的名字命名。本案例采用MindFlow流体仿真套件，基于物理驱动的PINNs (Physics Informed Neural Networks)方法，求解一维有粘性情况下的Burgers'方程。
+Burgers' equation is a nonlinear partial differential equation that simulates the propagation and reflection of shock waves. It is widely used in the fields of fluid mechanics, nonlinear acoustics, gas dynamics et al. It is named after Johannes Martins Hamburg (1895-1981). In this case, MindFlow fluid simulation suite is used to solve the Burgers' equation in one-dimensional viscous state based on the physical-driven PINNs (Physics Informed Neural Networks) method.
 
-## 问题描述
+## Problem Description
 
-Burgers'方程的形式如下：
+The form of Burgers' equation is as follows:
 
 $$
 u_t + uu_x = \epsilon u_{xx}, \quad x \in[-1,1], t \in[0, T],
 $$
 
-其中 $\epsilon=0.01/\pi$ ，等号左边为对流项，右边为耗散项，本案例使用迪利克雷边界条件和正弦函数的初始条件，形式如下：
+where $\epsilon=0.01/\pi$, the left of the equal sign is the convection term, and the right is the dissipation term. In this case, the Dirichlet boundary condition and the initial condition of the sine function are used. The format is as follows:
 
 $$
 u(t, -1) = u(t, 1) = 0,
@@ -26,21 +26,21 @@ $$
 u(0, x) = -sin(\pi x),
 $$
 
-本案例利用PINNs方法学习位置和时间到相应物理量的映射$(x, t) \mapsto u$，实现Burgers'方程的求解。
+In this case, the PINNs method is used to learn the mapping $(x, t) \mapsto u$ from position and time to corresponding physical quantities. So that the solution of Burgers' equation is realized.
 
-## 技术路径
+## Technology Path
 
-MindFlow求解该问题的具体流程如下：
+MindFlow solves the problem as follows:
 
-1. 创建训练数据集。
-2. 构建神经网络。
-3. 问题建模。
-4. 模型训练。
-5. 模型推理及可视化。
+1. Training Dataset Construction.
+2. Neural Network Construction.
+3. Problem Modeling.
+4. Model Training.
+5. Model Evaluation and Visualization.
 
-## 创建数据集
+## Training Dataset Construction
 
-本案例根据求解域、初始条件及边值条件进行随机采样，生成训练数据集与测试数据集，具体设置如下：
+In this case, random sampling is performed according to the solution domain, initial condition and boundary value condition to generate training data sets and test data sets. The specific settings are as follows:
 
 ```python
 from mindflow.data import Dataset
@@ -78,9 +78,9 @@ def create_random_dataset(config):
     return dataset
 ```
 
-## 构建神经网络
+## Neural Network Construction
 
-本例使用简单的全连接网络，深度为6层，激发函数为`tanh`函数。
+This example uses a simple fully-connected network with a depth of 6 layers and the activation function is the `tanh` function.
 
 ```python
 from mindflow.cell import FCSequential
@@ -88,15 +88,15 @@ from mindflow.cell import FCSequential
 model = FCSequential(in_channel=2, out_channel=1, layers=6, neurons=20, residual=False, act="tanh")
 ```
 
-## 问题建模
+## Problem Modeling
 
-`Problem`包含求解问题的控制方程、边界条件、初始条件等。
+`Problem` contains the governing equations, boundary conditions, initial conditions et al. to solve the problem.
 
 ```python
 from math import pi as PI
 from mindspore import ops
 from mindspore import Tensor
-from mindspore import dtype as mstype
+import mindspore.common.dtype as mstype
 from mindflow.solver import Problem
 from mindflow.operators import Grad, SecondOrderGrad
 
@@ -143,7 +143,7 @@ class Burgers1D(Problem):
         return u + ops.sin(self.pi * x)
 ```
 
-求解问题，定义`constraint`，作为模型训练的损失函数。
+Solve the problem and define `constraint` as the loss function.
 
 ```python
 train_prob = {}
@@ -156,9 +156,9 @@ print("check problem: ", train_prob)
 train_constraints = Constraints(burgers_train_dataset, train_prob)
 ```
 
-## 模型训练
+## Model Training
 
-调用`Solver`接口用于模型的训练和推理。
+Invoke the `Solver` interface for model training and inference.
 
 ```python
 params = model.trainable_params()
@@ -186,7 +186,7 @@ if config["save_ckpt"]:
 solver.train(config["train_epoch"], train_dataset, callbacks=callbacks, dataset_sink_mode=True)
 ```
 
-模型结果如下：
+The model results are as follows:
 
 ```python
 epoch time: 1.695 s, per step time: 211.935 ms
@@ -216,9 +216,9 @@ predict total time: 0.03775811195373535 s
 End-to-End total time: 3358.674560308456 s
 ```
 
-## 模型推理及可视化
+## Model Evaluation and Visualization
 
-训练后可对流场内所有数据点进行推理，并可视化相关结果。
+After training, all data points in the flow field can be inferred. And related results can be visualized.
 
 ```python
 from src import visual_result
@@ -226,4 +226,4 @@ from src import visual_result
 visual_result(model, resolution=config["visual_resolution"])
 ```
 
-![PINNS结果](images/result.jpg)
+![PINNs_results](images/result.jpg)

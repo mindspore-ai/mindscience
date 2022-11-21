@@ -32,8 +32,8 @@ class FixedPoint(Geometry):
 
     Args:
         name (str): name of the fixed point.
-        coord (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float]]):
-            Coordination of the fixed point. Could also be of type numpy.ndarray.
+        coord (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float],
+            numpy.ndarray]): coordinate of the fixed point.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: None.
 
@@ -42,7 +42,7 @@ class FixedPoint(Geometry):
 
     Examples:
         >>> from easydict import EasyDict as edict
-        >>> from mindflow.geometry import create_config_from_edict, FixedPoint
+        >>> from mindflow.geometry import generate_sampling_config, FixedPoint
         >>> hypercube_random = edict({
         ...      'domain': edict({
         ...          'random_sampling': True,
@@ -50,7 +50,7 @@ class FixedPoint(Geometry):
         ...          'sampler': 'uniform'
         ...         })
         ...  })
-        >>> sampling_config = create_config_from_edict(hypercube_random)
+        >>> sampling_config = generate_sampling_config(hypercube_random)
         >>> point = FixedPoint("FixedPoint", [-1, 2, 1], sampling_config=sampling_config)
         >>> domain = point.sampling(geom_type="domain")
         >>> print(domain.shape)
@@ -125,10 +125,10 @@ class HyperCube(Geometry):
     Args:
         name (str): name of the hyper cube.
         dim (int): number of dimensions.
-        coord_min (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float]]):
-            Minimal coordinate of the hyper cube. Could also be of type numpy.ndarray.
-        coord_max (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float]]):
-            Maximal coordinate of the hyper cube. Could also be of type numpy.ndarray.
+        coord_min (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float],
+            numpy.ndarray]): minimal coordinate of the hyper cube.
+        coord_max (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float],
+            numpy.ndarray]): maximal coordinate of the hyper cube.
         dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: None.
 
@@ -139,7 +139,7 @@ class HyperCube(Geometry):
 
     Examples:
         >>> from easydict import EasyDict as edict
-        >>> from mindflow.geometry import create_config_from_edict, HyperCube
+        >>> from mindflow.geometry import generate_sampling_config, HyperCube
         >>> hypercube_random = edict({
         ...      'domain': edict({
         ...          'random_sampling': True,
@@ -153,7 +153,7 @@ class HyperCube(Geometry):
         ...          'with_normal': False,
         ...      }),
         ...  })
-        >>> sampling_config = create_config_from_edict(hypercube_random)
+        >>> sampling_config = generate_sampling_config(hypercube_random)
         >>> hypercube = HyperCube("HyperCube", 3, [-1, 2, 1], [0, 3, 2], sampling_config=sampling_config)
         >>> domain = hypercube.sampling(geom_type="domain")
         >>> bc = hypercube.sampling(geom_type="BC")

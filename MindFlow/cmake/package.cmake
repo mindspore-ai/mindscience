@@ -37,6 +37,7 @@ install(
         ${CMAKE_SOURCE_DIR}/mindflow/geometry
         ${CMAKE_SOURCE_DIR}/mindflow/loss
         ${CMAKE_SOURCE_DIR}/mindflow/operators
+        ${CMAKE_SOURCE_DIR}/mindflow/pde
         ${CMAKE_SOURCE_DIR}/mindflow/solver
         ${CMAKE_SOURCE_DIR}/mindflow/utils
     DESTINATION ${INSTALL_PY_DIR}

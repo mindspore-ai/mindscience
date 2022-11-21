@@ -16,9 +16,7 @@
 import numpy as np
 
 from mindflow.data import Dataset, ExistedDataConfig
-from mindflow.geometry import Rectangle, TimeDomain, GeometryWithTime
-from mindflow.geometry import create_config_from_edict
-from .sampling_config import domain_sampling_config
+from mindflow.geometry import Rectangle, TimeDomain, GeometryWithTime, generate_sampling_config
 
 
 def create_evaluation_dataset(test_data_path):
@@ -34,18 +32,18 @@ def create_evaluation_dataset(test_data_path):
 
 def create_training_dataset(config):
     """create training dataset by online sampling"""
-    coord_min = config["coord_min"]
-    coord_max = config["coord_max"]
-    rectangle = Rectangle("rect", coord_min, coord_max)
+    geom_config = config["geometry"]
+    data_config = config["data"]
 
-    time_interval = TimeDomain("time", 0.0, config["range_t"])
-    domain_region = GeometryWithTime(rectangle, time_interval)
-    domain_region.set_name("domain")
-    domain_region.set_sampling_config(create_config_from_edict(domain_sampling_config))
+    time_interval = TimeDomain("time", geom_config["time_min"], geom_config["time_max"])
+    spatial_region = Rectangle("rect", geom_config["coord_min"], geom_config["coord_max"])
+    domain_region = GeometryWithTime(spatial_region, time_interval)
+    domain_region.set_sampling_config(generate_sampling_config(data_config))
 
     geom_dict = {domain_region: ["domain"]}
 
     data_path = config["train_data_path"]
+    print(data_path)
     config_bc = ExistedDataConfig(name="bc",
                                   data_dir=[data_path + "/bc_points.npy", data_path + "/bc_label.npy"],
                                   columns_list=["points", "label"],

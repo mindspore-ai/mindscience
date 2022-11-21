@@ -160,7 +160,7 @@ class CSGDifference(CSG):
 
     Examples:
         >>> from easydict import EasyDict as edict
-        >>> from mindflow.geometry import create_config_from_edict, Disk, Rectangle, CSGDifference
+        >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGDifference
         >>> sampling_config_csg = edict({
         ...     'domain': edict({
         ...         'random_sampling': True,
@@ -177,7 +177,7 @@ class CSGDifference(CSG):
         >>> disk = Disk("disk", (1.2, 0.5), 0.8)
         >>> rect = Rectangle("rect", (-1.0, 0), (1, 1))
         >>> diff = CSGDifference(rect, disk)
-        >>> diff.set_sampling_config(create_config_from_edict(sampling_config_csg))
+        >>> diff.set_sampling_config(generate_sampling_config(sampling_config_csg))
         >>> domain = diff.sampling(geom_type="domain")
         >>> bc, bc_normal = diff.sampling(geom_type="bc")
         >>> print(domain.shape)
@@ -284,7 +284,7 @@ class CSGUnion(CSG):
 
     Examples:
         >>> from easydict import EasyDict as edict
-        >>> from mindflow.geometry import create_config_from_edict, Disk, Rectangle, CSGUnion
+        >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGUnion
         >>> sampling_config_csg = edict({
         ...     'domain': edict({
         ...         'random_sampling': True,
@@ -301,7 +301,7 @@ class CSGUnion(CSG):
         >>> disk = Disk("disk", (1.2, 0.5), 0.8)
         >>> rect = Rectangle("rect", (-1.0, 0), (1, 1))
         >>> union = CSGUnion(rect, disk)
-        >>> union.set_sampling_config(create_config_from_edict(sampling_config_csg))
+        >>> union.set_sampling_config(generate_sampling_config(sampling_config_csg))
         >>> domain = union.sampling(geom_type="domain")
         >>> bc, bc_normal = union.sampling(geom_type="bc")
         >>> print(domain.shape)
@@ -402,7 +402,7 @@ class CSGIntersection(CSG):
 
     Examples:
         >>> from easydict import EasyDict as edict
-        >>> from mindflow.geometry import create_config_from_edict, Disk, Rectangle, CSGIntersection
+        >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGIntersection
         >>> sampling_config_csg = edict({
         ...     'domain': edict({
         ...         'random_sampling': True,
@@ -419,7 +419,7 @@ class CSGIntersection(CSG):
         >>> disk = Disk("disk", (1.2, 0.5), 0.8)
         >>> rect = Rectangle("rect", (-1.0, 0), (1, 1))
         >>> inter = CSGIntersection(rect, disk)
-        >>> inter.set_sampling_config(create_config_from_edict(sampling_config_csg))
+        >>> inter.set_sampling_config(generate_sampling_config(sampling_config_csg))
         >>> domain = inter.sampling(geom_type="domain")
         >>> bc, bc_normal = inter.sampling(geom_type="bc")
         >>> print(domain.shape)
@@ -522,7 +522,7 @@ class CSGXOR(CSG):
 
     Examples:
         >>> from easydict import EasyDict as edict
-        >>> from mindflow.geometry import create_config_from_edict, Disk, Rectangle, CSGXOR
+        >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGXOR
         >>> sampling_config_csg = edict({
         ...     'domain': edict({
         ...         'random_sampling': True,
@@ -539,7 +539,7 @@ class CSGXOR(CSG):
         >>> disk = Disk("disk", (1.2, 0.5), 0.8)
         >>> rect = Rectangle("rect", (-1.0, 0), (1, 1))
         >>> xor = CSGXOR(rect, disk)
-        >>> xor.set_sampling_config(create_config_from_edict(sampling_config_csg))
+        >>> xor.set_sampling_config(generate_sampling_config(sampling_config_csg))
         >>> domain = xor.sampling(geom_type="domain")
         >>> bc, bc_normal = xor.sampling(geom_type="bc")
         >>> print(domain.shape)

@@ -27,7 +27,7 @@ SAMPLER_TYPES = ["uniform", "lhs", "halton", "sobol"]
 
 
 class PartSamplingConfig:
-    r"""
+    """
     Definition of partial sampling configuration.
 
     Args:
@@ -134,11 +134,11 @@ class Geometry:
 
     Examples:
         >>> from easydict import EasyDict as edict
-        >>> from mindflow.geometry import create_config_from_edict, Geometry
+        >>> from mindflow.geometry import generate_sampling_config, Geometry
         >>> geometry_config = edict({'domain' : edict({'random_sampling' : True, 'size' : 100}),
         ...                          'BC' : edict({'random_sampling' : True, 'size' : 100, 'sampler' : 'uniform',}),
         ...                          'random_merge' : True,})
-        >>> sampling_config = create_config_from_edict(geometry_config)
+        >>> sampling_config = generate_sampling_config(geometry_config)
         >>> geom = Geometry("geom", 1, 0.0, 1.0, sampling_config=sampling_config)
         >>> geom.set_name("geom_name")
     """
@@ -183,7 +183,7 @@ class Geometry:
             TypeError: If `name` is not string.
 
         Examples:
-            >>> from mindflow.geometry import create_config_from_edict, Geometry
+            >>> from mindflow.geometry import generate_sampling_config, Geometry
             >>> geom = Geometry("geom", 1, 0.0, 1.0)
             >>> geom.set_name("geom_name")
         """
@@ -202,11 +202,11 @@ class Geometry:
 
         Examples:
             >>> from easydict import EasyDict as edict
-            >>> from sciai.geometry import create_config_from_edict, Geometry
+            >>> from sciai.geometry import generate_sampling_config, Geometry
             >>> geometry_config = edict({'domain': edict({'random_sampling': True, 'size': 100}),
             ...                          'BC': edict({'random_sampling': True, 'size': 100, 'sampler': 'uniform',}),
             ...                          'random_merge': True,})
-            >>> sampling_config = create_config_from_edict(geometry_config)
+            >>> sampling_config = generate_sampling_config(geometry_config)
             >>> geom = Geometry("geom", 1, 0.0, 1.0)
             >>> geom.set_sampling_config(sampling_config)
         """
