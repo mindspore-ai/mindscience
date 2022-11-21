@@ -11,8 +11,6 @@ mindflow.cell
 
 .. include:: mindflow.cell.get_activation.rst
 
-.. include:: mindflow.cell.Linear.rst
-
 .. include:: mindflow.cell.LinearBlock.rst
 
 .. include:: mindflow.cell.ResBlock.rst
