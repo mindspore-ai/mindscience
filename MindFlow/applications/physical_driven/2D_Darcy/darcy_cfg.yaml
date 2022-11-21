@@ -1,0 +1,29 @@
+geometry:
+  coord_min: [0.0, 0.0]
+  coord_max: [1.0, 1.0]
+  axis_size: 101
+data: 
+  domain: 
+    size: [256, 256]
+    random_sampling: false
+  BC:
+    size: 65536
+    random_sampling: false
+model:
+  name: FCNN_with_Residual
+  input_size: 2
+  output_size: 3
+  layers: 6
+  activation: tanh
+  neurons: 128
+  residual: true
+  weight_init: "TruncatedNormal"
+optimizer: 
+  lr: 0.001
+train_epoch: 2000
+train_batch_size: 8192
+vision_path: "./images"
+save_ckpt: false
+save_ckpt_path: "./ckpt"
+train_with_eval: false
+visual_resolution: 100
