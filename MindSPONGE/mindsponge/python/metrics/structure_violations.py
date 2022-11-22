@@ -315,27 +315,63 @@ def frame_aligned_point_error_map(pred_frames,
                                   target_positions,
                                   positions_mask,
                                   length_scale,
-                                  l1_clamp_distance,
-                                  epsilon=1e-4):
-    """Measure point error under different alignments.
+                                  l1_clamp_distance):
+    r"""Measure point error under different alignments which computes error between two
+    structures with B points under A alignments derived from the given pairs of frames.
+    Similar with the `frame_aligned_point_error` function. The difference is this is a
+    batched version which return batch error for each group of local frames individually,
+    this version considers only backbone frames.
 
-    Jumper et al. (2021) Suppl. Alg. 28 "computeFAPE"
-
-    Computes error between two structures with B points under A alignments derived
-    from the given pairs of frames.
     Args:
-      pred_frames: num_frames reference frames for 'pred_positions'.
-      target_frames: num_frames reference frames for 'target_positions'.
-      frames_mask: Mask for frame pairs to use.
-      pred_positions: num_positions predicted positions of the structure.
-      target_positions: num_positions target positions of the structure.
-      positions_mask: Mask on which positions to score.
-      length_scale: length scale to divide loss by.
-      l1_clamp_distance: Distance cutoff on error beyond which gradients will
-        be zero.
-      epsilon: small value used to regularize denominator for masked average.
+        - **pred_frames** (list) - The predicted backbone frames which is a 2-dimensional list,
+          the first element of pred_frames is a list of 9 tensors which are the 9 components of
+          rotation matrix; the second element of pred_frames is a list of 3 tensors are the 3
+          component of translation matrix. All tensors are of shape :math:`(N_{recycle}, N_{res})`.
+          with :math:`N_{recycle}` the recycle number of FoldIteration in Structure module, :math:`N_{res}` the
+          number of residues in protein.
+        - **target_frames** (list) - The ground truth backbone frames which is also a 2-dimensional
+          list, the same as pred_frames except that the shape of tensors is :math:`(N_{res},)`.
+        - **frames_mask** (Tensor) - The binary mask for frames of shape  :math:`(N_{res},)`.
+        - **pred_positions** (list) -  The predicted Ca atom positions which is a list of 3
+          tensors of shape :math:`(N_{recycle}, N_{res},)`.
+        - **target_positions** (list) -  The ground truth Ca atom positions which is a list
+          of 3 tensors of shape :math:`(N_{res},)`.
+        - **positions_mask** (Tensor) - The binary mask for Ca atom positions of shape :math:`(N_{res},)`.
+        - **length_scale** (float) - The unit distance which is used to scale distances.
+        - **l1_clamp_distance** (float) - Distance cutoff on error beyond which gradients will
+          be zero.
+
     Returns:
-      Masked Frame Aligned Point Error.
+        - **error_clamp** (Tensor) - Backbone FAPE loss clamped with shape :math:`(N_{recycle},)`.
+        - **error_no_clamp** (Tensor) - Backbone FAPE loss (not clamped) with shape :math:`(N_{recycle},)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.metrics import frame_aligned_point_error_map
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
+        >>> np.random.seed(0)
+        >>> rot_matrix = [[Tensor(np.random.rand(8, 256)).astype(mstype.float32) for _ in range(9)]]
+        >>> trans_matrix = [[Tensor(np.random.rand(8, 256)).astype(mstype.float32) for _ in range(3)]]
+        >>> pred_frames = rot_matrix + trans_matrix
+        >>> rot_matrix = [[Tensor(np.random.rand(256,)).astype(mstype.float32) for _ in range(9)]]
+        >>> trans_matrix = [[Tensor(np.random.rand(256,)).astype(mstype.float32) for _ in range(3)]]
+        >>> target_frames = rot_matrix + trans_matrix
+        >>> frames_mask = Tensor(np.random.rand(256,)).astype(mstype.float32)
+        >>> positions_mask = Tensor(np.random.rand(256,)).astype(mstype.float32)
+        >>> pred_positions = [Tensor(np.random.rand(8, 256)).astype(mstype.float32) for _ in range(3)]
+        >>> target_positions = [Tensor(np.random.rand(256,)).astype(mstype.float32) for _ in range(3)]
+        >>> length_scale = 10.0
+        >>> l1_clamp_distance = 10.0
+        >>> error, error_noclamp = frame_aligned_point_error_map(pred_frames, target_frames, frames_mask,
+        ...                                                      pred_positions, target_positions, positions_mask,
+        ...                                                      length_scale, l1_clamp_distance)
+        >>> print(error, error_noclamp)
+        [0.0827449  0.08608595 0.09045469 0.08518302 0.08452212 0.08624027 0.08426301 0.08154671]
+        [0.0827449  0.08608595 0.09045469 0.08518302 0.08452212 0.08624027 0.08426301 0.08154671]
     """
 
     # Compute array of predicted positions in the predicted frames.
@@ -387,6 +423,8 @@ def frame_aligned_point_error_map(pred_frames,
     v2_gt = -(xy_gt * t0_t + yy_gt * t1_t + zy_gt * t2_t)
     v3_gt = -(xz_gt * t0_t + yz_gt * t1_t + zz_gt * t2_t)
 
+    epsilon = 1e-4
+
     local_target_pos = [xx_gt[:, None] * t0_gt[None, :] + yx_gt[:, None] * t1_gt[None, :] +
                         zx_gt[:, None] * t2_gt[None, :] + v1_gt[:, None], xy_gt[:, None] * t0_gt[None, :] +
                         yy_gt[:, None] * t1_gt[None, :] + zy_gt[:, None] * t2_gt[None, :] +
@@ -402,32 +440,67 @@ def frame_aligned_point_error_map(pred_frames,
     normed_error_clamp = error_dist_clamp / length_scale
     normed_error_clamp *= mnp.expand_dims(frames_mask, axis=-1)
     normed_error_clamp *= mnp.expand_dims(positions_mask, axis=-2)
-    erro_clamp = P.ReduceSum()(normed_error_clamp, (-2, -1)) / (epsilon + normalization_factor)
+    error_clamp = P.ReduceSum()(normed_error_clamp, (-2, -1)) / (epsilon + normalization_factor)
 
     # fape with no clamp
     normed_error_no_clamp = error_dist / length_scale
     normed_error_no_clamp *= mnp.expand_dims(frames_mask, axis=-1)
     normed_error_no_clamp *= mnp.expand_dims(positions_mask, axis=-2)
-    erro_no_clamp = P.ReduceSum()(normed_error_no_clamp, (-2, -1)) / (epsilon + normalization_factor)
+    error_no_clamp = P.ReduceSum()(normed_error_no_clamp, (-2, -1)) / (epsilon + normalization_factor)
 
-    return erro_clamp, erro_no_clamp
+    return error_clamp, error_no_clamp
 
 
 def backbone(traj, backbone_affine_tensor, backbone_affine_mask, fape_clamp_distance, fape_loss_unit_distance,
              use_clamped_fape):
-    """Backbone FAPE Loss.
-
-    Jumper et al. (2021) Suppl. Alg. 20 "StructureModule" line 17
+    r"""Backbone FAPE Loss using `frame_aligned_point_error_map` function.
+    `Jumper et al. (2021) Suppl. Alg. 20 "StructureModule" line 17
+    <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/
+    MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 
     Args:
-      ret: Dictionary to write outputs into, needs to contain 'loss'.
-      batch: Batch, needs to contain 'backbone_affine_tensor',
-        'backbone_affine_mask'.
-      value: Dictionary containing structure module output, needs to contain
-        'traj', a trajectory of rigids.
-      config: Configuration of loss, should contain 'fape.clamp_distance' and
-        'fape.loss_unit_distance'.
+        - **traj** (Tensor) - The series of backbone frames(trajectory) generated by Structure
+          module, the shape is :math:`(N_{recycle}, N_{res}, 7)` with :math:`(N_{recycle},)` the
+          recycle number of recycle in Structure module, :math:`(N_{res},)` the number of residues
+          in protein, for the last dimension, the first 4 elements are the affine tensor which
+          contains the rotation information, the last 3 elements are the translations in space.
+        - **backbone_affine_tensor** (Tensor) - The ground truth backbone frames of shape :math:`(N_{res}, 7)`.
+        - **backbone_affine_mask** (Tensor) - The binary mask for backbone frames of shape :math:`(N_{res},)`.
+        - **fape_clamp_distance** (float) -  Distance cutoff on error beyond which gradients will
+          be zero.
+        - **fape_loss_unit_distance** (float) - The unit distance of backbone FAPE loss, used to scale
+          distances.
+        - **use_clamped_fape** (float) - The indicator that if backbone FAPE loss is clamped,
+          0 or 1, 1 means clamping.
+
+    Returns:
+        - **fape** (Tensor) - Backbone FAPE loss (clamped if use_clamped_fape is 1) of last recycle
+          of Structure module with shape ().
+        - **loss** (Tensor) - Averaged Backbone FAPE loss (clamped if use_clamped_fape is 1) of all recycle of
+          Structure module with shape ().
+        - **no_clamp** (Tensor) - Backbone FAPE loss of last recycle of Structure module with shape ().
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> np.random.seed(0)
+        >>> from mindsponge.metrics import backbone
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
+        >>> traj = Tensor(np.random.rand(8, 256, 7)).astype(mstype.float32)
+        >>> backbone_affine_tensor = Tensor(np.random.rand(256, 7)).astype(mstype.float32)
+        >>> backbone_affine_mask = Tensor(np.random.rand(256,)).astype(mstype.float16)
+        >>> fape_clamp_distance = 10.0
+        >>> fape_loss_unit_distance = 10.0
+        >>> use_clamped_fape = 1
+        >>> fape, loss, noclamp = backbone(traj, backbone_affine_tensor, backbone_affine_mask,
+        ...                                fape_clamp_distance, fape_loss_unit_distance, use_clamped_fape)
+        >>> print(fape, loss, noclamp)
+        0.12813742 0.12904957 0.12813742
     """
+
     _, rotation, translation = quaternion_from_tensor(traj)
     pred_frames = ((rotation[0], rotation[1], rotation[2],
                     rotation[3], rotation[4], rotation[5],
@@ -467,27 +540,61 @@ def frame_aligned_point_error(pred_frames,
                               target_positions,
                               positions_mask,
                               length_scale,
-                              l1_clamp_distance,
-                              epsilon=1e-4):
-    """Measure point error under different alignments.
-
-    Jumper et al. (2021) Suppl. Alg. 28 "computeFAPE"
-
-    Computes error between two structures with B points under A alignments derived
-    from the given pairs of frames.
+                              l1_clamp_distance):
+    r"""Measure point error under different alignments which computes error between two
+    structures with B points under A alignments derived from the given pairs of frames.
+    `Jumper et al. (2021) Suppl. Alg. 28 "computeFAPE"
+    <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/
+    MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
+    This function considers all frames.
+    First transform the predicted atom positions to different predicted local frames,
+    :math:`\vec{x_{j\_pred}^{i}} = \mathcal{T}_{i\_{pred}} \circ \vec{x_{j\_pred}}`
+    Then transform the true atom positions to different true local frames,
+    :math:`\vec{x_{j\_gt}^{i}} = \mathcal{T}_{i\_{gt}} \circ \vec{x_{j\_gt}}`
+    Then compute the L2 error of all atoms positions in all local frames.
+    :math:`\sum_{i }^{N_{frames}}\sum_{j}^{N_{atoms}}(\parallel \vec{x_{j\_pred}^{i}} -
+    \vec{x_{j\_gt}^{i}} \parallel )`
     Args:
-      pred_frames: num_frames reference frames for 'pred_positions'.
-      target_frames: num_frames reference frames for 'target_positions'.
-      frames_mask: Mask for frame pairs to use.
-      pred_positions: num_positions predicted positions of the structure.
-      target_positions: num_positions target positions of the structure.
-      positions_mask: Mask on which positions to score.
-      length_scale: length scale to divide loss by.
-      l1_clamp_distance: Distance cutoff on error beyond which gradients will
-        be zero.
-      epsilon: small value used to regularize denominator for masked average.
+        - **pred_frames** (Tensor) -The predicted frames of shape :math:`(12, N_{frames})` with
+          :math:`N_{frames}` the number of pairs of frames. For the first dimension, the first
+          9 elements are the 9 components of rotation matrix; the last 3 elements are
+          the 3 component of translation matrix.
+        - **target_frames** (Tensor) - The ground truth frames of same shape as pred_frames.
+        - **frames_mask** (Tensor) - The binary mask for frames of shape :math:`(N_{frames},)`.
+        - **pred_positions** (Tensor) -  The predicted atom positions tensor of shape
+          :math:`(3, N_{atoms})` with :math:`N_{atoms}` the number of atoms.
+        - **target_positions** (Tensor) -  The ground truth atom positions of same shape as
+          pred_positions.
+        - **positions_mask** (Tensor) - The binary mask for atom positions of shape :math:`(N_{atoms},)`.
+        - **length_scale** (float) - The unit distance which is used to scale distances.
+        - **l1_clamp_distance** (float) -  Distance cutoff on error beyond which gradients will
+          be zero.
+
     Returns:
-      Masked Frame Aligned Point Error.
+        - **error_clamp** (Tensor) - Backbone FAPE loss clamped with shape :math:`(N_{recycle},)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> np.random.seed(0)
+        >>> from mindsponge.metrics import frame_aligned_point_error
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
+        >>> pred_frames = Tensor(np.random.rand(12, 256)).astype(mstype.float32)
+        >>> target_frames = Tensor(np.random.rand(12, 256)).astype(mstype.float32)
+        >>> frames_mask = Tensor(np.random.rand(256,)).astype(mstype.float32)
+        >>> pred_positions = Tensor(np.random.rand(3, 1024)).astype(mstype.float32)
+        >>> target_positions = Tensor(np.random.rand(3, 1024)).astype(mstype.float32)
+        >>> positions_mask = Tensor(np.random.rand(1024,)).astype(mstype.float32)
+        >>> length_scale = 10.0
+        >>> l1_clamp_distance = 10.0
+        >>> fape = frame_aligned_point_error(pred_frames, target_frames, frames_mask,
+        >>>                                  pred_positions, target_positions, positions_mask,
+        >>>                                  length_scale, l1_clamp_distance)
+        >>> print(fape)
+        0.08747593
     """
 
     # Compute array of predicted positions in the predicted frames.
@@ -536,6 +643,7 @@ def frame_aligned_point_error(pred_frames,
     v2_gt = -(xy_gt * t0_t + yy_gt * t1_t + zy_gt * t2_t)
     v3_gt = -(xz_gt * t0_t + yz_gt * t1_t + zz_gt * t2_t)
 
+    epsilon = 1e-4
     local_target_pos = [xx_gt[:, None] * t0_gt[None, :] + yx_gt[:, None] * t1_gt[None, :] +
                         zx_gt[:, None] * t2_gt[None, :] + v1_gt[:, None], xy_gt[:, None] * t0_gt[None, :] +
                         yy_gt[:, None] * t1_gt[None, :] + zy_gt[:, None] * t2_gt[None, :] +
@@ -558,7 +666,69 @@ def frame_aligned_point_error(pred_frames,
 def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_frames, rigidgroups_gt_exists,
               renamed_atom14_gt_positions, renamed_atom14_gt_exists, sidechain_atom_clamp_distance,
               sidechain_length_scale, pred_frames, pred_positions):
-    """All Atom FAPE Loss using renamed rigids."""
+    r"""sidechain FAPE Loss which take all local frames (side-chain, backbone) into consideration.
+    `Jumper et al. (2021) Suppl. Alg. 20 "StructureModule" line 17
+    <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/
+    MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
+
+
+    Args:
+        - **alt_naming_is_better** (Tensor) - Tensor of shape :math:`(N_{res},)`, with value 1.0 where alternative
+          swap is better.
+        - **rigidgroups_gt_frames** (Tensor) - The ground truth locals frames of shape :math:`(N_{res}, 8, 12)`,
+          with :math:`(N_{res},)` the number of residues in protein. For each residue, there are 1 backbone
+          frame and 7 side-chain frames, 8 frames in total. For the last dimension, the first 9 elements
+          are the 9 components of rotation matrix; the last 3 elements are the 3 component of
+          translation matrix.
+        - **rigidgroups_alt_gt_frames** (Tensor) - The alternative ground truth locals frames due to
+          symmetry of amino acids. This tensor has the same shape as rigidgroups_gt_frames
+        - **rigidgroups_gt_exists** (Tensor) - The binary mask for gt frames of shape :math:`(N_{res}, 8)`.
+        - **renamed_atom14_gt_positions** (Tensor) - The mask for ground truth positions after renaming
+          swaps are performed(swaps are needed for some amino acids due to symmetry
+          `compute_renamed_ground_truth`), its shape is :math:(N_{res}, 14).It takes the 14-types
+          atoms encoding.
+        - **renamed_atom14_gt_exists** (Tensor) - The mask for ground truth positions after renaming
+          swap is performed after renaming swaps are performed, its shape is :math:`(N_{res}, 14)`.
+        - **sidechain_atom_clamp_distance** (float) - Distance cutoff on error beyond which gradients
+          will be zero.
+        - **sidechain_length_scale** (float) - The unit distance of sidechain FAPE loss, used to scale
+          distances.
+        - **pred_frames** (Tensor) - The predicted locals frames of shape  :math:`(12, N_{recycle}, N_{res}, 8)`.
+          :math:`(N_{recycle},)` is the recycle number of FoldIteration in Structure module. Only the frames of
+          last recycle is used in side-chain FAPE loss. 12 has the same meaning as the third dimension of
+          rigidgroups_gt_frames.
+        - **pred_positions** (Tensor) - The predicted positions of shape :math:`(3, N_{recycle}, N_{res}, 14)`.
+          Only the positions of last recycle is used in side-chain FAPE loss, encoded atom-14 encoding.
+
+    Returns:
+        - **fape** (Tensor) - Clamped side-chian FAPE loss with shape ().
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> np.random.seed(0)
+        >>> from mindsponge.metrics import sidechain
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
+        >>> alt_naming_is_better = Tensor(np.zeros((256,))).astype(mstype.float32)
+        >>> rigidgroups_gt_frames = Tensor(np.random.rand(256, 8, 12)).astype(mstype.float32)
+        >>> rigidgroups_alt_gt_frames = Tensor(np.random.rand(256, 8, 12)).astype(mstype.float32)
+        >>> rigidgroups_gt_exists = Tensor(np.random.rand(256, 8)).astype(mstype.float32)
+        >>> renamed_atom14_gt_positions = Tensor(np.random.rand(256, 14, 3)).astype(mstype.float32)
+        >>> renamed_atom14_gt_exists = Tensor(np.random.rand(256, 14)).astype(mstype.float32)
+        >>> sidechain_atom_clamp_distance = 10.0
+        >>> sidechain_length_scale = 10.0
+        >>> pred_frames = Tensor(np.random.rand(12, 8, 256, 8)).astype(mstype.float32)
+        >>> pred_positions = Tensor(np.random.rand(3, 8, 256, 14)).astype(mstype.float32)
+        >>> sidechain_loss = sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_frames,
+        ...                            rigidgroups_gt_exists, renamed_atom14_gt_positions,
+        ...                            renamed_atom14_gt_exists, sidechain_atom_clamp_distance,sidechain_length_scale,
+        ...                            pred_frames, pred_positions)
+        >>> print(sidechain_loss)
+        0.08569459
+    """
     # Rename Frames
     # Jumper et al. (2021) Suppl. Alg. 26 "renameSymmetricGroundTruthAtoms" line 7
     renamed_gt_frames = ((1. - alt_naming_is_better[:, None, None]) * rigidgroups_gt_frames
@@ -566,8 +736,7 @@ def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_fr
     flat_gt_frames = mnp.moveaxis(mnp.reshape(renamed_gt_frames, [-1, 12]), -1, 0)
     flat_frames_mask = mnp.reshape(rigidgroups_gt_exists, [-1])
 
-    flat_gt_positions_t = mnp.reshape(renamed_atom14_gt_positions, [-1, 3])
-    flat_gt_positions = [flat_gt_positions_t[..., 0], flat_gt_positions_t[..., 1], flat_gt_positions_t[..., 2]]
+    flat_gt_positions_t = mnp.moveaxis(mnp.reshape(renamed_atom14_gt_positions, [-1, 3]), -1, 0)
     flat_positions_mask = mnp.reshape(renamed_atom14_gt_exists, [-1])
 
     # Compute frame_aligned_point_error score for the final layer.
@@ -580,30 +749,69 @@ def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_fr
         target_frames=flat_gt_frames,
         frames_mask=flat_frames_mask,
         pred_positions=flat_pred_positions,
-        target_positions=flat_gt_positions,
+        target_positions=flat_gt_positions_t,
         positions_mask=flat_positions_mask,
         l1_clamp_distance=sidechain_atom_clamp_distance,
         length_scale=sidechain_length_scale)
-    loss = fape
-    return fape, loss
+    return fape
 
 
 def supervised_chi(sequence_mask, aatype, sin_cos_true_chi, torsion_angle_mask, sin_cos_pred_chi,
                    sin_cos_unnormalized_pred, chi_weight, angle_norm_weight, chi_pi_periodic):
-    """Computes loss for direct chi angle supervision.
-
-    Jumper et al. (2021) Suppl. Alg. 27 "torsionAngleLoss"
+    r"""Computes loss for direct chi angle supervision. The torsion angles are represented by
+    the sine and cosine value of the angle. This loss is composed of 2 items, the error of
+    normalized predicted sine and cosine value, called chi angle difference loss; the other
+    term is the difference between L2 norm of sine cosine value and 1, called angle norm loss.
+    `Jumper et al. (2021) Suppl. Alg. 27 "torsionAngleLoss"
+    <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/
+    MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 
     Args:
-      ret: Dictionary to write outputs into, needs to contain 'loss'.
-      batch: Batch, needs to contain 'seq_mask', 'chi_mask', 'chi_angles'.
-      value: Dictionary containing structure module output, needs to contain
-        value['sidechains']['angles_sin_cos'] for angles and
-        value['sidechains']['unnormalized_angles_sin_cos'] for unnormalized
-        angles.
-      config: Configuration of loss, should contain 'chi_weight' and
-        'angle_norm_weight', 'angle_norm_weight' scales angle norm term,
-        'chi_weight' scales torsion term.
+        - **sequence_mask** (Tensor) - The mask tensor for sequence of shape :math:`(N_{res},)`
+          with :math:`N_{res}` the number of residues in protein.
+        - **aatype** (Tensor) - The amino acid type tensor of shape :math:`(N_{res},)`.
+        - **sin_cos_true_chi** (Tensor) - Tensor of shape :math:`(N_{res}, 14)` which is the sine
+          and cosine value of torsion angles. There are 7 torsion angles per residue,
+          3 for backbone and 4 for sidechain.
+        - **torsion_angle_mask** (Tensor) - The binary mask for sidechain torsion angles of shape
+          :math:`(N_{res}, 4)`
+        - **sin_cos_pred_chi** (Tensor) - The predicted sine and cosine value (normalized)
+          of torsion angles of shape :math:`(N_{res}, 4, 2)`.
+        - **sin_cos_unnormalized_pred** (Tensor) - The predicted sine and cosine value (unnormalized)
+          of torsion angles of shape :math:`(N_{recycle}, N_{res}, 7, 2)`  with :math:`N_{recycle}`
+          is the recycle number of FoldIteration in Structure module.
+        - **chi_weight** (float) - The weight of chi angle difference loss term, constant.
+        - **angle_norm_weight** (float) - The weight of angle norm loss term, constant.
+        - **chi_pi_periodic** (float) - Chi angles that are pi periodic: they can be rotated
+          by a multiple of pi without affecting the structure. Constants of residues of shape
+          :math:`(21, 4)`, 20 types of amino acids + unknown.
+
+    Returns:
+        - **loss** (Tensor) - Supervised chi angle loss with shape ().
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> np.random.seed(0)
+        >>> from mindsponge.metrics import supervised_chi
+        >>> from mindsponge.common import residue_constants
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
+        >>> sequence_mask = Tensor(np.random.rand(256, )).astype(mstype.float32)
+        >>> aatype = Tensor(np.random.randint(0, 21, (256,) )).astype(mstype.int32)
+        >>> sin_cos_true_chi = Tensor(np.random.rand(256, 4, 2)).astype(mstype.float32)
+        >>> torsion_angle_mask = Tensor(np.random.rand(256, 4)).astype(mstype.float32)
+        >>> sin_cos_pred_chi = Tensor(np.random.rand(256, 14)).astype(mstype.float32)
+        >>> sin_cos_unnormalized_pred = Tensor(np.random.rand(8, 256, 7, 2)).astype(mstype.float32)
+        >>> chi_weight = 0.1
+        >>> angle_norm_weight = 0.2
+        >>> chi_pi_periodic = Tensor(residue_constants.chi_pi_periodic).astype(mstype.float32)
+        >>> chi_loss = supervised_chi(sequence_mask, aatype, sin_cos_true_chi, torsion_angle_mask, sin_cos_pred_chi,
+        ...                           sin_cos_unnormalized_pred, chi_weight, angle_norm_weight, chi_pi_periodic)
+        >>> print(chi_loss)
+        0.061829045
     """
     eps = 1e-6
 
@@ -638,7 +846,48 @@ def supervised_chi(sequence_mask, aatype, sin_cos_true_chi, torsion_angle_mask, 
 
 
 def local_distance_difference_test(predicted_points, true_points, true_points_mask, cutoff=15, per_residue=False):
-    """Compute true and predicted distance matrices."""
+    r"""Compute true and predicted distance matrices for  :math:`C\alpha`.
+    First calculate the distance matrix of true and predicted :math:`C\alpha` atoms
+     :math:`D = (((x[None,:] - x[:,None])^2).sum(-1))^{0.5}`
+    then compute the rate that difference is smaller than fixed value:
+     :math:`lddt = (rate(abs(D_{true} - D_{pred}) < 0.5) + rate(abs(D_{true} - D_{pred}) < 1.0)
+                    + rate(abs(D_{true} - D_{pred}) < 2.0) + rate(abs(D_{true} - D_{pred}) < 4.0))/4`
+    `Jumper et al. (2021) Suppl. Alg. 29 "predictPerResidueLDDT_Ca"
+    <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/
+    MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
+
+    Args:
+        - **predicted_points** (Tensor) - The prediction Ca atoms position tensor of shape
+          :math:`(1, N_{res}, 3)` with :math:`N_{res}` the number of residues in protein.
+        - **true_points** (Tensor) - The ground truth Ca atoms position tensor of shape
+          :math:`(1, N_{res}, 3)`
+        - **true_points_mask** (Tensor) - The binary mask for predicted_points of shape
+          :math:`(1, N_{res}, 1)`
+        - **cutoff** (float) - The cutoff value for lddt to stop gradient, Default: 15.
+        - **per_residue** (Tensor) - The indicator if local distance difference is averaged,
+          set True to return local distance difference per residue. Default: False.
+
+    Returns:
+        - **score** (Tensor) - Local distance difference score, the shape is :math:`(1,)`
+          if per_residue set False, :math:`(1, N_{res})` otherwise.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> np.random.seed(0)
+        >>> from mindsponge.metrics import local_distance_difference_test
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
+        >>> predicted_points = Tensor(np.random.rand(1, 256, 3)).astype(mstype.float32)
+        >>> true_points = Tensor(np.random.rand(1, 256, 3)).astype(mstype.float32)
+        >>> true_points_mask = Tensor(np.random.rand(1, 256, 1)).astype(mstype.float32)
+        >>> lddt = local_distance_difference_test(predicted_points, true_points, true_points_mask,
+        ...                                       cutoff=15, per_residue=False)
+        >>> print(lddt)
+        [0.9554313]
+    """
     dmat_true = mnp.sqrt(1e-10 + mnp.sum((true_points[:, :, None] - true_points[:, None, :]) ** 2, axis=-1))
 
     dmat_predicted = mnp.sqrt(1e-10 + mnp.sum((predicted_points[:, :, None] - predicted_points[:, None, :]) ** 2,

@@ -167,10 +167,10 @@ class LossNet(nn.Cell):
         _, fape_loss, no_clamp = backbone(traj, backbone_affine_tensor, backbone_affine_mask,
                                           self.fape_clamp_distance, self.fape_loss_unit_distance, use_clamped_fape)
 
-        _, loss_sidechain = sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_frames,
-                                      rigidgroups_gt_exists, renamed_atom14_gt_positions, renamed_atom14_gt_exists,
-                                      self.sidechain_atom_clamp_distance, self.sidechain_length_scale, pred_frames,
-                                      pred_positions)
+        loss_sidechain = sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_frames,
+                                   rigidgroups_gt_exists, renamed_atom14_gt_positions, renamed_atom14_gt_exists,
+                                   self.sidechain_atom_clamp_distance, self.sidechain_length_scale, pred_frames,
+                                   pred_positions)
         angle_norm_loss = supervised_chi(seq_mask, aatype, sin_cos_true_chi, torsion_angle_mask,
                                          angles_sin_cos, um_angles_sin_cos, self.chi_weight,
                                          self.angle_norm_weight, self.chi_pi_periodic)
