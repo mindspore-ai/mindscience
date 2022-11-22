@@ -66,13 +66,12 @@ violation_all = violations[-1]
 
 ```bash
 from mindsponge.common.geometry import initial_affine
-from mindsponge.common.geometry import quat_to_rot, rot_to_quat
+from mindsponge.common.geometry import quat_to_rot
 # quaternion is a mindspore tensor
 # rotation_matrix is a tuple of mindspore tensor, length is 9
 # translation is a tuple of mindsproe tensor, length is 3
 quat, rot, trans = initial_affine(128) # 128 is the num of residues
 transformed_rot = quat_to_rot(quat)
-transformed_quat = rot_to_quat(rot)
 ```
 
 ### 一个简单的分子动力学模拟案例

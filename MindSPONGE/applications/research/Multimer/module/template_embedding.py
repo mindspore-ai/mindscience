@@ -20,7 +20,7 @@ from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 from mindsponge.cell.initializer import lecun_init
 from mindsponge.common.utils import dgram_from_positions, _memory_reduce, pseudo_beta_fn
-from mindsponge.common.geometry import make_transform_from_reference, rot_to_quat, quat_affine, invert_point
+from mindsponge.common.geometry import make_transform_from_reference, quat_affine, invert_point
 from mindsponge.common.residue_constants import atom_order
 from mindsponge.cell import Attention, TriangleAttention, Transition, TriangleMultiplication
 from common.geometry import multimer_rigids_get_unit_vector
@@ -132,7 +132,7 @@ class SingleTemplateEmbedding(nn.Cell):
                                                              template_all_atom_positions[:, :, self.ca],
                                                              template_all_atom_positions[:, :, self.c])
 
-        _, rotation_tmp, translation_tmp = quat_affine(rot_to_quat(rot_temp), trans_temp, rot_temp)
+        _, rotation_tmp, translation_tmp = quat_affine(None, trans_temp, rot_temp)
         points_tmp = [P.ExpandDims()(translation_tmp[0], -2),
                       P.ExpandDims()(translation_tmp[1], -2),
                       P.ExpandDims()(translation_tmp[2], -2)]
