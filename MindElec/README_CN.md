@@ -29,6 +29,7 @@
 
 ## **最新消息** 📰
 
+- `2022.11` 论文"Meta-Auto-Decoder for Solving Parametric Partial Differential Equations" 被AI领域顶会 NeurIPS 2022 SpotLight(前5%)接收，详情参见[论文](https://arxiv.org/pdf/2111.08823)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/incremental_learning)
 - `2022.07` 论文"A Universal PINNs Method for Solving Partial Differential Equations with a Point Source" 被AI领域顶会 IJCAI 2022接收，详情参见[论文](https://www.ijcai.org/proceedings/2022/533)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/time_domain_maxwell)
 
 ## MindElec介绍
@@ -111,7 +112,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 
 ## API
 
-MindElec API文档请查看[文档链接](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec.html)
+MindElec API文档请查看[文档链接](https://mindspore.cn/mindscience/api/zh-CN/r0.1/mindelec.html)
 
 ## 验证是否成功安装
 
@@ -123,7 +124,7 @@ python -c 'import mindelec'
 
 ## 快速入门
 
-关于如何快速使用AI电磁仿真工具包，进行训练推理，请点击查看[MindElec使用教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
+关于如何快速使用AI电磁仿真工具包，进行训练推理，请点击查看[MindElec使用教程](https://mindspore.cn/mindscience/docs/zh-CN/r0.1/mindelec/intro_and_install.html)
 
 ## 文档
 

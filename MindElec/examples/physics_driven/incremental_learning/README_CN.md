@@ -59,8 +59,8 @@ $$L_{total} = \lambda_{src}L_{src} + \lambda_{src_ic}L_{src_ic} + \lambda_{no_sr
 - 框架
     - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindElec教程](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindscience/docs/zh-CN/master/mindelec.html)
+    - [MindElec教程](https://mindspore.cn/mindscience/docs/zh-CN/r0.1/mindelec/intro_and_install.html)
+    - [MindElec Python API](https://mindspore.cn/mindscience/api/zh-CN/r0.1/mindelec.html)
 
 ## 脚本说明
 
@@ -81,7 +81,7 @@ $$L_{total} = \lambda_{src}L_{src} + \lambda_{src_ic}L_{src_ic} + \lambda_{no_sr
   ├─config
     ├──pretrain.json                  # 预训练参数配置
     ├──reconstruct.json               # 增量训练参数配置
-  ├──piad.py                          # 预训练和增量训练脚本
+  ├──mad.py                          # 预训练和增量训练脚本
 ```
 
 ### 脚本参数
@@ -245,10 +245,10 @@ bc_sampling_config = edict({          # 边界区域的采样配置
 
 ## 模型预训练
 
-您可以通过piad.py脚本训练参数化电磁仿真模型，训练过程中模型参数会自动保存：
+您可以通过mad.py脚本训练参数化电磁仿真模型，训练过程中模型参数会自动保存：
 
 ```shell
-python piad.py --mode=pretrain
+python mad.py --mode=pretrain
 ```
 
 ## 预训练性能与精度
@@ -305,10 +305,10 @@ l2_error, Ex:  0.06892983792636541 , Ey:  0.06803824510149464 , Hz:  0.070612441
 
 ## 增量训练求解新方程
 
-给定一组新的方程参数，您可以通过piad.py脚本加载预训练模型与测试数据集增量训练，从而快速得到新问题的解：
+给定一组新的方程参数，您可以通过mad.py脚本加载预训练模型与测试数据集增量训练，从而快速得到新问题的解：
 
 ```shell
-python piad.py --mode=reconstruct
+python mad.py --mode=reconstruct
 ```
 
 ## 增量训练性能与精度

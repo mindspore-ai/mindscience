@@ -30,6 +30,7 @@
 
 ## **Up-to-date News** 📰
 
+- `2022.07` Our paper "Meta-Auto-Decoder for Solving Parametric Partial Differential Equations" was accepted by NeurIPS 2022 SpotLight(top 5%)，please refer our [paper](https://arxiv.org/pdf/2111.08823) and [code](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/incremental_learning)
 - `2022.07` Our paper "A Universal PINNs Method for Solving Partial Differential Equations with a Point Source" was accepted by IJCAI 2022，please refer our [paper](https://www.ijcai.org/proceedings/2022/533) and [code](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/time_domain_maxwell)
 
 ## Introduction to MindElec
@@ -111,7 +112,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 
 ## API
 
-For details about MindElec APIs, see the [API](https://www.mindspore.cn/mindscience/docs/en/master/mindelec.html) page.
+For details about MindElec APIs, see the [API](https://mindspore.cn/mindscience/api/en/r0.1/mindelec.html) page.
 
 ## Installation Verification
 
@@ -123,7 +124,7 @@ python -c 'import mindelec'
 
 ## Quick Start
 
-For details about how to quickly use the AI electromagnetic simulation toolkit for training and inference, see [MindElec Guide](https://www.mindspore.cn/mindscience/docs/en/master/mindelec/intro_and_install.html).
+For details about how to quickly use the AI electromagnetic simulation toolkit for training and inference, see [MindElec Guide](https://mindspore.cn/mindscience/docs/en/r0.1/mindelec/intro_and_install.html).
 
 ## Documents
 
