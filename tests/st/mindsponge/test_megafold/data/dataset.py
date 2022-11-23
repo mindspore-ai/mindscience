@@ -21,9 +21,9 @@ import numpy as np
 from mindspore import dataset as ds
 from mindspore.communication import get_rank
 
-from mindsponge.common.residue_constants import make_atom14_dists_bounds
+from mindsponge.common.residue_constants import make_atom14_dists_bounds, order_restype_with_x
 from mindsponge.common.protein import from_pdb_string
-from mindsponge.common.utils import make_atom14_positions
+from mindsponge.common.utils import make_atom14_positions, get_aligned_seq
 from mindsponge.data.data_transform import pseudo_beta_fn, atom37_to_frames, atom37_to_torsion_angles
 from .preprocess import Feature
 
@@ -188,3 +188,54 @@ class SeedMaker:
 
 
 global_seed = SeedMaker()
+
+
+def process_pdb(true_aatype, ori_res_length, decoy_pdb_path):
+    """get atom information from pdb"""
+    with open(decoy_pdb_path, 'r') as f:
+        decoy_prot_pdb = from_pdb_string(f.read())
+        f.close()
+    decoy_aatype = decoy_prot_pdb.aatype
+    decoy_atom37_positions = decoy_prot_pdb.atom_positions.astype(np.float32)
+    decoy_atom37_mask = decoy_prot_pdb.atom_mask.astype(np.float32)
+    padding_val = true_aatype.shape[0] - ori_res_length
+    true_aatype = true_aatype[:ori_res_length]
+    decoy_aatype, decoy_atom37_positions, decoy_atom37_mask, align_mask = \
+        align_with_aatype(true_aatype, decoy_aatype, decoy_atom37_positions, decoy_atom37_mask)
+    decoy_atom37_positions = np.pad(decoy_atom37_positions, ((0, padding_val), (0, 0), (0, 0)))
+    decoy_atom37_mask = np.pad(decoy_atom37_mask, ((0, padding_val), (0, 0)))
+    align_mask = np.pad(align_mask, ((0, padding_val)))
+
+    return decoy_atom37_positions, decoy_atom37_mask, align_mask
+
+
+def align_with_aatype(true_aatype, aatype, atom37_positions, atom37_mask):
+    """align pdb with aatype"""
+    if len(true_aatype) == len(aatype):
+        out = aatype, atom37_positions, atom37_mask, np.ones((aatype.shape[0])).astype(np.float32)
+        return out
+    seq1 = [order_restype_with_x.get(x) for x in aatype]
+    seq2 = [order_restype_with_x.get(x) for x in true_aatype]
+    seq1 = ''.join(seq1)
+    seq2 = ''.join(seq2)
+    _, align_relationship, _ = get_aligned_seq(seq1, seq2)
+    pdb_index = 0
+    seq_len = len(true_aatype)
+    new_aatype = np.zeros((seq_len,)).astype(np.int32)
+    new_atom37_positions = np.zeros((seq_len, 37, 3)).astype(np.float32)
+    new_atom37_mask = np.zeros((seq_len, 37)).astype(np.float32)
+    align_mask = np.zeros((seq_len,)).astype(np.float32)
+    for i in range(len(true_aatype)):
+        if align_relationship[i] == "-":
+            new_aatype[i] = 20
+            new_atom37_positions[i] = np.zeros((37, 3)).astype(np.float32)
+            new_atom37_mask[i] = np.zeros((37,)).astype(np.float32)
+            align_mask[i] = 0
+        else:
+            new_aatype[i] = aatype[pdb_index]
+            new_atom37_positions[i] = atom37_positions[pdb_index]
+            new_atom37_mask[i] = atom37_mask[pdb_index]
+            align_mask[i] = 1
+            pdb_index += 1
+    out = new_aatype, new_atom37_positions, new_atom37_mask, align_mask
+    return out

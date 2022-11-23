@@ -649,7 +649,7 @@ class MultimerFeature:
 
     def pipeline(self, model_cfg, data_cfg, raw_feature):
         """Preprocesses Numpy feature dict in multimer model"""
-        if not data_cfg.random_recycle:
+        if not data_cfg.common.random_recycle:
             np.random.seed(0)
         features = raw_feature.copy()
         features['msa_profile'] = self.np_mask_mean(features['msa_mask'][:, :, None],

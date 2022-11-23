@@ -163,10 +163,10 @@ class SingleTemplateEmbedding(nn.Cell):
 
         output = []
         for i in range(self.batch_block):
-            act_bacth = act[i]
+            act_batch = act[i]
             for j in range(self.num_block):
-                act_bacth = self.template_pair_stack[j](act_bacth, mask_2d)
-            slice_act = P.Reshape()(act_bacth, ((1,) + P.Shape()(act_bacth)))
+                act_batch = self.template_pair_stack[j](act_batch, mask_2d)
+            slice_act = P.Reshape()(act_batch, ((1,) + P.Shape()(act_batch)))
             output.append(slice_act)
 
         act_tmp_loop = P.Concat()(output)

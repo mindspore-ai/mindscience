@@ -16,4 +16,4 @@
 from .preprocess import Feature
 from .protein_feature import RawFeatureGenerator
 from .utils import get_crop_size, get_raw_feature
-from .dataset import create_dataset
+from .dataset import create_dataset, process_pdb

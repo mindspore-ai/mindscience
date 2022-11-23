@@ -17,9 +17,11 @@ import os
 import pickle
 import pytest
 import mindspore.context as context
+import mindspore.common.dtype as mstype
 from mindspore import Tensor
 from mindspore import load_checkpoint
 from mindsponge.common.config_load import load_config
+from mindsponge.cell.initializer import do_keep_cell_fp32
 from model.fold import MegaFold, compute_confidence
 from data.preprocess import Feature
 from data.utils import get_raw_feature
@@ -32,7 +34,7 @@ def load_pkl(pickle_path):
     return data
 
 
-def fold_infer(crop_size, predict_confidence):
+def fold_infer(crop_size, predict_confidence, mixed_precision=False):
     """fold_infer"""
     data_cfg = load_config('./config/data.yaml')
     model_cfg = load_config('./config/model.yaml')
@@ -42,8 +44,12 @@ def fold_infer(crop_size, predict_confidence):
     slice_val = vars(model_cfg.slice)[slice_key]
     model_cfg.slice = slice_val
 
-    megafold = MegaFold(model_cfg, mixed_precision=False)
-    megafold.add_flags_recursive(train_backward=False)
+    megafold = MegaFold(model_cfg, mixed_precision=mixed_precision)
+    if mixed_precision is True:
+        megafold.to_float(mstype.float16)
+        do_keep_cell_fp32(megafold)
+    else:
+        megafold.to_float(mstype.float32)
     load_checkpoint("/home/workspace/mindspore_ckpt/ckpt/megafold.ckpt", megafold)
     seq_files = os.listdir("./feature/")
     feature_generator = None
@@ -52,7 +58,7 @@ def fold_infer(crop_size, predict_confidence):
         ori_res_length = raw_feature['msa'].shape[1]
         processed_feature = Feature(data_cfg, raw_feature)
         feat, prev_pos, prev_msa_first_row, prev_pair = processed_feature.pipeline(data_cfg,
-                                                                                   mixed_precision=False)
+                                                                                   mixed_precision=mixed_precision)
         prev_pos = Tensor(prev_pos)
         prev_msa_first_row = Tensor(prev_msa_first_row)
         prev_pair = Tensor(prev_pair)
@@ -83,3 +89,19 @@ def test_megafold_gpu_seqlen_256():
     context.set_context(enable_graph_kernel=True,
                         graph_kernel_flags="--enable_expand_ops_only=Softmax --enable_cluster_ops_only=Add")
     fold_infer(256, 94)
+
+
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend_training
+@pytest.mark.platform_x86_ascend_training
+@pytest.mark.env_onecard
+def test_megafold_ascend_seqlen_256():
+    """
+    Feature: megafold model test in the ascend, seq length is 256
+    Description: input the tensors of raw feature
+    Expectation: cost_time <= predict_time, confidence >= predict_confidence.
+    """
+    context.set_context(mode=context.GRAPH_MODE,
+                        device_target="Ascend",
+                        max_device_memory="31GB")
+    fold_infer(256, 94, True)

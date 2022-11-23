@@ -19,20 +19,21 @@ import mindspore.communication.management as D
 import mindspore.nn as nn
 import mindspore.numpy as mnp
 from mindspore import Tensor
+from mindspore.context import ParallelMode
+from mindspore.parallel._utils import _get_parallel_mode
 from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 from mindsponge.common import residue_constants
 from mindsponge.common.geometry import invert_point, quaternion_from_tensor, vecs_expend_dims
-from mindsponge.metrics.structure_violations import softmax_cross_entropy, sigmoid_cross_entropy, \
-    get_structural_violations, compute_renamed_ground_truth, backbone, sidechain, supervised_chi, \
-    local_distance_difference_test
+from mindsponge.metrics.structure_violations import get_structural_violations, compute_renamed_ground_truth, backbone,\
+    sidechain, supervised_chi, local_distance_difference_test
 from mindsponge.metrics import BalancedMSE, BinaryFocal, MultiClassFocal
 
 
 class LossNet(nn.Cell):
     """loss net"""
 
-    def __init__(self, config):
+    def __init__(self, config, train_fold=True):
         super(LossNet, self).__init__()
         self.config = config
         self.num_res = config.seq_length
@@ -84,6 +85,9 @@ class LossNet(nn.Cell):
         self.twos = Tensor(2, ms.int32)
         self.dists_mask_i = mnp.eye(14, 14)
         self.cys_sg_idx = Tensor(5, ms.int32)
+        self.train_fold = train_fold
+        self.softmax_cross_entropy = nn.SoftmaxCrossEntropyWithLogits(sparse=False)
+        self.sigmoid_cross_entropy = P.SigmoidCrossEntropyWithLogits()
 
     def distogram_loss(self, logits, bin_edges, pseudo_beta, pseudo_beta_mask):
         """Log loss of a distogram."""
@@ -97,7 +101,7 @@ class LossNet(nn.Cell):
 
         true_bins = P.ReduceSum()(aa, -1)
         true_bins = true_bins.astype(ms.int32)
-        errors = softmax_cross_entropy(labels=self.distogram_one_hot(true_bins), logits=logits)
+        errors = self.softmax_cross_entropy(labels=self.distogram_one_hot(true_bins), logits=logits)
         square_mask = mnp.expand_dims(mask, axis=-2) * mnp.expand_dims(mask, axis=-1)
         avg_error = (P.ReduceSum()(errors * square_mask, (-2, -1)) /
                      (1e-6 + P.ReduceSum()(square_mask.astype(ms.float32), (-2, -1))))
@@ -118,7 +122,7 @@ class LossNet(nn.Cell):
         # *except for OXT*
         all_atom_mask = all_atom_mask.astype(mnp.float32)
 
-        xent = sigmoid_cross_entropy(logits, all_atom_mask)
+        xent = self.sigmoid_cross_entropy(logits, all_atom_mask)
         loss = P.ReduceSum()(xent * atom_exists) / (1e-8 + P.ReduceSum()(atom_exists.astype(ms.float32)))
         loss = loss * filter_by_solution
         loss *= self.exp_res_mask
@@ -126,7 +130,7 @@ class LossNet(nn.Cell):
 
     def masked_head_loss(self, true_msa, logits, bert_mask):
         """masked_head_loss"""
-        errors = softmax_cross_entropy(logits=logits, labels=self.masked_one_hot(true_msa))
+        errors = self.softmax_cross_entropy(logits=logits, labels=self.masked_one_hot(true_msa))
         loss = (P.ReduceSum()(errors * bert_mask, (-2, -1)) /
                 (1e-8 + P.ReduceSum()(bert_mask.astype(ms.float32), (-2, -1))))
         return loss
@@ -193,7 +197,7 @@ class LossNet(nn.Cell):
         lddt_ca_one_hot = nn.OneHot(depth=self.predicted_lddt_num_bins)(bin_index)
 
         logits = predicted_lddt_logits
-        errors = softmax_cross_entropy(labels=lddt_ca_one_hot, logits=logits)
+        errors = self.softmax_cross_entropy(labels=lddt_ca_one_hot, logits=logits)
 
         mask_ca = all_atom_mask[:, 1]
         mask_ca = mask_ca.astype(mnp.float32)
@@ -229,7 +233,7 @@ class LossNet(nn.Cell):
         sq_breaks = mnp.square(breaks)
         true_bins = P.ReduceSum()((error_dist2[..., None] > sq_breaks).astype(mnp.float32), -1)
 
-        errors = softmax_cross_entropy(labels=self.aligned_one_hot(true_bins.astype(ms.int32)), logits=logits)
+        errors = self.softmax_cross_entropy(labels=self.aligned_one_hot(true_bins.astype(ms.int32)), logits=logits)
 
         loss = (P.ReduceSum()(errors * square_mask, (-2, -1)) /
                 (1e-8 + P.ReduceSum()(square_mask, (-2, -1))))
@@ -256,11 +260,18 @@ class LossNet(nn.Cell):
                   pred_frames, pred_positions, sin_cos_true_chi, torsion_angle_mask, use_clamped_fape,
                   filter_by_solution):
         """construct"""
-        distogram_loss, _ = self.distogram_loss(distogram_logits, bin_edges, pseudo_beta, pseudo_beta_mask)
-        distogram_loss = distogram_loss * self.distogram_weight
+        distogram_loss = 0.0
+        masked_loss = 0.0
+        if self.train_fold:
+            distogram_loss, _ = self.distogram_loss(distogram_logits, bin_edges, pseudo_beta, pseudo_beta_mask)
+            distogram_loss = distogram_loss * self.distogram_weight
 
-        masked_loss = self.masked_head_loss(true_msa, masked_logits, bert_mask)
-        masked_loss = self.masked_weight * masked_loss
+            masked_loss = self.masked_head_loss(true_msa, masked_logits, bert_mask)
+            masked_loss = self.masked_weight * masked_loss
+
+            self.aligned_error_loss(final_affines, backbone_affine_tensor, backbone_affine_mask, pae_breaks,
+                                    pae_logits, filter_by_solution)
+            self.experimentally_loss(experimentally_logits, atom37_atom_exists, all_atom_mask, filter_by_solution)
 
         fape_loss, loss_sidechain, angle_norm_loss, _, _ = \
             self.structure_loss(atom14_gt_positions, atom14_alt_gt_positions, atom14_atom_is_ambiguous,
@@ -272,14 +283,10 @@ class LossNet(nn.Cell):
                                 rigidgroups_alt_gt_frames,
                                 pred_frames, pred_positions, sin_cos_true_chi, torsion_angle_mask, use_clamped_fape)
 
-        self.experimentally_loss(experimentally_logits, atom37_atom_exists, all_atom_mask, filter_by_solution)
-
         predict_lddt_loss = self.predicted_lddt_loss(final_atom_positions, all_atom_positions, all_atom_mask,
                                                      predicted_lddt_logits, filter_by_solution)
         predict_lddt_loss = self.plddt_weight * predict_lddt_loss
 
-        self.aligned_error_loss(final_affines, backbone_affine_tensor, backbone_affine_mask, pae_breaks,
-                                pae_logits, filter_by_solution)
         # # todo check whether to use it
         # aligned_error_loss = self.aligned_error_loss(final_affines, backbone_affine_tensor,
         #                                              backbone_affine_mask, pae_breaks, pae_logits, filter_by_solution)
@@ -304,31 +311,40 @@ class LossNetAssessment(nn.Cell):
 
     def __init__(self, config):
         super(LossNetAssessment, self).__init__()
-        self.orign_loss = LossNet(config)
+        self.orign_loss = LossNet(config, train_fold=False)
 
+        self.num_bins = config.heads.distogram.num_bins
         self.cutoff = 15.0
         self.within_cutoff_clip = 0.3
         self.beyond_cutoff_clip = 3.0
         self.beyond_cutoff_weight = 0.2
         self.regressor_idx = 1
         self.regressor_weight = 2.
+        self.parallel_mode = _get_parallel_mode()
+        self.reducer_flag = self.parallel_mode in (ParallelMode.DATA_PARALLEL, ParallelMode.HYBRID_PARALLEL)
+        if self.reducer_flag:
+            self.allreduce = P.AllReduce()
+            self.device_num = D.get_group_size()
 
         self.reg_loss_distogram = RegressionLosses(first_break=2., last_break=22.,
-                                                   num_bins=config.model.heads.distogram.num_bins, bin_shift=True,
-                                                   charbonnier_eps=0.1)
+                                                   num_bins=config.heads.distogram.num_bins, bin_shift=True,
+                                                   charbonnier_eps=0.1, reducer_flag=self.reducer_flag)
         self.reg_loss_lddt = RegressionLosses(first_break=0., last_break=1.,
-                                              num_bins=config.model.heads.predicted_lddt.num_bins, bin_shift=False,
-                                              charbonnier_eps=1e-5)
+                                              num_bins=config.heads.predicted_lddt.num_bins, bin_shift=False,
+                                              charbonnier_eps=1e-5, reducer_flag=self.reducer_flag)
 
         self.binary_focal_loss = BinaryFocal(alpha=0.25, gamma=1., feed_in=False, not_focal=False)
-        self.softmax_focal_loss_lddt = MultiClassFocal(num_class=config.model.heads.predicted_lddt.num_bins,
-                                                       gamma=1., e=0.1, neighbors=2, not_focal=False)
-        self.softmax_focal_loss_distogram = MultiClassFocal(num_class=config.model.heads.distogram.num_bins,
-                                                            gamma=1., e=0.1, neighbors=2, not_focal=False)
+        self.softmax_focal_loss_lddt = MultiClassFocal(num_class=config.heads.predicted_lddt.num_bins,
+                                                       gamma=1., e=0.1, neighbors=2, not_focal=False,
+                                                       reducer_flag=self.reducer_flag)
+        self.softmax_focal_loss_distogram = MultiClassFocal(num_class=config.heads.distogram.num_bins,
+                                                            gamma=1., e=0.1, neighbors=2, not_focal=False,
+                                                            reducer_flag=self.reducer_flag)
         self.cameo_focal_loss = BinaryFocal(alpha=0.2, gamma=0.5, feed_in=True, not_focal=False)
-
-        self.allreduce = P.AllReduce()
-        self.device_num = D.get_group_size()
+        self.distogram_one_hot = nn.OneHot(depth=self.num_bins, axis=-1)
+        self.breaks = mnp.linspace(2.0, 22.0, self.num_bins)
+        self.width = self.breaks[1] - self.breaks[0]
+        self.centers = self.breaks + 0.5 * self.width
 
     def distogram_loss(self, logits, bin_edges, pseudo_beta, pseudo_beta_mask):
         """Log loss of a distogram."""
@@ -341,7 +357,7 @@ class LossNetAssessment(nn.Cell):
         aa = (dist2 > sq_breaks).astype(ms.float32)
 
         square_mask = mnp.expand_dims(mask, axis=-2) * mnp.expand_dims(mask, axis=-1)
-        probs = self.softmax(logits)
+        probs = nn.Softmax(-1)(logits)
         dmat_pred = mnp.sum(probs * mnp.reshape(self.centers, (1, 1, -1)), -1)
         dist2 = dist2[..., 0]
         dmat_true = mnp.sqrt(1e-6 + dist2)
@@ -388,10 +404,10 @@ class LossNetAssessment(nn.Cell):
 
         return dist_loss
 
-    def construct(self, distogram_logits, bin_edges, pseudo_beta, pseudo_beta_mask, experimentally_logits,
-                  atom37_atom_exists, all_atom_mask, true_msa, masked_logits, bert_mask,
+    def construct(self, distogram_logits, bin_edges, pseudo_beta, pseudo_beta_mask,
+                  atom37_atom_exists, all_atom_mask, true_msa, bert_mask,
                   final_atom14_positions, residue_index, aatype, residx_atom14_to_atom37, lower_bound, upper_bound,
-                  seq_mask, atomtype_radius, final_affines, pae_breaks, pae_logits, angles_sin_cos,
+                  seq_mask, atomtype_radius, final_affines, angles_sin_cos,
                   um_angles_sin_cos, backbone_affine_tensor, backbone_affine_mask, atom14_gt_positions,
                   atom14_alt_gt_positions, atom14_atom_is_ambiguous, atom14_gt_exists, atom14_atom_exists,
                   atom14_alt_gt_exists, final_atom_positions, all_atom_positions, predicted_lddt_logits, traj,
@@ -400,10 +416,10 @@ class LossNetAssessment(nn.Cell):
                   decoy_pseudo_beta, decoy_pseudo_beta_mask, decoy_predicted_lddt_logits, plddt_dist, pred_mask2d):
         """construct"""
         _, l_fape_side, l_fape_backbone, l_anglenorm, _, _, predict_lddt_loss = self.orign_loss(
-            distogram_logits, bin_edges, pseudo_beta, pseudo_beta_mask, experimentally_logits,
-            atom37_atom_exists, all_atom_mask, true_msa, masked_logits, bert_mask,
+            distogram_logits, bin_edges, pseudo_beta, pseudo_beta_mask, None,
+            atom37_atom_exists, all_atom_mask, true_msa, None, bert_mask,
             final_atom14_positions, residue_index, aatype, residx_atom14_to_atom37, lower_bound, upper_bound,
-            seq_mask, atomtype_radius, final_affines, pae_breaks, pae_logits, angles_sin_cos,
+            seq_mask, atomtype_radius, final_affines, None, None, angles_sin_cos,
             um_angles_sin_cos, backbone_affine_tensor, backbone_affine_mask, atom14_gt_positions,
             atom14_alt_gt_positions, atom14_atom_is_ambiguous, atom14_gt_exists, atom14_atom_exists,
             atom14_alt_gt_exists, final_atom_positions, all_atom_positions, predicted_lddt_logits, traj,
@@ -454,8 +470,9 @@ class LossNetAssessment(nn.Cell):
 
         seq_len = F.cast(P.ReduceSum()(pseudo_beta_mask), mnp.float32)
         loss_weight = mnp.power(seq_len, 0.5)
-        loss_weight_sum = self.allreduce(loss_weight) / self.device_num
-        loss_weight = loss_weight / loss_weight_sum
+        if self.reducer_flag:
+            loss_weight_sum = self.allreduce(loss_weight) / self.device_num
+            loss_weight = loss_weight / loss_weight_sum
         loss_weight *= 64.
 
         loss = loss * loss_weight
@@ -470,7 +487,8 @@ class LossNetAssessment(nn.Cell):
 class RegressionLosses(nn.Cell):
     """Return various regressor losses"""
 
-    def __init__(self, first_break, last_break, num_bins, bin_shift=True, beta=0.99, charbonnier_eps=1e-5):
+    def __init__(self, first_break, last_break, num_bins, bin_shift=True, beta=0.99, charbonnier_eps=1e-5,
+                 reducer_flag=False):
         super(RegressionLosses, self).__init__()
 
         self.beta = beta
@@ -479,6 +497,8 @@ class RegressionLosses(nn.Cell):
         self.first_break = first_break
         self.last_break = last_break
         self.num_bins = num_bins
+        self.breaks = mnp.linspace(self.first_break, self.last_break, self.num_bins)
+        self.width = self.breaks[1] - self.breaks[0]
 
         bin_width = 2
         start_n = 1
@@ -490,8 +510,8 @@ class RegressionLosses(nn.Cell):
             centers = mnp.linspace(self.first_break, self.last_break, self.num_bins)
             self.centers = centers + 0.5 * self.width
         self.mse = nn.MSELoss()
-        self.mas = nn.L1Loss()
-        self.bmse = BalancedMSE(first_break, last_break, num_bins, beta)
+        self.mae = nn.L1Loss()
+        self.bmse = BalancedMSE(first_break, last_break, num_bins, beta, reducer_flag)
 
     def construct(self, prediction, target, p_bins=None):
         """construct"""
