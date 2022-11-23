@@ -273,15 +273,6 @@ def rots_to_tensor(rots, use_numpy=False):
     return rots
 
 
-def rot_to_quat(rot, stack=False, use_numpy=False):
-    """rot to quat"""
-    if stack:
-        rot = rots_from_tensor(rot, use_numpy)
-    xx, xy, xz, yx, yy, yz, zx, zy, zz = rot
-
-    quaternion = (1. / 3.) * mnp.stack((xx + yy + zz, zy - yz, xz - zx, yx - xy), axis=-1)
-    return quaternion
-
 
 def quat_affine(quaternion, translation, rotation=None, normalize=True, unstack_inputs=False, use_numpy=False):
     """create quat affine representations"""
