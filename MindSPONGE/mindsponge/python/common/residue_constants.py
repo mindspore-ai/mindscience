@@ -759,16 +759,6 @@ def chi_angle_atom(atom_index: int) -> np.ndarray:
 
     return one_hot
 
-
-chi_atom_1_one_hot = chi_angle_atom(1)
-chi_atom_2_one_hot = chi_angle_atom(2)
-
-# An array like chi_angles_atoms but using indices rather than names.
-chi_angles_atom_indices = [[], [[0, 1, 3, 5], [1, 3, 5, 11], [3, 5, 11, 23], [5, 11, 23, 32]], [[0, 1, 3, 5], [1, 3, 5, 16]], [[0, 1, 3, 5], [1, 3, 5, 16]], [[0, 1, 3, 10]], [[0, 1, 3, 5], [1, 3, 5, 11], [3, 5, 11, 26]], [[0, 1, 3, 5], [1, 3, 5, 11], [3, 5, 11, 26]], [], [[0, 1, 3, 5], [1, 3, 5, 14]], [[0, 1, 3, 6], [1, 3, 6, 12]], [[0, 1, 3, 5], [1, 3, 5, 12]], [[0, 1, 3, 5], [1, 3, 5, 11], [3, 5, 11, 19], [5, 11, 19, 35]], [[0, 1, 3, 5], [1, 3, 5, 18], [3, 5, 18, 19]], [[0, 1, 3, 5], [1, 3, 5, 12]], [[0, 1, 3, 5], [1, 3, 5, 11]], [[0, 1, 3, 8]], [[0, 1, 3, 9]], [[0, 1, 3, 5], [1, 3, 5, 12]], [[0, 1, 3, 5], [1, 3, 5, 12]], [[0, 1, 3, 6]]]
-chi_angles_atom_indices = np.array([
-    chi_atoms + ([[0, 0, 0, 0]] * (4 - len(chi_atoms)))
-    for chi_atoms in chi_angles_atom_indices])
-
 # Mapping from (res_name, atom_name) pairs to the atom's chi group index
 # and atom index within that group.
 chi_groups_for_atom = collections.defaultdict(list)
