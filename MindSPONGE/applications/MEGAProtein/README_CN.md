@@ -18,17 +18,17 @@ MEGA-Protein主要由三部分组成：
 <img src="../../docs/evogen_contest.jpg" alt="MEGA-EvoGen方法获得CAMEO-3D蛋白质结构预测赛道月榜第一" width="600"/>
 </div>
 
-- **蛋白质结构评分工具MEGA-Assessement**，该工具可以评价蛋白质结构每个残基的准确性以及残基-残基之间的距离误差，同时可以基于评价结果对蛋白结构作出进一步的优化，该方法获得了CAMEO-QE结构质量评估赛道22年7月月榜第一
+- **蛋白质结构评分工具MEGA-Assessment**，该工具可以评价蛋白质结构每个残基的准确性以及残基-残基之间的距离误差，同时可以基于评价结果对蛋白结构作出进一步的优化，该方法获得了CAMEO-QE结构质量评估赛道22年7月月榜第一
 
 <div align=center>
-<img src="../../docs/assess_contest.png" alt="MEGA-Assessement方法获得CAMEO-QE结构质量评估赛道月榜第一" width="600"/>
+<img src="../../docs/assess_contest.png" alt="MEGA-Assessment方法获得CAMEO-QE结构质量评估赛道月榜第一" width="600"/>
 </div>
 
 ## 可用的模型和数据集
 
 | 所属模块      | 文件名        | 大小 | 描述  |Model URL  |
 |-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
-| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 |  [下载链接](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)  |
+| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 |  [下载链接](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)  |
 | PSP          | `PSP`         | 1.6TB(解压后25TB)    | PSP蛋白质结构数据集，可用于MEGA-Fold训练 |  [下载链接](http://ftp.cbi.pku.edu.cn/psp/)  |
 
 <details><summary>引用我们</summary>
@@ -49,7 +49,7 @@ MEGA-Protein主要由三部分组成：
 
 - MSA生成工具MEGA-EvoGen:
 
-- 蛋白质结构评分工具MEGA-Assessement:
+- 蛋白质结构评分工具MEGA-Assessment:
 
 </details>
 
@@ -65,7 +65,7 @@ MEGA-Protein主要由三部分组成：
   - [运行示例](#运行示例)
     - [MEGA-Fold蛋白质结构预测](#mega-fold蛋白质结构预测)
     - [MEGA-EvoGen MSA生成/增强](#mega-evogen-msa生成增强)
-    - [MEGA-Assessement 蛋白质结构评分&优化](#mega-assessement-蛋白质结构评分优化)
+    - [MEGA-Assessment 蛋白质结构评分&优化](#mega-assessment-蛋白质结构评分优化)
     - [MEGA-Protein整体使用](#mega-protein整体使用)
   - [可用的模型和数据集](#可用的模型和数据集)
   - [引用](#引用)
@@ -197,7 +197,7 @@ MEGA-Protein主要由三部分组成：
 
 ### MEGA-Fold蛋白质结构预测推理
 
-配置数据库搜索与`config/data.yaml`中的相关参数，下载已经训好的模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)，运行以下命令启动推理。
+配置数据库搜索与`config/data.yaml`中的相关参数，下载已经训好的模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)，运行以下命令启动推理。
 
 ```bash
 用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --run_platform PLATFORM
@@ -252,9 +252,9 @@ MEGA-Fold预测结果与真实结果对比：
 
 To be released
 
-### MEGA-Assessement 蛋白质结构评分推理
+### MEGA-Assessment 蛋白质结构评分推理
 
-下载已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)，和MEGA-Assessement模型权重[MEGA_Assessment.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Assessment.ckpt)运行以下命令启动推理。
+下载已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)，和MEGA-Assessment模型权重[MEGA_Assessment.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Assessment.ckpt)运行以下命令启动推理。
 
 ```bash
 用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --input_path INPUT_FILE_PATH
@@ -267,14 +267,14 @@ To be released
 --input_path                    输入文件目录，可包含多个`.fasta/.pkl`文件
 --decoy_pdb_path                待评估蛋白质结构路径，可包含多个`_decoy.pdb`文件
 --checkpoint_path               MEGA-Fold模型权重文件路径
---checkpoint_path_assessment    MEGA-Assessement模型权重文件路径
+--checkpoint_path_assessment    MEGA-Assessment模型权重文件路径
 --run_assessment                运行蛋白质结构评估
 ```
 
-### MEGA-Assessement 蛋白质结构评分训练
+### MEGA-Assessment 蛋白质结构评分训练
 
 下载开源结构训练数据集[PSP dataset](http://ftp.cbi.pku.edu.cn/psp/)，使用以下命令启动训练：
-和已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt)，运行以下命令启动训练。
+和已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)，运行以下命令启动训练。
 
 ```bash
 用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --is_training True
