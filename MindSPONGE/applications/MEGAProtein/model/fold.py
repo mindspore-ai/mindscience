@@ -149,8 +149,6 @@ class MegaFold(nn.Cell):
                                         pair_act_dim=128,
                                         is_extra_msa=True,
                                         batch_size=None)
-            if self.is_training:
-                extra_msa_block.recompute()
             extra_msa_stack.append(extra_msa_block)
         self.extra_msa_stack = extra_msa_stack
         if self.is_training:
@@ -161,10 +159,8 @@ class MegaFold(nn.Cell):
                                       pair_act_dim=128,
                                       is_extra_msa=False,
                                       batch_size=None)
-                msa_block.recompute()
                 msa_stack.append(msa_block)
             self.msa_stack = msa_stack
-
             self.module_distogram = DistogramHead(self.cfg.heads.distogram,
                                                   self.cfg.pair_channel)
             self.module_exp_resolved = ExperimentallyResolvedHead(self.cfg.seq_channel)
