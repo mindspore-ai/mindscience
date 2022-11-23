@@ -61,6 +61,8 @@ def _mindspore_version_check():
     ms_version = ms.__version__[:5]
     required_mindspore_verision = '1.8.1'
 
+    logger.info("Current Mindspore version is {}.".format(ms_version))
+
     if ms_version < required_mindspore_verision:
         logger.warning("Current version of MindSpore is not compatible with MindFlow. "
                        "Some functions might not work or even raise error. Please install MindSpore "
