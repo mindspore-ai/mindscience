@@ -513,11 +513,11 @@ class RegressionLosses(nn.Cell):
         self.mae = nn.L1Loss()
         self.bmse = BalancedMSE(first_break, last_break, num_bins, beta, reducer_flag)
 
-    def construct(self, prediction, target, p_bins=None):
+    def construct(self, prediction, target):
         """construct"""
         target = mnp.clip(target, self.centers[0], self.centers[-1])
 
         mse = self.mse(prediction, target)
         mae = self.mae(prediction, target)
-        bmse = self.bmse(prediction, target, p_bins=p_bins)
+        bmse = self.bmse(prediction, target)
         return [mse, mae, bmse]
