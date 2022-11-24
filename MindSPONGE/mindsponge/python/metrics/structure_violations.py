@@ -56,6 +56,66 @@ def between_residue_bond(
 ):
     """Flat-bottom loss to penalize structural violations between residues. This is a loss penalizing any violation
      of the geometry around the peptide bond between consecutive amino acids.
+
+     Args:
+         pred_atom_positions (Tensor):  Atom positions in atom37/14 representation, shape :math:`(N_{res}, 37, 3)`.
+                                        or shape :math:`(N_{res}, 14, 3)` .
+         pred_atom_mask (Tensor):       Atom mask in atom37/14 representation. shape :math:`(N_{res}, 37)` or
+                                        shape :math:`(N_{res}, 14)` .
+         residue_index (Tensor):        Residue index for given amino acid, this is assumed to be monotonically
+                                        increasing. shape :math:`(N_{res}, )` .
+         aatype (Tensor):               amino acid types. shape :math:`(N_{res}, )` .
+         tolerance_factor_soft (float): soft tolerance factor measured in standard deviations of pdb distributions.
+                                        Default: 12.0 .
+         tolerance_factor_hard (float): hard tolerance factor measured in standard deviations of pdb distributions.
+                                        Default: 12.0 .
+
+     Returns:
+         - c_n_loss_mean(Tensor), loss for peptide bond length violations. shape: () .
+         - ca_c_n_loss_mean(Tensor), loss for violations of bond angle around C spanned by CA, C，N. shape: () .
+         - c_n_ca_loss_mean(Tensor), loss for violations of bond angle around N spanned by C， N， CA. shape: () .
+         - per_residue_loss_sum(Tensor), sum of all losses of each residue. shape :math:`(N_{res}, )` .
+         - per_residue_violation_mask(Tensor), mask denoting all residues with violation present.
+           shape :math:`(N_{res}, )` .
+
+    Note:
+        - shape :math:`N_{res}`, number of amino acid.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>>import mindspore as ms
+        >>>from mindspore import Tensor
+        >>>import numpy as np
+        >>>from mindsponge.metrics import between_residue_bond
+        >>>np.random.seed(1)
+        >>>pred_atom_positions = Tensor(np.random.random(size=(50,37,3)), ms.float32)
+        >>>pred_atom_mask = Tensor(np.random.randint(2,size=(50,37)), ms.int32)
+        >>>residue_index = Tensor(np.array(range(50)), ms.int32)
+        >>>aatype = Tensor(np.random.randint(20, size=(50,)), ms.int32)
+        >>>tolerance_factor_soft = 12.0
+        >>>tolerance_factor_hard = 12.0
+        >>>result = between_residue_bond(pred_atom_positions, pred_atom_mask, residue_index, aatype,
+        >>>                              tolerance_factor_soft, tolerance_factor_hard)
+        >>>for x in result:
+        >>>    print(x)
+        0.52967054
+        0.6045412
+        0.39251995
+        [0.62809587 1.6770853  1.7221183  1.0325309  1.3417522  1.79882
+         1.7718308  1.5092779  1.5653987  1.9564128  1.6804926  1.6051245
+         1.5033073  1.5895741  2.1686926  2.126039   1.3837843  1.2554975
+         1.8135165  2.1593785  1.9408598  1.7281027  1.8666006  1.9623451
+         1.8177024  1.7543832  1.5969353  1.2150483  0.9833115  1.219868
+         1.7008476  1.6968286  1.7648234  1.5584714  1.370602   1.8525059
+         1.7938454  1.5313196  1.6940074  1.8512855  1.8222975  1.6600168
+         1.9163743  1.7201058  1.6288358  1.6055745  1.521946   1.6553445
+         1.6175683  0.894606 ]
+         [1. 1. 0. 1. 1. 0. 0. 1. 1. 1. 1. 0. 0. 0. 0. 1. 1. 1. 1. 1. 0. 1. 1. 0.
+          0. 1. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 1. 1. 1. 1. 0.
+          1. 1.]
+
     """
 
     # Get the positions of the relevant backbone atoms.
@@ -133,7 +193,60 @@ def between_residue_clash(
         overlap_tolerance_soft,
         overlap_tolerance_hard,
         cys_sg_idx):
-    """Loss to penalize steric clashes between residues.
+    """
+    This is a loss penalizing any steric clashes due to non bonded atoms in different peptides coming too close.
+
+    Args:
+        atom14_pred_positions (Tensor): predicted positions of atoms in global prediction frame.
+                                        shape :math:`(N_{res}, 14, 3)` .
+        atom14_atom_exists (Tensor):    mask denoting whether atom at positions exists for given amino acid type.
+                                        shape :math:`(N_{res}, 14)` .
+        atom14_atom_radius (Tensor):    Van der Waals radius for each atom. shape :math:`(N_{res}, 14)` .
+        residue_index (Tensor):         Residue index for given amino acid. shape :math:`(N_{res}, )` .
+        c_one_hot (Tensor):             one hot encoding for C atoms (using atom14 representation). shape: (14, ) .
+        n_one_hot (Tensor):             one hot encoding for N atoms (using atom14 representation). shape: (14, ) .
+        overlap_tolerance_soft (float): soft tolerance factor. in default: 12.0 .
+        overlap_tolerance_hard (float): hard tolerance factor. in default: 1.5 .
+        cys_sg_idx (Tensor)：           CYS amino acid index. Default: 5 .
+                                        see more at: `mindsponge.common.residue_constants`.
+
+    Returns:
+        - mean_loss (Tensor), average clash loss. shape: () .
+        - per_atom_loss_sum (Tensor), sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
+        - per_atom_clash_mask (Tensor), mask whether atom clashes with any other atom, shape :math:`(N_{res}, 14)` .
+
+    Note:
+        - shape :math:`N_{res}`, number of amino acid.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>>import mindspore as ms
+        >>>from mindspore import Tensor
+        >>>import numpy as np
+        >>>from mindsponge.metrics import between_residue_clash
+        >>>atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>>atom14_atom_exists = Tensor(np.random.randint(2, size=(50, 14)))
+        >>>atom14_atom_radius = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>>residue_index = Tensor(np.array(range(50)), ms.int32)
+        >>>c_one_hot = Tensor(np.array([0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
+        >>>n_one_hot = Tensor(np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
+        >>>overlap_tolerance_soft = 12.0
+        >>>overlap_tolerance_hard = 1.5
+        >>>cys_sg_idx = Tensor(5, ms.int32)
+        >>>mean_loss, per_atom_loss_sum, per_atom_clash_mask = between_residue_clash(atom14_pred_positions,
+        ...                                                                          atom14_atom_exists,
+        ...                                                                          atom14_atom_radius,
+        ...                                                                          residue_index,
+        ...                                                                          c_one_hot,
+        ...                                                                          n_one_hot,
+        ...                                                                          overlap_tolerance_soft,
+        ...                                                                          overlap_tolerance_hard,
+        ...                                                                          cys_sg_idx)
+        >>>print(mean_loss.shape, per_atom_loss_sum.shape, per_atom_clash_mask.shape)
+        () (50,14) (50,14)
+
     """
 
     dists = mnp.sqrt(1e-10 + mnp.sum(
@@ -170,6 +283,48 @@ def within_residue_violations(
         dists_mask_i
 ):
     """Loss to penalize steric clashes within residues.
+    This is a loss penalizing any steric violations or clashes of non-bonded atoms in a given peptide.
+
+    Args:
+        atom14_pred_positions (Tensor):    predicted positions of atoms in global prediction frame.
+                                           shape :math:`(N_{res}, 14, 3)` .
+        atom14_atom_exists (Tensor):       mask denoting whether atom at positions exists for given amino acid type.
+                                           shape :math:`(N_{res}, 14)` .
+        atom14_dists_lower_bound (Tensor): lower bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
+        atom14_dists_upper_bound (Tensor): upper bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
+        tighten_bounds_for_loss (Tensor):  Extra factor to tighten loss. Default: 0.0.
+        dists_mask_i (Tensor):             initial distants mask, shape: (14, 14) .
+
+    Returns:
+        - per_atom_loss_sum (Tensor), sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
+        - per_atom_violations (Tensor), violation per atom, shape :math:`(N_{res}, 14)` .
+
+    Note:
+        - shape :math:`N_{res}`, number of amino acid.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>>import mindspore as ms
+        >>>from mindspore import Tensor
+        >>>import numpy as np
+        >>>from mindsponge.metrics import within_residue_violations
+        >>>atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>>atom14_atom_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>>atom14_dists_lower_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
+        >>>atom14_dists_upper_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
+        >>>tighten_bounds_for_loss = 0.0
+        >>>dists_mask_i = Tensor(np.eye(14, 14), ms.int32)
+        >>>per_atom_loss_sum, per_atom_violations = within_residue_violations(atom14_pred_positions,
+        ...                                                                   atom14_atom_exists,
+        ...                                                                   atom14_dists_lower_bound,
+        ...                                                                   atom14_dists_upper_bound,
+        ...                                                                   tighten_bounds_for_loss,
+        ...                                                                   dists_mask_i)
+        >>>print(per_atom_loss_sum.shape, per_atom_violations.shape)
+        (50, 14) (50, 14)
+
     """
 
     dists_masks = (1. - dists_mask_i[None])
@@ -196,7 +351,91 @@ def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_
                               upper_bound=UPPER_BOUND, atomtype_radius=ATOMTYPE_RADIUS,
                               c_one_hot=C_ONE_HOT, n_one_hot=N_ONE_HOT, dists_mask_i=DISTS_MASK_I,
                               cys_sg_idx=CYS_SG_IDX):
-    """Computes several checks for structural violations."""
+    """Computes several checks for structural violations.
+
+    Args:
+        atom14_atom_exists (Tensor):        mask denoting whether atom at positions exists for given amino acid type.
+                                            shape :math:`(N_{res}, 14)` .
+        residue_index (Tensor):             Residue index for given amino acid. shape :math:`(N_{res}, )` .
+        aatype (Tensor):                    amino acid types. shape :math:`(N_{res}, )` .
+        residx_atom14_to_atom37 (Tensor):   mapping for (residx, atom14) --> atom37. shape :math:`(N_{res}, 14)` .
+        atom14_pred_positions (Tensor):     predicted positions of atoms in global prediction frame.
+                                            shape :math:`(N_{res}, 14, 3)` .
+        violation_tolerance_factor (float): violation between amino acid tolerance factor. Default: 12.0 .
+        clash_overlap_tolerance (float):    clash overlap tolerance factor. Default: 1.5 .
+        lower_bound (Tensor):               lower bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
+        upper_bound (Tensor):               upper bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
+        atomtype_radius (Tensor):           Van der Waals radius for each amino acid. shape: (37, ) .
+        c_one_hot (Tensor):                 one hot encoding for C atoms (using atom14 representation). shape: (14, ) .
+        n_one_hot (Tensor):                 one hot encoding for N atoms (using atom14 representation). shape: (14, ) .
+        dists_mask_i (Tensor):              initial distants mask, shape: (14, 14) .
+        cys_sg_idx (Tensor):                CYS amino acid index. Default: 5 .
+                                            see more at: `mindsponge.common.residue_constants`.
+
+    Returns:
+        - bonds_c_n_loss_mean (Tensor), loss for peptide bond length violations. shape: () .
+        - angles_ca_c_n_loss_mean (Tensor), loss for violations of bond angle around C spanned by CA, C，N. shape: () .
+        - angles_c_n_ca_loss_mean (Tensor), loss for violations of bond angle around N spanned by C， N， CA. shape: () .
+        - connections_per_residue_loss_sum (Tensor), sum of all losses of each residue. shape: (Nres, ) .
+        - connections_per_residue_violation_mask (Tensor), mask denoting all residues with violation present.
+          shape :math:`(N_{res}, )` .
+        - clashes_mean_loss (Tensor),  average clash loss. shape: () .
+        - clashes_per_atom_loss_sum (Tensor), sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
+        - clashes_per_atom_clash_mask (Tensor), mask whether atom clashes with any other atom.
+          shape :math:`(N_{res}, 14)` .
+        - per_atom_loss_sum (Tensor), sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
+        - per_atom_violations (Tensor), violation per atom, shape :math:`(N_{res}, 14)` .
+        - total_per_residue_violations_mask (Tensor), violation masks for all residues, shape :math:`(N_{res}, )` .
+        - structure_violation_loss (Tensor), total violations for all amino acids. shape: () .
+
+    Note:
+        - shape :math:`N_{res}`, number of amino acid.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>>import mindspore as ms
+        >>>from mindspore import Tensor
+        >>>import numpy as np
+        >>>from mindsponge.metrics import get_structural_violations
+        >>>atom14_atom_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>>residue_index = Tensor(np.array(range(50)), ms.int32)
+        >>>aatype = Tensor(np.random.randint(20, size=(50,)), ms.int32)
+        >>>residx_atom14_to_atom37 = Tensor(np.random.randint(2, size=(50, 14)), ms.int32)
+        >>>atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>>violation_tolerance_factor = 12.0
+        >>>clash_overlap_tolerance = 1.5
+        >>>lower_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
+        >>>upper_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
+        >>>atomtype_radius =Tensor([1.55, 1.7, 1.7, 1.7, 1.52, 1.7, 1.7, 1.7, 1.52, 1.52, 1.8,
+        ...                         1.7, 1.7, 1.7, 1.55, 1.55, 1.52, 1.52, 1.8, 1.7, 1.7, 1.7,
+        ...                         1.7, 1.55, 1.55, 1.55, 1.52, 1.52, 1.7, 1.55, 1.55, 1.52, 1.7,
+        ...                         1.7, 1.7, 1.55, 1.52], ms.float32)
+        >>>c_one_hot = Tensor(np.array([0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
+        >>>n_one_hot = Tensor(np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
+        >>>dists_mask_i = Tensor(np.eye(14, 14), ms.int32)
+        >>>cys_sg_idx = Tensor(5, ms.int32)
+        >>>result = get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_atom14_to_atom37,
+        ...                                   atom14_pred_positions, violation_tolerance_factor,
+        ...                                   clash_overlap_tolerance, lower_bound, upper_bound, atomtype_radius,
+        ...                                   c_one_hot, n_one_hot, dists_mask_i,cys_sg_idx)
+        >>>for r in result:
+        >>>    print(r.shape)
+        ()
+        ()
+        ()
+        (50,)
+        (50,)
+        ()
+        (50, 14)
+        (50, 14)
+        (50, 14)
+        (50, 14)
+        (50,)
+        ()
+
+    """
 
     # Compute between residue backbone violations of bonds and angles.
     c_n_loss_mean, ca_c_n_loss_mean, c_n_ca_loss_mean, per_residue_loss_sum, per_residue_violation_mask = \
@@ -275,22 +514,44 @@ def compute_renamed_ground_truth(atom14_gt_positions,
     Shape (N).
 
     Args:
-        atom14_gt_positions: Ground truth positions.
-        atom14_alt_gt_positions: Ground truth positions with renaming swaps.
-        atom14_atom_is_ambiguous: 1.0 for atoms that are affected by
-            renaming swaps.
-        atom14_gt_exists: Mask for which atoms exist in ground truth.
-        atom14_alt_gt_exists: Mask for which atoms exist in ground truth
-            after renaming.
-        atom14_atom_exists: Mask for whether each atom is part of the given
-            amino acid type.
-        atom14_pred_positions: Array of atom positions in global frame with shape
-            (N, 14, 3).
+        atom14_gt_positions (Tensor):      Ground truth positions. shape :math:`(N_{res}, 14, 3)` .
+        atom14_alt_gt_positions (Tensor):  Ground truth positions with renaming swaps. shape :math:`(N_{res}, 14, 3)` .
+        atom14_atom_is_ambiguous (Tensor): 1.0 for atoms that are affected by renaming swaps.
+                                           shape :math:`(N_{res}, 14)` .
+        atom14_gt_exists (Tensor):         Mask for which atoms exist in ground truth. shape :math:`(N_{res}, 14)` .
+        atom14_pred_positions (Tensor):    Array of atom positions in global frame with shape :math:`(N_{res}, 14, 3)` .
+        atom14_alt_gt_exists (Tensor):     Mask for which atoms exist in ground truth after renaming.
+                                           shape :math:`(N_{res}, 14)` .
+
     Returns:
-        alt_naming_is_better: Array with 1.0 where alternative swap is better.
-        renamed_atom14_gt_positions: Array of optimal ground truth positions
-            after renaming swaps are performed.
-        renamed_atom14_gt_exists: Mask after renaming swap is performed.
+        - alt_naming_is_better (Tensor): Array with 1.0 where alternative swap is better. shape :math:`(N_{res}, )` .
+        - renamed_atom14_gt_positions (Tensor): Array of optimal ground truth positions after renaming swaps are
+          performed. shape :math:`(N_{res}, 14, 3)` .
+        - renamed_atom14_gt_exists(Tensor): Mask after renaming swap is performed. shape :math:`(N_{res}, 14)` .
+
+    Note:
+        - shape :math:`N_{res}`, number of amino acid.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>>import mindspore as ms
+        >>>from mindspore import Tensor
+        >>>import numpy as np
+        >>>from mindsponge.metrics import compute_renamed_ground_truth
+        >>>atom14_gt_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>>atom14_alt_gt_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>>atom14_atom_is_ambiguous = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>>atom14_gt_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>>atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>>atom14_alt_gt_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>>alt_naming_is_better, renamed_atom14_gt_positions, renamed_atom14_gt_exists = \
+        ...    compute_renamed_ground_truth(atom14_gt_positions, atom14_alt_gt_positions, atom14_atom_is_ambiguous,
+        ...                                 atom14_gt_exists, atom14_pred_positions, atom14_alt_gt_exists)
+        >>>print(alt_naming_is_better.shape, renamed_atom14_gt_positions.shape, renamed_atom14_gt_exists.shape)
+        (50,) (50, 14, 3) (50, 14)
+
     """
 
     alt_naming_is_better = find_optimal_renaming(atom14_gt_positions,
