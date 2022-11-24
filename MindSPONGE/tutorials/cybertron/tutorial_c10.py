@@ -30,8 +30,7 @@ from mindspore import load_checkpoint
 from mindspore import context
 
 if __name__ == '__main__':
-
-    sys.path.append('..')
+    sys.path.append('../..')
 
     from cybertron.model import MolCT
     from cybertron.readout import AtomwiseReadout
