@@ -258,7 +258,7 @@ To be released
 
 ### MEGA-Assessment inference
 
-Downloading MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt) and MEGA_Assessment weights [MEGA_Assessment.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Assessment.ckpt). Finally running following command to start inference.
+Downloading MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt) and MEGA_Assessment weights [MEGA_Assessment.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAAssessment/MEGA_Assessment.ckpt). Finally running following command to start inference.
 
 ```bash
 Usage: python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --input_path INPUT_FILE_PATH

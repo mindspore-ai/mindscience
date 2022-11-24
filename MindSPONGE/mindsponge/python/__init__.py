@@ -51,15 +51,20 @@ def _mindspore_version_check():
                           "the instruction at https://www.mindspore.cn/install")
 
     ms_version = ms.__version__[:5]
-    required_mindspore_verision = '1.8.1'
-
-    if ms_version < required_mindspore_verision:
+    required_mindspore_version = '1.8.1'
+    logger.info("Current Mindspore version is {}".format(ms_version))
+    ms_version = list(map(int, ms_version.split('.')))
+    required_mindspore = list(map(int, required_mindspore_version.split('.')))
+    max_len = max(len(ms_version), len(required_mindspore))
+    ms_version += [0] * (max_len - len(ms_version))
+    required_mindspore += [0] * (max_len - len(required_mindspore))
+    if ms_version < required_mindspore:
         logger.warning("Current version of MindSpore is not compatible with MindSPONGE. "
                        "Some functions might not work or even raise error. Please install MindSpore "
                        "version >= {} For more details about dependency setting, please check "
                        "the instructions at MindSpore official website https://www.mindspore.cn/install "
                        "or check the README.md at https://gitee.com/mindspore/mindscience"
-                       .format(required_mindspore_verision))
+                       .format(required_mindspore_version))
         warning_countdown = 3
         for i in range(warning_countdown, 0, -1):
             logger.warning(
