@@ -72,8 +72,8 @@ In the preceding information, $\lambda$s indicates the weight of each loss funct
 - Framework
     - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - For more information, see the following resources:
-    - [MindElec Tutorial](https://www.mindspore.cn/mindscience/docs/en/master/mindelec/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindscience/docs/en/master/mindelec.html)
+    - [MindElec Tutorial](https://mindspore.cn/mindscience/docs/en/r0.1/mindelec/intro_and_install.html)
+    - [MindElec Python API](https://mindspore.cn/mindscience/api/en/r0.1/mindelec.html)
 
 ## Script Description
 
@@ -94,7 +94,7 @@ In the preceding information, $\lambda$s indicates the weight of each loss funct
   ├─config
     ├──pretrain.json                  # pre-training configuration
     ├──reconstruct.json               # fine-tuning configuration
-  ├──piad.py                          # run PIAD
+  ├──mad.py                          # run MAD
 ```
 
 ### Script Parameters
@@ -258,10 +258,10 @@ In this tutorial, the network architecture of multi-channel residual network com
 
 ## Model Pre-training
 
-You can use the piad.py script to train a parametric electromagnetic simulation model. During the training, the model parameters are automatically saved.
+You can use the mad.py script to train a parametric electromagnetic simulation model. During the training, the model parameters are automatically saved.
 
 ```shell
-python piad.py --mode=pretrain
+python mad.py --mode=pretrain
 ```
 
 ## Pre-training Performance and Accuracy
@@ -318,10 +318,10 @@ l2_error, Ex:  0.06892983792636541 , Ey:  0.06803824510149464 , Hz:  0.070612441
 
 ## Solving New PDE with Fine-tuning
 
-Given a new set of equation parameters, you can use the piad.py script to load the pre-trained model and fine-tune the test dataset to quickly obtain a solution to the new problem.
+Given a new set of equation parameters, you can use the mad.py script to load the pre-trained model and fine-tune the test dataset to quickly obtain a solution to the new problem.
 
 ```shell
-python piad.py --mode=reconstruct
+python mad.py --mode=reconstruct
 ```
 
 ## Fine-tuning Performance and Accuracy
@@ -368,7 +368,7 @@ l2_error, Ex:  0.06008509896061373 , Ey:  0.06597097288551895 , Hz:  0.059188475
 
 ## Random Seed Setting
 
-The random seed is set in piad.py, and the network input is randomly sampled through uniform distribution.
+The random seed is set in mad.py, and the network input is randomly sampled through uniform distribution.
 
 ## MindScience Home Page
 

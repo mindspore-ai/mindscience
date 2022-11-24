@@ -28,7 +28,6 @@ from mindspore.train.serialization import load_checkpoint, load_param_into_net
 import mindspore.common.dtype as ms_type
 from mindspore.common.initializer import HeUniform
 
-
 from mindelec.loss import Constraints
 from mindelec.solver import Solver, LossAndTimeMonitor
 from mindelec.common import L2
@@ -44,6 +43,7 @@ set_seed(123456)
 np.random.seed(123456)
 
 context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend", save_graphs_path="./solver")
+
 
 def piad2d(config, mode):
     """pretraining and reconstruction process"""
@@ -72,13 +72,7 @@ def piad2d(config, mode):
     # initialize latent vector
     num_scenarios = config["num_scenarios"]
     latent_size = config["latent_vector_size"]
-    if mode == "pretrain":
-        latent_init = np.random.randn(num_scenarios, latent_size) / np.sqrt(latent_size)
-    else:
-        latent_norm = np.mean(np.linalg.norm(latent_vector_ckpt, axis=1))
-        print("check mean latent vector norm: ", latent_norm)
-        latent_init = np.zeros((num_scenarios, latent_size))
-    latent_vector = Parameter(Tensor(latent_init, ms_type.float32), requires_grad=True)
+    latent_vector = calc_latent_init(latent_size, latent_vector_ckpt, mode, num_scenarios)
 
     network = MultiScaleFCCell(config["input_size"],
                                config["output_size"],
@@ -161,6 +155,17 @@ def piad2d(config, mode):
     solver.train(config["train_epoch"], train_dataset, callbacks=callbacks, dataset_sink_mode=True)
 
 
+def calc_latent_init(latent_size, latent_vector_ckpt, mode, num_scenarios):
+    if mode == "pretrain":
+        latent_init = np.random.randn(num_scenarios, latent_size) / np.sqrt(latent_size)
+    else:
+        latent_norm = np.mean(np.linalg.norm(latent_vector_ckpt, axis=1))
+        print("check mean latent vector norm: ", latent_norm)
+        latent_init = np.zeros((num_scenarios, latent_size))
+    latent_vector = Parameter(Tensor(latent_init, ms_type.float32), requires_grad=True)
+    return latent_vector
+
+
 def preprocess_config(config):
     """preprocess to get the coefficients of electromagnetic field for each scenario"""
     eps_candidates = config["EPS_candidates"]
@@ -170,13 +175,13 @@ def preprocess_config(config):
     config["batch_size"] = batch_size_single_scenario * config["num_scenarios"]
     eps_list = []
     for eps in eps_candidates:
-        eps_list.extend([eps]*(batch_size_single_scenario*len(mu_candidates)))
+        eps_list.extend([eps] * (batch_size_single_scenario * len(mu_candidates)))
     mu_list = []
     for mu in mu_candidates:
-        mu_list.extend([mu]*batch_size_single_scenario)
-    mu_list = mu_list*(len(eps_candidates))
+        mu_list.extend([mu] * batch_size_single_scenario)
+    mu_list = mu_list * (len(eps_candidates))
 
-    exp_name = "_" + config["Case"] + '_num_scenarios_' +  str(config["num_scenarios"]) \
+    exp_name = "_" + config["Case"] + '_num_scenarios_' + str(config["num_scenarios"]) \
                + "_latent_reg_" + str(config["latent_reg"])
     if config["save_ckpt"]:
         config["save_ckpt_path"] += exp_name
@@ -187,9 +192,10 @@ def preprocess_config(config):
     config["eps_list"] = eps_list
     config["mu_list"] = mu_list
 
+
 if __name__ == '__main__':
     print("pid:", os.getpid())
-    parser = argparse.ArgumentParser(description='Physical-informed Autodecoder Simulation')
+    parser = argparse.ArgumentParser(description='Meta Auto Decoder Simulation')
     parser.add_argument('--mode', type=str, default="pretrain", choices=["pretrain", "reconstruct"],
                         help="Running mode options: pretrain or reconstruct")
 
