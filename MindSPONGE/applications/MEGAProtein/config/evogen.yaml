@@ -1,0 +1,88 @@
+train:
+  seq_weight_power: 0.1
+  augmented_msa_depth: 128
+  max_msa_clusters: 128
+  softmax_temperature: 1.
+  use_dark_knowledge: True
+  use_gumbel_trick: false
+  label_smoothing: 0.05
+  context_true_prob: 0.75
+  keep_prob: 0.9
+  available_msa_fraction: 0.25
+global_config:
+  recompute: false
+  num_aa_types: 22
+  num_msa: 128
+  max_num_res: 512
+model:
+  embeddings_and_evoformer:
+    evoformer_num_block: 12
+    evoformer:
+      msa_row_attention_with_pair_bias:
+        gating: true
+        num_head: 8
+        ape_table:
+      msa_transition:
+        num_intermediate_factor: 4
+        ape_table:
+      msa_condition:
+        num_intermediate_factor: 4
+        ape_table:
+      outer_product:
+        num_outer_channel: 32
+      triangle_multiplication_outgoing:
+        equation: ikc,jkc->ijc
+        num_intermediate_channel: 128
+        ape_table:
+      triangle_multiplication_incoming:
+        equation: kjc,kic->ijc
+        num_intermediate_channel: 128
+        ape_table:
+      triangle_attention_starting_node:
+        gating: true
+        num_head: 4
+        orientation: per_row
+        ape_table:
+      triangle_attention_ending_node:
+        gating: true
+        num_head: 4
+        orientation: per_column
+        ape_table:
+      pair_transition:
+        num_intermediate_factor: 4
+    exact_distance: 16
+    num_buckets: 32
+    max_distance: 64
+    msa_channel: 256
+    pair_channel: 128
+    del_num_bins:
+      - 0.21
+      - 0.4
+      - 0.6
+      - 0.8
+      - 0.9
+      - 0.95
+  latent:
+    num_noise: 3
+    noise_layers:
+      - 0
+      - 6
+      - 4
+    context_layers: 3
+    latent_dim: 256
+    latent_dim_tuple:
+      - 256
+      - 128
+      - 64
+    temperature: 1.
+    latent_transition:
+      num_intermediate_factor: 1
+    column_attention_with_pair_bias:
+      gating: true
+      num_head: 8
+      ape_table:
+    msa_transition:
+      num_intermediate_factor: 4
+    latent_statistics:
+      num_intermediate_factor: 4
+      initializer_range: 0.02

@@ -21,6 +21,7 @@ from mindspore import Parameter
 from mindspore.ops import operations as P
 from mindspore.common.initializer import initializer
 from .initializer import lecun_init
+from .mask import MaskedLayerNorm
 from ..common.utils import _memory_reduce
 
 
@@ -45,6 +46,9 @@ class Transition(nn.Cell):
         - **act** (Tensor) - The input with channels equal to input_dim.
         - **index** (Tensor) - The index of while loop, only used in case of while control
           flow. Default: "None".
+        - **mask** (Tensor) - The mask of act when to do layernorm with shape :math:`(32, input_{dim})`,
+          Default: "None".
+
 
     Outputs:
         - **output** (Tensor) - Tensor, the float tensor of the output of the layer with
@@ -67,7 +71,6 @@ class Transition(nn.Cell):
 
     def __init__(self, num_intermediate_factor, input_dim, batch_size=None, slice_num=0):
         super(Transition, self).__init__()
-        self.input_layer_norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
         self.matmul = P.MatMul(transpose_b=True)
         self.input_dim = input_dim
         self.num_intermediate = int(input_dim * num_intermediate_factor)
@@ -75,9 +78,10 @@ class Transition(nn.Cell):
         self.slice_num = slice_num
         self.relu = nn.ReLU()
         self.idx = Tensor(0, mstype.int32)
+        self.masked_layer_norm = MaskedLayerNorm()
         self._init_parameter()
 
-    def construct(self, act, index=None):
+    def construct(self, act, index=None, mask=None):
         '''Compute transition'''
         if self.batch_size:
             input_layer_norm_gamma = P.Gather()(self.input_layer_norm_gammas, index, 0)
@@ -93,7 +97,7 @@ class Transition(nn.Cell):
             transition1_bias = self.transition1_biases
             transition2_weight = self.transition2_weights
             transition2_bias = self.transition2_biases
-        act, _, _ = self.input_layer_norm(act, input_layer_norm_gamma, input_layer_norm_beta)
+        act = self.masked_layer_norm(act, input_layer_norm_gamma, input_layer_norm_beta, mask=mask)
         batched_inputs = (act,)
         nonbatched_inputs = (transition1_weight, transition1_bias, transition2_weight, transition2_bias)
         act = _memory_reduce(self._compute, batched_inputs, nonbatched_inputs, self.slice_num)
