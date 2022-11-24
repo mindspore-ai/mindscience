@@ -183,7 +183,40 @@ def rigids_mul_rigids(a, b):
 
 
 def rots_mul_rots(x, y):
-    """numpy version of getting result of rots x multiply rots y"""
+    r"""
+    Get result of rotation matrix x multiply rotation matrix y
+
+    .. math::
+        \begin{split}
+        &xx = xx1*xx2 + xy1*yx2 + xz1*zx2 \\
+        &xy = xx1*xy2 + xy1*yy2 + xz1*zy2 \\
+        &xz = xx1*xz2 + xy1*yz2 + xz1*zz2 \\
+        &yx = yx1*xx2 + yy1*yx2 + yz1*zx2 \\
+        &yy = yx1*xy2 + yy1*yy2 + yz1*zy2 \\
+        &yz = yx1*xz2 + yy1*yz2 + yz1*zz2 \\
+        &zx = zx1*xx2 + zy1*yx2 + zz1*zx2 \\
+        &zy = zx1*xy2 + zy1*yy2 + zz1*zy2 \\
+        &zz = zx1*xz2 + zy1*yz2 + zz1*zz2 \\
+        \end{split}
+
+    Args:
+        x (tuple): rotation matrix x, shape :math:`(xx1, xy1, xz1, yx1, yy1, yz1, zx1, zy1, zz1)`.
+        y (tuple): rotation matrix y, shape :math:`(xx2, xy2, xz2, yx2, yy2, yz2, zx2, zy2, zz2)`.
+
+    Returns:
+        rots (tuple): the result of rots x multiply rots y, shape :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindsponge.common.geometry import rots_mul_rots
+        >>> rtos_0 = (1, 1, 1, 1, 1, 1, 1)
+        >>> rtos_1 = (1, 1, 1, 1, 1, 1, 1)
+        >>> result = rots_mul_rots(rots_0, rots_1)
+        >>> print(output)
+        (3, 3, 3, 3, 3, 3, 3, 3, 3)
+    """
     vecs0 = rots_mul_vecs(x, (y[0], y[3], y[6]))
     vecs1 = rots_mul_vecs(x, (y[1], y[4], y[7]))
     vecs2 = rots_mul_vecs(x, (y[2], y[5], y[8]))
@@ -192,27 +225,103 @@ def rots_mul_rots(x, y):
 
 
 def vecs_from_tensor(inputs):
-    """get vectors from input tensor"""
+    """
+    Get vectors from input tensor
+
+    Args:
+        inputs (tensor): the atom position. shape :math:`(..., 3)`.
+
+    Returns:
+        tuple have three tensor, represent the position of x, y, z.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from mindsponge.common.geometry import vecs_from_tensor
+        >>> input_0 = Tensor(np.ones((4, 256, 3)), ms.float32)
+        >>> output = vecs_from_tensor(input_0)
+        >>> print(len(output), output[0].shape)
+        3, (4,256)
+    """
     num_components = inputs.shape[-1]
     assert num_components == 3
     return (inputs[..., 0], inputs[..., 1], inputs[..., 2])
 
 
 def vecs_to_tensor(v):
-    """Converts 'v' to tensor with shape 3, inverse of 'vecs_from_tensor'."""
+    """
+    Converts vector to tensor with last dim is 3, inverse of 'vecs_from_tensor'.
+
+    Args:
+        v (tuple): three tensors, represent the position x, y, z.
+
+    Returns:
+        tensor, concat the tensor in last dims, shape :math:`(..., 3)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from mindsponge.common.geometry import vecs_to_tensor
+        >>> input_0 = Tensor(np.ones((4, 256)), ms.float32)
+        >>> input_1 = Tensor(np.ones((4, 256)), ms.float32)
+        >>> input_2 = Tensor(np.ones((4, 256)), ms.float32)
+        >>> inputs = (input_0, input_1, input_2)
+        >>> output = vecs_to_tensor(inputs)
+        >>> print(output.shape)
+        (4, 256, 3)
+    """
     return mnp.stack([v[0], v[1], v[2]], axis=-1)
 
 
 def make_transform_from_reference(point_a, point_b, point_c):
-    '''construct rotation and translation from given points
+    r"""
+    Using GramSchmidt process to construct rotation and translation from given points,
     calculate the rotation matrix and translation meets:
-    a) point_b is the original point
-    b) point_c is on the x_axis
-    c) the plane a-b-c is on the x-y plane
+    a) 'N' atom is the original point
+    b) 'CA' atom is on the x_axis
+    c) the plane CA-N-C is on the x-y plane
+
+    .. math::
+        \begin{split}
+        &\vec v_1 = \vec x_3 - \vec x_2 \\
+        &\vec v_2 = \vec x_1 - \vec x_2 \\
+        &\vec e_1 = \vec v_1 / ||\vec v_1|| \\
+        &\vec u_2 = \vec v_2 - \vec  e_1(\vec e_1^T\vec v_2) \\
+        &\vec e_2 = \vec u_2 / ||\vec u_2|| \\
+        &\vec e_3 = \vec e_1 \times \vec e_2 \\
+        &rotation = (\vec e_1, \vec e_2, \vec e_3) \\
+        &translation = (\vec x_2) \\
+        \end{split}
+
+    Args:
+        point_a (float, tensor) -> (tensor): the position of 'N', shape: :math:`[..., N_{res}, 3]`.
+        point_b (float, tensor) -> (tensor): the position of 'CA', shape: :math:`[..., N_{res}, 3]`.
+        point_c (float, tensor) -> (tensor): the position of 'C', shape: :math:`[..., N_{res}, 3]`.
+
     Return:
-    rotation: Tuple [xx, xy, xz, yx, yy, yz, zx, zy, zz]
-    translation: Tuple [x, y, z]
-    '''
+        rotation: (tuple) :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, shape :math:`(..., N_{res})`.
+        translation: (tuple) :math:`(x, y, z)`, shape :math:`(..., N_{res})`.
+
+    Examples:
+        >>> import numpy as np
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from mindsponge.common.geometry import make_transform_from_reference
+        >>> input_0 = Tensor(np.ones((4, 256, 3)), ms.float32)
+        >>> input_1 = Tensor(np.ones((4, 256, 3)), ms.float32)
+        >>> input_2 = Tensor(np.ones((4, 256, 3)), ms.float32)
+        >>> rots, trans = make_transform_from_reference(input_0, input_1, input_2)
+        >>> print(len(rots), rots[0].shape, len(trans), trans[0].shape)
+        9, (4, 256), 3, (4, 256)
+    """
 
     # step 1 : shift the crd system by -point_b (point_b is the origin)
     translation = -point_b
@@ -250,7 +359,29 @@ def make_transform_from_reference(point_a, point_b, point_c):
 
 
 def rots_from_tensor(rots, use_numpy=False):
-    """rots from tensor"""
+    """
+    Get rots vector from input tensor
+
+    Args:
+        rots (tensor): represent the rotation matrix.
+        use_numpy (bool): use numpy or not, Default: "False"
+
+    Returns:
+        tuple, the 9 tensors of rotation, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from mindsponge.common.geometry import rots_from_tensor
+        >>> input_0 = Tensor(np.ones((256, 3, 3)), ms.float32)
+        >>> output = rots_from_tensor(input_0)
+        >>> print(len(output), output[0].shape)
+        9, (256,)
+    """
     if use_numpy:
         rots = np.reshape(rots, rots.shape[:-2] + (9,))
     else:
@@ -262,7 +393,29 @@ def rots_from_tensor(rots, use_numpy=False):
 
 
 def rots_to_tensor(rots, use_numpy=False):
-    """rots to tensor"""
+    """
+    Converts rotation to tensor, inverse of 'rots_from_tensor'.
+
+    Args:
+        rots (tuple): represent the rotation matrix, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
+        use_numpy (bool): use numpy or not, Default: "False"
+
+    Returns:
+        tensor, concat the tensor in last dims, shape :math:`(N_{res}, 3, 3)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from mindsponge.common.geometry import rots_to_tensor
+        >>> inputs = [Tensor(np.ones((256,)), ms.float32) for i in range(9)]
+        >>> output = rots_to_tensor(inputs)
+        >>> print(output.shape)
+        (256, 3, 3)
+    """
     assert len(rots) == 9
     if use_numpy:
         rots = np.stack(rots, axis=-1)
@@ -273,9 +426,37 @@ def rots_to_tensor(rots, use_numpy=False):
     return rots
 
 
-
 def quat_affine(quaternion, translation, rotation=None, normalize=True, unstack_inputs=False, use_numpy=False):
-    """create quat affine representations"""
+    """
+    Create quat affine representations
+
+    Args:
+        quaternion (tensor): shape :math:`(N_{res}, 4)`
+        translation (tensor)： shape :math:`(N_{res}, 3)`
+        rotation (tensor)： represent the rotation matrix, shape :math:`(N_{res}, 9)`. Default: "None"
+        normalize (bool): Default: "True"
+        unstack_inputs (bool): vector or tensor, Default: "False"
+        use_numpy (bool): use numpy or not, Default: "False"
+
+    Returns:
+        quaternion (tensor), shape :math:`(N_{res}, 4)`
+        rotation (tuple), :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`， every element shape :math:`(N_{res},)`
+        translation (tensor), shape :math:`(N_{res}, 3)`
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from mindsponge.common.geometry import quat_affine
+        >>> input_0 = Tensor(np.ones((256, 4)), ms.float32)
+        >>> input_1 = Tensor(np.ones((256, 3)), ms.float32)
+        >>> qua, rot, trans = quat_affine(input_0, input_1)
+        >>> print(qua.shape, len(rot), rot[0].shape, trans.shape)
+        (256, 4), 9, (256,), (256, 3)
+    """
     if unstack_inputs:
         if rotation is not None:
             rotation = rots_from_tensor(rotation, use_numpy)
@@ -289,7 +470,42 @@ def quat_affine(quaternion, translation, rotation=None, normalize=True, unstack_
 
 
 def quat_to_rot(normalized_quat, use_numpy=False):
-    """Convert a normalized quaternion to a rotation matrix."""
+    r"""
+    Convert a normalized quaternion to a rotation matrix.
+
+    .. math::
+        /begin{split}
+        &xx = 1 - 2 * y * y - 2 * z * z \\
+        &xy = 2 * x * y + 2 * w * z \\
+        &xz = 2 * x * z - 2 * w * y \\
+        &yx = 2 * x * y - 2 * w * z \\
+        &yy = 1 - 2 * x * x - 2 * z * z \\
+        &yz = 2 * z * y + 2 * w * x \\
+        &zx = 2 * x * z + 2 * w * y \\
+        &zy = 2 * y * z - 2 * w * x \\
+        &zz = 1 - 2 * x * x - 2 * y * y \\
+        /end{split}
+
+    Args:
+        normalized_quat (tensor): normalized quaternion, shape :math:`(N_{res}, 4)`.
+        use_numpy (bool): use numpy or not, Default: "False".
+
+    Returns:
+        rotation (tuple), :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, every element shape :math:`(N_{res},)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from mindsponge.common.geometry import quat_to_rot
+        >>> input_0 = Tensor(np.ones((256, 4)), ms.float32)
+        >>> output = quat_to_rot(input_0)
+        >>> print(len(output), output[0].shape)
+        9, (256,)
+    """
     if use_numpy:
         rot_tensor = np.sum(np.reshape(QUAT_TO_ROT.asnumpy(), (4, 4, 9)) * normalized_quat[..., :, None, None] \
                 * normalized_quat[..., None, :, None], axis=(-3, -2))
@@ -305,7 +521,36 @@ def quat_to_rot(normalized_quat, use_numpy=False):
 
 
 def initial_affine(num_residues, use_numpy=False):
-    """initial affine"""
+    """
+    initial quaternion, translation, and rotation.
+
+    Args:
+        num_residues (int): the number of residues.
+        use_numpy (bool): use numpy or not, Default: "False"
+
+    Returns:
+        quaternion (tensor), shape为 :math:`(N_{res}, 4)`
+        rotation (tuple), :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, every element shape :math:`(N_{res},)`
+        translation (tuple), :math:`(x，y，z)`, every element shape :math:`(N_{res},)`
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from mindsponge.common.geometry import initial_affine
+        >>> output = initial_affine(256)
+        >>> print(len(output), output[0].shape, len(output[1]), len(output[1][0]), len(output[2]), len(output[2][0]))
+        >>> print(output[0])
+        >>> print(output[1])
+        >>> print(output[2])
+        3, (1, 4), 9, 1, 3, 1
+        [[1.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00]]
+        (1, 0, 0, 0, 1, 0, 0, 0, 1)
+        ([0.00000000e+00], [0.00000000e+00], [0.00000000e+00])
+    """
     if use_numpy:
         quaternion = np.tile(np.reshape(np.asarray([1., 0., 0., 0.]), [1, 4]), [num_residues, 1])
         translation = np.zeros([num_residues, 3])
