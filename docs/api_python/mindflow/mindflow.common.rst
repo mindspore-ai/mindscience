@@ -5,6 +5,8 @@ mindflow.common
 
 .. include:: mindflow.common.LearningRate.rst
 
+.. include:: mindflow.common.LossAndTimeMonitor.rst
+
 .. include:: mindflow.common.get_poly_lr.rst
 
 .. automodule:: mindflow.common

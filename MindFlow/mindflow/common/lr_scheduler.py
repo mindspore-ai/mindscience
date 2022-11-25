@@ -57,7 +57,7 @@ class LearningRate(LearningRateSchedule):
     Inputs:
        - **global_step** (Tensor) - The current step number with shape :math:`()`.
 
-    Returns:
+    Outputs:
        Tensor. The learning rate value for the current step with shape :math:`()`.
 
     Supported Platforms:

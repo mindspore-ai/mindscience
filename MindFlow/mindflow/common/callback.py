@@ -78,7 +78,7 @@ class LossAndTimeMonitor(Callback):
         If per_print_times is 0, do not print loss.
 
     Args:
-        data_size (int): number of batches of each epoch dataset
+        data_size (int): number of batches of each epoch dataset.
         per_print_times (int): Print the loss each every seconds. Default: 1.
 
     Raises:
