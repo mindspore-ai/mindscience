@@ -134,7 +134,8 @@ class NeighbourList(Cell):
 
             if not self.use_grids:
                 if num_neighbours is None and self.pbc_box is not None:
-                    volume = msnp.min(F.reduce_prod(self.pbc_box, -1))
+                    op = ms.ops.ReduceProd(keep_dims=True)
+                    volume = msnp.min(op(self.pbc_box, -1))
                     num_neighbours = grid_num_scale * self.num_atoms * \
                         msnp.power(cutoff*cutoff_scale, self.dim) / volume
                     num_neighbours = num_neighbours.astype(ms.int32)

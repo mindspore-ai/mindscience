@@ -25,7 +25,7 @@ from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 from mindsponge.common import residue_constants
 from mindsponge.common.geometry import invert_point, quaternion_from_tensor, vecs_expend_dims
-from mindsponge.metrics.structure_violations import get_structural_violations, compute_renamed_ground_truth, backbone,\
+from mindsponge.metrics.structure_violations import get_structural_violations, compute_renamed_ground_truth, backbone, \
     sidechain, supervised_chi, local_distance_difference_test
 from mindsponge.metrics import BalancedMSE, BinaryFocal, MultiClassFocal
 
@@ -86,8 +86,12 @@ class LossNet(nn.Cell):
         self.dists_mask_i = mnp.eye(14, 14)
         self.cys_sg_idx = Tensor(5, ms.int32)
         self.train_fold = train_fold
-        self.softmax_cross_entropy = nn.SoftmaxCrossEntropyWithLogits(sparse=False)
         self.sigmoid_cross_entropy = P.SigmoidCrossEntropyWithLogits()
+
+    def softmax_cross_entropy(self, logits, labels):
+        """Computes softmax cross entropy given logits and one-hot class labels."""
+        loss = -mnp.sum(labels * nn.LogSoftmax()(logits), axis=-1)
+        return mnp.asarray(loss)
 
     def distogram_loss(self, logits, bin_edges, pseudo_beta, pseudo_beta_mask):
         """Log loss of a distogram."""
@@ -391,7 +395,7 @@ class LossNetAssessment(nn.Cell):
                                                 20.) - self.beyond_cutoff_clip
 
         regression_error = regression_error_clip_within * within_cutoff_mask + regression_error_clip_beyond \
-                            * beyond_cutoff_mask
+                           * beyond_cutoff_mask
 
         square_mask_off_diagonal = square_mask * (1 - mnp.eye(square_mask.shape[1]))
 
