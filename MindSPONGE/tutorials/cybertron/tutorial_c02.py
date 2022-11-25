@@ -35,7 +35,7 @@ from mindspore.train.callback import ModelCheckpoint, CheckpointConfig
 
 if __name__ == '__main__':
 
-    sys.path.append('..')
+    sys.path.append('../..')
 
     from cybertron import Cybertron
     from cybertron import MolCT

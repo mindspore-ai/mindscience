@@ -31,7 +31,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    sys.path.append('..')
+    sys.path.append('../..')
 
     from cybertron.dataset import DatasetProcessor
 

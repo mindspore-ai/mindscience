@@ -32,7 +32,7 @@ from mindspore.train import load_checkpoint
 
 if __name__ == '__main__':
 
-    sys.path.append('..')
+    sys.path.append('../..')
 
     from mindsponge.data import load_hyperparam
     from cybertron import Cybertron
