@@ -95,7 +95,7 @@ class CoulombEnergy(NonbondEnergy):
                  parameters: dict = None,
                  cutoff: float = None,
                  use_pbc: bool = None,
-                 use_pme: bool = None,
+                 use_pme: bool = False,
                  alpha: float = 0.25,
                  nfft: Tensor = None,
                  exclude_index: Tensor = None,
