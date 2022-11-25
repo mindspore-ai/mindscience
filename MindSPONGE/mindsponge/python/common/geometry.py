@@ -60,13 +60,94 @@ QUAT_TO_ROT = Tensor(QUAT_TO_ROT)
 
 
 def vecs_scale(v, scale):
-    """vec scale"""
+    r"""
+    Scaling of vectors.
+    .. math::
+        v=(x1,x2,x3)
+        scaled\_{vecs} = (scale*x1,scale*x2,scale*x3)
+
+    Args：
+        - **v** (Tuple) - Input vector, tuple with length of 3, tuple with length of 3，:math:`(x,y,z)` where
+          x,y,z is scalar or Tensor which has same shape.
+        - **scale** (float) - Scale value.
+
+    Returns：
+        - **scaled_vecs** (Tuple) - Scaled vector, tuple with length of 3,  each element has same shape as v's element.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> from mindsponge.common.geometry import vecs_scale
+        >>> x= Tensor(np.ones(256), mstype.float32)
+        >>> y= Tensor(np.ones(256), mstype.float32)
+        >>> z= Tensor(np.ones(256), mstype.float32)
+        >>> scale=10
+        >>> result=vecs_scale((x,y,z),scale)
+        >>> print(len(result))
+        >>> print(result[0].shape)
+        >>> print(result[1].shape)
+        >>> print(result[2].shape)
+        3
+        (256,)
+        (256,)
+        (256,)
+    """
     scaled_vecs = (v[0] * scale, v[1] * scale, v[2] * scale)
     return scaled_vecs
 
 
 def rots_scale(rot, scale):
-    """rots scale"""
+    r"""
+    Scaling of rotation matrixs.
+    .. math::
+        rot=(x1,x2,x3,x4,x5,x6,x7,x8,x9)
+        scaled\_{rots} = (scale*x1,scale*x2,scale*x3,scale*x4,scale*x5,scale*x6,scale*x7,scale*x8,scale*x9)
+
+
+    Args：
+        - **rot** (Tuple) - rotation matrix, tuple with length of 9, :math:`(xx,xy,xz,yx,yy,yz,zx,zy,zz)`
+          each element is scalar or Tensor which has same shape.
+        - **scale** (float) - Scale value.
+
+    Returns：
+        - **scaled_rots** (Tuple) - Scaled rotation matrixs, tuple with length of 9,
+          each element has same shape as rot's element.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> from mindsponge.common.geometry import rots_scale
+        >>> x = Tensor(np.ones(256), mstype.float32)
+        >>> result = rots_scale((x, x, x, x, x, x, x, x, x),10)
+        >>> print(len(result))
+        >>> print(result[0].shape)
+        >>> print(result[1].shape)
+        >>> print(result[2].shape)
+        >>> print(result[3].shape)
+        >>> print(result[4].shape)
+        >>> print(result[5].shape)
+        >>> print(result[6].shape)
+        >>> print(result[7].shape)
+        >>> print(result[8].shape)
+        3
+        (256,)
+        (256,)
+        (256,)
+        (256,)
+        (256,)
+        (256,)
+        (256,)
+        (256,)
+        (256,)
+    """
     scaled_rots = (rot[0] * scale, rot[1] * scale, rot[2] * scale,
                    rot[3] * scale, rot[4] * scale, rot[5] * scale,
                    rot[6] * scale, rot[7] * scale, rot[8] * scale)
@@ -74,19 +155,117 @@ def rots_scale(rot, scale):
 
 
 def vecs_sub(v1, v2):
-    """Computes v1 - v2."""
+    r"""
+    Subtract two vectors.
+    .. math::
+        v1=(x1,x2,x3)
+        v2=(x1',x2',x3')
+        result=(x1-x1',x2-x2',x3-x3')
+
+    Args：
+        - **v1** (Tuple) - The first vector, tuple with length of 3，:math:`(x,y,z)` where x,y,z is is scalar or
+          Tensor which has same shape.
+        - **v2** (Tuple) - The second vector, tuple with length of 3, each element has same shape as v1's element.
+
+    Returns：
+        Tuple with length of 3, Subtracted vectors,  each element has same shape as v1's element.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> from mindsponge.common.geometry import vecs_sub
+        >>> x= Tensor(np.ones(256), mstype.float32)
+        >>> y= Tensor(np.ones(256), mstype.float32)
+        >>> z= Tensor(np.ones(256), mstype.float32)
+        >>> result=vecs_sub((x,y,z),(x,y,z))
+        >>> print(len(result))
+        >>> print(result[0].shape)
+        >>> print(result[1].shape)
+        >>> print(result[2].shape)
+        3
+        (256,)
+        (256,)
+        (256,)
+    """
     return (v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2])
 
 
 def vecs_robust_norm(v, epsilon=1e-8):
-    """Computes norm of vectors 'v'."""
+    r"""
+    Calculate the l2-norm of a vector.
+    .. math::
+        v=(x1,x2,x3)
+        l2\_norm=\sqrt{x1*x1+x2*x2+x3*x3+epsilon}
+
+    Args：
+        - **v** (Tuple) - Input vector, tuple with length of 3, tuple with length of 3，:math:`(x,y,z)`
+          where x,y,z is scalar or Tensor which has same shape
+        - **epsilon** (float) - Minimal value, prevents the return value from being 0, Default 1e-8.
+
+    Returns：
+        - **v_norm** (Tensor) - The l2-norm calculated from v, shape is as same as v's elements.
+
+    Supported Platforms:
+    ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> from mindsponge.common.geometry import vecs_robust_norm
+        >>> x= Tensor(np.ones(256), mstype.float32)
+        >>> y= Tensor(np.ones(256), mstype.float32)
+        >>> z= Tensor(np.ones(256), mstype.float32)
+        >>> result=vecs_robust_norm((x,y,z))
+        >>> print(result.shape)
+        (256)
+    """
     v_l2_norm = v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + epsilon
     v_norm = v_l2_norm ** 0.5
     return v_norm
 
 
 def vecs_robust_normalize(v, epsilon=1e-8):
-    """Normalizes vectors 'v'."""
+    r"""
+    Use l2-norm normalization vectors
+    .. math::
+        v=(x1,x2,x3)
+        l2\_norm=\sqrt{x1*x1+x2*x2+x3*x3+epsilon}
+        result=(x1/l2\_norm, x2/l2\_norm, x3/l2\_norm)
+
+    Args：
+        - **v** (Tuple) - Input vector, tuple with length of 3，:math:`(x,y,z)` where x,y,z is scalar or
+          Tensor which has same shape
+        - **epsilon** (float) - Minimal value, prevents the return value from being 0, Default 1e-8.
+
+    Outputs：
+        Tuple with length of 3, the normalized vector, each element has same shape as v's element.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> from mindsponge.common.geometry import vecs_robust_normalize
+        >>> x= Tensor(np.ones(256), mstype.float32)
+        >>> y= Tensor(np.ones(256), mstype.float32)
+        >>> z= Tensor(np.ones(256), mstype.float32)
+        >>> result=vecs_robust_normalize((x,y,z))
+        >>> print(len(result))
+        >>> print(result[0].shape)
+        >>> print(result[1].shape)
+        >>> print(result[2].shape)
+            3
+        (256,)
+        (256,)
+        (256,)
+    """
     norms = vecs_robust_norm(v, epsilon)
     return (v[0] / norms, v[1] / norms, v[2] / norms)
 
@@ -508,7 +687,7 @@ def quat_to_rot(normalized_quat, use_numpy=False):
     """
     if use_numpy:
         rot_tensor = np.sum(np.reshape(QUAT_TO_ROT.asnumpy(), (4, 4, 9)) * normalized_quat[..., :, None, None] \
-                * normalized_quat[..., None, :, None], axis=(-3, -2))
+                            * normalized_quat[..., None, :, None], axis=(-3, -2))
         rot_tensor = rots_from_tensor(rot_tensor, use_numpy)
     else:
         rot_tensor = mnp.sum(mnp.reshape(QUAT_TO_ROT, (4, 4, 9)) * normalized_quat[..., :, None, None] *

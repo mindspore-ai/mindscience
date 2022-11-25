@@ -533,7 +533,53 @@ def atom37_to_frames(
         all_atom_mask,  # inputs3 shape (..., 37)
         is_affine=False
 ):
-    """get the frames and affine for each residue"""
+    r"""
+    Computes  the torsion angle of up to 8 rigid body groups for each residue.
+
+    Args:
+        aatype(numpy.array):     Amino acid sequence, :math: `[N_{res}]`.
+        all_atom_positions(numpy.array):   The coordinates of all atoms, presented as atom37, :math:`[N_{res}, 37,3]`.
+        all_atom_mask(numpy.array):       Mask of all atomic coordinates, :math:`[N_{res},37]`.
+        is_affine(bool):    Whether to perform affine, the default value is "True".
+
+    Returns:
+        Dictionary, the specific content is as follows.
+        - **rigidgroups_gt_frames** (numpy.array) - The torsion angle of the 8 rigid body groups for each residue,
+          :math:`[N_{res},8,12]`.
+        - **rigidgroups_gt_exists** (numpy.array) - The mask of rigidgroups_gt_frames denoting whether the rigid body
+          group exists according to the experiment, :math:`[N_{res}, 8]`.
+        - **rigidgroups_group_exists** (numpy.array) - Mask denoting whether given group is in principle present
+          for given amino acid type, :math:`[N_{res},8]` .
+        - **rigidgroups_group_is_ambiguous** (numpy.array) - Indicates that the position is chiral symmetry,
+          :math:`[N_{res},8]` .
+        - **rigidgroups_alt_gt_frames** (numpy.array) - 8 Frames with alternative atom renaming
+          corresponding to 'all_atom_positions' represented as flat
+          12 dimensional array :math:`[N_{res},8,12]` .
+        - **backbone_affine_tensor** (numpy.array) - The translation and rotation of the local coordinates of each
+          amino acid relative to the global coordinates, :math:`[N_{res},7]` , for the last dimension, the first 4
+          elements are the affine tensor which contains the rotation information, the last 3 elements are the
+          translations in space.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.data import atom37_to_frames
+        >>> from mindspore import dtype as mstype
+        >>> from mindspore import Tensor
+        >>> aatype = np.ones(193,dtype=np.int32)
+        >>> all_atom_positions = np.ones((193,37,3),dtype=np.float32)
+        >>> all_atom_mask = np.ones((193,37),dtype=np.int32)
+        >>> result = atom37_to_frames(aatype,all_atom_positions,all_atom_mask)
+        >>> for key in result.keys():
+        >>>     print(key,result[key].shape)
+        rigidgroups_gt_frames (193, 8, 12)
+        rigidgroups_gt_exists (193, 8)
+        rigidgroups_group_exists (193, 8)
+        rigidgroups_group_is_ambiguous (193, 8)
+        rigidgroups_alt_gt_frames (193, 8, 12)
+    """
     aatype_shape = aatype.shape
 
     flat_aatype = np.reshape(aatype, [-1])
