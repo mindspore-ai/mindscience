@@ -89,7 +89,7 @@ This directory is the open source code of MEGA-Protein (including MEGA-fold, MEG
 
 ### Hardware & Framework
 
-This tool is developed based on [MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) computational biology/chemistry package and [MindSpore](https://www.mindspore.cn/) AI framework. It requires MindSpore 1.8 or later versions. This tool can be run on Ascend910 or GPU. Full fp32 precision inference is called by default. When running on Ascend, mixed-precision inference is required. Since the recompute function is used in training, the current training mode only supports graph mode.
+This tool is developed based on [MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) computational biology/chemistry package and [MindSpore](https://www.mindspore.cn/) AI framework. It requires MindSpore 1.8 or later versions. This tool can be run on Ascend910 or GPU. Full fp32 precision inference is called by default on GPU. When running on Ascend, mixed-precision inference is applied. Since the recompute function is used in training, the current training mode only supports graph mode.
 
 The protein structure prediction tool MEGA-Fold relies on the co-evolution and template information provided by database search tools for multiple sequence alignments (MSA, multiple sequence alignments) and template search generation. The searching database requires **2.5T hard disk** (SSD recommended) and a CPU with equal or higher performance than Kunpeng920.
 
@@ -212,7 +212,6 @@ option:
 --checkpoint_path    model weights path
 --use_pkl            using pkl file as input, default False
 --run_platform       running platform ，Ascend or GPU，default Ascend
---mixed_precision    using mixed precision, default 0, full fp32.
 
 ```
 
@@ -247,7 +246,6 @@ option:
 --input_path         training input folder，pkl format file is required, see PSP dataset for more details
 --pdb_path           output folder，pdb format file is required
 --run_platform       running platform ，Ascend or GPU，default Ascend
---mixed_precision    using mixed precision, default 0, full fp32.
 ```
 
 Checkpoints are saved in `./ckpt` folder every 50 iterations. Dataset downloading and setting can refer to `scripts/run_fold_train.sh`.
@@ -281,7 +279,7 @@ Downloading our open source protein structure training dataset [PSP dataset](htt
 
 ```bash
 Usage:python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --is_training True
-            --input_path INPUT_PATH --pdb_path PDB_PATH --checkpoint_path CHECKPOINT_PATH --run_assessment 1 --mixed_precision 1
+            --input_path INPUT_PATH --pdb_path PDB_PATH --checkpoint_path CHECKPOINT_PATH --run_assessment 1
 
 option:
 --data_config        configuration for data preprocessing
@@ -291,7 +289,6 @@ option:
 --pdb_path           output folder, pdb format file is required
 --checkpoint_path    MEGA-Fold model weights path
 --run_assessment     run pdb assessment
---mixed_precision    using mixed precision, default 0, full fp32.
 ```
 
 ### MEGA-Protein

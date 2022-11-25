@@ -2,7 +2,7 @@
 
 if [ ! -e filename ]; then
 echo downloading checkpoint
-wget --no-check-certificate https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Fold_1.ckpt
+wget --no-check-certificate https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt
 fi
 
 # Luanch inference

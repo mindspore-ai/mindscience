@@ -86,7 +86,7 @@ MEGA-Protein主要由三部分组成：
 
 ### 硬件环境与框架
 
-本工具基于[MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE)生物计算库与[MindSpore](https://www.mindspore.cn/)AI框架开发，MindSpore 1.8及以后的版本均可运行，MindSpore安装和配置可以参考[MindSpore安装页面](https://www.mindspore.cn/install)。本工具可以Ascend910或32G以上内存的GPU上运行，默认使用全精度推理，基于Ascend运行时需调用混合精度。由于训练中使用了重计算功能，所以当前训练仅支持图模式。
+本工具基于[MindSPONGE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE)生物计算库与[MindSpore](https://www.mindspore.cn/)AI框架开发，MindSpore 1.8及以后的版本均可运行，MindSpore安装和配置可以参考[MindSpore安装页面](https://www.mindspore.cn/install)。本工具可以Ascend910或32G以上内存的GPU上运行，基于Ascend运行时默认调用混合精度，基于GPU运行时使用全精度计算。由于训练中使用了重计算功能，所以当前训练仅支持图模式。
 
 蛋白质结构预测工具MEGA-Fold依赖多序列比对(MSA，multiple sequence alignments)与模板检索生成等传统数据库搜索工具提供的共进化与模板信息，配置数据库搜索需**2.5T硬盘**（推荐SSD）和与Kunpeng920性能持平的CPU。
 
@@ -210,7 +210,6 @@ MEGA-Protein主要由三部分组成：
 --checkpoint_path    模型权重文件路径
 --use_pkl            使用pkl数据作为输入，默认False
 --run_platform       运行后端，Ascend或者GPU，默认Ascend
---mixed_precision    调用混合精度推理，默认0，全精度推理
 ```
 
 对于多条序列推理，MEGA-Fold会基于所有序列的最长长度自动选择编译配置，避免重复编译。如需推理的序列较多，建议根据序列长度分类放入不同文件夹中分批推理。由于数据库搜索硬件要求较高，MEGA-Fold支持先做数据库搜索生成`raw_feature`并保存为pkl文件，然后使用`raw_feature`作为预测工具的输入，此时须将`use_pkl`选项置为True，`examples`文件夹中提供了样例pkl文件与对应的真实结构，供测试运行，测试命令参考`scripts/run_fold_infer_gpu.sh`。
@@ -278,7 +277,7 @@ To be released
 
 ```bash
 用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --is_training True
-            --input_path INPUT_PATH --pdb_path PDB_PATH --checkpoint_path CHECKPOINT_PATH --run_assessment 1 --mixed_precision 1
+            --input_path INPUT_PATH --pdb_path PDB_PATH --checkpoint_path CHECKPOINT_PATH --run_assessment 1
 
 选项：
 --data_config        数据预处理参数配置
@@ -288,7 +287,6 @@ To be released
 --pdb_path           训练标签数据（pdb文件，真实结构或知识蒸馏结构）路径
 --checkpoint_path    MEGA-Fold模型权重文件路径
 --run_assessment     运行蛋白质结构评估
---mixed_precision    调用混合精度推理，默认0，全精度
 ```
 
 ### MEGA-Protein整体使用
