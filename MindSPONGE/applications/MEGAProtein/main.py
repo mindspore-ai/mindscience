@@ -43,9 +43,6 @@ parser.add_argument('--use_pkl', default=False, help="use pkl as input or fasta 
 parser.add_argument('--checkpoint_path', help='checkpoint path')
 parser.add_argument('--checkpoint_path_assessment', help='assessment model checkpoint path')
 parser.add_argument('--device_id', default=0, type=int, help='DEVICE_ID')
-parser.add_argument('--mixed_precision', default=0, type=int,
-                    help='whether to use mixed precision, 0 for full fp32 and 1 for fp32/fp16 mixed,\
-                          only Ascend supports mixed precision, GPU should use fp32')
 parser.add_argument('--is_training', type=bool, default=False, help='is training or not')
 parser.add_argument('--run_platform', default='Ascend', type=str, help='which platform to use, Ascend or GPU')
 parser.add_argument('--run_distribute', type=bool, default=False, help='run distribute')
@@ -68,6 +65,7 @@ def fold_infer(args):
     slice_key = "seq_" + str(model_cfg.seq_length)
     slice_val = vars(model_cfg.slice)[slice_key]
     model_cfg.slice = slice_val
+
 
     megafold = MegaFold(model_cfg, mixed_precision=args.mixed_precision)
     load_checkpoint(args.checkpoint_path, megafold)
@@ -491,11 +489,13 @@ if __name__ == "__main__":
                             memory_optimize_level="O1",
                             max_call_depth=6000,
                             device_id=arguments.device_id)
+        arguments.mixed_precision = 1
     elif arguments.run_platform == 'Ascend' and arguments.is_training:
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="Ascend",
                             max_device_memory="29GB",
                             device_id=arguments.device_id)
+        arguments.mixed_precision = 1
     elif arguments.run_platform == 'GPU':
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="GPU",
@@ -503,8 +503,10 @@ if __name__ == "__main__":
                             graph_kernel_flags="--disable_expand_ops=Softmax --disable_cluster_ops=ReduceSum",
                             device_id=arguments.device_id,
                             enable_graph_kernel=True)
+        arguments.mixed_precision = 0
     else:
         raise Exception("Only support GPU or Ascend")
+
     if arguments.run_assessment:
         if not arguments.is_training:
             assessment_infer(arguments)
