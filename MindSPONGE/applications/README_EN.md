@@ -17,4 +17,5 @@ Application is based on MindSPONGE and MindSpore. We aim to provide powerful app
     - [Traditional MD](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/tradition)
 - [MEGA-Protein](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
     - [MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/fold.py)
+    - [MEGA-EvoGen](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/evogen.py)
     - [to be released]()

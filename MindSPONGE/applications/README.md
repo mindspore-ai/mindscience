@@ -16,4 +16,5 @@ Application底层依托计算生物工具包MindSPONGE以及昇思MindSpore构�
     - [传统分子动力学](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/tradition)
 - [MEGA-Protein](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
     - [MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/fold.py)
+    - [MEGA-EvoGen](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/evogen.py)
     - [to be updated]()
