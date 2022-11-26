@@ -15,6 +15,7 @@
 """
 init
 """
+from distutils.version import LooseVersion
 from .solver import *
 from .common import *
 
@@ -45,8 +46,9 @@ def _mindspore_version_check():
 
     ms_version = ms.__version__
     ms_requires = '1.5.0'
+    logger.info("Current Mindspore version is {} ".format(ms_version))
 
-    if ms_version < ms_requires:
+    if LooseVersion(ms_version) < LooseVersion(ms_requires):
         logger.warning("Current version of MindSpore is not compatible with MindSpore Elec. "
                        "Some functions might not work or even raise error. Please install MindSpore "
                        "version >= 1.5.0. For more details about dependency setting, please check "
