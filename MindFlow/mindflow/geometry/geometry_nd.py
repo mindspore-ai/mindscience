@@ -134,6 +134,7 @@ class HyperCube(Geometry):
 
     Raises:
         TypeError: sampling_config is not instance of class SamplingConfig.
+
     Supported Platforms:
         ``Ascend`` ``GPU``
 
