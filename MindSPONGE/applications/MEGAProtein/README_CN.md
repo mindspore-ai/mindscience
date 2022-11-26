@@ -29,6 +29,7 @@ MEGA-Protein主要由三部分组成：
 | 所属模块      | 文件名        | 大小 | 描述  |Model URL  |
 |-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
 | MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 |  [下载链接](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)  |
+| MEGA-EvoGen     | `MEGAEvoGen.ckpt`  | 535.7MB        | MEGA-EvoGen的checkpoint链接 | [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAEvoGen/MEGAEvoGen.ckpt)   |
 | PSP          | `PSP`         | 1.6TB(解压后25TB)    | PSP蛋白质结构数据集，可用于MEGA-Fold训练 |  [下载链接](http://ftp.cbi.pku.edu.cn/psp/)  |
 
 <details><summary>引用我们</summary>
@@ -48,6 +49,15 @@ MEGA-Protein主要由三部分组成：
     ```
 
 - MSA生成工具MEGA-EvoGen:
+
+    ```bibtex
+    @article{zhang2022few,
+        title={Few-shot learning of accurate folding landscape for protein structure prediction},
+        author={Zhang, Jun and Liu, Sirui and Chen, Mengyun and Chu, Haotian and Wang, Min and Wang, Zidong and Yu, Jialiang and Ni, Ningxi and Yu, Fan and Chen, Diqing and others},
+        journal={arXiv preprint arXiv:2208.09652},
+        year={2022}
+      }
+    ```
 
 - 蛋白质结构评分工具MEGA-Assessment:
 
@@ -77,8 +87,9 @@ MEGA-Protein主要由三部分组成：
 
 <details><summary>近期更新</summary>
 
-- 2022.04: 蛋白质结构预测工具MEGA-Fold训练开源.
-- 2021.11: 蛋白质结构预测工具MEGA-Fold推理开源.
+- 2022.11：MSA生成/增强工具MEGA-EvoGen推理开源。
+- 2022.04: 蛋白质结构预测工具MEGA-Fold训练开源。
+- 2021.11: 蛋白质结构预测工具MEGA-Fold推理开源。
 
 </details>
 
@@ -247,9 +258,24 @@ MEGA-Fold预测结果与真实结果对比：
 
 代码默认每50次迭代保存一次权重，权重保存在`./ckpt`目录下。数据集下载及测试命令参考参考`scripts/run_fold_train.sh`。
 
-### MEGA-EvoGen MSA生成/增强
+### MEGA-EvoGen MSA生成/增强推理
 
-To be released
+MEGA-EvoGen相关超参位于 `./config/evogen.yaml`，
+然后下载模型权重 [MEGAEvoGen.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAEvoGen/MEGAEvoGen.ckpt)
+， 最后使用如下命令运行模型。
+
+```bash
+用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --evogen_config ./config/evogen.yaml
+            --input_path INPUT_FILE_PATH --checkpoint_path CHECKPOINT_PATH --run_evogen 1
+
+选项：
+--data_config        蛋白质结构预测模型数据预处理参数配置
+--model_config       蛋白质结构预测模型超参配置
+--evogen_config      MSA生成/增强模型超参配置
+--input_path         输入文件目录，可包含多个`.fasta/.pkl`文件
+--checkpoint_path    MEGA-EvoGen模型和MEGA-Fold模型权重文件路径
+--run_evogen         运行MSA生成/增强推理得到蛋白质结构
+```
 
 ### MEGA-Assessment 蛋白质结构评分推理
 

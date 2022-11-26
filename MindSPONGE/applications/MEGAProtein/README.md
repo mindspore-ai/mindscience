@@ -30,10 +30,11 @@ MEGA-Protein mainly consists of three parts:
 
 This directory is the open source code of MEGA-Protein (including MEGA-fold, MEGA-EvoGen, and mega-Accessment). The available checkpoints and datasets are listed in the following chart:
 
-| Model & Dataset      | Name        | Size | Description  |Model URL  |
-|-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
-| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | model checkpoint |  [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)  |
-| PSP          | `PSP`         | 2TB(25TB after decompressed)    | multimodal dataset for protein |  [download](http://ftp.cbi.pku.edu.cn/psp/)  |
+| Model & Dataset      | Name        | Size                         | Description  |Model URL  |
+|-----------|---------------------|------------------------------|---------------|-----------------------------------------------------------------------|
+| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB                        | model checkpoint |  [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)  |
+| MEGA-EvoGen     | `MEGAEvoGen.ckpt`  | 535.7MB                      | MEGA-EvoGen model checkpoint | [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAEvoGen/MEGAEvoGen.ckpt)   |
+| PSP          | `PSP`         | 2TB(25TB after decompressed) | multimodal dataset for protein |  [download](http://ftp.cbi.pku.edu.cn/psp/)  |
 
 <details><summary>Cite us</summary>
 
@@ -52,6 +53,15 @@ This directory is the open source code of MEGA-Protein (including MEGA-fold, MEG
     ```
 
 - MEGA-EvoGen:
+
+    ```bibtex
+    @article{zhang2022few,
+        title={Few-shot learning of accurate folding landscape for protein structure prediction},
+        author={Zhang, Jun and Liu, Sirui and Chen, Mengyun and Chu, Haotian and Wang, Min and Wang, Zidong and Yu, Jialiang and Ni, Ningxi and Yu, Fan and Chen, Diqing and others},
+        journal={arXiv preprint arXiv:2208.09652},
+        year={2022}
+      }
+    ```
 
 - MEGA-Assessment:
 
@@ -80,6 +90,7 @@ This directory is the open source code of MEGA-Protein (including MEGA-fold, MEG
 
 <details><summary>Updates</summary>
 
+- 2022.11：MEGA-EvoGen inference codes released.
 - 2022.04: MEGA-Fold training codes released.
 - 2021.11: MEGA-Fold inference codes released.
 
@@ -250,9 +261,25 @@ option:
 
 Checkpoints are saved in `./ckpt` folder every 50 iterations. Dataset downloading and setting can refer to `scripts/run_fold_train.sh`.
 
-### MEGA-EvoGen
+### MEGA-EvoGen inference
 
-To be released
+First related hyper-parameters in `./config/evogen.yaml`, then downloading weights [MEGAEvoGen.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAEvoGen/MEGAEvoGen.ckpt). Finally running following command to start inference.
+
+```bash
+Usage:python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --evogen_config ./config/evogen.yaml
+            --input_path INPUT_FILE_PATH --checkpoint_path CHECKPOINT_PATH --use_pkl True --run_evogen 1
+
+
+option:
+--data_config        configuration for data preprocessing
+--model_config       hyperparameters for the MEGA-Fold model
+--evogen_config      hyperparameters for the MEGA_EvoGen model
+--input_path         input folder, .pkl files
+--checkpoint_path    model weights path of MEGA_EvoGen and MEGA-Fold
+--use_pkl            using pkl file as input, default False
+--run_evogen         whether to run evogen model to generate/augmentate msa.
+
+```
 
 ### MEGA-Assessment inference
 
