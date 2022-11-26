@@ -17,7 +17,7 @@ mindelec.solver.Solver
           - PINNs：模型是physics_informed。
 
         - **train_constraints** (Constraints) - 训练数据集损失的定义。默认值：None。如果模式是PINNs，则 `train_constraints` 不能为None。
-        - **test_constraints** (Constraints) - 测试数据集损失的定义。默认值：None。如果模式为PINNs，且需要执行 `eval`（见类中的 `train_with_eval` 和 `eval` 函数）时， `test_constraints` 不能为None。
+        - **test_constraints** (Constraints) - 测试数据集损失的定义。默认值：None。如果模式为PINNs，且需要执行 `eval` （见类中的 `train_with_eval` 和 `eval` 函数）时， `test_constraints` 不能为None。
         - **train_input_map** (dict) - 在训练时，指定相应数据集中数据的列名进入网络。key为数据集的名称，value为在相应的数据集中的数据列名进入网络。默认值：None。如果模型的输入不是单个， `train_input_map` 不能为None。
         - **test_input_map** (dict) - 在执行评估时，指定相应数据集中数据的列名进入网络。key为数据集的名称，value为进入网络数据集中的列名。默认值：None。如果模型的输入不是单个且需要eval，则 `test_input_map` 不能为None。
         - **mtl_weighted_cell** (Cell) - 基于多任务学习不确定性评估的损失加权算法。默认值：None。
@@ -94,7 +94,7 @@ mindelec.solver.Solver
             - **train_dataset** (Dataset) - 训练数据集迭代器。如果没有 `loss_fn` ，将会返回具有多个数据[data1, data2, data3, ...]的tuple并传递到网络。否则返回tuple[data, label]。数据和标签将分别传到网络和loss函数。
             - **test_dataset** (Dataset) - 用于评估模型的数据集。
             - **eval_interval** (int) - 指定eval间隔。
-            - **callbacks** (Optional[list[Callback], Callback]) - 回调对象或回调对象的列表，应在训练时被执行。默认值：None。
+            - **callbacks** (Union[list[Callback], Callback]) - 回调对象或回调对象的列表，应在训练时被执行。默认值：None。
             - **dataset_sink_mode** (bool) - 确定是否通过数据集通道传递数据。配置PyNative模式或CPU，训练过程中数据集将不会被下沉。默认值：True。
             - **sink_size** (int) - 控制每个下沉集中的数据量。如果 `sink_size` = -1，则接收每个epoch的完整数据集。如果 `sink_size` > 0，则每个epoch下沉 `sink_size` 的数据。如果 `dataset_sink_mode` 为False，则 `sink_size` 将失效。默认值：-1。
 

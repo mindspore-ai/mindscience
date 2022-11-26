@@ -23,8 +23,8 @@ mindelec.geometry.Disk
         参数：
             - **geom_type** (str) - 几何类型，可以是"domain"或者"BC"。默认值："domain"。
 
-              - "domain": 问题的可行域。
-              - "BC": 问题的边界条件。
+              - "domain"：问题的可行域。
+              - "BC"：问题的边界条件。
 
         返回：
             Numpy.array，如果配置选择包括法向向量，返回带边界法向向量的二维numpy数组。否则返回不带边界法向向量的二维numpy数组。
@@ -32,7 +32,7 @@ mindelec.geometry.Disk
 
         异常：
             - **ValueError** - 如果 `config` 为None。
-            - **KeyError** - 如果 `geom_type` 是 `domain`，但 `config.domain` 是None。
-            - **KeyError** - 如果 `geom_type `为 `BC`，但 `config.bc` 为None。
+            - **KeyError** - 如果 `geom_type` 是 `domain` ，但 `config.domain` 是None。
+            - **KeyError** - 如果 `geom_type `为 `BC` ，但 `config.bc` 为None。
             - **ValueError** - 如果 `geom_type` 既不是 `BC` 也不是 `domain`。
 
