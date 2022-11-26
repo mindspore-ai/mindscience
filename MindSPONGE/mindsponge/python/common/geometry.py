@@ -1062,13 +1062,67 @@ def initial_affine(num_residues, use_numpy=False):
 
 
 def vecs_expend_dims(v, axis):
-    """vecs expend dim"""
+    """
+    Adds an additional dimension to 'v' at the given axis.
+
+    Args:
+        v (Tuple):  The initial vector of the input,length:3,:math: '(xx, xy, xz)'
+        axi (Int):  Specifies the dimension index at which to expand the shape of v. Only constant value is allowed.
+
+    Returns:
+        v (Tuple), If the value of axis is 0, and the shape of xx is :math: '(... ,X_R)',
+        where X_R is any number, and the expanded shape is :math: '(1,... ,X_R).
+        Return expanded :math: '(xx, xy, xz, yx, yy, yz, zx, zy, zz)'.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindsponge.common.geometry import vecs_expend_dims
+        >>> from mindspore.common import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> v = (1, 2, 3)
+        >>> axis = 0
+        >>> output= vecs_expend_dims(v, axis)
+        >>> print(output)
+       (Tensor(shape=[1], dtype=Int64, value=[1]),Tensor(shape=[1], dtype=Int64, value=[2]),
+        Tensor(shape=[1], dtype=Int64, value=[3]))
+    """
     v = (P.ExpandDims()(v[0], axis), P.ExpandDims()(v[1], axis), P.ExpandDims()(v[2], axis))
     return v
 
 
 def rots_expend_dims(rots, axis):
-    """rot expend dims"""
+    """
+    Adds an additional dimension to `rots` at the given axis.
+
+    Args:
+        rots (Tuple): The rotation matrix is :math: '(xx, xy, xz, yx, yy, yz, zx, zy, zz)',
+                      and xx and xy have the same shape
+        axis (Int):   Specifies the dimension index at which to expand the shape of v. Only constant value is allowed.
+
+    Returns:
+        rots (Tuple): If the value of axis is 0, and the shape of xx is :math: '(... ,X_R) ',
+                      where X_R is any number, and the expanded shape is :math: '(1,... ,X_R).
+                      Return expanded :math: '(xx, xy, xz, yx, yy, yz, zx, zy, zz)'.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindsponge.common.geometry import rots_expend_dims
+        >>> from mindspore.common import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> rots = (1, 2, 3, 4, 5, 6, 7, 8, 9)
+        >>> axis = 0
+        >>> rots_expend_dims(rots, axis)
+        >>> print(output)
+        (Tensor(shape=[1], dtype=Int64, value=[1]), Tensor(shape=[1], dtype=Int64, value=[2]),
+        Tensor(shape=[1], dtype=Int64, value=[3]), Tensor(shape=[1], dtype=Int64, value=[4]),
+        Tensor(shape=[1], dtype=Int64, value=[5]), Tensor(shape=[1], dtype=Int64, value=[6]),
+        Tensor(shape=[1], dtype=Int64, value=[7]), Tensor(shape=[1], dtype=Int64, value=[8]),
+        Tensor(shape=[1], dtype=Int64, value=[9]))
+    """
     rots = (P.ExpandDims()(rots[0], axis), P.ExpandDims()(rots[1], axis), P.ExpandDims()(rots[2], axis),
             P.ExpandDims()(rots[3], axis), P.ExpandDims()(rots[4], axis), P.ExpandDims()(rots[5], axis),
             P.ExpandDims()(rots[6], axis), P.ExpandDims()(rots[7], axis), P.ExpandDims()(rots[8], axis))
@@ -1076,7 +1130,52 @@ def rots_expend_dims(rots, axis):
 
 
 def invert_point(transformed_point, rotation, translation, extra_dims=0, stack=False, use_numpy=False):
-    """invert_point"""
+    """
+    The inverse transformation of a rigid body group transformation with respect to a point coordinate,
+    that is, the inverse transformation of apply to point Make rotational translation changes on coordinates
+    with the transpose of the rotation
+    matrix :math: '(xx, xy, xz, yx, yy, yz, zx, zy, zz)' and the translation vector :math: '(x, y, z)' translation.
+
+    First, the initial coordinates are translated, and then the transpose of the rotation matrix is multiplied
+    by rot_point to get the final coordinates.
+
+    .. math::
+        rot_point = transformed_point - translation
+        result = :math:`rotation^t` * rot_point
+
+    The specific procedures of vector subtraction, transpose and multiplication can be referred to the
+    api of vecs_sub, invert_rots, rots_mul_vecs etc.
+
+    Args:
+        transformed_point (Tuple): The initial coordinates of the input have shape :math: '(x, y, z)',
+                                    where x, y and z are Tensor and have the same shape.
+        rotation (Tuple):          The rotation matrix. shape is :math: '(xx, xy, xz, yx, yy, yz, zx, zy, zz)',
+                                    and xx and xy have the same shape.
+        translation (Tuple):       The translation vector shape is :math: '(x, y, z)',
+                                    where x, y and z are Tensor and have the same shape.
+        extra_dims (int):           Control whether to expand dims.default:0
+        stack (bool):               Control whether to transform to tuple.default: False
+        use_numpy(bool):            Control whether to use numpy.default: False
+
+    Returns:
+        invert_point (tuple):  The transformed coordinate.Length: 3
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindsponge.common.geometry import invert_point
+        >>> from mindspore.common import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> transformed_point = (1, 2, 3)
+        >>> rotation = (1, 2, 3, 4, 5, 6, 7, 8, 9)
+        >>> translation = (1, 0.5, -1)
+        >>> output= invert_point(transformed_point, rotation, translation)
+        >>> print(output)
+       (Tensor(shape=[], dtype=Float32, value = 34), Tensor(shape=[], dtype=Float32, value = 39.5),
+        Tensor(shape=[], dtype=Float32, value = 45))
+
+    """
     if stack:
         rotation = rots_from_tensor(rotation, use_numpy)
         translation = vecs_from_tensor(translation)
@@ -1088,7 +1187,36 @@ def invert_point(transformed_point, rotation, translation, extra_dims=0, stack=F
 
 
 def quat_multiply_by_vec(quat, vec):
-    """Multiply a quaternion by a pure-vector quaternion."""
+    """
+    Multiply a quaternion by a pure-vector quaternion.
+
+    .. math::
+        temp =  QUAT_MULTIPLY_BY_VEC * quat[..., :, None, None] * vec[..., None, :, None]
+        result = sum(tempc,axis=:math:`(-3, -2)`)
+
+    Args:
+        quat (Tensor): Quaternion.Tensor of shape :math:`(..., 4)`.
+        vec (Tensor): A pure-vector quaternion，: math: ` (b, c, d) ` not normalized quaternion
+                      Quaternion can be expressed as: math: ` (1, b, c, d) ` .
+
+    Returns:
+        Tensor: The product of a quaternion with a pure vector quaternion.
+
+    Supported Platforms:
+       ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.common.geometry import quat_multiply_by_vec
+        >>> from mindspore.common import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> np.random.seed(1)
+        >>> quat = Tensor(np.random.rand(4),dtype=mstype.float32)
+        >>> vec = Tensor(np.random.rand(3),dtype=mstype.float32)
+        >>> out = quat_multiply_by_vec(quat, vec)
+        >>> print(out)
+        [-0.16203496,  0.03330477, -0.05129148,  0.14417158]
+    """
 
     return mnp.sum(QUAT_MULTIPLY_BY_VEC * quat[..., :, None, None] * vec[..., None, :, None],
                    axis=(-3, -2))
@@ -1097,15 +1225,66 @@ def quat_multiply_by_vec(quat, vec):
 def pre_compose(quaternion, rotation, translation, update):
     """Return a new QuatAffine which applies the transformation update first.
 
+    The process of obtaining the updated translation vector and rotation matrix is as follows:
+
+    .. math::
+        update = :math:`(xx, xy, xz, yx, yy, yz)`
+        vector_quaternion_update = :math:`(xx, xy, xz)`
+        x = :math:`(yx)`
+        y = :math:`(yy)`
+        z = :math:`(yz)`
+        trans_update = :math:`(x, y, z)`
+        new_quaternion = quaternion + vector_quaternion_update * quaternion
+        rotated_trans_update = rotation * trans_update
+        new_translation = translation + rotated_trans_update
+
+    vector_quaternion_update and quaternion are multiplied by the quat_multiply_by_vec function，
+    Affine transformation is performed using the generated new_quaternion and new_translation.
+    The process of affine transformation is referred to the quat_affine api.
+
     Args:
-    update: Length-6 vector. 3-vector of x, y, and z such that the quaternion
-    update is (1, x, y, z) and zero for the 3-vector is the identity
-    quaternion. 3-vector for translation concatenated.
+        quaternion(Tensor):  The initial quaternion to be updated, shape :math: '['(..., 4)']'.
+        rotation(Tuple):     Rotation matrix, :math: '(xx, xy, xz, yx, yy, yz, zx, zy, zz)',
+                             and xx and xy are Tensor and have the same shape.
+        translation(Tuple): Translation vector :math: '(x, y, z)',
+                             where x, y and z are Tensor and have the same shape.
+        update(Tensor):      The update-assisted matrix has shape :math: '['(..., 6)']'.
+                             3-vector of x, y, and z such that the quaternion
+                             update is (1, x, y, z) and zero for the 3-vector is the identity
+                             quaternion. 3-vector for translation concatenated.
 
     Returns:
-    quaternion: [..., 4]
-    rotation: Tuple [xx, xy, xz, yx, yy, yz, zx, zy, zz]
-    translation: Tuple [x, y, z]
+        quaternion(Tensor):New quaternion.The updated Tensor tuple has shape :math: '['(..., 4)'] '.
+        rotation(Tuple):The updated rotation matrix :math: '(xx, xy, xz, yx, yy, yz, zx, zy, zz)',
+                        and xx and xy are Tensor and have the same shape.
+        translation(Tuple):The updated translation vector :math: '(x, y, z)',
+                           where x, y and z are Tensor and have the same shape.
+
+    Supported Platforms:
+   ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.common.geometry import pre_compose
+        >>> from mindspore.common import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> np.random.seed(1)
+        >>> quaternion = Tensor(np.random.rand(4),dtype=mstype.float32)
+        >>> update = Tensor(np.random.rand(6),dtype=mstype.float32)
+        >>> rotation = Tensor(np.random.rand(9),dtype=mstype.float32)
+        >>> translation = Tensor(np.random.rand(3),dtype=mstype.float32)
+        >>> quaternion, rotation, translation = pre_compose(quaternion,rotation,translation,update)
+        >>> print(quaternion)
+        [ 0.27905196  0.82475466 -0.05600705  0.48864394]
+        >>> print(rotation)
+        (Tensor(shape=[], dtype=Float32, value= 0.516181), Tensor(shape=[], dtype=Float32, value= -0.365098),
+        Tensor(shape=[], dtype=Float32, value= 0.774765), Tensor(shape=[], dtype=Float32, value= 0.18033),
+        Tensor(shape=[], dtype=Float32, value= -0.837986), Tensor(shape=[], dtype=Float32, value= -0.515034),
+        Tensor(shape=[], dtype=Float32, value= 0.837281), Tensor(shape=[], dtype=Float32, value= 0.405564),
+        Tensor(shape=[], dtype=Float32, value= -0.366714))
+        >>> print(translation)
+        (Tensor(shape=[], dtype=Float32, value= 0.724994), Tensor(shape=[], dtype=Float32, value= 1.47631),
+        Tensor(shape=[], dtype=Float32, value= 1.40978))
     """
 
     vector_quaternion_update, x, y, z = mnp.split(update, [3, 4, 5], axis=-1)
@@ -1117,21 +1296,136 @@ def pre_compose(quaternion, rotation, translation, update):
 
 
 def quaternion_to_tensor(quaternion, translation):
-    """quaternion to tensor"""
+    """
+    Change quaternion to tensor.
+
+    .. math::
+        quaternion = :math:`[`(x_1, y_1, z_1, m_1)']'
+        translation = :math:`[`(x_2, y_2, z_2)']'
+        result = :math:`[`(x_1, y_1, z_1, m_1, x_2, y_2, z_2)']'
+
+    Args:
+        quaternion(Tensor):  Inputs quaternion.Tensor of shape :math:`(..., 4)`
+        translation(Tuple): Inputs translation.Tensor of shape :math:`(..., 3)`
+
+    Returns:
+        Tensor: The result of the concatenation between translation and translation.Tensor of shape :math:`(..., 7)`
+
+    Supported Platforms:
+       ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.common.geometry import quaternion_to_tensor
+        >>> from mindspore.common import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> np.random.seed(1)
+        >>> quaternion = Tensor(np.random.rand(4),dtype=mstype.float32)
+        >>> translation = Tensor(np.random.rand(3),dtype=mstype.float32)
+        >>> out = quaternion_to_tensor(quaternion, translation)
+        >>> print(out)
+        [0.6631489  0.44137922 0.97213906 0.7425225  0.3549025  0.6535310.5426164 ]
+    """
     translation = (P.ExpandDims()(translation[0], -1), P.ExpandDims()(translation[1], -1),
                    P.ExpandDims()(translation[2], -1),)
     return mnp.concatenate((quaternion,) + translation, axis=-1)
 
 
 def quaternion_from_tensor(tensor, normalize=False):
-    """quaternion from tensor"""
+    """
+    Take the input 'tensor' to get the new 'quaternion', 'rotation', 'translation'.
+
+    .. math::
+         quaternion = :math:`[`(x_1, y_1, z_1, m_1)']'
+         translation = :math:`[`(x_2, y_2, z_2)']'
+         result = :math:`[`(x_1, y_1, z_1, m_1, x_2, y_2, z_2)']'
+
+    Affine transformation is performed using the generated quaternion and translation.
+    The process of affine transformation is referred to the quat_affine api.
+
+    Args:
+        tensor(Tensor): An initial Tensor of shape is :math: '['(... 7)'].
+        normalize(bool): Control whether to find the norm during quat_affine. Default: False
+
+    Returns:
+        quaternion(Tensor):New quaternion.Tensor of shape :math:`(..., 4)` .
+        rotation(Tuple):New rotation, :math: '(xx, xy, xz, yx, yy, yz, zx, zy, zz)',
+                        and xx and xy are Tensor and have the same shape.
+        translation(Tuple):Translation vector :math: '[' (x, y, z)'] ',
+                            where x, y and z are Tensor and have the same shape.
+
+    Supported Platforms:
+       ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.common.geometry import quaternion_from_tensor
+        >>> from mindspore.common import Tensor
+        >>> tensor = Tensor(np.random.rand(7),dtype=mstype.float32)
+        >>> quaternion, rotation, translation = quaternion_from_tensor(tensor)
+        >>> print(quaternion)
+        [4.17021990e-01,  7.20324516e-01,  1.14374816e-04,  3.02332580e-01]
+        >>> print(rotation)
+        (Tensor(shape=[], dtype=Float32, value= 0.60137), Tensor(shape=[], dtype=Float32, value= -0.251994),
+        Tensor(shape=[], dtype=Float32, value= 0.435651), Tensor(shape=[], dtype=Float32, value= 0.252323),
+        Tensor(shape=[], dtype=Float32, value= -0.436365), Tensor(shape=[], dtype=Float32, value= -0.600713),
+        Tensor(shape=[], dtype=Float32, value= 0.43546), Tensor(shape=[], dtype=Float32, value= 0.600851),
+        Tensor(shape=[], dtype=Float32, value= -0.253555))
+        >>> print(translation)
+        (Tensor(shape=[], dtype=Float32, value= 0.146756),Tensor(shape=[], dtype=Float32, value= 0.0923386),
+        Tensor(shape=[], dtype=Float32, value= 0.18626))
+    """
     quaternion, tx, ty, tz = mnp.split(tensor, [4, 5, 6], axis=-1)
     translation = (P.Squeeze()(tx), P.Squeeze()(ty), P.Squeeze()(tz))
     return quat_affine(quaternion, translation, normalize=normalize)
 
 
 def apply_to_point(rotation, translation, point, extra_dims=0):
-    """apply to point func"""
+    """
+    Rotate and translate the input coordinates.
+
+    .. math::
+        rot_point = rotation * point
+        result = rot_point + translation
+
+    For specific multiplication and addition procedures, refer to the rots_mul_vecs and vecs_add apis.
+
+    Args:
+        rotation(Tuple):    The rotation matrix :math: '(xx, xy, xz, yx, yy, yz, zx, zy, zz)',
+                             and xx and xy are Tensor and have the same shape.
+        translation(Tuple): Translation vector :math: '[' (x, y, z)'] ',
+                             where x, y and z are Tensor and have the same shape.
+        point(Tensor):       Initial coordinate values :math: '[' (x, y, z)'] ',
+                             where x, y and z are Tensor and have the same shape.
+        extra_dims(int):     Control whether to expand dims.default:0
+
+    Returns:
+        result(Tuple):The result of the coordinate transformation.Length:3
+
+    Supported Platforms:
+       ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindsponge.common.geometry import apply_to_point
+        >>> from mindspore.common import Tensor
+        >>> from mindspore import dtype as mstype
+        >>> np.random.seed(1)
+        >>> rotation = []
+        >>> for i in range(9):
+        ...     rotation.append(Tensor(np.random.rand(4),dtype=mstype.float32))
+        >>> translation = []
+        >>> for i in range(3):
+        ...     translation.append(Tensor(np.random.rand(4),dtype=mstype.float32))
+        >>> point = []
+        >>> for i in range(3):
+        ...     point.append(Tensor(np.random.rand(4),dtype=mstype.float32))
+        >>> out = apply_to_point(rotation, translation, point)
+        >>> print(out)
+        (Tensor(shape=[4], dtype=Float32, value= [ 1.02389336e+00,  1.12493467e+00,  2.54357845e-01,  1.25249946e+00]),
+        Tensor(shape=[4], dtype=Float32, value= [ 9.84841168e-01,  5.20081401e-01,  6.43978953e-01,  6.15328550e-01]),
+        Tensor(shape=[4], dtype=Float32, value= [ 8.62860143e-01,  9.11733627e-01,  1.09284782e+00,  1.44202101e+00]))
+    """
     for _ in range(extra_dims):
         rotation = rots_expend_dims(rotation, -1)
         translation = vecs_expend_dims(translation, -1)
