@@ -49,7 +49,6 @@ class Transition(nn.Cell):
         - **mask** (Tensor) - The mask of act when to do layernorm with shape :math:`(32, input_{dim})`,
           Default: "None".
 
-
     Outputs:
         - **output** (Tensor) - Tensor, the float tensor of the output of the layer with
           shape same as the input.

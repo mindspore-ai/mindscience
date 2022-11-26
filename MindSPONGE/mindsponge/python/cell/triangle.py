@@ -38,7 +38,7 @@ class TriangleAttention(nn.Cell):
 
     Args:
         orientation (int):      Decide on the dimension of Triangle attention.
-        num_heads (int):        The number of the heads.
+        num_head (int):        The number of the heads.
         key_dim (int):          The dimension of the hidden layer.
         gating (bool):          Indicator of if the attention is gated.
         layer_norm_dim (int):   The dimension of the layer_norm.

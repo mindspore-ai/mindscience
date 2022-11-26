@@ -44,7 +44,7 @@ class WriteH5MD(Callback):
                                 Default:  False
         write_force (bool):     Whether to write the forece of the system to the H5MD file.
                                 Default: False
-        wiite_image (bool):     Whether to write the image of the position of system to the H5MD file.
+        write_image (bool):     Whether to write the image of the position of system to the H5MD file.
                                 Default: False
         length_unit (str):      Length unit for coordinates. Default: None.
         energy_unit (str):      Energy unit. Default: None.

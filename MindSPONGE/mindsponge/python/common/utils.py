@@ -382,9 +382,9 @@ def make_atom14_positions(aatype, all_atom_mask, all_atom_positions):
     Constructs denser atom positions (14 dimensions instead of 37).
 
     Args:
-        aatype:             numpy.array.
-        all_atom_positions: numpy.array.
-        all_atom_mask:      numpy.array.
+        aatype (numpy.array):             numpy.array.
+        all_atom_positions (numpy.array): numpy.array.
+        all_atom_mask (numpy.array):      numpy.array.
 
     Returns:
         - 'atom14_atom_exists', atom14 position exists mask.
@@ -553,6 +553,7 @@ def get_pdb_info(pdb_path):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
     Examples:
         >>> from mindsponge.common import get_pdb_info
         >>> pdb_path = "YOUR PDB PATH"

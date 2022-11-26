@@ -1,5 +1,5 @@
 mindsponge.data.atom37_to_frames
-=========================
+=================================
 
 .. py:function:: mindsponge.data.atom37_to_frames(aatype, all_atom_positions, all_atom_mask, is_affine)
 
@@ -11,8 +11,9 @@ mindsponge.data.atom37_to_frames
         - **all_atom_mask** (numpy.array) - 所有原子坐标的mask, :math:`[N_{res},37]` 。
         - **is_affine** (bool) - 是否进行仿射变换, 默认值为"True"。
 
-    输出：
+    返回：
         字典，具体内容如下。
+
         - **rigidgroups_gt_frames** (numpy.array) - 将氨基酸序列位置用刚体群表示, :math:`[N_{res},8,12]`。
         - **rigidgroups_gt_exists** (numpy.array) - rigidgroups_gt_frames的mask，表示该刚体群是不是存在实验解析获得的真实结构,
           :math:`[N_{res}, 8]`。

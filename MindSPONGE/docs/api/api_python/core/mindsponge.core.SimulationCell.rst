@@ -1,11 +1,11 @@
 mindsponge.core.SimulationCell
 ==============================
 
-.. py:class:: mindsponge.core.SimulationCell(system, potential, cutoff=None, neighbour_list=None, wrapper="sum", bias=None)
+.. py:class:: mindsponge.core.SimulationCell(system: Molecule, potential: PotentialCell, cutoff: float = None, neighbour_list: NeighbourList = None, wrapper: EnergyWrapper = "sum", bias: Bias = None)
 
     模拟的核心层。
 
-    参数:
+    参数：
         - **system** (Molecule) - 模拟系统。
         - **potential** (PotentialCell) - 势能。
         - **cutoff** (float) - 中止距离。默认值："None"。
@@ -21,7 +21,7 @@ mindsponge.core.SimulationCell
             - Tensor。邻居的索引。
             - Tensor。邻居的mask。
 
-    .. py:method:: set_pbc_grad(grad_box)
+    .. py:method:: set_pbc_grad(grad_box: bool)
 
         设置是否计算PBC box的梯度。
 

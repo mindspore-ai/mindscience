@@ -3,7 +3,7 @@ mindsponge.metrics.sidechain
 
 .. py:function:: mindsponge.metrics.sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_frames, rigidgroups_gt_exists, renamed_atom14_gt_positions, renamed_atom14_gt_exists, sidechain_atom_clamp_distance, sidechain_length_scale, pred_frames, pred_positions)
 
-    调用 `frame_aligned_point_error`实现全原子损失函数计算
+    调用 `frame_aligned_point_error` 实现全原子损失函数计算
     `Jumper et al. (2021) Suppl. Alg. 20 "StructureModule" line 17
     <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 

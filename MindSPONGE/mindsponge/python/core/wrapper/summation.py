@@ -38,7 +38,7 @@ class EnergySummation(EnergyWrapper):
         dim_potential (int):    Dimension of potential energy (U). Default: 1
         dim_bias (int):         Dimension of bias potential (V). Default: 1
 
-    Returns:
+    Outputs:
         energy (Tensor), Tensor of shape (B, 1). Data type is float. Total energy.
 
     Supported Platforms:

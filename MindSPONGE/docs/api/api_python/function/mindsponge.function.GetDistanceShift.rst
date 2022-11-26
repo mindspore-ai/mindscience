@@ -1,7 +1,7 @@
 mindsponge.function.GetDistanceShift
 ====================================
 
-.. py:class:: mindsponge.function.GetDistanceShift(bonds, num_atoms, num_walkers=1, use_pbc=None)
+.. py:class:: mindsponge.function.GetDistanceShift(bonds: Tensor, num_atoms: int, num_walkers: int = 1, use_pbc: bool = None)
 
     计算维数为C的B矩阵。
 

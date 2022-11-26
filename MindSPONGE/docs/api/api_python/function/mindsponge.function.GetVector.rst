@@ -1,7 +1,7 @@
 mindsponge.function.GetVector
 =============================
 
-.. py:class:: mindsponge.function.GetVector(use_pbc=None)
+.. py:class:: mindsponge.function.GetVector(use_pbc: bool = None)
 
     获取有或者没有PBC box的向量。
 

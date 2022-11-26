@@ -1,5 +1,5 @@
 mindsponge.common.vecs_sub
-=========================
+===========================
 
 .. py:function:: mindsponge.common.vecs_sub(v1, v2)
 

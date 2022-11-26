@@ -397,20 +397,21 @@ def atom37_to_torsion_angles(
     The phi represents twist angle between `C-CA-N-(C+1)`, psi represents twist angle between `(N-1)-C-CA-N`.
 
     Args:
-      aatype (numpy.array):         amino acid type with shape :math:`(batch\_size, N_{res})`.
-      all_atom_pos (numpy.array):   atom37 representation of all atomic coordinates with
-                                    shape :math:`(batch\_size, N_{res}, 37, 3)`.
-      all_atom_mask (numpy.array):  atom37 representation of the mask on all atomic coordinates with
-                                    shape :math:`(batch\_size, N_{res})`.
-      alt_torsions (bool):          indicates whether to set the sign angle of shielding torsion to zero.
+        aatype (numpy.array):         amino acid type with shape :math:`(batch\_size, N_{res})`.
+        all_atom_pos (numpy.array):   atom37 representation of all atomic coordinates with
+                                        shape :math:`(batch\_size, N_{res}, 37, 3)`.
+        all_atom_mask (numpy.array):  atom37 representation of the mask on all atomic coordinates with
+                                        shape :math:`(batch\_size, N_{res})`.
+        alt_torsions (bool):          indicates whether to set the sign angle of shielding torsion to zero.
 
     Outputs:
-      - Dict containing
-        - torsion_angles_sin_cos (numpy.array), with shape :math:`(batch\_size, N_{res}, 37, 3)` where
-         the final 2 dimensions denote sin and cos respectively.
-        - alt_torsion_angles_sin_cos (numpy.array), same as 'torsion_angles_sin_cos', but with the angle shifted
-         by pi for all chi angles affected by the naming ambiguities.
-        - torsion_angles_mask (numpy.array), Mask for which chi angles are present.
+        - Dict containing
+
+          - torsion_angles_sin_cos (numpy.array), with shape :math:`(batch\_size, N_{res}, 37, 3)` where
+            the final 2 dimensions denote sin and cos respectively.
+          - alt_torsion_angles_sin_cos (numpy.array), same as 'torsion_angles_sin_cos', but with the angle shifted
+            by pi for all chi angles affected by the naming ambiguities.
+          - torsion_angles_mask (numpy.array), Mask for which chi angles are present.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -544,6 +545,7 @@ def atom37_to_frames(
 
     Returns:
         Dictionary, the specific content is as follows.
+
         - **rigidgroups_gt_frames** (numpy.array) - The torsion angle of the 8 rigid body groups for each residue,
           :math:`[N_{res},8,12]`.
         - **rigidgroups_gt_exists** (numpy.array) - The mask of rigidgroups_gt_frames denoting whether the rigid body

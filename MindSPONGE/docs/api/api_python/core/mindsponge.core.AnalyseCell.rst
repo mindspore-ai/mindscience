@@ -1,7 +1,7 @@
 mindsponge.core.AnalyseCell
 ===========================
 
-.. py:class:: mindsponge.core.AnalyseCell(system, potential, neighbour_list=None, calc_energy=False, calc_forces=False)
+.. py:class:: mindsponge.core.AnalyseCell(system: Molecule, potential: PotentialCell, neighbour_list: NeighbourList = None, calc_energy: bool = False, calc_forces: bool = False)
 
     分析的核心层。
 

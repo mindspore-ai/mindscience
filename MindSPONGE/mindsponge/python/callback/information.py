@@ -34,7 +34,7 @@ class RunInfo(Callback):
     Callback to print the information of MD simulation.
 
     Args:
-        print_freq (int):   Frequency to print out the information
+        print_freq (int):   Frequency to print out the information. Default: 1.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

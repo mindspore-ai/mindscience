@@ -1,7 +1,7 @@
 mindsponge.function.GetShiftGrad
 ================================
 
-.. py:class:: mindsponge.function.GetShiftGrad(num_atoms, bonds, num_walkers=1, dimension=3, use_pbc=None)
+.. py:class:: mindsponge.function.GetShiftGrad(num_atoms: int, bonds: Tensor, num_walkers: int = 1, dimension: int = 3, use_pbc: bool = None)
 
     计算维度为(K, N, D)的B矩阵的微分。
 

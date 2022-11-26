@@ -39,7 +39,7 @@ class Attention(nn.Cell):
     attention.
 
     Args:
-        num_heads(int):     The number of the heads.
+        num_head(int):     The number of the heads.
         hidden_size(int):   The hidden size of the input.
         gating(bool):       Indicator of if the attention is gated.
         q_data_dim(int):    The last dimension length of the query tensor.
@@ -54,11 +54,11 @@ class Attention(nn.Cell):
         - **m_data** (Tensor) - The key/value tensor with shape (batch_size,
           value_seq_length, m_data_dim) with value_seq_length the value sequence length.
         - **attention_mask** (Tensor) - The mask for attention matrix with shape
-          (batch_size, num_heads, query_seq_length, value_seq_length).
+          (batch_size, num_head, query_seq_length, value_seq_length).
         - **index** (Tensor) - The index of while loop, only used in case of while
           control flow. Default: "None".
         - **nonbatched_bias** (Tensor) - Non-batched bias for the attention matrix with
-          shape(num_heads, query_seq_length, value_seq_length). Default: "None".
+          shape(num_head, query_seq_length, value_seq_length). Default: "None".
 
     Outputs:
         - **output** (Tensor) - Output tensor of the layer with shape (batch_size,
@@ -229,7 +229,7 @@ class GlobalAttention(nn.Cell):
     shape of the query tensor, key tensor and the value tensor should be the same.
 
     Args:
-        num_heads(int):     The number of the heads.
+        num_head(int):     The number of the heads.
         gating(bool):       Indicator of if the attention is gated.
         input_dim(int):     The last dimension length of the input tensor.
         output_dim(int):    The last dimension length of the output tensor.

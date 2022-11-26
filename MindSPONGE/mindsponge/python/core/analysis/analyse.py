@@ -45,7 +45,7 @@ class AnalyseCell(Cell):
         calc_energy (bool):             Whether to calculate the energy. Default: False
         calc_forces (bool):             Whether to calculate the forces. Default: False
 
-    Returns:
+    Outputs:
         - energy.
         - forces.
         - coordinates.

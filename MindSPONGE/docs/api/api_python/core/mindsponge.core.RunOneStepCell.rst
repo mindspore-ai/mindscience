@@ -1,7 +1,7 @@
 mindsponge.core.RunOneStepCell
 ==============================
 
-.. py:class:: mindsponge.core.RunOneStepCell(network, optimizer, steps=1, sens=1.0)
+.. py:class:: mindsponge.core.RunOneStepCell(network: SimulationCell, optimizer: Optimizer, steps: int = 1, sens: float = 1.0)
 
     运行一步模拟的核心层。
 
@@ -27,14 +27,14 @@ mindsponge.core.RunOneStepCell
             - Tensor。模拟层结果输出的能量的大小。
             - Tensor。模拟层结果输出的力的大小。
 
-    .. py:method:: set_pbc_grad(value)
+    .. py:method:: set_pbc_grad(value: bool)
 
         设定是否计算PBC box的梯度。
 
         参数：
             - **value** (bool) - 判断是否计算PBC box的梯度。
 
-    .. py:method:: set_steps(steps)
+    .. py:method:: set_steps(steps: int)
 
         设置JIT的步数。
 
