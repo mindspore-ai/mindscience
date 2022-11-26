@@ -253,7 +253,7 @@ To be released
 
 ### MEGA-Assessment 蛋白质结构评分推理
 
-下载已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)，和MEGA-Assessment模型权重[MEGA_Assessment.ckpt](https://download.mindspore.cn/model_zoo/research/hpc/molecular_dynamics/MEGA_Assessment.ckpt)运行以下命令启动推理。
+下载已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)，和MEGA-Assessment模型权重[MEGA_Assessment.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAAssessment/MEGA_Assessment.ckpt)运行以下命令启动推理。
 
 ```bash
 用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --input_path INPUT_FILE_PATH
