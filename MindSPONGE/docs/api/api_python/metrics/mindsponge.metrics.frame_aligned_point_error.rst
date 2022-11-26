@@ -21,5 +21,5 @@ mindsponge.metrics.frame_aligned_point_error
         - **length_scale** (float) - 单位距离，用于缩放距离的差，常量。
         - **l1_clamp_distance** (float) - 距离误差的截断点，超过该距离时梯度不再考虑，常量。
 
-    输出：
+    返回：
         - **error_clamp** (list) - Tensor。计算所得全原子点位置误差，计算过程中过大的误差会被截断。shape为 :math:`()` 。

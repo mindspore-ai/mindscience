@@ -1,5 +1,5 @@
 mindsponge.common.vecs_scale
-=========================
+=============================
 
 .. py:function:: mindsponge.common.vecs_scale(v, scale)
 

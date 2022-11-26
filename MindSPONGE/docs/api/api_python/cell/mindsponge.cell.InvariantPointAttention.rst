@@ -31,4 +31,4 @@ mindsponge.cell.InvariantPointAttention
         - **translation** (tuple) - 刚体群T(r,t)中的旋转信息的偏移信息, 长度为3的元组，每个元素shape为 :math:`[N_{res}]` 。
 
     输出：
-        Tensor。input_1d的更新， shape为 :math:`[N_{res}, channel]` 。
+        - **output** (Tensor) - Tensor，input_1d的更新，shape为 :math:`[N_{res}, channel]` 。

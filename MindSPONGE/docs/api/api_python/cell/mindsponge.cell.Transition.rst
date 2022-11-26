@@ -1,7 +1,7 @@
 mindsponge.cell.Transition
 ==========================
 
-.. py:class:: mindsponge.cell.Transition(num_intermediate_factor, input_dim, batch_size, slice_num=0)
+.. py:class:: mindsponge.cell.Transition(num_intermediate_factor, input_dim, batch_size=None, slice_num=0)
 
     两层全连接层，中间输出特征数为输入特征数的倍数。
 

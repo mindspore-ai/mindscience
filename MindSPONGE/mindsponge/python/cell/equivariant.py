@@ -41,7 +41,7 @@ class InvariantPointAttention(nn.Cell):
     and T is the rotation and translation in the input.
 
     `Jumper et al. (2021) Suppl. Alg. 22 "InvariantPointAttention"
-      <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
+    <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 
     Args:
         num_head (int):         The number of the heads.

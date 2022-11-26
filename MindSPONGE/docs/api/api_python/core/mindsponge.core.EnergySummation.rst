@@ -1,7 +1,7 @@
 mindsponge.core.EnergySummation
 ===============================
 
-.. py:class:: mindsponge.core.EnergySummation(num_walker=1, dim_potential=1, dim_bias=1)
+.. py:class:: mindsponge.core.EnergySummation(num_walker: int = 1, dim_potential: int = 1, dim_bias: int = 1)
 
     直接计算势能和偏置的和的网络。
 

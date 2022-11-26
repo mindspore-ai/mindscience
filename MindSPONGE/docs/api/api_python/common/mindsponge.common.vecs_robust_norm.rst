@@ -1,5 +1,5 @@
 mindsponge.common.vecs_robust_norm
-=========================
+==================================
 
 .. py:function:: mindsponge.common.vecs_robust_norm(v, epsilon)
 

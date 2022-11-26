@@ -1,7 +1,7 @@
 mindsponge.core.Sponge
 ======================
 
-.. py:class:: mindsponge.core.Sponge(network, potential=None, optimizer=None, metrics=None, analyse_network=None)
+.. py:class:: mindsponge.core.Sponge(network: Union[Molecule, SimulationCell, RunOneStepCell], potential: PotentialCell = None, optimizer: Optimizer = None, metrics: Metric = None, analyse_network: AnalyseCell = None)
 
     MindSPONGE的核心引擎。
 
@@ -13,7 +13,7 @@ mindsponge.core.Sponge
         - **metrics** (Metric) - 矩阵。默认值："None"。
         - **analyse_network** (Cell) - 分析网络。默认值："None"。
 
-    .. py:method:: analyse(dataset=None， callbacks=None)
+    .. py:method:: analyse(dataset=None, callbacks=None)
 
         计算API，其中迭代由python前端控制。配置为pynative模式或CPU，计算过程将以数据集非下沉模式执行。
 
@@ -28,14 +28,14 @@ mindsponge.core.Sponge
         返回：
             Dict。key是用户定义的矩阵名称。value是测试模式中的模型的矩阵。
 
-    .. py:method:: change_optimizer(optimizer)
+    .. py:method:: change_optimizer(optimizer: Optimizer)
 
         改变优化器。
 
         参数：
             - **optimizer** (Optimizer) - 使用的优化器。
 
-    .. py:method:: change_potential(potential)
+    .. py:method:: change_potential(potential: PotentialCell)
 
         改变势能。
 
@@ -56,7 +56,7 @@ mindsponge.core.Sponge
         返回：
             系统的能量和力。
 
-    .. py:method:: run(steps, callbacks=None, dataset=None)
+    .. py:method:: run(steps: int, callbacks: Callback = None, dataset: Dataset = None)
 
         运行模拟。
 

@@ -1,7 +1,7 @@
 mindsponge.cell.MSAColumnAttention
 ==================================
 
-.. py:class:: mindsponge.cell.MSAColumnAttention(num_head, key_dim, gating, msa_act_dim, batch_size, slice_num=0)
+.. py:class:: mindsponge.cell.MSAColumnAttention(num_head, key_dim, gating, msa_act_dim, batch_size=None, slice_num=0)
 
     MSA列注意力层。
     MSA逐列注意模块，让处于相同序列位置的信息进行交互。

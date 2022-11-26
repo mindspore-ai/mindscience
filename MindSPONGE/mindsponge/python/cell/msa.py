@@ -170,7 +170,7 @@ class MSAColumnAttention(nn.Cell):
         gating (bool):          Indicator of if the attention is gated.
         msa_act_dim (int):      The dimension of the msa_act.
         batch_size (int):       The batch size of parameters in MSAColumnAttention, used in while control flow,
-        Default: "None".
+                                Default: "None".
         slice_num (int):        The number of slices to be made to reduce memory, Default: 0
 
     Inputs:
@@ -253,7 +253,7 @@ class MSAColumnGlobalAttention(nn.Cell):
         gating (bool):          Indicator of if the attention is gated.
         msa_act_dim (int):      The dimension of the msa_act.
         batch_size (int):       The batch size of parameters in MSAColumnGlobalAttention, used
-                                in while control flow.
+                                in while control flow. Default: None.
         slice_num (int):        The number of slices to be made to reduce memory. Default: 0
 
     Inputs:

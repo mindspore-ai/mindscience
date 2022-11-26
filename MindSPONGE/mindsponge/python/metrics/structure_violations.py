@@ -54,29 +54,30 @@ def between_residue_bond(
         tolerance_factor_soft=12.0,
         tolerance_factor_hard=12.0
 ):
-    """Flat-bottom loss to penalize structural violations between residues. This is a loss penalizing any violation
-     of the geometry around the peptide bond between consecutive amino acids.
+    """
+    Flat-bottom loss to penalize structural violations between residues. This is a loss penalizing any violation
+    of the geometry around the peptide bond between consecutive amino acids.
 
-     Args:
-         pred_atom_positions (Tensor):  Atom positions in atom37/14 representation, shape :math:`(N_{res}, 37, 3)`.
-                                        or shape :math:`(N_{res}, 14, 3)` .
-         pred_atom_mask (Tensor):       Atom mask in atom37/14 representation. shape :math:`(N_{res}, 37)` or
-                                        shape :math:`(N_{res}, 14)` .
-         residue_index (Tensor):        Residue index for given amino acid, this is assumed to be monotonically
-                                        increasing. shape :math:`(N_{res}, )` .
-         aatype (Tensor):               amino acid types. shape :math:`(N_{res}, )` .
-         tolerance_factor_soft (float): soft tolerance factor measured in standard deviations of pdb distributions.
-                                        Default: 12.0 .
-         tolerance_factor_hard (float): hard tolerance factor measured in standard deviations of pdb distributions.
-                                        Default: 12.0 .
+    Args:
+        pred_atom_positions (Tensor):  Atom positions in atom37/14 representation, shape :math:`(N_{res}, 37, 3)`.
+                                      or shape :math:`(N_{res}, 14, 3)` .
+        pred_atom_mask (Tensor):       Atom mask in atom37/14 representation. shape :math:`(N_{res}, 37)` or
+                                      shape :math:`(N_{res}, 14)` .
+        residue_index (Tensor):        Residue index for given amino acid, this is assumed to be monotonically
+                                      increasing. shape :math:`(N_{res}, )` .
+        aatype (Tensor):               amino acid types. shape :math:`(N_{res}, )` .
+        tolerance_factor_soft (float): soft tolerance factor measured in standard deviations of pdb distributions.
+                                      Default: 12.0 .
+        tolerance_factor_hard (float): hard tolerance factor measured in standard deviations of pdb distributions.
+                                      Default: 12.0 .
 
-     Returns:
-         - c_n_loss_mean(Tensor), loss for peptide bond length violations. shape: () .
-         - ca_c_n_loss_mean(Tensor), loss for violations of bond angle around C spanned by CA, C，N. shape: () .
-         - c_n_ca_loss_mean(Tensor), loss for violations of bond angle around N spanned by C， N， CA. shape: () .
-         - per_residue_loss_sum(Tensor), sum of all losses of each residue. shape :math:`(N_{res}, )` .
-         - per_residue_violation_mask(Tensor), mask denoting all residues with violation present.
-           shape :math:`(N_{res}, )` .
+    Returns:
+        - c_n_loss_mean(Tensor), loss for peptide bond length violations. shape: () .
+        - ca_c_n_loss_mean(Tensor), loss for violations of bond angle around C spanned by CA, C，N. shape: () .
+        - c_n_ca_loss_mean(Tensor), loss for violations of bond angle around N spanned by C， N， CA. shape: () .
+        - per_residue_loss_sum(Tensor), sum of all losses of each residue. shape :math:`(N_{res}, )` .
+        - per_residue_violation_mask(Tensor), mask denoting all residues with violation present.
+          shape :math:`(N_{res}, )` .
 
     Note:
         - shape :math:`N_{res}`, number of amino acid.
@@ -85,20 +86,20 @@ def between_residue_bond(
         ``Ascend`` ``GPU``
 
     Examples:
-        >>>import mindspore as ms
-        >>>from mindspore import Tensor
-        >>>import numpy as np
-        >>>from mindsponge.metrics import between_residue_bond
-        >>>np.random.seed(1)
-        >>>pred_atom_positions = Tensor(np.random.random(size=(50,37,3)), ms.float32)
-        >>>pred_atom_mask = Tensor(np.random.randint(2,size=(50,37)), ms.int32)
-        >>>residue_index = Tensor(np.array(range(50)), ms.int32)
-        >>>aatype = Tensor(np.random.randint(20, size=(50,)), ms.int32)
-        >>>tolerance_factor_soft = 12.0
-        >>>tolerance_factor_hard = 12.0
-        >>>result = between_residue_bond(pred_atom_positions, pred_atom_mask, residue_index, aatype,
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> import numpy as np
+        >>> from mindsponge.metrics import between_residue_bond
+        >>> np.random.seed(1)
+        >>> pred_atom_positions = Tensor(np.random.random(size=(50,37,3)), ms.float32)
+        >>> pred_atom_mask = Tensor(np.random.randint(2,size=(50,37)), ms.int32)
+        >>> residue_index = Tensor(np.array(range(50)), ms.int32)
+        >>> aatype = Tensor(np.random.randint(20, size=(50,)), ms.int32)
+        >>> tolerance_factor_soft = 12.0
+        >>> tolerance_factor_hard = 12.0
+        >>> result = between_residue_bond(pred_atom_positions, pred_atom_mask, residue_index, aatype,
         >>>                              tolerance_factor_soft, tolerance_factor_hard)
-        >>>for x in result:
+        >>> for x in result:
         >>>    print(x)
         0.52967054
         0.6045412
@@ -207,13 +208,14 @@ def between_residue_clash(
         n_one_hot (Tensor):             one hot encoding for N atoms (using atom14 representation). shape: (14, ) .
         overlap_tolerance_soft (float): soft tolerance factor. in default: 12.0 .
         overlap_tolerance_hard (float): hard tolerance factor. in default: 1.5 .
-        cys_sg_idx (Tensor)：           CYS amino acid index. Default: 5 .
+        cys_sg_idx (Tensor):           CYS amino acid index. Default: 5 .
                                         see more at: `mindsponge.common.residue_constants`.
 
     Returns:
-        - mean_loss (Tensor), average clash loss. shape: () .
-        - per_atom_loss_sum (Tensor), sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
-        - per_atom_clash_mask (Tensor), mask whether atom clashes with any other atom, shape :math:`(N_{res}, 14)` .
+        - **mean_loss** (Tensor) - average clash loss. shape: () .
+        - **per_atom_loss_sum** (Tensor) - sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
+        - **per_atom_clash_mask** (Tensor) - mask whether atom clashes with any other atom,
+          shape :math:`(N_{res}, 14)` .
 
     Note:
         - shape :math:`N_{res}`, number of amino acid.
@@ -222,29 +224,29 @@ def between_residue_clash(
         ``Ascend`` ``GPU``
 
     Examples:
-        >>>import mindspore as ms
-        >>>from mindspore import Tensor
-        >>>import numpy as np
-        >>>from mindsponge.metrics import between_residue_clash
-        >>>atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
-        >>>atom14_atom_exists = Tensor(np.random.randint(2, size=(50, 14)))
-        >>>atom14_atom_radius = Tensor(np.random.random(size=(50, 14)), ms.float32)
-        >>>residue_index = Tensor(np.array(range(50)), ms.int32)
-        >>>c_one_hot = Tensor(np.array([0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
-        >>>n_one_hot = Tensor(np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
-        >>>overlap_tolerance_soft = 12.0
-        >>>overlap_tolerance_hard = 1.5
-        >>>cys_sg_idx = Tensor(5, ms.int32)
-        >>>mean_loss, per_atom_loss_sum, per_atom_clash_mask = between_residue_clash(atom14_pred_positions,
-        ...                                                                          atom14_atom_exists,
-        ...                                                                          atom14_atom_radius,
-        ...                                                                          residue_index,
-        ...                                                                          c_one_hot,
-        ...                                                                          n_one_hot,
-        ...                                                                          overlap_tolerance_soft,
-        ...                                                                          overlap_tolerance_hard,
-        ...                                                                          cys_sg_idx)
-        >>>print(mean_loss.shape, per_atom_loss_sum.shape, per_atom_clash_mask.shape)
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> import numpy as np
+        >>> from mindsponge.metrics import between_residue_clash
+        >>> atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>> atom14_atom_exists = Tensor(np.random.randint(2, size=(50, 14)))
+        >>> atom14_atom_radius = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>> residue_index = Tensor(np.array(range(50)), ms.int32)
+        >>> c_one_hot = Tensor(np.array([0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
+        >>> n_one_hot = Tensor(np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
+        >>> overlap_tolerance_soft = 12.0
+        >>> overlap_tolerance_hard = 1.5
+        >>> cys_sg_idx = Tensor(5, ms.int32)
+        >>> mean_loss, per_atom_loss_sum, per_atom_clash_mask = between_residue_clash(atom14_pred_positions,
+        ...                                                                           atom14_atom_exists,
+        ...                                                                           atom14_atom_radius,
+        ...                                                                           residue_index,
+        ...                                                                           c_one_hot,
+        ...                                                                           n_one_hot,
+        ...                                                                           overlap_tolerance_soft,
+        ...                                                                           overlap_tolerance_hard,
+        ...                                                                           cys_sg_idx)
+        >>> print(mean_loss.shape, per_atom_loss_sum.shape, per_atom_clash_mask.shape)
         () (50,14) (50,14)
 
     """
@@ -292,12 +294,12 @@ def within_residue_violations(
                                            shape :math:`(N_{res}, 14)` .
         atom14_dists_lower_bound (Tensor): lower bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
         atom14_dists_upper_bound (Tensor): upper bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
-        tighten_bounds_for_loss (Tensor):  Extra factor to tighten loss. Default: 0.0.
+        tighten_bounds_for_loss (float):  Extra factor to tighten loss. Default: 0.0.
         dists_mask_i (Tensor):             initial distants mask, shape: (14, 14) .
 
     Returns:
-        - per_atom_loss_sum (Tensor), sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
-        - per_atom_violations (Tensor), violation per atom, shape :math:`(N_{res}, 14)` .
+        - **per_atom_loss_sum** (Tensor) - sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
+        - **per_atom_violations** (Tensor) - violation per atom, shape :math:`(N_{res}, 14)` .
 
     Note:
         - shape :math:`N_{res}`, number of amino acid.
@@ -306,23 +308,23 @@ def within_residue_violations(
         ``Ascend`` ``GPU``
 
     Examples:
-        >>>import mindspore as ms
-        >>>from mindspore import Tensor
-        >>>import numpy as np
-        >>>from mindsponge.metrics import within_residue_violations
-        >>>atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
-        >>>atom14_atom_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
-        >>>atom14_dists_lower_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
-        >>>atom14_dists_upper_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
-        >>>tighten_bounds_for_loss = 0.0
-        >>>dists_mask_i = Tensor(np.eye(14, 14), ms.int32)
-        >>>per_atom_loss_sum, per_atom_violations = within_residue_violations(atom14_pred_positions,
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> import numpy as np
+        >>> from mindsponge.metrics import within_residue_violations
+        >>> atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>> atom14_atom_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>> atom14_dists_lower_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
+        >>> atom14_dists_upper_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
+        >>> tighten_bounds_for_loss = 0.0
+        >>> dists_mask_i = Tensor(np.eye(14, 14), ms.int32)
+        >>> per_atom_loss_sum, per_atom_violations = within_residue_violations(atom14_pred_positions,
         ...                                                                   atom14_atom_exists,
         ...                                                                   atom14_dists_lower_bound,
         ...                                                                   atom14_dists_upper_bound,
         ...                                                                   tighten_bounds_for_loss,
         ...                                                                   dists_mask_i)
-        >>>print(per_atom_loss_sum.shape, per_atom_violations.shape)
+        >>> print(per_atom_loss_sum.shape, per_atom_violations.shape)
         (50, 14) (50, 14)
 
     """
@@ -505,7 +507,8 @@ def compute_renamed_ground_truth(atom14_gt_positions,
                                  atom14_gt_exists,
                                  atom14_pred_positions,
                                  atom14_alt_gt_exists):
-    """Find optimal renaming of ground truth based on the predicted positions.
+    """
+    Find optimal renaming of ground truth based on the predicted positions.
 
     Jumper et al. (2021) Suppl. Alg. 26 "renameSymmetricGroundTruthAtoms"
 
@@ -524,10 +527,11 @@ def compute_renamed_ground_truth(atom14_gt_positions,
                                            shape :math:`(N_{res}, 14)` .
 
     Returns:
-        - alt_naming_is_better (Tensor): Array with 1.0 where alternative swap is better. shape :math:`(N_{res}, )` .
-        - renamed_atom14_gt_positions (Tensor): Array of optimal ground truth positions after renaming swaps are
+        - **alt_naming_is_better** (Tensor) - Array with 1.0 where alternative swap is better.
+          shape :math:`(N_{res}, )` .
+        - **renamed_atom14_gt_positions** (Tensor) - Array of optimal ground truth positions after renaming swaps are
           performed. shape :math:`(N_{res}, 14, 3)` .
-        - renamed_atom14_gt_exists(Tensor): Mask after renaming swap is performed. shape :math:`(N_{res}, 14)` .
+        - **renamed_atom14_gt_exists** (Tensor) - Mask after renaming swap is performed. shape :math:`(N_{res}, 14)` .
 
     Note:
         - shape :math:`N_{res}`, number of amino acid.
@@ -584,23 +588,23 @@ def frame_aligned_point_error_map(pred_frames,
     this version considers only backbone frames.
 
     Args:
-        - **pred_frames** (list) - The predicted backbone frames which is a 2-dimensional list,
-          the first element of pred_frames is a list of 9 tensors which are the 9 components of
-          rotation matrix; the second element of pred_frames is a list of 3 tensors are the 3
-          component of translation matrix. All tensors are of shape :math:`(N_{recycle}, N_{res})`.
-          with :math:`N_{recycle}` the recycle number of FoldIteration in Structure module, :math:`N_{res}` the
-          number of residues in protein.
-        - **target_frames** (list) - The ground truth backbone frames which is also a 2-dimensional
-          list, the same as pred_frames except that the shape of tensors is :math:`(N_{res},)`.
-        - **frames_mask** (Tensor) - The binary mask for frames of shape  :math:`(N_{res},)`.
-        - **pred_positions** (list) -  The predicted Ca atom positions which is a list of 3
-          tensors of shape :math:`(N_{recycle}, N_{res},)`.
-        - **target_positions** (list) -  The ground truth Ca atom positions which is a list
-          of 3 tensors of shape :math:`(N_{res},)`.
-        - **positions_mask** (Tensor) - The binary mask for Ca atom positions of shape :math:`(N_{res},)`.
-        - **length_scale** (float) - The unit distance which is used to scale distances.
-        - **l1_clamp_distance** (float) - Distance cutoff on error beyond which gradients will
-          be zero.
+        pred_frames (list): The predicted backbone frames which is a 2-dimensional list,
+            the first element of pred_frames is a list of 9 tensors which are the 9 components of
+            rotation matrix; the second element of pred_frames is a list of 3 tensors are the 3
+            component of translation matrix. All tensors are of shape :math:`(N_{recycle}, N_{res})`.
+            with :math:`N_{recycle}` the recycle number of FoldIteration in Structure module, :math:`N_{res}` the
+            number of residues in protein.
+        target_frames (list): The ground truth backbone frames which is also a 2-dimensional
+            list, the same as pred_frames except that the shape of tensors is :math:`(N_{res},)`.
+        frames_mask (Tensor): The binary mask for frames of shape  :math:`(N_{res},)`.
+        pred_positions (list):  The predicted Ca atom positions which is a list of 3
+            tensors of shape :math:`(N_{recycle}, N_{res},)`.
+        target_positions (list):  The ground truth Ca atom positions which is a list
+            of 3 tensors of shape :math:`(N_{res},)`.
+        positions_mask (Tensor): The binary mask for Ca atom positions of shape :math:`(N_{res},)`.
+        length_scale (float): The unit distance which is used to scale distances.
+        l1_clamp_distance (float): Distance cutoff on error beyond which gradients will
+            be zero.
 
     Returns:
         - **error_clamp** (Tensor) - Backbone FAPE loss clamped with shape :math:`(N_{recycle},)`.
@@ -714,25 +718,26 @@ def frame_aligned_point_error_map(pred_frames,
 
 def backbone(traj, backbone_affine_tensor, backbone_affine_mask, fape_clamp_distance, fape_loss_unit_distance,
              use_clamped_fape):
-    r"""Backbone FAPE Loss using `frame_aligned_point_error_map` function.
+    r"""
+    Backbone FAPE Loss using `frame_aligned_point_error_map` function.
     `Jumper et al. (2021) Suppl. Alg. 20 "StructureModule" line 17
     <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/
     MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 
     Args:
-        - **traj** (Tensor) - The series of backbone frames(trajectory) generated by Structure
-          module, the shape is :math:`(N_{recycle}, N_{res}, 7)` with :math:`(N_{recycle},)` the
-          recycle number of recycle in Structure module, :math:`(N_{res},)` the number of residues
-          in protein, for the last dimension, the first 4 elements are the affine tensor which
-          contains the rotation information, the last 3 elements are the translations in space.
-        - **backbone_affine_tensor** (Tensor) - The ground truth backbone frames of shape :math:`(N_{res}, 7)`.
-        - **backbone_affine_mask** (Tensor) - The binary mask for backbone frames of shape :math:`(N_{res},)`.
-        - **fape_clamp_distance** (float) -  Distance cutoff on error beyond which gradients will
-          be zero.
-        - **fape_loss_unit_distance** (float) - The unit distance of backbone FAPE loss, used to scale
-          distances.
-        - **use_clamped_fape** (float) - The indicator that if backbone FAPE loss is clamped,
-          0 or 1, 1 means clamping.
+        traj (Tensor): The series of backbone frames(trajectory) generated by Structure
+            module, the shape is :math:`(N_{recycle}, N_{res}, 7)` with :math:`(N_{recycle},)` the
+            recycle number of recycle in Structure module, :math:`(N_{res},)` the number of residues
+            in protein, for the last dimension, the first 4 elements are the affine tensor which
+            contains the rotation information, the last 3 elements are the translations in space.
+        backbone_affine_tensor (Tensor): The ground truth backbone frames of shape :math:`(N_{res}, 7)`.
+        backbone_affine_mask (Tensor): The binary mask for backbone frames of shape :math:`(N_{res},)`.
+        fape_clamp_distance (float):  Distance cutoff on error beyond which gradients will
+            be zero.
+        fape_loss_unit_distance (float): The unit distance of backbone FAPE loss, used to scale
+            distances.
+        use_clamped_fape (float): The indicator that if backbone FAPE loss is clamped,
+            0 or 1, 1 means clamping.
 
     Returns:
         - **fape** (Tensor) - Backbone FAPE loss (clamped if use_clamped_fape is 1) of last recycle
@@ -802,7 +807,8 @@ def frame_aligned_point_error(pred_frames,
                               positions_mask,
                               length_scale,
                               l1_clamp_distance):
-    r"""Measure point error under different alignments which computes error between two
+    r"""
+    Measure point error under different alignments which computes error between two
     structures with B points under A alignments derived from the given pairs of frames.
     `Jumper et al. (2021) Suppl. Alg. 28 "computeFAPE"
     <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/
@@ -815,21 +821,22 @@ def frame_aligned_point_error(pred_frames,
     Then compute the L2 error of all atoms positions in all local frames.
     :math:`\sum_{i }^{N_{frames}}\sum_{j}^{N_{atoms}}(\parallel \vec{x_{j\_pred}^{i}} -
     \vec{x_{j\_gt}^{i}} \parallel )`
+
     Args:
-        - **pred_frames** (Tensor) -The predicted frames of shape :math:`(12, N_{frames})` with
-          :math:`N_{frames}` the number of pairs of frames. For the first dimension, the first
-          9 elements are the 9 components of rotation matrix; the last 3 elements are
-          the 3 component of translation matrix.
-        - **target_frames** (Tensor) - The ground truth frames of same shape as pred_frames.
-        - **frames_mask** (Tensor) - The binary mask for frames of shape :math:`(N_{frames},)`.
-        - **pred_positions** (Tensor) -  The predicted atom positions tensor of shape
-          :math:`(3, N_{atoms})` with :math:`N_{atoms}` the number of atoms.
-        - **target_positions** (Tensor) -  The ground truth atom positions of same shape as
-          pred_positions.
-        - **positions_mask** (Tensor) - The binary mask for atom positions of shape :math:`(N_{atoms},)`.
-        - **length_scale** (float) - The unit distance which is used to scale distances.
-        - **l1_clamp_distance** (float) -  Distance cutoff on error beyond which gradients will
-          be zero.
+        pred_frames (Tensor): The predicted frames of shape :math:`(12, N_{frames})` with
+            :math:`N_{frames}` the number of pairs of frames. For the first dimension, the first
+            9 elements are the 9 components of rotation matrix; the last 3 elements are
+            the 3 component of translation matrix.
+        target_frames (Tensor): The ground truth frames of same shape as pred_frames.
+        frames_mask (Tensor): The binary mask for frames of shape :math:`(N_{frames},)`.
+        pred_positions (Tensor):  The predicted atom positions tensor of shape
+            :math:`(3, N_{atoms})` with :math:`N_{atoms}` the number of atoms.
+        target_positions (Tensor): The ground truth atom positions of same shape as
+            pred_positions.
+        positions_mask (Tensor): The binary mask for atom positions of shape :math:`(N_{atoms},)`.
+        length_scale (float): The unit distance which is used to scale distances.
+        l1_clamp_distance (float): Distance cutoff on error beyond which gradients will
+            be zero.
 
     Returns:
         - **error_clamp** (Tensor) - Backbone FAPE loss clamped with shape :math:`(N_{recycle},)`.
@@ -927,39 +934,39 @@ def frame_aligned_point_error(pred_frames,
 def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_frames, rigidgroups_gt_exists,
               renamed_atom14_gt_positions, renamed_atom14_gt_exists, sidechain_atom_clamp_distance,
               sidechain_length_scale, pred_frames, pred_positions):
-    r"""sidechain FAPE Loss which take all local frames (side-chain, backbone) into consideration.
+    r"""
+    sidechain FAPE Loss which take all local frames (side-chain, backbone) into consideration.
     `Jumper et al. (2021) Suppl. Alg. 20 "StructureModule" line 17
     <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/
     MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 
-
     Args:
-        - **alt_naming_is_better** (Tensor) - Tensor of shape :math:`(N_{res},)`, with value 1.0 where alternative
-          swap is better.
-        - **rigidgroups_gt_frames** (Tensor) - The ground truth locals frames of shape :math:`(N_{res}, 8, 12)`,
-          with :math:`(N_{res},)` the number of residues in protein. For each residue, there are 1 backbone
-          frame and 7 side-chain frames, 8 frames in total. For the last dimension, the first 9 elements
-          are the 9 components of rotation matrix; the last 3 elements are the 3 component of
-          translation matrix.
-        - **rigidgroups_alt_gt_frames** (Tensor) - The alternative ground truth locals frames due to
-          symmetry of amino acids. This tensor has the same shape as rigidgroups_gt_frames
-        - **rigidgroups_gt_exists** (Tensor) - The binary mask for gt frames of shape :math:`(N_{res}, 8)`.
-        - **renamed_atom14_gt_positions** (Tensor) - The mask for ground truth positions after renaming
-          swaps are performed(swaps are needed for some amino acids due to symmetry
-          `compute_renamed_ground_truth`), its shape is :math:(N_{res}, 14).It takes the 14-types
-          atoms encoding.
-        - **renamed_atom14_gt_exists** (Tensor) - The mask for ground truth positions after renaming
-          swap is performed after renaming swaps are performed, its shape is :math:`(N_{res}, 14)`.
-        - **sidechain_atom_clamp_distance** (float) - Distance cutoff on error beyond which gradients
-          will be zero.
-        - **sidechain_length_scale** (float) - The unit distance of sidechain FAPE loss, used to scale
-          distances.
-        - **pred_frames** (Tensor) - The predicted locals frames of shape  :math:`(12, N_{recycle}, N_{res}, 8)`.
-          :math:`(N_{recycle},)` is the recycle number of FoldIteration in Structure module. Only the frames of
-          last recycle is used in side-chain FAPE loss. 12 has the same meaning as the third dimension of
-          rigidgroups_gt_frames.
-        - **pred_positions** (Tensor) - The predicted positions of shape :math:`(3, N_{recycle}, N_{res}, 14)`.
-          Only the positions of last recycle is used in side-chain FAPE loss, encoded atom-14 encoding.
+        alt_naming_is_better (Tensor): Tensor of shape :math:`(N_{res},)`, with value 1.0 where alternative
+            swap is better.
+        rigidgroups_gt_frames (Tensor): The ground truth locals frames of shape :math:`(N_{res}, 8, 12)`,
+            with :math:`(N_{res},)` the number of residues in protein. For each residue, there are 1 backbone
+            frame and 7 side-chain frames, 8 frames in total. For the last dimension, the first 9 elements
+            are the 9 components of rotation matrix; the last 3 elements are the 3 component of
+            translation matrix.
+        rigidgroups_alt_gt_frames (Tensor): The alternative ground truth locals frames due to
+            symmetry of amino acids. This tensor has the same shape as rigidgroups_gt_frames
+        rigidgroups_gt_exists (Tensor): The binary mask for gt frames of shape :math:`(N_{res}, 8)`.
+        renamed_atom14_gt_positions (Tensor): The mask for ground truth positions after renaming
+            swaps are performed(swaps are needed for some amino acids due to symmetry
+            `compute_renamed_ground_truth`), its shape is :math:(N_{res}, 14).It takes the 14-types
+            atoms encoding.
+        renamed_atom14_gt_exists (Tensor): The mask for ground truth positions after renaming
+            swap is performed after renaming swaps are performed, its shape is :math:`(N_{res}, 14)`.
+        sidechain_atom_clamp_distance (float): Distance cutoff on error beyond which gradients
+            will be zero.
+        sidechain_length_scale (float): The unit distance of sidechain FAPE loss, used to scale
+            distances.
+        pred_frames (Tensor): The predicted locals frames of shape  :math:`(12, N_{recycle}, N_{res}, 8)`.
+            :math:`(N_{recycle},)` is the recycle number of FoldIteration in Structure module. Only the frames of
+            last recycle is used in side-chain FAPE loss. 12 has the same meaning as the third dimension of
+            rigidgroups_gt_frames.
+        pred_positions (Tensor): The predicted positions of shape :math:`(3, N_{recycle}, N_{res}, 14)`.
+            Only the positions of last recycle is used in side-chain FAPE loss, encoded atom-14 encoding.
 
     Returns:
         - **fape** (Tensor) - Clamped side-chian FAPE loss with shape ().
@@ -1028,24 +1035,24 @@ def supervised_chi(sequence_mask, aatype, sin_cos_true_chi, torsion_angle_mask, 
     MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 
     Args:
-        - **sequence_mask** (Tensor) - The mask tensor for sequence of shape :math:`(N_{res},)`
-          with :math:`N_{res}` the number of residues in protein.
-        - **aatype** (Tensor) - The amino acid type tensor of shape :math:`(N_{res},)`.
-        - **sin_cos_true_chi** (Tensor) - Tensor of shape :math:`(N_{res}, 14)` which is the sine
-          and cosine value of torsion angles. There are 7 torsion angles per residue,
-          3 for backbone and 4 for sidechain.
-        - **torsion_angle_mask** (Tensor) - The binary mask for sidechain torsion angles of shape
-          :math:`(N_{res}, 4)`
-        - **sin_cos_pred_chi** (Tensor) - The predicted sine and cosine value (normalized)
-          of torsion angles of shape :math:`(N_{res}, 4, 2)`.
-        - **sin_cos_unnormalized_pred** (Tensor) - The predicted sine and cosine value (unnormalized)
-          of torsion angles of shape :math:`(N_{recycle}, N_{res}, 7, 2)`  with :math:`N_{recycle}`
-          is the recycle number of FoldIteration in Structure module.
-        - **chi_weight** (float) - The weight of chi angle difference loss term, constant.
-        - **angle_norm_weight** (float) - The weight of angle norm loss term, constant.
-        - **chi_pi_periodic** (float) - Chi angles that are pi periodic: they can be rotated
-          by a multiple of pi without affecting the structure. Constants of residues of shape
-          :math:`(21, 4)`, 20 types of amino acids + unknown.
+        sequence_mask (Tensor): The mask tensor for sequence of shape :math:`(N_{res},)`
+            with :math:`N_{res}` the number of residues in protein.
+        aatype (Tensor): The amino acid type tensor of shape :math:`(N_{res},)`.
+        sin_cos_true_chi (Tensor): Tensor of shape :math:`(N_{res}, 14)` which is the sine
+            and cosine value of torsion angles. There are 7 torsion angles per residue,
+            3 for backbone and 4 for sidechain.
+        torsion_angle_mask (Tensor): The binary mask for sidechain torsion angles of shape
+            :math:`(N_{res}, 4)`
+        sin_cos_pred_chi (Tensor): The predicted sine and cosine value (normalized)
+            of torsion angles of shape :math:`(N_{res}, 4, 2)`.
+        sin_cos_unnormalized_pred (Tensor): The predicted sine and cosine value (unnormalized)
+            of torsion angles of shape :math:`(N_{recycle}, N_{res}, 7, 2)`  with :math:`N_{recycle}`
+            is the recycle number of FoldIteration in Structure module.
+        chi_weight (float): The weight of chi angle difference loss term, constant.
+        angle_norm_weight (float): The weight of angle norm loss term, constant.
+        chi_pi_periodic (float): Chi angles that are pi periodic: they can be rotated
+            by a multiple of pi without affecting the structure. Constants of residues of shape
+            :math:`(21, 4)`, 20 types of amino acids + unknown.
 
     Returns:
         - **loss** (Tensor) - Supervised chi angle loss with shape ().
@@ -1107,26 +1114,27 @@ def supervised_chi(sequence_mask, aatype, sin_cos_true_chi, torsion_angle_mask, 
 
 
 def local_distance_difference_test(predicted_points, true_points, true_points_mask, cutoff=15, per_residue=False):
-    r"""Compute true and predicted distance matrices for  :math:`C\alpha`.
+    r"""
+    Compute true and predicted distance matrices for  :math:`C\alpha`.
     First calculate the distance matrix of true and predicted :math:`C\alpha` atoms
-     :math:`D = (((x[None,:] - x[:,None])^2).sum(-1))^{0.5}`
+    :math:`D = (((x[None,:] - x[:,None])^2).sum(-1))^{0.5}`
     then compute the rate that difference is smaller than fixed value:
-     :math:`lddt = (rate(abs(D_{true} - D_{pred}) < 0.5) + rate(abs(D_{true} - D_{pred}) < 1.0)
-                    + rate(abs(D_{true} - D_{pred}) < 2.0) + rate(abs(D_{true} - D_{pred}) < 4.0))/4`
+    :math:`lddt = (rate(abs(D_{true} - D_{pred}) < 0.5) + rate(abs(D_{true} - D_{pred}) < 1.0)
+    + rate(abs(D_{true} - D_{pred}) < 2.0) + rate(abs(D_{true} - D_{pred}) < 4.0))/4`
     `Jumper et al. (2021) Suppl. Alg. 29 "predictPerResidueLDDT_Ca"
     <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/
     MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 
     Args:
-        - **predicted_points** (Tensor) - The prediction Ca atoms position tensor of shape
-          :math:`(1, N_{res}, 3)` with :math:`N_{res}` the number of residues in protein.
-        - **true_points** (Tensor) - The ground truth Ca atoms position tensor of shape
-          :math:`(1, N_{res}, 3)`
-        - **true_points_mask** (Tensor) - The binary mask for predicted_points of shape
-          :math:`(1, N_{res}, 1)`
-        - **cutoff** (float) - The cutoff value for lddt to stop gradient, Default: 15.
-        - **per_residue** (Tensor) - The indicator if local distance difference is averaged,
-          set True to return local distance difference per residue. Default: False.
+        predicted_points (Tensor): The prediction Ca atoms position tensor of shape
+            :math:`(1, N_{res}, 3)` with :math:`N_{res}` the number of residues in protein.
+        true_points (Tensor): The ground truth Ca atoms position tensor of shape
+            :math:`(1, N_{res}, 3)`
+        true_points_mask (Tensor): The binary mask for predicted_points of shape
+            :math:`(1, N_{res}, 1)`
+        cutoff (float): The cutoff value for lddt to stop gradient, Default: 15.
+        per_residue (Tensor): The indicator if local distance difference is averaged,
+            set True to return local distance difference per residue. Default: False.
 
     Returns:
         - **score** (Tensor) - Local distance difference score, the shape is :math:`(1,)`

@@ -40,6 +40,7 @@ class BerendsenBarostat(Barostat):
         Molecular Dynamics with Coupling to an External Bath [J].
         The Journal of Chemical Physics, 1984, 81(8): 3684.
         <https://aip.scitation.org/doi/abs/10.1063/1.448118>`_.
+
     Args:
         system (Molecule):          Simulation system.
         pressure (float):           Reference pressure P_ref (bar) for pressure coupling.
@@ -48,7 +49,7 @@ class BerendsenBarostat(Barostat):
                                     Default: False
         control_step (int):         Step interval for controller execution. Default: 1
         compressibility (float):    Isothermal compressibility \beta (bar^-1). Default: 4.6e-5
-        time_constant (float)       Time constant \tau_p (ps) for pressure coupling.
+        time_constant (float):       Time constant \tau_p (ps) for pressure coupling.
                                     Default: 1
 
     Returns:

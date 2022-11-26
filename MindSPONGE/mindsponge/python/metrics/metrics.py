@@ -62,11 +62,14 @@ class CV(Metric):
 
 
 class BalancedMSE(nn.Cell):
-    r"""Balanced MSE error
+    r"""
+    Balanced MSE error
     Compute Balanced MSE error between the prediction and the ground truth
-     to solve unbalanced labels in regression task.
+    to solve unbalanced labels in regression task.
+
     Reference:
-    `Ren, Jiawei, et al. 'Balanced MSE for Imbalanced Visual Regression' <https://arxiv.org/abs/2203.16427>`_ .
+        `Ren, Jiawei, et al. 'Balanced MSE for Imbalanced Visual Regression' <https://arxiv.org/abs/2203.16427>`_ .
+
     .. math::
         L =-\log \mathcal{N}\left(\boldsymbol{y} ; \boldsymbol{y}_{\text {pred }},
         \sigma_{\text {noise }}^{2} \mathrm{I}\right)
@@ -285,16 +288,19 @@ class MultiClassFocal(nn.Cell):
 
 
 class BinaryFocal(nn.Cell):
-    r"""Focal error for Binary classifications.
+    r"""
+    Focal error for Binary classifications.
     Compute the binary classes focal error between `prediction` and the ground truth `target`.
+
     Reference:
-    `Lin, Tsung-Yi, et al. 'Focal loss for dense object detection' <https://arxiv.org/abs/1708.02002>`_ .
+        `Lin, Tsung-Yi, et al. 'Focal loss for dense object detection' <https://arxiv.org/abs/1708.02002>`_ .
+
     .. math::
         \mathrm{FL}\left(p_{\mathrm{t}}\right)=-\alpha_{\mathrm{t}}\left(1-p_{\mathrm{t}}\right)^{\gamma}
         \log \left(p_{\mathrm{t}}\right)
 
     Args:
-        alpha (int):            The weight of cross entropy, default: 0.25.
+        alpha (float):            The weight of cross entropy, default: 0.25.
         gamma (float):          The hyperparameters, modulating loss from hard to easy, default: 2.0.
         feed_in (bool):         Whether to covert prediction, default: "False".
         not_focal (bool):       Whether focal loss, default: "False".

@@ -151,7 +151,7 @@ class GetDistance(Cell):
                         periodic boundary condition based on whether the pbc_box is given.
                         Default: None
 
-    Returns:
+    Outputs:
         distance (Tensor), Tensor of shape (B, ...). Data type is float.
 
     Supported Platforms:
@@ -317,7 +317,7 @@ class GetDistanceShift(Cell):
         num_walkers (int):  Number of multiple walkers. Default: 1
         use_pbc (bool):     Whether to use periodic boundary condition. Default: None
 
-    Return:
+    Outputs:
         shift (Tensor), Tensor of shape (B,A,D). Data type is float.
 
     Symbols:
@@ -405,7 +405,7 @@ class GetShiftGrad(Cell):
         dimension (int):    Number of dimension. Default: 3
         use_pbc (bool):     Whether to use periodic boundary condition.
 
-    Return:
+    Outputs:
         shift (Tensor), Tensor of shape (B,A,D). Data type is float.
 
     Symbol:

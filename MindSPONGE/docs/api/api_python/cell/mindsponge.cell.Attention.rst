@@ -1,7 +1,7 @@
 mindsponge.cell.Attention
 =========================
 
-.. py:class:: mindsponge.cell.Attention(num_head, hidden_size, gating, q_data_dim, m_data_dim, output_dim, batch_size)
+.. py:class:: mindsponge.cell.Attention(num_head, hidden_size, gating, q_data_dim, m_data_dim, output_dim, batch_size=None)
 
     多头注意力机制，具体实现请参考 `Attention is all you need <https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf>`_ 。Attention公式如下，query向量长度与输入一致，key向量长度为key长度和目标长度。
 

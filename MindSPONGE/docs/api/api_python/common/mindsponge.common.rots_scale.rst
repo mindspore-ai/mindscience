@@ -1,5 +1,5 @@
 mindsponge.common.rots_scale
-=========================
+=============================
 
 .. py:function:: mindsponge.common.rots_scale(rot, scale)
 

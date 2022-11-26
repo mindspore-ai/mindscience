@@ -3,7 +3,7 @@ mindsponge.metrics.backbone
 
 .. py:function:: mindsponge.metrics.backbone(traj, backbone_affine_tensor, backbone_affine_mask, fape_clamp_distance, fape_loss_unit_distance, use_clamped_fape)
 
-    调用 `frame_aligned_point_error_map`实现骨架全原子损失函数计算
+    调用 `frame_aligned_point_error_map` 实现骨架全原子损失函数计算
     `Jumper et al. (2021) Suppl. Alg. 20 "StructureModule" line 17
     <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 
@@ -15,7 +15,7 @@ mindsponge.metrics.backbone
         - **fape_clamp_distance** (float) - 距离误差的截断点，超过该距离时梯度不再考虑，常量。
         - **use_clamped_fape** (float) - 是否截断截断距离误差，0或者1，0代表不截断。
 
-    输出：
+    返回：
         - **fape** (list) - Tensor。计算所得Structure模块最后一次迭代输出的结构的全原子点位置误差，如果use_clamped_fape为1，则计算过程中过大的误差会被截断。shape为 :math:`()` 。
         - **loss** (list) - Tensor。计算所得Structure模块所有迭代输出的结构的全原子点位置误差的均值，如果use_clamped_fape为1，则计算过程中过大的误差会被截断。shape为 :math:`()` 。
         - **no_clamp** (list) - Tensor。。计算所得Structure模块最后一次迭代输出的结构的全原子点位置误差，没有截断。shape为 :math:`()` 。
