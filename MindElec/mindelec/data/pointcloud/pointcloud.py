@@ -167,9 +167,9 @@ class MaterialConfig:
         physical_field (dict): Standard physical quantities fields that Maxwell equations concern about,
             material solving stage will deal with these standard physical fields. The key of physical_field dict
             is physical quantity name, the value is default value for this physical quantity.
-        customize_physical_field (dict, option): User can specify physical quantities fields according to their
+        customize_physical_field (dict, optional): User can specify physical quantities fields according to their
             demand, similarly, material solving stage will take care of them. Default: None.
-        remove_vacuum (bool, option): Remove sub-solid whose material property is vacuum. Default: True.
+        remove_vacuum (bool, optional): Remove sub-solid whose material property is vacuum. Default: True.
 
     Raises:
         TypeError: if `json_file` is not a str.

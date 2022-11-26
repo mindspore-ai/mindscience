@@ -18,7 +18,7 @@ mindelec.geometry.Geometry
         设置几何实例名称。
 
         参数：
-            - **name(str)** - 几何实例的名称。
+            - **name** (str) - 几何实例的名称。
 
         异常：
             - **TypeError** - 如果 `name` 不是字符串。

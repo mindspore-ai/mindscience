@@ -65,8 +65,8 @@ class GeometryWithTime(Geometry):
     Definition of geometry with time.
 
     Args:
-        geometry (Geometry): geometry
-        timedomain (TimeDomain): time domain
+        geometry (Geometry): geometry.
+        timedomain (TimeDomain): time domain.
         sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Raises:
@@ -247,7 +247,7 @@ class GeometryWithTime(Geometry):
 
     def sampling(self, geom_type="domain"):
         """
-        sampling points
+        sampling points.
 
         Args:
             geom_type (str): geometry type: can be 'domain' or 'BC' or 'IC'. Default: 'domain'.

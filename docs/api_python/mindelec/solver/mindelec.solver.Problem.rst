@@ -22,7 +22,7 @@ mindelec.solver.Problem
 
         函数约束的普遍情况，抽象方法。
         如果相应的约束类型为"Label"或"Function"，则必须重载此函数。
-        它是约束类型的更普遍情况，可以表示为`f(inputs) = 0`，inputs为通用函数的数据点。
+        它是约束类型的更普遍情况，可以表示为 `f(inputs) = 0` ，inputs为通用函数的数据点。
         将返回残差f。
 
         参数：
@@ -33,7 +33,7 @@ mindelec.solver.Problem
 
         控制方程，抽象方法。
         如果相应的约束类型为"Equation"，则必须重载此函数。
-        如果方程为`f(inputs) = 0`，则将返回残差f，inputs为控制区间的数据点。
+        如果方程为 `f(inputs) = 0` ，则将返回残差f，inputs为控制区间的数据点。
 
         参数：
             - **output** (tuple) - 代理模型输出，如电场、磁场等。
@@ -43,7 +43,7 @@ mindelec.solver.Problem
 
         初始条件，抽象方法。
         如果相应的约束类型为"IC"，则必须重载此函数。
-        如果初始条件可以表示为`f(ic_points) = 0`，则将返回残差f，ic_points为初始时刻数据点。
+        如果初始条件可以表示为 `f(ic_points) = 0` ，则将返回残差f，ic_points为初始时刻数据点。
 
         参数：
             - **output** (tuple) - 代理模型输出，如电场、磁场等。
