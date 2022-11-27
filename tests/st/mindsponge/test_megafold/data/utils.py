@@ -21,10 +21,12 @@ import tempfile
 import shutil
 import pickle
 import os
-
+import numpy as np
 from absl import logging
 
 from .parsers import parse_fasta
+
+truncated_normal_stddev_factor = np.asarray(.87962566103423978, dtype=np.float32)
 
 
 @contextlib.contextmanager

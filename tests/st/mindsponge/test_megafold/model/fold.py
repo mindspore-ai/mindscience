@@ -125,8 +125,8 @@ class MegaFold(nn.Cell):
                                          weight_init=lecun_init(self.cfg.common.pair_in_dim))
         self.extra_msa_one_hot = nn.OneHot(depth=23, axis=-1)
         self.template_aatype_one_hot = nn.OneHot(depth=22, axis=-1)
-        self.prev_msa_first_row_norm = nn.LayerNorm([256,], epsilon=1e-5)
-        self.prev_pair_norm = nn.LayerNorm([128,], epsilon=1e-5)
+        self.prev_msa_first_row_norm = nn.LayerNorm([256], epsilon=1e-5)
+        self.prev_pair_norm = nn.LayerNorm([128], epsilon=1e-5)
         self.one_hot = nn.OneHot(depth=self.cfg.max_relative_feature * 2 + 1, axis=-1)
         self.extra_msa_activations = nn.Dense(25, self.cfg.extra_msa_channel, weight_init=lecun_init(25))
         self.template_embedding = TemplateEmbedding(self.cfg, mixed_precision)
@@ -149,8 +149,6 @@ class MegaFold(nn.Cell):
                                         pair_act_dim=128,
                                         is_extra_msa=True,
                                         batch_size=None)
-            if self.is_training:
-                extra_msa_block.recompute()
             extra_msa_stack.append(extra_msa_block)
         self.extra_msa_stack = extra_msa_stack
         if self.is_training:
@@ -161,10 +159,8 @@ class MegaFold(nn.Cell):
                                       pair_act_dim=128,
                                       is_extra_msa=False,
                                       batch_size=None)
-                msa_block.recompute()
                 msa_stack.append(msa_block)
             self.msa_stack = msa_stack
-
             self.module_distogram = DistogramHead(self.cfg.heads.distogram,
                                                   self.cfg.pair_channel)
             self.module_exp_resolved = ExperimentallyResolvedHead(self.cfg.seq_channel)

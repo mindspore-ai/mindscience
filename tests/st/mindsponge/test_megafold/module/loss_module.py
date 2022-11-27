@@ -25,7 +25,7 @@ from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 from mindsponge.common import residue_constants
 from mindsponge.common.geometry import invert_point, quaternion_from_tensor, vecs_expend_dims
-from mindsponge.metrics.structure_violations import get_structural_violations, compute_renamed_ground_truth, backbone,\
+from mindsponge.metrics.structure_violations import get_structural_violations, compute_renamed_ground_truth, backbone, \
     sidechain, supervised_chi, local_distance_difference_test
 from mindsponge.metrics import BalancedMSE, BinaryFocal, MultiClassFocal
 
@@ -67,17 +67,17 @@ class LossNet(nn.Cell):
 
         self.masked_one_hot = nn.OneHot(depth=23, axis=-1)
         self.masked_weight = config.heads.masked_msa.weight
-        self.sidechain_weight_frac = config.heads.structure_module.sidechain.weight_frac
-        self.angle_norm_weight = config.heads.structure_module.angle_norm_weight
-        self.chi_weight = config.heads.structure_module.chi_weight
+        self.sidechain_weight_frac = config.structure_module.sidechain.weight_frac
+        self.angle_norm_weight = config.structure_module.angle_norm_weight
+        self.chi_weight = config.structure_module.chi_weight
         self.chi_pi_periodic = mnp.asarray(residue_constants.chi_pi_periodic, ms.float32)
 
-        self.violation_tolerance_factor = config.heads.structure_module.violation_tolerance_factor
-        self.clash_overlap_tolerance = config.heads.structure_module.clash_overlap_tolerance
-        self.sidechain_atom_clamp_distance = config.heads.structure_module.sidechain.atom_clamp_distance
-        self.sidechain_length_scale = config.heads.structure_module.sidechain.length_scale
-        self.fape_clamp_distance = config.heads.structure_module.fape.clamp_distance
-        self.fape_loss_unit_distance = config.heads.structure_module.fape.loss_unit_distance
+        self.violation_tolerance_factor = config.structure_module.violation_tolerance_factor
+        self.clash_overlap_tolerance = config.structure_module.clash_overlap_tolerance
+        self.sidechain_atom_clamp_distance = config.structure_module.sidechain.atom_clamp_distance
+        self.sidechain_length_scale = config.structure_module.sidechain.length_scale
+        self.fape_clamp_distance = config.structure_module.fape.clamp_distance
+        self.fape_loss_unit_distance = config.structure_module.fape.loss_unit_distance
         self.predicted_lddt_num_bins = config.heads.predicted_lddt.num_bins
         self.c_one_hot = nn.OneHot(depth=14)
         self.n_one_hot = nn.OneHot(depth=14)
@@ -86,8 +86,12 @@ class LossNet(nn.Cell):
         self.dists_mask_i = mnp.eye(14, 14)
         self.cys_sg_idx = Tensor(5, ms.int32)
         self.train_fold = train_fold
-        self.softmax_cross_entropy = nn.SoftmaxCrossEntropyWithLogits(sparse=False)
         self.sigmoid_cross_entropy = P.SigmoidCrossEntropyWithLogits()
+
+    def softmax_cross_entropy(self, logits, labels):
+        """Computes softmax cross entropy given logits and one-hot class labels."""
+        loss = -mnp.sum(labels * nn.LogSoftmax()(logits), axis=-1)
+        return mnp.asarray(loss)
 
     def distogram_loss(self, logits, bin_edges, pseudo_beta, pseudo_beta_mask):
         """Log loss of a distogram."""
@@ -167,10 +171,10 @@ class LossNet(nn.Cell):
         _, fape_loss, no_clamp = backbone(traj, backbone_affine_tensor, backbone_affine_mask,
                                           self.fape_clamp_distance, self.fape_loss_unit_distance, use_clamped_fape)
 
-        _, loss_sidechain = sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_frames,
-                                      rigidgroups_gt_exists, renamed_atom14_gt_positions, renamed_atom14_gt_exists,
-                                      self.sidechain_atom_clamp_distance, self.sidechain_length_scale, pred_frames,
-                                      pred_positions)
+        loss_sidechain = sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_frames,
+                                   rigidgroups_gt_exists, renamed_atom14_gt_positions, renamed_atom14_gt_exists,
+                                   self.sidechain_atom_clamp_distance, self.sidechain_length_scale, pred_frames,
+                                   pred_positions)
         angle_norm_loss = supervised_chi(seq_mask, aatype, sin_cos_true_chi, torsion_angle_mask,
                                          angles_sin_cos, um_angles_sin_cos, self.chi_weight,
                                          self.angle_norm_weight, self.chi_pi_periodic)
@@ -391,7 +395,7 @@ class LossNetAssessment(nn.Cell):
                                                 20.) - self.beyond_cutoff_clip
 
         regression_error = regression_error_clip_within * within_cutoff_mask + regression_error_clip_beyond \
-                            * beyond_cutoff_mask
+                           * beyond_cutoff_mask
 
         square_mask_off_diagonal = square_mask * (1 - mnp.eye(square_mask.shape[1]))
 
@@ -513,11 +517,11 @@ class RegressionLosses(nn.Cell):
         self.mae = nn.L1Loss()
         self.bmse = BalancedMSE(first_break, last_break, num_bins, beta, reducer_flag)
 
-    def construct(self, prediction, target, p_bins=None):
+    def construct(self, prediction, target):
         """construct"""
         target = mnp.clip(target, self.centers[0], self.centers[-1])
 
         mse = self.mse(prediction, target)
         mae = self.mae(prediction, target)
-        bmse = self.bmse(prediction, target, p_bins=p_bins)
+        bmse = self.bmse(prediction, target)
         return [mse, mae, bmse]

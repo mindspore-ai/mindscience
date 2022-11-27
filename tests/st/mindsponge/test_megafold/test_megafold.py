@@ -50,7 +50,7 @@ def fold_infer(crop_size, predict_confidence, mixed_precision=False):
         do_keep_cell_fp32(megafold)
     else:
         megafold.to_float(mstype.float32)
-    load_checkpoint("/home/workspace/mindspore_ckpt/ckpt/megafold.ckpt", megafold)
+    load_checkpoint("/home/workspace/mindspore_ckpt/ckpt/MEGA_Fold_1.ckpt", megafold)
     seq_files = os.listdir("./feature/")
     feature_generator = None
     for seq_file in seq_files:

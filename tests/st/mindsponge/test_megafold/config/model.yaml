@@ -183,6 +183,28 @@ slice:
       triangle_attention_starting_node: 0
       triangle_attention_ending_node: 0
       pair_transition: 0
+  seq_384:
+    template_embedding: 0
+    template_pair_stack:
+      triangle_attention_starting_node: 0
+      triangle_attention_ending_node: 0
+      pair_transition: 0
+    extra_msa_stack:
+      msa_transition: 0
+      msa_row_attention_with_pair_bias: 0
+      msa_column_global_attention: 0
+      outer_product_mean: 0
+      triangle_attention_starting_node: 0
+      triangle_attention_ending_node: 0
+      pair_transition: 0
+    msa_stack:
+      msa_transition: 0
+      msa_row_attention_with_pair_bias: 0
+      msa_column_attention: 0
+      outer_product_mean: 0
+      triangle_attention_starting_node: 0
+      triangle_attention_ending_node: 0
+      pair_transition: 0
   seq_512:
     template_embedding: 0
     template_pair_stack:
@@ -215,14 +237,6 @@ slice:
       msa_transition: 0
       msa_row_attention_with_pair_bias: 128
       msa_column_global_attention: 0
-      outer_product_mean: 0
-      triangle_attention_starting_node: 0
-      triangle_attention_ending_node: 0
-      pair_transition: 0
-    msa_stack:
-      msa_transition: 0
-      msa_row_attention_with_pair_bias: 0
-      msa_column_attention: 0
       outer_product_mean: 0
       triangle_attention_starting_node: 0
       triangle_attention_ending_node: 0
@@ -397,16 +411,3 @@ heads:
     max_resolution: 3.0
     min_resolution: 0.1
     weight: 0.01
-  structure_module:
-    fape:
-      clamp_distance: 10.0
-      loss_unit_distance: 10.0
-    angle_norm_weight: 0.01
-    chi_weight: 0.5
-    clash_overlap_tolerance: 1.5
-    sidechain:
-      atom_clamp_distance: 10.0
-      weight_frac: 0.5
-      length_scale: 10.0
-      structural_violation_loss_weight: 1.0
-    violation_tolerance_factor: 12.0
