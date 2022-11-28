@@ -19,5 +19,5 @@ mindsponge.metrics.supervised_chi
         - **angle_norm_weight** (Tensor) - 角度模量损失函数项的权重。
         - **chi_pi_periodic** (Tensor) - 扭转角的周期性信息，某些氨基酸的某些扭转角具有周期性。氨基酸性质的常量，shape是 :math:`(21, 4)` ，21代表二十种氨基酸加未知氨基酸。
 
-    输出：
-        - **loss** (list) - Tensor。主链与侧链扭转角的误差，shape为 :math:`()` 。
+    返回：
+        - **loss** (Tensor) - Tensor。主链与侧链扭转角的误差，shape为 :math:`()` 。

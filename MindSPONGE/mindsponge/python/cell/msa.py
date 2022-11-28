@@ -35,7 +35,7 @@ class MSARowAttentionWithPairBias(nn.Cell):
         msa_act_dim (int):      The dimension of the msa_act.
         pair_act_dim (int):     The dimension of the pair_act.
         batch_size (int):       The batch size of parameters in MSA row attention, used in while control flow.
-        slice_num (int):        The number of slices to be made to reduce memory. Default: 0
+        slice_num (int):        The number of slices to be made to reduce memory. Default: 0.
 
     Inputs:
         - **msa_act** (Tensor) - Tensor of msa_act with shape :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` .
@@ -49,10 +49,8 @@ class MSARowAttentionWithPairBias(nn.Cell):
           Default: "None".
         - **res_idx** (Tensor) - The residue index used to perform ROPE with shape :math:`(N_{res})`, Default: "None".
 
-
     Outputs:
-        - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
-          with shape :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` .
+        Tensor, the float tensor of the msa_act of the layer with shape :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -161,8 +159,9 @@ class MSAColumnAttention(nn.Cell):
     """
     MSA column-wise gated self attention。
     The column-wise attention lets the elements that belong to the same target residue exchange information。
-    Reference：`Jumper et al. (2021) Suppl. Alg. 8 "MSAColumnAttention"
-    <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
+    Reference: `Jumper et al. (2021) Suppl. Alg. 8 "MSAColumnAttention"
+    <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/
+    41586_2021_3819_MOESM1_ESM.pdf>`_.
 
     Args:
         num_head (int):         The number of the heads.
@@ -179,8 +178,7 @@ class MSAColumnAttention(nn.Cell):
         - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: "None".
 
     Outputs:
-        - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer,
-          shape :math:`[N_{seqs}, N_{res}, C_m]`.
+        Tensor, the float tensor of the msa_act of the layer, shape :math:`[N_{seqs}, N_{res}, C_m]`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -262,8 +260,7 @@ class MSAColumnGlobalAttention(nn.Cell):
         - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: "None".
 
     Outputs:
-        - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the layer
-          with shape :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` .
+        Tensor, the float tensor of the msa_act of the layer with shape :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``

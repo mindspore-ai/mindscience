@@ -13,7 +13,7 @@ mindsponge.metrics.within_residue_violations
         - **tighten_bounds_for_loss** (float) - 原子间距离冲突系数。
         - **dists_mask_i** (Tensor) - 以稠密编码方式编码的原子距离掩码矩阵。shape :math:`(14, 14)` 。
 
-    输出：
+    返回：
         - **per_atom_loss_sum** (Tensor) 每个原子的总距离冲突误差。shape :math:`(N_{res}, 14)` 。
         - **per_atom_violations** (Tensor) 每个原子的冲突误差（键长和键角冲突最大值）。shape :math:`(N_{res}, 14)` 。
 

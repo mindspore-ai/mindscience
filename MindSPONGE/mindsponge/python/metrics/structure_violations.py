@@ -1133,7 +1133,7 @@ def local_distance_difference_test(predicted_points, true_points, true_points_ma
         true_points_mask (Tensor): The binary mask for predicted_points of shape
             :math:`(1, N_{res}, 1)`
         cutoff (float): The cutoff value for lddt to stop gradient, Default: 15.
-        per_residue (Tensor): The indicator if local distance difference is averaged,
+        per_residue (bool): The indicator if local distance difference is averaged,
             set True to return local distance difference per residue. Default: False.
 
     Returns:

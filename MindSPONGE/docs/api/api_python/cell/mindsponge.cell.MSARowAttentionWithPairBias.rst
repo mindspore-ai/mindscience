@@ -1,7 +1,7 @@
 mindsponge.cell.MSARowAttentionWithPairBias
 ===========================================
 
-.. py:class:: mindsponge.cell.MSARowAttentionWithPairBias(num_head, key_dim, gating, msa_act_dim, pair_act_dim, batch_size, slice_num=0)
+.. py:class:: mindsponge.cell.MSARowAttentionWithPairBias(num_head, key_dim, gating, msa_act_dim, pair_act_dim, batch_size=None, slice_num=0)
 
     MSA行注意力层。具体实现参考 `Jumper et al. (2021) Suppl. Alg. 7 'MSARowAttentionWithPairBias' <https://www.nature.com/articles/s41586-021-03819-2>`_ 。来自pair激活值的信息作为MSARowAttention的注意力矩阵的偏置项，这样可以利用pair信息更新msa表示的状态。
 
@@ -11,7 +11,7 @@ mindsponge.cell.MSARowAttentionWithPairBias
         - **gating** (bool) - 判断attention是否经过gating的指示器。
         - **msa_act_dim** (int) - msa_act的维度。
         - **pair_act_dim** (int) - pair_act的维度。
-        - **batch_size** (int) - MSARowAttentionWithPairBias中参数的batch size，控制流场景下使用。
+        - **batch_size** (int) - MSARowAttentionWithPairBias中参数的batch size，控制流场景下使用。默认值：None。
         - **slice_num** (int) - 为了减少内存需要进行切分的数量。默认值：0。
 
     输入：

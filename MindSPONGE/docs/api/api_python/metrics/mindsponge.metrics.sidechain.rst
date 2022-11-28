@@ -19,5 +19,5 @@ mindsponge.metrics.sidechain
         - **pred_frames** (Tensor) - 预测的局部坐标系，shape为 :math:`(12, N_{recycle}, N_{res}, 8)` ，其中 :math:`N_{recycle}` 是Structure模块中FoldIteration的循环次数，实际只使用最后一次循环产生的局部坐标系。
         - **pred_positions** (Tensor) - 预测的原子坐标，shape为 :math:`(3, N_{recycle}, N_{res}, 14)` ，实际只使用最后一次循环产生的坐标。
 
-    输出：
+    返回：
         - **fape** (list) - Tensor。计算所得全原子点位置误差，计算过程中过大的误差会被截断。shape为 :math:`()` 。

@@ -52,8 +52,7 @@ class TriangleAttention(nn.Cell):
         - **mask** (Tensor) - The mask of pair_act when to do layernorm with shape (N_{res}, N_{res}), Default: "None".
 
     Outputs:
-        - **pair_act** (Tensor) - Tensor, the float tensor of the pair_act of the layer with
-          shape :math:`(N{res}, N{res}, layer\_norm\_dim)`.
+        Tensor, the float tensor of the pair_act of the layer with shape :math:`(N{res}, N{res}, layer\_norm\_dim)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -161,8 +160,7 @@ class TriangleMultiplication(nn.Cell):
           flow.
 
     Outputs:
-        - **pair_act** (Tensor) - Tensor, the float tensor of the pair_act of the layer with
-          shape :math:`(N{res}, N{res}, layer\_norm\_dim)`.
+        Tensor, the float tensor of the pair_act of the layer with shape :math:`(N{res}, N{res}, layer\_norm\_dim)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -395,8 +393,8 @@ class OuterProductMean(nn.Cell):
           flow. Default: "None".
 
     Outputs:
-        - **output** (Tensor) - Tensor, the float tensor of the output of the layer with
-          shape :math:`(dim_2, dim_2, num\_output\_channel)`.
+        Tensor, the float tensor of the output of the layer with shape
+        :math:`(dim_2, dim_2, num\_output\_channel)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
