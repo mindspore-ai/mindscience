@@ -50,8 +50,7 @@ class Transition(nn.Cell):
           Default: "None".
 
     Outputs:
-        - **output** (Tensor) - Tensor, the float tensor of the output of the layer with
-          shape same as the input.
+        Tensor, the float tensor of the output of the layer with shape same as the input.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

@@ -404,7 +404,7 @@ def atom37_to_torsion_angles(
                                         shape :math:`(batch\_size, N_{res})`.
         alt_torsions (bool):          indicates whether to set the sign angle of shielding torsion to zero.
 
-    Outputs:
+    Returns:
         - Dict containing
 
           - torsion_angles_sin_cos (numpy.array), with shape :math:`(batch\_size, N_{res}, 37, 3)` where

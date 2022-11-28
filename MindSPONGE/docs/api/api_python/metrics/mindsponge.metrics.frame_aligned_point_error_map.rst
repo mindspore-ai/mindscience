@@ -16,5 +16,5 @@ mindsponge.metrics.frame_aligned_point_error_map
         - **l1_clamp_distance** (float) - 距离误差的截断点，超过该距离时梯度不再考虑，常量。
 
     返回：
-        - **error_clamp** (list) - Tensor。计算所得骨架全原子点位置误差，计算过程中过大的误差会被截断。shape为 :math:`(N_{recycle},)` 。
-        - **error_no_clamp** (list) - Tensor。计算所得骨架原子点位置误差（没有截断）。shape为 :math:`(N_{recycle},)` 。
+        - **error_clamp** (Tensor) - Tensor。计算所得骨架全原子点位置误差，计算过程中过大的误差会被截断。shape为 :math:`(N_{recycle},)` 。
+        - **error_no_clamp** (Tensor) - Tensor。计算所得骨架原子点位置误差（没有截断）。shape为 :math:`(N_{recycle},)` 。

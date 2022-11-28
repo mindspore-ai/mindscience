@@ -61,8 +61,7 @@ class Attention(nn.Cell):
           shape(num_head, query_seq_length, value_seq_length). Default: "None".
 
     Outputs:
-        - **output** (Tensor) - Output tensor of the layer with shape (batch_size,
-          query_seq_length, hidden_size).
+        Tensor, Output tensor of the layer with shape (batch_size, query_seq_length, hidden_size).
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -248,8 +247,7 @@ class GlobalAttention(nn.Cell):
           flow. Default: "None".
 
     Outputs:
-        - **output** (Tensor) - Output tensor of the layer with
-          shape (batch_size, seq_length, output_dim).
+        Tensor, Output tensor of the layer with shape (batch_size, seq_length, output_dim).
 
     Supported Platforms:
         ``Ascend`` ``GPU``

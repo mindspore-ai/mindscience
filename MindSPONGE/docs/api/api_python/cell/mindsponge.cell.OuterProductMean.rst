@@ -1,7 +1,7 @@
 mindsponge.cell.OuterProductMean
 ================================
 
-.. py:class:: mindsponge.cell.OuterProductMean(num_outer_channel, act_dim, num_output_channel, batch_size, slice_num=0)
+.. py:class:: mindsponge.cell.OuterProductMean(num_outer_channel, act_dim, num_output_channel, batch_size=None, slice_num=0)
 
     通过外积平均计算输入张量（act）在第二维上的相关性，得到的相关性可以用于更新相关特征（如Pair特征）。
 
