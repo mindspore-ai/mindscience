@@ -142,10 +142,13 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 
 ## **Installation**
 
-### Dependency
+### Version dependency
 
-- python >= 3.7
-- MindSpore >= 1.8.0
+Due to the dependency between MindSPONGE and MindSpore, please follow the table below and install the corresponding MindSpore version from [MindSpore download page](https://www.mindspore.cn/versions).
+
+| MindSPONGE Version |                                  Branch                                  | MindSpore Version | Python Version |
+|:------------------:|:------------------------------------------------------------------------:|:-----------------:|:--------------:|
+|       1.0.0        | [master](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) |     \>=2.0.0      |     \>=3.7     |
 
 ```bash
 pip install -r requirements.txt

@@ -51,7 +51,7 @@ def _mindspore_version_check():
                           "the instruction at https://www.mindspore.cn/install")
 
     ms_version = ms.__version__[:5]
-    required_mindspore_version = '1.8.1'
+    required_mindspore_version = '2.0.0'
     logger.info("Current Mindspore version is {}".format(ms_version))
     ms_version = list(map(int, ms_version.split('.')))
     required_mindspore = list(map(int, required_mindspore_version.split('.')))
