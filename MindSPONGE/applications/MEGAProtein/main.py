@@ -66,7 +66,6 @@ def fold_infer(args):
     slice_val = vars(model_cfg.slice)[slice_key]
     model_cfg.slice = slice_val
 
-
     megafold = MegaFold(model_cfg, mixed_precision=args.mixed_precision)
     load_checkpoint(args.checkpoint_path, megafold)
     if args.mixed_precision:
@@ -135,6 +134,8 @@ def fold_infer(args):
 def fold_train(args):
     """megafold train"""
     data_cfg = load_config(args.data_config)
+    data_cfg.common.max_extra_msa = 1024
+    data_cfg.eval.max_msa_clusters = 128
     model_cfg = load_config(args.model_config)
     model_cfg.is_training = True
     model_cfg.seq_length = data_cfg.eval.crop_size
@@ -403,11 +404,7 @@ def evogen_augmentation(args):
     data_cfg.num_recycle = 1
     data_cfg.eval.max_msa_clusters = 128
     megaevogen = MegaEvogen(evogen_model_cfg, model_cfg, mixed_precision=args.mixed_precision)
-    if args.mixed_precision:
-        megaevogen.to_float(mstype.float16)
-        do_keep_cell_fp32(megaevogen)
-    else:
-        megaevogen.to_float(mstype.float32)
+    megaevogen.to_float(mstype.float32)
 
     data_cfg.common.num_recycle = 1
     load_checkpoint(args.checkpoint_path, megaevogen)
@@ -500,7 +497,8 @@ if __name__ == "__main__":
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="GPU",
                             max_call_depth=6000,
-                            graph_kernel_flags="--disable_expand_ops=Softmax --disable_cluster_ops=ReduceSum",
+                            graph_kernel_flags="--disable_expand_ops=Softmax --disable_cluster_ops=ReduceSum "
+                                               "--composite_op_limit_size=50",
                             device_id=arguments.device_id,
                             enable_graph_kernel=True)
         arguments.mixed_precision = 0
