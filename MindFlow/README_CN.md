@@ -43,6 +43,14 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ## **安装教程**
 
+### 版本依赖关系
+
+由于MindFlow与MindSpore有依赖关系，请根据下表中所指示的对应关系，在[MindSpore下载页面](https://www.mindspore.cn/versions)下载并安装对应的whl包。
+
+| MindFlow |                                   分支                                   | MindSpore | Python |
+|:--------:|:----------------------------------------------------------------------:|:---------:|:------:|
+|  1.0.0   | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) | \>=1.8.1  | \>=3.7 |
+
 ### 依赖安装
 
 ```bash
