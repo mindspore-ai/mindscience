@@ -133,10 +133,9 @@ class Geometry:
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, Geometry
-        >>> geometry_config = edict({'domain' : edict({'random_sampling' : True, 'size' : 100}),
-        ...                          'BC' : edict({'random_sampling' : True, 'size' : 100, 'sampler' : 'uniform',}),
+        >>> geometry_config = dict({'domain' : dict({'random_sampling' : True, 'size' : 100}),
+        ...                          'BC' : dict({'random_sampling' : True, 'size' : 100, 'sampler' : 'uniform',}),
         ...                          'random_merge' : True,})
         >>> sampling_config = generate_sampling_config(geometry_config)
         >>> geom = Geometry("geom", 1, 0.0, 1.0, sampling_config=sampling_config)
@@ -201,10 +200,9 @@ class Geometry:
             TypeError: If `sampling_config` is not instance of SamplingConfig.
 
         Examples:
-            >>> from easydict import EasyDict as edict
             >>> from sciai.geometry import generate_sampling_config, Geometry
-            >>> geometry_config = edict({'domain': edict({'random_sampling': True, 'size': 100}),
-            ...                          'BC': edict({'random_sampling': True, 'size': 100, 'sampler': 'uniform',}),
+            >>> geometry_config = dict({'domain': dict({'random_sampling': True, 'size': 100}),
+            ...                          'BC': dict({'random_sampling': True, 'size': 100, 'sampler': 'uniform',}),
             ...                          'random_merge': True,})
             >>> sampling_config = generate_sampling_config(geometry_config)
             >>> geom = Geometry("geom", 1, 0.0, 1.0)

@@ -43,10 +43,9 @@ class TimeDomain(Interval):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, TimeDomain
-        >>> time_config = edict({
-        ...     'domain': edict({
+        >>> time_config = dict({
+        ...     'domain': dict({
         ...         'random_sampling': True,
         ...         'size': 100,
         ...         'sampler': 'lhs'
@@ -81,23 +80,22 @@ class GeometryWithTime(Geometry):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, Rectangle, TimeDomain, GeometryWithTime
-        >>> rect_with_time_config = edict({
-        ...     'domain': edict({
+        >>> rect_with_time_config = dict({
+        ...     'domain': dict({
         ...         'random_sampling': True,
         ...         'size': 200,
         ...     }),
-        ...     'BC': edict({
+        ...     'BC': dict({
         ...         'random_sampling': False,
         ...         'size': 100,
         ...         'with_normal': True,
         ...     }),
-        ...     'IC': edict({
+        ...     'IC': dict({
         ...         'random_sampling': False,
         ...         'size': [10, 10],
         ...     }),
-        ...     'time': edict({
+        ...     'time': dict({
         ...         'random_sampling': True,
         ...         'size': 10,
         ...     })

@@ -39,10 +39,9 @@ class Interval(HyperCube):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, Interval
-        >>> line_config = edict({'domain': edict({'random_sampling': True, 'size': 100, 'sampler': 'uniform'}),
-        ...                      'BC': edict({'random_sampling': True, 'size': 10, 'sampler': 'uniform',}),})
+        >>> line_config = dict({'domain': dict({'random_sampling': True, 'size': 100, 'sampler': 'uniform'}),
+        ...                      'BC': dict({'random_sampling': True, 'size': 10, 'sampler': 'uniform',}),})
         >>> line = Interval("line", -1.0, 1.0, sampling_config=generate_sampling_config(line_config))
         >>> domain = line.sampling(geom_type="domain")
         >>> bc = line.sampling(geom_type="BC")
