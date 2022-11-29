@@ -130,6 +130,14 @@ if __name__ == "__main__":
                             mempool_block_size="31GB",
                             max_call_depth=6000,
                             device_id=arguments.device_id)
+    elif arguments.run_platform == 'GPU':
+        context.set_context(mode=context.GRAPH_MODE,
+                            device_target="GPU",
+                            max_call_depth=6000,
+                            graph_kernel_flags="--disable_expand_ops=Softmax --disable_cluster_ops=ReduceSum "
+                                               "--composite_op_limit_size=50",
+                            device_id=arguments.device_id,
+                            enable_graph_kernel=True)
     else:
         raise Exception("Only support Ascend")
     fold_multimer_infer(arguments)
