@@ -45,13 +45,13 @@ def _mindspore_version_check():
         raise
 
     ms_version = ms.__version__
-    ms_requires = '1.5.0'
+    ms_requires = '2.0.0'
     logger.info("Current Mindspore version is {} ".format(ms_version))
 
     if LooseVersion(ms_version) < LooseVersion(ms_requires):
         logger.warning("Current version of MindSpore is not compatible with MindSpore Elec. "
                        "Some functions might not work or even raise error. Please install MindSpore "
-                       "version >= 1.5.0. For more details about dependency setting, please check "
+                       f"version >= {ms_requires}. For more details about dependency setting, please check "
                        "the instructions at MindSpore official website https://www.mindspore.cn/install "
                        "or check the README.md at https://gitee.com/mindspore/mindscience/tree/master/MindElec")
         warning_countdown = 3
