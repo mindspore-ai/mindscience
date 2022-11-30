@@ -1,13 +1,13 @@
 mindelec.geometry.Disk
 ======================
 
-.. py:class:: mindelec.geometry.Disk(name, center, radius, dtype=<class 'numpy.float32'>, sampling_config=None)
+.. py:class:: mindelec.geometry.Disk(name, center, radius, dtype=np.float32, sampling_config=None)
 
     圆盘对象的定义。
 
     参数：
         - **name** (str) - 圆盘的名称。
-        - **center** (Union[tuple[float, float], tuple[int, int], list[float, float], list[int, int], numpy.ndarray]) - 圆盘的中心坐标。
+        - **center** (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]) - 圆盘的中心坐标。
         - **radius** (Union[int, float]) - 圆盘的半径。
         - **dtype** (numpy.dtype) - 采样点的数据类型。默认值：numpy.float32。
         - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
@@ -33,6 +33,6 @@ mindelec.geometry.Disk
         异常：
             - **ValueError** - 如果 `config` 为None。
             - **KeyError** - 如果 `geom_type` 是 `domain` ，但 `config.domain` 是None。
-            - **KeyError** - 如果 `geom_type `为 `BC` ，但 `config.bc` 为None。
+            - **KeyError** - 如果 `geom_type` 为 `BC` ，但 `config.bc` 为None。
             - **ValueError** - 如果 `geom_type` 既不是 `BC` 也不是 `domain`。
 
