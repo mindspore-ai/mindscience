@@ -1,5 +1,5 @@
 mindsponge.metrics.sidechain
-==========================================
+============================
 
 .. py:function:: mindsponge.metrics.sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_frames, rigidgroups_gt_exists, renamed_atom14_gt_positions, renamed_atom14_gt_exists, sidechain_atom_clamp_distance, sidechain_length_scale, pred_frames, pred_positions)
 
@@ -20,4 +20,4 @@ mindsponge.metrics.sidechain
         - **pred_positions** (Tensor) - 预测的原子坐标，shape为 :math:`(3, N_{recycle}, N_{res}, 14)` ，实际只使用最后一次循环产生的坐标。
 
     返回：
-        - **fape** (list) - Tensor。计算所得全原子点位置误差，计算过程中过大的误差会被截断。shape为 :math:`()` 。
+        fape(Tensor)。计算所得全原子点位置误差，计算过程中过大的误差会被截断。shape为 :math:`()` 。

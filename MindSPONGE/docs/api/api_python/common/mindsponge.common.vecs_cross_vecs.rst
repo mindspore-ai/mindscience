@@ -13,5 +13,5 @@ mindsponge.common.vecs_cross_vecs
         - **v1** (tuple) - 向量 :math:`v_1` ，长度为3，数据类型为标量或者shape相同的Tensor。
         - **v2** (tuple) - 向量 :math:`v_2` ，长度为3，数据类型为标量或者shape相同的Tensor。
 
-    输出：
+    返回：
         tuple。两个向量外积的结果，长度为3，数据类型为标量或者shape相同的Tensor。

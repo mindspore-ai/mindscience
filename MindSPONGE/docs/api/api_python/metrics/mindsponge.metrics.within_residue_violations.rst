@@ -18,4 +18,4 @@ mindsponge.metrics.within_residue_violations
         - **per_atom_violations** (Tensor) 每个原子的冲突误差（键长和键角冲突最大值）。shape :math:`(N_{res}, 14)` 。
 
     符号:
-        - :math:`N_{res}` - 蛋白质中氨基酸个数，按蛋白质一级序列排列。
+        :math:`N_{res}` - 蛋白质中氨基酸个数，按蛋白质一级序列排列。

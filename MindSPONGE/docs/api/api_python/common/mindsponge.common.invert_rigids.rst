@@ -15,5 +15,5 @@ mindsponge.common.invert_rigids
     参数：
         - **rigids** (tuple) - 把刚体从当前坐标系仿射变换到另一个坐标系的旋转矩阵与平移矩阵。
 
-    输出：
+    返回：
         tuple(rots, trans)。把刚体坐标从当前坐标系变换到另一个坐标系的旋转矩阵与平移矩阵，长度为2，包含旋转矩阵 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` 与平移距离 :math:`(x, y, z)` ，数据类型为标量或者shape相同的Tensor。

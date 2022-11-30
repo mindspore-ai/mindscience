@@ -14,5 +14,5 @@ mindsponge.common.rigids_mul_vecs
         - **rigids** (tuple) - 刚体变换的旋转矩阵和平移距离。
         - **v** (tuple) - 向量 :math:`\vec v` ，长度为3，数据类型为标量或者shape相同的Tensor。
 
-    输出：
+    返回：
         tuple，变换后的向量，长度为3，数据类型为标量或者shape相同的Tensor。

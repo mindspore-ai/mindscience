@@ -11,8 +11,8 @@ mindsponge.metrics.MultiClassFocal
         - **gamma** (float) - 超参数。默认值：2.0。
         - **e** (float) - 比例系数，focal误差占比。默认值：0.1。
         - **neighbors** (int) - 标签中需要mask的邻居数。默认值：2。
-        - **not_focal** (bool) - 是否使用focal误差。默认值："False"。
-        - **reducer_flag** (bool) - 是否对多卡的标签值做聚合。默认值："False"。
+        - **not_focal** (bool) - 是否使用focal误差。默认值：False。
+        - **reducer_flag** (bool) - 是否对多卡的标签值做聚合。默认值：False。
 
     输入：
         - **prediction** (Tensor) - 模型预测值，shape为 :math:`(batch\_size, ndim)` 。

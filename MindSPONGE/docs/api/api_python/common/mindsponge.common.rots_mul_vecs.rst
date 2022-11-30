@@ -13,5 +13,5 @@ mindsponge.common.rots_mul_vecs
         - **m** (tuple) - 旋转矩阵 :math:`\vec m` ，长度为9，数据类型为标量或者shape相同的Tensor。
         - **v** (tuple) - 向量 :math:`\vec v` ，长度为3，数据类型为标量或者shape相同的Tensor。
 
-    输出：
+    返回：
         tuple, 旋转后的向量，长度为3，数据类型为标量或者shape相同的Tensor。。

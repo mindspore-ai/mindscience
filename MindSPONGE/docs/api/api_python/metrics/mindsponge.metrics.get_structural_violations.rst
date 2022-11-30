@@ -1,7 +1,7 @@
-mindsponge.metrics.get_structure_violations
+mindsponge.metrics.get_structural_violations
 ===========================================
 
-.. py:function:: mindsponge.metrics.get_structure_violations(atom14_atom_exists, residue_index, aatype, residx_atom14_to_atom37, atom14_pred_positions, violation_tolerance_factor, clash_overlap_tolerance, lower_bound, upper_bound, atomtype_radius, c_one_hot, n_one_hot, dists_mask_i, cys_sg_idx)
+.. py:function:: mindsponge.metrics.get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_atom14_to_atom37, atom14_pred_positions, violation_tolerance_factor, clash_overlap_tolerance, lower_bound, upper_bound, atomtype_radius, c_one_hot, n_one_hot, dists_mask_i, cys_sg_idx)
 
     该函数主要用于计算蛋白序列中相邻的氨基酸是否存在不合理的肽键构型，以及不同原子是否在空间中距离过近，从而对蛋白质结构中不合理的空间冲突进行惩罚。（针对蛋白质全原子坐标编码分为两种形式：分别为稀疏编码和稠密编码，详见： `common.make_atom14_positions` ）
 
@@ -36,4 +36,4 @@ mindsponge.metrics.get_structure_violations
         - **structure_violation_loss** (Tensor) - 所有氨基酸残基原子冲突损失总和。 shape： `( )` 。
 
     符号:
-        - :math:`N_{res}` - 蛋白质中氨基酸个数，按蛋白质一级序列排列。
+        :math:`N_{res}` - 蛋白质中氨基酸个数，按蛋白质一级序列排列。
