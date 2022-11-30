@@ -90,7 +90,7 @@ class LossNet(nn.Cell):
 
     def softmax_cross_entropy(self, logits, labels):
         """Computes softmax cross entropy given logits and one-hot class labels."""
-        loss = -mnp.sum(labels * nn.LogSoftmax()(logits), axis=-1)
+        loss = -mnp.sum(labels * P.Log()(nn.Softmax()(logits), axis=-1))
         return mnp.asarray(loss)
 
     def distogram_loss(self, logits, bin_edges, pseudo_beta, pseudo_beta_mask):
