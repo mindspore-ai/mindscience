@@ -75,10 +75,14 @@ class PredictCallback(Callback):
             time_beg = time.time()
             rel_rmse_error = 0.0
             max_error = 0.0
+            prediction = 0.0
             for i in range(self.length):
                 for j in range(self.t - 1, self.t + 9):
                     label = self.label[i:i + 1, j]
-                    test_batch = Tensor(self.inputs[i:i + 1, j], dtype=mstype.float32)
+                    if j == self.t - 1:
+                        test_batch = Tensor(self.inputs[i:i + 1, j], dtype=mstype.float32)
+                    else:
+                        test_batch = Tensor(prediction)
                     prediction = self.model(test_batch)
                     prediction = prediction.asnumpy()
                     rel_rmse_error_step = self._calculate_error(label, prediction)
@@ -101,6 +105,5 @@ class PredictCallback(Callback):
         """calculate l2-error to evaluate accuracy"""
         rel_error = np.sqrt(np.sum(np.square(label.reshape(self.batch_size, -1) -
                                              prediction.reshape(self.batch_size, -1)))) / \
-                    np.sqrt(np.sum(np.square(prediction.reshape(self.batch_size, -1))))
+                    np.sqrt(np.sum(np.square(label.reshape(self.batch_size, -1))))
         return rel_error
-        

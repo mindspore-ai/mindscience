@@ -1,4 +1,4 @@
-# 基于Fourier Neural Operator的Navier-Stokes equation求解
+# 基于Fourier Neural Operator的Navier-Stokes方程求解
 
 ## 概述
 
@@ -6,7 +6,7 @@
 
 近年来，随着神经网络的迅猛发展，为科学计算提供了新的范式。经典的神经网络是在有限维度的空间进行映射，只能学习与特定离散化相关的解。与经典神经网络不同，傅里叶神经算子（Fourier Neural Operator，FNO）是一种能够学习无限维函数空间映射的新型深度学习架构。该架构可直接学习从任意函数参数到解的映射，用于解决一类偏微分方程的求解问题，具有更强的泛化能力。更多信息可参考[原文](https://arxiv.org/abs/2010.08895)。
 
-本案例教程介绍利用傅里叶神经算子的纳维-斯托克斯方程（Navier-Stokes equation）求解方法。
+本案例教程介绍利用傅里叶神经算子的Navier-Stokes方程求解方法。
 
 ## 纳维-斯托克斯方程（Navier-Stokes equation）
 
@@ -28,10 +28,10 @@ $$
 
 ## 问题描述
 
-本案例利用Fourier Neural Operator学习某一个时刻对应涡度到下一时刻涡度的映射，实现二维不可压缩N-S方程的求解：
+本案例利用Fourier Neural Operator学习初始涡度到下一时刻涡度的映射，实现二维不可压缩Navier-Stokes方程的求解：
 
 $$
-w_t \mapsto w(\cdot, t+1)
+w_0 \mapsto w(\cdot, 1)
 $$
 
 MindFlow求解该问题的具体流程如下：
@@ -55,9 +55,47 @@ Fourier Layer网络结构如下图所示。图中V表示输入向量，上框表
 
 ![Fourier Layer网络结构](images/FNO-2.png)
 
+## [训练示例](https://gitee.com/mindspore/mindscience/tree/master/)
+
+### 配置文件
+
+配置文件包括四类参数，分别为模型相关参数（model）、数据相关参数（data）、优化器相关参数（optimizer）、输出相关参数（callback）。其中FNO模型最重要的参数为modes、width与depth，分别控制模型中频率保留数量、通道数以及Fourier Layer叠加数量。具体参数配置含义默认值如下：
+
+```python
+model:
+  work_space: /path/to/work_space   # 代码工作空间
+  name: FNO2D                       # 模型名称
+  input_dims: 1                     # 输入向量空间维度
+  output_dims: 1                    # 输出向量空间维度
+  input_resolution: 64              # 输入向量分辨率
+  modes: 12                         # 低频分量的保留数目
+  width: 20                         # 输入向量升维后隐藏层的空间维度
+  depth: 4                          # Fourier Layer的叠加层数
+data:
+  name: "navier_stoke_2d"           # 数据名称
+  path: "/path/to/data"             # 数据路径
+  train_size: 19000                 # 训练集样本量
+  test_size: 3800                   # 测试集样本量
+  batch_size: 19                    # 批数据大小
+  resolution: 64                    # 输入向量分辨率
+  sub: 2                            # 创建数据集时的采样间隔
+optimizer:
+  initial_lr: 0.001                 # 初始学习率
+  warmup_epochs: 1                  # 学习率warmup所需迭代次数
+  weight_decay: 0.0                 # 权重衰减率
+  gamma: 0.5                        # 优化器gamma值
+  train_epochs: 150                 # 迭代训练数据集的次数
+callback:
+  summary_dir: "/path/to/summary"   # Summary输出路径
+  ckpt_dir: "/path/to/ckpt"         # Checkpoint输出路径
+  save_checkpoint_steps: 50         # 保存checkpoint的迭代间隔数
+  keep_checkpoint_max: 10           # 保存checkpoint的最大数目
+  eval_interval: 10                 # 边训练边推理的迭代间隔步数
+```
+
 ### 导入依赖
 
-导入本教程所依赖模块与接口：
+导入本教程所依赖模块与接口:
 
 ```python
 import os
@@ -138,13 +176,14 @@ class FNOBlock(nn.Cell):
     def construct(self, x):
         return self.act(self.conv(x) + self.w(x))
 
+
 class FNO2D(nn.Cell):
     def __init__(self,
                  input_dims,
                  output_dims,
                  resolution,
                  modes,
-                 width=20,
+                 channels=20,
                  depth=4,
                  mlp_ratio=4,
                  compute_dtype=mstype.float32):
@@ -157,8 +196,8 @@ class FNO2D(nn.Cell):
             raise ValueError("modes must at least 1, but got mode: {}".format(modes))
 
         self.modes1 = modes
-        self.channels = width
-        self.fc_channel = mlp_ratio * width
+        self.channels = channels
+        self.fc_channel = mlp_ratio * channels
         self.fc0 = nn.Dense(input_dims + 2, self.channels, has_bias=False).to_float(compute_dtype)
         self.layers = depth
 
@@ -202,7 +241,7 @@ model = FNO2D(input_dims=model_params["input_dims"],
               output_dims=model_params["output_dims"],
               resolution=model_params["input_resolution"],
               modes=model_params["modes"],
-              width=model_params["width"],
+              channels=model_params["width"],
               depth=model_params["depth"]
              )
 ```
@@ -212,20 +251,16 @@ model = FNO2D(input_dims=model_params["input_dims"],
 使用相对均方根误差作为网络训练损失函数：
 
 ```python
-import mindspore
-import mindspore.nn as nn
-from mindspore import ops
-
 class RelativeRMSELoss(nn.LossBase):
     def __init__(self, reduction="sum"):
         super(RelativeRMSELoss, self).__init__(reduction=reduction)
 
     def construct(self, prediction, label):
-        prediction = ops.Cast()(prediction, mindspore.float32)
-        batch_size = ops.shape[0]
-        diff_norms = ops.square(prediction.reshape(batch_size, -1) - label.reshape(batch_size, -1)).sum(axis=1)
-        label_norms = ops.square(label.reshape(batch_size, -1)).sum(axis=1)
-        rel_error = ops.div(ops.sqrt(diff_norms), ops.sqrt(label_norms))
+        prediction = P.Cast()(prediction, mindspore.float32)
+        batch_size = prediction.shape[0]
+        diff_norms = F.square(prediction.reshape(batch_size, -1) - label.reshape(batch_size, -1)).sum(axis=1)
+        label_norms = F.square(label.reshape(batch_size, -1)).sum(axis=1)
+        rel_error = ops.div(F.sqrt(diff_norms), F.sqrt(label_norms))
         return self.get_loss(rel_error)
 ```
 
@@ -250,7 +285,7 @@ class PredictCallback(Callback):
         self.predict_interval = config.get("eval_interval", 3)
         self.batch_size = config.get("test_batch_size", 1)
         self.rel_rmse_error = 1.0
-        self.T = 10
+        self.t = 10
         print("check test dataset shape: {}, {}".format(self.inputs.shape, self.label.shape))
 
     def __enter__(self):
@@ -268,9 +303,9 @@ class PredictCallback(Callback):
             rel_rmse_error = 0.0
             max_error = 0.0
             for i in range(self.length):
-                for j in range(self.T - 1, self.T + 9):
+                for j in range(self.t - 1, self.t + 9):
                     label = self.label[i:i + 1, j]
-                    if j == self.T - 1:
+                    if j == self.t - 1:
                         test_batch = Tensor(self.inputs[i:i + 1, j], dtype=mstype.float32)
                     else:
                         test_batch = Tensor(prediction)
@@ -293,7 +328,7 @@ class PredictCallback(Callback):
         """calculate l2-error to evaluate accuracy"""
         rel_error = np.sqrt(np.sum(np.square(label.reshape(self.batch_size, -1) -
                                              prediction.reshape(self.batch_size, -1)))) / \
-                    np.sqrt(np.sum(np.square(prediction.reshape(self.batch_size, -1))))
+                    np.sqrt(np.sum(np.square(label.reshape(self.batch_size, -1))))
         return rel_error
 
     def get_rel_rmse_error(self):
@@ -342,32 +377,32 @@ solver.train(epoch=optimizer_params["train_epochs"],
 
 ## 网络训练结果
 
-运行结果如下，训练50个迭代轮次后，网络损失函数值降至1.475，在测试集上的相对均方根误差为0.110。
+运行结果如下，经过150次迭代后，损失函数值将至0.77，测试集上的相对均方根误差为0.064。
 
 ```python
 ......
-epoch: 41 step: 1000, loss is 1.417490005493164
-Train epoch time: 6512.500 ms, per step time: 6.513 ms
-epoch: 42 step: 1000, loss is 1.6001394987106323
-Train epoch time: 6516.459 ms, per step time: 6.516 ms
-epoch: 43 step: 1000, loss is 1.64013671875
-Train epoch time: 6520.781 ms, per step time: 6.521 ms
-epoch: 44 step: 1000, loss is 1.7954413890838623
-Train epoch time: 6520.548 ms, per step time: 6.521 ms
-epoch: 45 step: 1000, loss is 1.639083743095398
-Train epoch time: 6519.727 ms, per step time: 6.520 ms
-epoch: 46 step: 1000, loss is 2.7023866176605225
-Train epoch time: 6513.133 ms, per step time: 6.513 ms
-epoch: 47 step: 1000, loss is 1.5318703651428223
-Train epoch time: 6509.813 ms, per step time: 6.510 ms
-epoch: 48 step: 1000, loss is 2.2350616455078125
-Train epoch time: 6522.118 ms, per step time: 6.522 ms
-epoch: 49 step: 1000, loss is 2.0657312870025635
-Train epoch time: 6514.847 ms, per step time: 6.515 ms
-epoch: 50 step: 1000, loss is 1.4754825830459595
-Train epoch time: 6577.887 ms, per step time: 6.578 ms
+epoch: 141 step: 1000, loss is 0.6700252
+Train epoch time: 13031.857 ms, per step time: 13.032 ms
+epoch: 142 step: 1000, loss is 0.6154704
+Train epoch time: 12718.254 ms, per step time: 12.718 ms
+epoch: 143 step: 1000, loss is 0.62129307
+Train epoch time: 12352.193 ms, per step time: 12.352 ms
+epoch: 144 step: 1000, loss is 0.61726654
+Train epoch time: 12506.747 ms, per step time: 12.507 ms
+epoch: 145 step: 1000, loss is 0.52468574
+Train epoch time: 12353.260 ms, per step time: 12.353 ms
+epoch: 146 step: 1000, loss is 0.8221446
+Train epoch time: 12382.338 ms, per step time: 12.382 ms
+epoch: 147 step: 1000, loss is 0.81664354
+Train epoch time: 12429.017 ms, per step time: 12.429 ms
+epoch: 148 step: 1000, loss is 0.6715837
+Train epoch time: 12762.776 ms, per step time: 12.763 ms
+epoch: 149 step: 1000, loss is 0.63126796
+Train epoch time: 11530.839 ms, per step time: 11.531 ms
+epoch: 150 step: 1000, loss is 0.7708728
+Train epoch time: 12259.766 ms, per step time: 12.260 ms
 ================================Start Evaluation================================
-mean rel_rmse_error: 0.11016936695948243
+mean rel_rmse_error: 0.06415492885652929
 =================================End Evaluation=================================
 ......
 ```

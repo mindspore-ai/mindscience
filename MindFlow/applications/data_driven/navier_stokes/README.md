@@ -28,10 +28,10 @@ where $u$ is the velocity field, $w=\nabla \times u$ is the vorticity, $w_0(x)$ 
 
 ## Description
 
-We aim to solve two-dimensional incompressible N-S equation by learning the operator mapping from each time step to the next time step:
+We aim to solve two-dimensional incompressible Navier-Stokes equation by learning the operator mapping the initial condition to the solution at time one:
 
 $$
-w_t \mapsto w(\cdot, t+1)
+w_0 \mapsto w(\cdot, 1)
 $$
 
 The process for MindFlow to solve the problem is as follows:
@@ -55,6 +55,44 @@ Fourier layers: Start from input V. On top: apply the Fourier transform $\mathca
 
 ![Fourier Layer structure](images/FNO-2.png)
 
+## [Example](https://gitee.com/mindspore/mindscience/tree/master/)
+
+### Configuration file
+
+The configuration file contains four types of parameters: model parameters, data parameters, optimizer parameters, and output parameters. The most important parameters of the FNO model are modes, width, and depth, which control the number of reserved frequencies, the number of lifting channels, and the number of Fourier layers in the model, respectively. The default values of the parameters are as follows:
+
+```python
+model:
+  work_space: /path/to/work_space   # Work space path
+  name: FNO2D                       # Model name
+  input_dims: 1                     # Input data channel
+  output_dims: 1                    # Output data channel
+  input_resolution: 64              # Column resolution
+  modes: 12                         # Number of frequency to keep
+  width: 20                         # The number of channels after dimension lifting of the input
+  depth: 4                          # The number of Fourier layers
+data:
+  name: "navier_stoke_2d"           # Data name
+  path: "/path/to/data"             # Path to data
+  train_size: 19000                 # Size of train set
+  test_size: 3800                   # Size of test set
+  batch_size: 19                    # Batch size
+  resolution: 64                    # Data resolution
+  sub: 2                            # Sampling interval when creating a dataset
+optimizer:
+  initial_lr: 0.001                 # Initial learning rate
+  warmup_epochs: 1                  # Number of epochs required for warmup
+  weight_decay: 0.0                 # Weight decay of the optimizer
+  gamma: 0.5                        # The gamma value of the optimizer
+  train_epochs: 150                 # The number of train epoch
+callback:
+  summary_dir: "/path/to/summary"   # Path to Summary
+  ckpt_dir: "/path/to/ckpt"         # Path to Checkpoint
+  save_checkpoint_steps: 50         # Frequency of checkpoint results
+  keep_checkpoint_max: 10           # Maximum number of checkpoint files can be saved
+  eval_interval: 10                 # TestSet Accuracy Test Frequency
+```
+
 ### Import dependencies
 
 Import the modules and interfaces on which this tutorial depends:
@@ -66,7 +104,7 @@ import datetime
 import numpy as np
 
 import mindspore.nn as nn
-from mindspore import set_seed
+from mindspore.common import set_seed
 from mindspore import Tensor, context
 from mindspore.train import LossMonitor, TimeMonitor, CheckpointConfig, ModelCheckpoint
 from mindspore.train import DynamicLossScaleManager
@@ -143,7 +181,7 @@ class FNO2D(nn.Cell):
                  output_dims,
                  resolution,
                  modes,
-                 width=20,
+                 channels=20,
                  depth=4,
                  mlp_ratio=4,
                  compute_dtype=mstype.float32):
@@ -156,8 +194,8 @@ class FNO2D(nn.Cell):
             raise ValueError("modes must at least 1, but got mode: {}".format(modes))
 
         self.modes1 = modes
-        self.channels = width
-        self.fc_channel = mlp_ratio * width
+        self.channels = channels
+        self.fc_channel = mlp_ratio * channels
         self.fc0 = nn.Dense(input_dims + 2, self.channels, has_bias=False).to_float(compute_dtype)
         self.layers = depth
 
@@ -201,7 +239,7 @@ model = FNO2D(input_dims=model_params["input_dims"],
               output_dims=model_params["output_dims"],
               resolution=model_params["input_resolution"],
               modes=model_params["modes"],
-              width=model_params["width"],
+              channels=model_params["width"],
               depth=model_params["depth"]
              )
 ```
@@ -245,7 +283,7 @@ class PredictCallback(Callback):
         self.predict_interval = config.get("eval_interval", 3)
         self.batch_size = config.get("test_batch_size", 1)
         self.rel_rmse_error = 1.0
-        self.T = 10
+        self.t = 10
         print("check test dataset shape: {}, {}".format(self.inputs.shape, self.label.shape))
 
     def __enter__(self):
@@ -263,9 +301,9 @@ class PredictCallback(Callback):
             rel_rmse_error = 0.0
             max_error = 0.0
             for i in range(self.length):
-                for j in range(self.T - 1, self.T + 9):
+                for j in range(self.t - 1, self.t + 9):
                     label = self.label[i:i + 1, j]
-                    if j == self.T - 1:
+                    if j == self.t - 1:
                         test_batch = Tensor(self.inputs[i:i + 1, j], dtype=mstype.float32)
                     else:
                         test_batch = Tensor(prediction)
@@ -288,7 +326,7 @@ class PredictCallback(Callback):
         """calculate l2-error to evaluate accuracy"""
         rel_error = np.sqrt(np.sum(np.square(label.reshape(self.batch_size, -1) -
                                              prediction.reshape(self.batch_size, -1)))) / \
-                    np.sqrt(np.sum(np.square(prediction.reshape(self.batch_size, -1))))
+                    np.sqrt(np.sum(np.square(label.reshape(self.batch_size, -1))))
         return rel_error
 
     def get_rel_rmse_error(self):
@@ -321,7 +359,7 @@ optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
 
 # prepare loss function
 loss_scale = DynamicLossScaleManager()
-loss_fn = RelativeRMSELoss()
+loss_fn = RelativeRMSELoss(input_resolution=model_params["input_resolution"])
 
 # define solver
 solver = Solver(model,
@@ -337,32 +375,35 @@ solver.train(epoch=optimizer_params["train_epochs"],
 
 ## Training Result
 
-The model training result is as follows. After 50 training epochs, the value of loss function drops to 1.475, and the relative root mean square error on the test set is 0.110.
+The model training result is as follows. After 150 training epochs, the value of loss function drops to 0.77, and the relative root mean square error on the test set is 0.064.
 
 ```python
 ......
-epoch: 41 step: 1000, loss is 1.417490005493164
-Train epoch time: 6512.500 ms, per step time: 6.513 ms
-epoch: 42 step: 1000, loss is 1.6001394987106323
-Train epoch time: 6516.459 ms, per step time: 6.516 ms
-epoch: 43 step: 1000, loss is 1.64013671875
-Train epoch time: 6520.781 ms, per step time: 6.521 ms
-epoch: 44 step: 1000, loss is 1.7954413890838623
-Train epoch time: 6520.548 ms, per step time: 6.521 ms
-epoch: 45 step: 1000, loss is 1.639083743095398
-Train epoch time: 6519.727 ms, per step time: 6.520 ms
-epoch: 46 step: 1000, loss is 2.7023866176605225
-Train epoch time: 6513.133 ms, per step time: 6.513 ms
-epoch: 47 step: 1000, loss is 1.5318703651428223
-Train epoch time: 6509.813 ms, per step time: 6.510 ms
-epoch: 48 step: 1000, loss is 2.2350616455078125
-Train epoch time: 6522.118 ms, per step time: 6.522 ms
-epoch: 49 step: 1000, loss is 2.0657312870025635
-Train epoch time: 6514.847 ms, per step time: 6.515 ms
-epoch: 50 step: 1000, loss is 1.4754825830459595
-Train epoch time: 6577.887 ms, per step time: 6.578 ms
+epoch: 141 step: 1000, loss is 0.6700252
+Train epoch time: 13031.857 ms, per step time: 13.032 ms
+epoch: 142 step: 1000, loss is 0.6154704
+Train epoch time: 12718.254 ms, per step time: 12.718 ms
+epoch: 143 step: 1000, loss is 0.62129307
+Train epoch time: 12352.193 ms, per step time: 12.352 ms
+epoch: 144 step: 1000, loss is 0.61726654
+Train epoch time: 12506.747 ms, per step time: 12.507 ms
+epoch: 145 step: 1000, loss is 0.52468574
+Train epoch time: 12353.260 ms, per step time: 12.353 ms
+epoch: 146 step: 1000, loss is 0.8221446
+Train epoch time: 12382.338 ms, per step time: 12.382 ms
+epoch: 147 step: 1000, loss is 0.81664354
+Train epoch time: 12429.017 ms, per step time: 12.429 ms
+epoch: 148 step: 1000, loss is 0.6715837
+Train epoch time: 12762.776 ms, per step time: 12.763 ms
+epoch: 149 step: 1000, loss is 0.63126796
+Train epoch time: 11530.839 ms, per step time: 11.531 ms
+epoch: 150 step: 1000, loss is 0.7708728
+Train epoch time: 12259.766 ms, per step time: 12.260 ms
 ================================Start Evaluation================================
-mean rel_rmse_error: 0.11016936695948243
+mean rel_rmse_error: 0.06415492885652929
 =================================End Evaluation=================================
 ......
 ```
+
+
+
