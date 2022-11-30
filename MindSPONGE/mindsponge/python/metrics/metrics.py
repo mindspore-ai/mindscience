@@ -101,7 +101,7 @@ class BalancedMSE(nn.Cell):
         >>> net = BalancedMSE(0, 1, 20)
         >>> prediction = Tensor(np.random.randn(32, 10).astype(np.float32))
         >>> target = Tensor(np.random.randn(32, 10).astype(np.float32))
-        >>> out = net(prediction, target, None)
+        >>> out = net(prediction, target)
         >>> print(out.shape)
         (32, 10)
     """
@@ -247,7 +247,7 @@ class MultiClassFocal(nn.Cell):
 
         zeros = mnp.zeros_like(prediction_tensor)
         one_minus_p = mnp.where(target > 1e-5, target - prediction_tensor, zeros)
-        ft = -1 * mnp.pow(one_minus_p, self.gamma) * mnp.log(mnp.clip(prediction_tensor, 1e-8, 1.0))
+        ft = -1 * mnp.power(one_minus_p, self.gamma) * mnp.log(mnp.clip(prediction_tensor, 1e-8, 1.0))
 
         classes_num = self._compute_classes_num(target)
         total_num = mnp.sum(classes_num)
@@ -352,9 +352,9 @@ class BinaryFocal(nn.Cell):
         positive_pt = mnp.where(target > 1e-5, probs, ones_tensor)
         negative_pt = mnp.where(target < 1e-5, 1 - probs, ones_tensor)
 
-        focal_loss = -self.alpha * mnp.pow(1 - positive_pt, self.gamma) * \
+        focal_loss = -self.alpha * mnp.power(1 - positive_pt, self.gamma) * \
                      mnp.log(mnp.clip(positive_pt, epsilon, 1.)) - (1 - self.alpha) * \
-                     mnp.pow(1 - negative_pt, self.gamma) * mnp.log(mnp.clip(negative_pt, epsilon, 1.))
+                     mnp.power(1 - negative_pt, self.gamma) * mnp.log(mnp.clip(negative_pt, epsilon, 1.))
         focal_loss *= 2.
 
         if self.not_focal:

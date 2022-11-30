@@ -34,6 +34,7 @@ This directory is the open source code of MEGA-Protein (including MEGA-fold, MEG
 |-----------|---------------------|------------------------------|---------------|-----------------------------------------------------------------------|
 | MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB                        | model checkpoint |  [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)  |
 | MEGA-EvoGen     | `MEGAEvoGen.ckpt`  | 535.7MB                      | MEGA-EvoGen model checkpoint | [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAEvoGen/MEGAEvoGen.ckpt)   |
+| MEGA-Assessment     | `MEGA_Assessment.ckpt`  | 77MB        | MEGA-Assessment model checkpoint | [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAAssessment/MEGA_Assessment.ckpt)   |
 | PSP          | `PSP`         | 2TB(25TB after decompressed) | multimodal dataset for protein |  [download](http://ftp.cbi.pku.edu.cn/psp/)  |
 
 <details><summary>Cite us</summary>
@@ -90,7 +91,8 @@ This directory is the open source code of MEGA-Protein (including MEGA-fold, MEG
 
 <details><summary>Updates</summary>
 
-- 2022.11：MEGA-EvoGen inference codes released.
+- 2022.11: MEGA-Assessment training and inference codes released.
+- 2022.11: MEGA-EvoGen inference codes released.
 - 2022.04: MEGA-Fold training codes released.
 - 2021.11: MEGA-Fold inference codes released.
 
@@ -302,7 +304,7 @@ option:
 
 ### MEGA-Assessment training
 
-Downloading our open source protein structure training dataset [PSP dataset](http://ftp.cbi.pku.edu.cn/psp/) and MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt), using follow command to start training:
+Downloading our open source protein structure training dataset [PSP lite dataset](http://ftp.cbi.pku.edu.cn/psp/psp_lite/) and MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt), using follow command to start training:
 
 ```bash
 Usage:python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --is_training True
