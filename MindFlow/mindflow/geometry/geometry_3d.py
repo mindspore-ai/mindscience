@@ -39,10 +39,9 @@ class Cuboid(HyperCube):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, Cuboid
-        >>> cuboid_mesh = edict({'domain': edict({'random_sampling': False, 'size': [50, 50, 25]}),
-        ...                      'BC': edict({'random_sampling': False, 'size': 1000, 'with_normal': True,}),})
+        >>> cuboid_mesh = dict({'domain': dict({'random_sampling': False, 'size': [50, 50, 25]}),
+        ...                      'BC': dict({'random_sampling': False, 'size': 1000, 'with_normal': True,}),})
         >>> cuboid = Cuboid("cuboid", (-3.0, 1, 0), (1, 2, 1), sampling_config=generate_sampling_config(cuboid_mesh))
         >>> domain = cuboid.sampling(geom_type="domain")
         >>> bc, bc_normal = cuboid.sampling(geom_type="BC")

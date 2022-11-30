@@ -41,10 +41,9 @@ class FixedPoint(Geometry):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, FixedPoint
-        >>> hypercube_random = edict({
-        ...      'domain': edict({
+        >>> hypercube_random = dict({
+        ...      'domain': dict({
         ...          'random_sampling': True,
         ...          'size': 1,
         ...          'sampler': 'uniform'
@@ -134,20 +133,18 @@ class HyperCube(Geometry):
 
     Raises:
         TypeError: sampling_config is not instance of class SamplingConfig.
-
     Supported Platforms:
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, HyperCube
-        >>> hypercube_random = edict({
-        ...      'domain': edict({
+        >>> hypercube_random = dict({
+        ...      'domain': dict({
         ...          'random_sampling': True,
         ...          'size': 1000,
         ...          'sampler': 'uniform'
         ...         }),
-        ...      'BC': edict({
+        ...      'BC': dict({
         ...          'random_sampling': True,
         ...          'size': 200,
         ...          'sampler': 'uniform',

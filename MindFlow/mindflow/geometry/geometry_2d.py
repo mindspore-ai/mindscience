@@ -45,13 +45,12 @@ class Disk(Geometry):
         ValueError: If `radius` is negative.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, Disk
-        >>> disk_mesh = edict({'domain': edict({'random_sampling': False, 'size' : [100, 180]}),
-        ...                    'BC': edict({'random_sampling': False, 'size': 200, 'with_normal' : True,})})
+        >>> disk_mesh = dict({'domain': dict({'random_sampling': False, 'size' : [100, 180]}),
+        ...                    'BC': dict({'random_sampling': False, 'size': 200, 'with_normal' : True,})})
         >>> disk = Disk("disk", (-1.0, 0), 2.0, sampling_config=generate_sampling_config(disk_mesh))
         >>> domain = disk.sampling(geom_type="domain")
         >>> bc, bc_normal = disk.sampling(geom_type="BC")
@@ -237,13 +236,12 @@ class Rectangle(HyperCube):
         sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, Rectangle
-        >>> rectangle_mesh = edict({'domain': edict({'random_sampling': False, 'size': [50, 25]}),
-        ...                         'BC': edict({'random_sampling': False, 'size': 300, 'with_normal': True,}),})
+        >>> rectangle_mesh = dict({'domain': dict({'random_sampling': False, 'size': [50, 25]}),
+        ...                         'BC': dict({'random_sampling': False, 'size': 300, 'with_normal': True,}),})
         >>> rectangle = Rectangle("rectangle", (-3.0, 1), (1, 2),
         ...                       sampling_config=generate_sampling_config(rectangle_mesh))
         >>> domain = rectangle.sampling(geom_type="domain")

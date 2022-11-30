@@ -159,15 +159,14 @@ class CSGDifference(CSG):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGDifference
-        >>> sampling_config_csg = edict({
-        ...     'domain': edict({
+        >>> sampling_config_csg = dict({
+        ...     'domain': dict({
         ...         'random_sampling': True,
         ...         'size': 1000,
         ...         'sampler': 'uniform'
         ...     }),
-        ...     'BC': edict({
+        ...     'BC': dict({
         ...         'random_sampling': True,
         ...         'size': 200,
         ...         'sampler': 'uniform',
@@ -283,15 +282,14 @@ class CSGUnion(CSG):
         ``Ascend``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGUnion
-        >>> sampling_config_csg = edict({
-        ...     'domain': edict({
+        >>> sampling_config_csg = dict({
+        ...     'domain': dict({
         ...         'random_sampling': True,
         ...         'size': 1000,
         ...         'sampler': 'uniform'
         ...     }),
-        ...     'BC': edict({
+        ...     'BC': dict({
         ...         'random_sampling': True,
         ...         'size': 200,
         ...         'sampler': 'uniform',
@@ -401,15 +399,14 @@ class CSGIntersection(CSG):
         ``Ascend``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGIntersection
-        >>> sampling_config_csg = edict({
-        ...     'domain': edict({
+        >>> sampling_config_csg = dict({
+        ...     'domain': dict({
         ...         'random_sampling': True,
         ...         'size': 1000,
         ...         'sampler': 'uniform'
         ...     }),
-        ...     'BC': edict({
+        ...     'BC': dict({
         ...         'random_sampling': True,
         ...         'size': 200,
         ...         'sampler': 'uniform',
@@ -521,15 +518,14 @@ class CSGXOR(CSG):
         ``Ascend``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGXOR
-        >>> sampling_config_csg = edict({
-        ...     'domain': edict({
+        >>> sampling_config_csg = dict({
+        ...     'domain': dict({
         ...         'random_sampling': True,
         ...         'size': 1000,
         ...         'sampler': 'uniform'
         ...     }),
-        ...     'BC': edict({
+        ...     'BC': dict({
         ...         'random_sampling': True,
         ...         'size': 200,
         ...         'sampler': 'uniform',
