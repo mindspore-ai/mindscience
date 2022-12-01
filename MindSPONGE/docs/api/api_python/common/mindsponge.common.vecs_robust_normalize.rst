@@ -6,9 +6,11 @@ mindsponge.common.vecs_robust_normalize
     向量l2范数归一化。
 
     .. math::
-        v=(x1,x2,x3)
-        l2\_norm=\sqrt{x1*x1+x2*x2+x3*x3+epsilon}
-        result=(x1/l2\_norm, x2/l2\_norm, x3/l2\_norm)
+        \begin{split}
+        &v=(x1,x2,x3) \\
+        &l2\_norm=\sqrt{x1*x1+x2*x2+x3*x3+epsilon} \\
+        &result=(x1/l2\_norm, x2/l2\_norm, x3/l2\_norm) \\
+        \end{split}
 
     参数：
         - **v** (Tuple) - 输入向量，:math:`(x,y,z)` 其中 x,y,z 是标量或 Tensor，若为Tensor其shape相同。

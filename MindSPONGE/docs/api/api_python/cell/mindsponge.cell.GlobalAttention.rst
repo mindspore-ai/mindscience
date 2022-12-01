@@ -20,4 +20,4 @@ mindsponge.cell.GlobalAttention
         - **index** (Tensor) - 在while循环中的索引，仅在有while控制流时使用。默认值："None"。
 
     输出：
-        Tensor。Attention层的输出tensor，shape是(batch_size, seq_length, output_dim)。
+        Tensor。GlobalAttention层的输出tensor，shape是(batch_size, seq_length, output_dim)。

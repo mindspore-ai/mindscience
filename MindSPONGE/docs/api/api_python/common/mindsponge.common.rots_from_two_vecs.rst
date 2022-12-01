@@ -15,11 +15,11 @@ mindsponge.common.rots_from_two_vecs
 
     最后通过计算 :math:`\vec e_1` 和 :math:`\vec e_0` 的外积得到 :math:`\vec e_2` ，即为该坐标系的z轴单位向量。
 
-    最后返回的旋转矩阵为 :math:`(e_0_x, e_1_x, e_2_x, e_0_y, e_1_y, e_2_y, e_0_z, e_1_z, e_2_z)` 。
+    最后返回的旋转矩阵为 :math:`(e_{0x}, e_{1x}, e_{2x}, e_{0y}, e_{1y}, e_{2y}, e_{0z}, e_{1z}, e_{2z})` 。
 
     参数：
         - **e0_unnormalized** (tuple) - 作为该坐标系x轴的向量，长度为3，数据类型为标量或者shape相同的Tensor。
         - **e1_unnormalized** (tuple) - 构成X-Y平面的另一个向量，长度为3，数据类型为标量或者shape相同的Tensor。
 
     返回：
-        tuple，两个向量的旋转矩阵 :math:`(e_0_x, e_1_x, e_2_x, e_0_y, e_1_y, e_2_y, e_0_z, e_1_z, e_2_z)` ，数据类型为标量或者shape相同的Tensor。
+        tuple，两个向量的旋转矩阵 :math:`(e_{0x}, e_{1x}, e_{2x}, e_{0y}, e_{1y}, e_{2y}, e_{0z}, e_{1z}, e_{2z})` ，数据类型为标量或者shape相同的Tensor。

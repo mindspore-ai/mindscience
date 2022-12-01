@@ -19,5 +19,5 @@ mindsponge.common.rigids_mul_rigids
         - **a** (tuple) - 刚体变换 :math:`a` ，长度为2，包含旋转矩阵 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` 与平移距离 :math:`(x, y, z)` ，数据类型为标量或者shape相同的Tensor。
         - **b** (tuple) - 刚体变换 :math:`b` ，长度为2，包含旋转矩阵 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` 与平移距离 :math:`(x, y, z)` ，数据类型为标量或者shape相同的Tensor。
 
-    输出：
+    返回：
         tuple(rots, trans)，变换后的刚体 :math:`b` ，长度为2，包含旋转矩阵 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` 与平移距离 :math:`(x, y, z)` ，数据类型为标量或者shape相同的Tensor。

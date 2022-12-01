@@ -31,5 +31,5 @@ mindsponge.common.rigids_from_3_points
         - **origin** (tuple) - 当前局部坐标系的原点O的坐标，长度为3，数据类型为标量或者shape相同的Tensor。
         - **point_on_xy_plane** (tuple) - x-y平面上一点P的坐标，长度为3，数据类型为标量或者shape相同的Tensor。
 
-    输出：
+    返回：
         tuple(rots, trans)，长度为2，刚体的旋转矩阵 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` 与平移距离 :math:`(x, y, z)` ，数据类型为标量或者shape相同的Tensor。

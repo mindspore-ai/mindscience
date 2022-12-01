@@ -8,5 +8,5 @@ mindsponge.common.invert_rots
     参数：
         - **m** (tuple) - 旋转矩阵m，长度为9，数据类型为标量或者shape相同的Tensor。
 
-    输出：
+    返回：
         tuple， 旋转矩阵m的逆，长度为9，数据类型为标量或者shape相同的Tensor。

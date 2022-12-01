@@ -27,7 +27,6 @@ mindsponge.common
     mindsponge.common.rigids_mul_rigids
     mindsponge.common.rigids_mul_rots
     mindsponge.common.rigids_mul_vecs
-    mindsponge.common.rot_to_quat
     mindsponge.common.rots_expend_dims
     mindsponge.common.rots_from_tensor
     mindsponge.common.rots_from_two_vecs

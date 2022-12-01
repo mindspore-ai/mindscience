@@ -1,7 +1,7 @@
-mindsponge.common.geometry.quat_multiply_by_vec
-===============================================
+mindsponge.common.quat_multiply_by_vec
+======================================
 
-.. py:function:: mindsponge.common.geometry.quat_multiply_by_vec(quat, vec)
+.. py:function:: mindsponge.common.quat_multiply_by_vec(quat, vec)
 
     计算四元数与纯向量四元数的乘积。
 
@@ -14,4 +14,4 @@ mindsponge.common.geometry.quat_multiply_by_vec
         - **vec** (Tensor) - 纯向量四元数， :math:`(b, c, d)` 的未归一化四元数,其中归一化四元数能被表示成 :math:`(1, b, c, d)`。
 
     返回:
-        Tensor，计算后的结果， shape 为 :math:`[(..., 4)]`
+        Tensor，计算后的结果，shape 为 :math:`[(..., 4)]` 。

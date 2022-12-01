@@ -22,10 +22,10 @@ mindsponge.common.make_transform_from_reference
         \end{split}
 
     参数：
-        - **point_a** (float, tensor) -> (tensor) - 'N'原子空间位置信息，shape为: :math:`[..., N_{res}, 3]`。
-        - **point_b** (float, tensor) -> (tensor) - 'CA'原子空间位置信息，shape为: :math:`[..., N_{res}, 3]`。
-        - **point_c** (float, tensor) -> (tensor) - 'C'原子空间位置信息，shape为: :math:`[..., N_{res}, 3]`。
+        - **point_a** (float, tensor) -> (tensor) - 'N'原子空间位置信息，shape为: :math:`[..., N_{res}, 3]` 。
+        - **point_b** (float, tensor) -> (tensor) - 'CA'原子空间位置信息，shape为: :math:`[..., N_{res}, 3]` 。
+        - **point_c** (float, tensor) -> (tensor) - 'C'原子空间位置信息，shape为: :math:`[..., N_{res}, 3]` 。
 
-    输出：
-        旋转矩阵，（tuple），:math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`，每个元素shape为:math:`(..., N_{res})`。
-        平移向量，（tuple），:math:`(x, y, z)` 每个元素shape为:math:`(..., N_{res})`。
+    返回：
+        旋转矩阵(tuple) :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` ，每个元素shape为 :math:`(..., N_{res})` 。
+        平移向量(tuple) :math:`(x, y, z)` 每个元素shape为 :math:`(..., N_{res})` 。

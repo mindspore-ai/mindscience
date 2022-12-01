@@ -13,5 +13,5 @@ mindsponge.common.find_optimal_renaming
         - **atom14_gt_exists** (Tensor) - 掩码表明真实结构中原子是否存在，shape为 :math:`(N_{res}, 14)` 。
         - **atom14_pred_positions** (Tensor) - 全局坐标系中预测得到的原子坐标值，shape为 :math:`(N_{res}, 14, 3)` 。
 
-    输出：
+    返回：
         Tensor。 `atom14_alt_gt_positions` 与  `atom14_pred_positions` 更接近的位置为1，否则是0，shape为 :math:`(N_{res},)` 。

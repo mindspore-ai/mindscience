@@ -13,8 +13,8 @@ mindsponge.common.make_atom14_positions
 
     参数：
         - **aatype** (numpy.array) - 蛋白质一级序列编码，编码方式参考 `common.residue_constants.restype_order`, 取值范围 :math:`[0,20]` ，若为20表示该氨基酸为unkown（`UNK`）。
-        - **all_atom_mask** (numpy.array) - 蛋白质所有原子坐标掩码，维度为 :math:`（N_{res}，37）` ，若对应位置为0则表示该氨基酸不含该原子坐标。
-        - **all_atom_positions** (numpy.array) - 蛋白质所有原子坐标，维度为 :math:`（N_{res}, 37, 3）` 。
+        - **all_atom_mask** (numpy.array) - 蛋白质所有原子坐标掩码，维度为 :math:`(N_{res}, 37)` ，若对应位置为0则表示该氨基酸不含该原子坐标。
+        - **all_atom_positions** (numpy.array) - 蛋白质所有原子坐标，维度为 :math:`(N_{res}, 37, 3)` 。
 
     返回：
         - numpy.array。按照稠密编码方式编码，蛋白质全原子掩码，包含unkown氨基酸原子， :math:`[N_{res}, 14]` 。

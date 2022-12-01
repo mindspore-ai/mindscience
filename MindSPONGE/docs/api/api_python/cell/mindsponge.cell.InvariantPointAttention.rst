@@ -4,13 +4,13 @@ mindsponge.cell.InvariantPointAttention
 .. py:class:: mindsponge.cell.InvariantPointAttention(num_head, num_scalar_qk, num_scalar_v, num_point_v, num_point_qk, num_channel, pair_dim)
 
     该模块用于更新序列表示（即输入inputs_1d），在序列表示中加入位置信息。
-    其中注意力由三部分构成，即由序列表示得到的q，k，v，由序列表示与刚体群T交互得到的q'，k'，v'，
+    其中注意力由三部分构成，即由序列表示得到的q, k, v，由序列表示与刚体群T交互得到的q', k', v'，
     以及从氨基酸对表示（输入中的inputs_2d）中得到的偏移b。
 
     .. math::
         a_{ij} = Softmax(w_l(c_1{q_i}^Tk_j+b{ij}-c_2\sum {\left \| T_i\circ q'_i-T_j\circ k'_j \right \| ^{2 } })
 
-    其中i，j分别表示序列中第i，第j个氨基酸，T即输入中的rotation和translation。
+    其中i,j分别表示序列中第i、第j个氨基酸，T即输入中的rotation和translation。
 
     参考文献：`Jumper et al. (2021) Suppl. Alg. 22 InvariantPointAttention <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_。
 
