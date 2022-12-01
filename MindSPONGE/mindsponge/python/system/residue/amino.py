@@ -23,11 +23,11 @@
 """
 Molecule
 """
-from mindspore import ms_class
+from mindspore import jit_class
 from .residue import Residue
 
 
-@ms_class
+@jit_class
 class AminoAcid(Residue):
     r"""
     Residue of amino acid.

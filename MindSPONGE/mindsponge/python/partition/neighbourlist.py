@@ -26,7 +26,7 @@ Neighbour list
 
 import mindspore as ms
 import mindspore.numpy as msnp
-from mindspore import Tensor, ms_function
+from mindspore import Tensor, jit
 from mindspore import Parameter
 from mindspore import ops
 from mindspore.ops import functional as F
@@ -197,7 +197,7 @@ class NeighbourList(Cell):
         self.neighbour_list.print_info()
         return self
 
-    @ms_function
+    @jit
     def calcaulate(self, coordinate: Tensor, pbc_box: Tensor = None):
         """
         calculate neighbour list.
