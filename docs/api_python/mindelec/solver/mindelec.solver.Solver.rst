@@ -1,7 +1,7 @@
 mindelec.solver.Solver
 ======================
 
-.. py:class:: mindelec.solver.Solver(network, optimizer, loss_fn='l2', mode='Data', train_constraints=None, test_constraints=None, train_input_map=None, test_input_map=None, mtl_weighted_cell=None, latent_vector=None, latent_reg=0.01, metrics=None, eval_network=None, eval_indexes=None, amp_level='O0', **kwargs)
+.. py:class:: mindelec.solver.Solver(network, optimizer, loss_fn='l2', mode='Data', train_constraints=None, test_constraints=None, train_input_map=None, test_input_map=None, mtl_weighted_cell=None, latent_vector=None, latent_reg=1e-2, metrics=None, eval_network=None, eval_indexes=None, amp_level='O0', **kwargs)
 
     用于训练或推理的高级API。
     `Solver` 将图层分组到具有训练和推理功能的对象中。
