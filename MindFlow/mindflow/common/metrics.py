@@ -69,8 +69,8 @@ class L2(nn.Metric):
 
         Args:
             inputs (Union[Tensor, list, numpy.array]): `y_pred` and `y` can be retrieved from `input`. `y_pred` is
-            the predicted value while `y` the ground truth value.
-            They are used for calculating L2 where the shape of them are the same.
+                the predicted value while `y` the ground truth value.
+                They are used for calculating L2 where the shape of them are the same.
 
         Raises:
             ValueError: if the length of inputs is not 2.
