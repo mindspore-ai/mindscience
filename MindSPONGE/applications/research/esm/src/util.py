@@ -25,7 +25,14 @@ import numpy as np
 import mindspore as ms
 import mindspore.nn as nn
 import mindspore.ops as ops
-from data import BatchConverter
+from mindspore.common.tensor import Tensor
+from mindspore.common.initializer import initializer
+from mindspore.ops import operations as P
+from mindspore.ops.primitive import Primitive
+from mindspore.common.parameter import Parameter
+from mindspore._checkparam import Validator
+from mindspore.nn.layer.activation import get_activation
+from src.data import BatchConverter
 
 
 def ms_sum(x, dim, keep_dims=False):
@@ -103,6 +110,7 @@ def get_atom_coords_residuewise(atoms: List[str], struct: biotite.structure.Atom
     """
     Example for atoms argument: ["N", "CA", "C"]
     """
+
     def filterfn(s, axis=None):
         _ = axis
         filters = np.stack([s.atom_name == name for name in atoms], axis=1)
@@ -237,12 +245,14 @@ class CoordBatchConverter(BatchConverter):
             for _, cf in coords_and_confidence
         ]
         coords = self.collate_dense_tensors(coords, pad_v=np.nan)
+
         confidence = self.collate_dense_tensors(confidence, pad_v=-1.)
         is_nan = ms.ops.IsNan()
         padding_mask = is_nan(coords[:, :, 0, 0])
         coord_mask = ms.ops.IsFinite()(coords.sum(-2).sum(-1))
         confidence = confidence * coord_mask + (-1.) * padding_mask
         output = [coords, confidence, strs, tokens, padding_mask]
+
         return output
 
     @staticmethod
@@ -257,13 +267,17 @@ class CoordBatchConverter(BatchConverter):
             )
         max_shape = [max(lst) for lst in zip(*[x.shape for x in samples])]
 
-        fill = ops.Fill()
-        result = fill(samples[0].dtype, (len(samples), *max_shape), pad_v)
+        result = ops.Zeros()((len(samples), *max_shape), ms.float32)
 
         for i, x_sample in enumerate(samples):
-            result_i = result[i]
-            t = x_sample
-            result_i[tuple(slice(0, k) for k in t.shape)] = t
+            len_sample = x_sample.shape[0]
+            shape1 = ops.Zeros()(result[i].shape, ms.int32)
+            shape2 = ops.Ones()(x_sample.shape, ms.int32)
+            shape1[:len_sample] += shape2
+            shape1 = ms.ops.Cast()(shape1, ms.bool_)
+            result[i] = ms.ops.masked_fill(result[i], ~shape1, pad_v)
+            result[i][:len_sample] = x_sample
+
         return result
 
     def from_lists(self, coords_list, confidence_list=None, seq_list=None, device=None):
@@ -274,3 +288,71 @@ class CoordBatchConverter(BatchConverter):
             seq_list = [None] * batch_size
         raw_batch = zip(coords_list, confidence_list, seq_list)
         return self.__call__(raw_batch, device)
+
+
+class Dense(nn.Cell):
+    """
+    preprocess input of each layer.
+    """
+
+    def __init__(self,
+                 in_channels=None,
+                 out_channels=None,
+                 weight_init='normal',
+                 bias_init='zeros',
+                 has_bias=True,
+                 activation=None):
+        super(Dense, self).__init__()
+        self.in_channels = Validator.check_positive_int(in_channels, "in_channels", self.cls_name)
+        self.out_channels = Validator.check_positive_int(out_channels, "out_channels", self.cls_name)
+        self.has_bias = Validator.check_bool(has_bias, "has_bias", self.cls_name)
+        self.reshape = P.Reshape()
+        self.shape_op = P.Shape()
+
+        if isinstance(weight_init, Tensor):
+            if weight_init.ndim != 2 or weight_init.shape[0] != out_channels or \
+                    weight_init.shape[1] != in_channels:
+                raise ValueError(f"For '{self.cls_name}', weight init shape error. The ndim of 'weight_init' must "
+                                 f"be equal to 2, and the first dim must be equal to 'out_channels', and the "
+                                 f"second dim must be equal to 'in_channels'. But got 'weight_init': {weight_init}, "
+                                 f"'out_channels': {out_channels}, 'in_channels': {in_channels}.")
+        self.weight = Parameter(initializer(weight_init, [out_channels, in_channels]), name="weight")
+
+        self.bias = None
+        if self.has_bias:
+            if isinstance(bias_init, Tensor):
+                if bias_init.ndim != 1 or bias_init.shape[0] != out_channels:
+                    raise ValueError(f"For '{self.cls_name}', bias init shape error. The ndim of 'bias_init' must "
+                                     f"be equal to 1, and the first dim must be equal to 'out_channels'. But got "
+                                     f"'bias_init': {bias_init}, 'out_channels': {out_channels}.")
+            self.bias = Parameter(initializer(bias_init, [out_channels]), name="bias")
+            self.bias_add = P.BiasAdd()
+
+        self.matmul = P.MatMul(transpose_b=True)
+        self.activation = get_activation(activation) if isinstance(activation, str) else activation
+        if activation is not None and not isinstance(self.activation, (nn.Cell, Primitive)):
+            raise TypeError(f"For '{self.cls_name}', the 'activation' must be str or Cell or Primitive, but got "
+                            f"{type(activation).__name__}.")
+        self.activation_flag = self.activation is not None
+
+        self.cast = ops.Cast()
+        self.get_dtype = ops.DType()
+
+    def construct(self, x):
+        """Dense construction"""
+        x = self.cast(x, ms.float16)
+
+        x_shape = self.shape_op(x)
+        if len(x_shape) != 2:
+            x = self.reshape(x, (-1, x_shape[-1]))
+        x = self.matmul(x, self.cast(self.weight, x.dtype))
+        if self.has_bias:
+            x = self.bias_add(x, self.cast(self.bias, x.dtype))
+        if self.activation_flag:
+            x = self.activation(x)
+        if len(x_shape) != 2:
+            out_shape = x_shape[:-1] + (-1,)
+            x = self.reshape(x, out_shape)
+
+        x = self.cast(x, ms.float32)
+        return x

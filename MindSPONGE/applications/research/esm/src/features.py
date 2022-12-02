@@ -19,9 +19,10 @@ import numpy as np
 import mindspore as ms
 import mindspore.ops as ops
 import mindspore.nn as nn
-from gvp_utils import flatten_graph
-from gvp_modules import GVP, LayerNorm
-from util import normalize, norm, nan_to_num, rbf
+from src.gvp_utils import flatten_graph
+from src.gvp_modules import GVP, LayerNorm
+from src.util import normalize, norm, nan_to_num, rbf
+from src.util import Dense
 
 
 def ms_transpose(x, index_a, index_b):
@@ -36,16 +37,16 @@ def ms_transpose(x, index_a, index_b):
 def ms_padding_without_val(x, padding):
     """Padding"""
     ms_padding = ()
-    num = int(len(padding)/2)
-    zero_pad = len(x.shape)-num
+    num = int(len(padding) / 2)
+    zero_pad = len(x.shape) - num
     i = int(0)
     while i < zero_pad:
         i += 1
         ms_padding = ms_padding + ((0, 0),)
     for j in range(num):
-        ms_padding = ms_padding + ((padding[(-2)*j-2], padding[(-2)*j-1]),)
-    x = ms.nn.Pad(paddings=ms_padding)(x)
-    return x
+        ms_padding = ms_padding + ((padding[(-2) * j - 2], padding[(-2) * j - 1]),)
+    y = ms.nn.Pad(paddings=ms_padding)(x)
+    return y
 
 
 class GVPInputFeaturizer(nn.Cell):
@@ -54,7 +55,6 @@ class GVPInputFeaturizer(nn.Cell):
     @staticmethod
     def get_node_features(coords, coord_mask, with_coord_mask=True):
         """Get node features"""
-
         node_scalar_features = GVPInputFeaturizer._dihedrals(coords)
         if with_coord_mask:
             coord_mask = ops.ExpandDims()(ops.Cast()(coord_mask, ms.float32), -1)
@@ -67,11 +67,14 @@ class GVPInputFeaturizer(nn.Cell):
 
     @staticmethod
     def _orientations(x):
+
         forward = normalize(x[:, 1:] - x[:, :-1])
         backward = normalize(x[:, :-1] - x[:, 1:])
-        forward = ms_padding_without_val(forward, [0, 0, 0, 1])
-        backward = ms_padding_without_val(backward, [0, 0, 1, 0])
-        return ops.Concat(axis=-2)([ops.ExpandDims()(forward, -2), ops.ExpandDims()(backward, -2)])
+        forward = ops.concat((forward, ops.Zeros()((forward.shape[0], 1, forward.shape[2]), ms.float32)), 1)
+        backward = ops.concat((ops.Zeros()((backward.shape[0], 1, backward.shape[2]), ms.float32), backward), 1)
+
+        output = ops.Concat(axis=-2)([ops.ExpandDims()(forward, -2), ops.ExpandDims()(backward, -2)])
+        return output
 
     @staticmethod
     def _sidechains(x):
@@ -86,9 +89,9 @@ class GVPInputFeaturizer(nn.Cell):
     def _dihedrals(x, eps=1e-7):
         """Dihedron"""
 
-        x = x[:, :, :3].reshape((x.shape[0], (x.shape[1]*x.shape[2]), x.shape[3]))
+        y = x[:, :, :3].reshape((x.shape[0], (x.shape[1] * x.shape[2]), x.shape[3]))
         bsz = x.shape[0]
-        dx = x[:, 1:] - x[:, :-1]
+        dx = y[:, 1:] - y[:, :-1]
         u = normalize(dx, dim=-1)
         u_2 = u[:, :-2]
         u_1 = u[:, 1:-1]
@@ -101,12 +104,10 @@ class GVPInputFeaturizer(nn.Cell):
         # Angle between normals
         cosd = ops.ReduceSum()(n_2 * n_1, -1)
 
-        min_value = ms.Tensor((-1+eps), ms.float32)
+        min_value = ms.Tensor((-1 + eps), ms.float32)
         max_value = ms.Tensor((1 - eps), ms.float32)
         cosd = ops.clip_by_value(cosd, clip_value_min=min_value, clip_value_max=max_value)
         d = ops.Sign()((u_2 * n_1).sum(-1)) * ops.ACos()(cosd)
-
-
 
         # This scheme will remove phi[0], psi[-1], omega[-1]
         d = ms_padding_without_val(d, [1, 2])
@@ -125,7 +126,7 @@ class GVPInputFeaturizer(nn.Cell):
         d = edge_index[0] - edge_index[1]
 
         frequency = ops.Exp()(
-            ms.numpy.arange(0, num_embeddings, 2, dtype=ms.float32,)
+            ms.numpy.arange(0, num_embeddings, 2, dtype=ms.float32)
             * -(np.log(10000.0) / num_embeddings)
         )
         angles = ops.ExpandDims()(d, -1) * frequency
@@ -151,7 +152,8 @@ class GVPInputFeaturizer(nn.Cell):
         seqpos_1 = ops.ExpandDims()(seqpos, 1)
         seqpos_0 = ops.ExpandDims()(seqpos, 0)
         d_seq = ops.Abs()(seqpos_1 - seqpos_0)
-        d_seq = ms.numpy.tile(d_seq, (bsz, 1, 1))
+        if bsz != 1:
+            d_seq = ms.numpy.tile(d_seq, (bsz, 1, 1))
         coord_mask_2d = ops.Cast()(coord_mask_2d, ms.bool_)
         residue_mask_2d = ops.Cast()(residue_mask_2d, ms.bool_)
         verse_coord_mask_2d = ops.Cast()(~coord_mask_2d, ms.float32)
@@ -160,16 +162,16 @@ class GVPInputFeaturizer(nn.Cell):
             verse_residue_mask_2d) * (1e10)
 
         if top_k_neighbors == -1:
-            d_neighbors = d_adjust
+            d_neighbors = d_adjust / 1e4
             e_idx = seqpos.repeat(
                 *d_neighbors.shape[:-1], 1)
         else:
-            d_neighbors, e_idx = ops.Sort(axis=-1)(d_adjust.astype(ms.float32))
+            d_adjust = d_adjust / 1e4
+            d_neighbors, e_idx = ops.TopK(sorted=True)(d_adjust, d_adjust.shape[-1])
+            d_neighbors, e_idx = d_neighbors[..., ::-1], e_idx[..., ::-1]
             d_neighbors, e_idx = d_neighbors[:, :, 0:int(min(top_k_neighbors, x.shape[1]))], \
                                  e_idx[:, :, 0:int(min(top_k_neighbors, x.shape[1]))]
-
-
-
+        d_neighbors = ms.Tensor(d_neighbors, ms.float32)*1e4
         coord_mask_neighbors = (d_neighbors < 5e7)
         residue_mask_neighbors = (d_neighbors < 5e9)
         output = [d_neighbors, e_idx, coord_mask_neighbors, residue_mask_neighbors]
@@ -210,7 +212,7 @@ class DihedralFeatures(nn.Cell):
         # 3 dihedral angles; sin and cos of each angle
         node_in = 6
         # Normalization and embedding
-        self.node_embedding = nn.Dense(node_in, node_embed_dim, has_bias=True)
+        self.node_embedding = Dense(node_in, node_embed_dim, has_bias=True)
         self.norm_nodes = Normalize(node_embed_dim)
 
     @staticmethod
@@ -232,7 +234,7 @@ class DihedralFeatures(nn.Cell):
 
         # Angle between normals
         cosd = (n_2 * n_1).sum(-1)
-        min_value = ms.Tensor((-1+eps), ms.float32)
+        min_value = ms.Tensor((-1 + eps), ms.float32)
         max_value = ms.Tensor((1 - eps), ms.float32)
         cosd = ops.clip_by_value(cosd, clip_value_min=min_value, clip_value_max=max_value)
         d = ops.Sign()((u_2 * n_1).sum(-1)) * ops.ACos()(cosd)
@@ -279,21 +281,25 @@ class GVPGraphEmbedding(GVPInputFeaturizer):
             [GVP(edge_input_dim, edge_hidden_dim, activations=(None, None)),
              LayerNorm(edge_hidden_dim, eps=1e-4)]
         )
-        self.embed_confidence = nn.Dense(16, args.node_hidden_dim_scalar)
+        self.embed_confidence = Dense(16, args.node_hidden_dim_scalar)
 
     def construct(self, coords, coord_mask, padding_mask, confidence):
         """GVP graph embedding construction"""
+
         node_features = self.get_node_features(coords, coord_mask)
+
         edge_features, edge_index = self.get_edge_features(
             coords, coord_mask, padding_mask)
         node_embeddings_scalar, node_embeddings_vector = self.embed_node(node_features)
         edge_embeddings = self.embed_edge(edge_features)
 
         rbf_rep = rbf(confidence, 0., 1.)
+
         node_embeddings = (
             node_embeddings_scalar + self.embed_confidence(rbf_rep),
             node_embeddings_vector
         )
+
 
         node_embeddings, edge_embeddings, edge_index = flatten_graph(
             node_embeddings, edge_embeddings, edge_index)
@@ -301,7 +307,9 @@ class GVPGraphEmbedding(GVPInputFeaturizer):
 
     def get_edge_features(self, coords, coord_mask, padding_mask):
         """Get edge features"""
+
         x_ca = coords[:, :, 1]
+
         # Get distances to the top k neighbors
         e_dist, e_idx, e_coord_mask, e_residue_mask = GVPInputFeaturizer._dist(
             x_ca, coord_mask, padding_mask, self.top_k_neighbors)
@@ -312,21 +320,27 @@ class GVPGraphEmbedding(GVPInputFeaturizer):
         src = ms.numpy.arange(e_idx_l).view((1, e_idx_l, 1))
         src = ops.BroadcastTo((e_idx_b, e_idx_l, k))(src)
 
+
         edge_index = ops.Stack(axis=0)([src, dest])
+
         edge_index = edge_index.reshape((edge_index.shape[0], edge_index.shape[1],
                                          (edge_index.shape[2] * edge_index.shape[3])))
+
         # After flattening, [B, E]
         e_dist = e_dist.reshape((e_dist.shape[0], (e_dist.shape[1] * e_dist.shape[2])))
+
         e_coord_mask = e_coord_mask.reshape((e_coord_mask.shape[0], (e_coord_mask.shape[1] * e_coord_mask.shape[2])))
         e_coord_mask = ops.ExpandDims()(e_coord_mask, -1)
         e_residue_mask = e_residue_mask.reshape((e_residue_mask.shape[0],
                                                  (e_residue_mask.shape[1] * e_residue_mask.shape[2])))
+
         # Calculate relative positional embeddings and distance RBF
         pos_embeddings = GVPInputFeaturizer._positional_embeddings(
             edge_index,
             num_positional_embeddings=self.num_positional_embeddings,
         )
         d_rbf = rbf(e_dist, 0., 20.)
+
         # Calculate relative orientation
         x_src = ops.ExpandDims()(x_ca, 2)
         x_src = ops.BroadcastTo((-1, -1, k, -1))(x_src)
@@ -354,7 +368,7 @@ class GVPGraphEmbedding(GVPInputFeaturizer):
         e_vectors = x_src - x_dest
         # For the ones without coordinates, substitute in the average vector
         e_coord_mask = ops.Cast()(e_coord_mask, ms.float32)
-        e_vector_mean = ops.ReduceSum(keep_dims=True)\
+        e_vector_mean = ops.ReduceSum(keep_dims=True) \
                             (e_vectors * e_coord_mask, axis=1) / ops.ReduceSum(keep_dims=True)(e_coord_mask, axis=1)
         e_coord_mask = ops.Cast()(e_coord_mask, ms.bool_)
         e_vectors = e_vectors * e_coord_mask + e_vector_mean * ~(e_coord_mask)
@@ -367,8 +381,7 @@ class GVPGraphEmbedding(GVPInputFeaturizer):
         edge_s = ops.Concat(axis=-1)([
             edge_s,
             ops.ExpandDims()((~coord_mask_src).astype(np.float32), -1),
-            ops.ExpandDims()((~coord_mask_dest).astype(np.float32), -1),
-        ],)
+            ops.ExpandDims()((~coord_mask_dest).astype(np.float32), -1)])
         e_residue_mask = ops.Cast()(e_residue_mask, ms.bool_)
         edge_index = edge_index.masked_fill(~e_residue_mask, -1)
 

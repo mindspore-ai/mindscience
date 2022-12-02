@@ -28,32 +28,37 @@ import src.util
 
 
 def main():
-    ms.set_context(mode=ms.PYNATIVE_MODE, device_target="GPU")
     parser = argparse.ArgumentParser(
         description='Score sequences based on a given structure.'
     )
     parser.add_argument(
         '--pdbfile', type=str,
-        help='input filepath, either .pdb or .cif', default='./data/5YH2.cif',
+        help='input filepath, either .pdb or .cif', default='src/data/5YH2.cif',
     )
     parser.add_argument(
         '--seqfile', type=str,
-        help='input filepath for variant sequences in a .fasta file', default='./data/5YH2_mutated_seqs.fasta',
+        help='input filepath for variant sequences in a .fasta file', default='src/data/5YH2_mutated_seqs.fasta',
     )
     parser.add_argument(
         '--outpath', type=str,
         help='output filepath for scores of variant sequences',
-        default='output/sequence_scores.csv',
+        default='output/5YH2_mutated_seqs_scores.csv',
+    )
+    parser.add_argument(
+        '--ckptpath', type=str,
+        help='ckpt filepath for model',
+        default='./checkpoint/esm_if1_gvp4_t16_142M_UR50.ckpt',
     )
     parser.add_argument(
         '--chain', type=str,
         help='chain id for the chain of interest', default='C',
     )
-    parser.add_argument('--device_id', help='device id', type=int, default=2)
+    parser.add_argument('--device_id', help='device id', type=int, default=3)
+    parser.add_argument('--device_target', help='device target', type=str, default='GPU')
     args = parser.parse_args()
-    ms.set_context(device_target='GPU', device_id=args.device_id)
+    ms.set_context(mode=ms.PYNATIVE_MODE, device_target=args.device_target, device_id=args.device_id)
 
-    model, alphabet = src.pretrained.esm_if1_gvp4_t16_142m_ur50()
+    model, alphabet = src.pretrained.esm_if1_gvp4_t16_142m_ur50(args.ckptpath)
     model.set_train(False)
     coords, seq = src.util.load_coords(args.pdbfile, args.chain)
     print('Native sequence loaded from structure file:')

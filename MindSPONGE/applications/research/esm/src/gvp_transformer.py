@@ -14,9 +14,9 @@
 # ============================================================================
 """gvp transformer model"""
 
-from gvp_transformer_encoder import GVPTransformerEncoder
-from transformer_decoder import TransformerDecoder
-from util import CoordBatchConverter
+from src.gvp_transformer_encoder import GVPTransformerEncoder
+from src.transformer_decoder import TransformerDecoder
+from src.util import CoordBatchConverter
 import mindspore as ms
 import mindspore.ops as ops
 import mindspore.nn as nn
@@ -99,7 +99,7 @@ class GVPTransformerModel(nn.Cell):
         )
 
         # Start with prepend token
-        sampled_tokens = ops.Zeros()((1, 1 + l_coords), ms.int32)
+        sampled_tokens = ops.Zeros()((1, 1 + l_coords), ms.float32)
         sampled_tokens[0, 0] = self.decoder.dictionary.get_idx('<cath>')
 
         # Save incremental states for faster sampling
@@ -110,16 +110,16 @@ class GVPTransformerModel(nn.Cell):
 
         # Decode one token at a time
         for i in range(1, l_coords + 1):
-            logits, _ = self.decoder(sampled_tokens[:, :i], encoder_out, incremental_state=incremental_state,)
+            logits, _ = self.decoder(sampled_tokens[:, :i], encoder_out, incremental_state=incremental_state)
             logits = logits[0].reshape(1, -1)
             logits /= temperature
             softmax = ops.Softmax(axis=-1)
             probs = softmax(logits)
             probs = probs.reshape(1, -1)
-            probs = ops.multinomial(probs, 1)
-            tokens = ops.Squeeze(-1)(probs)
+            tokens = ops.Argmax()(probs)
             sampled_tokens[:, i] = tokens
         sampled_seq = sampled_tokens[0, 1:]
+        sampled_seq = ops.Cast()(sampled_seq, ms.int32)
 
         # Convert back to string via lookup
         output = ''.join([self.decoder.dictionary.get_tok(a) for a in sampled_seq])

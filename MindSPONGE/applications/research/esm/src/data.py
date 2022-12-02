@@ -165,8 +165,8 @@ class BatchConverter:
         seq_encoded_list = [self.alphabet.encode(seq_str) for seq_str in seq_str_list]
         max_len = max(len(seq_encoded) for seq_encoded in seq_encoded_list)
         fill = ops.Fill()
-        tokens = fill(ms.int64, (batch_size, max_len + int(self.alphabet.prepend_bos)
-                                 + int(self.alphabet.append_eos)), self.alphabet.padding_idx)
+        tokens = fill(ms.float32, (batch_size, max_len + int(self.alphabet.prepend_bos)
+                                   + int(self.alphabet.append_eos)), self.alphabet.padding_idx)
 
         labels = []
         strs = []
@@ -178,7 +178,7 @@ class BatchConverter:
             strs.append(seq_str)
             if self.alphabet.prepend_bos:
                 tokens[i, 0] = self.alphabet.cls_idx
-            seq = ms.Tensor(seq_encoded, dtype=ms.int64)
+            seq = ms.Tensor(seq_encoded, dtype=ms.float32)
             tokens[
                 i,
                 int(self.alphabet.prepend_bos) : len(seq_encoded)

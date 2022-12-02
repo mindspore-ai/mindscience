@@ -14,10 +14,11 @@
 # ============================================================================
 """GVP operations, will be used in gvp_encoder.py"""
 
-from message_passing import scatter_sum, MessagePassing
 import mindspore as ms
 import mindspore.ops as ops
 import mindspore.nn as nn
+from src.util import Dense
+from src.message_passing import scatter_sum, MessagePassing
 
 
 def ms_transpose(x, index_a, index_b):
@@ -93,14 +94,14 @@ class GVP(nn.Cell):
         self.tuple_io = tuple_io
         if self.vi:
             self.h_dim = h_dim or max(self.vi, self.vo)
-            self.wh = nn.Dense(self.vi, self.h_dim, has_bias=False)
-            self.ws = nn.Dense(self.h_dim + self.si, self.so)
+            self.wh = Dense(self.vi, self.h_dim, has_bias=False)
+            self.ws = Dense(self.h_dim + self.si, self.so)
             if self.vo:
-                self.wv = nn.Dense(self.h_dim, self.vo, has_bias=False)
+                self.wv = Dense(self.h_dim, self.vo, has_bias=False)
                 if vector_gate:
-                    self.wg = nn.Dense(self.so, self.vo)
+                    self.wg = Dense(self.so, self.vo)
         else:
-            self.ws = nn.Dense(self.si, self.so)
+            self.ws = Dense(self.si, self.so)
 
         self.vector_gate = vector_gate
         self.scalar_act, self.vector_act = activations
@@ -111,7 +112,7 @@ class GVP(nn.Cell):
 
         if self.vi:
             s, v = x
-            v = ms_transpose(v, -1, -2)
+            v = ms_transpose(v, (v.ndim - 1), (v.ndim - 2))
             vh = self.wh(v)
             vn = _norm_no_nan(vh, axis=-2, eps=self.eps)
             concat_op = ops.Concat(axis=-1)
@@ -120,7 +121,7 @@ class GVP(nn.Cell):
                 s = self.scalar_act(s)
             if self.vo:
                 v = self.wv(vh)
-                v = ms_transpose(v, -1, -2)
+                v = ms_transpose(v, (v.ndim - 1), (v.ndim - 2))
                 if self.vector_gate:
                     unsqueeze = ops.ExpandDims()
                     g = unsqueeze(self.wg(s), -1)
@@ -153,6 +154,9 @@ class _VDropout(nn.Cell):
     def __init__(self, drop_rate):
         super(_VDropout, self).__init__()
         self.drop_rate = drop_rate
+        self.dropout = nn.Dropout(drop_rate)
+        self.ones = ops.Ones()
+        self.unsqueeze = ops.ExpandDims()
 
     def construct(self, x):
         """Dropout construction"""
@@ -161,12 +165,9 @@ class _VDropout(nn.Cell):
             return None
         if not self.training:
             return x
-
-        ones = ops.Ones()
-        mask = ops.bernoulli(
-            (1 - self.drop_rate) * ones(x.shape[:-1], x.dtype))
-        unsqueeze = ops.ExpandDims()
-        mask = unsqueeze(mask, -1)
+        a = self.ones(x.shape[:-1], x.dtype)
+        mask = self.dropout(a)
+        mask = self.unsqueeze(mask, -1)
         x = mask * x / (1 - self.drop_rate)
         return x
 
@@ -252,14 +253,16 @@ class GVPConv(MessagePassing):
         x_s, x_v = x
         message = self.propagate(x_s, edge_index, s=x_s, v=x_v.reshape(x_v.shape[0], 3 * x_v.shape[1]),
                                  edge_attr=edge_attr, aggr=self.aggr)
-        return _split(message, self.vo)
+        output = _split(message, self.vo)
+        return output
 
     def message(self, s_i, v_i, s_j, v_j, edge_attr):
         v_j = v_j.view(v_j.shape[0], v_j.shape[1] // 3, 3)
         v_i = v_i.view(v_i.shape[0], v_i.shape[1] // 3, 3)
         message = tuple_cat((s_j, v_j), edge_attr, (s_i, v_i))
         message = self.message_func(message)
-        return _merge(*message)
+        output = _merge(*message)
+        return output
 
 
 class GVPConvLayer(nn.Cell):
@@ -381,6 +384,7 @@ class GVPConvLayer(nn.Cell):
         x = self.norm[0](tuple_sum(x, self.dropout[0](dh)))
 
         dh = self.ff_func(x)
+
         x = self.norm[1](tuple_sum(x, self.dropout[1](dh)))
 
         if node_mask is not None:
