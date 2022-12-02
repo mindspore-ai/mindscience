@@ -12,8 +12,8 @@ mindsponge.metrics.frame_aligned_point_error
     :math:`\sum_{i }^{N_{frames}}\sum_{j}^{N_{atoms}}(\parallel \vec{x_{j\_pred}^{i}} - \vec{x_{j\_gt}^{i}} \parallel )` 
 
     参数：
-        - **pred_frames** (Tensor) - 预测的蛋白质刚体群对应局部坐标系，shape为 :math:`(12, N_{frames})` ，其中 :math:`N_{frames}` 是局部坐标系的数量。其中第一维上前九个元素代表局部坐标系相对于全局坐标系的旋转矩阵；后三个代表局部坐标系相对于全局坐标系的平移矩阵。
-        - **target_frames** (Tensor) - 预测的蛋白质刚体群对应局部坐标系，shape与pred_frames一致。
+        - **pred_frames** (Tensor) - 预测的蛋白质刚体变换组对应局部坐标系，shape为 :math:`(12, N_{frames})` ，其中 :math:`N_{frames}` 是局部坐标系的数量。其中第一维上前九个元素代表局部坐标系相对于全局坐标系的旋转矩阵；后三个代表局部坐标系相对于全局坐标系的平移矩阵。
+        - **target_frames** (Tensor) - 预测的蛋白质刚体变换组对应局部坐标系，shape与pred_frames一致。
         - **frames_mask** (Tensor) - 局部坐标系的mask，shape为 :math:`(N_{frames},)` 。
         - **pred_positions** (Tensor) - 预测的原子坐标，shape为 :math:`(3, N_{atoms})` 。
         - **target_positions** (list) - 真实的原子坐标，shape与pred_positions一致。

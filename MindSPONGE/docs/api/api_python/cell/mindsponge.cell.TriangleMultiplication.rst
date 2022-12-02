@@ -8,7 +8,7 @@ mindsponge.cell.TriangleMultiplication
 
     参数：
         - **num_intermediate_channel** (float) - 中间通道的数量。
-        - **equation** (str) - 三角形边顺序的爱因斯坦算符表示，分别对应于"incoming"和"outgoing"的边更新形式。 :math:`(ikc,jkc->ijc， kjc,kic->ijc)`。
+        - **equation** (str) - 三角形边顺序的爱因斯坦算符表示，分别对应于"incoming"和"outgoing"的边更新形式。 :math:`(ikc,jkc->ijc, kjc,kic->ijc)`。
         - **layer_norm_dim** (int) - 归一层的最后一维的长度。
         - **batch_size** (int) - 三角乘法中的batch size。默认值："None"。
 

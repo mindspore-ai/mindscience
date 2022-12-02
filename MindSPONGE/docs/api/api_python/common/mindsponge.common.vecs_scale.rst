@@ -15,5 +15,5 @@ mindsponge.common.vecs_scale
         - **v** (Tuple) - 待缩放向量, :math:`(x,y,z)` 其中 x,y,z 是标量或者Tensor，若为Tensor其shape相同。
         - **scale** (float) - 缩放值。
 
-    输出：
+    返回：
         Tuple，缩放后的向量，shape与v相同。

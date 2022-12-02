@@ -15,8 +15,8 @@ mindsponge.metrics.supervised_chi
         - **torsion_angle_mask** (Tensor) - 侧链扭转角的mask，shape为 :math:`(N_{res}, 4)` 。
         - **sin_cos_pred_chi** (Tensor) - shape为 :math:`(N_{res}, 4, 2)` ，预测的侧链扭转角的正弦和余弦值。
         - **sin_cos_unnormalized_pred** (Tensor) - 预测的扭转角的正弦和余弦值，没有做过正则化，shape为 :math:`(N_{recycle}, N_{res}, 7, 2)` ，其中 :math:`N_{recycle}` 是Structure模块中的循环次数。
-        - **chi_weight** (Tensor) - 角度差损失函数项的权重。
-        - **angle_norm_weight** (Tensor) - 角度模量损失函数项的权重。
+        - **chi_weight** (float) - 角度差损失函数项的权重。
+        - **angle_norm_weight** (float) - 角度模量损失函数项的权重。
         - **chi_pi_periodic** (Tensor) - 扭转角的周期性信息，某些氨基酸的某些扭转角具有周期性。氨基酸性质的常量，shape是 :math:`(21, 4)` ，21代表二十种氨基酸加未知氨基酸。
 
     返回：

@@ -8,5 +8,5 @@ mindsponge.common.vecs_to_tensor
     参数：
         - **v** (tuple) - 带有3个tensor，分别表示位置坐标中的x, y, z。
 
-    输出：
+    返回：
         tensor，返回三个tensor在最后一根轴合并后结果，shape为 :math:`(..., 3)` 。

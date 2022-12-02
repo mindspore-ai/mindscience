@@ -3,7 +3,7 @@ mindsponge.data.atom37_to_frames
 
 .. py:function:: mindsponge.data.atom37_to_frames(aatype, all_atom_positions, all_atom_mask, is_affine)
 
-    用至多8个刚体群来表示每个氨基酸。
+    用至多8个刚体变换组来表示每个氨基酸。
 
     参数：
         - **aatype** (numpy.array) - 氨基酸序列, :math:`[N_{res}]`。
@@ -14,10 +14,10 @@ mindsponge.data.atom37_to_frames
     返回：
         字典，具体内容如下。
 
-        - **rigidgroups_gt_frames** (numpy.array) - 将氨基酸序列位置用刚体群表示, :math:`[N_{res},8,12]`。
-        - **rigidgroups_gt_exists** (numpy.array) - rigidgroups_gt_frames的mask，表示该刚体群是不是存在实验解析获得的真实结构,
+        - **rigidgroups_gt_frames** (numpy.array) - 将氨基酸序列位置用刚体变换组表示, :math:`[N_{res},8,12]`。
+        - **rigidgroups_gt_exists** (numpy.array) - rigidgroups_gt_frames的mask，表示该刚体变换组是不是存在实验解析获得的真实结构,
           :math:`[N_{res}, 8]`。
-        - **rigidgroups_group_exists** (numpy.array) - rigidgroups_gt_frames的mask，表示该刚体群根据氨基酸残基的理想结构是否存在,
+        - **rigidgroups_group_exists** (numpy.array) - rigidgroups_gt_frames的mask，表示该刚体变换组根据氨基酸残基的理想结构是否存在,
           :math:`[N_{res},8]` 。
         - **rigidgroups_group_is_ambiguous** (numpy.array) - rigidgroups_gt_frames的mask，表示该位置是存在手性对称,
           :math:`[N_{res},8]` 。

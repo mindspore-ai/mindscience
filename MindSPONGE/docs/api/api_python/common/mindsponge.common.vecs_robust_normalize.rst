@@ -16,5 +16,5 @@ mindsponge.common.vecs_robust_normalize
         - **v** (Tuple) - 输入向量，:math:`(x,y,z)` 其中 x,y,z 是标量或 Tensor，若为Tensor其shape相同。
         - **epsilon** (float) - 极小值，防止返回值为0，默认为1e-8。
 
-    输出：
+    返回：
         Tuple， 返回二范数归一化后的向量，长度为3，其中每个元素shape与v中的元素相同。

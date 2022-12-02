@@ -1,7 +1,7 @@
-mindsponge.common.geometry.quaternion_to_tensor
-===============================================
+mindsponge.common.quaternion_to_tensor
+======================================
 
-.. py:function:: mindsponge.common.geometry.quaternion_to_tensor(quaternion, translation)
+.. py:function:: mindsponge.common.quaternion_to_tensor(quaternion, translation)
 
     将输入的四元数变为Tensor。
 

@@ -1,15 +1,15 @@
 restype_atom37_to_rigid_group
 =============================
 
-21种氨基酸按照稀疏编码方式，每种氨基酸中所包含原子所属的刚体变换群。shape为 :math:`(21, 37)` 。
+21种氨基酸按照稀疏编码方式，每种氨基酸中所包含原子所属的刚体变换组。shape为 :math:`(21, 37)` 。
 
-每个原子所属的刚体变换群从 `rigid_group_atom_positions ` 中获取。
+每个原子所属的刚体变换组从 `rigid_group_atom_positions ` 中获取。
 
 8种group为
-    - 0 - backbone-group 氨基酸 :math:`N-C\alpha-C-C\beta` 原子之间的扭转角 `backbone` 对应主链刚体变换群，CA为坐标原点，C在x轴正向，N在X-Y平面。
-    - 1 - pre-omega-group 氨基酸 :math:`N_i-C\alpha_i-N_{i-1}-C\alpha_{i-1}` 原子之间的扭转角 `pre-omega` 对应刚体变换群。
-    - 2 - phi-group 氨基酸 :math:`C_i-C\alpha_i-N_i-C_{i+1}` 原子之间的扭转角 `phi` 对应刚体变换群。
-    - 3 - psi-group 氨基酸 :math:`N_{i-1}-C_i-C\alpha_i-N_i` 原子之间的扭转角 `psi` 对应刚体变换群。
+    - 0 - backbone-group 氨基酸 :math:`N-C\alpha-C-C\beta` 原子之间的扭转角 `backbone` 对应主链刚体变换组，CA为坐标原点，C在x轴正向，N在X-Y平面。
+    - 1 - pre-omega-group 氨基酸 :math:`N_i-C\alpha_i-N_{i-1}-C\alpha_{i-1}` 原子之间的扭转角 `pre-omega` 对应刚体变换组。
+    - 2 - phi-group 氨基酸 :math:`C_i-C\alpha_i-N_i-C_{i+1}` 原子之间的扭转角 `phi` 对应刚体变换组。
+    - 3 - psi-group 氨基酸 :math:`N_{i-1}-C_i-C\alpha_i-N_i` 原子之间的扭转角 `psi` 对应刚体变换组。
     - 4 - chi1-group
     - 5 - chi2-group
     - 6 - chi3-group

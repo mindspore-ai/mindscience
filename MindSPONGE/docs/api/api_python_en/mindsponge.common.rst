@@ -6,16 +6,25 @@ mindsponge.common
     :nosignatures:
     :template: classtemplate.rst
 
-    mindsponge.common.apply_to_point
     mindsponge.common.find_optimal_renaming
     mindsponge.common.get_aligned_seq
     mindsponge.common.get_fasta_info
     mindsponge.common.get_pdb_info
+    mindsponge.common.make_atom14_positions
+
+mindsponge.common.geometry
+--------------------------
+
+.. msplatformautosummary::
+    :toctree: common
+    :nosignatures:
+    :template: classtemplate.rst
+
+    mindsponge.common.apply_to_point
     mindsponge.common.initial_affine
     mindsponge.common.invert_point
     mindsponge.common.invert_rigids
     mindsponge.common.invert_rots
-    mindsponge.common.make_atom14_positions
     mindsponge.common.make_transform_from_reference
     mindsponge.common.pre_compose
     mindsponge.common.quat_affine
@@ -27,7 +36,7 @@ mindsponge.common
     mindsponge.common.rigids_mul_rigids
     mindsponge.common.rigids_mul_rots
     mindsponge.common.rigids_mul_vecs
-    mindsponge.common.rots_expend_dims
+    mindsponge.common.rots_expand_dims
     mindsponge.common.rots_from_tensor
     mindsponge.common.rots_from_two_vecs
     mindsponge.common.rots_mul_rots
@@ -36,7 +45,7 @@ mindsponge.common
     mindsponge.common.rots_to_tensor
     mindsponge.common.vecs_cross_vecs
     mindsponge.common.vecs_dot_vecs
-    mindsponge.common.vecs_expend_dims
+    mindsponge.common.vecs_expand_dims
     mindsponge.common.vecs_from_tensor
     mindsponge.common.vecs_robust_norm
     mindsponge.common.vecs_robust_normalize
