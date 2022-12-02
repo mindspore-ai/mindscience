@@ -414,7 +414,7 @@ def atom37_to_torsion_angles(
           - torsion_angles_mask (numpy.array), Mask for which chi angles are present.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
         >>> import numpy as np
@@ -529,16 +529,16 @@ def atom37_to_torsion_angles(
 
 
 def atom37_to_frames(
-        aatype,  # inputs1 shape (...)
-        all_atom_positions,  # inputs2 shape (..., 37, 3)
-        all_atom_mask,  # inputs3 shape (..., 37)
+        aatype,
+        all_atom_positions,
+        all_atom_mask,
         is_affine=False
 ):
     r"""
     Computes  the torsion angle of up to 8 rigid body groups for each residue.
 
     Args:
-        aatype(numpy.array):     Amino acid sequence, :math: `[N_{res}]`.
+        aatype(numpy.array):     Amino acid sequence, :math:`[N_{res}]` .
         all_atom_positions(numpy.array):   The coordinates of all atoms, presented as atom37, :math:`[N_{res}, 37,3]`.
         all_atom_mask(numpy.array):       Mask of all atomic coordinates, :math:`[N_{res},37]`.
         is_affine(bool):    Whether to perform affine, the default value is "True".

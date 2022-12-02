@@ -47,10 +47,10 @@ CYS_SG_IDX = Tensor(5, ms.int32)
 
 
 def between_residue_bond(
-        pred_atom_positions,  # (N, 37(14), 3)
-        pred_atom_mask,  # (N, 37(14))
-        residue_index,  # (N)
-        aatype,  # (N)
+        pred_atom_positions,
+        pred_atom_mask,
+        residue_index,
+        aatype,
         tolerance_factor_soft=12.0,
         tolerance_factor_hard=12.0
 ):
@@ -72,12 +72,12 @@ def between_residue_bond(
                                       Default: 12.0 .
 
     Returns:
-        - c_n_loss_mean(Tensor), loss for peptide bond length violations. shape: () .
-        - ca_c_n_loss_mean(Tensor), loss for violations of bond angle around C spanned by CA, C，N. shape: () .
-        - c_n_ca_loss_mean(Tensor), loss for violations of bond angle around N spanned by C， N， CA. shape: () .
-        - per_residue_loss_sum(Tensor), sum of all losses of each residue. shape :math:`(N_{res}, )` .
-        - per_residue_violation_mask(Tensor), mask denoting all residues with violation present.
-          shape :math:`(N_{res}, )` .
+        - Tensor, c_n_loss_mean, loss for peptide bond length violations. shape is () .
+        - Tensor, ca_c_n_loss_mean, loss for violations of bond angle around C spanned by CA, C, N. shape is () .
+        - Tensor, c_n_ca_loss_mean, loss for violations of bond angle around N spanned by C, N, CA. shape is () .
+        - Tensor, per_residue_loss_sum, sum of all losses of each residue. shape is :math:`(N_{res}, )` .
+        - Tensor, per_residue_violation_mask, mask denoting all residues with violation present.
+          shape is math:`(N_{res}, )` .
 
     Note:
         - shape :math:`N_{res}`, number of amino acid.
@@ -199,23 +199,23 @@ def between_residue_clash(
 
     Args:
         atom14_pred_positions (Tensor): predicted positions of atoms in global prediction frame.
-                                        shape :math:`(N_{res}, 14, 3)` .
+                                        shape is :math:`(N_{res}, 14, 3)` .
         atom14_atom_exists (Tensor):    mask denoting whether atom at positions exists for given amino acid type.
-                                        shape :math:`(N_{res}, 14)` .
-        atom14_atom_radius (Tensor):    Van der Waals radius for each atom. shape :math:`(N_{res}, 14)` .
-        residue_index (Tensor):         Residue index for given amino acid. shape :math:`(N_{res}, )` .
-        c_one_hot (Tensor):             one hot encoding for C atoms (using atom14 representation). shape: (14, ) .
-        n_one_hot (Tensor):             one hot encoding for N atoms (using atom14 representation). shape: (14, ) .
-        overlap_tolerance_soft (float): soft tolerance factor. in default: 12.0 .
-        overlap_tolerance_hard (float): hard tolerance factor. in default: 1.5 .
-        cys_sg_idx (Tensor):           CYS amino acid index. Default: 5 .
-                                        see more at: `mindsponge.common.residue_constants`.
+                                        shape is :math:`(N_{res}, 14)` .
+        atom14_atom_radius (Tensor):    Van der Waals radius for each atom. shape is :math:`(N_{res}, 14)` .
+        residue_index (Tensor):         Residue index for given amino acid. shape is :math:`(N_{res}, )` .
+        c_one_hot (Tensor):             one hot encoding for C atoms (using atom14 representation). shape is (14, ) .
+        n_one_hot (Tensor):             one hot encoding for N atoms (using atom14 representation). shape is (14, ) .
+        overlap_tolerance_soft (float): soft tolerance factor. in default: 12.0.
+        overlap_tolerance_hard (float): hard tolerance factor. in default: 1.5.
+        cys_sg_idx (Tensor):            CYS amino acid index. Default: 5.
+                                        see more at `mindsponge.common.residue_constants`.
 
     Returns:
-        - **mean_loss** (Tensor) - average clash loss. shape: () .
-        - **per_atom_loss_sum** (Tensor) - sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
-        - **per_atom_clash_mask** (Tensor) - mask whether atom clashes with any other atom,
-          shape :math:`(N_{res}, 14)` .
+        - Tensor, mean_loss, average clash loss. Shape is () .
+        - Tensor, per_atom_loss_sum, sum of all clash losses per atom, shape is :math:`(N_{res}, 14)` .
+        - Tensor, per_atom_clash_mask, mask whether atom clashes with any other atom,
+          shape is :math:`(N_{res}, 14)` .
 
     Note:
         - shape :math:`N_{res}`, number of amino acid.
@@ -372,15 +372,15 @@ def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_
         n_one_hot (Tensor):                 one hot encoding for N atoms (using atom14 representation). shape: (14, ) .
         dists_mask_i (Tensor):              initial distants mask, shape: (14, 14) .
         cys_sg_idx (Tensor):                CYS amino acid index. Default: 5 .
-                                            see more at: `mindsponge.common.residue_constants`.
+                                            see more at `mindsponge.common.residue_constants`.
 
     Returns:
-        - bonds_c_n_loss_mean (Tensor), loss for peptide bond length violations. shape: () .
-        - angles_ca_c_n_loss_mean (Tensor), loss for violations of bond angle around C spanned by CA, C，N. shape: () .
-        - angles_c_n_ca_loss_mean (Tensor), loss for violations of bond angle around N spanned by C， N， CA. shape: () .
-        - connections_per_residue_loss_sum (Tensor), sum of all losses of each residue. shape: (Nres, ) .
+        - bonds_c_n_loss_mean (Tensor), loss for peptide bond length violations. shape is () .
+        - angles_ca_c_n_loss_mean (Tensor), loss for violations of bond angle around C spanned by CA, C, N. shape is ().
+        - angles_c_n_ca_loss_mean (Tensor), loss for violations of bond angle around N spanned by C, N, CA. shape is ().
+        - connections_per_residue_loss_sum (Tensor), sum of all losses of each residue. shape is :math:`(N_{res}, )` .
         - connections_per_residue_violation_mask (Tensor), mask denoting all residues with violation present.
-          shape :math:`(N_{res}, )` .
+          shape is :math:`(N_{res}, )` .
         - clashes_mean_loss (Tensor),  average clash loss. shape: () .
         - clashes_per_atom_loss_sum (Tensor), sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
         - clashes_per_atom_clash_mask (Tensor), mask whether atom clashes with any other atom.
@@ -388,7 +388,7 @@ def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_
         - per_atom_loss_sum (Tensor), sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
         - per_atom_violations (Tensor), violation per atom, shape :math:`(N_{res}, 14)` .
         - total_per_residue_violations_mask (Tensor), violation masks for all residues, shape :math:`(N_{res}, )` .
-        - structure_violation_loss (Tensor), total violations for all amino acids. shape: () .
+        - structure_violation_loss (Tensor), total violations for all amino acids. shape is () .
 
     Note:
         - shape :math:`N_{res}`, number of amino acid.
@@ -969,7 +969,7 @@ def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_fr
             Only the positions of last recycle is used in side-chain FAPE loss, encoded atom-14 encoding.
 
     Returns:
-        - **fape** (Tensor) - Clamped side-chian FAPE loss with shape ().
+        Tensor, fape. Clamped side-chian FAPE loss with shape ().
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1050,7 +1050,7 @@ def supervised_chi(sequence_mask, aatype, sin_cos_true_chi, torsion_angle_mask, 
             is the recycle number of FoldIteration in Structure module.
         chi_weight (float): The weight of chi angle difference loss term, constant.
         angle_norm_weight (float): The weight of angle norm loss term, constant.
-        chi_pi_periodic (float): Chi angles that are pi periodic: they can be rotated
+        chi_pi_periodic (Tensor): Chi angles that are pi periodic: they can be rotated
             by a multiple of pi without affecting the structure. Constants of residues of shape
             :math:`(21, 4)`, 20 types of amino acids + unknown.
 

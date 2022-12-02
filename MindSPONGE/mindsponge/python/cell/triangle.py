@@ -31,14 +31,15 @@ class TriangleAttention(nn.Cell):
     Triangle attention. for the detailed implementation process, refer to
     `TriangleAttention <https://www.nature.com/articles/s41586-021-03819-2>`_.
 
-    the information between the amino acid pair is integrated through the information of three edges ij, ik, jk,
-    which is divided into three parts: projection, self-attention and output. firstly, the amino acid pair is projected
+    The information between the amino acid pair is integrated through the information of three edges ij, ik, jk,
+    which is divided into three parts: projection, self-attention and output. Firstly, the amino acid pair is projected
     to obtain the q, k, v, and then through the classic multi-head self-attention mechanism, add the relationship
     between i, j, k triangle sides, finally output the result.
 
     Args:
-        orientation (int):      Decide on the dimension of Triangle attention.
-        num_head (int):        The number of the heads.
+        orientation (int):      Decide the dimension of Triangle attention, used as the starting and ending
+                                edge of self-attention.
+        num_head (int):         The number of the heads.
         key_dim (int):          The dimension of the hidden layer.
         gating (bool):          Indicator of if the attention is gated.
         layer_norm_dim (int):   The dimension of the layer_norm.
@@ -142,14 +143,14 @@ class TriangleMultiplication(nn.Cell):
     Triangle multiplication layer. for the detailed implementation process, refer to
     `TriangleMultiplication <https://www.nature.com/articles/s41586-021-03819-2>`_.
 
-    the information between the amino acid pair is integrated through the information of three edges ij, ik, jk, and
+    The information between the amino acid pair is integrated through the information of three edges ij, ik, jk, and
     the result of the dot product between ik and jk is added to the edge of ij.
 
     Args:
         num_intermediate_channel (float):   The number of intermediate channel.
         equation (str):                     The equation used in triangle multiplication layer. edge update forms
                                             corresponding to 'incoming' and 'outgoing',
-                                            :math:`(ikc,jkc->ijc， kjc,kic->ijc)`.
+                                            :math:`(ikc,jkc->ijc, kjc,kic->ijc)`.
         layer_norm_dim (int):               The last dimension length of the layer norm.
         batch_size (int):                   The batch size of parameters in triangle multiplication. Default: None.
 
@@ -373,7 +374,7 @@ class OuterProductMean(nn.Cell):
     could be used to update the correlation features(e.g. the Pair representation).
 
     .. math::
-        OuterProductMean(\mathbf{output}) = Linear(flatten(mean(\mathbf{act}\otimes\mathbf{act})))
+        OuterProductMean(\mathbf{act}) = Linear(flatten(mean(\mathbf{act}\otimes\mathbf{act})))
 
     Args:
         num_outer_channel (float):  The last dimension size of intermediate layer in OuterProductMean.
@@ -393,8 +394,8 @@ class OuterProductMean(nn.Cell):
           flow. Default: "None".
 
     Outputs:
-        Tensor, the float tensor of the output of the layer with shape
-        :math:`(dim_2, dim_2, num\_output\_channel)`.
+        Tensor, the float tensor of the output of OuterProductMean layer with
+          shape :math:`(dim_2, dim_2, num\_output\_channel)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

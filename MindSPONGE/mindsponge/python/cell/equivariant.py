@@ -32,7 +32,7 @@ class InvariantPointAttention(nn.Cell):
 
     The attention consists of three parts, namely, q, k, v obtained by the sequence representation,
     q'k'v' obtained by the interaction between the sequence representation and the rigid body group,
-    and b , which is th bias,  obtained  from the pair representation(the second inputs -- inputs_2d).
+    and b , which is th bias, obtained from the pair representation (the second inputs -- inputs_2d).
 
     .. math::
         a_{ij} = Softmax(w_l(c_1{q_i}^Tk_j+b{ij}-c_2\sum {\left \| T_i\circ q'_i-T_j\circ k'_j \right \| ^{2 } })
@@ -65,8 +65,7 @@ class InvariantPointAttention(nn.Cell):
           A tuple of length 3, The shape of each elements in the tuple is :math:`[N_{res}]`.
 
     Outputs:
-        - **output** (Tensor) - Tensor, the update of inputs_1d,
-          shape :math:`[N_{res}, channel]`.
+        Tensor, the update of inputs_1d, shape :math:`[N_{res}, channel]`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
