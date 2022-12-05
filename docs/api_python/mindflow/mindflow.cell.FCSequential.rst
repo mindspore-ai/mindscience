@@ -1,10 +1,10 @@
-.. py:class:: mindflow.cell.FCSequential(in_channel, out_channel, layers, neurons, residual=True, act="sin", weight_init="normal", has_bias=True, bias_init="default", weight_norm=False)
+.. py:class:: mindflow.cell.FCSequential(in_channels, out_channels, layers, neurons, residual=True, act="sin", weight_init="normal", has_bias=True, bias_init="default", weight_norm=False)
 
     全连接层的一个时序容器，按序放入全连接层。
 
     参数：
-        - **in_channel** (int) - 输入中的通道数。
-        - **out_channel** (int) - 输出中的通道数。
+        - **in_channels** (int) - 输入中的通道数。
+        - **out_channels** (int) - 输出中的通道数。
         - **layers** (int) - 层的总数，包括输入/隐藏/输出层。
         - **neurons** (int) - 隐藏层的神经元数量。
         - **residual** (bool) - 隐藏层是否使用残差网络模块。若为True，使用残差网络模块。若为False，使用线性模块。默认值：True。

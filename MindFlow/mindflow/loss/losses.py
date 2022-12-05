@@ -203,7 +203,6 @@ class MTLWeightedLossCell(WeightedLossCell):
         self.div = ops.RealDiv()
 
     def construct(self, losses):
-        """get weighted total loss"""
         loss_sum = 0
         params = self.pow(self.params, 2)
         for i in range(self.num_losses):
