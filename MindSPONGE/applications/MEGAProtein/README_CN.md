@@ -29,7 +29,8 @@ MEGA-Protein主要由三部分组成：
 | 所属模块      | 文件名        | 大小 | 描述  |Model URL  |
 |-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
 | MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 |  [下载链接](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)  |
-| MEGA-EvoGen     | `MEGAEvoGen.ckpt`  | 535.7MB        | MEGA-EvoGen的checkpoint链接 | [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAEvoGen/MEGAEvoGen.ckpt)   |
+| MEGA-EvoGen     | `MEGAEvoGen.ckpt`  | 535.7MB        | MEGA-EvoGen的checkpoint链接 | [下载链接](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAEvoGen/MEGAEvoGen.ckpt)   |
+| MEGA-Assessment     | `MEGA_Assessment.ckpt`  | 77MB        | MEGA-Assessment的checkpoint链接 | [下载链接](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAAssessment/MEGA_Assessment.ckpt)   |
 | PSP          | `PSP`         | 1.6TB(解压后25TB)    | PSP蛋白质结构数据集，可用于MEGA-Fold训练 |  [下载链接](http://ftp.cbi.pku.edu.cn/psp/)  |
 
 <details><summary>引用我们</summary>
@@ -87,6 +88,7 @@ MEGA-Protein主要由三部分组成：
 
 <details><summary>近期更新</summary>
 
+- 2022.11：MSA生成/增强工具MEGA-Assessment训练推理开源。
 - 2022.11：MSA生成/增强工具MEGA-EvoGen推理开源。
 - 2022.04: 蛋白质结构预测工具MEGA-Fold训练开源。
 - 2021.11: 蛋白质结构预测工具MEGA-Fold推理开源。
@@ -298,7 +300,7 @@ MEGA-EvoGen相关超参位于 `./config/evogen.yaml`，
 
 ### MEGA-Assessment 蛋白质结构评分训练
 
-下载开源结构训练数据集[PSP dataset](http://ftp.cbi.pku.edu.cn/psp/)，使用以下命令启动训练：
+下载开源结构训练数据集[PSP lite dataset](http://ftp.cbi.pku.edu.cn/psp/psp_lite/)，使用以下命令启动训练：
 和已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)，运行以下命令启动训练。
 
 ```bash

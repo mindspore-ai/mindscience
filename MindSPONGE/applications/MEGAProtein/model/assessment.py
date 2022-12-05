@@ -124,9 +124,9 @@ class MegaAssessment(nn.Cell):
                                              self.cfg.seq_channel)
         self.module_distogram = DistogramHead(self.cfg.heads.distogram,
                                               self.cfg.pair_channel)
-
-        self.module_lddt_decoy = PredictedLDDTHead(self.cfg.heads.predicted_lddt,
-                                                   self.cfg.seq_channel * 3)
+        if self.is_training:
+            self.module_lddt_decoy = PredictedLDDTHead(self.cfg.heads.predicted_lddt,
+                                                       self.cfg.seq_channel)
         self.module_estogram = EstogramHead(first_break=self.cfg.heads.distogram.first_break,
                                             last_break=self.cfg.heads.distogram.last_break,
                                             num_bins=self.cfg.heads.distogram.num_bins)
@@ -150,22 +150,15 @@ class MegaAssessment(nn.Cell):
         extra_has_deletion = mnp.zeros_like(extra_has_deletion[:self.extra_msa_length])
         extra_deletion_value = mnp.zeros_like(extra_deletion_value[:self.extra_msa_length])
         extra_msa_mask = mnp.zeros_like(extra_msa_mask[:self.extra_msa_length])
-        msa_feat = msa_feat[:self.msa_cluster_length]
-        msa_mask = msa_mask[:self.msa_cluster_length]
-        msa_feat[1:self.msa_cluster_length] = mnp.zeros_like(msa_feat[1:self.msa_cluster_length])
-        msa_mask[1:self.msa_cluster_length] = mnp.zeros_like(msa_mask[1:self.msa_cluster_length])
-        template_aatype[0:1] = aatype[None]
+        msa_feat = mnp.concatenate((msa_feat[0:1], mnp.zeros_like(msa_feat[1:self.msa_cluster_length])), axis=0)
+        msa_mask = mnp.concatenate((msa_mask[0:1], mnp.zeros_like(msa_mask[1:self.msa_cluster_length])), axis=0)
+        template_aatype = mnp.concatenate((aatype[None], mnp.zeros_like(template_aatype[1:])), axis=0)
+        template_mask = mnp.concatenate((mnp.ones_like(template_mask[0:1]), mnp.zeros_like(template_mask[1:])), axis=0)
         template_all_atom_masks[0] = final_atom_mask_recycle
         template_all_atom_positions[0] = final_atom_positions_recycle
         template_mask[0] = mnp.ones_like(template_mask[0])
         template_pseudo_beta_mask[0] = decoy_pseudo_beta_mask
         template_pseudo_beta[0] = decoy_pseudo_beta
-        template_aatype[1:] = mnp.zeros_like(template_aatype[1:])
-        template_all_atom_masks[1:] = mnp.zeros_like(template_all_atom_masks[1:])
-        template_all_atom_positions[1:] = mnp.zeros_like(template_all_atom_positions[1:])
-        template_mask[1:] = mnp.zeros_like(template_mask[1:])
-        template_pseudo_beta_mask[1:] = mnp.zeros_like(template_pseudo_beta_mask[1:])
-        template_pseudo_beta[1:] = mnp.zeros_like(template_pseudo_beta[1:])
 
         preprocess_1d = self.preprocess_1d(target_feat)
         preprocess_msa = self.preprocess_msa(msa_feat)
