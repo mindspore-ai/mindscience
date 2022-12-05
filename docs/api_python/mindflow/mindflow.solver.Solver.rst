@@ -8,11 +8,6 @@
         - **optimizer** (Cell) - 用于更新权重的优化器。
         - **loss_fn** (Union(str, dict, Cell)) - 目标函数，如果 `loss_fn` 为None，网络应包含逻辑损失和梯度计算。请注意，在数据模式下不支持 `loss_fn` 的dict类型。
           默认值："l2"。
-        - **mode** (str) - 模型的类型。支持["Data", "PINNs"]。默认值："Data"。
-
-          - Data：模型是data_driven。
-          - PINNs：模型是physics_informed。
-
         - **train_constraints** (Constraints) - 训练数据集损失的定义。默认值：None。如果模式是PINNs，则 `train_constraints` 不能为None。
         - **test_constraints** (Constraints) - 测试数据集损失的定义。默认值：None。如果模式为PINNs，且需要执行 `eval` （见类中的 `train_with_eval` 和 `eval` 函数）时， `test_constraints` 不能为None。
         - **train_input_map** (dict) - 在训练时，指定相应数据集中数据的列名进入网络。key为数据集的名称，value为在相应的数据集中的数据列名进入网络。默认值：None。如果模型的输入不是单个， `train_input_map` 不能为None。

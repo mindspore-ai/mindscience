@@ -1,10 +1,10 @@
-.. py:class:: mindflow.cell.MultiScaleFCCell(in_channel, out_channel, layers, neurons, residual=True, act="sin", weight_init="normal", weight_norm=False, has_bias=True, bias_init='default', num_scales=4, amp_factor=1.0, scale_factor=2.0, input_scale=None, input_center=None, latent_vector=None)
+.. py:class:: mindflow.cell.MultiScaleFCCell(in_channels, out_channels, layers, neurons, residual=True, act="sin", weight_init="normal", weight_norm=False, has_bias=True, bias_init='default', num_scales=4, amp_factor=1.0, scale_factor=2.0, input_scale=None, input_center=None, latent_vector=None)
 
     多尺度神经网络。
 
     参数：
-        - **in_channel** (int) - 输入中的通道数。
-        - **out_channel** (int) - 输出中的通道数。
+        - **in_channels** (int) - 输入中的通道数。
+        - **out_channels** (int) - 输出中的通道数。
         - **layers** (int) - 层总数，包括输入/隐藏/输出层。
         - **neurons** (int) - 隐藏层的神经元数量。
         - **residual** (bool) - 隐藏层的残差块的全连接。默认值：True。

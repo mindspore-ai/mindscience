@@ -31,7 +31,7 @@
             - **KeyError** - 如果 `geom_type` 为 `IC`，但 `config.ic` 为None。
             - **ValueError** - 如果 `geom_type` 不是 `BC` 、 `IC` 也不是 `domain`。
 
-    .. py:method:: set_sampling_config(sampling_config: mindelec.geometry.geometry_base.SamplingConfig)
+    .. py:method:: set_sampling_config(sampling_config: SamplingConfig)
 
         设置采样信息。
 

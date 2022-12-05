@@ -1,4 +1,4 @@
-.. py:class:: mindflow.solver.Problem
+.. py:class:: mindflow.pde.Problem
 
     用户定义问题的基类。
     在每个数据集上设置约束的所有用户定义的问题，必须继承此类。
