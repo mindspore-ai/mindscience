@@ -28,14 +28,12 @@ def _make_paths_absolute(dir_, config):
     """
     Make all values for keys ending with `_path` absolute to dir_.
 
-    Parameters
-    ----------
-    dir_ : str
-    config : dict
+    Args:
+        dir_ (str): The path of yaml configuration file.
+        config (dict): The yaml for configuration file.
 
-    Returns
-    -------
-    config : dict
+    Returns:
+        Dict. The configuration information in dict format.
     """
     for key in config.keys():
         if key.endswith("_path"):
@@ -50,16 +48,18 @@ def load_yaml_config(file_path):
     """
     Load a YAML configuration file.
 
-    Parameters
-    ----------
-    file_path : str
+    Args:
+        file_path (str): The path of yaml configuration file.
 
-    Returns
-    -------
-    config : dict
+    Returns:
+        Dict. The configuration information in dict format.
+
+    Supported Platforms:
+        ``Ascend`` ``CPU`` ``GPU``
     """
     # Read YAML experiment definition file
     with open(file_path, 'r') as stream:
         config = yaml.safe_load(stream)
-    config = _make_paths_absolute(os.path.join(os.path.dirname(file_path), ".."), config)
+    config = _make_paths_absolute(os.path.join(
+        os.path.dirname(file_path), ".."), config)
     return config

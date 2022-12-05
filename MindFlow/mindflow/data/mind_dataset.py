@@ -40,9 +40,13 @@ class MindDataset(Data):
         constraint_type (str, optional): constraint type of the specified dataset to get it's corresponding loss
             function. Default: "Label"
         shuffle (Union[bool, Shuffle level], optional): Perform reshuffling of the data every epoch
-            (default=True, performs global shuffle).
             If shuffle is False, no shuffling will be performed.
-            If shuffle is True, performs global shuffle.
+            If shuffle is True, performs global shuffle. Default: True.
+            Otherwise, there are two levels of shuffling:
+
+            - Shuffle.GLOBAL: Shuffle both the files and sample.
+            - Shuffle.FILES: Shuffle files only.
+
         num_shards (int, optional): Number of shards that the dataset will be divided into (default=None).
             When this argument is specified, 'num_samples' reflects the maximum sample number of per shard.
         shard_id (int, optional): The shard ID within `num_shards` (default=None). This
@@ -164,6 +168,7 @@ class MindDataset(Data):
             batch_size (int, optional): An int number of rows each batch is created with. Default: 1.
             preprocess_fn (Union[list[TensorOp], list[functions]], optional): List of operations to be
                 applied on the dataset. Operations are applied in the order they appear in this list. Default: None.
+            updated_columns_list (listoptional): List of columns to be applied on the dataset. Default: None.
             drop_remainder (bool, optional): Determines whether or not to drop the last block
                 whose data row number is less than batch size. If True, and if there are less
                 than batch_size rows available to make the last batch, then those rows will
@@ -216,8 +221,6 @@ class MindDataset(Data):
 
     def get_columns_list(self):
         """get columns list
-
-        Args:
 
         Returns:
             list[str]. column names list of the final unified dataset.
