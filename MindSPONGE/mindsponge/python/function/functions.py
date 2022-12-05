@@ -31,9 +31,10 @@ import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import ops
 from mindspore import ms_function
+from mindspore.ops import function as F
 from mindspore import Tensor, Parameter, context
 from mindspore.ops._grad.grad_base import bprop_getters
-from mindspore.ops._utils.utils import generate_shape_index, is_shape_unknown
+from mindspore.ops._utils.utils import generate_shape_index
 from mindspore.ops.composite.multitype_ops.zeros_like_impl import zeros_like
 
 __all__ = [
@@ -153,7 +154,7 @@ class GatherNet(ms.nn.Cell):
         ind_shp = ops.shape(indices)
         perm_1 = generate_shape_index(out_shp, ind_shp, axis)
         values_transpose = ops.transpose(dout, perm_1)
-        if is_shape_unknown(ops.shape(x)):
+        if F.is_sequence_value_unknown(ops.shape(x)):
             params_grad = unsorted_segment_sum(values_transpose, indices, dyn_shape_op(x)[axis])
         else:
             params_grad = unsorted_segment_sum(values_transpose, indices, ops.shape(x)[axis])

@@ -28,7 +28,7 @@ from mindsponge.cell.initializer import do_keep_cell_fp32
 from mindsponge.common.config_load import load_config
 from mindsponge.common.protein import to_pdb, from_prediction
 
-from data import Feature, RawFeatureGenerator, get_crop_size, get_raw_feature
+from data import Feature, RawFeatureGenerator, get_raw_feature
 from model import MegaFold, compute_confidence
 from module.fold_wrapcell import TrainOneStepCell, WithLossCell
 from module.lr import cos_decay_lr
@@ -55,6 +55,7 @@ parser.add_argument('--total_steps', type=int, default=9600000, help='total step
 parser.add_argument('--decoy_pdb_path', type=str, help='Location of decoy pdb file.')
 parser.add_argument('--run_assessment', type=int, default=0, help='Run pdb assessment.')
 parser.add_argument('--run_evogen', type=int, default=0, help='Run pdb assessment.')
+parser.add_argument('--seq_len', type=int, default=1536, help='Seq len.')
 arguments = parser.parse_args()
 
 
@@ -62,7 +63,7 @@ def fold_infer(args):
     '''mega fold inference'''
     data_cfg = load_config(args.data_config)
     model_cfg = load_config(args.model_config)
-    data_cfg.eval.crop_size = get_crop_size(args.input_path, args.use_pkl)
+    data_cfg.eval.crop_size = args.seq_len
     model_cfg.seq_length = data_cfg.eval.crop_size
     slice_key = "seq_" + str(model_cfg.seq_length)
     slice_val = vars(model_cfg.slice)[slice_key]
