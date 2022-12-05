@@ -61,21 +61,23 @@ QUAT_TO_ROT = Tensor(QUAT_TO_ROT)
 
 def vecs_scale(v, scale):
     r"""
-    Scaling of vectors.
+    Scale the vector.
+
     .. math::
-        v=(x1,x2,x3)
-        scaled\_{vecs} = (scale*x1,scale*x2,scale*x3)
+        \begin{split}
+        &v=(x1,x2,x3) \\
+        &scaled\_{vecs} = (scale*x1,scale*x2,scale*x3) \\
+        \end{split}
 
-    Args：
-        - **v** (Tuple) - Input vector, tuple with length of 3, tuple with length of 3，:math:`(x,y,z)` where
-          x,y,z is scalar or Tensor which has same shape.
-        - **scale** (float) - Scale value.
+    Args:
+        v(Tuple):       Vector will be scaled, :math:`(x,y,z)`. x, y, z are scalars or Tensor with same shape.
+        scale(float):   Value of scale.
 
-    Returns：
-        - **scaled_vecs** (Tuple) - Scaled vector, tuple with length of 3,  each element has same shape as v's element.
+    Returns:
+        Tuple with length of 3, vector after scaled with the same shape as input v.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
         >>> import numpy as np
@@ -103,22 +105,23 @@ def vecs_scale(v, scale):
 def rots_scale(rot, scale):
     r"""
     Scaling of rotation matrixs.
+
     .. math::
-        rot=(x1,x2,x3,x4,x5,x6,x7,x8,x9)
-        scaled\_{rots} = (scale*x1,scale*x2,scale*x3,scale*x4,scale*x5,scale*x6,scale*x7,scale*x8,scale*x9)
+        \begin{split}
+        &rot=(xx,xy,xz,yx,yy,yz,zx,zy,zz) \\
+        &scaled\_{rots} = (scale*xx,scale*xy,scale*xz,scale*yx,scale*yy,scale*yz,scale*zx,scale*zy,scale*zz)
+        \end{split}
 
+    Args:
+        rot(Tuple):     Rots, length is 9, :math:`(xx,xy,xz,yx,yy,yz,zx,zy,zz)` . Data type is scalar or
+                        Tensor with the same shape.
+        scale(float):   Value of scale.
 
-    Args：
-        - **rot** (Tuple) - rotation matrix, tuple with length of 9, :math:`(xx,xy,xz,yx,yy,yz,zx,zy,zz)`
-          each element is scalar or Tensor which has same shape.
-        - **scale** (float) - Scale value.
-
-    Returns：
-        - **scaled_rots** (Tuple) - Scaled rotation matrixs, tuple with length of 9,
-          each element has same shape as rot's element.
+    Returns:
+        Tuple, scaled rotation matrixs. Length is 9, shape is the same as the input rots' shape.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
         >>> import numpy as np
@@ -157,21 +160,23 @@ def rots_scale(rot, scale):
 def vecs_sub(v1, v2):
     r"""
     Subtract two vectors.
+
     .. math::
-        v1=(x1,x2,x3)
-        v2=(x1',x2',x3')
-        result=(x1-x1',x2-x2',x3-x3')
+        \begin{split}
+        &v1=(x1,x2,x3) \\
+        &v2=(x1',x2',x3') \\
+        &result=(x1-x1',x2-x2',x3-x3') \\
+        \end{split}
 
-    Args：
-        - **v1** (Tuple) - The first vector, tuple with length of 3，:math:`(x,y,z)` where x,y,z is is scalar or
-          Tensor which has same shape.
-        - **v2** (Tuple) - The second vector, tuple with length of 3, each element has same shape as v1's element.
+    Args:
+        v1(Tuple):  input vector 1 :math:`(x, y, z)`, data type is scalar or Tensor with same shape.
+        v2(Tuple):  input vector 2 :math:`(x, y, z)`, data type is scalar or Tensor with same shape.
 
-    Returns：
-        Tuple with length of 3, Subtracted vectors,  each element has same shape as v1's element.
+    Returns:
+        Tuple. Length is 3, :math:`(x', y', z')` , data type is scalar or Tensor with same shape as v1.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
         >>> import numpy as np
@@ -197,20 +202,22 @@ def vecs_sub(v1, v2):
 def vecs_robust_norm(v, epsilon=1e-8):
     r"""
     Calculate the l2-norm of a vector.
+
     .. math::
-        v=(x1,x2,x3)
-        l2\_norm=\sqrt{x1*x1+x2*x2+x3*x3+epsilon}
+        \begin{split}
+        &v=(x1,x2,x3) \\
+        &l2\_norm=\sqrt{x1*x1+x2*x2+x3*x3+epsilon} \\
+        \end{split}
 
-    Args：
-        - **v** (Tuple) - Input vector, tuple with length of 3, tuple with length of 3，:math:`(x,y,z)`
-          where x,y,z is scalar or Tensor which has same shape
-        - **epsilon** (float) - Minimal value, prevents the return value from being 0, Default 1e-8.
+    Args:
+        v(Tuple):       Input vector :math:`(x,y,z)` . Data type is scalar or Tensor with same shape.
+        epsilon(float): A very small number to prevent the result from being 0. Default: 1e-8.
 
-    Returns：
-        - **v_norm** (Tensor) - The l2-norm calculated from v, shape is as same as v's elements.
+    Returns:
+        Tensor, 2-Norm calculated by vector v. Shape is the same as v.
 
     Supported Platforms:
-    ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
         >>> import numpy as np
@@ -232,21 +239,23 @@ def vecs_robust_norm(v, epsilon=1e-8):
 def vecs_robust_normalize(v, epsilon=1e-8):
     r"""
     Use l2-norm normalization vectors
+
     .. math::
-        v=(x1,x2,x3)
-        l2\_norm=\sqrt{x1*x1+x2*x2+x3*x3+epsilon}
-        result=(x1/l2\_norm, x2/l2\_norm, x3/l2\_norm)
+        \begin{split}
+        &v=(x1,x2,x3) \\
+        &l2\_norm=\sqrt{x1*x1+x2*x2+x3*x3+epsilon} \\
+        &result=(x1/l2\_norm, x2/l2\_norm, x3/l2\_norm) \\
+        \end{split}
 
-    Args：
-        - **v** (Tuple) - Input vector, tuple with length of 3，:math:`(x,y,z)` where x,y,z is scalar or
-          Tensor which has same shape
-        - **epsilon** (float) - Minimal value, prevents the return value from being 0, Default 1e-8.
+    Args:
+        v(Tuple):       Input vector :math:`(x,y,z)` . Data type is scalar or Tensor with same shape.
+        epsilon(float): Minimal value, prevent the result from being 0. Default: 1e-8.
 
-    Outputs：
-        Tuple with length of 3, the normalized vector, each element has same shape as v's element.
+    Returns:
+        Tuple with length of 3, normalized 2-Norm calculated by vector v. Shape is the same as v.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
         >>> import numpy as np
@@ -271,9 +280,8 @@ def vecs_robust_normalize(v, epsilon=1e-8):
 
 
 def vecs_dot_vecs(v1, v2):
-    """
-    Dot product of vectors :math:`v_1 = (x_1, x_2, x_3)`
-    and :math:`v_2 = (y_1, y_2, y_3)`.
+    r"""
+    Dot product of vectors :math:`v_1 = (x_1, x_2, x_3)` and :math:`v_2 = (y_1, y_2, y_3)`.
 
     .. math::
         res = x_1 * y_1 + x_2 * y_2 + x_3 * y_3
@@ -303,12 +311,11 @@ def vecs_dot_vecs(v1, v2):
 
 
 def vecs_cross_vecs(v1, v2):
-    """
-    Cross product of vectors :math:`v_1 = (x_1, x_2, x_3)`
-    and :math:`v_2 = (y_1, y_2, y_3)`.
+    r"""
+    Cross product of vectors :math:`v_1 = (x_1, x_2, x_3)` and :math:`v_2 = (y_1, y_2, y_3)`.
 
     .. math::
-        cross_res = (x_2 * y_3 - x_3 * y_2, x_3 * y_1 - x_1 * y_3, x_1 * y_2 - x_2 * y_1)
+        cross_{res} = (x_2 * y_3 - x_3 * y_2, x_3 * y_1 - x_1 * y_3, x_1 * y_2 - x_2 * y_1)
 
     Args:
         v1 (tuple): vectors :math:`\vec v_1` , length is 3.
@@ -365,7 +372,7 @@ def rots_from_two_vecs(e0_unnormalized, e1_unnormalized):
                                     length is 3. Data type is constant or Tensor with same shape.
 
     Returns:
-        tuple, rotation matrix :math:`(e_0_x, e_1_x, e_2_x, e_0_y, e_1_y, e_2_y, e_0_z, e_1_z, e_2_z)`.
+        tuple, rotation matrix :math:`(e_0_x, e_1_x, e_2_x, e_0_y, e_1_y, e_2_y, e_0_z, e_1_z, e_2_z)` .
             Data type is constant or Tensor with same shape.
 
     Supported Platforms:
@@ -461,7 +468,7 @@ def rigids_from_3_points(point_on_neg_x_axis, origin, point_on_xy_plane):
 
 
 def invert_rots(m):
-    """
+    r"""
     Computes inverse of rotations :math:`m`.
 
     rotations :math:`m = (xx, xy, xz, yx, yy, yz, zx, zy, zz)` and
@@ -575,7 +582,7 @@ def vecs_add(v1, v2):
 
 
 def rigids_mul_vecs(rigids, v):
-    """
+    r"""
     Transform vector :math:`v` to rigid' local coordinate system.
 
     Multiply vector :math:`v` and the rotations of rigid together
@@ -606,7 +613,7 @@ def rigids_mul_vecs(rigids, v):
 
 
 def rigids_mul_rots(x, y):
-    """
+    r"""
     Numpy version of getting results rigid :math:`x` multiply rotations :math:`\vec y` .
 
     Multiply rotations of rigid :math:`x` with rotations :math:`y`,
@@ -685,7 +692,7 @@ def rigids_mul_rigids(a, b):
 
 def rots_mul_rots(x, y):
     r"""
-    Get result of rotation matrix x multiply rotation matrix y
+    Get result of rotation matrix x multiply rotation matrix y.
 
     .. math::
         \begin{split}
@@ -701,11 +708,11 @@ def rots_mul_rots(x, y):
         \end{split}
 
     Args:
-        x (tuple): rotation matrix x, shape :math:`(xx1, xy1, xz1, yx1, yy1, yz1, zx1, zy1, zz1)`.
-        y (tuple): rotation matrix y, shape :math:`(xx2, xy2, xz2, yx2, yy2, yz2, zx2, zy2, zz2)`.
+        x(tuple):   rots x, :math:`(xx1, xy1, xz1, yx1, yy1, yz1, zx1, zy1, zz1)`.
+        y(tuple):   rots y, :math:`(xx2, xy2, xz2, yx2, yy2, yz2, zx2, zy2, zz2)`.
 
     Returns:
-        rots (tuple): the result of rots x multiply rots y, shape :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
+        tuple, the result of rots x multiplying rots y. Shape is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -727,13 +734,13 @@ def rots_mul_rots(x, y):
 
 def vecs_from_tensor(inputs):
     """
-    Get vectors from input tensor
+    Get vectors from the last axis of input tensor.
 
     Args:
-        inputs (tensor): the atom position. shape :math:`(..., 3)`.
+        inputs(Tensor): Atom position information. Shape is :math:`(..., 3)`.
 
     Returns:
-        tuple have three tensor, represent the position of x, y, z.
+        tuple :math:`(x, y, z)` , including the coordinate information of x, y and z.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -755,13 +762,13 @@ def vecs_from_tensor(inputs):
 
 def vecs_to_tensor(v):
     """
-    Converts vector to tensor with last dim is 3, inverse of 'vecs_from_tensor'.
+    Converts 'v' to tensor with last dim shape 3, inverse of 'vecs_from_tensor'.
 
     Args:
-        v (tuple): three tensors, represent the position x, y, z.
+        v(tuple):   Input tuple v :math:`(x, y, z)`, including the coordinate information of x, y and z.
 
     Returns:
-        tensor, concat the tensor in last dims, shape :math:`(..., 3)`.
+        tensor, concat the tensor in last dims, shape :math:`(..., 3)` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -784,11 +791,15 @@ def vecs_to_tensor(v):
 
 def make_transform_from_reference(point_a, point_b, point_c):
     r"""
-    Using GramSchmidt process to construct rotation and translation from given points,
-    calculate the rotation matrix and translation meets:
-    a) 'N' atom is the original point
-    b) 'CA' atom is on the x_axis
-    c) the plane CA-N-C is on the x-y plane
+    Using GramSchmidt process to construct rotation and translation from given points.
+
+    Calculate the rotation matrix and translation meets
+
+    a) point_b is the original point.
+
+    b) point_c is on the x_axis.
+
+    c) the plane a-b-c is on the x-y plane.
 
     .. math::
         \begin{split}
@@ -803,13 +814,20 @@ def make_transform_from_reference(point_a, point_b, point_c):
         \end{split}
 
     Args:
-        point_a (float, tensor) -> (tensor): the position of 'N', shape: :math:`[..., N_{res}, 3]`.
-        point_b (float, tensor) -> (tensor): the position of 'CA', shape: :math:`[..., N_{res}, 3]`.
-        point_c (float, tensor) -> (tensor): the position of 'C', shape: :math:`[..., N_{res}, 3]`.
+        point_a(float, tensor) -> (tensor): Spatial location information of atom 'N',
+                                            shape is :math:`[..., N_{res}, 3]` .
+        point_b(float, tensor) -> (tensor): Spatial location information of atom 'CA',
+                                            shape is :math:`[..., N_{res}, 3]` .
+        point_c(float, tensor) -> (tensor): Spatial location information of atom 'C',
+                                            shape is :math:`[..., N_{res}, 3]` .
 
-    Return:
-        rotation: (tuple) :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, shape :math:`(..., N_{res})`.
-        translation: (tuple) :math:`(x, y, z)`, shape :math:`(..., N_{res})`.
+    Returns:
+        - Tuple, rots :math:`[xx, xy, xz, yx, yy, yz, zx, zy, zz]` ,
+          the shape of every element is :math:`(..., N_{res})` .
+        - Tuple, trans :math:`[x, y, z]` , the shape of every element is :math:`(..., N_{res})` .
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np
@@ -861,14 +879,15 @@ def make_transform_from_reference(point_a, point_b, point_c):
 
 def rots_from_tensor(rots, use_numpy=False):
     """
-    Get rots vector from input tensor
+    Amortize and split the 3*3 rotation matrix corresponding to the last two axes of input Tensor
+      to obtain each component of the rotation matrix, inverse of 'rots_to_tensor'.
 
     Args:
-        rots (tensor): represent the rotation matrix.
-        use_numpy (bool): use numpy or not, Default: "False"
+        rots(Tuple):        Represent the rotation matrix, shape is :math:`(..., 3, 3)` .
+        use_numpy(bool):    Whether to use numpy to calculate. Default: False.
 
     Returns:
-        tuple, the 9 tensors of rotation, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
+        Tuple, rots represented by vectors, shape is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -895,14 +914,14 @@ def rots_from_tensor(rots, use_numpy=False):
 
 def rots_to_tensor(rots, use_numpy=False):
     """
-    Converts rotation to tensor, inverse of 'rots_from_tensor'.
+    Translate rots represented by vectors to tensor, inverse of 'rots_from_tensor'.
 
     Args:
-        rots (tuple): represent the rotation matrix, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
-        use_numpy (bool): use numpy or not, Default: "False"
+        rots(Tuple):        Rots represented by vectors, shape is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` .
+        use_numpy(bool):    Whether to use numpy to calculate. Default: False.
 
     Returns:
-        tensor, concat the tensor in last dims, shape :math:`(N_{res}, 3, 3)`.
+        Tensor, concat the tensor in last dims, shape :math:`(N_{res}, 3, 3)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -929,20 +948,21 @@ def rots_to_tensor(rots, use_numpy=False):
 
 def quat_affine(quaternion, translation, rotation=None, normalize=True, unstack_inputs=False, use_numpy=False):
     """
-    Create quat affine representations
+    Create quat affine representations based on rots and trans.
 
     Args:
-        quaternion (tensor): shape :math:`(N_{res}, 4)`
-        translation (tensor)： shape :math:`(N_{res}, 3)`
-        rotation (tensor)： represent the rotation matrix, shape :math:`(N_{res}, 9)`. Default: "None"
-        normalize (bool): Default: "True"
-        unstack_inputs (bool): vector or tensor, Default: "False"
-        use_numpy (bool): use numpy or not, Default: "False"
+        quaternion(tensor):     Shape is :math:`(N_{res}, 4)`.
+        translation(tensor):    Shape is :math:`(N_{res}, 3)`.
+        rotation(tensor):       Rots, shape is :math:`(N_{res}, 9)`. Default: None.
+        normalize(bool):        Whether to use normalization. Default: True.
+        unstack_inputs(bool):   Whether input is vector(True) of Tensor(False). Default: False.
+        use_numpy(bool):        Whether to use numpy. Default: False.
 
     Returns:
-        quaternion (tensor), shape :math:`(N_{res}, 4)`
-        rotation (tuple), :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`， every element shape :math:`(N_{res},)`
-        translation (tensor), shape :math:`(N_{res}, 3)`
+        result after quat affine.
+        - quaternion, tensor, shape is :math:`(N_{res}, 4)` .
+        - rotation, tuple, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, shape of every element is :math:`(N_{res},)` .
+        - translation, tensor, shape is :math:`(N_{res}, 3)` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -975,7 +995,7 @@ def quat_to_rot(normalized_quat, use_numpy=False):
     Convert a normalized quaternion to a rotation matrix.
 
     .. math::
-        /begin{split}
+        \begin{split}
         &xx = 1 - 2 * y * y - 2 * z * z \\
         &xy = 2 * x * y + 2 * w * z \\
         &xz = 2 * x * z - 2 * w * y \\
@@ -985,14 +1005,14 @@ def quat_to_rot(normalized_quat, use_numpy=False):
         &zx = 2 * x * z + 2 * w * y \\
         &zy = 2 * y * z - 2 * w * x \\
         &zz = 1 - 2 * x * x - 2 * y * y \\
-        /end{split}
+        \end{split}
 
     Args:
         normalized_quat (tensor): normalized quaternion, shape :math:`(N_{res}, 4)`.
         use_numpy (bool): use numpy or not, Default: "False".
 
     Returns:
-        rotation (tuple), :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, every element shape :math:`(N_{res},)`.
+        tuple, rotation :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, every element shape :math:`(N_{res},)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1023,16 +1043,17 @@ def quat_to_rot(normalized_quat, use_numpy=False):
 
 def initial_affine(num_residues, use_numpy=False):
     """
-    initial quaternion, translation, and rotation.
+    Initialize quaternion, rotation, translation of affine.
 
     Args:
-        num_residues (int): the number of residues.
-        use_numpy (bool): use numpy or not, Default: "False".
+        num_residues(int):  Number of residues.
+        use_numpy(bool):    Whether to use numpy. Default: False.
 
     Returns:
-        quaternion (tensor), shape为 :math:`(N_{res}, 4)`.
-        rotation (tuple), :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, every element shape :math:`(N_{res},)`.
-        translation (tuple), :math:`(x, y, z)`, every element shape :math:`(N_{res},)`.
+        result after quat affine.
+        - quaternion, tensor, shape is :math:`(N_{res}, 4)` .
+        - rotation, tuple, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, shape of every element is :math:`(N_{res},)` .
+        - translation, tensor, shape is :math:`(N_{res}, 3)` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1062,17 +1083,17 @@ def initial_affine(num_residues, use_numpy=False):
 
 
 def vecs_expend_dims(v, axis):
-    """
-    Adds an additional dimension to 'v' at the given axis.
+    r"""
+    Add an extra dimension to the input `v` at the given axis.
 
     Args:
-        v (Tuple):  The initial vector of the input,length:3,:math:`(xx, xy, xz)`.
-        axi (Int):  Specifies the dimension index at which to expand the shape of v. Only constant value is allowed.
+        v(Tuple):   Input vector. Length is 3, :math:`(xx, xy, xz)` .
+        axis(int):  Specifies the dimension index at which to expand the shape of `v`. Only constant value is allowed.
 
     Returns:
-        v (Tuple), If the value of axis is 0, and the shape of xx is :math:`(... ,X_R)`,
-        where X_R is any number, and the expanded shape is :math:`(1,... ,X_R)`.
-        Return expanded :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
+        Tuple, if the axis is 0, and the shape of :math:`xx` is :math:`(... , X_R)`, where X_R is any number.
+          If the axis is other value, then expand in the other direction. And return expanded
+          :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1097,14 +1118,15 @@ def rots_expend_dims(rots, axis):
     Adds an additional dimension to `rots` at the given axis.
 
     Args:
-        rots (Tuple): The rotation matrix is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
-                      and xx and xy have the same shape
-        axis (Int):   Specifies the dimension index at which to expand the shape of v. Only constant value is allowed.
+        rots (Tuple):   The rotation matrix is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
+                        and xx and xy have the same shape
+        axis (Int):     Specifies the dimension index at which to expand the shape of v.
+                        Only constant value is allowed.
 
     Returns:
-        rots (Tuple): If the value of axis is 0, and the shape of xx is :math:`(... ,X_R)`,
-                      where X_R is any number, and the expanded shape is :math:`(1,... ,X_R)`.
-                      Return expanded :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
+        Tuple, rots. If the value of axis is 0, and the shape of xx is :math:`(... ,X_R)`,
+          where X_R is any number, and the expanded shape is :math:`(1,... ,X_R)`.
+          Return expanded :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1130,7 +1152,7 @@ def rots_expend_dims(rots, axis):
 
 
 def invert_point(transformed_point, rotation, translation, extra_dims=0, stack=False, use_numpy=False):
-    """
+    r"""
     The inverse transformation of a rigid body group transformation with respect to a point coordinate,
     that is, the inverse transformation of apply to point Make rotational translation changes on coordinates
     with the transpose of the rotation
@@ -1140,25 +1162,27 @@ def invert_point(transformed_point, rotation, translation, extra_dims=0, stack=F
     by rot_point to get the final coordinates.
 
     .. math::
-        rot_point = transformed_point - translation
-        result = :math:`rotation^t` * rot_point
+        \begin{split}
+        &rot_point = transformed_point - translation \\
+        &result = :math:`rotation^t` * rot_point \\
+        \end{split}
 
     The specific procedures of vector subtraction, transpose and multiplication can be referred to the
-    api of vecs_sub, invert_rots, rots_mul_vecs etc.
+      api of vecs_sub, invert_rots, rots_mul_vecs etc.
 
     Args:
-        transformed_point (Tuple): The initial coordinates of the input have shape :math:`(x, y, z)`,
-            where x, y and z are Tensor and have the same shape.
-        rotation (Tuple):          The rotation matrix. shape is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
-            and xx and xy have the same shape.
-        translation (Tuple):       The translation vector shape is :math:`(x, y, z)`,
-            where x, y and z are Tensor and have the same shape.
+        transformed_point (Tuple):  The initial coordinates of the input have shape :math:`(x, y, z)`,
+                                    where x, y and z are Tensor and have the same shape.
+        rotation (Tuple):           The rotation matrix. shape is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
+                                    and xx and xy have the same shape.
+        translation (Tuple):        The translation vector shape is :math:`(x, y, z)`,
+                                    where x, y and z are Tensor and have the same shape.
         extra_dims (int):           Control whether to expand dims. Default: 0.
         stack (bool):               Control whether to transform to tuple. Default: False.
         use_numpy(bool):            Control whether to use numpy. Default: False.
 
     Returns:
-        - **invert_point** (tuple) - The transformed coordinate.Length: 3
+        Tuple, the transformed coordinate of invert point.Length: 3
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1186,21 +1210,22 @@ def invert_point(transformed_point, rotation, translation, extra_dims=0, stack=F
 
 
 def quat_multiply_by_vec(quat, vec):
-    """
+    r"""
     Multiply a quaternion by a pure-vector quaternion.
 
     .. math::
-        temp =  QUAT_MULTIPLY_BY_VEC * quat[..., :, None, None] * vec[..., None, :, None]
-
-        result = sum(tempc,axis=(-3, -2))
+        \begin{split}
+        &temp =  QUAT_MULTIPLY_BY_VEC * quat[..., :, None, None] * vec[..., None, :, None] \\
+        &result = sum(tempc,axis=(-3, -2)) \\
+        \end{split}
 
     Args:
-        quat (Tensor): Quaternion.Tensor of shape :math:`(..., 4)`.
-        vec (Tensor): A pure-vector quaternion, :math:`(b, c, d)` not normalized quaternion
-                      Quaternion can be expressed as :math:`(1, b, c, d)`.
+        quat (Tensor):  Quaternion.Tensor of shape :math:`(..., 4)`.
+        vec (Tensor):   A pure-vector quaternion, :math:`(b, c, d)` not normalized quaternion.
+                        Quaternion can be expressed as :math:`(1, b, c, d)`.
 
     Returns:
-        Tensor, The product of a quaternion with a pure vector quaternion.
+        Tensor, the product of a quaternion with a pure vector quaternion.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1223,50 +1248,44 @@ def quat_multiply_by_vec(quat, vec):
 
 
 def pre_compose(quaternion, rotation, translation, update):
-    """
+    r"""
     Return a new QuatAffine which applies the transformation update first.
 
     The process of obtaining the updated translation vector and rotation matrix is as follows:
 
     .. math::
-        update = (xx, xy, xz, yx, yy, yz)
-
-        vector_quaternion_update = (xx, xy, xz)
-
-        x = (yx)
-
-        y = (yy)
-
-        z = (yz)
-
-        trans_update = (x, y, z)
-
-        new_quaternion = quaternion + vector_quaternion_update * quaternion
-
-        rotated_trans_update = rotation * trans_update
-
-        new_translation = translation + rotated_trans_update
+        \begin{split}
+        &update = (xx, xy, xz, yx, yy, yz) \\
+        &vector_quaternion_update = (xx, xy, xz) \\
+        &x = (yx) \\
+        &y = (yy) \\
+        &z = (yz) \\
+        &trans_update = (x, y, z) \\
+        &new_quaternion = quaternion + vector_quaternion_update * quaternion \\
+        &rotated_trans_update = rotation * trans_update \\
+        &new_translation = translation + rotated_trans_update \\
+        \end{split}
 
     vector_quaternion_update and quaternion are multiplied by the quat_multiply_by_vec function,
     Affine transformation is performed using the generated new_quaternion and new_translation.
     The process of affine transformation is referred to the quat_affine api.
 
     Args:
-        quaternion (Tensor):  The initial quaternion to be updated, shape :math:`[(..., 4)]`.
-        rotation (Tuple):     Rotation matrix, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
-            and xx and xy are Tensor and have the same shape.
-        translation (Tuple):  Translation vector :math:`(x, y, z)`,
-            where x, y and z are Tensor and have the same shape.
-        update (Tensor):      The update-assisted matrix has shape :math:`[(..., 6)]`.
-            3-vector of x, y, and z such that the quaternion
-            update is (1, x, y, z) and zero for the 3-vector is the identity
-            quaternion. 3-vector for translation concatenated.
+        quaternion (Tensor):    The initial quaternion to be updated, shape :math:`[(..., 4)]`.
+        rotation (Tuple):       Rotation matrix, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
+                                and xx and xy are Tensor and have the same shape.
+        translation (Tuple):    Translation vector :math:`(x, y, z)`,
+                                where x, y and z are Tensor and have the same shape.
+        update (Tensor):        The update-assisted matrix has shape :math:`[(..., 6)]`.
+                                3-vector of x, y, and z such that the quaternion
+                                update is :math:`(1, x, y, z)` and zero for the 3-vector is the identity
+                                quaternion. 3-vector for translation concatenated.
 
     Returns:
-        - **quaternion** (Tensor) - New quaternion.The updated Tensor tuple has shape :math:`[(..., 4)]`.
-        - **rotation** (Tuple) - The updated rotation matrix :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
+        - Tensor, new quaternion.The updated Tensor tuple has shape :math:`[(..., 4)]`.
+        - Tuple, the updated rotation matrix :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
           and xx and xy are Tensor and have the same shape.
-        - **translation** (Tuple) - The updated translation vector :math:`(x, y, z)`,
+        - Tuple, the updated translation vector :math:`(x, y, z)`,
           where x, y and z are Tensor and have the same shape.
 
     Supported Platforms:
@@ -1305,19 +1324,19 @@ def pre_compose(quaternion, rotation, translation, update):
 
 
 def quaternion_to_tensor(quaternion, translation):
-    """
+    r"""
     Change quaternion to tensor.
 
     .. math::
-        quaternion = [(x_1, y_1, z_1, m_1)]
-
-        translation = [(x_2, y_2, z_2)]
-
-        result = [(x_1, y_1, z_1, m_1, x_2, y_2, z_2)]
+        \begin{split}
+        &quaternion = [(x_1, y_1, z_1, m_1)] \\
+        &translation = [(x_2, y_2, z_2)] \\
+        &result = [(x_1, y_1, z_1, m_1, x_2, y_2, z_2)] \\
+        \end{split}
 
     Args:
-        quaternion (Tensor): Inputs quaternion. Tensor of shape :math:`(..., 4)`
-        translation (Tuple): Inputs translation. Tensor of shape :math:`(..., 3)`
+        quaternion (Tensor):    Inputs quaternion. Tensor of shape :math:`(..., 4)`.
+        translation (Tuple):    Inputs translation. Tensor of shape :math:`(..., 3)`
 
     Returns:
         Tensor, The result of the concatenation between translation and translation. Tensor of shape :math:`(..., 7)`.
@@ -1343,29 +1362,28 @@ def quaternion_to_tensor(quaternion, translation):
 
 
 def quaternion_from_tensor(tensor, normalize=False):
-    """
+    r"""
     Take the input 'tensor' to get the new 'quaternion', 'rotation', 'translation'.
 
     .. math::
-        quaternion = [(x_1, y_1, z_1, m_1)]
-
-        translation = [(x_2, y_2, z_2)]
-
-        result = [(x_1, y_1, z_1, m_1, x_2, y_2, z_2)]
+        \begin{split}
+        &quaternion = [(x_1, y_1, z_1, m_1)] \\
+        &translation = [(x_2, y_2, z_2)] \\
+        &result = [(x_1, y_1, z_1, m_1, x_2, y_2, z_2)] \\
+        \end{split}
 
     Affine transformation is performed using the generated quaternion and translation.
     The process of affine transformation is referred to the quat_affine api.
 
     Args:
-        tensor(Tensor): An initial Tensor of shape is :math:`[(... 7)]`.
-        normalize(bool): Control whether to find the norm during quat_affine. Default: False.
+        tensor(Tensor):     An initial Tensor of shape is :math:`[(... 7)]`.
+        normalize(bool):    Control whether to find the norm during quat_affine. Default: False.
 
     Returns:
-        - **quaternion** (Tensor) - New quaternion.Tensor of shape :math:`(..., 4)` .
-        - **rotation** (Tuple) - New rotation, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
+        - Tensor, new quaternion.Tensor of shape :math:`(..., 4)` .
+        - Tuple, new rotation, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
           and xx and xy are Tensor and have the same shape.
-        - **translation** (Tuple) - Translation vector :math:`[(x, y, z)]`,
-          where x, y and z are Tensor and have the same shape.
+        - Tuple, translation vector :math:`[(x, y, z)]`, where x, y and z are Tensor and have the same shape.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1394,26 +1412,28 @@ def quaternion_from_tensor(tensor, normalize=False):
 
 
 def apply_to_point(rotation, translation, point, extra_dims=0):
-    """
+    r"""
     Rotate and translate the input coordinates.
 
     .. math::
-        rot_point = rotation * point
-        result = rot_point + translation
+        \begin{split}
+        &rot_point = rotation * point \\
+        &result = rot_point + translation \\
+        \end{split}
 
     For specific multiplication and addition procedures, refer to the rots_mul_vecs and vecs_add apis.
 
     Args:
         rotation(Tuple):    The rotation matrix :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
-            and xx and xy are Tensor and have the same shape.
+                            and xx and xy are Tensor and have the same shape.
         translation(Tuple): Translation vector :math:`[(x, y, z)]`,
-            where x, y and z are Tensor and have the same shape.
+                            where x, y and z are Tensor and have the same shape.
         point(Tensor):      Initial coordinate values :math:`[(x, y, z)]`,
-            where x, y and z are Tensor and have the same shape.
+                            where x, y and z are Tensor and have the same shape.
         extra_dims(int):    Control whether to expand dims. default:0.
 
     Returns:
-        - **result** (Tuple) - The result of the coordinate transformation. Length is 3.
+        Tuple, the result of the coordinate transformation. Length is 3.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

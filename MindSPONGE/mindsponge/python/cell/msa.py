@@ -26,7 +26,12 @@ from ..common.utils import _memory_reduce
 
 class MSARowAttentionWithPairBias(nn.Cell):
     r"""
-    MSA row attention.
+    MSA row attention. Information from pair action value is made as the bias of the matrix of MSARowAttention,
+        in order to update the state of MSA using pair information.
+
+    Reference:
+        `Jumper et al. (2021) Suppl. Alg. 7 'MSARowAttentionWithPairBias'
+            <https://www.nature.com/articles/s41586-021-03819-2>`_.
 
     Args:
         num_head (int):         The number of the attention head.
@@ -35,6 +40,7 @@ class MSARowAttentionWithPairBias(nn.Cell):
         msa_act_dim (int):      The dimension of the msa_act.
         pair_act_dim (int):     The dimension of the pair_act.
         batch_size (int):       The batch size of parameters in MSA row attention, used in while control flow.
+                                Default: None.
         slice_num (int):        The number of slices to be made to reduce memory. Default: 0.
 
     Inputs:
@@ -157,23 +163,26 @@ class MSARowAttentionWithPairBias(nn.Cell):
 
 class MSAColumnAttention(nn.Cell):
     """
-    MSA column-wise gated self attention。
-    The column-wise attention lets the elements that belong to the same target residue exchange information。
-    Reference: `Jumper et al. (2021) Suppl. Alg. 8 "MSAColumnAttention"
-    <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/
-    41586_2021_3819_MOESM1_ESM.pdf>`_.
+    MSA column-wise gated self attention.
+    The column-wise attention lets the elements that belong to the same target residue exchange information.
+
+    Reference:
+        `Jumper et al. (2021) Suppl. Alg. 8 "MSAColumnAttention"
+        <https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-021-03819-2/MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_.
 
     Args:
         num_head (int):         The number of the heads.
         key_dim (int):          The dimension of the input.
         gating (bool):          Indicator of if the attention is gated.
-        msa_act_dim (int):      The dimension of the msa_act.
+        msa_act_dim (int):      The dimension of the msa_act. The intermediate variable after MSA retrieving
+                                in AlphaFold.
         batch_size (int):       The batch size of parameters in MSAColumnAttention, used in while control flow,
                                 Default: "None".
-        slice_num (int):        The number of slices to be made to reduce memory, Default: 0
+        slice_num (int):        The number of slices to be made to reduce memory, Default: 0.
 
     Inputs:
-        - **msa_act** (Tensor) - Tensor of msa_act. Data type is float, shape :math:`[N_{seqs}, N_{res}, C_m]` .
+        - **msa_act** (Tensor) - Tensor of msa_act. The intermediate variable after MSA retrieving
+          in AlphaFold, shape :math:`[N_{seqs}, N_{res}, C_m]` .
         - **msa_mask** (Tensor) - The mask for MSAColumnAttention matrix, shape :math:`[N_{seqs}, N_{res}]`.
         - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: "None".
 
@@ -244,7 +253,14 @@ class MSAColumnAttention(nn.Cell):
 
 class MSAColumnGlobalAttention(nn.Cell):
     r"""
-    MSA column global attention
+    MSA column global attention. Transpose MSA information at sequence axis and residue axis, then use `GlobalAttention
+    <https://www.mindspore.cn/mindsponge/docs/zh-CN/master/cell/mindsponge.cell.GlobalAttention.html>` to
+    do Attention between input sequences without dealing with the relationship between residues in sequence.
+    Comparing with MSAColumnAttention, it uses GlobalAttention to deal with longer input sequence.
+
+    Reference:
+        `Jumper et al. (2021) Suppl. Alg. 19 'MSAColumnGlobalAttention'
+        <https://www.nature.com/articles/s41586-021-03819-2>`_.
 
     Args:
         num_head (int):         The number of the attention heads.

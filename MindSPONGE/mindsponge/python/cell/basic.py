@@ -46,7 +46,7 @@ class Attention(nn.Cell):
         m_data_dim(int):    The last dimension length of the key and value tensor.
         output_dim(int):    The last dimension length of the output tensor.
         batch_size(int):    The batch size of parameters in attention, used in while
-                            control flow. Default: "None".
+                            control flow. Default: None.
 
     Inputs:
         - **q_data** (Tensor) - The query tensor with shape (batch_size,
@@ -56,12 +56,13 @@ class Attention(nn.Cell):
         - **attention_mask** (Tensor) - The mask for attention matrix with shape
           (batch_size, num_head, query_seq_length, value_seq_length).
         - **index** (Tensor) - The index of while loop, only used in case of while
-          control flow. Default: "None".
+          control flow. Default: None.
         - **nonbatched_bias** (Tensor) - Non-batched bias for the attention matrix with
-          shape(num_head, query_seq_length, value_seq_length). Default: "None".
+          shape(num_heads, query_seq_length, value_seq_length). Default: None.
 
     Outputs:
-        Tensor, Output tensor of the layer with shape (batch_size, query_seq_length, hidden_size).
+        Tensor, output tensor of the Attention layer with shape (batch_size,
+          query_seq_length, hidden_size).
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -233,7 +234,7 @@ class GlobalAttention(nn.Cell):
         input_dim(int):     The last dimension length of the input tensor.
         output_dim(int):    The last dimension length of the output tensor.
         batch_size(int):    The batch size of parameters in attention, used in while control
-                            flow. Default: "None".
+                            flow. Default: None.
 
     Inputs:
         - **q_data** (Tensor) - The query tensor with shape (batch_size, seq_length,
@@ -242,12 +243,12 @@ class GlobalAttention(nn.Cell):
           input_dim).
         - **q_mask** (Tensor) - A binary mask for q_data of shape (batch_size,
           seq_length, 1).
-        - **bias** (Tensor) - Bias for the attention matrix. Default: "None".
+        - **bias** (Tensor) - Bias for the attention matrix. Default: None.
         - **index** (Tensor) - The index of while loop, only used in case of while control
-          flow. Default: "None".
+          flow. Default: None.
 
     Outputs:
-        Tensor, Output tensor of the layer with shape (batch_size, seq_length, output_dim).
+        Tensor, Output tensor of the GlobalAttention layer with shape (batch_size, seq_length, output_dim).
 
     Supported Platforms:
         ``Ascend`` ``GPU``

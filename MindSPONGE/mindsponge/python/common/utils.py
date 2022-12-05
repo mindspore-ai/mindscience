@@ -700,11 +700,12 @@ def find_optimal_renaming(
         atom14_gt_exists,  # (N, 14)
         atom14_pred_positions,  # (N, 14, 3)
 ):  # (N):
-    """Find optimal renaming for ground truth that maximizes LDDT.
+    """
+    Find optimal renaming for ground truth that maximizes LDDT.
 
     Reference:
-    `Jumper et al. (2021) Suppl. Alg. 26 "renameSymmetricGroundTruthAtoms"
-     <https://www.nature.com/articles/s41586-021-03819-2>`_
+        `Jumper et al. (2021) Suppl. Alg. 26 "renameSymmetricGroundTruthAtoms"
+        <https://www.nature.com/articles/s41586-021-03819-2>`_
 
     Args:
       atom14_gt_positions (Tensor):      Ground truth positions in global frame with shape :math:`(N_{res}, 14, 3)`.
@@ -718,9 +719,9 @@ def find_optimal_renaming(
       atom14_pred_positions(Tensor):     Predicted positions of atoms in global prediction frame with
                                          shape :math:`(N_{res}, 14, 3)`.
 
-    Outputs:
+    Returns:
       Tensor, shape is :math:`(N_{res},)` with 1.0 where atom14_alt_gt_positions is closer to
-      prediction and otherwise 0.
+        prediction and otherwise 0.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
