@@ -1,7 +1,7 @@
-mindsponge.common.geometry.quaternion_from_tensor
-=================================================
+mindsponge.common.quaternion_from_tensor
+========================================
 
-.. py:function:: mindsponge.common.geometry.quaternion_from_tensor(tensor, normalize=False)
+.. py:function:: mindsponge.common.quaternion_from_tensor(tensor, normalize=False)
 
     利用输入的 `tensor` :math:`[(xx, xy, xz, yx, yy, yz, zz)]` ,其中 :math:`[(xx, xy, xz, yx)]`
     与 `quaternion` 一致，:math:`(yy, yz, zz)` 与translation一致，进行仿射变换得到新的 `quaternion` ， `rotation`， `translation`。

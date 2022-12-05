@@ -19,8 +19,8 @@ mindsponge.common.rots_mul_rots
         \end{split}
 
     参数：
-        - **x** (tuple) - 旋转矩阵x，shape为 :math:`(xx1, xy1, xz1, yx1, yy1, yz1, zx1, zy1, zz1)`。
-        - **y** (tuple) - 旋转矩阵y，shape为 :math:`(xx2, xy2, xz2, yx2, yy2, yz2, zx2, zy2, zz2)`。
+        - **x** (tuple) - 旋转矩阵x， :math:`(xx1, xy1, xz1, yx1, yy1, yz1, zx1, zy1, zz1)`。
+        - **y** (tuple) - 旋转矩阵y， :math:`(xx2, xy2, xz2, yx2, yy2, yz2, zx2, zy2, zz2)`。
 
     返回：
         tuple，旋转矩阵x和旋转矩阵y的矩阵相乘结果, shape为 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`。

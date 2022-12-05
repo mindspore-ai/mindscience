@@ -4,9 +4,12 @@ mindsponge.common.make_transform_from_reference
 .. py:function:: mindsponge.common.make_transform_from_reference(point_a, point_b, point_c)
 
     使用施密特正交化方法构造骨架的旋转矩阵和平移向量，
-    计算旋转矩阵和平移满足：
+    计算旋转矩阵和平移满足
+
     a）'N'原子是原始点
+
     b）'CA'原子位于x轴上
+    
     c）平面CA-N-C在x-y平面上。
 
     .. math::

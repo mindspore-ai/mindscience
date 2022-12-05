@@ -3,7 +3,7 @@ mindsponge.common.invert_point
 
 .. py:function:: mindsponge.common.invert_point(transformed_point, rotation, translation, extra_dims=0, stack=False, use_numpy=False)
 
-    刚体群变换对点坐标的逆变换，即apply_to_point的逆变换。                                                     
+    刚体变换组变换对点坐标的逆变换，即apply_to_point的逆变换。                                                     
     用旋转矩阵 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` 的转置矩阵和平移向量 :math:`(x, y, z)` translation对坐标做旋转平移变化。
     首先对初始坐标作平移变化,再将旋转矩阵 `rotation` 的转置矩阵与 `rot_point` 相乘得到最后坐标。
 

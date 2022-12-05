@@ -19,9 +19,9 @@ pre-omega-group到backbone-group的坐标系相同，坐标变换为恒等变换
 
 phi-group到backbone-group，psi-group到backbone-group，chi1-group到backbone-group，chi2-group到chi1-group，chi3-group到chi2-group，chi4-group到chi3-group的坐标变换矩阵需要通过_make_rigid_transformation_4x4函数计算得到。
 
-+============+======+=======+===========================+
-| amino acid | Atom | group | positions                 |
 +------------+------+-------+---------------------------+
+| amino acid | Atom | group | positions                 |
++============+======+=======+===========================+
 ||           || N   || 0    || (-0.525, 1.363, 0.0)     |
 ||           || CA  || 0    || (0.0, 0.0, 0.0)          |
 || ALA       || C   || 0    || (1.526, -0.0, -0.0)      |

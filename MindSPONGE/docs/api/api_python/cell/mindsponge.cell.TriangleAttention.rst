@@ -20,6 +20,7 @@ mindsponge.cell.TriangleAttention
         - **pair_act** (Tensor) - pair_act。氨基酸对之间的信息，shape为 :math:`(N_{res}, N_{res}, layer\_norm\_dim)` 。
         - **pair_mask** (Tensor) - 三角注意力层矩阵的mask。shape为 :math:`(N_{res}, N_{res})` 。
         - **index** (Tensor) - 在循环中的索引，只会在有控制流的时候使用。
+        - **mask** (Tensor) - 当做layernorm操作的时候pair_act的掩码，shape为:math:`(N_{res}, N_{res})`，默认值："None"。
 
     输出：
         Tensor。三角注意力层中的pair_act。shape为 :math:`(N_{res}, N_{res}, layer\_norm\_dim)` 。

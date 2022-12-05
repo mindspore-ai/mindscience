@@ -1,13 +1,13 @@
 restype_rigid_group_default_frame
 =================================
 
-21种氨基酸的每个刚体变换群的仿射变换矩阵，即从各个刚体变换群的局部坐标系到之前相邻的刚体变换群的局部坐标系的坐标变换矩阵。shape为 :math:`(21, 8, 4, 4)` 。
+21种氨基酸的每个刚体变换组的仿射变换矩阵，即从各个刚体变换组的局部坐标系到之前相邻的刚体变换组的局部坐标系的坐标变换矩阵。shape为 :math:`(21, 8, 4, 4)` 。
 
 8种group为
-    - 0 - backbone-group 氨基酸 :math:`N-C\alpha-C-C\beta` 原子之间的扭转角 `backbone` 对应主链刚体变换群，CA为坐标原点，C在x轴正向，N在X-Y平面。
-    - 1 - pre-omega-group 氨基酸 :math:`N_i-C\alpha_i-N_{i-1}-C\alpha_{i-1}` 原子之间的扭转角 `pre-omega` 对应刚体变换群。
-    - 2 - phi-group 氨基酸 :math:`C_i-C\alpha_i-N_i-C_{i+1}` 原子之间的扭转角 `phi` 对应刚体变换群。
-    - 3 - psi-group 氨基酸 :math:`N_{i-1}-C_i-C\alpha_i-N_i` 原子之间的扭转角 `psi` 对应刚体变换群。
+    - 0 - backbone-group 氨基酸 :math:`N-C\alpha-C-C\beta` 原子之间的扭转角 `backbone` 对应主链刚体变换组，CA为坐标原点，C在x轴正向，N在X-Y平面。
+    - 1 - pre-omega-group 氨基酸 :math:`N_i-C\alpha_i-N_{i-1}-C\alpha_{i-1}` 原子之间的扭转角 `pre-omega` 对应刚体变换组。
+    - 2 - phi-group 氨基酸 :math:`C_i-C\alpha_i-N_i-C_{i+1}` 原子之间的扭转角 `phi` 对应刚体变换组。
+    - 3 - psi-group 氨基酸 :math:`N_{i-1}-C_i-C\alpha_i-N_i` 原子之间的扭转角 `psi` 对应刚体变换组。
     - 4 - chi1-group
     - 5 - chi2-group
     - 6 - chi3-group
