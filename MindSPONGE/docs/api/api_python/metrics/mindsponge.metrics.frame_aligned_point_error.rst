@@ -16,7 +16,7 @@ mindsponge.metrics.frame_aligned_point_error
         - **target_frames** (Tensor) - 预测的蛋白质刚体变换组对应局部坐标系，shape与pred_frames一致。
         - **frames_mask** (Tensor) - 局部坐标系的mask，shape为 :math:`(N_{frames},)` 。
         - **pred_positions** (Tensor) - 预测的原子坐标，shape为 :math:`(3, N_{atoms})` 。
-        - **target_positions** (list) - 真实的原子坐标，shape与pred_positions一致。
+        - **target_positions** (Tensor) - 真实的原子坐标，shape与pred_positions一致。
         - **positions_mask** (Tensor) - 预测的原子坐标的mask，shape为 :math:`(N_{atoms},)`  。
         - **length_scale** (float) - 单位距离，用于缩放距离的差，常量。
         - **l1_clamp_distance** (float) - 距离误差的截断点，超过该距离时梯度不再考虑，常量。

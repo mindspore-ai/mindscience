@@ -6,7 +6,7 @@ mindsponge.common.rots_to_tensor
     将以向量表示的旋转矩阵转化为tensor， `rots_from_tensor` 的逆操作。
 
     参数：
-        - **rots** (tuple) - 使用向量表示的旋转矩阵， :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`。
+        - **rots** (Tuple) - 使用向量表示的旋转矩阵， :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`。
         - **use_numpy** (bool) - 是否使用numpy计算，默认值：False。
 
     返回：

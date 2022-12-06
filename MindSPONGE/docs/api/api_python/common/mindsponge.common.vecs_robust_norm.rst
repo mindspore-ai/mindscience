@@ -1,7 +1,7 @@
 mindsponge.common.vecs_robust_norm
 ==================================
 
-.. py:function:: mindsponge.common.vecs_robust_norm(v, epsilon)
+.. py:function:: mindsponge.common.vecs_robust_norm(v, epsilon=1e-8)
 
     求向量的l2范数。
 
@@ -16,4 +16,4 @@ mindsponge.common.vecs_robust_norm
         - **epsilon** (float) - 极小值，防止返回值为0，默认为1e-8。
 
     返回：
-        - **v_norm** (Tensor) - 根据v计算得到的二范数, shape与v中的元素相同。
+        Tensor，根据v计算得到的二范数, shape与v中的元素相同。

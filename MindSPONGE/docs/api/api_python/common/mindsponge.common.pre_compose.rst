@@ -29,7 +29,7 @@ mindsponge.common.pre_compose
         - **translation** (Tuple) - 平移向量 :math:`(x, y, z)` ，其中x, y, z均为Tensor，且shape相同。
         - **update** (Tensor) - 用于辅助更新的矩阵，shape为 :math:`[(..., 6)]` 的Tensor，最后一维前三个元素为代表旋转矩阵的四元数三维向量表示，参考 `quat_multiply_by_vec` 。
 
-    返回:
+    返回：
         - **quaternion** (Tensor) - 更新后的四元数，shape为 :math:`[(..., 4)]` 的Tensor。
         - **rotation** (Tensor) - 更新后的旋转矩阵 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` ，且xx, xy等均为Tensor且shape相同。
         - **translation** (Tensor) - 更新后的平移向量 :math:`(x, y, z)` ，其中x, y, z均为Tensor，且shape相同。

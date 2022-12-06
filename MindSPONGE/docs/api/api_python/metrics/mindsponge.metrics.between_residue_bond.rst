@@ -1,7 +1,7 @@
 mindsponge.metrics.between_residue_bond
 =======================================
 
-.. py:function:: mindsponge.metrics.between_residue_bond(pred_atom_positions, pred_atom_mask, residue_index, aatype, tolerance_factor_soft, tolerance_factor_hard)
+.. py:function:: mindsponge.metrics.between_residue_bond(pred_atom_positions, pred_atom_mask, residue_index, aatype, tolerance_factor_soft=12.0, tolerance_factor_hard=12.0)
 
     该函数主要用于计算序列上连续氨基酸残基之间是否存在肽键长度及角度冲突，可以对蛋白质结构冲突进行惩罚。（针对蛋白质全原子坐标编码分为两种形式：分别为稀疏编码和稠密编码，详见：`common.make_atom14_positions` ）
 

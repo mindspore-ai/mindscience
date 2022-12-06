@@ -1,7 +1,7 @@
 mindsponge.common.vecs_robust_normalize
 ========================================
 
-.. py:function:: mindsponge.common.vecs_robust_normalize(v, epsilon)
+.. py:function:: mindsponge.common.vecs_robust_normalize(v, epsilon=1e-8)
 
     向量l2范数归一化。
 
