@@ -1,6 +1,8 @@
 mindflow.common
 ==================
 
+.. include:: mindflow.common.EvalCallback.rst
+
 .. include:: mindflow.common.L2.rst
 
 .. include:: mindflow.common.LearningRate.rst

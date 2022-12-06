@@ -11,5 +11,7 @@ mindflow.loss
 
 .. include:: mindflow.loss.get_loss_metric.rst
 
+.. include:: mindflow.loss.WaveletTransformLoss.rst
+
 .. automodule:: mindflow.loss
     :members:

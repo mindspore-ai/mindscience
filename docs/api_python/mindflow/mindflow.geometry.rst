@@ -13,6 +13,8 @@ mindflow.geometry
 
 .. include:: mindflow.geometry.Disk.rst
 
+.. include:: mindflow.geometry.FixedPoint.rst
+
 .. include:: mindflow.geometry.Geometry.rst
 
 .. include:: mindflow.geometry.GeometryWithTime.rst
@@ -29,7 +31,7 @@ mindflow.geometry
 
 .. include:: mindflow.geometry.TimeDomain.rst
 
-.. include:: mindflow.geometry.create_config_from_edict.rst
+.. include:: mindflow.geometry.generate_sampling_config.rst
 
 .. automodule:: mindflow.geometry
     :members:

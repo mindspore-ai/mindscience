@@ -227,8 +227,8 @@ class WaveletTransformLoss(nn.LossBase):
 
     Inputs:
         - **input** - tuple of Tensors. Tensor of shape :math:`(B H*W/(P*P) P*P*C)`, where B denotes the batch size.
-        H, W denotes the height and the width of the image, respectively.
-        P denotes the patch size. C denots the feature channels.
+          H, W denotes the height and the width of the image, respectively.
+          P denotes the patch size. C denots the feature channels.
 
     Outputs:
         Tensor.

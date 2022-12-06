@@ -13,5 +13,7 @@ mindflow.data
 
 .. include:: mindflow.data.ExistedDataConfig.rst
 
+.. include:: mindflow.data.MindDataset.rst
+
 .. automodule:: mindflow.data
     :members:
