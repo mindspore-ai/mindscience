@@ -18,6 +18,7 @@ import numpy as np
 import mindspore.common.dtype as mstype
 from mindspore import ops, nn, Tensor, Parameter
 from mindspore.ops import operations as P
+from mindspore.common.initializer import Zero
 
 from .dft import dft2, idft2
 from ...common.math import get_grid_2d
@@ -25,25 +26,45 @@ from ...utils.check_func import check_param_type
 
 
 class SpectralConv2dDft(nn.Cell):
-    def __init__(self, in_channels, out_channels, modes1, resolution, compute_dtype=mstype.float16):
+    def __init__(self, in_channels, out_channels, modes1, modes2, column_resolution, raw_resolution,
+                 compute_dtype=mstype.float16):
         super().__init__()
 
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.modes1 = modes1
-        self.resolution = resolution
+        self.modes2 = modes2
+        self.column_resolution = column_resolution
+        self.raw_resolution = raw_resolution
         self.compute_dtype = compute_dtype
 
         self.scale = (1. / (in_channels * out_channels))
-        w_re = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1, self.modes1),
-                      dtype=compute_dtype)
-        w_im = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1, self.modes1),
-                      dtype=compute_dtype)
-        self.w_re = Parameter(w_re, requires_grad=True)
-        self.w_im = Parameter(w_im, requires_grad=True)
-        self.dft2_cell = dft2(shape=(self.resolution, self.resolution), modes=modes1,
+
+        w_re1 = Tensor(
+            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2),
+            dtype=compute_dtype)
+        w_im1 = Tensor(
+            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2),
+            dtype=compute_dtype)
+        w_re2 = Tensor(
+            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2),
+            dtype=compute_dtype)
+        w_im2 = Tensor(
+            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2),
+            dtype=compute_dtype)
+
+        self.w_re1 = Parameter(w_re1, requires_grad=True)
+        self.w_im1 = Parameter(w_im1, requires_grad=True)
+        self.w_re2 = Parameter(w_re2, requires_grad=True)
+        self.w_im2 = Parameter(w_im2, requires_grad=True)
+
+        self.dft2_cell = dft2(shape=(column_resolution, raw_resolution), modes=(modes1, modes2),
                               compute_dtype=compute_dtype)
-        self.idft2_cell = idft2(shape=(self.resolution, self.resolution), modes=modes1, compute_dtype=compute_dtype)
+        self.idft2_cell = idft2(shape=(column_resolution, raw_resolution), modes=(modes1, modes2),
+                                compute_dtype=compute_dtype)
+        self.mat = Tensor(shape=(1, out_channels, column_resolution - 2 * modes1, modes2), dtype=compute_dtype,
+                          init=Zero())
+        self.concat = ops.Concat(-2)
 
     @staticmethod
     def mul2d(inputs, weights):
@@ -57,21 +78,34 @@ class SpectralConv2dDft(nn.Cell):
         x_im = ops.zeros_like(x_re)
         x_ft_re, x_ft_im = self.dft2_cell((x_re, x_im))
 
-        out_ft_re = \
-            self.mul2d(x_ft_re[:, :, :self.modes1], self.w_re) \
-            - self.mul2d(x_ft_im[:, :, :self.modes1], self.w_im)
-        out_ft_im = \
-            self.mul2d(x_ft_re[:, :, :self.modes1], self.w_re) \
-            + self.mul2d(x_ft_im[:, :, :self.modes1], self.w_im)
+        out_ft_re1 = \
+            self.mul2d(x_ft_re[:, :, :self.modes1, :self.modes2], self.w_re1) \
+            - self.mul2d(x_ft_im[:, :, :self.modes1, :self.modes2], self.w_im1)
+        out_ft_im1 = \
+            self.mul2d(x_ft_re[:, :, :self.modes1, :self.modes2], self.w_im1) \
+            + self.mul2d(x_ft_im[:, :, :self.modes1, :self.modes2], self.w_re1)
 
-        x, _ = self.idft2_cell((out_ft_re, out_ft_im))
+        out_ft_re2 = \
+            self.mul2d(x_ft_re[:, :, -self.modes1:, :self.modes2], self.w_re2) \
+            - self.mul2d(x_ft_im[:, :, -self.modes1:, :self.modes2], self.w_im2)
+        out_ft_im2 = \
+            self.mul2d(x_ft_re[:, :, -self.modes1:, :self.modes2], self.w_im2) \
+            + self.mul2d(x_ft_im[:, :, -self.modes1:, :self.modes2], self.w_re2)
+
+        batch_size = x.shape[0]
+        mat = self.mat.repeat(batch_size, 0)
+        out_re = self.concat((out_ft_re1, mat, out_ft_re2))
+        out_im = self.concat((out_ft_im1, mat, out_ft_im2))
+
+        x, _ = self.idft2_cell((out_re, out_im))
         return x
 
 
 class FNOBlock(nn.Cell):
     def __init__(self, in_channels, out_channels, modes1, resolution=211, gelu=True, compute_dtype=mstype.float16):
         super().__init__()
-        self.conv = SpectralConv2dDft(in_channels, out_channels, modes1, resolution, compute_dtype=compute_dtype)
+        self.conv = SpectralConv2dDft(in_channels, out_channels, modes1, modes1, resolution, resolution,
+                                      compute_dtype=compute_dtype)
         self.w = nn.Conv2d(in_channels, out_channels, 1, weight_init='HeUniform').to_float(compute_dtype)
 
         if gelu:
@@ -99,16 +133,16 @@ class FNO2D(nn.Cell):
         depth (int): The number of FNO layers. Default: 4.
         mlp_ratio (int): The number of channels lifting ratio of the decoder layer. Default: 4.
         compute_dtype (dtype.Number): The computation type of dense. Default mstype.float16.
-                Should be mstype.float16 or mstype.float32. mstype.float32 is recommended
-                for the GPU backend, mstype.float16 is recommended for the Ascend backend.
+                Should be mstype.float16 or mstype.float32. mstype.float32 is recommended for the GPU backend,
+                mstype.float16 is recommended for the Ascend backend.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, resolution, input\_dims)`.
+        - **x** (Tensor) - Tensor of shape :math:`(batch_size, resolution, resolution, input_dims)`.
 
     Outputs:
         Tensor, the output of this FNO network.
 
-        - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, resolution, output_dims)`.
+        - **output** (Tensor) -Tensor of shape :math:`(batch_size, resolution, resolution, output_dims)`.
 
     Raises:
         TypeError: If `input_dims` is not an int.

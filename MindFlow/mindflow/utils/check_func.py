@@ -113,6 +113,14 @@ def check_param_odd(param, param_name):
             param_name, param))
 
 
+def check_param_even(param, param_name):
+    """ Check whether the param is an even number"""
+    for value in param:
+        if value % 2 != 0:
+            raise ValueError("The value of {} should be an even number, but got {}".format(
+                param_name, param))
+
+
 def check_lr_param_type_value(param, param_name, param_type, thresh_hold=0, restrict=False, exclude=None):
     if (exclude and isinstance(param, exclude)) or not isinstance(param, param_type):
         raise TypeError("the type of {} should be {}, but got {}".format(param_name, param_type, type(param)))

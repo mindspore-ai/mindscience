@@ -94,6 +94,5 @@ class PredictCallback(Callback):
         """calculate l2-error to evaluate accuracy"""
         rel_error = np.sqrt(np.sum(np.square(label.reshape(self.batch_size, -1) -
                                              prediction.reshape(self.batch_size, -1)))) / \
-                    np.sqrt(np.sum(np.square(prediction.reshape(self.batch_size, -1))))
+                    np.sqrt(np.sum(np.square(label.reshape(self.batch_size, -1))))
         return rel_error
-        

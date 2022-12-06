@@ -102,4 +102,9 @@
 "mindscience/MindFlow/mindflow/loss/constraints.py"                                            "redefined-argument-from-local"
 "mindscience/MindFlow/mindflow/operators/derivatives.py"                                       "trailing-whitespace"
 "mindscience/MindFlow/mindflow/cell/basic_block.py"                                            "bad-continuation"
+"mindscience/MindFlow/mindflow/cell/neural_operators/dft.py"                                   "bad-whitespace"
+"mindscience/MindFlow/mindflow/cell/neural_operators/dft.py"                                   "invalid-name"
+"mindscience/MindFlow/mindflow/cell/neural_operators/dft.py"                                   "redefined-builtin"
+"mindscience/MindFlow/mindflow/cell/neural_operators/dft.py"                                   "missing-docstring"
+"mindscience/MindFlow/mindflow/cell/neural_operators/fno2d.py"                                 "invalid-name"
 

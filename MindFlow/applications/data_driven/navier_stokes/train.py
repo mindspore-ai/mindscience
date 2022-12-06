@@ -42,13 +42,13 @@ print("pid:", os.getpid())
 print(datetime.datetime.now())
 
 parser = argparse.ArgumentParser(description='navier_stoke 2D problem')
-parser.add_argument('--device_id', type=int, default=0)
+parser.add_argument('--device_id', type=int, default=1)
 parser.add_argument('--config_path', default='navier_stokes_2d.yaml', help='yaml config file path')
 opt = parser.parse_args()
 
 context.set_context(mode=context.GRAPH_MODE,
                     save_graphs=False,
-                    device_target='Ascend',
+                    device_target='GPU',
                     device_id=opt.device_id,
                     )
 
