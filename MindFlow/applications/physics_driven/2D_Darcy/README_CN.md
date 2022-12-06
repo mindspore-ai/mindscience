@@ -10,12 +10,12 @@
 
 ## 问题描述
 
-考虑二维正方体$\Omega=(0,\;1)\times(0,\;1)$，该正方体的边界为$\Gamma$。忽略重力的影响，在$\Omega$的范围内，流体压力$p$和速度$u$满足的定常2D Darcy方程如下：
+考虑二维正方体$\Omega=(0, 1)\times(0, 1)$，该正方体的边界为$\Gamma$。忽略重力的影响，在$\Omega$的范围内，流体压力$p$和速度$u$满足的定常2D Darcy方程如下：
 
 $$
 \begin{align}
-u + \nabla p &= 0,\;\;(x,\;y)\in\Omega\\
-\nabla \cdot u &= f,\;\;(x,\;y)\in\Omega
+u + \nabla p &= 0, (x, y)\in\Omega\\
+\nabla \cdot u &= f, (x, y)\in\Omega
 \end{align}
 $$
 
@@ -23,13 +23,13 @@ $$
 
 $$
 \begin{align}
-u_x &= -2 \pi cos(2 \pi x) cos(2 \pi y)\;&(x,\;y)\in\Gamma\\
-u_y &= 2 \pi sin(2 \pi x) sin(2 \pi y)\;&(x,\;y)\in\Gamma\\
-p &= sin(2 \pi x) cos(2 \pi y)\;&(x,\;y)\in\Gamma
+u_x &= -2 \pi cos(2 \pi x) cos(2 \pi y) &(x, y)\in\Gamma\\
+u_y &= 2 \pi sin(2 \pi x) sin(2 \pi y) &(x, y)\in\Gamma\\
+p &= sin(2 \pi x) cos(2 \pi y) &(x, y)\in\Gamma
 \end{align}
 $$
 
-其中$f$为Darcy微分方程中的**forcing function**。本案例利用PINNs学习**forcing function** $f$为$8 \pi^2 sin(2 \pi x)cos(2 \pi y)$时位置到相应物理量的映射$(x,\;y) \mapsto (u,\;p)$，实现对Darcy方程的求解。
+其中$f$为Darcy微分方程中的**forcing function**。本案例利用PINNs学习**forcing function** $f$为$8 \pi^2 sin(2 \pi x)cos(2 \pi y)$时位置到相应物理量的映射$(x, y) \mapsto (u, p)$，实现对Darcy方程的求解。
 
 ## 技术路线
 

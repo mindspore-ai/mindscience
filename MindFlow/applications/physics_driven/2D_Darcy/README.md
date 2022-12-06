@@ -10,12 +10,12 @@ As the research of parallel algorithm for numerical solution tends to slow down,
 
 ## Problem Description
 
-Considering the two-dimensional cube $\Omega=(0,\;1)\times(0,\;1)$, The boundary of the cube is $\Gamma$. Ignoring the effects of gravity, in the range of $\Omega$, the two-dimensional stabilized Darcy equation satisfied by the fluid pressure $p$ and velocity $u$ is as follows:
+Considering the two-dimensional cube $\Omega=(0, 1)\times(0, 1)$, The boundary of the cube is $\Gamma$. Ignoring the effects of gravity, in the range of $\Omega$, the two-dimensional stabilized Darcy equation satisfied by the fluid pressure $p$ and velocity $u$ is as follows:
 
 $$
 \begin{align}
-u + \nabla p &= 0,\;\;(x,\;y)\in\Omega\\
-\nabla \cdot u &= f,\;\;(x,\;y)\in\Omega
+u + \nabla p &= 0, (x, y)\in\Omega\\
+\nabla \cdot u &= f, (x, y)\in\Omega
 \end{align}
 $$
 
@@ -23,13 +23,13 @@ The Dirichlet boundary conditions are used in this case in the following form:
 
 $$
 \begin{align}
-u_x &= -2 \pi cos(2 \pi x) cos(2 \pi y)\;&(x,\;y)\in\Gamma\\
-u_y &= 2 \pi sin(2 \pi x) sin(2 \pi y)\;&(x,\;y)\in\Gamma\\
-p &= sin(2 \pi x) cos(2 \pi y)\;&(x,\;y)\in\Gamma
+u_x &= -2 \pi cos(2 \pi x) cos(2 \pi y) &(x, y)\in\Gamma\\
+u_y &= 2 \pi sin(2 \pi x) sin(2 \pi y) &(x, y)\in\Gamma\\
+p &= sin(2 \pi x) cos(2 \pi y) &(x, y)\in\Gamma
 \end{align}
 $$
 
-In which $f$ is **forcing function** in the Darcy equation. In this case, **forcing function** $f$ is used to learn the mapping $(x,\;y) \mapsto (u,\; p)$ from position to corresponding physical quantities when **forcing function** $f$ is $8 \pi^2 sin(2 \pi x)cos(2 \pi y)$.  So that the solution of Darcy equation is realized.
+In which $f$ is **forcing function** in the Darcy equation. In this case, **forcing function** $f$ is used to learn the mapping $(x, y) \mapsto (u, p)$ from position to corresponding physical quantities when **forcing function** $f$ is $8 \pi^2 sin(2 \pi x)cos(2 \pi y)$. So that the solution of Darcy equation is realized.
 
 ## Technology Path
 
