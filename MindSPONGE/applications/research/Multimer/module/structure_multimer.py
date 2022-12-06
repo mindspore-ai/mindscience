@@ -25,7 +25,7 @@ from mindsponge.cell.initializer import lecun_init
 from mindsponge.common.utils import torsion_angles_to_frames, frames_and_literature_positions_to_atom14_pos, \
     atom14_to_atom37
 from mindsponge.common.geometry import initial_affine, quaternion_to_tensor, pre_compose, vecs_scale,\
-        vecs_to_tensor, vecs_expend_dims, rots_expend_dims
+        vecs_to_tensor, vecs_expand_dims, rots_expand_dims
 from cell.equivariant import MultimerInvariantPointAttention
 
 
@@ -232,9 +232,9 @@ class MultimerStructureModule(nn.Cell):
             affine_init = affine_init + (affine_output[None, ...],)
             angles_sin_cos_init = angles_sin_cos_init + (angles_sin_cos[None, ...],)
             um_angles_sin_cos_init = um_angles_sin_cos_init + (unnormalized_angles_sin_cos[None, ...],)
-            atom_pos_batch += (mnp.concatenate(vecs_expend_dims(atom_pos, 0), axis=0)[:, None, ...],)
-            frames_batch += (mnp.concatenate(rots_expend_dims(frames[0], 0) +
-                                             vecs_expend_dims(frames[1], 0), axis=0)[:, None, ...],)
+            atom_pos_batch += (mnp.concatenate(vecs_expand_dims(atom_pos, 0), axis=0)[:, None, ...],)
+            frames_batch += (mnp.concatenate(rots_expand_dims(frames[0], 0) +
+                                             vecs_expand_dims(frames[1], 0), axis=0)[:, None, ...],)
         affine_output_new = mnp.concatenate(affine_init, axis=0)
         angles_sin_cos_new = mnp.concatenate(angles_sin_cos_init, axis=0)
         um_angles_sin_cos_new = mnp.concatenate(um_angles_sin_cos_init, axis=0)
