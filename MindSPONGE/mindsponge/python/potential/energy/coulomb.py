@@ -26,7 +26,7 @@ from numpy import exp
 import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import Tensor, Parameter
-from mindspore import ms_function
+from mindspore import jit
 from mindspore import ops
 from mindspore.nn import Cell
 from mindspore.ops import functional as F
@@ -38,7 +38,7 @@ from ...function.functions import gather_values
 from ...function.units import Units
 
 
-@ms_function
+@jit
 def coulomb_interaction(qi: Tensor, qj: Tensor, inv_dis: Tensor, mask: Tensor = None):
     """calculate Coulomb interaction using Coulomb's law."""
 

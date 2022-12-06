@@ -30,7 +30,7 @@ from numpy import ndarray
 import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import ops
-from mindspore import ms_function
+from mindspore import jit
 from mindspore.ops import function as F
 from mindspore import Tensor, Parameter, context
 from mindspore.ops._grad.grad_base import bprop_getters
@@ -166,7 +166,7 @@ class GatherNet(ms.nn.Cell):
 gather = GatherNet() if context.get_context("device_target") == "Ascend" else ops.Gather()
 
 
-@ms_function
+@jit
 def norm_last_dim(vector: Tensor) -> Tensor:
     r"""Compute the norm of vector, delete the last dims
 
@@ -186,7 +186,7 @@ def norm_last_dim(vector: Tensor) -> Tensor:
     return msnp.norm(vector, axis=-1)
 
 
-@ms_function
+@jit
 def keep_norm_last_dim(vector: Tensor) -> Tensor:
     r"""Compute the norm of vector, keep the last dims
 
@@ -205,7 +205,7 @@ def keep_norm_last_dim(vector: Tensor) -> Tensor:
     """
     return msnp.norm(vector, axis=-1, keep_dims=True)
 
-@ms_function
+@jit
 def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
     r"""
     Reshape the pbc_box as the same ndim.
@@ -231,7 +231,7 @@ def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
     return ops.reshape(pbc_box, shape)
 
 
-@ms_function
+@jit
 def periodic_image(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tensor:
     r"""
     calculate the periodic image of the PBC box.
@@ -257,7 +257,7 @@ def periodic_image(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tenso
     return ops.cast(image, ms.int32)
 
 
-@ms_function
+@jit
 def displace_in_box(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tensor:
     r"""
     displace the positions of system in a PBC box.
@@ -283,7 +283,7 @@ def displace_in_box(position: Tensor, pbc_box: Tensor, shift: float = 0) -> Tens
     return position + pbc_box * image
 
 
-@ms_function
+@jit
 def vector_in_box(vector: Tensor, pbc_box: Tensor) -> Tensor:
     r"""
     Make the vector at the range from -0.5 box to 0.5 box
@@ -310,7 +310,7 @@ def vector_in_box(vector: Tensor, pbc_box: Tensor) -> Tensor:
     vector -= box_nograd * ops.floor(vector * inv_box + 0.5)
     return  vector * inv_box * pbc_box
 
-@ms_function
+@jit
 def get_vector_without_pbc(initial: Tensor, terminal: Tensor, _pbc_box=None) -> Tensor:
     r"""
     Compute vector from initial point to terminal point without perodic bundary condition.
@@ -337,7 +337,7 @@ def get_vector_without_pbc(initial: Tensor, terminal: Tensor, _pbc_box=None) -> 
     return terminal - initial
 
 
-@ms_function
+@jit
 def get_vector_with_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor) -> Tensor:
     r"""
     Compute vector from initial point to terminal point at perodic bundary condition.
@@ -362,7 +362,7 @@ def get_vector_with_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor) -> T
 
     return vector_in_box(terminal-initial, pbc_box)
 
-@ms_function
+@jit
 def get_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Tensor:
     r"""
     Compute vector from initial point to terminal point.
@@ -392,7 +392,7 @@ def get_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Ten
     return vector_in_box(vector, pbc_box)
 
 
-@ms_function
+@jit
 def gather_vectors(tensor: Tensor, index: Tensor) -> Tensor:
     r"""
     Gather vectors from the penultimate axis (axis=-2) of the tensor according to index.
@@ -438,7 +438,7 @@ def gather_vectors(tensor: Tensor, index: Tensor) -> Tensor:
     return ops.reshape(neigh_atoms, output_shape)
 
 
-@ms_function
+@jit
 def gather_values(tensor: Tensor, index: Tensor) -> Tensor:
     r"""
     Gather values from the last axis (axis=-1) of the tensor according to index.
@@ -482,7 +482,7 @@ def gather_values(tensor: Tensor, index: Tensor) -> Tensor:
     return ops.reshape(neigh_values, origin_shape)
 
 
-@ms_function
+@jit
 def calc_distance_without_pbc(position_a: Tensor, position_b: Tensor, _pbc_box=None) -> Tensor:
     r"""
     Compute distance between position A and B without perodic bundary condition.
@@ -516,7 +516,7 @@ def calc_distance_without_pbc(position_a: Tensor, position_b: Tensor, _pbc_box=N
     return msnp.norm(vec, axis=-1, keepdims=True)
 
 
-@ms_function
+@jit
 def calc_distance_with_pbc(position_a: Tensor, position_b: Tensor, pbc_box: Tensor) -> Tensor:
     r"""
     Compute distance between position A and B at perodic bundary condition.
@@ -551,7 +551,7 @@ def calc_distance_with_pbc(position_a: Tensor, position_b: Tensor, pbc_box: Tens
     return msnp.norm(vec, axis=-1, keepdims=True)
 
 
-@ms_function
+@jit
 def calc_distance(position_a: Tensor, position_b: Tensor, pbc_box: Tensor = None) -> Tensor:
     r"""
     Compute distance between position A and B.
@@ -590,7 +590,7 @@ def calc_distance(position_a: Tensor, position_b: Tensor, pbc_box: Tensor = None
     return msnp.norm(vec, axis=-1, keepdims=True)
 
 
-@ms_function
+@jit
 def calc_angle_between_vectors(vector1: Tensor, vector2: Tensor) -> Tensor:
     r"""
     Compute angle between two vectors. For vector :math:`\vec {V_1} = (x_1, x_2, x_3, ..., x_n)`
@@ -635,7 +635,7 @@ def calc_angle_between_vectors(vector1: Tensor, vector2: Tensor) -> Tensor:
     return ops.acos(cos_theta)
 
 
-@ms_function
+@jit
 def calc_angle_without_pbc(position_a: Tensor, position_b: Tensor, position_c: Tensor) -> Tensor:
     r"""
     Compute angle :math:`\angle ABC` formed by three positions A, B, C without periodic boundary condition.
@@ -675,7 +675,7 @@ def calc_angle_without_pbc(position_a: Tensor, position_b: Tensor, position_c: T
     return calc_angle_between_vectors(vec_ba, vec_bc)
 
 
-@ms_function
+@jit
 def calc_angle_with_pbc(position_a: Tensor, position_b: Tensor, position_c: Tensor, pbc_box: Tensor) -> Tensor:
     r"""
     Compute angle :math:`\angle ABC` formed by three positions A, B, C with periodic boundary condition.
@@ -719,7 +719,7 @@ def calc_angle_with_pbc(position_a: Tensor, position_b: Tensor, position_c: Tens
     return calc_angle_between_vectors(vec_ba, vec_bc)
 
 
-@ms_function
+@jit
 def calc_angle(position_a, position_b: Tensor, position_c: Tensor, pbc_box: Tensor = None) -> Tensor:
     r"""
     Compute angle :math:`\angle ABC` formed by three positions A, B, C.
@@ -775,7 +775,7 @@ def calc_angle(position_a, position_b: Tensor, position_c: Tensor, pbc_box: Tens
     return calc_angle_between_vectors(vec_ba, vec_bc)
 
 
-@ms_function
+@jit
 def calc_torsion_for_vectors(vector1: Tensor, vector2: Tensor, vector3: Tensor) -> Tensor:
     r"""
     Compute torsion angle formed by three vectors.
@@ -812,7 +812,7 @@ def calc_torsion_for_vectors(vector1: Tensor, vector2: Tensor, vector3: Tensor) 
     return ops.atan2(-sin_phi, cos_phi)
 
 
-@ms_function
+@jit
 def calc_torsion_without_pbc(position_a: Tensor,
                              position_b: Tensor,
                              position_c: Tensor,
@@ -843,7 +843,7 @@ def calc_torsion_without_pbc(position_a: Tensor,
     return calc_torsion_for_vectors(vec_ba, vec_cb, vec_dc)
 
 
-@ms_function
+@jit
 def calc_torsion_with_pbc(position_a: Tensor,
                           position_b: Tensor,
                           position_c: Tensor,
@@ -877,7 +877,7 @@ def calc_torsion_with_pbc(position_a: Tensor,
     return calc_torsion_for_vectors(vec_ba, vec_cb, vec_dc)
 
 
-@ms_function
+@jit
 def calc_torsion(position_a: Tensor,
                  position_b: Tensor,
                  position_c: Tensor,
@@ -917,7 +917,7 @@ def calc_torsion(position_a: Tensor,
     return calc_torsion_for_vectors(vec_ba, vec_cb, vec_dc)
 
 
-@ms_function
+@jit
 def get_kinetic_energy(mass: Tensor, velocity: Tensor) -> Tensor:
     r"""
     Compute kinectic energy of the simulation system.

@@ -26,7 +26,7 @@ RunOneStepCell
 
 from mindspore import ops
 from mindspore.ops import functional as F
-from mindspore import ms_function
+from mindspore import jit
 from mindspore.nn import Cell
 
 from mindspore.parallel._utils import (_get_device_num, _get_gradients_mean,
@@ -110,7 +110,7 @@ class RunOneStepCell(Cell):
         self.steps = get_integer(steps)
         return self
 
-    @ms_function
+    @jit
     def get_energy_and_force(self, *inputs):
         """
         get energy and force of the system.
@@ -124,7 +124,7 @@ class RunOneStepCell(Cell):
         force = - self.grad(self.network, self.coordinate)(*inputs, sens)
         return energy, force
 
-    # @ms_function
+    # @jit
     def run_one_step(self, *inputs):
         """
         run one step simulation.
