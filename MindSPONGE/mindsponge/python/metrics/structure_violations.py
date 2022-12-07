@@ -185,10 +185,10 @@ def between_residue_bond(
 
 
 def between_residue_clash(
-        atom14_pred_positions,  # (N, 14, 3)
-        atom14_atom_exists,  # (N, 14)
-        atom14_atom_radius,  # (N, 14)
-        residue_index,  # (N)
+        atom14_pred_positions,
+        atom14_atom_exists,
+        atom14_atom_radius,
+        residue_index,
         c_one_hot,
         n_one_hot,
         overlap_tolerance_soft,
@@ -301,8 +301,8 @@ def within_residue_violations(
         - **per_atom_loss_sum** (Tensor) - sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
         - **per_atom_violations** (Tensor) - violation per atom, shape :math:`(N_{res}, 14)` .
 
-    Note:
-        - shape :math:`N_{res}`, number of amino acid.
+    Symbol:
+        :math:`N_{res}`, number of amino acid.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -390,8 +390,8 @@ def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_
         - total_per_residue_violations_mask (Tensor), violation masks for all residues, shape :math:`(N_{res}, )` .
         - structure_violation_loss (Tensor), total violations for all amino acids. shape is () .
 
-    Note:
-        - shape :math:`N_{res}`, number of amino acid.
+    Symbol:
+        :math:`N_{res}`, number of amino acid.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -533,8 +533,8 @@ def compute_renamed_ground_truth(atom14_gt_positions,
           performed. shape :math:`(N_{res}, 14, 3)` .
         - **renamed_atom14_gt_exists** (Tensor) - Mask after renaming swap is performed. shape :math:`(N_{res}, 14)` .
 
-    Note:
-        - shape :math:`N_{res}`, number of amino acid.
+    Symbol:
+        :math:`N_{res}`, number of amino acid.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

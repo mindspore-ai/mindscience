@@ -262,9 +262,9 @@ def frames_and_literature_positions_to_atom14_pos(aatype, all_frames_to_global, 
 
 def rigids_concate_all(xall, x5, x6, x7):
     """rigids concate all."""
-    x5 = (geometry.rots_expend_dims(x5[0], -1), geometry.vecs_expend_dims(x5[1], -1))
-    x6 = (geometry.rots_expend_dims(x6[0], -1), geometry.vecs_expend_dims(x6[1], -1))
-    x7 = (geometry.rots_expend_dims(x7[0], -1), geometry.vecs_expend_dims(x7[1], -1))
+    x5 = (geometry.rots_expand_dims(x5[0], -1), geometry.vecs_expand_dims(x5[1], -1))
+    x6 = (geometry.rots_expand_dims(x6[0], -1), geometry.vecs_expand_dims(x6[1], -1))
+    x7 = (geometry.rots_expand_dims(x7[0], -1), geometry.vecs_expand_dims(x7[1], -1))
     xall_rot = xall[0]
     xall_rot_slice = []
     for val in xall_rot:
@@ -338,8 +338,8 @@ def torsion_angles_to_frames(aatype, backb_to_global, torsion_angles_sin_cos, re
     all_frames_to_backb = rigids_concate_all(all_frames, chi2_frame_to_backb,
                                              chi3_frame_to_backb, chi4_frame_to_backb)
 
-    backb_to_global = (geometry.rots_expend_dims(backb_to_global[0], -1),
-                       geometry.vecs_expend_dims(backb_to_global[1], -1))
+    backb_to_global = (geometry.rots_expand_dims(backb_to_global[0], -1),
+                       geometry.vecs_expand_dims(backb_to_global[1], -1))
     # Create the global frames.
     all_frames_to_global = geometry.rigids_mul_rigids(backb_to_global, all_frames_to_backb)
     return all_frames_to_global
@@ -349,11 +349,11 @@ def map_atoms_to_global_func(all_frames, group_mask):
     """map atoms to global."""
     all_frames_rot = all_frames[0]
     all_frames_trans = all_frames[1]
-    rot = geometry.rots_scale(geometry.rots_expend_dims(all_frames_rot, 1), group_mask)
+    rot = geometry.rots_scale(geometry.rots_expand_dims(all_frames_rot, 1), group_mask)
     res_rot = []
     for val in rot:
         res_rot.append(mnp.sum(val, axis=-1))
-    trans = geometry.vecs_scale(geometry.vecs_expend_dims(all_frames_trans, 1), group_mask)
+    trans = geometry.vecs_scale(geometry.vecs_expand_dims(all_frames_trans, 1), group_mask)
     res_trans = []
     for val in trans:
         res_trans.append(mnp.sum(val, axis=-1))
@@ -694,11 +694,11 @@ def get_aligned_seq(gt_seq, pr_seq):
 
 
 def find_optimal_renaming(
-        atom14_gt_positions,  # (N, 14, 3)
-        atom14_alt_gt_positions,  # (N, 14, 3)
-        atom14_atom_is_ambiguous,  # (N, 14)
-        atom14_gt_exists,  # (N, 14)
-        atom14_pred_positions,  # (N, 14, 3)
+        atom14_gt_positions,
+        atom14_alt_gt_positions,
+        atom14_atom_is_ambiguous,
+        atom14_gt_exists,
+        atom14_pred_positions,
 ):  # (N):
     """
     Find optimal renaming for ground truth that maximizes LDDT.

@@ -384,9 +384,9 @@ def random_crop_to_size(seq_length, template_mask, crop_size, max_templates,
 
 
 def atom37_to_torsion_angles(
-        aatype: np.ndarray,  # inputs1 shape (N,)
-        all_atom_pos: np.ndarray,  # inputs2 shape (N, 37, 3)
-        all_atom_mask: np.ndarray,  # inputs3 shape (N, 37)
+        aatype: np.ndarray,
+        all_atom_pos: np.ndarray,
+        all_atom_mask: np.ndarray,
         alt_torsions=False,
 ):
 
@@ -397,12 +397,13 @@ def atom37_to_torsion_angles(
     The phi represents twist angle between `C-CA-N-(C+1)`, psi represents twist angle between `(N-1)-C-CA-N`.
 
     Args:
-        aatype (numpy.array):         amino acid type with shape :math:`(batch\_size, N_{res})`.
-        all_atom_pos (numpy.array):   atom37 representation of all atomic coordinates with
+        aatype (numpy.array):           Amino acid type with shape :math:`(batch\_size, N_{res})`.
+        all_atom_pos (numpy.array):     Atom37 representation of all atomic coordinates with
                                         shape :math:`(batch\_size, N_{res}, 37, 3)`.
-        all_atom_mask (numpy.array):  atom37 representation of the mask on all atomic coordinates with
+        all_atom_mask (numpy.array):    Atom37 representation of the mask on all atomic coordinates with
                                         shape :math:`(batch\_size, N_{res})`.
-        alt_torsions (bool):          indicates whether to set the sign angle of shielding torsion to zero.
+        alt_torsions (bool):            Indicates whether to set the sign angle of shielding torsion to zero.
+                                        Default: False.
 
     Returns:
         - Dict containing
@@ -535,30 +536,30 @@ def atom37_to_frames(
         is_affine=False
 ):
     r"""
-    Computes  the torsion angle of up to 8 rigid body groups for each residue.
+    Computes the torsion angle of up to 8 rigid body groups for each residue.
 
     Args:
-        aatype(numpy.array):     Amino acid sequence, :math:`[N_{res}]` .
-        all_atom_positions(numpy.array):   The coordinates of all atoms, presented as atom37, :math:`[N_{res}, 37,3]`.
-        all_atom_mask(numpy.array):       Mask of all atomic coordinates, :math:`[N_{res},37]`.
-        is_affine(bool):    Whether to perform affine, the default value is "True".
+        aatype(numpy.array):                Amino acid sequence, :math:`[N_{res}]` .
+        all_atom_positions(numpy.array):    The coordinates of all atoms, presented as atom37, :math:`[N_{res}, 37,3]`.
+        all_atom_mask(numpy.array):         Mask of all atomic coordinates, :math:`[N_{res},37]`.
+        is_affine(bool):                    Whether to perform affine, the default value is False.
 
     Returns:
         Dictionary, the specific content is as follows.
 
         - **rigidgroups_gt_frames** (numpy.array) - The torsion angle of the 8 rigid body groups for each residue,
-          :math:`[N_{res},8,12]`.
+          :math:`[N_{res}, 8, 12]`.
         - **rigidgroups_gt_exists** (numpy.array) - The mask of rigidgroups_gt_frames denoting whether the rigid body
           group exists according to the experiment, :math:`[N_{res}, 8]`.
         - **rigidgroups_group_exists** (numpy.array) - Mask denoting whether given group is in principle present
-          for given amino acid type, :math:`[N_{res},8]` .
+          for given amino acid type, :math:`[N_{res}, 8]` .
         - **rigidgroups_group_is_ambiguous** (numpy.array) - Indicates that the position is chiral symmetry,
-          :math:`[N_{res},8]` .
+          :math:`[N_{res}, 8]` .
         - **rigidgroups_alt_gt_frames** (numpy.array) - 8 Frames with alternative atom renaming
           corresponding to 'all_atom_positions' represented as flat
-          12 dimensional array :math:`[N_{res},8,12]` .
+          12 dimensional array :math:`[N_{res}, 8, 12]` .
         - **backbone_affine_tensor** (numpy.array) - The translation and rotation of the local coordinates of each
-          amino acid relative to the global coordinates, :math:`[N_{res},7]` , for the last dimension, the first 4
+          amino acid relative to the global coordinates, :math:`[N_{res}, 7]` , for the last dimension, the first 4
           elements are the affine tensor which contains the rotation information, the last 3 elements are the
           translations in space.
 

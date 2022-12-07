@@ -16,7 +16,7 @@
 import mindspore.numpy as mnp
 from mindspore.ops import operations as P
 from mindsponge.common.geometry import vecs_dot_vecs, vecs_sub, vecs_cross_vecs, \
-    rots_expend_dims, vecs_expend_dims, invert_rigids, rigids_mul_vecs, \
+    rots_expand_dims, vecs_expand_dims, invert_rigids, rigids_mul_vecs, \
         vecs_from_tensor, vecs_scale
 
 
@@ -77,10 +77,10 @@ def multimer_rigids_get_unit_vector(point_a, point_b, point_c):
                                           vecs_from_tensor(point_b),
                                           vecs_from_tensor(point_c))
     rot, trans = rigid
-    rotation = rots_expend_dims(rot, -1)
-    translation = vecs_expend_dims(trans, -1)
+    rotation = rots_expand_dims(rot, -1)
+    translation = vecs_expand_dims(trans, -1)
     inv_rigid = invert_rigids((rotation, translation))
-    rigid_vec = rigids_mul_vecs(inv_rigid, vecs_expend_dims(trans, -2))
+    rigid_vec = rigids_mul_vecs(inv_rigid, vecs_expand_dims(trans, -2))
     unit_vector = multimer_vecs_robust_normalize(rigid_vec)
     return unit_vector
 

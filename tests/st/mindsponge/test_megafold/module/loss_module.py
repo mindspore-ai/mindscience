@@ -24,7 +24,7 @@ from mindspore.parallel._utils import _get_parallel_mode
 from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 from mindsponge.common import residue_constants
-from mindsponge.common.geometry import invert_point, quaternion_from_tensor, vecs_expend_dims
+from mindsponge.common.geometry import invert_point, quaternion_from_tensor, vecs_expand_dims
 from mindsponge.metrics.structure_violations import get_structural_violations, compute_renamed_ground_truth, backbone, \
     sidechain, supervised_chi, local_distance_difference_test
 from mindsponge.metrics import BalancedMSE, BinaryFocal, MultiClassFocal
@@ -216,11 +216,11 @@ class LossNet(nn.Cell):
         """aligned_error_loss"""
         # Shape (num_res, 7) predict affine
         _, rotation_pd, translation_pd = quaternion_from_tensor(final_affines)
-        translation_point_pd = vecs_expend_dims(translation_pd, -2)
+        translation_point_pd = vecs_expand_dims(translation_pd, -2)
         rotation_pd_tensor = rotation_pd
         # Shape (num_res, 7) true affine
         _, rotation_gt, translation_gt = quaternion_from_tensor(backbone_affine_tensor)
-        translation_point_tr = vecs_expend_dims(translation_gt, -2)
+        translation_point_tr = vecs_expand_dims(translation_gt, -2)
         rotation_gt_tensor = rotation_gt
         mask = backbone_affine_mask
         square_mask = (mask[:, None] * mask[None, :]).astype(ms.float32)

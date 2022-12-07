@@ -883,7 +883,7 @@ def rots_from_tensor(rots, use_numpy=False):
       to obtain each component of the rotation matrix, inverse of 'rots_to_tensor'.
 
     Args:
-        rots(Tuple):        Represent the rotation matrix, shape is :math:`(..., 3, 3)` .
+        rots(Tensor):       Represent the rotation matrix, shape is :math:`(..., 3, 3)` .
         use_numpy(bool):    Whether to use numpy to calculate. Default: False.
 
     Returns:
@@ -1082,7 +1082,7 @@ def initial_affine(num_residues, use_numpy=False):
     return quat_affine(quaternion, translation, unstack_inputs=True, use_numpy=use_numpy)
 
 
-def vecs_expend_dims(v, axis):
+def vecs_expand_dims(v, axis):
     r"""
     Add an extra dimension to the input `v` at the given axis.
 
@@ -1099,12 +1099,12 @@ def vecs_expend_dims(v, axis):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from mindsponge.common.geometry import vecs_expend_dims
+        >>> from mindsponge.common.geometry import vecs_expand_dims
         >>> from mindspore.common import Tensor
         >>> from mindspore import dtype as mstype
         >>> v = (1, 2, 3)
         >>> axis = 0
-        >>> output= vecs_expend_dims(v, axis)
+        >>> output= vecs_expand_dims(v, axis)
         >>> print(output)
         (Tensor(shape=[1], dtype=Int64, value=[1]),Tensor(shape=[1], dtype=Int64, value=[2]),
          Tensor(shape=[1], dtype=Int64, value=[3]))
@@ -1113,7 +1113,7 @@ def vecs_expend_dims(v, axis):
     return v
 
 
-def rots_expend_dims(rots, axis):
+def rots_expand_dims(rots, axis):
     """
     Adds an additional dimension to `rots` at the given axis.
 
@@ -1132,12 +1132,12 @@ def rots_expend_dims(rots, axis):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from mindsponge.common.geometry import rots_expend_dims
+        >>> from mindsponge.common.geometry import rots_expand_dims
         >>> from mindspore.common import Tensor
         >>> from mindspore import dtype as mstype
         >>> rots = (1, 2, 3, 4, 5, 6, 7, 8, 9)
         >>> axis = 0
-        >>> rots_expend_dims(rots, axis)
+        >>> rots_expand_dims(rots, axis)
         >>> print(output)
         (Tensor(shape=[1], dtype=Int64, value=[1]), Tensor(shape=[1], dtype=Int64, value=[2]),
         Tensor(shape=[1], dtype=Int64, value=[3]), Tensor(shape=[1], dtype=Int64, value=[4]),
@@ -1203,8 +1203,8 @@ def invert_point(transformed_point, rotation, translation, extra_dims=0, stack=F
         rotation = rots_from_tensor(rotation, use_numpy)
         translation = vecs_from_tensor(translation)
     for _ in range(extra_dims):
-        rotation = rots_expend_dims(rotation, -1)
-        translation = vecs_expend_dims(translation, -1)
+        rotation = rots_expand_dims(rotation, -1)
+        translation = vecs_expand_dims(translation, -1)
     rot_point = vecs_sub(transformed_point, translation)
     return rots_mul_vecs(invert_rots(rotation), rot_point)
 
@@ -1336,7 +1336,7 @@ def quaternion_to_tensor(quaternion, translation):
 
     Args:
         quaternion (Tensor):    Inputs quaternion. Tensor of shape :math:`(..., 4)`.
-        translation (Tuple):    Inputs translation. Tensor of shape :math:`(..., 3)`
+        translation (Tensor):    Inputs translation. Tensor of shape :math:`(..., 3)`
 
     Returns:
         Tensor, The result of the concatenation between translation and translation. Tensor of shape :math:`(..., 7)`.
@@ -1460,8 +1460,8 @@ def apply_to_point(rotation, translation, point, extra_dims=0):
         Tensor(shape=[4], dtype=Float32, value= [ 8.62860143e-01,  9.11733627e-01,  1.09284782e+00,  1.44202101e+00]))
     """
     for _ in range(extra_dims):
-        rotation = rots_expend_dims(rotation, -1)
-        translation = vecs_expend_dims(translation, -1)
+        rotation = rots_expand_dims(rotation, -1)
+        translation = vecs_expand_dims(translation, -1)
     rot_point = rots_mul_vecs(rotation, point)
     result = vecs_add(rot_point, translation)
     return result
