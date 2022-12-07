@@ -1,7 +1,7 @@
 mindsponge.data.atom37_to_frames
 =================================
 
-.. py:function:: mindsponge.data.atom37_to_frames(aatype, all_atom_positions, all_atom_mask, is_affine)
+.. py:function:: mindsponge.data.atom37_to_frames(aatype, all_atom_positions, all_atom_mask, is_affine=False)
 
     用至多8个刚体变换组来表示每个氨基酸。
 
@@ -9,7 +9,7 @@ mindsponge.data.atom37_to_frames
         - **aatype** (numpy.array) - 氨基酸序列, :math:`[N_{res}]`。
         - **all_atom_positions** (numpy.array) - 所有原子的坐标，用atom37的方式呈现, :math:`[N_{res}, 37,3]`。
         - **all_atom_mask** (numpy.array) - 所有原子坐标的mask, :math:`[N_{res},37]` 。
-        - **is_affine** (bool) - 是否进行仿射变换, 默认值为"True"。
+        - **is_affine** (bool) - 是否进行仿射变换, 默认值：False。
 
     返回：
         字典，具体内容如下。

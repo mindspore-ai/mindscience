@@ -18,5 +18,5 @@ mindsponge.metrics.compute_renamed_ground_truth
         - **renamed_atom14_gt_positions** (Tensor) - 对称变换后重命名的，稠密编码的原子所对应的真实三维坐标。shape :math:`(N_{res}, 14, 3)` 。
         - **renamed_atom14_gt_exists** (Tensor) - 对称变换后重命名的、稠密编码的原子在标签中是否存在的掩码。shape :math:`(N_{res}, 14)` 。
 
-    符号:
-        - :math:`N_{res}` - 蛋白质中氨基酸个数，按蛋白质一级序列排列。
+    符号：
+        :math:`N_{res}` - 蛋白质中氨基酸个数，按蛋白质一级序列排列。

@@ -18,7 +18,7 @@ mindsponge.common.quaternion_from_tensor
           与 `quaternion` 一致，:math:`(yy, yz, zz)` 与 `translation` 一致。
         - **normalize** (bool) - 控制是否要在仿射变换过程求范数。默认值：False。
 
-    返回:
+    返回：
         - **quaternion** (Tensor) - 四元数，shape为 :math:`[(..., 4)]` 的Tensor。
         - **rotation** (Tuple) - 旋转矩阵 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` ，且xx, xy等均为Tensor且shape相同。
         - **translation** (Tuple) - 平移向量 :math:`[(x, y, z)]` ，其中x, y, z均为Tensor，且shape相同。

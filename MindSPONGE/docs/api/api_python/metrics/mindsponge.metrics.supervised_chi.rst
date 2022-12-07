@@ -9,7 +9,7 @@ mindsponge.metrics.supervised_chi
     MediaObjects/41586_2021_3819_MOESM1_ESM.pdf>`_。
 
     参数：
-        - **sequence_mask** (Tensor) -序列残基的mask，shape为 :math:`(N_{res},)` ，其中 :math:`N_{res}` 是蛋白质中的残基数目。
+        - **sequence_mask** (Tensor) - 序列残基的mask，shape为 :math:`(N_{res},)` ，其中 :math:`N_{res}` 是蛋白质中的残基数目。
         - **aatype** (Tensor) - 序列中的氨基酸残基类型，shape为 :math:`(N_{res},)` 。
         - **sin_cos_true_chi** (Tensor) - shape为 :math:`(N_{res}, 14)` ，扭转角的正弦和余弦值，每个氨基酸残基有七个扭转角，其中主链三个，侧链四个。
         - **torsion_angle_mask** (Tensor) - 侧链扭转角的mask，shape为 :math:`(N_{res}, 4)` 。

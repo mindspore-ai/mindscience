@@ -14,5 +14,5 @@ mindsponge.common.quaternion_to_tensor
         - **quaternion** (Tensor) - 输入的初始坐标，shape为 :math:`[(..., 4)]` 的Tensor。
         - **translation** (Tensor) - 坐标平移值，shape为 :math:`[(..., 3)]` 的Tensor。
 
-    返回:
+    返回：
         Tensor，返回 `quaternion` 和 `translation` 的连接结果，shape为 :math:`(..., 7)` 。

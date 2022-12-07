@@ -6,8 +6,8 @@ mindsponge.common.initial_affine
     初始化仿射变换后的四元数，旋转矩阵，平移向量。
 
     参数：
-        - **num_residues** (int)- 氨基酸残基数量。
-        - **use_numpy** (bool)- 是否使用numpy计算，默认值：False。
+        - **num_residues** (int) - 氨基酸残基数量。
+        - **use_numpy** (bool) - 是否使用numpy计算，默认值：False。
 
     返回：
         返回初始化后仿射变换结果

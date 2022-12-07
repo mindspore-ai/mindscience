@@ -21,6 +21,6 @@ mindsponge.common.invert_point
         - **stack** (bool) - 控制是否进行入栈操作。默认值：False。
         - **use_numpy** (bool) - 控制是否使用numpy。默认值：False。
 
-    返回:
+    返回：
         Tuple，旋转平移后的坐标，长度为3。
 
