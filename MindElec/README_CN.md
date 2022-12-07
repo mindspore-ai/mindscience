@@ -69,7 +69,18 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 
 ## 安装教程
 
-### 确认系统环境信息
+### 版本依赖关系
+
+由于MindElec与Mindspore有依赖关系，请根据下表中所指示的对应关系，在[Mindspore下载页面](https://www.mindspore.cn/versions)
+下载并安装对应的whl包。
+
+| MindElec | 分支     | MindSpore | Python |
+|:---------|:-------|:----------|:-------|
+| 0.2.0    | master | \>=2.0.0️ | \>=3.7 |
+
+其余依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/MindElec/requirements.txt)
+
+### 硬件支持情况
 
 | 硬件平台      | 操作系统        | 状态  |
 | :------------ | :-------------- | :--- |
@@ -78,9 +89,6 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 |               | EulerOS-aarch64 | ✔️   |
 |               | CentOS-x86      | ✔️   |
 |               | CentOS-aarch64  | ✔️   |
-
-- 参考[MindSpore安装指南](https://www.mindspore.cn/install)，完成MindSpore的安装，要求至少1.5.0版本。
-- 其余依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/MindElec/requirements.txt)
 
 ### pip安装
 

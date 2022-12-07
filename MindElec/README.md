@@ -69,6 +69,12 @@ If you are interested in our Meta-Auto-Decoder for solving parametric PDEs, plea
 
 ## Installation Guide
 
+Due to the dependency between MindElec and MindSpore, please follow the table below and install the corresponding MindSpore version from [MindSpore download Guide](https://www.mindspore.cn/versions)
+
+| MindElec Version | Branch | MindSpore Version | Python Version |
+|:-----------------|:-------|:------------------|:---------------|
+| 0.2.0            | master | \>=2.0.0️         | \>=3.7         |
+
 ### Confirming the System Environment Information
 
 | Hardware| Operating System| Status|
