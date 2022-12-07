@@ -65,7 +65,7 @@ class InvariantPointAttention(nn.Cell):
           A tuple of length 3, The shape of each elements in the tuple is :math:`[N_{res}]`.
 
     Outputs:
-        Tensor, the update of inputs_1d, shape :math:`[N_{res}, channel]`.
+        Tensor, the update of inputs_1d, shape :math:`[N_{res}, num\_channel]`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
