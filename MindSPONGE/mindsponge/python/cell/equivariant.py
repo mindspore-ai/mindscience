@@ -117,9 +117,9 @@ class InvariantPointAttention(nn.Cell):
         self.attention_2d = nn.Dense(pair_dim, self.num_head, weight_init=lecun_init(pair_dim))
         self.output_projection = nn.Dense(self.projection_num, self.num_channel, weight_init='zeros'
                                           )
-        self.scalar_weights = np.sqrt(1.0 / (3 * 16))
-        self.point_weights = np.sqrt(1.0 / (3 * 18))
-        self.attention_2d_weights = np.sqrt(1.0 / 3)
+        self.scalar_weights = Tensor(np.sqrt(1.0 / (3 * 16)).astype(np.float32))
+        self.point_weights = Tensor(np.sqrt(1.0 / (3 * 18)).astype(np.float32))
+        self.attention_2d_weights = Tensor(np.sqrt(1.0 / 3).astype(np.float32))
 
     def construct(self, inputs_1d, inputs_2d, mask, rotation, translation):
         '''construct'''
@@ -185,11 +185,11 @@ class InvariantPointAttention(nn.Cell):
         q_point = [mnp.swapaxes(q_point0, -2, -3), mnp.swapaxes(q_point1, -2, -3), mnp.swapaxes(q_point2, -2, -3)]
         k_point = [mnp.swapaxes(k_point0, -2, -3), mnp.swapaxes(k_point1, -2, -3), mnp.swapaxes(k_point2, -2, -3)]
 
-        dist2 = mnp.square(q_point[0][:, :, None, :] - k_point[0][:, None, :, :]) + \
-                mnp.square(q_point[1][:, :, None, :] - k_point[1][:, None, :, :]) + \
-                mnp.square(q_point[2][:, :, None, :] - k_point[2][:, None, :, :])
+        dist2 = mnp.square(ops.expand_dims(q_point[0], 2) - ops.expand_dims(k_point[0], 1)) + \
+                mnp.square(ops.expand_dims(q_point[1], 2) - ops.expand_dims(k_point[1], 1)) + \
+                mnp.square(ops.expand_dims(q_point[2], 2) - ops.expand_dims(k_point[2], 1))
 
-        attn_qk_point = -0.5 * mnp.sum(point_weights[:, None, None, :] * dist2, axis=-1)
+        attn_qk_point = -0.5 * mnp.sum(ops.expand_dims(ops.expand_dims(point_weights, 1), 1) * dist2, axis=-1)
 
         v = mnp.swapaxes(v_scalar, -2, -3)
         q = mnp.swapaxes(self.scalar_weights * q_scalar, -2, -3)
