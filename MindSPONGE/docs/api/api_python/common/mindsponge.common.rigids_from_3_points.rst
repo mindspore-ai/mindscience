@@ -3,7 +3,9 @@ mindsponge.common.rigids_from_3_points
 
 .. py:function:: mindsponge.common.rigids_from_3_points(point_on_neg_x_axis, origin, point_on_xy_plane)
 
-    Gram-Schmidt正交化过程，通过输入局部坐标系的原点O，在x轴负半轴上的点A以及x-y平面上一点P的坐标，计算该局部坐标系相对于全局坐标系的变换矩阵。
+    Gram-Schmidt正交化过程。
+    
+    通过输入局部坐标系的原点O，在x轴负半轴上的点A以及x-y平面上一点P的坐标，计算该局部坐标系相对于全局坐标系的变换矩阵。
 
     首先根据三点坐标计算向量 :math:`\vec AO` 和 :math:`\vec OP` 的坐标，再根据 `rots_from_two_vecs` 得到的两个向量计算旋转矩阵。
 

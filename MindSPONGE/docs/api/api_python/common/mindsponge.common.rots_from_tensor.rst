@@ -3,7 +3,7 @@ mindsponge.common.rots_from_tensor
 
 .. py:function:: mindsponge.common.rots_from_tensor(rots, use_numpy=False)
 
-    通过输入tensor，将最后两根轴对应的3*3的旋转矩阵摊平拆分，得到旋转矩阵的每个分量，rots_to_tensor的逆操作。
+    输入tensor，将最后两根轴对应的3*3的旋转矩阵摊平拆分，得到旋转矩阵的每个分量，rots_to_tensor的逆操作。
 
     参数：
         - **rots** (tensor) - 代表旋转矩阵，shape为 :math:`(..., 3, 3)` 。

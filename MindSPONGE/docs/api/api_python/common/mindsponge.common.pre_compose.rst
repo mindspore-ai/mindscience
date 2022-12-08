@@ -3,10 +3,9 @@ mindsponge.common.pre_compose
 
 .. py:function:: mindsponge.common.pre_compose(quaternion, rotation, translation, update)
 
-    利用 rotation 和 update 将输入的 quaternion 和 translation 进行更新，并用更新的 quaternion 和 translation
-    进行新的仿射变化过程。
-
-    得到更新的平移向量，旋转矩阵的过程如下：
+    利用旋转矩阵rotation和辅助矩阵update更新输入的四元数quaternion和平移向量translation，并进行新的仿射变化过程，得到更新的平移向量。
+    
+    旋转矩阵的过程如下：
 
     .. math::
         update = (xx, xy, xz, yx, yy, yz)

@@ -3,7 +3,9 @@ mindsponge.common.rots_from_two_vecs
 
 .. py:function:: mindsponge.common.rots_from_two_vecs(e0_unnormalized, e1_unnormalized)
 
-    输入两个向量 :math:`\vec a = (a_x, a_y, a_z)` 和 :math:`\vec b = (b_x, b_y, b_z)` ，计算由这两个向量所构成的x-y平面所在坐标系与原始坐标系之间的旋转矩阵。
+    输入两个向量 :math:`\vec a` 和 :math:`\vec b` ，计算由这两个向量所构成的x-y平面所在坐标系与原始坐标系之间的旋转矩阵。
+
+    :math:`\vec a = (a_x, a_y, a_z)` ， :math:`\vec b = (b_x, b_y, b_z)`
 
     首先计算 :math:`\vec a` 的单位向量 :math:`\vec e_0 = \frac{\vec a}{|\vec a|}` 作为该坐标系的x轴单位向量。
 

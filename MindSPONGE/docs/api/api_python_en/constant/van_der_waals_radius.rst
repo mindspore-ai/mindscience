@@ -1,7 +1,7 @@
 van_der_waals_radius
 ====================
 
-`C` 原子、 `N` 原子、 `O` 原子、 `S` 原子的范德华半径。
+Van der Waals radius of atom `C`, atom `N` , atom `O` and atom `S` .
 
 +-----+-------+
 | key | value |

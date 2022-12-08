@@ -3,7 +3,9 @@ mindsponge.common.rigids_mul_rots
 
 .. py:function:: mindsponge.common.rigids_mul_rots(x, y)
 
-    使用旋转矩阵 :math:`\vec y` 对刚体变换 :math:`x` 进行旋转，即使用 `rots_mul_rots` 让旋转矩阵 :math:`\vec y` 与刚体的旋转矩阵 :math:`x[0]` 相乘，平移距离不发生变化。
+    使用旋转矩阵 :math:`\vec y` 对刚体变换 :math:`x` 进行旋转。
+    
+    即使用 `rots_mul_rots` 让旋转矩阵 :math:`\vec y` 与刚体的旋转矩阵 :math:`x[0]` 相乘，平移距离不发生变化。
 
     .. math::
         (r, t) = (x_ry, x_t)

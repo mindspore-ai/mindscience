@@ -1,9 +1,7 @@
 HHBLITS_AA_TO_ID
 ============================
 
-使用hhblits约定将氨基酸映射到对应编号，对一些未明确定义的单字母符号映射为确定值，如B可以表示天冬氨酸也可表示为天冬酰胺，这里规定B与D编号相同，
-表示天冬氨酸（ASP），而J，O与X编号相同，表示未知氨基酸，U与C编号相同表示半胱氨酸（CYS），Z与E编号相同表示谷氨酸（GLU），'-'表示缺失氨基酸。
-除B、J、O、U、Z外，其余字母按顺序编号，字母含义与 `restype_1to3` 中的含义对应。
+Use the hhblits convention to map amino acids to corresponding numbers. Map some undefined single-letter symbols to definite values, such that B can be expressed as aspartic acid or aspartic acid. It is specified that B has the same number as D for aspartic acid (ASP), while J and O have the same number as X for unknown amino acid. U has the same number as C for cysteine (CYS). Z has the same number as E for glutamic acid (GLU), and '-' represents the missing amino acid. Except B, J, O, U, and Z, other letters are numbered in sequence, and their meanings correspond to those in `restype_1to3` .
 
 +------+--------+
 | key  | value  |
