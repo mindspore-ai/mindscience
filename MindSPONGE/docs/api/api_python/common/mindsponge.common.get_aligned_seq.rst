@@ -3,7 +3,7 @@ mindsponge.common.get_aligned_seq
 
 .. py:function:: mindsponge.common.get_aligned_seq(gt_seq, pr_seq)
 
-    输入两条蛋白质序列，对序列进行对齐，分别输入对齐后的序列以及两条序列的相同位置（顺序无要求）。
+    输入两条蛋白质序列，对序列进行对齐，分别输出对齐后的序列以及两条序列的相同位置（顺序无要求）。
 
     参数：
         - **gt_seq** (str) - 一条蛋白质序列，如"ABAAABAA"。

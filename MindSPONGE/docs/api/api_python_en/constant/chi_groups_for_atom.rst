@@ -1,9 +1,9 @@
 chi_groups_for_atom
 ===================
 
-氨基酸中所有原子在对应侧链转角编码中的索引，其中侧链扭转角编码见`chi_angles_atoms`。
-例如，('ARG', 'N'):[(0, 0)] 代表氨基酸 "ARG" 中"N"原子的编码索引为"ARG"的侧链转角编码的(0,0)位置。
+Indexes of all atoms in amino acids in the corresponding side chain torsion angle encoding, where the side chain torsion angle encodings are shown in 'chi_angles_atoms'.
 
+For example, ('ARG', 'N'):[(0, 0)] represents the encoding index of "N" atom in amino acid "ARG" is the (0, 0) position of side chain torsion angle encoding of "ARG".
 
 +------------------+-------------------------------------+
 | key              | value                               |

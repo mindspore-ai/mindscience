@@ -1,7 +1,7 @@
 ID_TO_HHBLITS_AA
 ============================
 
-`HHBLITS_AA_TO_ID` 的逆映射，将编号映射为氨基酸种类
+Inverse mapping of `HHBLITS_AA_TO_ID`, mapping the number to the amino acid type.
 
 +------+--------+
 | key  | value  |
