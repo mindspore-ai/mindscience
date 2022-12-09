@@ -23,6 +23,7 @@ from mindspore import log as logger
 from .geometry_base import Geometry, DATA_TYPES, GEOM_TYPES, SamplingConfig
 from .geometry_nd import HyperCube
 from .geom_utils import sample, polar_sample, generate_mesh
+from .shapes import adapter, simplex, pentagon
 from ..utils.check_func import check_param_type, check_param_type_value
 
 _SPACE = " "
@@ -253,8 +254,92 @@ class Rectangle(HyperCube):
         super(Rectangle, self).__init__(name, 2, coord_min, coord_max, dtype=dtype, sampling_config=sampling_config)
 
 
-class Triangle(Geometry):
-    pass
+class Triangle(adapter.Geometry):
+    r"""
+    Definition of triangle object.
+
+    Args:
+        name (str): name of the triangle.
+        vertices (numpy.ndarray): vertices of the triangle.
+        boundary_type (str): this can be 'uniform' or 'unweighted'. Default: 'uniform'.
+
+            - 'uniform', the expected number of samples in each boundary is proportional to the
+              area (length) of the boundary.
+            - 'unweighted', the expected number of samples in each boundary is the same.
+
+        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
+        sampling_config (samplingconfig): sampling configuration. Default: none.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindflow.geometry import generate_sampling_config, Triangle
+        >>> triangle_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
+        ...                       'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
+        >>> vertices = np.array([[0., .1], [.9, .2], [.5, .6]])
+        >>> triangle = Triangle("triangle", vertices,
+        ...                     sampling_config=generate_sampling_config(triangle_mesh))
+        >>> domain = triangle.sampling(geom_type="domain")
+        >>> bc = triangle.sampling(geom_type="bc")
+        >>> print(domain.shape)
+        (300, 2)
+    """
+    def __init__(self, name, vertices,
+                 boundary_type="uniform", dtype=np.float32, sampling_config=None):
+        super(Triangle, self).__init__(
+            name=name,
+            shape=simplex.Simplex(vertices, boundary_type),
+            dim=2,
+            coord_min=np.min(vertices, axis=0),
+            coord_max=np.max(vertices, axis=0),
+            dtype=dtype,
+            sampling_config=sampling_config,
+        )
+
+
+class Pentagon(adapter.Geometry):
+    r"""
+    Definition of pentagon object.
+
+    Args:
+        name (str): name of the pentagon.
+        vertices (numpy.ndarray): vertices of the pentagon in an anti-clockwise order.
+        boundary_type (str): this can be 'uniform' or 'unweighted'. Default: 'uniform'.
+
+            - 'uniform', the expected number of samples in each boundary is proportional to the
+              area (length) of the boundary.
+            - 'unweighted', the expected number of samples in each boundary is the same.
+
+        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
+        sampling_config (samplingconfig): sampling configuration. Default: none.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindflow.geometry import generate_sampling_config, Pentagon
+        >>> pentagon_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
+        ...                       'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
+        >>> vertices = np.array([[0., .1], [.5, .1], [.9, .2], [.7, .6], [.2, .5]])
+        >>> pentagon = Pentagon("pentagon", vertices,
+        ...                     sampling_config=generate_sampling_config(pentagon_mesh))
+        >>> domain = pentagon.sampling(geom_type="domain")
+        >>> bc = pentagon.sampling(geom_type="bc")
+        >>> print(domain.shape)
+        (300, 2)
+    """
+    def __init__(self, name, vertices,
+                 boundary_type="uniform", dtype=np.float32, sampling_config=None):
+        super(Pentagon, self).__init__(
+            name=name,
+            shape=pentagon.Pentagon(vertices, boundary_type),
+            dim=2,
+            coord_min=np.min(vertices, axis=0),
+            coord_max=np.max(vertices, axis=0),
+            dtype=dtype,
+            sampling_config=sampling_config,
+        )
 
 
 class Polygon(Geometry):

@@ -20,6 +20,7 @@ import numpy as np
 
 from .geometry_base import Geometry
 from .geometry_nd import HyperCube
+from .shapes import adapter, rotating, simplex
 
 
 class Cuboid(HyperCube):
@@ -52,9 +53,163 @@ class Cuboid(HyperCube):
         super(Cuboid, self).__init__(name, 3, coord_min, coord_max, dtype=dtype, sampling_config=sampling_config)
 
 
+class Tetrahedron(adapter.Geometry):
+    r"""
+    Definition of tetrahedron object.
+
+    Args:
+        name (str): name of the tetrahedron.
+        vertices (numpy.ndarray): vertices of the tetrahedron.
+        boundary_type (str): this can be 'uniform' or 'unweighted'. Default: 'uniform'.
+
+            - 'uniform', the expected number of samples in each boundary is proportional to the
+              area (length) of the boundary.
+            - 'unweighted', the expected number of samples in each boundary is the same.
+
+        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
+        sampling_config (samplingconfig): sampling configuration. Default: none.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindflow.geometry import generate_sampling_config, Tetrahedron
+        >>> tetrahedron_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
+        ...                          'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
+        >>> vertices = np.array([[0., .1, 0.], [.9, .2, .1], [.5, .6, 0.1], [.6, .5, .8]])
+        >>> tetrahedron = Tetrahedron("tetrahedron", vertices,
+        ...                           sampling_config=generate_sampling_config(tetrahedron_mesh))
+        >>> domain = tetrahedron.sampling(geom_type="domain")
+        >>> bc = tetrahedron.sampling(geom_type="bc")
+        >>> print(domain.shape)
+        (300, 2)
+    """
+    def __init__(self, name, vertices,
+                 boundary_type="uniform", dtype=np.float32, sampling_config=None):
+        super(Tetrahedron, self).__init__(
+            name=name,
+            shape=simplex.Simplex(vertices, boundary_type),
+            dim=3,
+            coord_min=np.min(vertices, axis=0),
+            coord_max=np.max(vertices, axis=0),
+            dtype=dtype,
+            sampling_config=sampling_config
+        )
+
+
 class Sphere(Geometry):
     pass
 
 
-class Cylinder(Geometry):
-    pass
+class Cylinder(adapter.Geometry):
+    r"""
+    Definition of cylinder object.
+
+    Args:
+        name (str): name of the cylinder.
+        centre (numpy.ndarray): origin of the bottom disk.
+        radius (float): Radius of the cylinder.
+        h_min (float): Height coordinate of the bottom disk.
+        h_max (float): Height coordinate of the top disk.
+        h_axis (int): Axis of the normal vector of the bottom disk.
+        boundary_type (str): this can be 'uniform' or 'unweighted'. Default: 'uniform'.
+
+            - 'uniform', the expected number of samples in each boundary is proportional to the
+              area (length) of the boundary.
+            - 'unweighted', the expected number of samples in each boundary is the same.
+
+        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
+        sampling_config (samplingconfig): sampling configuration. Default: none.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindflow.geometry import generate_sampling_config, Cylinder
+        >>> cylinder_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
+        ...                       'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
+        >>> vertices = np.array([[0., .1, 0.], [.9, .2, .1], [.5, .6, 0.1], [.6, .5, .8]])
+        >>> centre = np.array([0., 0.5])
+        >>> radius = 1.5
+        >>> h_min = -7.
+        >>> h_max = 7.
+        >>> h_axis = 2
+        >>> cylinder = Cylinder("cylinder", centre, radius, h_min, h_max, h_axis,
+        ...                     sampling_config=generate_sampling_config(cylinder_mesh))
+        >>> domain = cylinder.sampling(geom_type="domain")
+        >>> bc = cylinder.sampling(geom_type="bc")
+        >>> print(domain.shape)
+        (300, 2)
+    """
+    def __init__(self, name, centre, radius, h_min, h_max, h_axis,
+                 boundary_type="uniform", dtype=np.float32, sampling_config=None):
+
+        shape = rotating.Cylinder(centre, radius, h_min, h_max, h_axis, boundary_type)
+        coord_min = np.append(np.asarray(centre) - np.asarray(radius), h_min)
+        coord_max = np.append(np.asarray(centre) + np.asarray(radius), h_max)
+        super(Cylinder, self).__init__(
+            name=name,
+            shape=shape,
+            dim=3,
+            coord_min=coord_min,
+            coord_max=coord_max,
+            dtype=dtype,
+            sampling_config=sampling_config
+        )
+
+
+class Cone(adapter.Geometry):
+    r"""
+    Definition of cone object.
+
+    Args:
+        name (str): name of the cone.
+        centre (numpy.ndarray): origin of the bottom disk.
+        radius (float): Radius of the bottom disk.
+        h_min (float): Height coordinate of the bottom disk.
+        h_max (float): Maximum Height coordinate of the cone.
+        h_axis (int): Axis of the normal vector of the bottom disk.
+        boundary_type (str): this can be 'uniform' or 'unweighted'. Default: 'uniform'.
+
+            - 'uniform', the expected number of samples in each boundary is proportional to the
+              area (length) of the boundary.
+            - 'unweighted', the expected number of samples in each boundary is the same.
+
+        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
+        sampling_config (samplingconfig): sampling configuration. Default: none.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindflow.geometry import generate_sampling_config, Cone
+        >>> cone_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
+        ...                   'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
+        >>> vertices = np.array([[0., .1, 0.], [.9, .2, .1], [.5, .6, 0.1], [.6, .5, .8]])
+        >>> centre = np.array([0., 0.5])
+        >>> radius = 1.5
+        >>> h_min = -7.
+        >>> h_max = 7.
+        >>> h_axis = 2
+        >>> cone = Cone("cone", centre, radius, h_min, h_max, h_axis,
+        ...             sampling_config=generate_sampling_config(cone_mesh))
+        >>> domain = cone.sampling(geom_type="domain")
+        >>> bc = cone.sampling(geom_type="bc")
+        >>> print(domain.shape)
+        (300, 2)
+    """
+    def __init__(self, name, centre, radius, h_min, h_max, h_axis,
+                 boundary_type="uniform", dtype=np.float32, sampling_config=None):
+
+        shape = rotating.Cone(centre, radius, h_min, h_max, h_axis, boundary_type)
+        coord_min = np.append(np.asarray(centre) - np.asarray(radius), h_min)
+        coord_max = np.append(np.asarray(centre) + np.asarray(radius), h_max)
+        super(Cone, self).__init__(
+            name=name,
+            shape=shape,
+            dim=3,
+            coord_min=coord_min,
+            coord_max=coord_max,
+            dtype=dtype,
+            sampling_config=sampling_config
+        )
