@@ -1,7 +1,7 @@
 restype_atom37_to_rigid_group
 =============================
 
-Densely encoding 21 types of amino acid. Each amino acid contains the rigid group the atoms belong to. Shape is :math:`(21, 14)` .
+Sparse encoding 21 types of amino acid. Each amino acid contains the rigid group the atoms belong to. Shape is :math:`(21, 37)` .
 
 8 groups are
     - 0 - backbone-group Main chain rigid group corresponding to torsion angle `backbone` between atoms :math:`N-C\alpha-C-C\beta` in amino acid. CA is the origin point, C is on positive x-axis and N is on X-Y plane.
