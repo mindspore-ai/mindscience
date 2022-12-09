@@ -356,7 +356,7 @@ def rots_from_two_vecs(e0_unnormalized, e1_unnormalized):
     Then calculate the projected length of :math:`\vec b` on a axis.
     :math:`c = |\vec b| \cos\theta = \vec b \cdot \frac{\vec a}{|\vec a|}` .
 
-    So the projected vector of :math:`b` on a axis is :math:`c\vec e_0 `.
+    So the projected vector of :math:`b` on a axis is :math:`c\vec e_0`.
     The vector perpendicular to e0 is :math:`\vec e_1' = \vec b - c\vec e_0` .
 
     The unit vector of :math:`\vec e_1'` is :math:`\vec e_1 = \frac{\vec e_1'}{|\vec e_1'|}`,
@@ -420,7 +420,7 @@ def rigids_from_3_points(point_on_neg_x_axis, origin, point_on_xy_plane):
 
     Reference:
         `Jumper et al. (2021) Suppl. Alg. 21 'Gram-Schmidt process'
-            <https://www.nature.com/articles/s41586-021-03819-2>`_.
+        <https://www.nature.com/articles/s41586-021-03819-2>`_.
 
     .. math::
         \begin{split}
@@ -1164,11 +1164,11 @@ def invert_point(transformed_point, rotation, translation, extra_dims=0, stack=F
     .. math::
         \begin{split}
         &rot_point = transformed_point - translation \\
-        &result = :math:`rotation^t` * rot_point \\
+        &result = rotation^t * rot_point \\
         \end{split}
 
     The specific procedures of vector subtraction, transpose and multiplication can be referred to the
-      api of vecs_sub, invert_rots, rots_mul_vecs etc.
+    api of vecs_sub, invert_rots, rots_mul_vecs etc.
 
     Args:
         transformed_point (Tuple):  The initial coordinates of the input have shape :math:`(x, y, z)`,
@@ -1182,7 +1182,7 @@ def invert_point(transformed_point, rotation, translation, extra_dims=0, stack=F
         use_numpy(bool):            Control whether to use numpy. Default: False.
 
     Returns:
-        Tuple, the transformed coordinate of invert point.Length: 3
+        Tuple, the transformed coordinate of invert point.Length is 3.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

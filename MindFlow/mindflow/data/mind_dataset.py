@@ -102,7 +102,7 @@ class MindDataset(Data):
         Args:
             dataset_dict (dict): dictionary of each sub-dataset, the key is the labeled name while the value
                 refers to the specified columns contained in the sub-dataset.
-            constraint_dict (Union[None, str, dict): The constraint type of specified dataset. If None, "Label" will be
+            constraint_dict (Union[None, str, dict]): The constraint type of specified dataset. If None, "Label" will be
                 set for all. If is string, all will be set to the same one. If is dict,
                 the subdataset and it's constraint type is specified by the pair (key, value). Default: None.
 
@@ -134,7 +134,7 @@ class MindDataset(Data):
         """set constraint type of dataset
 
         Args:
-            constraint_type (Union[str, dict): The constraint type of specified dataset. If is string, the constraint
+            constraint_type (Union[str, dict]): The constraint type of specified dataset. If is string, the constraint
                 type of all subdataset will be set to the same one. If is dict, the subdataset and it's constraint type
                 is specified by the pair (key, value).
 
@@ -168,7 +168,7 @@ class MindDataset(Data):
             batch_size (int, optional): An int number of rows each batch is created with. Default: 1.
             preprocess_fn (Union[list[TensorOp], list[functions]], optional): List of operations to be
                 applied on the dataset. Operations are applied in the order they appear in this list. Default: None.
-            updated_columns_list (listoptional): List of columns to be applied on the dataset. Default: None.
+            updated_columns_list (list, optional): List of columns to be applied on the dataset. Default: None.
             drop_remainder (bool, optional): Determines whether or not to drop the last block
                 whose data row number is less than batch size. If True, and if there are less
                 than batch_size rows available to make the last batch, then those rows will

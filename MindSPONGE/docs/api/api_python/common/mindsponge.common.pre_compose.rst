@@ -19,7 +19,7 @@ mindsponge.common.pre_compose
         new_translation = translation + rotated_trans_update
 
     其中 `vector_quaternion_update` 与 `quaternion` 的相乘使用 `quat_multiply_by_vec` 函数相乘，
-    `rotation` 与 `trans_update`的相乘用 `rots_mul_vecs` 函数， `translation`` 与 `rotated_trans_update` 相加过程使用 `vecs_add` 函数。
+    `rotation` 与 `trans_update` 的相乘用 `rots_mul_vecs` 函数， `translation`` 与 `rotated_trans_update` 相加过程使用 `vecs_add` 函数。
     再用生成的 `new_quaternion` 和 `new_translation` 进行仿射变换。仿射变换的过程参照 `quat_affine` API。
 
     参数：

@@ -31,7 +31,7 @@ class MSARowAttentionWithPairBias(nn.Cell):
 
     Reference:
         `Jumper et al. (2021) Suppl. Alg. 7 'MSARowAttentionWithPairBias'
-            <https://www.nature.com/articles/s41586-021-03819-2>`_.
+        <https://www.nature.com/articles/s41586-021-03819-2>`_.
 
     Args:
         num_head (int):         The number of the attention head.
