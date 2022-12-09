@@ -1,7 +1,7 @@
 restype_3to1
 ============
 
-the mapping information of amino acids represented by three characters with amino acids represented by one characters.
+The mapping information of amino acids represented by three characters with amino acids represented by one characters.
 Key is amino acids represented by three characters and value is amino acids represented by one characters.
 
 +--------+-------+
