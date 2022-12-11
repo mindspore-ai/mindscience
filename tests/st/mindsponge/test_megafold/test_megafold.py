@@ -18,10 +18,10 @@ import pickle
 import pytest
 import mindspore.context as context
 import mindspore.common.dtype as mstype
-from mindspore import Tensor
+from mindspore import Tensor, nn
 from mindspore import load_checkpoint
 from mindsponge.common.config_load import load_config
-from mindsponge.cell.initializer import do_keep_cell_fp32
+from mindsponge.cell.amp import amp_convert
 from model.fold import MegaFold, compute_confidence
 from data.preprocess import Feature
 from data.utils import get_raw_feature
@@ -46,8 +46,8 @@ def fold_infer(crop_size, predict_confidence, mixed_precision=False):
 
     megafold = MegaFold(model_cfg, mixed_precision=mixed_precision)
     if mixed_precision is True:
-        megafold.to_float(mstype.float16)
-        do_keep_cell_fp32(megafold)
+        fp32_white_list = (nn.Softmax, nn.LayerNorm)
+        amp_convert(megafold, fp32_white_list)
     else:
         megafold.to_float(mstype.float32)
     load_checkpoint("/home/workspace/mindspore_ckpt/ckpt/MEGA_Fold_1.ckpt", megafold)

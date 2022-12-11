@@ -22,8 +22,8 @@ import numpy as np
 
 import mindspore.context as context
 import mindspore.common.dtype as mstype
-from mindspore import Tensor, load_checkpoint
-from mindsponge.cell.initializer import do_keep_cell_fp32
+from mindspore import Tensor, load_checkpoint, nn
+from mindsponge.cell.amp import amp_convert
 from mindsponge.common.config_load import load_config
 from common.protein import to_pdb, from_prediction
 
@@ -59,8 +59,8 @@ def fold_multimer_infer(args):
     load_checkpoint(args.checkpoint_path, megafold_multimer)
     if args.mixed_precision:
         dtype = np.float16
-        megafold_multimer.to_float(mstype.float16)
-        do_keep_cell_fp32(megafold_multimer)
+        fp32_white_list = (nn.Softmax, nn.LayerNorm)
+        amp_convert(megafold_multimer, fp32_white_list)
     else:
         dtype = np.float32
         megafold_multimer.to_float(mstype.float32)
