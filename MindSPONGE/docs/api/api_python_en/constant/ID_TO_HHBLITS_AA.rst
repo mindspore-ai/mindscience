@@ -48,5 +48,5 @@ Inverse mapping of `HHBLITS_AA_TO_ID`, mapping the number to the amino acid type
 +------+--------+
 | 20   |  X     |
 +------+--------+
-| 21   |  -     |
+| 21   |  \-    |
 +------+--------+
