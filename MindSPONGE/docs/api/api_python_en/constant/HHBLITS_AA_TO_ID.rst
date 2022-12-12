@@ -58,5 +58,5 @@ Use the hhblits convention to map amino acids to corresponding numbers. Map some
 +------+--------+
 | Z    | 3      |
 +------+--------+
-| -    | 21     |
+| \-   | 21     |
 +------+--------+
