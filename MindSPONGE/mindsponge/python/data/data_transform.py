@@ -389,7 +389,6 @@ def atom37_to_torsion_angles(
         all_atom_mask: np.ndarray,
         alt_torsions=False,
 ):
-
     r"""
     This function calculates the seven torsion angles of each residue and encodes them in sine and cosine.
     The order of the seven torsion angles is [pre_omega, phi, psi, chi_1, chi_2, chi_3, chi_4]
@@ -536,7 +535,12 @@ def atom37_to_frames(
         is_affine=False
 ):
     r"""
-    Computes the torsion angle of up to 8 rigid body groups for each residue.
+    Computes the torsion angle of up to 8 rigid groups for each residue, shape is :math:`[N_{res}, 8, 12]`,
+    where 8 is indicates that each residue can be divided into up to 8 rigid groups according to the dependence of
+    the atom on the torsion angle, there are 1 backbone frame and 7 side-chain frames.
+    For the meaning of 12 ,the first 9 elements are the 9 components of rotation matrix, the last
+    3 elements are the 3 component of translation matrix.
+
 
     Args:
         aatype(numpy.array):                Amino acid sequence, :math:`[N_{res}]` .
