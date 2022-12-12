@@ -1,4 +1,4 @@
-.. py:class:: FixedPoint(name, coord, dtype=<class 'numpy.float32'>, sampling_config=None)
+.. py:class:: mindflow.geometry.FixedPoint(name, coord, dtype=<class 'numpy.float32'>, sampling_config=None)
 
     HyperCube对象的定义。
 

@@ -1,4 +1,4 @@
-.. py:class:: GradVmap(model, argnum=0)
+.. py:class:: mindflow.operators.GradVmap(model, argnum=0)
 
     使用Vmap计算并返回指定输出列相对于指定输入列的梯度。
 

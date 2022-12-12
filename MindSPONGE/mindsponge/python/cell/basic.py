@@ -62,7 +62,7 @@ class Attention(nn.Cell):
 
     Outputs:
         Tensor, output tensor of the Attention layer with shape (batch_size,
-          query_seq_length, hidden_size).
+        query_seq_length, hidden_size).
 
     Supported Platforms:
         ``Ascend`` ``GPU``

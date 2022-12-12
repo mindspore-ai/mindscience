@@ -1,4 +1,4 @@
-.. py:method:: generate_sampling_config(dict_config)
+.. py:function:: mindflow.geometry.generate_sampling_config(dict_config)
 
     从dict转换为采样配置。
 

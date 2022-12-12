@@ -77,7 +77,7 @@ def between_residue_bond(
         - Tensor, c_n_ca_loss_mean, loss for violations of bond angle around N spanned by C, N, CA. shape is () .
         - Tensor, per_residue_loss_sum, sum of all losses of each residue. shape is :math:`(N_{res}, )` .
         - Tensor, per_residue_violation_mask, mask denoting all residues with violation present.
-          shape is math:`(N_{res}, )` .
+          shape is :math:`(N_{res}, )` .
 
     Note:
         - shape :math:`N_{res}`, number of amino acid.
@@ -953,7 +953,7 @@ def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_fr
         rigidgroups_gt_exists (Tensor): The binary mask for gt frames of shape :math:`(N_{res}, 8)`.
         renamed_atom14_gt_positions (Tensor): The mask for ground truth positions after renaming
             swaps are performed(swaps are needed for some amino acids due to symmetry
-            `compute_renamed_ground_truth`), its shape is :math:(N_{res}, 14).It takes the 14-types
+            `compute_renamed_ground_truth`), its shape is :math:`(N_{res}, 14)`.It takes the 14-types
             atoms encoding.
         renamed_atom14_gt_exists (Tensor): The mask for ground truth positions after renaming
             swap is performed after renaming swaps are performed, its shape is :math:`(N_{res}, 14)`.
@@ -961,7 +961,7 @@ def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_fr
             will be zero.
         sidechain_length_scale (float): The unit distance of sidechain FAPE loss, used to scale
             distances.
-        pred_frames (Tensor): The predicted locals frames of shape  :math:`(12, N_{recycle}, N_{res}, 8)`.
+        pred_frames (Tensor): The predicted locals frames of shape :math:`(12, N_{recycle}, N_{res}, 8)`.
             :math:`(N_{recycle},)` is the recycle number of FoldIteration in Structure module. Only the frames of
             last recycle is used in side-chain FAPE loss. 12 has the same meaning as the third dimension of
             rigidgroups_gt_frames.
