@@ -43,7 +43,8 @@ print(datetime.datetime.now())
 
 parser = argparse.ArgumentParser(description='navier_stoke 2D problem')
 parser.add_argument('--device_id', type=int, default=1)
-parser.add_argument('--config_path', default='navier_stokes_2d.yaml', help='yaml config file path')
+parser.add_argument(
+    '--config_path', default='navier_stokes_2d.yaml', help='yaml config file path')
 opt = parser.parse_args()
 
 context.set_context(mode=context.GRAPH_MODE,
@@ -69,12 +70,12 @@ def train_with_eval():
     test_label = np.load(os.path.join(data_params["path"], "test/label.npy"))
 
     # prepare model
-    model = FNO2D(input_dims=model_params["input_dims"],
-                  output_dims=model_params["output_dims"],
+    model = FNO2D(in_channels=model_params["input_dims"],
+                  out_channels=model_params["output_dims"],
                   resolution=model_params["input_resolution"],
                   modes=model_params["modes"],
                   channels=model_params["width"],
-                  depth=model_params["depth"]
+                  depths=model_params["depth"]
                   )
 
     model_params_list = []

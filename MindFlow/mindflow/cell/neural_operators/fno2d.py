@@ -41,16 +41,20 @@ class SpectralConv2dDft(nn.Cell):
         self.scale = (1. / (in_channels * out_channels))
 
         w_re1 = Tensor(
-            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2),
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2),
             dtype=compute_dtype)
         w_im1 = Tensor(
-            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2),
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2),
             dtype=compute_dtype)
         w_re2 = Tensor(
-            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2),
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2),
             dtype=compute_dtype)
         w_im2 = Tensor(
-            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2),
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2),
             dtype=compute_dtype)
 
         self.w_re1 = Parameter(w_re1, requires_grad=True)
@@ -106,7 +110,8 @@ class FNOBlock(nn.Cell):
         super().__init__()
         self.conv = SpectralConv2dDft(in_channels, out_channels, modes1, modes1, resolution, resolution,
                                       compute_dtype=compute_dtype)
-        self.w = nn.Conv2d(in_channels, out_channels, 1, weight_init='HeUniform').to_float(compute_dtype)
+        self.w = nn.Conv2d(in_channels, out_channels, 1,
+                           weight_init='HeUniform').to_float(compute_dtype)
 
         if gelu:
             self.act = ops.GeLU()
@@ -125,28 +130,28 @@ class FNO2D(nn.Cell):
     partial differential equations <https://arxiv.org/pdf/2010.08895.pdf>`_.
 
     Args:
-        input_dims (int): The number of channels in the input space.
-        output_dims (int): The number of channels in the output space.
+        in_channels (int): The number of channels in the input space.
+        out_channels (int): The number of channels in the output space.
         resolution (int): The spatial resolution of the input.
         modes (int): The number of low-frequency components to keep.
         channels (int): The number of channels after dimension lifting of the input. Default: 20.
-        depth (int): The number of FNO layers. Default: 4.
+        depths (int): The number of FNO layers. Default: 4.
         mlp_ratio (int): The number of channels lifting ratio of the decoder layer. Default: 4.
         compute_dtype (dtype.Number): The computation type of dense. Default mstype.float16.
                 Should be mstype.float16 or mstype.float32. mstype.float32 is recommended for the GPU backend,
                 mstype.float16 is recommended for the Ascend backend.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(batch_size, resolution, resolution, input_dims)`.
+        - **x** (Tensor) - Tensor of shape :math:`(batch_size, resolution, resolution, in_channels)`.
 
     Outputs:
         Tensor, the output of this FNO network.
 
-        - **output** (Tensor) -Tensor of shape :math:`(batch_size, resolution, resolution, output_dims)`.
+        - **output** (Tensor) -Tensor of shape :math:`(batch_size, resolution, resolution, out_channels)`.
 
     Raises:
-        TypeError: If `input_dims` is not an int.
-        TypeError: If `output_dims` is not an int.
+        TypeError: If `in_channels` is not an int.
+        TypeError: If `out_channels` is not an int.
         TypeError: If `resolution` is not an int.
         TypeError: If `modes` is not an int.
         ValueError: If `modes` is less than 1.
@@ -160,7 +165,7 @@ class FNO2D(nn.Cell):
         >>> from mindflow.cell.neural_operators import FNO2D
         >>> B, H, W, C = 32, 64, 64, 1
         >>> input = initializer(Normal(), [B, H, W, C])
-        >>> net = FNO2D(input_dims=1, output_dims=1, resolution=64, modes=12)
+        >>> net = FNO2D(in_channels=1, out_channels=1, resolution=64, modes=12)
         >>> output = net(input)
         >>> print(output.shape)
         (32, 64, 64, 1)
@@ -168,27 +173,32 @@ class FNO2D(nn.Cell):
     """
 
     def __init__(self,
-                 input_dims,
-                 output_dims,
+                 in_channels,
+                 out_channels,
                  resolution,
                  modes,
                  channels=20,
-                 depth=4,
+                 depths=4,
                  mlp_ratio=4,
                  compute_dtype=mstype.float32):
         super().__init__()
-        check_param_type(input_dims, "input_dims", data_type=int, exclude_type=bool)
-        check_param_type(output_dims, "output_dims", data_type=int, exclude_type=bool)
-        check_param_type(resolution, "resolution", data_type=int, exclude_type=bool)
+        check_param_type(in_channels, "in_channels",
+                         data_type=int, exclude_type=bool)
+        check_param_type(out_channels, "out_channels",
+                         data_type=int, exclude_type=bool)
+        check_param_type(resolution, "resolution",
+                         data_type=int, exclude_type=bool)
         check_param_type(modes, "modes", data_type=int, exclude_type=bool)
         if modes < 1:
-            raise ValueError("modes must at least 1, but got mode: {}".format(modes))
+            raise ValueError(
+                "modes must at least 1, but got mode: {}".format(modes))
 
         self.modes1 = modes
         self.channels = channels
         self.fc_channel = mlp_ratio * channels
-        self.fc0 = nn.Dense(input_dims + 2, self.channels, has_bias=False).to_float(compute_dtype)
-        self.layers = depth
+        self.fc0 = nn.Dense(in_channels + 2, self.channels,
+                            has_bias=False).to_float(compute_dtype)
+        self.layers = depths
 
         self.fno_seq = nn.SequentialCell()
         for _ in range(self.layers - 1):
@@ -198,8 +208,10 @@ class FNO2D(nn.Cell):
             FNOBlock(self.channels, self.channels, self.modes1, resolution=resolution, gelu=False,
                      compute_dtype=compute_dtype))
 
-        self.fc1 = nn.Dense(self.channels, self.fc_channel, has_bias=False).to_float(compute_dtype)
-        self.fc2 = nn.Dense(self.fc_channel, output_dims, has_bias=False).to_float(compute_dtype)
+        self.fc1 = nn.Dense(self.channels, self.fc_channel,
+                            has_bias=False).to_float(compute_dtype)
+        self.fc2 = nn.Dense(self.fc_channel, out_channels,
+                            has_bias=False).to_float(compute_dtype)
 
         self.grid = Tensor(get_grid_2d(resolution), dtype=mstype.float32)
         self.concat = ops.Concat(axis=-1)

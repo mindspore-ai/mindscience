@@ -39,12 +39,16 @@ class DFT1d(nn.Cell):
         self.idx = idx
 
         self.dft_mode_mat_upper = self.dft_mat[:, :modes]
-        self.a_re_upper = Tensor(self.dft_mode_mat_upper.real, dtype=compute_dtype)
-        self.a_im_upper = Tensor(self.dft_mode_mat_upper.imag, dtype=compute_dtype)
+        self.a_re_upper = Tensor(
+            self.dft_mode_mat_upper.real, dtype=compute_dtype)
+        self.a_im_upper = Tensor(
+            self.dft_mode_mat_upper.imag, dtype=compute_dtype)
 
         self.dft_mode_mat_lower = self.dft_mat[:, -modes:]
-        self.a_re_lower = Tensor(self.dft_mode_mat_lower.real, dtype=compute_dtype)
-        self.a_im_lower = Tensor(self.dft_mode_mat_lower.imag, dtype=compute_dtype)
+        self.a_re_lower = Tensor(
+            self.dft_mode_mat_lower.real, dtype=compute_dtype)
+        self.a_im_lower = Tensor(
+            self.dft_mode_mat_lower.imag, dtype=compute_dtype)
         self.concat = ops.Concat(axis=-1)
 
         if self.inv:
@@ -57,8 +61,10 @@ class DFT1d(nn.Cell):
                     self.dft_mat_res = self.dft_mat[:, -modes + 1:]
 
                 mat = Tensor(np.zeros(n, ), dtype=compute_dtype).reshape(n, 1)
-                self.a_re_res = mindspore.numpy.flip(Tensor(self.dft_mat_res.real, dtype=compute_dtype), axis=-1)
-                self.a_im_res = mindspore.numpy.flip(Tensor(self.dft_mat_res.imag, dtype=compute_dtype), axis=-1)
+                self.a_re_res = mindspore.numpy.flip(
+                    Tensor(self.dft_mat_res.real, dtype=compute_dtype), axis=-1)
+                self.a_im_res = mindspore.numpy.flip(
+                    Tensor(self.dft_mat_res.imag, dtype=compute_dtype), axis=-1)
                 if modes == n // 2 + 1:
                     self.a_re_res = self.concat((mat, self.a_re_res, mat))
                     self.a_im_res = self.concat((mat, self.a_im_res, mat))
@@ -73,7 +79,8 @@ class DFT1d(nn.Cell):
                 self.a_im_res = -self.a_im_lower.T
 
         if (self.n - 2 * self.modes) > 0:
-            self.mat = Tensor(shape=(self.n - 2 * self.modes), dtype=compute_dtype, init=Zero())
+            self.mat = Tensor(shape=(self.n - 2 * self.modes),
+                              dtype=compute_dtype, init=Zero())
 
     def swap_axes(self, x_re, x_im):
         return x_re.swapaxes(-1, self.idx), x_im.swapaxes(-1, self.idx)
@@ -145,12 +152,14 @@ class DFTn(nn.Cell):
 
 
 def _dftn(shape, modes, dim=None, compute_dtype=mindspore.float32):
-    dftn_ = DFTn(shape=shape, modes=modes, dim=dim, inv=False, compute_dtype=compute_dtype)
+    dftn_ = DFTn(shape=shape, modes=modes, dim=dim,
+                 inv=False, compute_dtype=compute_dtype)
     return dftn_
 
 
 def _idftn(shape, modes, dim=None, compute_dtype=mindspore.float32):
-    idftn_ = DFTn(shape=shape, modes=modes, dim=dim, inv=True, compute_dtype=compute_dtype)
+    idftn_ = DFTn(shape=shape, modes=modes, dim=dim,
+                  inv=True, compute_dtype=compute_dtype)
     return idftn_
 
 
