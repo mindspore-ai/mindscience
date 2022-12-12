@@ -406,13 +406,13 @@ def atom37_to_torsion_angles(
                                         Default: False.
 
     Returns:
-        - Dict containing
+        Dict containing
 
-          - torsion_angles_sin_cos (numpy.array), with shape :math:`(batch\_size, N_{res}, 37, 3)` where
-            the final 2 dimensions denote sin and cos respectively.
-          - alt_torsion_angles_sin_cos (numpy.array), same as 'torsion_angles_sin_cos', but with the angle shifted
-            by pi for all chi angles affected by the naming ambiguities.
-          - torsion_angles_mask (numpy.array), Mask for which chi angles are present.
+        - torsion_angles_sin_cos (numpy.array), with shape :math:`(batch\_size, N_{res}, 37, 3)` where
+          the final 2 dimensions denote sin and cos respectively.
+        - alt_torsion_angles_sin_cos (numpy.array), same as 'torsion_angles_sin_cos', but with the angle shifted
+          by pi for all chi angles affected by the naming ambiguities.
+        - torsion_angles_mask (numpy.array), Mask for which chi angles are present.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

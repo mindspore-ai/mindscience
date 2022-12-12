@@ -379,24 +379,46 @@ def atom14_to_atom37(atom14_data, residx_atom37_to_atom14, atom37_atom_exists, i
 
 def make_atom14_positions(aatype, all_atom_mask, all_atom_positions):
     """
-    Constructs denser atom positions (14 dimensions instead of 37).
+    The function of transforming sparse encoding method to densely encoding method.
+
+    Total coordinate encoding for atoms in proteins comes in two forms.
+
+    - Sparse encoding, 20 amino acids contain a total of 37 atom types as shown in
+      `common.residue_constants.atom_types`. So coordinates of atoms in protein can be encoded
+      as a Tensor with shape :math:`(N_{res}, 37, 3)`.
+    - Densely encoding. 20 amino acids contain a total of 14 atom types as shown in
+      `common.residue_constants.restype_name_to_atom14_names`. So coordinates of atoms in protein can be encoded
+      as a Tensor with shape :math:`(N_{res}, 14, 3)`.
 
     Args:
-        aatype (numpy.array):             numpy.array.
-        all_atom_positions (numpy.array): numpy.array.
-        all_atom_mask (numpy.array):      numpy.array.
+        aatype(numpy.array):                Protein sequence encoding. the encoding method refers to
+                                            `common.residue_constants.restype_order`. The value ranges from 0 to 20.
+                                            20 means the amino acid is unknown (`UNK`).
+        all_atom_mask(numpy.array):         Mask of coordinates of all atoms in proteins. Shape is
+                                            :math:`(N_{res}, 37)`. If the corresponding position is 0, the amino acid
+                                            does not contain the atom.
+        all_atom_positions(numpy.array):    Coordinates of all atoms in protein. Shape is :math:`(N_{res}, 37, 3)` .
 
     Returns:
-        - 'atom14_atom_exists', atom14 position exists mask.
-        - 'atom14_gt_exists', ground truth atom14 position exists mask.
-        - 'atom14_gt_positions', ground truth atom14 positions.
-        - 'residx_atom14_to_atom37', mapping for (residx, atom14) --> atom37, i.e. an array.
-        - 'residx_atom37_to_atom14', gather indices for mapping back.
-        - 'atom37_atom_exists', atom37 exists mask.
-        - 'atom14_alt_gt_positions', apply transformation matrices for the given residue sequence to the ground
-          truth positions.
-        - 'atom14_alt_gt_exists', the mask for the alternative ground truth.
-        - 'atom14_atom_is_ambiguous', create an ambiguous_mask for the given sequence.
+        - numpy.array. Densely encoding, mask of all atoms in protein, including unknown amino acid atoms.
+          Shape is :math:`(N_{res}, 14)`.
+        - numpy.array. Densely encoding, mask of all atoms in protein, excluding unknown amino acid atoms.
+          Shape is :math:`(N_{res}, 14)`.
+        - numpy.array. Densely encoding, coordinates of all atoms in protein. Shape is :math:`(N_{res}, 14, 3)`.
+        - numpy.array. Index of mapping sparse encoding atoms with densely encoding method.
+          Shape is :math:`(N_{res}, 14)` .
+        - numpy.array. Index of mapping densely encoding atoms with sparse encoding method.
+          Shape is :math:`(N_{res}, 37)` .
+        - numpy.array. Sparse encoding, mask of all atoms in protein, including unknown amino acid atoms.
+          Shape is :math:`(N_{res}, 14)`
+        - numpy.array. The atomic coordinates after chiral transformation for the atomic coordinates of
+          densely encoding method. Shape is :math:`(N_{res}, 14, 3)` .
+        - numpy.array. Atom mask after chiral transformation. Shape is :math:`(N_{res}, 14)` .
+        - numpy.array. Atom identifier of the chiral transformation. 1 is transformed and 0 is not transformed.
+          Shape is :math:`(N_{res}, 14)` .
+
+    Symbol:
+        - ** :math:`N_{res}` ** - The number of amino acids in a protein, according to the sequence of the protein.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -549,7 +571,33 @@ def get_pdb_info(pdb_path):
         pdb_path(str): the path of the input pdb.
 
     Returns:
-        features(dict), the information of pdb.
+        features(dict), the information of pdb, including these keys
+        - aatype, numpy.array. Protein sequence encoding. Encoding method refers to
+          `common.residue_constants_restype_order`, [0:20]. 20 means the amino acid is `UNK`. Shape :math:`(N_{res})` .
+        - all_atom_positions, numpy.array. Coordinates of all residues in pdb. Shape :math:`(N_{res}, 37)` .
+        - all_atom_mask, numpy.array. Mask of atoms in pdb. Shape :math:`(N_{res}, 37)` .
+          0 means the atom inexistence.
+        - atom14_atom_exists, numpy.array. Densely encoding, mask of all atoms in protein.
+          The position with atoms is 1 and the position without atoms is 0. Shape is :math:`(N_{res}, 14)`.
+        - atom14_gt_exists, numpy.array. Densely encoding, mask of all atoms in protein.
+          Keep the same as `atom14_atom_exist`. Shape is :math:`(N_{res}, 14)`.
+        - atom14_gt_positions, numpy.array. Densely encoding, coordinates of all atoms in the protein.
+          Shape is :math:`(N_{res}, 14, 3)`.
+        - residx_atom14_to_atom37, numpy.array. Index of mapping sparse encoding atoms with densely encoding method.
+          Shape is :math:`(N_{res}, 14)` .
+        - residx_atom37_to_atom14, numpy.array. Index of mapping densely encoding atoms with sparse encoding method.
+          Shape is :math:`(N_{res}, 37)` .
+        - atom37_atom_exists, numpy.array. Sparse encoding, mask of all atoms in protein.
+          The position with atoms is 1 and the position without atoms is 0. Shape is :math:`(N_{res}, 37)`.
+        - atom14_alt_gt_positions, numpy.array. Densely encoding, coordinates of all atoms in chiral proteins.
+          Shape is :math:`(N_{res}, 14, 3)` .
+        - atom14_alt_gt_exists, numpy.array. Densely encoding, mask of all atoms in chiral proteins.
+          Shape is :math:`(N_{res}, 14)` .
+        - atom14_atom_is_ambiguous, numpy.array. Because of the local symmetry of some amino acid structures,
+          the symmetric atomic codes can be transposed. Specific atoms can be found in
+          `common.residue_atom_renaming_swaps`. This feature records the uncertain atom encoding positions.
+          Shape is :math:`(N_{res}, 14)` .
+        - residue_index, numpy.array. Residue index information of protein sequence, ranging from 1 to :math:`N_{res}` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -606,13 +654,14 @@ def get_pdb_info(pdb_path):
 
 def get_fasta_info(pdb_path):
     """
-    get fasta info from pdb.
+    Put in a pdb file and get fasta information from it. Return the sequence of the pdb.
 
     Args:
         pdb_path(str): path of the input pdb.
 
     Returns:
-        fasta(str), fasta of input pdb.
+        fasta(str), fasta of input pdb. The sequence is the order of residues in the protein and has no
+        relationship with residue index, such as "GSHMGVQ".
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -635,11 +684,11 @@ def get_fasta_info(pdb_path):
 
 def get_aligned_seq(gt_seq, pr_seq):
     """
-    align two protein fasta sequence.
+    Align two protein fasta sequence. Return two aligned sequences and the position of same residues.
 
     Args:
-        gt_seq(str): one protein fasta sequence.
-        pr_seq(str): another protein fasta sequence.
+        gt_seq(str): one protein fasta sequence, such as "ABAAABAA".
+        pr_seq(str): another protein fasta sequence, such as "A-AABBBA".
 
     Returns:
         - target(str), one protein fasta sequence.
@@ -720,8 +769,7 @@ def find_optimal_renaming(
                                          shape :math:`(N_{res}, 14, 3)`.
 
     Returns:
-      Tensor, shape is :math:`(N_{res},)` with 1.0 where atom14_alt_gt_positions is closer to
-        prediction and otherwise 0.
+        Tensor, :math:`(N_{res},)` with 1.0 where atom14_alt_gt_positions is closer to prediction and otherwise 0.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

@@ -20,8 +20,8 @@ mindsponge.common.make_atom14_positions
         - numpy.array。按照稠密编码方式编码，蛋白质全原子掩码，包含unkown氨基酸原子， :math:`[N_{res}, 14]` 。
         - numpy.array。按照稠密编码方式编码，蛋白质全原子掩码，不包含unkown氨基酸原子， :math:`[N_{res}, 14]` 。
         - numpy.array。按照稠密编码方式编码，蛋白质全原子坐标,  :math:`[N_{res}, 14, 3]` 。
-        - numpy.array。稠密编码方式原子在稀疏编码方式中的索引映射， :math:`[N_{res}, 14]` 。
-        - numpy.array。稀疏编码方式原子在稠密编码方式中的索引映射， :math:`[N_{res}, 37]` 。
+        - numpy.array。稀疏编码方式原子在稠密编码方式中的索引映射， :math:`[N_{res}, 14]` 。
+        - numpy.array。稠密编码方式原子在稀疏编码方式中的索引映射， :math:`[N_{res}, 37]` 。
         - numpy.array。按照稀疏编码方式编码，蛋白质全原子掩码，包含unkown氨基酸原子， :math:`[N_{res}, 37]` 。
         - numpy.array。针对稠密编码方式全原子坐标进行手性变换后的全原子坐标。 :math:`[N_{res}, 14, 3]` 。
         - numpy.array。手性变换后原子掩码， :math:`[N_{res}, 14]` 。
