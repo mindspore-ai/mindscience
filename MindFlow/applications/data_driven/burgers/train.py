@@ -40,7 +40,8 @@ np.random.seed(0)
 
 parser = argparse.ArgumentParser(description='Burgers 1D problem')
 parser.add_argument('--device_id', type=int, default=7)
-parser.add_argument('--config_path', default='burgers1d.yaml', help='yaml config file path')
+parser.add_argument('--config_path', default='burgers1d.yaml',
+                    help='yaml config file path')
 opt = parser.parse_args()
 
 context.set_context(mode=context.GRAPH_MODE,
@@ -61,14 +62,14 @@ def train_with_eval():
                                    shuffle=True)
 
     test_input, test_label = np.load(os.path.join(data_params["path"], "test/inputs.npy")), \
-                             np.load(os.path.join(data_params["path"], "test/label.npy"))
+        np.load(os.path.join(data_params["path"], "test/label.npy"))
 
-    model = FNO1D(input_dims=model_params["input_dims"],
-                  output_dims=model_params["output_dims"],
+    model = FNO1D(in_channels=model_params["input_dims"],
+                  out_channels=model_params["output_dims"],
                   resolution=model_params["resolution"],
                   modes=model_params["modes"],
                   channels=model_params["width"],
-                  depth=model_params["depth"])
+                  depths=model_params["depth"])
     model_params_list = []
     for k, v in model_params.items():
         model_params_list.append(f"{k}:{v}")

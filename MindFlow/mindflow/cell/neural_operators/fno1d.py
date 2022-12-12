@@ -38,8 +38,10 @@ class SpectralConv1dDft(nn.Cell):
         w_im = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1), dtype=mstype.float32)
         self.w_re = Parameter(w_re, requires_grad=True)
         self.w_im = Parameter(w_im, requires_grad=True)
-        self.dft1_cell = dft1(shape=(self.resolution,), modes=modes1, compute_dtype=compute_dtype)
-        self.idft1_cell = idft1(shape=(self.resolution,), modes=modes1, compute_dtype=compute_dtype)
+        self.dft1_cell = dft1(shape=(self.resolution,),
+                              modes=modes1, compute_dtype=compute_dtype)
+        self.idft1_cell = idft1(shape=(self.resolution,),
+                                modes=modes1, compute_dtype=compute_dtype)
 
     @staticmethod
     def mul1d(inputs, weights):
@@ -89,12 +91,12 @@ class FNO1D(nn.Cell):
     parametric partial differential equations <https://arxiv.org/pdf/2010.08895.pdf>`_.
 
     Args:
-        input_dims (int): The number of channels in the input space.
-        output_dims (int): The number of channels in the output space.
+        in_channels (int): The number of channels in the input space.
+        out_channels (int): The number of channels in the output space.
         resolution (int): The spatial resolution of the input.
         modes (int): The number of low-frequency components to keep.
         channels (int): The number of channels after dimension lifting of the input. Default: 20.
-        depth (int): The number of FNO layers. Default: 4.
+        depths (int): The number of FNO layers. Default: 4.
         mlp_ratio (int): The number of channels lifting ratio of the decoder layer. Default: 4.
         compute_dtype (dtype.Number): The computation type of dense. Default mstype.float16.
             Should be mstype.float32 or mstype.float16. mstype.float32 is recommended for
@@ -109,8 +111,8 @@ class FNO1D(nn.Cell):
         - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, output\_dims)`.
 
     Raises:
-        TypeError: If `input_dims` is not an int.
-        TypeError: If `output_dims` is not an int.
+        TypeError: If `in_channels` is not an int.
+        TypeError: If `out_channels` is not an int.
         TypeError: If `resolution` is not an int.
         TypeError: If `modes` is not an int.
         ValueError: If `modes` is less than 1.
@@ -124,7 +126,7 @@ class FNO1D(nn.Cell):
         >>> from mindflow.cell.neural_operators import FNO1D
         >>> B, W, C = 32,1024,1
         >>> input_ = initializer(Normal(), [B, W, C])
-        >>> net = FNO1D(input_dims=1, output_dims=1, resolution=64, modes=12)
+        >>> net = FNO1D(in_channels=1, out_channels=1, resolution=64, modes=12)
         >>> output = net(input_)
         >>> print(output.shape)
         (32, 1024, 1)
@@ -132,26 +134,31 @@ class FNO1D(nn.Cell):
     """
 
     def __init__(self,
-                 input_dims,
-                 output_dims,
+                 in_channels,
+                 out_channels,
                  resolution,
                  modes,
                  channels=20,
-                 depth=4,
+                 depths=4,
                  mlp_ratio=4,
                  compute_dtype=mstype.float32):
         super().__init__()
-        check_param_type(input_dims, "input_dims", data_type=int, exclude_type=bool)
-        check_param_type(output_dims, "output_dims", data_type=int, exclude_type=bool)
-        check_param_type(resolution, "resolution", data_type=int, exclude_type=bool)
+        check_param_type(in_channels, "in_channels",
+                         data_type=int, exclude_type=bool)
+        check_param_type(out_channels, "out_channels",
+                         data_type=int, exclude_type=bool)
+        check_param_type(resolution, "resolution",
+                         data_type=int, exclude_type=bool)
         check_param_type(modes, "modes", data_type=int, exclude_type=bool)
         if modes < 1:
-            raise ValueError("modes must at least 1, but got mode: {}".format(modes))
+            raise ValueError(
+                "modes must at least 1, but got mode: {}".format(modes))
         self.modes1 = modes
         self.channels = channels
         self.fc_channel = mlp_ratio * channels
-        self.fc0 = nn.Dense(input_dims + 1, self.channels).to_float(compute_dtype)
-        self.layers = depth
+        self.fc0 = nn.Dense(
+            in_channels + 1, self.channels).to_float(compute_dtype)
+        self.layers = depths
 
         self.fno_seq = nn.SequentialCell()
         for _ in range(self.layers - 1):
@@ -160,8 +167,10 @@ class FNO1D(nn.Cell):
         self.fno_seq.append(
             FNOBlock(self.channels, self.channels, self.modes1, gelu=False, compute_dtype=compute_dtype))
 
-        self.fc1 = nn.Dense(self.channels, self.fc_channel).to_float(compute_dtype)
-        self.fc2 = nn.Dense(self.fc_channel, output_dims).to_float(compute_dtype)
+        self.fc1 = nn.Dense(
+            self.channels, self.fc_channel).to_float(compute_dtype)
+        self.fc2 = nn.Dense(
+            self.fc_channel, out_channels).to_float(compute_dtype)
 
         self.grid = Tensor(get_grid_1d(resolution), dtype=mstype.float32)
         self.concat = ops.Concat(axis=-1)

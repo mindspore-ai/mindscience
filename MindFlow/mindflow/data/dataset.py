@@ -64,19 +64,20 @@ class Dataset(Data):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from easydict import EasyDict as edict
         >>> from mindflow.geometry import Rectangle, generate_sampling_config
         >>> from mindflow.data import Dataset
-        >>> rectangle_mesh = edict({'domain': edict({'random_sampling': False, 'size': [50, 25]})})
+        >>> rectangle_mesh = dict({'domain': dict({'random_sampling': False, 'size': [50, 25]})})
         >>> rect_space = Rectangle("rectangle", coord_min=[0, 0], coord_max=[5, 5],
         ...                        sampling_config=generate_sampling_config(rectangle_mesh))
         >>> geom_dict = {rect_space: ["domain"]}
         >>> dataset = Dataset(geometry_dict=geom_dict)
     """
+
     def __init__(self, geometry_dict=None, existed_data_list=None, dataset_list=None):
         super(Dataset, self).__init__()
         if all((geometry_dict is None, existed_data_list is None, dataset_list is None)):
-            raise ValueError("Dataset should have at least one sub-dataset, but got None")
+            raise ValueError(
+                "Dataset should have at least one sub-dataset, but got None")
 
         if geometry_dict is not None:
             check_param_type(geometry_dict, "geometry_dict", data_type=dict)
@@ -86,10 +87,12 @@ class Dataset(Data):
         if existed_data_list is not None:
             if isinstance(existed_data_list, ExistedDataConfig):
                 existed_data_list = [existed_data_list]
-            check_param_type(existed_data_list, "existed_data_list", (list, tuple))
+            check_param_type(existed_data_list,
+                             "existed_data_list", (list, tuple))
 
             for data_config in existed_data_list:
-                check_param_type(data_config, "element in existed_data_list", ExistedDataConfig)
+                check_param_type(
+                    data_config, "element in existed_data_list", ExistedDataConfig)
 
         if dataset_list is not None:
             if isinstance(dataset_list, Data):
@@ -126,7 +129,8 @@ class Dataset(Data):
         if self.geometry_dict:
             for geom, types in self.geometry_dict.items():
                 for geom_type in types:
-                    dataset = self._create_dataset_from_geometry(geom, geom_type)
+                    dataset = self._create_dataset_from_geometry(
+                        geom, geom_type)
                     self.all_datasets.append(dataset)
 
         if self.existed_data_list:
@@ -185,16 +189,19 @@ class Dataset(Data):
         check_param_type(prebatched_data, "prebatched_data", data_type=bool)
         check_param_type(drop_remainder, "drop_remainder", data_type=bool)
         check_param_type(shuffle, "shuffle", data_type=bool)
-        check_param_type(batch_size, "batch_size", data_type=int, exclude_type=bool)
+        check_param_type(batch_size, "batch_size",
+                         data_type=int, exclude_type=bool)
 
         if prebatched_data and not drop_remainder:
-            raise ValueError("prebatched_data is not supported when drop_remained is set to be False")
+            raise ValueError(
+                "prebatched_data is not supported when drop_remained is set to be False")
         for dataset in self.all_datasets:
             prebatch_size = batch_size if prebatched_data else 1
             prebatch_shuffle = shuffle if prebatched_data else False
-            dataset._initialization(batch_size=prebatch_size, shuffle=prebatch_shuffle)
+            dataset._initialization(
+                batch_size=prebatch_size, shuffle=prebatch_shuffle)
             self.columns_list = dataset.columns_list if not self.columns_list else self.columns_list + \
-                                dataset.columns_list
+                dataset.columns_list
             logger.info("Check initial all dataset, dataset: {}, columns_list: {}, data_size: {}".format(
                 dataset.name, dataset.columns_list, len(dataset)))
 
@@ -203,27 +210,36 @@ class Dataset(Data):
                                            num_shards=num_shards,
                                            shard_id=shard_id,
                                            python_multiprocessing=python_multiprocessing)
-        logger.info("Initial dataset size: {}".format(dataset.get_dataset_size()))
-        logger.info("Get all dataset columns names: {}".format(self.columns_list))
+        logger.info("Initial dataset size: {}".format(
+            dataset.get_dataset_size()))
+        logger.info("Get all dataset columns names: {}".format(
+            self.columns_list))
 
         self.dataset_columns_map, self.dataset_constraint_map, self.column_index_map = self._create_trace_maps()
         logger.info("Dataset columns map: {}".format(self.dataset_columns_map))
-        logger.info("Dataset column index map: {}".format(self.column_index_map))
-        logger.info("Dataset constraints map: {}".format(self.dataset_constraint_map))
+        logger.info("Dataset column index map: {}".format(
+            self.column_index_map))
+        logger.info("Dataset constraints map: {}".format(
+            self.dataset_constraint_map))
 
         if preprocess_fn:
             input_columns = copy.deepcopy(self.columns_list)
-            check_param_type(input_output_columns_map, "input_output_columns_map", (type(None), dict))
+            check_param_type(input_output_columns_map,
+                             "input_output_columns_map", (type(None), dict))
             if input_output_columns_map:
-                new_columns_list, new_dataset_columns_map = self._update_columns_list(input_output_columns_map)
+                new_columns_list, new_dataset_columns_map = self._update_columns_list(
+                    input_output_columns_map)
                 self.columns_list = new_columns_list
                 self.dataset_columns_map = new_dataset_columns_map
                 self.column_index_map = {}
                 for i in range(len(self.columns_list)):
                     self.column_index_map[self.columns_list[i]] = i
-                logger.info("Dataset columns map after preprocess: {}".format(self.dataset_columns_map))
-                logger.info("Dataset column index after preprocess: {}".format(self.column_index_map))
-                logger.info("Dataset constraints after preprocess: {}".format(self.dataset_constraint_map))
+                logger.info("Dataset columns map after preprocess: {}".format(
+                    self.dataset_columns_map))
+                logger.info("Dataset column index after preprocess: {}".format(
+                    self.column_index_map))
+                logger.info("Dataset constraints after preprocess: {}".format(
+                    self.dataset_constraint_map))
             output_columns = self.columns_list
 
             dataset = dataset.map(operations=preprocess_fn,
@@ -232,13 +248,15 @@ class Dataset(Data):
                                   column_order=output_columns,
                                   num_parallel_workers=num_parallel_workers,
                                   python_multiprocessing=python_multiprocessing)
-            logger.info("Get all dataset columns names after preprocess: {}".format(self.columns_list))
+            logger.info("Get all dataset columns names after preprocess: {}".format(
+                self.columns_list))
 
         if not prebatched_data:
             dataset = dataset.batch(batch_size=batch_size,
                                     drop_remainder=drop_remainder,
                                     num_parallel_workers=num_parallel_workers)
-        logger.info("Final dataset size: {}".format(dataset.get_dataset_size()))
+        logger.info("Final dataset size: {}".format(
+            dataset.get_dataset_size()))
         return dataset
 
     def _merge_all_datasets(self, shuffle=True, num_parallel_workers=1, num_shards=1, shard_id=0,
@@ -267,7 +285,8 @@ class Dataset(Data):
                     if isinstance(new_column, list):
                         new_dataset_columns_map[dataset.name] += new_column
                     else:
-                        new_dataset_columns_map.get(dataset.name).append(new_column)
+                        new_dataset_columns_map.get(
+                            dataset.name).append(new_column)
                 else:
                     new_dataset_columns_map.get(dataset.name).append(column)
 
@@ -308,7 +327,8 @@ class Dataset(Data):
 
     def __getitem__(self, index):
         if not self._iterable_datasets:
-            raise ValueError("Call create_dataset() before getting item by index to avoid unexpected error")
+            raise ValueError(
+                "Call create_dataset() before getting item by index to avoid unexpected error")
         return self._iterable_datasets[index]
 
     def set_constraint_type(self, constraint_type="Equation"):
@@ -339,12 +359,14 @@ class Dataset(Data):
 
     def __len__(self):
         if not self._iterable_datasets:
-            raise ValueError("Call create_dataset() before getting item by index to avoid unexpected error")
+            raise ValueError(
+                "Call create_dataset() before getting item by index to avoid unexpected error")
         return len(self._iterable_datasets)
 
 
 class _IterableDatasets():
     """get data iteratively"""
+
     def __init__(self, dataset_list):
         self.dataset_list = dataset_list
         dataset_size = [len(dataset) for dataset in dataset_list]

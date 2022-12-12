@@ -18,10 +18,11 @@ import copy
 import mindspore
 import mindspore.nn as nn
 import mindspore.ops.operations as P
+from mindspore import dtype as mstype
 from mindspore import Parameter, Tensor
 from mindspore.common.initializer import initializer, XavierUniform
 
-from ...common.math import get_2d_sin_cos_pos_embed
+from ..utils import get_2d_sin_cos_pos_embed
 
 __all__ = ['Decoder', 'Encoder']
 
@@ -34,23 +35,23 @@ class Attention(nn.Cell):
                  num_heads,
                  mlp_ratio,
                  dropout_rate=1.0,
-                 compute_dtype=mindspore.float16):
+                 compute_dtype=mstype.float16):
         super(Attention, self).__init__()
         self.num_heads = num_heads
         self.embed_dim = embed_dim
         self.embed_dim_per_head = embed_dim // num_heads
-        self.embed_dim_per_head_fp32 = Tensor(self.embed_dim_per_head, mindspore.float32)
+        self.embed_dim_per_head_fp32 = Tensor(self.embed_dim_per_head, mstype.float32)
         self.mlp_ratio = mlp_ratio
         self.compute_dtype = compute_dtype
 
-        self.layer_norm = nn.LayerNorm([embed_dim], epsilon=1e-6).to_float(mindspore.float32)
+        self.layer_norm = nn.LayerNorm([embed_dim], epsilon=1e-6).to_float(mstype.float32)
 
         self.query = nn.Dense(self.embed_dim, self.embed_dim, weight_init='XavierUniform').to_float(compute_dtype)
         self.key = nn.Dense(self.embed_dim, self.embed_dim, weight_init='XavierUniform').to_float(compute_dtype)
         self.value = nn.Dense(self.embed_dim, self.embed_dim, weight_init='XavierUniform').to_float(compute_dtype)
 
         self.proj = nn.Dense(self.embed_dim, self.embed_dim, weight_init='XavierUniform').to_float(compute_dtype)
-        self.attn_dropout = nn.Dropout(dropout_rate)
+        self.attention_dropout_rate = nn.Dropout(dropout_rate)
         self.proj_dropout = nn.Dropout(dropout_rate)
 
         self.softmax = nn.Softmax(axis=-1)
@@ -71,12 +72,12 @@ class Attention(nn.Cell):
         value_layer = self.transpose_for_scores(mixed_value_layer)
 
         attention_scores_compute_dtype = mindspore.ops.matmul(query_layer, P.Transpose()(key_layer, (0, 1, 3, 2)))
-        attention_scores_fp32 = P.Cast()(attention_scores_compute_dtype, mindspore.float32)
+        attention_scores_fp32 = P.Cast()(attention_scores_compute_dtype, mstype.float32)
 
         scaled_attention_scores_fp32 = attention_scores_fp32 / P.Sqrt()(self.embed_dim_per_head_fp32)
         attention_probs_fp32 = self.softmax(scaled_attention_scores_fp32)
         attention_probs_compute_dtype = P.Cast()(attention_probs_fp32, self.compute_dtype)
-        attention_probs = self.attn_dropout(attention_probs_compute_dtype)
+        attention_probs = self.attention_dropout_rate(attention_probs_compute_dtype)
 
         context_layer = mindspore.ops.matmul(attention_probs, value_layer)
         context_layer = P.Transpose()(context_layer, (0, 2, 1, 3))
@@ -95,7 +96,7 @@ class Mlp(nn.Cell):
                  embed_dim,
                  mlp_ratio,
                  dropout_rate=1.0,
-                 compute_dtype=mindspore.float16):
+                 compute_dtype=mstype.float16):
         super(Mlp, self).__init__()
         self.fc1 = nn.Dense(embed_dim, embed_dim * mlp_ratio,
                             weight_init='XavierUniform').to_float(compute_dtype)
@@ -122,11 +123,11 @@ class Block(nn.Cell):
                  num_heads,
                  mlp_ratio,
                  dropout_rate=1.0,
-                 compute_dtype=mindspore.float16):
+                 compute_dtype=mstype.float16):
         super(Block, self).__init__()
         self.embed_dim = embed_dim
-        self.attention_norm = nn.LayerNorm([embed_dim], epsilon=1e-6).to_float(mindspore.float32)
-        self.ffn_norm = nn.LayerNorm([embed_dim], epsilon=1e-6).to_float(mindspore.float32)
+        self.attention_norm = nn.LayerNorm([embed_dim], epsilon=1e-6).to_float(mstype.float32)
+        self.ffn_norm = nn.LayerNorm([embed_dim], epsilon=1e-6).to_float(mstype.float32)
         self.ffn = Mlp(embed_dim, mlp_ratio, dropout_rate, compute_dtype=compute_dtype)
         self.attn = Attention(embed_dim, num_heads, mlp_ratio, dropout_rate, compute_dtype=compute_dtype)
 
@@ -151,7 +152,7 @@ class Embedding(nn.Cell):
                  input_dims,
                  embed_dim,
                  patch_size=16,
-                 compute_dtype=mindspore.float16):
+                 compute_dtype=mstype.float16):
         super(Embedding, self).__init__()
         self.compute_dtype = compute_dtype
         self.patch_embedding = nn.Conv2d(in_channels=input_dims,
@@ -165,7 +166,7 @@ class Embedding(nn.Cell):
         weight_shape = self.patch_embedding.weight.shape
         xavier_init = initializer(XavierUniform(),
                                   [weight_shape[0], weight_shape[1] * weight_shape[2] * weight_shape[3]],
-                                  mindspore.float32)
+                                  mstype.float32)
 
         self.patch_embedding.weight = P.Reshape()(xavier_init,
                                                   (weight_shape[0], weight_shape[1], weight_shape[2], weight_shape[3]))
@@ -182,23 +183,23 @@ class Encoder(nn.Cell):
      Encoder module with multi-layer stacked of `Block`, including multihead self attention and feedforward layer.
 
      Args:
-          grid_size(tuple[int]): The grid_size size of input.
-          input_dims(int): The input feature size of input. Default: 3,
-          patch_size(int): The patch size of image. Default: 16,
-          depth(int): The encoder depth of encoder layer.
-          embed_dim(int): The encoder embedding dimension of encoder layer. Default: 768,
-          num_heads(int): The encoder heads' number of encoder layer. Default: 16,
-          mlp_ratio(int): The rate of mlp layer. Default: 4,
-          dropout_rate(float): The rate of dropout layer. Default: 1.0,
-          compute_dtype(dtype): The data type for encoder, encoding_embedding, encoder and dense layer.
-                                Default: mindspore.float16.
+          grid_size (tuple[int]): The grid_size size of input.
+          in_channels (int): The input feature size of input. Default: 3.
+          patch_size (int): The patch size of image. Default: 16.
+          depths (int): The encoder depth of encoder layer.
+          embed_dim (int): The encoder embedding dimension of encoder layer. Default: 768.
+          num_heads (int): The encoder heads' number of encoder layer. Default: 16.
+          mlp_ratio (int): The rate of mlp layer. Default: 4.
+          dropout_rate (float): The rate of dropout layer. Default: 1.0.
+          compute_dtype (dtype): The data type for encoder, encoding_embedding, encoder and dense layer.
+                                Default: mstype.float16.
 
      Inputs:
              - **input** (Tensor) - Tensor of shape :math:`(batch_size, feature_size, image_height, image_width)`.
 
      Outputs:
              - **output** (Tensor) - Tensor of shape :math:`(batch_size, patchify_size, embed_dim)`.
-             where patchify_size = (image_height * image_width) / (patch_size * patch_size)
+             where patchify_size = (image_height * image_width) / (patch_size * patch_size).
 
      Supported Platforms:
          ``Ascend`` ``GPU``
@@ -215,37 +216,38 @@ class Encoder(nn.Cell):
         >>> print(input_tensor.shape)
         (32, 3, 192, 384)
         >>>encoder = Encoder(grid_size=(192 // 16, 384 // 16),
-        >>>                  input_dims=3,
+        >>>                  in_channels=3,
         >>>                  patch_size=16,
-        >>>                  depth=6,
+        >>>                  depths=6,
         >>>                  embed_dim=768,
         >>>                  num_heads=12,
         >>>                  mlp_ratio=4,
         >>>                  dropout_rate=1.0,
-        >>>                  compute_dtype=mindspore.float16)
+        >>>                  compute_dtype=mstype.float16)
         >>>output_tensor = encoder(input_tensor)
         >>> print("output_tensor:",output_tensor.shape)
         (32, 288, 768)
     """
+
     def __init__(self,
                  grid_size,
-                 input_dims,
+                 in_channels,
                  patch_size,
-                 depth,
+                 depths,
                  embed_dim,
                  num_heads,
                  mlp_ratio=4,
                  dropout_rate=1.0,
-                 compute_dtype=mindspore.float16):
+                 compute_dtype=mstype.float16):
         super(Encoder, self).__init__()
-        self.patch_embedding = Embedding(input_dims, embed_dim, patch_size, compute_dtype=compute_dtype)
+        self.patch_embedding = Embedding(in_channels, embed_dim, patch_size, compute_dtype=compute_dtype)
         pos_embed = get_2d_sin_cos_pos_embed(embed_dim, grid_size)
-        self.position_embedding = Parameter(Tensor(pos_embed, mindspore.float32),
+        self.position_embedding = Parameter(Tensor(pos_embed, mstype.float32),
                                             name="encoder_pos_embed",
                                             requires_grad=False)
         self.layer = nn.CellList([])
-        self.encoder_norm = nn.LayerNorm([embed_dim], epsilon=1e-6).to_float(mindspore.float32)
-        for _ in range(depth):
+        self.encoder_norm = nn.LayerNorm([embed_dim], epsilon=1e-6).to_float(mstype.float32)
+        for _ in range(depths):
             layer = Block(embed_dim, num_heads, mlp_ratio, dropout_rate, compute_dtype=compute_dtype)
             self.layer.append(copy.deepcopy(layer))
 
@@ -264,21 +266,21 @@ class Decoder(nn.Cell):
     Decoder module with multi-layer stacked of `Block`, including multihead self attention and feedforward layer.
 
     Args:
-         grid_size(tuple[int]): The grid_size size of input.
-         depth(int): The decoder depth of decoder layer.
-         embed_dim(int): The decoder embedding dimension of decoder layer.
-         num_heads(int): The decoder heads' number of decoder layer.
-         mlp_ratio(int): The rate of mlp layer. Default: 4,
-         dropout_rate(float): The rate of dropout layer. Default: 1.0,
-         compute_dtype(dtype): The data type for encoder, decoding_embedding, decoder and dense layer.
-            Default: mindspore.float16):
+         grid_size (tuple[int]): The grid_size size of input.
+         depths (int): The decoder depth of decoder layer.
+         embed_dim (int): The decoder embedding dimension of decoder layer.
+         num_heads (int): The decoder heads' number of decoder layer.
+         mlp_ratio (int): The rate of mlp layer. Default: 4.
+         dropout_rate (float): The rate of dropout layer. Default: 1.0.
+         compute_dtype (dtype): The data type for encoder, decoding_embedding, decoder and dense layer.
+            Default: mstype.float16.
 
     Inputs:
             - **input** (Tensor) - Tensor of shape :math:`(batch_size, patchify_size, embed_dim)`.
 
     Outputs:
          - **output** (Tensor) - Tensor of shape :math:`(batch_size, patchify_size, embed_dim)`.
-         where patchify_size = (image_height * image_width) / (patch_size * patch_size)
+         where patchify_size = (image_height * image_width) / (patch_size * patch_size).
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -295,33 +297,34 @@ class Decoder(nn.Cell):
         >>> print(input_tensor.shape)
         (32, 288, 768)
         >>> decoder = Decoder(grid_size=grid_size,
-        >>>                   depth=6,
+        >>>                   depths=6,
         >>>                   embed_dim=512,
         >>>                   num_heads=16,
         >>>                   mlp_ratio=4,
         >>>                   dropout_rate=1.0,
-        >>>                   compute_dtype=mindspore.float16)
+        >>>                   compute_dtype=mstype.float16)
         >>> output_tensor = decoder(input_tensor)
         >>> print("output_tensor:",output_tensor.shape)
         (32, 288, 512)
     """
+
     def __init__(self,
                  grid_size,
-                 depth,
+                 depths,
                  embed_dim,
                  num_heads,
                  mlp_ratio=4,
                  dropout_rate=1.0,
-                 compute_dtype=mindspore.float16):
+                 compute_dtype=mstype.float16):
         super(Decoder, self).__init__()
         self.grid_size = grid_size
         self.layer = nn.CellList([])
         pos_embed = get_2d_sin_cos_pos_embed(embed_dim, grid_size)
-        self.position_embedding = Parameter(Tensor(pos_embed, mindspore.float32),
+        self.position_embedding = Parameter(Tensor(pos_embed, mstype.float32),
                                             name="decoder_pos_embed",
                                             requires_grad=False)
-        self.decoder_norm = nn.LayerNorm([embed_dim], epsilon=1e-6).to_float(mindspore.float32)
-        for _ in range(depth):
+        self.decoder_norm = nn.LayerNorm([embed_dim], epsilon=1e-6).to_float(mstype.float32)
+        for _ in range(depths):
             layer = Block(embed_dim, num_heads, mlp_ratio, dropout_rate, compute_dtype=compute_dtype)
             self.layer.append(copy.deepcopy(layer))
 
@@ -332,4 +335,3 @@ class Decoder(nn.Cell):
             x = layer_block(x)
         x = self.decoder_norm(x)
         return x
-        

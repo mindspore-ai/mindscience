@@ -27,7 +27,7 @@ from mindspore import Parameter
 from mindspore.common.tensor import Tensor
 from mindspore.ops import operations as P
 
-from ..common.math import unpatchify
+from ..cell.utils import unpatchify
 from ..utils.check_func import check_param_type, check_param_type_value
 
 
@@ -73,7 +73,8 @@ def get_loss_metric(name):
         0.6666667
     """
     if not isinstance(name, str):
-        raise TypeError("the type of name should be str but got {}".format(type(name)))
+        raise TypeError(
+            "the type of name should be str but got {}".format(type(name)))
 
     if name not in _loss_metric:
         raise ValueError("Unknown loss function type: {}".format(name))
@@ -113,10 +114,12 @@ class RegularizedLossCell(nn.Cell):
     def __init__(self, reg_params, reg_factor=0.01, reg_mode="l2"):
         super(RegularizedLossCell, self).__init__()
         check_param_type(reg_params, "reg_params", data_type=Parameter)
-        check_param_type_value(reg_mode, "reg_mode", data_type=str, valid_value=["l1", "l2"])
+        check_param_type_value(reg_mode, "reg_mode",
+                               data_type=str, valid_value=["l1", "l2"])
         check_param_type(reg_factor, "reg_factor", data_type=float)
         if reg_factor < 0.0:
-            raise ValueError("The reg_factor must be a non-negtive value, but got {}".format(reg_factor))
+            raise ValueError(
+                "The reg_factor must be a non-negtive value, but got {}".format(reg_factor))
         self.reg_params = reg_params
         self.reg_mode = reg_mode
         self.reg_factor = reg_factor
@@ -189,14 +192,17 @@ class MTLWeightedLossCell(WeightedLossCell):
 
     def __init__(self, num_losses, bound_param=0.0):
         super(MTLWeightedLossCell, self).__init__()
-        check_param_type(num_losses, "num_losses", data_type=int, exclude_type=bool)
+        check_param_type(num_losses, "num_losses",
+                         data_type=int, exclude_type=bool)
         if num_losses <= 0:
-            raise ValueError("the value of num_losses should be positive, but got {}".format(num_losses))
+            raise ValueError(
+                "the value of num_losses should be positive, but got {}".format(num_losses))
         self.num_losses = num_losses
         check_param_type(bound_param, "bound_param", data_type=float)
         self.bounded = bound_param > 1.0e-6
         self.bound_param = bound_param ** 2
-        self.params = Parameter(Tensor(np.ones(num_losses), mstype.float32), requires_grad=True)
+        self.params = Parameter(
+            Tensor(np.ones(num_losses), mstype.float32), requires_grad=True)
         self.concat = ops.Concat(axis=0)
         self.pow = ops.Pow()
         self.log = ops.Log()
