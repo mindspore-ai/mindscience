@@ -37,7 +37,7 @@
             - **drop_remainder** (bool, 可选) - 确定是否删除最后一个块，其数据行号小于批处理大小。如果为True，如果有更少的比批处理大小行可用于创建最后一个批处理，那么这些行将被丢弃，而不传播到子节点。默认值：True。
             - **prebatched_data** (bool, 可选) - 在数据预处理前生成预批处理数据。默认值：False。
             - **num_parallel_workers** (int, 可选) - 并行处理数据集的工作线程（线程）数量。默认值：1。
-            - **python_multiprocessing** (bool, 可选)  - 使用多处理并行Python函数per_batch_map。如果函数计算量很大，此选项可能会很有用。默认值：False。
+            - **python_multiprocessing** (bool, 可选) - 使用多处理并行Python函数per_batch_map。如果函数计算量很大，此选项可能会很有用。默认值：False。
 
         返回：
             BatchDataset，批处理的数据集。
