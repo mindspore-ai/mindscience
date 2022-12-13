@@ -23,7 +23,7 @@ mindelec.geometry.Geometry
         异常：
             - **TypeError** - 如果 `name` 不是字符串。
 
-    .. py:method:: mindelec.geometry.Geometry.set_sampling_config(sampling_config: mindelec.geometry.geometry_base.SamplingConfig)
+    .. py:method:: mindelec.geometry.Geometry.set_sampling_config(sampling_config: SamplingConfig)
 
         设置采样信息。
 

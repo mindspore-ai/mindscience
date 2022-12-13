@@ -6,7 +6,7 @@ mindelec.geometry.create_config_from_edict
     从dict转换为SamplingConfig。
 
     参数：
-        - **dict_config** (dict) - 包含配置信息的dict。
+        - **edict_config** (dict) - 包含配置信息的dict。
 
     返回：
         geometry_base.SamplingConfig，采样配置。

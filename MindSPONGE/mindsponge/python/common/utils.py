@@ -572,6 +572,7 @@ def get_pdb_info(pdb_path):
 
     Returns:
         features(dict), the information of pdb, including these keys
+
         - aatype, numpy.array. Protein sequence encoding. Encoding method refers to
           `common.residue_constants_restype_order`, [0:20]. 20 means the amino acid is `UNK`. Shape :math:`(N_{res})` .
         - all_atom_positions, numpy.array. Coordinates of all residues in pdb. Shape :math:`(N_{res}, 37)` .

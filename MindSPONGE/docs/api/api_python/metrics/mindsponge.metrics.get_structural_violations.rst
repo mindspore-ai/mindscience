@@ -1,7 +1,7 @@
 mindsponge.metrics.get_structural_violations
 ===========================================
 
-.. py:function:: mindsponge.metrics.get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_atom14_to_atom37, atom14_pred_positions, violation_tolerance_factor, clash_overlap_tolerance, lower_bound, upper_bound, atomtype_radius, c_one_hot, n_one_hot, dists_mask_i, cys_sg_idx)
+.. py:function:: mindsponge.metrics.get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_atom14_to_atom37, atom14_pred_positions, violation_tolerance_factor=VIOLATION_TOLERANCE_ACTOR, clash_overlap_tolerance=CLASH_OVERLAP_TOLERANCE, lower_bound=LOWER_BOUND, upper_bound=UPPER_BOUND, atomtype_radius=ATOMTYPE_RADIUS, c_one_hot=C_ONE_HOT, n_one_hot=N_ONE_HOT, dists_mask_i=DISTS_MASK_I, cys_sg_idx=CYS_SG_IDX)
 
     该函数主要用于计算蛋白序列中相邻的氨基酸是否存在不合理的肽键构型，以及不同原子是否在空间中距离过近，从而对蛋白质结构中不合理的空间冲突进行惩罚。（针对蛋白质全原子坐标编码分为两种形式：分别为稀疏编码和稠密编码，详见： `common.make_atom14_positions` ）
 

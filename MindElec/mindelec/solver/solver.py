@@ -76,7 +76,8 @@ class Solver:
               always general. User should specify the level for special network.
 
             O2 is recommended on GPU, O3 is recommended on Ascend.The more detailed explanation of `amp_level` setting
-            can be found at `mindspore.amp.build_train_network`.
+            can be found at `mindspore.amp.build_train_network <https://www.mindspore.cn/docs/en/master/api_python/
+            amp/mindspore.amp.build_train_network.html#mindspore.amp.build_train_network>`_ .
 
     Supported Platforms:
         ``Ascend``
