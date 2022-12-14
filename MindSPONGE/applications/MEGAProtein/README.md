@@ -30,12 +30,12 @@ MEGA-Protein mainly consists of three parts:
 
 This directory is the open source code of MEGA-Protein (including MEGA-fold, MEGA-EvoGen, and mega-Accessment). The available checkpoints and datasets are listed in the following chart:
 
-| Model & Dataset      | Name        | Size                         | Description  |Model URL  |
-|-----------|---------------------|------------------------------|---------------|-----------------------------------------------------------------------|
-| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB                        | model checkpoint |  [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)  |
-| MEGA-EvoGen     | `MEGAEvoGen.ckpt`  | 535.7MB                      | MEGA-EvoGen model checkpoint | [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAEvoGen/MEGAEvoGen.ckpt)   |
-| MEGA-Assessment     | `MEGA_Assessment.ckpt`  | 77MB        | MEGA-Assessment model checkpoint | [download](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAAssessment/MEGA_Assessment.ckpt)   |
-| PSP          | `PSP`         | 2TB(25TB after decompressed) | multimodal dataset for protein |  [download](http://ftp.cbi.pku.edu.cn/psp/)  |
+| Model & Dataset      | Name        | Size                         | Description  | Model URL                                                                                                       |
+|-----------|---------------------|------------------------------|---------------|-----------------------------------------------------------------------------------------------------------------|
+| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB                        | model checkpoint | [download](https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt)           |
+| MEGA-EvoGen     | `MEGAEvoGen.ckpt`  | 535.7MB                      | MEGA-EvoGen model checkpoint | [download](https://download.mindspore.cn/mindscience/mindsponge/MEGAEvoGen/checkpoint/MEGAEvoGen.ckpt)          |
+| MEGA-Assessment     | `MEGA_Assessment.ckpt`  | 77MB        | MEGA-Assessment model checkpoint | [download](https://download.mindspore.cn/mindscience/mindsponge/MEGAAssessment/checkpoint/MEGA_Assessment.ckpt) |
+| PSP          | `PSP`         | 2TB(25TB after decompressed) | multimodal dataset for protein | [download](http://ftp.cbi.pku.edu.cn/psp/)                                                                      |
 
 <details><summary>Cite us</summary>
 
@@ -211,7 +211,7 @@ The protein structure prediction tool MEGA-Fold relies on the co-evolution and t
 
 ### MEGA-Fold inference
 
-First configuring the database search and related hyper-parameters in `config/data.yaml`, then downloading weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt). Finally running following command to start inference.
+First configuring the database search and related hyper-parameters in `config/data.yaml`, then downloading weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt). Finally running following command to start inference.
 
 ```bash
 Usage:python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --run_platform PLATFORM
@@ -265,7 +265,7 @@ Checkpoints are saved in `./ckpt` folder every 50 iterations. Dataset downloadin
 
 ### MEGA-EvoGen inference
 
-First related hyper-parameters in `./config/evogen.yaml`, then downloading weights [MEGAEvoGen.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAEvoGen/MEGAEvoGen.ckpt). Finally running following command to start inference.
+First related hyper-parameters in `./config/evogen.yaml`, then downloading weights [MEGAEvoGen.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAEvoGen/checkpoint/MEGAEvoGen.ckpt). Finally running following command to start inference.
 
 ```bash
 Usage:python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --evogen_config ./config/evogen.yaml
@@ -285,7 +285,7 @@ option:
 
 ### MEGA-Assessment inference
 
-Downloading MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt) and MEGA_Assessment weights [MEGA_Assessment.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAAssessment/MEGA_Assessment.ckpt). Finally running following command to start inference.
+Downloading MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt) and MEGA_Assessment weights [MEGA_Assessment.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAAssessment/checkpoint/MEGA_Assessment.ckpt). Finally running following command to start inference.
 
 ```bash
 Usage: python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --input_path INPUT_FILE_PATH
@@ -304,7 +304,7 @@ option:
 
 ### MEGA-Assessment training
 
-Downloading our open source protein structure training dataset [PSP lite dataset](http://ftp.cbi.pku.edu.cn/psp/psp_lite/) and MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt), using follow command to start training:
+Downloading our open source protein structure training dataset [PSP lite dataset](http://ftp.cbi.pku.edu.cn/psp/psp_lite/) and MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt), using follow command to start training:
 
 ```bash
 Usage:python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --is_training True

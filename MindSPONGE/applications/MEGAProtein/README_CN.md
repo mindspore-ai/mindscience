@@ -26,12 +26,12 @@ MEGA-Protein主要由三部分组成：
 
 ## 可用的模型和数据集
 
-| 所属模块      | 文件名        | 大小 | 描述  |Model URL  |
-|-----------|---------------------|---------|---------------|-----------------------------------------------------------------------|
-| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 |  [下载链接](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)  |
-| MEGA-EvoGen     | `MEGAEvoGen.ckpt`  | 535.7MB        | MEGA-EvoGen的checkpoint链接 | [下载链接](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAEvoGen/MEGAEvoGen.ckpt)   |
-| MEGA-Assessment     | `MEGA_Assessment.ckpt`  | 77MB        | MEGA-Assessment的checkpoint链接 | [下载链接](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAAssessment/MEGA_Assessment.ckpt)   |
-| PSP          | `PSP`         | 1.6TB(解压后25TB)    | PSP蛋白质结构数据集，可用于MEGA-Fold训练 |  [下载链接](http://ftp.cbi.pku.edu.cn/psp/)  |
+| 所属模块      | 文件名        | 大小 | 描述  | Model URL                                                                                                   |
+|-----------|---------------------|---------|---------------|-------------------------------------------------------------------------------------------------------------|
+| MEGA-Fold    | `MEGA_Fold_1.ckpt` | 356MB       | MEGA-Fold在PSP数据集训练的数据库与checkpoint链接 | [下载链接](https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt)           |
+| MEGA-EvoGen     | `MEGAEvoGen.ckpt`  | 535.7MB        | MEGA-EvoGen的checkpoint链接 | [下载链接](https://download.mindspore.cn/mindscience/mindsponge/MEGAEvoGen/checkpoint/MEGAEvoGen.ckpt)          |
+| MEGA-Assessment     | `MEGA_Assessment.ckpt`  | 77MB        | MEGA-Assessment的checkpoint链接 | [下载链接](https://download.mindspore.cn/mindscience/mindsponge/MEGAAssessment/checkpoint/MEGA_Assessment.ckpt) |
+| PSP          | `PSP`         | 1.6TB(解压后25TB)    | PSP蛋白质结构数据集，可用于MEGA-Fold训练 | [下载链接](http://ftp.cbi.pku.edu.cn/psp/)                                                                      |
 
 <details><summary>引用我们</summary>
 
@@ -210,7 +210,7 @@ MEGA-Protein主要由三部分组成：
 
 ### MEGA-Fold蛋白质结构预测推理
 
-配置数据库搜索与`config/data.yaml`中的相关参数，下载已经训好的模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)，运行以下命令启动推理。
+配置数据库搜索与`config/data.yaml`中的相关参数，下载已经训好的模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt)，运行以下命令启动推理。
 
 ```bash
 用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --run_platform PLATFORM
@@ -263,7 +263,7 @@ MEGA-Fold预测结果与真实结果对比：
 ### MEGA-EvoGen MSA生成/增强推理
 
 MEGA-EvoGen相关超参位于 `./config/evogen.yaml`，
-然后下载模型权重 [MEGAEvoGen.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAEvoGen/MEGAEvoGen.ckpt)
+然后下载模型权重 [MEGAEvoGen.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAEvoGen/checkpoint/MEGAEvoGen.ckpt)
 ， 最后使用如下命令运行模型。
 
 ```bash
@@ -281,7 +281,7 @@ MEGA-EvoGen相关超参位于 `./config/evogen.yaml`，
 
 ### MEGA-Assessment 蛋白质结构评分推理
 
-下载已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)，和MEGA-Assessment模型权重[MEGA_Assessment.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAAssessment/MEGA_Assessment.ckpt)运行以下命令启动推理。
+下载已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt)，和MEGA-Assessment模型权重[MEGA_Assessment.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAAssessment/checkpoint/MEGA_Assessment.ckpt)运行以下命令启动推理。
 
 ```bash
 用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --input_path INPUT_FILE_PATH
@@ -301,7 +301,7 @@ MEGA-EvoGen相关超参位于 `./config/evogen.yaml`，
 ### MEGA-Assessment 蛋白质结构评分训练
 
 下载开源结构训练数据集[PSP lite dataset](http://ftp.cbi.pku.edu.cn/psp/psp_lite/)，使用以下命令启动训练：
-和已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/ckpts/MEGAFold/MEGA_Fold_1.ckpt)，运行以下命令启动训练。
+和已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt)，运行以下命令启动训练。
 
 ```bash
 用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --is_training True
