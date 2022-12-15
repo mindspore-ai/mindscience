@@ -397,33 +397,33 @@ def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_
         ``Ascend`` ``GPU``
 
     Examples:
-        >>>import mindspore as ms
-        >>>from mindspore import Tensor
-        >>>import numpy as np
-        >>>from mindsponge.metrics import get_structural_violations
-        >>>atom14_atom_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
-        >>>residue_index = Tensor(np.array(range(50)), ms.int32)
-        >>>aatype = Tensor(np.random.randint(20, size=(50,)), ms.int32)
-        >>>residx_atom14_to_atom37 = Tensor(np.random.randint(2, size=(50, 14)), ms.int32)
-        >>>atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
-        >>>violation_tolerance_factor = 12.0
-        >>>clash_overlap_tolerance = 1.5
-        >>>lower_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
-        >>>upper_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
-        >>>atomtype_radius =Tensor([1.55, 1.7, 1.7, 1.7, 1.52, 1.7, 1.7, 1.7, 1.52, 1.52, 1.8,
-        ...                         1.7, 1.7, 1.7, 1.55, 1.55, 1.52, 1.52, 1.8, 1.7, 1.7, 1.7,
-        ...                         1.7, 1.55, 1.55, 1.55, 1.52, 1.52, 1.7, 1.55, 1.55, 1.52, 1.7,
-        ...                         1.7, 1.7, 1.55, 1.52], ms.float32)
-        >>>c_one_hot = Tensor(np.array([0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
-        >>>n_one_hot = Tensor(np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
-        >>>dists_mask_i = Tensor(np.eye(14, 14), ms.int32)
-        >>>cys_sg_idx = Tensor(5, ms.int32)
-        >>>result = get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_atom14_to_atom37,
-        ...                                   atom14_pred_positions, violation_tolerance_factor,
-        ...                                   clash_overlap_tolerance, lower_bound, upper_bound, atomtype_radius,
-        ...                                   c_one_hot, n_one_hot, dists_mask_i,cys_sg_idx)
-        >>>for r in result:
-        >>>    print(r.shape)
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> import numpy as np
+        >>> from mindsponge.metrics import get_structural_violations
+        >>> atom14_atom_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>> residue_index = Tensor(np.array(range(50)), ms.int32)
+        >>> aatype = Tensor(np.random.randint(20, size=(50,)), ms.int32)
+        >>> residx_atom14_to_atom37 = Tensor(np.random.randint(2, size=(50, 14)), ms.int32)
+        >>> atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>> violation_tolerance_factor = 12.0
+        >>> clash_overlap_tolerance = 1.5
+        >>> lower_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
+        >>> upper_bound = Tensor(np.random.random(size=(50, 14, 14)), ms.float32)
+        >>> atomtype_radius =Tensor([1.55, 1.7, 1.7, 1.7, 1.52, 1.7, 1.7, 1.7, 1.52, 1.52, 1.8,
+        ...                          1.7, 1.7, 1.7, 1.55, 1.55, 1.52, 1.52, 1.8, 1.7, 1.7, 1.7,
+        ...                          1.7, 1.55, 1.55, 1.55, 1.52, 1.52, 1.7, 1.55, 1.55, 1.52, 1.7,
+        ...                          1.7, 1.7, 1.55, 1.52], ms.float32)
+        >>> c_one_hot = Tensor(np.array([0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
+        >>> n_one_hot = Tensor(np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ms.int32)
+        >>> dists_mask_i = Tensor(np.eye(14, 14), ms.int32)
+        >>> cys_sg_idx = Tensor(5, ms.int32)
+        >>> result = get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_atom14_to_atom37,
+        ...                                    atom14_pred_positions, violation_tolerance_factor,
+        ...                                    clash_overlap_tolerance, lower_bound, upper_bound, atomtype_radius,
+        ...                                    c_one_hot, n_one_hot, dists_mask_i,cys_sg_idx)
+        >>> for r in result:
+        >>>     print(r.shape)
         ()
         ()
         ()
@@ -540,20 +540,20 @@ def compute_renamed_ground_truth(atom14_gt_positions,
         ``Ascend`` ``GPU``
 
     Examples:
-        >>>import mindspore as ms
-        >>>from mindspore import Tensor
-        >>>import numpy as np
-        >>>from mindsponge.metrics import compute_renamed_ground_truth
-        >>>atom14_gt_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
-        >>>atom14_alt_gt_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
-        >>>atom14_atom_is_ambiguous = Tensor(np.random.random(size=(50, 14)), ms.float32)
-        >>>atom14_gt_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
-        >>>atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
-        >>>atom14_alt_gt_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
-        >>>alt_naming_is_better, renamed_atom14_gt_positions, renamed_atom14_gt_exists = \
-        ...    compute_renamed_ground_truth(atom14_gt_positions, atom14_alt_gt_positions, atom14_atom_is_ambiguous,
-        ...                                 atom14_gt_exists, atom14_pred_positions, atom14_alt_gt_exists)
-        >>>print(alt_naming_is_better.shape, renamed_atom14_gt_positions.shape, renamed_atom14_gt_exists.shape)
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> import numpy as np
+        >>> from mindsponge.metrics import compute_renamed_ground_truth
+        >>> atom14_gt_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>> atom14_alt_gt_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>> atom14_atom_is_ambiguous = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>> atom14_gt_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>> atom14_pred_positions = Tensor(np.random.random(size=(50, 14, 3)), ms.float32)
+        >>> atom14_alt_gt_exists = Tensor(np.random.random(size=(50, 14)), ms.float32)
+        >>> alt_naming_is_better, renamed_atom14_gt_positions, renamed_atom14_gt_exists = \
+        ...     compute_renamed_ground_truth(atom14_gt_positions, atom14_alt_gt_positions, atom14_atom_is_ambiguous,
+        ...                                  atom14_gt_exists, atom14_pred_positions, atom14_alt_gt_exists)
+        >>> print(alt_naming_is_better.shape, renamed_atom14_gt_positions.shape, renamed_atom14_gt_exists.shape)
         (50,) (50, 14, 3) (50, 14)
 
     """

@@ -1,5 +1,5 @@
 mindsponge.metrics.get_structural_violations
-===========================================
+============================================
 
 .. py:function:: mindsponge.metrics.get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_atom14_to_atom37, atom14_pred_positions, violation_tolerance_factor=VIOLATION_TOLERANCE_ACTOR, clash_overlap_tolerance=CLASH_OVERLAP_TOLERANCE, lower_bound=LOWER_BOUND, upper_bound=UPPER_BOUND, atomtype_radius=ATOMTYPE_RADIUS, c_one_hot=C_ONE_HOT, n_one_hot=N_ONE_HOT, dists_mask_i=DISTS_MASK_I, cys_sg_idx=CYS_SG_IDX)
 
