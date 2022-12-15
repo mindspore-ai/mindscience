@@ -1,0 +1,42 @@
+#模型配置参数文件
+#####buildin 受数据采样的限制
+nx: 100
+#number of nodes along x axis. used here to remove the specfem's absorbing regions from PINN's computational domain
+nz: 100
+
+n_abs: 10  # number of nodes for absorbing B.C in both directions from specfem
+n_absx: 10 #number nodes from left side of the domain
+n_absz: 10 #the top boundary is not absorbing
+
+ax_spec: 1.5 #domain size in specfem before removing absorbing regions
+az_spec: 0.5
+xsf: 1.3 #x location of all the seismometers in specfem
+
+
+rho: 1.0
+t_m: 0.5 #total time for PDE training.
+t_st: 0.1 #this is when we take the first I.C from specfem
+t_s: 0.5 #total time series used from the seismograms
+s_spec: 5.e-5 #specfem time stepsize
+
+
+n_event: 1 # number of seismic events
+n_seis: 20 #number of input seismometers from SPECFEM; if events have different 
+#numbers of seismometers, you have to change the lines containing n_seis accordingly
+
+Lx: 3 #this is for scaling the wavespeed in the PDE via saling x coordinate
+Lz: 3 #this is for scaling the wavespeed in the PDE via scaling z coordinate
+
+########数据所在位置 根据实际情况改
+data_dir: './datasets'
+
+#################可调参数
+
+batch_size: 40000
+batch_number: 1000
+
+
+learning_rate: 1.e-4
+eps: 1.e-07
+
+is_Train: True # False if eval
