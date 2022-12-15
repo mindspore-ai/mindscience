@@ -281,11 +281,11 @@ MEGA-EvoGen相关超参位于 `./config/evogen.yaml`，
 
 ### MEGA-Assessment 蛋白质结构评分推理
 
-下载已经训好的MEGA-Fold模型权重[MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt)，和MEGA-Assessment模型权重[MEGA_Assessment.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAAssessment/checkpoint/MEGA_Assessment.ckpt)运行以下命令启动推理。
+下载已经训好的MEGA-Assessment模型权重[MEGA_Assessment.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAAssessment/checkpoint/MEGA_Assessment.ckpt)运行以下命令启动推理。
 
 ```bash
 用法：python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --input_path INPUT_FILE_PATH
-            --decoy_pdb_path INPUT_FILE_PATH --checkpoint_path CHECKPOINT_PATH --checkpoint_path_assessment CHECKPOINT_PATH_ASSESSMENT
+            --decoy_pdb_path INPUT_FILE_PATH --checkpoint_path_assessment CHECKPOINT_PATH_ASSESSMENT
             --run_assessment=1
 
 选项：
@@ -293,7 +293,6 @@ MEGA-EvoGen相关超参位于 `./config/evogen.yaml`，
 --model_config                  模型超参配置
 --input_path                    输入文件目录，可包含多个`.fasta/.pkl`文件
 --decoy_pdb_path                待评估蛋白质结构路径，可包含多个`_decoy.pdb`文件
---checkpoint_path               MEGA-Fold模型权重文件路径
 --checkpoint_path_assessment    MEGA-Assessment模型权重文件路径
 --run_assessment                运行蛋白质结构评估
 ```
