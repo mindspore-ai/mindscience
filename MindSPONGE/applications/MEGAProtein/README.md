@@ -285,11 +285,11 @@ option:
 
 ### MEGA-Assessment inference
 
-Downloading MEGA_Fold weights [MEGA_Fold_1.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt) and MEGA_Assessment weights [MEGA_Assessment.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAAssessment/checkpoint/MEGA_Assessment.ckpt). Finally running following command to start inference.
+Downloading MEGA_Assessment weights [MEGA_Assessment.ckpt](https://download.mindspore.cn/mindscience/mindsponge/MEGAAssessment/checkpoint/MEGA_Assessment.ckpt). Finally running following command to start inference.
 
 ```bash
 Usage: python main.py --data_config ./config/data.yaml --model_config ./config/model.yaml --input_path INPUT_FILE_PATH
-            --decoy_pdb_path INPUT_FILE_PATH --checkpoint_path CHECKPOINT_PATH --checkpoint_path_assessment CHECKPOINT_PATH_ASSESSMENT
+            --decoy_pdb_path CHECKPOINT_PATH --checkpoint_path_assessment CHECKPOINT_PATH_ASSESSMENT
             --run_assessment=1
 
 option:
@@ -297,7 +297,6 @@ option:
 --model_config                  hyperparameters for the model
 --input_path                    input folder, multiple .pkl or .fasta files can be included
 --decoy_pdb_path                decoy pdb folder, multiple _decoy.pdb files can be included
---checkpoint_path               MEGA-Fold model weights path
 --checkpoint_path_assessment    MEGA-Assessment model weights path
 --run_assessment                run pdb assessment
 ```

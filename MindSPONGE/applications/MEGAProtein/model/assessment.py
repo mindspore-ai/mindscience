@@ -13,23 +13,90 @@
 # limitations under the License.
 # ============================================================================
 """model"""
+from collections import defaultdict
 import mindspore.common.dtype as mstype
 import mindspore.nn as nn
 import mindspore.numpy as mnp
 from mindspore.ops import operations as P
-from mindspore.common.tensor import Tensor
-from mindspore import Parameter
+from mindspore import Tensor, Parameter, load_checkpoint
 from mindsponge.common.utils import dgram_from_positions, pseudo_beta_fn, atom37_to_torsion_angles
 from mindsponge.cell.initializer import lecun_init
 from module.template_embedding import TemplateEmbedding
 from module.evoformer import Evoformer
 from module.structure import StructureModule
 from module.head import DistogramHead, PredictedLDDTHead, EstogramHead
-from model.fold import caculate_constant_array
+from model.fold import caculate_constant_array, MegaFold
+
+
+def load_weights(model_path, config):
+    """
+    Load checkpoint as parameter dict, support both npz file and mindspore checkpoint file.
+    """
+    ms_ckpt = load_checkpoint(model_path)
+    weights = defaultdict(str)
+    for msname in ms_ckpt:
+        if "msa_stack" in msname and "extra" not in msname:
+            for i in range(config.evoformer.msa_stack_num):
+                temp_name = msname.split(".")
+                temp_name.insert(1, str(i))
+                infer_name = "fold." + ".".join(temp_name)
+                weights[infer_name] = ms_ckpt[msname].data.asnumpy()[i]
+
+            for i in range(config.evoformer.msa_stack_num_assessment):
+                temp_name = msname.split(".")
+                temp_name.insert(1, str(i))
+                infer_name = "assessment." + ".".join(temp_name)
+                weights[infer_name] = ms_ckpt[msname].data.asnumpy()[i]
+        else:
+            infer_name = "fold." + msname
+            weights[infer_name] = ms_ckpt[msname].data.asnumpy()
+            infer_name = "assessment." + msname
+            weights[infer_name] = ms_ckpt[msname].data.asnumpy()
+
+    parameter_dict = defaultdict(str)
+    for name in weights:
+        parameter_dict[name] = Parameter(Tensor(weights[name]), name=name)
+    return parameter_dict
+
+
+class CombineModel(nn.Cell):
+    """Combine MegaFold and MegaAssessment"""
+
+    def __init__(self, config, mixed_precision):
+        super(CombineModel, self).__init__()
+        self.fold = MegaFold(config, mixed_precision=mixed_precision)
+        config.max_extra_msa = 2
+        config.max_msa_clusters = 2
+        config.slice.extra_msa_stack.msa_row_attention_with_pair_bias = 0
+        self.assessment = MegaAssessment(config, mixed_precision=mixed_precision)
+
+    def construct(self, target_feat, msa_feat, msa_mask, seq_mask, aatype,
+                  template_aatype, template_all_atom_masks, template_all_atom_positions,
+                  template_mask, template_pseudo_beta_mask, template_pseudo_beta, extra_msa, extra_has_deletion,
+                  extra_deletion_value, extra_msa_mask,
+                  residx_atom37_to_atom14, atom37_atom_exists, residue_index,
+                  prev_pos, prev_msa_first_row, prev_pair, final_atom_positions_recycle=None,
+                  final_atom_mask_recycle=None, run_pretrain=True):
+        """construct"""
+        if run_pretrain:
+            out = self.fold(target_feat, msa_feat, msa_mask, seq_mask, aatype,
+                            template_aatype, template_all_atom_masks, template_all_atom_positions,
+                            template_mask, template_pseudo_beta_mask, template_pseudo_beta, extra_msa,
+                            extra_has_deletion, extra_deletion_value, extra_msa_mask, residx_atom37_to_atom14,
+                            atom37_atom_exists, residue_index, prev_pos, prev_msa_first_row, prev_pair)
+        else:
+            out = self.assessment(target_feat, msa_feat, msa_mask, seq_mask, aatype,
+                                  template_aatype, template_all_atom_masks, template_all_atom_positions,
+                                  template_mask, template_pseudo_beta_mask, template_pseudo_beta, extra_msa,
+                                  extra_has_deletion, extra_deletion_value, extra_msa_mask,
+                                  residx_atom37_to_atom14, atom37_atom_exists, residue_index,
+                                  prev_pos, prev_msa_first_row, prev_pair, final_atom_positions_recycle,
+                                  final_atom_mask_recycle)
+        return out
 
 
 class MegaAssessment(nn.Cell):
-    """MegaFold"""
+    """MegaAssessment"""
 
     def __init__(self, config, mixed_precision):
         super(MegaAssessment, self).__init__()
@@ -92,8 +159,6 @@ class MegaAssessment(nn.Cell):
                                         pair_act_dim=128,
                                         is_extra_msa=True,
                                         batch_size=None)
-            if self.is_training:
-                extra_msa_block.recompute()
             extra_msa_stack.append(extra_msa_block)
         self.extra_msa_stack = extra_msa_stack
         if self.is_training:
@@ -104,7 +169,6 @@ class MegaAssessment(nn.Cell):
                                       pair_act_dim=128,
                                       is_extra_msa=False,
                                       batch_size=None)
-                msa_block.recompute()
                 msa_stack.append(msa_block)
             self.msa_stack = msa_stack
         else:
