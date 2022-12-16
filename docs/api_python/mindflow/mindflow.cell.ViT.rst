@@ -7,10 +7,10 @@
         - **in_channels** (int) - 输入的输入特征维度。默认值：7。
         - **out_channels** (int) - 输出的输出特征维度。默认值：3。
         - **patch_size** (int) - 图像的path尺寸。默认值：16。
-        - **encoder_depth** (int) - encoder层的层数。默认值：12。
+        - **encoder_depths** (int) - encoder层的层数。默认值：12。
         - **encoder_embed_dim** (int) - encoder层的编码器维度。默认值：768。
         - **encoder_num_heads** (int) - encoder层的head数。默认值：12。
-        - **decoder_depth** (int) - decoder层的解码器深度。默认值：8。
+        - **decoder_depths** (int) - decoder层的解码器深度。默认值：8。
         - **decoder_embed_dim** (int) - decoder层的解码器维度。默认值：512。
         - **decoder_num_heads** (int) - decoder层的head数。默认值：16。
         - **mlp_ratio** (int) - mlp层的比例。默认值：4。

@@ -12,7 +12,7 @@
         - **weight_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始权重值。数据类型与输入 `input` 相同。str的值引用函数 `initializer` 。默认值："normal"。
         - **weight_norm** (bool) - 是否计算权重的平方和。默认值：False。
         - **has_bias** (bool) - 指定图层是否使用偏置向量。默认值：True。
-        - **bias_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始偏差值。数据类型与输入 `input` 相同。str的值引用函数 `initializer` 。默认值："sin"。
+        - **bias_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始偏差值。数据类型与输入 `input` 相同。str的值引用函数 `initializer` 。默认值："default"。
         - **num_scales** (int) - 多规模网络的子网号。默认值：4
         - **amp_factor** (Union[int, float]) - 输入的放大系数。默认值：1.0
         - **scale_factor** (Union[int, float]) - 基本比例因子。默认值：2.0

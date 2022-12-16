@@ -57,7 +57,9 @@ class Solver:
             elements, including the positions of loss value, predicted value and label. The loss
             value would be passed to the `Loss` metric, the predicted value and label would be passed
             to other metric. Default: None.
-        amp_level (str): Option for argument `level` in `mindspore.amp.build_train_network` , level for mixed
+        amp_level (str): Option for argument `level` in `mindspore.amp.build_train_network
+            <https://www.mindspore.cn/docs/en/master/api_python/amp/
+            mindspore.amp.build_train_network.html#mindspore.amp.build_train_network>`_ , level for mixed
             precision training. Supports ["O0", "O2", "O3", "auto"]. Default: "O0".
 
             - O0: Do not change.
@@ -68,7 +70,9 @@ class Solver:
               always general. User should specify the level for special network.
 
             O2 is recommended on GPU, O3 is recommended on Ascend.The more detailed explanation of `amp_level` setting
-            can be found at `mindspore.amp.build_train_network`.
+            can be found at `mindspore.amp.build_train_network
+            <https://www.mindspore.cn/docs/en/master/api_python/amp/
+            mindspore.amp.build_train_network.html#mindspore.amp.build_train_network>`_ .
 
     Supported Platforms:
         ``Ascend``

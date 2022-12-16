@@ -17,13 +17,13 @@
         - **metrics** (Union[dict, set]) - 在训练和推理时，由模型评估的字典或metrics集。例如：{“accuracy”, “recall”}。默认值：None。
         - **eval_network** (Cell) - 评估网络。如果未定义，`network` 和 `loss_fn` 将包装为 `eval_network`。默认值：None。注：在PINNs模式下不需要设置 `eval_network` 。
         - **eval_indexes** (list) - 定义 `eval_network` 时，如果 `eval_indexes` 为None，则 `eval_network` 将传递给metrics，否则 `eval_indexes` 必须包含三个元素：损失值、预测值和标签的位置。损失值将传递给 `Loss` metrics，预测值和标签将传递到其他metric。默认值：None。
-        - **amp_level** (str) - :class:`mindspore.amp.build_train_network` 中参数 `level` 的选项，混合精确训练的级别。支持[“O0”, “O2”, “O3”, “auto”]。默认值：“O0”。
+        - **amp_level** (str) - `mindspore.amp.build_train_network <https://www.mindspore.cn/docs/zh-CN/master/api_python/amp/mindspore.amp.build_train_network.html#mindspore.amp.build_train_network>`_  中参数 `level` 的选项，混合精确训练的级别。支持[“O0”, “O2”, “O3”, “auto”]。默认值：“O0”。
 
           - O0：不改变。
           - O2：将网络强制转换为float16，保持批处理规范在float32中运行，使用动态损失比例。
           - O3：将网络强制转换为float16，带有附加属性 `keep_batchnorm_fp32=False` 。
           - auto：设置为不同设备中的建议级别。在GPU上设置级别为O2，Ascend上设置级别为O3 。建议的级别由导出经验选择，不能总是保持平均数值。用户应指定特殊网络的级别。
-            GPU上建议使用O2，Ascend上建议使用O3。有关 `amp_level` 设置的详情可查阅 :class:`mindspore.amp.build_train_network`。
+            GPU上建议使用O2，Ascend上建议使用O3。有关 `amp_level` 设置的详情可查阅 `mindspore.amp.build_train_network <https://www.mindspore.cn/docs/zh-CN/master/api_python/amp/mindspore.amp.build_train_network.html#mindspore.amp.build_train_network>`_  。
 
     .. py:method:: eval(valid_dataset, callbacks=None, dataset_sink_mode=True)
 
