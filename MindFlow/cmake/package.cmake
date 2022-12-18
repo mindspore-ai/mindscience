@@ -32,6 +32,7 @@ install(
 install(
     DIRECTORY
         ${CMAKE_SOURCE_DIR}/mindflow/cell
+        ${CMAKE_SOURCE_DIR}/mindflow/cfd
         ${CMAKE_SOURCE_DIR}/mindflow/common
         ${CMAKE_SOURCE_DIR}/mindflow/data
         ${CMAKE_SOURCE_DIR}/mindflow/geometry
