@@ -72,7 +72,7 @@ eval:
   max_msa_clusters: 512
   max_templates: 4
   num_ensemble: 1
-  subsample_templates: True
+  subsample_templates: False
   keep_extra: True
 
 database_search:

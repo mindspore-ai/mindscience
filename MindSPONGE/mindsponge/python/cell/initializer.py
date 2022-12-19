@@ -15,9 +15,6 @@
 """initializer"""
 
 import numpy as np
-import mindspore.common.dtype as mstype
-from mindspore import nn
-from mindspore.ops import functional as F
 from mindspore.common.initializer import TruncatedNormal
 
 TRUNCATED_NORMAL_STDDEV_FACTOR = np.asarray(.87962566103423978, dtype=np.float32)
@@ -36,31 +33,3 @@ def glorot_uniform(fan_in, fan_out, weight_shape):
     """glorot uniform"""
     limit = np.sqrt(6 / (fan_in + fan_out))
     return np.random.uniform(-limit, limit, size=weight_shape)
-
-
-class OutputTo16(nn.Cell):
-    "Wrap cell for amp. Cast network output back to float16"
-
-    def __init__(self, op):
-        super(OutputTo16, self).__init__(auto_prefix=False)
-        self._op = op
-
-    def construct(self, x):
-        return F.cast(self._op(x), mstype.float16)
-
-
-def do_keep_cell_fp32(network):
-    """Do keep cell fp32."""
-    cells = network.name_cells()
-    change = False
-    for name in cells:
-        subcell = cells[name]
-        if subcell == network:
-            continue
-        elif isinstance(subcell, (nn.Softmax, nn.LayerNorm)):
-            network._cells[name] = OutputTo16(subcell.to_float(mstype.float32))
-            change = True
-        else:
-            do_keep_cell_fp32(subcell)
-    if isinstance(network, nn.SequentialCell) and change:
-        network.cell_list = list(network.cells())

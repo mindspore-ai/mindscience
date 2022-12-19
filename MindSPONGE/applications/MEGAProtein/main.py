@@ -18,12 +18,13 @@ import os
 import stat
 import json
 import time
+import ast
 import numpy as np
 
 import mindspore.context as context
 import mindspore.common.dtype as mstype
 from mindspore import Tensor, nn, save_checkpoint, load_checkpoint, load_param_into_net
-from mindsponge.cell.initializer import do_keep_cell_fp32
+from mindsponge.cell.amp import amp_convert
 from mindsponge.common.config_load import load_config
 from mindsponge.common.protein import to_pdb, from_prediction
 
@@ -40,13 +41,14 @@ parser.add_argument('--model_config', default="./config/model.yaml", help='model
 parser.add_argument('--evogen_config', default="./config/evogen.yaml", help='evogen config')
 parser.add_argument('--input_path', help='processed raw feature path')
 parser.add_argument('--pdb_path', type=str, help='Location of training pdb file.')
-parser.add_argument('--use_pkl', default=False, help="use pkl as input or fasta file as input, in default use fasta")
+parser.add_argument('--use_pkl', type=ast.literal_eval, default=False,
+                    help="use pkl as input or fasta file as input, in default use fasta")
 parser.add_argument('--checkpoint_path', help='checkpoint path')
 parser.add_argument('--checkpoint_path_assessment', help='assessment model checkpoint path')
 parser.add_argument('--device_id', default=0, type=int, help='DEVICE_ID')
-parser.add_argument('--is_training', type=bool, default=False, help='is training or not')
+parser.add_argument('--is_training', type=ast.literal_eval, default=False, help='is training or not')
 parser.add_argument('--run_platform', default='Ascend', type=str, help='which platform to use, Ascend or GPU')
-parser.add_argument('--run_distribute', type=bool, default=False, help='run distribute')
+parser.add_argument('--run_distribute', type=ast.literal_eval, default=False, help='run distribute')
 parser.add_argument('--resolution_data', type=str, default=None, help='Location of resolution data file.')
 parser.add_argument('--loss_scale', type=float, default=1024.0, help='loss scale')
 parser.add_argument('--gradient_clip', type=float, default=0.1, help='gradient clip value')
@@ -70,8 +72,8 @@ def fold_infer(args):
     megafold = MegaFold(model_cfg, mixed_precision=args.mixed_precision)
     load_checkpoint(args.checkpoint_path, megafold)
     if args.mixed_precision:
-        megafold.to_float(mstype.float16)
-        do_keep_cell_fp32(megafold)
+        fp32_white_list = (nn.Softmax, nn.LayerNorm)
+        amp_convert(megafold, fp32_white_list)
     else:
         megafold.to_float(mstype.float32)
 
@@ -146,8 +148,8 @@ def fold_train(args):
 
     megafold = MegaFold(model_cfg, mixed_precision=args.mixed_precision)
     if args.mixed_precision:
-        megafold.to_float(mstype.float16)
-        do_keep_cell_fp32(megafold)
+        fp32_white_list = (nn.Softmax, nn.LayerNorm)
+        amp_convert(megafold, fp32_white_list)
     else:
         megafold.to_float(mstype.float32)
 
@@ -236,8 +238,8 @@ def assessment_infer(args):
     megaassessment = CombineModel(model_cfg, mixed_precision=args.mixed_precision)
     load_checkpoint(args.checkpoint_path_assessment, megaassessment)
     if args.mixed_precision:
-        megaassessment.to_float(mstype.float16)
-        do_keep_cell_fp32(megaassessment)
+        fp32_white_list = (nn.Softmax, nn.LayerNorm)
+        amp_convert(megaassessment, fp32_white_list)
     else:
         megaassessment.to_float(mstype.float32)
 
@@ -296,8 +298,8 @@ def assessment_train(args):
     param_dict = load_weights(args.checkpoint_path, model_cfg)
     load_param_into_net(megaassessment, param_dict)
     if args.mixed_precision:
-        megaassessment.to_float(mstype.float16)
-        do_keep_cell_fp32(megaassessment)
+        fp32_white_list = (nn.Softmax, nn.LayerNorm)
+        amp_convert(megaassessment, fp32_white_list)
     else:
         megaassessment.to_float(mstype.float32)
 
