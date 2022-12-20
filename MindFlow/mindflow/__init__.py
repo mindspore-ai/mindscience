@@ -16,6 +16,7 @@
 init
 """
 import time
+from .cfd import *
 from .data import *
 from .geometry import *
 from .common import *
@@ -28,6 +29,7 @@ from .utils import *
 
 
 __all__ = []
+__all__.extend(cfd.__all__)
 __all__.extend(data.__all__)
 __all__.extend(geometry.__all__)
 __all__.extend(common.__all__)

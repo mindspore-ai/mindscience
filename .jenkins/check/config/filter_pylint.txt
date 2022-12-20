@@ -108,4 +108,8 @@
 "mindscience/MindFlow/mindflow/cell/neural_operators/dft.py"                                   "redefined-builtin"
 "mindscience/MindFlow/mindflow/cell/neural_operators/dft.py"                                   "missing-docstring"
 "mindscience/MindFlow/mindflow/cell/neural_operators/fno2d.py"                                 "invalid-name"
+"mindscience/MindFlow/mindflow/cfd/boundary_conditions/neumann.py"                              "useless-super-delegation"
+"mindscience/MindFlow/mindflow/cfd/boundary_conditions/periodic.py"                              "useless-super-delegation"
+"mindscience/MindFlow/mindflow/cfd/boundary_conditions/symmetry.py"                              "useless-super-delegation"
+"mindscience/MindFlow/mindflow/cfd/space_solver/riemann_computer/rusanov.py"                     "unused-argument"
 
