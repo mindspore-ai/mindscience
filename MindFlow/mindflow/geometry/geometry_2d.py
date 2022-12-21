@@ -268,7 +268,7 @@ class Triangle(adapter.Geometry):
             - 'unweighted', the expected number of samples in each boundary is the same.
 
         dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (samplingconfig): sampling configuration. Default: none.
+        sampling_config (SamplingConfig): sampling configuration. Default: none.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -312,7 +312,7 @@ class Pentagon(adapter.Geometry):
             - 'unweighted', the expected number of samples in each boundary is the same.
 
         dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (samplingconfig): sampling configuration. Default: none.
+        sampling_config (SamplingConfig): sampling configuration. Default: none.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

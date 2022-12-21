@@ -4,7 +4,7 @@
 
     参数：
         - **name** (str) - 定点的名称。
-        - **coord** (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]) - 定点坐标。
+        - **coord** (Union[int, float, tuple, list, numpy.ndarray]) - 定点坐标。若参数类型为tuple或list，元素类型支持tuple[int, int]，tuple[float, float]，list[int, int]，list[float, float]。
         - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：numpy.float32。
         - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
 
