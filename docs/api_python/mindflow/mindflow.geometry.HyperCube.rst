@@ -5,8 +5,8 @@
     参数：
         - **name** (str) - 超立方体的名称。
         - **dim** (int) - 维数。
-        - **coord_min** (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float]]) - 超立方体的最小坐标。
-        - **coord_max** (Union[int, float, tuple[int, int], tuple[float, float], list[int, int], list[float, float]]) - 超立方体的最大坐标。
+        - **coord_min** (Union[int, float, tuple, list, numpy.ndarray]) - 超立方体的最小坐标。若参数类型为tuple或list，元素类型支持tuple[int, int]，tuple[float, float]，list[int, int]，list[float, float]。
+        - **coord_max** (Union[int, float, tuple, list, numpy.ndarray]) - 超立方体的最大坐标。若参数类型为tuple或list，元素类型支持tuple[int, int]，tuple[float, float]，list[int, int]，list[float, float]。
         - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：numpy.float32。
         - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
 

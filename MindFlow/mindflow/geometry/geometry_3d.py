@@ -67,7 +67,7 @@ class Tetrahedron(adapter.Geometry):
             - 'unweighted', the expected number of samples in each boundary is the same.
 
         dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (samplingconfig): sampling configuration. Default: none.
+        sampling_config (SamplingConfig): sampling configuration. Default: none.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -119,7 +119,7 @@ class Cylinder(adapter.Geometry):
             - 'unweighted', the expected number of samples in each boundary is the same.
 
         dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (samplingconfig): sampling configuration. Default: none.
+        sampling_config (SamplingConfig): sampling configuration. Default: none.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -176,7 +176,7 @@ class Cone(adapter.Geometry):
             - 'unweighted', the expected number of samples in each boundary is the same.
 
         dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (samplingconfig): sampling configuration. Default: none.
+        sampling_config (SamplingConfig): sampling configuration. Default: none.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
