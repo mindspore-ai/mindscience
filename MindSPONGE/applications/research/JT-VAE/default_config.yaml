@@ -1,0 +1,74 @@
+# Builtin Configurations(DO NOT CHANGE THESE CONFIGURATIONS unlesee you know exactly what you are doing)
+enable_modelarts: False
+# Url for modelarts
+data_url: ""
+train_url: ""
+ckpt_url: ""
+result_url: ""
+# path for local
+data_dir: "/cache/data/"
+train_dir: "/cache/train/"
+result_dir: "/cache/output/"
+ckpt_dir: "/cache/model.ckpt"
+device_target: "Ascend"
+
+# ======================================================================================
+# common options
+run_distribute: False
+hidden_size: 450
+latent_size: 56
+depth: 3
+
+raw_data_dir: "./data/"
+processed_data_dir: "./processed_data/"
+
+# ======================================================================================
+# Training options
+batch_size: 4
+num_workers: 2
+save_ckpt_dir: "./ckpt"
+
+pretrain_epoch: 3
+pretrain_beta: 0.00
+pretrain_lr: 0.001
+
+vaetrain_epoch: 7
+vaetrain_beta: 0.01
+vaetrain_lr: 0.001
+
+# ======================================================================================
+# Eval options
+ckpt_path: "./ckpt/model.ckpt"
+acclog_path : "./acc.log"
+
+# ======================================================================================
+# export options
+device_id: 0
+file_name: "JTVAE"
+file_format: "MINDIR" # ["AIR", "ONNX", "MINDIR"]
+
+---
+# Help description for each configuration
+enable_modelarts: "Whether training on modelarts default: False"
+data_url: "Url for modelarts"
+train_url: "Url for modelarts"
+ckpt_url: "Url for modelarts"
+result_url: "Url for modelarts"
+data_path: "The location of input data"
+output_pah: "The location of the output file"
+device_target: "device id of GPU or Ascend."
+file_name: "CNN&CTC output mindir name"
+file_format: "choices [AIR, MINDIR]"
+ckpt_file: "Checkpoint file path."
+run_distribute: "Run distribute, default is false."
+train_dataset_path: "train Dataset path, default is None"
+model: "Model type, default is lowercase"
+dataset: "choices [kegg, drugbank]"
+train_eval_dataset: "choices [synth, ic03, ic13, svt, iiit5k]"
+train_eval_dataset_path: "Dataset path, default is None"
+run_eval: "Run evaluation when training, default is False."
+save_best_ckpt: "Save best checkpoint when run_eval is True, default is True."
+eval_start_epoch: "Evaluation start epoch when run_eval is True, default is 5."
+eval_interval: "Evaluation interval when run_eval is True, default is 5."
+eval_dataset_path: "eval Dataset, default is None."
+ckpt_path: "checkpoint file path, default is None"
