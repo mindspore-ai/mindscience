@@ -142,12 +142,12 @@ class FNO2D(nn.Cell):
                 mstype.float16 is recommended for the Ascend backend.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(batch_size, resolution, resolution, in_channels)`.
+        - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, resolution, in\_channels)`.
 
     Outputs:
         Tensor, the output of this FNO network.
 
-        - **output** (Tensor) -Tensor of shape :math:`(batch_size, resolution, resolution, out_channels)`.
+        - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, resolution, out\_channels)`.
 
     Raises:
         TypeError: If `in_channels` is not an int.

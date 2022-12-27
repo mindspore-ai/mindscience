@@ -3,7 +3,7 @@ mindsponge.data.atom37_to_frames
 
 .. py:function:: mindsponge.data.atom37_to_frames(aatype, all_atom_positions, all_atom_mask, is_affine=False)
 
-    根据8个刚性组计算每个氨基酸的局部坐标系，返回shape为:math:`[N_{res},8,12]`， 其中8表示每个残基依据原子对扭转角的依赖可分成至多8个刚性组，
+    根据8个刚性组计算每个氨基酸的局部坐标系，返回shape为 :math:`[N_{res},8,12]`， 其中8表示每个残基依据原子对扭转角的依赖可分成至多8个刚性组，
     分别为一个骨架刚体组和7个由扭转角定义的刚体组（包括3个主链扭转角和4个侧脸扭转角）。12表示9个局部坐标系相对于全局坐标系的旋转矩阵和
     3个局部坐标系相对于全局坐标系的平移矩阵。
 

@@ -22,4 +22,4 @@ mindsponge.cell.OuterProductMean
         - **index** (Tensor) - 在循环中的索引。默认值："None"。
 
     输出：
-        Tensor。OuterProductMean的输出，shape是:math:`(dim_2, dim_2, num\_output\_channel)`。
+        Tensor。OuterProductMean的输出，shape是 :math:`(dim_2, dim_2, num\_output\_channel)`。
