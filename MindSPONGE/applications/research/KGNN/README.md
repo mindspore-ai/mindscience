@@ -193,27 +193,34 @@ You can start training using python or shell scripts. The usage of shell scripts
 
 Evaluation result will be stored in the output file of evaluation script, you can find result like the followings in `log`.
 
+```python
+Logging Info - test_auc: 0.9422428483164229, test_acc: 0.8876509232954546, test_f1: 0.8932487731478626, test_aupr: 0.9188073906877906
+```
+
 ## Inference Process
 
 ### [Export MindIR](#contents)
 
 ```shell
-python export.py --ckpt_file=[CKPT_FILE]
+python export.py --checkpoint_path=[checkpoint_path]
 ```
 
-The ckpt_file parameter is required,
+The `checkpoint_path` parameter is required,
 
 ### Infer on Ascend310
 
+```shell
+# Ascend310 inference
+bash run_infer_310.sh [MINDIR_PATH] [DATASET_NAME] [DATASET_PATH] [NEED_PREPROCESS] [DEVICE_ID]
+```
+
+- `DATASET_NAME` must be in ['kegg', 'drugbank'].
+- `NEED_PREPROCESS` means weather need preprocess or not, it's value is 'y' or 'n'.
 - `DEVICE_ID` is optional, default value is 0.
 
-### result
+### Result
 
-Inference result is as follow.
-
-```python
-Logging Info - test_auc: 0.9608221767427638, test_acc: 0.9100640519434939, test_f1: 0.9138944892473119, test_aupr: 0.948576247617334
-```
+Inference result is saved in current path, you can find result like this in acc.log file.
 
 # [Model description](#contents)
 
