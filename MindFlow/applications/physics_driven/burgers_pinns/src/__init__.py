@@ -13,12 +13,14 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .dataset import create_random_dataset
-from .burgers import Burgers1D, Burgers1DVmap
-from .utils import visual_result
+from .dataset import create_training_dataset, create_test_dataset
+from .utils import visual_result, calculate_l2_error
+from .model import Burgers1D
 
 __all__ = [
-    "create_random_dataset",
-    "Burgers1D", "Burgers1DVmap",
+    "create_training_dataset",
     "visual_result",
+    "calculate_l2_error",
+    "create_test_dataset",
+    "Burgers1D",
 ]

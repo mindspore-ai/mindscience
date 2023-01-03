@@ -13,19 +13,14 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .dataset import create_training_dataset, create_evaluation_dataset
-from .navier_stokes import NavierStokes2D
-from .model import FlowNetwork
-from .lr_scheduler import MultiStepLR
-from .callback import PredictCallback
-from .visualization import visualization
+from .dataset import create_training_dataset, create_test_dataset
+from .model import NavierStokes2D
+from .utils import calculate_l2_error, visualization
 
 __all__ = [
     "create_training_dataset",
-    "create_evaluation_dataset",
-    "NavierStokes2D",
-    "MultiStepLR",
-    "PredictCallback",
+    "create_test_dataset",
     "visualization",
-    "FlowNetwork",
+    "calculate_l2_error",
+    "NavierStokes2D",
 ]

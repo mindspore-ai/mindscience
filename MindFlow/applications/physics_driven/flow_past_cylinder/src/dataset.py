@@ -19,7 +19,7 @@ from mindflow.data import Dataset, ExistedDataConfig
 from mindflow.geometry import Rectangle, TimeDomain, GeometryWithTime, generate_sampling_config
 
 
-def create_evaluation_dataset(test_data_path):
+def create_test_dataset(test_data_path):
     """load labeled data for evaluation"""
     # check data
     print("get dataset path: {}".format(test_data_path))

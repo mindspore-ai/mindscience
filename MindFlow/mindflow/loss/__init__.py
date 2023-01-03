@@ -13,14 +13,10 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .constraints import Constraints
-from .net_with_loss import NetWithLoss, NetWithEval
-from .losses import get_loss_metric, WaveletTransformLoss, MTLWeightedLossCell
+from .losses import get_loss_metric, WaveletTransformLoss, MTLWeightedLossCell, RelativeRMSELoss
 
-__all__ = ['Constraints',
-           'NetWithLoss',
-           'NetWithEval',
-           'get_loss_metric',
+__all__ = ['get_loss_metric',
            'WaveletTransformLoss',
-           'MTLWeightedLossCell'
+           'MTLWeightedLossCell',
+           'RelativeRMSELoss'
            ]

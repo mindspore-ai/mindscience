@@ -4,7 +4,7 @@
 
 Computational fluid dynamics is one of the most important techniques in the field of fluid mechanics in the 21st century. The flow analysis, prediction and control can be realized by solving the governing equations of fluid mechanics by numerical method. Traditional finite element method (FEM) and finite difference method (FDM) are inefficient because of the complex simulation process (physical modeling, meshing, numerical discretization, iterative solution, etc.) and high computing costs. Therefore, it is necessary to improve the efficiency of fluid simulation with AI.
 
-Machine learning methods provide a new paradigm for scientific computing by providing a fast solver similar to traditional methods. Classical neural networks learn mappings between finite dimensional spaces and can only learn solutions related to specific discretizations. Different from traditional neural networks, Fourier Neural Operator (FNO) is a new deep learning architecture that can learn mappings between infinite-dimensional function spaces. It directly learns mappings from arbitrary function parameters to solutions to solve a class of partial differential equations.  Therefore, it has a stronger generalization capability. More information can be found in [paper] (https://arxiv.org/abs/2010.08895).
+Machine learning methods provide a new paradigm for scientific computing by providing a fast solver similar to traditional methods. Classical neural networks learn mappings between finite dimensional spaces and can only learn solutions related to specific discretizations. Different from traditional neural networks, Fourier Neural Operator (FNO) is a new deep learning architecture that can learn mappings between infinite-dimensional function spaces. It directly learns mappings from arbitrary function parameters to solutions to solve a class of partial differential equations.  Therefore, it has a stronger generalization capability. More information can be found in the paper, [Fourier Neural Operator for Parametric Partial Differential Equations](https://arxiv.org/abs/2010.08895).
 
 This tutorial describes how to solve the Navier-Stokes equation using Fourier neural operator.
 
@@ -65,8 +65,8 @@ The configuration file contains four types of parameters: model parameters, data
 model:
   work_space: /path/to/work_space   # Work space path
   name: FNO2D                       # Model name
-  input_dims: 1                     # Input data channel
-  output_dims: 1                    # Output data channel
+  in_channels: 1                     # Input data channel
+  out_channels: 1                    # Output data channel
   input_resolution: 64              # Column resolution
   modes: 12                         # Number of frequency to keep
   width: 20                         # The number of channels after dimension lifting of the input
@@ -123,6 +123,8 @@ from src.loss import RelativeRMSELoss
 
 In this case, training data sets and test data sets are generated according to Zongyi Li's data set in Fourier Neural Operator for Parametric Partial Differential Equations(https://arxiv.org/pdf/2010.08895.pdf) . The settings are as follows:
 
+Download the training and test dataset: [data_driven/navier_stokes/dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/dataset/) .
+
 The initial condition $w_0(x)$ is generated according to periodic boundary conditions:
 
 $$
@@ -176,9 +178,9 @@ class FNOBlock(nn.Cell):
 
 
 class FNO2D(nn.Cell):
-        def __init__(self,
-                 input_dims,
-                 output_dims,
+    def __init__(self,
+                 in_channels,
+                 out_channels,
                  resolution,
                  modes,
                  channels=20,
@@ -186,8 +188,8 @@ class FNO2D(nn.Cell):
                  mlp_ratio=4,
                  compute_dtype=mstype.float32):
         super().__init__()
-        check_param_type(input_dims, "input_dims", data_type=int, exclude_type=bool)
-        check_param_type(output_dims, "output_dims", data_type=int, exclude_type=bool)
+        check_param_type(in_channels, "in_channels", data_type=int, exclude_type=bool)
+        check_param_type(out_channels, "out_channels", data_type=int, exclude_type=bool)
         check_param_type(resolution, "resolution", data_type=int, exclude_type=bool)
         check_param_type(modes, "modes", data_type=int, exclude_type=bool)
         if modes < 1:
@@ -196,7 +198,7 @@ class FNO2D(nn.Cell):
         self.modes1 = modes
         self.channels = channels
         self.fc_channel = mlp_ratio * channels
-        self.fc0 = nn.Dense(input_dims + 2, self.channels, has_bias=False).to_float(compute_dtype)
+        self.fc0 = nn.Dense(in_channels + 2, self.channels, has_bias=False).to_float(compute_dtype)
         self.layers = depth
 
         self.fno_seq = nn.SequentialCell()
@@ -208,7 +210,7 @@ class FNO2D(nn.Cell):
                      compute_dtype=compute_dtype))
 
         self.fc1 = nn.Dense(self.channels, self.fc_channel, has_bias=False).to_float(compute_dtype)
-        self.fc2 = nn.Dense(self.fc_channel, output_dims, has_bias=False).to_float(compute_dtype)
+        self.fc2 = nn.Dense(self.fc_channel, out_channels, has_bias=False).to_float(compute_dtype)
 
         self.grid = Tensor(get_grid_2d(resolution), dtype=mstype.float32)
         self.concat = ops.Concat(axis=-1)
@@ -235,8 +237,8 @@ class FNO2D(nn.Cell):
 The model is initialized based on the foregoing network structure. The configuration in model_params can be modified in the configuration file.
 
 ```python
-model = FNO2D(input_dims=model_params["input_dims"],
-              output_dims=model_params["output_dims"],
+model = FNO2D(in_channels=model_params["in_channels"],
+              out_channels=model_params["out_channels"],
               resolution=model_params["input_resolution"],
               modes=model_params["modes"],
               channels=model_params["width"],

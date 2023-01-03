@@ -13,11 +13,11 @@
 # limitations under the License.
 # ============================================================================
 """solver"""
-from mindspore.train import Model, amp
+from mindspore.train import Model
 from mindspore import nn, Tensor
 
 from ..common import EvalCallback
-from ..loss import NetWithLoss, NetWithEval, get_loss_metric
+from ..loss import get_loss_metric
 from ..utils.check_func import check_param_type
 
 
@@ -33,21 +33,6 @@ class Solver:
         loss_fn (Union(str, dict, Cell)): Objective function, if loss_fn is None, the network should contain the logic
             of loss and grads calculation,. Note that the dict type of loss_fn is not supported in Data mode.
             Default: "l2".
-        train_constraints (Constraints): Definition of the loss for train dataset. Default: None. If mode
-            is PINNs, the train_constraints cannot be None.
-        test_constraints (Constraints): Definition of the loss for test dataset. Default: None. If mode is
-            PINNs and eval is needed, the test_constraints cannot be None.
-        train_input_map (dict): Specifies the column names of the data in the corresponding dataset to enter
-            into the network while training. The key is name of dataset and the value is column names of the data
-            in the  corresponding dataset to enter into the network. Default: None. If the input of model is not
-            single, train_input_map can not be None.
-        test_input_map (dict): Specifies the column names of the data in the corresponding dataset to enter
-            into the network while doing eval. The key is name of dataset and the value is column names of the data
-            in the corresponding dataset to enter into the network. Default: None. If the input of model is not
-            single and eval is needed, test_input_map can not be None.
-        mtl_weighted_cell (Cell): Losses weighting algorithms based on multi-task learning uncertainty evaluation.
-            Default: None.
-        regular_loss_cell (Cell): Regularized loss function cell. Default: None.
         metrics (Union[dict, set]): A Dictionary or a set of metrics to be evaluated by the model during
             training and inference. eg: {'accuracy', 'recall'}. Default: None.
         eval_network (Cell): Network for evaluation. If not defined, `network` and `loss_fn` would be wrapped as
@@ -57,9 +42,7 @@ class Solver:
             elements, including the positions of loss value, predicted value and label. The loss
             value would be passed to the `Loss` metric, the predicted value and label would be passed
             to other metric. Default: None.
-        amp_level (str): Option for argument `level` in `mindspore.amp.build_train_network
-            <https://www.mindspore.cn/docs/en/master/api_python/amp/
-            mindspore.amp.build_train_network.html#mindspore.amp.build_train_network>`_ , level for mixed
+        amp_level (str): Option for argument `level` in `mindspore.amp.build_train_network` , level for mixed
             precision training. Supports ["O0", "O2", "O3", "auto"]. Default: "O0".
 
             - O0: Do not change.
@@ -70,9 +53,7 @@ class Solver:
               always general. User should specify the level for special network.
 
             O2 is recommended on GPU, O3 is recommended on Ascend.The more detailed explanation of `amp_level` setting
-            can be found at `mindspore.amp.build_train_network
-            <https://www.mindspore.cn/docs/en/master/api_python/amp/
-            mindspore.amp.build_train_network.html#mindspore.amp.build_train_network>`_ .
+            can be found at `mindspore.amp.build_train_network`.
 
     Supported Platforms:
         ``Ascend``
@@ -108,70 +89,18 @@ class Solver:
         >>> optim = nn.Momentum(params=net.trainable_params(), learning_rate=0.1, momentum=0.9)
         >>> solver = Solver(net, loss_fn=loss, optimizer=optim, metrics=None)
     """
-    def __init__(self, network, optimizer, loss_fn="l2", train_constraints=None, test_constraints=None,
-                 train_input_map=None, test_input_map=None, mtl_weighted_cell=None, regular_loss_cell=None,
-                 metrics=None, eval_network=None,
+    def __init__(self, network, optimizer, loss_fn="l2", metrics=None, eval_network=None,
                  eval_indexes=None, amp_level="O0", **kwargs):
         self._network = network
         check_param_type(network, "network", data_type=nn.Cell)
         self.network = isinstance(network, nn.Cell)
-        if train_constraints:
-            self._loss_scale_manager = None
-            self._loss_scale_manager_set = False
-            self._keep_bn_fp32 = True
-            self._amp_level = amp_level
-            self._eval_network = eval_network
-            self._process_amp_args(kwargs)
-            self._train_constraints = train_constraints
-            self._train_input_map = train_input_map
-            self._optimizer = optimizer
-            self._loss_fn = loss_fn
-            self._test_constraints = test_constraints
-            self.mtl_weighted_cell = mtl_weighted_cell
-            self.regular_loss_cell = regular_loss_cell
-            train_network = self._build_train_network()
-            if not test_constraints:
-                eval_network = train_network
-            else:
-                eval_network = NetWithEval(self._network, test_constraints, loss_fn, test_input_map)
-                eval_indexes = [0, 1, 2] if not eval_indexes else eval_indexes
-            self.model = Model(network=train_network, eval_network=eval_network, metrics=metrics,
-                               eval_indexes=eval_indexes)
-        else:
-            if not isinstance(loss_fn, (str, nn.Cell)):
-                raise TypeError("For `Data` mode, the type of loss_fn should be str or an instance of Cell but got {}"
-                                .format(type(loss_fn)))
-            loss_fn = get_loss_metric(loss_fn) if isinstance(loss_fn, str) else loss_fn
-            self.model = Model(self._network, loss_fn=loss_fn, optimizer=optimizer, metrics=metrics,
-                               eval_network=eval_network, eval_indexes=eval_indexes, amp_level=amp_level, **kwargs)
 
-    def _build_train_network(self):
-        """Build train network"""
-        loss_network = NetWithLoss(self._network, self._train_constraints, self._loss_fn,
-                                   dataset_input_map=self._train_input_map,
-                                   mtl_weighted_cell=self.mtl_weighted_cell,
-                                   regular_loss_cell=self.regular_loss_cell)
-        if self._loss_scale_manager_set:
-            network = amp.build_train_network(loss_network,
-                                              self._optimizer,
-                                              level=self._amp_level,
-                                              loss_scale_manager=self._loss_scale_manager,
-                                              keep_batchnorm_fp32=self._keep_bn_fp32)
-        else:
-            network = amp.build_train_network(loss_network,
-                                              self._optimizer,
-                                              level=self._amp_level,
-                                              keep_batchnorm_fp32=self._keep_bn_fp32)
-        return network
-
-    def _process_amp_args(self, kwargs):
-        if self._amp_level in ["O0", "O3"]:
-            self._keep_bn_fp32 = False
-        if 'keep_batchnorm_fp32' in kwargs:
-            self._keep_bn_fp32 = kwargs['keep_batchnorm_fp32']
-        if 'loss_scale_manager' in kwargs:
-            self._loss_scale_manager = kwargs['loss_scale_manager']
-            self._loss_scale_manager_set = True
+        if not isinstance(loss_fn, (str, nn.Cell)):
+            raise TypeError("For `Data` mode, the type of loss_fn should be str or an instance of Cell but got {}"
+                            .format(type(loss_fn)))
+        loss_fn = get_loss_metric(loss_fn) if isinstance(loss_fn, str) else loss_fn
+        self.model = Model(self._network, loss_fn=loss_fn, optimizer=optimizer, metrics=metrics,
+                           eval_network=eval_network, eval_indexes=eval_indexes, amp_level=amp_level, **kwargs)
 
     def train(self, epoch, train_dataset, callbacks=None, dataset_sink_mode=True, sink_size=-1):
         """

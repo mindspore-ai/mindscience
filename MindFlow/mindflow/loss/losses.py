@@ -20,16 +20,13 @@ from __future__ import absolute_import
 
 import numpy as np
 
-import mindspore.ops as ops
-import mindspore.nn as nn
-import mindspore.common.dtype as mstype
-from mindspore import Parameter
-from mindspore.common.tensor import Tensor
+from mindspore import dtype as mstype
+from mindspore import nn, ops, Parameter, Tensor
 from mindspore.ops import operations as P
+from mindspore.ops import functional as F
 
 from ..cell.utils import unpatchify
 from ..utils.check_func import check_param_type, check_param_type_value
-
 
 _loss_metric = {
     'l1_loss': nn.L1Loss,
@@ -73,8 +70,7 @@ def get_loss_metric(name):
         0.6666667
     """
     if not isinstance(name, str):
-        raise TypeError(
-            "the type of name should be str but got {}".format(type(name)))
+        raise TypeError("the type of name should be str but got {}".format(type(name)))
 
     if name not in _loss_metric:
         raise ValueError("Unknown loss function type: {}".format(name))
@@ -114,12 +110,10 @@ class RegularizedLossCell(nn.Cell):
     def __init__(self, reg_params, reg_factor=0.01, reg_mode="l2"):
         super(RegularizedLossCell, self).__init__()
         check_param_type(reg_params, "reg_params", data_type=Parameter)
-        check_param_type_value(reg_mode, "reg_mode",
-                               data_type=str, valid_value=["l1", "l2"])
+        check_param_type_value(reg_mode, "reg_mode", data_type=str, valid_value=["l1", "l2"])
         check_param_type(reg_factor, "reg_factor", data_type=float)
         if reg_factor < 0.0:
-            raise ValueError(
-                "The reg_factor must be a non-negtive value, but got {}".format(reg_factor))
+            raise ValueError("The reg_factor must be a non-negtive value, but got {}".format(reg_factor))
         self.reg_params = reg_params
         self.reg_mode = reg_mode
         self.reg_factor = reg_factor
@@ -179,7 +173,7 @@ class MTLWeightedLossCell(WeightedLossCell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindelec.architecture import MTLWeightedLossCell
+        >>> from mindflow.loss import MTLWeightedLossCell
         >>> import mindspore
         >>> from mindspore import Tensor
         >>> net = MTLWeightedLossCell(num_losses=2)
@@ -192,17 +186,14 @@ class MTLWeightedLossCell(WeightedLossCell):
 
     def __init__(self, num_losses, bound_param=0.0):
         super(MTLWeightedLossCell, self).__init__()
-        check_param_type(num_losses, "num_losses",
-                         data_type=int, exclude_type=bool)
+        check_param_type(num_losses, "num_losses", data_type=int, exclude_type=bool)
         if num_losses <= 0:
-            raise ValueError(
-                "the value of num_losses should be positive, but got {}".format(num_losses))
+            raise ValueError("the value of num_losses should be positive, but got {}".format(num_losses))
         self.num_losses = num_losses
         check_param_type(bound_param, "bound_param", data_type=float)
         self.bounded = bound_param > 1.0e-6
         self.bound_param = bound_param ** 2
-        self.params = Parameter(
-            Tensor(np.ones(num_losses), mstype.float32), requires_grad=True)
+        self.params = Parameter(Tensor(np.ones(num_losses), mstype.float32), requires_grad=True)
         self.concat = ops.Concat(axis=0)
         self.pow = ops.Pow()
         self.log = ops.Log()
@@ -329,3 +320,59 @@ class WaveletTransformLoss(nn.LossBase):
         x_lh = -x1 + x2 - x3 + x4
         x_hh = x1 - x2 - x3 + x4
         return x_ll, x_hl, x_lh, x_hh
+
+
+class RelativeRMSELoss(nn.LossBase):
+    r"""
+    Relative Root Mean Square Error (RRMSE) is the root mean squared error normalized by the root mean square value
+    where each residual is scaled against the actual value. Relative RMSELoss creates a criterion to measure the root
+    mean square error between :math:`x` and :math:`y` element-wise,
+    where :math:`x` is the prediction and :math:`y` is the labels.
+
+    For simplicity, let :math:`x` and :math:`y` be 1-dimensional Tensor with length :math:`N`,
+    the loss of :math:`x` and :math:`y` is given as:
+
+    .. math::
+        loss = \sqrt{\frac{\frac{1}{N}\sum_{i=1}^{N}{(x_i-y_i)^2}}{sum_{i=1}^{N}{(y_i)^2}}}
+
+    Args:
+        reduction (str): Type of reduction to be applied to loss. The optional values are "mean", "sum", and "none".
+            Default: "sum".
+
+    Inputs:
+        - **prediction** (Tensor) - Tensor of shape :math:`(N, *)` where :math:`*` means, any number of
+          additional dimensions.
+        - **labels** (Tensor) - Tensor of shape :math:`(N, *)`, same shape as the `prediction` in common cases.
+          However, it supports the shape of `labels` is different from the shape of `labels`
+          and they should be broadcasted to each other.
+
+    Outputs:
+        Tensor, weighted loss float tensor and its shape is ().
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> import mindspore
+        >>> from mindspore import Tensor
+        >>> from mindflow import RelativeRMSELoss
+        >>> # Case: prediction.shape = labels.shape = (3, 3)
+        >>> prediction = Tensor(np.array([[1, 2, 3],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
+        >>> labels = Tensor(np.array([[1, 2, 2],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
+        >>> loss_fn = RelativeRMSELoss()
+        >>> loss = loss_fn(prediction, labels)
+        >>> print(loss)
+        0.33333334
+    """
+
+    def __init__(self, reduction="sum"):
+        super(RelativeRMSELoss, self).__init__(reduction=reduction)
+
+    def construct(self, prediction, labels):
+        prediction = P.Cast()(prediction, mstype.float32)
+        batch_size = prediction.shape[0]
+        diff_norms = F.square(prediction.reshape(batch_size, -1) - labels.reshape(batch_size, -1)).sum(axis=1)
+        label_norms = F.square(labels.reshape(batch_size, -1)).sum(axis=1)
+        rel_error = ops.div(F.sqrt(diff_norms), F.sqrt(label_norms))
+        return self.get_loss(rel_error)

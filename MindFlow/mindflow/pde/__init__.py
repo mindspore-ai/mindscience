@@ -13,8 +13,10 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .problem import Problem
-from .burgers import Burgers1D
-from .navier_stokes import NavierStokes2D
+from .burgers import Burgers
+from .navier_stokes import NavierStokes
+from .poisson import Poisson
+from .sympy2mindspore import sympy_to_mindspore
+from .sympy_pde import PDEWithLoss
 
-__all__ = ["Problem", "Burgers1D", "NavierStokes2D"]
+__all__ = ["Burgers", "NavierStokes", "Poisson", "sympy_to_mindspore", "PDEWithLoss"]

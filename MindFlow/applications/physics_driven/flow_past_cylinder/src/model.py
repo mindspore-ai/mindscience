@@ -1,4 +1,4 @@
-# Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2022 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,51 +11,75 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ==============================================================================
-"""
-feedforward neural network
-"""
-
+# ============================================================================
+"""Navier-Stokes 2D"""
 import numpy as np
-from mindspore import Tensor
-import mindspore.nn as nn
-from mindspore.common.initializer import TruncatedNormal
-from mindflow.cell import get_activation, LinearBlock
+
+from mindspore import nn, ops, Tensor
+from mindspore import dtype as mstype
+
+from mindflow.pde import NavierStokes, sympy_to_mindspore
 
 
-class FlowNetwork(nn.Cell):
-    """Full-connect networks."""
+class NavierStokes2D(NavierStokes):
+    r"""
+    2D NavierStokes equation problem based on PDEWithLoss.
 
-    def __init__(self, in_channels, out_channels, coord_min, coord_max,
-                 num_layers=10, neurons=64, activation="tanh", residual=False):
-        super(FlowNetwork, self).__init__()
-        self.activation = get_activation(activation)
-        self.lower_x = Tensor(np.array(coord_min).astype(np.float32))
-        self.upper_x = Tensor(np.array(coord_max).astype(np.float32))
-        self.residual = residual
+    Args:
+        model (mindspore.nn.Cell): Network for training.
+        re (float): Reynolds number is the ratio of inertia force to viscous force of a fluid. it is a dimensionless
+            quantity. Default: 100.0.
+        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. If None, the `network` should have the loss
+            inside. Default: mindspore.nn.MSELoss.
 
-        self.fc1 = LinearBlock(in_channels, neurons,
-                               weight_init=TruncatedNormal(sigma=np.sqrt(2.0 / (in_channels + neurons))))
-        self.cell_list = nn.CellList()
-        if num_layers < 2:
-            raise ValueError("Total layers number should be at least 2, but got: {}".format(num_layers))
-        self.num_hidden_layers = num_layers - 2
-        for _ in range(self.num_hidden_layers):
-            linear = LinearBlock(neurons, neurons, weight_init=TruncatedNormal(sigma=np.sqrt(1.0 / neurons)))
-            self.cell_list.append(linear)
-        self.fc2 = LinearBlock(neurons, out_channels,
-                               weight_init=TruncatedNormal(sigma=np.sqrt(2.0 / (neurons + out_channels))))
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+    """
+    def __init__(self, model, re=100, loss_fn=nn.MSELoss()):
+        super(NavierStokes2D, self).__init__(model, re=re, loss_fn=loss_fn)
+        self.ic_nodes = sympy_to_mindspore(self.ic(), self.in_vars, self.out_vars)
+        self.bc_nodes = sympy_to_mindspore(self.bc(), self.in_vars, self.out_vars)
 
-    def construct(self, *inputs):
-        """fc network"""
-        x = inputs[0]
-        x = 2.0 * (x - self.lower_x) / (self.upper_x - self.lower_x) - 1.0
-        out = self.fc1(x)
-        out = self.activation(out)
-        for i in range(self.num_hidden_layers):
-            if self.residual:
-                out = self.activation(out + self.cell_list[i](out))
-            else:
-                out = self.activation(self.cell_list[i](out))
-        out = self.fc2(out)
-        return out
+    def ic(self):
+        """
+        Define initial condition equations based on sympy, abstract method.
+        """
+        ic_u = self.u
+        ic_v = self.v
+        equations = {"ic_u": ic_u, "ic_v": ic_v}
+        return equations
+
+    def bc(self):
+        """
+        Define boundary condition equations based on sympy, abstract method.
+        """
+        bc_u = self.u
+        bc_v = self.v
+        bc_p = self.p
+        equations = {"bc_u": bc_u, "bc_v": bc_v, "bc_p": bc_p}
+        return equations
+
+    def get_loss(self, pde_data, ic_data, ic_label, bc_data, bc_label):
+        """
+        Compute loss of 3 parts: governing equation, initial condition and boundary conditions.
+
+        Args:
+            pde_data (Tensor): the input data of governing equations.
+            ic_data (Tensor): the input data of initial condition.
+            ic_label (Tensor): the true value of initial state.
+            bc_data (Tensor): the input data of boundary condition.
+            bc_label (Tensor): the true value at boundary.
+        """
+        pde_res = self.parse_node(self.pde_nodes, inputs=pde_data)
+        pde_residual = ops.Concat(1)(pde_res)
+        pde_loss = self.loss_fn(pde_residual, Tensor(np.array([0.0]).astype(np.float32), mstype.float32))
+
+        ic_res = self.parse_node(self.ic_nodes, inputs=ic_data)
+        ic_residual = ops.Concat(1)(ic_res)
+        ic_loss = self.loss_fn(ic_residual, ic_label)
+
+        bc_res = self.parse_node(self.bc_nodes, inputs=bc_data)
+        bc_residual = ops.Concat(1)(bc_res)
+        bc_loss = self.loss_fn(bc_residual, bc_label)
+
+        return pde_loss + ic_loss + bc_loss

@@ -67,7 +67,7 @@ def create_npy(config, sub=8):
         np.save(f, y_test)
 
 
-def create_dataset(config, shuffle=True, drop_remainder=True, is_train=True):
+def create_training_dataset(config, shuffle=True, drop_remainder=True, is_train=True):
     """create dataset"""
     create_npy(config)
     data_path = config["path"]

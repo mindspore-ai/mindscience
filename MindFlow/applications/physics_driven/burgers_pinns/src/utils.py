@@ -13,64 +13,18 @@
 # limitations under the License.
 # ============================================================================
 """
-utility functions
+visualization functions
 """
-import os
-import yaml
+import time
 import numpy as np
 from matplotlib.gridspec import GridSpec
 import matplotlib.pyplot as plt
 
 from mindspore import Tensor
-import mindspore.common.dtype as mstype
+from mindspore import dtype as mstype
 
 
-EPS = 1e-8
-np.random.seed(0)
-
-
-def make_paths_absolute(dir_, config):
-    """
-    Make all values for keys ending with `_path` absolute to dir_.
-
-    Parameters
-    ----------
-    dir_ : str
-    config : dict
-
-    Returns
-    -------
-    config : dict
-    """
-    for key in config.keys():
-        if key.endswith("_path"):
-            config[key] = os.path.join(dir_, config[key])
-            config[key] = os.path.abspath(config[key])
-        if isinstance(config[key], dict):
-            config[key] = make_paths_absolute(dir_, config[key])
-    return config
-
-
-def load_config(yaml_filepath):
-    """
-    Load a YAML configuration file.
-
-    Parameters
-    ----------
-    yaml_filepath : str
-
-    Returns
-    -------
-    config : dict
-    """
-    # Read YAML experiment definition file
-    with open(yaml_filepath, 'r') as stream:
-        config = yaml.safe_load(stream)
-    config = make_paths_absolute(os.path.join(os.path.dirname(yaml_filepath), ".."), config)
-    return config
-
-
-def visual_result(model, resolution=100):
+def visual_result(model, step=1, resolution=100):
     """visulization of ex/ey/hz"""
     t_flat = np.linspace(0, 1, resolution)
     x_flat = np.linspace(-1, 1, resolution)
@@ -98,4 +52,52 @@ def visual_result(model, resolution=100):
         plt.xlabel('x')
         plt.ylabel('u(t,x)')
     plt.tight_layout()
-    plt.savefig('result.jpg')
+    plt.savefig(f'images/{step}-result.jpg')
+
+
+def _calculate_error(label, prediction):
+    '''calculate l2-error to evaluate accuracy'''
+    error = label - prediction
+    l2_error = np.sqrt(np.sum(np.square(error[..., 0]))) / np.sqrt(np.sum(np.square(label[..., 0])))
+
+    return l2_error
+
+
+def _get_prediction(model, inputs, label_shape, batch_size):
+    '''calculate the prediction respect to the given inputs'''
+    prediction = np.zeros(label_shape)
+    prediction = prediction.reshape((-1, label_shape[1]))
+    inputs = inputs.reshape((-1, inputs.shape[1]))
+
+    time_beg = time.time()
+
+    index = 0
+    while index < inputs.shape[0]:
+        index_end = min(index + batch_size, inputs.shape[0])
+        test_batch = Tensor(inputs[index: index_end, :], mstype.float32)
+        prediction[index: index_end, :] = model(test_batch).asnumpy()
+        index = index_end
+
+    print("    predict total time: {} ms".format((time.time() - time_beg)*1000))
+    prediction = prediction.reshape(label_shape)
+    prediction = prediction.reshape((-1, label_shape[1]))
+    return prediction
+
+
+def calculate_l2_error(model, inputs, label, batch_size):
+    """
+    Evaluate the model respect to input data and label.
+
+    Args:
+         model (Cell): list of expressions node can by identified by mindspore.
+         inputs (Tensor): the input data of network.
+         label (Tensor): the true output value of given inputs.
+         batch_size (int): data size in one step, which is the same as that in training.
+
+    """
+    label_shape = label.shape
+    prediction = _get_prediction(model, inputs, label_shape, batch_size)
+    label = label.reshape((-1, label_shape[1]))
+    l2_error = _calculate_error(label, prediction)
+    print("    l2_error: ", l2_error)
+    print("==================================================================================================")

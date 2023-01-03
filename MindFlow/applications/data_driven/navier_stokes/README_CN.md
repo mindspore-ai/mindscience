@@ -4,7 +4,7 @@
 
 计算流体力学是21世纪流体力学领域的重要技术之一，其通过使用数值方法在计算机中对流体力学的控制方程进行求解，从而实现流动的分析、预测和控制。传统的有限元法（finite element method，FEM）和有限差分法（finite difference method，FDM）常囿于复杂的仿真流程（物理建模，网格划分，数值离散，迭代求解等）和较高的计算成本，往往效率低下。因此，借助AI提升流体仿真效率是十分必要的。
 
-近年来，随着神经网络的迅猛发展，为科学计算提供了新的范式。经典的神经网络是在有限维度的空间进行映射，只能学习与特定离散化相关的解。与经典神经网络不同，傅里叶神经算子（Fourier Neural Operator，FNO）是一种能够学习无限维函数空间映射的新型深度学习架构。该架构可直接学习从任意函数参数到解的映射，用于解决一类偏微分方程的求解问题，具有更强的泛化能力。更多信息可参考[原文](https://arxiv.org/abs/2010.08895)。
+近年来，随着神经网络的迅猛发展，为科学计算提供了新的范式。经典的神经网络是在有限维度的空间进行映射，只能学习与特定离散化相关的解。与经典神经网络不同，傅里叶神经算子（Fourier Neural Operator，FNO）是一种能够学习无限维函数空间映射的新型深度学习架构。该架构可直接学习从任意函数参数到解的映射，用于解决一类偏微分方程的求解问题，具有更强的泛化能力。更多信息可参考[Fourier Neural Operator for Parametric Partial Differential Equations](https://arxiv.org/abs/2010.08895)。
 
 本案例教程介绍利用傅里叶神经算子的Navier-Stokes方程求解方法。
 
@@ -65,8 +65,8 @@ Fourier Layer网络结构如下图所示。图中V表示输入向量，上框表
 model:
   work_space: /path/to/work_space   # 代码工作空间
   name: FNO2D                       # 模型名称
-  input_dims: 1                     # 输入向量空间维度
-  output_dims: 1                    # 输出向量空间维度
+  in_channels: 1                     # 输入向量空间维度
+  out_channels: 1                    # 输出向量空间维度
   input_resolution: 64              # 输入向量分辨率
   modes: 12                         # 低频分量的保留数目
   width: 20                         # 输入向量升维后隐藏层的空间维度
@@ -122,6 +122,8 @@ from src.loss import RelativeRMSELoss
 ### 创建数据集
 
 本案例根据Zongyi Li在 [Fourier Neural Operator for Parametric Partial Differential Equations](https://arxiv.org/pdf/2010.08895.pdf) 一文中对数据集的设置生成训练数据集与测试数据集。具体设置如下：
+
+[下载](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/dataset/) 本案例使用的训练和测试数据。
 
 基于周期性边界，生成满足如下分布的初始条件$w_0(x)$：
 
@@ -179,8 +181,8 @@ class FNOBlock(nn.Cell):
 
 class FNO2D(nn.Cell):
     def __init__(self,
-                 input_dims,
-                 output_dims,
+                 in_channels,
+                 out_channels,
                  resolution,
                  modes,
                  channels=20,
@@ -188,8 +190,8 @@ class FNO2D(nn.Cell):
                  mlp_ratio=4,
                  compute_dtype=mstype.float32):
         super().__init__()
-        check_param_type(input_dims, "input_dims", data_type=int, exclude_type=bool)
-        check_param_type(output_dims, "output_dims", data_type=int, exclude_type=bool)
+        check_param_type(in_channels, "in_channels", data_type=int, exclude_type=bool)
+        check_param_type(out_channels, "out_channels", data_type=int, exclude_type=bool)
         check_param_type(resolution, "resolution", data_type=int, exclude_type=bool)
         check_param_type(modes, "modes", data_type=int, exclude_type=bool)
         if modes < 1:
@@ -198,7 +200,7 @@ class FNO2D(nn.Cell):
         self.modes1 = modes
         self.channels = channels
         self.fc_channel = mlp_ratio * channels
-        self.fc0 = nn.Dense(input_dims + 2, self.channels, has_bias=False).to_float(compute_dtype)
+        self.fc0 = nn.Dense(in_channels + 2, self.channels, has_bias=False).to_float(compute_dtype)
         self.layers = depth
 
         self.fno_seq = nn.SequentialCell()
@@ -210,7 +212,7 @@ class FNO2D(nn.Cell):
                      compute_dtype=compute_dtype))
 
         self.fc1 = nn.Dense(self.channels, self.fc_channel, has_bias=False).to_float(compute_dtype)
-        self.fc2 = nn.Dense(self.fc_channel, output_dims, has_bias=False).to_float(compute_dtype)
+        self.fc2 = nn.Dense(self.fc_channel, out_channels, has_bias=False).to_float(compute_dtype)
 
         self.grid = Tensor(get_grid_2d(resolution), dtype=mstype.float32)
         self.concat = ops.Concat(axis=-1)
@@ -237,8 +239,8 @@ class FNO2D(nn.Cell):
 基于上述网络结构，进行模型初始化，其中model_params中的配置可在配置文件中修改。
 
 ```python
-model = FNO2D(input_dims=model_params["input_dims"],
-              output_dims=model_params["output_dims"],
+model = FNO2D(in_channels=model_params["in_channels"],
+              out_channels=model_params["out_channels"],
               resolution=model_params["input_resolution"],
               modes=model_params["modes"],
               channels=model_params["width"],
