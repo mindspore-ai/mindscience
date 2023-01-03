@@ -288,8 +288,7 @@ class Jacobian(nn.Cell):
         self.eye = ops.Eye()
         self.concat = ops.Concat()
         self.reshape = ops.Reshape()
-        self.tuple_len = ops.Primitive("tuple_len")
-        self.make_list = ops.Primitive("make_list")
+        self.tuple_len = ops.tuple_len
         self._merge_output = _MergeOutput()
         self._generate_multi_sens = _GenerateMultiSens()
 
