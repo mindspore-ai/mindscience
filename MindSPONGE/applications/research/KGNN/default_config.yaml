@@ -29,10 +29,10 @@ neighbor_sample_size: 4
 embed_dim: 32
 n_depth: 2
 l2_weight: 0.0000001
-lr: 0.02
+lr: 0.0005
 batch_size: 2048
-aggregator_type: "sum"
-n_epoch: 40
+aggregator_type: "concat"
+n_epoch: 12
 optimizer: "adam"
 
 # ======================================================================================

@@ -129,9 +129,6 @@ if __name__ == '__main__':
     config.adj_relation = np.load(format_filename(config.PROCESSED_DATA_DIR, ADJ_RELATION_TEMPLATE,
                                                   dataset=config.dataset))
 
-    aggregator_types = ['sum', 'concat', 'neigh']
-    for t in aggregator_types:
-        config.aggregator_type = t
-        train_net()
+    train_net()
     if config.enable_modelarts:
         upload_qizhi(config.train_dir, config.train_url)
