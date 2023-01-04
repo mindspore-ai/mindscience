@@ -195,10 +195,10 @@ class Encoder(nn.Cell):
                                 Default: mstype.float16.
 
      Inputs:
-             - **input** (Tensor) - Tensor of shape :math:`(batch_size, feature_size, image_height, image_width)`.
+             - **input** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, image\_height, image\_width)`.
 
      Outputs:
-             - **output** (Tensor) - Tensor of shape :math:`(batch_size, patchify_size, embed_dim)`.
+             - **output** (Tensor) - Tensor of shape :math:`(batch\_size, patchify\_size, embed\_dim)`.
              where patchify_size = (image_height * image_width) / (patch_size * patch_size).
 
      Supported Platforms:
@@ -266,21 +266,21 @@ class Decoder(nn.Cell):
     Decoder module with multi-layer stacked of `Block`, including multihead self attention and feedforward layer.
 
     Args:
-         grid_size (tuple[int]): The grid_size size of input.
-         depths (int): The decoder depth of decoder layer.
-         embed_dim (int): The decoder embedding dimension of decoder layer.
-         num_heads (int): The decoder heads' number of decoder layer.
-         mlp_ratio (int): The rate of mlp layer. Default: 4.
-         dropout_rate (float): The rate of dropout layer. Default: 1.0.
-         compute_dtype (dtype): The data type for encoder, decoding_embedding, decoder and dense layer.
+        grid_size (tuple[int]): The grid_size size of input.
+        depths (int): The decoder depth of decoder layer.
+        embed_dim (int): The decoder embedding dimension of decoder layer.
+        num_heads (int): The decoder heads' number of decoder layer.
+        mlp_ratio (int): The rate of mlp layer. Default: 4.
+        dropout_rate (float): The rate of dropout layer. Default: 1.0.
+        compute_dtype (dtype): The data type for encoder, decoding_embedding, decoder and dense layer.
             Default: mstype.float16.
 
     Inputs:
-            - **input** (Tensor) - Tensor of shape :math:`(batch_size, patchify_size, embed_dim)`.
+        - **input** (Tensor) - Tensor of shape :math:`(batch\_size, patchify\_size, embed\_dim)`.
 
     Outputs:
-         - **output** (Tensor) - Tensor of shape :math:`(batch_size, patchify_size, embed_dim)`.
-         where patchify_size = (image_height * image_width) / (patch_size * patch_size).
+        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, patchify\_size, embed\_dim)`.
+          where patchify_size = (image_height * image_width) / (patch_size * patch_size).
 
     Supported Platforms:
         ``Ascend`` ``GPU``

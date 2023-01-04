@@ -19,4 +19,4 @@ mindsponge.metrics.local_distance_difference_test
         - **per_residue** (bool) - 指示是否按残基为单位计算局部距离差，如果设为True则按残基为单位返回局部距离差值，默认值：False。
 
     返回：
-        - **score** (list) - Tensor。局部距离误差，如果per_residue为False则shape为 :math:`(1,)` ，否则为 :math:`(1, N_res)` 。
+        - **score** (list) - Tensor。局部距离误差，如果per_residue为False则shape为 :math:`(1,)` ，否则为 :math:`(1, N_{res})` 。
