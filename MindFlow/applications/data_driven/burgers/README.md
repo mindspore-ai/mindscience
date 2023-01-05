@@ -4,7 +4,7 @@
 
 Computational fluid dynamics is one of the most important techniques in the field of fluid mechanics in the 21st century. The flow analysis, prediction and control can be realized by solving the governing equations of fluid mechanics by numerical method. Traditional finite element method (FEM) and finite difference method (FDM) are inefficient because of the complex simulation process (physical modeling, meshing, numerical discretization, iterative solution, etc.) and high computing costs. Therefore, it is necessary to improve the efficiency of fluid simulation with AI.
 
-Machine learning methods provide a new paradigm for scientific computing by providing a fast solver similar to traditional methods. Classical neural networks learn mappings between finite dimensional spaces and can only learn solutions related to a specific discretization. Different from traditional neural networks, Fourier Neural Operator (FNO) is a new deep learning architecture that can learn mappings between infinite-dimensional function spaces. It directly learns mappings from arbitrary function parameters to solutions to solve a class of partial differential equations.  Therefore, it has a stronger generalization capability. More information can be found in [paper] (https://arxiv.org/abs/2010.08895).
+Machine learning methods provide a new paradigm for scientific computing by providing a fast solver similar to traditional methods. Classical neural networks learn mappings between finite dimensional spaces and can only learn solutions related to a specific discretization. Different from traditional neural networks, Fourier Neural Operator (FNO) is a new deep learning architecture that can learn mappings between infinite-dimensional function spaces. It directly learns mappings from arbitrary function parameters to solutions to solve a class of partial differential equations.  Therefore, it has a stronger generalization capability. More information can be found in the paper, [Fourier Neural Operator for Parametric Partial Differential Equations](https://arxiv.org/abs/2010.08895).
 
 This tutorial describes how to solve the 1-d Burgers' equation using Fourier neural operator.
 
@@ -59,8 +59,8 @@ The configuration file contains four types of parameters: model parameters, data
 ```python
 model:
   name: FNO1D                       # Model name
-  input_dims: 1                     # Input data channel
-  output_dims: 1                    # Output data channel
+  in_channels: 1                     # Input data channel
+  out_channels: 1                    # Output data channel
   input_resolution: 1024            # Column resolution
   modes: 12                         # Number of frequency to keep
   width: 32                         # The number of channels after dimension lifting of the input
@@ -89,23 +89,24 @@ callback:
 Import the modules and interfaces on which this tutorial depends:
 
 ```python
-import mindspore.nn as nn
-from mindspore.common import set_seed
-from mindspore import Tensor
-from mindspore.train import LossMonitor, TimeMonitor
-from mindspore.train import DynamicLossScaleManager
+import os
 
-from mindflow.solver import Solver
-from mindflow.cell.neural_operators import FNO1D
-from src.lr_scheduler import warmup_cosine_annealing_lr
-from src.dataset import create_dataset
-from src.utils import load_config
-from src.loss import RelativeRMSELoss
+import numpy as np
+
+from mindspore import context, nn, Tensor, set_seed
+from mindspore.train.callback import LossMonitor, TimeMonitor
+from mindspore.train.loss_scale_manager import DynamicLossScaleManager
+
+from mindflow import FNO1D, Solver, load_yaml_config
+
+from src import PredictCallback, create_training_dataset, RelativeRMSELoss, warmup_cosine_annealing_lr
 ```
 
 ### Create datasets
 
 In this case, training datasets and test data sets are generated according to Zongyi Li's data set in Fourier Neural Operator for Parametric Partial Differential Equations(https://arxiv.org/pdf/2010.08895.pdf) . The settings are as follows:
+
+Download the training and test dataset: [data_driven/burgers/dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/dataset/) .
 
 The initial condition $w_0(x)$ is generated according to periodic boundary conditions:
 
@@ -144,8 +145,8 @@ The network consists of a lifting layer, multiple Fourier layers, and a decoder 
 The model is initialized based on the foregoing network structure. The configuration in model_params can be modified in the configuration file.
 
 ```python
-model = FNO1D(input_dims=model_params["input_dims"],
-              output_dims=model_params["output_dims"],
+model = FNO1D(in_channels=model_params["in_channels"],
+              out_channels=model_params["out_channels"],
               resolution=model_params["resolution"],
               modes=model_params["modes"],
               channels=model_params["channels"],
@@ -158,11 +159,6 @@ model = FNO1D(input_dims=model_params["input_dims"],
 This case uses the rms error as the loss function:
 
 ```python
-import mindspore
-import mindspore.nn as nn
-from mindspore import ops
-
-
 class RelativeRMSELoss(nn.LossBase):
     def __init__(self, reduction="sum"):
         super(RelativeRMSELoss, self).__init__(reduction=reduction)
@@ -181,15 +177,6 @@ class RelativeRMSELoss(nn.LossBase):
 The customised PredictCallback function is used to implement inference during training. You can directly load the test data set and output the inference precision of the test set every n epochs are trained. The value of n is specified by eval_interval in the configuration file.
 
 ```python
-import time
-
-import numpy as np
-from mindspore.train import Callback
-from mindspore.train import SummaryRecord
-from mindspore import Tensor
-from mindspore import dtype as mstype
-
-
 class PredictCallback(Callback):
     """
     Monitor the prediction accuracy in training.
@@ -268,10 +255,10 @@ Initialize the PredictCallback：
 
 ```python
 pred_cb = PredictCallback(model=model,
-                              inputs=test_input,
-                              label=test_label,
-                              config=config,
-                              summary_dir=summary_dir)
+                          inputs=test_input,
+                          label=test_label,
+                          config=config,
+                          summary_dir=summary_dir)
 ```
 
 ### Model Training and Evaluation

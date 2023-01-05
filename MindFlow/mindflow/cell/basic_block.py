@@ -61,7 +61,7 @@ class LinearBlock(nn.Cell):
         Tensor of shape :math:`(*, out\_channels)`.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np
@@ -119,12 +119,12 @@ class ResBlock(nn.Cell):
     Outputs:
         Tensor of shape :math:`(*, out\_channels)`.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
     Raises:
         ValueError: If `in_channels` not equal out_channels.
         TypeError: If `activation` is not in str or Cell or Primitive.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> import numpy as np
@@ -194,12 +194,12 @@ class InputScaleNet(nn.Cell):
     Outputs:
         Tensor of shape :math:`(*, channels)`.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
     Raises:
         TypeError: If `input_scale` is not a list.
         TypeError: If `input_center` is not a list or None.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> import numpy as np
@@ -235,6 +235,12 @@ class InputScaleNet(nn.Cell):
         return out
 
 
+def _get_out_net_activation(is_out, act):
+    if is_out:
+        return None
+    return act
+
+
 class FCSequential(nn.Cell):
     r"""
     A sequential container of the dense layers, dense layers are added to the container sequentially.
@@ -260,14 +266,14 @@ class FCSequential(nn.Cell):
     Outputs:
         Tensor of shape :math:`(*, out\_channels)`.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
     Raises:
         TypeError: If `layers` is not an int.
         TypeError: If `neurons` is not an int.
         TypeError: If `residual` is not a bool.
         ValueError: If `layers` is less than 3.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> import numpy as np
@@ -293,53 +299,67 @@ class FCSequential(nn.Cell):
                  bias_init='default',
                  weight_norm=False):
         super(FCSequential, self).__init__()
-        check_param_type(layers, "layers", data_type=int, exclude_type=bool)
-        check_param_type(neurons, "neurons", data_type=int, exclude_type=bool)
-        check_param_type(residual, "residual", data_type=bool)
-        if layers < 3:
-            raise ValueError(
-                "FCSequential have at least 3 layers, but got layers: {}".format(layers))
-        self.network = nn.SequentialCell([LinearBlock(in_channels,
-                                                      neurons,
-                                                      activation=act,
-                                                      weight_init=weight_init,
-                                                      has_bias=has_bias,
-                                                      bias_init=_bias_init(
-                                                          in_channels, neurons)
-                                                      if bias_init == "default" else bias_init
-                                                      )])
-        for _ in range(layers - 2):
-            if residual:
-                self.network.append(ResBlock(neurons,
-                                             neurons,
-                                             activation=act,
-                                             weight_init=weight_init,
-                                             has_bias=has_bias,
-                                             bias_init=_bias_init(
-                                                 neurons, neurons)
-                                             if bias_init == "default" else bias_init,
-                                             ))
-            else:
-                self.network.append(LinearBlock(neurons,
-                                                neurons,
-                                                activation=act,
-                                                weight_init=weight_init,
-                                                has_bias=has_bias,
-                                                bias_init=_bias_init(
-                                                    neurons, neurons)
-                                                if bias_init == "default" else bias_init
-                                                ))
-        self.network.append(LinearBlock(neurons,
-                                        out_channels,
-                                        weight_init=weight_init,
-                                        has_bias=has_bias,
-                                        bias_init=_bias_init(
-                                            neurons, out_channels)
-                                        if bias_init == "default" else bias_init,
-                                        ))
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.layers = layers
+        self.neurons = neurons
+        self.residual = residual
+        self.act = act
+        self.weight_init = weight_init
+        self.has_bias = has_bias
+        self.bias_init = bias_init
+        self.weight_norm = weight_norm
+
+        self._check_params()
+        self.network = nn.SequentialCell()
+        self._create_networks()
 
     def construct(self, x):
         return self.network(x)
+
+    def _create_networks(self):
+        self._add_linear_block(self.in_channels, self.neurons, weight_init=self.weight_init)
+        self._add_hidden_blocks(self.neurons, self.neurons, weight_init=self.weight_init)
+        self._add_linear_block(self.neurons, self.out_channels, weight_init=self.weight_init, is_out_net=True)
+
+    def _check_params(self):
+        check_param_type(self.layers, "layers", data_type=int, exclude_type=bool)
+        check_param_type(self.neurons, "neurons", data_type=int, exclude_type=bool)
+        check_param_type(self.residual, "residual", data_type=bool)
+        if self.layers < 3:
+            raise ValueError(
+                "FCSequential have at least 3 layers, but got layers: {}".format(self.layers))
+
+    def _add_linear_block(self, in_channels, out_channels, weight_init, is_out_net=False):
+        act = _get_out_net_activation(is_out_net, self.act)
+        self.network.append(LinearBlock(in_channels,
+                                        out_channels,
+                                        activation=act,
+                                        weight_init=weight_init,
+                                        has_bias=self.has_bias,
+                                        bias_init=_bias_init(
+                                            in_channels, out_channels)
+                                        if self.bias_init == "default" else self.bias_init,
+                                        ))
+
+    def _add_res_block(self, in_channels, out_channels, weight_init, is_out_net=False):
+        act = _get_out_net_activation(is_out_net, self.act)
+        self.network.append(ResBlock(in_channels,
+                                     out_channels,
+                                     activation=act,
+                                     weight_init=weight_init,
+                                     has_bias=self.has_bias,
+                                     bias_init=_bias_init(
+                                         in_channels, out_channels)
+                                     if self.bias_init == "default" else self.bias_init,
+                                     ))
+
+    def _add_hidden_blocks(self, in_channels, out_channels, weight_init):
+        for _ in range(self.layers - 2):
+            if self.residual:
+                self._add_res_block(in_channels, out_channels, weight_init)
+            else:
+                self._add_linear_block(in_channels, out_channels, weight_init)
 
 
 class MultiScaleFCCell(nn.Cell):
@@ -376,14 +396,14 @@ class MultiScaleFCCell(nn.Cell):
     Outputs:
         Tensor of shape :math:`(*, out\_channels)`.
 
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
     Raises:
         TypeError: If `num_scales` is not an int.
         TypeError: If `amp_factor` is neither int nor float.
         TypeError: If `scale_factor` is neither int nor float.
         TypeError: If `latent_vector` is neither a Parameter nor None.
-
-    Supported Platforms:
-        ``Ascend``
 
     Examples:
         >>> import numpy as np
@@ -458,7 +478,7 @@ class MultiScaleFCCell(nn.Cell):
                                                has_bias=has_bias,
                                                bias_init=bias_init,
                                                ))
-        if input_scale:
+        if input_scale is not None:
             self.input_scale = InputScaleNet(input_scale, input_center)
         else:
             self.input_scale = ops.Identity()

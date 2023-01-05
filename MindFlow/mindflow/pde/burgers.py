@@ -13,59 +13,65 @@
 # limitations under the License.
 # ============================================================================
 """Burgers 1D problem"""
-from math import pi as PI
+import numpy as np
+from sympy import diff, Function, symbols
 
-from mindspore import ops, Tensor
-from mindspore import dtype as mstype
+from mindspore import nn
 
-from .problem import Problem
-from ..operators import Grad, SecondOrderGrad
+from .sympy_pde import PDEWithLoss
 
 
-class Burgers1D(Problem):
-    """The 1D Burger's equations with constant boundary condition."""
+class Burgers(PDEWithLoss):
+    r"""
+    Base class for Burgers 1-D problem based on PDEWithLoss.
 
-    def __init__(self,
-                 model,
-                 domain_name=None,
-                 bc_name=None,
-                 ic_name=None):
-        super(Burgers1D, self).__init__()
+    Args:
+        model (mindspore.nn.Cell): Network for training.
+        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. If None, the `model` should have the loss
+            inside. Default: mindspore.nn.MSELoss.
 
-        self.model = model
-        self.mu = Tensor(0.01 / PI, mstype.float32)
-        self.pi = Tensor(PI, mstype.float32)
+    Supported Platforms:
+        ``Ascend`` ``GPU``
 
-        self.domain_name = domain_name
-        self.bc_name = bc_name
-        self.ic_name = ic_name
-        # define first order gradient and second order gradient
-        self.first_grad = Grad(self.model)
-        self.u_xx_cell = SecondOrderGrad(self.model, input_idx1=0, input_idx2=0, output_idx=0)
+    Examples:
+        >>> from mindflow.pde import burgers
+        >>> from mindspore import nn, ops
+        >>> class Net(nn.Cell):
+                def __init__(self, cin=2, cout=1, hidden=10):
+                    super().__init__()
+                    self.fc1 = nn.Dense(cin, hidden)
+                    self.fc2 = nn.Dense(hidden, hidden)
+                    self.fcout = nn.Dense(hidden, cout)
+                    self.act = ops.Tanh()
 
-    def governing_equation(self, *output, **kwargs):
-        """Burgers equation"""
-        u = output[0]
-        data = kwargs[self.domain_name]
+                def construct(self, x):
+                    x = self.act(self.fc1(x))
+                    x = self.act(self.fc2(x))
+                    x = self.fcout(x)
+                    return x
+        >>> model = Net()
+        >>> problem = Burgers(model)
+        >>> print(problem.pde())
+        burgers: u(x, t)Derivative(u(x, t), x) + Derivative(u(x, t), t) - 0.00318309897556901Derivative(u(x, t), (x, 2))
+            Item numbers of current derivative formula nodes: 3
+        {'burgers': u(x, t)Derivative(u(x, t), x) + Derivative(u(x, t), t) - 0.00318309897556901Derivative(u(x, t),
+        (x, 2))}
+    """
+    def __init__(self, model, loss_fn=nn.MSELoss()):
+        self.mu = np.float32(0.01 / np.pi)
+        self.x, self.t = symbols('x t')
+        self.u = Function('u')(self.x, self.t)
+        self.in_vars = [self.x, self.t]
+        self.out_vars = [self.u]
+        super(Burgers, self).__init__(model, self.in_vars, self.out_vars)
+        self.loss_fn = loss_fn
 
-        du_dxt = self.first_grad(data, None, 0, u)
-        du_dx, du_dt = ops.split(du_dxt, axis=1, output_num=2)
-        du_dxx = self.u_xx_cell(data)
+    def pde(self):
+        """
+        Define governing equations based on sympy, abstract method.
+        """
+        burgers_eq = diff(self.u, (self.t, 1)) + self.u * diff(self.u, (self.x, 1)) - \
+            self.mu * diff(self.u, (self.x, 2))
 
-        pde_residual = du_dt + u * du_dx - self.mu * du_dxx
-
-        return pde_residual
-
-    def boundary_condition(self, *output, **kwargs):
-        """constant boundary condition"""
-        bc_residual = output[0]
-        return bc_residual
-
-    def initial_condition(self, *output, **kwargs):
-        """initial condition: u = - pi * sin(x)"""
-        u = output[0]
-        data = kwargs[self.ic_name]
-        x = ops.reshape(data[:, 0], (-1, 1))
-        ic_residual = u + ops.sin(self.pi * x)
-        return ic_residual
-    
+        equations = {"burgers": burgers_eq}
+        return equations

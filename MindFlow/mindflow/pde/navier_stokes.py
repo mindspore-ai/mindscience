@@ -13,64 +13,86 @@
 # limitations under the License.
 # ============================================================================
 """Navier-Stokes 2D Problem"""
-from mindspore import ops, Tensor
-from mindspore import dtype as mstype
+import numpy as np
+from sympy import diff, Function, symbols
 
-from .problem import Problem
-from ..operators import Grad, SecondOrderGrad
+from mindspore import nn
+
+from .sympy_pde import PDEWithLoss
 
 
-class NavierStokes2D(Problem):
-    """2D NavierStokes equation"""
+class NavierStokes(PDEWithLoss):
+    r"""
+    2D NavierStokes equation problem based on PDEWithLoss.
 
-    def __init__(self, model, re=100, domain_name=None, bc_label_name=None, ic_label_name=None):
-        super(NavierStokes2D, self).__init__()
-        self.model = model
-        self.re = Tensor(re, mstype.float32)
+    Args:
+        model (mindspore.nn.Cell): network for training.
+        re (float): reynolds number is the ratio of inertia force to viscous force of a fluid. It is a dimensionless
+            quantity. Default: 100.0.
+        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. If None, the `model` should have the loss
+            inside. Default: mindspore.nn.MSELoss.
 
-        self.domain_name = domain_name
-        self.bc_label_name = bc_label_name
-        self.ic_label_name = ic_label_name
+    Supported Platforms:
+        ``Ascend`` ``GPU``
 
-        # define first order gradient and second order gradient
-        self.grad = Grad(self.model)
-        self.gradux_xx = SecondOrderGrad(self.model, input_idx1=0, input_idx2=0, output_idx=0)
-        self.gradux_yy = SecondOrderGrad(self.model, input_idx1=1, input_idx2=1, output_idx=0)
-        self.graduy_xx = SecondOrderGrad(self.model, input_idx1=0, input_idx2=0, output_idx=1)
-        self.graduy_yy = SecondOrderGrad(self.model, input_idx1=1, input_idx2=1, output_idx=1)
+    Examples:
+            >>> from mindflow.pde import NavierStokes
+            >>> from mindspore import nn, ops
+            >>> class Net(nn.Cell):
+                    def __init__(self, cin=3, cout=3, hidden=10):
+                        super().__init__()
+                        self.fc1 = nn.Dense(cin, hidden)
+                        self.fc2 = nn.Dense(hidden, hidden)
+                        self.fcout = nn.Dense(hidden, cout)
+                        self.act = ops.Tanh()
 
-    def governing_equation(self, *output, **kwargs):
-        """governing equation"""
-        flow_vars = output[0]
-        u, v, _ = ops.split(flow_vars, axis=1, output_num=3)
-        domain_data = kwargs[self.domain_name]
+                    def construct(self, x):
+                        x = self.act(self.fc1(x))
+                        x = self.act(self.fc2(x))
+                        x = self.fcout(x)
+                        return x
+            >>> model = Net()
+            >>> problem = NavierStokes(model)
+            >>> print(problem.pde())
+            momentum_x: u(x, y, t)Derivative(u(x, y, t), x) + v(x, y, t)Derivative(u(x, y, t), y) +
+            Derivative(p(x, y, t), x) + Derivative(u(x, y, t), t) - 0.00999999977648258Derivative(u(x, y, t), (x, 2)) -
+            0.00999999977648258Derivative(u(x, y, t), (y, 2))
+                Item numbers of current derivative formula nodes: 6
+            momentum_y: u(x, y, t)Derivative(v(x, y, t), x) + v(x, y, t)Derivative(v(x, y, t), y) +
+            Derivative(p(x, y, t), y) + Derivative(v(x, y, t), t) - 0.00999999977648258Derivative(v(x, y, t), (x, 2)) -
+            0.00999999977648258Derivative(v(x, y, t), (y, 2))
+                Item numbers of current derivative formula nodes: 6
+            continuty: Derivative(u(x, y, t), x) + Derivative(v(x, y, t), y)
+                Item numbers of current derivative formula nodes: 2
+            {'momentum_x': u(x, y, t)Derivative(u(x, y, t), x) + v(x, y, t)Derivative(u(x, y, t), y) +
+            Derivative(p(x, y, t), x) + Derivative(u(x, y, t), t) - 0.00999999977648258Derivative(u(x, y, t), (x, 2)) -
+            0.00999999977648258Derivative(u(x, y, t), (y, 2)),
+            'momentum_y': u(x, y, t)Derivative(v(x, y, t), x) + v(x, y, t)Derivative(v(x, y, t), y) +
+            Derivative(p(x, y, t), y) + Derivative(v(x, y, t), t) - 0.00999999977648258Derivative(v(x, y, t), (x, 2)) -
+            0.00999999977648258Derivative(v(x, y, t), (y, 2)),
+            'continuty': Derivative(u(x, y, t), x) + Derivative(v(x, y, t), y)}
+    """
 
-        du_dx, du_dy, du_dt = ops.split(self.grad(domain_data, None, 0, flow_vars), axis=1, output_num=3)
-        dv_dx, dv_dy, dv_dt = ops.split(self.grad(domain_data, None, 1, flow_vars), axis=1, output_num=3)
-        dp_dx, dp_dy, _ = ops.split(self.grad(domain_data, None, 2, flow_vars), axis=1, output_num=3)
-        du_dxx = self.gradux_xx(domain_data)
-        du_dyy = self.gradux_yy(domain_data)
-        dv_dxx = self.graduy_xx(domain_data)
-        dv_dyy = self.graduy_yy(domain_data)
+    def __init__(self, model, re=100, loss_fn=nn.MSELoss()):
+        self.number = np.float32(1.0 / re)
+        self.x, self.y, self.t = symbols('x y t')
+        self.u = Function('u')(self.x, self.y, self.t)
+        self.v = Function('v')(self.x, self.y, self.t)
+        self.p = Function('p')(self.x, self.y, self.t)
+        self.in_vars = [self.x, self.y, self.t]
+        self.out_vars = [self.u, self.v, self.p]
+        super(NavierStokes, self).__init__(model, self.in_vars, self.out_vars)
+        self.loss_fn = loss_fn
 
-        eq1 = du_dt + (u * du_dx + v * du_dy) + dp_dx - 1.0 / self.re * (du_dxx + du_dyy)
-        eq2 = dv_dt + (u * dv_dx + v * dv_dy) + dp_dy - 1.0 / self.re * (dv_dxx + dv_dyy)
-        eq3 = du_dx + dv_dy
-        pde_residual = ops.Concat(1)((eq1, eq2, eq3))
-        return pde_residual
+    def pde(self):
+        """
+        Define governing equations based on sympy, abstract method.
+        """
+        momentum_x = self.u.diff(self.t) + self.u * self.u.diff(self.x) + self.v * self.u.diff(self.y) + \
+                     self.p.diff(self.x) - self.number * (diff(self.u, (self.x, 2)) + diff(self.u, (self.y, 2)))
+        momentum_y = self.v.diff(self.t) + self.u * self.v.diff(self.x) + self.v * self.v.diff(self.y) + \
+                     self.p.diff(self.y) - self.number * (diff(self.v, (self.x, 2)) + diff(self.v, (self.y, 2)))
+        continuty = self.u.diff(self.x) + self.v.diff(self.y)
 
-    def boundary_condition(self, *output, **kwargs):
-        """boundary condition"""
-        # select u, v and drop pressure
-        flow_vars = output[0][:, :2]
-        bc_label = kwargs[self.bc_label_name]
-        bc_residual = flow_vars - bc_label
-        return bc_residual
-
-    def initial_condition(self, *output, **kwargs):
-        """initial condition"""
-        flow_vars = output[0]
-        ic_label = kwargs[self.ic_label_name]
-        ic_residual = flow_vars - ic_label
-        return ic_residual
-    
+        equations = {"momentum_x": momentum_x, "momentum_y": momentum_y, "continuty": continuty}
+        return equations

@@ -7,11 +7,11 @@ geometry:
   time_max: 7.0
 data:
   domain:
-    size: 65536
+    size: 8192
     random_sampling: true
     sampler: "uniform"
   time:
-    size: 65536
+    size: 8192
     random_sampling: true
     sampler: "uniform"
 model:
@@ -21,7 +21,7 @@ model:
   activation: "sin"
   layers: 10
   neurons: 128
-  residual: true
+  residual: false
 optimizer:
   initial_lr: 0.001
   weight_decay: 0.0
@@ -29,13 +29,13 @@ optimizer:
   milestones: [2000, 4000]
 name: CylinderFlow
 Re: 100
-train_epochs: 5000
+train_steps: 12000
 train_batch_size: 8192
-test_batch_size: 32768
+test_batch_size: 8192
 eval_interval_epochs: 500
 train_with_eval: true
-train_data_path: "./flow_past_cylinder_new_config/dataset"
-test_data_path: "./flow_past_cylinder_new_config/dataset"
+train_data_path: "./flow_past_cylinder/dataset"
+test_data_path: "./flow_past_cylinder/dataset"
 save_ckpt_path: "path/to/ckpt"
 summary_dir: "./summary"
 visual_dir: "./vision"
@@ -43,3 +43,4 @@ save_checkpoint_steps: 50
 keep_checkpoint_max: 10
 load_ckpt: false
 save_ckpt: false
+amp_level: O0

@@ -4,7 +4,7 @@
 
 计算流体力学是21世纪流体力学领域的重要技术之一，其通过使用数值方法在计算机中对流体力学的控制方程进行求解，从而实现流动的分析、预测和控制。传统的有限元法（finite element method，FEM）和有限差分法（finite difference method，FDM）常用于复杂的仿真流程（物理建模，网格划分，数值离散，迭代求解等）和较高的计算成本，往往效率低下。因此，借助AI提升流体仿真效率是十分必要的。
 
-近年来，随着神经网络的迅猛发展，为科学计算提供了新的范式。经典的神经网络是在有限维度的空间进行映射，只能学习与特定离散化相关的解。与经典神经网络不同，傅里叶神经算子（Fourier Neural Operator，FNO）是一种能够学习无限维函数空间映射的新型深度学习架构。该架构可直接学习从任意函数参数到解的映射，用于解决一类偏微分方程的求解问题，具有更强的泛化能力。更多信息可参考[原文](https://arxiv.org/abs/2010.08895)。
+近年来，随着神经网络的迅猛发展，为科学计算提供了新的范式。经典的神经网络是在有限维度的空间进行映射，只能学习与特定离散化相关的解。与经典神经网络不同，傅里叶神经算子（Fourier Neural Operator，FNO）是一种能够学习无限维函数空间映射的新型深度学习架构。该架构可直接学习从任意函数参数到解的映射，用于解决一类偏微分方程的求解问题，具有更强的泛化能力。更多信息可参考[Fourier Neural Operator for Parametric Partial Differential Equations](https://arxiv.org/abs/2010.08895)。
 
 本案例教程介绍利用傅里叶神经算子的1-d Burgers'方程求解方法。
 
@@ -60,8 +60,8 @@ Fourier Layer网络结构如下图所示。图中V表示输入向量，上框表
 ```python
 model:
   name: FNO1D                       # 模型名称
-  input_dims: 1                     # 输入向量空间维度
-  output_dims: 1                    # 输出向量空间维度
+  in_channels: 1                     # 输入向量空间维度
+  out_channels: 1                    # 输出向量空间维度
   input_resolution: 1024            # 输入向量分辨率
   modes: 12                         # 低频分量的保留数目
   width: 32                         # 输入向量升维后隐藏层的空间维度
@@ -90,24 +90,24 @@ callback:
 导入本教程所依赖模块与接口:
 
 ```python
-import mindspore.nn as nn
-from mindspore import set_seed
-from mindspore import Tensor
-from mindspore.train import LossMonitor, TimeMonitor
-from mindspore.train import DynamicLossScaleManager
+import os
 
-from mindflow.solver import Solver
-from mindflow.cell.neural_operators import FNO1D
+import numpy as np
 
-from src.lr_scheduler import warmup_cosine_annealing_lr
-from src.dataset import create_dataset
-from src.utils import load_config
-from src.loss import RelativeRMSELoss
+from mindspore import context, nn, Tensor, set_seed
+from mindspore.train.callback import LossMonitor, TimeMonitor
+from mindspore.train.loss_scale_manager import DynamicLossScaleManager
+
+from mindflow import FNO1D, Solver, load_yaml_config
+
+from src import PredictCallback, create_training_dataset, RelativeRMSELoss, warmup_cosine_annealing_lr
 ```
 
 ### 创建数据集
 
 本案例根据Zongyi Li在 [Fourier Neural Operator for Parametric Partial Differential Equations](https://arxiv.org/pdf/2010.08895.pdf) 一文中对数据集的设置生成训练数据集与测试数据集。具体设置如下：
+
+[下载](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/dataset/) 本案例使用的训练和测试数据。
 
 基于周期性边界，生成满足如下分布的初始条件$w_0(x)$：
 
@@ -148,8 +148,8 @@ train_dataset = create_dataset(data_params,
 基于上述网络结构，进行模型初始化，其中model_params中的配置可在配置文件中修改。
 
 ```python
-model = FNO1D(input_dims=model_params["input_dims"],
-              output_dims=model_params["output_dims"],
+model = FNO1D(in_channels=model_params["in_channels"],
+              out_channels=model_params["out_channels"],
               resolution=model_params["resolution"],
               modes=model_params["modes"],
               channels=model_params["channels"],
@@ -162,11 +162,6 @@ model = FNO1D(input_dims=model_params["input_dims"],
 使用相对均方根误差作为网络训练损失函数：
 
 ```python
-import mindspore
-import mindspore.nn as nn
-from mindspore import ops
-
-
 class RelativeRMSELoss(nn.LossBase):
     def __init__(self, reduction="sum"):
         super(RelativeRMSELoss, self).__init__(reduction=reduction)
@@ -185,16 +180,6 @@ class RelativeRMSELoss(nn.LossBase):
 通过自定义的PredictCallback函数，实现边训练边推理的功能。用户可以直接加载测试数据集，每训练n个epoch后输出一次测试集上的推理精度，n的大小通过配置文件中的eval_interval进行设置。
 
 ```python
-import time
-
-import numpy as np
-
-from mindspore import Tensor
-from mindspore.train import Callback
-from mindspore.train import SummaryRecord
-from mindspore import dtype as mstype
-
-
 class PredictCallback(Callback):
     """
     Monitor the prediction accuracy in training.

@@ -36,7 +36,7 @@ class SReLU(nn.Cell):
         Tensor, with the same type and shape as the `input_data`.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np
@@ -92,7 +92,7 @@ def get_activation(name):
         Function, the activation function.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np

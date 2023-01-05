@@ -18,10 +18,8 @@ call back functions
 import time
 import numpy as np
 
-from mindspore.train.callback import Callback
-from mindspore.train.summary import SummaryRecord
-from mindspore import Tensor
-import mindspore.common.dtype as mstype
+from mindspore import Callback, SummaryRecord, Tensor
+from mindspore import dtype as mstype
 
 
 class PredictCallback(Callback):

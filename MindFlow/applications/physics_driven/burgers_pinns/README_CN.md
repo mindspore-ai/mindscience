@@ -33,11 +33,10 @@ $$
 MindFlow求解该问题的具体流程如下：
 
 1. 创建训练数据集。
-2. 构建模型。
-3. 优化器。
-4. 约束。
-5. 模型训练。
-6. 模型推理及可视化。
+2. 构建神经网络。
+3. 问题建模。
+4. 模型训练。
+5. 模型推理及可视化。
 
 ## 创建数据集
 
@@ -47,10 +46,9 @@ MindFlow求解该问题的具体流程如下：
 from mindflow.data import Dataset
 from mindflow.geometry import Interval, TimeDomain, GeometryWithTime
 from mindflow.geometry import generate_sampling_config
-from mindflow.utils import load_yaml_config
 
 
-def create_random_dataset(config):
+def create_training_dataset(config):
     """create training dataset by online sampling"""
     geom_config = config["geometry"]
     data_config = config["data"]
@@ -64,118 +62,147 @@ def create_random_dataset(config):
     dataset = Dataset(geom_dict)
 
     return dataset
-
-# load configurations
-config = load_yaml_config('burgers_cfg.yaml')
-
-# create dataset
-burgers_train_dataset = create_random_dataset(config)
-train_dataset = burgers_train_dataset.create_dataset(batch_size=config["train_batch_size"],
-                                                     shuffle=True,
-                                                     prebatched_data=True,
-                                                     drop_remainder=True)
 ```
 
-## 构建模型
+## 构建神经网络
 
 本例使用简单的全连接网络，深度为6层，激发函数为`tanh`函数。
 
 ```python
-import numpy as np
+from mindflow import MultiScaleFCCell
 
-import mindspore as ms
-from mindspore.common import set_seed
-from mindspore import context, nn
-from mindspore.train import DynamicLossScaleManager
-from mindspore.train.callback import ModelCheckpoint, CheckpointConfig
-from mindspore.train.serialization import load_checkpoint, load_param_into_net
+model = MultiScaleFCCell(in_channels=2,
+                         out_channels=1,
+                         layers=6,
+                         neurons=128,
+                         residual=True,
+                         act='tan',
+                         num_scales=1)
 
-from mindflow.loss import Constraints
-from mindflow.solver import Solver
-from mindflow.common import LossAndTimeMonitor
-from mindflow.cell import FCSequential
-from mindflow.pde import Burgers1D
-from mindflow.utils import load_yaml_config
-
-
-model = FCSequential(in_channels=config["model"]["in_channels"],
-                     out_channels=config["model"]["out_channels"],
-                     layers=config["model"]["layers"],
-                     neurons=config["model"]["neurons"],
-                     residual=config["model"]["residual"],
-                     act=config["model"]["activation"])
-if config["load_ckpt"]:
-    param_dict = load_checkpoint(config["load_ckpt_path"])
-    load_param_into_net(model, param_dict)
-if context.get_context(attr_key='device_target') == "Ascend":
-    model.to_float(ms.float16)
-```
-
-## 优化器
-
-```python
 # define optimizer
 optimizer = nn.Adam(model.trainable_params(), config["optimizer"]["initial_lr"])
 ```
 
-## 约束
+## 问题建模
 
-定义`constraint`将PDE问题同数据集关联起来，`Burgers1D`包含控制方程，边界条件和初始条件。
+`Burgers1D`包含求解问题的控制方程、边界条件、初始条件等。使用`sympy`以符号形式定义偏微分方程并求解所有方程的损失值。
 
 ```python
-burgers_problems = [Burgers1D(model=model) for _ in range(burgers_train_dataset.num_dataset)]
-train_constraints = Constraints(burgers_train_dataset, burgers_problems)
+from mindspore import nn
+from mindspore import dtype as mstype
+from mindflow.pde import Burgers, sympy_to_mindspore
+
+
+class Burgers1D(Burgers):
+    def __init__(self, model, loss_fn=nn.MSELoss()):
+        super(Burgers1D, self).__init__(model, loss_fn=loss_fn)
+        self.ic_nodes = sympy_to_mindspore(self.ic(), self.in_vars, self.out_vars)
+        self.bc_nodes = sympy_to_mindspore(self.bc(), self.in_vars, self.out_vars)
+
+    def ic(self):
+        ic_eq = self.u + sympy.sin(np.pi * self.x)
+        equations = {"ic": ic_eq}
+        return equations
+
+    def bc(self):
+        bc_eq = self.u
+        equations = {"bc": bc_eq}
+        return equations
+
+    def get_loss(self, pde_data, ic_data, bc_data):
+        pde_res = self.parse_node(self.pde_nodes, inputs=pde_data)
+        pde_loss = self.loss_fn(pde_res[0], Tensor(np.array([0.0]), mstype.float32))
+
+        ic_res = self.parse_node(self.ic_nodes, inputs=ic_data)
+        ic_loss = self.loss_fn(ic_res[0], Tensor(np.array([0.0]), mstype.float32))
+
+        bc_res = self.parse_node(self.bc_nodes, inputs=bc_data)
+        bc_loss = self.loss_fn(bc_res[0], Tensor(np.array([0.0]), mstype.float32))
+
+        return pde_loss + ic_loss + bc_loss
 ```
 
 ## 模型训练
 
-调用`Solver`接口用于模型的训练和推理。
+使用2.0.0及以后版本的MindSpore，采用函数式编程的方式训练网络。
 
 ```python
-# define solvers
-solver = Solver(model,
-                optimizer=optimizer,
-                train_constraints=train_constraints,
-                loss_scale_manager=DynamicLossScaleManager(),
-                )
+def train():
+    problem = Burgers1D(model)
 
-# define callbacks
-callbacks = [LossAndTimeMonitor(len(burgers_train_dataset))]
-if config["save_ckpt"]:
-    config_ck = CheckpointConfig(save_checkpoint_steps=10, keep_checkpoint_max=2)
-    ckpoint_cb = ModelCheckpoint(prefix='burgers_1d', directory=config["save_ckpt_path"], config=config_ck)
-    callbacks += [ckpoint_cb]
+    from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
+    if is_ascend:
+        loss_scaler = DynamicLossScaler(1024, 2, 100)
+        auto_mixed_precision(model, 'O1')
+    else:
+        loss_scaler = None
 
-# run the solver to train the model with callbacks
-train_epochs = 1000
-solver.train(train_epochs, train_dataset, callbacks=callbacks, dataset_sink_mode=True)
+    # the loss function receives 3 data sources: pde, ic and bc
+    def forward_fn(pde_data, ic_data, bc_data):
+        loss = problem.get_loss(pde_data, ic_data, bc_data)
+        if is_ascend:
+            loss = loss_scaler.scale(loss)
+        return loss
 
+    grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
+
+    # using jit function to accelerate training process
+    @jit
+    def train_step(pde_data, ic_data, bc_data):
+        loss, grads = grad_fn(pde_data, ic_data, bc_data)
+        if is_ascend:
+            loss = loss_scaler.unscale(loss)
+            if all_finite(grads):
+                grads = loss_scaler.unscale(grads)
+
+        loss = ops.depend(loss, optimizer(grads))
+        return loss
+
+    steps = config["train_steps"]
+    sink_process = mindspore.data_sink(train_step, train_dataset, sink_size=1)
+    model.set_train()
+    for step in range(steps + 1):
+        time_beg = time.time()
+        cur_loss = sink_process()
+        if step % 100 == 0:
+            print(f"loss: {cur_loss.asnumpy():>7f}")
+            print("step: {}, time elapsed: {}ms".format(step, (time.time() - time_beg)*1000))
+            calculate_l2_error(model, inputs, label, config["train_batch_size"])
+
+time_beg = time.time()
+train()
+print("End-to-End total time: {} s".format(time.time() - time_beg))
 ```
 
 模型结果如下：
 
 ```python
-epoch: 991 step: 8, loss is 0.00016303812
-epoch time: 0.257 s, per step time: 32.074 ms
-epoch: 992 step: 8, loss is 0.00011361649
-epoch time: 0.272 s, per step time: 33.975 ms
-epoch: 993 step: 8, loss is 0.00014278122
-epoch time: 0.259 s, per step time: 32.426 ms
-epoch: 994 step: 8, loss is 0.002453908
-epoch time: 0.284 s, per step time: 35.503 ms
-epoch: 995 step: 8, loss is 0.0036222944
-epoch time: 0.244 s, per step time: 30.465 ms
-epoch: 996 step: 8, loss is 0.010429059
-epoch time: 0.264 s, per step time: 32.949 ms
-epoch: 997 step: 8, loss is 0.0036520353
-epoch time: 0.250 s, per step time: 31.305 ms
-epoch: 998 step: 8, loss is 0.0018088069
-epoch time: 0.258 s, per step time: 32.295 ms
-epoch: 999 step: 8, loss is 0.0017990978
-epoch time: 0.257 s, per step time: 32.150 ms
-epoch: 1000 step: 8, loss is 0.0032512385
-epoch time: 0.250 s, per step time: 31.225 ms
-End-to-End total time: 258.6200895309448 s
+loss: 0.000082
+step: 14500, time elapsed: 51.5749454498291ms
+    predict total time: 8.36324691772461 ms
+    l2_error:  0.0047564595594806035
+==================================================================================================
+loss: 0.000081
+step: 14600, time elapsed: 51.32031440734863ms
+    predict total time: 9.172677993774414 ms
+    l2_error:  0.005077659280011354
+==================================================================================================
+loss: 0.000099
+step: 14700, time elapsed: 50.887107849121094ms
+    predict total time: 4.549264907836914 ms
+    l2_error:  0.0049527912578844506
+==================================================================================================
+loss: 0.000224
+step: 14800, time elapsed: 51.982879638671875ms
+    predict total time: 9.348869323730469 ms
+    l2_error:  0.0055557865591330845
+==================================================================================================
+loss: 0.000080
+step: 14900, time elapsed: 51.56064033508301ms
+    predict total time: 8.392810821533203 ms
+    l2_error:  0.004695746950148064
+==================================================================================================
+End-to-End total time: 897.3836033344269 s
 ```
 
 ## 模型推理及可视化

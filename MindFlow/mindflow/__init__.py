@@ -15,8 +15,8 @@
 """
 init
 """
+import re
 import time
-from .cfd import *
 from .data import *
 from .geometry import *
 from .common import *
@@ -27,9 +27,7 @@ from .solver import *
 from .cell import *
 from .utils import *
 
-
 __all__ = []
-__all__.extend(cfd.__all__)
 __all__.extend(data.__all__)
 __all__.extend(geometry.__all__)
 __all__.extend(common.__all__)
@@ -60,12 +58,13 @@ def _mindspore_version_check():
                           "MindSpore before using MindFlow, by following "
                           "the instruction at https://www.mindspore.cn/install")
 
-    ms_version = ms.__version__[:5]
+    pattern = r'\d+\.\d+\.\d+'
+    ms_version = re.match(pattern, ms.__version__)
     required_mindspore_version = '1.8.1'
 
     logger.info("Current Mindspore version is {}.".format(ms_version))
 
-    if list(map(int, ms.__version__.split("."))) < list(map(int, required_mindspore_version.split("."))):
+    if not ms_version or ms_version.group() < required_mindspore_version:
         logger.warning("Current version of MindSpore is not compatible with MindFlow. "
                        "Some functions might not work or even raise error. Please install MindSpore "
                        "version >= {} For more details about dependency setting, please check "
@@ -77,5 +76,6 @@ def _mindspore_version_check():
             logger.warning(
                 f"Please pay attention to the above warning, countdown: {i}")
             time.sleep(1)
+
 
 _mindspore_version_check()

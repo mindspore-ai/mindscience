@@ -20,28 +20,20 @@ import os
 
 import numpy as np
 
-import mindspore.nn as nn
-from mindspore import Tensor
-from mindspore import context
-from mindspore.common import set_seed
-from mindspore.train.callback import LossMonitor, TimeMonitor
-from mindspore.train.loss_scale_manager import DynamicLossScaleManager
+from mindspore import context, nn, Tensor, set_seed
+from mindspore import DynamicLossScaleManager, LossMonitor, TimeMonitor
 
-from mindflow.cell.neural_operators import FNO1D
-from mindflow.solver import Solver
-from src.callback import PredictCallback
-from src.dataset import create_dataset
-from src.loss import RelativeRMSELoss
-from src.lr_scheduler import warmup_cosine_annealing_lr
-from src.utils import load_config
+from mindflow import FNO1D, RelativeRMSELoss, Solver, load_yaml_config, get_warmup_cosine_annealing_lr
+
+from src import PredictCallback, create_training_dataset
+
 
 set_seed(0)
 np.random.seed(0)
 
 parser = argparse.ArgumentParser(description='Burgers 1D problem')
-parser.add_argument('--device_id', type=int, default=7)
-parser.add_argument('--config_path', default='burgers1d.yaml',
-                    help='yaml config file path')
+parser.add_argument('--device_id', type=int, default=4)
+parser.add_argument('--config_path', default='burgers1d.yaml', help='yaml config file path')
 opt = parser.parse_args()
 
 context.set_context(mode=context.GRAPH_MODE,
@@ -50,22 +42,23 @@ context.set_context(mode=context.GRAPH_MODE,
                     device_id=opt.device_id)
 
 
-def train_with_eval():
+def train():
     '''Train and evaluate the network'''
-    config = load_config(opt.config_path)
+    config = load_yaml_config(opt.config_path)
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
     callback_params = config["callback"]
 
-    train_dataset = create_dataset(data_params,
-                                   shuffle=True)
+    # create training dataset
+    train_dataset = create_training_dataset(data_params, shuffle=True)
 
+    # create test dataset
     test_input, test_label = np.load(os.path.join(data_params["path"], "test/inputs.npy")), \
-        np.load(os.path.join(data_params["path"], "test/label.npy"))
+                             np.load(os.path.join(data_params["path"], "test/label.npy"))
 
-    model = FNO1D(in_channels=model_params["input_dims"],
-                  out_channels=model_params["output_dims"],
+    model = FNO1D(in_channels=model_params["in_channels"],
+                  out_channels=model_params["out_channels"],
                   resolution=model_params["resolution"],
                   modes=model_params["modes"],
                   channels=model_params["width"],
@@ -77,10 +70,10 @@ def train_with_eval():
     print(model_name)
 
     steps_per_epoch = train_dataset.get_dataset_size()
-    lr = warmup_cosine_annealing_lr(lr=optimizer_params["initial_lr"],
-                                    steps_per_epoch=steps_per_epoch,
-                                    warmup_epochs=1,
-                                    max_epoch=optimizer_params["train_epochs"])
+    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["initial_lr"],
+                                        last_epoch=optimizer_params["train_epochs"],
+                                        steps_per_epoch=steps_per_epoch,
+                                        warmup_epochs=1)
     optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
     loss_scale = DynamicLossScaleManager()
 
@@ -105,4 +98,4 @@ def train_with_eval():
 
 
 if __name__ == '__main__':
-    train_with_eval()
+    train()

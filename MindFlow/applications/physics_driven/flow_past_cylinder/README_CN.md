@@ -1,3 +1,4 @@
+
 # 基于PINNs的圆柱绕流
 
 ## 概述
@@ -26,8 +27,6 @@ $$
 
 其中，`Re`表示雷诺数。
 
-## 问题描述
-
 本案例利用PINNs方法学习位置和时间到相应流场物理量的映射，实现`N-S`方程的求解：
 
 $$
@@ -38,20 +37,55 @@ $$
 
 MindFlow求解该问题的具体流程如下：
 
-1. 创建数据集。
-2. 构建模型。
-3. 优化器。
-4. 约束。
+1. 创建训练数据集。
+2. 构建神经网络。
+3. 多任务学习loss权重自适应。
+4. 问题建模。
 5. 模型训练。
-6. 模型推理及可视化
+6. 模型推理及可视化。
 
-## 训练示例
+### 导入依赖
 
-### 创建数据集
+导入本教程所依赖模块与接口:
+
+```python
+"""train process"""
+import os
+import time
+
+import numpy as np
+from sympy import diff, Function, symbols
+
+import mindspore
+from mindspore import context, nn, ops, Tensor, jit, set_seed, load_checkpoint, load_param_into_net
+from mindspore import dtype as mstype
+
+from mindflow import MTLWeightedLossCell, load_yaml_config, NavierStokes, sympy_to_mindspore
+
+from src import create_training_dataset, create_test_dataset, calculate_l2_error
+```
+
+## 创建数据集
 
 本案例对已有的雷诺数为100的标准圆柱绕流进行初始条件和边界条件数据的采样。对于训练数据集，构建平面矩形的问题域以及时间维度，再对已知的初始条件，边界条件采样；基于已有的流场中的点构造验证集。
 
+[下载](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/flow_past_cylinder/dataset/) 本案例使用的训练和测试数据。
+
 ```python
+from mindflow.data import Dataset, ExistedDataConfig
+from mindflow.geometry import Rectangle, TimeDomain, GeometryWithTime, generate_sampling_config
+
+
+def create_test_dataset(test_data_path):
+    """load labeled data for evaluation"""
+    print("get dataset path: {}".format(test_data_path))
+    paths = [test_data_path + '/eval_points.npy', test_data_path + '/eval_label.npy']
+    inputs = np.load(paths[0])
+    label = np.load(paths[1])
+    print("check eval dataset length: {}".format(inputs.shape))
+    return inputs, label
+
+
 def create_training_dataset(config):
     """create training dataset by online sampling"""
     coord_min = config["coord_min"]
@@ -81,118 +115,175 @@ def create_training_dataset(config):
 
 ```
 
-### 自适应损失的多任务学习
+## 构建神经网络
 
-同一时间，基于PINNs的方法需要优化多个loss，给优化过程带来的巨大的挑战。我们采用***Kendall, Alex, Yarin Gal, and Roberto Cipolla. "Multi-task learning using uncertainty to weigh losses for scene geometry and semantics." CVPR, 2018.*** 论文中提出的不确定性权重算法动态调整权重。
+本例使用简单的全连接网络，深度为6层，激发函数为`tanh`函数。
 
 ```python
-    mtl = MTLWeightedLossCell(num_losses=cylinder_dataset.num_dataset)
+from mindflow import MultiScaleFCCell
+
+coord_min = np.array(config["geometry"]["coord_min"] + [config["geometry"]["time_min"]]).astype(np.float32)
+coord_max = np.array(config["geometry"]["coord_max"] + [config["geometry"]["time_max"]]).astype(np.float32)
+input_center = list(0.5 * (coord_max + coord_min))
+input_scale = list(2.0 / (coord_max - coord_min))
+model = MultiScaleFCCell(in_channels=config["model"]["in_channels"],
+                         out_channels=config["model"]["out_channels"],
+                         layers=config["model"]["layers"],
+                         neurons=config["model"]["neurons"],
+                         residual=config["model"]["residual"],
+                         act='tanh',
+                         num_scales=1,
+                         input_scale=input_scale,
+                         input_center=input_center)
 ```
 
-### 模型构建
+## 多任务学习loss权重自适应
 
-本示例使用一个简单的全连接网络，深度为6层，激活函数是`tanh`函数。
+基于PINNs的学习方法在同一时间需要优化多个loss，这给优化过程带来了挑战。我们采用 ***Kendall, Alex, Yarin Gal, and Roberto Cipolla. "Multi-task learning using uncertainty to weigh losses for scene geometry and semantics." CVPR, 2018.*** 中提出的不确定性算法，动态调整loss权重。
 
 ```python
-import numpy as np
-
-import mindspore as ms
-from mindspore.common import set_seed
-from mindspore import context, Tensor, nn
-from mindspore.train import DynamicLossScaleManager
-from mindspore.train.callback import ModelCheckpoint, CheckpointConfig
-from mindspore.train.serialization import load_checkpoint, load_param_into_net
-
-from mindflow.loss import Constraints
-from mindflow.solver import Solver
-from mindflow.common import L2, LossAndTimeMonitor
-from mindflow.loss import MTLWeightedLossCell
-from mindflow.pde import NavierStokes2D
-
-from src import FlowNetwork
-
-model = FlowNetwork(config["model"]["in_channels"],
-                    config["model"]["out_channels"],
-                    coord_min=config["geometry"]["coord_min"] + [config["geometry"]["time_min"]],
-                    coord_max=config["geometry"]["coord_max"] + [config["geometry"]["time_max"]],
-                    num_layers=config["model"]["layers"],
-                    neurons=config["model"]["neurons"],
-                    residual=config["model"]["residual"])
+mtl = MTLWeightedLossCell(num_losses=cylinder_flow_train_dataset.num_dataset)
 
 if config["load_ckpt"]:
     param_dict = load_checkpoint(config["load_ckpt_path"])
     load_param_into_net(model, param_dict)
     load_param_into_net(mtl, param_dict)
 
-if context.get_context(attr_key='device_target') == "Ascend":
-    model.to_float(ms.float16)
+# define optimizer
+params = model.trainable_params() + mtl.trainable_params()
+optimizer = nn.Adam(params, config["optimizer"]["initial_lr"])
 ```
 
-### 模型训练
+### 问题建模
 
-调用`Solver`接口进行模型训练，调用`callback`接口进行评估。
+`NavierStokes2D`包含求解问题的控制方程、边界条件、初始条件等。使用`sympy`以符号形式定义偏微分方程并求解所有方程的损失值。
 
 ```python
-# define solver
-solver = Solver(model,
-                optimizer=optim,
-                train_constraints=train_constraints,
-                test_constraints=None,
-                metrics={'l2': L2(), 'distance': nn.MAE()},
-                loss_fn='smooth_l1_loss',
-                loss_scale_manager=DynamicLossScaleManager(init_loss_scale=2 ** 10, scale_window=2000),
-                mtl_weighted_cell=mtl,
-                )
+class NavierStokes2D(NavierStokes):
+    def __init__(self, model, re=100, loss_fn=nn.MSELoss()):
+        super(NavierStokes2D, self).__init__(model, re=re, loss_fn=loss_fn)
+        self.ic_nodes = sympy_to_mindspore(self.ic(), self.in_vars, self.out_vars)
+        self.bc_nodes = sympy_to_mindspore(self.bc(), self.in_vars, self.out_vars)
 
-loss_time_callback = LossAndTimeMonitor(steps_per_epoch)
-callbacks = [loss_time_callback]
-if config.get("train_with_eval", False):
-    inputs, label = create_evaluation_dataset(config["test_data_path"])
-    predict_callback = PredictCallback(model, inputs, label, config=config, visual_fn=visualization)
-    callbacks += [predict_callback]
-if config["save_ckpt"]:
-    config_ck = CheckpointConfig(save_checkpoint_steps=10,
-                                 keep_checkpoint_max=2)
-    ckpoint_cb = ModelCheckpoint(prefix='ckpt_flow_past_cylinder_Re100',
-                                 directory=config["save_ckpt_path"], config=config_ck)
-    callbacks += [ckpoint_cb]
+    def ic(self):
+        ic_u = self.u
+        ic_v = self.v
+        equations = {"ic_u": ic_u, "ic_v": ic_v}
+        return equations
 
-solver.train(config["train_epoch"], train_dataset, callbacks=callbacks, dataset_sink_mode=True)
+    def bc(self):
+        bc_u = self.u
+        bc_v = self.v
+        bc_p = self.p
+        equations = {"bc_u": bc_u, "bc_v": bc_v, "bc_p": bc_p}
+        return equations
+
+    def get_loss(self, pde_data, ic_data, ic_label, bc_data, bc_label):
+        pde_res = self.parse_node(self.pde_nodes, inputs=pde_data)
+        pde_residual = ops.Concat(1)(pde_res)
+        pde_loss = self.loss_fn(pde_residual, Tensor(np.array([0.0]).astype(np.float32), mstype.float32))
+
+        ic_res = self.parse_node(self.ic_nodes, inputs=ic_data)
+        ic_residual = ops.Concat(1)(ic_res)
+        ic_loss = self.loss_fn(ic_residual, ic_label)
+
+        bc_res = self.parse_node(self.bc_nodes, inputs=bc_data)
+        bc_residual = ops.Concat(1)(bc_res)
+        bc_loss = self.loss_fn(bc_residual, bc_label)
+
+        return pde_loss + ic_loss + bc_loss
 ```
 
-## 网络训练结果
+## 模型训练
+
+使用2.0.0及以后版本的MindSpore，采用函数式编程的方式训练网络。
+
+```python
+def train():
+    problem = NavierStokes2D(model)
+
+    from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
+    if use_ascend:
+        loss_scaler = DynamicLossScaler(1024, 2, 100)
+        auto_mixed_precision(model, 'O3')
+    else:
+        loss_scaler = None
+
+    # the loss function receives 5 data sources: pde, ic, ic_label, bc and bc_label
+    def forward_fn(pde_data, ic_data, ic_label, bc_data, bc_label):
+        loss = problem.get_loss(pde_data, ic_data, ic_label, bc_data, bc_label)
+        if use_ascend:
+            loss = loss_scaler.scale(loss)
+        return loss
+
+    grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
+
+    # using jit function to accelerate training process
+    @jit
+    def train_step(pde_data, ic_data, ic_label, bc_data, bc_label):
+        loss, grads = grad_fn(pde_data, ic_data, ic_label, bc_data, bc_label)
+        if use_ascend:
+            loss = loss_scaler.unscale(loss)
+            if all_finite(grads):
+                grads = loss_scaler.unscale(grads)
+
+        loss = ops.depend(loss, optimizer(grads))
+        return loss
+
+
+    steps = config["train_steps"]
+    sink_process = mindspore.data_sink(train_step, cylinder_dataset, sink_size=1)
+    model.set_train()
+
+    for step in range(steps + 1):
+        local_time_beg = time.time()
+        cur_loss = sink_process()
+        if step % 100 == 0:
+            print(f"loss: {cur_loss.asnumpy():>7f}")
+            print("step: {}, time elapsed: {}ms".format(step, (time.time() - local_time_beg)*1000))
+            calculate_l2_error(model, inputs, label, config)
+
+time_beg = time.time()
+train()
+print("End-to-End total time: {} s".format(time.time() - time_beg))
+```
 
 运行结果如下：
 
 ```python
-epoch: 4991 step: 8, loss is 0.0063523385
-epoch time: 0.863 s, per step time: 107.902 ms
-epoch: 4992 step: 8, loss is 0.006585151
-epoch time: 0.864 s, per step time: 107.974 ms
-epoch: 4993 step: 8, loss is 0.006354205
-epoch time: 0.862 s, per step time: 107.711 ms
-epoch: 4994 step: 8, loss is 0.006413138
-epoch time: 0.865 s, per step time: 108.074 ms
-epoch: 4995 step: 8, loss is 0.0062734303
-epoch time: 0.860 s, per step time: 107.502 ms
-epoch: 4996 step: 8, loss is 0.006455861
-epoch time: 0.862 s, per step time: 107.750 ms
-epoch: 4997 step: 8, loss is 0.006378171
-epoch time: 0.864 s, per step time: 107.976 ms
-epoch: 4998 step: 8, loss is 0.00636143
-epoch time: 0.862 s, per step time: 107.709 ms
-epoch: 4999 step: 8, loss is 0.006477215
-epoch time: 0.864 s, per step time: 108.024 ms
-epoch: 5000 step: 8, loss is 0.0064105876
-epoch time: 0.862 s, per step time: 107.746 ms
+step: 4500, time elapsed: 401.7298221588135ms
+    predict total time: 34.17372703552246 ms
+    l2_error, U:  0.06336409400901151 , V:  0.2589800209573793 , P:  0.34167427991249655 , Total:  0.10642616781913976
 ==================================================================================================
-predict total time: 0.024950027465820312 s
-l2_error, U:  0.011893196515698487 , V:  0.052116949016282374 , P:  0.2798291882189069 , Total:  0.04287303192192062
+loss: 0.000452
+step: 4600, time elapsed: 402.61220932006836ms
+    predict total time: 34.90447998046875 ms
+    l2_error, U:  0.062382466103748126 , V:  0.25132992417815014 , P:  0.31638189557928253 , Total:  0.10285521629387122
 ==================================================================================================
-End-to-End total time: 5388.308397293091 s
+loss: 0.001991
+step: 4700, time elapsed: 402.57716178894043ms
+    predict total time: 34.70349311828613 ms
+    l2_error, U:  0.07896903562757136 , V:  0.2652466317087061 , P:  0.3036429776439537 , Total:  0.1145695518800529
+==================================================================================================
+loss: 0.000889
+step: 4800, time elapsed: 402.6777744293213ms
+    predict total time: 34.42740440368652 ms
+    l2_error, U:  0.058614692034967684 , V:  0.2414685389277242 , P:  0.3107724054671294 , Total:  0.0985094087524046
+==================================================================================================
+loss: 0.000381
+step: 4900, time elapsed: 401.6759395599365ms
+    predict total time: 34.93666648864746 ms
+    l2_error, U:  0.05813861797271185 , V:  0.237321794767128 , P:  0.292845942377899 , Total:  0.0963624185597883
+==================================================================================================
+loss: 0.000343
+step: 5000, time elapsed: 401.6103744506836ms
+    predict total time: 31.789302825927734 ms
+    l2_error, U:  0.056819929136297694 , V:  0.22960231322852553 , P:  0.30507615478534533 , Total:  0.0948311305565182
+==================================================================================================
+End-to-End total time: 2056.573511123657 s
 ```
 
-### 分析
+## 模型推理及可视化
 
 训练过程中的error如图所示，随着epoch增长，error逐渐下降。
 

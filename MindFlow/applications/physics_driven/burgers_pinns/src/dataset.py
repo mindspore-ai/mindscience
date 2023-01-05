@@ -13,12 +13,17 @@
 # limitations under the License.
 # ============================================================================
 """create dataset"""
+import numpy as np
+
+from mindspore import Tensor
+from mindspore import dtype as mstype
+
 from mindflow.data import Dataset
 from mindflow.geometry import Interval, TimeDomain, GeometryWithTime
 from mindflow.geometry import generate_sampling_config
 
 
-def create_random_dataset(config):
+def create_training_dataset(config):
     """create training dataset by online sampling"""
     geom_config = config["geometry"]
     data_config = config["data"]
@@ -32,3 +37,13 @@ def create_random_dataset(config):
     dataset = Dataset(geom_dict)
 
     return dataset
+
+
+def create_test_dataset():
+    test_data = np.load("dataset/Burgers.npz")
+    x, t, u = test_data["x"], test_data["t"], test_data["usol"].T
+    xx, tt = np.meshgrid(x, t)
+
+    test_data = Tensor(np.vstack((np.ravel(xx), np.ravel(tt))).T, mstype.float32)
+    test_label = u.flatten()[:, None]
+    return test_data, test_label

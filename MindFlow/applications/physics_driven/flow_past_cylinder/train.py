@@ -13,100 +13,106 @@
 # limitations under the License.
 # ============================================================================
 """train process"""
+
 import os
 import time
+
 import numpy as np
 
-from mindspore.common import set_seed
-from mindspore import context, Tensor, nn
-from mindspore.train import DynamicLossScaleManager
-from mindspore.train.callback import ModelCheckpoint, CheckpointConfig
-from mindspore.train.serialization import load_checkpoint, load_param_into_net
-import mindspore.common.dtype as mstype
+import mindspore
+from mindspore import context, nn, ops, jit, set_seed, load_checkpoint, load_param_into_net
 
-from mindflow.loss import Constraints
-from mindflow.solver import Solver
-from mindflow.common import L2, LossAndTimeMonitor
+from mindflow.cell import MultiScaleFCCell
 from mindflow.loss import MTLWeightedLossCell
-from mindflow.pde import NavierStokes2D
 from mindflow.utils import load_yaml_config
 
-from src import create_training_dataset, create_evaluation_dataset
-from src import FlowNetwork
-from src import MultiStepLR, PredictCallback, visualization
+from src import create_training_dataset, create_test_dataset, calculate_l2_error, NavierStokes2D
 
 set_seed(123456)
 np.random.seed(123456)
 
-context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="GPU", save_graphs_path="./graph",
-                    device_id=0)
+context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=5)
+use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
 
 def train():
-    """training process"""
-
+    '''Train and evaluate the network'''
     # load configurations
     config = load_yaml_config('cylinder_flow.yaml')
-    cylinder_dataset = create_training_dataset(config)
-    train_dataset = cylinder_dataset.create_dataset(batch_size=config["train_batch_size"],
-                                                    shuffle=True,
-                                                    prebatched_data=True,
-                                                    drop_remainder=True)
-    steps_per_epoch = len(cylinder_dataset)
-    print("check training dataset size: ", steps_per_epoch)
 
-    model = FlowNetwork(config["model"]["in_channels"],
-                        config["model"]["out_channels"],
-                        coord_min=config["geometry"]["coord_min"] + [config["geometry"]["time_min"]],
-                        coord_max=config["geometry"]["coord_max"] + [config["geometry"]["time_max"]],
-                        num_layers=config["model"]["layers"],
-                        neurons=config["model"]["neurons"],
-                        residual=config["model"]["residual"])
-    if context.get_context(attr_key='device_target') == "Ascend":
-        model.to_float(mstype.float16)
-    mtl = MTLWeightedLossCell(num_losses=cylinder_dataset.num_dataset)
+    # create training dataset
+    cylinder_flow_train_dataset = create_training_dataset(config)
+    cylinder_dataset = cylinder_flow_train_dataset.create_dataset(batch_size=config["train_batch_size"],
+                                                                  shuffle=True,
+                                                                  prebatched_data=True,
+                                                                  drop_remainder=True)
+
+    # create test dataset
+    inputs, label = create_test_dataset(config["test_data_path"])
+
+    coord_min = np.array(config["geometry"]["coord_min"] + [config["geometry"]["time_min"]]).astype(np.float32)
+    coord_max = np.array(config["geometry"]["coord_max"] + [config["geometry"]["time_max"]]).astype(np.float32)
+    input_center = list(0.5 * (coord_max + coord_min))
+    input_scale = list(2.0 / (coord_max - coord_min))
+    model = MultiScaleFCCell(in_channels=config["model"]["in_channels"],
+                             out_channels=config["model"]["out_channels"],
+                             layers=config["model"]["layers"],
+                             neurons=config["model"]["neurons"],
+                             residual=config["model"]["residual"],
+                             act='tanh',
+                             num_scales=1,
+                             input_scale=input_scale,
+                             input_center=input_center)
+
+    mtl = MTLWeightedLossCell(num_losses=cylinder_flow_train_dataset.num_dataset)
     print("Use MtlWeightedLossCell, num loss: {}".format(mtl.num_losses))
-
-    problem_list = [NavierStokes2D(model=model, re=config["Re"]) for i in range(cylinder_dataset.num_dataset)]
-    train_constraints = Constraints(cylinder_dataset, problem_list)
-
-    params = model.trainable_params() + mtl.trainable_params()
-    lr_scheduler = MultiStepLR(config["optimizer"]["initial_lr"],
-                               config["optimizer"]["milestones"],
-                               config["optimizer"]["gamma"],
-                               steps_per_epoch,
-                               config["train_epochs"])
-    lr = lr_scheduler.get_lr()
-    optimizer = nn.Adam(params, learning_rate=Tensor(lr))
 
     if config["load_ckpt"]:
         param_dict = load_checkpoint(config["load_ckpt_path"])
         load_param_into_net(model, param_dict)
         load_param_into_net(mtl, param_dict)
 
-    solver = Solver(model,
-                    optimizer=optimizer,
-                    train_constraints=train_constraints,
-                    metrics={'l2': L2(), 'distance': nn.MAE()},
-                    loss_fn='smooth_l1_loss',
-                    loss_scale_manager=DynamicLossScaleManager(init_loss_scale=2 ** 10, scale_window=2000),
-                    mtl_weighted_cell=mtl,
-                    )
+    params = model.trainable_params() + mtl.trainable_params()
+    optimizer = nn.Adam(params, config["optimizer"]["initial_lr"])
+    problem = NavierStokes2D(model)
 
-    loss_time_callback = LossAndTimeMonitor(steps_per_epoch)
-    callbacks = [loss_time_callback]
-    if config.get("train_with_eval", False):
-        inputs, label = create_evaluation_dataset(config["test_data_path"])
-        predict_callback = PredictCallback(model, inputs, label, config=config, visual_fn=visualization)
-        callbacks += [predict_callback]
-    if config["save_ckpt"]:
-        config_ck = CheckpointConfig(save_checkpoint_steps=10,
-                                     keep_checkpoint_max=2)
-        ckpoint_cb = ModelCheckpoint(prefix='ckpt_flow_past_cylinder_Re100',
-                                     directory=config["save_ckpt_path"], config=config_ck)
-        callbacks += [ckpoint_cb]
+    if use_ascend:
+        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
+        loss_scaler = DynamicLossScaler(1024, 2, 100)
+        auto_mixed_precision(model, 'O3')
 
-    solver.train(config["train_epochs"], train_dataset, callbacks=callbacks, dataset_sink_mode=True)
+    def forward_fn(pde_data, ic_data, ic_label, bc_data, bc_label):
+        loss = problem.get_loss(pde_data, ic_data, ic_label, bc_data, bc_label)
+        if use_ascend:
+            loss = loss_scaler.scale(loss)
+        return loss
+
+    grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
+
+    @jit
+    def train_step(pde_data, ic_data, ic_label, bc_data, bc_label):
+        loss, grads = grad_fn(pde_data, ic_data, ic_label, bc_data, bc_label)
+        if use_ascend:
+            loss = loss_scaler.unscale(loss)
+            if all_finite(grads):
+                grads = loss_scaler.unscale(grads)
+                loss = ops.depend(loss, optimizer(grads))
+        else:
+            loss = ops.depend(loss, optimizer(grads))
+        return loss
+
+    steps = config["train_steps"]
+    sink_process = mindspore.data_sink(train_step, cylinder_dataset, sink_size=1)
+    model.set_train()
+
+    for step in range(steps + 1):
+        local_time_beg = time.time()
+        cur_loss = sink_process()
+        if step % 100 == 0:
+            print(f"loss: {cur_loss.asnumpy():>7f}")
+            print("step: {}, time elapsed: {}ms".format(step, (time.time() - local_time_beg) * 1000))
+            calculate_l2_error(model, inputs, label, config)
+
 
 if __name__ == '__main__':
     print("pid:", os.getpid())

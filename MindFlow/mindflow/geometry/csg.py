@@ -43,7 +43,7 @@ class CSG(Geometry):
     CSG base class.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend````GPU``
     """
 
     def __init__(self, name, geom1, geom2, coord_min, coord_max, sampling_config=None):
@@ -178,7 +178,7 @@ class CSGDifference(CSG):
         >>> diff = CSGDifference(rect, disk)
         >>> diff.set_sampling_config(generate_sampling_config(sampling_config_csg))
         >>> domain = diff.sampling(geom_type="domain")
-        >>> bc, bc_normal = diff.sampling(geom_type="bc")
+        >>> bc, bc_normal = diff.sampling(geom_type="BC")
         >>> print(domain.shape)
         (1000, 2)
     """
@@ -279,7 +279,7 @@ class CSGUnion(CSG):
         sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
 
     Examples:
         >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGUnion
@@ -301,7 +301,7 @@ class CSGUnion(CSG):
         >>> union = CSGUnion(rect, disk)
         >>> union.set_sampling_config(generate_sampling_config(sampling_config_csg))
         >>> domain = union.sampling(geom_type="domain")
-        >>> bc, bc_normal = union.sampling(geom_type="bc")
+        >>> bc, bc_normal = union.sampling(geom_type="BC")
         >>> print(domain.shape)
         (1000, 2)
     """
@@ -396,7 +396,7 @@ class CSGIntersection(CSG):
         sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
 
     Examples:
         >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGIntersection
@@ -418,7 +418,7 @@ class CSGIntersection(CSG):
         >>> inter = CSGIntersection(rect, disk)
         >>> inter.set_sampling_config(generate_sampling_config(sampling_config_csg))
         >>> domain = inter.sampling(geom_type="domain")
-        >>> bc, bc_normal = inter.sampling(geom_type="bc")
+        >>> bc, bc_normal = inter.sampling(geom_type="BC")
         >>> print(domain.shape)
         (1000, 2)
     """
@@ -515,7 +515,7 @@ class CSGXOR(CSG):
         sampling_config (SamplingConfig): sampling configuration. Default: None.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
 
     Examples:
         >>> from mindflow.geometry import generate_sampling_config, Disk, Rectangle, CSGXOR
@@ -537,7 +537,7 @@ class CSGXOR(CSG):
         >>> xor = CSGXOR(rect, disk)
         >>> xor.set_sampling_config(generate_sampling_config(sampling_config_csg))
         >>> domain = xor.sampling(geom_type="domain")
-        >>> bc, bc_normal = xor.sampling(geom_type="bc")
+        >>> bc, bc_normal = xor.sampling(geom_type="BC")
         >>> print(domain.shape)
         (1000, 2)
     """

@@ -20,20 +20,12 @@ import argparse
 import datetime
 import numpy as np
 
-import mindspore.nn as nn
-from mindspore.common import set_seed
-from mindspore import Tensor, context
-from mindspore.train.callback import LossMonitor, TimeMonitor, CheckpointConfig, ModelCheckpoint
-from mindspore.train.loss_scale_manager import DynamicLossScaleManager
+from mindspore import nn, context, Tensor, set_seed
+from mindspore import DynamicLossScaleManager, LossMonitor, TimeMonitor, CheckpointConfig, ModelCheckpoint
 
-from mindflow.cell.neural_operators import FNO2D
-from mindflow.solver import Solver
+from mindflow import FNO2D, RelativeRMSELoss, Solver, load_yaml_config, get_warmup_cosine_annealing_lr
+from src import PredictCallback, create_training_dataset
 
-from src.callback import PredictCallback
-from src.lr_scheduler import warmup_cosine_annealing_lr
-from src.dataset import create_dataset
-from src.utils import load_config
-from src.loss import RelativeRMSELoss
 
 set_seed(0)
 np.random.seed(0)
@@ -43,8 +35,7 @@ print(datetime.datetime.now())
 
 parser = argparse.ArgumentParser(description='navier_stoke 2D problem')
 parser.add_argument('--device_id', type=int, default=1)
-parser.add_argument(
-    '--config_path', default='navier_stokes_2d.yaml', help='yaml config file path')
+parser.add_argument('--config_path', default='navier_stokes_2d.yaml', help='yaml config file path')
 opt = parser.parse_args()
 
 context.set_context(mode=context.GRAPH_MODE,
@@ -54,24 +45,24 @@ context.set_context(mode=context.GRAPH_MODE,
                     )
 
 
-def train_with_eval():
+def train():
     '''train and evaluate the network'''
-    config = load_config(opt.config_path)
+    config = load_yaml_config(opt.config_path)
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
     callback_params = config["callback"]
 
     # prepare dataset
-    train_dataset = create_dataset(data_params,
-                                   input_resolution=model_params["input_resolution"],
-                                   shuffle=True)
+    train_dataset = create_training_dataset(data_params,
+                                            input_resolution=model_params["input_resolution"],
+                                            shuffle=True)
     test_input = np.load(os.path.join(data_params["path"], "test/inputs.npy"))
     test_label = np.load(os.path.join(data_params["path"], "test/label.npy"))
 
     # prepare model
-    model = FNO2D(in_channels=model_params["input_dims"],
-                  out_channels=model_params["output_dims"],
+    model = FNO2D(in_channels=model_params["in_channels"],
+                  out_channels=model_params["out_channels"],
                   resolution=model_params["input_resolution"],
                   modes=model_params["modes"],
                   channels=model_params["width"],
@@ -85,10 +76,10 @@ def train_with_eval():
 
     # prepare optimizer
     steps_per_epoch = train_dataset.get_dataset_size()
-    lr = warmup_cosine_annealing_lr(lr=optimizer_params["initial_lr"],
-                                    steps_per_epoch=steps_per_epoch,
-                                    warmup_epochs=optimizer_params["warmup_epochs"],
-                                    max_epoch=optimizer_params["train_epochs"])
+    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["initial_lr"],
+                                        last_epoch=optimizer_params["train_epochs"],
+                                        steps_per_epoch=steps_per_epoch,
+                                        warmup_epochs=optimizer_params["warmup_epochs"])
 
     optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
     loss_scale = DynamicLossScaleManager()
@@ -125,4 +116,4 @@ def train_with_eval():
 
 
 if __name__ == '__main__':
-    train_with_eval()
+    train()

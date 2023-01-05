@@ -13,6 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .derivatives import Grad, SecondOrderGrad, GradVmap
+from .derivatives import batched_hessian, batched_jacobian
 
-__all__ = ["Grad", "GradVmap", "SecondOrderGrad"]
+__all__ = ["batched_hessian", "batched_jacobian"]
