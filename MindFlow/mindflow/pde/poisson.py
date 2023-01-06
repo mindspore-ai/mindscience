@@ -36,18 +36,18 @@ class Poisson(PDEWithLoss):
         >>> from mindflow.pde import Poisson
         >>> from mindspore import nn, ops
         >>> class Net(nn.Cell):
-                def __init__(self, cin=2, cout=1, hidden=10):
-                    super().__init__()
-                    self.fc1 = nn.Dense(cin, hidden)
-                    self.fc2 = nn.Dense(hidden, hidden)
-                    self.fcout = nn.Dense(hidden, cout)
-                    self.act = ops.Tanh()
-
-                def construct(self, x):
-                    x = self.act(self.fc1(x))
-                    x = self.act(self.fc2(x))
-                    x = self.fcout(x)
-                    return x
+        ...     def __init__(self, cin=2, cout=1, hidden=10):
+        ...         super().__init__()
+        ...         self.fc1 = nn.Dense(cin, hidden)
+        ...         self.fc2 = nn.Dense(hidden, hidden)
+        ...         self.fcout = nn.Dense(hidden, cout)
+        ...         self.act = ops.Tanh()
+        ...
+        ...     def construct(self, x):
+        ...         x = self.act(self.fc1(x))
+        ...         x = self.act(self.fc2(x))
+        ...         x = self.fcout(x)
+        ...         return x
         >>> model = Net()
         >>> problem = Poisson(model)
         >>> print(problem.pde())
