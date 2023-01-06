@@ -51,45 +51,45 @@ class PDEWithLoss:
         >>> from mindspore import dtype as mstype
         >>> from sympy import symbols, Function, diff
         >>> class Net(nn.Cell):
-                def __init__(self, cin=2, cout=1, hidden=10):
-                    super().__init__()
-                    self.fc1 = nn.Dense(cin, hidden)
-                    self.fc2 = nn.Dense(hidden, hidden)
-                    self.fcout = nn.Dense(hidden, cout)
-                    self.act = ops.Tanh()
-
-                def construct(self, x):
-                    x = self.act(self.fc1(x))
-                    x = self.act(self.fc2(x))
-                    x = self.fcout(x)
-                    return x
+        ...     def __init__(self, cin=2, cout=1, hidden=10):
+        ...         super().__init__()
+        ...         self.fc1 = nn.Dense(cin, hidden)
+        ...         self.fc2 = nn.Dense(hidden, hidden)
+        ...         self.fcout = nn.Dense(hidden, cout)
+        ...         self.act = ops.Tanh()
+        ...
+        ...     def construct(self, x):
+        ...         x = self.act(self.fc1(x))
+        ...         x = self.act(self.fc2(x))
+        ...         x = self.fcout(x)
+        ...         return x
         >>> model = Net()
         >>> class MyProblem(PDEWithLoss):
-                def __init__(self, model, loss_fn=nn.MSELoss()):
-                    self.x, self.y = symbols('x t')
-                    self.u = Function('u')(self.x, self.y)
-                    self.in_vars = [self.x, self.y]
-                    self.out_vars = [self.u]
-                    super(MyProblem, self).__init__(model, in_vars=self.in_vars, out_vars=self.out_vars)
-                    self.loss_fn = loss_fn
-                    self.bc_nodes = sympy_to_mindspore(self.bc(), self.in_vars, self.out_vars)
-
-                def pde(self):
-                    my_eq = diff(self.u, (self.x, 2)) + diff(self.u, (self.y, 2)) - 4.0
-                    equations = {"my_eq": my_eq}
-                    return equations
-
-                def bc(self):
-                    bc_eq = diff(self.u, (self.x, 1)) + diff(self.u, (self.y, 1)) - 2.0
-                    equations = {"bc_eq": bc_eq}
-                    return equations
-
-                def get_loss(self, pde_data, bc_data):
-                    pde_res = self.parse_node(self.pde_nodes, inputs=pde_data)
-                    pde_loss = self.loss_fn(pde_res[0], Tensor(np.array([0.0]), mstype.float32))
-                    bc_res = self.parse_node(self.bc_nodes, inputs=bc_data)
-                    bc_loss = self.loss_fn(bc_res[0], Tensor(np.array([0.0]), mstype.float32))
-                    return pde_loss + bc_loss
+        ...     def __init__(self, model, loss_fn=nn.MSELoss()):
+        ...         self.x, self.y = symbols('x t')
+        ...         self.u = Function('u')(self.x, self.y)
+        ...         self.in_vars = [self.x, self.y]
+        ...         self.out_vars = [self.u]
+        ...         super(MyProblem, self).__init__(model, in_vars=self.in_vars, out_vars=self.out_vars)
+        ...         self.loss_fn = loss_fn
+        ...         self.bc_nodes = sympy_to_mindspore(self.bc(), self.in_vars, self.out_vars)
+        ...
+        ...     def pde(self):
+        ...         my_eq = diff(self.u, (self.x, 2)) + diff(self.u, (self.y, 2)) - 4.0
+        ...         equations = {"my_eq": my_eq}
+        ...         return equations
+        ...
+        ...     def bc(self):
+        ...         bc_eq = diff(self.u, (self.x, 1)) + diff(self.u, (self.y, 1)) - 2.0
+        ...         equations = {"bc_eq": bc_eq}
+        ...         return equations
+        ...
+        ...     def get_loss(self, pde_data, bc_data):
+        ...         pde_res = self.parse_node(self.pde_nodes, inputs=pde_data)
+        ...         pde_loss = self.loss_fn(pde_res[0], Tensor(np.array([0.0]), mstype.float32))
+        ...         bc_res = self.parse_node(self.bc_nodes, inputs=bc_data)
+        ...         bc_loss = self.loss_fn(bc_res[0], Tensor(np.array([0.0]), mstype.float32))
+        ...         return pde_loss + bc_loss
         >>> problem = MyProblem(model)
         >>> print(problem.pde())
         >>> print(problem.bc())

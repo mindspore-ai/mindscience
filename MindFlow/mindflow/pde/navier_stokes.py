@@ -36,41 +36,41 @@ class NavierStokes(PDEWithLoss):
         ``Ascend`` ``GPU``
 
     Examples:
-            >>> from mindflow.pde import NavierStokes
-            >>> from mindspore import nn, ops
-            >>> class Net(nn.Cell):
-                    def __init__(self, cin=3, cout=3, hidden=10):
-                        super().__init__()
-                        self.fc1 = nn.Dense(cin, hidden)
-                        self.fc2 = nn.Dense(hidden, hidden)
-                        self.fcout = nn.Dense(hidden, cout)
-                        self.act = ops.Tanh()
-
-                    def construct(self, x):
-                        x = self.act(self.fc1(x))
-                        x = self.act(self.fc2(x))
-                        x = self.fcout(x)
-                        return x
-            >>> model = Net()
-            >>> problem = NavierStokes(model)
-            >>> print(problem.pde())
-            momentum_x: u(x, y, t)Derivative(u(x, y, t), x) + v(x, y, t)Derivative(u(x, y, t), y) +
-            Derivative(p(x, y, t), x) + Derivative(u(x, y, t), t) - 0.00999999977648258Derivative(u(x, y, t), (x, 2)) -
-            0.00999999977648258Derivative(u(x, y, t), (y, 2))
-                Item numbers of current derivative formula nodes: 6
-            momentum_y: u(x, y, t)Derivative(v(x, y, t), x) + v(x, y, t)Derivative(v(x, y, t), y) +
-            Derivative(p(x, y, t), y) + Derivative(v(x, y, t), t) - 0.00999999977648258Derivative(v(x, y, t), (x, 2)) -
-            0.00999999977648258Derivative(v(x, y, t), (y, 2))
-                Item numbers of current derivative formula nodes: 6
-            continuty: Derivative(u(x, y, t), x) + Derivative(v(x, y, t), y)
-                Item numbers of current derivative formula nodes: 2
-            {'momentum_x': u(x, y, t)Derivative(u(x, y, t), x) + v(x, y, t)Derivative(u(x, y, t), y) +
-            Derivative(p(x, y, t), x) + Derivative(u(x, y, t), t) - 0.00999999977648258Derivative(u(x, y, t), (x, 2)) -
-            0.00999999977648258Derivative(u(x, y, t), (y, 2)),
-            'momentum_y': u(x, y, t)Derivative(v(x, y, t), x) + v(x, y, t)Derivative(v(x, y, t), y) +
-            Derivative(p(x, y, t), y) + Derivative(v(x, y, t), t) - 0.00999999977648258Derivative(v(x, y, t), (x, 2)) -
-            0.00999999977648258Derivative(v(x, y, t), (y, 2)),
-            'continuty': Derivative(u(x, y, t), x) + Derivative(v(x, y, t), y)}
+        >>> from mindflow.pde import NavierStokes
+        >>> from mindspore import nn, ops
+        >>> class Net(nn.Cell):
+        ...     def __init__(self, cin=3, cout=3, hidden=10):
+        ...         super().__init__()
+        ...         self.fc1 = nn.Dense(cin, hidden)
+        ...         self.fc2 = nn.Dense(hidden, hidden)
+        ...         self.fcout = nn.Dense(hidden, cout)
+        ...         self.act = ops.Tanh()
+        ...
+        ...     def construct(self, x):
+        ...         x = self.act(self.fc1(x))
+        ...         x = self.act(self.fc2(x))
+        ...         x = self.fcout(x)
+        ...         return x
+        >>> model = Net()
+        >>> problem = NavierStokes(model)
+        >>> print(problem.pde())
+        momentum_x: u(x, y, t)Derivative(u(x, y, t), x) + v(x, y, t)Derivative(u(x, y, t), y) +
+        Derivative(p(x, y, t), x) + Derivative(u(x, y, t), t) - 0.00999999977648258Derivative(u(x, y, t), (x, 2)) -
+        0.00999999977648258Derivative(u(x, y, t), (y, 2))
+            Item numbers of current derivative formula nodes: 6
+        momentum_y: u(x, y, t)Derivative(v(x, y, t), x) + v(x, y, t)Derivative(v(x, y, t), y) +
+        Derivative(p(x, y, t), y) + Derivative(v(x, y, t), t) - 0.00999999977648258Derivative(v(x, y, t), (x, 2)) -
+        0.00999999977648258Derivative(v(x, y, t), (y, 2))
+            Item numbers of current derivative formula nodes: 6
+        continuty: Derivative(u(x, y, t), x) + Derivative(v(x, y, t), y)
+            Item numbers of current derivative formula nodes: 2
+        {'momentum_x': u(x, y, t)Derivative(u(x, y, t), x) + v(x, y, t)Derivative(u(x, y, t), y) +
+        Derivative(p(x, y, t), x) + Derivative(u(x, y, t), t) - 0.00999999977648258Derivative(u(x, y, t), (x, 2)) -
+        0.00999999977648258Derivative(u(x, y, t), (y, 2)),
+        'momentum_y': u(x, y, t)Derivative(v(x, y, t), x) + v(x, y, t)Derivative(v(x, y, t), y) +
+        Derivative(p(x, y, t), y) + Derivative(v(x, y, t), t) - 0.00999999977648258Derivative(v(x, y, t), (x, 2)) -
+        0.00999999977648258Derivative(v(x, y, t), (y, 2)),
+        'continuty': Derivative(u(x, y, t), x) + Derivative(v(x, y, t), y)}
     """
 
     def __init__(self, model, re=100, loss_fn=nn.MSELoss()):
