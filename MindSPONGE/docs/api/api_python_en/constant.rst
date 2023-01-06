@@ -1,6 +1,40 @@
 Constants
 =========
 
+.. toctree::
+   :hidden:
+
+   constant/atom_order
+   constant/atom_types
+   constant/chi_angles_atoms
+   constant/chi_angles_mask
+   constant/chi_groups_for_atom
+   constant/chi_pi_periodic
+   constant/HHBLITS_AA_TO_ID
+   constant/ID_TO_HHBLITS_AA
+   constant/order_restype_with_x
+   constant/residue_atoms
+   constant/residue_atom_renaming_swaps
+   constant/resnames
+   constant/resname_to_idx
+   constant/restypes
+   constant/restypes_with_x
+   constant/restypes_with_x_and_gap
+   constant/restype_1to3
+   constant/restype_3to1
+   constant/restype_atom14_mask
+   constant/restype_atom14_rigid_group_positions
+   constant/restype_atom14_to_rigid_group
+   constant/restype_atom37_mask
+   constant/restype_atom37_rigid_group_positions
+   constant/restype_atom37_to_rigid_group
+   constant/restype_name_to_atom14_names
+   constant/restype_order
+   constant/restype_order_with_x
+   constant/restype_rigid_group_default_frame
+   constant/rigid_group_atom_positions
+   constant/van_der_waals_radius
+
 HHBLITS Mapping to Amino Acid Type
 ----------------------------------
 
