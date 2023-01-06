@@ -26,8 +26,7 @@ class Poisson(PDEWithLoss):
 
     Args:
         model (mindspore.nn.Cell): network for training.
-        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. If None, the `model` should have the loss
-            inside. Default: mindspore.nn.MSELoss.
+        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. Default: mindspore.nn.MSELoss.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -68,7 +67,10 @@ class Poisson(PDEWithLoss):
 
     def pde(self):
         """
-        Define governing equations based on sympy, abstract method.
+        Define Poisson 2-D governing equations based on sympy, abstract method.
+
+        Returns:
+            equations (dict): user defined sympy symbolic equations.
         """
         poisson = sympy.diff(self.u, (self.x, 2)) + sympy.diff(self.u, (self.y, 2)) + 1.0
 

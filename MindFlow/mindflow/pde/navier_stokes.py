@@ -29,8 +29,7 @@ class NavierStokes(PDEWithLoss):
         model (mindspore.nn.Cell): network for training.
         re (float): reynolds number is the ratio of inertia force to viscous force of a fluid. It is a dimensionless
             quantity. Default: 100.0.
-        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. If None, the `model` should have the loss
-            inside. Default: mindspore.nn.MSELoss.
+        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. Default: mindspore.nn.MSELoss.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -87,6 +86,9 @@ class NavierStokes(PDEWithLoss):
     def pde(self):
         """
         Define governing equations based on sympy, abstract method.
+
+        Returns:
+            equations (dict): user defined sympy symbolic equations.
         """
         momentum_x = self.u.diff(self.t) + self.u * self.u.diff(self.x) + self.v * self.u.diff(self.y) + \
                      self.p.diff(self.x) - self.number * (diff(self.u, (self.x, 2)) + diff(self.u, (self.y, 2)))

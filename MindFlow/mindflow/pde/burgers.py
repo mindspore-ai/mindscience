@@ -27,8 +27,7 @@ class Burgers(PDEWithLoss):
 
     Args:
         model (mindspore.nn.Cell): Network for training.
-        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. If None, the `model` should have the loss
-            inside. Default: mindspore.nn.MSELoss.
+        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. Default: mindspore.nn.MSELoss.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -68,7 +67,10 @@ class Burgers(PDEWithLoss):
 
     def pde(self):
         """
-        Define governing equations based on sympy, abstract method.
+        Define Burgers 1-D governing equations based on sympy, abstract method.
+
+        Returns:
+            equations (dict): user defined sympy symbolic equations.
         """
         burgers_eq = diff(self.u, (self.t, 1)) + self.u * diff(self.u, (self.x, 1)) - \
             self.mu * diff(self.u, (self.x, 2))

@@ -56,7 +56,7 @@ class Solver:
             can be found at `mindspore.amp.build_train_network`.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
 
     Examples:
         >>> from mindflow.solver import Solver

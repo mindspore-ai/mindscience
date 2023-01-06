@@ -29,17 +29,20 @@ class PDEWithLoss:
     Base class of user-defined pde problems.
     All user-defined problems to set constraint on each dataset should be and must be inherited from this class.
     It is utilized to establish the mapping between each sub-dataset and used-defined loss functions.
-    The mapping will be constructed by the Constraint API, and the loss will be calculated automatically by the
-    constraint type of each sub-dataset. Corresponding member functions must be overloaded by user based on the
-    constraint type in order to obtain the target label output. For example, for dataset1 the constraint type is
-    "pde", so the member function "sympy_pde" must be overloaded to tell that how to get the pde residual.
-    The data(e.g. inputs, prediction, jacobian, hessian) used to solve the residuals is passed to the parse_node,
-    and the residuals of each equation can be automatically calculated.
+    The loss will be calculated automatically by the constraint type of each sub-dataset. Corresponding member functions
+    must be out_channels by user based on the constraint type in order to obtain the target label output. For example,
+    for dataset1 the constraint type is "pde", so the member function "pde" must be overridden to tell that how to get
+    the pde residual. The data(e.g. inputs) used to solve the residuals is passed to the parse_node, and the residuals
+    of each equation can be automatically calculated.
 
     Args:
         model (mindspore.nn.Cell): Network for training.
-        in_vars (List[sympy.core.Symbol]): Input variables of the model, represented by the sympy symbol.
-        out_vars (List[sympy.core.Function]): Output variables of the model, represented by the sympy function.
+        in_vars (List[sympy.core.Symbol]): Input variables of the `model`, represented by the sympy symbol.
+        out_vars (List[sympy.core.Function]): Output variables of the `model`, represented by the sympy function.
+
+    Note:
+        - The member function, "pde", must be overridden to define the symbolic derivative equqtions based on sympy.
+        - The member function, "get_loss", must be overridden to caluate the loss of symbolic derivative equqtions.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -111,15 +114,14 @@ class PDEWithLoss:
 
     def pde(self):
         """
-        Governing equation, abstract method.
-        This function must be overloaded, if the corresponding constraint is governing equation.
+        Governing equation based on sympy, abstract method.
+        This function must be overridden, if the corresponding constraint is governing equation.
         """
         return None
 
     def get_loss(self):
         """
-        Compute all loss from pde residual, ic residual, bc residual, abstract method.
-        This function must be overloaded.
+        Compute all loss from user-defined derivative equations. This function must be overridden.
         """
         return None
 

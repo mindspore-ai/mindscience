@@ -38,7 +38,7 @@ class SimplifiedGradient(nn.Cell):
 @constexpr
 def batched_jacobian(model):
     """
-    Batched jacobian for fully connected networks.
+    Calculate Jacobian matrix of network model.
 
     Args:
         model (mindspore.nn.Cell): a network with the input dimension is in_channels and output dimension is
@@ -47,6 +47,9 @@ def batched_jacobian(model):
     Returns:
         jacobian(Tensor): jacobi of the model. With the input dimension is [batch_size, in_channels], output dimension
             is [out_channels, batch_size, in_channels].
+
+    Note:
+        The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -83,7 +86,7 @@ def batched_jacobian(model):
 @constexpr
 def batched_hessian(model):
     """
-    Batched hessian for fully connected networks.
+    Calculate Hessian matrix of network model.
 
     Args:
         model (mindspore.nn.Cell): a network with the input dimension is in_channels and output dimension is
@@ -92,6 +95,9 @@ def batched_hessian(model):
     Returns:
         hessian(Tensor): hessian of the model. With the input dimension is [batch_size, in_channels], output dimension
             is [out_channels, in_channels, batch_size, in_channels].
+
+    Note:
+        The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

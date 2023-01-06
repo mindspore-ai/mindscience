@@ -7,7 +7,11 @@ mindflow.common
 
 .. include:: mindflow.common.LossAndTimeMonitor.rst
 
+.. include:: mindflow.common.get_multi_step_lr.rst
+
 .. include:: mindflow.common.get_poly_lr.rst
+
+.. include:: mindflow.common.get_warmup_cosine_annealing_lr.rst
 
 .. automodule:: mindflow.common
     :members:

@@ -80,11 +80,11 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
 
 def get_multi_step_lr(lr_init, milestones, gamma, steps_per_epoch, last_epoch):
     r"""
-    Decays the learning rate of each parameter group by gamma once the
+    Generate decay learning rate array of each parameter group by gamma once the
     number of epoch reaches one of the milestones.
 
-    Calculate learning rate by the given `milestone` and `learning_rates`. Let the value of `milestone` be
-    :math:`(M_1, M_2, ..., M_t, ..., M_N)` and the value of `learning_rates` be :math:`(x_1, x_2, ..., x_t, ..., x_N)`.
+    Calculate learning rate by the given `milestone` and `lr_init`. Let the value of `milestone` be
+    :math:`(M_1, M_2, ..., M_t, ..., M_N)` and the value of `lr_init` be :math:`(x_1, x_2, ..., x_t, ..., x_N)`.
     N is the length of `milestone`. Let the output learning rate be `y`, then for the i-th step, the formula of
     computing decayed_learning_rate[i] is:
 
@@ -96,7 +96,7 @@ def get_multi_step_lr(lr_init, milestones, gamma, steps_per_epoch, last_epoch):
         milestones (Union[list[int], tuple[int]]): list of epoch indices, each element in the list must be greater than
             0.
         gamma (float): multiplicative factor of learning rate decay.
-        steps_per_epoch (int): number of steps to each epoch.
+        steps_per_epoch (int): number of steps to each epoch, positive int value.
         last_epoch (int): total epoch of training, positive int value.
 
     Returns:
@@ -173,10 +173,10 @@ def get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch,
     For the i-th step, the formula of computing cosine decayed_learning_rate[i] is:
 
     .. math::
-        decayed\_learning\_rate[i] = etamin + 0.5 * (lr\_init - etamin) *
+        decayed\_learning\_rate[i] = eta\_min + 0.5 * (lr\_init - eta\_min) *
         (1 + cos(\frac{current\_epoch}{last\_epoch}\pi))
 
-    Where :math:`current\_epoch=floor(\frac{i}{steps\_per\_epoch})`.
+    Where :math:`current\_epoch = floor(\frac{i}{steps\_per\_epoch})`.
 
     If warmup epoch is specified, for the i-th step in waramup epoch, the formula of computing
      warmup_learning_rate[i] is:
@@ -186,7 +186,7 @@ def get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch,
 
     Args:
         lr_init (float): init learning rate, positive float value.
-        steps_per_epoch (int): number of steps to each epoch.
+        steps_per_epoch (int): number of steps to each epoch, positive int value.
         last_epoch (int): total epoch of training, positive int value.
         warmup_epochs (int): total epoch of warming up, default:0.
         warmup_lr_init (float): warmup init learning rate, default:0.0.
