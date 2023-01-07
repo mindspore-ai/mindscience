@@ -53,12 +53,7 @@ def model_eval_all_test(contact_net, test_generator):
 
     for contacts, seq_embeddings, _, seq_lens, seq_ori, seq_name, nc_map, _ in test_generator:
 
-        nc_map_nc = cast(nc_map, mstype.float32) * contacts
-        if seq_lens.item() > 1500:
-            continue
-        if batch_n % 1000 == 0:
-            print('Batch number: ', batch_n)
-
+        nc_map_nc = cast(nc_map, mstype.float32) * cast(contacts, mstype.float32)
         batch_n += 1
         contacts_batch = ms.Tensor(cast(contacts, mstype.float32))
         seq_embedding_batch = ms.Tensor(cast(seq_embeddings, mstype.float32))
@@ -107,7 +102,7 @@ def model_eval_all_test(contact_net, test_generator):
 
 
 def main():
-    ms.context.set_context(device_target=args.device_target, device_id=args.device_id)
+    ms.set_context(device_target=args.device_target, device_id=args.device_id)
 
     config_file = args.config
     test_file = args.test_files
@@ -127,8 +122,8 @@ def main():
 
     test_set = Dataset_FCN(test_data)
     test_generator = GeneratorDataset(test_set, column_names=['contacts', 'seq_embeddings', 'matrix_reps',
-                                                              'seq_lens', 'seq_ori', 'seq_name', 'nc_map', 'l_len',],
-                                      num_parallel_workers=6,
+                                                              'seq_lens', 'seq_ori', 'seq_name', 'nc_map', 'l_len'],
+                                      num_parallel_workers=3,
                                       shuffle=True).batch(batch_size=batch_size_1, drop_remainder=True)
 
     contact_net = FCNNet(img_ch=17)

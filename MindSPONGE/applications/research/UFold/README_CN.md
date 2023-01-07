@@ -20,7 +20,7 @@
 
 - bpRNA new，源自Rfam 14.2，包含来自1500个新RNA家族的序列。
 
-为了方便数据集的使用，我们将bpseq格式的数据文件处理成pickle文件。UFold模型使用的数据文件可以在[drive](https://drive.google.com/drive/folders/1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi)中下载，使用时需将文件放到data文件夹。
+为了方便数据集的使用，我们将bpseq格式的数据文件处理成pickle文件。UFold模型使用的数据文件可以在[网盘](https://pan.baidu.com/s/1y2EWQlZJhJfqi_UyUnEicw?pwd=o5k2)中下载，使用时需将文件放到data文件夹。
 
 ## 环境要求
 
@@ -75,15 +75,18 @@ python ufold_test.py --test_files TS2
   ├─README_CN.md                          # README_CN
   ├─ckpt_models                           # 用来存放训练好的/下载的ckpt文件
   ├─data                                  # 数据集预处理得到的pickle文件
+  ├─ascend310_infer                       # 310推理
   ├─src
     ├─config.json                         # 参数设置
     ├─config.py                           # 加载设置
     ├─data_generator.py                   # 自定义数据集类
-    ├─Network.py                          # UFold网络定义
+    ├─model.py                            # UFold网络定义
     ├─utils.py                            # 零散函数
     └─postprocess.py                      # 后处理进行优化
   ├─eval.py                               # 评估脚本
-  └─train.py                              # 训练脚本
+  ├─train.py                              # 训练脚本
+  ├─preprocess.py                         # 310推理的预处理
+  └─ascend_postprocess.py                 # 310推理的后处理
 ```
 
 ### 脚本参数
@@ -122,7 +125,7 @@ epcoh:2 epoch: 2, loss: 1.0897788
 
 - 运行`eval.py`进行评估。
 
-注：可以使用训练出来的ckpt进行评估，或者使用已训练好的提供的[文件](https://drive.google.com/drive/folders/1XmeoRaFS3iXa9kZwte99e7usB7mPLV4z?usp=sharing)进行评估。 (ufold_train_pdbfinetune.ckpt用于TS1, TS2, TS3; ufold_train.ckpt用于bpnew, ArchiveII和TS0; ufold_train_alldata.ckpt由于是使用全部数据训练出来的所以可以用于所有的测试数据。)
+注：可以使用训练出来的ckpt进行评估，或者使用已训练好的提供的[ckpt文件](https://pan.baidu.com/s/1y2EWQlZJhJfqi_UyUnEicw?pwd=o5k2)进行评估。 (ufold_train_pdbfinetune.ckpt用于TS1, TS2, TS3; ufold_train.ckpt用于bpnew, ArchiveII和TS0; ufold_train_99.ckpt由于是使用全部数据训练出来的所以可以用于所有的测试数据。)
 
 ```bash
 # 推理
@@ -139,5 +142,44 @@ python ufold_test.py --test_files TS2
 
 ```log
 Average testing precision with pure post-processing: 0.781516432132
+```
+
+## 模型导出
+
+```shell
+python export.py --ckpt_file [CKPT_PATH] --device_target [DEVICE_TARGET] --device_id[DEVICE_ID]
+```
+
+## 推理过程
+
+### 使用方法
+
+在推理之前需要先运行preprocess.py得到需要的contacts, embedding_batch和seq_ori。
+
+```shell
+# Ascend310 预处理
+cd acs310_infer
+python ../preprocess.py --test_files TS2
+    --test_files: 可从(['ArchiveII','TS0','bpnew','TS1','TS2','TS3'])中选择
+```
+
+预处理的数据分别存在contact, ori和preprocess_Result文件夹，之后运行推理脚本进行推理。
+
+```shell
+# Ascend310 推理
+bash build.sh
+```
+
+最后再使用ascend_postprocess对符合模型尺寸的数据进行后处理，最终得到精度。
+
+```shell
+# Ascend310 后处理
+python ../ascend_postprocess.py
+```
+
+### 结果
+
+```log
+Average testing precision with pure post-processing:  0.8701159951160506
 ```
 

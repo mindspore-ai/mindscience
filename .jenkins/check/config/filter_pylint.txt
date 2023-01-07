@@ -113,3 +113,6 @@
 "mindscience/MindFlow/mindflow/cfd/boundary_conditions/symmetry.py"                              "useless-super-delegation"
 "mindscience/MindFlow/mindflow/cfd/space_solver/riemann_computer/rusanov.py"                     "unused-argument"
 "mindscience/MindSPONGE/applications/research/grover/src/model/layers.py"                        "invalid-name"
+"mindscience/MindSPONGE/applications/research/UFold/train.py"                             "invalid-name"
+"mindscience/MindSPONGE/applications/research/UFold/ascend_postprocess.py"                             "invalid-name"
+"mindscience/MindSPONGE/applications/research/UFold/preprocess.py"                             "invalid-name"
