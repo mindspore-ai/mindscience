@@ -324,9 +324,9 @@ class WaveletTransformLoss(nn.LossBase):
 
 class RelativeRMSELoss(nn.LossBase):
     r"""
-    Relative Root Mean Square Error (RRMSE) is the root mean squared error normalized by the root mean square value
-    where each residual is scaled against the actual value. Relative RMSELoss creates a criterion to measure the root
-    mean square error between :math:`x` and :math:`y` element-wise,
+    Relative Root Mean Square Error (RRMSE) is the root mean squared error normalized by the root-mean-square value
+    where each residual is scaled against the actual value. Relative RMSELoss creates a criterion to measure the
+    root-mean-square error between :math:`x` and :math:`y` element-wise,
     where :math:`x` is the prediction and :math:`y` is the labels.
 
     For simplicity, let :math:`x` and :math:`y` be 1-dimensional Tensor with length :math:`N`,
@@ -340,14 +340,15 @@ class RelativeRMSELoss(nn.LossBase):
             Default: "sum".
 
     Inputs:
-        - **prediction** (Tensor) - Tensor of shape :math:`(N, *)` where :math:`*` means, any number of
-          additional dimensions.
-        - **labels** (Tensor) - Tensor of shape :math:`(N, *)`, same shape as the `prediction` in common cases.
-          However, it supports the shape of `labels` is different from the shape of `labels`
-          and they should be broadcasted to each other.
+        - **prediction** (Tensor) - The prediction value of the network. Tensor of shape :math:`(N, *)` where :math:`*`
+          means, any number of additional dimensions.
+        - **labels** (Tensor) - True value of the samples. Tensor of shape :math:`(N, *)`,  where :math:`*`
+          means, any number of additional dimensions, same shape as the `prediction` in common cases.
+          However, it supports the shape of `labels` is different from the shape of `prediction` and they should be
+          broadcasted to each other.
 
     Outputs:
-        Tensor, weighted loss float tensor and its shape is ().
+        Tensor, weighted loss.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
