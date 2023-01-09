@@ -49,7 +49,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 | MindFlow |                                   分支                                   | MindSpore | Python |
 |:--------:|:----------------------------------------------------------------------:|:---------:|:------:|
-|  1.0.0   | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) | \>=1.8.1  | \>=3.7 |
+|  0.1.0   | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) | \>=2.0.0  | \>=3.7 |
 
 ### 依赖安装
 
