@@ -267,7 +267,7 @@ class Triangle(adapter.Geometry):
               area (length) of the boundary.
             - 'unweighted', the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
+        dtype (numpy.dtype): data type of sampled point data type. Default: np.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: none.
 
     Supported Platforms:
@@ -311,7 +311,7 @@ class Pentagon(adapter.Geometry):
               area (length) of the boundary.
             - 'unweighted', the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
+        dtype (numpy.dtype): data type of sampled point data type. Default: np.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: none.
 
     Supported Platforms:

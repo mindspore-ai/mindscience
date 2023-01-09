@@ -14,5 +14,5 @@
           - 'uniform'，每个边界中的预期样本数与边界的面积（长度）是成比例的。
           - 'unweighted'，每个边界中的预期样本数相同。
         
-        - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：numpy.float32。
+        - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：np.float32。
         - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
