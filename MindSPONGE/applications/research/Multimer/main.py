@@ -88,6 +88,10 @@ def fold_multimer_infer(args):
                                                                                            prev_pos,
                                                                                            prev_msa_first_row,
                                                                                            prev_pair)
+        prev_pos.asnumpy()
+        prev_msa_first_row.asnumpy()
+        prev_pair.asnumpy()
+        predicted_lddt_logits.asnumpy()
         t3 = time.time()
         if i == data_cfg.common.num_recycle - 1:
             final_atom_positions = prev_pos.asnumpy()[:ori_res_length]
