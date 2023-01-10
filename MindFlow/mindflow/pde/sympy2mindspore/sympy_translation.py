@@ -23,7 +23,7 @@ from mindspore import Tensor, jit_class
 from mindspore import dtype as mstype
 
 from .pde_node import MINDSPORE_SYMPY_TRANSLATIONS, MulNode, NumberNode, SymbolNode
-from .pde_node import MSFunctionNode, NetOutputNode, DerivativeNode
+from .pde_node import MSFunctionNode, NetOutputNode, DerivativeNode, PowNode, AddNode
 
 
 @jit_class
@@ -34,6 +34,7 @@ class SympyTranslation:
         self.formula_node = formula_node
         self.in_vars = in_vars
         self.out_vars = out_vars
+        print(f"{self.formula_node.name}: {self.formula}")
         self._parse_node()
         print(f"    Item numbers of current derivative formula nodes: {len(self.formula_node.nodes)}")
 
@@ -54,7 +55,7 @@ class SympyTranslation:
     @staticmethod
     def _parse_number_symbol(item):
         """parses number symbol"""
-        if isinstance(item, sympy.core.numbers.pi):
+        if isinstance(item, sympy.core.numbers.Pi):
             nodes = [Tensor(np.float32(np.pi), mstype.float32)]
             number_symbol_node = NumberNode(nodes=nodes)
         elif isinstance(item, sympy.core.numbers.Exp1):
@@ -67,7 +68,6 @@ class SympyTranslation:
 
     def _parse_node(self):
         """parses each node in sympy expression"""
-        print(f"{self.formula_node.name}: {self.formula}")
         if self.formula.is_Add:
             for item in self.formula.args:
                 cur_node = self._parse_item(item)
@@ -96,6 +96,9 @@ class SympyTranslation:
 
         elif item.is_NumberSymbol:
             node = self._parse_number_symbol(item)
+
+        elif item.is_Pow:
+            node = self._parse_pow(item)
 
         else:
             raise ValueError("For parsing sympy expression: {} is not supported!".format(item))
@@ -151,16 +154,16 @@ class SympyTranslation:
         """parse the sympy expression which in mindspore ops"""
         fn = MINDSPORE_SYMPY_TRANSLATIONS.get(type(item).__name__)
         self._check_item_args(item.args)
-        if item.args[0] in self.in_vars:
-            in_var_idx = self.in_vars.index(item.args[0])
-            function_node = MSFunctionNode(self.in_vars, self.out_vars, fn=fn, in_var_idx=in_var_idx)
-        elif item.args[0] in self.out_vars:
-            out_var_idx = self.out_vars.index(item.args[0])
-            function_node = MSFunctionNode(self.in_vars, self.out_vars, fn=fn, out_var_idx=out_var_idx)
+        if item.args[0].is_Add:
+            nodes = []
+            for cur_item in item.args[0].args:
+                cur_node = self._parse_item(cur_item)
+                nodes.append(cur_node)
+            fn_inside_node = AddNode(nodes=nodes)
         else:
-            node = self._parse_item(item.args[0])
-            function_node = MSFunctionNode(self.in_vars, self.out_vars, fn=fn, nodes=[node],
-                                           is_function_composition=True)
+            fn_inside_node = self._parse_item(item.args[0])
+        function_node = MSFunctionNode(nodes=[fn_inside_node], fn=fn)
+
         return function_node
 
     def _parse_symbol(self, item):
@@ -177,3 +180,12 @@ class SympyTranslation:
             nodes.append(cur_node)
         mul_node = MulNode(nodes=nodes)
         return mul_node
+
+    def _parse_pow(self, item):
+        """parse pow"""
+        nodes = []
+        for cur_item in item.args:
+            cur_node = self._parse_item(cur_item)
+            nodes.append(cur_node)
+        pow_node = PowNode(nodes=nodes)
+        return pow_node

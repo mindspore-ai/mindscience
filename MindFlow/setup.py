@@ -38,6 +38,7 @@ required_package = [
     'scipy >= 1.7.0',
     'matplotlib >= 3.1.3',
     'easydict >= 1.9',
+    'sympy >= 1.10.1',
 ]
 
 package_data = {

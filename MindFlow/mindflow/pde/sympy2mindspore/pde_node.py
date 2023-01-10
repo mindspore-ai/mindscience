@@ -80,6 +80,31 @@ MINDSPORE_SYMPY_TRANSLATIONS = {
 
 
 @jit_class
+class AddNode:
+    """Compute add terms in sympy expression"""
+    def __init__(self, nodes=None):
+        self.nodes = nodes or list()
+
+    def compute(self, data):
+        rst = list()
+        for node in self.nodes:
+            cur_node_rst = node.compute(data)
+            rst.append(cur_node_rst)
+
+        return sum(rst)
+
+
+@jit_class
+class PowNode:
+    """Compute pow terms in sympy expression"""
+    def __init__(self, nodes=None):
+        self.nodes = nodes or list()
+
+    def compute(self, data):
+        return ops.pow(self.nodes[0].compute(data), self.nodes[1].compute(data))
+
+
+@jit_class
 class MulNode:
     """Compute multiplication terms in sympy expression"""
     def __init__(self, nodes=None):
@@ -137,31 +162,13 @@ class NetOutputNode:
 @jit_class
 class MSFunctionNode:
     """Compute function which can be translated into mindspore function in sympy expression"""
-    def __init__(self, in_vars, out_vars, nodes=None, fn=None, is_function_composition=False,
-                 in_var_idx=None, out_var_idx=None):
+    def __init__(self, nodes=None, fn=None):
         self.nodes = nodes or list()
-        self.input_split = ops.Split(1, len(in_vars))
-        self.output_split = ops.Split(1, len(out_vars))
         self.fn = fn
-        self.is_function_composition = is_function_composition
-        self.in_var_idx = in_var_idx
-        self.out_var_idx = out_var_idx
 
     def compute(self, data):
         """compute the result of mindspore function"""
-        if self.is_function_composition:
-            rst = Tensor(np.float32(1.0), mstype.float32)
-            for node in self.nodes:
-                rst = rst * node.compute(data)
-            return self.fn(rst)
-
-        if self.in_var_idx is not None:
-            input_data = data.get("inputs")
-            ret = self.fn(self.input_split(input_data)[self.in_var_idx])
-            return ret
-
-        output_data = data.get("outputs")
-        ret = self.fn(self.output_split(output_data)[self.out_var_idx])
+        ret = self.fn(self.nodes[0].compute(data))
         return ret
 
 
