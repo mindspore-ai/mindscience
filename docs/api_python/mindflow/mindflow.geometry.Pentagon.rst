@@ -1,4 +1,4 @@
-.. py:class:: mindflow.geometry.Pentagon(name, vertices, boundary_type='uniform', dtype=numpy.float32, sampling_config=None)
+.. py:class:: mindflow.geometry.Pentagon(name, vertices, boundary_type='uniform', dtype=np.float32, sampling_config=None)
     
     五边形对象的定义。
     
@@ -10,5 +10,5 @@
           - 'uniform'，每个边界中的预期样本数与边界的面积（长度）成比例的。
           - 'unweighted'，每个边界中的预期样本数相同。
 
-        - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：numpy.float32。
+        - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：np.float32。
         - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
