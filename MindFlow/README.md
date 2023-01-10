@@ -5,7 +5,7 @@
 [![LICENSE](https://img.shields.io/github/license/mindspore-ai/mindspore.svg?style=flat-square)](https://github.com/mindspore-ai/mindspore/blob/master/LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://gitee.com/mindspore/mindscience/pulls)
 
-# **MindSpore Flow**
+# **MindFlow**
 
 - [Introduction](#Introduction)
 - [Latest News](#Latest)
@@ -43,7 +43,15 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 ## **Installation**
 
-### Dependency
+### Version Dependency
+
+Because MindFlow is dependent on MindSpore, please click [MindSpot Download Page](https://www.mindspore.cn/versions) according to the corresponding relationship indicated in the following table. Download and install the corresponding whl package.
+
+| MindFlow |                                   Branch                                   | MindSpore | Python |
+|:--------:|:----------------------------------------------------------------------:|:---------:|:------:|
+|  0.1.0   | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) | \>=2.0.0  | \>=3.7 |
+
+### Install Dependency
 
 ```bash
 pip install -r requirements.txt
