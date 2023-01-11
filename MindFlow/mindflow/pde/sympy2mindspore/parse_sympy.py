@@ -68,7 +68,7 @@ def sympy_to_mindspore(equations, in_vars, out_vars):
             output data.
 
     Returns:
-        converted_equations (list(FormulaNode)): list of expressions node can be identified by mindspore.
+        List(FormulaNode), list of expressions node can be identified by mindspore.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

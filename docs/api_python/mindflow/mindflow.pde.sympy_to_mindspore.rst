@@ -4,8 +4,8 @@
 
     参数：
         - **equations** (dict) - 自定义偏微分方程组，每个方程的健由用户定义，其值为sympy表达式。
-        - **in_vars** (List[sympy.core.Symbol]) - 求解偏微分方程网络模型的输入参数，sympy符号表示的自变量，和输入数据的维度一致。
-        - **out_vars** (List[sympy.core.Function]) - 求解偏微分方程网络模型的输出参数，sympy符号表示的因变量，和输出数据的维度一致。
+        - **in_vars** (list[sympy.core.Symbol]) - 求解偏微分方程网络模型的输入参数，sympy符号表示的自变量，和输入数据的维度一致。
+        - **out_vars** (list[sympy.core.Function]) - 求解偏微分方程网络模型的输出参数，sympy符号表示的因变量，和输出数据的维度一致。
 
     返回：
         list[FormulaNode]，转换后的表达式，能够被MindSpore识别。
