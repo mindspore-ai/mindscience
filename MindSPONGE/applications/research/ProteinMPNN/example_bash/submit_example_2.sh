@@ -9,6 +9,7 @@ path_for_assigned_chains=$output_dir"/assigned_pdbs.jsonl"
 
 
 python eval.py \
+        --model_name "pretrained_model_020" \
         --jsonl_path $path_for_parsed_chains \
         --chain_id_jsonl $path_for_assigned_chains \
         --out_folder $output_dir \
