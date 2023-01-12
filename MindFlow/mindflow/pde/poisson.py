@@ -70,7 +70,7 @@ class Poisson(PDEWithLoss):
         Define Poisson 2-D governing equations based on sympy, abstract method.
 
         Returns:
-            equations (dict): user defined sympy symbolic equations.
+            dict, user defined sympy symbolic equations.
         """
         poisson = sympy.diff(self.u, (self.x, 2)) + sympy.diff(self.u, (self.y, 2)) + 1.0
 
