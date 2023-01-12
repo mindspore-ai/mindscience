@@ -7,7 +7,7 @@
         - **re** (float) - 无量纲参数，雷诺数是流体惯性力与粘滞力的比值。默认值：100.0。
         - **loss_fn** (Union[None, mindspore.nn.Cell]) - 损失函数。默认值：mindspore.nn.MSELoss()。
 
-    .. py::method:: pde()
+    .. py:method:: pde()
 
         抽象方法，基于sympy定义的二维NavierStokes控制方程。
 

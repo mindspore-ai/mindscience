@@ -136,7 +136,7 @@ class PDEWithLoss:
                 point. Default: None.
 
         Returns:
-            pde_result (list(Tensor)): The results of the partial differential equations.
+            List(Tensor), the results of the partial differential equations.
         """
         max_order = 0
         for formula_node in formula_nodes:

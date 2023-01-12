@@ -70,7 +70,7 @@ class Burgers(PDEWithLoss):
         Define Burgers 1-D governing equations based on sympy, abstract method.
 
         Returns:
-            equations (dict): user defined sympy symbolic equations.
+            dict, user defined sympy symbolic equations.
         """
         burgers_eq = diff(self.u, (self.t, 1)) + self.u * diff(self.u, (self.x, 1)) - \
             self.mu * diff(self.u, (self.x, 2))

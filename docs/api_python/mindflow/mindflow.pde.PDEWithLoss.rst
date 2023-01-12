@@ -12,15 +12,15 @@
         - `pde` 方法必须重写，用于定义sympy符号微分方程。
         - `get_loss` 方法必须重写，用于计算符号微分方程的损失。
 
-    .. py::method:: pde()
+    .. py:method:: pde()
 
         抽象方法，基于sympy定义的控制方程。如果相关约束为控制方程，该方法必须被重写。
 
-    .. py::method:: get_loss()
+    .. py:method:: get_loss()
 
         计算所有定义的微分方程的损失。用户必须重写该方法。
 
-    .. py::method:: parse_node(formula_nodes, inputs=None, norm=None)
+    .. py:method:: parse_node(formula_nodes, inputs=None, norm=None)
 
         计算定义的微分方程的预测结果。
 

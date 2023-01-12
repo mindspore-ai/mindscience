@@ -46,7 +46,7 @@ def batched_jacobian(model):
 
     Returns:
         jacobian(Tensor): jacobi of the model. With the input dimension is [batch_size, in_channels], output dimension
-            is [out_channels, batch_size, in_channels].
+        is [out_channels, batch_size, in_channels].
 
     Note:
         The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
@@ -94,7 +94,7 @@ def batched_hessian(model):
 
     Returns:
         hessian(Tensor): hessian of the model. With the input dimension is [batch_size, in_channels], output dimension
-            is [out_channels, in_channels, batch_size, in_channels].
+        is [out_channels, in_channels, batch_size, in_channels].
 
     Note:
         The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
