@@ -26,3 +26,4 @@ __all__ = [
     "vis_1d",
     "vis_2d"
 ]
+__all__.sort()
