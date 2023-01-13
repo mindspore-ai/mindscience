@@ -16,7 +16,7 @@
 import numpy as np
 from sympy import diff, Function, symbols
 
-from mindspore import nn
+import mindspore
 
 from .sympy_pde import PDEWithLoss
 
@@ -33,7 +33,7 @@ class Burgers(PDEWithLoss):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from mindflow.pde import burgers
+        >>> from mindflow.pde import Burgers
         >>> from mindspore import nn, ops
         >>> class Net(nn.Cell):
         ...     def __init__(self, cin=2, cout=1, hidden=10):
@@ -56,7 +56,7 @@ class Burgers(PDEWithLoss):
         {'burgers': u(x, t)Derivative(u(x, t), x) + Derivative(u(x, t), t) - 0.00318309897556901Derivative(u(x, t),
         (x, 2))}
     """
-    def __init__(self, model, loss_fn=nn.MSELoss()):
+    def __init__(self, model, loss_fn=mindspore.nn.MSELoss()):
         self.mu = np.float32(0.01 / np.pi)
         self.x, self.t = symbols('x t')
         self.u = Function('u')(self.x, self.t)

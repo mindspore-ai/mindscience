@@ -15,7 +15,7 @@
 """Poisson 2D problem"""
 import sympy
 
-from mindspore import nn
+import mindspore
 
 from .sympy_pde import PDEWithLoss
 
@@ -54,7 +54,7 @@ class Poisson(PDEWithLoss):
             Item numbers of current derivative formula nodes: 3
         {'poisson': Derivative(u(x, y), (x, 2)) + Derivative(u(x, y), (y, 2)) + 1.0}
     """
-    def __init__(self, model, loss_fn=nn.MSELoss()):
+    def __init__(self, model, loss_fn=mindspore.nn.MSELoss()):
         self.x = sympy.Symbol('x')
         self.y = sympy.Symbol('y')
         self.normal = sympy.Symbol('n')

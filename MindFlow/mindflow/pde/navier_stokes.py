@@ -16,7 +16,7 @@
 import numpy as np
 from sympy import diff, Function, symbols
 
-from mindspore import nn
+import mindspore
 
 from .sympy_pde import PDEWithLoss
 
@@ -72,7 +72,7 @@ class NavierStokes(PDEWithLoss):
         'continuty': Derivative(u(x, y, t), x) + Derivative(v(x, y, t), y)}
     """
 
-    def __init__(self, model, re=100, loss_fn=nn.MSELoss()):
+    def __init__(self, model, re=100, loss_fn=mindspore.nn.MSELoss()):
         self.number = np.float32(1.0 / re)
         self.x, self.y, self.t = symbols('x y t')
         self.u = Function('u')(self.x, self.y, self.t)
