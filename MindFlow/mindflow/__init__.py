@@ -58,9 +58,9 @@ def _mindspore_version_check():
                           "MindSpore before using MindFlow, by following "
                           "the instruction at https://www.mindspore.cn/install")
 
-    pattern = r'\d+\.\d+\.\d+'
+    pattern = r'\d+\.\d+\.\d+\w\d+'
     ms_version = re.match(pattern, ms.__version__)
-    required_mindspore_version = '2.0.0'
+    required_mindspore_version = '2.0.0a0'
 
     logger.info("Current Mindspore version is {}.".format(ms_version))
 
