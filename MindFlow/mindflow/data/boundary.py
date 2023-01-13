@@ -38,7 +38,15 @@ class Boundary(Data):
         TypeError: if geometry is not an instance of Geometry.
 
     Supported Platforms:
-        ``Ascend``
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindflow.geometry import generate_sampling_config, Geometry
+        >>> from mindflow.data import Boundary
+        >>> geometry_config = dict({'BC' : dict({'random_sampling' : True, 'size' : 100, 'sampler' : 'uniform',})})
+        >>> sampling_config = generate_sampling_config(geometry_config)
+        >>> geom = Geometry("geom", 1, 0.0, 1.0, sampling_config=sampling_config)
+        >>> boundary = Boundary(geometry=geom)
     """
     def __init__(self, geometry):
         check_param_type(geometry, "geometry", data_type=Geometry)
@@ -121,6 +129,14 @@ class BoundaryBC(Boundary):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindflow.geometry import generate_sampling_config, Geometry
+        >>> from mindflow.data import BoundaryBC
+        >>> geometry_config = dict({'BC' : dict({'random_sampling' : True, 'size' : 100, 'sampler' : 'uniform',})})
+        >>> sampling_config = generate_sampling_config(geometry_config)
+        >>> geom = Geometry("geom", 1, 0.0, 1.0, sampling_config=sampling_config)
+        >>> boundary_bc = BoundaryBC(geometry=geom)
     """
     def __init__(self, geometry):
         super(BoundaryBC, self).__init__(geometry)
@@ -157,6 +173,14 @@ class BoundaryIC(Boundary):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindflow.geometry import generate_sampling_config, Geometry
+        >>> from mindflow.data import BoundaryIC
+        >>> geometry_config = dict({'IC' : dict({'random_sampling' : True, 'size' : 100, 'sampler' : 'uniform',})})
+        >>> sampling_config = generate_sampling_config(geometry_config)
+        >>> geom = Geometry("geom", 1, 0.0, 1.0, sampling_config=sampling_config)
+        >>> boundary_ic = BoundaryIC(geometry=geom)
     """
     def __init__(self, geometry):
         super(BoundaryIC, self).__init__(geometry)
