@@ -1,4 +1,6 @@
 """Create dataset."""
+from copy import deepcopy
+
 from mindflow.data import Dataset
 from mindflow.geometry import (
     Rectangle, Disk, Triangle, Pentagon,
@@ -18,8 +20,13 @@ shape_factory = {
 }
 
 
-def create_dataset(geom_name, config):
+def create_dataset(geom_name, config, n_samps=None):
     """Create dataset."""
+    if n_samps is not None:
+        config = deepcopy(config)
+        config['data']['domain']['size'] = n_samps
+        config['data']['BC']['size'] = n_samps
+        config['batch_size'] = n_samps
     sampling_config = generate_sampling_config(config['data'])
     try:
         cls_shape = shape_factory[geom_name]
@@ -30,5 +37,4 @@ def create_dataset(geom_name, config):
     ds_create = dataset.create_dataset(
         batch_size=config['batch_size'], shuffle=True, prebatched_data=True, drop_remainder=True
     )
-    steps_per_epoch = config['data']['domain']['size']//config['batch_size']
-    return (dataset, ds_create), (steps_per_epoch, region.dim)
+    return ds_create, region.dim
