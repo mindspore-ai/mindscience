@@ -11,3 +11,7 @@
 
     输出：
         Tensor。
+
+    异常：
+        - **TypeError** - 如果 `wave_level` 不是int。
+        - **TypeError** - 如果 `regroup` bool。

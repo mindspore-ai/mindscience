@@ -27,7 +27,7 @@ from ..operators import batched_hessian, batched_jacobian
 class PDEWithLoss:
     """
     Base class of user-defined pde problems.
-    All user-defined problems to set constraint on each dataset should be and must be inherited from this class.
+    All user-defined problems to set constraint on each dataset should be inherited from this class.
     It is utilized to establish the mapping between each sub-dataset and used-defined loss functions.
     The loss will be calculated automatically by the constraint type of each sub-dataset. Corresponding member functions
     must be out_channels by user based on the constraint type in order to obtain the target label output. For example,
