@@ -32,7 +32,7 @@ mindelec.solver.Solver
           - O2：将网络强制转换为float16，保持批处理规范在float32中运行，使用动态损失比例。
           - O3：将网络强制转换为float16，带有附加属性 `keep_batchnorm_fp32=False` 。
           - auto：设置为不同设备中的建议级别。在GPU上设置级别为O2，Ascend上设置级别为O3 。建议的级别由导出经验选择，不能总是保持平均数值。用户应指定特殊网络的级别。
-            GPU上建议使用O2，Ascend上建议使用O3。有关 `amp_level` 设置的详情可查阅 `mindspore.amp.build_train_network <https://www.mindspore.cn/docs/zh-CN/master/api_python/amp/mindspore.amp.build_train_network.html#mindspore.amp.build_train_network>`_ 。
+            GPU上建议使用O2，Ascend上建议使用O3。有关 `amp_level` 设置的详情可查阅 `mindspore.amp.build_train_network <https://www.mindspore.cn/docs/zh-CN/r2.0.0-alpha/api_python/amp/mindspore.amp.build_train_network.html#mindspore.amp.build_train_network>`_ 。
 
     .. py:method:: mindelec.solver.Solver.eval(valid_dataset, callbacks=None, dataset_sink_mode=True)
 

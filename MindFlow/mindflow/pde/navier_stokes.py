@@ -88,7 +88,7 @@ class NavierStokes(PDEWithLoss):
         Define governing equations based on sympy, abstract method.
 
         Returns:
-            equations (dict): user defined sympy symbolic equations.
+            dict, user defined sympy symbolic equations.
         """
         momentum_x = self.u.diff(self.t) + self.u * self.u.diff(self.x) + self.v * self.u.diff(self.y) + \
                      self.p.diff(self.x) - self.number * (diff(self.u, (self.x, 2)) + diff(self.u, (self.y, 2)))

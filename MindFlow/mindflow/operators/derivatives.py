@@ -45,8 +45,8 @@ def batched_jacobian(model):
             out_channels.
 
     Returns:
-        jacobian(Tensor): jacobi of the model. With the input dimension is [batch_size, in_channels], output dimension
-            is [out_channels, batch_size, in_channels].
+        Tensor, jacobi of the model. With the input dimension is [batch_size, in_channels], output dimension
+        is [out_channels, batch_size, in_channels].
 
     Note:
         The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
@@ -61,18 +61,18 @@ def batched_jacobian(model):
         >>> from mindflow.operators import batched_jacobian
         >>> np.random.seed(123456)
         >>> class Net(nn.Cell):
-                def __init__(self, cin=2, cout=1, hidden=10):
-                    super().__init__()
-                    self.fc1 = nn.Dense(cin, hidden)
-                    self.fc2 = nn.Dense(hidden, hidden)
-                    self.fcout = nn.Dense(hidden, cout)
-                    self.act = ops.Tanh()
-
-                def construct(self, x):
-                    x = self.act(self.fc1(x))
-                    x = self.act(self.fc2(x))
-                    x = self.fcout(x)
-                    return x
+        ...     def __init__(self, cin=2, cout=1, hidden=10):
+        ...         super().__init__()
+        ...         self.fc1 = nn.Dense(cin, hidden)
+        ...         self.fc2 = nn.Dense(hidden, hidden)
+        ...         self.fcout = nn.Dense(hidden, cout)
+        ...         self.act = ops.Tanh()
+        ...
+        ...     def construct(self, x):
+        ...         x = self.act(self.fc1(x))
+        ...         x = self.act(self.fc2(x))
+        ...         x = self.fcout(x)
+        ...         return x
         >>> model = Net()
         >>> jacobian = batched_jacobian(model)
         >>> inputs = np.random.random(size=(3, 2))
@@ -93,8 +93,8 @@ def batched_hessian(model):
             out_channels.
 
     Returns:
-        hessian(Tensor): hessian of the model. With the input dimension is [batch_size, in_channels], output dimension
-            is [out_channels, in_channels, batch_size, in_channels].
+        Tensor, hessian of the model. With the input dimension is [batch_size, in_channels], output dimension
+        is [out_channels, in_channels, batch_size, in_channels].
 
     Note:
         The version of MindSpore should be >= 2.0.0 for using `mindspore.jacrev`.
@@ -109,18 +109,18 @@ def batched_hessian(model):
         >>> from mindflow.operators import batched_hessian
         >>> np.random.seed(123456)
         >>> class Net(nn.Cell):
-                def __init__(self, cin=2, cout=1, hidden=10):
-                    super().__init__()
-                    self.fc1 = nn.Dense(cin, hidden)
-                    self.fc2 = nn.Dense(hidden, hidden)
-                    self.fcout = nn.Dense(hidden, cout)
-                    self.act = ops.Tanh()
-
-                def construct(self, x):
-                    x = self.act(self.fc1(x))
-                    x = self.act(self.fc2(x))
-                    x = self.fcout(x)
-                    return x
+        ...     def __init__(self, cin=2, cout=1, hidden=10):
+        ...         super().__init__()
+        ...         self.fc1 = nn.Dense(cin, hidden)
+        ...         self.fc2 = nn.Dense(hidden, hidden)
+        ...         self.fcout = nn.Dense(hidden, cout)
+        ...         self.act = ops.Tanh()
+        ...
+        ...     def construct(self, x):
+        ...         x = self.act(self.fc1(x))
+        ...         x = self.act(self.fc2(x))
+        ...         x = self.fcout(x)
+        ...         return x
         >>> model = Net()
         >>> hessian = batched_hessian(model)
         >>> inputs = np.random.random(size=(3, 2))

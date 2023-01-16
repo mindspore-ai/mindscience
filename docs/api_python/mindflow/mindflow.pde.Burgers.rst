@@ -6,7 +6,7 @@
         - **model** (mindspore.nn.Cell) - 用于训练的网络模型。
         - **loss_fn** (Union[None, mindspore.nn.Cell]) - 损失函数。默认：mindspore.nn.MSELoss。
 
-    .. py::method:: pde()
+    .. py:method:: pde()
 
         抽象方法，基于sympy定义的一维Burgers控制方程。
 
