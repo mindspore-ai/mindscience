@@ -72,7 +72,7 @@ class NavierStokes(PDEWithLoss):
         'continuty': Derivative(u(x, y, t), x) + Derivative(v(x, y, t), y)}
     """
 
-    def __init__(self, model, re=100, loss_fn=mindspore.nn.MSELoss()):
+    def __init__(self, model, re=100.0, loss_fn=mindspore.nn.MSELoss()):
         self.number = np.float32(1.0 / re)
         self.x, self.y, self.t = symbols('x y t')
         self.u = Function('u')(self.x, self.y, self.t)

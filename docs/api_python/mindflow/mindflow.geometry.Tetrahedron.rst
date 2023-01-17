@@ -1,4 +1,4 @@
-.. py:class:: mindflow.geometry.Tetrahedron(name, vertices, boundary_type='uniform', dtype=np.float32, sampling_config=None)
+.. py:class:: mindflow.geometry.Tetrahedron(name, vertices, boundary_type='uniform', dtype=numpy.float32, sampling_config=None)
 
     四面体对象的定义。
 

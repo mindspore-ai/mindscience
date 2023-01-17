@@ -130,7 +130,7 @@ class PDEWithLoss:
         Calculate the results for each formula node.
 
         Args:
-            formula_nodes (list(FormulaNode)): List of expressions node can by identified by mindspore.
+            formula_nodes (list[FormulaNode]): List of expressions node can by identified by mindspore.
             inputs (Tensor): The input data of network. Default: None.
             norm (Tensor): The normal of the surface at a point P is a vector perpendicular to the tangent plane of the
                 point. Default: None.
