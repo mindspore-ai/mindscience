@@ -20,15 +20,7 @@ import mindspore as ms
 import mindspore.ops as ops
 
 
-sigmoid = ops.Sigmoid()
-ones = ops.Ones()
-zeros = ops.Zeros()
-reshape = ops.Reshape()
-sort = ops.Sort()
 sign = ops.Sign()
-transpose = ops.Transpose()
-relu = ops.ReLU()
-expand_dims = ops.ExpandDims()
 
 label_dict = {
     '.': np.array([1, 0, 0]),

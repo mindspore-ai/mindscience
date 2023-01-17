@@ -44,23 +44,21 @@ def train(contact_net, train_merge_generator, epoches_first):
     pos_weight = ms.Tensor([300], mstype.float32)
     criterion_bce_weighted = nn.BCEWithLogitsLoss(
         pos_weight=pos_weight)
-    u_optimizer = nn.Adam(params=contact_net.trainable_params())
+    u_optimizer = nn.Adam(params=contact_net.trainable_params(), learning_rate=1e-4)
+    cast = ops.Cast()
+    zeroslike = ops.ZerosLike()
+    loss_net = MyWithLossCell(contact_net, criterion_bce_weighted)
+    train_net = nn.TrainOneStepCell(loss_net, u_optimizer)
 
     print('start training...')
 
     for epoch in range(epoches_first):
-        contact_net.set_train()
-        cast = ops.Cast()
-        zeroslike = ops.ZerosLike()
-        loss_net = MyWithLossCell(contact_net, criterion_bce_weighted)
-        train_net = nn.TrainOneStepCell(loss_net, u_optimizer)
-
+        train_net.set_train()
         for contacts, seq_embeddings, _, seq_lens, _, _ in train_merge_generator:
             contacts_batch = ms.Tensor(cast(contacts, mstype.float32))
             seq_embedding_batch = ms.Tensor(cast(seq_embeddings, mstype.float32))
 
             pred_contacts = contact_net(seq_embedding_batch)
-
             contact_masks = zeroslike(pred_contacts)
             contact_masks[:, :seq_lens, :seq_lens] = 1
             loss_ms = train_net(seq_embedding_batch, contact_masks, contacts_batch)
@@ -113,7 +111,7 @@ def main():
     train_merge_generator = GeneratorDataset(train_merge,
                                              column_names=['contacts', 'seq_embeddings',
                                                            'matrix_reps', 'seq_lens', 'seq_ori', 'seq_name'],
-                                             num_parallel_workers=4,
+                                             num_parallel_workers=16,
                                              shuffle=True).batch(batch_size=batch_size_1, drop_remainder=True)
 
     contact_net = FCNNet(img_ch=17)
