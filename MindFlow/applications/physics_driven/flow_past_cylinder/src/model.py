@@ -15,7 +15,7 @@
 """Navier-Stokes 2D"""
 import numpy as np
 
-from mindspore import nn, ops, Tensor
+from mindspore import ops, Tensor
 from mindspore import dtype as mstype
 
 from mindflow.pde import NavierStokes, sympy_to_mindspore
@@ -29,13 +29,12 @@ class NavierStokes2D(NavierStokes):
         model (mindspore.nn.Cell): Network for training.
         re (float): Reynolds number is the ratio of inertia force to viscous force of a fluid. it is a dimensionless
             quantity. Default: 100.0.
-        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. If None, the `network` should have the loss
-            inside. Default: mindspore.nn.MSELoss.
+        loss_fn (str): Define the loss function. Default: mse.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
     """
-    def __init__(self, model, re=100, loss_fn=nn.MSELoss()):
+    def __init__(self, model, re=100, loss_fn="mse"):
         super(NavierStokes2D, self).__init__(model, re=re, loss_fn=loss_fn)
         self.ic_nodes = sympy_to_mindspore(self.ic(), self.in_vars, self.out_vars)
         self.bc_nodes = sympy_to_mindspore(self.bc(), self.in_vars, self.out_vars)
