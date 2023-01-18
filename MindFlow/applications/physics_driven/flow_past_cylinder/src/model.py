@@ -39,35 +39,35 @@ class NavierStokes2D(NavierStokes):
         self.ic_nodes = sympy_to_mindspore(self.ic(), self.in_vars, self.out_vars)
         self.bc_nodes = sympy_to_mindspore(self.bc(), self.in_vars, self.out_vars)
 
-    def ic(self):
-        """
-        Define initial condition equations based on sympy, abstract method.
-        """
-        ic_u = self.u
-        ic_v = self.v
-        equations = {"ic_u": ic_u, "ic_v": ic_v}
-        return equations
-
     def bc(self):
         """
         Define boundary condition equations based on sympy, abstract method.
         """
         bc_u = self.u
         bc_v = self.v
-        bc_p = self.p
-        equations = {"bc_u": bc_u, "bc_v": bc_v, "bc_p": bc_p}
+        equations = {"bc_u": bc_u, "bc_v": bc_v}
         return equations
 
-    def get_loss(self, pde_data, ic_data, ic_label, bc_data, bc_label):
+    def ic(self):
+        """
+        Define initial condition equations based on sympy, abstract method.
+        """
+        ic_u = self.u
+        ic_v = self.v
+        ic_p = self.p
+        equations = {"ic_u": ic_u, "ic_v": ic_v, "ic_p": ic_p}
+        return equations
+
+    def get_loss(self, pde_data, bc_data, bc_label, ic_data, ic_label):
         """
         Compute loss of 3 parts: governing equation, initial condition and boundary conditions.
 
         Args:
             pde_data (Tensor): the input data of governing equations.
-            ic_data (Tensor): the input data of initial condition.
-            ic_label (Tensor): the true value of initial state.
             bc_data (Tensor): the input data of boundary condition.
             bc_label (Tensor): the true value at boundary.
+            ic_data (Tensor): the input data of initial condition.
+            ic_label (Tensor): the true value of initial state.
         """
         pde_res = self.parse_node(self.pde_nodes, inputs=pde_data)
         pde_residual = ops.Concat(1)(pde_res)
