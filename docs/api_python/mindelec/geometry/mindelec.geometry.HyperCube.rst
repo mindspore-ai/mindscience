@@ -17,7 +17,7 @@ mindelec.geometry.HyperCube
         - **TypeError** - `sampling_config` 不是类采样配置的实例。
 
 
-    .. py:method::mindelec.geometry.HyperCube.sampling(geom_type='domain')
+    .. py:method:: mindelec.geometry.HyperCube.sampling(geom_type='domain')
 
         采样点。
 
