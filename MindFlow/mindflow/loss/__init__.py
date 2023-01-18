@@ -20,3 +20,5 @@ __all__ = ['get_loss_metric',
            'MTLWeightedLossCell',
            'RelativeRMSELoss'
            ]
+
+__all__.sort()

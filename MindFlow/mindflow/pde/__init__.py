@@ -20,3 +20,5 @@ from .sympy2mindspore import sympy_to_mindspore
 from .sympy_pde import PDEWithLoss
 
 __all__ = ["Burgers", "NavierStokes", "Poisson", "sympy_to_mindspore", "PDEWithLoss"]
+
+__all__.sort()
