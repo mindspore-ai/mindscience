@@ -20,7 +20,7 @@ model:
   weight_init: "TruncatedNormal"
 optimizer: 
   lr: 0.001
-train_epoch: 2000
+train_epoch: 4000
 train_batch_size: 8192
 vision_path: "./images"
 save_ckpt: false

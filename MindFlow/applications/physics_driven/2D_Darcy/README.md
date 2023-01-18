@@ -67,7 +67,7 @@ model:
   neurons: 64
 optimizer:
   lr: 0.001
-train_epoch: 2000
+train_epoch: 4000
 train_batch_size: 8192
 vision_path: "./images"
 save_ckpt: false
@@ -139,7 +139,7 @@ def get_test_data(config):
 `Problem` contains the governing equations and boundary conditions for solving 2D stabilized Darcy problem.
 
 ```python
-class Darcy2D(Problem):
+class Darcy2D(PDEWithLoss):
     r"""
     The steady-state 2D Darcy flow's equations with Dirichlet boundary condition
 
@@ -149,63 +149,61 @@ class Darcy2D(Problem):
       bc_name (str): The corresponding column name of data which governed by boundary condition.
     """
 
-    def __init__(self, model, domain_name=None, bc_name=None):
-        super(Darcy2D, self).__init__()
-        self.domain_name = domain_name
-        self.bc_name = bc_name
-        self.model = model
-        self.grad = Grad(self.model)
-        self.sin = ops.Sin()
-        self.cos = ops.Cos()
+    def __init__(self, model, loss_fn=nn.MSELoss()):
+        self.x, self.y = symbols("x y")
+        self.u = Function("u")(self.x, self.y)
+        self.v = Function("v")(self.x, self.y)
+        self.p = Function("p")(self.x, self.y)
+        self.in_vars = [self.x, self.y]
+        self.out_vars = [self.u, self.v, self.p]
+        self.loss_fn = loss_fn
+        self.bc_nodes = sympy_to_mindspore(self.bc(), self.in_vars, self.out_vars)
+        super(Darcy2D, self).__init__(model, self.in_vars, self.out_vars)
 
-        # constants
-        self.PI = Tensor(PI, mstype.float32)
+    def force_function(self, x, y):
+        """ "forcing function in Darcy Equation"""
+        return 8 * pi**2 * sin(2 * pi * x) * cos(2 * pi * y)
 
-    def force_function(self, in_x, in_y):
-        """"forcing function in Darcy Equation"""
-        return 8 * self.PI**2 * self.sin(2 * self.PI * in_x) * self.cos(2 * self.PI * in_y)
-
-    @ms_function
-    def governing_equation(self, *output, **kwargs):
+    def pde(self):
         """darcy equation"""
-        u_x, u_y, _ = ops.split(output[0], axis=1, output_num=3)
+        loss_1 = (
+            self.u.diff(self.x)
+            + self.v.diff(self.y)
+            - self.force_function(self.x, self.y)
+        )
+        loss_2 = self.u + self.p.diff(self.x)
+        loss_3 = self.v + self.p.diff(self.y)
+        return {"loss_1": loss_1, "loss_2": loss_2, "loss_3": loss_3}
 
-        data = kwargs[self.domain_name]
-        in_x = ops.Reshape()(data[:, 0], (-1, 1))
-        in_y = ops.Reshape()(data[:, 1], (-1, 1))
-
-        duxdx = ops.Cast()(self.grad(data, 0, 0, output[0]), mstype.float32)
-        duydy = ops.Cast()(self.grad(data, 1, 1, output[0]), mstype.float32)
-        dpdx = ops.Cast()(self.grad(data, 0, 2, output[0]), mstype.float32)
-        dpdy = ops.Cast()(self.grad(data, 1, 2, output[0]), mstype.float32)
-
-        loss_1 = -1 * (duxdx + duydy - self.force_function(in_x, in_y))
-        loss_2 = 1 * (u_x + dpdx)
-        loss_3 = 2 * self.PI * (u_y + dpdy)
-
-        return ops.Concat(1)((loss_1, loss_2, loss_3))
-
-    @ms_function
-    def boundary_condition(self, *output, **kwargs):
+    def bc(self):
         """Dirichlet boundary condition"""
+        u_boundary = self.u - (-2 * pi * cos(2 * pi * self.x) * cos(2 * pi * self.y))
 
-        out_vars = output[0]
-        u_x, u_y, pressure = ops.split(out_vars, axis=1, output_num=3)
-        data = kwargs[self.bc_name]
-        in_x = ops.Reshape()(data[:, 0], (-1, 1))
-        in_y = ops.Reshape()(data[:, 1], (-1, 1))
-        ux_boundary = -1 * (
-            u_x - (-2 * self.PI * self.cos(2 * self.PI * in_x) * self.cos(2 * self.PI * in_y))
+        v_boundary = self.v - (2 * pi * sin(2 * pi * self.x) * sin(2 * pi * self.y))
+
+        p_boundary = self.p - (sin(2 * pi * self.x) * cos(2 * pi * self.y))
+
+        return {
+            "u_boundary": u_boundary,
+            "v_boundary": v_boundary,
+            "p_boundary": p_boundary,
+        }
+
+    def get_loss(self, pde_data, bc_data):
+        """
+        Compute loss of 2 parts: governing equation and boundary conditions.
+        """
+        pde_res = ops.Concat(1)(self.parse_node(self.pde_nodes, inputs=pde_data))
+        pde_loss = self.loss_fn(
+            pde_res, Tensor(np.array([0.0]).astype(np.float32), mstype.float32)
         )
 
-        uy_boundary = 1 * (
-            u_y - (2 * self.PI * self.sin(2 * self.PI * in_x) * self.sin(2 * self.PI * in_y))
+        bc_res = ops.Concat(1)(self.parse_node(self.bc_nodes, inputs=bc_data))
+        bc_loss = self.loss_fn(
+            bc_res, Tensor(np.array([0.0]).astype(np.float32), mstype.float32)
         )
 
-        p_boundary = (
-            2 * self.PI * (pressure - self.sin(2 * self.PI * in_x) * self.cos(2 * self.PI * in_y))
-        )
-        return ops.Concat(1)((ux_boundary, uy_boundary, p_boundary))
+        return pde_loss + bc_loss
 ```
 
 ### Neural Network Construction
@@ -229,11 +227,8 @@ This example uses a simple fully-connected network with a depth of 6 layers and 
 Instantiate `Contraints` as a loss.
 
 ```python
-    # define problem and Constraints
-    darcy_problem = [
-        Darcy2D(model=model) for _ in range(flow_train_dataset.num_dataset)
-    ]
-    train_constraints = Constraints(flow_train_dataset, darcy_problem)
+    # define problem
+    problem = Darcy2D(model)
 ```
 
 ### Model Training
@@ -245,32 +240,33 @@ Invoke the `Solver` interface for model training and inference. pass optimizer, 
     params = model.trainable_params()
     optim = nn.Adam(params, learning_rate=config["optimizer"]["lr"])
 
-    # solver
-    solver = Solver(
-        model,
-        optimizer=optim,
-        mode="PINNs",
-        train_constraints=train_constraints,
-        test_constraints=None,
-        metrics={"l2": L2(), "distance": nn.MAE()},
-        loss_scale_manager=DynamicLossScaleManager(),
-    )
+    def forward_fn(pde_data, bc_data):
+        return problem.get_loss(pde_data, bc_data)
 
-    # training
+    grad_fn = ops.value_and_grad(forward_fn, None, optim.parameters, has_aux=False)
 
-    # define callbacks
-    callbacks = [LossAndTimeMonitor(len(flow_train_dataset))]
+    @jit
+    def train_step(pde_data, bc_data):
+        loss, grads = grad_fn(pde_data, bc_data)
+        loss = ops.depend(loss, optim(grads))
+        return loss
 
-    if config["save_ckpt"]:
-        ckpt_config = CheckpointConfig(save_checkpoint_steps=10, keep_checkpoint_max=2)
-        ckpoint_cb = ModelCheckpoint(
-            prefix="ckpt_darcy", directory=config["save_ckpt_path"], config=ckpt_config
-        )
-        callbacks += [ckpoint_cb]
+    epochs = config["train_epoch"]
+    sink_process = data_sink(train_step, train_data, sink_size=1)
+    model.set_train()
 
-    solver.train(
-        epoch=config["train_epoch"], train_dataset=train_data, callbacks=callbacks
-    )
+    for epoch in range(epochs):
+        local_time_beg = time.time()
+        cur_loss = sink_process()
+        if epoch % 200 == 0:
+            print(
+                "epoch: {}, loss: {}, time: {}ms.".format(
+                    epoch, cur_loss, (time.time() - local_time_beg) * 1000
+                )
+            )
+            calculate_l2_error(
+                model, test_input, test_label, config["train_batch_size"]
+            )
 
     visual_result(model, config)
 ```
@@ -280,32 +276,99 @@ Invoke the `Solver` interface for model training and inference. pass optimizer, 
 The model results are as follows:
 
 ```log
-epoch time: 1137.334 ms, per step time: 142.167 ms
-epoch: 1991 step: 8, loss is 0.12258543819189072
-epoch time: 1117.534 ms, per step time: 139.692 ms
-epoch: 1992 step: 8, loss is 0.10140248388051987
-epoch time: 1155.795 ms, per step time: 144.474 ms
-epoch: 1993 step: 8, loss is 0.030582554638385773
-epoch time: 1146.296 ms, per step time: 143.287 ms
-epoch: 1994 step: 8, loss is 0.10011541098356247
-epoch time: 2366.454 ms, per step time: 295.807 ms
-epoch: 1995 step: 8, loss is 0.24885042011737823
-epoch time: 502.493 ms, per step time: 62.812 ms
-epoch: 1996 step: 8, loss is 0.2624998688697815
-epoch time: 2406.218 ms, per step time: 300.777 ms
-epoch: 1997 step: 8, loss is 0.14243541657924652
-epoch time: 322.166 ms, per step time: 40.271 ms
-epoch: 1998 step: 8, loss is 0.17884144186973572
-epoch time: 1493.348 ms, per step time: 186.669 ms
-epoch: 1999 step: 8, loss is 0.07444168627262115
-epoch time: 623.304 ms, per step time: 77.913 ms
-epoch: 2000 step: 8, loss is 0.0650666207075119
-================================Start Evaluation================================
-Total prediction time: 0.0147705078125 s
-l2_error, ux:  0.012288654921565733 , uy:  0.010292700640242451 , p:  0.008429703507824701
-=================================End Evaluation=================================
-epoch time: 1879.475 ms, per step time: 234.934 ms
-End-to-End total time: 2449.483253479004 s
+u_boundary: u(x, y) + 2*pi*cos(2*pi*x)*cos(2*pi*y)
+    Item numbers of current derivative formula nodes: 2
+v_boundary: v(x, y) - 2*pi*sin(2*pi*x)*sin(2*pi*y)
+    Item numbers of current derivative formula nodes: 2
+p_boundary: p(x, y) - sin(2*pi*x)*cos(2*pi*y)
+    Item numbers of current derivative formula nodes: 2
+loss_1: -8*pi**2*sin(2*pi*x)*cos(2*pi*y) + Derivative(u(x, y), x) + Derivative(v(x, y), y)
+    Item numbers of current derivative formula nodes: 3
+loss_2: u(x, y) + Derivative(p(x, y), x)
+    Item numbers of current derivative formula nodes: 2
+loss_3: v(x, y) + Derivative(p(x, y), y)
+    Item numbers of current derivative formula nodes: 2
+epoch: 0, loss: 540.41064, time: 6506.239652633667ms.
+    predict total time: 1118.4625625610352 ms
+    l2_error:  1.0001721637046521
+==================================================================================================
+epoch: 200, loss: 519.95905, time: 224.0011692047119ms.
+    predict total time: 107.98430442810059 ms
+    l2_error:  1.000227361534047
+==================================================================================================
+epoch: 400, loss: 530.78564, time: 250.22459030151367ms.
+    predict total time: 3.2651424407958984 ms
+    l2_error:  1.000569918705146
+==================================================================================================
+epoch: 600, loss: 205.96858, time: 263.2002830505371ms.
+    predict total time: 267.98462867736816 ms
+    l2_error:  0.8051833259470584
+==================================================================================================
+epoch: 800, loss: 6.81559, time: 247.53975868225098ms.
+    predict total time: 3.2553672790527344 ms
+    l2_error:  0.5721603283228421
+==================================================================================================
+epoch: 1000, loss: 0.7342617, time: 233.46233367919922ms.
+    predict total time: 47.98769950866699 ms
+    l2_error:  0.15113541987718068
+==================================================================================================
+epoch: 1200, loss: 0.32787272, time: 189.26453590393066ms.
+    predict total time: 223.968505859375 ms
+    l2_error:  0.06990242878007565
+==================================================================================================
+epoch: 1400, loss: 0.92689145, time: 354.1455268859863ms.
+    predict total time: 303.9853572845459 ms
+    l2_error:  0.05815758712471397
+==================================================================================================
+epoch: 1600, loss: 0.5284673, time: 309.88574028015137ms.
+    predict total time: 147.98974990844727 ms
+    l2_error:  0.047257754766852345
+==================================================================================================
+epoch: 1800, loss: 0.06530425, time: 274.4631767272949ms.
+    predict total time: 8.200645446777344 ms
+    l2_error:  0.03284622712221182
+==================================================================================================
+epoch: 2000, loss: 0.84967047, time: 316.03217124938965ms.
+    predict total time: 7.172822952270508 ms
+    l2_error:  0.04487714822865241
+==================================================================================================
+epoch: 2200, loss: 0.70964915, time: 252.62761116027832ms.
+    predict total time: 154.88839149475098 ms
+    l2_error:  0.039425191815509394
+==================================================================================================
+epoch: 2400, loss: 0.056157738, time: 220.26371955871582ms.
+    predict total time: 6.469488143920898 ms
+    l2_error:  0.024135588727258288
+==================================================================================================
+epoch: 2600, loss: 0.22577585, time: 316.00093841552734ms.
+    predict total time: 128.19910049438477 ms
+    l2_error:  0.032751112166644045
+==================================================================================================
+epoch: 2800, loss: 0.04019782, time: 132.07292556762695ms.
+    predict total time: 127.98666954040527 ms
+    l2_error:  0.021813896887517493
+==================================================================================================
+epoch: 3000, loss: 0.1239146, time: 283.0181121826172ms.
+    predict total time: 57.543277740478516 ms
+    l2_error:  0.024571568144330987
+==================================================================================================
+epoch: 3200, loss: 0.018467793, time: 219.33817863464355ms.
+    predict total time: 76.04241371154785 ms
+    l2_error:  0.019597676617278563
+==================================================================================================
+epoch: 3400, loss: 0.098201014, time: 160.3076457977295ms.
+    predict total time: 91.98641777038574 ms
+    l2_error:  0.021949914163476116
+==================================================================================================
+epoch: 3600, loss: 0.73904705, time: 336.02404594421387ms.
+    predict total time: 211.99345588684082 ms
+    l2_error:  0.046544678917597206
+==================================================================================================
+epoch: 3800, loss: 0.22243327, time: 316.00022315979004ms.
+    predict total time: 211.98391914367676 ms
+    l2_error:  0.022450780339445277
+==================================================================================================
+End-to-End total time: 839.0130681991577 s
 ```
 
 ### Model Inference and Visualization

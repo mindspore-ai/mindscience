@@ -1,4 +1,5 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# ============================================================================
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,17 +14,16 @@
 # limitations under the License.
 # ============================================================================
 """2d darcy problem with dirichlet boundary condition"""
-from scipy.constants import pi as PI
-from mindspore import ms_function
-from mindspore import ops
-from mindspore import Tensor
-import mindspore.common.dtype as mstype
+import numpy as np
 
-from mindflow.operators import Grad
-from mindflow.pde import Problem
+from mindspore import nn, ops, Tensor
+from mindspore import dtype as mstype
+from sympy import Function, symbols, sin, cos, pi
+
+from mindflow.pde import PDEWithLoss, sympy_to_mindspore
 
 
-class Darcy2D(Problem):
+class Darcy2D(PDEWithLoss):
     r"""
     The steady-state 2D Darcy flow's equations with Dirichlet boundary condition
 
@@ -33,60 +33,58 @@ class Darcy2D(Problem):
       bc_name (str): The corresponding column name of data which governed by boundary condition.
     """
 
-    def __init__(self, model, domain_name=None, bc_name=None):
-        super(Darcy2D, self).__init__()
-        self.domain_name = domain_name
-        self.bc_name = bc_name
-        self.model = model
-        self.grad = Grad(self.model)
-        self.sin = ops.Sin()
-        self.cos = ops.Cos()
+    def __init__(self, model, loss_fn=nn.MSELoss()):
+        self.x, self.y = symbols("x y")
+        self.u = Function("u")(self.x, self.y)
+        self.v = Function("v")(self.x, self.y)
+        self.p = Function("p")(self.x, self.y)
+        self.in_vars = [self.x, self.y]
+        self.out_vars = [self.u, self.v, self.p]
+        self.loss_fn = loss_fn
+        self.bc_nodes = sympy_to_mindspore(self.bc(), self.in_vars, self.out_vars)
+        super(Darcy2D, self).__init__(model, self.in_vars, self.out_vars)
 
-        # constants
-        self.pi = Tensor(PI, mstype.float32)
+    def force_function(self, x, y):
+        """ "forcing function in Darcy Equation"""
+        return 8 * pi**2 * sin(2 * pi * x) * cos(2 * pi * y)
 
-    def force_function(self, in_x, in_y):
-        """"forcing function in Darcy Equation"""
-        return 8 * self.pi**2 * self.sin(2 * self.pi * in_x) * self.cos(2 * self.pi * in_y)
-
-    @ms_function
-    def governing_equation(self, *output, **kwargs):
+    def pde(self):
         """darcy equation"""
-        u_x, u_y, _ = ops.split(output[0], axis=1, output_num=3)
+        loss_1 = (
+            self.u.diff(self.x)
+            + self.v.diff(self.y)
+            - self.force_function(self.x, self.y)
+        )
+        loss_2 = self.u + self.p.diff(self.x)
+        loss_3 = self.v + self.p.diff(self.y)
+        return {"loss_1": loss_1, "loss_2": loss_2, "loss_3": loss_3}
 
-        data = kwargs[self.domain_name]
-        in_x = ops.Reshape()(data[:, 0], (-1, 1))
-        in_y = ops.Reshape()(data[:, 1], (-1, 1))
-
-        duxdx = ops.Cast()(self.grad(data, 0, 0, output[0]), mstype.float32)
-        duydy = ops.Cast()(self.grad(data, 1, 1, output[0]), mstype.float32)
-        dpdx = ops.Cast()(self.grad(data, 0, 2, output[0]), mstype.float32)
-        dpdy = ops.Cast()(self.grad(data, 1, 2, output[0]), mstype.float32)
-
-        loss_1 = -1 * (duxdx + duydy - self.force_function(in_x, in_y))
-        loss_2 = 1 * (u_x + dpdx)
-        loss_3 = 2 * self.pi * (u_y + dpdy)
-
-        return ops.Concat(1)((loss_1, loss_2, loss_3))
-
-    @ms_function
-    def boundary_condition(self, *output, **kwargs):
+    def bc(self):
         """Dirichlet boundary condition"""
+        u_boundary = self.u - (-2 * pi * cos(2 * pi * self.x) * cos(2 * pi * self.y))
 
-        out_vars = output[0]
-        u_x, u_y, pressure = ops.split(out_vars, axis=1, output_num=3)
-        data = kwargs[self.bc_name]
-        in_x = ops.Reshape()(data[:, 0], (-1, 1))
-        in_y = ops.Reshape()(data[:, 1], (-1, 1))
-        ux_boundary = -1 * (
-            u_x - (-2 * self.pi * self.cos(2 * self.pi * in_x) * self.cos(2 * self.pi * in_y))
+        v_boundary = self.v - (2 * pi * sin(2 * pi * self.x) * sin(2 * pi * self.y))
+
+        p_boundary = self.p - (sin(2 * pi * self.x) * cos(2 * pi * self.y))
+
+        return {
+            "u_boundary": u_boundary,
+            "v_boundary": v_boundary,
+            "p_boundary": p_boundary,
+        }
+
+    def get_loss(self, pde_data, bc_data):
+        """
+        Compute loss of 2 parts: governing equation and boundary conditions.
+        """
+        pde_res = ops.Concat(1)(self.parse_node(self.pde_nodes, inputs=pde_data))
+        pde_loss = self.loss_fn(
+            pde_res, Tensor(np.array([0.0]).astype(np.float32), mstype.float32)
         )
 
-        uy_boundary = 1 * (
-            u_y - (2 * self.pi * self.sin(2 * self.pi * in_x) * self.sin(2 * self.pi * in_y))
+        bc_res = ops.Concat(1)(self.parse_node(self.bc_nodes, inputs=bc_data))
+        bc_loss = self.loss_fn(
+            bc_res, Tensor(np.array([0.0]).astype(np.float32), mstype.float32)
         )
 
-        p_boundary = (
-            2 * self.pi * (pressure - self.sin(2 * self.pi * in_x) * self.cos(2 * self.pi * in_y))
-        )
-        return ops.Concat(1)((ux_boundary, uy_boundary, p_boundary))
+        return pde_loss + bc_loss

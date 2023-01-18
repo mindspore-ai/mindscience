@@ -1,4 +1,5 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# ============================================================================
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,11 +16,12 @@
 """init"""
 from .dataset import get_test_data, create_random_dataset
 from .darcy import Darcy2D
-from .utils import visual_result
+from .utils import visual_result, calculate_l2_error
 
 __all__ = [
     "create_random_dataset",
     "get_test_data",
     "Darcy2D",
     "visual_result",
+    "calculate_l2_error",
 ]
