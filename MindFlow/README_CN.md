@@ -36,10 +36,30 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 **更多应用案例请见**：👀
 
-- [PDENet](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_plus_data_driven/variant_linear_coe_pde_net)
-- [圆柱绕流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physical_driven/flow_past_cylinder)
+### CFD
+
+- [二维库埃特流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)
+- [一维`Lax`激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
+- [二维黎曼问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)
+- [一维`Sod`激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
+
+### 数据驱动
+
 - [`N-S`方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes)
-- [`Burgers`方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physical_driven/burgers_pinns)
+- [`Burgers`方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers)
+
+### 物理驱动
+
+- [`Burgers-pinns`方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers_pinns)
+- [2D`Darcy`方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/2D_Darcy)
+- [二维泊松方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson_ring)
+- [`PINNs`求解泊松方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/possion_pinns)
+- [偏微分方程样例](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/sympy_pde_introduction)
+- [圆柱绕流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/flow_past_cylinder)
+
+### 数据机理融合
+
+- [PDENet](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_plus_data_driven/variant_linear_coe_pde_net)
 
 ## **安装教程**
 

@@ -36,10 +36,30 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 **More Cases**：👀
 
-- [PDENet](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_plus_data_driven/variant_linear_coe_pde_net)
-- [Flow around a cylinder](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physical_driven/flow_past_cylinder)
+### CFD
+
+- [Couetee flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)
+- [1d lax tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
+- [2d riemann](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)
+- [Sod tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
+
+### Data Driven
+
 - [`N-S` equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes)
-- [`Burgers` equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physical_driven/burgers_pinns)
+- [`Burgers` equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers)
+
+### Physics Driven
+
+- [Flow around a cylinder](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/flow_past_cylinder)
+- [`Burgers-pinns` equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers_pinns)
+- [2D Darcy flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/2D_Darcy)
+- [poisson ring](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson_ring)
+- [poisson pinns](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/possion_pinns)
+- [simple pde introduction](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/sympy_pde_introduction)
+
+### Physics Plus Data Driven
+
+- [PDENet](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_plus_data_driven/variant_linear_coe_pde_net)
 
 ## **Installation**
 
