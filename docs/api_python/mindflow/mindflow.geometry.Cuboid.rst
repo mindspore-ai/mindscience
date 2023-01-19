@@ -1,4 +1,4 @@
-.. py:class:: mindflow.geometry.Cuboid(name, coord_min, coord_max, dtype=np.float32, sampling_config=None)
+.. py:class:: mindflow.geometry.Cuboid(name, coord_min, coord_max, dtype=numpy.float32, sampling_config=None)
 
     立方体对象的定义。
 

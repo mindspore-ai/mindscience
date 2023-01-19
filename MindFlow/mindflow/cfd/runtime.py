@@ -57,7 +57,12 @@ class RunTime:
         self.eps = 1e-8
 
     def compute_timestep(self, pri_var):
-        """Computes the physical time step size."""
+        """
+        Computes the physical time step size.
+
+        Args:
+            pri_var (Tensor): The primitive variables.
+        """
         if not self.fixed_timestep:
             tmp = []
             for axis in self.mesh_info.active_axis:
@@ -74,23 +79,29 @@ class RunTime:
         print("current time = {:.6f}, time step = {:.6f}".format(self.current_time.asnumpy(), self.timestep.asnumpy()))
 
     def advance(self):
-        """Simulation advance according to the timestep"""
+        """
+        Simulation advance according to the timestep.
+
+        Raises:
+            NotImplementedError: If `timestep` is invalid.
+        """
         if not self.timestep:
             raise NotImplementedError()
         self.current_time += self.timestep
 
     def time_loop(self, pri_var):
-        """Weather to continue the simulation. When current time reaches end time or NAN value detected,
+        """
+        Weather to continue the simulation. When current time reaches end time or NAN value detected,
         return False.
 
         Args:
             pri_var (Tensor): The primitive variables.
 
-        Raises:
-            ValueError: If pri_var has NAN values.
-
         Returns:
             Bool. Weather to continue the simulation.
+
+        Raises:
+            ValueError: If pri_var has NAN values.
         """
         if mnp.isnan(pri_var).sum() > 0:
             raise ValueError('Nan value detected!')

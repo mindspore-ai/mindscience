@@ -43,6 +43,14 @@ class Equation(Data):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindflow.geometry import generate_sampling_config, Geometry
+        >>> from mindflow.data import Equation
+        >>> geometry_config = dict({'domain' : dict({'random_sampling' : True, 'size' : 100, 'sampler' : 'uniform',})})
+        >>> sampling_config = generate_sampling_config(geometry_config)
+        >>> geom = Geometry("geom", 1, 0.0, 1.0, sampling_config=sampling_config)
+        >>> boundary = Equation(geometry=geom)
     """
     def __init__(self, geometry):
         check_param_type(geometry, "geometry", data_type=Geometry)

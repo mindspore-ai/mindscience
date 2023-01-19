@@ -230,6 +230,10 @@ class WaveletTransformLoss(nn.LossBase):
     Outputs:
         Tensor.
 
+    Raises:
+        TypeError: if `wave_level` is not an int.
+        TypeError: if `regroup` is not a bool.
+
     Supported Platforms:
         ``Ascend`` ``GPU``
 
@@ -247,6 +251,8 @@ class WaveletTransformLoss(nn.LossBase):
     """
 
     def __init__(self, wave_level=2, regroup=False):
+        check_param_type(param=wave_level, param_name="wave_level", data_type=int)
+        check_param_type(param=regroup, param_name="regroup", data_type=bool)
         super(WaveletTransformLoss, self).__init__()
         self.abs = P.Abs()
         self.wave_level = wave_level

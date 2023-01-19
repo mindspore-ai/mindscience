@@ -62,13 +62,13 @@ def sympy_to_mindspore(equations, in_vars, out_vars):
 
     Args:
         equations (dict): the item in equations contains the key defined by user and the value is sympy expression.
-        in_vars (list(sympy.core.Symbol)): list of all input variable symbols, consistent with the dimension of the
+        in_vars (list[sympy.core.Symbol]): list of all input variable symbols, consistent with the dimension of the
             input data.
-        out_vars (list(sympy.core.Function)): list of all output variable symbols, consistent with the dimension of the
+        out_vars (list[sympy.core.Function]): list of all output variable symbols, consistent with the dimension of the
             output data.
 
     Returns:
-        List(FormulaNode), list of expressions node can be identified by mindspore.
+        List([FormulaNode]), list of expressions node can be identified by mindspore.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

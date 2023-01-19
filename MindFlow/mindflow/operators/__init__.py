@@ -16,3 +16,5 @@
 from .derivatives import batched_hessian, batched_jacobian
 
 __all__ = ["batched_hessian", "batched_jacobian"]
+
+__all__.sort()

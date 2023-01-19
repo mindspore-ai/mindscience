@@ -27,11 +27,11 @@ def cal_con_var(pri_var, material):
         pri_var (Tensor): The primitive variables.
         material (Material): Material of the fluid.
 
+    Returns:
+        Tensor, with the same shape as pri_var.
+
     Supported Platforms:
         ``GPU``
-
-    Returns:
-        Tensor, with the same shape as pri_var
 
     Examples:
         >>> import numpy as np
@@ -62,11 +62,11 @@ def cal_pri_var(con_var, material):
         con_var (Tensor): The conservative variables.
         material (Material): Material of the fluid.
 
+    Returns:
+        Tensor, with the same shape as con_var.
+
     Supported Platforms:
         ``GPU``
-
-    Returns:
-        Tensor, with the same shape as pri_var
 
     Examples:
         >>> import numpy as np
@@ -104,7 +104,7 @@ def cal_flux(con_var, pri_var, axis):
         ``GPU``
 
     Returns:
-        Tensor, with the same shape as pri_var
+        Tensor, with the same shape as pri_var.
 
     Examples:
         >>> import numpy as np

@@ -16,7 +16,7 @@
 import numpy as np
 import sympy
 
-from mindspore import nn, Tensor
+from mindspore import Tensor
 from mindspore import dtype as mstype
 
 from mindflow.pde import Burgers, sympy_to_mindspore
@@ -28,14 +28,13 @@ class Burgers1D(Burgers):
 
     Args:
         model (Cell): network for training.
-        loss_fn (Union[None, Cell]): Define the loss function. If None, the `network` should have the loss inside.
-            Default: MSELoss.
+        loss_fn (str): Define the loss function. Default: mse.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
     """
-    def __init__(self, model, loss_fn=nn.MSELoss()):
+    def __init__(self, model, loss_fn="mse"):
         super(Burgers1D, self).__init__(model, loss_fn=loss_fn)
         self.ic_nodes = sympy_to_mindspore(self.ic(), self.in_vars, self.out_vars)
         self.bc_nodes = sympy_to_mindspore(self.bc(), self.in_vars, self.out_vars)

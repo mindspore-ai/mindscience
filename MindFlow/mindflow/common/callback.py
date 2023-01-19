@@ -37,6 +37,20 @@ class EvalCallback(Callback):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> import mindspore.dataset as ds
+        >>> import mindspore as ms
+        >>> from mindspore import nn
+        >>> from mindflow import EvalCallback
+        >>> loss_fn = nn.MSELoss()
+        >>> net = nn.Dense(2, 1)
+        >>> optimizer = nn.Adam(net.trainable_params(), 0.001)
+        >>> model = ms.train.model.Model(net, loss_fn, optimizer)
+        >>> data = np.array(np.random.sample(size=(5, 5)))
+        >>> dataset = ds.NumpySlicesDataset([data], ["data"])
+        >>> eval_cb = EvalCallback(model, dataset, 1)
     """
     def __init__(self, model, eval_ds, eval_interval):
         super(EvalCallback, self).__init__()
@@ -87,6 +101,10 @@ class LossAndTimeMonitor(Callback):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindflow.common import LossAndTimeMonitor
+        >>> loss_time_monitor = LossAndTimeMonitor(8)
     """
 
     def __init__(self, data_size, per_print_times=1):

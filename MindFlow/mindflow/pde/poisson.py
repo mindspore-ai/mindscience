@@ -15,8 +15,7 @@
 """Poisson 2D problem"""
 import sympy
 
-from mindspore import nn
-
+from ..loss import get_loss_metric
 from .sympy_pde import PDEWithLoss
 
 
@@ -26,7 +25,7 @@ class Poisson(PDEWithLoss):
 
     Args:
         model (mindspore.nn.Cell): network for training.
-        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. Default: mindspore.nn.MSELoss.
+        loss_fn (str): Define the loss function. Default: mse.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -54,7 +53,7 @@ class Poisson(PDEWithLoss):
             Item numbers of current derivative formula nodes: 3
         {'poisson': Derivative(u(x, y), (x, 2)) + Derivative(u(x, y), (y, 2)) + 1.0}
     """
-    def __init__(self, model, loss_fn=nn.MSELoss()):
+    def __init__(self, model, loss_fn="mse"):
         self.x = sympy.Symbol('x')
         self.y = sympy.Symbol('y')
         self.normal = sympy.Symbol('n')
@@ -63,7 +62,10 @@ class Poisson(PDEWithLoss):
         self.in_vars = [self.x, self.y]
         self.out_vars = [self.u]
         super(Poisson, self).__init__(model, self.in_vars, self.out_vars)
-        self.loss_fn = loss_fn
+        if isinstance(loss_fn, str):
+            self.loss_fn = get_loss_metric(loss_fn)
+        else:
+            self.loss_fn = loss_fn
 
     def pde(self):
         """

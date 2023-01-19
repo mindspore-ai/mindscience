@@ -45,7 +45,7 @@ def batched_jacobian(model):
             out_channels.
 
     Returns:
-        Tensor, jacobi of the model. With the input dimension is [batch_size, in_channels], output dimension
+        jacobian(Tensor): jacobi of the model. With the input dimension is [batch_size, in_channels], output dimension
         is [out_channels, batch_size, in_channels].
 
     Note:
@@ -67,7 +67,7 @@ def batched_jacobian(model):
         ...         self.fc2 = nn.Dense(hidden, hidden)
         ...         self.fcout = nn.Dense(hidden, cout)
         ...         self.act = ops.Tanh()
-        ...
+        ...     
         ...     def construct(self, x):
         ...         x = self.act(self.fc1(x))
         ...         x = self.act(self.fc2(x))
@@ -93,7 +93,7 @@ def batched_hessian(model):
             out_channels.
 
     Returns:
-        Tensor, hessian of the model. With the input dimension is [batch_size, in_channels], output dimension
+        hessian(Tensor): hessian of the model. With the input dimension is [batch_size, in_channels], output dimension
         is [out_channels, in_channels, batch_size, in_channels].
 
     Note:
@@ -115,7 +115,7 @@ def batched_hessian(model):
         ...         self.fc2 = nn.Dense(hidden, hidden)
         ...         self.fcout = nn.Dense(hidden, cout)
         ...         self.act = ops.Tanh()
-        ...
+        ...     
         ...     def construct(self, x):
         ...         x = self.act(self.fc1(x))
         ...         x = self.act(self.fc2(x))

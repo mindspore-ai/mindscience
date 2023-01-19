@@ -16,8 +16,7 @@
 import numpy as np
 from sympy import diff, Function, symbols
 
-from mindspore import nn
-
+from ..loss import get_loss_metric
 from .sympy_pde import PDEWithLoss
 
 
@@ -29,7 +28,7 @@ class NavierStokes(PDEWithLoss):
         model (mindspore.nn.Cell): network for training.
         re (float): reynolds number is the ratio of inertia force to viscous force of a fluid. It is a dimensionless
             quantity. Default: 100.0.
-        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. Default: mindspore.nn.MSELoss.
+        loss_fn (str): Define the loss function. Default: mse.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -72,7 +71,7 @@ class NavierStokes(PDEWithLoss):
         'continuty': Derivative(u(x, y, t), x) + Derivative(v(x, y, t), y)}
     """
 
-    def __init__(self, model, re=100, loss_fn=nn.MSELoss()):
+    def __init__(self, model, re=100.0, loss_fn="mse"):
         self.number = np.float32(1.0 / re)
         self.x, self.y, self.t = symbols('x y t')
         self.u = Function('u')(self.x, self.y, self.t)
@@ -81,7 +80,10 @@ class NavierStokes(PDEWithLoss):
         self.in_vars = [self.x, self.y, self.t]
         self.out_vars = [self.u, self.v, self.p]
         super(NavierStokes, self).__init__(model, self.in_vars, self.out_vars)
-        self.loss_fn = loss_fn
+        if isinstance(loss_fn, str):
+            self.loss_fn = get_loss_metric(loss_fn)
+        else:
+            self.loss_fn = loss_fn
 
     def pde(self):
         """
