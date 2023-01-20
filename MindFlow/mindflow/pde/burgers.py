@@ -16,9 +16,8 @@
 import numpy as np
 from sympy import diff, Function, symbols
 
-from mindspore import nn
-
 from .sympy_pde import PDEWithLoss
+from ..loss import get_loss_metric
 
 
 class Burgers(PDEWithLoss):
@@ -27,13 +26,13 @@ class Burgers(PDEWithLoss):
 
     Args:
         model (mindspore.nn.Cell): Network for training.
-        loss_fn (Union[None, mindspore.nn.Cell]): Define the loss function. Default: mindspore.nn.MSELoss.
+        loss_fn (str): Define the loss function. Default: mse.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from mindflow.pde import burgers
+        >>> from mindflow.pde import Burgers
         >>> from mindspore import nn, ops
         >>> class Net(nn.Cell):
         ...     def __init__(self, cin=2, cout=1, hidden=10):
@@ -56,14 +55,17 @@ class Burgers(PDEWithLoss):
         {'burgers': u(x, t)Derivative(u(x, t), x) + Derivative(u(x, t), t) - 0.00318309897556901Derivative(u(x, t),
         (x, 2))}
     """
-    def __init__(self, model, loss_fn=nn.MSELoss()):
+    def __init__(self, model, loss_fn="mse"):
         self.mu = np.float32(0.01 / np.pi)
         self.x, self.t = symbols('x t')
         self.u = Function('u')(self.x, self.t)
         self.in_vars = [self.x, self.t]
         self.out_vars = [self.u]
         super(Burgers, self).__init__(model, self.in_vars, self.out_vars)
-        self.loss_fn = loss_fn
+        if isinstance(loss_fn, str):
+            self.loss_fn = get_loss_metric(loss_fn)
+        else:
+            self.loss_fn = loss_fn
 
     def pde(self):
         """

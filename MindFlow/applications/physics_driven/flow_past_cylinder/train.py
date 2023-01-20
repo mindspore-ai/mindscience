@@ -81,8 +81,8 @@ def train():
         loss_scaler = DynamicLossScaler(1024, 2, 100)
         auto_mixed_precision(model, 'O3')
 
-    def forward_fn(pde_data, ic_data, ic_label, bc_data, bc_label):
-        loss = problem.get_loss(pde_data, ic_data, ic_label, bc_data, bc_label)
+    def forward_fn(pde_data, bc_data, bc_label, ic_data, ic_label):
+        loss = problem.get_loss(pde_data, bc_data, bc_label, ic_data, ic_label)
         if use_ascend:
             loss = loss_scaler.scale(loss)
         return loss
@@ -90,8 +90,8 @@ def train():
     grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
 
     @jit
-    def train_step(pde_data, ic_data, ic_label, bc_data, bc_label):
-        loss, grads = grad_fn(pde_data, ic_data, ic_label, bc_data, bc_label)
+    def train_step(pde_data, bc_data, bc_label, ic_data, ic_label):
+        loss, grads = grad_fn(pde_data, bc_data, bc_label, ic_data, ic_label)
         if use_ascend:
             loss = loss_scaler.unscale(loss)
             if all_finite(grads):

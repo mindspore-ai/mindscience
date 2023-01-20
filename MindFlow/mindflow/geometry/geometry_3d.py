@@ -16,7 +16,7 @@
 """3d geometry"""
 
 from __future__ import absolute_import
-import numpy as np
+import numpy
 
 from .geometry_base import Geometry
 from .geometry_nd import HyperCube
@@ -49,7 +49,7 @@ class Cuboid(HyperCube):
         >>> print(domain.shape)
         (62500, 3)
     """
-    def __init__(self, name, coord_min, coord_max, dtype=np.float32, sampling_config=None):
+    def __init__(self, name, coord_min, coord_max, dtype=numpy.float32, sampling_config=None):
         super(Cuboid, self).__init__(name, 3, coord_min, coord_max, dtype=dtype, sampling_config=sampling_config)
 
 
@@ -66,13 +66,14 @@ class Tetrahedron(adapter.Geometry):
               area (length) of the boundary.
             - 'unweighted', the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: np.float32.
+        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: none.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
     Examples:
+        >>> import numpy as np
         >>> from mindflow.geometry import generate_sampling_config, Tetrahedron
         >>> tetrahedron_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
         ...                          'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
@@ -85,13 +86,13 @@ class Tetrahedron(adapter.Geometry):
         (300, 2)
     """
     def __init__(self, name, vertices,
-                 boundary_type="uniform", dtype=np.float32, sampling_config=None):
+                 boundary_type="uniform", dtype=numpy.float32, sampling_config=None):
         super(Tetrahedron, self).__init__(
             name=name,
             shape=simplex.Simplex(vertices, boundary_type),
             dim=3,
-            coord_min=np.min(vertices, axis=0),
-            coord_max=np.max(vertices, axis=0),
+            coord_min=numpy.min(vertices, axis=0),
+            coord_max=numpy.max(vertices, axis=0),
             dtype=dtype,
             sampling_config=sampling_config
         )
@@ -118,13 +119,14 @@ class Cylinder(adapter.Geometry):
               area (length) of the boundary.
             - 'unweighted', the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: np.float32.
+        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: none.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
     Examples:
+        >>> import numpy as np
         >>> from mindflow.geometry import generate_sampling_config, Cylinder
         >>> cylinder_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
         ...                       'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
@@ -142,11 +144,11 @@ class Cylinder(adapter.Geometry):
         (300, 2)
     """
     def __init__(self, name, centre, radius, h_min, h_max, h_axis,
-                 boundary_type="uniform", dtype=np.float32, sampling_config=None):
+                 boundary_type="uniform", dtype=numpy.float32, sampling_config=None):
 
         shape = rotating.Cylinder(centre, radius, h_min, h_max, h_axis, boundary_type)
-        coord_min = np.append(np.asarray(centre) - np.asarray(radius), h_min)
-        coord_max = np.append(np.asarray(centre) + np.asarray(radius), h_max)
+        coord_min = numpy.append(numpy.asarray(centre) - numpy.asarray(radius), h_min)
+        coord_max = numpy.append(numpy.asarray(centre) + numpy.asarray(radius), h_max)
         super(Cylinder, self).__init__(
             name=name,
             shape=shape,
@@ -175,13 +177,14 @@ class Cone(adapter.Geometry):
               area (length) of the boundary.
             - 'unweighted', the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: np.float32.
+        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
         sampling_config (SamplingConfig): sampling configuration. Default: none.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
     Examples:
+        >>> import numpy as np
         >>> from mindflow.geometry import generate_sampling_config, Cone
         >>> cone_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
         ...                   'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
@@ -199,11 +202,11 @@ class Cone(adapter.Geometry):
         (300, 2)
     """
     def __init__(self, name, centre, radius, h_min, h_max, h_axis,
-                 boundary_type="uniform", dtype=np.float32, sampling_config=None):
+                 boundary_type="uniform", dtype=numpy.float32, sampling_config=None):
 
         shape = rotating.Cone(centre, radius, h_min, h_max, h_axis, boundary_type)
-        coord_min = np.append(np.asarray(centre) - np.asarray(radius), h_min)
-        coord_max = np.append(np.asarray(centre) + np.asarray(radius), h_max)
+        coord_min = numpy.append(numpy.asarray(centre) - numpy.asarray(radius), h_min)
+        coord_max = numpy.append(numpy.asarray(centre) + numpy.asarray(radius), h_max)
         super(Cone, self).__init__(
             name=name,
             shape=shape,

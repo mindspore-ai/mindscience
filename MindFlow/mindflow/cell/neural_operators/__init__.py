@@ -18,3 +18,5 @@ from .fno2d import FNO2D
 from .pdenet import PDENet
 
 __all__ = ["FNO1D", "FNO2D", "PDENet"]
+
+__all__.sort()

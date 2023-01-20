@@ -1,4 +1,4 @@
-.. py:class:: mindflow.geometry.Cylinder(name, centre, radius, h_min, h_max, h_axis, boundary_type='uniform', dtype=np.float32, sampling_config=None)
+.. py:class:: mindflow.geometry.Cylinder(name, centre, radius, h_min, h_max, h_axis, boundary_type='uniform', dtype=numpy.float32, sampling_config=None)
     
     圆柱体对象的定义。
     

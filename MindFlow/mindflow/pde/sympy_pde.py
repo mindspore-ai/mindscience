@@ -27,7 +27,7 @@ from ..operators import batched_hessian, batched_jacobian
 class PDEWithLoss:
     """
     Base class of user-defined pde problems.
-    All user-defined problems to set constraint on each dataset should be and must be inherited from this class.
+    All user-defined problems to set constraint on each dataset should be inherited from this class.
     It is utilized to establish the mapping between each sub-dataset and used-defined loss functions.
     The loss will be calculated automatically by the constraint type of each sub-dataset. Corresponding member functions
     must be out_channels by user based on the constraint type in order to obtain the target label output. For example,
@@ -130,13 +130,13 @@ class PDEWithLoss:
         Calculate the results for each formula node.
 
         Args:
-            formula_nodes (list(FormulaNode)): List of expressions node can by identified by mindspore.
+            formula_nodes (list[FormulaNode]): List of expressions node can by identified by mindspore.
             inputs (Tensor): The input data of network. Default: None.
             norm (Tensor): The normal of the surface at a point P is a vector perpendicular to the tangent plane of the
                 point. Default: None.
 
         Returns:
-            List(Tensor), The results of the partial differential equations.
+            List(Tensor), the results of the partial differential equations.
         """
         max_order = 0
         for formula_node in formula_nodes:
