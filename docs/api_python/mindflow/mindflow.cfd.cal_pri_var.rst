@@ -6,5 +6,5 @@
         - **con_var** (Tensor) - 守恒量。
         - **material** (Material) - 流体材料。
 
-    返回:
+    返回：
         Tensor，shape和 `con_var` 一致。
