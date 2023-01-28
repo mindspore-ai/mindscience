@@ -1,4 +1,4 @@
-.. py:class:: mindflow.pde.NavierStokes(model, re=100.0, loss_fn=mindspore.nn.MSELoss())
+.. py:class:: mindflow.pde.NavierStokes(model, re=100.0, loss_fn="mse")
 
     基于PDEWithLoss定义的二维NavierStokes方程求解问题。
 
