@@ -1,4 +1,5 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# ============================================================================
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,21 +18,14 @@ import os
 import time
 import numpy as np
 
-from mindspore.common import set_seed
-from mindspore import context, nn
-from mindspore.train import DynamicLossScaleManager
-from mindspore.train.callback import ModelCheckpoint, CheckpointConfig
+from mindspore import context, nn, ops, jit, set_seed, data_sink
 
-from mindflow.loss import Constraints
-from mindflow.solver import Solver
-from mindflow.common import L2
 from mindflow.utils import load_yaml_config
-from mindflow.common import LossAndTimeMonitor
 from mindflow.cell import FCSequential
 
-from src import create_random_dataset
+from src import create_random_dataset, get_test_data
 from src import Darcy2D
-from src import visual_result
+from src import visual_result, calculate_l2_error
 
 set_seed(123456)
 np.random.seed(123456)
@@ -43,6 +37,7 @@ context.set_context(
     save_graphs_path="./graph",
 )
 
+
 def train(config):
     """training process"""
     geom_name = "flow_region"
@@ -51,6 +46,7 @@ def train(config):
     train_data = flow_train_dataset.create_dataset(
         batch_size=config["train_batch_size"], shuffle=True, drop_remainder=True
     )
+    test_input, test_label = get_test_data(config)
 
     # network model
     model = FCSequential(
@@ -60,47 +56,46 @@ def train(config):
         layers=config["model"]["layers"],
         residual=config["model"]["residual"],
         act=config["model"]["activation"],
-        weight_init=config["model"]["weight_init"]
+        weight_init=config["model"]["weight_init"],
     )
 
-    # define problem and Constraints
-    darcy_problem = [
-        Darcy2D(model=model) for _ in range(flow_train_dataset.num_dataset)
-    ]
-    train_constraints = Constraints(flow_train_dataset, darcy_problem)
+    # define problem
+    problem = Darcy2D(model)
 
     # optimizer
     params = model.trainable_params()
     optim = nn.Adam(params, learning_rate=config["optimizer"]["lr"])
 
-    # solver
-    solver = Solver(
-        model,
-        optimizer=optim,
-        mode="PINNs",
-        train_constraints=train_constraints,
-        test_constraints=None,
-        metrics={"l2": L2(), "distance": nn.MAE()},
-        loss_scale_manager=DynamicLossScaleManager(),
-    )
+    def forward_fn(pde_data, bc_data):
+        return problem.get_loss(pde_data, bc_data)
 
-    # training
+    grad_fn = ops.value_and_grad(forward_fn, None, optim.parameters, has_aux=False)
 
-    # define callbacks
-    callbacks = [LossAndTimeMonitor(len(flow_train_dataset))]
+    @jit
+    def train_step(pde_data, bc_data):
+        loss, grads = grad_fn(pde_data, bc_data)
+        loss = ops.depend(loss, optim(grads))
+        return loss
 
-    if config["save_ckpt"]:
-        ckpt_config = CheckpointConfig(save_checkpoint_steps=10, keep_checkpoint_max=2)
-        ckpoint_cb = ModelCheckpoint(
-            prefix="ckpt_darcy", directory=config["save_ckpt_path"], config=ckpt_config
-        )
-        callbacks += [ckpoint_cb]
+    epochs = config["train_epoch"]
+    sink_process = data_sink(train_step, train_data, sink_size=1)
+    model.set_train()
 
-    solver.train(
-        epoch=config["train_epoch"], train_dataset=train_data, callbacks=callbacks
-    )
+    for epoch in range(epochs):
+        local_time_beg = time.time()
+        cur_loss = sink_process()
+        if epoch % 200 == 0:
+            print(
+                "epoch: {}, loss: {}, time: {}ms.".format(
+                    epoch, cur_loss, (time.time() - local_time_beg) * 1000
+                )
+            )
+            calculate_l2_error(
+                model, test_input, test_label, config["train_batch_size"]
+            )
 
     visual_result(model, config)
+
 
 if __name__ == "__main__":
     print("pid:", os.getpid())
