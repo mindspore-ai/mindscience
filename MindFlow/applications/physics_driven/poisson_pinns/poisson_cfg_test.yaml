@@ -36,10 +36,10 @@ batch_size: 5000
 model:
     2d:
         input_size: 2
-        base_neurons: 100
+        base_neurons: 16
     3d:
         input_size: 3
-        base_neurons: 200
+        base_neurons: 32
 optimizer:
     lr_max: 5.e-4
     pct_start: .15
