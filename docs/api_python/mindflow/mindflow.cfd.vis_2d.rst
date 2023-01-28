@@ -1,4 +1,4 @@
-.. py:function:: vis_2d(pri_var, file_name='vis.jpg')
+.. py:function:: mindflow.cfd.vis_2d(pri_var, file_name='vis.jpg')
 
     2d流场可视化。
 

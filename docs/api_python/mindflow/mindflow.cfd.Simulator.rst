@@ -6,13 +6,13 @@
         - **config** (dict) - 参数字典。
         - **net_dict** (dict) - 网络字典, 默认为None。
 
-    .. py::method:: integration_step(con_var, timestep)
+    .. py:method:: integration_step(con_var, timestep)
 
         按时间步长积分。
 
-        参数:
+        参数：
             - **con_var** (Tensor) - 守恒量。
             - **timestep** (float) - 积分的时间步长。
 
-        返回:
+        返回：
             Tensor，一个时间步长之后的守恒量。

@@ -1,4 +1,4 @@
-.. py:class:: mindflow.pde.Poisson(model, loss_fn=mindspore.nn.MSELoss())
+.. py:class:: mindflow.pde.Poisson(model, loss_fn="mse")
 
     基于PDEWithLoss定义的二维泊松方程求解问题。
 
