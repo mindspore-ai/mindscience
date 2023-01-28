@@ -1,4 +1,4 @@
-.. py:class:: mindflow.pde.Burgers(model, loss_fn=mindspore.nn.MSELoss())
+.. py:class:: mindflow.pde.Burgers(model, loss_fn="mse")
 
     基于PDEWithLoss定义的一维Burgers方程求解问题。
 

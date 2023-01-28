@@ -6,5 +6,5 @@
         - **pri_var** (Tensor) - 原始量。
         - **material** (Material) - 流体材料。
 
-    返回:
+    返回：
         Tensor，shape和 `pri_var` 一致。
