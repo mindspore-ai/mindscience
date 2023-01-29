@@ -116,3 +116,4 @@
 "mindscience/MindSPONGE/applications/research/UFold/train.py"                             "invalid-name"
 "mindscience/MindSPONGE/applications/research/UFold/ascend_postprocess.py"                             "invalid-name"
 "mindscience/MindSPONGE/applications/research/UFold/preprocess.py"                             "invalid-name"
+"mindscience/MindFlow/mindflow/__init__.py"                                                      "wrong-import-position"
