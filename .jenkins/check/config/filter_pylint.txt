@@ -3,6 +3,7 @@
 "mindscience/MindElec/mindelec/common/lr_scheduler.py"                                      "missing-docstring"
 "mindscience/MindElec/mindelec/operators/derivatives.py"                                    "missing-docstring"
 #MindSPONGE
+"mindscience/MindSPONGE/mindsponge/python/__init__.py"                                      "wrong-import-position"
 "mindscience/MindSPONGE/mindsponge/python/common/units.py"                                  "protected-access"
 "mindscience/MindSPONGE/mindsponge/python/common/checkpoint.py"                             "protected-access"
 "mindscience/MindSPONGE/mindsponge/python/simulation/sponge.py"                        "protected-access"
