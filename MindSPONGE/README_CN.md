@@ -145,9 +145,9 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 
 由于MindSPONGE与MindSpore有依赖关系，请根据下表中所指示的对应关系，在[MindSpore下载页面](https://www.mindspore.cn/versions)下载并安装对应的whl包。
 
-| MindSPONGE |                                    分支                                    | MindSpore | Python |
-|:----------:|:------------------------------------------------------------------------:|:---------:|:------:|
-|   1.0.0    | [master](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) | \>=2.0.0  | \>=3.7 |
+| MindSPONGE |                                    分支                                    |   MindSpore    | Python |
+|:----------:|:------------------------------------------------------------------------:|:--------------:|:------:|
+|   1.0.0    | [master](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) | \>=2.0.0-alpha | \>=3.7 |
 
 ```bash
 pip install -r requirements.txt
