@@ -23,7 +23,6 @@ import mindspore
 from mindspore import context, nn, ops, jit, set_seed, load_checkpoint, load_param_into_net
 
 from mindflow.cell import MultiScaleFCCell
-from mindflow.loss import MTLWeightedLossCell
 from mindflow.utils import load_yaml_config
 
 from src import create_training_dataset, create_test_dataset, calculate_l2_error, NavierStokes2D
@@ -68,15 +67,12 @@ def train():
                              input_scale=input_scale,
                              input_center=input_center)
 
-    mtl = MTLWeightedLossCell(num_losses=taylor_dataset.num_dataset)
-    print("Use MtlWeightedLossCell, num loss: {}".format(mtl.num_losses))
 
     if config["load_ckpt"]:
         param_dict = load_checkpoint(config["load_ckpt_path"])
         load_param_into_net(model, param_dict)
-        load_param_into_net(mtl, param_dict)
 
-    params = model.trainable_params() + mtl.trainable_params()
+    params = model.trainable_params()
     optimizer = nn.Adam(params, learning_rate=config["optimizer"]["initial_lr"])
     problem = NavierStokes2D(model, re=config["Re"])
 
