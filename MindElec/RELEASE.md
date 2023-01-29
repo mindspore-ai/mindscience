@@ -1,18 +1,21 @@
-# MindElec 0.1.0 Release Notes
+﻿# MindElec Release Notes
 
-Initial release of MindElec.
+## MindElec  0.2.0-alpha Release Notes
 
-## Major Features
+### Major Feature and Improvements
 
-* Provide physics-driven and data-driven neural network for electromagnetic simulation
-* Support CSG geometry model construction and CAD format data processing
-* Include multiple scale filter and dynamic adaptive weighted loss for improving performance
-* Provide visualization tools for electromagnetic fields and scattering parameters
-
-## Contributors
+- [STABLE] [`AD_FDTD`](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/AD_FDTD): Support
+  end-to-end differentiable FDTD simulation.
+- [STABLE] [`Maxwell3D`](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/frequency_domain_maxwell_3D):
+  Support 3D frequency electromagnetic equation simulation with PINNs method.
+- [STABLE] [`pinnFWI`](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/pinnFWI):
+  Support wave equation simulation with PINNs method.
+- [STABLE] [`gprMax`](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/gprinversion):
+  Support data-driven GPR electromagnetic inversion.
 
 Thanks goes to these wonderful people:
 
-yufan, wangzidong, yangkang, lujiale, shibeiji, liuhongsheng, liyang, wengbingya, chuhaotian, huangxiang, wangmin
-
+yufan, wangzidong, yangkang, lujiale, shibeiji, liuhongsheng, liyang, wengbingya, chuhaotian, huangxiang, wangmin,
+lizhihao, zhanglulu, chenxiang, yudamiao, gengli.
 Contributions of any kind are welcome!
+
