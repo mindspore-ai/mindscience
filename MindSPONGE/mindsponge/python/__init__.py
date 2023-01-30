@@ -23,12 +23,6 @@
 """MindSPONGE"""
 
 import time
-from .system import Molecule, Protein
-from .potential import PotentialCell, ForceFieldBase, ForceField
-from .optimizer import Updater, DynamicUpdater, SteepestDescent
-from .core import Sponge, SimulationCell, RunOneStepCell, AnalyseCell
-from .function.units import global_units, set_global_units
-from .function.units import set_global_length_unit, set_global_energy_unit
 
 
 def _mindspore_version_check():
@@ -72,3 +66,10 @@ def _mindspore_version_check():
             time.sleep(1)
 
 _mindspore_version_check()
+
+from .system import Molecule, Protein
+from .potential import PotentialCell, ForceFieldBase, ForceField
+from .optimizer import Updater, DynamicUpdater, SteepestDescent
+from .core import Sponge, SimulationCell, RunOneStepCell, AnalyseCell
+from .function.units import global_units, set_global_units
+from .function.units import set_global_length_unit, set_global_energy_unit

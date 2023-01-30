@@ -148,7 +148,7 @@ Due to the dependency between MindSPONGE and MindSpore, please follow the table 
 
 | MindSPONGE Version |                                  Branch                                  | MindSpore Version | Python Version |
 |:------------------:|:------------------------------------------------------------------------:|:-----------------:|:--------------:|
-|       1.0.0        | [master](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) |     \>=2.0.0      |     \>=3.7     |
+|       1.0.0        | [master](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) |  \>=2.0.0-alpha   |     \>=3.7     |
 
 ```bash
 pip install -r requirements.txt
