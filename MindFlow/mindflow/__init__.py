@@ -17,26 +17,6 @@ init
 """
 import re
 import time
-from .data import *
-from .geometry import *
-from .common import *
-from .operators import *
-from .pde import *
-from .loss import *
-from .solver import *
-from .cell import *
-from .utils import *
-
-__all__ = []
-__all__.extend(data.__all__)
-__all__.extend(geometry.__all__)
-__all__.extend(common.__all__)
-__all__.extend(operators.__all__)
-__all__.extend(pde.__all__)
-__all__.extend(loss.__all__)
-__all__.extend(solver.__all__)
-__all__.extend(cell.__all__)
-__all__.extend(utils.__all__)
 
 
 def _mindspore_version_check():
@@ -79,3 +59,24 @@ def _mindspore_version_check():
 
 
 _mindspore_version_check()
+
+from .data import *
+from .geometry import *
+from .common import *
+from .operators import *
+from .pde import *
+from .loss import *
+from .solver import *
+from .cell import *
+from .utils import *
+
+__all__ = []
+__all__.extend(data.__all__)
+__all__.extend(geometry.__all__)
+__all__.extend(common.__all__)
+__all__.extend(operators.__all__)
+__all__.extend(pde.__all__)
+__all__.extend(loss.__all__)
+__all__.extend(solver.__all__)
+__all__.extend(cell.__all__)
+__all__.extend(utils.__all__)
