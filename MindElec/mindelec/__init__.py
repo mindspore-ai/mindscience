@@ -38,6 +38,7 @@ def _mindspore_version_check():
     try:
         import mindspore as ms
         from mindspore import log as logger
+        import time
     except (ImportError, ModuleNotFoundError):
         print("Can not find MindSpore in current environment. Please install "
               "MindSpore before using MindSpore Elec, by following "
