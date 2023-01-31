@@ -73,7 +73,7 @@ Due to the dependency between MindElec and MindSpore, please follow the table be
 
 | MindElec Version | Branch | MindSpore Version | Python Version |
 |:-----------------|:-------|:------------------|:---------------|
-| 0.2.0            | master | \>=2.0.0️         | \>=3.7         |
+| 0.2.0            | master | \>=2.0.0-alpha️         | \>=3.7         |
 
 ### Confirming the System Environment Information
 
