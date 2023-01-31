@@ -74,9 +74,9 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 由于MindElec与Mindspore有依赖关系，请根据下表中所指示的对应关系，在[Mindspore下载页面](https://www.mindspore.cn/versions)
 下载并安装对应的whl包。
 
-| MindElec | 分支     | MindSpore | Python |
-|:---------|:-------|:----------|:-------|
-| 0.2.0    | master | \>=2.0.0️ | \>=3.7 |
+| MindElec    | 分支           | MindSpore       | Python |
+|:------------|:-------------|:----------------|:-------|
+| 0.2.0-alpha | r0.2.0-alpha | \>=2.0.0-alpha️ | \>=3.7 |
 
 其余依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/MindElec/requirements.txt)
 
