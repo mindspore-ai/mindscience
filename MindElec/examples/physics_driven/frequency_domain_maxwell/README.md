@@ -51,8 +51,8 @@ AI uses self-supervised training to solve the Maxwell's equations in frequency d
 - Framework
     - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - For more information, see the following resources:
-    - [MindElec Tutorial](https://www.mindspore.cn/mindscience/docs/en/master/mindelec/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindscience/docs/en/master/mindelec.html)
+    - [MindElec Tutorial](https://www.mindspore.cn/mindelec/docs/en/master/intro_and_install.html)
+    - [MindElec Python API](https://www.mindspore.cn/mindelec/docs/en/master/mindelec.architecture.html)
 
 ## Script Description
 
