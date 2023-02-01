@@ -72,8 +72,8 @@ In the preceding information, $\lambda$s indicates the weight of each loss funct
 - Framework
     - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - For more information, see the following resources:
-    - [MindElec Tutorial](https://mindspore.cn/mindscience/docs/en/r0.1/mindelec/intro_and_install.html)
-    - [MindElec Python API](https://mindspore.cn/mindscience/api/en/r0.1/mindelec.html)
+    - [MindElec Tutorial](https://www.mindspore.cn/mindelec/docs/en/master/intro_and_install.html)
+    - [MindElec Python API](https://www.mindspore.cn/mindelec/docs/en/master/mindelec.architecture.html)
 
 ## Script Description
 
