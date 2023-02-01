@@ -59,8 +59,8 @@ $$L_{total} = \lambda_{src}L_{src} + \lambda_{src_ic}L_{src_ic} + \lambda_{no_sr
 - 框架
     - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindElec教程](https://mindspore.cn/mindscience/docs/zh-CN/r0.1/mindelec/intro_and_install.html)
-    - [MindElec Python API](https://mindspore.cn/mindscience/api/zh-CN/r0.1/mindelec.html)
+    - [MindElec教程](https://www.mindspore.cn/mindelec/docs/zh-CN/master/intro_and_install.html)
+    - [MindElec Python API](https://www.mindspore.cn/mindelec/docs/zh-CN/master/mindelec.architecture.html)
 
 ## 脚本说明
 
