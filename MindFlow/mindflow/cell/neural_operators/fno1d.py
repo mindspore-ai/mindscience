@@ -61,8 +61,8 @@ class SpectralConv1dDft(nn.Cell):
             self.mul1d(x_ft_re[:, :, :self.modes1], w_re) \
             - self.mul1d(x_ft_im[:, :, :self.modes1], w_im)
         out_ft_im = \
-            self.mul1d(x_ft_re[:, :, :self.modes1], w_re) \
-            + self.mul1d(x_ft_im[:, :, :self.modes1], w_im)
+            self.mul1d(x_ft_re[:, :, :self.modes1], w_im) \
+            + self.mul1d(x_ft_im[:, :, :self.modes1], w_re)
 
         x, _ = self.idft1_cell((out_ft_re, out_ft_im))
         return x
@@ -165,7 +165,8 @@ class FNO1D(nn.Cell):
             self.fno_seq.append(FNOBlock(self.channels, self.channels, modes1=self.modes1, resolution=resolution,
                                          compute_dtype=compute_dtype))
         self.fno_seq.append(
-            FNOBlock(self.channels, self.channels, self.modes1, gelu=False, compute_dtype=compute_dtype))
+            FNOBlock(self.channels, self.channels, self.modes1, resolution=resolution,
+                     gelu=False, compute_dtype=compute_dtype))
 
         self.fc1 = nn.Dense(
             self.channels, self.fc_channel).to_float(compute_dtype)
