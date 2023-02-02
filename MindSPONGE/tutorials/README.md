@@ -21,7 +21,7 @@ wget https://download.mindspore.cn/mindscience/mindsponge/dataset/ethanol_dft.np
 
 ```bash
 cd mindscience/MindSPONGE/tutorials/cybertron/
-wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/Cybertron/checkpoint_c10.ckpt
+wget https://download.mindspore.cn/mindscience/mindsponge/Cybertron/checkpoint/checkpoint_c10.ckpt
 ```
 
 ## **GAN**
@@ -34,8 +34,8 @@ GAN所需数据集可以从[此处](http://yann.lecun.com/exdb/mnist/)下载
 
 ```bash
 cd mindscience/MindSPONGE/tutorials/GAN/ckpts/opt_ckpts/
-wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/GAN/generator_epoch_50000.ckpt
-wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/GAN/model_epoch_50000.ckpt
+wget https://download.mindspore.cn/mindscience/mindsponge/GAN/checkpoint/generator_epoch_50000.ckpt
+wget https://download.mindspore.cn/mindscience/mindsponge/GAN/checkpoint/model_epoch_50000.ckpt
 ```
 
 ## **IDM**
@@ -44,8 +44,8 @@ wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/GAN/model_epoch_
 
 ```bash
 cd mindscience/MindSPONGE/tutorials/IDM/ckpts/resolutions/
-wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/IDM/resolutions_4_model_epoch_5000.ckpt
-wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/IDM/resolutions_50_model_epoch_5000.ckpt
-wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/IDM/resolutions_200_model_epoch_5000.ckpt
-wget https://download.mindspore.cn/mindscience/mindsponge/ckpts/IDM/resolutions_400_model_epoch_5000.ckpt
+wget https://download.mindspore.cn/mindscience/mindsponge/IDM/checkpoint/resolutions_4_model_epoch_5000.ckpt
+wget https://download.mindspore.cn/mindscience/mindsponge/IDM/checkpoint/resolutions_50_model_epoch_5000.ckpt
+wget https://download.mindspore.cn/mindscience/mindsponge/IDM/checkpoint/resolutions_200_model_epoch_5000.ckpt
+wget https://download.mindspore.cn/mindscience/mindsponge/IDM/checkpoint/resolutions_400_model_epoch_5000.ckpt
 ```
