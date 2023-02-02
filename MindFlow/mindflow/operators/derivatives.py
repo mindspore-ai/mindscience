@@ -45,7 +45,7 @@ def batched_jacobian(model):
             out_channels.
 
     Returns:
-        jacobian(Tensor): jacobi of the model. With the input dimension is [batch_size, in_channels], output dimension
+        jacobian(Tensor), jacobi of the model. With the input dimension is [batch_size, in_channels], output dimension
         is [out_channels, batch_size, in_channels].
 
     Note:
@@ -93,7 +93,7 @@ def batched_hessian(model):
             out_channels.
 
     Returns:
-        hessian(Tensor): hessian of the model. With the input dimension is [batch_size, in_channels], output dimension
+        hessian(Tensor), hessian of the model. With the input dimension is [batch_size, in_channels], output dimension
         is [out_channels, in_channels, batch_size, in_channels].
 
     Note:
