@@ -54,7 +54,7 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 - [`Burgers-pinns` equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers_pinns)
 - [2D Darcy flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/2D_Darcy)
 - [poisson ring](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson_ring)
-- [poisson pinns](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/possion_pinns)
+- [poisson pinns](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson_pinns)
 - [simple pde introduction](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/sympy_pde_introduction)
 
 ### Physics Plus Data Driven
