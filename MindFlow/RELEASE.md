@@ -1,48 +1,30 @@
 # MindFlow Release Notes
 
-## MindFlow 0.1.0a0 Release Notes
+[查看中文](./RELEASE_CN.md)
+
+## MindFlow 0.1.0-alpha Release Notes
 
 ### Major Features and Improvements
 
-#### Network Cells
+#### Physics Driven
 
-- [STABLE] Support various networks, including fully connected networks, residual networks, Fourier neural operators, Vision Transformer (ViT), PDE-Net.
+- [STABLE] Solve partial differential equations (PDEs) based on physics informed neural network. PDEs and basic equations can be defined by sympy. Users can calculate the Hessian and Jacobian matrix of network output to input. Basic geometrics, time domains and their operations are supported, which can be used for sampling within the geometric region and on the boundary.
 
-#### PDE
+#### Data Driven
 
-- [STABLE] Solve partial differential equations (PDE) based on physics informed neural networks (PINNs). Users can define PDE by sympy. Commenly used basic equations are also supported.
+- [STABLE] Various neural networks are supported, including fully connected networks, residual networks, Fourier neural operators and Vision Transformer. Dataset merging and multiple data formats are supported. High level API is provided for training and evaluation. Multiple learning rates and losses are supported.
 
-#### Geometry
+#### Physics Plus Data Driven
 
-- [STABLE] The definition of basic geometrics, time domains and their operations. Support sampling within the geometric domain and boundaries.
+- [STABLE] A physics plus data driven deep learning method, PDE-Net, is provided for unsteady flow field prediction and regression of PDEs.
 
-#### Data
+#### Differentiable CFD Solver
 
-- [STABLE] Support combining multiple datasets. Loading existed npy files are also supported.
-
-#### Learning Rate
-
-- [STABLE] Support polynomial decay laerning rate, warmup-cosine-annealing learning rate and multi-step learning rate.
-
-#### Loss
-
-- [STABLE] Support relative RMSE loss, multi-level wavelet loss and weighted multi-task loss.
-
-#### Operators
-
-- [STABLE] Calculate the Hessian and Jacobian matrix of network output to input.
-
-#### Solver
-
-- [STABLE] Train and evaluate neural networks.
-
-#### CFD
-
-- [STABLE] An end-to-end differentiable compressible computational fluid dynamics (CFD) solver, MindFlow-CFD, is introduced. WENO5 reconstruction, Rusanov flux, Runge-Kutta integrator are supported. Symmetry, periodic, non-slip wall and Neumann boundary conditions are supported.
+- [STABLE] An end-to-end differentiable compressible CFD solver, MindFlow-CFD, is introduced. WENO5 reconstruction, Rusanov flux, Runge-Kutta integrator are supported. Symmetry, periodic, solid wall and Neumann boundary conditions are supported.
 
 ## Contributors
 
 Thanks goes to these wonderful people:
 
-wangzidong, liuhongsheng, dengzhiwen, zhangyi, zhouhongye, libokai, yangge, liulei, longzichao
+yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, yqiuu, haojiwei, leiyixiang
 
