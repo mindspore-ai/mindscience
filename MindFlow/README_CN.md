@@ -28,18 +28,35 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ## **最新消息** 📰
 
-- `2022.09.02` 中国商飞首席科学家吴光辉院士在WAIC2022世界人工智能大会发布首个工业级流体仿真大模型“东方.御风”, AI流体仿真助力国产大飞机气动仿真， [相关新闻](http://www.news.cn/fortune/2022-09/06/c_1128978806.htm)。
-
-## **即将到来** 🚀
-
-- 不要着急，精彩即将到来~
+- 🔥`2023.02.05` [MindFlow 0.1.0-alpha](https://mindspore.cn/mindflow/docs/zh-CN/r0.1.0-alpha/index.html) 版本发布。
+- 🔥`2023.01.17` 推出[MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997)基于MindSpore的端到端可微分求解器，[详见](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/mindflow/cfd)。
+- 🔥`2022.12.27` MindSpore团队同西安交大陈刚老师合作发表[Temporal predictions of periodic flows using a mesh transformation and deep learning-based strategy](https://www.sciencedirect.com/science/article/pii/S1270963822007556)文章于航空领域Top期刊`Aerospace Science and Technology`，论文作者为邓志文、刘红升、时北极、王紫东、于璠、刘子扬(西交)、陈刚(通讯)。
+- 🔥`2022.09.02` 中国商飞首席科学家吴光辉院士在WAIC2022世界人工智能大会发布首个工业级流体仿真大模型“东方.御风”, AI流体仿真助力国产大飞机气动仿真， [相关新闻](http://www.news.cn/fortune/2022-09/06/c_1128978806.htm)。
 
 **更多应用案例请见**：👀
 
-- [PDENet](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_plus_data_driven/variant_linear_coe_pde_net)
-- [圆柱绕流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physical_driven/flow_past_cylinder)
-- [`N-S`方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes)
-- [`Burgers`方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physical_driven/burgers_pinns)
+### 物理驱动
+
+- [一维Burgers问题](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/physics_driven/burgers_pinns)
+- [二维圆柱绕流](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/physics_driven/flow_past_cylinder)
+- [作用于圆环的二维Poisson问题](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/physics_driven/poisson_ring)
+- [基于MindFlow定义符号化偏微分方程](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/physics_driven/sympy_pde_introduction)
+
+### 数据驱动
+
+- [基于FNO求解一维Burgers](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/data_driven/burgers)
+- [基于FNO求解二维Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/data_driven/navier_stokes)
+
+### CFD
+
+- [一维Lax激波管](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/cfd/lax)
+- [一维Sod激波管](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/cfd/sod)
+- [二维库埃特流](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/cfd/couette)
+- [二维黎曼问题](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/cfd/riemann2d)
+
+### 数据机理融合
+
+- [PDE-Net求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/physics_plus_data_driven/variant_linear_coe_pde_net)
 
 ## **安装教程**
 
@@ -68,16 +85,28 @@ pip install -r requirements.txt
 |               | CentOS-aarch64  | ✔️ |
 | GPU CUDA 11.1 | Ubuntu-x86      | ✔️ |
 
-### pip安装(暂不可用)
+### pip安装
 
 ```bash
-pip install mindflow_[gpu|ascend]
+export MS_VERSION=2.0.0a0
+export MindFlow_VERSION=0.1.0a0
+# gpu and ascend are supported
+export DEVICE_NAME=gpu
+# cuda-10.1 and cuda-11.1 are supported
+export CUDA_VERSION=cuda-11.1
+
+# Python3.7
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp37-cp37m-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# Python3.8
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp38-cp38-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# Python3.9
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp39-cp39-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### 源码安装
 
 ```bash
-git clone https://gitee.com/mindspore/mindscience.git
+git clone https://gitee.com/mindspore/mindscience.git -b r0.2.0-alpha
 cd {PATH}/mindscience/MindFlow
 ```
 
@@ -106,6 +135,10 @@ pip install mindflow_*.whl
 ### SIG 🏠
 
 ### 核心贡献者 🧑‍🤝‍🧑
+
+感谢以下开发者做出的贡献：
+
+yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, yqiuu, haojiwei, leiyixiang
 
 ## **贡献指南**
 

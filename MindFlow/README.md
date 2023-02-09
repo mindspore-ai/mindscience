@@ -28,18 +28,35 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 ## **Latest News** 📰
 
-- 🔥`2022.09.02` Academician Guanghui Wu, Chief Scientist of COMAC, released the first industrial flow simulation model "DongFang.YuFeng" at WAIC2022 World Artificial Intelligence Conference. AI flow simulation assisted the aerodynamic simulation of domestic large aircraft. [Page](http://www.news.cn/fortune/2022-09/06/c_1128978806.htm)
-
-## **Coming Soon** 🚀
-
-- Everything is coming soon, don't worry~
+- 🔥`2023.02.05` [MindFlow 0.1.0-alpha](https://mindspore.cn/mindflow/docs/zh-CN/r0.1.0-alpha/index.html) is released.
+- 🔥`2023.01.17` [MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997), an End-to-End Differentiable Solver based on MindSpore，[see more](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/mindflow/cfd).
+- 🔥`2022.12.27` MindSpore team cooperates with Xi'an Jiaotong University teacher Gang Chen publish [Temporal predictions of periodic flows using a mesh transformation and deep learning-based strategy](https://www.sciencedirect.com/science/article/pii/S1270963822007556)in top journals `Aerospace Science and Technology`, authors are Zhiwen Deng, Hongsheng Liu, Beiji Shi, Zidonog Wang, Fan Yu, Ziyang Liu、Gang Chen(Corresponding author).
+- 🔥`2022.09.02` Academician Guanghui Wu, Chief Scientist of COMAC, released the first industrial flow simulation model "DongFang.YuFeng" at WAIC2022 World Artificial Intelligence Conference. AI flow simulation assisted the aerodynamic simulation of domestic large aircraft. [Page](http://www.news.cn/fortune/2022-09/06/c_1128978806.htm).
 
 **More Cases**：👀
 
-- [PDENet](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_plus_data_driven/variant_linear_coe_pde_net)
-- [Flow around a cylinder](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physical_driven/flow_past_cylinder)
-- [`N-S` equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes)
-- [`Burgers` equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physical_driven/burgers_pinns)
+### Physics Driven
+
+- [1D Burgers](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/physics_driven/burgers_pinns)
+- [2D Cylinder Flow](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/physics_driven/flow_past_cylinder)
+- [2D Poisson on a Ring](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/physics_driven/poisson_ring)
+- [Definition of Symbolic PDE Based on MindFlow](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/physics_driven/sympy_pde_introduction)
+
+### Data Driven
+
+- [FNO for 1D Burgers](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/data_driven/burgers)
+- [FNO for 2D Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/data_driven/navier_stokes)
+
+### CFD
+
+- [1D Lax Tube](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/cfd/lax)
+- [1D Sod Tube](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/cfd/sod)
+- [2D Couette Flow](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/cfd/couette)
+- [2D Riemann](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/cfd/riemann2d)
+
+### Physics Plus Data Driven
+
+- [PDE-Net for Convecton-Diffusion Equation](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindFlow/applications/physics_plus_data_driven/variant_linear_coe_pde_net)
 
 ## **Installation**
 
@@ -68,16 +85,28 @@ pip install -r requirements.txt
 |               | CentOS-aarch64  | ✔️ |
 | GPU CUDA 11.1 | Ubuntu-x86      | ✔️ |
 
-### **pip install** (not support temporarily)
+### **pip install**
 
 ```bash
-pip install mindflow_[gpu|ascend]
+export MS_VERSION=2.0.0a0
+export MindFlow_VERSION=0.1.0a0
+# gpu and ascend are supported
+export DEVICE_NAME=gpu
+# cuda-10.1 and cuda-11.1 are supported
+export CUDA_VERSION=cuda-11.1
+
+# Python3.7
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp37-cp37m-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# Python3.8
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp38-cp38-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# Python3.9
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp39-cp39-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### **source code install**
 
 ```bash
-git clone https://gitee.com/mindspore/mindscience.git
+git clone https://gitee.com/mindspore/mindscience.git -b r0.2.0-alpha
 cd {PATH}/mindscience/MindFlow
 ```
 
@@ -106,6 +135,10 @@ pip install mindflow_*.whl
 ### CO-CHAIR
 
 ### Core Contributor 🧑‍🤝‍🧑
+
+Thanks goes to these wonderful people:
+
+yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, yqiuu, haojiwei, leiyixiang
 
 ## **Contribution Guide**
 
