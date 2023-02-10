@@ -1,21 +1,24 @@
 ﻿# MindElec Release Notes
 
-## MindElec  0.2.0-alpha Release Notes
+[查看中文](./RELEASE_CN.md)
+
+## MindElec 0.2.0-alpha Release Notes
 
 ### Major Feature and Improvements
 
-- [STABLE] [`AD_FDTD`](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/AD_FDTD): Support
+- [STABLE] [`AD_FDTD`](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindElec/examples/AD_FDTD): Support
   end-to-end differentiable FDTD simulation.
-- [STABLE] [`Maxwell3D`](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/frequency_domain_maxwell_3D):
+- [STABLE] [`Maxwell3D`](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindElec/examples/physics_driven/frequency_domain_maxwell_3D):
   Support 3D frequency electromagnetic equation simulation with PINNs method.
-- [STABLE] [`pinnFWI`](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/pinnFWI):
+- [STABLE] [`pinnFWI`](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindElec/examples/physics_driven/pinnFWI):
   Support wave equation simulation with PINNs method.
-- [STABLE] [`gprMax`](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/gprinversion):
+- [STABLE] [`gprMax`](https://gitee.com/mindspore/mindscience/tree/r0.2.0-alpha/MindElec/examples/data_driven/gprinversion):
   Support data-driven GPR electromagnetic inversion.
+
+### Contributors
 
 Thanks goes to these wonderful people:
 
 yufan, wangzidong, yangkang, lujiale, shibeiji, liuhongsheng, liyang, wengbingya, chuhaotian, huangxiang, wangmin,
 lizhihao, zhanglulu, chenxiang, yudamiao, gengli.
 Contributions of any kind are welcome!
-
