@@ -6,7 +6,7 @@ mindelec.geometry.PartSamplingConfig
     部分采样配置的定义。
 
     参数：
-        - **size** (Union[int, tuple[int], list[int]) - 采样点数。
+        - **size** (Union[int, tuple[int], list[int]]) - 采样点数。
         - **random_sampling** (bool) - 指定是否随机采样点。默认值：True。
         - **sampler** (str) - 随机采样的方法。默认值：uniform。
         - **random_merge** (bool) - 是否随机合并不同维度的坐标。默认值：True。

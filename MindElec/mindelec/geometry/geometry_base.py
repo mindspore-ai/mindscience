@@ -28,7 +28,7 @@ class PartSamplingConfig:
     Definition of partial sampling configuration.
 
     Args:
-        size (Union[int, tuple[int], list[int]): number of sampling points.
+        size (Union[int, tuple[int], list[int]]): number of sampling points.
         random_sampling (bool): Specifies whether randomly sampling points. Default: True.
         sampler (str): method for random sampling. Default: uniform.
         random_merge (bool): Specifies whether randomly merge coordinates of different dimensions. Default: True.

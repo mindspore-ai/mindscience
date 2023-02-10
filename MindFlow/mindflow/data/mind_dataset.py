@@ -62,7 +62,7 @@ class MindDataset(Data):
     Raises:
         ValueError: If dataset_files are not valid or do not exist.
         TypeError: If dataset_name is not string.
-        ValueError: If constraint)_type.lower() not in ["equation", "bc", "ic", "label", "function", "custom"].
+        ValueError: If constraint_type.lower() not in ["equation", "bc", "ic", "label", "function", "custom"].
         RuntimeError: If `num_shards` is specified but `shard_id` is None.
         RuntimeError: If `shard_id` is specified but `num_shards` is None.
         ValueError: If `shard_id` is invalid (< 0 or >= `num_shards`).
