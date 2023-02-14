@@ -21,9 +21,8 @@ optimizer:
   weight_decay: 0.0
   gamma: 0.5
   train_epochs: 150
-callback:
-  summary_dir: "./summary"
-  ckpt_dir: "./ckpt"
-  save_checkpoint_steps: 50
-  keep_checkpoint_max: 10
-  eval_interval: 10
+
+summary_dir: "./summary"
+eval_interval: 10
+save_checkpoint_epoches: 50
+test_batch_size: 1

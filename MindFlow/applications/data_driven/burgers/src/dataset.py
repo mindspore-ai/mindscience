@@ -1,4 +1,4 @@
-# Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""
-dataset
-"""
+"""dataset"""
 import os
-
 import numpy as np
 
 from mindflow.data import Dataset, ExistedDataConfig
+
 
 EPS = 1e-8
 
@@ -42,8 +40,8 @@ def create_npy(config, sub=8):
     if not os.path.exists(test_path):
         os.makedirs(test_path)
 
-    inputs = np.load(os.path.join(data_path, "inputs.npy"))
-    label = np.load(os.path.join(data_path, "label.npy"))
+    inputs = np.load(os.path.join(train_path, "inputs.npy"))
+    label = np.load(os.path.join(train_path, "label.npy"))
 
     x_train = inputs[:train_size, :][:, ::sub]
     y_train = label[:train_size, :][:, ::sub]
@@ -72,13 +70,13 @@ def create_training_dataset(config, shuffle=True, drop_remainder=True, is_train=
     create_npy(config)
     data_path = config["path"]
     if is_train:
-        train_path = os.path.join(data_path, "train")
+        train_path = os.path.abspath(os.path.join(data_path, "train"))
         input_path = os.path.join(train_path, "inputs.npy")
         print('input_path: ', np.load(input_path).shape)
         label_path = os.path.join(train_path, "label.npy")
         print('label_path: ', np.load(label_path).shape)
     else:
-        test_path = os.path.join(data_path, "test")
+        test_path = os.path.abspath(os.path.join(data_path, "test"))
         input_path = os.path.join(test_path, "inputs.npy")
         label_path = os.path.join(test_path, "label.npy")
     burgers_1d_data = ExistedDataConfig(name=config["name"],
@@ -90,4 +88,7 @@ def create_training_dataset(config, shuffle=True, drop_remainder=True, is_train=
                                          shuffle=shuffle,
                                          drop_remainder=drop_remainder)
 
+    operations = [lambda x, y: (x.reshape(-1, config["resolution"], config["t_in"], config["channels"]),
+                                y.reshape(-1, config["resolution"], config["t_out"], config["channels"]))]
+    data_loader = data_loader.map(operations, input_columns=["burgers1d_inputs", "burgers1d_label"])
     return data_loader

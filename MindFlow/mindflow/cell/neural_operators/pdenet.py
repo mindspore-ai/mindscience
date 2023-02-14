@@ -54,7 +54,6 @@ class PDENet(nn.Cell):
         channels (int): The channel number of the input and output tensor of the PDE-Net.
         kernel_size (int): Specifies the height and width of the 2D convolution kernel.
         max_order (int): The max order of the PDE models.
-        step (int): The number of the delta-T blocks used in PDE-Net.
         dx (float): The spatial resolution of x dimension. Default: 0.01.
         dy (float): The spatial resolution of y dimension. Default: 0.01.
         dt (float): The time step of the PDE-Net. Default: 0.01.
@@ -69,7 +68,7 @@ class PDENet(nn.Cell):
         Tensor, has the same shape as `input` with data type of float32.
 
     Raises:
-        TypeError: If `height`, `width`, `channels`, `kernel_size`, `max_order` or `step` is not an int.
+        TypeError: If `height`, `width`, `channels`, `kernel_size` or `max_order is not an int.
         TypeError: If `periodic`, `enable_moment`, `if_fronzen` is not a bool.
 
     Supported Platforms:
@@ -93,7 +92,6 @@ class PDENet(nn.Cell):
                  channels,
                  kernel_size,
                  max_order,
-                 step,
                  dx=0.01,
                  dy=0.01,
                  dt=0.01,
@@ -107,7 +105,6 @@ class PDENet(nn.Cell):
         check_param_type(channels, "channels", data_type=int)
         check_param_type(kernel_size, "kernel_size", data_type=int)
         check_param_type(max_order, "max_order", data_type=int)
-        check_param_type(step, "step", data_type=int)
         check_param_type(periodic, "periodic", data_type=bool)
         check_param_type(enable_moment, "enable_moment", data_type=bool)
         check_param_type(if_fronzen, "if_fronzen", data_type=bool)
@@ -124,7 +121,6 @@ class PDENet(nn.Cell):
         self.dx = dx
         self.dy = dy
         self.enable_moment = enable_moment
-        self.step = step
         self.if_fronzen = if_fronzen
         self.padding = int((self.kernel_size - 1) / 2)
         if self.enable_moment:
@@ -140,8 +136,19 @@ class PDENet(nn.Cell):
         self.coe_param = Parameter(ops.UniformReal(seed=2)((self.num_filter - 1, self.h, self.w)))
 
     def construct(self, x):
-        id_kernel = None
-        fd_kernel = None
+        return self._one_step_forward(x)
+
+    @property
+    def coe(self):
+        return self.coe_param
+
+    def _one_step_forward(self, x):
+        if self.periodic:
+            x = self._periodicpad(x)
+
+        cast = ops.Cast()
+        x = cast(x, self.dtype)
+
         if self.enable_moment:
             if self.if_fronzen:
                 cur_moment = self.raw_moment
@@ -154,23 +161,6 @@ class PDENet(nn.Cell):
             kernel = self.scale * kernel
             id_kernel = kernel[0].reshape((1, 1, self.kernel_size, self.kernel_size))
             fd_kernel = kernel[1:].reshape((self.num_filter - 1, 1, self.kernel_size, self.kernel_size))
-
-        for _ in range(self.step):
-            x = self._one_step_forward(x, id_kernel, fd_kernel)
-        return x
-
-    @property
-    def coe(self):
-        return self.coe_param
-
-    def _one_step_forward(self, x, id_kernel, fd_kernel):
-        if self.periodic:
-            x = self._periodicpad(x)
-
-        cast = ops.Cast()
-        x = cast(x, self.dtype)
-
-        if self.enable_moment:
             id_conv2d = ops.Conv2D(out_channel=id_kernel.shape[0], kernel_size=self.kernel_size, pad=self.padding)
             fd_conv2d = ops.Conv2D(out_channel=fd_kernel.shape[0], kernel_size=self.kernel_size, pad=self.padding)
             id_out = id_conv2d(x, id_kernel)
@@ -201,7 +191,7 @@ class PDENet(nn.Cell):
                 i = o1 - o2
                 j = o2
                 self.idx2ij[str(idx)] = (i, j,)
-                raw_moment[idx, i, j] = 1
+                raw_moment[idx, j, i] = 1
                 scale[idx] = 1.0 / (self.dx ** i * self.dy ** j)
                 for p in range(i + j + 1):
                     for q in range(i + j + 1):
