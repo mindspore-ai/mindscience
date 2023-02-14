@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,15 +17,13 @@ traditional pde solver to obtain data
 """
 import numpy as np
 
-__all__ = ['initgen', 'VariantCoeLinear2d']
-
 
 def _initgen_periodic(mesh_size, freq=3):
     """"generate initial field on periodic boundary"""
     dim = len(mesh_size)
     x = np.random.randn(*mesh_size)
     coe = np.fft.ifftn(x)
-    freqs = np.random.randint(freq, 2 * freq, size=[dim,])
+    freqs = np.random.randint(freq, 2 * freq, size=[dim])
     for i in range(dim):
         perm = [i for i in range(dim)]
         perm[i] = 0
@@ -55,13 +53,14 @@ def initgen(mesh_size, freq=3, boundary='Periodic'):
             s[i] = mesh_size[i]
             y = np.reshape(y, s)
             x = x * y
-        x = x[[slice(1, None),] * dim]
+        x = x[[slice(1, None)] * dim]
         x = x * 16
     return x
 
 
 class _PDESolver:
     """base class for pde solver"""
+
     def step(self, init, dt):
         raise NotImplementedError
 

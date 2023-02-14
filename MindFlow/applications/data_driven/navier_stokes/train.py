@@ -16,42 +16,37 @@
 train
 """
 import os
-import argparse
+import time
 import datetime
 import numpy as np
 
-from mindspore import nn, context, Tensor, set_seed
-from mindspore import DynamicLossScaleManager, LossMonitor, TimeMonitor, CheckpointConfig, ModelCheckpoint
+import mindspore
+from mindspore import nn, context, ops, Tensor, jit, set_seed
 
-from mindflow import FNO2D, RelativeRMSELoss, Solver, load_yaml_config, get_warmup_cosine_annealing_lr
-from src import PredictCallback, create_training_dataset
+from mindflow.cell import FNO2D
+from mindflow.common import get_warmup_cosine_annealing_lr
+from mindflow.loss import RelativeRMSELoss
+from mindflow.utils import load_yaml_config
+from mindflow.pde import UnsteadyFlowWithLoss
+from src import calculate_l2_error, create_training_dataset
 
 
-set_seed(0)
-np.random.seed(0)
+set_seed(123456)
+np.random.seed(123456)
 
 print("pid:", os.getpid())
 print(datetime.datetime.now())
 
-parser = argparse.ArgumentParser(description='navier_stoke 2D problem')
-parser.add_argument('--device_id', type=int, default=1)
-parser.add_argument('--config_path', default='navier_stokes_2d.yaml', help='yaml config file path')
-opt = parser.parse_args()
-
-context.set_context(mode=context.GRAPH_MODE,
-                    save_graphs=False,
-                    device_target='GPU',
-                    device_id=opt.device_id,
-                    )
+context.set_context(mode=context.GRAPH_MODE, device_target='GPU', device_id=5)
+use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
 
 def train():
     '''train and evaluate the network'''
-    config = load_yaml_config(opt.config_path)
+    config = load_yaml_config('navier_stokes_2d.yaml')
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
-    callback_params = config["callback"]
 
     # prepare dataset
     train_dataset = create_training_dataset(data_params,
@@ -76,43 +71,65 @@ def train():
 
     # prepare optimizer
     steps_per_epoch = train_dataset.get_dataset_size()
+    print("steps_per_epoch: ", steps_per_epoch)
     lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["initial_lr"],
                                         last_epoch=optimizer_params["train_epochs"],
                                         steps_per_epoch=steps_per_epoch,
                                         warmup_epochs=optimizer_params["warmup_epochs"])
 
     optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
-    loss_scale = DynamicLossScaleManager()
+    problem = UnsteadyFlowWithLoss(model, loss_fn=RelativeRMSELoss(), data_format="NHWC")
 
-    # prepare loss function
-    loss_fn = RelativeRMSELoss()
-    solver = Solver(model,
-                    optimizer=optimizer,
-                    loss_scale_manager=loss_scale,
-                    loss_fn=loss_fn,
-                    )
+    if use_ascend:
+        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
+        loss_scaler = DynamicLossScaler(1024, 2, 100)
+        auto_mixed_precision(model, 'O3')
 
-    # prepare callback
-    summary_dir = os.path.join(callback_params["summary_dir"], model_name)
-    print(summary_dir)
-    pred_cb = PredictCallback(model=model,
-                              inputs=test_input,
-                              label=test_label,
-                              config=callback_params,
-                              summary_dir=summary_dir)
+    def forward_fn(train_inputs, train_label):
+        loss = problem.get_loss(train_inputs, train_label)
+        if use_ascend:
+            loss = loss_scaler.scale(loss)
+        return loss
 
-    ckpt_config = CheckpointConfig(save_checkpoint_steps=callback_params["save_checkpoint_steps"] * steps_per_epoch,
-                                   keep_checkpoint_max=callback_params["keep_checkpoint_max"])
-    ckpt_dir = os.path.join(summary_dir, "ckpt")
-    ckpt_cb = ModelCheckpoint(prefix=model_params["name"],
-                              directory=ckpt_dir,
-                              config=ckpt_config)
+    grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
 
-    # start train with evaluation
-    solver.train(epoch=optimizer_params["train_epochs"],
-                 train_dataset=train_dataset,
-                 callbacks=[LossMonitor(), TimeMonitor(), pred_cb, ckpt_cb],
-                 dataset_sink_mode=True)
+    @jit
+    def train_step(train_inputs, train_label):
+        loss, grads = grad_fn(train_inputs, train_label)
+        if use_ascend:
+            loss = loss_scaler.unscale(loss)
+            if all_finite(grads):
+                grads = loss_scaler.unscale(grads)
+                loss = ops.depend(loss, optimizer(grads))
+        else:
+            loss = ops.depend(loss, optimizer(grads))
+        return loss
+
+    sink_process = mindspore.data_sink(train_step, train_dataset, sink_size=1)
+    summary_dir = os.path.join(config["summary_dir"], model_name)
+
+    for cur_epoch in range(optimizer_params["train_epochs"]):
+        local_time_beg = time.time()
+        model.set_train()
+
+        cur_loss = 0.0
+        for _ in range(steps_per_epoch):
+            cur_loss = sink_process()
+
+        print("epoch: %s, loss is %s" % (cur_epoch + 1, cur_loss), flush=True)
+        local_time_end = time.time()
+        epoch_seconds = (local_time_end - local_time_beg) * 1000
+        step_seconds = epoch_seconds / steps_per_epoch
+        print("Train epoch time: {:5.3f} ms, per step time: {:5.3f} ms".format(epoch_seconds, step_seconds), flush=True)
+
+        if (cur_epoch + 1) % config["save_checkpoint_epoches"] == 0:
+            ckpt_dir = os.path.join(summary_dir, "ckpt")
+            if not os.path.exists(ckpt_dir):
+                os.makedirs(ckpt_dir)
+            mindspore.save_checkpoint(model, os.path.join(ckpt_dir, model_params["name"]))
+
+        if (cur_epoch + 1) % config['eval_interval'] == 0:
+            calculate_l2_error(model, test_input, test_label, config["test_batch_size"])
 
 
 if __name__ == '__main__':

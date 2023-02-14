@@ -12,6 +12,10 @@ data:
   train_size: 1000
   test_size: 200
   batch_size: 8
+  resolution: 1024
+  channels: 1
+  t_in: 1
+  t_out: 1
   sub: 8
 optimizer:
   initial_lr: 0.001
@@ -19,7 +23,6 @@ optimizer:
   gamma: 0.5
   train_epochs: 100
   valid_epochs: 10
-callback:
-  summary_dir: "./"
-  save_checkpoint_steps: 20
-  keep_checkpoint_max: 10
+eval_interval: 10
+epochs: 100
+summary_dir: "./summary"

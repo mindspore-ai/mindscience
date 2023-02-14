@@ -1,4 +1,4 @@
-# Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,11 +13,19 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .sympy2mindspore import sympy_to_mindspore
-from .pde_with_loss import PDEWithLoss, Burgers, NavierStokes, Poisson
-from .flow_with_loss import FlowWithLoss, SteadyFlowWithLoss, UnsteadyFlowWithLoss
+from .dataset import create_dataset
+from .utils import calculate_lp_loss_error, make_dir, scheduler, get_param_dic, init_model
+from .utils import plot_coe, get_label_coe, plot_test_error, plot_extrapolation_error
 
-__all__ = ["Burgers", "NavierStokes", "Poisson", "sympy_to_mindspore", "PDEWithLoss",
-           "FlowWithLoss", "SteadyFlowWithLoss", "UnsteadyFlowWithLoss"]
-
-__all__.sort()
+__all__ = [
+    "create_dataset",
+    "calculate_lp_loss_error",
+    "make_dir",
+    "scheduler",
+    "get_param_dic",
+    "init_model",
+    "plot_coe",
+    "get_label_coe",
+    "plot_test_error",
+    "plot_extrapolation_error"
+]

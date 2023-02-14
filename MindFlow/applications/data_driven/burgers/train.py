@@ -12,43 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""
-train
-"""
-import argparse
+"""train"""
 import os
-
+import time
 import numpy as np
 
-from mindspore import context, nn, Tensor, set_seed
-from mindspore import DynamicLossScaleManager, LossMonitor, TimeMonitor
+from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
+from mindspore import context, nn, Tensor, set_seed, ops, data_sink, jit, save_checkpoint
+from mindspore import dtype as mstype
+from mindflow import FNO1D, RelativeRMSELoss, load_yaml_config, get_warmup_cosine_annealing_lr
+from mindflow.pde import UnsteadyFlowWithLoss
 
-from mindflow import FNO1D, RelativeRMSELoss, Solver, load_yaml_config, get_warmup_cosine_annealing_lr
-
-from src import PredictCallback, create_training_dataset
+from src.dataset import create_training_dataset
 
 
 set_seed(0)
 np.random.seed(0)
 
-parser = argparse.ArgumentParser(description='Burgers 1D problem')
-parser.add_argument('--device_id', type=int, default=4)
-parser.add_argument('--config_path', default='burgers1d.yaml', help='yaml config file path')
-opt = parser.parse_args()
-
-context.set_context(mode=context.GRAPH_MODE,
-                    save_graphs=False,
-                    device_target="GPU",
-                    device_id=opt.device_id)
+context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="GPU", device_id=4)
+use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
 
 def train():
     '''Train and evaluate the network'''
-    config = load_yaml_config(opt.config_path)
+    config = load_yaml_config('burgers1d.yaml')
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
-    callback_params = config["callback"]
 
     # create training dataset
     train_dataset = create_training_dataset(data_params, shuffle=True)
@@ -56,6 +46,8 @@ def train():
     # create test dataset
     test_input, test_label = np.load(os.path.join(data_params["path"], "test/inputs.npy")), \
                              np.load(os.path.join(data_params["path"], "test/label.npy"))
+    test_input = Tensor(np.expand_dims(test_input, -2), mstype.float32)
+    test_label = Tensor(np.expand_dims(test_label, -2), mstype.float32)
 
     model = FNO1D(in_channels=model_params["in_channels"],
                   out_channels=model_params["out_channels"],
@@ -63,6 +55,7 @@ def train():
                   modes=model_params["modes"],
                   channels=model_params["width"],
                   depths=model_params["depth"])
+
     model_params_list = []
     for k, v in model_params.items():
         model_params_list.append(f"{k}:{v}")
@@ -75,26 +68,55 @@ def train():
                                         steps_per_epoch=steps_per_epoch,
                                         warmup_epochs=1)
     optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
-    loss_scale = DynamicLossScaleManager()
 
-    loss_fn = RelativeRMSELoss()
-    solver = Solver(model,
-                    optimizer=optimizer,
-                    loss_scale_manager=loss_scale,
-                    loss_fn=loss_fn,
-                    )
+    if use_ascend:
+        loss_scaler = DynamicLossScaler(1024, 2, 100)
+        auto_mixed_precision(model, 'O1')
+    else:
+        loss_scaler = None
 
-    summary_dir = os.path.join(callback_params["summary_dir"], model_name)
+    problem = UnsteadyFlowWithLoss(model, loss_fn=RelativeRMSELoss(), data_format="NHWTC")
+
+    summary_dir = os.path.join(config["summary_dir"], model_name)
     print(summary_dir)
-    pred_cb = PredictCallback(model=model,
-                              inputs=test_input,
-                              label=test_label,
-                              config=config,
-                              summary_dir=summary_dir)
-    solver.train(epoch=optimizer_params["train_epochs"],
-                 train_dataset=train_dataset,
-                 callbacks=[LossMonitor(), TimeMonitor(), pred_cb],
-                 dataset_sink_mode=True)
+
+    def forward_fn(data, label):
+        loss = problem.get_loss(data, label)
+        return loss
+
+    grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
+
+    @jit
+    def train_step(data, label):
+        loss, grads = grad_fn(data, label)
+        if use_ascend:
+            loss = loss_scaler.unscale(loss)
+            if all_finite(grads):
+                grads = loss_scaler.unscale(grads)
+        loss = ops.depend(loss, optimizer(grads))
+        return loss
+
+    sink_process = data_sink(train_step, train_dataset, 1)
+    summary_dir = os.path.join(config["summary_dir"], model_name)
+
+    for epoch in range(1, config["epochs"] + 1):
+        model.set_train()
+        local_time_beg = time.time()
+        for _ in range(steps_per_epoch):
+            cur_loss = sink_process()
+        print("epoch: {}, time elapsed: {}ms, loss: {}".format(epoch, (time.time() - local_time_beg) * 1000,
+                                                               cur_loss.asnumpy()))
+
+        if epoch % config['eval_interval'] == 0:
+            model.set_train(False)
+            print("================================Start Evaluation================================")
+            rms_error = problem.get_loss(test_input, test_label)/test_input.shape[0]
+            print("mean rms_error:", rms_error)
+            print("=================================End Evaluation=================================")
+            ckpt_dir = os.path.join(summary_dir, "ckpt")
+            if not os.path.exists(ckpt_dir):
+                os.makedirs(ckpt_dir)
+            save_checkpoint(model, os.path.join(ckpt_dir, model_params["name"] + '_epoch' + str(epoch)))
 
 
 if __name__ == '__main__':

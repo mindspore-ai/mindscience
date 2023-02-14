@@ -14,9 +14,9 @@
 # ============================================================================
 """init"""
 from .dataset import create_training_dataset
-from .callback import PredictCallback
+from .utils import calculate_l2_error
 
 __all__ = [
     "create_training_dataset",
-    "PredictCallback",
+    "calculate_l2_error",
 ]
