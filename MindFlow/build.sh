@@ -38,7 +38,6 @@ usage()
   echo "Usage:"
   echo "bash build.sh [-d] [-v] [-e gpu|ascend] [-j[n]]"
   echo "Options:"
-  echo "    -d Debug mode"
   echo "    -e Use gpu or ascend"
   echo "    -r Release mode, default mode"
   echo "    -j[n] Set the threads when building (Default: -j8)"
