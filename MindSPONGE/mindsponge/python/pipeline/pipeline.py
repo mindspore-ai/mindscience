@@ -20,10 +20,11 @@ import urllib.request
 from mindspore import context
 from mindsponge.common.config_load import load_config
 from .models import Multimer, MultimerDataSet, multimer_configuration
-
+from .models import COLABDESIGN, ColabDesignDataSet, colabdesign_configuration
 
 model_card = {
     "Multimer": {"model": Multimer, "dataset": MultimerDataSet, "config": multimer_configuration},
+    "ColabDesign": {"model": COLABDESIGN, "dataset": ColabDesignDataSet, "config": colabdesign_configuration},
 }
 
 
@@ -41,6 +42,7 @@ def download_config(url, save_path):
 
 class PipeLine:
     """PipeLine"""
+
     def __init__(self, name):
         self.model_cls = model_card[name]["model"]
         self.dataset_cls = model_card[name]["dataset"]
