@@ -48,17 +48,17 @@ class DataSet(metaclass=ABCMeta):
         self.phase = phase
 
     @abstractmethod
-    def process(self, data, label=None, ensemble_num=0):
+    def process(self, data, label=None):
         pass
 
     @abstractmethod
-    def download(self):
+    def download(self, path=None):
         pass
 
     @abstractmethod
-    def data_parse(self, input, idx):
+    def data_parse(self, input_data, idx):
         pass
 
     @abstractmethod
-    def create_iterator(self):
+    def create_iterator(self, num_epochs):
         pass
