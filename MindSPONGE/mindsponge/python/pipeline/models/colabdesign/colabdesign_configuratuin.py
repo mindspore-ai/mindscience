@@ -20,6 +20,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Models"""
-from .multimer import Multimer, MultimerDataSet, multimer_configuration
-from .colabdesign import COLABDESIGN, ColabDesignDataSet, colabdesign_configuration
+"""colabdesign_configuration"""
+colabdesign_configuration = {
+    "fold_design": "https://download.mindspore.cn/mindscience/mindsponge/Multimer/config/"
+}
