@@ -34,8 +34,8 @@ train_batch_size: 8192
 test_batch_size: 8192
 eval_interval_epochs: 500
 train_with_eval: true
-train_data_path: "./flow_past_cylinder/dataset"
-test_data_path: "./flow_past_cylinder/dataset"
+train_data_path: "./cylinder_flow/dataset"
+test_data_path: "./cylinder_flow/dataset"
 save_ckpt_path: "path/to/ckpt"
 summary_dir: "./summary"
 visual_dir: "./vision"
