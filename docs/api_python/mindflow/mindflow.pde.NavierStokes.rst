@@ -5,7 +5,7 @@
     参数：
         - **model** (mindspore.nn.Cell) - 用于训练的网络模型。
         - **re** (float) - 无量纲参数，雷诺数是流体惯性力与粘滞力的比值。默认值：100.0。
-        - **loss_fn** (str) - 损失函数。默认值："mse"。
+        - **loss_fn** (Union[str, Cell]) - 损失函数。默认值："mse"。
 
     .. py:method:: pde()
 

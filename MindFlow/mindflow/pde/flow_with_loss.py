@@ -23,8 +23,12 @@ class FlowWithLoss:
     Base class of user-defined data-driven flow prediction problems.
 
     Args:
-        model (Cell): A training or testing model.
-        loss_fn (Union[str, Cell]): Objective function. Default: "mse".
+        model (mindspore.nn.Cell): A training or test model.
+        loss_fn (Union[str, Cell]): Loss function. Default: "mse".
+
+    Raises:
+        TypeError: If `modle` or `loss_fn` is not mindspore.nn.Cell.
+        NotImplementedError: If the member function `get_loss` is not implemented.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -34,12 +38,17 @@ class FlowWithLoss:
     def __init__(self, model, loss_fn='mse'):
         self.model = model
         self.loss_fn = get_loss_metric(loss_fn) if isinstance(loss_fn, str) else loss_fn
-        check_param_type(model, "model",
-                         data_type=nn.Cell, exclude_type=bool)
-        check_param_type(loss_fn, "loss_fn",
-                         data_type=nn.Cell, exclude_type=bool)
+        check_param_type(model, "model", data_type=nn.Cell, exclude_type=bool)
+        check_param_type(loss_fn, "loss_fn", data_type=nn.Cell, exclude_type=bool)
 
     def get_loss(self, inputs, labels):
+        """
+        Compute the loss of the model.
+
+        Args:
+            inputs (Tensor): The input data of model.
+            labels (Tensor): True values of the samples.
+        """
         raise NotImplementedError
 
 
@@ -49,8 +58,8 @@ class SteadyFlowWithLoss(FlowWithLoss):
     Base class of user-defined steady data-driven problems.
 
     Args:
-        model (Cell): A training or testing model.
-        loss_fn (Union[str, Cell]): Objective function. Default: "mse".
+        model (mindspore.nn.Cell): A training or test model.
+        loss_fn (Union[str, Cell]): Loss function. Default: "mse".
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -94,6 +103,16 @@ class SteadyFlowWithLoss(FlowWithLoss):
     """
 
     def get_loss(self, inputs, labels):
+        """
+        Compute the loss of training or test model.
+
+        Args:
+            inputs (Tensor): The input data of model.
+            labels (Tensor): True values of the samples.
+
+        Returns:
+            float, loss value.
+        """
         pred = self.model(inputs)
         loss = self.loss_fn(pred, labels)
         return loss
@@ -105,10 +124,11 @@ class UnsteadyFlowWithLoss(FlowWithLoss):
     Base class of unsteady user-defined data-driven problems.
 
     Args:
-        model (Cell): A training or testing model.
+        model (Cell): A training or test model.
         t_in (int): Initial time steps. Default: 1.
         t_out (int): Output time steps. Default: 1.
-        loss_fn (Union[str, Cell]): Objective function. Default: "mse".
+        loss_fn (Union[str, Cell]): Loss function. Default: "mse".
+        data_format (str): Data format. Default: "NTCHW".
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -134,14 +154,20 @@ class UnsteadyFlowWithLoss(FlowWithLoss):
         super(UnsteadyFlowWithLoss, self).__init__(model, loss_fn)
         self.t_in = t_in
         self.t_out = t_out
-        check_param_type(t_in, "t_in",
-                         data_type=int, exclude_type=bool)
-        check_param_type(t_out, "t_out",
-                         data_type=int, exclude_type=bool)
+        check_param_type(t_in, "t_in", data_type=int, exclude_type=bool)
+        check_param_type(t_out, "t_out", data_type=int, exclude_type=bool)
         self.data_format = data_format
 
     def step(self, inputs):
-        """ for multiple time steps """
+        """
+        Support single or multiple time steps training.
+
+        Args:
+            inputs (Tensor): Input dataset with data format is "NTCHW" or "NHWTC".
+
+        Returns:
+            List(Tensor), Dataset with data format is "NTCHW" or "NHWTC".
+        """
         # change inputs dimension: [bs, t_in, c, x1, x2, ...] -> [bs, t_out, c, x1, x2, ...]
         pred_list = []
         for _ in range(self.t_out):
@@ -169,6 +195,16 @@ class UnsteadyFlowWithLoss(FlowWithLoss):
         return pred_list
 
     def get_loss(self, inputs, labels):
+        """
+        Compute the loss of training or test model.
+
+        Args:
+            inputs (Tensor): Dataset with data format is "NTCHW" or "NHWTC".
+            labels (Tensor): True values of the samples.
+
+        Returns:
+            float, loss value.
+        """
         # the dimension of inputs: [bs, t_in, c, x1, x2, ...]
         # the dimension of labels [bs, t_out, c, x1, x2, ...]
         pred = self.step(inputs)

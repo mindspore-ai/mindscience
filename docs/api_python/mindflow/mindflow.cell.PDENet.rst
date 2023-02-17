@@ -1,4 +1,4 @@
-.. py:class:: mindflow.cell.PDENet(height, width, channels, kernel_size, max_order, step, dx=0.01, dy=0.01, dt=0.01, periodic=True, enable_moment=True, if_fronzen=False)
+.. py:class:: mindflow.cell.PDENet(height, width, channels, kernel_size, max_order, dx=0.01, dy=0.01, dt=0.01, periodic=True, enable_moment=True, if_fronzen=False)
 
     PDE-Net模型。
     PDE-Net是一个前馈深度网络，可同时实现两个目标：准确预测复杂的系统，并揭示底层隐藏的PDE模型。基本思想是学习微分算子通过学习卷积核（过滤器），并将神经网络或其他机器学习方法应用于
@@ -11,7 +11,6 @@
         - **channels** (int) - PDE-Net输入和输出Tensor的通。
         - **kernel_size** (int) - 指定2D卷积内核的高度和宽度。
         - **max_order** (int) - PDE模型的最大顺序。
-        - **step** (int) - PDE-Net中使用的增量-T块的数量。
         - **dx** (float) - x维的空间分辨率。默认值：0.01。
         - **dy** (float) - y维的空间分辨率。默认值：0.01。
         - **dt** (float) - PDE-Net的时间步长。默认值：0.01。
@@ -26,5 +25,5 @@
         Tensor，具有与 `input` 相同的形状，数据类型为float32。
 
     异常：
-        - **TypeError** - 如果 `height` 、 `width` 、 `channels` 、 `kernel_size` 、 `max_order` 或 `step` 不是int。
+        - **TypeError** - 如果 `height` 、 `width` 、 `channels` 、 `kernel_size` 或 `max_order` 不是int。
         - **TypeError** - 如果 `periodic` 、 `enable_moment` 、 `if_fronzen` 不是bool。

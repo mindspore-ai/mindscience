@@ -68,7 +68,7 @@ class PDENet(nn.Cell):
         Tensor, has the same shape as `input` with data type of float32.
 
     Raises:
-        TypeError: If `height`, `width`, `channels`, `kernel_size` or `max_order is not an int.
+        TypeError: If `height`, `width`, `channels`, `kernel_size` or `max_order` is not an int.
         TypeError: If `periodic`, `enable_moment`, `if_fronzen` is not a bool.
 
     Supported Platforms:
