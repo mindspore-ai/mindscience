@@ -17,11 +17,8 @@
 from argparse import Namespace
 import json
 from pathlib import Path
-from gvp_transformer import GVPTransformerModel
+from src.gvp_transformer import GVPTransformerModel
 from mindspore import load_checkpoint, load_param_into_net
-from mindspore import context
-context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
-
 
 
 def load_model_and_alphabet_local(model_location):
@@ -34,11 +31,11 @@ def load_model_and_alphabet_local(model_location):
 
 def load_model_and_alphabet_core(model_data, regression_data=None):
     """ Load model and alphabet"""
-    import data  # conditional esm.inverse_folding below
+    import src.data  # conditional esm.inverse_folding below
     if regression_data is not None:
         model_data["model"].update(regression_data["model"])
 
-    alphabet = data.Alphabet.from_architecture('vt_medium_with_invariant_gvp')
+    alphabet = src.data.Alphabet.from_architecture('vt_medium_with_invariant_gvp')
 
     with open('src/args.json', 'r') as args_data:
         model_args = json.load(args_data)
@@ -48,6 +45,6 @@ def load_model_and_alphabet_core(model_data, regression_data=None):
     return model, alphabet
 
 
-def esm_if1_gvp4_t16_142m_ur50():
+def esm_if1_gvp4_t16_142m_ur50(ckptpath):
     """Load esm_if1_gvp4_t16_142M_UR50.ckpt"""
-    return load_model_and_alphabet_local('esm_if1_gvp4_t16_142M_UR50.ckpt')
+    return load_model_and_alphabet_local(ckptpath)

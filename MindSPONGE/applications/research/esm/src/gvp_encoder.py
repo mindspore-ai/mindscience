@@ -17,9 +17,9 @@
 import mindspore.ops as ops
 import mindspore.nn as nn
 
-from features import GVPGraphEmbedding
-from gvp_modules import GVPConvLayer
-from gvp_utils import unflatten_graph
+from src.features import GVPGraphEmbedding
+from src.gvp_modules import GVPConvLayer
+from src.gvp_utils import unflatten_graph
 
 
 class GVPEncoder(nn.Cell):

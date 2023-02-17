@@ -25,9 +25,6 @@ import src.util as util
 
 
 def main():
-    ms.set_context(mode=ms.PYNATIVE_MODE, device_target="GPU")
-
-
     parser = argparse.ArgumentParser(
         description='Sample sequences based on a given structure.'
     )
@@ -50,15 +47,21 @@ def main():
         default='output/sampled_seqs.fasta',
     )
     parser.add_argument(
+        '--ckptpath', type=str,
+        help='ckpt filepath for model',
+        default='./checkpoint/esm_if1_gvp4_t16_142M_UR50.ckpt',
+    )
+    parser.add_argument(
         '--num-samples', type=int,
         help='number of sequences to sample',
         default=1,
     )
     parser.add_argument('--device_id', help='device id', type=int, default=2)
+    parser.add_argument('--device_target', help='device target', type=str, default='GPU')
     args = parser.parse_args()
-    ms.set_context(device_target='GPU', device_id=args.device_id)
+    ms.set_context(mode=ms.PYNATIVE_MODE, device_target=args.device_target, device_id=args.device_id)
 
-    model, _ = pretrained.esm_if1_gvp4_t16_142m_ur50()
+    model, _ = pretrained.esm_if1_gvp4_t16_142m_ur50(args.ckptpath)
     model.set_train(False)
     coords, seq = util.load_coords(args.pdbfile, args.chain)
     print('Sequence loaded from file:')

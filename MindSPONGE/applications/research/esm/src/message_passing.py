@@ -16,13 +16,13 @@
 
 from inspect import Parameter
 from typing import List, Optional
-from inspector import Inspector
+from src.inspector import Inspector
 from mindspore import Tensor
-from mindspore.ops import Size
 import mindspore as ms
 from mindspore import ops
 import mindspore.nn as nn
-from mindspore.ops import functional as F
+import mindspore.numpy as mnp
+from mindspore.ops import Size
 
 
 def gather(params, indices, axis=None):
@@ -55,11 +55,35 @@ def broadcast(src: ms.Tensor, other: ms.Tensor, dim: int):
     return src
 
 
+
+def tensor_scatter_add(out, index, src, dim):
+    """Tensor scatter add"""
+    if dim < 0:
+        dim = out.ndim + dim
+    if out.ndim == 1:
+        out = ops.Cast()(out, ms.float32)
+        index = index.reshape(index.shape[0], 1)
+        src = ops.Cast()(src, ms.float32)
+        out = ops.scatter_nd_add(out, index, src)
+    elif out.ndim == 2:
+        if dim == 0:
+            m = index.shape[0]
+            n = index.shape[1]
+            index_new = index[:, :].reshape(-1)[:, None]
+            index_j = mnp.arange(n).astype(mnp.int32)[None,]
+            index_j = mnp.tile(index_j, (m, 1)).reshape(-1)[:, None]
+            index = mnp.concatenate((index_new, index_j), -1)  # m*n, 2
+            src = src[:, :].reshape(-1)  # m*n,
+            out = ops.tensor_scatter_add(out, index, src)
+    return out
+
+
 def scatter_sum(src: Tensor, index: Tensor, dim: int = -1,
                 out: Optional[Tensor] = None,
                 dim_size: Optional[int] = None) -> Tensor:
     """Scatter sum"""
     index = broadcast(index, src, dim)
+    index = index.astype(ms.int32)
     if out is None:
         size = list(src.shape)
         if dim_size is not None:
@@ -69,9 +93,9 @@ def scatter_sum(src: Tensor, index: Tensor, dim: int = -1,
         else:
             size[dim] = int(index.max()) + 1
         out = ops.Zeros()(tuple(size), src.dtype)
-        out = F.tensor_scatter_elements(out, index, src, dim, 'add')
+        out = tensor_scatter_add(out, index, src, dim)
         return out
-    out = F.tensor_scatter_elements(out, index, src, dim, 'add')
+    out = tensor_scatter_add(out, index, src, dim)
     return out
 
 
@@ -85,7 +109,6 @@ def scatter_mean(src: ms.Tensor, index: ms.Tensor, dim: int = -1,
     index_dim = dim
 
     if index_dim < 0:
-        index_dim = index_dim + src.dim()
         index_dim = 0
     if index.dim() <= index_dim:
         index_dim = index.dim() - 1
@@ -131,7 +154,6 @@ class MessagePassing(nn.Cell):
             ('`MessagePassing.propagate` only supports `torch.LongTensor` of '
              'shape `[2, num_messages]` or `torch_sparse.SparseTensor` for '
              'argument `edge_index`.'))
-
 
     def __set_size__(self, size: List[Optional[int]], dim: int, src: Tensor):
         the_size = size[dim]

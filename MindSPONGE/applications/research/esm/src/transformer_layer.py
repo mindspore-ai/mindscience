@@ -19,7 +19,8 @@ import mindspore as ms
 import mindspore.ops as ops
 import mindspore.nn as nn
 from mindspore import Tensor
-from multihead_attention import MultiheadAttention
+from src.multihead_attention import MultiheadAttention
+from src.util import Dense
 
 
 class TransformerEncoderLayer(nn.Cell):
@@ -45,10 +46,10 @@ class TransformerEncoderLayer(nn.Cell):
         self.final_layer_norm = nn.LayerNorm([self.embed_dim])
 
     def build_fc1(self, input_dim, output_dim):
-        return nn.Dense(input_dim, output_dim)
+        return Dense(input_dim, output_dim)
 
     def build_fc2(self, input_dim, output_dim):
-        return nn.Dense(input_dim, output_dim)
+        return Dense(input_dim, output_dim)
 
     def build_self_attention(self, embed_dim, args):
         return MultiheadAttention(
@@ -172,10 +173,10 @@ class TransformerDecoderLayer(nn.Cell):
         self.need_attn = True
 
     def build_fc1(self, input_dim, output_dim):
-        return nn.Dense(input_dim, output_dim)
+        return Dense(input_dim, output_dim)
 
     def build_fc2(self, input_dim, output_dim):
-        return nn.Dense(input_dim, output_dim)
+        return Dense(input_dim, output_dim)
 
     def build_self_attention(
             self, embed_dim, args, add_bias_kv=False, add_zero_attn=False

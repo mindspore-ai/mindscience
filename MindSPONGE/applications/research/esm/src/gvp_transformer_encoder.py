@@ -20,11 +20,12 @@ import mindspore as ms
 import mindspore.ops as ops
 import mindspore.nn as nn
 
-from modules import SinusoidalPositionalEmbedding
-from features import GVPInputFeaturizer, DihedralFeatures
-from gvp_encoder import GVPEncoder
-from transformer_layer import TransformerEncoderLayer
-from util import nan_to_num, get_rotation_frames, rotate, rbf
+from src.modules import SinusoidalPositionalEmbedding
+from src.features import GVPInputFeaturizer, DihedralFeatures
+from src.gvp_encoder import GVPEncoder
+from src.transformer_layer import TransformerEncoderLayer
+from src.util import nan_to_num, get_rotation_frames, rotate, rbf
+from src.util import Dense
 
 
 def ms_transpose(x, index_a, index_b):
@@ -80,8 +81,8 @@ class GVPTransformerEncoder(nn.Cell):
             embed_dim,
             self.padding_idx,
         )
-        self.embed_gvp_input_features = nn.Dense(15, embed_dim)
-        self.embed_confidence = nn.Dense(16, embed_dim)
+        self.embed_gvp_input_features = Dense(15, embed_dim)
+        self.embed_confidence = Dense(16, embed_dim)
         self.embed_dihedrals = DihedralFeatures(embed_dim)
 
         gvp_args = argparse.Namespace()
@@ -91,7 +92,7 @@ class GVPTransformerEncoder(nn.Cell):
         self.gvp_encoder = GVPEncoder(gvp_args)
         gvp_out_dim = gvp_args.node_hidden_dim_scalar + \
                       (3 * gvp_args.node_hidden_dim_vector)
-        self.embed_gvp_output = nn.Dense(gvp_out_dim, embed_dim)
+        self.embed_gvp_output = Dense(gvp_out_dim, embed_dim)
 
         self.layers = nn.CellList([])
         self.layers.extend(

@@ -21,9 +21,9 @@ import mindspore as ms
 import mindspore.ops as ops
 import mindspore.nn as nn
 from mindspore.common.initializer import Normal, initializer
-
-from modules import SinusoidalPositionalEmbedding
-from transformer_layer import TransformerDecoderLayer
+from src.modules import SinusoidalPositionalEmbedding
+from src.transformer_layer import TransformerDecoderLayer
+from src.util import Dense
 
 
 def ms_transpose(x, index_a, index_b):
@@ -59,14 +59,12 @@ class TransformerDecoder(nn.Cell):
         input_embed_dim = embed_tokens.embedding_size
         embed_dim = args.decoder_embed_dim
         self.embed_dim = embed_dim
-
         self.padding_idx = embed_tokens.padding_idx
-
         self.embed_tokens = embed_tokens
         self.embed_scale = math.sqrt(embed_dim)
 
         self.project_in_dim = (
-            nn.Dense(input_embed_dim, embed_dim, has_bias=False)
+            Dense(input_embed_dim, embed_dim, has_bias=False)
             if embed_dim != input_embed_dim
             else None
         )
@@ -88,7 +86,7 @@ class TransformerDecoder(nn.Cell):
         self.build_output_projection(args, dictionary)
 
     def build_output_projection(self, args, dictionary):
-        self.output_projection = nn.Dense(
+        self.output_projection = Dense(
             args.decoder_embed_dim, len(dictionary), has_bias=False
         )
         self.output_projection.weight = initializer(Normal(sigma=args.decoder_embed_dim ** -0.5, mean=0),
@@ -149,6 +147,7 @@ class TransformerDecoder(nn.Cell):
             positions = positions[:, -1:]
 
         # embed tokens and positions
+        prev_output_tokens = ops.Cast()(prev_output_tokens, ms.int32)
         x = self.embed_scale * self.embed_tokens(prev_output_tokens)
 
         if self.project_in_dim is not None:

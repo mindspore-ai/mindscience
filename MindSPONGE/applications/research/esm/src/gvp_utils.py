@@ -21,9 +21,9 @@ import mindspore.ops as ops
 def ms_flatten(input_tensor, start_dim, end_dim):
     """Flatten"""
     if start_dim == 0:
-        shape_list = list(input_tensor.shape[end_dim+1:])
+        shape_list = list(input_tensor.shape[end_dim + 1:])
         dim = 1
-        for i in range(start_dim, end_dim+1):
+        for i in range(start_dim, end_dim + 1):
             dim = input_tensor.shape[i] * dim
         shape_list.insert(0, dim)
         shape_list = tuple(shape_list)
@@ -62,17 +62,13 @@ def flatten_graph(node_embeddings, edge_embeddings, edge_index):
     permute = ops.Transpose()
 
     edge_index = permute(edge_index, (1, 0, 2))
-    edge_index = edge_index.reshape(edge_index.shape[0], (edge_index.shape[1]*edge_index.shape[2]))
-
-
+    edge_index = edge_index.reshape(edge_index.shape[0], (edge_index.shape[1] * edge_index.shape[2]))
 
     edge_mask = edge_mask.flatten()
-    edge_mask = ops.Cast()(edge_mask, ms.int32)
-    edge_mask = edge_mask.asnumpy().astype(bool)
+    edge_mask = edge_mask.asnumpy()
     edge_index = edge_index.asnumpy()
     edge_embeddings_0 = edge_embeddings[0].asnumpy()
     edge_embeddings_1 = edge_embeddings[1].asnumpy()
-
 
     edge_index = edge_index[:, edge_mask]
     edge_embeddings = (

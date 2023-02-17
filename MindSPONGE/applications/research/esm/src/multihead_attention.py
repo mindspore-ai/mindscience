@@ -24,6 +24,7 @@ from mindspore.common.initializer import Initializer, initializer,\
     XavierUniform, _calculate_fan_in_and_fan_out, _assignment
 import mindspore.nn as nn
 from mindspore import Tensor
+from src.util import Dense
 
 
 class XavierNormal(Initializer):
@@ -142,11 +143,11 @@ class MultiheadAttention(nn.Cell):
             "Self-attention requires query, key and " "value to be of the same size"
         )
 
-        self.k_proj = nn.Dense(self.kdim, embed_dim, has_bias=bias)
-        self.v_proj = nn.Dense(self.vdim, embed_dim, has_bias=bias)
-        self.q_proj = nn.Dense(embed_dim, embed_dim, has_bias=bias)
+        self.k_proj = Dense(self.kdim, embed_dim, has_bias=bias)
+        self.v_proj = Dense(self.vdim, embed_dim, has_bias=bias)
+        self.q_proj = Dense(embed_dim, embed_dim, has_bias=bias)
 
-        self.out_proj = nn.Dense(embed_dim, embed_dim, has_bias=bias)
+        self.out_proj = Dense(embed_dim, embed_dim, has_bias=bias)
 
         if add_bias_kv:
             self.bias_k = ms.Parameter(ms.Tensor((1, 1, embed_dim)))
@@ -179,8 +180,8 @@ class MultiheadAttention(nn.Cell):
         if prev_key_padding_mask is not None and static_kv:
             new_key_padding_mask = prev_key_padding_mask
         elif prev_key_padding_mask is not None and key_padding_mask is not None:
-            prev_key_padding_mask = ops.Cast()(prev_key_padding_mask, ms.float32)
-            key_padding_mask = ops.Cast()(key_padding_mask, ms.float32)
+            prev_key_padding_mask = ops.Cast()(prev_key_padding_mask, ms.int32)
+            key_padding_mask = ops.Cast()(key_padding_mask, ms.int32)
             new_key_padding_mask = ops.Concat(1)(
                 [prev_key_padding_mask, key_padding_mask]
             )
@@ -191,19 +192,22 @@ class MultiheadAttention(nn.Cell):
             filler = ops.Zeros()(
                 (batch_size, src_len - prev_key_padding_mask.shape[1]), prev_key_padding_mask.dtype
             )
-            prev_key_padding_mask = ops.Cast()(prev_key_padding_mask, ms.float32)
-            filler = ops.Cast()(filler, ms.float32)
+            prev_key_padding_mask = ops.Cast()(prev_key_padding_mask, ms.int32)
+            filler = ops.Cast()(filler, ms.int32)
             new_key_padding_mask = ops.Concat(1)(
                 [prev_key_padding_mask, filler]
             )
         elif key_padding_mask is not None:
             filler = ops.Zeros()(
                 (batch_size, src_len - key_padding_mask.shape[1]),
-                ms.float32,
+                ms.int32,
             )
-            key_padding_mask = ops.Cast()(key_padding_mask, ms.float32)
-            filler = ops.Cast()(filler, ms.float32)
-            new_key_padding_mask = ops.Concat(1)([filler, key_padding_mask])
+
+            key_padding_mask = ops.Cast()(key_padding_mask, ms.int32)
+            if filler.shape == (1, 0):
+                new_key_padding_mask = key_padding_mask
+            else:
+                new_key_padding_mask = ops.concat((filler, key_padding_mask), 1)
         else:
             new_key_padding_mask = prev_key_padding_mask
         return new_key_padding_mask
@@ -387,7 +391,11 @@ class MultiheadAttention(nn.Cell):
                         ops.Zeros()((key_padding_mask.shape[0], 1), key_padding_mask.dtype),
                     ])
 
-        attn_weights = ops.BatchMatMul()(q, ms_transpose(k, 1, 2))
+        q = ops.Cast()(q, ms.float16)
+        k = ops.Cast()(ms_transpose(k, 1, 2), ms.float16)
+        attn_weights = ops.BatchMatMul()(q, k)
+        attn_weights = ops.Cast()(attn_weights, ms.float32)
+
         attn_weights = MultiheadAttention.apply_sparse_mask(attn_weights)
 
         assert list(attn_weights.shape) == [bsz * self.num_heads, tgt_len, src_len]
@@ -418,7 +426,12 @@ class MultiheadAttention(nn.Cell):
         attn_probs = dropout_net(attn_weights_float.astype(attn_weights.dtype))
 
         assert v is not None
+
+        attn_probs = ops.Cast()(attn_probs, ms.float16)
+        v = ops.Cast()(v, ms.float16)
         attn = ops.BatchMatMul()(attn_probs, v)
+        attn = ops.Cast()(attn, ms.float32)
+
         assert list(attn.shape) == [bsz * self.num_heads, tgt_len, self.head_dim]
         if self.onnx_trace and attn.shape[1] == 1:
             # when ONNX tracing a single decoder step (sequence length == 1)

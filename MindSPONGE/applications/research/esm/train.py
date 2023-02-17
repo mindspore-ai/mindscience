@@ -14,6 +14,7 @@
 # ============================================================================
 """Training of esm"""
 
+import time
 import argparse
 from argparse import Namespace
 import json
@@ -28,14 +29,14 @@ from src.gvp_transformer import GVPTransformerModel
 
 
 class DatasetGenerator:
-    """自定义数据集类"""
+    """dataset generator"""
     def __init__(self, path, alphabet):
         with open(path) as f:
             traindata = json.load(f)
         trainset = []
         for seq in traindata:
             trainset.append(self.mask(0.15, seq, p=0.05))
-        batch = [(e["coords"], None, e["seq"]) for e in trainset]
+        batch = [(e["coords"], None, e["seq"]) for e in trainset[:]]
         self.coords, self.confidence, self.padding_mask, self.prev_output_tokens, self.target\
             = self.data_generation(batch, alphabet)
 
@@ -95,7 +96,7 @@ class DatasetGenerator:
 
 
 class CustomTrainOneStepCell(nn.Cell):
-    """自定义训练网络"""
+    """training"""
     def __init__(self, network, optimizer):
         super(CustomTrainOneStepCell, self).__init__(auto_prefix=False)
         self.network = network
@@ -119,9 +120,8 @@ class CustomTrainOneStepCell(nn.Cell):
 
 
 def main():
-    ms.set_context(mode=ms.PYNATIVE_MODE, device_target="GPU")
     parser = argparse.ArgumentParser()
-    parser.add_argument('--epochs', metavar='N', type=int, default=150,
+    parser.add_argument('--epochs', metavar='N', type=int, default=100,
                         help='training epochs, default=150')
     parser.add_argument('--batch_size', metavar='N', type=int, default=2,
                         help='training epochs, default=1')
@@ -129,10 +129,10 @@ def main():
                         help='location of CATH dataset, default=data/chain_set.jsonl')
     parser.add_argument('--cath_splits', metavar='PATH', default='data/splits.json',
                         help='location of CATH split file, default=data/splits.json')
-    parser.add_argument('--device_id', help='device id', type=int, default=2)
+    parser.add_argument('--device_id', help='device id', type=int, default=1)
+    parser.add_argument('--device_target', help='device target', type=str, default='GPU')
     args = parser.parse_args()
-    # whether to ran with cuda
-    ms.set_context(device_target='GPU', device_id=args.device_id)
+    ms.set_context(mode=ms.PYNATIVE_MODE, device_target=args.device_target, device_id=args.device_id)
     tf = open("src/args.json", "r")
     params = json.load(tf)
     params = Namespace(**params)
@@ -146,13 +146,23 @@ def main():
     net_with_loss = nn.WithLossCell(model, loss)
     opt = nn.Adam(model.trainable_params())
     train_net = CustomTrainOneStepCell(net_with_loss, opt)
+
+
+
     train_net.set_train()
     for epoch in range(args.epochs):
         total_loss, total_count = 0, 0
         batch_epoch = 0
+        start_epoch = time.time()
         for d in train_dataset.create_dict_iterator():
+            d['prev_output_tokens'] = ms.ops.Cast()(d['prev_output_tokens'], ms.int32)
             d['target'] = ms.ops.Cast()(d['target'], ms.int32)
+
+            start = time.time()
             result = train_net(d)
+            print('time for one step (ms):', time.time() - start)
+
+
             coord_mask = ms.ops.IsFinite()(d['coords']).all(axis=-1).all(axis=-1)
             coord_mask = coord_mask[:, 1:-1]
             avgloss = \
@@ -162,6 +172,9 @@ def main():
             batch_epoch += 1
             print(f"Batch: {batch_epoch}, " f"loss: {avgloss}")
         print(f'EPOCH {epoch} TRAIN loss: {total_loss/total_count:.4f}')
+        print('time for one epoch (ms):', time.time()-start_epoch)
+        ms.save_checkpoint(train_net, 'checkpoint/esm_if1_gvp4_t16_142M_UR50.ckpt')
+
 
 
 if __name__ == '__main__':
