@@ -10,6 +10,7 @@ path_for_fixed_positions=$output_dir"/fixed_pdbs.jsonl"
 path_for_tied_positions=$output_dir"/tied_pdbs.jsonl"
 
 python eval.py \
+        --model_name "pretrained_model_020" \
         --jsonl_path $path_for_parsed_chains \
         --chain_id_jsonl $path_for_assigned_chains \
         --fixed_positions_jsonl $path_for_fixed_positions \

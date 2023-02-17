@@ -30,9 +30,7 @@ def parse_pdb_biounits(args):
     aa_3_n = {a: n for n, a in enumerate(alpha_3)}
     aa_n_1 = {n: a for n, a in enumerate(alpha_1)}
 
-
     def n_to_aa(x):
-        # [[0,1,2,3]] -> ["ARND"]
         x = np.array(x)
         if x.ndim == 1:
             x = x[None]
@@ -202,6 +200,7 @@ class StructureDataset():
 
 class StructureDatasetPDB():
     """StructureDatasetPDB"""
+
     def __init__(self, pdb_dict_list, truncate=None, max_length=100,
                  alphabet='ACDEFGHIKLMNPQRSTVWYX-'):
         alphabet_set = {a for a in alphabet}
@@ -229,7 +228,6 @@ class StructureDatasetPDB():
             if truncate is not None and len(self.data) == truncate:
                 return
 
-
     def __len__(self):
         return len(self.data)
 
@@ -239,9 +237,10 @@ class StructureDatasetPDB():
 
 class StructureLoader():
     """StructureLoader"""
+
     def __init__(self, dataset, batch_size=100):
-        self.dataset = dataset
-        self.size = len(dataset)
+        self.dataset = dataset  # 数据
+        self.size = len(dataset)  # 有多少个序列
         self.lengths = [len(dataset[i]['seq']) for i in range(self.size)]
         self.batch_size = batch_size
         sorted_ix = np.argsort(self.lengths)
@@ -254,7 +253,7 @@ class StructureLoader():
                 batch.append(ix)
             else:
                 clusters.append(batch)
-                batch = []
+                batch, _ = [], 0
         if batch:
             clusters.append(batch)
         self.clusters = clusters
@@ -263,6 +262,74 @@ class StructureLoader():
         return len(self.clusters)
 
     def __iter__(self):
+        np.random.shuffle(self.clusters)
+        for b_idx in self.clusters:
+            batch = [self.dataset[i] for i in b_idx]
+            yield batch
+
+
+def append(sorted_ix, lengths, define_batch):
+    """append"""
+    clusters, batch_128, batch_256, batch_512, batch_1024, batch_ = [], [], [], [], [], []
+    for ix in sorted_ix:
+        batch_128, batch_256, batch_512, batch_1024, batch_ = append_batch(ix, lengths, define_batch, batch_128, \
+                                                                           batch_256, batch_512, batch_1024, batch_)
+        clusters, batch_128, batch_256, batch_512, batch_1024, batch_ = append_cluster(ix, lengths, define_batch, \
+                                                    clusters, batch_128, batch_256, batch_512, batch_1024, batch_)
+    clusters_ = clusters
+    return clusters_
+
+
+def append_batch(ix, lengths, define_batch, batch_128, batch_256, batch_512, batch_1024, batch_):
+    """append_batch"""
+    if lengths[ix] <= 128 and len(batch_128) < define_batch[0]:
+        batch_128.append(ix)
+    elif lengths[ix] <= 256 and lengths[ix] > 128 and len(batch_256) < define_batch[1]:
+        batch_256.append(ix)
+    elif lengths[ix] > 256 and lengths[ix] <= 512 and len(batch_512) < define_batch[2]:
+        batch_512.append(ix)
+    elif lengths[ix] > 1024 and len(batch_) < define_batch[4]:
+        batch_.append(ix)
+    output = (batch_128, batch_256, batch_512, batch_1024, batch_)
+    return output
+
+
+def append_cluster(ix, lengths, define_batch, clusters, batch_128, batch_256, batch_512, batch_1024, batch_):
+    """append_cluster"""
+    if lengths[ix] <= 128 and len(batch_128) == define_batch[0]:
+        clusters.append(batch_128)
+        batch_128 = []
+    elif lengths[ix] <= 256 and lengths[ix] > 128 and len(batch_256) == define_batch[1]:
+        clusters.append(batch_256)
+        batch_256 = []
+    elif lengths[ix] > 256 and lengths[ix] <= 512 and len(batch_512) == define_batch[2]:
+        clusters.append(batch_512)
+        batch_512 = []
+    elif lengths[ix] > 1024 and len(batch_) == define_batch[4]:
+        clusters.append(batch_)
+        batch_ = []
+        output = (clusters, batch_128, batch_256, batch_512, batch_1024, batch_)
+    return output
+
+
+class Definebatch():
+    """StructureLoader"""
+
+    def __init__(self, dataset, batch_size=100):
+        self.dataset = dataset
+        self.size = len(dataset)
+        self.lengths = [len(dataset[i]['seq']) for i in range(self.size)]
+        self.batch_size = batch_size
+        self.define_batch = [10, 2, 2, 2, 2]
+        sorted_ix = np.argsort(self.lengths)
+        self.clusters = append(sorted_ix, self.lengths, self.define_batch)
+
+
+    def __len__(self):
+        return len(self.clusters)
+
+    def __iter__(self):
+        np.random.seed(123)
         np.random.shuffle(self.clusters)
         for b_idx in self.clusters:
             batch = [self.dataset[i] for i in b_idx]

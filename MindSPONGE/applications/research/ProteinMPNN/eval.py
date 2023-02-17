@@ -13,19 +13,17 @@
 """model inference"""
 import argparse
 import os
-import json
 import time
-import stat
 import copy
+import json
+import stat
 import numpy as np
 import mindspore as ms
 import mindspore.ops as ops
 import mindspore.nn as nn
-from utils import scores_, s_to_seq, tied_featurize
-from datasets import StructureDataset, StructureDatasetPDB, parse_pdb
-from model import ProteinMPNN
-
-ms.set_context(mode=ms.PYNATIVE_MODE)
+from src.utils import scores_, s_to_seq, tied_featurize
+from src.datasets import StructureDataset, StructureDatasetPDB, parse_pdb
+from src.model import ProteinMPNN
 
 
 if __name__ == "__main__":
@@ -33,24 +31,24 @@ if __name__ == "__main__":
 
     argparser.add_argument("--path_to_model_weights", type=str, default="model_weights",
                            help="Path to model weights folder;")
-    argparser.add_argument("--model_name", type=str, default="v_48_020",
+    argparser.add_argument("--model_name", type=str, default="pretrained_model_020",
                            help="ProteinMPNN model name: v_48_002, v_48_010, \
-                           v_48_020, v_48_030; v_48_010=version with 48 edges 0.10A noise")
-    argparser.add_argument("--device_id", type=int, default=0, help="device_id")
+                               v_48_020, v_48_030; v_48_010=version with 48 edges 0.10A noise")
+
     argparser.add_argument("--save_score", type=int, default=0, help="0 for False, \
-                           1 for True; save score=-log_prob to npy files")
+                               1 for True; save score=-log_prob to npy files")
     argparser.add_argument("--save_probs", type=int, default=0, help="0 for False, \
-                            1 for True; save MPNN predicted probabilities per position")
+                                1 for True; save MPNN predicted probabilities per position")
 
     argparser.add_argument("--score_only", type=int, default=0,
                            help="0 for False, 1 for True; score input backbone-sequence pairs")
 
     argparser.add_argument("--conditional_probs_only", type=int, default=0, help="0 for False, 1 for True; \
-                           output conditional probabilities p(s_i given the rest of the sequence and backbone)")
+                               output conditional probabilities p(s_i given the rest of the sequence and backbone)")
     argparser.add_argument("--conditional_probs_only_backbone", type=int, default=0, help="0 for False, 1 for True; \
-                            if true output conditional probabilities p(s_i given backbone)")
+                                if true output conditional probabilities p(s_i given backbone)")
     argparser.add_argument("--unconditional_probs_only", type=int, default=0, help="0 for False, 1 for True; \
-                            output unconditional probabilities p(s_i given backbone) in one forward pass")
+                                output unconditional probabilities p(s_i given backbone) in one forward pass")
 
     argparser.add_argument("--backbone_noise", type=float, default=0.00,
                            help="Standard deviation of Gaussian noise to add to backbone atoms")
@@ -60,10 +58,9 @@ if __name__ == "__main__":
                             quadro GPUs, reduce this if running out of GPU memory")
     argparser.add_argument("--max_length", type=int, default=20000, help="Max sequence length")
     argparser.add_argument("--sampling_temp", type=str, default="0.1", help="A string of temperatures, 0.2 0.25 0.5. \
-                            Sampling temperature for amino acids, T=0.0 means taking argmax, T>>1.0 means sample \
-                            randomly. Suggested values 0.1, 0.15, 0.2, 0.25, 0.3. Higher values will lead to \
-                            more diversity.")
-
+                                Sampling temperature for amino acids, T=0.0 means taking argmax, \
+                                T>>1.0 means sample randomly. Suggested values 0.1, 0.15, 0.2, 0.25, 0.3. \
+                                Higher values will lead to more diversity.")
     argparser.add_argument("--out_folder", type=str, default='PDB_monomers/example_1_outputs',
                            help="Path to a folder to output sequences, e.g. /home/out/")
     argparser.add_argument("--pdb_path", type=str, default='', help="Path to a single PDB to be designed")
@@ -71,36 +68,36 @@ if __name__ == "__main__":
                            help="Define which chains need to be designed for a single PDB ")
     argparser.add_argument("--jsonl_path", type=str, default='PDB_monomers/example_1_outputs/parsed_pdbs.jsonl',
                            help="Path to a folder with parsed pdb into jsonl")
-    argparser.add_argument("--chain_id_jsonl", type=str, default='', help="Path to a dictionary specifying \
-                            which chains need to be designed and which ones are fixed, if not specified all \
-                            chains will be designed.")
+    argparser.add_argument("--chain_id_jsonl", type=str, default='', help="Path to a dictionary specifying which chains\
+                     need to be designed and which ones are fixed, if not specified all chains will be designed.")
     argparser.add_argument("--fixed_positions_jsonl", type=str, default='',
                            help="Path to a dictionary with fixed positions")
-    argparser.add_argument("--omit_AAs", type=list, default='X', help="Specify which amino acids should be omitted \
-                            in the generated sequence, e.g. 'AC' would omit alanine and cystine.")
-    argparser.add_argument("--bias_AA_jsonl", type=str, default='', help="Path to a dictionary which specifies AA \
-                            composion bias if neededi, e.g. {A: -1.1, F: 0.7} would make A less likely \
-                            and F more likely.")
+    argparser.add_argument("--omit_aas", type=list, default='X', help="Specify which amino acids should be omitted \
+                                in the generated sequence, e.g. 'AC' would omit alanine and cystine.")
+    argparser.add_argument("--bias_aa_jsonl", type=str, default='', help="Path to a dictionary which specifies aa \
+                     composion bias if neededi, e.g. {A: -1.1, F: 0.7} would make A less likely and F more likely.")
 
     argparser.add_argument("--bias_by_res_jsonl", default='', help="Path to dictionary with per position bias.")
-    argparser.add_argument("--omit_AA_jsonl", type=str, default='', help="Path to a dictionary which specifies which \
-                            amino acids need to be omitted from design at specific chain indices")
+    argparser.add_argument("--omit_aa_jsonl", type=str, default='', help="Path to a dictionary which specifies which \
+                                amino acids need to be omitted from design at specific chain indices")
     argparser.add_argument("--pssm_jsonl", type=str, default='', help="Path to a dictionary with pssm")
     argparser.add_argument("--pssm_multi", type=float, default=0.0,
                            help="A value between [0.0, 1.0], 0.0 means do not use pssm, 1.0 ignore MPNN predictions")
     argparser.add_argument("--pssm_threshold", type=float, default=0.0,
-                           help="A value between -inf + inf to restric per position AAs")
+                           help="A value between -inf + inf to restric per position aas")
     argparser.add_argument("--pssm_log_odds_flag", type=int, default=0, help="0 for False, 1 for True")
     argparser.add_argument("--pssm_bias_flag", type=int, default=0, help="0 for False, 1 for True")
 
     argparser.add_argument("--tied_positions_jsonl", type=str, default='',
                            help="Path to a dictionary with tied positions")
 
+    argparser.add_argument('--device_target', help='device target', type=str, default="GPU")
+    argparser.add_argument('--device_id', help='device id', type=int, default=0)
     args = argparser.parse_args()
 
-    ms.set_context(device_target='GPU', device_id=args.device_id)
-    HIDDEN_DIM = 128
-    NUM_LAYERS = 3
+    ms.set_context(device_target=args.device_target, device_id=args.device_id, mode=ms.PYNATIVE_MODE)
+    HIDDENDIM = 128
+    NUMLAYERS = 3
 
     if args.path_to_model_weights:
         model_folder_path = args.path_to_model_weights
@@ -109,19 +106,19 @@ if __name__ == "__main__":
     else:
         file_path = os.path.realpath(__file__)
         k = file_path.rfind("/")
-        model_folder_path = file_path[:k] + '/model_weights/'
+        model_folder_path = file_path[:k] + '/vanilla_model_weights/'
 
     folder_for_outputs = args.out_folder
 
     num_batches = args.num_seq_per_target // args.batch_size
     batch_copies = args.batch_size
     temperatures = [float(item) for item in args.sampling_temp.split()]
-    omit_aas_list = args.omit_AAs
+    omit_aas_list = args.omit_aas
     ALPHABET = 'ACDEFGHIKLMNPQRSTVWYX'
 
     omit_aas_np = np.array([aa in omit_aas_list for aa in ALPHABET]).astype(np.float32)
     if os.path.isfile(args.chain_id_jsonl):
-        with os.fdopen(os.open(args.chain_id_jsonl, os.O_RDONLY, stat.S_IRUSR), 'r') as json_file:
+        with open(args.chain_id_jsonl, 'r') as json_file:
             json_list = list(json_file)
         for json_str in json_list:
             chain_id_dict = json.loads(json_str)
@@ -131,7 +128,7 @@ if __name__ == "__main__":
         print('chain_id_jsonl is NOT loaded')
 
     if os.path.isfile(args.fixed_positions_jsonl):
-        with os.fdopen(os.open(args.fixed_positions_jsonl, os.O_RDONLY, stat.S_IRUSR), 'r') as json_file:
+        with open(args.fixed_positions_jsonl, 'r') as json_file:
             json_list = list(json_file)
         for json_str in json_list:
             fixed_positions_dict = json.loads(json_str)
@@ -141,7 +138,7 @@ if __name__ == "__main__":
         fixed_positions_dict = None
 
     if os.path.isfile(args.pssm_jsonl):
-        with os.fdopen(os.open(args.pssm_jsonl, os.O_RDONLY, stat.S_IRUSR), 'r') as json_file:
+        with open(args.pssm_jsonl, 'r') as json_file:
             json_list = list(json_file)
         pssm_dict = {}
         for json_str in json_list:
@@ -151,28 +148,28 @@ if __name__ == "__main__":
         print('pssm_jsonl is NOT loaded')
         pssm_dict = None
 
-    if os.path.isfile(args.omit_AA_jsonl):
-        with os.fdopen(os.open(args.omit_AA_jsonl, os.O_RDONLY, stat.S_IRUSR), 'r') as json_file:
+    if os.path.isfile(args.omit_aa_jsonl):
+        with open(args.omit_aa_jsonl, 'r') as json_file:
             json_list = list(json_file)
         for json_str in json_list:
             omit_aa_dict = json.loads(json_str)
     else:
         print(40 * '-')
-        print('omit_AA_jsonl is NOT loaded')
+        print('omit_aa_jsonl is NOT loaded')
         omit_aa_dict = None
 
-    if os.path.isfile(args.bias_AA_jsonl):
-        with os.fdopen(os.open(args.bias_AA_jsonl, os.O_RDONLY, stat.S_IRUSR), 'r') as json_file:
+    if os.path.isfile(args.bias_aa_jsonl):
+        with open(args.bias_aa_jsonl, 'r') as json_file:
             json_list = list(json_file)
         for json_str in json_list:
             bias_aa_dict = json.loads(json_str)
     else:
         print(40 * '-')
-        print('bias_AA_jsonl is NOT loaded')
+        print('bias_aa_jsonl is NOT loaded')
         bias_aa_dict = None
 
     if os.path.isfile(args.tied_positions_jsonl):
-        with os.fdopen(os.open(args.tied_positions_jsonl, os.O_RDONLY, stat.S_IRUSR), 'r') as json_file:
+        with open(args.tied_positions_jsonl, 'r') as json_file:
             json_list = list(json_file)
         for json_str in json_list:
             tied_positions_dict = json.loads(json_str)
@@ -182,7 +179,7 @@ if __name__ == "__main__":
         tied_positions_dict = None
 
     if os.path.isfile(args.bias_by_res_jsonl):
-        with os.fdopen(os.open(args.bias_by_res_jsonl, os.O_RDONLY, stat.S_IRUSR), 'r') as json_file:
+        with open(args.bias_by_res_jsonl, 'r') as json_file:
             json_list = list(json_file)
 
         for json_str in json_list:
@@ -203,7 +200,7 @@ if __name__ == "__main__":
     if args.pdb_path:
         pdb_dict_list = parse_pdb(args.pdb_path)
         dataset_valid = StructureDatasetPDB(pdb_dict_list, truncate=None, max_length=args.max_length)
-        all_chain_list = [item[-1:] for item in list(pdb_dict_list[0]) if item[:9] == 'seq_chain']  # ['A','B', 'C',...]
+        all_chain_list = [item[-1:] for item in list(pdb_dict_list[0]) if item[:9] == 'seq_chain']
         if args.pdb_path_chains:
             designed_chain_list = [str(item) for item in args.pdb_path_chains.split()]
         else:
@@ -215,17 +212,13 @@ if __name__ == "__main__":
         dataset_valid = StructureDataset(args.jsonl_path, truncate=None, max_length=args.max_length)
 
     print(40 * '-')
-
     checkpoint_path = model_folder_path + f'{args.model_name}.ckpt'
     param_dict = ms.load_checkpoint(checkpoint_path)
-    print('Number of edges:', int(param_dict['num_edges']))
-    noise_level_print = float(param_dict['noise_level'])
-    print(f'Training noise level: {noise_level_print}A')
-    net = ProteinMPNN(num_letters=21, node_features=HIDDEN_DIM, edge_features=HIDDEN_DIM, hidden_dim=HIDDEN_DIM,
-                      num_encoder_layers=NUM_LAYERS, num_decoder_layers=NUM_LAYERS, augment_eps=args.backbone_noise,
-                      k_neighbors=int(param_dict['num_edges']))
+    net = ProteinMPNN(num_letters=21, node_features=HIDDENDIM, edge_features=HIDDENDIM, hidden_dim=HIDDENDIM,
+                      num_encoder_layers=NUMLAYERS, num_decoder_layers=NUMLAYERS, augment_eps=args.backbone_noise,
+                      k_neighbors=48)
     ms.load_param_into_net(net, param_dict)
-    model = ms.Model(net)
+    model = net
 
     # Build paths for experiment
     base_folder = folder_for_outputs
@@ -257,31 +250,26 @@ if __name__ == "__main__":
         if not os.path.exists(base_folder + 'probs'):
             os.makedirs(base_folder + 'probs')
 
-            # Timing
-    start_time = time.time()
-    protein_list = []
-    # Validation epoch
-    test_sum, test_weights = 0., 0.
-    for ix, protein in enumerate(dataset_valid):
+    for _, protein in enumerate(dataset_valid):
         score_list = []
         all_probs_list = []
         all_log_probs_list = []
         s_sample_list = []
         batch_clones = [copy.deepcopy(protein) for i in range(batch_copies)]
-        x, s, mask, lengths, chain_m, chain_encoding_all, chain_list_list, visible_list_list, \
-        masked_list_list, masked_chain_length_list_list, chain_m_pos, omit_aa_mask, residue_idx, \
-        dihedral_mask, tied_pos_list_of_lists_list, pssm_coef, pssm_bias, pssm_log_odds_all, \
-        bias_by_res_all, tied_beta = tied_featurize(batch_clones, chain_id_dict, fixed_positions_dict,
-                                                    omit_aa_dict, tied_positions_dict, pssm_dict, bias_by_res_dict)
-        pssm_log_odds_mask = (pssm_log_odds_all > args.pssm_threshold).astype(
-            ms.float32)  # 1.0 for true, 0.0 for false
+        x, s, mask, _, chain_m, chain_encoding_all, chain_list_list, visible_list_list, masked_list_list, \
+        masked_chain_length_list_list, chain_m_pos, omit_aa_mask, residue_idx, _, \
+        tied_pos_list_of_lists_list, pssm_coef, pssm_bias, pssm_log_odds_all, bias_by_res_all, tied_beta = \
+            tied_featurize(batch_clones, chain_id_dict, fixed_positions_dict, omit_aa_dict, tied_positions_dict, \
+                           pssm_dict, bias_by_res_dict)
+        pssm_log_odds_mask = (pssm_log_odds_all > args.pssm_threshold).astype(ms.float32)
         name_ = batch_clones[0]['name']
         if args.score_only:
             structure_sequence_score_file = base_folder + '/score_only/' + batch_clones[0]['name'] + '.npy'
             native_score_list = []
             for j in range(num_batches):
                 randn_1 = ops.StandardNormal()(chain_m.shape)
-                log_probs = model.predict(x, s, mask, chain_m * chain_m_pos, residue_idx, chain_encoding_all, randn_1)
+                log_probs = model.predict(x, s, mask, chain_m * chain_m_pos, residue_idx, chain_encoding_all, randn_1, \
+                                          use_input_decoding_order=False)
                 mask_for_loss = mask * chain_m * chain_m_pos
                 scores = scores_(s, log_probs, mask_for_loss)
                 native_score = scores.asnumpy()
@@ -300,13 +288,12 @@ if __name__ == "__main__":
             log_conditional_probs_list = []
             for j in range(num_batches):
                 randn_1 = ops.StandardNormal()(chain_m.shape)
-                log_conditional_probs = net.conditional_probs(x, s, mask, chain_m * chain_m_pos, residue_idx,
-                                                              chain_encoding_all, randn_1,
-                                                              args.conditional_probs_only_backbone)
+                log_conditional_probs = net.conditional_probs(x, s, mask, chain_m * chain_m_pos, residue_idx, \
+                                        chain_encoding_all, randn_1, args.conditional_probs_only_backbone)
                 log_conditional_probs_list.append(log_conditional_probs.numpy())
             concat_log_p = np.concatenate(log_conditional_probs_list, 0)  # [B, L, 21]
             mask_out = (chain_m * chain_m_pos * mask)[0,].asnumpy()
-            np.savez(conditional_probs_only_file, log_p=concat_log_p, S=s[0,].asnumpy(),
+            np.savez(conditional_probs_only_file, log_p=concat_log_p, s=s[0,].asnumpy(),
                      mask=mask[0,].asnumpy(), design_mask=mask_out)
         elif args.unconditional_probs_only:
             print(f'Calculating sequence unconditional probabilities for {name_}')
@@ -317,11 +304,12 @@ if __name__ == "__main__":
                 log_unconditional_probs_list.append(log_unconditional_probs.asnumpy())
             concat_log_p = np.concatenate(log_unconditional_probs_list, 0)  # [B, L, 21]
             mask_out = (chain_m * chain_m_pos * mask)[0,].asnumpy()
-            np.savez(unconditional_probs_only_file, log_p=concat_log_p, S=s[0,].asnumpy(),
+            np.savez(unconditional_probs_only_file, log_p=concat_log_p, s=s[0,].asnumpy(),
                      mask=mask[0,].asnumpy(), design_mask=mask_out)
         else:
-            randn_1 = ops.StandardNormal()(chain_m.shape)
-            log_probs = model.predict(x, s, mask, chain_m * chain_m_pos, residue_idx, chain_encoding_all, randn_1)
+            randn_1 = ops.StandardNormal()(chain_m.shape).astype(ms.float32)
+            log_probs = model(x, s, mask, chain_m * chain_m_pos, residue_idx, chain_encoding_all, \
+                              randn_1, use_input_decoding_order=False)
             mask_for_loss = mask * chain_m * chain_m_pos
             scores = scores_(s, log_probs, mask_for_loss)
             native_score = scores.asnumpy()
@@ -335,7 +323,7 @@ if __name__ == "__main__":
                     as f:
                 for temp in temperatures:
                     for j in range(num_batches):
-                        randn_2 = ops.StandardNormal()(chain_m.shape)
+                        randn_2 = ops.StandardNormal()(chain_m.shape).astype(ms.float32)
                         if tied_positions_dict is None:
                             sample_dict = net.sample(x, randn_2, s, chain_m, chain_encoding_all, residue_idx,
                                                      mask=mask, temperature=temp, omit_aas_np=omit_aas_np,
@@ -346,7 +334,7 @@ if __name__ == "__main__":
                                                      pssm_log_odds_mask=pssm_log_odds_mask,
                                                      pssm_bias_flag=bool(args.pssm_bias_flag),
                                                      bias_by_res=bias_by_res_all)
-                            s_sample = sample_dict.get("S")
+                            s_sample = sample_dict.get("s")
                         else:
                             sample_dict = net.tied_sample(x, randn_2, s, chain_m, chain_encoding_all, residue_idx,
                                                           mask=mask, temperature=temp, omit_aas_np=omit_aas_np,
@@ -359,24 +347,22 @@ if __name__ == "__main__":
                                                           tied_pos=tied_pos_list_of_lists_list[0],
                                                           tied_beta=tied_beta, bias_by_res=bias_by_res_all)
                             # Compute scores
-                            s_sample = sample_dict.get("S")
-                        log_probs = model.predict(x, s_sample, mask, chain_m * chain_m_pos,
-                                                  residue_idx, chain_encoding_all,
-                                                  randn_2)  # , use_input_decoding_order=True,
-                        # decoding_order=sample_dict["decoding_order"])
+                            s_sample = sample_dict.get("s")
+                        log_probs = model(x, s_sample, mask, chain_m * chain_m_pos, residue_idx, chain_encoding_all, \
+                                          randn_2)
                         mask_for_loss = mask * chain_m * chain_m_pos
                         scores = scores_(s_sample, log_probs, mask_for_loss)
                         scores = scores.asnumpy()
                         all_probs_list.append(sample_dict["probs"].asnumpy())
                         all_log_probs_list.append(log_probs.asnumpy())
                         s_sample_list.append(s_sample.asnumpy())
+                        s_sample = s_sample.astype(ms.int64)
                         for b_ix in range(batch_copies):
                             masked_chain_length_list = masked_chain_length_list_list[b_ix]
                             masked_list = masked_list_list[b_ix]
-                            seq_recovery_rate = ops.ReduceSum()(ops.ReduceSum()(
-                                nn.OneHot(depth=21)(s[b_ix]) * nn.OneHot(depth=21)(s_sample[b_ix]), axis=-1) *
-                                                                mask_for_loss[b_ix]) / ops.ReduceSum()(
-                                                                    mask_for_loss[b_ix])
+                            seq_recovery_rate = ops.ReduceSum()(ops.ReduceSum()(nn.OneHot(depth=21)(s[b_ix]) \
+                                                * nn.OneHot(depth=21)(s_sample[b_ix]), axis=-1) \
+                                                * mask_for_loss[b_ix]) / ops.ReduceSum()(mask_for_loss[b_ix])
                             seq = s_to_seq(s_sample[b_ix], chain_m[b_ix])
                             score = scores[b_ix]
                             score_list.append(score)
@@ -402,10 +388,9 @@ if __name__ == "__main__":
                                 native_score_print = np.format_float_positional(np.float32(native_score.mean()),
                                                                                 unique=False, precision=4)
                                 f.write(
-                                    '>{}, score={}, fixed_chains={}, designed_chains={}, '
-                                    'model_name={}\n{}\n'.format(
-                                        name_, native_score_print, print_visible_chains, print_masked_chains,
-                                        args.model_name, native_seq))  # write the native sequence
+                                    '>{}, score={}, fixed_chains={}, designed_chains={}, model_name={}\
+                                     \n{}\n'.format(name_, native_score_print, print_visible_chains,\
+                                            print_masked_chains, args.model_name, native_seq))
                             start = 0
                             end = 0
                             list_of_aas = []
@@ -423,8 +408,8 @@ if __name__ == "__main__":
                             score_print = np.format_float_positional(np.float32(score), unique=False, precision=4)
                             seq_rec_print = np.format_float_positional(
                                 np.float32(seq_recovery_rate.asnumpy()), unique=False, precision=4)
-                            f.write('>T={}, sample={}, score={}, seq_recovery={}\n{}\n'.format(temp, b_ix, score_print,\
-                                                                    seq_rec_print, seq))  # write generated sequence
+                            f.write('>T={}, sample={}, score={}, seq_recovery={}\n{}\n'.format(temp, b_ix, \
+                                                                                    score_print, seq_rec_print, seq))
             if args.save_score:
                 np.save(score_file, np.array(score_list, np.float32))
             if args.save_probs:
@@ -432,7 +417,7 @@ if __name__ == "__main__":
                 all_log_probs_concat = np.concatenate(all_log_probs_list)
                 s_sample_concat = np.concatenate(s_sample_list)
                 np.savez(probs_file, probs=np.array(all_probs_concat, np.float32),
-                         log_probs=np.array(all_log_probs_concat, np.float32), S=np.array(s_sample_concat, np.int32),
+                         log_probs=np.array(all_log_probs_concat, np.float32), s=np.array(s_sample_concat, np.int32),
                          mask=mask_for_loss.asnumpy(), chain_order=chain_list_list)
             t1 = time.time()
             dt = round(float(t1 - t0), 4)

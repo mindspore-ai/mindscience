@@ -10,6 +10,7 @@ path_for_fixed_positions=$output_dir"/fixed_pdbs.jsonl"
 #The first amino acid in the chain corresponds to 1 and not PDB residues index for now.
 
 python eval.py \
+        --model_name "pretrained_model_020" \
         --jsonl_path $path_for_parsed_chains \
         --chain_id_jsonl $path_for_assigned_chains \
         --fixed_positions_jsonl $path_for_fixed_positions \

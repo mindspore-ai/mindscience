@@ -9,6 +9,7 @@ path_for_bias=$output_dir"/bias_pdbs.jsonl"
 path_for_parsed_chains=$output_dir"/parsed_pdbs.jsonl"
 
 python eval.py \
+        --model_name "pretrained_model_020" \
         --jsonl_path $path_for_parsed_chains \
         --out_folder $output_dir \
         --bias_AA_jsonl $path_for_bias \

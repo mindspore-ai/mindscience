@@ -8,6 +8,7 @@ path_for_tied_positions=$output_dir"/tied_pdbs.jsonl"
 
 
 python eval.py \
+        --model_name "pretrained_model_020" \
         --jsonl_path $path_for_parsed_chains \
         --tied_positions_jsonl $path_for_tied_positions \
         --out_folder $output_dir \

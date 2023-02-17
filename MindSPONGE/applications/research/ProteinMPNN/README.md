@@ -8,29 +8,54 @@
 
 ## 环境
 
-本项目运行于Nvidia RTX3090，采用Mindspore深度学习框架。本项目可以通过自行配置运行环境使其部署于其他硬件环境。
+本项目运行于Nvidia RTX3090和Ascend 910计算平台，采用MindSpore深度学习框架。本项目可以通过自行配置运行环境使其部署于不同的硬件环境。
 
 本项目使用环境版本为：
 
 mindspore-gpu 1.8.0；
 
-python 3.7；
+mindspore-ascend 1.9.0
+
+python 3.8；
 
 ## 组织架构
 
 - src：数据处理，模型和工具脚本；
+- train.py: 模型训练脚本；
 - eval.py：模型推理脚本；
-- example_bash：项目运行文件。
+- example_bash：项目运行文件；
+- ascend310_infer：Ascend 310推理脚本。
 
 ## conda环境配置
 
 ```conda环境配置
 - conda create --name proteinmpnn
 - conda activate proteinmpnn
-- conda install mindspore-gpu=1.8.1 cudatoolkit=11.1 -c mindspore -c conda-forge
+- conda install mindspore-ascend=1.9.0 -c mindspore -c conda-forge
 ```
 
+## 数据集
+
+本项目采用多链训练数据 (16.5 GB, PDB biounits, 2021 August 2)对模型进行训练，该数据集可以通过链接[multi-chain training data](https://files.ipd.uw.edu/pub/training_sets/pdb_2021aug02.tar.gz)进行下载。为了便于对训练数据进行解析，本项目提供经过预处理的训练数据[parsed training data](https://pan.baidu.com/s/1pbJNaADmO_mOuVTo5KqE4Q?pwd=xfrp)。对于模型推理任务，本项目提供用于模型推理的示例数据pdb文件和对应解析后的jsonl文件[PDB_monomers](https://gitee.com/bling__bling/protein-mpnn/tree/master/datasets/PDB_monomers)，[PDB_homooligomers](https://gitee.com/bling__bling/protein-mpnn/tree/master/datasets/PDB_homooligomers)和[
+PDB_complexes](https://gitee.com/bling__bling/protein-mpnn/tree/master/datasets)。
+
 ## 运行
+
+### 模型训练
+
+```text
+python train.py --path_for_pkl "pdb_dict_train.pkl" --path_for_outputs "./outputs/" --num_epochs 100 --max_protein_length 1000 --backbone_noise 0.2 --device_id 0
+```
+
+本项目提供预训练模型文件，可以通过链接[pretrained model weights](https://gitee.com/bling__bling/protein-mpnn/tree/master/checkpoint)进行下载用于模型推理、模型部署等任务。
+
+### 模型推理
+
+```text
+python eval.py --path_to_model_weights "model_weights" --model_name "pretrained_model_020" --save_score 0 --save_probs 0 --score_only 0 --conditional_probs_only 0 --conditional_probs_only_backbone 0 --unconditional_probs_only 0 --num_seq_per_target 2 --batch_size 1 --sampling_temp "0.1" --out_folder 'PDB_monomers/example_1_outputs' --jsonl_path 'PDB_monomers/example_1_outputs/parsed_pdbs.jsonl' --device_id 0
+```
+
+本项目提供8个不同的示例推理任务，执行命令的bash脚本存放于./example_bash/目录下。
 
 推理脚本`eval.py`输入参数示例：
 
@@ -64,6 +89,8 @@ python 3.7；
 - argparser.add_argument("--pssm_log_odds_flag", type=int, default=0, help="0 for False, 1 for True")
 - argparser.add_argument("--pssm_bias_flag", type=int, default=0, help="0 for False, 1 for True")
 - argparser.add_argument("--tied_positions_jsonl", type=str, default='', help="Path to a dictionary with tied positions")
+- argparser.add_argument('--device_target', help='device target', type=str, default="GPU")
+- argparser.add_argument('--device_id', help='device id', type=int, default=0)
 ```
 
 推理脚本运行示例。以example 1的推理脚本运行为例：

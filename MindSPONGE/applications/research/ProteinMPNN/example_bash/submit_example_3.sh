@@ -8,6 +8,7 @@ output_dir="PDB_complexes/example_3_outputs"
 chains_to_design="A B"
 
 python eval.py \
+        --model_name "pretrained_model_020" \
         --pdb_path $path_to_PDB \
         --pdb_path_chains "$chains_to_design" \
         --out_folder $output_dir \
