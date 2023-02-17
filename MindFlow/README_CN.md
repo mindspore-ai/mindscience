@@ -37,12 +37,15 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ### 物理驱动
 
-- [一维Burgers问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers_pinns)
-- [二维圆柱绕流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/flow_past_cylinder)
-- [作用于圆环的二维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson_ring)
-- [不同几何体下的二维和三维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson_pinns)
-- [二维Darcy问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/2D_Darcy)
-- [基于MindFlow定义符号化偏微分方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/sympy_pde_introduction)
+- [一维Burgers问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
+- [二维圆柱绕流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)
+- [不同几何体下的二维和三维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)
+- [二维Darcy问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
+
+### Mindflow特性
+
+- [基于MindFlow定义符号化偏微分方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/sympy_pde_introduction)
+- [作用于圆环的二维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/poisson_ring)
 
 ### 数据驱动
 
@@ -58,7 +61,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ### 数据机理融合
 
-- [PDE-Net求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_plus_data_driven/variant_linear_coe_pde_net)
+- [PDE-Net求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
 
 ## **安装教程**
 
