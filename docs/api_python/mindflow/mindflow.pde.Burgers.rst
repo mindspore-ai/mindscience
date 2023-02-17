@@ -4,7 +4,7 @@
 
     参数：
         - **model** (mindspore.nn.Cell) - 用于训练的网络模型。
-        - **loss_fn** (str) - 损失函数。默认："mse"。
+        - **loss_fn** (Union[str, Cell]) - 损失函数。默认值："mse"。
 
     .. py:method:: pde()
 

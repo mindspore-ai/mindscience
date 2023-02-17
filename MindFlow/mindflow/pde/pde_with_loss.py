@@ -168,7 +168,7 @@ class Burgers(PDEWithLoss):
 
     Args:
         model (mindspore.nn.Cell): Network for training.
-        loss_fn (str): Define the loss function. Default: mse.
+        loss_fn (Union[str, Cell]): Define the loss function. Default: mse.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -232,7 +232,7 @@ class NavierStokes(PDEWithLoss):
         model (mindspore.nn.Cell): network for training.
         re (float): reynolds number is the ratio of inertia force to viscous force of a fluid. It is a dimensionless
             quantity. Default: 100.0.
-        loss_fn (str): Define the loss function. Default: mse.
+        loss_fn (Union[str, Cell]): Define the loss function. Default: mse.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -312,7 +312,7 @@ class Poisson(PDEWithLoss):
 
     Args:
         model (mindspore.nn.Cell): network for training.
-        loss_fn (str): Define the loss function. Default: mse.
+        loss_fn (Union[str, Cell]): Define the loss function. Default: mse.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
