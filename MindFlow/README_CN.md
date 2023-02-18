@@ -35,7 +35,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ## **最新消息**
 
-- 🔥`2023.02.28` Mindspore团队与北京大学董彬老师合作，提出神经网络表示法（[Solving Boltzmann equation with neural sparse representation](https://arxiv.org/abs/2302.09233)）求解玻尔兹曼方程。详见：[基于神经网络表示求解玻尔兹曼方程](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/boltzmann/boltzmannD1V3_CN.ipynb)。
+- 🔥`2023.02.28` Mindspore团队与北京大学董彬老师以及北京计算科学研究中心王艳莉老师合作，提出用稀疏神经表示求解玻尔兹曼方程。详见：[Solving Boltzmann equation with neural sparse representation](https://arxiv.org/abs/2302.09233)。样例代码请参考：[基于神经网络表示求解玻尔兹曼方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/boltzmann)。
 - 🔥`2023.02.05` [MindFlow 0.1.0-alpha](https://mindspore.cn/mindflow/docs/zh-CN/r0.1.0-alpha/index.html) 版本发布。
 - 🔥`2023.01.17` 推出[MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997)基于MindSpore的端到端可微分求解器，[详见](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/mindflow/cfd)。
 - 🔥`2022.12.27` MindSpore团队同西安交大陈刚老师合作发表[Temporal predictions of periodic flows using a mesh transformation and deep learning-based strategy](https://www.sciencedirect.com/science/article/pii/S1270963822007556)文章于航空领域Top期刊`Aerospace Science and Technology`，论文作者为邓志文、刘红升、时北极、王紫东、于璠、刘子扬(西交)、陈刚(通讯)。
