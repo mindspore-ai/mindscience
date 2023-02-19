@@ -18,7 +18,7 @@ import os
 import numpy as np
 from mindspore import dataset as ds
 from src.util.utils import load_features, load_smiles_labels
-from src.data.torchvocab import MolVocab
+from src.data.mindsporevocab import MolVocab
 from src.data.transforms import MolCollator, GroverCollator, normalize_data
 
 
