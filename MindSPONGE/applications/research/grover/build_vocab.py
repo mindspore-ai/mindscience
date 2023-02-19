@@ -17,7 +17,7 @@ The vocabulary building scripts.
 """
 import os
 import argparse
-from src.data.torchvocab import MolVocab
+from src.data.mindsporevocab import MolVocab
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_path', default="../../dataset/grover_new_dataset/druglike_merged_refine2.csv", type=str)
