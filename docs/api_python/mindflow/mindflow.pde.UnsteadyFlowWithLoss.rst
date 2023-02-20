@@ -1,4 +1,4 @@
-.. py:class:: mindflow.pde.UnsteadyFlowWithLoss(model, loss_fn='mse')
+.. py:class:: mindflow.pde.UnsteadyFlowWithLoss(model, t_in=1, t_out=1, loss_fn='mse', data_format='NTCHW')
 
     基于数据驱动的非定常流体问题求解的基类。
 

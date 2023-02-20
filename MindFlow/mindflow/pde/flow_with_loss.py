@@ -124,7 +124,7 @@ class UnsteadyFlowWithLoss(FlowWithLoss):
     Base class of unsteady user-defined data-driven problems.
 
     Args:
-        model (Cell): A training or test model.
+        model (mindspore.nn.Cell): A training or test model.
         t_in (int): Initial time steps. Default: 1.
         t_out (int): Output time steps. Default: 1.
         loss_fn (Union[str, Cell]): Loss function. Default: "mse".
