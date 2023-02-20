@@ -14,12 +14,12 @@
 # ============================================================================
 """init"""
 from .dataset import create_training_dataset, create_test_dataset
-from .utils import visual_result, calculate_l2_error
+from .utils import visual, calculate_l2_error
 from .model import Burgers1D
 
 __all__ = [
     "create_training_dataset",
-    "visual_result",
+    "visual",
     "calculate_l2_error",
     "create_test_dataset",
     "Burgers1D",

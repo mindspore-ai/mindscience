@@ -14,6 +14,7 @@
 # ============================================================================
 """train process"""
 
+import argparse
 import os
 import time
 
@@ -28,17 +29,35 @@ from mindflow.utils import load_yaml_config
 
 from src import create_training_dataset, create_test_dataset, calculate_l2_error, NavierStokes2D
 
+
 set_seed(123456)
 np.random.seed(123456)
 
-context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=5)
+parser = argparse.ArgumentParser(description="cylinder flow train")
+parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+                    help="Running in GRAPH_MODE OR PYNATIVE_MODE")
+parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
+                    help="Whether to save intermediate compilation graphs")
+parser.add_argument("--save_graphs_path", type=str, default="./graphs")
+parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
+                    help="The target device to run, support 'Ascend', 'GPU'")
+parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
+parser.add_argument("--config_file_path", type=str, default="./cylinder_flow.yaml")
+args = parser.parse_args()
+
+context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
+                    save_graphs=args.save_graphs,
+                    save_graphs_path=args.save_graphs_path,
+                    device_target=args.device_target,
+                    device_id=args.device_id)
+print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
 use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
 
 def train():
     '''Train and evaluate the network'''
     # load configurations
-    config = load_yaml_config('cylinder_flow.yaml')
+    config = load_yaml_config(args.config_file_path)
 
     # create training dataset
     cylinder_flow_train_dataset = create_training_dataset(config)
@@ -101,21 +120,29 @@ def train():
             loss = ops.depend(loss, optimizer(grads))
         return loss
 
-    steps = config["train_steps"]
+    epochs = config["train_epochs"]
+    steps_per_epochs = cylinder_dataset.get_dataset_size()
     sink_process = mindspore.data_sink(train_step, cylinder_dataset, sink_size=1)
-    model.set_train()
 
-    for step in range(steps + 1):
-        local_time_beg = time.time()
-        cur_loss = sink_process()
-        if step % 100 == 0:
-            print(f"loss: {cur_loss.asnumpy():>7f}")
-            print("step: {}, time elapsed: {}ms".format(step, (time.time() - local_time_beg) * 1000))
+    for epoch in range(1, 1 + epochs):
+        # train
+        time_beg = time.time()
+        model.set_train(True)
+        for _ in range(steps_per_epochs + 1):
+            step_train_loss = sink_process()
+        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg)*1000 :.3f} ms")
+        model.set_train(False)
+        if epoch % config["eval_interval_epochs"] == 0:
+            # eval
             calculate_l2_error(model, inputs, label, config)
+
+        if epoch % config["save_checkpoint_epochs"] == 0 and config["save_ckpt"]:
+            ckpt_name = "ns-{}.ckpt".format(epoch + 1)
+            mindspore.save_checkpoint(model, os.path.join("./ckpt", ckpt_name))
 
 
 if __name__ == '__main__':
     print("pid:", os.getpid())
-    time_beg = time.time()
+    start_time = time.time()
     train()
-    print("End-to-End total time: {} s".format(time.time() - time_beg))
+    print("End-to-End total time: {} s".format(time.time() - start_time))
