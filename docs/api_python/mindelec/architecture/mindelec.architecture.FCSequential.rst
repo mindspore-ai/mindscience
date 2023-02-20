@@ -12,9 +12,9 @@ mindelec.architecture.FCSequential
         - **neurons** (int) - 隐藏层的神经元数量。
         - **residual** (bool) - 隐藏层的残差块的全连接。默认值：True。
         - **act** (Union[str, Cell, Primitive, None]) - 激活应用于全连接层输出的函数，例如"ReLU"。默认值："sin"。
-        - **weight_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始权重值。数据类型与输入 `input` 相同。str的值可参考函数 :func:`mindspore.common.initializer` 。默认值："normal"。
+        - **weight_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始权重值。数据类型与输入 `input` 相同。str的值可参考函数 `mindspore.common.initializer <https://mindspore.cn/docs/zh-CN/master/api_python/mindspore.common.initializer.html>`_ 。默认值："normal"。
         - **has_bias** (bool) - 指定图层是否使用偏置向量。默认值：True。
-        - **bias_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始偏差值。数据类型与输入 `input` 相同。str的值可参考函数 :func:`mindspore.common.initializer`。默认值："default"。
+        - **bias_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始偏差值。数据类型与输入 `input` 相同。str的值可参考函数 `mindspore.common.initializer <https://mindspore.cn/docs/zh-CN/master/api_python/mindspore.common.initializer.html>`_ 。默认值："default"。
 
     输入：
         - **input** (Tensor) - shape为 :math:`(*, in\_channels)` 的Tensor。
