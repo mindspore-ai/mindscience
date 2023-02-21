@@ -37,11 +37,11 @@ optimizer:
   gamma: 0.5
 name: Burgers1D
 train_batch_size: 8192
-train_steps: 15000
-eval_interval_epochs: 10
+train_epochs: 15000
+eval_interval_epochs: 100
 save_checkpoint_steps: 50
 keep_checkpoint_max: 10
 load_ckpt: false
 save_ckpt: false
-save_ckpt_path: "path/to/ckpt"
+save_ckpt_path: "./ckpt"
 visual_resolution: 100

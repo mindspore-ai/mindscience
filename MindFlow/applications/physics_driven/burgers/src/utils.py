@@ -24,7 +24,7 @@ from mindspore import Tensor
 from mindspore import dtype as mstype
 
 
-def visual_result(model, step=1, resolution=100):
+def visual(model, epochs=1, resolution=100):
     """visulization of ex/ey/hz"""
     t_flat = np.linspace(0, 1, resolution)
     x_flat = np.linspace(-1, 1, resolution)
@@ -52,7 +52,7 @@ def visual_result(model, step=1, resolution=100):
         plt.xlabel('x')
         plt.ylabel('u(t,x)')
     plt.tight_layout()
-    plt.savefig(f'images/{step}-result.jpg')
+    plt.savefig(f'images/{epochs + 1}-result.jpg')
 
 
 def _calculate_error(label, prediction):

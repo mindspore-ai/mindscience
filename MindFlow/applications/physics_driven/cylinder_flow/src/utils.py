@@ -32,7 +32,7 @@ from mindspore import dtype as mstype
 plt.rcParams['figure.dpi'] = 300
 
 
-def visualization(model, step, input_data, label, path="./videos"):
+def visual(model, epochs, input_data, label, path="./videos"):
     """visulization of u/v/p"""
     predict = model(Tensor(input_data, mstype.float32)).asnumpy()
     [sample_t, sample_x, sample_y, _] = np.shape(input_data)
@@ -52,7 +52,7 @@ def visualization(model, step, input_data, label, path="./videos"):
     fourcc = cv2.VideoWriter_fourcc('D', 'I', 'V', 'X')
     fps = 10
     size = (1920, 1440)
-    video = cv2.VideoWriter(os.path.join(path, "FlowField_" + str(step + 1) + ".avi"), fourcc, fps, size)
+    video = cv2.VideoWriter(os.path.join(path, "FlowField_" + str(epochs + 1) + ".avi"), fourcc, fps, size)
 
     t_set = []
     if sample_t < 100:
@@ -158,7 +158,7 @@ def visualization(model, step, input_data, label, path="./videos"):
     plt.xlabel('time')
     plt.ylabel('l2_error')
     plt.xticks(np.arange(0, 7.0, 1.0))
-    plt.savefig(os.path.join(path, "TimeError_" + str(step) + ".png"))
+    plt.savefig(os.path.join(path, "TimeError_" + str(epochs) + ".png"))
 
 
 CylinderFlowError = collections.namedtuple("CylinderFlowError", ["l2_error", "l2_error_u", "l2_error_v", "l2_error_p"])
