@@ -15,12 +15,12 @@
 """init"""
 from .dataset import create_training_dataset, create_test_dataset
 from .model import NavierStokes2D
-from .utils import calculate_l2_error, visualization
+from .utils import calculate_l2_error, visual
 
 __all__ = [
     "create_training_dataset",
     "create_test_dataset",
-    "visualization",
+    "visual",
     "calculate_l2_error",
     "NavierStokes2D",
 ]
