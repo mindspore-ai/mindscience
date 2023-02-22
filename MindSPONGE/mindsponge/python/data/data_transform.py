@@ -14,6 +14,7 @@
 # ============================================================================
 """data transform MSA TEMPLATE"""
 import numpy as np
+from scipy.special import softmax
 import mindsponge.common.geometry as geometry
 from mindsponge.common.residue_constants import chi_angles_mask, chi_pi_periodic, restype_1to3, chi_angles_atoms, \
     atom_order, residue_atom_renaming_swaps, restype_3to1, MAP_HHBLITS_AATYPE_TO_OUR_AATYPE, restype_order, \
@@ -181,6 +182,68 @@ def sample_msa(msa, max_seq):
     return is_sel, not_sel_seq, sel_seq
 
 
+def gumbel_noise(shape):
+    """Generate Gumbel Noise of given Shape."""
+    epsilon = 1e-6
+    uniform_noise = np.random.uniform(0, 1, shape)
+    gumbel = -np.log(-np.log(uniform_noise + epsilon) + epsilon)
+    return gumbel
+
+
+def gumbel_argsort_sample_idx(logits):
+    """Samples with replacement from a distribution given by 'logits'."""
+    z = gumbel_noise(logits.shape)
+    return np.argsort(logits + z, axis=-1)[..., ::-1]
+
+
+def gumbel_permutation(msa_mask, msa_chains=None):
+    """gumbel permutation."""
+    has_msa = np.sum(msa_mask, axis=-1) > 0
+    # default logits is zero
+    logits = np.zeros_like(has_msa, dtype=np.float32)
+    logits[~has_msa] = -1e6
+    # one sample only
+    assert len(logits.shape) == 1
+    # skip first row
+    logits = logits[1:]
+    has_msa = has_msa[1:]
+    if logits.shape[0] == 0:
+        return np.array([0])
+    if msa_chains is not None:
+        # skip first row
+        msa_chains = msa_chains[1:].reshape(-1)
+        msa_chains[~has_msa] = 0
+        keys, _ = np.unique(msa_chains, return_counts=True)
+        num_has_msa = np.array(has_msa.sum())
+        num_pair = np.array((msa_chains == 1).sum())
+        num_unpair = num_has_msa - num_pair
+        num_chains = np.array((keys > 1).sum())
+        logits[has_msa] = 1.0 / (num_has_msa + 1e-6)
+        logits[~has_msa] = 0
+        for k in keys:
+            if k > 1:
+                cur_mask = msa_chains == k
+                cur_cnt = np.array(cur_mask.sum())
+                if cur_cnt > 0:
+                    logits[cur_mask] *= num_unpair / (num_chains * cur_cnt)
+        logits = np.log(logits + 1e-6)
+    shuffled = gumbel_argsort_sample_idx(logits) + 1
+    return np.concatenate((np.array([0]), shuffled), axis=0)
+
+
+def sample_msa_v2(msa, msa_chains, msa_mask, max_seq, biased_msa_by_chain=False):
+    """Sample MSA randomly in multimer, remaining sequences are stored as `extra_*`."""
+    num_seq = msa.shape[0]
+    num_sel = min(max_seq, num_seq)
+    msa_chain = (msa_chains if biased_msa_by_chain else None)
+    index_order = gumbel_permutation(msa_mask, msa_chain)
+    num_sel = min(max_seq, num_seq)
+    sel_seq = index_order[:num_sel]
+    not_sel_seq = index_order[num_sel:]
+    is_sel = num_seq - num_sel
+    return is_sel, not_sel_seq, sel_seq
+
+
 def shape_list(x):
     """get the list of dimensions of an array"""
     x = np.array(x)
@@ -240,6 +303,60 @@ def make_masked_msa(msa, hhblits_profile, uniform_prob, profile_prob, same_prob,
     return make_masked_msa_result
 
 
+def share_mask_by_entity(mask_position, entity_id, sym_id, num_sym):
+    "share mask by entity"
+    entity_id = entity_id
+    sym_id = sym_id
+    num_sym = num_sym
+    unique_entity_ids = np.unique(entity_id)
+    first_sym_mask = sym_id == 1
+    for cur_entity_id in unique_entity_ids:
+        cur_entity_mask = entity_id == cur_entity_id
+        cur_num_sym = int(num_sym[cur_entity_mask][0])
+        if cur_num_sym > 1:
+            cur_sym_mask = first_sym_mask & cur_entity_mask
+            cur_sym_bert_mask = mask_position[:, cur_sym_mask]
+            mask_position[:, cur_entity_mask] = cur_sym_bert_mask.repeat(cur_num_sym, 0).reshape(
+                cur_sym_bert_mask.shape[0], cur_sym_bert_mask.shape[1] * cur_num_sym)
+    return mask_position
+
+
+def gumbel_max_sample(logits):
+    """Samples from a probability distribution given by 'logits'."""
+    z = gumbel_noise(logits.shape)
+    return np.argmax(logits + z, axis=-1)
+
+
+def make_masked_msa_v2(msa, hhblits_profile, msa_mask, entity_id, sym_id, num_sym,
+                       uniform_prob, profile_prob, same_prob,
+                       replace_fraction, share_mask=False, bert_mask=None):
+    """create masked msa for BERT on raw MSA features"""
+
+    random_aatype = np.array([0.05] * 20 + [0., 0.], dtype=np.float32)
+    probability = uniform_prob * random_aatype + profile_prob * hhblits_profile + same_prob * one_hot(22, msa)
+
+    pad_shapes = [[0, 0] for _ in range(len(probability.shape))]
+    pad_shapes[-1][1] = 1
+    mask_prob = 1.0 - profile_prob - same_prob - uniform_prob
+    assert mask_prob >= 0.0
+    probability = np.pad(probability, pad_shapes, constant_values=(mask_prob,))
+    sh = msa.shape
+    mask_position = np.random.rand(*sh) < replace_fraction
+    mask_position &= np.array(msa_mask, dtype=bool)
+    if bert_mask is not None:
+        mask_position &= np.array(bert_mask, dtype=bool)
+
+    if share_mask:
+        mask_position = share_mask_by_entity(mask_position, entity_id, sym_id, num_sym)
+    logits = np.log(probability + 1e-6)
+    bert_msa = gumbel_max_sample(logits)
+    bert_msa = np.where(mask_position, bert_msa, msa).astype(np.float32)
+    bert_msa *= msa_mask
+
+    mask_position = np.array(mask_position, dtype=np.float32)
+    return mask_position, msa, bert_msa
+
+
 def nearest_neighbor_clusters(msa_mask, msa, extra_msa_mask, extra_msa, gap_agreement_weight=0.):
     """Assign each extra MSA sequence to its nearest neighbor in sampled MSA."""
 
@@ -266,6 +383,46 @@ def nearest_neighbor_clusters(msa_mask, msa, extra_msa_mask, extra_msa, gap_agre
     else:
         extra_cluster_assignment = np.array([])
     return extra_cluster_assignment
+
+
+def nearest_neighbor_clusters_v2(msa, msa_mask, extra_msa, extra_msa_mask,
+                                 deletion_matrix, extra_deletion_matrix, gap_agreement_weight=0.0):
+    """Assign each extra MSA sequence to its nearest neighbor in sampled MSA."""
+
+    # Determine how much weight we assign to each agreement.  In theory, we could
+    # use a full blosum matrix here, but right now let's just down-weight gap
+    # agreement because it could be spurious.
+    # Never put weight on agreeing on BERT mask.
+
+    weights = np.concatenate([np.ones(21), gap_agreement_weight * np.ones(1), np.zeros(1)], 0)
+    msa_one_hot = one_hot(23, msa.astype(np.int32))
+    extra_one_hot = one_hot(23, extra_msa)
+
+    msa_one_hot_masked = msa_mask[:, :, None] * msa_one_hot
+    extra_one_hot_masked = extra_msa_mask[:, :, None] * extra_one_hot
+
+    t1 = weights * msa_one_hot_masked
+    t1 = np.resize(t1, (t1.shape[0], t1.shape[1] * t1.shape[2]))
+    t2 = np.resize(extra_one_hot_masked, (extra_one_hot.shape[0], extra_one_hot.shape[1] * extra_one_hot.shape[2]))
+    agreement = t1 @ t2.T
+    cluster_assignment = softmax(1e3 * agreement, axis=0)
+    cluster_assignment *= np.einsum("mr, nr->mn", msa_mask, extra_msa_mask)
+
+    cluster_count = np.sum(cluster_assignment, axis=-1)
+    cluster_count += 1.0  # We always include the sequence itself.
+
+    msa_sum = np.einsum("nm, mrc->nrc", cluster_assignment, extra_one_hot_masked)
+    msa_sum += msa_one_hot_masked
+
+    cluster_profile = msa_sum / cluster_count[:, None, None]
+
+    del_sum = np.einsum(
+        "nm, mc->nc", cluster_assignment, extra_msa_mask * extra_deletion_matrix
+    )
+    del_sum += deletion_matrix  # Original sequence.
+    cluster_deletion_mean = del_sum / cluster_count[:, None]
+
+    return cluster_profile, cluster_deletion_mean
 
 
 def summarize_clusters(msa, msa_mask, extra_cluster_assignment, extra_msa_mask, extra_msa, extra_deletion_matrix,
@@ -339,6 +496,38 @@ def make_msa_feat(between_segment_residues, aatype, msa, deletion_matrix, cluste
     return res
 
 
+def make_msa_feat_v2(msa, deletion_matrix, cluster_deletion_mean, cluster_profile):
+    """Create and concatenate MSA features."""
+    msa_1hot = one_hot(23, msa.astype(np.int32))
+    has_deletion = np.clip(deletion_matrix, 0.0, 1.0)[..., None]
+    deletion_value = (np.arctan(deletion_matrix / 3.0) * (2.0 / np.pi))[..., None]
+
+    deletion_mean_value = (np.arctan(cluster_deletion_mean / 3.0) * (2.0 / np.pi))[..., None]
+
+    msa_feat = [
+        msa_1hot,
+        has_deletion,
+        deletion_value,
+        cluster_profile,
+        deletion_mean_value,
+    ]
+    msa_feat = np.concatenate(msa_feat, axis=-1)
+    return msa_feat
+
+
+def make_extra_msa_feat(extra_msa, extra_deletion_matrix, extra_msa_mask, num_extra_msa):
+    # 23 = 20 amino acids + 'X' for unknown + gap + bert mask
+    extra_msa = extra_msa[:num_extra_msa]
+    deletion_matrix = extra_deletion_matrix[:num_extra_msa]
+    has_deletion = np.clip(deletion_matrix, 0.0, 1.0)
+    deletion_value = np.arctan(deletion_matrix / 3.0) * (2.0 / np.pi)
+    extra_msa_mask = extra_msa_mask[:num_extra_msa]
+    return {"extra_msa": extra_msa,
+            "extra_msa_mask": extra_msa_mask,
+            "extra_msa_has_deletion": has_deletion,
+            "extra_msa_deletion_value": deletion_value}
+
+
 def make_random_seed(size, seed_maker_t, low=MS_MIN32, high=MS_MAX32, random_recycle=False):
     if random_recycle:
         r = np.random.RandomState(seed_maker_t)
@@ -388,6 +577,7 @@ def atom37_to_torsion_angles(
         all_atom_pos: np.ndarray,
         all_atom_mask: np.ndarray,
         alt_torsions=False,
+        is_multimer=False,
 ):
     r"""
     This function calculates the seven torsion angles of each residue and encodes them in sine and cosine.
@@ -436,7 +626,6 @@ def atom37_to_torsion_angles(
 
     paddings = np.zeros([num_batch, 1, 37, 3], np.float32)
     padding_atom_pos = np.concatenate([paddings, all_atom_pos[:, :-1, :, :]], axis=1)
-
     paddings = np.zeros([num_batch, 1, 37], np.float32)
     padding_atom_mask = np.concatenate([paddings, all_atom_mask[:, :-1, :]], axis=1)
 
@@ -461,34 +650,38 @@ def atom37_to_torsion_angles(
     psi_mask_padding = (np.prod(all_atom_mask[..., 0:3], axis=-1) * all_atom_mask[..., 4])
 
     chi_atom_pos_indices = get_chi_atom_pos_indices()
-    atom_pos_indices = np_gather_ops(chi_atom_pos_indices, true_aatype, 0, 0)
-    chi_atom_pos = np_gather_ops(all_atom_pos, atom_pos_indices, -2, 2)
+    if is_multimer:
+        atom_pos_indices = chi_atom_pos_indices[..., true_aatype, :, :]
+    else:
+        atom_pos_indices = np_gather_ops(chi_atom_pos_indices, true_aatype, 0, 0)
+
+    chi_atom_pos = np_gather_ops(all_atom_pos, atom_pos_indices, -2, 2, is_multimer)
 
     angles_mask = list(chi_angles_mask)
     angles_mask.append([0.0, 0.0, 0.0, 0.0])
     angles_mask = np.array(angles_mask)
 
-    chis_mask = np_gather_ops(angles_mask, true_aatype, 0, 0)
+    if is_multimer:
+        chis_mask = angles_mask[true_aatype, :]
+    else:
+        chis_mask = np_gather_ops(angles_mask, true_aatype, 0, 0)
 
-    chi_angle_atoms_mask = np_gather_ops(all_atom_mask, atom_pos_indices, -1, 2)
+    chi_angle_atoms_mask = np_gather_ops(all_atom_mask, atom_pos_indices, -1, 2, is_multimer)
 
     chi_angle_atoms_mask = np.prod(chi_angle_atoms_mask, axis=-1)
     chis_mask = chis_mask * chi_angle_atoms_mask.astype(np.float32)
-
     torsions_atom_pos_padding = np.concatenate(
         [omega_atom_pos_padding[:, :, None, :, :],
          phi_atom_pos_padding[:, :, None, :, :],
          psi_atom_pos_padding[:, :, None, :, :],
          chi_atom_pos
          ], axis=2)
-
     torsion_angles_mask_padding = np.concatenate(
         [omega_mask_padding[:, :, None],
          phi_mask_padding[:, :, None],
          psi_mask_padding[:, :, None],
          chis_mask
          ], axis=2)
-
     torsion_frames = geometry.rigids_from_3_points(
         point_on_neg_x_axis=geometry.vecs_from_tensor(torsions_atom_pos_padding[:, :, :, 1, :]),
         origin=geometry.vecs_from_tensor(torsions_atom_pos_padding[:, :, :, 2, :]),
@@ -496,18 +689,23 @@ def atom37_to_torsion_angles(
     inv_torsion_frames = geometry.invert_rigids(torsion_frames)
     vecs = geometry.vecs_from_tensor(torsions_atom_pos_padding[:, :, :, 3, :])
     forth_atom_rel_pos = geometry.rigids_mul_vecs(inv_torsion_frames, vecs)
-
     torsion_angles_sin_cos = np.stack(
         [forth_atom_rel_pos[2], forth_atom_rel_pos[1]], axis=-1)
     torsion_angles_sin_cos /= np.sqrt(
         np.sum(np.square(torsion_angles_sin_cos), axis=-1, keepdims=True)
         + 1e-8)
 
-    torsion_angles_sin_cos *= np.array(
-        [1., 1., -1., 1., 1., 1., 1.])[None, None, :, None]
+    if is_multimer:
+        torsion_angles_sin_cos = torsion_angles_sin_cos * np.array(
+            [1., 1., -1., 1., 1., 1., 1.])[((None,) * len(torsion_angles_sin_cos.shape[:-2])) + (slice(None), None)]
+        chi_is_ambiguous = np.array(chi_pi_periodic)[true_aatype, ...]
+    else:
+        torsion_angles_sin_cos *= np.array(
+            [1., 1., -1., 1., 1., 1., 1.])[None, None, :, None]
 
-    chi_is_ambiguous = np_gather_ops(
-        np.array(chi_pi_periodic), true_aatype)
+        chi_is_ambiguous = np_gather_ops(
+            np.array(chi_pi_periodic), true_aatype)
+
     mirror_torsion_angles = np.concatenate(
         [np.ones([num_batch, num_res, 3]),
          1.0 - 2.0 * chi_is_ambiguous], axis=-1)
@@ -521,6 +719,12 @@ def atom37_to_torsion_angles(
         alt_torsion_angles_sin_cos = alt_torsion_angles_sin_cos * torsion_angles_mask_padding[
             ..., None] + fix_torsions * (1 - torsion_angles_mask_padding[..., None])
 
+    if is_multimer:
+        return {
+            'torsion_angles_sin_cos': torsion_angles_sin_cos,
+            'alt_torsion_angles_sin_cos': alt_torsion_angles_sin_cos,
+            'torsion_angles_mask': torsion_angles_mask_padding
+        }
     return {
         'torsion_angles_sin_cos': torsion_angles_sin_cos[0],  # (N, 7, 2)
         'alt_torsion_angles_sin_cos': alt_torsion_angles_sin_cos[0],  # (N, 7, 2)
@@ -727,8 +931,20 @@ def gather(params, indices, axis=0):
     return func(params, indices)
 
 
-def np_gather_ops(params, indices, axis=0, batch_dims=0):
+def np_gather_ops(params, indices, axis=0, batch_dims=0, is_multimer=False):
     """np gather operation"""
+    if is_multimer:
+        assert axis < 0 or axis - batch_dims >= 0
+        ranges = []
+        for i, s in enumerate(params.shape[:batch_dims]):
+            r = np.arange(s)
+            r = np.resize(r, (1,) * i + r.shape + (1,) * (len(indices.shape) - i - 1))
+            ranges.append(r)
+        remaining_dims = [slice(None) for _ in range(len(params.shape) - batch_dims)]
+        remaining_dims[axis - batch_dims if axis >= 0 else axis] = indices
+        ranges.extend(remaining_dims)
+        return params[tuple(ranges)]
+
     if batch_dims == 0:
         return gather(params, indices)
     result = []
@@ -906,3 +1122,14 @@ def generate_random_sample(cfg, model_config):
 
     evogen_context_mask = np.stack((context_mask, target_mask), -1)
     return evogen_random_data, evogen_context_mask
+
+
+def to_tensor_4x4(feature):
+    rots = feature[..., :9]
+    trans = feature[..., 9:]
+    arrays = np.zeros(feature.shape[:-1] + (4, 4))
+    rots = np.reshape(rots, rots.shape[:-1] + (3, 3))
+    arrays[..., :3, :3] = rots
+    arrays[..., :3, 3] = trans
+    arrays[..., 3, 3] = 1
+    return arrays

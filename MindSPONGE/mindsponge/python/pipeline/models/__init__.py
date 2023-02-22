@@ -21,3 +21,4 @@
 # limitations under the License.
 # ============================================================================
 """Models"""
+from .pafnucy import PAFNUCY, PAFNUCYDataSet, pafnucy_configuration
