@@ -75,7 +75,6 @@ MINDSPORE_SYMPY_TRANSLATIONS = {
     "Max": _reduce(mnp.maximum),
     "Min": _reduce(mnp.minimum),
     "Trace": mnp.trace,
-    "Determinant": ops.matrix_determinant,
 }
 
 

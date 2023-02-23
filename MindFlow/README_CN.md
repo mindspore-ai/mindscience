@@ -42,15 +42,14 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 - [不同几何体下的二维和三维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)
 - [二维Darcy问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
 
-### Mindflow特性
-
-- [基于MindFlow定义符号化偏微分方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/sympy_pde_introduction)
-- [作用于圆环的二维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/poisson_ring)
-
 ### 数据驱动
 
 - [基于FNO求解一维Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers)
 - [基于FNO求解二维Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes)
+
+### 数据机理融合
+
+- [PDE-Net求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
 
 ### CFD
 
@@ -59,9 +58,10 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 - [二维库埃特流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)
 - [二维黎曼问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)
 
-### 数据机理融合
+### Mindflow特性
 
-- [PDE-Net求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
+- [基于MindFlow定义符号化偏微分方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/sympy_pde_introduction)
+- [作用于圆环的二维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/poisson_ring)
 
 ## **安装教程**
 

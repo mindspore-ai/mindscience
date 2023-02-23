@@ -42,15 +42,14 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 - [2D and 3D Poisson with Different Geometry](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)
 - [2D Darcy](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
 
-### Features
-
-- [Definition of Symbolic PDE Based on MindFlow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/sympy_pde_introduction)
-- [2D Poisson on a Ring](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/poisson_ring)
-
 ### Data Driven
 
 - [FNO for 1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers)
 - [FNO for 2D Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes)
+
+### Data-Mechanism Fusion
+
+- [PDE-Net for Convecton-Diffusion Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
 
 ### CFD
 
@@ -59,9 +58,10 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 - [2D Couette Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)
 - [2D Riemann](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)
 
-### Data-Mechanism Fusion
+### Features
 
-- [PDE-Net for Convecton-Diffusion Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
+- [Definition of Symbolic PDE Based on MindFlow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/sympy_pde_introduction)
+- [2D Poisson on a Ring](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/poisson_ring)
 
 ## **Installation**
 
