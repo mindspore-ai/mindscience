@@ -33,6 +33,12 @@ if [ $# -gt 0 ]; then
     ST_PATH="$PROJECT_DIR/tests/st/mindsponge/"
     pytest "$ST_PATH"
     echo "Test all mindsponge use cases success."
+  elif [ $1 == "mindflow" ]; then
+    echo "Run st mindflow."
+    cd "$PROJECT_DIR" || exit
+    ST_PATH="$PROJECT_DIR/tests/st/mindflow/"
+    pytest "$ST_PATH"
+    echo "Test all mindflow use cases success."
   fi
 else
   echo "Run all st."
