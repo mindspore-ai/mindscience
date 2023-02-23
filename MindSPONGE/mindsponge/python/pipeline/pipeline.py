@@ -20,12 +20,10 @@ import urllib.request
 from mindspore import context
 from mindsponge.common.config_load import load_config
 from .models import Multimer, MultimerDataSet, multimer_configuration
-from .models import PAFNUCY, PAFNUCYDataSet, pafnucy_configuration
 
 
 model_card = {
     "Multimer": {"model": Multimer, "dataset": MultimerDataSet, "config": multimer_configuration},
-    "pafnucy": {"model": PAFNUCY, "dataset": PAFNUCYDataSet, "config": pafnucy_configuration},
 }
 
 
