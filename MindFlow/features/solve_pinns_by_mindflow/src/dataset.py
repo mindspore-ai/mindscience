@@ -101,7 +101,7 @@ def create_training_dataset(config):
     return dataset
 
 
-def _calcu_color(x, y):
+def _numerical_solution(x, y):
     return (4.0 - x ** 2 - y ** 2) / 4
 
 
@@ -110,5 +110,5 @@ def create_test_dataset(config):
     _, _, union = _get_region(config)
     union.set_sampling_config(generate_sampling_config(config["data"]))
     test_data = union.sampling(geom_type="domain")
-    test_label = _calcu_color(test_data[:, 0], test_data[:, 1]).reshape(-1, 1)
+    test_label = _numerical_solution(test_data[:, 0], test_data[:, 1]).reshape(-1, 1)
     return test_data, test_label
