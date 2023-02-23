@@ -19,15 +19,11 @@ import ssl
 import urllib.request
 from mindspore import context
 from mindsponge.common.config_load import load_config
-from .models import MEGAFold, MEGAFoldDataSet, megafold_configuration
-from .models import MEGAEvoGen, MEGAEvoGenDataSet, megaevogen_configuration
 from .models import Multimer, MultimerDataSet, multimer_configuration
 from .models import PAFNUCY, PAFNUCYDataSet, pafnucy_configuration
 
 
 model_card = {
-    "MEGAFold": {"model": MEGAFold, "dataset": MEGAFoldDataSet, "config": megafold_configuration},
-    "MEGAEvoGen": {"model": MEGAEvoGen, "dataset": MEGAEvoGenDataSet, "config": megaevogen_configuration},
     "Multimer": {"model": Multimer, "dataset": MultimerDataSet, "config": multimer_configuration},
     "pafnucy": {"model": PAFNUCY, "dataset": PAFNUCYDataSet, "config": pafnucy_configuration},
 }
