@@ -34,10 +34,10 @@ from ....common.utils import dgram_from_positions, pseudo_beta_fn
 from ....data.data_transform import get_chi_atom_pos_indices
 from ...cell.initializer import lecun_init
 from .module.multimer_block import compute_chi_angles
-from .module.template_embedding import MultimerTemplateEmbedding
-from .module.evoformer import MultimerEvoformer
-from .module.structure import MultimerStructureModule
-from .module.head import PredictedLDDTHead
+from .module.multimer_template_embedding import MultimerTemplateEmbedding
+from .module.multimer_evoformer import MultimerEvoformer
+from .module.multimer_structure import MultimerStructureModule
+from .module.multimer_head import PredictedLDDTHead
 
 
 def caculate_constant_array(seq_length):
@@ -97,7 +97,7 @@ class MultimerArch(nn.Cell):
     """MultimerArch"""
 
     def __init__(self, config, mixed_precision):
-        super(multimer, self).__init__()
+        super(MultimerArch, self).__init__()
 
         self.cfg = config
 

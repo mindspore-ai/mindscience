@@ -21,5 +21,4 @@
 # limitations under the License.
 # ============================================================================
 """Models"""
-from .pafnucy import PAFNUCY, PAFNUCYDataSet, pafnucy_configuration
 from .multimer import Multimer, MultimerDataSet, multimer_configuration
