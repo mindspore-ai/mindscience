@@ -593,15 +593,19 @@ def atom37_to_torsion_angles(
                                         shape :math:`(batch\_size, N_{res})`.
         alt_torsions (bool):            Indicates whether to set the sign angle of shielding torsion to zero.
                                         Default: False.
+        is_multimer (bool):             It will be True when multimer is used. Default: False
 
     Returns:
         Dict containing
 
-        - torsion_angles_sin_cos (numpy.array), with shape :math:`(batch\_size, N_{res}, 37, 3)` where
-          the final 2 dimensions denote sin and cos respectively.
+        - torsion_angles_sin_cos (numpy.array), with shape :math:`(N_{res}, 37, 3)` where
+          the final 2 dimensions denote sin and cos respectively. If is_multimer is True, the shape will
+          be :math:`(N_{seq}, N_{res}, 37, 3)` .
         - alt_torsion_angles_sin_cos (numpy.array), same as 'torsion_angles_sin_cos', but with the angle shifted
-          by pi for all chi angles affected by the naming ambiguities.
-        - torsion_angles_mask (numpy.array), Mask for which chi angles are present.
+          by pi for all chi angles affected by the naming ambiguities. If is_multimer is True, the shape will
+          be :math:`(N_{seq}, N_{res}, 37, 3)` .
+        - torsion_angles_mask (numpy.array), Mask for which chi angles are present. If is_multimer is True,
+          the shape will be :math:`(N_{seq}, N_{res}, 37, 3)` .
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
