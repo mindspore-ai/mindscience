@@ -35,10 +35,10 @@ optimizer:
   milestones: [2000, 4000]
 name: 2D_Taylor_Green_Vortex_Simulation_Reynolds_1
 Re: 1.0
-train_steps: 30000
+train_epochs: 500
 train_batch_size: 1024
 test_batch_size: 1024
-eval_interval_epochs: 500
+eval_interval_epochs: 20
 train_with_eval: true
 save_ckpt_path: "path/to/ckpt"
 summary_dir: "./summary"
