@@ -1,5 +1,12 @@
 mindflow.loss
 ==================
 
-.. automodule:: mindflow.loss
-    :members:
+.. msplatformautosummary::
+    :toctree: loss
+    :nosignatures:
+    :template: classtemplate.rst
+
+    mindflow.loss.MTLWeightedLossCell
+    mindflow.loss.RelativeRMSELoss
+    mindflow.loss.WaveletTransformLoss
+    mindflow.loss.get_loss_metric

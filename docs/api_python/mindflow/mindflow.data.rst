@@ -1,19 +1,15 @@
 mindflow.data
 ==================
 
-.. include:: mindflow.data.BoundaryBC.rst
+.. mscnplatformautosummary::
+    :toctree: data
+    :nosignatures:
+    :template: classtemplate.rst
 
-.. include:: mindflow.data.BoundaryIC.rst
-
-.. include:: mindflow.data.Dataset.rst
-
-.. include:: mindflow.data.Equation.rst
-
-.. include:: mindflow.data.ExistedDataConfig.rst
-
-.. include:: mindflow.data.ExistedDataset.rst
-
-.. include:: mindflow.data.MindDataset.rst
-
-.. automodule:: mindflow.data
-    :members:
+    mindflow.data.BoundaryBC
+    mindflow.data.BoundaryIC
+    mindflow.data.Dataset
+    mindflow.data.Equation
+    mindflow.data.ExistedDataConfig
+    mindflow.data.ExistedDataset
+    mindflow.data.MindDataset
