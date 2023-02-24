@@ -14,7 +14,7 @@
 # ============================================================================
 """init"""
 from .dataset import create_training_dataset, create_test_dataset
-from .utils import calculate_l2_error, visual_result
+from .utils import calculate_l2_error, visual
 from .model import Poisson2D
 
 
@@ -22,6 +22,6 @@ __all__ = [
     "create_training_dataset",
     "create_test_dataset",
     "calculate_l2_error",
-    "visual_result",
+    "visual",
     "Poisson2D"
 ]

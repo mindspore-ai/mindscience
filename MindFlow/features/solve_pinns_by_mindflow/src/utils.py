@@ -23,7 +23,7 @@ from mindspore import Tensor
 from mindspore import dtype as mstype
 
 
-def visual_result(model, inputs, label, step=1):
+def visual(model, inputs, label, epochs=1):
     '''visual result for poisson 2D'''
     fig, ax = plt.subplots(2, 1)
     ax = ax.flatten()
@@ -41,7 +41,7 @@ def visual_result(model, inputs, label, step=1):
     cbar = fig.colorbar(ax0, ax=[ax[0], ax[1]])
     cbar.set_label('u(x, y)')
 
-    plt.savefig(f"images/{step}-result.jpg", dpi=600)
+    plt.savefig(f"images/{epochs}-result.jpg", dpi=600)
 
 
 def _calculate_error(label, prediction):
