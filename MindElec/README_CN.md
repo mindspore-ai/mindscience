@@ -120,7 +120,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 
 ## API
 
-MindElec API文档请查看[文档链接](https://mindspore.cn/mindscience/api/zh-CN/r0.1/mindelec.html)
+MindElec API文档请查看[文档链接](https://mindspore.cn/mindelec/docs/zh-CN/master/mindelec.architecture.html)
 
 ## 验证是否成功安装
 
@@ -132,7 +132,7 @@ python -c 'import mindelec'
 
 ## 快速入门
 
-关于如何快速使用AI电磁仿真工具包，进行训练推理，请点击查看[MindElec使用教程](https://mindspore.cn/mindscience/docs/zh-CN/r0.1/mindelec/intro_and_install.html)
+关于如何快速使用AI电磁仿真工具包，进行训练推理，请点击查看[MindElec使用教程](https://mindspore.cn/mindelec/docs/zh-CN/master/intro_and_install.html)
 
 ## 文档
 

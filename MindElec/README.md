@@ -118,7 +118,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 
 ## API
 
-For details about MindElec APIs, see the [API](https://mindspore.cn/mindscience/api/en/r0.1/mindelec.html) page.
+For details about MindElec APIs, see the [API](https://mindspore.cn/mindelec/docs/en/master/mindelec.architecture.html) page.
 
 ## Installation Verification
 
@@ -130,7 +130,7 @@ python -c 'import mindelec'
 
 ## Quick Start
 
-For details about how to quickly use the AI electromagnetic simulation toolkit for training and inference, see [MindElec Guide](https://mindspore.cn/mindscience/docs/en/r0.1/mindelec/intro_and_install.html).
+For details about how to quickly use the AI electromagnetic simulation toolkit for training and inference, see [MindElec Guide](https://mindspore.cn/mindelec/docs/en/master/intro_and_install.html).
 
 ## Documents
 
