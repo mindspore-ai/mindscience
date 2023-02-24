@@ -41,6 +41,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 - [二维圆柱绕流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)
 - [不同几何体下的二维和三维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)
 - [二维Darcy问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
+- [二维泰勒格林涡](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)
 
 ### Mindflow特性
 

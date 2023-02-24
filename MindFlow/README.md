@@ -41,6 +41,7 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 - [2D Cylinder Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)
 - [2D and 3D Poisson with Different Geometry](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)
 - [2D Darcy](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
+- [2D Taylor-Green Vortex](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)
 
 ### Features
 
