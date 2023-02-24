@@ -1,21 +1,16 @@
 mindflow.pde
 ==================
 
-.. include:: mindflow.pde.Burgers.rst
+.. mscnplatformautosummary::
+    :toctree: pde
+    :nosignatures:
+    :template: classtemplate.rst
 
-.. include:: mindflow.pde.FlowWithLoss.rst
-
-.. include:: mindflow.pde.NavierStokes.rst
-
-.. include:: mindflow.pde.PDEWithLoss.rst
-
-.. include:: mindflow.pde.Poisson.rst
-
-.. include:: mindflow.pde.SteadyFlowWithLoss.rst
-
-.. include:: mindflow.pde.UnsteadyFlowWithLoss.rst
-
-.. include:: mindflow.pde.sympy_to_mindspore.rst
-
-.. automodule:: mindflow.pde
-    :members:
+    mindflow.pde.Burgers
+    mindflow.pde.FlowWithLoss
+    mindflow.pde.NavierStokes
+    mindflow.pde.PDEWithLoss
+    mindflow.pde.Poisson
+    mindflow.pde.SteadyFlowWithLoss
+    mindflow.pde.UnsteadyFlowWithLoss
+    mindflow.pde.sympy_to_mindspore

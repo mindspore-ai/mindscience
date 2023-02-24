@@ -1,47 +1,29 @@
 mindflow.geometry
 ==================
 
-.. include:: mindflow.geometry.Cone.rst
+.. mscnplatformautosummary::
+    :toctree: geometry
+    :nosignatures:
+    :template: classtemplate.rst
 
-.. include:: mindflow.geometry.CSGDifference.rst
-
-.. include:: mindflow.geometry.CSGIntersection.rst
-
-.. include:: mindflow.geometry.CSGUnion.rst
-
-.. include:: mindflow.geometry.CSGXOR.rst
-
-.. include:: mindflow.geometry.Cuboid.rst
-
-.. include:: mindflow.geometry.Cylinder.rst
-
-.. include:: mindflow.geometry.Disk.rst
-
-.. include:: mindflow.geometry.FixedPoint.rst
-
-.. include:: mindflow.geometry.Geometry.rst
-
-.. include:: mindflow.geometry.GeometryWithTime.rst
-
-.. include:: mindflow.geometry.HyperCube.rst
-
-.. include:: mindflow.geometry.Interval.rst
-
-.. include:: mindflow.geometry.PartSamplingConfig.rst
-
-.. include:: mindflow.geometry.Pentagon.rst
-
-.. include:: mindflow.geometry.Rectangle.rst
-
-.. include:: mindflow.geometry.SamplingConfig.rst
-
-.. include:: mindflow.geometry.Tetrahedron.rst
-
-.. include:: mindflow.geometry.TimeDomain.rst
-
-.. include:: mindflow.geometry.Triangle.rst
-
-.. include:: mindflow.geometry.generate_sampling_config.rst
-
-.. automodule:: mindflow.geometry
-    :members:
+    mindflow.geometry.Cone
+    mindflow.geometry.CSGDifference
+    mindflow.geometry.CSGIntersection
+    mindflow.geometry.CSGUnion
+    mindflow.geometry.CSGXOR
+    mindflow.geometry.Cuboid
+    mindflow.geometry.Cylinder
+    mindflow.geometry.Disk
+    mindflow.geometry.FixedPoint
+    mindflow.geometry.Geometry
+    mindflow.geometry.GeometryWithTime
+    mindflow.geometry.HyperCube
+    mindflow.geometry.Interval
+    mindflow.geometry.PartSamplingConfig
+    mindflow.geometry.Pentagon
+    mindflow.geometry.Rectangle
+    mindflow.geometry.SamplingConfig
+    mindflow.geometry.Tetrahedron
+    mindflow.geometry.TimeDomain
+    mindflow.geometry.Triangle
+    mindflow.geometry.generate_sampling_config

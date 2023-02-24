@@ -35,6 +35,10 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 **More Cases**：👀
 
+### Features
+
+- [Solve Pinns by MindFlow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/solve_pinns_by_mindflow)
+
 ### Physics Driven
 
 - [1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
@@ -57,11 +61,6 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 - [1D Sod Tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
 - [2D Couette Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)
 - [2D Riemann](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)
-
-### Features
-
-- [Definition of Symbolic PDE Based on MindFlow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/sympy_pde_introduction)
-- [2D Poisson on a Ring](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/poisson_ring)
 
 ## **Installation**
 

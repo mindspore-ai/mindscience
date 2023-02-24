@@ -1,17 +1,14 @@
 mindflow.common
 ==================
 
-.. include:: mindflow.common.EvalCallback.rst
+.. mscnplatformautosummary::
+    :toctree: common
+    :nosignatures:
+    :template: classtemplate.rst
 
-.. include:: mindflow.common.L2.rst
-
-.. include:: mindflow.common.LossAndTimeMonitor.rst
-
-.. include:: mindflow.common.get_multi_step_lr.rst
-
-.. include:: mindflow.common.get_poly_lr.rst
-
-.. include:: mindflow.common.get_warmup_cosine_annealing_lr.rst
-
-.. automodule:: mindflow.common
-    :members:
+    mindflow.common.EvalCallback
+    mindflow.common.L2
+    mindflow.common.LossAndTimeMonitor
+    mindflow.common.get_multi_step_lr
+    mindflow.common.get_poly_lr
+    mindflow.common.get_warmup_cosine_annealing_lr

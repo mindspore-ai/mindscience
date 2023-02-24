@@ -1,9 +1,10 @@
 mindflow.operators
 ===================
 
-.. include:: mindflow.operators.batched_hessian.rst
+.. mscnplatformautosummary::
+    :toctree: operators
+    :nosignatures:
+    :template: classtemplate.rst
 
-.. include:: mindflow.operators.batched_jacobian.rst
-
-.. automodule:: mindflow.operators
-    :members:
+    mindflow.operators.batched_hessian
+    mindflow.operators.batched_jacobian
