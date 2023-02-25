@@ -8,14 +8,22 @@
 # **MindFlow**
 
 - [Introduction](#Introduction)
-- [Latest News](#Latest)
+- [Latest News](#Latest-News)
+- [MindFlow Features](#MindFlow-Features)
+- [Physics Driven](#Physics-Driven)
+- [Data Driven](#Data-Driven)
+- [Data-Mechanism Fusion](#Data-Mechanism-Fusion)
+- [CFD](#CFD)
 - [Installation](#Installation)
-    - [Dependency](#Dependency)
+    - [Version Dependency](#Version-Dependency)
+    - [Install Dependency](#Install-Dependency)
     - [Hardware](#Hardware)
-    - [pip install](#pip)
-    - [source code install](#source)
+    - [pip install](#pip-install)
+    - [source code install](#source-code-install)
 - [Community](#Community)
-- [Contribution Guide](#Contribution)
+    - [SIG](#SIG)
+    - [Core Contributor](#Core-Contributor)
+- [Contribution Guide](#Contribution-Guide)
 - [License](#License)
 
 ## **Introduction**
@@ -26,20 +34,18 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 <div align=center><img src="docs/mindflow_archi_en.png" alt="MindFlow Architecture" width="700"/></div>
 
-## **Latest News** 📰
+## **Latest News**
 
 - 🔥`2023.02.05` [MindFlow 0.1.0-alpha](https://mindspore.cn/mindflow/docs/zh-CN/r0.1.0-alpha/index.html) is released.
 - 🔥`2023.01.17` [MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997), an End-to-End Differentiable Solver based on MindSpore，[see more](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/mindflow/cfd).
 - 🔥`2022.12.27` MindSpore team cooperates with Xi'an Jiaotong University teacher Gang Chen publish [Temporal predictions of periodic flows using a mesh transformation and deep learning-based strategy](https://www.sciencedirect.com/science/article/pii/S1270963822007556) in top journals `Aerospace Science and Technology`, authors are Zhiwen Deng, Hongsheng Liu, Beiji Shi, Zidonog Wang, Fan Yu, Ziyang Liu、Gang Chen(Corresponding author).
 - 🔥`2022.09.02` Academician Guanghui Wu, Chief Scientist of COMAC, released the first industrial flow simulation model "DongFang.YuFeng" at WAIC2022 World Artificial Intelligence Conference. AI flow simulation assisted the aerodynamic simulation of domestic large aircraft. [Page](http://www.news.cn/fortune/2022-09/06/c_1128978806.htm).
 
-**More Cases**：👀
-
-### Features
+## MindFlow Features
 
 - [Solve Pinns by MindFlow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/solve_pinns_by_mindflow)
 
-### Physics Driven
+## Physics Driven
 
 - [1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
 - [2D Cylinder Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)
@@ -47,16 +53,16 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 - [2D Darcy](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
 - [2D Taylor-Green Vortex](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)
 
-### Data Driven
+## Data Driven
 
 - [FNO for 1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers)
 - [FNO for 2D Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes)
 
-### Data-Mechanism Fusion
+## Data-Mechanism Fusion
 
-- [PDE-Net for Convecton-Diffusion Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
+- [PDE-Net for Convection-Diffusion Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
 
-### CFD
+## CFD
 
 - [1D Lax Tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
 - [1D Sod Tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
@@ -137,11 +143,14 @@ pip install mindflow_*.whl
 
 ## **Community**
 
-### CO-CHAIR
+### SIG
 
-### Core Contributor 🧑‍🤝‍🧑
+Join MindSpore [MindFlow SIG](https://mindspore.cn/community/SIG/detail/?name=mindflow%20SIG) to help AI fluid simulation development.
+We will continue to release [open source internship tasks](https://gitee.com/mindspore/community/issues/I55B5A?from=project-issue), build MindFlow ecology with you, and promote the development of computational fluid dynamics with experts, professors and students in the field. Welcome to actively claim the task.
 
-Thanks goes to these wonderful people:
+### Core Contributor
+
+Thanks goes to these wonderful people 🧑‍🤝‍🧑:
 
 yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, yqiuu, haojiwei, leiyixiang
 

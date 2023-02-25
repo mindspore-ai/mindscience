@@ -9,7 +9,7 @@ mindflow.geometry.Tetrahedron
         - **name** (str) - 四面体的名称。
         - **vertices** (numpy.ndarray) - 四面体的顶点。
         - **boundary_type** (str) - 值可以是“uniform”或“unweighted”。默认值：“uniform”。
-        
+
           - 'uniform'，每个边界中的预期样本数与边界的面积（长度）成比例的。
           - 'unweighted'，每个边界中的预期样本数相同。
 

@@ -2,9 +2,9 @@ mindflow.geometry.Pentagon
 ==========================
 
 .. py:class:: mindflow.geometry.Pentagon(name, vertices, boundary_type='uniform', dtype=np.float32, sampling_config=None)
-    
+
     五边形对象的定义。
-    
+
     参数：
         - **name** (str) - 五边形的名称。
         - **vertices** (numpy.ndarray) - 五边形的顶点，按逆时针顺序排列。

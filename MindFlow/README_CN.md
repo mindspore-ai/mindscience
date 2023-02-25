@@ -9,12 +9,19 @@
 
 - [MindFlow介绍](#MindFlow介绍)
 - [最新消息](#最新消息)
+- [MindFlow特性](#Mindflow特性)
+- [物理驱动](#物理驱动)
+- [数据驱动](#数据驱动)
+- [数据机理融合](#数据机理融合)
+- [CFD](#CFD)
 - [安装教程](#安装教程)
     - [依赖安装](#依赖安装)
     - [硬件支持情况](#硬件支持情况)
     - [pip安装](#pip安装)
     - [源码安装](#源码安装)
 - [社区](#社区)
+  - [SIG](#SIG)
+  - [核心贡献者](#核心贡献者)
 - [贡献指南](#贡献指南)
 - [许可证](#许可证)
 
@@ -26,7 +33,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 <div align=center><img src="docs/mindflow_archi_cn.png" alt="MindFlow Architecture" width="700"/></div>
 
-## **最新消息** 📰
+## **最新消息**
 
 - 🔥`2023.02.05` [MindFlow 0.1.0-alpha](https://mindspore.cn/mindflow/docs/zh-CN/r0.1.0-alpha/index.html) 版本发布。
 - 🔥`2023.01.17` 推出[MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997)基于MindSpore的端到端可微分求解器，[详见](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/mindflow/cfd)。
@@ -35,11 +42,11 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 **更多应用案例请见**：👀
 
-### Mindflow特性
+## Mindflow特性
 
 - [基于MindFlow求解PINNs问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/solve_pinns_by_mindflow)
 
-### 物理驱动
+## 物理驱动
 
 - [一维Burgers问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
 - [二维圆柱绕流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)
@@ -47,16 +54,16 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 - [二维Darcy问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
 - [二维泰勒格林涡](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)
 
-### 数据驱动
+## 数据驱动
 
 - [基于FNO求解一维Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers)
 - [基于FNO求解二维Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes)
 
-### 数据机理融合
+## 数据机理融合
 
 - [PDE-Net求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
 
-### CFD
+## CFD
 
 - [一维Lax激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
 - [一维Sod激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
@@ -137,11 +144,14 @@ pip install mindflow_*.whl
 
 ## **社区**
 
-### SIG 🏠
+### SIG
 
-### 核心贡献者 🧑‍🤝‍🧑
+加入昇思[MindFlow SIG](https://mindspore.cn/community/SIG/detail/?name=mindflow%20SIG)，助力AI流体仿真发展。
+我们将不断发布[开源实习任务](https://gitee.com/mindspore/community/issues/I55B5A?from=project-issue)，与各位共同构筑MindFlow生态，与领域内的专家、教授和学生一起推动计算流体力学的发展，欢迎各位积极认领。
 
-感谢以下开发者做出的贡献：
+### 核心贡献者
+
+感谢以下开发者做出的贡献 🧑‍🤝‍🧑：
 
 yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, yqiuu, haojiwei, leiyixiang
 
