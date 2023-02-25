@@ -31,7 +31,7 @@ import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import ops
 from mindspore import jit
-from mindspore.ops import function as F
+from mindspore.ops import functional as F
 from mindspore import Tensor, Parameter, context
 from mindspore.ops._grad.grad_base import bprop_getters
 from mindspore.ops._utils.utils import generate_shape_index
