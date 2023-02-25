@@ -1,25 +1,18 @@
 mindflow.cell
 ==================
 
-.. include:: mindflow.cell.FCSequential.rst
+.. mscnplatformautosummary::
+    :toctree: cell
+    :nosignatures:
+    :template: classtemplate.rst
 
-.. include:: mindflow.cell.FNO1D.rst
-
-.. include:: mindflow.cell.FNO2D.rst
-
-.. include:: mindflow.cell.InputScaleNet.rst
-
-.. include:: mindflow.cell.LinearBlock.rst
-
-.. include:: mindflow.cell.MultiScaleFCCell.rst
-
-.. include:: mindflow.cell.PDENet.rst
-
-.. include:: mindflow.cell.ResBlock.rst
-
-.. include:: mindflow.cell.ViT.rst
-
-.. include:: mindflow.cell.get_activation.rst
-
-.. automodule:: mindflow.cell
-    :members:
+    mindflow.cell.FCSequential
+    mindflow.cell.FNO1D
+    mindflow.cell.FNO2D
+    mindflow.cell.InputScaleNet
+    mindflow.cell.LinearBlock
+    mindflow.cell.MultiScaleFCCell
+    mindflow.cell.PDENet
+    mindflow.cell.ResBlock
+    mindflow.cell.ViT
+    mindflow.cell.get_activation

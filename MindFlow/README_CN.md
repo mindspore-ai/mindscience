@@ -35,6 +35,10 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 **更多应用案例请见**：👀
 
+### Mindflow特性
+
+- [基于MindFlow求解PINNs问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/solve_pinns_by_mindflow)
+
 ### 物理驱动
 
 - [一维Burgers问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
@@ -57,11 +61,6 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 - [一维Sod激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
 - [二维库埃特流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)
 - [二维黎曼问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)
-
-### Mindflow特性
-
-- [基于MindFlow定义符号化偏微分方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/sympy_pde_introduction)
-- [作用于圆环的二维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/poisson_ring)
 
 ## **安装教程**
 

@@ -1,17 +1,14 @@
 mindflow.cfd
 ==================
 
-.. include:: mindflow.cfd.RunTime.rst
+.. mscnplatformautosummary::
+    :toctree: cfd
+    :nosignatures:
+    :template: classtemplate.rst
 
-.. include:: mindflow.cfd.Simulator.rst
-
-.. include:: mindflow.cfd.cal_pri_var.rst
-
-.. include:: mindflow.cfd.cal_con_var.rst
-
-.. include:: mindflow.cfd.vis_1d.rst
-
-.. include:: mindflow.cfd.vis_2d.rst
-
-.. automodule:: mindflow.cfd
-    :members:
+    mindflow.cfd.RunTime
+    mindflow.cfd.Simulator
+    mindflow.cfd.cal_pri_var
+    mindflow.cfd.cal_con_var
+    mindflow.cfd.vis_1d
+    mindflow.cfd.vis_2d

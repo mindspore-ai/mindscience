@@ -66,7 +66,6 @@ from .common import *
 from .operators import *
 from .pde import *
 from .loss import *
-from .solver import *
 from .cell import *
 from .cfd import *
 from .utils import *
@@ -78,7 +77,6 @@ __all__.extend(common.__all__)
 __all__.extend(operators.__all__)
 __all__.extend(pde.__all__)
 __all__.extend(loss.__all__)
-__all__.extend(solver.__all__)
 __all__.extend(cell.__all__)
 __all__.extend(cfd.__all__)
 __all__.extend(utils.__all__)
