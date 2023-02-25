@@ -22,5 +22,11 @@
 # ============================================================================
 """multimer configuration"""
 multimer_configuration = {
-    "predict_256": "https://download.mindspore.cn/mindscience/mindsponge/Multimer/config/"
+    "predict_256": "https://download.mindspore.cn/mindscience/mindsponge/Multimer/config/predict_256.yaml",
+    "predict_512": "https://download.mindspore.cn/mindscience/mindsponge/Multimer/config/predict_512.yaml",
+    "predict_768": "https://download.mindspore.cn/mindscience/mindsponge/Multimer/config/predict_768.yaml",
+    "predict_1024": "https://download.mindspore.cn/mindscience/mindsponge/Multimer/config/predict_1024.yaml",
+    "predict_1280": "https://download.mindspore.cn/mindscience/mindsponge/Multimer/config/predict_1280.yaml",
+    "predict_1536": "https://download.mindspore.cn/mindscience/mindsponge/Multimer/config/predict_1536.yaml",
+    "predict_1792": "https://download.mindspore.cn/mindscience/mindsponge/Multimer/config/predict_1792.yaml"
 }
