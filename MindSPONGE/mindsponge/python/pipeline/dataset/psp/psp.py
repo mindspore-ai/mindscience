@@ -85,11 +85,11 @@ class PSP(DataSet):
     def make_name_list(self):
         pass
 
-    def process(self):
+    def process(self, data, **kwargs):
         raise NotImplementedError
 
     def data_parse(self, input, idx):
         raise NotImplementedError
 
-    def create_iterator(self):
+    def create_iterator(self, num_epochs, **kwargs):
         raise NotImplementedError

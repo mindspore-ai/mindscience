@@ -48,7 +48,7 @@ class DataSet(metaclass=ABCMeta):
         self.phase = phase
 
     @abstractmethod
-    def process(self, data, label=None):
+    def process(self, data, **kwargs):
         pass
 
     @abstractmethod
@@ -60,5 +60,5 @@ class DataSet(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def create_iterator(self, num_epochs):
+    def create_iterator(self, num_epochs, **kwargs):
         pass
