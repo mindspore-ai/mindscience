@@ -21,8 +21,6 @@ from mindspore import Tensor
 from mindspore import context
 from mindelec.architecture import get_activation
 
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
-
 
 class Net(nn.Cell):
     def __init__(self):
@@ -39,6 +37,7 @@ class Net(nn.Cell):
 @pytest.mark.env_onecard
 def test_srelu():
     """test srelu activation"""
+    context.set_context(mode=context.GRAPH_MODE)
     net = Net()
     input_tensor = Tensor(np.array([[1.2, 0.1], [0.2, 3.2]], dtype=np.float32))
     output = net(input_tensor)
@@ -61,6 +60,7 @@ class Net1(nn.Cell):
 @pytest.mark.env_onecard
 def test_sin():
     """test sin activation"""
+    context.set_context(mode=context.GRAPH_MODE)
     net = Net1()
     input_tensor = Tensor(np.array([[1.2, 0.1], [0.2, 3.2]], dtype=np.float32))
     output = net(input_tensor)
@@ -72,6 +72,7 @@ def test_sin():
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
 def test_activation_type_error():
+    context.set_context(mode=context.GRAPH_MODE)
     with pytest.raises(TypeError):
         get_activation(1)
 
@@ -81,5 +82,6 @@ def test_activation_type_error():
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
 def test_get_activation():
+    context.set_context(mode=context.GRAPH_MODE)
     activation = get_activation("softshrink")
     assert isinstance(activation, nn.Cell)

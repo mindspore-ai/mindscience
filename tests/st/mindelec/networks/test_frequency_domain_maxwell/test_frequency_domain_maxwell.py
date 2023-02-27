@@ -42,7 +42,6 @@ set_seed(0)
 np.random.seed(0)
 
 print("pid:", os.getpid())
-context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend")
 
 
 # define problem
@@ -62,13 +61,18 @@ class Helmholtz2D(Problem):
     def governing_equation(self, *output, **kwargs):
         """governing equation"""
         u = output[0]
-        x = kwargs[self.domain_name][:, 0]
-        y = kwargs[self.domain_name][:, 1]
-        x = self.reshape(x, (-1, 1))
-        y = self.reshape(y, (-1, 1))
+        value = kwargs.get(self.domain_name)
+        if value is not None:
+            x = value[:, 0]
+            y = value[:, 1]
+            x = self.reshape(x, (-1, 1))
+            y = self.reshape(y, (-1, 1))
+        else:
+            print("key doesn't exist")
+            return u
 
-        u_xx = self.grad_xx(kwargs[self.domain_name])
-        u_yy = self.grad_yy(kwargs[self.domain_name])
+        u_xx = self.grad_xx(value)
+        u_yy = self.grad_yy(value)
 
         return u_xx + u_yy + self.wave_number**2 * u
 
@@ -76,10 +80,15 @@ class Helmholtz2D(Problem):
     def boundary_condition(self, *output, **kwargs):
         """boundary condition"""
         u = output[0]
-        x = kwargs[self.bc_name][:, 0]
-        y = kwargs[self.bc_name][:, 1]
-        x = self.reshape(x, (-1, 1))
-        y = self.reshape(y, (-1, 1))
+        value = kwargs.get(self.bc_name)
+        if value is not None:
+            x = value[:, 0]
+            y = value[:, 1]
+            x = self.reshape(x, (-1, 1))
+            y = self.reshape(y, (-1, 1))
+        else:
+            print("key doesn't exist")
+            return u
 
         test_label = ops.sin(self.wave_number * x)
         return 100 * (u - test_label)
@@ -91,6 +100,8 @@ class Helmholtz2D(Problem):
 @pytest.mark.env_onecard
 def test_frequency_domain_maxwell():
     """train process"""
+    context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend")
+
     net = FFNN(input_dim=2, output_dim=1, hidden_layer=64)
 
     # define geometry

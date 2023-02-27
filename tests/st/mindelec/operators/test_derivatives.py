@@ -24,7 +24,6 @@ from mindspore import Tensor, ops
 from mindspore import dtype as mstype
 from mindspore import context
 from mindspore import nn
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
 
 
 def func(x):
@@ -57,6 +56,7 @@ class Net1(nn.Cell):
 @pytest.mark.env_onecard
 def test_grad_error():
     """test grad error"""
+    context.set_context(mode=context.GRAPH_MODE)
     # check argnum error
     with pytest.raises(TypeError):
         Grad(func, "a")
@@ -100,6 +100,7 @@ def test_grad_error():
 @pytest.mark.env_onecard
 def test_grad():
     """test grad"""
+    context.set_context(mode=context.GRAPH_MODE)
     x = Tensor(np.array([[1.0, -2.0], [-3.0, 4.0]]).astype(np.float32))
     out = func(x)
     grad = Grad(func)
@@ -114,6 +115,7 @@ def test_grad():
 @pytest.mark.env_onecard
 def test_grad_two_input():
     """test_grad_two_input"""
+    context.set_context(mode=context.GRAPH_MODE)
     a = Tensor(np.array([[1, 3], [5, 9], [8, 2]], np.float32))
     b = Tensor(np.array([[4, 6], [7, 2], [2, 1]], np.float32))
     net = Net()
@@ -130,6 +132,7 @@ def test_grad_two_input():
 @pytest.mark.env_onecard
 def test_second_order_grad_error():
     """test_second_order_grad_error"""
+    context.set_context(mode=context.GRAPH_MODE)
     # check input_idx1 type error
     with pytest.raises(TypeError):
         SecondOrderGrad(func, "a", 1, 0)
@@ -173,6 +176,7 @@ def test_second_order_grad_error():
 @pytest.mark.env_onecard
 def test_second_order_grad():
     """test_second_order_grad"""
+    context.set_context(mode=context.GRAPH_MODE)
     x = Tensor(np.array([[1.0, -2.0], [-3.0, 4.0]]).astype(np.float32))
     second_order_grad = SecondOrderGrad(func, 0, 0, 0)
     output = second_order_grad(x).asnumpy()
@@ -185,6 +189,7 @@ def test_second_order_grad():
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
 def test_class_jacobian_type_error():
+    context.set_context(mode=context.GRAPH_MODE)
     with pytest.raises(TypeError):
         Jacobian(Net1(), "a", 1)
 
@@ -195,6 +200,7 @@ def test_class_jacobian_type_error():
 @pytest.mark.env_onecard
 def test_class_jacobian():
     """test Jacobian"""
+    context.set_context(mode=context.GRAPH_MODE)
     a = Tensor(np.array([[1, 3], [5, 9], [8, 2]], np.float32))
     b = Tensor(np.array([[4, 6], [7, 2], [2, 1]], np.float32))
     jac = Jacobian(Net(), 0, 0)
@@ -215,6 +221,7 @@ def test_class_jacobian():
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
 def test_class_hessian_type_error():
+    context.set_context(mode=context.GRAPH_MODE)
     with pytest.raises(TypeError):
         Hessian(Net1(), "a", 1)
 
@@ -225,6 +232,7 @@ def test_class_hessian_type_error():
 @pytest.mark.env_onecard
 def test_class_hessian():
     """test Hessian"""
+    context.set_context(mode=context.GRAPH_MODE)
     a = Tensor(np.array([[1, 3], [5, 9], [8, 2]], np.float32))
     b = Tensor(np.array([[4, 6], [7, 2], [2, 1]], np.float32))
     hes = Hessian(Net1(), 0, 1)

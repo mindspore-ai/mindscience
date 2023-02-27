@@ -35,7 +35,6 @@ from mindelec.operators import Grad
 
 set_seed(1)
 np.random.seed(1)
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
 
 path = os.getcwd()
 data_config = edict({
@@ -112,9 +111,16 @@ class RectPde(Problem):
 
     @ms_function
     def boundary_condition(self, *output, **kwargs):
+        """boundary condition"""
         u = output[0]
-        x = kwargs[self.bc_name][:, 0]
-        y = kwargs[self.bc_name][:, 1]
+        value = kwargs.get(self.bc_name)
+
+        if value is not None:
+            x = value[:, 0]
+            y = value[:, 1]
+        else:
+            print("key doesn't exist")
+            return u
         return u - ops.sin(x) * ops.cos(y)
 
     @ms_function
@@ -146,6 +152,7 @@ class RectPde1(Problem):
 @pytest.mark.env_onecard
 def test_netwithloss():
     """test netwithloss function"""
+    context.set_context(mode=context.GRAPH_MODE)
     model = Net(2, 1, 128, "sin")
     rect_space = Rectangle("rectangle", coord_min=[-1.0, -1.0], coord_max=[1.0, 1.0],
                            sampling_config=create_config_from_edict(rectangle_config))
@@ -173,6 +180,7 @@ def test_netwithloss():
 @pytest.mark.env_onecard
 def test_netwithloss1():
     """test netwithloss function1"""
+    context.set_context(mode=context.GRAPH_MODE)
     model = Net(2, 1, 128, "sin")
     rect_space = Rectangle("rectangle", coord_min=[-1.0, -1.0], coord_max=[1.0, 1.0],
                            sampling_config=create_config_from_edict(rectangle_config1))
@@ -196,6 +204,7 @@ def test_netwithloss1():
 @pytest.mark.env_onecard
 def test_netwitheval():
     """test netwitheval function"""
+    context.set_context(mode=context.GRAPH_MODE)
     model = Net(2, 1, 128, "sin")
     src_domain = ExistedDataConfig(name="src_domain",
                                    data_dir=[path+"/inputs.npy", path+"/label.npy"],

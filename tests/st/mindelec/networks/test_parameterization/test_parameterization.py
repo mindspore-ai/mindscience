@@ -36,7 +36,6 @@ from src.loss import EvalMetric
 
 set_seed(123456)
 np.random.seed(123456)
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
 
 opt = edict({
     'epochs': 100,
@@ -116,6 +115,8 @@ def test_parameterization():
     """
     test parameterization
     """
+    context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
+
     data, config_data = create_dataset(opt)
 
     model_net = S11Predictor(opt.input_dim)

@@ -41,7 +41,6 @@ train_data_path = "./train_data_em/"
 test_data_path = "./test_data_em/"
 
 print("pid:", os.getpid())
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
 
 
 class TimeMonitor(Callback):
@@ -117,6 +116,8 @@ def init_weight(net):
 @pytest.mark.env_onecard
 def test_full_em():
     """train"""
+    context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
+
     generate_data(train_data_path, test_data_path)
     train_dataset, _ = create_dataset(train_data_path, batch_size=config.batch_size, shuffle=True)
     test_dataset, config_scale = create_dataset(test_data_path, batch_size=config.batch_size,
