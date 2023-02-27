@@ -22,8 +22,6 @@ from mindspore import Tensor, Parameter
 from mindelec.architecture import LinearBlock, ResBlock
 from mindelec.architecture import InputScaleNet, FCSequential, MultiScaleFCCell
 
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
-
 
 class Net(nn.Cell):
     """ Net definition """
@@ -46,6 +44,7 @@ class Net(nn.Cell):
 @pytest.mark.env_onecard
 def test_linear():
     """test linear block"""
+    context.set_context(mode=context.GRAPH_MODE)
     weight = Tensor(np.random.randint(0, 255, [8, 64]).astype(np.float32))
     bias = Tensor(np.random.randint(0, 255, [8]).astype(np.float32))
     net = Net(64, 8, weight=weight, bias=bias)
@@ -60,6 +59,7 @@ def test_linear():
 @pytest.mark.env_onecard
 def test_linear_nobias():
     """test linear block with no bias"""
+    context.set_context(mode=context.GRAPH_MODE)
     weight = Tensor(np.random.randint(0, 255, [8, 64]).astype(np.float32))
     net = Net(64, 8, weight=weight, has_bias=False)
     input_data = Tensor(np.random.randint(0, 255, [128, 64]).astype(np.float32))
@@ -89,6 +89,7 @@ class Net1(nn.Cell):
 @pytest.mark.env_onecard
 def test_res():
     """test res block"""
+    context.set_context(mode=context.GRAPH_MODE)
     weight = Tensor(np.random.randint(0, 255, [8, 8]).astype(np.float32))
     bias = Tensor(np.random.randint(0, 255, [8]).astype(np.float32))
     net = Net1(8, 8, weight=weight, bias=bias)
@@ -103,6 +104,7 @@ def test_res():
 @pytest.mark.env_onecard
 def test_res_nobias():
     """test res block with no bias"""
+    context.set_context(mode=context.GRAPH_MODE)
     weight = Tensor(np.random.randint(0, 255, [8, 8]).astype(np.float32))
     net = Net1(8, 8, weight=weight, has_bias=False)
     input_data = Tensor(np.random.randint(0, 255, [128, 8]).astype(np.float32))
@@ -116,6 +118,7 @@ def test_res_nobias():
 @pytest.mark.env_onecard
 def test_res_activation():
     """test res block with activation"""
+    context.set_context(mode=context.GRAPH_MODE)
     weight = Tensor(np.random.randint(0, 255, [8, 8]).astype(np.float32))
     bias = Tensor(np.random.randint(0, 255, [8]).astype(np.float32))
     net = Net1(8, 8, weight=weight, bias=bias, activation='sin')
@@ -129,6 +132,7 @@ def test_res_activation():
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
 def test_res_channel_error():
+    context.set_context(mode=context.GRAPH_MODE)
     with pytest.raises(ValueError):
         ResBlock(3, 6)
 
@@ -139,6 +143,7 @@ def test_res_channel_error():
 @pytest.mark.env_onecard
 def test_input_scale():
     """test input scale cell"""
+    context.set_context(mode=context.GRAPH_MODE)
     inputs = np.random.uniform(size=(16, 3)) + 3.0
     inputs = Tensor(inputs.astype(np.float32))
     input_scale = [1.0, 2.0, 4.0]
@@ -157,6 +162,7 @@ def test_input_scale():
 @pytest.mark.env_onecard
 def test_fc_sequential():
     """test fc sequential cell"""
+    context.set_context(mode=context.GRAPH_MODE)
     inputs = np.ones((16, 3))
     inputs = Tensor(inputs.astype(np.float32))
     net = FCSequential(3, 3, 5, 32, weight_init="ones", bias_init="zeros")
@@ -171,6 +177,7 @@ def test_fc_sequential():
 @pytest.mark.env_onecard
 def test_mulscale_without_latent():
     """test multi-scale net without latent vector"""
+    context.set_context(mode=context.GRAPH_MODE)
     inputs = np.ones((16, 3)) + 3.0
     inputs = Tensor(inputs.astype(np.float32))
     input_scale = [1.0, 2.0, 4.0]
@@ -189,6 +196,7 @@ def test_mulscale_without_latent():
 @pytest.mark.env_onecard
 def test_mulscale_with_latent():
     """test multi-scale net with latent vector and input scale"""
+    context.set_context(mode=context.GRAPH_MODE)
     inputs = np.ones((64, 3)) + 3.0
     inputs = Tensor(inputs.astype(np.float32))
     num_scenarios = 4
@@ -211,6 +219,7 @@ def test_mulscale_with_latent():
 @pytest.mark.env_onecard
 def test_mulscale_with_latent_noscale():
     """test multi-scale net with latent vector"""
+    context.set_context(mode=context.GRAPH_MODE)
     inputs = np.ones((64, 3))
     inputs = Tensor(inputs.astype(np.float32))
     num_scenarios = 4

@@ -20,14 +20,13 @@ from mindspore import context
 from mindspore import Tensor
 from mindelec.architecture import MTLWeightedLossCell
 
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
-
 
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend_training
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
 def test_linear():
+    context.set_context(mode=context.GRAPH_MODE)
     net = MTLWeightedLossCell(num_losses=2)
     input_data = Tensor(np.array([1.0, 1.0]).astype(np.float32))
     output = net(input_data)
@@ -39,5 +38,6 @@ def test_linear():
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
 def test_mlt_num_losses_error():
+    context.set_context(mode=context.GRAPH_MODE)
     with pytest.raises(TypeError):
         MTLWeightedLossCell('a')

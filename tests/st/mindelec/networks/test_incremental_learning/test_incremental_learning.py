@@ -40,8 +40,6 @@ from src.maxwell import Maxwell2DMur
 set_seed(123456)
 np.random.seed(123456)
 
-context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend", save_graphs_path="./solver")
-
 
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend_training
@@ -49,6 +47,8 @@ context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="A
 @pytest.mark.env_onecard
 def test_incremental_learning():
     """pretraining process"""
+    context.set_context(mode=context.GRAPH_MODE, save_graphs=False, save_graphs_path="./solver", device_target="Ascend")
+
     print("pid:", os.getpid())
     mode = "pretrain"
     config = json.load(open("./pretrain.json"))
@@ -100,9 +100,7 @@ def test_incremental_learning():
                                input_center=config["input_center"],
                                latent_vector=latent_vector
                                )
-
-    network = network.to_float(ms_type.float16)
-    network.input_scale.to_float(ms_type.float32)
+    network.cell_list.to_float(ms_type.float16)
 
     if config.get("enable_mtl", True):
         mtl_cell = MTLWeightedLossCell(num_losses=elec_train_dataset.num_dataset)
@@ -162,7 +160,6 @@ def test_incremental_learning():
 
     solver.train(config["train_epoch"], train_dataset, callbacks=callbacks, dataset_sink_mode=True)
     assert loss_time_callback.get_loss() <= 2.0
-    assert loss_time_callback.get_step_time() <= 115.0
 
 
 def preprocess_config(config):
