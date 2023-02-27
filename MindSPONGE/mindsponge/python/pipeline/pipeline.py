@@ -21,10 +21,14 @@ from mindspore import context
 from mindsponge.common.config_load import load_config
 from .models import Multimer, MultimerDataSet, multimer_configuration
 from .models import COLABDESIGN, ColabDesignDataSet, colabdesign_configuration
+from .models import KGNN, KGNNDataSet, kgnn_configuration
+from .models import UFold, UFoldDataSet, ufold_configuration
 
 model_card = {
     "Multimer": {"model": Multimer, "dataset": MultimerDataSet, "config": multimer_configuration},
     "ColabDesign": {"model": COLABDESIGN, "dataset": ColabDesignDataSet, "config": colabdesign_configuration},
+    "KGNN": {"model": KGNN, "dataset": KGNNDataSet, "config": kgnn_configuration},
+    "UFold": {"model": UFold, "dataset": UFoldDataSet, "config": ufold_configuration}
 }
 
 

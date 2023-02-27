@@ -56,7 +56,7 @@ class DataSet(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def data_parse(self, input_data, idx):
+    def data_parse(self, idx):
         pass
 
     @abstractmethod
