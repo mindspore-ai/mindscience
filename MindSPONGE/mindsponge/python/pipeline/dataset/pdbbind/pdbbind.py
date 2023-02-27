@@ -74,11 +74,11 @@ class PDBBind(DataSet):
         print("Finish uncompression ... ")
         print("PDBBind has been saved in ", self.cache)
 
-    def process(self, data, label=None):
+    def process(self, data, **kwargs):
         raise NotImplementedError
 
     def data_parse(self, input_data, idx):
         raise NotImplementedError
 
-    def create_iterator(self, num_epochs):
+    def create_iterator(self, num_epochs, **kwargs):
         raise NotImplementedError

@@ -14,9 +14,9 @@
 # ============================================================================
 """Pipeline"""
 import os
-import time
 import ssl
 import urllib.request
+import mindspore as ms
 from mindspore import context
 from mindsponge.common.config_load import load_config
 from .models import Multimer, MultimerDataSet, multimer_configuration
@@ -51,32 +51,32 @@ class PipeLine:
         self.dataset = None
         self.config_path = "./config/"
 
-    def initialize(self, key):
-        config = download_config(self.config[key], self.config_path + key + ".yaml")
+    def initialize(self, key, config_path=None):
+        if config_path is None:
+            config = download_config(self.config[key], self.config_path + key + ".yaml")
+        else:
+            config = load_config(config_path)
         self.model = self.model_cls(config)
         self.dataset = self.dataset_cls(config)
 
     def set_device_id(self, device_id):
         context.set_context(device_id=device_id)
 
-    def predict(self, data):
-        data = self.dataset.process(data)
-        result = self.model.predict(data)
+    def predict(self, data, **kwargs):
+        data = self.dataset.process(data, **kwargs)
+        result = self.model.predict(data, **kwargs)
         return result
 
-    def train(self, data_source, num_epochs):
-        self.dataset.set_training_data_src(data_source)
-        data_iter = self.dataset.create_iterator(num_epochs)
+    def train(self, data_source, num_epochs=1, **kwargs):
+        self.dataset.set_training_data_src(data_source, **kwargs)
+        data_iter = self.dataset.create_iterator(num_epochs, **kwargs)
         for _ in range(num_epochs):
             for d in data_iter:
                 loss = self.model.train_step(d)
                 print(loss)
 
-    def _test_predict(self, config, run_times=2):
-        self.initialize(config)
-        test_data = self.dataset._test_data_parse()
-        for i in range(run_times):
-            t1 = time.time()
-            result = self.predict(test_data)
-            t2 = time.time()
-            print("predict times : ", i, " cost : ", t2 - t1, " s")
+    def save_model(self, ckpt_path=None):
+        if ckpt_path is not None:
+            ms.save_checkpoint(self.model.network, ckpt_path)
+        else:
+            print("Checkpoint path is None!")
