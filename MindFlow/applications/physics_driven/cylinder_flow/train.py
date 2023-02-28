@@ -23,8 +23,8 @@ import numpy as np
 import mindspore
 from mindspore import context, nn, ops, jit, set_seed, load_checkpoint, load_param_into_net
 
-from mindflow.cell import MultiScaleFCCell
-from mindflow.loss import MTLWeightedLossCell
+from mindflow.cell import MultiScaleFCSequential
+from mindflow.loss import MTLWeightedLoss
 from mindflow.utils import load_yaml_config
 
 from src import create_training_dataset, create_test_dataset, calculate_l2_error, NavierStokes2D
@@ -73,18 +73,18 @@ def train():
     coord_max = np.array(config["geometry"]["coord_max"] + [config["geometry"]["time_max"]]).astype(np.float32)
     input_center = list(0.5 * (coord_max + coord_min))
     input_scale = list(2.0 / (coord_max - coord_min))
-    model = MultiScaleFCCell(in_channels=config["model"]["in_channels"],
-                             out_channels=config["model"]["out_channels"],
-                             layers=config["model"]["layers"],
-                             neurons=config["model"]["neurons"],
-                             residual=config["model"]["residual"],
-                             act='tanh',
-                             num_scales=1,
-                             input_scale=input_scale,
-                             input_center=input_center)
+    model = MultiScaleFCSequential(in_channels=config["model"]["in_channels"],
+                                   out_channels=config["model"]["out_channels"],
+                                   layers=config["model"]["layers"],
+                                   neurons=config["model"]["neurons"],
+                                   residual=config["model"]["residual"],
+                                   act='tanh',
+                                   num_scales=1,
+                                   input_scale=input_scale,
+                                   input_center=input_center)
 
-    mtl = MTLWeightedLossCell(num_losses=cylinder_flow_train_dataset.num_dataset)
-    print("Use MtlWeightedLossCell, num loss: {}".format(mtl.num_losses))
+    mtl = MTLWeightedLoss(num_losses=cylinder_flow_train_dataset.num_dataset)
+    print("Use MTLWeightedLoss, num loss: {}".format(mtl.num_losses))
 
     if config["load_ckpt"]:
         param_dict = load_checkpoint(config["load_ckpt_path"])
@@ -137,6 +137,8 @@ def train():
             calculate_l2_error(model, inputs, label, config)
 
         if epoch % config["save_checkpoint_epochs"] == 0 and config["save_ckpt"]:
+            if not os.path.exists(os.path.abspath("./ckpt")):
+                os.makedirs(os.path.abspath("./ckpt"))
             ckpt_name = "ns-{}.ckpt".format(epoch + 1)
             mindspore.save_checkpoint(model, os.path.join("./ckpt", ckpt_name))
 

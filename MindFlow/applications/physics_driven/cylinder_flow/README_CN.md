@@ -1,4 +1,4 @@
-[ENGLISH](navier_stokes2D.md) | 简体中文
+[ENGLISH](README.md) | 简体中文
 
 # 二维圆柱绕流
 

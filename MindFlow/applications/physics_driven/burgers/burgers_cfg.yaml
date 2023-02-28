@@ -41,6 +41,7 @@ train_epochs: 15000
 eval_interval_epochs: 100
 save_checkpoint_steps: 50
 keep_checkpoint_max: 10
+test_dataset_path: "./dataset"
 load_ckpt: false
 save_ckpt: false
 save_ckpt_path: "./ckpt"

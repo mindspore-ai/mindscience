@@ -1,4 +1,4 @@
-ENGLISH | [简体中文](burgers1D_CN.md)
+ENGLISH | [简体中文](README_CN.md)
 
 # 1D Burgers
 

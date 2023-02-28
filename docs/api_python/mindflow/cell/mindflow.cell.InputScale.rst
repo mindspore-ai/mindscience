@@ -1,7 +1,7 @@
-mindflow.cell.InputScaleNet
+mindflow.cell.InputScale
 ===========================
 
-.. py:class:: mindflow.cell.InputScaleNet(input_scale, input_center=None)
+.. py:class:: mindflow.cell.InputScale(input_scale, input_center=None)
 
     将输入值缩放到指定的区域。
 

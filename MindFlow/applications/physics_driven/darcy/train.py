@@ -49,15 +49,13 @@ def train(config):
     test_input, test_label = get_test_data(config)
 
     # network model
-    model = FCSequential(
-        in_channels=config["model"]["input_size"],
-        out_channels=config["model"]["output_size"],
-        neurons=config["model"]["neurons"],
-        layers=config["model"]["layers"],
-        residual=config["model"]["residual"],
-        act=config["model"]["activation"],
-        weight_init=config["model"]["weight_init"],
-    )
+    model = FCSequential(in_channels=config["model"]["input_size"],
+                         out_channels=config["model"]["output_size"],
+                         neurons=config["model"]["neurons"],
+                         layers=config["model"]["layers"],
+                         residual=config["model"]["residual"],
+                         act=config["model"]["activation"],
+                         weight_init=config["model"]["weight_init"])
 
     # define problem
     problem = Darcy2D(model)

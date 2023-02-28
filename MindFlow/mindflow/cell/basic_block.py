@@ -27,8 +27,8 @@ from mindspore.ops.primitive import constexpr
 from .activation import get_activation
 from ..utils.check_func import check_param_type
 
-__all__ = ['LinearBlock', 'ResBlock', 'InputScaleNet',
-           'FCSequential', 'MultiScaleFCCell']
+__all__ = ['LinearBlock', 'ResBlock', 'InputScale',
+           'FCSequential', 'MultiScaleFCSequential']
 
 
 @constexpr
@@ -65,7 +65,7 @@ class LinearBlock(nn.Cell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindelec.architecture import LinearBlock
+        >>> from mindflow.cell import LinearBlock
         >>> from mindspore import Tensor
         >>> input = Tensor(np.array([[180, 234, 154], [244, 48, 247]], np.float32))
         >>> net = LinearBlock(3, 4)
@@ -160,8 +160,7 @@ class ResBlock(nn.Cell):
                                  bias_init=bias_init,
                                  has_bias=has_bias,
                                  activation=None)
-        self.activation = get_activation(activation) if isinstance(
-            activation, str) else activation
+        self.activation = get_activation(activation) if isinstance(activation, str) else activation
         if activation is not None and not isinstance(self.activation, (nn.Cell, ops.Primitive)):
             raise TypeError(
                 "The activation must be str or Cell or Primitive,"" but got {}.".format(type(activation)))
@@ -180,7 +179,7 @@ def _bias_init(fan_in, fan_out):
     return Tensor(out, mstype.float32)
 
 
-class InputScaleNet(nn.Cell):
+class InputScale(nn.Cell):
     r"""
     Scale the input value to specified region.
 
@@ -203,13 +202,13 @@ class InputScaleNet(nn.Cell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.cell import InputScaleNet
+        >>> from mindflow.cell import InputScale
         >>> from mindspore import Tensor
         >>> inputs = np.random.uniform(size=(16, 3)) + 3.0
         >>> inputs = Tensor(inputs.astype(np.float32))
         >>> input_scale = [1.0, 2.0, 4.0]
         >>> input_center = [3.5, 3.5, 3.5]
-        >>> net = InputScaleNet(input_scale, input_center)
+        >>> net = InputScale(input_scale, input_center)
         >>> output = net(inputs).asnumpy()
         >>> assert np.all(output[:, 0] <= 0.5) and np.all(output[:, 0] >= -0.5)
         >>> assert np.all(output[:, 1] <= 1.0) and np.all(output[:, 0] >= -1.0)
@@ -217,7 +216,7 @@ class InputScaleNet(nn.Cell):
     """
 
     def __init__(self, input_scale, input_center=None):
-        super(InputScaleNet, self).__init__()
+        super(InputScale, self).__init__()
         check_param_type(input_scale, "input_scale", data_type=list)
         check_param_type(input_center, "input_center",
                          data_type=(type(None), list))
@@ -362,9 +361,9 @@ class FCSequential(nn.Cell):
                 self._add_linear_block(in_channels, out_channels, weight_init)
 
 
-class MultiScaleFCCell(nn.Cell):
+class MultiScaleFCSequential(nn.Cell):
     r"""
-    The multi-scale network.
+    The multi-scale fully conneted network.
 
     Args:
         in_channels (int): The number of channels in the input space.
@@ -407,7 +406,7 @@ class MultiScaleFCCell(nn.Cell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.cell import MultiScaleFCCell
+        >>> from mindflow.cell import MultiScaleFCSequential
         >>> from mindspore import Tensor, Parameter
         >>> inputs = np.ones((64,3)) + 3.0
         >>> inputs = Tensor(inputs.astype(np.float32))
@@ -417,7 +416,7 @@ class MultiScaleFCCell(nn.Cell):
         >>> latent_vector = Parameter(Tensor(latent_init), requires_grad=True)
         >>> input_scale = [1.0, 2.0, 4.0]
         >>> input_center = [3.5, 3.5, 3.5]
-        >>> net = MultiScaleFCCell(3, 3, 5, 32,
+        >>> net = MultiScaleFCSequential(3, 3, 5, 32,
         ...                        weight_init="ones", bias_init="zeros",
         ...                        input_scale=input_scale, input_center=input_center, latent_vector=latent_vector)
         >>> output = net(inputs).asnumpy()
@@ -443,7 +442,7 @@ class MultiScaleFCCell(nn.Cell):
                  input_center=None,
                  latent_vector=None
                  ):
-        super(MultiScaleFCCell, self).__init__()
+        super(MultiScaleFCSequential, self).__init__()
         check_param_type(num_scales, "num_scales",
                          data_type=int, exclude_type=bool)
         check_param_type(amp_factor, "amp_factor",
@@ -479,7 +478,7 @@ class MultiScaleFCCell(nn.Cell):
                                                bias_init=bias_init,
                                                ))
         if input_scale is not None:
-            self.input_scale = InputScaleNet(input_scale, input_center)
+            self.input_scale = InputScale(input_scale, input_center)
         else:
             self.input_scale = ops.Identity()
 

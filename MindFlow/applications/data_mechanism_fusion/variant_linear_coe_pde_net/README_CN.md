@@ -1,4 +1,4 @@
-[ENGLISH](pde_net.md) | 简体中文
+[ENGLISH](README.md) | 简体中文
 
 # PDE-Net求解对流扩散方程
 
