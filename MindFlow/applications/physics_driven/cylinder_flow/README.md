@@ -1,4 +1,4 @@
-ENGLISH | [简体中文](navier_stokes2D_CN.md)
+ENGLISH | [简体中文](README_CN.md)
 
 # 2D Cylinder Flow
 

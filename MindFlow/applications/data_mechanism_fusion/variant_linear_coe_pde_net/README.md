@@ -1,4 +1,4 @@
-ENGLISH | [简体中文](pde_net_CN.md)
+ENGLISH | [简体中文](README_CN.md)
 
 # PDE-Net for Convection-Diffusion Equation
 

@@ -14,7 +14,7 @@
 # ============================================================================
 """init"""
 from .activation import get_activation
-from .basic_block import LinearBlock, ResBlock, InputScaleNet, FCSequential, MultiScaleFCCell
+from .basic_block import LinearBlock, ResBlock, InputScale, FCSequential, MultiScaleFCSequential
 from .neural_operators import FNO1D, FNO2D, PDENet
 from .transformer import ViT
 

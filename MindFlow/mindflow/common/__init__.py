@@ -13,14 +13,9 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .metrics import L2
 from .lr_scheduler import get_poly_lr, get_multi_step_lr, get_warmup_cosine_annealing_lr
-from .callback import EvalCallback, LossAndTimeMonitor
 
-__all__ = ["L2",
-           "EvalCallback",
-           "LossAndTimeMonitor",
-           "get_poly_lr",
+__all__ = ["get_poly_lr",
            "get_multi_step_lr",
            "get_warmup_cosine_annealing_lr",
            ]

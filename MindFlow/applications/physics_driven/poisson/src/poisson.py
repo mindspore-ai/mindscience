@@ -5,7 +5,7 @@ import sympy
 import mindspore as ms
 from mindspore import nn, ops
 from mindspore import numpy as ms_np
-from mindflow import PDEWithLoss, MTLWeightedLossCell, sympy_to_mindspore
+from mindflow import PDEWithLoss, MTLWeightedLoss, sympy_to_mindspore
 
 
 class Poisson(PDEWithLoss):
@@ -21,7 +21,7 @@ class Poisson(PDEWithLoss):
         self.out_vars = (sympy.Function('u')(*self.in_vars),)
         super(Poisson, self).__init__(model, self.in_vars, self.out_vars)
         self.bc_nodes = sympy_to_mindspore(self.bc(n_dim), self.in_vars, self.out_vars)
-        self.loss_fn = MTLWeightedLossCell(num_losses=2)
+        self.loss_fn = MTLWeightedLoss(num_losses=2)
 
     def pde(self):
         """Define the gonvering equation."""

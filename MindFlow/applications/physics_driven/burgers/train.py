@@ -24,7 +24,7 @@ import mindspore
 from mindspore import context, nn, ops, jit, set_seed
 from mindspore import load_checkpoint, load_param_into_net
 
-from mindflow.cell import MultiScaleFCCell
+from mindflow.cell import MultiScaleFCSequential
 from mindflow.utils import load_yaml_config
 
 from src import create_training_dataset, create_test_dataset, visual, calculate_l2_error, Burgers1D
@@ -66,16 +66,16 @@ def train():
                                                          prebatched_data=True,
                                                          drop_remainder=True)
     # create  test dataset
-    inputs, label = create_test_dataset()
+    inputs, label = create_test_dataset(config["test_dataset_path"])
 
     # define models and optimizers
-    model = MultiScaleFCCell(in_channels=config["model"]["in_channels"],
-                             out_channels=config["model"]["out_channels"],
-                             layers=config["model"]["layers"],
-                             neurons=config["model"]["neurons"],
-                             residual=config["model"]["residual"],
-                             act=config["model"]["activation"],
-                             num_scales=1)
+    model = MultiScaleFCSequential(in_channels=config["model"]["in_channels"],
+                                   out_channels=config["model"]["out_channels"],
+                                   layers=config["model"]["layers"],
+                                   neurons=config["model"]["neurons"],
+                                   residual=config["model"]["residual"],
+                                   act=config["model"]["activation"],
+                                   num_scales=1)
     if config["load_ckpt"]:
         param_dict = load_checkpoint(config["load_ckpt_path"])
         load_param_into_net(model, param_dict)

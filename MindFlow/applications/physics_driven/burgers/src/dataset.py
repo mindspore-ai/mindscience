@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """create dataset"""
+import os
 import numpy as np
 
 from mindspore import Tensor
@@ -39,8 +40,8 @@ def create_training_dataset(config):
     return dataset
 
 
-def create_test_dataset():
-    test_data = np.load("dataset/Burgers.npz")
+def create_test_dataset(test_dataset_path):
+    test_data = np.load(os.path.join(test_dataset_path, "Burgers.npz"))
     x, t, u = test_data["x"], test_data["t"], test_data["usol"].T
     xx, tt = np.meshgrid(x, t)
 
