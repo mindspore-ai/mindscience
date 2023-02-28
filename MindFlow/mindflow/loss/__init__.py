@@ -13,11 +13,11 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .losses import get_loss_metric, WaveletTransformLoss, MTLWeightedLossCell, RelativeRMSELoss
+from .losses import get_loss_metric, WaveletTransformLoss, MTLWeightedLoss, RelativeRMSELoss
 
 __all__ = ['get_loss_metric',
            'WaveletTransformLoss',
-           'MTLWeightedLossCell',
+           'MTLWeightedLoss',
            'RelativeRMSELoss'
            ]
 

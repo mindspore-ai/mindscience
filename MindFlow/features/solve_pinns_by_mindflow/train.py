@@ -22,7 +22,7 @@ import numpy as np
 from mindspore import nn, ops, set_seed, jit, context
 import mindspore as ms
 
-from mindflow.cell import MultiScaleFCCell
+from mindflow.cell import MultiScaleFCSequential
 from mindflow.utils import load_yaml_config
 
 from src import create_training_dataset, create_test_dataset, calculate_l2_error, visual, Poisson2D
@@ -63,13 +63,13 @@ def train():
     inputs, label = create_test_dataset(config)
 
     # define models and optimizers
-    model = MultiScaleFCCell(in_channels=config["model"]["in_channels"],
-                             out_channels=config["model"]["out_channels"],
-                             layers=config["model"]["layers"],
-                             neurons=config["model"]["neurons"],
-                             residual=config["model"]["residual"],
-                             act=config["model"]["activation"],
-                             num_scales=1)
+    model = MultiScaleFCSequential(in_channels=config["model"]["in_channels"],
+                                   out_channels=config["model"]["out_channels"],
+                                   layers=config["model"]["layers"],
+                                   neurons=config["model"]["neurons"],
+                                   residual=config["model"]["residual"],
+                                   act=config["model"]["activation"],
+                                   num_scales=1)
 
     optimizer = nn.Adam(model.trainable_params(), config["optimizer"]["initial_lr"])
     problem = Poisson2D(model)

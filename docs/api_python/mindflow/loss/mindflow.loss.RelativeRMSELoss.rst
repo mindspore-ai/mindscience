@@ -9,7 +9,7 @@ mindflow.loss.RelativeRMSELoss
     假设 :math:`x` 和 :math:`y` 为一维Tensor，长度为 :math:`N` ，则 :math:`x` 和 :math:`y` 的损失为:
 
     .. math::
-        loss = \sqrt{\frac{\frac{1}{N}\sum_{i=1}^{N}{(x_i-y_i)^2}}{\sum_{i=1}^{N}{(y_i)^2}}}
+        loss = \sqrt{\frac{\sum_{i=1}^{N}{(x_i-y_i)^2}}{\sum_{i=1}^{N}{(y_i)^2}}}
 
     参数：
         - **reduction** (str) - `reduction` 决定了计算模式。有三种模式可选："mean"，"sum"和"none"。默认值："sum"。

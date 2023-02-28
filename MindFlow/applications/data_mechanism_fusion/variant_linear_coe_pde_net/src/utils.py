@@ -232,7 +232,7 @@ def _extapolation(config, extra_step, test_data_iterator):
     load_param_into_net(model, param_dict)
 
     cast = ops.Cast()
-    problem = UnsteadyFlowWithLoss(model, t_out=extra_step, loss_fn=RelativeRMSELoss(), data_format="NCHW")
+    problem = UnsteadyFlowWithLoss(model, t_out=extra_step, loss_fn=RelativeRMSELoss(), data_format="NTCHW")
 
     error_list = []
     for item in test_data_iterator:

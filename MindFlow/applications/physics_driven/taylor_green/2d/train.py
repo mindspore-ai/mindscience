@@ -23,7 +23,7 @@ import numpy as np
 import mindspore
 from mindspore import context, nn, ops, jit, set_seed, load_checkpoint, load_param_into_net
 
-from mindflow.cell import MultiScaleFCCell
+from mindflow.cell import MultiScaleFCSequential
 from mindflow.utils import load_yaml_config
 
 from src import create_training_dataset, create_test_dataset, calculate_l2_error, NavierStokes2D
@@ -75,15 +75,15 @@ def train():
     input_center = list(0.5 * (coord_max + coord_min))
     input_scale = list(2.0 / (coord_max - coord_min))
 
-    model = MultiScaleFCCell(in_channels=config["model"]["in_channels"],
-                             out_channels=config["model"]["out_channels"],
-                             layers=config["model"]["layers"],
-                             neurons=config["model"]["neurons"],
-                             residual=config["model"]["residual"],
-                             act='tanh',
-                             num_scales=1,
-                             input_scale=input_scale,
-                             input_center=input_center)
+    model = MultiScaleFCSequential(in_channels=config["model"]["in_channels"],
+                                   out_channels=config["model"]["out_channels"],
+                                   layers=config["model"]["layers"],
+                                   neurons=config["model"]["neurons"],
+                                   residual=config["model"]["residual"],
+                                   act='tanh',
+                                   num_scales=1,
+                                   input_scale=input_scale,
+                                   input_center=input_center)
 
 
     if config["load_ckpt"]:

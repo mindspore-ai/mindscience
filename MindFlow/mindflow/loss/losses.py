@@ -152,7 +152,7 @@ class WeightedLossCell(nn.Cell):
         return losses
 
 
-class MTLWeightedLossCell(WeightedLossCell):
+class MTLWeightedLoss(WeightedLossCell):
     r"""
     Compute the MTL strategy weighted multi-task losses automatically.
     For more information, please refer to `MTL weighted losses <https://arxiv.org/pdf/1805.06334.pdf>`_ .
@@ -173,10 +173,10 @@ class MTLWeightedLossCell(WeightedLossCell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.loss import MTLWeightedLossCell
+        >>> from mindflow.loss import MTLWeightedLoss
         >>> import mindspore
         >>> from mindspore import Tensor
-        >>> net = MTLWeightedLossCell(num_losses=2)
+        >>> net = MTLWeightedLoss(num_losses=2)
         >>> input1 = Tensor(1.0, mindspore.float32)
         >>> input2 = Tensor(0.8, mindspore.float32)
         >>> output = net((input1, input2))
@@ -185,7 +185,7 @@ class MTLWeightedLossCell(WeightedLossCell):
     """
 
     def __init__(self, num_losses, bound_param=0.0):
-        super(MTLWeightedLossCell, self).__init__()
+        super(MTLWeightedLoss, self).__init__()
         check_param_type(num_losses, "num_losses", data_type=int, exclude_type=bool)
         if num_losses <= 0:
             raise ValueError("the value of num_losses should be positive, but got {}".format(num_losses))
@@ -259,12 +259,12 @@ class WaveletTransformLoss(nn.LossBase):
         self.regroup = regroup
         self.print = P.Print()
         if self.regroup:
-            self.mtl = MTLWeightedLossCell(num_losses=3)
+            self.mtl = MTLWeightedLoss(num_losses=3)
         else:
             if self.wave_level == 1:
-                self.mtl = MTLWeightedLossCell(num_losses=4)
+                self.mtl = MTLWeightedLoss(num_losses=4)
             else:
-                self.mtl = MTLWeightedLossCell(num_losses=self.wave_level + 1)
+                self.mtl = MTLWeightedLoss(num_losses=self.wave_level + 1)
 
     def construct(self, logit, label):
         l1_loss = P.ReduceMean()(self.abs(logit - label))
@@ -339,7 +339,7 @@ class RelativeRMSELoss(nn.LossBase):
     the loss of :math:`x` and :math:`y` is given as:
 
     .. math::
-        loss = \sqrt{\frac{\frac{1}{N}\sum_{i=1}^{N}{(x_i-y_i)^2}}{sum_{i=1}^{N}{(y_i)^2}}}
+        loss = \sqrt{\frac{\sum_{i=1}^{N}{(x_i-y_i)^2}}{sum_{i=1}^{N}{(y_i)^2}}}
 
     Args:
         reduction (str): Type of reduction to be applied to loss. The optional values are "mean", "sum", and "none".

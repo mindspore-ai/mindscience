@@ -1,7 +1,7 @@
-mindflow.cell.MultiScaleFCCell
-==============================
+mindflow.cell.MultiScaleFCSequential
+=====================================
 
-.. py:class:: mindflow.cell.MultiScaleFCCell(in_channels, out_channels, layers, neurons, residual=True, act="sin", weight_init="normal", weight_norm=False, has_bias=True, bias_init='default', num_scales=4, amp_factor=1.0, scale_factor=2.0, input_scale=None, input_center=None, latent_vector=None)
+.. py:class:: mindflow.cell.MultiScaleFCSequential(in_channels, out_channels, layers, neurons, residual=True, act="sin", weight_init="normal", weight_norm=False, has_bias=True, bias_init='default', num_scales=4, amp_factor=1.0, scale_factor=2.0, input_scale=None, input_center=None, latent_vector=None)
 
     多尺度神经网络。
 

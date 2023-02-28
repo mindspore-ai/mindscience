@@ -1,5 +1,5 @@
 mindflow.cell.FCSequential
-==========================
+============================
 
 .. py:class:: mindflow.cell.FCSequential(in_channels, out_channels, layers, neurons, residual=True, act="sin", weight_init="normal", has_bias=True, bias_init="default", weight_norm=False)
 
