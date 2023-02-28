@@ -37,6 +37,7 @@ class Model(metaclass=ABCMeta):
         self.cache = None
         self.ckpt_path = None
         self.checkpoint_url = checkpoint_url
+        self.checkpoint_path = None
         self.name = name
         self.network = network
         self.white_list = white_list
@@ -54,11 +55,11 @@ class Model(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def train_step(self):
+    def train_step(self, data):
         pass
 
     @abstractmethod
-    def predict(self):
+    def predict(self, data, **kwargs):
         pass
 
     def set_cache(self, path):
@@ -67,7 +68,9 @@ class Model(metaclass=ABCMeta):
     def set_checkpoint_path(self, path):
         self.ckpt_path = path
 
-    def from_pretrained(self):
+    def from_pretrained(self, ckpt_path=None):
+        if ckpt_path is not None:
+            self.checkpoint_path = ckpt_path
         if not os.path.exists(self.checkpoint_path):
             print("Download checkpoint to ", self.checkpoint_path)
             # pylint: disable=protected-access

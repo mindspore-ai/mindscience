@@ -53,24 +53,27 @@ class PAFNUCYDataSet(PDBBind):
         self.refine_pdbids = []
         self.training_pdbids = []
         self.training_size = 0
+        self.label = None
+        self.rotation = 0
+        self.rot = False
         super().__init__()
 
 
     def __getitem__(self, idx):
-        data, label = self.data_parse(idx=idx)
-        rot = False
+        data, self.label = self.data_parse(idx=idx)
+        self.rot = False
         if self.is_training:
             assert self.training_size != 0
-            rotation = idx // self.training_size
-            if rotation >= self.config.rotations:
-                rotation = 0
-                rot = True
+            self.rotation = idx // self.training_size
+            if self.rotation >= self.config.rotations:
+                self.rotation = 0
+                self.rot = True
             else:
-                rot = False
-                rotation = rotation.item()
+                self.rot = False
+                self.rotation = self.rotation.item()
         else:
-            rotation = 0
-        features = self.process(data, label, rotation, rot)
+            self.rotation = 0
+        features = self.process(data)
         tuple_feature = tuple([features.get(key) for key in self.schemalist])
         return tuple_feature
 
@@ -105,7 +108,7 @@ class PAFNUCYDataSet(PDBBind):
         return ligand_path, pocket_path
 
     # pylint: disable=arguments-differ
-    def process(self, data, label=None, rotation=0, rot=False):
+    def process(self, data):
         """data process"""
         assert len(data) == 2
         pocket = data[0]
@@ -114,13 +117,13 @@ class PAFNUCYDataSet(PDBBind):
         feature = extractfeature(pocket, ligand)
         coords = feature[:, :3]
         features = feature[:, 3:]
-        coords_feature = preprocess(coords, features, self.config, self.std, rotation=rotation)
+        coords_feature = preprocess(coords, features, self.config, self.std, rotation=self.rotation)
         coords_feature = np.array(coords_feature, dtype=np.float32)
-        if label is not None:
-            affinity = label
+        if self.label is not None:
+            affinity = self.label
         else:
             affinity = -1
-        return {"coords_feature": coords_feature, "affinity": affinity, "rot": rot}
+        return {"coords_feature": coords_feature, "affinity": affinity, "rot": self.rot}
 
 
     def download(self, path=None):
@@ -145,7 +148,6 @@ class PAFNUCYDataSet(PDBBind):
         label = self.labels.get(pdbid)
         data = [pocket, ligand]
         return data, label
-
 
     def set_training_data_src(self, data_src=None):
         """set training data src"""
@@ -196,7 +198,6 @@ class PAFNUCYDataSet(PDBBind):
         self.training_pdbids = self.general_pdbids + refined_shuffled[self.config.size_val:]
         self.training_size = len(self.training_pdbids)
         self.training_pdbids *= (self.config.rotations + 1)
-
 
     def create_iterator(self, num_epochs):
         dataset = GeneratorDataset(source=self, column_names=self.schemalist,

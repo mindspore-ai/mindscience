@@ -64,7 +64,7 @@ class Multimer(Model):
         return prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits
 
     # pylint: disable=arguments-differ
-    def predict(self, inputs, num_recycle=1):
+    def predict(self, inputs, num_recycle=4):
         num_residues = inputs["num_residues"]
         recycle_feature_name = self.feature_list[:-3]
         prev_pos = Tensor(inputs['prev_pos'])
@@ -99,7 +99,7 @@ class Multimer(Model):
     def backward(self, data):
         pass
 
-    def train_step(self):
+    def train_step(self, data):
         pass
 
     @jit

@@ -71,18 +71,18 @@ class PAFNUCY(Model):
             result = self._pynative_forward(data)
         return result
 
-
-    def predict(self, test_data):
+    # pylint: disable=arguments-differ
+    def predict(self, data):
         """predict"""
         feat = []
-        data = {}
-        data["coords_feature"] = Tensor(test_data["coords_feature"], ms.float32)
-        if len(data.get("coords_feature").shape) == 4:
-            data["coords_feature"] = data.get("coords_feature").expand_dims(axis=0)
-        data["affinity"] = Tensor(test_data.get("affinity"), ms.float32)
+        test_data = {}
+        test_data["coords_feature"] = Tensor(data["coords_feature"], ms.float32)
+        if len(test_data.get("coords_feature").shape) == 4:
+            test_data["coords_feature"] = test_data.get("coords_feature").expand_dims(axis=0)
+        test_data["affinity"] = Tensor(data.get("affinity"), ms.float32)
 
-        feat.append(data.get("coords_feature"))
-        feat.append(data.get("affinity"))
+        feat.append(test_data.get("coords_feature"))
+        feat.append(test_data.get("affinity"))
         feat = mutable(feat)
 
         t1 = time.time()
@@ -101,8 +101,8 @@ class PAFNUCY(Model):
 
 
     @jit
-    def backward(self, feat):
-        loss = self.train_wrapper(*feat)
+    def backward(self, data):
+        loss = self.train_wrapper(*data)
         return loss
 
 

@@ -86,7 +86,8 @@ class MultimerDataSet(DataSet):
                         'prev_pos', 'prev_msa_first_row', 'prev_pair']
         self.feature_list = feature_list
 
-    def process(self, data, label=None):
+    # pylint: disable=arguments-differ
+    def process(self, data):
         """process"""
         res = {}
         for _ in range(4):
@@ -111,5 +112,6 @@ class MultimerDataSet(DataSet):
     def data_parse(self, input_data, idx):
         pass
 
+    # pylint: disable=arguments-differ
     def create_iterator(self, num_epochs):
         pass
