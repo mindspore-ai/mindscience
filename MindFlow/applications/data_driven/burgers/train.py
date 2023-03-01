@@ -15,9 +15,10 @@
 """train"""
 import os
 import time
+import argparse
+import datetime
 import numpy as np
 
-from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
 from mindspore import context, nn, Tensor, set_seed, ops, data_sink, jit, save_checkpoint
 from mindspore import dtype as mstype
 from mindflow import FNO1D, RelativeRMSELoss, load_yaml_config, get_warmup_cosine_annealing_lr
@@ -25,17 +26,31 @@ from mindflow.pde import UnsteadyFlowWithLoss
 
 from src.dataset import create_training_dataset
 
+parser = argparse.ArgumentParser(description='Burgers 1D problem')
+parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+                    help="Context mode, support 'GRAPH', 'PYNATIVE'")
+parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
+                    help="Whether to save intermediate compilation graphs")
+parser.add_argument("--save_graphs_path", type=str, default="./graphs")
+parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
+                    help="The target device to run, support 'Ascend', 'GPU'")
+parser.add_argument("--device_id", type=int, default=3, help="ID of the target device")
+parser.add_argument("--config_file_path", type=str, default="./burgers1d.yaml")
+args = parser.parse_args()
+
 
 set_seed(0)
 np.random.seed(0)
 
-context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="GPU", device_id=4)
+context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
+                    save_graphs=args.save_graphs, save_graphs_path=args.save_graphs_path,
+                    device_target=args.device_target, device_id=args.device_id)
 use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
 
 def train():
     '''Train and evaluate the network'''
-    config = load_yaml_config('burgers1d.yaml')
+    config = load_yaml_config(args.config_file_path)
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
@@ -70,6 +85,7 @@ def train():
     optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
 
     if use_ascend:
+        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
         loss_scaler = DynamicLossScaler(1024, 2, 100)
         auto_mixed_precision(model, 'O1')
     else:
@@ -82,6 +98,8 @@ def train():
 
     def forward_fn(data, label):
         loss = problem.get_loss(data, label)
+        if use_ascend:
+            loss = loss_scaler.scale(loss)
         return loss
 
     grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
@@ -98,26 +116,29 @@ def train():
 
     sink_process = data_sink(train_step, train_dataset, 1)
     summary_dir = os.path.join(config["summary_dir"], model_name)
+    ckpt_dir = os.path.join(summary_dir, "ckpt")
+    if not os.path.exists(ckpt_dir):
+        os.makedirs(ckpt_dir)
 
     for epoch in range(1, config["epochs"] + 1):
         model.set_train()
         local_time_beg = time.time()
         for _ in range(steps_per_epoch):
             cur_loss = sink_process()
-        print("epoch: {}, time elapsed: {}ms, loss: {}".format(epoch, (time.time() - local_time_beg) * 1000,
-                                                               cur_loss.asnumpy()))
+        print(f"epoch: {epoch} train loss: {cur_loss.asnumpy()} epoch time: {time.time() - local_time_beg:.2f}s")
 
         if epoch % config['eval_interval'] == 0:
             model.set_train(False)
             print("================================Start Evaluation================================")
             rms_error = problem.get_loss(test_input, test_label)/test_input.shape[0]
-            print("mean rms_error:", rms_error)
+            print(f"mean rms_error: {rms_error}")
             print("=================================End Evaluation=================================")
-            ckpt_dir = os.path.join(summary_dir, "ckpt")
-            if not os.path.exists(ckpt_dir):
-                os.makedirs(ckpt_dir)
-            save_checkpoint(model, os.path.join(ckpt_dir, model_params["name"] + '_epoch' + str(epoch)))
+            save_checkpoint(model, os.path.join(ckpt_dir, f"{model_params['name']}_epoch{epoch}"))
 
 
 if __name__ == '__main__':
+    print(f"pid: {os.getpid()}")
+    print(datetime.datetime.now())
+    print(f"use_ascend: {use_ascend}")
+    print(f"device_id: {context.get_context(attr_key='device_id')}")
     train()
