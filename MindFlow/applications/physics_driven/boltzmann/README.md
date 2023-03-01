@@ -1,4 +1,4 @@
-# Nerual representation method for Boltzmann equation
+# Neural representation method for Boltzmann equation
 
 Here it will be shown how to solve Boltzmann equation using sparse neural representation method.
 
