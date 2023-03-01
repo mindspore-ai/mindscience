@@ -35,7 +35,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ## **最新消息**
 
-- 🔥`2023.02.28` Mindspore团队与北京大学董斌老师合作，提出用稀疏神经算子求解玻尔兹曼方程. 详见：[Solving Boltzmann equation with neural sparse representation](https://arxiv.org/abs/2302.09233)。
+- 🔥`2023.02.28` Mindspore团队与北京大学董彬老师合作，提出神经网络表示法（[Solving Boltzmann equation with neural sparse representation](https://arxiv.org/abs/2302.09233)）求解玻尔兹曼方程。详见：[基于神经网络表示求解玻尔兹曼方程](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/boltzmann/boltzmannD1V3_CN.ipynb)。
 - 🔥`2023.02.05` [MindFlow 0.1.0-alpha](https://mindspore.cn/mindflow/docs/zh-CN/r0.1.0-alpha/index.html) 版本发布。
 - 🔥`2023.01.17` 推出[MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997)基于MindSpore的端到端可微分求解器，[详见](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/mindflow/cfd)。
 - 🔥`2022.12.27` MindSpore团队同西安交大陈刚老师合作发表[Temporal predictions of periodic flows using a mesh transformation and deep learning-based strategy](https://www.sciencedirect.com/science/article/pii/S1270963822007556)文章于航空领域Top期刊`Aerospace Science and Technology`，论文作者为邓志文、刘红升、时北极、王紫东、于璠、刘子扬(西交)、陈刚(通讯)。
@@ -49,6 +49,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ## 物理驱动
 
+- [玻尔兹曼方程](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/boltzmann)
 - [一维Burgers问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
 - [二维圆柱绕流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)
 - [不同几何体下的二维和三维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)
@@ -148,13 +149,14 @@ pip install mindflow_*.whl
 ### SIG
 
 加入昇思[MindFlow SIG](https://mindspore.cn/community/SIG/detail/?name=mindflow%20SIG)，助力AI流体仿真发展。
+MindSpore AI+科学计算专题，北京大学董彬老师[Learning and Learning to solve PDEs](https://www.bilibili.com/video/BV1ur4y1H7vB?p=4)专题报告。
 我们将不断发布[开源实习任务](https://gitee.com/mindspore/community/issues/I55B5A?from=project-issue)，与各位共同构筑MindFlow生态，与领域内的专家、教授和学生一起推动计算流体力学的发展，欢迎各位积极认领。
 
 ### 核心贡献者
 
 感谢以下开发者做出的贡献 🧑‍🤝‍🧑：
 
-yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, yqiuu, haojiwei, leiyixiang
+yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang
 
 ## **贡献指南**
 
