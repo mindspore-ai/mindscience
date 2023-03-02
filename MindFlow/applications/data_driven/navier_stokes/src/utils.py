@@ -51,7 +51,7 @@ def calculate_l2_error(model, inputs, label, batch_size):
             if j == t - 1:
                 test_batch = Tensor(inputs[i:i + 1, j], dtype=mstype.float32)
             else:
-                test_batch = Tensor(np.expand_dims(prediction, axis=-2))
+                test_batch = Tensor(np.expand_dims(prediction, axis=-2), dtype=mstype.float32)
             prediction = model(test_batch[..., -1, :])
             prediction = prediction.asnumpy()
             rel_rmse_error_step = _calculate_error(cur_label[..., -1, :], prediction, batch_size)

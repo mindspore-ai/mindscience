@@ -18,10 +18,12 @@ train
 import os
 import time
 import datetime
+import argparse
 import numpy as np
 
 import mindspore
-from mindspore import nn, context, ops, Tensor, jit, set_seed
+from mindspore import nn, context, ops, Tensor, jit, set_seed, save_checkpoint
+import mindspore.common.type as mstype
 
 from mindflow.cell import FNO2D
 from mindflow.common import get_warmup_cosine_annealing_lr
@@ -30,20 +32,30 @@ from mindflow.utils import load_yaml_config
 from mindflow.pde import UnsteadyFlowWithLoss
 from src import calculate_l2_error, create_training_dataset
 
+parser = argparse.ArgumentParser(description='Navier Stokes problem')
+parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+                    help="Context mode, support 'GRAPH', 'PYNATIVE'")
+parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
+                    help="Whether to save intermediate compilation graphs")
+parser.add_argument("--save_graphs_path", type=str, default="./graphs")
+parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
+                    help="The target device to run, support 'Ascend', 'GPU'")
+parser.add_argument("--device_id", type=int, default=3, help="ID of the target device")
+parser.add_argument("--config_file_path", type=str, default="./navier_stokes_2d.yaml")
+args = parser.parse_args()
 
-set_seed(123456)
-np.random.seed(123456)
+set_seed(0)
+np.random.seed(0)
 
-print("pid:", os.getpid())
-print(datetime.datetime.now())
-
-context.set_context(mode=context.GRAPH_MODE, device_target='GPU', device_id=5)
+context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
+                    save_graphs=args.save_graphs, save_graphs_path=args.save_graphs_path,
+                    device_target=args.device_target, device_id=args.device_id)
 use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
 
 def train():
     '''train and evaluate the network'''
-    config = load_yaml_config('navier_stokes_2d.yaml')
+    config = load_yaml_config(args.config_file_path)
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
@@ -55,13 +67,18 @@ def train():
     test_input = np.load(os.path.join(data_params["path"], "test/inputs.npy"))
     test_label = np.load(os.path.join(data_params["path"], "test/label.npy"))
 
+    if use_ascend:
+        compute_type = mstype.float16
+    else:
+        compute_type = mstype.float32
     # prepare model
     model = FNO2D(in_channels=model_params["in_channels"],
                   out_channels=model_params["out_channels"],
                   resolution=model_params["input_resolution"],
                   modes=model_params["modes"],
                   channels=model_params["width"],
-                  depths=model_params["depth"]
+                  depths=model_params["depth"],
+                  compute_dtype=compute_type
                   )
 
     model_params_list = []
@@ -77,18 +94,12 @@ def train():
                                         steps_per_epoch=steps_per_epoch,
                                         warmup_epochs=optimizer_params["warmup_epochs"])
 
-    optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
-    problem = UnsteadyFlowWithLoss(model, loss_fn=RelativeRMSELoss(), data_format="NHWC")
-
-    if use_ascend:
-        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
-        loss_scaler = DynamicLossScaler(1024, 2, 100)
-        auto_mixed_precision(model, 'O3')
+    optimizer = nn.AdamWeightDecay(model.trainable_params(), learning_rate=Tensor(lr),
+                                   weight_decay=optimizer_params['weight_decay'])
+    problem = UnsteadyFlowWithLoss(model, loss_fn=RelativeRMSELoss(), data_format="NHWTC")
 
     def forward_fn(train_inputs, train_label):
         loss = problem.get_loss(train_inputs, train_label)
-        if use_ascend:
-            loss = loss_scaler.scale(loss)
         return loss
 
     grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
@@ -96,41 +107,33 @@ def train():
     @jit
     def train_step(train_inputs, train_label):
         loss, grads = grad_fn(train_inputs, train_label)
-        if use_ascend:
-            loss = loss_scaler.unscale(loss)
-            if all_finite(grads):
-                grads = loss_scaler.unscale(grads)
-                loss = ops.depend(loss, optimizer(grads))
-        else:
-            loss = ops.depend(loss, optimizer(grads))
+        loss = ops.depend(loss, optimizer(grads))
         return loss
 
     sink_process = mindspore.data_sink(train_step, train_dataset, sink_size=1)
     summary_dir = os.path.join(config["summary_dir"], model_name)
+    ckpt_dir = os.path.join(summary_dir, "ckpt")
+    if not os.path.exists(ckpt_dir):
+        os.makedirs(ckpt_dir)
 
-    for cur_epoch in range(optimizer_params["train_epochs"]):
+    for epoch in range(1, 1+optimizer_params["train_epochs"]):
         local_time_beg = time.time()
-        model.set_train()
-
-        cur_loss = 0.0
+        model.set_train(True)
         for _ in range(steps_per_epoch):
             cur_loss = sink_process()
+        print(f"epoch: {epoch} loss: {cur_loss} epoch time: {time.time() - local_time_beg:.2f}s")
 
-        print("epoch: %s, loss is %s" % (cur_epoch + 1, cur_loss), flush=True)
-        local_time_end = time.time()
-        epoch_seconds = (local_time_end - local_time_beg) * 1000
-        step_seconds = epoch_seconds / steps_per_epoch
-        print("Train epoch time: {:5.3f} ms, per step time: {:5.3f} ms".format(epoch_seconds, step_seconds), flush=True)
+        model.set_train(False)
+        if epoch % config["save_ckpt_interval"] == 0:
+            save_checkpoint(model, os.path.join(ckpt_dir, model_params["name"]))
 
-        if (cur_epoch + 1) % config["save_checkpoint_epoches"] == 0:
-            ckpt_dir = os.path.join(summary_dir, "ckpt")
-            if not os.path.exists(ckpt_dir):
-                os.makedirs(ckpt_dir)
-            mindspore.save_checkpoint(model, os.path.join(ckpt_dir, model_params["name"]))
-
-        if (cur_epoch + 1) % config['eval_interval'] == 0:
+        if epoch % config['eval_interval'] == 0:
             calculate_l2_error(model, test_input, test_label, config["test_batch_size"])
 
 
 if __name__ == '__main__':
+    print(f"pid: {os.getpid()}")
+    print(datetime.datetime.now())
+    print(f"use_ascend: {use_ascend}")
+    print(f"device_id: {context.get_context(attr_key='device_id')}")
     train()

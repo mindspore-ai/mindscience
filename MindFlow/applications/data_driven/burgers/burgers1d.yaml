@@ -19,8 +19,6 @@ data:
   sub: 8
 optimizer:
   initial_lr: 0.001
-  weight_decay: 0.0
-  gamma: 0.5
   train_epochs: 100
   valid_epochs: 10
 eval_interval: 10
