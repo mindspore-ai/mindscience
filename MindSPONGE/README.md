@@ -2,10 +2,10 @@
 
 ![MindSPONGE LOGO](docs/MindSPONGE.png "MindSPONGE logo")
 
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mindspore.svg)](https://pypi.org/project/mindspore)
-[![PyPI](https://badge.fury.io/py/mindspore.svg)](https://badge.fury.io/py/mindspore)
 [![LICENSE](https://img.shields.io/github/license/mindspore-ai/mindspore.svg?style=flat-square)](https://github.com/mindspore-ai/mindspore/blob/master/LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://gitee.com/mindspore/mindscience/pulls)
+[![docs 1.0.0-alpha](https://img.shields.io/badge/docs-1.0.0--alpha-blueviolet.svg?style=flat-square)](https://mindspore.cn/mindsponge/docs/zh-CN/r1.0.0-alpha/index.html)
+[![release](https://img.shields.io/badge/release-1.0.0--alpha-blueviolet.svg?style=flat-square)](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/RELEASE_CN.md)
 
 # **MindSpore SPONGE**
 
@@ -17,7 +17,9 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **Latest News** 📰
 
-- 🔥`2022.8.23` Paper "Few-Shot Learning of Accurate Folding Landscape for Protein Structure Prediction" is preprinted in arxiv, Please refer to [Paper](https://arxiv.org/abs/2208.09652)
+- 🔥`Top` [open source internship task](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue) has been released! Everyone is welcome to claim it~
+- 🔥`2023.1.31` MindSPONGE version 1.0.0-alpha is released. The documents are available on [Scientific Computing MindSPONGE module](https://mindspore.cn/mindsponge/docs/en/r1.0.0-alpha/index.html) on MindSpore website
+- `2022.8.23` Paper "Few-Shot Learning of Accurate Folding Landscape for Protein Structure Prediction" is preprinted in arxiv, Please refer to [Paper](https://arxiv.org/abs/2208.09652)
 - `2022.8.11—2022.8.15` MindSpore SPONGE SIG [Summer School](#special-interesting-group-), [replay](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453)
 - `2022.07.18` Paper "SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"is published in Chinese Journal of Chemistry. Please refer to [paper](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456) and [codes](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
 - `2022.07.09` MEGA-Assessment wins CAMEO-QE monthly 1st
@@ -30,50 +32,44 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **Quick Start**
 
-### Protein Violation Computation
-
-- Although the structure predicted by structure prediciton model(e.g. AlphaFold2, MEGA-Fold) has ideal bond-length and bond-angle on most atoms, whether there is conflict between atoms and peptide bond information are also particularly important. Violation can measure the conflict well and is an import metric for protein relaxation.
-- The formula for violation computation as below:
-
-\begin{align}
-  \mathcal L_{viol} = \mathcal L_{bondlength }+\mathcal L_{bondangle }+\mathcal L_{clash}
-\end{align}
+### Protein Multimer Structure Prediction
 
 ```bash
-import mindspore as ms
-from mindspore import context
-from mindspore.common import Tensor
-from mindsponge.common.utils import get_pdb_info
-from mindsponge.metrics.structure_violations import get_structural_violations
+import os
+import stat
+import pickle
+from mindsponge import Pipeline
+from mindsponge.common.protein import to_pdb, from_prediction
 
-# set which gpu to use, in default use 0 card
-context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=0)
-input_pdb = "xxx.pdb"
+cmd = "wget https://download.mindspore.cn/mindscience/mindsponge/Multimer/examples/6T36.pkl"
+os.system(cmd)
 
-# extract features from pdb
-features = get_pdb_info(input_pdb)
-
-violations = get_structural_violations(Tensor(features.get("atom14_gt_exists")).astype(ms.float32),
-                                       Tensor(features.get("residue_index")).astype(ms.float32),
-                                       Tensor(features.get("aatype")).astype(ms.int32),
-                                       Tensor(features.get("residx_atom14_to_atom37")).astype(ms.int32),
-                                       Tensor(features.get("atom14_gt_positions")).astype(ms.float32))
-violation_all = violations[-1]
+pipe = Pipeline(name="Multimer")
+pipe.set_device_id(0)
+pipe.initialize("predict_256")
+pipe.model.from_pretrained()
+f = open("./6T36.pkl", "rb")
+raw_feature = pickle.load(f)
+f.close()
+final_atom_positions, final_atom_mask, confidence, b_factors = pipe.predict(raw_feature)
+unrelaxed_protein = from_prediction_v2(final_atom_positions,
+                                       final_atom_mask,
+                                       raw_feature["aatype"],
+                                       raw_feature["residue_index"],
+                                       b_factors)
+pdb_file = to_pdb_v2(unrelaxed_protein)
+os.makedirs('./result/', exist_ok=True)
+os_flags = os.O_RDWR | os.O_CREAT
+os_modes = stat.S_IRWXU
+pdb_path = './result/unrelaxed_6T36.pdb'
+with os.fdopen(os.open(pdb_path, os_flags, os_modes), 'w') as fout:
+    fout.write(pdb_file)
+print("confidence:", confidence)
 ```
 
-### Transfer between rotation matrix and quaternion
-
-- geometry module provides basic operations for quaternion, rotation matrix and vectors
-
-```bash
-from mindsponge.common.geometry import initial_affine
-from mindsponge.common.geometry import quat_to_rot
-# quaternion is a mindspore tensor
-# rotation_matrix is a tuple of mindspore tensor, length is 9
-# translation is a tuple of mindsproe tensor, length is 3
-quat, rot, trans = initial_affine(128) # 128 is the num of residues
-transformed_rot = quat_to_rot(quat)
-```
+<div align=left>
+    <img src="docs/multimer.gif" width=30%>
+</div>
 
 ### A simple example for molecular dynamics
 
@@ -129,6 +125,8 @@ cb_h5md = WriteH5MD(system, 'test.h5md', save_freq=10, write_velocity=True, writ
 md.run(1000, callbacks=[run_info, cb_h5md])
 ```
 
+<div align=left><img src="docs/tutorial_b03.gif" width="220"/></div>
+
 **More Cases**：👀
 
 - [Protein Relaxation](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/protein_relaxation)
@@ -168,10 +166,10 @@ pip install -r requirements.txt
 - CUDA>=10.1
 - Ubuntu>=16.04
 
-### **pip install**(not support temporarily)
+### **pip install**
 
 ```bash
-pip install mindsponge_[gpu|ascend]
+pip install mindsponge-[gpu|ascend]
 ```
 
 ### **source code install**
@@ -206,13 +204,33 @@ pip install mindsponge*.whl
 pip install cybertron*.whl # if "-c on" is used
 ```
 
+### API
+
+For details about MindSPONGE APIs, please refer to [API](https://mindspore.cn/mindsponge/docs/en/master/index.html) pages.
+
 ## **Community**
 
 ### CO-CHAIR
 
-- Shenzhen Bay Laboratory [Yi Isaac Yang](https://gitee.com/helloyesterday)
-- Chang Ping Laboratory [Jun Zhang](https://gitee.com/jz_90)
-- Chang Ping Laboratory [Sirui Liu](https://gitee.com/sirui63)
+<div align=center>
+    <a href="https://gitee.com/helloyesterday">
+        <img src="docs/co-chair/yangyi.jpg" width=15%>
+    </a>
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    <a href="https://gitee.com/jz_90">
+        <img src="docs/co-chair/zhangjun.jpg" width=15%>
+    </a>
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    <a href="https://gitee.com/sirui63">
+        <img src="docs/co-chair/sirui.jpg" width=15%>
+    </a>
+    <br/>
+    <font>Shenzhen Bay Laboratory Yi Isaac Yang</font>
+    &emsp;&emsp;&emsp;
+    <font>Chang Ping Laboratory Jun Zhang</font>
+    &emsp;&emsp;&emsp;
+    <font>Chang Ping Laboratory Sirui Liu</font>
+</div>
 
 ### Special Interesting Group 🏠
 
@@ -231,6 +249,16 @@ If you want to join us and become a member of our group, please send your resume
 ### Core Contributor 🧑‍🤝‍🧑
 
 - [Yi Qin Gao Research Group](https://www.chem.pku.edu.cn/gaoyq/):  [Yi Isaac Yang](https://gitee.com/helloyesterday)，[Jun Zhang](https://gitee.com/jz_90)，[Sirui Liu](https://gitee.com/sirui63)，[Yijie Xia](https://gitee.com/xiayijie)，[Diqing Chen](https://gitee.com/dechin)，[Yu-Peng Huang](https://gitee.com/gao_hyp_xyj_admin)
+
+### Cooperative Partner
+
+<div class="item1">
+    <img src="docs/cooperative_partner/北京大学.png" width=20%>
+    &emsp;
+    <img src="docs/cooperative_partner/深圳湾.jpg" width=20%>
+    &emsp;
+    <img src="docs/cooperative_partner/西电.png" width=20%>
+</div>
 
 ## **Contribution Guide**
 

@@ -1,10 +1,10 @@
 [ENGLISH](README.md) | 简体中文
 ![MindSPONGE标志](docs/MindSPONGE.png "MindSPONGE logo")
 
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mindspore.svg)](https://pypi.org/project/mindspore)
-[![PyPI](https://badge.fury.io/py/mindspore.svg)](https://badge.fury.io/py/mindspore)
 [![LICENSE](https://img.shields.io/github/license/mindspore-ai/mindspore.svg?style=flat-square)](https://github.com/mindspore-ai/mindspore/blob/master/LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://gitee.com/mindspore/mindscience/pulls)
+[![docs 1.0.0-alpha](https://img.shields.io/badge/docs-1.0.0--alpha-blueviolet.svg?style=flat-square)](https://mindspore.cn/mindsponge/docs/zh-CN/r1.0.0-alpha/index.html)
+[![release](https://img.shields.io/badge/release-1.0.0--alpha-blueviolet.svg?style=flat-square)](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/RELEASE_CN.md)
 
 # **MindSpore SPONGE**
 
@@ -16,7 +16,9 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **最新消息** 📰
 
-- 🔥`2022.8.23` 论文"Few-Shot Learning of Accurate Folding Landscape for Protein Structure Prediction" arxiv预印，详情参见[论文](https://arxiv.org/abs/2208.09652)
+- 🔥`置顶` [开源实习任务](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue)发布！欢迎大家认领~
+- 🔥`2023.1.31` MindSPONGE 1.0.0-alpha版本发布，文档介绍可参见MindSpore官网中的[科学计算套件MindSPONGE模块](https://mindspore.cn/mindsponge/docs/zh-CN/r1.0.0-alpha/index.html)
+- `2022.8.23` 论文"Few-Shot Learning of Accurate Folding Landscape for Protein Structure Prediction" arxiv预印，详情参见[论文](https://arxiv.org/abs/2208.09652)
 - `2022.8.11—2022.8.15` MindSpore SPONGE SIG[暑期学校活动](#sig-)，[活动回放](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453)
 - `2022.07.18` 论文"SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"发表于期刊Chinese Journal of Chemistry，详情参见[论文](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
 - `2022.07.09` MEGA-Assessment在CAMEO-QE月榜取得第一名
@@ -29,104 +31,78 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **初体验**
 
-### 蛋白质 violation 计算
-
-- 蛋白质推理模型预测的pdb虽然在绝大多数原子上都准确预测出理想的键长和键角，然而原子间是否存在冲突以及肽键信息对于真实结构也尤为重要，violation 则计算了预测pdb的总原子间冲突程度以及肽键键长键角是否满足一定的限制条件。该计算数值对于评估预测蛋白质结构是否合理以及后续做蛋白质relax尤其重要。
-- violation计算公式如下:
-
-\begin{align}
-\mathcal L_{viol} = \mathcal L_{bondlength }+\mathcal L_{bondangle }+\mathcal L_{clash } .
-\end{align}
+### 蛋白质多聚体结构预测
 
 ```bash
-import mindspore as ms
-from mindspore import context
-from mindspore.common import Tensor
-from mindsponge.common.utils import get_pdb_info
-from mindsponge.metrics.structure_violations import get_structural_violations
+import os
+import stat
+import pickle
+from mindsponge import Pipeline
+from mindsponge.common.protein import to_pdb, from_prediction
 
-# set which gpu to use, in default use 0 card
-context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=0)
-input_pdb = "xxx.pdb"
+cmd = "wget https://download.mindspore.cn/mindscience/mindsponge/Multimer/examples/6T36.pkl"
+os.system(cmd)
 
-# extract features from pdb
-features = get_pdb_info(input_pdb)
-
-violations = get_structural_violations(Tensor(features.get("atom14_gt_exists")).astype(ms.float32),
-                                       Tensor(features.get("residue_index")).astype(ms.float32),
-                                       Tensor(features.get("aatype")).astype(ms.int32),
-                                       Tensor(features.get("residx_atom14_to_atom37")).astype(ms.int32),
-                                       Tensor(features.get("atom14_gt_positions")).astype(ms.float32))
-violation_all = violations[-1]
+pipe = Pipeline(name="Multimer")
+pipe.set_device_id(0)
+pipe.initialize("predict_256")
+pipe.model.from_pretrained()
+f = open("./6T36.pkl", "rb")
+raw_feature = pickle.load(f)
+f.close()
+final_atom_positions, final_atom_mask, confidence, b_factors = pipe.predict(raw_feature)
+unrelaxed_protein = from_prediction_v2(final_atom_positions,
+                                       final_atom_mask,
+                                       raw_feature["aatype"],
+                                       raw_feature["residue_index"],
+                                       b_factors)
+pdb_file = to_pdb_v2(unrelaxed_protein)
+os.makedirs('./result/', exist_ok=True)
+os_flags = os.O_RDWR | os.O_CREAT
+os_modes = stat.S_IRWXU
+pdb_path = './result/unrelaxed_6T36.pdb'
+with os.fdopen(os.open(pdb_path, os_flags, os_modes), 'w') as fout:
+    fout.write(pdb_file)
+print("confidence:", confidence)
 ```
 
-### 四元数与旋转矩阵转换
-
-- geometry模块提供基础四元数、旋转矩阵、向量操作
-
-```bash
-from mindsponge.common.geometry import initial_affine
-from mindsponge.common.geometry import quat_to_rot
-# quaternion is a mindspore tensor
-# rotation_matrix is a tuple of mindspore tensor, length is 9
-# translation is a tuple of mindsproe tensor, length is 3
-quat, rot, trans = initial_affine(128) # 128 is the num of residues
-transformed_rot = quat_to_rot(quat)
-```
+<div align=left>
+    <img src="docs/multimer.gif" width=30%>
+</div>
 
 ### 一个简单的分子动力学模拟案例
 
 ```bash
-import numpy as np
-from mindspore import context
 from mindsponge import Sponge
 from mindsponge import Molecule
-from mindsponge import ForceFieldBase
-from mindsponge import DynamicUpdater
-from mindsponge.potential import BondEnergy, AngleEnergy
+from mindsponge import ForceField
+from mindspore import context
+from mindspore.nn import Adam
 from mindsponge.callback import WriteH5MD, RunInfo
-from mindsponge.function import VelocityGenerator
-from mindsponge.control import LeapFrog
 
 context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 
-system = Molecule(
-    atoms=['O', 'H', 'H'],
-    coordinate=[[0, 0, 0], [0.1, 0, 0], [-0.0333, 0.0943, 0]],
-    bond=[[[0, 1], [0, 2]]],
-)
+system = Molecule(template='water.spce.yaml')
 
-bond_energy = BondEnergy(
-    index=system.bond,
-    force_constant=[[345000, 345000]],
-    bond_length=[[0.1, 0.1]],
-)
+system.reduplicate([0.3, 0, 0])
+system.reduplicate([0, 0.3, 0])
+new_sys = system.copy([0, 0, -0.3])
+system.reduplicate([0, 0, 0.3])
+system.append(new_sys)
 
-angle_energy = AngleEnergy(
-    index=[[1, 0, 2]],
-    force_constant=[[383]],
-    bond_angle=[[109.47 / 180 * np.pi]],
-)
+potential = ForceField(system, parameters='SPCE')
 
-energy = ForceFieldBase(energy=[bond_energy, angle_energy])
+opt = Adam(system.trainable_params(), 1e-3)
 
-velocity_generator = VelocityGenerator(300)
-velocity = velocity_generator(system.coordinate.shape, system.atom_mass)
-
-opt = DynamicUpdater(
-    system,
-    integrator=LeapFrog(system),
-    time_step=1e-3,
-    velocity=velocity,
-)
-
-md = Sponge(system, energy, opt)
+md = Sponge(system, potential, opt)
 
 run_info = RunInfo(10)
-cb_h5md = WriteH5MD(system, 'test.h5md', save_freq=10, write_velocity=True, write_force=True)
+cb_h5md = WriteH5MD(system, 'tutorial_b03.h5md', save_freq=10)
 
 md.run(1000, callbacks=[run_info, cb_h5md])
 ```
+
+<div align=left><img src="docs/tutorial_b03.gif" width="220"/></div>
 
 **更多应用案例请见**：👀
 
@@ -145,9 +121,9 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 
 由于MindSPONGE与MindSpore有依赖关系，请根据下表中所指示的对应关系，在[MindSpore下载页面](https://www.mindspore.cn/versions)下载并安装对应的whl包。
 
-| MindSPONGE |                                    分支                                    |   MindSpore    | Python |
-|:----------:|:------------------------------------------------------------------------:|:--------------:|:------:|
-|   1.0.0    | [master](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) | \>=2.0.0-alpha | \>=3.7 |
+| MindSPONGE |                                 分支                                 | MindSpore | Python |
+| :--------: | :-------------------------------------------------------------------: | :-------: | :----: |
+|   1.0.0   | [master](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) | \>=2.0.0 | \>=3.7 |
 
 ```bash
 pip install -r requirements.txt
@@ -167,10 +143,10 @@ pip install -r requirements.txt
 - CUDA>=10.1
 - Ubuntu>=16.04
 
-### pip安装(暂不可用)
+### pip安装
 
 ```bash
-pip install mindsponge_[gpu|ascend]
+pip install mindsponge-[gpu|ascend]
 ```
 
 ### 源码安装
@@ -205,13 +181,34 @@ pip install mindsponge_gpu*.whl
 pip install cybertron*.whl # if "-c on" is used
 ```
 
+### API
+
+MindSPONGE API文档请查看[文档链接](https://mindspore.cn/mindsponge/docs/zh-CN/master/index.html)
+
 ## **社区**
 
 ### CO-CHAIR
 
-- 深圳湾实验室[杨奕](https://gitee.com/helloyesterday)
-- 北京昌平实验室[张骏](https://gitee.com/jz_90)
-- 北京昌平实验室[刘思睿](https://gitee.com/sirui63)
+<div align=center>
+    <a href="https://gitee.com/helloyesterday">
+        <img src="docs/co-chair/yangyi.jpg" width=15%>
+    </a>
+    &emsp;&emsp;&emsp;
+    <a href="https://gitee.com/jz_90">
+        <img src="docs/co-chair/zhangjun.jpg" width=15%>
+    </a>
+    &emsp;&emsp;&emsp;
+    <a href="https://gitee.com/sirui63">
+        <img src="docs/co-chair/sirui.jpg" width=15%>
+    </a>
+    <br/>
+    &emsp;
+    <font>深圳湾实验室杨奕</font>
+    &emsp;&emsp;&emsp;
+    <font>北京昌平实验室张骏</font>
+    &emsp;&emsp;&emsp;
+    <font>北京昌平实验室刘思睿</font>
+</div>
 
 ### SIG 🏠
 
@@ -230,6 +227,16 @@ SIG小组目前有着六位核心专家老师，加入SIG小组之后可以由�
 ### 核心贡献者 🧑‍🤝‍🧑
 
 - [高毅勤课题组](https://www.chem.pku.edu.cn/gaoyq/):  [杨奕](https://gitee.com/helloyesterday)，[张骏](https://gitee.com/jz_90)，[刘思睿](https://gitee.com/sirui63)，[夏义杰](https://gitee.com/xiayijie)，[陈迪青](https://gitee.com/dechin)，[黄渝鹏](https://gitee.com/gao_hyp_xyj_admin)
+
+### 合作伙伴
+
+<div class="item1">
+    <img src="docs/cooperative_partner/北京大学.png" width=20%>
+    &emsp;
+    <img src="docs/cooperative_partner/深圳湾.jpg" width=20%>
+    &emsp;
+    <img src="docs/cooperative_partner/西电.png" width=20%>
+</div>
 
 ## **贡献指南**
 
