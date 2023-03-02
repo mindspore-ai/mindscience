@@ -24,15 +24,15 @@ import numpy as np
 from mindspore import Tensor
 import mindspore.common.dtype as mstype
 
-from .dataset import get_test_data
+from .dataset import create_test_dataset
 
 plt.rcParams["figure.dpi"] = 300
 
 
-def visual_result(model, config):
+def visual(model, config):
     """visual result of model prediction and ground-truth"""
     name = "result"
-    test_input, label = get_test_data(config)
+    test_input, label = create_test_dataset(config)
     visual_input = test_input.reshape(-1, config["model"]["input_size"])
     visual_label = label.reshape(-1, config["model"]["output_size"])
     prediction = np.zeros(label.shape)
@@ -46,10 +46,10 @@ def visual_result(model, config):
             prediction[index:index_end, i] = predict[:, i]
         index = index_end
 
-    visual(visual_label, prediction.reshape(visual_label.shape), "./images", name)
+    visual_fn(visual_label, prediction.reshape(visual_label.shape), "./images", name)
 
 
-def visual(label, predict, path, name):
+def visual_fn(label, predict, path, name):
     """visulization of ux/uy/p"""
     ux_min, ux_max = np.percentile(label[:, 0], [0.5, 99.5])
     uy_min, uy_max = np.percentile(label[:, 1], [0.5, 99.5])

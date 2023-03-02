@@ -22,7 +22,7 @@ from mindflow.geometry import Rectangle
 from mindflow.geometry import generate_sampling_config
 
 
-def get_test_data(config):
+def create_test_dataset(config):
     """load labeled data for evaluation"""
     # acquire config
     coord_min = config["geometry"]["coord_min"]
@@ -52,7 +52,7 @@ def get_test_data(config):
     return input_data, label
 
 
-def create_random_dataset(config, name):
+def create_training_dataset(config, name):
     """create training dataset by online sampling"""
     # define geometry
     coord_min = config["geometry"]["coord_min"]
