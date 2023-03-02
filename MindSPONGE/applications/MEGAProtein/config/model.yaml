@@ -169,7 +169,7 @@ slice:
       pair_transition: 0
     extra_msa_stack:
       msa_transition: 0
-      msa_row_attention_with_pair_bias: 4
+      msa_row_attention_with_pair_bias: 0
       msa_column_global_attention: 0
       outer_product_mean: 0
       triangle_attention_starting_node: 0
