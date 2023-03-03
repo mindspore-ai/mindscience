@@ -25,3 +25,4 @@ from .multimer import Multimer, MultimerDataSet, multimer_configuration
 from .colabdesign import COLABDESIGN, ColabDesignDataSet, colabdesign_configuration
 from .kgnn import KGNN, KGNNDataSet, kgnn_configuration
 from .ufold import UFold, UFoldDataSet, ufold_configuration
+from .deepdr import DeepDR, DeepDRDataSet, deepdr_configuration
