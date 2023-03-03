@@ -25,6 +25,7 @@ import mindspore.context as context
 import mindspore.common.dtype as mstype
 from mindspore import Tensor, nn, save_checkpoint, load_checkpoint, load_param_into_net
 from mindsponge.cell.amp import amp_convert
+from mindsponge.cell.mask import LayerNormProcess
 from mindsponge.common.config_load import load_config
 from mindsponge.common.protein import to_pdb, from_prediction
 
@@ -148,7 +149,7 @@ def fold_train(args):
 
     megafold = MegaFold(model_cfg, mixed_precision=args.mixed_precision)
     if args.mixed_precision:
-        fp32_white_list = (nn.Softmax, nn.LayerNorm)
+        fp32_white_list = (nn.Softmax, nn.LayerNorm, LayerNormProcess)
         amp_convert(megafold, fp32_white_list)
     else:
         megafold.to_float(mstype.float32)

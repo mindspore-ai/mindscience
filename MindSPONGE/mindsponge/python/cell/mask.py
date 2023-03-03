@@ -18,12 +18,22 @@ from mindspore.ops import functional as F
 import mindspore.nn as nn
 
 
+class LayerNormProcess(nn.Cell):
+    def __init__(self,):
+        super(LayerNormProcess, self).__init__()
+        self.layernorm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
+
+    def construct(self, msa_act, query_norm_gamma, query_norm_beta):
+        output, _, _ = self.layernorm(msa_act, query_norm_gamma, query_norm_beta)
+        return output
+
+
 class MaskedLayerNorm(nn.Cell):
     '''masked_layer_norm'''
 
     def __init__(self):
         super(MaskedLayerNorm, self).__init__()
-        self.norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
+        self.norm = LayerNormProcess()
 
     def construct(self, act, gamma, beta, mask=None):
         '''construct'''
@@ -39,6 +49,6 @@ class MaskedLayerNorm(nn.Cell):
             mask = ones
 
         act = act * mask
-        act, _, _ = self.norm(act, gamma, beta)
+        act = self.norm(act, gamma, beta)
         act = act * mask
         return act
