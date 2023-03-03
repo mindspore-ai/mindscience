@@ -1,19 +1,23 @@
  ENGLISH | [简体中文](README_CN.md)
 
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mindspore.svg)](https://pypi.org/project/mindspore)
-[![PyPI](https://badge.fury.io/py/mindspore.svg)](https://badge.fury.io/py/mindspore)
-[![LICENSE](https://img.shields.io/github/license/mindspore-ai/mindspore.svg?style=flat-square)](https://github.com/mindspore-ai/mindspore/blob/master/LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://gitee.com/mindspore/mindscience/pulls)
+[![master](https://img.shields.io/badge/version-master-blue.svg?style=flat?logo=Gitee)](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/README.md)
+[![docs](https://img.shields.io/badge/docs-master-yellow.svg?style=flat)](https://mindspore.cn/mindflow/docs/en/master/index.html)
+[![internship](https://img.shields.io/badge/internship-tasks-important.svg?style=flat)](https://gitee.com/mindspore/community/issues/I55B5A?from=project-issue)
+[![SIG](https://img.shields.io/badge/community-SIG-yellowgreen.svg?style=flat)](https://mindspore.cn/community/SIG/detail/en?name=mindflow%20SIG)
+[![Downloads](https://static.pepy.tech/badge/mindflow-gpu)](https://pepy.tech/project/mindflow-gpu)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](https://gitee.com/mindspore/mindscience/pulls)
+[![LICENSE](https://img.shields.io/github/license/mindspore-ai/mindspore.svg?style=flat)](https://github.com/mindspore-ai/mindspore/blob/master/LICENSE)
 
 # **MindFlow**
 
 - [Introduction](#Introduction)
 - [Latest News](#Latest-News)
 - [MindFlow Features](#MindFlow-Features)
-- [Physics Driven](#Physics-Driven)
-- [Data Driven](#Data-Driven)
-- [Data-Mechanism Fusion](#Data-Mechanism-Fusion)
-- [CFD](#CFD)
+- [Applications](#Applications)
+    - [Physics Driven](#Physics-Driven)
+    - [Data Driven](#Data-Driven)
+    - [Data-Mechanism Fusion](#Data-Mechanism-Fusion)
+    - [CFD](#CFD)
 - [Installation](#Installation)
     - [Version Dependency](#Version-Dependency)
     - [Install Dependency](#Install-Dependency)
@@ -21,8 +25,9 @@
     - [pip install](#pip-install)
     - [source code install](#source-code-install)
 - [Community](#Community)
-    - [SIG](#SIG)
+    - [SIG](#Join-MindFlow-SIG)
     - [Core Contributor](#Core-Contributor)
+    - [Community Partners](#Community-Partners)
 - [Contribution Guide](#Contribution-Guide)
 - [License](#License)
 
@@ -46,7 +51,9 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 - [Solve Pinns by MindFlow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/solve_pinns_by_mindflow)
 
-## Physics Driven
+## Applications
+
+### Physics Driven
 
 - [Boltzmann equation](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/boltzmann)
 - [1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
@@ -55,16 +62,16 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 - [2D Darcy](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
 - [2D Taylor-Green Vortex](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)
 
-## Data Driven
+### Data Driven
 
 - [FNO for 1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers)
 - [FNO for 2D Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes)
 
-## Data-Mechanism Fusion
+### Data-Mechanism Fusion
 
 - [PDE-Net for Convection-Diffusion Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
 
-## CFD
+### CFD
 
 - [1D Lax Tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
 - [1D Sod Tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
@@ -145,9 +152,41 @@ pip install mindflow_*.whl
 
 ## **Community**
 
-### SIG
+### Join MindFlow SIG
 
-Join MindSpore [MindFlow SIG](https://mindspore.cn/community/SIG/detail/?name=mindflow%20SIG) to help AI fluid simulation development.
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+</head>
+<body>
+
+<table id="t2" style="text-align:center" align="center">
+    <tr id="tr2">
+        <td align="center">
+            <img src="docs/co-chairs/张伟伟.jpeg" width="200" height="243"/>
+            <p align="center">
+                Northwestern Polytechnical University ZhangWeiwei
+            </p>
+        </td>
+        <td align="center">
+            <img src="docs/co-chairs/董彬.jpeg" width="200" height="243"/>
+            <p align="center">
+                Peking University DongBin
+            </p>
+        </td>
+        <td align="center">
+            <img src="docs/co-chairs/孙浩.jpeg" width="200" height="243"/>
+            <p align="center">
+                RenMin University of China SunHao
+            </p>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
+
+[Join](https://mp.weixin.qq.com/s/e00lvKx30TsqjRhYa8nlhQ) MindSpore [MindFlow SIG](https://mindspore.cn/community/SIG/detail/?name=mindflow%20SIG) to help AI fluid simulation development.
 MindSpore AI for Science, [Learning and Learning to solve PDEs](https://www.bilibili.com/video/BV1ur4y1H7vB?p=4) topic report by Dong Bin, Peking University.
 We will continue to release [open source internship tasks](https://gitee.com/mindspore/community/issues/I55B5A?from=project-issue), build MindFlow ecology with you, and promote the development of computational fluid dynamics with experts, professors and students in the field. Welcome to actively claim the task.
 
@@ -156,6 +195,45 @@ We will continue to release [open source internship tasks](https://gitee.com/min
 Thanks goes to these wonderful people 🧑‍🤝‍🧑:
 
 yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang
+
+### Community Partners
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<table id="t1" style="text-align:center" align="center">
+    <tr id="tr1">
+        <td>
+            <img src="docs/partners/CACC.jpeg"/>
+            <p align="center">
+                Commercial Aircraft Corporation of China Ltd
+            </p>
+        </td>
+        <td>
+            <img src="docs/partners/NorthwesternPolytechnical.jpeg"/>
+            <p align="center">
+                Northwestern Polytechnical University
+            </p>
+        </td>
+        <td>
+            <img src="docs/partners/Peking_University.jpeg"/>
+            <p align="center">
+                Peking University
+            </p>
+        </td>
+        <td>
+            <img src="docs/partners/RenminUniversity.jpeg"/>
+            <p align="center">
+                Renmin University of China
+            </p>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
 
 ## **Contribution Guide**
 

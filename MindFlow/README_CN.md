@@ -1,27 +1,32 @@
 [ENGLISH](README.md) | 简体中文
 
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mindspore.svg)](https://pypi.org/project/mindspore)
-[![PyPI](https://badge.fury.io/py/mindspore.svg)](https://badge.fury.io/py/mindspore)
-[![LICENSE](https://img.shields.io/github/license/mindspore-ai/mindspore.svg?style=flat-square)](https://github.com/mindspore-ai/mindspore/blob/master/LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://gitee.com/mindspore/mindscience/pulls)
+[![master](https://img.shields.io/badge/version-master-blue.svg?style=flat?logo=Gitee)](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/README_CN.md)
+[![docs](https://img.shields.io/badge/docs-master-yellow.svg?style=flat)](https://mindspore.cn/mindflow/docs/zh-CN/master/index.html)
+[![internship](https://img.shields.io/badge/internship-tasks-important.svg?style=flat)](https://gitee.com/mindspore/community/issues/I55B5A?from=project-issue)
+[![SIG](https://img.shields.io/badge/community-SIG-yellowgreen.svg?style=flat)](https://mindspore.cn/community/SIG/detail/?name=mindflow%20SIG)
+[![Downloads](https://static.pepy.tech/badge/mindflow-gpu)](https://pepy.tech/project/mindflow-gpu)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](https://gitee.com/mindspore/mindscience/pulls)
+[![LICENSE](https://img.shields.io/github/license/mindspore-ai/mindspore.svg?style=flat)](https://github.com/mindspore-ai/mindspore/blob/master/LICENSE)
 
 # **MindFlow**
 
 - [MindFlow介绍](#MindFlow介绍)
 - [最新消息](#最新消息)
 - [MindFlow特性](#Mindflow特性)
-- [物理驱动](#物理驱动)
-- [数据驱动](#数据驱动)
-- [数据机理融合](#数据机理融合)
-- [CFD](#CFD)
+- [应用案例](#应用案例)
+    - [物理驱动](#物理驱动)
+    - [数据驱动](#数据驱动)
+    - [数据机理融合](#数据机理融合)
+    - [CFD](#CFD)
 - [安装教程](#安装教程)
     - [依赖安装](#依赖安装)
     - [硬件支持情况](#硬件支持情况)
     - [pip安装](#pip安装)
     - [源码安装](#源码安装)
 - [社区](#社区)
-  - [SIG](#SIG)
+  - [SIG](#加入MindFlow-SIG)
   - [核心贡献者](#核心贡献者)
+  - [合作伙伴](#合作伙伴)
 - [贡献指南](#贡献指南)
 - [许可证](#许可证)
 
@@ -47,7 +52,9 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 - [基于MindFlow求解PINNs问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/solve_pinns_by_mindflow)
 
-## 物理驱动
+## 应用案例
+
+### 物理驱动
 
 - [玻尔兹曼方程](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/boltzmann)
 - [一维Burgers问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
@@ -56,16 +63,16 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 - [二维Darcy问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
 - [二维泰勒格林涡](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)
 
-## 数据驱动
+### 数据驱动
 
 - [基于FNO求解一维Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers)
 - [基于FNO求解二维Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes)
 
-## 数据机理融合
+### 数据机理融合
 
 - [PDE-Net求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
 
-## CFD
+### CFD
 
 - [一维Lax激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
 - [一维Sod激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
@@ -146,9 +153,41 @@ pip install mindflow_*.whl
 
 ## **社区**
 
-### SIG
+### 加入MindFlow SIG
 
-加入昇思[MindFlow SIG](https://mindspore.cn/community/SIG/detail/?name=mindflow%20SIG)，助力AI流体仿真发展。
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+</head>
+<body>
+
+<table id="t2" style="text-align:center" align="center">
+    <tr id="tr2">
+        <td>
+            <img src="docs/co-chairs/张伟伟.jpeg" width="200" height="243"/>
+            <p align="center">
+                西北工业大学 张伟伟
+            </p>
+        </td>
+        <td>
+            <img src="docs/co-chairs/董彬.jpeg" width="200" height="243"/>
+            <p align="center">
+                北京大学 董彬
+            </p>
+        </td>
+        <td>
+            <img src="docs/co-chairs/孙浩.jpeg" width="200" height="243"/>
+            <p align="center">
+                中国人民大学 孙浩
+            </p>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
+
+[加入](https://mp.weixin.qq.com/s/e00lvKx30TsqjRhYa8nlhQ)昇思[MindFlow SIG](https://mindspore.cn/community/SIG/detail/?name=mindflow%20SIG)，助力AI流体仿真发展。
 MindSpore AI+科学计算专题，北京大学董彬老师[Learning and Learning to solve PDEs](https://www.bilibili.com/video/BV1ur4y1H7vB?p=4)专题报告。
 我们将不断发布[开源实习任务](https://gitee.com/mindspore/community/issues/I55B5A?from=project-issue)，与各位共同构筑MindFlow生态，与领域内的专家、教授和学生一起推动计算流体力学的发展，欢迎各位积极认领。
 
@@ -157,6 +196,45 @@ MindSpore AI+科学计算专题，北京大学董彬老师[Learning and Learning
 感谢以下开发者做出的贡献 🧑‍🤝‍🧑：
 
 yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang
+
+### 合作伙伴
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<table id="t1" style="text-align:center" align="center">
+    <tr id="tr1">
+        <td>
+            <img src="docs/partners/CACC.jpeg"/>
+            <p align="center">
+                中国商飞
+            </p>
+        </td>
+        <td>
+            <img src="docs/partners/NorthwesternPolytechnical.jpeg"/>
+            <p align="center">
+                西北工业大学
+            </p>
+        </td>
+        <td>
+            <img src="docs/partners/Peking_University.jpeg"/>
+            <p align="center">
+                北京大学
+            </p>
+        </td>
+        <td>
+            <img src="docs/partners/RenminUniversity.jpeg"/>
+            <p align="center">
+                中国人民大学
+            </p>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
 
 ## **贡献指南**
 
