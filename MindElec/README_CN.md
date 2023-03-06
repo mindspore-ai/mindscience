@@ -75,7 +75,7 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 
 - [点源时域麦克斯韦方程AI求解](https://www.mindspore.cn/mindelec/docs/zh-CN/master/time_domain_maxwell.html)
 
-  基于PINNs方法求解二维时域MaxWell方程时，面临点源奇异性、剧烈变化的多尺度波函数以及多损失函数等问题。MindSpore Elec通过高斯分布函数平滑、多通道残差网络结合sin激活函数的网络结构以及自适应加权的多任务学习策略，使得求解精度和性能均明显优于其他框架及方法。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/7f81563126ccbd6f56659aba1c1e7eeadf0870a8/MindElec/examples/physics_driven/time_domain_maxwell)
+  基于PINNs方法求解二维时域MaxWell方程时，面临点源奇异性、剧烈变化的多尺度波函数以及多损失函数等问题。MindSpore Elec通过高斯分布函数平滑、多通道残差网络结合sin激活函数的网络结构以及自适应加权的多任务学习策略，使得求解精度和性能均明显优于其他框架及方法。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/time_domain_maxwell)
 <div align="center">
 <img src="docs/maxwell_function.jpg" width="200"/>
 </div>
@@ -86,7 +86,7 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 
 - [增量训练求解麦克斯韦方程组](https://www.mindspore.cn/mindelec/docs/zh-CN/master/incremental_learning.html)
 
-  方程介质参数发生变化时，需重新训练。为降低训练成本，我们提出了基于物理信息的自解码器来求解同一类的方程组。该方法将高维可变参数空间映射到由低维向量表征的低维流形上，然后将流形的特征参数与方程的输入融合作为点源问题求解网络的输入一起参与到PINNs的训练中，由此可以得到预训练模型。针对新给定的可变参数问题，对预训练模型进行微调即可以得到新方程的解。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/7f81563126ccbd6f56659aba1c1e7eeadf0870a8/MindElec/examples/physics_driven/incremental_learning)
+  方程介质参数发生变化时，需重新训练。为降低训练成本，我们提出了基于物理信息的自解码器来求解同一类的方程组。该方法将高维可变参数空间映射到由低维向量表征的低维流形上，然后将流形的特征参数与方程的输入融合作为点源问题求解网络的输入一起参与到PINNs的训练中，由此可以得到预训练模型。针对新给定的可变参数问题，对预训练模型进行微调即可以得到新方程的解。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/incremental_learning)
 
 <div align="center">
 <img src="docs/incremental.png" alt="pretrain_model" width="400">
@@ -97,7 +97,7 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 
 - [基于参数化方案的AI电磁仿真](https://www.mindspore.cn/mindelec/docs/zh-CN/master/parameterization.html)
 
-  蝶形天线参数化方案实现的是参数到仿真结果的直接映射，例如天线的宽度、角度作为网络输入，网络输出为散射参数（S参数）。参数化方案的优点是直接映射且网络简单。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/7f81563126ccbd6f56659aba1c1e7eeadf0870a8/MindElec/examples/data_driven/parameterization)
+  蝶形天线参数化方案实现的是参数到仿真结果的直接映射，例如天线的宽度、角度作为网络输入，网络输出为散射参数（S参数）。参数化方案的优点是直接映射且网络简单。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/parameterization)
 
 <div align="center">
 <img src="docs/parameterization.png" width="500">
@@ -106,7 +106,7 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 
 - [基于点云方案的AI电磁仿真](https://www.mindspore.cn/mindelec/docs/zh-CN/master/point_cloud.html)
 
-  点云方案实现的是从天线/手机的采样点云到仿真结果的映射，该方案先将手机结构文件转化为点云张量数据，（压缩后）使用卷积神经网络提取结构特征，再通过数层全连接层映射到最终的仿真结果（即S参数），该方案的优点是适用于结构参数数量或种类可能发生变化的复杂工况。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/7f81563126ccbd6f56659aba1c1e7eeadf0870a8/MindElec/examples/data_driven/pointcloud)
+  点云方案实现的是从天线/手机的采样点云到仿真结果的映射，该方案先将手机结构文件转化为点云张量数据，（压缩后）使用卷积神经网络提取结构特征，再通过数层全连接层映射到最终的仿真结果（即S参数），该方案的优点是适用于结构参数数量或种类可能发生变化的复杂工况。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/pointcloud)
 
 <div align="center">
 <img src="docs/phones.png" width="400">
@@ -117,7 +117,7 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 
 - [基于可微分FDTD的贴片天线S参数仿真](https://www.mindspore.cn/mindelec/docs/zh-CN/master/AD_FDTD_forward.html)
 
-  时域有限差分（FDTD）方法求解麦克斯韦方程组的过程等价于一个循环卷积网络（RCNN）。利用MindSpore的可微分算子重写更新流程，便可得到端到端可微分FDTD。如下图右，三维贴片天线S参数仿真精度与BenchMark一致。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/7f81563126ccbd6f56659aba1c1e7eeadf0870a8/MindElec/examples/AD_FDTD/fdtd_forward)
+  时域有限差分（FDTD）方法求解麦克斯韦方程组的过程等价于一个循环卷积网络（RCNN）。利用MindSpore的可微分算子重写更新流程，便可得到端到端可微分FDTD。如下图右，三维贴片天线S参数仿真精度与BenchMark一致。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/AD_FDTD/fdtd_forward)
 
 <div align="center">
 <img src="https://gitee.com/mindspore/docs/raw/master/docs/mindelec/docs/source_zh_cn/images/AD_FDTD/fdtd_forward/microstrip_filter_structure.png" width="250" style="margin-right:40px">
@@ -126,7 +126,7 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 
 - [端到端可微分FDTD求解电磁逆散射问题](https://www.mindspore.cn/mindelec/docs/zh-CN/master/AD_FDTD_inverse.html)
 
-  基于端到端可微FDTD求解二维TM模式的电磁逆散射问题。两个介质体位于矩形区域内。如下图左，在求解区域外侧设置4个激励源（红色三角）和8个观察点（绿色原点）。反演得到的相对介电常数SSIM达0.9635，与目标（下图右）高度吻合。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/7f81563126ccbd6f56659aba1c1e7eeadf0870a8/MindElec/examples/AD_FDTD/fdtd_inverse)
+  基于端到端可微FDTD求解二维TM模式的电磁逆散射问题。两个介质体位于矩形区域内。如下图左，在求解区域外侧设置4个激励源（红色三角）和8个观察点（绿色原点）。反演得到的相对介电常数SSIM达0.9635，与目标（下图右）高度吻合。[【代码链接】](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/AD_FDTD/fdtd_inverse)
 
 <div align=center>
 <img src="https://www.mindspore.cn/mindelec/docs/zh-CN/master/_images/inversion_problem_setup.png" width="350">
