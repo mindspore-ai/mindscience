@@ -14,6 +14,7 @@
 # limitations under the License.
 # ============================================================================
 """train process"""
+import argparse
 import os
 import time
 import numpy as np
@@ -23,30 +24,44 @@ from mindspore import context, nn, ops, jit, set_seed, data_sink
 from mindflow.utils import load_yaml_config
 from mindflow.cell import FCSequential
 
-from src import create_random_dataset, get_test_data
+from src import create_training_dataset, create_test_dataset
 from src import Darcy2D
-from src import visual_result, calculate_l2_error
+from src import visual, calculate_l2_error
 
 set_seed(123456)
 np.random.seed(123456)
 
-context.set_context(
-    mode=context.GRAPH_MODE,
-    save_graphs=False,
-    device_target="GPU",
-    save_graphs_path="./graph",
-)
+parser = argparse.ArgumentParser(description="darcy flow")
+parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+                    help="Running in GRAPH_MODE OR PYNATIVE_MODE")
+parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
+                    help="Whether to save intermediate compilation graphs")
+parser.add_argument("--save_graphs_path", type=str, default="./graphs")
+parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
+                    help="The target device to run, support 'Ascend', 'GPU'")
+parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
+parser.add_argument("--config_file_path", type=str, default="./darcy_cfg.yaml")
+args = parser.parse_args()
+
+context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
+                    save_graphs=args.save_graphs,
+                    save_graphs_path=args.save_graphs_path,
+                    device_target=args.device_target,
+                    device_id=args.device_id)
+print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
+use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
 
 def train(config):
     """training process"""
     geom_name = "flow_region"
     # create train dataset
-    flow_train_dataset = create_random_dataset(config, geom_name)
+    flow_train_dataset = create_training_dataset(config, geom_name)
     train_data = flow_train_dataset.create_dataset(
         batch_size=config["train_batch_size"], shuffle=True, drop_remainder=True
     )
-    test_input, test_label = get_test_data(config)
+    # create test dataset
+    test_input, test_label = create_test_dataset(config)
 
     # network model
     model = FCSequential(in_channels=config["model"]["input_size"],
@@ -76,23 +91,21 @@ def train(config):
         return loss
 
     epochs = config["train_epoch"]
+    steps_per_epochs = train_data.get_dataset_size()
     sink_process = data_sink(train_step, train_data, sink_size=1)
     model.set_train()
 
-    for epoch in range(epochs):
+    for epoch in range(1, 1 + epochs):
         local_time_beg = time.time()
-        cur_loss = sink_process()
-        if epoch % 200 == 0:
-            print(
-                "epoch: {}, loss: {}, time: {}ms.".format(
-                    epoch, cur_loss, (time.time() - local_time_beg) * 1000
-                )
-            )
-            calculate_l2_error(
-                model, test_input, test_label, config["train_batch_size"]
-            )
+        model.set_train(True)
+        for _ in range(steps_per_epochs):
+            cur_loss = sink_process()
+        print(f"epoch: {epoch} train loss: {cur_loss} epoch time: {(time.time() - local_time_beg) * 1000 :.3f} ms")
+        model.set_train(False)
+        if epoch % config["eval_interval_epochs"] == 0:
+            calculate_l2_error(model, test_input, test_label, config["train_batch_size"])
 
-    visual_result(model, config)
+    visual(model, config)
 
 
 if __name__ == "__main__":

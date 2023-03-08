@@ -22,6 +22,7 @@ optimizer:
   lr: 0.001
 train_epoch: 4000
 train_batch_size: 8192
+eval_interval_epochs: 100
 vision_path: "./images"
 save_ckpt: false
 save_ckpt_path: "./ckpt"

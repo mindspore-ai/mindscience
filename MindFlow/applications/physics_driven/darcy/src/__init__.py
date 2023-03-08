@@ -14,14 +14,14 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .dataset import get_test_data, create_random_dataset
+from .dataset import create_test_dataset, create_training_dataset
 from .darcy import Darcy2D
-from .utils import visual_result, calculate_l2_error
+from .utils import visual, calculate_l2_error
 
 __all__ = [
-    "create_random_dataset",
-    "get_test_data",
+    "create_training_dataset",
+    "create_test_dataset",
     "Darcy2D",
-    "visual_result",
+    "visual",
     "calculate_l2_error",
 ]
