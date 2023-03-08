@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,59 +13,12 @@
 # limitations under the License.
 # ============================================================================
 
-import numpy as np
-
 import mindspore.common.dtype as mstype
-from mindspore import ops, nn, Tensor, Parameter
-from mindspore.ops import operations as P
+from mindspore import ops, nn, Tensor
 
-from .dft import dft1, idft1
+from .dft import SpectralConv1dDft
 from ...common.math import get_grid_1d
 from ...utils.check_func import check_param_type
-
-
-class SpectralConv1dDft(nn.Cell):
-    def __init__(self, in_channels, out_channels, modes1, resolution, compute_dtype=mstype.float32):
-        super().__init__()
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-        self.modes1 = modes1
-        self.resolution = resolution
-        self.compute_dtype = compute_dtype
-
-        self.scale = (1. / (in_channels * out_channels))
-        w_re = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1), dtype=mstype.float32)
-        w_im = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1), dtype=mstype.float32)
-        self.w_re = Parameter(w_re, requires_grad=True)
-        self.w_im = Parameter(w_im, requires_grad=True)
-        self.dft1_cell = dft1(shape=(self.resolution,),
-                              modes=modes1, compute_dtype=compute_dtype)
-        self.idft1_cell = idft1(shape=(self.resolution,),
-                                modes=modes1, compute_dtype=compute_dtype)
-
-    @staticmethod
-    def mul1d(inputs, weights):
-        weights = weights.expand_dims(0)
-        inputs = inputs.expand_dims(2)
-        out = inputs * weights
-        return out.sum(1)
-
-    def construct(self, x: Tensor):
-        x_re = x
-        x_im = ops.zeros_like(x_re)
-        x_ft_re, x_ft_im = self.dft1_cell((x_re, x_im))
-
-        w_re = P.Cast()(self.w_re, self.compute_dtype)
-        w_im = P.Cast()(self.w_im, self.compute_dtype)
-        out_ft_re = \
-            self.mul1d(x_ft_re[:, :, :self.modes1], w_re) \
-            - self.mul1d(x_ft_im[:, :, :self.modes1], w_im)
-        out_ft_im = \
-            self.mul1d(x_ft_re[:, :, :self.modes1], w_im) \
-            + self.mul1d(x_ft_im[:, :, :self.modes1], w_re)
-
-        x, _ = self.idft1_cell((out_ft_re, out_ft_im))
-        return x
 
 
 class FNOBlock(nn.Cell):

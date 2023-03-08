@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
 """init"""
 from .fno1d import FNO1D
 from .fno2d import FNO2D
+from .kno1d import KNO1D
+from .kno2d import KNO2D
 from .pdenet import PDENet
 
-__all__ = ["FNO1D", "FNO2D", "PDENet"]
+__all__ = ["FNO1D", "FNO2D", "KNO1D", "KNO2D", "PDENet"]
 
 __all__.sort()
