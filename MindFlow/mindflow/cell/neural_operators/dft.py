@@ -1,5 +1,5 @@
 ''''
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@ import numpy as np
 from scipy.linalg import dft
 
 import mindspore
-from mindspore import nn, ops, Tensor
+import mindspore.common.dtype as mstype
+from mindspore import nn, ops, Tensor, Parameter
 from mindspore.common.initializer import Zero
+from mindspore.ops import operations as P
 
 from ...utils.check_func import check_param_no_greater, check_param_value, check_param_type, check_param_even
 
@@ -350,3 +352,127 @@ def idft1(shape, modes, dim=(-1,), compute_dtype=mindspore.float32):
     check_param_no_greater(modes, "mode1", shape[0] // 2 + 1)
     modes = (modes,)
     return _idftn(shape, modes, dim=dim, compute_dtype=compute_dtype)
+
+
+class SpectralConv1dDft(nn.Cell):
+    def __init__(self, in_channels, out_channels, modes1, resolution, compute_dtype=mstype.float32):
+        super().__init__()
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.modes1 = modes1
+        self.resolution = resolution
+        self.compute_dtype = compute_dtype
+
+        self.scale = (1. / (in_channels * out_channels))
+        w_re = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1), dtype=mstype.float32)
+        w_im = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1), dtype=mstype.float32)
+        self.w_re = Parameter(w_re, requires_grad=True)
+        self.w_im = Parameter(w_im, requires_grad=True)
+        self.dft1_cell = dft1(shape=(self.resolution,),
+                              modes=modes1, compute_dtype=compute_dtype)
+        self.idft1_cell = idft1(shape=(self.resolution,),
+                                modes=modes1, compute_dtype=compute_dtype)
+
+    @staticmethod
+    def mul1d(inputs, weights):
+        weights = weights.expand_dims(0)
+        inputs = inputs.expand_dims(2)
+        out = inputs * weights
+        return out.sum(1)
+
+    def construct(self, x: Tensor):
+        x_re = x
+        x_im = ops.zeros_like(x_re)
+        x_ft_re, x_ft_im = self.dft1_cell((x_re, x_im))
+
+        w_re = P.Cast()(self.w_re, self.compute_dtype)
+        w_im = P.Cast()(self.w_im, self.compute_dtype)
+        out_ft_re = \
+            self.mul1d(x_ft_re[:, :, :self.modes1], w_re) \
+            - self.mul1d(x_ft_im[:, :, :self.modes1], w_im)
+        out_ft_im = \
+            self.mul1d(x_ft_re[:, :, :self.modes1], w_im) \
+            + self.mul1d(x_ft_im[:, :, :self.modes1], w_re)
+
+        x, _ = self.idft1_cell((out_ft_re, out_ft_im))
+        return x
+
+
+class SpectralConv2dDft(nn.Cell):
+    def __init__(self, in_channels, out_channels, modes1, modes2, column_resolution, raw_resolution,
+                 compute_dtype=mstype.float16):
+        super().__init__()
+
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.modes1 = modes1
+        self.modes2 = modes2
+        self.column_resolution = column_resolution
+        self.raw_resolution = raw_resolution
+        self.compute_dtype = compute_dtype
+
+        self.scale = (1. / (in_channels * out_channels))
+
+        w_re1 = Tensor(
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2),
+            dtype=compute_dtype)
+        w_im1 = Tensor(
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2),
+            dtype=compute_dtype)
+        w_re2 = Tensor(
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2),
+            dtype=compute_dtype)
+        w_im2 = Tensor(
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2),
+            dtype=compute_dtype)
+
+        self.w_re1 = Parameter(w_re1, requires_grad=True)
+        self.w_im1 = Parameter(w_im1, requires_grad=True)
+        self.w_re2 = Parameter(w_re2, requires_grad=True)
+        self.w_im2 = Parameter(w_im2, requires_grad=True)
+
+        self.dft2_cell = dft2(shape=(column_resolution, raw_resolution), modes=(modes1, modes2),
+                              compute_dtype=compute_dtype)
+        self.idft2_cell = idft2(shape=(column_resolution, raw_resolution), modes=(modes1, modes2),
+                                compute_dtype=compute_dtype)
+        self.mat = Tensor(shape=(1, out_channels, column_resolution - 2 * modes1, modes2), dtype=compute_dtype,
+                          init=Zero())
+        self.concat = ops.Concat(-2)
+
+    @staticmethod
+    def mul2d(inputs, weights):
+        weight = weights.expand_dims(0)
+        data = inputs.expand_dims(2)
+        out = weight * data
+        return out.sum(1)
+
+    def construct(self, x: Tensor):
+        x_re = x
+        x_im = ops.zeros_like(x_re)
+        x_ft_re, x_ft_im = self.dft2_cell((x_re, x_im))
+
+        out_ft_re1 = \
+            self.mul2d(x_ft_re[:, :, :self.modes1, :self.modes2], self.w_re1) \
+            - self.mul2d(x_ft_im[:, :, :self.modes1, :self.modes2], self.w_im1)
+        out_ft_im1 = \
+            self.mul2d(x_ft_re[:, :, :self.modes1, :self.modes2], self.w_im1) \
+            + self.mul2d(x_ft_im[:, :, :self.modes1, :self.modes2], self.w_re1)
+
+        out_ft_re2 = \
+            self.mul2d(x_ft_re[:, :, -self.modes1:, :self.modes2], self.w_re2) \
+            - self.mul2d(x_ft_im[:, :, -self.modes1:, :self.modes2], self.w_im2)
+        out_ft_im2 = \
+            self.mul2d(x_ft_re[:, :, -self.modes1:, :self.modes2], self.w_im2) \
+            + self.mul2d(x_ft_im[:, :, -self.modes1:, :self.modes2], self.w_re2)
+
+        batch_size = x.shape[0]
+        mat = self.mat.repeat(batch_size, 0)
+        out_re = self.concat((out_ft_re1, mat, out_ft_re2))
+        out_im = self.concat((out_ft_im1, mat, out_ft_im2))
+
+        x, _ = self.idft2_cell((out_re, out_im))
+        return x
