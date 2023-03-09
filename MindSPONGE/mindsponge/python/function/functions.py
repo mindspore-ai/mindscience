@@ -163,9 +163,6 @@ class GatherNet(ms.nn.Cell):
         return params_grad, zeros_like(orig_indices), zeros_like(axis)
 
 
-gather = GatherNet() if context.get_context("device_target") == "Ascend" else ops.Gather()
-
-
 @jit
 def norm_last_dim(vector: Tensor) -> Tensor:
     r"""Compute the norm of vector, delete the last dims
@@ -412,7 +409,7 @@ def gather_vectors(tensor: Tensor, index: Tensor) -> Tensor:
     Supported Platforms:
         ``Ascend`` ``GPU``
     """
-
+    gather = GatherNet() if context.get_context("device_target") == "Ascend" else ops.Gather()
     if index.shape[0] == 1:
         index1 = ops.reshape(index, index.shape[1:])
         if tensor.shape[0] == 1:
@@ -457,7 +454,7 @@ def gather_values(tensor: Tensor, index: Tensor) -> Tensor:
     Supported Platforms:
         ``Ascend`` ``GPU``
     """
-
+    gather = GatherNet() if context.get_context("device_target") == "Ascend" else ops.Gather()
     if index.shape[0] == 1:
         index1 = ops.reshape(index, index.shape[1:])
         if tensor.shape[0] == 1:

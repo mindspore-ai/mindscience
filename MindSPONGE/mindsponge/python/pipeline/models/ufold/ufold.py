@@ -98,7 +98,7 @@ class UFold(Model):
         self.train_net = TrainOneStepCell(self.loss_net, self.u_optimizer)
         if self.config.is_training:
             self.train_net.set_train()
-        super().__init__(self.checkpoint_url, self.network)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network)
 
 
     def forward(self, data):

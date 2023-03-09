@@ -55,7 +55,7 @@ class GraphDTA(Model):
         else:
             self.network.set_train(False)
 
-        super().__init__(self.checkpoint_url, self.network, self.name, self.white_list)
+        super().__init__(self.checkpoint_url, network=self.network, name=self.name, white_list=self.white_list)
 
     @jit
     def backward(self, data):

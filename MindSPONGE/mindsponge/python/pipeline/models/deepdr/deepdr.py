@@ -96,7 +96,7 @@ class DeepDR(Model):
             self.train_wrapper.set_train()
         else:
             self.train_wrapper.set_train(False)
-        super().__init__(self.checkpoint_url, self.network)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network)
 
 
     def forward(self, data):
