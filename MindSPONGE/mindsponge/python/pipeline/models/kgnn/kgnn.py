@@ -67,7 +67,7 @@ class KGNN(Model):
             self.train_wrapper.set_train()
         else:
             self.network.set_train(False)
-        super().__init__(self.checkpoint_url, self.network)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network)
 
 
     def forward(self, data):

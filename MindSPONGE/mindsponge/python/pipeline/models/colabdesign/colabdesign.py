@@ -72,7 +72,7 @@ class COLABDESIGN(Model):
         model_params = [Parameter(Tensor(seq_vector, ms.float16))]
         opt = get_opt(model_params, lr, 0.0, self.config.opt_choice)
         self.train_net = TrainOneStepCell(net_with_criterion, opt, sens=8192)
-        super().__init__(self.checkpoint_url, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
 
     # pylint: disable=arguments-differ
     def predict(self, data):

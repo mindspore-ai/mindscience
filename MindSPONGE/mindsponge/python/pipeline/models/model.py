@@ -33,11 +33,11 @@ from mindsponge.pipeline.cell.amp import amp_convert
 
 class Model(metaclass=ABCMeta):
     """Model"""
-    def __init__(self, checkpoint_url=None, network=None, name=None, white_list=None):
+    def __init__(self, checkpoint_url=None, checkpoint_path=None, network=None, name=None, white_list=None):
         self.cache = None
         self.ckpt_path = None
         self.checkpoint_url = checkpoint_url
-        self.checkpoint_path = None
+        self.checkpoint_path = checkpoint_path
         self.name = name
         self.network = network
         self.white_list = white_list
@@ -64,9 +64,6 @@ class Model(metaclass=ABCMeta):
 
     def set_cache(self, path):
         self.cache = path
-
-    def set_checkpoint_path(self, path):
-        self.ckpt_path = path
 
     def from_pretrained(self, ckpt_path=None):
         if ckpt_path is not None:

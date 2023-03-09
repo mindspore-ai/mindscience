@@ -76,7 +76,7 @@ class MEGAAssessment(Model):
         lr = 0.0001
         opt = nn.Adam(params=self.network.trainable_params(), learning_rate=lr, eps=1e-6)
         self.train_net = TrainOneStepCell(net_with_criterion, opt, sens=1, gradient_clip_value=0.1)
-        super().__init__(self.checkpoint_url, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
 
     # pylint: disable=arguments-differ
     def forward(self, data, run_pretrain=True):

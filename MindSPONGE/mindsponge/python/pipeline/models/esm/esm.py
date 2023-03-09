@@ -49,7 +49,7 @@ class ESM(Model):
         opt = nn.Adam(net_with_loss.trainable_params(), learning_rate=0.0001, eps=1e-6)
         self.train_net = TrainOneStepCell(net_with_loss, opt)
         self.train_net.set_train()
-        super().__init__(self.checkpoint_url, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
 
     def forward(self, data):
         if self.use_jit:

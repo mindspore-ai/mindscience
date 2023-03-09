@@ -61,7 +61,7 @@ class PAFNUCY(Model):
                                      isize=config.isize, keep_prob=1.0)
             self.network.set_train(False)
 
-        super().__init__(self.checkpoint_url, self.network)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network)
 
 
     def forward(self, data):
