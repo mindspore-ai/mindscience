@@ -38,13 +38,13 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 import os
 import stat
 import pickle
-from mindsponge import Pipeline
-from mindsponge.common.protein import to_pdb, from_prediction
+from mindsponge import PipeLine
+from mindsponge.common.protein import to_pdb_v2, from_prediction_v2
 
 cmd = "wget https://download.mindspore.cn/mindscience/mindsponge/Multimer/examples/6T36.pkl"
 os.system(cmd)
 
-pipe = Pipeline(name="Multimer")
+pipe = PipeLine(name="Multimer")
 pipe.set_device_id(0)
 pipe.initialize("predict_256")
 pipe.model.from_pretrained()
@@ -56,7 +56,9 @@ unrelaxed_protein = from_prediction_v2(final_atom_positions,
                                        final_atom_mask,
                                        raw_feature["aatype"],
                                        raw_feature["residue_index"],
-                                       b_factors)
+                                       b_factors,
+                                       raw_feature["asym_id"],
+                                       False)
 pdb_file = to_pdb_v2(unrelaxed_protein)
 os.makedirs('./result/', exist_ok=True)
 os_flags = os.O_RDWR | os.O_CREAT
