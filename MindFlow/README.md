@@ -64,8 +64,8 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 ### Data Driven
 
-- [FNO for 1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers)
-- [FNO for 2D Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes)
+- [FNO for 1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers_fno)
+- [FNO for 2D Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_fno)
 
 ### Data-Mechanism Fusion
 
