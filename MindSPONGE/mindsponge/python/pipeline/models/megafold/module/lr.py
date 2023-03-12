@@ -20,10 +20,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Models"""
-from .multimer import Multimer, MultimerDataSet, multimer_configuration
-from .colabdesign import COLABDESIGN, ColabDesignDataSet, colabdesign_configuration
-from .kgnn import KGNN, KGNNDataSet, kgnn_configuration
-from .ufold import UFold, UFoldDataSet, ufold_configuration
-from .deepdr import DeepDR, DeepDRDataSet, deepdr_configuration
-from .megafold import MEGAFold, MEGAFoldDataSet, megafold_configuration
+"""learning rate"""
+
+import math
+import numpy as np
+
+
+def cos_decay_lr(start_step, lr_init, lr_min, lr_max, decay_steps, warmup_steps):
+    """cosine decay learning rate"""
+    lr_each_step = []
+    for i in range(decay_steps):
+        if i < warmup_steps:
+            lr_inc = (float(lr_max) - float(lr_init)) / float(warmup_steps)
+            lr = float(lr_init) + lr_inc * (i + 1)
+        else:
+            lr = lr_min + 0.5 * (lr_max-lr_min) * \
+                (1 + math.cos((i - warmup_steps) / decay_steps * math.pi))
+        lr_each_step.append(lr)
+    lr_each_step = np.array(lr_each_step).astype(np.float32)
+    return lr_each_step[start_step:]
