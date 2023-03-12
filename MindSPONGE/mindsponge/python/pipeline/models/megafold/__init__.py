@@ -20,10 +20,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Models"""
-from .multimer import Multimer, MultimerDataSet, multimer_configuration
-from .colabdesign import COLABDESIGN, ColabDesignDataSet, colabdesign_configuration
-from .kgnn import KGNN, KGNNDataSet, kgnn_configuration
-from .ufold import UFold, UFoldDataSet, ufold_configuration
-from .deepdr import DeepDR, DeepDRDataSet, deepdr_configuration
-from .megafold import MEGAFold, MEGAFoldDataSet, megafold_configuration
+"""megafold"""
+
+from .megafold import MEGAFold
+from .megafold_dataset import MEGAFoldDataSet
+from .megafold_configuration import megafold_configuration

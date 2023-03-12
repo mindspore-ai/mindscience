@@ -24,8 +24,10 @@ from .models import COLABDESIGN, ColabDesignDataSet, colabdesign_configuration
 from .models import KGNN, KGNNDataSet, kgnn_configuration
 from .models import UFold, UFoldDataSet, ufold_configuration
 from .models import DeepDR, DeepDRDataSet, deepdr_configuration
+from .models import MEGAFold, MEGAFoldDataSet, megafold_configuration
 
 model_card = {
+    "MEGAFold": {"model": MEGAFold, "dataset": MEGAFoldDataSet, "config": megafold_configuration},
     "Multimer": {"model": Multimer, "dataset": MultimerDataSet, "config": multimer_configuration},
     "ColabDesign": {"model": COLABDESIGN, "dataset": ColabDesignDataSet, "config": colabdesign_configuration},
     "KGNN": {"model": KGNN, "dataset": KGNNDataSet, "config": kgnn_configuration},
