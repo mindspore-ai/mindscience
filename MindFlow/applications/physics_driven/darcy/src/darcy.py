@@ -25,12 +25,14 @@ from mindflow.pde import PDEWithLoss, sympy_to_mindspore
 
 class Darcy2D(PDEWithLoss):
     r"""
-    The steady-state 2D Darcy flow's equations with Dirichlet boundary condition
+    The steady-state 2D Darcy flow problem based on PDEWithLoss.
 
     Args:
-      model (Cell): The solving network.
-      domain_name (str): The corresponding column name of data which governed by maxwell's equation.
-      bc_name (str): The corresponding column name of data which governed by boundary condition.
+        model (Cell): The solving network.
+        loss_fn (str): Define the loss function. Default: mse.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self, model, loss_fn=nn.MSELoss()):
@@ -45,11 +47,19 @@ class Darcy2D(PDEWithLoss):
         super(Darcy2D, self).__init__(model, self.in_vars, self.out_vars)
 
     def force_function(self, x, y):
-        """ "forcing function in Darcy Equation"""
+        """
+        Define forcing function in Darcy Equation
+
+        Args:
+            x (Tensor): x coordinate.
+            y (Tensor): y coordinate.
+        """
         return 8 * pi**2 * sin(2 * pi * x) * cos(2 * pi * y)
 
     def pde(self):
-        """darcy equation"""
+        """
+        Define darcy equation
+        """
         loss_1 = (
             self.u.diff(self.x)
             + self.v.diff(self.y)
@@ -60,7 +70,9 @@ class Darcy2D(PDEWithLoss):
         return {"loss_1": loss_1, "loss_2": loss_2, "loss_3": loss_3}
 
     def bc(self):
-        """Dirichlet boundary condition"""
+        """
+        Define Dirichlet boundary condition equations based on sympy.
+        """
         u_boundary = self.u - (-2 * pi * cos(2 * pi * self.x) * cos(2 * pi * self.y))
 
         v_boundary = self.v - (2 * pi * sin(2 * pi * self.x) * sin(2 * pi * self.y))
@@ -76,6 +88,10 @@ class Darcy2D(PDEWithLoss):
     def get_loss(self, pde_data, bc_data):
         """
         Compute loss of 2 parts: governing equation and boundary conditions.
+
+        Args:
+            pde_data (Tensor): the input data of governing equations.
+            bc_data (Tensor): the input data of boundary condition.
         """
         pde_res = ops.Concat(1)(self.parse_node(self.pde_nodes, inputs=pde_data))
         pde_loss = self.loss_fn(
