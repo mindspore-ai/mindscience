@@ -1,5 +1,5 @@
-mindelec.data.PointCloud
-========================
+mindelec.data.PointCloudSamplingConfig
+=======================================
 
 .. py:class:: mindelec.data.PointCloudSamplingConfig(sampling_mode, bbox_type, mode_args=None, bbox_args=None)
 
