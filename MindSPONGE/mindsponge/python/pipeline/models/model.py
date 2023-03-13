@@ -69,8 +69,11 @@ class Model(metaclass=ABCMeta):
         self.ckpt_path = path
 
     def from_pretrained(self, ckpt_path=None):
+        "from_pretrained"
         if ckpt_path is not None:
             self.checkpoint_path = ckpt_path
+        if self.checkpoint_path is None:
+            self.checkpoint_path = "./"
         if not os.path.exists(self.checkpoint_path):
             print("Download checkpoint to ", self.checkpoint_path)
             # pylint: disable=protected-access

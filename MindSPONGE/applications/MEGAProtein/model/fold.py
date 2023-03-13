@@ -284,14 +284,16 @@ class MegaFold(nn.Cell):
             experimentally_logits = self.module_exp_resolved(single_activations)
             masked_logits = self.module_mask(msa)
             aligned_error_logits, aligned_error_breaks = self.aligned_error(pair_activations)
-            return dist_logits, bin_edges, experimentally_logits, masked_logits, aligned_error_logits, \
-                   aligned_error_breaks, atom14_pred_positions, final_affines, angles_sin_cos_new, \
-                   predicted_lddt_logits, structure_traj, sidechain_frames, sidechain_atom_pos, \
-                   um_angles_sin_cos_new, final_atom_positions
+            all_logits = dist_logits, bin_edges, experimentally_logits, masked_logits, aligned_error_logits, \
+                         aligned_error_breaks, atom14_pred_positions, final_affines, angles_sin_cos_new, \
+                         predicted_lddt_logits, structure_traj, sidechain_frames, sidechain_atom_pos, \
+                         um_angles_sin_cos_new, final_atom_positions
+            return all_logits
         final_atom_positions = P.Cast()(final_atom_positions, self._type)
         prev_pos = final_atom_positions
         prev_msa_first_row = msa_first_row
         prev_pair = pair_activations
         if self.is_training:
             return prev_pos, prev_msa_first_row, prev_pair
-        return prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits
+        all_val = prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits
+        return all_val

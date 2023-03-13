@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""warp cell"""
+"""wrap cell"""
 
 import mindspore.nn as nn
 import mindspore.common.dtype as mstype
