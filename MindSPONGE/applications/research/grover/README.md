@@ -21,7 +21,7 @@ GROVER将消息传递网络与Transformer式的架构结合起来，提供了一
       ├─molgraph.py                   # 分子图表示数据
       ├─scaler.py                     # 归一化操作
       ├─task_labels.py                # 标签提取工具
-      ├─torchvocab.py                 # 建立词汇表工具
+      ├─mindsporevocab.py             # 建立词汇表工具
       ├─transforms.py                 # 特征生成器
     ├─model
       ├─layers.py                     # grove网络组件

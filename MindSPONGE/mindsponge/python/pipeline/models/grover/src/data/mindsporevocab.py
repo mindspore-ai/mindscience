@@ -24,11 +24,11 @@ from multiprocessing import Pool
 import tqdm
 from rdkit import Chem
 
-from src.data.task_labels import atom_to_vocab
-from src.data.task_labels import bond_to_vocab
+from ..data.task_labels import atom_to_vocab
+from ..data.task_labels import bond_to_vocab
 
 
-class TorchVocab:
+class MsVocab:
     """
     Defines the vocabulary for atoms/bonds in molecular.
     """
@@ -78,6 +78,13 @@ class TorchVocab:
     def __len__(self):
         return len(self.itos)
 
+    @staticmethod
+    def load_vocab(vocab_path: str):
+        flags = os.O_RDONLY
+        modes = stat.S_IWUSR | stat.S_IRUSR
+        with os.fdopen(os.open(vocab_path, flags, modes), 'rb') as f:
+            return pickle.load(f)
+
     def vocab_rerank(self):
         self.stoi = {word: i for i, word in enumerate(self.itos)}
 
@@ -104,15 +111,8 @@ class TorchVocab:
         with os.fdopen(os.open(vocab_path, flags, modes), 'wb') as f:
             pickle.dump(self, f)
 
-    @staticmethod
-    def load_vocab(vocab_path: str):
-        flags = os.O_RDONLY
-        modes = stat.S_IWUSR | stat.S_IRUSR
-        with os.fdopen(os.open(vocab_path, flags, modes), 'rb') as f:
-            return pickle.load(f)
 
-
-class MolVocab(TorchVocab):
+class MolVocab(MsVocab):
     """
     Mol vocab.
     """

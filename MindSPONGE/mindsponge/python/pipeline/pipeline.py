@@ -57,12 +57,12 @@ class PipeLine:
         self.dataset = None
         self.config_path = "./config/"
 
-    def initialize(self, key, config_path=None):
+    def initialize(self, key=None, config_path=None, **kwargs):
         if config_path is None:
             config = download_config(self.config[key], self.config_path + key + ".yaml")
         else:
             config = load_config(config_path)
-        self.model = self.model_cls(config)
+        self.model = self.model_cls(config, **kwargs)
         self.dataset = self.dataset_cls(config)
 
     def set_device_id(self, device_id):
