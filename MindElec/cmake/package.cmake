@@ -9,11 +9,11 @@ set(CPACK_TEMPORARY_PACKAGE_FILE_NAME ${CMAKE_SOURCE_DIR}/build/package/mindelec
 set(CPACK_TEMPORARY_INSTALL_DIRECTORY ${CMAKE_SOURCE_DIR}/build/package/mindelec)
 
 if(ENABLE_D)
-    set(CPACK_MS_PACKAGE_NAME "mindscience_mindelec_ascend")
+    set(CPACK_MS_PACKAGE_NAME "mindelec_ascend")
 elseif(ENABLE_GPU)
-    set(CPACK_MS_PACKAGE_NAME "mindscience_mindelec_gpu")
+    set(CPACK_MS_PACKAGE_NAME "mindelec_gpu")
 else()
-    set(CPACK_MS_PACKAGE_NAME "mindscience_mindelec_ascend")
+    set(CPACK_MS_PACKAGE_NAME "mindelec_ascend")
 endif()
 include(CPack)
 
