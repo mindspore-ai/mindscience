@@ -34,10 +34,6 @@ from src.metric import MyMSELoss, EvalMetric
 set_seed(0)
 np.random.seed(0)
 
-context.set_context(mode=context.GRAPH_MODE,
-                    save_graphs=False,
-                    device_target="Ascend")
-
 
 class TimeMonitor(Callback):
     """
@@ -90,6 +86,10 @@ def init_weight(net):
 @pytest.mark.env_onecard
 def test_s_predictor_train():
     """training"""
+    context.set_context(mode=context.GRAPH_MODE,
+                        save_graphs=False,
+                        device_target="Ascend")
+
     train_input_path = "input.npy"
     train_label_path = "label.npy"
     train_input = np.ones((100, 496, 20, 40, 3), np.float32)

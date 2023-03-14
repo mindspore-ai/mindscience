@@ -21,8 +21,6 @@ from mindspore import Tensor
 from mindspore import context
 from mindelec.common import L2
 
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
-
 
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend_training
@@ -30,6 +28,7 @@ context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
 @pytest.mark.env_onecard
 def test_l2():
     """test l2"""
+    context.set_context(mode=context.GRAPH_MODE)
     x = Tensor(np.array([0.1, 0.2, 0.6, 0.9]), mindspore.float32)
     y = Tensor(np.array([0.1, 0.25, 0.7, 0.9]), mindspore.float32)
     metric = L2()

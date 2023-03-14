@@ -37,7 +37,6 @@ test_data_path = "/home/workspace/mindspore_dataset/mindelec_data/ae_data/test_d
 set_seed(0)
 
 print("pid:", os.getpid())
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
 
 class TimeMonitor(Callback):
     """
@@ -90,6 +89,7 @@ def init_weight(net):
 @pytest.mark.env_onecard
 def test_auto_encoder():
     """training"""
+    context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
 
     model_net = EncoderDecoder(config["input_channels"], config["patch_shape"], config["base_channels"], decoding=True)
     init_weight(net=model_net)

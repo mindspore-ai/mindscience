@@ -38,8 +38,6 @@ from src.lr_scheduler import MultiStepLR
 set_seed(123456)
 np.random.seed(123456)
 
-context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend", save_graphs_path="./graph")
-
 
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend_training
@@ -47,6 +45,8 @@ context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="A
 @pytest.mark.env_onecard
 def test_time_domain_maxwell():
     """training process"""
+    context.set_context(mode=context.GRAPH_MODE, save_graphs=False, save_graphs_path="./graph", device_target="Ascend")
+
     config = json.load(open("./config.json"))
     print("check config: {}".format(config))
     if config["random_sampling"]:
@@ -74,8 +74,7 @@ def test_time_domain_maxwell():
                              scale_factor=config["scale_factor"]
                              )
 
-    model.to_float(mstype.float16)
-    model.input_scale.to_float(mstype.float32)
+    model.cell_list.to_float(mstype.float16)
     mtl = MTLWeightedLossCell(num_losses=elec_train_dataset.num_dataset)
 
     # define problem

@@ -32,8 +32,6 @@ from mindelec.common import L2
 set_seed(0)
 np.random.seed(0)
 
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
-
 
 class NetWithoutLoss(nn.Cell):
     """define network"""
@@ -67,6 +65,7 @@ def test_solver():
     """
     test solver
     """
+    context.set_context(mode=context.GRAPH_MODE)
     input_path = "./input.npy"
     label_path = "./label.npy"
     input = np.random.randn(1000, 3)

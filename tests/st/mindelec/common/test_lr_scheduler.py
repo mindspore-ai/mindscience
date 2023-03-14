@@ -19,8 +19,6 @@ from mindspore.common.tensor import Tensor
 from mindspore.common import dtype as mstype
 from mindelec.common import LearningRate, get_poly_lr
 
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
-
 
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend_training
@@ -28,6 +26,7 @@ context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
 @pytest.mark.env_onecard
 def test_learning_rate():
     """test LearningRate"""
+    context.set_context(mode=context.GRAPH_MODE)
     learning_rate = LearningRate(0.1, 0.001, 0, 10, 0.5)
     res = learning_rate(Tensor(10000, mstype.int32))
     assert res == 0.001
@@ -38,6 +37,7 @@ def test_learning_rate():
 @pytest.mark.platform_x86_ascend_training
 @pytest.mark.env_onecard
 def test_learning_rate_power_value_error():
+    context.set_context(mode=context.GRAPH_MODE)
     with pytest.raises(ValueError):
         LearningRate(0.1, 0.001, 0, 10, -0.5)
 
@@ -48,6 +48,7 @@ def test_learning_rate_power_value_error():
 @pytest.mark.env_onecard
 def test_learning_rate_warmup_steps_type_error():
     """test TypeError cases"""
+    context.set_context(mode=context.GRAPH_MODE)
     with pytest.raises(TypeError):
         LearningRate(0.1, 0.001, 0.1, 10, 0.5)
     with pytest.raises(ValueError):
@@ -69,6 +70,7 @@ def test_learning_rate_warmup_steps_type_error():
 @pytest.mark.env_onecard
 def test_get_poly_lr():
     """test get_poly_lr"""
+    context.set_context(mode=context.GRAPH_MODE)
     res = get_poly_lr(100, 0.001, 0.1, 0.0001, 1000, 10000, 0.5)
     assert res.shape == (9900,)
     with pytest.raises(ValueError):
@@ -88,5 +90,6 @@ def test_get_poly_lr():
 @pytest.mark.env_onecard
 def test_get_poly_lr1():
     """test get_poly_lr"""
+    context.set_context(mode=context.GRAPH_MODE)
     res = get_poly_lr(100, 0.001, 0.1, 0.0001, 0, 10000, 0.5)
     assert res.shape == (9900,)

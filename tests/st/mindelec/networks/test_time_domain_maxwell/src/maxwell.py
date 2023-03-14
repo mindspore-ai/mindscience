@@ -93,10 +93,13 @@ class Maxwell2DMur(Problem):
     def governing_equation(self, *output, **kwargs):
         """maxwell equation of TE mode wave"""
         u = output[0]
-        data = kwargs[self.domain_name]
-        x = self.reshape(data[:, 0], (-1, 1))
-        y = self.reshape(data[:, 1], (-1, 1))
-        t = self.reshape(data[:, 2], (-1, 1))
+        data = kwargs.get(self.domain_name, None)
+        if data is not None:
+            x = self.reshape(data[:, 0], (-1, 1))
+            y = self.reshape(data[:, 1], (-1, 1))
+            t = self.reshape(data[:, 2], (-1, 1))
+        else:
+            raise KeyError("dict key error!")
 
         dex_dxyt = self.grad(data, None, 0, u)
         _, dex_dy, dex_dt = self.split(dex_dxyt)
@@ -134,16 +137,19 @@ class Maxwell2DMur(Problem):
     def boundary_condition(self, *output, **kwargs):
         """2nd-order mur boundary condition"""
         u = output[0]
-        data = kwargs[self.bc_name]
+        data = kwargs.get(self.bc_name, None)
+        if data is not None:
+            coord_min = self.coord_min
+            coord_max = self.coord_max
+            batch_size, _ = data.shape
+            attr = ms_np.zeros(shape=(batch_size, 4))
+        else:
+            raise KeyError("dict key error!")
 
-        coord_min = self.coord_min
-        coord_max = self.coord_max
-        batch_size, _ = data.shape
-        attr = ms_np.zeros(shape=(batch_size, 4))
-        attr[:, 0] = ms_np.where(ms_np.isclose(data[:, 0], coord_min[0]), 1.0, 0.0)
-        attr[:, 1] = ms_np.where(ms_np.isclose(data[:, 0], coord_max[0]), 1.0, 0.0)
-        attr[:, 2] = ms_np.where(ms_np.isclose(data[:, 1], coord_min[1]), 1.0, 0.0)
-        attr[:, 3] = ms_np.where(ms_np.isclose(data[:, 1], coord_max[1]), 1.0, 0.0)
+        attr[:, 0] = ms_np.where(ms_np.equal(data[:, 0], float(coord_min[0])), 1.0, 0.0)
+        attr[:, 1] = ms_np.where(ms_np.equal(data[:, 0], float(coord_max[0])), 1.0, 0.0)
+        attr[:, 2] = ms_np.where(ms_np.equal(data[:, 1], float(coord_min[1])), 1.0, 0.0)
+        attr[:, 3] = ms_np.where(ms_np.equal(data[:, 1], float(coord_max[1])), 1.0, 0.0)
 
         dex_dxyt = self.grad(data, None, 0, u)
         _, dex_dy, _ = self.split(dex_dxyt)
