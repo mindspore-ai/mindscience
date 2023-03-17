@@ -60,6 +60,5 @@ def load_yaml_config(file_path):
     # Read YAML experiment definition file
     with open(file_path, 'r') as stream:
         config = yaml.safe_load(stream)
-    config = _make_paths_absolute(os.path.join(
-        os.path.dirname(file_path), ".."), config)
+    config = _make_paths_absolute(os.path.dirname(file_path), config)
     return config
