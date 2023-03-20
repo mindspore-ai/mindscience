@@ -13,7 +13,7 @@ mindflow.data.ExistedDataset
         - **data_dir** (Union[str, list, tuple], 可选) - 已存在数据文件的路径，默认值：None。如果 `data_config` 为None， `data_dir` 不应为None。
         - **columns_list** (Union[str, list, tuple], 可选) - 数据集的列名列表，默认值：None。如果 `data_config` 为None， `columns_list` 不应为None。
         - **data_format** (str, 可选) - 现有数据文件的格式，默认值：“npy”。
-        - **constraint_type** (str, 可选) - 指定创建的数据集的约束类型，默认值：“Label”。
+        - **constraint_type** (str, 可选) - 指定创建的数据集的约束类型，默认值：“Label”，其他支持的类型可详见mindflow.data.Dataset。
         - **random_merge** (bool, 可选) - 指定是否随机合并给定的数据集，默认值：True。
         - **data_config** (ExistedDataConfig, 可选) - ExistedDataConfig实例，收集上述的信息，默认值：None。如果非None，则将通过使用它来简化创建数据集类。如果为None，则(`name`, `data_dir`, `columns_list`, `data_format`, `constraint_type`, `random_merge`)的信息用于替换。
 

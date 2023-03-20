@@ -6,7 +6,7 @@ mindflow.pde.sympy_to_mindspore
     将sympy定义的符号方程转换为MindSpore能够支持的语法。
 
     参数：
-        - **equations** (dict) - 自定义偏微分方程组，每个方程的健由用户定义，其值为sympy表达式。
+        - **equations** (dict) - 自定义偏微分方程组，每个方程的键由用户定义，其值为sympy表达式。
         - **in_vars** (list[sympy.core.Symbol]) - 求解偏微分方程网络模型的输入参数，sympy符号表示的自变量，和输入数据的维度一致。
         - **out_vars** (list[sympy.core.Function]) - 求解偏微分方程网络模型的输出参数，sympy符号表示的因变量，和输出数据的维度一致。
 

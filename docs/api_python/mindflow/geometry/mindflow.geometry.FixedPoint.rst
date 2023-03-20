@@ -3,7 +3,7 @@ mindflow.geometry.FixedPoint
 
 .. py:class:: mindflow.geometry.FixedPoint(name, coord, dtype=np.float32, sampling_config=None)
 
-    HyperCube对象的定义。
+    固定点对象的定义。
 
     参数：
         - **name** (str) - 定点的名称。
@@ -16,10 +16,10 @@ mindflow.geometry.FixedPoint
         采样点。
 
         参数：
-            - **geom_type** (str) - 几何类型。默认值：'domain'。
+            - **geom_type** (str) - 几何类型，支持'domain'和'BC'。默认值：'domain'。
 
         返回：
-            Numpy.array，带或不带边界法向向量的二维numpy数组。
+            Numpy.ndarray，带或不带边界法向向量的二维numpy数组。
 
         异常：
             - **ValueError** - 如果 `config` 为None。
