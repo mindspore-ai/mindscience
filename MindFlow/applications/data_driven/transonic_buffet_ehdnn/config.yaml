@@ -1,0 +1,26 @@
+data:
+  data_dir: "./dataset"
+  data_length: 2200
+  train_ratio: 0.8
+model:
+  in_channels: 3
+  out_channels: 128
+  num_layers: 7
+  kernel_size_conv: 3
+  kernel_size_lstm: 2
+optimizer:
+  lr: 0.00005
+  epochs: 400
+  eval_interval: 10
+  save_ckpt_interval: 10
+  summary_dir: "./summary" #The directory where the training process files are saved
+prediction:
+  history_length: 16  # The length of the historical flow field time series involved in the prediction process
+  prediction_length: 84 # The length of the predicted flow field time series involved in the prediction process
+  ckpt_path: "./summary/ckpt/net_400.ckpt"  # the path of ckpt file used in prediction process
+  prediction_result_dir: "./prediction_result" #The directory where the  prediction results are saved
+postprocess:
+  foil_path: "./dataset/foil_oat15a.npy"   #The path of the airfoil OAT15A geometry file
+  size_field: 200
+  x_range: [ -0.0235, 0.275 ]
+  y_range: [ -0.0285, 0.27 ]
