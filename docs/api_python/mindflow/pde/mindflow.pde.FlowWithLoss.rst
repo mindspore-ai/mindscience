@@ -19,4 +19,4 @@ mindflow.pde.FlowWithLoss
 
         参数：
             - **inputs** (Tensor) - 网络模型的输入数据。
-            - **labels** (Tensor) - 损失函数。默认值：'mse'。
+            - **labels** (Tensor) - 样本的真值。

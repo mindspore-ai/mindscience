@@ -3,7 +3,7 @@ mindflow.cell.FCSequential
 
 .. py:class:: mindflow.cell.FCSequential(in_channels, out_channels, layers, neurons, residual=True, act="sin", weight_init="normal", has_bias=True, bias_init="default", weight_norm=False)
 
-    全连接层的一个时序容器，按序放入全连接层。
+    一个全连接层的顺序容器，按序放入全连接层。
 
     参数：
         - **in_channels** (int) - 输入中的通道数。

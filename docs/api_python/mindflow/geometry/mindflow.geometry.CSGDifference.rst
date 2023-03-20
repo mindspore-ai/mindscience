@@ -3,7 +3,7 @@ mindflow.geometry.CSGDifference
 
 .. py:class:: mindflow.geometry.CSGDifference(geom1, geom2, sampling_config=None)
 
-    几何差异的CSG类。
+    用于计算几何差异的CSG类。
 
     参数：
         - **geom1** (Geometry) - 几何体对象。

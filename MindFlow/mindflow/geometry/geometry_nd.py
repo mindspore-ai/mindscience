@@ -28,7 +28,7 @@ _SPACE = " "
 
 class FixedPoint(Geometry):
     r"""
-    Definition of HyperCube object.
+    Definition of fixed point object.
 
     Args:
         name (str): name of the fixed point.
