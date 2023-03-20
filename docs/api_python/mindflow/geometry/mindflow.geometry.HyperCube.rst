@@ -27,7 +27,7 @@ mindflow.geometry.HyperCube
               - "BC": 问题的边界条件。
 
         返回：
-            Numpy.array，如果配置选择包括法向向量，返回带边界法向向量的二维numpy数组。否则返回不带边界法向向量的二维numpy数组。
+            Numpy.ndarray，如果配置选择包括法向向量，返回带边界法向向量的二维numpy数组。否则返回不带边界法向向量的二维numpy数组。
 
         异常：
             - **ValueError** - 如果 `config` 为None。
