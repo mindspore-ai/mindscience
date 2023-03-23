@@ -168,7 +168,7 @@ class InputScaleNet(nn.Cell):
     Scale the input value to specified region.
 
     Args:
-        input_scale (list): The scale factor of input x/y/t.
+        input_scale (list): The scale factor of input and the dimension should be identical to that of `input`.
         input_center (Union[list, None]): Center position of coordinate translation. Default: None.
 
     Inputs:
@@ -228,7 +228,7 @@ class FCSequential(nn.Cell):
         neurons (int): The number of neurons of hidden layers.
         residual (bool): full-connected of residual block for the hidden layers. Default: True.
         act (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected layer,
-            eg. "ReLU". Default: "sin".
+            e.g. "ReLU", "Softmax" and "Tanh". Default: "sin".
         weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
             is same as input x. The values of str refer to the function
             `mindspore.common.initializer <https://mindspore.cn/docs/zh-CN/master/api_python/
