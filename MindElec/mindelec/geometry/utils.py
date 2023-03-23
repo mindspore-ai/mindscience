@@ -26,7 +26,14 @@ def create_config_from_edict(edict_config):
     Convert from dict to SamplingConfig.
 
     Args:
-        edict_config (dict): dict containing configuration info.
+        edict_config (dict): dictionary containing configuration info. The keys are "domain", "BC", "IC" or "time".
+            For each key, the value is still a dictionary, containing the following keys.
+
+            - size: number of sampling points, value type: Union[int, tuple[int], list[int]]).
+            - random_sampling: Specifies whether randomly sampling points, value type: bool.
+            - sampler: method for random sampling, value type: str.
+            - random_merge: Specifies whether randomly merge coordinates of different dimensions, value type: bool.
+            - with_normal: Specifies whether generating the normal vectors of the boundary, value type: bool.
 
     Returns:
         geometry_base.SamplingConfig, sampling configuration.

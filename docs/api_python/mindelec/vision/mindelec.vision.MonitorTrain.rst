@@ -17,4 +17,4 @@ mindelec.vision.MonitorTrain
         在epoch结束时评估模型。
 
         参数：
-            - **run_context** (RunContext) - 训练运行的上下文。
+            - **run_context** (RunContext) - 包含一些模型中的信息，详情请参考 :class:`mindspore.train.RunContext`。
