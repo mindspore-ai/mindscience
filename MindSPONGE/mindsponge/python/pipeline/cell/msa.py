@@ -209,7 +209,7 @@ class MSAColumnAttention(nn.Cell):
 
     def __init__(self, num_head, key_dim, gating, msa_act_dim, batch_size=None, slice_num=0):
         super(MSAColumnAttention, self).__init__()
-        self.query_norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
+        self.query_norm = MaskedLayerNorm()
         self.attn_mod = Attention(num_head, key_dim, gating, msa_act_dim, msa_act_dim, msa_act_dim, batch_size)
         self.batch_size = batch_size
         self.slice_num = slice_num
@@ -230,7 +230,7 @@ class MSAColumnAttention(nn.Cell):
 
         input_mask = 1e9 * (msa_mask - 1.)
         input_mask = P.ExpandDims()(P.ExpandDims()(input_mask, 1), 2)
-        msa_act, _, _ = self.query_norm(msa_act, query_norm_gamma, query_norm_beta)
+        msa_act = self.query_norm(msa_act, query_norm_gamma, query_norm_beta)
         batched_inputs = (msa_act, input_mask)
         nonbatched_inputs = (index,)
         msa_act = _memory_reduce(self._compute, batched_inputs, nonbatched_inputs, self.slice_num)
@@ -298,7 +298,7 @@ class MSAColumnGlobalAttention(nn.Cell):
     def __init__(self, num_head, gating, msa_act_dim, batch_size=None, slice_num=0):
         super(MSAColumnGlobalAttention, self).__init__()
         self.attn_mod = GlobalAttention(num_head, gating, msa_act_dim, msa_act_dim, batch_size)
-        self.query_norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
+        self.query_norm = MaskedLayerNorm()
         self.batch_size = batch_size
         self.slice_num = slice_num
         self.msa_act_dim = msa_act_dim
@@ -321,9 +321,9 @@ class MSAColumnGlobalAttention(nn.Cell):
         input_mask = 1e9 * (msa_mask - 1.)
         input_mask = P.ExpandDims()(P.ExpandDims()(input_mask, 1), 2)
 
-        msa_act, _, _ = self.query_norm(msa_act,
-                                        query_norm_gamma,
-                                        query_norm_beta)
+        msa_act = self.query_norm(msa_act,
+                                  query_norm_gamma,
+                                  query_norm_beta)
         msa_mask = P.ExpandDims()(msa_mask, -1)
         batched_inputs = (msa_act, msa_mask)
         nonbatched_inputs = (index,)

@@ -21,7 +21,6 @@
 # limitations under the License.
 # ============================================================================
 """multimer"""
-import time
 from mindspore import jit, context, nn
 from mindspore.common import mutable
 from mindspore import Tensor
@@ -78,10 +77,7 @@ class Multimer(Model):
             data['prev_msa_first_row'] = prev_msa_first_row
             data['prev_pair'] = prev_pair
             data = mutable(data)
-            t1 = time.time()
             prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits = self.forward(data)
-            t2 = time.time()
-            print(round(t2 - t1, 2))
         final_atom_positions = prev_pos.asnumpy()[:num_residues]
         final_atom_mask = data['atom37_atom_exists'].asnumpy()[:num_residues]
         predicted_lddt_logits = predicted_lddt_logits.asnumpy()[:num_residues]
