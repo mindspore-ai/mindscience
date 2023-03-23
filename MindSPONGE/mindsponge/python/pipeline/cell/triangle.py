@@ -184,7 +184,7 @@ class TriangleMultiplication(nn.Cell):
         super(TriangleMultiplication, self).__init__()
         self.num_intermediate_channel = num_intermediate_channel
         self.equation = equation
-        self.layer_norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
+        self.layer_norm = MaskedLayerNorm()
         self.matmul = P.MatMul(transpose_b=True)
         self.sigmoid = nn.Sigmoid()
         self.batch_matmul_trans_b = P.BatchMatMul(transpose_b=True)
@@ -250,9 +250,9 @@ class TriangleMultiplication(nn.Cell):
             gating_linear_bias = self.gating_linear_biases
 
         mask = P.ExpandDims()(mask, -1)
-        act, _, _ = self.layer_norm(act,
-                                    layer_norm_input_gamma,
-                                    layer_norm_input_beta)
+        act = self.layer_norm(act,
+                              layer_norm_input_gamma,
+                              layer_norm_input_beta)
 
         act_shape = P.Shape()(act)
         if len(act_shape) != 2:
@@ -286,9 +286,9 @@ class TriangleMultiplication(nn.Cell):
                 act = self.batch_matmul_trans_b(left_proj_act_tmp, right_proj_act_tmp)
                 act = P.Transpose()(act, (2, 1, 0))
 
-        act, _, _ = self.layer_norm(act,
-                                    center_layer_norm_gamma,
-                                    center_layer_norm_beta)
+        act = self.layer_norm(act,
+                              center_layer_norm_gamma,
+                              center_layer_norm_beta)
 
         if len(act_shape) != 2:
             act = P.Reshape()(act, (-1, act_shape[-1]))
@@ -419,7 +419,7 @@ class OuterProductMean(nn.Cell):
         super(OuterProductMean, self).__init__()
         self.num_output_channel = num_output_channel
         self.num_outer_channel = num_outer_channel
-        self.layer_norm_input = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
+        self.layer_norm_input = MaskedLayerNorm()
         self.matmul_trans_b = P.MatMul(transpose_b=True)
         self.matmul = P.MatMul()
         self.batch_matmul_trans_b = P.BatchMatMul(transpose_b=True)
@@ -451,7 +451,7 @@ class OuterProductMean(nn.Cell):
             linear_output_weight = self.linear_output_weights
             linear_output_bias = self.o_biases
         mask = P.ExpandDims()(mask, -1)
-        act, _, _ = self.layer_norm_input(act, layer_norm_input_gamma, layer_norm_input_beta)
+        act = self.layer_norm_input(act, layer_norm_input_gamma, layer_norm_input_beta)
         act_shape = P.Shape()(act)
         if len(act_shape) != 2:
             act = P.Reshape()(act, (-1, act_shape[-1]))
