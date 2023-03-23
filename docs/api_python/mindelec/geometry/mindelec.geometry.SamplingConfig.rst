@@ -6,7 +6,12 @@ mindelec.geometry.SamplingConfig
     全局采样配置定义。
 
     参数：
-        - **part_sampling_dict** (dict) - 采样配置。
+        - **part_sampling_dict** (dict) - 采样配置，可配置键为"domain"，"BC"，"IC"或"time"。
+
+          - "domain"：问题的可行域。
+          - "BC"：问题的边界条件。
+          - "IC"：问题的初始条件。
+          - "time"：问题的时域。
 
     异常：
         - **ValueError** - 如果 `coord_min` 或 `coord_max` 既不是int也不是float。

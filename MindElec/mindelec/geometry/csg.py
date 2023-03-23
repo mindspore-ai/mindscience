@@ -399,7 +399,7 @@ class CSGUnion(CSG):
 
 class CSGIntersection(CSG):
     r"""
-    CSG class for intersection of geometries.
+    Constructive Solid Geometry(CSG) class for intersection of geometries.
 
     Args:
         geom1 (Geometry): a geometry object.
