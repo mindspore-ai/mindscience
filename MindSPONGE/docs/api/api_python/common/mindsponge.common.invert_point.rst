@@ -8,8 +8,10 @@ mindsponge.common.invert_point
     首先对初始坐标作平移变化,再将旋转矩阵 `rotation` 的转置矩阵与 `rot_point` 相乘得到最后坐标。
 
     .. math::
-        rot_point = transformed_point - translation
-        result = rotation^t \cdot rot_point
+        \begin{split}
+        &rot\_point = transformed\_point - translation \\
+        &result = rotation^T \cdot rot\_point \\
+        \end{split}
 
     其中向量的减法、转置与乘法具体过程可以参阅 `vecs_sub` 、 `invert_rots` 、 `rots_mul_vecs` 等api。
 

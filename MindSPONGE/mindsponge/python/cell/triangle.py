@@ -405,11 +405,11 @@ class OuterProductMean(nn.Cell):
         >>> from mindsponge.cell import OuterProductMean
         >>> from mindspore import dtype as mstype
         >>> from mindspore import Tensor
-        >>> from mindspore.ops import operations as P
+        >>> from mindspore import ops
         >>> model = OuterProductMean(num_outer_channel=32, act_dim=128, num_output_channel=256)
         >>> act = Tensor(np.ones((32, 64, 128)), mstype.float32)
         >>> mask = Tensor(np.ones((32, 64)), mstype.float32)
-        >>> mask_norm = P.ExpandDims()(P.MatMul(transpose_a=True)(mask, mask), -1)
+        >>> mask_norm = ops.ExpandDims()(P.MatMul(transpose_a=True)(mask, mask), -1)
         >>> output= model(act, mask, mask_norm)
         >>> print(output.shape)
         (64, 64, 256)

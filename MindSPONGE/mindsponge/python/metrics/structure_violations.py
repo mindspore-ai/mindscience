@@ -72,9 +72,11 @@ def between_residue_bond(
                                       Default: 12.0 .
 
     Returns:
-        - Tensor, c_n_loss_mean, loss for peptide bond length violations. shape is () .
-        - Tensor, ca_c_n_loss_mean, loss for violations of bond angle around C spanned by CA, C, N. shape is () .
-        - Tensor, c_n_ca_loss_mean, loss for violations of bond angle around N spanned by C, N, CA. shape is () .
+        - Tensor, c_n_loss_mean, loss for peptide bond length violations. shape is :math:`( )` .
+        - Tensor, ca_c_n_loss_mean, loss for violations of bond angle around C spanned by CA, C, N.
+          shape is :math:`( )` .
+        - Tensor, c_n_ca_loss_mean, loss for violations of bond angle around N spanned by C, N, CA.
+          shape is :math:`( )` .
         - Tensor, per_residue_loss_sum, sum of all losses of each residue. shape is :math:`(N_{res}, )` .
         - Tensor, per_residue_violation_mask, mask denoting all residues with violation present.
           shape is :math:`(N_{res}, )` .
