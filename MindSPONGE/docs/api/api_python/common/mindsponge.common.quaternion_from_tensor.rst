@@ -8,9 +8,12 @@ mindsponge.common.quaternion_from_tensor
     其中 :math:`[(xx, xy, xz, yx)]` 与 `quaternion` 一致，:math:`(yy, yz, zz)` 与translation一致。
 
     .. math::
-        tensor = [(xx, xy, xz, yx, yy, yz, zz)]
-        quaternion = (xx, xy, xz, yx)
-        translation = (yy, yz, zz)
+        \begin{split}
+        &tensor = [(xx, xy, xz, yx, yy, yz, zz)] \\
+        &quaternion = (xx, xy, xz, yx) \\
+        &translation = (yy, yz, zz) \\
+        \end{split}
+
 
     再用生成的 `quaternion` 和 `translation` 进行仿射变换。仿射变换的过程参照 `quat_affine` API。
 

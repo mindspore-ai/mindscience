@@ -6,8 +6,10 @@ mindsponge.common.quat_multiply_by_vec
     计算四元数与纯向量四元数的乘积。
 
     .. math::
-        temp =  QUAT_MULTIPLY_BY_VEC * quat[..., :, None, None] * vec[..., None, :, None]
-        result = sum(tempc,axis=(-3, -2))
+        \begin{split}
+        &temp =  QUAT\_MULTIPLY\_BY\_VEC * quat[..., :, None, None] * vec[..., None, :, None] \\
+        &result = sum(temp,axis=(-3, -2)) \\
+        \end{split}
 
     参数：
         - **quat** (Tensor) - 输入的四元数，shape为 :math:`[(..., 4)]` 的 Tensor。

@@ -11,7 +11,7 @@ mindsponge.common.rigids_mul_rots
         (r, t) = (x_ry, x_t)
 
     参数：
-        - **x** (tuple) - 刚体变换 :math:`x` ，长度为2，包含旋转矩阵 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` 与平移距离 :math:`(x, y, z)` ，数据类型为标量或者shape相同的Tensor。
+        - **x** (tuple) - 刚体变换 :math:`x` ，长度为2，包含旋转矩阵 :math:`x_r = (xx, xy, xz, yx, yy, yz, zx, zy, zz)` 与平移距离 :math:`x_t = (x, y, z)` ，数据类型为标量或者shape相同的Tensor。
         - **y** (tuple) - 旋转矩阵 :math:`\vec y` ，长度为9，数据类型为标量或者shape相同的Tensor。
 
     返回：

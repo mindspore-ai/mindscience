@@ -8,15 +8,17 @@ mindsponge.common.pre_compose
     旋转矩阵的过程如下：
 
     .. math::
-        update = (xx, xy, xz, yx, yy, yz)
-        vector_quaternion_update = (xx, xy, xz)
-        x = (yx)
-        y = (yy)
-        z = (yz)
-        trans_update = [(x, y, z)]
-        new_quaternion = quaternion + vector_quaternion_update * quaternion
-        rotated_trans_update = rotation * trans_update
-        new_translation = translation + rotated_trans_update
+        \begin{split}
+        &update = (xx, xy, xz, yx, yy, yz) \\
+        &vector\_quaternion\_update = (xx, xy, xz) \\
+        &x = (yx) \\
+        &y = (yy) \\
+        &z = (yz) \\
+        &trans\_update = [(x, y, z)] \\
+        &new\_quaternion = quaternion + vector\_quaternion\_update * quaternion \\
+        &rotated\_trans\_update = rotation * trans\_update \\
+        &new\_translation = translation + rotated\_trans\_update \\
+        \end{split}
 
     其中 `vector_quaternion_update` 与 `quaternion` 的相乘使用 `quat_multiply_by_vec` 函数相乘，
     `rotation` 与 `trans_update` 的相乘用 `rots_mul_vecs` 函数， `translation` 与 `rotated_trans_update` 相加过程使用 `vecs_add` 函数。

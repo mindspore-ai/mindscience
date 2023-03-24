@@ -15,9 +15,9 @@ mindsponge.cell.Transition
         - **slice_num** (int) - 当内存超出上限时在转换层使用的切分数量。默认值：0。
 
     输入：
-        - **act** (Tensor) - shape为(..., input_dim)的Tensor。
+        - **act** (Tensor) - shape为 :math:`(..., input\_dim)` 的Tensor。
         - **index** (Tensor) - while循环中权重的索引，应用控制流时需设置该变量，默认值："None"。
-        - **mask** (Tensor) - 当做layernorm操作的时候act的掩码，shape为 :math:`(32, input_{dim})`，默认值："None"。
+        - **mask** (Tensor) - 当做layernorm操作的时候act的掩码，shape为 :math:`(32, input\_dim)`，默认值："None"。
 
     输出：
-        Tensor。shape为(..., input_dim)的Tensor。
+        Tensor。shape为 :math:`(..., input\_dim)` 的Tensor。
