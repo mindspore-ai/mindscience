@@ -12,9 +12,9 @@ mindsponge.common.make_atom14_positions
     - 稠密编码：单氨基酸最多包含14种不同的原子类型，详见 `common.residue_constants.restype_name_to_atom14_names` ，故可将蛋白质全原子坐标编码为 :math:`(N_{res}, 14, 3)` 的张量。
 
     参数：
-        - **aatype** (numpy.array) - 蛋白质一级序列编码，编码方式参考 `common.residue_constants.restype_order`, 取值范围 :math:`[0,20]` ，若为20表示该氨基酸为unkown（`UNK`）。
-        - **all_atom_mask** (numpy.array) - 蛋白质所有原子坐标掩码，维度为 :math:`(N_{res}, 37)` ，若对应位置为0则表示该氨基酸不含该原子坐标。
-        - **all_atom_positions** (numpy.array) - 蛋白质所有原子坐标，维度为 :math:`(N_{res}, 37, 3)` 。
+        - **aatype** (numpy.ndarray) - 蛋白质一级序列编码，编码方式参考 `common.residue_constants.restype_order`, 取值范围 :math:`[0,20]` ，若为20表示该氨基酸为unkown（`UNK`）。
+        - **all_atom_mask** (numpy.ndarray) - 蛋白质所有原子坐标掩码，维度为 :math:`(N_{res}, 37)` ，若对应位置为0则表示该氨基酸不含该原子坐标。
+        - **all_atom_positions** (numpy.ndarray) - 蛋白质所有原子坐标，维度为 :math:`(N_{res}, 37, 3)` 。
 
     返回：
         - numpy.array。按照稠密编码方式编码，蛋白质全原子掩码，包含unkown氨基酸原子， :math:`[N_{res}, 14]` 。

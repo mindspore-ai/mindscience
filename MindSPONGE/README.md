@@ -17,10 +17,10 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **Latest News** 📰
 
-- 🔥`Top` [open source internship task](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue) has been released! Everyone is welcome to claim it~
-- 🔥`2023.1.31` MindSPONGE version 1.0.0-alpha is released. The documents are available on [Scientific Computing MindSPONGE module](https://mindspore.cn/mindsponge/docs/en/r1.0.0-alpha/index.html) on MindSpore website
+- 🔥`Top` [**open source internship task**](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue) has been released! Everyone is welcome to claim it~
+- 🔥`2023.1.31` MindSPONGE version 1.0.0-alpha is released. The documents are available on [**Scientific Computing MindSPONGE module**](https://mindspore.cn/mindsponge/docs/en/r1.0.0-alpha/index.html) on MindSpore website
 - `2022.8.23` Paper "Few-Shot Learning of Accurate Folding Landscape for Protein Structure Prediction" is preprinted in arxiv, Please refer to [Paper](https://arxiv.org/abs/2208.09652)
-- `2022.8.11—2022.8.15` MindSpore SPONGE SIG [Summer School](#special-interesting-group-), [replay](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453)
+- `2022.8.11—2022.8.15` MindSpore SPONGE SIG [**Summer School**](#special-interesting-group-), [**replay**](https://www.bilibili.com/video/BV1pB4y167yS?spm_id_from=333.999.0.0&vd_source=94e532d8ff646603295d235e65ef1453)
 - `2022.07.18` Paper "SPONGE: A GPU-Accelerated Molecular Dynamics Package with Enhanced Sampling and AI-Driven Algorithms"is published in Chinese Journal of Chemistry. Please refer to [paper](https://onlinelibrary.wiley.com/doi/epdf/10.1002/cjoc.202100456) and [codes](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/mindsponge/ccsrc/molecular_dynamics)
 - `2022.07.09` MEGA-Assessment wins CAMEO-QE monthly 1st
 - `2022.06.27` Paper "PSP: Million-level Protein Sequence Dataset for Protein Structure Prediction" is preprinted in arxiv. Please refer to [Paper](https://arxiv.org/pdf/2206.12240v1.pdf) and [codes](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein).
@@ -174,6 +174,12 @@ pip install -r requirements.txt
 pip install mindsponge-[gpu|ascend]
 ```
 
+The version of mindsponge installed by pip corresponds to the r0.2.0-alpha branch code. The code can be downloaded using the following instruct.
+
+```bash
+git clone -b r0.2.0-alpha https://gitee.com/mindspore/mindscience.git
+```
+
 ### **source code install**
 
 ```bash
@@ -202,7 +208,8 @@ bash build.sh -e gpu -j32 -t on -c on
 
 ```bash
 cd {PATH}/mindscience/MindSPONGE/output
-pip install mindsponge*.whl
+pip install mindsponge_ascend*.whl # Ascend
+pip install mindsponge-gpu*.whl # GPU
 pip install cybertron*.whl # if "-c on" is used
 ```
 

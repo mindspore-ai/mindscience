@@ -6,9 +6,11 @@ mindsponge.common.quaternion_to_tensor
     将输入的四元数变为Tensor。
 
     .. math::
-        quaternion = [(x_1, y_1, z_1, m_1)]
-        translation = [(x_2, y_2, z_2)]
-        result = [(x_1, y_1, z_1, m_1, x_2, y_2, z_2)]
+        \begin{split}
+        &quaternion = [(x_1, y_1, z_1, m_1)] \\
+        &translation = [(x_2, y_2, z_2)] \\
+        &result = [(x_1, y_1, z_1, m_1, x_2, y_2, z_2)] \\
+        \end{split}
     
     参数：
         - **quaternion** (Tensor) - 输入的初始坐标，shape为 :math:`[(..., 4)]` 的Tensor。

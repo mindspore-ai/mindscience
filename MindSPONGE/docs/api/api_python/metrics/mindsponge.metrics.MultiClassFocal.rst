@@ -19,4 +19,4 @@ mindsponge.metrics.MultiClassFocal
         - **target** (Tensor) - 标签值，shape为 :math:`(batch\_size, ndim)` 。
 
     输出：
-        Tensor。shape为 :math:`(batch\_size)` 。
+        Tensor。shape为 :math:`(batch\_size, )` 。

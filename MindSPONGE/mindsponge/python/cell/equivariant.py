@@ -72,11 +72,11 @@ class InvariantPointAttention(nn.Cell):
 
     Examples:
         >>> import numpy as np
+        >>> import mindspore as ms
         >>> from mindsponge.cell import InvariantPointAttention
         >>> from mindspore import dtype as mstype
         >>> from mindspore import Tensor
-        >>> import mindspore.context as context
-        >>> context.set_context(mode=context.GRAPH_MODE)
+        >>> ms.set_context(mode=ms.GRAPH_MODE)
         >>> model = InvariantPointAttention(num_head=12, num_scalar_qk=16, num_scalar_v=16,
         ...                                 num_point_v=8, num_point_qk=4,
         ...                                 num_channel=384, pair_dim=128)
