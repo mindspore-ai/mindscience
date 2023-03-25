@@ -10,4 +10,4 @@ mindsponge.common.rots_from_tensor
         - **use_numpy** (bool) - 是否使用numpy计算，默认值：False。
 
     返回：
-        tuple，使用向量表示的旋转矩阵，shape为 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` 。
+        tuple，使用向量表示的旋转矩阵，矩阵为 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` 。

@@ -43,14 +43,14 @@ class Transition(nn.Cell):
                                            when the memory is overflow. Default: 0.
 
     Inputs:
-        - **act** (Tensor) - The input with channels equal to input_dim, shape is (..., input_dim).
+        - **act** (Tensor) - The input with channels equal to input_dim, shape is :math:`(..., input\_dim)`.
         - **index** (Tensor) - The index of while loop, only used in case of while control
           flow. Default: "None".
-        - **mask** (Tensor) - The mask of act when to do layernorm with shape :math:`(32, input_{dim})`,
+        - **mask** (Tensor) - The mask of act when to do layernorm with shape :math:`(32, input\_dim)`,
           Default: "None".
 
     Outputs:
-        Tensor, the float tensor of the output of the layer with shape (..., input_dim).
+        Tensor, the float tensor of the output of the layer with shape :math:`(..., input\_dim)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

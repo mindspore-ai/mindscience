@@ -336,7 +336,7 @@ def vecs_cross_vecs(v1, v2):
         >>> v2 = (3, 4, 5)
         >>> ans = mindsponge.common.vecs_cross_vecs(v1, v2)
         >>> print(ans)
-        (2, -4, 2)
+        (-2, 4, -2)
     """
     cross_res = (v1[1] * v2[2] - v1[2] * v2[1],
                  v1[2] * v2[0] - v1[0] * v2[2],
@@ -543,11 +543,12 @@ def invert_rigids(rigids):
     result is the translations of invert rigid.
 
     .. math::
-        inv\_rots = r_r^T = (r_0, r_3, r_6, r_1, r_4, r_7, r_2, r_5, r_8)
-
-        inv\_trans = -r_r^T \cdot r_t^T = (- (r_0 \times t_0 + r_3 \times t_0 + r_6 \times t_0),
+        \begin{split}
+        &inv\_rots = r_r^T = (r_0, r_3, r_6, r_1, r_4, r_7, r_2, r_5, r_8) \\
+        &inv\_trans = -r_r^T \cdot r_t^T = (- (r_0 \times t_0 + r_3 \times t_0 + r_6 \times t_0),
                                            - (r_1 \times t_1 + r_4 \times t_1 + r_7 \times t_1),
-                                           - (r_2 \times t_2 + r_5 \times t_2 + r_8 \times t_2))
+                                           - (r_2 \times t_2 + r_5 \times t_2 + r_8 \times t_2)) \\
+        \end{split}
 
     Args:
         rigids (tuple): rigids, including the rots and trans changing rigids
@@ -623,8 +624,8 @@ def rigids_mul_rots(x, y):
         (r, t) = (x_ry, x_t)
 
     Args:
-        x (tuple):  rigid :math:`x` . Length is 2. Include rots :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`
-                    and trans :math:`(x, y, z)` . Data type is constant or Tensor with same shape.
+        x (tuple):  rigid :math:`x` . Length is 2. Include rots :math:`x_r = (xx, xy, xz, yx, yy, yz, zx, zy, zz)`
+                    and trans :math:`x_t = (x, y, z)` . Data type is constant or Tensor with same shape.
         y (tuple):  rotations :math:`\vec y` , length is 9. Data type is constant or Tensor with same shape.
 
     Returns:
@@ -712,7 +713,7 @@ def rots_mul_rots(x, y):
         y(tuple):   rots y, :math:`(xx2, xy2, xz2, yx2, yy2, yz2, zx2, zy2, zz2)`.
 
     Returns:
-        tuple, the result of rots x multiplying rots y. Shape is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
+        tuple, the result of rots x multiplying rots y. The result is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -887,7 +888,7 @@ def rots_from_tensor(rots, use_numpy=False):
         use_numpy(bool):    Whether to use numpy to calculate. Default: False.
 
     Returns:
-        Tuple, rots represented by vectors, shape is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
+        Tuple, rots represented by vectors, rots is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -961,7 +962,8 @@ def quat_affine(quaternion, translation, rotation=None, normalize=True, unstack_
     Returns:
         result after quat affine.
         - quaternion, tensor, shape is :math:`(N_{res}, 4)` .
-        - rotation, tuple, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, shape of every element is :math:`(N_{res},)` .
+        - rotation, tuple, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
+          shape of every element is :math:`(N_{res},)` .
         - translation, tensor, shape is :math:`(N_{res}, 3)` .
 
     Supported Platforms:
@@ -1163,8 +1165,8 @@ def invert_point(transformed_point, rotation, translation, extra_dims=0, stack=F
 
     .. math::
         \begin{split}
-        &rot_point = transformed_point - translation \\
-        &result = rotation^t * rot_point \\
+        &rot\_point = transformed\_point - translation \\
+        &result = rotation^T * rot\_point \\
         \end{split}
 
     The specific procedures of vector subtraction, transpose and multiplication can be referred to the
@@ -1215,8 +1217,8 @@ def quat_multiply_by_vec(quat, vec):
 
     .. math::
         \begin{split}
-        &temp =  QUAT_MULTIPLY_BY_VEC * quat[..., :, None, None] * vec[..., None, :, None] \\
-        &result = sum(tempc,axis=(-3, -2)) \\
+        &temp =  QUAT\_MULTIPLY\_BY\_VEC * quat[..., :, None, None] * vec[..., None, :, None] \\
+        &result = sum(temp,axis=(-3, -2)) \\
         \end{split}
 
     Args:
@@ -1256,14 +1258,14 @@ def pre_compose(quaternion, rotation, translation, update):
     .. math::
         \begin{split}
         &update = (xx, xy, xz, yx, yy, yz) \\
-        &vector_quaternion_update = (xx, xy, xz) \\
+        &vector\_quaternion\_update = (xx, xy, xz) \\
         &x = (yx) \\
         &y = (yy) \\
         &z = (yz) \\
-        &trans_update = (x, y, z) \\
-        &new_quaternion = quaternion + vector_quaternion_update * quaternion \\
-        &rotated_trans_update = rotation * trans_update \\
-        &new_translation = translation + rotated_trans_update \\
+        &trans\_update = (x, y, z) \\
+        &new\_quaternion = quaternion + vector\_quaternion\_update * quaternion \\
+        &rotated\_trans\_update = rotation * trans\_update \\
+        &new\_translation = translation + rotated\_trans\_update \\
         \end{split}
 
     vector_quaternion_update and quaternion are multiplied by the quat_multiply_by_vec function,
@@ -1425,11 +1427,11 @@ def apply_to_point(rotation, translation, point, extra_dims=0):
 
     Args:
         rotation(Tuple):    The rotation matrix :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
-                            and xx and xy are Tensor and have the same shape.
+                            and :math:`xx, xy` are Tensor and have the same shape.
         translation(Tuple): Translation vector :math:`[(x, y, z)]`,
-                            where x, y and z are Tensor and have the same shape.
+                            where :math:`x, y, z` are Tensor and have the same shape.
         point(Tensor):      Initial coordinate values :math:`[(x, y, z)]`,
-                            where x, y and z are Tensor and have the same shape.
+                            where :math:`x, y, z` are Tensor and have the same shape.
         extra_dims(int):    Control whether to expand dims. default:0.
 
     Returns:
