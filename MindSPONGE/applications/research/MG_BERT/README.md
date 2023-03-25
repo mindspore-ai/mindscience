@@ -72,7 +72,7 @@ python regression.py --task='logS' --pretraining=0 --trained_epoch=100 --vocab_s
 
 预训练所用数据可通过以下链接中chembl_31_chemreps.txt.gz获得：
 
-- https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/
+- https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases/chembl_31/
 
 回归和分类所用数据可通过以下链接获得：
 

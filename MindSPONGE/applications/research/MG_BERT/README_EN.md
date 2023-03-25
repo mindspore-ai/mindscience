@@ -70,7 +70,7 @@ The data used in the pretraining stage were obtained from the CHeMBL database, a
 
 The data used for pretraining is available through the chembl_31_chemreps.txt.gz in the following links:
 
-- https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/
+- https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases/chembl_31/
 
 The data used for regression and classification can be obtained through the following link:
 
