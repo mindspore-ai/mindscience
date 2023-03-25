@@ -14,9 +14,9 @@ mindsponge.metrics.between_residue_bond
         - **tolerance_factor_hard** (float) - 根据蛋白质结构分布的标准偏差测量的硬公差因子，默认为 12.0 。
 
     返回：
-        - **c_n_loss_mean** (Tensor) C-N 肽键长度冲突损失。shape: `( )` 。
-        - **ca_c_n_loss_mean** (Tensor) CA-C-N键角的冲突损失。shape: `( )` 。
-        - **c_n_ca_loss_mean** (Tensor) C-N-CA键角的冲突损失。shape: `( )` 。
+        - **c_n_loss_mean** (Tensor) C-N 肽键长度冲突损失。shape: :math:`( )` 。
+        - **ca_c_n_loss_mean** (Tensor) CA-C-N键角的冲突损失。shape: :math:`( )` 。
+        - **c_n_ca_loss_mean** (Tensor) C-N-CA键角的冲突损失。shape: :math:`( )` 。
         - **per_residue_loss_sum** (Tensor) 所有氨基酸残基的冲突损失总和，包括键角键长损失。shape :math:`(N_{res}, )` 。
         - **per_residue_violation_mask** (Tensor) 指示每个氨基酸残基是否存在键长或键角损失；1代表存在，0代表不存在。shape :math:`(N_{res}, )` 。
 

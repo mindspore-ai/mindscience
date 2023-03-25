@@ -23,4 +23,4 @@ mindsponge.common.rots_mul_rots
         - **y** (tuple) - 旋转矩阵y， :math:`(xx2, xy2, xz2, yx2, yy2, yz2, zx2, zy2, zz2)`。
 
     返回：
-        tuple，旋转矩阵x和旋转矩阵y的矩阵相乘结果, shape为 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`。
+        tuple，旋转矩阵x和旋转矩阵y的矩阵相乘结果, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`。
