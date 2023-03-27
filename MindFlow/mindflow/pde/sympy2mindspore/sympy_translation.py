@@ -22,18 +22,19 @@ import sympy
 from mindspore import Tensor, jit_class
 from mindspore import dtype as mstype
 
-from .pde_node import MINDSPORE_SYMPY_TRANSLATIONS, MulNode, NumberNode, SymbolNode
+from .pde_node import MINDSPORE_SYMPY_TRANSLATIONS, MulNode, NumberNode, SymbolNode, ParamNode
 from .pde_node import MSFunctionNode, NetOutputNode, DerivativeNode, PowNode, AddNode
 
 
 @jit_class
 class SympyTranslation:
     '''translate sympy expressions'''
-    def __init__(self, formula, formula_node, in_vars, out_vars):
+    def __init__(self, formula, formula_node, in_vars, out_vars, params=None):
         self.formula = formula
         self.formula_node = formula_node
         self.in_vars = in_vars
         self.out_vars = out_vars
+        self.params = params
         print(f"{self.formula_node.name}: {self.formula}")
         self._parse_node()
         print(f"    Item numbers of current derivative formula nodes: {len(self.formula_node.nodes)}")
@@ -168,8 +169,14 @@ class SympyTranslation:
 
     def _parse_symbol(self, item):
         """parse symbol"""
-        in_var_idx = self.in_vars.index(item)
-        symbol_node = SymbolNode(self.in_vars, in_var_idx=in_var_idx)
+        if item in self.in_vars:
+            in_var_idx = self.in_vars.index(item)
+            symbol_node = SymbolNode(self.in_vars, in_var_idx=in_var_idx)
+        elif item in self.params:
+            para_var_idx = self.params.index(item)
+            symbol_node = ParamNode(self.params, param_var_idx=para_var_idx)
+        else:
+            raise ValueError("Inputs and Parameters are supported, but got {}".format(item))
         return symbol_node
 
     def _parse_mul(self, item):

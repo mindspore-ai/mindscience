@@ -41,6 +41,8 @@ class PDEWithLoss:
         model (mindspore.nn.Cell): Network for training.
         in_vars (List[sympy.core.Symbol]): Input variables of the `model`, represented by the sympy symbol.
         out_vars (List[sympy.core.Function]): Output variables of the `model`, represented by the sympy function.
+        params (List[sympy.core.Function]): Parameters of the `model`, represented by the sympy function.
+        params (List): Values of the Parameters from optimizer.
 
     Note:
         - The member function, "pde", must be overridden to define the symbolic derivative equqtions based on sympy.
@@ -106,13 +108,14 @@ class PDEWithLoss:
         {'bc_eq': Derivative(u(x, t), t) + Derivative(u(x, t), x) - 2.0}
     """
 
-    def __init__(self, model, in_vars, out_vars):
+    def __init__(self, model, in_vars, out_vars, params=None, params_val=None):
         self.model = model
         self.jacobian = batched_jacobian(self.model)
         self.hessian = batched_hessian(self.model)
+        self.param_val = params_val
         pde_nodes = self.pde() or dict()
         if isinstance(pde_nodes, dict) and pde_nodes:
-            self.pde_nodes = sympy_to_mindspore(pde_nodes, in_vars, out_vars)
+            self.pde_nodes = sympy_to_mindspore(pde_nodes, in_vars, out_vars, params)
 
     def pde(self):
         """
@@ -154,7 +157,12 @@ class PDEWithLoss:
         else:
             hessian = None
             jacobian = None
-        data_map = {"inputs": inputs, "outputs": outputs, "jacobian": jacobian, "hessian": hessian, "norm": norm}
+
+        if self.param_val is None:
+            data_map = {"inputs": inputs, "outputs": outputs, "jacobian": jacobian, "hessian": hessian, "norm": norm}
+        else:
+            data_map = {"inputs": inputs, "outputs": outputs, "jacobian": jacobian, "hessian": hessian,
+                        "norm": norm, "params": self.param_val}
         res = []
         for formula_node in formula_nodes:
             cur_eq_ret = formula_node.compute(data_map)

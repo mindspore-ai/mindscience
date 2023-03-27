@@ -145,6 +145,20 @@ class SymbolNode:
 
 
 @jit_class
+class ParamNode:
+    """Compute parameter terms in sympy expression"""
+    def __init__(self, params, param_var_idx=None):
+        self.param_split = ops.Split(-1, len(params))
+        self.param_var_idx = param_var_idx
+
+    def compute(self, data):
+        """compute the result of parameter"""
+        params_data = data.get("params")
+        ret = self.param_split(params_data)[self.param_var_idx]
+        return ret
+
+
+@jit_class
 class NetOutputNode:
     """Compute network function terms in sympy expression"""
     def __init__(self, out_vars, out_var_idx=None):

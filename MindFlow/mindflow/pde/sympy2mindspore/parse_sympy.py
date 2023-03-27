@@ -46,17 +46,17 @@ class FormulaNode:
         return sum(rst)
 
 
-def _make_nodes(equations, in_vars, out_vars):
+def _make_nodes(equations, in_vars, out_vars, params=None):
     graph_nodes = list()
     for name, formula in equations.items():
         formula_node = FormulaNode(name)
-        SympyTranslation(sympy.expand(formula), formula_node, in_vars, out_vars)
+        SympyTranslation(sympy.expand(formula), formula_node, in_vars, out_vars, params)
         graph_nodes.append(formula_node)
 
     return graph_nodes
 
 
-def sympy_to_mindspore(equations, in_vars, out_vars):
+def sympy_to_mindspore(equations, in_vars, out_vars, parmas=None):
     """
     The sympy expression to create an identifier for mindspore.
 
@@ -66,7 +66,7 @@ def sympy_to_mindspore(equations, in_vars, out_vars):
             input data.
         out_vars (list[sympy.core.Function]): list of all output variable symbols, consistent with the dimension of the
             output data.
-
+        params (list[sympy.core.Function]): list of all parameter variable symbols.
     Returns:
         List([FormulaNode]), list of expressions node can be identified by mindspore.
 
@@ -91,5 +91,5 @@ def sympy_to_mindspore(equations, in_vars, out_vars):
             Item numbers of current derivative formula nodes: 2
         2
     """
-    converted_equations = _make_nodes(equations, in_vars, out_vars)
+    converted_equations = _make_nodes(equations, in_vars, out_vars, parmas)
     return converted_equations
