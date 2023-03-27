@@ -31,11 +31,7 @@ import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import ops
 from mindspore import jit
-from mindspore.ops import functional as F
-from mindspore import Tensor, Parameter, context
-from mindspore.ops._grad.grad_base import bprop_getters
-from mindspore.ops._utils.utils import generate_shape_index
-from mindspore.ops.composite.multitype_ops.zeros_like_impl import zeros_like
+from mindspore import Tensor, Parameter
 
 __all__ = [
     'PI',
@@ -88,79 +84,7 @@ reduce_all = ops.ReduceAll()
 concat_last_dim = ops.Concat(-1)
 concat_penulti = ops.Concat(-2)
 identity = ops.Identity()
-dyn_shape_op = ops.TensorShape()
-unsorted_segment_sum = ops.UnsortedSegmentSum()
-
-
-@bprop_getters.register(ops.Slice)
-def get_bprop_slice(self):
-    """Bprop for slice"""
-    # pylint: disable=W0613
-    concat = ops.Concat(axis=2)
-    def bprop(x, begin, size, out, dout):
-        # pylint: disable=W0613
-        dtype = x.dtype
-        begin = begin[-1]
-        size = size[-1]
-        if begin != 0:
-            left_tensor = ops.zeros(x.shape[:-1] + (begin,), dtype)
-            dout = concat((left_tensor, dout))
-        shape = x.shape[-1]
-        if shape != begin + size:
-            right_tensor = ops.zeros(x.shape[:-1] + (shape - begin - size,), dtype)
-            dout = concat((dout, right_tensor))
-        return (dout, zeros_like(begin), zeros_like(size))
-
-    return bprop
-
-
-def _generate_inverse_index(x_shape, axis):
-    x_rank = len(x_shape)
-    index = tuple(range(x_rank))
-    if axis < 0:
-        axis += x_rank
-    perm = index[1:1 + axis] + (0,) + index[1 + axis:]
-    return perm
-
-
-def _regenerate_output_shape(x_shp, ind_shp, axis):
-    rank = len(x_shp)
-    if axis < 0:
-        axis += rank
-    out_shape = x_shp[:axis] + ind_shp + x_shp[axis + 1:]
-    return out_shape
-
-
-class GatherNet(ms.nn.Cell):
-    """Redefine bprop for gather to run unsorted_segment_sum on aicpu"""
-    def construct(self, data, indices, axis):
-        return ops.gather(data, indices, axis)
-
-    def bprop(x, indices, axis, out, dout):
-        """bprop for gather"""
-        # pylint: disable=E0213, W0613
-        orig_indices = indices
-        if ops.rank(dout) == 0:
-            dout = ops.ExpandDims()(dout, -1)
-        if ops.rank(indices) == 0:
-            indices = ops.ExpandDims()(indices, -1)
-            x_shp = ops.shape(x)
-            ind_shp = ops.shape(indices)
-            out_shp = _regenerate_output_shape(x_shp, ind_shp, axis)
-            dout = ops.reshape(dout, out_shp)
-
-        x_shp = ops.shape(x)
-        out_shp = ops.shape(dout)
-        ind_shp = ops.shape(indices)
-        perm_1 = generate_shape_index(out_shp, ind_shp, axis)
-        values_transpose = ops.transpose(dout, perm_1)
-        if F.is_sequence_value_unknown(ops.shape(x)):
-            params_grad = unsorted_segment_sum(values_transpose, indices, dyn_shape_op(x)[axis])
-        else:
-            params_grad = unsorted_segment_sum(values_transpose, indices, ops.shape(x)[axis])
-        perm_2 = _generate_inverse_index(x_shp, axis)
-        params_grad = ops.transpose(params_grad, perm_2)
-        return params_grad, zeros_like(orig_indices), zeros_like(axis)
+gather = ops.Gather()
 
 
 @jit
@@ -409,7 +333,7 @@ def gather_vectors(tensor: Tensor, index: Tensor) -> Tensor:
     Supported Platforms:
         ``Ascend`` ``GPU``
     """
-    gather = GatherNet() if context.get_context("device_target") == "Ascend" else ops.Gather()
+
     if index.shape[0] == 1:
         index1 = ops.reshape(index, index.shape[1:])
         if tensor.shape[0] == 1:
@@ -454,7 +378,7 @@ def gather_values(tensor: Tensor, index: Tensor) -> Tensor:
     Supported Platforms:
         ``Ascend`` ``GPU``
     """
-    gather = GatherNet() if context.get_context("device_target") == "Ascend" else ops.Gather()
+
     if index.shape[0] == 1:
         index1 = ops.reshape(index, index.shape[1:])
         if tensor.shape[0] == 1:
