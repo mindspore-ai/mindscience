@@ -84,6 +84,11 @@ class StdPhysicalQuantity(IntEnum):
     Standard physical quantities fields that Maxwell equations concern about,
     material solving stage will deal with these standard physical fields.
 
+    - 0: Magnetic permeability `MU`.
+    - 1: Permittvity `EPSILON`.
+    - 2: Electrical conductivity `SIGMA`.
+    - 3: Dielectric loss `TAND`.
+
     Supported Platforms:
         ``Ascend``
     """

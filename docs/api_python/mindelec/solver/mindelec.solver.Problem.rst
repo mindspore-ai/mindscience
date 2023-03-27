@@ -3,10 +3,9 @@ mindelec.solver.Problem
 
 .. py:class:: mindelec.solver.Problem
 
-    用户定义问题的基类。
-    在每个数据集上设置约束的所有用户定义的问题，必须继承此类。
-    它用于建立每个子数据集和使用定义的损失函数之间的映射。
-    映射将由Constraint API构造，损失将由每个子数据集的约束类型自动计算。根据约束类型，对应的成员函数必须由用户重载，以获取目标标签输出。例如，对于dataset1，约束类型设置为"Equation"，因此成员函数"governing_equation"必须重载，以告知如何获取方程残差。
+    求解偏微分方程问题的基类，用户自定义的问题需要继承此基类以建立子数据集和损失函数之间的映射。
+    映射将由Constraint API构造，损失将由每个子数据集的约束类型自动计算。
+    根据约束类型，对应的成员函数必须由用户重载，以获取目标残差。例如，对于dataset1，约束类型设置为"Equation"，因此成员函数"governing_equation"必须重载，以告知如何获取方程残差。
 
     .. py:method:: mindelec.solver.Problem.boundary_condition(*output, **kwargs)
 

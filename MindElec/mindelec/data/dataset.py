@@ -54,7 +54,7 @@ class Dataset(Data):
     Raises:
         ValueError: If geometry_dict, existed_data_list and dataset_list are all None.
         TypeError: If the type of geometry_dict is not dict.
-        TypeError: If the type of key of geometry_dict is not instance of class Geometry.
+        TypeError: If the type of key of geometry_dict is not instance of :class:`mindelec.geometry.Geometry`.
         TypeError: If the type of existed_data_list is not list, tuple or instance of ExistedDataConfig.
         TypeError: If the element of existed_data_list is not instance of ExistedDataConfig.
         TypeError: If the element of dataset_list is not instance of class Data.
@@ -312,7 +312,8 @@ class Dataset(Data):
         Args:
             constraint_type (Union[str, dict]): The constraint type of specified dataset.
                 If it is string, the constraint
-                type of all subdataset will be set to the same one. If it is dict, the subdataset and it's constraint
+                type of all subdataset will be set to the same one, e.g. "Equation", "Label" and "Function".
+                If it is dict, the subdataset and it's constraint
                 type is specified by the pair (key, value). Default: "Equation".
 
         Examples:

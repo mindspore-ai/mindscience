@@ -6,7 +6,7 @@ mindelec.architecture.InputScaleNet
     将输入值缩放到指定的区域。
 
     参数：
-        - **input_scale** (list) - 输入x/y/t的比例因子。
+        - **input_scale** (list) - 输入的比例因子，其维度需要与输入维度相同。
         - **input_center** (Union[list, None]) - 坐标转换的中心位置。默认值：None。
 
     输入：

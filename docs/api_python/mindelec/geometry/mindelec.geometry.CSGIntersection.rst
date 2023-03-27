@@ -3,7 +3,7 @@ mindelec.geometry.CSGIntersection
 
 .. py:class:: mindelec.geometry.CSGIntersection(geom1, geom2, sampling_config=None)
 
-    几何相交的CSG类。
+    几何相交的Constructive Solid Geometry(CSG)类。
 
     参数：
         - **geom1** (Geometry) - 几何体对象。
