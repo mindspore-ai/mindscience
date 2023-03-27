@@ -66,7 +66,12 @@ class SamplingConfig:
     Definition of global sampling configuration.
 
     Args:
-        part_sampling_dict (dict): sampling configuration.
+        part_sampling_dict (dict): sampling configuration. The configurable keys are "domain", "BC", "IC" or "time".
+
+            - 'domain', feasible domain of the problem.
+            - 'BC', boundary of the problem.
+            - 'IC', initial condition of the problem.
+            - 'time', time domain of the problem.
 
     Raises:
         ValueError: If `coord_min` or `coord_max` is neither int nor float .

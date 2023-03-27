@@ -13,7 +13,7 @@ mindelec.data.Dataset
     异常：
         - **ValueError** - 如果 `geometry_dict` 、 `existed_data_list` 和 `dataset_list` 都为None。
         - **TypeError** - 如果 `geometry_dict` 的类型不是dict。
-        - **TypeError** - 如果 `geometry_dict` 的键类型不是Geometry的实例。
+        - **TypeError** - 如果 `geometry_dict` 的键类型不是mindelec.geometry.Geometry的实例。
         - **TypeError** - 如果 `existed_data_list` 的类型不是列表、元组或ExistedDataConfig的实例。
         - **TypeError** - 如果 `existed_data_list` 的元素不是ExistedDataConfig的实例。
         - **TypeError** - 如果 `dataset_list` 的元素不是Data的实例。
@@ -49,4 +49,4 @@ mindelec.data.Dataset
         设置数据集的约束类型。
 
         参数：
-            - **constraint_type** (Union[str, dict]) - 指定数据集的约束类型。如果是string，则所有子数据集的约束类型将设置为相同的类型。如果是dict，则子数据集及其约束类型由对（键，值）指定。默认值："Equation"。
+            - **constraint_type** (Union[str, dict]) - 指定数据集的约束类型。如果是string，则所有子数据集的约束类型将设置为相同的类型，例如"Equation"，"Label"和"Function"等。如果是dict，则子数据集及其约束类型由对（键，值）指定。默认值："Equation"。
