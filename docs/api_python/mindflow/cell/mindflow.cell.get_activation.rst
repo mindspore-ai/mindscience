@@ -9,4 +9,4 @@ mindflow.cell.get_activation
         - **name** (Union[str, None]) - 激活函数的名称。若输入为None，函数返回None。
 
     返回：
-        Function，激活函数。
+        Function(mindspore.cell)，激活函数。

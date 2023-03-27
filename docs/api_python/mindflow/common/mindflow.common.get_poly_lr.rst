@@ -3,7 +3,7 @@ mindflow.common.get_poly_lr
 
 .. py:function:: mindflow.common.get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps, poly_power)
 
-    生成指数衰减学习率数组。学习率随着训练步数进行指数衰减。
+    生成指数衰减的学习率。学习率随着训练步数进行指数衰减。当step小于warmup_steps时，:math:`lr = step * (lr_max - lr_init)/warmup_steps` ，之后 :math:`lr = lr_end + (lr_max - lr_end) * [(1- i + step)/(total_steps - warmup_steps)]**poly_power`。
 
     参数：
         - **global_step** (int) - 当前步骤编号，非负值。

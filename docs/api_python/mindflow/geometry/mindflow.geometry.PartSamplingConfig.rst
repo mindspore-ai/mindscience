@@ -14,4 +14,4 @@ mindflow.geometry.PartSamplingConfig
         - **with_sdf** (bool) - 是否返回域内点的符号距离函数结果。默认值：False。
 
     异常：
-        - **TypeError** - 采样点数不为int时。
+        - **TypeError** - size不为int时。

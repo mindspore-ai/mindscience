@@ -3,7 +3,7 @@ mindflow.cell.ResBlock
 
 .. py:class:: mindflow.cell.ResBlock(in_channels, out_channels, weight_init="normal", bias_init="zeros", has_bias=True, activation=None, weight_norm=False)
 
-    密集层的ResBlock。
+    密集层的残差模块。
 
     参数：
         - **in_channels** (int) - 输入中的通道数。

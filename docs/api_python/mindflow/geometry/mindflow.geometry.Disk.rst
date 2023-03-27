@@ -13,7 +13,7 @@ mindflow.geometry.Disk
         - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
 
     异常：
-        - **ValueError** - 如果 `center` 既不是长度为2的list也不是Tuple。
+        - **ValueError** - 如果 `center` 既不是长度为2的list也不是长度为2的Tuple。
         - **ValueError** - 如果 `radius` 为负数。
 
     .. py:method:: sampling(geom_type="domain")

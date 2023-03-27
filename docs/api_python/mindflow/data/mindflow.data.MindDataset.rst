@@ -6,9 +6,9 @@ mindflow.data.MindDataset
     从MindRecord类型的数据创建数据集。
 
     参数：
-        - **dataset_files** (Union[str, list[str]]) - 如果数据集文件是str，则它代表思维记录源的一个组件的文件名，其他具有相同源的文件在同一路径中，将自动找到并加载。如果dataset_file是列表，它表示要直接读取的数据集文件列表。
+        - **dataset_files** (Union[str, list[str]]) - 如果数据集文件是str，则它代表MindRecord的一个子文件名。同一路径下来自同一个数据源的子文件会被自动加载。如果dataset_file是list，它表示要读取的数据集文件列表。
         - **dataset_name** (str, 可选) - 数据集名称，默认值：“dataset_name”。
-        - **constraint_type** (str, 可选) - 指定数据集的约束类型，以获取其相应的损失函数。默认值：“Label”。
+        - **constraint_type** (str, 可选) - 指定数据集的约束类型，以获取其相应的损失函数。默认值：“Label”。其他支持的类型可详见 `mindflow.data.Dataset`。
         - **shuffle** (Union[bool, Shuffle level], 可选) - 每个epoch对数据执行shuffle。如果shuffle为False，则不执行shuffle。如果shuffle为True，则执行全局shuffle。默认值：True。
           而且，有两种shuffle level：
         
