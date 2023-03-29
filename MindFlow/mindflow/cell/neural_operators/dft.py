@@ -384,9 +384,9 @@ class SpectralConv1dDft(nn.Cell):
         x_re = x
         x_im = ops.zeros_like(x_re)
         x_ft_re, x_ft_im = self.dft1_cell((x_re, x_im))
-
-        w_re = P.Cast()(self.w_re, self.compute_dtype)
-        w_im = P.Cast()(self.w_im, self.compute_dtype)
+        compute_dtype = self.compute_dtype
+        w_re = P.Cast()(self.w_re, compute_dtype)
+        w_im = P.Cast()(self.w_im, compute_dtype)
         out_ft_re = \
             self.mul1d(x_ft_re[:, :, :self.modes1], w_re) \
             - self.mul1d(x_ft_im[:, :, :self.modes1], w_im)
