@@ -23,7 +23,7 @@ import numpy as np
 
 import mindspore
 from mindspore import nn, context, ops, Tensor, jit, set_seed, save_checkpoint
-import mindspore.common.type as mstype
+import mindspore.common.dtype as mstype
 
 from mindflow.cell import FNO2D
 from mindflow.common import get_warmup_cosine_annealing_lr
@@ -121,7 +121,7 @@ def train():
         model.set_train(True)
         for _ in range(steps_per_epoch):
             cur_loss = sink_process()
-        print(f"epoch: {epoch} loss: {cur_loss} epoch time: {time.time() - local_time_beg:.2f}s")
+        print(f"epoch: {epoch} train loss: {cur_loss} epoch time: {time.time() - local_time_beg:.2f}s")
 
         model.set_train(False)
         if epoch % config["save_ckpt_interval"] == 0:

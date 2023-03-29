@@ -77,17 +77,31 @@ def train(config):
 
     # optimizer
     params = model.trainable_params()
-    optim = nn.Adam(params, learning_rate=config["optimizer"]["lr"])
+    optimizer = nn.Adam(params, learning_rate=config["optimizer"]["lr"])
+    # prepare loss scaler
+    if use_ascend:
+        from mindspore.amp import DynamicLossScaler, all_finite
+        loss_scaler = DynamicLossScaler(1024, 2, 100)
+        auto_mixed_precision(model, 'O3')
+    else:
+        loss_scaler = None
 
     def forward_fn(pde_data, bc_data):
-        return problem.get_loss(pde_data, bc_data)
+        loss = problem.get_loss(pde_data, bc_data)
+        if use_ascend:
+            loss = loss_scaler.scale(loss)
+        return loss
 
-    grad_fn = ops.value_and_grad(forward_fn, None, optim.parameters, has_aux=False)
+    grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
 
     @jit
     def train_step(pde_data, bc_data):
         loss, grads = grad_fn(pde_data, bc_data)
-        loss = ops.depend(loss, optim(grads))
+        if use_ascend:
+            loss = loss_scaler.unscale(loss)
+            if all_finite(grads):
+                grads = loss_scaler.unscale(grads)
+        loss = ops.depend(loss, optimizer(grads))
         return loss
 
     epochs = config["train_epoch"]
@@ -100,7 +114,7 @@ def train(config):
         model.set_train(True)
         for _ in range(steps_per_epochs):
             cur_loss = sink_process()
-        print(f"epoch: {epoch} train loss: {cur_loss} epoch time: {(time.time() - local_time_beg) * 1000 :.3f} ms")
+        print(f"epoch: {epoch} train loss: {cur_loss} epoch time: {(time.time() - local_time_beg) * 1000 :.3f}ms")
         model.set_train(False)
         if epoch % config["eval_interval_epochs"] == 0:
             calculate_l2_error(model, test_input, test_label, config["train_batch_size"])

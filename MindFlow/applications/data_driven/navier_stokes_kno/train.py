@@ -94,11 +94,10 @@ def main():
     model.set_train()
     loss_fn = MSELoss()
     if use_ascend:
-        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite, init_status
+        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
         loss_scaler = DynamicLossScaler(1024, 2, 100)
         auto_mixed_precision(model, 'O3')
     else:
-        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite, init_status
         loss_scaler = None
     problem = NavierStokesWithLoss(model, data_params["out_channels"], loss_fn, data_format="NHWTC")
 
@@ -114,7 +113,7 @@ def main():
         (loss, l_recons, l_pred), grads = grad_fn(inputs, labels)
         if use_ascend:
             loss = loss_scaler.unscale(loss)
-            if all_finite(grads, init_status()):
+            if all_finite(grads):
                 grads = loss_scaler.unscale(grads)
         loss = ops.depend(loss, optimizer(grads))
         return loss, l_recons, l_pred

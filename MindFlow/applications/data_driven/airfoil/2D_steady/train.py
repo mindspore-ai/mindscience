@@ -99,7 +99,7 @@ def train():
                                                          drop_remainder=True)
     # prepare loss scaler
     if use_ascend:
-        from mindspore.amp import DynamicLossScaler, all_finite, init_status
+        from mindspore.amp import DynamicLossScaler, all_finite
         loss_scaler = DynamicLossScaler(1024, 2, 100)
         compute_dtype = mstype.float16
     else:
@@ -156,9 +156,8 @@ def train():
     def train_step(x, y):
         loss, grads = grad_fn(x, y)
         if use_ascend:
-            status = init_status()
             loss = loss_scaler.unscale(loss)
-            if all_finite(grads, status):
+            if all_finite(grads):
                 grads = loss_scaler.unscale(grads)
         loss = ops.depend(loss, optimizer(grads))
         return loss

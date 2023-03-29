@@ -94,11 +94,10 @@ def main():
     model.set_train()
     loss_fn = MSELoss()
     if use_ascend:
-        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite, init_status
+        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
         loss_scaler = DynamicLossScaler(1024, 2, 100)
         auto_mixed_precision(model, 'O3')
     else:
-        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite, init_status
         loss_scaler = None
     problem = BurgersWithLoss(model, data_params["out_channels"], loss_fn)
 
@@ -114,7 +113,7 @@ def main():
         (loss, l_recons, l_pred), grads = grad_fn(inputs, labels)
         if use_ascend:
             loss = loss_scaler.unscale(loss)
-            if all_finite(grads, init_status()):
+            if all_finite(grads):
                 grads = loss_scaler.unscale(grads)
         loss = ops.depend(loss, optimizer(grads))
         return loss, l_recons, l_pred
@@ -139,7 +138,7 @@ def main():
             l_pred_train += l_pred.asnumpy()
         l_recons_train = l_recons_train / train_size
         l_pred_train = l_pred_train / train_size
-        print(f"epoch: {epoch}, time cost: {(time.time() - time_beg):>8f},"
+        print(f"epoch: {epoch} epoch time: {(time.time() - time_beg):>8f},"
               f" recons loss: {l_recons_train:>8f}, pred loss: {l_pred_train:>8f}")
 
         if epoch % config['eval_interval'] == 0:
