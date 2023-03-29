@@ -79,10 +79,10 @@ class FixedPoint(Geometry):
         sampling points
 
         Args:
-            geom_type (str): geometry type
+            geom_type (str): geometry type, which supports 'domain' and 'BC'. Default: 'domain'.
 
         Returns:
-            Numpy.array, 2D numpy array with or without boundary normal vectors
+            Numpy.ndarray, 2D numpy array with or without boundary normal vectors
 
         Raises:
             ValueError: If `config` is None.
@@ -279,7 +279,7 @@ class HyperCube(Geometry):
                 - 'BC', boundary of the problem.
 
         Returns:
-            Numpy.array, if the with_normal property of boundary configuration is true, returns 2D numpy array with
+            Numpy.ndarray, if the with_normal property of boundary configuration is true, returns 2D numpy array with
                          boundary normal vectors. Otherwise, returns 2D numpy array without boundary normal vectors.
 
         Raises:

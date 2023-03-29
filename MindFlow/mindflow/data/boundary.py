@@ -122,7 +122,8 @@ class BoundaryBC(Boundary):
     Sampling data of boundary condition.
 
     Args:
-        geometry (Geometry): specifies geometry information of boundary condition.
+        geometry (Geometry): specifies geometry information of boundary condition. Derived from mindflow.geometry,
+        the geometry could be cube or disk, etc.
 
     Raises:
         ValueError: if sampling_config.bc of geometry is None.
