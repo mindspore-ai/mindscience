@@ -112,7 +112,7 @@ def train():
         if i % 100 == 0:
             e_sum = loss.mean().asnumpy().item()
             print(
-                f"epoch: {i} train loss: {e_sum:.3e} epoch time: {(time.time() - time_beg) * 1000 :.3f} ms"
+                f"epoch: {i} train loss: {e_sum:.3e} epoch time: {(time.time() - time_beg) * 1000 :.3f}ms"
             )
     ms.save_checkpoint(problem, f'./model_{config["collision"]}_kn{config["kn"]}.ckpt')
     visual(

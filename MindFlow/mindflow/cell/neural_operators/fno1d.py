@@ -26,7 +26,7 @@ class FNOBlock(nn.Cell):
         super().__init__()
         self.conv = SpectralConv1dDft(in_channels, out_channels, modes1, resolution, compute_dtype=compute_dtype)
         self.w = nn.Conv1d(in_channels, out_channels, 1).to_float(compute_dtype)
-
+        self.act = None
         if gelu:
             self.act = ops.GeLU()
         else:

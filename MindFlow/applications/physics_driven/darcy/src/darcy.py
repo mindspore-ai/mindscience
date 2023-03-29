@@ -16,11 +16,12 @@
 """2d darcy problem with dirichlet boundary condition"""
 import numpy as np
 
-from mindspore import nn, ops, Tensor
+from mindspore import ops, Tensor
 from mindspore import dtype as mstype
 from sympy import Function, symbols, sin, cos, pi
 
 from mindflow.pde import PDEWithLoss, sympy_to_mindspore
+from mindflow.loss import get_loss_metric
 
 
 class Darcy2D(PDEWithLoss):
@@ -35,14 +36,17 @@ class Darcy2D(PDEWithLoss):
         ``Ascend`` ``GPU``
     """
 
-    def __init__(self, model, loss_fn=nn.MSELoss()):
+    def __init__(self, model, loss_fn='mse'):
         self.x, self.y = symbols("x y")
         self.u = Function("u")(self.x, self.y)
         self.v = Function("v")(self.x, self.y)
         self.p = Function("p")(self.x, self.y)
         self.in_vars = [self.x, self.y]
         self.out_vars = [self.u, self.v, self.p]
-        self.loss_fn = loss_fn
+        if isinstance(loss_fn, str):
+            self.loss_fn = get_loss_metric(loss_fn)
+        else:
+            self.loss_fn = loss_fn
         self.bc_nodes = sympy_to_mindspore(self.bc(), self.in_vars, self.out_vars)
         super(Darcy2D, self).__init__(model, self.in_vars, self.out_vars)
 

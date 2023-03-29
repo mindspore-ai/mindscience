@@ -30,8 +30,8 @@ from mindflow.utils import load_yaml_config
 from src import create_training_dataset, create_test_dataset, calculate_l2_error, NavierStokes2D
 
 
-set_seed(123456)
-np.random.seed(123456)
+set_seed(0)
+np.random.seed(0)
 
 parser = argparse.ArgumentParser(description="cylinder flow train")
 parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
@@ -50,7 +50,6 @@ context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRA
                     save_graphs_path=args.save_graphs_path,
                     device_target=args.device_target,
                     device_id=args.device_id)
-print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
 use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
 
@@ -130,7 +129,7 @@ def train():
         model.set_train(True)
         for _ in range(steps_per_epochs + 1):
             step_train_loss = sink_process()
-        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg)*1000 :.3f} ms")
+        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg)*1000 :.3f}ms")
         model.set_train(False)
         if epoch % config["eval_interval_epochs"] == 0:
             # eval
@@ -145,6 +144,7 @@ def train():
 
 if __name__ == '__main__':
     print("pid:", os.getpid())
+    print(f"device id: {args.device_id}")
     start_time = time.time()
     train()
     print("End-to-End total time: {} s".format(time.time() - start_time))

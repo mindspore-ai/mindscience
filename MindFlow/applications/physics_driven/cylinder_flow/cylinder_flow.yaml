@@ -34,8 +34,8 @@ train_batch_size: 8192
 test_batch_size: 8192
 eval_interval_epochs: 100
 train_with_eval: true
-train_data_path: "./Dataset"
-test_data_path: "./Dataset"
+train_data_path: "./dataset"
+test_data_path: "./dataset"
 save_ckpt_path: "./ckpt"
 summary_dir: "./summary"
 visual_dir: "./vision"
