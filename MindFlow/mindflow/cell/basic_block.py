@@ -47,9 +47,11 @@ class LinearBlock(nn.Cell):
         in_channels (int): The number of channels in the input space.
         out_channels (int): The number of channels in the output space.
         weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
-            is same as input `input` . For the values of str, refer to the function `initializer`. Default: "normal".
+            is same as input `input` . For the values of str, refer to the function `mindspore.common.initializer`.
+            Default: "normal".
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype is
-            same as input `input` . The values of str refer to the function `initializer`. Default: "zeros".
+            same as input `input` . The values of str refer to the function `mindspore.common.initializer`.
+            Default: "zeros".
         has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
         activation (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected
             layer. Default: None.
@@ -160,7 +162,8 @@ class ResBlock(nn.Cell):
                                  bias_init=bias_init,
                                  has_bias=has_bias,
                                  activation=None)
-        self.activation = get_activation(activation) if isinstance(activation, str) else activation
+        self.activation = get_activation(activation) if isinstance(
+            activation, str) else activation
         if activation is not None and not isinstance(self.activation, (nn.Cell, ops.Primitive)):
             raise TypeError(
                 "The activation must be str or Cell or Primitive,"" but got {}.".format(type(activation)))
@@ -181,11 +184,11 @@ def _bias_init(fan_in, fan_out):
 
 class InputScale(nn.Cell):
     r"""
-    Scale the input value to specified region.
+    Scale the input value to specified region based on :math:`(x_i - input_center)*input_scale`
 
     Args:
-        input_scale (list): The scale factor of input x/y/t.
-        input_center (Union[list, None]): Center position of coordinate translation. Default: None.
+        input_scale (list): The scale factor of input.
+        input_center (Union[list, None]): Position offset of coordinate translation. Default: None.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, channels)`.
@@ -317,13 +320,18 @@ class FCSequential(nn.Cell):
         return self.network(x)
 
     def _create_networks(self):
-        self._add_linear_block(self.in_channels, self.neurons, weight_init=self.weight_init)
-        self._add_hidden_blocks(self.neurons, self.neurons, weight_init=self.weight_init)
-        self._add_linear_block(self.neurons, self.out_channels, weight_init=self.weight_init, is_out_net=True)
+        self._add_linear_block(
+            self.in_channels, self.neurons, weight_init=self.weight_init)
+        self._add_hidden_blocks(
+            self.neurons, self.neurons, weight_init=self.weight_init)
+        self._add_linear_block(
+            self.neurons, self.out_channels, weight_init=self.weight_init, is_out_net=True)
 
     def _check_params(self):
-        check_param_type(self.layers, "layers", data_type=int, exclude_type=bool)
-        check_param_type(self.neurons, "neurons", data_type=int, exclude_type=bool)
+        check_param_type(self.layers, "layers",
+                         data_type=int, exclude_type=bool)
+        check_param_type(self.neurons, "neurons",
+                         data_type=int, exclude_type=bool)
         check_param_type(self.residual, "residual", data_type=bool)
         if self.layers < 3:
             raise ValueError(
@@ -491,8 +499,8 @@ class MultiScaleFCSequential(nn.Cell):
             batch_size = x.shape[0]
             latent_vectors = self.latent_vector.view(self.num_scenarios, 1,
                                                      self.latent_size).repeat(
-                                                        batch_size // self.num_scenarios,
-                                                        axis=1).view((-1, self.latent_size))
+                batch_size // self.num_scenarios,
+                axis=1).view((-1, self.latent_size))
             x = self.concat((x, latent_vectors))
         out = 0
         for i in range(self.num_scales):

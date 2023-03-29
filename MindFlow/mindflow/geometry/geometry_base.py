@@ -77,13 +77,12 @@ class SamplingConfig:
         part_sampling_dict (dict): sampling configuration.
 
     Raises:
-        ValueError: If `coord_min` or `coord_max` is neither int nor float .
         TypeError: If `part_sampling_dict` is not dict.
         KeyError: If `geom_type` not "domain", "BC", "IC" or "time".
         TypeError: If 'config' is not PartSamplingConfig object.
-        ValueError: If `self.domain.size` is neither list nor tuple.
-        ValueError: If `self.ic.size` is neither list nor tuple.
-        ValueError: If `self.time.size` is neither list nor tuple.
+        ValueError: If `domain.size` in part_sampling_dict is neither list nor tuple.
+        ValueError: If `ic.size` in part_sampling_dict is neither list nor tuple.
+        ValueError: If `time.size` in part_sampling_dict is neither list nor tuple.
 
 
     Supported Platforms:

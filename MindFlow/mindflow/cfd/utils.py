@@ -25,7 +25,7 @@ def cal_con_var(pri_var, material):
 
     Args:
         pri_var (Tensor): The primitive variables.
-        material (Material): Material of the fluid.
+        material (mindflow.cfd.Material): Material of the fluid.
 
     Returns:
         Tensor, with the same shape as pri_var.
@@ -60,7 +60,7 @@ def cal_pri_var(con_var, material):
 
     Args:
         con_var (Tensor): The conservative variables.
-        material (Material): Material of the fluid.
+        material (mindflow.cfd.Material): Material of the fluid.
 
     Returns:
         Tensor, with the same shape as con_var.
