@@ -14,7 +14,8 @@ mindsponge.common.quat_affine
         - **use_numpy** (bool) - 是否使用numpy计算，默认值：False。
 
     返回：
-        返回仿射变换后结果
+        返回仿射变换后结果。
+
         - 四元数 (tensor)，shape为 :math:`(N_{res}, 4)` 。
         - 旋转矩阵 (tuple) :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` ，每个元素shape为 :math:`(N_{res},)` 。
         - 平移向量 (tensor)，shape为 :math:`(N_{res}, 3)` 。
