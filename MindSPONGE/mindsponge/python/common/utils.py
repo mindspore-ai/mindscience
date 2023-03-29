@@ -391,13 +391,13 @@ def make_atom14_positions(aatype, all_atom_mask, all_atom_positions):
       as a Tensor with shape :math:`(N_{res}, 14, 3)`.
 
     Args:
-        aatype(numpy.array):                Protein sequence encoding. the encoding method refers to
+        aatype(numpy.ndarray):                Protein sequence encoding. the encoding method refers to
                                             `common.residue_constants.restype_order`. The value ranges from 0 to 20.
                                             20 means the amino acid is unknown (`UNK`).
-        all_atom_mask(numpy.array):         Mask of coordinates of all atoms in proteins. Shape is
+        all_atom_mask(numpy.ndarray):         Mask of coordinates of all atoms in proteins. Shape is
                                             :math:`(N_{res}, 37)`. If the corresponding position is 0, the amino acid
                                             does not contain the atom.
-        all_atom_positions(numpy.array):    Coordinates of all atoms in protein. Shape is :math:`(N_{res}, 37, 3)` .
+        all_atom_positions(numpy.ndarray):    Coordinates of all atoms in protein. Shape is :math:`(N_{res}, 37, 3)` .
 
     Returns:
         - numpy.array. Densely encoding, mask of all atoms in protein, including unknown amino acid atoms.

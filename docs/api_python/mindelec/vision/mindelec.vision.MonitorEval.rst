@@ -17,5 +17,5 @@ mindelec.vision.MonitorEval
         在epoch结束时评估模型。
 
         参数：
-            - **run_context** (RunContext) - 包含一些模型中的信息，详情请参考 :class:`mindspore.train.RunContext`。
+            - **run_context** (RunContext) - 包含一些模型中的信息，详情请参考 `mindspore.train.RunContext <https://mindspore.cn/docs/zh-CN/r2.0/api_python/train/mindspore.train.RunContext.html#mindspore.train.RunContext>`_。
 

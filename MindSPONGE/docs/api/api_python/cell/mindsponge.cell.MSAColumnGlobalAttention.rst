@@ -4,7 +4,7 @@ mindsponge.cell.MSAColumnGlobalAttention
 .. py:class:: mindsponge.cell.MSAColumnGlobalAttention(num_head, gating, msa_act_dim, batch_size=None, slice_num=0)
 
     MSA列全局注意力层。详细实现过程参考 `Jumper et al. (2021) Suppl. Alg. 19 'MSAColumnGlobalAttention' <https://www.nature.com/articles/s41586-021-03819-2>`_ 。
-    将输入的msa信息在序列与残基轴上做转置，而后调用 `GlobalAttention <https://www.mindspore.cn/mindsponge/docs/zh-CN/master/cell/mindsponge.cell.GlobalAttention.html>`_ ，在输入的多条序列之间做attention操作，不会处理序列本身残基之间的关系。相比较于MSAColumnAttention，它使用全局的注意力机制，可以处理更大规模的输入序列。
+    将输入的msa信息在序列与残基轴上做转置，而后调用 `GlobalAttention <https://www.mindspore.cn/mindsponge/docs/zh-CN/r1.0/cell/mindsponge.cell.GlobalAttention.html>`_ ，在输入的多条序列之间做attention操作，不会处理序列本身残基之间的关系。相比较于MSAColumnAttention，它使用全局的注意力机制，可以处理更大规模的输入序列。
 
     参数：
         - **num_head** (int) - attention头的数量。
