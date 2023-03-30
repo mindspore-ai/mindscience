@@ -355,8 +355,6 @@ parameters:
     parameter_names:
       pattern: [bond_length, force_constant]
     parameters:
-      OW-HW: [0.09572, 462750.4]
-      HW-HW: [0.15136, 462750.4]
       C-C: [0.1525, 259408.0]
       C-CA: [0.1409, 392459.2]
       C-CB: [0.1419, 374049.6]
@@ -539,8 +537,6 @@ parameters:
     parameter_names:
       pattern: [bond_angle, force_constant]
     parameters:
-      HW-OW-HW: [104.52, 836.8]
-      HW-HW-OW: [127.74, 0.0]
       C-C-O: [120.0, 669.44]
       C-C-OH: [120.0, 669.44]
       CA-C-CA: [120.0, 527.184]
@@ -2126,8 +2122,6 @@ parameters:
       3C: [0.3399669, 0.4577296]
       C8: [0.3399669, 0.4577296]
       CO: [0.3399669, 0.359824]
-      HW: [0.0, 0.0]
-      OW: [0.636386, 0.315061]
   nb_pair_energy:
     length_unit: nm
     energy_unit: kj/mol

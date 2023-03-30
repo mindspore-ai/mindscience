@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -22,17 +22,8 @@
 # ============================================================================
 """Metrics"""
 
-from .metrics import CV, BalancedMSE, BinaryFocal, MultiClassFocal
-from .structure_violations import between_residue_bond, between_residue_clash
-from .structure_violations import within_residue_violations, get_structural_violations
-from .structure_violations import compute_renamed_ground_truth, frame_aligned_point_error_map
-from .structure_violations import backbone, frame_aligned_point_error, sidechain
-from .structure_violations import supervised_chi, local_distance_difference_test
+from .metrics import Metric, MetricCV, BalancedMSE, BinaryFocal, MultiClassFocal
+from .metrics import get_metrics
 
-__all__ = ['CV', 'BalancedMSE', 'BinaryFocal', 'MultiClassFocal', "between_residue_bond",
-           "between_residue_clash", "within_residue_violations", "get_structural_violations",
-           "compute_renamed_ground_truth", "frame_aligned_point_error_map",
-           "backbone", "frame_aligned_point_error", "sidechain", "supervised_chi",
-           "local_distance_difference_test"]
-
-__all__.sort()
+__all__ = ['Metric', 'MetricCV', 'BalancedMSE', 'BinaryFocal', 'MultiClassFocal',
+           'get_metrics']

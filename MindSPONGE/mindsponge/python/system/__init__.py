@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -24,5 +24,6 @@
 
 from .molecule import Molecule, Protein
 from .residue import Residue, AminoAcid
+from .dimension import DIMENSION, set_dimension
 
-__all__ = ['Molecule', 'Protein', 'Residue', 'AminoAcid']
+__all__ = ['Molecule', 'Protein', 'Residue', 'AminoAcid', 'DIMENSION', 'set_dimension']

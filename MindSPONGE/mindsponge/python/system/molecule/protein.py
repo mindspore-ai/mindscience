@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -24,11 +24,13 @@
 Protein modeling.
 """
 
+from typing import Union, List
 import numpy as np
+from numpy import ndarray
 from mindspore.common import Tensor
 from .molecule import Molecule
 from ..residue.amino import AminoAcid
-from ..modeling.hadder import ReadPdbByMindsponge as read_pdb
+from ..modelling.hadder import read_pdb
 from ...data.template import get_template
 
 
@@ -37,39 +39,59 @@ include_backbone_atoms = np.array(['OXT'], np.str_)
 
 
 class Protein(Molecule):
-    r"""
-    Protein molecule.
+    r"""Protein molecule, which is a subclass of `Molecule` Cell.
+
+        Protein Cell can be initialized by accepting a PDB file, thus creating a `Molecule` Cell for the protein.
 
     Args:
-        pdb (str):                         Atoms in system. Can be list of str or int. Default: None.
-        sequence (list):                   Atom type. Can be ndarray or list of str. Default: None.
-        coordinate (Tensor):               Tensor of shape (B, A, D) or (1, A, D). Data type is float.
-                                           Position coordinates of atoms. Default: None.
-        pbc_box (Tensor):                  Tensor of shape (B, D) or (1, D). Data type is float.
-                                           Box of periodic boundary condition. Default: None.
-        template (Union[dict, str]):       Template of residue.
-                                           The key of the dict are base, template, the name of molecule and so on.
-                                           The value of the dict is file name.
-                                           Default: 'protein0.yaml'
-        ignore_hydrogen (bool, optional):  Ignore hydrogen. Default: True.
-        length_unit (str):                 Length unit for position coordinates. Default: None.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        pdb (str):                  Filename of the PDB (Protein Data Bank) file. Defulat: None
+
+        sequence (List[str]):       Sequence of the protein moleulce. Defulat: None
+
+        coordinate (Union[Tensor, ndarray, List[float]]):
+                                    Array of the position coordinates of atoms of the simulation system.
+                                    The shape of the array is (A, D) or (B, A, D), and the data type is float.
+                                    Default: None
+
+        pbc_box (Union[Tensor, ndarray, List[float]]):
+                                    Array of the Box of periodic boundary condition.
+                                    The shape of the array is (D) or (B, D), and the data type is float.
+                                    Default: None
+
+        template (Union[dict, str]):
+                                    Template for protein molecule. It can be a `dict` of template,
+                                    a `str` of filename of a template file in MindSPONGE YAML format,
+                                    If a filename is given, it will first look for a file with the same name
+                                    in the current directory. If the file does not exist, it will search
+                                    in MindSPONGE's built-in templates.
+
+        rebuild_hydrogen (bool):    Whether to rebuild the hydrogen atoms of the protein molecule from PDB file.
+                                    Default: False
+
+        rebuild_suffix (str):       The suffix of the PDB file of the protetin module with rebuilt hydrogen.
+                                    Default: '_addH'
+
+        length_unit (str):          Length unit for position coordinates. Default: None
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation.
+
+        B:  Batchsize, i.e. number of walkers in simulation
+
         A:  Number of atoms.
-        D:  Dimension of the simulation system. Usually is 3.
+
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
 
     def __init__(self,
                  pdb: str = None,
-                 sequence: list = None,
-                 coordinate: Tensor = None,
-                 pbc_box: Tensor = None,
-                 template: dict = 'protein0.yaml',
-                 ignore_hydrogen: bool = True,
+                 sequence: List[str] = None,
+                 coordinate: Union[Tensor, ndarray, List[float]] = None,
+                 pbc_box: Union[Tensor, ndarray, List[float]] = None,
+                 template: Union[dict, str] = 'protein0.yaml',
+                 rebuild_hydrogen: bool = False,
+                 rebuild_suffix: str = '_addH',
                  length_unit: str = None,
                  ):
 
@@ -80,15 +102,18 @@ class Protein(Molecule):
             if sequence is None:
                 raise ValueError('At least 1 of pdb name and residue sequence should be given.')
         else:
-            _, residue_name, _, coordinate, residue_pointer, flatten_atoms, flatten_crds, init_res_names,\
-                init_res_ids, \
-                _, _, _, _, _ = read_pdb(
-                    pdb, ignore_hydrogen)
+            pdb_obj = read_pdb(pdb, rebuild_hydrogen, rebuild_suffix=rebuild_suffix)
+            residue_name = pdb_obj.res_names
+            residue_pointer = pdb_obj.res_pointer
+            flatten_atoms = pdb_obj.flatten_atoms
+            flatten_crds = pdb_obj.flatten_crds
+            init_res_names = pdb_obj.init_res_names
+            init_res_ids = pdb_obj.init_res_ids
 
             if len(residue_name) > 1:
-                if residue_name[0] != 'ACE' and residue_name[0] != 'NME':
+                if residue_name[0] != 'ACE':
                     residue_name[0] = 'N' + residue_name[0]
-                if residue_name[-1] != 'ACE' and residue_name[-1] != 'NME':
+                if residue_name[-1] != 'NME':
                     residue_name[-1] = 'C' + residue_name[-1]
 
             self.init_resname = init_res_names

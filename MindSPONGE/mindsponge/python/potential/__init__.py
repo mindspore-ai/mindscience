@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -23,10 +23,11 @@
 """Potential energy"""
 
 from .potential import PotentialCell
+from .force import ForceCell
 from .forcefield import ForceFieldBase, ForceField
 from .energy import *
 from .bias import *
 
-__all__ = ['PotentialCell', 'ForceFieldBase', 'ForceField']
+__all__ = ['PotentialCell', 'ForceCell', 'ForceFieldBase', 'ForceField']
 __all__.extend(energy.__all__)
 __all__.extend(bias.__all__)

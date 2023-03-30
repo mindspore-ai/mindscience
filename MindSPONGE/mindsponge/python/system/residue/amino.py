@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -23,29 +23,45 @@
 """
 Molecule
 """
-from mindspore import jit_class
+from typing import Union, List
+from numpy import ndarray
+from mindspore import ms_class
 from .residue import Residue
 
 
-@jit_class
+@ms_class
 class AminoAcid(Residue):
-    r"""
-    Residue of amino acid.
+    r"""Residue for amino acid
 
     Args:
-        name (str):             Name of the residue. Default: ''
-        template (dict or str): Template of Residue. Default: None
-        atom_name (list):       Atom name. Can be ndarray or list of str. Default: None
-        start_index (int):      The start index of the first atom in this residue. Default: 0
+
+        name (str):         Name of the residue. Default: ''
+
+        template (dict):    Template of Residue. Default: None
+
+        atom_name (Union[str, List[str], ndarray]):
+                            Atom name. Can be ndarray or list of str. Defulat: None
+
+        start_index (int):  The start index of the first atom in this residue.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
+    Symbols:
+
+        B:  Batchsize, i.e. number of walkers in simulation
+
+        A:  Number of atoms.
+
+        b:  Number of bonds.
+
     """
 
     def __init__(self,
                  name: str = '',
                  template: dict = None,
-                 atom_name: str = None,
+                 atom_name: Union[str, List[str], ndarray] = None,
                  start_index: int = 0,
                  ):
 

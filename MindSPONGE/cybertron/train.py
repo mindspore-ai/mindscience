@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -126,7 +126,7 @@ class OutputScaleShift(Cell):
         self.axis = axis
 
         self.reduce_sum = P.ReduceSum()
-        self.keep_sum = P.ReduceSum(keep_dims=True)
+        self.keep_sum = P.ReduceSum(True)
 
     def construct(self, outputs: Tensor, num_atoms: Tensor, atom_types: Tensor = None):
         """Scale and shift output.
@@ -223,7 +223,7 @@ class DatasetNormalization(Cell):
         self.axis = axis
 
         self.reduce_sum = P.ReduceSum()
-        self.keep_sum = P.ReduceSum(keep_dims=True)
+        self.keep_sum = P.ReduceSum(True)
 
     def construct(self, label: Tensor, num_atoms: Tensor, atom_types: Tensor = None):
         """Normalize outputs.
@@ -560,7 +560,7 @@ class WithCell(Cell):
 
         print(self.cls_name + ' with input type: ' + self.datatypes)
 
-        self.keep_sum = P.ReduceSum(keep_dims=True)
+        self.keep_sum = P.ReduceSum(True)
 
 
 class WithForceLossCell(WithCell):
@@ -848,7 +848,7 @@ class WithEvalCell(WithCell):
                     print(info)
 
         self.add_cast_fp32 = add_cast_fp32
-        self.reducesum = P.ReduceSum(keep_dims=True)
+        self.reducesum = P.ReduceSum(True)
 
 
 class WithLabelEvalCell(WithEvalCell):

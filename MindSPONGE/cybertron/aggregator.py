@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -296,7 +296,7 @@ class TensorMean(Aggregator):
         self.name = 'mean'
 
         self.reduce_mean = P.ReduceMean()
-        self.mol_sum = P.ReduceSum(keep_dims=True)
+        self.mol_sum = P.ReduceSum(True)
 
     def __str__(self):
         return "mean"
@@ -368,7 +368,7 @@ class SoftmaxGeneralizedAggregator(Aggregator):
 
         self.softmax = P.Softmax(axis=self.axis)
         self.softmax_with_mask = SoftmaxWithMask(axis=self.axis)
-        self.mol_sum = P.ReduceSum(keep_dims=True)
+        self.mol_sum = P.ReduceSum(True)
 
         self.expand_ones = P.Ones()((1, 1, self.dim), ms.int32)
 
@@ -446,7 +446,7 @@ class PowermeanGeneralizedAggregator(Aggregator):
         self.rho = ms.Parameter(initializer('one', 1), name="rho")
 
         self.power = P.Pow()
-        self.mol_sum = P.ReduceSum(keep_dims=True)
+        self.mol_sum = P.ReduceSum(True)
 
     def __str__(self):
         return "powermean"

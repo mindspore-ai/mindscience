@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -31,9 +31,14 @@ from mindspore.ops import functional as F
 from mindspore import ops, nn
 from mindspore import Tensor
 from mindspore.nn import Cell
+from mindspore.ops._utils.utils import generate_shape_index
+from mindspore.ops.composite.multitype_ops.zeros_like_impl import zeros_like
 
 from . import functions as func
-from .units import Units, global_units
+from .functions import get_integer
+from .functions import _regenerate_output_shape, _generate_inverse_index
+from .functions import unsorted_segment_sum, dyn_shape_op
+from .units import Units, GLOBAL_UNITS
 
 __all__ = [
     'GetVector',
@@ -41,87 +46,78 @@ __all__ = [
     'VelocityGenerator',
     'GetDistanceShift',
     'GetShiftGrad',
+    'GatherNet',
 ]
 
 
 class GetVector(Cell):
-    r"""
-    The class to get vector with or without PBC box.
+    r"""The class to get vector with or without PBC box
 
     Args:
+
         use_pbc (bool): Whether to calculate vector under periodic boundary condition.
-                        If this is "None", it will determine whether to calculate the vector under
-                        periodic boundary condition based on whether the pbc_box is given.
+                        If `None` is given, it will determine whether to use periodic boundary
+                        conditions based on whether the `pbc_box` is provided.
                         Default: None
 
-    Returns:
-        vector (Tensor), Tensor of shape (B, ..., D). Data type is float.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
     """
 
     def __init__(self, use_pbc: bool = None):
         super().__init__()
 
-        self.get_vector = self.get_vector_default
-
-        self.use_pbc = use_pbc
-        self.set_pbc(use_pbc)
-
-    def get_vector_without_pbc(self, position0, position1, pbc_box=None):
-        """
-        get vector without periodic boundary condition.
-
-        Args:
-            position0 (Tensor): Tensor of coordinate of initial point.
-            position1 (Tensor): Tensor of coordinate of terminal point.
-            pbc_box (Any):      Dummy. Default: None
-        """
-        return func.get_vector_without_pbc(position0, position1, pbc_box)
-
-    def get_vector_with_pbc(self, position0, position1, pbc_box):
-        """
-        get vector with periodic boundary condition.
-
-        Args:
-            position0 (Tensor): Tensor of coordinate of initial point.
-            position1 (Tensor): Tensor of coordinate of terminal point.
-            pbc_box (Any):      Dummy. Default: None
-        """
-        return func.get_vector_with_pbc(position0, position1, pbc_box)
-
-    def get_vector_default(self, position0, position1, pbc_box=None):
-        """
-        get vector.
-
-        Args:
-            position0 (Tensor): Tensor of coordinate of initial point.
-            position1 (Tensor): Tensor of coordinate of terminal point.
-            pbc_box (Any):      Dummy. Default: None
-        """
-        return func.get_vector(position0, position1, pbc_box)
-
-    def set_pbc(self, use_pbc=None):
-        """
-        set whether to use periodic boundary condition.
-
-        Args:
-            use_pbc (bool): Whether use periodic boundary condition. Default: None
-        """
-        self.use_pbc = use_pbc
+        self._use_pbc = use_pbc
         if use_pbc is None:
-            self.get_vector = self.get_vector_default
+            self.calc_vector = self.calc_vector_default
         else:
             if use_pbc:
-                self.get_vector = self.get_vector_with_pbc
+                self.calc_vector = self.calc_vector_pbc
             else:
-                self.get_vector = self.get_vector_without_pbc
+                self.calc_vector = self.calc_vector_nopbc
+
+    @property
+    def use_pbc(self) -> bool:
+        """whether to use periodic boundary condition
+
+        Return:
+            bool, whether to use periodic boundary condition
+
+        """
+        return self._use_pbc
+
+    @use_pbc.setter
+    def use_pbc(self, use_pbc_: bool):
+        """set whether to use periodic boundary condition"""
+        self.set_pbc(use_pbc_)
+
+    def set_pbc(self, use_pbc: bool):
+        """set whether to use periodic boundary condition"""
+        self._use_pbc = use_pbc
+        if use_pbc is None:
+            self.calc_vector = self.calc_vector_default
+        else:
+            if not isinstance(use_pbc, bool):
+                raise TypeError(f'The type of use_pbc must be bool or None but got: {type(use_pbc)}')
+            if use_pbc:
+                self.calc_vector = self.calc_vector_pbc
+            else:
+                self.calc_vector = self.calc_vector_nopbc
         return self
 
+    def calc_vector_default(self, initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Tensor:
+        """get vector"""
+        return func.calc_vector(initial, terminal, pbc_box)
+
+    def calc_vector_pbc(self, initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Tensor:
+        """get vector with perodic bundary condition"""
+        return func.calc_vector_pbc(initial, terminal, pbc_box)
+
+    def calc_vector_nopbc(self, initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Tensor:
+        """get vector without perodic bundary condition"""
+        #pylint: disable=unused-argument
+        return terminal - initial
+
     def construct(self, initial: Tensor, terminal: Tensor, pbc_box: Tensor = None):
-        r"""
-        Compute vector from initial point to terminal point.
+        r"""Compute vector from initial point to terminal point.
 
         Args:
             initial (Tensor):   Tensor of shape (B, ..., D). Data type is float.
@@ -132,87 +128,85 @@ class GetVector(Cell):
                                 Default: None
 
         Returns:
-            vector (Tensor), Tensor of shape (B, ..., D). Data type is float.
+            vector (Tensor):    Tensor of shape (B, ..., D). Data type is float.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
+
         """
-        return self.get_vector(initial, terminal, pbc_box)
+        return self.calc_vector(initial, terminal, pbc_box)
 
 
-class GetDistance(Cell):
-    r"""
-    The class to calculate distance with or without PBC box.
+class GetDistance(GetVector):
+    r"""The class to calculate distance with or without PBC box
 
     Args:
-        use_pbc (bool): Whether to calculate distance under periodic boundary condition.
-                        If this is "None", it will determine whether to calculate the distance under
-                        periodic boundary condition based on whether the pbc_box is given.
-                        Default: None
 
-    Outputs:
-        distance (Tensor), Tensor of shape (B, ...). Data type is float.
+        use_pbc (bool):     Whether to calculate distance under periodic boundary condition.
+                            If this is "None", it will determine whether to calculate the distance under
+                            periodic boundary condition based on whether the pbc_box is given.
+                            Default: None
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        keepdims (bool):    Whether to keep the last dimension of the output Tensor of distance after norm.
+                            If this is "True", the last dimension of the output Tensor will be 1.
+                            Default: False
+
+        axis (int):         The axis of the space dimension of the coordinate. Default: -1
+
     """
 
-    def __init__(self, use_pbc=None):
-        super().__init__()
+    def __init__(self,
+                 use_pbc: bool = None,
+                 keepdims: bool = False,
+                 axis: int = -1,
+                 ):
 
-        self.get_vector = GetVector(use_pbc)
-        self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
+        super().__init__(use_pbc=use_pbc)
 
-    def set_pbc(self, use_pbc):
-        """
-        set whether to use periodic boundary condition.
-
-        Args:
-            use_pbc (bool): Whether use periodic boundary condition.
-        """
-        self.get_vector.set_pbc(use_pbc)
-        return self
+        self.norm = nn.Norm(get_integer(axis), keepdims)
 
     def construct(self, initial: Tensor, terminal: Tensor, pbc_box: Tensor = None):
-        r"""
-        Compute the distance from initial point to terminal point.
+        r"""Compute the distance from initial point to terminal point.
 
         Args:
             initial (Tensor):   Tensor of shape (B, ..., D). Data type is float.
-                                Coordinate of initial point.
+                                Coordinate of initial point
             terminal (Tensor):  Tensor of shape (B, ..., D). Data type is float.
-                                Coordinate of terminal point.
+                                Coordinate of terminal point
             pbc_box (Tensor):   Tensor of shape (B, D). Data type is float.
                                 Default: None
 
         Returns:
-            distance (Tensor), Tensor of shape (B, ...). Data type is float.
+            distance (Tensor):  Tensor of shape (B, ...). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation.
-            D:  Dimension of the simulation system. Usually is 3.
+            B:  Batchsize, i.e. number of walkers in simulation
+            D:  Spatial dimension of the simulation system. Usually is 3.
 
         """
-        vector = self.get_vector(initial, terminal, pbc_box)
-        return self.norm_last_dim(vector)
+        vector = self.calc_vector(initial, terminal, pbc_box)
+        return self.norm(vector)
 
 
 class VelocityGenerator(Cell):
-    r"""
-    A class to generate velocities for atoms in system according to temperature.
+    r"""A class to generate velocities for atoms in system according to temperature
 
     Args:
-        temperature (float):        Temperature. Default: 300
+
+        temperature (float):        Temperature
+
         remove_translation (bool):  Whether to calculate distance under periodic boundary condition.
                                     Default: True
+
         seed (int):                 Random seed for standard normal. Default: 0
+
         seed2 (int):                Random seed2 for standard normal. Default: 0
+
         length_unit (str):          Length unit. Default: None
+
         energy_unit (str):          energy unit. Default: None
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
     """
     #pylint: disable=invalid-name
 
@@ -228,7 +222,7 @@ class VelocityGenerator(Cell):
         super().__init__()
 
         if length_unit is None and energy_unit is None:
-            self.units = global_units
+            self.units = GLOBAL_UNITS
         else:
             self.units = Units(length_unit, energy_unit)
 
@@ -247,12 +241,7 @@ class VelocityGenerator(Cell):
         self.multi_temp = False
 
     def set_temperature(self, temperature: float):
-        """
-        set temperature.
-
-        Args:
-            temperature (float):    Temperature value.
-        """
+        """set temperature"""
         self.temperature = Tensor(temperature, ms.float32).reshape(-1, 1, 1)
         self.multi_temp = False
         if self.temperature is not None and self.temperature.size > 1:
@@ -260,23 +249,23 @@ class VelocityGenerator(Cell):
         return self
 
     def construct(self, shape: tuple, atom_mass: Tensor, mask: Tensor = None):
-        r"""
-        Randomly generate velocities for atoms in system.
+        r"""Randomly generate velocities for atoms in system.
 
         Args:
-            shape (tuple):      Shape of velocity.
+            shape (tuple):      Shape of velocity
             atom_mass (Tensor): Tensor of shape (B, A). Data type is float.
                                 Atom mass in system.
             mask (Tensor):      Tensor of shape (B, A). Data type is bool.
                                 Mask for atoms. Default: None
 
         Returns:
-            velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
+            velocity (Tensor):  Tensor of shape (B, A, D). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation.
-            A:  Number of atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            B:  Batchsize, i.e. number of walkers in simulation
+            A:  Number of atoms
+            D:  Spatial dimension of the simulation system. Usually is 3.
+
         """
         # (B,A,1)
         atom_mass = F.expand_dims(self.identity(atom_mass), -1)
@@ -294,10 +283,10 @@ class VelocityGenerator(Cell):
             momentum = atom_mass * velocity
             # (1,1,1) or (B,1,1) <- (1,A,1) or (B,A,1)
 
-            dp = func.keepdim_mean(momentum, -2)
+            dp = func.keepdims_mean(momentum, -2)
             if mask is not None:
-                sp = func.keepdim_sum(momentum, -2)
-                n = func.keepdim_sum(F.cast(mask, ms.int32), -2)
+                sp = func.keepdims_sum(momentum, -2)
+                n = func.keepdims_sum(F.cast(mask, ms.int32), -2)
                 dp = sp / n
             # (B,A,D) - (B,1,D) = (B,A,D)
             momentum -= dp
@@ -307,26 +296,18 @@ class VelocityGenerator(Cell):
 
 
 class GetDistanceShift(Cell):
-    r"""
-    Module for calculating B matrix whose dimensions are C.
+    r"""Module for calculating B matrix whose dimensions are: C.
 
     Args:
         bonds (Tensor):     Tensor of shape (C, 2). Data type is int.
                             Bonds need to be constraint.
+
         num_atoms (int):    Number of atoms in system.
-        num_walkers (int):  Number of multiple walkers. Default: 1
-        use_pbc (bool):     Whether to use periodic boundary condition. Default: None
 
-    Outputs:
-        shift (Tensor), Tensor of shape (B,A,D). Data type is float.
+        num_walkers (int):  Number of multiple walkers.
 
-    Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation.
-        A:  Number of atoms.
-        D:  Dimension of the simulation system. Usually is 3.
+        use_pbc (bool):     Whether to use periodic boundary condition.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -338,34 +319,33 @@ class GetDistanceShift(Cell):
 
         super().__init__(auto_prefix=False)
 
-        # (C,2):
+        # (C,2)
         self.bonds = bonds
         self.norm = nn.Norm(-1)
 
-        # (B,C,A):
+        # (B,C,A)
         shape = (num_walkers, bonds.shape[-2], num_atoms)
 
-        # (1,C,1):
+        # (1,C,1)
         bond0 = self.bonds[..., 0].reshape(1, -1, 1).asnumpy()
-        # (B,C,A) <- (B,A,1):
+        # (B,C,A) <- (B,A,1)
         mask0 = np.zeros(shape)
         np.put_along_axis(mask0, bond0, 1, axis=-1)
-        # (B,C,A,1):
+        # (B,C,A,1)
         self.mask0 = F.expand_dims(Tensor(mask0, ms.int32), -1)
 
-        # (1,C,1):
+        # (1,C,1)
         bond1 = self.bonds[..., 1].reshape(1, -1, 1).asnumpy()
-        # (B,C,A) <- (B,A,1):
+        # (B,C,A) <- (B,A,1)
         mask1 = np.zeros(shape)
         np.put_along_axis(mask1, bond1, 1, axis=-1)
-        # (B,C,A,1):
+        # (B,C,A,1)
         self.mask1 = F.expand_dims(Tensor(mask1, ms.int32), -1)
 
         self.get_distance = GetDistance(use_pbc)
 
     def construct(self, coordinate_new: Tensor, coordinate_old: Tensor, pbc_box: Tensor = None):
-        """
-        Module for calculating B matrix whose dimensions are C.
+        """Module for calculating B matrix whose dimensions are: C.
 
         Args:
             coordinate_new (Tensor):    Tensor of shape (B,A,D). Data type is float.
@@ -374,17 +354,17 @@ class GetDistanceShift(Cell):
                                         The old coordinates of the system.
             pbc_box (Tensor):           Tensor of shape (B,D). Data type is float.
                                         Tensor of PBC box
-
         Return:
-            shift (Tensor), Tensor of shape (B,A,D). Data type is float.
+            shift (Tensor): Tensor of shape (B,A,D). Data type is float.
+
         """
-        # (B,C,A,D) = (B,C,A,1) * (B,1,A,D):
+        # (B,C,A,D) = (B,C,A,1) * (B,1,A,D)
         pos_new_0 = F.reduce_sum(self.mask0 * coordinate_new, -2)
         pos_new_1 = F.reduce_sum(self.mask1 * coordinate_new, -2)
         # (B,C,A)
         dis_new = self.get_distance(pos_new_0, pos_new_1, pbc_box)
 
-        # (B,C,A,D) = (B,C,A,1) * (B,1,A,D):
+        # (B,C,A,D) = (B,C,A,1) * (B,1,A,D)
         pos_old_0 = F.reduce_sum(self.mask0 * coordinate_old, -2)
         pos_old_1 = F.reduce_sum(self.mask1 * coordinate_old, -2)
         dis_old = self.get_distance(pos_old_0, pos_old_1, pbc_box)
@@ -394,28 +374,19 @@ class GetDistanceShift(Cell):
 
 
 class GetShiftGrad(Cell):
-    """
-    Module for calculating the differentiation of B matrix whose dimensions are: K*N*D.
+    """Module for calculating the differentiation of B matrix whose dimensions are: K*N*D.
 
     Args:
-        bonds (Tensor):     Tensor of shape (K, N, D). Data type is int.
+
+        bonds (Tensor):     Tensor of shape (C, 2). Data type is int.
                             Bonds need to be constraint.
+
         num_atoms (int):    Number of atoms in system.
-        num_walkers (int):  Number of multiple walkers. Default: 1
-        dimension (int):    Number of dimension. Default: 3
+
+        num_walkers (int):  Number of multiple walkers.
+
         use_pbc (bool):     Whether to use periodic boundary condition.
 
-    Outputs:
-        shift (Tensor), Tensor of shape (B,A,D). Data type is float.
-
-    Symbol:
-        B:  Batchsize, i.e. number of walkers in simulation.
-        A:  Number of atoms in system.
-        N:  Number of neighbour atoms.
-        D:  Dimension of the simulation system. Usually is 3.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -428,7 +399,7 @@ class GetShiftGrad(Cell):
 
         super().__init__(auto_prefix=False)
 
-        # (B,K,A,D):
+        # (B,K,A,D)
         shape = (num_walkers, bonds.shape[-2], num_atoms, dimension)
         self.broadcast = ops.BroadcastTo(shape)
         self.net = GetDistanceShift(
@@ -442,8 +413,7 @@ class GetShiftGrad(Cell):
         self.zero_shift = ops.Zeros()((num_walkers, num_atoms - 1, num_atoms, dimension), ms.float32)
 
     def construct(self, coordinate_new: Tensor, coordinate_old: Tensor, pbc_box: Tensor = None):
-        """
-        Module for calculating the differentiation of B matrix whose dimensions are: K*N*D.
+        """Module for calculating the differentiation of B matrix whose dimensions are: K*N*D.
 
         Args:
             coordinate_new (Tensor):    Tensor of shape (B,A,D). Data type is float.
@@ -451,15 +421,50 @@ class GetShiftGrad(Cell):
             coordinate_old (Tensor):    Tensor of shape (B,A,D). Data type is float.
                                         The old coordinates of the system.
             pbc_box (Tensor):           Tensor of shape (B,D). Data type is float.
-                                        Tensor of PBC box.
-
+                                        Tensor of PBC box
         Return:
-            shift (Tensor), Tensor of shape (B,A,D). Data type is float.
+            shift (Tensor): Tensor of shape (B,A,D). Data type is float.
+
         """
-        # (B,C,A,D):
+        # (B,C,A,D)
         coordinate_new = self.broadcast(coordinate_new[:, None, :, :])
         coordinate_old = self.broadcast(coordinate_old[:, None, :, :])
         shift_grad = self.grad(self.net)(coordinate_new, coordinate_old, pbc_box)
         if msnp.isnan(shift_grad.sum()):
             shift_grad = self.zero_shift
         return shift_grad
+
+
+class GatherNet(ms.nn.Cell):
+    """Redefine bprop for gather to run unsorted_segment_sum on aicpu"""
+
+    def construct(self, data, indices, axis):
+        return ops.gather(data, indices, axis)
+
+    def bprop(x, indices, axis, out, dout):
+        """bprop for gather"""
+        # pylint: disable=E0213, W0613
+        orig_indices = indices
+        if ops.rank(dout) == 0:
+            dout = ops.ExpandDims()(dout, -1)
+        if ops.rank(indices) == 0:
+            indices = ops.ExpandDims()(indices, -1)
+            x_shp = ops.shape(x)
+            ind_shp = ops.shape(indices)
+            out_shp = _regenerate_output_shape(x_shp, ind_shp, axis)
+            dout = ops.reshape(dout, out_shp)
+
+        x_shp = ops.shape(x)
+        out_shp = ops.shape(dout)
+        ind_shp = ops.shape(indices)
+        perm_1 = generate_shape_index(out_shp, ind_shp, axis)
+        values_transpose = ops.transpose(dout, perm_1)
+        if F.is_sequence_value_unknown(ops.shape(x)):
+            params_grad = unsorted_segment_sum(
+                values_transpose, indices, dyn_shape_op(x)[axis])
+        else:
+            params_grad = unsorted_segment_sum(
+                values_transpose, indices, ops.shape(x)[axis])
+        perm_2 = _generate_inverse_index(x_shp, axis)
+        params_grad = ops.transpose(params_grad, perm_2)
+        return params_grad, zeros_like(orig_indices), zeros_like(axis)

@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -23,44 +23,54 @@
 """Space updater"""
 
 from mindspore import Tensor
-from mindspore.nn.optim.optimizer import opt_init_args_register
 
-from . import Updater
+from .md import UpdaterMD
 from ..system import Molecule
 from ..control.controller import Controller
 from ..control.integrator import Integrator
 
 
-class DynamicUpdater(Updater):
-    r"""
-    A updater for molecular dynamics (MD) simulation.
+class DynamicUpdater(UpdaterMD):
+    r"""Updater for molecular dynamics (MD) simulation.
+
+        This updater will be removed a future release. Please use `UpdaterMD` instead.
 
     Args:
-        system (Molecule):          Simulation system.
-        integrator (Integrator):    MD integrator.
-        thermostat (Controller):    Thermostat for temperature coupling. Default: None
-        barostat (Controller):      Barostat for pressure coupling. Default: None
-        constraint (Controller):    Constraint for bond. Default: None
-        controller (Controller):    Other controllers. Default: None
-        time_step (float):          Time step. Default: 1e-3
-        velocity (Tensor):          Tensor of shape (B, A, D). Data type is float.
-                                    Default: None
-        weight_decay (float):       A value for the weight decay. Default: 0.0
-        loss_scale (float):         A value for the loss scale. Default: 1.0
 
-    Returns:
-        bool, update the parameters of system.
+        system (Molecule):          Simulation system.
+
+        integrator (Integrator):    MD integrator.
+
+        thermostat (Controller):    Thermostat for temperature coupling. Default: None
+
+        barostat (Controller):      Barostat for pressure coupling. Default: None
+
+        constraint (Controller):    Constraint for bond.
+
+        controller (Controller):    Other controllers.
+
+        time_step (float):          Time step. Defulat: 1e-3
+
+        velocity (Tensor):          Atomic velocity. The shape of tensor is `(B, A, D)`.
+                                    The data type is float. Default: None
+
+        weight_decay (float):       An value for the weight decay. Default: 0
+
+        loss_scale (float):         A value for the loss scale. Default: 1
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation.
+
+        B:  Batchsize, i.e. number of walkers in simulation
+
         A:  Number of atoms.
-        D:  Dimension of the simulation system. Usually is 3.
+
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
-    @opt_init_args_register
     def __init__(self,
                  system: Molecule,
                  integrator: Integrator,
@@ -76,6 +86,10 @@ class DynamicUpdater(Updater):
 
         super().__init__(
             system=system,
+            integrator=integrator,
+            thermostat=thermostat,
+            barostat=barostat,
+            constraint=constraint,
             controller=controller,
             time_step=time_step,
             velocity=velocity,
@@ -83,59 +97,5 @@ class DynamicUpdater(Updater):
             loss_scale=loss_scale,
         )
 
-        self.integrator = integrator
-
-        if thermostat is not None:
-            self.integrator.set_thermostat(thermostat)
-        self.thermostat = self.integrator.thermostat
-
-        if barostat is not None:
-            if self.pbc_box is None:
-                raise ValueError('Barostat cannot be used for the system without periodic boundary condition.')
-            self.integrator.set_barostat(barostat)
-        self.barostat = self.integrator.barostat
-
-        if constraint is not None:
-            self.integrator.set_constraint(constraint)
-        self.constraint = self.integrator.constraint
-
-        self.integrator.set_time_step(self.time_step)
-        self.integrator.set_degrees_of_freedom(self.degrees_of_freedom)
-
-    def construct(self, gradients: tuple, loss: Tensor = None):
-        """update the parameters of system"""
-        gradients = self.decay_weight(gradients)
-        gradients = self.scale_grad(gradients)
-
-        coordinate = self.coordinate
-        velocity = self.velocity
-        force = -gradients[0]
-        energy = loss
-        kinetics = self.kinetics
-        pbc_box = self.pbc_box
-        virial = None
-        if self.pbc_box is not None:
-            virial = self.get_virial(gradients[1], pbc_box)
-
-        step = self.identity(self.step)
-        coordinate, velocity, force, energy, kinetics, virial, pbc_box = \
-            self.integrator(coordinate, velocity, force, energy, kinetics, virial, pbc_box, step)
-
-        if self.controller is not None:
-            for i in range(self.num_controller):
-                coordinate, velocity, force, energy, kinetics, virial, pbc_box = \
-                    self.controller[i](coordinate, velocity, force, energy, kinetics, virial, pbc_box, step)
-
-        temperature = self.get_temperature(kinetics)
-        pressure = self.get_pressure(kinetics, virial, pbc_box)
-
-        success = True
-        success = self.update_coordinate(coordinate, success)
-        success = self.update_velocity(velocity, success)
-        success = self.update_pbc_box(pbc_box, success)
-        success = self.update_kinetics(kinetics, success)
-        success = self.update_temperature(temperature, success)
-        success = self.update_virial(virial, success)
-        success = self.update_pressure(pressure, success)
-
-        return self.next_step(success)
+        print('[WARNING] `DynamicUpdater` will be removed a future release. '
+              'Please use `UpdaterMD` instead.')

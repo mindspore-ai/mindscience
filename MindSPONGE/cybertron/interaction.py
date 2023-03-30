@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -84,7 +84,7 @@ class Interaction(Cell):
         self.use_bonds = use_bonds
         self.use_distances = use_distances
 
-        self.gather_neighbours = func.gather_vectors
+        self.gather_neighbours = func.gather_vector
 
     def print_info(self, num_retraction: int = 6, num_gap: int = 3, char: str = '-'):
         """print information of interaction layer"""

@@ -25,10 +25,11 @@
 H-Adder Module.
 """
 import sys
+import time
 import numpy as np
 from .add_missing_atoms import add_h
 from .pdb_generator import gen_pdb
-from .pdb_parser import read_pdb
+from .pdb_parser import _read_pdb
 
 hnames = {'ACE': {'CH3': ['H1', 'H2', 'H3']},
           'ALA': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB1', 'HB2', 'HB3']},
@@ -68,8 +69,9 @@ hnames = {'ACE': {'CH3': ['H1', 'H2', 'H3']},
                    'CH2': ['HH2'], 'CZ3': ['HZ3'], 'CE3': ['HE3'], 'C': ['OXT']},
           'CTYR': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'CD1': ['HD1'], 'CE1': ['HE1'], 'OH': ['HH'],
                    'CE2': ['HE2'], 'CD2': ['HD2'], 'C': ['OXT']},
-          'CVAL': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB'], 'CG1': ['HG11', 'HG12', 'HG13'],
-                   'CG2': ['HG21', 'HG22', 'HG23'], 'C': ['OXT']},
+          'CVAL': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB'], 'CG1': ['HG11', 'HG12', 'HG13'], 'CG2': ['HG21', 'HG22',
+                                                                                                    'HG23'],
+                   'C': ['OXT']},
           'CYS': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'SG': ['HG']},
           'GLN': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'CG': ['HG2', 'HG3'], 'NE2': ['HE21', 'HE22']},
           'GLU': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'CG': ['HG2', 'HG3']},
@@ -84,13 +86,14 @@ hnames = {'ACE': {'CH3': ['H1', 'H2', 'H3']},
                   'CE': ['HE2', 'HE3'], 'NZ': ['HZ1', 'HZ2', 'HZ3']},
           'MET': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'CG': ['HG2', 'HG3'], 'CE': ['HE1', 'HE2', 'HE3']},
           'NALA': {'N': ['H1', 'H2', 'H3'], 'CA': ['HA'], 'CB': ['HB1', 'HB2', 'HB3']},
-          'NARG': {'N': ['H1', 'H2', 'H3'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'CG': ['HG2', 'HG3'],
-                   'CD': ['HD2', 'HD3'], 'NE': ['HE'], 'NH1': ['HH11', 'HH12'], 'NH2': ['HH21', 'HH22']},
+          'NARG': {'N': ['H1', 'H2', 'H3'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'CG': ['HG2', 'HG3'], 'CD': ['HD2',
+                                                                                                             'HD3'],
+                   'NE': ['HE'], 'NH1': ['HH11', 'HH12'], 'NH2': ['HH21', 'HH22']},
           'NASN': {'N': ['H1', 'H2', 'H3'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'ND2': ['HD21', 'HD22']},
           'NASP': {'N': ['H1', 'H2', 'H3'], 'CA': ['HA'], 'CB': ['HB2', 'HB3']},
           'NCYS': {'N': ['H1', 'H2', 'H3'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'SG': ['HG']},
-          'NGLN': {'N': ['H1', 'H2', 'H3'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'CG': ['HG2', 'HG3'],
-                   'NE2': ['HE21', 'HE22']},
+          'NGLN': {'N': ['H1', 'H2', 'H3'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'CG': ['HG2', 'HG3'], 'NE2': ['HE21',
+                                                                                                              'HE22']},
           'NGLU': {'N': ['H1', 'H2', 'H3'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'CG': ['HG2', 'HG3']},
           'NGLY': {'N': ['H1', 'H2', 'H3'], 'CA': ['HA2', 'HA3']},
           'NHID': {'N': ['H1', 'H2', 'H3'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'ND1': ['HD1'], 'CE1': ['HE1'],
@@ -127,8 +130,8 @@ hnames = {'ACE': {'CH3': ['H1', 'H2', 'H3']},
                   'CH2': ['HH2'], 'CZ3': ['HZ3'], 'CE3': ['HE3']},
           'TYR': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB2', 'HB3'], 'CD1': ['HD1'], 'CE1': ['HE1'], 'OH': ['HH'],
                   'CE2': ['HE2'], 'CD2': ['HD2']},
-          'VAL': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB'], 'CG1': ['HG11', 'HG12', 'HG13'],
-                  'CG2': ['HG21', 'HG22', 'HG23']},
+          'VAL': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB'], 'CG1': ['HG11', 'HG12', 'HG13'], 'CG2': ['HG21',
+                                                                                                   'HG22', 'HG23']},
           }
 
 hbond_type = {
@@ -625,7 +628,10 @@ hbond_type = {
         'CG1': np.array(['ch3', 'CB', 'CA']),
         'CG2': np.array(['ch3', 'CB', 'CA'])
     },
-    'NME': None
+    'NME': {
+        'N': np.array(['c6', 'CH3', 'C']),
+        'CH3': np.array(['ch3', 'N', 'C'])
+    }
 }
 
 addhs = {'c6': 1,
@@ -638,22 +644,31 @@ addhs = {'c6': 1,
 sys.path.append('../')
 
 
-def AddHydrogen(pdb_in, pdb_out):
+def add_hydrogen(pdb_in, pdb_out):
     """ The API function for adding Hydrogen.
     Args:
         pdb_in(str): The input pdb file name, absolute file path is suggested.
         pdb_out(str): The output pdb file name, absolute file path is suggested.
     """
+    # Record the time cost of Add Hydrogen.
+    start_time = time.time()
+
     pdb_name = pdb_in
     new_pdb_name = pdb_out
-    atom_names, res_names, _, crds, _, _, _, _, _, \
-        _, _, _, _, _ = read_pdb(pdb_name, ignoreh=True)
+    pdb_obj = _read_pdb(pdb_name, rebuild_hydrogen=True)
+    atom_names = pdb_obj.atom_names
+    res_names = pdb_obj.res_names
+    crds = pdb_obj.crds
 
     for i, res in enumerate(res_names):
-        res = 'N' * (i == 0) + res
-        res = 'C' * (i == (len(res_names) - 1)) + res
+        res = 'N' * (i == 0 and res != 'ACE') + res
+        res = 'C' * (i == (len(res_names) - 1) and res != 'NME') + res
         h_names = []
         crds[i] = np.array(crds[i])
+        if res == 'NME':
+            c_index = np.where(np.array(atom_names[i - 1]) == 'C')
+            atom_names[i].insert(0, 'C')
+            crds[i] = np.append(crds[i - 1][c_index], crds[i], axis=-2)
         for atom in atom_names[i]:
             if atom == 'C' and len(res) == 4 and res.startswith(
                     'C') and np.isin(atom_names[i], 'OXT').sum() == 1:
@@ -661,19 +676,14 @@ def AddHydrogen(pdb_in, pdb_out):
             if atom in hbond_type[res].keys() and len(
                     hbond_type[res][atom].shape) == 1:
                 addh_type = hbond_type[res][atom][0]
-                for name in hnames[res][atom]:
-                    h_names.append(name)
-                try:
-                    m = np.where(np.array(atom_names[i]) == [atom])[0][0]
-                    n = np.where(
-                        np.array(
-                            atom_names[i]) == hbond_type[res][atom][1])[0][0]
-                    o = np.where(
-                        np.array(
-                            atom_names[i]) == hbond_type[res][atom][2])[0][0]
-                except IndexError as e:
-                    raise ValueError(
-                        'Some heavy atoms are missing in given pdb file.') from e
+                h_names.extend(hnames[res][atom])
+                m = np.where(np.array(atom_names[i]) == [atom])[0][0]
+                n = np.where(
+                    np.array(
+                        atom_names[i]) == hbond_type[res][atom][1])[0][0]
+                o = np.where(
+                    np.array(
+                        atom_names[i]) == hbond_type[res][atom][2])[0][0]
                 new_crd = add_h(np.array(crds[i]),
                                 atype=addh_type,
                                 i=m,
@@ -684,13 +694,9 @@ def AddHydrogen(pdb_in, pdb_out):
                 for j, hbond in enumerate(hbond_type[res][atom]):
                     addh_type = hbond[0]
                     h_names.append(hnames[res][atom][j])
-                    try:
-                        m = np.where(np.array(atom_names[i]) == [atom])[0][0]
-                        n = np.where(np.array(atom_names[i]) == hbond[1])[0][0]
-                        o = np.where(np.array(atom_names[i]) == hbond[2])[0][0]
-                    except IndexError as e:
-                        raise ValueError(
-                            'Some heavy atoms are missing in given pdb file.') from e
+                    m = np.where(np.array(atom_names[i]) == [atom])[0][0]
+                    n = np.where(np.array(atom_names[i]) == hbond[1])[0][0]
+                    o = np.where(np.array(atom_names[i]) == hbond[2])[0][0]
                     new_crd = add_h(np.array(crds[i]),
                                     atype=addh_type,
                                     i=m,
@@ -699,8 +705,11 @@ def AddHydrogen(pdb_in, pdb_out):
                     crds[i] = np.append(crds[i], new_crd, axis=0)
             else:
                 continue
-        for name in h_names:
-            atom_names[i].append(name)
+        atom_names[i].extend(h_names)
+
+        if res == 'NME':
+            atom_names[i].pop(0)
+            crds[i] = crds[i][1:]
 
     new_crds = crds[0]
     for crd in crds[1:]:
@@ -719,12 +728,33 @@ def AddHydrogen(pdb_in, pdb_out):
 
     gen_pdb(new_crds[None, :], new_atom_names,
             new_res_names, new_res_ids, new_pdb_name)
-    print('1 H-Adding task complete.')
 
-def ReadPdbByMindsponge(pdb_name, addh):
-    if addh:
-        t_name = pdb_name.replace('.pdb', '_addH_by_mindsponge.pdb')
-        AddHydrogen(pdb_name, t_name)
-        return read_pdb(t_name)
+    end_time = time.time()
+    print(
+        '[MindSPONGE] Adding {} hydrogen atoms for the protein molecule in {} seconds.'.format(
+            round(len(new_crds), 3), round(end_time - start_time, 3)))
 
-    return read_pdb(pdb_name)
+
+def read_pdb(pdb_name: str, rebuild_hydrogen: bool = False, rebuild_suffix: str = '_addH'):
+    """ Entry function for parse pdb files.
+    Args:
+        pdb_name(str): The pdb file name, absolute path is suggested.
+        rebuild_hydrogen(Bool): Set to rebuild all hydrogen in pdb files or not.
+        rebuild_suffix(str): If rebuild the hydrogen system, a new pdb file with suffix will be stored.
+    Returns:
+        atom_names(list): 1-dimension list contain all atom names in each residue.
+        res_names(list): 1-dimension list of all residue names.
+        res_ids(numpy.int32): Unique id for each residue names.
+        crds(list): The list format of coordinates.
+        res_pointer(numpy.int32): The pointer where the residue starts.
+        flatten_atoms(numpy.str_): The flatten atom names.
+        flatten_crds(numpy.float32): The numpy array format of coordinates.
+        init_res_names(list): The residue name information of each atom.
+        init_res_ids(list): The residue id of each atom.
+    """
+    if rebuild_hydrogen:
+        out_name = pdb_name.replace('.pdb', '{}.pdb'.format(rebuild_suffix))
+        add_hydrogen(pdb_name, out_name)
+        return _read_pdb(out_name)
+
+    return _read_pdb(pdb_name)

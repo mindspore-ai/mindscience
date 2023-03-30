@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -28,33 +28,43 @@ from mindspore import nn
 from mindspore.ops import functional as F
 
 from .bias import Bias
-from ...function.units import Units, global_units, Length, Energy
+from ...function.units import Length, Energy
 from ...function import functions as func
 
 
 class SphericalRestrict(Bias):
-    r"""
-    Basic cell for bias potential.
+    r"""Basic cell for bias potential
+
+    Math:
 
     .. Math::
 
-        V(R) = k * log(1 + exp((|R - R_0| - r_0) / \sigma))
+        V(R) = k \log{\left ( 1 + e^{\frac{|R - R_0| - r_0}{\sigma}} \right )}
 
     Args:
-        radius (float):         Radius of sphere (r_0).
-        center (Tensor):        Coordinate of the center of sphere (R_0). Default: 0
-        force_constant (float): Force constant of the bias potential(k). Default: Energy(500, 'kj/mol')
-        depth (float):          Wall depth of the restriction (\sigma). Default: Length(0.01, 'nm')
-        length_unit (str):      Length unit for position coordinates. Default: None
-        energy_unit (str):      Energy unit. Default: None
-        units (Units):          Units of length and energy. Default: global_units
-        use_pbc (bool):         Whether to use periodic boundary condition. Default: None
 
-    Returns:
-        potential (Tensor), Tensor of shape (B, 1). Data type is float.
+        radius (float):         Radius of sphere (r_0).
+
+        center (Tensor):        Coordinate of the center of sphere (R_0).
+
+        force_constant (float): Force constant of the bias potential(k). Default: Energy(500, 'kj/mol')
+
+        depth (float):          Wall depth of the restriction (\sigma). Default: Length(0.01, 'nm')
+
+        length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
+                                Default: None
+
+        energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
+                                Default: None
+
+        use_pbc (bool):         Whether to use periodic boundary condition.
+
+        name (str):             Name of the bias potential. Default: 'spherical'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
     def __init__(self,
                  radius: float,
@@ -63,14 +73,14 @@ class SphericalRestrict(Bias):
                  depth: float = Length(0.01, 'nm'),
                  length_unit: str = None,
                  energy_unit: str = None,
-                 units: Units = global_units,
                  use_pbc: bool = None,
+                 name: str = 'spherical',
                  ):
 
         super().__init__(
+            name=name,
             length_unit=length_unit,
             energy_unit=energy_unit,
-            units=units,
             use_pbc=use_pbc,
         )
 
@@ -85,7 +95,7 @@ class SphericalRestrict(Bias):
             depth = depth(self.units)
         self.depth = Tensor(depth, ms.float32)
 
-        self.norm_last_dim = nn.Norm(axis=-1, keep_dims=False)
+        self.norm_last_dim = nn.Norm(-1, False)
 
     def construct(self,
                   coordinate: Tensor,
@@ -95,11 +105,10 @@ class SphericalRestrict(Bias):
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
-        r"""
-        Calculate bias potential.
+        r"""Calculate bias potential.
 
         Args:
-            coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
+            coordinate (Tensor):           Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
                                             Index of neighbour atoms. Default: None
@@ -107,25 +116,26 @@ class SphericalRestrict(Bias):
                                             Mask for neighbour atoms. Default: None
             neighbour_coord (Tensor):       Tensor of shape (B, A, N). Data type is bool.
                                             Position coorindates of neighbour atoms.
-            neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
+            neighbour_distance (Tensor):   Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
                                             Tensor of PBC box. Default: None
 
         Returns:
-            potential (Tensor), Tensor of shape (B, 1). Data type is float.
+            potential (Tensor): Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation.
+            B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
+
         """
 
         # (B, A) <- (B, A, D)
         distance = self.norm_last_dim(coordinate - self.center)
         diff = distance - self.radius
-        bias = self.force_constant * F.log(1.0 + F.exp(diff/self.depth))
+        bias = self.force_constant * F.log1p(F.exp(diff/self.depth))
 
         # (B, 1) <- (B, A)
-        return func.keepdim_sum(bias, -1)
+        return func.keepdims_sum(bias, -1)

@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -35,9 +35,8 @@ def export_xyz(filename: str, atom: ndarray, coordinate: ndarray, mol_name: str 
     coordinate = get_ndarray(coordinate)
     natom = atom.shape[-1]
     if coordinate.shape[-2] != natom:
-        raise ValueError('The penultimate dimension of coordinate (' +
-                         str(coordinate.shape[-2])+') must be equal to the number of atoms (' +
-                         str(natom)+')!')
+        raise ValueError(f'The penultimate dimension of coordinate ({coordinate.shape[-2]}) must be equal to '
+                         f'the number of atoms ({natom})!')
     with open(filename, mode='w+') as ofile:
         ofile.write(str(natom)+os.linesep)
         ofile.write(' '+mol_name+os.linesep)

@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -25,30 +25,35 @@ Harmonic oscillator module.
 """
 import mindspore as ms
 from mindspore import Tensor
-from ..potential import PotentialCell
+from .bias import Bias
 
 
-class OscillatorBias(PotentialCell):
-    """
-    Add a restraint for heavy atoms in a molecule.
+class OscillatorBias(Bias):
+    """ Add a restraint for heavy atoms in a molecule.
 
     Args:
+
         old_crd(Tensor):    The origin coordinates of all atoms.
+
         k(float):           The elasticity coefficient of all atoms, assuming to be the same.
+
         nonh_mask(Tensor):  A mask to distinguish H atoms and heavy atoms.
 
-    Returns:
-        potential (Tensor).
+        name (str):         Name of the bias potential. Default: 'oscillator'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
     def __init__(self,
-                 old_crd,
-                 k,
-                 nonh_mask,
+                 old_crd: Tensor,
+                 k: Tensor,
+                 nonh_mask: Tensor,
+                 name: str = 'oscillator',
                  ):
-        super().__init__()
+        super().__init__(name=name)
+
         self.old_crd = Tensor(old_crd, ms.float32)
         self.k = Tensor(k, ms.float32)
         self.nonh_mask = Tensor(1 - nonh_mask, ms.int32)

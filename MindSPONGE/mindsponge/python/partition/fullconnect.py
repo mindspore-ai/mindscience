@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -24,6 +24,7 @@
 Full connected neighbour list
 """
 
+from typing import Tuple
 import mindspore as ms
 from mindspore import numpy as msnp
 from mindspore import Tensor
@@ -33,14 +34,16 @@ from mindspore.ops import functional as F
 
 
 class FullConnectNeighbours(Cell):
-    r"""
-    Full connected neighbour list.
+    r"""Full connected neighbour list
 
     Args:
-        num_atoms (int): Number of atoms.
+
+        num_atoms (int):    Number of atoms
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
 
     def __init__(self, num_atoms: int):
@@ -76,31 +79,31 @@ class FullConnectNeighbours(Cell):
 
         self.reduce_all = ops.ReduceAll()
 
-    def set_exclude_index(self, _exclude_index: Tensor):
-        """
-        Dummy.
+    def set_exclude_index(self, exclude_index: Tensor) -> Tensor:
+        """Dummy"""
+        return exclude_index
 
-        Args:
-            _exclude_index (Tensor):    Tensor of exclude indexes.
-        """
-        # pylint: disable=invalid-name
+    def check_neighbour_list(self):
+        """check the number of neighbouring atoms in neighbour list"""
         return self
 
     def print_info(self):
         """print information"""
         return self
 
-    def construct(self, atom_mask: Tensor = None, exclude_index: Tensor = None):
-        r"""
-        Calculate the full connected neighbour list.
+    def construct(self,
+                  atom_mask: Tensor = None,
+                  exclude_index: Tensor = None
+                  ) -> Tuple[Tensor, Tensor]:
+        r"""Calculate the full connected neighbour list.
 
         Args:
             atom_mask (Tensor):     Tensor of shape (B, A). Data type is bool.
             exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int.
 
         Returns:
-            - neighbours (Tensor), Tensor of shape (B, A, N). Data type is int.
-            - neighbour_mask (Tensor), Tensor of shape (B, A, N). Data type is bool.
+            neighbours (Tensor):    Tensor of shape (B, A, N). Data type is int.
+            neighbour_mask (Tensor) Tensor of shape (B, A, N). Data type is bool.
 
         Symbols:
             B:  Batch size.
@@ -113,8 +116,8 @@ class FullConnectNeighbours(Cell):
         if atom_mask is None:
             neighbours = self.fc_idx
             neighbour_mask = self.fc_mask
+            no_idx = self.no_idx
         else:
-
             # (B,1,N)
             mask0 = F.expand_dims(atom_mask[:, :-1], -2)
             mask1 = F.expand_dims(atom_mask[:, 1:], -2)
@@ -122,15 +125,18 @@ class FullConnectNeighbours(Cell):
             # (B,A,N)
             neighbour_mask = msnp.where(self.idx_mask, mask1, mask0)
             neighbour_mask = F.logical_and(F.expand_dims(atom_mask, -1), neighbour_mask)
-            neighbours = msnp.where(neighbour_mask, self.fc_idx, self.no_idx)
+            fc_idx = msnp.broadcast_to(self.fc_idx, neighbour_mask.shape)
+            no_idx = msnp.broadcast_to(self.no_idx, neighbour_mask.shape)
+            neighbours = F.select(neighbour_mask, fc_idx, no_idx)
 
         if exclude_index is not None:
             # (B,A,N,E) <- (B,A,N,1) vs (B,A,1,E)
-            exc_mask = F.expand_dims(
-                neighbours, -1) != F.expand_dims(exclude_index, -2)
+            exc_mask = F.expand_dims(neighbours, -1) != F.expand_dims(exclude_index, -2)
             # (B,A,N)
             exc_mask = self.reduce_all(exc_mask, -1)
             neighbour_mask = F.logical_and(neighbour_mask, exc_mask)
-            neighbours = msnp.where(neighbour_mask, neighbours, self.no_idx)
+            if atom_mask is None:
+                no_idx = msnp.broadcast_to(no_idx, neighbour_mask.shape)
+            neighbours = F.select(neighbour_mask, neighbours, no_idx)
 
         return neighbours, neighbour_mask

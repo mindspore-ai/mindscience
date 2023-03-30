@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -23,8 +23,9 @@
 """Force filed"""
 import os
 import copy
-from typing import Union
+from typing import Union, List
 import numpy as np
+from numpy import ndarray
 import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import Tensor
@@ -45,131 +46,142 @@ BUILTIN_FF_PATH = THIS_PATH.replace('potential/forcefield.py', 'data/forcefield/
 
 
 class ForceFieldBase(PotentialCell):
-    r"""
-    Basic cell for force filed.
+    r"""Base class for the potential energy of classical force filed. It is a subclass of `PotentialCell`.
+
+        A `ForceFieldBase` object contains multiple `EnergyCell` objects. The last dimension of its output Tensor
+        is equal to the number of `EnergyCell` objects it contains.
 
     Args:
-        energy (Union[EnergyCell, list]):    Energy terms. The type of energy parameter can be list or EnergyCell.
-                                             Default: None.
-        cutoff (float):                      Cutoff distance. Default: None.
-        exclude_index (Tensor):              Tensor of shape (B, A, Ex). Data type is int.
-                                             The indexes of atoms that should be excluded from neighbour list.
-                                             Default: None.
-        length_unit (str):                   Length unit for position coordinate. Default: None.
-        energy_unit (str):                   Energy unit. Default: None.
-        units (Units):                       Units of length and energy. Default: None.
-        use_pbc (bool, optional):            Whether to use periodic boundary condition.
-                                             If this is "None", that means do not use periodic boundary condition.
-                                             Default: None.
+
+        Energy (Union[EnergyCell, List[EnergyCell]]):
+                                List of `EnergyCell` objects. Default: None
+
+        cutoff (float):         Cutoff distance. Default: None
+
+        exclude_index (Tensor): Tensor of shape `(B, A, Ex)`. Data type is int
+                                The indexes of atoms that should be excluded from neighbour list.
+                                Default: None
+
+        length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
+                                Default: None
+
+        energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
+                                Default: None
+
+        use_pbc (bool):         Whether to use periodic boundary condition.
 
     Returns:
-        potential (Tensor), Tensor of shape (B, 1). Data type is float.
+
+        energy (Tensor):    Tensor of shape `(B, E)`. Data type is float.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
+    Symbols:
+
+        B:  Batchsize, i.e. number of walkers in simulation.
+        E:  Number of energy terms.
+
     """
 
     def __init__(self,
-                 energy: Union[EnergyCell, list] = None,
-                 cutoff: float = None,
-                 exclude_index: Tensor = None,
+                 energy: Union[EnergyCell, List[EnergyCell]] = None,
+                 cutoff: Union[float, Tensor, ndarray] = None,
+                 exclude_index: Union[Tensor, ndarray, List[int]] = None,
                  length_unit: str = None,
                  energy_unit: str = None,
-                 units: Units = None,
                  use_pbc: bool = None,
                  ):
 
         super().__init__(
-            cutoff=cutoff,
-            exclude_index=exclude_index,
             length_unit=length_unit,
             energy_unit=energy_unit,
-            units=units,
             use_pbc=use_pbc,
         )
 
-        self.num_energy = 0
-        self.energy_cell = self.set_energy_cell(energy)
+        if cutoff is not None:
+            self.cutoff = Tensor(cutoff, ms.float32)
+
+        self._exclude_index = self._check_exclude_index(exclude_index)
+
+        self._num_energies = 0
+        self._energy_index = {}
+        self.energies = None
+        self.output_unit_scale = 1
+        self.set_energies(energy)
 
         self.energy_scale = 1
-
-        self.output_unit_scale = self.set_unit_scale()
 
         self.concat = ops.Concat(-1)
 
     def set_energy_scale(self, scale: Tensor):
-        """
-        Set energy scale.
-
-        Args:
-            scale (Tensor):                 Tensor of shape(B, 1). The scale parameter is used to set energy scale.
-        """
+        """set energy scale"""
         scale = Tensor(scale, ms.float32)
         if scale.ndim != 1 and scale.ndim != 0:
             raise ValueError('The rank of energy scale must be 0 or 1.')
-        if scale.shape[-1] != self.output_dim and scale.shape[-1] != 1:
-            raise ValueError('The dimension of energy scale must be equal to the dimension of energy ' +
-                             str(self.output_dim)+' or 1, but got: '+str(scale.shape[-1]))
+        if scale.shape[-1] != self._num_energies and scale.shape[-1] != 1:
+            raise ValueError(f'The dimension of energy scale must be equal to '
+                             f'the dimension of energy {self._num_energies} or 1, '
+                             f'but got: {scale.shape[-1]}')
         self.energy_scale = scale
         return self
 
-    def set_energy_cell(self, energy: EnergyCell) -> CellList:
-        """
-        Set energy.
-
-        Args:
-            energy (Union[EnergyCell, list]):    Energy terms. The type of energy parameter can be list or EnergyCell.
-                                                 Default: None.
-
-        Returns:
-            CellList.
-        """
+    def set_energies(self, energy: EnergyCell):
+        """set energy"""
         if energy is None:
-            return None
+            self.output_unit_scale = 1
+            return self
         if isinstance(energy, EnergyCell):
-            self.num_energy = 1
-            energy = CellList([energy])
+            self._num_energies = 1
+            self.energies = CellList([energy])
         elif isinstance(energy, list):
-            self.num_energy = len(energy)
-            energy = CellList(energy)
+            self._num_energies = len(energy)
+            self.energies = CellList(energy)
         else:
-            raise TypeError(
-                'The type of energy must be EnergyCell or list but got: '+str(type(energy)))
+            raise TypeError(f'The type of energy must be EnergyCell or list but got: {type(energy)}')
 
-        self.output_dim = 0
-        if energy is not None:
-            for i in range(self.num_energy):
-                self.output_dim += energy[i].output_dim
-        return energy
+        self._energy_names = []
+        self._energy_index = {}
+        index = 0
+        if self.energies is not None:
+            for i in range(self._num_energies):
+                name = self.energies[i].name
+                self._energy_index[name] = index
+                self._energy_names.append(name)
+                index += 1
+
+        self.set_unit_scale()
+        return self
+
+    def append_energy(self, energy: EnergyCell):
+        """append energy terms"""
+        if not isinstance(energy, EnergyCell):
+            raise TypeError(f'The type of energy must be EnergyCell or list but got: {type(energy)}')
+
+        self.energies.append(energy)
+        self._energy_names.append(energy.name)
+        self._energy_index[energy.name] = self._num_energies
+        self._num_energies += 1
+        self.set_unit_scale()
+
+        return self
 
     def set_unit_scale(self) -> Tensor:
-        """
-        set unit scale.
-
-        Returns:
-            Tensor, output unit scale.
-        """
-        if self.energy_cell is None:
-            return 1
-        output_unit_scale = ()
-        for i in range(self.num_energy):
-            self.energy_cell[i].set_input_unit(self.units)
-            dim = self.energy_cell[i].output_dim
-            scale = np.ones((dim,), np.float32) * \
-                self.energy_cell[i].convert_energy_to(self.units)
-            output_unit_scale += (scale,)
-        output_unit_scale = np.concatenate(output_unit_scale, axis=-1)
-        return Tensor(output_unit_scale, ms.float32)
+        """set unit scale"""
+        if self.energies is None:
+            self.output_unit_scale = 1
+            return self
+        output_unit_scale = []
+        for i in range(self._num_energies):
+            self.energies[i].set_input_unit(self.units)
+            scale = self.energies[i].convert_energy_to(self.units)
+            output_unit_scale.append(scale)
+        self.output_unit_scale = Tensor(output_unit_scale, ms.float32)
+        return self
 
     def set_units(self, length_unit: str = None, energy_unit: str = None, units: Units = None):
-        """
-        Set units.
-
-        Args:
-            length_unit (str):              Length unit for position coordinate. Default: None.
-            energy_unit (str):              Energy unit. Default: None.
-            units (Units):                  Units of length and energy. Default: None.
-        """
+        """set units"""
         if units is not None:
             self.units.set_units(units=units)
         else:
@@ -178,35 +190,21 @@ class ForceFieldBase(PotentialCell):
             if energy_unit is not None:
                 self.units.set_energy_unit(energy_unit)
 
-        self.output_unit_scale = self.set_unit_scale()
+        self.set_unit_scale()
 
         return self
 
     def set_pbc(self, use_pbc: bool = None):
-        """
-        Set whether to use periodic boundary condition.
-
-        Args:
-            use_pbc (bool, optional):       Whether to use periodic boundary condition.
-                                            If this is "None", that means do not use periodic boundary condition.
-                                            Default: None.
-        """
-        for i in range(self.num_energy):
-            self.energy_cell[i].set_pbc(use_pbc)
+        """set whether to use periodic boundary condition."""
+        for i in range(self._num_energies):
+            self.energies[i].set_pbc(use_pbc)
         return self
 
-    def set_cutoff(self, cutoff: Tensor = None):
-        """
-        Set cutoff distance.
-
-        Args:
-            cutoff (Tensor):                 Cutoff distance. Default: None.
-        """
-        self.cutoff = None
-        if cutoff is not None:
-            self.cutoff = Tensor(cutoff, ms.float32)
-        for i in range(self.num_energy):
-            self.energy_cell[i].set_cutoff(self.cutoff)
+    def set_cutoff(self, cutoff: float = None, unit: str = None):
+        """set cutoff distance"""
+        super().set_cutoff(cutoff, unit)
+        for i in range(self._num_energies):
+            self.energies[i].set_cutoff(self.cutoff, self.length_unit)
         return self
 
     def construct(self,
@@ -217,11 +215,10 @@ class ForceFieldBase(PotentialCell):
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
-        r"""
-        Calculate potential energy.
+        r"""Calculate potential energy.
 
         Args:
-            coordinate (Tensor):           Tensor of shape (B, A, D). Data type is float.
+            coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
                                             Index of neighbour atoms. Default: None
@@ -229,67 +226,94 @@ class ForceFieldBase(PotentialCell):
                                             Mask for neighbour atoms. Default: None
             neighbour_coord (Tensor):       Tensor of shape (B, A, N, D). Data type is bool.
                                             Position coorindates of neighbour atoms.
-            neighbour_distance (Tensor):   Tensor of shape (B, A, N). Data type is float.
+            neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
                                             Tensor of PBC box. Default: None
 
         Returns:
-            potential (Tensor), Tensor of shape (B, 1). Data type is float.
+            potential (Tensor): Tensor of shape (B, E). Data type is float.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
+            E:  Number of energy terms.
+
         """
 
-        inv_neigh_dis = 0
-        inv_neigh_dis = msnp.reciprocal(neighbour_distance)
-        if neighbour_mask is not None:
-            inv_neigh_dis = msnp.where(neighbour_mask, inv_neigh_dis, 0)
-
-        potential = ()
-        for i in range(self.num_energy):
-            ene = self.energy_cell[i](
+        energies = ()
+        for i in range(self._num_energies):
+            energy = self.energies[i](
                 coordinate=coordinate,
                 neighbour_index=neighbour_index,
                 neighbour_mask=neighbour_mask,
                 neighbour_coord=neighbour_coord,
                 neighbour_distance=neighbour_distance,
-                inv_neigh_dis=inv_neigh_dis,
                 pbc_box=pbc_box
             )
-            potential += (ene,)
+            energies += (energy,)
 
-        potential = self.concat(potential) * self.energy_scale * self.output_unit_scale
+        potential = self.concat(energies) * self.energy_scale * self.output_unit_scale
 
         return potential
 
 
 class ForceField(ForceFieldBase):
-    r"""
-    Potential of classical force field.
+    r"""Potential energy of classical force field. It is a subclass of `ForceFieldBase`.
+
+        The `ForceField` class use force field parameter files to build the potential energy.
 
     Args:
-        system (Molecule):               Simulation system.
-        parameters (Union[dict, str]):   Force field parameters.
-        cutoff (float):                  Cutoff distance. Default: None.
-        length_unit (str):               Length unit for position coordinate. Default: None.
-        energy_unit (str):               Energy unit. Default: None.
-        units (Units):                   Units of length and energy. Default: None.
+
+        system (Molecule):      Simulation system.
+
+        parameters (Union[dict, str, List[Union[dict, str]]]):
+                                Force field parameters. It can be a `dict` of force field parameters,
+                                a `str` of filename of a force field file in MindSPONGE YAML format,
+                                or a `list` or `tuple` containing multiple `dict` or `str`.
+                                If a filename is given, it will first look for a file with the same name
+                                in the current directory. If the file does not exist, it will search
+                                in MindSPONGE's built-in force field.
+                                If multiple sets of parameters are given and the same atom type
+                                is present in different parameters, then the atom type in the parameter
+                                at the back of the array will replace the one at the front.
+
+        cutoff (float):         Cutoff distance. Default: None
+
+        rebuild_system (bool):  Whether to rebuild the atom types and bond connection of the system
+                                based on the template in parameters.
+                                Default: True
+
+        length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
+                                Default: None
+
+        energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
+                                Default: None
+
+    Returns:
+
+        energy (Tensor):    Tensor of shape `(B, E)`. Data type is float.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
+    Symbols:
+
+        B:  Batchsize, i.e. number of walkers in simulation.
+        E:  Number of energy terms.
+
     """
 
     def __init__(self,
                  system: Molecule,
-                 parameters: Union[dict, str],
+                 parameters: Union[dict, str, List[Union[dict, str]]],
                  cutoff: float = None,
+                 rebuild_system: bool = True,
                  length_unit: str = None,
                  energy_unit: str = None,
-                 units: Units = None,
                  ):
 
         super().__init__(
@@ -297,18 +321,21 @@ class ForceField(ForceFieldBase):
             exclude_index=None,
             length_unit=length_unit,
             energy_unit=energy_unit,
-            units=units,
         )
 
         use_pbc = system.use_pbc
 
         # Generate Forcefield Parameters
         parameters, template = get_forcefield(parameters)
-        for residue in system.residue:
-            residue.build_atom_type(template.get(residue.name))
-            residue.build_atom_charge(template.get(residue.name))
 
-        system.build_system()
+        if rebuild_system:
+            if template is None:
+                print('[WARNING] No template in parameters! Cannot rebuild the system!')
+            else:
+                for res in system.residue:
+                    res.build_atom_type(template.get(res.name))
+                    res.build_atom_charge(template.get(res.name))
+                system.build_system()
 
         ff_params = ForceFieldParameters(
             system.atom_type, copy.deepcopy(parameters), atom_names=system.atom_name,
@@ -373,12 +400,16 @@ class ForceField(ForceFieldBase):
                                              energy_unit=energy_unit)
             energy.append(dihedral_energy)
 
+        # Exclude Parameters
+        self._exclude_index = Tensor(system_params.excludes[None, :], ms.int32)
+
         # Electronic energy
         if system.atom_charge is not None:
             coulomb_params: dict = parameters.get('coulomb_energy')
             length_unit = coulomb_params.get('length_unit')
             energy_unit = coulomb_params.get('energy_unit')
-            ele_energy = CoulombEnergy(atom_charge=system.atom_charge, use_pbc=use_pbc,
+            ele_energy = CoulombEnergy(atom_charge=system.atom_charge, pbc_box=system.pbc_box,
+                                       exclude_index=self._exclude_index,
                                        length_unit=length_unit, energy_unit=energy_unit)
             energy.append(ele_energy)
 
@@ -415,7 +446,5 @@ class ForceField(ForceFieldBase):
                                                 length_unit=length_unit, energy_unit=energy_unit, use_pbc=use_pbc)
             energy.append(pair_energy)
 
-        # Exclude Parameters
-        self._exclude_index = Tensor(system_params.excludes[None, :], ms.int32)
-        self.energy_cell = self.set_energy_cell(energy)
-        self.output_unit_scale = self.set_unit_scale()
+        self.set_energies(energy)
+        self.set_cutoff(self.cutoff, self.length_unit)

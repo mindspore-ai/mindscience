@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -25,6 +25,7 @@ Export H5MD file.
 """
 
 import os
+from typing import Union, List
 import numpy as np
 from numpy import ndarray
 import h5py
@@ -32,18 +33,18 @@ from h5py import Group
 from mindspore.train._utils import _make_directory
 
 from ...system import Molecule
-from ...function.units import Units, global_units
+from ...function.units import Units, GLOBAL_UNITS
 
 _cur_dir = os.getcwd()
 
 
 class H5MD:
-    r"""write HDF5 molecular data (H5MD) hdf5_file
+    r"""write HDF5 molecular data (H5MD) file
 
     Reference:
 
-        de Buyl, P.; Colberg, P. H., Höfling, F.,
-        H5MD: A structured, efficient, and portable file format for molecular data [J].
+        de Buyl, P.; Colberg, P. H.; Höfling, F.
+        H5MD: A Structured, Efficient, and Portable File Format for Molecular Data [J].
         Computer Physics Communications, 2014, 185(6): 1546-1553.
 
     Args:
@@ -53,6 +54,11 @@ class H5MD:
         filename (str):         Name of output H5MD hdf5_file.
 
         directory (str):        Directory of the output hdf5_file. Default: None
+
+        mode (str):             I/O mode for HDF5. Default: 'w'
+                                'w'          Create file, truncate if exists
+                                'w-' or 'x': Create file, fail if exists
+                                'a':         Read/write if exists, create otherwise
 
         write_velocity (bool):  Whether to write the velocity of the system to the H5MD file.
                                 Default:  False
@@ -72,7 +78,9 @@ class H5MD:
 
         compression_opts (int): Compression settings for HDF5. Default: 4
 
-        mode (str):             I/O mode for HDF5. Default: 'w'
+    Supported Platforms:
+
+        ``Ascend`` ``GPU`` ``CPU``
 
     """
 
@@ -80,11 +88,11 @@ class H5MD:
                  system: Molecule,
                  filename: str,
                  directory: str = None,
+                 mode: str = 'w',
                  length_unit: str = None,
                  energy_unit: str = None,
                  compression: str = 'gzip',
                  compression_opts: int = 4,
-                 mode: str = 'w',
                  ):
 
         if directory is not None:
@@ -109,7 +117,7 @@ class H5MD:
         if length_unit is None:
             length_unit = system.length_unit
         if energy_unit is None:
-            energy_unit = global_units.energy_unit
+            energy_unit = GLOBAL_UNITS.energy_unit
         self.units = Units(length_unit, energy_unit)
 
         self.num_walker = system.num_walker
@@ -181,6 +189,7 @@ class H5MD:
             for i in range(self.num_walker):
                 name = 'trajectory' + str(i)
                 trajectory = self.create_trajectory(species, name)
+                trajectory['time'].attrs['unit'] = self.time_unit.encode('ascii', 'ignore')
                 self.trajectory.append(trajectory)
 
                 self.position.append(self.create_position(
@@ -190,6 +199,7 @@ class H5MD:
 
         else:
             self.trajectory = self.create_trajectory(species, 'trajectory')
+            self.trajectory['time'].attrs['unit'] = self.time_unit.encode('ascii', 'ignore')
             self.position = self.create_position(self.trajectory, self.shape)
             self.box = self.create_box(self.trajectory, self.use_pbc)
 
@@ -199,18 +209,61 @@ class H5MD:
         self.force = None
 
         self.observables = self.hdf5_file.create_group('observables')
-        self.obs_group = None
+        if self.num_walker > 1:
+            self.obs_group = [self.create_obs_group('trajectory' + str(i)) for i in range(self.num_walker)]
+        else:
+            self.obs_group = self.create_obs_group('trajectory')
 
-    def create_element(self, group: h5py.Group, name: str, shape: tuple, dtype: str, unit: str = None) -> h5py.Group:
-        """create element"""
+    def reload(self, mode: str = 'a'):
+        """reload the HDF5 file"""
+        self.hdf5_file = h5py.File(self.filename, mode)
+        return self
+
+    def create_dataset(self,
+                       group: h5py.Group,
+                       name: str,
+                       shape: tuple = None,
+                       dtype: type = None,
+                       data: ndarray = None,):
+        """create dataset for group"""
+        if self.num_walker > 1:
+            for i in range(self.num_walker):
+                group[i].create_dataset(name, shape=shape, dtype=dtype, data=data,
+                                        compression=self.compression,
+                                        compression_opts=self.compression_opts)
+        else:
+            group.create_dataset(name, shape=shape, dtype=dtype, data=data,
+                                 compression=self.compression,
+                                 compression_opts=self.compression_opts)
+        return self
+
+    def create_element(self,
+                       group: h5py.Group,
+                       name: str,
+                       shape: tuple,
+                       dtype: str,
+                       unit: str = None,
+                       create_step: bool = False,
+                       create_time: bool = False,
+                       ) -> h5py.Group:
+        """create element in H5MD file"""
         element = group.create_group(name)
-        element.create_dataset('step', shape=(0,), dtype='int32', maxshape=(None,),
-                               compression=self.compression, compression_opts=self.compression_opts)
-        element.create_dataset('time', shape=(0,), dtype='float32', maxshape=(None,),
-                               compression=self.compression, compression_opts=self.compression_opts)
+
+        if create_step:
+            element.create_dataset('step', shape=(0,), dtype='int32', maxshape=(None,),
+                                   compression=self.compression, compression_opts=self.compression_opts)
+        else:
+            element['step'] = group['step']
+
+        if create_time:
+            element.create_dataset('time', shape=(0,), dtype='float32', maxshape=(None,),
+                                   compression=self.compression, compression_opts=self.compression_opts)
+            element['time'].attrs['unit'] = self.time_unit.encode('ascii', 'ignore')
+        else:
+            element['time'] = group['time']
+
         element.create_dataset('value', shape=(0,)+shape, dtype=dtype, maxshape=(None,)+shape,
                                compression=self.compression, compression_opts=self.compression_opts)
-        element['time'].attrs['unit'] = self.time_unit
         if unit is not None:
             element['value'].attrs['unit'] = unit.encode('ascii', 'ignore')
         return element
@@ -224,8 +277,8 @@ class H5MD:
                              resname: ndarray = None,
                              bond_from: ndarray = None,
                              bond_to: ndarray = None,
-                             ):
-        """create the group 'vmd_structure'"""
+                             ) -> h5py.Group:
+        """create HDF5 group of 'vmd_structure'"""
 
         vmd_structure = self.parameters.create_group('vmd_structure')
         vmd_structure.create_dataset(
@@ -255,16 +308,55 @@ class H5MD:
 
         return vmd_structure
 
-    def create_trajectory(self, species: ndarray, name: str = 'trajectory') -> h5py.Group:
-        """create the group 'trajectory'"""
+    def create_trajectory(self,
+                          species: ndarray,
+                          name: str = 'trajectory',
+                          create_step: bool = True,
+                          create_time: bool = True,
+                          ) -> h5py.Group:
+        """create HDF5 group of 'trajectory'"""
         trajectory = self.particles.create_group(name)
         trajectory.create_dataset('species', dtype='int32', data=species,
                                   compression=self.compression, compression_opts=self.compression_opts)
+
+        if create_step:
+            trajectory.create_dataset('step', shape=(0,), dtype='int32', maxshape=(None,),
+                                      compression=self.compression, compression_opts=self.compression_opts)
+
+        if create_time:
+            trajectory.create_dataset('time', shape=(0,), dtype='float32', maxshape=(None,),
+                                      compression=self.compression, compression_opts=self.compression_opts)
+
         return trajectory
 
-    def create_position(self, trajectory: h5py.Group, shape: tuple) -> h5py.Group:
-        """create the group 'position'"""
-        return self.create_element(trajectory, 'position', shape, 'float32', self.units.length_unit_name)
+    def create_obs_group(self,
+                         name: str = 'trajectory',
+                         create_step: bool = True,
+                         create_time: bool = True,
+                         ) -> h5py.Group:
+        """create HDF5 group of observables"""
+        obs_group = self.observables.create_group(name)
+        obs_group.attrs['dimension'] = self.dimension
+        obs_group.create_dataset('particle_number', dtype='int32', data=[self.num_atoms],
+                                 compression=self.compression, compression_opts=self.compression_opts)
+        if create_step:
+            obs_group.create_dataset('step', shape=(0,), dtype='int32', maxshape=(None,),
+                                     compression=self.compression, compression_opts=self.compression_opts)
+
+        if create_time:
+            obs_group.create_dataset('time', shape=(0,), dtype='float32', maxshape=(None,),
+                                     compression=self.compression, compression_opts=self.compression_opts)
+        return obs_group
+
+    def create_position(self,
+                        trajectory: h5py.Group,
+                        shape: tuple,
+                        create_step: bool = False,
+                        create_time: bool = False
+                        ) -> h5py.Group:
+        """create HDF5 group of 'position'"""
+        return self.create_element(
+            trajectory, 'position', shape, 'float32', self.units.length_unit_name, create_step, create_time)
 
     def create_box(self, trajectory: h5py.Group, use_pbc: ndarray = None) -> h5py.Group:
         """create the group 'box'"""
@@ -276,185 +368,255 @@ class H5MD:
             box.attrs['boundary'] = ['periodic'] * self.dimension
         return box
 
-    def create_edges(self, box: h5py.Group, pbc_box: ndarray = None):
+    def create_edges(self,
+                     group: h5py.Group,
+                     pbc_box: ndarray = None,
+                     create_step: bool = False,
+                     create_time: bool = False
+                     ) -> h5py.Group:
         """create edges"""
         if pbc_box is None:
-            edges = self.create_element(
-                box, 'edges', (self.dimension,), 'float32', self.units.length_unit_name)
+            edges = group['box'].create_group('edges')
+            if create_step:
+                edges.create_dataset('step', shape=(0,), dtype='int32', maxshape=(None,),
+                                     compression=self.compression, compression_opts=self.compression_opts)
+            else:
+                edges['step'] = group['step']
+
+            if create_time:
+                edges.create_dataset('time', shape=(0,), dtype='float32', maxshape=(None,),
+                                     compression=self.compression, compression_opts=self.compression_opts)
+                edges['time'].attrs['unit'] = self.time_unit.encode('ascii', 'ignore')
+            else:
+                edges['time'] = group['time']
+
+            shape = (self.dimension,)
+            edges.create_dataset('value', shape=(0,)+shape, dtype='float32', maxshape=(None,)+shape,
+                                 compression=self.compression, compression_opts=self.compression_opts)
+            edges['value'].attrs['unit'] = self.units.length_unit_name.encode('ascii', 'ignore')
         else:
             pbc_box *= self.length_unit_scale
-            edges = box.create_dataset('edges', data=pbc_box, dtype='float32',
-                                       compression=self.compression, compression_opts=self.compression_opts)
+            edges = group['box'].create_dataset('edges', data=pbc_box, dtype='float32',
+                                                compression=self.compression,
+                                                compression_opts=self.compression_opts)
             edges.attrs['unit'] = self.units.length_unit_name.encode(
                 'ascii', 'ignore')
         return edges
 
-    def create_image(self, trajectory: h5py.Group, shape: tuple) -> h5py.Group:
+    def create_image(self,
+                     trajectory: h5py.Group,
+                     shape: tuple,
+                     create_step: bool = False,
+                     create_time: bool = False
+                     ) -> h5py.Group:
         """create the group 'image'"""
-        return self.create_element(trajectory, 'image', shape, 'int8')
+        return self.create_element(trajectory, 'image', shape, 'int8',
+                                   create_step=create_step, create_time=create_time)
 
-    def create_velocity(self, trajectory: h5py.Group, shape: tuple) -> h5py.Group:
+    def create_velocity(self,
+                        trajectory: h5py.Group,
+                        shape: tuple,
+                        create_step: bool = False,
+                        create_time: bool = False
+                        ) -> h5py.Group:
         """create the group 'velocity'"""
-        return self.create_element(trajectory, 'velocity', shape, 'float32', self.units.velocity_unit_name)
+        return self.create_element(trajectory, 'velocity', shape, 'float32',
+                                   self.units.velocity_unit_name, create_step, create_time)
 
-    def create_force(self, trajectory: h5py.Group, shape: tuple) -> h5py.Group:
+    def create_force(self,
+                     trajectory: h5py.Group,
+                     shape: tuple,
+                     create_step: bool = False,
+                     create_time: bool = False
+                     ) -> h5py.Group:
         """create the group 'force'"""
-        return self.create_element(trajectory, 'force', shape, 'float32', self.units.force_unit_name)
+        return self.create_element(trajectory, 'force', shape, 'float32',
+                                   self.units.force_unit_name, create_step, create_time)
 
-    def create_obs_group(self, name: str = 'trajectory') -> h5py.Group:
-        obs_group = self.observables.create_group(name)
-        obs_group.attrs['dimension'] = self.dimension
-        obs_group.create_dataset('particle_number', dtype='int32', data=[self.num_atoms],
-                                 compression=self.compression, compression_opts=self.compression_opts)
-        return obs_group
-
-    def set_box(self, constant_volume: bool = True):
+    def set_box(self,
+                constant_volume: bool = True,
+                create_step: bool = False,
+                create_time: bool = False
+                ) -> h5py.Group:
         """set PBC box information"""
         if self.pbc_box is not None:
             if self.num_walker > 1:
                 self.edges = []
                 for i in range(self.num_walker):
-                    if constant_volume:
-                        self.edges.append(self.create_edges(
-                            self.box, self.pbc_box[i]))
-                    else:
-                        self.edges.append(self.create_edges(self.box))
+                    pbc_box = self.pbc_box[i] if constant_volume else None
+                    self.edges.append(
+                        self.create_edges(self.trajectory[i], pbc_box,
+                                          create_step=create_step, create_time=create_time))
             else:
-                if constant_volume:
-                    self.edges = self.create_edges(self.box, self.pbc_box[0])
-                else:
-                    self.edges = self.create_edges(self.box)
-        return self
+                pbc_box = self.pbc_box if constant_volume else None
+                self.edges = self.create_edges(
+                    self.trajectory, pbc_box, create_step=create_step, create_time=create_time)
+        return self.edges
 
-    def set_image(self):
+    def set_image(self, create_step: bool = False, create_time: bool = False) -> h5py.Group:
         """set group 'image'"""
         if self.num_walker > 1:
-            self.image = []
-            for i in range(self.num_walker):
-                self.force.append(self.create_image(
-                    self.trajectory[i], self.shape))
+            self.image = [self.create_image(self.trajectory[i], self.shape, create_step, create_time)
+                          for i in range(self.num_walker)]
         else:
-            self.image = self.create_image(self.trajectory, self.shape)
-        return self
+            self.image = self.create_image(
+                self.trajectory, self.shape, create_step, create_time)
+        return self.image
 
-    def set_velocity(self):
+    def set_velocity(self, create_step: bool = False, create_time: bool = False) -> h5py.Group:
         """set group 'velocity'"""
         if self.num_walker > 1:
-            self.velocity = []
-            for i in range(self.num_walker):
-                self.velocity.append(self.create_velocity(
-                    self.trajectory[i], self.shape))
+            self.velocity = [self.create_velocity(
+                self.trajectory[i], self.shape) for i in range(self.num_walker)]
         else:
-            self.velocity = self.create_velocity(self.trajectory, self.shape)
-        return self
+            self.velocity = self.create_velocity(
+                self.trajectory, self.shape, create_step, create_time)
+        return self.velocity
 
-    def set_force(self):
+    def set_force(self, create_step: bool = False, create_time: bool = False) -> h5py.Group:
         """set group 'force'"""
         if self.num_walker > 1:
-            self.force = []
-            for i in range(self.num_walker):
-                self.force.append(self.create_force(
-                    self.trajectory[i], self.shape))
+            self.force = [self.create_force(self.trajectory[i], self.shape)
+                          for i in range(self.num_walker)]
         else:
-            self.force = self.create_force(self.trajectory, self.shape)
-        return self
+            self.force = self.create_force(
+                self.trajectory, self.shape, create_step, create_time)
+        return self.force
 
-    def set_observables(self, names: list, shapes: list, dtypes: list, units: list):
+    def add_observables(self,
+                        name: str,
+                        shape: tuple,
+                        dtype: type,
+                        unit: Units = None,
+                        create_step: bool = False,
+                        create_time: bool = False
+                        ) -> Union[h5py.Group, List[h5py.Group]]:
         """set observables"""
+        if self.num_walker == 1:
+            return self.create_element(self.obs_group, name, shape,
+                                       dtype, unit, create_step, create_time)
+
+        return [self.create_element(self.obs_group[i], name, shape, dtype,
+                                    unit, create_step, create_time)
+                for i in range(self.num_walker)]
+
+    def write_step(self, step: int):
+        """write simulation step"""
         if self.num_walker > 1:
-            self.obs_group = []
             for i in range(self.num_walker):
-                obs_group = self.create_obs_group('trajectory' + str(i))
-                for name, shape, dtype, unit in zip(names, shapes, dtypes, units):
-                    self.create_element(obs_group, name, shape, dtype, unit)
-                self.obs_group.append(obs_group)
+                traj_step = self.trajectory[i]['step']
+                traj_step.resize(traj_step.shape[0]+1, axis=0)
+                traj_step[-1] = step
+
+                obs_step = self.obs_group[i]['step']
+                obs_step.resize(obs_step.shape[0]+1, axis=0)
+                obs_step[-1] = step
         else:
-            self.obs_group = self.create_obs_group('trajectory')
-            for name, shape, dtype, unit in zip(names, shapes, dtypes, units):
-                self.create_element(self.obs_group, name, shape, dtype, unit)
+            traj_step = self.trajectory['step']
+            traj_step.resize(traj_step.shape[0]+1, axis=0)
+            traj_step[-1] = step
+
+            obs_step = self.obs_group['step']
+            obs_step.resize(obs_step.shape[0]+1, axis=0)
+            obs_step[-1] = step
         return self
 
-    def write_element(self, group: Group, step: int, time: float, value: ndarray):
-        """write the element to H5MD file"""
-        ds_step = group['step']
-        ds_step.resize(ds_step.shape[0]+1, axis=0)
-        ds_step[-1] = step
+    def write_time(self, time: float):
+        """write simulation time"""
+        if self.num_walker > 1:
+            for i in range(self.num_walker):
+                traj_time = self.trajectory[i]['time']
+                traj_time.resize(traj_time.shape[0]+1, axis=0)
+                traj_time[-1] = time
 
-        ds_time = group['time']
-        ds_time.resize(ds_time.shape[0]+1, axis=0)
-        ds_time[-1] = time
+                obs_time = self.obs_group[i]['time']
+                obs_time.resize(obs_time.shape[0]+1, axis=0)
+                obs_time[-1] = time
+        else:
+            traj_time = self.trajectory['time']
+            traj_time.resize(traj_time.shape[0]+1, axis=0)
+            traj_time[-1] = time
+
+            obs_time = self.obs_group['time']
+            obs_time.resize(obs_time.shape[0]+1, axis=0)
+            obs_time[-1] = time
+
+        return self
+
+    def write_element(self, group: Group, value: ndarray, step: int = None, time: float = None):
+        """write element to H5MD file"""
+        if step is not None:
+            ds_step = group['step']
+            ds_step.resize(ds_step.shape[0]+1, axis=0)
+            ds_step[-1] = step
+
+        if time is not None:
+            ds_time = group['time']
+            ds_time.resize(ds_time.shape[0]+1, axis=0)
+            ds_time[-1] = time
 
         ds_value = group['value']
         ds_value.resize(ds_value.shape[0]+1, axis=0)
         ds_value[-1] = value
+
         return self
 
-    def write_position(self, step: int, time: float, position: ndarray):
+    def write_mw_element(self, group: Union[Group, List[Group]],
+                         value: ndarray,
+                         step: int = None,
+                         time: float = None
+                         ):
+        """write multiple walker element to H5MD file"""
+        if self.num_walker == 1:
+            self.write_element(group, value, step, time)
+        else:
+            for i in range(self.num_walker):
+                self.write_element(group[i], value[i], step, time)
+        return self
+
+    def write_position(self, position: ndarray, step: int = None, time: float = None):
         """write position"""
         position *= self.length_unit_scale
-        if self.num_walker == 1:
-            self.write_element(self.position, step, time, position[0])
-        else:
-            for i in range(self.num_walker):
-                self.write_element(
-                    self.position[i], step, time, position[i])
+        self.write_mw_element(self.position, position, step, time)
         return self
 
-    def write_box(self, step: int, time: float, box: ndarray):
+    def write_box(self, box: ndarray, step: int = None, time: float = None):
         """write box"""
         box *= self.length_unit_scale
-        if self.num_walker == 1:
-            self.write_element(self.edges, step, time, box[0])
-        else:
-            for i in range(self.num_walker):
-                self.write_element(self.edges[i], step, time, box[i])
+        self.write_mw_element(self.edges, box, step, time)
         return self
 
-    def write_image(self, step: int, time: float, image: ndarray):
+    def write_image(self, image: ndarray, step: int = None, time: float = None):
         """write image"""
-        if self.num_walker == 1:
-            self.write_element(self.image, step, time,
-                               image[0].astype(np.int8))
-        else:
-            for i in range(self.num_walker):
-                self.write_element(
-                    self.image[i], step, time, image[i].astype(np.int8))
+        self.write_mw_element(self.image, image.astype(np.int8), step, time)
         return self
 
-    def write_velocity(self, step: int, time: float, velocity: ndarray):
+    def write_velocity(self, velocity: ndarray, step: int = None, time: float = None):
         """write velocity"""
         velocity *= self.length_unit_scale
-        if self.num_walker == 1:
-            self.write_element(self.velocity, step, time, velocity[0])
-        else:
-            for i in range(self.num_walker):
-                self.write_element(
-                    self.velocity[i], step, time, velocity[i])
+        self.write_mw_element(self.velocity, velocity, step, time)
         return self
 
-    def write_force(self, step: int, time: float, force: ndarray):
+    def write_force(self, force: ndarray, step: int = None, time: float = None):
         """write force"""
         force *= self.force_unit_scale
-        if self.num_walker == 1:
-            self.write_element(self.force, step, time, force[0])
-        else:
-            for i in range(self.num_walker):
-                self.write_element(
-                    self.force[i], step, time, force[i])
+        self.write_mw_element(self.force, force, step, time)
         return self
 
-    def write_observables(self, names: list, step: int, time: float, values: list, index: int = None):
+    def write_observables(self,
+                          name: str,
+                          value: ndarray,
+                          step: int = None,
+                          time: float = None
+                          ):
         """write observables"""
-        if index is None and self.num_walker > 1:
-            raise ValueError(
-                'The "index" must given when using muliple walkers')
-        if self.num_walker == 1:
-            for name, value in zip(names, values):
-                self.write_element(self.obs_group[name], step, time, value)
+
+        if self.num_walker > 1:
+            for i in range(self.num_walker):
+                self.write_element(self.obs_group[i][name], value[i], step, time)
         else:
-            for name, value in zip(names, values):
-                self.write_element(
-                    self.obs_group[index][name], step, time, value)
+            self.write_element(self.obs_group[name], value, step, time)
+
         return self
 
     def close(self):

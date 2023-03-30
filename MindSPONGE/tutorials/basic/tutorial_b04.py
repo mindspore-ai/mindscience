@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -35,8 +35,8 @@ if __name__ == "__main__":
     from mindsponge import Sponge
     from mindsponge import Molecule
     from mindsponge import ForceField
-    from mindsponge import DynamicUpdater
-    from mindsponge import SimulationCell
+    from mindsponge import UpdaterMD
+    from mindsponge import WithEnergyCell
     from mindsponge.control import VelocityVerlet, Langevin
     from mindsponge.potential import SphericalRestrict
     from mindsponge.function import VelocityGenerator
@@ -65,17 +65,17 @@ if __name__ == "__main__":
     vgen = VelocityGenerator(temp)
     velocity = vgen(system.coordinate.shape, system.atom_mass)
 
-    opt = DynamicUpdater(
+    updater = UpdaterMD(
         system,
         integrator=VelocityVerlet(system),
         thermostat=Langevin(system, temp),
         velocity=velocity,
-        time_step=5e-4,
+        time_step=1e-3,
     )
 
-    sim = SimulationCell(system, potential, bias=SphericalRestrict(radius=1.5, center=[0, 0, 0]))
-    md = Sponge(sim, optimizer=opt)
+    sim = WithEnergyCell(system, potential, bias=SphericalRestrict(radius=1.5, center=[0, 0, 0]))
+    md = Sponge(sim, optimizer=updater)
 
     cb_h5md = WriteH5MD(system, 'tutorial_b04.h5md', save_freq=10, write_velocity=True, write_force=True)
 
-    md.run(1000, callbacks=[run_info, cb_h5md])
+    md.run(2000, callbacks=[run_info, cb_h5md])

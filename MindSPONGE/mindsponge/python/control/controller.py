@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -36,16 +36,21 @@ from ..function.functions import get_integer
 
 
 class Controller(Cell):
-    r"""
-    The controller for control the parameters in the simulation process,
-    including integrator, thermostat, barostat, constraint, etc.
+    r"""Base class for the controller module in MindSPONGE.
+
+        The `Controller` used in `Updater` to control the values of seven variables during the simulation
+        process: coordinate, velocity, force, energy, kinetics, virial and pbc_box.
 
     Args:
-        system (Molecule):  Simulation system.
+
+        system (Molecule):  Simulation system
+
         control_step (int): Step interval for controller execution. Default: 1
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
     def __init__(self,
                  system: Molecule,
@@ -68,9 +73,8 @@ class Controller(Cell):
         self._pbc_box = self.system.pbc_box
 
         self.units = self.system.units
-        self.boltzmann = self.units.boltzmann
-        self.kinetic_unit_scale = self.units.kinetic_ref
-        self.press_unit_scale = self.units.pressure_ref
+        self.kinetic_unit_scale = Tensor(self.units.kinetic_ref, ms.float32)
+        self.press_unit_scale = Tensor(self.units.pressure_ref, ms.float32)
 
         # (B,A)
         self.atom_mass = self.system.atom_mass
@@ -90,67 +94,34 @@ class Controller(Cell):
         self.num_constraints = 0
 
         self.identity = ops.Identity()
-        self.keepdim_sum = ops.ReduceSum(keep_dims=True)
+        self.keepdims_sum = ops.ReduceSum(True)
+
+    @property
+    def boltzmann(self) -> float:
+        return self.units.boltzmann
 
     def set_time_step(self, dt: float):
-        """
-        set simulation time step.
-
-        Args:
-            dt (float): Time of a time step.
-        """
+        """set simulation time step"""
         self.time_step = Tensor(dt, ms.float32)
         return self
 
     def set_degrees_of_freedom(self, dofs: int):
-        """
-        set degrees of freedom (DOFs).
-
-        Args:
-            dofs (int): degrees of freedom.
-        """
+        """set degrees of freedom (DOFs)"""
         self.degrees_of_freedom = get_integer(dofs)
         return self
 
-    def update_coordinate(self, coordinate: Tensor, success: bool = True) -> bool:
-        """
-        update the parameter of coordinate.
+    def update_coordinate(self, coordinate: Tensor) -> Tensor:
+        """update the parameter of coordinate"""
+        return F.assign(self._coordinate, coordinate)
 
-        Args:
-            coordinate (Tensor):    A tensor of parameters of coordinate.
-            success (bool):         Whether update the parameters successfully.
-
-        Returns:
-            bool.
-        """
-        success = F.depend(success, F.assign(self._coordinate, coordinate))
-        return success
-
-    def update_pbc_box(self, pbc_box: Tensor, success: bool = True) -> bool:
-        """
-        update the parameter of PBC box.
-
-        Args:
-            pbc_box (Tensor):   A tensor of parameters of PBC box.
-            success (bool):     Whether update the parameters successfully.
-
-        Returns:
-            bool.
-        """
+    def update_pbc_box(self, pbc_box: Tensor) -> Tensor:
+        """update the parameter of PBC box"""
         if self._pbc_box is None:
-            return success
-        return F.depend(success, F.assign(self._pbc_box, pbc_box))
+            return pbc_box
+        return F.assign(self._pbc_box, pbc_box)
 
     def get_kinetics(self, velocity: Tensor) -> Tensor:
-        """
-        calculate kinetics according to velocity.
-
-        Args:
-            velocity (Tensor):  A tensor of velocity.
-
-        Returns:
-            Tensor, kinetics according to velocity.
-        """
+        """calculate kinetics according to velocity"""
         if velocity is None:
             return None
         # (B,A,D) * (B,A,1)
@@ -160,15 +131,7 @@ class Controller(Cell):
         return kinetics * self.kinetic_unit_scale
 
     def get_temperature(self, kinetics: Tensor = None) -> Tensor:
-        """
-        calculate temperature according to velocity.
-
-        Args:
-            kinetics (Tensor):  A tensor of kinetics.
-
-        Returns:
-            Tensor, temperature according to velocity.
-        """
+        """calculate temperature according to velocity"""
         if kinetics is None:
             return None
         # (B) <- (B,D)
@@ -176,78 +139,35 @@ class Controller(Cell):
         return 2 * kinetics / self.degrees_of_freedom / self.boltzmann
 
     def get_volume(self, pbc_box: Tensor) -> Tensor:
-        """
-        calculate volume according to PBC box.
-
-        Args:
-            pbc_box (Tensor):   A PBC box tensor used to calculate volume.
-
-        Returns:
-            Tensor, volume according to PBC box.
-        """
+        """calculate volume according to PBC box"""
         if self._pbc_box is None:
             return None
         # (B,1) <- (B,D)
-        return func.keepdim_prod(pbc_box, -1)
+        return func.keepdims_prod(pbc_box, -1)
 
     def get_virial(self, pbc_grad, pbc_box):
-        """
-        calculate virial according to the PBC box and its gradients.
-
-        Args:
-            pbc_grad (Tensor):  Tensor of PBC box's gradients.
-            pbc_box (Tensor):   Tensor of PBC box
-
-        Returns:
-            Tensor, virial.
-        """
+        """calculate virial according to the PBC box and its gradients"""
         # (B,D)
         return 0.5 * pbc_grad * pbc_box
 
     def get_pressure(self, kinetics: Tensor, virial: Tensor, pbc_box: Tensor) -> Tensor:
-        """
-        calculate pressure according to kinetics, virial and PBC box.
-
-        Args:
-            kinetics (Tensor):  Tensor of kinetics.
-            virials (Tensor):   Tensor of virials.
-            pbc_box (Tensor):   Tensor of PBC box.
-
-        Returns:
-            Tensor, pressure according to kinetics, viral and PBC box.
-        """
+        """calculate pressure according to kinetics, viral and PBC box"""
         if self._pbc_box is None:
             return None
-        volume = func.keepdim_prod(pbc_box, -1)
+        volume = func.keepdims_prod(pbc_box, -1)
         # (B,D) = ((B,D) - (B, D)) / (B,1)
         pressure = 2 * (kinetics - virial) / volume
         return pressure * self.press_unit_scale
 
     def get_com(self, coordinate: Tensor) -> Tensor:
-        """
-        get coordinate of center of mass.
-
-        Args:
-            coordinate (Tensor):    Tensor of coordinate.
-
-        Returns:
-            Tensor, coordinate of center of mass.
-        """
-        return self.keepdim_sum(coordinate * self._atom_mass, -2) / F.expand_dims(self.system_mass, -1)
+        """get coordinate of center of mass"""
+        return self.keepdims_sum(coordinate * self._atom_mass, -2) / F.expand_dims(self.system_mass, -1)
 
     def get_com_velocity(self, velocity: Tensor) -> Tensor:
-        """
-        calculate velocity of center of mass.
-
-        Args:
-            velocity (Tensor):  Tensor of velocity.
-
-        Returns:
-            Tensor, velocity of center of mass.
-        """
+        """calculate velocity of center of mass"""
         # (B,A,D) * (B,A,1) -> (B,1,D)
         # (B,1,D) / (B,1,1)
-        return self.keepdim_sum(velocity * self._atom_mass, -2) / F.expand_dims(self.system_mass, -1)
+        return self.keepdims_sum(velocity * self._atom_mass, -2) / F.expand_dims(self.system_mass, -1)
 
     def construct(self,
                   coordinate: Tensor,
@@ -260,32 +180,32 @@ class Controller(Cell):
                   step: int = 0,
                   ):
 
-        r"""
-        Control the parameters during the simulation.
+        r"""Control the parameters during the simulation
 
         Args:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor):      Tensor of shape (B, A, D). Data type is float.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor):      Tensor of shape (B, D). Data type is float.
-            virial (Tensor):        Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
+            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
+            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
             step (int):             Simulation step. Default: 0
 
         Returns:
-            - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-            - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-            - force (Tensor), Tensor of shape (B, A, D). Data type is float.
-            - energy (Tensor), Tensor of shape (B, 1). Data type is float.
-            - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-            - virial (Tensor), Tensor of shape (B, D). Data type is float.
-            - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
+            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
+            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
 
         Symbols:
             B:  Number of walkers in simulation.
             A:  Number of atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
+
         """
         #pylint: disable=unused-argument
 

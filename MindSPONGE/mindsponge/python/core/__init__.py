@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -23,8 +23,8 @@
 """Core codes of MindSPONGE"""
 
 from .sponge import Sponge
-from .simulation import SimulationCell, RunOneStepCell
-from .analysis import AnalyseCell
-from .wrapper import EnergySummation
+from .simulation import WithEnergyCell, WithForceCell, SimulationCell, RunOneStepCell
+from .analysis import AnalysisCell
 
-__all__ = ['Sponge', 'SimulationCell', 'RunOneStepCell', 'AnalyseCell', 'EnergySummation']
+__all__ = ['Sponge', 'WithEnergyCell', 'WithForceCell',
+           'SimulationCell', 'RunOneStepCell', 'AnalysisCell']

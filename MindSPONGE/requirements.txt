@@ -1,4 +1,5 @@
 numpy >= 1.17.0
+scipy >= 1.7.0
 biopython >= 1.79
 pyyaml >= 5.4.1
 dataclasses >= 0.6

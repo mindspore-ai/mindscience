@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -80,7 +80,7 @@ class GraphNorm(Cell):
 
         self.axis = axis
 
-        self.reduce_mean = P.ReduceMean(keep_dims=True)
+        self.reduce_mean = P.ReduceMean(True)
 
         self.sqrt = P.Sqrt()
 
@@ -417,7 +417,7 @@ class MultiheadAttention(Cell):
         self.softmax = P.Softmax()
         self.bmm = P.BatchMatMul()
         self.bmmt = P.BatchMatMul(transpose_b=True)
-        self.reducesum = P.ReduceSum(keep_dims=True)
+        self.reducesum = P.ReduceSum(True)
 
         # [0,1,...,D-1]
         ranges = list(range(dim_tensor+1))

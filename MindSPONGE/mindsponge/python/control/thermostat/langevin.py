@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -32,43 +32,42 @@ from ...system import Molecule
 
 
 class Langevin(Thermostat):
-    r"""
-    A Langevin thermostat controller.
+    r"""A Langevin thermostat module, which is a subclass of `Thermostat`.
 
     Reference:
-        `Goga, N.; Rzepiela, A. J.; de Vries, A. H.; Marrink, S. J.; Berendsen, H. J. C..
+
+        Goga, N.; Rzepiela, A. J.; de Vries, A. H.; Marrink, S. J.; Berendsen, H. J. C..
         Efficient Algorithms for Langevin and DPD Dynamics [J].
         Journal of Chemical Theory and Computation, 2012, 8(10): 3637-3649.
-        <https://pubs.acs.org/doi/full/10.1021/ct3000876>`_.
 
     Args:
-        system (Molecule):      Simulation system.
-        temperature (float):    Reference temperature T_ref (K) for temperature coupling.
+
+        system (Molecule):      Simulation system
+
+        temperature (float):    Reference temperature :math:`T_{ref}` in unit Kelvin for temperature coupling.
                                 Default: 300
+
         control_step (int):     Step interval for controller execution. Default: 1
-        time_constant (float):  Time constant \tau_T (ps) for temperature coupling.
-                                Default: 2
+
+        time_constant (float)   Time constant :math:`\tau_T` in unit picosecond for temperature coupling.
+                                Default: 0.2
+
         seed (int):             Random seed for standard normal. Default: 0
+
         seed2 (int):            Random seed2 for standard normal. Default: 0
 
-    Returns:
-        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
-        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-        - virial (Tensor), Tensor of shape (B, D). Data type is float.
-        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
 
     def __init__(self,
                  system: Molecule,
                  temperature: float = 300,
                  control_step: int = 1,
-                 time_constant: float = 2,
+                 time_constant: float = 0.1,
                  seed: int = 0,
                  seed2: int = 0,
                  ):
@@ -96,12 +95,7 @@ class Langevin(Thermostat):
         self.standard_normal = ops.StandardNormal(seed, seed2)
 
     def set_time_step(self, dt):
-        """
-        set simulation time step.
-
-        Args:
-            dt (float): Time of a time step.
-        """
+        """set simulation time step"""
         self.time_step = dt
         # \f = 1 - exp(-\gamma * dt)
         self.friction = 1.0 - \

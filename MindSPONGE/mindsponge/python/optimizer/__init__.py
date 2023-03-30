@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -23,7 +23,8 @@
 """Space updater"""
 
 from .updater import Updater
-from .dynamics import DynamicUpdater
+from .md import UpdaterMD
 from .steepest import SteepestDescent
+from .dynamics import DynamicUpdater
 
-__all__ = ['Updater', 'DynamicUpdater', 'SteepestDescent']
+__all__ = ['Updater', 'UpdaterMD', 'SteepestDescent', 'DynamicUpdater']

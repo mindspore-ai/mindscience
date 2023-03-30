@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -24,6 +24,7 @@
 Units
 """
 
+from typing import Union
 import math
 
 __all__ = [
@@ -45,20 +46,32 @@ __all__ = [
     'length_convert',
     'energy_convert',
     'Units',
-    'global_units',
+    'GLOBAL_UNITS',
     'set_global_length_unit',
     'set_global_energy_unit',
     'set_global_units',
 ]
 
-# origin constant
-AVOGADRO_NUMBER = 6.02214076e23           # N_A
-BOLTZMANN_CONSTANT = 1.380649e-23         # kB
-GAS_CONSTANT = 8.31446261815324           # R unit=1/mol
-ELEMENTARY_CHARGE = 1.602176634e-19       # e unit=C
-VACCUM_PERMITTIVITY = 8.854187812813e-12  # \epsilon_0
-COULOMB_CONSTANT = 8.9875517923e9         # k = 1/(4*pi*\epsilon_0) unit=N*m^2/C^2
-STANDARD_ATMOSPHERE = 101325              # atm
+AVOGADRO_NUMBER = 6.02214076e23
+r"""Avogadro number :math:`N_A`"""
+
+BOLTZMANN_CONSTANT = 1.380649e-23
+r"""Boltzmann constant :math:`k_B`"""
+
+GAS_CONSTANT = 8.31446261815324
+r"""Gas constant :math:`R` with unit `J/mol·K`"""
+
+ELEMENTARY_CHARGE = 1.602176634e-19
+r"""Elementary charge :math:`e` with unit `C`"""
+
+VACCUM_PERMITTIVITY = 8.854187812813e-12
+r"""Vacuum permittivity :math:`\epsilon_0`"""
+
+COULOMB_CONSTANT = 8.9875517923e9
+r"""Coulomb constant :math:`k = \frac{1}{4 pi \epsilon_0}` with unit `N*m^2/C^2`"""
+
+STANDARD_ATMOSPHERE = 101325
+r"""Standard atmosphere with unit `Pa`"""
 
 _LENGTH_UNITS = (
     'nm',
@@ -131,13 +144,16 @@ _ENERGY_NAME = {
     'none': 'None',
 }
 
-# Boltzmann constant for simulation (kJ/mol)
 _BOLTZMANN_DEFAULT_REF = 8.31446261815324e-3
-# Coulomb constant for simulation (e^2*kJ/mol*nm)
-# N_A*e^2/(4*pi*\epsilon_0)*1e9nm[1m]*1e-3kJ[1J]
+r"""Boltzmann constant for simulation (kJ/mol)"""
+
 _COULOMB_DEFAULT_REF = 138.93545764498226165718756672623
-# Pressure 1 Bar in kJ mol-1 nm^3
+r"""Coulomb constant for simulation (e^2*kJ/mol*nm)
+    N_A*e^2/(4*pi*\epsilon_0)*1e9nm[1m]*1e-3kJ[1J]
+"""
+
 _BAR_DEFAULT_REF = 16.6053906717384685
+r"""Pressure 1 Bar in kJ mol-1 nm^3"""
 
 
 class Length:
@@ -149,7 +165,7 @@ class Length:
         unit (str):      length value unit. Default: 'nm'
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
 
     def __init__(self, value: float, unit: str = 'nm'):
@@ -168,82 +184,11 @@ class Length:
                 self.__unit = 'user'
                 self.__ref = float(unit)
             else:
-                raise TypeError(
-                    'Unsupported length unit type: ' + str(type(unit)))
+                raise TypeError(f'Unsupported length unit type: {type(unit)}')
             self.__abs_size = self.__value * self.__ref
             self.__unit_name = get_length_unit_name(self.__unit)
         else:
-            raise TypeError(
-                'Unsupported length value type: ' + str(type(value)))
-
-    def change_unit(self, unit):
-        """
-        change unit.
-
-        Args:
-            unit (str): Energy unit.
-        """
-        if isinstance(unit, (str, Units)):
-            self.__unit = get_length_unit(unit)
-            self.__ref = get_length_ref(unit)
-        elif isinstance(unit, (float, int)):
-            self.__unit = 'user'
-            self.__ref = unit
-        else:
-            raise TypeError('Unsupported length unit type: ' + str(type(unit)))
-        self.__value = length_convert('nm', unit) * self.__abs_size
-        self.__unit_name = get_length_unit_name(self.__unit)
-        return self
-
-    @property
-    def abs_size(self):
-        """
-        absolute size of length.
-
-        Returns:
-            float, the absolute size of length.
-        """
-        return self.__abs_size
-
-    @property
-    def value(self):
-        """
-        value of length.
-
-        Returns:
-            float, the value of length.
-        """
-        return self.__value
-
-    @property
-    def ref(self):
-        """
-        reference value.
-
-        Returns:
-            float, a reference value.
-        """
-        return self.__ref
-
-    @property
-    def unit(self):
-        """
-        length unit.
-
-        Returns:
-            str, the length unit.
-        """
-        return self.__unit
-
-    @property
-    def unit_name(self):
-        """
-        name of length unit.
-
-        Returns:
-            str, the name of length unit.
-        """
-        return self.__unit_name
+            raise TypeError(f'Unsupported length value type: {type(value)}')
 
     def __call__(self, unit=None):
         return self.__value * length_convert(self.__unit, unit)
@@ -276,6 +221,75 @@ class Length:
             return self.__abs_size >= other.abs_size
         return self.__value >= other
 
+    @property
+    def abs_size(self) -> float:
+        """
+        absolute size of length.
+
+        Returns:
+            float, the absolute size of length.
+        """
+        return self.__abs_size
+
+    @property
+    def value(self) -> float:
+        """
+        value of length.
+
+        Returns:
+            float, the value of length.
+        """
+        return self.__value
+
+    @property
+    def ref(self) -> float:
+        """
+        reference value.
+
+        Returns:
+            float, a reference value.
+        """
+        return self.__ref
+
+    @property
+    def unit(self) -> str:
+        """
+        length unit.
+
+        Returns:
+            str, the length unit.
+        """
+        return self.__unit
+
+    @property
+    def unit_name(self) -> str:
+        """
+        name of length unit.
+
+        Returns:
+            str, the name of length unit.
+        """
+        return self.__unit_name
+
+    def change_unit(self, unit):
+        """
+        change unit.
+
+        Args:
+            unit (Union[str, Units, float, int]):   Energy unit.
+        """
+        if isinstance(unit, (str, Units)):
+            self.__unit = get_length_unit(unit)
+            self.__ref = get_length_ref(unit)
+        elif isinstance(unit, (float, int)):
+            self.__unit = 'user'
+            self.__ref = unit
+        else:
+            raise TypeError(f'Unsupported length unit type: {type(unit)}')
+        self.__value = length_convert('nm', unit) * self.__abs_size
+        self.__unit_name = get_length_unit_name(self.__unit)
+        return self
+
 
 class Energy:
     """
@@ -286,7 +300,7 @@ class Energy:
         unit (str):      energy value unit. Default: 'kl/mol'
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
 
     def __init__(self, value: float, unit: str = 'kj/mol'):
@@ -305,31 +319,11 @@ class Energy:
                 self.__unit = 'user'
                 self.__ref = float(unit)
             else:
-                raise TypeError('Unsupported energy unit type: ' + str(type(unit)))
+                raise TypeError(f'Unsupported energy unit type: {type(unit)}')
             self.__abs_size = self.__value * self.__ref
             self.__unit_name = get_energy_unit_name(self.__unit)
         else:
-            raise TypeError(
-                'Unsupported energy value type: ' + str(type(value)))
-
-    def change_unit(self, unit):
-        """
-        change unit.
-
-        Args:
-            unit (str): Energy unit.
-        """
-        if isinstance(unit, (str, Units)):
-            self.__unit = get_energy_unit(unit)
-            self.__ref = get_energy_ref(unit)
-        elif isinstance(unit, (float, int)):
-            self.__unit = 'user'
-            self.__ref = unit
-        else:
-            raise TypeError('Unsupported energy unit type: ' + str(type(unit)))
-        self.__value = energy_convert('kj/mol', unit) * self.__abs_size
-        self.__unit_name = get_energy_unit_name(self.__unit)
-        return self
+            raise TypeError(f'Unsupported energy value type: {type(value)}')
 
     def __call__(self, unit=None):
         return self.__value * energy_convert(self.__unit, unit)
@@ -363,7 +357,7 @@ class Energy:
         return self.__value >= other
 
     @property
-    def abs_size(self):
+    def abs_size(self) -> float:
         """
         absolute size of energy.
 
@@ -373,7 +367,7 @@ class Energy:
         return self.__abs_size
 
     @property
-    def value(self):
+    def value(self) -> float:
         """
         value of energy.
 
@@ -383,7 +377,7 @@ class Energy:
         return self.__value
 
     @property
-    def ref(self):
+    def ref(self) -> float:
         """
         reference value.
 
@@ -393,7 +387,7 @@ class Energy:
         return self.__ref
 
     @property
-    def unit(self):
+    def unit(self) -> str:
         """
         energy unit.
 
@@ -403,7 +397,7 @@ class Energy:
         return self.__unit
 
     @property
-    def unit_name(self):
+    def unit_name(self) -> str:
         """
         name of energy unit.
 
@@ -411,6 +405,25 @@ class Energy:
             str, the name of energy unit.
         """
         return self.__unit_name
+
+    def change_unit(self, unit):
+        """
+        change unit.
+
+        Args:
+            unit (Union[str, Units, float, int]): Energy unit.
+        """
+        if isinstance(unit, (str, Units)):
+            self.__unit = get_energy_unit(unit)
+            self.__ref = get_energy_ref(unit)
+        elif isinstance(unit, (float, int)):
+            self.__unit = 'user'
+            self.__ref = unit
+        else:
+            raise TypeError(f'Unsupported energy unit type: {type(unit)}')
+        self.__value = energy_convert('kj/mol', unit) * self.__abs_size
+        self.__unit_name = get_energy_unit_name(self.__unit)
+        return self
 
 
 def get_length_ref(unit):
@@ -424,7 +437,7 @@ def get_length_ref(unit):
         length reference(Union[str, float, int]).
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
     if unit is None:
         return None
@@ -438,7 +451,7 @@ def get_length_ref(unit):
         return unit.ref
     if isinstance(unit, (float, int)):
         return unit
-    raise TypeError('Unsupported length reference type: ' + str(type(unit)))
+    raise TypeError(f'Unsupported length reference type: {type(unit)}')
 
 
 def get_length_unit(unit):
@@ -452,13 +465,13 @@ def get_length_unit(unit):
         length unit(Union[str, float, int]).
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
     if unit is None:
         return 'none'
     if isinstance(unit, str):
         if unit.lower() not in _LENGTH_UNITS:
-            raise KeyError('length unit "' + unit + '" is not recorded!')
+            raise KeyError(f'Unknown length unit: {unit}')
         return unit.lower()
     if isinstance(unit, Units):
         return unit.length_unit
@@ -466,7 +479,7 @@ def get_length_unit(unit):
         return unit.unit
     if isinstance(unit, (float, int)):
         return 'user'
-    raise TypeError('Unsupported length unit type: ' + str(type(unit)))
+    raise TypeError(f'Unsupported length unit type: {type(unit)}')
 
 
 def get_length_unit_name(unit):
@@ -480,13 +493,13 @@ def get_length_unit_name(unit):
         length unit(str).
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
     if unit is None:
         return 'None'
     if isinstance(unit, str):
         if unit.lower() not in _LENGTH_NAME.keys():
-            raise KeyError('length unit "' + unit + '" is not recorded!')
+            raise KeyError(f'Unknown length unit: {unit}')
         return _LENGTH_NAME.get(unit.lower())
     if isinstance(unit, Units):
         return unit.length_unit_name
@@ -494,7 +507,7 @@ def get_length_unit_name(unit):
         return unit.unit_name
     if isinstance(unit, (float, int)):
         return 'User_Length'
-    raise TypeError('Unsupported length unit name type: ' + str(type(unit)))
+    raise TypeError(f'Unsupported length unit name type: {type(unit)}')
 
 
 def get_energy_ref(unit):
@@ -502,19 +515,19 @@ def get_energy_ref(unit):
     get energy reference.
 
     Args:
-        unit (Union[str, Units, Length, float, int]):   Energy unit.
+        unit (Union[str, Units, Energy, float, int]):   Energy unit.
 
     Returns:
         energy reference(Union[str, float, int]).
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
     if unit is None:
         return None
     if isinstance(unit, str):
         if unit.lower() not in _ENERGY_REF.keys():
-            raise KeyError('energy unit "' + unit + '" is not recorded!')
+            raise KeyError(f'Unknown energy unit: {unit}')
         return _ENERGY_REF.get(unit.lower())
     if isinstance(unit, Units):
         return unit.energy_ref
@@ -522,7 +535,7 @@ def get_energy_ref(unit):
         return unit.ref
     if isinstance(unit, (float, int)):
         return unit
-    raise TypeError('Unsupported energy reference type: ' + str(type(unit)))
+    raise TypeError(f'Unsupported energy reference type: {type(unit)}')
 
 
 def get_energy_unit(unit):
@@ -530,19 +543,19 @@ def get_energy_unit(unit):
     get energy unit.
 
     Args:
-        unit (Union[str, Units, Length, float, int]):   Energy unit.
+        unit (Union[str, Units, Energy, float, int]):   Energy unit.
 
     Returns:
         energy unit(str).
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
     if unit is None:
         return 'none'
     if isinstance(unit, str):
         if unit.lower() not in _ENERGY_UNITS:
-            raise KeyError('energy unit "' + unit + '" is not recorded!')
+            raise KeyError(f'Unknown energy unit: {unit}')
         return unit.lower()
     if isinstance(unit, Units):
         return unit.energy_unit
@@ -550,7 +563,7 @@ def get_energy_unit(unit):
         return unit.unit
     if isinstance(unit, (float, int)):
         return 'user'
-    raise TypeError('Unsupported energy unit type: ' + str(type(unit)))
+    raise TypeError(f'Unsupported energy unit type: {type(unit)}')
 
 
 def get_energy_unit_name(unit):
@@ -558,13 +571,13 @@ def get_energy_unit_name(unit):
     get the name of energy unit.
 
     Args:
-        unit (Union[str, Units, Length, float, int]):   Energy unit.
+        unit (Union[str, Units, Energy, float, int]):   Energy unit.
 
     Returns:
         name of energy unit(str).
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
     if unit is None:
         return 'None'
@@ -578,7 +591,7 @@ def get_energy_unit_name(unit):
         return unit.unit_name
     if isinstance(unit, (float, int)):
         return 'User_Energy'
-    raise TypeError('Unsupported energy unit name type: ' + str(type(unit)))
+    raise TypeError(f'Unsupported energy unit name type: {type(unit)}')
 
 
 def length_convert(unit_in, unit_out):
@@ -593,7 +606,7 @@ def length_convert(unit_in, unit_out):
         float, length according to different units.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
     length_in = get_length_ref(unit_in)
     length_out = get_length_ref(unit_out)
@@ -607,14 +620,14 @@ def energy_convert(unit_in, unit_out):
     convert energy according to difference units.
 
     Args:
-        unit_in (Union[str, Units, Length, float, int]):    input unit of length.
-        unit_out (Union[str, Units, Length, float, int]):   output unit of length.
+        unit_in (Union[str, Units, Energy, float, int]):    Input unit of energy.
+        unit_out (Union[str, Units, Energy, float, int]):   Output unit of energy.
 
     Returns:
         float, energy according to different units.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
     energy_in = get_energy_ref(unit_in)
     energy_out = get_energy_ref(unit_out)
@@ -632,7 +645,7 @@ class Units:
         energy_unit (str):  Energy unit. Default: None
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
 
     def __init__(self,
@@ -657,7 +670,225 @@ class Units:
 
         self.time_unit = 'ps'
 
-    def set_length_unit(self, unit=None):
+    @property
+    def boltzmann_def(self) -> float:
+        """
+        Boltzmann constant in kJ/mol.
+
+        Returns:
+            float, Boltzmann constant in kJ/mol.
+        """
+        return _BOLTZMANN_DEFAULT_REF
+
+    @property
+    def boltzmann(self) -> float:
+        """
+        Boltzmann constant in current unit.
+
+        Returns:
+            float, Boltzmann constant in current unit.
+        """
+        return self.__boltzmann
+
+    @property
+    def coulomb(self) -> float:
+        """
+        Coulomb constant in current unit.
+
+        Returns:
+            float, Coulomb constant in current unit.
+        """
+        return self.__coulomb
+
+    @property
+    def avogadro(self) -> float:
+        """
+        Avogadro number.
+
+        Returns:
+            float, Avogadro number.
+        """
+        return AVOGADRO_NUMBER
+
+    @property
+    def gas_constant(self) -> float:
+        """
+        gas constant.
+
+        Returns:
+            float, gas constant.
+        """
+        return GAS_CONSTANT
+
+    @property
+    def length_unit(self) -> str:
+        """
+        length unit.
+
+        Returns:
+            str, length unit
+        """
+        return self.__length_unit
+
+    @property
+    def energy_unit(self) -> str:
+        """
+        energy unit.
+
+        Returns:
+            str, length unit
+        """
+        return self.__energy_unit
+
+    @property
+    def length_unit_name(self) -> str:
+        """
+        name of length unit.
+
+        Returns:
+            str, name of length unit.
+        """
+        return self.__length_unit_name
+
+    @property
+    def energy_unit_name(self) -> str:
+        """
+        name of energy unit.
+
+        Returns:
+            str, name of energy unit.
+        """
+        return self.__energy_unit_name
+
+    @property
+    def volume_unit(self) -> str:
+        """
+        velocity unit.
+
+        Returns:
+            str, velocity unit.
+        """
+        return self.__length_unit + "^3"
+
+    @property
+    def volume_unit_name(self) -> str:
+        """
+        velocity unit name.
+
+        Returns:
+            str, velocity unit name.
+        """
+        return self.__length_unit + "+3"
+
+    @property
+    def force_unit(self) -> str:
+        """
+        force unit.
+
+        Returns:
+            str, force unit.
+        """
+        return self.__energy_unit + '/' + self.__length_unit
+
+    @property
+    def force_unit_name(self) -> str:
+        """
+        name of force unit.
+
+        Returns:
+            str, name of force unit.
+        """
+        return self.__energy_unit_name + ' ' + self.__length_unit_name + '-1'
+
+    @property
+    def velocity_unit(self) -> str:
+        """
+        velocity unit.
+
+        Returns:
+            str, velocity unit.
+        """
+        return self.__length_unit + "/" + self.time_unit
+
+    @property
+    def velocity_unit_name(self) -> str:
+        """
+        name of velocity unit.
+
+        Returns:
+            str, name of velocity unit.
+        """
+        return self.__length_unit_name + ' ' + self.time_unit + '-1'
+
+    @property
+    def length_ref(self) -> float:
+        """
+        reference value of length.
+
+        Returns:
+            float, reference value of length.
+        """
+        return self.__length_ref
+
+    @property
+    def energy_ref(self) -> float:
+        """
+        reference value of energy.
+
+        Returns:
+            float, reference value of energy.
+        """
+        return self.__energy_ref
+
+    @property
+    def force_ref(self) -> float:
+        """
+        reference value of force.
+
+        Returns:
+            float, reference value of force.
+        """
+        if self.__energy_ref is None:
+            return None
+        return self.__energy_ref / self.__length_ref
+
+    @property
+    def acceleration_ref(self) -> float:
+        """
+        reference value of acceleration.
+
+        Returns:
+            float, reference value of acceleration.
+        """
+        if self.__energy_ref is None or self.__length_ref is None:
+            return None
+        return self.__energy_ref / self.__length_ref / self.__length_ref
+
+    @property
+    def kinetic_ref(self) -> float:
+        """
+        reference value of kinetic.
+
+        Returns:
+            float, reference value of kinetic.
+        """
+        if self.__energy_ref is None or self.__length_ref is None:
+            return None
+        return self.__length_ref * self.__length_ref / self.__energy_ref
+
+    @property
+    def pressure_ref(self) -> float:
+        """
+        reference value of pressure.
+
+        Returns:
+            float, reference value of pressure.
+        """
+        if self.__energy_ref is None or self.__length_ref is None:
+            return None
+        return _BAR_DEFAULT_REF * self.__energy_ref / math.pow(self.__length_ref, 3)
+
+    def set_length_unit(self, unit: str = None):
         """
         set length unit.
 
@@ -671,7 +902,7 @@ class Units:
             self._set_constants()
         return self
 
-    def set_energy_unit(self, unit=None):
+    def set_energy_unit(self, unit: str = None):
         """
         set energy unit.
 
@@ -685,16 +916,21 @@ class Units:
             self._set_constants()
         return self
 
-    def set_units(self, length_unit, energy_unit, units=None):
+    def set_units(self, length_unit: str = None, energy_unit: str = None, units=None):
         """
-        set unit.
+        set units.
 
         Args:
-            length_unit (str):  Length unit.
-            energy_unit (str):  Energy unit.
-            units (str):        Units.
+            length_unit (str):  Length unit. Only valid when `units` is None.
+                                Default: None
+            energy_unit (str):  Energy unit. Only valid when `units` is None.
+                                Default: None
+            units (Units):      `Units` object. Default: None
+
         """
         if units is None:
+            if length_unit is None and energy_unit is None:
+                raise ValueError('`length_unit`, `energy_unit` and `units` cannot all be None!')
             if length_unit is not None:
                 self.__length_unit = get_length_unit(length_unit)
                 self.__length_unit_name = get_length_unit_name(length_unit)
@@ -724,331 +960,127 @@ class Units:
             self.__coulomb /= self.__energy_ref * self.__length_ref
         return self
 
-    def length(self, value, unit=None):
+    def length(self, value: float, unit=None) -> float:
         """
         return the length value of the specified unit.
 
         Args:
-            value (float):  Length value.
-            unit (str):     Length unit.
+            value (float):                                  Length value.
+            unit (Union[str, Units, Length, float, int]):   Length unit.
 
         Returns:
             float, the length value.
         """
         return value * self.convert_length_from(unit)
 
-    def energy(self, value, unit=None):
+    def energy(self, value: float, unit=None) -> float:
         """
         return the energy value of the specified unit.
 
         Args:
-            value (float):  Energy value.
-            unit (str):     Energy unit.
+            value (float):                                  Energy value.
+            unit (Union[str, Units, Energy, float, int]):   Energy unit.
 
         Returns:
             float, the energy value.
         """
         return value * self.convert_energy_from(unit)
 
-    def convert_length_to(self, unit):
+    def convert_length_to(self, unit) -> float:
         """
         convert length to a specified units.
 
         Args:
-            unit (str): Length unit.
+            unit (Union[str, Units, Length, float, int]):   Length unit.
 
         Returns:
             float, length according to a specified units.
         """
         return length_convert(self.__length_unit, unit)
 
-    def convert_energy_to(self, unit):
+    def convert_energy_to(self, unit) -> float:
         """
         convert energy to a specified units.
 
         Args:
-            unit (str): Energy unit.
+            unit (Union[str, Units, Energy, float, int]):   Energy unit.
 
         Returns:
             float, energy according to a specified units.
         """
         return energy_convert(self.__energy_unit, unit)
 
-    def convert_length_from(self, unit):
+    def convert_length_from(self, unit) -> float:
         """convert length from a specified units.
 
         Args:
-            unit (str): Length unit.
+            unit (Union[str, Units, Length, float, int]):   Length unit.
 
         Returns:
             float, length according from a specified units.
         """
         return length_convert(unit, self.__length_unit)
 
-    def convert_energy_from(self, unit):
+    def convert_energy_from(self, unit) -> float:
         """
         convert energy from a specified units.
 
         Args:
-            unit (str): Energy unit.
+            unit (Union[str, Units, Energy, float, int]):   Energy unit.
 
         Returns:
             float, energy according from a specified units.
         """
         return energy_convert(unit, self.__energy_unit)
 
-    @property
-    def boltzmann_def(self):
-        """
-        Boltzmann constant in kJ/mol.
 
-        Returns:
-            float, Boltzmann constant in kJ/mol.
-        """
-        return _BOLTZMANN_DEFAULT_REF
-
-    @property
-    def boltzmann(self):
-        """
-        Boltzmann constant in current unit.
-
-        Returns:
-            float, Boltzmann constant in current unit.
-        """
-        return self.__boltzmann
-
-    @property
-    def coulomb(self):
-        """
-        Coulomb constant in current unit.
-
-        Returns:
-            float, Coulomb constant in current unit.
-        """
-        return self.__coulomb
-
-    @property
-    def avogadro(self):
-        """
-        Avogadro number.
-
-        Returns:
-            float, Avogadro number.
-        """
-        return AVOGADRO_NUMBER
-
-    @property
-    def gas_constant(self):
-        """
-        gas constant.
-
-        Returns:
-            float, gas constant.
-        """
-        return GAS_CONSTANT
-
-    @property
-    def length_unit(self):
-        """
-        length unit.
-
-        Returns:
-            length unit (Union[str, float, int]).
-        """
-        return self.__length_unit
-
-    @property
-    def energy_unit(self):
-        """
-        energy unit.
-
-        Returns:
-            energy unit (Union[str, float, int]).
-        """
-        return self.__energy_unit
-
-    @property
-    def length_unit_name(self):
-        """
-        name of length unit.
-
-        Returns:
-            str, name of length unit.
-        """
-        return self.__length_unit_name
-
-    @property
-    def energy_unit_name(self):
-        """
-        name of energy unit.
-
-        Returns:
-            str, name of energy unit.
-        """
-        return self.__energy_unit_name
-
-    @property
-    def volume_unit(self):
-        """
-        velocity unit.
-
-        Returns:
-            str, velocity unit.
-        """
-        return self.__length_unit + "^3"
-
-    @property
-    def volume_unit_name(self):
-        """
-        velocity unit name.
-
-        Returns:
-            str, velocity unit name.
-        """
-        return self.__length_unit + "+3"
-
-    @property
-    def force_unit(self):
-        """
-        force unit.
-
-        Returns:
-            str, force unit.
-        """
-        return self.__energy_unit + '/' + self.__length_unit
-
-    @property
-    def force_unit_name(self):
-        """
-        name of force unit.
-
-        Returns:
-            str, name of force unit.
-        """
-        return self.__energy_unit_name + ' ' + self.__length_unit_name + '-1'
-
-    @property
-    def velocity_unit(self):
-        """
-        velocity unit.
-
-        Returns:
-            str, velocity unit.
-        """
-        return self.__length_unit + "/" + self.time_unit
-
-    @property
-    def velocity_unit_name(self):
-        """
-        name of velocity unit.
-
-        Returns:
-            str, name of velocity unit.
-        """
-        return self.__length_unit_name + ' ' + self.time_unit + '-1'
-
-    @property
-    def length_ref(self):
-        """
-        reference value of length.
-
-        Returns:
-            float, reference value of length.
-        """
-        return self.__length_ref
-
-    @property
-    def energy_ref(self):
-        """
-        reference value of energy.
-
-        Returns:
-            float, reference value of energy.
-        """
-        return self.__energy_ref
-
-    @property
-    def force_ref(self):
-        """
-        reference value of force.
-
-        Returns:
-            float, reference value of force.
-        """
-        if self.__energy_ref is None:
-            return None
-        return self.__energy_ref / self.__length_ref
-
-    @property
-    def acceleration_ref(self):
-        """
-        reference value of acceleration.
-
-        Returns:
-            float, reference value of acceleration.
-        """
-        if self.__energy_ref is None or self.__length_ref is None:
-            return None
-        return self.__energy_ref / self.__length_ref / self.__length_ref
-
-    @property
-    def kinetic_ref(self):
-        """
-        reference value of kinetic.
-
-        Returns:
-            float, reference value of kinetic.
-        """
-        if self.__energy_ref is None or self.__length_ref is None:
-            return None
-        return self.__length_ref * self.__length_ref / self.__energy_ref
-
-    @property
-    def pressure_ref(self):
-        if self.__energy_ref is None or self.__length_ref is None:
-            return None
-        return _BAR_DEFAULT_REF * self.__energy_ref / math.pow(self.__length_ref, 3)
+GLOBAL_UNITS = Units('nm', 'kj/mol')
+r"""Global unints of MindSPONGE"""
 
 
-global_units = Units('nm', 'kj/mol')
-
-
-def set_global_length_unit(unit):
+def set_global_length_unit(unit: Union[str, Units, Length, float, int]):
     """
-    set length unit for global_units.
+    set global length unit.
 
     Args:
-        unit (str):  Length unit. Default: None
+        unit (Union[str, Units, Length, float, int]):  Length unit.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
-    global_units.set_length_unit(unit)
+    global GLOBAL_UNITS
+    GLOBAL_UNITS.set_length_unit(unit)
 
 
-def set_global_energy_unit(unit):
+def set_global_energy_unit(unit: Union[str, Units, Length, float, int]):
     """
-    set energy unit for global_units.
+    set global energy unit.
 
     Args:
-        unit (str):  Energy unit. Default: None
+        unit (Union[str, Units, Length, float, int]):  Energy unit.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
-    global_units.set_energy_unit(unit)
+    global GLOBAL_UNITS
+    GLOBAL_UNITS.set_energy_unit(unit)
 
 
-def set_global_units(length_unit, energy_unit, units=None):
+def set_global_units(length_unit: Union[str, Units, Length, float, int] = None,
+                     energy_unit: Union[str, Units, Length, float, int] = None,
+                     units: Units = None):
     """
-    set units for global_units.
+    set global units.
 
     Args:
-        length_unit (str):  Length unit. Default: None
-        energy_unit (str):  Energy unit. Default: None
-        units (str):        units. Default: None
+        length_unit (Union[str, Units, Length, float, int]):
+                        Length unit. Only valid when `units` is None. Default: None
+        energy_unit (Union[str, Units, Length, float, int]):
+                        Energy unit. Only valid when `units` is None. Default: None
+        units (Units):  `Units` object. Default: None
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
-    global_units.set_units(length_unit, energy_unit, units)
+    global GLOBAL_UNITS
+    GLOBAL_UNITS.set_units(length_unit, energy_unit, units)
