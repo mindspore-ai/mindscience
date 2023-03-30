@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -34,31 +34,33 @@ from ...system import Molecule
 
 
 class Barostat(Controller):
-    r"""
-    Barostat controller for pressure coupling.
+    r"""Base class for barostat module in MindSPONGE, which is a subclass of `Controller`.
+
+        The `Barostat` module is used for pressure coupling. It controls the atomic coordinates and the size of
+        the PBC box of the system during the simulation process.
 
     Args:
-        system (Molecule):          Simulation system.
-        pressure (float):           Reference pressure P_ref (bar) for pressure coupling.
+
+        system (Molecule):          Simulation system
+
+        pressure (float):           Reference pressure :math:`P_{ref}` in unit bar for pressure coupling.
                                     Default: 1
+
         anisotropic (bool):         Whether to perform anisotropic pressure control.
                                     Default: False
+
         control_step (int):         Step interval for controller execution. Default: 1
-        compressibility (float):    Isothermal compressibility \beta (bar^-1). Default: 4.6e-5
-        time_constant (float)       Time constant \tau_p (ps) for pressure coupling.
+
+        compressibility (float):    Isothermal compressibility :math:`\beta` in unit bar^-1.
+                                    Default: 4.6e-5
+
+        time_constant (float)       Time constant :math:`\tau_p` in unit picosecond for pressure coupling.
                                     Default: 1
 
-    Returns:
-        coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-        velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-        force (Tensor), Tensor of shape (B, A, D). Data type is float.
-        energy (Tensor), Tensor of shape (B, 1). Data type is float.
-        kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-        virial (Tensor), Tensor of shape (B, D). Data type is float.
-        pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
-
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
     def __init__(self,
                  system: Molecule,
@@ -75,8 +77,6 @@ class Barostat(Controller):
         )
 
         self.anisotropic = anisotropic
-        self.kinetic_unit_scale = self.units.kinetic_ref
-        self.press_unit_scale = self.units.pressure_ref
 
         self.sens = Tensor(1e8, ms.float32)
         self.inv_sens = msnp.reciprocal(self.sens)
@@ -84,8 +84,8 @@ class Barostat(Controller):
         #(B,1)
         self.ref_press = Tensor(pressure, ms.float32).reshape(-1, 1)
         if self.ref_press.shape[0] != 1 and self.ref_press.shape[0] != self.num_walker:
-            raise ValueError('The first dimension of "pressure" (' + str(self.ref_press.shape[0]) +
-                             ') does not match the number of multiple walkers ('+str(self.num_walker) + ')!')
+            raise ValueError(f'The first dimension of "pressure" ({self.ref_press.shape[0]})'
+                             f'does not match the number of multiple walkers ({self.num_walker})!')
 
         # isothermal compressibility
         self.beta = Tensor(compressibility, ms.float32)
@@ -102,23 +102,16 @@ class Barostat(Controller):
 
     @property
     def pressure(self):
-        """reference pressure."""
+        """reference pressure"""
         return self.ref_press
 
     @property
     def compressibility(self):
-        """isothermal compressibility."""
+        """isothermal compressibility"""
         return self.beta
 
     def pressure_scale(self, sim_press: Tensor, ref_press: Tensor, ratio: float = 1) -> Tensor:
-        """
-        calculate the coordinate scale factor for pressure coupling.
-
-        Args:
-            sim_press (Tensor): The tensor of simulation pressure.
-            ref_press (Tensor): The tensor of reference pressure.
-            ratio (float):      The ratio used to change the difference of two pressures. Default: 1
-        """
+        """calculate the coordinate scale factor for pressure coupling"""
         delta_p = ref_press - sim_press
         change = - ratio * self.beta * delta_p
 
@@ -130,7 +123,7 @@ class Barostat(Controller):
         mask = msnp.abs(change) > self.critical_change
         scale = msnp.where(mask, 1+change, 1.)
         change = msnp.where(mask, 0., change)
-        F.depend(True, F.assign(self.change_accumulation, change))
+        scale = F.depend(scale, F.assign(self.change_accumulation, change))
 
         return scale
 
@@ -145,32 +138,31 @@ class Barostat(Controller):
                   step: int = 0,
                   ):
 
-        r"""
-        Control the pressure of the simulation system.
+        r"""Control the pressure of the simulation system.
 
         Args:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor):      Tensor of shape (B, A, D). Data type is float.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor):      Tensor of shape (B, D). Data type is float.
-            virial (Tensor):        Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
+            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
+            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
             step (int):             Simulation step. Default: 0
 
         Returns:
-            coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-            force (Tensor), Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor), Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-            virial (Tensor), Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
+            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
+            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
 
         Symbols:
             B:  Number of walkers in simulation.
             A:  Number of atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
 
         """
 

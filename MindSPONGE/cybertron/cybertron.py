@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -34,12 +34,12 @@ from mindspore.train._utils import _make_directory
 
 from mindspore.train import save_checkpoint
 
-from mindsponge.function import Units, global_units
+from mindsponge.function import Units, GLOBAL_UNITS
 from mindsponge.function import get_integer
 from mindsponge.data import get_class_parameters
 from mindsponge.data import get_hyper_parameter, get_hyper_string
 from mindsponge.data import set_class_into_hyper_param
-from mindsponge.colvar import IndexDistances
+from mindsponge.partition import IndexDistances
 from mindsponge.partition import FullConnectNeighbours
 from mindsponge.potential import PotentialCell
 
@@ -131,7 +131,7 @@ class Cybertron(Cell):
                 hyper_param, 'hyperparam.energy_unit')
 
         if length_unit is None and energy_unit is None:
-            self.units = global_units
+            self.units = GLOBAL_UNITS
         else:
             self.units = Units(length_unit, energy_unit)
 
@@ -215,14 +215,12 @@ class Cybertron(Cell):
         if atom_types is None:
             self.atom_types = None
             self.atom_mask = None
-            self.fixed_atoms = False
             if num_atoms is None:
                 raise ValueError(
                     '"num_atoms" must be assigned when "atom_types" is None')
             natoms = get_integer(num_atoms)
             self.num_atoms = natoms
         else:
-            self.fixed_atoms = True
             # (1,A)
             self.atom_types = Tensor(atom_types, ms.int32).reshape(1, -1)
             self.atom_mask = atom_types > 0
@@ -255,8 +253,11 @@ class Cybertron(Cell):
             self.use_pbc = True
 
         cutoff = self.model.cutoff
-        self.distances = IndexDistances(
-            self.use_pbc, length_unit, cutoff*10, keep_dims=False)
+        self.get_distance = IndexDistances(
+            use_pbc=self.use_pbc,
+            large_dis=cutoff*10,
+            keepdims=False
+        )
 
         self.hyper_param = dict()
         self.hyper_types = {
@@ -535,29 +536,28 @@ class Cybertron(Cell):
 
         """
 
-        if self.fixed_atoms:
-            # (1,A)
-            atom_types = self.atom_types
-            num_atoms = self.num_atoms
-            atom_mask = self.atom_mask
-        else:
+        if self.atom_types is None:
             # (1,A)
             atom_mask = atom_types > 0
             num_atoms = F.cast(atom_mask, ms.int32)
             num_atoms = msnp.sum(num_atoms, -1, keepdims=True)
+        else:
+            # (1,A)
+            atom_types = self.atom_types
+            num_atoms = self.num_atoms
+            atom_mask = self.atom_mask
 
         if self.calc_distance:
             if distances is None:
                 if neighbours is None:
-                    if self.fixed_atoms:
+                    if self.atom_types is None:
+                        neighbours, neighbour_mask = self.fc_neighbours(atom_mask)
+                    else:
                         neighbours = self.neighbours
                         neighbour_mask = self.neighbour_mask
-                    else:
-                        neighbours, neighbour_mask = self.fc_neighbours(
-                            atom_mask)
                 if self.pbc_box is not None:
                     pbc_box = self.pbc_box
-                distances = self.distances(
+                distances = self.get_distance(
                     positions, neighbours, neighbour_mask, pbc_box) * self.input_unit_scale
         else:
             distances = 1
@@ -631,7 +631,6 @@ class CybertronFF(PotentialCell):
                  ):
 
         super().__init__(
-            exclude_index=None,
             length_unit=length_unit,
             energy_unit=energy_unit,
             use_pbc=use_pbc,
@@ -714,8 +713,6 @@ class CybertronFF(PotentialCell):
         if pbc_box is not None:
             # (1,D)
             self.pbc_box = Tensor(pbc_box, ms.float32).reshape(1, -1)
-
-        self.cutoff = self.model.cutoff
 
         self.hyper_param = dict()
         self.hyper_types = {
@@ -857,7 +854,7 @@ class CybertronFF(PotentialCell):
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
 
         """
         #pylint: disable=unused-argument

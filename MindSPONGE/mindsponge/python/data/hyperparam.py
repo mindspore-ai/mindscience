@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -197,8 +197,7 @@ def set_class_parameters(hyper_param: list, prefix: str, cell: Cell):
         elif isinstance(cell, str):
             set_hyper_parameter(hyper_param, prefix, cell)
         elif cell is not None:
-            raise TypeError('The type of "cls" must be "Cell", "str" or list of them, but got "' +
-                            str(type(cell))+'".')
+            raise TypeError(f'The type of "cls" must be "Cell", "str" or list of them, but got "{type(cell)}')
 
     if isinstance(cell, (CellList, list)):
         for i, c in enumerate(cell):

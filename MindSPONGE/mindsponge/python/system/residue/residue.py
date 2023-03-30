@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -25,66 +25,88 @@ Residue
 """
 
 from operator import itemgetter
-from typing import Union
+from typing import Union, List
 import numpy as np
 from numpy import ndarray
 import mindspore as ms
 from mindspore import numpy as msnp
-from mindspore import jit_class
+from mindspore import ms_class
 from mindspore.ops import functional as F
 from mindspore.common import Tensor
 
-from ...function.functions import get_integer
+from ...function.functions import get_integer, get_ms_array
 from ...data.elements import elements, element_set, element_dict, atomic_mass
 from ...data.template import get_template, get_template_index
 
 
-@jit_class
+@ms_class
 class Residue:
-    r"""
-    Class for residue in molecule.
+    r"""Base class for residue.
+
+        The `Residue` Cell is the component of the `Molecule` (System) Cell.
+
+        A `Residue` can represent not only an amino acid residue, but also a small molecule in a molecular system,
+        such as a water molecule, an inorganic salt ion, etc. This means that the `Residue` Cell has
+        a similar concept to the "residue" in a PDB file.
+
+        NOTE: `Residue` Cell is only used to represent the atomic properties and bond connections,
+              but does NOT contain atomic coordinates.
 
     Args:
-        atom_name (list):               Atom name. Can be ndarray or list of str. Default: None.
-        atom_type (list):               Atom type. Can be ndarray or list of str. Default: None.
-        atom_mass (Tensor):             Tensor of shape (B, A). Data type is float.
-                                        Atom mass. Default: None.
-        atom_charge (Tensor):           Tensor of shape (B, A). Data type is float.
-                                        Atom charge. Default: None.
-        atomic_number (Tensor):         Tensor of shape (B, A). Data type is float.
-                                        Atomic number. Default: None.
-        bond (Tensor):                  Tensor of shape (B, b, 2) or (1, b, 2). Data type is int.
-                                        Bond index. Default: None.
-        head_atom (int):                Index of the head atom to connect with the previous residue.
-                                        Default: None.
-        tail_atom (int):                Index of the tail atom to connect with the next residue.
-                                        Default: None.
-        start_index (int):              The start index of the first atom in this residue.
-        name (str):                     Name of the residue.
-                                        Examples: 'SOL', 'CL'. Indicating water molecule and Na+ ion respectively.
-                                        The residue that is not defined usually called 'MOL'.
-                                        Default: 'MOL'.
-        template (Union[dict, str]):    Template of residue.
-                                        The key of the dict are base, template, the name of molecule and so on.
-                                        The value of the dict is file name.
-                                        Default: None.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        atom_name (Union[List[str], ndarray]):
+                            Array of atom name with data type `str`. Defulat: None
+
+        atom_type (Union[List[str], ndarray]):
+                            Array of atom type with data type `str`. Defulat: None
+
+        atom_mass (Union[Tensor, ndarray, List[float]]):
+                            Array of atom mass of shape `(B, A)` with data type `float`. Defulat: None
+
+        atom_charge (Union[Tensor, ndarray, List[float]]):
+                            Array of atom charge of shape `(B, A)` with data type `float`. Defulat: None
+
+        atomic_number (Union[Tensor, ndarray, List[float]]):
+                            Array of atomic number of shape `(B, A)` with data type `int`. Defulat: None
+
+        bond (Union[Tensor, ndarray, List[int]]):
+                            Array of bond connection of shape `(B, b, 2)` with data type `int`. Defulat: None
+
+        head_atom (int):    Index of the head atom to connect with the previous residue.
+                            Default: None
+
+        tail_atom (int):    Index of the tail atom to connect with the next residue.
+                            Default: None
+
+        start_index (int):  The start index of the first atom in this residue.
+
+        template (Union[dict, str]):
+                            Template for residue. It can be a `dict` in MindSPONGE template format
+                            or a `str` for the filename of a MindSPONGE template file. If a `str` is given,
+                            it will first look for a file with the same name in the current directory.
+                            If file does not exist, it will search in the built-in template directory
+                            of MindSPONGE (`mindsponge.data.template`).
+                            Default: None.
+
+        name (str):         Name of the residue. Default: 'MOL'
 
     Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation.
+
+        B:  Batchsize, i.e. number of walkers in simulation
+
         A:  Number of atoms.
+
         b:  Number of bonds.
+
     """
 
     def __init__(self,
-                 atom_name: list = None,
-                 atom_type: list = None,
-                 atom_mass: Tensor = None,
-                 atom_charge: Tensor = None,
-                 atomic_number: Tensor = None,
-                 bond: Tensor = None,
+                 atom_name: Union[List[str], ndarray] = None,
+                 atom_type: Union[List[str], ndarray] = None,
+                 atom_mass: Union[Tensor, ndarray, List[float]] = None,
+                 atom_charge: Union[Tensor, ndarray, List[float]] = None,
+                 atomic_number: Union[Tensor, ndarray, List[float]] = None,
+                 bond: Union[Tensor, ndarray, List[int]] = None,
                  head_atom: int = None,
                  tail_atom: int = None,
                  start_index: int = 0,
@@ -112,7 +134,7 @@ class Residue:
                     raise ValueError('The name cannot be None when the number of '
                                      'keys in template is larger than 1!')
             elif self._name not in template.keys():
-                raise ValueError('Cannot found the key "' + str(self._name) + ' in template."')
+                raise ValueError(f'Cannot found the key "{self._name}" in template.')
 
             template = template.get(self._name)
 
@@ -162,7 +184,7 @@ class Residue:
             raise ValueError('atom_name and atomic_number cannot both be None')
 
         if atomic_number is not None:
-            self.atomic_number = Tensor(atomic_number, ms.int32)
+            self.atomic_number = get_ms_array(atomic_number, ms.int32)
             if self.atomic_number.ndim == 1:
                 self.atomic_number = F.expand_dims(self.atomic_number, 0)
             if self.atomic_number.ndim != 2:
@@ -177,7 +199,7 @@ class Residue:
                 self.atomic_number = msnp.ones(self.atom_name.shape, ms.int32)
             else:
                 atomic_number = itemgetter(*atom_name_list)(element_dict)
-                self.atomic_number = Tensor(atomic_number, ms.int32).reshape(self.atom_name.shape)
+                self.atomic_number = get_ms_array(atomic_number, ms.int32).reshape(self.atom_name.shape)
 
         if self.atomic_number.shape != self.atom_name.shape:
             if self.atomic_number.shape[-1] == self.atom_name.shape[-1]:
@@ -186,8 +208,8 @@ class Residue:
                 elif self.atom_name.shape[0] == 1:
                     self.atom_name = msnp.broadcast_to(self.atom_name, self.atomic_number.shape)
 
-            raise ValueError('The shape of "atomic_number" ' + str(self.atomic_number) +
-                             ' does not match the shape of "atom_name" ' + str(self.atom_name) + '!')
+            raise ValueError(f'The shape of "atomic_number" {self.atomic_number} does not match '
+                             f'the shape of "atom_name" {self.atom_name}!')
 
         if atom_type is None:
             self.atom_type = self.atom_name.copy()
@@ -196,8 +218,8 @@ class Residue:
             if self.atom_type.ndim == 1:
                 self.atom_type = np.expand_dims(self.atom_type, 0)
             if self.atom_type.shape != self.atom_name.shape:
-                raise ValueError('The shape of "atom_type" ' + str(self.atom_type.shape) +
-                                 ' must be equal to the shape of "atom_name" ' + str(self.atom_name.shape) + '!')
+                raise ValueError(f'The shape of "atom_type" {self.atom_type.shape} must be equal to '
+                                 f'the shape of "atom_name" {self.atom_name.shape}!')
 
         self.num_atoms = self.atom_name.shape[-1]
         self.multi_system = self.atom_name.shape[0]
@@ -213,53 +235,48 @@ class Residue:
                 self.atom_mass = msnp.ones(
                     self.atom_name.shape, dtype=np.float32)
             else:
-                self.atom_mass = Tensor(
-                    atomic_mass[self.atomic_number.asnumpy()], ms.float32)
+                self.atom_mass = get_ms_array(atomic_mass[self.atomic_number.asnumpy()], ms.float32)
         else:
-            self.atom_mass = Tensor(atom_mass, ms.float32)
+            self.atom_mass = get_ms_array(atom_mass, ms.float32)
             if self.atom_mass.ndim == 1:
                 self.atom_mass = F.expand_dims(self.atom_mass, 0)
             if self.atom_mass.ndim != 2:
                 raise ValueError('The rank of "atom_mass" must be 1 or 2!')
             if self.atom_mass.shape[-1] != self.num_atoms:
-                raise ValueError('The last dimension of atom_mass (' + str(self.atom_mass.shape[-1]) +
-                                 ') must be equal to the number of atoms (' + str(self.num_atoms) + ')!')
+                raise ValueError(f'The last dimension of atom_mass ({self.atom_mass.shape[-1]} must be equal to '
+                                 f'the number of atoms ({self.num_atoms}!')
             if self.atom_mass.shape[0] > 1 and self.atom_mass.shape[0] != self.multi_system:
-                raise ValueError('The first dimension of atom_mass (' + str(self.atom_mass.shape[0]) +
-                                 ') does not match the number of the number of system multi_system (' +
-                                 str(self.multi_system) + ')!')
+                raise ValueError(f'The first dimension of atom_mass ({self.atom_mass.shape[0]} does not match '
+                                 f'the number of the number of system multi_system ({self.multi_system})!')
 
         # (B,A')
-        self.atom_mask = F.logical_and(
-            self.atomic_number > 0, self.atom_mass > 0)
+        self.atom_mask = F.logical_and(self.atomic_number > 0, self.atom_mass > 0)
         self.inv_mass = msnp.where(
             self.atom_mask, msnp.reciprocal(self.atom_mass), 0)
         # (B,1)
-        self.natom_tensor = msnp.sum(
-            F.cast(self.atom_mask, ms.float32), -1, keepdims=True)
+        self.natom_tensor = msnp.sum(F.cast(self.atom_mask, ms.float32), -1, keepdims=True)
         self.total_mass = msnp.sum(self.atom_mass, -1, keepdims=True)
 
         # (B,A')
         self.atom_charge = atom_charge
         if atom_charge is not None:
-            self.atom_charge = Tensor(atom_charge, ms.float32)
+            self.atom_charge = get_ms_array(atom_charge, ms.float32)
             if self.atom_charge.ndim == 1:
                 self.atom_charge = F.expand_dims(self.atom_charge, 0)
             if self.atom_charge.ndim != 2:
                 raise ValueError('The rank of "atom_charge" must be 1 or 2!')
             if self.atom_charge.shape[-1] != self.num_atoms:
-                raise ValueError('The last dimension of atom_charge (' + str(self.atom_charge.shape[-1]) +
-                                 ') must be equal to the num_atoms (' + str(self.num_atoms) + ')!')
+                raise ValueError(f'The last dimension of atom_charge ({self.atom_charge.shape[-1]} must be equal to '
+                                 f'the num_atoms ({self.num_atoms})!')
             if self.atom_charge.shape[0] != self.multi_system and self.atom_charge.shape[0] != 1:
-                raise ValueError('The first dimension of atom_charge (' + str(self.atom_charge.shape[0]) +
-                                 ') must be equal to 1 or the number of the number of system multi_system (' +
-                                 str(self.multi_system) + ')!')
+                raise ValueError(f'The first dimension of atom_charge ({self.atom_charge.shape[0]} must be equal to '
+                                 f'the number of the number of system multi_system ({self.multi_system}) or 1!')
 
         # (B,C,2)
         self.bond = bond
         self.bond_mask = None
         if bond is not None:
-            self.bond = Tensor(bond, ms.int32)
+            self.bond = get_ms_array(bond, ms.int32)
             if self.bond.shape[-1] != 2:
                 raise ValueError('The last dimension of bond must 2!')
             if self.bond.ndim == 2:
@@ -269,10 +286,10 @@ class Residue:
         # (B,1)
         self.head_atom = head_atom
         if head_atom is not None:
-            self.head_atom = Tensor([head_atom,], ms.int32).reshape(-1, 1)
+            self.head_atom = get_ms_array([head_atom,], ms.int32).reshape(-1, 1)
             if self.head_atom.shape[0] != self.multi_system and self.head_atom.shape[0] != 1:
-                raise ValueError('The first dimension of head_atom (' + str(self.head_atom.shape[0]) +
-                                 ') does not match the number of system multi_system (' + str(self.multi_system) + ')!')
+                raise ValueError(f'The first dimension of head_atom ({self.head_atom.shape[0]} does not match '
+                                 f'the number of system multi_system ({self.multi_system})!')
             if (self.head_atom >= self.num_atoms).any():
                 raise ValueError(
                     'The value of head_atom has exceeds the number of atoms.')
@@ -280,10 +297,11 @@ class Residue:
         # (B,1)
         self.tail_atom = tail_atom
         if tail_atom is not None:
-            self.tail_atom = Tensor([tail_atom,], ms.int32).reshape(-1, 1)
+            self.tail_atom = get_ms_array(
+                [tail_atom], ms.int32).reshape(-1, 1)
             if self.tail_atom.shape[0] != self.multi_system and self.tail_atom.shape[0] != 1:
-                raise ValueError('The first dimension of tail_atom (' + str(self.tail_atom.shape[0]) +
-                                 ') does not match the number of system multi_system (' + str(self.multi_system) + ')!')
+                raise ValueError(f'The first dimension of tail_atom ({self.tail_atom.shape[0]}) does not match '
+                                 f'the number of system multi_system ({self.multi_system})!')
             if (self.tail_atom >= self.num_atoms).any():
                 raise ValueError(
                     'The value of tail_atom has exceeds the number of atoms.')
@@ -344,71 +362,31 @@ class Residue:
         return bond
 
     def build_atom_mass(self, template: dict):
-        """
-        This function is built to attach the mass of atom to the index of atom.
-
-        Args:
-            template (Union[dict, str]):    Template of residue.
-                                            The key of the dict are base, template, the name of molecule and so on.
-                                            The value of the dict is file name.
-                                            Default: None.
-        """
+        """build atom mass"""
         atom_index = get_template_index(template, self.atom_name)
         self.atom_mass = Tensor(self._get_atom_mass(template, atom_index), ms.float32)
         return self
 
     def build_atomic_number(self, template: dict):
-        """
-        This function is built to attach the atomic number of atom to the index of atom.
-
-        Args:
-            template (Union[dict, str]):    Template of residue.
-                                            The key of the dict are base, template, the name of molecule and so on.
-                                            The value of the dict is file name.
-                                            Default: None.
-        """
+        """build atomic number"""
         atom_index = get_template_index(template, self.atom_name)
         self.atomic_number = Tensor(self._get_atomic_number(template, atom_index), ms.int32)
         return self
 
     def build_atom_type(self, template: dict):
-        """
-        This function is built to attach the type of atom to the index of atom.
-
-        Args:
-            template (Union[dict, str]):    Template of residue.
-                                            The key of the dict are base, template, the name of molecule and so on.
-                                            The value of the dict is file name.
-                                            Default: None.
-        """
+        """build atom type"""
         atom_index = get_template_index(template, self.atom_name)
         self.atom_type = self._get_atom_type(template, atom_index)
         return self
 
     def build_atom_charge(self, template: dict):
-        """
-        This function is built to attach the chargre of atom to the index of atom.
-
-        Args:
-            template (Union[dict, str]):    Template of residue.
-                                            The key of the dict are base, template, the name of molecule and so on.
-                                            The value of the dict is file name.
-                                            Default: None.
-        """
+        """build atom type"""
         atom_index = get_template_index(template, self.atom_name)
         self.atom_charge = Tensor(self._get_atom_charge(template, atom_index), ms.float32)
         return self
 
     def build_bond(self, template: dict):
-        """
-        This function is built to attach the bonds of atom to the index of atom.
-
-        Args:
-            template (Union[dict, str]):    Template of residue.
-                                            The key of the dict are base, template, the name of molecule and so on.
-                                            The value of the dict is file name.
-                                            Default: None.
-        """
+        """build bond"""
         atom_index = get_template_index(template, self.atom_name)
         self.bond = Tensor(self._get_bond(template, atom_index), ms.int32)
         return self
@@ -420,19 +398,7 @@ class Residue:
                  atom_charge: float = None,
                  atomic_number: str = None,
                  ):
-        """
-        Set atom.
-
-        Args:
-            atom_name (Union[numpy.ndarray, list(str)]):    Atom name. Can be ndarray or list of str. Default: None.
-            atom_type (Union[numpy.ndarray, list(str)]):    Atom type. Can be ndarray or list of str. Default: None.
-            atom_mass (Tensor):                             Tensor of shape (B, A). Data type is float.
-                                                            Atom mass. Default: None.
-            atom_charge (Tensor):                           Tensor of shape (B, A). Data type is float.
-                                                            Atom charge. Default: None.
-            atomic_number (Tensor):                         Tensor of shape (B, A). Data type is float.
-                                                            Atomic number. Default: None.
-        """
+        """set atom"""
 
         if atom_name is None and atomic_number is None:
             raise ValueError('atom_name and atomic_number cannot both be None')
@@ -478,8 +444,8 @@ class Residue:
                     atom_name = msnp.broadcast_to(
                         atom_name, atomic_number.shape)
 
-            raise ValueError('The shape of "atomic_number" '+str(atomic_number) +
-                             ' does not match the shape of "atom_name" '+str(atom_name)+'!')
+            raise ValueError(f'The shape of "atomic_number" {atomic_number} does not match '
+                             f'the shape of "atom_name" {atom_name}!')
 
         atom_mask = F.logical_and(atomic_number > 0, atom_mass > 0)
         inv_mass = msnp.where(atom_mask, msnp.reciprocal(atom_mass), 0)
@@ -518,17 +484,12 @@ class Residue:
         return self
 
     def broadcast_multiplicity(self, multi_system: int):
-        """
-        Broadcast the information to the number of multiple system.
-
-        Args:
-            multi_system (int):     Amount of multiple system.
-        """
+        """broadcast the information to the number of multiple system"""
         if multi_system <= 0:
             raise ValueError('multi_system must be larger than 0!')
         if self.multi_system > 1:
-            raise ValueError('The current the number of system multi_system ('+str(self.multi_system) +
-                             ') is larger than 1 and cannot be broadcast!')
+            raise ValueError(f'The current the number of system multi_system ({self.multi_system}) '
+                             f'is larger than 1 and cannot be broadcast!')
 
         self.multi_system = multi_system
         self.atom_name = msnp.broadcast_to(self.atom_name, (self.multi_system, -1))
@@ -555,25 +516,12 @@ class Residue:
         return self
 
     def set_name(self, name: str):
-        """
-        Set residue name of this residue.
-
-        Args:
-            name (str):             Name of the residue.
-                                    Examples: 'SOL', 'CL'. Indicating water molecule and Na+ ion respectively.
-                                    The residue that is not defined usually called 'MOL'.
-                                    Default: 'MOL'.
-        """
+        """set residue name"""
         self._name = name
         return self
 
     def set_start_index(self, start_index: int):
-        """
-        Set the start index of the first atom in this residue.
-
-        Args:
-            start_index (int):      The start index of the first atom in this residue.
-        """
+        """set the start index"""
         if start_index < 0:
             raise ValueError('The start_index cannot be smaller than 0!')
         self.start_index = get_integer(start_index)

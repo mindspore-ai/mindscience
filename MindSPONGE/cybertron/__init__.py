@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -48,16 +48,22 @@ def _mindspore_version_check():
                           "MindSpore before using MindSpore Cybertron, by following "
                           "the instruction at https://www.mindspore.cn/install")
 
-    ms_version = mindspore.__version__[:5]
-    required_mindspore_verision = '1.8.1'
+    ms_version = mindspore.__version__
+    required_mindspore_version = '1.8.1'
+    logger.info("Current Mindspore version is {}".format(ms_version))
+    ms_version = list(map(int, ms_version.split('.')))
+    required_mindspore = list(map(int, required_mindspore_version.split('.')))
+    max_len = max(len(ms_version), len(required_mindspore))
+    ms_version += [0] * (max_len - len(ms_version))
+    required_mindspore += [0] * (max_len - len(required_mindspore))
 
-    if ms_version < required_mindspore_verision:
+    if ms_version < required_mindspore:
         logger.warning("Current version of MindSpore is not compatible with Cybertron. "
                        "Some functions might not work or even raise error. Please install MindSpore "
                        "version >= {} For more details about dependency setting, please check "
                        "the instructions at MindSpore official website https://www.mindspore.cn/install "
                        "or check the README.md at https://gitee.com/mindspore/mindscience"
-                       .format(required_mindspore_verision))
+                       .format(required_mindspore_version))
         warning_countdown = 3
         for i in range(warning_countdown, 0, -1):
             logger.warning(

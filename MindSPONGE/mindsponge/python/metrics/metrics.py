@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -23,6 +23,8 @@
 """
 Metrics for collective variables
 """
+
+from typing import Union
 import numpy as np
 import mindspore.common.dtype as mstype
 import mindspore.communication.management as D
@@ -32,33 +34,228 @@ import mindspore.numpy as mnp
 from mindspore import Parameter, Tensor
 from mindspore.ops import functional as F
 from mindspore.ops import operations as P
-from mindspore.nn import Metric
+from mindspore.nn import Metric as _Metric
 
-from ..colvar import Colvar
+from ..colvar import Colvar, get_colvar
+from ..function import Units
 
 
-class CV(Metric):
-    """Metric to output collective variables"""
+def get_metrics(metrics: Union[dict, set]) -> dict:
+    """
+    Get metrics used in analysis.
+
+    Args:
+        metrics (Union[dict, set]): Dict or set of Metric or Colvar to be evaluated by the model
+                                    during MD running or analysis.
+
+    Returns:
+        dict, the key is metric name, the value is class instance of metric method.
+
+    Raises:
+        TypeError: If the type of argument 'metrics' is not None, dict or set.
+    """
+    if metrics is None:
+        return metrics
+
+    if isinstance(metrics, dict):
+        for name, metric in metrics.items():
+            if not isinstance(name, str):
+                raise TypeError(f"The key in 'metrics' must be string and but got key: {type(name)}.")
+            if isinstance(metric, Colvar):
+                metrics[name] = MetricCV(metric)
+            elif not isinstance(metric, Metric):
+                raise TypeError(f"The value in 'metrics' must be Metric or Colvar, but got: {type(metric)}.")
+        return metrics
+
+    if isinstance(metrics, set):
+        out_metrics = {}
+        for metric in metrics:
+            if not isinstance(metric, Colvar):
+                raise TypeError(f"When 'metrics' is set, the type of the value in 'metrics must be Colvar, '"
+                                f"but got: {type(metric)}")
+            out_metrics[metric.name] = MetricCV(metric)
+        return out_metrics
+
+    raise TypeError("For 'get_metrics', the argument 'metrics' must be None, dict or set, "
+                    "but got {}".format(metrics))
+
+
+class Metric(_Metric):
+    """Basic Metric Cell for MindSPONGE"""
+
+    def update(self,
+               coordinate: Tensor,
+               pbc_box: Tensor = None,
+               energy: Tensor = None,
+               force: Tensor = None,
+               potentials: Tensor = None,
+               total_bias: Tensor = None,
+               biases: Tensor = None,
+               ):
+        """
+
+        Args:
+            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
+                                    Position coordinate of atoms in system.
+            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+                                    Tensor of PBC box. Default: None
+            bias (Tensor):          Tensor of shape (B, 1). Data type is float.
+                                    Total bias energy.
+            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
+                                    Total energy of the simulation system.
+            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
+                                    Force on each atoms of the simulation system.
+            potentials (Tensor):    Tensor of shape (B, U). Data type is float.
+                                    All potential energies.
+            biases (Tensor):        Tensor of shape (B, V). Data type is float
+                                    All bias potential energies.
+
+        Symbols:
+            B:  Batchsize, i.e. number of walkers in simulation.
+            A:  Number of atoms of the simulation system.
+            D:  Dimension of the space of the simulation system. Usually is 3.
+            U:  Number of potential energies.
+            V:  Number of bias potential energies.
+        """
+        #pylint: disable=unused-argument
+        raise NotImplementedError
+
+
+class MetricCV(Metric):
+    """Metric for collective variables (CVs)"""
+
     def __init__(self,
                  colvar: Colvar,
-                 indexes: tuple = (2, 3),
                  ):
 
         super().__init__()
-        self._indexes = indexes
-        self.colvar = colvar
-        self._cv_value = None
+        self.colvar = get_colvar(colvar)
+        self._value = None
+
+    @property
+    def shape(self) -> tuple:
+        return self.colvar.shape
+
+    @property
+    def ndim(self) -> int:
+        return self.colvar.ndim
+
+    @property
+    def dtype(self) -> type:
+        return self.colvar.dtype
+
+    def get_unit(self, units: Units = None) -> str:
+        """return unit of the collective variables"""
+        return self.colvar.get_unit(units)
 
     def clear(self):
-        self._cv_value = 0
+        self._value = 0
 
-    def update(self, *inputs):
-        coordinate = inputs[self._indexes[0]]
-        pbc_box = inputs[self._indexes[1]]
-        self._cv_value = self.colvar(coordinate, pbc_box)
+    def update(self,
+               coordinate: Tensor,
+               pbc_box: Tensor = None,
+               energy: Tensor = None,
+               force: Tensor = None,
+               potentials: Tensor = None,
+               total_bias: Tensor = None,
+               biases: Tensor = None,
+               ):
+        """
+
+        Args:
+            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
+                                    Position coordinate of atoms in system.
+            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+                                    Tensor of PBC box. Default: None
+            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
+                                    Total potential energy of the simulation system. Default: None
+            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
+                                    Force on each atoms of the simulation system. Default: None
+            potentials (Tensor):    Tensor of shape (B, U). Data type is float.
+                                    Original potential energies from force field. Default: None
+            total_bias (Tensor):    Tensor of shape (B, 1). Data type is float.
+                                    Total bias energy for reweighting. Default: None
+            biases (Tensor):        Tensor of shape (B, V). Data type is float
+                                    Original bias potential energies from bias functions. Default: None
+
+        Symbols:
+            B:  Batchsize, i.e. number of walkers in simulation.
+            A:  Number of atoms of the simulation system.
+            D:  Dimension of the space of the simulation system. Usually is 3.
+            U:  Number of potential energies.
+            V:  Number of bias potential energies.
+        """
+        #pylint: disable=unused-argument
+
+        colvar = self.colvar(coordinate, pbc_box)
+
+        self._value = self._convert_data(colvar)
 
     def eval(self):
-        return self._cv_value
+        return self._value
+
+
+class Average(Metric):
+    """Average of collective variables (CVs)"""
+
+    def __init__(self,
+                 colvar: Colvar,
+                 ):
+        super().__init__()
+
+        self.colvar = get_colvar(colvar)
+
+        self._value = None
+        self._average = None
+        self._weights = 0
+
+    def clear(self):
+        self._value = 0
+        self._weights = 0
+
+    def update(self,
+               coordinate: Tensor,
+               pbc_box: Tensor = None,
+               energy: Tensor = None,
+               force: Tensor = None,
+               potentials: Tensor = None,
+               total_bias: Tensor = None,
+               biases: Tensor = None,
+               ):
+        """
+
+        Args:
+            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
+                                    Position coordinate of atoms in system.
+            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+                                    Tensor of PBC box. Default: None
+            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
+                                    Total potential energy of the simulation system. Default: None
+            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
+                                    Force on each atoms of the simulation system. Default: None
+            potentials (Tensor):    Tensor of shape (B, U). Data type is float.
+                                    Original potential energies from force field. Default: None
+            total_bias (Tensor):    Tensor of shape (B, 1). Data type is float.
+                                    Total bias energy for reweighting. Default: None
+            biases (Tensor):        Tensor of shape (B, V). Data type is float
+                                    Original bias potential energies from bias functions. Default: None
+
+        Symbols:
+            B:  Batchsize, i.e. number of walkers in simulation.
+            A:  Number of atoms of the simulation system.
+            D:  Dimension of the space of the simulation system. Usually is 3.
+            U:  Number of potential energies.
+            V:  Number of bias potential energies.
+        """
+        #pylint: disable=unused-argument
+
+        colvar = self.colvar(coordinate, pbc_box)
+
+        self._average += self._convert_data(colvar)
+        self._weights += 1
+
+    def eval(self):
+        return self._average / self._weights
 
 
 class BalancedMSE(nn.Cell):
@@ -302,7 +499,7 @@ class BinaryFocal(nn.Cell):
     Args:
         alpha (float):            The weight of cross entropy, default: 0.25.
         gamma (float):          The hyperparameters, modulating loss from hard to easy, default: 2.0.
-        feed_in (bool):         Whether to covert prediction, default: "False".
+        feed_in (bool):         Whether to convert prediction, default: "False".
         not_focal (bool):       Whether focal loss, default: "False".
 
     Inputs:

@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -21,7 +21,7 @@
 # limitations under the License.
 # ============================================================================
 """
-Energy terms
+Energy terms with `EnergCell` as base class
 """
 
 from .energy import EnergyCell, NonbondEnergy

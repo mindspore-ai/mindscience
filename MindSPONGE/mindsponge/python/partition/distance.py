@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -24,44 +24,58 @@
 Use the distances between atoms to calculate neighbour list
 """
 
+from typing import Tuple
 import mindspore as ms
 import mindspore.numpy as msnp
-from mindspore import Tensor
+from mindspore import Tensor, Parameter
 from mindspore.nn import Cell
 from mindspore import ops
 from mindspore.ops import functional as F
 
-from ..function.functions import get_integer
-from ..function.functions import calc_distance
-from ..function.functions import calc_distance_with_pbc
-from ..function.functions import calc_distance_without_pbc
+from ..function.functions import get_integer, get_ms_array
+from ..function.operations import GetDistance
 
 
 class DistanceNeighbours(Cell):
-    r"""
-    Neighbour list calculated by distance.
+    r"""Neighbour list calculated by distance
 
     Args:
+
         cutoff (float):         Cutoff distance.
-        num_neighbours (int):   Number of neighbours. If input "None", this value will be calculated by
+
+        num_neighbours (int):   Number of neighbours. If `None` is given, this value will be calculated by
                                 the ratio of the number of neighbouring grids to the total number of grids.
                                 Default: None
-        atom_mask (Tensor):     Tensor of shape (B, A). Data type is bool\_.
-                                Mask of atoms in the system. Default: None
-        exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int32.
+
+        atom_mask (Tensor):     Tensor of shape `(B, A)`. Data type is bool_.
+                                Mask of atoms in the system.
+                                Default: None
+
+        exclude_index (Tensor): Tensor of shape `(B, A, Ex)`. Data type is int32.
                                 Index of neighbour atoms which could be excluded from the neighbour list.
                                 Default: None
+
         use_pbc (bool):         Whether to use periodic boundary condition. Default: None
+
         cutoff_scale (float):   Factor to scale the cutoff distance. Default: 1.2
-        large_dis (float):      A large number of distance to fill the default atoms. Default: 1e4
+
+        large_dis (float):      A large number to fill in the distances to the masked neighbouring atoms.
+                                Default: 1e4
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     Symbols:
+
         B:  Number of simulation walker.
+
         A:  Number of atoms in system.
+
+        N:  Number of neighbour atoms.
+
         Ex: Maximum number of excluded neighbour atoms.
+
     """
 
     def __init__(self,
@@ -81,6 +95,11 @@ class DistanceNeighbours(Cell):
         self.scaled_cutoff = self.cutoff * self.cutoff_scale
 
         self.num_neighbours = get_integer(num_neighbours)
+        if self.num_neighbours is None:
+            max_neighbours = Tensor(0, ms.int32)
+        else:
+            max_neighbours = Tensor(self.num_neighbours, ms.int32)
+        self.max_neighbours = Parameter(max_neighbours, name='max_neighbours', requires_grad=False)
 
         self.large_dis = Tensor(large_dis, ms.float32)
 
@@ -106,50 +125,50 @@ class DistanceNeighbours(Cell):
             if self.exclude_index.ndim == 2:
                 self.exclude_index = F.expand_dims(self.exclude_index, 0)
 
-        if use_pbc is None:
-            self.get_distances = calc_distance
-        else:
-            if use_pbc:
-                self.get_distances = calc_distance_with_pbc
-            else:
-                self.get_distances = calc_distance_without_pbc
+        self.get_distance = GetDistance(use_pbc)
 
         self.sort = ops.Sort(-1)
         self.reduce_all = ops.ReduceAll()
 
-    def set_exclude_index(self, exclude_index: Tensor):
+    @staticmethod
+    def calc_max_neighbours(distances: Tensor, cutoff: float) -> Tensor:
+        """calculate the maximum number of neighbouring atoms"""
+        mask = distances < cutoff
+        max_neighbours = ops.count_nonzero(F.cast(mask, ms.float16), -1, dtype=ms.float16) - 1
+        return F.cast(ops.reduce_max(max_neighbours), ms.int32)
+
+    def set_num_neighbours(self,
+                           coordinate: Tensor,
+                           pbc_box: Tensor = None,
+                           scale_factor: float = 1.25
+                           ):
+        """set maximum number of neighbouring atoms"""
+        distances = self.get_distance(F.expand_dims(coordinate, -2), F.expand_dims(coordinate, -3), pbc_box)
+        num_neighbours = self.calc_max_neighbours(distances, self.scaled_cutoff)
+        num_neighbours = F.ceil(num_neighbours * scale_factor)
+        self.num_neighbours = get_integer(msnp.minimum(num_neighbours, coordinate.shape[-2] - 1))
+        F.assign(self.max_neighbours, self.num_neighbours)
+        return self
+
+    def set_exclude_index(self, exclude_index: Tensor) -> Tensor:
         # (B,A,Ex)
-        self.exclude_index = Tensor(exclude_index, ms.int32)
+        self.exclude_index = get_ms_array(exclude_index, ms.int32)
         if self.exclude_index.ndim == 2:
             self.exclude_index = F.expand_dims(self.exclude_index, 0)
-        return self
+        return self.exclude_index
 
     def print_info(self):
+        print(f'[MindSPONGE] Neighbour list: DistanceNeighbours')
+        print(f'[MindSPONGE]     Cut-off distance: {self.cutoff}')
+        print(f'[MindSPONGE]     Scaled cut-off: {self.scaled_cutoff}')
+        print(f'[MindSPONGE]     Max number of neighbour atoms: {self.num_neighbours}')
         return self
 
-    def check_neighbours_number(self, neighbour_mask: Tensor):
-        """
-        check number of neighbours in neighbour list.
-
-        Args:
-            neighbour_mask (Tensor):    The neighbour list mask.
-        """
-        max_neighbours = F.cast(msnp.max(F.cast(msnp.sum(neighbour_mask, -1), ms.float32)), ms.int32)
-        if max_neighbours > self.num_neighbours:
-            print(
-                '================================================================================')
-            print(
-                'Warning! Warning! Warning! Warning! Warning! Warning! Warning! Warning! Warning!')
-            print(
-                '--------------------------------------------------------------------------------')
-            print('The max number of neighbour atoms is larger than that in neighbour list!')
-            print('The max number of neighbour atoms:')
-            print(max_neighbours)
-            print('The number of neighbour atoms in neighbour list:')
-            print(self.num_neighbours)
-            print('Please increase the value of grid_num_scale or num_neighbours!')
-            print(
-                '================================================================================')
+    def check_neighbour_list(self):
+        """check the number of neighbouring atoms in neighbour list"""
+        if self.num_neighbours is not None and self.max_neighbours > self.num_neighbours:
+            raise RuntimeError(f'The max number of neighbour atoms ({self.max_neighbours.asnumpy()}) is larger than '
+                               f'the initial neighbouring number of neighbour list ({self.num_neighbours}!')
         return self
 
     def construct(self,
@@ -157,25 +176,25 @@ class DistanceNeighbours(Cell):
                   pbc_box: Tensor = None,
                   atom_mask: Tensor = None,
                   exclude_index: Tensor = None
-                  ):
-        r"""
-        Calculate distances and neighbours.
+                  ) -> Tuple[Tensor, Tensor]:
+        r"""Calculate distances and neighbours.
 
         Args:
             coordinate (Tensor):    Tensor of (B, A, D). Data type is float.
-                                    Position coordinates of atoms.
+                                    Position coordinates of atoms
             pbc_box (Tensor):       Tensor of (B, D). Data type is bool.
-                                    Periodic boundary condition box. Default: None
+                                    Periodic boundary condition box.
+                                    Default: None
             atom_mask (Tensor):     Tensor of (B, A). Data type is bool.
-                                    Atomic mask.
+                                    Atomic mask
             exclude_index (Tensor): Tensor of (B, A, Ex). Data type is int.
                                     Index of the atoms that should be excluded from the neighbour list.
                                     Default: None
 
         Returns:
-            - distances (Tensor), Tensor of (B, A, N). Data type is float.
-            - neighbours (Tensor), Tensor of (B, A, N). Data type is int.
-            - neighbour_mask (Tensor), Tensor of (B, A, N). Data type is bool.
+            distances (Tensor):         Tensor of (B, A, N). Data type is float.
+            neighbours (Tensor):        Tensor of (B, A, N). Data type is int.
+            neighbour_mask (Tensor):    Tensor of (B, A, N). Data type is bool.
 
         Symbols:
             B:  Batch size.
@@ -183,13 +202,13 @@ class DistanceNeighbours(Cell):
             N:  Number of neighbour atoms.
             D:  Dimension of position coordinates.
             Ex: Maximum number of excluded neighbour atoms.
+
         """
 
         # A
         num_atoms = coordinate.shape[-2]
         # (B,A,A) <- (B,A,1,3) - (B,1,A,3)
-        distances = self.get_distances(F.expand_dims(
-            coordinate, -2), F.expand_dims(coordinate, -3), pbc_box).squeeze(-1)
+        distances = self.get_distance(F.expand_dims(coordinate, -2), F.expand_dims(coordinate, -3), pbc_box)
 
         if atom_mask is None:
             atom_mask = self.atom_mask
@@ -200,42 +219,39 @@ class DistanceNeighbours(Cell):
             if not atom_mask.all():
                 emtpy_atom_mask = F.logical_not(atom_mask)
                 # (B,1,A)
-                emtpy_atom_shift = F.expand_dims(
-                    emtpy_atom_mask, -2) * self.large_dis
+                emtpy_atom_shift = F.expand_dims(emtpy_atom_mask, -2) * self.large_dis
                 distances += emtpy_atom_shift
 
-        distances, neighbours = self.sort(distances)
-        # (B,A)
-        neighbour_mask = distances < self.scaled_cutoff
-
+        # (B, A)
         if self.num_neighbours is None:
             num_neighbours = num_atoms - 1
         else:
             num_neighbours = self.num_neighbours
+            max_neighbours = self.calc_max_neighbours(distances, self.cutoff)
+            distances = F.depend(distances, F.assign(self.max_neighbours, max_neighbours))
 
-        distances = distances[..., 1:num_neighbours+1]
-        neighbours = neighbours[..., 1:num_neighbours+1]
-        neighbour_mask = neighbour_mask[..., 1:num_neighbours+1]
-        if self.num_neighbours is not None:
-            self.check_neighbours_number(neighbour_mask)
+        distances, neighbours = F.top_k(-distances, num_neighbours+1)
+        distances = -distances[..., 1:]
+        neighbours = neighbours[..., 1:]
+        neighbour_mask = distances < self.scaled_cutoff
 
         if exclude_index is None:
             exclude_index = self.exclude_index
         if exclude_index is not None:
             # (B,A,n,E) <- (B,A,n,1) != (B,A,1,E)
-            exc_mask = F.expand_dims(
-                neighbours, -1) != F.expand_dims(exclude_index, -2)
+            exc_mask = F.expand_dims(neighbours, -1) != F.expand_dims(exclude_index, -2)
             # (B,A,n)
             exc_mask = self.reduce_all(exc_mask, -1)
             neighbour_mask = F.logical_and(neighbour_mask, exc_mask)
 
         if atom_mask is not None:
             # (B,A,n) <- (B,A,n) && (B,A,1)
-            neighbour_mask = F.logical_and(
-                neighbour_mask, F.expand_dims(atom_mask, -1))
+            neighbour_mask = F.logical_and(neighbour_mask, F.expand_dims(atom_mask, -1))
 
-        # (B,A,n)
+        # (1, A, 1)
         no_idx = msnp.arange(num_atoms).reshape(1, -1, 1)
-        neighbours = msnp.where(neighbour_mask, neighbours, no_idx)
+        # (B,A,n)
+        no_idx = msnp.broadcast_to(no_idx, neighbours.shape)
+        neighbours = F.select(neighbour_mask, neighbours, no_idx)
 
         return distances, neighbours, neighbour_mask

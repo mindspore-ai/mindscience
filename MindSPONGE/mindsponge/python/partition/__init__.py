@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -28,5 +28,7 @@ from .fullconnect import FullConnectNeighbours
 from .distance import DistanceNeighbours
 from .grids import GridNeighbours
 from .neighbourlist import NeighbourList
+from .index import *
 
 __all__ = ['FullConnectNeighbours', 'DistanceNeighbours', 'GridNeighbours', 'NeighbourList']
+__all__.extend(index.__all__)

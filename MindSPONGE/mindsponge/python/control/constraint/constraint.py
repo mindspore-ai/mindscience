@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -24,6 +24,7 @@
 Constraint
 """
 
+from typing import Union
 import numpy as np
 import mindspore as ms
 from mindspore import Tensor, Parameter
@@ -35,32 +36,30 @@ from ...function.operations import GetVector, GetDistance
 
 
 class Constraint(Controller):
-    r"""
-    Constraint for bonds.
+    r"""Base class for constraint module in MindSPONGE, which is a subclass of `Controller`.
+
+        The `Constraint` module is used for bond constraint. It controls the atomic coordinates, the atomic velocities,
+        the atomic forces and the virial of the system during the simulation process.
 
     Args:
+
         system (Molecule):          Simulation system.
-        bonds (Tensor or str):      Bonds to be constraint.
+
+        bonds (Union[Tensor, str]): Bonds to be constraint.
                                     Tensor of shape (K, 2). Data type is int.
                                     Alternative: "h-bonds" or "all-bonds".
+
         potential (PotentialCell):  Potential Cell. Default: None
 
-    Returns:
-        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - nergy (Tensor), Tensor of shape (B, 1). Data type is float.
-        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-        - virial (Tensor), Tensor of shape (B, D). Data type is float.
-        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
-
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
 
     def __init__(self,
                  system: Molecule,
-                 bonds: Tensor = 'h-bonds',
+                 bonds: Union[Tensor, str] = 'h-bonds',
                  potential: PotentialCell = None,
                  ):
 
@@ -84,25 +83,20 @@ class Constraint(Controller):
             elif bonds.lower() == 'all-bonds':
                 self.bonds = self.all_bonds
             else:
-                raise ValueError(
-                    '"bonds" must be "h-bonds" or "all-bonds" but got: '+bonds)
+                raise ValueError(f'"bonds" must be "h-bonds" or "all-bonds" but got: {bonds}')
         else:
-            raise TypeError(
-                'The type of "bonds" must be Tensor or str, but got: '+str(type(bonds)))
+            raise TypeError(f'The type of "bonds" must be Tensor or str, but got: {type(bonds)}')
 
         if self.bonds.ndim != 2:
             if self.bonds.ndim != 3:
-                raise ValueError(
-                    'The rank of "bonds" must be 2 or 3 but got: '+str(self.bonds.ndim))
+                raise ValueError(f'The rank of "bonds" must be 2 or 3 but got: {self.bonds.ndim}')
 
             if self.bonds.shape[0] != 1:
-                raise ValueError('For constraint, the batch size of "bonds" must be 1 but got: ' +
-                                 str(self.bonds[0]))
+                raise ValueError(f'For constraint, the batch size of "bonds" must be 1 but got: {self.bonds[0]}')
             self.bonds = self.bonds[0]
 
         if self.bonds.shape[-1] != 2:
-            raise ValueError(
-                'The last dimension of "bonds" but got: '+str(self.bonds.shape[-1]))
+            raise ValueError(f'The last dimension of "bonds" but got: {self.bonds.shape[-1]}')
 
         # C
         self.num_constraints = self.bonds.shape[-2]
@@ -122,32 +116,31 @@ class Constraint(Controller):
                   pbc_box: Tensor = None,
                   step: int = 0,
                   ):
-        """
-        constraint the bonds.
+        """ constraint the bonds.
 
         Args:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor):      Tensor of shape (B, A, D). Data type is float.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor):      Tensor of shape (B, D). Data type is float.
-            virial (Tensor):        Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
+            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
+            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
             step (int):             Simulation step. Default: 0
 
         Returns:
-            coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-            force (Tensor), Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor), Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-            virial (Tensor), Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
+            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
+            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
 
         Symbols:
             B:  Number of walkers in simulation.
             A:  Number of atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
 
         """
 

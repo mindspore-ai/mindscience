@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -35,25 +35,21 @@ from ...system import Molecule
 
 
 class Brownian(Integrator):
-    r"""
-    Brownian integrator.
+    r"""A Brownian integrator module, which is a subclass of `Integrator`.
 
     Args:
-        system (Molecule):              Simulation system.
+
+        system (Molecule):              Simulation system
+
         temperature (float):            Simulation temperature T (K). Default: 300
+
         friction_coefficient (float):   Friction coefficient g (amu/ps). Default: 1e3
 
-    Returns:
-        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
-        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-        - virial (Tensor), Tensor of shape (B, D). Data type is float.
-        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
     def __init__(self,
                  system: Molecule,
@@ -84,52 +80,31 @@ class Brownian(Integrator):
 
         self.concat_last_dim = ops.Concat(axis=-1)
         self.concat_penulti = ops.Concat(axis=-2)
-        self.keep_mean = ops.ReduceMean(keep_dims=True)
 
     @property
     def temperature(self) -> Tensor:
         return self.ref_temp
 
     def set_thermostat(self, thermostat: None = None):
-        """
-        set thermostat algorithm for integrator.
-
-        Args:
-            thermostat (None):  Set thermostat algorithm. Default: None
-        """
+        """set thermostat algorithm for integrator"""
         if thermostat is not None:
             raise ValueError('The Brownian integrator cannot accept thermostat')
         return self
 
     def set_barostat(self, barostat: None = None):
-        """
-        set barostat algorithm for integrator.
-
-        Args:
-            barostat (None):    Set barostat algorithm. Default: None
-        """
+        """set barostat algorithm for integrator"""
         if barostat is not None:
             raise ValueError('The Brownian integrator cannot accept barostat')
         return self
 
-    def set_constraint(self, constraint: None = None):
-        """
-        set constraint algorithm for integrator.
-
-        Args:
-            constraint (None):  Set constraint algorithm. Default: None
-        """
+    def set_constraint(self, constraint: None = None, num_constraints: int = 0):
+        """set constraint algorithm for integrator"""
         if constraint is not None:
             raise ValueError('The Brownian integrator cannot accept constraint')
         return self
 
     def set_time_step(self, dt: float):
-        """
-        set simulation time step.
-
-        Args:
-            dt (float): Time of a time step.
-        """
+        """set simulation time step"""
         self.time_step = Tensor(dt, ms.float32)
         self.random_scale = F.sqrt(2 * self.boltzmann * self.ref_temp * self.time_step * self.inv_gamma)
         return self

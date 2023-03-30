@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -22,79 +22,98 @@
 # ============================================================================
 """Lennard-Jones potential"""
 
+from typing import Union, List
+from numpy import ndarray
+
 import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import Tensor, Parameter
 from mindspore.ops import functional as F
 
 from .energy import NonbondEnergy
-from ...function import functions as func
-from ...function.functions import gather_values
-from ...function.units import Units
+from ... import function as func
+from ...function.functions import gather_value, get_ms_array
 
 
 class LennardJonesEnergy(NonbondEnergy):
-    r"""
-    Lennard-Jones potential
+    r"""Lennard-Jones potential
 
-    .. Math::
+    Math:
 
-        E_{lj}(r_{ij}) = 4 * \epsilon_{ij} * [(\sigma_{ij} / r_{ij}) ^ {12} - (\sigma_{ij} / r_{ij}) ^ 6]
+    .. math::
 
-        \epsilon_{ij} = \sqrt(\epsilon_i * \epsilon_j)
+        E_{lj}(r_{ij}) = 4 \epsilon_{ij} \left (\frac{\sigma_{ij}^{12}}{r_{ij}^{12}}
+                                              - \frac{\sigma_{ij}^{6}}{r_{ij}^{6}} \right)
 
-        \sigma_{ij} = 1 / 2 * (\sigma_i + \sigma_j)
+        \epsilon_{ij} = \sqrt{\epsilon_i \epsilon_j}
 
-    ...
+        \sigma_{ij} = \frac{1}{2} (\sigma_i + \sigma_j)
 
     Args:
-        epsilon (Tensor):   Tensor of shape (B, A). Data type is float.
-                            Parameter \epsilon for LJ potential. Default: None
-        sigma (Tensor):     Tensor of shape (B, A). Data type is float.
-                            Parameter \sigma in LJ potential. Default: None
-        mean_c6 (Tensor):   Tensor of shape (B, A). Data type is float.
-                            Average dispersion (<C6>) of the system used for
-                            long range correction of dispersion interaction. Default: 0
+
+
+        epsilon (Union[Tensor, ndarray, List[float]]):
+                            Parameter :math:`\epsilon` for LJ potential.
+                            The shape of array is `(B, A)`, and the data type is float.
+
+        sigma (Union[Tensor, ndarray, List[float]]):
+                            Parameter :math:`\sigma` in LJ potential.
+                            The shape of array is `(B, A)`, and the data type is float.
+
+        mean_c6 (Union[Tensor, ndarray, List[float]]):
+                            Average dispersion :math:`\langle C_6 \rangle` of the system
+                            used for long range correction of dispersion interaction.
+                            The shape of array is `(B, 1)`, and the data type is float.
+                            Default: 0
+
         parameters (dict):  Force field parameters. Default: None
+
         cutoff (float):     Cutoff distance. Default: None
+
         use_pbc (bool):     Whether to use periodic boundary condition. Default: None
-        length_unit (str):  Length unit for position coordinates. Default: 'nm'
-        energy_unit (str):  Energy unit. Default: 'kj/mol'
-        units (Units):      Units of length and energy. Default: None
 
-    Returns:
-        energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
+                            Default: 'nm'
 
-    Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation.
-        A:  Number of atoms.
-        N:  Maximum number of neighbour atoms.
-        D:  Dimension of the simulation system. Usually is 3.
+        energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
+                            Default: 'kj/mol'
+
+        name (str):         Name of the energy. Default: 'vdw'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
+    Symbols:
+
+        B:  Batchsize, i.e. number of walkers in simulation
+
+        A:  Number of atoms.
+
+        N:  Maximum number of neighbour atoms.
+
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
 
     def __init__(self,
-                 epsilon: Tensor = None,
-                 sigma: Tensor = None,
-                 mean_c6: Tensor = 0,
+                 epsilon: Union[Tensor, ndarray, List[float]] = None,
+                 sigma: Union[Tensor, ndarray, List[float]] = None,
+                 mean_c6: Union[Tensor, ndarray, List[float]] = 0,
                  parameters: dict = None,
                  cutoff: float = None,
                  use_pbc: bool = None,
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
-                 units: Units = None,
+                 name: str = 'vdw',
                  ):
 
         super().__init__(
-            label='vdw_energy',
-            output_dim=1,
+            name=name,
             cutoff=cutoff,
             use_pbc=use_pbc,
             length_unit=length_unit,
             energy_unit=energy_unit,
-            units=units,
         )
 
         if parameters is not None:
@@ -106,12 +125,12 @@ class LennardJonesEnergy(NonbondEnergy):
             sigma = parameters.get('sigma')
             mean_c6 = parameters.get('mean_c6')
 
-        sigma = Tensor(sigma, ms.float32)
-        epsilon = Tensor(epsilon, ms.float32)
+        sigma = get_ms_array(sigma, ms.float32)
+        epsilon = get_ms_array(epsilon, ms.float32)
 
         if sigma.shape[-1] != epsilon.shape[-1]:
-            raise ValueError('the last dimension of sigma'+str(sigma.shape[-1]) +
-                             'must be equal to the last dimension of epsilon ('+str(epsilon.shape[-1])+')!')
+            raise ValueError(f'the last dimension of sigma {sigma.shape[-1]} must be equal to '
+                             f'the last dimension of epsilon ({epsilon.shape[-1]})!')
 
         self.num_atoms = sigma.shape[-1]
 
@@ -129,39 +148,28 @@ class LennardJonesEnergy(NonbondEnergy):
 
         self.mean_c6 = None
         if mean_c6 is not None:
-            mean_c6 = Tensor(mean_c6, ms.float32)
+            mean_c6 = get_ms_array(mean_c6, ms.float32)
             if mean_c6.ndim == 0:
                 mean_c6 = mean_c6.reshape(1, 1)
             elif mean_c6.ndim == 1:
                 mean_c6 = F.expand_dims(mean_c6, 0)
             elif mean_c6.ndim > 2:
                 raise ValueError('The rank of mean_c6 cannot be larger than 2!')
-            self.mean_c6 = Parameter(Tensor(mean_c6, ms.float32), name='average_dispersion', requires_grad=False)
+            self.mean_c6 = Parameter(get_ms_array(mean_c6, ms.float32), name='average_dispersion', requires_grad=False)
 
         self.disp_corr = self._calc_disp_corr()
-
-    def set_cutoff(self, cutoff: float):
-        """
-        Set cutoff distance.
-
-        Args:
-            cutoff (float):     Cutoff distance. Default: None.
-        """
-        super().set_cutoff(cutoff)
-        self.disp_corr = self._calc_disp_corr()
-        return self
 
     def _calc_disp_corr(self) -> Tensor:
-        """
-        calculate the long range correct factor for dispersion
-
-        Returns:
-            Tensor, the long range correct factor for dispersion.
-        """
-
+        """calculate the long range correct factor for dispersion"""
         if self.cutoff is None:
             return 0
         return -2.0 / 3.0 * msnp.pi * self.num_atoms**2 / msnp.power(self.cutoff, 3)
+
+    def set_cutoff(self, cutoff: float, unit: str = None):
+        """set cutoff distance"""
+        super().set_cutoff(cutoff, unit)
+        self.disp_corr = self._calc_disp_corr()
+        return self
 
     def construct(self,
                   coordinate: Tensor,
@@ -169,15 +177,13 @@ class LennardJonesEnergy(NonbondEnergy):
                   neighbour_mask: Tensor = None,
                   neighbour_coord: Tensor = None,
                   neighbour_distance: Tensor = None,
-                  inv_neigh_dis: Tensor = None,
-                  pbc_box: Tensor = None,
+                  pbc_box: Tensor = None
                   ):
-        r"""
-        Calculate energy term
+        r"""Calculate energy term.
 
         Args:
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
-                                            Position coordinate of atoms in system.
+                                            Position coordinate of atoms in system
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
                                             Index of neighbour atoms.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
@@ -192,43 +198,43 @@ class LennardJonesEnergy(NonbondEnergy):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            energy (Tensor), Tensor of shape (B, 1). Data type is float.
+            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation.
+            B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
 
         """
 
-        inv_neigh_dis *= self.inverse_input_scale
+        inv_neigh_dis = msnp.reciprocal(neighbour_distance * self.input_unit_scale)
+        if neighbour_mask is not None:
+            inv_neigh_dis = msnp.where(neighbour_mask, inv_neigh_dis, inv_neigh_dis)
 
         epsilon = self.identity(self.epsilon)
         sigma = self.identity(self.sigma)
 
-        # (B,A,1)
+        # \epsilon_i: (B,A,1)
         eps_i = F.expand_dims(epsilon, -1)
-        # (B,A,N)
-        eps_j = gather_values(epsilon, neighbour_index)
-        # (B,A,N) = (B,A,1) * (B,A,N)
+        # \epsilon_j: (B,A,N)
+        eps_j = gather_value(epsilon, neighbour_index)
+        # \epsilon_{ij}: (B,A,N) = (B,A,1) * (B,A,N)
         eps_ij = F.sqrt(eps_i * eps_j)
 
-        # (B,A,1)
+        # \sigma_i: (B,A,1)
         sigma_i = F.expand_dims(sigma, -1)
-        # (B,A,N)
-        sigma_j = gather_values(sigma, neighbour_index)
-        # (B,A,N) = (B,A,1) * (B,A,N)
+        # \sigma_j: (B,A,N)
+        sigma_j = gather_value(sigma, neighbour_index)
+        # \sigma_{ij}: (B,A,N) = (B,A,1) * (B,A,N)
         sigma_ij = (sigma_i + sigma_j) * 0.5
 
-        # \sigma_ij / r_ij
-        sigma_over_rij = sigma_ij * inv_neigh_dis
-        # (\sigma_ij / r_ij) ^ 6
-        sigma_over_rij_6 = F.pows(sigma_over_rij, 6)
+        # (\sigma_{ij} / r_{ij}) ^ 6
+        r0_6 = F.pows(sigma_ij * inv_neigh_dis, 6)
 
-        # 4 * \epsilon * (\sigma_ij / r_ij) ^ 6
-        ene_bcoeff = 4 * eps_ij * sigma_over_rij_6
-        # 4 * \epsilon * (\sigma_ij / r_ij) ^ 12
-        ene_acoeff = ene_bcoeff * sigma_over_rij_6
+        # 4 * \epsilon_{ij} * (\sigma_{ij} / r_{ij}) ^ 6
+        ene_bcoeff = 4 * eps_ij * r0_6
+        # 4 * \epsilon_{ij} * (\sigma_{ij} / r_{ij}) ^ 12
+        ene_acoeff = ene_bcoeff * r0_6
 
         # (B,A,N)
         energy = ene_acoeff - ene_bcoeff
@@ -236,11 +242,11 @@ class LennardJonesEnergy(NonbondEnergy):
         # (B,A)
         energy = F.reduce_sum(energy, -1)
         # (B,1)
-        energy = func.keepdim_sum(energy, -1) * 0.5
+        energy = func.keepdims_sum(energy, -1) * 0.5
 
         if self.cutoff is not None and pbc_box is not None:
             # (B,1) <- (B,D)
-            volume = func.keepdim_prod(pbc_box, -1)
+            volume = func.keepdims_prod(pbc_box * self.input_unit_scale, -1)
             # E_corr = -2 / 3 * pi * N * \rho * <C_6> * r_c^-3
             #        = -2 / 3 * pi * N * (N / V) * <C_6> * r_c^-3
             #        = -2 / 3 * pi * N^2 * <C_6> / V

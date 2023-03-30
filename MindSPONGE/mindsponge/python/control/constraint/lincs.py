@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -24,6 +24,7 @@
 LINCS Constraint algorithm
 """
 
+from typing import Union
 import numpy as np
 import mindspore as ms
 import mindspore.numpy as msnp
@@ -38,42 +39,27 @@ from ...function.operations import GetShiftGrad
 
 
 class Lincs(Constraint):
-    """
-    LINCS (LINear Constraint Solver) constraint controller.
+    """A LINCS (LINear Constraint Solver) constraint module, which is a subclass of `Constraint`.
 
     Args:
+
         system (Molecule):          Simulation system.
-        bonds (Tensor):             Bonds to be constraint.
-                                    Tensor of shape (B, 2). Data type is int.
-                                    Default: "h-bonds".
+
+        bonds (Union[Tensor, str]): Bonds to be constraint.
+                                    Tensor of shape (K, 2). Data type is int.
+                                    Alternative: "h-bonds" or "all-bonds".
+
         potential (PotentialCell):  Potential Cell. Default: None
 
-    Inputs:
-        - **coordinate** (Tensor) - The coordinates of the system.
-        - **velocity** (Tensor) - The velocity of the system.
-        - **force** (Tensor) - The force of the system.
-        - **energy** (Tensor) - The energy of the system.
-        - **kinetics** (Tensor) - The kinetics of the system.
-        - **virial** (Tensor) - The virial of the system. Default: None
-        - **pbc_box** (Tensor) - PBC box of the system. Default: None
-        - **step** (int) - The step of the system. Default: 0
-
-    Return:
-        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
-        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-        - virial (Tensor), Tensor of shape (B, D). Data type is float.
-        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
-
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
 
     def __init__(self,
                  system: Molecule,
-                 bonds: Tensor = 'h-bonds',
+                 bonds: Union[Tensor, str] = 'h-bonds',
                  potential: PotentialCell = None,
                  ):
 

@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     from mindsponge import Sponge
     from mindsponge import Molecule
     from mindsponge import ForceFieldBase
-    from mindsponge import DynamicUpdater
+    from mindsponge import UpdaterMD
 
     from mindsponge.potential import BondEnergy, AngleEnergy
     from mindsponge.callback import WriteH5MD, RunInfo
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     vgen = VelocityGenerator(300)
     velocity = vgen(system.coordinate.shape, system.atom_mass)
 
-    opt = DynamicUpdater(
+    updater = UpdaterMD(
         system,
         integrator=LeapFrog(system),
         thermostat=BerendsenThermostat(system, 300),
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         velocity=velocity
     )
 
-    md = Sponge(system, potential, opt)
+    md = Sponge(system, potential, updater)
 
     run_info = RunInfo(10)
     cb_h5md = WriteH5MD(system, 'tutorial_b01.h5md', save_freq=10, write_velocity=True, write_force=True)

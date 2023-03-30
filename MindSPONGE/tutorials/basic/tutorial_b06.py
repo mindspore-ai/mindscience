@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -33,13 +33,13 @@ if __name__ == "__main__":
 
     from mindsponge import Sponge
     from mindsponge import ForceField
+    from mindsponge import set_global_units
+    from mindsponge import Protein
+    from mindsponge import UpdaterMD
     from mindsponge.optimizer import SteepestDescent
     from mindsponge.control import VelocityVerlet
     from mindsponge.callback import WriteH5MD, RunInfo
     from mindsponge.control import Langevin
-    from mindsponge import set_global_units
-    from mindsponge import Protein
-    from mindsponge import DynamicUpdater
     from mindsponge.function import VelocityGenerator
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     set_global_units('nm', 'kj/mol')
 
     PDB_NAME = 'case2.pdb'
-    system = Protein(pdb=PDB_NAME)
+    system = Protein(pdb=PDB_NAME, rebuild_hydrogen=True)
 
     energy = ForceField(system, 'AMBER.FF14SB')
 
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     vgen = VelocityGenerator(300)
     velocity = vgen(system.coordinate.shape, system.atom_mass)
 
-    opt = DynamicUpdater(
+    updater = UpdaterMD(
         system,
         integrator=VelocityVerlet(system),
         thermostat=Langevin(system, 300),
@@ -69,9 +69,7 @@ if __name__ == "__main__":
         velocity=velocity
     )
 
-    md = Sponge(system, energy, min_opt)
+    cb_h5md = WriteH5MD(system, 'tutorial_b06.h5md', save_freq=10)
 
-    cb_h5md = WriteH5MD(system, 'tutorial_b06.h5md', save_freq=10, write_velocity=True, write_force=True)
-
-    md.change_optimizer(opt)
+    md.change_optimizer(updater)
     md.run(2000, callbacks=[run_info, cb_h5md])

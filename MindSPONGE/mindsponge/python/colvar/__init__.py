@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -23,13 +23,13 @@
 """Collective variables"""
 
 from .colvar import Colvar
-from .base import Distance, Angle, Torsion
-from .position import Atom, Position
-from .atoms import AtomDistances, AtomAngles, AtomTorsions
-from .bonded import BondedColvar, BondedDistances, BondedTorsions, BondedAngles
-from .index import IndexColvar, IndexVectors, IndexDistances
+from .group import ColvarGroup
+from .combine import ColvarCombine
+from .get import get_colvar
+from .basic import Distance, Angle, Torsion
+from .atoms import AtomsBase, Atoms, BatchedAtoms, Group, Center, Vector, \
+        Position, BatchedPosition, get_atoms
 
-__all__ = ['Colvar', 'Distance', 'Angle', 'Torsion', 'Atom', 'Position',
-           'AtomDistances', 'AtomAngles', 'AtomTorsions', 'BondedColvar',
-           'BondedDistances', 'BondedTorsions', 'BondedAngles', 'IndexColvar',
-           'IndexVectors', 'IndexDistances']
+__all__ = ['Colvar', 'ColvarGroup', 'ColvarCombine', 'get_colvar']
+__all__.extend(atoms.__all__)
+__all__.extend(basic.__all__)

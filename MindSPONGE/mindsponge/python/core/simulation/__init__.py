@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -22,7 +22,10 @@
 # ============================================================================
 """simulation"""
 
+from .energy import WithEnergyCell
+from .force import WithForceCell
 from .simulation import SimulationCell
 from .run import RunOneStepCell
 
-__all__ = ['SimulationCell', 'RunOneStepCell']
+__all__ = ['WithEnergyCell', 'WithForceCell',
+           'SimulationCell', 'RunOneStepCell']
