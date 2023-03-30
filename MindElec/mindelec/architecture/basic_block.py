@@ -231,12 +231,12 @@ class FCSequential(nn.Cell):
             e.g. "ReLU", "Softmax" and "Tanh". Default: "sin".
         weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
             is same as input x. The values of str refer to the function
-            `mindspore.common.initializer <https://mindspore.cn/docs/zh-CN/master/api_python/
+            `mindspore.common.initializer <https://mindspore.cn/docs/zh-CN/r2.0/api_python/
             mindspore.common.initializer.html>`_ . Default: "normal".
         has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype
             is same as input x. The values of str refer to the function
-            `mindspore.common.initializer <https://mindspore.cn/docs/zh-CN/master/api_python/
+            `mindspore.common.initializer <https://mindspore.cn/docs/zh-CN/r2.0/api_python/
             mindspore.common.initializer.html>`_ . Default: "default".
 
     Inputs:
