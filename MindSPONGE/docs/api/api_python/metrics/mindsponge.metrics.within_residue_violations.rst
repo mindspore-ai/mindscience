@@ -7,9 +7,9 @@ mindsponge.metrics.within_residue_violations
 
     参数：
         - **atom14_pred_positions** (Tensor) - 以稠密编码方式编码的蛋白质所有原子三维坐标，shape :math:`(N_{res}, 14, 3)` 。
-        - **atom14_atom_exists** (Tensor) - 按照稠密编码方式编码，蛋白质全原子掩码，有原子位置为1，无原子位置为0。shape :math:`(N_{res}，14)` 。
-        - **atom14_dists_lower_bound** (Tensor) - 按稠密编码方式编码的原子间允许的最小距离。shape :math:`(N_{res}，14, 14)` 。
-        - **atom14_dists_upper_bound** (Tensor) - 按稠密编码方式编码的原子间允许的最大距离。shape :math:`(N_{res}，14, 14)` 。
+        - **atom14_atom_exists** (Tensor) - 按照稠密编码方式编码，蛋白质全原子掩码，有原子位置为1，无原子位置为0。shape :math:`(N_{res}, 14)` 。
+        - **atom14_dists_lower_bound** (Tensor) - 按稠密编码方式编码的原子间允许的最小距离。shape :math:`(N_{res}, 14, 14)` 。
+        - **atom14_dists_upper_bound** (Tensor) - 按稠密编码方式编码的原子间允许的最大距离。shape :math:`(N_{res}, 14, 14)` 。
         - **tighten_bounds_for_loss** (float) - 原子间距离冲突系数。
         - **dists_mask_i** (Tensor) - 以稠密编码方式编码的原子距离掩码矩阵。shape :math:`(14, 14)` 。
 

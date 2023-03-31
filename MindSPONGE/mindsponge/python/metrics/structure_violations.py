@@ -59,17 +59,17 @@ def between_residue_bond(
     of the geometry around the peptide bond between consecutive amino acids.
 
     Args:
-        pred_atom_positions (Tensor):  Atom positions in atom37/14 representation, shape :math:`(N_{res}, 37, 3)`.
-                                      or shape :math:`(N_{res}, 14, 3)` .
-        pred_atom_mask (Tensor):       Atom mask in atom37/14 representation. shape :math:`(N_{res}, 37)` or
-                                      shape :math:`(N_{res}, 14)` .
-        residue_index (Tensor):        Residue index for given amino acid, this is assumed to be monotonically
-                                      increasing. shape :math:`(N_{res}, )` .
-        aatype (Tensor):               amino acid types. shape :math:`(N_{res}, )` .
-        tolerance_factor_soft (float): soft tolerance factor measured in standard deviations of pdb distributions.
-                                      Default: 12.0 .
-        tolerance_factor_hard (float): hard tolerance factor measured in standard deviations of pdb distributions.
-                                      Default: 12.0 .
+        pred_atom_positions (Tensor):   Atom positions in atom37/14 representation, shape :math:`(N_{res}, 37, 3)`.
+                                        or shape :math:`(N_{res}, 14, 3)` .
+        pred_atom_mask (Tensor):        Atom mask in atom37/14 representation. shape :math:`(N_{res}, 37)` or
+                                        shape :math:`(N_{res}, 14)` .
+        residue_index (Tensor):         Residue index for given amino acid, this is assumed to be monotonically
+                                        increasing. Range from 1 to :math:`N_{res}`. shape :math:`(N_{res}, )` .
+        aatype (Tensor):                amino acid types. Range is :math:`[0,20]`. shape :math:`(N_{res}, )` .
+        tolerance_factor_soft (float):  soft tolerance factor measured in standard deviations of pdb distributions.
+                                        Default: 12.0 .
+        tolerance_factor_hard (float):  hard tolerance factor measured in standard deviations of pdb distributions.
+                                        Default: 12.0 .
 
     Returns:
         - Tensor, c_n_loss_mean, loss for peptide bond length violations. shape is :math:`( )` .
@@ -205,16 +205,17 @@ def between_residue_clash(
         atom14_atom_exists (Tensor):    mask denoting whether atom at positions exists for given amino acid type.
                                         shape is :math:`(N_{res}, 14)` .
         atom14_atom_radius (Tensor):    Van der Waals radius for each atom. shape is :math:`(N_{res}, 14)` .
-        residue_index (Tensor):         Residue index for given amino acid. shape is :math:`(N_{res}, )` .
+        residue_index (Tensor):         Residue index for given amino acid. shape is :math:`(N_{res}, )` ,
+                                        range from 1 to :math:`N_{res}` .
         c_one_hot (Tensor):             one hot encoding for C atoms (using atom14 representation). shape is (14, ) .
         n_one_hot (Tensor):             one hot encoding for N atoms (using atom14 representation). shape is (14, ) .
         overlap_tolerance_soft (float): soft tolerance factor. in default: 12.0.
         overlap_tolerance_hard (float): hard tolerance factor. in default: 1.5.
         cys_sg_idx (Tensor):            CYS amino acid index. Default: 5.
-                                        see more at `mindsponge.common.residue_constants`.
+                                        see more at `mindsponge.common.residue_constants`. Shape: `()` .
 
     Returns:
-        - Tensor, mean_loss, average clash loss. Shape is () .
+        - Tensor, mean_loss, average clash loss. Shape is `()` .
         - Tensor, per_atom_loss_sum, sum of all clash losses per atom, shape is :math:`(N_{res}, 14)` .
         - Tensor, per_atom_clash_mask, mask whether atom clashes with any other atom,
           shape is :math:`(N_{res}, 14)` .
@@ -360,8 +361,9 @@ def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_
     Args:
         atom14_atom_exists (Tensor):        mask denoting whether atom at positions exists for given amino acid type.
                                             shape :math:`(N_{res}, 14)` .
-        residue_index (Tensor):             Residue index for given amino acid. shape :math:`(N_{res}, )` .
-        aatype (Tensor):                    amino acid types. shape :math:`(N_{res}, )` .
+        residue_index (Tensor):             Residue index for given amino acid range from 0 to :math:`N_{res} - 1`.
+                                            Shape :math:`(N_{res}, )` .
+        aatype (Tensor):                    amino acid types. shape :math:`(N_{res}, )` . Range is  :math:`[0,20]` .
         residx_atom14_to_atom37 (Tensor):   mapping for (residx, atom14) --> atom37. shape :math:`(N_{res}, 14)` .
         atom14_pred_positions (Tensor):     predicted positions of atoms in global prediction frame.
                                             shape :math:`(N_{res}, 14, 3)` .
@@ -369,10 +371,12 @@ def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_
         clash_overlap_tolerance (float):    clash overlap tolerance factor. Default: 1.5 .
         lower_bound (Tensor):               lower bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
         upper_bound (Tensor):               upper bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
-        atomtype_radius (Tensor):           Van der Waals radius for each amino acid. shape: (37, ) .
-        c_one_hot (Tensor):                 one hot encoding for C atoms (using atom14 representation). shape: (14, ) .
-        n_one_hot (Tensor):                 one hot encoding for N atoms (using atom14 representation). shape: (14, ) .
-        dists_mask_i (Tensor):              initial distants mask, shape: (14, 14) .
+        atomtype_radius (Tensor):           Van der Waals radius for each amino acid. shape: :math:`(37, )` .
+        c_one_hot (Tensor):                 one hot encoding for C atoms (using atom14 representation).
+                                            shape: :math:`(14, )` .
+        n_one_hot (Tensor):                 one hot encoding for N atoms (using atom14 representation).
+                                            shape: :math:`(14, )` .
+        dists_mask_i (Tensor):              initial distants mask, shape: :math:`(14, 14)` .
         cys_sg_idx (Tensor):                CYS amino acid index. Default: 5 .
                                             see more at `mindsponge.common.residue_constants`.
 
@@ -587,7 +591,7 @@ def frame_aligned_point_error_map(pred_frames,
     structures with B points under A alignments derived from the given pairs of frames.
     Similar with the `frame_aligned_point_error` function. The difference is this is a
     batched version which return batch error for each group of local frames individually,
-    this version considers only backbone frames.
+    this version considers only backbone frames :math:`C\alpha` .
 
     Args:
         pred_frames (list): The predicted backbone frames which is a 2-dimensional list,
@@ -599,9 +603,9 @@ def frame_aligned_point_error_map(pred_frames,
         target_frames (list): The ground truth backbone frames which is also a 2-dimensional
             list, the same as pred_frames except that the shape of tensors is :math:`(N_{res},)`.
         frames_mask (Tensor): The binary mask for frames of shape  :math:`(N_{res},)`.
-        pred_positions (list):  The predicted Ca atom positions which is a list of 3
+        pred_positions (list):  The predicted :math:`C\alpha` atom positions which is a list of 3
             tensors of shape :math:`(N_{recycle}, N_{res},)`.
-        target_positions (list):  The ground truth Ca atom positions which is a list
+        target_positions (list):  The ground truth :math:`C\alpha` atom positions which is a list
             of 3 tensors of shape :math:`(N_{res},)`.
         positions_mask (Tensor): The binary mask for Ca atom positions of shape :math:`(N_{res},)`.
         length_scale (float): The unit distance which is used to scale distances.
@@ -728,8 +732,8 @@ def backbone(traj, backbone_affine_tensor, backbone_affine_mask, fape_clamp_dist
 
     Args:
         traj (Tensor): The series of backbone frames(trajectory) generated by Structure
-            module, the shape is :math:`(N_{recycle}, N_{res}, 7)` with :math:`(N_{recycle},)` the
-            recycle number of recycle in Structure module, :math:`(N_{res},)` the number of residues
+            module, the shape is :math:`(N_{recycle}, N_{res}, 7)` with :math:`N_{recycle}` the
+            recycle number of recycle in Structure module, :math:`N_{res}` the number of residues
             in protein, for the last dimension, the first 4 elements are the affine tensor which
             contains the rotation information, the last 3 elements are the translations in space.
         backbone_affine_tensor (Tensor): The ground truth backbone frames of shape :math:`(N_{res}, 7)`.
@@ -743,10 +747,10 @@ def backbone(traj, backbone_affine_tensor, backbone_affine_mask, fape_clamp_dist
 
     Returns:
         - **fape** (Tensor) - Backbone FAPE loss (clamped if use_clamped_fape is 1) of last recycle
-          of Structure module with shape ().
+          of Structure module with shape :math:`()` .
         - **loss** (Tensor) - Averaged Backbone FAPE loss (clamped if use_clamped_fape is 1) of all recycle of
-          Structure module with shape ().
-        - **no_clamp** (Tensor) - Backbone FAPE loss of last recycle of Structure module with shape ().
+          Structure module with shape :math:`()` .
+        - **no_clamp** (Tensor) - Backbone FAPE loss of last recycle of Structure module with shape :math:`()` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -955,7 +959,7 @@ def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_fr
         rigidgroups_gt_exists (Tensor): The binary mask for gt frames of shape :math:`(N_{res}, 8)`.
         renamed_atom14_gt_positions (Tensor): The mask for ground truth positions after renaming
             swaps are performed(swaps are needed for some amino acids due to symmetry
-            `compute_renamed_ground_truth`), its shape is :math:`(N_{res}, 14)`.It takes the 14-types
+            `compute_renamed_ground_truth`), its shape is :math:`(N_{res}, 14, 3)`.It takes the 14-types
             atoms encoding.
         renamed_atom14_gt_exists (Tensor): The mask for ground truth positions after renaming
             swap is performed after renaming swaps are performed, its shape is :math:`(N_{res}, 14)`.
@@ -971,7 +975,7 @@ def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_fr
             Only the positions of last recycle is used in side-chain FAPE loss, encoded atom-14 encoding.
 
     Returns:
-        Tensor, fape. Clamped side-chian FAPE loss with shape ().
+        Tensor, fape. Clamped side-chian FAPE loss with shape :math:`()`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1057,7 +1061,7 @@ def supervised_chi(sequence_mask, aatype, sin_cos_true_chi, torsion_angle_mask, 
             :math:`(21, 4)`, 20 types of amino acids + unknown.
 
     Returns:
-        - **loss** (Tensor) - Supervised chi angle loss with shape ().
+        - **loss** (Tensor) - Supervised chi angle loss with shape :math:`()` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
