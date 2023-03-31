@@ -31,13 +31,9 @@ from mindspore.ops import functional as F
 from mindspore import ops, nn
 from mindspore import Tensor
 from mindspore.nn import Cell
-from mindspore.ops._utils.utils import generate_shape_index
-from mindspore.ops.composite.multitype_ops.zeros_like_impl import zeros_like
 
 from . import functions as func
 from .functions import get_integer
-from .functions import _regenerate_output_shape, _generate_inverse_index
-from .functions import unsorted_segment_sum, dyn_shape_op
 from .units import Units, GLOBAL_UNITS
 
 __all__ = [
@@ -46,7 +42,6 @@ __all__ = [
     'VelocityGenerator',
     'GetDistanceShift',
     'GetShiftGrad',
-    'GatherNet',
 ]
 
 
@@ -433,38 +428,3 @@ class GetShiftGrad(Cell):
         if msnp.isnan(shift_grad.sum()):
             shift_grad = self.zero_shift
         return shift_grad
-
-
-class GatherNet(ms.nn.Cell):
-    """Redefine bprop for gather to run unsorted_segment_sum on aicpu"""
-
-    def construct(self, data, indices, axis):
-        return ops.gather(data, indices, axis)
-
-    def bprop(x, indices, axis, out, dout):
-        """bprop for gather"""
-        # pylint: disable=E0213, W0613
-        orig_indices = indices
-        if ops.rank(dout) == 0:
-            dout = ops.ExpandDims()(dout, -1)
-        if ops.rank(indices) == 0:
-            indices = ops.ExpandDims()(indices, -1)
-            x_shp = ops.shape(x)
-            ind_shp = ops.shape(indices)
-            out_shp = _regenerate_output_shape(x_shp, ind_shp, axis)
-            dout = ops.reshape(dout, out_shp)
-
-        x_shp = ops.shape(x)
-        out_shp = ops.shape(dout)
-        ind_shp = ops.shape(indices)
-        perm_1 = generate_shape_index(out_shp, ind_shp, axis)
-        values_transpose = ops.transpose(dout, perm_1)
-        if F.is_sequence_value_unknown(ops.shape(x)):
-            params_grad = unsorted_segment_sum(
-                values_transpose, indices, dyn_shape_op(x)[axis])
-        else:
-            params_grad = unsorted_segment_sum(
-                values_transpose, indices, ops.shape(x)[axis])
-        perm_2 = _generate_inverse_index(x_shp, axis)
-        params_grad = ops.transpose(params_grad, perm_2)
-        return params_grad, zeros_like(orig_indices), zeros_like(axis)
