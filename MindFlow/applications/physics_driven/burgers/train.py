@@ -39,7 +39,7 @@ parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNA
 parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
                     help="Whether to save intermediate compilation graphs")
 parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
+parser.add_argument("--device_target", type=str, default="Ascend", choices=["GPU", "Ascend"],
                     help="The target device to run, support 'Ascend', 'GPU'")
 parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
 parser.add_argument("--config_file_path", type=str, default="./burgers_cfg.yaml")
