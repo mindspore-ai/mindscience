@@ -12,5 +12,5 @@ mindsponge.common.initial_affine
     返回：
         返回初始化后仿射变换结果
         - 四元数 (tensor)，shape为 :math:`(N_{res}, 4)` 。
-        - 旋转矩阵 (tuple) :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` ，每个元素shape为 :math:`(N_{res},)` 。
-        - 平移向量 (tuple) :math:`(x, y, z)` ，每个元素shape为 :math:`(N_{res},)` 。
+        - 旋转矩阵 (tuple) :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` ，每个元素shape为 :math:`(N_{res}, )` 。
+        - 平移向量 (tuple) :math:`(x, y, z)` ，每个元素shape为 :math:`(N_{res}, )` 。
