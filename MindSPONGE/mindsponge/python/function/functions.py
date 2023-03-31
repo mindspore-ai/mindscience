@@ -93,8 +93,6 @@ reduce_all = ops.ReduceAll()
 concat_last_dim = ops.Concat(-1)
 concat_penulti = ops.Concat(-2)
 identity = ops.Identity()
-dyn_shape_op = ops.TensorShape()
-unsorted_segment_sum = ops.UnsortedSegmentSum()
 
 
 @ms_function
@@ -1217,20 +1215,3 @@ def all_not_none(iterable: Union[list, tuple]) -> bool:
 
     """
     return all([i is not None for i in iterable])
-
-
-def _generate_inverse_index(x_shape, axis):
-    x_rank = len(x_shape)
-    index = tuple(range(x_rank))
-    if axis < 0:
-        axis += x_rank
-    perm = index[1:1 + axis] + (0,) + index[1 + axis:]
-    return perm
-
-
-def _regenerate_output_shape(x_shp, ind_shp, axis):
-    rank = len(x_shp)
-    if axis < 0:
-        axis += rank
-    out_shape = x_shp[:axis] + ind_shp + x_shp[axis + 1:]
-    return out_shape
