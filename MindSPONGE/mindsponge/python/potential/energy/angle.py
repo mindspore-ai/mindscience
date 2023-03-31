@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -22,65 +22,85 @@
 # ============================================================================
 """Angle energy"""
 
+from typing import Union, List
+from numpy import ndarray
+
 import mindspore as ms
 from mindspore import Tensor
 from mindspore import Parameter
 from mindspore.ops import functional as F
 
 from .energy import EnergyCell
-from ...colvar import AtomAngles
+from ...colvar import Angle
 from ...function import functions as func
-from ...function.units import Units
+from ...function import get_ms_array
 
 
 class AngleEnergy(EnergyCell):
-    r"""
-    Energy term of bond angles.
+    r"""Energy term of bond angles
 
-    .. Math::
+    Math:
 
-        E_{angle}(\theta_{ijk}) = 1 / 2 \times k_{ijk}^\theta \times (\theta_{ijk} - \theta_{ijk}^0) ^ 2
+    .. math::
+
+        E_{angle}(\theta_{ijk}) = \frac{1}{2} k_{ijk}^{\theta} (\theta_{ijk} - \theta_{ijk}^0) ^ 2
 
     Args:
-        index (Tensor):             Tensor of shape (B, a, 3). Data type is int.
-                                    Atom index of bond angles. Default: None
-        force_constant (Tensor):    Tensor of shape (1, a). Data type is float.
-                                    The harmonic force constants for angle :math:`(k^{\theta})`. Default: None
-        bond_angle (Tensor):        Tensor of shape (1, a). Data type is float.
-                                    The equilibrium value of bond angle :math:`({\theta}^0)`. Default: None
-        parameters (dict):          Force field parameters. Default: None
-        use_pbc (bool):             Whether to use periodic boundary condition. Default: None
-        energy_unit (str):          Energy unit. Default: 'kj/mol'
-        units (Units):              Units of length and energy. Default: None
 
-    Returns:
-        energy (Tensor), Tensor of shape (B, 1). Data type is float.
+        index (Union[Tensor, ndarray, List[int]]):
+                            Array of the indices of the atoms forming the bond angles.
+                            The shape of array is `(B, a, 3)`, and the data type is int.
 
-    Symbols:
-        B:  Batchsize, i.e. number of walkers in simulation.
-        a:  Number of angles.
-        D:  Dimension of the simulation system. Usually is 3.
+        force_constant (Union[Tensor, ndarray, List[float]]):
+                            Array of the harmonic force constant :math:`k^\theta` for the bond angles.
+                            The shape of array is `(1, a)`, and the data type is float.
+
+        bond_angle (Union[Tensor, ndarray, List[float]]):
+                            Array of the equilibrium value :math:`\theta^0` for the bond angles.
+                            The shape of array is `(1, a)`, and the data type is float.
+
+        parameters (dict):  Force field parameters. Default: None
+
+        use_pbc (bool):     Whether to use periodic boundary condition.
+
+        length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
+                            Default: 'nm'
+
+        energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
+                            Default: 'kj/mol'
+
+        name (str):         Name of the energy. Default: 'angle'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
+    Symbols:
+
+        B:  Batchsize, i.e. number of walkers in simulation
+
+        a:  Number of angles.
+
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
 
     def __init__(self,
-                 index: Tensor = None,
-                 force_constant: Tensor = None,
-                 bond_angle: Tensor = None,
+                 index: Union[Tensor, ndarray, List[int]] = None,
+                 force_constant: Union[Tensor, ndarray, List[float]] = None,
+                 bond_angle: Union[Tensor, ndarray, List[float]] = None,
                  parameters: dict = None,
                  use_pbc: bool = None,
+                 length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
-                 units: Units = None,
+                 name: str = 'angle',
                  ):
 
         super().__init__(
-            label='angle_energy',
-            output_dim=1,
+            name=name,
             use_pbc=use_pbc,
+            length_unit=length_unit,
             energy_unit=energy_unit,
-            units=units,
         )
 
         if parameters is not None:
@@ -93,44 +113,44 @@ class AngleEnergy(EnergyCell):
             bond_angle = parameters.get('bond_angle')
 
         # (1,a,3)
-        index = Tensor(index, ms.int32)
+        index = get_ms_array(index, ms.int32)
         if index.shape[-1] != 3:
-            raise ValueError('The last dimension of index in AngleEnergy must be 3 but got: ' +
-                             str(index.shape[-1]))
+            raise ValueError(f'The last dimension of index in AngleEnergy must be 3 but got: {index.shape[-1]}')
         if index.ndim == 2:
             index = F.expand_dims(index, 0)
         if index.ndim != 3:
-            raise ValueError('The rank of index must be 2 or 3 but got shape: '+str(index.shape))
+            raise ValueError(f'The rank of index must be 2 or 3 but got shape: {index.shape}')
         self.index = Parameter(index, name='angle_index', requires_grad=False)
 
-        self.num_angles = index.shape[-2]
+        # (a,)
+        self.get_angles = Angle(atoms=self.index, use_pbc=use_pbc, batched=True)
+        # a
+        self.num_angles = self.get_angles.shape[-1]
 
         # (1,a)
-        force_constant = Tensor(force_constant, ms.float32)
+        force_constant = get_ms_array(force_constant, ms.float32)
         if force_constant.shape[-1] != self.num_angles:
-            raise ValueError('The last shape of force_constant ('+str(force_constant.shape[-1]) +
-                             ') must be equal to num_angles ('+str(self.num_angles)+')!')
+            raise ValueError(f'The last shape of force_constant ({force_constant.shape[-1]}) must be equal to '
+                             f'the num_angles ({self.num_angles})!')
         if force_constant.ndim == 1:
             force_constant = F.expand_dims(force_constant, 0)
         if force_constant.ndim > 2:
             raise ValueError('The rank of force_constant cannot be larger than 2!')
         self.force_constant = Parameter(force_constant, name='angle_force_constant')
 
-        bond_angle = Tensor(bond_angle, ms.float32)
+        bond_angle = get_ms_array(bond_angle, ms.float32)
         if bond_angle.shape[-1] != self.num_angles:
-            raise ValueError('The last shape of bond_angle ('+str(bond_angle.shape[-1]) +
-                             ') must be equal to num_angles ('+str(self.num_angles)+')!')
+            raise ValueError(f'The last shape of bond_angle {bond_angle.shape[-1]}) must be equal to '
+                             f'the num_angles ({self.num_angles})!')
         if bond_angle.ndim == 1:
             bond_angle = F.expand_dims(bond_angle, 0)
         if bond_angle.ndim > 2:
             raise ValueError('The rank of bond_angle cannot be larger than 2!')
         self.bond_angle = Parameter(bond_angle, name='bond_angle')
 
-        self.get_angle = AtomAngles(self.index, use_pbc=use_pbc)
-
-    def set_pbc(self, use_pbc=None):
-        self.use_pbc = use_pbc
-        self.get_angle.set_pbc(use_pbc)
+    def set_pbc(self, use_pbc: bool):
+        self._use_pbc = use_pbc
+        self.get_angles.set_pbc(use_pbc)
         return self
 
     def construct(self,
@@ -139,15 +159,13 @@ class AngleEnergy(EnergyCell):
                   neighbour_mask: Tensor = None,
                   neighbour_coord: Tensor = None,
                   neighbour_distance: Tensor = None,
-                  inv_neigh_dis: Tensor = None,
-                  pbc_box: Tensor = None,
+                  pbc_box: Tensor = None
                   ):
-        r"""
-        Calculate energy term.
+        r"""Calculate energy term.
 
         Args:
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
-                                            Position coordinate of atoms in system.
+                                            Position coordinate of atoms in system
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
                                             Index of neighbour atoms.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
@@ -162,16 +180,16 @@ class AngleEnergy(EnergyCell):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            energy (Tensor), Tensor of shape (B, 1). Data type is float.
+            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation.
+            B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
 
         """
         # (B,M)
-        theta = self.get_angle(coordinate, pbc_box)
+        theta = self.get_angles(coordinate, pbc_box)
         # (B,M) = (B,M) - (1,M)
         dtheta = theta - self.bond_angle
         dtheta2 = dtheta * dtheta
@@ -181,4 +199,4 @@ class AngleEnergy(EnergyCell):
         energy = 0.5 * self.force_constant * dtheta2
 
         # (B,1) <- (B,M)
-        return func.keepdim_sum(energy, -1)
+        return func.keepdims_sum(energy, -1)

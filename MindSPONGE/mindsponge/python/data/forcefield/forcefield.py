@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -30,39 +30,34 @@ from ..data import read_yaml, update_dict
 from ..template import get_template
 
 
-def get_forcefield(forcefield: Union[str, dict, list]) -> Tuple[dict, dict]:
-    """
-    Get force field parameters from YAML file.
+def get_forcefield(forcefield: Union[str, dict, list, tuple]) -> Tuple[dict, dict]:
+    """ Get force field parameters from YAML file.
 
     Args:
-        forcefield (str, dict or list): The file name of force field parameters.
+
+        forcefield (dict, str, list or tuple):
+                            Force field parameters. It can be a `dict` of force field parameters,
+                            a `str` of filename of a force field file in MindSPONGE YAML format,
+                            or a `list` or `tuple` containing multiple `dict` or `str`.
+                            If a filename is given, it will first look for a file with the same name
+                            in the current directory. If the file does not exist, it will search
+                            in MindSPONGE's built-in force field.
+                            If multiple sets of parameters are given and the same atom type
+                            is present in different parameters, then the atom type in the parameter
+                            at the back of the array will replace the one at the front.
 
     Returns:
-        parameters (dict), Force field parameters.
-        template (dict), Molecular template.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
+        parameters (dict):  Force field parameters.
+
+        template (dict):    Molecular template.
+
     """
 
     if forcefield is None:
         return None, None
 
-    if isinstance(forcefield, str):
-        if os.path.exists(forcefield):
-            filename = forcefield
-        else:
-            filename = forcefield.lower()
-            if os.path.splitext(forcefield)[-1] != '.yaml':
-                filename += '.yaml'
-
-            directory, _ = os.path.split(os.path.realpath(__file__))
-            filename = os.path.join(directory, filename)
-        if not os.path.exists(filename):
-            raise ValueError('Cannot find force field parameters file: "'+forcefield+'".')
-
-        forcefield: dict = read_yaml(filename)
-    elif isinstance(forcefield, (list, tuple)):
+    if isinstance(forcefield, (list, tuple)):
         parameters = {}
         template = []
         for ff in forcefield:
@@ -70,16 +65,32 @@ def get_forcefield(forcefield: Union[str, dict, list]) -> Tuple[dict, dict]:
             template.append(temp)
             parameters = update_dict(parameters, params)
         template = get_template(template)
-    elif not isinstance(forcefield, dict):
-        raise TypeError('The type of forcefield must be str or dict but got: '+str(type(forcefield)))
-
-    template = None
-    if 'template' in forcefield.keys():
-        template = get_template(forcefield.pop('template'))
-
-    if 'parameters' in forcefield.keys():
-        parameters = forcefield.get('parameters')
     else:
-        parameters = forcefield
+        if isinstance(forcefield, str):
+            if os.path.exists(forcefield):
+                filename = forcefield
+            else:
+                filename = forcefield.lower()
+                if os.path.splitext(forcefield)[-1] != '.yaml':
+                    filename += '.yaml'
+                directory, _ = os.path.split(os.path.realpath(__file__))
+                filename = os.path.join(directory, filename)
+
+            if not os.path.exists(filename):
+                raise ValueError(f'Cannot find force field parameters file: {forcefield}.')
+
+            forcefield = read_yaml(filename)
+
+        if not isinstance(forcefield, dict):
+            raise TypeError(f'The type of forcefield must be str or dict but got: {type(forcefield)}')
+
+        template = None
+        if 'template' in forcefield.keys():
+            template = get_template(forcefield.pop('template'))
+
+        if 'parameters' in forcefield.keys():
+            parameters = forcefield.get('parameters')
+        else:
+            parameters = forcefield
 
     return parameters, template

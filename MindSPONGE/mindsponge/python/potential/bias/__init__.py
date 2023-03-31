@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -20,10 +20,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Bais potential"""
+"""Bias potential energies with `Bias` as base class"""
 
 from .bias import Bias
 from .oscillator import OscillatorBias
 from .spherical import SphericalRestrict
+from .harmonic import HarmonicOscillator
+from .wall import LowerWall, UpperWall
 
-__all__ = ['Bias', 'OscillatorBias', 'SphericalRestrict']
+__all__ = ['Bias', 'OscillatorBias', 'SphericalRestrict',
+           'HarmonicOscillator', 'LowerWall', 'UpperWall']

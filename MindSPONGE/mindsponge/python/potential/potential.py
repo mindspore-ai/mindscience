@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -22,145 +22,112 @@
 # ============================================================================
 """Potential"""
 
+from typing import Union, List
 import mindspore as ms
 from mindspore import Tensor, Parameter
-from mindspore import ops
-from mindspore.nn import Cell
 from mindspore.ops import functional as F
 
-from ..function.functions import gather_vectors
+from .energy import EnergyCell
+from ..function.functions import get_integer
 from ..function.operations import GetDistance, GetVector
-from ..function.units import Units, global_units
 
 
-class PotentialCell(Cell):
-    r"""
-    Basic cell for potential energy.
+class PotentialCell(EnergyCell):
+    r"""Base class for potential energy.
+
+        The `PotentialCell` is a special subclass of `EnergyCell`. The main difference with `EnergyCell` is
+        that normally `EnergyCell` only outputs one energy term, so that `EnergyCell` returns a Tensor of
+        the shape `(B, 1)`. And a `PotentialCell` can output multiple energy items, so it returns a Tensor
+        of the shape `(B, E)`. Besides, by default the units of `PotentialCell` are equal to the global units.
 
     Args:
-        cutoff (float):              Cutoff distance. Default: None.
-        exclude_index (Tensor):      Tensor of shape (B, A, Ex). Data type is int.
-                                     Index of the atoms should be excluded from non-bond interaction.
-                                     Default: None.
-        length_unit (str):           Length unit for position coordinates. Default: None.
-        energy_unit (str):           Energy unit. Default: None.
-        units (Units):               Units of length and energy. Default: None.
-        use_pbc (bool, optional):    Whether to use periodic boundary condition.
-                                     If this is None, that means do not use periodic boundary condition.
-                                     Default: None.
+
+        num_energies (int): Number of the outputs of energy terms. Default: 1
+
+        length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
+                            Default: None
+
+        energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
+                            Default: None
+
+        use_pbc (bool):     Whether to use periodic boundary condition.
 
     Returns:
-        potential (Tensor), Tensor of shape (B, 1). Data type is float.
+
+        energy (Tensor):    Tensor of shape `(B, E)`. Data type is float.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
+    Symbols:
+
+        B:  Batchsize, i.e. number of walkers in simulation.
+        E:  Number of energy terms.
+
     """
 
     def __init__(self,
-                 cutoff: float = None,
-                 exclude_index: Tensor = None,
+                 num_energies: int = 1,
+                 energy_names: Union[str, List[str]] = 'potential',
                  length_unit: str = None,
                  energy_unit: str = None,
-                 units: Units = None,
                  use_pbc: bool = None,
                  ):
 
-        super().__init__()
+        super().__init__(
+            name='potential',
+            length_unit=length_unit,
+            energy_unit=energy_unit,
+            use_pbc=use_pbc,
+        )
 
-        if units is None:
-            if length_unit is None and energy_unit is None:
-                self.units = global_units
-            else:
-                self.units = Units(length_unit, energy_unit)
+        self._num_energies = get_integer(num_energies)
+        self._energy_names = []
+        if isinstance(energy_names, str):
+            self._energy_names = [energy_names] * self._num_energies
+        elif isinstance(energy_names, list):
+            if len(energy_names) != self._num_energies:
+                if len(energy_names) != 1:
+                    raise ValueError(f'The number of energy names ({len(energy_names)}) does not match '
+                                     f'the number of energ ({self._num_energies})')
+                energy_names *= self._num_energies
+            self._energy_names = energy_names
         else:
-            if not isinstance(units, Units):
-                raise TypeError('The type of units must be "Unit" but get type: '+str(type(units)))
-            self.units = units
+            raise TypeError(f'The type of energy_names must str or list but got "{type(energy_names)}"')
 
-        self.output_dim = 1
+        self._exclude_index = None
 
-        self.cutoff = None
-        if cutoff is not None:
-            self.cutoff = Tensor(cutoff, ms.float32)
-
-        self.use_pbc = use_pbc
-        self._exclude_index = self._check_exclude_index(exclude_index)
-
-        self.get_vector = GetVector(use_pbc)
-        self.get_distance = GetDistance(use_pbc)
-        self.gather_atoms = gather_vectors
-
-        self.identity = ops.Identity()
+        self.get_vector = GetVector(self._use_pbc)
+        self.get_distance = GetDistance(use_pbc=self._use_pbc)
 
     @property
     def exclude_index(self) -> Tensor:
-        """
-        exclude index.
-
-        Returns:
-            Tensor, exclude index.
-        """
+        """exclude index"""
         if self._exclude_index is None:
             return None
         return self.identity(self._exclude_index)
 
-    def _check_exclude_index(self, exclude_index: Tensor):
-        """check excluded index."""
-        if exclude_index is None:
-            return None
-        exclude_index = Tensor(exclude_index, ms.int32)
-        if exclude_index.ndim == 2:
-            exclude_index = F.expand_dims(exclude_index, 0)
-        if exclude_index.ndim != 3:
-            raise ValueError('The rank of exclude_index must be 2 or 3 but got: '
-                             + str(exclude_index.shape))
-        # (B,A,Ex)
-        return Parameter(exclude_index, name='exclude_index', requires_grad=False)
+    @property
+    def num_energies(self) -> int:
+        """number of energy components"""
+        return self._num_energies
 
-    def set_exclude_index(self, exclude_index: Tensor):
-        """
-        Set excluded index.
+    @property
+    def energy_names(self) -> List[str]:
+        """List of strings of energy names"""
+        return self._energy_names
 
-        Args:
-            exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int.
-                                    Index of the atoms should be excluded from non-bond interaction.
-                                    Default: None.
-        """
+    def set_exclude_index(self, exclude_index: Tensor) -> Tensor:
+        """set excluded index"""
         self._exclude_index = self._check_exclude_index(exclude_index)
-        return self
-
-    @property
-    def length_unit(self):
-        return self.units.length_unit
-
-    @property
-    def energy_unit(self):
-        return self.units.energy_unit
+        return self._exclude_index
 
     def set_pbc(self, use_pbc: bool = None):
-        """
-        Set PBC box.
-
-        Args:
-            use_pbc (bool, optional):    Whether to use periodic boundary condition.
-                                         If this is None, that means do not use periodic boundary condition.
-                                         Default: None.
-        """
-        self.use_pbc = use_pbc
+        """set PBC box"""
+        self._use_pbc = use_pbc
         self.get_vector.set_pbc(use_pbc)
         self.get_distance.set_pbc(use_pbc)
-        return self
-
-    def set_cutoff(self, cutoff: Tensor = None):
-        """
-        Set cutoff distance.
-
-        Args:
-            cutoff (Tensor):         Cutoff distance. Default: None
-        """
-        self.cutoff = None
-        if cutoff is not None:
-            self.cutoff = Tensor(cutoff, ms.float32)
         return self
 
     def construct(self,
@@ -188,15 +155,29 @@ class PotentialCell(Cell):
                                             Tensor of PBC box. Default: None
 
         Returns:
-            potential (Tensor), Tensor of shape (B, 1). Data type is float.
+            potential (Tensor): Tensor of shape (B, E). Data type is float.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
+            E:  Number of energy terms.
 
         """
-        #pylint: disable=invalid-name
+        #pylint: disable=unused-argument
 
         raise NotImplementedError
+
+    def _check_exclude_index(self, exclude_index: Tensor):
+        """check excluded index"""
+        if exclude_index is None:
+            return None
+        exclude_index = Tensor(exclude_index, ms.int32)
+        if exclude_index.ndim == 2:
+            exclude_index = F.expand_dims(exclude_index, 0)
+        if exclude_index.ndim != 3:
+            raise ValueError(f'The rank of exclude_index must be 2 or 3, '
+                             f'but got: {exclude_index.shape}')
+        # (B,A,Ex)
+        return Parameter(exclude_index, name='exclude_index', requires_grad=False)

@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -30,42 +30,41 @@ from ...system import Molecule
 
 
 class BerendsenThermostat(Thermostat):
-    r"""
-    A Berendsen (weak coupling) thermostat controller.
+    r"""A Berendsen (weak coupling) thermostat module, which is a subclass of `Thermostat`.
 
     Reference:
-        `Berendsen, H. J. C.; Postma, J. P. M.; van Gunsteren, W. F.; DiNola, A.; Haak, J. R..
+
+        Berendsen, H. J. C.; Postma, J. P. M.; van Gunsteren, W. F.; DiNola, A.; Haak, J. R..
         Molecular Dynamics with Coupling to an External Bath [J].
         The Journal of Chemical Physics, 1984, 81(8): 3684.
-        <https://pure.rug.nl/ws/portalfiles/portal/64380902/1.448118>`_.
 
     Args:
-        system (Molecule):      Simulation system.
-        temperature (float):    Reference temperature T_ref (K) for temperature coupling.
+
+        system (Molecule):      Simulation system
+
+        temperature (float):    Reference temperature :math:`T_{ref}` in unit Kelvin for temperature coupling.
                                 Default: 300
+
         control_step (int):     Step interval for controller execution. Default: 1
-        time_constant (float)   Time constant \tau_T (ps) for temperature coupling.
-                                Default: 4
+
+        time_constant (float)   Time constant :math:`\tau_T` in unit picosecond for temperature coupling.
+                                Default: 0.5
+
         scale_min (float):      The minimum value to clip the velocity scale factor. Default: 0.8
+
         scale_max (float):      The maximum value to clip the velocity scale factor. Default: 1.25
 
-    Returns:
-        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
-        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-        - virial (Tensor), Tensor of shape (B, D). Data type is float.
-        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
     def __init__(self,
                  system: Molecule,
                  temperature: float = 300,
                  control_step: int = 1,
-                 time_constant: float = 4,
+                 time_constant: float = 0.2,
                  scale_min: float = 0.8,
                  scale_max: float = 1.25,
                  ):
@@ -83,12 +82,7 @@ class BerendsenThermostat(Thermostat):
         self.ratio = self.control_step * self.time_step / self.time_constant
 
     def set_time_step(self, dt):
-        """
-        set simulation time step.
-
-        Args:
-            dt (float): Time of a time step.
-        """
+        """set simulation time step"""
         self.time_step = dt
         self.ratio = self.control_step * self.time_step / self.time_constant
         return self

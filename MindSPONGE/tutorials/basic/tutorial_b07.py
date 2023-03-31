@@ -21,7 +21,7 @@
 # limitations under the License.
 # ============================================================================
 """
-MindSPONGE basic tutorial 06: Minimization and MD simulation of protein molecule.
+MindSPONGE basic tutorial 07: Constraint and LINCS.
 """
 
 from mindspore import context
@@ -39,15 +39,15 @@ if __name__ == "__main__":
     from mindsponge.control import Langevin
     from mindsponge import set_global_units
     from mindsponge import Protein
-    from mindsponge import DynamicUpdater
+    from mindsponge import UpdaterMD
     from mindsponge.function import VelocityGenerator
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 
     set_global_units('nm', 'kj/mol')
 
-    PDB_NAME = 'case1.pdb'
-    system = Protein(pdb=PDB_NAME)
+    PDB_NAME = 'alad.pdb'
+    system = Protein(pdb=PDB_NAME, rebuild_hydrogen=True, rebuild_suffix='_tutorial_07')
 
     energy = ForceField(system, 'AMBER.FF14SB')
 
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     vgen = VelocityGenerator(300)
     velocity = vgen(system.coordinate.shape, system.atom_mass)
 
-    opt = DynamicUpdater(
+    opt = UpdaterMD(
         system,
         integrator=VelocityVerlet(system),
         thermostat=Langevin(system, 300),

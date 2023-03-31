@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -35,7 +35,6 @@ if __name__ == "__main__":
     from mindsponge import Sponge
     from mindsponge import Molecule
     from mindsponge import ForceField
-
     from mindsponge.callback import WriteH5MD, RunInfo
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")

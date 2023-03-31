@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -32,7 +32,7 @@ from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 from mindspore.common.initializer import Normal
 
-from mindsponge import global_units
+from mindsponge import GLOBAL_UNITS
 from mindsponge.data import set_class_into_hyper_param, set_hyper_parameter
 from mindsponge.data import get_hyper_string, get_hyper_parameter, get_class_parameters
 from mindsponge.function import Units, Length
@@ -163,7 +163,7 @@ class MolecularModel(Cell):
             length_unit = get_hyper_string(hyper_param, 'length_unit')
 
         if length_unit is None:
-            self.units = global_units
+            self.units = GLOBAL_UNITS
         else:
             self.units = Units(length_unit)
         self.length_unit = self.units.length_unit

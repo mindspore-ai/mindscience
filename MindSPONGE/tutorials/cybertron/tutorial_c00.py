@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -31,7 +31,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    sys.path.append('../..')
+    sys.path.append('..')
 
     from cybertron.dataset import DatasetProcessor
 

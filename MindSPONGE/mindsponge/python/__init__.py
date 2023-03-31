@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -36,6 +36,7 @@ def _mindspore_version_check():
            ImportError: If the MindSpore can not be imported.
        """
 
+    # pylint: disable=import-outside-toplevel
     try:
         import mindspore as ms
         from mindspore import log as logger
@@ -44,8 +45,8 @@ def _mindspore_version_check():
                           "MindSpore before using MindSpore Mindsponge, by following "
                           "the instruction at https://www.mindspore.cn/install")
 
-    ms_version = ms.__version__[:5]
-    required_mindspore_version = '2.0.0'
+    ms_version = ms.__version__
+    required_mindspore_version = '1.8.1'
     logger.info("Current Mindspore version is {}".format(ms_version))
     ms_version = list(map(int, ms_version.split('.')))
     required_mindspore = list(map(int, required_mindspore_version.split('.')))
@@ -67,10 +68,11 @@ def _mindspore_version_check():
 
 _mindspore_version_check()
 
+# pylint: disable=wrong-import-position
 from .system import Molecule, Protein
 from .potential import PotentialCell, ForceFieldBase, ForceField
-from .optimizer import Updater, DynamicUpdater, SteepestDescent
-from .core import Sponge, SimulationCell, RunOneStepCell, AnalyseCell
-from .function.units import global_units, set_global_units
+from .optimizer import Updater, UpdaterMD, DynamicUpdater
+from .core import Sponge, WithEnergyCell, SimulationCell, RunOneStepCell, AnalysisCell
+from .function.units import GLOBAL_UNITS, set_global_units
 from .function.units import set_global_length_unit, set_global_energy_unit
 from .pipeline import PipeLine

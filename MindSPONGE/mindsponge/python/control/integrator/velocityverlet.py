@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -36,33 +36,31 @@ from ...system import Molecule
 
 
 class VelocityVerlet(Integrator):
-    r"""
-    A velocity verlet integrator based on "middle scheme" developed by Jian Liu, et al.
+    r"""A velocity verlet integrator based on "middle scheme" developed by Jian Liu, et al.
+        It is a subclass of `Integrator`.
 
     Reference:
-        `Zhang, Z.; Liu, X.; Chen, Z.; Zheng, H.; Yan, K.; Liu, J.
+
+        Zhang, Z.; Liu, X.; Chen, Z.; Zheng, H.; Yan, K.; Liu, J.
         A Unified Thermostat Scheme for Efficient Configurational Sampling for
-        Classical/Quantum Canonical Ensembles via Molecular Dynamics [J].
+            Classical/Quantum Canonical Ensembles via Molecular Dynamics [J].
         The Journal of Chemical Physics, 2017, 147(3): 034109.
-        <https://aip.scitation.org/doi/abs/10.1063/1.4991621>`_.
 
     Args:
-        system (Molecule):          Simulation system.
+
+        system (Molecule):          Simulation system
+
         thermostat (Thermostat):    Thermostat for temperature coupling. Default: None
+
         barostat (Barostat):        Barostat for pressure coupling. Default: None
+
         constraint (Constraint):    Constraint algorithm. Default: None
 
-    Returns:
-        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
-        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-        - virial (Tensor), Tensor of shape (B, D). Data type is float.
-        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
 
     def __init__(self,
@@ -83,15 +81,9 @@ class VelocityVerlet(Integrator):
         velocity_half = msnp.zeros_like(self.system.coordinate)
         self.velocity_half = Parameter(velocity_half, name='velocity_half')
 
-    def set_velocity_half(self, velocity_half: Tensor, success: bool = True) -> bool:
-        """
-        set the veloctiy before half step.
-
-        Args:
-            velocity_half (Tensor): Tensor of velocity before half step.
-            success (Tensor):       Whether the velocity has been set successfully.
-        """
-        return F.depend(success, F.assign(self.velocity_half, velocity_half))
+    def set_velocity_half(self, velocity_half: Tensor) -> bool:
+        """set the veloctiy before half step"""
+        return F.assign(self.velocity_half, velocity_half)
 
     def construct(self,
                   coordinate: Tensor,
@@ -109,18 +101,18 @@ class VelocityVerlet(Integrator):
         # if t > 0: v(t) = v(t-0.5) + 0.5 * a(t) * dt
         velocity = msnp.where(step > 0, self.velocity_half +
                               0.5 * acceleration * self.time_step, velocity)
-        # (B,A,D) = (B,A,D) - (B,1,D)
-        velocity -= self.get_com_velocity(velocity)
 
         # v(t+0.5) = v(t) + 0.5 * a(t) * dt
         velocity_half = velocity + 0.5 * acceleration * self.time_step
+        # (B,A,D) = (B,A,D) - (B,1,D)
+        velocity_half -= self.get_com_velocity(velocity_half)
+        kinetics = self.get_kinetics(velocity_half)
 
         # R(t+0.5) = R(t) + 0.5 * v(t+0.5) * dt
         coordinate_half = coordinate + velocity_half * self.time_step * 0.5
 
         if self.thermostat is not None:
             # v'(t) = f_T[v(t)]
-            kinetics = self.get_kinetics(velocity_half)
             coordinate_half, velocity_half, force, energy, kinetics, virial, pbc_box = \
                 self.thermostat(coordinate_half, velocity_half,
                                 force, energy, kinetics, virial, pbc_box, step)
@@ -139,8 +131,6 @@ class VelocityVerlet(Integrator):
                 self.barostat(coordinate_new, velocity_half, force,
                               energy, kinetics, virial, pbc_box, step)
 
-        F.depend(True, F.assign(self.velocity_half, velocity_half))
-
-        kinetics = self.get_kinetics(velocity)
+        velocity = F.depend(velocity, F.assign(self.velocity_half, velocity_half))
 
         return coordinate_new, velocity, force, energy, kinetics, virial, pbc_box

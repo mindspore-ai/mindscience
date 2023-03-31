@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -35,7 +35,7 @@ from mindspore.train.callback import ModelCheckpoint, CheckpointConfig
 
 if __name__ == '__main__':
 
-    sys.path.append('../..')
+    sys.path.append('..')
 
     from cybertron import Cybertron
     from cybertron import MolCT
@@ -64,6 +64,7 @@ if __name__ == '__main__':
         activation='swish',
         max_cycles=10,
         length_unit='nm',
+        coupled_interaction=True,
     )
 
     readout = AtomwiseReadout(
@@ -80,14 +81,14 @@ if __name__ == '__main__':
         print(i, param.name, param.shape)
     print('Total parameters: ', tot_params)
 
-    n_epoch = 8
-    repeat_time = 1
-    batch_size = 32
+    N_EPOCH = 8
+    REPEAT_TIME = 1
+    BATCH_SIZE = 32
 
     ds_train = ds.NumpySlicesDataset(
         {'R': train_data['R'], 'Z': train_data['Z'], 'E': train_data['E'][:, idx]}, shuffle=True)
-    ds_train = ds_train.batch(batch_size, drop_remainder=True)
-    ds_train = ds_train.repeat(repeat_time)
+    ds_train = ds_train.batch(BATCH_SIZE, drop_remainder=True)
+    ds_train = ds_train.repeat(REPEAT_TIME)
     loss_network = WithLabelLossCell('RZE', net, nn.MAELoss())
 
     lr = 1e-3
@@ -106,7 +107,7 @@ if __name__ == '__main__':
 
     print("Start training ...")
     beg_time = time.time()
-    model.train(n_epoch, ds_train, callbacks=[
+    model.train(N_EPOCH, ds_train, callbacks=[
                 monitor_cb, ckpoint_cb], dataset_sink_mode=False)
     end_time = time.time()
     used_time = end_time - beg_time

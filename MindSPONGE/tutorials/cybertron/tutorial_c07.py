@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -36,7 +36,7 @@ from mindspore.train.callback import ModelCheckpoint, CheckpointConfig
 
 if __name__ == '__main__':
 
-    sys.path.append('../..')
+    sys.path.append('..')
 
     from cybertron import Cybertron
     from cybertron import MolCT
@@ -82,14 +82,14 @@ if __name__ == '__main__':
         print(i, param.name, param.shape)
     print('Total parameters: ', tot_params)
 
-    n_epoch = 8
-    repeat_time = 1
-    batch_size = 32
+    N_EPOCH = 8
+    REPEAT_TIME = 1
+    BATCH_SIZE = 32
 
     ds_train = ds.NumpySlicesDataset(
         {'R': train_data['R'], 'F': train_data['F'], 'E': train_data['E']}, shuffle=True)
-    ds_train = ds_train.batch(batch_size)
-    ds_train = ds_train.repeat(repeat_time)
+    ds_train = ds_train.batch(BATCH_SIZE)
+    ds_train = ds_train.repeat(REPEAT_TIME)
 
     ds_valid = ds.NumpySlicesDataset(
         {'R': valid_data['R'], 'F': valid_data['F'], 'E': valid_data['E']}, shuffle=False)
@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
     print("Start training ...")
     beg_time = time.time()
-    model.train(n_epoch, ds_train, callbacks=[
+    model.train(N_EPOCH, ds_train, callbacks=[
                 record_cb, ckpoint_cb], dataset_sink_mode=False)
     end_time = time.time()
     used_time = end_time - beg_time

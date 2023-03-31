@@ -17,9 +17,6 @@ class SteepestDescent(nn.Optimizer):
         nonh_mask(Tensor):      The mask of atoms which are not Hydrogen.
         max_shift(float):       The max step size each atom can move.
 
-    Returns:
-        float, the first element of parameters.
-
     Supported Platforms:
         ``Ascend`` ``GPU``
     """

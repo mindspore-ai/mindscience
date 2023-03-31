@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -20,11 +20,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Modeling"""
+"""Basic collective variables"""
 
-from .add_missing_atoms import rotate_by_axis, add_h
-from .hadder import AddHydrogen, ReadPdbByMindsponge
-from .pdb_generator import gen_pdb
-from .pdb_parser import read_pdb
+from .distance import Distance
+from .angle import Angle
+from .torsion import Torsion
 
-__all__ = ['rotate_by_axis', 'add_h', 'AddHydrogen', 'ReadPdbByMindsponge', 'gen_pdb', 'read_pdb']
+__all__ = ['Distance', 'Angle', 'Torsion']

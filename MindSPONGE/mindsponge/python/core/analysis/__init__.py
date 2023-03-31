@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -22,6 +22,6 @@
 # ============================================================================
 """Analysis"""
 
-from .analyse import AnalyseCell
+from .analysis import AnalysisCell
 
-__all__ = ['AnalyseCell']
+__all__ = ['AnalysisCell']

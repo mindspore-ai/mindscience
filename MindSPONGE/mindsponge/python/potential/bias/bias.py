@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -24,66 +24,61 @@
 
 from mindspore import Tensor
 
-from ..potential import PotentialCell
-from ...colvar import Colvar
-from ...function.units import Units, global_units
+from ...potential.energy import EnergyCell
+from ...colvar import Colvar, get_colvar
+from ...function import get_integer
 
 
-class Bias(PotentialCell):
-    r"""
-    Basic cell for bias potential.
+class Bias(EnergyCell):
+    r"""Basic cell for bias potential
 
     Args:
-        colvar (Colvar):            Collective variables. Default: None
-        multiple_walkers (bool):    Whether to use multiple walkers. Default: False
-        length_unit (str):          Length unit for position coordinates. Default: None
-        energy_unit (str):          Energy unit. Default: None
-        units (Units):              Units of length and energy. Default: global_units
-        use_pbc (bool):             Whether to use periodic boundary condition. Default: None
 
-    Returns:
-        potential (Tensor), Tensor of shape (B, 1). Data type is float.
+        name (str):         Name of the bias potential. Default: 'bias'
+
+        colvar (Colvar):    Collective variables. Default: None
+
+        update_pace (int):  Frequency for updating bias potential. Default: 0
+
+        length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
+                            Default: None
+
+        energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
+                            Default: None
+
+        use_pbc (bool):     Whether to use periodic boundary condition.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
     def __init__(self,
+                 name: str = 'bias',
                  colvar: Colvar = None,
-                 multiple_walkers: bool = False,
+                 update_pace: int = 0,
                  length_unit: str = None,
                  energy_unit: str = None,
-                 units: Units = global_units,
                  use_pbc: bool = None,
                  ):
 
         super().__init__(
+            name=name,
             length_unit=length_unit,
             energy_unit=energy_unit,
-            units=units,
             use_pbc=use_pbc,
         )
 
-        if units is None:
-            self.units.set_length_unit(length_unit)
-            self.units.set_energy_unit(energy_unit)
-        else:
-            self.units = units
+        self.update_pace = get_integer(update_pace)
+        if self.update_pace < 0:
+            raise ValueError(f'update_pace cannot be smaller than 0 but got {self.update_pace}')
 
-        self.colvar = colvar
-        self.multiple_walkers = multiple_walkers
+        self.colvar = get_colvar(colvar)
 
-    def update(self, coordinates: Tensor, pbc_box: Tensor = None):
-        """
-        Update parameter of bias potential.
-
-        Args:
-            coordinate (Tensor):              Tensor of shape (B, A, D). Data type is float.
-                                              Position coordinate of atoms in system.
-            pbc_box (Tensor, optional):       Tensor of shape (B, D) or (1, D). Data type is float.
-                                              Box of periodic boundary condition. Default: None.
-        """
-        #pylint: disable = unused-argument
-        return self
+    def update(self, coordinate: Tensor, pbc_box: Tensor = None) -> Tensor:
+        """update parameter of bias potential"""
+        #pylint: disable=unused-argument
+        return None
 
     def construct(self,
                   coordinate: Tensor,
@@ -93,31 +88,32 @@ class Bias(PotentialCell):
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
-        r"""
-        Calculate bias potential.
+        r"""Calculate bias potential.
 
         Args:
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: None.
+                                            Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
                                             Mask for neighbour atoms. Default: None
             neighbour_coord (Tensor):       Tensor of shape (B, A, N). Data type is bool.
                                             Position coorindates of neighbour atoms.
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: None.
-            pbc_box (Tensor, optional):     Tensor of shape (B, D) or (1, D). Data type is float.
-                                            Box of periodic boundary condition. Default: None.
+                                            Distance between neighbours atoms. Default: None
+            pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
+                                            Tensor of PBC box. Default: None
 
         Returns:
-            potential (Tensor), Tensor of shape (B, 1). Data type is float.
+            potential (Tensor): Tensor of shape (B, 1). Data type is float.
 
         Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation.
+            B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
+
         """
+        #pylint: disable=arguments-differ
 
         raise NotImplementedError

@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -24,6 +24,8 @@
 Integrator
 """
 
+from typing import Union, List
+
 import mindspore as ms
 from mindspore import Tensor
 from mindspore.nn import CellList
@@ -37,24 +39,33 @@ from ...function.functions import get_integer
 
 
 class Integrator(Controller):
-    r"""
-    Integrator for simulation.
+    r"""Base class for thermostat module in MindSPONGE, which is a subclass of `Controller`.
+
+        The `Integrator` module used to control the atomic coordinates and velocities during the simulation process.
 
     Args:
-        system (Molecule):          Simulation system.
+
+        system (Molecule):          Simulation system
+
         thermostat (Thermostat):    Thermostat for temperature coupling. Default: None
+
         barostat (Barostat):        Barostat for pressure coupling. Default: None
-        constraint (Constraint):    Constraint algorithm. Default: None
+
+        constraint (Union[Constraint, list]):
+                                    Constraint algorithm. Default: None
+
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
 
     def __init__(self,
                  system: Molecule,
                  thermostat: Thermostat = None,
                  barostat: Barostat = None,
-                 constraint: Constraint = None,
+                 constraint: Union[Constraint, List[Constraint]] = None,
                  ):
 
         super().__init__(
@@ -62,29 +73,31 @@ class Integrator(Controller):
             control_step=1,
         )
 
-        self.kinetic_unit_scale = Tensor(self.units.kinetic_ref, ms.float32)
         self.acc_unit_scale = Tensor(self.units.acceleration_ref, ms.float32)
 
-        self.boltzmann = self.units.boltzmann
-        self.degrees_of_freedom = self.degrees_of_freedom
+        self.thermostat: Thermostat = None
+        self.barostat: Barostat = None
+        self.constraint: Constraint = None
 
-        self.thermostat = None
+        self.num_constraint_controller = 0
+
+        self.set_constraint(constraint)
         self.set_thermostat(thermostat)
-
-        self.barostat = None
         self.set_barostat(barostat)
 
-        self.constraint = None
-        self.num_constraint_controller = 0
-        self.set_constraint(constraint)
+    @classmethod
+    def get_name(cls, controller: Controller) -> str:
+        """get name of controller"""
+        if controller is None:
+            return None
+        if isinstance(controller, Controller):
+            return controller.cls_name
+        if isinstance(controller, (list, CellList)):
+            return [control.cls_name for control in controller]
+        raise TypeError(f'The type of controller must be Controller or list but got: {type(controller)}')
 
     def set_time_step(self, dt: float):
-        """
-        set simulation time step.
-
-        Args:
-            dt (float): Time of a time step.
-        """
+        """set simulation time step"""
         self.time_step = Tensor(dt, ms.float32)
         if self.thermostat is not None:
             self.thermostat.set_time_step(dt)
@@ -96,12 +109,7 @@ class Integrator(Controller):
         return self
 
     def set_degrees_of_freedom(self, dofs: int):
-        """
-        set degrees of freedom (DOFs)
-
-        Args:
-            dofs (int): Degrees of freedom.
-        """
+        """set degrees of freedom (DOFs)"""
         self.degrees_of_freedom = get_integer(dofs)
         if self.thermostat is not None:
             self.thermostat.set_degrees_of_freedom(dofs)
@@ -113,52 +121,41 @@ class Integrator(Controller):
         return self
 
     def set_thermostat(self, thermostat: Thermostat):
-        """
-        set thermostat algorithm for integrator.
-
-        Args:
-            thermostat (Thermostat):    The thermostat.
-        """
+        """set thermostat algorithm for integrator"""
         if self.thermostat is not None:
-            print('Warning! The thermostat for this integrator has already been set to "' +
-                  str(self.thermostat.cls_name)+'" but will now be changed to "'+str(thermostat.cls_name)+'".')
+            print(f'Change the thermostat from "{self.thermostat.cls_name} to "{thermostat.cls_name}".')
         if thermostat is None:
             self.thermostat = None
-        else:
-            self.thermostat = thermostat
-            self.thermostat.set_degrees_of_freedom(self.degrees_of_freedom)
-            self.thermostat.set_time_step(self.time_step)
+            return self
+
+        self.thermostat = thermostat
+        self.thermostat.set_degrees_of_freedom(self.degrees_of_freedom)
+        self.thermostat.set_time_step(self.time_step)
         return self
 
     def set_barostat(self, barostat: Barostat):
-        """
-        set barostat algorithm for integrator.
-
-        Args:
-            barostat (Barostat):    The barostat.
-        """
+        """set barostat algorithm for integrator"""
         if self.barostat is not None:
-            print('Warning! The barostat for this integrator has already been set to "' +
-                  str(self.barostat.cls_name)+'" but will now be changed to "'+str(barostat.cls_name)+'".')
+            print(f'Change the barostat from "{self.barostat.cls_name} to "{barostat.cls_name}".')
         if barostat is None:
             self.barostat = None
-        else:
-            self.barostat = barostat
-            self.barostat.set_degrees_of_freedom(self.degrees_of_freedom)
-            self.barostat.set_time_step(self.time_step)
+            return self
+
+        self.barostat = barostat
+        self.barostat.set_degrees_of_freedom(self.degrees_of_freedom)
+        self.barostat.set_time_step(self.time_step)
         return self
 
-    def set_constraint(self, constraint: Constraint):
-        """
-        set constraint algorithm for integrator.
-
-        Args:
-            constraint (Constraint):    The constraints.
-        """
+    def set_constraint(self, constraint: Union[Constraint, list], num_constraints: int = 0):
+        """set constraint algorithm for integrator"""
+        self.num_constraints = num_constraints
         if self.constraint is not None:
-            print('Warning! The constraint for this integrator has already been set to "' +
-                  str(self.constraint.cls_name)+'" but will now be changed to "'+str(constraint.cls_name)+'".')
-        self.num_constraints = 0
+            for i in range(self.num_constraint_controller):
+                self.num_constraints -= self.constraint[i].num_constraints
+            old_name = self.get_name(self.constraint)
+            new_name = self.get_name(constraint)
+            print(f'Change the constraint from "{old_name} to "{new_name}".')
+
         if constraint is None:
             self.constraint = None
             self.num_constraint_controller = 0
@@ -169,33 +166,28 @@ class Integrator(Controller):
             elif isinstance(constraint, list):
                 self.num_constraint_controller = len(constraint)
             else:
-                raise ValueError('The type of "constraint" must be Controller or list but got: '
-                                 + str(type(constraint)))
+                raise ValueError(f'The type of "constraint" must be '
+                                 f'Controller or list but got: {type(constraint)}')
 
             self.constraint = CellList(constraint)
             for i in range(self.num_constraint_controller):
                 self.num_constraints += self.constraint[i].num_constraints
                 self.constraint[i].set_time_step(self.time_step)
-            degrees_of_freedom = self.sys_dofs - self.num_constraints
-            self.set_degrees_of_freedom(degrees_of_freedom)
+
+        self.set_degrees_of_freedom(self.sys_dofs - self.num_constraints)
 
         return self
 
     def add_constraint(self, constraint: Constraint):
-        """
-        add constraint algorithm for integrator.
-
-        Args:
-            constraint (Constraint):    The constraints.
-        """
+        """add constraint algorithm for integrator"""
         if isinstance(constraint, Controller):
             constraint = [constraint]
             num_constraint_controller = 1
         elif isinstance(constraint, list):
             num_constraint_controller = len(constraint)
         else:
-            raise ValueError('The type of "constraint" must be Controller or list but got: '
-                             + str(type(constraint)))
+            raise ValueError(f'The type of "constraint" must be '
+                             f'Controller or list but got: {type(constraint)}')
 
         if self.constraint is None:
             return self.set_constraint(constraint)
@@ -220,32 +212,32 @@ class Integrator(Controller):
                   pbc_box: Tensor = None,
                   step: int = 0,
                   ):
-        r"""
-        update simulation step
+        r"""update simulation step.
 
         Args:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor):      Tensor of shape (B, A, D). Data type is float.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor):      Tensor of shape (B, D). Data type is float.
-            virial (Tensor):        Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
+            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
+            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
             step (int):             Simulation step. Default: 0
 
         Returns:
-            - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-            - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-            - force (Tensor), Tensor of shape (B, A, D). Data type is float.
-            - energy (Tensor), Tensor of shape (B, 1). Data type is float.
-            - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-            - virial (Tensor), Tensor of shape (B, D). Data type is float.
-            - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
+            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
+            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
 
         Symbols:
             B:  Number of walkers in simulation.
             A:  Number of atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
+
         """
 
         raise NotImplementedError

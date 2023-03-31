@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -34,7 +34,7 @@ from mindspore.train import load_checkpoint
 
 if __name__ == '__main__':
 
-    sys.path.append('../..')
+    sys.path.append('..')
 
     from mindsponge.data import load_hyperparam
     from cybertron import Cybertron

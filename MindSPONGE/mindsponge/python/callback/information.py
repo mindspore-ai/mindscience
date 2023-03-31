@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -30,14 +30,16 @@ from ..optimizer import Updater
 
 
 class RunInfo(Callback):
-    r"""
-    Callback to print the information of MD simulation.
+    r"""Callback to print the information of MD simulation
 
     Args:
-        print_freq (int):   Frequency to print out the information. Default: 1.
+
+        print_freq (int):   Frequency to print out the information
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
 
     def __init__(self, print_freq: int = 1):
@@ -124,22 +126,29 @@ class RunInfo(Callback):
         if self.count % self.print_freq == 0:
             cb_params = run_context.original_args()
             step = cb_params.cur_step
-            self.potential = cb_params.energy.asnumpy().squeeze()
+            self.potential = cb_params.potential.asnumpy().squeeze()
             if self.use_updater:
                 self.tot_energy = self.potential + self.kinetics
             info = 'Step: '+str(step) + ', '
-            info += 'E_pot: ' + str(self.potential) + ', '
+            info += 'E_pot: ' + str(self.potential)
             if self.use_updater:
+                info += ', '
                 self.tot_energy = self.potential + self.kinetics
                 info += 'E_kin: ' + str(self.kinetics) + ', '
                 info += 'E_tot: ' + str(self.tot_energy) + ', '
                 info += 'Temperature: ' + str(self.temperature)
                 if self.use_pbc:
+                    info += ', '
                     self.pressure = cb_params.pressure.asnumpy().squeeze()
-                    info += ', Pressure: ' + str(self.pressure)
+                    info += 'Pressure: ' + str(self.pressure) + ', '
                     self.volume = cb_params.volume.asnumpy().squeeze()
-                    info += ', Volume: ' + str(self.volume)
-            print(info)
+                    info += 'Volume: ' + str(self.volume)
+            if cb_params.analyse is not None:
+                metrics = cb_params.analyse()
+                for k, v in metrics.items():
+                    info += ', '
+                    info += k + ': ' + str(v.squeeze())
+            print('[MindSPONGE]', info)
 
         self.count += 1
 

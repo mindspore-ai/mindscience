@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -30,25 +30,26 @@ import numpy as np
 from numpy import ndarray
 
 
-def update_dict(origin_dict: dict, new_dict: dict) -> dict:
+def update_dict(origin: dict, addition: dict = None) -> dict:
     """
     update complex dict.
 
     Args:
-        origin_dict(dict):  The original input dict need to be updated.
-        new_dict(dict):     Complex dict will be updated according to new dict.
+        origin (dict):      Original dict to be updated.
+        addition (dict):    Dict that need to be added to the original dict.
 
     Returns:
-        dict, update complex dict.
+        dict, new dict.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
+
     """
-    if new_dict is None:
-        return origin_dict
-    dictionary = origin_dict.copy()
-    origin_dict.update()
-    for k, v in new_dict.items():
+    if addition is None:
+        return origin
+    dictionary = origin.copy()
+    origin.update()
+    for k, v in addition.items():
         if k in dictionary.keys() and isinstance(dictionary.get(k), dict) and isinstance(v, dict):
             dictionary[k] = update_dict(dictionary[k], v)
         else:
@@ -58,31 +59,34 @@ def update_dict(origin_dict: dict, new_dict: dict) -> dict:
 
 def write_yaml(filename: str, data: dict):
     """
-    write yaml file.
+    write YAML file.
 
     Args:
-        filename(str):  name of yaml file.
-        data(dict):     A dict of data.
+        filename(str):  Name of YAML file.
+        data(dict):     Dict for output.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
+
     """
+
     with open(filename, 'w', encoding="utf-8") as file:
         yaml.dump(data, file, sort_keys=False)
 
 
 def read_yaml(filename: str) -> dict:
     """
-    read yaml file.
+    read YAML file.
 
     Args:
-        filename(str): the name of yaml file.
+        filename(str):  Name of YAML file.
 
     Returns:
-        data(dict), data in the yaml file.
+        data(dict):     Data read from the YAML file.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
+
     """
     with open(filename, 'r', encoding="utf-8") as file:
         data = yaml.safe_load(file.read())
@@ -101,7 +105,7 @@ def get_bonded_types(atom_types: ndarray, symbol: str = '-'):
         types(ndarray), types of bonded terms including bond, angle and dihedral.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
     num_atoms = atom_types.shape[-1]
 
@@ -129,7 +133,7 @@ def get_dihedral_types(atom_types: ndarray, symbol: str = '-'):
         - inverse_types, ndarray.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
     num_atoms = atom_types.shape[-1]
 
@@ -162,7 +166,7 @@ def get_improper_types(atom_types: ndarray, symbol: str = '-'):
         - orders, tuple.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend`` ``GPU`` ``CPU``
     """
     num_atoms = atom_types.shape[-1]
 

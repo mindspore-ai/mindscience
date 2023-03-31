@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -25,11 +25,13 @@ Core engine of MindSPONGE
 """
 
 import os
-from typing import Union
+from typing import Union, List
 import time
+import datetime
 from collections.abc import Iterable
 
 from mindspore import nn
+from mindspore import ops
 from mindspore.ops import functional as F
 from mindspore.common import Tensor
 from mindspore.nn.optim import Optimizer
@@ -41,44 +43,114 @@ from mindspore.parallel._utils import _get_parallel_mode, _get_device_num, _get_
     _get_parameter_broadcast, _device_number_check
 from mindspore.parallel._ps_context import _is_role_pserver
 from mindspore.train.model import _StepSync, _transfer_tensor_to_tuple
-from mindspore.nn.metrics import get_metrics, Metric
 from mindspore.dataset.engine.datasets import Dataset
+from mindspore.train.dataset_helper import DatasetHelper
+from mindspore.dataset.engine.datasets import _set_training_dataset
 
-from .simulation import SimulationCell
+from .simulation import WithEnergyCell, WithForceCell
 from .simulation import RunOneStepCell
-from .analysis import AnalyseCell
-from ..potential import PotentialCell
-from ..optimizer import Updater, DynamicUpdater
+from .analysis import AnalysisCell
+from ..function import any_not_none
+from ..potential import PotentialCell, ForceCell
+from ..optimizer import Updater, UpdaterMD
 from ..system.molecule import Molecule
+from ..metrics import MetricCV, get_metrics
 
 
 class Sponge():
-    r"""
-    Core engine of MindSPONGE.
+    r"""Core engine of MindSPONGE for simulation and analysis.
+
+        This Cell is the top-level wrapper for the three modules system (`Molecule`), potential (`PotentialCell`)
+        and optimizer (`Optimizer`) in MindSPONGE.
+
+        There are three ways to wraps the modules:
+
+        1)  Wraps `system`, `potential` and `optimizer` directly into `Sponge`.
+
+            Example:
+            >>> from mindsponge import Sponge
+            >>> md = Sponge(system, potential, optimizer)
+
+            In this way ordinary simulations can be achieved
+
+        2)  Wrap `system` and `potential` with `WithEnergyCell` first, then wrap `WithEnergyCell` and `optimizer`
+            with `Sponge`.
+
+            Example:
+            >>> from mindsponge import WithEnergyCell, Sponge
+            >>> sys_with_ene = WithEnergyCell(system, potential)
+            >>> md = Sponge(sys_with_ene, optimizer=optimizer)
+
+            In this case, the adjustment of the potential can be achieved by adjusting the `WithEnergyCell`,
+            for example by setting the `neighbour_list` and the `bias` in `WithEnergyCell`.
+
+        3)  Wrap `system` and `potential` with `WithEnergyCell` first, then wrap `WithEnergyCell` and `optimizer`
+            with `RunOneStepCell`, and finally pass the `RunOneStepCell` into 'Sponge'.
+
+            Example:
+            >>> from mindsponge import WithEnergyCell, RunOneStepCell, Sponge
+            >>> sys_with_ene = WithEnergyCell(system, potential)
+            >>> one_step = RunOneStepCell(sys_with_ene, optimizer=optimizer)
+            >>> md = Sponge(one_step)
+
+            In this case, the adjustment of the force can be achieved by adjusting the `RunOneStepCell`, for example
+            by adding a `WithForceCell` to the `RunOneStepCell`.
+
+        For simulations:
+
+            Simulation can be performed by executing the member function `Sponge.run`.
+
+            Example:
+                >>> from mindsponge import Sponge
+                >>> md = Sponge(system, potential, optimizer)
+                >>> md.run(10000)
+
+        For analysis:
+
+            `Sponge` can also analyse the simulation system by `metrics`. The `metrics` should be a dictionary of
+            `Metric` or `Colvar`. The value of the `metrics` can be calculated by executing the member function
+            `Sponge.analyse`.
+
+            Example:
+            >>> from mindsponge.colvar import Torsion
+            >>> from mindsponge.colvar import Torsion
+            >>> phi = Torsion([4, 6, 8, 14])
+            >>> psi = Torsion([6, 8, 14, 16])
+            >>> md = Sponge(system, potential, optimizer, metrics={'phi': phi, 'psi': psi})
+            >>> metrics = md.analyse()
+            >>> for k, v in metrics.items():
+            >>>     print(k, v)
+            phi [[3.1415927]]
+            psi [[3.1415927]]
 
     Args:
-        network (Union[Molecule, SimulationCell, RunOneStepCell]):  Function or neural netork for simulation system.
-        potential (Cell):                                           Potential energy. Default: None
-        optimizer (Optimizer):                                      Optimizer. Default: None
-        metrics (Metric):                                           Metrics. Default: None
-        analyse_network (Cell):                                     Analyse network. Default: None
+
+        network (Union[Molecule, WithEnergyCell, RunOneStepCell]):
+                                    Cell of the simulation system.
+
+        potential (PotentialCell):  Potential energy. Defulat: None
+
+        optimizer (Optimizer):      Optimizer. Defulat: None
+
+        metrics (dict):             A Dictionary of metrics for system analysis. The key type of the `dict` should
+                                    be `str`, and the value type of the `dict` should be `Metric` or `Colvar`.
+                                    Defulat: None
+
+        analysis (AnalysisCell):    Analysis network. Defulat: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
 
     def __init__(self,
-                 network: Union[Molecule, SimulationCell, RunOneStepCell],
+                 network: Union[Molecule, WithEnergyCell, RunOneStepCell],
                  potential: PotentialCell = None,
                  optimizer: Optimizer = None,
-                 metrics: Metric = None,
-                 analyse_network: AnalyseCell = None,
+                 metrics: dict = None,
+                 analysis: AnalysisCell = None,
                  ):
-
-        self._potential = potential
-        self._optimizer = optimizer
-        self._metrics = metrics
-        self._analyse_network = analyse_network
 
         self._parallel_mode = _get_parallel_mode()
         self._device_number = _get_device_num()
@@ -86,27 +158,46 @@ class Sponge():
         self._parameter_broadcast = _get_parameter_broadcast()
         self._create_time = int(time.time() * 1e9)
 
-        if self._potential is None and self._optimizer is None:
-            self._optimizer = None
-            self.sim_network: RunOneStepCell = network
-            self.sim_system: SimulationCell = self.sim_network.network
-            self._optimizer: Optimizer = self.sim_network.optimizer
-            self._system: Molecule = self.sim_system.network
-            self._potential: PotentialCell = self.sim_system.potential
+        self._force_function = None
+        if optimizer is None:
+            if potential is not None:
+                raise ValueError('When optimizer is None, potential must also be None!')
+            # network is RunOneStepCell: Sponge = RunOneStepCell
+            self._simulation_network: RunOneStepCell = network
+            self._system_with_energy: WithEnergyCell = self._simulation_network.system_with_energy
+            self._system_with_force: WithForceCell = self._simulation_network.system_with_force
+            self._optimizer: Optimizer = self._simulation_network.optimizer
+            self._system: Molecule = self._simulation_network.system
+
+            self._potential_function = None
+            if self._system_with_energy is not None:
+                self._potential_function: PotentialCell = self._system_with_energy.potential_function
+
+            if self._system_with_force is not None:
+                self._force_function: ForceCell = self._system_with_force.force_function
         else:
-            if self._optimizer is None:
-                raise ValueError(
-                    '"optimizer" cannot be "None" when potential is not None!')
-            if self._potential is None:
-                self.sim_system: SimulationCell = network
-                self.sim_network = RunOneStepCell(
-                    self.sim_system, self._optimizer)
-                self._system: Molecule = self.sim_system.system
-                self._potential: PotentialCell = self.sim_system.potential
+            self._system_with_force = None
+            self._optimizer = optimizer
+            if potential is None:
+                # network is WithEnergyCell: Sponge = WithEnergyCell + optimizer
+                self._system_with_energy: WithEnergyCell = network
+                self._simulation_network = RunOneStepCell(
+                    energy=self._system_with_energy, optimizer=self._optimizer)
+                self._system: Molecule = self._system_with_energy.system
+                self._potential_function: PotentialCell = self._system_with_energy.potential_function
             else:
+                # network is system: Sponge = system + potential + optimizer
                 self._system: Molecule = network
-                self.sim_system = SimulationCell(self._system, self._potential)
-                self.sim_network = RunOneStepCell(self.sim_system, self._optimizer)
+                self._potential_function: PotentialCell = potential
+                self._system_with_energy = WithEnergyCell(self._system, self._potential_function)
+                self._simulation_network = RunOneStepCell(
+                    energy=self._system_with_energy, optimizer=self._optimizer)
+
+        self._metrics = metrics
+
+        self._num_energies = self._simulation_network.num_energies
+        self._num_biases = self._simulation_network.num_biases
+        self._energy_names = self._simulation_network.energy_names
 
         self._check_for_graph_cell()
 
@@ -114,8 +205,8 @@ class Sponge():
         if isinstance(self._optimizer, Updater):
             self.use_updater = True
 
-        if isinstance(self.sim_network, RunOneStepCell):
-            self.sim_network.set_pbc_grad(self.use_updater)
+        if isinstance(self._simulation_network, RunOneStepCell):
+            self._simulation_network.set_pbc_grad(self.use_updater)
 
         self.units = self._system.units
 
@@ -123,27 +214,103 @@ class Sponge():
 
         self.coordinate = self._system.coordinate
         self.pbc_box = self._system.pbc_box
-        self.neighbour_list = self.sim_system.neighbour_list
 
-        self.cutoff = self.neighbour_list.cutoff
-        self.nl_update_steps = self.neighbour_list.update_steps
+        self.energy_neighbour_list = None
+        if self._system_with_energy is not None:
+            self.energy_neighbour_list = self._system_with_energy.neighbour_list
 
-        # Avoiding the bug for return None type
-        self.one_neighbour_terms = False
-        if self.neighbour_list.no_mask and context.get_context("mode") == context.GRAPH_MODE:
-            self.one_neighbour_terms = True
+        self.force_neighbour_list = None
+        if self._system_with_force is not None:
+            self.force_neighbour_list = self._system_with_force.neighbour_list
+
+        self.neighbour_list_pace = self._simulation_network.neighbour_list_pace
+
+        self.energy_cutoff = self._simulation_network.energy_cutoff
+        self.force_cutoff = self._simulation_network.force_cutoff
+
+        self.update_nl = any_not_none([self.energy_cutoff, self.force_cutoff])
+
+        self._analysis_network = analysis
 
         self._metric_fns = None
+        self._metric_key = []
+        self._metric_shape = []
+        self._metric_units = []
         if metrics is not None:
             self._metric_fns = get_metrics(metrics)
-
-        self.analyse_network = analyse_network
-        if analyse_network is None and self._metric_fns is not None:
-            self.analyse_network = AnalyseCell(
-                self._system, self._potential, self.neighbour_list)
+            for k, v in self._metric_fns.items():
+                self._metric_key.append(k)
+                if isinstance(v, MetricCV):
+                    self._metric_shape.append(v.shape)
+                    self._metric_units.append(v.get_unit(self.units))
+                else:
+                    self._metric_shape.append(tuple())
+                    self._metric_units.append(None)
+            if analysis is None:
+                self._analysis_network = AnalysisCell(self._system, self._potential_function,
+                                                      self.energy_neighbour_list)
 
         self.sim_step = 0
         self.sim_time = 0.0
+
+        self._potential = None
+        self._force = None
+
+        self._use_bias = False
+
+        self.reduce_mean = ops.ReduceMean()
+
+    @property
+    def energy_names(self) -> List[str]:
+        """names of energy terms
+
+        Return:
+            list of str, names of energy terms
+
+        """
+        return self._energy_names
+
+    @property
+    def num_energies(self) -> int:
+        """number of energy terms
+
+        Return:
+            int, number of energy terms
+
+        """
+        return self._num_energies
+
+    @property
+    def num_biases(self) -> int:
+        """number of bias potential energies V
+
+        Return:
+            int, number of bias potential energies
+
+        """
+        return self._num_biases
+
+    def recompile(self):
+        """recompile the simulation network"""
+        self._simulation_network.compile_cache.clear()
+        return self
+
+    def update_neighbour_list(self):
+        """update neighbour list"""
+        self._simulation_network.update_neighbour_list()
+        return self
+
+    def update_bias(self, step: int):
+        """update bias potential"""
+        self._simulation_network.update_bias(step)
+
+    def update_wrapper(self, step: int):
+        """update energy wrapper"""
+        self._simulation_network.update_wrapper(step)
+
+    def update_modifier(self, step: int):
+        """update force modifier"""
+        self._simulation_network.update_modifier(step)
 
     def change_optimizer(self, optimizer: Optimizer):
         """
@@ -151,6 +318,7 @@ class Sponge():
 
         Args:
             optimizer (Optimizer): Optimizer will be used.
+
         """
         if self._optimizer is None:
             raise ValueError('Cannot change the optimizer, because the initial optimizer is None '
@@ -163,8 +331,9 @@ class Sponge():
         else:
             self.use_updater = False
 
-        self.sim_network = RunOneStepCell(self.sim_system, self._optimizer)
-        self.sim_network.set_pbc_grad(self.use_updater)
+        self._simulation_network = RunOneStepCell(
+            energy=self._system_with_energy, optimizer=self._optimizer)
+        self._simulation_network.set_pbc_grad(self.use_updater)
 
         self.time_step = self._optimizer.learning_rate.asnumpy()
 
@@ -176,59 +345,122 @@ class Sponge():
 
         Args:
             potential (PotentialCell):  Potential energy will be used.
+
         """
-        if self._potential is None:
+        if self._potential_function is None:
             raise ValueError('Cannot change the potential, because the initial potential is None '
-                             'or the network is not a SimulationCell type.')
+                             'or the network is not a WithEnergyCell type.')
         if self._optimizer is None:
             raise ValueError('Cannot change the potential, because the initial optimizer is None '
                              'or the network is not a RunOneStepCell type.')
 
-        self._potential = potential
-        self.sim_system = SimulationCell(self._system, self._potential)
-        self.sim_network = RunOneStepCell(self.sim_system, self._optimizer)
-        self.sim_network.set_pbc_grad(self.use_updater)
+        self._potential_function = potential
+        self._system_with_energy = WithEnergyCell(self._system, self._potential_function)
+        self._simulation_network = RunOneStepCell(
+            energy=self._system_with_energy, optimizer=self._optimizer)
+        self._simulation_network.set_pbc_grad(self.use_updater)
 
         return self
 
+    def calc_energy(self) -> Tensor:
+        """calculate the total potential energy (potential energy and bias potential) of the simulation system.
+
+        Return:
+            energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
+                                Total potential energy.
+
+        """
+        if self._system_with_energy is None:
+            return None
+        return self._system_with_energy()
+
+    def calc_energies(self) -> Tensor:
+        """calculate the energy terms of the potential energy.
+
+        Return:
+            energies (Tensor):  Tensor of shape `(B, U)`. Data type is float.
+                                Energy terms.
+
+        Symbols:
+            B:  Batchsize, i.e. number of walkers of the simulation.
+            U:  Number of potential energy terms.
+
+        """
+        if self._system_with_energy is None:
+            return None
+        return self._system_with_energy.calc_energies()
+
+    def calc_biases(self) -> Tensor:
+        """calculate the bias potential terms.
+
+        Return:
+            biases (Tensor):    Tensor of shape `(B, V)`. Data type is float.
+                                Energy terms.
+
+        Symbols:
+            B:  Batchsize, i.e. number of walkers of the simulation.
+            V:  Number of bias potential terms.
+
+        """
+        if self._system_with_energy is None:
+            return None
+        return self._system_with_energy.calc_biases()
+
     def run(self,
             steps: int,
-            callbacks: Callback = None,
+            callbacks: Union[Callback, List[Callback]] = None,
             dataset: Dataset = None
             ):
-        """
-        Run simulation.
+        """Simulation API.
 
         Args:
             steps (int):            Simulation steps.
-            callbacks (Callback):   Callback functions. Default: None
+            callbacks (Union[Callback, List[Callback]]):
+                                    Callback function(s) to obtain the information of the system during
+                                    the simulation. Default: None
             dataset (Dataset):      Dataset used at simulation process. Default: None
 
+        Example:
+            >>> from mindsponge import Sponge
+            >>> from mindsponge.callback import RunInfo
+            >>> md = Sponge(system, potential, optimizer)
+            >>> md.run(10000, callbacks=[RunInfo(10)])
+
         """
-        if self.cutoff is None or steps < self.nl_update_steps:
+        if self.neighbour_list_pace == 0 or steps < self.neighbour_list_pace:
             epoch = 1
             cycle_steps = steps
             rest_steps = 0
         else:
-            epoch = steps // self.nl_update_steps
-            cycle_steps = self.nl_update_steps
+            epoch = steps // self.neighbour_list_pace
+            cycle_steps = self.neighbour_list_pace
             rest_steps = steps - epoch * cycle_steps
 
         cb_params = _InternalCallbackParam()
-        cb_params.sim_network = self.sim_network
-        cb_params.num_steps = steps
+        cb_params.sim_network = self._simulation_network
+        cb_params.analyse = None
+        cb_params.metrics = None
+        cb_params.metrics_shape = None
+        cb_params.metrics_units = None
+        if self._analysis_network is not None:
+            cb_params.analyse = self.analyse
+            cb_params.metrics = self._metric_key
+            cb_params.metrics_shape = self._metric_shape
+            cb_params.metrics_units = self._metric_units
+
+        cb_params.with_energy = self._system_with_energy is not None
+        cb_params.with_force = self._system_with_force is not None
 
         cb_params.num_steps = steps
         cb_params.time_step = self.time_step
         cb_params.num_epoch = epoch
         cb_params.cycle_steps = cycle_steps
         cb_params.rest_steps = rest_steps
-        cb_params.cutoff = self.cutoff
 
         cb_params.mode = "simulation"
-        cb_params.sim_network = self.sim_network
+        cb_params.sim_network = self._simulation_network
         cb_params.system = self._system
-        cb_params.potential = self._potential
+        cb_params.potential_network = self._potential_function
         cb_params.optimizer = self._optimizer
         cb_params.parallel_mode = self._parallel_mode
         cb_params.device_number = self._device_number
@@ -240,6 +472,24 @@ class Sponge():
 
         cb_params.coordinate = self.coordinate
         cb_params.pbc_box = self.pbc_box
+        cb_params.energy = 0
+        cb_params.force = 0
+        cb_params.potential = 0
+        cb_params.energies = 0
+        cb_params.num_energies = self._num_energies
+        cb_params.energy_names = self._energy_names
+
+        cb_params.num_biases = self._num_biases
+
+        if self._num_biases > 0:
+            cb_params.bias = 0
+            cb_params.biases = 0
+            cb_params.bias_names = self._simulation_network.bias_names
+        else:
+            cb_params.bias = None
+            cb_params.biases = None
+            cb_params.bias_names = None
+
         cb_params.volume = self._system.get_volume()
         if self.use_updater:
             self._optimizer.set_step(0)
@@ -250,93 +500,121 @@ class Sponge():
             pressure = self._optimizer.pressure
             if pressure is not None:
                 # (B) <- (B,D)
-                pressure = F.reduce_mean(pressure, -1)
+                pressure = self.reduce_mean(pressure, -1)
             cb_params.pressure = pressure
 
             cb_params.thermostat = None
             cb_params.barostat = None
             cb_params.constraint = None
-            if isinstance(self._optimizer, DynamicUpdater):
+            if isinstance(self._optimizer, UpdaterMD):
                 cb_params.thermostat = self._optimizer.thermostat
                 cb_params.barostat = self._optimizer.barostat
                 cb_params.constraint = self._optimizer.constraint
 
+        beg_time = datetime.datetime.now()
+        print('[MindSPONGE] Started simulation at', beg_time.strftime('%Y-%m-%d %H:%M:%S'))
         # build callback list
         with _CallbackManager(callbacks) as list_callback:
-            self._simulation_process(
-                epoch, cycle_steps, rest_steps, list_callback, cb_params)
-
+            self._simulation_process(epoch, cycle_steps, rest_steps, list_callback, cb_params)
+        end_time = datetime.datetime.now()
+        print('[MindSPONGE] Finished simulation at', end_time.strftime('%Y-%m-%d %H:%M:%S'))
+        used_time = end_time - beg_time
+        d = used_time.days
+        s = used_time.seconds
+        m, s = divmod(s, 60)
+        h, m = divmod(m, 60)
+        if d > 1:
+            print('[MindSPONGE] Simulation time: %d days, %d hours, %d minutes and %d seconds.' % (d, h, m, s))
+        elif h > 1:
+            print('[MindSPONGE] Simulation time: %d hours %d minutes %d seconds.' % (h, m, s))
+        elif m > 1:
+            s += used_time.microseconds / 1e6
+            print('[MindSPONGE] Simulation time: %d minutes %1.1f seconds.' % (m, s))
+        else:
+            s += used_time.microseconds / 1e6
+            print('[MindSPONGE] Simulation time: %1.2f seconds.' % s)
+        print('-'*80)
         return self
 
-    def energy(self):
-        """get energy of system"""
-        return self.sim_system()
+    def calc_potential(self) -> Tensor:
+        """calculate and return the potential energy"""
+        if self._system_with_energy is None:
+            return 0
+        return self._system_with_energy()
 
-    def energy_and_force(self):
-        """get energy and force"""
-        return self.sim_network.get_energy_and_force()
+    def get_energies(self) -> Tensor:
+        """Tensor of potential energies with shape (B, U). Data type is float."""
+        return self._simulation_network.energies
 
-    def analyse(self, dataset=None, callbacks=None):
+    def get_biases(self) -> Tensor:
+        """Tensor bias potential energies with shape (B, V). Data type is float."""
+        return self._simulation_network.biases
+
+    def get_bias(self) -> Tensor:
+        """Tensor of total bias potential with shape (B, 1). Data type is float."""
+        return self._simulation_network.bias
+
+    def analyse(self,
+                dataset: Dataset = None,
+                callbacks: Union[Callback, List[Callback]] = None,
+                ):
         """
-        Evaluation API where the iteration is controlled by python front-end.
+        Analysis API.
 
-        Configure to pynative mode or CPU, the evaluating process will be performed with dataset non-sink mode.
-
-        Note:
-            If dataset_sink_mode is True, data will be sent to device. If the device is Ascend, features
-            of data will be transferred one by one. The limitation of data transmission per time is 256M.
-            When dataset_sink_mode is True, the step_end method of the Callback class will be executed when
-            the epoch_end method is called.
+            NOTE: To use this API, the `metrics` must be set at `Sponge` initialization.
 
         Args:
-            dataset (Dataset):                      Dataset to evaluate the model.
-            callbacks (Optional[list(Callback)]):   List of callback objects which should be executed
-                                                    while training. Default: None.
+            dataset (Dataset):  Dataset of simulation to be analysed. Default: None
+            callbacks (Union[Callback, List(Callback)]): List of callback objects which should be executed
+                while training. Default: None.
 
         Returns:
             Dict, the key is the metric name defined by users and the value is the metrics value for
             the model in the test mode.
 
-        Examples:
-            >>> from mindspore import Model, nn
-            >>>
-            >>> # For details about how to build the dataset, please refer to the tutorial
-            >>> # document on the official website.
-            >>> dataset = create_custom_dataset()
-            >>> net = Net()
-            >>> loss = nn.SoftmaxCrossEntropyWithLogits()
-            >>> model = Model(net, loss_fn=loss, optimizer=None, metrics={'acc'})
-            >>> acc = model.eval(dataset, dataset_sink_mode=False)
+        Example:
+            >>> from mindsponge.colvar import Torsion
+            >>> from mindsponge.colvar import Torsion
+            >>> phi = Torsion([4, 6, 8, 14])
+            >>> psi = Torsion([6, 8, 14, 16])
+            >>> md = Sponge(system, potential, optimizer, metrics={'phi': phi, 'psi': psi})
+            >>> metrics = md.analyse()
+            >>> for k, v in metrics.items():
+            >>>     print(k, v)
+            phi [[3.1415927]]
+            psi [[3.1415927]]
+
         """
 
         _device_number_check(self._parallel_mode, self._device_number)
         if not self._metric_fns:
-            raise ValueError("The model argument 'metrics' can not be None or empty, "
-                             "you should set the argument 'metrics' for model.")
+            raise ValueError("The Sponge argument 'metrics' can not be None or empty, "
+                             "you should set the argument 'metrics' for Sponge.")
 
         cb_params = _InternalCallbackParam()
-        cb_params.analyse_network = self.analyse_network
+        cb_params.mode = "analyse"
+        cb_params.analysis_network = self._analysis_network
+        cb_params.cur_step_num = 0
         if dataset is not None:
             cb_params.analysis_dataset = dataset
             cb_params.batch_num = dataset.get_dataset_size()
-            cb_params.mode = "analyse"
-            cb_params.cur_step_num = 0
 
         cb_params.list_callback = self._transform_callbacks(callbacks)
 
         self._clear_metrics()
 
         with _CallbackManager(callbacks) as list_callback:
-            return self._analyse_process(dataset, list_callback, cb_params)
+            return self._analysis_process(dataset, list_callback, cb_params)
 
     def _check_for_graph_cell(self):
         """Check for graph cell"""
         if not isinstance(self._system, nn.GraphCell):
             return
 
-        if self._potential is not None or self._optimizer is not None:
+        if self._potential_function is not None or self._optimizer is not None:
             raise ValueError("For 'Model', 'loss_fn' and 'optimizer' should be None when network is a GraphCell, "
-                             "but got 'loss_fn': {}, 'optimizer': {}.".format(self._potential, self._optimizer))
+                             "but got 'loss_fn': {}, 'optimizer': {}.".format(self._potential_function,
+                                                                              self._optimizer))
 
     @staticmethod
     def _transform_callbacks(callbacks: Callback):
@@ -380,25 +658,14 @@ class Sponge():
 
         for i in range(epoch):
             cb_params.cur_epoch = i
-            if self.pbc_box is None:
-                coordinate = self._system()
-                pbc_box = None
-            else:
-                coordinate, pbc_box = self._system()
-            self.neighbour_list(coordinate, pbc_box)
-            should_stop = self._run_one_epoch(
-                cycle_steps, list_callback, cb_params, run_context)
+            self.update_neighbour_list()
+            should_stop = self._run_one_epoch(cycle_steps, list_callback, cb_params, run_context)
             should_stop = should_stop or run_context.get_stop_requested()
             if should_stop:
                 break
 
         if rest_steps > 0:
-            if self.pbc_box is None:
-                coordinate = self._system()
-                pbc_box = None
-            else:
-                coordinate, pbc_box = self._system()
-            self.neighbour_list(coordinate, pbc_box)
+            self.update_neighbour_list()
             self._run_one_epoch(rest_steps, list_callback,
                                 cb_params, run_context)
 
@@ -421,10 +688,18 @@ class Sponge():
 
             cb_params.volume = self._system.get_volume()
 
-            energy, force = self.sim_network()
+            self._potential, self._force = self._simulation_network()
+            self.update_bias(self.sim_step)
+            self.update_wrapper(self.sim_step)
+            self.update_modifier(self.sim_step)
 
-            cb_params.energy = energy
-            cb_params.force = force
+            cb_params.potential = self._potential
+            cb_params.force = self._force
+
+            cb_params.energies = self.get_energies()
+            if self._num_biases > 0:
+                cb_params.bias = self.get_bias()
+                cb_params.biases = self.get_biases()
 
             if self.use_updater:
                 cb_params.velocity = self._optimizer.velocity
@@ -435,7 +710,7 @@ class Sponge():
                 pressure = self._optimizer.pressure
                 if pressure is not None:
                     # (B) <- (B,D)
-                    pressure = F.reduce_mean(pressure, -1)
+                    pressure = self.reduce_mean(pressure, -1)
                 cb_params.pressure = pressure
 
             self.sim_step += 1
@@ -456,7 +731,11 @@ class Sponge():
         list_callback.epoch_end(run_context)
         return should_stop
 
-    def _analyse_process(self, dataset=None, list_callback=None, cb_params=None):
+    def _analysis_process(self,
+                          dataset: Dataset = None,
+                          list_callback: Callback = None,
+                          cb_params: _InternalCallbackParam = None
+                          ):
         """
         Evaluation. The data would be passed to network directly.
 
@@ -476,7 +755,22 @@ class Sponge():
         if dataset is None:
             cb_params.cur_step_num += 1
             list_callback.step_begin(run_context)
-            outputs = self.analyse_network()
+
+            inputs = (
+                self.coordinate,
+                self.pbc_box,
+                self._potential,
+                self._force,
+                self.get_energies(),
+                self.get_bias(),
+                self.get_biases(),
+            )
+
+            outputs = self._analysis_network(*inputs)
+
+            if self.pbc_box is None:
+                outputs = (outputs[0], None) + outputs[2:]
+
             cb_params.net_outputs = outputs
             list_callback.step_end(run_context)
             self._update_metrics(outputs)
@@ -485,13 +779,14 @@ class Sponge():
                 cb_params.cur_step_num += 1
                 list_callback.step_begin(run_context)
                 next_element = _transfer_tensor_to_tuple(next_element)
-                outputs = self.analyse_network(*next_element)
+                outputs = self._analysis_network(*next_element)
                 cb_params.net_outputs = outputs
                 list_callback.step_end(run_context)
                 self._update_metrics(outputs)
 
         list_callback.epoch_end(run_context)
-        dataset.reset()
+        if dataset is not None:
+            dataset.reset()
         metrics = self._get_metrics()
         cb_params.metrics = metrics
         list_callback.end(run_context)
@@ -520,14 +815,20 @@ class Sponge():
             metrics[key] = value.eval()
         return metrics
 
-    def _exec_preprocess(self, is_run):
+    def _exec_preprocess(self, is_run, dataset=None, dataset_helper=None):
         """Initializes dataset."""
         if is_run:
-            network = self.sim_network
+            network = self._simulation_network
             phase = 'simulation'
         else:
-            network = self.analyse_network
-            phase = 'analyse'
+            network = self._analysis_network
+            phase = 'analysis'
+
+        if dataset is not None and dataset_helper is None:
+            dataset_helper = DatasetHelper(dataset, False)
+
+        if is_run:
+            _set_training_dataset(dataset_helper)  # pylint: disable=W0212
 
         network.set_train(is_run)
         network.phase = phase
@@ -535,7 +836,7 @@ class Sponge():
         if self._parallel_mode in (ParallelMode.SEMI_AUTO_PARALLEL, ParallelMode.AUTO_PARALLEL):
             network.set_auto_parallel()
 
-        return network
+        return dataset_helper, network
 
     def _flush_from_cache(self, cb_params):
         """Flush cache data to host if tensor is cache enable."""

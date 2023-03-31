@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -34,34 +34,33 @@ from ...function import functions as func
 
 
 class Thermostat(Controller):
-    r"""
-    Thermostat controller for temperature coupling.
+    r"""Base class for thermostat module in MindSPONGE, which is a subclass of `Controller`.
+
+        The `Thermostat` module is used for temperature coupling. It controls the atomic velocities and the kinetics
+        of the system during the simulation process.
 
     Args:
-        system (Molecule):      Simulation system.
-        temperature (float):    Reference temperature T_ref (K) for temperature coupling.
-                                Default: 300
-        control_step (int):     Step interval for controller execution. Default: 1
-        time_constant (float)   Time constant \tau_T (ps) for temperature coupling.
-                                Default: 4
 
-    Returns:
-        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
-        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-        - virial (Tensor), Tensor of shape (B, D). Data type is float.
-        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+        system (Molecule):      Simulation system
+
+        temperature (float):    Reference temperature :math:`T_{ref}` in unit Kelvin for temperature coupling.
+                                Default: 300
+
+        control_step (int):     Step interval for controller execution. Default: 1
+
+        time_constant (float)   Time constant :math:`\tau_T` in unit picosecond for temperature coupling.
+                                Default: 0.5
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
     """
     def __init__(self,
                  system: Molecule,
                  temperature: float = 300,
                  control_step: int = 1,
-                 time_constant: float = 4.,
+                 time_constant: float = 0.5,
                  ):
 
         super().__init__(
@@ -69,10 +68,7 @@ class Thermostat(Controller):
             control_step=control_step,
         )
 
-        self.boltzmann = self.units.boltzmann
-        self.kinetic_unit_scale = self.units.kinetic_ref
-
-        self.ref_temp = Tensor(temperature, ms.float32).reshape(-1, 1)
+        self.ref_temp = func.get_ms_array(temperature, ms.float32).reshape(-1, 1)
         self.ref_kinetics = 0.5 * self.degrees_of_freedom * self.boltzmann * self.ref_temp
 
         # \tau_t
@@ -83,7 +79,7 @@ class Thermostat(Controller):
 
     @property
     def temperature(self):
-        """reference temperature."""
+        """reference temperature"""
         return self.ref_temp
 
     @property
@@ -91,30 +87,21 @@ class Thermostat(Controller):
         """reference kinetics"""
         return self.ref_kinetics
 
-    def set_degrees_of_freedom(self, dofs: int):
-        """
-        set degrees of freedom (DOFs).
+    def set_temperature(self, temperature: float):
+        """set reference temperature"""
+        self.ref_temp = func.get_ms_array(temperature, ms.float32).reshape(-1, 1)
+        self.ref_kinetics = 0.5 * self.degrees_of_freedom * self.boltzmann * self.ref_temp
+        return self
 
-        Args:
-            dofs (int): Degrees of freedom.
-        """
+    def set_degrees_of_freedom(self, dofs: int):
+        """set degrees of freedom (DOFs)"""
         self.degrees_of_freedom = dofs
         self.ref_kinetics = 0.5 * self.degrees_of_freedom * self.boltzmann * self.ref_temp
         return self
 
     def velocity_scale(self, sim_kinetics: Tensor, ref_kinetics: Tensor, ratio: float = 1) -> Tensor:
-        r"""
-        calculate the velocity scale factor for temperature coupling.
-
-        Args:
-            sim_kinetics (Tensor):  Tensor of simulation kinetics.
-            ref_kinetics (Tensor):  Tensor of reference kinetics.
-            ratio (float):          The degree of change lambda\_.
-
-        Returns:
-            Tensor, teh velocity scale factor.
-        """
-        sim_kinetics = func.keepdim_sum(sim_kinetics, -1)
+        """calculate the velocity scale factor for temperature coupling"""
+        sim_kinetics = func.keepdims_sum(sim_kinetics, -1)
         lambda_ = 1. + ratio * (ref_kinetics / sim_kinetics - 1)
         return F.sqrt(lambda_)
 
@@ -129,32 +116,32 @@ class Thermostat(Controller):
                   step: int = 0,
                   ):
 
-        r"""
-        Control the temperature of the simulation system.
+        r"""Control the temperature of the simulation system
 
         Args:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor):      Tensor of shape (B, A, D). Data type is float.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor):      Tensor of shape (B, D). Data type is float.
-            virial (Tensor):        Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
+            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
+            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
             step (int):             Simulation step. Default: 0
 
         Returns:
-            coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-            velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-            force (Tensor), Tensor of shape (B, A, D). Data type is float.
-            energy (Tensor), Tensor of shape (B, 1). Data type is float.
-            kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-            virial (Tensor), Tensor of shape (B, D). Data type is float.
-            pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
+            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
+            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
 
         Symbols:
             B:  Number of walkers in simulation.
             A:  Number of atoms.
-            D:  Dimension of the simulation system. Usually is 3.
+            D:  Spatial dimension of the simulation system. Usually is 3.
+
         """
 
         raise NotImplementedError

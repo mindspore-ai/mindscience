@@ -1,4 +1,4 @@
-# Copyright 2021-2022 @ Shenzhen Bay Laboratory &
+# Copyright 2021-2023 @ Shenzhen Bay Laboratory &
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
@@ -22,11 +22,17 @@
 # ============================================================================
 """Functions and Operations"""
 
-from .functions import *
-from .operations import *
-from .units import *
+from mindspore import context
+from mindspore.ops import Gather
 
-__all__ = []
+from .functions import *
+from .units import *
+from .operations import GetVector, GetDistance, VelocityGenerator, \
+        GetDistanceShift, GetShiftGrad, GatherNet
+
+gather = GatherNet() if context.get_context("device_target") == "Ascend" else Gather()
+
+__all__ = ['gather']
 __all__.extend(functions.__all__)
-__all__.extend(operations.__all__)
 __all__.extend(units.__all__)
+__all__.extend(operations.__all__)
