@@ -381,20 +381,22 @@ def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_
                                             see more at `mindsponge.common.residue_constants`.
 
     Returns:
-        - bonds_c_n_loss_mean (Tensor), loss for peptide bond length violations. shape is () .
-        - angles_ca_c_n_loss_mean (Tensor), loss for violations of bond angle around C spanned by CA, C, N. shape is ().
-        - angles_c_n_ca_loss_mean (Tensor), loss for violations of bond angle around N spanned by C, N, CA. shape is ().
+        - bonds_c_n_loss_mean (Tensor), loss for peptide bond length violations. shape is :math:`()`.
+        - angles_ca_c_n_loss_mean (Tensor), loss for violations of bond angle around C spanned by CA, C, N.
+          Shape is :math:`()`.
+        - angles_c_n_ca_loss_mean (Tensor), loss for violations of bond angle around N spanned by C, N, CA.
+          Shape is :math:`()`.
         - connections_per_residue_loss_sum (Tensor), sum of all losses of each residue. shape is :math:`(N_{res}, )` .
         - connections_per_residue_violation_mask (Tensor), mask denoting all residues with violation present.
           shape is :math:`(N_{res}, )` .
-        - clashes_mean_loss (Tensor),  average clash loss. shape: () .
+        - clashes_mean_loss (Tensor),  average clash loss. shape: :math:`()` .
         - clashes_per_atom_loss_sum (Tensor), sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
         - clashes_per_atom_clash_mask (Tensor), mask whether atom clashes with any other atom.
           shape :math:`(N_{res}, 14)` .
         - per_atom_loss_sum (Tensor), sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
         - per_atom_violations (Tensor), violation per atom, shape :math:`(N_{res}, 14)` .
         - total_per_residue_violations_mask (Tensor), violation masks for all residues, shape :math:`(N_{res}, )` .
-        - structure_violation_loss (Tensor), total violations for all amino acids. shape is () .
+        - structure_violation_loss (Tensor), total violations for all amino acids. shape is :math:`()` .
 
     Symbol:
         :math:`N_{res}`, number of amino acids.

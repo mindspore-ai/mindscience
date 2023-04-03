@@ -13,11 +13,11 @@ mindsponge.cell.GlobalAttention
         - **batch_size** (int) - attention中权重的batch size，仅在有while控制流时使用，默认值："None"。
 
     输入：
-        - **q_data** (Tensor) - shape为(batch_size, seq_length, input_dim)的query tensor，其中seq_length是query向量的序列长度。
-        - **m_data** (Tensor) - shape为(batch_size, seq_length, input_dim)的key和value tensor。
-        - **q_mask** (Tensor) - shape为(batch_size, seq_length, 1)的q_data的mask。
+        - **q_data** (Tensor) - shape为 :math:`(batch\_size, seq\_length, input\_dim)` 的query tensor，其中seq_length是query向量的序列长度。
+        - **m_data** (Tensor) - shape为 :math:`(batch\_size, seq\_length, input\_dim)` 的key和value tensor。
+        - **q_mask** (Tensor) - shape为 :math:`(batch\_size, seq\_length, 1)` 的q_data的mask。
         - **bias** (Tensor) - attention矩阵的偏置。默认值："None"。
         - **index** (Tensor) - 在while循环中的索引，仅在有while控制流时使用。默认值："None"。
 
     输出：
-        Tensor。GlobalAttention层的输出tensor，shape是(batch_size, seq_length, output_dim)。
+        Tensor。GlobalAttention层的输出tensor，shape是 :math:`(batch\_size, seq\_length, output\_dim)`。

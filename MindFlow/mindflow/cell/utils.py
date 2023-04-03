@@ -34,13 +34,13 @@ def to_2tuple(t):
 
 
 def get_2d_sin_cos_pos_embed(embed_dim, grid_size):
-    """
+    r"""
     Args:
         embed_dim (int): The output dimension for each position.
         grid_size (tuple(int)): The grid height and width.
 
     Returns:
-        The numpy array with shape of (1, grid_height*grid_width, embed_dim)
+        The numpy array with shape of :math:`(1, grid\_height*grid_width, embed\_dim)`
 
     """
     grid_size = to_2tuple(grid_size)
@@ -56,7 +56,7 @@ def get_2d_sin_cos_pos_embed(embed_dim, grid_size):
 
 
 def get_2d_sin_cos_pos_embed_from_grid(embed_dim, grid):
-    """
+    r"""
     use half of dimensions to encode grid_height
 
     Args:
@@ -64,7 +64,7 @@ def get_2d_sin_cos_pos_embed_from_grid(embed_dim, grid):
         grid (int): a numpy array of positions to be encoded: size (M,).
 
     Returns:
-        The numpy array with shape of (M/2, embed_dim)
+        The numpy array with shape of :math:`(M/2, embed\_dim)`
     """
     emb_height = get_1d_sin_cos_pos_embed_from_grid(embed_dim // 2, grid[0])  # (H*W, D/2)
     emb_width = get_1d_sin_cos_pos_embed_from_grid(embed_dim // 2, grid[1])  # (H*W, D/2)
@@ -74,13 +74,13 @@ def get_2d_sin_cos_pos_embed_from_grid(embed_dim, grid):
 
 
 def get_1d_sin_cos_pos_embed_from_grid(embed_dim, pos):
-    """
+    r"""
     Args:
         embed_dim (int): output dimension for each position.
         pos (int): a numpy array of positions to be encoded: size (M,).
 
     Returns:
-        The numpy array with shape of (M, embed_dim)
+        The numpy array with shape of :math:`(M, embed\_dim)`
     """
     omega = np.arange(embed_dim // 2, dtype=np.float)
     omega /= embed_dim / 2.
@@ -103,7 +103,7 @@ def patchify(label, patch_size=16):
         patch_size (int): The patch size of image. Default: 16.
 
     Returns:
-        The numpy array with new shape of (H, W).
+        The numpy array with new shape of :math:`(H, W)`.
     """
     label_shape = label.shape
     label = np.reshape(label, (label_shape[0] // patch_size,
@@ -127,7 +127,7 @@ def unpatchify(labels, img_size=(192, 384), patch_size=16, nchw=False):
         nchw (bool): If True, the unpatchify shape contains N, C, H, W.
 
     Returns:
-        The tensor with shape of (N, H, W, C).
+        The tensor with shape of :math:`(N, H, W, C)`.
     """
     label_shape = labels.shape
     output_dim = label_shape[-1] // (patch_size * patch_size)
