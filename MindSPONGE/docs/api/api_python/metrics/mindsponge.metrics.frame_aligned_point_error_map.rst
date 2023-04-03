@@ -9,7 +9,7 @@ mindsponge.metrics.frame_aligned_point_error_map
         - **pred_frames** (list) - 预测的蛋白质刚体变换组对应局部坐标系，二维数组，数组的第一个元素是长度为9的tensor的list，代表局部坐标系相对于全局坐标系的旋转矩阵；第二个元素是长度为3的tensor的list，代表局部坐标系相对于全局坐标系的平移矩阵，所有tensor的shape均为 :math:`(N_{recycle}, N\_res)` ，其中 :math:`N_{recycle}` 是Structure模块中FoldIteration的循环次数。 :math:`N_{res}` 是蛋白质中的残基数目。
         - **target_frames** (list) - 预测的蛋白质刚体变换组对应局部坐标系，shape与 `pred_frames` 一致。
         - **frames_mask** (Tensor) - 局部坐标系的mask，shape为 :math:`(N_{res},)` 。
-        - **pred_positions** (list) - 预测的 :math:`C\alpha` 原子的坐标，长度为3的tensor的一维数组，tensor的shape为 :math:`(N_{res},)` 。
+        - **pred_positions** (list) - 预测的 :math:`C\alpha` 原子的坐标，长度为3的tensor的一维数组，tensor的shape为 :math:`(N_{recycle}, N_{res},)` 。
         - **target_positions** (list) - 真实的 :math:`C\alpha` 原子的坐标，长度与 `pred_positions` 一致。
         - **positions_mask** (Tensor) - 预测的原子坐标的mask，shape为 :math:`(N_{res},)` 。
         - **length_scale** (float) - 单位距离，用于缩放距离的差，常量。

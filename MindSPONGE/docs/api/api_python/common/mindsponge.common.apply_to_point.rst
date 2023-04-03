@@ -6,8 +6,10 @@ mindsponge.common.apply_to_point
     对输入坐标进行旋转平移变换。
 
     .. math::
-        rot_point = rotation \cdot point
-        result = rot_point + translation
+        \begin{split}
+        &rot_point = rotation \cdot point \\
+        &result = rot_point + translation \\
+        \end{split}
 
     具体的乘法过程与加法过程可以参考 `mindsponge.common.rots_mul_vecs` 和 `mindsponge.common.vecs_add` API。
 

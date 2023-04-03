@@ -10,4 +10,4 @@ mindsponge.common.vecs_expand_dims
         - **axis** (int) - 新插入的维度的位置,仅接受常量输入。
 
     返回：
-        tuple，如果 axis 的值为0，且 :math:`xx` 的shape为 :math:`(... , X_R)` ，拓展后的shape为 :math:`(1, ..., X_R)` 。若 axis为其它值，则在其它方向拓展，返回拓展后的 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` 。
+        tuple，如果 axis 的值为0，且 :math:`xx` 的shape为 :math:`(..., X_R)` ，拓展后的shape为 :math:`(1, ..., X_R)` 。若 axis为其它值，则在其它方向拓展，返回拓展后的 :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` 。

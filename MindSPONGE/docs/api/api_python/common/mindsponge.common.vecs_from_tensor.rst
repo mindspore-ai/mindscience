@@ -9,4 +9,4 @@ mindsponge.common.vecs_from_tensor
         - **inputs** (Tensor) - 原子位置信息，shape为 :math:`(..., 3)`。
 
     返回：
-        返回带有三个tensor的tuple，分别包含x, y, z坐标信息。
+        返回带有三个tensor的tuple :math:`(x, y, z)`，分别包含x, y, z坐标信息。

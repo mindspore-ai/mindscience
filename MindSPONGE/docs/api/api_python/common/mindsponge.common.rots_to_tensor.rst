@@ -10,4 +10,4 @@ mindsponge.common.rots_to_tensor
         - **use_numpy** (bool) - 是否使用numpy计算，默认值：False。
 
     返回：
-        tensor，最后一根轴合并后的旋转矩阵，shape为 :math:`(..., 3, 3)`。
+        tensor，最后一根轴合并后的旋转矩阵，shape为 :math:`(N_{res}, 3, 3)`。
