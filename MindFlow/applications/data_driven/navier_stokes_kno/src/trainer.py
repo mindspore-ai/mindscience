@@ -48,7 +48,7 @@ class NavierStokesWithLoss(FlowWithLoss):
         """Train the model on one batch of train dataset.
 
         Args:
-            xx (Array): Input data with shape e.g. [N,H,W,T,C].
+            xx (Array): Input data with shape e.g. :math:`[N,H,W,T,C]`.
             t_out (int): Number of time steps to forward the model sequentially.
         """
         t_out = t_out or self.t_out
@@ -92,8 +92,8 @@ class NavierStokesWithLoss(FlowWithLoss):
         """Calculate the loss, which is used to guide the gradient computing.
 
         Args:
-            inputs (Array): Input data with shape e.g. [N,H,W,T,C].
-            labels (Array): Label data with shape e.g. [N,H,W,T,C].
+            inputs (Array): Input data with shape e.g. :math:`[N,H,W,T,C]`.
+            labels (Array): Label data with shape e.g. :math:`[N,H,W,T,C]`.
         """
         pred, l_recons = self.step(inputs, self.t_out)
         l_pred = self.loss_fn(ops.flatten(pred), ops.flatten(labels))
@@ -106,8 +106,8 @@ class NavierStokesWithLoss(FlowWithLoss):
 
         Predict 1 time step each step, and use the prediction as input for next time step.
         Args:
-            inputs (Array): Input data with shape e.g. [N,T0,H,W,T,C].
-            labels (Array): Label data with shape e.g. [N,T0,H,W,T,C].
+            inputs (Array): Input data with shape e.g. :math:`[N,T0,H,W,T,C]`.
+            labels (Array): Label data with shape e.g. :math:`[N,T0,H,W,T,C]`.
             t_out (int): Number of time steps to predict sequentially.
         """
         l_recons_all, l_pred_all = 0.0, 0.0
