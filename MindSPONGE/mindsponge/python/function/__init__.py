@@ -28,11 +28,9 @@ from mindspore.ops import Gather
 from .functions import *
 from .units import *
 from .operations import GetVector, GetDistance, VelocityGenerator, \
-        GetDistanceShift, GetShiftGrad, GatherNet
+        GetDistanceShift, GetShiftGrad
 
-gather = GatherNet() if context.get_context("device_target") == "Ascend" else Gather()
-
-__all__ = ['gather']
+__all__ = []
 __all__.extend(functions.__all__)
 __all__.extend(units.__all__)
 __all__.extend(operations.__all__)
