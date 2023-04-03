@@ -365,6 +365,8 @@ def rots_from_two_vecs(e0_unnormalized, e1_unnormalized):
     Finally get the unit vector of z axis :math:`\vec e_2` by calculating cross product of
     :math:`\vec e_1` and :math:`\vec e_0`.
 
+    The final rots is :math:`(e_{0x}, e_{1x}, e_{2x}, e_{0y}, e_{1y}, e_{2y}, e_{0z}, e_{1z}, e_{2z})`.
+
     Args:
         e0_unnormalized (tuple):    vectors :math:`\vec a` as x-axis of x-y plane,
                                     length is 3. Data type is constant or Tensor with same shape.
@@ -372,7 +374,7 @@ def rots_from_two_vecs(e0_unnormalized, e1_unnormalized):
                                     length is 3. Data type is constant or Tensor with same shape.
 
     Returns:
-        tuple, rotation matrix :math:`(e_0_x, e_1_x, e_2_x, e_0_y, e_1_y, e_2_y, e_0_z, e_1_z, e_2_z)` .
+        tuple, rotation matrix :math:`(e_{0x}, e_{1x}, e_{2x}, e_{0y}, e_{1y}, e_{2y}, e_{0z}, e_{1z}, e_{2z})` .
             Data type is constant or Tensor with same shape.
 
     Supported Platforms:
@@ -584,9 +586,9 @@ def vecs_add(v1, v2):
 
 def rigids_mul_vecs(rigids, v):
     r"""
-    Transform vector :math:`v` to rigid' local coordinate system.
+    Transform vector :math:`\vec v` to rigid' local coordinate system.
 
-    Multiply vector :math:`v` and the rotations of rigid together
+    Multiply vector :math:`\vec v` and the rotations of rigid together
     and add the translations of rigid. The result is the output vector.
 
     .. math::
@@ -617,7 +619,7 @@ def rigids_mul_rots(x, y):
     r"""
     Numpy version of getting results rigid :math:`x` multiply rotations :math:`\vec y` .
 
-    Multiply rotations of rigid :math:`x` with rotations :math:`y`,
+    Multiply rotations of rigid :math:`x[0]` with rotations :math:`\vec y`,
     the result is rigids new rotations. Translations of rigid will not changed.
 
     .. math::
@@ -649,7 +651,7 @@ def rigids_mul_rots(x, y):
 def rigids_mul_rigids(a, b):
     r"""
     Change rigid :math:`b` from its local coordinate system to rigid :math:`a`
-    local coordinate system, using rigid :math:`a` rotations and translations.
+    local coordinate system, using rigid rotations and translations.
 
     Use the rotations calculated by multiplying rotations of rigid :math:`b`
     and rigid :math:`a` as new rotations of rigid :math:`b` .
@@ -741,7 +743,8 @@ def vecs_from_tensor(inputs):
         inputs(Tensor): Atom position information. Shape is :math:`(..., 3)`.
 
     Returns:
-        tuple :math:`(x, y, z)` , including the coordinate information of x, y and z.
+        tuple :math:`(x, y, z)` with three tensors,
+        including the coordinate information of x, y and z.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -766,7 +769,8 @@ def vecs_to_tensor(v):
     Converts 'v' to tensor with last dim shape 3, inverse of 'vecs_from_tensor'.
 
     Args:
-        v(tuple):   Input tuple v :math:`(x, y, z)`, including the coordinate information of x, y and z.
+        v(tuple):   Input tuple v :math:`(x, y, z)` with three tensors, including
+                    the coordinate information of x, y and z.
 
     Returns:
         tensor, concat the tensor in last dims, shape :math:`(..., 3)` .
@@ -823,9 +827,9 @@ def make_transform_from_reference(point_a, point_b, point_c):
                                             shape is :math:`[..., N_{res}, 3]` .
 
     Returns:
-        - Tuple, rots :math:`[xx, xy, xz, yx, yy, yz, zx, zy, zz]` ,
+        - Tuple, rots :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` ,
           the shape of every element is :math:`(..., N_{res})` .
-        - Tuple, trans :math:`[x, y, z]` , the shape of every element is :math:`(..., N_{res})` .
+        - Tuple, trans :math:`(x, y, z)` , the shape of every element is :math:`(..., N_{res})` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1014,7 +1018,7 @@ def quat_to_rot(normalized_quat, use_numpy=False):
         use_numpy (bool): use numpy or not, Default: "False".
 
     Returns:
-        tuple, rotation :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, every element shape :math:`(N_{res},)`.
+        tuple, rotation :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, every element shape :math:`(N_{res}, )`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1054,8 +1058,8 @@ def initial_affine(num_residues, use_numpy=False):
     Returns:
         result after quat affine.
         - quaternion, tensor, shape is :math:`(N_{res}, 4)` .
-        - rotation, tuple, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, shape of every element is :math:`(N_{res},)` .
-        - translation, tensor, shape is :math:`(N_{res}, 3)` .
+        - rotation, tuple, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`, shape of every element is :math:`(N_{res}, )` .
+        - translation, tuple, :math:`(x, y, z)` shape of every element tensor is :math:`(N_{res}, )` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1093,9 +1097,9 @@ def vecs_expand_dims(v, axis):
         axis(int):  Specifies the dimension index at which to expand the shape of `v`. Only constant value is allowed.
 
     Returns:
-        Tuple, if the axis is 0, and the shape of :math:`xx` is :math:`(... , X_R)`, where X_R is any number.
-          If the axis is other value, then expand in the other direction. And return expanded
-          :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`
+        Tuple, if the axis is 0, and the shape of :math:`xx` is :math:`(..., X_R)`, where X_R is any number.
+          The expanded shape is :math:`(1, ..., X_R)`. If the axis is other value, then expand in the other
+          direction. And return expanded :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1126,8 +1130,8 @@ def rots_expand_dims(rots, axis):
                         Only constant value is allowed.
 
     Returns:
-        Tuple, rots. If the value of axis is 0, and the shape of xx is :math:`(... ,X_R)`,
-          where X_R is any number, and the expanded shape is :math:`(1,... ,X_R)`.
+        Tuple, rots. If the value of axis is 0, and the shape of xx is :math:`(..., X_R)`,
+          where X_R is any number, and the expanded shape is :math:`(1, ..., X_R)`.
           Return expanded :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
 
     Supported Platforms:
@@ -1365,20 +1369,23 @@ def quaternion_to_tensor(quaternion, translation):
 
 def quaternion_from_tensor(tensor, normalize=False):
     r"""
-    Take the input 'tensor' to get the new 'quaternion', 'rotation', 'translation'.
+    Take the input 'tensor' :math:`[(xx, xy, xz, yx, yy, yz, zz)]` to get the new
+    'quaternion', 'rotation', 'translation'.
 
     .. math::
         \begin{split}
-        &quaternion = [(x_1, y_1, z_1, m_1)] \\
-        &translation = [(x_2, y_2, z_2)] \\
-        &result = [(x_1, y_1, z_1, m_1, x_2, y_2, z_2)] \\
+        &tensor = [(xx, xy, xz, yx, yy, yz, zz)] \\
+        &quaternion = (xx, xy, xz, yx) \\
+        &translation = (yy, yz, zz) \\
         \end{split}
 
     Affine transformation is performed using the generated quaternion and translation.
     The process of affine transformation is referred to the quat_affine api.
 
     Args:
-        tensor(Tensor):     An initial Tensor of shape is :math:`[(... 7)]`.
+        tensor(Tensor):     An initial Tensor :math:`[(xx, xy, xz, yx, yy, yz, zz)]` .
+                            :math:`[(xx, xy, xz, yx)]` is the same with `quaternion`.
+                            :math:`(yy, yz, zz)` is the same with `translation`.
         normalize(bool):    Control whether to find the norm during quat_affine. Default: False.
 
     Returns:
@@ -1419,7 +1426,7 @@ def apply_to_point(rotation, translation, point, extra_dims=0):
 
     .. math::
         \begin{split}
-        &rot_point = rotation * point \\
+        &rot_point = rotation \cdot point \\
         &result = rot_point + translation \\
         \end{split}
 

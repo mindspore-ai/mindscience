@@ -598,14 +598,14 @@ def atom37_to_torsion_angles(
     Returns:
         Dict containing
 
-        - torsion_angles_sin_cos (numpy.array), with shape :math:`(N_{res}, 37, 3)` where
+        - torsion_angles_sin_cos (numpy.array), with shape :math:`(N_{res}, 7, 2)` where
           the final 2 dimensions denote sin and cos respectively. If is_multimer is True, the shape will
-          be :math:`(N_{seq}, N_{res}, 37, 3)` .
+          be :math:`(N_{seq}, N_{res}, 7, 2)` .
         - alt_torsion_angles_sin_cos (numpy.array), same as 'torsion_angles_sin_cos', but with the angle shifted
-          by pi for all chi angles affected by the naming ambiguities. If is_multimer is True, the shape will
-          be :math:`(N_{seq}, N_{res}, 37, 3)` .
-        - torsion_angles_mask (numpy.array), Mask for which chi angles are present. If is_multimer is True,
-          the shape will be :math:`(N_{seq}, N_{res}, 37, 3)` .
+          by pi for all chi angles affected by the naming ambiguities. shape is :math:`(N_{res}, 7, 2)`.
+          If is_multimer is True, the shape will be :math:`(N_{seq}, N_{res}, 7, 2)` .
+        - torsion_angles_mask (numpy.array), Mask for which chi angles are present. shape is :math:`(N_{res}, 7)` .
+          If is_multimer is True, the shape will be :math:`(N_{seq}, N_{res}, 7, 2)` .
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -752,8 +752,8 @@ def atom37_to_frames(
 
     Args:
         aatype(numpy.array):                Amino acid sequence, :math:`[N_{res}]` .
-        all_atom_positions(numpy.array):    The coordinates of all atoms, presented as atom37, :math:`[N_{res}, 37,3]`.
-        all_atom_mask(numpy.array):         Mask of all atomic coordinates, :math:`[N_{res},37]`.
+        all_atom_positions(numpy.array):    The coordinates of all atoms, presented as atom37, :math:`[N_{res}, 37, 3]`.
+        all_atom_mask(numpy.array):         Mask of all atomic coordinates, :math:`[N_{res}, 37]`.
         is_affine(bool):                    Whether to perform affine, the default value is False.
 
     Returns:

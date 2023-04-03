@@ -392,7 +392,7 @@ def make_atom14_positions(aatype, all_atom_mask, all_atom_positions):
 
     Args:
         aatype(numpy.array):                Protein sequence encoding. the encoding method refers to
-                                            `common.residue_constants.restype_order`. The value ranges from 0 to 20.
+                                            `common.residue_constants.restype_order`. Value range is :math:`[0,20]`.
                                             20 means the amino acid is unknown (`UNK`).
         all_atom_mask(numpy.array):         Mask of coordinates of all atoms in proteins. Shape is
                                             :math:`(N_{res}, 37)`. If the corresponding position is 0, the amino acid
@@ -574,7 +574,8 @@ def get_pdb_info(pdb_path):
         features(dict), the information of pdb, including these keys
 
         - aatype, numpy.array. Protein sequence encoding. Encoding method refers to
-          `common.residue_constants_restype_order`, [0:20]. 20 means the amino acid is `UNK`. Shape :math:`(N_{res})` .
+          `common.residue_constants_restype_order`, :math:`[0,20]` . 20 means the amino acid is `UNK`.
+          Shape :math:`(N_{res}, )` .
         - all_atom_positions, numpy.array. Coordinates of all residues in pdb. Shape :math:`(N_{res}, 37)` .
         - all_atom_mask, numpy.array. Mask of atoms in pdb. Shape :math:`(N_{res}, 37)` .
           0 means the atom inexistence.
@@ -599,6 +600,7 @@ def get_pdb_info(pdb_path):
           `common.residue_atom_renaming_swaps`. This feature records the uncertain atom encoding positions.
           Shape is :math:`(N_{res}, 14)` .
         - residue_index, numpy.array. Residue index information of protein sequence, ranging from 1 to :math:`N_{res}` .
+          Shape is :math:`(N_{res}, )` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``

@@ -15,11 +15,11 @@ mindsponge.metrics.get_structural_violations
         - **clash_overlap_tolerance** (float) - 空间中原子由于过近会导致重叠，该系数表示原子间空间距离的容忍数。
         - **lower_bound** (Tensor) - 按稠密编码方式编码的原子间允许的最小距离。shape :math:`(N_{res}, 14, 14)` 。
         - **upper_bound** (Tensor) - 按稠密编码方式编码的原子间允许的最大距离。shape :math:`(N_{res}, 14, 14)` 。
-        - **atomtype_radius** (Tensor) - 按照稠密编码方式编码，每个原子的范德华半径。shape :math:`(N_{res}, 14)` 。
-        - **c_one_hot** (Tensor) - 按照稠密编码方式对C原子的独热编码。shape: `(14, )` 。
-        - **n_one_hot** (Tensor) - 按照稠密编码方式对N原子的独热编码。shape: `(14, )` 。
-        - **dists_mask_i** (Tensor) - 按稠密编码方式编码的原子间距离矩阵。shape: `(14, 14)` 。
-        - **cys_sg_idx** (Tensor) - 半胱氨酸在蛋白质编码中的index，详见： `mindsponge.common.residue_constants` 。 shape: `( )` 。
+        - **atomtype_radius** (Tensor) - 按照稠密编码方式编码，每个原子的范德华半径。shape :math:`(37, )` 。
+        - **c_one_hot** (Tensor) - 按照稠密编码方式对C原子的独热编码。shape: :math:`(14, )` 。
+        - **n_one_hot** (Tensor) - 按照稠密编码方式对N原子的独热编码。shape: :math:`(14, )` 。
+        - **dists_mask_i** (Tensor) - 按稠密编码方式编码的原子间距离矩阵。shape: :math:`(14, 14)` 。
+        - **cys_sg_idx** (Tensor) - 半胱氨酸在蛋白质编码中的index，详见： `mindsponge.common.residue_constants` 。 shape: :math:`( )` 。
 
     返回：
         - **bonds_c_n_loss_mean** (Tensor) - C-N 肽键长度冲突的平均损失。shape: `( )` 。
