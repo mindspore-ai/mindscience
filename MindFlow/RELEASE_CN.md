@@ -2,7 +2,7 @@
 
 [View English](./RELEASE.md)
 
-## MindFlow 0.1.0-alpha Release Notes
+## MindFlow 0.1.0 Release Notes
 
 ### 主要特性和增强
 
@@ -26,4 +26,4 @@
 
 感谢以下开发者做出的贡献：
 
-yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, yqiuu, haojiwei, leiyixiang
+yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang
