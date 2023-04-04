@@ -12,4 +12,4 @@ In fluid dynamics, the Taylor–Green vortex is an unsteady flow of a decaying v
 
 ![Time Error](images/TimeError_30000.png)
 
-[详见](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/taylor_green/2d/taylor_green_2D.ipynb)
+[详见](https://gitee.com/mindspore/mindscience/blob/r0.2.0/MindFlow/applications/physics_driven/taylor_green/2d/taylor_green_2D.ipynb)

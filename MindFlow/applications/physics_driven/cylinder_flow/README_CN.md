@@ -12,7 +12,7 @@
 
 ![Time Error](images/TimeError_epoch5000.png)
 
-[详见](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/cylinder_flow/navier_stokes2D_CN.ipynb)
+[详见](https://gitee.com/mindspore/mindscience/blob/r0.2.0/MindFlow/applications/physics_driven/cylinder_flow/navier_stokes2D_CN.ipynb)
 
 ## 贡献者
 

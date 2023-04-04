@@ -14,7 +14,7 @@ PDE-Net是Zichao Long等人提出的一种前馈深度网络用于从数据中�
 
 ![extrapolation](images/extrapolation.jpg)
 
-[详见](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net/pde_net_CN.ipynb)
+[详见](https://gitee.com/mindspore/mindscience/blob/r0.2.0/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net/pde_net_CN.ipynb)
 
 ## 贡献者
 

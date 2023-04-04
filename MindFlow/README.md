@@ -1,6 +1,6 @@
  ENGLISH | [简体中文](README_CN.md)
 
-[![master](https://img.shields.io/badge/version-master-blue.svg?style=flat?logo=Gitee)](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/README.md)
+[![master](https://img.shields.io/badge/version-master-blue.svg?style=flat?logo=Gitee)](https://gitee.com/mindspore/mindscience/blob/r0.2.0/MindFlow/README.md)
 [![docs](https://img.shields.io/badge/docs-master-yellow.svg?style=flat)](https://mindspore.cn/mindflow/docs/en/master/index.html)
 [![internship](https://img.shields.io/badge/internship-tasks-important.svg?style=flat)](https://gitee.com/mindspore/community/issues/I55B5A?from=project-issue)
 [![SIG](https://img.shields.io/badge/community-SIG-yellowgreen.svg?style=flat)](https://mindspore.cn/community/SIG/detail/en?name=mindflow%20SIG)
@@ -41,42 +41,42 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 ## **Latest News**
 
-- 🔥`2023.02.28` Mindspore team has cooperated with Prof. Bin Dong from Peking University and Prof. Yanli Wang from CSRC in the respect of proposing a neural sparse representation to solve Boltzmann equation. Our achievement is about to publish. [Solving Boltzmann equation with neural sparse representation](https://arxiv.org/abs/2302.09233). Here is a sample code:[Neural representation method for Boltzmann equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/boltzmann)
+- 🔥`2023.02.28` Mindspore team has cooperated with Prof. Bin Dong from Peking University and Prof. Yanli Wang from CSRC in the respect of proposing a neural sparse representation to solve Boltzmann equation. Our achievement is about to publish. [Solving Boltzmann equation with neural sparse representation](https://arxiv.org/abs/2302.09233). Here is a sample code:[Neural representation method for Boltzmann equation](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/boltzmann)
 - 🔥`2023.02.05` [MindFlow 0.1.0-alpha](https://mindspore.cn/mindflow/docs/zh-CN/r0.1.0-alpha/index.html) is released.
-- 🔥`2023.01.17` [MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997), an End-to-End Differentiable Solver based on MindSpore，[see more](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/mindflow/cfd).
+- 🔥`2023.01.17` [MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997), an End-to-End Differentiable Solver based on MindSpore，[see more](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/mindflow/cfd).
 - 🔥`2022.12.27` MindSpore team cooperates with Xi'an Jiaotong University teacher Gang Chen publish [Temporal predictions of periodic flows using a mesh transformation and deep learning-based strategy](https://www.sciencedirect.com/science/article/pii/S1270963822007556) in top journals `Aerospace Science and Technology`, authors are Zhiwen Deng, Hongsheng Liu, Beiji Shi, Zidonog Wang, Fan Yu, Ziyang Liu、Gang Chen(Corresponding author).
 - 🔥`2022.09.02` Academician Guanghui Wu, Chief Scientist of COMAC, released the first industrial flow simulation model "DongFang.YuFeng" at WAIC2022 World Artificial Intelligence Conference. AI flow simulation assisted the aerodynamic simulation of domestic large aircraft. [Page](http://www.news.cn/fortune/2022-09/06/c_1128978806.htm).
 
 ## MindFlow Features
 
-- [Solve Pinns by MindFlow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/solve_pinns_by_mindflow)
+- [Solve Pinns by MindFlow](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/features/solve_pinns_by_mindflow)
 
 ## Applications
 
 ### Physics Driven
 
-- [Boltzmann equation](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/boltzmann)
-- [1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
-- [2D Cylinder Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)
-- [2D and 3D Poisson with Different Geometry](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)
-- [2D Darcy](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
-- [2D Taylor-Green Vortex](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)
+- [Boltzmann equation](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/boltzmann)
+- [1D Burgers](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/burgers)
+- [2D Cylinder Flow](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/cylinder_flow)
+- [2D and 3D Poisson with Different Geometry](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/poisson)
+- [2D Darcy](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/darcy)
+- [2D Taylor-Green Vortex](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/taylor_green/2d)
 
 ### Data Driven
 
-- [FNO for 1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers_fno)
-- [FNO for 2D Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_fno)
+- [FNO for 1D Burgers](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/data_driven/burgers_fno)
+- [FNO for 2D Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/data_driven/navier_stokes_fno)
 
 ### Data-Mechanism Fusion
 
-- [PDE-Net for Convection-Diffusion Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
+- [PDE-Net for Convection-Diffusion Equation](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
 
 ### CFD
 
-- [1D Lax Tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
-- [1D Sod Tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
-- [2D Couette Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)
-- [2D Riemann](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)
+- [1D Lax Tube](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/cfd/lax)
+- [1D Sod Tube](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/cfd/sod)
+- [2D Couette Flow](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/cfd/couette)
+- [2D Riemann](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/cfd/riemann2d)
 
 ## **Installation**
 
@@ -86,7 +86,7 @@ Because MindFlow is dependent on MindSpore, please click [MindSpot Download Page
 
 | MindFlow |                                  Branch                                |  MindSpore  | Python |
 |:--------:|:----------------------------------------------------------------------:|:-----------:|:------:|
-|  0.1.0   | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) | \>=2.0.0rc1 | \>=3.7 |
+| 0.1.0rc1 | [master](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow) | \>=2.0.0rc1 | \>=3.7 |
 
 ### Install Dependency
 
@@ -109,7 +109,7 @@ pip install -r requirements.txt
 
 ```bash
 export MS_VERSION=2.0.0rc1
-export MindFlow_VERSION=0.1.0
+export MindFlow_VERSION=0.1.0rc1
 # gpu and ascend are supported
 export DEVICE_NAME=gpu
 # cuda-10.1 and cuda-11.1 are supported
