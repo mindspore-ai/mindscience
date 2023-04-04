@@ -965,6 +965,7 @@ def quat_affine(quaternion, translation, rotation=None, normalize=True, unstack_
 
     Returns:
         result after quat affine.
+
         - quaternion, tensor, shape is :math:`(N_{res}, 4)` .
         - rotation, tuple, :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`,
           shape of every element is :math:`(N_{res},)` .

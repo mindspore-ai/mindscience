@@ -29,7 +29,7 @@ def create_config_from_edict(edict_config):
         edict_config (dict): dictionary containing configuration info. The keys are "domain", "BC", "IC" or "time".
             For each key, the value is still a dictionary, containing the following keys.
 
-            - size: number of sampling points, value type: Union[int, tuple[int], list[int]]).
+            - size: number of sampling points, value type: Union[int, tuple[int], list[int]].
             - random_sampling: Specifies whether randomly sampling points, value type: bool.
             - sampler: method for random sampling, value type: str.
             - random_merge: Specifies whether randomly merge coordinates of different dimensions, value type: bool.
