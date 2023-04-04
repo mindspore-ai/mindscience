@@ -49,4 +49,4 @@ mindflow.data.Dataset
         设置数据集的约束类型。
 
         参数：
-            - **constraint_type** (Union[str, dict]) - 指定数据集的约束类型，有方程，边界条件，初始条件等。如果是string，则所有子数据集的约束类型将设置为相同的类型。如果是dict，则子数据集及其约束类型由对（键，值）指定。默认值："Equation"，指该约束类型为方程。
+            - **constraint_type** (Union[str, dict]) - 指定数据集的约束类型，有方程，边界条件，初始条件等。如果是string，则所有子数据集的约束类型将设置为相同的类型。如果是dict，则子数据集及其约束类型由对（键，值）指定。支持的值有："equation", "bc", "ic", "label", "function", "custom"。默认值："Equation"，指该约束类型为方程。
