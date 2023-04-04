@@ -89,7 +89,7 @@ def get_activation(name):
         name (Union[str, None]): The name of the activation function. If name was None, it would return None.
 
     Returns:
-        Function, the activation function.
+        Function(mindspore.cell), the activation function.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

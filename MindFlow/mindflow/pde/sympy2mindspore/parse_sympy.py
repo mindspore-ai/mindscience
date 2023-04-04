@@ -56,7 +56,7 @@ def _make_nodes(equations, in_vars, out_vars, params=None):
     return graph_nodes
 
 
-def sympy_to_mindspore(equations, in_vars, out_vars, parmas=None):
+def sympy_to_mindspore(equations, in_vars, out_vars, params=None):
     """
     The sympy expression to create an identifier for mindspore.
 
@@ -91,5 +91,5 @@ def sympy_to_mindspore(equations, in_vars, out_vars, parmas=None):
             Item numbers of current derivative formula nodes: 2
         2
     """
-    converted_equations = _make_nodes(equations, in_vars, out_vars, parmas)
+    converted_equations = _make_nodes(equations, in_vars, out_vars, params)
     return converted_equations

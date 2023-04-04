@@ -337,7 +337,8 @@ class Dataset(Data):
         Args:
             constraint_type (Union[str, dict]): The constraint type of specified dataset. If is string, the constraint
                 type of all subdataset will be set to the same one. If is dict, the subdataset and it's constraint type
-                is specified by the pair (key, value). Default: "Equation".
+                is specified by the pair (key, value). Default: "Equation". It also supports "bc", "ic", "label",
+                "function", and "custom".
 
         Examples:
             >>> dataset.set_constraint_type("Equation")

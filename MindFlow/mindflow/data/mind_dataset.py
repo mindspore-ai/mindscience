@@ -38,7 +38,7 @@ class MindDataset(Data):
             it represents for a list of dataset files to be read directly.
         dataset_name (str, optional): name of dataset, Default: "dataset_name"
         constraint_type (str, optional): constraint type of the specified dataset to get it's corresponding loss
-            function. Default: "Label"
+            function. Default: "Label". Other supported types can be found in `mindflow.data.Dataset`.
         shuffle (Union[bool, Shuffle level], optional): Perform reshuffling of the data every epoch
             If shuffle is False, no shuffling will be performed.
             If shuffle is True, performs global shuffle. Default: True.
