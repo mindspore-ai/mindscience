@@ -8,7 +8,7 @@
 
 ![Burgers PINNs](images/result.jpg)
 
-[详见](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/burgers/burgers1D_CN.ipynb)
+[详见](https://gitee.com/mindspore/mindscience/blob/r0.2.0/MindFlow/applications/physics_driven/burgers/burgers1D_CN.ipynb)
 
 ## Contributor
 

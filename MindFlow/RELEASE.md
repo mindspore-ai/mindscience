@@ -2,7 +2,7 @@
 
 [查看中文](./RELEASE_CN.md)
 
-## MindFlow 0.1.0 Release Notes
+## MindFlow 0.1.0rc1 Release Notes
 
 ### Major Features and Improvements
 

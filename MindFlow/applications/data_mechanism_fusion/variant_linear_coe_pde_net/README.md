@@ -14,7 +14,7 @@ PDE-Net is a feedforward deep network proposed by Zichao Long et al. to learn pa
 
 ![extrapolation](images/extrapolation.jpg)
 
-[See More](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net/pde_net.ipynb)
+[See More](https://gitee.com/mindspore/mindscience/blob/r0.2.0/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net/pde_net.ipynb)
 
 ## Contributor
 

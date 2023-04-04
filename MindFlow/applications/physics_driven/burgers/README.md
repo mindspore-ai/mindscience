@@ -8,7 +8,7 @@ Burgers' equation is a nonlinear partial differential equation that simulates th
 
 ![Burgers PINNs](images/result.jpg)
 
-[See More](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/burgers/burgers1D.ipynb)
+[See More](https://gitee.com/mindspore/mindscience/blob/r0.2.0/MindFlow/applications/physics_driven/burgers/burgers1D.ipynb)
 
 ## Contributor
 

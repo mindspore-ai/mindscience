@@ -2,7 +2,7 @@
 
 [View English](./RELEASE.md)
 
-## MindFlow 0.1.0 Release Notes
+## MindFlow 0.1.0rc1 Release Notes
 
 ### 主要特性和增强
 

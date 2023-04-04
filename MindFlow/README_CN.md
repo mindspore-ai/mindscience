@@ -1,6 +1,6 @@
 [ENGLISH](README.md) | 简体中文
 
-[![master](https://img.shields.io/badge/version-master-blue.svg?style=flat?logo=Gitee)](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/README_CN.md)
+[![master](https://img.shields.io/badge/version-master-blue.svg?style=flat?logo=Gitee)](https://gitee.com/mindspore/mindscience/blob/r0.2.0/MindFlow/README_CN.md)
 [![docs](https://img.shields.io/badge/docs-master-yellow.svg?style=flat)](https://mindspore.cn/mindflow/docs/zh-CN/master/index.html)
 [![internship](https://img.shields.io/badge/internship-tasks-important.svg?style=flat)](https://gitee.com/mindspore/community/issues/I55B5A?from=project-issue)
 [![SIG](https://img.shields.io/badge/community-SIG-yellowgreen.svg?style=flat)](https://mindspore.cn/community/SIG/detail/?name=mindflow%20SIG)
@@ -40,9 +40,9 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ## **最新消息**
 
-- 🔥`2023.02.28` Mindspore团队与北京大学董彬老师以及北京计算科学研究中心王艳莉老师合作，提出用稀疏神经表示求解玻尔兹曼方程。详见：[Solving Boltzmann equation with neural sparse representation](https://arxiv.org/abs/2302.09233)。样例代码请参考：[基于神经网络表示求解玻尔兹曼方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/boltzmann)。
+- 🔥`2023.02.28` Mindspore团队与北京大学董彬老师以及北京计算科学研究中心王艳莉老师合作，提出用稀疏神经表示求解玻尔兹曼方程。详见：[Solving Boltzmann equation with neural sparse representation](https://arxiv.org/abs/2302.09233)。样例代码请参考：[基于神经网络表示求解玻尔兹曼方程](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/boltzmann)。
 - 🔥`2023.02.05` [MindFlow 0.1.0-alpha](https://mindspore.cn/mindflow/docs/zh-CN/r0.1.0-alpha/index.html) 版本发布。
-- 🔥`2023.01.17` 推出[MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997)基于MindSpore的端到端可微分求解器，[详见](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/mindflow/cfd)。
+- 🔥`2023.01.17` 推出[MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997)基于MindSpore的端到端可微分求解器，[详见](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/mindflow/cfd)。
 - 🔥`2022.12.27` MindSpore团队同西安交大陈刚老师合作发表[Temporal predictions of periodic flows using a mesh transformation and deep learning-based strategy](https://www.sciencedirect.com/science/article/pii/S1270963822007556)文章于航空领域Top期刊`Aerospace Science and Technology`，论文作者为邓志文、刘红升、时北极、王紫东、于璠、刘子扬(西交)、陈刚(通讯)。
 - 🔥`2022.09.02` 中国商飞首席科学家吴光辉院士在WAIC2022世界人工智能大会发布首个工业级流体仿真大模型“东方.御风”, AI流体仿真助力国产大飞机气动仿真， [相关新闻](http://www.news.cn/fortune/2022-09/06/c_1128978806.htm)。
 
@@ -50,34 +50,34 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ## Mindflow特性
 
-- [基于MindFlow求解PINNs问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/solve_pinns_by_mindflow)
+- [基于MindFlow求解PINNs问题](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/features/solve_pinns_by_mindflow)
 
 ## 应用案例
 
 ### 物理驱动
 
-- [玻尔兹曼方程](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/boltzmann)
-- [一维Burgers问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
-- [二维圆柱绕流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)
-- [不同几何体下的二维和三维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)
-- [二维Darcy问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
-- [二维泰勒格林涡](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)
+- [玻尔兹曼方程](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/boltzmann)
+- [一维Burgers问题](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/burgers)
+- [二维圆柱绕流](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/cylinder_flow)
+- [不同几何体下的二维和三维Poisson问题](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/poisson)
+- [二维Darcy问题](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/darcy)
+- [二维泰勒格林涡](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/physics_driven/taylor_green/2d)
 
 ### 数据驱动
 
-- [基于FNO求解一维Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers_fno)
-- [基于FNO求解二维Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_fno)
+- [基于FNO求解一维Burgers](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/data_driven/burgers_fno)
+- [基于FNO求解二维Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/data_driven/navier_stokes_fno)
 
 ### 数据机理融合
 
-- [PDE-Net求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
+- [PDE-Net求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
 
 ### CFD
 
-- [一维Lax激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
-- [一维Sod激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
-- [二维库埃特流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)
-- [二维黎曼问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)
+- [一维Lax激波管](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/cfd/lax)
+- [一维Sod激波管](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/cfd/sod)
+- [二维库埃特流](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/cfd/couette)
+- [二维黎曼问题](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow/applications/cfd/riemann2d)
 
 ## **安装教程**
 
@@ -87,7 +87,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 | MindFlow |                                   分支                                 |  MindSpore  | Python |
 |:--------:|:----------------------------------------------------------------------:|:-----------:|:------:|
-|  0.1.0   | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) | \>=2.0.0rc1 | \>=3.7 |
+| 0.1.0rc1 | [master](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow) | \>=2.0.0rc1 | \>=3.7 |
 
 ### 依赖安装
 
@@ -110,7 +110,7 @@ pip install -r requirements.txt
 
 ```bash
 export MS_VERSION=2.0.0rc1
-export MindFlow_VERSION=0.1.0
+export MindFlow_VERSION=0.1.0rc1
 # gpu and ascend are supported
 export DEVICE_NAME=gpu
 # cuda-10.1 and cuda-11.1 are supported
