@@ -84,9 +84,9 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 Because MindFlow is dependent on MindSpore, please click [MindSpot Download Page](https://www.mindspore.cn/versions) according to the corresponding relationship indicated in the following table. Download and install the corresponding whl package.
 
-| MindFlow |                                  Branch                                |    MindSpore   | Python |
-|:--------:|:----------------------------------------------------------------------:|:--------------:|:------:|
-|  0.1.0   | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) | \>=2.0.0-alpha | \>=3.7 |
+| MindFlow |                                  Branch                                |  MindSpore  | Python |
+|:--------:|:----------------------------------------------------------------------:|:-----------:|:------:|
+|  0.1.0   | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) | \>=2.0.0rc1 | \>=3.7 |
 
 ### Install Dependency
 
@@ -108,8 +108,8 @@ pip install -r requirements.txt
 ### **pip install**
 
 ```bash
-export MS_VERSION=2.0.0a0
-export MindFlow_VERSION=0.1.0a0
+export MS_VERSION=2.0.0rc1
+export MindFlow_VERSION=0.1.0
 # gpu and ascend are supported
 export DEVICE_NAME=gpu
 # cuda-10.1 and cuda-11.1 are supported
