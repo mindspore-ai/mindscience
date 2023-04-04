@@ -50,7 +50,6 @@ context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRA
                     save_graphs_path=args.save_graphs_path,
                     device_target=args.device_target,
                     device_id=args.device_id)
-print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
 use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
 
@@ -130,7 +129,7 @@ def train():
         model.set_train(True)
         for _ in range(steps_per_epochs + 1):
             step_train_loss = sink_process()
-        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg)*1000 :.3f} ms")
+        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {time.time() - time_beg:.3f}s")
         model.set_train(False)
         if epoch % config["eval_interval_epochs"] == 0:
             # eval

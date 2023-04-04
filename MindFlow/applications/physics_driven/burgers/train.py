@@ -120,7 +120,7 @@ def train():
         model.set_train(True)
         for _ in range(steps_per_epochs):
             step_train_loss = sink_process()
-        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) * 1000 :.3f} ms")
+        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {time.time() - time_beg :.3f}s")
         model.set_train(False)
         if epoch % config["eval_interval_epochs"] == 0:
             calculate_l2_error(model, inputs, label, config["train_batch_size"])
@@ -132,5 +132,4 @@ if __name__ == '__main__':
     print("pid:", os.getpid())
     start_time = time.time()
     train()
-    print("End-to-End total time: {} s".format(time.time() - start_time))
-    
+    print("End-to-End total time: {}s".format(time.time() - start_time))
