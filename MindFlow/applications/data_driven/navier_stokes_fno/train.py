@@ -23,7 +23,7 @@ import numpy as np
 
 import mindspore
 from mindspore import nn, context, ops, Tensor, jit, set_seed, save_checkpoint
-import mindspore.common.type as mstype
+import mindspore.common.dtype as mstype
 
 from mindflow.cell import FNO2D
 from mindflow.common import get_warmup_cosine_annealing_lr

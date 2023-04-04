@@ -128,6 +128,7 @@ def train(config_param):
 
 
 if __name__ == '__main__':
+    print(f'pid: {os.getpid()}')
     config = load_yaml_config('pde_net.yaml')
     make_dir(config["mindrecord_data_dir"])
     train(config)
