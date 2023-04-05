@@ -18,7 +18,20 @@
 import numpy as np
 import mindspore.ops.operations as P
 
-__all__ = ['to_2tuple', 'unpatchify', 'patchify', 'get_2d_sin_cos_pos_embed']
+__all__ = ['to_2tuple', 'to_3tuple', 'unpatchify',
+           'patchify', 'get_2d_sin_cos_pos_embed']
+
+
+def to_3tuple(t):
+    """
+    Args:
+        t (Union[int, tuple(int)]): The grid height and width.
+
+    Returns:
+        Same as input or a tuple as (t,t,t).
+
+    """
+    return t if isinstance(t, tuple) else (t, t, t)
 
 
 def to_2tuple(t):
@@ -66,8 +79,10 @@ def get_2d_sin_cos_pos_embed_from_grid(embed_dim, grid):
     Returns:
         The numpy array with shape of (M/2, embed_dim)
     """
-    emb_height = get_1d_sin_cos_pos_embed_from_grid(embed_dim // 2, grid[0])  # (H*W, D/2)
-    emb_width = get_1d_sin_cos_pos_embed_from_grid(embed_dim // 2, grid[1])  # (H*W, D/2)
+    emb_height = get_1d_sin_cos_pos_embed_from_grid(
+        embed_dim // 2, grid[0])  # (H*W, D/2)
+    emb_width = get_1d_sin_cos_pos_embed_from_grid(
+        embed_dim // 2, grid[1])  # (H*W, D/2)
 
     emb = np.concatenate([emb_height, emb_width], axis=1)  # (H*W, D)
     return emb
