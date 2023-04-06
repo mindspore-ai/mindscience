@@ -23,7 +23,7 @@ import mindspore as ms
 from mindspore.ops.function.nn_func import _innner_log_softmax, _get_cache_prim
 from mindspore.ops import operations as P
 from mindspore.common.parameter import Parameter
-from mindspore._checkparam import Validator
+from mindspore import _checkparam as Validator
 from mindspore.nn.layer.activation import get_activation
 from mindspore.common.tensor import Tensor
 from mindspore.common.initializer import initializer

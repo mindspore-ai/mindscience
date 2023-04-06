@@ -414,7 +414,7 @@ class GroverFinetuneTask(nn.Cell):
             else:
                 first_linear_dim = args.hidden_size + args.features_dim
 
-        dropout = nn.Dropout(keep_prob=1 - args.dropout)
+        dropout = nn.Dropout(p=args.dropout)
         activation = get_activation_function(args.activation)
         # Create FFN layers
         if args.ffn_num_layers == 1:

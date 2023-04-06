@@ -25,11 +25,11 @@ Molecule
 """
 from typing import Union, List
 from numpy import ndarray
-from mindspore import ms_class
+from mindspore import jit_class
 from .residue import Residue
 
 
-@ms_class
+@jit_class
 class AminoAcid(Residue):
     r"""Residue for amino acid
 
