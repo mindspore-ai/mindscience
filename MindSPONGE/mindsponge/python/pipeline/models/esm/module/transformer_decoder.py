@@ -16,7 +16,7 @@
 
 import math
 from typing import Dict, List, Optional
-
+import numpy as np
 import mindspore as ms
 import mindspore.ops as ops
 import mindspore.nn as nn
@@ -45,7 +45,7 @@ class TransformerDecoder(nn.Cell):
         super().__init__()
         self.args = args
         self.dictionary = dictionary
-        self._future_mask = ms.numpy.empty((0))
+        self._future_mask = np.empty((0))
 
         self.dropout_module = nn.Dropout(1 - args.dropout)
 

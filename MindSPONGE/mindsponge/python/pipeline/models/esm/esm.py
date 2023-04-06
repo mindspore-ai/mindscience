@@ -28,11 +28,8 @@ class ESM(Model):
     name = "ESM"
 
     def __init__(self, config):
-        context.set_context(memory_optimize_level="O1", max_call_depth=6000)
         if context.get_context("device_target") == "GPU":
             self.mixed_precision = False
-            context.set_context(graph_kernel_flags="--disable_expand_ops=Softmax --disable_cluster_ops=ReduceSum "
-                                                   "--composite_op_limit_size=50", enable_graph_kernel=True)
         else:
             self.mixed_precision = True
         self.config = config
@@ -42,13 +39,14 @@ class ESM(Model):
         self.checkpoint_path = "./esm_if1.ckpt"
         self.alphabet = Alphabet.from_architecture('vt_medium_with_invariant_gvp')
         self.network = esm(self.config, self.alphabet)
-
-        self.feature_list = ['coords', 'confidence', 'padding_mask', 'prev_output_tokens', 'target']
-        loss = nn.CrossEntropyLoss()
-        net_with_loss = nn.WithLossCell(self.network, loss)
-        opt = nn.Adam(net_with_loss.trainable_params(), learning_rate=0.0001, eps=1e-6)
-        self.train_net = TrainOneStepCell(net_with_loss, opt)
-        self.train_net.set_train()
+        self.is_training = self.config.is_training
+        if self.is_training:
+            self.feature_list = ['coords', 'confidence', 'padding_mask', 'prev_output_tokens', 'target']
+            loss = nn.CrossEntropyLoss()
+            net_with_loss = nn.WithLossCell(self.network, loss)
+            opt = nn.Adam(net_with_loss.trainable_params(), learning_rate=0.0001, eps=1e-6)
+            self.train_net = TrainOneStepCell(net_with_loss, opt)
+            self.train_net.set_train()
         super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
 
     def forward(self, data):
@@ -58,6 +56,7 @@ class ESM(Model):
             outputs = self._pynative_forward(data)
         return outputs
 
+    # pylint: disable=arguments-differ
     def predict(self, inputs):
         sampled_seq = self.forward(inputs)
         return sampled_seq
@@ -68,6 +67,7 @@ class ESM(Model):
     def grad_operations(self, gradient):
         pass
 
+    # pylint: disable=arguments-differ
     def backward(self, feat):
         loss = self.train_net(feat)
         return loss

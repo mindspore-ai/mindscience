@@ -24,7 +24,7 @@ from mindspore.ops.primitive import Primitive
 from mindspore._checkparam import Validator
 from mindspore.nn.layer.activation import get_activation
 from mindspore.common.initializer import Initializer, initializer,\
-    XavierUniform, _calculate_fan_in_and_fan_out, _assignment
+    XavierUniform, _calculate_fan_in_and_fan_out, _assignment, Constant
 # pylint: disable=relative-beyond-top-level
 from .message_passing import scatter_sum, MessagePassing
 from .util import ms_transpose, _norm_no_nan, _split, tuple_cat, _merge, tuple_sum, tuple_index, utils_softmax
@@ -653,7 +653,7 @@ class MultiheadAttention(nn.Cell):
         self.out_proj.weight = initializer(XavierUniform(), self.out_proj.weight.shape,
                                            self.out_proj.weight.dtype)
         if self.out_proj.bias is not None:
-            ms.common.initializer.Constant(value=0.0)(self.out_proj.bias)
+            self.out_proj.bias = initializer(Constant(0.0), self.out_proj.bias.shape, self.out_proj.bias.dtype)
         if self.bias_k is not None:
             self.bias_k = initializer(XavierNormal(), self.bias_k.shape,
                                       self.bias_k.dtype)
