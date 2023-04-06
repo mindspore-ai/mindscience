@@ -11,7 +11,7 @@ mindflow.pde.PDEWithLoss
         - **in_vars** (List[sympy.core.Symbol]) - `model` 的输入参数，sympy符号表示的自变量。
         - **out_vars** (List[sympy.core.Function]) - `model` 的输出参数，sympy符号表示的因变量。
         - **params** (List[sympy.core.Function]) - 问题中非输入的可学习参数。
-        - **params_val** (List[sympy.core.Function]) - 问题中非输入的可学习参数的值
+        - **params_val** (List[sympy.core.Function]) - 问题中非输入的可学习参数的值。
 
     .. note::
         - `pde` 方法必须重写，用于定义sympy符号微分方程。
