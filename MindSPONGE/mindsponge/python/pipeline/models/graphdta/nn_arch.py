@@ -47,7 +47,7 @@ class Graphdta(nn.Cell):
         self.fc_g1 = nn.Dense(num_features_xd*4, 1024)
         self.fc_g2 = nn.Dense(1024, output_dim)
         self.relu = nn.ReLU()
-        self.dropout = nn.Dropout(keep_prob=dropout)
+        self.dropout = nn.Dropout(p=1.0 - dropout)
 
         self.embedding_xt = nn.Embedding(num_features_xt + 1, embed_dim)
         self.conv_xt_1 = nn.Conv1d(in_channels=sequence, out_channels=n_filters, kernel_size=8, pad_mode="valid")

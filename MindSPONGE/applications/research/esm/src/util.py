@@ -30,7 +30,7 @@ from mindspore.common.initializer import initializer
 from mindspore.ops import operations as P
 from mindspore.ops.primitive import Primitive
 from mindspore.common.parameter import Parameter
-from mindspore._checkparam import Validator
+from mindspore import _checkparam as Validator
 from mindspore.nn.layer.activation import get_activation
 from src.data import BatchConverter
 

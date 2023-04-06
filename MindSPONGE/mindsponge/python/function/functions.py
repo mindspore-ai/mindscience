@@ -30,7 +30,7 @@ from numpy import ndarray
 import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import ops
-from mindspore import ms_function
+from mindspore import jit
 from mindspore import Tensor, Parameter
 from mindspore.ops import functional as F
 
@@ -95,7 +95,7 @@ concat_penulti = ops.Concat(-2)
 identity = ops.Identity()
 
 
-@ms_function
+@jit
 def periodic_variable(variable: Tensor,
                       upper: Tensor,
                       lower: Tensor = 0,
@@ -130,7 +130,7 @@ def periodic_variable(variable: Tensor,
     return F.select(mask, period_value, variable)
 
 
-@ms_function
+@jit
 def periodic_difference(difference: Tensor,
                         period: Tensor,
                         mask: Tensor = None,
@@ -165,7 +165,7 @@ def periodic_difference(difference: Tensor,
     return F.select(mask, period_diff, difference)
 
 
-@ms_function
+@jit
 def gather_vector(tensor: Tensor, index: Tensor) -> Tensor:
     r"""Gather vector from the penultimate axis (`axis=-2`) of the tensor according to index.
 
@@ -203,7 +203,7 @@ def gather_vector(tensor: Tensor, index: Tensor) -> Tensor:
     return F.reshape(vectors, output_shape)
 
 
-@ms_function
+@jit
 def gather_value(tensor: Tensor, index: Tensor) -> Tensor:
     r"""Gather value from the last axis (`axis=-1`) of the tensor according to index.
 
@@ -238,7 +238,7 @@ def gather_value(tensor: Tensor, index: Tensor) -> Tensor:
     return F.reshape(values, origin_shape)
 
 
-@ms_function
+@jit
 def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
     r"""Reshape the pbc_box as the same ndim.
 
@@ -264,7 +264,7 @@ def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
     return F.reshape(pbc_box, shape)
 
 
-@ms_function
+@jit
 def pbc_image(position: Tensor, pbc_box: Tensor, offset: float = 0) -> Tensor:
     r"""calculate the periodic image of the PBC box
 
@@ -291,7 +291,7 @@ def pbc_image(position: Tensor, pbc_box: Tensor, offset: float = 0) -> Tensor:
     return F.cast(image, ms.int32)
 
 
-@ms_function
+@jit
 def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> Tensor:
     r"""get coordinate in main PBC box
 
@@ -319,7 +319,7 @@ def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> T
     return position - pbc_box * F.floor(position / pbc_box - offset)
 
 
-@ms_function
+@jit
 def vector_in_pbc(vector: Tensor, pbc_box: Tensor, offset: float = -0.5) -> Tensor:
     r"""Make the value of vector :math:`\vec{v}` at a single PBC box :math:`\vec{L}`.
 
@@ -351,7 +351,7 @@ def vector_in_pbc(vector: Tensor, pbc_box: Tensor, offset: float = -0.5) -> Tens
     return  vector * inv_box * pbc_box
 
 
-@ms_function
+@jit
 def calc_vector_nopbc(initial: Tensor, terminal: Tensor) -> Tensor:
     r"""Compute vector from initial point to terminal point without perodic bundary condition.
 
@@ -376,7 +376,7 @@ def calc_vector_nopbc(initial: Tensor, terminal: Tensor) -> Tensor:
     return terminal - initial
 
 
-@ms_function
+@jit
 def calc_vector_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor) -> Tensor:
     r"""Compute vector from initial point to terminal point at perodic bundary condition.
 
@@ -402,7 +402,7 @@ def calc_vector_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor) -> Tenso
 
     return vector_in_pbc(terminal-initial, pbc_box)
 
-@ms_function
+@jit
 def calc_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Tensor:
     r"""Compute vector from initial point to terminal point.
 
@@ -432,7 +432,7 @@ def calc_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Te
     return vector_in_pbc(vector, pbc_box)
 
 
-@ms_function
+@jit
 def calc_distance_nopbc(position_a: Tensor,
                         position_b: Tensor,
                         keepdims: bool = False,
@@ -463,7 +463,7 @@ def calc_distance_nopbc(position_a: Tensor,
     return msnp.norm(vec, axis=-1, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_distance_pbc(position_a: Tensor,
                       position_b: Tensor,
                       pbc_box: Tensor = None,
@@ -498,7 +498,7 @@ def calc_distance_pbc(position_a: Tensor,
     return msnp.norm(vec, axis=-1, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_distance(position_a: Tensor,
                   position_b: Tensor,
                   pbc_box: Tensor = None,
@@ -535,7 +535,7 @@ def calc_distance(position_a: Tensor,
     return msnp.norm(vec, axis=-1, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_angle_by_vectors(vector1: Tensor,
                           vector2: Tensor,
                           keepdims: bool = False
@@ -578,7 +578,7 @@ def calc_angle_by_vectors(vector1: Tensor,
     return F.acos(cos_theta)
 
 
-@ms_function
+@jit
 def calc_angle_nopbc(position_a: Tensor,
                      position_b: Tensor,
                      position_c: Tensor,
@@ -617,7 +617,7 @@ def calc_angle_nopbc(position_a: Tensor,
     return calc_angle_by_vectors(vec_ba, vec_bc, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_angle_pbc(position_a: Tensor,
                    position_b: Tensor,
                    position_c: Tensor,
@@ -658,7 +658,7 @@ def calc_angle_pbc(position_a: Tensor,
     return calc_angle_by_vectors(vec_ba, vec_bc, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_angle(position_a: Tensor,
                position_b: Tensor,
                position_c: Tensor,
@@ -698,7 +698,7 @@ def calc_angle(position_a: Tensor,
     return calc_angle_pbc(position_a, position_b, position_c, pbc_box=pbc_box, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_torsion_by_vectors(vector1: Tensor,
                             vector2: Tensor,
                             axis_vector: Tensor = None,
@@ -750,7 +750,7 @@ def calc_torsion_by_vectors(vector1: Tensor,
     return F.atan2(sin_phi, cos_phi)
 
 
-@ms_function
+@jit
 def calc_torsion_nopbc(position_a: Tensor,
                        position_b: Tensor,
                        position_c: Tensor,
@@ -790,7 +790,7 @@ def calc_torsion_nopbc(position_a: Tensor,
     return calc_torsion_by_vectors(vec_ba, vec_cd, axis_vector=vec_bc, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_torsion_pbc(position_a: Tensor,
                      position_b: Tensor,
                      position_c: Tensor,
@@ -834,7 +834,7 @@ def calc_torsion_pbc(position_a: Tensor,
     return calc_torsion_by_vectors(vec_ba, vec_cd, axis_vector=vec_bc, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_torsion(position_a: Tensor,
                  position_b: Tensor,
                  position_c: Tensor,
@@ -881,7 +881,7 @@ def calc_torsion(position_a: Tensor,
         position_a, position_b, position_c, position_d, pbc_box=pbc_box, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def coulomb_interaction(q_i: Tensor,
                         q_j: Tensor,
                         r_ij: Tensor,
@@ -923,7 +923,7 @@ def coulomb_interaction(q_i: Tensor,
     return energy * mask
 
 
-@ms_function
+@jit
 def lennard_jones_potential(epsilon: Tensor, sigma: Tensor, r_ij: Tensor, mask: Tensor = None) -> Tensor:
     r"""Calculate Lennard-Jones (LJ) potential with :math:`\epsilon` and :math:`\sigma`.
 
@@ -965,7 +965,7 @@ def lennard_jones_potential(epsilon: Tensor, sigma: Tensor, r_ij: Tensor, mask: 
     return energy * mask
 
 
-@ms_function
+@jit
 def lennard_jones_potential2(epsilon: Tensor, r_0: Tensor, r_ij: Tensor, mask: Tensor = None) -> Tensor:
     r"""Calculate Lennard-Jones (LJ) potential with :math:`\epsilon` and :math:`r_0`.
 

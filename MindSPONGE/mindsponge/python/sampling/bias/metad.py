@@ -27,7 +27,7 @@ import itertools
 import numpy as np
 import mindspore as ms
 import mindspore.numpy as msnp
-from mindspore import ms_function
+from mindspore import jit
 from mindspore import Tensor, Parameter
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
@@ -298,7 +298,7 @@ class Metadynamics(Bias):
         """periodic of collectiva variables"""
         return self.colvar.periodic
 
-    @ms_function
+    @jit
     def calc_bias(self, colvar: Tensor) -> Tensor:
         """calculate bias potential by colvar"""
         if self.use_cutoff:

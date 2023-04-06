@@ -170,7 +170,7 @@ class MPNEncoder(nn.Cell):
         self.is_training = is_training
 
         # Dropout
-        self.dropout_layer = nn.Dropout(keep_prob=1.0 - self.dropout)
+        self.dropout_layer = nn.Dropout(p=self.dropout)
 
         # Activation
         self.act_func = get_activation_function(args.activation)
@@ -440,7 +440,7 @@ class Attention(nn.Cell):
     def __init__(self, dropout, dim):
         super(Attention, self).__init__()
 
-        self.dropout = nn.Dropout(keep_prob=1 - dropout)
+        self.dropout = nn.Dropout(p=dropout)
         self.softmax = nn.Softmax(axis=-1)
         self.dim = dim
 
@@ -476,7 +476,7 @@ class MultiHeadedAttention(nn.Cell):
         self.linear_layers = nn.CellList([nn.Dense(d_model, d_model) for _ in range(3)])  # why 3: query, key, value
         self.output_linear = nn.Dense(d_model, d_model)
         self.attention = Attention(dropout, dim)
-        self.dropout = nn.Dropout(keep_prob=1.0 - dropout)
+        self.dropout = nn.Dropout(p=dropout)
 
     def construct(self, query, key, value):
         """
@@ -656,7 +656,7 @@ class MTBlock(nn.Cell):
         self.input_dim = input_dim
         self.res_connection = res_connection
         self.act_func = get_activation_function(activation)
-        self.dropout_layer = nn.Dropout(keep_prob=1.0 - dropout)
+        self.dropout_layer = nn.Dropout(p=dropout)
         # Note: elementwise_affine has to be consistent with the pre-training phase
 
         self.layernorm = nn.LayerNorm((self.hidden_size,), begin_norm_axis=-1, begin_params_axis=-1)
@@ -837,7 +837,7 @@ class GTransEncoder(nn.Cell):
         self.act_func_node = get_activation_function(self.activation)
         self.act_func_edge = get_activation_function(self.activation)
 
-        self.dropout_layer = nn.Dropout(keep_prob=1.0 - self.dropout)
+        self.dropout_layer = nn.Dropout(p=self.dropout)
 
     def construct(self, batch):
         """

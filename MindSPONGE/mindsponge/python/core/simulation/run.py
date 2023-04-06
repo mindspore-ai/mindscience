@@ -28,7 +28,7 @@ from typing import Tuple
 from mindspore import ops
 from mindspore.ops import functional as F
 from mindspore import Tensor
-from mindspore import ms_function
+from mindspore import jit
 from mindspore.nn import Cell
 
 from mindspore.parallel._utils import (_get_device_num, _get_gradients_mean,
@@ -344,7 +344,7 @@ class RunOneStepCell(Cell):
         self.steps = get_integer(steps)
         return self
 
-    @ms_function
+    @jit
     def run_one_step(self, *inputs):
         r"""run one step simulation
 
