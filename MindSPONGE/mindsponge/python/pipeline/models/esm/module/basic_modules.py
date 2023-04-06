@@ -21,7 +21,7 @@ import mindspore as ms
 import mindspore.ops as ops
 from mindspore import nn, Tensor, Parameter
 from mindspore.ops.primitive import Primitive
-from mindspore._checkparam import Validator
+from mindspore import _checkparam as Validator
 from mindspore.nn.layer.activation import get_activation
 from mindspore.common.initializer import Initializer, initializer,\
     XavierUniform, _calculate_fan_in_and_fan_out, _assignment
@@ -833,7 +833,7 @@ class MultiheadAttention(nn.Cell):
         attn_weights_float = utils_softmax(attn_weights, dim=-1, onnx_trace=self.onnx_trace)
         attn_weights = attn_weights_float.astype(attn_weights.dtype)
 
-        dropout_net = nn.Dropout(keep_prob=(1 - self.dropout))
+        dropout_net = nn.Dropout(p=self.dropout)
         if self.training:
             dropout_net.set_train()
         attn_probs = dropout_net(attn_weights_float.astype(attn_weights.dtype))

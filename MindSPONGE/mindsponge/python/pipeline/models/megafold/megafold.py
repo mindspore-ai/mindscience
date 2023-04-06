@@ -76,9 +76,8 @@ class MEGAFold(Model):
         self.config = config
         self.use_jit = self.config.use_jit
         self.network = Megafold(self.config, self.mixed_precision)
-
-        super().__init__(self.checkpoint_url, self.network, self.name)
         self.checkpoint_path = "./MEGA_Fold_1.ckpt"
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
 
 
         if self.config.is_training:

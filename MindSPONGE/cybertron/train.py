@@ -46,7 +46,7 @@ from mindspore.train import save_checkpoint
 from mindspore.train.callback import Callback, RunContext
 from mindspore.train.callback._callback import InternalCallbackParam
 from mindspore.train._utils import _make_directory
-from mindspore._checkparam import Validator as validator
+from mindspore import _checkparam as validator
 
 from .cybertron import Cybertron
 

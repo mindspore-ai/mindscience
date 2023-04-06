@@ -30,7 +30,7 @@ import numpy as np
 from numpy import ndarray
 import mindspore as ms
 from mindspore import numpy as msnp
-from mindspore import ms_class
+from mindspore import jit_class
 from mindspore.ops import functional as F
 from mindspore.common import Tensor
 
@@ -39,7 +39,7 @@ from ...data.elements import elements, element_set, element_dict, atomic_mass
 from ...data.template import get_template, get_template_index
 
 
-@ms_class
+@jit_class
 class Residue:
     r"""Base class for residue.
 

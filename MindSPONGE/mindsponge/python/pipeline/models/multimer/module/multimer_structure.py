@@ -126,7 +126,7 @@ class MultimerFoldIteration(nn.Cell):
     def __init__(self, config, pair_dim, single_repr_dim):
         super().__init__()
         self.config = config
-        self.drop_out = nn.Dropout(keep_prob=0.9)
+        self.drop_out = nn.Dropout(p=0.1)
         self.attention_layer_norm = nn.LayerNorm([self.config.num_channel,], epsilon=1e-5)
         self.transition_layer_norm = nn.LayerNorm([self.config.num_channel,], epsilon=1e-5)
         self.transition = nn.Dense(self.config.num_channel, config.num_channel,

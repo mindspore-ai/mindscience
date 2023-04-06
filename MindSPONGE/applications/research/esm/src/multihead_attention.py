@@ -420,7 +420,7 @@ class MultiheadAttention(nn.Cell):
         attn_weights_float = utils_softmax(attn_weights, dim=-1, onnx_trace=self.onnx_trace)
         attn_weights = attn_weights_float.astype(attn_weights.dtype)
 
-        dropout_net = nn.Dropout(keep_prob=(1 - self.dropout))
+        dropout_net = nn.Dropout(p=self.dropout)
         if self.training:
             dropout_net.set_train()
         attn_probs = dropout_net(attn_weights_float.astype(attn_weights.dtype))
