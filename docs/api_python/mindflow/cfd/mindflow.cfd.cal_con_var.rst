@@ -7,7 +7,7 @@ mindflow.cfd.cal_con_var
 
     参数：
         - **pri_var** (Tensor) - 原始量。
-        - **material** (Mindflow.cfd.Material) - 流体材料。
+        - **material** (mindflow.cfd.Material) - 流体材料。
 
     返回：
         Tensor，shape和 `pri_var` 一致。
