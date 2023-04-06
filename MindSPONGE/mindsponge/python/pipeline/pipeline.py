@@ -25,14 +25,19 @@ from .models import KGNN, KGNNDataSet, kgnn_configuration
 from .models import UFold, UFoldDataSet, ufold_configuration
 from .models import DeepDR, DeepDRDataSet, deepdr_configuration
 from .models import MEGAFold, MEGAFoldDataSet, megafold_configuration
+from .models import MEGAAssessment, MEGAAssessmentDataSet, megaassessment_configuration
+from .models import ESM, ESMDataSet, esm_configuration
 
 model_card = {
     "MEGAFold": {"model": MEGAFold, "dataset": MEGAFoldDataSet, "config": megafold_configuration},
+    "MEGAAssessment": {"model": MEGAAssessment, "dataset": MEGAAssessmentDataSet,
+                       "config": megaassessment_configuration},
     "Multimer": {"model": Multimer, "dataset": MultimerDataSet, "config": multimer_configuration},
     "ColabDesign": {"model": COLABDESIGN, "dataset": ColabDesignDataSet, "config": colabdesign_configuration},
     "KGNN": {"model": KGNN, "dataset": KGNNDataSet, "config": kgnn_configuration},
     "UFold": {"model": UFold, "dataset": UFoldDataSet, "config": ufold_configuration},
-    "DeepDR": {"model": DeepDR, "dataset": DeepDRDataSet, "config": deepdr_configuration}
+    "DeepDR": {"model": DeepDR, "dataset": DeepDRDataSet, "config": deepdr_configuration},
+    "ESM": {"model": ESM, "dataset": ESMDataSet, "config": esm_configuration},
 }
 
 

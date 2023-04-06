@@ -28,7 +28,7 @@ from ..megafold.module.template_embedding import TemplateEmbedding
 from ..megafold.module.evoformer import Evoformer
 from ..megafold.module.structure import StructureModule
 from ..megafold.module.head import DistogramHead, PredictedLDDTHead, EstogramHead
-from ..megafold.nn_arch import caculate_constant_array, megafold
+from ..megafold.nn_arch import caculate_constant_array, Megafold
 
 
 def load_weights(model_path, config):
@@ -67,7 +67,7 @@ class CombineModel(nn.Cell):
 
     def __init__(self, config, mixed_precision):
         super(CombineModel, self).__init__()
-        self.fold = megafold(config, mixed_precision=mixed_precision)
+        self.fold = Megafold(config, mixed_precision=mixed_precision)
         config.model.evoformer.extra_msa_stack_num = 4
         config.model.evoformer.msa_stack_num = 8
         self.assessment = MegaAssessment(config, mixed_precision=mixed_precision)

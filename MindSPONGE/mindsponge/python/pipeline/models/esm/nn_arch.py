@@ -17,7 +17,8 @@
 import mindspore as ms
 import mindspore.ops as ops
 import mindspore.nn as nn
-from mindspore.common.initializer import Normal, initializer, Constant
+from mindspore import Tensor
+from mindspore.common.initializer import Normal, initializer
 from .module.transformer_encoder import GVPTransformerEncoder
 from .module.transformer_decoder import TransformerDecoder
 from .module.util import CoordBatchConverter
@@ -61,7 +62,7 @@ class GVPTransformerModel(nn.Cell):
         emb = nn.Embedding(num_embeddings, embed_dim, padding_idx=padding_idx)
         emb.embedding_table = initializer(Normal(mean=0, sigma=embed_dim ** -0.5), emb.embedding_table.shape,
                                           dtype=ms.float32)
-        Constant(0)(emb.embedding_table[padding_idx])
+        emb.embedding_table[padding_idx] = 0
         return emb
 
     def construct(self, net_input):
@@ -88,6 +89,9 @@ class GVPTransformerModel(nn.Cell):
         batch_coords, confidence, _, _, padding_mask = (
             batch_converter([(coords, confidence, None)])
         )
+        batch_coords = Tensor(batch_coords)
+        confidence = Tensor(confidence)
+        padding_mask = Tensor(padding_mask)
 
         # Start with prepend token
         sampled_tokens = ops.Zeros()((1, 1 + l_coords), ms.float32)
