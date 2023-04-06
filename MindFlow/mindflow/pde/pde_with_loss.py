@@ -42,7 +42,7 @@ class PDEWithLoss:
         in_vars (List[sympy.core.Symbol]): Input variables of the `model`, represented by the sympy symbol.
         out_vars (List[sympy.core.Function]): Output variables of the `model`, represented by the sympy function.
         params (List[sympy.core.Function]): Parameters of the `model`, represented by the sympy function.
-        params (List): Values of the Parameters from optimizer.
+        params_val (List[sympy.core.Function]): Values of the Parameters from optimizer.
 
     Note:
         - The member function, "pde", must be overridden to define the symbolic derivative equqtions based on sympy.
