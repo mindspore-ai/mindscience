@@ -97,10 +97,12 @@ class DFT1d(nn.Cell):
 
         if not self.inv:
             x_re, x_im = self.swap_axes(x_re, x_im)
-            y_re, y_im = self.complex_matmul(x_re=x_re, x_im=x_im, a_re=self.a_re_upper, a_im=self.a_im_upper)
+            y_re, y_im = self.complex_matmul(
+                x_re=x_re, x_im=x_im, a_re=self.a_re_upper, a_im=self.a_im_upper)
 
             if not self.last_index:
-                y_re2, y_im2 = self.complex_matmul(x_re=x_re, x_im=x_im, a_re=self.a_re_lower, a_im=self.a_im_lower)
+                y_re2, y_im2 = self.complex_matmul(
+                    x_re=x_re, x_im=x_im, a_re=self.a_re_lower, a_im=self.a_im_lower)
 
                 if self.n == self.modes * 2:
                     y_re = self.concat((y_re, y_re2))
@@ -124,7 +126,8 @@ class DFT1d(nn.Cell):
         y_re, y_im = self.swap_axes(y_re, y_im)
 
         if self.last_index:
-            y_re_res, y_im_res = self.complex_matmul(x_re=x_re, x_im=x_im, a_re=self.a_re_res, a_im=-self.a_im_res)
+            y_re_res, y_im_res = self.complex_matmul(
+                x_re=x_re, x_im=x_im, a_re=self.a_re_res, a_im=-self.a_im_res)
         else:
             y_re_res, y_im_res = self.complex_matmul(x_re=x_re[..., -self.modes:], x_im=x_im[..., -self.modes:],
                                                      a_re=self.a_re_res, a_im=self.a_im_res)
@@ -163,6 +166,152 @@ def _idftn(shape, modes, dim=None, compute_dtype=mindspore.float32):
     idftn_ = DFTn(shape=shape, modes=modes, dim=dim,
                   inv=True, compute_dtype=compute_dtype)
     return idftn_
+
+
+def dft3(shape, modes, dim=(-3, -2, -1), compute_dtype=mindspore.float32):
+    r"""
+    Calculate three-dimensional discrete Fourier transform. Corresponding to the rfftn operator in torch.
+
+    Args:
+        shape (tuple): Dimension of the input 'x'.
+        modes (tuple): The length of the output transform axis. The `modes` must be no greater than half of the
+            dimension of input 'x'.
+        dim (tuple): Dimensions to be transformed.
+        compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
+
+    Inputs:
+        - **x** (Tensor, Tensor): The input data. It's 3-D tuple of Tensor. It's a complex,
+          including x real and imaginary. Tensor of shape :math:`(*, *)`.
+
+    Returns:
+        Complex tensor with the same shape of input x.
+
+    Raises:
+        TypeError: If `shape` is not a tuple.
+        ValueError: If the length of `shape` is no equal to 3.
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindspore import Tensor, ops
+        >>> import mindspore.common.dtype as mstype
+        >>> from mindflow.cell.neural_operators.dft import dft3
+        >>> array = np.ones((6, 6, 6)) * np.arange(1, 7)
+        >>> x_re = Tensor(array, dtype=mstype.float32)
+        >>> x_im = x_re
+        >>> dft3_cell = dft3(shape=array.shape, modes=(2, 2, 2), compute_dtype=mstype.float32)
+        >>> ret, _ = dft3_cell((x_re, x_im))
+        >>> print(ret)
+        [[[ 5.1439293e+01 -2.0076393e+01]
+        [ 7.9796671e-08 -1.9494735e-08]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 9.0537789e-08  1.0553553e-07]
+        [ 3.3567730e-07  1.0368046e-07]]
+
+        [[ 4.7683722e-07 -3.1770034e-07]
+        [ 6.5267522e-15 -2.7775875e-15]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [-2.1755840e-15 -1.5215135e-15]
+        [ 3.6259736e-15 -4.0336615e-15]]
+
+        [[ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]]
+
+        [[ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]]
+
+        [[ 1.1920930e-07 -5.1619136e-08]
+        [-3.6259733e-16 -1.0747753e-15]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 3.6259733e-16 -1.8129867e-16]
+        [ 3.6259733e-16 -1.4373726e-15]]
+
+        [[ 5.9604650e-07 -2.5809570e-07]
+        [ 8.7023360e-15 -1.9812689e-15]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 0.0000000e+00  0.0000000e+00]
+        [ 2.9007787e-15  7.2519467e-16]
+        [ 8.7023360e-15 -1.7869532e-15]]]
+
+    """
+    check_param_type(shape, "shape", data_type=tuple)
+    check_param_type(modes, "modes", data_type=tuple)
+    check_param_value(len(shape), "shape length", 3)
+    check_param_value(len(modes), "modes length", 3)
+    check_param_even(shape, "shape")
+    check_param_no_greater(modes[0], "mode1", shape[0] // 2)
+    check_param_no_greater(modes[1], "mode2", shape[1] // 2)
+    check_param_no_greater(modes[2], "mode3", shape[2] // 2 + 1)
+    return _dftn(shape, modes, dim=dim, compute_dtype=compute_dtype)
+
+
+def idft3(shape, modes, dim=(-3, -2, -1), compute_dtype=mindspore.float32):
+    r"""
+    Calculate three-dimensional discrete Fourier transform. Corresponding to the irfftn operator in torch.
+
+    Args:
+        shape (tuple): Dimension of the input 'x'.
+        modes (tuple): The length of the output transform axis. The `modes` must be no greater than half of the
+            dimension of input 'x'.
+        dim (tuple): Dimensions to be transformed.
+        compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
+
+    Inputs:
+        - **x** (Tensor, Tensor): The input data. It's 3-D tuple of Tensor. It's a complex, including x real and
+          imaginary. Tensor of shape :math:`(*, *)`.
+
+    Returns:
+        Complex tensor with the same shape of input x.
+
+    Raises:
+        TypeError: If `shape` is not a tuple.
+        ValueError: If the length of `shape` is no equal to 3.
+
+    Examples:
+        >>> import numpy as np
+        >>> from mindspore import Tensor, ops
+        >>> import mindspore.common.dtype as mstype
+        >>> from mindflow.cell.neural_operators.dft import idft3
+        >>> array = np.ones((2, 2, 2)) * np.arange(1, 3)
+        >>> x_re = Tensor(array, dtype=mstype.float32)
+        >>> x_im = ops.zeros_like(x_re)
+        >>> idft3_cell = idft3(shape=(6, 6, 6), modes=(2, 2, 2), compute_dtype=mstype.float32)
+        >>> ret, _ = idft3_cell((x_re, x_im))
+        >>> print(ret)
+        [[[ 5.44331074e+00  3.26598644e+00 -1.08866215e+00 -3.26598644e+00 -1.08866215e+00  3.26598644e+00]
+        [ 2.04124165e+00  2.04124165e+00  4.08248246e-01 -1.22474492e+00 -1.22474492e+00  4.08248365e-01]
+        [-6.80413842e-01 -1.22474492e+00 -6.80413783e-01  4.08248305e-01 9.52579379e-01  4.08248246e-01]
+        [ 0.00000000e+00 -2.30921616e-16 -2.30921616e-16  6.53092730e-32 2.30921616e-16  2.30921616e-16]
+        [-6.80413842e-01  4.08248246e-01  9.52579379e-01  4.08248305e-01 -6.80413783e-01 -1.22474492e+00]
+        [ 2.04124165e+00  4.08248365e-01 -1.22474492e+00 -1.22474492e+00 4.08248246e-01  2.04124165e+00]]
+        ......
+        [[ 2.04124165e+00  4.08248544e-01 -1.22474492e+00 -1.22474504e+00 4.08248186e-01  2.04124165e+00]
+        [ 1.02062082e+00  6.12372518e-01 -2.04124182e-01 -6.12372518e-01 -2.04124182e-01  6.12372518e-01]
+        [-5.10310411e-01 -5.10310411e-01 -1.02062061e-01  3.06186229e-01 3.06186229e-01 -1.02062091e-01]
+        [-7.21630050e-17 -1.29893429e-16 -7.21630183e-17  4.32978030e-17 1.01028220e-16  4.32978163e-17]
+        [-6.08337416e-08  4.08248246e-01  4.08248305e-01  3.65002428e-08 -4.08248246e-01 -4.08248305e-01]
+        [ 5.10310471e-01 -3.06186140e-01 -7.14434564e-01 -3.06186318e-01 5.10310352e-01  9.18558717e-01]]]
+
+    """
+    check_param_type(shape, "shape", data_type=tuple)
+    check_param_type(modes, "modes", data_type=tuple)
+    check_param_value(len(shape), "shape length", 3)
+    check_param_value(len(modes), "modes length", 3)
+    check_param_even(shape, "shape")
+    check_param_no_greater(modes[0], "mode1", shape[0] // 2)
+    check_param_no_greater(modes[1], "mode2", shape[1] // 2)
+    check_param_no_greater(modes[2], "mode3", shape[2] // 2 + 1)
+    return _idftn(shape, modes, dim=dim, compute_dtype=compute_dtype)
 
 
 def dft2(shape, modes, dim=(-2, -1), compute_dtype=mindspore.float32):
@@ -364,8 +513,10 @@ class SpectralConv1dDft(nn.Cell):
         self.compute_dtype = compute_dtype
 
         self.scale = (1. / (in_channels * out_channels))
-        w_re = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1), dtype=mstype.float32)
-        w_im = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1), dtype=mstype.float32)
+        w_re = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1),
+                      dtype=mstype.float32)
+        w_im = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1),
+                      dtype=mstype.float32)
         self.w_re = Parameter(w_re, requires_grad=True)
         self.w_im = Parameter(w_im, requires_grad=True)
         self.dft1_cell = dft1(shape=(self.resolution,),
@@ -475,4 +626,121 @@ class SpectralConv2dDft(nn.Cell):
         out_im = self.concat((out_ft_im1, mat, out_ft_im2))
 
         x, _ = self.idft2_cell((out_re, out_im))
+        return x
+
+
+class SpectralConv3d(nn.Cell):
+    """3D Fourier layer. It does DFT, linear transform, and Inverse DFT."""
+    def __init__(self, in_channels, out_channels, modes1, modes2, modes3,
+                 column_resolution, row_resolution, bar_resolution,
+                 compute_dtype=mstype.float32):
+        super(SpectralConv3d, self).__init__()
+
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        # Number of Fourier modes to multiply, at most floor(N/2) + 1
+        self.modes1 = modes1
+        self.modes2 = modes2
+        self.modes3 = modes3
+        self.column_resolution = column_resolution
+        self.row_resolution = row_resolution
+        self.bar_resolution = bar_resolution
+        self.compute_dtype = compute_dtype
+
+        self.scale = (1 / (in_channels * out_channels))
+
+        w_re1 = Tensor(
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2, modes3),
+            dtype=compute_dtype)
+        w_im1 = Tensor(
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2, modes3),
+            dtype=compute_dtype)
+        w_re2 = Tensor(
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2, modes3),
+            dtype=compute_dtype)
+        w_im2 = Tensor(
+            self.scale * np.random.rand(in_channels,
+                                        out_channels, modes1, modes2, modes3),
+            dtype=compute_dtype)
+        w_re3 = Tensor(
+            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2, modes3),
+            dtype=compute_dtype)
+        w_im3 = Tensor(
+            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2, modes3),
+            dtype=compute_dtype)
+        w_re4 = Tensor(
+            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2, modes3),
+            dtype=compute_dtype)
+        w_im4 = Tensor(
+            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2, modes3),
+            dtype=compute_dtype)
+
+        self.w_re1 = Parameter(w_re1, requires_grad=True)
+        self.w_im1 = Parameter(w_im1, requires_grad=True)
+        self.w_re2 = Parameter(w_re2, requires_grad=True)
+        self.w_im2 = Parameter(w_im2, requires_grad=True)
+        self.w_re3 = Parameter(w_re3, requires_grad=True)
+        self.w_im3 = Parameter(w_im3, requires_grad=True)
+        self.w_re4 = Parameter(w_re4, requires_grad=True)
+        self.w_im4 = Parameter(w_im4, requires_grad=True)
+
+        self.dft3_cell = dft3(shape=(column_resolution, row_resolution, bar_resolution),
+                              modes=(modes1, modes2, modes3),
+                              compute_dtype=compute_dtype)
+        self.idft3_cell = idft3(shape=(column_resolution, row_resolution, bar_resolution),
+                                modes=(modes1, modes2, modes3),
+                                compute_dtype=compute_dtype)
+        self.mat_x = Tensor(shape=(1, out_channels, column_resolution - 2 * modes1, modes2,  modes3),
+                            dtype=compute_dtype, init=Zero())
+        self.mat_y = Tensor(shape=(1, out_channels, column_resolution, row_resolution - 2 * modes2,  modes3),
+                            dtype=compute_dtype, init=Zero())
+        self.concat = ops.Concat(-2)
+
+    # Complex multiplication
+    def mul3d(self, inputs, weights):
+        weight = weights.expand_dims(0)
+        data = inputs.expand_dims(2)
+        out = weight * data
+        return out.sum(1)
+
+    def construct(self, x: Tensor):
+        x_re = x
+        x_im = ops.zeros_like(x_re)
+        x_ft_re, x_ft_im = self.dft3_cell((x_re, x_im))
+
+        out_ft_re1 = self.mul3d(x_ft_re[:, :, :self.modes1, :self.modes2, :self.modes3], self.w_re1) \
+            - self.mul3d(x_ft_im[:, :, :self.modes1, :self.modes2, :self.modes3], self.w_im1)
+        out_ft_im1 = self.mul3d(x_ft_re[:, :, :self.modes1, :self.modes2, :self.modes3], self.w_im1) \
+            + self.mul3d(x_ft_im[:, :, :self.modes1, :self.modes2, :self.modes3], self.w_re1)
+
+        out_ft_re2 = self.mul3d(x_ft_re[:, :, -self.modes1:, :self.modes2, :self.modes3], self.w_re2) \
+            - self.mul3d(x_ft_im[:, :, -self.modes1:, :self.modes2, :self.modes3], self.w_im2)
+        out_ft_im2 = self.mul3d(x_ft_re[:, :, -self.modes1:, :self.modes2, :self.modes3], self.w_im2) \
+            + self.mul3d(x_ft_im[:, :, -self.modes1:, :self.modes2, :self.modes3], self.w_re2)
+
+        out_ft_re3 = self.mul3d(x_ft_re[:, :, :self.modes1, -self.modes2:, :self.modes3], self.w_re3) \
+            - self.mul3d(x_ft_im[:, :, :self.modes1, -self.modes2:, :self.modes3], self.w_im3)
+        out_ft_im3 = self.mul3d(x_ft_re[:, :, :self.modes1, -self.modes2:, :self.modes3], self.w_im3) \
+            + self.mul3d(x_ft_im[:, :, :self.modes1, -self.modes2:, :self.modes3], self.w_re3)
+
+        out_ft_re4 = self.mul3d(x_ft_re[:, :, -self.modes1:, -self.modes2:, :self.modes3], self.w_re4) \
+            - self.mul3d(x_ft_im[:, :, -self.modes1:, -self.modes2:, :self.modes3], self.w_im4)
+        out_ft_im4 = self.mul3d(x_ft_re[:, :, -self.modes1:, -self.modes2:, :self.modes3], self.w_im4) \
+            + self.mul3d(x_ft_im[:, :, -self.modes1:, -self.modes2:, :self.modes3], self.w_re4)
+
+        batch_size = x.shape[0]
+        mat_x = self.mat_x.repeat(batch_size, 0)
+        mat_y = self.mat_y.repeat(batch_size, 0)
+
+        out_re1 = ops.concat((out_ft_re1, mat_x, out_ft_re2), -3)
+        out_im1 = ops.concat((out_ft_im1, mat_x, out_ft_im2), -3)
+
+        out_re2 = ops.concat((out_ft_re3, mat_x, out_ft_re4), -3)
+        out_im2 = ops.concat((out_ft_im3, mat_x, out_ft_im4), -3)
+        out_re = ops.concat((out_re1, mat_y, out_re2), -2)
+        out_im = ops.concat((out_im1, mat_y, out_im2), -2)
+        x, _ = self.idft3_cell((out_re, out_im))
         return x
