@@ -26,7 +26,7 @@ def visual(problem, inputs):
 
     Args:
         problem (BurgersWithLoss): A wrapper with step and get_loss method for model.
-        inputs (Array): Input data with shape e.g. [N,H,T].
+        inputs (Array): Input data with shape e.g. :math:`[N,H,T]`.
     """
     x = Tensor(inputs[:6, :, :], dtype=dtype.float32)
     problem.model.set_train(False)

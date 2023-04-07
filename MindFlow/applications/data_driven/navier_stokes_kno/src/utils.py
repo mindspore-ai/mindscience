@@ -27,9 +27,9 @@ def visual_static(x, yy, yp):
     """ Plot static figures.
 
     Args:
-        x (Array): Input data with shape e.g. [H,W,C].
-        yy (Array): Label data with shape e.g. [H,W,T,C].
-        yp (Array): Label data with shape e.g. [H,W,T,C].
+        x (Array): Input data with shape e.g. :math:`[H,W,C]`.
+        yy (Array): Label data with shape e.g. :math:`[H,W,T,C]`.
+        yp (Array): Label data with shape e.g. :math:`[H,W,T,C]`.
     """
     cmap = matplotlib.colormaps['jet']
 
@@ -61,9 +61,9 @@ def visual_animate(yy, yp, ye):
     """ Plot animate figures.
 
     Args:
-        yy (Array): Label data with shape e.g. [H,W,T,C].
-        yp (Array): Label data with shape e.g. [H,W,T,C].
-        ye (Array): Error data with shape e.g. [H,W,T,C].
+        yy (Array): Label data with shape e.g. :math:`[H,W,T,C]`.
+        yp (Array): Label data with shape e.g. :math:`[H,W,T,C]`.
+        ye (Array): Error data with shape e.g. :math:`[H,W,T,C]`.
     """
     cmap = matplotlib.colormaps['jet']
     fig, ax = plt.subplots(1, 3, figsize=[7, 3])
@@ -101,8 +101,8 @@ def visual(problem, inputs, labels, t_out):
 
     Args:
         problem (BurgersWithLoss): A wrapper with step and get_loss method for model.
-        inputs (Array): Input data with shape e.g. [N,T0,H,W,T,C].
-        labels (Array): Label data with shape e.g. [N,T0,H,W,T,C].
+        inputs (Array): Input data with shape e.g. :math:`[N,T0,H,W,T,C]`.
+        labels (Array): Label data with shape e.g. :math:`[N,T0,H,W,T,C]`.
         t_out (int): Number of time steps to predict sequentially.
     """
     t_start = inputs.shape[1] - t_out

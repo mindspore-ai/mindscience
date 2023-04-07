@@ -45,7 +45,7 @@ class BurgersWithLoss(FlowWithLoss):
         """Train the model on one batch of train dataset.
 
         Args:
-            inputs (Array): Input data with shape e.g. [N,H,T].
+            inputs (Array): Input data with shape e.g. :math:`[N,H,T]`.
         """
         l_recons, pred = 0, 0
         bs = inputs.shape[0]
@@ -65,8 +65,8 @@ class BurgersWithLoss(FlowWithLoss):
         """Calculate the loss, which is used to guide the gradient computing.
 
         Args:
-            inputs (Array): Input data with shape e.g. [N,H,T].
-            labels (Array): Label data with shape e.g. [N,H] or [N,H,T].
+            inputs (Array): Input data with shape e.g. :math:`[N,H,T]`.
+            labels (Array): Label data with shape e.g. :math:`[N,H]` or :math:`[N,H,T]`.
         """
         if labels.ndim == 2:
             labels = labels[:, :, None]
@@ -80,8 +80,8 @@ class BurgersWithLoss(FlowWithLoss):
         """Calculate RelativeRMSELoss.
 
         Args:
-            inputs (Array): Input data with shape e.g. [N,H,T].
-            labels (Array): Label data with shape e.g. [N,H] or [N,H,T].
+            inputs (Array): Input data with shape e.g. :math:`[N,H,T]`.
+            labels (Array): Label data with shape e.g. :math:`[N,H]` or :math:`[N,H,T]`.
         """
         if labels.ndim == 2:
             labels = labels[:, :, None]
