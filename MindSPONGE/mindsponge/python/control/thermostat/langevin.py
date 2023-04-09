@@ -22,6 +22,8 @@
 # ============================================================================
 """Langevin thermostat"""
 
+from typing import Tuple
+
 import mindspore.numpy as msnp
 from mindspore import Tensor
 from mindspore import ops
@@ -114,7 +116,7 @@ class Langevin(Thermostat):
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
+                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
 
         if self.control_step == 1 or step % self.control_step == 0:
             velocity += -self.friction * velocity + self.random_scale * \

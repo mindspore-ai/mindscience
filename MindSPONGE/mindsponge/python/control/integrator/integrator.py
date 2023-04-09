@@ -24,7 +24,7 @@
 Integrator
 """
 
-from typing import Union, List
+from typing import Union, List, Tuple
 
 import mindspore as ms
 from mindspore import Tensor
@@ -211,7 +211,7 @@ class Integrator(Controller):
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
+                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
         r"""update simulation step.
 
         Args:

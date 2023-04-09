@@ -24,6 +24,8 @@
 Leap-frog integrator
 """
 
+from typing import Tuple
+
 from mindspore import Tensor
 
 from .integrator import Integrator
@@ -81,7 +83,7 @@ class LeapFrog(Integrator):
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
+                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
 
         # (B,A,D) = (B,A,D) * (B,A,1)
         acceleration = self.acc_unit_scale * force * self._inv_mass

@@ -22,13 +22,14 @@
 # ============================================================================
 """Base energy cell"""
 
+from typing import Union
 import mindspore as ms
 from mindspore import Tensor
 from mindspore import ops
 from mindspore.nn import Cell
 
 from ...function import get_ms_array
-from ...function.units import Units, GLOBAL_UNITS
+from ...function.units import Units, Length, GLOBAL_UNITS
 
 
 class EnergyCell(Cell):
@@ -106,15 +107,15 @@ class EnergyCell(Cell):
         """energy unit"""
         return self.units.energy_unit
 
-    def set_input_unit(self, units: Units):
+    def set_input_unit(self, length_unit: Union[str, Units, Length]):
         """set the length unit for the input coordinates"""
-        if units is None:
+        if length_unit is None:
             self.input_unit_scale = 1
-        elif isinstance(units, Units):
+        elif isinstance(length_unit, (str, Units, float)):
             self.input_unit_scale = Tensor(
-                self.units.convert_length_from(units), ms.float32)
+                self.units.convert_length_from(length_unit), ms.float32)
         else:
-            raise TypeError(f'Unsupported type: {type(units)}')
+            raise TypeError(f'Unsupported type of `length_unit`: {type(length_unit)}')
 
         return self
 
@@ -185,7 +186,7 @@ class NonbondEnergy(EnergyCell):
 
         name (str):             Name of energy.
 
-        cutoff (float):         cutoff distance. Default: None
+        cutoff (Union[float, Length, Tensor]):  cutoff distance. Default: None
 
         length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
                                 Default: 'nm'
@@ -198,7 +199,7 @@ class NonbondEnergy(EnergyCell):
     """
     def __init__(self,
                  name: str,
-                 cutoff: float = None,
+                 cutoff: Union[float, Length, Tensor] = None,
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
                  use_pbc: bool = None,
@@ -210,6 +211,9 @@ class NonbondEnergy(EnergyCell):
             energy_unit=energy_unit,
             use_pbc=use_pbc,
         )
+
+        if isinstance(cutoff, Length):
+            cutoff = cutoff(self.units)
 
         self.cutoff = None
         if cutoff is not None:

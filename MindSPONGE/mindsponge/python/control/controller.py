@@ -24,6 +24,8 @@
 Controller
 """
 
+from typing import Tuple
+
 import mindspore as ms
 from mindspore import Tensor
 from mindspore.nn import Cell
@@ -32,7 +34,7 @@ from mindspore.ops import functional as F
 
 from ..system import Molecule
 from ..function import functions as func
-from ..function.functions import get_integer
+from ..function.functions import get_integer, get_ms_array
 
 
 class Controller(Cell):
@@ -76,14 +78,14 @@ class Controller(Cell):
         self.kinetic_unit_scale = Tensor(self.units.kinetic_ref, ms.float32)
         self.press_unit_scale = Tensor(self.units.pressure_ref, ms.float32)
 
-        # (B,A)
+        # (B, A)
         self.atom_mass = self.system.atom_mass
         self.inv_mass = self.system.inv_mass
-        # (B,A,1)
+        # (B, A, 1)
         self._atom_mass = F.expand_dims(self.atom_mass, -1)
         self._inv_mass = F.expand_dims(self.inv_mass, -1)
 
-        # (B,1)
+        # (B, 1)
         self.system_mass = self.system.system_mass
         self.system_natom = self.system.system_natom
 
@@ -101,73 +103,196 @@ class Controller(Cell):
         return self.units.boltzmann
 
     def set_time_step(self, dt: float):
-        """set simulation time step"""
-        self.time_step = Tensor(dt, ms.float32)
+        r"""Set simulation time step
+
+        Args:
+            dt (float): Time step
+
+        """
+        self.time_step = get_ms_array(dt, ms.float32)
         return self
 
     def set_degrees_of_freedom(self, dofs: int):
-        """set degrees of freedom (DOFs)"""
+        """Set degrees of freedom (DOFs)
+
+        Args:
+            dofs (int): Degrees of freedom
+
+        """
         self.degrees_of_freedom = get_integer(dofs)
         return self
 
     def update_coordinate(self, coordinate: Tensor) -> Tensor:
-        """update the parameter of coordinate"""
+        r"""Update the coordinate of the simulation system
+
+        Args:
+            coordinate (Tensor): Tensor of atomic coordinates.
+                The shape of the Tensor is `(B, A, D)`, and the data type is float.
+
+        Returns:
+            Tensor, has the same data type and shape as original `coordinate`.
+
+        """
         return F.assign(self._coordinate, coordinate)
 
     def update_pbc_box(self, pbc_box: Tensor) -> Tensor:
-        """update the parameter of PBC box"""
+        r"""Update the parameter of PBC box
+
+        Args:
+            pbc_box (Tensor): Tensor of PBC box.
+                The shape of the Tensor is `(B, D)`, and the data type is float.
+
+        Returns:
+            Tensor, has the same data type and shape as original `pbc_box`.
+
+        """
         if self._pbc_box is None:
             return pbc_box
         return F.assign(self._pbc_box, pbc_box)
 
     def get_kinetics(self, velocity: Tensor) -> Tensor:
-        """calculate kinetics according to velocity"""
+        r"""Calculate kinetics according to velocity
+
+        Args:
+            velocity (Tensor): Tensor of atomic velocities.
+                The shape of the Tensor is `(B, A, D)`, and the data type is float.
+
+        Returns:
+            kinetics (Tensor): Tensor of kinetics.
+                The shape of the Tensor is `(B, D)`, and the data type is float.
+
+        """
         if velocity is None:
             return None
-        # (B,A,D) * (B,A,1)
+        # (B, A, D) * (B, A, 1)
         k = 0.5 * self._atom_mass * velocity**2
-        # (B,D) <- (B,A,D)
+        # (B, D) <- (B, A, D)
         kinetics = F.reduce_sum(k, -2)
         return kinetics * self.kinetic_unit_scale
 
     def get_temperature(self, kinetics: Tensor = None) -> Tensor:
-        """calculate temperature according to velocity"""
+        r"""Calculate temperature according to velocity
+        Args:
+            kinetics (Tensor): Tensor of kinetics.
+                The shape of the Tensor is `(B, D)`, and the data type is float.
+
+        Returns:
+            temperature (Tensor): Tensor of temperature.
+                The shape of the Tensor is `(B)`, and the data type is float.
+
+        """
         if kinetics is None:
             return None
-        # (B) <- (B,D)
+        # (B) <- (B, D)
         kinetics = F.reduce_sum(kinetics, -1)
         return 2 * kinetics / self.degrees_of_freedom / self.boltzmann
 
     def get_volume(self, pbc_box: Tensor) -> Tensor:
-        """calculate volume according to PBC box"""
+        r"""Calculate volume according to PBC box
+
+        Args:
+            pbc_box (Tensor): Tensor of PBC box.
+                The shape of the Tensor is `(B, D)`, and the data type is float.
+
+        Returns:
+            volume (Tensor): Tensor of volume.
+                The shape of the Tensor is `(B)`, and the data type is float.
+
+        """
         if self._pbc_box is None:
             return None
-        # (B,1) <- (B,D)
+        # (B, 1) <- (B, D)
         return func.keepdims_prod(pbc_box, -1)
 
-    def get_virial(self, pbc_grad, pbc_box):
-        """calculate virial according to the PBC box and its gradients"""
-        # (B,D)
-        return 0.5 * pbc_grad * pbc_box
-
     def get_pressure(self, kinetics: Tensor, virial: Tensor, pbc_box: Tensor) -> Tensor:
-        """calculate pressure according to kinetics, viral and PBC box"""
+        r"""Calculate pressure according to kinetics, viral and PBC box
+
+        Args:
+            kinetics (Tensor): Tensor of kinetics.
+                The shape of the Tensor is `(B, D)`, and the data type is float.
+            virial (Tensor): Tensor of virial.
+                The shape of the Tensor is `(B, D)`, and the data type is float.
+            pbc_box (Tensor): Tensor of PBC box.
+                The shape of the Tensor is `(B, D)`, and the data type is float.
+
+        Returns:
+            pressure (Tensor): Tensor of pressure.
+                The shape of the Tensor is `(B, D)`, and the data type is float.
+
+        """
         if self._pbc_box is None:
             return None
         volume = func.keepdims_prod(pbc_box, -1)
-        # (B,D) = ((B,D) - (B, D)) / (B,1)
+        # (B, D) = ((B, D) - (B, D)) / (B, 1)
         pressure = 2 * (kinetics - virial) / volume
         return pressure * self.press_unit_scale
 
-    def get_com(self, coordinate: Tensor) -> Tensor:
-        """get coordinate of center of mass"""
-        return self.keepdims_sum(coordinate * self._atom_mass, -2) / F.expand_dims(self.system_mass, -1)
+    def get_com(self, coordinate: Tensor, keepdims: bool = True) -> Tensor:
+        r"""Get coordinate of center of mass
 
-    def get_com_velocity(self, velocity: Tensor) -> Tensor:
-        """calculate velocity of center of mass"""
-        # (B,A,D) * (B,A,1) -> (B,1,D)
-        # (B,1,D) / (B,1,1)
-        return self.keepdims_sum(velocity * self._atom_mass, -2) / F.expand_dims(self.system_mass, -1)
+        Args:
+            coordinate (Tensor): Tensor of atomic coordinates.
+                The shape of the Tensor is `(B, A, D)`, and the data type is float.
+            keepdims (bool): If this is set to `True`, the second axis will be left
+                in the result as dimensions with size one. Default: True
+
+        Returns:
+            com (Tensor): Tensor of the center of mass.
+                The shape of the Tensor is `(B, A, D)` or `(B, D)`, and the data type is float.
+
+        """
+
+        # (B, A, D) = (B, A, D) * (B, A, 1)
+        weight_coord = coordinate * self._atom_mass
+        if keepdims:
+            # (B, 1, D) <- (B, A, D)
+            tot_coord = self.keepdims_sum(weight_coord, -2)
+            # (B, 1, 1) <- (B, 1)
+            tot_mass = F.expand_dims(self.system_mass, -1)
+        else:
+            # (B, D) <- (B, A, D)
+            tot_coord = F.reduce_sum(weight_coord, -2)
+            # (B, 1)
+            tot_mass = self.system_mass
+
+        # (B, 1, D) = (B, 1, D) / (B, 1, 1)
+        # OR
+        # (B, D) = (B, D) / (B, 1)
+        com = tot_coord / tot_mass
+        return com
+
+    def get_com_velocity(self, velocity: Tensor, keepdims: bool = True) -> Tensor:
+        r"""calculate velocity of center of mass
+        Args:
+            coordinate (Tensor): Tensor of atomic coordinates.
+                The shape of the Tensor is `(B, A, D)`, and the data type is float.
+            keepdims (bool): If this is set to `True`, the second axis will be left
+                in the result as dimensions with size one. Default: True
+
+        Returns:
+            com_vel (Tensor): Tensor of the velocity of the center of mass.
+                The shape of the Tensor is `(B, A, D)` or `(B, D)`, and the data type is float.
+
+        """
+
+        # (B, A, D) = (B, A, D) * (B, A, 1)
+        weight_vel = velocity * self._atom_mass
+        if keepdims:
+            # (B, 1, D) <- (B, A, D)
+            tot_vel = self.keepdims_sum(weight_vel, -2)
+            # (B, 1, 1) <- (B, 1)
+            tot_mass = F.expand_dims(self.system_mass, -1)
+        else:
+            # (B, D) <- (B, A, D)
+            tot_vel = F.reduce_sum(weight_vel, -2)
+            # (B, 1)
+            tot_mass = self.system_mass
+
+        # (B, 1, D) = (B, 1, D) / (B, 1, 1)
+        # OR
+        # (B, D) = (B, D) / (B, 1)
+        com_vel = tot_vel / tot_mass
+        return com_vel
 
     def construct(self,
                   coordinate: Tensor,
@@ -178,7 +303,7 @@ class Controller(Cell):
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
+                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
 
         r"""Control the parameters during the simulation
 

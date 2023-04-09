@@ -44,7 +44,7 @@ from ...colvar.atoms import AtomsBase
 from ...colvar.atoms import get_atoms as _get_atoms
 from ...function import functions as func
 from ...function.units import Units, GLOBAL_UNITS
-from ...function.functions import get_ms_array, get_ndarray
+from ...function.functions import get_ms_array, get_ndarray, keepdims_prod
 
 
 class Molecule(Cell):
@@ -476,7 +476,6 @@ class Molecule(Cell):
         # (B, 1) <- (B, A)
         self.system_natom = msnp.sum(F.cast(self.atom_mask, ms.float32), -1, keepdims=True)
 
-        self.keep_prod = ops.ReduceProd(True)
         self.identity = ops.Identity()
 
         # (B, D)
@@ -549,7 +548,7 @@ class Molecule(Cell):
         """get volume of system"""
         if self.pbc_box is None:
             return None
-        return self.keep_prod(self.pbc_box, -1)
+        return keepdims_prod(self.pbc_box, -1)
 
     def space_parameters(self) -> list:
         """get the parameter of space (coordinates and pbc box)"""

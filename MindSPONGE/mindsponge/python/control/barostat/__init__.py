@@ -24,5 +24,6 @@
 
 from .barostat import Barostat
 from .berendsen import BerendsenBarostat
+from .andersen import AndersenBarostat
 
-__all__ = ['Barostat', 'BerendsenBarostat']
+__all__ = ['Barostat', 'BerendsenBarostat', 'AndersenBarostat']

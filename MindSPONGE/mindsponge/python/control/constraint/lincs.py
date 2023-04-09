@@ -24,8 +24,9 @@
 LINCS Constraint algorithm
 """
 
-from typing import Union
+from typing import Union, Tuple
 import numpy as np
+
 import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import Tensor
@@ -126,8 +127,7 @@ class Lincs(Constraint):
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
-        """ Construct function of Lincs"""
+                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
         #pylint: disable=invalid-name
 
         # (B,A,D)
