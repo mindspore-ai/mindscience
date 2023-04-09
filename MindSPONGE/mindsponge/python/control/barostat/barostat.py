@@ -24,6 +24,8 @@
 Barostat
 """
 
+from typing import Tuple
+
 import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import Tensor, Parameter
@@ -31,6 +33,7 @@ from mindspore.ops import functional as F
 
 from .. import Controller
 from ...system import Molecule
+from ...function import get_ms_array
 
 
 class Barostat(Controller):
@@ -82,16 +85,16 @@ class Barostat(Controller):
         self.inv_sens = msnp.reciprocal(self.sens)
 
         #(B,1)
-        self.ref_press = Tensor(pressure, ms.float32).reshape(-1, 1)
+        self.ref_press = get_ms_array(pressure, ms.float32).reshape(-1, 1)
         if self.ref_press.shape[0] != 1 and self.ref_press.shape[0] != self.num_walker:
             raise ValueError(f'The first dimension of "pressure" ({self.ref_press.shape[0]})'
                              f'does not match the number of multiple walkers ({self.num_walker})!')
 
         # isothermal compressibility
-        self.beta = Tensor(compressibility, ms.float32)
+        self.beta = get_ms_array(compressibility, ms.float32)
 
         # \tau_t
-        self.time_constant = Tensor(time_constant, ms.float32).reshape(-1, 1)
+        self.time_constant = get_ms_array(time_constant, ms.float32).reshape(-1, 1)
         if self.time_constant.shape[0] != self.num_walker and self.time_constant.shape[0] != 1:
             raise ValueError('The first shape of self.time_constant must equal to 1 or num_walker')
 
@@ -136,8 +139,7 @@ class Barostat(Controller):
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
-
+                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
         r"""Control the pressure of the simulation system.
 
         Args:

@@ -24,6 +24,8 @@
 Velocity verlet integrator
 """
 
+from typing import Tuple
+
 import mindspore.numpy as msnp
 from mindspore.ops import functional as F
 from mindspore import Tensor, Parameter
@@ -94,7 +96,7 @@ class VelocityVerlet(Integrator):
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
+                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
 
         acceleration = self.acc_unit_scale * force * self._inv_mass
 

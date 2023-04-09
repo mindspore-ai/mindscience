@@ -28,9 +28,10 @@ from typing import Tuple
 import mindspore as ms
 from mindspore import numpy as msnp
 from mindspore import Tensor
-from mindspore import ops
 from mindspore.nn import Cell
 from mindspore.ops import functional as F
+
+from ..function import reduce_all
 
 
 class FullConnectNeighbours(Cell):
@@ -52,32 +53,30 @@ class FullConnectNeighbours(Cell):
         self.num_neighbours = num_atoms - 1
 
         # neighbours for no connection (A*N)
-        # (A,1)
+        # (A, 1)
         no_idx = msnp.arange(self.num_atoms).reshape(-1, 1)
 
         # (N)
         nrange = msnp.arange(self.num_neighbours)
 
-        # neighbours for full connection (A,N)
-        # [[1,2,3,...,N],
-        #  [0,2,3,...,N],
-        #  [0,1,3,....N],
-        #  .............,
-        #  [0,1,2,...,N-1]]
+        # neighbours for full connection (A, N)
+        # [[1, 2, 3, ..., N],
+        #  [0, 2, 3, ..., N],
+        #  [0, 1, 3, ..., N],
+        #  ...,
+        #  [0, 1, 2, ..., N-1]]
         fc_idx = nrange + F.cast(no_idx <= nrange, ms.int32)
         no_idx = msnp.broadcast_to(
             no_idx, (self.num_atoms, self.num_neighbours))
         idx_mask = fc_idx > no_idx
 
-        # (1,A,N)
+        # (1, A, N)
         self.fc_idx = F.expand_dims(fc_idx, 0)
         self.no_idx = F.expand_dims(no_idx, 0)
         self.idx_mask = F.expand_dims(idx_mask, 0)
 
         self.shape = (self.num_atoms, self.num_neighbours)
         self.fc_mask = msnp.broadcast_to(Tensor(True), (1,)+self.shape)
-
-        self.reduce_all = ops.ReduceAll()
 
     def set_exclude_index(self, exclude_index: Tensor) -> Tensor:
         """Dummy"""
@@ -118,11 +117,11 @@ class FullConnectNeighbours(Cell):
             neighbour_mask = self.fc_mask
             no_idx = self.no_idx
         else:
-            # (B,1,N)
+            # (B, 1, N)
             mask0 = F.expand_dims(atom_mask[:, :-1], -2)
             mask1 = F.expand_dims(atom_mask[:, 1:], -2)
 
-            # (B,A,N)
+            # (B, A, N)
             neighbour_mask = msnp.where(self.idx_mask, mask1, mask0)
             neighbour_mask = F.logical_and(F.expand_dims(atom_mask, -1), neighbour_mask)
             fc_idx = msnp.broadcast_to(self.fc_idx, neighbour_mask.shape)
@@ -130,10 +129,10 @@ class FullConnectNeighbours(Cell):
             neighbours = F.select(neighbour_mask, fc_idx, no_idx)
 
         if exclude_index is not None:
-            # (B,A,N,E) <- (B,A,N,1) vs (B,A,1,E)
+            # (B, A, N, Ex) <- (B, A, N, 1) vs (B, A, 1, Ex)
             exc_mask = F.expand_dims(neighbours, -1) != F.expand_dims(exclude_index, -2)
-            # (B,A,N)
-            exc_mask = self.reduce_all(exc_mask, -1)
+            # (B, A, N)
+            exc_mask = reduce_all(exc_mask, -1)
             neighbour_mask = F.logical_and(neighbour_mask, exc_mask)
             if atom_mask is None:
                 no_idx = msnp.broadcast_to(no_idx, neighbour_mask.shape)

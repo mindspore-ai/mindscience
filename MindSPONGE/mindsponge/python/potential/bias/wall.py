@@ -83,7 +83,7 @@ class WallBias(Bias):
 
         super().__init__(
             name=name,
-            covlar=colvar,
+            colvar=colvar,
             update_pace=0,
             length_unit=length_unit,
             energy_unit=energy_unit,
@@ -210,7 +210,7 @@ class UpperWall(WallBias):
                  ):
 
         super().__init__(
-            covlar=colvar,
+            colvar=colvar,
             depth=depth,
             energy_constant=energy_constant,
             length_unit=length_unit,
@@ -275,7 +275,7 @@ class LowerWall(WallBias):
                  ):
 
         super().__init__(
-            covlar=colvar,
+            colvar=colvar,
             depth=depth,
             energy_constant=energy_constant,
             length_unit=length_unit,

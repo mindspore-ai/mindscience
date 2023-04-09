@@ -52,7 +52,7 @@ class WithEnergyCell(Cell):
 
         potential (PotentialCell):      Potential energy function cell.
 
-        bias (Union[Bias, List[Bias]]): Bias potential function cell: Default: None
+        bias (Union[Bias, List[Bias]]): Bias potential function cell. Default: None
 
         cutoff (float):                 Cut-off distance for neighbour list. If None is given, it will be assigned
                                         as the cutoff value of the of potential energy.
@@ -128,9 +128,8 @@ class WithEnergyCell(Cell):
         self.neighbour_list = neighbour_list
         if neighbour_list is None:
             if cutoff is None and self.potential_function.cutoff is not None:
-                cutoff = self.units.length(self.potential_function.cutoff, self.potential_function.length_unit)
-            self.neighbour_list = NeighbourList(
-                system, cutoff, exclude_index=self.exclude_index, length_unit=self.length_unit)
+                cutoff = self.potential_function.cutoff
+            self.neighbour_list = NeighbourList(system, cutoff, exclude_index=self.exclude_index)
         else:
             self.neighbour_list.set_exclude_index(self.exclude_index)
 
@@ -141,10 +140,13 @@ class WithEnergyCell(Cell):
         if self.neighbour_list.cutoff is not None:
             if self.potential_function.cutoff is None:
                 self.potential_function.set_cutoff(self.neighbour_list.cutoff, self.length_unit)
-            elif self.potential_function.cutoff > self.neighbour_list.cutoff:
-                raise ValueError(f'The cutoff of the potential function {self.potential_function.cutoff} '
-                                 f'cannot be greater than '
-                                 f'the cutoff of the neighbour list {self.neighbour_list.cutoff}.')
+            else:
+                pot_cutoff = self.units.length(self.potential_function.cutoff, self.potential_function.length_unit)
+                nl_cutoff = self.neighbour_list.cutoff
+                if self.potential_function.cutoff > self.neighbour_list.cutoff:
+                    raise ValueError(f'The cutoff of the potential function ({pot_cutoff} {self.length_unit}) '
+                                     f'cannot be greater than '
+                                     f'the cutoff of the neighbour list ({nl_cutoff} {self.length_unit}).')
 
         self.coordinate = self.system.coordinate
         self.pbc_box = self.system.pbc_box
@@ -159,10 +161,8 @@ class WithEnergyCell(Cell):
 
         self.potential_function_units = self.potential_function.units
 
-        self.input_unit_scale = Tensor(self.units.convert_length_to(
+        self.length_unit_scale = Tensor(self.units.convert_length_to(
             self.potential_function.length_unit), ms.float32)
-        self.output_unit_scale = Tensor(self.units.convert_energy_from(
-            self.potential_function.energy_unit), ms.float32)
 
         self.identity = ops.Identity()
 
@@ -383,12 +383,14 @@ class WithEnergyCell(Cell):
 
         """
 
-        coordinate = self.coordinate * self.input_unit_scale
+        neigh_idx, neigh_pos, neigh_dis, neigh_mask = self.neighbour_list(self.coordinate, self.pbc_box)
+
+        coordinate = self.coordinate * self.length_unit_scale
         pbc_box = self.pbc_box
         if pbc_box is not None:
-            pbc_box *= self.input_unit_scale
-
-        neigh_idx, neigh_pos, neigh_dis, neigh_mask = self.neighbour_list(coordinate, pbc_box)
+            pbc_box *= self.length_unit_scale
+        neigh_pos *= self.length_unit_scale
+        neigh_dis *= self.length_unit_scale
 
         energies = self.potential_function(
             coordinate=coordinate,
@@ -397,7 +399,7 @@ class WithEnergyCell(Cell):
             neighbour_coord=neigh_pos,
             neighbour_distance=neigh_dis,
             pbc_box=pbc_box
-        ) * self.output_unit_scale
+        )
 
         return energies
 
@@ -416,12 +418,14 @@ class WithEnergyCell(Cell):
         if self.bias_function is None:
             return None
 
-        coordinate = self.coordinate * self.input_unit_scale
+        neigh_idx, neigh_pos, neigh_dis, neigh_mask = self.neighbour_list(self.coordinate, self.pbc_box)
+
+        coordinate = self.coordinate * self.length_unit_scale
         pbc_box = self.pbc_box
         if pbc_box is not None:
-            pbc_box *= self.input_unit_scale
-
-        neigh_idx, neigh_pos, neigh_dis, neigh_mask = self.neighbour_list(coordinate, pbc_box)
+            pbc_box *= self.length_unit_scale
+        neigh_pos *= self.length_unit_scale
+        neigh_dis *= self.length_unit_scale
 
         biases = ()
         for i in range(self._num_biases):
@@ -435,7 +439,7 @@ class WithEnergyCell(Cell):
             )
             biases += (bias_,)
 
-        return msnp.concatenate(biases, axis=-1) * self.output_unit_scale
+        return msnp.concatenate(biases, axis=-1)
 
     def construct(self, *inputs) -> Tensor:
         """calculate the total potential energy (potential energy and bias potential) of the simulation system.
@@ -451,11 +455,13 @@ class WithEnergyCell(Cell):
         #pylint: disable=unused-argument
         coordinate, pbc_box = self.system()
 
-        coordinate *= self.input_unit_scale
-        if pbc_box is not None:
-            pbc_box *= self.input_unit_scale
-
         neigh_idx, neigh_pos, neigh_dis, neigh_mask = self.neighbour_list(coordinate, pbc_box)
+
+        coordinate *= self.length_unit_scale
+        neigh_pos *= self.length_unit_scale
+        neigh_dis *= self.length_unit_scale
+        if pbc_box is not None:
+            pbc_box *= self.length_unit_scale
 
         energies = self.potential_function(
             coordinate=coordinate,
@@ -464,7 +470,7 @@ class WithEnergyCell(Cell):
             neighbour_coord=neigh_pos,
             neighbour_distance=neigh_dis,
             pbc_box=pbc_box
-        ) * self.output_unit_scale
+        )
 
         energies = F.depend(energies, F.assign(self._energies, energies))
 
@@ -482,7 +488,7 @@ class WithEnergyCell(Cell):
                 )
                 biases += (bias_,)
 
-            biases = msnp.concatenate(biases, axis=-1) * self.output_unit_scale
+            biases = msnp.concatenate(biases, axis=-1)
             biases = F.depend(biases, F.assign(self._biases, biases))
 
         energy, bias = self.energy_wrapper(energies, biases)

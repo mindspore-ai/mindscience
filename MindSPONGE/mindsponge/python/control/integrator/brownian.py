@@ -24,6 +24,8 @@
 Brownian integrator
 """
 
+from typing import Tuple
+
 import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import Tensor
@@ -78,9 +80,6 @@ class Brownian(Integrator):
 
         self.normal = ops.StandardNormal()
 
-        self.concat_last_dim = ops.Concat(axis=-1)
-        self.concat_penulti = ops.Concat(axis=-2)
-
     @property
     def temperature(self) -> Tensor:
         return self.ref_temp
@@ -118,7 +117,7 @@ class Brownian(Integrator):
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
+                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
 
         coordinate += self.acc_unit_scale * force * self.inv_gamma * self.time_step
         coordinate += self.normal(coordinate.shape) * self.random_scale

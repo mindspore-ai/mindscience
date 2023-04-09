@@ -42,6 +42,7 @@ __all__ = [
     'keepdims_prod',
     'reduce_any',
     'reduce_all',
+    'reduce_prod',
     'concat_last_dim',
     'concat_penulti',
     'identity',
@@ -90,6 +91,7 @@ keepdims_mean = ops.ReduceMean(True)
 keepdims_prod = ops.ReduceProd(True)
 reduce_any = ops.ReduceAny()
 reduce_all = ops.ReduceAll()
+reduce_prod = ops.ReduceProd()
 concat_last_dim = ops.Concat(-1)
 concat_penulti = ops.Concat(-2)
 identity = ops.Identity()

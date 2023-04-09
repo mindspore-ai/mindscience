@@ -29,12 +29,11 @@ import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import jit
 from mindspore import Tensor, Parameter
-from mindspore.ops import operations as P
 from mindspore.ops import functional as F
 
 from ...potential.bias import Bias
 from ...colvar import Colvar
-from ...function import get_ms_array, get_integer, periodic_difference
+from ...function import get_ms_array, get_integer, periodic_difference, keepdims_sum
 
 
 class Metadynamics(Bias):
@@ -286,8 +285,6 @@ class Metadynamics(Bias):
             self.reweighting_factor = Parameter(msnp.zeros((self.num_parameter, 1), ms.float32),
                                                 name="reweighting_factor", requires_grad=False)
 
-        self.keepdims_sum = P.ReduceSum(True)
-
     @property
     def boltzmann(self) -> float:
         """Boltzmann constant"""
@@ -315,7 +312,7 @@ class Metadynamics(Bias):
         # (B, G) * (B, G) OR (B, N) * (B, N)
         bias = weights * self.height * gaussian
         # (B, 1) <- (B, G) or (B, N)
-        bias = self.keepdims_sum(bias, -1)
+        bias = keepdims_sum(bias, -1)
 
         if self.reweighting_factor is None:
             return bias
@@ -505,7 +502,7 @@ class Metadynamics(Bias):
             index = None
 
         # (B, 1) <- (B, G) or (B, N)
-        gnorm = msnp.reciprocal(self.keepdims_sum(F.square(gaussian), -1))
+        gnorm = msnp.reciprocal(keepdims_sum(F.square(gaussian), -1))
 
         # (B, G) or (B, N)
         new_hills = gaussian * gnorm
@@ -514,7 +511,7 @@ class Metadynamics(Bias):
             # (B, G) or (B, N)
             hills = self.get_weights(index)
             # (B, 1) <- (B, G) or (B, N)
-            bias = self.keepdims_sum(hills * self.height * gaussian, -1)
+            bias = keepdims_sum(hills * self.height * gaussian, -1)
             # -1 / (\gamma - 1) * \beta * V(s)
             new_hills *= F.exp(-self.wt_factor * bias)
 
@@ -524,7 +521,7 @@ class Metadynamics(Bias):
 
         if self.share_parameter and colvar.shape[0] > 1:
             # (1, G) <- (B, G) OR (1, N) <- (B, N)
-            new_hills = self.keepdims_sum(new_hills, 0)
+            new_hills = keepdims_sum(new_hills, 0)
 
         new_hills = F.assign_add(self.hills, new_hills)
 

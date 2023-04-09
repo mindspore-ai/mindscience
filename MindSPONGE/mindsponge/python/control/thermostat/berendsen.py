@@ -22,6 +22,8 @@
 # ============================================================================
 """Berendsen thermostat"""
 
+from typing import Tuple
+
 from mindspore import Tensor
 from mindspore import ops
 
@@ -96,7 +98,7 @@ class BerendsenThermostat(Thermostat):
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
+                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
 
         if self.control_step == 1 or step % self.control_step == 0:
             scale = self.velocity_scale(kinetics, self.ref_kinetics, self.ratio)

@@ -73,10 +73,11 @@ class PotentialCell(EnergyCell):
                  length_unit: str = None,
                  energy_unit: str = None,
                  use_pbc: bool = None,
+                 name: str = 'potential',
                  ):
 
         super().__init__(
-            name='potential',
+            name=name,
             length_unit=length_unit,
             energy_unit=energy_unit,
             use_pbc=use_pbc,

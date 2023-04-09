@@ -25,9 +25,9 @@
 from .controller import Controller
 from .integrator import Integrator, LeapFrog, VelocityVerlet, Brownian
 from .thermostat import Thermostat, BerendsenThermostat, Langevin
-from .barostat import Barostat, BerendsenBarostat
+from .barostat import Barostat, BerendsenBarostat, AndersenBarostat
 from .constraint import Constraint, Lincs
 
 __all__ = ['Controller', 'Integrator', 'LeapFrog', 'VelocityVerlet', 'Brownian',
            'Thermostat', 'BerendsenThermostat', 'Langevin', 'Barostat',
-           'BerendsenBarostat', 'Constraint', 'Lincs']
+           'BerendsenBarostat', 'AndersenBarostat', 'Constraint', 'Lincs']
