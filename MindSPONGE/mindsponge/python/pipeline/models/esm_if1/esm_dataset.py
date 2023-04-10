@@ -23,6 +23,7 @@ from .module.util import Alphabet
 from ...dataset import PSP
 
 
+# pylint: disable=abstract-method
 class ESMDataSet(PSP):
     """esm dataset"""
     def __init__(self, config):
@@ -37,6 +38,7 @@ class ESMDataSet(PSP):
 
         super().__init__()
 
+    # pylint: disable=arguments-differ
     def __getitem__(self, item):
         output = [self.coords[item], self.confidence[item], self.padding_mask[item],
                   self.prev_output_tokens[item], self.target[item]]
@@ -45,7 +47,8 @@ class ESMDataSet(PSP):
     def __len__(self):
         return len(self.traindata)
 
-    def process(self, pdbfile, chain="C"):
+    # pylint: disable=arguments-differ
+    def process(self, pdbfile, chain="B"):
         coords, _ = load_coords(pdbfile, chain)
         return coords
 
@@ -105,12 +108,14 @@ class ESMDataSet(PSP):
     def test_data(self, seq_length):
         pass
 
+    # pylint: disable=arguments-differ
     def download(self):
         pass
 
     def set_training_data_src(self, data_src):
         self.training_data_src = data_src
 
+    # pylint: disable=arguments-differ
     def create_iterator(self, num_epochs):
         self.coords, self.confidence, self.padding_mask, self.prev_output_tokens, self.target = \
             self.data_generation(self.alphabet)

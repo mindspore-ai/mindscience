@@ -21,12 +21,15 @@
 # limitations under the License.
 # ============================================================================
 """Models"""
-from .multimer import Multimer, MultimerDataSet, multimer_configuration
 from .colabdesign import COLABDESIGN, ColabDesignDataSet, colabdesign_configuration
-from .kgnn import KGNN, KGNNDataSet, kgnn_configuration
-from .ufold import UFold, UFoldDataSet, ufold_configuration
 from .deepdr import DeepDR, DeepDRDataSet, deepdr_configuration
-from .megafold import MEGAFold, MEGAFoldDataSet, megafold_configuration
+from .deepfri import DeepFri, DeepFriDataSet, deepfri_configuration
+from .esm_if1 import ESM, ESMDataSet, esm_configuration
+from .esm2 import ESM2, ESM2DataSet, esm2_configuration
+from .kgnn import KGNN, KGNNDataSet, kgnn_configuration
 from .megaassessment import MEGAAssessment, MEGAAssessmentDataSet, megaassessment_configuration
-from .esm import ESM, ESMDataSet, esm_configuration
-from .esm2 import ESM2, esm2_configuration, ESM2DataSet
+from .megaevogen import MEGAEvoGen, MEGAEvoGenDataSet, megaevogen_configuration
+from .megafold import MEGAFold, MEGAFoldDataSet, megafold_configuration
+from .multimer import Multimer, MultimerDataSet, multimer_configuration
+from .proteinmpnn import ProteinMpnn, ProteinMpnnDataset, proteinmpnn_configuration
+from .ufold import UFold, UFoldDataSet, ufold_configuration

@@ -51,7 +51,7 @@ def evaluate_exact_new(pred_a, true_a, eps=1e-11):
 
 class MyWithLossCell(nn.Cell):
     def __init__(self, network, loss_fn):
-        super(MyWithLossCell, self).__init__()
+        super(MyWithLossCell, self).__init__(auto_prefix=False)
         self.network = network
         self.loss_fn = loss_fn
 
@@ -110,9 +110,12 @@ class UFold(Model):
 
     # pylint: disable=arguments-differ
     def predict(self, data):
-        _, seq_embeddings, _, _, _, _, _, _ = data.values()
-        seq_embedding_batch = ms.Tensor(ops.Cast()(seq_embeddings, mstype.float32))
-        pred_contacts = self.forward(seq_embedding_batch)
+        pred_contacts = []
+        for d in data:
+            _, seq_embeddings, _, _, _, _, _, _ = d
+            seq_embeddings = ms.Tensor(seq_embeddings).unsqueeze(0)
+            seq_embedding_batch = ms.Tensor(ops.Cast()(seq_embeddings, mstype.float32))
+            pred_contacts.append(self.forward(seq_embedding_batch))
         return pred_contacts
 
 
@@ -136,7 +139,7 @@ class UFold(Model):
         seq_embedding_batch = Tensor(ops.Cast()(seq_embeddings, mstype.float32))
         pred_contacts = self.network(seq_embedding_batch)
         contact_masks = ops.ZerosLike()(pred_contacts)
-        contact_masks[:, :seq_lens, :seq_lens] = 1
+        contact_masks[:, :seq_lens.item(0), :seq_lens.item(0)] = 1
         feat = [seq_embedding_batch, contact_masks, contacts_batch]
         feat = mutable(feat)
         loss = self.backward(feat)

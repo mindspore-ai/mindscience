@@ -149,8 +149,8 @@ class MsaGen(nn.Cell):
             if i == self.num_noise - 1:
                 for j in range(i_layer, self.evoformer_num_block):
                     msa_recon_act, _ = self.evoformer_decoder[j](msa_recon_act, pair_act_list[-(j + 1)], \
-                                                                 msa_mask, pair_mask, context_mask, mask_norm=mask_norm,
-                                                                 res_idx=res_idx)
+                                                                 msa_mask, pair_mask, context_mask, \
+                                                                 mask_norm=mask_norm, res_idx=res_idx)
 
         q_act = msa_recon_act[0]
         q_logits = self.reconstruct_head_query_new(q_act)
@@ -192,8 +192,8 @@ class MsaGen(nn.Cell):
 
 class MegaEvogen(nn.Cell):
     '''MegaEvogen'''
-
-    def __init__(self, msa_model_config):
+    # pylint: disable=unused-argument
+    def __init__(self, msa_model_config, mixed_precision):
         super().__init__()
         self.msa_vae = MsaGen(msa_model_config)
         self.feat_process = EvoGenFeatProcess(
@@ -255,6 +255,7 @@ class MegaEvogen(nn.Cell):
         del_num_feat = P.ExpandDims()(del_num_feat, -1)
         has_del_prob[0] *= 0.
         del_num_feat[0] *= 0.
+        msa = msa.astype(mstype.float32)
         msa_feat_new_reconstruct = self.concat((msa, has_del_prob, del_num_feat, msa, del_num_feat))
         recon_mask = target_mask_new
         recon_mask_new = P.Reshape()(recon_mask, (-1, 1, 1))
@@ -264,4 +265,4 @@ class MegaEvogen(nn.Cell):
         msa_mask_new = P.ExpandDims()(msa_mask_af2, 1) * P.ExpandDims()(seq_mask, 0)
 
         msa_feat_new = msa_feat_new * P.ExpandDims()(msa_mask_new, -1)
-        return msa_feat_new
+        return msa_feat_new, msa_mask_new

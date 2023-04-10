@@ -16,6 +16,7 @@
 import pickle
 import pytest
 from mindsponge import PipeLine
+from mindsponge.common.config_load import load_config
 
 
 @pytest.mark.level0
@@ -29,7 +30,8 @@ def test_multimer_seq_256():
     Expectation: cost_time <= predict_time, confidence >= predict_confidence.
     """
     pipe = PipeLine(name="Multimer")
-    pipe.initialize(config_path="./predict_256.yaml")
+    conf = load_config("./predict_256.yaml")
+    pipe.initialize(conf=conf)
     pipe.model.from_pretrained(ckpt_path='/home/workspace/mindspore_ckpt/ckpt/Multimer_Model_1.ckpt')
     f = open("/home/workspace/mindspore_dataset/mindsponge_data/6T36/6T36.pkl", "rb")
     raw_feature = pickle.load(f)
