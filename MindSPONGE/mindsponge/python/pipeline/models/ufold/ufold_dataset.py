@@ -21,12 +21,15 @@
 # limitations under the License.
 # ============================================================================
 """ufold dataset"""
+import os
+import subprocess
+import collections
 from itertools import product
 import numpy as np
 from mindspore.dataset import GeneratorDataset
 from ...dataset import DataSet, data_process_run
 from .ufold_data import RNASSDataGenerator
-from .ufold_data import get_cut_len, permutation, permutation_nc, creatematrix
+from .ufold_data import get_cut_len, permutation, permutation_nc, creatematrix, one_hot
 
 
 class UFoldDataSet(DataSet):
@@ -38,8 +41,6 @@ class UFoldDataSet(DataSet):
         self.data2 = None
         self.batch_size_1 = self.config.batch_size_stage_1
         self.train_column_list = ['contacts', 'seq_embeddings', 'matrix_reps', 'seq_lens', 'seq_ori', 'seq_name']
-        self.test_column_list = ['contacts', 'seq_embeddings', 'matrix_reps',
-                                 'seq_lens', 'seq_ori', 'seq_name', 'nc_map', 'l_len']
         self.perm = list(product(np.arange(4), np.arange(4)))
         self.perm_nc = [[0, 0], [0, 2], [0, 3], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2], [3, 0], [3, 3]]
         self.data_process = [
@@ -53,14 +54,8 @@ class UFoldDataSet(DataSet):
 
 
     def __getitem__(self, idx):
-        contact, data_seq, matrix_rep, data_len, data_name = self.data.get_one_sample(idx)
-        data = {}
-        data["contact"] = contact
-        data["data_seq"] = data_seq
-        data["matrix_rep"] = matrix_rep
-        data["data_len"] = data_len
-        data["data_name"] = data_name
-        output = self.process(data)
+        data = self.data_parse(idx)
+        output = self.train_process(data)
         return tuple(output)
 
 
@@ -74,49 +69,108 @@ class UFoldDataSet(DataSet):
             print(f"{path} can be used in method set_training_data_src to set the raw data path.")
 
     # pylint: disable=arguments-differ
-    def process(self, data):
-        features = data_process_run(data, self.data_process)
+    def train_process(self, data):
+        """train process"""
+        contact, data_seq, matrix_rep, data_len, data_name = data
+        d = {}
+        d["contact"] = contact
+        d["data_seq"] = data_seq
+        d["matrix_rep"] = matrix_rep
+        d["data_len"] = data_len
+        d["data_name"] = data_name
+        features = data_process_run(d, self.data_process)
         if self.config.is_training:
-            output = [features["contact"][:features["l"], :features["l"]], features["data_fcn_2"],
-                      features["matrix_rep"], features["data_len"],
-                      features["data_seq"][:features["l"]], features["data_name"]]
+            output = [features.get("contact")[:features.get("l"), :features.get("l")], features.get("data_fcn_2"),
+                      features.get("matrix_rep"), features.get("data_len"),
+                      features.get("data_seq")[:features.get("l")], features.get("data_name")]
         else:
-            output = [features["contact"][:features["l"], :features["l"]], features["data_fcn_2"],
-                      features["matrix_rep"], features["data_len"], features["data_seq"][:features["l"]],
-                      features["data_name"], features["data_name"], features["data_nc"], features["l"]]
+            output = [features.get("contact")[:features.get("l"), :features.get("l")], features.get("data_fcn_2"),
+                      features.get("matrix_rep"), features.get("data_len"),
+                      features.get("data_seq")[:features.get("l")], features.get("data_name"),
+                      features.get("data_nc"), features.get("l")]
         return output
 
 
+    def process(self, data):
+        if not data.endswith(".ct"):
+            all_files = os.listdir(data)
+        else:
+            all_files = [data.split('/')[-1]]
+        all_files.sort()
+        all_files_list = []
+        RNA_SS_data = collections.namedtuple('RNA_SS_data', 'seq ss_label length name pairs')
+
+        for item in all_files:
+            path = os.path.join(data.replace(data.split('/')[-1], ''), item)
+            t0 = subprocess.getstatusoutput('awk \'{print $2}\' '+path)
+            t0_1 = t0[1].split('\n')
+            t0_1.pop(0)
+            seq = ''.join(t0_1)
+
+            one_hot_matrix = one_hot(seq.upper())
+
+            t1 = subprocess.getstatusoutput('awk \'{print $1}\' '+path)
+            t2 = subprocess.getstatusoutput('awk \'{print $3}\' '+path)
+
+            if t1[0] == 0 and t2[0] == 0:
+                t1_1 = t1[1].split('\n')
+                t2_1 = t2[1].split('\n')
+                t1_1.pop(0)
+                t2_1.pop(0)
+                pair_dict_all_list = [[int(item_tmp) - 1, int(t2_1[index_tmp]) - 1] for index_tmp, item_tmp
+                                      in enumerate(t1_1) if int(t2_1[index_tmp]) != 0]
+            else:
+                pair_dict_all_list = []
+
+            seq_name = data.split('/')[-1]
+            seq_len = len(seq)
+            # pylint: disable=consider-using-dict-comprehension
+            pair_dict_all = dict([item for item in pair_dict_all_list if item[0] < item[1]])
+
+            # pylint: disable=chained-comparison
+            if seq_len > 0 and seq_len <= 600:
+                ss_label = np.zeros((seq_len, 3), dtype=int)
+                ss_label[[*pair_dict_all.keys()],] = [0, 1, 0]
+                ss_label[[*pair_dict_all.values()],] = [0, 0, 1]
+                ss_label[np.where(np.sum(ss_label, axis=1) <= 0)[0],] = [1, 0, 0]
+                one_hot_matrix_600 = np.zeros((600, 4))
+                one_hot_matrix_600[:seq_len,] = one_hot_matrix
+                ss_label_600 = np.zeros((600, 3), dtype=int)
+                ss_label_600[:seq_len,] = ss_label
+                ss_label_600[np.where(np.sum(ss_label_600, axis=1) <= 0)[0],] = [1, 0, 0]
+                sample_tmp = RNA_SS_data(seq=one_hot_matrix_600, ss_label=ss_label_600,
+                                         length=seq_len, name=seq_name, pairs=pair_dict_all_list)
+                all_files_list.append(sample_tmp)
+
+        test_data = RNASSDataGenerator(data=all_files_list)
+        all_d = []
+        for i in range(test_data.len):
+            d = test_data.get_one_sample(i)
+            all_d.append(self.train_process(d))
+        return all_d
+
+
     def data_parse(self, idx):
-        pass
+        data = self.data.get_one_sample(idx)
+        return data
 
 
     def set_training_data_src(self, data_src=None):
         """set training data source path"""
-        if self.config.is_training:
-            train_files = self.config.train_files
-            train_data_list = []
-            for file_item in train_files:
-                print('Loading dataset: ', file_item)
-                if file_item == 'ArchiveII':
-                    train_data_list.append(RNASSDataGenerator(data_src, file_item+'.pickle'))
-                else:
-                    train_data_list.append(RNASSDataGenerator(data_src, file_item+'.cPickle'))
-            print('Data Loading Done!!!')
-            self.data2 = train_data_list[0]
-            if len(train_data_list) > 1:
-                self.data = self.merge_data(train_data_list)
+        train_files = self.config.train_files
+        train_data_list = []
+        for file_item in train_files:
+            print('Loading dataset: ', file_item)
+            if file_item == 'ArchiveII':
+                train_data_list.append(RNASSDataGenerator(data_src, file_item+'.pickle'))
             else:
-                self.data = self.data2
+                train_data_list.append(RNASSDataGenerator(data_src, file_item+'.cPickle'))
+        print('Data Loading Done!!!')
+        self.data2 = train_data_list[0]
+        if len(train_data_list) > 1:
+            self.data = self.merge_data(train_data_list)
         else:
-            test_file = self.config.test_file
-            assert isinstance(test_file, str)
-            print('Loading test file: ', test_file)
-            if test_file == 'ArchiveII':
-                test_data = RNASSDataGenerator(data_src, test_file+'.pickle')
-            else:
-                test_data = RNASSDataGenerator(data_src, test_file+'.cPickle')
-            self.data = test_data
+            self.data = self.data2
 
 
     def merge_data(self, data_list):
@@ -138,10 +192,7 @@ class UFoldDataSet(DataSet):
 
     # pylint: disable=arguments-differ
     def create_iterator(self, num_epochs):
-        if self.config.is_training:
-            dataset = GeneratorDataset(self, column_names=self.train_column_list, num_parallel_workers=3, shuffle=True)
-        else:
-            dataset = GeneratorDataset(self, column_names=self.test_column_list, num_parallel_workers=3, shuffle=True)
+        dataset = GeneratorDataset(self, column_names=self.train_column_list, num_parallel_workers=3, shuffle=True)
         dataset = dataset.batch(batch_size=self.batch_size_1, drop_remainder=True)
         iteration = dataset.create_dict_iterator(num_epochs=num_epochs, output_numpy=False)
         return iteration

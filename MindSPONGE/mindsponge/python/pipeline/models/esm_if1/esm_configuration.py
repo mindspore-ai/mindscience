@@ -14,6 +14,6 @@
 # ============================================================================
 """esm configuration"""
 esm_configuration = {
-    "training": "https://download.mindspore.cn/mindscience/mindsponge/esm/config/sampling.yaml",
-    "sampling": "https://download.mindspore.cn/mindscience/mindsponge/esm/config/training.yaml",
+    "training": "https://download.mindspore.cn/mindscience/mindsponge/esm/config/training.yaml",
+    "sampling": "https://download.mindspore.cn/mindscience/mindsponge/esm/config/sampling.yaml",
 }

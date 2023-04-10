@@ -191,6 +191,8 @@ class RelativePositionEmbedding(nn.Cell):
         gx = P.Sign()(x) * gx
 
         cond = P.Greater()(x_abs, alpha)
+        gx = gx.astype(mstype.float32)
+        x = x.astype(mstype.float32)
         ret = P.Select()(cond, gx, x)
         ret = ops.clip_by_value(ret, -beta, beta)
 
@@ -227,7 +229,7 @@ class EvogenAttention(Attention):
         idx_one_hot = self.onehot(res_idx.astype(mstype.int32))
         ape_sin, ape_cos = ops.Split(axis=-1, output_num=2)(self.ape_table)
         ape_table = P.Concat(-1)([ape_cos, ape_sin])
-
+        ape_table = ape_table.astype(mstype.float32)
         rope = P.MatMul()(idx_one_hot, ape_table)
         rope_double = P.Reshape()(P.Tile()(P.ExpandDims()(rope, -1), (1, 1, 2)), (n_res, -1))
         rope_cos, rope_sin = P.Split(axis=-1, output_num=2)(rope_double)

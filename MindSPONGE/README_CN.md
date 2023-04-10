@@ -221,7 +221,7 @@ MindSPONGE API文档请查看[文档链接](https://mindspore.cn/mindsponge/docs
 
 ### SIG 🏠
 
-MindSpore SPONGE SIG(Special Interesting Group)是由一群有兴趣，有使命，旨在AI×生物计算领域做出一番成就的人组成的团队。
+MindSpore SPONGE SIG(Special Interesting Group)是由一群有兴趣，有使命，旨在AI×计算生物领域做出一番成就的人组成的团队。
 
 MindSpore SPONGE SIG小组为广大科研人员，老师和学生提供高效易用的AI计算生物软件的同时，为在这个领域有着强大的能力或者浓厚的兴趣的人们提供了一个能够共同交流合作的平台。
 

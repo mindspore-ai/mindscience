@@ -70,7 +70,7 @@ class PAFNUCYDataSet(PDBBind):
                 rotation = rotation.item()
         else:
             rotation = 0
-        features = self.process(data, label, rotation, rot)
+        features = self.train_process(data, label, rotation, rot)
         tuple_feature = tuple([features.get(key) for key in self.schemalist])
         return tuple_feature
 
@@ -108,9 +108,31 @@ class PAFNUCYDataSet(PDBBind):
     def process(self, data, label=None, rotation=0, rot=False):
         """data process"""
         assert len(data) == 2
+        pocket_path = data[0]
+        ligand_path = data[1]
+        if pocket_path.split('.')[-1] == "pdb":
+            pocketpath = pocket_path.replace(".pdb", ".mol2")
+            command = "obabel -i pdb %s -o mol2 -O %s" % (pocket_path, pocketpath)
+            os.system(command)
+            pocket_path = pocketpath
+        pocket = next(pybel.readfile('mol2', pocket_path))
+        ligand = next(pybel.readfile('mol2', ligand_path))
+
+        feature = self.feature_extract(pocket, ligand, label, rotation, rot)
+        return feature
+
+    # pylint: disable=arguments-differ
+    def train_process(self, data, label=None, rotation=0, rot=False):
+        """data process"""
+        assert len(data) == 2
         pocket = data[0]
         ligand = data[1]
+        feature = self.feature_extract(pocket, ligand, label, rotation, rot)
+        return feature
 
+
+    def feature_extract(self, pocket, ligand, label, rotation, rot):
+        """feature extract"""
         feature = extractfeature(pocket, ligand)
         coords = feature[:, :3]
         features = feature[:, 3:]
@@ -151,8 +173,11 @@ class PAFNUCYDataSet(PDBBind):
         """set training data src"""
         if data_src is None:
             data_src = self.cache
-        cmd = "cp {data_src}/index/INDEX_core_data.2016 {data_src}/PDBbind_2016_plain_text_index/index/"
-        os.system(cmd)
+        if not os.path.exists(os.path.join(data_src, "PDBbind_2016_plain_text_index")):
+            self.download(data_src)
+        if not os.path.exists(os.path.join(data_src, 'PDBbind_2016_plain_text_index/index/INDEX_general_PL_data.2016')):
+            cmd = "cp {data_src}/index/INDEX_core_data.2016 {data_src}/PDBbind_2016_plain_text_index/index/"
+            os.system(cmd)
         print("Start preprocessing PDBBind data ... ")
         if not os.path.exists(os.path.join(data_src, 'PDBbind_2016_plain_text_index/index/INDEX_general_PL_data.2016')):
             raise IOError("INDEX_general_PL_data.2016 file doesn't exit!")

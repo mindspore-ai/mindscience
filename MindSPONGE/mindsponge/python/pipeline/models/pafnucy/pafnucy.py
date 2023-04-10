@@ -21,8 +21,6 @@
 # limitations under the License.
 # ============================================================================
 """pafnucy Model"""
-import time
-
 import mindspore as ms
 from mindspore import Tensor, context, jit, nn
 from mindspore.common import dtype as mstype
@@ -85,10 +83,7 @@ class PAFNUCY(Model):
         feat.append(test_data.get("affinity"))
         feat = mutable(feat)
 
-        t1 = time.time()
         result = self.forward(feat)
-        t2 = time.time()
-        print(round(t2 - t1, 2))
         return result
 
 

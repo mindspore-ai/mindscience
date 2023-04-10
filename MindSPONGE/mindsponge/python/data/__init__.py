@@ -22,16 +22,19 @@
 # ============================================================================
 """Data"""
 
-from .elements import elements, element_dict, element_name, element_set, atomic_mass
-from .hyperparam import str_to_tensor, tensor_to_str
-from .hyperparam import get_class_parameters, get_hyper_parameter, get_hyper_string
-from .hyperparam import set_class_parameters, set_hyper_parameter, set_class_into_hyper_param
-from .hyperparam import load_checkpoint, load_hyperparam, load_hyper_param_into_class
-from .template import get_template, get_template_index, get_molecule
-from .parameters import ForceFieldParameters
+from .data import (get_bonded_types, get_dihedral_types, get_improper_types,
+                   read_yaml, update_dict, write_yaml)
+from .data_transform import atom37_to_frames, atom37_to_torsion_angles
+from .elements import (atomic_mass, element_dict, element_name, element_set,
+                       elements)
 from .forcefield import get_forcefield
-from .data import read_yaml, write_yaml, update_dict
-from .data import get_bonded_types, get_dihedral_types, get_improper_types
+from .hyperparam import (get_class_parameters, get_hyper_parameter,
+                         get_hyper_string, load_checkpoint,
+                         load_hyper_param_into_class, load_hyperparam,
+                         set_class_into_hyper_param, set_class_parameters,
+                         set_hyper_parameter, str_to_tensor, tensor_to_str)
+from .parameters import ForceFieldParameters
+from .template import get_molecule, get_template, get_template_index
 
 __all__ = ['elements', 'element_dict', 'element_name', 'element_set', 'atomic_mass',
            'str_to_tensor', 'tensor_to_str', 'get_class_parameters', 'get_hyper_parameter',
@@ -40,4 +43,4 @@ __all__ = ['elements', 'element_dict', 'element_name', 'element_set', 'atomic_ma
            'load_hyper_param_into_class', 'get_template', 'get_template_index',
            'get_molecule', 'ForceFieldParameters', 'get_forcefield', 'read_yaml',
            'write_yaml', 'update_dict', 'get_bonded_types', 'get_dihedral_types',
-           'get_improper_types']
+           'get_improper_types', 'atom37_to_frames', 'atom37_to_torsion_angles']

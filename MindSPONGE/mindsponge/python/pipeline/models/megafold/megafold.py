@@ -151,7 +151,7 @@ class MEGAFold(Model):
         pdb_file = to_pdb(unrelaxed_protein)
 
         print("Infer finished, confidence is ", round(confidence, 2))
-        res = final_atom_positions, final_atom_mask, confidence, pdb_file
+        res = final_atom_positions, final_atom_mask, data["aatype"][0][:num_residues], confidence, pdb_file
         return res
 
 
