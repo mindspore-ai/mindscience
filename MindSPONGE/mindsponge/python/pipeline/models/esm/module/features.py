@@ -19,6 +19,7 @@ import numpy as np
 import mindspore as ms
 import mindspore.ops as ops
 import mindspore.nn as nn
+from mindspore import context
 # pylint: disable=relative-beyond-top-level
 from .basic_modules import GVP, LayerNorm, Dense
 from .util import normalize, norm, nan_to_num, rbf, flatten_graph, ms_transpose, ms_padding_without_val
@@ -142,7 +143,10 @@ class GVPInputFeaturizer(nn.Cell):
                 *d_neighbors.shape[:-1], 1)
         else:
             d_adjust = d_adjust / 1e4
-            d_neighbors, e_idx = ops.TopK(sorted=True)(d_adjust, d_adjust.shape[-1])
+            if context.get_context("device_target") == "GPU":
+                d_neighbors, e_idx = ops.Sort(axis=-1, descending=True)(d_adjust)
+            else:
+                d_neighbors, e_idx = ops.TopK(sorted=True)(d_adjust, d_adjust.shape[-1])
             d_neighbors, e_idx = d_neighbors[..., ::-1], e_idx[..., ::-1]
             d_neighbors, e_idx = d_neighbors[:, :, 0:int(min(top_k_neighbors, x.shape[1]))], \
                                  e_idx[:, :, 0:int(min(top_k_neighbors, x.shape[1]))]
