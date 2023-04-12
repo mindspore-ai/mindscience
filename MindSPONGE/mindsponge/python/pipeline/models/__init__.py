@@ -29,3 +29,4 @@ from .deepdr import DeepDR, DeepDRDataSet, deepdr_configuration
 from .megafold import MEGAFold, MEGAFoldDataSet, megafold_configuration
 from .megaassessment import MEGAAssessment, MEGAAssessmentDataSet, megaassessment_configuration
 from .esm import ESM, ESMDataSet, esm_configuration
+from .esm2 import ESM2, esm2_configuration, ESM2DataSet
