@@ -396,7 +396,7 @@ class MultiClassFocal(nn.Cell):
         - **target** (Tensor) - Label values, shape is :math:`(batch\_size, ndim)`.
 
     Outputs:
-        Tensor, shape is :math:`(batch\_size,)`.
+        Tensor, shape is :math:`(batch\_size, )`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

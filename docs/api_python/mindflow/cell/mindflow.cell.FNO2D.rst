@@ -17,12 +17,12 @@ mindflow.cell.FNO2D
         - **compute_dtype** (dtype.Number) - 密集的计算类型。默认mindspore.common.dtype.float32。支持以下数据类型：mindspore.common.dtype.float16或mindspore.common.dtype.float32。GPU后端建议使用float32，Ascend后端建议使用float16。
 
     输入：
-        - **x** (Tensor) - shape为 :math:`(batch\_size, resolution, in\_channels)` 的Tensor。
+        - **x** (Tensor) - shape为 :math:`(batch\_size, resolution, resolution, in\_channels)` 的Tensor。
 
     输出：
         Tensor，此FNO网络的输出。
         
-        - **output** (Tensor) - shape为 :math:`(batch\_size, resolution, out\_channels)` 的Tensor。
+        - **output** (Tensor) - shape为 :math:`(batch\_size, resolution, resolution, out\_channels)` 的Tensor。
 
     异常：
         - **TypeError** - 如果 `in_channels` 不是int。

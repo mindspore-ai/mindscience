@@ -59,9 +59,9 @@ class InvariantPointAttention(nn.Cell):
           shape :math:`[N_{res}, N_{res}, pair\_dim]`.
         - **mask** (Tensor) - A mask that determines which elements of inputs_1d are involved in the
           attention calculation, shape :math:`[N_{res}, 1]`
-        - **rotation** (tuple) - A rotation term in a rigid body group T(r,t),
+        - **rotation** (tuple) - A rotation term in a rigid body group :math:`T(r,t)`,
           A tuple of length 9, The shape of each elements in the tuple is :math:`[N_{res}]`.
-        - **translation** (tuple) - A translation term in a rigid body group T(r,t),
+        - **translation** (tuple) - A translation term in a rigid body group :math:`T(r,t)`,
           A tuple of length 3, The shape of each elements in the tuple is :math:`[N_{res}]`.
 
     Outputs:

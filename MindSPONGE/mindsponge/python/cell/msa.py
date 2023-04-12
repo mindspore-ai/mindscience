@@ -53,7 +53,7 @@ class MSARowAttentionWithPairBias(nn.Cell):
           Default: "None".
         - **norm_pair_mask** (Tensor) - The mask of pair_act when to do layernorm with shape :math:`(N_{res}, N_{res})`,
           Default: "None".
-        - **res_idx** (Tensor) - The residue index used to perform ROPE with shape :math:`(N_{res})`, Default: "None".
+        - **res_idx** (Tensor) - The residue index used to perform ROPE with shape :math:`(N_{res}, )`, Default: "None".
 
     Outputs:
         Tensor, the float tensor of the msa_act of the layer with shape :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` .
