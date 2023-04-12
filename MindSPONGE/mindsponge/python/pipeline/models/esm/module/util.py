@@ -427,6 +427,20 @@ class Alphabet:
             prepend_bos = True
             append_eos = False
             use_msa = False
+        elif name in ("ESM-1", "protein_bert_base"):
+            standard_toks = proteinseq_toks.get("toks")
+            prepend_toks: Tuple[str, ...] = ("<null_0>", "<pad>", "<eos>", "<unk>")
+            append_toks: Tuple[str, ...] = ("<cls>", "<mask>", "<sep>")
+            prepend_bos = True
+            append_eos = False
+            use_msa = False
+        elif name in ("ESM-1b", "roberta_large"):
+            standard_toks = proteinseq_toks.get("toks")
+            prepend_toks = ("<cls>", "<pad>", "<eos>", "<unk>")
+            append_toks = ("<mask>",)
+            prepend_bos = True
+            append_eos = True
+            use_msa = False
         else:
             raise ValueError("Unknown architecture selected")
         return cls(standard_toks, prepend_toks, append_toks, prepend_bos, append_eos, use_msa)

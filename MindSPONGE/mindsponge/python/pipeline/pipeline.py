@@ -27,6 +27,7 @@ from .models import DeepDR, DeepDRDataSet, deepdr_configuration
 from .models import MEGAFold, MEGAFoldDataSet, megafold_configuration
 from .models import MEGAAssessment, MEGAAssessmentDataSet, megaassessment_configuration
 from .models import ESM, ESMDataSet, esm_configuration
+from .models import ESM2, esm2_configuration, ESM2DataSet
 
 model_card = {
     "MEGAFold": {"model": MEGAFold, "dataset": MEGAFoldDataSet, "config": megafold_configuration},
@@ -38,6 +39,7 @@ model_card = {
     "UFold": {"model": UFold, "dataset": UFoldDataSet, "config": ufold_configuration},
     "DeepDR": {"model": DeepDR, "dataset": DeepDRDataSet, "config": deepdr_configuration},
     "ESM": {"model": ESM, "dataset": ESMDataSet, "config": esm_configuration},
+    "ESM2": {"model": ESM2, "dataset": ESM2DataSet, "config": esm2_configuration}
 }
 
 
