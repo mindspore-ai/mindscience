@@ -410,7 +410,7 @@ def make_atom14_positions(aatype, all_atom_mask, all_atom_positions):
         - numpy.array. Index of mapping densely encoding atoms with sparse encoding method.
           Shape is :math:`(N_{res}, 37)` .
         - numpy.array. Sparse encoding, mask of all atoms in protein, including unknown amino acid atoms.
-          Shape is :math:`(N_{res}, 14)`
+          Shape is :math:`(N_{res}, 37)`
         - numpy.array. The atomic coordinates after chiral transformation for the atomic coordinates of
           densely encoding method. Shape is :math:`(N_{res}, 14, 3)` .
         - numpy.array. Atom mask after chiral transformation. Shape is :math:`(N_{res}, 14)` .

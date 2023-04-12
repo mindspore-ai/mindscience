@@ -15,4 +15,4 @@ mindelec.loss.NetWithEval
         - **inputs** (Tensor) - 输入是可变长度参数，包含网络输入和标签。
 
     输出：
-        Tuple，包含标量损失Tensor、shape为 :math:`(N, \ldots)` 的网络输出Tensor和shape为 :math:`(`N,\ldts)` 的标签Tensor。
+        Tuple，包含标量损失Tensor、shape为 :math:`(N, \ldots)` 的网络输出Tensor和shape为 :math:`(N, \ldots)` 的标签Tensor。

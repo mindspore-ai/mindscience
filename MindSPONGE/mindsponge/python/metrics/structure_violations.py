@@ -298,7 +298,7 @@ def within_residue_violations(
         atom14_dists_lower_bound (Tensor): lower bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
         atom14_dists_upper_bound (Tensor): upper bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
         tighten_bounds_for_loss (float):  Extra factor to tighten loss. Default: 0.0.
-        dists_mask_i (Tensor):             initial distants mask, shape: (14, 14) .
+        dists_mask_i (Tensor):             initial distants mask, shape: :math:`(14, 14)` .
 
     Returns:
         - **per_atom_loss_sum** (Tensor) - sum of all clash losses per atom, shape :math:`(N_{res}, 14)` .
@@ -952,7 +952,7 @@ def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_fr
         alt_naming_is_better (Tensor): Tensor of shape :math:`(N_{res},)`, with value 1.0 where alternative
             swap is better.
         rigidgroups_gt_frames (Tensor): The ground truth locals frames of shape :math:`(N_{res}, 8, 12)`,
-            with :math:`(N_{res},)` the number of residues in protein. For each residue, there are 1 backbone
+            with :math:`N_{res}` the number of residues in protein. For each residue, there are 1 backbone
             frame and 7 side-chain frames, 8 frames in total. For the last dimension, the first 9 elements
             are the 9 components of rotation matrix; the last 3 elements are the 3 component of
             translation matrix.
@@ -970,7 +970,7 @@ def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_fr
         sidechain_length_scale (float): The unit distance of sidechain FAPE loss, used to scale
             distances.
         pred_frames (Tensor): The predicted locals frames of shape :math:`(12, N_{recycle}, N_{res}, 8)`.
-            :math:`(N_{recycle},)` is the recycle number of FoldIteration in Structure module. Only the frames of
+            :math:`N_{recycle}` is the recycle number of FoldIteration in Structure module. Only the frames of
             last recycle is used in side-chain FAPE loss. 12 has the same meaning as the third dimension of
             rigidgroups_gt_frames.
         pred_positions (Tensor): The predicted positions of shape :math:`(3, N_{recycle}, N_{res}, 14)`.
