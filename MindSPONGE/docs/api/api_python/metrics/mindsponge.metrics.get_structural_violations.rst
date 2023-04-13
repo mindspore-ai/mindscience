@@ -22,18 +22,18 @@ mindsponge.metrics.get_structural_violations
         - **cys_sg_idx** (Tensor) - 半胱氨酸在蛋白质编码中的index，详见： `mindsponge.common.residue_constants` 。 shape: :math:`( )` 。
 
     返回：
-        - **bonds_c_n_loss_mean** (Tensor) - C-N 肽键长度冲突的平均损失。shape: :math:`( )` 。
-        - **angles_ca_c_n_loss_mean** (Tensor) - CA-C-N键角冲突的平均损失。shape: :math:`( )` 。
-        - **angles_c_n_ca_loss_mean** (Tensor) - C-N-CA键角冲突的平均损失。shape: :math:`( )` 。
+        - **bonds_c_n_loss_mean** (Tensor) - C-N 肽键长度冲突的平均损失。shape: :math:`()` 。
+        - **angles_ca_c_n_loss_mean** (Tensor) - CA-C-N键角冲突的平均损失。shape: :math:`()` 。
+        - **angles_c_n_ca_loss_mean** (Tensor) - C-N-CA键角冲突的平均损失。shape: :math:`()` 。
         - **connections_per_residue_loss_sum** (Tensor) - 所有氨基酸残基关于肽键的冲突损失总和，包括键角键长损失。shape :math:`(N_{res}, )` 。
         - **connections_per_residue_violation_mask** (Tensor) - mask表示每个氨基酸残基是否存在键长或键角损失。shape :math:`(N_{res}, )` 。
-        - **clashes_mean_loss** (Tensor) - 在空间中，所有原子间距离中超出原子范德化半径的总平均距离损失。即含有距离冲突的原子平均损失。shape :math:`( )`
+        - **clashes_mean_loss** (Tensor) - 在空间中，所有原子间距离中超出原子范德化半径的总平均距离损失。即含有距离冲突的原子平均损失。shape :math:`()`
         - **clashes_per_atom_loss_sum** (Tensor) - 在空间中，所有原子间距离中超出原子范德化半径的总和除以总原子个数。即平均单个原子距离损失（包括没有距离冲突的原子）。shape :math:`(N_{res}, 14)` 。
         - **clashes_per_atom_clash_mask** (Tensor) - 在空间中，所有原子间距离中超出原子范德化半径的原子mask。1表示有冲突，0表示没有冲突。shape :math:`(N_{res}, 14)` 。
         - **per_atom_loss_sum** (Tensor) - 每个原子的总距离冲突误差。shape :math:`(N_{res}, 14)` 。
         - **per_atom_violations** (Tensor) - 每个原子的冲突误差（键长和键角冲突最大值）。shape :math:`(N_{res}, 14)` 。
         - **total_per_residue_violations_mask** (Tensor) - 氨基酸残基是否存在原子冲突掩码。 shape :math:`(N_{res}, )` 。
-        - **structure_violation_loss** (Tensor) - 所有氨基酸残基原子冲突损失总和。 shape： :math:`( )` 。
+        - **structure_violation_loss** (Tensor) - 所有氨基酸残基原子冲突损失总和。 shape： :math:`()` 。
 
     符号:
         :math:`N_{res}` - 蛋白质中氨基酸个数，按蛋白质一级序列排列。

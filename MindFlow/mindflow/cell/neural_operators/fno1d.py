@@ -56,12 +56,12 @@ class FNO1D(nn.Cell):
             the GPU backend, float16 is recommended for the Ascend backend.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, input\_dims)`.
+        - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, in\_channels)`.
 
     Outputs:
         Tensor, the output of this FNO network.
 
-        - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, output\_dims)`.
+        - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, out\_channels)`.
 
     Raises:
         TypeError: If `in_channels` is not an int.

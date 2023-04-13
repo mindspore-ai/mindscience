@@ -356,7 +356,7 @@ def rots_from_two_vecs(e0_unnormalized, e1_unnormalized):
     Then calculate the projected length of :math:`\vec b` on a axis.
     :math:`c = |\vec b| \cos\theta = \vec b \cdot \frac{\vec a}{|\vec a|}` .
 
-    So the projected vector of :math:`b` on a axis is :math:`c\vec e_0`.
+    So the projected vector of :math:`\vec b` on a axis is :math:`c\vec e_0`.
     The vector perpendicular to e0 is :math:`\vec e_1' = \vec b - c\vec e_0` .
 
     The unit vector of :math:`\vec e_1'` is :math:`\vec e_1 = \frac{\vec e_1'}{|\vec e_1'|}`,
