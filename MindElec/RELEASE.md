@@ -1,8 +1,8 @@
-﻿# MindElec Release Notes
+﻿# MindSpore Elec Release Notes
 
 [查看中文](./RELEASE_CN.md)
 
-## MindElec 0.2.0-alpha Release Notes
+## MindSpore Elec 0.2.0-alpha Release Notes
 
 ### Major Feature and Improvements
 

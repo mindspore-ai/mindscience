@@ -1,10 +1,10 @@
-# MindElec
+# MindSpore Elec
 
 [View English](README.md)
 
 <!-- TOC --->
 
-- [MindElec介绍](#mindelec介绍)
+- [MindSpore Elec介绍](#mindspore-elec介绍)
     - [数据构建及转换](#数据构建及转换)
     - [仿真计算](#仿真计算)
         - [AI电磁模型库](#AI电磁模型库)
@@ -34,11 +34,11 @@
 - `2022.11` 论文"Meta-Auto-Decoder for Solving Parametric Partial Differential Equations" 被AI领域顶会 NeurIPS 2022 SpotLight(前5%)接收，详情参见[论文](https://arxiv.org/pdf/2111.08823)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/incremental_learning)
 - `2022.07` 论文"A Universal PINNs Method for Solving Partial Differential Equations with a Point Source" 被AI领域顶会 IJCAI 2022接收，详情参见[论文](https://www.ijcai.org/proceedings/2022/533)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/time_domain_maxwell)
 
-## MindElec介绍
+## MindSpore Elec介绍
 
 电磁仿真是指通过计算的方式模拟电磁波在物体或空间中的传播特性，其在手机容差、天线优化和芯片设计等场景中应用广泛。传统数值方法如有限差分、有限元等需网格剖分、迭代计算，仿真流程复杂、计算时间长，无法满足产品的设计需求。AI方法具有万能逼近和高效推理能力，可有效提升仿真效率。
 
-MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及转换、仿真计算、以及结果可视化组成。可以支持端到端的AI电磁仿真。目前已在华为终端手机容差场景中取得阶段性成果，相比商业仿真软件，AI电磁仿真的S参数误差在2%左右，端到端仿真速度提升10+倍。
+MindSpore Elec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及转换、仿真计算、以及结果可视化组成。可以支持端到端的AI电磁仿真。目前已在华为终端手机容差场景中取得阶段性成果，相比商业仿真软件，AI电磁仿真的S参数误差在2%左右，端到端仿真速度提升10+倍。
 
 <div align=center>
 <img src="docs/MindElec-architecture.jpg" alt="MindElec Architecture" width="600"/>
@@ -137,12 +137,12 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 
 ### 版本依赖关系
 
-由于MindElec与Mindspore有依赖关系，请根据下表中所指示的对应关系，在[Mindspore下载页面](https://www.mindspore.cn/versions)
+由于MindSpore Elec与Mindspore有依赖关系，请根据下表中所指示的对应关系，在[Mindspore下载页面](https://www.mindspore.cn/versions)
 下载并安装对应的whl包。
 
-| MindElec | 分支     | MindSpore       | Python |
-|:---------|:-------|:----------------|:-------|
-| 0.2.0    | master | \>=2.0.0-alpha️ | \>=3.7 |
+| MindSpore Elec | 分支     | MindSpore       | Python |
+|:---------------|:--------|:----------------|:-------|
+| 0.2.0          | master  | \>=2.0.0-alpha️| \>=3.7 |
 
 其余依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/MindElec/requirements.txt)
 
@@ -162,8 +162,8 @@ MindElec是基于MindSpore开发的AI电磁仿真工具包，由数据构建及�
 pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindscience/{arch}/mindelec_ascend-{version}-{python_version}-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-> - 在联网状态下，安装whl包时会自动下载MindElec安装包的依赖项（依赖项详情参见[setup.py](https://gitee.com/mindspore/mindscience/blob/master/MindElec/setup.py)），点云数据采样依赖[pythonocc](https://github.com/tpaviot/pythonocc-core)，需自行安装。
-> - `{version}`表示MindElec版本号，例如下载0.1.0版本MindElec时，`{version}`应写为0.1.0。
+> - 在联网状态下，安装whl包时会自动下载MindSpore Elec安装包的依赖项（依赖项详情参见[setup.py](https://gitee.com/mindspore/mindscience/blob/master/MindElec/setup.py)），点云数据采样依赖[pythonocc](https://github.com/tpaviot/pythonocc-core)，需自行安装。
+> - `{version}`表示MindSpore Elec版本号，例如下载0.1.0版本MindSpore Elec时，`{version}`应写为0.1.0。
 > - `{arch}`表示系统架构，例如使用的Linux系统是x86架构64位时，`{arch}`应写为x86_64。如果系统是ARM架构64位，则写为aarch64。
 > - `{python_version}`表示用户的Python版本，Python版本为3.7.5时，{python_version}应写为cp37-cp37m。Python版本为3.9.0时，则写为cp39-cp39。
 
@@ -176,7 +176,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
     git clone https://gitee.com/mindspore/mindscience.git
     ```
 
-2. 编译安装MindElec
+2. 编译安装MindSpore Elec
 
     ```bash
     cd ~/MindElec
@@ -186,7 +186,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 
 ## API
 
-MindElec API文档请查看[文档链接](https://mindspore.cn/mindelec/docs/zh-CN/master/mindelec.architecture.html)
+MindSpore Elec API文档请查看[文档链接](https://mindspore.cn/mindelec/docs/zh-CN/master/mindelec.architecture.html)
 
 ## 验证是否成功安装
 
@@ -198,7 +198,7 @@ python -c 'import mindelec'
 
 ## 快速入门
 
-关于如何快速使用AI电磁仿真工具包，进行训练推理，请点击查看[MindElec使用教程](https://mindspore.cn/mindelec/docs/zh-CN/master/intro_and_install.html)
+关于如何快速使用AI电磁仿真工具包，进行训练推理，请点击查看[MindSpore Elec使用教程](https://mindspore.cn/mindelec/docs/zh-CN/master/intro_and_install.html)
 
 ## 文档
 
