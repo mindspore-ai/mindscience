@@ -1,11 +1,11 @@
-# MindElec
+# MindSpore Elec
 
 [查看中文](README_CN.md)
 
 <!-- TOC -->
 
-- [MindElec](#mindelec)
-    - [Introduction to MindElec](#introduction-to-mindelec)
+- [MindSpore Elec](#mindspore-elec)
+    - [Introduction to MindSpore Elec](#introduction-to-mindspore-elec)
         - [Data Building and Conversion](#data-building-and-conversion)
         - [Simulation](#simulation)
             - [Electromagnetic Model Library](#electromagnetic-model-library)
@@ -33,11 +33,11 @@
 - `2022.07` Our paper "Meta-Auto-Decoder for Solving Parametric Partial Differential Equations" was accepted by NeurIPS 2022 SpotLight(top 5%)，please refer our [paper](https://arxiv.org/pdf/2111.08823) and [code](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/incremental_learning)
 - `2022.07` Our paper "A Universal PINNs Method for Solving Partial Differential Equations with a Point Source" was accepted by IJCAI 2022，please refer our [paper](https://www.ijcai.org/proceedings/2022/533) and [code](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/physics_driven/time_domain_maxwell)
 
-## Introduction to MindElec
+## Introduction to MindSpore Elec
 
 Electromagnetic simulation refers to simulating the propagation characteristics of electromagnetic waves in objects or space through computation. It is widely used in scenarios such as mobile phone tolerance simulation, antenna optimization, and chip design. Conventional numerical methods, such as finite difference and finite element, require mesh segmentation and iterative computation. The simulation process is complex and the computation time is long, which cannot meet the product design requirements. With the universal approximation theorem and efficient inference capability, the AI method can improve the simulation efficiency.
 
-MindElec is an AI electromagnetic simulation toolkit developed based on MindSpore. It consists of the electromagnetic model library, data build and conversion, simulation computation, and result visualization. End-to-end AI electromagnetic simulation is supported. Currently, Huawei has achieved phase achievements in the tolerance scenario of Huawei mobile phones. Compared with the commercial simulation software, the S parameter error of AI electromagnetic simulation is about 2%, and the end-to-end simulation speed is improved by more than 10 times.
+MindSpore Elec is an AI electromagnetic simulation toolkit developed based on MindSpore. It consists of the electromagnetic model library, data build and conversion, simulation computation, and result visualization. End-to-end AI electromagnetic simulation is supported. Currently, Huawei has achieved phase achievements in the tolerance scenario of Huawei mobile phones. Compared with the commercial simulation software, the S parameter error of AI electromagnetic simulation is about 2%, and the end-to-end simulation speed is improved by more than 10 times.
 
 <div align=center>
 <img src="docs/MindElec-architecture-en.jpg" alt="MindElec Architecture" width="600"/>
@@ -69,11 +69,11 @@ If you are interested in our Meta-Auto-Decoder for solving parametric PDEs, plea
 
 ## Installation Guide
 
-Due to the dependency between MindElec and MindSpore, please follow the table below and install the corresponding MindSpore version from [MindSpore download Guide](https://www.mindspore.cn/versions)
+Due to the dependency between MindSpore Elec and MindSpore, please follow the table below and install the corresponding MindSpore version from [MindSpore download Guide](https://www.mindspore.cn/versions)
 
-| MindElec Version | Branch | MindSpore Version | Python Version |
-|:-----------------|:-------|:------------------|:---------------|
-| 0.2.0            | master | \>=2.0.0-alpha️         | \>=3.7         |
+| MindSpore Elec Version | Branch | MindSpore Version | Python Version |
+|:-----------------------|:-------|:------------------|:---------------|
+| 0.2.0                  | master | \>=2.0.0-alpha️  | \>=3.7         |
 
 ### Confirming the System Environment Information
 
@@ -94,10 +94,10 @@ Due to the dependency between MindElec and MindSpore, please follow the table be
 pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindscience/{arch}/mindelec_ascend-{version}-{python_version}-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-> - When the network is connected, dependencies of the MindElec installation package are automatically downloaded during the .whl package installation. For details about dependencies, see [setup.py](https://gitee.com/mindspore/mindscience/blob/master/MindElec/setup.py). Pointcloud data generation depends on [pythonocc](https://github.com/tpaviot/pythonocc-core), please install the dependencies by yourself.
-> - `{version}` denotes the version of MindElec. For example, when you are installing MindElec 0.1.0, `{version}` should be 0.1.0.
+> - When the network is connected, dependencies of the MindSpore Elec installation package are automatically downloaded during the .whl package installation. For details about dependencies, see [setup.py](https://gitee.com/mindspore/mindscience/blob/master/MindElec/setup.py). Pointcloud data generation depends on [pythonocc](https://github.com/tpaviot/pythonocc-core), please install the dependencies by yourself.
+> - `{version}` denotes the version of MindSpore Elec. For example, when you are installing MindSpore Elec 0.1.0, `{version}` should be 0.1.0.
 > - `{arch}` denotes the system architecture. For example, the Linux system you are using is x86 architecture 64-bit, `{arch}`should be x86_64. If the system is ARM architecture 64-bit, then it should be aarch64.
-> - `{python_version}` specifies the python version of which MindElec is built. If you wish to use Python3.7.5, `{python_version}` should be cp37-cp37m. If Python3.9.0 is used, it should be cp39-cp39.
+> - `{python_version}` specifies the python version of which MindSpore Elec is built. If you wish to use Python3.7.5, `{python_version}` should be cp37-cp37m. If Python3.9.0 is used, it should be cp39-cp39.
 
 ### Installing Using Source Code
 
@@ -108,7 +108,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
     git clone https://gitee.com/mindspore/mindscience.git
     ```
 
-2. Build and install MindElec.
+2. Build and install MindSpore Elec.
 
     ```bash
     cd ~/MindElec
@@ -118,7 +118,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindsc
 
 ## API
 
-For details about MindElec APIs, see the [API](https://mindspore.cn/mindelec/docs/en/master/mindelec.architecture.html) page.
+For details about MindSpore Elec APIs, see the [API](https://mindspore.cn/mindelec/docs/en/master/mindelec.architecture.html) page.
 
 ## Installation Verification
 
@@ -130,11 +130,11 @@ python -c 'import mindelec'
 
 ## Quick Start
 
-For details about how to quickly use the AI electromagnetic simulation toolkit for training and inference, see [MindElec Guide](https://mindspore.cn/mindelec/docs/en/master/intro_and_install.html).
+For details about how to quickly use the AI electromagnetic simulation toolkit for training and inference, see [MindSpore Elec Guide](https://mindspore.cn/mindelec/docs/en/master/intro_and_install.html).
 
 ## Documents
 
-For more details about the installation guides, tutorials, and APIs, see [MindElec Documents](https://gitee.com/mindspore/docs/tree/master/docs/mindscience).
+For more details about the installation guides, tutorials, and APIs, see [MindSpore Elec Documents](https://gitee.com/mindspore/docs/tree/master/docs/mindscience).
 
 ## Community
 

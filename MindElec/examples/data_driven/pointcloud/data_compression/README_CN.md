@@ -20,7 +20,7 @@
 
 使用点云数据计算散射参数时，如果目标体系结构复杂或结构调整比较精细，点云数据的分辨率需要设置得非常高才能保证点云数据的有效性；但同时，分辨率高会导致单条数据过大的问题，以手机仿真计算为例，该场景中单条点云数据通常包含上亿个点，深度仿真计算方法处理这种数据需要大量的显存与算力，通用性与高效性也会降低。
 
-针对该问题MindElec提供基于神经网络的分块压缩工具，该工具可以大幅降低点云数据方案的显存与算力消耗，提升基于点云数据AI仿真方案的通用性与高效性。
+针对该问题MindSpore Elec提供基于神经网络的分块压缩工具，该工具可以大幅降低点云数据方案的显存与算力消耗，提升基于点云数据AI仿真方案的通用性与高效性。
 
 ## 压缩模型自监督训练
 
@@ -44,10 +44,10 @@
 - 硬件（Ascend）
     - 准备Ascend处理器搭建硬件环境。
 - 框架
-    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindSpore Elec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindElec教程](https://www.mindspore.cn/mindelec/docs/zh-CN/master/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindelec/docs/zh-CN/master/mindelec.architecture.html)
+    - [MindSpore Elec教程](https://www.mindspore.cn/mindelec/docs/zh-CN/master/intro_and_install.html)
+    - [MindSpore Elec Python API](https://www.mindspore.cn/mindelec/docs/zh-CN/master/mindelec.architecture.html)
 
 # 脚本说明
 

@@ -144,9 +144,9 @@ write_checksum() {
     done
 }
 
-echo "---------------- MindElec: build start ----------------"
+echo "---------------- MindSpore Elec: build start ----------------"
 checkopts "$@"
 build_mindelec
 mv ${BASEPATH}/build/package/*whl ${OUTPUT_PATH}
 write_checksum
-echo "---------------- MindElec: build end   ----------------"
+echo "---------------- MindSpore Elec: build end   ----------------"
