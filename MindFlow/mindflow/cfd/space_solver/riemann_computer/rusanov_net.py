@@ -40,7 +40,7 @@ class RusanovNet(RiemannComputer):
         Tensor, calculated riemann flux.
 
     Raises:
-        ValueError: If net_dict do not have 'rusanov_net'.
+        ValueError: If `net_dict` do not have 'rusanov_net'.
 
     Supported Platforms:
         ``GPU``

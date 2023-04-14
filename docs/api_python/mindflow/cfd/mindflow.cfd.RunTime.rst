@@ -26,7 +26,7 @@ mindflow.cfd.RunTime
 
     .. py:method:: time_loop(pri_var)
 
-        是否继续仿真，当前时间达到终值或NAN值时返回False。
+        是否继续仿真，当前时间达到终值或 ``NAN`` 值时返回False。
 
         参数：
             - **pri_var** (Tensor) - 原始变量。
@@ -35,4 +35,4 @@ mindflow.cfd.RunTime
             bool，是否继续仿真。
 
         异常：
-            - **ValueError** - 如果 `pri_var` 值为NAN。
+            - **ValueError** - 如果 `pri_var` 值为 ``NAN``。

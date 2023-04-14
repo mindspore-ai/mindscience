@@ -7,4 +7,4 @@ mindflow.cfd.vis_1d
 
     参数：
         - **pri_var** (Tensor) - 原始量。
-        - **file_name** (str) - 图片文件名，默认值: “vis.jpg”。
+        - **file_name** (str) - 图片文件名，默认值:  ``'vis.jpg'``。

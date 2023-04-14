@@ -592,8 +592,8 @@ def atom37_to_torsion_angles(
         all_atom_mask (numpy.array):    Atom37 representation of the mask on all atomic coordinates with
                                         shape :math:`(batch\_size, N_{res})`.
         alt_torsions (bool):            Indicates whether to set the sign angle of shielding torsion to zero.
-                                        Default: False.
-        is_multimer (bool):             It will be True when multimer is used. Default: False
+                                        Default: Fal``se.
+        is_multimer (bool):             It will be True when multimer is used. Default: ``False``.
 
     Returns:
         Dict containing
@@ -754,7 +754,7 @@ def atom37_to_frames(
         aatype(numpy.array):                Amino acid sequence, :math:`[N_{res}]` .
         all_atom_positions(numpy.array):    The coordinates of all atoms, presented as atom37, :math:`[N_{res}, 37, 3]`.
         all_atom_mask(numpy.array):         Mask of all atomic coordinates, :math:`[N_{res}, 37]`.
-        is_affine(bool):                    Whether to perform affine, the default value is False.
+        is_affine(bool):                    Whether to perform affine, the default value is ``False``.
 
     Returns:
         Dictionary, the specific content is as follows.

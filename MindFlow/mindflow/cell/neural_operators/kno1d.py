@@ -28,13 +28,13 @@ class KNO1D(nn.Cell):
      <https://arxiv.org/pdf/2301.01104.pdf>`_.
 
     Args:
-        in_channels (int): The number of channels in the input space. Default: 1.
-        channels (int): The number of channels after dimension lifting of the input. Default: 32.
-        modes (int): The number of low-frequency components to keep. Default: 16.
-        resolution (int): The spatial resolution of the input. Default: 1024.
-        depths (int): The number of KNO layers. Default: 4.
-        compute_dtype (dtype.Number): The computation type of dense. Default mstype.float16.
-            Should be mstype.float32 or mstype.float16. mstype.float32 is recommended for
+        in_channels (int): The number of channels in the input space. Default: ``1``.
+        channels (int): The number of channels after dimension lifting of the input. Default: ``32``.
+        modes (int): The number of low-frequency components to keep. Default: ``16``.
+        resolution (int): The spatial resolution of the input. Default: ``1024``.
+        depths (int): The number of KNO layers. Default: ``4``.
+        compute_dtype (dtype.Number): The computation type of dense. Default: ``mstype.float16``.
+            Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
             the GPU backend, mstype.float16 is recommended for the Ascend backend.
 
     Inputs:

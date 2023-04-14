@@ -9,4 +9,4 @@ mindflow.data.BoundaryIC
         - **geometry** (Geometry) - 指定初始条件的几何体信息。
 
     异常：
-        - **ValueError** - 如果几何体的sampling_config.ic为None。
+        - **ValueError** - 如果几何体的sampling_config.ic为 ``None``。

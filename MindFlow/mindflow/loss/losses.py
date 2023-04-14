@@ -83,7 +83,8 @@ class RegularizedLossCell(nn.Cell):
 
     Args:
         reg_params (Parameter): Parameter type tensor used for regularization.
-        reg_mode (str): type to compute the regularized loss function. Only ["l1", "l2"] are supported. Default: "l2".
+        reg_mode (str): type to compute the regularized loss function. Only [``"l1"``, ``"l2"``] are supported.
+            Default: ``"l2"``.
 
     Inputs:
         None.
@@ -220,7 +221,7 @@ class WaveletTransformLoss(nn.LossBase):
 
     Args:
         wave_level (int): The number of the wavelet transformation levels, should be positive integer.
-        regroup (bool): The regroup error combination form of the wavelet transformation losses. Default: "False".
+        regroup (bool): The regroup error combination form of the wavelet transformation losses. Default: ``"False"``.
 
     Inputs:
         - **input** - tuple of Tensors. Tensor of shape :math:`(B*H*W/(P*P), P*P*C)`, where B denotes the batch size.
@@ -342,8 +343,8 @@ class RelativeRMSELoss(nn.LossBase):
         loss = \sqrt{\frac{\sum_{i=1}^{N}{(x_i-y_i)^2}}{\sum_{i=1}^{N}{(y_i)^2}}}
 
     Args:
-        reduction (str): Type of reduction to be applied to loss. The optional values are "mean", "sum", and "none".
-            Default: "sum".
+        reduction (str): Type of reduction to be applied to loss. The optional values are ``"mean"``,
+            ``"sum"``, and ``"none"``. Default: ``"sum"``.
 
     Inputs:
         - **prediction** (Tensor) - The prediction value of the network. Tensor of shape :math:`(N, *)` where :math:`*`

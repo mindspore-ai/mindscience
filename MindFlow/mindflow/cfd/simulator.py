@@ -30,7 +30,7 @@ class Simulator:
 
     Args:
         config (dict): The dict of parameters.
-        net_dict (dict): The dict of netwoks. Default: None.
+        net_dict (dict): The dict of netwoks. Default: ``None``.
 
     Supported Platforms:
         ``GPU``

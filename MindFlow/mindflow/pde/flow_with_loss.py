@@ -24,7 +24,7 @@ class FlowWithLoss:
 
     Args:
         model (mindspore.nn.Cell): A training or test model.
-        loss_fn (Union[str, Cell]): Loss function. Default: "mse".
+        loss_fn (Union[str, Cell]): Loss function. Default: ``"mse"``.
 
     Raises:
         TypeError: If `modle` or `loss_fn` is not mindspore.nn.Cell.
@@ -59,7 +59,7 @@ class SteadyFlowWithLoss(FlowWithLoss):
 
     Args:
         model (mindspore.nn.Cell): A training or test model.
-        loss_fn (Union[str, Cell]): Loss function. Default: "mse".
+        loss_fn (Union[str, Cell]): Loss function. Default: ``"mse"``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -125,10 +125,10 @@ class UnsteadyFlowWithLoss(FlowWithLoss):
 
     Args:
         model (mindspore.nn.Cell): A training or test model.
-        t_in (int): Initial time steps. Default: 1.
-        t_out (int): Output time steps. Default: 1.
-        loss_fn (Union[str, Cell]): Loss function. Default: "mse".
-        data_format (str): Data format. Default: "NTCHW".
+        t_in (int): Initial time steps. Default: ``1``.
+        t_out (int): Output time steps. Default: ``1``.
+        loss_fn (Union[str, Cell]): Loss function. Default: ``"mse"``.
+        data_format (str): Data format. Default: ``"NTCHW"``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

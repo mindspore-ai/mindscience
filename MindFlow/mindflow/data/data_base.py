@@ -32,14 +32,15 @@ class Data:
     a node in the data flow graph.
 
     Args:
-        name (str): distinguished name of specified dataset (default=None).
-        columns_list (Union[list, tuple]): list of column names (default=None).
+        name (str): distinguished name of specified dataset. Default: ``None``.
+        columns_list (Union[list, tuple]): list of column names. Default: ``None``.
         constraint_type (str, optional): constraint type of the specified dataset to get it's corresponding loss
-            function (default=None). The constraint_type can be equation, bc, ic, label or function.
+            function. Default: ``None``. The `constraint_type` can be ``"equation"``, ``"bc"``, ``"ic"``,
+            ``"label"`` or ``"function"``.
 
     Raises:
-        TypeError: if constraint_type is None or constraint_type.lower() not in ["equation", "bc", "ic", "label",
-                   "function"].
+        TypeError: if `constraint_type` is ``None`` or `constraint_type.lower()` is not in
+            [``"equation"``, ``"bc"``, ``"ic"``, ``"label"``, ``"function"``].
 
     Supported Platforms:
         ``Ascend``
@@ -91,10 +92,12 @@ class ExistedDataConfig:
         name (str): specifies the name of dataset.
         data_dir (Union[str, list, tuple]): the path of existed data files.
         columns_list (Union[str, list, tuple]): list of column names of the dataset.
-        data_format (str, optional): the format of existed data files (default='npy'). The format of 'npy'
-            is supported now.
-        constraint_type (str, optional): specifies the constraint type of the created dataset (default="Label").
-        random_merge (bool, optional): specifies whether randomly merge the given datasets (default=True).
+        data_format (str, optional): the format of existed data files. Default: ``'npy'``.
+            The format of ``'npy'`` is supported now.
+        constraint_type (str, optional): specifies the constraint type of the created dataset.
+            Default: ``"Label"``.
+        random_merge (bool, optional): specifies whether randomly merge the given datasets.
+            Default: ``True``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

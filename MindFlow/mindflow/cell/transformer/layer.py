@@ -184,15 +184,15 @@ class Encoder(nn.Cell):
 
      Args:
           grid_size (tuple[int]): The grid_size size of input.
-          in_channels (int): The input feature size of input. Default: 3.
-          patch_size (int): The patch size of image. Default: 16.
+          in_channels (int): The input feature size of input. Default: ``3``.
+          patch_size (int): The patch size of image. Default: ``16``.
           depths (int): The encoder depth of encoder layer.
-          embed_dim (int): The encoder embedding dimension of encoder layer. Default: 768.
-          num_heads (int): The encoder heads' number of encoder layer. Default: 16.
-          mlp_ratio (int): The rate of mlp layer. Default: 4.
-          dropout_rate (float): The rate of dropout layer. Default: 1.0.
+          embed_dim (int): The encoder embedding dimension of encoder layer. Default: ``768``.
+          num_heads (int): The encoder heads' number of encoder layer. Default: ``16``.
+          mlp_ratio (int): The rate of mlp layer. Default: ``4``.
+          dropout_rate (float): The rate of dropout layer. Default: ``1.0``.
           compute_dtype (dtype): The data type for encoder, encoding_embedding, encoder and dense layer.
-                                Default: mstype.float16.
+                                Default: ``mstype.float16``.
 
      Inputs:
              - **input** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, image\_height, image\_width)`.
@@ -270,10 +270,10 @@ class Decoder(nn.Cell):
         depths (int): The decoder depth of decoder layer.
         embed_dim (int): The decoder embedding dimension of decoder layer.
         num_heads (int): The decoder heads' number of decoder layer.
-        mlp_ratio (int): The rate of mlp layer. Default: 4.
-        dropout_rate (float): The rate of dropout layer. Default: 1.0.
+        mlp_ratio (int): The rate of mlp layer. Default: ``4``.
+        dropout_rate (float): The rate of dropout layer. Default: ``1.0``.
         compute_dtype (dtype): The data type for encoder, decoding_embedding, decoder and dense layer.
-            Default: mstype.float16.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(batch\_size, patchify\_size, embed\_dim)`.

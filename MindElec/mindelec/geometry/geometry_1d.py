@@ -28,8 +28,8 @@ class Interval(HyperCube):
         name (str): name of the interval.
         coord_min (Union[int, float]): left of the interval.
         coord_max (Union[int, float]): right of the interval.
-        dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Raises:
         ValueError: If `coord_min` or `coord_max` is neither int nor float .

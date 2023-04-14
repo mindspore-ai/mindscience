@@ -38,8 +38,8 @@ class Disk(Geometry):
         center (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
             center coordinates of the disk.
         radius (Union[int, float]): radius of the disk.
-        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Raises:
         ValueError: If `center` is neither list nor tuple of length 2.
@@ -154,20 +154,20 @@ class Disk(Geometry):
         sampling domain and boundary points
 
         Args:
-            geom_type (str): geometry type: can be 'domain' or 'BC'. Default: 'domain'.
+            geom_type (str): geometry type: can be ``'domain'`` or ``'BC'``. Default: ``'domain'``.
 
-                - 'domain', feasible domain of the problem.
-                - 'BC', boundary of the problem.
+                - ``'domain'``, feasible domain of the problem.
+                - ``'BC'``, boundary of the problem.
 
         Returns:
             Numpy.array. If the with_normal property of boundary configuration is true, returns 2D numpy array with
             boundary normal vectors. Otherwise, returns 2D numpy array without boundary normal vectors.
 
         Raises:
-            ValueError: If `config` is None.
-            KeyError: If `geom_type` is `domain` but `config.domain` is None.
-            KeyError: If `geom_type` is `BC` but `config.bc` is None.
-            ValueError: If `geom_type` is neither `BC` nor `domain`.
+            ValueError: If `config` is ``None``.
+            KeyError: If `geom_type` is ``'domain'`` but `config.domain` is ``None``.
+            KeyError: If `geom_type` is ``'BC'`` but `config.bc` is ``None``.
+            ValueError: If `geom_type` is neither ``'BC'`` nor ``'domain'``.
         """
         config = self.sampling_config
         check_param_type(config, _SPACE.join((self.geom_type, self.name, "'s sampling_config")),
@@ -233,8 +233,8 @@ class Rectangle(HyperCube):
             coordinates of the bottom left corner of rectangle.
         coord_max (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
             coordinates of the top right corner of rectangle.
-        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -261,14 +261,14 @@ class Triangle(adapter.Geometry):
     Args:
         name (str): name of the triangle.
         vertices (numpy.ndarray): vertices of the triangle.
-        boundary_type (str): this can be 'uniform' or 'unweighted'. Default: 'uniform'.
+        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
 
-            - 'uniform', the expected number of samples in each boundary is proportional to the
+            - ``'uniform'``, the expected number of samples in each boundary is proportional to the
               area (length) of the boundary.
-            - 'unweighted', the expected number of samples in each boundary is the same.
+            - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: np.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: none.
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``np.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``none``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -305,14 +305,14 @@ class Pentagon(adapter.Geometry):
     Args:
         name (str): name of the pentagon.
         vertices (numpy.ndarray): vertices of the pentagon in an anti-clockwise order.
-        boundary_type (str): this can be 'uniform' or 'unweighted'. Default: 'uniform'.
+        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
 
-            - 'uniform', the expected number of samples in each boundary is proportional to the
+            - ``'uniform'``, the expected number of samples in each boundary is proportional to the
               area (length) of the boundary.
-            - 'unweighted', the expected number of samples in each boundary is the same.
+            - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: np.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: none.
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``np.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``none``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

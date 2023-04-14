@@ -115,7 +115,7 @@ def patchify(label, patch_size=16):
     """
     Args:
         label (Union[int, float]): output dimension for each position.
-        patch_size (int): The patch size of image. Default: 16.
+        patch_size (int): The patch size of image. Default: ``16``.
 
     Returns:
         The numpy array with new shape of :math:`(H, W)`.

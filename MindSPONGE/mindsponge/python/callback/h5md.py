@@ -43,34 +43,35 @@ class WriteH5MD(Callback):
 
         filename (str):         Name of output H5MD file.
 
-        directory (str):        Directory of the output file. Default: None
+        directory (str):        Directory of the output file. Default: ``None``.
 
         mode (str):             I/O mode for H5MD.
-                                'w'             Create file, truncate if exists
-                                'w-' or 'x':    Create file, fail if exists
-                                'a':            Read/write if exists, create otherwise
+
+                                - ``'w'``             Create file, truncate if exists.
+                                - ``'w-'`` or ``'x'``:    Create file, fail if exists.
+                                - ``'a'``:            Read/write if exists, create otherwise.
 
         write_velocity (bool):  Whether to write the velocity of the system to the H5MD file.
-                                Default:  False
+                                Default: ``False``.
 
         write_force (bool):     Whether to write the forece of the system to the H5MD file.
-                                Default: False
+                                Default: ``False``.
 
         wiite_image (bool):     Whether to write the image of the position of system to the H5MD file.
-                                Default: False
+                                Default: ``False``.
 
-        length_unit (str):      Length unit for coordinates. Default: None.
+        length_unit (str):      Length unit for coordinates. Default: ``None``.
 
-        energy_unit (str):      Energy unit. Default: None.
+        energy_unit (str):      Energy unit. Default: ``None``.
 
-        dtype (str):            Data type for H5MD. Default: 'float32'
+        dtype (str):            Data type for H5MD. Default: ``'float32'``.
 
-        compression (str):      Compression strategy for HDF5. Default: 'gzip'
+        compression (str):      Compression strategy for HDF5. Default: ``'gzip'``.
 
-        compression_opts (int): Compression settings for HDF5. Default: 4
+        compression_opts (int): Compression settings for HDF5. Default: ``4``.
 
         auto_close (bool):      Whether to automatically close the writing of H5MD files at the end of
-                                the simulation process. Default: True
+                                the simulation process. Default: ``True``.
 
     Supported Platforms:
 

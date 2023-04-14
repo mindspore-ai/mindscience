@@ -27,8 +27,8 @@ mindflow.pde.PDEWithLoss
 
         参数：
             - **formula_nodes** (list[FormulaNode]) - 转义后的sympy表达式，可以被MindSpore识别。
-            - **inputs** (Tensor) - 网络模型的输入数据。默认值：None。
-            - **norm** (Tensor) - 输入数据点的法向量。对于曲面上某点P处的法向量是垂直于该点的切平面的向量。默认值：None。
+            - **inputs** (Tensor) - 网络模型的输入数据。默认值： ``None``。
+            - **norm** (Tensor) - 输入数据点的法向量。对于曲面上某点P处的法向量是垂直于该点的切平面的向量。默认值： ``None``。
 
         返回：
             list[Tensor]，偏微分方程的计算结果。

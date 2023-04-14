@@ -32,15 +32,15 @@ class PartSamplingConfig:
 
     Args:
         size (Union[int, tuple[int], list[int]]): number of sampling points.
-        random_sampling (bool): Whether randomly sampling points. Default: True.
-        sampler (str): method for random sampling. Default: uniform.
-        random_merge (bool): Specifies whether randomly merge coordinates of different dimensions. Default: True.
-        with_normal (bool): Specifies whether generating the normal vectors of the boundary. Default: False.
+        random_sampling (bool): Whether randomly sampling points. Default: ``True``.
+        sampler (str): method for random sampling. Default: ``"uniform"``.
+        random_merge (bool): Specifies whether randomly merge coordinates of different dimensions. Default: ``True``.
+        with_normal (bool): Specifies whether generating the normal vectors of the boundary. Default: ``False``.
         with_sdf (bool): Specifies whether return the sign-distance-function result of the inner domain points.
-                         Default: False.
+                         Default: ``False``.
 
     Raises:
-        TypeError: size is not int number when random sampling.
+        TypeError: `size` is not int number when random sampling.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -78,11 +78,11 @@ class SamplingConfig:
 
     Raises:
         TypeError: If `part_sampling_dict` is not dict.
-        KeyError: If `geom_type` not "domain", "BC", "IC" or "time".
+        KeyError: If `geom_type` not ``"domain"``, ``"BC"``, ``"IC"`` or ``"time"``.
         TypeError: If 'config' is not PartSamplingConfig object.
-        ValueError: If `domain.size` in part_sampling_dict is neither list nor tuple.
-        ValueError: If `ic.size` in part_sampling_dict is neither list nor tuple.
-        ValueError: If `time.size` in part_sampling_dict is neither list nor tuple.
+        ValueError: If `domain.size` in `part_sampling_dict` is neither list nor tuple.
+        ValueError: If `ic.size` in `part_sampling_dict` is neither list nor tuple.
+        ValueError: If `time.size` in `part_sampling_dict` is neither list nor tuple.
 
 
     Supported Platforms:
@@ -125,8 +125,8 @@ class Geometry:
             minimal coordinate of the geometry.
         coord_max (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]):
             maximal coordinate of the geometry.
-        dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -172,10 +172,10 @@ class Geometry:
 
     def set_name(self, name):
         """
-        set geometry instance name
+        Set geometry instance name.
 
         Args:
-            name (str): name of geometry instance
+            name (str): name of geometry instance.
 
         Raises:
             TypeError: If `name` is not string.
@@ -190,7 +190,7 @@ class Geometry:
 
     def set_sampling_config(self, sampling_config: SamplingConfig):
         """
-        set sampling info
+        Set sampling info.
 
         Args:
             sampling_config (SamplingConfig): sampling configuration.

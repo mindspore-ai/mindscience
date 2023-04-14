@@ -31,20 +31,20 @@ class ViT(nn.Cell):
     This module based on ViT backbone which including encoder, decoding_embedding, decoder and dense layer.
 
     Args:
-        image_size (tuple[int]): The image size of input. Default: (192, 384).
-        in_channels (int): The input feature size of input. Default: 7.
-        out_channels (int): The output feature size of output. Default: 3.
-        patch_size (int): The patch size of image. Default: 16.
-        encoder_depths (int): The encoder depth of encoder layer. Default: 12.
-        encoder_embed_dim (int): The encoder embedding dimension of encoder layer. Default: 768.
-        encoder_num_heads (int): The encoder heads' number of encoder layer. Default: 12.
-        decoder_depths (int): The decoder depth of decoder layer. Default: 8.
-        decoder_embed_dim (int): The decoder embedding dimension of decoder layer. Default: 512.
-        decoder_num_heads (int): The decoder heads' number of decoder layer. Default: 16.
-        mlp_ratio (int): The rate of mlp layer. Default: 4.
-        dropout_rate (float): The rate of dropout layer. Default: 1.0.
+        image_size (tuple[int]): The image size of input. Default: ``(192, 384)``.
+        in_channels (int): The input feature size of input. Default: ``7``.
+        out_channels (int): The output feature size of output. Default: ``3``.
+        patch_size (int): The patch size of image. Default: ``16``.
+        encoder_depths (int): The encoder depth of encoder layer. Default: ``12``.
+        encoder_embed_dim (int): The encoder embedding dimension of encoder layer. Default: ``768``.
+        encoder_num_heads (int): The encoder heads' number of encoder layer. Default: ``12``.
+        decoder_depths (int): The decoder depth of decoder layer. Default: ``8``.
+        decoder_embed_dim (int): The decoder embedding dimension of decoder layer. Default: ``512``.
+        decoder_num_heads (int): The decoder heads' number of decoder layer. Default: ``16``.
+        mlp_ratio (int): The rate of mlp layer. Default: ``4``.
+        dropout_rate (float): The rate of dropout layer. Default: ``1.0``.
         compute_dtype (dtype): The data type for encoder, decoding_embedding, decoder and dense layer.
-            Default: mstype.float16.
+            Default: ``mstype.float16``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, image\_height, image\_width)`.

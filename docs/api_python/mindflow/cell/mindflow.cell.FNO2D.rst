@@ -11,10 +11,10 @@ mindflow.cell.FNO2D
         - **out_channels** (int) - 输出中的通道数。
         - **resolution** (int) - 输入的分辨率。
         - **modes** (int) - 要保留的低频分量的数量。
-        - **channels** (int) - 输入提升尺寸后的通道数。默认值：20。
-        - **depths** (int) - FNO层的数量。默认值：4。
-        - **mlp_ratio** (int) - 解码器层的通道数提升比率。默认值：4。
-        - **compute_dtype** (dtype.Number) - 密集的计算类型。默认mindspore.common.dtype.float32。支持以下数据类型：mindspore.common.dtype.float16或mindspore.common.dtype.float32。GPU后端建议使用float32，Ascend后端建议使用float16。
+        - **channels** (int) - 输入提升尺寸后的通道数。默认值： ``20``。
+        - **depths** (int) - FNO层的数量。默认值： ``4``。
+        - **mlp_ratio** (int) - 解码器层的通道数提升比率。默认值： ``4``。
+        - **compute_dtype** (dtype.Number) - 密集的计算类型。默认值： ``mindspore.common.dtype.float32``。支持以下数据类型： ``mindspore.common.dtype.float16`` 或 ``mindspore.common.dtype.float32``。GPU后端建议使用float32，Ascend后端建议使用float16。
 
     输入：
         - **x** (Tensor) - shape为 :math:`(batch\_size, resolution, resolution, in\_channels)` 的Tensor。

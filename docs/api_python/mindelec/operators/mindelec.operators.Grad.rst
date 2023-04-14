@@ -7,7 +7,7 @@ mindelec.operators.Grad
 
     参数：
         - **model** (Cell) - 接受Tensor输入的函数或网络。
-        - **argnum** (int) - 指定输出采用的一阶导数的输入。默认值：0。
+        - **argnum** (int) - 指定输出采用的一阶导数的输入。默认值：``0``。
 
     输入：
         - **x** (list) - 输入是可变长度参数。第一个输入是二维的网络输入（Tensor），最后三个输入是输入的列索引（int）、输出的列索引（int）和网络的输出（Tensor）。

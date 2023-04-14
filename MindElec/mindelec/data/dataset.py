@@ -43,21 +43,22 @@ class Dataset(Data):
 
     Parameters:
         geometry_dict (dict, optional): specifies geometry datasets to be merged. The key is geometry instance and
-            value is a list of type of geometry. For example, geometry_dict = {geom : ["domain", "BC", "IC"]}.
-            Default: None.
+            value is a list of type of geometry. For example,
+            geometry_dict = {geom : [``"domain"``, ``"BC"``, ``"IC"``]}. Default: ``None``.
         existed_data_list (Union[list, tuple, ExistedDataConfig], optional): specifies existed datasets to be merged.
-            For example, existed_data_list = [ExistedDataConfig_Instance1, ExistedDataConfig_Instance2]. Default: None.
+            For example, existed_data_list = [``ExistedDataConfig_Instance1``, ``ExistedDataConfig_Instance2``].
+            Default: ``None``.
         dataset_list (Union[list, tuple, Data], optional): specifies instances of data to be merged. For example,
-            dataset_list=[BoundaryIC_Instance, Equation_Instance, BoundaryBC_Instance and ExistedData_Instance].
-            Default: None.
+            dataset_list=[``BoundaryIC_Instance``, ``Equation_Instance``, ``BoundaryBC_Instance``,
+            ``ExistedData_Instance``]. Default: ``None``.
 
     Raises:
-        ValueError: If geometry_dict, existed_data_list and dataset_list are all None.
-        TypeError: If the type of geometry_dict is not dict.
-        TypeError: If the type of key of geometry_dict is not instance of :class:`mindelec.geometry.Geometry`.
-        TypeError: If the type of existed_data_list is not list, tuple or instance of ExistedDataConfig.
-        TypeError: If the element of existed_data_list is not instance of ExistedDataConfig.
-        TypeError: If the element of dataset_list is not instance of class Data.
+        ValueError: If `geometry_dict`, `existed_data_list` and `dataset_list` are all ``None``.
+        TypeError: If the type of `geometry_dict` is not dict.
+        TypeError: If the type of key of `geometry_dict` is not instance of :class:`mindelec.geometry.Geometry`.
+        TypeError: If the type of `existed_data_list` is not list, tuple or instance of ExistedDataConfig.
+        TypeError: If the element of `existed_data_list` is not instance of ExistedDataConfig.
+        TypeError: If the element of `dataset_list` is not instance of class Data.
 
     Supported Platforms:
         ``Ascend``
@@ -162,31 +163,34 @@ class Dataset(Data):
         create the final mindspore type dataset to merge all the sub-datasets.
 
         Args:
-            batch_size (int, optional): An int number of rows each batch is created with. Default: 1.
+            batch_size (int, optional): An int number of rows each batch is created with. Default: ``1``.
             preprocess_fn (Union[list[TensorOp], list[functions]], optional): List of operations to be
-                applied on the dataset. Operations are applied in the order they appear in this list. Default: None.
+                applied on the dataset. Operations are applied in the order they appear in this list.
+                Default: ``None``.
             input_output_columns_map (dict, optional): specifies which columns to replace and to what.
                 The key is the column name to be replaced and the value is the name you want to replace with.
-                There's no need to set this argument if all columns are not changed after mapping. Default: None.
+                There's no need to set this argument if all columns are not changed after mapping.
+                Default: ``None``.
             shuffle (bool, optional): Whether or not to perform shuffle on the dataset. Random accessible input is
-                required. Default: True, expected order behavior shown in the table.
+                required. Default: ``True``, expected order behavior shown in the table.
             drop_remainder (bool, optional): Determines whether or not to drop the last block
-                whose data row number is less than batch size. If True, and if there are less
+                whose data row number is less than batch size. If ``True``, and if there are less
                 than batch_size rows available to make the last batch, then those rows will
-                be dropped and not propagated to the child node. Default: True.
-            prebatched_data (bool, optional): Generate pre-batched data before create mindspore dataset. If True,
+                be dropped and not propagated to the child node. Default: ``True``.
+            prebatched_data (bool, optional): Generate pre-batched data before create mindspore dataset. If ``True``,
                 pre-batched data will be returned when get each sub-dataset data by index. Else, the batch operation
                 will be done by mindspore dataset interface: dataset.batch. When batch_size is very large, it's
-                recommended to set this option to be True in order to improve performance on host. Default: False.
+                recommended to set this option to be ``True`` in order to improve performance on host.
+                Default: ``False``.
             num_parallel_workers (int, optional): Number of workers(threads) to process the dataset in parallel.
-                Default: 1.
+                Default: ``1``.
             num_shards (int, optional): Number of shards that the dataset will be divided into.
                 Random accessible input is required. When this argument is specified, `num_samples` reflects the
-                maximum sample number of per shard. Default: None.
+                maximum sample number of per shard. Default: ``None``.
             shard_id (int, optional): The shard ID within num_shards. This argument must be specified
-                only when num_shards is also specified. Random accessible input is required. Default: None.
+                only when num_shards is also specified. Random accessible input is required. Default: ``None``.
             python_multiprocessing (bool, optional): Parallelize Python function per_batch_map with multi-processing.
-                This option could be beneficial if the function is computational heavy. Default: False.
+                This option could be beneficial if the function is computational heavy. Default: ``False``.
 
         Returns:
             BatchDataset, dataset batched.
@@ -293,8 +297,6 @@ class Dataset(Data):
     def get_columns_list(self):
         """get columns list.
 
-        Args:
-
         Returns:
             list[str]. column names list of the final unified dataset.
 
@@ -311,10 +313,9 @@ class Dataset(Data):
 
         Args:
             constraint_type (Union[str, dict]): The constraint type of specified dataset.
-                If it is string, the constraint
-                type of all subdataset will be set to the same one, e.g. "Equation", "Label" and "Function".
-                If it is dict, the subdataset and it's constraint
-                type is specified by the pair (key, value). Default: "Equation".
+                If it is string, the constraint type of all subdataset will be set to the same one,
+                e.g. ``"Equation"``, ``"Label"`` and ``"Function"``. If it is dict, the subdataset
+                and it's constraint type is specified by the pair (key, value). Default: ``"Equation"``.
 
         Examples:
             >>> dataset.set_constraint_type("Equation")

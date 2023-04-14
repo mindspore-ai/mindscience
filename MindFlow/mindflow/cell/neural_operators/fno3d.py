@@ -59,11 +59,11 @@ class FNO3D(nn.Cell):
         out_channels (int): The number of channels in the output space.
         resolution (tuple): The spatial resolution of the input.
         modes (int): The number of low-frequency components to keep.
-        channels (int): The number of channels after dimension lifting of the input. Default: 20.
-        depths (int): The number of FNO layers. Default: 4.
-        mlp_ratio (int): The number of channels lifting ratio of the decoder layer. Default: 4.
-        compute_dtype (dtype.Number): The computation type of dense. Default mstype.float16.
-                Should be mstype.float16 or mstype.float32. mstype.float32 is recommended for the GPU backend,
+        channels (int): The number of channels after dimension lifting of the input. Default: ``20``.
+        depths (int): The number of FNO layers. Default: ``4``.
+        mlp_ratio (int): The number of channels lifting ratio of the decoder layer. Default: ``4``.
+        compute_dtype (dtype.Number): The computation type of dense. Default: ``mstype.float16``.
+                Should be ``mstype.float16`` or ``mstype.float32``. mstype.float32 is recommended for the GPU backend,
                 mstype.float16 is recommended for the Ascend backend.
 
     Inputs:

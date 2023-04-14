@@ -8,11 +8,11 @@ mindelec.solver.LossAndTimeMonitor
     如果loss是NAN或INF，将终止训练。
 
     .. note::
-        如果 `per_print_times` 为0，则不打印loss。
+        如果 `per_print_times` 为 ``0``，则不打印loss。
 
     参数：
         - **data_size** (int) - 每个epoch数据集的批次数。
-        - **per_print_times** (int) - 表示每隔多少个step打印一次loss。默认值：1。
+        - **per_print_times** (int) - 表示每隔多少个step打印一次loss。默认值： ``1``。
 
     异常：
         - **ValueError** - 如果 `data_size` 不是整数或小于零。

@@ -67,9 +67,9 @@ def between_residue_bond(
                                         increasing. Range from 1 to :math:`N_{res}`. shape :math:`(N_{res}, )` .
         aatype (Tensor):                amino acid types. Range is :math:`[0,20]`. shape :math:`(N_{res}, )` .
         tolerance_factor_soft (float):  soft tolerance factor measured in standard deviations of pdb distributions.
-                                        Default: 12.0 .
+                                        Default: ``12.0`` .
         tolerance_factor_hard (float):  hard tolerance factor measured in standard deviations of pdb distributions.
-                                        Default: 12.0 .
+                                        Default: ``12.0`` .
 
     Returns:
         - Tensor, c_n_loss_mean, loss for peptide bond length violations. shape is :math:`( )` .
@@ -209,9 +209,9 @@ def between_residue_clash(
                                         range from 1 to :math:`N_{res}` .
         c_one_hot (Tensor):             one hot encoding for C atoms (using atom14 representation). shape is (14, ) .
         n_one_hot (Tensor):             one hot encoding for N atoms (using atom14 representation). shape is (14, ) .
-        overlap_tolerance_soft (float): soft tolerance factor. in default: 12.0.
-        overlap_tolerance_hard (float): hard tolerance factor. in default: 1.5.
-        cys_sg_idx (Tensor):            CYS amino acid index. Default: 5.
+        overlap_tolerance_soft (float): soft tolerance factor. in default: ``12.0``.
+        overlap_tolerance_hard (float): hard tolerance factor. in default: ``1.5``.
+        cys_sg_idx (Tensor):            CYS amino acid index. Default: ``5``.
                                         see more at `mindsponge.common.residue_constants`. Shape: `()` .
 
     Returns:
@@ -297,7 +297,7 @@ def within_residue_violations(
                                            shape :math:`(N_{res}, 14)` .
         atom14_dists_lower_bound (Tensor): lower bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
         atom14_dists_upper_bound (Tensor): upper bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
-        tighten_bounds_for_loss (float):  Extra factor to tighten loss. Default: 0.0.
+        tighten_bounds_for_loss (float):  Extra factor to tighten loss. Default: ``0.0``.
         dists_mask_i (Tensor):             initial distants mask, shape: :math:`(14, 14)` .
 
     Returns:
@@ -367,8 +367,8 @@ def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_
         residx_atom14_to_atom37 (Tensor):   mapping for (residx, atom14) --> atom37. shape :math:`(N_{res}, 14)` .
         atom14_pred_positions (Tensor):     predicted positions of atoms in global prediction frame.
                                             shape :math:`(N_{res}, 14, 3)` .
-        violation_tolerance_factor (float): violation between amino acid tolerance factor. Default: 12.0 .
-        clash_overlap_tolerance (float):    clash overlap tolerance factor. Default: 1.5 .
+        violation_tolerance_factor (float): violation between amino acid tolerance factor. Default: ``12.0`` .
+        clash_overlap_tolerance (float):    clash overlap tolerance factor. Default: ``1.5`` .
         lower_bound (Tensor):               lower bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
         upper_bound (Tensor):               upper bond on allowed distances. shape :math:`(N_{res}, 14, 14)` .
         atomtype_radius (Tensor):           Van der Waals radius for each amino acid. shape: :math:`(37, )` .
@@ -377,7 +377,7 @@ def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_
         n_one_hot (Tensor):                 one hot encoding for N atoms (using atom14 representation).
                                             shape: :math:`(14, )` .
         dists_mask_i (Tensor):              initial distants mask, shape: :math:`(14, 14)` .
-        cys_sg_idx (Tensor):                CYS amino acid index. Default: 5 .
+        cys_sg_idx (Tensor):                CYS amino acid index. Default: ``5`` .
                                             see more at `mindsponge.common.residue_constants`.
 
     Returns:
@@ -957,7 +957,7 @@ def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_fr
             are the 9 components of rotation matrix; the last 3 elements are the 3 component of
             translation matrix.
         rigidgroups_alt_gt_frames (Tensor): The alternative ground truth locals frames due to
-            symmetry of amino acids. This tensor has the same shape as rigidgroups_gt_frames
+            symmetry of amino acids. This tensor has the same shape as `rigidgroups_gt_frames`
         rigidgroups_gt_exists (Tensor): The binary mask for gt frames of shape :math:`(N_{res}, 8)`.
         renamed_atom14_gt_positions (Tensor): The mask for ground truth positions after renaming
             swaps are performed(swaps are needed for some amino acids due to symmetry
@@ -972,7 +972,7 @@ def sidechain(alt_naming_is_better, rigidgroups_gt_frames, rigidgroups_alt_gt_fr
         pred_frames (Tensor): The predicted locals frames of shape :math:`(12, N_{recycle}, N_{res}, 8)`.
             :math:`N_{recycle}` is the recycle number of FoldIteration in Structure module. Only the frames of
             last recycle is used in side-chain FAPE loss. 12 has the same meaning as the third dimension of
-            rigidgroups_gt_frames.
+            `rigidgroups_gt_frames`.
         pred_positions (Tensor): The predicted positions of shape :math:`(3, N_{recycle}, N_{res}, 14)`.
             Only the positions of last recycle is used in side-chain FAPE loss, encoded atom-14 encoding.
 
@@ -1140,13 +1140,13 @@ def local_distance_difference_test(predicted_points, true_points, true_points_ma
             :math:`(1, N_{res}, 3)`
         true_points_mask (Tensor): The binary mask for predicted_points of shape
             :math:`(1, N_{res}, 1)`
-        cutoff (float): The cutoff value for lddt to stop gradient, Default: 15.
+        cutoff (float): The cutoff value for lddt to stop gradient, Default: ``15``.
         per_residue (bool): The indicator if local distance difference is averaged,
-            set True to return local distance difference per residue. Default: False.
+            set True to return local distance difference per residue. Default: ``False``.
 
     Returns:
         - **score** (Tensor) - Local distance difference score, the shape is :math:`(1,)`
-          if per_residue set False, :math:`(1, N_{res})` otherwise.
+          if `per_residue` is set to ``False``, :math:`(1, N_{res})` otherwise.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

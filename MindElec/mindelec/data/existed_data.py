@@ -34,24 +34,24 @@ class ExistedDataset(Data):
         The `npy` data format is supported now.
 
     Parameters:
-        name (str, optional): specifies the name of dataset (default=None). If `data_config` is None, the `name` should
-            not be None.
-        data_dir (Union[str, list, tuple], optional): the path of existed data files (default=None). If `data_config`
-            is None, the `data_dir` should not be None.
-        columns_list (Union[str, list, tuple], optional): list of column names of the dataset (default=None). If
-            `data_config` is None, the `columns_list` should not be None.
-        data_format (str, optional): the format of existed data files (default='npy').
-        constraint_type (str, optional): specifies the constraint type of the created dataset (default="Label").
-        random_merge (bool, optional): specifies whether randomly merge the given datasets (default=True).
+        name (str, optional): specifies the name of dataset. Default: ``None``.
+            If `data_config` is ``None``, the `name` should not be ``None``.
+        data_dir (Union[str, list, tuple], optional): the path of existed data files. Default: ``None``.
+            If `data_config` is ``None``, the `data_dir` should not be ``None``.
+        columns_list (Union[str, list, tuple], optional): list of column names of the dataset. Default: ``None``.
+            If `data_config` is ``None``, the `columns_list` should not be ``None``.
+        data_format (str, optional): the format of existed data files. Default: ``'npy'``.
+        constraint_type (str, optional): specifies the constraint type of the created dataset. Default: ``"Label"``.
+        random_merge (bool, optional): specifies whether randomly merge the given datasets. Default: ``True``.
         data_config (ExistedDataConfig, optional): Instance of ExistedDataConfig which collect the info
-            described above (default=None). If it's not None, the dataset class will be create by using it for
-            simplifying. If it's None, the info of (name, data_dir, columns_list, data_format, constraint_type,
-            random_merge) will be used for replacement.
+            described above. Default: ``None``. If it's not ``None``, the dataset class will be create by
+            using it for simplifying. If it's ``None``, the info of (name, data_dir, columns_list, data_format,
+            constraint_type, random_merge) will be used for replacement.
 
     Raises:
-        ValueError: Argument name/data_dir/columns_list is None when data_config is None.
-        TypeError: If data_config is not a instance of ExistedDataConfig.
-        ValueError: If data_format is not 'npy'.
+        ValueError: If `name` / `data_dir` / `columns_list` is ``None`` when `data_config` is ``None``.
+        TypeError: If `data_config` is not a instance of ExistedDataConfig.
+        ValueError: If `data_format` is not ``'npy'``.
 
     Supported Platforms:
         ``Ascend``

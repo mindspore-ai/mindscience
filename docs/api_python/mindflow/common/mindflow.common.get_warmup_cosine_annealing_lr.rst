@@ -21,9 +21,9 @@ mindflow.common.get_warmup_cosine_annealing_lr
         - **lr_init** (float) - 初始学习速率，正值。
         - **steps_per_epoch** (int) - 每个epoch的步数，正值。
         - **last_epoch** (int) - 总epoch的数量，正值。
-        - **warmup_epochs** (int) - 热身epoch的数量，默认：0。
-        - **warmup_lr_init** (float) - 热身初始学习速率，默认：0.0。
-        - **eta_min** (float) - 学习速率最小值，默认：1e-6。
+        - **warmup_epochs** (int) - 热身epoch的数量，默认： ``0``。
+        - **warmup_lr_init** (float) - 热身初始学习速率，默认： ``0.0``。
+        - **eta_min** (float) - 学习速率最小值，默认： ``1e-6``。
 
     返回：
         Numpy.array，学习率数组。
