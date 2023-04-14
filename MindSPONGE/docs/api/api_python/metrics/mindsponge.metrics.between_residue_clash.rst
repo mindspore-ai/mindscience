@@ -19,7 +19,7 @@ mindsponge.metrics.between_residue_clash
     返回：
         - **mean_loss** (Tensor) - 在空间中，所有原子间距离中超出原子范德化半径的总平均距离损失。即含有距离冲突的原子平均损失。shape: `( )`
         - **per_atom_loss_sum** (Tensor) - 在空间中，所有原子间距离中超出原子范德化半径的总和除以总原子个数。即平均单个原子距离损失（包括没有距离冲突的原子）。shape :math:`(N_{res}, 14)` 。
-        - **per_atom_clash_mask** (Tensor) - 在空间中，所有原子间距离中超出原子范德化半径的原子mask。1表示有冲突，0表示没有冲突。shape :math:`(N_{res}, 14)` 。
+        - **per_atom_clash_mask** (Tensor) - 在空间中，所有原子间距离中超出原子范德化半径的原子mask。 ``1`` 表示有冲突， ``0`` 表示没有冲突。shape :math:`(N_{res}, 14)` 。
 
     符号:
         - :math:`N_{res}` - 蛋白质中氨基酸个数，按蛋白质一级序列排列。

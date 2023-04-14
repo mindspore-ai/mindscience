@@ -8,8 +8,8 @@ mindelec.loss.NetWithEval
     参数：
         - **net_without_loss** (Cell) - 无损失定义的训练网络。
         - **constraints** (Constraints) - pde问题的约束函数。
-        - **loss** (Union[str, dict, Cell]) - 损失函数的名称，例如"l1"，"l2"和"mae"等。默认值："l2"。
-        - **dataset_input_map** (dict) - 数据集的输入映射，如果输入为None，第一列将被设置为输入。默认值：None。
+        - **loss** (Union[str, dict, Cell]) - 损失函数的名称，例如 ``"l1"``、 ``"l2"`` 和 ``"mae"`` 等。默认值： ``"l2"``。
+        - **dataset_input_map** (dict) - 数据集的输入映射，如果输入为 ``None``，第一列将被设置为输入。默认值：``None``。
 
     输入：
         - **inputs** (Tensor) - 输入是可变长度参数，包含网络输入和标签。

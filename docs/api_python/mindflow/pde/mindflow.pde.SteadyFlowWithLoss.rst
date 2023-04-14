@@ -7,7 +7,7 @@ mindflow.pde.SteadyFlowWithLoss
 
     参数：
         - **model** (mindspore.nn.Cell) - 用于训练或测试的网络模型。
-        - **loss_fn** (Union[str, Cell]) - 损失函数。默认值：'mse'。
+        - **loss_fn** (Union[str, Cell]) - 损失函数。默认值： ``'mse'``。
 
     .. py:method:: get_loss(inputs, labels)
 

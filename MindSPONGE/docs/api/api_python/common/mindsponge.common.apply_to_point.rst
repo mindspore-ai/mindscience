@@ -17,7 +17,7 @@ mindsponge.common.apply_to_point
         - **rotation** (Tuple) - 旋转矩阵，:math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` ，且 :math:`xx, xy` 等均为Tensor且shape相同。
         - **translation** (Tuple) - 平移向量， :math:`[(x, y, z)]` ，其中 :math:`x, y, z` 均为Tensor，且shape相同。
         - **point** (Tensor) - 初始坐标值， :math:`[(x, y, z)]` ，其中 :math:`x, y, z` 均为Tensor，且shape相同。
-        - **extra_dims** (int) - 控制进行几次维度的拓展。默认值： 0
+        - **extra_dims** (int) - 控制进行几次维度的拓展。默认值： ``0``。
 
     返回：
         Tuple，转化后的坐标，长度为3。

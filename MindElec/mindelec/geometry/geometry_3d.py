@@ -32,8 +32,8 @@ class Cuboid(HyperCube):
             coordinates of the bottom left back corner of cuboid.
         coord_max (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
             coordinates of the top right front corner of cuboid.
-        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend``

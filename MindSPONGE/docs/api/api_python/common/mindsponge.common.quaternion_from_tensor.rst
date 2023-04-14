@@ -18,7 +18,7 @@ mindsponge.common.quaternion_from_tensor
     参数：
         - **tensor** (Tensor) - 输入的初始Tensor :math:`[(xx, xy, xz, yx, yy, yz, zz)]` ，其中 :math:`[(xx, xy, xz, yx)]`
           与 `quaternion` 一致，:math:`(yy, yz, zz)` 与 `translation` 一致。
-        - **normalize** (bool) - 控制是否要在仿射变换过程求范数。默认值：False。
+        - **normalize** (bool) - 控制是否要在仿射变换过程求范数。默认值： ``False``。
 
     返回：
         - **quaternion** (Tensor) - 四元数，shape为 :math:`[(..., 4)]` 的Tensor。

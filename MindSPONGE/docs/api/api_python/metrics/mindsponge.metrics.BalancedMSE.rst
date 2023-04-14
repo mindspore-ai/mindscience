@@ -12,8 +12,8 @@ mindsponge.metrics.BalancedMSE
         - **first_break** (float) - bin划分的起始位置。
         - **last_break** (float) - bin划分的结束位置。
         - **num_bins** (int) - 划分bin的数目。
-        - **beta** (float) - 滑动平均的系数。默认值：0.99。
-        - **reducer_flag** (bool) - 是否对多卡的标签值做聚合。默认值：False。
+        - **beta** (float) - 滑动平均的系数。默认值： ``0.99``。
+        - **reducer_flag** (bool) - 是否对多卡的标签值做聚合。默认值： ``False``。
 
     输入：
         - **prediction** (Tensor) - 模型预测值，shape为 :math:`(batch\_size, ndim)` 。

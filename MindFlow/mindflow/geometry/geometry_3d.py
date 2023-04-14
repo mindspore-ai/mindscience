@@ -33,8 +33,8 @@ class Cuboid(HyperCube):
             coordinates of the bottom left back corner of cuboid.
         coord_max (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
             coordinates of the top right front corner of cuboid.
-        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -60,14 +60,14 @@ class Tetrahedron(adapter.Geometry):
     Args:
         name (str): name of the tetrahedron.
         vertices (numpy.ndarray): vertices of the tetrahedron.
-        boundary_type (str): this can be 'uniform' or 'unweighted'. Default: 'uniform'.
+        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
 
-            - 'uniform', the expected number of samples in each boundary is proportional to the
+            - ``'uniform'``, the expected number of samples in each boundary is proportional to the
               area (length) of the boundary.
-            - 'unweighted', the expected number of samples in each boundary is the same.
+            - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: none.
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``none``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -113,14 +113,14 @@ class Cylinder(adapter.Geometry):
         h_min (float): Height coordinate of the bottom disk.
         h_max (float): Height coordinate of the top disk.
         h_axis (int): Axis of the normal vector of the bottom disk.
-        boundary_type (str): this can be 'uniform' or 'unweighted'. Default: 'uniform'.
+        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
 
-            - 'uniform', the expected number of samples in each boundary is proportional to the
+            - ``'uniform'``, the expected number of samples in each boundary is proportional to the
               area (length) of the boundary.
-            - 'unweighted', the expected number of samples in each boundary is the same.
+            - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: none.
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``none``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -171,14 +171,14 @@ class Cone(adapter.Geometry):
         h_min (float): Height coordinate of the bottom disk.
         h_max (float): Maximum Height coordinate of the cone.
         h_axis (int): Axis of the normal vector of the bottom disk.
-        boundary_type (str): this can be 'uniform' or 'unweighted'. Default: 'uniform'.
+        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
 
-            - 'uniform', the expected number of samples in each boundary is proportional to the
+            - ``'uniform'``, the expected number of samples in each boundary is proportional to the
               area (length) of the boundary.
-            - 'unweighted', the expected number of samples in each boundary is the same.
+            - ``'unweighted'``, the expected number of samples in each boundary is the same.
 
-        dtype (numpy.dtype): data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: none.
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``none``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

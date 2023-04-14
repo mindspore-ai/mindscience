@@ -20,7 +20,7 @@ mindsponge.common.quat_to_rot
 
     参数：
         - **normalized_quat** (tensor) - 归一化的四元数，shape为 :math:`(N_{res}, 4)` 。
-        - **use_numpy** (bool) - 是否使用numpy计算，默认值：False。
+        - **use_numpy** (bool) - 是否使用numpy计算，默认值： ``False``。
 
     返回：
         旋转矩阵(tuple)， :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` , 每个元素shape :math:`(N_{res}, )` 。

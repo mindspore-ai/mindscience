@@ -10,12 +10,12 @@ mindflow.cell.FCSequential
         - **out_channels** (int) - 输出中的通道数。
         - **layers** (int) - 层的总数，包括输入/隐藏/输出层。
         - **neurons** (int) - 隐藏层的神经元数量。
-        - **residual** (bool) - 隐藏层是否使用残差网络模块。若为True，使用残差网络模块。若为False，使用线性模块。默认值：True。
-        - **act** (Union[str, Cell, Primitive, None]) - 激活应用于全连接层输出的函数，例如"ReLU"。默认值："sin"。
-        - **weight_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始权重值。数据类型与输入 `input` 相同。str的值引用函数 `initializer` 。默认值：'normal'。
-        - **has_bias** (bool) - 指定图层是否使用偏置向量。默认值：True。
-        - **bias_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始偏差值。数据类型与输入 `input` 相同。str的值引用函数 `initializer` 。默认值：'default'。
-        - **weight_norm** (bool) - 是否计算权重的平方和。默认值：False。
+        - **residual** (bool) - 隐藏层是否使用残差网络模块。若为 ``True``，使用残差网络模块。若为 ``False``，使用线性模块。默认值： ``True``。
+        - **act** (Union[str, Cell, Primitive, None]) - 激活应用于全连接层输出的函数，例如 ``"ReLU"``。默认值： ``"sin"``。
+        - **weight_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始权重值。数据类型与输入 `input` 相同。str的值引用函数 `initializer` 。默认值： ``'normal'``。
+        - **has_bias** (bool) - 指定图层是否使用偏置向量。默认值： ``True``。
+        - **bias_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始偏差值。数据类型与输入 `input` 相同。str的值引用函数 `initializer` 。默认值： ``'default'``。
+        - **weight_norm** (bool) - 是否计算权重的平方和。默认值： ``False``。
 
     输入：
         - **input** (Tensor) - shape为 :math:`(*, in\_channels)` 的Tensor。

@@ -16,7 +16,7 @@ mindsponge.metrics.local_distance_difference_test
         - **true_points** (Tensor) - 真实的 :math:`C\alpha` 原子的坐标，shape为 :math:`(1, N_{res}, 3)` 。
         - **true_points_mask** (Tensor) - true_points的mask，shape为 :math:`(1, N_{res}, 1)` 。
         - **cutoff** (float) - 距离误差的截断点，超过该距离时梯度不再考虑，常量。
-        - **per_residue** (bool) - 指示是否按残基为单位计算局部距离差，如果设为True则按残基为单位返回局部距离差值，默认值：False。
+        - **per_residue** (bool) - 指示是否按残基为单位计算局部距离差，如果设为True则按残基为单位返回局部距离差值，默认值： ``False``。
 
     返回：
-        - **score** (list) - Tensor。局部距离误差，如果per_residue为False则shape为 :math:`(1,)` ，否则为 :math:`(1, N_{res})` 。
+        - **score** (list) - Tensor。局部距离误差，如果 `per_residue` 为 ``False`` 则shape为 :math:`(1,)` ，否则为 :math:`(1, N_{res})` 。

@@ -7,7 +7,7 @@ mindelec.architecture.InputScaleNet
 
     参数：
         - **input_scale** (list) - 输入的比例因子，其维度需要与输入维度相同。
-        - **input_center** (Union[list, None]) - 坐标转换的中心位置。默认值：None。
+        - **input_center** (Union[list, None]) - 坐标转换的中心位置。默认值： ``None``。
 
     输入：
         - **input** (Tensor) - shape为 :math:`(*, channels)` 的Tensor。
@@ -17,4 +17,4 @@ mindelec.architecture.InputScaleNet
 
     异常：
         - **TypeError** - 如果 `input_scale` 不是list。
-        - **TypeError** - 如果 `input_center` 不是list或None。
+        - **TypeError** - 如果 `input_center` 不是list或 ``None``。

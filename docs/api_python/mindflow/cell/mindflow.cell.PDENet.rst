@@ -14,18 +14,18 @@ mindflow.cell.PDENet
         - **channels** (int) - PDE-Net输入和输出Tensor的通。
         - **kernel_size** (int) - 指定2D卷积内核的高度和宽度。
         - **max_order** (int) - PDE模型的最大顺序。
-        - **dx** (float) - x维的空间分辨率。默认值：0.01。
-        - **dy** (float) - y维的空间分辨率。默认值：0.01。
-        - **dt** (float) - PDE-Net的时间步长。默认值：0.01。
-        - **periodic** (bool) - 指定周期是否与卷积核一起使用。默认值：True。
-        - **enable_moment** (bool) - 指定卷积核是否受moment约束。默认值：True。
-        - **if_fronzen** (bool) - moment里的参数是否参与训练。默认值：False。
+        - **dx** (float) - x维的空间分辨率。默认值： ``0.01``。
+        - **dy** (float) - y维的空间分辨率。默认值： ``0.01``。
+        - **dt** (float) - PDE-Net的时间步长。默认值： ``0.01``。
+        - **periodic** (bool) - 指定周期是否与卷积核一起使用。默认值： ``True``。
+        - **enable_moment** (bool) - 指定卷积核是否受moment约束。默认值： ``True``。
+        - **if_fronzen** (bool) - moment里的参数是否参与训练。默认值： ``False``。
 
     输入：
         - **input** (Tensor) - shape为 :math:`(batch\_size, channels, height, width)` 的Tensor。
 
     输出：
-        Tensor，具有与 `input` 相同的形状，数据类型为float32。
+        Tensor，具有与 `input` 相同的shape，数据类型为float32。
 
     异常：
         - **TypeError** - 如果 `height` 、 `width` 、 `channels` 、 `kernel_size` 或 `max_order` 不是int。

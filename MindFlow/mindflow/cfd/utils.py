@@ -28,7 +28,7 @@ def cal_con_var(pri_var, material):
         material (mindflow.cfd.Material): Material of the fluid.
 
     Returns:
-        Tensor, with the same shape as pri_var.
+        Tensor, with the same shape as `pri_var`.
 
     Supported Platforms:
         ``GPU``
@@ -63,7 +63,7 @@ def cal_pri_var(con_var, material):
         material (mindflow.cfd.Material): Material of the fluid.
 
     Returns:
-        Tensor, with the same shape as con_var.
+        Tensor, with the same shape as `con_var`.
 
     Supported Platforms:
         ``GPU``
@@ -104,7 +104,7 @@ def cal_flux(con_var, pri_var, axis):
         ``GPU``
 
     Returns:
-        Tensor, with the same shape as pri_var.
+        Tensor, with the same shape as `pri_var`.
 
     Examples:
         >>> import numpy as np

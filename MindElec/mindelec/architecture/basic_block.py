@@ -37,12 +37,13 @@ class LinearBlock(nn.Cell):
         in_channels (int): The number of channels in the input space.
         out_channels (int): The number of channels in the output space.
         weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
-            is same as input `input` . For the values of str, refer to the function `initializer`. Default: "normal".
+            is same as input `input` . For the values of str, refer to the function `initializer`.
+            Default: ``"normal"``.
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype is
-            same as input `input` . The values of str refer to the function `initializer`. Default: "zeros".
-        has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
+            same as input `input` . The values of str refer to the function `initializer`. Default: ``"zeros"``.
+        has_bias (bool): Specifies whether the layer uses a bias vector. Default: ``True``.
         activation (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected
-            layer. Default: None.
+            layer. Default: ``None``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.
@@ -94,12 +95,12 @@ class ResBlock(nn.Cell):
         in_channels (int): The number of channels in the input space.
         out_channels (int): The number of channels in the output space.
         weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
-            is same as input x. The values of str refer to the function `initializer`. Default: "normal".
+            is same as `input`. The values of str refer to the function `initializer`. Default: ``"normal"``.
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype is
-            same as input x. The values of str refer to the function `initializer`. Default: "zeros".
-        has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
+            same as input x. The values of str refer to the function `initializer`. Default: ``"zeros"``.
+        has_bias (bool): Specifies whether the layer uses a bias vector. Default: ``True``.
         activation (Union[str, Cell, Primitive, None]): activate function applied to the output of the dense layer.
-            Default: None.
+            Default: ``None``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.
@@ -108,7 +109,7 @@ class ResBlock(nn.Cell):
         Tensor of shape :math:`(*, out\_channels)`.
 
     Raises:
-        ValueError: If `in_channels` not equal out_channels.
+        ValueError: If `in_channels` not equal to `out_channels`.
         TypeError: If `activation` is not in str or Cell or Primitive.
 
     Supported Platforms:
@@ -169,7 +170,7 @@ class InputScaleNet(nn.Cell):
 
     Args:
         input_scale (list): The scale factor of input and the dimension should be identical to that of `input`.
-        input_center (Union[list, None]): Center position of coordinate translation. Default: None.
+        input_center (Union[list, None]): Center position of coordinate translation. Default: ``None``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, channels)`.
@@ -179,7 +180,7 @@ class InputScaleNet(nn.Cell):
 
     Raises:
         TypeError: If `input_scale` is not a list.
-        TypeError: If `input_center` is not a list or None.
+        TypeError: If `input_center` is not a list or ``None``.
 
     Supported Platforms:
         ``Ascend``
@@ -226,18 +227,18 @@ class FCSequential(nn.Cell):
         out_channel (int): The number of channels in the output space.
         layers (int): The total number of layers, include input/hidden/output layers.
         neurons (int): The number of neurons of hidden layers.
-        residual (bool): full-connected of residual block for the hidden layers. Default: True.
+        residual (bool): full-connected of residual block for the hidden layers. Default: ``True``.
         act (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected layer,
-            e.g. "ReLU", "Softmax" and "Tanh". Default: "sin".
+            e.g. ``"ReLU"``, ``"Softmax"`` and ``"Tanh"``. Default: ``"sin"``.
         weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
-            is same as input x. The values of str refer to the function
+            is same as `input`. The values of str refer to the function
             `mindspore.common.initializer <https://mindspore.cn/docs/zh-CN/master/api_python/
-            mindspore.common.initializer.html>`_ . Default: "normal".
-        has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
+            mindspore.common.initializer.html>`_ . Default: ``"normal"``.
+        has_bias (bool): Specifies whether the layer uses a bias vector. Default: ``True``.
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype
             is same as input x. The values of str refer to the function
             `mindspore.common.initializer <https://mindspore.cn/docs/zh-CN/master/api_python/
-            mindspore.common.initializer.html>`_ . Default: "default".
+            mindspore.common.initializer.html>`_ . Default: ``"default"``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.
@@ -330,23 +331,23 @@ class MultiScaleFCCell(nn.Cell):
         out_channel (int): The number of channels in the output space.
         layers (int): The total number of layers, include input/hidden/output layers.
         neurons (int): The number of neurons of hidden layers.
-        residual (bool): full-connected of residual block for the hidden layers. Default: True.
+        residual (bool): full-connected of residual block for the hidden layers. Default: ``True``.
         act (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected layer,
-            eg. 'ReLU'.Default: "sin".
+            eg. ``'ReLU'``. Default: ``"sin"``.
         weight_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype
-            is same as input x. The values of str refer to the function `initializer`. Default: 'normal'.
-        has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
+            is same as `input`. The values of str refer to the function `initializer`. Default: ``'normal'``.
+        has_bias (bool): Specifies whether the layer uses a bias vector. Default: ``True``.
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype
-            is same as input x. The values of str refer to the function `initializer`. Default: 'default'.
-        num_scales (int): The subnet number of multi-scale network. Default: 4
-        amp_factor (Union[int, float]): The amplification factor of input. Default: 1.0
-        scale_factor (Union[int, float]): The base scale factor. Default: 2.0
-        input_scale (Union[list, None]): The scale factor of input x/y/t. If not None, the inputs will be scaled before
-            set in the network. Default: None.
-        input_center (Union[list, None]): Center position of coordinate translation. If not None, the inputs will be
-            translated before set in the network. Default: None.
+            is same as input x. The values of str refer to the function `initializer`. Default: ``'default'``.
+        num_scales (int): The subnet number of multi-scale network. Default: ``4``.
+        amp_factor (Union[int, float]): The amplification factor of input. Default: ``1.0``.
+        scale_factor (Union[int, float]): The base scale factor. Default: ``2.0``.
+        input_scale (Union[list, None]): The scale factor of input x/y/t. If not ``None``, the inputs will be scaled
+            before set in the network. Default: ``None``.
+        input_center (Union[list, None]): Center position of coordinate translation. If not ``None``, the inputs will be
+            translated before set in the network. Default: ``None``.
         latent_vector (Union[Parameter, None]): Trainable parameter which will be concated with the sampling inputs
-            and updated during training. Default: None.
+            and updated during training. Default: ``None``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.
@@ -358,7 +359,7 @@ class MultiScaleFCCell(nn.Cell):
         TypeError: If `num_scales` is not an int.
         TypeError: If `amp_factor` is neither int nor float.
         TypeError: If `scale_factor` is neither int nor float.
-        TypeError: If `latent_vector` is neither a Parameter nor None.
+        TypeError: If `latent_vector` is neither a Parameter nor ``None``.
 
     Supported Platforms:
         ``Ascend``

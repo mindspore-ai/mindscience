@@ -76,11 +76,11 @@ class LossAndTimeMonitor(Callback):
     If the loss is NAN or INF, it will terminate training.
 
     Note:
-        If per_print_times is 0, do not print loss.
+        If `per_print_times` is ``0``, do not print loss.
 
     Args:
         data_size (int): number of batches of each epoch dataset
-        per_print_times (int): How many steps to print each loss. Default: 1.
+        per_print_times (int): How many steps to print each loss. Default: ``1``.
 
     Raises:
         ValueError: If data_size is not an integer or less than zero.

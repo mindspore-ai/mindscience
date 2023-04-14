@@ -35,8 +35,8 @@ class Equation(Data):
 
     Raises:
         TypeError: if geometry is not instance of class Geometry.
-        ValueError: if sampling_config of geometry is None.
-        KeyError: if sampling_config.domain of geometry is None.
+        ValueError: if sampling_config of geometry is ``None``.
+        KeyError: if sampling_config.domain of geometry is ``None``.
 
     Supported Platforms:
         ``Ascend``

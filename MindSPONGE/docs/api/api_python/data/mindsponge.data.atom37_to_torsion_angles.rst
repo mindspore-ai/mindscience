@@ -11,8 +11,8 @@ mindsponge.data.atom37_to_torsion_angles
         - **aatype** (numpy.array) - 氨基酸类型。shape为 :math:`(batch\_size, N_{res})` 。
         - **all_atom_pos** (numpy.array) - 所有原子坐标的 `atom37` 编码下的表示。shape为 :math:`(batch\_size, N_{res}, 37, 3)` 。
         - **all_atom_mask** (numpy.array) - 所有原子坐标掩码的 `atom37` 编码下的表示。shape为 :math:`(batch\_size, N_{res})` 。
-        - **alt_torsions** (bool) - 是否将屏蔽扭转角的标志角度设置为零。默认值：False。
-        - **is_multimer** (bool) - 如果使用Multimer时该变量置为True。默认值：False。
+        - **alt_torsions** (bool) - 是否将屏蔽扭转角的标志角度设置为零。默认值： ``False``。
+        - **is_multimer** (bool) - 如果使用Multimer时该变量置为True。默认值： ``False``。
 
     返回：
         字典。

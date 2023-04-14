@@ -102,7 +102,7 @@ class Grad(nn.Cell):
 
     Args:
         model (Cell): a function or network that takes Tensor inputs.
-        argnum (int): specifies which input the output takes the first derivative of. Default: 0.
+        argnum (int): specifies which input the output takes the first derivative of. Default: ``0``.
 
     Inputs:
         - **x** (list) - The input is variable-length argument. The first input is a 2D network inputs (Tensor),

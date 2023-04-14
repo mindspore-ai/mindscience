@@ -35,8 +35,8 @@ class HyperCube(Geometry):
         coord_max (Union[int, float, tuple, list, numpy.ndarray]): maximal coordinate of the hyper cube. if the
             parameter type is tuple or list, the element support tuple[int, int], tuple[float, float], list[int, int],
             list[float, float].
-        dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Raises:
         TypeError: sampling_config is not instance of class SamplingConfig.
@@ -169,20 +169,20 @@ class HyperCube(Geometry):
         sampling points
 
         Args:
-            geom_type (str): geometry type: can be 'domain' or 'BC'. Default: 'domain'.
+            geom_type (str): geometry type: can be ``'domain'`` or ``'BC'``. Default: ``'domain'``.
 
-                - 'domain', feasible domain of the problem.
-                - 'BC', boundary of the problem.
+                - ``'domain'``, feasible domain of the problem.
+                - ``'BC'``, boundary of the problem.
 
         Returns:
             Numpy.array, if the with_normal property of boundary configuration is true, returns 2D numpy array with
                          boundary normal vectors. Otherwise, returns 2D numpy array without boundary normal vectors.
 
         Raises:
-            ValueError: If `config` is None.
-            KeyError: If `geom_type` is `domain` but `config.domain` is None.
-            KeyError: If `geom_type` is `BC` but `config.bc` is None.
-            ValueError: If `geom_type` is neither `BC` nor `domain`.
+            ValueError: If `config` is ``None``.
+            KeyError: If `geom_type` is ``'domain'`` but `config.domain` is ``None``.
+            KeyError: If `geom_type` is ``'BC'`` but `config.bc` is ``None``.
+            ValueError: If `geom_type` is neither ``'BC'`` nor ``'domain'``.
         """
         config = self.sampling_config
         if config is None:

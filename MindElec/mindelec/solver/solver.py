@@ -29,54 +29,55 @@ class Solver:
     Args:
         network (Cell): A training or testing network.
         optimizer (Cell): Optimizer for updating the weights.
-        loss_fn (Union(str, dict, Cell)): Objective function, if loss_fn is None, the network should contain the logic
-            of loss and grads calculation,. Note that the dict type of loss_fn is not supported in Data mode.
-            Default: "l2".
-        mode (str): The type of model. Supports ["Data", "PINNs"]. Default: "Data".
+        loss_fn (Union(str, dict, Cell)): Objective function, if `loss_fn` is ``None``, the network should contain
+            the logic of loss and grads calculation. Note that the dict type of `loss_fn` is not supported in Data mode.
+            Default: ``"l2"``.
+        mode (str): The type of model. Supports [``"Data", "PINNs"``]. Default: ``"Data"``.
 
-            - Data: The model is data_driven.
-            - PINNs: The model is physics_informed.
+            - ``"Data"``: The model is data_driven.
+            - ``"PINNs"``: The model is physics_informed.
 
-        train_constraints (Constraints): Definition of the loss for train dataset. Default: None. If mode
-            is PINNs, the train_constraints cannot be None.
-        test_constraints (Constraints): Definition of the loss for test dataset. Default: None. If mode is
-            PINNs and eval is needed(see train_with_eval and eval functions in the class), the test_constraints
-            cannot be None.
+        train_constraints (Constraints): Definition of the loss for train dataset. Default: ``None``. If `mode`
+            is ``"PINNs"``, the `train_constraints` cannot be ``None``.
+        test_constraints (Constraints): Definition of the loss for test dataset. Default: ``None``. If `mode` is
+            ``"PINNs"`` and eval is needed(see `train_with_eval` and `eval` functions in the class),
+            the `test_constraints` cannot be ``None``.
         train_input_map (dict): Specifies the column names of the data in the corresponding dataset to enter
             into the network while training. The key is name of dataset and the value is column names of the data
-            in the  corresponding dataset to enter into the network. Default: None. If the input of model is not
-            single, train_input_map can not be None.
+            in the  corresponding dataset to enter into the network. Default: ``None``. If the input of model is not
+            single, `train_input_map` can not be ``None``.
         test_input_map (dict): Specifies the column names of the data in the corresponding dataset to enter
             into the network while doing eval. The key is name of dataset and the value is column names of the data
-            in the corresponding dataset to enter into the network. Default: None. If the input of model is not
-            single and eval is needed, test_input_map can not be None.
+            in the corresponding dataset to enter into the network. Default: ``None``. If the input of model is not
+            single and eval is needed, `test_input_map` can not be ``None``.
         mtl_weighted_cell (Cell): Losses weighting algorithms based on multi-task learning uncertainty evaluation.
-            Default: None.
+            Default: ``None``.
         latent_vector (Parameter): Tensor of Parameter. The latent vector to encodes the variational parameters in
             governing equation. It will be concated with the sampling data togother as final network inputs.
-            Default: None.
-        latent_reg (float): The regularization coefficient of latent vector. Default: 1e-2.
+            Default: ``None``.
+        latent_reg (float): The regularization coefficient of latent vector. Default: ``1e-2``.
         metrics (Union[dict, set]): A Dictionary or a set of metrics to be evaluated by the model during
-            training and inference. eg: {'accuracy', 'recall'}. Default: None.
+            training and inference. eg: {``'accuracy'``, ``'recall'``}. Default: ``None``.
         eval_network (Cell): Network for evaluation. If not defined, `network` and `loss_fn` would be wrapped as
-            `eval_network` . Default: None. Note that eval_network do not need to be set in PINNs mode.
-        eval_indexes (list): When defining the `eval_network`, if `eval_indexes` is None, all outputs of the
+            `eval_network` . Default: None. Note that eval_network do not need to be set in ``"PINNs"`` mode.
+        eval_indexes (list): When defining the `eval_network`, if `eval_indexes` is ``None``, all outputs of the
             `eval_network` would be passed to metrics, otherwise `eval_indexes` must contain three
             elements, including the positions of loss value, predicted value and label. The loss
             value would be passed to the `Loss` metric, the predicted value and label would be passed
-            to other metric. Default: None.
+            to other metric. Default: ``None``.
         amp_level (str): Option for argument `level` in `mindspore.amp.build_train_network` , level for mixed
-            precision training. Supports ["O0", "O2", "O3", "auto"]. Default: "O0".
+            precision training. Supports [``"O0"``, ``"O2"``, ``"O3"``, ``"auto"``]. Default: ``"O0"``.
 
-            - O0: Do not change.
-            - O2: Cast network to float16, keep batchnorm run in float32, using dynamic loss scale.
-            - O3: Cast network to float16, with additional property `keep_batchnorm_fp32=False` .
-            - auto: Set to level to recommended level in different devices. Set level to O2 on GPU, Set
-              level to O3 Ascend. The recommended level is choose by the export experience, cannot
+            - ``"O0"``: Do not change.
+            - ``"O2"``: Cast network to float16, keep batchnorm run in float32, using dynamic loss scale.
+            - ``"O3"``: Cast network to float16, with additional property `keep_batchnorm_fp32=False` .
+            - ``"auto"``: Set to level to recommended level in different devices. Set level to ``"O2"``
+              on GPU, set level to ``"O3"`` Ascend. The recommended level is choose by the export experience, cannot
               always general. User should specify the level for special network.
 
-            O2 is recommended on GPU, O3 is recommended on Ascend.The more detailed explanation of `amp_level` setting
-            can be found at `mindspore.amp.build_train_network <https://www.mindspore.cn/docs/en/master/api_python/
+            ``"O2"`` is recommended on GPU, ``"O3"`` is recommended on Ascend.
+            The more detailed explanation of `amp_level` setting can be found at
+            `mindspore.amp.build_train_network <https://www.mindspore.cn/docs/en/master/api_python/
             amp/mindspore.amp.build_train_network.html#mindspore.amp.build_train_network>`_ .
 
     Supported Platforms:
@@ -191,14 +192,14 @@ class Solver:
         Training API where the iteration is controlled by python front-end.
 
         Note:
-            If dataset_sink_mode is True, data will be sent to device. If device is Ascend, features
+            If `dataset_sink_mode` is ``True``, data will be sent to device. If device is Ascend, features
             of data will be transferred one by one. The limitation of data transmission per time is 256M.
-            If sink_size > 0, each epoch the dataset can be traversed unlimited times until you get sink_size
+            If `sink_size` > 0, each epoch the dataset can be traversed unlimited times until you get `sink_size`
             elements of the dataset. Next epoch continues to traverse from the end position of the previous traversal.
 
         Args:
             epoch (int): Generally, total number of iterations on the data per epoch.
-                         When dataset_sink_mode is set to true and sink_size>0, each epoch sink sink_size
+                         When dataset_sink_mode is set to true and sink_size > 0, each epoch sink sink_size
                          steps on the data instead of total number of iterations.
             train_dataset (Dataset): A training dataset iterator. If there is no
                                      loss_fn, a tuple with multiple data (data1, data2, data3, ...) should be
@@ -206,15 +207,15 @@ class Solver:
                                      be returned.
             callbacks (Union[list[Callback], Callback]): List of callback objects or callback object,
                                                             which should be executed while training.
-                                                            Default: None.
+                                                            Default: ``None``.
             dataset_sink_mode (bool): Determines whether to pass the data through dataset channel.
                                       Configure pynative mode or CPU, the training process will be performed with
-                                      dataset not sink. Default: True.
+                                      dataset not sink. Default: ``True``.
             sink_size (int): Control the amount of data in each sink.
                              If sink_size = -1, sink the complete dataset for each epoch.
                              If sink_size > 0, sink sink_size data for each epoch.
                              If dataset_sink_mode is False, set sink_size as invalid.
-                             Default: -1.
+                             Default: ``-1``.
 
         Examples:
             >>> # For details about how to build the dataset, please refer to the tutorial
@@ -231,14 +232,14 @@ class Solver:
         Train_with_eval API where the iteration is controlled by python front-end.
 
         Note:
-            If dataset_sink_mode is True, data will be sent to device. If device is Ascend, features
+            If `dataset_sink_mode` is ``True``, data will be sent to device. If device is Ascend, features
             of data will be transferred one by one. The limitation of data transmission per time is 256M.
-            If sink_size > 0, each epoch the dataset can be traversed unlimited times until you get sink_size
+            If `sink_size` > 0, each epoch the dataset can be traversed unlimited times until you get `sink_size`
             elements of the dataset. Next epoch continues to traverse from the end position of the previous traversal.
 
         Args:
             epoch (int): Generally, total number of iterations on the data per epoch.
-                         When `dataset_sink_mode` is set to true and `sink_size`>0, each epoch sink `sink_size`
+                         When `dataset_sink_mode` is set to true and `sink_size`> 0, each epoch sink `sink_size`
                          steps on the data instead of total number of iterations.
             train_dataset (Dataset): A training dataset iterator. If there is no
                                      `loss_fn`, a tuple with multiple data (data1, data2, data3, ...) should be
@@ -249,15 +250,15 @@ class Solver:
             eval_interval (int): Specifies eval interval.
             callbacks (Union[list[Callback], Callback]): List of callback objects or callback object,
                                                             which should be executed while training.
-                                                            Default: None.
-            dataset_sink_mode (bool): Determines whether to pass the data through dataset channel. Default: True.
+                                                            Default: ``None``.
+            dataset_sink_mode (bool): Determines whether to pass the data through dataset channel.
                                       Configure pynative mode or CPU, the training process will be performed with
-                                      dataset not sink. Default: True.
+                                      dataset not sink. Default: ``True``.
             sink_size (int): Control the amount of data in each sink.
                              If sink_size = -1, sink the complete dataset for each epoch.
                              If sink_size > 0, sink sink_size data for each epoch.
                              If dataset_sink_mode is False, set sink_size as invalid.
-                             Default: -1.
+                             Default: ``-1``.
 
         Examples:
             >>> # For details about how to build the dataset, please refer to the tutorial
@@ -282,15 +283,15 @@ class Solver:
         Configure to pynative mode or CPU, the evaluating process will be performed with dataset non-sink mode.
 
         Note:
-            If dataset_sink_mode is True, data will be sent to device. If device is Ascend, features
+            If `dataset_sink_mode` is ``True``, data will be sent to device. If device is Ascend, features
             of data will be transferred one by one. The limitation of data transmission per time is 256M.
 
         Args:
             valid_dataset (Dataset): Dataset to evaluate the model.
             callbacks (Optional[list(Callback)]): List of callback objects which should be executed
-                while training. Default: None.
+                while training. Default: ``None``.
             dataset_sink_mode (bool): Determines whether to pass the data through dataset channel.
-                Default: True.
+                Default: ``True``.
 
         Returns:
             Dict, whose key is name of metric and value is value of metric.
@@ -319,7 +320,7 @@ class Solver:
             Tensor, array(s) of predictions.
 
         Raises:
-            TypeError: if predict_data is not Tensor or tuple of tensor.
+            TypeError: if `predict_data` is not Tensor or tuple of tensor.
 
         Examples:
             >>> input_data = Tensor(np.random.randint(0, 255, [1, 1, 32, 32]), mindspore.float32)

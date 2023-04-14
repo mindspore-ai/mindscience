@@ -86,7 +86,7 @@ def get_activation(name):
     Gets the activation function.
 
     Args:
-        name (Union[str, None]): The name of the activation function. If name was None, it would return None.
+        name (Union[str, None]): The name of the activation function. If name was ``None``, it would return ``None``.
 
     Returns:
         Function(mindspore.cell), the activation function.

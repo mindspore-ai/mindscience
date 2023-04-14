@@ -19,9 +19,9 @@ mindsponge.common.invert_point
         - **transformed_point** (Tuple) - 输入的初始坐标， :math:`(x, y, z)` ，其中x, y, z均为Tensor，且shape相同。
         - **rotation** (Tuple) - 旋转矩阵， :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` ，且xx, xy等均为Tensor且shape相同。
         - **translation** (Tuple) - 平移向量， :math:`(x, y, z)`, 其中x, y, z均为Tensor，且shape相同。
-        - **extra_dims** (int) - 控制进行几层拓展。默认值：0。
-        - **stack** (bool) - 控制是否进行入栈操作。默认值：False。
-        - **use_numpy** (bool) - 控制是否使用numpy。默认值：False。
+        - **extra_dims** (int) - 控制进行几层拓展。默认值： ``0``。
+        - **stack** (bool) - 控制是否进行入栈操作。默认值： ``False``。
+        - **use_numpy** (bool) - 控制是否使用numpy。默认值： ``False``。
 
     返回：
         Tuple，旋转平移后的坐标，长度为3。

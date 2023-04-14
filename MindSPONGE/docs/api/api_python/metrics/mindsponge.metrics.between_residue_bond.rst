@@ -10,8 +10,8 @@ mindsponge.metrics.between_residue_bond
         - **pred_atom_mask** (Tensor) - 以稠密或稀疏编码方式编码的蛋白质全原子mask， shape :math:`(N_{res}, 37)`（稀疏编码）或 :math:`(N_{res}, 14)` （稠密编码）。
         - **residue_index** (Tensor) - 蛋白质序列编码index信息，大小从1到 :math:`N_{res}` 。shape :math:`(N_{res}, )` 。
         - **aatype** (Tensor) - 蛋白质一级序列编码，编码方式参考 `common.residue_constants.restype_order`，取值范围 :math:`[0,20]` ，若为20表示该氨基酸为unkown（`UNK`）。 shape :math:`(N_{res}, )` 。
-        - **tolerance_factor_soft** (float) - 根据蛋白质结构分布的标准偏差测量的软公差因子，默认为 12.0 。
-        - **tolerance_factor_hard** (float) - 根据蛋白质结构分布的标准偏差测量的硬公差因子，默认为 12.0 。
+        - **tolerance_factor_soft** (float) - 根据蛋白质结构分布的标准偏差测量的软公差因子，默认为 ``12.0`` 。
+        - **tolerance_factor_hard** (float) - 根据蛋白质结构分布的标准偏差测量的硬公差因子，默认为 ``12.0`` 。
 
     返回：
         - **c_n_loss_mean** (Tensor) C-N 肽键长度冲突损失。shape: :math:`( )` 。

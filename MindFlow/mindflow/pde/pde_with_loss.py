@@ -136,9 +136,9 @@ class PDEWithLoss:
 
         Args:
             formula_nodes (list[FormulaNode]): List of expressions node can be identified by mindspore.
-            inputs (Tensor): The input data of network. Default: None.
+            inputs (Tensor): The input data of network. Default: ``None``.
             norm (Tensor): The normal of the surface at a point P is a vector perpendicular to the tangent plane of the
-                point. Default: None.
+                point. Default: ``None``.
 
         Returns:
             List(Tensor), the results of the partial differential equations.
@@ -176,7 +176,7 @@ class Burgers(PDEWithLoss):
 
     Args:
         model (mindspore.nn.Cell): Network for training.
-        loss_fn (Union[str, Cell]): Define the loss function. Default: mse.
+        loss_fn (Union[str, Cell]): Define the loss function. Default: ``"mse"``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -239,8 +239,8 @@ class NavierStokes(PDEWithLoss):
     Args:
         model (mindspore.nn.Cell): network for training.
         re (float): reynolds number is the ratio of inertia force to viscous force of a fluid. It is a dimensionless
-            quantity. Default: 100.0.
-        loss_fn (Union[str, Cell]): Define the loss function. Default: mse.
+            quantity. Default: ``100.0``.
+        loss_fn (Union[str, Cell]): Define the loss function. Default: ``"mse"``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -320,7 +320,7 @@ class Poisson(PDEWithLoss):
 
     Args:
         model (mindspore.nn.Cell): network for training.
-        loss_fn (Union[str, Cell]): Define the loss function. Default: mse.
+        loss_fn (Union[str, Cell]): Define the loss function. Default: ``"mse"``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

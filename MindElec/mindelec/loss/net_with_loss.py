@@ -47,15 +47,16 @@ class NetWithLoss(nn.Cell):
     Args:
         net_without_loss (Cell): The training network without loss definition.
         constraints (Constraints): The constraints function of pde problem.
-        loss (Union[str, dict, Cell]): The name of loss function, e.g. "l1", "l2" and "mae". Default: "l2".
-        dataset_input_map (dict): The input map of the dataset. If it takes "None", the first column will be set
-            as input. Default: None.
+        loss (Union[str, dict, Cell]): The name of loss function, e.g. ``"l1"``, ``"l2"`` and ``"mae"``.
+            Default: ``"l2"``.
+        dataset_input_map (dict): The input map of the dataset. If it takes ``None``, the first column will be set
+            as input. Default: ``None``.
         mtl_weighted_cell (Cell): Losses weighting algorithms based on multi-task learning uncertainty evaluation.
-            Default: None.
+            Default: ``None``.
         latent_vector (Parameter): Tensor of Parameter. The latent vector to encodes the variational parameters in
             governing equation. It will be concated with the sampling data togother as final network inputs.
-            Default: None.
-        latent_reg (float): The regularization coefficient of latent vector. Default: 0.01.
+            Default: ``None``.
+        latent_reg (float): The regularization coefficient of latent vector. Default: ``0.01``.
 
     Inputs:
         - **inputs** (Tensor) - The input is variable-length argument which contains network inputs.
@@ -182,8 +183,9 @@ class NetWithEval(nn.Cell):
     Args:
         net_without_loss (Cell): The training network without loss definition.
         constraints (Constraints): The constraints function of pde problem.
-        loss(Union[str, dict, Cell]): The name of loss function, e.g. "l1", "l2" and "mae". Default: "l2".
-        dataset_input_map (dict): The input map of the dataset Default: None.
+        loss(Union[str, dict, Cell]): The name of loss function, e.g. ``"l1"``, ``"l2"`` and ``"mae"``.
+            Default: ``"l2"``.
+        dataset_input_map (dict): The input map of the dataset Default: ``None``.
 
     Inputs:
         - **inputs** (Tensor) - The input is variable-length argument which contains network inputs and label.

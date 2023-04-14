@@ -51,12 +51,13 @@ class FNO2D(nn.Cell):
         out_channels (int): The number of channels in the output space.
         resolution (int): The spatial resolution of the input.
         modes (int): The number of low-frequency components to keep.
-        channels (int): The number of channels after dimension lifting of the input. Default: 20.
-        depths (int): The number of FNO layers. Default: 4.
-        mlp_ratio (int): The number of channels lifting ratio of the decoder layer. Default: 4.
-        compute_dtype (dtype.Number): The computation type of dense. Default mindspore.common.dtype.float32.
-                Should be mindspore.common.dtype.float32 or mindspore.common.dtype.float32.
-                float32 is recommended for the GPU backend, float16 is recommended for the Ascend backend.
+        channels (int): The number of channels after dimension lifting of the input. Default: ``20``.
+        depths (int): The number of FNO layers. Default: ``4``.
+        mlp_ratio (int): The number of channels lifting ratio of the decoder layer. Default: ``4``.
+        compute_dtype (dtype.Number): The computation type of dense.
+            Default: ``mindspore.common.dtype.float32``.
+            Should be ``mindspore.common.dtype.float32`` or ``mindspore.common.dtype.float32``.
+            float32 is recommended for the GPU backend, float16 is recommended for the Ascend backend.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, resolution, in\_channels)`.

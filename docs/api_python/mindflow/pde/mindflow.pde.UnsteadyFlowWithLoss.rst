@@ -7,10 +7,10 @@ mindflow.pde.UnsteadyFlowWithLoss
 
     参数：
         - **model** (mindspore.nn.Cell) - 用于训练的网络模型。
-        - **t_in** (int) - 初始步长。默认值： 1。
-        - **t_out** (int) - 输出步长。 默认值： 1。
-        - **loss_fn** (Union[str, Cell]) - 损失函数。默认值： 'mse'。
-        - **data_format** (str) - 数据格式。默认值： "NTCHW"。
+        - **t_in** (int) - 初始步长。默认值： ``1``。
+        - **t_out** (int) - 输出步长。 默认值： ``1``。
+        - **loss_fn** (Union[str, Cell]) - 损失函数。默认值： ``'mse'``。
+        - **data_format** (str) - 数据格式。默认值： ``'NTCHW'``。
 
     .. py:method:: get_loss(inputs, labels)
 

@@ -23,7 +23,7 @@ def vis_1d(pri_var, file_name='vis.jpg'):
 
     Args:
         pri_var (Tensor): The primitive variables.
-        file_name (str): The name of the picture. Default: 'vis.jpg'.
+        file_name (str): The name of the picture. Default: ``'vis.jpg'``.
 
     Supported Platforms:
         ``GPU``
@@ -50,7 +50,7 @@ def vis_2d(pri_var, file_name='vis.jpg'):
 
     Args:
         pri_var (Tensor): The primitive variables.
-        file_name (str): The name of the picture. Default: 'vis.jpg'.
+        file_name (str): The name of the picture. Default: ``'vis.jpg'``.
 
     Supported Platforms:
         ``GPU``

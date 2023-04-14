@@ -54,12 +54,12 @@ class PDENet(nn.Cell):
         channels (int): The channel number of the input and output tensor of the PDE-Net.
         kernel_size (int): Specifies the height and width of the 2D convolution kernel.
         max_order (int): The max order of the PDE models.
-        dx (float): The spatial resolution of x dimension. Default: 0.01.
-        dy (float): The spatial resolution of y dimension. Default: 0.01.
-        dt (float): The time step of the PDE-Net. Default: 0.01.
-        periodic (bool): Specifies whether periodic pad is used with convolution kernels. Default: True.
-        enable_moment (bool): Specifies whether the convolution kernels are constrained by moments. Default: True.
-        if_fronzen (bool): Specifies whether the moment is frozen. Default: False.
+        dx (float): The spatial resolution of x dimension. Default: ``0.01``.
+        dy (float): The spatial resolution of y dimension. Default: ``0.01``.
+        dt (float): The time step of the PDE-Net. Default: ``0.01``.
+        periodic (bool): Specifies whether periodic pad is used with convolution kernels. Default: ``True``.
+        enable_moment (bool): Specifies whether the convolution kernels are constrained by moments. Default: ``True``.
+        if_fronzen (bool): Specifies whether the moment is frozen. Default: ``False``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(batch\_size, channels, height, width)`.

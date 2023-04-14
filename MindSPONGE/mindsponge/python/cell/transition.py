@@ -38,16 +38,16 @@ class Transition(nn.Cell):
                                            channels compared to the input.
         input_dim(int):                    The channels of the input.
         batch_size(int):                   The batch size of parameters in Transition,
-                                           used in while control flow. Default: "None".
+                                           used in while control flow. Default: ``None``.
         slice_num (int):                   The slice num used in transition layer
-                                           when the memory is overflow. Default: 0.
+                                           when the memory is overflow. Default: ``0``.
 
     Inputs:
         - **act** (Tensor) - The input with channels equal to input_dim, shape is :math:`(..., input\_dim)`.
         - **index** (Tensor) - The index of while loop, only used in case of while control
-          flow. Default: "None".
+          flow. Default: ``None``.
         - **mask** (Tensor) - The mask of act when to do layernorm with shape :math:`(32, input\_dim)`,
-          Default: "None".
+          Default: ``None``.
 
     Outputs:
         Tensor, the float tensor of the output of the layer with shape :math:`(..., input\_dim)`.
