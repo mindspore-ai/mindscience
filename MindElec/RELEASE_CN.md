@@ -1,8 +1,8 @@
-﻿# MindElec Release Notes
+﻿# MindSpore Elec Release Notes
 
 [View English](./RELEASE.md)
 
-## MindElec 0.2.0-alpha Release Notes
+## MindSpore Elec 0.2.0-alpha Release Notes
 
 ### 主要特性和增强
 
