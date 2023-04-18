@@ -12,11 +12,11 @@ mindflow.loss.RelativeRMSELoss
         loss = \sqrt{\frac{\sum_{i=1}^{N}{(x_i-y_i)^2}}{\sum_{i=1}^{N}{(y_i)^2}}}
 
     参数：
-        - **reduction** (str) - `reduction` 决定了计算模式。有三种模式可选："mean"，"sum"和"none"。默认值："sum"。
+        - **reduction** (str) - `reduction` 决定了计算模式。有三种模式可选： ``"mean"``、 ``"sum"`` 和 ``"none"``。默认值： ``"sum"``。
 
     输入：
         - **prediction** (Tensor) - 网络模型预测值。Tensor的形状 :math:`(N, *)` 其中 :math:`*` 表示任意维度。
-        - **labels** (Tensor) - 样本的真实值。Tensor的形状 :math:`(N, *)` 其中 :math:`*` 表示任意维度，通常情况下和 `prediction` 的形状一致。但是，也支持labels的形状和prediction的形状不一致，两者应该可以相互广播。
+        - **labels** (Tensor) - 样本的真实值。Tensor的shape :math:`(N, *)` 其中 :math:`*` 表示任意维度，通常情况下和 `prediction` 的shape一致。但是，也支持labels的shape和prediction的shape不一致，两者应该可以相互广播。
 
     输出：
         Tensor。加权计算出的损失。

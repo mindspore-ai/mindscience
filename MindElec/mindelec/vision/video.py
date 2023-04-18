@@ -26,7 +26,8 @@ def image_to_video(path_image, path_video, video_name, fps):
     Args:
         path_image (str): image path, all images are jpg.
                           image names in path_image should be like:
-                          00.jpg, 01.jpg, 02.jpg, ... 09.jpg, 10.jpg, 11.jpg, 12.jpg ...
+                          ``"00.jpg"``, ``"01.jpg"``, ``"02.jpg"``, ... ``"09.jpg"``,
+                          ``"10.jpg"``, ``"11.jpg"``, ``"12.jpg"`` ...
         path_video (str): video path, video saved path.
         video_name (str): video name(.avi file)
         fps (int): Specifies how many pictures per second in video.

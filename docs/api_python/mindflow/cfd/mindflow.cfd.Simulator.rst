@@ -7,7 +7,7 @@ mindflow.cfd.Simulator
 
     参数：
         - **config** (dict) - 参数字典。
-        - **net_dict** (dict) - 网络字典, 默认为None。
+        - **net_dict** (dict) - 网络字典, 默认为 ``None``。
 
     .. py:method:: integration_step(con_var, timestep)
 

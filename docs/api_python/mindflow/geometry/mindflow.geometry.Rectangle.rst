@@ -9,5 +9,5 @@ mindflow.geometry.Rectangle
         - **name** (str) - 矩形的名称。
         - **coord_min** (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]) - 矩形的左底部的坐标。
         - **coord_max** (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]) - 矩形的右顶部的坐标。
-        - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：numpy.float32。
-        - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
+        - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值： ``numpy.float32``。
+        - **sampling_config** (SamplingConfig) - 采样配置。默认值： ``None``。

@@ -100,16 +100,16 @@ class CSG(Geometry):
         sampling points
 
         Args:
-            geom_type (str): geometry type
+            geom_type (str): geometry type.
 
         Returns:
-            Numpy.array, numpy array with or without boundary normal vectors
+            Numpy.array, numpy array with or without boundary normal vectors.
 
         Raises:
-            ValueError: If `config` is None.
-            KeyError: If `geom_type` is `domain` but `config.domain` is None.
-            KeyError: If `geom_type` is `BC` but `config.bc` is None.
-            ValueError: If `geom_type` is neither `BC` nor `domain`.
+            ValueError: If `config` is ``None``.
+            KeyError: If `geom_type` is `domain` but `config.domain` is ``None``.
+            KeyError: If `geom_type` is ``"BC"`` but `config.bc` is ``None``.
+            ValueError: If `geom_type` is neither ``"BC"`` nor ``"domain"``.
         """
         self._check_sampling_config(self.sampling_config)
         config = self.sampling_config
@@ -153,7 +153,7 @@ class CSGDifference(CSG):
     Args:
         geom1 (Geometry): a geometry object.
         geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -276,7 +276,7 @@ class CSGUnion(CSG):
     Args:
         geom1 (Geometry): a geometry object.
         geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -393,7 +393,7 @@ class CSGIntersection(CSG):
     Args:
         geom1 (Geometry): a geometry object.
         geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -512,7 +512,7 @@ class CSGXOR(CSG):
     Args:
         geom1 (Geometry): a geometry object.
         geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

@@ -10,8 +10,8 @@ mindflow.geometry.SamplingConfig
 
     异常：
         - **TypeError** - 如果 `part_sampling_dict` 不是dict。
-        - **KeyError** - 如果 `geom_type` 不是"domain"、"BC"、"IC"或"time"。
+        - **KeyError** - 如果 `geom_type` 不是 ``"domain"``、 ``"BC"``、 ``"IC"`` 或 ``"time"``。
         - **TypeError** - 如果"config"不是PartSamplingConfig对象。
-        - **ValueError** - 如果 part_sampling_dict中的 `domain.size` 既不是list也不是tuple。
-        - **ValueError** - 如果 part_sampling_dict中的 `ic.size` 既不是list也不是tuple。
-        - **ValueError** - 如果 part_sampling_dict中的 `time.size` 既不是list也不是tuple。
+        - **ValueError** - 如果 `part_sampling_dict` 中的 `domain.size` 既不是list也不是tuple。
+        - **ValueError** - 如果 `part_sampling_dict` 中的 `ic.size` 既不是list也不是tuple。
+        - **ValueError** - 如果 `part_sampling_dict` 中的 `time.size` 既不是list也不是tuple。

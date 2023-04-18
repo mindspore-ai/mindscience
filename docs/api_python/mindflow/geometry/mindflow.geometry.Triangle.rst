@@ -8,10 +8,10 @@ mindflow.geometry.Triangle
     参数：
         - **name** (str) - 三角形的名称。
         - **vertices** (numpy.ndarray) - 三角形的顶点。
-        - **boundary_type** (str) - 值可以是“uniform”或“unweighted”。默认值：“uniform”。
+        - **boundary_type** (str) - 值可以是 ``'uniform'`` 或 ``'unweighted'``。默认值： ``'uniform'``。
 
-          - 'uniform'，每个边界中的预期样本数与边界的面积（长度）成比例的。
-          - 'unweighted'，每个边界中的预期样本数相同。
+          - ``'uniform'``，每个边界中的预期样本数与边界的面积（长度）成比例的。
+          - ``'unweighted'``，每个边界中的预期样本数相同。
 
-        - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：np.float32。
-        - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
+        - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值： ``np.float32``。
+        - **sampling_config** (SamplingConfig) - 采样配置。默认值： ``None``。

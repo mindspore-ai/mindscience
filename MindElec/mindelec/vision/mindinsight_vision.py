@@ -28,11 +28,11 @@ class MonitorTrain(Callback):
     Loss monitor for train.
 
     Note:
-        If `per_print_times` is 0, do not print loss.
+        If `per_print_times` is ``0``, do not print loss.
 
     Args:
-        per_print_times (int): print loss interval. Default: 1.
-        summary_dir (str): summary save path. Default: './summary_train'.
+        per_print_times (int): print loss interval. Default: ``1``.
+        summary_dir (str): summary save path. Default: ``'./summary_train'``.
 
     Supported Platforms:
         ``Ascend``
@@ -104,11 +104,11 @@ class MonitorEval(Callback):
     LossMonitor for eval.
 
     Args:
-        summary_dir (str): summary save path. Default: './summary_eval'.
-        model (Solver): Model object for eval. Default: None.
-        eval_ds (Dataset): eval dataset. Default: None.
-        eval_interval (int): eval interval. Default: 10.
-        draw_flag (bool): specifies if save summary_record. Default: True.
+        summary_dir (str): summary save path. Default: ``'./summary_eval'``.
+        model (Solver): Model object for eval. Default: ``None``.
+        eval_ds (Dataset): eval dataset. Default: ``None``.
+        eval_interval (int): eval interval. Default: ``10``.
+        draw_flag (bool): specifies if save summary_record. Default: ``True``.
 
     Supported Platforms:
         ``Ascend``

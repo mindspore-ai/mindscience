@@ -10,8 +10,8 @@ mindflow.geometry.Geometry
         - **dim** (int) - 维数。
         - **coord_min** (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]) - 几何体的最小坐标。
         - **coord_max** (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]) - 几何体的最大坐标。
-        - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值：numpy.float32。
-        - **sampling_config** (SamplingConfig) - 采样配置。默认值：None。
+        - **dtype** (numpy.dtype) - 采样点数据类型的数据类型。默认值： ``numpy.float32``。
+        - **sampling_config** (SamplingConfig) - 采样配置。默认值： ``None``。
 
     .. py:method:: set_name(name)
 

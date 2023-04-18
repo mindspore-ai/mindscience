@@ -10,13 +10,13 @@ mindsponge.cell.MSAColumnGlobalAttention
         - **num_head** (int) - attention头的数量。
         - **gating** (bool) - 判断attention是否经过gating的指示器。
         - **msa_act_dim** (int) - 输入msa_act的维度。
-        - **batch_size** (int) - MSAColumnGlobalAttention中参数的batch size，在控制流场景下使用。默认值：None。
-        - **slice_num** (int) - 为了减少内存需要进行切分的数量。默认值：0。
+        - **batch_size** (int) - MSAColumnGlobalAttention中参数的batch size，在控制流场景下使用。默认值： ``None``。
+        - **slice_num** (int) - 为了减少内存需要进行切分的数量。默认值： ``0``。
 
     输入：
         - **msa_act** (Tensor) - shape为 :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` 。
         - **msa_mask** (Tensor) - msa_act矩阵的mask，shape为 :math:`(N_{seqs}, N_{res})` 。
-        - **index** (Tensor) - 在循环中的索引，只会在有控制流的时候使用。默认值为："None"。
+        - **index** (Tensor) - 在循环中的索引，只会在有控制流的时候使用。默认值为： ``None``。
 
     输出：
         Tensor。本层输出的msa_act，shape是 :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` 。

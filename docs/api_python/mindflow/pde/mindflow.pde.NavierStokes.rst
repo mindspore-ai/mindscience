@@ -7,8 +7,8 @@ mindflow.pde.NavierStokes
 
     参数：
         - **model** (mindspore.nn.Cell) - 用于训练的网络模型。
-        - **re** (float) - 雷诺数（流体惯性力与粘滞力的比值）。默认值：100.0。
-        - **loss_fn** (Union[str, Cell]) - 损失函数。默认值："mse"。
+        - **re** (float) - 雷诺数（流体惯性力与粘滞力的比值）。默认值： ``100.0``。
+        - **loss_fn** (Union[str, Cell]) - 损失函数。默认值： ``"mse"``。
 
     .. py:method:: pde()
 

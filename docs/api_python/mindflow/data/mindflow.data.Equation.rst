@@ -10,5 +10,5 @@ mindflow.data.Equation
 
     异常：
         - **TypeError** - 如果 `geometry` 不是Geometry的实例。
-        - **ValueError** - 如果 `geometry` 的sampling_config为None。
-        - **KeyError** - 如果 `geometry` 的sampling_config.domain为None。
+        - **ValueError** - 如果 `geometry` 的sampling_config为 ``None``。
+        - **KeyError** - 如果 `geometry` 的sampling_config.domain为 ``None``。

@@ -29,10 +29,10 @@ class PartSamplingConfig:
 
     Args:
         size (Union[int, tuple[int], list[int]]): number of sampling points.
-        random_sampling (bool): Specifies whether randomly sampling points. Default: True.
-        sampler (str): method for random sampling. Default: uniform.
-        random_merge (bool): Specifies whether randomly merge coordinates of different dimensions. Default: True.
-        with_normal (bool): Specifies whether generating the normal vectors of the boundary. Default: False.
+        random_sampling (bool): Specifies whether randomly sampling points. Default: ``True``.
+        sampler (str): method for random sampling. Default: ``"uniform"``.
+        random_merge (bool): Specifies whether randomly merge coordinates of different dimensions. Default: ``True``.
+        with_normal (bool): Specifies whether generating the normal vectors of the boundary. Default: ``False``.
 
     Raises:
         TypeError: size is not int number when random sampling.
@@ -66,17 +66,18 @@ class SamplingConfig:
     Definition of global sampling configuration.
 
     Args:
-        part_sampling_dict (dict): sampling configuration. The configurable keys are "domain", "BC", "IC" or "time".
+        part_sampling_dict (dict): sampling configuration. The configurable keys are ``"domain"``,
+            ``"BC"``, ``"IC"`` or ``"time"``.
 
-            - 'domain', feasible domain of the problem.
-            - 'BC', boundary of the problem.
-            - 'IC', initial condition of the problem.
-            - 'time', time domain of the problem.
+            - ``'domain'``, feasible domain of the problem.
+            - ``'BC'``, boundary of the problem.
+            - ``'IC'``, initial condition of the problem.
+            - ``'time'``, time domain of the problem.
 
     Raises:
         ValueError: If `coord_min` or `coord_max` is neither int nor float .
         TypeError: If `part_sampling_dict` is not dict.
-        KeyError: If `geom_type` not "domain", "BC", "IC" or "time".
+        KeyError: If `geom_type` not ``"domain"``, ``"BC"``, ``"IC"`` or ``"time"``.
         TypeError: If 'config' is not PartSamplingConfig object.
         ValueError: If `self.domain.size` is neither list nor tuple.
         ValueError: If `self.ic.size` is neither list nor tuple.
@@ -122,8 +123,8 @@ class Geometry:
             minimal coordinate of the geometry.
         coord_max (Union[tuple[int, int], tuple[float, float], list[int, int], list[float, float], numpy.ndarray]):
             maximal coordinate of the geometry.
-        dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend``

@@ -42,12 +42,12 @@ from .pointcloud_util import inner_point_generation
 
 class SamplingMode(IntEnum):
     r"""
-    Point sampling method, at present support UPPERBOUND(0) and DIMENSIONS(1).
+    Point sampling method, at present support ``UPPERBOUND(0)`` and ``DIMENSIONS(1)``.
 
-    - 'UPPERBOUND': limit the sampling points number upperbound within whole sampling space, the other space
+    - ``'UPPERBOUND'``: limit the sampling points number upperbound within whole sampling space, the other space
       parameters such as sampling number on each axis can be automatically computed according to the space
       size ratio.
-    - 'DIMENSIONS': users can specify the sampling number in each dimension, the axis order is x:y:z.
+    - ``'DIMENSIONS'``: users can specify the sampling number in each dimension, the axis order is x:y:z.
 
     Supported Platforms:
         ``Ascend``
@@ -58,10 +58,10 @@ class SamplingMode(IntEnum):
 
 class BBoxType(IntEnum):
     r"""
-    Bounding box for sampling space, only supports cube-shape sampling space, at present supports STATIC(0) and
-    DYNAMIC(1).
+    Bounding box for sampling space, only supports cube-shape sampling space, at present supports
+    ``STATIC(0)`` and ``DYNAMIC(1)``.
 
-    - 'DYNAMIC', generate sampling bbox from the bbox of all 3-D topology models and space extension
+    - ``'DYNAMIC'``, generate sampling bbox from the bbox of all 3-D topology models and space extension
       constants, models bbox can be computed automatically after read all files, then add extension
       constants on each direction the DYNAMIC sampling bbox can be obtained. Each model is different.
 
@@ -69,7 +69,7 @@ class BBoxType(IntEnum):
         \text{Space} = (x_{min} - x_{neg}, y_{min} - y_{neg}, z_{min} - z_{neg},
         x_{max} + x_{pos}, y_{max} + y_{pos}, z_{max} + z_{pos}).
 
-    - 'STATIC', users can specify the sampling space on each dimension,
+    - ``'STATIC'``, users can specify the sampling space on each dimension,
       in (x_min, y_min, z_min, x_max, y_max, z_max) order.
 
     Supported Platforms:
@@ -84,10 +84,10 @@ class StdPhysicalQuantity(IntEnum):
     Standard physical quantities fields that Maxwell equations concern about,
     material solving stage will deal with these standard physical fields.
 
-    - 0: Magnetic permeability `MU`.
-    - 1: Permittvity `EPSILON`.
-    - 2: Electrical conductivity `SIGMA`.
-    - 3: Dielectric loss `TAND`.
+    - ``0``: Magnetic permeability `MU`.
+    - ``1``: Permittvity `EPSILON`.
+    - ``2``: Electrical conductivity `SIGMA`.
+    - ``3``: Dielectric loss `TAND`.
 
     Supported Platforms:
         ``Ascend``
@@ -111,23 +111,23 @@ class PointCloudSamplingConfig:
     Sampling space config for PointCloud-Tensor generation.
 
     Args:
-        sampling_mode (int): Point sampling method. 0(UPPERBOUND) and 1(DIMENSIONS) are supported.
-        bbox_type (int): Bounding box type for sampling space, only supports cube-shape sampling space. 0(STATIC) and
-            1(DYNAMIC) are supported.
-        mode_args (Union[int, tuple]): sampling upperbound number for SamplingMode. Default: None
+        sampling_mode (int): Point sampling method. ``0(UPPERBOUND)`` and ``1(DIMENSIONS)`` are supported.
+        bbox_type (int): Bounding box type for sampling space, only supports cube-shape sampling space.
+            ``0(STATIC)`` and ``1(DYNAMIC)`` are supported.
+        mode_args (Union[int, tuple]): sampling upperbound number for SamplingMode. Default: ``None``.
         bbox_args (tuple): bounding_box arguments for sampling, has different definition in different bbox_type.
-            Default: None.
+            Default: ``None``.
 
     Raises:
         TypeError: if `sampling_mode` is not an int.
         TypeError: if `bbox_type` is not an int.
         TypeError: if `mode_args` is not one of int or tuple.
         TypeError: if `bbox_args` is not a tuple.
-        TypeError:  if `sampling_mode` is 0 but `mode_args` is not int.
-        TypeError:  if `sampling_mode` is 1 but `mode_args` is not a tuple of three integers.
-        ValueError:  if `sampling_mode` is 1 but the length of `mode_args` is not three.
-        ValueError:  if `sampling_mode` not in [0(UPPERBOUND), 1(DIMENSIONS)].
-        ValueError:  if `bbox_type` not in [0(STATIC), 1(DYNAMIC)].
+        TypeError:  if `sampling_mode` is ``0`` but `mode_args` is not int.
+        TypeError:  if `sampling_mode` is ``1`` but `mode_args` is not a tuple of three integers.
+        ValueError:  if `sampling_mode` is ``1`` but the length of `mode_args` is not three.
+        ValueError:  if `sampling_mode` not ``0(UPPERBOUND)`` or ``1(DIMENSIONS)``.
+        ValueError:  if `bbox_type` not ``0(STATIC)`` or ``1(DYNAMIC)``.
 
     Supported Platforms:
         ``Ascend``
@@ -173,8 +173,8 @@ class MaterialConfig:
             material solving stage will deal with these standard physical fields. The key of physical_field dict
             is physical quantity name, the value is default value for this physical quantity.
         customize_physical_field (dict, optional): User can specify physical quantities fields according to their
-            demand, similarly, material solving stage will take care of them. Default: None.
-        remove_vacuum (bool, optional): Remove sub-solid whose material property is vacuum. Default: True.
+            demand, similarly, material solving stage will take care of them. Default: ``None``.
+        remove_vacuum (bool, optional): Remove sub-solid whose material property is vacuum. Default: ``True``.
 
     Raises:
         TypeError: if `json_file` is not a str.
@@ -258,8 +258,9 @@ class PointCloud:
         sampling_config (PointCloudSamplingConfig): Sampling space config for PointCloud-Tensor generation.
         material_config (MaterialConfig): Material solution config for PointCloud-Tensor generation, which
             influence the material solving stage.
-        num_parallel_workers (int, option): Parallel workers number, this arguments can take effect on all computing
-         stages, including reading model, section building, space solving and material solving. Default: os.cpu_count().
+        num_parallel_workers (int, optional): Parallel workers number, this arguments can take effect on all computing
+            stages, including reading model, section building, space solving and material solving.
+            Default: ``os.cpu_count()``.
 
     Raises:
         TypeError: if `data_dir` is not a str.

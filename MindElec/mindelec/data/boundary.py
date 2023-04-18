@@ -33,8 +33,8 @@ class Boundary(Data):
         geometry (Geometry): specifies geometry information of boundary condition and initial condition.
 
     Raises:
-        ValueError: if sampling_config of geometry is None.
-        TypeError: if geometry is not an instance of Geometry.
+        ValueError: if sampling_config of geometry is ``None``.
+        TypeError: if `geometry` is not an instance of Geometry.
 
     Supported Platforms:
         ``Ascend``
@@ -119,7 +119,7 @@ class BoundaryBC(Boundary):
         geometry (Geometry): specifies geometry information of boundary condition.
 
     Raises:
-        ValueError: if sampling_config.bc of geometry is None.
+        ValueError: if sampling_config.bc of geometry is ``None``.
 
     Supported Platforms:
         ``Ascend``
@@ -155,7 +155,7 @@ class BoundaryIC(Boundary):
         geometry (Geometry): specifies geometry information of initial condition.
 
     Raises:
-        ValueError: if sampling_config.ic of geometry is None.
+        ValueError: if sampling_config.ic of geometry is ``None``.
 
     Supported Platforms:
         ``Ascend``

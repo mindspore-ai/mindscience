@@ -79,11 +79,11 @@ def derive_union_boundary(shapes, boundary_type):
 
     Args:
         shapes (list): A list of shape objects.
-        boundary_type (str): this can be 'uniform' or 'unweighted'.
+        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``.
 
-            - 'uniform', the expected number of samples in each boundary is
+            - ``'uniform'``, the expected number of samples in each boundary is
               proportional to the area (length) of the boundary.
-            - 'unweighted', the expected number of samples in each boundary is
+            - ``'unweighted'``, the expected number of samples in each boundary is
               the same.
 
     Returns:

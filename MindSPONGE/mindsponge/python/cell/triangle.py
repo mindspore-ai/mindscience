@@ -43,15 +43,15 @@ class TriangleAttention(nn.Cell):
         key_dim (int):          The dimension of the hidden layer.
         gating (bool):          Indicator of if the attention is gated.
         layer_norm_dim (int):   The dimension of the layer_norm.
-        batch_size (int):       The batch size of triangle attention, default: "None".
-        slice_num (int):        The number of slices to be made to reduce memory, default: 0.
+        batch_size (int):       The batch size of triangle attention, default: ``None``.
+        slice_num (int):        The number of slices to be made to reduce memory, default: ``0``.
 
     Inputs:
         - **pair_act** (Tensor) - Tensor of pair_act. shape :math:`(N_{res}, N_{res}, layer\_norm\_dim)`
         - **pair_mask** (Tensor) - The mask for TriangleAttention matrix with shape. shape :math:`(N_{res}, N_{res})`.
         - **index** (Tensor) - The index of while loop, only used in case of while control flow, Default: "None".
         - **mask** (Tensor) - The mask of pair_act when to do layernorm with shape :math:`(N_{res}, N_{res})`,
-          Default: "None".
+          Default: ``None``.
 
     Outputs:
         Tensor, the float tensor of the pair_act of the layer with shape :math:`(N_{res}, N_{res}, layer\_norm\_dim)`.
@@ -150,10 +150,10 @@ class TriangleMultiplication(nn.Cell):
     Args:
         num_intermediate_channel (float):   The number of intermediate channel.
         equation (str):                     The equation used in triangle multiplication layer. edge update forms
-                                            corresponding to 'incoming' and 'outgoing',
+                                            corresponding to ``'incoming'`` and ``'outgoing'``,
                                             :math:`(ikc,jkc->ijc, kjc,kic->ijc)`.
         layer_norm_dim (int):               The last dimension length of the layer norm.
-        batch_size (int):                   The batch size of parameters in triangle multiplication. Default: None.
+        batch_size (int):                   The batch size of parameters in triangle multiplication. Default: ``None``.
 
     Inputs:
         - **pair_act** (Tensor) - Tensor of pair_act. shape :math:`(N{res}, N{res}, layer\_norm\_dim)`.
@@ -382,9 +382,9 @@ class OuterProductMean(nn.Cell):
         act_dim (int):              The last dimension size of the input act.
         num_output_channel (int):   The last dimension size of output.
         batch_size(int):            The batch size of parameters in OuterProductMean,
-                                    used in while control flow. Default: "None".
+                                    used in while control flow. Default: ``None``.
         slice_num (int):            The slice num used in OuterProductMean layer
-                                    when the memory is overflow. Default: 0.
+                                    when the memory is overflow. Default: ``0``.
 
     Inputs:
         - **act** (Tensor) - The input tensor with shape :math:`(dim_1, dim_2, act\_dim)`.
@@ -392,7 +392,7 @@ class OuterProductMean(nn.Cell):
         - **mask_norm** (Tensor) - Squared L2-norm along the first dimension of **mask**,
           pre-computed to avoid re-computing, its shape is :math:`(dim_2, dim_2, 1)`.
         - **index** (Tensor) - The index of while loop, only used in case of while control
-          flow. Default: "None".
+          flow. Default:"``None``.
 
     Outputs:
         Tensor, the float tensor of the output of OuterProductMean layer with

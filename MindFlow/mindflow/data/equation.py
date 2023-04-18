@@ -37,9 +37,9 @@ class Equation(Data):
         geometry (Geometry): specifies geometry information of equation domain.
 
     Raises:
-        TypeError: if geometry is not instance of class Geometry.
-        ValueError: if sampling_config of geometry is None.
-        KeyError: if sampling_config.domain of geometry is None.
+        TypeError: if `geometry` is not instance of class Geometry.
+        ValueError: if sampling_config of `geometry` is ``None``.
+        KeyError: if sampling_config.domain of `geometry` is ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

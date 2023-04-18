@@ -162,8 +162,8 @@ class CSGDifference(CSG):
 
     Args:
         geom1 (Geometry): a geometry object.
-        geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        geom2 (Geometry): a geometry object to be subtracted from `geom1`.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend``
@@ -285,8 +285,8 @@ class CSGUnion(CSG):
 
     Args:
         geom1 (Geometry): a geometry object.
-        geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        geom2 (Geometry): a geometry object to be subtracted from `geom1`.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend``
@@ -403,8 +403,8 @@ class CSGIntersection(CSG):
 
     Args:
         geom1 (Geometry): a geometry object.
-        geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        geom2 (Geometry): a geometry object to be subtracted from `geom1`.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend``
@@ -523,8 +523,8 @@ class CSGXOR(CSG):
 
     Args:
         geom1 (Geometry): a geometry object.
-        geom2 (Geometry): a geometry object to be subtracted from geom1.
-        sampling_config (SamplingConfig): sampling configuration. Default: None.
+        geom2 (Geometry): a geometry object to be subtracted from `geom1`.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend``

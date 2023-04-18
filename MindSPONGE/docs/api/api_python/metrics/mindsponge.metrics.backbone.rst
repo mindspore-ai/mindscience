@@ -13,9 +13,9 @@ mindsponge.metrics.backbone
         - **backbone_affine_mask** (Tensor) - 骨架局部坐标系的mask，shape为 :math:`(N_{res},)` 。
         - **fape_loss_unit_distance** (float) - 单位距离，用于缩放距离的差，常量。
         - **fape_clamp_distance** (float) - 距离误差的截断点，超过该距离时梯度不再考虑，常量。
-        - **use_clamped_fape** (float) - 是否截断截断距离误差，0或者1，0代表不截断。
+        - **use_clamped_fape** (float) - 是否截断截断距离误差， ``0`` 或者 ``1``， ``0`` 代表不截断。
 
     返回：
         - **fape** (list) - Tensor。计算所得Structure模块最后一次迭代输出的结构的全原子点位置误差，如果use_clamped_fape为1，则计算过程中过大的误差会被截断。shape为 :math:`()` 。
         - **loss** (list) - Tensor。计算所得Structure模块所有迭代输出的结构的全原子点位置误差的均值，如果use_clamped_fape为1，则计算过程中过大的误差会被截断。shape为 :math:`()` 。
-        - **no_clamp** (list) - Tensor。。计算所得Structure模块最后一次迭代输出的结构的全原子点位置误差，没有截断。shape为 :math:`()` 。
+        - **no_clamp** (list) - Tensor。计算所得Structure模块最后一次迭代输出的结构的全原子点位置误差，没有截断。shape为 :math:`()` 。

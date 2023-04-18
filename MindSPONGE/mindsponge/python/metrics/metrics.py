@@ -52,7 +52,7 @@ def get_metrics(metrics: Union[dict, set]) -> dict:
         dict, the key is metric name, the value is class instance of metric method.
 
     Raises:
-        TypeError: If the type of argument 'metrics' is not None, dict or set.
+        TypeError: If the type of argument `metrics` is not ``None``, dict or set.
     """
     if metrics is None:
         return metrics
@@ -98,7 +98,7 @@ class Metric(_Metric):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
             bias (Tensor):          Tensor of shape (B, 1). Data type is float.
                                     Total bias energy.
             energy (Tensor):        Tensor of shape (B, 1). Data type is float.
@@ -166,17 +166,17 @@ class MetricCV(Metric):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
             energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-                                    Total potential energy of the simulation system. Default: None
+                                    Total potential energy of the simulation system. Default: ``None``.
             force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-                                    Force on each atoms of the simulation system. Default: None
+                                    Force on each atoms of the simulation system. Default: ``None``.
             potentials (Tensor):    Tensor of shape (B, U). Data type is float.
-                                    Original potential energies from force field. Default: None
+                                    Original potential energies from force field. Default: ``None``.
             total_bias (Tensor):    Tensor of shape (B, 1). Data type is float.
-                                    Total bias energy for reweighting. Default: None
-            biases (Tensor):        Tensor of shape (B, V). Data type is float
-                                    Original bias potential energies from bias functions. Default: None
+                                    Total bias energy for reweighting. Default: ``None``.
+            biases (Tensor):        Tensor of shape (B, V). Data type is float.
+                                    Original bias potential energies from bias functions. Default: ``None``.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers in simulation.
@@ -228,17 +228,17 @@ class Average(Metric):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
             energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-                                    Total potential energy of the simulation system. Default: None
+                                    Total potential energy of the simulation system. Default: ``None``.
             force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-                                    Force on each atoms of the simulation system. Default: None
+                                    Force on each atoms of the simulation system. Default: ``None``.
             potentials (Tensor):    Tensor of shape (B, U). Data type is float.
-                                    Original potential energies from force field. Default: None
+                                    Original potential energies from force field. Default: ``None``.
             total_bias (Tensor):    Tensor of shape (B, 1). Data type is float.
-                                    Total bias energy for reweighting. Default: None
-            biases (Tensor):        Tensor of shape (B, V). Data type is float
-                                    Original bias potential energies from bias functions. Default: None
+                                    Total bias energy for reweighting. Default: ``None``.
+            biases (Tensor):        Tensor of shape (B, V). Data type is float.
+                                    Original bias potential energies from bias functions. Default: ``None``.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers in simulation.
@@ -278,8 +278,8 @@ class BalancedMSE(nn.Cell):
         first_break (float):    The begin value of bin.
         last_break (float):     The end value of bin.
         num_bins (int):         The bin numbers.
-        beta (float):           The moving average coefficient, default: 0.99.
-        reducer_flag (bool):    Whether to aggregate the label values of multiple devices, default: "False".
+        beta (float):           The moving average coefficient, default: ``0.99``.
+        reducer_flag (bool):    Whether to aggregate the label values of multiple devices, default: ``False``.
 
     Inputs:
         - **prediction** (Tensor) - Predict values, shape is :math:`(batch\_size, ndim)`.
@@ -384,12 +384,12 @@ class MultiClassFocal(nn.Cell):
 
     Args:
         num_class (int):        The class numbers.
-        beta (float):           The moving average coefficient, default: 0.99.
-        gamma (float):          The hyperparameters, default: 2.0.
-        e (float):              The proportion of focal loss, default: 0.1.
-        neighbors(int):         The neighbors to be mask in the target, default 2.
-        not_focal (bool):       Whether focal loss, default: "False".
-        reducer_flag (bool):    Whether to aggregate the label values of multiple devices, default: "False".
+        beta (float):           The moving average coefficient, default: ``0.99``.
+        gamma (float):          The hyperparameters, default: ``2.0``.
+        e (float):              The proportion of focal loss, default: ``0.1``.
+        neighbors(int):         The neighbors to be mask in the target, default ``2``.
+        not_focal (bool):       Whether focal loss, default: ``False``.
+        reducer_flag (bool):    Whether to aggregate the label values of multiple devices, default: ``False``.
 
     Inputs:
         - **prediction** (Tensor) - Predict values, shape is :math:`(batch\_size, ndim)`.
@@ -497,10 +497,10 @@ class BinaryFocal(nn.Cell):
         \log \left(p_{\mathrm{t}}\right)
 
     Args:
-        alpha (float):            The weight of cross entropy, default: 0.25.
-        gamma (float):          The hyperparameters, modulating loss from hard to easy, default: 2.0.
-        feed_in (bool):         Whether to convert prediction, default: "False".
-        not_focal (bool):       Whether focal loss, default: "False".
+        alpha (float):            The weight of cross entropy, default: ``0.25``.
+        gamma (float):          The hyperparameters, modulating loss from hard to easy, default: ``2.0``.
+        feed_in (bool):         Whether to convert prediction, default: ``False``.
+        not_focal (bool):       Whether focal loss, default: ``False``.
 
     Inputs:
         - **prediction** (Tensor) - Predict values, shape is :math:`(batch\_size, ndim)`.

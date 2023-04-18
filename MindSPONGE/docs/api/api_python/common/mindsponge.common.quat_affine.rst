@@ -9,9 +9,9 @@ mindsponge.common.quat_affine
         - **quaternion** (tensor) - shape为 :math:`(N_{res}, 4)` 。
         - **translation** (tensor) - shape为 :math:`(N_{res}, 3)` 。
         - **rotation** (tensor) - 旋转矩阵，shape为 :math:`(N_{res}, 9)` 。
-        - **normalize** (bool) - 是否归一化，默认值：True。
-        - **unstack_inputs** (bool) - 输入为向量（True）还是张量（False），默认值：False。
-        - **use_numpy** (bool) - 是否使用numpy计算，默认值：False。
+        - **normalize** (bool) - 是否归一化，默认值： ``True``。
+        - **unstack_inputs** (bool) - 输入为向量（``True``）还是张量（``False``），默认值： ``False``。
+        - **use_numpy** (bool) - 是否使用numpy计算，默认值： ``False``。
 
     返回：
         返回仿射变换后结果。

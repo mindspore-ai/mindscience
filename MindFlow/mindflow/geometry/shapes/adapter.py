@@ -16,8 +16,8 @@ class Geometry(geometry_base.Geometry):
             minimal coordinate of the geometry.
         coord_max (Union[int, float, list[int, float], tuple[int, float], numpy.ndarray]):
             maximal coordinate of the geometry.
-        dtype (numpy.dtype): Data type of sampled point data type. Default: numpy.float32.
-        sampling_config (SamplingConfig): sampling configuration. Default: None
+        dtype (numpy.dtype): Data type of sampled point data type. Default: ``numpy.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

@@ -91,7 +91,7 @@ class RunTime:
 
     def time_loop(self, pri_var):
         """
-        Weather to continue the simulation. When current time reaches end time or NAN value detected,
+        Weather to continue the simulation. When current time reaches end time or ``NAN`` value detected,
         return False.
 
         Args:
@@ -101,7 +101,7 @@ class RunTime:
             Bool. Weather to continue the simulation.
 
         Raises:
-            ValueError: If pri_var has NAN values.
+            ValueError: If `pri_var` has ``NAN`` values.
         """
         if mnp.isnan(pri_var).sum() > 0:
             raise ValueError('Nan value detected!')
