@@ -18,6 +18,7 @@ import numpy as np
 
 from mindspore import Tensor, nn, ops
 import mindspore.common.dtype as mstype
+import mindspore.ops.operations as P
 
 
 class ConvolutionalLayer(nn.Cell):
@@ -309,7 +310,8 @@ class EhdnnNet(nn.Cell):
         self.build_block = nn.SequentialCell(layers)
 
     def construct(self, x):
-        return self.build_block(x)
+        output = self.build_block(x)
+        return P.Cast()(output, mstype.float32)
 
 
 class HybridLoss(nn.Cell):
