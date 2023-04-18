@@ -32,7 +32,7 @@ from mindsponge import SimulationCell
 from mindsponge.callback import RunInfo
 from mindsponge.optimizer import SteepestDescent
 from mindsponge.potential.bias import OscillatorBias
-from mindsponge.system.modeling.pdb_generator import gen_pdb
+from mindsponge.system.modelling.pdb_generator import gen_pdb
 
 from mindsponge.common.utils import get_pdb_info
 from mindsponge.metrics.structure_violations import get_structural_violations
@@ -104,7 +104,7 @@ def optimize_strategy(system, gds, loops, ads, adm, nonh_mask, mode=1):
     run_info = RunInfo(1)
     md.run(gds, callbacks=[run_info])
 
-    if msnp.isnan(md.energy().sum()):
+    if msnp.isnan(md.calc_energy().sum()):
         return 0
 
     for _ in range(loops):
@@ -121,10 +121,10 @@ def optimize_strategy(system, gds, loops, ads, adm, nonh_mask, mode=1):
                 for i, param in enumerate(opt.trainable_params()):
                     print(i, param.name, param.shape)
                 md = Sponge(simulation_network, optimizer=opt)
-                print(md.energy())
+                print(md.calc_energy())
                 run_info = RunInfo(1)
                 md.run(ads, callbacks=[run_info])
-                if msnp.isnan(md.energy().sum()):
+                if msnp.isnan(md.calc_energy().sum()):
                     return 0
 
         if mode in (1, 3):
@@ -136,10 +136,10 @@ def optimize_strategy(system, gds, loops, ads, adm, nonh_mask, mode=1):
                 for i, param in enumerate(opt.trainable_params()):
                     print(i, param.name, param.shape)
                 md = Sponge(simulation_network, optimizer=opt)
-                print(md.energy())
+                print(md.calc_energy())
                 run_info = RunInfo(1)
                 md.run(ads, callbacks=[run_info])
-                if msnp.isnan(md.energy().sum()):
+                if msnp.isnan(md.calc_energy().sum()):
                     return 0
 
     return system
@@ -149,7 +149,7 @@ def main():
     seed = 2333
     ms.set_seed(seed)
     set_global_units("A", "kcal/mol")
-    system = Protein(pdb=pdb_name)
+    system = Protein(pdb=pdb_name, rebuild_hydrogen=True)
     nonh_mask = Tensor(
         np.where(system.atomic_number[0] > 1, 0, 1)[None, :, None], ms.int32
     )
