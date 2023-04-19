@@ -33,24 +33,28 @@ from .energy import WithEnergyCell
 
 
 class SimulationCell(WithEnergyCell):
-    r"""Cell for simulation, equivalent to WithEnergyCell.
+    r"""Cell for simulation, equivalent to `WithEnergyCell`.
+        NOTE: This Cell will be removed a future release, Please use `WithEnergyCell` instead.
 
     Args:
 
         system (Molecule):              Simulation system.
 
-        potential (PotentialCell):      Potential energy.
+        potential (PotentialCell):      Potential energy function cell.
 
-        cutoff (float):                 Cutoff distance. Defulat: None
+        bias (Union[Bias, List[Bias]]): Bias potential function cell: Default: None
+
+        cutoff (float):                 Cut-off distance for neighbour list. If None is given, it will be assigned
+                                        as the cutoff value of the of potential energy.
+                                        Defulat: None
 
         neighbour_list (NeighbourList): Neighbour list. Default: None
 
         wrapper (EnergyWrapper):        Network to wrap and process potential and bias.
                                         Default: None
 
-        bias (Bias):                    Bias potential: Default: None
-
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """

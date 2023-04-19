@@ -107,12 +107,12 @@ class H5MD:
         self.h5md.attrs['version'] = [1, 1]
 
         self.h5md_author = self.h5md.create_group('author')
-        self.h5md_author.attrs['name'] = 'AIMM Group @ Shenzhen Bay Laboratory & Peking University'
+        self.h5md_author.attrs['name'] = 'Yi Isaac Yang'
         self.h5md_author.attrs['email'] = 'yangyi@szbl.ac.cn'
 
         self.h5md_creator = self.h5md.create_group('creator')
         self.h5md_creator.attrs['name'] = 'MindSPONGE'
-        self.h5md_creator.attrs['version'] = '0.5'
+        self.h5md_creator.attrs['version'] = '1.0'
 
         if length_unit is None:
             length_unit = system.length_unit

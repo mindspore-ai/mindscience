@@ -37,7 +37,6 @@ from . import FullConnectNeighbours, DistanceNeighbours, GridNeighbours
 from ..system import Molecule
 from ..function.functions import gather_vector, get_integer, get_ms_array
 from ..function.operations import GetVector
-from ..function.units import Units, GLOBAL_UNITS
 
 
 class NeighbourList(Cell):
@@ -75,8 +74,9 @@ class NeighbourList(Cell):
 
         use_grids (bool):       Whether to use grids to calculate the neighbour list. Default: None
 
-        length_unit (str):      Length unit. If None is given, it will be equal to the global length unit.
-                                Default: None
+        cast_fp16 (bool):       If this is set to `True`, the data will be cast to float16 before sort.
+                                For use with some devices that only support sorting of float16 data.
+                                Default: False
 
     Supported Platforms:
 
@@ -107,14 +107,10 @@ class NeighbourList(Cell):
                  cell_cap_scale: float = 1.25,
                  grid_num_scale: float = 2,
                  use_grids: bool = None,
-                 length_unit: str = None,
+                 cast_fp16: bool = False,
                  ):
 
         super().__init__()
-
-        if length_unit is None:
-            length_unit = GLOBAL_UNITS.length_unit
-        self.units = Units(length_unit)
 
         self.num_walker = system.num_walker
         self.coordinate = system.get_coordinate()
@@ -129,7 +125,6 @@ class NeighbourList(Cell):
         if exclude_index is not None:
             self.exclude_index = Tensor(exclude_index, ms.int32)
 
-        self.units = system.units
         self.use_grids = use_grids
 
         self._pace = get_integer(pace)
@@ -137,7 +132,7 @@ class NeighbourList(Cell):
             raise ValueError('pace cannot be less than 0!')
 
         if cutoff is None and self.pbc_box is not None:
-            cutoff = self.units.length(1, 'nm')
+            cutoff = system.units.length(1, 'nm')
 
         self.no_mask = False
         if cutoff is None:
@@ -188,7 +183,8 @@ class NeighbourList(Cell):
                     exclude_index=self.exclude_index,
                     use_pbc=use_pbc,
                     cutoff_scale=cutoff_scale,
-                    large_dis=self.large_dis
+                    large_dis=self.large_dis,
+                    cast_fp16=cast_fp16,
                 )
 
                 if num_neighbours is None:
@@ -212,7 +208,7 @@ class NeighbourList(Cell):
     def pace(self) -> int:
         r"""Update frequency for neighbour list
 
-        Args:
+        return:
             int, update pace
 
         """

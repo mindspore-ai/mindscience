@@ -28,19 +28,23 @@ from mindspore import Tensor
 from mindspore.ops import functional as F
 
 from .atoms import AtomsBase
-from ...system import DIMENSION
-from ...function import all_none, all_not_none
+from ...function import all_none, all_not_none, get_integer
 
 
 class AllAtoms(AtomsBase):
-    r"""Center of specific atoms
+    r"""All atoms of the simulation system.
 
     Args:
 
-        system (Molecule):  Simulation system.
+        system (Molecule):  Simulation system. Default: None
+
+        num_atoms (int):    Number of atoms. The number of atoms must be given when `system` is None.
+                            Default: None
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
                             Default: False
+
+        dimension (int):    Spatial dimension of the simulation system. Default: 3
 
         name (str):         Name of the Colvar. Default: 'all_atoms'
 
@@ -63,6 +67,7 @@ class AllAtoms(AtomsBase):
                  system=None,
                  num_atoms: int = None,
                  keep_in_box: bool = False,
+                 dimension: int = 3,
                  name: str = 'all_atoms',
                  ):
 
@@ -78,7 +83,7 @@ class AllAtoms(AtomsBase):
             raise ValueError('system and num_atoms cannot be both None!')
 
         if num_atoms is not None:
-            self._set_shape((num_atoms, DIMENSION))
+            self._set_shape((num_atoms, get_integer(dimension)))
         if system is not None:
             self._set_shape(system.shape)
 

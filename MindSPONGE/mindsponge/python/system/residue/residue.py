@@ -139,7 +139,7 @@ class Residue:
             template = template.get(self._name)
 
             atom_mass = np.array(template.get('atom_mass'), np.float32)
-            atomic_number = np.array(template.get('atom_mass'), np.int32)
+            atomic_number = np.array(template.get('atomic_number'), np.int32)
 
             atom_type = template.get('atom_type')
             if atom_type is not None:

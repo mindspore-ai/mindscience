@@ -25,10 +25,11 @@
 from typing import Union, List
 import numpy as np
 from numpy import ndarray
+from scipy.special import erfcinv
 
 import mindspore as ms
 import mindspore.numpy as msnp
-from mindspore import Tensor, Parameter
+from mindspore import Tensor
 from mindspore import ops
 from mindspore.nn import Cell
 from mindspore.ops import functional as F
@@ -37,7 +38,8 @@ from ...colvar import Distance
 from .energy import NonbondEnergy
 from ...function import functions as func
 from ...function import gather_value, get_ms_array
-from ...function.units import Units
+from ...function.units import Units, GLOBAL_UNITS, Length
+from ...system.molecule import Molecule
 
 
 class CoulombEnergy(NonbondEnergy):
@@ -51,33 +53,35 @@ class CoulombEnergy(NonbondEnergy):
     Args:
 
         atom_charge (Union[Tensor, ndarray, List[float]]):
-                            Array of atomic charge. The shape of array is `(B, A)`, and the data type is float.
+            Array of atomic charge. The shape of array is `(B, A)`, and the data type is float.
 
-        parameters (dict):  Force field parameters. Default: None
+        cutoff (Union[float, Length, Tensor]):  Cut-off distance. Default: None
 
-        cutoff (float):     Cut-off distance. Default: None
-
-        pbc_box (Tensor):   Tensor of PBC box. Default: None
-
-        use_pme (bool):     Whether to use particle mesh ewald (PME) method to calculate the coulomb interaction
-                            of the system in PBC box. If `False` is given, the damped shifted force (DSF) method
-                            will be used for PBC. Default: False
-
-        alpha (float):      Parameter of Gaussian charge :math:`\alpha` for DSF and PME coulomb interaction.
-                            Default: 0.25 for DSF and 0.276501 for PME
-
-        nfft (Tensor):      Parameter of FFT, required by PME. Default: None
+        pbc_box (Union[Tensor, ndarray, List[float]]):
+            Array of PBC box with shape `(B, A, D)`, and the data type is float. Default: None
 
         exclude_index (Union[Tensor, ndarray, List[int]]):
-                            Tensor of the exclude index, required by PME. Default: None
+            Tensor of the exclude index, required by PME. Default: None
 
-        length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
-                            Default: 'nm'
+        damp_dis (Union[float, Length, Tensor]):
+            A distance :math:`l_{\alpha}` to calculate the damping factor :math:`\alpha = l_{\alpha}^-1`
+            for damped shifted force (DSF) method. Default: Length(0.48, 'nm')
 
-        energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
-                            Default: 'kj/mol'
+        pme_accuracy (float): Accuracy for particle mesh ewald (PME) method.
 
-        name (str):         Name of the energy. Default: 'coulomb'
+        use_pme (bool): Whether to use particle mesh ewald (PME) method to calculate the coulomb interaction
+            of the system in PBC box. If `False` is given, the damped shifted force (DSF) method
+            will be used for PBC. Default: True
+
+        parameters (dict): Force field parameters. Default: None
+
+        length_unit (str): Length unit. If None is given, it will be assigned with the global length unit.
+            Default: 'nm'
+
+        energy_unit (str): Energy unit. If None is given, it will be assigned with the global energy unit.
+            Default: 'kj/mol'
+
+        name (str): Name of the energy. Default: 'coulomb'
 
     Supported Platforms:
 
@@ -86,14 +90,15 @@ class CoulombEnergy(NonbondEnergy):
     """
 
     def __init__(self,
+                 system: Molecule = None,
                  atom_charge: Union[Tensor, ndarray, List[float]] = None,
-                 parameters: dict = None,
-                 cutoff: float = None,
-                 pbc_box: Tensor = None,
-                 use_pme: bool = False,
-                 alpha: float = None,
-                 nfft: Tensor = None,
+                 cutoff: Union[float, Length, Tensor] = None,
+                 pbc_box: Union[Tensor, ndarray, List[float]] = None,
                  exclude_index: Union[Tensor, ndarray, List[int]] = None,
+                 damp_dis: Union[float, Length, Tensor] = Length(0.48, 'nm'),
+                 pme_accuracy: float = 1e-4,
+                 use_pme: bool = True,
+                 parameters: dict = None,
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
                  name: str = 'coulomb',
@@ -112,42 +117,43 @@ class CoulombEnergy(NonbondEnergy):
             energy_unit = parameters.get('energy_unit')
             self.units.set_units(length_unit, energy_unit)
 
-        self.atom_charge = self.identity(atom_charge)
+        if system is None:
+            self.input_unit = self.units.length_unit
+        else:
+            self.input_unit = system.units.length_unit
+            if atom_charge is None:
+                atom_charge = system.atom_charge
+            if pbc_box is None and system.pbc_box is not None:
+                self._use_pbc = True
+                pbc_box = system.pbc_box * self.units.convert_length_from(system.units)
+                if cutoff is None:
+                    cutoff = self.units.length(1, 'nm')
+
+        if isinstance(cutoff, Length):
+            cutoff = cutoff(self.units)
+        self.cutoff = get_ms_array(cutoff, ms.float32)
+
+        self.atom_charge = atom_charge
         self.coulomb_const = Tensor(self.units.coulomb, ms.float32)
 
-        if nfft is None and pbc_box is not None:
-            nfft = pbc_box[0] * 10 * self.input_unit_scale // 4 * 4
+        self.damp_dis = damp_dis
 
         self.pme_coulomb = None
         self.dsf_coulomb = None
         self.use_pme = use_pme
-        if self._use_pbc:
-            if self.use_pme:
-                if alpha is None:
-                    alpha = 0.276501
-                self.pme_coulomb = ParticleMeshEwaldCoulomb(
-                    self.cutoff, alpha, nfft, exclude_index, self.units)
-            else:
-                if alpha is None:
-                    alpha = 0.25
-                self.dsf_coulomb = DampedShiftedForceCoulomb(self.cutoff, alpha)
-
-    def set_cutoff(self, cutoff: float, unit: str = None):
-        """set cutoff distance"""
-        super().set_cutoff(cutoff, unit)
         if self.cutoff is not None:
-            if self.dsf_coulomb is not None:
-                self.dsf_coulomb.set_cutoff(self.cutoff)
-            if self.pme_coulomb is not None:
-                self.pme_coulomb.set_cutoff(self.cutoff)
-        return self
+            if self._use_pbc and self.use_pme:
+                self.pme_coulomb = ParticleMeshEwaldCoulomb(cutoff=self.cutoff,
+                                                            pbc_box=pbc_box,
+                                                            exclude_index=exclude_index,
+                                                            accuracy=pme_accuracy,
+                                                            length_unit=self.units.length_unit)
+            else:
+                self.dsf_coulomb = DampedShiftedForceCoulomb(self.cutoff, damp_dis=self.damp_dis,
+                                                             length_unit=self.units.length_unit)
 
-    def coulomb_interaction(self,
-                            qi: Tensor,
-                            qj: Tensor,
-                            inv_dis: Tensor,
-                            mask: Tensor = None
-                            ):
+    @staticmethod
+    def coulomb_interaction(qi: Tensor, qj: Tensor, inv_dis: Tensor, mask: Tensor = None) -> Tensor:
         """calculate Coulomb interaction using Coulomb's law"""
 
         # (B,A,N) = (B,A,1) * (B,A,N)
@@ -166,6 +172,21 @@ class CoulombEnergy(NonbondEnergy):
         energy = func.keepdims_sum(energy, 1) * 0.5
 
         return energy
+
+    def set_cutoff(self, cutoff: Union[float, Length, Tensor], unit: str = None):
+        """set cutoff distance"""
+        super().set_cutoff(cutoff, unit)
+        if self.cutoff is not None:
+            if self._use_pbc and self.use_pme:
+                self.pme_coulomb.set_cutoff(self.cutoff)
+            else:
+                if self.dsf_coulomb is None:
+                    self.dsf_coulomb = DampedShiftedForceCoulomb(self.cutoff,
+                                                                 damp_dis=self.damp_dis,
+                                                                 length_unit=self.units.length_unit)
+                else:
+                    self.dsf_coulomb.set_cutoff(self.cutoff)
+        return self
 
     def construct(self,
                   coordinate: Tensor,
@@ -201,20 +222,23 @@ class CoulombEnergy(NonbondEnergy):
 
         """
 
-        inv_neigh_dis = msnp.reciprocal(neighbour_distance * self.input_unit_scale)
+        neighbour_distance *= self.input_unit_scale
+        inv_neigh_dis = msnp.reciprocal(neighbour_distance)
         if neighbour_mask is not None:
-            inv_neigh_dis = msnp.where(neighbour_mask, inv_neigh_dis, inv_neigh_dis)
+            inv_neigh_dis = msnp.where(neighbour_mask, inv_neigh_dis, 0)
 
+        atom_charge = self.identity(self.atom_charge)
         # (B,A,1)
-        qi = F.expand_dims(self.atom_charge, -1)
+        qi = F.expand_dims(atom_charge, -1)
         # (B,A,N)
-        qj = gather_value(self.atom_charge, neighbour_index)
+        qj = gather_value(atom_charge, neighbour_index)
 
         if self.cutoff is None:
             energy = self.coulomb_interaction(qi, qj, inv_neigh_dis, neighbour_mask)
         else:
-            neighbour_distance *= self.input_unit_scale
-            if self.use_pme:
+            if pbc_box is not None and self.use_pme:
+                coordinate *= self.input_unit_scale
+                pbc_box *= self.input_unit_scale
                 energy = self.pme_coulomb(coordinate,
                                           qi, qj, neighbour_distance,
                                           inv_neigh_dis, neighbour_mask,
@@ -229,39 +253,66 @@ class CoulombEnergy(NonbondEnergy):
 class DampedShiftedForceCoulomb(Cell):
     r"""Damped shifted force coulomb potential
 
+    Reference:
+
+        Mei, H.; Liu, Q.; Liu, L.; Lai, X.; Li, J.
+        An improved charge transfer ionic-embedded atom method potential for aluminum/alumina
+        interface system based on damped shifted force method [J].
+        Computational Materials Science, 2016, 115: 60-71.
+
     Args:
 
-        cutoff (float):         Cutoff distance. Default: None
+        cutoff (Union[float, Length, Tensor]): Cutoff distance.
 
-        alpha (float):          Alpha. Default: 0.25
+        damp_dis (Union[float, Length, Tensor]):
+            A distance :math:`l_{\alpha}` to calculate the damping factor :math:`\alpha = l_{\alpha}^-1`.
+            Default: Length(0.48, 'nm')
 
+        length_unit (str): Length unit. If None is given, it will be assigned with the global length unit.
+            Default: 'nm'
     """
 
     def __init__(self,
-                 cutoff: float = None,
-                 alpha: float = 0.25,
+                 cutoff: Union[float, Length, Tensor] = Length(1, 'nm'),
+                 damp_dis: Union[float, Length, Tensor] = Length(0.48, 'nm'),
+                 length_unit: str = 'nm',
                  ):
 
         super().__init__()
 
-        self.alpha = Parameter(get_ms_array(alpha, ms.float32), name='alpha', requires_grad=False)
+        if length_unit is None:
+            length_unit = GLOBAL_UNITS.length_unit
+        self.units = Units(length_unit)
+
+        if isinstance(cutoff, Length):
+            cutoff = cutoff(self.units)
+        self.cutoff = get_ms_array(cutoff, ms.float32)
+        self.inv_cutoff = msnp.reciprocal(self.cutoff)
+
+        if isinstance(damp_dis, Length):
+            damp_dis = damp_dis(self.units)
+
+        self.alpha = msnp.reciprocal(damp_dis, ms.float32)
 
         self.erfc = ops.Erfc()
-        self.f_shift = None
-        self.e_shift = None
-        if cutoff is not None:
-            self.set_cutoff(cutoff)
+        self.dsf_scale = None
+        self.dsf_shift = None
+        self.dsf_self = None
+
+        self._build_dsf()
+
+    def set_alpha(self, alpha: float):
+        """set damping parameter `\alpha`"""
+        self.alpha = get_ms_array(alpha, ms.float32)
+        self._build_dsf()
+        return self
 
     def set_cutoff(self, cutoff: Tensor):
         """set cutoff distance"""
-        self.cutoff = Tensor(cutoff, ms.float32)
-        cutoff2 = F.square(self.cutoff)
-        erfcc = self.erfc(self.alpha * self.cutoff)
-        erfcd = msnp.exp(-F.square(self.alpha) * cutoff2)
-
-        self.f_shift = -(erfcc / cutoff2 + 2 / msnp.sqrt(msnp.pi)
-                         * self.alpha * erfcd / self.cutoff)
-        self.e_shift = erfcc / self.cutoff - self.f_shift * self.cutoff
+        self.cutoff = get_ms_array(cutoff, ms.float32)
+        self.inv_cutoff = msnp.reciprocal(self.cutoff)
+        self._build_dsf()
+        return self
 
     def construct(self,
                   qi: Tensor,
@@ -300,22 +351,48 @@ class DampedShiftedForceCoulomb(Cell):
 
         # (B,A,N) = (B,A,1) * (B,A,N)
         qiqj = qi*qj
-        energy = qiqj * inv_dis * (self.erfc(self.alpha * dis) -
-                                   dis * self.e_shift - F.square(dis) * self.f_shift)
+
+        e_ij = qiqj * (self.erfc(self.alpha * dis) * inv_dis - self.dsf_shift +
+                       self.dsf_scale * (dis * self.inv_cutoff - 1))
 
         if mask is None:
             mask = dis < self.cutoff
         else:
             mask = F.logical_and(mask, dis < self.cutoff)
 
-        energy = F.select(mask, energy, F.zeros_like(energy))
+        e_ij = F.select(mask, e_ij, F.zeros_like(e_ij))
 
         # (B,A)
-        energy = F.reduce_sum(energy, -1)
+        e_ij = F.reduce_sum(e_ij, -1)
         # (B,1)
-        energy = func.keepdims_sum(energy, 1) * 0.5
+        e_ij = func.keepdims_sum(e_ij, 1)
+
+        # (B, 1) <- (B, A, 1)
+        sum_qi2 = F.reduce_sum(F.square(qi), -2)
+        # (B, 1)
+        e_ii = self.dsf_self * sum_qi2
+
+        energy = 0.5 * (e_ii + e_ij)
 
         return energy
+
+    def _build_dsf(self):
+        """build shifted constant"""
+        ac = self.alpha * self.cutoff
+        # erfc(\alpha R_c)
+        erfc_ac = self.erfc(ac)
+        # e^{-\alpha^2 R_c^2}
+        exp_ac2 = msnp.exp(-F.square(ac))
+        # \frac{\alpha}{\sqrt{\pi}}
+        a_pi = self.alpha / msnp.sqrt(msnp.pi)
+
+        # \frac{erfc(\alpha R_c)}{R_c}
+        self.dsf_shift = erfc_ac * self.inv_cutoff
+        # \frac{erfc(\alpha R_c)}{R_c} + \frac{2\alpha}{\sqrt{\pi}} e^{-\alpha^2 R_c^2}
+        self.dsf_scale = self.dsf_shift + 2 * a_pi * exp_ac2
+        # \frac{erfc(\alpha R_c)}{R_c} + \frac{\alpha}{\sqrt{\pi}} e^{-\alpha^2 R_c^2} +
+        #   \frac{\alpha}{\sqrt{\pi}}
+        self.dsf_self = self.dsf_shift + a_pi * (exp_ac2 + 1)
 
 #pylint: disable=unused-argument
 
@@ -353,36 +430,50 @@ class RFFT3D(Cell):
 class ParticleMeshEwaldCoulomb(Cell):
     r"""Particle mesh ewald algorithm for electronic interaction
 
+    Reference:
+
+        Essmann, U.; Perera, L.; Berkowitz, M. L.; Darden, T.; Lee, H.; Pedersen, L. G.
+        A Smooth Particle Mesh Ewald Method [J].
+        The Journal of Chemical Physics, 1995, 103(19): 8577-8593.
+
     Args:
 
-        atom_charge (Tensor):   Tensor of shape (B, A). Data type is float.
-                                Atom charge.
+        pbc_box (Union[Tensor, ndarray, List[float]]):
+            Array of PBC box with shape `(B, A, D)`, and the data type is float. Default: None
 
-        cutoff (float):         Cutoff distance. Default: None
+        cutoff (Union[float, Length, Tensor]): Cutoff distance. Default: Length(1, 'nm')
 
-        alpha (float):          The parameter of the Gaussian charge. Default: 0.275106
+        exclude_index (Union[Tensor, ndarray, List[int]]):
+            Array of indexes of atoms that should be excluded from neighbour list.
+            The shape of the tensor is `(B, A, Ex)`. The data type is int. Default: None
 
-        nfft (Tensor):          Tensor of FFT parameter. Default: None
+        accuracy (float): Accuracy for PME. Default: 1e-4
 
-        exclude_index (Tensor): Tensor of the exclude index. Default: None
-
-        units (Units):          Units of length and energy. Default: None
+        length_unit (str): Length unit. If None is given, it will be assigned with the global length unit.
+            Default: 'nm'
 
     """
 
     def __init__(self,
-                 cutoff: float = None,
-                 alpha: float = 0.275106,
-                 nfft: Tensor = None,
+                 pbc_box: Union[Tensor, ndarray, List[float]],
+                 cutoff: Union[float, Length, Tensor] = Length(1, 'nm'),
                  exclude_index: Tensor = None,
-                 units: Units = None):
+                 accuracy: float = 1e-4,
+                 length_unit: str = 'nm',
+                 ):
 
         super().__init__()
-        self.units = units
-        self.cutoff = cutoff
-        self.alpha = get_ms_array(alpha, ms.float32)
-        self.erfc = ops.Erfc()
-        self.input_unit_scale = 1
+
+        if length_unit is None:
+            length_unit = GLOBAL_UNITS.length_unit
+        self.units = Units(length_unit)
+
+        if isinstance(cutoff, Length):
+            cutoff = cutoff(self.units)
+        self.cutoff = get_ms_array(cutoff, ms.float32)
+
+        self.accuracy = accuracy
+        self.alpha = erfcinv(self.accuracy) / self.cutoff
 
         self.nfft = None
         self.fftx = None
@@ -396,6 +487,10 @@ class ParticleMeshEwaldCoulomb(Cell):
         self.rfft3d = None
         self.irfft3d = None
         self.cast = ops.Cast()
+        self.erfc = ops.Erfc()
+
+        pbc_box = get_ms_array(pbc_box, ms.float32)
+        nfft = pbc_box[0] * 10 // 4 * 4
         self.set_nfft(nfft)
 
         self.exclude_pairs = None
@@ -424,11 +519,6 @@ class ParticleMeshEwaldCoulomb(Cell):
         self.batch_constant = msnp.ones((self.exclude_index.shape[0], self.exclude_index.shape[1], 64, 1), ms.int32)
         self.batch_constant *= msnp.arange(0, self.exclude_index.shape[0]).reshape(-1, 1, 1, 1)
 
-        if units:
-            self.set_input_unit(units)
-        if alpha:
-            self.set_alpha(alpha)
-
         self.reduce_prod = ops.ReduceProd()
 
     @staticmethod
@@ -455,24 +545,16 @@ class ParticleMeshEwaldCoulomb(Cell):
         res = res / tempc2
         return abs(res) * abs(res)
 
-    def set_input_unit(self, units: Units):
-        """set the length unit for the input coordinates"""
-        if units is None:
-            self.input_unit_scale = 1
-        elif isinstance(units, Units):
-            self.input_unit_scale = Tensor(
-                self.units.convert_length_from(units), ms.float32)
-        else:
-            raise TypeError(f'Unsupported type: {type(units)}')
-        return self
-
     def set_cutoff(self, cutoff: Tensor):
         """set cutoff distance"""
         self.cutoff = get_ms_array(cutoff, ms.float32)
+        self.alpha = erfcinv(self.accuracy) / self.cutoff
+        return self
 
     def set_alpha(self, alpha: Tensor):
         """set the parameter beta"""
         self.alpha = get_ms_array(alpha, ms.float32)
+        return self
 
     def set_exclude_index(self, exclude_index: Union[Tensor, ndarray, List[int]] = None):
         """set exclude index"""
@@ -569,8 +651,7 @@ class ParticleMeshEwaldCoulomb(Cell):
         """Calculate the excluded correction energy term."""
         if self.exclude_index is not None:
             # (B,b)
-            dis = self.get_exclude_distance(
-                coordinate, pbc_box) * self.input_unit_scale
+            dis = self.get_exclude_distance(coordinate, pbc_box)
             # (B,A) <- (B,A,1)
             qi = F.reshape(qi, (qi.shape[0], -1))
             # (B,b,2) <- (B,A)

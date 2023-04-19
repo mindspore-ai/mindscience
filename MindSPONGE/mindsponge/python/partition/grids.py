@@ -35,7 +35,7 @@ from mindspore import Tensor, Parameter
 from mindspore import ops
 from mindspore.ops import functional as F
 
-from ..function.functions import get_integer, get_ms_array, coordinate_in_pbc
+from ..function.functions import get_integer, get_ms_array, coordinate_in_pbc, reduce_all
 
 
 class GridNeighbours(Cell):
@@ -128,13 +128,13 @@ class GridNeighbours(Cell):
 
         if pbc_box is None:
             self.use_pbc = False
-            # (B,1,D) <- (B,A,D)
+            # (B, 1, D) <- (B, A, D)
             rmax = msnp.max(coordinate, -2, keepdims=True)
             rmin = msnp.min(coordinate, -2, keepdims=True)
             center = msnp.mean(coordinate, -2, keepdims=True)
-            # (B,2,D)
+            # (B, 2, D)
             rhalf = msnp.concatenate((rmax-center, center-rmin))
-            # (B,D)
+            # (B, D)
             rhalf = msnp.max(rhalf, -2)
             # (D)
             rhalf = msnp.max(rhalf, 0)
@@ -146,7 +146,7 @@ class GridNeighbours(Cell):
         else:
             self.use_pbc = True
             center = None
-            # (B,D)
+            # (B, D)
             box = get_ms_array(pbc_box, ms.float32)
             if box.ndim == 1:
                 box = F.expand_dims(pbc_box, 0)
@@ -155,7 +155,7 @@ class GridNeighbours(Cell):
                 raise ValueError(f'The cutoff ({self.cutoff}) cannot be greater than '
                                  f'the half of the length of the shortest side of '
                                  f'the PBC pbc_box {self.half_box}!')
-            # (B,D)
+            # (B, D)
             self.origin_grid_dims = msnp.floor(box/self.scaled_grid_cutoff)
             # (D)
             self.origin_grid_dims = Tensor(np.min(self.origin_grid_dims.asnumpy(), axis=0).astype(np.int32))
@@ -173,22 +173,22 @@ class GridNeighbours(Cell):
         self.grid_factor = msnp.cumprod(self.grid_dims[::-1], axis=-1)
         self.grid_factor = msnp.concatenate((self.grid_factor[:-1][::-1], Tensor([1], ms.int32)), axis=-1)
 
-        # (G,D)
+        # (G, D)
         grids = [np.arange(dim).tolist() for dim in self.grid_dims.asnumpy()]
         grids = Tensor(tuple(itertools.product(*grids)), ms.int32)
 
-        # (B,1,D)
+        # (B, 1, D)
         box = F.expand_dims(box, -2)
         if self.use_pbc:
-            # (B,1,D) = (B,D) / (D)
+            # (B, 1, D) = (B, D) / (D)
             self.cell = box / self.grid_dims
             if (self.cell < self.grid_cutoff).any():
                 raise ValueError('The cell length of cannot be smaller than cutoff!')
-            # (B,A,D) = ((B,A,D) - (D)) / (B,1,D)
+            # (B, A, D) = ((B, A, D) - (D)) / (B, 1, D)
             atom_grid_idx = msnp.floor((coordinate_in_pbc(coordinate, pbc_box))/self.cell).astype(ms.int32)
         else:
             self.cell = msnp.broadcast_to(self.scaled_grid_cutoff, (self.dim,))
-            # (B,A,D) = (B,A,D) - (B,1,D) + (D)
+            # (B, A, D) = (B, A, D) - (B, 1, D) + (D)
             scaled_coord = (coordinate - center + self.half_box) / self.scaled_grid_cutoff
             scaled_coord = msnp.where(scaled_coord < 0, 0, scaled_coord)
             atom_grid_idx = msnp.floor(scaled_coord).astype(ms.int32)
@@ -196,17 +196,17 @@ class GridNeighbours(Cell):
                                        atom_grid_idx, self.max_grid_index)
             atom_grid_idx += 1
 
-        # (B,A) <- (B,A,D) * (D)
+        # (B, A) <- (B, A, D) * (D)
         atom_grid_idx = msnp.sum(atom_grid_idx * self.grid_factor, axis=-1)
 
-        # (D): [n_1,n_2,...n_D]
+        # (D): [n_1, n_2, ..., n_D]
         num_extend_neigh = np.where(grid_mask.asnumpy(), num_cell_cut, 0)
         dim_neigh_grids = num_extend_neigh * 2 + 1
         self.num_neigh_grids = int(np.prod(dim_neigh_grids))
         self.dim_neigh_grids = Tensor(dim_neigh_grids)
 
         if cell_capacity is None:
-            # (B,1)
+            # (B, 1)
             _, max_num_in_cell = scipy.stats.mode(atom_grid_idx.asnumpy(), axis=1)
             max_num_in_cell = get_integer(np.max(max_num_in_cell))
             # C
@@ -218,11 +218,11 @@ class GridNeighbours(Cell):
         # N_cap = n * C
         self.neigh_capacity = self.num_neigh_grids * self.cell_capacity
 
-        # G*C
+        # G * C
         self.grid_cap = self.num_grids * self.cell_capacity
         self.sort_id_factor = msnp.mod(msnp.arange(self.num_atoms), self.cell_capacity)
 
-        # (n,D)
+        # (n, D)
         neigh_offsets = [np.arange(-num_extend_neigh[i], num_extend_neigh[i]+1,
                                    dtype=np.int32).tolist() for i in range(self.dim)]
         neigh_offsets = Tensor(tuple(itertools.product(*neigh_offsets)), ms.int32)
@@ -232,7 +232,7 @@ class GridNeighbours(Cell):
                 # N' = ceil(A * n / G * n_scale)
                 num_neighbours = msnp.ceil(
                     self.num_atoms*self.num_neigh_grids/self.num_grids*self.grid_num_scale).asnumpy()
-                # N = min(N',n*C)
+                # N = min(N', n*C)
                 self.num_neighbours = int(min(num_neighbours, self.num_atoms))
             else:
                 self.num_neighbours = int(min(self.neigh_capacity, self.num_atoms))
@@ -245,19 +245,19 @@ class GridNeighbours(Cell):
         max_neighbours = Tensor(self.num_neighbours, ms.int32)
         self.max_neighbours = Parameter(max_neighbours, name='max_neighbours', requires_grad=False)
 
-        # (G,n,D)
+        # (G, n, D)
         neigh_grids = F.expand_dims(grids, -2) + neigh_offsets
         neigh_grids = F.select(neigh_grids < 0, neigh_grids+self.grid_dims, neigh_grids)
         neigh_grids = F.select(neigh_grids >= self.grid_dims, neigh_grids-self.grid_dims, neigh_grids)
 
-        # (G*n)
+        # (G*n,)
         self.neigh_idx = msnp.sum(neigh_grids*self.grid_factor, axis=-1).reshape(-1)
         self.atom_idx = msnp.arange(self.num_atoms).reshape(1, self.num_atoms, 1)
 
         if atom_mask is None:
             self.atom_mask = None
         else:
-            # (B,A)
+            # (B, A)
             self.atom_mask = Tensor(atom_mask, ms.bool_)
             if self.atom_mask.shape[-1] != self.num_atoms:
                 raise ValueError(f'The number of atoms in atom_mask ({self.atom_mask.shape[-1]}) '
@@ -268,7 +268,7 @@ class GridNeighbours(Cell):
         if exclude_index is None:
             self.exclude_index = None
         else:
-            # (B,A,Ex)
+            # (B, A, Ex)
             self.exclude_index = Tensor(exclude_index, ms.int32)
             if self.exclude_index.shape[-2] != self.num_atoms:
                 raise ValueError(f'The number of atoms in exclude_index ({self.exclude_index.shape[-2]}) '
@@ -277,11 +277,10 @@ class GridNeighbours(Cell):
                 self.exclude_index = F.expand_dims(self.exclude_index, 0)
 
         self.sort = ops.Sort(-1)
-        self.reduce_all = ops.ReduceAll()
 
     def set_exclude_index(self, exclude_index: Tensor) -> Tensor:
         """set excluded neighbour index"""
-        # (B,A,Ex)
+        # (B, A, Ex)
         self.exclude_index = get_ms_array(exclude_index, ms.int32)
         if self.exclude_index.shape[-2] != self.num_atoms:
             raise ValueError(f'The number of atoms in exclude_index ({self.exclude_index.shape[-2]}) '
@@ -439,7 +438,7 @@ class GridNeighbours(Cell):
             exmask = (F.expand_dims(neighbours, -1) !=
                       F.expand_dims(exclude_index, -2))
             # (B, A, N)
-            exmask = self.reduce_all(exmask, -1)
+            exmask = reduce_all(exmask, -1)
             mask = F.logical_and(mask, exmask)
 
         return neighbours, mask

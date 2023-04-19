@@ -34,8 +34,7 @@ from mindspore.common import Tensor
 
 from ..colvar import Colvar
 from ...function import functions as func
-from ...function import get_ms_array, Units
-from ...system.dimension import DIMENSION
+from ...function import get_ms_array, get_integer, Units
 
 __all__ = [
     'AtomsBase',
@@ -57,6 +56,8 @@ class AtomsBase(Colvar):
         keep_in_box (bool): Whether to keep the coordinate in PBC box.
                             Default: False
 
+        dimension (int):    Spatial dimension of the simulation system. Default: 3
+
         name (str):         Name of the Colvar. Default: 'atoms'
 
     Supported Platforms:
@@ -74,16 +75,18 @@ class AtomsBase(Colvar):
     """
     def __init__(self,
                  keep_in_box: bool = False,
+                 dimension: int = 3,
                  name: str = 'atoms'
                  ):
 
         super().__init__(
-            shape=(1, DIMENSION),
+            shape=(1, dimension),
             ndim=2,
             periodic=False,
             name=name,
         )
 
+        self.dimension = get_integer(dimension)
         self.keep_in_box = keep_in_box
 
     @property
@@ -95,6 +98,12 @@ class AtomsBase(Colvar):
     def shape(self) -> tuple:
         """shape of the atoms"""
         return self._shape
+
+    def set_dimension(self, dimension: int = 3):
+        """set the spatial dimension of the simulation system"""
+        self.dimension = get_integer(dimension)
+        self._shape = self.shape[:-1] + (self.dimension,)
+        return self
 
     def get_unit(self, units: Units = None) -> str:
         """return unit of the collective variables"""
@@ -136,6 +145,12 @@ class AtomsBase(Colvar):
         # (B, a_1, a_2, ..., a_n, D)
         raise NotImplementedError
 
+    def _set_shape(self, shape: tuple):
+        """set shape of Atoms"""
+        super()._set_shape(shape)
+        self.dimension = self._shape[-1]
+        return self
+
 
 class Atoms(AtomsBase):
     r"""Specific atoms group initialized using an array of atomic indices. It is a subclass of `AtomsBase`.
@@ -165,6 +180,8 @@ class Atoms(AtomsBase):
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
                             Default: False
 
+        dimension (int):    Spatial dimension of the simulation system. Default: 3
+
         name (str):         Name of the Colvar. Default: 'atoms'
 
     Supported Platforms:
@@ -184,11 +201,13 @@ class Atoms(AtomsBase):
                  index: Union[Tensor, ndarray, List[int]],
                  batched: bool = False,
                  keep_in_box: bool = False,
+                 dimension: int = 3,
                  name: str = 'atoms',
                  ):
 
         super().__init__(
             keep_in_box=keep_in_box,
+            dimension=dimension,
             name=name,
         )
 
@@ -205,7 +224,7 @@ class Atoms(AtomsBase):
             self.index = F.expand_dims(self.index, 0)
 
         # (a_1, a_2, ..., a_n, -1)
-        self._set_shape(self.index.shape[1:] + (DIMENSION,))
+        self._set_shape(self.index.shape[1:] + (self.dimension,))
 
         self.keep_in_box = keep_in_box
 
@@ -213,7 +232,7 @@ class Atoms(AtomsBase):
         """rearranges the shape of atoms"""
         shape = self._shape[0] + input_shape[:-1]
         self.index = F.reshape(self.index, shape)
-        self._shape = self.index.shape[1:] + (DIMENSION,)
+        self._shape = self.index.shape[1:] + (self.dimension,)
         self._ndim = self.index.ndim
         self._periodic = msnp.full(self._shape, False)
         return self
@@ -259,6 +278,8 @@ class BatchedAtoms(Atoms):
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
                             Default: False
 
+        dimension (int):    Spatial dimension of the simulation system. Default: 3
+
         name (str):         Name of the Colvar. Default: 'atoms'
 
     Supported Platforms:
@@ -275,6 +296,7 @@ class BatchedAtoms(Atoms):
     def __init__(self,
                  index: Union[Tensor, ndarray, List[int]],
                  keep_in_box: bool = False,
+                 dimension: int = 3,
                  name: str = 'atoms',
                  ):
 
@@ -282,5 +304,6 @@ class BatchedAtoms(Atoms):
             index=index,
             batched=True,
             keep_in_box=keep_in_box,
+            dimension=dimension,
             name=name,
         )

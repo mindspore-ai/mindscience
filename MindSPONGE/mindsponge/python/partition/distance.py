@@ -32,7 +32,7 @@ from mindspore.nn import Cell
 from mindspore import ops
 from mindspore.ops import functional as F
 
-from ..function.functions import get_integer, get_ms_array
+from ..function.functions import get_integer, get_ms_array, reduce_all
 from ..function.operations import GetDistance
 
 
@@ -62,6 +62,10 @@ class DistanceNeighbours(Cell):
         large_dis (float):      A large number to fill in the distances to the masked neighbouring atoms.
                                 Default: 1e4
 
+        cast_fp16 (bool):       If this is set to `True`, the data will be cast to float16 before sort.
+                                For use with some devices that only support sorting of float16 data.
+                                Default: False
+
     Supported Platforms:
 
         ``Ascend`` ``GPU``
@@ -86,6 +90,7 @@ class DistanceNeighbours(Cell):
                  use_pbc: bool = None,
                  cutoff_scale: float = 1.2,
                  large_dis: float = 1e4,
+                 cast_fp16: bool = False,
                  ):
 
         super().__init__()
@@ -102,12 +107,13 @@ class DistanceNeighbours(Cell):
         self.max_neighbours = Parameter(max_neighbours, name='max_neighbours', requires_grad=False)
 
         self.large_dis = Tensor(large_dis, ms.float32)
+        self.cast_fp16 = cast_fp16
 
         self.emtpy_atom_shift = 0
         self.atom_mask = None
         self.has_empty_atom = False
         if atom_mask is not None:
-            # (B,A)
+            # (B, A)
             self.atom_mask = Tensor(atom_mask, ms.bool_)
             if self.atom_mask.ndim == 1:
                 self.atom_mask = F.expand_dims(self.atom_mask, 0)
@@ -115,12 +121,12 @@ class DistanceNeighbours(Cell):
             self.has_empty_atom = F.logical_not(self.atom_mask.all())
             if self.has_empty_atom:
                 emtpy_atom_mask = F.logical_not(self.atom_mask)
-                # (B,1,A)
+                # (B, 1, A)
                 self.emtpy_atom_shift = F.expand_dims(emtpy_atom_mask, -2) * self.large_dis
 
         self.exclude_index = None
         if exclude_index is not None:
-            # (B,A,E)
+            # (B, A, Ex)
             self.exclude_index = Tensor(exclude_index, ms.int32)
             if self.exclude_index.ndim == 2:
                 self.exclude_index = F.expand_dims(self.exclude_index, 0)
@@ -128,7 +134,6 @@ class DistanceNeighbours(Cell):
         self.get_distance = GetDistance(use_pbc)
 
         self.sort = ops.Sort(-1)
-        self.reduce_all = ops.ReduceAll()
 
     @staticmethod
     def calc_max_neighbours(distances: Tensor, cutoff: float) -> Tensor:
@@ -151,7 +156,7 @@ class DistanceNeighbours(Cell):
         return self
 
     def set_exclude_index(self, exclude_index: Tensor) -> Tensor:
-        # (B,A,Ex)
+        # (B, A, Ex)
         self.exclude_index = get_ms_array(exclude_index, ms.int32)
         if self.exclude_index.ndim == 2:
             self.exclude_index = F.expand_dims(self.exclude_index, 0)
@@ -207,18 +212,18 @@ class DistanceNeighbours(Cell):
 
         # A
         num_atoms = coordinate.shape[-2]
-        # (B,A,A) <- (B,A,1,3) - (B,1,A,3)
+        # (B, A, A) <- (B, A, 1, 3) - (B, 1, A, 3)
         distances = self.get_distance(F.expand_dims(coordinate, -2), F.expand_dims(coordinate, -3), pbc_box)
 
         if atom_mask is None:
             atom_mask = self.atom_mask
             if self.has_empty_atom:
-                # (B,A,A) + (B,1,A)
+                # (B, A, A) + (B, 1, A)
                 distances += self.emtpy_atom_shift
         else:
             if not atom_mask.all():
                 emtpy_atom_mask = F.logical_not(atom_mask)
-                # (B,1,A)
+                # (B, 1, A)
                 emtpy_atom_shift = F.expand_dims(emtpy_atom_mask, -2) * self.large_dis
                 distances += emtpy_atom_shift
 
@@ -230,27 +235,35 @@ class DistanceNeighbours(Cell):
             max_neighbours = self.calc_max_neighbours(distances, self.cutoff)
             distances = F.depend(distances, F.assign(self.max_neighbours, max_neighbours))
 
-        distances, neighbours = F.top_k(-distances, num_neighbours+1)
-        distances = -distances[..., 1:]
-        neighbours = neighbours[..., 1:]
+        if self.cast_fp16:
+            distances = F.cast(distances, ms.float16)
+            distances, neighbours = self.sort(distances)
+            distances = distances[..., 1:num_neighbours+1]
+            distances = F.cast(distances, ms.float32)
+            neighbours = neighbours[..., 1:num_neighbours+1]
+        else:
+            distances, neighbours = F.top_k(-distances, num_neighbours+1)
+            distances = -distances[..., 1:]
+            neighbours = neighbours[..., 1:]
+
         neighbour_mask = distances < self.scaled_cutoff
 
         if exclude_index is None:
             exclude_index = self.exclude_index
         if exclude_index is not None:
-            # (B,A,n,E) <- (B,A,n,1) != (B,A,1,E)
+            # (B, A, n, Ex) <- (B, A, n, 1) != (B, A, 1, E)
             exc_mask = F.expand_dims(neighbours, -1) != F.expand_dims(exclude_index, -2)
             # (B,A,n)
-            exc_mask = self.reduce_all(exc_mask, -1)
+            exc_mask = reduce_all(exc_mask, -1)
             neighbour_mask = F.logical_and(neighbour_mask, exc_mask)
 
         if atom_mask is not None:
-            # (B,A,n) <- (B,A,n) && (B,A,1)
+            # (B, A, n) <- (B, A, n) && (B, A, 1)
             neighbour_mask = F.logical_and(neighbour_mask, F.expand_dims(atom_mask, -1))
 
         # (1, A, 1)
         no_idx = msnp.arange(num_atoms).reshape(1, -1, 1)
-        # (B,A,n)
+        # (B, A, n)
         no_idx = msnp.broadcast_to(no_idx, neighbours.shape)
         neighbours = F.select(neighbour_mask, neighbours, no_idx)
 

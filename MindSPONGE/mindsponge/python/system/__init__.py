@@ -24,6 +24,5 @@
 
 from .molecule import Molecule, Protein
 from .residue import Residue, AminoAcid
-from .dimension import DIMENSION, set_dimension
 
-__all__ = ['Molecule', 'Protein', 'Residue', 'AminoAcid', 'DIMENSION', 'set_dimension']
+__all__ = ['Molecule', 'Protein', 'Residue', 'AminoAcid']

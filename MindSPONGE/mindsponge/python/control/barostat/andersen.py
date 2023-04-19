@@ -24,7 +24,6 @@
 
 from typing import Tuple
 
-import mindspore as ms
 import mindspore.numpy as msnp
 from mindspore import Tensor
 from mindspore.ops import functional as F
@@ -33,14 +32,14 @@ from . import Barostat
 from ...system import Molecule
 
 
-class BerendsenBarostat(Barostat):
-    r"""A Berendsen (weak coupling) barostat module, which is a subclass of `Barostat`.
+class AndersenBarostat(Barostat):
+    r"""A Andersen barostat module, which is a subclass of `Barostat`.
 
     Reference:
 
-        Berendsen, H. J. C.; Postma, J. P. M.; van Gunsteren, W. F.; DiNola, A.; Haak, J. R.
-        Molecular Dynamics with Coupling to an External Bath [J].
-        The Journal of Chemical Physics, 1984, 81(8): 3684.
+        Andersen, Hans Christian.
+        Molecular dynamics simulations at constant pressure and/or temperature [J].
+        Journal of Chemical Physics, 1980, 72: 2384-2393.
 
     Args:
 
@@ -83,13 +82,7 @@ class BerendsenBarostat(Barostat):
             time_constant=time_constant,
         )
 
-        self.ratio = self.control_step * self.time_step / self.time_constant / 3.
-
-    def set_time_step(self, dt: float):
-        """set simulation time step"""
-        self.time_step = Tensor(dt, ms.float32)
-        self.ratio = self.control_step * self.time_step / self.time_constant / 3.
-        return self
+        self.h_mass_inverse_0 = F.square(self.time_constant) / self.compressibility
 
     def construct(self,
                   coordinate: Tensor,
@@ -103,20 +96,16 @@ class BerendsenBarostat(Barostat):
                   ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
 
         if self.control_step == 1 or step % self.control_step == 0:
+            crd_scale_factor = 0
             # (B, D)
             pressure = self.get_pressure(kinetics, virial, pbc_box)
-            if not self.anisotropic:
-                # (B, 1) <- (B, D)
-                pressure = msnp.mean(pressure, axis=-1, keepdims=True)
-                # (B, D) <- (B, 1)
-                pressure = msnp.broadcast_to(pressure, self.shape)
+            volume0 = self.get_volume(pbc_box)
 
-            # (B, D)
-            scale = self.pressure_scale(pressure, self.ref_press, self.ratio)
-
-            # (B, A, D) * (B, 1, D)
-            coordinate *= F.expand_dims(scale, -2)
-            # (B, D)
-            pbc_box *= scale
+            dv_dt = F.reduce_sum(pressure - self.ref_press) / self.h_mass_inverse_0 * volume0
+            volume = volume0 + dv_dt * self.time_step
+            crd_scale_factor = msnp.cbrt(volume / volume0)
+            coordinate *= crd_scale_factor
+            pbc_box *= crd_scale_factor
+            velocity *= msnp.reciprocal(crd_scale_factor)
 
         return coordinate, velocity, force, energy, kinetics, virial, pbc_box

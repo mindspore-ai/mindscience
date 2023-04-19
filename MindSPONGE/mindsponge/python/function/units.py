@@ -190,7 +190,8 @@ class Length:
         else:
             raise TypeError(f'Unsupported length value type: {type(value)}')
 
-    def __call__(self, unit=None):
+    def __call__(self, unit: str = None):
+        """Returns the length value in a specific unit"""
         return self.__value * length_convert(self.__unit, unit)
 
     def __str__(self):
@@ -325,7 +326,8 @@ class Energy:
         else:
             raise TypeError(f'Unsupported energy value type: {type(value)}')
 
-    def __call__(self, unit=None):
+    def __call__(self, unit: str = None):
+        """Returns the energy value in a specific unit"""
         return self.__value * energy_convert(self.__unit, unit)
 
     def __str__(self):
@@ -887,6 +889,21 @@ class Units:
         if self.__energy_ref is None or self.__length_ref is None:
             return None
         return _BAR_DEFAULT_REF * self.__energy_ref / math.pow(self.__length_ref, 3)
+
+    def get_boltzmann(self, energy_unit: str = None) -> float:
+        """get the Boltzmann constant for a specific unit"""
+        if energy_unit is None:
+            return self.__boltzmann
+        energy_ref = get_energy_ref(energy_unit)
+        return _BOLTZMANN_DEFAULT_REF / energy_ref
+
+    def get_coulomb(self, length_unit: str = None, energy_unit: str = None) -> float:
+        """get the Coulomb constant for a specific unit"""
+        if length_unit is None and energy_unit is None:
+            return self.__coulomb
+        length_ref = get_length_ref(length_unit)
+        energy_ref = get_energy_ref(energy_unit)
+        return _COULOMB_DEFAULT_REF / length_ref / energy_ref
 
     def set_length_unit(self, unit: str = None):
         """

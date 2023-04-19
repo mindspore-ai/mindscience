@@ -24,6 +24,8 @@
 Thermostat
 """
 
+from typing import Tuple
+
 import mindspore as ms
 from mindspore import Tensor
 from mindspore.ops import functional as F
@@ -101,7 +103,7 @@ class Thermostat(Controller):
 
     def velocity_scale(self, sim_kinetics: Tensor, ref_kinetics: Tensor, ratio: float = 1) -> Tensor:
         """calculate the velocity scale factor for temperature coupling"""
-        sim_kinetics = func.keepdims_sum(sim_kinetics, -1)
+        sim_kinetics = self.keepdims_sum(sim_kinetics, -1)
         lambda_ = 1. + ratio * (ref_kinetics / sim_kinetics - 1)
         return F.sqrt(lambda_)
 
@@ -114,8 +116,7 @@ class Thermostat(Controller):
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
-
+                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
         r"""Control the temperature of the simulation system
 
         Args:

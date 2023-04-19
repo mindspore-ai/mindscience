@@ -24,7 +24,8 @@
 Constraint
 """
 
-from typing import Union
+from typing import Union, Tuple
+
 import numpy as np
 import mindspore as ms
 from mindspore import Tensor, Parameter
@@ -115,8 +116,8 @@ class Constraint(Controller):
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
-        """ constraint the bonds.
+                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+        r""" constraint the bonds.
 
         Args:
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.

@@ -38,7 +38,7 @@ from .potential import PotentialCell
 from ..data.parameters import ForceFieldParameters
 from ..data.forcefield import get_forcefield
 from ..system import Molecule
-from ..function.units import Units
+from ..function.units import Units, Length
 
 
 THIS_PATH = os.path.abspath(__file__)
@@ -56,10 +56,11 @@ class ForceFieldBase(PotentialCell):
         Energy (Union[EnergyCell, List[EnergyCell]]):
                                 List of `EnergyCell` objects. Default: None
 
-        cutoff (float):         Cutoff distance. Default: None
+        cutoff (Union[float, Length, Tensor]):  Cutoff distance. Default: None
 
-        exclude_index (Tensor): Tensor of shape `(B, A, Ex)`. Data type is int
-                                The indexes of atoms that should be excluded from neighbour list.
+        exclude_index (Union[Tensor, ndarray, List[int]]):
+                                Array of indexes of atoms that should be excluded from neighbour list.
+                                The shape of the tensor is `(B, A, Ex)`. The data type is int.
                                 Default: None
 
         length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
@@ -87,18 +88,23 @@ class ForceFieldBase(PotentialCell):
 
     def __init__(self,
                  energy: Union[EnergyCell, List[EnergyCell]] = None,
-                 cutoff: Union[float, Tensor, ndarray] = None,
+                 cutoff: Union[float, Length, Tensor] = None,
                  exclude_index: Union[Tensor, ndarray, List[int]] = None,
                  length_unit: str = None,
                  energy_unit: str = None,
                  use_pbc: bool = None,
+                 name: str = 'potential',
                  ):
 
         super().__init__(
             length_unit=length_unit,
             energy_unit=energy_unit,
             use_pbc=use_pbc,
+            name=name,
         )
+
+        if isinstance(cutoff, Length):
+            cutoff = cutoff(self.units)
 
         if cutoff is not None:
             self.cutoff = Tensor(cutoff, ms.float32)
@@ -314,6 +320,7 @@ class ForceField(ForceFieldBase):
                  rebuild_system: bool = True,
                  length_unit: str = None,
                  energy_unit: str = None,
+                 name: str = 'potential',
                  ):
 
         super().__init__(
@@ -321,6 +328,7 @@ class ForceField(ForceFieldBase):
             exclude_index=None,
             length_unit=length_unit,
             energy_unit=energy_unit,
+            name=name,
         )
 
         use_pbc = system.use_pbc
@@ -408,8 +416,7 @@ class ForceField(ForceFieldBase):
             coulomb_params: dict = parameters.get('coulomb_energy')
             length_unit = coulomb_params.get('length_unit')
             energy_unit = coulomb_params.get('energy_unit')
-            ele_energy = CoulombEnergy(atom_charge=system.atom_charge, pbc_box=system.pbc_box,
-                                       exclude_index=self._exclude_index,
+            ele_energy = CoulombEnergy(system=system, exclude_index=self._exclude_index,
                                        length_unit=length_unit, energy_unit=energy_unit)
             energy.append(ele_energy)
 
