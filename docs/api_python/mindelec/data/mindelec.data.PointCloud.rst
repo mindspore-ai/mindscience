@@ -9,7 +9,7 @@ mindelec.data.PointCloud
         - **data_dir** (str) - stp文件目录，原始数据。
         - **sampling_config** (PointCloudSamplingConfig) - 用于生成PointCloud-Tensor的采样空间配置。
         - **material_config** (MaterialConfig) - 用于生成PointCloud-Tensor的材料解的配置，其中影响材料求解阶段。
-        - **num_parallel_workers** (int, option) - 并行进程编号，此参数可以对所有计算阶段生效，包括阅读模型、截面构建、空间求解和材料求解。默认值： ``os.cpu_count()``。
+        - **num_parallel_workers** (int, 可选) - 并行进程编号，此参数可以对所有计算阶段生效，包括阅读模型、截面构建、空间求解和材料求解。默认值： ``os.cpu_count()``。
 
     异常：
         - **TypeError** - 如果 `data_dir` 不是str。
