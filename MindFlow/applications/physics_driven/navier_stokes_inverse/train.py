@@ -29,8 +29,8 @@ from mindflow.utils import load_yaml_config
 from src import create_training_dataset, create_test_dataset, calculate_l2_error, InvNavierStokes
 from src import visual, plot_params
 
-set_seed(123456)
-np.random.seed(123456)
+set_seed(0)
+np.random.seed(0)
 
 parser = argparse.ArgumentParser(description="cylinder flow train")
 parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
@@ -41,7 +41,7 @@ parser.add_argument("--save_graphs_path", type=str, default="./graphs")
 parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                     help="The target device to run, support 'Ascend', 'GPU'")
 parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-parser.add_argument("--config_file_path", type=str, default="./cylinder_flow.yaml")
+parser.add_argument("--config_file_path", type=str, default="./navier_stokes_inverse.yaml")
 args = parser.parse_args()
 
 context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
@@ -56,7 +56,7 @@ use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 def train():
     '''Train and evaluate the network'''
     # load configurations
-    config = load_yaml_config('inverse_navier_stokes.yaml')
+    config = load_yaml_config(args.config_file_path)
 
     # create dataset
     inv_ns_train_dataset = create_training_dataset(config)
@@ -91,6 +91,7 @@ def train():
     params.append(theta)
     optimizer = nn.Adam(params, learning_rate=config["optimizer"]["initial_lr"])
     problem = InvNavierStokes(model, params)
+
     if use_ascend:
         from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
         loss_scaler = DynamicLossScaler(1024, 2, 100)
@@ -128,7 +129,7 @@ def train():
         model.set_train(True)
         for _ in range(steps_per_epochs):
             step_train_loss = sink_process()
-        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) * 1000 :.3f} ms")
+        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {time.time() - time_beg:.3f}s")
         model.set_train(False)
         if epoch % config["eval_interval_epochs"] == 0:
             print(f"Params are{params[-1].value()}")
@@ -143,4 +144,4 @@ if __name__ == '__main__':
     print("pid:", os.getpid())
     start_time = time.time()
     train()
-    print("End-to-End total time: {} s".format(time.time() - start_time))
+    print("End-to-End total time: {}s".format(time.time() - start_time))

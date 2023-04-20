@@ -20,7 +20,7 @@ import argparse
 import numpy as np
 
 from mindspore import nn, ops, context, save_checkpoint, jit, data_sink, set_seed
-
+import mindspore.common.dtype as mstype
 from mindflow.utils import load_yaml_config
 from src import create_dataset, EhdnnNet, HybridLoss, plot_train_loss
 
@@ -36,7 +36,7 @@ parser.add_argument("--save_graphs_path", type=str, default="./summary")
 parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                     help="The target device to run, support 'Ascend', 'GPU'")
 parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-parser.add_argument("--train_aoa_list", type=list, default=[35],
+parser.add_argument("--train_aoa_list", type=int, nargs='+', default=[33],
                     help="The type for training, [33 ,34 , 35 , 36 , 37 , 38] for multi_state training /n"
                          "[33],....,[38] for single_state training")
 parser.add_argument("--num_memory_layers", type=int, default=2, choices=[2, 4],
@@ -73,14 +73,16 @@ def train():
                      model_params["num_layers"],
                      args.num_memory_layers,
                      model_params["kernel_size_conv"],
-                     model_params["kernel_size_lstm"])
+                     model_params["kernel_size_lstm"],
+                     compute_dtype=mstype.float16 if use_ascend else mstype.float32
+                     )
     loss_func = HybridLoss()
     optimizer = nn.Adam(params=model.trainable_params(), learning_rate=optimizer_params["lr"])
 
     if use_ascend:
         from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
         loss_scaler = DynamicLossScaler(1024, 2, 100)
-        auto_mixed_precision(model, 'O1')
+        auto_mixed_precision('O3')
     else:
         loss_scaler = None
 
