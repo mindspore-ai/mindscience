@@ -378,7 +378,7 @@ def get_structural_violations(atom14_atom_exists, residue_index, aatype, residx_
                                             shape: :math:`(14, )` .
         dists_mask_i (Tensor):              initial distants mask, shape: :math:`(14, 14)` .
         cys_sg_idx (Tensor):                CYS amino acid index. Default: ``5`` .
-                                            see more at `mindsponge.common.residue_constants`.
+                                            see more at `mindsponge.common.residue_constants`. shape: :math:`( )`
 
     Returns:
         - bonds_c_n_loss_mean (Tensor), loss for peptide bond length violations. shape is :math:`()`.

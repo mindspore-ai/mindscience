@@ -7,7 +7,7 @@ mindsponge.common.vecs_cross_vecs
 
     .. math::
 
-        cross_res = (x_2 * y_3 - x_3 * y_2, x_3 * y_1 - x_1 * y_3, x_1 * y_2 - x_2 * y_1)
+        cross_{res} = (x_2 * y_3 - x_3 * y_2, x_3 * y_1 - x_1 * y_3, x_1 * y_2 - x_2 * y_1)
 
     参数：
         - **v1** (tuple) - 向量 :math:`\vec v_1` ，长度为3，数据类型为标量或者shape相同的Tensor。
