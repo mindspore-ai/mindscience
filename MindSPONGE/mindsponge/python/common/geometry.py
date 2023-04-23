@@ -1132,7 +1132,7 @@ def rots_expand_dims(rots, axis):
 
     Returns:
         Tuple, rots. If the value of axis is 0, and the shape of xx is :math:`(..., X_R)`,
-          where X_R is any number, and the expanded shape is :math:`(1, ..., X_R)`.
+          where :math:`X_R` is any number, and the expanded shape is :math:`(1, ..., X_R)`.
           Return expanded :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
 
     Supported Platforms:
@@ -1232,7 +1232,7 @@ def quat_multiply_by_vec(quat, vec):
                         Quaternion can be expressed as :math:`(1, b, c, d)`.
 
     Returns:
-        Tensor, the product of a quaternion with a pure vector quaternion.
+        Tensor, the product of a quaternion with a pure vector quaternion. Shape is :math:`(..., 4)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

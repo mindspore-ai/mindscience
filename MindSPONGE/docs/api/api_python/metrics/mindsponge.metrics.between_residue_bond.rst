@@ -20,5 +20,5 @@ mindsponge.metrics.between_residue_bond
         - **per_residue_loss_sum** (Tensor) 所有氨基酸残基的冲突损失总和，包括键角键长损失。shape :math:`(N_{res}, )` 。
         - **per_residue_violation_mask** (Tensor) 指示每个氨基酸残基是否存在键长或键角损失；1代表存在，0代表不存在。shape :math:`(N_{res}, )` 。
 
-    符号:
+    符号：
         - :math:`N_{res}` - 蛋白质中氨基酸个数，按蛋白质一级序列排列。
