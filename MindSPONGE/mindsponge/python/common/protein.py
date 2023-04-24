@@ -102,7 +102,7 @@ def from_pdb_string(pdb_str: str, chain_id: Optional[str] = None) -> Protein:
         res_shortname = residue_constants.restype_3to1.get(res.resname, 'X')
         restype_idx = residue_constants.restype_order.get(
             res_shortname, residue_constants.restype_num)
-        #print(res_shortname, restype_idx)
+        # print(res_shortname, restype_idx)
         pos = np.zeros((residue_constants.atom_type_num, 3))
         mask = np.zeros((residue_constants.atom_type_num,))
         res_b_factors = np.zeros((residue_constants.atom_type_num,))
@@ -360,6 +360,7 @@ def from_prediction_v2(final_atom_positions,
     Returns:
         A protein instance.
     """
+
     def _maybe_remove_leading_dim(arr: np.ndarray) -> np.ndarray:
         return arr[0] if remove_leading_feature_dimension else arr
 
@@ -377,3 +378,23 @@ def from_prediction_v2(final_atom_positions,
         residue_index=residue_index + 1,
         chain_index=chain_index,
         b_factors=b_factors)
+
+
+def from_prediction_new(features) -> Protein:
+    """Assembles a protein from a prediction.
+
+    Args:
+      features: Dictionary holding model inputs.
+      result: Dictionary holding model outputs.
+
+    Returns:
+      A protein instance.
+    """
+    dist_per_residue = features[4]
+
+    return Protein(
+        aatype=features[0],
+        atom_positions=features[2],
+        atom_mask=features[3],
+        residue_index=features[1] + 1,
+        b_factors=dist_per_residue)

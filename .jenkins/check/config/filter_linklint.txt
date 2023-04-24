@@ -1,0 +1,5 @@
+# MindSPONGE
+# file directory: MindSPONGE/
+
+https://api.colabfold.com
+https://a3m.mmseqs.com
