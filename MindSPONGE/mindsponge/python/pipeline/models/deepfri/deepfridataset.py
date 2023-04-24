@@ -50,7 +50,7 @@ class DeepFriDataSet(PSP):
         return data_len
 
     def deepfri_inputs(self):
-        feature_list = ['adj', 'seq_1hot', 'seq']
+        feature_list = ['adj', 'seq_1hot']
         self.feature_list = feature_list
 
     # pylint: disable=arguments-differ

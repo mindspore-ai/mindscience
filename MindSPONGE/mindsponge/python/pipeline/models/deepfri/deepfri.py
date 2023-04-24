@@ -13,8 +13,6 @@
 # limitations under the License.
 # ============================================================================
 """deepfri"""
-import numpy as np
-
 from mindspore import jit, context
 import mindspore as ms
 from mindspore import Tensor
@@ -35,16 +33,14 @@ class DeepFri(Model):
         else:
             self.mixed_precision = True
             context.set_context(device_target="Ascend")
-        self.configs = config
+        self.config = config
         self.checkpoint_url = \
             f"https://download.mindspore.cn/mindscience/mindsponge/DeepFri/checkpoint/" \
-            f"deepfri_{self.configs.prefix}.ckpt"
-        self.checkpoint_path = f"./deepfri_{self.configs.prefix}.ckpt"
-        self.use_jit = self.configs.use_jit
-        param_dict = ms.load_checkpoint(self.checkpoint_path)
-        self.network = Predictor(self.configs.prefix, self.configs, gcn=True)
-        ms.load_param_into_net(self.network, param_dict)
-        super().__init__(self.checkpoint_url, self.network, self.name, self.white_list)
+            f"DeepFRI_{self.config.prefix}.ckpt"
+        self.checkpoint_path = f"./DeepFRI_{self.config.prefix}.ckpt"
+        self.use_jit = self.config.use_jit
+        self.network = Predictor(self.config.prefix, self.config, gcn=True)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network)
 
     def forward(self, data):
         pass
@@ -60,7 +56,6 @@ class DeepFri(Model):
     def predict(self, inputs):
         inputs[0] = Tensor(inputs[0], dtype=ms.float32)
         inputs[1] = Tensor(inputs[1], dtype=ms.float32)
-        inputs[2] = Tensor(np.array(inputs[2], np.str_))
         if self.use_jit:
             outputs = self._jit_forward(inputs)
         else:

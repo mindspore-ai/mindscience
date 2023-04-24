@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd & CPL YiQin GAO Research Group
+# Copyright 2022-2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ from mindspore.ops import operations as P
 from mindspore.common.tensor import Tensor
 from mindspore import ops
 
+from ...models.megafold.nn_arch import Megafold
 from .module.loss_design import LossNet
 
 
@@ -60,7 +61,7 @@ class Colabdesign(nn.Cell):
 
     def __init__(self, config, mixed_precision, seq_vector, ori_seq_len, protocol):
         super(Colabdesign, self).__init__()
-        self.megafold = MegaFold(config, mixed_precision)
+        self.megafold = Megafold(config, mixed_precision)
         self.megafold.add_flags_recursive(train_backward=True)
         self.cfg = config
         self.seq_vector = seq_vector

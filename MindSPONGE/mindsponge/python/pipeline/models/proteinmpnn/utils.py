@@ -23,6 +23,16 @@ import mindspore.nn as nn
 import mindspore.ops as ops
 
 
+class ProcessLinspace(nn.Cell):
+    def __init__(self):
+        super(ProcessLinspace, self).__init__()
+        self.linspace = ops.LinSpace()
+
+    def construct(self, d_min, d_max, d_count):
+        output = self.linspace(d_min, d_max, d_count)
+        return output
+
+
 def scores_(s, log_probs, mask):
     """ Negative log probabilities """
     criterion = ops.NLLLoss(reduction='none')
