@@ -15,13 +15,14 @@
 "proteinmpnn"
 import mindspore as ms
 import mindspore.ops as ops
-from mindspore import jit, context, nn, load_checkpoint
+from mindspore import jit, context, nn
 from mindspore import Tensor
 
 from ..model import Model
 from .nn_arch import ProteinMPNN
-from .utils import scores_, loss_nll
+from .utils import scores_, loss_nll, ProcessLinspace
 from .proteinmpnn_wrapcell import CustomTrainOneStepCell, CustomWithLossCell, LossSmoothed, LRLIST
+from .proteinmpnn_dataset import ProteinMpnnDataset
 
 
 class ProteinMpnn(Model):
@@ -39,6 +40,10 @@ class ProteinMpnn(Model):
         self.config = config
         self.use_jit = self.config.use_jit
         self.network = ProteinMPNN(self.config)
+        self.white_list = ProcessLinspace
+        self.dataset = ProteinMpnnDataset(self.config)
+        self.checkpoint_url = ""
+        self.checkpoint_path = ""
         if self.config.is_training:
             loss = LossSmoothed()
             net_with_loss = CustomWithLossCell(self.network, loss)
@@ -51,9 +56,7 @@ class ProteinMpnn(Model):
             self.checkpoint_url = \
                 'https://download.mindspore.cn/mindscience/mindsponge/ProteinMPNN/checkpoint/proteinmpnn.ckpt'
             self.checkpoint_path = "./proteinmpnn.ckpt"
-            param_dict = load_checkpoint(self.checkpoint_path)
-            ms.load_param_into_net(self.network, param_dict)
-        super().__init__(self.checkpoint_url, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name, self.white_list)
 
     def forward(self, data):
         pass
@@ -65,6 +68,7 @@ class ProteinMpnn(Model):
         return log_probs
 
     def train_step(self, data):
+        data = self.dataset.process(data)
         log_probs = self.backward(data)
         loss, _, true_false = loss_nll(data[1], log_probs, data[-1])
         train_sum, train_weights = 0., 0.
@@ -134,6 +138,4 @@ class ProteinMpnn(Model):
 
     def _pynative_forward(self, data):
         log_probs = self.network(*data)
-
-        print(outputs)
         return log_probs

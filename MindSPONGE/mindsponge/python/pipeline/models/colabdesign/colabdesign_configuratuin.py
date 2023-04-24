@@ -1,12 +1,4 @@
-# Copyright 2023 @ Shenzhen Bay Laboratory &
-#                  Peking University &
-#                  Huawei Technologies Co., Ltd
-#
-# This code is a part of MindSPONGE:
-# MindSpore Simulation Package tOwards Next Generation molecular modelling.
-#
-# MindSPONGE is open-source software based on the AI-framework:
-# MindSpore (https://www.mindspore.cn/)
+# Copyright 2022-2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,5 +14,5 @@
 # ============================================================================
 """colabdesign_configuration"""
 colabdesign_configuration = {
-    "fold_design": "https://download.mindspore.cn/mindscience/mindsponge/Multimer/config/"
+    "fold_design": "https://download.mindspore.cn/mindscience/mindsponge/ColabDesign/config/fold_design.yaml"
 }

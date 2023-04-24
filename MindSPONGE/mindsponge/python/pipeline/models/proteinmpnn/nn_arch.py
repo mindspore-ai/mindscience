@@ -21,6 +21,8 @@ import mindspore.ops as ops
 from mindspore import Tensor
 from mindspore.common.initializer import initializer, XavierUniform
 
+from .utils import ProcessLinspace
+
 
 def gather_edges(edges, neighbor_idx):
     # Features [B,N,N,C] at Neighbor indices [B,N,K] => Neighbor features [B,N,K,C]
@@ -65,9 +67,9 @@ class EncLayer(nn.Cell):
         self.num_hidden = num_hidden
         self.num_in = num_in
         self.scale = scale
-        self.dropout1 = nn.Dropout(1 - dropout)
-        self.dropout2 = nn.Dropout(1 - dropout)
-        self.dropout3 = nn.Dropout(1 - dropout)
+        self.dropout1 = nn.Dropout(p=dropout)
+        self.dropout2 = nn.Dropout(p=dropout)
+        self.dropout3 = nn.Dropout(p=dropout)
         self.norm1 = nn.LayerNorm([num_hidden])
         self.norm2 = nn.LayerNorm([num_hidden])
         self.norm3 = nn.LayerNorm([num_hidden])
@@ -116,8 +118,8 @@ class DecLayer(nn.Cell):
         self.num_hidden = num_hidden
         self.num_in = num_in
         self.scale = scale
-        self.dropout1 = nn.Dropout(1 - dropout)
-        self.dropout2 = nn.Dropout(1 - dropout)
+        self.dropout1 = nn.Dropout(p=dropout)
+        self.dropout2 = nn.Dropout(p=dropout)
         self.norm1 = nn.LayerNorm([num_hidden])
         self.norm2 = nn.LayerNorm([num_hidden])
 
@@ -254,7 +256,7 @@ class ProteinFeatures(nn.Cell):
                                                            :]) == 0), ms.int32)  # find self vs non-self interaction
         e_chains = gather_edges(d_chains[:, :, :, None], e_idx)[:, :, :, 0]
         e_positional = self.embeddings(ops.Cast()(offset, ms.int32), e_chains)
-        e = ops.Concat(axis=-1)((e_positional, rbf_all))
+        e = ops.Concat(axis=-1)((e_positional, rbf_all.astype(ms.float16)))
         e = self.edge_embedding(e)
         e = self.norm_edges(e)
         return e, e_idx
@@ -280,7 +282,7 @@ class ProteinFeatures(nn.Cell):
 
     def _rbf(self, d):
         d_min, d_max, d_count = 2., 22., self.num_rbf
-        d_mu = ops.linspace(Tensor(d_min, ms.float32), Tensor(d_max, ms.float32), d_count)
+        d_mu = ProcessLinspace()(Tensor(d_min, ms.float32), Tensor(d_max, ms.float32), d_count)
         d_mu = d_mu.view((1, 1, 1, -1))
         d_sigma = (d_max - d_min) / d_count
         d_expand = ops.expand_dims(d, -1)
@@ -477,22 +479,23 @@ class ProteinMPNN(nn.Cell):
                                       ms.numpy.tile(t[:, None, None], (1, 1, h_v_stack[-1].shape[-1])))[:, 0]
                 logits = self.w_out(h_v_t) / temperature
                 probs = ops.Softmax(axis=-1)((logits - constant[None, :] * 1e8 + constant_bias[None, \
-                        :] / temperature + bias_by_res_gathered / temperature).astype(ms.float32))
+                                :] / temperature + bias_by_res_gathered / temperature).astype(ms.float32))
                 if pssm_bias_flag:
                     pssm_coef_gathered = ops.GatherD()(pssm_coef, 1, t[:, None])[:, 0]
                     pssm_bias_gathered = ops.GatherD()(pssm_bias, 1, ms.numpy.tile(t[:, None, None], \
-                                        (1, 1, pssm_bias.shape[-1])))[:, 0]
+                                                     (1, 1, pssm_bias.shape[-1])))[:, 0]
                     probs = (1 - pssm_multi * pssm_coef_gathered[:, None]) * probs + \
                             pssm_multi * pssm_coef_gathered[:, None] * pssm_bias_gathered
                 if pssm_log_odds_flag:
                     pssm_log_odds_mask_gathered = ops.GatherD()(pssm_log_odds_mask, 1, \
-                    ms.numpy.tile(t[:, None, None], (1, 1, pssm_log_odds_mask.shape[-1])))[:, 0]
+                                                                ms.numpy.tile(t[:, None, None], \
+                                                                 (1, 1, pssm_log_odds_mask.shape[-1])))[:, 0]
                     probs_masked = probs * pssm_log_odds_mask_gathered
                     probs_masked += probs * 0.001
                     probs = probs_masked / ops.ReduceSum(keep_dims=True)(probs_masked, axis=-1)
                 if omit_aa_mask_flag:
                     omit_aa_mask_gathered = ops.GatherD()(omit_aa_mask, 1, ms.numpy.tile(t[:, None, None], \
-                                            (1, 1, omit_aa_mask.shape[-1])))[:, 0]
+                                                         (1, 1, omit_aa_mask.shape[-1])))[:, 0]
                     probs_masked = probs * (1.0 - omit_aa_mask_gathered)
                     probs = probs_masked / ops.ReduceSum(keep_dims=True)(probs_masked, axis=-1)  # [B, 21]
                 probs_ = np.squeeze(probs.asnumpy(), axis=0).astype("float64")
@@ -597,7 +600,7 @@ class ProteinMPNN(nn.Cell):
             else:
                 bias_by_res_gathered = bias_by_res[:, t, :]  # [B, 21]
                 probs = ops.Softmax(axis=-1)((logits - constant[None, :] * 1e8 + constant_bias[None, \
-                                    :] / temperature + bias_by_res_gathered / temperature).astype(ms.float32))
+                            :] / temperature + bias_by_res_gathered / temperature).astype(ms.float32))
                 if pssm_bias_flag:
                     pssm_coef_gathered = pssm_coef[:, t]
                     pssm_bias_gathered = pssm_bias[:, t]

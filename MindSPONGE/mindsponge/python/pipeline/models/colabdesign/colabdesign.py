@@ -1,12 +1,4 @@
-# Copyright 2023 @ Shenzhen Bay Laboratory &
-#                  Peking University &
-#                  Huawei Technologies Co., Ltd
-#
-# This code is a part of MindSPONGE:
-# MindSpore Simulation Package tOwards Next Generation molecular modelling.
-#
-# MindSPONGE is open-source software based on the AI-framework:
-# MindSpore (https://www.mindspore.cn/)
+# Copyright 2022-2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,15 +15,15 @@
 """colabdesign"""
 import numpy as np
 
-from mindspore import Parameter
-from mindspore import Tensor, load_checkpoint
 import mindspore as ms
+from mindspore import Parameter
+from mindspore import Tensor
 from mindspore import jit, context
 
-from .nn_arch import Colabdesign
-from ..model import Model
 from .module.design_wrapcell import TrainOneStepCell, WithLossCell
 from .module.utils import get_weights, get_lr, get_opt
+from .nn_arch import Colabdesign
+from ..model import Model
 
 
 class COLABDESIGN(Model):
@@ -58,25 +50,38 @@ class COLABDESIGN(Model):
         self.config = config
         self.use_jit = self.config.use_jit
         self.checkpoint_url = \
-            'https://download.mindspore.cn/mindscience/mindsponge/Multimer/checkpoint/Multimer_Model_1.ckpt'
+            'https://download.mindspore.cn/mindscience/mindsponge/ColabDesign/checkpoint/ColabDesign.ckpt'
         self.checkpoint_path = "./colabdesign.ckpt"
         seq_vector = 0.01 * np.random.normal(0, 1, size=(1, 100, 20))
-        self.network = Colabdesign(self.config, self.mixed_precision, Tensor(seq_vector, ms.float16), 100,
+        self.network = Colabdesign(self.config, self.mixed_precision, Tensor(seq_vector, ms.float32), 100,
                                    protocol=self.config.protocol)
-        load_checkpoint(self.checkpoint_path, self.network)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
         net_with_criterion = WithLossCell(self.network)
-        soft_weights, temp_weights = get_weights(self.config, self.config.soft_iters, self.config.temp_iters,
-                                                 self.config.hard_iters)
+        soft_weights, _, temp_weights = get_weights(self.config, self.config.soft_iters, self.config.temp_iters,
+                                                    self.config.hard_iters)
         epoch = self.config.soft_iters + self.config.temp_iters + self.config.hard_iters
         lr = get_lr(temp_weights, soft_weights, epoch)
-        model_params = [Parameter(Tensor(seq_vector, ms.float16))]
+        model_params = [Parameter(Tensor(seq_vector, ms.float32), name="seq_vector", requires_grad=True)]
         opt = get_opt(model_params, lr, 0.0, self.config.opt_choice)
         self.train_net = TrainOneStepCell(net_with_criterion, opt, sens=8192)
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
 
     # pylint: disable=arguments-differ
     def predict(self, data):
-        pass
+        temp, soft, hard = get_weights(self.config, self.config.soft_iters, self.config.temp_iters,
+                                       self.config.hard_iters)
+        best = 999
+        for epoch in range(30):
+            temp_step = temp[epoch]
+            soft_step = soft[epoch]
+            hard_step = hard[epoch]
+            data[-6] = temp_step
+            data[-5] = soft_step
+            data[-4] = hard_step
+            inputs_feats = [Tensor(feat) for feat in data]
+            loss = self._jit_forward(inputs_feats)
+            if loss < best:
+                best = loss
+        return best
 
     def forward(self, data):
         pass
@@ -84,22 +89,16 @@ class COLABDESIGN(Model):
     # pylint: disable=arguments-differ
     @jit
     def backward(self, feat):
-        loss = self.train_net(*feat)
-        return loss
+        pass
 
     # pylint: disable=arguments-differ
     def train_step(self, data):
-        features = []
-        for feature in data:
-            features.append(Tensor(data[feature]))
-
-        loss = self.backward(features)
-
-        return loss
+        pass
 
     def _pynative_forward(self, data):
         pass
 
     @jit
     def _jit_forward(self, data):
-        pass
+        loss = self.train_net(*data)
+        return loss

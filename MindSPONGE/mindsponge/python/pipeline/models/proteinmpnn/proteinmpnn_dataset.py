@@ -17,12 +17,14 @@ import os
 import pickle
 
 from ...dataset import PSP, data_process_run
+
 from .proteinmpnndata import pre_process, tied_featurize, featurize
-from .dataset import StructureDatasetPDB, Definebatch
+from .dataset import StructureDatasetPDB, Definebatch, parse_pdb
 
 
 class ProteinMpnnDataset(PSP):
     """proteinmpnndataset"""
+
     def __init__(self, config):
         self.config = config
         self.supported_models = ['Proteinmpnn']
@@ -31,9 +33,9 @@ class ProteinMpnnDataset(PSP):
         self.is_training = self.config.is_training
         self.proteinmpnn_inputs()
         if self.is_training:
-            self.data_process = [featurize]
+            self.data_process = [featurize()]
         else:
-            self.data_process = [pre_process, tied_featurize]
+            self.data_process = [pre_process(), tied_featurize()]
         super().__init__()
 
     # pylint: disable=arguments-differ
@@ -69,7 +71,13 @@ class ProteinMpnnDataset(PSP):
 
     # pylint: disable=arguments-differ
     def process(self, data):
-        features = data_process_run(data, self.data_process)
+        pdb_dict_list = parse_pdb(data)
+        all_chain_list = [item[-1:] for item in list(pdb_dict_list[0]) if item[:9] == 'seq_chain']
+        designed_chain_list = all_chain_list
+        fixed_chain_list = [letter for letter in all_chain_list if letter not in designed_chain_list]
+        chain_id_dict = {}
+        chain_id_dict[pdb_dict_list[0]['name']] = (designed_chain_list, fixed_chain_list)
+        features = data_process_run(pdb_dict_list.copy(), self.data_process)
         return features
 
     def set_training_data_src(self, data_src):
