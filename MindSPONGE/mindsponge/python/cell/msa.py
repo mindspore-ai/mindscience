@@ -357,3 +357,93 @@ class MSAColumnGlobalAttention(nn.Cell):
         """
         msa_act = self.attn_mod(msa_act, msa_act, msa_mask, index)
         return msa_act
+
+
+class MSARowAttentionWithPairBiasContact(nn.Cell):
+    '''MSA row attention'''
+
+    def __init__(self, num_head, key_dim, gating, msa_act_dim, pair_act_dim, batch_size=None, slice_num=0):
+        super(MSARowAttentionWithPairBiasContact, self).__init__()
+        self.num_head = num_head
+        self.batch_size = batch_size
+        self.norm = P.LayerNorm(begin_norm_axis=-1, begin_params_axis=-1, epsilon=1e-5)
+        self.matmul = P.MatMul(transpose_b=True)
+        self.attn_mod = Attention(num_head, key_dim, gating, msa_act_dim, msa_act_dim, msa_act_dim, batch_size)
+        self.msa_act_dim = msa_act_dim
+        self.pair_act_dim = pair_act_dim
+        self.batch_size = batch_size
+        self.slice_num = slice_num
+        self.idx = Tensor(0, mstype.int32)
+        self.masked_layer_norm = MaskedLayerNorm()
+        self._init_parameter()
+
+    def construct(self, msa_act, msa_mask, pair_act, contact_act, contact_info_mask, index):
+        '''construct'''
+        query_norm_gamma = P.Gather()(self.query_norm_gammas, index, 0)
+        query_norm_beta = P.Gather()(self.query_norm_betas, index, 0)
+        feat_2d_norm_gamma = P.Gather()(self.feat_2d_norm_gammas, index, 0)
+        feat_2d_norm_beta = P.Gather()(self.feat_2d_norm_betas, index, 0)
+        feat_2d_weight = P.Cast()(P.Gather()(self.feat_2d_weights, index, 0), mstype.float16)
+        contact_norm_gamma = P.Gather()(self.contact_norm_gammas, index, 0)
+        contact_norm_beta = P.Gather()(self.contact_norm_betas, index, 0)
+        contact_weight = P.Cast()(P.Gather()(self.contact_weights, index, 0), mstype.float16)
+
+        q, k, _ = pair_act.shape
+        msa_mask = P.Cast()(msa_mask, mstype.float32)
+        bias = 1e9 * (msa_mask - 1.0)
+        bias = P.ExpandDims()(P.ExpandDims()(bias, 1), 2)
+
+        msa_act = P.Cast()(msa_act, mstype.float32)
+        pair_act = P.Cast()(pair_act, mstype.float32)
+        msa_act, _, _ = self.norm(msa_act, query_norm_gamma, query_norm_beta)
+        pair_act, _, _ = self.norm(pair_act, feat_2d_norm_gamma, feat_2d_norm_beta)
+        msa_act = P.Cast()(msa_act, mstype.float16)
+        pair_act = P.Cast()(pair_act, mstype.float16)
+        pair_act = P.Reshape()(pair_act, (-1, pair_act.shape[-1]))
+        pair_act_bias = P.Transpose()(P.Reshape()(self.matmul(pair_act, feat_2d_weight), (q, k, self.num_head)),
+                                      (2, 0, 1))
+
+        contact_act = P.Cast()(contact_act, mstype.float32)
+        contact_act, _, _ = self.norm(contact_act, contact_norm_gamma, contact_norm_beta)
+        contact_act = P.Cast()(contact_act, mstype.float16)
+        contact_act = P.Reshape()(contact_act, (-1, contact_act.shape[-1]))
+        contact_act_bias = P.Transpose()(P.Reshape()(self.matmul(contact_act, contact_weight), (q, k, self.num_head)),
+                                         (2, 0, 1))
+        contact_act_bias = contact_act_bias * contact_info_mask[None, :, :]
+
+        nonbatched_bias = pair_act_bias + contact_act_bias
+        batched_inputs = (msa_act, bias)
+
+        nonbatched_inputs = (index, nonbatched_bias)
+
+        msa_act = _memory_reduce(self._compute, batched_inputs, nonbatched_inputs, self.slice_num)
+        return msa_act
+
+    def _init_parameter(self):
+        '''init parameter'''
+        self.query_norm_gammas = Parameter(Tensor(np.zeros([self.batch_size, self.msa_act_dim,]), mstype.float32))
+        self.query_norm_betas = Parameter(Tensor(np.zeros([self.batch_size, self.msa_act_dim,]), mstype.float32))
+        self.feat_2d_norm_gammas = Parameter(Tensor(np.zeros([self.batch_size, self.pair_act_dim,]), mstype.float32))
+        self.feat_2d_norm_betas = Parameter(Tensor(np.zeros([self.batch_size, self.pair_act_dim,]), mstype.float32))
+        self.feat_2d_weights = Parameter(
+            Tensor(np.zeros([self.batch_size, self.num_head, self.pair_act_dim]), mstype.float32))
+
+        self.contact_norm_gammas = Parameter(Tensor(np.ones([self.batch_size, 32,]), mstype.float32))
+        self.contact_norm_betas = Parameter(Tensor(np.zeros([self.batch_size, 32,]), mstype.float32))
+        self.contact_weights = Parameter(Tensor(np.zeros([self.batch_size, self.num_head, 32]), mstype.float32))
+
+    def _compute(self, msa_act, mask, index, nonbatched_bias):
+        """
+        compute.
+
+        Args:
+            msa_act (Tensor):           Tensor of msa_act.
+            mask (Tensor):              The mask for MSA row attention matrix.
+            index (Tensor):             The index of while loop, only used in case of while control flow. Default: None
+            nonbatched_bias(Tensor):    Tensor of non batched bias matrix.
+
+        Outputs:
+            - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the attention layer.
+        """
+        msa_act = self.attn_mod(msa_act, msa_act, mask, index, nonbatched_bias)
+        return msa_act
