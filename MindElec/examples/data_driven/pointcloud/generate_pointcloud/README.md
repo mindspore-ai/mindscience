@@ -15,24 +15,24 @@ In order to convert the electromagnetic simulation model into a pattern that can
 
 ## **Exporting Information of Geometry and Material**
 
-MindElec provides two types of automatic execution scripts for converting CST files into STP files that can be read by Python. The scripts can be used to convert data in batches to implement large-scale electromagnetic simulation.
+MindSpore Elec provides two types of automatic execution scripts for converting CST files into STP files that can be read by Python. The scripts can be used to convert data in batches to implement large-scale electromagnetic simulation.
 
 - **The CST VBA API automatically calls and exports the JSON and STP files**: Open the VBA Macros Editor of the CST software, import the `export_stp.bas` file in the `generate_pointcloud` directory, change the paths of the JSON and STP files to the desired ones, and click `Run` to export the JSON and STP files. The JSON file contains the model port location and the material information corresponding to the STP file.
 - **For CST 2019 or later, you can use Python to directly call CST**: Directly call the `export_stp.py` file in the `generate_pointcloud` directory.
 
 ## Generating Point Cloud Data
 
-The STP file cannot be directly used as the input of the neural network. It needs to be converted into regular tensor data. MindElec provides an API for efficiently converting the STP file into the point cloud tensor data. The `generate_cloud_point.py` file in the `generate_pointcloud` directory provides the API calling example.
+The STP file cannot be directly used as the input of the neural network. It needs to be converted into regular tensor data. MindSpore Elec provides an API for efficiently converting the STP file into the point cloud tensor data. The `generate_cloud_point.py` file in the `generate_pointcloud` directory provides the API calling example.
 
 # **Requirements**
 
 - Hardware (Ascend)
     - Prepare the Ascend AI Processor to set up the hardware environment.
 - Framework
-    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindSpore Elec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - For more information, see the following resources:
-    - [MindElec Tutorial](https://www.mindspore.cn/mindelec/docs/en/master/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindelec/docs/en/master/mindelec.architecture.html)
+    - [MindSpore Elec Tutorial](https://www.mindspore.cn/mindelec/docs/en/master/intro_and_install.html)
+    - [MindSpore Elec Python API](https://www.mindspore.cn/mindelec/docs/en/master/mindelec.architecture.html)
 
 # **Script Description**
 

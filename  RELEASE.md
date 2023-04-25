@@ -4,7 +4,7 @@
 
 ### Major Features and Improvements
 
-#### MindElec
+#### MindSpore Elec
 
 * Provide physics-driven and data-driven neural network for electromagnetic simulation
 * Support CSG geometry model construction and CAD format data processing

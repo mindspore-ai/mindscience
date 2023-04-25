@@ -20,7 +20,7 @@
 
 When you use point cloud data to calculate scatter parameters, if the target architecture is too complex or the modification of structure is too fine, the resolution of the point cloud data needs to be set to a high value to ensure the validity of the point cloud data. However, a high resolution may lead to the problem that a single piece of data is too large. For example, a single point cloud data in this scenario consists of hundreds of millions of points. The deep learning based simulation method requires a large amount of memory and computing power to process such data, and its efficiency is also reduced.
 
-To solve this problem, MindElec proposes a neural network-based compression model to compress the original point cloud data by blocks. This tool can greatly reduce the storage and computation cost of point cloud based AI simulation method, improve its generality and efficiency.
+To solve this problem, MindSpore Elec proposes a neural network-based compression model to compress the original point cloud data by blocks. This tool can greatly reduce the storage and computation cost of point cloud based AI simulation method, improve its generality and efficiency.
 
 ## **Self-supervised Training of the Compression Model**
 
@@ -44,10 +44,10 @@ The model training data in this example involves commercial secrets and the down
 - Hardware (Ascend)
     - Prepare the Ascend AI Processor to set up the hardware environment.
 - Framework
-    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindSpore Elec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - For more information, see the following resources:
-    - [MindElec Tutorial](https://www.mindspore.cn/mindelec/docs/en/master/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindelec/docs/en/master/mindelec.architecture.html)
+    - [MindSpore Elec Tutorial](https://www.mindspore.cn/mindelec/docs/en/master/intro_and_install.html)
+    - [MindSpore Elec Python API](https://www.mindspore.cn/mindelec/docs/en/master/mindelec.architecture.html)
 
 # **Script Description**
 

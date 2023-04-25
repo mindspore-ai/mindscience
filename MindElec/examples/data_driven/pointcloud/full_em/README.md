@@ -30,14 +30,14 @@ Generate electromagnetic field inputs data based on [Point Cloud Data Generation
 - Hardware (Ascend)
     - Prepare the Ascend AI Processor to set up the hardware environment.
 - Framework
-    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindSpore Elec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - For more information, see the following resources:
-    - [MindElec Tutorial](https://www.mindspore.cn/mindelec/docs/en/master/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindelec/docs/en/master/mindelec.architecture.html)
+    - [MindSpore Elec Tutorial](https://www.mindspore.cn/mindelec/docs/en/master/intro_and_install.html)
+    - [MindSpore Elec Python API](https://www.mindspore.cn/mindelec/docs/en/master/mindelec.architecture.html)
 
 # Quick Start
 
-After installing MindElec, you can perform the following training and evaluation steps:
+After installing MindSpore Elec, you can perform the following training and evaluation steps:
 
 - Running in the Ascend AI Processor environment
 
