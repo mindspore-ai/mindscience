@@ -53,10 +53,10 @@ $$L_{total} = \lambda_{src}L_{src} + \lambda_{src_ic}L_{src_ic} + \lambda_{no_sr
 - 硬件（Ascend）
     - 准备Ascend处理器搭建硬件环境。
 - 框架
-    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindSpore Elec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindElec教程](https://www.mindspore.cn/mindelec/docs/zh-CN/master/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindelec/docs/zh-CN/master/mindelec.architecture.html)
+    - [MindSpore Elec教程](https://www.mindspore.cn/mindelec/docs/zh-CN/master/intro_and_install.html)
+    - [MindSpore Elec Python API](https://www.mindspore.cn/mindelec/docs/zh-CN/master/mindelec.architecture.html)
 
 # 脚本说明
 

@@ -15,7 +15,7 @@
 
 # 参数化电磁仿真
 
-电磁仿真的某些场景（如容差评估）中，目标结构可以用一组参数描述，将这些参数作为神经网络的输入可以仿真不同目标结构的散射参数。本案例介绍如何通过MindElec参数化方法仿真天线和手机的散射参数，详细信息可以参考参数化电磁仿真教程。
+电磁仿真的某些场景（如容差评估）中，目标结构可以用一组参数描述，将这些参数作为神经网络的输入可以仿真不同目标结构的散射参数。本案例介绍如何通过MindSpore Elec参数化方法仿真天线和手机的散射参数，详细信息可以参考参数化电磁仿真教程。
 
 # 模型架构
 
@@ -36,10 +36,10 @@
 - 硬件（Ascend）
     - 准备Ascend处理器搭建硬件环境。
 - 框架
-    - [MindElec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
+    - [MindSpore Elec](https://gitee.com/mindspore/mindscience/tree/master/MindElec)
 - 如需查看详情，请参见如下资源：
-    - [MindElec教程](https://www.mindspore.cn/mindelec/docs/zh-CN/master/intro_and_install.html)
-    - [MindElec Python API](https://www.mindspore.cn/mindelec/docs/zh-CN/master/mindelec.architecture.html)
+    - [MindSpore Elec教程](https://www.mindspore.cn/mindelec/docs/zh-CN/master/intro_and_install.html)
+    - [MindSpore Elec Python API](https://www.mindspore.cn/mindelec/docs/zh-CN/master/mindelec.architecture.html)
 
 # 脚本说明
 
