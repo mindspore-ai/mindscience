@@ -1,6 +1,16 @@
 # MindFlow Release Notes
 
+MindFlow is a flow simulation suite developed based on MindSpore. It supports AI flow simulation in industries such as aerospace, ship manufacturing, and energy and power. It aims to provide efficient and easy-to-use AI computing flow simulation software for industrial research engineers, university professors, and students.
+
 [查看中文](./RELEASE_CN.md)
+
+## MindFlow 0.1.0.rc1 Release Notes
+
+### Major Features and Improvements
+
+#### Data Driven
+
+- [STABLE] Provide the Kupmann KNO neural operator to improve the simulation accuracy of NS equations. Provide a large model of Dongfang Yufeng, supporting end-to-end rapid simulation of airfoils.
 
 ## MindFlow 0.1.0-alpha Release Notes
 
