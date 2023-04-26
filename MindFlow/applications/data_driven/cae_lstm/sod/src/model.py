@@ -15,7 +15,8 @@
 """
 cae-lstm model
 """
-from mindspore import nn, ops, float32
+import mindspore.common.dtype as mstype
+from mindspore import nn, ops
 
 
 class CaeEncoder(nn.Cell):
@@ -166,8 +167,8 @@ class Lstm(nn.Cell):
         self.num_layers = num_layers
 
     def construct(self, x):
-        h0 = ops.zeros((self.num_layers, ops.shape(x)[0], self.hidden_size), float32)
-        c0 = ops.zeros((self.num_layers, ops.shape(x)[0], self.hidden_size), float32)
+        h0 = ops.zeros((self.num_layers, ops.shape(x)[0], self.hidden_size), mstype.float32)
+        c0 = ops.zeros((self.num_layers, ops.shape(x)[0], self.hidden_size), mstype.float32)
         x, _ = self.lstm(x, (h0, c0))
         x = self.dense(x)
         return x
