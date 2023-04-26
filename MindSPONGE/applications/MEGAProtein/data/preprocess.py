@@ -473,7 +473,9 @@ class Feature:
                           "all_atom_positions", "rigidgroups_gt_frames", "rigidgroups_gt_exists",
                           "rigidgroups_alt_gt_frames", "torsion_angles_sin_cos", "chi_mask"]
             label_arrays = [features[key] for key in label_keys]
-            label_arrays = [array[0] for array in label_arrays]
+            for i, _ in enumerate(label_arrays):
+                if i not in (3, 4):
+                    label_arrays[i] = label_arrays[i][0]
             label_arrays = [array.astype(dtype) if array.dtype == "float64" else array for array in label_arrays]
             label_arrays = [array.astype(dtype) if array.dtype == "float32" else array for array in label_arrays]
             res = [arrays, prev_pos, prev_msa_first_row, prev_pair, label_arrays]

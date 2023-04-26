@@ -192,7 +192,7 @@ def fold_train(args):
         prev_pos, prev_msa_first_row, prev_pair = Tensor(d["prev_pos"]), Tensor(d["prev_msa_first_row"]), \
                                                   Tensor(d["prev_pair"])
         ground_truth = d["pseudo_beta_gt"], d["pseudo_beta_mask_gt"], d["all_atom_mask_gt"], \
-                       d["true_msa"], d["bert_mask"], d["residx_atom14_to_atom37"], \
+                       d["true_msa"][max_recycle], d["bert_mask"][max_recycle], d["residx_atom14_to_atom37"], \
                        d["restype_atom14_bond_lower_bound"], d["restype_atom14_bond_upper_bound"], \
                        d["atomtype_radius"], d["backbone_affine_tensor"], d["backbone_affine_mask"], \
                        d["atom14_gt_positions"], d["atom14_alt_gt_positions"], d["atom14_atom_is_ambiguous"], \
@@ -268,7 +268,7 @@ def assessment_infer(args):
                                                                         prev_pair)
         for pdb_name in os.listdir(args.decoy_pdb_path):
             decoy_atom_positions, decoy_atom_mask, align_mask = \
-            process_pdb(feat[4][0], ori_res_length, os.path.join(args.decoy_pdb_path, pdb_name))
+                process_pdb(feat[4][0], ori_res_length, os.path.join(args.decoy_pdb_path, pdb_name))
             plddt = megaassessment(*feat_i, prev_pos, prev_msa_first_row, prev_pair,
                                    Tensor(decoy_atom_positions), Tensor(decoy_atom_mask), run_pretrain=False)
             t3 = time.time()
