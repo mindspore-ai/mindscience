@@ -418,7 +418,7 @@ def make_atom14_positions(aatype, all_atom_mask, all_atom_positions):
           Shape is :math:`(N_{res}, 14)` .
 
     Symbol:
-        - ** :math:`N_{res}` ** - The number of amino acids in a protein, according to the sequence of the protein.
+        - :math:`N_{res}` - The number of amino acids in a protein, according to the sequence of the protein.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
