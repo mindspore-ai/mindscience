@@ -18,7 +18,7 @@ from mindspore import ops, nn
 from mindspore.nn import LayerNorm
 import mindspore.numpy as mnp
 # pylint: disable=relative-beyond-top-level
-from ..esm.module.util import Alphabet
+from ..esm_if1.module.util import Alphabet
 from .module.transformer_layer import TransformerLayer
 from .module.contact_prediction_head import ContactPredictionHead
 from .module.roberta_lm_head import RobertaLMHead

@@ -102,10 +102,7 @@ class MEGAAssessment(Model):
             data['prev_msa_first_row'] = prev_msa_first_row
             data['prev_pair'] = prev_pair
             data = mutable(data)
-            t1 = time.time()
             prev_pos, prev_msa_first_row, prev_pair, _ = self.forward(data, run_pretrain=True)
-            t2 = time.time()
-            print(round(t2 - t1, 2))
         data['prev_pos'] = prev_pos
         data['prev_msa_first_row'] = prev_msa_first_row
         data['prev_pair'] = prev_pair
@@ -113,7 +110,10 @@ class MEGAAssessment(Model):
         data['decoy_atom_mask'] = Tensor(inputs['decoy_atom_mask'])
 
         plddt = self.forward(data, run_pretrain=False)
-        plddt = plddt.asnumpy()[inputs['align_mask'] == 1]
+        if 'align_mask' in inputs.keys():
+            plddt = plddt.asnumpy()[inputs['align_mask'] == 1]
+        else:
+            plddt = plddt.asnumpy()
         return plddt
 
     # pylint: disable=arguments-differ

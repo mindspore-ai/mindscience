@@ -42,9 +42,15 @@ char_dict = {
 
 class RNASSDataGenerator():
     """RNA builder class"""
-    def __init__(self, data_dir, split, upsampling=False):
-        self.data_dir = data_dir
-        self.split = split
+    def __init__(self, data_dir=None, split=None, upsampling=False, data=None):
+        if data is None:
+            assert data_dir is not None
+            assert split is not None
+            self.data_dir = data_dir
+            self.split = split
+            self.data = None
+        else:
+            self.data = data
         self.upsampling = upsampling
         # Load vocab explicitly when needed
         self.load_data()
@@ -54,9 +60,10 @@ class RNASSDataGenerator():
     def load_data(self):
         """Load the current split"""
         p = Pool()
-        data_dir = self.data_dir
-        with open(os.path.join(data_dir, '%s' % self.split), 'rb') as f:
-            self.data = cPickle.load(f, encoding='iso-8859-1')
+        if self.data is None:
+            data_dir = self.data_dir
+            with open(os.path.join(data_dir, '%s' % self.split), 'rb') as f:
+                self.data = cPickle.load(f, encoding='iso-8859-1')
         if self.upsampling:
             self.data = self.upsampling_data_new()
         self.data_x = np.array([instance[0] for instance in self.data])
@@ -277,3 +284,13 @@ def creatematrix(data):
     data_fcn_2 = np.concatenate((data["data_fcn"], data["data_fcn_1"]), axis=0)
     data["data_fcn_2"] = data_fcn_2
     return data
+
+
+def one_hot(seq):
+    """one hot"""
+    rnn_seq = seq
+    basess = 'AUCG'
+    bases = np.array([base for base in basess])
+    feat = np.concatenate([[(bases == base.upper()).astype(int)]
+                           if str(base).upper() in basess else np.array([[0] * len(basess)]) for base in rnn_seq])
+    return feat

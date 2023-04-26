@@ -22,8 +22,9 @@ from mindspore.dataset import GeneratorDataset
 
 from .evogen_datafunction import dict_replace_key, correct_restypes, dict_concatenate, one_hot_convert, \
     dict_expand_dims, dict_take, dict_del_key, make_mask, initialize_hhblits_profile, msa_sample, msa_bert_mask, \
-    generate_random_sample, random_crop_to_size, dict_suqeeze, dict_cast, dict_filter_key
+    generate_random_sample, random_crop_to_size, dict_suqeeze, dict_cast, dict_filter_key, process_fasta
 from ...dataset import PSP, data_process_run
+
 
 NUM_RES = 'num residues placeholder'
 NUM_MSA_SEQ = 'msa placeholder'
@@ -50,15 +51,19 @@ _msa_feature_names = ['msa', 'deletion_matrix', 'msa_mask', 'msa_row_mask', 'ber
 
 class MEGAEvoGenDataSet(PSP):
     '''MEGAEvoGenDataSet'''
-    def __init__(self, config, data_src, seed=0):
+    def __init__(self, config, seed=0):
         self.config = config
         self.in_memory = False
         self.phase = None
-        self.training_data_src = data_src
-        self.training_pkl_path = self.training_data_src + "/pkl/"
-        self.training_pdb_path = self.training_data_src + "/pdb/"
-        self.training_pdb_items = [self.training_pdb_path + key for key in sorted(os.listdir(self.training_pdb_path))]
-        self.training_pkl_items = [self.training_pkl_path + key for key in sorted(os.listdir(self.training_pkl_path))]
+        self.use_pkl = config.use_pkl
+        if self.use_pkl:
+            self.training_data_src = config.data_path
+            self.training_pkl_path = self.training_data_src + "/pkl/"
+            self.training_pdb_path = self.training_data_src + "/pdb/"
+            self.training_pdb_items = [self.training_pdb_path + key
+                                       for key in sorted(os.listdir(self.training_pdb_path))]
+            self.training_pkl_items = [self.training_pkl_path + key
+                                       for key in sorted(os.listdir(self.training_pkl_path))]
         self.data_process = [
             dict_replace_key(['deletion_matrix_int', 'deletion_matrix']),
             dict_expand_dims(keys=["deletion_matrix", "msa"], axis=-1),
@@ -98,8 +103,10 @@ class MEGAEvoGenDataSet(PSP):
             dict_cast([np.int32, np.float32], filtered_list=[]),
             dict_cast([np.float64, np.float32], filtered_list=[]),
         ]
+
         super().__init__()
 
+    # pylint: disable=arguments-differ
     def __getitem__(self, idx):
         if self.in_memory:
             data, _ = self.inputs[idx]
@@ -117,8 +124,17 @@ class MEGAEvoGenDataSet(PSP):
     # pylint: disable=arguments-differ
     def process(self, data):
         '''process'''
-        features = data_process_run(data, self.data_process)
-        return features
+        if self.use_pkl:
+            new_data = {}
+            need_key = ['aatype', 'residue_index', 'deletion_matrix_int', 'msa']
+            for key in need_key:
+                new_data[key] = data[key]
+            features = data_process_run(new_data, self.data_process)
+            return features
+        # use fasta
+        new_data = process_fasta(data)
+        features = data_process_run(new_data, self.data_process)
+        return new_data, features
 
     # pylint: disable=arguments-differ
     def data_parse(self, idx):

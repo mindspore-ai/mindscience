@@ -13,10 +13,14 @@
 # limitations under the License.
 # ============================================================================
 """evogen"""
+import string
+
 import numpy as np
-from ...dataset import curry1
+from mindsponge.common import residue_constants
+
 from ....common import residue_constants
 from ....data.data_transform import one_hot
+from ...dataset import curry1
 
 MS_MIN32 = -2147483648
 MS_MAX32 = 2147483647
@@ -91,7 +95,7 @@ def dict_expand_dims(feature=None, keys=None, result_key=None, axis=-1):
         for i in range(key_num):
             feature[result_key[i]] = np.expand_dims(feature[keys[i]], axis=axis)
     else:
-        for key in range(keys):
+        for key in keys:
             feature[key] = np.expand_dims(feature[key], axis=axis)
     return feature
 
@@ -350,4 +354,80 @@ def random_crop_to_size(feature=None, feature_list=None, crop_size=None, max_msa
     }
     feature = feature_pad(feature, pad_size_map, feature_list)
 
+    return feature
+
+
+def make_sequence_features(sequence, num_res):
+    """Constructs a feature dict of sequence features."""
+    features = {'aatype': residue_constants.sequence_to_onehot(sequence=sequence,
+                                                               mapping=residue_constants.restype_order_with_x,
+                                                               map_unknown_to_x=True),
+                'residue_index': np.array(range(num_res), dtype=np.int32)}
+    return features
+
+
+def make_msa_features(msas, deletion_matrices):
+    """Constructs a feature dict of MSA features."""
+    if not msas:
+        raise ValueError('At least one MSA must be provided.')
+
+    int_msa = []
+    deletion_matrix = []
+    seen_sequences = set()
+    for msa_index, msa in enumerate(msas):
+        if not msa:
+            raise ValueError(f'MSA {msa_index} must contain at least one sequence.')
+        for sequence_index, sequence in enumerate(msa):
+            if sequence in seen_sequences:
+                continue
+            seen_sequences.add(sequence)
+            int_msa.append([residue_constants.HHBLITS_AA_TO_ID.get(res) for res in sequence])
+            deletion_matrix.append(deletion_matrices[msa_index][sequence_index])
+
+    num_res = len(msas[0][0])
+    num_alignments = len(int_msa)
+    features = {'deletion_matrix_int': np.array(deletion_matrix, dtype=np.int32),
+                'deletion_matrix_int_all_seq': np.array(deletion_matrix, dtype=np.int32),
+                'msa': np.array(int_msa, dtype=np.int32),
+                'msa_all_seq': np.array(int_msa, dtype=np.int32),
+                'num_alignments': np.array([num_alignments] * num_res, dtype=np.int32),
+                'msa_species_identifiers_all_seq': np.array([b''] * num_alignments)}
+    return features
+
+
+def parse_a3m(sequences):
+    """parse a3m"""
+    deletion_matrix = []
+    if not isinstance(sequences, list):
+        sequences = [sequences]
+    for msa_sequence in sequences:
+        deletion_vec = []
+        deletion_count = 0
+        for j in msa_sequence:
+            if j.islower():
+                deletion_count += 1
+            else:
+                deletion_vec.append(deletion_count)
+                deletion_count = 0
+        deletion_matrix.append(deletion_vec)
+
+    # Make the MSA matrix out of aligned (deletion-free) sequences.
+    deletion_table = str.maketrans('', '', string.ascii_lowercase)
+    aligned_sequences = [s.translate(deletion_table) for s in sequences]
+    return aligned_sequences, deletion_matrix
+
+
+def process_fasta(fasta):
+    """process fasta"""
+    feature = {}
+    aligned_sequences, deletion_matrix = parse_a3m(fasta)
+    msa_features = make_msa_features(msas=(aligned_sequences,), deletion_matrices=(deletion_matrix,))
+    num_res = len(fasta)
+    sequence_features = make_sequence_features(
+        sequence=fasta,
+        num_res=num_res)
+    feature['aatype'] = sequence_features.get('aatype')
+    feature['residue_index'] = sequence_features.get('residue_index')
+    feature['deletion_matrix_int'] = msa_features.get('deletion_matrix_int')
+    feature['msa'] = msa_features.get('msa')
     return feature

@@ -15,7 +15,7 @@
 """esm2 dataset"""
 import mindspore as ms
 from ...dataset import PSP
-from ..esm.module.util import Alphabet
+from ..esm_if1.module.util import Alphabet
 
 
 class ESM2DataSet(PSP):

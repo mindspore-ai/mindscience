@@ -24,7 +24,7 @@ from mindspore.nn.layer.activation import get_activation
 from mindspore.common.initializer import Initializer, initializer, \
     XavierUniform, _calculate_fan_in_and_fan_out, _assignment, Constant
 # pylint: disable=relative-beyond-top-level
-from ...esm.module.util import ms_transpose, utils_softmax
+from ...esm_if1.module.util import ms_transpose, utils_softmax
 from .rotary_embedding import RotaryEmbedding
 
 

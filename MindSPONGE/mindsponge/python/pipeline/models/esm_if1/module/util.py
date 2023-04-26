@@ -280,10 +280,8 @@ def nan_to_num(ts, val=0.0):
 
 def rbf(values, v_min, v_max, n_bins=16):
     """Radial basis function"""
-    linspace = ms.ops.LinSpace()
-    v_min = ms.Tensor(v_min, ms.float32)
-    v_max = ms.Tensor(v_max, ms.float32)
-    rbf_centers = linspace(v_min, v_max, n_bins)
+    rbf_centers = np.linspace(v_min, v_max, n_bins)
+    rbf_centers = ms.Tensor(rbf_centers, ms.float32)
     rbf_centers = rbf_centers.view(tuple([1] * len(values.shape) + [-1]))
     rbf_std = (v_max - v_min) / n_bins
     expand_dims = ms.ops.ExpandDims()
