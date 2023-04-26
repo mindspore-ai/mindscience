@@ -28,4 +28,4 @@ mindsponge.common.make_atom14_positions
         - numpy.array。进行手性变换的原子标识，1为进行变换，0为未进行变换， :math:`(N_{res}, 14)` 。
 
     符号：
-        - **:math:`N_{res}`** - 蛋白质中氨基酸个数，按蛋白质一级序列排列。
+        - :math:`N_{res}` - 蛋白质中氨基酸个数，按蛋白质一级序列排列。
