@@ -13,17 +13,17 @@
 # limitations under the License.
 # ============================================================================
 """graphdta dataset processing script."""
-
-import pickle
 import numpy as np
 
 from mindspore.dataset import GeneratorDataset
+from .data_process import generate_feature
 
 
 class GraphDTADataSet:
     """Class for Generate Dataset."""
     def __init__(self, config):
         self.batch_size = config.batch_size
+        self.data_path = config.data_path
         self.train_data = None
         self.train_index = None
         self.column_name = ["x_feature", "x_mask", "edge_feature", "edge_mask", "target_feature", "target_mask",
@@ -115,14 +115,14 @@ class GraphDTADataSet:
         edge_mask1[0][:edge_num_all] = 1
         edge_mask1[1][:edge_num_all] = 1
 
-        new_train_data = {"x_feature_batch": x_1,
-                          "x_mask_batch": x_mask1,
-                          "edge_feature_batch": edge_feat1,
-                          "edge_mask_batch": edge_mask1,
-                          "target_feature_batch": target_feat1,
-                          "target_mask_batch": np.zeros((batch_size, 1000)),
-                          "label_batch": label1,
-                          "batch_info": batch1,
+        new_train_data = {"x_feature_batch": x_1.astype(np.float32),
+                          "x_mask_batch": x_mask1.astype(np.int32),
+                          "edge_feature_batch": edge_feat1.astype(np.int32),
+                          "edge_mask_batch": edge_mask1.astype(np.int32),
+                          "target_feature_batch": target_feat1.astype(np.int32),
+                          "target_mask_batch": np.zeros((batch_size, 1000)).astype(np.int32),
+                          "label_batch": label1.astype(np.float32),
+                          "batch_info": batch1.astype(np.int32),
                           }
         return new_train_data
 
@@ -130,9 +130,8 @@ class GraphDTADataSet:
         """set training data src"""
         if data_src is None:
             raise FileNotFoundError
-        with open(data_src, "rb") as f:
-            input_data = pickle.load(f)
-        self.train_data = input_data
+        self.data_path = data_src
+        self.train_data = self.raw_feature()
 
     def create_iterator(self, num_epochs):
         """create data iterator"""
@@ -146,3 +145,14 @@ class GraphDTADataSet:
                                    num_parallel_workers=4, shuffle=True, max_rowsize=16)
         iteration = dataset.create_dict_iterator(num_epochs=1, output_numpy=True)
         return iteration
+
+    def raw_feature(self):
+        feature = generate_feature(self.data_path)
+        return feature
+
+    def process(self, data_path):
+        self.data_path = data_path
+        raw_feature = self.raw_feature()
+        index_all = [0] # for inference, only one data at a time
+        feature_dict = self.process_data(raw_feature, 1, index_all)
+        return feature_dict

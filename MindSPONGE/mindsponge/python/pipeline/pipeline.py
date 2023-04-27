@@ -24,6 +24,7 @@ from .models import DeepDR, DeepDRDataSet, deepdr_configuration
 from .models import DeepFri, DeepFriDataSet, deepfri_configuration
 from .models import ESM, ESMDataSet, esm_configuration
 from .models import ESM2, ESM2DataSet, esm2_configuration
+from .models import Grover, GroverDataSet, grover_configuration
 from .models import KGNN, KGNNDataSet, kgnn_configuration
 from .models import MEGAAssessment, MEGAAssessmentDataSet, megaassessment_configuration
 from .models import MEGAEvoGen, MEGAEvoGenDataSet, megaevogen_configuration
@@ -36,8 +37,9 @@ model_card = {
     "ColabDesign": {"model": COLABDESIGN, "dataset": ColabDesignDataSet, "config": colabdesign_configuration},
     "DeepDR": {"model": DeepDR, "dataset": DeepDRDataSet, "config": deepdr_configuration},
     "DeepFri": {"model": DeepFri, "dataset": DeepFriDataSet, "config": deepfri_configuration},
-    "ESM": {"model": ESM, "dataset": ESMDataSet, "config": esm_configuration},
+    "ESM_IF1": {"model": ESM, "dataset": ESMDataSet, "config": esm_configuration},
     "ESM2": {"model": ESM2, "dataset": ESM2DataSet, "config": esm2_configuration},
+    "Grover": {"model": Grover, "dataset": GroverDataSet, "config": grover_configuration},
     "KGNN": {"model": KGNN, "dataset": KGNNDataSet, "config": kgnn_configuration},
     "MEGAAssessment": {"model": MEGAAssessment, "dataset": MEGAAssessmentDataSet,
                        "config": megaassessment_configuration},

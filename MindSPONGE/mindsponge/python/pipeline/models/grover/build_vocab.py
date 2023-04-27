@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@ class BuildVocab:
             if dataset_name is not None:
                 vocab_file = dataset_name + '_' + vocab_file
             vocab_save_path = os.path.join(vocab_save_folder, vocab_file)
+            if os.path.exists(vocab_save_path):
+                continue
             os.makedirs(os.path.dirname(vocab_save_path), exist_ok=True)
             vocab = MolVocab(file_path=data_path,
                              min_freq=vocab_min_freq,

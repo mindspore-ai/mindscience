@@ -57,7 +57,7 @@ class Graphdta(nn.Cell):
         self.fc1 = nn.Dense(2*output_dim, 1024)
         self.fc2 = nn.Dense(1024, 512)
         self.out = nn.Dense(512, n_output)
-        self.graph_mask = ms.Tensor(np.ones(512), ms.int32)
+        self.graph_mask = ms.Tensor(np.ones(batch_size), ms.int32)
         self.max_pooling = MaxPooling()
         self.cat = ops.Concat(axis=1)
         self.loss = nn.MSELoss()

@@ -21,6 +21,7 @@ import json
 import pickle
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from rdkit import Chem
 import networkx as nx
 
@@ -73,7 +74,7 @@ def smile_to_graph(input_smile):
     return c_size, features, edge_index
 
 
-def seq_cat(prot, max_seq_len):
+def seq_cat(prot, max_seq_len, seq_dict):
     x = np.zeros(max_seq_len)
     for i, ch in enumerate(prot[:max_seq_len]):
         x[i] = seq_dict[ch]
@@ -124,13 +125,12 @@ def create_prot_csv(input_datasets):
         print('len(set(drugs)),len(set(prots)):', len(set(drug_t)), len(set(prot_t)))
 
 
-def process_data(xd, xt, y, smile_graph_info, pkl_path):
+def process_data(xd, xt, y, smile_graph_info):
     """save data into pickle file"""
     assert (len(xd) == len(xt) == len(y)), "The three lists must be the same length!"
     data_len = len(xd)
     res = []
-    for i in range(data_len):
-        print('Converting SMILES to graph: {}/{}'.format(i+1, data_len))
+    for i in tqdm(range(data_len), "generating features"):
         smiles = xd[i]
         target = xt[i]
         labels = y[i]
@@ -144,43 +144,32 @@ def process_data(xd, xt, y, smile_graph_info, pkl_path):
                  "target": np.array([target]),
                  "num_nodes": np.array([c_size])}
         res.append(res_t)
-
-    # save features to pickle file
-    with os.fdopen(os.open(pkl_path, os.O_CREAT, stat.S_IWUSR), 'wb') as f:
-        pickle.dump(res, f)
+    return res
 
 
-if __name__ == '__main__':
-    # choose the data to generate dataset for training or inference, support kiba or davis
-    datasets = ['kiba']
+def generate_feature(data_path):
+    """generate feature"""
+    print(f"start preprocessing {data_path}:")
 
-    create_prot_csv(datasets)
+    seq_voc = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+    max_seq_len = 1000
+    seq_dict = {v: (i + 1) for i, v in enumerate(seq_voc)}
 
-    SEQ_VOC = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
-    MAX_SEQ_LEN = 1000
-    seq_dict = {v: (i + 1) for i, v in enumerate(SEQ_VOC)}
-    seq_dict_len = len(seq_dict)
-
-    compound_iso_smiles = []
-    for dt_name in datasets:
-        opts = ['train', 'test']
-        for opt in opts:
-            df = pd.read_csv(f'data/{dt_name}/{dt_name}_{opt}.csv')
-            compound_iso_smiles += list(df['compound_iso_smiles'])
-    compound_iso_smiles_set = set(compound_iso_smiles)
+    df_data = pd.read_csv(data_path)
+    drugs = list(df_data['compound_iso_smiles'])
+    compound_iso_smiles_set = set(drugs)
     smile_graph = {}
-    for smile in compound_iso_smiles_set:
+    for smile in tqdm(compound_iso_smiles_set, "extracting smiles to graph"):
         g = smile_to_graph(smile)
         smile_graph[smile] = g
 
-    # convert data and save to pickle
-    for dataset in datasets:
-        for opt in ['train', 'test']:
-            df_data = pd.read_csv(f'data/{dataset}/{dataset}_{opt}.csv')
-            drugs = list(df_data['compound_iso_smiles'])
-            prots = list(df_data['target_sequence'])
-            Y = list(df_data['affinity'])
-            XT = [seq_cat(t, MAX_SEQ_LEN) for t in prots]
-            drugs, prots, Y = np.asarray(drugs), np.asarray(XT), np.asarray(Y)
+    prots = list(df_data['target_sequence'])
+    if "affinity" not in df_data:
+        y = np.zeros(len(drugs))
+    else:
+        y = list(df_data['affinity'])
+    xt = [seq_cat(t, max_seq_len, seq_dict) for t in prots]
+    drugs, prots, y = np.asarray(drugs), np.asarray(xt), np.asarray(y)
 
-            process_data(drugs, prots, Y, smile_graph, f"data/{dataset}/{dataset}_{opt}.pkl")
+    feature = process_data(drugs, prots, y, smile_graph)
+    return feature

@@ -1,12 +1,4 @@
-# Copyright 2023 @ Shenzhen Bay Laboratory &
-#                  Peking University &
-#                  Huawei Technologies Co., Ltd
-#
-# This code is a part of MindSPONGE:
-# MindSpore Simulation Package tOwards Next Generation molecular modelling.
-#
-# MindSPONGE is open-source software based on the AI-framework:
-# MindSpore (https://www.mindspore.cn/)
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,14 +27,14 @@ from ..model import Model
 class GraphDTA(Model):
     """GraphDTA"""
     name = "GraphDTA"
-    feature_list = ["x_feature", "x_mask", "edge_feature", "edge_mask", "target_feature", "target_mask", "label",
-                    "batch_info", "index_all"]
+    feature_list = ["x_feature_batch", "edge_feature_batch", "target_feature_batch", "batch_info"]
 
     def __init__(self, config):
         self.config = config
         self.use_jit = self.config.use_jit
         self.white_list = (nn.Softmax, nn.LayerNorm)
-        self.checkpoint_url = self.config.checkpoint_url
+        self.checkpoint_url = \
+            "https://download.mindspore.cn/mindscience/mindsponge/GraphDTA/checkpoint/graphdta_model.ckpt"
         self.network = Graphdta(self.config)
 
         if self.config.train:
@@ -76,7 +68,7 @@ class GraphDTA(Model):
         for key in data:
             data[key] = Tensor(data[key])
         logits = self.forward(data)
-        return logits
+        return logits[0]
 
     def loss(self, data):
         pass
