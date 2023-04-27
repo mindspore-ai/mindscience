@@ -592,7 +592,7 @@ def atom37_to_torsion_angles(
         all_atom_mask (numpy.array):    Atom37 representation of the mask on all atomic coordinates with
                                         shape :math:`(batch\_size, N_{res})`.
         alt_torsions (bool):            Indicates whether to set the sign angle of shielding torsion to zero.
-                                        Default: Fal``se.
+                                        Default: ``False``.
         is_multimer (bool):             It will be True when multimer is used. Default: ``False``.
 
     Returns:
