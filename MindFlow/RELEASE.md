@@ -1,10 +1,10 @@
-# MindFlow Release Notes
+# MindSpore Flow Release Notes
 
 [查看中文](./RELEASE_CN.md)
 
-MindFlow is a flow simulation suite developed based on MindSpore. It supports AI flow simulation in industries such as aerospace, ship manufacturing, and energy and power. It aims to provide efficient and easy-to-use AI computing flow simulation software for industrial research engineers, university professors, and students.
+## MindSpore Flow 0.1.0.rc1 Release Notes
 
-## MindFlow 0.1.0.rc1 Release Notes
+MindSpore Flow is a flow simulation suite developed based on MindSpore. It supports AI flow simulation in industries such as aerospace, ship manufacturing, and energy and power. It aims to provide efficient and easy-to-use AI computing flow simulation software for industrial research engineers, university professors, and students.
 
 ### Major Features and Improvements
 
