@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,10 +17,14 @@ import os
 import multiprocessing
 import numpy as np
 from mindspore import dataset as ds
+from .split_data import SplitData
+from .save_features import SaveFeatures
+from .build_vocab import BuildVocab
 from .src.util.utils import load_features, load_smiles_labels
 from .src.data.mindsporevocab import MolVocab
 from .src.data.transforms import MolCollator, GroverCollator, normalize_data
 from ...dataset import DataSet
+
 
 
 def get_smiles_labels(args, smiles_file, is_training, mode):
@@ -81,6 +85,9 @@ class GroverDataSet(DataSet):
         self.features_scaler = None
         self.atom_vocab_path = None
         self.bond_vocab_path = None
+        self.sd = SplitData()
+        self.sf = SaveFeatures()
+        self.bv = BuildVocab()
         super().__init__()
 
     def __getitem__(self, idx):
@@ -102,6 +109,31 @@ class GroverDataSet(DataSet):
         return num_tasks
 
     def process(self, data, **kwargs):
+        if self.config.parser_name == "eval":
+            data_path = data.split('.csv')[0]
+            self.sf.generate_and_save_features(data, 'rdkit_2d_normalized', f"{data_path}.npz", 10000, False, True)
+            self.smiles_path = data
+            self.feature_path = data_path + ".npz"
+            scaler_path = data.split(data.split('/')[-1])[0] + (data.split('/')[-1]).split('_')[0] + "_scaler"
+            self.config.scaler_path = scaler_path
+            self.is_training = False
+            self.mode = "finetune"
+        elif self.config.parser_name == "gen":
+            data_path = data.split('.csv')[0]
+            self.smiles_path = data
+            self.feature_path = data_path + ".npz"
+            self.is_training = False
+            self.mode = "finetune"
+        self.smiles_list, self.labels_list, self.labels_scaler = get_smiles_labels(self.config, self.smiles_path,
+                                                                                   self.is_training, self.mode)
+        self.features_list, self.features_scaler = get_features(self.config, self.feature_path, self.is_training,
+                                                                self.mode)
+        self.config.batch_size = 1
+        dataset = self.create_grover_dataset()
+        iteration = dataset.create_dict_iterator(output_numpy=False, num_epochs=1)
+        for d in iteration:
+            data = d
+            break
         return data
 
     def download(self, path=None):
@@ -112,28 +144,30 @@ class GroverDataSet(DataSet):
 
     def set_training_data_src(self, data_src):
         """set_training_data_src"""
-        if self.config.parser_name == "eval":
-            self.smiles_path = os.path.join(data_src, "bbbp_val.csv")
-            self.feature_path = os.path.join(data_src, "bbbp_val.npz")
-            self.config.scaler_path = os.path.join(data_src, "bbbp_scaler")
-            self.is_training = False
-            self.mode = "finetune"
-        elif self.config.parser_name == "gen":
-            self.smiles_path = os.path.join(data_src, "bbbp_val.csv")
-            self.feature_path = os.path.join(data_src, "bbbp_val.npz")
-            self.is_training = False
-            self.mode = "finetune"
-        elif self.config.parser_name == "pretrain":
-            self.smiles_path = os.path.join(data_src, "tryout_train.csv")
-            self.feature_path = os.path.join(data_src, "tryout_train.npz")
-            self.atom_vocab_path = os.path.join(data_src, "tryout_atom_vocab.pkl")
-            self.bond_vocab_path = os.path.join(data_src, "tryout_bond_vocab.pkl")
+        if self.config.parser_name == "pretrain":
+            data_path = data_src.split(data_src.split('/')[-1])[0]
+            filename = data_src.split('/')[-1].split('.csv')[0]
+            if not os.path.exists(f"{data_path}/{filename}_train.csv"):
+                self.sd.split_data(data_path, filename)
+            self.sf.generate_and_save_features(f"{data_path}/{filename}_train.csv", 'fgtasklabel',
+                                               f"{data_path}/{filename}_train.npz", 10000, False, True)
+            self.bv.build_vocab(f"{data_path}/{filename}.csv", data_path, 'tryout', 1)
+            self.smiles_path = os.path.join(data_path, f"{filename}_train.csv")
+            self.feature_path = os.path.join(data_path, f"{filename}_train.npz")
+            self.atom_vocab_path = os.path.join(data_path, f"{filename}_atom_vocab.pkl")
+            self.bond_vocab_path = os.path.join(data_path, f"{filename}_bond_vocab.pkl")
             self.mode = "pretrain"
             self.is_training = True
         else:
-            self.smiles_path = os.path.join(data_src, "bbbp_train.csv")
-            self.feature_path = os.path.join(data_src, "bbbp_train.npz")
-            self.config.scaler_path = os.path.join(data_src, "bbbp_scaler")
+            data_path = data_src.split(data_src.split('/')[-1])[0]
+            filename = data_src.split('/')[-1].split('.csv')[0]
+            if not os.path.exists(f"{data_src}/{filename}_train.csv"):
+                self.sd.split_data(data_path, filename)
+            self.sf.generate_and_save_features(f"{data_path}/{filename}_train.csv", 'rdkit_2d_normalized',
+                                               f"{data_path}/{filename}_train.npz", 10000, False, True)
+            self.smiles_path = os.path.join(data_path, f"{filename}_train.csv")
+            self.feature_path = os.path.join(data_path, f"{filename}_train.npz")
+            self.config.scaler_path = os.path.join(data_path, f"{filename}_scaler")
             self.mode = "finetune"
             if not os.path.exists(self.config.scaler_path):
                 os.makedirs(self.config.scaler_path)
@@ -146,11 +180,9 @@ class GroverDataSet(DataSet):
     def create_iterator(self, num_epochs, **kwargs):
         if self.config.parser_name == "pretrain":
             dataset = self.create_pretrain_dataset()
-            iteration = dataset.create_dict_iterator(output_numpy=False)
         else:
             dataset = self.create_grover_dataset()
-            iteration = dataset.create_dict_iterator(output_numpy=False)
-
+        iteration = dataset.create_dict_iterator(output_numpy=False, num_epochs=num_epochs)
         return iteration
 
     def create_pretrain_dataset(self):
