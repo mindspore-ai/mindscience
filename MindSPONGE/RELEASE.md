@@ -1,10 +1,10 @@
-# MindSPONGE Release Notes
+# MindSpore SPONGE Release Notes
 
 [查看中文](./RELEASE_CN.md)
 
-## MindSPONGE 1.0.0-rc1 Release Notes
+## MindSpore SPONGE 1.0.0-rc1 Release Notes
 
-MindSPONGE(Simulation Package tOwards Next GEneration molecular modelling) is a toolkit for Computational Biology based on AI framework MindSpore，which supports MD, folding and so on. It aims to provide efficient AI computational biology software for a wide range of scientific researchers, staff, teachers and students.
+MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling) is a toolkit for Computational Biology based on AI framework MindSpore，which supports MD, folding and so on. It aims to provide efficient AI computational biology software for a wide range of scientific researchers, staff, teachers and students.
 
 ### Major Features and Improvements
 
