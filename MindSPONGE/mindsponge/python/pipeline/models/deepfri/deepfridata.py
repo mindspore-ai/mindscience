@@ -15,6 +15,9 @@
 """deepfridata"""
 import numpy as np
 
+from Bio import SeqIO
+from Bio.PDB.PDBParser import PDBParser
+
 from ...dataset import curry1
 from ....common import residue_constants
 
@@ -106,20 +109,38 @@ def seq2onehot(seq):
     return seqs_x
 
 
+def load_predicted_pdb(pdb_file):
+    """Load predicted pdb"""
+    # Generate (diagonalized) C_alpha distance matrix from a pdb file
+    parser = PDBParser()
+    structure = parser.get_structure(pdb_file.split('/')[-1].split('.')[0], pdb_file)
+    residues = [r for r in structure.get_residues()]
+
+    # sequence from atom lines
+    records = SeqIO.parse(pdb_file, 'pdb-atom')
+    seqs = [str(r.seq) for r in records]
+
+    size = len(residues)
+    distances = np.empty((size, size))
+    for x in range(size):
+        for y in range(size):
+            one = residues[x]['CA'].get_coord()
+            two = residues[y]['CA'].get_coord()
+            distances[x, y] = np.linalg.norm(one - two)
+
+    return distances, seqs[0]
+
+
 @curry1
 def load_cmap(cmap=None):
     """load cmap"""
-    if 'C_alpha' not in cmap:
-        raise ValueError("C_alpha not in *.npz dict.")
-    dis = cmap['C_alpha']
-    cmap_thresh = 10.0
-    adj = np.double(dis < cmap_thresh)
-    seq = str(cmap['seqres'])
+
+    dis, seq = load_predicted_pdb(cmap)
+    adj = np.double(dis < 10.0)
     one_hot = seq2onehot(seq)
     one_hot = one_hot.reshape(1, *one_hot.shape)
     adj = adj.reshape(1, *adj.shape)
     temp = []
     temp.append(adj)
     temp.append(one_hot)
-    temp.append(seq)
     return temp

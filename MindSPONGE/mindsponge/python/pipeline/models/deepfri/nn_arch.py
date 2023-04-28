@@ -58,13 +58,12 @@ class Predictor(nn.Cell):
         self.sum_pooling = SumPooling(1)
         self.en_dense = nn.Dense((self.config.gc_dims[0] + self.config.gc_dims[1] + self.config.gc_dims[2]),
                                  self.config.fc_dims, has_bias=True, activation='relu')
-        self.dropout = nn.Dropout(1 - self.config.dropout)
+        self.dropout = nn.Dropout(p=self.config.dropout)
         self.func_predictor = FuncPredictor(self.config.fc_dims, self.config.output_dim, train)
         self.pad = ops.Pad(((0, 0), (0, 0), (0, 512 - self.config.input_dim)))
 
-    def predict(self, adj, seq_1hot, seq):
+    def predict(self, adj, seq_1hot):
         """predict"""
-        print("### Computing predictions on a single protein...", seq)
         if self.gcn:
             seq_0 = self.pad(seq_1hot)
             x_1 = self.lstm(seq_0)

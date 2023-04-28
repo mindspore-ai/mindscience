@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 "proteinmpnndata"
-import json
 import random
 import numpy as np
 
@@ -23,7 +22,7 @@ from ...dataset import curry1
 
 
 @curry1
-def pre_process(feature):
+def pre_process(feature=None):
     "pre_process"
     alphabet = 'ACDEFGHIKLMNPQRSTVWYX-'
     alphabet_set = {a for a in alphabet}
@@ -35,15 +34,14 @@ def pre_process(feature):
 
     data = []
 
-    lines = feature
-    for _, line in enumerate(lines):
-        entry = json.loads(line)
+    pdb_dict_list = feature
+    for _, entry in enumerate(pdb_dict_list):
         seq = entry['seq']
 
         # Check if in alphabet
         bad_chars = {s for s in seq}.difference(alphabet_set)
         if not bad_chars:
-            if len(entry['seq']) <= 100:
+            if len(entry['seq']) <= 1000:
                 data.append(entry)
             else:
                 discard_count['too_long'] += 1
@@ -53,7 +51,7 @@ def pre_process(feature):
 
 
 @curry1
-def tied_featurize(batch, chain_dict=None, fixed_position_dict=None, omit_aa_dict=None, tied_positions_dict=None,
+def tied_featurize(batch=None, chain_dict=None, fixed_position_dict=None, omit_aa_dict=None, tied_positions_dict=None,
                    pssm_dict=None, bias_by_res_dict=None):
     """ Pack and pad batch into tensors """
     alphabet = 'ACDEFGHIKLMNPQRSTVWYX'
@@ -379,7 +377,7 @@ def batch_(batch, l_max, residue_idx, chain_m, chain_encoding_all, x, s, alphabe
 
 
 @curry1
-def featurize(batch):
+def featurize(batch=None):
     """featurize"""
     alphabet = 'ACDEFGHIKLMNPQRSTVWYX'
     b = len(batch)

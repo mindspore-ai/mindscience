@@ -1,12 +1,4 @@
-# Copyright 2023 @ Shenzhen Bay Laboratory &
-#                  Peking University &
-#                  Huawei Technologies Co., Ltd
-#
-# This code is a part of MindSPONGE:
-# MindSpore Simulation Package tOwards Next Generation molecular modelling.
-#
-# MindSPONGE is open-source software based on the AI-framework:
-# MindSpore (https://www.mindspore.cn/)
+# Copyright 2022-2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,12 +14,10 @@
 # ============================================================================
 """colabdesign dataset"""
 import os
-import pickle
-
 from mindspore.dataset import GeneratorDataset
 
+from .colabdesign_data import prep, get_weights, DesignPrep
 from ...dataset import PSP, data_process_run
-from .colabdesign_data import prep, get_weights
 
 
 class ColabDesignDataSet(PSP):
@@ -38,24 +28,22 @@ class ColabDesignDataSet(PSP):
         self.supported_models = ['ColabDesign']
         self.in_memory = False
         self.colabdesign_inputs()
-        self.indx = 0
         self.training_data_src = ""
         self.training_pkl_path = ""
         self.training_pdb_path = ""
         self.training_pdb_items = ""
         self.training_pkl_items = ""
-        self.data_process = [get_weights(self.indx, cfg=config), prep(cfg=config)]
+        self.data_process = [get_weights(cfg=self.config), prep(cfg=self.config)]
 
         self._num = num_seq
         super().__init__()
 
+    # pylint: disable=arguments-differ
     def __getitem__(self, idx):
         if self.in_memory:
             data = self.inputs[idx]
         else:
             data = self.data_parse(idx)
-
-        self.indx += 1
         features = self.process(data)
         return tuple(features)
 
@@ -76,14 +64,22 @@ class ColabDesignDataSet(PSP):
 
     # pylint: disable=arguments-differ
     def data_parse(self, idx):
-        pkl_path = self.training_pkl_items[idx]
-        f = open(pkl_path, "rb")
-        data = pickle.load(f)
-        return data
+        pdb_path = self.training_pdb_items[idx]
+        data_prep = DesignPrep(self.config)
+        inputs_feats, _, _ = data_prep.prep_feature(pdb_filename=pdb_path, chain="A", \
+                                                    protocol=self.config.protocol)
+        return inputs_feats
 
     # pylint: disable=arguments-differ
     def process(self, data):
-        features = data_process_run(data.copy(), self.data_process)
+        data_prep = DesignPrep(self.config)
+        pdb_path = data
+        inputs_feats, new_feature, _ = data_prep.prep_feature(pdb_filename=pdb_path, chain="A",
+                                                              protocol=self.config.protocol)
+        features = data_process_run(inputs_feats, self.data_process)
+        features[-3] = new_feature.get('prev_pos')
+        features[-2] = new_feature.get('prev_msa_first_row')
+        features[-1] = new_feature.get('prev_pair')
         return features
 
     def set_training_data_src(self, data_src):
