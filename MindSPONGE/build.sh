@@ -39,13 +39,14 @@ write_checksum() {
 usage()
 {
   echo "Usage:"
-  echo "bash build.sh [-e gpu|ascend] [-j[n]] [-t on|off]"
+  echo "bash build.sh [-e gpu|ascend] [-j[n]] [-t on|off] [-p mindsponge|aichemist|sponge]"
   echo "Options:"
   echo "    -e Use gpu or ascend. Currently only support ascend, later will support GPU"
   echo "    -j[n] Set the threads when building (Default: -j8)"
   echo "    -t whether to compile traditional sponge(GPU platform)"
   echo "    -c whether to build Cybertron(A basic Molecular Representation NN toolkit)"
   echo "    -d whether to create time in the package"
+  echo "    -p which package to build (Default: mindsponge)"
 }
 
 # check value of input is 'on' or 'off'
@@ -65,11 +66,12 @@ checkopts()
   ENABLE_D="off"
   ENABLE_GPU="off"
   ENABLE_MD="off"
-  ENABLE_CYBERTRON="off"
+  ENABLE_CYBERTRON="on"
   ENABLE_DAILY="off"
   THREAD_NUM=8
+  PACKAGE="mindsponge"
   # Process the options
-  while getopts 'rvj:e:t:c:d:s:S' opt
+  while getopts 'rvj:e:t:c:d:s:S:p:P' opt
   do
     OPTARG=$(echo ${OPTARG} | tr '[A-Z]' '[a-z]')
     case "${opt}" in
@@ -87,6 +89,9 @@ checkopts()
             ;;
         d)
             ENABLE_DAILY=$OPTARG
+            ;;
+        p)
+            PACKAGE=$OPTARG
             ;;
         *)
             echo "Unknown option ${opt}"
@@ -125,12 +130,12 @@ build_mindsponge()
       echo $line'.'$time2 >>./version.txt
       break
     done
-    names=$(cat ./cybertron/version.txt)
+    names=$(cat ./src/aichemist/version.txt)
     time2=$(date "+%Y%m%d")
     for line in $names
     do
-      rm -rf ./cybertron/version.txt
-      echo $line'.'$time2 >>./cybertron/version.txt
+      rm -rf ./src/aichemist/version.txt
+      echo $line'.'$time2 >>./src/aichemist/version.txt
     done
   fi
   if [[ "X$ENABLE_D" = "Xon" ]]; then
@@ -138,6 +143,27 @@ build_mindsponge()
     export SPONGE_PACKAGE_NAME=mindsponge_ascend
     CMAKE_FLAG="-DENABLE_D=ON"
   fi
+  if [[ "X$ENABLE_CYBERTRON" = "Xon" ]]; then
+    echo "build aichemist"
+    cp -r "${BASEPATH}/src/aichemist/" "${BASEPATH}/build/"
+    mv "${BASEPATH}/build/aichemist/setup.py" "${BASEPATH}/build/"
+    mv "${BASEPATH}/build/aichemist/requirements.txt" "${BASEPATH}/build/"
+    export CYBERTRON_PACKAGE_NAME=aichemist
+    cd ${BASEPATH}/build/
+    ${PYTHON} ./setup.py bdist_wheel
+    cd ..
+    mv ${BASEPATH}/build/dist/aichemist*.whl ${OUTPUT_PATH}
+    rm -rf ${BASEPATH}/build/*
+  fi
+  if [[ "X$ENABLE_GPU" = "Xon" ]]; then
+    echo "build gpu backend"
+    export SPONGE_PACKAGE_NAME=mindsponge_gpu
+    CMAKE_FLAG="-DENABLE_GPU=ON"
+    if [[ "X$ENABLE_MD" = "Xon" ]]; then
+      CMAKE_FLAG="${CMAKE_FLAG} -DENABLE_MD=ON"
+    fi
+  fi
+
   if [[ "X$ENABLE_CYBERTRON" = "Xon" ]]; then
     echo "build Cybertron"
     cp -r "${BASEPATH}/cybertron/" "${BASEPATH}/build/"
@@ -150,21 +176,22 @@ build_mindsponge()
     mv ${BASEPATH}/build/dist/cybertron*.whl ${OUTPUT_PATH}
     rm -rf ${BASEPATH}/build/*
   fi
-  if [[ "X$ENABLE_GPU" = "Xon" ]]; then
-    echo "build gpu backend"
-    export SPONGE_PACKAGE_NAME=mindsponge_gpu
-    CMAKE_FLAG="-DENABLE_GPU=ON"
-    if [[ "X$ENABLE_MD" = "Xon" ]]; then
-      CMAKE_FLAG="${CMAKE_FLAG} -DENABLE_MD=ON"
-    fi
+
+  if [[ "X$PACKAGE" = "Xaichemist" ]]; then
+    echo "build aichemist package"
+    cp -r "${BASEPATH}/src/aichemist/" "${BASEPATH}/build/aichemist/"
+  elif [[ "X$PACKAGE" = "Xsponge" ]]; then
+    echo "build sponge package"
+    cp -r "${BASEPATH}/src/sponge/" "${BASEPATH}/build/sponge/"
+  else
+    cp -r "${BASEPATH}/src/mindsponge/" "${BASEPATH}/build/mindsponge/"
+    cp -r "${BASEPATH}/src/aichemist/" "${BASEPATH}/build/aichemist/"
+    cp -r "${BASEPATH}/src/sponge/" "${BASEPATH}/build/sponge/"
   fi
-  cp -r "${BASEPATH}/mindsponge/python/" "${BASEPATH}/build/mindsponge/"
-  cp -r "${BASEPATH}/mindsponge/toolkits/" "${BASEPATH}/build/mindsponge/"
   cp "${BASEPATH}/setup.py" "${BASEPATH}/build/"
   cd "${BASEPATH}/build/"
   echo ${CMAKE_FLAG}
-  cmake .. ${CMAKE_FLAG}
-  make -j$THREAD_NUM
+  echo ${THREAD_NUM}
   ${PYTHON} ./setup.py bdist_wheel
   cd ..
   mv ${BASEPATH}/build/dist/*whl ${OUTPUT_PATH}
