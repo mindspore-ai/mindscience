@@ -129,13 +129,13 @@ def main():
         train_recons_full = 0.0
         train_pred_full = 0.0
         for _ in range(train_size):
-            _, l_recons, l_pred = train_sink()
+            loss_full, l_recons, l_pred = train_sink()
             train_recons_full += l_recons.asnumpy()
             train_pred_full += l_pred.asnumpy()
         train_recons_full = train_recons_full / train_size
         train_pred_full = train_pred_full / train_size
-        print(f"epoch: {epoch}, time cost: {(time.time() - time_beg):>8f},"
-              f" recons loss: {train_recons_full:>8f}, pred loss: {train_pred_full:>8f}")
+        print(f"epoch: {epoch}, time cost: {(time.time() - time_beg):>8f}s,"
+              f" recons loss: {train_recons_full:>8f}, pred loss: {train_pred_full:>8f}, Total loss: {loss_full:>8f}")
 
         if epoch % config['eval_interval'] == 0:
             l_recons_all, l_pred_all = problem.test(test_input, test_label)
