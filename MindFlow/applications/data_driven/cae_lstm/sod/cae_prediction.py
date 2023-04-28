@@ -27,10 +27,10 @@ np.random.seed(0)
 set_seed(0)
 
 
-def cae_prediction():
+def cae_prediction(config_file_path):
     """Process of prediction with cae net"""
     # prepare params
-    config = load_yaml_config(args.config_file_path)
+    config = load_yaml_config(config_file_path)
     data_params = config["cae_data"]
     model_params = config["cae_model"]
     prediction_params = config["prediction"]
@@ -65,4 +65,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print(f"pid:{os.getpid()}")
-    cae_prediction()
+    cae_prediction(args.config_file_path)

@@ -17,18 +17,18 @@
 import os
 import numpy as np
 
-import matplotlib.pyplot as plot
+import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 from scipy.io import loadmat
 
 
 def plot_train_loss(train_loss, plot_dir, epochs):
     """Plot change of loss during training"""
-    t_loss = plot.scatter(list(range(epochs)), train_loss, s=0.2)
-    plot.xlabel('epoch')
-    plot.ylabel('train_loss')
-    plot.legend(t_loss, 'train', loc='upper right')
-    plot.savefig(f'{plot_dir}/train_loss.png')
+    t_loss = plt.scatter(list(range(epochs)), train_loss, s=0.2)
+    plt.xlabel('epoch')
+    plt.ylabel('train_loss')
+    plt.legend([t_loss], ['train'], loc='upper right')
+    plt.savefig(f'{plot_dir}/train_loss.png')
 
 
 class PostProcess:
