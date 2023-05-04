@@ -54,7 +54,7 @@ class Attention(nn.Cell):
         - **m_data** (Tensor) - The key/value tensor with shape :math:`(batch\_size,
           value\_seq_length, m\_data_dim)` with value_seq_length the value sequence length.
         - **attention_mask** (Tensor) - The mask for attention matrix with shape
-          :math:`(batch\_size, num\_head, query\_seq_length, value_seq_length)`.
+          :math:`(batch\_size, num\_head, query\_seq_length, value\_seq_length)`.
         - **index** (Tensor) - The index of while loop, only used in case of while
           control flow. Default: ``None``.
         - **nonbatched_bias** (Tensor) - Non-batched bias for the attention matrix with
@@ -236,18 +236,18 @@ class GlobalAttention(nn.Cell):
                             flow. Default: ``None``.
 
     Inputs:
-        - **q_data** (Tensor) - The query tensor with shape :math:`(batch_size, seq_length,
-          input_dim)` with seq_length the sequence length.
-        - **m_data** (Tensor) - The key/value tensor with shape :math:`(batch_size, seq_length,
-          input_dim)`.
-        - **q_mask** (Tensor) - A binary mask for q_data of shape :math:`(batch_size,
-          seq_length, 1)`.
+        - **q_data** (Tensor) - The query tensor with shape :math:`(batch\_size, seq\_length,
+          input\_dim)` with seq_length the sequence length.
+        - **m_data** (Tensor) - The key/value tensor with shape :math:`(batch\_size, seq\_length,
+          input\_dim)`.
+        - **q_mask** (Tensor) - A binary mask for q_data of shape :math:`(batch\_size,
+          seq\_length, 1)`.
         - **bias** (Tensor) - Bias for the attention matrix. Default: ``None``.
         - **index** (Tensor) - The index of while loop, only used in case of while control
           flow. Default: ``None``.
 
     Outputs:
-        Tensor, Output tensor of the GlobalAttention layer with shape :math:`(batch_size, seq_length, output_dim)`.
+        Tensor, Output tensor of the GlobalAttention layer with shape :math:`(batch\_size, seq\_length, output\_dim)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

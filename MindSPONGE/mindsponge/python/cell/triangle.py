@@ -156,13 +156,13 @@ class TriangleMultiplication(nn.Cell):
         batch_size (int):                   The batch size of parameters in triangle multiplication. Default: ``None``.
 
     Inputs:
-        - **pair_act** (Tensor) - Tensor of pair_act. shape :math:`(N{res}, N{res}, layer\_norm\_dim)`.
-        - **pair_mask** (Tensor) - The mask for TriangleAttention matrix with shape. shape :math:`(N{res}, N{res})`.
+        - **pair_act** (Tensor) - Tensor of pair_act. shape :math:`(N_{res}, N_{res}, layer\_norm\_dim)`.
+        - **pair_mask** (Tensor) - The mask for TriangleAttention matrix with shape. shape :math:`(N_{res}, N_{res})`.
         - **index** (Tensor) - The index of while loop, only used in case of while control
           flow.
 
     Outputs:
-        Tensor, the float tensor of the pair_act of the layer with shape :math:`(N{res}, N{res}, layer\_norm\_dim)`.
+        Tensor, the float tensor of the pair_act of the layer with shape :math:`(N_{res}, N_{res}, layer\_norm\_dim)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
