@@ -24,7 +24,7 @@ mindsponge.cell.Attention
         - **m_data** (Tensor) - shape为 :math:`(batch\_size, value\_seq_length, m\_data_dim)` 的key和value Tensor，其中value_seq_length是value向量的序列长度。
         - **attention_mask** (Tensor) - 注意力矩阵的mask。shape为 :math:`(batch\_size, num\_heads, query\_seq_length, value\_seq_length)`。
         - **index** (Tensor) - 在while循环中的索引，仅在有while控制流时使用。默认值： ``None``。
-        - **nonbatched_bias** (Tensor) - attention矩阵中无batch维的偏置。shape为 :math:`(num\_heads, query\_seq_length, value_seq_length)`。默认值： ``None``。
+        - **nonbatched_bias** (Tensor) - attention矩阵中无batch维的偏置。shape为 :math:`(num\_heads, query\_seq_length, value\_seq_length)`。默认值： ``None``。
 
     输出：
         Tensor。Attention层的输出tensor，shape是 :math:`(batch\_size, query\_seq_length, hidden\_size)`。
