@@ -57,7 +57,7 @@ $$
 
 * 对立方体内部，使用 `mindelec` 定义的 `Cuboid` 采样，默认采用均匀网格划分，划分粒度为 $64\times 64 \times 64$ 。
 * 对立方体的4个PEC面和ABC面，使用 `mindelec` 定义的随机采样，采样点数默认为 `65536`。
-* 对波导管输入平面，数据采用 $E_x = 0, E_y = 0, E_z = sin(k_1 y) * sin(k_2 z)$ 的方式定义，其中 $k_1, k_2$ 为系数，项目中等价于 $k_1 = \pi, k_2 = \pi$。该输入参考 [Nvidia Modulus](https://docs.nvidia.com/deeplearning/modulus/user_guide/intermediate/em.html#problem-3-3d-waveguide-cavity) 的输入。
+* 对波导管输入平面，数据采用 $E_x = 0, E_y = 0, E_z = sin(k_1 y) * sin(k_2 z)$ 的方式定义，其中 $k_1, k_2$ 为系数，项目中等价于 $k_1 = \pi, k_2 = \pi$。该输入参考 [Nvidia Modulus](https://docs.nvidia.com/deeplearning/modulus/modulus-v2209/user_guide/intermediate/em.html#problem-3-3d-waveguide-cavity) 的输入。
 
 ## 神经网络模型架构
 
@@ -77,7 +77,7 @@ $$
 
 * 对立方体内部，使用 `mindelec` 定义的 `Cuboid` 采样，默认采用均匀网格划分，划分粒度为 $64\times 64 \times 64$ 。
 * 对立方体的4个PEC面和ABC面，使用 `mindelec` 定义的随机采样，采样点数默认为 `65536`。
-* 对波导管输入平面，数据采用 $E_x = 0, E_y = 0, E_z = sin(k_1 y) * sin(k_2 z)$ 的方式定义，其中 $k_1, k_2$ 为系数，项目中等价于 $k_1 = \pi, k_2 = \pi$。该输入参考 [Nvidia Modulus](https://docs.nvidia.com/deeplearning/modulus/user_guide/intermediate/em.html#problem-3-3d-waveguide-cavity) 的输入。
+* 对波导管输入平面，数据采用 $E_x = 0, E_y = 0, E_z = sin(k_1 y) * sin(k_2 z)$ 的方式定义，其中 $k_1, k_2$ 为系数，项目中等价于 $k_1 = \pi, k_2 = \pi$。该输入参考 [Nvidia Modulus](https://docs.nvidia.com/deeplearning/modulus/modulus-v2209/user_guide/intermediate/em.html#problem-3-3d-waveguide-cavity) 的输入。
 
 ## 环境要求
 
@@ -269,7 +269,7 @@ python eval.py
 
 ## 参考资料
 
-[Nvidia Modulus](https://docs.nvidia.com/deeplearning/modulus/text/intermediate/em.html#)
+[Nvidia Modulus](https://docs.nvidia.com/deeplearning/modulus/modulus-v2209/user_guide/intermediate/em.html)
 
 ## ModelZoo 主页
 
