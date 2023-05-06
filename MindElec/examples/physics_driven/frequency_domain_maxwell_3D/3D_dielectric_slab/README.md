@@ -61,7 +61,7 @@ PDE方程求解的原理如下图所示：
 
 * 对立方体内部，使用 `mindelec` 定义的 `Cuboid` 采样，默认采用均匀网格划分，划分粒度为 $64\times 64 \times 64$ 。
 * 对立方体的4个PEC面和ABC面，使用 `mindelec` 定义的随机采样，采样点数默认为 `65536`。
-* 对波导管数据，采用外部数据，该数据为[nvidia modulus]() 进行该仿真时采用的数据，详见 `data/sample_points_all.npy` 文件，包含11000多条数据。
+* 对波导管数据，采用外部数据，该数据为[Nvidia Modulus](https://docs.nvidia.com/deeplearning/modulus/modulus-v2209/user_guide/intermediate/em.html#problem-4-3d-dielectric-slab-waveguide) 进行该仿真时采用的数据，详见 `data/sample_points_all.npy` 文件，包含11000多条数据。
 
 ## 环境要求
 
@@ -277,7 +277,7 @@ python eval.py
 
 ## 参考资料
 
-[Nvidia Modulus](https://docs.nvidia.com/deeplearning/modulus/text/intermediate/em.html#)
+[Nvidia Modulus](https://docs.nvidia.com/deeplearning/modulus/modulus-v2209/user_guide/intermediate/em.html)
 
 ## ModelZoo 主页
 
