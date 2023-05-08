@@ -1,0 +1,158 @@
+
+### [GLOBAL]
+### Select Solver Which State is OK
+    EMSolver: ANN_SED_T
+
+### [GLOBAL]
+### Result Type (1). BistaticRCS (2). MonostaticRCS (2). Radiation
+    result_type: BistaticRCS
+
+### [GLOBAL]
+### The Absolute Path of Mesh File
+    mesh_path:   C:\Users\user\Desktop\ResNet\Release\SED-ANN-T.nas
+    supply_mesh_path:   E:\EMFAex\nas\dipole2.nas
+
+
+### The Absolute Path of red_I_ANN File
+    red_ANN:  C:\Users\user\Desktop\ResNet\Release\SED_Coef_50_0.6.csv
+
+### [EPA][Graphene mesh]
+### The Absolute Path of Surround Mesh File
+    surround_path: D:\EMFA3.0\nas\cuboid_epf.nas
+
+### [FEKO CURRENT]
+### The absolute path of current file from FEKO software
+    FEKOcur_path: E:\EMFA\nas\butterfly_New_ASED_PEC\bowtie_array.os
+
+### [Bistatic][Monostatic]
+### Incident Field Configuration
+### Frequency Unit: Hz
+### Pole Unit: degree
+    frequency:   3e8
+    pole:   0
+
+### [Reflection]
+### Different Incident Frequency
+### Frequency: Hz
+    frequency_from: 6e8
+    frequency_to: 6e8
+    frequency_delta: 6e8
+    frequency_inc: 6e8
+
+### [Bistatic]
+### Incident Field Direction
+### Theta/Phi Unit: degree
+    theta:  0
+    phi:    0
+
+### [Bistatic][Monostatic]
+### Scattering Field Configuration
+### All Unit: Degree
+    theta_from:     0
+    theta_to:       360
+    theta_delta:    0.5
+    phi_from:       0
+    phi_to:         90
+    phi_delta:      90
+
+### [Radiation]
+### Radiation Field Configuration
+### EPlane:   XZ Plane
+### HPlane:   YZ Plane
+### HHPlane:  XY Plane
+### "false" is Unset, "true" is Set
+    E_Plane:    true
+    H_Plane:    true
+    HH_Plane:   true
+
+### [Electric near field]
+### Origin point; End point; Number of sampling from three direction
+### unit:m
+    Origin_point: (0,0,1)
+    End_point: (3,3,1)
+    Sampling_x: 1
+    Sampling_y: 1
+    Sampling_z: 1
+
+### [CFIE]
+### Combined Coefficient: alpha * EFIE + (1 - alpha) * MFIE
+    alpha:  0.5
+
+### [ACA_CFIE]
+### ACA Box Length (Electrical Length)
+### EDM (Equivalent Dipole Method) Acceleration Option: (1).Set is 'true' (2). Unset is 'false'
+    aca_box_length: 0.5
+    edm_acceleration: false
+    
+### [ACA_*]
+### Threshold is Relative Tolerance (Also for SVD if SVD is applied) [Recommended Value: <= 0.01]
+    aca_threshold: 1e-2
+
+### The Iteration Threshold
+### The Maximum Iterative Number
+    iteration_threshold:    5e-3
+    max_iteration_number:   100
+
+### Preconditioner Option: (1).Set is 'true' (2).Unset is 'false'
+    preconditioning: true   
+
+# Multithreading Option
+### Sequence: value = 1
+### Parallel: value > 1
+    thread_number: 5
+
+# The Factor of Task Packets: task_packet = task_factor * working_thread
+    task_factor: 6
+
+    
+### [VIE]
+### The fast filling of impedance matrix.
+    Isfast: 1
+    
+### [ARRAY][FSPGF_EFIE][NEWSED][NEWSED_SPIN]
+### The distance between the array cell:(1)"Dx" is the x direction distance. (2)"Dy" is the y direction distance. (3)unit:lamda(wave length). 
+### (4) "D_Angle" is the period of spin volume.(5) "A_Angle" is the angle of the whole spin volume
+    Dx: 0.6   
+    Dy: 0.6   
+    D_Angle: 10
+    A_Angle: 360
+    Phase_0: 0
+    Phase_x: 0
+    Phase_y: 0
+    Array_x: 50
+    Array_y: 50
+    Scale_alongx: 1
+    Scale_alongy: 1
+    Rotate_alongx: 0
+    Rotate_alongy: 0
+    isContinuous: 0
+
+### [PGF]
+### the number of periodic green's function sum
+    t_sum: 1
+
+### [CONDUCTIVITY]
+### In fact, the metal have finite conductivity. (0,0) represent the PEC.
+    Sigma: (0,0)
+    
+
+    
+### [PGF_Interpolation]
+### To speed up the progress that filling the PGF elements.
+### The length of the interpolation gird. unit:lamda
+    d_x: 0.01
+    d_y: 0.01
+    d_z: 0.005
+
+### [multiple Plane Waves][NEWSED]
+### Solve the problem with connected structure
+### The direction of the incident plane waves, the unit is degree.
+### polarization option:[Theta][Phi][Bidirect]
+    PW_theta_from: 0
+    PW_theta_delta: 5
+    PW_theta_to: 0
+    PW_phi_from: 0
+    PW_phi_delta: 5
+    PW_phi_to: 0
+    polarization: Theta
+
