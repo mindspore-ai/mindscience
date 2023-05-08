@@ -1,7 +1,7 @@
 mindflow.cell.FNO1D
 =========================
 
-.. py:class:: mindflow.cell.FNO1D(in_channels, out_channels, resolution, modes, channels=20, depths=4, mlp_ratio=4, compute_dtype=mindspore.common.dtype.float32)
+.. py:class:: mindflow.cell.FNO1D(in_channels, out_channels, resolution, modes, channels=20, depths=4, mlp_ratio=4, compute_dtype=mstype.float32)
 
     一维傅里叶神经算子（FNO1D）包含一个提升层、多个傅里叶层和一个解码器层。
     有关更多详细信息，请参考论文 `Fourier Neural Operator for Parametric Partial Differential Equations <https://arxiv.org/pdf/2010.08895.pdf>`_ 。
