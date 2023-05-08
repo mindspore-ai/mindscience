@@ -18,39 +18,43 @@ CAE-LSTM的基本框架主要基于[论文](https://doi.org/10.13700/j.bh.1001-5
 
 # 数据集
 
-+ 来源：一维Sod激波管的数值仿真流场数据，由北京航空航天大学航空科学与工程学院于剑副教授团队提供
+来源：一维Sod激波管的数值仿真流场数据，由北京航空航天大学航空科学与工程学院于剑副教授团队提供
 
-+ 建立方法：数据集计算状态与建立方法见[论文](https://doi.org/10.13700/j.bh.1001-5965.2022.0085)
+建立方法：数据集计算状态与建立方法见[论文](https://doi.org/10.13700/j.bh.1001-5965.2022.0085)
 
-+ 数据说明：
-    + Sod激波管坐标x范围为[0, 1]，中间x=0.5处有一薄膜。在初始时刻，将激波管中间的薄膜撤去，研究激波管中气体密度的变化情况。计算时间t范围为[0, 0.2]，平均分成531个时间步。
-    + 数据集的下载地址为：https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/sod.npy
+数据说明：
+Sod激波管坐标x范围为[0, 1]，中间x=0.5处有一薄膜。在初始时刻，将激波管中间的薄膜撤去，研究激波管中气体密度的变化情况。计算时间t范围为[0, 0.2]，平均分成531个时间步。
+
+数据集的下载地址为：data_driven/cae-lstm/sod/dataset
 
 # 训练过程
 
-该模型单机单卡进行训练，根据训练任务需求，分别执行cae_train.py和lstm_train.py开始训练CAE和LSTM网络；
+该模型单机单卡进行训练，根据训练任务需求，分别执行cae_train.py和lstm_train.py开始训练CAE和LSTM网络。
 在开始训练前需要在config.yaml中设置数据读取保存路径和训练参数等相关训练条件。
 
-+ python cae_train.py
-+ python lstm_train.py
++ 训练CAE网络：
+
+`python -u cae_train.py --mode GRAPH --save_graphs_path ./graphs --device_target GPU --device_id 0 --config_file_path ./config.yaml`
+
++ 训练LSTM网络：
+
+`python -u lstm_train.py --mode GRAPH --save_graphs_path ./graphs --device_target GPU --device_id 0 --config_file_path ./config.yaml`
 
 # 预测结果可视化
 
-根据训练条件，执行prediction.py；
-后处理操作：
+根据训练条件，执行prediction.py进行模型推理，此操作将会根据训练结果的权重参数文件，预测输出CAE的降维、重构数据，LSTM的演化数据和CAE-LSTM预测的流场数据。
+此操作还会分别计算CAE的重构数据和CAE-LSTM预测的流场数据的平均相对误差。
 
-+ 根据训练结果的权重参数文件，预测输出CAE的降维、重构数据，LSTM的演化数据和CAE-LSTM预测的流场数据.npy文件；
-
-+ 分别计算CAE的重构数据和CAE-LSTM预测的流场数据的平均相对误差；
-
-+ 保存路径默认为：prediction_result。
+上述后处理输出路径默认为`./prediction_result`，可在config.yaml里修改保存路径。
 
 # 预测结果展示
 
-以下分别为真实流场，CAE-LSTM预测结果和预测误差：
+以下分别为真实流场，CAE-LSTM预测结果和预测误差。
+
+其中前两个流场结果展现了流场中不同x位置的密度随时间的变化情况，第三个误差曲线展现了CAE重建流场和CAE-LSTM流场与真实流场label的平均相对误差随时间的变化情况。CAE-LSTM预测结果的误差比CAE重建的误差较大，是因为前者比后者多了LSTM的演化误差，但整个预测时间误差保持在0.014以下，满足流场预测精度需求。
 
 <figure class="harf">
-    <img src="./images/true2.gif" title="true" width="300"/>
-    <img src="./images/cae_lstm.gif" title="cae_lstm_prediction" width="300"/>
-    <img src="./images/cae_lstm_error.png" title="cae_lstm_error" width="300"/>
+    <img src="./images/true2.gif" title="true" width="250"/>
+    <img src="./images/cae_lstm.gif" title="cae_lstm_prediction" width="250"/>
+    <img src="./images/cae_lstm_error.png" title="cae_lstm_error" width="250"/>
 </figure>
