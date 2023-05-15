@@ -313,7 +313,7 @@ class LossSmoothed(nn.Cell):
         s_onehot = ops.Cast()(nn.OneHot(depth=21)(s), ms.float32)
 
         # Label smoothing
-        s_onehot = s_onehot + self.weight / float(s_onehot.shape[-1])
+        s_onehot = s_onehot + self.weight / s_onehot.shape[-1]
         s_onehot = s_onehot / ops.ReduceSum(keep_dims=True)(s_onehot, -1)
 
         loss = -(s_onehot * log_probs).sum(-1)

@@ -181,5 +181,5 @@ if __name__ == "__main__":
     argparser.add_argument('--device_target', help='device target', type=str, default="Ascend")
 
     args_ = argparser.parse_args()
-    ms.set_context(device_target='GPU', device_id=args_.device_id, mode=ms.GRAPH_MODE)
+    ms.set_context(device_target=args_.device_target, device_id=args_.device_id, mode=ms.GRAPH_MODE)
     main(args_)

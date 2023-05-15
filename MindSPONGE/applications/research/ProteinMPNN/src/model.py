@@ -21,6 +21,7 @@ from mindspore.common.initializer import initializer, XavierUniform
 
 
 def gather_edges(edges, neighbor_idx):
+    """gather_edges"""
     # Features [B,N,N,C] at Neighbor indices [B,N,K] => Neighbor features [B,N,K,C]
     neighbors = ops.broadcast_to(ops.expand_dims(neighbor_idx, -1),
                                  (neighbor_idx.shape[0], neighbor_idx.shape[1], neighbor_idx.shape[2], edges.shape[-1]))
@@ -29,6 +30,7 @@ def gather_edges(edges, neighbor_idx):
 
 
 def gather_nodes(nodes, neighbor_idx):
+    """gather_nodes"""
     # Features [B,N,C] at Neighbor indices [B,N,K] => [B,N,K,C]
     # Flatten and expand indices per batch [B,N,K] => [B,NK] => [B,NK,C]
     neighbors_flat = neighbor_idx.view((neighbor_idx.shape[0], -1))
@@ -36,11 +38,13 @@ def gather_nodes(nodes, neighbor_idx):
                                       (neighbors_flat.shape[0], neighbors_flat.shape[1], nodes.shape[2]))
     # Gather and re-pack
     neighbor_features = ops.GatherD()(nodes, 1, neighbors_flat)
-    neighbor_features = neighbor_features.view(tuple(list(neighbor_idx.shape)[:3] + [-1]))
+    neighbor_features = neighbor_features.view((neighbor_idx.shape[0], neighbor_idx.shape[1],
+                                                neighbor_idx.shape[2], -1))
     return neighbor_features
 
 
 def gather_nodes_t(nodes, neighbor_idx):
+    """gather_nodes_t"""
     # Features [B,N,C] at Neighbor index [B,K] => Neighbor features[B,K,C]
     idx_flat = ops.broadcast_to(ops.expand_dims(neighbor_idx, -1),
                                 (neighbor_idx.shape[0], neighbor_idx.shape[1], nodes.shape[2]))
@@ -242,7 +246,11 @@ class ProteinFeatures(nn.Cell):
         rbf_all.append(self._get_rbf(c, cb, e_idx))  # C-cb
         rbf_all.append(self._get_rbf(o, cb, e_idx))  # o-cb
         rbf_all.append(self._get_rbf(c, o, e_idx))  # C-O
-        rbf_all = ops.Concat(axis=-1)(tuple(rbf_all))
+        rbf_all = ops.Concat(axis=-1)((rbf_all[0], rbf_all[1], rbf_all[2], rbf_all[3], rbf_all[4], rbf_all[5],
+                                       rbf_all[6], rbf_all[7], rbf_all[8], rbf_all[9], rbf_all[10], rbf_all[11],
+                                       rbf_all[12], rbf_all[13], rbf_all[14], rbf_all[15], rbf_all[16], rbf_all[17],
+                                       rbf_all[18], rbf_all[19], rbf_all[20], rbf_all[21], rbf_all[22], rbf_all[23],
+                                       rbf_all[24]))
 
         offset = residue_idx[:, :, None] - residue_idx[:, None, :]
         offset = gather_edges(offset[:, :, :, None], e_idx)[:, :, :, 0]  # [B, L, K]
