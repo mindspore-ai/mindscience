@@ -35,7 +35,7 @@ class InvariantPointAttention(nn.Cell):
     and b , which is th bias, obtained from the pair representation (the second inputs -- inputs_2d).
 
     .. math::
-        a_{ij} = Softmax(w_l(c_1{q_i}^Tk_j+b{ij}-c_2\sum {\left \| T_i\circ q'_i-T_j\circ k'_j \right \| ^{2 } }))
+        a_{ij} = Softmax(w_l(c_1{q_i}^Tk_j+b{ij}-c_2\sum {\left \| T_i\circ q'_i-T_j\circ k'_j \right \| ^{2 } })
 
     where i and j represent the ith and jth amino acids in the sequence, respectively,
     and T is the rotation and translation in the input.
@@ -59,9 +59,9 @@ class InvariantPointAttention(nn.Cell):
           shape :math:`[N_{res}, N_{res}, pair\_dim]`.
         - **mask** (Tensor) - A mask that determines which elements of inputs_1d are involved in the
           attention calculation, shape :math:`[N_{res}, 1]`
-        - **rotation** (tuple) - A rotation term in a rigid body group :math:`T(r,t)`,
+        - **rotation** (tuple) - A rotation term in a rigid body group T(r,t),
           A tuple of length 9, The shape of each elements in the tuple is :math:`[N_{res}]`.
-        - **translation** (tuple) - A translation term in a rigid body group :math:`T(r,t)`,
+        - **translation** (tuple) - A translation term in a rigid body group T(r,t),
           A tuple of length 3, The shape of each elements in the tuple is :math:`[N_{res}]`.
 
     Outputs:
@@ -72,11 +72,11 @@ class InvariantPointAttention(nn.Cell):
 
     Examples:
         >>> import numpy as np
-        >>> import mindspore as ms
         >>> from mindsponge.cell import InvariantPointAttention
         >>> from mindspore import dtype as mstype
         >>> from mindspore import Tensor
-        >>> ms.set_context(mode=ms.GRAPH_MODE)
+        >>> import mindspore.context as context
+        >>> context.set_context(mode=context.GRAPH_MODE)
         >>> model = InvariantPointAttention(num_head=12, num_scalar_qk=16, num_scalar_v=16,
         ...                                 num_point_v=8, num_point_qk=4,
         ...                                 num_channel=384, pair_dim=128)
@@ -179,15 +179,15 @@ class InvariantPointAttention(nn.Cell):
         k_point2, v_point2 = mnp.split(kv_point_global2, [num_point_qk], axis=-1)
 
         trainable_point_weights = self.soft_plus(self.trainable_point_weights)
-        point_weights = self.point_weights * mnp.expand_dims(trainable_point_weights, axis=1)
+        point_weights = self.point_weights * ops.expand_dims(trainable_point_weights, axis=1)
 
         v_point = [mnp.swapaxes(v_point0, -2, -3), mnp.swapaxes(v_point1, -2, -3), mnp.swapaxes(v_point2, -2, -3)]
         q_point = [mnp.swapaxes(q_point0, -2, -3), mnp.swapaxes(q_point1, -2, -3), mnp.swapaxes(q_point2, -2, -3)]
         k_point = [mnp.swapaxes(k_point0, -2, -3), mnp.swapaxes(k_point1, -2, -3), mnp.swapaxes(k_point2, -2, -3)]
 
-        dist2 = mnp.square(ops.expand_dims(q_point[0], 2) - ops.expand_dims(k_point[0], 1)) + \
-                mnp.square(ops.expand_dims(q_point[1], 2) - ops.expand_dims(k_point[1], 1)) + \
-                mnp.square(ops.expand_dims(q_point[2], 2) - ops.expand_dims(k_point[2], 1))
+        dist2 = ops.Square()(ops.expand_dims(q_point[0], 2) - ops.expand_dims(k_point[0], 1)) + \
+                ops.Square()(ops.expand_dims(q_point[1], 2) - ops.expand_dims(k_point[1], 1)) + \
+                ops.Square()(ops.expand_dims(q_point[2], 2) - ops.expand_dims(k_point[2], 1))
 
         attn_qk_point = -0.5 * mnp.sum(ops.expand_dims(ops.expand_dims(point_weights, 1), 1) * dist2, axis=-1)
 
@@ -230,9 +230,9 @@ class InvariantPointAttention(nn.Cell):
         output_feature22 = result_point_local[2]
 
         output_feature3 = mnp.sqrt(self._dist_epsilon +
-                                   mnp.square(result_point_local[0]) +
-                                   mnp.square(result_point_local[1]) +
-                                   mnp.square(result_point_local[2]))
+                                   ops.Square()(result_point_local[0]) +
+                                   ops.Square()(result_point_local[1]) +
+                                   ops.Square()(result_point_local[2]))
 
         result_attention_over_2d = ops.matmul(mnp.swapaxes(attn, 0, 1), inputs_2d)
         num_out = num_head * result_attention_over_2d.shape[-1]
