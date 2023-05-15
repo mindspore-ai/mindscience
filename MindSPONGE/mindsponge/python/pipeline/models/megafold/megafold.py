@@ -106,15 +106,12 @@ class MEGAFold(Model):
 
     def forward(self, data):
         "forward"
-        feat = []
-        for key in self.feature_list:
-            feat.append(data[key])
         if self.use_jit:
             prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits \
-                = self._jit_forward(feat)
+                = self._jit_forward(data)
         else:
             prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits \
-                = self._pynative_forward(feat)
+                = self._pynative_forward(data)
 
         res = prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits
         return res
@@ -219,10 +216,16 @@ class MEGAFold(Model):
 
 
     @jit
-    def _jit_forward(self, feat):
+    def _jit_forward(self, data):
+        feat = []
+        for key in self.feature_list:
+            feat.append(data[key])
         res = self.network(*feat)
         return res
 
-    def _pynative_forward(self, feat):
+    def _pynative_forward(self, data):
+        feat = []
+        for key in self.feature_list:
+            feat.append(data[key])
         res = self.network(*feat)
         return res

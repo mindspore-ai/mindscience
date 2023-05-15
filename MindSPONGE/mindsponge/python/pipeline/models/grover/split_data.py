@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ import os
 import stat
 from .src.util.utils import load_smiles
 
-TRAIN_PERCENT = 0.8
-VAL_PERCENT = 0.2
+TRAIN_PERCENT = 1.0
+VAL_PERCENT = 0.0
 
 random.seed(3)
 

@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,15 +13,12 @@
 # limitations under the License.
 # ============================================================================
 """grover"""
-import time
 import mindspore as ms
 from mindspore import jit, nn
 from mindspore.common import mutable
-from mindspore.communication.management import init
 from ..model import Model
 from .nn_arch import GROVEREmbedding, GroverFinetuneTask, GroverFpGenerationTask, GroverPretrainTask
 from .src.util.scheduler import get_lr
-from .src.model_utils.local_adapter import get_device_id, get_device_num, get_rank_id
 
 
 def load_parameters(network, file_name):
@@ -57,126 +54,37 @@ def eval_context_init(args):
     """
     Init context.
     """
-    device_id = get_device_id()
-    ms.set_context(mode=ms.GRAPH_MODE, device_target=args.device_target, save_graphs=False, device_id=device_id)
-
-    ms.reset_auto_parallel_context()
-    if args.run_distribute:
-        init()
-        args.device_num = get_device_num()
-        args.rank = get_rank_id()
-        parallel_mode = ms.ParallelMode.DATA_PARALLEL
-
-    else:
-        args.device_num = 1
-        args.rank = 0
-        parallel_mode = ms.ParallelMode.STAND_ALONE
-
-    ms.set_auto_parallel_context(device_num=args.device_num,
-                                 parallel_mode=parallel_mode,
-                                 gradients_mean=True)
+    ms.set_context(device_target=args.device_target, save_graphs=False)
 
 
 def gen_context_init(args):
     """
     Init Context.
     """
-    device_id = get_device_id()
-    ms.set_context(mode=ms.GRAPH_MODE, device_target=args.device_target, save_graphs=False, device_id=device_id)
+    ms.set_context(device_target=args.device_target, save_graphs=False)
 
     if ms.get_context("device_target") == "Ascend":
         ms.set_context(max_device_memory="10GB")
-
-    ms.reset_auto_parallel_context()
-    if args.run_distribute:
-        init()
-        args.device_num = get_device_num()
-        args.rank = get_rank_id()
-        parallel_mode = ms.ParallelMode.DATA_PARALLEL
-
-    else:
-        args.device_num = 1
-        args.rank = 0
-        parallel_mode = ms.ParallelMode.STAND_ALONE
-
-    ms.set_auto_parallel_context(device_num=args.device_num,
-                                 parallel_mode=parallel_mode,
-                                 gradients_mean=True)
-
-    args.rank_save_ckpt_flag = 0
-    if args.is_save_on_master:
-        if args.rank == 0:
-            args.rank_save_ckpt_flag = 1
-    else:
-        args.rank_save_ckpt_flag = 1
 
 
 def pretrain_context_init(args):
     """
     Init context.
     """
-    device_id = get_device_id()
-    ms.set_context(mode=ms.GRAPH_MODE, device_target=args.device_target, save_graphs=False, device_id=device_id)
+    ms.set_context(device_target=args.device_target, save_graphs=False)
 
     if ms.get_context("device_target") == "Ascend":
         ms.set_context(max_device_memory="10GB")
-
-    ms.reset_auto_parallel_context()
-    print(args.run_distribute)
-    if args.run_distribute:
-        init()
-        args.device_num = get_device_num()
-        args.rank = get_rank_id()
-        parallel_mode = ms.ParallelMode.DATA_PARALLEL
-
-    else:
-        args.device_num = 1
-        args.rank = 0
-        parallel_mode = ms.ParallelMode.STAND_ALONE
-
-        ms.set_auto_parallel_context(device_num=args.device_num,
-                                     parallel_mode=parallel_mode,
-                                     gradients_mean=True)
-        args.rank_save_ckpt_flag = 0
-    if args.is_save_on_master:
-        if args.rank == 0:
-            args.rank_save_ckpt_flag = 1
-    else:
-        args.rank_save_ckpt_flag = 1
 
 
 def train_context_init(args):
     """
     Init context.
     """
-    device_id = get_device_id()
-    ms.set_context(mode=ms.GRAPH_MODE, device_target=args.device_target, save_graphs=False, device_id=device_id)
+    ms.set_context(device_target=args.device_target, save_graphs=False)
 
     if ms.get_context("device_target") == "Ascend":
         ms.set_context(max_device_memory="10GB")
-
-    ms.reset_auto_parallel_context()
-    if args.run_distribute:
-        init()
-        args.device_num = get_device_num()
-        args.rank = get_rank_id()
-        parallel_mode = ms.ParallelMode.DATA_PARALLEL
-
-    else:
-        args.device_num = 1
-        args.rank = 0
-        parallel_mode = ms.ParallelMode.STAND_ALONE
-
-    ms.set_auto_parallel_context(device_num=args.device_num,
-                                 parallel_mode=parallel_mode,
-                                 gradients_mean=True)
-
-    args.rank_save_ckpt_flag = 0
-    if args.is_save_on_master:
-        if args.rank == 0:
-            args.rank_save_ckpt_flag = 1
-    else:
-        args.rank_save_ckpt_flag = 1
 
 
 class Grover(Model):
@@ -191,17 +99,13 @@ class Grover(Model):
         if self.config.parser_name == "eval":
             eval_context_init(config)
             config.is_training = False
-            config.features_dim = kwargs['features_dim']
-            config.output_size = kwargs['output_size']
             grover_model = GROVEREmbedding(config)
             network = GroverFinetuneTask(config, grover_model, is_training=config.is_training)
-            load_parameters(network, config.pretrained)
             network.set_train(False)
         elif self.config.parser_name == "gen":
             gen_context_init(config)
             config.is_training = False
             grover_model = GROVEREmbedding(config)
-            load_convert_params(config, grover_model)
             network = GroverFpGenerationTask(config, grover_model)
             network.set_train(False)
         elif self.config.parser_name == "pretrain":
@@ -232,7 +136,6 @@ class Grover(Model):
             config.features_dim = kwargs['features_dim']
             config.output_size = kwargs['output_size']
             grover_model = GROVEREmbedding(config)
-            load_convert_params(config, grover_model)
             network = GroverFinetuneTask(config, grover_model, is_training=config.is_training)
             config.steps_per_epoch = kwargs['steps_per_epoch']
             lr = get_lr(config)
@@ -249,7 +152,7 @@ class Grover(Model):
                 network = nn.TrainOneStepCell(network=network, optimizer=opt)
             network.set_train(True)
         self.network = network
-        super().__init__(self.checkpoint_url, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
 
     # pylint: disable=arguments-differ
     def forward(self, input_graph, scope, features_batch):
@@ -274,20 +177,14 @@ class Grover(Model):
             b_scope = data["b_scope"].asnumpy().tolist()
             scope = (a_scope, b_scope)
             input_graph = (f_atoms, f_bonds, a2b, b2a, b2revb, a2a)
-            t1 = time.time()
             preds = self.forward(input_graph, scope, features_batch)
-            t2 = time.time()
-            print(round(t2 - t1))
         else:
             features_batch = data["features"]
             a_scope = data["a_scope"].asnumpy().tolist()
             b_scope = data["b_scope"].asnumpy().tolist()
             scope = (a_scope, b_scope)
             input_graph = (data["f_atoms"], data["f_bonds"], data["a2b"], data["b2a"], data["b2revb"], data["a2a"])
-            t1 = time.time()
             preds = self.forward(input_graph, scope, features_batch)
-            t2 = time.time()
-            print(round(t2 - t1))
         return preds
 
     def loss(self, data):
@@ -320,10 +217,7 @@ class Grover(Model):
             input_graph = (data["f_atoms"], data["f_bonds"], data["a2b"], data["b2a"], data["b2revb"], data["a2a"])
             input_graph = mutable(input_graph)
             feat = (input_graph, scope, features_batch, targets)
-        t1 = time.time()
         loss = self.backward(feat)
-        t2 = time.time()
-        print("backward time : ", round(t2 - t1, 2))
         return loss
 
     # pylint: disable=arguments-differ

@@ -32,7 +32,7 @@ def test_esmif1():
     cmd = "wget https://download.mindspore.cn/mindscience/mindsponge/esm/examples/6t36.pdb"
     os.system(cmd)
 
-    pipe = PipeLine(name="ESM")
+    pipe = PipeLine(name="ESM_IF1")
     conf = download_config(pipe.config["sampling"], pipe.config_path + "sampling.yaml")
     pipe.initialize(conf=conf)
     pipe.model.from_pretrained(ckpt_path="/home/workspace/mindspore_ckpt/ckpt/esm_if1.ckpt")

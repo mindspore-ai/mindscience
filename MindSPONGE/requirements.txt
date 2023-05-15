@@ -7,3 +7,5 @@ glob2 >= 0.6
 h5py >= 3.6.0
 absl-py >= 1.1.0
 biotite >= 0.35.0
+descriptastorus >= 2.6.0
+rdkit
