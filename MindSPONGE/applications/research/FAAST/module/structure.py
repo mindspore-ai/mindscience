@@ -18,14 +18,14 @@ import mindspore.common.dtype as mstype
 import mindspore.nn as nn
 import mindspore.numpy as mnp
 import mindspore.ops as ops
-from mindspore import Tensor
+from mindspore import Tensor, Parameter
 from mindspore.ops import functional as F
 import mindsponge.common.residue_constants as residue_constants
 from mindsponge.cell.initializer import lecun_init
 from mindsponge.common.utils import torsion_angles_to_frames, frames_and_literature_positions_to_atom14_pos, \
     atom14_to_atom37, pseudo_beta_fn
 from mindsponge.common.geometry import initial_affine, quaternion_to_tensor, pre_compose, vecs_scale, \
-    vecs_to_tensor, vecs_expand_dims, rots_expand_dims
+    vecs_to_tensor, vecs_expand_dims, rots_expand_dims, apply_to_point, invert_point
 
 
 class InvariantPointContactAttention(nn.Cell):

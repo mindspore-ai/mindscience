@@ -187,7 +187,7 @@ def eval_main(prot_names, megafold, model_cfg, data_cfg, feature_generator):
                 else:
                     ur_file_path = os.path.join(local_ur_tuple_path, f"{prot_name}.pkl")
                 raw_feature = get_raw_feature(os.path.join(arguments.input_path, prot_file), feature_generator,
-                                              arguments.use_pkl)
+                                              arguments.use_pkl, prot_name)
                 ori_res_length = raw_feature['msa'].shape[1]
                 contact_info_mask_new = make_contact_info(model_cfg.seq_length, ur_file_path,
                                                           sample_ur_rate=sample_ur_rate)

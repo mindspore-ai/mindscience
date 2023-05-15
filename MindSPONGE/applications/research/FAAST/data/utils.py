@@ -48,14 +48,14 @@ def timing(msg: str):
     logging.info('Finished %s in %.3f seconds', msg, toc - tic)
 
 
-def get_raw_feature(input_path, feature_generator, use_pkl):
+def get_raw_feature(input_path, feature_generator, use_pkl, prot_name):
     '''get raw feature of protein by loading pkl file or searching from database'''
     if use_pkl:
         f = open(input_path, "rb")
         data = pickle.load(f)
         f.close()
         return data
-    return feature_generator.monomer_feature_generate(input_path)
+    return feature_generator.monomer_feature_generate(input_path, prot_name)
 
 
 def get_crop_size(input_path, use_pkl):
