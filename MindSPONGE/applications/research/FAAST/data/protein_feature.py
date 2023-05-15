@@ -15,7 +15,9 @@
 """
 protein feature generation module.
 """
-
+import os
+import stat
+import pickle
 import numpy as np
 from data.hhsearch import HHSearch
 from data.msa_query import MmseqQuery
@@ -94,7 +96,7 @@ class RawFeatureGenerator:
                                     result_path=self.a3m_result_path)
         self.use_custom = use_custom
 
-    def monomer_feature_generate(self, fasta_path):
+    def monomer_feature_generate(self, fasta_path, prot_name):
         """protein raw feature generation"""
         with open(fasta_path) as f:
             input_fasta_str = f.read()
@@ -155,4 +157,10 @@ class RawFeatureGenerator:
             features = templates_result.features
 
         feature_dict = {**sequence_features, **msa_features, **features}
+        os.makedirs("./pkl_file/", exist_ok=True)
+        os_flags = os.O_RDWR | os.O_CREAT
+        os_modes = stat.S_IRWXU
+        with os.fdopen(os.open(f"./pkl_file/{prot_name}.pkl", os_flags, os_modes), "wb") as fout:
+            pickle.dump(feature_dict, fout)
+            f.close()
         return feature_dict
