@@ -59,7 +59,7 @@ def train(geom_name, file_cfg, ckpt_dir, n_epochs):
 
     # prepare loss scaler
     if use_ascend:
-        from mindspore.amp import DynamicLossScaler, all_finite
+        from mindspore.amp import DynamicLossScaler, all_finite, auto_mixed_precision
         loss_scaler = DynamicLossScaler(1024, 2, 100)
         auto_mixed_precision(model, 'O3')
     else:
