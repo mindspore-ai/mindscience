@@ -75,7 +75,7 @@ def lstm_train():
         return loss
 
     # prepare dataset
-    latent_true = cae_prediction()
+    latent_true = cae_prediction(args.config_file_path)
     lstm_dataset, _ = create_lstm_dataset(latent_true, data_params["batch_size"], data_params["time_size"],
                                           data_params["latent_size"], data_params["time_window"],
                                           data_params["gaussian_filter_sigma"])
