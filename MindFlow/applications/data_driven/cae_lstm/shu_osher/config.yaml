@@ -1,5 +1,5 @@
 cae_data:
-  data_path: "./dataset/shu_osher.npu"
+  data_path: "./dataset/shu_osher.npy"
   batch_size: 16
   time_size: 2093      # The numbers of the snapshots
 cae_optimizer:

@@ -132,14 +132,17 @@ def main():
         time_beg = time.time()
         l_recons_train = 0.0
         l_pred_train = 0.0
+        l_train = 0.0
         for _ in range(train_size):
-            loss, l_recons, l_pred = train_sink()
+            l_full, l_recons, l_pred = train_sink()
             l_recons_train += l_recons.asnumpy()
             l_pred_train += l_pred.asnumpy()
+            l_train += l_full.asnumpy()
         l_recons_train = l_recons_train / train_size
         l_pred_train = l_pred_train / train_size
+        l_train = l_train / train_size
         print(f"epoch: {epoch} epoch time: {(time.time() - time_beg):>8f}s,"
-              f" recons loss: {l_recons_train:>8f}, pred loss: {l_pred_train:>8f}, Total loss: {loss:>8f}")
+              f" recons loss: {l_recons_train:>8f}, pred loss: {l_pred_train:>8f}, Total loss: {l_train:>8f}")
 
         if epoch % config['eval_interval'] == 0:
             l_recons_eval = 0.0
