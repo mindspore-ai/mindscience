@@ -155,7 +155,8 @@ def fold_infer(args):
 
     for prot_file in prot_names:
         prot_name = prot_file.split('.')[0]
-        raw_feature = get_raw_feature(os.path.join(args.input_path, prot_file), feature_generator, args.use_pkl)
+        raw_feature = get_raw_feature(os.path.join(args.input_path, prot_file), feature_generator, args.use_pkl,
+                                      prot_name)
         ori_res_length = raw_feature['msa'].shape[1]
         ur_path = f"{args.restraints_path}/{prot_name}.txt"
         contact_info_mask_new = make_contact_info(model_cfg.seq_length, ur_path)
