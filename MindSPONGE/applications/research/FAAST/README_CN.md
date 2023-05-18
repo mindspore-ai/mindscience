@@ -12,7 +12,7 @@
 - [代码目录](#代码目录)
 - [运行示例](#运行示例)
   - [RASP模型运行示例](#约束信息结构预测模型运行示例)
-  - [FAAST方法运行示例](#FAASTNMR数据自动解析方法运行示例)
+  - [FAAST方法运行示例](#FAAST-NMR数据自动解析方法运行示例)
 - [运行时间](#运行时间)
 - [引用](#引用)
 - [致谢](#致谢)
@@ -27,7 +27,9 @@
 
 ## FAAST
 
-核磁共振方法（NMR）是唯一一种以原子分辨率解析更贴近蛋白质在实际环境下的溶液态构象与动态结构的方法[1][2]，然而NMR实验数据获取与分析耗时长，平均单条蛋白需领域专家投入至少数月，其中大部分时间用于实验数据的解析和归属。现有NMR NOE谱峰数据解析方法如CARA，ARIA、CYANA等使用传统分子动力学模拟生成的结构迭代解析数据，解析速度慢，且从数据中解析出的约束信息和结构仍然需要大量专家知识，同时需要投入较长时间做进一步修正。为了提高 NMR 实验数据解析的速度和准确性，我们基于MindSpore+昇腾AI软硬件平台开发了NMR数据自动解析方法FAAST（iterative Folding Assisted peak ASsignmenT。）
+核磁共振方法（NMR）是唯一一种以原子分辨率解析更贴近蛋白质在实际环境下的溶液态构象与动态结构的方法[1][2]，然而NMR实验数据获取与分析耗时长，平均单条蛋白需领域专家投入至少数月，其中大部分时间用于实验数据的解析和归属。现有NMR NOE谱峰数据解析方法如CARA，ARIA、CYANA等使用传统分子动力学模拟生成的结构迭代解析数据，解析速度慢，且从数据中解析出的约束信息和结构仍然需要大量专家知识，同时需要投入较长时间做进一步修正。为了提高 NMR 实验数据解析的速度和准确性，我们基于MindSpore+昇腾AI软硬件平台开发了NMR数据自动解析方法FAAST（iterative Folding Assisted peak ASsignmenT）。
+
+RASP模型和FAAST方法是基于 MindSpore + Ascend 平台开发的，同时为了方便用户使用我们在 Google 的 Colab 布置了简单的测试用例：[FAAST_DEMO](https://colab.research.google.com/drive/1uaki0Ui1Y_gqVW7KSo838aOhXHSM3PTe?usp=sharing)。它们不仅可以利用实验限制来改进模型预测，而且还可以通过其集成功能促进和加快实验数据分析。
 
 ## 环境配置
 
@@ -155,7 +157,7 @@
             --a3m_path A3M_PATH --template_path TEMPLATE_PATH
 
 选项：
---restraints_PATH    约束信息文件夹位置，其中单个约束信息文件以txt形式保存
+--restraints_path    约束信息文件夹位置，其中单个约束信息文件以txt形式保存
 --run_platform       运行平台，可选Ascend或GPU
 --input_path         输入文件夹目录，可包含多个.fasta/.pkl文件
 --checkpoint_file    模型权重文件路径
@@ -166,18 +168,25 @@
 --template_path      搜索后保存的cif文件位夹置，或者直接提供的cif文件路径位置
 ```
 
-该模型支持三种模式的输入第一种输入原始fasta序列，通过在线mmseqs检索得到MSA和template，需要将use_pkl与use_custom设为False，同时输入a3m_path 与 template_path作为保存搜索结果的路径;
+该模型支持三种模式的输入：
+第一种输入原始fasta序列，通过在线mmseqs检索得到MSA和template，需要将use_pkl与use_custom设为False，同时输入a3m_path 与 template_path作为保存搜索结果的路径;
 第二种是输入用户提供的MSA与template文件，其中MSA为a3m格式，template为cif格式，可以由用户自行检索或者由经验知识提供；需要将use_pkl设为False 与use_custom设为True,同时输入用户提供的MSA和template路径a3m_path 与 template_path;
-第三种是用提前预处理好得到的pkl文件，需要将use_pkl设为True，不需要额外输入a3m_path与template path。pkl文件的预处理可以参考
+第三种是用提前预处理好得到的pkl文件，需要将use_pkl设为True，不需要额外输入a3m_path与template path。
+pkl文件的预处理可以参考
 
 ```log
 ./data/protein_feature.py:monomer_feature_generate 函数
 ```
 
 其主要是处理输入序列的特征信息，搜索到的msa信息以及template信息，同时为了方便使用，每次运行完一次rasp模型会在 ./pkl_file/保存对应的pkl文件。
+也可以参考下载好的样例pkl文件:
+
+```log
+example/pkl/prot_name.pkl
+```
 
 **约束信息**
-该模型额外需要restraints信息作为输入，约束信息是指形如`[[1,2],...,[2,10]]`等多维二进制序列代表氨基酸对的空间位置信息，为了方便用户使用，这里输入的约束信息需要以.txt后缀形式输入。同时约束信息的来源多样，包括质谱交联、荧光共振能量转移等等，这里提供了一个从pdb提取约束信息的样例脚本，用法如下。
+该模型额外需要restraints信息并通过restraints_path 传给模型。约束信息是指形如`[[1,2],...,[2,10]]`等多维二进制序列代表氨基酸对的空间位置信息，为了方便用户使用，这里输入的约束信息需要以.txt后缀形式输入。同时约束信息的来源多样，包括nmr核磁共振信息、质谱交联、荧光共振能量转移等等，这里提供了一个从pdb提取约束信息的样例脚本，用法如下。
 
 ```bash
 用法 python extract_restraints.py --pdb_path PDB_PATH --output_file OUTPUT_FILE
@@ -203,10 +212,10 @@
 {confidence of predicted structrue :89.23, time :95.86，restraint recall :1.0}
 ```
 
-img.png
+![输入图片说明](A.PNG)
 图A分别是原始pdb、alphafold、megaprotein、rasp 的结果，可以看出在multi-domain的蛋白上rasp模型推理得到结果更接近原始结果。
 
-### FAASTNMR数据自动解析方法运行示例
+### FAAST-NMR数据自动解析方法运行示例
 
 下载RASP模型训练好的权重:[RASP.ckpt](<https://download.mindspore.cn/mindscience/mindsponge/FAAST/checkpoint/RASP.ckpt>)，相关运行示例文件可以在[样例文件](<https://download.mindspore.cn/mindscience/mindsponge/FAAST/example/>)下载，运行以下命令启动推理。
 
@@ -270,7 +279,7 @@ output_file_path:  ./megaassign/iter_1/structure_relaxed/5W9F_0.pdb
 
 ## 运行时间
 
-image.png
+![输入图片说明](B.PNG)
 
 上图是FAAST模型和传统模型的解析时间及精度的对比，以Ascend 910 aarch64系统为例，在一台硬件驱动包已经安装好的环境，部署时间大约半个小时，单条序列FAAST模型平均运行半个小时。也就是说哪怕是零基础的小白仅用最长的一天时间就能将原本耗时几个月甚至更长的nmr数据解析完成。
 
@@ -280,7 +289,7 @@ image.png
 
 [2] Liu S, Zhang J, Chu H, et al. PSP: million-level protein sequence dataset for protein structure prediction[J]. arXiv preprint arXiv:2206.12240, 2022.
 
-[3] Terwilliger T C, Poon B K, Afonine P V, et al. Improved AlphaFold modeling with implicit experimental information[J]. Nat Methods, 2022, 19:1376–1382.
+[3] Terwilliger T C, Poon B K, Afonine P V, et al. Improved AlphaFold modeling with implicit experimental information[J]. Nat Methods, 2022.
 
 ## 致谢
 
