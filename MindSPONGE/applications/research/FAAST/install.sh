@@ -10,6 +10,7 @@ cd kalign
 mkdir build
 cd build
 cmake ..
+sed -i "2aset(CMAKE_INSTALL_PREFIX ../../)" cmake_install.cmake
 make
 make test
 make install
@@ -20,6 +21,6 @@ pip install decorator
 pip install tqdm
 pip install scikit-learn
 pip install pyparsing
-pip uninstall urllib3 && pip install urllib3==1.26.14
+pip uninstall --yes urllib3 && pip install urllib3==1.26.14
 conda install --yes openmm
 conda install --yes -c conda-forge pdbfixer

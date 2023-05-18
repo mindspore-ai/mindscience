@@ -77,7 +77,7 @@ eval:
 
 database_search:
   hhsearch_binary_path: ./hh-suite/build/bin/hhsearch
-  kalign_binary_path: /usr/local/bin/kalign
+  kalign_binary_path: ./bin/kalign
   pdb70_database_path: None
   mmcif_dir: None
   obsolete_pdbs_path: None

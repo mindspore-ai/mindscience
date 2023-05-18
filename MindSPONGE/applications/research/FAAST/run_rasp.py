@@ -213,11 +213,9 @@ if __name__ == "__main__":
         arguments.mixed_precision = 1
     elif arguments.run_platform == 'GPU':
         context.set_context(mode=context.GRAPH_MODE,
+                            memory_optimize_level="O1",
                             device_target="GPU",
                             max_call_depth=6000,
-                            graph_kernel_flags="--disable_expand_ops=Softmax --disable_cluster_ops=ReduceSum "
-                                               "--composite_op_limit_size=50",
-                            device_id=arguments.device_id,
-                            enable_graph_kernel=True)
+                            device_id=arguments.device_id,)
         arguments.mixed_precision = 0
     fold_infer(arguments)
