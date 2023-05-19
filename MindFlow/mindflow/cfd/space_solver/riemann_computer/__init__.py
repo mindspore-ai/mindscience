@@ -13,13 +13,11 @@
 # limitations under the License.
 # ==============================================================================
 """init of riemann computer."""
+from .hllc import HLLC
 from .rusanov import Rusanov
 from .rusanov_net import RusanovNet
 
-_riemann_dict = {
-    'Rusanov': Rusanov,
-    'RusanovNet': RusanovNet
-}
+_riemann_dict = {'Rusanov': Rusanov, 'RusanovNet': RusanovNet, 'HLLC': HLLC}
 
 
 def define_riemann_computer(name):
