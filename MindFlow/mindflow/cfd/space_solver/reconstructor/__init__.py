@@ -13,10 +13,14 @@
 # limitations under the License.
 # ==============================================================================
 """init of reconstructor."""
+from .weno3 import WENO3
 from .weno5 import WENO5
+from .weno7 import WENO7
 
 _reconstructor_dict = {
+    'WENO3': WENO3,
     'WENO5': WENO5,
+    'WENO7': WENO7,
 }
 
 
