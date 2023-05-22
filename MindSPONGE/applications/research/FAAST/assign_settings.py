@@ -40,24 +40,6 @@ settings["infer_pdb"] = {'sample_ur_rate': 0.05,
 
 assign_all_settings = {}
 
-'''
-settings["infer_pdb"]["sample_ur_rate"] = 0.05
-settings["infer_pdb"]["num_repeats"] = 20
-settings["assign"]["weight_cutoff"] = 0.9
-assign_all_settings[0] = copy.deepcopy(settings)
-
-settings["infer_pdb"]["sample_ur_rate"] = 0.05
-settings["infer_pdb"]["num_repeats"] = 20
-settings["assign"]["weight_cutoff"] = 0.8
-assign_all_settings[1] = copy.deepcopy(settings)
-
-settings["infer_pdb"]["sample_ur_rate"] = 0.10
-settings["infer_pdb"]["num_repeats"] = 20
-settings["assign"]["weight_cutoff"] = 0.8
-assign_all_settings[2] = copy.deepcopy(settings)
-
-'''
-
 settings.get("infer_pdb")["sample_ur_rate"] = 0.0
 settings.get("infer_pdb")["num_repeats"] = 1
 settings.get("assign")["weight_cutoff"] = 0.9
