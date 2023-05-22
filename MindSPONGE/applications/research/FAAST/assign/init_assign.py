@@ -299,22 +299,71 @@ def get_ur_list2(peak_list, long_distance_threshold=0):
     return ur_list, ur_list_tuple
 
 
+def load_noelist_from_txt(noe_file):
+    '''load_cs_from_txt'''
+    with open(noe_file, "r") as f:
+        data_txt_load = f.readlines()
+
+    noelist = []
+    for line in data_txt_load:
+        words = line.split()
+        try:
+            noelist.append([float(words[0]), float(words[1]), float(words[2]), float(words[3])])
+        except ValueError:
+            continue
+    noelist = np.array(noelist)
+
+    return noelist
+
+
+def load_cs_from_txt(cs_file):
+    '''load_cs_from_txt'''
+    with open(cs_file, "r") as f:
+        data_txt_load = f.readlines()
+
+    atom_names = []
+    atom_types = []
+    chem_shifts = []
+    res_idxs = []
+    res_types = []
+
+    for line in data_txt_load:
+        words = line.split()
+        try:
+            atom_name = words[0]
+            atom_type = words[1]
+            chem_shift = float(words[2])
+            res_idx = int(words[3])
+            res_type = words[4]
+        except ValueError:
+            continue
+        atom_names.append(atom_name)
+        atom_types.append(atom_type)
+        chem_shifts.append(chem_shift)
+        res_idxs.append(res_idx)
+        res_types.append(res_type)
+
+    res = [atom_names, atom_types, chem_shifts, res_idxs, res_types]
+    res = [np.array(array) for array in res]
+    return res
+
+
 def init_assign_call(prot_path):
     '''init_assign_call'''
     prot_name = prot_path.split("/")[-1]
     file_list = os.listdir(prot_path)
     noe_file_list = []
     for file in file_list:
-        if "noelist" in file:
+        if file.split("/")[-1].startswith("noelist_"):
             noe_file_list.append(file)
 
-    with open(os.path.join(prot_path, "chemical_shift_aligned.pkl"), "rb") as f:
-        atom_names, atom_types, chem_shifts, res_idxs, res_types = pickle.load(f)
+    cs_file_path = os.path.join(prot_path, "chemical_shift_aligned.txt")
+    atom_names, atom_types, chem_shifts, res_idxs, res_types = load_cs_from_txt(cs_file_path)
 
     all_peak_list = []
     for file_id, noe_file in enumerate(noe_file_list):
-        with open(os.path.join(prot_path, noe_file), "rb") as f:
-            noe_list = pickle.load(f)
+        noe_file_path = os.path.join(prot_path, noe_file)
+        noe_list = load_noelist_from_txt(noe_file_path)
 
         noe_list_25percentile = np.percentile(noe_list[:, -1], 100)
 

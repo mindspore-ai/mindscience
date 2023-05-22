@@ -15,7 +15,6 @@
 "run_relax"
 import os
 import stat
-import datetime
 import numpy as np
 
 from mindsponge.common import protein, residue_constants
@@ -65,7 +64,6 @@ def get_amber_input(input_file_path):
 
 def run_relax(input_file_path, output_file_path):
     '''run_relax'''
-    print("\ninput_file_path: ", input_file_path, "\n", datetime.datetime.now(), flush=True)
 
     amber_relaxer = relax.AmberRelaxation(
         max_iterations=RELAX_MAX_ITERATIONS,
@@ -87,5 +85,3 @@ def run_relax(input_file_path, output_file_path):
     os_modes = stat.S_IRWXU
     with os.fdopen(os.open(output_file_path, os_flags, os_modes), "w") as fout:
         fout.write(relaxed_pdb_str)
-
-    print("output_file_path: ", output_file_path, "\n", flush=True)
