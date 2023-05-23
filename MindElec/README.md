@@ -91,7 +91,7 @@ Due to the dependency between MindSpore Elec and MindSpore, please follow the ta
 ### Installing Using pip
 
 ```bash
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/mindscience/{arch}/mindelec_ascend-{version}-{python_version}-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/MindScience/{arch}/mindelec_ascend-{version}-{python_version}-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 > - When the network is connected, dependencies of the MindSpore Elec installation package are automatically downloaded during the .whl package installation. For details about dependencies, see [setup.py](https://gitee.com/mindspore/mindscience/blob/master/MindElec/setup.py). Pointcloud data generation depends on [pythonocc](https://github.com/tpaviot/pythonocc-core), please install the dependencies by yourself.
