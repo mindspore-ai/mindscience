@@ -483,7 +483,7 @@ def run_pipeline(
             "iteration": iteration,
         })
         violations = ret.get("violations_per_residue")
-        print("final_violations: ", violations)
+        print("Violation of structure after relaxation: ", violations)
         exclude_residues1 = exclude_residues1.union(ret.get("residue_violations"))
 
         logging.info("Iteration completed: Einit %.2f Efinal %.2f Time %.2f s "

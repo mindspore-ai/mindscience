@@ -59,9 +59,11 @@ arguments = parser.parse_args()
 
 def init_assign_with_pdb(prot_path, ur_path, ur_tuple_path, ref_pdb=None):
     '''init_assign_with_pdb'''
+    print("\nInitial assignment:")
     prot_name = prot_path.split("/")[-1]
     ur_list, ur_list_tuple = init_assign_call(prot_path=prot_path)
     if ref_pdb:
+        print(f"Filtering restraint with given structure.")
         ur_list_tuple = filter_ur_with_pdb(ur_list, ref_pdb)
     os_flags = os.O_RDWR | os.O_CREAT
     os_modes = stat.S_IRWXU
@@ -71,19 +73,19 @@ def init_assign_with_pdb(prot_path, ur_path, ur_tuple_path, ref_pdb=None):
         pickle.dump(ur_list_tuple, fout)
 
 
-def contact_evaluation(final_atom_positions, aatype, contact_mask_input):
-    '''contact_evaluation'''
-    if contact_mask_input.sum() < 1:
+def restraint_evaluation(final_atom_positions, aatype, restraint_mask_input):
+    '''restraint_evaluation'''
+    if restraint_mask_input.sum() < 1:
         return 1.0
-    contact_mask_input = contact_mask_input.astype(np.float32)
+    restraint_mask_input = restraint_mask_input.astype(np.float32)
     pseudo_beta_pred = pseudo_beta_fn(aatype, final_atom_positions, None)  # CA as CB for glycine
     cb_distance_pred = np.sqrt((np.square(pseudo_beta_pred[None] - pseudo_beta_pred[:, None])).sum(-1) + 1e-8)
-    has_contact_pred = (cb_distance_pred <= 10).astype(np.float32)  # 8.0 or 10.0
+    has_restraint_pred = (cb_distance_pred <= 10).astype(np.float32)  # 8.0 or 10.0
 
-    contact_pred_rate_input = ((has_contact_pred == contact_mask_input) * \
-                               contact_mask_input).sum() / (contact_mask_input.sum() + 1e-8)
+    restraint_pred_rate_input = ((has_restraint_pred == restraint_mask_input) * \
+                                  restraint_mask_input).sum() / (restraint_mask_input.sum() + 1e-8)
 
-    return round(contact_pred_rate_input, 4)
+    return round(restraint_pred_rate_input, 4)
 
 
 def analysis(predur_path, predpdb_path, filter_names, iter_idx):
@@ -99,15 +101,15 @@ def analysis(predur_path, predpdb_path, filter_names, iter_idx):
 
     outputs_all = output_predur_vs_predpdb
 
-    keys = ["prot_name", "restraints structure coincidence rate",
-            "restraints number per residue",
+    keys = ["protein name", "restraints number per residue",
             "long restraints number per residue",
+            "restraints structure coincidence rate",
             "long restraints structure coincidence rate"]
-    print(f"res analysis {iter_idx}:", end=" ")
+    print(f"Iteration {iter_idx}:")
 
     for outputs in outputs_all:
         for key, output in zip(keys, outputs):
-            print(key, " : ", output)
+            print(key, ": ", output)
         print()
 
     return confs
@@ -129,12 +131,12 @@ def pseudo_beta_fn(aatype, all_atom_positions, all_atom_masks):
     return pseudo_beta
 
 
-def make_contact_info(ori_seq_len, ur_path, distance_threshold=1, sample_ur_rate=0.1):
-    '''make_contact_info'''
+def make_restraint_info(ori_seq_len, ur_path, distance_threshold=1, sample_ur_rate=0.1):
+    '''make_restraint_info'''
     num_residues = ori_seq_len
-    contact_info_mask = np.zeros((num_residues, num_residues))
+    restraint_info_mask = np.zeros((num_residues, num_residues))
     if not ur_path:
-        return contact_info_mask
+        return restraint_info_mask
 
     with open(ur_path, "rb") as f:
         useful_urs = pickle.load(f)
@@ -143,14 +145,13 @@ def make_contact_info(ori_seq_len, ur_path, distance_threshold=1, sample_ur_rate
     ur_num = int(len(useful_urs) * sample_ur_rate)
     np.random.shuffle(useful_urs)
     useful_urs = useful_urs[:ur_num]
-    print(useful_urs[:5])
 
     for i, j in useful_urs:
-        contact_info_mask[int(i) - 1, int(j) - 1] = 1
-    contact_info_mask = (contact_info_mask + contact_info_mask.T) > 0
-    contact_info_mask = contact_info_mask.astype(np.float32)
+        restraint_info_mask[int(i) - 1, int(j) - 1] = 1
+    restraint_info_mask = (restraint_info_mask + restraint_info_mask.T) > 0
+    restraint_info_mask = restraint_info_mask.astype(np.float32)
 
-    return contact_info_mask
+    return restraint_info_mask
 
 
 def eval_main(prot_names, megafold, model_cfg, data_cfg, feature_generator):
@@ -189,9 +190,9 @@ def eval_main(prot_names, megafold, model_cfg, data_cfg, feature_generator):
                 raw_feature = get_raw_feature(os.path.join(arguments.input_path, prot_file), feature_generator,
                                               arguments.use_pkl, prot_name)
                 ori_res_length = raw_feature['msa'].shape[1]
-                contact_info_mask_new = make_contact_info(model_cfg.seq_length, ur_file_path,
-                                                          sample_ur_rate=sample_ur_rate)
-                contact_info_mask_new = Tensor(contact_info_mask_new, mstype.float32)
+                restraint_info_mask_new = make_restraint_info(model_cfg.seq_length, ur_file_path,
+                                                              sample_ur_rate=sample_ur_rate)
+                restraint_info_mask_new = Tensor(restraint_info_mask_new, mstype.float32)
                 processed_feature = Feature(data_cfg, raw_feature)
                 feat, prev_pos, prev_msa_first_row, prev_pair = processed_feature.pipeline(data_cfg, \
                                                                 mixed_precision=arguments.mixed_precision)
@@ -205,13 +206,13 @@ def eval_main(prot_names, megafold, model_cfg, data_cfg, feature_generator):
                                       prev_pos,
                                       prev_msa_first_row,
                                       prev_pair,
-                                      contact_info_mask_new)
+                                      restraint_info_mask_new)
                     prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits = result
 
-                eval_res = contact_evaluation(prev_pos.asnumpy()[:ori_res_length],
-                                              feat[4][0][:ori_res_length],
-                                              contact_info_mask_new[:ori_res_length, :ori_res_length].asnumpy())
-                contact_pred_rate_input = eval_res
+                eval_res = restraint_evaluation(prev_pos.asnumpy()[:ori_res_length],
+                                                feat[4][0][:ori_res_length],
+                                                restraint_info_mask_new[:ori_res_length, :ori_res_length].asnumpy())
+                restraint_pred_rate_input = eval_res
 
                 final_atom_positions = prev_pos.asnumpy()[:ori_res_length]
                 final_atom_mask = feat[16][0][:ori_res_length]
@@ -233,10 +234,10 @@ def eval_main(prot_names, megafold, model_cfg, data_cfg, feature_generator):
                 os_modes = stat.S_IRWXU
                 with os.fdopen(os.open(unrelaxed_pdb_file_path, os_flags, os_modes), 'w') as fout:
                     fout.write(pdb_file)
-                print(
-                    f">>>>>>>>>>>>>>>>>>>>>>repeat_idx {repeat_idx}, contact_info_input, "
-                    f"{contact_info_mask_new.asnumpy().sum()}, confidence {confidence}, "
-                    f"contact_pred_rate_input {contact_pred_rate_input}, prot_name {prot_name}, ", flush=True)
+                print(f">>>>>>>>>>>>>>>>>>>>>>Protein name: {prot_name}, iteration: {iter_idx}, "
+                      f"repeat: {repeat_idx}, number of input restraint pair: "
+                      f"{int(restraint_info_mask_new.asnumpy().sum())}, confidence: {round(confidence, 2)}, "
+                      f"input restraint recall: {restraint_pred_rate_input}.", flush=True)
                 run_relax(unrelaxed_pdb_file_path, relaxed_pdb_file_path)
 
             names = os.listdir(arguments.input_path)
