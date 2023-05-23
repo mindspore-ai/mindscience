@@ -28,6 +28,8 @@
 
 核磁共振方法（NMR）是唯一一种以原子分辨率解析更贴近蛋白质在实际环境下的溶液态构象与动态结构的方法[1][2]，然而NMR实验数据获取与分析耗时长，平均单条蛋白需领域专家投入至少数月，其中大部分时间用于实验数据的解析和归属。现有NMR NOE谱峰数据解析方法如CARA，ARIA、CYANA等使用传统分子动力学模拟生成的结构迭代解析数据，解析速度慢，且从数据中解析出的约束信息和结构仍然需要大量专家知识，同时需要投入较长时间做进一步修正。为了提高 NMR 实验数据解析的速度和准确性，我们基于MindSpore+昇腾AI软硬件平台开发了NMR数据自动解析方法FAAST（iterative Folding Assisted peak ASsignmenT）。
 
+任何使用此源码或模型参数的出版物都应引用[FAAST-paper](https://www.biorxiv.org/content/10.1101/2023.04.14.536890v1)。
+
 方便用户快速上手,我们在 Google 的 Colab 布置了简单的测试用例：[FAAST_DEMO](https://colab.research.google.com/drive/1uaki0Ui1Y_gqVW7KSo838aOhXHSM3PTe?usp=sharing)。测试版本支持有限（序列长度，推理速度），完整功能请尝试MindSpore+Ascend平台。
 
 ## 环境配置
@@ -48,7 +50,7 @@
     GPU平台 x86操作系统  | <https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.0.0rc1/MindSpore/unified/x86_64/mindspore-2.0.0rc1-cp37-cp37m-linux_x86_64.whl>
 
     该版本mindspore对应昇腾硬件驱动包版本为:Ascend Data Center Solution 23.0.RC1，详细安装链接参考:<<https://www.mindspore.cn/install>
-    对应的英伟达cuda版本为11.1-11.6，安装链接可以参考：cuda安装链接(<https://developer.nvidia.com/cuda-toolkit-archive>)
+    对应的英伟达cuda版本为11.1-11.8，安装链接可以参考：cuda安装链接(<https://developer.nvidia.com/cuda-toolkit-archive>)
 
     安装 wheel 包
 
@@ -203,7 +205,9 @@ RASP模型支持三种模式的输入:
 {confidence of predicted structrue :89.23, time :95.86，restraint recall :1.0}
 ```
 
-![输入图片说明](A.PNG)
+<div align=center>
+<img src="./A.png" alt="FAASTresult" width="600"/>
+</div>
 
 图A分别是原始PDB、AlphaFold、MEGA-Fold、RASP 的结果，可以看出在多域蛋白6XMV上RASP模型推理得到结果更接近真实结构。
 
@@ -309,7 +313,9 @@ Protein name是该蛋白的名字。，number of input restraint pair是有效�
 
 #### **结果对比**
 
-![输入图片说明](B.PNG)
+<div align=center>
+<img src="./B.png" alt="FAAST-TIME" width="600"/>
+</div>
 
 上图是FAAST方法和传统方法的解析时间及精度的对比，以ARM+Ascend910平台为例，在一台硬件驱动包已经安装好的环境，单条序列NOESY峰指认平均耗时半个小时，且解析出的约束数量与约束-结构符合率持平人工解析。
 

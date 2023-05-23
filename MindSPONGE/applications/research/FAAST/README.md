@@ -26,6 +26,8 @@ ENGLISH|[简体中文](README_CN.md)
 
 NMR experiments can detect in situ structures and dynamic interactions, but the NMR assignment process requires expertise and is time-consuming, thereby limiting its applicability. Deep learning algorithms have been employed to aid in experimental data analysis. In this work, we developed a RASP model which can enhance structure prediction with restraints. Based on the Evoformer and structure module architecture of AlphaFold, this model can predict structure based on sequence and a flexible number of input restraints. Moreover, it can evaluate the consistency between the predicted structure and the imposed restraints. Based on this model, we constructed an iterative NMR NOESY peak assignment pipeline named FAAST, to accelerate assignment process of NOESY restraints and obtaining high quality structure ensemble. The RASP model and FAAST pipeline not only allow for the leveraging of experimental restraints to improve model prediction, but can also facilitate and expedite experimental data analysis with their integrated capabilities.
 
+Any publication that discloses findings arising from using this source code or the model parameters should cite the [FAAST-paper](https://www.biorxiv.org/content/10.1101/2023.04.14.536890v1).
+
 A simple test cases is provided through Google Colab [FAAST_DEMO](https://colab.research.google.com/drive/1uaki0Ui1Y_gqVW7KSo838aOhXHSM3PTe?usp=sharing) for quick start. Since the RASP model and FAAST method are developed on the MindSpore+Ascend platform, this method works on both Ascend and GPU, and it would have better performance with this platform.
 
 ## Environment
@@ -46,7 +48,7 @@ RASP and FAAST are based on the computational biology library [MindSPONGE](<http
     GPU x86   | <https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.0.0rc1/MindSpore/unified/x86_64/mindspore-2.0.0rc1-cp37-cp37m-linux_x86_64.whl>
 
     Installation on Ascend requires hardware driver package:Ascend Data Center Solution 23.0.RC1,[Install Guide](<https://www.mindspore.cn/install>)
-    Installation on GPU requires Nvidia CUDA version 11.1-11.6. Please refer to the [Installation Link](<https://developer.nvidia.com/cuda-toolkit-archive>)
+    Installation on GPU requires Nvidia CUDA version 11.1-11.8. Please refer to the [Installation Link](<https://developer.nvidia.com/cuda-toolkit-archive>)
 
 - Install MindSPONGE:
     Download Mindscience ：
@@ -199,7 +201,9 @@ Predicted structures are stored in './result/ '.
 {confidence of predicted structrue :89.23, time :95.86，restraint recall :1.0}
 ```
 
-![A](A.PNG)
+<div align=center>
+<img src="./A.png" alt="FAASTresult" width="600"/>
+</div>
 
 For multi-domain structure 6XMV, both AlphaFold and MEGA-Fold provide inaccurate relative domain positions, however with restraint RASP is able to fix the inter-domain structure.
 
@@ -308,11 +312,13 @@ long restraints structure coincidence rate:  0.9642
 - Number of input restraint pair is the amount of input effective restraint pair;
 - Confidence is the credibility of the structure, where 0 is not at all trustworthy and 100 is very trustworthy. Credibility is positively correlated with the structure quality (correlation coefficient > 0.65).
 - Input restraint recall refers to the coincidence rate between inferred structures and input restraint information
-- Long restraints refer to the restraint information of residues pair with sequence seperation greater than or equal to 4 inside primary restraints.
+- Long restraints refer to the restraint information of residues pair with sequence separation greater than or equal to 4 inside primary restraints.
 
 #### **Comparison of Results**
 
-![B](B.PNG)
+<div align=center>
+<img src="./B.png" alt="FAAST-TIME" width="600"/>
+</div>
 
 The figure above compares the resolution time and accuracy of the FAAST model to the traditional model. The Ascend 910 aarch64 system, for example, is deployed in about half an hour in an environment where the hardware driver package is already installed. The single sequence FAAST model runs on average half an hour, which means that even zero-based whitewashed nmr data can be analyzed in as little as one day, which would otherwise take several months or more.
 
