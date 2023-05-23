@@ -1,5 +1,26 @@
 ENGLISH|[简体中文](README_CN.md)
 
+# FAAST and RASP
+
+NMR experiments can detect in situ structures and dynamic interactions, but the NMR assignment process requires expertise and is time-consuming, thereby limiting its applicability. Deep learning algorithms have been employed to aid in experimental data analysis. In this work, we developed a RASP model which can enhance structure prediction with restraints. Based on the Evoformer and structure module architecture of AlphaFold, this model can predict structure based on sequence and a flexible number of input restraints. Moreover, it can evaluate the consistency between the predicted structure and the imposed restraints. Based on this model, we constructed an iterative NMR NOESY peak assignment pipeline named FAAST, to accelerate assignment process of NOESY restraints and obtaining high quality structure ensemble. The RASP model and FAAST pipeline not only allow for the leveraging of experimental restraints to improve model prediction, but can also facilitate and expedite experimental data analysis with their integrated capabilities.
+
+Please check our paper ["Assisting and Accelerating NMR Assignment with Restrained Structure Prediction"](https://www.biorxiv.org/content/10.1101/2023.04.14.536890v1) for detailed information.
+
+A simple test cases is provided through Google Colab [FAAST_DEMO](https://colab.research.google.com/drive/1uaki0Ui1Y_gqVW7KSo838aOhXHSM3PTe?usp=sharing) for quick start. Since the RASP model and FAAST method are developed on the MindSpore+Ascend platform, this method works on both Ascend and GPU, and it would have better performance with this platform.
+
+<details><summary>Cite us</summary>
+
+```bibtex
+@article{Liu2023AssistingAA,
+title={Assisting and Accelerating NMR Assignment with Restrainted Structure Prediction},
+author={Sirui Liu and Haotian Chu and Yuantao Xie and Fangming Wu and Ningxi Ni and Chenghao Wang and Fangjing Mu and Jiachen Wei and Jun Zhang and Mengyun Chen and Junbin Li and F. Yu and Hui Fu and Shenlin Wang and Changlin Tian and Zidong Wang and Yi Qin Gao},
+journal={bioRxiv},
+year={2023}
+}
+```
+
+</details>
+
 <details><summary>Contents</summary>
 
 <!-- TOC -->
@@ -21,14 +42,6 @@ ENGLISH|[简体中文](README_CN.md)
 <!-- /TOC -->
 
 </details>
-
-# FAAST and RASP
-
-NMR experiments can detect in situ structures and dynamic interactions, but the NMR assignment process requires expertise and is time-consuming, thereby limiting its applicability. Deep learning algorithms have been employed to aid in experimental data analysis. In this work, we developed a RASP model which can enhance structure prediction with restraints. Based on the Evoformer and structure module architecture of AlphaFold, this model can predict structure based on sequence and a flexible number of input restraints. Moreover, it can evaluate the consistency between the predicted structure and the imposed restraints. Based on this model, we constructed an iterative NMR NOESY peak assignment pipeline named FAAST, to accelerate assignment process of NOESY restraints and obtaining high quality structure ensemble. The RASP model and FAAST pipeline not only allow for the leveraging of experimental restraints to improve model prediction, but can also facilitate and expedite experimental data analysis with their integrated capabilities.
-
-Any publication that discloses findings arising from using this source code or the model parameters should cite the [FAAST-paper](https://www.biorxiv.org/content/10.1101/2023.04.14.536890v1).
-
-A simple test cases is provided through Google Colab [FAAST_DEMO](https://colab.research.google.com/drive/1uaki0Ui1Y_gqVW7KSo838aOhXHSM3PTe?usp=sharing) for quick start. Since the RASP model and FAAST method are developed on the MindSpore+Ascend platform, this method works on both Ascend and GPU, and it would have better performance with this platform.
 
 ## Environment
 
@@ -175,7 +188,7 @@ RASP supports three types of input.
 
 **Restraint information**
 
-The model requires restraint information as input, and the restraint information takes the form of a (N,2) text file describing which residue pairs are close in 3-dimentional space like `[[1,2],... [2,10]]`, etc. Restraint information comes from various sources, including Nuclear Magnetic Resonance(NMR), mass spectrum cross-linking, fluorescent resonance energy transfer and so on. A sample script is provided to extract restraint information from the pdb, as shown below.
+The model requires restraint information as input, and the restraint information takes the form of a (N,2) text file describing which residue pairs are close in 3-dimentional space like `[[1,2],... [2,10]]`, etc. Restraint information comes from various sources, including Nuclear Magnetic Resonance(NMR), Cross-Linking Mass Spectrometry (XL-MS) and so on. A sample script is provided to extract restraint information from the pdb, as shown below.
 
 ```bash
 Usage:python extract_restraints.py --pdb_path PDB_PATH --output_file OUTPUT_FILE
@@ -202,7 +215,7 @@ Predicted structures are stored in './result/ '.
 ```
 
 <div align=center>
-<img src="./A.png" alt="FAASTresult" width="600"/>
+<img src="./A.png" alt="FAASTresult" width="300"/>
 </div>
 
 For multi-domain structure 6XMV, both AlphaFold and MEGA-Fold provide inaccurate relative domain positions, however with restraint RASP is able to fix the inter-domain structure.
