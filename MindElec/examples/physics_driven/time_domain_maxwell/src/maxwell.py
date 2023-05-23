@@ -140,10 +140,10 @@ class Maxwell2DMur(Problem):
         coord_max = self.coord_max
         batch_size, _ = data.shape
         attr = ms_np.zeros(shape=(batch_size, 4))
-        attr[:, 0] = ms_np.where(ms_np.isclose(data[:, 0], coord_min[0]), 1.0, 0.0)
-        attr[:, 1] = ms_np.where(ms_np.isclose(data[:, 0], coord_max[0]), 1.0, 0.0)
-        attr[:, 2] = ms_np.where(ms_np.isclose(data[:, 1], coord_min[1]), 1.0, 0.0)
-        attr[:, 3] = ms_np.where(ms_np.isclose(data[:, 1], coord_max[1]), 1.0, 0.0)
+        attr[:, 0] = ms_np.where(ms_np.equal(data[:, 0], coord_min[0]), 1.0, 0.0)
+        attr[:, 1] = ms_np.where(ms_np.equal(data[:, 0], coord_max[0]), 1.0, 0.0)
+        attr[:, 2] = ms_np.where(ms_np.equal(data[:, 1], coord_min[1]), 1.0, 0.0)
+        attr[:, 3] = ms_np.where(ms_np.equal(data[:, 1], coord_max[1]), 1.0, 0.0)
 
         dex_dxyt = self.grad(data, None, 0, u)
         _, dex_dy, _ = self.split(dex_dxyt)
