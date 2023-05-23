@@ -1,6 +1,29 @@
 [ENGLISH](README.md)|简体中文
 
-<details><summary>README目录</summary>
+# FAAST and RASP
+
+已有的AI计算方法如MEGA-Fold/AlphaFold虽然极大地提高了预测静态蛋白质结构的准确性，但仍存在未解决的问题，例如生成动态构象和进行符合实验或先验信息的结构预测。为了解决这些问题我们在已有MEGA-Fold的基础上自研了RASP(Restraints Assisted Structure Predictor)模型，RASP模型能接受抽象或实验约束，使它能根据抽象或实验、稀疏或密集的约束生成结构。这使得RASP可用于多种应用，包括改进多结构域蛋白和msa较少的蛋白的结构预测。
+
+核磁共振方法（NMR）是唯一一种以原子分辨率解析更贴近蛋白质在实际环境下的溶液态构象与动态结构的方法[1][2]，然而NMR实验数据获取与分析耗时长，平均单条蛋白需领域专家投入至少数月，其中大部分时间用于实验数据的解析和归属。现有NMR NOE谱峰数据解析方法如CARA，ARIA、CYANA等使用传统分子动力学模拟生成的结构迭代解析数据，解析速度慢，且从数据中解析出的约束信息和结构仍然需要大量专家知识，同时需要投入较长时间做进一步修正。为了提高 NMR 实验数据解析的速度和准确性，我们基于MindSpore+昇腾AI软硬件平台开发了NMR数据自动解析方法FAAST（iterative Folding Assisted peak ASsignmenT）。
+
+方便用户快速上手,我们在 Google 的 Colab 布置了简单的测试用例：[FAAST_DEMO](https://colab.research.google.com/drive/1uaki0Ui1Y_gqVW7KSo838aOhXHSM3PTe?usp=sharing)。测试版本支持有限（序列长度，推理速度），完整功能请尝试MindSpore+Ascend平台。
+
+更多信息请参考论文 ["Assisting and Accelerating NMR Assignment with Restrained Structure Prediction"](https://www.biorxiv.org/content/10.1101/2023.04.14.536890v1)。
+
+<details><summary>引用我们</summary>
+
+```bibtex
+@article{Liu2023AssistingAA,
+title={Assisting and Accelerating NMR Assignment with Restrainted Structure Prediction},
+author={Sirui Liu and Haotian Chu and Yuantao Xie and Fangming Wu and Ningxi Ni and Chenghao Wang and Fangjing Mu and Jiachen Wei and Jun Zhang and Mengyun Chen and Junbin Li and F. Yu and Hui Fu and Shenlin Wang and Changlin Tian and Zidong Wang and Yi Qin Gao},
+journal={bioRxiv},
+year={2023}
+}
+```
+
+</details>
+
+<details><summary>目录</summary>
 
 <!-- TOC -->
 
@@ -21,16 +44,6 @@
 <!-- /TOC -->
 
 </details>
-
-# FAAST and RASP
-
-已有的AI计算方法如MEGA-Fold/AlphaFold虽然极大地提高了预测静态蛋白质结构的准确性，但仍存在未解决的问题，例如生成动态构象和进行符合实验或先验信息的结构预测。为了解决这些问题我们在已有MEGA-Fold的基础上自研了RASP(Restraints Assisted Structure Predictor)模型，RASP模型能接受抽象或实验约束，使它能根据抽象或实验、稀疏或密集的约束生成结构。这使得RASP可用于多种应用，包括改进多结构域蛋白和msa较少的蛋白的结构预测。
-
-核磁共振方法（NMR）是唯一一种以原子分辨率解析更贴近蛋白质在实际环境下的溶液态构象与动态结构的方法[1][2]，然而NMR实验数据获取与分析耗时长，平均单条蛋白需领域专家投入至少数月，其中大部分时间用于实验数据的解析和归属。现有NMR NOE谱峰数据解析方法如CARA，ARIA、CYANA等使用传统分子动力学模拟生成的结构迭代解析数据，解析速度慢，且从数据中解析出的约束信息和结构仍然需要大量专家知识，同时需要投入较长时间做进一步修正。为了提高 NMR 实验数据解析的速度和准确性，我们基于MindSpore+昇腾AI软硬件平台开发了NMR数据自动解析方法FAAST（iterative Folding Assisted peak ASsignmenT）。
-
-任何使用此源码或模型参数的出版物都应引用[FAAST-paper](https://www.biorxiv.org/content/10.1101/2023.04.14.536890v1)。
-
-方便用户快速上手,我们在 Google 的 Colab 布置了简单的测试用例：[FAAST_DEMO](https://colab.research.google.com/drive/1uaki0Ui1Y_gqVW7KSo838aOhXHSM3PTe?usp=sharing)。测试版本支持有限（序列长度，推理速度），完整功能请尝试MindSpore+Ascend平台。
 
 ## 环境配置
 
@@ -179,7 +192,7 @@ RASP模型支持三种模式的输入:
 
 **约束信息**
 
-该模型额外需要restraints信息作为输入，约束信息是指形如`[[1,2],...,[2,10]]`等多维二进制序列代表氨基酸对的空间位置信息，为了方便用户使用，这里输入的约束信息需要以.txt后缀形式输入。同时约束信息的来源多样，包括核磁共振波谱法、质谱交联、荧光共振能量转移等等，这里提供了一个从pdb提取约束信息的样例脚本，用法如下。
+该模型额外需要restraints信息作为输入，约束信息是指形如`[[1,2],...,[2,10]]`等多维二进制序列代表氨基酸对的空间位置信息，为了方便用户使用，这里输入的约束信息需要以.txt后缀形式输入。同时约束信息的来源多样，包括核磁共振波谱法、质谱交联等等，这里提供了一个从pdb提取约束信息的样例脚本，用法如下。
 
 ```bash
 用法 python extract_restraints.py --pdb_path PDB_PATH --output_file OUTPUT_FILE
@@ -206,7 +219,7 @@ RASP模型支持三种模式的输入:
 ```
 
 <div align=center>
-<img src="./A.png" alt="FAASTresult" width="600"/>
+<img src="./A.png" alt="FAASTresult" width="300"/>
 </div>
 
 图A分别是原始PDB、AlphaFold、MEGA-Fold、RASP 的结果，可以看出在多域蛋白6XMV上RASP模型推理得到结果更接近真实结构。
