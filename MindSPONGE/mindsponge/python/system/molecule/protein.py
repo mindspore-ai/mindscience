@@ -32,6 +32,7 @@ from .molecule import Molecule
 from ..residue.amino import AminoAcid
 from ..modelling.hadder import read_pdb
 from ...data.template import get_template
+from ...function import get_arguments
 
 
 backbone_atoms = np.array(['N', 'CA', 'C', 'O'], np.str_)
@@ -93,9 +94,11 @@ class Protein(Molecule):
                  rebuild_hydrogen: bool = False,
                  rebuild_suffix: str = '_addH',
                  length_unit: str = None,
+                 **kwargs
                  ):
 
         super().__init__(length_unit=length_unit)
+        self._kwargs = get_arguments(locals(), kwargs)
 
         if pdb is None:
             #TODO

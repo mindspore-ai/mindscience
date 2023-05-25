@@ -22,9 +22,11 @@
 # ============================================================================
 """Base cell for bais potential"""
 
+from inspect import signature
+
 import mindspore as ms
 from mindspore import Tensor
-from mindspore import nn
+from mindspore import nn, ops
 from mindspore.ops import functional as F
 
 from .bias import Bias
@@ -95,13 +97,16 @@ class SphericalRestrict(Bias):
             depth = depth(self.units)
         self.depth = Tensor(depth, ms.float32)
 
-        self.norm_last_dim = nn.Norm(-1, False)
+        self.norm_last_dim = None
+        # MindSpore < 2.0.0-rc1
+        if 'ord' not in signature(ops.norm).parameters.keys():
+            self.norm_last_dim = nn.Norm(-1, False)
 
     def construct(self,
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,
                   neighbour_mask: Tensor = None,
-                  neighbour_coord: Tensor = None,
+                  neighbour_vector: Tensor = None,
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
@@ -114,8 +119,8 @@ class SphericalRestrict(Bias):
                                             Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
                                             Mask for neighbour atoms. Default: None
-            neighbour_coord (Tensor):       Tensor of shape (B, A, N). Data type is bool.
-                                            Position coorindates of neighbour atoms.
+            neighbour_vector (Tensor):       Tensor of shape (B, A, N). Data type is bool.
+                                            Vectors from central atom to neighbouring atoms.
             neighbour_distance (Tensor):   Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
@@ -132,8 +137,13 @@ class SphericalRestrict(Bias):
 
         """
 
+        # (B, A, D) - (D)
+        vector = coordinate - self.center
         # (B, A) <- (B, A, D)
-        distance = self.norm_last_dim(coordinate - self.center)
+        if self.norm_last_dim is None:
+            distance = ops.norm(vector, None, -1)
+        else:
+            distance = self.norm_last_dim(vector)
         diff = distance - self.radius
         bias = self.force_constant * F.log1p(F.exp(diff/self.depth))
 

@@ -37,7 +37,7 @@ from mindspore.common.initializer import initializer
 
 from ..system import Molecule
 from ..control import Controller
-from ..function import get_ms_array
+from ..function import get_ms_array, get_arguments
 from ..function import functions as func
 
 
@@ -93,6 +93,7 @@ class Updater(Optimizer):
                  velocity: Union[Tensor, ndarray, List[float]] = None,
                  weight_decay: float = 0.0,
                  loss_scale: float = 1.0,
+                 **kwargs
                  ):
 
         super().__init__(
@@ -101,6 +102,8 @@ class Updater(Optimizer):
             weight_decay=weight_decay,
             loss_scale=loss_scale,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
+        self._kwargs.pop('velocity')
 
         self.time_step = Tensor(time_step, ms.float32)
 
@@ -135,9 +138,8 @@ class Updater(Optimizer):
 
         self.num_constraints = 0
         self.num_controller = 0
-        if controller is None:
-            self.controller = None
-        else:
+        self.controller: List[Controller] = None
+        if controller is not None:
             if isinstance(controller, Controller):
                 self.num_controller = 1
                 controller = [controller]

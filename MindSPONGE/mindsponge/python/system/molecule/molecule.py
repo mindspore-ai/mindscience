@@ -44,7 +44,7 @@ from ...colvar.atoms import AtomsBase
 from ...colvar.atoms import get_atoms as _get_atoms
 from ...function import functions as func
 from ...function.units import Units, GLOBAL_UNITS
-from ...function.functions import get_ms_array, get_ndarray, keepdims_prod
+from ...function.functions import get_ms_array, get_ndarray, get_arguments, keepdims_prod
 
 
 class Molecule(Cell):
@@ -128,9 +128,11 @@ class Molecule(Cell):
                  template: Union[dict, str] = None,
                  residue: Union[Residue, List[Residue]] = None,
                  length_unit: str = None,
+                 **kwargs,
                  ):
 
         super().__init__()
+        self._kwargs = get_arguments(locals(), kwargs)
 
         if length_unit is None:
             length_unit = GLOBAL_UNITS.length_unit
@@ -238,15 +240,23 @@ class Molecule(Cell):
 
     @property
     def shape(self):
+        r"""shape of atomic coordinate"""
         return self.coordinate.shape
 
     @property
     def ndim(self):
+        r"""ndim of atomic coordinate"""
         return self.coordinate.ndim
 
     @property
     def length_unit(self):
+        r"""length unit"""
         return self.units.length_unit
+
+    @property
+    def heavy_atom_mask(self):
+        r"""mask for heavy (non-hydrogen) atoms"""
+        return msnp.where(self.atomic_number[0] > 1, 0, 1)
 
     def convert_length_from(self, unit) -> float:
         """convert length from a specified units."""

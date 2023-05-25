@@ -74,6 +74,7 @@ class PotentialCell(EnergyCell):
                  energy_unit: str = None,
                  use_pbc: bool = None,
                  name: str = 'potential',
+                 **kwargs
                  ):
 
         super().__init__(
@@ -82,6 +83,7 @@ class PotentialCell(EnergyCell):
             energy_unit=energy_unit,
             use_pbc=use_pbc,
         )
+        self._kwargs = kwargs
 
         self._num_energies = get_integer(num_energies)
         self._energy_names = []
@@ -135,7 +137,7 @@ class PotentialCell(EnergyCell):
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,
                   neighbour_mask: Tensor = None,
-                  neighbour_coord: Tensor = None,
+                  neighbour_vector: Tensor = None,
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
@@ -148,8 +150,8 @@ class PotentialCell(EnergyCell):
                                             Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
                                             Mask for neighbour atoms. Default: None
-            neighbour_coord (Tensor):       Tensor of shape (B, A, N, D). Data type is bool.
-                                            Position coorindates of neighbour atoms.
+            neighbour_vector (Tensor):       Tensor of shape (B, A, N, D). Data type is bool.
+                                            Vectors from central atom to neighbouring atoms.
             neighbour_distances (Tensor):   Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.

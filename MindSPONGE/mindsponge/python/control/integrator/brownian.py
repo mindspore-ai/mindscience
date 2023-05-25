@@ -34,6 +34,7 @@ from mindspore.ops import functional as F
 
 from .integrator import Integrator
 from ...system import Molecule
+from ...function import get_arguments
 
 
 class Brownian(Integrator):
@@ -57,6 +58,7 @@ class Brownian(Integrator):
                  system: Molecule,
                  temperature: float = 300,
                  friction_coefficient: float = 1e3,
+                 **kwargs,
                  ):
 
         super().__init__(
@@ -65,6 +67,7 @@ class Brownian(Integrator):
             barostat=None,
             constraint=None,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self.ref_temp = Tensor(temperature, ms.float32)
 

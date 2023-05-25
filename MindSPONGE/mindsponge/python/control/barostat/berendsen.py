@@ -31,6 +31,7 @@ from mindspore.ops import functional as F
 
 from . import Barostat
 from ...system import Molecule
+from ...function import get_arguments
 
 
 class BerendsenBarostat(Barostat):
@@ -72,6 +73,7 @@ class BerendsenBarostat(Barostat):
                  control_step: int = 1,
                  compressibility: float = 4.6e-5,
                  time_constant: float = 1.,
+                 **kwargs
                  ):
 
         super().__init__(
@@ -82,6 +84,7 @@ class BerendsenBarostat(Barostat):
             compressibility=compressibility,
             time_constant=time_constant,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self.ratio = self.control_step * self.time_step / self.time_constant / 3.
 

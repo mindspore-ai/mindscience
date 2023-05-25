@@ -24,6 +24,8 @@
 Collective variables by position
 """
 
+from inspect import signature
+
 import mindspore.numpy as msnp
 from mindspore import Tensor
 from mindspore import ops, nn
@@ -215,11 +217,17 @@ class Torsion(Colvar):
 
             self.squeeze = ops.Squeeze(axis)
 
-        if self.atoms is None and self.axis_vector is None:
-            self.norm = nn.Norm(-1, keepdims)
-        else:
-            self.norm = nn.Norm(-1, True)
         self.reduce_sum = ops.ReduceSum(keepdims)
+
+        self.keepdims = True
+        if self.atoms is None and self.axis_vector is None:
+            self.keepdims = keepdims
+
+        self.norm_last_dim = None
+        # MindSpore < 2.0.0-rc1
+        if 'ord' not in signature(ops.norm).parameters.keys():
+            self.norm_last_dim = nn.Norm(-1, self.keepdims)
+
         self.atan2 = ops.Atan2()
 
     def construct(self, coordinate: Tensor, pbc_box: bool = None):
@@ -260,8 +268,12 @@ class Torsion(Colvar):
 
         if self.atoms is None and self.axis_vector is None:
             # (B, ...) or (B, ..., 1) <- (B, ..., D)
-            dis1 = self.norm(vector1)
-            dis2 = self.norm(vector2)
+            if self.norm_last_dim is None:
+                dis1 = ops.norm(vector1, None, -1, self.keepdims)
+                dis2 = ops.norm(vector2, None, -1, self.keepdims)
+            else:
+                dis1 = self.norm_last_dim(vector1)
+                dis2 = self.norm_last_dim(vector2)
             dot12 = self.reduce_sum(vector1*vector2, -1)
 
             # (B, ...) or (B, ..., 1)
@@ -274,8 +286,14 @@ class Torsion(Colvar):
         vec_b = msnp.cross(vector2, axis_vector)
         cross_ab = msnp.cross(vec_a, vec_b)
 
+        # (B, ..., 1) <- (B, ..., D)
+        if self.norm_last_dim is None:
+            axis_dis = ops.norm(axis_vector, None, -1, self.keepdims)
+        else:
+            axis_dis = self.norm_last_dim(axis_vector)
+
         # (B, ..., D) = (B, ..., D) / (B, ...,1)
-        axis_vector *= msnp.reciprocal(self.norm(axis_vector))
+        axis_vector *= msnp.reciprocal(axis_dis)
 
         # (B, ...) or (B, ..., 1)
         sin_phi = self.reduce_sum(axis_vector*cross_ab, -1)

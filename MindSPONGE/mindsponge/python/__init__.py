@@ -23,6 +23,7 @@
 """MindSPONGE"""
 
 import time
+from distutils.version import LooseVersion
 
 
 def _mindspore_version_check():
@@ -45,15 +46,10 @@ def _mindspore_version_check():
                           "MindSpore before using MindSpore Mindsponge, by following "
                           "the instruction at https://www.mindspore.cn/install")
 
-    ms_version = ms.__version__[:5]
+    ms_version = ms.__version__
     required_mindspore_version = '2.0.0'
     logger.info("Current Mindspore version is {}".format(ms_version))
-    ms_version = list(map(int, ms_version.split('.')))
-    required_mindspore = list(map(int, required_mindspore_version.split('.')))
-    max_len = max(len(ms_version), len(required_mindspore))
-    ms_version += [0] * (max_len - len(ms_version))
-    required_mindspore += [0] * (max_len - len(required_mindspore))
-    if ms_version < required_mindspore:
+    if LooseVersion(ms_version) < LooseVersion(required_mindspore_version):
         logger.warning("Current version of MindSpore is not compatible with MindSPONGE. "
                        "Some functions might not work or even raise error. Please install MindSpore "
                        "version >= {} For more details about dependency setting, please check "

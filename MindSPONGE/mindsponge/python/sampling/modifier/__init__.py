@@ -23,6 +23,7 @@
 """Force modifier"""
 
 from .modifier import ForceModifier
+from .mask import MaskedDriven
 from .its import ModiferITS
 
-__all__ = ['ForceModifier', 'ModiferITS']
+__all__ = ['ForceModifier', 'MaskedDriven', 'ModiferITS']

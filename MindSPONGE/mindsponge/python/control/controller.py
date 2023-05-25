@@ -34,7 +34,7 @@ from mindspore.ops import functional as F
 
 from ..system import Molecule
 from ..function import functions as func
-from ..function.functions import get_integer, get_ms_array
+from ..function.functions import get_integer, get_ms_array, get_arguments
 
 
 class Controller(Cell):
@@ -57,9 +57,11 @@ class Controller(Cell):
     def __init__(self,
                  system: Molecule,
                  control_step: int = 1,
+                 **kwargs,
                  ):
 
         super().__init__(auto_prefix=False)
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self.system = system
         self.num_walker = self.system.num_walker

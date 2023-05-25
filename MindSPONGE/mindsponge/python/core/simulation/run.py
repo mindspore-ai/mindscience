@@ -39,7 +39,7 @@ from mindspore.nn.optim import Optimizer
 
 from .energy import WithEnergyCell
 from .force import WithForceCell
-from ...function.functions import get_integer, all_none
+from ...function.functions import get_integer, all_none, get_arguments
 from ...optimizer import Updater
 
 
@@ -85,9 +85,11 @@ class RunOneStepCell(Cell):
                  optimizer: Optimizer = None,
                  steps: int = 1,
                  sens: float = 1.0,
+                 **kwargs
                  ):
 
         super().__init__(auto_prefix=False)
+        self._kwargs = get_arguments(locals(), kwargs)
 
         if all_none([energy, force]):
             raise ValueError('energy and force cannot be both None!')
@@ -289,7 +291,7 @@ class RunOneStepCell(Cell):
         r"""update neighbour list"""
         if self.system_with_energy is not None:
             self.system_with_energy.update_neighbour_list()
-        if self.system_with_force is not None:
+        if self.system_with_force is not None and self.system_with_force.neighbour_list is not None:
             self.system_with_force.update_neighbour_list()
         return self
 

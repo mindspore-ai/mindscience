@@ -547,7 +547,7 @@ class Metadynamics(Bias):
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,
                   neighbour_mask: Tensor = None,
-                  neighbour_coord: Tensor = None,
+                  neighbour_vector: Tensor = None,
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
@@ -560,8 +560,8 @@ class Metadynamics(Bias):
                                             Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape `(B, A, N)`. Data type is bool.
                                             Mask for neighbour atoms. Default: None
-            neighbour_coord (Tensor):       Tensor of shape `(B, A, N)`. Data type is bool.
-                                            Position coorindates of neighbour atoms.
+            neighbour_vector (Tensor):       Tensor of shape `(B, A, N)`. Data type is bool.
+                                            Vectors from central atom to neighbouring atoms.
             neighbour_distance (Tensor):   Tensor of shape `(B, A, N)`. Data type is float.
                                             Distance between neigh_shift atoms. Default: None
             pbc_box (Tensor):               Tensor of shape `(B, D)`. Data type is float.

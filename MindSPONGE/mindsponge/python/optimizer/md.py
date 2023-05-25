@@ -32,6 +32,7 @@ from . import Updater
 from ..system import Molecule
 from ..control.controller import Controller
 from ..control import Integrator, Thermostat, Barostat, Constraint
+from ..function import get_arguments
 
 
 class UpdaterMD(Updater):
@@ -94,6 +95,7 @@ class UpdaterMD(Updater):
                  velocity: Union[Tensor, ndarray, List[float]] = None,
                  weight_decay: float = 0.0,
                  loss_scale: float = 1.0,
+                 **kwargs,
                  ):
 
         super().__init__(
@@ -104,6 +106,8 @@ class UpdaterMD(Updater):
             weight_decay=weight_decay,
             loss_scale=loss_scale,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
+        self._kwargs.pop('velocity')
 
         self.integrator: Integrator = integrator
         self.integrator.set_time_step(self.time_step)

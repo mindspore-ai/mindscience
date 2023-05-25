@@ -37,7 +37,7 @@ from mindspore.ops import functional as F
 from ...colvar import Distance
 from .energy import NonbondEnergy
 from ...function import functions as func
-from ...function import gather_value, get_ms_array
+from ...function import gather_value, get_ms_array, get_arguments
 from ...function.units import Units, GLOBAL_UNITS, Length
 from ...system.molecule import Molecule
 
@@ -102,6 +102,7 @@ class CoulombEnergy(NonbondEnergy):
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
                  name: str = 'coulomb',
+                 **kwargs,
                  ):
 
         super().__init__(
@@ -111,6 +112,7 @@ class CoulombEnergy(NonbondEnergy):
             length_unit=length_unit,
             energy_unit=energy_unit,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         if parameters is not None:
             length_unit = parameters.get('length_unit')
@@ -192,7 +194,7 @@ class CoulombEnergy(NonbondEnergy):
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,
                   neighbour_mask: Tensor = None,
-                  neighbour_coord: Tensor = None,
+                  neighbour_vector: Tensor = None,
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
@@ -205,8 +207,8 @@ class CoulombEnergy(NonbondEnergy):
                                             Index of neighbour atoms.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
                                             Mask for neighbour index.
-            neighbour_coord (Tensor):       Tensor of shape (B, A, N). Data type is bool.
-                                            Position coorindates of neighbour atoms.
+            neighbour_vector (Tensor):       Tensor of shape (B, A, N). Data type is bool.
+                                            Vectors from central atom to neighbouring atoms.
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
@@ -322,30 +324,6 @@ class DampedShiftedForceCoulomb(Cell):
                   mask: Tensor = None,
                   ):
         r"""Calculate energy term.
-
-        Args:
-            coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
-                                            Position coordinate of atoms in system
-            neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms.
-            neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour index.
-            neighbour_coord (Tensor):       Tensor of shape (B, A, N). Data type is bool.
-                                            Position coorindates of neighbour atoms.
-            neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms.
-            inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.
-                                            Reciprocal of distances.
-            pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: None
-
-        Returns:
-            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
-
-        Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
-            A:  Number of atoms.
-            D:  Spatial dimension of the simulation system. Usually is 3.
 
         """
 
