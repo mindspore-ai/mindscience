@@ -151,7 +151,7 @@ class DistanceNeighbours(Cell):
         distances = self.get_distance(F.expand_dims(coordinate, -2), F.expand_dims(coordinate, -3), pbc_box)
         num_neighbours = self.calc_max_neighbours(distances, self.scaled_cutoff)
         num_neighbours = F.ceil(num_neighbours * scale_factor)
-        self.num_neighbours = get_integer(msnp.minimum(num_neighbours, coordinate.shape[-2] - 1))
+        self.num_neighbours = get_integer(F.minimum(num_neighbours, coordinate.shape[-2] - 1))
         F.assign(self.max_neighbours, self.num_neighbours)
         return self
 

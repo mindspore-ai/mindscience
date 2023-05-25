@@ -37,6 +37,7 @@ from . import Constraint
 from ...system import Molecule
 from ...potential import PotentialCell
 from ...function.operations import GetShiftGrad
+from ...function import get_arguments
 
 
 class Lincs(Constraint):
@@ -62,6 +63,7 @@ class Lincs(Constraint):
                  system: Molecule,
                  bonds: Union[Tensor, str] = 'h-bonds',
                  potential: PotentialCell = None,
+                 **kwargs
                  ):
 
         super().__init__(
@@ -69,6 +71,8 @@ class Lincs(Constraint):
             bonds=bonds,
             potential=potential,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
+
         #pylint: disable=invalid-name
 
         # (A,A) <- (A,A)

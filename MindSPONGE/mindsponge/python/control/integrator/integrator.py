@@ -35,7 +35,7 @@ from ..thermostat import Thermostat
 from ..barostat import Barostat
 from ..constraint import Constraint
 from ...system import Molecule
-from ...function.functions import get_integer
+from ...function import get_integer, get_arguments
 
 
 class Integrator(Controller):
@@ -66,12 +66,14 @@ class Integrator(Controller):
                  thermostat: Thermostat = None,
                  barostat: Barostat = None,
                  constraint: Union[Constraint, List[Constraint]] = None,
+                 **kwargs
                  ):
 
         super().__init__(
             system=system,
             control_step=1,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self.acc_unit_scale = Tensor(self.units.acceleration_ref, ms.float32)
 
@@ -156,10 +158,9 @@ class Integrator(Controller):
             new_name = self.get_name(constraint)
             print(f'Change the constraint from "{old_name} to "{new_name}".')
 
-        if constraint is None:
-            self.constraint = None
-            self.num_constraint_controller = 0
-        else:
+        self.constraint: List[Constraint] = None
+        self.num_constraint_controller = 0
+        if constraint is not None:
             if isinstance(constraint, Controller):
                 self.num_constraint_controller = 1
                 constraint = [constraint]

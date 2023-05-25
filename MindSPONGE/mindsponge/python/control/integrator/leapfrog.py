@@ -33,6 +33,7 @@ from ..thermostat import Thermostat
 from ..barostat import Barostat
 from ..constraint import Constraint
 from ...system import Molecule
+from ...function import get_arguments
 
 
 class LeapFrog(Integrator):
@@ -65,6 +66,7 @@ class LeapFrog(Integrator):
                  thermostat: Thermostat = None,
                  barostat: Barostat = None,
                  constraint: Constraint = None,
+                 **kwargs
                  ):
 
         super().__init__(
@@ -73,6 +75,7 @@ class LeapFrog(Integrator):
             barostat=barostat,
             constraint=constraint,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
     def construct(self,
                   coordinate: Tensor,

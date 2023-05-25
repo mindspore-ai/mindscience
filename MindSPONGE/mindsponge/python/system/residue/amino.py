@@ -27,6 +27,7 @@ from typing import Union, List
 from numpy import ndarray
 from mindspore import jit_class
 from .residue import Residue
+from ...function import get_arguments
 
 
 @jit_class
@@ -63,6 +64,7 @@ class AminoAcid(Residue):
                  template: dict = None,
                  atom_name: Union[str, List[str], ndarray] = None,
                  start_index: int = 0,
+                 **kwargs,
                  ):
 
         super().__init__(
@@ -71,3 +73,4 @@ class AminoAcid(Residue):
             name=(name.replace('HIE', 'HIS') if 'HIE' in name else name),
             template=template,
         )
+        self._kwargs = get_arguments(locals(), kwargs)

@@ -24,6 +24,7 @@
 Common operations
 """
 
+from inspect import signature
 import numpy as np
 import mindspore as ms
 from mindspore import numpy as msnp
@@ -159,7 +160,13 @@ class GetDistance(GetVector):
 
         super().__init__(use_pbc=use_pbc)
 
-        self.norm = nn.Norm(get_integer(axis), keepdims)
+        self.axis = get_integer(axis)
+        self.keepdims = keepdims
+
+        self.norm = None
+        # MindSpore < 2.0.0-rc1
+        if 'ord' not in signature(ops.norm).parameters.keys():
+            self.norm = nn.Norm(self.axis, self.keepdims)
 
     def construct(self, initial: Tensor, terminal: Tensor, pbc_box: Tensor = None):
         r"""Compute the distance from initial point to terminal point.
@@ -181,6 +188,10 @@ class GetDistance(GetVector):
 
         """
         vector = self.calc_vector(initial, terminal, pbc_box)
+
+        if self.norm is None:
+            return ops.norm(vector, None, self.axis, self.keepdims)
+
         return self.norm(vector)
 
 
@@ -316,7 +327,6 @@ class GetDistanceShift(Cell):
 
         # (C,2)
         self.bonds = bonds
-        self.norm = nn.Norm(-1)
 
         # (B,C,A)
         shape = (num_walkers, bonds.shape[-2], num_atoms)

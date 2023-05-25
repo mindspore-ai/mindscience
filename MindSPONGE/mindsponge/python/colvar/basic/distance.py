@@ -24,8 +24,10 @@
 Collective variables by position
 """
 
+from inspect import signature
+
 from mindspore import Tensor
-from mindspore import nn
+from mindspore import nn, ops
 
 from ..colvar import Colvar
 from ..atoms import AtomsBase, Vector
@@ -124,7 +126,12 @@ class Distance(Colvar):
             shape += (1,)
         self._set_shape(shape)
 
-        self.norm_last_dim = nn.Norm(-1, keepdims)
+        self.keepdims = keepdims
+
+        self.norm_last_dim = None
+        # MindSpore < 2.0.0-rc1
+        if 'ord' not in signature(ops.norm).parameters.keys():
+            self.norm_last_dim = nn.Norm(-1, self.keepdims)
 
     def get_unit(self, units: Units = None) -> str:
         """return unit of the collective variables"""
@@ -147,4 +154,7 @@ class Distance(Colvar):
         vector = self.vector(coordinate, pbc_box)
 
         # (B, ...) or (B, ..., 1)
+        if self.norm_last_dim is None:
+            return ops.norm(vector, None, -1, self.keepdims)
+
         return self.norm_last_dim(vector)

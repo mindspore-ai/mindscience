@@ -114,7 +114,7 @@ class Group(AtomsBase):
 
             atoms_.append(a)
 
-        self.atoms = CellList(atoms_)
+        self.atoms: List[AtomsBase] = CellList(atoms_)
 
         shape = shape[:axis] + (dim,) + shape[axis:]
         self._shape = shape[1:]

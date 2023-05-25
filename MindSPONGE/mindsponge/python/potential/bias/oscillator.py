@@ -62,7 +62,7 @@ class OscillatorBias(Bias):
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,
                   neighbour_mask: Tensor = None,
-                  neighbour_coord: Tensor = None,
+                  neighbour_vector: Tensor = None,
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):

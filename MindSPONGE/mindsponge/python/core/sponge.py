@@ -50,7 +50,7 @@ from mindspore.dataset.engine.datasets import _set_training_dataset
 from .simulation import WithEnergyCell, WithForceCell
 from .simulation import RunOneStepCell
 from .analysis import AnalysisCell
-from ..function import any_not_none
+from ..function import any_not_none, get_arguments
 from ..potential import PotentialCell, ForceCell
 from ..optimizer import Updater, UpdaterMD
 from ..system.molecule import Molecule
@@ -150,7 +150,9 @@ class Sponge():
                  optimizer: Optimizer = None,
                  metrics: dict = None,
                  analysis: AnalysisCell = None,
+                 **kwargs
                  ):
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self._parallel_mode = _get_parallel_mode()
         self._device_number = _get_device_num()
@@ -210,7 +212,16 @@ class Sponge():
 
         self.units = self._system.units
 
-        self.time_step = self._optimizer.learning_rate.asnumpy()
+        lr = self._optimizer.learning_rate
+        if self._optimizer.dynamic_lr:
+            if self._optimizer.is_group_lr:
+                lr = ()
+                for learning_rate in self._optimizer.learning_rate:
+                    current_dynamic_lr = learning_rate(0)
+                    lr += (current_dynamic_lr,)
+            else:
+                lr = self._optimizer.learning_rate(0)
+        self.time_step = lr.asnumpy()
 
         self.coordinate = self._system.coordinate
         self.pbc_box = self._system.pbc_box
@@ -335,7 +346,16 @@ class Sponge():
             energy=self._system_with_energy, optimizer=self._optimizer)
         self._simulation_network.set_pbc_grad(self.use_updater)
 
-        self.time_step = self._optimizer.learning_rate.asnumpy()
+        lr = self._optimizer.learning_rate
+        if self._optimizer.dynamic_lr:
+            if self._optimizer.is_group_lr:
+                lr = ()
+                for learning_rate in self._optimizer.learning_rate:
+                    current_dynamic_lr = learning_rate(0)
+                    lr += (current_dynamic_lr,)
+            else:
+                lr = self._optimizer.learning_rate(0)
+        self.time_step = lr.asnumpy()
 
         return self
 
@@ -523,11 +543,11 @@ class Sponge():
         s = used_time.seconds
         m, s = divmod(s, 60)
         h, m = divmod(m, 60)
-        if d > 1:
+        if d >= 1:
             print('[MindSPONGE] Simulation time: %d days, %d hours, %d minutes and %d seconds.' % (d, h, m, s))
-        elif h > 1:
+        elif h >= 1:
             print('[MindSPONGE] Simulation time: %d hours %d minutes %d seconds.' % (h, m, s))
-        elif m > 1:
+        elif m >= 1:
             s += used_time.microseconds / 1e6
             print('[MindSPONGE] Simulation time: %d minutes %1.1f seconds.' % (m, s))
         else:

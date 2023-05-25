@@ -24,6 +24,8 @@
 Neighbour list
 """
 
+from inspect import signature
+
 from typing import Tuple
 import mindspore as ms
 import mindspore.numpy as msnp
@@ -201,8 +203,12 @@ class NeighbourList(Cell):
             self.neighbour_mask = Parameter(mask, name='neighbour_mask', requires_grad=False)
 
         self.get_vector = GetVector(use_pbc)
-        self.norm_last_dim = nn.Norm(-1, False)
         self.identity = ops.Identity()
+
+        self.norm_last_dim = None
+        # MindSpore < 2.0.0-rc1
+        if 'ord' not in signature(ops.norm).parameters.keys():
+            self.norm_last_dim = nn.Norm(-1, False)
 
     @property
     def pace(self) -> int:
@@ -343,9 +349,9 @@ class NeighbourList(Cell):
         Returns:
             neigh_idx (Tensor):     Tensor of shape `(B, A, N)`. Data type is int.
                                     Index of neighbouring atoms of each atoms in system.
-            neigh_pos (Tensor):     Tensor of shape `(B, A, N, D)`. Data type is float.
-                                    Position of neighbouring atoms.
-            neigh_dis (Tensor):     Tensor of shape `(B, A, N, D)`. Data type is float.
+            neigh_vec (Tensor):     Tensor of shape `(B, A, N, D)`. Data type is float.
+                                    Vectors from central atom to neighbouring atoms.
+            neigh_dis (Tensor):     Tensor of shape `(B, A, N)`. Data type is float.
                                     Distance between center atoms and neighbouring atoms.
             neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
                                     Mask for neighbour list `neigh_idx`.
@@ -360,24 +366,27 @@ class NeighbourList(Cell):
 
         neigh_idx, neigh_mask = self.get_neighbour_list()
 
-        # (B,A,1,D) <- (B,A,D)
+        # (B, A, 1, D) <- (B, A, D)
         center_pos = F.expand_dims(coordinate, -2)
-        # (B,A,N,D) <- (B,A,D)
-        neigh_pos = gather_vector(coordinate, neigh_idx)
+        # (B, A, N, D) <- (B, A, D)
+        neigh_vec = gather_vector(coordinate, neigh_idx)
 
-        neigh_vec = self.get_vector(center_pos, neigh_pos, pbc_box)
+        neigh_vec = self.get_vector(center_pos, neigh_vec, pbc_box)
 
         # Add a non-zero value to the neighbour_vector whose mask value is False
         # to prevent them from becoming zero values after Norm operation,
         # which could lead to auto-differentiation errors
         if neigh_mask is not None:
-            # (B,A,N)
+            # (B, A, N)
             large_dis = msnp.broadcast_to(self.large_dis, neigh_mask.shape)
             large_dis = F.select(neigh_mask, F.zeros_like(large_dis), large_dis)
-            # (B,A,N,D) = (B,A,N,D) + (B,A,N,1)
+            # (B, A, N, D) = (B, A, N, D) + (B, A, N, 1)
             neigh_vec += F.expand_dims(large_dis, -1)
 
-        # (B,A,N) = (B,A,N,D)
-        neigh_dis = self.norm_last_dim(neigh_vec)
+        # (B, A, N) <- (B, A, N, D)
+        if self.norm_last_dim is None:
+            neigh_dis = ops.norm(neigh_vec, None, -1)
+        else:
+            neigh_dis = self.norm_last_dim(neigh_vec)
 
-        return neigh_idx, neigh_pos, neigh_dis, neigh_mask
+        return neigh_idx, neigh_vec, neigh_dis, neigh_mask

@@ -27,6 +27,8 @@ Units
 from typing import Union
 import math
 
+from .functions import get_arguments
+
 __all__ = [
     'AVOGADRO_NUMBER',
     'BOLTZMANN_CONSTANT',
@@ -46,6 +48,8 @@ __all__ = [
     'length_convert',
     'energy_convert',
     'Units',
+    'get_length',
+    'get_energy',
     'GLOBAL_UNITS',
     'set_global_length_unit',
     'set_global_energy_unit',
@@ -168,7 +172,8 @@ class Length:
         ``Ascend`` ``GPU`` ``CPU``
     """
 
-    def __init__(self, value: float, unit: str = 'nm'):
+    def __init__(self, value: float, unit: str = 'nm', **kwargs):
+        self._kwargs = get_arguments(locals(), kwargs)
         if isinstance(value, Length):
             self.__value = value.value
             self.__unit = value.unit
@@ -304,7 +309,8 @@ class Energy:
         ``Ascend`` ``GPU`` ``CPU``
     """
 
-    def __init__(self, value: float, unit: str = 'kj/mol'):
+    def __init__(self, value: float, unit: str = 'kj/mol', **kwargs):
+        self._kwargs = get_arguments(locals(), kwargs)
         if isinstance(value, Energy):
             self.__value = value.value
             self.__unit = value.unit
@@ -653,7 +659,9 @@ class Units:
     def __init__(self,
                  length_unit: str = None,
                  energy_unit: str = None,
+                 **kwargs,
                  ):
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self.__length_unit = get_length_unit(length_unit)
         self.__length_unit_name = get_length_unit_name(length_unit)
@@ -1004,8 +1012,7 @@ class Units:
         return value * self.convert_energy_from(unit)
 
     def convert_length_to(self, unit) -> float:
-        """
-        convert length to a specified units.
+        """returns a scale factor that converts the length to a specified unit.
 
         Args:
             unit (Union[str, Units, Length, float, int]):   Length unit.
@@ -1016,8 +1023,7 @@ class Units:
         return length_convert(self.__length_unit, unit)
 
     def convert_energy_to(self, unit) -> float:
-        """
-        convert energy to a specified units.
+        """returns a scale factor that converts the energy to a specified unit.
 
         Args:
             unit (Union[str, Units, Energy, float, int]):   Energy unit.
@@ -1028,7 +1034,7 @@ class Units:
         return energy_convert(self.__energy_unit, unit)
 
     def convert_length_from(self, unit) -> float:
-        """convert length from a specified units.
+        """returns a scale factor that converts the length from a specified unit.
 
         Args:
             unit (Union[str, Units, Length, float, int]):   Length unit.
@@ -1039,8 +1045,7 @@ class Units:
         return length_convert(unit, self.__length_unit)
 
     def convert_energy_from(self, unit) -> float:
-        """
-        convert energy from a specified units.
+        """returns a scale factor that converts the energy from a specified unit.
 
         Args:
             unit (Union[str, Units, Energy, float, int]):   Energy unit.
@@ -1049,6 +1054,24 @@ class Units:
             float, energy according from a specified units.
         """
         return energy_convert(unit, self.__energy_unit)
+
+
+def get_length(length: Union[Length, float], unit: Union[str, Units] = None) -> float:
+    """get Tensor of length in specific unit"""
+    if isinstance(length, dict):
+        length = Length(**length)
+    if isinstance(length, Length):
+        return length(unit)
+    return length
+
+
+def get_energy(energy: Union[Energy, float], unit: Union[str, Units] = None) -> float:
+    """get Tensor of energy in specific unit"""
+    if isinstance(energy, dict):
+        energy = Energy(**energy)
+    if isinstance(energy, Energy):
+        return energy(unit)
+    return energy
 
 
 GLOBAL_UNITS = Units('nm', 'kj/mol')

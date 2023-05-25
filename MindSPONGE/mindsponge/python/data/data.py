@@ -24,10 +24,26 @@
 Base function for yaml
 """
 
+import os
 from itertools import permutations
 import yaml
 import numpy as np
 from numpy import ndarray
+
+from mindspore.train._utils import _make_directory
+
+
+_cur_dir = os.getcwd()
+
+
+__all__ = [
+    'update_dict',
+    'read_yaml',
+    'write_yaml',
+    'get_bonded_types',
+    'get_dihedral_types',
+    'get_improper_types',
+]
 
 
 def update_dict(origin: dict, addition: dict = None) -> dict:
@@ -57,18 +73,26 @@ def update_dict(origin: dict, addition: dict = None) -> dict:
     return dictionary
 
 
-def write_yaml(filename: str, data: dict):
+def write_yaml(data: dict, filename: str, directory: str = None):
     """
     write YAML file.
 
     Args:
-        filename(str):  Name of YAML file.
         data(dict):     Dict for output.
+        filename(str):  Name of YAML file.
+
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
 
     """
+
+    if directory is None:
+        directory = _cur_dir
+    else:
+        directory = _make_directory(directory)
+
+    filename = os.path.join(directory, filename)
 
     with open(filename, 'w', encoding="utf-8") as file:
         yaml.dump(data, file, sort_keys=False)
@@ -93,12 +117,12 @@ def read_yaml(filename: str) -> dict:
     return data
 
 
-def get_bonded_types(atom_types: ndarray, symbol: str = '-'):
+def get_bonded_types(atom_type: ndarray, symbol: str = '-'):
     """
     get the types of bonded terms including bond, angle and dihedral.
 
     Args:
-        atom_types(ndarray): types of atoms.
+        atom_type(ndarray): types of atoms.
         symbol(str): a symbol.
 
     Returns:
@@ -107,25 +131,25 @@ def get_bonded_types(atom_types: ndarray, symbol: str = '-'):
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
     """
-    num_atoms = atom_types.shape[-1]
+    num_atoms = atom_type.shape[-1]
 
     if num_atoms == 1:
-        return atom_types
+        return atom_type
 
-    types = atom_types[..., 0]
+    types = atom_type[..., 0]
     for i in range(1, num_atoms):
         types = np.char.add(types, symbol)
-        types = np.char.add(types, atom_types[..., i])
+        types = np.char.add(types, atom_type[..., i])
 
     return types
 
 
-def get_dihedral_types(atom_types: ndarray, symbol: str = '-'):
+def get_dihedral_types(atom_type: ndarray, symbol: str = '-'):
     """
     The multi atom name constructor.
 
     Args:
-        atom_types(ndarray): types of atoms.
+        atom_type(ndarray): types of atoms.
         symbol(str): a symbol.
 
     Returns:
@@ -135,30 +159,30 @@ def get_dihedral_types(atom_types: ndarray, symbol: str = '-'):
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
     """
-    num_atoms = atom_types.shape[-1]
+    num_atoms = atom_type.shape[-1]
 
     if num_atoms == 1:
-        return atom_types
+        return atom_type
 
-    types = atom_types[..., 0]
+    types = atom_type[..., 0]
     for i in range(1, num_atoms):
         types = np.char.add(types, symbol)
-        types = np.char.add(types, atom_types[..., i])
+        types = np.char.add(types, atom_type[..., i])
 
-    inverse_types = atom_types[..., -1]
+    inverse_types = atom_type[..., -1]
     for i in range(1, num_atoms):
         inverse_types = np.char.add(inverse_types, symbol)
-        inverse_types = np.char.add(inverse_types, atom_types[..., -1-i])
+        inverse_types = np.char.add(inverse_types, atom_type[..., -1-i])
 
     return types, inverse_types
 
 
-def get_improper_types(atom_types: ndarray, symbol: str = '-'):
+def get_improper_types(atom_type: ndarray, symbol: str = '-'):
     """
     The multi atom name constructor.
 
     Args:
-        atom_types(ndarray): types of atoms.
+        atom_type(ndarray): types of atoms.
         symbol(str): a symbol.
 
     Returns:
@@ -168,18 +192,18 @@ def get_improper_types(atom_types: ndarray, symbol: str = '-'):
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
     """
-    num_atoms = atom_types.shape[-1]
+    num_atoms = atom_type.shape[-1]
 
     if num_atoms == 1:
-        return atom_types
+        return atom_type
 
     permuation_types = ()
     orders = ()
     for combination in permutations(range(num_atoms)):
-        types = atom_types[..., combination[0]]
+        types = atom_type[..., combination[0]]
         for i in range(1, num_atoms):
             types = np.char.add(types, symbol)
-            types = np.char.add(types, atom_types[..., combination[i]])
+            types = np.char.add(types, atom_type[..., combination[i]])
         permuation_types += (types,)
         orders += (combination,)
 

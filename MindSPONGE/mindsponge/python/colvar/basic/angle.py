@@ -24,6 +24,8 @@
 Collective variables by position
 """
 
+from inspect import signature
+
 from mindspore import Tensor
 from mindspore import ops, nn
 from mindspore.ops import functional as F
@@ -115,6 +117,7 @@ class Angle(Colvar):
             raise ValueError('The atoms and vector cannot be used at same time!')
 
         axis = get_integer(axis)
+        self.keepdims = keepdims
 
         self.atoms = None
         self.vector1 = None
@@ -161,40 +164,44 @@ class Angle(Colvar):
             # (..., D)
             shape = check_broadcast(self.vector1.shape, self.vector2.shape)
 
-            if keepdims is None:
+            if self.keepdims is None:
                 if len(shape) > 1:
-                    keepdims = False
+                    self.keepdims = False
                 else:
-                    keepdims = True
+                    self.keepdims = True
 
             # (...)
             shape = shape[:-1]
-            if keepdims:
+            if self.keepdims:
                 # (..., 1)
                 shape += (1,)
             self._set_shape(shape)
 
         else:
-            if keepdims is None:
+            if self.keepdims is None:
                 if self.atoms.ndim > 2:
-                    keepdims = False
+                    self.keepdims = False
                 else:
-                    keepdims = True
+                    self.keepdims = True
             # (1, ..., 3, D)
             shape = (1,) + self.atoms.shape
             # (1, ..., D)
             shape = shape[:axis] + shape[axis+1:]
             # (...)
             shape = shape[1:-1]
-            if keepdims:
+            if self.keepdims:
                 # (..., 1)
                 shape += (1,)
             self._set_shape(shape)
 
             self.squeeze = ops.Squeeze(axis)
 
-        self.norm = nn.Norm(-1, keepdims)
-        self.reduce_sum = ops.ReduceSum(keepdims)
+        self.norm_last_dim = None
+        # MindSpore < 2.0.0-rc1
+        if 'ord' not in signature(ops.norm).parameters.keys():
+            self.norm_last_dim = nn.Norm(-1, self.keepdims)
+
+        self.reduce_sum = ops.ReduceSum(self.keepdims)
 
     def construct(self, coordinate: Tensor, pbc_box: bool = None):
         r"""calculate angle.
@@ -228,8 +235,12 @@ class Angle(Colvar):
             vector2 = self.get_vector(pos_b, pos_c, pbc_box)
 
         # (B, ...) or (B, ..., 1) <- (B, ..., D)
-        dis1 = self.norm(vector1)
-        dis2 = self.norm(vector2)
+        if self.norm_last_dim is None:
+            dis1 = ops.norm(vector1, None, -1, self.keepdims)
+            dis2 = ops.norm(vector2, None, -1, self.keepdims)
+        else:
+            dis1 = self.norm_last_dim(vector1)
+            dis2 = self.norm_last_dim(vector2)
         dot12 = self.reduce_sum(vector1*vector2, -1)
 
         # (B, ...) or (B, ..., 1)

@@ -38,7 +38,8 @@ from .potential import PotentialCell
 from ..data.parameters import ForceFieldParameters
 from ..data.forcefield import get_forcefield
 from ..system import Molecule
-from ..function.units import Units, Length
+from ..function import get_arguments
+from ..function import Units, Length
 
 
 THIS_PATH = os.path.abspath(__file__)
@@ -94,6 +95,7 @@ class ForceFieldBase(PotentialCell):
                  energy_unit: str = None,
                  use_pbc: bool = None,
                  name: str = 'potential',
+                 **kwargs,
                  ):
 
         super().__init__(
@@ -102,6 +104,7 @@ class ForceFieldBase(PotentialCell):
             use_pbc=use_pbc,
             name=name,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         if isinstance(cutoff, Length):
             cutoff = cutoff(self.units)
@@ -113,7 +116,7 @@ class ForceFieldBase(PotentialCell):
 
         self._num_energies = 0
         self._energy_index = {}
-        self.energies = None
+        self.energies: List[EnergyCell] = None
         self.output_unit_scale = 1
         self.set_energies(energy)
 
@@ -217,7 +220,7 @@ class ForceFieldBase(PotentialCell):
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,
                   neighbour_mask: Tensor = None,
-                  neighbour_coord: Tensor = None,
+                  neighbour_vector: Tensor = None,
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
@@ -230,8 +233,8 @@ class ForceFieldBase(PotentialCell):
                                             Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
                                             Mask for neighbour atoms. Default: None
-            neighbour_coord (Tensor):       Tensor of shape (B, A, N, D). Data type is bool.
-                                            Position coorindates of neighbour atoms.
+            neighbour_vector (Tensor):       Tensor of shape (B, A, N, D). Data type is bool.
+                                            Vectors from central atom to neighbouring atoms.
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
@@ -255,7 +258,7 @@ class ForceFieldBase(PotentialCell):
                 coordinate=coordinate,
                 neighbour_index=neighbour_index,
                 neighbour_mask=neighbour_mask,
-                neighbour_coord=neighbour_coord,
+                neighbour_vector=neighbour_vector,
                 neighbour_distance=neighbour_distance,
                 pbc_box=pbc_box
             )
@@ -321,6 +324,7 @@ class ForceField(ForceFieldBase):
                  length_unit: str = None,
                  energy_unit: str = None,
                  name: str = 'potential',
+                 **kwargs,
                  ):
 
         super().__init__(
@@ -330,6 +334,7 @@ class ForceField(ForceFieldBase):
             energy_unit=energy_unit,
             name=name,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         use_pbc = system.use_pbc
 

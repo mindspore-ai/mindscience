@@ -34,6 +34,7 @@ from .. import Controller
 from ...system import Molecule
 from ...potential import PotentialCell
 from ...function.operations import GetVector, GetDistance
+from ...function import get_arguments
 
 
 class Constraint(Controller):
@@ -62,12 +63,14 @@ class Constraint(Controller):
                  system: Molecule,
                  bonds: Union[Tensor, str] = 'h-bonds',
                  potential: PotentialCell = None,
+                 **kwargs,
                  ):
 
         super().__init__(
             system=system,
             control_step=1,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         if potential is None:
             self.all_bonds = system.bond

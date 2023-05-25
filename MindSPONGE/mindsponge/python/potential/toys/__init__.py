@@ -20,22 +20,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Data"""
+"""Toy model potentials"""
 
-from .element import elements, element_dict, element_name, element_set, atomic_mass
-from .hyperparam import str_to_tensor, tensor_to_str
-from .hyperparam import get_class_parameters, get_hyper_parameter, get_hyper_string
-from .hyperparam import set_class_parameters, set_hyper_parameter, set_class_into_hyper_param
-from .hyperparam import load_hyperparam, load_hyper_param_into_class
-from .template import get_template, get_template_index, get_molecule
-from .parameters import ForceFieldParameters
-from .forcefield import get_forcefield
-from .data import read_yaml, write_yaml, update_dict
-from .data import get_bonded_types, get_dihedral_types, get_improper_types
+from .tb import TiwaryBerne
 
-
-__all__ = ['ForceFieldParameters', 'get_forcefield']
-__all__.extend(element.__all__)
-__all__.extend(hyperparam.__all__)
-__all__.extend(template.__all__)
-__all__.extend(data.__all__)
+__all__ = ['TiwaryBerne']

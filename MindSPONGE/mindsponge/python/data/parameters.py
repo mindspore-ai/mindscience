@@ -61,7 +61,7 @@ class ForceFieldParameters:
     Getting parameters for given bonds and atom types.
 
     Args:
-        atom_types(str):        The atom types defined in forcefields.
+        atom_type(str):        The atom types defined in forcefields.
         parameters(dict):       A dictionary stores all force field constants.
         atom_names(str):        Unique atom names in an amino acid. Default: None
         atom_charges(ndarray):  The charge of the atoms. Default: None
@@ -70,10 +70,10 @@ class ForceFieldParameters:
         ``Ascend`` ``GPU``
     """
 
-    def __init__(self, atom_types, parameters, atom_names=None, atom_charges=None):
-        self.atom_types = atom_types[0]
+    def __init__(self, atom_type, parameters, atom_names=None, atom_charges=None):
+        self.atom_type = atom_type[0]
         self.atom_names = atom_names[0]
-        atom_nums = atom_types.shape[-1]
+        atom_nums = atom_type.shape[-1]
         assert atom_nums > 0
         self.atom_charges = atom_charges
         self.atom_nums = atom_nums
@@ -201,7 +201,7 @@ class ForceFieldParameters:
 
         return params
 
-    def get_dihedral_params(self, dihedrals_in, atom_types):
+    def get_dihedral_params(self, dihedrals_in, atom_type):
         """
         Get the force field dihedral parameters.
 
@@ -212,7 +212,7 @@ class ForceFieldParameters:
         Returns:
             dict, params.
         """
-        dihedral_atoms = np.take(atom_types, dihedrals_in, -1)
+        dihedral_atoms = np.take(atom_type, dihedrals_in, -1)
 
         k_index = self._dihedrals['parameter_names']["pattern"][0].index('force_constant')
         phi_index = self._dihedrals['parameter_names']["pattern"][0].index('phase')
@@ -257,19 +257,19 @@ class ForceFieldParameters:
 
         return params
 
-    def get_improper_params(self, improper_in, atom_types, third_id):
+    def get_improper_params(self, improper_in, atom_type, third_id):
         """
         Pre-processing of getting improper dihedrals.
 
         Args:
             improper_in (ndarray):  Array of input improper dihedrals.
-            atom_types (ndarray):   Array of the types of atoms.
+            atom_type (ndarray):   Array of the types of atoms.
             third_id (ndarray):     Array of the third IDs.
 
         Returns:
             dict, params.
         """
-        improper_atoms = np.take(atom_types, improper_in, -1)
+        improper_atoms = np.take(atom_type, improper_in, -1)
 
         k_index = self._improper['parameter_names']["pattern"][0].index('force_constant')
         phi_index = self._improper['parameter_names']["pattern"][0].index('phase')
@@ -640,7 +640,7 @@ class ForceFieldParameters:
             - bonds (np.ndarray), bonds with H.
             - bonds (np.ndarray), non H bonds.
         """
-        hatoms = np.where(np.isin(self.atom_types, self.htypes))[0]
+        hatoms = np.where(np.isin(self.atom_type, self.htypes))[0]
         bonds_with_h = np.where(np.isin(bonds, hatoms).sum(axis=-1))[0]
         non_hbonds = np.where(np.isin(bonds, hatoms).sum(axis=-1) == 0)[0]
         return bonds[bonds_with_h], bonds[non_hbonds]
@@ -734,9 +734,9 @@ class ForceFieldParameters:
     def __call__(self, bonds):
         # pylint: disable=unused-argument
         bonds = bonds[0]
-        atoms_types = self.atom_types.copy()
+        atoms_types = self.atom_type.copy()
         vdw_params = self.get_vdw_params(atoms_types)
-        atom_types = np.append(atoms_types, self._wildcard)
+        atom_type = np.append(atoms_types, self._wildcard)
 
         bond_params = None
         angle_params = None
@@ -757,14 +757,14 @@ class ForceFieldParameters:
             dihedrals = self.get_dihedrals(angles, dihedral_middle_id)
             dihedral_params = None
             if dihedrals is not None:
-                dihedral_params = self.get_dihedral_params(dihedrals, atom_types)
+                dihedral_params = self.get_dihedral_params(dihedrals, atom_type)
             core_id = np.where(np.bincount(bonds.flatten()) > 2)[0]
             improper = None
             improper_params = None
             if self._improper is not None:
                 checked_core_id = self.check_improper(bonds, core_id)
                 improper, third_id = self.get_improper(bonds, checked_core_id)
-                improper_params = self.get_improper_params(improper, atom_types, third_id)
+                improper_params = self.get_improper_params(improper, atom_type, third_id)
             if dihedrals is not None:
                 self.pair_index = self.get_pair_index(dihedrals, angles, bonds)
                 pair_params = self.get_pair_params(self.pair_index, vdw_params['epsilon'],

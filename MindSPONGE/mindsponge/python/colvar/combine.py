@@ -185,7 +185,7 @@ class ColvarCombine(Colvar):
 
             colvar_.append(cv)
 
-        self.colvar = CellList(colvar_)
+        self.colvar: List[Colvar] = CellList(colvar_)
 
         self._shape = shape
         self._ndim = len(self._shape)
