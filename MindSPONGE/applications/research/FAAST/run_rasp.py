@@ -160,7 +160,6 @@ def fold_infer(args):
         ori_res_length = raw_feature['msa'].shape[1]
         ur_path = f"{args.restraints_path}/{prot_name}.txt"
         contact_info_mask_new = make_contact_info(model_cfg.seq_length, ur_path)
-        print(contact_info_mask_new)
         contact_info_mask_new = Tensor(contact_info_mask_new, mstype.float32)
         processed_feature = Feature(data_cfg, raw_feature)
         feat, prev_pos, prev_msa_first_row, prev_pair = processed_feature.pipeline(data_cfg, \
