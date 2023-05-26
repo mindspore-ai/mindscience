@@ -329,9 +329,9 @@ class TriangleMultiplication(nn.Cell):
             self.right_gate_biases = Parameter(
                 Tensor(np.zeros((self.batch_size, self.num_intermediate_channel)), mstype.float32))
             self.center_layer_norm_gammas = Parameter(
-                Tensor(np.zeros((self.batch_size, self.layer_norm_dim)), mstype.float32))
+                Tensor(np.zeros((self.batch_size, self.num_intermediate_channel)), mstype.float32))
             self.center_layer_norm_betas = Parameter(
-                Tensor(np.zeros((self.batch_size, self.layer_norm_dim)), mstype.float32))
+                Tensor(np.zeros((self.batch_size, self.num_intermediate_channel)), mstype.float32))
             self.output_projection_weights = Parameter(
                 Tensor(np.zeros((self.batch_size, self.layer_norm_dim, self.layer_norm_dim)), mstype.float32))
             self.output_projection_biases = Parameter(
@@ -359,8 +359,8 @@ class TriangleMultiplication(nn.Cell):
             self.right_gate_weights = Parameter(
                 Tensor(np.zeros((self.num_intermediate_channel, self.layer_norm_dim)), mstype.float32))
             self.right_gate_biases = Parameter(Tensor(np.ones((self.num_intermediate_channel)), mstype.float32))
-            self.center_layer_norm_gammas = Parameter(Tensor(np.ones((self.layer_norm_dim)), mstype.float32))
-            self.center_layer_norm_betas = Parameter(Tensor(np.zeros((self.layer_norm_dim)), mstype.float32))
+            self.center_layer_norm_gammas = Parameter(Tensor(np.ones((self.num_intermediate_channel)), mstype.float32))
+            self.center_layer_norm_betas = Parameter(Tensor(np.zeros((self.num_intermediate_channel)), mstype.float32))
             self.output_projection_weights = Parameter(
                 Tensor(np.zeros((self.layer_norm_dim, self.layer_norm_dim)), mstype.float32))
             self.output_projection_biases = Parameter(Tensor(np.zeros((self.layer_norm_dim)), mstype.float32))
