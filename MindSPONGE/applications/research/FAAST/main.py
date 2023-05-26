@@ -164,6 +164,8 @@ def eval_main(prot_names, megafold, model_cfg, data_cfg, feature_generator):
 
         for iter_idx in range(len(assign_all_settings)):
             all_settings = assign_all_settings.get(iter_idx)
+            print(f"Settings for iteration {iter_idx}")
+            print(all_settings, flush=True)
             sample_ur_rate = all_settings.get("infer_pdb")["sample_ur_rate"]
 
             local_res_path = os.path.join(res_path, f"iter_{iter_idx}")

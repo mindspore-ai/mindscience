@@ -420,7 +420,6 @@ class StructureModule(nn.Cell):
             np.arange(self.seq_length).reshape((-1, 1, 1)).repeat(37, axis=1).astype("int32"))
         self.traj_w = Tensor(np.array([1.] * 4 + [self.config.position_scale] * 3), mstype.float32)
         self.use_sumcons = True
-        self.use_recyclecons = False
 
     def construct(self, single, pair, seq_mask, aatype, contact_act2, contact_info_mask2, residx_atom37_to_atom14=None,
                   atom37_atom_exists=None):
