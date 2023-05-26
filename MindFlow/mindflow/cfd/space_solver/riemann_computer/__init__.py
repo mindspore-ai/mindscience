@@ -14,10 +14,11 @@
 # ==============================================================================
 """init of riemann computer."""
 from .hllc import HLLC
+from .roe import ROE
 from .rusanov import Rusanov
 from .rusanov_net import RusanovNet
 
-_riemann_dict = {'Rusanov': Rusanov, 'RusanovNet': RusanovNet, 'HLLC': HLLC}
+_riemann_dict = {'Rusanov': Rusanov, 'RusanovNet': RusanovNet, 'HLLC': HLLC, 'ROE': ROE}
 
 
 def define_riemann_computer(name):
