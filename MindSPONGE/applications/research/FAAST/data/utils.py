@@ -68,12 +68,16 @@ def get_crop_size(input_path, use_pkl):
             with open(file_full_path, "rb") as f:
                 data = pickle.load(f)
             current_crop_size = (data["msa"].shape[1] // 256 + 1) * 256
+            if data["msa"].shape[1] <= 128:
+                current_crop_size = 128
             max_length = max(max_length, current_crop_size)
         else:
             with open(file_full_path, "r") as f:
                 input_fasta_str = f.read()
             input_seqs, _ = parse_fasta(input_fasta_str)
             current_crop_size = (len(input_seqs[0]) // 256 + 1) * 256
+            if len(input_seqs[0]) <= 128:
+                current_crop_size = 128
             max_length = max(max_length, current_crop_size)
 
     return max_length
