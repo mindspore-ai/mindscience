@@ -308,7 +308,7 @@ def append_cluster(ix, lengths, define_batch, clusters, batch_128, batch_256, ba
     elif lengths[ix] > 1024 and len(batch_) == define_batch[4]:
         clusters.append(batch_)
         batch_ = []
-        output = (clusters, batch_128, batch_256, batch_512, batch_1024, batch_)
+    output = (clusters, batch_128, batch_256, batch_512, batch_1024, batch_)
     return output
 
 
