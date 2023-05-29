@@ -94,7 +94,7 @@ class ColvarGroup(Colvar):
 
             periodic += (F.expand_dims(cv.periodic, 0),)
 
-        self.colvar = CellList(colvar_)
+        self.colvar: List[Colvar] = CellList(colvar_)
 
         if axis == -1:
             shape = shape[:-1] + (dim,)

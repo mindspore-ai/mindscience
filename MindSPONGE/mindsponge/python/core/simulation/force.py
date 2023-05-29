@@ -160,6 +160,8 @@ class WithForceCell(Cell):
             Tensor, cutoff
 
         """
+        if self.neighbour_list is None:
+            return None
         return self.neighbour_list.cutoff
 
     @property
@@ -170,6 +172,8 @@ class WithForceCell(Cell):
             int, step
 
         """
+        if self.neighbour_list is None:
+            return 0
         return self.neighbour_list.pace
 
     @property
@@ -284,13 +288,13 @@ class WithForceCell(Cell):
             if pbc_box is not None:
                 pbc_box *= self.length_unit_scale
 
-            neigh_idx, neigh_pos, neigh_dis, neigh_mask = self.neighbour_list(coordinate, pbc_box)
+            neigh_idx, neigh_vec, neigh_dis, neigh_mask = self.neighbour_list(coordinate, pbc_box)
 
             energy, force, virial = self.force_function(
                 coordinate=coordinate,
                 neighbour_index=neigh_idx,
                 neighbour_mask=neigh_mask,
-                neighbour_coord=neigh_pos,
+                neighbour_vector=neigh_vec,
                 neighbour_distance=neigh_dis,
                 pbc_box=pbc_box
             )

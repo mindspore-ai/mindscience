@@ -31,6 +31,20 @@ from mindspore.train import load_checkpoint
 from ..function.functions import get_integer
 
 
+__all__ = [
+    'str_to_tensor',
+    'tensor_to_str',
+    'get_class_parameters',
+    'get_hyper_parameter',
+    'get_hyper_string',
+    'set_class_parameters',
+    'set_hyper_parameter',
+    'set_class_into_hyper_param',
+    'load_hyperparam',
+    'load_hyper_param_into_class',
+]
+
+
 def str_to_tensor(string: str) -> Tensor:
     """
     encode string to Tensor[int]

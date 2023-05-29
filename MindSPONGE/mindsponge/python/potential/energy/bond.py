@@ -33,7 +33,7 @@ from mindspore.ops import functional as F
 from .energy import EnergyCell
 from ...colvar import Distance
 from ...function import functions as func
-from ...function import get_ms_array
+from ...function import get_ms_array, get_arguments
 
 
 class BondEnergy(EnergyCell):
@@ -94,6 +94,7 @@ class BondEnergy(EnergyCell):
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
                  name: str = 'bond',
+                 **kwargs,
                  ):
 
         super().__init__(
@@ -102,6 +103,7 @@ class BondEnergy(EnergyCell):
             length_unit=length_unit,
             energy_unit=energy_unit,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         if parameters is not None:
             length_unit = parameters.get('length_unit')
@@ -158,7 +160,7 @@ class BondEnergy(EnergyCell):
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,
                   neighbour_mask: Tensor = None,
-                  neighbour_coord: Tensor = None,
+                  neighbour_vector: Tensor = None,
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
@@ -171,8 +173,8 @@ class BondEnergy(EnergyCell):
                                             Index of neighbour atoms.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
                                             Mask for neighbour index.
-            neighbour_coord (Tensor):       Tensor of shape (B, A, N). Data type is bool.
-                                            Position coorindates of neighbour atoms.
+            neighbour_vector (Tensor):       Tensor of shape (B, A, N). Data type is bool.
+                                            Vectors from central atom to neighbouring atoms.
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms.
             inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.

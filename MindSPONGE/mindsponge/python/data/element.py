@@ -27,6 +27,16 @@ Information of chemical elements
 
 import numpy as np
 
+
+__all__ = [
+    'elements',
+    'element_dict',
+    'element_name',
+    'element_set',
+    'atomic_mass',
+]
+
+
 elements = np.array([
     '',
     'H',
@@ -149,7 +159,9 @@ elements = np.array([
     'Og',
 ])
 
+
 element_set = set(elements)
+
 
 element_dict = {
     'X':  0,
@@ -274,6 +286,7 @@ element_dict = {
     'Og': 118,
 }
 
+
 element_name = np.array([
     'None',
     'Hydrogen',
@@ -395,6 +408,7 @@ element_name = np.array([
     'Tennessine',
     'Oganesson',
 ])
+
 
 atomic_mass = np.array([
     0.000,

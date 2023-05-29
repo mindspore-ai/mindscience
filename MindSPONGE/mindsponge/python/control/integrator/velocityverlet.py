@@ -35,6 +35,7 @@ from ..thermostat import Thermostat
 from ..barostat import Barostat
 from ..constraint import Constraint
 from ...system import Molecule
+from ...function import get_arguments
 
 
 class VelocityVerlet(Integrator):
@@ -70,6 +71,7 @@ class VelocityVerlet(Integrator):
                  thermostat: Thermostat = None,
                  barostat: Barostat = None,
                  constraint: Constraint = None,
+                 **kwargs,
                  ):
 
         super().__init__(
@@ -78,6 +80,7 @@ class VelocityVerlet(Integrator):
             barostat=barostat,
             constraint=constraint,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         # v(t+0.5) = v(t) + 0.5 * a(t) * dt
         velocity_half = msnp.zeros_like(self.system.coordinate)

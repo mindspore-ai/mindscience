@@ -31,6 +31,7 @@ from mindspore.ops import functional as F
 
 from .thermostat import Thermostat
 from ...system import Molecule
+from ...function import get_arguments
 
 
 class Langevin(Thermostat):
@@ -72,6 +73,7 @@ class Langevin(Thermostat):
                  time_constant: float = 0.1,
                  seed: int = 0,
                  seed2: int = 0,
+                 **kwargs,
                  ):
 
         super().__init__(
@@ -80,6 +82,7 @@ class Langevin(Thermostat):
             control_step=control_step,
             time_constant=time_constant,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         # (B,A,1)
         self._inv_sqrt_mass = F.sqrt(self._inv_mass)

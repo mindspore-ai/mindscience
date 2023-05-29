@@ -24,6 +24,8 @@
 Collective variables that accept index
 """
 
+from inspect import signature
+
 import mindspore as ms
 from mindspore import ops
 from mindspore.ops import functional as F
@@ -33,7 +35,7 @@ from mindspore.common import Tensor
 from mindspore import numpy as msnp
 
 from ..function import functions as func
-from ..function.operations import GetVector
+from ..function import GetVector, get_integer
 
 __all__ = [
     'IndexColvar',
@@ -108,8 +110,13 @@ class IndexDistances(IndexColvar):
 
         super().__init__(use_pbc=use_pbc)
 
-        self.norm_last_dim = nn.Norm(-1, keepdims)
+        self.keepdims = keepdims
         self.large_dis = Tensor(large_dis, ms.float32)
+
+        self.norm_last_dim = None
+        # MindSpore < 2.0.0-rc1
+        if 'ord' not in signature(ops.norm).parameters.keys():
+            self.norm_last_dim = nn.Norm(-1, self.keepdims)
 
     def construct(self, coordinate: Tensor, index: Tensor, mask: Tensor = None, pbc_box: Tensor = None):
         r"""Compute distances between atoms according to index.
@@ -137,9 +144,9 @@ class IndexDistances(IndexColvar):
 
         """
 
-        # (B,A,1,D) <- (B,A,D)
+        # (B, A, 1, D) <- (B, A, D)
         atoms = F.expand_dims(coordinate, -2)
-        # (B,A,N,D) <- (B,A,D)
+        # (B, A, N, D) <- (B, A, D)
         neighbours = func.gather_vector(coordinate, index)
         vectors = self.get_vector(atoms, neighbours, pbc_box)
 
@@ -147,12 +154,94 @@ class IndexDistances(IndexColvar):
         # to prevent them from becoming zero values after Norm operation,
         # which could lead to auto-differentiation errors
         if mask is not None:
-            # (B,A,N,D) = (B,A,N,D) + (B,A,N,1)
+            # (B, A, N, D) = (B, A, N, D) + (B, A, N, 1)
             large_dis = msnp.broadcast_to(self.large_dis, mask.shape)
             vectors += F.expand_dims(F.select(mask, F.zeros_like(large_dis), large_dis), -1)
 
-        # (B,A,N) = (B,A,N,D)
+        # (B, A, N) <- (B, A, N, D)
+        if self.norm_last_dim is None:
+            return ops.norm(vectors, None, -1, self.keepdims)
+
         return self.norm_last_dim(vectors)
+
+
+class Vector2Distance(Cell):
+    r"""Calculate distance of vector
+
+    Args:
+        axis (int): Axis of vector to be calculated. Default: -1
+
+        large_dis (float): A large value that added to the distance equal to zero to prevent them from
+            becoming zero values after Norm operation, which could lead to auto-differentiation errors.
+
+        keepdims (bool): If this is `True`, the last axis will be left in the result as dimensions with size one.
+
+    Supported Platforms:
+
+        ``Ascend`` ``GPU``
+
+    """
+    def __init__(self,
+                 axis: int = -1,
+                 large_dis: float = 100,
+                 keepdims: bool = False,
+                 ):
+
+        self.axis = get_integer(axis)
+        self.keepdims = keepdims
+        self.large_dis = Tensor(large_dis, ms.float32)
+
+        self.norm_last_dim = None
+        # MindSpore < 2.0.0-rc1
+        if 'ord' not in signature(ops.norm).parameters.keys():
+            self.norm_last_dim = nn.Norm(self.axis, self.keepdims)
+
+    def construct(self, vector: Tensor, mask: Tensor = None):
+        r"""Compute distances between atoms according to index.
+
+        Args:
+            coordinate (Tensor):    Tensor of shape (B, ..., D). Data type is float.
+                                    Vector
+            mask (Tensor):          Tensor of shape (B, ...). Data type is bool.
+                                    Mask for Vector
+
+        Returns:
+            distances (Tensor):     Tensor of shape (B, A, N). Data type is float.
+
+        Symbols:
+
+            B:  Batchsize, i.e. number of simulation walker.
+            A:  Number of atoms.
+            N:  Number of neighbour atoms.
+            D:  Dimension of position coordinates.
+
+        """
+
+        # Add a non-zero value to the vectors whose mask value is False
+        # to prevent them from becoming zero values after Norm operation,
+        # which could lead to auto-differentiation errors
+        if mask is not None:
+            # (B, ...)
+            large_dis = msnp.broadcast_to(self.large_dis, mask.shape)
+            vector_shift = F.select(mask, F.zeros_like(large_dis), large_dis)
+            # (B, ..., 1) <- (B, ...)
+            vector_shift = F.expand_dims(vector_shift, self.axis)
+            # (B, ..., D) = (B, ..., D) + (B, .., 1)
+            vector += vector_shift
+
+        # (B, ...) <- (B, ..., D) OR (B, ..., 1) <- (B, ..., D)
+        if self.norm_last_dim is None:
+            distance = ops.norm(vector, None, self.axis, self.keepdims)
+        else:
+            distance = self.norm_last_dim(vector)
+
+        if mask is not None:
+            if self.keepdims:
+                mask = F.expand_dims(mask, self.axis)
+            # (B, ...) * (B, ...) OR (B, ..., 1) * (B, ..., 1)
+            distance *= mask
+
+        return distance
 
 
 class IndexVectors(IndexColvar):

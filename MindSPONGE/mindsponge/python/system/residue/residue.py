@@ -34,8 +34,8 @@ from mindspore import jit_class
 from mindspore.ops import functional as F
 from mindspore.common import Tensor
 
-from ...function.functions import get_integer, get_ms_array
-from ...data.elements import elements, element_set, element_dict, atomic_mass
+from ...function.functions import get_integer, get_ms_array, get_arguments
+from ...data.element import elements, element_set, element_dict, atomic_mass
 from ...data.template import get_template, get_template_index
 
 
@@ -112,7 +112,9 @@ class Residue:
                  start_index: int = 0,
                  name: str = 'MOL',
                  template: Union[dict, str] = None,
+                 **kwargs,
                  ):
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self._name = name
 

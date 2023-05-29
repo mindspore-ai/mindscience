@@ -25,6 +25,7 @@ Common functions
 """
 
 from typing import Union, List, Tuple
+from datetime import time, timedelta, date
 import numpy as np
 from numpy import ndarray
 import mindspore as ms
@@ -33,6 +34,8 @@ from mindspore import ops
 from mindspore import jit
 from mindspore import Tensor, Parameter
 from mindspore.ops import functional as F
+from mindspore.common.initializer import Initializer, _INITIALIZER_ALIAS
+
 
 __all__ = [
     'PI',
@@ -45,6 +48,10 @@ __all__ = [
     'reduce_prod',
     'concat_last_dim',
     'concat_penulti',
+    'stack_last_dim',
+    'stack_penulti',
+    'squeeze_last_dim',
+    'squeeze_penulti',
     'identity',
     'periodic_variable',
     'periodic_difference',
@@ -80,6 +87,8 @@ __all__ = [
     'all_none',
     'any_not_none',
     'all_not_none',
+    'get_arguments',
+    'get_initializer'
 ]
 
 PI = 3.141592653589793238462643383279502884197169399375105820974944592307
@@ -94,6 +103,10 @@ reduce_all = ops.ReduceAll()
 reduce_prod = ops.ReduceProd()
 concat_last_dim = ops.Concat(-1)
 concat_penulti = ops.Concat(-2)
+stack_last_dim = ops.Stack(-1)
+stack_penulti = ops.Stack(-2)
+squeeze_last_dim = ops.Squeeze(-1)
+squeeze_penulti = ops.Squeeze(-2)
 identity = ops.Identity()
 
 
@@ -327,7 +340,7 @@ def vector_in_pbc(vector: Tensor, pbc_box: Tensor, offset: float = -0.5) -> Tens
 
     Args:
         vector (Tensor):    Tensor of shape `(B, ..., D)`. Data type is float.
-                            Vector :math:`\vec{v}
+                            Vector :math:`\vec{v}`
         pbc_box (Tensor):   Tensor of shape `(B, D)`. Data type is float.
                             Size of PBC box :math:`\vec{L}`
         offset (float):     Offset ratio :math:`c` of the vector relative to box size :math:`\vec{L}`.
@@ -1204,7 +1217,7 @@ def any_not_none(iterable: Union[list, tuple]) -> bool:
 
 
 def all_not_none(iterable: Union[list, tuple]) -> bool:
-    r"""Return True if ALL values `x` in the `iterable` is Not None..
+    r"""Return True if ALL values `x` in the `iterable` is Not None.
 
     Args:
         iterable (Union[list, tuple]): Iterable variable
@@ -1217,3 +1230,112 @@ def all_not_none(iterable: Union[list, tuple]) -> bool:
 
     """
     return all([i is not None for i in iterable])
+
+
+def get_arguments(locals_: dict, kwargs: dict = None) -> dict:
+    r"""get arguments of a class
+
+    Args:
+        locals_ (dict): Dictionary of the arguments from `locals()`.
+        kwargs (dict): Dictionary of keyword arguments (kwargs) of the class.
+
+    Returns:
+        args (dict): Dictionary of arguments
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+
+    if '__class__' in locals_.keys():
+        locals_.pop('__class__')
+
+    arguments = {}
+    if 'self' in locals_.keys():
+        cls = locals_.pop('self')
+        arguments['cls_name'] = cls.__class__.__name__
+
+    def _set_arguments(args_: dict):
+        def _convert(value):
+            if value is None or isinstance(value, (int, float, bool, str,
+                                                   time, timedelta, date)):
+                return value
+            if isinstance(value, ndarray):
+                return value.tolist()
+            if isinstance(value, (Tensor, Parameter)):
+                return value.asnumpy().tolist()
+            if isinstance(value, (list, tuple)):
+                return [_convert(v) for v in value]
+            if isinstance(value, dict):
+                if 'cls_name' in value.keys():
+                    return value
+                dict_ = value.copy()
+                for k, v in value.items():
+                    dict_[k] = _convert(v)
+                return dict_
+
+            cls_name = value.__class__.__name__
+            if hasattr(value, '_kwargs'):
+                value = value.__dict__['_kwargs']
+            elif hasattr(value, 'init_args'):
+                value = value.__dict__['init_args']
+            else:
+                value = value.__class__.__name__
+
+            if isinstance(value, dict) and 'cls_name' not in value.keys():
+                dict_ = {'cls_name': cls_name}
+                dict_.update(_set_arguments(value))
+                value = dict_
+
+            return value
+
+        for k, v in args_.items():
+            args_[k] = _convert(v)
+        return args_
+
+    kwargs_ = {}
+    if 'kwargs' in locals_.keys():
+        kwargs_: dict = locals_.pop('kwargs')
+
+    if kwargs is None:
+        kwargs = kwargs_
+
+    if 'cls_name' in kwargs.keys():
+        kwargs.pop('cls_name')
+
+    arguments.update(_set_arguments(locals_))
+    arguments.update(_set_arguments(kwargs))
+
+    return arguments
+
+
+def get_initializer(cls_name: Union[Initializer, str, dict, Tensor], **kwargs) -> Initializer:
+    r"""get initializer by name
+
+    Args:
+        cls_name (Union[Initializer, str, dict, Tensor]): Class name of Initializer.
+        kwargs (dict): Dictionary of keyword arguments (kwargs) of the class.
+
+    Returns:
+        Initializer
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    if isinstance(cls_name, Initializer):
+        return cls_name
+
+    if isinstance(cls_name, (Tensor, Parameter, ndarray)):
+        return get_tensor(cls_name, ms.float32)
+
+    if isinstance(cls_name, dict):
+        return get_initializer(**cls_name)
+
+    if isinstance(cls_name, str):
+        init = _INITIALIZER_ALIAS.get(cls_name.lower())
+        if init is None:
+            raise ValueError(f"For 'initializer', the class corresponding to '{cls_name}' was not found.")
+        return init(**kwargs)
+
+    raise TypeError(f'The cls_name must be Initializer, str, dict or Tensor but got: {init}')

@@ -30,6 +30,7 @@ from mindspore.ops import functional as F
 
 from . import Barostat
 from ...system import Molecule
+from ...function import get_arguments
 
 
 class AndersenBarostat(Barostat):
@@ -71,6 +72,7 @@ class AndersenBarostat(Barostat):
                  control_step: int = 1,
                  compressibility: float = 4.6e-5,
                  time_constant: float = 1.,
+                 **kwargs,
                  ):
 
         super().__init__(
@@ -81,6 +83,7 @@ class AndersenBarostat(Barostat):
             compressibility=compressibility,
             time_constant=time_constant,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self.h_mass_inverse_0 = F.square(self.time_constant) / self.compressibility
 

@@ -22,9 +22,6 @@
 # ============================================================================
 """Functions and Operations"""
 
-from mindspore import context
-from mindspore.ops import Gather
-
 from .functions import *
 from .units import *
 from .operations import GetVector, GetDistance, VelocityGenerator, \

@@ -32,6 +32,7 @@ from mindspore.ops import functional as F
 
 from .. import Controller
 from ...system import Molecule
+from ...function import get_arguments
 from ...function import functions as func
 
 
@@ -63,12 +64,14 @@ class Thermostat(Controller):
                  temperature: float = 300,
                  control_step: int = 1,
                  time_constant: float = 0.5,
+                 **kwargs,
                  ):
 
         super().__init__(
             system=system,
             control_step=control_step,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self.ref_temp = func.get_ms_array(temperature, ms.float32).reshape(-1, 1)
         self.ref_kinetics = 0.5 * self.degrees_of_freedom * self.boltzmann * self.ref_temp

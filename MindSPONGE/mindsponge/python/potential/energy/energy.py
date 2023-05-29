@@ -69,9 +69,10 @@ class EnergyCell(Cell):
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
                  use_pbc: bool = None,
+                 **kwargs
                  ):
-
         super().__init__()
+        self._kwargs = kwargs
 
         self._name = name
 
@@ -145,7 +146,7 @@ class EnergyCell(Cell):
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,
                   neighbour_mask: Tensor = None,
-                  neighbour_coord: Tensor = None,
+                  neighbour_vector: Tensor = None,
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
@@ -158,8 +159,8 @@ class EnergyCell(Cell):
                                             Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
                                             Mask for neighbour index. Default: None
-            neighbour_coord (Tensor):       Tensor of shape (B, A, N). Data type is bool.
-                                            Position coorindates of neighbour atoms. Default: None
+            neighbour_vector (Tensor):       Tensor of shape (B, A, N). Data type is bool.
+                                            Vectors from central atom to neighbouring atoms. Default: None
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms. Default: None
             inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.
@@ -223,7 +224,7 @@ class NonbondEnergy(EnergyCell):
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,
                   neighbour_mask: Tensor = None,
-                  neighbour_coord: Tensor = None,
+                  neighbour_vector: Tensor = None,
                   neighbour_distance: Tensor = None,
                   pbc_box: Tensor = None
                   ):
@@ -236,8 +237,8 @@ class NonbondEnergy(EnergyCell):
                                             Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
                                             Mask for neighbour index. Default: None
-            neighbour_coord (Tensor):       Tensor of shape (B, A, N). Data type is bool.
-                                            Position coorindates of neighbour atoms. Default: None
+            neighbour_vector (Tensor):       Tensor of shape (B, A, N). Data type is bool.
+                                            Vectors from central atom to neighbouring atoms. Default: None
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms. Default: None
             inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.

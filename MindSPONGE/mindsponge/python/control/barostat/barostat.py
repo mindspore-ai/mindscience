@@ -33,7 +33,7 @@ from mindspore.ops import functional as F
 
 from .. import Controller
 from ...system import Molecule
-from ...function import get_ms_array
+from ...function import get_ms_array, get_arguments
 
 
 class Barostat(Controller):
@@ -72,12 +72,14 @@ class Barostat(Controller):
                  control_step: int = 1,
                  compressibility: float = 4.6e-5,
                  time_constant: float = 1.,
+                 **kwargs,
                  ):
 
         super().__init__(
             system=system,
             control_step=control_step,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self.anisotropic = anisotropic
 

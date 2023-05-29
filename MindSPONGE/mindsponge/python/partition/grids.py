@@ -207,7 +207,13 @@ class GridNeighbours(Cell):
 
         if cell_capacity is None:
             # (B, 1)
-            _, max_num_in_cell = scipy.stats.mode(atom_grid_idx.asnumpy(), axis=1)
+            try:
+                # SciPy >= 1.9
+                # pylint: disable=unexpected-keyword-arg
+                _, max_num_in_cell = scipy.stats.mode(atom_grid_idx.asnumpy(), axis=1, keepdims=True)
+            except TypeError:
+                # SciPy < 1.9
+                _, max_num_in_cell = scipy.stats.mode(atom_grid_idx.asnumpy(), axis=1)
             max_num_in_cell = get_integer(np.max(max_num_in_cell))
             # C
             cell_capacity = get_integer(msnp.ceil(max_num_in_cell*self.cell_cap_scale))

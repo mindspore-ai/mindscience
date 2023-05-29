@@ -29,6 +29,7 @@ from mindspore import ops
 
 from . import Thermostat
 from ...system import Molecule
+from ...function import get_arguments
 
 
 class BerendsenThermostat(Thermostat):
@@ -69,6 +70,7 @@ class BerendsenThermostat(Thermostat):
                  time_constant: float = 0.2,
                  scale_min: float = 0.8,
                  scale_max: float = 1.25,
+                 **kwargs,
                  ):
 
         super().__init__(
@@ -77,6 +79,7 @@ class BerendsenThermostat(Thermostat):
             control_step=control_step,
             time_constant=time_constant,
         )
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self.scale_min = scale_min
         self.scale_max = scale_max

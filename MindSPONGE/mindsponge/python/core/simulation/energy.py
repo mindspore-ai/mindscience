@@ -33,7 +33,7 @@ from mindspore import ops
 from mindspore.ops import functional as F
 from mindspore.nn import Cell, CellList
 
-from ...function.units import Units
+from ...function import Units, get_arguments
 from ...partition import NeighbourList
 from ...system import Molecule
 from ...potential import PotentialCell
@@ -89,9 +89,11 @@ class WithEnergyCell(Cell):
                  cutoff: float = None,
                  neighbour_list: NeighbourList = None,
                  wrapper: EnergyWrapper = None,
+                 **kwargs
                  ):
 
         super().__init__(auto_prefix=False)
+        self._kwargs = get_arguments(locals(), kwargs)
 
         self.system = system
         self.potential_function = potential
@@ -99,7 +101,7 @@ class WithEnergyCell(Cell):
         self.units = Units(self.system.length_unit, self.potential_function.energy_unit)
         self.system.units.set_energy_unit(self.energy_unit)
 
-        self.bias_function = None
+        self.bias_function: List[Bias] = None
         self._num_biases = 0
         self._bias_names = []
         if bias is not None:
@@ -383,20 +385,20 @@ class WithEnergyCell(Cell):
 
         """
 
-        neigh_idx, neigh_pos, neigh_dis, neigh_mask = self.neighbour_list(self.coordinate, self.pbc_box)
+        neigh_idx, neigh_vec, neigh_dis, neigh_mask = self.neighbour_list(self.coordinate, self.pbc_box)
 
         coordinate = self.coordinate * self.length_unit_scale
         pbc_box = self.pbc_box
         if pbc_box is not None:
             pbc_box *= self.length_unit_scale
-        neigh_pos *= self.length_unit_scale
+        neigh_vec *= self.length_unit_scale
         neigh_dis *= self.length_unit_scale
 
         energies = self.potential_function(
             coordinate=coordinate,
             neighbour_index=neigh_idx,
             neighbour_mask=neigh_mask,
-            neighbour_coord=neigh_pos,
+            neighbour_vector=neigh_vec,
             neighbour_distance=neigh_dis,
             pbc_box=pbc_box
         )
@@ -418,13 +420,13 @@ class WithEnergyCell(Cell):
         if self.bias_function is None:
             return None
 
-        neigh_idx, neigh_pos, neigh_dis, neigh_mask = self.neighbour_list(self.coordinate, self.pbc_box)
+        neigh_idx, neigh_vec, neigh_dis, neigh_mask = self.neighbour_list(self.coordinate, self.pbc_box)
 
         coordinate = self.coordinate * self.length_unit_scale
         pbc_box = self.pbc_box
         if pbc_box is not None:
             pbc_box *= self.length_unit_scale
-        neigh_pos *= self.length_unit_scale
+        neigh_vec *= self.length_unit_scale
         neigh_dis *= self.length_unit_scale
 
         biases = ()
@@ -433,7 +435,7 @@ class WithEnergyCell(Cell):
                 coordinate=coordinate,
                 neighbour_index=neigh_idx,
                 neighbour_mask=neigh_mask,
-                neighbour_coord=neigh_pos,
+                neighbour_vector=neigh_vec,
                 neighbour_distance=neigh_dis,
                 pbc_box=pbc_box
             )
@@ -455,10 +457,10 @@ class WithEnergyCell(Cell):
         #pylint: disable=unused-argument
         coordinate, pbc_box = self.system()
 
-        neigh_idx, neigh_pos, neigh_dis, neigh_mask = self.neighbour_list(coordinate, pbc_box)
+        neigh_idx, neigh_vec, neigh_dis, neigh_mask = self.neighbour_list(coordinate, pbc_box)
 
         coordinate *= self.length_unit_scale
-        neigh_pos *= self.length_unit_scale
+        neigh_vec *= self.length_unit_scale
         neigh_dis *= self.length_unit_scale
         if pbc_box is not None:
             pbc_box *= self.length_unit_scale
@@ -467,7 +469,7 @@ class WithEnergyCell(Cell):
             coordinate=coordinate,
             neighbour_index=neigh_idx,
             neighbour_mask=neigh_mask,
-            neighbour_coord=neigh_pos,
+            neighbour_vector=neigh_vec,
             neighbour_distance=neigh_dis,
             pbc_box=pbc_box
         )
@@ -482,7 +484,7 @@ class WithEnergyCell(Cell):
                     coordinate=coordinate,
                     neighbour_index=neigh_idx,
                     neighbour_mask=neigh_mask,
-                    neighbour_coord=neigh_pos,
+                    neighbour_vector=neigh_vec,
                     neighbour_distance=neigh_dis,
                     pbc_box=pbc_box
                 )
