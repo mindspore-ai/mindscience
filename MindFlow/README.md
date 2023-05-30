@@ -84,9 +84,10 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 Because MindFlow is dependent on MindSpore, please click [MindSpot Download Page](https://www.mindspore.cn/versions) according to the corresponding relationship indicated in the following table. Download and install the corresponding whl package.
 
-| MindFlow |                                  Branch                                |    MindSpore   | Python |
-|:--------:|:----------------------------------------------------------------------:|:--------------:|:------:|
-|  0.1.0   | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) | \>=2.0.0-alpha | \>=3.7 |
+| MindFlow |                                  Branch                                |  MindSpore  | Python |
+|:--------:|:----------------------------------------------------------------------:|:-----------:|:------:|
+|  master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) |        \       | \>=3.7 |
+| 0.1.0rc1 | [r0.2.0](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow) |   \>=2.0.0rc1  | \>=3.7 |
 
 ### Install Dependency
 
