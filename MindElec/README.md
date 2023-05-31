@@ -71,9 +71,10 @@ If you are interested in our Meta-Auto-Decoder for solving parametric PDEs, plea
 
 Due to the dependency between MindSpore Elec and MindSpore, please follow the table below and install the corresponding MindSpore version from [MindSpore download Guide](https://www.mindspore.cn/versions)
 
-| MindSpore Elec Version | Branch | MindSpore Version | Python Version |
-|:-----------------------|:-------|:------------------|:---------------|
-| 0.2.0                  | master | \>=2.0.0-alpha️  | \>=3.7         |
+| MindSpore Elec Version|                                  Branch                                 |    MindSpore Minimum Version Requirements   |
+|:---------------------:|:-----------------------------------------------------------------------:|:-------------------------------------------:|
+|        master         | [master](https://gitee.com/mindspore/mindscience/tree/master/MindElec)  |                     \                       |
+|       0.2.0rc1        | [r0.2.0](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindElec)  |                 \>=2.0.0rc1                 |
 
 ### Confirming the System Environment Information
 
@@ -85,7 +86,7 @@ Due to the dependency between MindSpore Elec and MindSpore, please follow the ta
 |               | CentOS-x86      | ✔️   |
 |               | CentOS-aarch64  | ✔️   |
 
-- Install MindSpore by referring to [MindSpore Installation Guide](https://www.mindspore.cn/install/en). The version must be 1.5.0 or later.
+- Install MindSpore by referring to [MindSpore Installation Guide](https://www.mindspore.cn/install/en).
 - For other dependencies, see [requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/MindElec/requirements.txt).
 
 ### Installing Using pip
