@@ -140,9 +140,10 @@ MindSpore Elec是基于MindSpore开发的AI电磁仿真工具包，由数据构�
 由于MindSpore Elec与Mindspore有依赖关系，请根据下表中所指示的对应关系，在[Mindspore下载页面](https://www.mindspore.cn/versions)
 下载并安装对应的whl包。
 
-| MindSpore Elec | 分支     | MindSpore       | Python |
-|:---------------|:--------|:----------------|:-------|
-| 0.2.0          | master  | \>=2.0.0-alpha️| \>=3.7 |
+|   MindSpore Elec 版本  |                                  分支                                    |  MindSpore 运行最低版本 |
+|:---------------------:|:-----------------------------------------------------------------------:|:---------------------:|
+|        master         | [master](https://gitee.com/mindspore/mindscience/tree/master/MindElec)  |           \           |
+|       0.2.0rc1        | [r0.2.0](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindElec)  |       \>=2.0.0rc1     |
 
 其余依赖请参见[requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/MindElec/requirements.txt)
 
