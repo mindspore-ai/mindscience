@@ -125,7 +125,8 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 
 | MindSPONGE |                                 分支                                 | MindSpore | Python |
 | :--------: | :-------------------------------------------------------------------: | :-------: | :----: |
-|   1.0.0   | [master](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) | \>=2.0.0 | \>=3.7 |
+|   master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) | \>=2.0.0 | \>=3.7 |
+|   1.0.0   | [r0.2.0](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindSPONGE) | \>=2.0.0 | \>=3.7 |
 
 ```bash
 pip install -r requirements.txt
