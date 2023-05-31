@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""ROE Riemann Solver"""
+"""Roe Riemann Solver"""
 from mindspore import jit_class, ops
 from mindspore import numpy as mnp
 
@@ -21,7 +21,7 @@ from .base import RiemannComputer
 
 
 @jit_class
-class ROE(RiemannComputer):
+class Roe(RiemannComputer):
     r"""
     ROE Riemann Solver based on Toro et al. 2009
 

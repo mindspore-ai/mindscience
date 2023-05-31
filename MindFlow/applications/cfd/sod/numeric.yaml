@@ -3,7 +3,7 @@ mesh:
   nx: 100
   gamma: 1.4
   x_range: [0, 1]
-  pad_size: 3
+  pad_size: 4
 
 material:
   type: "IdealGas"
@@ -24,7 +24,7 @@ space_solver:
   is_convective_flux: True
   convective_flux:
     reconstructor: 'WENO5'
-    riemann_computer: 'Rusanov'
+    riemann_computer: 'Roe'
 
   is_viscous_flux: False
 
