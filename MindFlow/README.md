@@ -86,7 +86,8 @@ Because MindFlow is dependent on MindSpore, please click [MindSpot Download Page
 
 | MindFlow |                                  Branch                                |  MindSpore  | Python |
 |:--------:|:----------------------------------------------------------------------:|:-----------:|:------:|
-| 0.1.0rc1 | [master](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow) | \>=2.0.0rc1 | \>=3.7 |
+|  master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) |        \       | \>=3.7 |
+| 0.1.0rc1 | [r0.2.0](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow) |   \>=2.0.0rc1  | \>=3.7 |
 
 ### Install Dependency
 
