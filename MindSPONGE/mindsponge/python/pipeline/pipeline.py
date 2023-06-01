@@ -24,6 +24,7 @@ from .models import DeepDR, DeepDRDataSet, deepdr_configuration
 from .models import DeepFri, DeepFriDataSet, deepfri_configuration
 from .models import ESM, ESMDataSet, esm_configuration
 from .models import ESM2, ESM2DataSet, esm2_configuration
+from .models import GraphDTA, GraphDTADataSet, graphdta_configuration
 from .models import Grover, GroverDataSet, grover_configuration
 from .models import KGNN, KGNNDataSet, kgnn_configuration
 from .models import MEGAAssessment, MEGAAssessmentDataSet, megaassessment_configuration
@@ -39,6 +40,7 @@ model_card = {
     "DeepFri": {"model": DeepFri, "dataset": DeepFriDataSet, "config": deepfri_configuration},
     "ESM_IF1": {"model": ESM, "dataset": ESMDataSet, "config": esm_configuration},
     "ESM2": {"model": ESM2, "dataset": ESM2DataSet, "config": esm2_configuration},
+    "GraphDTA": {"model": GraphDTA, "dataset": GraphDTADataSet, "config": graphdta_configuration},
     "Grover": {"model": Grover, "dataset": GroverDataSet, "config": grover_configuration},
     "KGNN": {"model": KGNN, "dataset": KGNNDataSet, "config": kgnn_configuration},
     "MEGAAssessment": {"model": MEGAAssessment, "dataset": MEGAAssessmentDataSet,

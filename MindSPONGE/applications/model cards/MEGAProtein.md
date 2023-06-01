@@ -79,7 +79,7 @@ fold_prediction = PipeLine(name="MEGAFold")
 fold_prediction.set_device_id(0)
 fold_prediction.initialize(key="predict_256")
 fold_prediction.model.from_pretrained()
-final_atom_positions, final_atom_mask, aatype, _, _ = fold_prediction.predict(msa_feature)
+final_atom_positions, final_atom_mask, aatype, _, _ = fold_prediction.model.predict(msa_feature)
 
 # MEGA-Assessment对蛋白质结构进行评价
 protein_assessment = PipeLine(name = "MEGAAssessment")
@@ -140,7 +140,7 @@ MEGAEvoGen，MEGAFold，MEGAAssessment均支持多种不同场景下的不同输
   conf.use_pkl = True
   msa_generator.initialize(conf=conf)
   msa_generator.model.from_pretrained()
-  feature = msa_generator.predict(data)
+  feature, mask = msa_generator.predict(data)
   print(feature.shape, feature.dtype)
   ```
 
@@ -221,7 +221,7 @@ ms.set_context(mode=ms.GRAPH_MODE)
 
 pipe = PipeLine(name="MEGAFold")
 pipe.set_device_id(0)
-pipe.initialize(key="predict_256")
+pipe.initialize(key="initial_training")
 pipe.train({YOUR_DATA_PATH}, num_epochs=1)
 ```
 

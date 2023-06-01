@@ -56,14 +56,6 @@ class MEGAEvoGenDataSet(PSP):
         self.in_memory = False
         self.phase = None
         self.use_pkl = config.use_pkl
-        if self.use_pkl:
-            self.training_data_src = config.data_path
-            self.training_pkl_path = self.training_data_src + "/pkl/"
-            self.training_pdb_path = self.training_data_src + "/pdb/"
-            self.training_pdb_items = [self.training_pdb_path + key
-                                       for key in sorted(os.listdir(self.training_pdb_path))]
-            self.training_pkl_items = [self.training_pkl_path + key
-                                       for key in sorted(os.listdir(self.training_pkl_path))]
         self.data_process = [
             dict_replace_key(['deletion_matrix_int', 'deletion_matrix']),
             dict_expand_dims(keys=["deletion_matrix", "msa"], axis=-1),
