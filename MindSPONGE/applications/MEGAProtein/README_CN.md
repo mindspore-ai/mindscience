@@ -69,18 +69,19 @@ MEGA-Protein主要由三部分组成：
 <!-- TOC -->
 
 - [MEGA-Protein](#mega-protein)
-  - [环境配置](#环境配置)
-    - [硬件环境与框架](#硬件环境与框架)
-    - [配置数据库检索](#配置数据库检索)
-  - [代码目录](#代码目录)
-  - [运行示例](#运行示例)
-    - [MEGA-Fold蛋白质结构预测](#mega-fold蛋白质结构预测)
-    - [MEGA-EvoGen MSA生成/增强](#mega-evogen-msa生成增强)
-    - [MEGA-Assessment 蛋白质结构评分&优化](#mega-assessment-蛋白质结构评分优化)
-    - [MEGA-Protein整体使用](#mega-protein整体使用)
-  - [可用的模型和数据集](#可用的模型和数据集)
-  - [引用](#引用)
-  - [致谢](#致谢)
+    - [可用的模型和数据集](#%E5%8F%AF%E7%94%A8%E7%9A%84%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%95%B0%E6%8D%AE%E9%9B%86)
+    - [环境配置](#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE)
+        - [硬件环境与框架](#%E7%A1%AC%E4%BB%B6%E7%8E%AF%E5%A2%83%E4%B8%8E%E6%A1%86%E6%9E%B6)
+        - [配置数据库检索](#%E9%85%8D%E7%BD%AE%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A3%80%E7%B4%A2)
+    - [代码示例](#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B)
+        - [MEGA-Fold蛋白质结构预测推理](#mega-fold%E8%9B%8B%E7%99%BD%E8%B4%A8%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B%E6%8E%A8%E7%90%86)
+        - [MEGA-Fold蛋白质结构预测训练](#mega-fold%E8%9B%8B%E7%99%BD%E8%B4%A8%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B%E8%AE%AD%E7%BB%83)
+        - [MEGA-EvoGen MSA生成/增强推理](#mega-evogen-msa%E7%94%9F%E6%88%90%E5%A2%9E%E5%BC%BA%E6%8E%A8%E7%90%86)
+        - [MEGA-Assessment 蛋白质结构评分推理](#mega-assessment-%E8%9B%8B%E7%99%BD%E8%B4%A8%E7%BB%93%E6%9E%84%E8%AF%84%E5%88%86%E6%8E%A8%E7%90%86)
+        - [MEGA-Assessment 蛋白质结构评分训练](#mega-assessment-%E8%9B%8B%E7%99%BD%E8%B4%A8%E7%BB%93%E6%9E%84%E8%AF%84%E5%88%86%E8%AE%AD%E7%BB%83)
+        - [MEGA-Protein整体使用](#mega-protein%E6%95%B4%E4%BD%93%E4%BD%BF%E7%94%A8)
+    - [引用](#%E5%BC%95%E7%94%A8)
+    - [致谢](#%E8%87%B4%E8%B0%A2)
 
 <!-- /TOC -->
 
@@ -154,14 +155,14 @@ MEGA-Protein主要由三部分组成：
     # configuration for template search
     hhsearch_binary_path   HHsearch可执行文件路径
     kalign_binary_path     kalign可执行文件路径
-    pdb70_database_path    pdb70文件夹路径
-    mmcif_dir              mmcif文件夹路径
+    pdb70_database_path    {pdb70文件夹}/pdb70
+    mmcif_dir              mmcif文件夹
     obsolete_pdbs_path     PDB IDs的映射文件路径
     max_template_date      模板搜索截止时间，该时间点之后的模板会被过滤掉，默认值"2100-01-01"
     # configuration for Multiple Sequence Alignment
     mmseqs_binary          MMseqs2可执行文件路径
-    uniref30_path          uniref30文件夹路径
-    database_envdb_dir     colabfold_envdb_202108文件夹路径
+    uniref30_path          {uniref30文件夹}/uniref30_2103_db
+    database_envdb_dir     {colabfold_envdb文件夹}/colabfold_envdb_202108_db
     a3m_result_path        mmseqs2检索结果(msa)的保存路径，默认值"./a3m_result/"
     ```
 
@@ -232,6 +233,8 @@ MEGA-Protein主要由三部分组成：
 ```log
 {"pre_process_time": 0.61, "model_time": 87.5, "pos_process_time": 0.02, "all_time ": 88.12, "confidence ": 93.5}
 ```
+
+*注：1、样例推理不包含数据库检索，检索耗时数分钟至数十分钟不等。2、多条序列推理时首条序列需编译网络，耗时可能更长，第二条起恢复正常。*
 
 MEGA-Fold预测结果与真实结果对比：
 
