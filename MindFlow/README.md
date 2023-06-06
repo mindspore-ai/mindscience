@@ -41,6 +41,7 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 ## **Latest News**
 
+- 🔥`2023.05.21` On May 21, 2023, the second plenary meeting of the intelligent fluid mechanics industrial consortium was successfully held in Hangzhou West Lake University, and Shengsi MindSpore co organized the meeting. Three academicians of the CAS Member, representatives of the industrial consortium and experts from the academic and industrial circless who care about the consortium attended the meeting. The first fluid mechanics model for aircraft - "Qinling · AoXiang" model is pre released. This model is an intelligent model for aircraft fluid simulation jointly developed by the International Joint Institute of fluid mechanics Intelligence of Northwestern Polytechnical University and Huawei based on the domestic Shengteng AI basic software and hardware platform and MindSpore AI framework.[Page](http://science.china.com.cn/2023-05/23/content_42378458.htm)。
 - 🔥`2023.02.28` Mindspore team has cooperated with Prof. Bin Dong from Peking University and Prof. Yanli Wang from CSRC in the respect of proposing a neural sparse representation to solve Boltzmann equation. Our achievement is about to publish. [Solving Boltzmann equation with neural sparse representation](https://arxiv.org/abs/2302.09233). Here is a sample code:[Neural representation method for Boltzmann equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/boltzmann)
 - 🔥`2023.02.05` [MindFlow 0.1.0-alpha](https://mindspore.cn/mindflow/docs/zh-CN/r0.1.0-alpha/index.html) is released.
 - 🔥`2023.01.17` [MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997), an End-to-End Differentiable Solver based on MindSpore，[see more](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/mindflow/cfd).
@@ -55,37 +56,55 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 ### Physics Driven
 
-- [Boltzmann equation](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/boltzmann)
-- [1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
-- [2D Cylinder Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)
-- [2D and 3D Poisson with Different Geometry](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)
-- [2D Darcy](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
-- [2D Taylor-Green Vortex](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)
+|        Case            |        Dataset               |    Network       |  GPU    |  NPU  |
+|:----------------------:|:--------------------------:|:---------------:|:-------:|:------:|
+|Burgers Equation       |             -              |     PINNs        |   ✔️     |   ✔️   |
+|2D Cylinder Flow        |             -              |        PINNs     |     ✔️   |   ✔️   |
+|2D Darcy                |             -              |      PINNs      |  ✔️      |  ✔️    |
+|Poisson Equation       |             -              |        PINNs     |  ✔️      |   ✔️   |
+|Boltzmann Equation      |             -              |      PINNs       |   ✔️     |   ✔️   |
+|2D Taylor-Green Votex  |             -              |      PINNs        |   ✔️     |   ✔️   |
+|Navier-Stoken Inverse  |             -              |       PINNs       |   ✔️     |   ✔️   |
 
 ### Data Driven
 
-- [FNO for 1D Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers_fno)
-- [FNO for 2D Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_fno)
+|        Case            |              Dataset                  |    Network       |  GPU    |  NPU  |
+|:----------------------:|:-------------------------------------:|:---------------:|:-------:|:------:|
+|DongFang.YuFeng        |         2D Airfoil Flow Dataset       |          ViT      |   ✔️     |   ✔️   |
+|Burgers Equation       |       1D Burgers Equation Dataset     |        FNO1D       |   ✔️     |   ✔️   |
+|Burgers Equation        |      1D Burgers EquationDataset      |       KNO1D       |   ✔️     |   ✔️   |
+|Navier-Stokes Equation |  2D Navier-Stokes Equation Dataset    |        FNO2D      | ✔️   |   ✔️    |
+|Navier-Stokes Equation | 2D Navier-Stokes Equation Dataset     |      FNO3D        |   ✔️     |   ✔️   |
+|Navier-Stokes Equation  |  2D Navier-Stokes Equation Dataset   |        KNO2D      |   ✔️     |   ✔️   |
+|2D Riemann Problem     |      2D Riemann Problem Dataset       |     CAE-LSTM      |   ✔️     |   ✔️   |
+|shu-osher Problem      |    1D shu-osher Problem Dataset       |      CAE-LSTM     |   ✔️     |   ✔️   |
+|sod Problem            |        1D sod Problem Dataset         |     CAE-LSTM      |   ✔️     |   ✔️   |
+|KH pelblem             |       2D K-H Problem Dataset          |       CAE-LSTM    |   ✔️     |   ✔️   |
+|2D Airfoil Buffet      |      2D Airfoil Buffet Dataset        |      ehdnn         |   ✔️     |   ✔️   |
 
 ### Data-Mechanism Fusion
 
-- [PDE-Net for Convection-Diffusion Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
+|          Case              |        Dataset               |    Network       |  GPU    |  NPU  |
+|:--------------------------:|:--------------------------:|:---------------:|:-------:|:------:|
+|   PDE-Net for Convection-Diffusion Equation   | Convection-Diffusion Equation Dataset   |    PDE-Net    |   ✔️     |   ✔️   |
 
 ### CFD
 
-- [1D Lax Tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
-- [1D Sod Tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
-- [2D Couette Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)
-- [2D Riemann](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)
+|       Case         |     格式      |    GPU    |    NPU |
+|:-----------------:|:-------------:|:---------:|:-------|
+|sod shock tube      |    Rusanov    |       ✔️   |   -   |
+|lax shock tube      |    Rusanov    |      ✔️    |   -   |
+|2D Riemann Problem  |       -       |     ✔️     |   -  |
+|Couette Flow        |       -       |  ✔️        |   -   |
 
 ## **Installation**
 
 ### Version Dependency
 
-Because MindFlow is dependent on MindSpore, please click [MindSpot Download Page](https://www.mindspore.cn/versions) according to the corresponding relationship indicated in the following table. Download and install the corresponding whl package.
+Because MindFlow is dependent on MindSpore, please click [MindSpore Download Page](https://www.mindspore.cn/versions) according to the corresponding relationship indicated in the following table. Download and install the corresponding whl package.
 
-| MindFlow |                                  Branch                                |  MindSpore  | Python |
-|:--------:|:----------------------------------------------------------------------:|:-----------:|:------:|
+| MindFlow |                                  Branch                                |  MindSpore  |Python |
+|:--------:|:----------------------------------------------------------------------:|:-----------:|:-------:|
 |  master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) |        \       | \>=3.7 |
 | 0.1.0rc1 | [r0.2.0](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow) |   \>=2.0.0rc1  | \>=3.7 |
 
@@ -109,19 +128,11 @@ pip install -r requirements.txt
 ### **pip install**
 
 ```bash
-export MS_VERSION=2.0.0a0
-export MindFlow_VERSION=0.1.0a0
-# gpu and ascend are supported
-export DEVICE_NAME=gpu
-# cuda-10.1 and cuda-11.1 are supported
-export CUDA_VERSION=cuda-11.1
 
-# Python3.7
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp37-cp37m-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
-# Python3.8
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp38-cp38-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
-# Python3.9
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp39-cp39-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# GPU version
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.0.0rc1/MindScience/gpu/x86_64/cuda-11.1/mindflow_gpu-0.1.0rc1-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# Ascend version
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.0.0rc1/MindScience/ascend/aarch64/mindflow_ascend-0.1.0rc1-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### **source code install**
