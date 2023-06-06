@@ -40,6 +40,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ## **最新消息**
 
+- 🔥`2023.05.21` 2023年5月21日,智能流体力学产业联合体第二次全体会议在杭州西湖大学成功举办，昇思MindSpore协办本次会议，三位中国科学院院士、产业联合体代表及关心联合体的学术界、产业界专家共计百位嘉宾现场参会。面向飞行器的首个流体力学大模型————“秦岭·翱翔”大模型预发布，该模型是由西北工业大学流体力学智能化国际联合研究所与华为基于国产昇腾AI基础软硬件平台及昇思MindSpore AI框架，共同研发的面向飞行器流体仿真的智能化模型，[相关新闻](http://science.china.com.cn/2023-05/23/content_42378458.htm)。
 - 🔥`2023.02.28` Mindspore团队与北京大学董彬老师以及北京计算科学研究中心王艳莉老师合作，提出用稀疏神经表示求解玻尔兹曼方程。详见：[Solving Boltzmann equation with neural sparse representation](https://arxiv.org/abs/2302.09233)。样例代码请参考：[基于神经网络表示求解玻尔兹曼方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/boltzmann)。
 - 🔥`2023.02.05` [MindFlow 0.1.0-alpha](https://mindspore.cn/mindflow/docs/zh-CN/r0.1.0-alpha/index.html) 版本发布。
 - 🔥`2023.01.17` 推出[MindFlow-CFD](https://zhuanlan.zhihu.com/p/599592997)基于MindSpore的端到端可微分求解器，[详见](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/mindflow/cfd)。
@@ -56,28 +57,46 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ### 物理驱动
 
-- [玻尔兹曼方程](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/boltzmann)
-- [一维Burgers问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
-- [二维圆柱绕流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)
-- [不同几何体下的二维和三维Poisson问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)
-- [二维Darcy问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)
-- [二维泰勒格林涡](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)
+|        案例            |        数据集               |    模型架构       |  GPU    |  NPU  |
+|:----------------------:|:--------------------------:|:---------------:|:-------:|:------:|
+| PINNs求解Burgers方程     |             -              |     PINNs        |   ✔️     |   ✔️   |
+|PINNs求解圆柱绕流流场      |             -              |        PINNs     |     ✔️   |   ✔️   |
+|PINNs求解Darcy流动         |             -              |      PINNs      |  ✔️      |  ✔️    |
+|PINNs求解泊松方程          |             -              |        PINNs     |  ✔️      |   ✔️   |
+|PINNs求解玻尔兹曼方程      |             -              |      PINNs       |   ✔️     |   ✔️   |
+|PINNs求解泰勒-格林涡       |             -              |      PINNs        |   ✔️     |   ✔️   |
+|PINNs求解NS方程反问题      |             -              |       PINNs       |   ✔️     |   ✔️   |
 
 ### 数据驱动
 
-- [基于FNO求解一维Burgers](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers_fno)
-- [基于FNO求解二维Navier-Stokes](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_fno)
+|        案例            |        数据集               |    模型架构       |  GPU    |  NPU  |
+|:----------------------:|:--------------------------:|:---------------:|:-------:|:------:|
+|东方.御风                  |    二维翼型流场数据集         |     ViT           |   ✔️     |   ✔️   |
+|FNO求解Burgers方程         |  一维Burgers方程数据集      |     FNO1D          |   ✔️     |   ✔️   |
+|KNO求解Burgers方程         | 一维Burgers方程数据集       |       KNO1D       |   ✔️     |   ✔️   |
+|FNO求解NS方程              |  二维NS方程数据集         |        FNO2D          | ✔️   |   ✔️    |
+|FNO3d求解NS方程            | 二维NS方程数据集          |          FNO3D        |   ✔️     |   ✔️   |
+|KNO求解NS方程              |  二维NS方程数据集         |        KNO2D          |   ✔️     |   ✔️   |
+|CAE-LSTM求解二维黎曼问题       |  二维黎曼问题数据集       |     CAE-LSTM      |   ✔️     |   ✔️   |
+|CAE-LSTM求解shu-osher     |   一维shu-osher波数据集    |      CAE-LSTM      |   ✔️     |   ✔️   |
+|CAE-LSTM求解sod激波管问题   |  一维sod激波管数据集         |     CAE-LSTM    |   ✔️     |   ✔️   |
+|CAE-LSTM求解KH问题         |  二维K-H问题数据集            |  CAE-LSTM     |   ✔️     |   ✔️   |
+|ehdnn求解抖振流场          |  二维翼型抖振数据集           |      ehdnn    |   ✔️     |   ✔️   |
 
-### 数据机理融合
+### 数据-机理融合驱动
 
-- [PDE-Net求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)
+|          案例              |        数据集               |    模型架构       |  GPU    |  NPU  |
+|:-------------------------:|:--------------------------:|:---------------:|:-------:|:------:|
+|   PDE-NET求解对流扩散方程   | 对流-扩散方程数据集           |    PDE-Net    |   ✔️     |   ✔️   |
 
 ### CFD
 
-- [一维Lax激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
-- [一维Sod激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
-- [二维库埃特流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)
-- [二维黎曼问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)
+|   案例        |     格式      |    GPU    |    NPU |
+|:------------:|:-------------:|:---------:|:-------|
+|sod激波管      |    Rusanov    |       ✔️   |   ×   |
+|lax激波管      |    Rusanov    |      ✔️    |   ×   |
+|二维黎曼问题    |       -       |     ✔️     |   ×  |
+|库埃特流动      |       -       |  ✔️        |   ×   |
 
 ## **安装教程**
 
@@ -85,7 +104,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 由于MindFlow与MindSpore有依赖关系，请根据下表中所指示的对应关系，在[MindSpore下载页面](https://www.mindspore.cn/versions)下载并安装对应的whl包。
 
-| MindFlow |                                   分支                                 |  MindSpore  | Python |
+| MindFlow |                                   分支                 |  MindSpore  | Python |
 |:--------:|:----------------------------------------------------------------------:|:-----------:|:------:|
 |  master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) |        \       | \>=3.7 |
 | 0.1.0rc1 | [r0.2.0](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow) |   \>=2.0.0rc1  | \>=3.7 |
@@ -101,28 +120,20 @@ pip install -r requirements.txt
 | 硬件平台      | 操作系统        | 状态 |
 | :------------ | :-------------- | :--- |
 | Ascend 910    | Ubuntu-x86      | ✔️ |
-|               | Ubuntu-aarch64  | ✔️ |
-|               | EulerOS-aarch64 | ✔️ |
-|               | CentOS-x86      | ✔️ |
-|               | CentOS-aarch64  | ✔️ |
+| Ubuntu-aarch64  | ✔️ |
+| EulerOS-aarch64 | ✔️ |
+| CentOS-x86      | ✔️ |
+| CentOS-aarch64  | ✔️ |
 | GPU CUDA 11.1 | Ubuntu-x86      | ✔️ |
 
 ### pip安装
 
 ```bash
-export MS_VERSION=2.0.0a0
-export MindFlow_VERSION=0.1.0a0
-# gpu and ascend are supported
-export DEVICE_NAME=gpu
-# cuda-10.1 and cuda-11.1 are supported
-export CUDA_VERSION=cuda-11.1
 
-# Python3.7
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp37-cp37m-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
-# Python3.8
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp38-cp38-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
-# Python3.9
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/${MS_VERSION}/MindScience/${DEVICE_NAME}/x86_64/${CUDA_VERSION}/mindflow_${DEVICE_NAME}-${MindFlow_VERSION}-cp39-cp39-linux_x86_64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# GPU version
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.0.0rc1/MindScience/gpu/x86_64/cuda-11.1/mindflow_gpu-0.1.0rc1-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# Ascend version
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.0.0rc1/MindScience/ascend/aarch64/mindflow_ascend-0.1.0rc1-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### 源码安装
