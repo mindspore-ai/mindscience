@@ -253,7 +253,7 @@ class MegaFold(nn.Cell):
         if self.is_training:
             for i in range(self.msa_stack_num):
                 msa_activations, pair_activations = self.msa_stack[i](msa_activations, pair_activations, msa_mask,
-                                                                      msa_mask_norm, mask_2d)
+                                                                      msa_mask_norm, mask_2d, None)
         else:
             self.idx_evoformer_block = self.idx_evoformer_block * 0
             while self.idx_evoformer_block < self.evoformer_num_block_eval:
