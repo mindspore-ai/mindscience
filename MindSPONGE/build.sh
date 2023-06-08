@@ -140,43 +140,17 @@ build_mindsponge()
   fi
   if [[ "X$ENABLE_D" = "Xon" ]]; then
     echo "build ascend backend"
-    export SPONGE_PACKAGE_NAME=mindsponge_ascend
+    export SPONGE_PACKAGE_NAME=mindsponge
     CMAKE_FLAG="-DENABLE_D=ON"
-  fi
-  if [[ "X$ENABLE_CYBERTRON" = "Xon" ]]; then
-    echo "build aichemist"
-    cp -r "${BASEPATH}/src/aichemist/" "${BASEPATH}/build/"
-    mv "${BASEPATH}/build/aichemist/setup.py" "${BASEPATH}/build/"
-    mv "${BASEPATH}/build/aichemist/requirements.txt" "${BASEPATH}/build/"
-    export CYBERTRON_PACKAGE_NAME=aichemist
-    cd ${BASEPATH}/build/
-    ${PYTHON} ./setup.py bdist_wheel
-    cd ..
-    mv ${BASEPATH}/build/dist/aichemist*.whl ${OUTPUT_PATH}
-    rm -rf ${BASEPATH}/build/*
   fi
   if [[ "X$ENABLE_GPU" = "Xon" ]]; then
     echo "build gpu backend"
-    export SPONGE_PACKAGE_NAME=mindsponge_gpu
+    export SPONGE_PACKAGE_NAME=mindsponge
     CMAKE_FLAG="-DENABLE_GPU=ON"
     if [[ "X$ENABLE_MD" = "Xon" ]]; then
       CMAKE_FLAG="${CMAKE_FLAG} -DENABLE_MD=ON"
     fi
   fi
-
-  if [[ "X$ENABLE_CYBERTRON" = "Xon" ]]; then
-    echo "build Cybertron"
-    cp -r "${BASEPATH}/cybertron/" "${BASEPATH}/build/"
-    mv "${BASEPATH}/build/cybertron/setup.py" "${BASEPATH}/build/"
-    mv "${BASEPATH}/build/cybertron/requirements.txt" "${BASEPATH}/build/"
-    export CYBERTRON_PACKAGE_NAME=cybertron
-    cd ${BASEPATH}/build/
-    ${PYTHON} ./setup.py bdist_wheel
-    cd ..
-    mv ${BASEPATH}/build/dist/cybertron*.whl ${OUTPUT_PATH}
-    rm -rf ${BASEPATH}/build/*
-  fi
-
   if [[ "X$PACKAGE" = "Xaichemist" ]]; then
     echo "build aichemist package"
     cp -r "${BASEPATH}/src/aichemist/" "${BASEPATH}/build/aichemist/"
@@ -197,6 +171,20 @@ build_mindsponge()
   mv ${BASEPATH}/build/dist/*whl ${OUTPUT_PATH}
   write_checksum
   echo "---------------- MindSPONGE: build end ----------------"
+
+  if [[ "X$ENABLE_CYBERTRON" = "Xon" ]]; then
+    echo "build Cybertron"
+    cp -r "${BASEPATH}/cybertron/" "${BASEPATH}/build/"
+    mv "${BASEPATH}/build/cybertron/setup.py" "${BASEPATH}/build/"
+    mv "${BASEPATH}/build/cybertron/requirements.txt" "${BASEPATH}/build/"
+    export CYBERTRON_PACKAGE_NAME=cybertron
+    cd ${BASEPATH}/build/
+    ${PYTHON} ./setup.py bdist_wheel
+    cd ..
+    mv ${BASEPATH}/build/dist/cybertron*.whl ${OUTPUT_PATH}
+    rm -rf ${BASEPATH}/build/*
+  fi
+
 }
 
 checkopts "$@"
