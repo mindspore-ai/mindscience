@@ -35,6 +35,7 @@ MindSPONGE还集成了20个自研以及业界主流模型，主要涵盖分子�
         - [MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/fold.py)
         - [MEGA-EvoGen](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/evogen.py)
         - [MEGA-Assessment](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/assessment.py)
+    - [FAAST&RASP](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/FAAST)
     - [Multimer-AlphaFold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/Multimer)
     - [UFold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/UFold)
 - 性质预测
