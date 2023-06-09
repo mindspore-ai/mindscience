@@ -40,6 +40,10 @@ GROVER提出了两个预训练自监督任务，一个是在节点/边层级的�
 
 - 回归任务数据集: FreeSolv | ESOL | Lipo | QM7 | QM8
 
+## 使用限制
+
+当前GROVER模型只提供了预训练模型的checkpoint。如进行推理任务，需先针对推理任务完成fine-tune获取所需checkpoint后再进行推理。
+
 ## 如何使用
 
 GROVER支持使用单个数据进行推理任务，分类和回归任务的选择通过修改config文件来完成。模型输入为csv文件，将SMILES式存放在csv文件中即可。

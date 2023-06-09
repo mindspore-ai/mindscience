@@ -232,7 +232,7 @@ from mindsponge import PipeLine
 
 pipe = PipeLine(name="MEGAAssessment")
 pipe.set_device_id(0)
-pipe.initialize(key="predict_256")
+pipe.initialize(key="initial_training")
 pipe.train({YOUR_DATA_PATH}, num_epochs=1)
 ```
 
