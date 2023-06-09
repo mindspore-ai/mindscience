@@ -115,7 +115,7 @@ class MEGAEvoGen(Model):
             feature["prev_msa_first_row"] = np.zeros((aatype.shape[1], 256)).astype(np.float32)
             feature["prev_pair"] = np.zeros((aatype.shape[1], aatype.shape[1], 128)).astype(np.float32)
             return feature
-        return reconstruct_msa
+        return reconstruct_msa, reconstruct_msa_mask
 
     def loss(self, data):
         pass

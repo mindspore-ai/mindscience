@@ -32,9 +32,11 @@ from .parameters import ForceFieldParameters
 from .forcefield import get_forcefield
 from .data import read_yaml, write_yaml, update_dict
 from .data import get_bonded_types, get_dihedral_types, get_improper_types
+from .data_transform import atom37_to_frames, atom37_to_torsion_angles
 
 
-__all__ = ['ForceFieldParameters', 'get_forcefield']
+__all__ = ['ForceFieldParameters', 'get_forcefield',
+           'atom37_to_frames', 'atom37_to_torsion_angles']
 __all__.extend(element.__all__)
 __all__.extend(hyperparam.__all__)
 __all__.extend(template.__all__)

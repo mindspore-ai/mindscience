@@ -26,6 +26,7 @@ from .deepdr import DeepDR, DeepDRDataSet, deepdr_configuration
 from .deepfri import DeepFri, DeepFriDataSet, deepfri_configuration
 from .esm_if1 import ESM, ESMDataSet, esm_configuration
 from .esm2 import ESM2, ESM2DataSet, esm2_configuration
+from .graphdta import GraphDTA, GraphDTADataSet, graphdta_configuration
 from .grover import Grover, GroverDataSet, grover_configuration
 from .kgnn import KGNN, KGNNDataSet, kgnn_configuration
 from .megaassessment import MEGAAssessment, MEGAAssessmentDataSet, megaassessment_configuration

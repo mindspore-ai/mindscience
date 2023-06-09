@@ -35,6 +35,7 @@ class GraphDTA(Model):
         self.white_list = (nn.Softmax, nn.LayerNorm)
         self.checkpoint_url = \
             "https://download.mindspore.cn/mindscience/mindsponge/GraphDTA/checkpoint/graphdta_model.ckpt"
+        self.checkpoint_path = "./graphdta_model.ckpt"
         self.network = Graphdta(self.config)
 
         if self.config.train:
@@ -47,7 +48,8 @@ class GraphDTA(Model):
         else:
             self.network.set_train(False)
 
-        super().__init__(self.checkpoint_url, network=self.network, name=self.name, white_list=self.white_list)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, network=self.network,
+                         name=self.name, white_list=self.white_list)
 
     @jit
     def backward(self, data):
