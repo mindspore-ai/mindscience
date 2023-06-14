@@ -22,7 +22,7 @@ from ..o3.norm import Norm
 
 class NormActivation(nn.Cell):
     r"""Activation function for the norm of irreps. 
-    Applies a scalar activation to the norm of each irrep and ouputs a (normalized) version of that irrep multiplied by the scalar output of the scalar activation.
+    Applies a scalar activation to the norm of each irrep and outputs a (normalized) version of that irrep multiplied by the scalar output of the scalar activation.
 
     Args:
         irreps_in (Union[str, Irrep, Irreps]): the input irreps.

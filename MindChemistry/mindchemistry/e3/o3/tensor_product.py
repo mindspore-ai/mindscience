@@ -290,7 +290,7 @@ def _init_ncon_weight(mode, weight_mode, ls):
 
 
 def _run_continue(ir1_data, ir2_data, irout_data, ins):
-    """check trival computations"""
+    """check trivial computations"""
     mir_in1 = ir1_data[ins['i_in1']]
     mir_in2 = ir2_data[ins['i_in2']]
     mir_out = irout_data[ins['i_out']]
@@ -335,35 +335,35 @@ class TensorProduct(nn.Cell):
 
         instructions (Union[str, List[Tule[int, int, int, str, bool, (float)]]]): List of tensor product path instructions. Default: 'full'.
             For `str` in {'full', 'connect', 'element', 'linear', 'mearge'}, the instructions are constructed automatically according to the different modes:
-                - 'full': each output irrep for every pair of input irreps — is created and returned independently. The outputs are not mixed with each other. 
+                 - 'full': each output irrep for every pair of input irreps — is created and returned independently. The outputs are not mixed with each other. 
                     Corresponding to the standard tensor product `FullTensorProduct` if `irreps_out` is not specified.
-                - 'connect': each output is a learned weighted sum of compatible paths. This allows the operator to produce outputs with any multiplicity.
+                 - 'connect': each output is a learned weighted sum of compatible paths. This allows the operator to produce outputs with any multiplicity.
                     Corresponding to `FullyConnectedTensorProduct`.
-                - 'element': the irreps are multiplied one-by-one. The inputs will be splitted and that the multiplicities of the outputs match with the multiplicities of the input.
+                 - 'element': the irreps are multiplied one-by-one. The inputs will be split and that the multiplicities of the outputs match with the multiplicities of the input.
                     Corresponding to `ElementwiseTensorProduct`.
-                - 'linear': linear operation equivariant on the first irreps, while the second irreps is set to be '0e'. This can be regarded as the geometric tensors version of teh dense layer.
+                 - 'linear': linear operation equivariant on the first irreps, while the second irreps is set to be '0e'. This can be regarded as the geometric tensors version of teh dense layer.
                     Corresponding to `Linear`.
-                - 'merge': Automatically build 'uvu' mode instructions with trainable parameters. The `irreps_out` here plays the role of output filters.
+                 - 'merge': Automatically build 'uvu' mode instructions with trainable parameters. The `irreps_out` here plays the role of output filters.
             For `List[Tule[int, int, int, str, bool, (float)]]`, the instructions are constructed manually.
                 Each instruction contain a tuple: (i_in1, i_in2, i_out, mode, has_weight, (optional: path_weight)).
                 Each instruction puts ``in1[i_in1]`` :math:`\otimes` ``in2[i_in2]`` into ``out[i_out]``.
-                - `i_in1`, `i_in2`, `i_out`: int, the index of the irrep in irreps for `irreps_in1`, `irreps_in2` and `irreps_out` correspondingly.
-                - `mode`: str in {'uvw', 'uvu', 'uvv', 'uuw', 'uuu', 'uvuv'}, the way of the multiplicities of each path are treated. 'uvw' is the fully mixed mode.
-                - `has_weight`: bool, `True` if this path should have learnable weights, otherwise `False`.
-                - `path_weight`:float, a multiplicative weight to apply to the output of this path. Defaults: 1.0.
+                 - `i_in1`, `i_in2`, `i_out`: int, the index of the irrep in irreps for `irreps_in1`, `irreps_in2` and `irreps_out` correspondingly.
+                 - `mode`: str in {'uvw', 'uvu', 'uvv', 'uuw', 'uuu', 'uvuv'}, the way of the multiplicities of each path are treated. 'uvw' is the fully mixed mode.
+                 - `has_weight`: bool, `True` if this path should have learnable weights, otherwise `False`.
+                 - `path_weight`:float, a multiplicative weight to apply to the output of this path. Defaults: 1.0.
 
         irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations. Default: 'component'. Default: 'component'.
-            - 'norm': :math:` \| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = 1`
+             - 'norm': :math:` \| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = 1`
 
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
-            - 'element': each output is normalized by the total number of elements (independently of their paths).
-            - 'path': each path is normalized by the total number of elements in the path, then each output is normalized by the number of paths.
+             - 'element': each output is normalized by the total number of elements (independently of their paths).
+             - 'path': each path is normalized by the total number of elements in the path, then each output is normalized by the number of paths.
 
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal', 'xavier_uniform'}, the initial method of weights. Default: 'normal'.
         weight_mode (str): {'inner', 'share', 'custom'} determine the weights' mode. Default: 'inner'.
-            - 'inner': weights will initialized in the tensor product internally.
-            - 'share': weights should given manually without batch dimension.
-            - 'custom': weights should given manually with batch dimension.
+             - 'inner': weights will initialized in the tensor product internally.
+             - 'share': weights should given manually without batch dimension.
+             - 'custom': weights should given manually with batch dimension.
 
     Raises:
         ValueError: If `irreps_out` is not legal.
@@ -446,7 +446,8 @@ class TensorProduct(nn.Cell):
             raise ValueError(
                 f"`core_mode` should be one of ['ncon', 'einsum'].")
         elif core_mode == 'einsum' and get_context('device_target') != 'GPU':
-            raise ValueError(f"The `core_mode`: einsum only support GPU, but got {get_context('device_target')}.")
+            raise ValueError(
+                f"The `core_mode`: einsum only support GPU, but got {get_context('device_target')}.")
         self.weight_mode = weight_mode
         self.dtype = dtype
         self.core_mode = core_mode
@@ -517,7 +518,7 @@ class TensorProduct(nn.Cell):
                 l = _prod(ins['path_shape'])
                 w = narrow(weight, -1, weight_ind, l).reshape(((-1,)
                                                                if self.weight_mode == 'custom' else ()) + ins[
-                                                                  'path_shape'])
+                    'path_shape'])
                 weight_ind += l
 
                 if self.core_mode == 'einsum':
@@ -550,7 +551,7 @@ class TensorProduct(nn.Cell):
 
         if not isinstance(instructions, str):
             irreps_out = irreps_in1 * \
-                         irreps_in2 if irreps_out is None else Irreps(irreps_out)
+                irreps_in2 if irreps_out is None else Irreps(irreps_out)
             self._mode = 'custom'
 
         else:
@@ -736,7 +737,7 @@ class TensorProduct(nn.Cell):
                 raise ValueError(
                     f"Custom weight {weight} should have batch dimension if `weight_mode` is `'custom'`.")
         else:
-            raise ValueError(f"Unkown `weight_mode`: {self.weight_mode}.")
+            raise ValueError(f"Unknown `weight_mode`: {self.weight_mode}.")
         return True
 
     def _get_weights(self, weight):

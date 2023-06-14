@@ -18,7 +18,7 @@ visualization functions
 import os
 import psutil
 
-from mindspore import Tensor, dtype
+from mindspore import Tensor
 
 
 def training_bar(epoch, size, current, loss=None):

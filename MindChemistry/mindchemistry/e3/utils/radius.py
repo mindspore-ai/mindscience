@@ -42,7 +42,7 @@ def radius(x, y, r, batch_x=None, batch_y=None, max_num_neighbors=32):
         max_num_neighbors (int): The maximum number of neighbors to return for each element in `y`.
 
     Returns:
-        ndarray, including edges of scource and destination.
+        ndarray, including edges of source and destination.
 
     Raises:
         ValueError: If the last dimension of `x` and `y` do not match.

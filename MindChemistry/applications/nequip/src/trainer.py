@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 import time
-import os
 
 from mindspore import nn
 import mindspore as ms
@@ -73,7 +72,6 @@ def train(dtype=ms.float32, configs=None):
     for epoch in range(optimizer_params['num_epoch']):
         total_train = 0
         T0 = time.time()
-        total_time = 0
         for current, data_dict in enumerate(trainset.create_dict_iterator()):
             _batch_size = trainset.get_batch_size()
             inputs, label = _unpack(data_dict)
@@ -83,7 +81,6 @@ def train(dtype=ms.float32, configs=None):
             optimizer(grads)
             total_train += loss.asnumpy()
             training_bar(epoch, size=trainset.get_dataset_size(), current=current)
-        print(total_time)
 
         loss_train += [total_train / trainset.get_dataset_size()]
 
@@ -115,5 +112,4 @@ def train(dtype=ms.float32, configs=None):
             print(
                 f'\rtrain loss: {loss_train[-1]:<8.8f}, eval loss: {loss_eval[-1]}, time used: {time.time() - T0:.2f}')
         else:
-            print('\n')
             print(f'\rtrain loss: {loss_train[-1]:<8.8f}, time used: {time.time() - T0:.2f}   ')

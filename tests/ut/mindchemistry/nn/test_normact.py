@@ -12,14 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-import pytest
 import numpy as np
 
 from mindspore import Tensor, float32
 from mindspore import ops
 
 from mindchemistry.e3 import NormActivation
-from mindchemistry.e3 import Irreps
 
 
 def test_normact():

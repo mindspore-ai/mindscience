@@ -19,7 +19,7 @@ class FullyConnectedTensorProduct(TensorProduct):
     r"""
     Fully-connected weighted tensor product. All the possible path allowed by :math:`|l_1 - l_2| \leq l_{out} \leq l_1 + l_2` are made.
 
-    Equvalent to `TensorProduct` with `instructions='connect'`. For details, see `mindchemistry.e3.TensorProduct`.
+    Equivalent to `TensorProduct` with `instructions='connect'`. For details, see `mindchemistry.e3.TensorProduct`.
 
     Args:
         irreps_in1 (Union[str, Irrep, Irreps]): Irreps for the first input.
@@ -46,7 +46,7 @@ class FullTensorProduct(TensorProduct):
     r"""
     Full tensor product between two irreps. 
 
-    Equvalent to `TensorProduct` with `instructions='full'`. For details, see `mindchemistry.e3.TensorProduct`.
+    Equivalent to `TensorProduct` with `instructions='full'`. For details, see `mindchemistry.e3.TensorProduct`.
 
     Args:
         irreps_in1 (Union[str, Irrep, Irreps]): Irreps for the first input.
@@ -73,7 +73,7 @@ class ElementwiseTensorProduct(TensorProduct):
     r"""
     Elementwise connected tensor product.
 
-    Equvalent to `TensorProduct` with `instructions='element'`. For details, see `mindchemistry.e3.TensorProduct`.
+    Equivalent to `TensorProduct` with `instructions='element'`. For details, see `mindchemistry.e3.TensorProduct`.
 
     Args:
         irreps_in1 (Union[str, Irrep, Irreps]): Irreps for the first input.
@@ -100,7 +100,7 @@ class Linear(TensorProduct):
     r"""
     Linear operation equivariant.
 
-    Equvalent to `TensorProduct` with `instructions='linear'`. For details, see `mindchemistry.e3.TensorProduct`.
+    Equivalent to `TensorProduct` with `instructions='linear'`. For details, see `mindchemistry.e3.TensorProduct`.
 
     Args:
         irreps_in (Union[str, Irrep, Irreps]): Irreps for the input.
@@ -126,7 +126,7 @@ class TensorSquare(TensorProduct):
     r"""
     Compute the square tensor product of a tensor.
 
-    Equvalent to `TensorProduct` with `irreps_in2=None and instructions='full' or 'connect'`. For details, see `mindchemistry.e3.TensorProduct`.
+    Equivalent to `TensorProduct` with `irreps_in2=None and instructions='full' or 'connect'`. For details, see `mindchemistry.e3.TensorProduct`.
 
     If `irreps_out` is given, this operation is fully connected.
     If `irreps_out` is not given, the operation has no parameter and is like full tensor product.

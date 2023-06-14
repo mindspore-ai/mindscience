@@ -15,7 +15,6 @@
 # """
 # dataset
 # """
-import os
 import numpy as np
 import mindspore as ms
 from mindchemistry.e3 import radius_graph_full
@@ -56,7 +55,7 @@ class RMD17:
         if get_force:
             self._label = np.concatenate((self._label, self._forces), axis=-1)
 
-    def statistics(self, stride: int = 1, end=None, ) -> list[tuple]:
+    def statistics(self, stride: int = 1, end=None):
         if end is not None:
             _indices = np.arange(end)
             selector = ms.Tensor(_indices)[::stride]
@@ -113,7 +112,7 @@ def generate_dataset(raw_data, batch_size=1, embed=False):
             return node_feature, pos.reshape((-1, pos.shape[-1])), label.reshape((-1, label.shape[-1]))
         else:
             if label.shape[-1] <= 1:
-                return x.flatten(), pos.reshape((-1, pos.shape[-1])), label, 0.
+                return x.flatten(), pos.reshape((-1, pos.shape[-1])), label, np.array(0., dtype=label.dtype)
             else:
                 _energy = label[:, :1]
                 _force = label[:, 1:].reshape(-1, 3)
@@ -136,7 +135,7 @@ def get_num_type(rmd_data):
     return num_type
 
 
-def create_training_dataset(config, dtype, pred_force, shuffle=True):
+def create_training_dataset(config, dtype, pred_force):
     with np.load(config['path']) as rmd_data:
         num_type = get_num_type(rmd_data)
         trainset, train_edge_index, train_batch = generate_dataset(
