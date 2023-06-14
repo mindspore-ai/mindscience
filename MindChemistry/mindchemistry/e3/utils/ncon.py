@@ -254,13 +254,6 @@ def _process_commands(con_list):
     return conmmands, operators
 
 
-def _prod(x):
-    out = 1
-    for i in x:
-        out *= i
-    return out
-
-
 class Ncon(nn.Cell):
     r"""
     Multiple-tensor contraction operator which has similar function to Einsum.

@@ -150,17 +150,17 @@ def _merge_init(irreps_in1, irreps_in2, irreps_out_filter):
     irreps_out_filter = Irreps(
         irreps_out_filter) if irreps_out_filter is not None else irreps_in1 * irreps_in2
 
-    irreps_out = []
+    irreps_out_list = []
     instr = []
     for i_1, (mul, ir_1) in enumerate(irreps_in1.data):
         for i_2, (_, ir_2) in enumerate(irreps_in2.data):
             for ir in ir_1 * ir_2:
                 if ir in irreps_out_filter:
-                    k = len(irreps_out)
-                    irreps_out.append((mul, ir))
+                    k = len(irreps_out_list)
+                    irreps_out_list.append((mul, ir))
                     instr.append((i_1, i_2, k, 'uvu', True))
 
-    irreps_out = Irreps(irreps_out)
+    irreps_out = Irreps(irreps_out_list)
     irreps_out, p, _ = irreps_out.sort()
 
     instr = [(i_1, i_2, p[i_out], mode, train)
