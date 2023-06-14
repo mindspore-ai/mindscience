@@ -1,0 +1,41 @@
+train_params:
+  visualize: True
+  save_log: True
+eval_params:
+  visualize: True
+  save_log: True
+wae_params:
+  num_epoch: 20
+  batch_size: 20
+  lr: 0.0005
+  weight_decay: 0.0
+  sigma: 8.0
+  MMD_lambda: 0.0001
+  model_name: 'WAE'
+  channels: [6, 80, 64, 48, 2]
+  activation: [True, True, True, False]
+  layer_norm: [True, True, True, False]
+  layer_norm_epsilon: 1e-5
+cls_params:
+  num_epoch: 20
+  batch_size: 16
+  lr: 0.0001
+  num_fold: 5
+  weight_decay: 0.
+  model_name: 'Classifier'
+  channels: [2, 8, 1]
+  dropout: [True, False]
+  activation: [False, True]
+ensem_params:
+  model_name: 'Ensemble'
+  num_feature: [17, 20]
+  num_output: 1
+  weight_decay: 0.0001
+  num_epoch: 5
+  num_group: 5
+  seed_start: 40
+  seed_end: 43
+  NN_stage1_dir: '/Invar_inference_NN_stage1.xlsx'
+  Tree_stage1_dir: '/Invar_inference_GBDT_stage1.xlsx'
+  NN_stage2_dir: '/Invar_inference_NN_stage2.xlsx'
+  Tree_stage2_dir: '/Invar_inference_GBDT_stage2.xlsx'
