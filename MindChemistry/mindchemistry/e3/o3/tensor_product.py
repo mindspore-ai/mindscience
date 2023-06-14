@@ -157,7 +157,7 @@ def _merge_init(irreps_in1, irreps_in2, irreps_out_filter):
             for ir in ir_1 * ir_2:
                 if ir in irreps_out_filter:
                     k = len(irreps_out_list)
-                    irreps_out_list.append((mul, ir))
+                    irreps_out.append((mul, ir))
                     instr.append((i_1, i_2, k, 'uvu', True))
 
     irreps_out = Irreps(irreps_out_list)
