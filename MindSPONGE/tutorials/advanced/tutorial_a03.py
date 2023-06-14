@@ -31,19 +31,19 @@ if __name__ == "__main__":
     import sys
     sys.path.append('..')
 
-    from mindsponge import Sponge
-    from mindsponge import ForceField
-    from mindsponge import set_global_units
-    from mindsponge import Protein
-    from mindsponge import WithEnergyCell
-    from mindsponge import UpdaterMD
-    from mindsponge.optimizer import SteepestDescent
-    from mindsponge.control import VelocityVerlet
-    from mindsponge.callback import WriteH5MD, RunInfo
-    from mindsponge.control import Langevin
-    from mindsponge.sampling import ITS
-    from mindsponge.function import VelocityGenerator
-    from mindsponge.colvar import Torsion
+    from sponge import Sponge
+    from sponge import ForceField
+    from sponge import set_global_units
+    from sponge import Protein
+    from sponge import WithEnergyCell
+    from sponge import UpdaterMD
+    from sponge.optimizer import SteepestDescent
+    from sponge.control import VelocityVerlet
+    from sponge.callback import WriteH5MD, RunInfo
+    from sponge.control import Langevin
+    from sponge.sampling import ITS
+    from sponge.function import VelocityGenerator
+    from sponge.colvar import Torsion
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     sim = WithEnergyCell(system, potential, wrapper=its)
 
     vgen = VelocityGenerator(300)
-    velocity = vgen(system.coordinate.shape, system.atom_mass)
+    velocity = vgen(system.shape, system.atom_mass)
     opt = UpdaterMD(
         system,
         integrator=VelocityVerlet(system),

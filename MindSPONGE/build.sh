@@ -192,6 +192,11 @@ build_mindsponge()
   cd "${BASEPATH}/build/"
   echo ${CMAKE_FLAG}
   echo ${THREAD_NUM}
+  mk_new_dir "${BASEPATH}/build/cmake"
+  cd "${BASEPATH}/build/cmake"
+  cmake -G "Unix Makefiles" ${CMAKE_FLAG} ../..
+  make -j ${THREAD_NUM}
+  cd ..
   ${PYTHON} ./setup.py bdist_wheel
   cd ..
   mv ${BASEPATH}/build/dist/*whl ${OUTPUT_PATH}

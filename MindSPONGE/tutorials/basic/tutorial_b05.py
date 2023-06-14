@@ -31,17 +31,17 @@ if __name__ == "__main__":
     import sys
     sys.path.append('..')
 
-    from mindsponge import Sponge
-    from mindsponge import Molecule
-    from mindsponge import ForceField
-    from mindsponge import UpdaterMD
-    from mindsponge import WithEnergyCell
-    from mindsponge.control import VelocityVerlet
-    from mindsponge.control import Langevin, BerendsenBarostat
-    from mindsponge.function import VelocityGenerator
-    from mindsponge.callback import WriteH5MD, RunInfo
-    from mindsponge.optimizer import SteepestDescent
-    from mindsponge import set_global_units
+    from sponge import Sponge
+    from sponge import Molecule
+    from sponge import ForceField
+    from sponge import UpdaterMD
+    from sponge import WithEnergyCell
+    from sponge.control import VelocityVerlet
+    from sponge.control import Langevin, BerendsenBarostat
+    from sponge.function import VelocityGenerator
+    from sponge.callback import WriteH5MD, RunInfo
+    from sponge.optimizer import SteepestDescent
+    from sponge import set_global_units
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     temp = 300
     vgen = VelocityGenerator(temp)
-    velocity = vgen(system.coordinate.shape, system.atom_mass)
+    velocity = vgen(system.shape, system.atom_mass)
 
     updater = UpdaterMD(
         system,
@@ -79,4 +79,4 @@ if __name__ == "__main__":
 
     cb_h5md = WriteH5MD(system, 'tutorial_b05.h5md', save_freq=50)
 
-    md.run(10000, callbacks=[run_info, cb_h5md])
+    md.run(2000, callbacks=[run_info, cb_h5md])

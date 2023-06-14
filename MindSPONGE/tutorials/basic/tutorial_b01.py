@@ -32,15 +32,15 @@ if __name__ == "__main__":
     import sys
     sys.path.append('..')
 
-    from mindsponge import Sponge
-    from mindsponge import Molecule
-    from mindsponge import ForceFieldBase
-    from mindsponge import UpdaterMD
+    from sponge import Sponge
+    from sponge import Molecule
+    from sponge import ForceFieldBase
+    from sponge import UpdaterMD
 
-    from mindsponge.potential import BondEnergy, AngleEnergy
-    from mindsponge.callback import WriteH5MD, RunInfo
-    from mindsponge.function import VelocityGenerator
-    from mindsponge.control import LeapFrog, BerendsenThermostat
+    from sponge.potential import BondEnergy, AngleEnergy
+    from sponge.callback import WriteH5MD, RunInfo
+    from sponge.function import VelocityGenerator
+    from sponge.control import LeapFrog, BerendsenThermostat
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     potential = ForceFieldBase(energy=[bond_energy, angle_energy])
 
     vgen = VelocityGenerator(300)
-    velocity = vgen(system.coordinate.shape, system.atom_mass)
+    velocity = vgen(system.shape, system.atom_mass)
 
     updater = UpdaterMD(
         system,

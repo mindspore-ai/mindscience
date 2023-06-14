@@ -32,14 +32,14 @@ if __name__ == "__main__":
     import sys
     sys.path.append('..')
 
-    from mindsponge import Sponge
-    from mindsponge import Molecule
-    from mindsponge import ForceField
-    from mindsponge import UpdaterMD
-    from mindsponge.control import VelocityVerlet, Langevin
-    from mindsponge.callback import WriteH5MD, RunInfo
+    from sponge import Sponge
+    from sponge import Molecule
+    from sponge import ForceField
+    from sponge import UpdaterMD
+    from sponge.control import VelocityVerlet, Langevin
+    from sponge.callback import WriteH5MD, RunInfo
 
-    context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
+    context.set_context(mode=context.GRAPH_MODE, device_target="GPU", enable_graph_kernel=False)
 
     system = Molecule(template='water.tip3p.yaml')
 

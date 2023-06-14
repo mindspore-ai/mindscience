@@ -1,0 +1,11 @@
+template:
+  WAT:
+    atom_name: [O, H1, H2]
+    atom_type: [OW, HW, HW]
+    atom_mass: [16.00, 1.008, 1.008]
+    atomic_number: [8, 1, 1]
+    bond:
+    - [0, 1]
+    - [0, 2]
+    head_atom: null
+    tail_atom: null
