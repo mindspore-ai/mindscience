@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""initialization for mindmaterial APIs"""
+"""initialization for mindchemistry APIs"""
 import time
 from .cell import *
 from .utils import *
@@ -27,9 +27,9 @@ __all__.extend(e3.__all__)
 
 def _mindspore_version_check():
     """
-       Do the MindSpore version check for MindMaterial. If the
+       Do the MindSpore version check for MindChemistry. If the
        MindSpore can not be imported, it will raise ImportError. If its
-       version is not compatibale with current MindMaterial verision,
+       version is not compatibale with current MindChemistry verision,
        it will print a warning.
 
        Raise:
@@ -41,14 +41,14 @@ def _mindspore_version_check():
         from mindspore import log as logger
     except ImportError:
         raise ImportError("Can not find MindSpore in current environment. Please install "
-                          "MindSpore before using MindMaterial, by following "
+                          "MindSpore before using MindChemistry, by following "
                           "the instruction at https://www.mindspore.cn/install")
 
     ms_version = ms.__version__[:5]
     required_mindspore_verision = '1.8.1'
 
     if ms_version < required_mindspore_verision:
-        logger.warning("Current version of MindSpore is not compatible with MindMaterial. "
+        logger.warning("Current version of MindSpore is not compatible with MindChemistry. "
                        "Some functions might not work or even raise error. Please install MindSpore "
                        "version >= {} For more details about dependency setting, please check "
                        "the instructions at MindSpore official website https://www.mindspore.cn/install "

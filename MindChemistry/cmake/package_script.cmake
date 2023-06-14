@@ -52,7 +52,7 @@ endif()
 
 # get the current timestamp to be embedded in the built info
 string(TIMESTAMP BUILD_DATE_TIME "whl generated on:%Y-%m-%d %H:%M:%S")
-file(WRITE ${CPACK_PACKAGE_DIRECTORY}/../package/mindmaterial/build_info.txt "${BUILD_DATE_TIME}\n${GIT_COMMIT_ID}")
+file(WRITE ${CPACK_PACKAGE_DIRECTORY}/../package/mindchemistry/build_info.txt "${BUILD_DATE_TIME}\n${GIT_COMMIT_ID}")
 
 # above block embeds a short msg containing commit id and date time in the whl package
 execute_process(
