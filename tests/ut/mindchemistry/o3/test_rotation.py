@@ -14,7 +14,6 @@
 # ============================================================================
 import math
 
-import pytest
 import numpy as np
 
 from mindspore import ops

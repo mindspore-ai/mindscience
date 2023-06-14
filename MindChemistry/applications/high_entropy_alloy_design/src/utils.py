@@ -76,11 +76,11 @@ def sampler(gm, classifier, n_samples, sigma=0.1):
         scores = classifier(ms.Tensor(z_combined, ms.float32)).asnumpy().squeeze()
         z_score, z_next_score = np.log(scores[0]), np.log(scores[1])
         z_prob, z_next_prob = (gm.score(z) + z_score), (gm.score(z_next) + z_next_score)
-        acceptence = min(0, (z_next_prob - z_prob))
+        acceptance = min(0, (z_next_prob - z_prob))
         if i == 0:
             sample_z.append(z.squeeze())
 
-        if np.log(uniform_rand) < acceptence:
+        if np.log(uniform_rand) < acceptance:
             sample_z.append(z_next.squeeze())
             z = z_next
         else:

@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-import pytest
 import numpy as np
 
-from mindspore import Tensor, ops, float32
+from mindspore import Tensor, ops
 import torch
 
 from mindchemistry.e3 import TensorProduct, Irreps

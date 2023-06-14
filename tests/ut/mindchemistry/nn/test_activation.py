@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-import pytest
 import numpy as np
 
 from mindspore import Tensor, ops
 import torch
-from torch.nn import functional as F
 
 from mindchemistry.e3 import Activation, Irreps
 from e3nn import nn

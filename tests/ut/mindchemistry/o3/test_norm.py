@@ -12,21 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-import pytest
 import numpy as np
 
-from mindspore import Tensor, ops
+from mindspore import Tensor, float32
+from mindspore import ops
 
-from mindchemistry.e3 import soft_one_hot_linspace
+from mindchemistry.e3 import Norm
 
 
-@pytest.mark.parametrize('basis', ['gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'])
-@pytest.mark.parametrize('cutoff', [True, False])
-def test_soft_one_hot_linspace(basis, cutoff):
-    v = Tensor(np.random.rand(2, 3).astype(np.float32))
-    out = soft_one_hot_linspace(v, 1., 2., 4, basis, cutoff)
-    assert out.shape == v.shape + (4,)
+def test_norm():
+    n = Norm('3x1o')
+    v = Tensor(np.linspace(1., 2., n.irreps_in.dim), dtype=float32)
+    grad = ops.grad(n, grad_position=(0))
+
+    assert np.allclose(n(v).asnumpy(), np.array([[1.9565594, 2.6040833, 3.252403]]), rtol=1e-4, atol=1e-6)
+    assert np.allclose(grad(v).asnumpy(), np.array(
+        [0.51110125, 0.57498896, 0.63887656, 0.52801687, 0.57601845, 0.6240199, 0.53806365, 0.57649684, 0.61492985]),
+                       rtol=1e-3, atol=1e-5)
 
 
 if __name__ == '__main__':
-    test_soft_one_hot_linspace('gaussian', False)
+    test_norm()

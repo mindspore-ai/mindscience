@@ -18,7 +18,7 @@ from mindspore.ops import operations as P
 
 
 @constexpr
-def _get_batch_size(x1_shape, x2_shape, prim_name=None):
+def _get_batch_size(x1_shape, x2_shape):
     """
     Get batch sizes from two inputs
     """
@@ -26,7 +26,7 @@ def _get_batch_size(x1_shape, x2_shape, prim_name=None):
 
 
 @constexpr
-def _get_batch_size(x1_shape, x2_shape, prim_name=None):
+def _get_batch_size(x1_shape, x2_shape):
     """
     Get batch sizes from two inputs
     """
@@ -69,7 +69,7 @@ def _check_batch_size(x1_batch_size, x2_batch_size, prim_name=None):
 
 
 @constexpr
-def _check_axes_for_batch_dot(x1_shape, x2_shape, axes, prim_name=None):
+def _check_axes_for_batch_dot(x1_shape, x2_shape, axes):
     """
     Check whether axes are valid and cast axes from tuple to list
     """
@@ -114,8 +114,6 @@ def batch_dot(x1, x2, axes=None):
     x2_shape = F.shape(x2)
     x1_dim_num = len(x1_shape)
     x2_dim_num = len(x2_shape)
-    x1_type = F.dtype(x1)
-    x2_type = F.dtype(x2)
 
     x1_batch_size, x2_batch_size = _get_batch_size(x1_shape, x2_shape, 'batch_dot')
 

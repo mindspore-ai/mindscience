@@ -12,25 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-import pytest
-import numpy as np
-
 from mindspore import Tensor, float32
-from mindspore import ops
 
-from mindchemistry.e3 import Norm
+from mindchemistry.e3 import BatchNorm
 
 
-def test_norm():
-    n = Norm('3x1o')
-    v = Tensor(np.linspace(1., 2., n.irreps_in.dim), dtype=float32)
-    grad = ops.grad(n, grad_position=(0))
-
-    assert np.allclose(n(v).asnumpy(), np.array([[1.9565594, 2.6040833, 3.252403]]), rtol=1e-4, atol=1e-6)
-    assert np.allclose(grad(v).asnumpy(), np.array(
-        [0.51110125, 0.57498896, 0.63887656, 0.52801687, 0.57601845, 0.6240199, 0.53806365, 0.57649684, 0.61492985]),
-                       rtol=1e-3, atol=1e-5)
+def test_batchnorm():
+    irreps = "1x0e+2x1o"
+    bn = BatchNorm(irreps, affine=False)
+    v = Tensor([[0., 1., 0., 0., 0., 1., 0.]], dtype=float32)
+    out = bn(v)
 
 
 if __name__ == '__main__':
-    test_norm()
+    test_batchnorm()
