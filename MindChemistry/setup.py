@@ -36,8 +36,7 @@ version = read_version()
 required_package = [
     'numpy >= 1.17.0',
     'scipy >= 1.7.0',
-    'matplotlib >= 3.1.3',
-    # 'mindspore >= 1.8.1'
+    'matplotlib >= 3.1.3'
 ]
 
 package_data = {

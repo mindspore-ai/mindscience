@@ -97,7 +97,7 @@ def train_cls(model, data, params):
             test_data = ds.NumpySlicesDataset(data={'x': x_test, 'y': y_test}, shuffle=False)
             test_data = test_data.batch(batch_size=len(y_test))
             test_iterator = test_data.create_dict_iterator()
-            # model.set_train(False)
+
             for i_, data_ in enumerate(test_iterator):
                 x = data_['x']
                 y = data_['y']
