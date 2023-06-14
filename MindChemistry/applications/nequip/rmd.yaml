@@ -1,0 +1,24 @@
+
+pred_force: False
+
+model:
+  irreps_embedding_out: 16x0e
+  irreps_conv_out: 64x0o+64x0e+64x1o+64x1e+64x2o+64x2e
+  chemical_embedding_irreps_out: 64x0e
+  num_layers: 5
+  num_type: 4
+  r_max: 4
+  hidden_mul: 64
+
+optimizer:
+  num_epoch: 1000
+  learning_rate: 0.01                                                                # learning rate
+  use_amsgrad: True
+
+data:
+  name: "nequip"
+  path: "./applications/nequip/dataset/MD17/rmd17_uracil.npz"
+  n_train: 950                                                                       # number of training data
+  n_val: 50                                                                          # number of validation data
+  batch_size: 5                                                                      # batch size,
+

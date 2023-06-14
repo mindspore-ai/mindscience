@@ -1,0 +1,4 @@
+numpy >= 1.17.0
+scipy >= 1.7.0
+matplotlib >= 3.1.3
+easydict >= 1.9
