@@ -203,7 +203,8 @@ def get_linear_block(in_channels,
                      has_bias=has_bias,
                      activation=None)
     dropout = _get_dropout(dropout_rate) if (has_dropout is True) else []
-    layernorm = _get_layernorm(out_channels, layernorm_epsilon) if (has_layernorm is True) else []
+    layernorm = _get_layernorm(out_channels, layernorm_epsilon) if (
+        has_layernorm is True) else []
     act = _get_activation(act) if (has_activation is True) else []
     block_list = [dense, dropout, layernorm, act]
     while [] in block_list:
@@ -286,14 +287,22 @@ class FCNet(nn.Cell):
         for i in range(len(self.channels) - 1):
             cell_list += get_linear_block(self.channels[i],
                                           self.channels[i + 1],
-                                          weight_init=_get_layer_arg(self.weight_init, i),
-                                          has_bias=_get_layer_arg(self.has_bias, i),
-                                          bias_init=_get_layer_arg(self.bias_init, i),
-                                          has_dropout=_get_layer_arg(self.has_dropout, i),
-                                          dropout_rate=_get_layer_arg(self.dropout_rate, i),
-                                          has_layernorm=_get_layer_arg(self.has_layernorm, i),
-                                          layernorm_epsilon=_get_layer_arg(self.layernorm_epsilon, i),
-                                          has_activation=_get_layer_arg(self.has_activation, i),
+                                          weight_init=_get_layer_arg(
+                                              self.weight_init, i),
+                                          has_bias=_get_layer_arg(
+                                              self.has_bias, i),
+                                          bias_init=_get_layer_arg(
+                                              self.bias_init, i),
+                                          has_dropout=_get_layer_arg(
+                                              self.has_dropout, i),
+                                          dropout_rate=_get_layer_arg(
+                                              self.dropout_rate, i),
+                                          has_layernorm=_get_layer_arg(
+                                              self.has_layernorm, i),
+                                          layernorm_epsilon=_get_layer_arg(
+                                              self.layernorm_epsilon, i),
+                                          has_activation=_get_layer_arg(
+                                              self.has_activation, i),
                                           act=_get_layer_arg(self.activation, i))
         return cell_list
 
@@ -366,7 +375,8 @@ class MLPNet(nn.Cell):
                  has_activation=True,
                  act='relu'):
         super(MLPNet, self).__init__()
-        self.channels = (in_channels,) + (layers - 2) * (neurons,) + (out_channels,)
+        self.channels = (in_channels,) + (layers - 2) * \
+            (neurons,) + (out_channels,)
         self.network = FCNet(channels=self.channels,
                              weight_init=weight_init,
                              has_bias=has_bias,
@@ -462,33 +472,51 @@ class AutoEncoder(nn.Cell):
         for i in range(len(self.channels) - 1):
             encoder_cell_list += get_linear_block(self.channels[i],
                                                   self.channels[i + 1],
-                                                  weight_init=_get_layer_arg(self.weight_init, i),
-                                                  has_bias=_get_layer_arg(self.has_bias, i),
-                                                  bias_init=_get_layer_arg(self.bias_init, i),
-                                                  has_dropout=_get_layer_arg(self.has_dropout, i),
-                                                  dropout_rate=_get_layer_arg(self.dropout_rate, i),
-                                                  has_layernorm=_get_layer_arg(self.has_layernorm, i),
-                                                  layernorm_epsilon=_get_layer_arg(self.layernorm_epsilon, i),
-                                                  has_activation=_get_layer_arg(self.has_activation, i),
+                                                  weight_init=_get_layer_arg(
+                                                      self.weight_init, i),
+                                                  has_bias=_get_layer_arg(
+                                                      self.has_bias, i),
+                                                  bias_init=_get_layer_arg(
+                                                      self.bias_init, i),
+                                                  has_dropout=_get_layer_arg(
+                                                      self.has_dropout, i),
+                                                  dropout_rate=_get_layer_arg(
+                                                      self.dropout_rate, i),
+                                                  has_layernorm=_get_layer_arg(
+                                                      self.has_layernorm, i),
+                                                  layernorm_epsilon=_get_layer_arg(
+                                                      self.layernorm_epsilon, i),
+                                                  has_activation=_get_layer_arg(
+                                                      self.has_activation, i),
                                                   act=_get_layer_arg(self.activation, i))
         return encoder_cell_list
 
     def _create_decoder(self):
         decoder_channels = self.channels[::-1]
-        decoder_weight_init = self.weight_init[::-1] if isinstance(self.weight_init, list) else self.weight_init
-        decoder_bias_init = self.bias_init[::-1] if isinstance(self.bias_init, list) else self.bias_init
+        decoder_weight_init = self.weight_init[::-1] if isinstance(
+            self.weight_init, list) else self.weight_init
+        decoder_bias_init = self.bias_init[::-1] if isinstance(
+            self.bias_init, list) else self.bias_init
         decoder_cell_list = []
         for i in range(len(decoder_channels) - 1):
             decoder_cell_list += get_linear_block(decoder_channels[i],
                                                   decoder_channels[i + 1],
-                                                  weight_init=_get_layer_arg(decoder_weight_init, i),
-                                                  has_bias=_get_layer_arg(self.has_bias, i),
-                                                  bias_init=_get_layer_arg(decoder_bias_init, i),
-                                                  has_dropout=_get_layer_arg(self.has_dropout, i),
-                                                  dropout_rate=_get_layer_arg(self.dropout_rate, i),
-                                                  has_layernorm=_get_layer_arg(self.has_layernorm, i),
-                                                  layernorm_epsilon=_get_layer_arg(self.layernorm_epsilon, i),
-                                                  has_activation=_get_layer_arg(self.has_activation, i),
+                                                  weight_init=_get_layer_arg(
+                                                      decoder_weight_init, i),
+                                                  has_bias=_get_layer_arg(
+                                                      self.has_bias, i),
+                                                  bias_init=_get_layer_arg(
+                                                      decoder_bias_init, i),
+                                                  has_dropout=_get_layer_arg(
+                                                      self.has_dropout, i),
+                                                  dropout_rate=_get_layer_arg(
+                                                      self.dropout_rate, i),
+                                                  has_layernorm=_get_layer_arg(
+                                                      self.has_layernorm, i),
+                                                  layernorm_epsilon=_get_layer_arg(
+                                                      self.layernorm_epsilon, i),
+                                                  has_activation=_get_layer_arg(
+                                                      self.has_activation, i),
                                                   act=_get_layer_arg(self.activation, i))
         if self.output_activation is not None:
             decoder_cell_list.append(_get_activation(self.output_activation))

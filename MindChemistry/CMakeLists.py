@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14.1)
-project(Mindmaterial)
+project(MindChemistry)
 
 # set build options for project target
 include(${CMAKE_SOURCE_DIR}/cmake/options.cmake)

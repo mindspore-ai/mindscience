@@ -64,7 +64,7 @@ setup(
         'Issue Tracker': 'https://gitee.com/mindspore/mindscience/issues',
     },
     description=
-    "An AI framework for material simulation",
+    "An AI framework for chemistry simulation",
     license='Apache 2.0',
     packages=find_packages(),
     package_data=package_data,

@@ -45,7 +45,8 @@ class BesselBasis(nn.Cell):
         self.r_max = r_max
         self.num_basis = num_basis
         self.prefactor = 2.0 / self.r_max
-        bessel_weights = Tensor(np.linspace(1., num_basis, num_basis) * math.pi, dtype=dtype)
+        bessel_weights = Tensor(np.linspace(
+            1., num_basis, num_basis) * math.pi, dtype=dtype)
         self.bessel_weights = Parameter(bessel_weights)
 
     def construct(self, x):
@@ -66,8 +67,10 @@ class RadialEdgeEmbedding(nn.Cell):
     def construct(self, edge_length):
         basis_edge_length = self.basis(edge_length)
         cutoff_edge_length = self.cutoff(edge_length)
-        edge_length_embedded = self.basis(edge_length) * self.cutoff(edge_length).unsqueeze(-1)
+        edge_length_embedded = self.basis(
+            edge_length) * self.cutoff(edge_length).unsqueeze(-1)
         return edge_length_embedded
 
     def __repr__(self):
-        return f'RadialEdgeEmbedding [num_basis: {self.num_basis}, cutoff_p: {self.cutoff_p}] ( -> {self.irreps_out} | {self.basis.num_basis} weights)'
+        return f'RadialEdgeEmbedding [num_basis: {self.num_basis }, cutoff_p: ' \
+            + f'{self.cutoff_p}] ( -> {self.irreps_out} | {self.basis.num_basis} weights)'

@@ -106,9 +106,9 @@ checkopts()
 }
 
 #Create building path
-build_mindmaterial()
+build_mindchemistry()
 {
-  echo "start build mindmaterial project."
+  echo "start build mindchemistry project."
 
   if [[ "X$ENABLE_DAILY" = "Xon" ]]; then
     names=$(cat ./version.txt)
@@ -121,8 +121,8 @@ build_mindmaterial()
     done
   fi
   
-  mkdir -pv "${BUILD_PATH}/mindmaterial"
-  cd "${BUILD_PATH}/mindmaterial"
+  mkdir -pv "${BUILD_PATH}/mindchemistry"
+  cd "${BUILD_PATH}/mindchemistry"
 
   CMAKE_ARGS="-DDEBUG_MODE=$DEBUG_MODE -DBUILD_PATH=$BUILD_PATH"
 
@@ -151,16 +151,16 @@ build_mindmaterial()
 
 write_checksum() {
     cd "$OUTPUT_PATH" || exit
-    PACKAGE_LIST=$(ls mindmaterial*.whl) || exit
+    PACKAGE_LIST=$(ls mindchemistry*.whl) || exit
     for PACKAGE_NAME in $PACKAGE_LIST; do
         echo $PACKAGE_NAME
         sha256sum -b "$PACKAGE_NAME" >"$PACKAGE_NAME.sha256"
     done
 }
 
-echo "---------------- MindMaterial: build start ----------------"
+echo "---------------- MindChemistry: build start ----------------"
 checkopts "$@"
-build_mindmaterial
+build_mindchemistry
 mv ${BASEPATH}/build/package/*whl ${OUTPUT_PATH}
 write_checksum
-echo "---------------- MindMaterial: build end   ----------------"
+echo "---------------- MindChemistry: build end   ----------------"
