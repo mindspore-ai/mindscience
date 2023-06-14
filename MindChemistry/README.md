@@ -7,23 +7,22 @@
 
 # **MindSpore Chemistry**
 
-- [Introduction](#Introduction)
-- [Latest News](#Latest-News)
-- [Features](#Features)
-    - [Applications](#Applications)
-      - [Material Generation](#Material-Generation)
-      - [Property Prediction](#Property-Prediction)
-    - [Modules](#Modules)
-      - [Equivariant Computing](#Equivariant-Computing)
-- [Installation](#Installation)
-    - [Version Dependency](#Version-Dependency)
-    - [Dependency](#Dependency)
-    - [Hardware](#Hardware)
-    - [source code install](#source-code-install)
-- [Community](#Community)
-- [Contribution Guide](#Contribution-Guide)
-- [License](#License)
-- [References](#References)
+- [**MindSpore Chemistry**](#mindspore-chemistry)
+  - [**Introduction**](#introduction)
+  - [**Latest News**](#latest-news)
+  - [**Features**](#features)
+    - [**Applications**](#applications)
+    - [**Modules**](#modules)
+  - [**Installation**](#installation)
+    - [**Version Dependency**](#version-dependency)
+    - [**Dependency**](#dependency)
+    - [**Hardware**](#hardware)
+    - [**source code install**](#source-code-install)
+  - [**Community**](#community)
+    - [**Core Contributor**](#core-contributor)
+  - [**Contribution Guide**](#contribution-guide)
+  - [**License**](#license)
+  - [**References**](#references)
 
 ## **Introduction**
 
@@ -32,11 +31,11 @@ The synergy between AI and chemistry offers unprecedented opportunities to overc
 
 **MindChemsitry** is a toolkit built on MindSpore endeavoring to integrate AI with conventional chemistry research. It supports multi-scale tasks including molecular generation, property prediction and synthesis optimization on multiple chemistry systems such as organic, inorganic and composites chemistry systems. MindChemistry dedicates to enabling the joint research of AI and chemistry with high efficiency, and seek to facilitate an innovative paradigm of joint research between AI and chemistry, providing experts with novel perspectives and efficient tools.
 
-<div align=center><img src="./docs/mindchemistry_arch.png" alt="MindFlow Architecture"/></div>
+<div align=center><img src="./docs/mindchemistry_arch.png" alt="MindFlow Architecture" width="75%"/></div>
 
 
 
-## **Latest News** 📰
+## **Latest News**
 
 - 🔥`2023.06.16` MindChemistry 0.1.0-alpha is released.
 
@@ -50,19 +49,19 @@ The synergy between AI and chemistry offers unprecedented opportunities to overc
   - **Scenario**：Inorganic chemistry
   - **Dataset**：High-entropy alloy dataset. The high-entropy alloy dataset includes the chemical composition of known high-entropy alloys and thermodynamic properties of the alloys. It provides chemical composition information such as the metal element types and corresponding percentages as well as thermodynamic properties such as magnetostrictive effects and Curie temperatures.
   - **Task**：High-entropy alloy composition design. We integrate Machine learning-enabled high-entropy alloy discovery[1] approach for designing novel high-entropy alloys with low thermal expansion coefficients(TEC) in active learning fashion. In the active learning circle, candidates of high-enropy alloys are firstly generated, then candidates with low TEC are identified by property predicting models and finally experimental validation are required for determine the composition of the novel high-entropy alloys.
-<div align=center><img src="./docs/high-alloy.png" alt="high-alloy"/></div>
+<div align=center><img src="./docs/high-alloy.png" alt="high-alloy" width="75%"/></div>
 
 - **Property Prediction**：
   - **Scenario**：Organic chemistry
   - **Dataset**: <u>R</u>evised <u>M</u>olecular <u>D</u>ynamics <u>17</u>(rMD17). rMD17 dataset includes molecular dynamics simulations of multiple organic chemical moleculars. It provides chemical desciptive information such as the atomic numbers and positions as well as molecular property information such as energies and forces.
   - **Task**：Molecular energy prediction. We integrate eural Equivariant Interatomic Potentials(NequIP)[2] algorithman which uses graph descriptor given atomic numbers and atomic positions as input and predict the molecular energy based on equivariant graph neural network. 
-<div align=center><img src="./docs/nequip.png" alt="nequip"/></div>
+<div align=center><img src="./docs/nequip.png" alt="nequip" width="75%"/></div>
 
 ### **Modules**
 - **Equivariant Computing**
   - **Introduction**：Symmetry is an essential property in science domain. Equivarient neural network adopts intuitive representation as input and computing equivariently with respect to spatial rotation,shift and inversion. Adopting equivariant neural network for modeling scientific scenarios results in higher representation effectiveness for data and high efficiency for model training.
   - **Functions**：E(3) computing modules integrates basic modules such as Irreps, Spherical Harmonics and Tensor Products. Based on the basic modules, equivariant neural network layers such as equivariant Activation, Linear and Convolution layers are provided for constructing user customed equivariant neural networks.
-<div align=center><img src="./docs/e3.png" alt="Equivariant(3) Computing Modules"/></div>
+<div align=center><img src="./docs/e3.png" alt="Equivariant(3) Computing Modules" width="75%"/></div>
 
 
 ## **Installation**
