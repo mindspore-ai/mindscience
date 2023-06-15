@@ -2,7 +2,7 @@ function(find_required_package pkg_name)
     find_package(${pkg_name})
     if(NOT ${pkg_name}_FOUND)
         message(FATAL_ERROR "Required package ${pkg_name} not found, "
-                "please install the package and try building MindMaterial again.")
+                "please install the package and try building MindChemistry again.")
     endif()
 endfunction()
 

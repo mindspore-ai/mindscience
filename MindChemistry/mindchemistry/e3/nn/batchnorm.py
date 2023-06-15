@@ -96,7 +96,7 @@ class BatchNorm(nn.Cell):
             field = inputs[:, :, ix: ix + mul * d]  # [batch, sample, mul * repr]
             ix += mul * d
 
-            # [batch, sample, mul, repr]
+            # (batch, sample, mul, repr)
             field = field.reshape(batch, -1, mul, d)
 
             if ir.is_scalar():  # scalars
@@ -112,7 +112,7 @@ class BatchNorm(nn.Cell):
                     field_mean = self.running_mean[irm: irm + mul]
                 irm += mul
 
-                # [batch, sample, mul, repr]
+                # (batch, sample, mul, repr)
                 field = field - field_mean.reshape(-1, 1, mul, 1)
 
             if self.training or self.instance:

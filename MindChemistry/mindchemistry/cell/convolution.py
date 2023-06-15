@@ -22,11 +22,15 @@ from mindspore import Tensor
 
 
 softplus = ops.Softplus()
+
+
 def shift_softplus(x):
     return softplus(x) - 0.6931471805599453
 
+
 def silu(x):
     return x * ops.sigmoid(x)
+
 
 class Convolution(nn.Cell):
 

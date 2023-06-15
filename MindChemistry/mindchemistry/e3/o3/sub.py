@@ -154,10 +154,10 @@ class TensorSquare(TensorProduct):
     """
 
     def __init__(self, irreps_in, irreps_out=None, filter_ir_out=None, **kwargs):
-        if irreps_out == None:
+        if irreps_out is None:
             super().__init__(irreps_in, None, filter_ir_out, instructions='full', **kwargs)
         else:
-            if filter_ir_out == None:
+            if filter_ir_out is None:
                 super().__init__(irreps_in, None, irreps_out, instructions='connect', **kwargs)
             else:
                 raise ValueError("Both `irreps_out` and `filter_ir_out` are not None, this is ambiguous.")

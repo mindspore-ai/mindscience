@@ -26,8 +26,8 @@ def _convert_to_tuple(params):
     if not isinstance(params, (list, tuple)):
         params = (params,)
     if isinstance(params, list):
-        params = tuple(params)
-    return params
+        params_out = tuple(params)
+    return params_out
 
 
 def check_param_type(param, param_name, data_type=None, exclude_type=None):

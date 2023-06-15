@@ -601,6 +601,7 @@ class Irreps:
             drop = Irreps(drop).data
             drop = {mir.ir for mir in drop}
             return Irreps([(mul, ir) for mul, ir in self.data if not ir in drop])
+        return None
 
     def decompose(self, v, batch=False):
         r"""
