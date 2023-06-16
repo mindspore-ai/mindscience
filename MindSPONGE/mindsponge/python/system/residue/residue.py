@@ -41,63 +41,47 @@ from ...data.template import get_template, get_template_index
 
 @jit_class
 class Residue:
-    r"""Base class for residue.
+    r"""
+    Base class for residue.
+    The `Residue` Cell is the component of the `Molecule` (System) Cell.
+    A `Residue` can represent not only an amino acid residue, but also a small molecule in a molecular system,
+    such as a water molecule, an inorganic salt ion, etc. This means that the `Residue` Cell has
+    a similar concept to the "residue" in a PDB file.
 
-        The `Residue` Cell is the component of the `Molecule` (System) Cell.
-
-        A `Residue` can represent not only an amino acid residue, but also a small molecule in a molecular system,
-        such as a water molecule, an inorganic salt ion, etc. This means that the `Residue` Cell has
-        a similar concept to the "residue" in a PDB file.
-
-        NOTE: `Residue` Cell is only used to represent the atomic properties and bond connections,
-              but does NOT contain atomic coordinates.
+    NOTE: `Residue` Cell is only used to represent the atomic properties and bond connections,
+            but does NOT contain atomic coordinates.
 
     Args:
-
-        atom_name (Union[List[str], ndarray]):
-                            Array of atom name with data type `str`. Defulat: None
-
-        atom_type (Union[List[str], ndarray]):
-                            Array of atom type with data type `str`. Defulat: None
-
-        atom_mass (Union[Tensor, ndarray, List[float]]):
-                            Array of atom mass of shape `(B, A)` with data type `float`. Defulat: None
-
-        atom_charge (Union[Tensor, ndarray, List[float]]):
-                            Array of atom charge of shape `(B, A)` with data type `float`. Defulat: None
-
-        atomic_number (Union[Tensor, ndarray, List[float]]):
-                            Array of atomic number of shape `(B, A)` with data type `int`. Defulat: None
-
-        bond (Union[Tensor, ndarray, List[int]]):
-                            Array of bond connection of shape `(B, b, 2)` with data type `int`. Defulat: None
-
-        head_atom (int):    Index of the head atom to connect with the previous residue.
-                            Default: None
-
-        tail_atom (int):    Index of the tail atom to connect with the next residue.
-                            Default: None
-
-        start_index (int):  The start index of the first atom in this residue.
-
-        template (Union[dict, str]):
-                            Template for residue. It can be a `dict` in MindSPONGE template format
-                            or a `str` for the filename of a MindSPONGE template file. If a `str` is given,
-                            it will first look for a file with the same name in the current directory.
-                            If file does not exist, it will search in the built-in template directory
-                            of MindSPONGE (`mindsponge.data.template`).
-                            Default: None.
-
-        name (str):         Name of the residue. Default: 'MOL'
+        atom_name (Union[List[str], ndarray]):                  Array of atom name with data type `str`. Defulat: None
+        atom_type (Union[List[str], ndarray]):                  Array of atom type with data type `str`. Defulat: None
+        atom_mass (Union[Tensor, ndarray, List[float]]):        Array of atom mass of shape `(B, A)` with data type
+                                                                `float`. Defulat: None
+        atom_charge (Union[Tensor, ndarray, List[float]]):      Array of atom charge of shape `(B, A)` with data type
+                                                                `float`. Defulat: None
+        atomic_number (Union[Tensor, ndarray, List[float]]):    Array of atomic number of shape `(B, A)` with data type
+                                                                `int`. Defulat: None
+        bond (Union[Tensor, ndarray, List[int]]):               Array of bond connection of shape `(B, b, 2)` with data
+                                                                type `int`. Defulat: None
+        head_atom (int):                                        Index of the head atom to connect with the previous
+                                                                residue. Default: None
+        tail_atom (int):                                        Index of the tail atom to connect with the next residue.
+                                                                Default: None
+        start_index (int):                                      The start index of the first atom in this residue.
+                                                                Default: 0
+        name (str):                                             Name of the residue. Default: 'MOL'
+        template (Union[dict, str]):                            Template for residue. It can be a `dict` in MindSPONGE
+                                                                template format or a `str` for the filename of a
+                                                                MindSPONGE template file. If a `str` is given, it will
+                                                                first look for a file with the same name in the
+                                                                current directory. If file does not exist, it will
+                                                                search in the built-in template directory
+                                                                of MindSPONGE (`mindsponge.data.template`).
+                                                                Default: None.
 
     Symbols:
-
         B:  Batchsize, i.e. number of walkers in simulation
-
         A:  Number of atoms.
-
         b:  Number of bonds.
-
     """
 
     def __init__(self,
@@ -310,6 +294,12 @@ class Residue:
 
     @property
     def name(self) -> str:
+        """
+        Get the name of the residue.
+
+        Returns:
+            str, the name of the residue.
+        """
         return str(self._name)
 
     @classmethod
@@ -364,31 +354,61 @@ class Residue:
         return bond
 
     def build_atom_mass(self, template: dict):
-        """build atom mass"""
+        """
+        According to the name of the atom, find the index of the atom in the template.
+        Get atom mass of the atom with the index in the template and build it into the residue.
+
+        Args:
+            template(dict): Template for residue.
+        """
         atom_index = get_template_index(template, self.atom_name)
         self.atom_mass = Tensor(self._get_atom_mass(template, atom_index), ms.float32)
         return self
 
     def build_atomic_number(self, template: dict):
-        """build atomic number"""
+        """
+        According to the name of the atom, find the index of the atom in the template.
+        Get atomic number of the atom with the index in the template and build it into the residue.
+
+        Args:
+            template(dict): Template for residue.
+        """
         atom_index = get_template_index(template, self.atom_name)
         self.atomic_number = Tensor(self._get_atomic_number(template, atom_index), ms.int32)
         return self
 
     def build_atom_type(self, template: dict):
-        """build atom type"""
+        """
+        According to the name of the atom, find the index of the atom in the template.
+        Get atom type of the atom with the index in the template and build it into the residue.
+
+        Args:
+            template(dict): Template for residue.
+        """
         atom_index = get_template_index(template, self.atom_name)
         self.atom_type = self._get_atom_type(template, atom_index)
         return self
 
     def build_atom_charge(self, template: dict):
-        """build atom type"""
+        """
+        According to the name of the atom, find the index of the atom in the template.
+        Get atom charge of the atom with the index in the template and build it into the residue.
+
+        Args:
+            template(dict): Template for residue.
+        """
         atom_index = get_template_index(template, self.atom_name)
         self.atom_charge = Tensor(self._get_atom_charge(template, atom_index), ms.float32)
         return self
 
     def build_bond(self, template: dict):
-        """build bond"""
+        """
+        According to the name of the atom, find the index of the atom in the template.
+        Get bond of the atom with the index in the template and build it into the residue.
+
+        Args:
+            template(dict): Template for residue.
+        """
         atom_index = get_template_index(template, self.atom_name)
         self.bond = Tensor(self._get_bond(template, atom_index), ms.int32)
         return self
@@ -400,7 +420,16 @@ class Residue:
                  atom_charge: float = None,
                  atomic_number: str = None,
                  ):
-        """set atom"""
+        """
+        Add an atom to the residue.
+
+        Args:
+            atom_name(str):     Atom name. Default: None
+            atom_type(str):     Atom type. Default: None
+            atom_mass(float):   Atom mass. Default: None
+            atom_charge(float): Atom charge. Default: None
+            atomic_number(str): Atomic number. Default: None
+        """
 
         if atom_name is None and atomic_number is None:
             raise ValueError('atom_name and atomic_number cannot both be None')
@@ -486,7 +515,12 @@ class Residue:
         return self
 
     def broadcast_multiplicity(self, multi_system: int):
-        """broadcast the information to the number of multiple system"""
+        """
+        Broadcast the information to the number of multiple system.
+
+        Args:
+            multi_system(int):  The number of multiple systems.
+        """
         if multi_system <= 0:
             raise ValueError('multi_system must be larger than 0!')
         if self.multi_system > 1:
@@ -518,12 +552,22 @@ class Residue:
         return self
 
     def set_name(self, name: str):
-        """set residue name"""
+        """
+        Set residue name.
+
+        Args:
+            name(str):  Residue name.
+        """
         self._name = name
         return self
 
     def set_start_index(self, start_index: int):
-        """set the start index"""
+        """
+        Set the start index.
+
+        Args:
+            start_index(int):   The start index.
+        """
         if start_index < 0:
             raise ValueError('The start_index cannot be smaller than 0!')
         self.start_index = get_integer(start_index)
