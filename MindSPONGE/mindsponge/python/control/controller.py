@@ -38,21 +38,36 @@ from ..function.functions import get_integer, get_ms_array, get_arguments
 
 
 class Controller(Cell):
-    r"""Base class for the controller module in MindSPONGE.
-
-        The `Controller` used in `Updater` to control the values of seven variables during the simulation
-        process: coordinate, velocity, force, energy, kinetics, virial and pbc_box.
+    r"""
+    Base class for the controller module in MindSPONGE.
+    The `Controller` used in `Updater` to control the values of seven variables during the simulation
+    process: coordinate, velocity, force, energy, kinetics, virial and pbc_box.
 
     Args:
+        system(Molecule):   Simulation system
+        control_step(int):  Step interval for controller execution. Default: 1
 
-        system (Molecule):  Simulation system
+    Inputs:
+        - **coordinate** (Tensor) - Tensor of shape `(B, A, D)`. Data type is float.
+        - **velocity** (Tensor) - Tensor of shape `(B, A, D)`. Data type is float.
+        - **force** (Tensor) - Tensor of shape `(B, A, D)`. Data type is float.
+        - **energy** (Tensor) - Tensor of shape `(B, 1)`. Data type is float.
+        - **kinetics** (Tensor) - Tensor of shape `(B, D)`. Data type is float.
+        - **virial** (Tensor) - Tensor of shape `(B, D)`. Data type is float.
+        - **pbc_box** (Tensor) - Tensor of shape `(B, D)`. Data type is float.
+        - **step** (int) - Simulation step. Default: 0
 
-        control_step (int): Step interval for controller execution. Default: 1
+    Outputs:
+        - coordinate, Tensor of shape `(B, A, D)`. Data type is float.
+        - velocity, Tensor of shape `(B, A, D)`. Data type is float.
+        - force, Tensor of shape `(B, A, D)`. Data type is float.
+        - energy, Tensor of shape `(B, 1)`. Data type is float.
+        - kinetics, Tensor of shape `(B, D)`. Data type is float.
+        - virial, Tensor of shape `(B, D)`. Data type is float.
+        - pbc_box, Tensor of shape `(B, D)`. Data type is float.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
-
     """
     def __init__(self,
                  system: Molecule,
@@ -102,67 +117,72 @@ class Controller(Cell):
 
     @property
     def boltzmann(self) -> float:
+        """
+        Boltzmann constant in current unit.
+
+        Returns:
+            float, Boltzmann constant in current unit.
+        """
         return self.units.boltzmann
 
     def set_time_step(self, dt: float):
-        r"""Set simulation time step
+        r"""
+        Set simulation time step.
 
         Args:
-            dt (float): Time step
-
+            dt(float):  Time step.
         """
         self.time_step = get_ms_array(dt, ms.float32)
         return self
 
     def set_degrees_of_freedom(self, dofs: int):
-        """Set degrees of freedom (DOFs)
+        """
+        Set degrees of freedom (DOFs).
 
         Args:
-            dofs (int): Degrees of freedom
-
+            dofs(int):  Degrees of freedom.
         """
         self.degrees_of_freedom = get_integer(dofs)
         return self
 
     def update_coordinate(self, coordinate: Tensor) -> Tensor:
-        r"""Update the coordinate of the simulation system
+        r"""
+        Update the coordinate of the simulation system.
 
         Args:
-            coordinate (Tensor): Tensor of atomic coordinates.
-                The shape of the Tensor is `(B, A, D)`, and the data type is float.
+            coordinate(Tensor): Tensor of atomic coordinates. Tensor shape is `(B, A, D)`.
+                                Data type is float.
 
         Returns:
             Tensor, has the same data type and shape as original `coordinate`.
-
         """
         return F.assign(self._coordinate, coordinate)
 
     def update_pbc_box(self, pbc_box: Tensor) -> Tensor:
-        r"""Update the parameter of PBC box
+        r"""
+        Update the parameter of PBC box.
 
         Args:
-            pbc_box (Tensor): Tensor of PBC box.
-                The shape of the Tensor is `(B, D)`, and the data type is float.
+            pbc_box(Tensor):    Tensor of PBC box. Tensor shape is `(B, D)`.
+                                Data type is float.
 
         Returns:
             Tensor, has the same data type and shape as original `pbc_box`.
-
         """
         if self._pbc_box is None:
             return pbc_box
         return F.assign(self._pbc_box, pbc_box)
 
     def get_kinetics(self, velocity: Tensor) -> Tensor:
-        r"""Calculate kinetics according to velocity
+        r"""
+        Calculate kinetics according to velocity.
 
         Args:
-            velocity (Tensor): Tensor of atomic velocities.
-                The shape of the Tensor is `(B, A, D)`, and the data type is float.
+            velocity(Tensor):   Tensor of atomic velocities. Tensor shape is `(B, A, D)`.
+                                Data type is float.
 
         Returns:
-            kinetics (Tensor): Tensor of kinetics.
-                The shape of the Tensor is `(B, D)`, and the data type is float.
-
+            Tensor, Tensor of kinetics. Tensor shape is `(B, D)`. Data type is float.
         """
         if velocity is None:
             return None
@@ -173,15 +193,14 @@ class Controller(Cell):
         return kinetics * self.kinetic_unit_scale
 
     def get_temperature(self, kinetics: Tensor = None) -> Tensor:
-        r"""Calculate temperature according to velocity
+        r"""
+        Calculate temperature according to velocity.
+
         Args:
-            kinetics (Tensor): Tensor of kinetics.
-                The shape of the Tensor is `(B, D)`, and the data type is float.
+            kinetics(Tensor):   Tensor of kinetics. Tensor shape is `(B, D)`. Data type is float. Default: None
 
         Returns:
-            temperature (Tensor): Tensor of temperature.
-                The shape of the Tensor is `(B)`, and the data type is float.
-
+            Tensor, Tensor of temperature. The shape of the Tensor is `(B)`. Data type is float.
         """
         if kinetics is None:
             return None
@@ -190,16 +209,14 @@ class Controller(Cell):
         return 2 * kinetics / self.degrees_of_freedom / self.boltzmann
 
     def get_volume(self, pbc_box: Tensor) -> Tensor:
-        r"""Calculate volume according to PBC box
+        r"""
+        Calculate volume according to PBC box
 
         Args:
-            pbc_box (Tensor): Tensor of PBC box.
-                The shape of the Tensor is `(B, D)`, and the data type is float.
+            pbc_box(Tensor):    Tensor of PBC box. Tensor shape is `(B, D)`. Data type is float.
 
         Returns:
-            volume (Tensor): Tensor of volume.
-                The shape of the Tensor is `(B)`, and the data type is float.
-
+            Tensor, Tensor of volume. The shape of the Tensor is `(B)`, and the data type is float.
         """
         if self._pbc_box is None:
             return None
@@ -207,20 +224,16 @@ class Controller(Cell):
         return func.keepdims_prod(pbc_box, -1)
 
     def get_pressure(self, kinetics: Tensor, virial: Tensor, pbc_box: Tensor) -> Tensor:
-        r"""Calculate pressure according to kinetics, viral and PBC box
+        r"""
+        Calculate pressure according to kinetics, viral and PBC box.
 
         Args:
-            kinetics (Tensor): Tensor of kinetics.
-                The shape of the Tensor is `(B, D)`, and the data type is float.
-            virial (Tensor): Tensor of virial.
-                The shape of the Tensor is `(B, D)`, and the data type is float.
-            pbc_box (Tensor): Tensor of PBC box.
-                The shape of the Tensor is `(B, D)`, and the data type is float.
+            kinetics(Tensor):   Tensor of kinetics. Tensor shape is `(B, D)`. Data type is float.
+            virial(Tensor):     Tensor of virial. Tensor shape is `(B, D)`. Data type is float.
+            pbc_box(Tensor):    Tensor of PBC box. Tensor shape is `(B, D)`. Data type is float.
 
         Returns:
-            pressure (Tensor): Tensor of pressure.
-                The shape of the Tensor is `(B, D)`, and the data type is float.
-
+            Tensor, Tensor of pressure. Tensor shape is `(B, D)`. Data type is float.
         """
         if self._pbc_box is None:
             return None
@@ -230,18 +243,17 @@ class Controller(Cell):
         return pressure * self.press_unit_scale
 
     def get_com(self, coordinate: Tensor, keepdims: bool = True) -> Tensor:
-        r"""Get coordinate of center of mass
+        r"""
+        Get coordinate of center of mass.
 
         Args:
-            coordinate (Tensor): Tensor of atomic coordinates.
-                The shape of the Tensor is `(B, A, D)`, and the data type is float.
-            keepdims (bool): If this is set to `True`, the second axis will be left
-                in the result as dimensions with size one. Default: True
+            coordinate(Tensor): Tensor of atomic coordinates. Tensor shape is `(B, A, D)`. Data type is float.
+            keepdims(bool):     If this is set to `True`, the second axis will be left
+                                in the result as dimensions with size one. Default: True
 
         Returns:
-            com (Tensor): Tensor of the center of mass.
-                The shape of the Tensor is `(B, A, D)` or `(B, D)`, and the data type is float.
-
+            Tensor, Tensor of the coordinate of the center of mass. Tensor shape is `(B, A, D)` or `(B, D)`.
+                Data type is float.
         """
 
         # (B, A, D) = (B, A, D) * (B, A, 1)
@@ -264,16 +276,17 @@ class Controller(Cell):
         return com
 
     def get_com_velocity(self, velocity: Tensor, keepdims: bool = True) -> Tensor:
-        r"""calculate velocity of center of mass
+        r"""
+        Calculate velocity of center of mass.
+
         Args:
-            coordinate (Tensor): Tensor of atomic coordinates.
-                The shape of the Tensor is `(B, A, D)`, and the data type is float.
-            keepdims (bool): If this is set to `True`, the second axis will be left
-                in the result as dimensions with size one. Default: True
+            velocity(Tensor):   Tensor of velocity. Tensor shape is `(B, A, D)`. Data type is float.
+            keepdims(bool):     If this is set to `True`, the second axis will be left
+                                in the result as dimensions with size one. Default: True
 
         Returns:
-            com_vel (Tensor): Tensor of the velocity of the center of mass.
-                The shape of the Tensor is `(B, A, D)` or `(B, D)`, and the data type is float.
+            Tensor, Tensor of the velocity of the center of mass.
+                Tensor shape is `(B, A, D)` or `(B, D)`. Data type is float.
 
         """
 

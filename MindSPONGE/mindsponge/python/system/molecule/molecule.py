@@ -48,71 +48,56 @@ from ...function.functions import get_ms_array, get_ndarray, get_arguments, keep
 
 
 class Molecule(Cell):
-    r"""Base class for molecular system, used as the "system module" in MindSPONGE.
-
-        The `Molecule` Cell can represent a molecule or a system consisting of multiple molecules.
-
-        The major components of the `Molecule` Cell is the `Residue` Cell. A `Molecule` Cell can
-        contain multiple `Residue` Cells.
+    r"""
+    Base class for molecular system, used as the "system module" in MindSPONGE.
+    The `Molecule` Cell can represent a molecule or a system consisting of multiple molecules.
+    The major components of the `Molecule` Cell is the `Residue` Cell. A `Molecule` Cell can
+    contain multiple `Residue` Cells.
 
     Args:
+        atoms(Union[List[Union[str, int]], ndarray]):       Array of atoms. The data in array can be str of atom
+                                                            name or int of atomic number. Defulat: None
+        atom_name(Union[List[str], ndarray]):               Array of atom name with data type `str`. Defulat: None
+        atom_type(Union[List[str], ndarray]):               Array of atom type with data type `str`. Defulat: None
+        atom_mass(Union[Tensor, ndarray, List[float]]):     Array of atom mass of shape `(B, A)` with data type
+                                                            `float`. Defulat: None
+        atom_charge(Union[Tensor, ndarray, List[float]]):   Array of atom charge of shape `(B, A)` with data type
+                                                            `float`. Defulat: None
+        atomic_number(Union[Tensor, ndarray, List[float]]): Array of atomic number of shape `(B, A)` with data type
+                                                            `int`. Defulat: None
+        bond(Union[Tensor, ndarray, List[int]]):            Array of bond connection of shape `(B, b, 2)` with data
+                                                            type `int`. Defulat: None
+        coordinate(Union[Tensor, ndarray, List[float]]):    Tensor of atomic coordinates :math:`R` of shape
+                                                            `(B, A, D)` with data type `float`. Default: None
+        pbc_box(Union[Tensor, ndarray, List[float]]):       Tensor of box size :math:`\vec{L}` of periodic boundary
+                                                            condition (PBC). The shape of tensor is `(B, D)`,
+                                                            and the data type is `float`. Default: None
+        template(Union[dict, str, List[Union[dict, str]]]): Template for molecule. It can be a `dict` in MindSPONGE
+                                                            template format or a `str` for the filename of a
+                                                            MindSPONGE template file. If a `str` is given,
+                                                            it will first look for a file with the same name in the
+                                                            current directory. If the file does not exist, it will
+                                                            search in the built-in template directory of
+                                                            MindSPONGE (`mindsponge.data.template`).
+                                                            Default: None.
+        residue(Union[Residue, List[Residue]]):             Residue or a list of residues. If template is not None,
+                                                            only the residues in the template will be used.
+                                                            Default: None.
+        length_unit(str):                                   Length unit. If `None` is given, the global length
+                                                            units will be used. Default: None
 
-        atoms (Union[List[Union[str, int]], ndarray]):
-                            Array of atoms. The data in array can be str of atom name.
-                            or int of atomic number. Defulat: None
-
-        atom_name (Union[List[str], ndarray]):
-                            Array of atom name with data type `str`. Defulat: None
-
-        atom_type (Union[List[str], ndarray]):
-                            Array of atom type with data type `str`. Defulat: None
-
-        atom_mass (Union[Tensor, ndarray, List[float]]):
-                            Array of atom mass of shape `(B, A)` with data type `float`. Defulat: None
-
-        atom_charge (Union[Tensor, ndarray, List[float]]):
-                            Array of atom charge of shape `(B, A)` with data type `float`. Defulat: None
-
-        atomic_number (Union[Tensor, ndarray, List[float]]):
-                            Array of atomic number of shape `(B, A)` with data type `int`. Defulat: None
-
-        bond (Union[Tensor, ndarray, List[int]]):
-                            Array of bond connection of shape `(B, b, 2)` with data type `int`. Defulat: None
-
-        coordinate (Union[Tensor, ndarray, List[float]]):
-                            Tensor of atomic coordinates :math:`R` of shape `(B, A, D)` with data type `float`.
-                            Default: None
-
-        pbc_box (Union[Tensor, ndarray, List[float]]):
-                            Tensor of box size :math:`\vec{L}` of periodic boundary condition (PBC).
-                            The shape of tensor is `(B, D)`, and the data type is `float`.
-                            Default: None
-
-        template (Union[dict, str, List[Union[dict, str]]]):
-                            Template for molecule. It can be a `dict` in MindSPONGE template format
-                            or a `str` for the filename of a MindSPONGE template file. If a `str` is given,
-                            it will first look for a file with the same name in the current directory.
-                            If the file does not exist, it will search in the built-in template directory
-                            of MindSPONGE (`mindsponge.data.template`).
-                            Default: None.
-
-        length_unit (str):  Length unit. If `None` is given, the global length units will be used.
-                            Default: None
+    Outputs:
+        - coordinate, Tensor of shape `(B, A, D)`. Data type is float.
+        - pbc_box, Tensor of shape `(B, D)`. Data type is float.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Symbols:
-
         B:  Batchsize, i.e. number of walkers in simulation
-
         A:  Number of atoms.
-
         b:  Number of bonds.
-
         D:  Spatial dimension of the simulation system. Usually is 3.
-
     """
 
     def __init__(self,
@@ -240,40 +225,89 @@ class Molecule(Cell):
 
     @property
     def shape(self):
-        r"""shape of atomic coordinate"""
+        r"""
+        Shape of atomic coordinate.
+
+        Returns:
+            Tuple, atomic coordinate.
+        """
         return self.coordinate.shape
 
     @property
     def ndim(self):
-        r"""ndim of atomic coordinate"""
+        r"""
+        Ndim of atomic coordinate.
+
+        Returns:
+            int, number of dims of atomic coordinate.
+        """
         return self.coordinate.ndim
 
     @property
     def length_unit(self):
-        r"""length unit"""
+        r"""
+        Length unit.
+
+        Returns:
+            str, length unit.
+        """
         return self.units.length_unit
 
     @property
     def heavy_atom_mask(self):
-        r"""mask for heavy (non-hydrogen) atoms"""
+        r"""
+        mask for heavy (non-hydrogen) atoms.
+
+        Returns:
+            Tensor, mask for heavy atoms.
+        """
         return msnp.where(self.atomic_number[0] > 1, 0, 1)
 
     def convert_length_from(self, unit) -> float:
-        """convert length from a specified units."""
+        """
+        Convert length from a specified units.
+
+        Args:
+            unit(Union[str, Units, Length, float, int]):    Length unit.
+
+        Returns:
+            float, length according to a specified units.
+        """
         return self.units.convert_length_from(unit)
 
     def convert_length_to(self, unit) -> float:
-        """convert length to a specified units."""
+        """
+        Convert length to a specified units.
+
+        Args:
+            unit(Union[str, Units, Length, float, int]):    Length unit.
+
+        Returns:
+            float, length according to a specified units.
+        """
         return self.units.convert_length_to(unit)
 
     def move(self, shift: Tensor = None):
-        """move the coordinate of the system"""
+        """
+        Move the coordinate of the system.
+
+        Args:
+            shift(Tensor): The displacement distance of the system. Default: None
+        """
         if shift is not None:
             self.update_coordinate(self.coordinate + Tensor(shift, ms.float32))
         return self
 
     def copy(self, shift: Tensor = None):
-        """return a Molecule that copy the parameters of this molecule"""
+        """
+        Return a Molecule that copy the parameters of this molecule.
+
+        Args:
+            shift(Tensor): The displacement distance of the system. Default: None
+
+        Returns:
+            class, class Molecule that copy the parameters of this molecule.
+        """
         coordinate = self.get_coordinate()
         if shift is not None:
             coordinate += Tensor(shift, ms.float32)
@@ -285,7 +319,13 @@ class Molecule(Cell):
         )
 
     def add_residue(self, residue: Residue, coordinate: Tensor = None):
-        """add residue"""
+        """
+        Add residue to this molecule system.
+
+        Args:
+            residue(class): a Residue class of the residue added in the system.
+            coordinate(Tensor): The coordinate of the input residue. Default: None
+        """
         if not isinstance(residue, list):
             if isinstance(residue, Residue):
                 residue = [residue]
@@ -305,14 +345,24 @@ class Molecule(Cell):
         return self
 
     def append(self, system):
-        """append the system"""
+        """
+        Append a system to this molecule system.
+
+        Args:
+            system(class): Another molecule system that will be added to this molecule system.
+        """
         if not isinstance(system, Molecule):
             raise TypeError(f'For append, the type of system must be "Molecule" but got: {type(system)}')
         self.add_residue(system.residue, system.get_coordinate())
         return self
 
     def reduplicate(self, shift: Tensor):
-        """duplicate the system to double of the origin size"""
+        """
+        Duplicate the system to double of the origin size.
+
+        Args:
+            shift(Tensor):  The distance moved from the origin system.
+        """
         shift = Tensor(shift, ms.float32)
         self.residue.extend(copy.deepcopy(self.residue))
         self.build_system()
@@ -321,7 +371,7 @@ class Molecule(Cell):
         return self
 
     def build_atom_type(self):
-        """build atom type"""
+        """Build atom type."""
         atom_type = ()
         for i in range(self.num_residue):
             atom_type += (self.residue[i].atom_type,)
@@ -329,7 +379,7 @@ class Molecule(Cell):
         return self
 
     def build_atom_charge(self):
-        """build atom charge"""
+        """Build atom charge."""
         charges = []
         for i in range(self.num_residue):
             charges.append(self.residue[i].atom_charge is not None)
@@ -345,7 +395,7 @@ class Molecule(Cell):
         return self
 
     def build_system(self):
-        """build the system by residues"""
+        """Build the system by residues."""
         if self.residue is None:
             self.residue = None
             return self
@@ -469,7 +519,15 @@ class Molecule(Cell):
         return self
 
     def build_space(self, coordinate: Tensor, pbc_box: Tensor = None):
-        """build coordinate and PBC box"""
+        """
+        Build coordinate and PBC box.
+
+        Args:
+            coordinate(Tensor): The initial coordinate of system. If it's None, the system will
+                                generate a random coordinate as its initial coordinate.
+            pbc_box(Tensor):    The initial pbc_box of the system. If it's None, the system won't use pbc_box.
+                                Default:None
+        """
         # (B, A, D)
         if coordinate is None:
             coordinate = np.random.uniform(0, self.units.length(
@@ -518,7 +576,12 @@ class Molecule(Cell):
         return self
 
     def set_bond_length(self, bond_length: Tensor):
-        """set bond length"""
+        """
+        Set bond length.
+
+        Args:
+            bond_length(Tensor):    Set the bond length of the system.
+        """
         if self.bond is None:
             raise ValueError('Cannot setup bond_length because bond is None')
         bond_length = Tensor(bond_length, ms.float32)
@@ -529,44 +592,104 @@ class Molecule(Cell):
         return self
 
     def residue_index(self, res_id: int) -> Tensor:
-        """get index of residue"""
+        """
+        Get index of residue.
+
+        Args:
+            res_id(int):    Residue index.
+
+        Returns:
+            Tensor, the system index of the residue.
+        """
         return self.residue[res_id].system_index
 
     def residue_bond(self, res_id: int) -> Tensor:
-        """get bond index of residue"""
+        """
+        Get bond index of residue.
+
+        Args:
+            res_id(int):    Residue index.
+
+        Returns:
+            Tensor, the bond index of residue.
+        """
         if self.residue[res_id].bond is None:
             return None
         return self.residue[res_id].bond + self.residue[res_id].start_index
 
     def residue_head(self, res_id: int) -> Tensor:
-        """get head index of residue"""
+        """
+        Get head index of residue.
+
+        Args:
+            res_id(int):    Residue index.
+
+        Returns:
+            Tensor, the head index of residue.
+        """
         if self.residue[res_id].head_atom is None:
             return None
         return self.residue[res_id].head_atom + self.residue[res_id].start_index
 
     def residue_tail(self, res_id: int) -> Tensor:
-        """get tail index of residue"""
+        """
+        Get tail index of residue.
+
+        Args:
+            res_id(int):    Residue index.
+
+        Returns:
+            Tensor, the tail index of residue.
+        """
         if self.residue[res_id].tail_atom is None:
             return None
         return self.residue[res_id].tail_atom + self.residue[res_id].start_index
 
     def residue_coordinate(self, res_id: int) -> Tensor:
-        """get residue coordinate"""
+        """
+        Get residue coordinate.
+
+        Args:
+            res_id(int):    Residue index.
+
+        Returns:
+            Tensor, residue coordinate in the system.
+        """
         return F.gather_d(self.coordinate, -2, self.residue[res_id].system_index)
 
     def get_volume(self) -> Tensor:
-        """get volume of system"""
+        """
+        Get volume of system.
+
+        Returns:
+            Tensor, the volume of the system. If pbc_box is not used, the volume is None.
+        """
         if self.pbc_box is None:
             return None
         return keepdims_prod(self.pbc_box, -1)
 
     def space_parameters(self) -> list:
-        """get the parameter of space (coordinates and pbc box)"""
+        """
+        Get the parameter of space (coordinates and pbc box).
+
+        Returns:
+            list[Tensor], coordinate and pbc_box. If pbc_box is not used, it will only return coordinate.
+        """
         if self.pbc_box is None:
             return [self.coordinate]
         return [self.coordinate, self.pbc_box]
 
     def trainable_params(self, recurse=True) -> list:
+        """
+        Trainable parameters.
+
+        Args:
+            recurse(bool):  If true, yields parameters of this cell and all subcells. Otherwise, only yield parameters
+                            that are direct members of this cell. Default: True
+
+        Returns:
+            list, all trainable system parameters.
+        """
         return list(filter(lambda x: x.name.split('.')[-1] == 'coordinate', self.get_parameters(expand=recurse)))
 
     def _check_coordianate(self, coordinate: Tensor) -> Tensor:
@@ -585,14 +708,30 @@ class Molecule(Cell):
         return coordinate
 
     def update_coordinate(self, coordinate: Tensor) -> Tensor:
-        """update the parameter of coordinate"""
+        """
+        Update the parameter of coordinate.
+
+        Args:
+            coordinate(Tensor): Coordinates used to update system coordinates.
+
+        Returns:
+            Tensor, updated coordinate.
+        """
         coordinate = F.assign(self.coordinate, coordinate)
         if self.pbc_box is None:
             return coordinate
         return F.depend(coordinate, self.update_image())
 
     def set_coordianate(self, coordinate: Tensor) -> Tensor:
-        """set the value of coordinate"""
+        """
+        Set the value of coordinate.
+
+        Args:
+            coordinate(Tensor): Coordinates used to set system coordinates.
+
+        Returns:
+            Tensor, the coordinate of the system.
+        """
         coordinate = self._check_coordianate(coordinate)
         if coordinate is not None and coordinate.shape == self.coordinate.shape:
             return self.update_coordinate(coordinate)
@@ -602,19 +741,44 @@ class Molecule(Cell):
         return self.identity(coordinate)
 
     def update_pbc_box(self, pbc_box: Tensor) -> Tensor:
-        """update PBC box"""
+        """
+        Update PBC box
+
+        Args:
+            pbc_box(Tensor):    PBC box used to update the system PBC box.
+
+        Returns:
+            Tensor, updated system PBC box.
+        """
         pbc_box = F.assign(self.pbc_box, pbc_box)
         return F.depend(pbc_box, self.update_image())
 
     def set_pbc_grad(self, grad_box: bool) -> bool:
-        """set whether to calculate the gradient of PBC box"""
+        """
+        Set whether to calculate the gradient of PBC box.
+
+        Args:
+            grad_box(bool): Whether to calculate the gradient of PBC box.
+
+        Returns:
+            bool, whether to calculate the gradient of PBC box.
+        """
         if self.pbc_box is None:
             return grad_box
         self.pbc_box.requires_grad = grad_box
         return self.pbc_box.requires_grad
 
     def set_pbc_box(self, pbc_box: Tensor = None) -> Tensor:
-        """set PBC box"""
+        """
+        Set PBC box.
+
+        Args:
+            pbc_box(Tensor):    Set the PBC box of the system. If it's None, the system won't use PBC box.
+                                Default: None
+
+        Returns:
+            Tensor, system PBC box.
+        """
         if pbc_box is None:
             self.pbc_box = None
             self.use_pbc = False
@@ -643,7 +807,12 @@ class Molecule(Cell):
         return self.pbc_box
 
     def repeat_box(self, lattices: list):
-        """repeat the system according to the lattices of PBC box"""
+        """
+        Repeat the system according to the lattices of PBC box.
+
+        Args:
+            lattices(list): Lattices of PBC box.
+        """
         if self.pbc_box is None:
             raise RuntimeError('repeat_box() cannot be used without pbc_box, '
                                'please use set_pbc_box() to set pbc_box first '
@@ -683,13 +852,30 @@ class Molecule(Cell):
         return self
 
     def coordinate_in_pbc(self, shift: float = 0) -> Tensor:
-        """get the coordinate in a whole PBC box"""
+        """
+        Get the coordinate in a whole PBC box.
+
+        Args:
+            shift(float):   Offset ratio relative to box size. Default: 0
+
+        Returns:
+            Tensor, the coordinate in the PBC box. Shape `(B, ..., D)`. Data type is float.
+        """
         coordinate = self.identity(self.coordinate)
         pbc_box = self.identity(self.pbc_box)
         return func.coordinate_in_pbc(coordinate, pbc_box, shift)
 
     def calc_image(self, shift: float = 0) -> Tensor:
-        """calculate the image of coordinate"""
+        """
+        Calculate the image of coordinate.
+
+        Args:
+            shift(float):   Offset ratio :math:`c` relative to box size :math:`\vec{L}`.
+                            Default: 0
+
+        Returns:
+            Tensor, the image of coordinate.
+        """
         coordinate = self.identity(self.coordinate)
         pbc_box = self.identity(self.pbc_box)
         image = func.pbc_image(coordinate, pbc_box, shift)
@@ -698,13 +884,26 @@ class Molecule(Cell):
         return image
 
     def update_image(self, image: Tensor = None) -> bool:
-        """update the image of coordinate"""
+        """
+        Update the image of coordinate.
+
+        Args:
+            image(Tensor):  The image of coordinate used to update the image of system coordinate. Default: None
+
+        Returns:
+            bool, whether successfully update the image of coordinate.
+        """
         if image is None:
             image = self.calc_image()
         return F.assign(self.image, image)
 
     def set_length_unit(self, unit):
-        """set the length unit of system"""
+        """
+        Set the length unit of system.
+
+        Args:
+            unit(Union[str, Units, Length, float, int]):    Length unit.
+        """
         scale = self.units.convert_length_to(unit)
         coordinate = self.coordinate * scale
         self.update_coordinate(coordinate)
@@ -715,13 +914,29 @@ class Molecule(Cell):
         return self
 
     def calc_colvar(self, colvar: Colvar) -> Tensor:
-        """calculate the value of specific collective variables in the system"""
+        """
+        Calculate the value of specific collective variables in the system.
+
+        Args:
+            colvar(class):  Base class for generalized collective variables (CVs) :math:`s(R)`.
+
+        Returns:
+            Tensor, the value of a collective variables :math:`s(R)`.
+        """
         coordinate = self.identity(self.coordinate)
         pbc_box = None if self.pbc_box is None else self.identity(self.pbc_box)
         return colvar(coordinate, pbc_box)
 
     def get_atoms(self, atoms: Union[Tensor, Parameter, ndarray, str, list, tuple]) -> AtomsBase:
-        """get Atoms from the system"""
+        """
+        Get atoms from the system.
+
+        Args:
+            atoms(Union[Tensor, Parameter, ndarray, str, list, tuple]): List of atoms.
+
+        Returns:
+            class, atoms or groups of atoms.
+        """
         try:
             atoms = _get_atoms(atoms)
         except TypeError:
@@ -730,7 +945,16 @@ class Molecule(Cell):
         return atoms
 
     def get_coordinate(self, atoms: AtomsBase = None) -> Tensor:
-        """get Tensor of coordinate"""
+        """
+        Get Tensor of coordinate.
+
+        Args:
+            atoms(class):   Base class for specific atoms group, used as the "atoms group module" in MindSPONGE.
+                            Default: None
+
+        Returns:
+            Tensor. Coordinate. Data type is float.
+        """
         coordinate = self.identity(self.coordinate)
         if atoms is None:
             return coordinate
@@ -738,7 +962,12 @@ class Molecule(Cell):
         return atoms(coordinate, pbc_box)
 
     def get_pbc_box(self) -> Tensor:
-        """get Tensor of PBC box"""
+        """
+        Get Tensor of PBC box.
+
+        Returns:
+            Tensor, PBC box
+        """
         if self.pbc_box is None:
             return None
         return self.identity(self.pbc_box)
