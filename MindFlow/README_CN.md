@@ -59,44 +59,44 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 |        案例            |        数据集               |    模型架构       |  GPU    |  NPU  |
 |:----------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-| PINNs求解Burgers方程     |             -              |     PINNs        |   ✔️     |   ✔️   |
-|PINNs求解圆柱绕流流场      |             -              |        PINNs     |     ✔️   |   ✔️   |
-|PINNs求解Darcy流动         |             -              |      PINNs      |  ✔️      |  ✔️    |
-|PINNs求解泊松方程          |             -              |        PINNs     |  ✔️      |   ✔️   |
-|PINNs求解玻尔兹曼方程      |             -              |      PINNs       |   ✔️     |   ✔️   |
-|PINNs求解泰勒-格林涡       |             -              |      PINNs        |   ✔️     |   ✔️   |
-|PINNs求解NS方程反问题      |             -              |       PINNs       |   ✔️     |   ✔️   |
+|[PINNs求解Burgers方程](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)     |            [Burgers数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)              |     PINNs        |   ✔️     |   ✔️   |
+|[PINNs求解圆柱绕流流场](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)      |             [圆柱绕流流场数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/flow_past_cylinder/)              |        PINNs     |     ✔️   |   ✔️   |
+|[PINNs求解Darcy流动](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)         |             -              |      PINNs      |  ✔️      |  ✔️    |
+|[PINNs求解泊松方程](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)          |             -              |        PINNs     |  ✔️      |   ✔️   |
+|[PINNs求解玻尔兹曼方程](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/boltzmann)      |             -              |      PINNs       |   ✔️     |   ✔️   |
+|[PINNs求解泰勒-格林涡](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)      |             -              |      PINNs        |   ✔️     |   ✔️   |
+|[PINNs求解NS方程反问题](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/navier_stokes_inverse)      |             [NS方程反问题数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/inverse_navier_stokes/)              |       PINNs       |   ✔️     |   ✔️   |
 
 ### 数据驱动
 
 |        案例            |        数据集               |    模型架构       |  GPU    |  NPU  |
 |:----------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-|东方.御风                  |    二维翼型流场数据集         |     ViT           |   ✔️     |   ✔️   |
-|FNO求解Burgers方程         |  一维Burgers方程数据集      |     FNO1D          |   ✔️     |   ✔️   |
-|KNO求解Burgers方程         | 一维Burgers方程数据集       |       KNO1D       |   ✔️     |   ✔️   |
-|FNO求解NS方程              |  二维NS方程数据集         |        FNO2D          | ✔️   |   ✔️    |
-|FNO3d求解NS方程            | 二维NS方程数据集          |          FNO3D        |   ✔️     |   ✔️   |
-|KNO求解NS方程              |  二维NS方程数据集         |        KNO2D          |   ✔️     |   ✔️   |
-|CAE-LSTM求解二维黎曼问题       |  二维黎曼问题数据集       |     CAE-LSTM      |   ✔️     |   ✔️   |
-|CAE-LSTM求解shu-osher     |   一维shu-osher波数据集    |      CAE-LSTM      |   ✔️     |   ✔️   |
-|CAE-LSTM求解sod激波管问题   |  一维sod激波管数据集         |     CAE-LSTM    |   ✔️     |   ✔️   |
-|CAE-LSTM求解KH问题         |  二维K-H问题数据集            |  CAE-LSTM     |   ✔️     |   ✔️   |
-|ehdnn求解抖振流场          |  二维翼型抖振数据集           |      ehdnn    |   ✔️     |   ✔️   |
+|[东方.御风](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/airfoil/2D_steady)   |  [二维翼型流场数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_steady/)   |     ViT           |   ✔️     |   ✔️   |
+|[FNO求解Burgers方程](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/burgers_fno)   | [一维Burgers方程数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)     |     FNO1D       |   ✔️     |   ✔️   |
+|[KNO求解Burgers方程](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/burgers_kno)     | [一维Burgers方程数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)       |       KNO1D       |   ✔️     |   ✔️   |
+|[FNO求解NS方程](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_fno)   |  [二维NS方程数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)         |        FNO2D          | ✔️   |   ✔️    |
+|[FNO3d求解NS方程](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_3d_fno)  | [二维NS方程数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)          |          FNO3D        |   ✔️     |   ✔️   |
+|[KNO求解NS方程](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_kno)    |  [二维NS方程数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)         |        KNO2D          |   ✔️     |   ✔️   |
+|[CAE-LSTM求解二维黎曼问题](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm/riemann)       |  [二维黎曼问题数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/riemann/)       |     CAE-LSTM      |   ✔️     |   ✔️   |
+|[CAE-LSTM求解shu-osher](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm/shu_osher)     |   [一维shu-osher波数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/shu_osher/)    |      CAE-LSTM      |   ✔️     |   ✔️   |
+|[CAE-LSTM求解sod激波管问题](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm/sod)   |  [一维sod激波管数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)         |     CAE-LSTM    |   ✔️     |   ✔️   |
+|[CAE-LSTM求解KH问题](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm/kh)         |  [二维K-H问题数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/kh/)            |  CAE-LSTM     |   ✔️     |   ✔️   |
+|[ehdnn求解抖振流场](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/transonic_buffet_ehdnn)          |  [二维翼型抖振数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_unsteady/)           |      ehdnn    |   ✔️     |   ✔️   |
 
 ### 数据-机理融合驱动
 
 |          案例              |        数据集               |    模型架构       |  GPU    |  NPU  |
 |:-------------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-|   PDE-NET求解对流扩散方程   | 对流-扩散方程数据集           |    PDE-Net    |   ✔️     |   ✔️   |
+| [PDE-NET求解对流扩散方程](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)   | 对流-扩散方程数据集()           |    PDE-Net    |   ✔️     |   ✔️   |
 
 ### CFD
 
 |   案例        |     格式      |    GPU    |    NPU |
 |:------------:|:-------------:|:---------:|:-------|
-|sod激波管      |    Rusanov    |       ✔️   |   -   |
-|lax激波管      |    Rusanov    |      ✔️    |   -   |
-|二维黎曼问题    |       -       |     ✔️     |   -  |
-|库埃特流动      |       -       |  ✔️        |   -   |
+|[sod激波管](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/cfd/sod)      |    Rusanov    |       ✔️   |   -   |
+|[lax激波管](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/cfd/lax)      |    Rusanov    |      ✔️    |   -   |
+|[二维黎曼问题](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)    |       -       |     ✔️     |   -  |
+|[库埃特流动](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/cfd/couette)      |       -       |  ✔️        |   -   |
 
 ## **安装教程**
 
@@ -223,6 +223,12 @@ yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, liboka
             <img src="docs/partners/CACC.jpeg"/>
             <p align="center">
                 中国商飞
+            </p>
+        </td>
+        <td>
+            <img src="docs/partners/TaiHuLaboratory.jpeg"/>
+            <p align="center">
+                太湖实验室
             </p>
         </td>
         <td>
