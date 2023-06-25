@@ -256,7 +256,7 @@ yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, liboka
 
 ## **贡献指南**
 
-- 如何贡献您的代码，请点击此处查看：[贡献指南](https://gitee.com/mindspore/mindscience/blob/master/CONTRIBUTION.md)
+- 如何贡献您的代码，请点击此处查看：[贡献指南](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/CONTRIBUTION.md)
 
 ## **许可证**
 
