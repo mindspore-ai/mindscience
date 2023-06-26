@@ -87,7 +87,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 |          案例              |        数据集               |    模型架构       |  GPU    |  NPU  |
 |:-------------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-| [PDE-NET求解对流扩散方程](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)   | 对流-扩散方程数据集()           |    PDE-Net    |   ✔️     |   ✔️   |
+| [PDE-NET求解对流扩散方程](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)   | 对流-扩散方程数据集           |    PDE-Net    |   ✔️     |   ✔️   |
 
 ### CFD
 
@@ -256,7 +256,7 @@ yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, liboka
 
 ## **贡献指南**
 
-- 如何贡献您的代码，请点击此处查看：[贡献指南](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/CONTRIBUTION.md)
+- 如何贡献您的代码，请点击此处查看：[贡献指南](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/CONTRIBUTION_CN.md)
 
 ## **许可证**
 

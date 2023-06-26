@@ -255,7 +255,7 @@ yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, liboka
 
 ## **Contribution Guide**
 
-- Please click here to see how to contribute your code:[Contribution Guide](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/CONTRIBUTION.md)
+- Please click here to see how to contribute your code:[Contribution Guide](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/CONTRIBUTION_CN.md)
 
 ## **License**
 
