@@ -1,7 +1,7 @@
 mindsponge.potential
 ====================
 
-.. mscnplatformautosummary::
+.. msplatformautosummary::
     :toctree: potential
     :nosignatures:
     :template: classtemplate.rst

@@ -1,7 +1,7 @@
 mindsponge.optimizer
 ====================
 
-.. mscnplatformautosummary::
+.. msplatformautosummary::
     :toctree: optimizer
     :nosignatures:
     :template: classtemplate.rst
