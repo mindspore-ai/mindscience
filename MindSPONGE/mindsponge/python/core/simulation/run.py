@@ -44,40 +44,37 @@ from ...optimizer import Updater
 
 
 class RunOneStepCell(Cell):
-    r"""Cell to run one step simulation.
-
-        This Cell wraps the `energy` and `force` with the `optimizer`. The backward graph will be created
-        in the construct function to update the atomic coordinates of the simulation system.
+    r"""
+    Cell to run one step simulation.
+    This Cell wraps the `energy` and `force` with the `optimizer`. The backward graph will be created
+    in the construct function to update the atomic coordinates of the simulation system.
 
     Args:
+        energy(WithEnergyCell): Cell that wraps the simulation system with
+                                the potential energy function.
+                                Defatul: None
+        force(WithForceCell):   Cell that wraps the simulation system with
+                                the atomic force function.
+                                Defatul: None
+        optimizer(Optimizer):   Optimizer for simulation. Defatul: None
+        steps(int):             Steps for JIT. Default: 1
+        sens(float):            The scaling number to be filled as the input of backpropagation.
+                                Default: 1.0
 
-        energy (WithEnergyCell):    Cell that wraps the simulation system with
-                                    the potential energy function.
-                                    Defatul: None
+    Inputs:
+        - **\*inputs** (Tuple(Tensor)) - Tuple of input tensors of `WithEnergyCell`.
 
-        force (WithForceCell):      Cell that wraps the simulation system with
-                                    the atomic force function.
-                                    Defatul: None
-
-        optimizer (Optimizer):      Optimizer for simulation. Defatul: None
-
-        steps (int):                Steps for JIT. Default: 1
-
-        sens (float):               The scaling number to be filled as the input of backpropagation.
-                                    Default: 1.0
+    Outputs:
+        - energy, Tensor of shape `(B, 1)`. Data type is float. Total potential energy.
+        - force, Tensor of shape `(B, A, D)`. Data type is float. Atomic force.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Symbols:
-
         B:  Batchsize, i.e. number of walkers of the simulation.
-
         A:  Number of the atoms in the simulation system.
-
         D:  Spatial dimension of the simulation system. Usually is 3.
-
     """
     def __init__(self,
                  energy: WithEnergyCell = None,
@@ -143,152 +140,157 @@ class RunOneStepCell(Cell):
         self.steps = get_integer(steps)
 
     @property
-    def neighbour_list_pace(self) -> int:
-        r"""update step for neighbour list
+    def neighbour_list_pace(self):
+        r"""
+        update step for neighbour list.
 
         Return:
-            int, steps
-
+            int, the number of steps needed for neighbour list updating.
         """
         return self._neighbour_list_pace
 
     @property
-    def energy_cutoff(self) -> Tensor:
-        r"""cutoff distance for neighbour list in WithEnergyCell
+    def energy_cutoff(self):
+        r"""
+        cutoff distance for neighbour list in WithEnergyCell.
 
         Return:
-            Tensor, cutoff
-
+            Tensor, cutoff distance for neighbour list in WithEnergyCell.
         """
         if self.system_with_energy is None:
             return None
         return self.system_with_energy.cutoff
 
     @property
-    def force_cutoff(self) -> Tensor:
-        r"""cutoff distance for neighbour list in WithForceCell
+    def force_cutoff(self):
+        r"""
+        cutoff distance for neighbour list in WithForceCell.
 
         Return:
-            Tensor, cutoff
-
+            Tensor, cutoff distance for neighbour list in WithForceCell.
         """
         if self.system_with_force is None:
             return None
         return self.system_with_force.cutoff
 
     @property
-    def length_unit(self) -> str:
-        r"""length unit
+    def length_unit(self):
+        r"""
+        length unit.
 
         Return:
-            str, length unit
-
+            str, length unit.
         """
         return self.units.length_unit
 
     @property
-    def energy_unit(self) -> str:
-        r"""energy unit
+    def energy_unit(self):
+        r"""
+        energy unit.
 
         Return:
-            str, energy unit
-
+            str, energy unit.
         """
         return self.units.energy_unit
 
     @property
-    def num_energies(self) -> int:
-        r"""number of energy terms :math:`U`
+    def num_energies(self):
+        r"""
+        number of energy terms :math:`U`.
 
         Return:
-            int, number of energy terms
-
+            int, number of energy terms.
         """
         if self.system_with_energy is None:
             return 0
         return self.system_with_energy.num_energies
 
     @property
-    def energy_names(self) -> list:
-        r"""names of energy terms
+    def energy_names(self):
+        r"""
+        names of energy terms.
 
         Return:
-            list of str, names of energy terms
-
+            list[str], names of energy terms.
         """
         if self.system_with_energy is None:
             return []
         return self.system_with_energy.energy_names
 
     @property
-    def bias_names(self) -> list:
-        r"""name of bias potential energies
+    def bias_names(self):
+        r"""
+        name of bias potential energies.
 
         Return:
-            list of str, the bias potential energies
-
+            list[str], the bias potential energies.
         """
         if self.system_with_energy is None:
             return []
         return self.system_with_energy.bias_names
 
     @property
-    def num_biases(self) -> int:
-        r"""number of bias potential energies :math:`V`
+    def num_biases(self):
+        r"""
+        number of bias potential energies :math:`V`.
 
         Return:
-            int, number of bias potential energies
-
+            int, number of bias potential energies.
         """
         if self.system_with_energy is None:
             return 0
         return self.system_with_energy.num_biases
 
     @property
-    def energies(self) -> Tensor:
-        r"""Tensor of potential energy components.
+    def energies(self):
+        r"""
+        Tensor of potential energy components.
 
         Return:
-            energies(Tensor):   Tensor of shape `(B, U)`. Data type is float.
-
+            Tensor, Tensor of shape `(B, U)`. Data type is float.
         """
         if self.system_with_energy is None:
             return None
         return self.system_with_energy.energies
 
     @property
-    def biases(self) -> Tensor:
-        r"""Tensor of bias potential components.
+    def biases(self):
+        r"""
+        Tensor of bias potential components.
 
         Return:
-            biases(Tensor): Tensor of shape `(B, V)`. Data type is float.
-
+            Tensor, Tensor of shape `(B, V)`. Data type is float.
         """
         if self.system_with_energy is None:
             return None
         return self.system_with_energy.biases
 
     @property
-    def bias(self) -> Tensor:
-        r"""Tensor of the total bias potential.
+    def bias(self):
+        r"""
+        Tensor of the total bias potential.
 
         Return:
-            bias(Tensor): Tensor of shape `(B, 1)`. Data type is float.
-
+            Tensor, Tensor of shape `(B, 1)`. Data type is float.
         """
         if self.system_with_energy is None:
             return None
         return self.system_with_energy.bias
 
     @property
-    def bias_function(self) -> Cell:
-        r"""Cell of bias potential function"""
+    def bias_function(self):
+        r"""
+        Cell of bias potential function.
+
+        Return:
+            Cell, bias potential function.
+        """
         if self.system_with_energy is None:
             return None
         return self.system_with_energy.bias_function
 
     def update_neighbour_list(self):
-        r"""update neighbour list"""
+        r"""update neighbour list."""
         if self.system_with_energy is not None:
             self.system_with_energy.update_neighbour_list()
         if self.system_with_force is not None and self.system_with_force.neighbour_list is not None:
@@ -296,40 +298,45 @@ class RunOneStepCell(Cell):
         return self
 
     def update_bias(self, step: int):
-        r"""update bias potential
+        r"""
+        update bias potential.
 
         Args:
-            step (int): Simulatio step.
-
+            step(int):  Simulation step to update bias potential.
         """
         if self.system_with_energy is not None:
             self.system_with_energy.update_bias(step)
         return self
 
     def update_wrapper(self, step: int):
-        r"""update energy wrapper
+        r"""
+        update energy wrapper.
 
         Args:
-            step (int): Simulatio step.
-
+            step(int):  Simulation step to update energy wrapper.
         """
         if self.system_with_energy is not None:
             self.system_with_energy.update_wrapper(step)
         return self
 
     def update_modifier(self, step: int):
-        r"""update force modifier
+        r"""
+        update force modifier.
 
         Args:
-            step (int): Simulatio step.
-
+            step(int):  Simulation step to update force modifier.
         """
         if self.system_with_force is not None:
             self.system_with_force.update_modifier(step)
         return self
 
     def set_pbc_grad(self, value: bool):
-        r"""set whether to calculate the gradient of PBC box"""
+        r"""
+        set whether to calculate the gradient of PBC box.
+
+        Args:
+            value(bool): Flag to judge whether to calculate the gradient of PBC box.
+        """
         if self.system_with_energy is not None:
             self.system_with_energy.set_pbc_grad(value)
         if self.system_with_force is not None:
@@ -337,29 +344,31 @@ class RunOneStepCell(Cell):
         return self
 
     def set_steps(self, steps: int):
-        r"""set steps for JIT
+        r"""
+        set steps for JIT.
 
         Args:
-            step (int): Simulatio step.
-
+            step(int):  Simulation step for JIT.
         """
         self.steps = get_integer(steps)
         return self
 
     @jit
     def run_one_step(self, *inputs):
-        r"""run one step simulation
+        r"""
+        Run one step simulation.
+
+        Args:
+            *inputs(Tuple(Tensor)): Tuple of input tensors of `WithEnergyCell`.
 
         Returns:
-            energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
-                                Total potential energy.
-            force (Tensor):     Tensor of shape `(B, A, D)`. Data type is float.
-                                Atomic force.
+            - energy, Tensor of shape `(B, 1)`. Data type is float. Total potential energy.
+            - force, Tensor of shape `(B, A, D)`. Data type is float. Atomic force.
+
         Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             D:  Spatial dimension of the simulation system. Usually is 3.
-
         """
         energy = 0
         force = 0
@@ -387,19 +396,20 @@ class RunOneStepCell(Cell):
         return energy, force
 
     def construct(self, *inputs) -> Tuple[Tensor, Tensor]:
-        r"""run simulation
+        r"""
+        Run simulation.
+
+        Args:
+            *inputs(list): Inputs of the 'WithEnergyCell'.
 
         Returns:
-            energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
-                                Total potential energy.
-            force (Tensor):     Tensor of shape `(B, A, D)`. Data type is float.
-                                Atomic force.
+            - energy, Tensor of shape `(B, 1)`. Data type is float. Total potential energy.
+            - force, Tensor of shape `(B, A, D)`. Data type is float. Atomic force.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             D:  Spatial dimension of the simulation system. Usually is 3.
-
         """
         if self.steps == 1:
             return self.run_one_step(*inputs)

@@ -42,44 +42,36 @@ from ...sampling.wrapper import EnergyWrapper
 
 
 class WithEnergyCell(Cell):
-    r"""Cell that wraps the simulation system with the potential energy function.
-
-        This Cell calculates the value of the potential energy of the system at the current coordinates and returns it.
+    r"""
+    Cell that wraps the simulation system with the potential energy function.
+    This Cell calculates the value of the potential energy of the system at the current coordinates and returns it.
 
     Args:
-
-        system (Molecule):              Simulation system.
-
-        potential (PotentialCell):      Potential energy function cell.
-
-        bias (Union[Bias, List[Bias]]): Bias potential function cell. Default: None
-
-        cutoff (float):                 Cut-off distance for neighbour list. If None is given, it will be assigned
+        system(Molecule):               Simulation system.
+        potential(PotentialCell):       Potential energy function cell.
+        bias(Union[Bias, List[Bias]]):  Bias potential function cell. Default: None
+        cutoff(float):                  Cut-off distance for neighbour list. If None is given, it will be assigned
                                         as the cutoff value of the of potential energy.
                                         Defulat: None
-
-        neighbour_list (NeighbourList): Neighbour list. Default: None
-
-        wrapper (EnergyWrapper):        Network to wrap and process potential and bias.
+        neighbour_list(NeighbourList):  Neighbour list. Default: None
+        wrapper(EnergyWrapper):         Network to wrap and process potential and bias.
                                         Default: None
 
-    Supported Platforms:
+    Inputs:
+        - **\*inputs** (Tuple(Tensor)) - Tuple of input tensors of 'WithEnergyCell'.
 
+    Outputs:
+        energy, Tensor of shape `(B, 1)`. Data type is float. Total potential energy.
+
+    Supported Platforms:
         ``Ascend`` ``GPU``
 
-
     Symbols:
-
         B:  Batchsize, i.e. number of walkers of the simulation.
-
         A:  Number of the atoms in the simulation system.
-
         N:  Number of the maximum neighbouring atoms.
-
         U:  Number of potential energy terms.
-
         V:  Number of bias potential terms.
-
     """
 
     def __init__(self,
@@ -182,101 +174,101 @@ class WithEnergyCell(Cell):
 
     @property
     def cutoff(self) -> Tensor:
-        r"""cutoff distance for neighbour list
+        r"""
+        Cutoff distance for neighbour list.
 
         Return:
-            Tensor, cutoff
-
+            Tensor, cutoff distance.
         """
         return self.neighbour_list.cutoff
 
     @property
     def neighbour_list_pace(self) -> int:
-        r"""update step for neighbour list
+        r"""
+        Update step for neighbour list.
 
         Return:
-            int, steps
-
+            int, update steps.
         """
         return self.neighbour_list.pace
 
     @property
     def length_unit(self) -> str:
-        r"""length unit
+        r"""
+        Length unit.
 
         Return:
-            str, length unit
-
+            str, length unit.
         """
         return self.units.length_unit
 
     @property
     def energy_unit(self) -> str:
-        r"""energy unit
+        r"""
+        Energy unit.
 
         Return:
-            str, energy unit
-
+            str, energy unit.
         """
         return self.units.energy_unit
 
     @property
     def num_energies(self) -> int:
-        r"""number of energy terms :math:`U`
+        r"""
+        Number of energy terms :math:`U`.
 
         Return:
-            int, number of energy terms
-
+            int, number of energy terms.
         """
         return self.potential_function.num_energies
 
     @property
     def num_biases(self) -> int:
-        r"""number of bias potential energies :math:`V`
+        r"""
+        Number of bias potential energies :math:`V`.
 
         Return:
-            int, number of bias potential energies
-
+            int, number of bias potential energies.
         """
         return self._num_biases
 
     @property
     def energy_names(self) -> list:
-        r"""names of energy terms
+        r"""
+        Names of energy terms.
 
         Return:
-            list of str, names of energy terms
-
+            list[str], names of energy terms.
         """
         return self.potential_function.energy_names
 
     @property
     def bias_names(self) -> list:
-        r"""name of bias potential energies
+        r"""
+        Name of bias potential energies.
 
         Return:
-            list of str, the bias potential energies
-
+            list[str], the bias potential energies.
         """
         return self._bias_names
 
     @property
     def energies(self) -> Tensor:
-        r"""Tensor of potential energy components.
+        r"""
+        Tensor of potential energy components.
 
         Return:
-            energies(Tensor):   Tensor of shape `(B, U)`. Data type is float.
-
+            Tensor, Tensor of shape `(B, U)`. Data type is float.
         """
         return self.identity(self._energies)
 
     @property
     def biases(self) -> Tensor:
-        r"""Tensor of bias potential components.
+        r"""
+        Tensor of bias potential components.
 
         Return:
-            biases(Tensor): Tensor of shape `(B, V)`. Data type is float.
-
+            Tensor, Tensor of shape `(B, V)`. Data type is float.
         """
         if self.bias_function is None:
             return None
@@ -284,59 +276,54 @@ class WithEnergyCell(Cell):
 
     @property
     def bias(self) -> Tensor:
-        r"""Tensor of the total bias potential.
+        r"""
+        Tensor of the total bias potential.
 
         Return:
-            bias(Tensor): Tensor of shape `(B, 1)`. Data type is float.
-
+            Tensor, Tensor of shape `(B, 1)`. Data type is float.
         """
         return self.identity(self._bias)
 
     def bias_pace(self, index: int = 0) -> int:
-        """return the update freqenucy for bias potential
+        """
+        Return the update freqenucy for bias potential.
 
         Args:
-            index (int):    Index of bias potential
+            index(int): Index of bias potential. Default: 0
 
         Returns:
-            update_pace (int):  Update freqenucy
-
+            int, update freqenucy.
         """
         return self.bias_function[index].update_pace
 
     def set_pbc_grad(self, grad_box: bool):
-        r"""set whether to calculate the gradient of PBC box
+        r"""
+        Set whether to calculate the gradient of PBC box.
 
         Args:
-            grad_box (bool):    Whether to calculate the gradient of PBC box.
-
+            grad_box(bool): Whether to calculate the gradient of PBC box.
         """
         self.system.set_pbc_grad(grad_box)
         return self
 
     def update_neighbour_list(self) -> Tuple[Tensor, Tensor]:
-        r"""update neighbour list
-
-        Args:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-                                    Position coordinate.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Size of PBC box.
+        r"""
+        Update neighbour list.
 
         Returns:
-            neigh_idx (Tensor):     Tensor of shape `(B, A, N)`. Data type is int.
-                                    Index of neighbouring atoms of each atoms in system.
-            neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
-                                    Mask for neighbour list `neigh_idx`.
+            - neigh_idx, Tensor. Tensor of shape `(B, A, N)`. Data type is int.
+              Index of neighbouring atoms of each atoms in system.
+            - neigh_mask, Tensor. Tensor of shape `(B, A, N)`. Data type is bool.
+              Mask for neighbour list `neigh_idx`.
         """
         return self.neighbour_list.update(self.coordinate, self.pbc_box)
 
     def update_bias(self, step: int):
-        r"""update bias potential
+        r"""
+        Update bias potential.
 
         Args:
-            step (int): Simulatio step.
-
+            step(int):  Current simulation step. If it can be divided by update frequency, update the bias potential.
         """
         if self.bias_function is not None:
             for i in range(self._num_biases):
@@ -345,44 +332,43 @@ class WithEnergyCell(Cell):
         return self
 
     def update_wrapper(self, step: int):
-        r"""update energy wrapper
+        r"""
+        Update energy wrapper.
 
         Args:
-            step (int): Simulatio step.
-
+            step(int):  Current simulation step. If it can be divided by update frequency, update the energy wrapper.
         """
         if self.wrapper_pace > 0 and step % self.wrapper_pace == 0:
             self.energy_wrapper.update()
         return self
 
     def get_neighbour_list(self) -> Tuple[Tensor, Tensor]:
-        r"""get neighbour list
+        r"""
+        Get neighbour list.
 
         Returns:
-            neigh_idx (Tensor):     Tensor of shape `(B, A, N)`. Data type is int.
-                                    Index of neighbouring atoms of each atoms in system.
-            neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
-                                    Mask for neighbour list `neigh_idx`.
+            - neigh_idx, Tensor. Tensor of shape `(B, A, N)`. Data type is int.
+              Index of neighbouring atoms of each atoms in system.
+            - neigh_mask, Tensor. Tensor of shape `(B, A, N)`. Data type is bool.
+              Mask for neighbour list `neigh_idx`.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.
-
         """
         return self.neighbour_list.get_neighbour_list()
 
     def calc_energies(self) -> Tensor:
-        """calculate the energy terms of the potential energy.
+        """
+        Calculate the energy terms of the potential energy.
 
         Return:
-            energies (Tensor):  Tensor of shape `(B, U)`. Data type is float.
-                                Energy terms.
+            Tensor, Tensor of shape `(B, U)`. Data type is float. Energy terms.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             U:  Number of potential energy terms.
-
         """
 
         neigh_idx, neigh_vec, neigh_dis, neigh_mask = self.neighbour_list(self.coordinate, self.pbc_box)
@@ -406,16 +392,15 @@ class WithEnergyCell(Cell):
         return energies
 
     def calc_biases(self) -> Tensor:
-        """calculate the bias potential terms.
+        """
+        Calculate the bias potential terms.
 
         Return:
-            biases (Tensor):    Tensor of shape `(B, V)`. Data type is float.
-                                Energy terms.
+            Tensor, Tensor of shape `(B, V)`. Data type is float. Bias potential terms.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             V:  Number of bias potential terms.
-
         """
         if self.bias_function is None:
             return None
