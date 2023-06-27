@@ -1,7 +1,7 @@
 mindsponge.core
 ===============
 
-.. mscnplatformautosummary::
+.. msplatformautosummary::
     :toctree: core
     :nosignatures:
     :template: classtemplate.rst

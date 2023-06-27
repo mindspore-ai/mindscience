@@ -1,7 +1,7 @@
 mindsponge.control
 ==================
 
-.. mscnplatformautosummary::
+.. msplatformautosummary::
     :toctree: control
     :nosignatures:
     :template: classtemplate.rst
