@@ -20,10 +20,23 @@
 # limitations under the License.
 # ============================================================================
 """
-AIchemist
+AIChemist
 """
 
 import time
+from mindspore import train
+from mindspore import nn
+from . import net
+from . import scenarios
+from . import data
+from . import loss
+from . import util
+from . import core
+from . import dataset
+from . import layers
+from . import metrics
+from . import transforms
+from .core import Registry as R
 
 
 def _mindspore_version_check():
@@ -46,7 +59,7 @@ def _mindspore_version_check():
                           "the instruction at https://www.mindspore.cn/install")
 
     ms_version = mindspore.__version__
-    required_mindspore_version = '1.8.1'
+    required_mindspore_version = '2.0.0'
     logger.info("Current Mindspore version is {}".format(ms_version))
     ms_version = list(map(int, ms_version.split('.')))
     required_mindspore = list(map(int, required_mindspore_version.split('.')))
@@ -67,4 +80,8 @@ def _mindspore_version_check():
                 f"Please pay attention to the above warning, countdown: {i}")
             time.sleep(1)
 
+
 _mindspore_version_check()
+R.put(nn.Adam, 'optim.adam')
+R.put(train.MAE, 'metric.mae')
+R.put(train.MSE, 'metric.mse')
