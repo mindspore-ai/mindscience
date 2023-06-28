@@ -86,7 +86,7 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 |          Case              |        Dataset               |    Network       |  GPU    |  NPU  |
 |:--------------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-|   [PDE-Net for Convection-Diffusion Equation](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)   | Convection-Diffusion Equation Dataset   |    PDE-Net    |   ✔️     |   ✔️   |
+|   [PDE-Net for Convection-Diffusion Equation](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)   | -   |    PDE-Net    |   ✔️     |   ✔️   |
 
 ### CFD
 
