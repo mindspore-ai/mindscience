@@ -29,7 +29,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **Coming Soon** 🚀
 
-- Everything is coming soon, don't worry~
+- The third Summer School activity will be held in Peking University from August 21 to August 25, 2023. The activity is in preparation. Please look forward to it!
 
 ## **Quick Start**
 

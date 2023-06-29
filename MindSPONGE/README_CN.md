@@ -28,7 +28,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **即将到来** 🚀
 
-- 不要着急，精彩即将到来~
+- 第三期暑期学校活动将于2023年8月21日——8月25日在北京大学举行，活动正在火热筹备中，敬请期待！
 
 ## **初体验**
 
