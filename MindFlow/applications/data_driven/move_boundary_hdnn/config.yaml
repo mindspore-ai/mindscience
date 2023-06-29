@@ -1,0 +1,22 @@
+data:
+  data_dir: "./forced_move"  # dataset store direction
+  time_steps: 1              # previous time steps used to predict
+
+model:
+  in_channels: 3             # the number of channels in the input space
+  num_layers: 12             # the number of Convolutional and DeConvolutional layer
+  kernel_size: 4             # the size of  kernel in Convolutional and DeConvolutional layer
+  num_convlstm_layers: 1     # the number of ConvLSTM layers
+  
+optimizer:
+  lr: 0.001                         # learning rate
+  epochs: 100                       # the number of training epochs
+  eval_interval: 10                 # time interval for model evaluation
+  save_ckpt_interval: 10            # save the model once for 10 epochs
+  ckpt_dir: "./ckpt_dir"            # the directory where the model files are saved
+
+prediction:
+  data_dir: "./forced_move/f0.90h0.20"                   # prediction dataset store direction
+  ckpt_path: "./ckpt_dir/net_100.ckpt"                   # the path of ckpt file used in prediction process
+  prediction_result_dir: "./save_prediction"             # the path for predicting results of a single step flow field
+  pred_continue_dir: "./save_prediction_continue"        # dtrained model store direction
