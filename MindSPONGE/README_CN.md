@@ -17,6 +17,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 ## **最新消息** 📰
 
 - 🔥`置顶` [**开源实习任务**](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue)发布！欢迎大家认领~
+- 🔥`2023.6.26` MindSPONGE论文"Artificial Intelligence Enhanced Molecular Simulations"发表于计算化学期刊JCTC，详情参见[论文](https://pubs.acs.org/doi/10.1021/acs.jctc.3c00214)
 - 🔥`2023.5.31` NMR核磁共振动态蛋白质结构解析方法正式开源，详情参见论文 [Assisting and Accelerating NMR Assignment with Restrained Structure Prediction](https://www.biorxiv.org/content/10.1101/2023.04.14.536890v1) 和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/FAAST/)
 - `2023.1.31` MindSPONGE 1.0.0-alpha版本发布，文档介绍可参见MindSpore官网中的[**科学计算套件MindSPONGE模块**](https://mindspore.cn/mindsponge/docs/zh-CN/r1.0.0-alpha/index.html)
 - `2022.8.23` 论文"Few-Shot Learning of Accurate Folding Landscape for Protein Structure Prediction" arxiv预印，详情参见[论文](https://arxiv.org/abs/2208.09652)

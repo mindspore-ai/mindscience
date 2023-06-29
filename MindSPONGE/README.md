@@ -18,6 +18,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 ## **Latest News** 📰
 
 - 🔥`Top` [**open source internship task**](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue) has been released! Everyone is welcome to claim it~
+- 🔥`2023.6.26` MindSPONGE Paper "Artificial Intelligence Enhanced Molecular Simulations" is published in JCTC. Please refer to [paper](https://pubs.acs.org/doi/10.1021/acs.jctc.3c00214).
 - 🔥`2023.5.31` Paper "Assisting and Accelerating NMR Assignment with Restrained Structure Prediction" is preprinted in arxiv, Please refer to [paper](https://arxiv.org/abs/2208.09652) and [code](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/FAAST/).
 - `2023.1.31` MindSPONGE version 1.0.0-alpha is released. The documents are available on [**Scientific Computing MindSPONGE module**](https://mindspore.cn/mindsponge/docs/en/r1.0.0-alpha/index.html) on MindSpore website
 - `2022.8.23` Paper "Few-Shot Learning of Accurate Folding Landscape for Protein Structure Prediction" is preprinted in arxiv, Please refer to [paper](https://arxiv.org/abs/2208.09652)
