@@ -1,0 +1,27 @@
+geometry:
+  rectangle:
+    coord_min: [0., 0.]
+    coord_max: [1., 1.]
+data:
+  domain:
+    random_sampling: True
+    size: 1000000
+    sampler: "uniform"
+  BC:
+    random_sampling: True
+    size: 1000000
+    sampler: "uniform"
+model:
+  in_channels: 2
+  out_channels: 3
+  layers: 4
+  neurons: 50
+  residual: True
+optimizer:
+  initial_lr: 0.001
+batch_size: 8000
+epochs: 20
+load_ckpt: false
+save_ckpt: false
+save_ckpt_path: "./ckpt"
+visual_resolution: 100
