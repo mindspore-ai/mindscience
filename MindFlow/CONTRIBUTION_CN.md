@@ -191,7 +191,8 @@ python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_targ
 
 ## Contributor
 
-代码贡献者的gitee id，email
+代码贡献者的gitee id:
+代码贡献者的email:
 
 ```
 
