@@ -111,4 +111,6 @@ generalization state) (displaying pressure field, horizontal velocity field, and
 
 ## Contributor
 
-The Gitee ID of the code contributor in this article is [DUJiaoxi](https://gitee.com/ddd000g), email is dujiaoxi@stu.xjtu.edu.cn
+gitee id: [DUJiaoxi](https://gitee.com/ddd000g)
+
+email: dujiaoxi@stu.xjtu.edu.cn

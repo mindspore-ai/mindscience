@@ -78,4 +78,6 @@ python train.py --mode GRAPH --save_graphs False --save_graphs_path ./summary --
 
 ## Contributor
 
-本文代码贡献者的gitee id为[DUJiaoxi](https://gitee.com/ddd000g), email为dujiaoxi@stu.xjtu.edu.cn
+gitee id: [DUJiaoxi](https://gitee.com/ddd000g)
+
+email: dujiaoxi@stu.xjtu.edu.cn
