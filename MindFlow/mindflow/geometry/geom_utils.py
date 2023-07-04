@@ -15,7 +15,7 @@
 """utils for geometry"""
 from __future__ import absolute_import
 import numpy as np
-import scipy.stats as ss
+from scipy.stats import qmc
 
 from .geometry_base import PartSamplingConfig, SamplingConfig, GEOM_TYPES, SAMPLER_TYPES
 from ..utils.check_func import check_param_type
@@ -69,9 +69,9 @@ def generate_sampling_config(dict_config):
 
 
 _sampler_method = {
-    "lhs": ss.qmc.LatinHypercube,
-    "halton": ss.qmc.Halton,
-    "sobol": ss.qmc.Sobol,
+    "lhs": qmc.LatinHypercube,
+    "halton": qmc.Halton,
+    "sobol": qmc.Sobol,
     "uniform": np.random.rand
 }
 
