@@ -113,7 +113,9 @@ class Colabdesign(nn.Cell):
         """construct"""
         seqs_res = self.soft_seq(self.seq_vector, self.ori_seq_len,
                                  opt_temp_num, opt_soft_num, opt_hard_num)
-        seq_logits, seq_pssm, seq_pseudo, _ = seqs_res[0], seqs_res[1], seqs_res[2], seqs_res[3]
+        seq_logits, seq_pssm, seq_pseudo, seq_hard = seqs_res[0], seqs_res[1], seqs_res[2], seqs_res[3]
+        if self.save_best:
+            return seq_hard
         if self.opt_use_pssm:
             pssm = seq_pssm
         else:
