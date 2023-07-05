@@ -256,7 +256,11 @@ class ProteinFeatures(nn.Cell):
                                                            :]) == 0), ms.int32)  # find self vs non-self interaction
         e_chains = gather_edges(d_chains[:, :, :, None], e_idx)[:, :, :, 0]
         e_positional = self.embeddings(ops.Cast()(offset, ms.int32), e_chains)
-        e = ops.Concat(axis=-1)((e_positional, rbf_all.astype(ms.float16)))
+        if context.get_context("device_target") == "GPU":
+            my_dtype = ms.float32
+        else:
+            my_dtype = ms.float16
+        e = ops.Concat(axis=-1)((e_positional, rbf_all.astype(my_dtype)))
         e = self.edge_embedding(e)
         e = self.norm_edges(e)
         return e, e_idx

@@ -21,7 +21,7 @@ from mindspore import Tensor
 from mindspore import jit, context
 
 from .module.design_wrapcell import TrainOneStepCell, WithLossCell
-from .module.utils import get_weights, get_lr, get_opt
+from .module.utils import get_weights, get_lr, get_opt, get_seqs
 from .nn_arch import Colabdesign
 from ..model import Model
 
@@ -70,7 +70,7 @@ class COLABDESIGN(Model):
         temp, soft, hard = get_weights(self.config, self.config.soft_iters, self.config.temp_iters,
                                        self.config.hard_iters)
         best = 999
-        for epoch in range(30):
+        for epoch in range(2):
             temp_step = temp[epoch]
             soft_step = soft[epoch]
             hard_step = hard[epoch]
@@ -78,9 +78,17 @@ class COLABDESIGN(Model):
             data[-5] = soft_step
             data[-4] = hard_step
             inputs_feats = [Tensor(feat) for feat in data]
+            self.train_net.add_flags_recursive(save_best=False)
+            self.train_net.phase = 'save_best'
             loss = self._jit_forward(inputs_feats)
             if loss < best:
+                self.train_net.add_flags_recursive(save_best=True)
+                self.train_net.phase = 'save_best'
                 best = loss
+                inputs_feats = [Tensor(feat) for feat in data]
+                final_seq = self._jit_forward(inputs_feats)
+        final_seqs = get_seqs(final_seq.asnumpy())
+        print("fina_seqs", str(final_seqs))
         return best
 
     def forward(self, data):

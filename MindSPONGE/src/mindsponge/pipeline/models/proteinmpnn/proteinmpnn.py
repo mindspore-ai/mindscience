@@ -20,7 +20,7 @@ from mindspore import Tensor
 
 from ..model import Model
 from .nn_arch import ProteinMPNN
-from .utils import scores_, loss_nll, ProcessLinspace
+from .utils import loss_nll, ProcessLinspace, s_to_seq
 from .proteinmpnn_wrapcell import CustomTrainOneStepCell, CustomWithLossCell, LossSmoothed, LRLIST
 from .proteinmpnn_dataset import ProteinMpnnDataset
 
@@ -117,9 +117,6 @@ class ProteinMpnn(Model):
                 data[1] = s_sample
                 log_probs = net_work_use(data)
                 mask_for_loss = inputs[2] * inputs[3] * inputs[4]
-                scores = scores_(data[1], log_probs, mask_for_loss)
-                scores = scores.asnumpy()
-                print(scores)
                 all_probs_list.append(sample_dict.get("probs").asnumpy())
                 all_log_probs_list.append(log_probs.asnumpy())
                 s_sample_list.append(s_sample.asnumpy())
@@ -128,6 +125,8 @@ class ProteinMpnn(Model):
             seq_recovery_rate = ops.ReduceSum()(ops.ReduceSum()(nn.OneHot(depth=21)(inputs[1][0]) \
                                                                 * nn.OneHot(depth=21)(s_sample[0]), axis=-1) \
                                                 * mask_for_loss[0]) / ops.ReduceSum()(mask_for_loss[0])
+            native_seq = s_to_seq(inputs[1][0], inputs[3][0])
+            print("final_seq", native_seq)
 
         return seq_recovery_rate
 
