@@ -44,7 +44,6 @@ usage()
   echo "    -e Use gpu or ascend. Currently only support ascend, later will support GPU"
   echo "    -j[n] Set the threads when building (Default: -j8)"
   echo "    -t whether to compile traditional sponge(GPU platform)"
-  echo "    -c whether to build Cybertron(A basic Molecular Representation NN toolkit)"
   echo "    -d whether to create time in the package"
   echo "    -p which package to build (Default: mindsponge)"
 }
@@ -66,7 +65,6 @@ checkopts()
   ENABLE_D="off"
   ENABLE_GPU="off"
   ENABLE_MD="off"
-  ENABLE_CYBERTRON="on"
   ENABLE_DAILY="off"
   THREAD_NUM=8
   PACKAGE="mindsponge"
@@ -83,9 +81,6 @@ checkopts()
             ;;
         t)
             ENABLE_MD=$OPTARG
-            ;;
-        c)
-            ENABLE_CYBERTRON=$OPTARG
             ;;
         d)
             ENABLE_DAILY=$OPTARG
@@ -171,20 +166,6 @@ build_mindsponge()
   mv ${BASEPATH}/build/dist/*whl ${OUTPUT_PATH}
   write_checksum
   echo "---------------- MindSPONGE: build end ----------------"
-
-  if [[ "X$ENABLE_CYBERTRON" = "Xon" ]]; then
-    echo "build Cybertron"
-    cp -r "${BASEPATH}/cybertron/" "${BASEPATH}/build/"
-    mv "${BASEPATH}/build/cybertron/setup.py" "${BASEPATH}/build/"
-    mv "${BASEPATH}/build/cybertron/requirements.txt" "${BASEPATH}/build/"
-    export CYBERTRON_PACKAGE_NAME=cybertron
-    cd ${BASEPATH}/build/
-    ${PYTHON} ./setup.py bdist_wheel
-    cd ..
-    mv ${BASEPATH}/build/dist/cybertron*.whl ${OUTPUT_PATH}
-    rm -rf ${BASEPATH}/build/*
-  fi
-
 }
 
 checkopts "$@"
