@@ -18,7 +18,7 @@ import numpy as np
 import mindspore as ms
 import mindspore.nn as nn
 import mindspore.ops as ops
-from mindspore import Tensor
+from mindspore import Tensor, context
 from mindspore.common.initializer import initializer, XavierUniform
 
 from .utils import ProcessLinspace
