@@ -1,0 +1,28 @@
+template:
+  base: water.spce.yaml
+parameters:
+  bond_energy:
+    length_unit: nm
+    energy_unit: kj/mol
+    parameter_names:
+      pattern: [bond_length, force_constant]
+    parameters:
+      OW-HW: [0.1, 345000]
+  angle_energy:
+    length_unit: nm
+    energy_unit: kj/mol
+    parameter_names:
+      pattern: [bond_angle, force_constant]
+    parameters:
+      HW-OW-HW: [109.47, 383]
+  coulomb_energy:
+    length_unit: nm
+    energy_unit: kj/mol
+  vdw_energy:
+    length_unit: nm
+    energy_unit: kj/mol
+    parameter_names:
+      pattern: [sigma, epsilon]
+    parameters:
+      OW: [0.316557, 0.650629]
+      HW: [0.0, 0.0]

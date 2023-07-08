@@ -2,9 +2,10 @@
 #                       Peking University &
 #                       Huawei Technologies Co., Ltd
 #
-# This code is a part of Sponge package.
+# This code is a part of MindSPONGE:
+# MindSpore Simulation Package tOwards Next Generation molecular modelling.
 #
-# The Sponge is open-source software based on the AI-framework:
+# MindSPONGE is open-source software based on the AI-framework:
 # MindSpore (https://www.mindspore.cn/)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,43 +20,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""
-Sponge
-"""
+"""MindSPONGE"""
 
 import time
+from distutils.version import LooseVersion
 
 
 def _mindspore_version_check():
     """
-       Do the MindSpore version check for Sponge. If the
+       Do the MindSpore version check for MindSPONGE. If the
        MindSpore can not be imported, it will raise ImportError. If its
-       version is not compatibale with current Sponge verision,
+       version is not compatibale with current MindSponge verision,
        it will print a warning.
 
        Raise:
            ImportError: If the MindSpore can not be imported.
        """
 
+    # pylint: disable=import-outside-toplevel
     try:
-        import mindspore
+        import mindspore as ms
         from mindspore import log as logger
     except ImportError:
         raise ImportError("Can not find MindSpore in current environment. Please install "
-                          "MindSpore before using MindSpore Sponge, by following "
+                          "MindSpore before using MindSpore Mindsponge, by following "
                           "the instruction at https://www.mindspore.cn/install")
 
-    ms_version = mindspore.__version__
+    ms_version = ms.__version__
     required_mindspore_version = '1.8.1'
     logger.info("Current Mindspore version is {}".format(ms_version))
-    ms_version = list(map(int, ms_version.split('.')))
-    required_mindspore = list(map(int, required_mindspore_version.split('.')))
-    max_len = max(len(ms_version), len(required_mindspore))
-    ms_version += [0] * (max_len - len(ms_version))
-    required_mindspore += [0] * (max_len - len(required_mindspore))
-
-    if ms_version < required_mindspore:
-        logger.warning("Current version of MindSpore is not compatible with Sponge. "
+    if LooseVersion(ms_version) < LooseVersion(required_mindspore_version):
+        logger.warning("Current version of MindSpore is not compatible with MindSPONGE. "
                        "Some functions might not work or even raise error. Please install MindSpore "
                        "version >= {} For more details about dependency setting, please check "
                        "the instructions at MindSpore official website https://www.mindspore.cn/install "
@@ -68,3 +63,11 @@ def _mindspore_version_check():
             time.sleep(1)
 
 _mindspore_version_check()
+
+# pylint: disable=wrong-import-position
+from .system import Molecule, Protein
+from .potential import PotentialCell, ForceFieldBase, ForceField
+from .optimizer import Updater, UpdaterMD, DynamicUpdater
+from .core import Sponge, WithEnergyCell, SimulationCell, RunOneStepCell, AnalysisCell
+from .function.units import GLOBAL_UNITS, set_global_units
+from .function.units import set_global_length_unit, set_global_energy_unit
