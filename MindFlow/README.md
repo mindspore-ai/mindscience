@@ -41,6 +41,7 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 ## **Latest News**
 
+- 🔥`2023.07.06` On July 6, 2023, the 2023 World Artificial Intelligence Conference with the theme of "Connect the World Intelligently. Generate the Future" was successfully held at the Shanghai World Expo Center. The 3D Supercritical airfoil fluid simulation AI model "Dongfang Yifeng" from Comac Shanghai Aircraft Design and Research Institute won the SAIL Award, the highest award of the World Artificial Intelligence Conference. This model is a large intelligent AI model for wing complex flow simulation scenarios jointly developed by Comac Co., Ltd. Shanghai Aircraft Design and Research Institute and Huawei based on the domestic Shengteng AI basic software and hardware platform and MindSpore AI framework, [Page](https://www.thepaper.cn/newsDetail_forward_23769936).
 - 🔥`2023.05.21` On May 21, 2023, the second plenary meeting of the intelligent fluid mechanics industrial consortium was successfully held in Hangzhou West Lake University, and Shengsi MindSpore co organized the meeting. Three academicians of the CAS Member, representatives of the industrial consortium and experts from the academic and industrial circless who care about the consortium attended the meeting. The first fluid mechanics model for aircraft - "Qinling · AoXiang" model is pre released. This model is an intelligent model for aircraft fluid simulation jointly developed by the International Joint Institute of fluid mechanics Intelligence of Northwestern Polytechnical University and Huawei based on the domestic Shengteng AI basic software and hardware platform and MindSpore AI framework.[Page](http://science.china.com.cn/2023-05/23/content_42378458.htm)。
 - 🔥`2023.02.28` Mindspore team has cooperated with Prof. Bin Dong from Peking University and Prof. Yanli Wang from CSRC in the respect of proposing a neural sparse representation to solve Boltzmann equation. Our achievement is about to publish. [Solving Boltzmann equation with neural sparse representation](https://arxiv.org/abs/2302.09233). Here is a sample code:[Neural representation method for Boltzmann equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/boltzmann)
 - 🔥`2023.02.05` [MindFlow 0.1.0-alpha](https://mindspore.cn/mindflow/docs/zh-CN/r0.1.0-alpha/index.html) is released.
@@ -81,6 +82,7 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 |[sod Problem](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm/sod)   |  [1D sod Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)         |     CAE-LSTM    |   ✔️     |   ✔️   |
 |[KH pelblem](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm/kh)         |  [2D K-H Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/kh/)            |  CAE-LSTM     |   ✔️     |   ✔️   |
 |[2D Airfoil Buffet](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/transonic_buffet_ehdnn)          |  [2D Airfoil Buffet Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_unsteady/)           |      ehdnn    |   ✔️     |   ✔️   |
+|[Move Boundary Hdnn](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/move_boundary_hdnn)          |  [Move Boundary Hdnn Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/move_boundary_hdnn)           |      hdnn    |   ✔️     |   ✔️   |
 
 ### Data-Mechanism Fusion
 
@@ -206,7 +208,7 @@ We will continue to release [open source internship tasks](https://gitee.com/min
 
 Thanks goes to these wonderful people 🧑‍🤝‍🧑:
 
-yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang
+yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, guoboqiang, chengzeruizhi, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang
 
 ### Community Partners
 

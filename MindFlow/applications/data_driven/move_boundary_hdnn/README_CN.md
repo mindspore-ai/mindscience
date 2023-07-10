@@ -76,7 +76,7 @@ python train.py --mode GRAPH --save_graphs False --save_graphs_path ./summary --
   <img src="./images/pred_cycle_puv.jpg" title="pred_cycle_puv" width="500"/>
 </div>
 
-## Contributor
+## 贡献者
 
 gitee id：[DUJiaoxi](https://gitee.com/ddd000g)
 
