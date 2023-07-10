@@ -60,6 +60,8 @@
 
 ![img-1.png](images/img_1.png)
 
+## 结果展示
+
 翼型几何形状发生改变时，AI和CFD预测的表面压力分布，流场分布及其误差统计如下：
 
 ![airfoil.gif](images/airfoil.gif)
@@ -71,3 +73,9 @@
 来流马赫数发生改变时，AI和CFD预测的表面压力分布，流场分布及其误差统计如下：
 
 ![Ma_var.gif](images/Ma_var.gif)
+
+## 贡献者
+
+gitee id: [Brian-K](https://gitee.com/Brian-K)
+
+email: brian_k2023@163.com
