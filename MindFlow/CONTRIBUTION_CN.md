@@ -44,6 +44,7 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 ├──burgers1D.ipynb
 ├──burgers1D_CN.ipynb
 ├──burgers_cfg.yaml
+├──eval.py
 └──train.py
 ```
 
@@ -72,6 +73,7 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 │  ├──case1_cfg.yaml
 │  ├──README.md
 │  ├──README_CN.md
+│  ├──eval.py
 │  └──train.py
 ├──case2
 │  ├──src
@@ -83,6 +85,7 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 │  ├──case2_cfg.yaml
 │  ├──README.md
 │  ├──README_CN.md
+│  ├──eval.py
 │  └──train.py
 ├──case3
 │  ├──src
@@ -94,6 +97,7 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 │  ├──case3_cfg.yaml
 │  ├──README.md
 │  ├──README_CN.md
+│  ├──eval.py
 │  └──train.py
 ```
 
