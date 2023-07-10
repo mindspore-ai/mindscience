@@ -14,7 +14,7 @@ construction. Deep neural networks can learn the evolutionary relationship betwe
 quickly achieve high-precision reconstruction of flow fields. In order to efficiently solve the problem of
 reconstructing dynamic boundary flow fields, a hybrid deep neural network (HDNN) is proposed to achieve unsteady dynamic
 boundary flow field reconstruction and fast prediction of flow fields based on this. The relevant dimensions of the flow
-field are shown in the figure, where Y=Asin(2πft) represents the motion expression of the cylinder Simple harmonic
+field are shown in the figure, where $$Y = Asin(2\pi ft)$$ represents the motion expression of the cylinder Simple harmonic
 motion in the vertical direction, A is the amplitude, and f is the frequency; D represents the diameter of the cylinder;
 The rectangular boundary represents the computational domain.
 
@@ -111,6 +111,6 @@ generalization state) (displaying pressure field, horizontal velocity field, and
 
 ## Contributor
 
-gitee id: [DUJiaoxi](https://gitee.com/ddd000g)
+gitee id：[DUJiaoxi](https://gitee.com/ddd000g)
 
 email: dujiaoxi@stu.xjtu.edu.cn
