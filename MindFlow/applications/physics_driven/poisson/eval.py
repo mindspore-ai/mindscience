@@ -3,10 +3,16 @@ from argparse import ArgumentParser
 
 import mindspore as ms
 import mindflow as mf
+import numpy as np
 
 from src.model import create_model
 from src.poisson import AnalyticSolution
 from src.dataset import create_dataset
+
+
+def relative_l2(x, y):
+    """Calculate the relative L2 error."""
+    return np.sqrt(np.mean(np.square(x - y))) / np.sqrt(np.mean(np.square(y)))
 
 
 def calculate_l2_error(model, ds_test, n_dim):
@@ -15,20 +21,23 @@ def calculate_l2_error(model, ds_test, n_dim):
     solution = AnalyticSolution(n_dim)
 
     # Evaluate
-    metric_domain = mf.L2()
-    metric_bc = mf.L2()
     for x_domain, x_bc in ds_test:
         y_pred_domain = model(x_domain)
         y_test_domain = solution(x_domain)
 
         y_pred_bc = model(x_bc)
         y_test_bc = solution(x_bc)
-        metric_domain.update(y_pred_domain.asnumpy(), y_test_domain.asnumpy())
-        metric_bc.update(y_pred_bc.asnumpy(), y_test_bc.asnumpy())
-
-    print("Relative L2 error (domain): {:.4f}".format(metric_domain.eval()))
-    print("Relative L2 error (bc): {:.4f}".format(metric_bc.eval()))
-    print("")
+        print(
+            "Relative L2 error (domain): {:.4f}".format(
+                relative_l2(y_pred_domain.asnumpy(), y_test_domain.asnumpy())
+            )
+        )
+        print(
+            "Relative L2 error (bc): {:.4f}".format(
+                relative_l2(y_pred_bc.asnumpy(), y_test_bc.asnumpy())
+            )
+        )
+        print("")
 
 
 def test(geom_name, checkpoint, file_cfg, n_samps):
