@@ -50,13 +50,13 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 
 ### 多个案例目录格式
 
-有时，有多个案例会采用相似的方法和数据集，为了避免代码和文档的重复，此时可以把这几个案例放在一起，提供统一的文档和`src`目录，如：
+有时，有多个案例会采用相似的模型，方法和数据集，为了避免代码和文档的重复，`images`目录统一存放图片文件，外层的`README.md`文件在总体上介绍案例和模型，每个案例内部的`README.md`文件介绍案例特有的内容，可以把这几个案例的公共部分代码抽取出来放到`common`目录下，把每个案例特有的代码放在每个案例目录下，其中每个案例定义的方法放在案例的`src`目录下，如：
 
 ```shell
 .
 ├──images
 │  └──result.jpg
-├──src
+├──common
 │  ├──__init__.py
 │  ├──dataset.py
 │  ├──model.py
@@ -99,6 +99,17 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 │  ├──README_CN.md
 │  ├──eval.py
 │  └──train.py
+```
+
+每个案例的训练文件调用`common`和`src`的方式如下：
+
+```python
+
+import sys
+sys.path.append('..')
+from common import MyModel, ...
+from src import Case1Func
+
 ```
 
 ## 训练文件格式
