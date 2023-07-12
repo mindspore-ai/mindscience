@@ -103,19 +103,19 @@ class InvariantPointAttention(nn.Cell):
         self.projection_num = self.num_head * self.num_scalar_v + self.num_head * self.num_point_v * 4 + \
                               self.num_head * pair_dim
         self.q_scalar = nn.Dense(self.num_channel, self.num_head * self.num_scalar_qk,
-                                 weight_init=lecun_init(self.num_channel))
+                                 weight_init=lecun_init(self.num_channel), bias_init="zeros")
         self.kv_scalar = nn.Dense(self.num_channel, self.num_head * (self.num_scalar_qk + self.num_scalar_v),
-                                  weight_init=lecun_init(self.num_channel))
+                                  weight_init=lecun_init(self.num_channel), bias_init="zeros")
         self.q_point_local = nn.Dense(self.num_channel, self.num_head * 3 * self.num_point_qk,
-                                      weight_init=lecun_init(self.num_channel)
+                                      weight_init=lecun_init(self.num_channel), bias_init="zeros"
                                       )
         self.kv_point_local = nn.Dense(self.num_channel, self.num_head * 3 * (self.num_point_qk + self.num_point_v),
-                                       weight_init=lecun_init(self.num_channel))
+                                       weight_init=lecun_init(self.num_channel), bias_init="zeros")
         self.soft_max = nn.Softmax()
         self.soft_plus = ops.Softplus()
         self.trainable_point_weights = Parameter(Tensor(np.ones((12,)), mstype.float32), name="trainable_point_weights")
-        self.attention_2d = nn.Dense(pair_dim, self.num_head, weight_init=lecun_init(pair_dim))
-        self.output_projection = nn.Dense(self.projection_num, self.num_channel, weight_init='zeros'
+        self.attention_2d = nn.Dense(pair_dim, self.num_head, weight_init=lecun_init(pair_dim), bias_init='zeros')
+        self.output_projection = nn.Dense(self.projection_num, self.num_channel, weight_init='zeros', bias_init='zeros'
                                           )
         self.scalar_weights = Tensor(np.sqrt(1.0 / (3 * 16)).astype(np.float32))
         self.point_weights = Tensor(np.sqrt(1.0 / (3 * 18)).astype(np.float32))

@@ -14,6 +14,7 @@
 # ============================================================================
 """esm2 model"""
 from mindspore import jit, context
+from mindspore.common import mutable
 # pylint: disable=relative-beyond-top-level
 from .nn_arch import ESM2 as esm2
 from ..model import Model
@@ -46,7 +47,7 @@ class ESM2(Model):
 
     def predict(self, data, **kwargs):
         return_contacts = kwargs.get('return_contacts')
-        batch_tokens = data
+        batch_tokens = mutable(data)
         forward_data = batch_tokens, return_contacts
         x, hidden_representations, attentions, contacts = self.forward(forward_data)
         result = (x, hidden_representations, attentions, contacts)
