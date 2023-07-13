@@ -56,22 +56,22 @@ class Molecule(Cell):
 
     Args:
         atoms(Union[List[Union[str, int]], ndarray]):       Array of atoms. The data in array can be str of atom
-                                                            name or int of atomic number. Defulat: None
-        atom_name(Union[List[str], ndarray]):               Array of atom name with data type `str`. Defulat: None
-        atom_type(Union[List[str], ndarray]):               Array of atom type with data type `str`. Defulat: None
+                                                            name or int of atomic number. Defulat: ``None``.
+        atom_name(Union[List[str], ndarray]):               Array of atom name with data type `str`. Defulat: ``None``.
+        atom_type(Union[List[str], ndarray]):               Array of atom type with data type `str`. Defulat: ``None``.
         atom_mass(Union[Tensor, ndarray, List[float]]):     Array of atom mass of shape `(B, A)` with data type
-                                                            `float`. Defulat: None
+                                                            `float`. Defulat: ``None``.
         atom_charge(Union[Tensor, ndarray, List[float]]):   Array of atom charge of shape `(B, A)` with data type
-                                                            `float`. Defulat: None
+                                                            `float`. Defulat: ``None``.
         atomic_number(Union[Tensor, ndarray, List[float]]): Array of atomic number of shape `(B, A)` with data type
-                                                            `int`. Defulat: None
+                                                            `int`. Defulat: ``None``.
         bond(Union[Tensor, ndarray, List[int]]):            Array of bond connection of shape `(B, b, 2)` with data
-                                                            type `int`. Defulat: None
+                                                            type `int`. Defulat: ``None``.
         coordinate(Union[Tensor, ndarray, List[float]]):    Tensor of atomic coordinates :math:`R` of shape
-                                                            `(B, A, D)` with data type `float`. Default: None
+                                                            :math:`(B, A, D)` with data type `float`. Default: ``None``.
         pbc_box(Union[Tensor, ndarray, List[float]]):       Tensor of box size :math:`\vec{L}` of periodic boundary
-                                                            condition (PBC). The shape of tensor is `(B, D)`,
-                                                            and the data type is `float`. Default: None
+                                                            condition (PBC). The shape of tensor is :math:`(B, D)`,
+                                                            and the data type is `float`. Default: ``None``.
         template(Union[dict, str, List[Union[dict, str]]]): Template for molecule. It can be a `dict` in MindSPONGE
                                                             template format or a `str` for the filename of a
                                                             MindSPONGE template file. If a `str` is given,
@@ -79,12 +79,12 @@ class Molecule(Cell):
                                                             current directory. If the file does not exist, it will
                                                             search in the built-in template directory of
                                                             MindSPONGE (`mindsponge.data.template`).
-                                                            Default: None.
-        residue(Union[Residue, List[Residue]]):             Residue or a list of residues. If template is not None,
+                                                            Default: ``None``.
+        residue(Union[Residue, List[Residue]]):             Residue or a list of residues. If template is not ``None``,
                                                             only the residues in the template will be used.
-                                                            Default: None.
-        length_unit(str):                                   Length unit. If `None` is given, the global length
-                                                            units will be used. Default: None
+                                                            Default: ``None``.
+        length_unit(str):                                   Length unit. If ```None``` is given, the global length
+                                                            units will be used. Default: ``None``.
 
     Outputs:
         - coordinate, Tensor of shape `(B, A, D)`. Data type is float.
@@ -866,12 +866,12 @@ class Molecule(Cell):
         return func.coordinate_in_pbc(coordinate, pbc_box, shift)
 
     def calc_image(self, shift: float = 0) -> Tensor:
-        """
+        r"""
         Calculate the image of coordinate.
 
         Args:
-            shift(float):   Offset ratio :math:`c` relative to box size :math:`\vec{L}`.
-                            Default: 0
+            shift(float): Offset ratio :math:`c` relative to box size :math:`\vec{L}`.
+                Default: ``0``.
 
         Returns:
             Tensor, the image of coordinate.
