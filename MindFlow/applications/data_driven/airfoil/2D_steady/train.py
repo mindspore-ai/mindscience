@@ -40,28 +40,6 @@ from src import AirfoilDataset, plot_u_and_cp, get_ckpt_summ_dir, plot_u_v_p, ca
 set_seed(0)
 np.random.seed(0)
 
-parser = argparse.ArgumentParser(description='Airfoil 2D_steady Simulation')
-parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                    help="Whether to save intermediate compilation graphs")
-parser.add_argument("--context_mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
-                    help="Support context mode: 'GRAPH', 'PYNATIVE'")
-parser.add_argument('--train_mode', type=str, default='train', choices=["train", "eval", "finetune"],
-                    help="Support run mode: 'train', 'eval', 'finetune'")
-parser.add_argument('--device_id', type=int, default=6, help="ID of the target device")
-parser.add_argument('--device_target', type=str, default='Ascend', choices=["GPU", "Ascend"],
-                    help="The target device to run, support 'Ascend', 'GPU'")
-parser.add_argument("--config_file_path", type=str, default="./config.yaml")
-parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-args = parser.parse_args()
-
-context.set_context(mode=context.GRAPH_MODE if args.context_mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                    save_graphs=args.save_graphs,
-                    save_graphs_path=args.save_graphs_path,
-                    device_target=args.device_target,
-                    device_id=args.device_id)
-
-use_ascend = (args.device_target == "Ascend")
-
 
 def train():
     '''Train and evaluate the network'''
@@ -194,6 +172,29 @@ def train():
 if __name__ == '__main__':
     print(f'pid: {os.getpid()}')
     print(datetime.datetime.now())
+
+    parser = argparse.ArgumentParser(description='Airfoil 2D_steady Simulation')
+    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
+                        help="Whether to save intermediate compilation graphs")
+    parser.add_argument("--context_mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+                        help="Support context mode: 'GRAPH', 'PYNATIVE'")
+    parser.add_argument('--train_mode', type=str, default='train', choices=["train", "eval", "finetune"],
+                        help="Support run mode: 'train', 'eval', 'finetune'")
+    parser.add_argument('--device_id', type=int, default=0, help="ID of the target device")
+    parser.add_argument('--device_target', type=str, default='Ascend', choices=["GPU", "Ascend"],
+                        help="The target device to run, support 'Ascend', 'GPU'")
+    parser.add_argument("--config_file_path", type=str, default="./config.yaml")
+    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
+    args = parser.parse_args()
+
+    context.set_context(mode=context.GRAPH_MODE if args.context_mode.upper().startswith("GRAPH") \
+                        else context.PYNATIVE_MODE,
+                        save_graphs=args.save_graphs,
+                        save_graphs_path=args.save_graphs_path,
+                        device_target=args.device_target,
+                        device_id=args.device_id)
+
+    use_ascend = (args.device_target == "Ascend")
     print(f'use_ascend : {use_ascend}')
     print(f'device_id: {context.get_context("device_id")}')
     train()
