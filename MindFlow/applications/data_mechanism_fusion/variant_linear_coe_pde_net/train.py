@@ -35,26 +35,6 @@ from src import make_dir, scheduler, get_param_dic
 set_seed(0)
 np.random.seed(0)
 
-print("pid:", os.getpid())
-parser = argparse.ArgumentParser(description="pde net train")
-parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
-                    help="Running in GRAPH_MODE OR PYNATIVE_MODE")
-parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                    help="Whether to save intermediate compilation graphs")
-parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
-                    help="The target device to run, support 'Ascend', 'GPU'")
-parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-parser.add_argument("--config_file_path", type=str, default="./cylinder_flow.yaml")
-args = parser.parse_args()
-
-context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                    save_graphs=args.save_graphs,
-                    save_graphs_path=args.save_graphs_path,
-                    device_target=args.device_target,
-                    device_id=args.device_id)
-print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
-
 
 def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
     """train PDE-Net with advancing steps"""
@@ -93,26 +73,26 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
     steps = train_dataset.get_dataset_size()
     sink_process = mindspore.data_sink(train_step, train_dataset, sink_size=1)
 
-    for cur_epoch in range(epoch):
+    for cur_epoch in range(1, 1+epoch):
         local_time_beg = time.time()
         model.set_train()
         for _ in range(steps):
             cur_loss = sink_process()
-            print("epoch: %s, loss is %s" % (cur_epoch + 1, cur_loss), flush=True)
+            print("epoch: %s, loss is %s" % (cur_epoch, cur_loss), flush=True)
         local_time_end = time.time()
         epoch_seconds = (local_time_end - local_time_beg) * 1000
         step_seconds = epoch_seconds / steps
         print("Train epoch time: {:5.3f} ms, per step time: {:5.3f} ms".format
               (epoch_seconds, step_seconds), flush=True)
 
-        if (cur_epoch + 1) % config_param["save_epoch_interval"] == 0:
+        if cur_epoch % config_param["save_epoch_interval"] == 0:
             ckpt_file_name = "ckpt/step_{}".format(step)
             ckpt_dir = os.path.join(config_param["summary_dir"], ckpt_file_name)
             make_dir(ckpt_dir)
-            ckpt_name = "pdenet-{}.ckpt".format(cur_epoch + 1,)
+            ckpt_name = "pdenet-{}.ckpt".format(cur_epoch,)
             mindspore.save_checkpoint(model, os.path.join(ckpt_dir, ckpt_name))
 
-        if (cur_epoch + 1) % config_param['eval_interval'] == 0:
+        if cur_epoch % config_param['eval_interval'] == 0:
             calculate_lp_loss_error(problem, eval_dataset, config_param["batch_size"])
 
 
@@ -129,6 +109,26 @@ def train(config_param):
 
 if __name__ == '__main__':
     print("pid:", os.getpid())
-    config = load_yaml_config('pde_net.yaml')
+
+    parser = argparse.ArgumentParser(description="pde net train")
+    parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+                        help="Running in GRAPH_MODE OR PYNATIVE_MODE")
+    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
+                        help="Whether to save intermediate compilation graphs")
+    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
+    parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
+                        help="The target device to run, support 'Ascend', 'GPU'")
+    parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
+    parser.add_argument("--config_file_path", type=str, default="./pde_net.yaml")
+    args = parser.parse_args()
+
+    context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") \
+                        else context.PYNATIVE_MODE,
+                        save_graphs=args.save_graphs,
+                        save_graphs_path=args.save_graphs_path,
+                        device_target=args.device_target,
+                        device_id=args.device_id)
+    print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
+    config = load_yaml_config(args.config_file_path)
     make_dir(config["mindrecord_data_dir"])
     train(config)
