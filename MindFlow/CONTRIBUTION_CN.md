@@ -33,7 +33,8 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 ```shell
 .
 ├──images
-│  └──result.jpg
+│  ├──background.png
+│  └──result.png
 ├──src
 │  ├──__init__.py
 │  ├──dataset.py
@@ -41,8 +42,8 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 │  └──utils.py
 ├──README.md
 ├──README_CN.md
-├──burgers1D.ipynb
-├──burgers1D_CN.ipynb
+├──problem.ipynb
+├──problem_CN.ipynb
 ├──burgers_cfg.yaml
 ├──eval.py
 └──train.py
@@ -50,66 +51,48 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 
 ### 多个案例目录格式
 
-有时，有多个案例会采用相似的模型，方法和数据集，为了避免代码和文档的重复，`images`目录统一存放图片文件，外层的`README.md`文件在总体上介绍案例和模型，每个案例内部的`README.md`文件介绍案例特有的内容，可以把这几个案例的公共部分代码抽取出来放到`common`目录下，把每个案例特有的代码放在每个案例目录下，其中每个案例定义的方法放在案例的`src`目录下，如：
+有时，有多个案例会使用相同的模型和方法，使用不同的数据集，为了避免代码和文档的重复，`src`目录下统一存放所有案例公共的代码和每个案例自定义的代码，`images`目录统一存放图片文件，`README.md`文件在总体上介绍模型方法和所有的案例，`problem.ipynb`文件介绍具体的案例代码，所有案例具有相同的入口，在命令行里通过指定参数来确定运行的具体案例，文件格式如下：
 
 ```shell
 .
 ├──images
-│  └──result.jpg
-├──common
+│  ├──background.png
+│  ├──result1.png
+│  ├──result2.png
+│  └──result3.png
+├──src
 │  ├──__init__.py
 │  ├──dataset.py
 │  ├──model.py
 │  └──utils.py
 ├──README.md
 ├──README_CN.md
-├──case1
-│  ├──src
-│  │  ├──__init__.py
-│  │  ├──dataset_1.py
-│  │  └──model_1.py
-│  ├──case1.ipynb
-│  ├──case1_CN.ipynb
-│  ├──case1_cfg.yaml
-│  ├──README.md
-│  ├──README_CN.md
-│  ├──eval.py
-│  └──train.py
-├──case2
-│  ├──src
-│  │  ├──__init__.py
-│  │  ├──dataset_2.py
-│  │  └──model_2.py
-│  ├──case2.ipynb
-│  ├──case2_CN.ipynb
-│  ├──case2_cfg.yaml
-│  ├──README.md
-│  ├──README_CN.md
-│  ├──eval.py
-│  └──train.py
-├──case3
-│  ├──src
-│  │  ├──__init__.py
-│  │  ├──dataset_3.py
-│  │  └──model_3.py
-│  ├──case3.ipynb
-│  ├──case3_CN.ipynb
-│  ├──case3_cfg.yaml
-│  ├──README.md
-│  ├──README_CN.md
-│  ├──eval.py
-│  └──train.py
+├──problem.ipynb
+├──problem_CN.ipynb
+├──problem_cfg.yaml
+├──eval.py
+└──train.py
 ```
 
-每个案例的训练文件调用`common`和`src`的方式如下：
+外层训练/测试文件调用的方式如下：
 
 ```python
-
-import sys
-sys.path.append('..')
-from common import MyModel, ...
-from src import Case1Func
-
+...
+parser = argparse.ArgumentParser(description="Cae-Lstm")
+parser.add_argument("--case", type=str, default='riemann', choices=['riemann', 'kh', 'sod'],
+                        help="Which case to run")
+...
+args = parser.parse_args()
+...
+model = Model()
+if args.case == 'riemann':
+    dataset = create_riemann_dataset()
+elif args.case == 'kh':
+    dataset = create_kh_dataset()
+else:
+    dataset = create_sod_dataset()
+model.train(dataset)
+...
 ```
 
 ## 训练文件格式
@@ -119,7 +102,7 @@ from src import Case1Func
 ```python
 import argparse
 ...
-from src import create_training_dataset, create_test_dataset, visual, calculate_l2_error, Burgers1D
+from src import create_training_dataset, create_test_dataset, visual, calculate_l2_error
 # 相关依赖导入，按照python官方库、第三方库、mindflow、src的顺序导入，导入mindflow时，精确到二级目录
 
 set_seed(123456)
