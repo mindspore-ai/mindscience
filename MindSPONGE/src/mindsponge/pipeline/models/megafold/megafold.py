@@ -28,6 +28,7 @@ import time
 import os
 import numpy as np
 
+import mindspore as ms
 from mindspore.common import mutable
 from mindspore import Tensor
 import mindspore.communication.management as D
@@ -35,6 +36,8 @@ from mindspore import jit, context, nn
 from mindspore.context import ParallelMode
 
 from mindsponge.common.protein import to_pdb, from_prediction
+from mindsponge.pipeline.cell.amp import amp_convert
+from mindsponge.pipeline.cell.mask import LayerNormProcess
 from .module.fold_wrapcell import TrainOneStepCell, WithLossCell
 from .module.lr import cos_decay_lr
 from .nn_arch import Megafold, compute_confidence
@@ -61,10 +64,12 @@ class MEGAFold(Model):
                   "torsion_angles_sin_cos", "use_clamped_fape", "filter_by_solution", "chi_mask"]
 
     def __init__(self, config):
+        self.config = config
+
         self.checkpoint_url =\
             'https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt'
 
-        context.set_context(memory_optimize_level="O1", max_call_depth=6000)
+        context.set_context(memory_optimize_level="O1", max_call_depth=6000, mode=ms.GRAPH_MODE)
         if context.get_context("device_target") == "GPU":
             self.mixed_precision = False
             context.set_context(graph_kernel_flags="--disable_expand_ops=Softmax \
@@ -73,12 +78,15 @@ class MEGAFold(Model):
         else:
             self.mixed_precision = True
 
-        self.config = config
         self.use_jit = self.config.use_jit
-        self.network = Megafold(self.config, self.mixed_precision)
+        megafold = Megafold(self.config, self.mixed_precision)
+        if self.mixed_precision:
+            fp32_white_list = (nn.Softmax, nn.LayerNorm, LayerNormProcess)
+            amp_convert(megafold, fp32_white_list)
+        self.network = megafold
+
         self.checkpoint_path = "./MEGA_Fold_1.ckpt"
         super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
-
 
         if self.config.is_training:
             if config.train.is_parallel:
@@ -160,7 +168,6 @@ class MEGAFold(Model):
         "grad_operations"
 
 
-    @jit
     def backward(self, data):
         loss = self.train_net(*data)
         return loss
