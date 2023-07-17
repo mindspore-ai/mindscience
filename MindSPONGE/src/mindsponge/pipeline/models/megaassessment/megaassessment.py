@@ -126,7 +126,7 @@ class MEGAAssessment(Model):
     # pylint: disable=arguments-differ
     def train_step(self, data):
         """train one step"""
-        num_recycle = np.random.randint(low=1, high=5)
+        num_recycle = np.random.randint(low=0, high=4)
         self.train_net.add_flags_recursive(train_backward=False)
         self.train_net.phase = 'train_forward'
         recycle_feature_name = self.feature_list[:-5]
