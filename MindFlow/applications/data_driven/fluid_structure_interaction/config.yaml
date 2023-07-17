@@ -1,0 +1,22 @@
+data:
+  data_dir: "./FSI"          # dataset store direction
+  time_steps: 1              # previous time steps used to predict
+
+model:
+  in_channels: 3             # the number of channels in the input space
+  num_layers: 12             # the number of Convolutional and DeConvolutional layer
+  kernel_size: 4             # the size of  kernel in Convolutional and DeConvolutional layer
+  num_convlstm_layers: 1     # the number of ConvLSTM layers
+
+optimizer:
+  lr: 0.001                         # learning rate
+  epochs: 200                       # the number of training epochs
+  eval_interval: 10                 # time interval for model evaluation
+  save_ckpt_interval: 10            # save the model once for 10 epochs
+  ckpt_dir: "./ckpt_dir"            # the directory where the model files are saved
+
+prediction:
+  data_list: [ "4.5" ]                                    # prediction dataset list
+  ckpt_path: "./ckpt_dir/net_200.ckpt"                    # the path of ckpt file used in prediction process
+  pred_continue_dir: "./save_prediction_continue"         # store direction of prediction_data.mat
+  save_prediction_dir: "./save_prediction_dir"            # store direction of prediction_v_d.mat
