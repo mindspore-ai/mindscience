@@ -19,8 +19,11 @@ import os
 import ssl
 import urllib
 import numpy as np
+import mindspore as ms
 from mindspore import jit, context, nn, load_param_into_net, Tensor
 from mindspore.common import mutable
+from mindsponge.pipeline.cell.amp import amp_convert
+from mindsponge.pipeline.cell.mask import LayerNormProcess
 from .module.assessment_wrapcell import TrainOneStepCell, WithLossCell
 from .nn_arch import CombineModel as megaassessment
 from .nn_arch import load_weights
@@ -45,7 +48,7 @@ class MEGAAssessment(Model):
                   "rigidgroups_alt_gt_frames", "torsion_angles_sin_cos", "chi_mask"]
 
     def __init__(self, config):
-        context.set_context(memory_optimize_level="O1", max_call_depth=6000)
+        context.set_context(memory_optimize_level="O1", max_call_depth=6000, mode=ms.GRAPH_MODE)
         if context.get_context("device_target") == "GPU":
             self.mixed_precision = False
             context.set_context(graph_kernel_flags="--disable_expand_ops=Softmax --disable_cluster_ops=ReduceSum "
@@ -55,8 +58,10 @@ class MEGAAssessment(Model):
 
         self.config = config
         self.use_jit = self.config.use_jit
-        self.use_jit = True
         self.network = megaassessment(self.config, self.mixed_precision)
+        if self.mixed_precision:
+            fp32_white_list = (nn.Softmax, nn.LayerNorm, LayerNormProcess)
+            amp_convert(self.network, fp32_white_list)
         if self.config.is_training:
             self.checkpoint_url = 'https://download.mindspore.cn/mindscience/mindsponge/' \
                                   'MEGAFold/checkpoint/MEGA_Fold_1.ckpt'
@@ -117,7 +122,6 @@ class MEGAAssessment(Model):
         return plddt
 
     # pylint: disable=arguments-differ
-    @jit
     def backward(self, feat):
         """backward"""
         loss = self.train_net(*feat)
