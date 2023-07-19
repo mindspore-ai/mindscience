@@ -34,7 +34,8 @@ class ESM2(Model):
                             embed_dim=self.config.encoder_embed_dim,
                             attention_heads=self.config.encoder_attention_heads,
                             alphabet=self.config.alphabet,
-                            token_dropout=self.config.token_dropout)
+                            token_dropout=self.config.token_dropout,
+                            return_contacts=self.config.return_contacts)
         super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
 
     def forward(self, data):
@@ -46,9 +47,8 @@ class ESM2(Model):
         return result
 
     def predict(self, data, **kwargs):
-        return_contacts = kwargs.get('return_contacts')
         batch_tokens = mutable(data)
-        forward_data = batch_tokens, return_contacts
+        forward_data = batch_tokens
         x, hidden_representations, attentions, contacts = self.forward(forward_data)
         result = (x, hidden_representations, attentions, contacts)
         return result
@@ -67,13 +67,11 @@ class ESM2(Model):
 
     @jit
     def _jit_forward(self, data):
-        batch_tokens, return_contacts = data
-        x, hidden_representations, attentions, contacts = self.network(batch_tokens, return_contacts=return_contacts)
+        x, hidden_representations, attentions, contacts = self.network(data)
         result = (x, hidden_representations, attentions, contacts)
         return result
 
     def _pynative_forward(self, data):
-        batch_tokens, return_contacts = data
-        x, hidden_representations, attentions, contacts = self.network(batch_tokens, return_contacts=return_contacts)
+        x, hidden_representations, attentions, contacts = self.network(data)
         result = (x, hidden_representations, attentions, contacts)
         return result

@@ -42,8 +42,7 @@ def test_esm2():
     data = [("protein3", "K A <mask> I S Q")]
     pipeline.dataset.set_data(data)
     protein_data = pipeline.dataset.protein_data
-    kwargs = {"return_contacts": True}
-    _, _, _, contacts = pipeline.predict(protein_data, **kwargs)
+    _, _, _, contacts = pipeline.predict(protein_data)
     contacts = contacts.asnumpy()
     tokens_len = pipeline.dataset.batch_lens[0]
     attention_contacts = contacts[0]
