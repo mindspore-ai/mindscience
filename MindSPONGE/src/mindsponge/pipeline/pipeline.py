@@ -29,6 +29,7 @@ from .models import KGNN, KGNNDataSet, kgnn_configuration
 from .models import MEGAAssessment, MEGAAssessmentDataSet, megaassessment_configuration
 from .models import MEGAEvoGen, MEGAEvoGenDataSet, megaevogen_configuration
 from .models import MEGAFold, MEGAFoldDataSet, megafold_configuration
+from .models import RASP, RASPDataSet, rasp_configuration
 from .models import Multimer, MultimerDataSet, multimer_configuration
 from .models import ProteinMpnn, ProteinMpnnDataset, proteinmpnn_configuration
 from .models import UFold, UFoldDataSet, ufold_configuration
@@ -47,6 +48,7 @@ model_card = {
     "MEGAFold": {"model": MEGAFold, "dataset": MEGAFoldDataSet, "config": megafold_configuration},
     "Multimer": {"model": Multimer, "dataset": MultimerDataSet, "config": multimer_configuration},
     "Proteinmpnn": {"model": ProteinMpnn, "dataset": ProteinMpnnDataset, "config": proteinmpnn_configuration},
+    "RASP": {"model": RASP, "dataset": RASPDataSet, "config": rasp_configuration},
     "UFold": {"model": UFold, "dataset": UFoldDataSet, "config": ufold_configuration},
 }
 

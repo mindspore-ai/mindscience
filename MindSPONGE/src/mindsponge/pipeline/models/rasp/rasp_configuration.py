@@ -20,15 +20,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Cell"""
-from .basic import Attention, GlobalAttention
-from .msa import MSARowAttentionWithPairBias, MSAColumnAttention, MSAColumnGlobalAttention, \
-    MSARowAttentionWithPairBiasContact
-from .triangle import TriangleAttention, TriangleMultiplication, OuterProductMean
-from .equivariant import InvariantPointAttention
-from .transition import Transition
+"""rasp_configuration"""
 
-__all__ = ['Attention', 'GlobalAttention', 'MSARowAttentionWithPairBias',
-           'MSAColumnAttention', 'MSAColumnGlobalAttention',
-           'TriangleAttention', 'TriangleMultiplication', 'OuterProductMean',
-           'InvariantPointAttention', 'Transition', 'MSARowAttentionWithPairBiasContact']
+rasp_configuration = {
+    "predict_256":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_256.yaml",
+    "predict_512":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_512.yaml",
+    "predict_768":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_768.yaml",
+    "predict_1024":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_1024.yaml",
+    "predict_1280":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_1280.yaml",
+    "predict_1536":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_1536.yaml",
+    "predict_1792":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_1792.yaml",
+    "predict_2048":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_2048.yaml"
+}
