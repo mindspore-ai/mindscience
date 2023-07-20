@@ -7,4 +7,4 @@ mindsponge.potential
     :template: classtemplate.rst
 
     mindsponge.potential.EnergyCell
-    mindsponge.potential.potential
+    mindsponge.potential.PotentialCell
