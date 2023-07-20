@@ -51,6 +51,8 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 ## MindFlow Features
 
+- [MindSpore Grad](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/mindspore_grad_cookbook.ipynb)
+
 - [Solve Pinns by MindFlow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/features/solve_pinns_by_mindflow)
 
 ## Applications
@@ -59,45 +61,45 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 |        Case            |        Dataset               |    Network       |  GPU    |  NPU  |
 |:----------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-|[Burgers Equation](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)       |         [Burgers Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)              |     PINNs        |   ✔️     |   ✔️   |
-|[2D Cylinder Flow](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)        |     [2D Cylinder Fow Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/flow_past_cylinder/)              |        PINNs     |     ✔️   |   ✔️   |
-|[2D Darcy](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)      |             -              |      PINNs      |  ✔️      |  ✔️    |
-|[Poisson Equation](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)       |             -              |        PINNs     |  ✔️      |   ✔️   |
-|[Boltzmann Equation](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/boltzmann)      |             -              |      PINNs       |   ✔️     |   ✔️   |
-|[2D Taylor-Green Votex](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)  |             -              |      PINNs        |   ✔️     |   ✔️   |
-|[Navier-Stoken Inverse](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/physics_driven/navier_stokes_inverse)  |            [Navier-Stoken Inverse Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/inverse_navier_stokes/)             |       PINNs       |   ✔️     |   ✔️   |
+|[Burgers Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)       |         [Burgers Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)              |     PINNs        |   ✔️     |   ✔️   |
+|[2D Cylinder Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/cylinder_flow)        |     [2D Cylinder Fow Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/flow_past_cylinder/)              |        PINNs     |     ✔️   |   ✔️   |
+|[2D Darcy](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/darcy)      |             -              |      PINNs      |  ✔️      |  ✔️    |
+|[Poisson Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson)       |             -              |        PINNs     |  ✔️      |   ✔️   |
+|[Boltzmann Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/boltzmann)      |             -              |      PINNs       |   ✔️     |   ✔️   |
+|[2D Taylor-Green Votex](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/taylor_green/2d)  |             -              |      PINNs        |   ✔️     |   ✔️   |
+|[Navier-Stoken Inverse](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/navier_stokes_inverse)  |            [Navier-Stoken Inverse Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/inverse_navier_stokes/)             |       PINNs       |   ✔️     |   ✔️   |
 
 ### Data Driven
 
 |        Case            |              Dataset                  |    Network       |  GPU    |  NPU  |
 |:----------------------:|:-------------------------------------:|:---------------:|:-------:|:------:|
-|[DongFang.YuFeng](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/airfoil/2D_steady)   |  [2D Airfoil Flow Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_steady/)   |     ViT           |   ✔️     |   ✔️   |
-|[FNO Solve Burgers Equation](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/burgers_fno)   | [1D Burgers Equation Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)     |     FNO1D       |   ✔️     |   ✔️   |
-|[KNO Solve Burgers Equation](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/burgers_kno)     | [1D Burgers Equation Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)       |       KNO1D       |   ✔️     |   ✔️   |
-|[FNO Solve Navier-Stokes Equation](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_fno)   |  [2D Navier-Stokes Equation Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)         |        FNO2D          | ✔️   |   ✔️    |
-|[FNO3d Solve Navier-Stokes Equation](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_3d_fno)  | [2D Navier-Stokes Equation Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)          |          FNO3D        |   ✔️     |   ✔️   |
-|[KNO Solve Navier-Stokes Equation](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_kno)    |  [2D Navier-Stokes Equation Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)         |        KNO2D          |   ✔️     |   ✔️   |
-|[2D Riemann Problem](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm/riemann)       |  [2D Riemann Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/riemann/)       |     CAE-LSTM      |   ✔️     |   ✔️   |
-|[shu-osher Problem](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm/shu_osher)     |   [1D shu-osher Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/shu_osher/)    |      CAE-LSTM      |   ✔️     |   ✔️   |
-|[sod Problem](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm/sod)   |  [1D sod Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)         |     CAE-LSTM    |   ✔️     |   ✔️   |
-|[KH pelblem](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm/kh)         |  [2D K-H Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/kh/)            |  CAE-LSTM     |   ✔️     |   ✔️   |
-|[2D Airfoil Buffet](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/transonic_buffet_ehdnn)          |  [2D Airfoil Buffet Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_unsteady/)           |      ehdnn    |   ✔️     |   ✔️   |
-|[Move Boundary Hdnn](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_driven/move_boundary_hdnn)          |  [Move Boundary Hdnn Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/move_boundary_hdnn)           |      hdnn    |   ✔️     |   ✔️   |
+|[DongFang.YuFeng](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/airfoil/2D_steady)   |  [2D Airfoil Flow Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_steady/)   |     ViT           |   ✔️     |   ✔️   |
+|[FNO Solve Burgers Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers_fno)   | [1D Burgers Equation Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)     |     FNO1D       |   ✔️     |   ✔️   |
+|[KNO Solve Burgers Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/burgers_kno)     | [1D Burgers Equation Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)       |       KNO1D       |   ✔️     |   ✔️   |
+|[FNO Solve Navier-Stokes Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_fno)   |  [2D Navier-Stokes Equation Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)         |        FNO2D          | ✔️   |   ✔️    |
+|[FNO3d Solve Navier-Stokes Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_3d_fno)  | [2D Navier-Stokes Equation Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)          |          FNO3D        |   ✔️     |   ✔️   |
+|[KNO Solve Navier-Stokes Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes_kno)    |  [2D Navier-Stokes Equation Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)         |        KNO2D          |   ✔️     |   ✔️   |
+|[2D Riemann Problem](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm)       |  [2D Riemann Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/riemann/)       |     CAE-LSTM      |   ✔️     |   ✔️   |
+|[shu-osher Problem](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm)     |   [1D shu-osher Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/shu_osher/)    |      CAE-LSTM      |   ✔️     |   ✔️   |
+|[sod Problem](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm)   |  [1D sod Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)         |     CAE-LSTM    |   ✔️     |   ✔️   |
+|[KH pelblem](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/cae_lstm/)         |  [2D K-H Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/kh/)            |  CAE-LSTM     |   ✔️     |   ✔️   |
+|[2D Airfoil Buffet](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/transonic_buffet_ehdnn)          |  [2D Airfoil Buffet Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_unsteady/)           |      ehdnn    |   ✔️     |   ✔️   |
+|[Move Boundary Hdnn](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/move_boundary_hdnn)          |  [Move Boundary Hdnn Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/move_boundary_hdnn)           |      hdnn    |   ✔️     |   ✔️   |
 
 ### Data-Mechanism Fusion
 
 |          Case              |        Dataset               |    Network       |  GPU    |  NPU  |
 |:--------------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-|   [PDE-Net for Convection-Diffusion Equation](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)   | -   |    PDE-Net    |   ✔️     |   ✔️   |
+|   [PDE-Net for Convection-Diffusion Equation](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/variant_linear_coe_pde_net)   | -   |    PDE-Net    |   ✔️     |   ✔️   |
 
 ### CFD
 
 |       Case         |     格式      |    GPU    |    NPU |
 |:-----------------:|:-------------:|:---------:|:-------|
-|[sod shock tube](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/cfd/sod)      |    Rusanov    |       ✔️   |   -   |
-|[lax shock tube](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/cfd/lax)      |    Rusanov    |      ✔️    |   -   |
-|[2D Riemann Problem](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)  |       -       |     ✔️     |   -  |
-|[Couette Flow](https://gitee.com/b_rookie/mindscience/tree/master/MindFlow/applications/cfd/couette)        |       -       |  ✔️        |   -   |
+|[sod shock tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)      |    Rusanov    |       ✔️   |   -   |
+|[lax shock tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)      |    Rusanov    |      ✔️    |   -   |
+|[2D Riemann Problem](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)  |       -       |     ✔️     |   -  |
+|[Couette Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)        |       -       |  ✔️        |   -   |
 
 ## **Installation**
 
