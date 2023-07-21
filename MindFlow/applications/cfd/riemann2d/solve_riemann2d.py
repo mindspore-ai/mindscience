@@ -21,7 +21,7 @@ from mindflow.cfd.simulator import Simulator
 
 from src.ic import riemann2d_ic
 
-context.set_context(device_target="GPU", device_id=3)
+context.set_context(device_target="GPU", device_id=0)
 
 config = load_yaml_config('numeric.yaml')
 

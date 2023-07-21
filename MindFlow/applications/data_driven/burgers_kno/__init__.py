@@ -13,13 +13,8 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-
-from .dataset import create_training_dataset
-from .trainer import NavierStokesWithLoss
-from .utils import visual
+from train import train
 
 __all__ = [
-    "create_training_dataset",
-    "NavierStokesWithLoss",
-    "visual"
+    "train",
 ]

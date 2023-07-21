@@ -31,29 +31,26 @@ from mindflow.cell.neural_operators.fno3d import FNO3D
 
 from src import LpLoss, UnitGaussianNormalizer, create_training_dataset
 
-
-parser = argparse.ArgumentParser(description='Navier Stokes 3D problem')
-parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
-                    help="Context mode, support 'GRAPH', 'PYNATIVE'")
-parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                    help="Whether to save intermediate compilation graphs")
-parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
-                    help="The target device to run, support 'Ascend', 'GPU'")
-parser.add_argument("--device_id", type=int, default=3,
-                    help="ID of the target device")
-parser.add_argument("--config_file_path", type=str,
-                    default="./navier_stokes_3d.yaml")
-args = parser.parse_args()
-
 set_seed(0)
 np.random.seed(0)
 
-context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                    save_graphs=args.save_graphs, save_graphs_path=args.save_graphs_path,
-                    device_target=args.device_target, device_id=args.device_id)
 
-use_ascend = context.get_context(attr_key='device_target') == "Ascend"
+def parse_args():
+    '''Parse input args'''
+    parser = argparse.ArgumentParser(description='Navier Stokes 3D problem')
+    parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+                        help="Context mode, support 'GRAPH', 'PYNATIVE'")
+    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
+                        help="Whether to save intermediate compilation graphs")
+    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
+    parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
+                        help="The target device to run, support 'Ascend', 'GPU'")
+    parser.add_argument("--device_id", type=int, default=3,
+                        help="ID of the target device")
+    parser.add_argument("--config_file_path", type=str,
+                        default="./navier_stokes_3d.yaml")
+    input_args = parser.parse_args()
+    return input_args
 
 
 def train():
@@ -210,6 +207,13 @@ def train():
 if __name__ == "__main__":
     print(f"pid: {os.getpid()}")
     print(datetime.datetime.now())
+
+    args = parse_args()
+    context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
+                        save_graphs=args.save_graphs, save_graphs_path=args.save_graphs_path,
+                        device_target=args.device_target, device_id=args.device_id)
+
+    use_ascend = context.get_context(attr_key='device_target') == "Ascend"
     print(f"use_ascend: {use_ascend}")
     print(f"device_id: {context.get_context(attr_key='device_id')}")
     train()
