@@ -25,7 +25,7 @@ from mindflow.cfd.simulator import Simulator
 
 from src.ic import couette_ic_2d
 
-context.set_context(device_target="GPU", device_id=6)
+context.set_context(device_target="GPU", device_id=0)
 
 config = load_yaml_config('couette.yaml')
 
