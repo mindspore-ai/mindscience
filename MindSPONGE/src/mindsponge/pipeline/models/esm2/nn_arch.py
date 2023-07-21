@@ -33,6 +33,8 @@ class ESM2(nn.Cell):
             attention_heads: int = 20,
             alphabet: Union[Alphabet, str] = "ESM-1b",
             token_dropout: bool = True,
+            return_contacts=False,
+            need_head_weights=False
     ):
         super().__init__()
         self.num_layers = num_layers
@@ -49,12 +51,14 @@ class ESM2(nn.Cell):
         self.prepend_bos = alphabet.prepend_bos
         self.append_eos = alphabet.append_eos
         self.token_dropout = token_dropout
-
+        self.return_contacts = return_contacts
+        self.need_head_weights = need_head_weights
         self._init_submodules()
 
-    def construct(self, tokens, need_head_weights=False, return_contacts=False):
+    def construct(self, tokens):
         """ESM2 Model structure"""
-        if return_contacts:
+        need_head_weights = self.need_head_weights
+        if self.return_contacts:
             need_head_weights = True
         padding_mask = ops.equal(tokens, self.padding_idx)
         x = self.embed_scale * self.embed_tokens(tokens)
