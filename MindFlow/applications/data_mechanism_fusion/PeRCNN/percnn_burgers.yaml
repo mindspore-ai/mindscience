@@ -1,0 +1,56 @@
+data_driven:
+  dx: 0.01
+  dy: 0.01
+  dt: 0.00025
+  nu: 0.005
+  input_channel: 2
+  upscaler_hidden_channel: 8
+  rcnn_hidden_channel: 8
+  out_channels: 2
+  kernel_size: 5
+  stride: 2
+  use_timestep: 400
+  pretrain:
+    epochs: 6000
+    name_conf: "pre_train"
+    learning_rate: 0.001
+  finetune:
+    learning_rate: 2e-3
+    gamma: 0.96
+    milestone_num: 150
+    epochs: 15000
+    name_conf: "train"
+  post_infer_step: 1800
+  fig_save_path: "./figures/data_driven"
+  ckpt_file_name: "./model/checkpointtrain.ckpt"
+
+physics_driven:
+  dx: 0.01
+  dy: 0.01
+  dt: 0.00025
+  nu: 0.005
+  input_channel: 2
+  upscaler_hidden_channel: 8
+  out_channels: 2
+  kernel_size: 5
+  stride: 2
+  use_timestep: 200
+  init_coef:
+    nu_u: 0.0050078
+    nu_v: 0.0050228
+    c1_u: -0.982252
+    c2_u: -0.992132
+    c1_v: -0.983758
+    c2_v: -0.971269
+  pretrain:
+    epochs: 5000
+    name_conf: "pre_train"
+    learning_rate: 0.001
+  finetune:
+    learning_rate: 5e-4
+    gamma: 0.95
+    milestone_num: 10
+    epochs: 1000
+    name_conf: "train"
+  post_infer_step: 1800
+  fig_save_path: "./figures/physics_driven"
