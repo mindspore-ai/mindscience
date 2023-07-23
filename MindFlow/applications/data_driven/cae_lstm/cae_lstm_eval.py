@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""prediction process"""
+"""eval of CaeLstm"""
 import os
 import argparse
 
@@ -22,7 +22,7 @@ import mindspore as ms
 
 from mindspore import load_checkpoint, load_param_into_net, set_seed, Tensor
 from mindflow.utils import load_yaml_config
-from src import create_cae_dataset, create_lstm_dataset, CaeNet1D, CaeNet2D, Lstm, plot_cae_lstm_prediction
+from src import create_cae_dataset, create_lstm_dataset, CaeNet1D, CaeNet2D, Lstm, plot_cae_lstm_eval
 from cae_eval import cae_eval
 
 np.random.seed(0)
@@ -30,7 +30,7 @@ set_seed(0)
 
 
 def cae_lstm_eval(encoded):
-    """Process of prediction with cae-lstm net"""
+    """eval of CaeLstm"""
     # prepare params
     config = load_yaml_config(args.config_file_path)
     if args.case == 'sod' or args.case == 'shu_osher':
@@ -69,23 +69,25 @@ def cae_lstm_eval(encoded):
                                        lstm_data_params["latent_size"], lstm_data_params["time_window"],
                                        lstm_data_params["gaussian_filter_sigma"])
 
-    _, true_data = create_cae_dataset(cae_data_params["data_path"], cae_data_params["batch_size"])
+    _, true_data = create_cae_dataset(cae_data_params["data_path"], cae_data_params["batch_size"],
+                                      cae_data_params["multiple"])
 
     output_seq_pred = np.zeros(shape=(lstm_data_params["time_size"] - lstm_data_params["time_window"],
                                       lstm_data_params["latent_size"]))
 
-    print(f"=================Start Lstm prediction=====================")
+    print(f"=================Start Lstm eval=====================")
     input_seq_pred = input_seq[0].reshape((1, lstm_data_params["time_window"], lstm_data_params["latent_size"]))
     input_seq_pred = input_seq_pred.astype(np.float32)
     for sample in range(0, lstm_data_params["time_size"] - lstm_data_params["time_window"]):
         output_seq_pred[sample, :] = lstm(Tensor(input_seq_pred)).asnumpy()[0, 0, :]
         input_seq_pred[0, : -1, :] = input_seq_pred[0, 1:, :]
         input_seq_pred[0, -1, :] = output_seq_pred[sample, :]
-    print(f"===================End Lstm prediction====================")
+    print(f"===================End Lstm eval====================")
     lstm_latent = np.expand_dims(output_seq_pred, 1)
     lstm_latent = ms.Tensor(lstm_latent.astype(np.float32))
     if args.case == 'sod' or args.case == 'shu_osher':
         cae_lstm_predict = np.squeeze(cae.decoder(lstm_latent).asnumpy())
+        cae_lstm_predict = cae_lstm_predict / cae_data_params["multiple"]
     else:
         cae_lstm_predict_time = lstm_data_params["time_size"] - lstm_data_params["time_window"]
         cae_lstm_predict = np.zeros((cae_lstm_predict_time, true_data.shape[1], true_data.shape[2]))
@@ -94,15 +96,17 @@ def cae_lstm_eval(encoded):
                 prediction_params["decoder_time_spilt"][i], prediction_params["decoder_time_spilt"][i + 1]
             cae_lstm_predict[time_predict_start: time_predict_end] = \
                 np.squeeze(cae.decoder(lstm_latent[time_predict_start: time_predict_end]).asnumpy())
+        cae_lstm_predict = cae_lstm_predict / cae_data_params["multiple"]
 
-    plot_cae_lstm_prediction(lstm_latent, cae_lstm_predict, true_data, prediction_params["prediction_result_dir"],
-                             lstm_data_params["time_size"], lstm_data_params["time_window"])
+    plot_cae_lstm_eval(lstm_latent, cae_lstm_predict, true_data, prediction_params["prediction_result_dir"],
+                       lstm_data_params["time_size"], lstm_data_params["time_window"])
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='cae-lstm eval')
-    parser.add_argument("--case", type=str, default="sod", choices=["sod", "shu_osher", "riemann", "kh"],
-                        help="Which case to run, support 'sod', 'shu_osher', 'riemann', 'kh'")
+    parser = argparse.ArgumentParser(description='CaeLstm eval')
+    parser.add_argument("--case", type=str, default="cylinder",
+                        choices=["sod", "shu_osher", "riemann", "kh", "cylinder"],
+                        help="Which case to run, support 'sod', 'shu_osher', 'riemann', 'kh', 'cylinder")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Context mode, support 'GRAPH', 'PYNATIVE'")
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "CPU", "Ascend"],

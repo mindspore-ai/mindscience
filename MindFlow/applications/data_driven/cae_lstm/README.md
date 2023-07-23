@@ -10,7 +10,7 @@ In order to effectively reduce the design cost and cycle time of using CFD metho
 
 ### Model structure
 
-The basic framework of CAE-LSTM is mainly based on [paper](https://doi.org/10.13700/j.bh.1001-5965.2022.0085). It consists of CAE and LSTM, where the encoder in CAE reduces the dimensionality of the time series flow field to achieve feature extraction, LSTM learns low dimensional spatiotemporal features and makes predictions, and the decoder in CAE realizes flow field reconstruction.
+The basic framework of CAE-LSTM is mainly based on paper: [Ruoye Xiao, Jian Yu, Zhengxiao Ma. Applicability of Convolutional Autoencoder in reduced-order model of unsteady compressible flows[J/OL]. Journal of Beihang University: 1-16[2023-07-25].DOI:10.13700/j.bh.1001-5965.2022.0085.](https://doi.org/10.13700/j.bh.1001-5965.2022.0085). It consists of CAE and LSTM, where the encoder in CAE reduces the dimensionality of the time series flow field to achieve feature extraction, LSTM learns low dimensional spatiotemporal features and makes predictions, and the decoder in CAE realizes flow field reconstruction.
 
 + Input：Input the flow field for a period of time
 + Compression：Extract high-dimensional spatiotemporal flow characteristics by dimensionality reduction of the flow field using the encoder of CAE
@@ -22,9 +22,10 @@ The basic framework of CAE-LSTM is mainly based on [paper](https://doi.org/10.13
 
 ### Dataset
 
-Source: Numerical simulation flow field data of one-dimensional Sod shock tube, Shu-Osher problem, Tow-dimensional Riemann problem and Kelvin-Helmholtz instability problem, provided by Professor Yu Jian from the School of Aeronautic Science and Engineering, Beihang University
+Source: Numerical simulation flow field data of one-dimensional Sod shock tube, Shu-Osher problem, Tow-dimensional Riemann problem, Kelvin-Helmholtz instability problem and cylinder flow, provided by Professor Yu Jian from the School of Aeronautic Science and Engineering, Beihang University
 
-Establishment method: The calculation status and establishment method of the dataset can be found in [paper](https://doi.org/10.13700/j.bh.1001-5965.2022.0085)
+Establishment method: The calculation status and establishment method of the dataset in the first four cases can be found in paper: [Ruoye Xiao, Jian Yu, Zhengxiao Ma. Applicability of Convolutional Autoencoder in reduced-order model of unsteady compressible flows[J/OL]. Journal of Beihang University: 1-16[2023-07-25].DOI:10.13700/j.bh.1001-5965.2022.0085.](https://doi.org/10.13700/j.bh.1001-5965.2022.0085)
+The cylinder case can be found in paper: [Ma Z, Yu J, Xiao R. Data-driven reduced order modeling for parametrized time-dependent flow problems[J]. Physics of Fluids, 2022, 34(7).](https://pubs.aip.org/aip/pof/article/34/7/075109/2847227/Data-driven-reduced-order-modeling-for)
 
 Data description:
 Sod shock tube: The coordinate range is \[0, 1\], and there is a thin film at x=0.5 in the middle. At the initial moment, remove the thin film in the middle of the shock tube and study the changes in gas density in the shock tube. The calculation time t ranges from \[0, 0.2\] and is divided into an average of 531 time steps. A total of 531 flow field snapshots, each with a matrix size of 256.
@@ -34,6 +35,8 @@ Shu-Osher problem: The coordinate range is \[-5, 5\], and the calculation time t
 Riemann problem: The coordinate range is \[0, 1\], and the calculation time t ranges from \[0, 0.25]. A total of 1250 flow field snapshots, each with a matrix size of (128, 128).
 
 Kelvin-Helmholtz instability problem: The coordinate range is \[-0.5, 0.5\], and the calculation time t ranges from \[0, 1.5] and is divided into an average of 1786 time steps. A total of 1786 flow field snapshots, each with a matrix size of (256, 256).
+
+cylinder flow: Using 128✖128 grids to interpolate flow field data for convolutional network processing. There are a total of 51 Reynolds (Re = 100, 110, 120, ..., 600), and there are 401 flow field snapshots in each Reynolds, each with a matrix size of (128, 128).
 
 The download address for the dataset is: [data_driven/cae-lstm/dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm)
 
@@ -50,7 +53,7 @@ The download address for the dataset is: [data_driven/cae-lstm/dataset](https://
 `python -u lstm_train.py --case sod --mode GRAPH --save_graphs False --save_graphs_path ./graphs --device_target GPU --device_id 0 --config_file_path ./config.yaml`
 
 where:
-`--case` indicates the case to run. You can choose 'sod', 'shu_osher', riemann' or 'kh'. Default 'sod'，where 'sod' and 'shu_osher' are one dimension cases, 'riemann' and 'kh' are two dimension cases
+`--case` indicates the case to run. You can choose 'sod', 'shu_osher', riemann', 'kh' or 'cylinder'. Default 'sod'，where 'sod' and 'shu_osher' are one dimension cases, 'riemann', 'kh' and 'cylinder' are two dimension cases
 
 `--config_file_path` indicates the path of the parameter file. Default './config.yaml'.
 
@@ -70,32 +73,38 @@ You can use [Chinese](./cae_lstm_CN.ipynb) or [English](./cae_lstm.ipynb) Jupyte
 
 ## Results
 
-The following are the actual flow field, CAE-LSTM prediction results, and prediction errors of the four cases.
+The following are the actual flow field, CAE-LSTM prediction results, and prediction errors of the five cases.
 
-The first two flow field results for each case show the variation of density at different x positions in the flow field over time, while the third error curve shows the variation of the average relative error between the CAE-LSTM flow field and the real flow field label over time. The overall prediction time error meet the accuracy requirements of flow field prediction.
+The first two flow field results for each case show the variation (density for the first four cases and streamwise velocity for the cylinder case) in the flow field over time, while the third error curve shows the variation of the average error between the CAE-LSTM flow field and the real flow field label over time. The overall prediction time error meet the accuracy requirements of flow field prediction.
 
 Sod shock tube:
 <figure class="harf">
-    <img src="./images/sod_cae_reconstruction.gif" title="sod_cae_reconstruction" width="500"/>
+    <img src="./images/sod_cae_lstm_predict.gif" title="sod_cae_lstm_predict" width="500"/>
     <img src="./images/sod_cae_lstm_error.png" title="sod_cae_lstm_error" width="250"/>
 </figure>
 
 Shu-Osher problem:
 <figure class="harf">
-    <img src="./images/shu_osher_cae_reconstruction.gif" title="shu_osher_cae_reconstruction" width="500"/>
+    <img src="./images/shu_osher_cae_lstm_predict.gif" title="shu_osher_cae_lstm_predict" width="500"/>
     <img src="./images/shu_osher_cae_lstm_error.png" title="shu_osher_cae_lstm_error" width="250"/>
 </figure>
 
 Riemann problem:
 <figure class="harf">
-    <img src="./images/riemann_cae_reconstruction.gif" title="riemann_cae_reconstruction" width="500"/>
+    <img src="./images/riemann_cae_lstm_predict.gif" title="riemann_cae_lstm_predict" width="500"/>
     <img src="./images/riemann_cae_lstm_error.png" title="riemann_cae_lstm_error" width="250"/>
 </figure>
 
 Kelvin-Helmholtz instability problem:
 <figure class="harf">
-    <img src="./images/kh_cae_reconstruction.gif" title="kh_cae_reconstruction" width="500"/>
+    <img src="./images/kh_cae_lstm_predict.gif" title="kh_cae_lstm_predict" width="500"/>
     <img src="./images/kh_cae_lstm_error.png" title="kh_cae_lstm_error" width="250"/>
+</figure>
+
+cylinder flow (Re = 300)：
+<figure class="harf">
+    <img src="./images/cylinder_cae_lstm_predict.gif" title="cylinder_cae_lstm_predict" width="500"/>
+    <img src="./images/cylinder_cae_lstm_error.png" title="cylinder_cae_lstm_error" width="250"/>
 </figure>
 
 ## Contributor
