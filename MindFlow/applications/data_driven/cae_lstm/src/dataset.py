@@ -31,12 +31,13 @@ class CreateDataset:
         return len(self.data)
 
 
-def create_cae_dataset(data_path, batch_size):
+def create_cae_dataset(data_path, batch_size, multiple):
     """create cae dataset"""
     true_data = np.load(data_path)
-    train_data = np.expand_dims(true_data, 1).astype(np.float32)
+    true_data_multiple = true_data * multiple
+    true_data_multiple = np.expand_dims(true_data_multiple, 1).astype(np.float32)
 
-    dataset_generator = CreateDataset(train_data, train_data)
+    dataset_generator = CreateDataset(true_data_multiple, true_data_multiple)
     dataset = ms.dataset.GeneratorDataset(dataset_generator, ["data", "label"], shuffle=True)
     dataset = dataset.batch(batch_size=batch_size, drop_remainder=True)
     return dataset, true_data

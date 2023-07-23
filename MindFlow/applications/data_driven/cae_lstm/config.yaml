@@ -40,9 +40,10 @@
 
 # 2D case
 2D_cae_data:
-  data_path: "./dataset/riemann.npy"    # ./dataset/riemann.npy or ./dataset/kh.npy
-  batch_size: 16    # 16 for riemann, 32 for kh
-  time_size: 1250      # The numbers of the snapshots, 1250 for riemann, 1786 for kh
+  data_path: "./dataset/cylinder_re300.npy"
+  batch_size: 8    # 16 for riemann, 32 for kh, 8 for cylinder
+  time_size: 401      # The numbers of the snapshots, 1250 for riemann, 1786 for kh, 401 for cylinder
+  multiple: 100      # 1 for riemann and kh, 100 for cylinder
 2D_cae_optimizer:
   lr: 0.001
   weight_decay: 0.000001
@@ -50,19 +51,19 @@
   save_ckpt_interval: 400
   summary_dir: "./summary"      # The directory where the training process files are saved
 2D_cae_model:
-  data_dimension: [128, 64, 32, 16, 8, 4]    # [128, 64, 32, 16, 8, 4] for riemann, [256, 128, 64, 32, 16, 8] for kh
+  data_dimension: [128, 64, 32, 16, 8, 4]    # [128, 64, 32, 16, 8, 4] for riemann and cylinder, [256, 128, 64, 32, 16, 8] for kh
   conv_kernel_size: 3
   maxpool_kernel_size: 2
   maxpool_stride: 2
-  encoder_channels: [ 1, 30, 25, 20, 15, 10, 5 ]    # [ 1, 30, 25, 20, 15, 10, 5 ] for riemann, [1, 40, 30, 20, 10, 5, 1] for kh
-  decoder_channels: [ 5, 5, 10, 15, 20, 25, 30, 1 ]    # [ 5, 5, 10, 15, 20, 25, 30, 1 ] for riemann, [1, 1, 5, 10, 20, 30, 40, 1] for kh
-  channels_dense: [ 20, 30, 25, 20 ]    # [ 20, 30, 25, 20 ] for riemann, [16, 30, 25, 20] for kh
+  encoder_channels: [ 1, 30, 25, 20, 15, 10, 5 ]    # [ 1, 30, 25, 20, 15, 10, 5 ] for riemann and cylinder, [1, 40, 30, 20, 10, 5, 1] for kh
+  decoder_channels: [ 5, 5, 10, 15, 20, 25, 30, 1 ]    # [ 5, 5, 10, 15, 20, 25, 30, 1 ] for riemann and cylinder, [1, 1, 5, 10, 20, 30, 40, 1] for kh
+  channels_dense: [ 20, 30, 25, 20 ]    # [ 20, 30, 25, 20 ] for riemann and cylinder, [16, 30, 25, 20] for kh
   latent_size: 20
 2D_lstm_data:
-  batch_size: 32
-  time_size: 1250    # 1250 for riemann, 1786 for kh
+  batch_size: 16    # 32 for riemann and kh, 16 for cylinder
+  time_size: 401    # 1250 for riemann, 1786 for kh, 401 for cylinder
   latent_size: 20
-  time_window: 150    # 150 for riemann, 200 for kh
+  time_window: 60    # 150 for riemann, 200 for kh, 60 for cylinder
   gaussian_filter_sigma: 3
 2D_lstm_optimizer:
   lr: 0.001
@@ -75,10 +76,10 @@
   hidden_size: 200
   num_layers: 3
 2D_prediction:
-  encoder_data_split: 1    # Split the dataset to reduce memory, 1 for riemann, 4 for kh
-  encoder_time_spilt: [ 0, 1250 ]    # [ 0, 1250 ] for riemann, [0, 500, 1000, 1500, 1786] for kh
-  decoder_data_split: 1    # 1 for riemann, 4 for kh
-  decoder_time_spilt: [ 0, 1250 ]    # [ 0, 1250 ] for riemann, [0, 500, 1000, 1500, 1786] for kh
+  encoder_data_split: 1    # Split the dataset to reduce memory, 1 for riemann and cylinder, 4 for kh
+  encoder_time_spilt: [ 0, 401 ]    # [ 0, 1250 ] for riemann, [ 0, 401 ] for cylinder, [0, 500, 1000, 1500, 1786] for kh
+  decoder_data_split: 1    # 1 for riemann and cylinder, 4 for kh
+  decoder_time_spilt: [ 0, 401 ]    # [ 0, 1250 ] for riemann, [ 0, 401 ] for cylinder, [0, 500, 1000, 1500, 1786] for kh
   cae_ckpt_path: "./summary/ckpt/cae_4400.ckpt"
   lstm_ckpt_path: "./summary/ckpt/lstm_4000.ckpt"
   prediction_result_dir: "./prediction_result"

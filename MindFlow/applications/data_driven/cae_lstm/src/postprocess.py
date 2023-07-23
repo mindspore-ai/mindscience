@@ -32,12 +32,15 @@ def plot_train_loss(train_loss, plot_dir, epochs, net_name):
 
 
 def error(y_true, y_predict):
-    relative_error = np.average(np.abs((y_predict - y_true)) / y_true)
+    if y_true.all() == 0:
+        relative_error = np.average(np.abs(y_predict - y_true))
+    else:
+        relative_error = np.average(np.abs((y_predict - y_true)) / y_true)
     return relative_error
 
 
-def plot_cae_prediction(cae_encoded, cae_predict, true_data, plot_dir, time_size):
-    """Plot cae prediction"""
+def plot_cae_eval(cae_encoded, cae_predict, true_data, multiple, plot_dir, time_size):
+    """Plot cae eval"""
     # prepare file
     if not os.path.exists(plot_dir):
         os.mkdir(plot_dir)
@@ -45,6 +48,7 @@ def plot_cae_prediction(cae_encoded, cae_predict, true_data, plot_dir, time_size
     # relative_error
     time_true = np.arange(0, time_size)
     cae_error = np.zeros(time_size)
+    cae_predict = cae_predict / multiple
     for time in np.arange(time_size):
         cae_error[time] = error(true_data[time, :], cae_predict[time, :])
 
@@ -61,8 +65,8 @@ def plot_cae_prediction(cae_encoded, cae_predict, true_data, plot_dir, time_size
     np.save(f'{plot_dir}/cae_error.npy', cae_error)
 
 
-def plot_cae_lstm_prediction(lstm_latent, cae_lstm_predict, true_data, plot_dir, time_size, time_window):
-    """Plot prediction"""
+def plot_cae_lstm_eval(lstm_latent, cae_lstm_predict, true_data, plot_dir, time_size, time_window):
+    """Plot CaeLstm eval"""
     # prepare file
     if not os.path.exists(plot_dir):
         os.mkdir(plot_dir)
