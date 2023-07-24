@@ -246,10 +246,10 @@ option:
 
 The input form supported by this method is the same as that of RASP model. Compared with RASP, it does not require restraint information, but requires chemical shift table and NOESY spectral peak list. The chemical shift table and NOESY spectral peak list of each protein sequence should be stored in an independent folder. For the file organization, refer to the sample file.
 
-**NOESY peak list** : The NOESY list file name must be `.txt` file whose names are beginning with `noelist_`. Each NOESY list file contains four columns of data separated by spaces. The first column is the resonance frequency of the heavy atom, the second column is the resonance frequency of the hydrogen atom connected with the heavy atom, the third column is the resonance frequency of the other hydrogen atom, and the fourth column is the peak intensity (volume). If multiple NOESY spectra exist, separate them into multiple `.txt` files for independent storage. Currently, only 3D-NOESY spectra are supported, as shown in the following example:
+**NOESY peak list** : The NOESY list file name must be `.txt` file whose names are beginning with `noelist_`. Each NOESY list file contains four columns of data separated by spaces. The first column is the resonance frequency of the heavy atom, the third column is the resonance frequency of the hydrogen atom connected with the heavy atom, the second column is the resonance frequency of the other hydrogen atom, and the fourth column is the peak intensity (volume). If multiple NOESY spectra exist, separate them into multiple `.txt` files for independent storage. Currently, only 3D-NOESY spectra are supported, as shown in the following example:
 
 ``` log
-w1 w2 w3 volume
+w1 w3 w2 volume
 119.73 4.584 8.102 7689.0
 119.73 3.058 8.102 1084.0
 119.73 3.057 8.102 1084.0

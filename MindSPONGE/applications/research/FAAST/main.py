@@ -42,7 +42,7 @@ parser.add_argument('--model_config', default="./config/model.yaml", help='model
 parser.add_argument('--use_custom', type=ast.literal_eval, default=False, help='whether use custom')
 parser.add_argument('--input_path', help='processed raw feature path')
 parser.add_argument('--pdb_path', type=str, help='Location of training pdb file.')
-parser.add_argument('--peaklist_path', type=str, default="./pdb_peaklist", help='peaklist_path.')
+parser.add_argument('--peak_and_cs_path', type=str, default="./pdb_peaklist", help='peak list and chemical shift path.')
 parser.add_argument('--use_pkl', type=ast.literal_eval, default=False,
                     help="use pkl as input or fasta file as input, in default use fasta")
 parser.add_argument('--use_template', type=ast.literal_eval, default=False,
