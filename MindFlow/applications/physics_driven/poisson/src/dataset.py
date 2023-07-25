@@ -3,13 +3,14 @@ from copy import deepcopy
 
 from mindflow.data import Dataset
 from mindflow.geometry import (
-    Rectangle, Disk, Triangle, Pentagon,
+    Interval, Rectangle, Disk, Triangle, Pentagon,
     Cylinder, Cone, Tetrahedron,
     generate_sampling_config,
 )
 
 
 shape_factory = {
+    "interval": Interval,
     "rectangle": Rectangle,
     "disk": Disk,
     "triangle": Triangle,
