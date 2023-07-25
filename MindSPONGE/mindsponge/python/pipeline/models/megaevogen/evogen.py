@@ -50,6 +50,7 @@ class MEGAEvoGen(Model):
         feat = []
         for key in self.feature_list:
             feat.append(data[key])
+        feat = mutable(feat)
         if self.use_jit:
             reconstruct_msa = self._jit_forward(feat)
         else:
