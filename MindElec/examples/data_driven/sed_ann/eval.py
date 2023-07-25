@@ -16,20 +16,40 @@
 
 import argparse
 import os
-import sys
 
 import numpy as np
 import pandas as pd
 from mindspore import nn, Tensor, load_checkpoint, load_param_into_net, Model as Model_nn
 
-input_path = sys.argv[1]
-output_path = sys.argv[2]
-model_path = sys.argv[3]
-parser = argparse.ArgumentParser(description='Parametrization sed_AI Simulation')
-parser.add_argument('--param_dict_path', default='')
-parser.add_argument('--predict_input_path', default='')
-parser.add_argument('--predict_output_path', default='')
-opt = parser.parse_args()
+
+def parse_args():
+    """parse args"""
+    parser = argparse.ArgumentParser(description='Parametrization sed_AI Simulation')
+    parser.add_argument('--case', default="ic Re")
+    parser.add_argument('--param_dict_path', default='./model/model-ic_Re.ckpt')
+    parser.add_argument('--predict_input_path', default='./data/Test_ic_50_0.6.csv')
+    parser.add_argument('--predict_output_path', default='output_Mag_ic_50_0.6.csv')
+    opt = parser.parse_args()
+    return opt
+
+
+def evaluation(opt):
+    """evaluation"""
+    inputs = pd.read_csv(os.path.join(opt.predict_input_path), header=None)
+    print("predict_input shape ", inputs.shape)
+    predict_input = inputs.astype(np.float32)
+    predict_input = np.array(predict_input)
+    predict_input = Tensor(predict_input)
+    model_net = Model()
+    model_net.set_train(False)
+    param_dict = load_checkpoint(opt.param_dict_path)
+    load_param_into_net(model_net, param_dict)
+    model = Model_nn(model_net)
+    result = model.predict(predict_input)
+    result = result.asnumpy()
+    print(result)
+    output_file = "./output/" + opt.predict_output_path
+    np.savetxt(output_file, result, delimiter=',')
 
 
 class Model(nn.Cell):
@@ -93,21 +113,5 @@ class Model(nn.Cell):
 
 
 if __name__ == '__main__':
-    input_path = sys.argv[1]
-    output_path = sys.argv[2]
-    model_path = sys.argv[3]
-    inputs = pd.read_csv(os.path.join(opt.predict_input_path), header=None)
-    print("predict_input shape ", inputs.shape)
-    predict_input = inputs.astype(np.float32)
-    predict_input = np.array(predict_input)
-    predict_input = Tensor(predict_input)
-    model_net = Model()
-    model_net.set_train(False)
-    param_dict = load_checkpoint(opt.param_dict_path)
-    load_param_into_net(model_net, param_dict)
-    model = Model_nn(model_net)
-    result = model.predict(predict_input)
-    result = result.asnumpy()
-    print(result)
-    output_file = "./output/" + opt.predict_output_path
-    np.savetxt(output_file, result, delimiter=',')
+    opt_ = parse_args()
+    evaluation(opt_)

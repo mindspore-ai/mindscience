@@ -18,56 +18,32 @@ import argparse
 import os
 import shutil
 
-import aicc_tools as ac
 import numpy as np
 import pandas as pd
-from mindelec.data import Dataset, ExistedDataConfig
-from mindelec.solver import Solver
 from mindspore import context, set_seed, ParallelMode, nn
 from mindspore.communication import init, get_rank, get_group_size
 from mindspore.train.callback import LossMonitor, TimeMonitor
 
-AICC_PATH = './aicc_tools-0.1.7-py3-none-any.whl'
-os.system(f'pip install {AICC_PATH}')
-os.system('pip install fsspec')
-os.system('pip list')
-print("success")
-
-set_seed(123)
-
-device_id = int(os.getenv('DEVICE_ID'))
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")
-context.set_context(device_id=device_id)
-init()
-
-parser = argparse.ArgumentParser(description='Parametrization sed_AI Simulation')
-parser.add_argument('--epochs', type=int, default=1500)
-parser.add_argument('--print_interval', type=int, default=1000)
-parser.add_argument('--batch_size', type=int, default=8)
-parser.add_argument('--lr', type=float, default=0.0001)
-parser.add_argument('--input_dim', type=int, default=3)
-parser.add_argument('--device_num', type=int, default=1)
-parser.add_argument('--device_target', type=str, default="Ascend")
-parser.add_argument('--checkpoint_dir', default='./ckpt/', help='checkpoint directory')
-parser.add_argument('--save_graphs_path', default='./graph_result/', help='checkpoint directory')
-parser.add_argument('--input_path', default='./dataset/Butterfly_antenna/data_input.npy')
-parser.add_argument('--label_path', default='./dataset/Butterfly_antenna/data_label.npy')
-opt = parser.parse_args()
+from mindelec.data import Dataset, ExistedDataConfig
+from mindelec.solver import Solver
 
 
-def get_lr(data):
-    """get learning rate"""
-    num_milestones = 10
-    if data['train_data_length'] % opt.batch_size == 0:
-        iter_number = int(data['train_data_length'] / opt.batch_size)
-    else:
-        iter_number = int(data['train_data_length'] / opt.batch_size) + 1
-    iter_number = opt.epochs * iter_number
-    milestones = [int(iter_number * i / num_milestones) for i in range(1, num_milestones)]
-    milestones.append(iter_number)
-    learning_rates = [opt.lr * 0.5 ** i for i in range(0, num_milestones - 1)]
-    learning_rates.append(opt.lr * 0.5 ** (num_milestones - 1))
-    return milestones, learning_rates
+def parse_args():
+    """parse args"""
+    parser = argparse.ArgumentParser(description='Parametrization sed_AI Simulation')
+    parser.add_argument('--epochs', type=int, default=1500)
+    parser.add_argument('--print_interval', type=int, default=1000)
+    parser.add_argument('--batch_size', type=int, default=8)
+    parser.add_argument('--lr', type=float, default=0.0001)
+    parser.add_argument('--input_dim', type=int, default=3)
+    parser.add_argument('--device_num', type=int, default=1)
+    parser.add_argument('--device_target', type=str, default="Ascend")
+    parser.add_argument('--checkpoint_dir', default='./ckpt/', help='checkpoint directory')
+    parser.add_argument('--save_graphs_path', default='./graph_result/', help='checkpoint directory')
+    parser.add_argument('--input_path', default='./dataset/Butterfly_antenna/data_input.npy')
+    parser.add_argument('--label_path', default='./dataset/Butterfly_antenna/data_label.npy')
+    opt = parser.parse_args()
+    return opt
 
 
 def custom_normalize(data):
@@ -152,11 +128,16 @@ class Model(nn.Cell):
 
 
 # @ac.aicc_monitor
-def train():
-    """
-    train function
-    Returns: None
-    """
+def train(args):
+    """train function"""
+    aicc_path = './aicc_tools-0.1.7-py3-none-any.whl'
+    os.system(f'pip install {aicc_path}')
+    os.system('pip install fsspec')
+    os.system('pip list')
+    print("success")
+    init()
+    import aicc_tools as ac
+
     cfts = ac.CFTS(obs_path="obs://sed-ann/train/train1/cc/", upload_frequence=1, keep_last=True)
 
     x_path = cfts.get_dataset(dataset_path="obs://sed-ann/train/train1/cc/data_cc/Input_cc_v5.csv")
@@ -214,11 +195,15 @@ def train():
     obs_cb = cfts.obs_monitor()
     callbacks_train = [time_monitor, loss_monitor, ckpt_cb, obs_cb]
 
-    solver.model.train(epoch=opt.epochs,
-                       train_dataset=train_loader,
-                       callbacks=callbacks_train,
-                       dataset_sink_mode=True)
+    solver.train(epoch=args.epochs,
+                 train_dataset=train_loader,
+                 callbacks=callbacks_train,
+                 dataset_sink_mode=True)
 
 
 if __name__ == '__main__':
-    train()
+    args_ = parse_args()
+    device_id = int(os.getenv('DEVICE_ID'))
+    context.set_context(device_id=device_id)
+    set_seed(123)
+    train(args_)
