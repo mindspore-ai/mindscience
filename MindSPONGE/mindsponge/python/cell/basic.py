@@ -168,32 +168,26 @@ class Attention(nn.Cell):
     def _init_parameter(self):
         '''init parameter'''
         if self.batch_size:
-            self.linear_q_weights = Parameter(Tensor(np.zeros([self.batch_size,
-                                                               self.num_head * self.dim_per_head,
-                                                               self.q_data_dim]), mstype.float32))
-            self.linear_k_weights = Parameter(Tensor(np.zeros([self.batch_size,
-                                                               self.num_head * self.dim_per_head,
-                                                               self.m_data_dim]), mstype.float32))
-            self.linear_v_weights = Parameter(Tensor(np.zeros([self.batch_size,
-                                                               self.num_head * self.dim_per_head,
-                                                               self.m_data_dim]), mstype.float32))
-            self.linear_output_weights = Parameter(Tensor(np.zeros([self.batch_size,
-                                                                    self.output_dim,
-                                                                    self.num_head * \
-                                                                        self.dim_per_head]),
-                                                          mstype.float32))
-            self.o_biases = Parameter(Tensor(np.zeros([self.batch_size, self.output_dim]),
-                                             mstype.float32))
+            self.linear_q_weights = Parameter(Tensor(
+                np.zeros([self.batch_size, self.num_head * self.dim_per_head, self.q_data_dim]),
+                mstype.float32))
+            self.linear_k_weights = Parameter(Tensor(
+                np.zeros([self.batch_size, self.num_head * self.dim_per_head, self.m_data_dim]),
+                mstype.float32))
+            self.linear_v_weights = Parameter(Tensor(
+                np.zeros([self.batch_size, self.num_head * self.dim_per_head, self.m_data_dim]),
+                mstype.float32))
+            self.linear_output_weights = Parameter(
+                Tensor(np.zeros([self.batch_size, self.output_dim, self.num_head * self.dim_per_head]),
+                       mstype.float32))
+            self.o_biases = Parameter(Tensor(np.zeros([self.batch_size, self.output_dim]), mstype.float32))
             if self.gating:
-                self.linear_gating_weights = Parameter(Tensor(np.zeros([self.batch_size,
-                                                                        self.num_head * \
-                                                                            self.dim_per_head,
-                                                                        self.q_data_dim]),
-                                                              mstype.float32))
-                self.gating_biases = Parameter(Tensor(np.zeros((self.batch_size,
-                                                                self.num_head,
-                                                                self.dim_per_head)),
-                                                      mstype.float32), name="gating_b")
+                self.linear_gating_weights = Parameter(
+                    Tensor(np.zeros([self.batch_size, self.num_head * self.dim_per_head, self.q_data_dim]),
+                           mstype.float32))
+                self.gating_biases = Parameter(Tensor(np.ones((self.batch_size, self.num_head, self.dim_per_head)),
+                                                      mstype.float32),
+                                               name="gating_b")
         else:
             self.linear_q_weights = Parameter(Tensor(
                 glorot_uniform(self.num_head * self.q_data_dim, self.dim_per_head * self.q_data_dim,
@@ -372,38 +366,30 @@ class GlobalAttention(nn.Cell):
     def _init_parameter(self):
         '''init parameter'''
         if self.batch_size:
-            self.linear_q_weights = Parameter(
-                Tensor(np.zeros((self.batch_size,
-                                 self.input_dim,
-                                 self.num_head,
-                                 self.dim_per_head)),
-                       mstype.float32))
+            self.linear_q_weights = Parameter(Tensor(
+                np.zeros((self.batch_size, self.input_dim, self.num_head * self.dim_per_head)),
+                mstype.float32))
             self.linear_k_weights = Parameter(
-                Tensor(np.zeros((self.batch_size, self.input_dim, self.dim_per_head)),
+                Tensor(np.zeros((self.batch_size, 1, self.input_dim, self.dim_per_head)),
                        mstype.float32))
             self.linear_v_weights = Parameter(
-                Tensor(np.zeros((self.batch_size, self.input_dim, self.dim_per_head)),
+                Tensor(np.zeros((self.batch_size, 1, self.input_dim, self.dim_per_head)),
                        mstype.float32))
             self.linear_output_weights = Parameter(
-                Tensor(np.zeros((self.batch_size,
-                                 self.output_dim,
-                                 self.num_head * self.dim_per_head)),
+                Tensor(np.zeros((self.batch_size, self.output_dim, self.num_head * self.dim_per_head)),
                        mstype.float32))
             self.o_biases = Parameter(Tensor(np.zeros((self.batch_size, self.output_dim)),
                                              mstype.float32))
             if self.gating:
                 self.linear_gating_weights = Parameter(
-                    Tensor(np.zeros((self.batch_size,
-                                     self.num_head * self.dim_per_head,
-                                     self.input_dim)),
+                    Tensor(np.zeros((self.batch_size, self.num_head * self.dim_per_head, self.input_dim)),
                            mstype.float32))
-                self.gating_biases = Parameter(Tensor(np.zeros((self.batch_size, self.input_dim)),
-                                                      mstype.float32))
+                self.gating_biases = Parameter(Tensor(np.ones((self.batch_size, self.input_dim)), mstype.float32))
         else:
             self.linear_q_weights = Parameter(Tensor(
                 glorot_uniform(self.num_head * self.input_dim,
                                self.dim_per_head * self.input_dim,
-                               (self.input_dim, self.num_head*self.dim_per_head)),
+                               (self.input_dim, self.num_head * self.dim_per_head)),
                 mstype.float32))
             self.linear_k_weights = Parameter(
                 Tensor(glorot_uniform(self.input_dim,
