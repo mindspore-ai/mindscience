@@ -2,63 +2,44 @@
 main module
 """
 import argparse
-import time
 import os
+import time
+
 import matplotlib.pyplot as plt
 import mindspore
 from mindspore import context, ops, nn, Tensor
-from mindspore.train import amp
 from mindspore.ops import operations as P
+from mindspore.train import amp
 
 from dataset import create_dataset_mnist
 from wgan_gradient_penalty import Discriminator, Generator
 
-parser = argparse.ArgumentParser(description="Mindspore implementation of GAN models.")
 
-parser.add_argument('--model', type=str, default='cWGAN-GP', choices=['GAN', 'DCGAN', 'WGAN-CP', 'cWGAN-GP'])
-parser.add_argument('--device', type=int, default=0)
+def parse_args():
+    """parse args"""
+    parser = argparse.ArgumentParser(description="Mindspore implementation of GAN models.")
+    parser.add_argument('--model', type=str, default='cWGAN-GP', choices=['GAN', 'DCGAN', 'WGAN-CP', 'cWGAN-GP'])
+    parser.add_argument('--device', type=int, default=0)
+    parser.add_argument('--data_path', type=str, default='./MNIST/binary_images', help='path to dataset')
+    parser.add_argument('--train_data_path', type=str, default='./data/MNIST/binary_images/trainimages',
+                        help='path to dataset')
+    parser.add_argument('--test_data_path', type=str, default='./data/MNIST/binary_images/testimages',
+                        help='path to dataset')
+    parser.add_argument('--valid_data_path', type=str, default='./data/MNIST/binary_images/validimages',
+                        help='path to dataset')
+    parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'fashion-mnist', 'cifar', 'stl10'],
+                        help='The name of dataset')
+    parser.add_argument('--Gen_learning_rate', type=float, default=3e-5, help='The learning rate of Generator')
+    parser.add_argument('--Dis_learning_rate', type=float, default=3e-5, help='The learning rate of Discriminator')
+    parser.add_argument('--save_per_times', type=int, default=50, help='Save model per generator update times')
+    parser.add_argument('--batch_size', type=int, default=64, help='The size of batch')
+    parser.add_argument('--Dis_per_train', type=int, default=1, help='Train Discriminator times per training iteration')
+    parser.add_argument('--Gen_per_train', type=int, default=3, help='Train Generator times per training iteration')
+    parser.add_argument('--train_iters', type=int, default=5001,
+                        help='The number of iterations for training in WGAN model.')
+    args = parser.parse_args()
+    return args
 
-parser.add_argument('--dataroot', type=str, default='../MNIST/binary_images', help='path to dataset')
-parser.add_argument('--train_dataroot', type=str, default='../MNIST/binary_images/trainimages', help='path to dataset')
-parser.add_argument('--test_dataroot', type=str, default='../MNIST/binary_images/testimages', help='path to dataset')
-parser.add_argument('--valid_dataroot', type=str, default='../MNIST/binary_images/validimages', help='path to dataset')
-parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'fashion-mnist', 'cifar', 'stl10'],
-                    help='The name of dataset')
-parser.add_argument('--Gen_learning_rate', type=float, default=3e-5, help='The learning rate of Generator')
-parser.add_argument('--Dis_learning_rate', type=float, default=3e-5, help='The learning rate of Discriminator')
-parser.add_argument('--save_per_times', type=int, default=50, help='Save model per generator update times')
-parser.add_argument('--batch_size', type=int, default=64, help='The size of batch')
-parser.add_argument('--Dis_per_train', type=int, default=1, help='Train Discriminator times per training iteration')
-parser.add_argument('--Gen_per_train', type=int, default=3, help='Train Generator times per training iteration')
-
-parser.add_argument('--train_iters', type=int, default=5001,
-                    help='The number of iterations for training in WGAN model.')
-
-args = parser.parse_args()
-
-# 1. loss: output loss, with penalty, with mse
-mindspore.set_seed(1234)
-context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")  # PYNATIVE_MODE  GRAPH_MODE
-
-LOGS_FOLDER = "./logs/"
-rec_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-txt_file_name = LOGS_FOLDER + rec_time + "_with_pena.txt"
-
-# WGAN values from paper
-g_learning_rate = args.Gen_learning_rate
-d_learning_rate = args.Dis_learning_rate
-B1 = 0.5
-B2 = 0.999
-batch_size = args.batch_size
-# 把不训练的参数去掉
-
-# # Set the logger
-logger_num = int(args.train_iters / args.save_per_times) + 1
-print('logger_num:', logger_num)
-
-
-# 计算loss必须用继承nn.Cell的类，在construct方法中计算
-# construct输入为data, label
 
 def write_log(log_file_name, log_message):
     """
@@ -166,7 +147,7 @@ class DLossFake(nn.Cell):
 class GradientPenaltyCell(nn.Cell):
     """连接判别器梯度和损失"""
 
-    def __init__(self, net_d, net_g):
+    def __init__(self, net_d, net_g, batch_size):
         super(GradientPenaltyCell, self).__init__()
         self.net_d = net_d
         self.net_g = net_g
@@ -260,79 +241,108 @@ def get_infinite_batches(data_loader):
             yield img
 
 
-generator = Generator()
-discriminator = Discriminator(channels=2)
+def train(args):
+    """train"""
+    logs_folder = "./logs/"
+    rec_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    txt_file_name = logs_folder + rec_time + "_with_pena.txt"
 
-g_loss_cell = GLoss(discriminator, generator)
-g_mse_cell = GMse(discriminator, generator)
-d_loss_real_cell = DLossReal(discriminator, generator)
-d_loss_fake_cell = DLossFake(discriminator, generator)
-gradient_penalty_cell = GradientPenaltyCell(discriminator, generator)
+    # WGAN values from paper
+    g_learning_rate = args.Gen_learning_rate
+    d_learning_rate = args.Dis_learning_rate
+    b1 = 0.5
+    b2 = 0.999
+    batch_size = args.batch_size
+    # 把不训练的参数去掉
 
-d_optimizer = nn.Adam(discriminator.trainable_params(), learning_rate=d_learning_rate, beta1=B1, beta2=B2)
-g_optimizer = nn.Adam(generator.trainable_params(), learning_rate=g_learning_rate, beta1=B1,
-                      beta2=B2)
-g_loss_step = amp.build_train_network(g_loss_cell, g_optimizer, level="O3")
-g_mse_step = amp.build_train_network(g_mse_cell, g_optimizer, level="O3")
-d_real_step = amp.build_train_network(d_loss_real_cell, d_optimizer, level="O3")
-d_fake_step = amp.build_train_network(d_loss_fake_cell, d_optimizer, level="O3")
-gradient_penalty_step = amp.build_train_network(gradient_penalty_cell, d_optimizer, level="O0")
+    # # Set the logger
+    logger_num = int(args.train_iters / args.save_per_times) + 1
+    print('logger_num:', logger_num)
 
-train_dataset = create_dataset_mnist(batch_size, args.train_dataroot)
-valid_dataset = create_dataset_mnist(batch_size, args.valid_dataroot, shuffle=False)
+    # 计算loss必须用继承nn.Cell的类，在construct方法中计算
+    # construct输入为data, label
 
-train_dataloader = get_infinite_batches(train_dataset.create_dict_iterator())
-valid_dataloader = get_infinite_batches(valid_dataset.create_dict_iterator())
+    generator = Generator()
+    discriminator = Discriminator(channels=2)
 
-# 开始循环训练
-print("Starting Training Loop...")
+    g_loss_cell = GLoss(discriminator, generator)
+    g_mse_cell = GMse(discriminator, generator)
+    d_loss_real_cell = DLossReal(discriminator, generator)
+    d_loss_fake_cell = DLossFake(discriminator, generator)
+    gradient_penalty_cell = GradientPenaltyCell(discriminator, generator, batch_size)
 
-START_MESSAGE = 'output loss, with penalty'
-write_log(txt_file_name, START_MESSAGE)
+    d_optimizer = nn.Adam(discriminator.trainable_params(), learning_rate=d_learning_rate, beta1=b1, beta2=b2)
+    g_optimizer = nn.Adam(generator.trainable_params(), learning_rate=g_learning_rate, beta1=b1,
+                          beta2=b2)
+    g_loss_step = amp.build_train_network(g_loss_cell, g_optimizer, level="O3")
+    g_mse_step = amp.build_train_network(g_mse_cell, g_optimizer, level="O3")
+    d_real_step = amp.build_train_network(d_loss_real_cell, d_optimizer, level="O3")
+    d_fake_step = amp.build_train_network(d_loss_fake_cell, d_optimizer, level="O3")
+    gradient_penalty_step = amp.build_train_network(gradient_penalty_cell, d_optimizer, level="O0")
 
-expand_dims = ops.ExpandDims()
+    train_dataset = create_dataset_mnist(batch_size, args.train_dataroot)
+    valid_dataset = create_dataset_mnist(batch_size, args.valid_dataroot, shuffle=False)
 
-# save original validation images
-val_img = valid_dataloader.__next__()  # (bs, 1, 40, 40)
-val_img = expand_dims(val_img[:, 0, :, :], 1)
+    train_dataloader = get_infinite_batches(train_dataset.create_dict_iterator())
+    valid_dataloader = get_infinite_batches(valid_dataset.create_dict_iterator())
 
-save_path = os.path.join(os.getcwd(), 'results/training_result_images/')
-save_tensor_imgs(val_img, save_path, 'orignal_val_img.png')
+    # 开始循环训练
+    print("Starting Training Loop...")
 
-discriminator.set_train()
-generator.set_train()
+    start_message = 'output loss, with penalty'
+    write_log(txt_file_name, start_message)
 
-START_ITER = 0
-start_time = time.time()
-last_time = start_time
-for t_iter in range(START_ITER, START_ITER + args.train_iters):
-    for d_iter in range(args.Dis_per_train):
-        real_img = train_dataloader.__next__()
-        real_img = real_img / 255.
-        real_img = expand_dims(real_img[:, 0, :, :], 1)
-        d_loss_real = d_real_step(real_img)
-        d_loss_fake = d_fake_step(real_img)
-        gradient_penalty_loss = gradient_penalty_step(real_img)
+    expand_dims = ops.ExpandDims()
 
-    for g_iter in range(args.Gen_per_train):
-        real_img = train_dataloader.__next__()
-        real_img = real_img / 255.
-        real_img = expand_dims(real_img[:, 0, :, :], 1)
-        g_loss = g_loss_step(real_img)
-        mse_loss = g_mse_step(real_img)
-    this_time = time.time()
-    time_diff = this_time - last_time
-    total_time = this_time - start_time
-    last_time = this_time
-    MESSAGE = '[%d/%d iters]\tLoss_D_real: %.4f\tLoss_D_fake: %.4f\tLoss_Gradient: %.4f\tLoss_G: %.4f\tmse_G: %.4f\t' \
-              'step time: %.4f\ttotal time: %.4f' % (
-                  t_iter, args.train_iters, d_loss_real.asnumpy(), d_loss_fake.asnumpy(),
-                  gradient_penalty_loss.asnumpy(), g_loss.asnumpy(), mse_loss.asnumpy(), time_diff, total_time)
-    write_log(txt_file_name, MESSAGE)
+    # save original validation images
+    val_img = valid_dataloader.__next__()  # (bs, 1, 40, 40)
+    val_img = expand_dims(val_img[:, 0, :, :], 1)
 
-    if t_iter % args.save_per_times == 0:
-        val_img = valid_dataloader.__next__()  # (bs, 1, 40, 40)
-        val_img = val_img / 255.
-        val_img = expand_dims(val_img[:, 0, :, :], 1)
-        save_path = os.path.join(os.getcwd(), 'results/training_result_images/')
-        validate(val_img, generator, save_path, t_iter, rec_time)
+    save_path = os.path.join(os.getcwd(), 'results/training_result_images/')
+    save_tensor_imgs(val_img, save_path, 'orignal_val_img.png')
+
+    discriminator.set_train()
+    generator.set_train()
+
+    start_iter = 0
+    start_time = time.time()
+    last_time = start_time
+    for t_iter in range(start_iter, start_iter + args.train_iters):
+        for _ in range(args.Dis_per_train):
+            real_img = train_dataloader.__next__()
+            real_img = real_img / 255.
+            real_img = expand_dims(real_img[:, 0, :, :], 1)
+            d_loss_real = d_real_step(real_img)
+            d_loss_fake = d_fake_step(real_img)
+            gradient_penalty_loss = gradient_penalty_step(real_img)
+
+        for _ in range(args.Gen_per_train):
+            real_img = train_dataloader.__next__()
+            real_img = real_img / 255.
+            real_img = expand_dims(real_img[:, 0, :, :], 1)
+            g_loss = g_loss_step(real_img)
+            mse_loss = g_mse_step(real_img)
+        this_time = time.time()
+        time_diff = this_time - last_time
+        total_time = this_time - start_time
+        last_time = this_time
+        message = '[%d/%d iters]\tLoss_D_real: %.4f\tLoss_D_fake: %.4f\tLoss_Gradient: %.4f\tLoss_G: %.4f\t' \
+                  'mse_G: %.4f\tstep time: %.4f\ttotal time: %.4f' \
+                  % (t_iter, args.train_iters, d_loss_real.asnumpy(), d_loss_fake.asnumpy(),
+                     gradient_penalty_loss.asnumpy(), g_loss.asnumpy(), mse_loss.asnumpy(), time_diff, total_time)
+        write_log(txt_file_name, message)
+
+        if t_iter % args.save_per_times == 0:
+            val_img = valid_dataloader.__next__()  # (bs, 1, 40, 40)
+            val_img = val_img / 255.
+            val_img = expand_dims(val_img[:, 0, :, :], 1)
+            save_path = os.path.join(os.getcwd(), 'results/training_result_images/')
+            validate(val_img, generator, save_path, t_iter, rec_time)
+
+
+if __name__ == "__main__":
+    args_ = parse_args()
+    # 1. loss: output loss, with penalty, with mse
+    mindspore.set_seed(1234)
+    context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")  # PYNATIVE_MODE  GRAPH_MODE
+    train(args_)

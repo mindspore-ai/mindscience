@@ -15,37 +15,37 @@
 """
 solve process
 """
-import os
 import argparse
+import os
+
+import matplotlib.pyplot as plt
 import numpy as np
 from mindspore import nn, context
-import matplotlib.pyplot as plt
+
+from src import BaseTopologyDesigner
+from src import Gaussian, CFSParameters, estimate_time_interval
 from src import transverse_magnetic, EMInverseSolver
 from src import zeros, tensor, vstack, elu
-from src import Gaussian, CFSParameters, estimate_time_interval
-from src import BaseTopologyDesigner
 
 
-parser = argparse.ArgumentParser(
-    description='Electromagnetic Inverse Scattering Solver Based on AD-FDTD')
-parser.add_argument('--epochs', type=int, default=100)
-parser.add_argument('--lr', type=float, default=0.1)
-parser.add_argument('--device_target', type=str, default='GPU')
-parser.add_argument('--nt', type=int, default=350,
-                    help='Number of time steps.')
-parser.add_argument('--max_call_depth', type=int, default=2000)
-parser.add_argument('--dataset_dir', type=str,
-                    default='./dataset', help='dataset directory')
-parser.add_argument('--checkpoint_dir', type=str,
-                    default='./ckpt', help='checkpoint directory')
-parser.add_argument('--result_dir', type=str,
-                    default='./result', help='result directory')
-options = parser.parse_args()
-
-
-context.set_context(mode=context.PYNATIVE_MODE,
-                    max_call_depth=options.max_call_depth,
-                    device_target=options.device_target)
+def parse_args():
+    """parse args"""
+    parser = argparse.ArgumentParser(
+        description='Electromagnetic Inverse Scattering Solver Based on AD-FDTD')
+    parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--lr', type=float, default=0.1)
+    parser.add_argument('--device_target', type=str, default='GPU')
+    parser.add_argument('--nt', type=int, default=350,
+                        help='Number of time steps.')
+    parser.add_argument('--max_call_depth', type=int, default=2000)
+    parser.add_argument('--dataset_dir', type=str,
+                        default='./dataset', help='dataset directory')
+    parser.add_argument('--checkpoint_dir', type=str,
+                        default='./ckpt', help='checkpoint directory')
+    parser.add_argument('--result_dir', type=str,
+                        default='./result', help='result directory')
+    options = parser.parse_args()
+    return options
 
 
 class InverseDomain(BaseTopologyDesigner):
@@ -158,11 +158,13 @@ def get_waveform_t(nt, dt, fmax):
     return waveform_t
 
 
-def solve():
+def solve(args):
     """solve process"""
+    context.set_context(max_call_depth=args.max_call_depth,
+                        device_target=args.device_target)
     # set up problem
-    nt = options.nt
-    dataset_dir = options.dataset_dir
+    nt = args.nt
+    dataset_dir = args.dataset_dir
     fmax = 1.4e9
     ns = 4
     cell_lengths = (1e-2, 1e-2)
@@ -187,30 +189,30 @@ def solve():
         cell_numbers, cell_lengths, nt, dt, ns,
         inverse_domain, cpml, rho_init)
 
-    # define sovler for inverse problem
-    epochs = options.epochs
-    lr = options.lr
+    # define solver for inverse problem
     loss_fn = nn.MSELoss(reduction='sum')
-    optimizer = nn.Adam(fdtd_net.trainable_params(), learning_rate=lr)
+    optimizer = nn.Adam(fdtd_net.trainable_params(), learning_rate=args.lr)
     solver = EMInverseSolver(fdtd_net, loss_fn, optimizer)
 
     # solve
-    solver.solve(epochs, waveform_t, field_labels)
+    solver.solve(args.epochs, waveform_t, field_labels)
 
     # eval
     epsr, _ = solver.eval(epsr_labels)
 
     # results
-    os.makedirs(options.result_dir)
+    os.makedirs(args.result_dir)
     plt.imshow(epsr.asnumpy().T, origin='lower',
                vmin=1., vmax=4., extent=[0., 1., 0., 1.])
     plt.xlabel('x (m)')
     plt.ylabel('y (m)')
     plt.title('reconstructed epsr')
     plt.colorbar()
-    plt.savefig(os.path.join(options.result_dir, 'epsr_reconstructed.png'))
+    plt.savefig(os.path.join(args.result_dir, 'epsr_reconstructed.png'))
     plt.close()
 
 
 if __name__ == '__main__':
-    solve()
+    args_ = parse_args()
+    context.set_context(mode=context.PYNATIVE_MODE)  # memory problem unsolved in graph mode
+    solve(args_)
