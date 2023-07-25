@@ -1,4 +1,7 @@
 geometry:
+    interval:
+        coord_min: 0.2
+        coord_max: 0.8
     rectangle:
         coord_min: [0., 0.]
         coord_max: [1., 1.]
@@ -34,6 +37,9 @@ data:
         sampler: 'uniform'
 batch_size: 5000
 model:
+    1d:
+        input_size: 1
+        base_neurons: 50
     2d:
         input_size: 2
         base_neurons: 100

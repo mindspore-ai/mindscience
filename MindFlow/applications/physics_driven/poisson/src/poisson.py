@@ -1,9 +1,5 @@
 """Define the Poisson equation."""
-import math
-
 import sympy
-import mindspore as ms
-from mindspore import nn, ops
 from mindspore import numpy as ms_np
 from mindflow import PDEWithLoss, MTLWeightedLoss, sympy_to_mindspore
 
@@ -11,7 +7,9 @@ from mindflow import PDEWithLoss, MTLWeightedLoss, sympy_to_mindspore
 class Poisson(PDEWithLoss):
     """Define the loss of the Poisson equation."""
     def __init__(self, model, n_dim):
-        if n_dim == 2:
+        if n_dim == 1:
+            var_str = 'x'
+        elif n_dim == 2:
             var_str = 'x y'
         elif n_dim == 3:
             var_str = 'x y z'
@@ -52,14 +50,3 @@ class Poisson(PDEWithLoss):
         loss_pde = ms_np.mean(ms_np.square(res_pde[0]))
         loss_bc = ms_np.mean(ms_np.square(res_bc[0]))
         return self.loss_fn((loss_pde, loss_bc))
-
-
-class AnalyticSolution(nn.Cell):
-    """Analytic solution."""
-    def __init__(self, n_dim):
-        super(AnalyticSolution, self).__init__()
-        self.prod = ops.ReduceProd(keep_dims=True)
-        self.factor = ms.Tensor(1/(16.*n_dim*math.pi*math.pi))
-
-    def construct(self, x):
-        return self.factor*self.prod(ms_np.sin(4*math.pi*x), 1)
