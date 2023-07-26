@@ -20,7 +20,7 @@ import numpy as np
 import imageio
 import matplotlib.pyplot as plt
 
-from mindspore import ops, context, nn, set_seed, save_checkpoint, jit, load_checkpoint, load_param_into_net
+from mindspore import ops, context, nn, set_seed, save_checkpoint, jit
 import mindspore.common.dtype as mstype
 from mindflow.utils import load_yaml_config
 
@@ -145,10 +145,8 @@ if __name__ == '__main__':
                              nu=burgers_config['nu'],
                              compute_dtype=mstype.float32)
 
-    param_dict = load_checkpoint('model/data_driven/train_upconv.ckpt')
-    param_not_load, _ = load_param_into_net(upconv, param_dict)
-    param_dict = load_checkpoint('model/data_driven/train_recurrent_cnn.ckpt')
-    param_not_load, _ = load_param_into_net(recurrent_cnn, param_dict)
+    train(percnn_trainer, 'pretrain', burgers_config['pretrain'])
+    train(percnn_trainer, 'finetune', burgers_config['finetune'])
 
     output = percnn_trainer.get_output(1800)
     output = ops.concat((output, output[:, :, :, 0:1]), axis=3)
