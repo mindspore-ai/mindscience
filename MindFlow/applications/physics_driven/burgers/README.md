@@ -36,4 +36,6 @@ You can use [Chinese](https://gitee.com/mindspore/mindscience/blob/master/MindFl
 
 ## Contributor
 
-liulei277
+gitee id：[liulei277](https://gitee.com/liulei277)
+
+email: liulei2770919@163.com

@@ -33,25 +33,22 @@ from src import create_training_dataset, create_test_dataset, visual, calculate_
 set_seed(123456)
 np.random.seed(123456)
 
-parser = argparse.ArgumentParser(description="burgers train")
-parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
-                    help="Running in GRAPH_MODE OR PYNATIVE_MODE")
-parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                    help="Whether to save intermediate compilation graphs")
-parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-parser.add_argument("--device_target", type=str, default="Ascend", choices=["GPU", "Ascend"],
-                    help="The target device to run, support 'Ascend', 'GPU'")
-parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-parser.add_argument("--config_file_path", type=str, default="./burgers_cfg.yaml")
-args = parser.parse_args()
 
-context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                    save_graphs=args.save_graphs,
-                    save_graphs_path=args.save_graphs_path,
-                    device_target=args.device_target,
-                    device_id=args.device_id)
-print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
-use_ascend = context.get_context(attr_key='device_target') == "Ascend"
+def parse_args():
+    '''Parse input args'''
+    parser = argparse.ArgumentParser(description="burgers train")
+    parser.add_argument("--config_file_path", type=str, default="./burgers_cfg.yaml")
+    parser.add_argument("--device_target", type=str, default="Ascend", choices=["GPU", "Ascend"],
+                        help="The target device to run, support 'Ascend', 'GPU'")
+    parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
+    parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+                        help="Running in GRAPH_MODE OR PYNATIVE_MODE")
+    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
+                        help="Whether to save intermediate compilation graphs")
+    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
+
+    input_args = parser.parse_args()
+    return input_args
 
 
 def train():
@@ -131,5 +128,13 @@ def train():
 if __name__ == '__main__':
     print("pid:", os.getpid())
     start_time = time.time()
+    args = parse_args()
+    context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
+                        save_graphs=args.save_graphs,
+                        save_graphs_path=args.save_graphs_path,
+                        device_target=args.device_target,
+                        device_id=args.device_id)
+    print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
+    use_ascend = context.get_context(attr_key='device_target') == "Ascend"
     train()
     print("End-to-End total time: {} s".format(time.time() - start_time))
