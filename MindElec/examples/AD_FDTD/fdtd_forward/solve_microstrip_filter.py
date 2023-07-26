@@ -15,37 +15,37 @@
 """
 forward problem solve process
 """
-import os
 import argparse
+import os
+
 import numpy as np
 from mindspore import context
-from src import estimate_time_interval, compare_s
-from src import CFSParameters, Gaussian
+
 from src import Antenna, SParameterSolver
+from src import CFSParameters, Gaussian
 from src import GridHelper, UniformBrick, PECPlate, VoltageSource, Resistor
 from src import VoltageMonitor, CurrentMonitor
+from src import estimate_time_interval, compare_s
 from src import full3d
 
 
-parser = argparse.ArgumentParser(
-    description='FDTD-Based Electromagnetics Forward-Problem Solver')
-parser.add_argument('--device_target', type=str, default='GPU')
-parser.add_argument('--nt', type=int, default=3000,
-                    help='Number of time steps.')
-parser.add_argument('--max_call_depth', type=int, default=1000)
-parser.add_argument('--dataset_dir', type=str,
-                    default='./dataset', help='dataset directory')
-parser.add_argument('--result_dir', type=str,
-                    default='./result', help='result directory')
-parser.add_argument('--cfl_number', type=float, default=0.9, help='CFL number')
-parser.add_argument('--fmax', type=float, default=20e9,
-                    help='highest frequency (Hz)')
-options = parser.parse_args()
-
-
-context.set_context(mode=context.GRAPH_MODE,
-                    max_call_depth=options.max_call_depth,
-                    device_target=options.device_target)
+def parse_args():
+    """parse args"""
+    parser = argparse.ArgumentParser(
+        description='FDTD-Based Electromagnetics Forward-Problem Solver')
+    parser.add_argument('--device_target', type=str, default='GPU')
+    parser.add_argument('--nt', type=int, default=3000,
+                        help='Number of time steps.')
+    parser.add_argument('--max_call_depth', type=int, default=1000)
+    parser.add_argument('--dataset_dir', type=str,
+                        default='./dataset', help='dataset directory')
+    parser.add_argument('--result_dir', type=str,
+                        default='./result', help='result directory')
+    parser.add_argument('--cfl_number', type=float, default=0.9, help='CFL number')
+    parser.add_argument('--fmax', type=float, default=20e9,
+                        help='highest frequency (Hz)')
+    options = parser.parse_args()
+    return options
 
 
 def get_waveform_t(nt, dt, fmax):
@@ -107,12 +107,15 @@ def get_microstrip_filter(air_buffers, npml):
     return grid
 
 
-def solve():
+def solve(args):
     """solve process"""
+    context.set_context(mode=context.GRAPH_MODE,
+                        max_call_depth=args.max_call_depth,
+                        device_target=args.device_target)
     # set up problem
-    nt = options.nt
-    fmax = options.fmax
-    cfl_number = options.cfl_number
+    nt = args.nt
+    fmax = args.fmax
+    cfl_number = args.cfl_number
     air_buffers = (3, 3, 3)
     npml = 8
 
@@ -120,12 +123,10 @@ def solve():
     antenna = Antenna(grid_helper)
     ns = len(grid_helper.sources_on_edges)
 
-    cpml = CFSParameters(npml=npml, alpha_max=0.05,
-                         sigma_factor=1.3, kappa_max=7, order=3)
+    cpml = CFSParameters(npml=npml, alpha_max=0.05, sigma_factor=1.3, kappa_max=7, order=3)
 
     # compute waveforms
-    dt = estimate_time_interval(
-        grid_helper.cell_lengths, cfl_number, epsr_min=1., mur_min=1.)
+    dt = estimate_time_interval(grid_helper.cell_lengths, cfl_number, epsr_min=1., mur_min=1.)
 
     waveform_t, t = get_waveform_t(nt, dt, fmax)
 
@@ -133,8 +134,7 @@ def solve():
     fs = np.linspace(0., fmax, 1001, endpoint=True)
 
     # define fdtd network
-    fdtd_net = full3d.ADFDTD(grid_helper.cell_numbers, grid_helper.cell_lengths,
-                             nt, dt, ns, antenna, cpml)
+    fdtd_net = full3d.ADFDTD(grid_helper.cell_numbers, grid_helper.cell_lengths, nt, dt, ns, antenna, cpml)
 
     # define solver
     solver = SParameterSolver(fdtd_net)
@@ -146,25 +146,19 @@ def solve():
     s_parameters = solver.eval(fs, t)
 
     # show results
-    os.makedirs(options.result_dir)
+    os.makedirs(args.result_dir)
     s_parameters = s_parameters.asnumpy()
     s_complex = s_parameters[..., 0] + 1j * s_parameters[..., 1]
-    s11_ref = np.loadtxt(os.path.join(
-        options.dataset_dir, 'microstrip_filter_s11_ref.txt'), delimiter=',')
+    s11_ref = np.loadtxt(os.path.join(args.dataset_dir, 'microstrip_filter_s11_ref.txt'), delimiter=',')
     s11_ref = s11_ref[np.argsort(s11_ref[:, 0])]
-    s21_ref = np.loadtxt(os.path.join(
-        options.dataset_dir, 'microstrip_filter_s21_ref.txt'), delimiter=',')
+    s21_ref = np.loadtxt(os.path.join(args.dataset_dir, 'microstrip_filter_s21_ref.txt'), delimiter=',')
     s21_ref = s21_ref[np.argsort(s21_ref[:, 0])]
-    compare_s(fs, s_complex,
-              os.path.join(options.result_dir,
-                           'microstrip_filter_s_parameters.png'),
-              s11_ref, s21_ref)
+    compare_s(fs, s_complex, os.path.join(args.result_dir, 'microstrip_filter_s_parameters.png'), s11_ref, s21_ref)
 
     # save results
-    np.savez(os.path.join(options.result_dir,
-                          'microstrip_filter_s_parameters.npz'),
-             s_parameters=s_complex, frequency=fs)
+    np.savez(os.path.join(args.result_dir, 'microstrip_filter_s_parameters.npz'), s_parameters=s_complex, frequency=fs)
 
 
 if __name__ == '__main__':
-    solve()
+    args_ = parse_args()
+    solve(args_)
