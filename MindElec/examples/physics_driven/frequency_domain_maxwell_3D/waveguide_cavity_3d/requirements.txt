@@ -1,0 +1,6 @@
+numpy
+matplotlib
+tqdm
+easydict
+mindspore >= 1.5.0
+mindelec==0.1.0

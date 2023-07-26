@@ -13,22 +13,25 @@
 # limitations under the License.
 # ============================================================================
 """evaluation process"""
-import os
-import json
-import time
 import copy
+import json
+import os
+import time
+
 import numpy as np
-
+import mindspore as ms
 from mindspore import context, Tensor
-import mindspore.common.dtype as mstype
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
+
 from mindelec.architecture import MultiScaleFCCell
-
-from src import get_test_data
-from src import visual_result
+from src import get_test_data, visual_result
 
 
-context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend", save_graphs_path="./graph")
+def load_config():
+    with open("./config.json") as f:
+        config = json.load(f)
+    return config
+
 
 def evaluation(config):
     """evaluation"""
@@ -45,8 +48,8 @@ def evaluation(config):
                              scale_factor=config["scale_factor"]
                              )
 
-    model.to_float(mstype.float16)
-    model.input_scale.to_float(mstype.float32)
+    model.to_float(ms.float16)
+    model.input_scale.to_float(ms.float32)
 
     # load parameters
     param_dict = load_checkpoint(config["load_ckpt_path"])
@@ -64,7 +67,7 @@ def evaluation(config):
     outputs_size = config.get("outputs_size", 3)
     inputs_size = config.get("inputs_size", 3)
     outputs_scale = np.array(config["output_scale"], dtype=np.float32)
-    batch_size = config.get("test_batch_size", 8192*4)
+    batch_size = config.get("test_batch_size", 8192 * 4)
 
     dx = inputs[0, 1, 0, 0] - inputs[0, 0, 0, 0]
     dy = inputs[0, 0, 1, 1] - inputs[0, 0, 0, 1]
@@ -90,7 +93,7 @@ def evaluation(config):
         index_end = min(index + batch_size, len(inputs_each[0]))
         # predict each physical quantity respectively in order to keep consistent with fdtd on staggered mesh
         for i in range(outputs_size):
-            test_batch = Tensor(inputs_each[i][index: index_end, :], mstype.float32)
+            test_batch = Tensor(inputs_each[i][index: index_end, :], ms.float32)
             predict = model(test_batch)
             predict = predict.asnumpy()
             prediction_each[index: index_end, i] = predict[:, i] * outputs_scale[i]
@@ -108,9 +111,11 @@ def evaluation(config):
     l2_error_hz = np.sqrt(np.sum(np.square(error[..., 2]))) / np.sqrt(np.sum(np.square(label[..., 2])))
     print("l2_error, Ex: ", l2_error_ex, ", Ey: ", l2_error_ey, ", Hz: ", l2_error_hz)
 
+
 if __name__ == '__main__':
+    context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend", save_graphs_path="./graph")
     print("pid:", os.getpid())
-    configs = json.load(open("./config.json"))
+    configs = load_config()
     print("check config: {}".format(configs))
     time0 = time.time()
     evaluation(configs)
