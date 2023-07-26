@@ -13,21 +13,18 @@
 ### 训练方式一：在命令行中调用`train.py`脚本
 
 ```shell
-python --mode GRAPH --save_graphs_path ./graphs --device_target Ascend --device_id 0 --config_file_path ./burgers_cfg.yaml
+python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_target Ascend --device_id 0
 ```
 
 其中，
+
+`--config_file_path`表示参数文件的路径，默认值'./burgers_cfg.yaml'；
+
 `--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式，详见[MindSpore官网](https://www.mindspore.cn/docs/zh-CN/r2.0.0-alpha/design/dynamic_graph_and_static_graph.html?highlight=pynative)，默认值'GRAPH'；
-
-`--save_graphs`表示是否保存计算图，默认值'False'；
-
-`--save_graphs_path`表示计算图保存的路径，默认值'./graphs'
 
 `--device_target`表示使用的计算平台类型，可以选择'Ascend'或'GPU'，默认值'Ascend'；
 
 `--device_id`表示使用的计算卡编号，可按照实际情况填写，默认值0；
-
-`--config_file_path`表示参数文件的路径，默认值'./burgers_cfg.yaml'；
 
 ### 训练方式二：运行Jupyter Notebook
 
