@@ -13,34 +13,32 @@
 # limitations under the License.
 # ============================================================================
 """train process"""
-import os
 import json
 import math
+import os
 import time
+
 import numpy as np
-
-from mindspore.common import set_seed
+import mindspore as ms
 from mindspore import context, Tensor, nn
-from mindspore.train import DynamicLossScaleManager
-from mindspore.train.callback import ModelCheckpoint, CheckpointConfig
-from mindspore.train.serialization import load_checkpoint, load_param_into_net
-import mindspore.common.dtype as mstype
+from mindspore.common import set_seed
 from mindspore.common.initializer import HeUniform
+from mindspore.train import DynamicLossScaleManager, ModelCheckpoint, CheckpointConfig, load_checkpoint, \
+    load_param_into_net
 
+from mindelec.architecture import MultiScaleFCCell, MTLWeightedLossCell
+from mindelec.common import L2
 from mindelec.loss import Constraints
 from mindelec.solver import Solver, LossAndTimeMonitor
-from mindelec.common import L2
-from mindelec.architecture import MultiScaleFCCell, MTLWeightedLossCell
+from src import Maxwell2DMur, MultiStepLR, PredictCallback, create_train_dataset, get_test_data, \
+    create_random_dataset, visual_result
 
-from src import create_train_dataset, get_test_data, create_random_dataset
-from src import Maxwell2DMur
-from src import MultiStepLR, PredictCallback
-from src import visual_result
 
-set_seed(123456)
-np.random.seed(123456)
-
-context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend", save_graphs_path="./graph")
+def load_config():
+    """load config"""
+    with open("./config.json") as f:
+        config = json.load(f)
+    return config
 
 
 def train(config):
@@ -70,8 +68,8 @@ def train(config):
                              scale_factor=config["scale_factor"]
                              )
 
-    model.to_float(mstype.float16)
-    model.input_scale.to_float(mstype.float32)
+    model.to_float(ms.float16)
+    model.input_scale.to_float(ms.float32)
     mtl = MTLWeightedLossCell(num_losses=elec_train_dataset.num_dataset)
 
     # define problem
@@ -124,8 +122,11 @@ def train(config):
 
 
 if __name__ == '__main__':
+    set_seed(123456)
+    np.random.seed(123456)
+    context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend", save_graphs_path="./graph")
     print("pid:", os.getpid())
-    configs = json.load(open("./config.json"))
+    configs = load_config()
     print("check config: {}".format(configs))
     time_beg = time.time()
     train(configs)
