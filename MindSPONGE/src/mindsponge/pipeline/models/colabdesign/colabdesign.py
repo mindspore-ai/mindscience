@@ -19,6 +19,9 @@ import mindspore as ms
 from mindspore import Parameter
 from mindspore import Tensor
 from mindspore import jit, context
+from mindspore.common import mutable
+from mindsponge.pipeline.cell.amp import amp_convert
+from mindsponge.pipeline.cell.mask import LayerNormProcess
 
 from .module.design_wrapcell import TrainOneStepCell, WithLossCell
 from .module.utils import get_weights, get_lr, get_opt, get_seqs
@@ -55,6 +58,9 @@ class COLABDESIGN(Model):
         seq_vector = 0.01 * np.random.normal(0, 1, size=(1, 100, 20))
         self.network = Colabdesign(self.config, self.mixed_precision, Tensor(seq_vector, ms.float32), 100,
                                    protocol=self.config.protocol)
+        if self.mixed_precision:
+            fp32_white_list = (ms.nn.Softmax, ms.nn.LayerNorm, LayerNormProcess)
+            amp_convert(self.network, fp32_white_list)
         super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
         net_with_criterion = WithLossCell(self.network)
         soft_weights, _, temp_weights = get_weights(self.config, self.config.soft_iters, self.config.temp_iters,
@@ -78,6 +84,7 @@ class COLABDESIGN(Model):
             data[-5] = soft_step
             data[-4] = hard_step
             inputs_feats = [Tensor(feat) for feat in data]
+            inputs_feats = mutable(inputs_feats)
             self.train_net.add_flags_recursive(save_best=False)
             self.train_net.phase = 'save_best'
             loss = self._jit_forward(inputs_feats)
