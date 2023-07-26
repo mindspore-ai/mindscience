@@ -13,22 +13,18 @@ You can download dataset from [physics_driven/burgers_pinns/dataset](https://dow
 ### Run Option 1: Call `train.py` from command line
 
 ```shell
-python --mode GRAPH --save_graphs_path ./graphs --device_target Ascend --device_id 0 --config_file_path ./burgers_cfg.yaml
+python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_target Ascend --device_id 0
 ```
 
 where:
 
+`--config_file_path` indicates the path of the parameter file. Default './burgers_cfg.yaml'；
+
 `--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode. You can refer to [MindSpore official website](https://www.mindspore.cn/docs/en/r2.0.0-alpha/design/dynamic_graph_and_static_graph.html) for details.Default 'GRAPH'.
-
-`--save_graphs` indicates whether to save the computational graph. Default 'False'.
-
-`--save_graphs_path` indicates the path to save the computational graph. Default './graphs'.
 
 `--device_target` indicates the computing platform. You can choose 'Ascend' or 'GPU'. Default 'Ascend'.
 
 `--device_id` indicates the index of NPU or GPU. Default 0.
-
-`--config_file_path` indicates the path of the parameter file. Default './burgers_cfg.yaml'；
 
 ### Run Option 2: Run Jupyter Notebook
 
