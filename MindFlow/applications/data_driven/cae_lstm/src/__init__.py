@@ -16,7 +16,7 @@
 """init"""
 from .dataset import create_cae_dataset, create_lstm_dataset
 from .model import CaeNet1D, CaeNet2D, Lstm
-from .postprocess import plot_train_loss, plot_cae_prediction, plot_cae_lstm_prediction
+from .postprocess import plot_train_loss, plot_cae_eval, plot_cae_lstm_eval
 
 __all__ = [
     "create_cae_dataset",
@@ -25,6 +25,6 @@ __all__ = [
     "CaeNet2D",
     "Lstm",
     "plot_train_loss",
-    "plot_cae_prediction",
-    "plot_cae_lstm_prediction"
+    "plot_cae_eval",
+    "plot_cae_lstm_eval"
 ]

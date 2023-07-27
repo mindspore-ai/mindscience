@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""prediction process of CaeNet"""
+"""eval of CaeNet"""
 import os
 import argparse
 
@@ -23,14 +23,14 @@ import mindspore.common.dtype as mstype
 
 from mindspore import load_checkpoint, load_param_into_net, set_seed, Tensor, ops
 from mindflow.utils import load_yaml_config
-from src import create_cae_dataset, CaeNet1D, CaeNet2D, plot_cae_prediction
+from src import create_cae_dataset, CaeNet1D, CaeNet2D, plot_cae_eval
 
 np.random.seed(0)
 set_seed(0)
 
 
 def cae_eval(config_file_path, case):
-    """Process of prediction with CaeNet"""
+    """eval of CaeNet"""
     # prepare params
     config = load_yaml_config(config_file_path)
     if case in ('sod', 'shu_osher'):
@@ -57,16 +57,15 @@ def cae_eval(config_file_path, case):
     load_param_into_net(cae, cae_param_dict)
 
     # prepare dataset
-    _, true_data = create_cae_dataset(data_params["data_path"], data_params["batch_size"])
-    data_set = np.expand_dims(true_data, 1).astype(np.float32)
+    _, true_data = create_cae_dataset(data_params["data_path"], data_params["batch_size"], data_params["multiple"])
+    true_data_multiple = true_data * data_params["multiple"]
+    data_set = np.expand_dims(true_data_multiple, 1).astype(np.float32)
 
+    print(f"=================Start CaeNet eval=====================")
     if case in ('sod', 'shu_osher'):
-        print(f"=================Start CaeNet1D prediction=====================")
         encoded = cae.encoder(Tensor(data_set))
         cae_predict = np.squeeze(cae(Tensor(data_set)).asnumpy())
-        print(f"===================End CaeNet1D prediction====================")
     else:
-        print(f"=================Start CaeNet2D prediction=====================")
         encoded = ops.zeros((data_params["time_size"], model_params["latent_size"]), mstype.float32)
         cae_predict = np.zeros(true_data.shape)
         for i in range(prediction_params["encoder_data_split"]):
@@ -76,17 +75,18 @@ def cae_eval(config_file_path, case):
                 cae.encoder(ms.Tensor(data_set[time_predict_start: time_predict_end]))
             cae_predict[time_predict_start: time_predict_end] = \
                 np.squeeze(cae(ms.Tensor(data_set[time_predict_start: time_predict_end])).asnumpy())
-        print(f"===================End CaeNet2D prediction====================")
+    print(f"===================End CaeNet eval====================")
 
-    plot_cae_prediction(encoded, cae_predict, true_data,
-                        prediction_params["prediction_result_dir"], data_params["time_size"])
+    plot_cae_eval(encoded, cae_predict, true_data, data_params["multiple"],
+                  prediction_params["prediction_result_dir"], data_params["time_size"])
     return encoded
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='CaeNet eval')
-    parser.add_argument("--case", type=str, default="sod", choices=["sod", "shu_osher", "riemann", "kh"],
-                        help="Which case to run, support 'sod', 'shu_osher', 'riemann', 'kh'")
+    parser.add_argument("--case", type=str, default="sod",
+                        choices=["sod", "shu_osher", "riemann", "kh", "cylinder"],
+                        help="Which case to run, support 'sod', 'shu_osher', 'riemann', 'kh', 'cylinder")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Context mode, support 'GRAPH', 'PYNATIVE'")
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "CPU", "Ascend"],

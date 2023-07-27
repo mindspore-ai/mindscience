@@ -37,9 +37,9 @@ def lstm_train():
         model_params = config["1D_lstm_model"]
         optimizer_params = config["1D_lstm_optimizer"]
     else:
-        data_params = config["1D_lstm_data"]
-        model_params = config["1D_lstm_model"]
-        optimizer_params = config["1D_lstm_optimizer"]
+        data_params = config["2D_lstm_data"]
+        model_params = config["2D_lstm_model"]
+        optimizer_params = config["2D_lstm_optimizer"]
 
     # prepare summary file
     summary_dir = optimizer_params["summary_dir"]
@@ -107,8 +107,9 @@ def lstm_train():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Lstm')
-    parser.add_argument("--case", type=str, default="sod", choices=["sod", "shu_osher", "riemann", "kh"],
-                        help="Which case to run, support 'sod', 'shu_osher', 'riemann', 'kh'")
+    parser.add_argument("--case", type=str, default="sod",
+                        choices=["sod", "shu_osher", "riemann", "kh", "cylinder"],
+                        help="Which case to run, support 'sod', 'shu_osher', 'riemann', 'kh', 'cylinder")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Context mode, support 'GRAPH', 'PYNATIVE'")
     parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
@@ -120,13 +121,11 @@ if __name__ == '__main__':
     parser.add_argument("--config_file_path", type=str, default="./config.yaml")
     args = parser.parse_args()
 
-    context.set_context(case=args.case,
-                        mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
+    context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
                         save_graphs=args.save_graphs,
                         save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target,
-                        device_id=args.device_id,
-                        config_file_path=args.config_file_path)
+                        device_id=args.device_id)
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
     print(f"pid: {os.getpid()}")
