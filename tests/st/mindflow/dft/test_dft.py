@@ -26,7 +26,7 @@ from mindflow.cell.neural_operators.dft import dft1, dft2, idft1, idft2
 def dft_1d_torch(x, dim=-1):
     x = torch.Tensor(x)
 
-    x_re_im = torch.fft.rfft(x, dim=dim, norm="ortho")
+    x_re_im = torch.fft.fft(x, dim=dim, norm="ortho")
     x_re, x_im = x_re_im.real, x_re_im.imag
     return x_re.numpy(), x_im.numpy()
 
@@ -42,7 +42,7 @@ def dft_2d_torch(x, dim=-1):
 def idft_1d_torch(x_re, x_im, dim=-1):
     x = torch.stack([torch.Tensor(x_re), torch.Tensor(x_im)], dim=-1)
     x = torch.view_as_complex(x)
-    x = torch.fft.irfft(x, norm="ortho", dim=dim)
+    x = torch.fft.ifft(x, norm="ortho", dim=dim)
     return x.numpy()
 
 
