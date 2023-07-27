@@ -376,14 +376,13 @@ class GlobalAttention(nn.Cell):
             self.linear_q_weights = Parameter(
                 Tensor(np.zeros((self.batch_size,
                                  self.input_dim,
-                                 self.num_head,
-                                 self.dim_per_head)),
+                                 self.num_head * self.dim_per_head)),
                        mstype.float32))
             self.linear_k_weights = Parameter(
-                Tensor(np.zeros((self.batch_size, self.input_dim, self.dim_per_head)),
+                Tensor(np.zeros((self.batch_size, 1, self.input_dim, self.dim_per_head)),
                        mstype.float32))
             self.linear_v_weights = Parameter(
-                Tensor(np.zeros((self.batch_size, self.input_dim, self.dim_per_head)),
+                Tensor(np.zeros((self.batch_size, 1, self.input_dim, self.dim_per_head)),
                        mstype.float32))
             self.linear_output_weights = Parameter(
                 Tensor(np.zeros((self.batch_size,
