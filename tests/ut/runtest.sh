@@ -32,6 +32,12 @@ if [ $# -gt 0 ]; then
     UT_PATH="$PROJECT_DIR/tests/ut/mindsponge/"
     pytest "$UT_PATH"
     echo "Test all mindsponge use cases success."
+  elif [ $1 == "mindchemistry" ]; then
+    echo "Run ut mindchemistry."
+    cd "$PROJECT_DIR" || exit
+    UT_PATH="$PROJECT_DIR/tests/ut/mindchemistry/"
+    pytest "$UT_PATH"
+    echo "Test all mindchemistry use cases success."
   fi
 else
   export PYTHONPATH=$PYTHONPATH:${PROJECT_DIR}/MindElec/

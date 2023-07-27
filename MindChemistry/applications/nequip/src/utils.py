@@ -22,17 +22,25 @@ from mindspore import Tensor
 
 
 def training_bar(epoch, size, current, loss=None):
+    """ visualize the training progress.
+
+    Args:
+        epoch (int): The current training epoch number.
+        size (int): the size of the dataset.
+        current (int): the dict iterator of the dataset.
+        loss (float): the loss of the trainset.
+    """
     stride = 50
     while size < stride:
         stride //= 2
     if current % (size // stride) == 0:
-        _complete = current * stride // size
+        complete = current * stride // size
         if loss is not None:
             loss = loss.asnumpy() if isinstance(loss, Tensor) else loss
             print(f'\r(loss = {loss:>4.4f}) ', end='')
         else:
             print('\r', end='')
-        _memory = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
-        _ratio = (current + 1) / size * 100
-        print(f'Training epoch {epoch + 1}: [\033[92m' + '■' * (_complete + 1) + '\033[0m' + ' ' * (
-                stride - _complete - 1) + f'] {_ratio:.2f}%    Memory used: {_memory:>6.2f} MB   ', end='')
+        memory = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+        ratio = (current + 1) / size * 100
+        print(f'Training epoch {epoch + 1}: [\033[92m' + '■' * (complete + 1) + '\033[0m' + ' ' * (
+            stride - complete - 1) + f'] {ratio:.2f}%    Memory used: {memory:>6.2f} MB   ', end='')

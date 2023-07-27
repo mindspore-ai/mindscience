@@ -12,14 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-
+"""convolution"""
 from mindspore import nn, ops, float32
 from ..e3.o3 import TensorProduct, Irreps, Linear
 from ..e3.nn import FullyConnectedNet, Scatter
-
-import numpy as np
-from mindspore import Tensor
-
 
 softplus = ops.Softplus()
 
@@ -33,20 +29,32 @@ def silu(x):
 
 
 class Convolution(nn.Cell):
+    r"""
+    InteractionBlock.
 
+    Args:
+        irreps_node_input: Input Features, default = None
+        irreps_node_attr: Nodes attribute irreps
+        irreps_node_output: Output irreps, in our case typically a single scalar
+        irreps_edge_attr: Edge attribute irreps
+        invariant_layers: Number of invariant layers, default = 1
+        invariant_neurons: Number of hidden neurons in invariant function, default = 8
+        avg_num_neighbors: Number of neighbors to divide by, default None => no normalization.
+        use_sc(bool): use self-connection or not
+    """
     def __init__(
-        self,
-        irreps_node_input,
-        irreps_node_attr,
-        irreps_node_output,
-        irreps_edge_attr,
-        irreps_edge_scalars,
-        invariant_layers=1,
-        invariant_neurons=8,
-        avg_num_neighbors=None,
-        use_sc=True,
-        nonlin_scalars={"e": "ssp"},
-        dtype=float32
+            self,
+            irreps_node_input,
+            irreps_node_attr,
+            irreps_node_output,
+            irreps_edge_attr,
+            irreps_edge_scalars,
+            invariant_layers=1,
+            invariant_neurons=8,
+            avg_num_neighbors=None,
+            use_sc=True,
+            nonlin_scalars=None,
+            dtype=float32
     ):
         super().__init__()
         self.avg_num_neighbors = avg_num_neighbors
@@ -87,6 +95,7 @@ class Convolution(nn.Cell):
                                     self.irreps_node_output, 'connect', dtype=dtype)
 
     def construct(self, node_input, node_attr, edge_src, edge_dst, edge_attr, edge_scalars):
+        """Evaluate interaction Block with resnet"""
         weight = self.fc(edge_scalars)
 
         node_features = self.lin1(node_input)
@@ -97,7 +106,7 @@ class Convolution(nn.Cell):
             edge_features, edge_dst, dim_size=node_input.shape[0])
 
         if self.avg_num_neighbors is not None:
-            node_features = node_features.div(self.avg_num_neighbors**0.5)
+            node_features = node_features.div(self.avg_num_neighbors ** 0.5)
 
         node_features = self.lin2(node_features)
 

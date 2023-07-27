@@ -15,10 +15,7 @@
 """basic"""
 from __future__ import absolute_import
 
-import numpy as np
-
 import mindspore.nn as nn
-from mindspore import Tensor
 import mindspore.nn.layer.activation as activation
 
 from .activation import _activation
@@ -111,8 +108,7 @@ def _get_activation(name):
         if name not in _activation:
             return activation.get_activation(name)
         return _activation.get(name)()
-    else:
-        return name
+    return name
 
 
 def _get_layer_arg(arguments, index):
@@ -141,14 +137,12 @@ def _get_layer_arg(arguments, index):
         >>> print(dropout_rate)
         0.2
     """
-    if type(arguments) is list:
+    if isinstance(arguments, list):
         if len(arguments) <= index:
             if len(arguments) == 1:
                 return [] if arguments[0] is None else arguments[0]
-            else:
-                return []
-        else:
-            return [] if arguments[index] is None else arguments[index]
+            return []
+        return [] if arguments[index] is None else arguments[index]
     return [] if arguments is None else arguments
 
 
@@ -218,7 +212,8 @@ class FCNet(nn.Cell):
 
     Args:
         channels (List): the list of numbers of channel of each fully connected layers.
-        weight_init (Union[str, float, mindspore.common.initializer, List]): The initializer of the weights of dense layer
+        weight_init (Union[str, float, mindspore.common.initializer, List]):
+        The initializer of the weights of dense layer.
             if weight_init was List, each element corresponds to each layer.
         has_bias (Union[bool, List]): The switch for whether the dense layers has bias.
             if has_bias was List, each element corresponds to each dense layer.
@@ -283,6 +278,7 @@ class FCNet(nn.Cell):
         self.network = nn.SequentialCell(self._create_network())
 
     def _create_network(self):
+        """ create the network """
         cell_list = []
         for i in range(len(self.channels) - 1):
             cell_list += get_linear_block(self.channels[i],
@@ -320,7 +316,7 @@ class MLPNet(nn.Cell):
         out_channels (int): the number of output layer channel.
         layers (int): the number of layers.
         neurons (int): the number of channels of hidden layers.
-        weight_init (Union[str, float, mindspore.common.initializer, List]): The initializer of the weights of dense layer
+        weight_init (Union[str, float, mindspore.common.initializer, List]): initialize layer weights
             if weight_init was List, each element corresponds to each layer.
         has_bias (Union[bool, List]): The switch for whether the dense layers has bias.
             if has_bias was List, each element corresponds to each dense layer.
@@ -398,11 +394,11 @@ class AutoEncoder(nn.Cell):
 
     Args:
         channels (list): The number of channels of each encoder and decoder layer.
-                weight_init (Union[str, float, mindspore.common.initializer, List]): The initializer of the weights of dense layer
+        weight_init (Union[str, float, mindspore.common.initializer, List]): initialize layer parameters
         if weight_init was List, each element corresponds to each layer.
             has_bias (Union[bool, List]): The switch for whether the dense layers has bias.
         if has_bias was List, each element corresponds to each dense layer.
-            bias_init (Union[str, float, mindspore.common.initializer, List]): The initializer of the bias of dense layer
+            bias_init (Union[str, float, mindspore.common.initializer, List]):initialize layer parameters
         if bias_init was List, each element corresponds to each dense layer.
             has_dropout (Union[bool, List]): The switch for whether linear block has a dropout layer.
         if has_dropout was List, each element corresponds to each layer.
@@ -468,6 +464,7 @@ class AutoEncoder(nn.Cell):
         self.decoder = nn.SequentialCell(self._create_decoder())
 
     def _create_encoder(self):
+        """ create the network encoder """
         encoder_cell_list = []
         for i in range(len(self.channels) - 1):
             encoder_cell_list += get_linear_block(self.channels[i],
@@ -492,6 +489,7 @@ class AutoEncoder(nn.Cell):
         return encoder_cell_list
 
     def _create_decoder(self):
+        """ create the network decoder """
         decoder_channels = self.channels[::-1]
         decoder_weight_init = self.weight_init[::-1] if isinstance(
             self.weight_init, list) else self.weight_init

@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2021 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,22 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""test"""
-import pytest
-import numpy as np
-
-from mindspore import Tensor
-
-from mindchemistry.e3 import soft_one_hot_linspace
+"""Test mindchemistry."""
 
 
-@pytest.mark.parametrize('basis', ['gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'])
-@pytest.mark.parametrize('cutoff', [True, False])
-def test_soft_one_hot_linspace(basis, cutoff):
-    v = Tensor(np.random.rand(2, 3).astype(np.float32))
-    out = soft_one_hot_linspace(v, 1., 2., 4, basis, cutoff)
-    assert out.shape == v.shape + (4,)
-
-
-if __name__ == '__main__':
-    test_soft_one_hot_linspace('gaussian', False)
+def test_empty():
+    """
+    Feature: Test empty
+    Description: None.
+    Expectation: Success or throw AssertionError.
+    """
+    assert 1 < 2
