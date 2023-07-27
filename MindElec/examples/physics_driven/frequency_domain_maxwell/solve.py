@@ -36,6 +36,7 @@ from src.model import FFNN
 
 
 def load_config():
+    """load config"""
     config = copy.deepcopy(helmholtz_2d_config)
     rectangle_config = copy.deepcopy(rectangle_sampling_config)
     config.update(rectangle_config)
