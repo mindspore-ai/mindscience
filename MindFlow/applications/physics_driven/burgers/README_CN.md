@@ -36,4 +36,6 @@ python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_targ
 
 ## Contributor
 
-liulei277
+gitee id：[liulei277](https://gitee.com/liulei277)
+
+email: liulei2770919@163.com
