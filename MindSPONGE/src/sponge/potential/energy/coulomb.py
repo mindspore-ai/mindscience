@@ -381,10 +381,10 @@ class RFFT3D(Cell):
     def __init__(self, fftx, ffty, fftz, fftc, inverse):
         Cell.__init__(self)
         self.cast = ops.Cast()
-        try:
-            self.rfft3d = ops.FFT3D()
-            self.irfft3d = ops.IFFT3D()
-        except AttributeError:
+        if ms.get_context("device_target") == "Ascend":
+            self.rfft3d = ops.FFTWithSize()
+            self.irfft3d = ops.FFTWithSize()
+        else:
             from ...customops import FFTOP
             fftop = FFTOP()
             self.rfft3d, self.irfft3d = fftop.register()
@@ -626,7 +626,7 @@ class ParticleMeshEwaldCoulomb(Cell):
         qi_sum = F.reduce_sum(qi, 1)
 
         #pylint:disable=invalid-unary-operand-type
-        energy = -self.alpha / msnp.sqrt(msnp.pi) * qiqi_sum
+        energy = (0 - self.alpha) / msnp.sqrt(msnp.pi) * qiqi_sum
         energy -= qi_sum * 0.5 * msnp.pi / (self.alpha * self.alpha * self.reduce_prod(pbc_box, 1))
         return energy
 
@@ -682,7 +682,10 @@ class ParticleMeshEwaldCoulomb(Cell):
         bc[0][0][0] = 0
         bc *= self.b
         fq = self.rfft3d(q_matrix.reshape(self.fftx, self.ffty, self.fftz))
-        bcfq = bc * fq
+
+        bcfq_real = bc * ops.stop_gradient(fq.real())
+        bcfq_imag = bc * ops.stop_gradient(fq.imag())
+        bcfq = ops.Complex()(bcfq_real, bcfq_imag)
         fbcfq = self.irfft3d(bcfq)
         fbcfq = F.expand_dims(fbcfq, 0)
         energy = q_matrix * fbcfq

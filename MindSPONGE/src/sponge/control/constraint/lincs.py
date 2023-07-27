@@ -40,6 +40,61 @@ from ...function.operations import GetShiftGrad
 from ...function import get_arguments
 
 
+class EinsumWrapper(ms.nn.Cell):
+    """Implement particular Einsum operation
+
+    Args:
+
+        equation (str):  en equation represent the operation.
+
+    Supported Platforms:
+
+        ``Ascend`` ``GPU``
+
+    """
+    def __init__(self, equation: str):
+        super().__init__(auto_prefix=False)
+        self.equation = equation
+
+    def construct(self, xy: Tuple[Tensor, Tensor]) -> Tensor:
+        """Calculation for Einsum operation"""
+
+        result = None
+        if self.equation == 'ijk,ilkm->iljm':
+            ijk, ilkm = xy
+            iljk = ops.expand_dims(ijk, 1).broadcast_to(ijk.shape[:1] + ilkm.shape[1:2] + ijk.shape[1:])
+            iljm = ops.BatchMatMul()(iljk, ilkm)
+            result = iljm
+        elif self.equation == 'ijkl,imkl->ijm':
+            ijkl, imkl = xy
+            ijmkl1 = ops.expand_dims(ijkl, 2).broadcast_to(ijkl.shape[:2] + imkl.shape[1:2] + ijkl.shape[2:])
+            ijmkl2 = ops.expand_dims(imkl, 1).broadcast_to(imkl.shape[:1] + ijkl.shape[1:2] + imkl.shape[1:])
+            ijm = ops.ReduceSum()(ijmkl1 * ijmkl2, [-1, -2])
+            result = ijm
+        elif self.equation == 'ijkl,ikl->ij':
+            ijkl, ikl = xy
+            ijkl2 = ops.expand_dims(ikl, 1).broadcast_to(ikl.shape[:1] + ijkl.shape[1:2] + ikl.shape[1:])
+            ij = ops.ReduceSum()(ijkl * ijkl2, [-1, -2])
+            result = ij
+        elif self.equation == 'ijk,ik->ij':
+            ijk, ik = xy
+            ijk2 = ops.expand_dims(ik, 1).broadcast_to(ik.shape[:1] + ijk.shape[1:2] + ik.shape[1:])
+            ij = ops.ReduceSum()(ijk * ijk2, -1)
+            result = ij
+        elif self.equation == 'ijkl,ij->ikl':
+            ijkl, ij = xy
+            ijkl2 = ij.reshape(ij.shape + (1, 1)).broadcast_to(ij.shape + ijkl.shape[-2:])
+            ikl = ops.ReduceSum()(ijkl * ijkl2, 1)
+            result = ikl
+        elif self.equation == 'ijk,ikl->ijl':
+            ijk, ikl = xy
+            ijl = ops.BatchMatMul()(ijk, ikl)
+            result = ijl
+        else:
+            raise NotImplementedError("This equation is not implemented")
+        return result
+
+
 class Lincs(Constraint):
     """A LINCS (LINear Constraint Solver) constraint module, which is a subclass of `Constraint`.
 
@@ -96,12 +151,12 @@ class Lincs(Constraint):
         self.broadcast = ops.BroadcastTo(shape)
         self.inv = ops.MatrixInverse(adjoint=False)
         self.squeeze = ops.Squeeze()
-        self.einsum0 = ops.Einsum('ijk,ilkm->iljm')
-        self.einsum1 = ops.Einsum('ijkl,imkl->ijm')
-        self.einsum2 = ops.Einsum('ijkl,ikl->ij')
-        self.einsum3 = ops.Einsum('ijk,ik->ij')
-        self.einsum4 = ops.Einsum('ijkl,ij->ikl')
-        self.einsum5 = ops.Einsum('ijk,ikl->ijl')
+        self.einsum0 = EinsumWrapper('ijk,ilkm->iljm')
+        self.einsum1 = EinsumWrapper('ijkl,imkl->ijm')
+        self.einsum2 = EinsumWrapper('ijkl,ikl->ij')
+        self.einsum3 = EinsumWrapper('ijk,ik->ij')
+        self.einsum4 = EinsumWrapper('ijkl,ij->ikl')
+        self.einsum5 = EinsumWrapper('ijk,ikl->ijl')
 
         # (B,C,A)
         shape = (self.num_walker, self.num_constraints, self.num_atoms)

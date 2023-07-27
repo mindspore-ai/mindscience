@@ -52,7 +52,7 @@ if context.get_context("device_target") == "Ascend":
     context.set_context(mode=context.GRAPH_MODE, enable_graph_kernel=True,
                         graph_kernel_flags="--enable_cluster_ops=ReduceSum --reduce_fuse_depth=10")
 else:
-    context.set_context(mode=context.GRAPH_MODE, device_target="GPU", device_id=1, enable_graph_kernel=True)
+    context.set_context(mode=context.GRAPH_MODE, device_target="GPU", enable_graph_kernel=True)
 
 
 def get_violation_loss(system):
