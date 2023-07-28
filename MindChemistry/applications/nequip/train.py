@@ -20,7 +20,6 @@ import argparse
 import numpy as np
 import mindspore as ms
 from mindchemistry.utils.load_config import load_yaml_config_from_path
-from mindspore import nn, set_seed
 from src import trainer
 
 if __name__ == '__main__':
@@ -49,7 +48,7 @@ if __name__ == '__main__':
         print("Error: invalid value for dtype")
 
     np.random.seed(0)
-    set_seed(0)
+    ms.set_seed(0)
     warnings.filterwarnings("ignore")
 
     trainer.train(dtype=dtype, configs=configs)

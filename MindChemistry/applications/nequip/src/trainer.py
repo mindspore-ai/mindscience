@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""
+User-defined wrapper for training and testing.
+"""
 import time
 
 from mindspore import nn
@@ -19,11 +22,12 @@ import mindspore as ms
 
 from mindchemistry.cell import EnergyNet
 
-from .dataset import create_training_dataset, _unpack
-from .utils import training_bar
+from dataset import create_training_dataset, _unpack
+from utils import training_bar
 
 
 def train(dtype=ms.float32, configs=None):
+    """Train the model on the train dataset."""
     data_params = configs['data']
     model_params = configs['model']
     optimizer_params = configs['optimizer']
@@ -52,16 +56,12 @@ def train(dtype=ms.float32, configs=None):
     def forward(batch, x, pos, edge_src, edge_dst, energy, force, batch_size, sep):
         pred = net(batch, x, pos, edge_src, edge_dst, batch_size)
         if pred_force:
+            loss_energy = loss_fn(pred[0], energy)
+            loss_force = loss_fn(pred[1], force)
             if sep:
-                loss_energy = loss_fn(pred[0], energy)
-                loss_force = loss_fn(pred[1], force)
                 return loss_energy, loss_force
-            else:
-                loss_energy = loss_fn(pred[0], energy)
-                loss_force = loss_fn(pred[1], force)
-                return loss_energy + 1000. * loss_force
-        else:
-            return loss_fn(pred, energy)
+            return loss_energy + 1000. * loss_force
+        return loss_fn(pred, energy)
 
     backward = ms.value_and_grad(forward, None, optimizer.parameters)
 
@@ -71,12 +71,17 @@ def train(dtype=ms.float32, configs=None):
     loss_train = []
     for epoch in range(optimizer_params['num_epoch']):
         total_train = 0
-        T0 = time.time()
+        t0 = time.time()
         for current, data_dict in enumerate(trainset.create_dict_iterator()):
-            _batch_size = trainset.get_batch_size()
+            batch_size_train = trainset.get_batch_size()
             inputs, label = _unpack(data_dict)
 
-            loss, grads = backward(train_batch, *inputs, train_edge_index[0], train_edge_index[1], *label, _batch_size,
+            loss, grads = backward(train_batch,
+                                   *inputs,
+                                   train_edge_index[0],
+                                   train_edge_index[1],
+                                   *label,
+                                   batch_size_train,
                                    False)
             optimizer(grads)
             total_train += loss.asnumpy()
@@ -93,10 +98,16 @@ def train(dtype=ms.float32, configs=None):
             else:
                 eval_energy, eval_force = 0, 0
             for current, data_dict in enumerate(evalset.create_dict_iterator()):
-                _batch_size = evalset.get_batch_size()
+                batch_size_eval = evalset.get_batch_size()
                 inputs, label = _unpack(data_dict)
 
-                loss = forward(eval_batch, *inputs, eval_edge_index[0], eval_edge_index[1], *label, _batch_size, True)
+                loss = forward(eval_batch,
+                               *inputs,
+                               eval_edge_index[0],
+                               eval_edge_index[1],
+                               *label,
+                               batch_size_eval,
+                               True)
                 if not pred_force:
                     total_eval += loss.asnumpy()
                 else:
@@ -110,6 +121,6 @@ def train(dtype=ms.float32, configs=None):
                                   eval_force / evalset.get_dataset_size()))
 
             print(
-                f'\rtrain loss: {loss_train[-1]:<8.8f}, eval loss: {loss_eval[-1]}, time used: {time.time() - T0:.2f}')
+                f'\rtrain loss: {loss_train[-1]:<8.8f}, eval loss: {loss_eval[-1]}, time used: {time.time() - t0:.2f}')
         else:
-            print(f'\rtrain loss: {loss_train[-1]:<8.8f}, time used: {time.time() - T0:.2f}   ')
+            print(f'\rtrain loss: {loss_train[-1]:<8.8f}, time used: {time.time() - t0:.2f}   ')

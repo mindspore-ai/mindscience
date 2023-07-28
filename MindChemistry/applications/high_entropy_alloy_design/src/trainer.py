@@ -15,8 +15,9 @@
 """model trainers"""
 import os
 import time
-import joblib
 import warnings
+import stat
+import joblib
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -31,6 +32,7 @@ import mindspore.dataset as ds
 
 
 def train_cls(model, data, params):
+    '''Train classification network'''
     # load params
     model_name = params['model_name']
     exp_name = params['exp_name']
@@ -46,6 +48,23 @@ def train_cls(model, data, params):
     train_acc = []
     test_acc = []
     k = 1
+
+    # prepare training
+    optimizer = ms.nn.Adam(params=model.trainable_params(), learning_rate=lr,
+                           weight_decay=w_decay)  # initialize optimizer
+    def forward_fn(input_x, label):
+        y_pred = model(input_x)
+        loss = ms.ops.binary_cross_entropy(y_pred, label)
+        return loss, y_pred
+
+    grad_fn = ms.ops.value_and_grad(forward_fn, None, optimizer.parameters)
+
+    @ms.jit()
+    def train_step(step_x, step_y):
+        ((step_loss, step_y_pred), grads) = grad_fn(step_x, step_y)
+        step_loss = ms.ops.depend(step_loss, optimizer(grads))
+        return step_loss, step_y_pred
+
     for train, test in kf.split(latents):
         # split train and test data
         x_train, x_test, y_train, y_test = latents[train], latents[test], label_y[train], label_y[test]
@@ -58,24 +77,9 @@ def train_cls(model, data, params):
             os.mkdir(folder_dir)
             warnings.warn('current model file not exists, please check history model training record.')
         if params['save_log']:
-            train_record = open(folder_dir + '/' + model_name + '-' + exp_name + '.txt', 'a')
-
-        # prepare model training
-        optimizer = ms.nn.Adam(params=model.trainable_params(), learning_rate=lr,
-                               weight_decay=w_decay)  # initialize optimizer
-
-        def forward_fn(input_x, label):
-            y_pred = model(input_x)
-            loss = ms.ops.binary_cross_entropy(y_pred, label)
-            return loss, y_pred
-
-        grad_fn = ms.ops.value_and_grad(forward_fn, None, optimizer.parameters)
-
-        @ms.jit()
-        def train_step(step_x, step_y):
-            ((step_loss, step_y_pred), grads) = grad_fn(step_x, step_y)
-            step_loss = ms.ops.depend(step_loss, optimizer(grads))
-            return step_loss, step_y_pred
+            flags = os.O_RDWR  | os.O_CREAT
+            modes = stat.S_IWUSR | stat.S_IRUSR
+            train_record = os.open(folder_dir + '/' + model_name + '-' + exp_name + '.txt', flags, modes)
 
         # start model training
         for epoch in range(num_epoch):
@@ -83,10 +87,10 @@ def train_cls(model, data, params):
             epoch_acc = []
             test_epoch_acc = []
             model.set_train(True)
-            for i, data in enumerate(train_iterator):
-                x = data['x']
-                y = data['y']
-                iter_loss, iter_y_pred = train_step(x, y)
+            for _, data_ in enumerate(train_iterator):
+                x = data_['x']
+                y = data_['y']
+                iter_y_pred = train_step(x, y)[1]
                 # train accuracy
                 iter_acc = ms.numpy.equal(
                     ms.numpy.where(iter_y_pred >= ms.Tensor(0.5), ms.Tensor(1.), ms.Tensor(0.)),
@@ -98,7 +102,7 @@ def train_cls(model, data, params):
             test_data = test_data.batch(batch_size=len(y_test))
             test_iterator = test_data.create_dict_iterator()
 
-            for i_, data_ in enumerate(test_iterator):
+            for _, data_ in enumerate(test_iterator):
                 x = data_['x']
                 y = data_['y']
                 test_y_pred = model(x)
@@ -120,7 +124,7 @@ def train_cls(model, data, params):
             print(record)
             if params['save_log']:
                 # save loss record
-                train_record.writelines(record + '\n')
+                os.write(train_record, str.encode(record + '\n'))
         train_acc_ = sum(epoch_acc) / len(epoch_acc)
         test_acc_ = sum(test_epoch_acc) / len(test_epoch_acc)
         train_acc.append(train_acc_)
@@ -136,7 +140,7 @@ def train_cls(model, data, params):
 
     # save training info
     if params['save_log']:
-        train_record.writelines(record + '\n')
+        os.write(train_record, str.encode(record + '\n'))
         # loss record saved
         train_record.close()
 
@@ -159,6 +163,7 @@ def train_cls(model, data, params):
 
 
 def imq_kernel(input_x, output_y, h_dim):
+    '''Compute maximum mean discrepancy using inverse multiquadric kernel'''
     batch_size = input_x.shape[0]
     norms_x = input_x.pow(2).sum(axis=1, keepdims=True)
     prods_x = ms.ops.MatMul()(input_x, input_x.T)
@@ -184,7 +189,7 @@ def imq_kernel(input_x, output_y, h_dim):
 def get_latents(model, iterator):
     model.set_train(mode=False)
     latents = []
-    for i, data in enumerate(iterator):
+    for _, data in enumerate(iterator):
         x = data['x']
         z = model.encode(x)
         latents.append(z.asnumpy().astype(np.float32))
@@ -192,6 +197,7 @@ def get_latents(model, iterator):
 
 
 def train_wae(model, data, params):
+    ''' Train WAE generation network'''
     # load params
     model_name = params['model_name']
     exp_name = params['exp_name']
@@ -213,7 +219,9 @@ def train_wae(model, data, params):
         os.mkdir(folder_dir)
         warnings.warn('current model file not exists, please check history model training record.')
     if params['save_log']:
-        train_record = open(folder_dir + '/' + model_name + '-' + exp_name + '.txt', 'a')
+        flags = os.O_RDWR  | os.O_CREAT
+        modes = stat.S_IWUSR | stat.S_IRUSR
+        train_record = os.open(folder_dir + '/' + model_name + '-' + exp_name + '.txt', flags, modes)
 
     # prepare model training
     optimizer = ms.nn.Adam(params=model.trainable_params(), learning_rate=lr,
@@ -244,8 +252,8 @@ def train_wae(model, data, params):
         epoch_recon = []
         epoch_mmd = []
         model.set_train(True)
-        for i, data in enumerate(train_iterator):
-            data_x = data['x']
+        for _, data_ in enumerate(train_iterator):
+            data_x = data_['x']
             (iter_loss, iter_recon_loss, iter_mmd_loss) = train_step(data_x)
             epoch_loss.append(iter_loss.asnumpy())
             epoch_recon.append(iter_recon_loss.asnumpy())
@@ -269,7 +277,7 @@ def train_wae(model, data, params):
         # save training info
         if params['save_log']:
             # save loss record
-            train_record.writelines(record + '\n')
+            os.write(train_record, str.encode(record + '\n'))
 
     # save model checkpoint
     save_model_file = str(model_name + ".ckpt")
@@ -324,6 +332,7 @@ def train_wae(model, data, params):
 
 
 def train_mlp(model, data, seed, params):
+    ''' Train MLP ranking network'''
     # load params:
     w_decay = params['weight_decay']
     num_epoch = params['num_epoch']
@@ -343,7 +352,9 @@ def train_mlp(model, data, seed, params):
         os.mkdir(folder_dir)
         warnings.warn('current model file not exists, please check history model training record.')
     if params['save_log']:
-        train_record = open(folder_dir + '/' + model_name + '-' + exp_name + '.txt', 'a')
+        flags = os.O_RDWR  | os.O_CREAT
+        modes = stat.S_IWUSR | stat.S_IRUSR
+        train_record = os.open(folder_dir + '/' + model_name + '-' + exp_name + '.txt', flags, modes)
 
     # prepare model training
     optimizer = ms.nn.Adam(params=model.trainable_params(), learning_rate=lr,
@@ -368,9 +379,9 @@ def train_mlp(model, data, seed, params):
         start_time = time.time()
         iter_losses = []
         model.set_train(True)
-        for i, data in enumerate(train_iterator):
-            data_x = data['x']
-            data_y = data['y']
+        for _, data_ in enumerate(train_iterator):
+            data_x = data_['x']
+            data_y = data_['y']
             iter_loss = train_step(data_x, data_y)
             iter_losses.append(iter_loss.asnumpy())
         # train loss
@@ -383,7 +394,7 @@ def train_mlp(model, data, seed, params):
         test_data = test_data.batch(batch_size=len(test_labels))
         test_iterator = test_data.create_dict_iterator()
         model.set_train(False)
-        for i_, data_ in enumerate(test_iterator):
+        for _, data_ in enumerate(test_iterator):
             data_x_ = data_['x']
             data_y_ = data_['y']
             y_predict_ = model(data_x_)
@@ -400,7 +411,7 @@ def train_mlp(model, data, seed, params):
         print(record)
         # save training info
         if params['save_log']:
-            train_record.writelines(record + '\n')
+            os.write(train_record, str.encode(record + '\n'))
 
     # save model checkpoint
     save_model_file = str(model_name + "_{}_{}.ckpt".format(seed, search_params_no))
@@ -414,6 +425,7 @@ def train_mlp(model, data, seed, params):
 
 
 def train_tree(model, data, seed, params):
+    ''' Train Tree ranking network'''
     # load params
     folder_dir = params['folder_dir']
     model_name = 'Tree_' + params['model_name']
@@ -428,7 +440,9 @@ def train_tree(model, data, seed, params):
         os.mkdir(folder_dir)
         warnings.warn('current model file not exists, please check history model training record.')
     if params['save_log']:
-        train_record = open(folder_dir + '/' + model_name + '-' + exp_name + '.txt', 'a')
+        flags = os.O_RDWR  | os.O_CREAT
+        modes = stat.S_IWUSR | stat.S_IRUSR
+        train_record = os.open(folder_dir + '/' + model_name + '-' + exp_name + '.txt', flags, modes)
 
     # start model training
     model.fit(train_features, train_labels)
@@ -447,7 +461,7 @@ def train_tree(model, data, seed, params):
     print(record)
     # save training info
     if params['save_log']:
-        train_record.writelines(record + '\n')
+        os.write(train_record, str.encode(record + '\n'))
         # loss record saved
         train_record.close()
     print('=' * 200 + '\n' + 'Training Complete! Model file saved at' + save_model_dir + '\n' + '==' * 200)
