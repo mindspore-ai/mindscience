@@ -65,7 +65,7 @@ def train(input_args):
 
     t1 = default_timer()
 
-    sub = model_params["sub"]
+    sub = data_params["sub"]
     grid_size = model_params["input_resolution"] // sub
     input_timestep = model_params["input_timestep"]
     output_timestep = model_params["output_timestep"]
@@ -160,30 +160,17 @@ def train(input_args):
             test_batch = a_normalizer.encode(test_batch)
             label = y_normalizer.encode(label)
 
-            test_batch = test_batch.reshape(
-                1, grid_size, grid_size, 1, input_timestep).repeat(output_timestep, axis=3)
-            test_batch = test_batch.reshape(
-                1, grid_size, grid_size, 1, input_timestep).repeat(output_timestep, axis=3)
-            prediction = model(test_batch).reshape(
-                1, grid_size, grid_size, output_timestep)
-            prediction = model(test_batch).reshape(
-                1, grid_size, grid_size, output_timestep)
+            test_batch = test_batch.reshape(1, grid_size,
+                                            grid_size, 1, input_timestep).repeat(output_timestep, axis=3)
+            prediction = model(test_batch).reshape(1, grid_size, grid_size, output_timestep)
             prediction = y_normalizer.decode(prediction)
-            prediction = y_normalizer.decode(prediction)
-            label = y_normalizer.decode(label)
             label = y_normalizer.decode(label)
             rms_error_step = loss_fn(prediction.reshape(
                 1, -1), label.reshape(1, -1))
-            rms_error_step = loss_fn(prediction.reshape(
-                1, -1), label.reshape(1, -1))
-            rms_error += rms_error_step
             rms_error += rms_error_step
 
         rms_error = rms_error / labels.shape[0]
-        rms_error = rms_error / labels.shape[0]
         print("mean rms_error:", rms_error)
-        print("mean rms_error:", rms_error)
-        print("predict total time: {} s".format(time.time() - time_beg))
         print("predict total time: {} s".format(time.time() - time_beg))
         print("=================================End Evaluation=================================")
 
