@@ -57,7 +57,8 @@ class SParameterSolver:
                 of S parameters.
         """
         ns, nr = self.outputs.shape[-3:-1]
-        assert ns <= nr
+        if ns > nr:
+            raise ValueError('ns is larger than nr')
 
         v_dft_r, v_dft_i = compute_dft(self.outputs[:, :, :, 0],
                                        tensor(t) + 0.5 * self.network.dt,
