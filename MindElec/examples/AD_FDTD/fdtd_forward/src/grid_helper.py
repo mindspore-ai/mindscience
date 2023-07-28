@@ -120,9 +120,9 @@ class UniformBrick:
 
         Args:
             grid_helper (GridHelper):
-            x (tuple): nodex index range ([start, stop)) in x direction
-            y (tuple): nodex index range ([start, stop)) in y direction
-            z (tuple): nodex index range ([start, stop)) in z direction
+            x (tuple): node index range ([start, stop)) in x direction
+            y (tuple): node index range ([start, stop)) in y direction
+            z (tuple): node index range ([start, stop)) in z direction
         """
         grid_helper.objects_in_cells.append(self)
         i_s, i_e = x
@@ -162,9 +162,9 @@ class PECPlate:
 
         Args:
             grid_helper (GridHelper):
-            x (tuple): nodex index range ([start, stop)) in x direction
-            y (tuple): nodex index range ([start, stop)) in y direction
-            z (tuple): nodex index range ([start, stop)) in z direction
+            x (tuple): node index range ([start, stop)) in x direction
+            y (tuple): node index range ([start, stop)) in y direction
+            z (tuple): node index range ([start, stop)) in z direction
         """
         grid_helper.objects_on_faces.append(self)
         i_s, i_e = x
@@ -177,16 +177,16 @@ class PECPlate:
         k_e -= 1
 
         # check indices
-        if self.direction == 'x':
-            assert i_e == i_s
+        if self.direction == 'x' and i_e != i_s:
+            raise ValueError(f'Starting node index is not -1 in direction {self.direction}')
 
-        elif self.direction == 'y':
-            assert j_e == j_s
+        if self.direction == 'y' and j_e != j_s:
+            raise ValueError(f'Starting node index is not -1 in direction {self.direction}')
 
-        elif self.direction == 'z':
-            assert k_e == k_s
+        if self.direction == 'z' and k_e != k_s:
+            raise ValueError(f'Starting node index is not -1 in direction {self.direction}')
 
-        else:
+        if self.direction not in ('x', 'y', 'z'):
             raise ValueError(f'Cannot match direction {self.direction}')
 
         self.indices = [[i_s, i_e], [j_s, j_e], [k_s, k_e]]

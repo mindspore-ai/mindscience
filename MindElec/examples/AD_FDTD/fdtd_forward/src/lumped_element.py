@@ -56,17 +56,20 @@ class Resistor:
         # convert node index to edge index
         if self.direction == 'x':
             i_e -= 1
-            assert i_e - i_s > 0
+            if i_e <= i_s:
+                raise ValueError('i_e not larger than i_s')
             coef = ((i_e - i_s) * dx) / ((j_e - j_s) * (k_e - k_s) * dy * dz)
 
         elif self.direction == 'y':
             j_e -= 1
-            assert j_e - j_s > 0
+            if j_e <= j_s:
+                raise ValueError('j_e not larger than j_s')
             coef = ((j_e - j_s) * dy) / ((i_e - i_s) * (k_e - k_s) * dx * dz)
 
         elif self.direction == 'z':
             k_e -= 1
-            assert k_e - k_s > 0
+            if k_e <= k_s:
+                raise ValueError('k_e not larger than k_s')
             coef = ((k_e - k_s) * dz) / ((i_e - i_s) * (j_e - j_s) * dx * dy)
 
         else:
@@ -115,17 +118,20 @@ class Capacitor:
         # convert node index to edge index
         if self.direction == 'x':
             i_e -= 1
-            assert i_e - i_s > 0
+            if i_e <= i_s:
+                raise ValueError('i_e not larger than i_s')
             coef = ((i_e - i_s) * dx) / ((j_e - j_s) * (k_e - k_s) * dy * dz)
 
         elif self.direction == 'y':
             j_e -= 1
-            assert j_e - j_s > 0
+            if j_e <= j_s:
+                raise ValueError('j_e not larger than j_s')
             coef = ((j_e - j_s) * dy) / ((i_e - i_s) * (k_e - k_s) * dx * dz)
 
         elif self.direction == 'z':
             k_e -= 1
-            assert k_e - k_s > 0
+            if k_e <= k_s:
+                raise ValueError('k_e not larger than k_s')
             coef = ((k_e - k_s) * dz) / ((i_e - i_s) * (j_e - j_s) * dx * dy)
 
         else:
@@ -172,17 +178,20 @@ class Inductor:
         # convert node index to edge index
         if self.direction == 'x':
             i_e -= 1
-            assert i_e - i_s > 0
+            if i_e <= i_s:
+                raise ValueError('i_e not larger than i_s')
             coef = ((i_e - i_s) * dx) / ((j_e - j_s) * (k_e - k_s) * dy * dz)
 
         elif self.direction == 'y':
             j_e -= 1
-            assert j_e - j_s > 0
+            if j_e <= j_s:
+                raise ValueError('j_e not larger than j_s')
             coef = ((j_e - j_s) * dy) / ((i_e - i_s) * (k_e - k_s) * dx * dz)
 
         elif self.direction == 'z':
             k_e -= 1
-            assert k_e - k_s > 0
+            if k_e <= k_s:
+                raise ValueError('k_e not larger than k_s')
             coef = ((k_e - k_s) * dz) / ((i_e - i_s) * (j_e - j_s) * dx * dy)
 
         else:
@@ -240,19 +249,22 @@ class VoltageSource:
         # convert node index to edge index
         if self.direction == 'x':
             i_e -= 1
-            assert i_e - i_s > 0
+            if i_e <= i_s:
+                raise ValueError('i_e not larger than i_s')
             area = (j_e - j_s) * (k_e - k_s) * dy * dz
             coef = ((i_e - i_s) * dx) / area
 
         elif self.direction == 'y':
             j_e -= 1
-            assert j_e - j_s > 0
+            if j_e <= j_s:
+                raise ValueError('j_e not larger than j_s')
             area = (i_e - i_s) * (k_e - k_s) * dx * dz
             coef = ((j_e - j_s) * dy) / area
 
         elif self.direction == 'z':
             k_e -= 1
-            assert k_e - k_s > 0
+            if k_e <= k_s:
+                raise ValueError('k_e not larger than k_s')
             area = (i_e - i_s) * (j_e - j_s) * dx * dy
             coef = ((k_e - k_s) * dz) / area
 
@@ -302,17 +314,20 @@ class VoltageMonitor:
         # convert node index to edge index
         if self.direction == 'x':
             i_e -= 1
-            assert i_e - i_s > 0
+            if i_e <= i_s:
+                raise ValueError('i_e not larger than i_s')
             self.coef = -dx / ((j_e - j_s) * (k_e - k_s))
 
         elif self.direction == 'y':
             j_e -= 1
-            assert j_e - j_s > 0
+            if j_e <= j_s:
+                raise ValueError('j_e not larger than j_s')
             self.coef = -dy / ((i_e - i_s) * (k_e - k_s))
 
         elif self.direction == 'z':
             k_e -= 1
-            assert k_e - k_s > 0
+            if k_e <= k_s:
+                raise ValueError('k_e not larger than k_s')
             self.coef = -dz / ((i_e - i_s) * (j_e - j_s))
 
         else:
@@ -358,20 +373,26 @@ class CurrentMonitor:
         k_s, k_e = z
 
         # check node locations
-        assert i_s > 0
-        assert j_s > 0
-        assert k_s > 0
-        assert i_e <= nx
-        assert j_e <= ny
-        assert k_e <= nz
+        if i_s <= 0:
+            raise ValueError('i_s is not positive')
+        if j_s <= 0:
+            raise ValueError('j_s is not positive')
+        if k_s <= 0:
+            raise ValueError('k_s is not positive')
+        if i_e > nx:
+            raise ValueError('i_e is larger than nx')
+        if j_e > ny:
+            raise ValueError('j_e is larger than ny')
+        if k_e > nz:
+            raise ValueError('k_e is larger than nz')
 
-        if self.direction == 'x':
-            assert i_e - i_s == 1
+        if self.direction == 'x' and i_e - i_s != 1:
+            raise ValueError(f'Ending index is not 1 larger than starting index in {self.direction}')
 
-        if self.direction == 'y':
-            assert j_e - j_s == 1
+        if self.direction == 'y' and j_e - j_s != 1:
+            raise ValueError(f'Ending index is not 1 larger than starting index in {self.direction}')
 
-        if self.direction == 'z':
-            assert k_e - k_s == 1
+        if self.direction == 'z' and k_e - k_s != 1:
+            raise ValueError(f'Ending index is not 1 larger than starting index in {self.direction}')
 
         self.indices = [[i_s, i_e], [j_s, j_e], [k_s, k_e]]
