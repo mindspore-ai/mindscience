@@ -34,3 +34,4 @@ from .megafold import MEGAFold, MEGAFoldDataSet, megafold_configuration
 from .multimer import Multimer, MultimerDataSet, multimer_configuration
 from .proteinmpnn import ProteinMpnn, ProteinMpnnDataset, proteinmpnn_configuration
 from .ufold import UFold, UFoldDataSet, ufold_configuration
+from .rasp import RASP, RASPDataSet, rasp_configuration
