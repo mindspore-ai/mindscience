@@ -30,7 +30,8 @@ def dict_filter_key(feature, feature_list):
 
 @curry1
 def dict_replace_key(feature, replaced_key):
-    assert len(replaced_key) == 2
+    if len(replaced_key) != 2:
+        raise ValueError("'replaced_key' should equal to 2")
     origin_key, new_key = replaced_key
     if origin_key in feature:
         feature[new_key] = feature.pop(origin_key)
@@ -39,7 +40,9 @@ def dict_replace_key(feature, replaced_key):
 
 @curry1
 def dict_cast(feature, cast_type, filtered_list):
-    assert len(cast_type) == 2
+    """dict cast"""
+    if len(cast_type) != 2:
+        raise ValueError("'cast_type' should equal to 2")
     origin_type = cast_type[0]
     new_type = cast_type[1]
     for k, v in feature.items():
@@ -125,7 +128,8 @@ def prep_pos(pos, residue, chain):
     pos_set = []
     for i, c in zip(residue_set, chain_set):
         idx = np.where((residue == i) & (chain == c))[0]
-        assert len(idx) == 1, f'ERROR: positions {i} and chain {c} not found'
+        if len(idx) != 1:
+            raise ValueError(f'ERROR: positions {i} and chain {c} not found')
         pos_set.append(idx[0])
 
     return {"residue": np.array(residue_set),

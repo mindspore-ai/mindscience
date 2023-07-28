@@ -31,9 +31,9 @@ class VAE(nn.Cell):
     def __init__(self, encoder_layer_sizes, latent_size, decoder_layer_sizes):
         super(VAE, self).__init__()
 
-        assert isinstance(encoder_layer_sizes, list)
-        assert isinstance(latent_size, int)
-        assert isinstance(decoder_layer_sizes, list)
+        if (not isinstance(encoder_layer_sizes, list)) or (not isinstance(latent_size, int)) or\
+                (not isinstance(decoder_layer_sizes, list)):
+            raise TypeError()
 
         self.latent_size = latent_size
 

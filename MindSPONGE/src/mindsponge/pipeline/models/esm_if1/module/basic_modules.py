@@ -96,7 +96,8 @@ class GVP(nn.Cell):
                     v = v * g
         else:
             if self.tuple_io:
-                assert x[1] is None
+                if x[1] is not None:
+                    raise ValueError("'x[1]' should not be None")
                 x = x[0]
             s = self.ws(x)
             if self.scalar_act:
@@ -546,17 +547,16 @@ class MultiheadAttention(nn.Cell):
         self.num_heads = num_heads
         self.dropout = dropout
         self.head_dim = embed_dim // num_heads
-        assert (
-            self.head_dim * num_heads == self.embed_dim
-        ), "embed_dim must be divisible by num_heads"
+        if self.head_dim * num_heads != self.embed_dim:
+            raise ValueError("embed_dim must be divisible by num_heads")
         self.scaling = self.head_dim ** -0.5
 
         self.self_attention = self_attention
         self.encoder_decoder_attention = encoder_decoder_attention
 
-        assert not self.self_attention or self.qkv_same_dim, (
-            "Self-attention requires query, key and " "value to be of the same size"
-        )
+        if self.self_attention:
+            if not self.qkv_same_dim:
+                raise ValueError("Self-attention requires query, key and " "value to be of the same size")
 
         self.k_proj = Dense(self.kdim, embed_dim, has_bias=bias)
         self.v_proj = Dense(self.vdim, embed_dim, has_bias=bias)
@@ -680,15 +680,17 @@ class MultiheadAttention(nn.Cell):
             need_weights = True
 
         tgt_len, bsz, embed_dim = query.shape
-        assert embed_dim == self.embed_dim
-        assert list(query.shape) == [tgt_len, bsz, embed_dim]
+        if embed_dim != self.embed_dim or list(query.shape) != [tgt_len, bsz, embed_dim]:
+            raise ValueError("embed_dim not equal to self.embed_dim, or query.shape not "
+                             "equal to (tgt_len, bsz, embed_dim)")
         if incremental_state is not None:
             saved_state = self._get_input_buffer(incremental_state)
             if saved_state is not None and "prev_key" in saved_state:
                 # previous time steps are cached - no need to recompute
                 # key and value if they are static
                 if static_kv:
-                    assert self.encoder_decoder_attention and not self.self_attention
+                    if (not self.encoder_decoder_attention) or self.self_attention:
+                        raise ValueError()
                     key = value = None
         else:
             saved_state = None
@@ -701,21 +703,24 @@ class MultiheadAttention(nn.Cell):
             # encoder-decoder attention
             q = self.q_proj(query)
             if key is None:
-                assert value is None
+                if value is not None:
+                    raise ValueError()
                 k = v = None
             else:
                 k = self.k_proj(key)
                 v = self.v_proj(key)
 
         else:
-            assert key is not None and value is not None
+            if key is None or value is None:
+                raise ValueError()
             q = self.q_proj(query)
             k = self.k_proj(key)
             v = self.v_proj(value)
         q *= self.scaling
 
         if self.bias_k is not None:
-            assert self.bias_v is not None
+            if self.bias_v is None:
+                raise ValueError()
             k = ops.Concat()([k, ms.numpy.tile(self.bias_k, (1, bsz, 1))])
             v = ops.Concat()([v, ms.numpy.tile(self.bias_v, (1, bsz, 1))])
             if attn_mask is not None:
@@ -742,26 +747,31 @@ class MultiheadAttention(nn.Cell):
             # saved states are stored with shape (bsz, num_heads, seq_len, head_dim)
             if "prev_key" in saved_state:
                 o_prev_key = saved_state.get("prev_key", " ")
-                assert o_prev_key is not None
+                if o_prev_key is None:
+                    raise ValueError()
                 prev_key = o_prev_key.view((bsz * self.num_heads, -1, self.head_dim))
                 if static_kv:
                     k = prev_key
                 else:
-                    assert k is not None
+                    if k is None:
+                        raise ValueError()
                     k = ops.Concat(1)([prev_key, k])
             if "prev_value" in saved_state:
                 o_prev_value = saved_state.get("prev_value", " ")
-                assert o_prev_value is not None
+                if o_prev_value is None:
+                    raise ValueError()
                 prev_value = o_prev_value.view((bsz * self.num_heads, -1, self.head_dim))
                 if static_kv:
                     v = prev_value
                 else:
-                    assert v is not None
+                    if v is None:
+                        raise ValueError()
                     v = ops.Concat(1)([prev_value, v])
             prev_key_padding_mask: Optional[ms.Tensor] = None
             if "prev_key_padding_mask" in saved_state:
                 prev_key_padding_mask = saved_state.get("prev_key_padding_mask", " ")
-            assert k is not None and v is not None
+            if k is None or v is None:
+                raise ValueError()
             key_padding_mask = MultiheadAttention._append_prev_key_padding_mask(
                 key_padding_mask=key_padding_mask,
                 prev_key_padding_mask=prev_key_padding_mask,
@@ -774,9 +784,11 @@ class MultiheadAttention(nn.Cell):
             saved_state["prev_value"] = v.view((bsz, self.num_heads, -1, self.head_dim))
             saved_state["prev_key_padding_mask"] = key_padding_mask
             # In this branch incremental_state is never None
-            assert incremental_state is not None
+            if incremental_state is None:
+                raise ValueError()
             incremental_state = self._set_input_buffer(incremental_state, saved_state)
-        assert k is not None
+        if k is None:
+            raise ValueError()
         src_len = k.shape[1]
 
         # This is part of a workaround to get around fork/join parallelism
@@ -785,11 +797,12 @@ class MultiheadAttention(nn.Cell):
             key_padding_mask = None
 
         if key_padding_mask is not None:
-            assert key_padding_mask.shape[0] == bsz
-            assert key_padding_mask.shape[1] == src_len
+            if key_padding_mask.shape[0] != bsz or key_padding_mask.shape[1] != src_len:
+                raise ValueError()
 
         if self.add_zero_attn:
-            assert v is not None
+            if v is None:
+                raise ValueError()
             src_len += 1
             k = ops.Concat(1)([k, ops.Zeros()(((k.shape[0], 1) + k.shape[2:]), k.dtype)])
             k = ops.Concat(1)([k, ops.Zeros()(((k.shape[0], 1) + k.shape[2:]), k.dtype)])
@@ -811,7 +824,8 @@ class MultiheadAttention(nn.Cell):
 
         attn_weights = MultiheadAttention.apply_sparse_mask(attn_weights)
 
-        assert list(attn_weights.shape) == [bsz * self.num_heads, tgt_len, src_len]
+        if list(attn_weights.shape) != [bsz * self.num_heads, tgt_len, src_len]:
+            raise ValueError()
         unsqueeze = ops.ExpandDims()
         if attn_mask is not None:
             attn_mask = unsqueeze(attn_mask, 0)
@@ -838,14 +852,16 @@ class MultiheadAttention(nn.Cell):
             dropout_net.set_train()
         attn_probs = dropout_net(attn_weights_float.astype(attn_weights.dtype))
 
-        assert v is not None
+        if v is None:
+            raise ValueError()
 
         attn_probs = ops.Cast()(attn_probs, ms.float16)
         v = ops.Cast()(v, ms.float16)
         attn = ops.BatchMatMul()(attn_probs, v)
         attn = ops.Cast()(attn, ms.float32)
 
-        assert list(attn.shape) == [bsz * self.num_heads, tgt_len, self.head_dim]
+        if list(attn.shape) != [bsz * self.num_heads, tgt_len, self.head_dim]:
+            raise ValueError()
         if self.onnx_trace and attn.shape[1] == 1:
             # when ONNX tracing a single decoder step (sequence length == 1)
             # the transpose is a no-op copy before view, thus unnecessary

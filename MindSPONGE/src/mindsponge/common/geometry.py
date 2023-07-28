@@ -760,7 +760,8 @@ def vecs_from_tensor(inputs):
         3, (4,256)
     """
     num_components = inputs.shape[-1]
-    assert num_components == 3
+    if num_components != 3:
+        raise ValueError()
     return (inputs[..., 0], inputs[..., 1], inputs[..., 2])
 
 
@@ -941,7 +942,8 @@ def rots_to_tensor(rots, use_numpy=False):
         >>> print(output.shape)
         (256, 3, 3)
     """
-    assert len(rots) == 9
+    if len(rots) != 9:
+        raise ValueError()
     if use_numpy:
         rots = np.stack(rots, axis=-1)
         rots = np.reshape(rots, rots.shape[:-1] + (3, 3))

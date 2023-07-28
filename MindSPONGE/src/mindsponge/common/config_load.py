@@ -40,6 +40,6 @@ def load_config(path):
     Convert yaml file to Obj.
     """
     f = open(path, 'r')
-    config = yaml.load(f, Loader=yaml.FullLoader)
+    config = yaml.safe_load(f)
     config = Config(config)
     return config

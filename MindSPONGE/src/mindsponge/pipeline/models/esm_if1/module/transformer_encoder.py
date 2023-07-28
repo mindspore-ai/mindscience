@@ -254,7 +254,8 @@ class GVPTransformerEncoder(nn.Cell):
                 x, encoder_padding_mask=encoder_padding_mask
             )
             if return_all_hiddens:
-                assert encoder_states is not None
+                if encoder_states is None:
+                    raise ValueError("'encoder_states' should not be None")
                 encoder_states.append(x)
 
         if self.layer_norm is not None:

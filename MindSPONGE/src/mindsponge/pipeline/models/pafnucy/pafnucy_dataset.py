@@ -60,7 +60,8 @@ class PAFNUCYDataSet(PDBBind):
         data, label = self.data_parse(idx=idx)
         rot = False
         if self.is_training:
-            assert self.training_size != 0
+            if self.training_size == 0:
+                raise ValueError("'training_size' should not be zeros")
             rotation = idx // self.training_size
             if rotation >= self.config.rotations:
                 rotation = 0
@@ -107,7 +108,8 @@ class PAFNUCYDataSet(PDBBind):
     # pylint: disable=arguments-differ
     def process(self, data, label=None, rotation=0, rot=False):
         """data process"""
-        assert len(data) == 2
+        if len(data) != 2:
+            raise ValueError("data length should be 2")
         pocket_path = data[0]
         ligand_path = data[1]
         if pocket_path.split('.')[-1] == "pdb":
@@ -124,7 +126,8 @@ class PAFNUCYDataSet(PDBBind):
     # pylint: disable=arguments-differ
     def train_process(self, data, label=None, rotation=0, rot=False):
         """data process"""
-        assert len(data) == 2
+        if len(data) != 2:
+            raise ValueError("data length should be 2")
         pocket = data[0]
         ligand = data[1]
         feature = self.feature_extract(pocket, ligand, label, rotation, rot)
@@ -157,7 +160,8 @@ class PAFNUCYDataSet(PDBBind):
         else:
             pdbid = input_data[0]
             pdbset = input_data[1]
-        assert pdbset in ["general", "refined"]
+        if pdbset not in ["general", "refined"]:
+            raise TypeError("'pdbset' should in '[general, refined]'")
         ligand_path, pocket_path = self.get_path(pdbid, pdbset)
         ligand = next(pybel.readfile('mol2', ligand_path))
         try:

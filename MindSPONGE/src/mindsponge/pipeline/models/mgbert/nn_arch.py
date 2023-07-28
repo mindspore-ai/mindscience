@@ -115,7 +115,8 @@ class MultiHeadAttention(nn.Cell):
         self.num_heads = num_heads
         self.d_model = d_model
 
-        assert d_model % self.num_heads == 0
+        if d_model % self.num_heads != 0:
+            raise ValueError()
 
         self.depth = d_model // self.num_heads
         wq = dense(d_model, d_model, use_se=False)

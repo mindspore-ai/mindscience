@@ -48,7 +48,8 @@ def smiles2adjoin(smiles, explicit_hydrogens=True, canonical_atom_order=False):
     if mol is None:
         print('error')
         mol = Chem.MolFromSmiles(obsmitosmile(smiles))
-        assert mol is not None, smiles + ' is not valid '
+        if mol is None:
+            raise ValueError(f'{smiles} if not vaild')
 
     if explicit_hydrogens:
         mol = Chem.AddHs(mol)

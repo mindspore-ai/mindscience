@@ -42,7 +42,8 @@ def dict_filter_key(feature=None, feature_list=None):
 @curry1
 def dict_replace_key(feature=None, replaced_key=None):
     "dict_replace_key"
-    assert len(replaced_key) == 2
+    if len(replaced_key) != 2:
+        raise ValueError("'replaced_key' length should be 2")
     origin_key, new_key = replaced_key
     if origin_key in feature:
         feature[new_key] = feature.pop(origin_key)
@@ -52,7 +53,8 @@ def dict_replace_key(feature=None, replaced_key=None):
 @curry1
 def dict_cast(feature=None, cast_type=None, filtered_list=None):
     "dict_cast"
-    assert len(cast_type) == 2
+    if len(cast_type) != 2:
+        raise ValueError("'cast_type' length should be 2")
     origin_type = cast_type[0]
     new_type = cast_type[1]
     for k, v in feature.items():
@@ -513,8 +515,8 @@ def random_crop_to_size(feature=None, feature_list=None, crop_size=None, max_tem
             continue
         shape = list(v.shape)
         schema = feature_list.get(k)
-        assert len(shape) == len(
-            schema), f'Rank mismatch between shape and shape schema for {k}: {shape} vs {schema}'
+        if len(shape) != len(schema):
+            raise ValueError(f'Rank mismatch between shape and shape schema for {k}: {shape} vs {schema}')
 
         pad_size = [pad_size_map.get(s2, None) or s1 for (s1, s2) in zip(shape, schema)]
         padding = [(0, p - v.shape[i]) for i, p in enumerate(pad_size)]

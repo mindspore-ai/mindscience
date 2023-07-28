@@ -130,15 +130,16 @@ class MultiheadAttention(nn.Cell):
         self.num_heads = num_heads
         self.dropout = dropout
         self.head_dim = embed_dim // num_heads
-        assert (self.head_dim * num_heads == self.embed_dim), "embed_dim must be divisible by num_heads"
+        if self.head_dim * num_heads != self.embed_dim:
+            raise ValueError("embed_dim must be divisible by num_heads")
         self.scaling = self.head_dim ** -0.5
 
         self.self_attention = self_attention
         self.encoder_decoder_attention = encoder_decoder_attention
 
-        assert not self.self_attention or self.qkv_same_dim, (
-            "Self-attention requires query, key and " "value to be of the same size"
-        )
+        if self.self_attention:
+            if not self.qkv_same_dim:
+                raise ValueError("Self-attention requires query, key and " "value to be of the same size")
 
         self.k_proj = Dense(self.kdim, embed_dim, has_bias=bias)
         self.v_proj = Dense(self.vdim, embed_dim, has_bias=bias)

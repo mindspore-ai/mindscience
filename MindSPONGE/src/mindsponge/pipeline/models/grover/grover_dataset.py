@@ -97,7 +97,8 @@ class GroverDataSet(DataSet):
         return smiles, features, labels
 
     def __len__(self):
-        assert len(self.smiles_list) == len(self.features_list)
+        if len(self.smiles_list) != len(self.features_list):
+            raise ValueError()
         return len(self.smiles_list)
 
     def get_features_dim(self):

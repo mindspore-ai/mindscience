@@ -467,7 +467,8 @@ class MultiHeadedAttention(nn.Cell):
 
     def __init__(self, h, d_model, dropout=0.1):
         super().__init__()
-        assert d_model % h == 0
+        if d_model % h != 0:
+            raise ValueError()
 
         # We assume d_v always equals d_k
         self.d_k = d_model // h
