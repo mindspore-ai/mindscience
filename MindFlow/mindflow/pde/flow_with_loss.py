@@ -39,7 +39,7 @@ class FlowWithLoss:
         self.model = model
         self.loss_fn = get_loss_metric(loss_fn) if isinstance(loss_fn, str) else loss_fn
         check_param_type(model, "model", data_type=nn.Cell, exclude_type=bool)
-        check_param_type(loss_fn, "loss_fn", data_type=nn.Cell, exclude_type=bool)
+        check_param_type(self.loss_fn, "loss_fn", data_type=nn.Cell, exclude_type=bool)
 
     def get_loss(self, inputs, labels):
         """
