@@ -9,37 +9,38 @@ from .shapes import Shape, derive_union_boundary
 
 class Segment(Shape):
     """Segment sampler."""
+
     def __init__(self, vertices):
-        x0, y0, x1, y1 = np.ravel(vertices)
-        self._slope = (y1 - y0)/(x1 - x0)
-        self._intercpet = (y0*x1 - y1*x0)/(x1 - x0)
-        self._x_min = min(x0, x1)
-        self._x_max = max(x0, x1)
-        super(Segment, self).__init__(volume=math.sqrt((x0 - x1)*(x0 - x1) + (y0 - y1)*(y0 - y1)))
+        vertices = np.asarray(vertices)
+        self._vector = vertices[1] - vertices[0]
+        self._point = vertices[0]
+        self._x_min, self._x_max = np.sort(vertices[:, 0])
+        self._y_min, self._y_max = np.sort(vertices[:, 1])
+        super(Segment, self).__init__(volume=math.hypot(*self._vector))
 
     def is_inside(self, pts):
-        x = pts[:, 0]
-        return (x >= self._x_min) & (x <= self._x_max) & self.is_on(pts)
+        return (pts[:, 0] >= self._x_min) & (pts[:, 0] <= self._x_max) & \
+            (pts[:, 1] >= self._y_min) & (pts[:, 1] <= self._y_max) & \
+            self.is_on(pts)
 
     def is_on(self, pts):
         """Check if ``x`` is on the line defined by the segment."""
-        x, y = pts.T
-        return np.isclose(y, self.line_equation(x))
+        return np.cross(pts - self._point, self._vector) == 0
 
     def sample(self, num_samps):
-        x = self._x_min + (self._x_max - self._x_min)*np.random.rand(num_samps, 1)
-        return np.hstack([x, self.line_equation(x)])
-
-    def line_equation(self, x):
-        return self._intercpet + self._slope*x
+        samps = np.random.rand(num_samps, 1)
+        return self._point + samps*self._vector
 
 
 class Simplex(Shape):
     """Simplex (triangle in 2D and tetrahedron in 3D) sampler."""
+
     def __init__(self, vertices, boundary_type='none'):
         vertices = self._validate(vertices)
         # Compute volume
-        volume = .5*abs(np.linalg.det(np.hstack([np.ones([len(vertices), 1]), vertices])))
+        volume = .5 * \
+            abs(np.linalg.det(
+                np.hstack([np.ones([len(vertices), 1]), vertices])))
         # Prepare boundary
         num_vertices = len(vertices)
         if num_vertices == 3:
@@ -107,6 +108,7 @@ class Simplex(Shape):
 
 class Triangle3D(Shape):
     """3D Triangle sampler."""
+
     def __init__(self, vertices):
         vertices = self._validate(vertices)
         # Check if the given triangle can be reduced into 2D.
@@ -119,7 +121,8 @@ class Triangle3D(Shape):
 
         if dim_reduced is None:
             # Compute area
-            cross_product = np.cross(vertices[1] - vertices[0], vertices[2] - vertices[0])
+            cross_product = np.cross(
+                vertices[1] - vertices[0], vertices[2] - vertices[0])
             volume = .5*abs(np.linalg.norm(cross_product, ord=2))
             super(Triangle3D, self).__init__(volume)
             # Prepare transform matrix
@@ -151,7 +154,8 @@ class Triangle3D(Shape):
             return self.transform(self.sample_unit_triangle(num_samps))
 
         samps_reduced = self._tri_reduced.sample(num_samps)
-        samps = np.insert(samps_reduced, self._dim_reduced, self._val_reduced, axis=1)
+        samps = np.insert(samps_reduced, self._dim_reduced,
+                          self._val_reduced, axis=1)
         return samps
 
     def sample_unit_triangle(self, num_samps):
@@ -175,5 +179,6 @@ class Triangle3D(Shape):
     def _validate(self, vertices):
         vertices = np.asarray(vertices).copy()
         assert vertices.shape == (3, 3)
-        # TODO Check the cases that three points lie on a line
+        if np.linalg.det(vertices) == 0:
+            raise ValueError("Three points lie on a line.")
         return vertices
