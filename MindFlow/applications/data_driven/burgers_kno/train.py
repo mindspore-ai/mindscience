@@ -51,9 +51,12 @@ def parse_args():
     return input_args
 
 
-def train():
+def train(input_args):
     '''Train and evaluate the network'''
-    config = load_yaml_config(args.config_file_path)
+    use_ascend = context.get_context(attr_key='device_target') == "Ascend"
+    print(f"use_ascend: {use_ascend}")
+
+    config = load_yaml_config(input_args.config_file_path)
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
@@ -169,7 +172,6 @@ if __name__ == '__main__':
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
                         save_graphs=args.save_graphs, save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target, device_id=args.device_id)
-    use_ascend = context.get_context(attr_key='device_target') == "Ascend"
-    print(f"use_ascend: {use_ascend}")
+
     print(f"device_id: {context.get_context(attr_key='device_id')}")
-    train()
+    train(args)
