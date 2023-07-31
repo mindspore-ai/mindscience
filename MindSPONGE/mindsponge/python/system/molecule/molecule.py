@@ -83,7 +83,7 @@ class Molecule(Cell):
         residue(Union[Residue, List[Residue]]):             Residue or a list of residues. If template is not ``None``,
                                                             only the residues in the template will be used.
                                                             Default: ``None``.
-        length_unit(str):                                   Length unit. If ```None``` is given, the global length
+        length_unit(str):                                   Length unit. If ``None`` is given, the global length
                                                             units will be used. Default: ``None``.
 
     Outputs:
