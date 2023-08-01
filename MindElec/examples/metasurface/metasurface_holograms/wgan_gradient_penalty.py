@@ -1,6 +1,8 @@
 """
 gradient penalty module
 """
+import os.path
+
 import scipy.io as sci
 from mindspore import Parameter, nn, ops, Tensor
 from mindspore.common.initializer import initializer, HeUniform
@@ -30,14 +32,14 @@ class Generator(nn.Cell):
     """
     generator
     """
-    def __init__(self):
+    def __init__(self, data_path):
         """
         generator
         """
         super().__init__()
         self.resnet34 = _resnet34_ln(img_channel=1, first_stride=1, logit=False)
         print(self.resnet34)
-        path = '../Wr_matrix.mat'
+        path = os.path.join(data_path, 'Wr_matrix.mat')
         data = sci.loadmat(path)
         wr = data['W_r_real']
         wm = data['W_r_im']

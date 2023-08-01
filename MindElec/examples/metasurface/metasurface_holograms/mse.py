@@ -1,31 +1,35 @@
 """
 mse module
 """
+import argparse
 import os
 import time
-import argparse
+
 import matplotlib.pyplot as plt
+from mindspore import context, ops, nn, Tensor
 
 from dataset import create_dataset_mnist
 from wgan_gradient_penalty import Generator
-from mindspore import context, ops, nn, Tensor
 
-parser = argparse.ArgumentParser(description="Pytorch implementation of GAN models.")
+parser = argparse.ArgumentParser(description="Mindspore implementation of GAN models.")
 
 parser.add_argument('--model', type=str, default='cWGAN-GP', choices=['GAN', 'DCGAN', 'WGAN-CP', 'cWGAN-GP'])
-parser.add_argument('--device', type=int, default=0)
+parser.add_argument('--device_id', type=int, default=0)
 parser.add_argument('--is_train', type=str, default='False')
 parser.add_argument('--is_finetune', type=str, default='True',
                     help='False: Train from scratch; True: Train from a saved checkpint(load_D, load_G)')
 parser.add_argument('--is_evaluate', type=str, default='False',
-                    help='True: Will test the images loaded from test_dataroot.')
+                    help='True: Will test the images loaded from test_data_path.')
 parser.add_argument('--is_test_single_image', type=str, default='True',
                     help='True: Will test the single image from single_image_path')
 
-parser.add_argument('--dataroot', type=str, default='./MNIST/binary_images', help='path to dataset')
-parser.add_argument('--train_dataroot', type=str, default='../MNIST/binary_images/trainimages', help='path to dataset')
-parser.add_argument('--test_dataroot', type=str, default='../MNIST/binary_images/testimages', help='path to dataset')
-parser.add_argument('--valid_dataroot', type=str, default='../MNIST/binary_images/validimages', help='path to dataset')
+parser.add_argument('--data_path', type=str, default='./data/', help='path to dataset')
+parser.add_argument('--train_data_path', type=str, default='./data/MNIST/binary_images/trainimages',
+                    help='path to dataset')
+parser.add_argument('--test_data_path', type=str, default='./data/MNIST/binary_images/testimages',
+                    help='path to dataset')
+parser.add_argument('--valid_data_path', type=str, default='./data/MNIST/binary_images/validimages',
+                    help='path to dataset')
 parser.add_argument('--single_image_path', type=str,
                     default='./MNIST/binary_images/testimages/9/38.png',
                     help='The image path when is_test_single_image==True')
@@ -47,7 +51,7 @@ args = parser.parse_args()
 
 # 1. loss: output loss, without penalty, with mse
 
-context.set_context(mode=context.PYNATIVE_MODE, device_target="CPU", device_id=args.device)  # PYNATIVE_MODE  GRAPH_MODE
+context.set_context(mode=context.PYNATIVE_MODE, device_target="CPU", device_id=args.device_id)  # PYNATIVE_MODE  GRAPH_MODE
 # , save_graphs = True, save_graphs_path = './simple_net_mse_graph'
 
 LOGS_FOLDER = "./logs/"
@@ -157,7 +161,7 @@ def get_infinite_batches(data_loader):
             yield img
 
 
-generator = Generator()  # _trainable _trainable_sqrt
+generator = Generator(args.data_path)  # _trainable _trainable_sqrt
 
 g_loss_cell = GLoss(generator)
 
@@ -167,8 +171,8 @@ g_optimizer = nn.Adam(filter(lambda p: p.requires_grad, generator.trainable_para
 # 实例化TrainOneStepCell
 g_loss_step = nn.TrainOneStepCell(g_loss_cell, g_optimizer)  # TrainOneStep
 
-train_dataset = create_dataset_mnist(args.batch_size, args.train_dataroot)
-valid_dataset = create_dataset_mnist(args.batch_size, args.valid_dataroot, shuffle=False)
+train_dataset = create_dataset_mnist(args.batch_size, args.train_data_path)
+valid_dataset = create_dataset_mnist(args.batch_size, args.valid_data_path, shuffle=False)
 
 train_dataloader = get_infinite_batches(train_dataset.create_dict_iterator())
 valid_dataloader = get_infinite_batches(valid_dataset.create_dict_iterator())

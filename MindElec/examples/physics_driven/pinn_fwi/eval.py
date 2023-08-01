@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """eval process"""
-
+import argparse
 import os
 
 import mindspore as ms
@@ -25,7 +25,16 @@ from src.model import Net, Net0
 from utils.plot import plot_alpha, plot_wave_pnential
 
 
-def evaluate():
+def parse_args():
+    """parse args"""
+    parser = argparse.ArgumentParser(description='Meta Auto Decoder Simulation')
+    parser.add_argument('--ckpt_path', type=str, default="MyNet.ckpt")
+    parser.add_argument('--ckpt0_path', type=str, default="MyNet0.ckpt")
+    opt = parser.parse_args()
+    return opt
+
+
+def evaluate(args):
     """evaluate"""
     layers = [3] + [100] * 8 + [1]
     neural_net = Net(layers=layers)
@@ -33,13 +42,13 @@ def evaluate():
     layers0 = [2] + [20] * 5 + [1]
     neural_net0 = Net0(layers=layers0)
 
-    param_dict = ms.load_checkpoint("MyNet.ckpt")
+    param_dict = ms.load_checkpoint(args.ckpt_path)
     ms.load_param_into_net(neural_net, param_dict)
 
-    param_dict = ms.load_checkpoint("MyNet0.ckpt")
+    param_dict = ms.load_checkpoint(args.ckpt0_path)
     ms.load_param_into_net(neural_net0, param_dict)
 
-    alpha_true0 = alpha_true_func(dataset01)
+    alpha_true0 = alpha_true_func(dataset01, args)
     alpha_true0 = alpha_true0.reshape(xx.shape)
 
     eval_net = CustomWithEval2Cell(neural_net=neural_net, neural_net0=neural_net0)
@@ -61,4 +70,5 @@ def evaluate():
 
 if __name__ == "__main__":
     os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-    evaluate()
+    args_ = parse_args()
+    evaluate(args_)

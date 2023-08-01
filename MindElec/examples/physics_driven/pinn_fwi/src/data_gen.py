@@ -22,7 +22,7 @@ import numpy as np
 import mindspore.dataset as ds
 import mindspore as ms
 
-with open('src/dafault_config.yaml', 'r') as y:
+with open('src/default_config.yaml', 'r') as y:
     cfg = yaml.full_load(y)
 # 定义训练数据 包括内部采样和初始条件及边界采样
 dx = cfg['ax_spec']/cfg['nx']

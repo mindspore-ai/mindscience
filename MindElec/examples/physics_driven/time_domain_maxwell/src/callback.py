@@ -33,7 +33,7 @@ class PredictCallback(Callback):
         inputs (Array): Input data of prediction.
         label (Array): Label data of prediction.
         config (dict): config info of prediction.
-        visual_fn (dict): Visualization function. Default: None.
+        visual_fn (Union[Callable, None]): Visualization function. Default: None.
     """
     def __init__(self, model, inputs, label, config, visual_fn=None):
         super(PredictCallback, self).__init__()

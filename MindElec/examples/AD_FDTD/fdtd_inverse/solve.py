@@ -34,7 +34,7 @@ def parse_args():
         description='Electromagnetic Inverse Scattering Solver Based on AD-FDTD')
     parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--lr', type=float, default=0.1)
-    parser.add_argument('--device_target', type=str, default='GPU')
+    parser.add_argument('--device_target', type=str, default=None)
     parser.add_argument('--nt', type=int, default=350,
                         help='Number of time steps.')
     parser.add_argument('--max_call_depth', type=int, default=2000)
@@ -214,5 +214,7 @@ def solve(args):
 
 if __name__ == '__main__':
     args_ = parse_args()
+    if args_.device_target is not None:
+        context.set_context(device_target=args_.device_target)
     context.set_context(mode=context.PYNATIVE_MODE)  # memory problem unsolved in graph mode
     solve(args_)

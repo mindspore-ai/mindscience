@@ -17,25 +17,22 @@
 import yaml
 import numpy as np
 import mindspore as ms
-from mindspore import nn
-from mindspore import Parameter, Tensor
+from mindspore import Parameter, Tensor, nn, ops
 from mindspore.common.initializer import TruncatedNormal
-import mindspore.ops.operations as OP
 
-with open('src/dafault_config.yaml', 'r') as y:
+with open('src/default_config.yaml', 'r') as y:
     cfg = yaml.full_load(y)
 
-
-dx = cfg['ax_spec']/cfg['nx']
-dz = cfg['az_spec']/cfg['nz']
-ax = cfg['xsf']-cfg['n_absx']*dx
-az = cfg['az_spec']-cfg['n_absz']*dz
-ub = np.array([ax/cfg['Lx'], az/cfg['Lz'], (cfg['t_m']-cfg['t_st'])]).reshape(-1, 1).T
-ub0 = np.array([ax/cfg['Lx'], az/cfg['Lz']]).reshape(-1, 1).T
+dx = cfg['ax_spec'] / cfg['nx']
+dz = cfg['az_spec'] / cfg['nz']
+ax = cfg['xsf'] - cfg['n_absx'] * dx
+az = cfg['az_spec'] - cfg['n_absz'] * dz
+ub = np.array([ax / cfg['Lx'], az / cfg['Lz'], (cfg['t_m'] - cfg['t_st'])]).reshape(-1, 1).T
+ub0 = np.array([ax / cfg['Lx'], az / cfg['Lz']]).reshape(-1, 1).T
 
 
 def xavier_init(in_dim, out_dim):
-    xavier_stddev = np.sqrt(2.0/(in_dim + out_dim))
+    xavier_stddev = np.sqrt(2.0 / (in_dim + out_dim))
     return xavier_stddev
 
 
@@ -43,7 +40,6 @@ class Net(nn.Cell):
     """parameterize the wave ponential"""
 
     def __init__(self, layers):
-
         super(Net, self).__init__()
 
         self.layer1 = nn.Dense(layers[0], layers[1], weight_init=TruncatedNormal(
@@ -65,14 +61,14 @@ class Net(nn.Cell):
         self.layer9 = nn.Dense(layers[8], layers[9], weight_init=TruncatedNormal(
             xavier_init(in_dim=layers[8], out_dim=layers[9])))
 
-        self.op_concat = OP.Concat(1)
+        self.op_concat = ops.Concat(1)
         self.ub = ms.Tensor(ub, dtype=ms.float32)
 
     def construct(self, x, z, t):
         """parameterize the wave ponential"""
 
         xzt = self.op_concat((x, z, t))
-        out = 2*(xzt/self.ub)-1
+        out = 2 * (xzt / self.ub) - 1
         out = self.layer1(out)
         out = self.layer2(out)
         out = self.layer3(out)
@@ -92,7 +88,7 @@ class Net0(nn.Cell):
         super(Net0, self).__init__()
 
         self.mix_coe = ms.Tensor(
-            np.arange(1, layers[1]+1)[np.newaxis, :], dtype=ms.float32)
+            np.arange(1, layers[1] + 1)[np.newaxis, :], dtype=ms.float32)
 
         self.layer1 = nn.Dense(layers[0], layers[1], weight_init=TruncatedNormal(
             xavier_init(in_dim=layers[0], out_dim=layers[1])), has_bias=False)
@@ -107,7 +103,7 @@ class Net0(nn.Cell):
         self.layer6 = nn.Dense(layers[5], layers[6], weight_init=TruncatedNormal(
             xavier_init(in_dim=layers[5], out_dim=layers[6])))
 
-        self.op_concat = OP.Concat(1)
+        self.op_concat = ops.Concat(1)
         self.tanh = nn.Tanh()
         self.add_bias = Parameter(
             Tensor(np.zeros((1, layers[1])), dtype=ms.float32), name='add_bias')
@@ -118,9 +114,9 @@ class Net0(nn.Cell):
         """parameterize the wave speed"""
 
         x_z = self.op_concat((x, z))
-        out = 2*(x_z/self.ub0)-1
+        out = 2 * (x_z / self.ub0) - 1
 
-        out = self.tanh(self.layer1(out)*self.mix_coe) + self.add_bias
+        out = self.tanh(self.layer1(out) * self.mix_coe) + self.add_bias
 
         out = self.layer2(out)
         out = self.layer3(out)

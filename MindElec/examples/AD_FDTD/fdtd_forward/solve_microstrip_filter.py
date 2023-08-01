@@ -33,7 +33,7 @@ def parse_args():
     """parse args"""
     parser = argparse.ArgumentParser(
         description='FDTD-Based Electromagnetics Forward-Problem Solver')
-    parser.add_argument('--device_target', type=str, default='GPU')
+    parser.add_argument('--device_target', type=str, default=None)
     parser.add_argument('--nt', type=int, default=3000,
                         help='Number of time steps.')
     parser.add_argument('--max_call_depth', type=int, default=1000)
@@ -109,9 +109,10 @@ def get_microstrip_filter(air_buffers, npml):
 
 def solve(args):
     """solve process"""
+    if args.device_target is not None:
+        context.set_context(device_target=args.device_target)
     context.set_context(mode=context.GRAPH_MODE,
-                        max_call_depth=args.max_call_depth,
-                        device_target=args.device_target)
+                        max_call_depth=args.max_call_depth)
     # set up problem
     nt = args.nt
     fmax = args.fmax

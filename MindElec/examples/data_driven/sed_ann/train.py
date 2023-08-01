@@ -36,8 +36,8 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--lr', type=float, default=0.0001)
     parser.add_argument('--input_dim', type=int, default=3)
-    parser.add_argument('--device_num', type=int, default=1)
-    parser.add_argument('--device_target', type=str, default="Ascend")
+    parser.add_argument('--device_id', type=int, default=None)
+    parser.add_argument('--device_target', type=str, default=None)
     parser.add_argument('--checkpoint_dir', default='./ckpt/', help='checkpoint directory')
     parser.add_argument('--save_graphs_path', default='./graph_result/', help='checkpoint directory')
     parser.add_argument('--input_path', default='./dataset/Butterfly_antenna/data_input.npy')
@@ -203,6 +203,8 @@ def train(args):
 
 if __name__ == '__main__':
     args_ = parse_args()
+    if args_.device_target is not None:
+        context.set_context(device_targer=args_.device_target)
     device_id = int(os.getenv('DEVICE_ID'))
     context.set_context(device_id=device_id)
     set_seed(123)
