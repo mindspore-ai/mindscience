@@ -12,19 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-#pylint: disable=W0613
+# pylint: disable=W0613
 """
 2D maxwell problem with Mur bc
 """
-import mindspore.numpy as ms_np
-from mindspore import ms_function
-from mindspore import ops
-from mindspore import Tensor
-import mindspore.common.dtype as mstype
+import mindspore as ms
+import mindspore.numpy as mnp
+from mindspore import Tensor, ms_function, ops
 
-from mindelec.solver import Problem
 from mindelec.common import MU, EPS, LIGHT_SPEED, PI
 from mindelec.operators import Grad
+from mindelec.solver import Problem
 
 
 class Maxwell2DMur(Problem):
@@ -39,6 +37,7 @@ class Maxwell2DMur(Problem):
         bc_normal (str): The column name of normal direction vector corresponding to specified boundary.
         ic_name (str): The corresponding column name of data which governed by initial condition.
     """
+
     def __init__(self, model, config, domain_name=None, bc_name=None, bc_normal=None, ic_name=None):
         super(Maxwell2DMur, self).__init__()
         self.domain_name = domain_name
@@ -55,38 +54,38 @@ class Maxwell2DMur(Problem):
         self.concat = ops.Concat(1)
 
         # constants
-        self.pi = Tensor(PI, mstype.float32)
-        self.eps_x = Tensor(EPS, mstype.float32)
-        self.eps_y = Tensor(EPS, mstype.float32)
-        self.mu_z = Tensor(MU, mstype.float32)
-        self.light_speed = Tensor(LIGHT_SPEED, mstype.float32)
+        self.pi = Tensor(PI, ms.float32)
+        self.eps_x = Tensor(EPS, ms.float32)
+        self.eps_y = Tensor(EPS, ms.float32)
+        self.mu_z = Tensor(MU, ms.float32)
+        self.light_speed = Tensor(LIGHT_SPEED, ms.float32)
 
         # gauss-type pulse source
         self.src_frq = config.get("src_frq", 1e+9)
-        self.tau = Tensor((2.3 ** 0.5) / (PI * self.src_frq), mstype.float32)
-        self.amp = Tensor(1.0, mstype.float32)
-        self.t0 = Tensor(3.65 * self.tau, mstype.float32)
+        self.tau = Tensor((2.3 ** 0.5) / (PI * self.src_frq), ms.float32)
+        self.amp = Tensor(1.0, ms.float32)
+        self.t0 = Tensor(3.65 * self.tau, ms.float32)
 
         # src space
-        self.x0 = Tensor(config["src_pos"][0], mstype.float32)
-        self.y0 = Tensor(config["src_pos"][1], mstype.float32)
-        self.sigma = Tensor(config["src_radius"] / 4.0, mstype.float32)
+        self.x0 = Tensor(config["src_pos"][0], ms.float32)
+        self.y0 = Tensor(config["src_pos"][1], ms.float32)
+        self.sigma = Tensor(config["src_radius"] / 4.0, ms.float32)
         self.coord_min = config["coord_min"]
         self.coord_max = config["coord_max"]
 
         input_scale = config.get("input_scale", [1.0, 1.0, 2.5e+8])
         output_scale = config.get("output_scale", [37.67303, 37.67303, 0.1])
-        self.s_x = Tensor(input_scale[0], mstype.float32)
-        self.s_y = Tensor(input_scale[1], mstype.float32)
-        self.s_t = Tensor(input_scale[2], mstype.float32)
-        self.s_ex = Tensor(output_scale[0], mstype.float32)
-        self.s_ey = Tensor(output_scale[1], mstype.float32)
-        self.s_hz = Tensor(output_scale[2], mstype.float32)
+        self.s_x = Tensor(input_scale[0], ms.float32)
+        self.s_y = Tensor(input_scale[1], ms.float32)
+        self.s_t = Tensor(input_scale[2], ms.float32)
+        self.s_ex = Tensor(output_scale[0], ms.float32)
+        self.s_ey = Tensor(output_scale[1], ms.float32)
+        self.s_hz = Tensor(output_scale[2], ms.float32)
 
     def smooth_src(self, x, y, t):
-        source = self.amp * ops.exp(- ((t - self.t0) / self.tau)**2)
-        gauss = 1 / (2 * self.pi * self.sigma**2) * \
-                ops.exp(- ((x - self.x0)**2 + (y - self.y0)**2) / (2 * (self.sigma**2)))
+        source = self.amp * ops.exp(- ((t - self.t0) / self.tau) ** 2)
+        gauss = 1 / (2 * self.pi * self.sigma ** 2) * \
+                ops.exp(- ((x - self.x0) ** 2 + (y - self.y0) ** 2) / (2 * (self.sigma ** 2)))
         return self.mul(source, gauss)
 
     @ms_function
@@ -105,13 +104,13 @@ class Maxwell2DMur(Problem):
         dhz_dxyt = self.grad(data, None, 2, u)
         dhz_dx, dhz_dy, dhz_dt = self.split(dhz_dxyt)
 
-        dex_dy = self.cast(dex_dy, mstype.float32)
-        dex_dt = self.cast(dex_dt, mstype.float32)
-        dey_dx = self.cast(dey_dx, mstype.float32)
-        dey_dt = self.cast(dey_dt, mstype.float32)
-        dhz_dx = self.cast(dhz_dx, mstype.float32)
-        dhz_dy = self.cast(dhz_dy, mstype.float32)
-        dhz_dt = self.cast(dhz_dt, mstype.float32)
+        dex_dy = self.cast(dex_dy, ms.float32)
+        dex_dt = self.cast(dex_dt, ms.float32)
+        dey_dx = self.cast(dey_dx, ms.float32)
+        dey_dt = self.cast(dey_dt, ms.float32)
+        dhz_dx = self.cast(dhz_dx, ms.float32)
+        dhz_dy = self.cast(dhz_dy, ms.float32)
+        dhz_dt = self.cast(dhz_dt, ms.float32)
 
         loss_a1 = (self.s_hz * dhz_dy) / (self.s_ex * self.s_t * self.eps_x)
         loss_a2 = dex_dt / self.s_t
@@ -139,11 +138,11 @@ class Maxwell2DMur(Problem):
         coord_min = self.coord_min
         coord_max = self.coord_max
         batch_size, _ = data.shape
-        attr = ms_np.zeros(shape=(batch_size, 4))
-        attr[:, 0] = ms_np.where(ms_np.equal(data[:, 0], coord_min[0]), 1.0, 0.0)
-        attr[:, 1] = ms_np.where(ms_np.equal(data[:, 0], coord_max[0]), 1.0, 0.0)
-        attr[:, 2] = ms_np.where(ms_np.equal(data[:, 1], coord_min[1]), 1.0, 0.0)
-        attr[:, 3] = ms_np.where(ms_np.equal(data[:, 1], coord_max[1]), 1.0, 0.0)
+        attr = mnp.zeros(shape=(batch_size, 4))
+        attr[:, 0] = mnp.where(mnp.equal(data[:, 0], coord_min[0]), 1.0, 0.0)
+        attr[:, 1] = mnp.where(mnp.equal(data[:, 0], coord_max[0]), 1.0, 0.0)
+        attr[:, 2] = mnp.where(mnp.equal(data[:, 1], coord_min[1]), 1.0, 0.0)
+        attr[:, 3] = mnp.where(mnp.equal(data[:, 1], coord_max[1]), 1.0, 0.0)
 
         dex_dxyt = self.grad(data, None, 0, u)
         _, dex_dy, _ = self.split(dex_dxyt)
@@ -152,14 +151,14 @@ class Maxwell2DMur(Problem):
         dhz_dxyt = self.grad(data, None, 2, u)
         dhz_dx, dhz_dy, dhz_dt = self.split(dhz_dxyt)
 
-        dex_dy = self.cast(dex_dy, mstype.float32)
-        dey_dx = self.cast(dey_dx, mstype.float32)
-        dhz_dx = self.cast(dhz_dx, mstype.float32)
-        dhz_dy = self.cast(dhz_dy, mstype.float32)
-        dhz_dt = self.cast(dhz_dt, mstype.float32)
+        dex_dy = self.cast(dex_dy, ms.float32)
+        dey_dx = self.cast(dey_dx, ms.float32)
+        dhz_dx = self.cast(dhz_dx, ms.float32)
+        dhz_dy = self.cast(dhz_dy, ms.float32)
+        dhz_dt = self.cast(dhz_dt, ms.float32)
 
         bc_r1 = dhz_dx / self.s_x - dhz_dt / (self.light_speed * self.s_x) + \
-                self.s_ex * self.light_speed * self.eps_x / (2 * self.s_hz * self.s_x) * dex_dy # x=0
+                self.s_ex * self.light_speed * self.eps_x / (2 * self.s_hz * self.s_x) * dex_dy  # x=0
         bc_r2 = dhz_dx / self.s_x + dhz_dt / (self.light_speed * self.s_x) - \
                 self.s_ex * self.light_speed * self.eps_x / (2 * self.s_hz * self.s_x) * dex_dy  # x=L
         bc_r3 = dhz_dy / self.s_y - dhz_dt / (self.light_speed * self.s_y) - \

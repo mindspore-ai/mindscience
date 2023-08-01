@@ -14,7 +14,9 @@
 # ===========================================================================
 """Learning rate scheduler."""
 from collections import Counter
+
 import numpy as np
+
 
 class _LRScheduler:
     """

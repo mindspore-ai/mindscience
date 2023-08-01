@@ -19,14 +19,17 @@ def parse_args():
     """parse args"""
     parser = argparse.ArgumentParser(description="Mindspore implementation of GAN models.")
     parser.add_argument('--model', type=str, default='cWGAN-GP', choices=['GAN', 'DCGAN', 'WGAN-CP', 'cWGAN-GP'])
-    parser.add_argument('--device', type=int, default=0)
-    parser.add_argument('--data_path', type=str, default='./MNIST/binary_images', help='path to dataset')
+    parser.add_argument('--mode', type=str, default=context.GRAPH_MODE)
+    parser.add_argument('--device_id', type=int, default=None)
+    parser.add_argument('--device_target', type=int, default=None)
+    parser.add_argument('--data_path', type=str, default='./data/', help='path to dataset')
     parser.add_argument('--train_data_path', type=str, default='./data/MNIST/binary_images/trainimages',
                         help='path to dataset')
     parser.add_argument('--test_data_path', type=str, default='./data/MNIST/binary_images/testimages',
                         help='path to dataset')
     parser.add_argument('--valid_data_path', type=str, default='./data/MNIST/binary_images/validimages',
                         help='path to dataset')
+    parser.add_argument('--log_folder_path', type=str, default='./logs', help='path to logs')
     parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'fashion-mnist', 'cifar', 'stl10'],
                         help='The name of dataset')
     parser.add_argument('--Gen_learning_rate', type=float, default=3e-5, help='The learning rate of Generator')
@@ -52,7 +55,7 @@ def write_log(log_file_name, log_message):
 
     """
     print(log_message)
-    with os.fdopen(log_file_name, 'a') as txt_file:
+    with open(log_file_name, mode='a') as txt_file:
         txt_file.write(log_message + "\n")
 
 
@@ -243,9 +246,9 @@ def get_infinite_batches(data_loader):
 
 def train(args):
     """train"""
-    logs_folder = "./logs/"
+    os.makedirs(args.log_folder_path, exist_ok=True)
     rec_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    txt_file_name = logs_folder + rec_time + "_with_pena.txt"
+    txt_file_name = os.path.join(args.log_folder_path, rec_time + "_with_pena.log")
 
     # WGAN values from paper
     g_learning_rate = args.Gen_learning_rate
@@ -262,7 +265,7 @@ def train(args):
     # 计算loss必须用继承nn.Cell的类，在construct方法中计算
     # construct输入为data, label
 
-    generator = Generator()
+    generator = Generator(args.data_path)
     discriminator = Discriminator(channels=2)
 
     g_loss_cell = GLoss(discriminator, generator)
@@ -272,16 +275,15 @@ def train(args):
     gradient_penalty_cell = GradientPenaltyCell(discriminator, generator, batch_size)
 
     d_optimizer = nn.Adam(discriminator.trainable_params(), learning_rate=d_learning_rate, beta1=b1, beta2=b2)
-    g_optimizer = nn.Adam(generator.trainable_params(), learning_rate=g_learning_rate, beta1=b1,
-                          beta2=b2)
+    g_optimizer = nn.Adam(generator.trainable_params(), learning_rate=g_learning_rate, beta1=b1, beta2=b2)
     g_loss_step = amp.build_train_network(g_loss_cell, g_optimizer, level="O3")
     g_mse_step = amp.build_train_network(g_mse_cell, g_optimizer, level="O3")
     d_real_step = amp.build_train_network(d_loss_real_cell, d_optimizer, level="O3")
     d_fake_step = amp.build_train_network(d_loss_fake_cell, d_optimizer, level="O3")
     gradient_penalty_step = amp.build_train_network(gradient_penalty_cell, d_optimizer, level="O0")
 
-    train_dataset = create_dataset_mnist(batch_size, args.train_dataroot)
-    valid_dataset = create_dataset_mnist(batch_size, args.valid_dataroot, shuffle=False)
+    train_dataset = create_dataset_mnist(batch_size, args.train_data_path)
+    valid_dataset = create_dataset_mnist(batch_size, args.valid_data_path, shuffle=False)
 
     train_dataloader = get_infinite_batches(train_dataset.create_dict_iterator())
     valid_dataloader = get_infinite_batches(valid_dataset.create_dict_iterator())
@@ -344,5 +346,9 @@ if __name__ == "__main__":
     args_ = parse_args()
     # 1. loss: output loss, with penalty, with mse
     mindspore.set_seed(1234)
-    context.set_context(mode=context.GRAPH_MODE, device_target="Ascend")  # PYNATIVE_MODE  GRAPH_MODE
+    if args_.device_target is not None:
+        context.set_context(device_target=args_.device_target)
+    if args_.device_id is not None:
+        context.set_context(device_target=args_.device_id)
+    context.set_context(mode=args_.mode)
     train(args_)

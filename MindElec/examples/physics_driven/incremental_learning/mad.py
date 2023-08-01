@@ -51,7 +51,17 @@ def piad2d(args):
     epoch_steps = len(train_dataset)
     print("check train dataset size: ", len(train_dataset))
     # load ckpt
-    latent_vector_ckpt, loaded_ckpt_dict = load_ckpt(args, config)
+    if config.get("load_ckpt", False):
+        param_dict = load_checkpoint(config["load_ckpt_path"])
+        if args.mode == "pretrain":
+            loaded_ckpt_dict = param_dict
+        else:
+            loaded_ckpt_dict, latent_vector_ckpt = {}, 0
+            for name in param_dict:
+                if name == "model.latent_vector":
+                    latent_vector_ckpt = param_dict[name].data.asnumpy()
+                elif "network" in name and "moment" not in name:
+                    loaded_ckpt_dict[name] = param_dict[name]
     # initialize latent vector
     num_scenarios, latent_size = config["num_scenarios"], config["latent_vector_size"]
     latent_vector = calc_latent_init(latent_size, latent_vector_ckpt, args.mode, num_scenarios)
@@ -63,7 +73,6 @@ def piad2d(args):
                                input_center=config["input_center"], latent_vector=latent_vector)
     network = network.to_float(ms.float16)
     network.input_scale.to_float(ms.float32)
-
     mtl_cell = MTLWeightedLossCell(num_losses=train_dataset.num_dataset) if config.get("enable_mtl", True) else None
     # define problem
     train_prob = {}
@@ -110,6 +119,7 @@ def load_ckpt(args, config):
         param_dict = load_checkpoint(config["load_ckpt_path"])
         if args.mode == "pretrain":
             loaded_ckpt_dict = param_dict
+            latent_vector_ckpt = 0
         else:
             loaded_ckpt_dict = {}
             latent_vector_ckpt = 0
