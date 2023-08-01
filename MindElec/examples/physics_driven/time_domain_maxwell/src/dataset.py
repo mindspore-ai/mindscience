@@ -20,8 +20,8 @@ import numpy as np
 from mindelec.data import Dataset, ExistedDataConfig
 from mindelec.geometry import Disk, Rectangle, TimeDomain, GeometryWithTime
 from mindelec.geometry import create_config_from_edict
-
 from .sampling_config import no_src_sampling_config, src_sampling_config, bc_sampling_config
+
 
 def get_test_data(test_data_path):
     """load labeled data for evaluation"""
@@ -30,6 +30,7 @@ def get_test_data(test_data_path):
     inputs = np.load(paths[0])
     label = np.load(paths[1])
     return inputs, label
+
 
 def create_train_dataset(train_data_path):
     """create training dataset from existed data files"""
@@ -65,6 +66,7 @@ def create_train_dataset(train_data_path):
                                       random_merge=True)
     dataset = Dataset(existed_data_list=[no_src_domain, no_src_ic, boundary, src_domain, src_ic])
     return dataset
+
 
 def create_random_dataset(config):
     """create training dataset by online sampling"""

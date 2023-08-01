@@ -36,7 +36,7 @@ from src import Maxwell2DMur, MultiStepLR, PredictCallback, create_train_dataset
 
 def load_config():
     """load config"""
-    with open("./config.json") as f:
+    with open(os.path.join(os.path.dirname(__file__), "config.json")) as f:
         config = json.load(f)
     return config
 

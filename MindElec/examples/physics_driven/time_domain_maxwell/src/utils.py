@@ -13,19 +13,19 @@
 # limitations under the License.
 # ============================================================================
 """visualization of field quantities"""
-import os
-
 import copy
 import io
-import cv2
+import os
+
 import PIL
-import numpy as np
+import cv2
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+import numpy as np
 from mpl_toolkits.axes_grid1 import make_axes_locatable, axes_size
 
-
 plt.rcParams['figure.dpi'] = 300
+
 
 def visual_result(input_data, label, predict, path, name):
     """visulization of original field and normalized field"""
@@ -59,6 +59,7 @@ def visual_result(input_data, label, predict, path, name):
     predict[:, :, :, 1] = 2 * (predict[:, :, :, 1] - np.mean([ey_max, ey_min])) / (ey_max - ey_min)
     predict[:, :, :, 2] = 2 * (predict[:, :, :, 2] - np.mean([hz_max, hz_min])) / (hz_max - hz_min)
     visual(input_data, label, predict, path, str(name) + "_normlize")
+
 
 def visual(input_data, label, predict, path, name):
     """visulization of ex/ey/hz"""
@@ -150,7 +151,7 @@ def visual(input_data, label, predict, path, name):
                 aspect = 20
                 pad_fraction = 0.5
                 divider = make_axes_locatable(ax)
-                width = axes_size.AxesY(ax, aspect=1/aspect)
+                width = axes_size.AxesY(ax, aspect=1 / aspect)
                 pad = axes_size.Fraction(pad_fraction, width)
                 cax = divider.append_axes("right", size=width, pad=pad)
                 cb = plt.colorbar(img, cax=cax)
