@@ -23,11 +23,12 @@
 """ufold data"""
 import math
 import os
+import collections
 from collections import Counter
 from multiprocessing import Pool
 from random import shuffle
 
-import _pickle as cPickle
+import pickle as cPickle
 import numpy as np
 
 from ...dataset import curry1
@@ -63,7 +64,15 @@ class RNASSDataGenerator():
         if self.data is None:
             data_dir = self.data_dir
             with open(os.path.join(data_dir, '%s' % self.split), 'rb') as f:
-                self.data = cPickle.load(f, encoding='iso-8859-1')
+                class CustomUnpickler(cPickle.Unpickler):
+                    def find_class(self, module, name):
+                        if name == 'RNA_SS_data':
+                            RNA_SS_data = collections.namedtuple('RNA_SS_data', 'seq ss_label length name pairs')
+                            return RNA_SS_data
+                        return super().find_class(module, name)
+
+                self.data = CustomUnpickler(f, fix_imports=True, encoding='iso-8859-1', errors="strict").load()
+            f.close()
         if self.upsampling:
             self.data = self.upsampling_data_new()
         self.data_x = np.array([instance[0] for instance in self.data])
