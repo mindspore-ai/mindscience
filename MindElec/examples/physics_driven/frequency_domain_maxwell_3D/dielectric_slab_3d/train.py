@@ -59,7 +59,7 @@ def train(config):
     Train model.
     """
     # Train dataset.
-    train_dataset = create_train_dataset()
+    train_dataset = create_train_dataset(config)
     train_loader = train_dataset.create_dataset(batch_size=config["batch_size"],
                                                 shuffle=True, drop_remainder=True)
     # Network.

@@ -114,7 +114,7 @@ class MaxwellCavity(nn.Cell):
         mask += ms_np.where(data[:, 2] < self.slab_len/2, 1.0, 0)
         # If a points is in slab, the upper 4 conditions is satisfied,
         # so the value is 4.0, reset it to 1.0 .
-        mask = ms_np.where(ms_np.isclose(mask, 4.0), 1.0, 0)
+        mask = ms_np.where(ms_np.equal(mask, 4.0), 1.0, 0)
         # reshaape the mask to 1 column
         mask = self.reshape(mask, (batch_size, 1))
 
@@ -167,37 +167,37 @@ class MaxwellCavity(nn.Cell):
         # Use mask to select the boundary points.
         mask = ms_np.zeros(shape=(batch_size, 14), dtype=ms.dtype.float32)
 
-        mask[:, 0] = ms_np.where(ms_np.isclose(
+        mask[:, 0] = ms_np.where(ms_np.equal(
             data[:, 0], coord_max[0]), 1.0, 0.0)  # right
-        mask[:, 1] = ms_np.where(ms_np.isclose(
+        mask[:, 1] = ms_np.where(ms_np.equal(
             data[:, 0], coord_max[0]), 1.0, 0.0)  # right
 
-        mask[:, 2] = ms_np.where(ms_np.isclose(
+        mask[:, 2] = ms_np.where(ms_np.equal(
             data[:, 1], coord_min[1]), 1.0, 0.0)  # bottom
-        mask[:, 3] = ms_np.where(ms_np.isclose(
+        mask[:, 3] = ms_np.where(ms_np.equal(
             data[:, 1], coord_min[1]), 1.0, 0.0)  # bottom
-        mask[:, 4] = ms_np.where(ms_np.isclose(
+        mask[:, 4] = ms_np.where(ms_np.equal(
             data[:, 1], coord_min[1]), 1.0, 0.0)  # bottom
 
-        mask[:, 5] = ms_np.where(ms_np.isclose(
+        mask[:, 5] = ms_np.where(ms_np.equal(
             data[:, 1], coord_max[1]), 1.0, 0.0)  # top
-        mask[:, 6] = ms_np.where(ms_np.isclose(
+        mask[:, 6] = ms_np.where(ms_np.equal(
             data[:, 1], coord_max[1]), 1.0, 0.0)  # top
-        mask[:, 7] = ms_np.where(ms_np.isclose(
+        mask[:, 7] = ms_np.where(ms_np.equal(
             data[:, 1], coord_max[1]), 1.0, 0.0)  # top
 
-        mask[:, 8] = ms_np.where(ms_np.isclose(
+        mask[:, 8] = ms_np.where(ms_np.equal(
             data[:, 2], coord_min[2]), 1.0, 0.0)  # back
-        mask[:, 9] = ms_np.where(ms_np.isclose(
+        mask[:, 9] = ms_np.where(ms_np.equal(
             data[:, 2], coord_min[2]), 1.0, 0.0)  # back
-        mask[:, 10] = ms_np.where(ms_np.isclose(
+        mask[:, 10] = ms_np.where(ms_np.equal(
             data[:, 2], coord_min[2]), 1.0, 0.0)  # back
 
-        mask[:, 11] = ms_np.where(ms_np.isclose(
+        mask[:, 11] = ms_np.where(ms_np.equal(
             data[:, 2], coord_max[2]), 1.0, 0.0)  # front
-        mask[:, 12] = ms_np.where(ms_np.isclose(
+        mask[:, 12] = ms_np.where(ms_np.equal(
             data[:, 2], coord_max[2]), 1.0, 0.0)  # front
-        mask[:, 13] = ms_np.where(ms_np.isclose(
+        mask[:, 13] = ms_np.where(ms_np.equal(
             data[:, 2], coord_max[2]), 1.0, 0.0)  # front
 
         # The ABC loss on right face.
