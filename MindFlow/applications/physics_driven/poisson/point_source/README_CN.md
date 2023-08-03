@@ -47,7 +47,7 @@ python --mode GRAPH --save_graphs_path ./graphs --device_target Ascend --device_
 
 ### 训练方式二：运行Jupyter Notebook
 
-您可以使用[中文版](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/poisson_point_source/poisson_CN.ipynb)和[英文版](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/poisson_point_source/poisson_CN.ipynb) Jupyter Notebook逐行运行训练和验证代码。
+您可以使用[中文版](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/poisson/point_source/poisson_CN.ipynb)和[英文版](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/poisson/point_source/poisson_CN.ipynb) Jupyter Notebook逐行运行训练和验证代码。
 
 ## 结果展示
 

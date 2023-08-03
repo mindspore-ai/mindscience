@@ -45,7 +45,7 @@ where:
 
 ### Run Option 2: Run Jupyter Notebook
 
-You can use [Chinese](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/poisson_point_source/poisson_CN.ipynb) or [English](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/poisson_point_source/poisson.ipynb) Jupyter Notebook to run the training and evaluation code line-by-line.
+You can use [Chinese](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/poisson/point_source/poisson_CN.ipynb) or [English](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/poisson/point_source/poisson.ipynb) Jupyter Notebook to run the training and evaluation code line-by-line.
 
 ## Results
 
