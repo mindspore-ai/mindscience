@@ -9,11 +9,11 @@ model:
   depth: 4
   output_timestep: 40
   input_timestep: 10
-  sub: 1
 data:
   name: "navier_stoke_3d"
   path: "./dataset"
   batch_size: 10
+  sub: 1
   resolution: 64
 optimizer:
   initial_lr: 0.01
