@@ -23,7 +23,7 @@
 """rasp_data"""
 
 import numpy as np
-
+from ...dataset import curry1
 
 def make_contact_info(ori_seq_len, ur_path):
     '''make_contact_info'''
@@ -50,7 +50,7 @@ def make_contact_info(ori_seq_len, ur_path):
     return contact_info_mask
 
 
-# @curry1
+@curry1
 def contact_info(feature=None, contact_path=None):
     "contact_info"
     feature["contact_info_mask"] = make_contact_info(256, contact_path)

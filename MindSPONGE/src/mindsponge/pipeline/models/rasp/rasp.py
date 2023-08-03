@@ -67,12 +67,12 @@ class RASP(Model):
         else:
             self.mixed_precision = True
 
-        if self.mixed_precision:
-            fp32_white_list = (ms.nn.Softmax, ms.nn.LayerNorm, LayerNormProcess)
-            amp_convert(self.network, fp32_white_list)
         self.config = config
         self.use_jit = self.config.use_jit
         self.network = Rasp(self.config, self.mixed_precision)
+        if self.mixed_precision:
+            fp32_white_list = (ms.nn.Softmax, ms.nn.LayerNorm, LayerNormProcess)
+            amp_convert(self.network, fp32_white_list)
         self.checkpoint_path = "./rasp.ckpt"
         super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
 
