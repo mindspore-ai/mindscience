@@ -22,7 +22,7 @@ from mindelec.data import Dataset, ExistedDataConfig
 from mindelec.geometry import Cuboid
 from mindelec.geometry import create_config_from_edict
 
-from src.config import maxwell_3d_config, cuboid_sampling_config
+from src.config import cuboid_sampling_config
 
 
 def preprocessing_waveguide_data(waveguide_data_path, npy_save_path,
@@ -47,22 +47,22 @@ def preprocessing_waveguide_data(waveguide_data_path, npy_save_path,
     np.save(label_save_path, label)
 
 
-def create_train_dataset() -> Dataset:
+def create_train_dataset(config) -> Dataset:
     """
     create trainning dataset from existed data and sample
     """
     # The left (waveguide plane) data
-    npy_points_path = maxwell_3d_config["waveguide_points_path"]
-    waveguide_port = ExistedDataConfig(name=maxwell_3d_config["waveguide_name"],
+    npy_points_path = config["waveguide_points_path"]
+    waveguide_port = ExistedDataConfig(name=config["waveguide_name"],
                                        data_dir=[npy_points_path],
                                        columns_list=["points"],
                                        data_format="npy",
                                        constraint_type="Label",
                                        random_merge=False)
     # Other faces and domain data
-    cuboid_space = Cuboid(name=maxwell_3d_config["geom_name"],
-                          coord_min=maxwell_3d_config["coord_min"],
-                          coord_max=maxwell_3d_config["coord_max"],
+    cuboid_space = Cuboid(name=config["geom_name"],
+                          coord_min=config["coord_min"],
+                          coord_max=config["coord_max"],
                           sampling_config=create_config_from_edict(cuboid_sampling_config))
     geom_dict = {cuboid_space: ["domain", "BC"]}
 

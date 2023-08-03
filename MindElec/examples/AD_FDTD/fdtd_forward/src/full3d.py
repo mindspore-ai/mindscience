@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-#pylint: disable=W0613
+# pylint: disable=W0613
 """
 3D Differentiable FDTD
 """
 from mindspore import nn, ops
+
 from .constants import epsilon0, mu0
-from .utils import tensor, zeros_like, ones, hstack
 from .utils import create_zero_tensor, fcmpt
+from .utils import tensor, zeros_like, ones, hstack
 
 
 class FDTDLayer(nn.Cell):
@@ -73,7 +74,7 @@ class FDTDLayer(nn.Cell):
                   pexy, pexz, peyx, peyz, pezx, pezy,
                   phxy, phxz, phyx, phyz, phzx, phzy,
                   cexe, cexh, ceye, ceyh, ceze, cezh,
-                  chxh, chxe, chyh, chye, chzh, chze,):
+                  chxh, chxe, chyh, chye, chzh, chze):
         """One-step forward propagation
 
         Args:
@@ -211,7 +212,7 @@ class ADFDTD:
         # FDTD layer
         self.fdtd_layer = FDTDLayer(
             cell_lengths, cpmlx_e, cpmlx_m, cpmly_e, cpmly_m,
-            cpmlz_e, cpmlz_m,)
+            cpmlz_e, cpmlz_m)
 
         # auxiliary variables
         self.dte = tensor(dt / epsilon0)
@@ -304,31 +305,26 @@ class ADFDTD:
         # ----------------------------------------
         outputs = []
 
-        t = 0
-
-        while t < nt:
-
-            (jx_t, jy_t, jz_t) = self.designer.update_sources(
+        for t in range(nt):
+            jx_t, jy_t, jz_t = self.designer.update_sources(
                 (jx_t, jy_t, jz_t), (ex, ey, ez),
-                waveform_t[t], dt,
-            )
+                waveform_t[t], dt)
 
             # RNN-Style Update
-            (ex, ey, ez, hx, hy, hz,
-             pexy, pexz, peyx, peyz, pezx, pezy,
-             phxy, phxz, phyx, phyz, phzx, phzy) =\
+            ex, ey, ez, hx, hy, hz, \
+            pexy, pexz, peyx, peyz, pezx, pezy, \
+            phxy, phxz, phyx, phyz, phzx, phzy = \
                 self.fdtd_layer(jx_t, jy_t, jz_t,
                                 ex, ey, ez, hx, hy, hz,
                                 pexy, pexz, peyx, peyz, pezx, pezy,
                                 phxy, phxz, phyx, phyz, phzx, phzy,
                                 cexe, cexh, ceye, ceyh, ceze, cezh,
-                                chxh, chxe, chyh, chye, chzh, chze,)
+                                chxh, chxe, chyh, chye, chzh, chze)
 
             # Compute outputs
             outputs.append(self.designer.get_outputs_at_each_step(
                 (ex, ey, ez, hx, hy, hz)))
-
-            t = t + 1
+            print(f"iter: {t} / {nt}")
 
         outputs = hstack(outputs)
         return outputs
