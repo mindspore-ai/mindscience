@@ -39,6 +39,7 @@ class DFT1d(nn.Cell):
         self.last_index = last_index
         self.inv = inv
         self.idx = idx
+        self.compute_dtype = compute_dtype
 
         self.dft_mode_mat_upper = self.dft_mat[:, :modes]
         self.a_re_upper = Tensor(
@@ -94,7 +95,7 @@ class DFT1d(nn.Cell):
 
     def construct(self, x):
         x_re, x_im = x
-
+        x_re, x_im = P.Cast()(x_re, self.compute_dtype), P.Cast()(x_im, self.compute_dtype)
         if not self.inv:
             x_re, x_im = self.swap_axes(x_re, x_im)
             y_re, y_im = self.complex_matmul(
