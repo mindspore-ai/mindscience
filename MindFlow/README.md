@@ -225,7 +225,7 @@ We will continue to release [open source internship tasks](https://gitee.com/min
 
 Thanks goes to these wonderful people 🧑‍🤝‍🧑:
 
-yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, guoboqiang, chengzeruizhi, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang
+yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, guoboqiang, chengzeruizhi, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang, huangxiang, huxin, lizhengyi, lixin, liuziyang, dujiaoxi, xiaoruoye, liangjiaming
 
 ### Community Partners
 

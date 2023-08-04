@@ -224,7 +224,7 @@ MindSpore AI+科学计算专题，北京大学董彬老师[Learning and Learning
 
 感谢以下开发者做出的贡献 🧑‍🤝‍🧑：
 
-yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, guoboqiang, chengzeruizhi, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang
+yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, guoboqiang, chengzeruizhi, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang, huangxiang, huxin, lizhengyi, lixin, liuziyang, dujiaoxi, xiaoruoye, liangjiaming
 
 ### 合作伙伴
 
