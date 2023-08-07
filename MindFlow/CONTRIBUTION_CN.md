@@ -109,24 +109,60 @@ set_seed(123456)
 np.random.seed(123456)
 # 设置随机数
 
-def train():
-    # 训练和验证函数，采用mindspore2.0函数式编程范式编写，注意打印内容尽量统一，即："epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) * 1000 :.3f}ms"
-
-if __name__ == '__main__':
-    # 调用训练函数
-
-    parser = argparse.ArgumentParser(description="burgers train")
+def parse_args():
+    '''Parse input args'''
+    parser = argparse.ArgumentParser(description='Problem description')
+    parser.add_argument("--config_file_path", type=str, default="./config.yaml")
+    parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
+                        help="The target device to run, support 'Ascend', 'GPU'")
+    parser.add_argument("--device_id", type=int, default=3, help="ID of the target device")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
-                        help="Running in GRAPH_MODE OR PYNATIVE_MODE")
+                        help="Context mode, support 'GRAPH', 'PYNATIVE'")
     parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
                         help="Whether to save intermediate compilation graphs")
     parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-    parser.add_argument("--device_target", type=str, default="Ascend", choices=["GPU", "Ascend"],
-                        help="The target device to run, support 'Ascend', 'GPU'")
-    parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-    parser.add_argument("--config_file_path", type=str, default="./burgers_cfg.yaml")
-    args = parser.parse_args()
-    # 脚本入参
+    input_args = parser.parse_args()
+    return input_args
+
+
+def train(input_args):
+    # 训练和验证函数，采用MindSpore函数式编程范式编写，注意打印内容尽量统一，即："epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) * 1000 :.3f}ms"
+    use_ascend = context.get_context(attr_key='device_target') == "Ascend"
+    # 读取训练配置
+    config = load_yaml_config(input_args.config_file_path)
+
+    # 创建训练集和测试集
+    train_dataset, test_dataset = create_training_dataset(data_params, shuffle=True)
+    # 初始化模型
+    model = Model(config)
+
+    problem = FlowWithLoss(model)
+    # 前向函数
+    def forward_fn(data, label):
+        ...
+
+    grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
+    # 训练的前向和反向过程
+    @jit
+    def train_step(data, label):
+        ...
+    # 数据下沉
+    sink_process = data_sink(train_step, train_dataset, 1)
+
+    # 训练流程
+    for epoch in range(1, config["epochs"] + 1):
+        model.set_train()
+        train()
+        # 验证
+        if epoch % config['eval_interval'] == 0:
+            eval()
+
+
+if __name__ == '__main__':
+    print(f"pid: {os.getpid()}")
+    print(datetime.datetime.now())
+    # 读取脚本入参
+    args = parse_args()
 
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
                         save_graphs=args.save_graphs,
@@ -135,11 +171,9 @@ if __name__ == '__main__':
                         device_id=args.device_id)
     print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
     # context设置，由于Ascend和GPU使用的差异，需要使用use_ascend变量进行判断
-    use_ascend = context.get_context(attr_key='device_target') == "Ascend"
-
-    print("pid:", os.getpid())
     start_time = time.time()
-    train()
+    # 调用训练函数
+    train(args)
     print("End-to-End total time: {} s".format(time.time() - start_time))
 ```
 
