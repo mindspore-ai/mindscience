@@ -16,7 +16,8 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **最新消息** 📰
 
-- 🔥`置顶` [**开源实习任务**](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue)发布！欢迎大家认领~
+- 🔥`2023.8.21—2023.8.25` MindSpore SPONGE SIG[**暑期学校活动**](https://mp.weixin.qq.com/s/oOaJ9KlUnWbptZWqSvam7g)火热报名中！
+- 🔥 [**开源实习任务**](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue)发布！欢迎大家认领~
 - 🔥`2023.6.26` MindSPONGE论文"Artificial Intelligence Enhanced Molecular Simulations"发表于计算化学期刊JCTC，同时当选Most Read Articles，详情参见[论文](https://pubs.acs.org/doi/10.1021/acs.jctc.3c00214)
 - 🔥`2023.5.31` NMR核磁共振动态蛋白质结构解析方法正式开源，详情参见论文 [Assisting and Accelerating NMR Assignment with Restrained Structure Prediction](https://www.biorxiv.org/content/10.1101/2023.04.14.536890v1) 和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/FAAST/)
 - `2023.1.31` MindSPONGE 1.0.0-alpha版本发布，文档介绍可参见MindSpore官网中的[**科学计算套件MindSPONGE模块**](https://mindspore.cn/mindsponge/docs/zh-CN/r1.0.0-alpha/index.html)
@@ -29,7 +30,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **即将到来** 🚀
 
-- 第三期暑期学校活动将于2023年8月21日——8月25日在北京大学举行，活动正在火热筹备中，敬请期待！
+- 第三期暑期学校活动将于2023年8月21日——8月25日在北京大学举行，[**报名ing**](https://mp.weixin.qq.com/s/oOaJ9KlUnWbptZWqSvam7g)！
 
 ## **初体验**
 
@@ -235,7 +236,7 @@ SIG小组目前有着六位核心专家老师，加入SIG小组之后可以由�
 
 在SIG小组中，我们还会发布众智任务和[开源实习任务](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue)，欢迎大家来认领。
 
-如果想加入我们，成为我们小组的成员，请将自己的简历发送至邮箱dingyahao@huawei.com，我们无时无刻不在期待着你的到来。
+如果想加入我们，成为我们小组的成员，请将自己的简历发送至邮箱liushuo65@huawei.com，我们无时无刻不在期待着你的到来。
 
 ### 核心贡献者 🧑‍🤝‍🧑
 
