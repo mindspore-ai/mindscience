@@ -100,9 +100,18 @@ model.train(dataset)
 训练文件train.py为模型训练的入口，格式如下：
 
 ```python
+import os
+import time
 import argparse
-...
-from src import create_training_dataset, create_test_dataset, visual, calculate_l2_error
+import numpy as np
+
+from mindspore import context, nn, Tensor, set_seed, ops, data_sink, jit, save_checkpoint
+from mindspore import dtype as mstype
+
+from mindflow import FNO1D, load_yaml_config, get_warmup_cosine_annealing_lr
+from mindflow.pde import FlowWithLoss
+
+from src import create_training_dataset, visual, calculate_l2_error
 # 相关依赖导入，按照python官方库、第三方库、mindflow、src的顺序导入，导入mindflow时，精确到二级目录
 
 set_seed(123456)
