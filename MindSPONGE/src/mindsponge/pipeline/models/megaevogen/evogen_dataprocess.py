@@ -110,7 +110,8 @@ class MEGAEvoGenDataSet(PSP):
 
     def __len__(self):
         data_len = len(os.listdir(self.training_pkl_path))
-        assert data_len == len(os.listdir(self.training_pdb_path))
+        if data_len != len(os.listdir(self.training_pdb_path)):
+            raise ValueError("pdb data load error")
         return data_len
 
     # pylint: disable=arguments-differ

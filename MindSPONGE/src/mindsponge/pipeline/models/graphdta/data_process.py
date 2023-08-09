@@ -127,7 +127,8 @@ def create_prot_csv(input_datasets):
 
 def process_data(xd, xt, y, smile_graph_info):
     """save data into pickle file"""
-    assert (len(xd) == len(xt) == len(y)), "The three lists must be the same length!"
+    if not len(xd) == len(xt) == len(y):
+        raise ValueError("The three lists must be the same length!")
     data_len = len(xd)
     res = []
     for i in tqdm(range(data_len), "generating features"):

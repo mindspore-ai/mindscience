@@ -124,9 +124,8 @@ class TransformerDecoder(nn.Cell):
         padding_mask: Optional[ms.float32] = None
         if encoder_out is not None and encoder_out["encoder_out"]:
             enc = encoder_out["encoder_out"][0]
-            assert (
-                enc.shape[1] == bs
-            ), f"Expected enc.shape == (t, {bs}, c) got {enc.shape}"
+            if enc.shape[1] != bs:
+                raise ValueError(f"Expected enc.shape == (t, {bs}, c) got {enc.shape}")
         if encoder_out is not None and encoder_out["encoder_padding_mask"]:
             padding_mask = encoder_out["encoder_padding_mask"][0]
 
@@ -322,7 +321,8 @@ class TransformerDecoderLayer(nn.Cell):
             }
             if len(prev_self_attn_state) >= 3:
                 saved_state["prev_key_padding_mask"] = prev_self_attn_state[2]
-            assert incremental_state is not None
+            if incremental_state is None:
+                raise ValueError("'incremental_state' should not be None")
             _set_input_buffer(self.self_attn, incremental_state, saved_state)
         _ = _get_input_buffer(self.self_attn, incremental_state)
         y = x
@@ -350,7 +350,8 @@ class TransformerDecoderLayer(nn.Cell):
                 }
                 if len(prev_attn_state) >= 3:
                     saved_state["prev_key_padding_mask"] = prev_attn_state[2]
-                assert incremental_state is not None
+                if incremental_state is None:
+                    raise ValueError("'incremental_state' should not be None")
                 _set_input_buffer(self.encoder_attn, incremental_state, saved_state)
 
             x, attn = self.encoder_attn(

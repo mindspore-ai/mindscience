@@ -43,7 +43,8 @@ def dict_filter_key(feature=None, feature_list=None):
 @curry1
 def dict_replace_key(feature=None, replaced_key=None):
     '''dict_replace_key'''
-    assert len(replaced_key) == 2
+    if len(replaced_key) != 2:
+        raise ValueError("'replaced_key' length should be 2")
     origin_key, new_key = replaced_key
     if origin_key in feature:
         feature[new_key] = feature.pop(origin_key)
@@ -53,7 +54,8 @@ def dict_replace_key(feature=None, replaced_key=None):
 @curry1
 def dict_cast(feature=None, cast_type=None, filtered_list=None):
     '''dict_cast'''
-    assert len(cast_type) == 2
+    if len(cast_type) != 2:
+        raise ValueError("'cast_type' length should be 2")
     origin_type = cast_type[0]
     new_type = cast_type[1]
     for k, v in feature.items():
@@ -90,7 +92,8 @@ def dict_concatenate(feature=None, keys=None, result_key=None, axis=-1):
 def dict_expand_dims(feature=None, keys=None, result_key=None, axis=-1):
     '''dict_expand_dims'''
     if result_key:
-        assert len(result_key) == len(keys)
+        if len(result_key) != len(keys):
+            raise ValueError("'result_key' length should equal to 'key' length")
         key_num = len(keys)
         for i in range(key_num):
             feature[result_key[i]] = np.expand_dims(feature[keys[i]], axis=axis)
@@ -113,7 +116,8 @@ def dict_del_key(feature=None, filter_list=None):
 def dict_take(feature=None, filter_list=None, result_key=None, axis=0):
     '''dict_take'''
     if result_key:
-        assert len(filter_list) == len(result_key)
+        if len(filter_list) != len(result_key):
+            raise ValueError("'filter_list' length should equal to 'result_key' length")
         for i, item in enumerate(filter_list):
             if item in feature:
                 feature[result_key[i]] = feature[item][axis]
@@ -291,9 +295,8 @@ def feature_pad(feature=None, pad_size_map=None, feature_list=None):
             continue
         shape = list(v.shape)
         schema = feature_list.get(k)
-        assert len(shape) == len(
-            schema), f'Rank mismatch between shape and shape schema for {k}: {shape} vs {schema}'
-
+        if len(shape) != len(schema):
+            raise ValueError(f'Rank mismatch between shape and shape schema for {k}: {shape} vs {schema}')
         pad_size = [pad_size_map.get(s2, None) or s1 for (s1, s2) in zip(shape, schema)]
         padding = [(0, p - v.shape[i]) for i, p in enumerate(pad_size)]
         if padding:

@@ -281,7 +281,7 @@ class Featurizer():
             encoding[self.ATOM_CODES[atomic_num]] = 1.0
         #pylint: disable=bare-except
         except:
-            pass
+            print("'encoding[self.ATOM_CODES[atomic_num]]' cannot be set as 1.0")
         return encoding
 
     def find_smarts(self, molecule):
@@ -566,7 +566,8 @@ def extractfeature(pocket, ligand):
     charge_idx = featurizer.FEATURE_NAMES.index('partialcharge')
 
     ligand_coords, ligand_features = featurizer.get_features(ligand, molcode=1)
-    assert (ligand_features[:, charge_idx] != 0).any()
+    if not (ligand_features[:, charge_idx] != 0).any():
+        raise ValueError()
     pocket_coords, pocket_features = featurizer.get_features(pocket, molcode=-1)
 
     centroid = ligand_coords.mean(axis=0)
@@ -663,8 +664,8 @@ def parseandclean(paths):
     refined_set = set(refined_set_)
     general_set = set(affinity_data['pdbid'])
 
-    assert core_set & refined_set == core_set
-    assert refined_set & general_set == refined_set
+    if core_set & refined_set != core_set or refined_set & general_set != refined_set:
+        raise ValueError()
 
     print("Refined Set Length: ", len(refined_set))
     print("General Set Length: ", len(general_set))

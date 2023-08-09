@@ -32,7 +32,8 @@ import numpy as np
 def read_entity2id_file(file_path: str, drug_vocab: dict, entity_vocab: dict):
     """read_entity2id_file"""
     print(f'Logging Info - Reading entity2id file: {file_path}')
-    assert not drug_vocab and not entity_vocab
+    if drug_vocab or entity_vocab:
+        raise ValueError()
     with open(file_path, encoding='utf8') as reader:
         count = 0
         for line in reader:
@@ -47,7 +48,8 @@ def read_entity2id_file(file_path: str, drug_vocab: dict, entity_vocab: dict):
 def read_example_file(file_path: str, separator: str, drug_vocab: dict):
     """read_example_file"""
     print(f'Logging Info - Reading example file: {file_path}')
-    assert drug_vocab
+    if not drug_vocab:
+        raise ValueError()
     examples = []
     with open(file_path, encoding='utf8') as reader:
         for _, line in enumerate(reader):

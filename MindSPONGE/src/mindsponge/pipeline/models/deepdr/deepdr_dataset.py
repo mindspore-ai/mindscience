@@ -148,7 +148,8 @@ class DeepDRDataSet(DataSet):
             r = np.loadtxt(data_src)
             self.rtensor = r.transpose()
             if self.config.rate:
-                assert train_index is not None
+                if train_index is None:
+                    raise ValueError()
                 self.rtensor = self.process(self.rtensor, train_index=train_index)
 
 

@@ -296,9 +296,10 @@ class MessagePassing(nn.Cell):
         the_size: List[Optional[int]] = [None, None]
 
         if isinstance(edge_index, Tensor):
-            assert edge_index.dtype == ms.int32
-            assert edge_index.dim() == 2
-            assert edge_index.shape[0] == 2
+            if edge_index.dtype != ms.int32:
+                raise TypeError("'edge_index' data type should be int32")
+            if edge_index.dim() != 2 or edge_index.shape[0] != 2:
+                raise ValueError("'edge_index' dims or shape[0] should be 2")
             if size is not None:
                 the_size[0] = size[0]
                 the_size[1] = size[1]
@@ -336,7 +337,8 @@ class MessagePassing(nn.Cell):
                 data = kwargs.get(arg[:-2], Parameter.empty)
 
                 if isinstance(data, (tuple, list)):
-                    assert len(data) == 2
+                    if len(data) != 2:
+                        raise ValueError("data length should be 2")
                     if isinstance(data[1 - dim], Tensor):
                         self.__set_size__(size, 1 - dim, data[1 - dim])
                     data = data[dim]

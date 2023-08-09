@@ -45,8 +45,8 @@ class RNASSDataGenerator():
     """RNA builder class"""
     def __init__(self, data_dir=None, split=None, upsampling=False, data=None):
         if data is None:
-            assert data_dir is not None
-            assert split is not None
+            if data_dir is None or split is None:
+                raise ValueError()
             self.data_dir = data_dir
             self.split = split
             self.data = None
