@@ -15,7 +15,6 @@
 # ============================================================================
 """ResUnet3D structure"""
 from mindspore import nn
-from mindspore import dtype as mstype
 from mindspore.ops import operations as P
 
 
@@ -29,6 +28,7 @@ class ResidualUnit(nn.Cell):
         stride(int): The movement stride of the 3D convolution kernel. Default: ``2``.
         kernel_size (Union[int, tuple[int]]): The size of convolutional kernel. Default: ``(3, 3, 3)``.
         down(bool): The flag to distinguish between Down and Up. Default: ``True``.
+        is_output(bool): The flag for the last upsampled Residual block. Default: ``False``.
         init(Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter. The dtype is same
             as input `input` . For the values of str, refer to the function `initializer`.Default:``'XavierUniform'``.
 
@@ -78,7 +78,7 @@ class ResidualUnit(nn.Cell):
             self.batch_normal_2 = nn.BatchNorm3d(num_features=self.out_channel)
 
     def construct(self, x):
-        """forward"""
+        """ResidualUnit construct"""
         out = self.down_conv_1(x)
         if self.is_output:
             return out
@@ -103,7 +103,6 @@ class Down(nn.Cell):
         out_channel (int): The number of channels in the output space.
         stride(int): The movement stride of the 3D convolution kernel. Default: ``2``.
         kernel_size (Union[int, tuple[int]]): The size of convolutional kernel. Default: ``(3, 3, 3)``.
-        dtype(dtype): The data type for ForwardNet. Default: ``mstype.float32``.
         init(Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter.
             The dtype is same as input `input` . For the values of str, refer to the function `initializer`.
             Default:``'XavierUniform'``.
@@ -128,16 +127,15 @@ class Down(nn.Cell):
         >>> print(output.shape)
         (10, 64, 32, 64, 32)
     """
-    def __init__(self, in_channel, out_channel, stride=2, kernel_size=(3, 3, 3), dtype=mstype.float32,
-                 init='XavierUniform'):
+    def __init__(self, in_channel, out_channel, stride=2, kernel_size=(3, 3, 3), init='XavierUniform'):
         super().__init__()
         self.stride = stride
         self.in_channel = in_channel
         self.out_channel = out_channel
-        self.down_conv = ResidualUnit(self.in_channel, self.out_channel, stride, kernel_size, init=init).to_float(dtype)
+        self.down_conv = ResidualUnit(self.in_channel, self.out_channel, stride, kernel_size, init=init)
 
     def construct(self, x):
-        """forward"""
+        """Down construct"""
         x = self.down_conv(x)
         return x
 
@@ -151,10 +149,9 @@ class Up(nn.Cell):
         down_in_channel(int): The number of channels in the down_input.
         out_channel(int): The channel number of the output tensor of the Conv3dTranspose layer.
         stride(int): The movement stride of the 3D convolution kernel. Default: ``2``.
-        is_output(bool): The flag for the last upsampled Rridual block. Default: ``False``.
+        is_output(bool): The flag for the last upsampled Residual block. Default: ``False``.
         output_padding(Union(int, tuple[int])): The number of padding on the depth, height and width directions of
                 the output. Default: ``(1, 1, 1)``.
-        dtype(dtype): The data type for ForwardNet. Default: ``mstype.float32``.
         init(Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter.
             Default:``'XavierUniform'``.
 
@@ -180,7 +177,7 @@ class Up(nn.Cell):
         (10, 64, 64, 128, 64)
     """
     def __init__(self, in_channel, down_in_channel, out_channel, stride=2, is_output=False, output_padding=(1, 1, 1),
-                 dtype=mstype.float32, init='XavierUniform'):
+                 init='XavierUniform'):
         super().__init__()
         self.in_channel = in_channel
         self.down_in_channel = down_in_channel
@@ -194,12 +191,12 @@ class Up(nn.Cell):
 
         self.concat = P.Concat(axis=1)
         self.conv = ResidualUnit(self.out_channel, self.out_channel, stride=1, down=False, is_output=is_output,
-                                 init=init).to_float(dtype)
+                                 init=init)
         self.batch_normal_1 = nn.BatchNorm3d(num_features=self.out_channel)
         self.relu = nn.PReLU()
 
     def construct(self, input_data, down_input):
-        """forward"""
+        """Up construct"""
         x = self.concat((input_data, down_input))
         x = self.conv3d_transpose(x)
         x = self.batch_normal_1(x)
@@ -218,7 +215,6 @@ class ResUnet3D(nn.Cell):
         out_channels (int): The number of channels in the output space. Default: 4.
         init(Union[Tensor, str, Initializer, numbers.Number]): The trainable weight_init parameter.
             Default:'XavierUniform'.
-        compute_dtype(dtype): The data type for ForwardNet. Default: mstype.float32.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, in_channels)`.
@@ -233,39 +229,34 @@ class ResUnet3D(nn.Cell):
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> inputs = Tensor(np.ones([10, 4, 64, 128, 64]), mstype.float32)
-        >>> net = ResUnet3D(in_channels=4, base=64, out_channels=4, init="XavierUniform", compute_dtype=mstype.float32)
+        >>> net = ResUnet3D(in_channels=4, base=64, out_channels=4, init="XavierUniform")
         >>> output = net(inputs)
         >>> print(output.shape)
         (10, 4, 64, 128, 64)
     """
-    def __init__(self, in_channels=4, base=64, out_channels=4, init="XavierUniform", compute_dtype=mstype.float32):
+    def __init__(self, in_channels=4, base_channels=64, out_channels=4, init="XavierUniform"):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.base = base
+        self.base_channels = base_channels
         self.init = init
-        self.compute_dtype = compute_dtype
 
-        self.down1 = Down(in_channel=self.in_channels, out_channel=self.base, dtype=self.compute_dtype,
-                          init=self.init).to_float(self.compute_dtype)
-        self.down2 = Down(in_channel=self.base, out_channel=2 * self.base, dtype=self.compute_dtype,
-                          init=self.init).to_float(self.compute_dtype)
-        self.down3 = Down(in_channel=2 * self.base, out_channel=4 * self.base, dtype=self.compute_dtype,
-                          init=self.init).to_float(self.compute_dtype)
-        self.down4 = Down(in_channel=4 * self.base, out_channel=8 * self.base, dtype=self.compute_dtype,
-                          init=self.init).to_float(self.compute_dtype)
-        self.down5 = Down(in_channel=8 * self.base, out_channel=16 * self.base, stride=1, kernel_size=(1, 1, 1),
-                          dtype=self.compute_dtype, init=self.init).to_float(self.compute_dtype)
+        self.down1 = Down(in_channel=self.in_channels, out_channel=self.base_channels, init=self.init)
+        self.down2 = Down(in_channel=self.base_channels, out_channel=2 * self.base_channels, init=self.init)
+        self.down3 = Down(in_channel=2 * self.base_channels, out_channel=4 * self.base_channels, init=self.init)
+        self.down4 = Down(in_channel=4 * self.base_channels, out_channel=8 * self.base_channels, init=self.init)
+        self.down5 = Down(in_channel=8 * self.base_channels, out_channel=16 * self.base_channels, stride=1,
+                          kernel_size=(1, 1, 1), init=self.init)
 
         # up
-        self.up1 = Up(in_channel=16 * self.base, down_in_channel=8 * self.base, out_channel=4 * self.base,
-                      dtype=self.compute_dtype, init=self.init).to_float(self.compute_dtype)
-        self.up2 = Up(in_channel=4 * self.base, down_in_channel=4 * self.base, out_channel=2 * self.base,
-                      dtype=self.compute_dtype, init=self.init).to_float(self.compute_dtype)
-        self.up3 = Up(in_channel=2 * self.base, down_in_channel=2 * self.base, out_channel=self.base,
-                      dtype=self.compute_dtype, init=self.init).to_float(self.compute_dtype)
-        self.up4 = Up(in_channel=self.base, down_in_channel=self.base, out_channel=self.out_channels,
-                      dtype=self.compute_dtype, is_output=True, init=self.init).to_float(self.compute_dtype)
+        self.up1 = Up(in_channel=16 * self.base_channels, down_in_channel=8 * self.base_channels,
+                      out_channel=4 * self.base_channels, init=self.init)
+        self.up2 = Up(in_channel=4 * self.base_channels, down_in_channel=4 * self.base_channels,
+                      out_channel=2 * self.base_channels, init=self.init)
+        self.up3 = Up(in_channel=2 * self.base_channels, down_in_channel=2 * self.base_channels,
+                      out_channel=self.base_channels, init=self.init)
+        self.up4 = Up(in_channel=self.base_channels, down_in_channel=self.base_channels, out_channel=self.out_channels,
+                      is_output=True, init=self.init)
 
     def construct(self, input_data):
         """Build a complete model"""
