@@ -14,7 +14,7 @@ For 3D unsteady flow, the reduced-order model based on the fully convolutional n
 
 ### Model structure
 
-The proposed neural network model follows the paradigm of an encoder-decoder architecture, which exhibits a symmetrical U-shaped structure. The main difference lies in the replacement of traditional convolutions with convolutional residual blocks.
+The proposed neural network model follows the paradigm of an encoder-decoder architecture, which exhibits a symmetrical U-shaped structure. The main difference from the traditional Unet3D lies in the replacement of traditional convolutions with convolutional residual blocks.
 
 ![ResUnet3D.jpg](./images/ResUnet3D.jpg)
 
@@ -30,7 +30,7 @@ The proposed neural network model follows the paradigm of an encoder-decoder arc
 
 ### Dataset
 
-+ Source: Numerical simulation data of 3D flow around sphere, provided by Professor Chen Gang, School of Aeronautics and Astronautics, Xi'an Jiaotong University
++ Source: Numerical simulation data of 3D flow around sphere, provided by Professor Chen Gang, School of Aerospace Engineering, Xi'an Jiaotong University
 
 + Establishment method: The calculation status and establishment method of the dataset can be found in [paper](https://arxiv.org/abs/2307.07323), and the case is an example in the paper based on Cartesian uniform sampling method
 
