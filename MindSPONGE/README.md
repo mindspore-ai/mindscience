@@ -17,7 +17,8 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **Latest News** 📰
 
-- 🔥`Top` [**open source internship task**](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue) has been released! Everyone is welcome to claim it~
+- 🔥`2023.8.21—2023.8.25` MindSpore SPONGE SIG [**Summer School**](https://mp.weixin.qq.com/s/oOaJ9KlUnWbptZWqSvam7g) is coming soon !
+- 🔥 [**open source internship task**](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue) has been released! Everyone is welcome to claim it~
 - 🔥`2023.6.26` MindSPONGE Paper "Artificial Intelligence Enhanced Molecular Simulations" is published in JCTC and achieve Most Read Articles. Please refer to [paper](https://pubs.acs.org/doi/10.1021/acs.jctc.3c00214).
 - 🔥`2023.5.31` Paper "Assisting and Accelerating NMR Assignment with Restrained Structure Prediction" is preprinted in arxiv, Please refer to [paper](https://arxiv.org/abs/2208.09652) and [code](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/FAAST/).
 - `2023.1.31` MindSPONGE version 1.0.0-alpha is released. The documents are available on [**Scientific Computing MindSPONGE module**](https://mindspore.cn/mindsponge/docs/en/r1.0.0-alpha/index.html) on MindSpore website
@@ -30,7 +31,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **Coming Soon** 🚀
 
-- The third Summer School activity will be held in Peking University from August 21 to August 25, 2023. The activity is in preparation. Please look forward to it!
+- The third Summer School activity will be held in Peking University from August 21 to August 25, 2023. The activity is in preparation. Please [join](https://mp.weixin.qq.com/s/oOaJ9KlUnWbptZWqSvam7g) us!
 
 ## **Quick Start**
 
@@ -257,7 +258,7 @@ In the SIG group, we will hold various activities, including summer school, publ
 
 In the SIG group, we will also release the public intelligence task and [open source internship task](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue), welcome everyone to claim it.
 
-If you want to join us and become a member of our group, please send your resume to dingyahao@huawei.com, we are always looking forward to your arrival.
+If you want to join us and become a member of our group, please send your resume to liushuo65@huawei.com, we are always looking forward to your arrival.
 
 ### Core Contributor 🧑‍🤝‍🧑
 
