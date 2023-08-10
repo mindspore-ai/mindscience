@@ -26,8 +26,13 @@ from typing import Tuple
 import itertools
 import numpy as np
 import mindspore as ms
+try:
+    # MindSpore 2.X
+    from mindspore import jit
+except ImportError:
+    # MindSpore 1.X
+    from mindspore import ms_function as jit
 import mindspore.numpy as msnp
-from mindspore import ms_function
 from mindspore import Tensor, Parameter
 from mindspore.ops import functional as F
 
@@ -246,8 +251,6 @@ class Metadynamics(Bias):
         #  (1, G) or (B, G)
         self.hills = Parameter(msnp.zeros((self.num_parameter, self.num_grids), ms.float32),
                                name="hills", requires_grad=False)
-        # (B, G)
-        self.empty_hills = msnp.zeros((self.num_walker, self.num_grids), ms.float32)
 
         # (G_0, S)
         grids0_index = self.get_nearest_grid(self.grids0)
@@ -295,7 +298,7 @@ class Metadynamics(Bias):
         """periodic of collectiva variables"""
         return self.colvar.periodic
 
-    @ms_function
+    @jit
     def calc_bias(self, colvar: Tensor) -> Tensor:
         """calculate bias potential by colvar"""
         if self.use_cutoff:
@@ -516,8 +519,9 @@ class Metadynamics(Bias):
             new_hills *= F.exp(-self.wt_factor * bias)
 
         if self.use_cutoff:
+            empty_hills = F.zeros((colvar.shape[0], self.num_grids), ms.float32)
             # (B, G) <- (B, N)
-            new_hills = F.tensor_scatter_elements(self.empty_hills, index, new_hills, -1)
+            new_hills = F.tensor_scatter_elements(empty_hills, index, new_hills, -1)
 
         if self.share_parameter and colvar.shape[0] > 1:
             # (1, G) <- (B, G) OR (1, N) <- (B, N)

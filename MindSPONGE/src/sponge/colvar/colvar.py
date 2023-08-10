@@ -24,6 +24,8 @@
 Collective variables
 """
 
+from typing import Union, Tuple, List
+
 import mindspore as ms
 from mindspore import ops
 from mindspore.common import Tensor
@@ -32,7 +34,7 @@ from mindspore.ops import functional as F
 
 from ..function import functions as func
 from ..function.operations import GetVector
-from ..function import get_integer, get_ms_array, Units
+from ..function import check_broadcast, get_ms_array, Units
 
 
 class Colvar(Cell):
@@ -96,9 +98,8 @@ class Colvar(Cell):
     """
 
     def __init__(self,
-                 shape: tuple = (),
-                 ndim: int = 0,
-                 periodic: bool = False,
+                 shape: Tuple[int] = (),
+                 periodic: Union[bool, List[bool]] = False,
                  use_pbc: bool = None,
                  name: str = 'colvar',
                  unit: str = None,
@@ -109,14 +110,15 @@ class Colvar(Cell):
 
         self._name = name
 
+        self._periodic = get_ms_array(periodic, ms.bool_)
+
         # (s_1, s_2, ..., s_n)
-        self._shape = shape
+        self._shape = None
         # rank: n
-        self._ndim = get_integer(ndim)
+        self._ndim = None
+        self._set_shape(shape)
 
         self._dtype = dtype
-
-        self._periodic = get_ms_array(periodic, ms.bool_)
 
         self.get_vector = GetVector(use_pbc)
         self._use_pbc = use_pbc
@@ -263,8 +265,8 @@ class Colvar(Cell):
         self._shape = shape
         self._ndim = len(self.shape)
         if self._periodic.shape != self._shape:
-            if self._periodic.size != 1:
-                raise ValueError(f'The shape of periodic {self._periodic.shape} does not match '
+            if not check_broadcast(self._periodic.shape, self._shape):
+                raise ValueError(f'The shape of periodic {self._periodic.shape} can not be broadcast to '
                                  f'the shape of CVs: {self._shape}')
             self._periodic = F.broadcast_to(self._periodic, self._shape)
         return self

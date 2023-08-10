@@ -29,7 +29,7 @@ from mindspore import context
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.insert(0, '../../src')
 
     from sponge import Sponge
     from sponge import ForceField
@@ -88,12 +88,13 @@ if __name__ == "__main__":
 
     vgen = VelocityGenerator(300)
     velocity = vgen(system.shape, system.atom_mass)
+
     opt = UpdaterMD(
         system,
+        velocity=velocity,
+        time_step=1e-3,
         integrator=VelocityVerlet(system),
         thermostat=Langevin(system, 300),
-        time_step=1e-3,
-        velocity=velocity
     )
 
     md = Sponge(sim, optimizer=opt, metrics={'phi': phi, 'psi': psi})

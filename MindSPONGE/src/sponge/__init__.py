@@ -65,7 +65,8 @@ def _mindspore_version_check():
 _mindspore_version_check()
 
 # pylint: disable=wrong-import-position
-from .system import Molecule, Protein
+from .system import get_molecule
+from .system import Molecule, Protein, MoleculeFromMol2
 from .potential import PotentialCell, ForceFieldBase, ForceField
 from .optimizer import Updater, UpdaterMD, DynamicUpdater
 from .core import Sponge, WithEnergyCell, SimulationCell, RunOneStepCell, AnalysisCell

@@ -30,7 +30,7 @@ import mindspore.numpy as msnp
 from mindspore.ops import functional as F
 from mindspore import Tensor, Parameter
 
-from .integrator import Integrator
+from .integrator import Integrator, _integrator_register
 from ..thermostat import Thermostat
 from ..barostat import Barostat
 from ..constraint import Constraint
@@ -38,6 +38,7 @@ from ...system import Molecule
 from ...function import get_arguments
 
 
+@_integrator_register('velocity_verlet')
 class VelocityVerlet(Integrator):
     r"""A velocity verlet integrator based on "middle scheme" developed by Jian Liu, et al.
         It is a subclass of `Integrator`.

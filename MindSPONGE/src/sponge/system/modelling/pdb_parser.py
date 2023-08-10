@@ -28,7 +28,7 @@ from collections import namedtuple
 import numpy as np
 
 
-def _read_pdb(pdb_name, rebuild_hydrogen=False):
+def _read_pdb(pdb_name, rebuild_hydrogen=False, remove_hydrogen=False):
     """Read a pdb file and return atom information with numpy array format.
     Args:
         pdb_name(str): The pdb file name, absolute path is suggested.
@@ -59,14 +59,16 @@ def _read_pdb(pdb_name, rebuild_hydrogen=False):
     flatten_atoms = []
     flatten_crds = []
     for index, line in enumerate(lines):
-        if 'END' in line or 'TER' in line:
+        if not line.startswith('ATOM') and index < len(lines) - 1:
+            continue
+        if not line.startswith('ATOM') and index == len(lines) - 1:
             atom_names.append(atom_group)
             crds.append(crd_group)
             break
-        if not line.startswith('ATOM'):
-            continue
         atom_name = line[12:16].strip()
         if rebuild_hydrogen and atom_name.startswith('H'):
+            continue
+        if remove_hydrogen and atom_name.startswith('H'):
             continue
         res_name = line[17:20].strip()
         res_id = int(line[22:26].strip())

@@ -404,7 +404,7 @@ class GetShiftGrad(Cell):
 
         super().__init__(auto_prefix=False)
 
-        # (B,K,A,D)
+        # (B,C,A,D)
         shape = (num_walkers, bonds.shape[-2], num_atoms, dimension)
         self.broadcast = ops.BroadcastTo(shape)
         self.net = GetDistanceShift(

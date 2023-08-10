@@ -29,14 +29,13 @@ from mindspore import context
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.append('../../src')
 
     from sponge import Sponge
     from sponge import ForceField
     from sponge.optimizer import SteepestDescent
-    from sponge.control import VelocityVerlet, Lincs
+    from sponge.control import Lincs
     from sponge.callback import WriteH5MD, RunInfo
-    from sponge.control import Langevin
     from sponge import set_global_units
     from sponge import Protein
     from sponge import UpdaterMD
@@ -63,11 +62,12 @@ if __name__ == "__main__":
 
     opt = UpdaterMD(
         system,
-        integrator=VelocityVerlet(system),
-        thermostat=Langevin(system, 300),
-        constraint=Lincs(system, bonds='all-bonds'),
         time_step=1e-3,
-        velocity=velocity
+        velocity=velocity,
+        integrator='velocity_verlet',
+        temperature=300,
+        thermostat='langevin',
+        constraint=Lincs(system, bonds='all-bonds'),
     )
 
     md = Sponge(system, energy, min_opt)

@@ -23,6 +23,8 @@
 """Non-bonded pairwise energy"""
 
 from typing import Union, List
+from operator import itemgetter
+import numpy as np
 from numpy import ndarray
 
 import mindspore as ms
@@ -32,11 +34,14 @@ from mindspore import Parameter
 from mindspore import ops
 from mindspore.ops import functional as F
 
-from .energy import EnergyCell
+from .energy import EnergyCell, _energy_register
 from ...colvar import Distance
-from ...function.functions import get_integer, get_ms_array, get_arguments, keepdims_sum
+from ...system.molecule import Molecule
+from ...function import get_integer, get_ms_array, get_arguments
+from ...function import keepdims_sum
 
 
+@_energy_register('nb_pair_energy')
 class NonbondPairwiseEnergy(EnergyCell):
     r"""Energy of non-bonded atom paris.
 
@@ -104,6 +109,8 @@ class NonbondPairwiseEnergy(EnergyCell):
     """
 
     def __init__(self,
+                 system: Molecule = None,
+                 parameters: dict = None,
                  index: Union[Tensor, ndarray, List[int]] = None,
                  qiqj: Union[Tensor, ndarray, List[float]] = None,
                  epsilon_ij: Union[Tensor, ndarray, List[float]] = None,
@@ -111,12 +118,11 @@ class NonbondPairwiseEnergy(EnergyCell):
                  r_scale: Union[Tensor, ndarray, List[float]] = None,
                  r6_scale: Union[Tensor, ndarray, List[float]] = None,
                  r12_scale: Union[Tensor, ndarray, List[float]] = None,
-                 parameters: dict = None,
                  cutoff: float = None,
                  use_pbc: bool = None,
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
-                 name: str = 'nb_pairs',
+                 name: str = 'nb_pair_energy',
                  **kwargs
                  ):
 
@@ -127,19 +133,19 @@ class NonbondPairwiseEnergy(EnergyCell):
             energy_unit=energy_unit,
         )
         self._kwargs = get_arguments(locals(), kwargs)
+        if 'exclude_index' in self._kwargs.keys():
+            self._kwargs.pop('exclude_index')
 
         if parameters is not None:
+            if system is None:
+                raise ValueError('`system` cannot be None when using `parameters`!')
             length_unit = parameters.get('length_unit')
             energy_unit = parameters.get('energy_unit')
             self.units.set_units(length_unit, energy_unit)
+            self._use_pbc = system.use_pbc
 
-            index = parameters.get('index')
-            qiqj = parameters.get('qiqj')
-            epsilon_ij = parameters.get('epsilon_ij')
-            sigma_ij = parameters.get('sigma_ij')
-            r_scale = parameters.get('r_scale')
-            r6_scale = parameters.get('r6_scale')
-            r12_scale = parameters.get('r12_scale')
+            index, qiqj, epsilon_ij, sigma_ij, r_scale, r6_scale, r12_scale = \
+                self.get_parameters(system, parameters)
 
         # (1,p,2)
         index = get_ms_array(index, ms.int32)
@@ -229,6 +235,113 @@ class NonbondPairwiseEnergy(EnergyCell):
         self.coulomb_const = self.units.coulomb
 
         self.concat = ops.Concat(-1)
+
+    @staticmethod
+    def check_system(system: Molecule) -> bool:
+        """Check if the system needs to calculate this energy term"""
+        return system.dihedrals is not None
+
+    @staticmethod
+    def get_pair_index(dihedrals, angles, bonds):
+        """
+        Get the non-bonded atom pairs index.
+
+        Args:
+            dihedrals (ndarray):    Array of dihedrals.
+            angles (ndarray):       Array of angles.
+            bonds (ndarray):        Array of bonds.
+
+        Returns:
+            np.ndarray, non-bonded atom pairs index.
+        """
+        pairs = dihedrals[:, [0, -1]]
+        pairs.sort()
+        pair_index = np.unique(pairs, axis=0)
+        pair_hash = []
+        for pair in pair_index:
+            if pair[0] < pair[1]:
+                pair_hash.append(hash((pair[0], pair[1])))
+            else:
+                pair_hash.append(hash((pair[1], pair[0])))
+        pair_hash = np.array(pair_hash)
+        angle_hash = []
+        for angle in angles:
+            if angle[0] < angle[-1]:
+                angle_hash.append(hash((angle[0], angle[-1])))
+            else:
+                angle_hash.append(hash((angle[-1], angle[0])))
+        angle_hash = np.array(angle_hash)
+        bond_hash = []
+        for bond in bonds:
+            b = sorted(bond)
+            bond_hash.append(hash(tuple(b)))
+        bond_hash = np.array(bond_hash)
+        include_index = np.where(
+            np.isin(pair_hash, angle_hash) + np.isin(pair_hash, bond_hash) == 0
+        )[0]
+        return pair_index[include_index]
+
+    def get_parameters(self, system: Molecule, parameters: dict):
+        """
+        Return all the pair parameters.
+
+        Args:
+            pair_index (ndarray):   Array of pair indexes.
+            epsilon (ndarray):      Array of epsilon.
+            sigma (ndarray):        Array of sigma.
+
+        Returns:
+            dict, pair parameters.
+        """
+
+        atom_type = system.atom_type[0]
+
+        bonds = system.bonds[0].asnumpy()
+        angles = system.angles.asnumpy()
+        dihedrals = system.dihedrals.asnumpy()
+
+        atom_charges = system.atom_charge.asnumpy()
+
+        index = self.get_pair_index(dihedrals, angles, bonds)
+
+        r_index = parameters['parameter_names']["pattern"].index('r_scale')
+        r6_index = parameters['parameter_names']["pattern"].index('r6_scale')
+        r12_index = parameters['parameter_names']["pattern"].index('r12_scale')
+
+        pair_params = parameters['parameters']
+        if len(pair_params) == 1 and '?' in pair_params.keys():
+            r_scale = pair_params['?'][r_index]
+            r6_scale = pair_params['?'][r6_index]
+            r12_scale = pair_params['?'][r12_index]
+        else:
+            #TODO
+            r_scale = 0
+            r6_scale = 0
+            r12_scale = 0
+
+        sigma_index = parameters['lj_parameter_names']["pattern"].index('sigma')
+        eps_index = parameters['lj_parameter_names']["pattern"].index('epsilon')
+
+        vdw_params = parameters['lj_parameters']
+        type_list: list = atom_type.reshape(-1).tolist()
+        sigma = []
+        epsilon = []
+        for params in itemgetter(*type_list)(vdw_params):
+            sigma.append(params[sigma_index])
+            epsilon.append(params[eps_index])
+        sigma = np.array(sigma, np.float32).reshape(atom_type.shape)
+        epsilon = np.array(epsilon, np.float32).reshape(atom_type.shape)
+
+        qiqj = np.take_along_axis(atom_charges, index, axis=1)
+        qiqj = np.prod(qiqj, -1)
+
+        epsilon_ij = epsilon[index]
+        epsilon_ij = np.sqrt(np.prod(epsilon_ij, -1))
+
+        sigma_ij = sigma[index]
+        sigma_ij = np.mean(sigma_ij, -1)
+
+        return index, qiqj, epsilon_ij, sigma_ij, r_scale, r6_scale, r12_scale
 
     def set_pbc(self, use_pbc=None):
         """set whether to use periodic boundary condition."""

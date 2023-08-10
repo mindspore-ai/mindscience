@@ -57,8 +57,6 @@ class OscillatorBias(Bias):
         self.old_crd = Tensor(old_crd, ms.float32)
         self.k = Tensor(k, ms.float32)
         self.nonh_mask = Tensor(1 - nonh_mask, ms.int32)
-        if self.nonh_mask.ndim == 1:
-            self.nonh_mask = self.nonh_mask[None, :, None]
 
     def construct(self,
                   coordinate: Tensor,

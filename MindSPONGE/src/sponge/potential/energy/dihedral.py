@@ -23,6 +23,9 @@
 """Torsion energy"""
 
 from typing import Union, List
+import re
+from operator import itemgetter
+import numpy as np
 from numpy import ndarray
 
 import mindspore as ms
@@ -30,12 +33,15 @@ from mindspore import Tensor
 from mindspore.ops import functional as F
 from mindspore import Parameter
 
-from .energy import EnergyCell
+from .energy import EnergyCell, _energy_register
 from ...colvar import Torsion
+from ...system import Molecule
+from ...data import get_dihedral_types
 from ...function import functions as func
 from ...function import get_ms_array, get_arguments
 
 
+@_energy_register('dihedral_energy')
 class DihedralEnergy(EnergyCell):
     r"""Energy term of dihedral (torsion) angles.
 
@@ -89,15 +95,16 @@ class DihedralEnergy(EnergyCell):
 
     """
     def __init__(self,
+                 system: Molecule = None,
+                 parameters: dict = None,
                  index: Union[Tensor, ndarray, List[int]] = None,
                  force_constant: Union[Tensor, ndarray, List[float]] = None,
                  periodicity: Union[Tensor, ndarray, List[float]] = None,
                  phase: Union[Tensor, ndarray, List[float]] = None,
-                 parameters: dict = None,
                  use_pbc: bool = None,
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
-                 name: str = 'dihedral',
+                 name: str = 'dihedral_energy',
                  **kwargs,
                  ):
 
@@ -108,15 +115,17 @@ class DihedralEnergy(EnergyCell):
             energy_unit=energy_unit,
         )
         self._kwargs = get_arguments(locals(), kwargs)
+        if 'exclude_index' in self._kwargs.keys():
+            self._kwargs.pop('exclude_index')
 
         if parameters is not None:
+            if system is None:
+                raise ValueError('`system` cannot be None when using `parameters`!')
+            length_unit = parameters.get('length_unit')
             energy_unit = parameters.get('energy_unit')
-            self.units.set_energy_unit(energy_unit)
-
-            index = parameters.get('index')
-            force_constant = parameters.get('force_constant')
-            periodicity = parameters.get('periodicity')
-            phase = parameters.get('phase')
+            self.units.set_units(length_unit, energy_unit)
+            self._use_pbc = system.use_pbc
+            index, force_constant, periodicity, phase = self.get_parameters(system, parameters)
 
         # (1,d,4)
         index = get_ms_array(index, ms.int32)
@@ -163,6 +172,74 @@ class DihedralEnergy(EnergyCell):
         if phase.ndim > 2:
             raise ValueError('The rank of phase cannot be larger than 2!')
         self.dihedral_phase = Parameter(phase, name='phase')
+
+    @staticmethod
+    def check_system(system: Molecule) -> bool:
+        """Check if the system needs to calculate this energy term"""
+        return system.dihedrals is not None
+
+    @staticmethod
+    def get_parameters(system: Molecule, parameters: dict):
+        """
+        Get the force field dihedral parameters.
+
+        Args:
+            dihedrals_in (ndarray): Array of input dihedrals.
+            atom_type (ndarray):    Array of the types of atoms.
+
+        Returns:
+            dict, params.
+        """
+
+        atom_type = np.append(system.atom_type[0], np.array(["X"], dtype=np.str_))
+
+        index = system.dihedrals.asnumpy()
+
+        dihedral_atoms = np.take(atom_type, index, -1)
+
+        k_index = parameters['parameter_names']["pattern"][0].index('force_constant')
+        phi_index = parameters['parameter_names']["pattern"][0].index('phase')
+        t_index = parameters['parameter_names']["pattern"][0].index('periodicity')
+
+        dihedral_params: dict = parameters['parameters']
+
+        key_types_ndarray = np.array([specific_name.split('-') for specific_name in dihedral_params.keys()], np.str_)
+        types_sorted_args = np.argsort((key_types_ndarray == '?').sum(axis=-1))
+        sorted_key_types = key_types_ndarray[types_sorted_args]
+        transformed_key_types = ['-'.join(specific_name).replace('?', '.+').replace('*', '\\*') for
+                                 specific_name in sorted_key_types]
+
+        dihedral_types, inverse_dihedral_types = get_dihedral_types(dihedral_atoms)
+        type_list: list = dihedral_types.reshape(-1).tolist()
+        inverse_type_list: list = inverse_dihedral_types.reshape(-1).tolist()
+
+        for i, _ in enumerate(type_list):
+            for key_type in transformed_key_types:
+                if re.match('^'+key_type+'$', type_list[i]) or re.match('^'+key_type+'$', inverse_type_list[i]):
+                    type_list[i] = key_type.replace('.+', '?').replace('\\', '')
+                    break
+
+        force_constant = []
+        phase = []
+        periodicity = []
+        dihedral_index = []
+        for i, params in enumerate(itemgetter(*type_list)(dihedral_params)):
+            for _, lastd_params in enumerate(params):
+                dihedral_index.append(index[i])
+                force_constant.append(lastd_params[k_index])
+                phase.append(lastd_params[phi_index])
+                periodicity.append(lastd_params[t_index])
+
+        params = {}
+        force_constant = np.array(force_constant, np.float32)
+        ks0_filter = np.where(force_constant != 0)[0]
+
+        index = np.array(dihedral_index, np.int32)[ks0_filter]
+        force_constant = force_constant[ks0_filter]
+        periodicity = np.array(periodicity, np.float32)[ks0_filter]
+        phase = np.array(phase, np.float32)[ks0_filter] / 180 * np.pi
+
+        return index, force_constant, periodicity, phase
 
     def set_pbc(self, use_pbc: bool = None):
         self._use_pbc = use_pbc

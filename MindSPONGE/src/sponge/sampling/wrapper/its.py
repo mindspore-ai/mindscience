@@ -153,7 +153,6 @@ class ITS(EnergyWrapper):
             energy_unit=energy_unit,
             )
 
-
         self.share_parameter = share_parameter
         self.num_walker = get_integer(num_walker)
         self.num_parameter = self.num_walker
@@ -166,7 +165,8 @@ class ITS(EnergyWrapper):
                 raise ValueError('num_walkers must be given when share_parameter is False!')
 
         # (B)
-        self.sim_temp = self._check_temp(sim_temp, 'sim_temp')
+        sim_temp = self._check_temp(sim_temp, 'sim_temp')
+        self.sim_temp = Parameter(sim_temp, name='sim_temp', requires_grad=False)
 
         if temperatures is None:
             if any_none([temp_min, temp_max, temp_bin]):
@@ -233,13 +233,10 @@ class ITS(EnergyWrapper):
         self.temp0_index, self.temp0_ratio = self.find_temp_index(sim_temp)
 
         self.boltzmann = self.units.boltzmann
-        # (1, 1) or (B, 1)
-        self.kbt_sim = self.boltzmann * F.expand_dims(self.sim_temp, -1)
-        self.beta_sim = msnp.reciprocal(self.kbt_sim)
 
         # (1, 1) or (B, 1)
-        self.kbtk = self.boltzmann * self.temperatures
-        self.betak = msnp.reciprocal(self.kbtk)
+        self.kbt_array = self.boltzmann * self.temperatures
+        self.beta_array = msnp.reciprocal(self.kbt_array)
 
         # (1, 1) or (B, 1)
         self.kbt_min = self.boltzmann * F.expand_dims(self.temp_min, -1)
@@ -254,6 +251,7 @@ class ITS(EnergyWrapper):
         self.bias_rest_ratio = 1.0 - self.bias_ratio
 
         # \log{0} = -\infty
+        # neg_inf = Tensor(float(-5e4), ms.float32)
         neg_inf = Tensor(float('-inf'), ms.float32)
 
         # (1, T-1) or (B, T-1)
@@ -261,9 +259,9 @@ class ITS(EnergyWrapper):
                                 name='partition_normalization', requires_grad=False)
 
         # (1, T) or (B, T)
-        # self.weighting_factors: \log{n_k}
-        self.weighting_factors = Parameter(F.zeros_like(self.betak),
-                                           name='weighting_factors', requires_grad=False)
+        # self.weight_factors: \log{n_k}
+        self.weight_factors = Parameter(F.zeros_like(self.beta_array),
+                                        name='weighting_factors', requires_grad=False)
 
         # (1, 1) or (B, 1)
         self.zeros = msnp.zeros((self.num_parameter, 1), ms.float32)
@@ -297,6 +295,15 @@ class ITS(EnergyWrapper):
                                     name='minimum_energy', requires_grad=False)
 
         self.step = Parameter(Tensor(0, ms.int32), name='iteration_step', requires_grad=False)
+
+    @property
+    def sim_kbt(self):
+        # (1, 1) or (B, 1)
+        return self.boltzmann * F.expand_dims(self.sim_temp, -1)
+
+    @property
+    def sim_beta(self):
+        return msnp.reciprocal(self.sim_kbt)
 
     def find_temp_index(self, temperature: Tensor) -> Tuple[Tensor, Tensor]:
         r"""find the index of a specify temperatures at the serial of integration temperatues.
@@ -359,10 +366,10 @@ class ITS(EnergyWrapper):
         """
 
         if ratio is None:
-            return F.gather_d(self.weighting_factors, -1, index)
+            return F.gather_d(self.weight_factors, -1, index)
 
-        fb_low = F.gather_d(self.weighting_factors, -1, index)
-        fb_high = F.gather_d(self.weighting_factors, -1, index + 1)
+        fb_low = F.gather_d(self.weight_factors, -1, index)
+        fb_high = F.gather_d(self.weight_factors, -1, index + 1)
         return fb_low + (fb_high - fb_low) * ratio
 
     def calc_reweight_factor(self, temperature: Tensor = None) -> Tensor:
@@ -382,7 +389,7 @@ class ITS(EnergyWrapper):
         if temperature is None:
             index = self.temp0_index
             ratio = self.temp0_ratio
-            kbt = self.kbt_sim
+            kbt = self.sim_kbt
         else:
             index, ratio = self.find_temp_index(temperature)
             kbt = self.boltzmann * temperature
@@ -401,10 +408,10 @@ class ITS(EnergyWrapper):
 
         """
         # (1, 1) or (B, 1)
-        fb0 = self.weighting_factors[:, [0]] + self.beta_min * peshift
+        fb0 = self.weight_factors[:, [0]] + self.beta_min * peshift
         # (1, T) = (1, T) * (1, 1) - (1, 1) or (B, T) = (B, T) * (B, 1) - (B, 1)
-        fb_add = self.betak * peshift - fb0
-        peshift = F.depend(peshift, F.assign_add(self.weighting_factors, fb_add))
+        fb_add = self.beta_array * peshift - fb0
+        peshift = F.depend(peshift, F.assign_add(self.weight_factors, fb_add))
         return F.assign(self.energy_shift, peshift)
 
     def update(self):
@@ -420,14 +427,14 @@ class ITS(EnergyWrapper):
             # (1, T) <- (B, T)
             partitions = F.logsumexp(partitions, 0, True)
 
-        if (min_energy < self.energy_shift).any():
-            self.change_energy_shift(min_energy)
+        if (min_energy + self.energy_shift < 0).any():
+            self.change_energy_shift(-min_energy)
 
         F.assign(self.step, self.step + 1)
 
         # (1, T-1) or (B, T-1)
-        fb0 = self.weighting_factors[:, :-1]
-        fb1 = self.weighting_factors[:, 1:]
+        fb0 = self.weight_factors[:, :-1]
+        fb1 = self.weight_factors[:, 1:]
         # fb_ratio: \log{m_k(t-1)}, k \in [1, N-1]
         # m_k(t-1) = n_k(t-1) / n_{k+1}(t-1)
         fb_ratio0 = fb0 - fb1
@@ -492,7 +499,7 @@ class ITS(EnergyWrapper):
         rct = self.calc_reweight_factor()
 
         # (1, T) or (B, T)
-        F.assign(self.weighting_factors, fb_new)
+        F.assign(self.weight_factors, fb_new)
         F.assign(self.partitions, self.zero_rbfb)
         # (1, T-1) or (B, T-1)
         F.assign(self.normal, normal)
@@ -523,12 +530,13 @@ class ITS(EnergyWrapper):
 
         # (B, U) * (B, U)
         # U_{select}(R)
-        enhanced_energy = potentials * self.energy_ratio
+        enhanced_pot = potentials * self.energy_ratio
         # U_{rest}(R) = U(R) - U_{select}(R)
         rest_potential = potentials * self.pot_rest_ratio
+
         # (B, 1) <- (B, U)
         # V_{select}(R)
-        enhanced_energy = func.keepdims_sum(enhanced_energy, -1)
+        enhanced_pot = func.keepdims_sum(enhanced_pot, -1)
         # V_{rest}(R) = V(R) - V_{select}(R)
         rest_potential = func.keepdims_sum(rest_potential, -1)
 
@@ -544,20 +552,22 @@ class ITS(EnergyWrapper):
 
         # (B, 1):
         # E(R) = U_{select}(R) + V_{select}(R)
-        energy = enhanced_energy + enhanced_bias
+        enhanced_energy = enhanced_pot + enhanced_bias
 
         if self.update_pace > 0:
             # (B, 1)
-            min_energy = F.stop_gradient(energy)
+            min_energy = F.stop_gradient(enhanced_energy)
             min_energy = F.select(min_energy < self.min_energy, min_energy, self.min_energy)
-            energy = F.depend(energy, F.assign(self.min_energy, min_energy))
+            enhanced_energy = F.depend(enhanced_energy, F.assign(self.min_energy, min_energy))
 
         # (B, 1) + (1, 1) OR (B, 1) + (B, 1)
-        energy += self.energy_shift
+        enhanced_energy += self.energy_shift
 
         # (B, T) - (B, T) * (B, 1)
         # \log {\left [ n_k e ^ {-\beta_k U(R)} \right ] }
-        gf = self.weighting_factors - self.betak * energy
+        # gf = self.weight_factors - self.beta_array * enhanced_energy
+        gf1 = - self.beta_array * enhanced_energy
+        gf = self.weight_factors + gf1
 
         if self.update_pace > 0:
             # (B, T)
@@ -572,7 +582,7 @@ class ITS(EnergyWrapper):
         gfsum = F.logsumexp(gf, -1, True)
         # (B, 1) * (B, 1)
         # U_{eff}(R) = -\frac{1}{\beta_0} \log{\sum_k^N {n_k e ^ {-\beta_k U(R)}}}
-        eff_energy = -self.kbt_sim * gfsum
+        eff_energy = -self.sim_kbt * gfsum
 
         # (B, 1)
         energy = eff_energy + rest_potential + rest_bias

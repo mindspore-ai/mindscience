@@ -22,8 +22,61 @@
 # ============================================================================
 """Barostat"""
 
-from .barostat import Barostat
+from typing import Union
+from ...system import Molecule
+
+from .barostat import Barostat, _BAROSTAT_BY_KEY
 from .berendsen import BerendsenBarostat
 from .andersen import AndersenBarostat
 
-__all__ = ['Barostat', 'BerendsenBarostat', 'AndersenBarostat']
+__all__ = ['Barostat', 'BerendsenBarostat', 'AndersenBarostat', 'get_barostat']
+
+_BAROSTAT_BY_NAME = {cell.__name__: cell for cell in _BAROSTAT_BY_KEY.values()}
+
+
+def get_barostat(cls_name: Union[str, dict, Barostat],
+                 system: Molecule,
+                 pressure: float = None,
+                 **kwargs) -> Barostat:
+    r"""get object of barostat
+
+    Args:
+        cls_name (Union[str, dict, Barostat]): Class name, arguments or object of a barostat.
+        system (Molecule): Simulation system.
+        pressure (float): Reference pressure for pressure coupling. If `None` is given and
+            the type of `cls_name` is `str`, `None` will be returned. Default: None
+        **kwargs:   Other arguments
+
+    Return:
+        barostat (Barostat): Object of barostat
+
+    """
+
+    if cls_name is None:
+        return None
+
+    if isinstance(cls_name, Barostat):
+        return cls_name
+
+    if isinstance(cls_name, dict):
+        return get_barostat(**cls_name)
+
+    if isinstance(cls_name, str):
+        if cls_name.lower() == 'none':
+            return None
+
+        if pressure is None:
+            return None
+
+        if cls_name.lower() in _BAROSTAT_BY_KEY.keys():
+            return _BAROSTAT_BY_KEY.get(cls_name.lower())(system=system,
+                                                          pressure=pressure,
+                                                          **kwargs)
+        if cls_name in _BAROSTAT_BY_NAME.keys():
+            return _BAROSTAT_BY_NAME.get(cls_name.lower())(system=system,
+                                                           pressure=pressure,
+                                                           **kwargs)
+
+        raise ValueError("The barostat corresponding to '{}' was not found.".format(cls_name))
+
+    raise TypeError("Unsupported barostat type '{}'.".format(type(cls_name)))

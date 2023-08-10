@@ -29,11 +29,12 @@ from mindspore import Tensor
 from mindspore import ops
 from mindspore.ops import functional as F
 
-from .thermostat import Thermostat
+from .thermostat import Thermostat, _thermostat_register
 from ...system import Molecule
 from ...function import get_arguments
 
 
+@_thermostat_register('langevin')
 class Langevin(Thermostat):
     r"""A Langevin thermostat module, which is a subclass of `Thermostat`.
 
@@ -70,7 +71,7 @@ class Langevin(Thermostat):
                  system: Molecule,
                  temperature: float = 300,
                  control_step: int = 1,
-                 time_constant: float = 0.1,
+                 time_constant: float = 0.5,
                  seed: int = 0,
                  seed2: int = 0,
                  **kwargs,

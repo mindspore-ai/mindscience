@@ -27,6 +27,7 @@ Callback to print the information of MD simulation
 import time
 
 from mindspore.train.callback import Callback, RunContext
+from mindspore import Tensor
 
 from ..optimizer import Updater
 
@@ -85,11 +86,11 @@ class RunInfo(Callback):
         self.use_pbc = cb_params.pbc_box is not None
         if isinstance(cb_params.optimizer, Updater):
             self.use_updater = True
-            self.kinetics = cb_params.kinetics.asnumpy().squeeze()
-            self.temperature = cb_params.temperature.asnumpy().squeeze()
+            self.kinetics = cb_params.kinetics.copy().asnumpy().squeeze()
+            self.temperature = cb_params.temperature.copy().asnumpy().squeeze()
             if self.use_pbc:
-                self.volume = cb_params.volume.asnumpy().squeeze()
-                self.pressure = cb_params.pressure.asnumpy().squeeze()
+                self.volume = cb_params.volume.copy().asnumpy().squeeze()
+                self.pressure = cb_params.pressure.copy().asnumpy().squeeze()
 
     def epoch_begin(self, run_context: RunContext):
         """
@@ -119,10 +120,14 @@ class RunInfo(Callback):
         if self.count % self.print_freq == 0:
             self.start_time = time.time()
             cb_params = run_context.original_args()
-            self.crd = cb_params.coordinate[0].asnumpy().squeeze()
+            if isinstance(cb_params.coordinate[0], Tensor):
+                self.crd = cb_params.coordinate[0].copy().asnumpy().squeeze()
+            else:
+                self.crd = cb_params.coordinate[0].squeeze()
+
             if self.use_updater:
-                self.kinetics = cb_params.kinetics.asnumpy().squeeze()
-                self.temperature = cb_params.temperature.asnumpy().squeeze()
+                self.kinetics = cb_params.kinetics.copy().asnumpy().squeeze()
+                self.temperature = cb_params.temperature.copy().asnumpy().squeeze()
 
     def step_end(self, run_context: RunContext):
         """
@@ -137,7 +142,7 @@ class RunInfo(Callback):
         if self.count % self.print_freq == 0:
             cb_params = run_context.original_args()
             step = cb_params.cur_step
-            self.potential = cb_params.potential.asnumpy().squeeze()
+            self.potential = cb_params.potential.copy().asnumpy().squeeze()
             if self.use_updater:
                 self.tot_energy = self.potential + self.kinetics
             info = 'Step: '+str(step) + ', '
@@ -150,9 +155,9 @@ class RunInfo(Callback):
                 info += 'Temperature: ' + str(self.temperature)
                 if self.use_pbc:
                     info += ', '
-                    self.pressure = cb_params.pressure.asnumpy().squeeze()
+                    self.pressure = cb_params.pressure.copy().asnumpy().squeeze()
                     info += 'Pressure: ' + str(self.pressure) + ', '
-                    self.volume = cb_params.volume.asnumpy().squeeze()
+                    self.volume = cb_params.volume.copy().asnumpy().squeeze()
                     info += 'Volume: ' + str(self.volume)
             if cb_params.analyse is not None:
                 metrics = cb_params.analyse()

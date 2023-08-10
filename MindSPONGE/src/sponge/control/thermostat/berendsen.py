@@ -27,11 +27,12 @@ from typing import Tuple
 from mindspore import Tensor
 from mindspore import ops
 
-from . import Thermostat
+from .thermostat import Thermostat, _thermostat_register
 from ...system import Molecule
 from ...function import get_arguments
 
 
+@_thermostat_register('berendsen')
 class BerendsenThermostat(Thermostat):
     r"""A Berendsen (weak coupling) thermostat module, which is a subclass of `Thermostat`.
 
@@ -67,7 +68,7 @@ class BerendsenThermostat(Thermostat):
                  system: Molecule,
                  temperature: float = 300,
                  control_step: int = 1,
-                 time_constant: float = 0.2,
+                 time_constant: float = 0.5,
                  scale_min: float = 0.8,
                  scale_max: float = 1.25,
                  **kwargs,

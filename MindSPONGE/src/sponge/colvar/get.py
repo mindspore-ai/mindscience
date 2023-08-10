@@ -30,12 +30,11 @@ from .colvar import Colvar
 from .group import ColvarGroup
 
 
-def get_colvar(
-        colvar: Union[Colvar, List[Colvar], Tuple[Colvar]],
-        axis: int = -1,
-        use_pbc: bool = None,
-        name: str = None,
-        ) -> Colvar:
+def get_colvar(colvar_: Union[Colvar, List[Colvar], Tuple[Colvar]],
+               axis: int = -1,
+               use_pbc: bool = None,
+               name: str = None,
+               ) -> Colvar:
     r"""get group of collective variables
 
     Args:
@@ -47,16 +46,16 @@ def get_colvar(
         colvar (Union[Atoms, Group]): Atoms or group
 
     """
-    if colvar is None:
+    if colvar_ is None:
         return None
 
-    if isinstance(colvar, (list, tuple)):
-        colvar = ColvarGroup(colvar, axis=axis, use_pbc=use_pbc)
+    if isinstance(colvar_, (list, tuple)):
+        colvar_ = ColvarGroup(colvar_, axis=axis, use_pbc=use_pbc)
 
-    if not isinstance(colvar, Colvar):
-        raise TypeError(f'The type of "colvar" must be list, tuple or Colvar but got: {type(colvar)}')
+    if not isinstance(colvar_, Colvar):
+        raise TypeError(f'The type of "colvar" must be list, tuple or Colvar but got: {type(colvar_)}')
 
     if name is not None:
-        colvar.set_name(name)
+        colvar_.set_name(name)
 
-    return colvar
+    return colvar_

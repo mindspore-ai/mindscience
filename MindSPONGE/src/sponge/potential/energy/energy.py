@@ -28,41 +28,53 @@ from mindspore import Tensor
 from mindspore import ops
 from mindspore.nn import Cell
 
+from ...system.molecule import Molecule
 from ...function import get_ms_array
 from ...function.units import Units, Length, GLOBAL_UNITS
 
+_ENERGY_BY_KEY = dict()
+
+
+def _energy_register(*aliases):
+    """Return the alias register."""
+    def alias_reg(cls):
+        name = cls.__name__
+        name = name.lower()
+        if name not in _ENERGY_BY_KEY:
+            _ENERGY_BY_KEY[name] = cls
+
+        for alias in aliases:
+            if alias not in _ENERGY_BY_KEY:
+                _ENERGY_BY_KEY[alias] = cls
+
+        return cls
+
+    return alias_reg
+
 
 class EnergyCell(Cell):
-    r"""Base class for energy terms.
-
-        `EnergyCell` is usually used as a base class for individual energy terms in a classical force field.
-        As the force field parameters usually has units, the units of the EnergyCell as an energy term
-        should be the same as the units of the force field parameters, and not equal to the global units.
+    r"""
+    Base class for energy terms.
+    `EnergyCell` is usually used as a base class for individual energy terms in a classical force field.
+    As the force field parameters usually has units, the units of the `EnergyCell` as an energy term
+    should be the same as the units of the force field parameters, and not equal to the global units.
 
     Args:
-
         name (str):         Name of energy. Default: 'energy'
-
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
                             Default: 'nm'
-
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
                             Default: 'kj/mol'
-
-        use_pbc (bool):     Whether to use periodic boundary condition.
+        use_pbc (bool):     Whether to use periodic boundary condition. Default: None
 
     Returns:
-
-        energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
+        Tensor of energy, Tensor of shape `(B, 1)`. Data type is float.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Symbols:
-
         B:  Batchsize, i.e. number of walkers in simulation
-
     """
     def __init__(self,
                  name: str = 'energy',
@@ -90,26 +102,75 @@ class EnergyCell(Cell):
 
     @property
     def name(self) -> str:
-        """name of energy"""
+        """
+        Name of energy.
+
+        Returns:
+            str, name of energy.
+        """
         return self._name
 
     @property
     def use_pbc(self) -> bool:
-        """whether to use periodic boundary condition"""
+        """
+        Whether to use periodic boundary condition.
+
+        Returns:
+            bool, the flag used to judge whether to use periodic boundary condition.
+        """
         return self._use_pbc
 
     @property
     def length_unit(self) -> str:
-        """length unit"""
+        """
+        Length unit.
+
+        Returns:
+            str, length unit.
+        """
         return self.units.length_unit
 
     @property
     def energy_unit(self) -> str:
-        """energy unit"""
+        """
+        Energy unit.
+
+        Returns:
+            str, energy unit.
+        """
         return self.units.energy_unit
 
+    @staticmethod
+    def check_system(system: Molecule) -> bool:
+        """Check if the system needs to calculate this energy term"""
+        #pylint:disable=unused-argument
+        return True
+
+    def set_units(self, length_unit: str = None, energy_unit: str = None, units: Units = None):
+        r"""set length and energy units"""
+        if units is None:
+            if length_unit is None:
+                length_unit = GLOBAL_UNITS.length_unit
+            if energy_unit is None:
+                energy_unit = GLOBAL_UNITS.energy_unit
+        else:
+            length_unit = None
+            energy_unit = None
+
+        if self.units is None:
+            self.units = Units(length_unit=length_unit, energy_unit=energy_unit, units=units)
+        else:
+            self.units.set_units(length_unit=length_unit, energy_unit=energy_unit, units=units)
+
+        return self
+
     def set_input_unit(self, length_unit: Union[str, Units, Length]):
-        """set the length unit for the input coordinates"""
+        """
+        Set the length unit for the input coordinates.
+
+        Args:
+            length_unit(Union[str, Units, Length]): The length unit for the input coordinates.
+        """
         if length_unit is None:
             self.input_unit_scale = 1
         elif isinstance(length_unit, (str, Units, float)):
@@ -121,7 +182,13 @@ class EnergyCell(Cell):
         return self
 
     def set_cutoff(self, cutoff: float, unit: str = None):
-        """set cutoff distances"""
+        """
+        Set cutoff distances.
+
+        Args:
+            cutoff(float):  Cutoff distances.
+            unit(str):      Length unit. Default: None
+        """
         if cutoff is None:
             self.cutoff = None
         else:
@@ -130,16 +197,37 @@ class EnergyCell(Cell):
         return self
 
     def set_pbc(self, use_pbc: bool):
-        """set whether to use periodic boundary condition."""
+        """
+        Set whether to use periodic boundary condition.
+
+        Args:
+            use_pbc(bool): Whether to use periodic boundary condition.
+        """
         self._use_pbc = use_pbc
         return self
 
     def convert_energy_from(self, unit: str) -> float:
-        """convert energy from outside unit to inside unit"""
+        """
+        Convert energy from outside unit to inside unit.
+
+        Args:
+            unit(str):  Energy unit.
+
+        Returns:
+            float, energy according from a specified units.
+        """
         return self.units.convert_energy_from(unit)
 
     def convert_energy_to(self, unit: str) -> float:
-        """convert energy from inside unit to outside unit"""
+        """
+        Convert energy from inside unit to outside unit.
+
+        Args:
+            unit(str):  Energy unit.
+
+        Returns:
+            float, energy according to a specified units.
+        """
         return self.units.convert_energy_to(unit)
 
     def construct(self,
@@ -163,8 +251,6 @@ class EnergyCell(Cell):
                                             Vectors from central atom to neighbouring atoms. Default: None
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms. Default: None
-            inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.
-                                            Reciprocal of distances. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
                                             Tensor of PBC box. Default: None
 

@@ -22,20 +22,16 @@
 # ============================================================================
 """Force filed"""
 import os
-import copy
 from typing import Union, List
 import numpy as np
 from numpy import ndarray
 import mindspore as ms
-import mindspore.numpy as msnp
 from mindspore import Tensor
 from mindspore import ops
 from mindspore.nn import CellList
 
-from .energy import EnergyCell, BondEnergy, AngleEnergy, DihedralEnergy, NonbondPairwiseEnergy
-from .energy import CoulombEnergy, LennardJonesEnergy
+from .energy import EnergyCell, get_energy_cell
 from .potential import PotentialCell
-from ..data.parameters import ForceFieldParameters
 from ..data.forcefield import get_forcefield
 from ..system import Molecule
 from ..function import get_arguments
@@ -191,16 +187,8 @@ class ForceFieldBase(PotentialCell):
 
     def set_units(self, length_unit: str = None, energy_unit: str = None, units: Units = None):
         """set units"""
-        if units is not None:
-            self.units.set_units(units=units)
-        else:
-            if length_unit is not None:
-                self.units.set_length_unit(length_unit)
-            if energy_unit is not None:
-                self.units.set_energy_unit(energy_unit)
-
+        super().set_units(length_unit=length_unit, energy_unit=energy_unit, units=units)
         self.set_unit_scale()
-
         return self
 
     def set_pbc(self, use_pbc: bool = None):
@@ -262,7 +250,7 @@ class ForceFieldBase(PotentialCell):
                 neighbour_distance=neighbour_distance,
                 pbc_box=pbc_box
             )
-            energies += (energy,)
+            energies += (energy.astype(ms.float32),)
 
         potential = self.concat(energies) * self.energy_scale * self.output_unit_scale
 
@@ -336,8 +324,6 @@ class ForceField(ForceFieldBase):
         )
         self._kwargs = get_arguments(locals(), kwargs)
 
-        use_pbc = system.use_pbc
-
         # Generate Forcefield Parameters
         parameters, template = get_forcefield(parameters)
 
@@ -350,117 +336,89 @@ class ForceField(ForceFieldBase):
                     res.build_atom_charge(template.get(res.name))
                 system.build_system()
 
-        atom_charge = system.atom_charge
-        if atom_charge is not None:
-            atom_charge = system.atom_charge.asnumpy()
-
-        ff_params = ForceFieldParameters(
-            system.atom_type, copy.deepcopy(parameters), atom_names=system.atom_name,
-            atom_charges=atom_charge)
-
-        if isinstance(system.bond, np.ndarray):
-            system_params = ff_params(system.bond)
-        if isinstance(system.bond, Tensor):
-            system_params = ff_params(system.bond.asnumpy())
+        self._exclude_index = self.get_exclude_index(system)
 
         energy = []
+        for energy_name, energy_params in parameters.items():
+            if energy_name != 'coulomb_energy':
+                energy_ = get_energy_cell(cls_name=energy_name,
+                                          system=system,
+                                          parameters=energy_params,
+                                          exclude_index=self._exclude_index,
+                                          )
+            else:
+                energy_ = get_energy_cell(cls_name=energy_name,
+                                          system=system,
+                                          parameters=energy_params,
+                                          exclude_index=self._exclude_index,
+                                          **kwargs
+                                          )
 
-        # Bond energy
-        if system_params.bond_params is not None:
-            bond_index = system_params.bond_params['bond_index']
-            bond_force_constant = system_params.bond_params['force_constant']
-            bond_length = system_params.bond_params['bond_length']
-
-            bond_params: dict = parameters.get('bond_energy')
-            length_unit = bond_params.get('length_unit')
-            energy_unit = bond_params.get('energy_unit')
-            bond_energy = BondEnergy(bond_index, force_constant=bond_force_constant,
-                                     bond_length=bond_length, use_pbc=use_pbc,
-                                     length_unit=length_unit, energy_unit=energy_unit)
-            energy.append(bond_energy)
-
-        # Angle energy
-        if system_params.angle_params is not None:
-            angle_index = system_params.angle_params['angle_index']
-            angle_force_constant = system_params.angle_params['force_constant']
-            bond_angle = system_params.angle_params['bond_angle']
-
-            angle_params: dict = parameters.get('angle_energy')
-            energy_unit = angle_params.get('energy_unit')
-            angle_energy = AngleEnergy(angle_index, force_constant=angle_force_constant,
-                                       bond_angle=bond_angle, use_pbc=use_pbc, energy_unit=energy_unit)
-            energy.append(angle_energy)
-
-        # Dihedral energy
-        if system_params.dihedral_params is not None:
-            dihedral_index = Tensor(system_params.dihedral_params['dihedral_index'][None, :], ms.int32)
-            dihe_force_constant = Tensor(system_params.dihedral_params['force_constant'][None, :], ms.float32)
-            periodicity = Tensor(system_params.dihedral_params['periodicity'][None, :], ms.int32)
-            phase = Tensor(system_params.dihedral_params['phase'][None, :], ms.float32)
-
-            # improper Parameters
-            improper_index = Tensor(system_params.improper_params['improper_index'][None, :], ms.int32)
-
-            # Appending dihedral parameters and improper dihedral parameters.
-            dihedral_index = msnp.append(dihedral_index, improper_index, axis=1)
-            dihe_force_constant = msnp.append(dihe_force_constant, Tensor(
-                system_params.improper_params['force_constant'][None, :], ms.float32), axis=1)
-            periodicity = msnp.append(periodicity, Tensor(
-                system_params.improper_params['periodicity'][None, :], ms.int32), axis=1)
-            phase = msnp.append(phase, Tensor(
-                system_params.improper_params['phase'][None, :], ms.float32), axis=1)
-
-            dihedral_params: dict = parameters.get('dihedral_energy')
-            energy_unit = dihedral_params.get('energy_unit')
-            dihedral_energy = DihedralEnergy(dihedral_index, force_constant=dihe_force_constant,
-                                             periodicity=periodicity, phase=phase, use_pbc=use_pbc,
-                                             energy_unit=energy_unit)
-            energy.append(dihedral_energy)
-
-        # Exclude Parameters
-        self._exclude_index = Tensor(system_params.excludes[None, :], ms.int32)
-
-        # Electronic energy
-        if system.atom_charge is not None:
-            coulomb_params: dict = parameters.get('coulomb_energy')
-            length_unit = coulomb_params.get('length_unit')
-            energy_unit = coulomb_params.get('energy_unit')
-            ele_energy = CoulombEnergy(system=system, exclude_index=self._exclude_index,
-                                       length_unit=length_unit, energy_unit=energy_unit)
-            energy.append(ele_energy)
-
-        # VDW energy
-        epsilon = None
-        sigma = None
-        if system_params.vdw_param is not None:
-            epsilon = system_params.vdw_param['epsilon']
-            sigma = system_params.vdw_param['sigma']
-            mean_c6 = system_params.vdw_param['mean_c6']
-
-            vdw_params: dict = parameters.get('vdw_energy')
-            length_unit = vdw_params.get('length_unit')
-            energy_unit = vdw_params.get('energy_unit')
-            vdw_energy = LennardJonesEnergy(epsilon=epsilon, sigma=sigma, mean_c6=mean_c6, use_pbc=use_pbc,
-                                            length_unit=length_unit, energy_unit=energy_unit)
-            energy.append(vdw_energy)
-
-        # Non-bonded pairwise energy
-        if system_params.pair_params is not None and system_params.pair_params is not None:
-            pair_index = Tensor(ff_params.pair_index[None, :], ms.int32)
-            qiqj = system_params.pair_params['qiqj']
-            epsilon_ij = system_params.pair_params['epsilon_ij']
-            sigma_ij = system_params.pair_params['sigma_ij']
-            r_scale = system_params.pair_params['r_scale']
-            r6_scale = system_params.pair_params['r6_scale']
-            r12_scale = system_params.pair_params['r12_scale']
-
-            pair_params: dict = parameters.get('nb_pair_energy')
-            length_unit = pair_params.get('length_unit')
-            energy_unit = pair_params.get('energy_unit')
-            pair_energy = NonbondPairwiseEnergy(pair_index, qiqj=qiqj, epsilon_ij=epsilon_ij, sigma_ij=sigma_ij,
-                                                r_scale=r_scale, r6_scale=r6_scale, r12_scale=r12_scale,
-                                                length_unit=length_unit, energy_unit=energy_unit, use_pbc=use_pbc)
-            energy.append(pair_energy)
+            if energy_ is not None:
+                energy.append(energy_)
 
         self.set_energies(energy)
         self.set_cutoff(self.cutoff, self.length_unit)
+
+    @staticmethod
+    def get_exclude_index(system: Molecule) -> Tensor:
+        """
+        Get the exclude atoms index.
+
+        Args:
+            bonds (ndarray):        Array of bonds.
+            angles (ndarray):       Array of angles.
+            dihedrals (ndarray):    Array of dihedrals.
+            improper (ndarray):     Array of improper.
+
+        Returns:
+            np.ndarray, the index of exclude atoms.
+        """
+
+        if system.bonds is None:
+            return None
+
+        num_atoms = system.num_atoms
+        bonds = system.bonds[0].asnumpy()
+        angles = None if system.angles is None else system.angles.asnumpy()
+        dihedrals = None if system.dihedrals is None else system.dihedrals.asnumpy()
+        improper = None if system.improper_dihedrals is None else system.improper_dihedrals.asnumpy()
+
+        excludes_ = []
+        for i in range(num_atoms):
+            bond_excludes = bonds[np.where(
+                np.isin(bonds, i).sum(axis=1))[0]].flatten()
+            this_excludes = bond_excludes
+
+            if angles is not None:
+                angle_excludes = angles[
+                    np.where(np.isin(angles, i).sum(axis=1))[0]
+                ].flatten()
+                this_excludes = np.append(this_excludes, angle_excludes)
+
+            if dihedrals is not None:
+                dihedral_excludes = dihedrals[
+                    np.where(np.isin(dihedrals, i).sum(axis=1))[0]
+                ].flatten()
+                this_excludes = np.append(this_excludes, dihedral_excludes)
+            if improper is not None:
+                idihedral_excludes = improper[
+                    np.where(np.isin(improper, i).sum(axis=1))[0]
+                ].flatten()
+                this_excludes = np.append(this_excludes, idihedral_excludes)
+
+            this_excludes = np.unique(this_excludes)
+            excludes_.append(this_excludes[np.where(
+                this_excludes != i)[0]].tolist())
+        padding_length = 0
+        for i in range(num_atoms):
+            padding_length = max(padding_length, len(excludes_[i]))
+        excludes = np.empty((num_atoms, padding_length))
+        for i in range(num_atoms):
+            excludes[i] = np.pad(
+                np.array(excludes_[i]),
+                (0, padding_length - len(excludes_[i])),
+                mode="constant",
+                constant_values=num_atoms,
+            )
+        return Tensor(excludes[None, :], ms.int32)

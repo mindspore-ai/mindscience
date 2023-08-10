@@ -33,38 +33,45 @@ from ..function.operations import GetDistance, GetVector
 
 
 class PotentialCell(EnergyCell):
-    r"""Base class for potential energy.
-
-        The `PotentialCell` is a special subclass of `EnergyCell`. The main difference with `EnergyCell` is
-        that normally `EnergyCell` only outputs one energy term, so that `EnergyCell` returns a Tensor of
-        the shape `(B, 1)`. And a `PotentialCell` can output multiple energy items, so it returns a Tensor
-        of the shape `(B, E)`. Besides, by default the units of `PotentialCell` are equal to the global units.
+    r"""
+    Base class for potential energy.
+    The `PotentialCell` is a special subclass of `EnergyCell`. The main difference with `EnergyCell` is
+    that normally `EnergyCell` only outputs one energy term, so that `EnergyCell` returns a Tensor of
+    the shape `(B, 1)`. And a `PotentialCell` can output multiple energy items, so it returns a Tensor
+    of the shape `(B, E)`. Besides, by default the units of `PotentialCell` are equal to the global units.
 
     Args:
+        num_energies(int):                      Number of the outputs of energy terms. Default: 1
+        energy_names(Union[str, List[str]]):    Names of energy terms. Default: "potential".
+        length_unit(str):                       Length unit. If None is given, it will be assigned
+                                                with the global length unit. Default: None
+        energy_unit(str):                       Energy unit. If None is given, it will be assigned
+                                                with the global energy unit. Default: None
+        use_pbc(bool):                          Whether to use periodic boundary condition.
+        name(str):                              Name of energy. Default: "potential"
 
-        num_energies (int): Number of the outputs of energy terms. Default: 1
+    Inputs:
+        - **coordinates** (Tensor) - Tensor of shape (B, A, D). Data type is float.
+          Position coordinate of atoms in system.
+        - **neighbour_index** (Tensor) - Tensor of shape (B, A, N). Data type is int.
+          Index of neighbour atoms. Default: None
+        - **neighbour_mask** (Tensor) - Tensor of shape (B, A, N). Data type is bool.
+          Mask for neighbour atoms. Default: None
+        - **neighbour_vector** (Tensor) - Tensor of shape (B, A, N, D). Data type is bool.
+          Vectors from central atom to neighbouring atoms. Default: None
+        - **neighbour_distances** (Tensor) - Tensor of shape (B, A, N). Data type is float.
+          Distance between neighbours atoms. Default: None
+        - **pbc_box** (Tensor) - Tensor of shape (B, D). Data type is float. Tensor of PBC box. Default: None
 
-        length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
-                            Default: None
-
-        energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
-                            Default: None
-
-        use_pbc (bool):     Whether to use periodic boundary condition.
-
-    Returns:
-
-        energy (Tensor):    Tensor of shape `(B, E)`. Data type is float.
+    Outputs:
+        potential, Tensor of shape `(B, E)`. Data type is float.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Symbols:
-
         B:  Batchsize, i.e. number of walkers in simulation.
         E:  Number of energy terms.
-
     """
 
     def __init__(self,
@@ -106,28 +113,56 @@ class PotentialCell(EnergyCell):
 
     @property
     def exclude_index(self) -> Tensor:
-        """exclude index"""
+        """
+        Exclude index.
+
+        Return:
+            Tensor, exclude index.
+        """
         if self._exclude_index is None:
             return None
         return self.identity(self._exclude_index)
 
     @property
     def num_energies(self) -> int:
-        """number of energy components"""
+        """
+        Number of energy components.
+
+        Return:
+            int, number of energy components.
+        """
         return self._num_energies
 
     @property
     def energy_names(self) -> List[str]:
-        """List of strings of energy names"""
+        """
+        List of strings of energy names.
+
+        Return:
+            List[str], strings of energy names.
+        """
         return self._energy_names
 
     def set_exclude_index(self, exclude_index: Tensor) -> Tensor:
-        """set excluded index"""
+        """
+        Set excluded index.
+
+        Args:
+            exclude_index(Tensor):  Excluded index of the system.
+
+        Return:
+            Tensor, excluded index.
+        """
         self._exclude_index = self._check_exclude_index(exclude_index)
         return self._exclude_index
 
     def set_pbc(self, use_pbc: bool = None):
-        """set PBC box"""
+        """
+        Set PBC box.
+
+        Args:
+            use_pbc(bool):  Whether to use periodic boundary condition.
+        """
         self._use_pbc = use_pbc
         self.get_vector.set_pbc(use_pbc)
         self.get_distance.set_pbc(use_pbc)

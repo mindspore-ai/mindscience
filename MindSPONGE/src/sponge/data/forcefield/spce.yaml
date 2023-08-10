@@ -18,11 +18,14 @@ parameters:
   coulomb_energy:
     length_unit: nm
     energy_unit: kj/mol
-  vdw_energy:
+  lj_energy:
     length_unit: nm
     energy_unit: kj/mol
-    parameter_names:
+    parameter_names: &lj_param_names
       pattern: [sigma, epsilon]
-    parameters:
+    parameters: &lj_parameters
       OW: [0.316557, 0.650629]
       HW: [0.0, 0.0]
+  nb_pair_energy:
+    lj_parameter_names: *lj_param_names
+    lj_parameters: *lj_parameters

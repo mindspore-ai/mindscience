@@ -24,16 +24,34 @@
 Thermostat
 """
 
-from typing import Tuple
+from typing import Union, Tuple, List
+from numpy import ndarray
 
-import mindspore as ms
-from mindspore import Tensor
+from mindspore import Tensor, Parameter
 from mindspore.ops import functional as F
 
 from .. import Controller
 from ...system import Molecule
 from ...function import get_arguments
-from ...function import functions as func
+
+_THERMOSTAT_BY_KEY = dict()
+
+
+def _thermostat_register(*aliases):
+    """Return the alias register."""
+    def alias_reg(cls):
+        name = cls.__name__
+        name = name.lower()
+        if name not in _THERMOSTAT_BY_KEY:
+            _THERMOSTAT_BY_KEY[name] = cls
+
+        for alias in aliases:
+            if alias not in _THERMOSTAT_BY_KEY:
+                _THERMOSTAT_BY_KEY[alias] = cls
+
+        return cls
+
+    return alias_reg
 
 
 class Thermostat(Controller):
@@ -44,15 +62,15 @@ class Thermostat(Controller):
 
     Args:
 
-        system (Molecule):      Simulation system
+        system (Molecule): Simulation system
 
-        temperature (float):    Reference temperature :math:`T_{ref}` in unit Kelvin for temperature coupling.
-                                Default: 300
+        temperature (Union[float, ndarray, Tensor]): Reference temperature :math:`T_{ref}` in unit Kelvin
+            for temperature coupling. Default: 300
 
-        control_step (int):     Step interval for controller execution. Default: 1
+        control_step (int): Step interval for controller execution. Default: 1
 
-        time_constant (float)   Time constant :math:`\tau_T` in unit picosecond for temperature coupling.
-                                Default: 0.5
+        time_constant (float): Time constant :math:`\tau_T` in unit picosecond for temperature coupling.
+            Default: 0.5
 
     Supported Platforms:
 
@@ -61,7 +79,7 @@ class Thermostat(Controller):
     """
     def __init__(self,
                  system: Molecule,
-                 temperature: float = 300,
+                 temperature: Union[float, ndarray, Tensor, List[float]] = 300,
                  control_step: int = 1,
                  time_constant: float = 0.5,
                  **kwargs,
@@ -73,35 +91,37 @@ class Thermostat(Controller):
         )
         self._kwargs = get_arguments(locals(), kwargs)
 
-        self.ref_temp = func.get_ms_array(temperature, ms.float32).reshape(-1, 1)
-        self.ref_kinetics = 0.5 * self.degrees_of_freedom * self.boltzmann * self.ref_temp
+        temperature = self._get_mw_tensor(temperature, 'temperature')
+        self.ref_temp = Parameter(temperature, name='ref_temp', requires_grad=False)
 
         # \tau_t
-        self.time_constant = Tensor(time_constant, ms.float32).reshape(-1, 1)
-        if self.time_constant.shape[0] != self.num_walker and self.time_constant.shape[0] != 1:
-            raise ValueError(
-                'The first shape of time_constant must equal to 1 or num_walker')
+        self.time_constant = self._get_mw_tensor(time_constant, 'time_constant')
 
     @property
-    def temperature(self):
+    def temperature(self) -> Tensor:
         """reference temperature"""
-        return self.ref_temp
+        return self.identity(self.ref_temp)
 
     @property
-    def kinetics(self):
+    def ref_kinetics(self) -> Tensor:
         """reference kinetics"""
-        return self.ref_kinetics
+        return 0.5 * self.degrees_of_freedom * self.boltzmann * self.ref_temp
 
-    def set_temperature(self, temperature: float):
-        """set reference temperature"""
-        self.ref_temp = func.get_ms_array(temperature, ms.float32).reshape(-1, 1)
-        self.ref_kinetics = 0.5 * self.degrees_of_freedom * self.boltzmann * self.ref_temp
+    def set_temperature(self, temperature: Union[float, ndarray, Tensor, List[float]]) -> Tensor:
+        r"""set the value of reference temperature.
+            The size of the temperature array must be equal to current temperature.
+        """
+        return F.assign(self.ref_temp, self._get_mw_tensor(temperature, 'temperature'))
+
+    def reconstruct_temperature(self, temperature: Union[float, ndarray, Tensor, List[float]]):
+        r"""reset the reference temperature"""
+        temperature = self._get_mw_tensor(temperature, 'temperature')
+        self.ref_temp = Parameter(temperature, name='ref_temp', requires_grad=False)
         return self
 
     def set_degrees_of_freedom(self, dofs: int):
         """set degrees of freedom (DOFs)"""
         self.degrees_of_freedom = dofs
-        self.ref_kinetics = 0.5 * self.degrees_of_freedom * self.boltzmann * self.ref_temp
         return self
 
     def velocity_scale(self, sim_kinetics: Tensor, ref_kinetics: Tensor, ratio: float = 1) -> Tensor:

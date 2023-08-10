@@ -30,7 +30,7 @@ from mindspore import nn
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.append('../../src')
 
     from sponge import Sponge
     from sponge import ForceField
@@ -75,5 +75,5 @@ if __name__ == "__main__":
     md = Sponge(network=one_step)
 
     run_info = RunInfo(10)
-    cb_h5md = WriteH5MD(system, 'tutorial_b08.h5md', save_freq=10)
+    cb_h5md = WriteH5MD(system, 'tutorial_b08.h5md', save_freq=10, save_last_pdb='last_08.pdb')
     md.run(steps, callbacks=[run_info, cb_h5md])

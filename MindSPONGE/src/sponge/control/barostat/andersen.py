@@ -28,11 +28,12 @@ import mindspore.numpy as msnp
 from mindspore import Tensor
 from mindspore.ops import functional as F
 
-from . import Barostat
+from .barostat import Barostat, _barostat_register
 from ...system import Molecule
 from ...function import get_arguments
 
 
+@_barostat_register('andersen')
 class AndersenBarostat(Barostat):
     r"""A Andersen barostat module, which is a subclass of `Barostat`.
 

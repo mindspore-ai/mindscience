@@ -24,5 +24,6 @@
 
 from .h5md import WriteH5MD
 from .information import RunInfo
+from .savepdb import SaveLastPdb
 
-__all__ = ['WriteH5MD', 'RunInfo']
+__all__ = ['WriteH5MD', 'RunInfo', 'SaveLastPdb']

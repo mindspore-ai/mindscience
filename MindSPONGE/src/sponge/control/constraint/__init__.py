@@ -22,7 +22,56 @@
 # ============================================================================
 """constraint"""
 
+from typing import Union, List
+from ...system import Molecule
+
 from .constraint import Constraint
 from .lincs import Lincs
+from .settle import SETTLE
 
-__all__ = ['Constraint', 'Lincs']
+__all__ = ['Constraint', 'Lincs', 'SETTLE', 'get_constraint']
+
+
+def get_constraint(constraint: Union[str, Constraint, List[Constraint]],
+                   system: Molecule):
+    """get constraint object"""
+
+    if constraint is None:
+        return None
+
+    if isinstance(constraint, Constraint):
+        return [constraint]
+
+    if isinstance(constraint, list):
+        for c in constraint:
+            if not isinstance(c, Constraint):
+                raise TypeError(f'The elements in list must be Constraint but got: '
+                                f'{type((c))}')
+        return constraint
+
+    settle = None
+    if system.force_settle:
+        settle = SETTLE(system)
+
+    if isinstance(constraint, str):
+        if constraint.lower() in ['all-bonds', 'h-bonds']:
+            if system.settle_index is not None and settle is None:
+                settle = SETTLE(system)
+            if system.remaining_index is None:
+                constraint = []
+            else:
+                constraint = [Lincs(system, bonds=constraint.lower())]
+
+        elif constraint.lower() == 'none':
+            constraint = []
+        else:
+            raise ValueError(f'Inputs of type `str` as `constraint` can only be "none", "all-bonds" or "h-bonds", '
+                             f'but got: {constraint}')
+
+        if settle is not None:
+            constraint.append(settle)
+
+    if constraint:
+        return constraint
+
+    return None

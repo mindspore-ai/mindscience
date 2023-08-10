@@ -25,5 +25,7 @@
 from .distance import Distance
 from .angle import Angle
 from .torsion import Torsion
+from .constant import ConstantValue
+from .volume import Volume
 
-__all__ = ['Distance', 'Angle', 'Torsion']
+__all__ = ['Distance', 'Angle', 'Torsion', 'ConstantValue', 'Volume']

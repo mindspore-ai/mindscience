@@ -31,7 +31,10 @@ from mindspore.nn.optim.optimizer import opt_init_args_register
 from . import Updater
 from ..system import Molecule
 from ..control.controller import Controller
-from ..control import Integrator, Thermostat, Barostat, Constraint
+from ..control.integrator import Integrator, get_integrator
+from ..control.thermostat import Thermostat, get_thermostat
+from ..control.barostat import Barostat, get_barostat
+from ..control.constraint import Constraint, get_constraint
 from ..function import get_arguments
 
 
@@ -45,30 +48,39 @@ class UpdaterMD(Updater):
 
     Args:
 
-        system (Molecule):          Simulation system.
+        system (Molecule): Simulation system.
 
-        integrator (Integrator):    Integrator for MD simulation.
+        time_step (float): Time step. Defulat: 1e-3
 
-        thermostat (Thermostat):    Thermostat for temperature coupling. Default: None
+        velocity (Union[Tensor, ndarray, List[float]]): Array of atomic velocity.
+            The shape of array is `(A, D)` or `(B, A, D)`, and the data type is float. Default: None
 
-        barostat (Barostat):        Barostat for pressure coupling. Default: None
+        temperature (float): Reference temperature for coupling. Only valid if `thermostat` is set to
+            type `str`. Default: None
 
-        constraint (Union[Constraint, List[Constraint]]):
-                                    Constraint controller(s) for bond constraint.
+        pressure (float): Reference pressure for temperature coupling. Only valid if `barostat` is set
+            to type `str`. Default: None
 
-        controller (Union[Controller, List[Controller]]):
-                                    Other controller(s). It will work after the four specific controllers above.
-                                    Default: None
+        integrator (Union[Integrator, str]): Integrator for MD simulation. It can be an object of
+            `Integrator` or the `str` of an integrator name. Default: 'leap_frog'
 
-        time_step (float):          Time step. Defulat: 1e-3
+        thermostat (Union[Thermostat, str]): Thermostat for temperature coupling. It can be an object
+            of `Thermostat` or the `str` of a thermostat name. If a `str` is given, then it will only
+            valid if the `temperature` is not `None`. Default: 'berendsen'
 
-        velocity (Union[Tensor, ndarray, List[float]]):
-                                    Array of atomic velocity. The shape of array is `(A, D)` or `(B, A, D)`, and
-                                    the data type is float. Default: None
+        barostat (Union[Thermostat, str]): Barostat for pressure coupling. It can be an object
+            of `Barostat` or the `str` of a barostat name. If a `str` is given, then it will only
+            valid if the `pressure` is not `None`. Default: 'berendsen'
 
-        weight_decay (float):       An value for the weight decay. Default: 0
+        constraint (Union[Constraint, List[Constraint]]): Constraint controller(s) for bond constraint.
+            Default: None
 
-        loss_scale (float):         A value for the loss scale. Default: 1
+        controller (Union[Controller, List[Controller]]): Other controller(s). It will work after the
+            four specific controllers (integrator, thermostat, barostat and constraint). Default: None
+
+        weight_decay (float): An value for the weight decay. Default: 0
+
+        loss_scale (float): A value for the loss scale. Default: 1
 
     Supported Platforms:
 
@@ -86,13 +98,15 @@ class UpdaterMD(Updater):
     @opt_init_args_register
     def __init__(self,
                  system: Molecule,
-                 integrator: Integrator,
-                 thermostat: Thermostat = None,
-                 barostat: Barostat = None,
-                 constraint: Union[Constraint, List[Constraint]] = None,
-                 controller: Union[Controller, List[Controller]] = None,
                  time_step: float = 1e-3,
                  velocity: Union[Tensor, ndarray, List[float]] = None,
+                 temperature: float = None,
+                 pressure: float = None,
+                 integrator: Union[Integrator, str] = 'leap_frog',
+                 thermostat: Union[Thermostat, str] = 'berendsen',
+                 barostat: Union[Barostat, str] = 'berendsen',
+                 constraint: Union[Constraint, List[Constraint], str] = None,
+                 controller: Union[Controller, List[Controller]] = None,
                  weight_decay: float = 0.0,
                  loss_scale: float = 1.0,
                  **kwargs,
@@ -109,19 +123,38 @@ class UpdaterMD(Updater):
         self._kwargs = get_arguments(locals(), kwargs)
         self._kwargs.pop('velocity')
 
-        self.integrator: Integrator = integrator
+        self.integrator: Integrator = get_integrator(integrator, self.system)
         self.integrator.set_time_step(self.time_step)
 
         self.constraint: Constraint = None
         self.set_constraint(constraint)
 
         self.thermostat: Thermostat = None
-        self.set_thermostat(thermostat)
+        self.set_thermostat(thermostat, temperature)
 
         self.barostat: Barostat = None
-        self.set_barostat(barostat)
+        self.set_barostat(barostat, pressure)
 
-    def set_thermostat(self, thermostat: Thermostat):
+    @property
+    def ref_temp(self):
+        if self.thermostat is None:
+            return None
+        return self.thermostat.temperature
+
+    @property
+    def ref_press(self):
+        if self.barostat is None:
+            return None
+        return self.barostat.pressure
+
+    def set_thermostat(self, thermostat: Thermostat, temperature: float = None):
+        r"""set thermostat"""
+        if temperature is None:
+            temperature = self.ref_temp
+        thermostat = get_thermostat(thermostat, self.system, temperature)
+        if temperature is not None and thermostat is None:
+            raise ValueError('The `thermostat` cannot be None when setting the `temperature`')
+
         if thermostat is None:
             self.thermostat = None
         else:
@@ -129,7 +162,13 @@ class UpdaterMD(Updater):
             self.thermostat = self.integrator.thermostat
         return self
 
-    def set_barostat(self, barostat: Barostat):
+    def set_barostat(self, barostat: Barostat, pressure: float = None):
+        r"""set barostat"""
+        if pressure is None:
+            pressure = self.ref_press
+        barostat = get_barostat(barostat, self.system, pressure)
+        if pressure is not None and barostat is None:
+            raise ValueError('The `barostat` cannot be None when setting the `pressure`')
         if barostat is None:
             self.barostat = None
         else:
@@ -139,7 +178,9 @@ class UpdaterMD(Updater):
             self.barostat = self.integrator.barostat
         return self
 
-    def set_constraint(self, constraint: Constraint):
+    def set_constraint(self, constraint: Union[Constraint, List[Constraint]]):
+        r"""set constraint"""
+        constraint = get_constraint(constraint, self.system)
         if constraint is None:
             self.constraint = None
         else:

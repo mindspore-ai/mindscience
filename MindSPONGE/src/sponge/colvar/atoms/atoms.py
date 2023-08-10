@@ -81,7 +81,6 @@ class AtomsBase(Colvar):
 
         super().__init__(
             shape=(1, dimension),
-            ndim=2,
             periodic=False,
             name=name,
         )
@@ -141,6 +140,8 @@ class AtomsBase(Colvar):
             A:      Number of atoms in system.
             D:      Dimension of the simulation system. Usually is 3.
         """
+
+        # (B, a_1, a_2, ..., a_n, D)
         raise NotImplementedError
 
     def _set_shape(self, shape: tuple):

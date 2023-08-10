@@ -37,6 +37,25 @@ from ..constraint import Constraint
 from ...system import Molecule
 from ...function import get_integer, get_arguments
 
+_INTEGRATOR_BY_KEY = dict()
+
+
+def _integrator_register(*aliases):
+    """Return the alias register."""
+    def alias_reg(cls):
+        name = cls.__name__
+        name = name.lower()
+        if name not in _INTEGRATOR_BY_KEY:
+            _INTEGRATOR_BY_KEY[name] = cls
+
+        for alias in aliases:
+            if alias not in _INTEGRATOR_BY_KEY:
+                _INTEGRATOR_BY_KEY[alias] = cls
+
+        return cls
+
+    return alias_reg
+
 
 class Integrator(Controller):
     r"""Base class for thermostat module in MindSPONGE, which is a subclass of `Controller`.
@@ -124,11 +143,15 @@ class Integrator(Controller):
 
     def set_thermostat(self, thermostat: Thermostat):
         """set thermostat algorithm for integrator"""
-        if self.thermostat is not None:
-            print(f'Change the thermostat from "{self.thermostat.cls_name} to "{thermostat.cls_name}".')
         if thermostat is None:
+            if self.thermostat is not None:
+                print('Set the thermostat to "None"')
             self.thermostat = None
             return self
+
+        if self.thermostat is not None:
+            print(f'Set the thermostat to "{thermostat.cls_name}" '
+                  f'with reference temperature {thermostat.temperature.asnumpy()} K.')
 
         self.thermostat = thermostat
         self.thermostat.set_degrees_of_freedom(self.degrees_of_freedom)
@@ -137,18 +160,22 @@ class Integrator(Controller):
 
     def set_barostat(self, barostat: Barostat):
         """set barostat algorithm for integrator"""
-        if self.barostat is not None:
-            print(f'Change the barostat from "{self.barostat.cls_name} to "{barostat.cls_name}".')
         if barostat is None:
+            if self.barostat is not None:
+                print('Set the barostat to "None"')
             self.barostat = None
             return self
+
+        if self.barostat is not None:
+            print(f'Set the barostat to "{barostat.cls_name}" '
+                  f'with reference pressure {barostat.pressure.asnumpy()} bar.')
 
         self.barostat = barostat
         self.barostat.set_degrees_of_freedom(self.degrees_of_freedom)
         self.barostat.set_time_step(self.time_step)
         return self
 
-    def set_constraint(self, constraint: Union[Constraint, list], num_constraints: int = 0):
+    def set_constraint(self, constraint: Union[Constraint, List[Constraint]], num_constraints: int = 0):
         """set constraint algorithm for integrator"""
         self.num_constraints = num_constraints
         if self.constraint is not None:

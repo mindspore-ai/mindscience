@@ -29,7 +29,7 @@ from mindspore import context
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.insert(0, '../../src')
 
     from sponge import Sponge
     from sponge import ForceField

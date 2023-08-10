@@ -45,7 +45,7 @@ def gen_pdb(crd, atom_names, res_names, res_ids, pdb_name='temp.pdb'):
     pdb.write('MODEL     1\n')
     for i, c in enumerate(crd[0]):
         pdb.write('ATOM'.ljust(6))
-        pdb.write('{}'.format(i + 1).rjust(5))
+        pdb.write('{}'.format((i + 1) % 100000).rjust(5))
         if len(atom_names[i]) < 4:
             pdb.write('  ')
             pdb.write(atom_names[i].ljust(3))
@@ -54,7 +54,7 @@ def gen_pdb(crd, atom_names, res_names, res_ids, pdb_name='temp.pdb'):
             pdb.write(atom_names[i].ljust(4))
         pdb.write(res_names[i].rjust(4))
         pdb.write('A'.rjust(2))
-        pdb.write('{}'.format(res_ids[i]).rjust(4))
+        pdb.write('{}'.format(res_ids[i] % 10000).rjust(4))
         pdb.write('    ')
         pdb.write('{:.3f}'.format(c[0]).rjust(8))
         pdb.write('{:.3f}'.format(c[1]).rjust(8))

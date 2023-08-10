@@ -24,12 +24,13 @@
 
 from .colvar import Colvar
 from .group import ColvarGroup
-from .combine import ColvarCombine
+from .function import ColvarCombine, CombineCV, SinCV, CosCV, TransformCV, FunctionCV
 from .get import get_colvar
-from .basic import Distance, Angle, Torsion
+from .basic import Distance, Angle, Torsion, ConstantValue, Volume
 from .atoms import AtomsBase, Atoms, BatchedAtoms, Group, Center, Vector, \
         Position, BatchedPosition, get_atoms
 
-__all__ = ['Colvar', 'ColvarGroup', 'ColvarCombine', 'get_colvar']
+__all__ = ['Colvar', 'ColvarGroup', 'get_colvar']
 __all__.extend(atoms.__all__)
 __all__.extend(basic.__all__)
+__all__.extend(function.__all__)

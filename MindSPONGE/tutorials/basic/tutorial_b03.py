@@ -30,7 +30,7 @@ from mindspore.nn import Adam
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.append('../../src')
 
     from sponge import Sponge
     from sponge import Molecule

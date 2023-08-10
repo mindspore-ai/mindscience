@@ -22,7 +22,9 @@
 # ============================================================================
 """Molecular system"""
 
-from .molecule import Molecule, Protein
+from .molecule import get_molecule
+from .molecule import Molecule, Protein, MoleculeFromMol2
 from .residue import Residue, AminoAcid
 
-__all__ = ['Molecule', 'Protein', 'Residue', 'AminoAcid']
+__all__ = ['Molecule', 'Protein', 'Residue', 'AminoAcid', 'get_molecule',
+           'MoleculeFromMol2']

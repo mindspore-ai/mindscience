@@ -32,11 +32,12 @@ from mindspore import Tensor
 from mindspore import ops
 from mindspore.ops import functional as F
 
-from .integrator import Integrator
+from .integrator import Integrator, _integrator_register
 from ...system import Molecule
 from ...function import get_arguments
 
 
+@_integrator_register('brownian')
 class Brownian(Integrator):
     r"""A Brownian integrator module, which is a subclass of `Integrator`.
 

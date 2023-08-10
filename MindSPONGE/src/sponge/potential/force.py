@@ -196,16 +196,14 @@ class ForceCell(Cell):
         """
         #pylint: disable=unused-argument
 
-        b = coordinate.shape[0]
-        a = coordinate.shape[1]
-        d = coordinate.shape[-1]
-
-        energy = F.zeros((b, 1), ms.float32)
-
-        force = F.zeros((b, a, d), ms.float32)
+        # (B, 1)
+        energy = F.zeros((coordinate.shape[0], 1), coordinate.dtype)
+        # (B, A, D)
+        force = F.zeros_like(coordinate)
 
         virial = None
         if pbc_box is not None:
-            virial = F.zeros((b, d), ms.float32)
+            # (B, D)
+            virial = F.zeros_like(pbc_box)
 
         return energy, force, virial

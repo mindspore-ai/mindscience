@@ -108,7 +108,7 @@ class NeighbourList(Cell):
                  cutoff_scale: float = 1.2,
                  cell_cap_scale: float = 1.25,
                  grid_num_scale: float = 2,
-                 use_grids: bool = None,
+                 use_grids: bool = False,
                  cast_fp16: bool = False,
                  ):
 
@@ -138,7 +138,6 @@ class NeighbourList(Cell):
 
         self.no_mask = False
         if cutoff is None:
-            print('[MindSPONGE] Using fully connected neighbour list (not updated).')
             self.cutoff = None
             self.large_dis = Tensor(1e4, ms.float32)
             self._pace = 0
@@ -173,11 +172,7 @@ class NeighbourList(Cell):
                 else:
                     self.use_grids = True
 
-            if self.use_grids:
-                print('[MindSPONGE] Calculate the neighbour list using the grids of PBC box.')
-            else:
-                print('[MindSPONGE] Calculate the neighbour list using the inter-atomic distances.')
-
+            if not self.use_grids:
                 self.neighbour_list = DistanceNeighbours(
                     cutoff=self.cutoff,
                     num_neighbours=num_neighbours,
@@ -328,11 +323,11 @@ class NeighbourList(Cell):
             N:  Number of the maximum neighbouring atoms.
 
         """
-        index = self.identity(self.neighbours)
+        index = F.stop_gradient(self.identity(self.neighbours))
         mask = None
         if self.neighbour_mask is not None:
-            mask = self.identity(self.neighbour_mask)
-        return F.stop_gradient(index), F.stop_gradient(mask)
+            mask = F.stop_gradient(self.identity(self.neighbour_mask))
+        return index, mask
 
     def construct(self,
                   coordinate: Tensor,

@@ -975,6 +975,16 @@ class Units:
             self.__energy_ref = get_energy_ref(units)
         return self._set_constants()
 
+    def _set_constants(self):
+        """set constant values"""
+        self.__boltzmann = _BOLTZMANN_DEFAULT_REF
+        if self.__energy_ref is not None:
+            self.__boltzmann /= self.__energy_ref
+        self.__coulomb = _COULOMB_DEFAULT_REF
+        if self.__length_ref is not None and self.__energy_ref is not None:
+            self.__coulomb /= self.__energy_ref * self.__length_ref
+        return self
+
     def length(self, value: float, unit=None) -> float:
         """
         return the length value of the specified unit.
@@ -1044,16 +1054,6 @@ class Units:
             float, energy according from a specified units.
         """
         return energy_convert(unit, self.__energy_unit)
-
-    def _set_constants(self):
-        """set constant values"""
-        self.__boltzmann = _BOLTZMANN_DEFAULT_REF
-        if self.__energy_ref is not None:
-            self.__boltzmann /= self.__energy_ref
-        self.__coulomb = _COULOMB_DEFAULT_REF
-        if self.__length_ref is not None and self.__energy_ref is not None:
-            self.__coulomb /= self.__energy_ref * self.__length_ref
-        return self
 
 
 def get_length(length: Union[Length, float], unit: Union[str, Units] = None) -> float:

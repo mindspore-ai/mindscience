@@ -25,5 +25,8 @@
 from .add_missing_atoms import rotate_by_axis, add_h
 from .hadder import add_hydrogen, read_pdb
 from .pdb_generator import gen_pdb
+from .mol2_parser import mol2parser
+from .fill_water import fill_water
 
-__all__ = ['rotate_by_axis', 'add_h', 'add_hydrogen', 'read_pdb', 'gen_pdb']
+__all__ = ['rotate_by_axis', 'add_h', 'add_hydrogen', 'read_pdb', 'gen_pdb',
+           'mol2parser', 'fill_water']
