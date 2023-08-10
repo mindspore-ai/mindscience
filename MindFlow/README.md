@@ -277,6 +277,7 @@ yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, guoboq
 ## **Contribution Guide**
 
 - Please click here to see how to contribute your code:[Contribution Guide](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/CONTRIBUTION_CN.md)
+- For users who are in need of AI chips, please refer to [the document of Open Intelligence](https://download.mindspore.cn/mindscience/mindflow/tutorials/%E5%90%AF%E6%99%BA%E4%BA%91%E8%84%91%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.pdf).
 
 ## **License**
 
