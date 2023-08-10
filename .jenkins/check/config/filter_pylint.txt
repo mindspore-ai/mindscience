@@ -127,3 +127,8 @@
 "mindscience/MindSPONGE/mindsponge/python/pipeline/dataset/psp/psp.py"                          "redefined-builtin"
 "mindscience/MindSPONGE/mindsponge/python/pipeline/dataset/psp/psp.py"                          "unexpected-special-method-signature"
 "mindscience/MindSPONGE/mindsponge/python/pipeline/dataset/psp/psp.py"                          "arguments-differ"
+"mindscience/MindSPONGE/src/sponge/callback/savepdb.py"                                         "unused-argument"
+"mindscience/MindSPONGE/src/sponge/callback/savepdb.py"                                         "inconsistent-return-statements"
+"mindscience/MindSPONGE/src/sponge/system/molecule/__init__.py"                                 "no-else-return"
+"mindscience/MindSPONGE/src/sponge/system/molecule/molecule.py"                                 "invalid-name"
+"mindscience/MindSPONGE/src/sponge/system/residue/residue.py"                                   "unused-argument"
