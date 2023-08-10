@@ -7,7 +7,12 @@ from mindspore import Parameter, Tensor
 from mindspore.nn.optim.optimizer import Optimizer, opt_init_args_register
 from mindspore.ops import functional as F
 from mindspore.ops import composite as C
-from mindspore.common.api import ms_function
+try:
+    # MindSpore 2.X
+    from mindspore import jit
+except ImportError:
+    # MindSpore 1.X
+    from mindspore import ms_function as jit
 from mindspore.nn.learning_rate_schedule import LearningRateSchedule
 from mindspore import _checkparam as validator
 
@@ -143,7 +148,7 @@ class SteepestDescent(Optimizer):
             validator.check_positive_float(max_shift, "max_shift", self.cls_name)
             self.max_shift = max_shift
 
-    @ms_function
+    @jit
     def construct(self, gradients):
         """update the parameters by the gradients"""
         params = self._parameters

@@ -23,11 +23,13 @@
 """Controller"""
 
 from .controller import Controller
-from .integrator import Integrator, LeapFrog, VelocityVerlet, Brownian
-from .thermostat import Thermostat, BerendsenThermostat, Langevin
-from .barostat import Barostat, BerendsenBarostat, AndersenBarostat
-from .constraint import Constraint, Lincs
+from .integrator import Integrator, LeapFrog, VelocityVerlet, Brownian, get_integrator
+from .thermostat import Thermostat, BerendsenThermostat, Langevin, get_thermostat
+from .barostat import Barostat, BerendsenBarostat, AndersenBarostat, get_barostat
+from .constraint import Constraint, Lincs, SETTLE, get_constraint
 
-__all__ = ['Controller', 'Integrator', 'LeapFrog', 'VelocityVerlet', 'Brownian',
-           'Thermostat', 'BerendsenThermostat', 'Langevin', 'Barostat',
-           'BerendsenBarostat', 'AndersenBarostat', 'Constraint', 'Lincs']
+__all__ = ['Controller']
+__all__.extend(integrator.__all__)
+__all__.extend(thermostat.__all__)
+__all__.extend(barostat.__all__)
+__all__.extend(constraint.__all__)

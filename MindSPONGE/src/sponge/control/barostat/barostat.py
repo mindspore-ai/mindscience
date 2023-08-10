@@ -24,7 +24,8 @@
 Barostat
 """
 
-from typing import Tuple
+from typing import Union, Tuple, List
+from numpy import ndarray
 
 import mindspore as ms
 import mindspore.numpy as msnp
@@ -34,6 +35,25 @@ from mindspore.ops import functional as F
 from .. import Controller
 from ...system import Molecule
 from ...function import get_ms_array, get_arguments
+
+_BAROSTAT_BY_KEY = dict()
+
+
+def _barostat_register(*aliases):
+    """Return the alias register."""
+    def alias_reg(cls):
+        name = cls.__name__
+        name = name.lower()
+        if name not in _BAROSTAT_BY_KEY:
+            _BAROSTAT_BY_KEY[name] = cls
+
+        for alias in aliases:
+            if alias not in _BAROSTAT_BY_KEY:
+                _BAROSTAT_BY_KEY[alias] = cls
+
+        return cls
+
+    return alias_reg
 
 
 class Barostat(Controller):
@@ -86,19 +106,17 @@ class Barostat(Controller):
         self.sens = Tensor(1e8, ms.float32)
         self.inv_sens = msnp.reciprocal(self.sens)
 
-        #(B,1)
-        self.ref_press = get_ms_array(pressure, ms.float32).reshape(-1, 1)
-        if self.ref_press.shape[0] != 1 and self.ref_press.shape[0] != self.num_walker:
-            raise ValueError(f'The first dimension of "pressure" ({self.ref_press.shape[0]})'
-                             f'does not match the number of multiple walkers ({self.num_walker})!')
+        self.size_error_info = f'The size of pressure must be equal to 1 or ' \
+                               f'the number of multiple walker ({self.num_walker}) but got '
+
+        pressure = self._get_mw_tensor(pressure, 'pressure')
+        self.ref_press = Parameter(pressure, name='ref_press', requires_grad=False)
 
         # isothermal compressibility
         self.beta = get_ms_array(compressibility, ms.float32)
 
         # \tau_t
-        self.time_constant = get_ms_array(time_constant, ms.float32).reshape(-1, 1)
-        if self.time_constant.shape[0] != self.num_walker and self.time_constant.shape[0] != 1:
-            raise ValueError('The first shape of self.time_constant must equal to 1 or num_walker')
+        self.time_constant = self._get_mw_tensor(time_constant, 'time_constant')
 
         self.shape = (self.num_walker, self.dimension)
         self.change_accumulation = Parameter(msnp.zeros(self.shape), name='change_accumulation', requires_grad=False)
@@ -106,14 +124,26 @@ class Barostat(Controller):
         self.critical_change = 1e-6
 
     @property
-    def pressure(self):
+    def pressure(self) -> Tensor:
         """reference pressure"""
-        return self.ref_press
+        return self.identity(self.ref_press)
 
     @property
-    def compressibility(self):
+    def compressibility(self) -> Tensor:
         """isothermal compressibility"""
         return self.beta
+
+    def set_pressure(self, pressure: Union[float, ndarray, Tensor, List[float]]) -> Tensor:
+        r"""set the value of reference pressure.
+            The size of the pressure array must be equal to current pressure.
+        """
+        return F.assign(self.ref_press, self._get_mw_tensor(pressure, 'pressure'))
+
+    def reconstruct_pressure(self, pressure: Union[float, ndarray, Tensor, List[float]]):
+        r"""reset the reference pressure"""
+        pressure = self._get_mw_tensor(pressure, 'pressure')
+        self.ref_press = Parameter(pressure, name='ref_press', requires_grad=False)
+        return self
 
     def pressure_scale(self, sim_press: Tensor, ref_press: Tensor, ratio: float = 1) -> Tensor:
         """calculate the coordinate scale factor for pressure coupling"""

@@ -37,8 +37,7 @@ from . import Constraint
 from ...system import Molecule
 from ...potential import PotentialCell
 from ...function.operations import GetShiftGrad
-from ...function import get_arguments
-
+from ...function import get_arguments, get_ms_array
 
 class EinsumWrapper(ms.nn.Cell):
     """Implement particular Einsum operation
@@ -90,6 +89,11 @@ class EinsumWrapper(ms.nn.Cell):
             ijk, ikl = xy
             ijl = ops.BatchMatMul()(ijk, ikl)
             result = ijl
+        elif self.equation == 'ijk,ijl->ikl':
+            ijk, ijl = xy
+            ijkl1 = ijk[..., None].broadcast_to(ijk.shape + ijl.shape[-1:])
+            ijkl2 = ijl[..., None, :].broadcast_to(ijl.shape[:2] + ijk.shape[-1:] + ijl.shape[-1:])
+            result = (ijkl1 * ijkl2).sum(axis=1)
         else:
             raise NotImplementedError("This equation is not implemented")
         return result
@@ -126,14 +130,60 @@ class Lincs(Constraint):
             bonds=bonds,
             potential=potential,
         )
+        print('[MindSPONGE] The lincs constraint is used for the molecule system.')
+
         self._kwargs = get_arguments(locals(), kwargs)
 
+        if isinstance(bonds, str):
+            if bonds.lower() == 'h-bonds':
+                if system.remaining_index is None:
+                    self.bonds = ops.gather(system.bonds, system.h_bonds, axis=-2)
+                else:
+                    take_index = ops.nonzero((system.remaining_index == system.h_bonds[..., None]).sum(-2)).reshape(-1)
+                    self.bonds = ops.gather(system.bonds, system.remaining_index[take_index], axis=-2)
+            elif bonds.lower() == 'all-bonds':
+                if system.remaining_index is None:
+                    self.bonds = system.bonds
+                else:
+                    self.bonds = ops.gather(system.bonds, system.remaining_index, axis=-2)
+            else:
+                raise ValueError(f'"bonds" must be "h-bonds" or "all-bonds" but got: {bonds}')
+        else:
+            try:
+                self.bonds = get_ms_array(bonds, ms.int32)
+            except TypeError:
+                raise TypeError(f'The type of "bonds" must be Tensor or str, but got: {type(bonds)}')
+
+        if self.bonds.ndim != 2:
+            if self.bonds.ndim != 3:
+                raise ValueError(f'The rank of "bonds" must be 2 or 3 but got: {self.bonds.ndim}')
+
+            if self.bonds.shape[0] != 1:
+                raise ValueError(f'For constraint, the batch size of "bonds" must be 1 but got: {self.bonds[0]}')
+            self.bonds = self.bonds[0]
+
+        if self.bonds.shape[-1] != 2:
+            raise ValueError(f'The last dimension of "bonds" but got: {self.bonds.shape[-1]}')
+
+        self.num_constraints = self.bonds.shape[-2]
+
         #pylint: disable=invalid-name
+        self.cast = ops.Cast()
+        remaining_atoms = self.cast(ops.Sort()(self.cast(msnp.unique(self.bonds.reshape(-1)), ms.float16))[0], ms.int32)
+        self.remaining_atoms = remaining_atoms
+        self.bs_index = ops.broadcast_to(self.remaining_atoms[None, ..., None],
+                                         (1, self.remaining_atoms.shape[0], 3))
+        mapping_atoms = msnp.arange(remaining_atoms.shape[-1])
 
-        # (A,A) <- (A,A)
+        mapping = dict(zip(remaining_atoms.asnumpy(), mapping_atoms.asnumpy()))
+        self.bonds = Tensor(np.vectorize(mapping.get)(self.bonds.asnumpy()), ms.int32)
+
+        self.num_atoms = remaining_atoms.shape[0]
+        # (R,R) <- (R,R)
         iinvM = msnp.identity(self.num_atoms)
+        self.inv_mass = ops.gather(self.inv_mass, remaining_atoms, axis=-1)
 
-        # (B,A,A) = (1,A,A) * (B,1,A)
+        # (B,R,R) = (1,R,R) * (B,1,R)
         self.Mii = msnp.broadcast_to(
             iinvM, (1,) + iinvM.shape) * self.inv_mass[:, None, :]
 
@@ -144,7 +194,7 @@ class Lincs(Constraint):
             dimension=self.dimension,
             use_pbc=self.use_pbc
         )
-        # (B,C,A,D)
+        # (B,C,R,D)
         shape = (self.num_walker,
                  self.bonds.shape[-2], self.num_atoms, self.dimension)
 
@@ -157,25 +207,27 @@ class Lincs(Constraint):
         self.einsum3 = EinsumWrapper('ijk,ik->ij')
         self.einsum4 = EinsumWrapper('ijkl,ij->ikl')
         self.einsum5 = EinsumWrapper('ijk,ikl->ijl')
+        self.einsum6 = EinsumWrapper('ijk,ijl->ikl')
 
-        # (B,C,A)
+        # (B,C,R)
         shape = (self.num_walker, self.num_constraints, self.num_atoms)
 
         # (1,C,1)
         bond0 = self.bonds[..., 0].reshape(1, -1, 1).asnumpy()
-        # (B,C,A) <- (B,A,1)
+        # (B,C,R) <- (B,A,1)
         mask0 = np.zeros(shape)
         np.put_along_axis(mask0, bond0, 1, axis=-1)
-        # (B,C,A,1)
+        # (B,C,R,1)
         self.mask0 = F.expand_dims(Tensor(mask0, ms.int32), -1)
 
         # (1,C,1)
         bond1 = self.bonds[..., 1].reshape(1, -1, 1).asnumpy()
-        # (B,C,A) <- (B,A,1)
+        # (B,C,R) <- (B,R,1)
         mask1 = np.zeros(shape)
         np.put_along_axis(mask1, bond1, 1, axis=-1)
-        # (B,C,A,1)
+        # (B,C,R,1)
         self.mask1 = F.expand_dims(Tensor(mask1, ms.int32), -1)
+        self.scatter_update = ops.tensor_scatter_elements
 
     def construct(self,
                   coordinate: Tensor,
@@ -190,61 +242,67 @@ class Lincs(Constraint):
         #pylint: disable=invalid-name
 
         # (B,A,D)
-        coordinate_old = self._coordinate
-        coordinate_new = coordinate
+        last_crd = coordinate.copy()
 
-        # (B,C,A,D)
+        # (B,R,D)
+        coordinate_old = msnp.take_along_axis(self._coordinate.copy(), self.remaining_atoms[None, ..., None], axis=-2)
+        coordinate_new = msnp.take_along_axis(coordinate.copy(), self.remaining_atoms[None, ..., None], axis=-2)
+
+        # (B,C,R,D)
         BMatrix = self.BMatrix(coordinate_new, coordinate_old, pbc_box)
 
         # ijk,ilkm->iljm
-        # (B,A,A),(B,C,A,D)->(B,C,A,D)
-        # (B,1,A,A,1),(B,C,1,A,D)->(B,C,A,'A',D)->(B,C,A,D)
+        # (B,C,R,D)<-(B,R,R),(B,C,R,D)
         tmp0 = self.einsum0((self.Mii, BMatrix))
 
         # ijkl,imkl->ijm
-        # (B,C,A,D),(B,C,A,D)->(B,C,C)
-        # (B,C,A,D),(B,A,C,D)->(B,C,A,1,D),(B,1,A,C,D)->(B,C,'A',C,'D')->(B,C,C)
+        # (B,C,C)<-(B,C,R,D),(B,C,R,D)
         tmp1 = self.einsum1((BMatrix, tmp0))
+
         # (B,C,C)
         tmp2 = self.inv(tmp1)
 
-        # (B,1,A,D) <- (B,A,D)
+        # (B,C,R,D) <- (B,R,D)
         pos_old = self.broadcast(F.expand_dims(coordinate_old, -3))
-        # (B,C,D) <- (B,C,A,D) = (B,C,A,1) * (B,1,A,D)
+
+        # (B,C,D) <- (B,C,R,D) = (B,C,R,1) * (B,C,R,D)
         pos_old_0 = F.reduce_sum(self.mask0 * pos_old, -2)
         pos_old_1 = F.reduce_sum(self.mask1 * pos_old, -2)
+
         # (B,C)
         di = self.get_distance(pos_old_0, pos_old_1, pbc_box)
 
         # ijkl,ikl->ij
-        # (B,C,A,D),(B,A,D)->(B,C)
-        # (B,C,A,D),(B,1,A,D)->(B,C,A,D)->(B,C)
+        # (B,C)<-(B,C,R,D),(B,R,D)
         tmp3 = self.einsum2((BMatrix, coordinate_new)) - di
 
         # ijk,ik->ij
-        # (B,C,C),(B,C)->(B,C)
-        # (B,C,C),(B,1,C)->(B,C,'C')->(B,C)
+        # (B,C)<-(B,C,C),(B,C)
         tmp4 = self.einsum3((tmp2, tmp3))
 
         # ijkl,ij->ikl
-        # (B,C,A,D),(B,C)->(B,A,D)
-        # (B,A,C,D),(B,1,C,1)->(B,A,C,D)->(B,A,D)
+        # (B,R,D)<-(B,C,R,D),(B,C)
         tmp5 = self.einsum4((BMatrix, tmp4))
 
         # ijk,ikl->ijl
-        # (B,A,A),(B,A,D)->(B,A,D)
-        # (B,A,A,1),(B,1,A,D)->(B,A,'A',D)->(B,A,D)
+        # (B,R,D)<-(B,R,R),(B,R,D)
         dr = -self.einsum5((self.Mii, tmp5))
-        coordinate = coordinate_new + dr
+
+        # (B,R,D)
+        update_crd = msnp.take_along_axis(coordinate.copy(), self.remaining_atoms[None, ..., None], axis=-2)
+        # (B,A,D)
+        coordinate = self.scatter_update(coordinate, self.bs_index, update_crd + dr, axis=-2)
 
         # (B,A,D)
-        velocity += dr / self.time_step
+        velocity += (coordinate - last_crd) / self.time_step
+
         # Constraint force = m * dR / dt^2
-        # (B,A,1) * (B,A,D)
-        constraint_force = self._atom_mass * dr / (self.time_step**2)
+        # (B,A,D)<-(B,A,1),(B,A,D)
+        constraint_force = self._atom_mass * (coordinate - last_crd) / (self.time_step ** 2)
         force += constraint_force
+
         if self._pbc_box is not None:
-            # (B,D) <- (B,A,D)
-            virial += F.reduce_sum(-0.5 * coordinate * constraint_force, -2)
+            # (B,D)<-(B,A,D)<-(B,A,D),(B,A,D)
+            virial += -0.5 * (last_crd * constraint_force).sum(-2)
 
         return coordinate, velocity, force, energy, kinetics, virial, pbc_box

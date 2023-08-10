@@ -22,9 +22,53 @@
 # ============================================================================
 """Simulation integrator"""
 
-from .integrator import Integrator
+from typing import Union
+from ...system import Molecule
+
+from .integrator import Integrator, _INTEGRATOR_BY_KEY
 from .leapfrog import LeapFrog
 from .velocityverlet import VelocityVerlet
 from .brownian import Brownian
 
-__all__ = ['Integrator', 'LeapFrog', 'VelocityVerlet', 'Brownian']
+__all__ = ['Integrator', 'LeapFrog', 'VelocityVerlet', 'Brownian', 'get_integrator']
+
+_INTEGRATOR_BY_NAME = {cell.__name__: cell for cell in _INTEGRATOR_BY_KEY.values()}
+
+
+def get_integrator(cls_name: Union[str, dict, Integrator],
+                   system: Molecule,
+                   **kwargs) -> Integrator:
+    r"""get object of integrator
+
+    Args:
+        cls_name (Union[str, dict, Integrator]): Class name, arguments or object of a integrator
+        system (Molecule): Simulation system.
+        **kwargs: Other arguments
+
+    Return:
+        integrator (Integrator): Object of integrator
+
+    """
+
+    if cls_name is None:
+        return None
+
+    if isinstance(cls_name, Integrator):
+        return cls_name
+
+    if isinstance(cls_name, dict):
+        return get_integrator(**cls_name)
+
+    if isinstance(cls_name, str):
+        if cls_name.lower() == 'none':
+            return None
+
+        #pylint: disable=invalid-name
+        if cls_name.lower() in _INTEGRATOR_BY_KEY.keys():
+            return _INTEGRATOR_BY_KEY.get(cls_name.lower())(system=system, **kwargs)
+        if cls_name in _INTEGRATOR_BY_NAME.keys():
+            return _INTEGRATOR_BY_NAME.get(cls_name.lower())(system=system, **kwargs)
+
+        raise ValueError("The integrator corresponding to '{}' was not found.".format(cls_name))
+
+    raise TypeError("Unsupported integrator type '{}'.".format(type(cls_name)))

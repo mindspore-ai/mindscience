@@ -2067,12 +2067,12 @@ parameters:
   coulomb_energy:
     length_unit: nm
     energy_unit: kj/mol
-  vdw_energy:
+  lj_energy:
     length_unit: nm
     energy_unit: kj/mol
-    parameter_names:
+    parameter_names: &lj_param_names
       pattern: [sigma, epsilon]
-    parameters:
+    parameters: &lj_parameters
       H: [0.1069079, 0.0656888]
       HO: [0.0, 0.0]
       HS: [0.1069079, 0.0656888]
@@ -2129,3 +2129,5 @@ parameters:
       pattern: [r_scale, r6_scale, r12_scale]
     parameters:
       ?: [0.8333333, 0.5, 0.5]
+    lj_parameter_names: *lj_param_names
+    lj_parameters: *lj_parameters

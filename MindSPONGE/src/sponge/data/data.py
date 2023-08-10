@@ -44,6 +44,7 @@ __all__ = [
     'get_bonded_types',
     'get_dihedral_types',
     'get_improper_types',
+    'get_parameter_terms',
 ]
 
 
@@ -209,3 +210,38 @@ def get_improper_types(atom_type: ndarray, symbol: str = '-'):
         orders += (combination,)
 
     return permuation_types, orders
+
+def get_parameter_terms(parameters: dict,
+                        name_key: str = 'parameter_names',
+                        param_key: str = 'parameters',
+                        pattern_key: str = 'pattern',
+                        ) -> dict:
+    """
+    get the parameter terms of force field
+
+    Args:
+        parameters (dict): force field parameters.
+        name_key (str): key of the parameter names. Default: 'parameter_names'
+        param_key (str): key of the parameters. Default: 'parameters'
+        pattern_key (str): key of the parameter pattern. Default: 'pattern'
+
+    Returns:
+        - parameter_terms, dict.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+    """
+
+    parameter_names: dict = parameters.get(name_key)
+    if parameter_names is None:
+        raise ValueError(f'Cannot find the key "{name_key}" in parameters!')
+    parameter_names: list = parameter_names.get(pattern_key)
+    if parameter_names is None:
+        raise ValueError(f'Cannot find the key "{name_key}" in parameter_names!')
+    params: dict = parameters.get(param_key)
+
+    terms = {}
+    for i, key in enumerate(parameter_names):
+        terms[key] = {k: v[i] for k, v in params.items()}
+
+    return terms

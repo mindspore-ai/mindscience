@@ -24,13 +24,71 @@
 Energy terms with `EnergCell` as base class
 """
 
-from .energy import EnergyCell, NonbondEnergy
+from typing import Union
+from mindspore import Tensor
+from ...system import Molecule
+
+from .energy import EnergyCell, NonbondEnergy, _ENERGY_BY_KEY
 from .bond import BondEnergy
 from .angle import AngleEnergy
 from .dihedral import DihedralEnergy
+from .improper import ImproperEnergy
 from .coulomb import CoulombEnergy
 from .lj import LennardJonesEnergy
 from .pairs import NonbondPairwiseEnergy
 
 __all__ = ['EnergyCell', 'NonbondEnergy', 'BondEnergy', 'AngleEnergy', 'DihedralEnergy',
-           'CoulombEnergy', 'LennardJonesEnergy', 'NonbondPairwiseEnergy']
+           'ImproperEnergy', 'CoulombEnergy', 'LennardJonesEnergy', 'NonbondPairwiseEnergy',
+           'get_energy_cell']
+
+_ENERGY_BY_NAME = {cell.__name__: cell for cell in _ENERGY_BY_KEY.values()}
+
+
+def get_energy_cell(cls_name: Union[str, dict, EnergyCell],
+                    system: Molecule,
+                    parameters: dict = None,
+                    exclude_index: Tensor = None,
+                    **kwargs) -> EnergyCell:
+    r"""get object of energy cell
+
+    Args:
+        cls_name (Union[str, dict, Thermostat]): Class name, arguments or object of a energy cell.
+        system (Molecule): Simulation system.
+        parameters (dict): Dict of force field parameters. Default: None
+        exclude_index (Tensor): Tensor of exclude index for neighbour list. Default: None
+        **kwargs: Other arguments
+
+    Return:
+        energy (EnergyCell): Object of energy cell
+
+    """
+
+    if cls_name is None:
+        return None
+
+    if isinstance(cls_name, EnergyCell):
+        return cls_name
+
+    if isinstance(cls_name, dict):
+        return get_energy_cell(**cls_name)
+
+    if isinstance(cls_name, str):
+        if cls_name.lower() == 'none':
+            return None
+
+        #pylint: disable=invalid-name
+        if cls_name.lower() in _ENERGY_BY_KEY.keys():
+            EnergyCell_: EnergyCell = _ENERGY_BY_KEY.get(cls_name.lower())
+        elif cls_name in _ENERGY_BY_NAME.keys():
+            EnergyCell_: EnergyCell = _ENERGY_BY_NAME.get(cls_name.lower())
+        else:
+            raise ValueError("The energy cell corresponding to '{}' was not found.".format(cls_name))
+
+        if EnergyCell_.check_system(system):
+            return EnergyCell_(system=system,
+                               parameters=parameters,
+                               exclude_index=exclude_index,
+                               **kwargs)
+        return None
+
+    raise TypeError("Unsupported energy cell type '{}'.".format(type(cls_name)))

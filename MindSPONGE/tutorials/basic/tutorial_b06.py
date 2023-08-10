@@ -29,7 +29,7 @@ from mindspore import context
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.append('../../src')
 
     from sponge import Sponge
     from sponge import ForceField
@@ -37,9 +37,7 @@ if __name__ == "__main__":
     from sponge import Protein
     from sponge import UpdaterMD, WithEnergyCell
     from sponge.optimizer import SteepestDescent
-    from sponge.control import VelocityVerlet
     from sponge.callback import WriteH5MD, RunInfo
-    from sponge.control import Langevin
     from sponge.function import VelocityGenerator
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
@@ -63,11 +61,12 @@ if __name__ == "__main__":
     velocity = vgen(system.shape, system.atom_mass)
 
     updater = UpdaterMD(
-        system,
-        integrator=VelocityVerlet(system),
-        thermostat=Langevin(system, 300),
+        system=system,
         time_step=1e-3,
-        velocity=velocity
+        velocity=velocity,
+        integrator='velocity_verlet',
+        temperature=300,
+        thermostat='langevin',
     )
 
     cb_h5md = WriteH5MD(system, 'tutorial_b06.h5md', save_freq=10)

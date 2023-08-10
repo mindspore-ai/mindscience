@@ -30,6 +30,7 @@ import numpy as np
 from numpy import ndarray
 import h5py
 from h5py import Group
+from mindspore import Tensor
 from mindspore.train._utils import _make_directory
 
 from ...system import Molecule
@@ -137,7 +138,10 @@ class H5MD:
 
         atomic_number = None
         if system.atomic_number is not None:
-            atomic_number = system.atomic_number.asnumpy()[0]
+            if isinstance(system.atomic_number, Tensor):
+                atomic_number = system.atomic_number.asnumpy()[0]
+            else:
+                atomic_number = system.atomic_number[0]
 
         self.length_unit_scale = self.units.convert_length_from(
             system.units)
@@ -160,16 +164,23 @@ class H5MD:
         if system.residue_name is not None:
             resname = [s.encode('ascii', 'ignore')
                        for s in system.residue_name.tolist()]
+            if len(resname[0]) == 4:
+                resname[0] = resname[0][1:]
+            if len(resname[-1]) == 4:
+                resname[-1] = resname[-1][1:]
 
         resid = None
         if system.atom_resid is not None:
-            resid = system.atom_resid.asnumpy()
+            if isinstance(system.atom_resid, Tensor):
+                resid = system.atom_resid.asnumpy()
+            else:
+                resid = system.atom_resid
 
         bond_from = None
         bond_to = None
-        if system.bond is not None:
-            bond_from = system.bond[0][..., 0].asnumpy() + 1
-            bond_to = system.bond[0][..., 1].asnumpy() + 1
+        if system.bonds is not None:
+            bond_from = system.bonds[0][..., 0].asnumpy() + 1
+            bond_to = system.bonds[0][..., 1].asnumpy() + 1
 
         species = np.arange(self.num_atoms, dtype=np.int32)
 

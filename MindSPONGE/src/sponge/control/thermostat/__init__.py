@@ -22,8 +22,61 @@
 # ============================================================================
 """Thermostat"""
 
-from .thermostat import Thermostat
+from typing import Union
+from ...system import Molecule
+
+from .thermostat import Thermostat, _THERMOSTAT_BY_KEY
 from .berendsen import BerendsenThermostat
 from .langevin import Langevin
 
-__all__ = ['Thermostat', 'BerendsenThermostat', 'Langevin']
+__all__ = ['Thermostat', 'BerendsenThermostat', 'Langevin', 'get_thermostat']
+
+_THERMOSTAT_BY_NAME = {cell.__name__: cell for cell in _THERMOSTAT_BY_KEY.values()}
+
+
+def get_thermostat(cls_name: Union[str, dict, Thermostat],
+                   system: Molecule,
+                   temperature: float = None,
+                   **kwargs) -> Thermostat:
+    r"""get object of thermostat
+
+    Args:
+        cls_name (Union[str, dict, Thermostat]): Class name, arguments or object of a thermostat.
+        system (Molecule): Simulation system.
+        temperature (float): Reference temperature for temperature coupling. If `None` is given and
+            the type of `cls_name` is `str`, `None` will be returned. Default: None
+        **kwargs: Other arguments
+
+    Return:
+        thermostat (Thermostat): Object of thermostat
+
+    """
+
+    if cls_name is None:
+        return None
+
+    if isinstance(cls_name, Thermostat):
+        return cls_name
+
+    if isinstance(cls_name, dict):
+        return get_thermostat(**cls_name)
+
+    if isinstance(cls_name, str):
+        if cls_name.lower() == 'none':
+            return None
+
+        if temperature is None:
+            return None
+
+        if cls_name.lower() in _THERMOSTAT_BY_KEY.keys():
+            return _THERMOSTAT_BY_KEY.get(cls_name.lower())(system=system,
+                                                            temperature=temperature,
+                                                            **kwargs)
+        if cls_name in _THERMOSTAT_BY_NAME.keys():
+            return _THERMOSTAT_BY_NAME.get(cls_name.lower())(system=system,
+                                                             temperature=temperature,
+                                                             **kwargs)
+
+        raise ValueError("The thermostat corresponding to '{}' was not found.".format(cls_name))
+
+    raise TypeError("Unsupported thermostat type '{}'.".format(type(cls_name)))

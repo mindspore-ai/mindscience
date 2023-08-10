@@ -22,7 +22,9 @@
 # ============================================================================
 """Lennard-Jones potential"""
 
-from typing import Union, List
+from typing import Union, List, Tuple
+from operator import itemgetter
+import numpy as np
 from numpy import ndarray
 
 import mindspore as ms
@@ -30,11 +32,13 @@ import mindspore.numpy as msnp
 from mindspore import Tensor, Parameter
 from mindspore.ops import functional as F
 
-from .energy import NonbondEnergy
+from .energy import NonbondEnergy, _energy_register
+from ...system import Molecule
 from ... import function as func
 from ...function.functions import gather_value, get_ms_array, get_arguments
 
 
+@_energy_register('lj_energy')
 class LennardJonesEnergy(NonbondEnergy):
     r"""Lennard-Jones potential
 
@@ -97,15 +101,16 @@ class LennardJonesEnergy(NonbondEnergy):
     """
 
     def __init__(self,
+                 system: Molecule = None,
+                 parameters: dict = None,
                  epsilon: Union[Tensor, ndarray, List[float]] = None,
                  sigma: Union[Tensor, ndarray, List[float]] = None,
                  mean_c6: Union[Tensor, ndarray, List[float]] = 0,
-                 parameters: dict = None,
                  cutoff: float = None,
                  use_pbc: bool = None,
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
-                 name: str = 'vdw',
+                 name: str = 'lj_energy',
                  **kwargs,
                  ):
 
@@ -117,15 +122,18 @@ class LennardJonesEnergy(NonbondEnergy):
             energy_unit=energy_unit,
         )
         self._kwargs = get_arguments(locals(), kwargs)
+        if 'exclude_index' in self._kwargs.keys():
+            self._kwargs.pop('exclude_index')
 
         if parameters is not None:
+            if system is None:
+                raise ValueError('`system` cannot be None when using `parameters`!')
             length_unit = parameters.get('length_unit')
             energy_unit = parameters.get('energy_unit')
             self.units.set_units(length_unit, energy_unit)
+            self._use_pbc = system.use_pbc
 
-            epsilon = parameters.get('epsilon')
-            sigma = parameters.get('sigma')
-            mean_c6 = parameters.get('mean_c6')
+            epsilon, sigma, mean_c6 = self.get_parameters(system, parameters)
 
         sigma = get_ms_array(sigma, ms.float32)
         epsilon = get_ms_array(epsilon, ms.float32)
@@ -160,6 +168,60 @@ class LennardJonesEnergy(NonbondEnergy):
             self.mean_c6 = Parameter(get_ms_array(mean_c6, ms.float32), name='average_dispersion', requires_grad=False)
 
         self.disp_corr = self._calc_disp_corr()
+
+    @staticmethod
+    def get_parameters(system: Molecule, parameters: dict) -> Tuple[ndarray]:
+        r"""get the force field parameters for the system
+
+        ['H','HO','HS','HC','H1','H2','H3','HP','HA','H4',
+         'H5','HZ','O','O2','OH','OS','OP','C*','CI','C5',
+         'C4','CT','CX','C','N','N3','S','SH','P','MG',
+         'C0','F','Cl','Br','I','2C','3C','C8','CO']
+
+        Args:
+            atom_type (ndarray):    Array of atoms.
+
+        Returns:
+            dict, parameters.
+        """
+
+        atom_type = system.atom_type[0]
+
+        sigma_index = parameters['parameter_names']["pattern"].index('sigma')
+        eps_index = parameters['parameter_names']["pattern"].index('epsilon')
+
+        vdw_params = parameters['parameters']
+        type_list: list = atom_type.reshape(-1).tolist()
+        sigma = []
+        epsilon = []
+        for params in itemgetter(*type_list)(vdw_params):
+            sigma.append(params[sigma_index])
+            epsilon.append(params[eps_index])
+
+        if atom_type.ndim == 2 and atom_type.shape[0] > 1:
+            #TODO
+            type_list: list = atom_type[0].tolist()
+
+        type_set = list(set(type_list))
+        count = np.array([type_list.count(i) for i in type_set], np.int32)
+
+        sigma_set = []
+        eps_set = []
+        for params in itemgetter(*type_set)(vdw_params):
+            sigma_set.append(params[sigma_index])
+            eps_set.append(params[eps_index])
+
+        sigma_set = np.array(sigma_set)
+        eps_set = np.array(eps_set)
+        c6_set = 4 * eps_set * np.power(sigma_set, 6)
+        param_count = count.reshape(1, -1) * count.reshape(-1, 1) - np.diag(count)
+        mean_c6 = np.sum(c6_set * param_count) / param_count.sum()
+
+        epsilon = np.array(epsilon, np.float32).reshape(atom_type.shape)
+        sigma = np.array(sigma, np.float32).reshape(atom_type.shape)
+        mean_c6 = mean_c6.astype(np.float32)
+
+        return epsilon, sigma, mean_c6
 
     def set_cutoff(self, cutoff: float, unit: str = None):
         """set cutoff distance"""

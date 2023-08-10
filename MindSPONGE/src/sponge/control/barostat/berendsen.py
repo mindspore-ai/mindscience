@@ -29,11 +29,12 @@ import mindspore.numpy as msnp
 from mindspore import Tensor
 from mindspore.ops import functional as F
 
-from . import Barostat
+from .barostat import Barostat, _barostat_register
 from ...system import Molecule
 from ...function import get_arguments
 
 
+@_barostat_register('berendsen')
 class BerendsenBarostat(Barostat):
     r"""A Berendsen (weak coupling) barostat module, which is a subclass of `Barostat`.
 

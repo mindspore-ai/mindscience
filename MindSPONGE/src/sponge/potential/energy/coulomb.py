@@ -35,13 +35,14 @@ from mindspore.nn import Cell
 from mindspore.ops import functional as F
 
 from ...colvar import Distance
-from .energy import NonbondEnergy
+from .energy import NonbondEnergy, _energy_register
 from ...function import functions as func
 from ...function import gather_value, get_ms_array, get_arguments
 from ...function.units import Units, GLOBAL_UNITS, Length
 from ...system.molecule import Molecule
 
 
+@_energy_register('coulomb_energy')
 class CoulombEnergy(NonbondEnergy):
     r"""Coulomb interaction
 
@@ -101,7 +102,7 @@ class CoulombEnergy(NonbondEnergy):
                  parameters: dict = None,
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
-                 name: str = 'coulomb',
+                 name: str = 'coulomb_energy',
                  **kwargs,
                  ):
 
@@ -140,6 +141,11 @@ class CoulombEnergy(NonbondEnergy):
 
         self.damp_dis = damp_dis
 
+        self._dsf_warrning = '[WARNING] Using `cutoff` without periodic boundary condition (PBC) will call ' \
+                             'the damped shifted force algorithm to estimate the Coulomb interaction, ' \
+                             'which is only recommended for minimization. It is recommended to set ' \
+                             'the `cutoff` to `None` to perform the MD simulation without PBC.'
+
         self.pme_coulomb = None
         self.dsf_coulomb = None
         self.use_pme = use_pme
@@ -151,8 +157,14 @@ class CoulombEnergy(NonbondEnergy):
                                                             accuracy=pme_accuracy,
                                                             length_unit=self.units.length_unit)
             else:
+                if not self.use_pbc:
+                    print(self._dsf_warrning)
                 self.dsf_coulomb = DampedShiftedForceCoulomb(self.cutoff, damp_dis=self.damp_dis,
                                                              length_unit=self.units.length_unit)
+    @staticmethod
+    def check_system(system: Molecule) -> bool:
+        """Check if the system needs to calculate this energy term"""
+        return system.atom_charge is not None
 
     @staticmethod
     def coulomb_interaction(qi: Tensor, qj: Tensor, inv_dis: Tensor, mask: Tensor = None) -> Tensor:
@@ -183,6 +195,8 @@ class CoulombEnergy(NonbondEnergy):
                 self.pme_coulomb.set_cutoff(self.cutoff)
             else:
                 if self.dsf_coulomb is None:
+                    if not self.use_pbc:
+                        print(self._dsf_warrning)
                     self.dsf_coulomb = DampedShiftedForceCoulomb(self.cutoff,
                                                                  damp_dis=self.damp_dis,
                                                                  length_unit=self.units.length_unit)
@@ -372,8 +386,6 @@ class DampedShiftedForceCoulomb(Cell):
         #   \frac{\alpha}{\sqrt{\pi}}
         self.dsf_self = self.dsf_shift + a_pi * (exp_ac2 + 1)
 
-#pylint: disable=unused-argument
-
 
 class RFFT3D(Cell):
     r"""rfft3d"""
@@ -403,6 +415,7 @@ class RFFT3D(Cell):
         return self.rfft3d(x)
 
     def bprop(self, x, out, dout):
+        #pylint: disable=unused-argument
         if self.inverse:
             ans = self.rfft3d(dout)
         else:
@@ -584,12 +597,21 @@ class ParticleMeshEwaldCoulomb(Cell):
         bx = msnp.array([self._b(i, self.fftx) for i in range(self.fftx)])
         by = msnp.array([self._b(i, self.ffty) for i in range(self.ffty)])
         bz = msnp.array([self._b(i, self.fftz) for i in range(self.fftc)])
-        self.b = bx.reshape(-1, 1, 1) * by.reshape(1, -
-                                                   1, 1) * bz.reshape(1, 1, -1)
-        self.rfft3d = RFFT3D(self.fftx, self.ffty,
-                             self.fftz, self.fftc, inverse=False)
-        self.irfft3d = RFFT3D(self.fftx, self.ffty,
-                              self.fftz, self.fftc, inverse=True)
+        self.b = bx.reshape(-1, 1, 1) * by.reshape(1, -1, 1) * bz.reshape(1, 1, -1)
+
+        self.multi_batch_fft = None
+        if ms.get_context("device_target") == "Ascend":
+            # Ascend platform & mindspore version >= 2.0.0
+            self.multi_batch_fft = True
+            self.rfft3d = ops.FFTWithSize(signal_ndim=3, real=True, inverse=False)
+            self.irfft3d = ops.FFTWithSize(signal_ndim=3, real=True, inverse=True, norm="forward")
+        else:
+            # GPU platform
+            self.multi_batch_fft = False
+            self.rfft3d = RFFT3D(self.fftx, self.ffty,
+                                 self.fftz, self.fftc, inverse=False)
+            self.irfft3d = RFFT3D(self.fftx, self.ffty,
+                                  self.fftz, self.fftc, inverse=True)
 
     def calculate_direct_energy(self,
                                 qi: Tensor,
@@ -648,30 +670,36 @@ class ParticleMeshEwaldCoulomb(Cell):
 
     def calculate_reciprocal_energy(self, coordinate: Tensor, qi: Tensor, pbc_box: Tensor):
         """Calculate the reciprocal energy term."""
-        # the batch dimension in the following part is ignored due to the limitation of the operator FFT3D
+
         # (B,A,3) <- (B,A,3) / (B,1,3) * (B,1,3)
         pbc_box = pbc_box.reshape((-1, 1, 3))
         frac = coordinate / F.stop_gradient(pbc_box) % 1.0 * self.nfft
         grid = self.cast(frac, ms.int32)
         frac = frac - F.floor(frac)
+
         # (B,A,64,3) <- (B,A,1,3) + (1,1,64,3)
         neibor_grids = F.expand_dims(grid, 2) - self.base_grid
         neibor_grids %= F.expand_dims(self.nfft, 2)
+
         # (B,A,64,3) <- (B,A,1,3) * (1,1,64,3)
         frac = F.expand_dims(frac, 2)
         neibor_q = frac * frac * frac * self.ma + frac * \
             frac * self.mb + frac * self.mc + self.md
+
         # (B,A,64) <- (B,A,1) * reduce (B,A,64,3)
         neibor_q = qi * self.reduce_prod(neibor_q, -1)
+
         # (B,A,64,4) <- concat (B,A,64,1) (B,A,64,3)
         neibor_grids = F.concat((self.batch_constant, neibor_grids), -1)
+
         # (B, fftx, ffty, fftz)
         q_matrix = msnp.zeros([1, self.fftx, self.ffty, self.fftz], ms.float32)
         q_matrix = F.tensor_scatter_add(
             q_matrix, neibor_grids.reshape(-1, 4), neibor_q.reshape(-1))
 
-        #pylint:disable=invalid-unary-operand-type
+        # pylint:disable=invalid-unary-operand-type
         mprefactor = msnp.pi * msnp.pi / -self.alpha / self.alpha
+
         # (fftx, ffty, fftc) = (fftx, 1, 1) + (1, ffty, 1) + (1, 1, fftc)
         msq = self.ffkx * self.ffkx / pbc_box[0][0][0] / pbc_box[0][0][0] + \
             self.ffky * self.ffky / pbc_box[0][0][1] / pbc_box[0][0][1] + \
@@ -681,13 +709,25 @@ class ParticleMeshEwaldCoulomb(Cell):
             msnp.exp(mprefactor * msq) / self.reduce_prod(pbc_box, -1)[0]
         bc[0][0][0] = 0
         bc *= self.b
-        fq = self.rfft3d(q_matrix.reshape(self.fftx, self.ffty, self.fftz))
 
-        bcfq_real = bc * ops.stop_gradient(fq.real())
-        bcfq_imag = bc * ops.stop_gradient(fq.imag())
-        bcfq = ops.Complex()(bcfq_real, bcfq_imag)
-        fbcfq = self.irfft3d(bcfq)
-        fbcfq = F.expand_dims(fbcfq, 0)
+        # depends on mindspore versions
+        if self.multi_batch_fft:
+            # if mindspore_version >= 2.0.0:
+            # the batch dimension in the following part is supported.
+            fq = self.rfft3d(q_matrix)
+            bcfq_real = bc * ops.stop_gradient(fq.real())
+            bcfq_imag = bc * ops.stop_gradient(fq.imag())
+            bcfq = ops.Complex()(bcfq_real, bcfq_imag)
+            fbcfq = self.irfft3d(bcfq)
+        else:
+            # if mindspore_version < 2.0.0:
+            # the batch dimension in the following part is ignored due to
+            # the limitation of the operator FFT3D.
+            fq = self.rfft3d(q_matrix.reshape(self.fftx, self.ffty, self.fftz))
+            bcfq = bc * fq
+            fbcfq = self.irfft3d(bcfq)
+            F.expand_dims(fbcfq, 0)
+
         energy = q_matrix * fbcfq
         energy = 0.5 * F.reduce_sum(energy, (-1, -2, -3))
         energy = energy.reshape(-1, 1)
@@ -710,4 +750,5 @@ class ParticleMeshEwaldCoulomb(Cell):
         exclude_energy = self.calculate_exclude_energy(coordinate, qi, pbc_box)
         reciprocal_energy = self.calculate_reciprocal_energy(
             coordinate, qi, pbc_box)
+
         return direct_energy + self_energy + exclude_energy + reciprocal_energy

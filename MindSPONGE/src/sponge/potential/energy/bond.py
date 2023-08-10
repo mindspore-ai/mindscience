@@ -23,6 +23,8 @@
 """Bond energy"""
 
 from typing import Union, List
+from operator import itemgetter
+import numpy as np
 from numpy import ndarray
 
 import mindspore as ms
@@ -30,12 +32,15 @@ from mindspore import Tensor
 from mindspore import Parameter
 from mindspore.ops import functional as F
 
-from .energy import EnergyCell
+from .energy import EnergyCell, _energy_register
 from ...colvar import Distance
+from ...system import Molecule
+from ...data import get_bonded_types
 from ...function import functions as func
 from ...function import get_ms_array, get_arguments
 
 
+@_energy_register('bond_energy')
 class BondEnergy(EnergyCell):
     r"""Energy term of bond length
 
@@ -86,14 +91,15 @@ class BondEnergy(EnergyCell):
     """
 
     def __init__(self,
+                 system: Molecule = None,
+                 parameters: dict = None,
                  index: Union[Tensor, ndarray, List[int]] = None,
                  force_constant: Union[Tensor, ndarray, List[float]] = None,
                  bond_length: Union[Tensor, ndarray, List[float]] = None,
-                 parameters: dict = None,
                  use_pbc: bool = None,
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
-                 name: str = 'bond',
+                 name: str = 'bond_energy',
                  **kwargs,
                  ):
 
@@ -104,15 +110,17 @@ class BondEnergy(EnergyCell):
             energy_unit=energy_unit,
         )
         self._kwargs = get_arguments(locals(), kwargs)
+        if 'exclude_index' in self._kwargs.keys():
+            self._kwargs.pop('exclude_index')
 
         if parameters is not None:
+            if system is None:
+                raise ValueError('`system` cannot be None when using `parameters`!')
             length_unit = parameters.get('length_unit')
             energy_unit = parameters.get('energy_unit')
             self.units.set_units(length_unit, energy_unit)
-
-            index = parameters.get('index')
-            force_constant = parameters.get('force_constant')
-            bond_length = parameters.get('bond_length')
+            self._use_pbc = system.use_pbc
+            index, force_constant, bond_length = self.get_parameters(system, parameters)
 
         # (B,b,2)
         index = get_ms_array(index, ms.int32)
@@ -150,6 +158,61 @@ class BondEnergy(EnergyCell):
         if bond_length.ndim > 2:
             raise ValueError('The rank of bond_length cannot be larger than 2!')
         self.bond_length = Parameter(bond_length, name='bond_length')
+
+    @staticmethod
+    def check_system(system: Molecule) -> bool:
+        """Check if the system needs to calculate this energy term"""
+        return system.bonds is not None
+
+    @staticmethod
+    def get_parameters(system: Molecule, parameters: dict):
+        """
+        Get the force field bond parameters.
+
+        Args:
+            system (Molecule): Simulation system.
+            parameters (dict): parameters.
+
+        Returns:
+            index (ndarray)
+            force_constant (ndarray)
+            bond_length (ndarray)
+
+        """
+
+        atom_type = system.atom_type[0]
+        index = system.bonds[0].asnumpy()
+
+        bond_atoms = np.take(atom_type, index, -1)
+
+        k_index = parameters['parameter_names']["pattern"].index('force_constant')
+        r_index = parameters['parameter_names']["pattern"].index('bond_length')
+
+        bond_params: dict = parameters['parameters']
+        params = {}
+        for k, v in bond_params.items():
+            [a, b] = k.split('-')
+            if a != b:
+                params[b + '-' + a] = v
+        bond_params.update(params)
+
+        bond_type = get_bonded_types(bond_atoms)
+        type_list: list = bond_type.reshape(-1).tolist()
+
+        if len(type_list) == 1:
+            bond_length = [bond_params[type_list[0]][r_index]]
+            force_constant = [bond_params[type_list[0]][k_index]]
+        else:
+            bond_length = []
+            force_constant = []
+            for params in itemgetter(*type_list)(bond_params):
+                bond_length.append(params[r_index])
+                force_constant.append(params[k_index])
+
+        force_constant = np.array(force_constant, np.float32).reshape(bond_type.shape)
+        bond_length = np.array(bond_length, np.float32).reshape(bond_type.shape)
+
+        return index, force_constant, bond_length
 
     def set_pbc(self, use_pbc: bool):
         self._use_pbc = use_pbc

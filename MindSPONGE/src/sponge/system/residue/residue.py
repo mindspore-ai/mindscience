@@ -30,7 +30,12 @@ import numpy as np
 from numpy import ndarray
 import mindspore as ms
 from mindspore import numpy as msnp
-from mindspore import ms_class
+try:
+    # MindSpore 2.X
+    from mindspore import jit_class
+except ImportError:
+    # MindSpore 1.X
+    from mindspore import ms_class as jit_class
 from mindspore.ops import functional as F
 from mindspore.common import Tensor
 
@@ -39,65 +44,48 @@ from ...data.element import elements, element_set, element_dict, atomic_mass
 from ...data.template import get_template, get_template_index
 
 
-@ms_class
+@jit_class
 class Residue:
-    r"""Base class for residue.
+    r"""
+    Base class for residue.
+    The `Residue` Cell is the component of the `Molecule` (System) Cell.
+    A `Residue` can represent not only an amino acid residue, but also a small molecule in a molecular system,
+    such as a water molecule, an inorganic salt ion, etc. This means that the `Residue` Cell has
+    a similar concept to the "residue" in a PDB file.
 
-        The `Residue` Cell is the component of the `Molecule` (System) Cell.
-
-        A `Residue` can represent not only an amino acid residue, but also a small molecule in a molecular system,
-        such as a water molecule, an inorganic salt ion, etc. This means that the `Residue` Cell has
-        a similar concept to the "residue" in a PDB file.
-
-        NOTE: `Residue` Cell is only used to represent the atomic properties and bond connections,
-              but does NOT contain atomic coordinates.
+    NOTE: `Residue` Cell is only used to represent the atomic properties and bond connections,
+            but does NOT contain atomic coordinates.
 
     Args:
-
-        atom_name (Union[List[str], ndarray]):
-                            Array of atom name with data type `str`. Defulat: None
-
-        atom_type (Union[List[str], ndarray]):
-                            Array of atom type with data type `str`. Defulat: None
-
-        atom_mass (Union[Tensor, ndarray, List[float]]):
-                            Array of atom mass of shape `(B, A)` with data type `float`. Defulat: None
-
-        atom_charge (Union[Tensor, ndarray, List[float]]):
-                            Array of atom charge of shape `(B, A)` with data type `float`. Defulat: None
-
-        atomic_number (Union[Tensor, ndarray, List[float]]):
-                            Array of atomic number of shape `(B, A)` with data type `int`. Defulat: None
-
-        bond (Union[Tensor, ndarray, List[int]]):
-                            Array of bond connection of shape `(B, b, 2)` with data type `int`. Defulat: None
-
-        head_atom (int):    Index of the head atom to connect with the previous residue.
-                            Default: None
-
-        tail_atom (int):    Index of the tail atom to connect with the next residue.
-                            Default: None
-
-        start_index (int):  The start index of the first atom in this residue.
-
-        template (Union[dict, str]):
-                            Template for residue. It can be a `dict` in MindSPONGE template format
-                            or a `str` for the filename of a MindSPONGE template file. If a `str` is given,
-                            it will first look for a file with the same name in the current directory.
-                            If file does not exist, it will search in the built-in template directory
-                            of MindSPONGE (`mindsponge.data.template`).
-                            Default: None.
-
-        name (str):         Name of the residue. Default: 'MOL'
+        atom_name (Union[List[str], ndarray]): Array of atom name with data type `str`. Defulat: None
+        atom_type (Union[List[str], ndarray]): Array of atom type with data type `str`. Defulat: None
+        atom_mass (Union[Tensor, ndarray, List[float]]): Array of atom mass of shape `(B, A)`
+            with data type `float`. Defulat: None
+        atom_charge (Union[Tensor, ndarray, List[float]]): Array of atom charge of shape `(B, A)
+            with data type `float`. Defulat: None
+        atomic_number (Union[Tensor, ndarray, List[float]]): Array of atomic number of shape `(B, A)`
+            with data type `int`. Defulat: None
+        bonds (Union[Tensor, ndarray, List[int]]): Array of bond connection of shape `(B, b, 2)`
+            with data type `int`. Defulat: None
+        settle_index (Union[Tensor, ndarray, List[int]]): Array of atom indices for SETTLE constraint algorithm,
+            The shape of the array is `(B, 3)` with data type `int`. The order of index is vertex atoms and two
+            base atoms. Defulat: None
+        settle_length (Union[Tensor, ndarray, List[float]]): Array of length for SETTLE constraint algorithm,
+            The shape of the array is `(B, 2)` with data type `int`. The order of length is leg and base. Defulat: None
+        head_atom (int): Index of the head atom to connect with the previous residue. Default: None
+        tail_atom (int): Index of the tail atom to connect with the next residue. Default: None
+        start_index (int): The start index of the first atom in this residue. Default: 0
+        name (str): Name of the residue. Default: 'MOL'
+        template (Union[dict, str]): Template for residue. It can be a `dict` in MindSPONGE template
+            format or a `str` for the filename of a MindSPONGE template file. If a `str` is given,
+            it will first look for a file with the same name in the current directory. If file does
+            not exist, it will search in the built-in template directory of MindSPONGE
+            (`mindsponge.data.template`). Default: None.
 
     Symbols:
-
         B:  Batchsize, i.e. number of walkers in simulation
-
         A:  Number of atoms.
-
         b:  Number of bonds.
-
     """
 
     def __init__(self,
@@ -106,17 +94,22 @@ class Residue:
                  atom_mass: Union[Tensor, ndarray, List[float]] = None,
                  atom_charge: Union[Tensor, ndarray, List[float]] = None,
                  atomic_number: Union[Tensor, ndarray, List[float]] = None,
-                 bond: Union[Tensor, ndarray, List[int]] = None,
+                 bonds: Union[Tensor, ndarray, List[int]] = None,
+                 settle_index: Union[Tensor, ndarray, List[int]] = None,
+                 settle_length: Union[Tensor, ndarray, List[float]] = None,
+                 settle_unit: str = None,
                  head_atom: int = None,
                  tail_atom: int = None,
                  start_index: int = 0,
                  name: str = 'MOL',
                  template: Union[dict, str] = None,
+                 length_unit: str = None,
                  **kwargs,
                  ):
         self._kwargs = get_arguments(locals(), kwargs)
 
         self._name = name
+        self.length_unit = None
 
         self.atom_name = None
         if atom_name is not None:
@@ -126,6 +119,7 @@ class Residue:
             if self.atom_name.ndim != 2:
                 raise ValueError('The rank of "atom_name" must be 1 or 2!')
 
+        settle = None
         if template is not None:
             template = get_template(template)
             if self._name is None:
@@ -151,9 +145,12 @@ class Residue:
             if atom_charge is not None:
                 atom_charge = np.array(atom_charge, np.float32)
 
-            bond = template.get('bond')
-            if bond is not None:
-                bond = np.array(bond, np.int32)
+            bonds = template.get('bond')
+            if bonds is not None:
+                bonds = np.array(bonds, np.int32)
+
+            self.length_unit = template.get('length_unit')
+            settle: dict = template.get('settle')
 
             head_atom = template.get('head_atom')
             tail_atom = template.get('tail_atom')
@@ -171,8 +168,8 @@ class Residue:
                 if atom_charge is not None:
                     atom_charge = atom_charge[atom_index]
 
-                if bond is not None:
-                    bond = self._get_bond(template, atom_index)
+                if bonds is not None:
+                    bonds = self._get_bond(template, atom_index)
 
                 serial_list: list = atom_index.reshape(-1).tolist()
 
@@ -184,6 +181,12 @@ class Residue:
 
         if self.atom_name is None and atomic_number is None:
             raise ValueError('atom_name and atomic_number cannot both be None')
+
+        if settle:
+            settle_index = get_template_index(template, self.atom_name)
+
+            distance = settle.get('distance')
+            settle_length = np.array([[distance['OW-HW'], distance['HW-HW']]], np.float32)
 
         if atomic_number is not None:
             self.atomic_number = get_ms_array(atomic_number, ms.int32)
@@ -275,15 +278,15 @@ class Residue:
                                  f'the number of the number of system multi_system ({self.multi_system}) or 1!')
 
         # (B,C,2)
-        self.bond = bond
+        self.bonds = bonds
         self.bond_mask = None
-        if bond is not None:
-            self.bond = get_ms_array(bond, ms.int32)
-            if self.bond.shape[-1] != 2:
+        if bonds is not None:
+            self.bonds = get_ms_array(bonds, ms.int32)
+            if self.bonds.shape[-1] != 2:
                 raise ValueError('The last dimension of bond must 2!')
-            if self.bond.ndim == 2:
-                self.bond = F.expand_dims(self.bond, 0)
-            self.bond_mask = self.bond < self.num_atoms
+            if self.bonds.ndim == 2:
+                self.bonds = F.expand_dims(self.bonds, 0)
+            self.bond_mask = self.bonds < self.num_atoms
 
         # (B,1)
         self.head_atom = head_atom
@@ -295,6 +298,26 @@ class Residue:
             if (self.head_atom >= self.num_atoms).any():
                 raise ValueError(
                     'The value of head_atom has exceeds the number of atoms.')
+
+        # (B, 3)
+        self.settle_index = settle_index
+        # (B, 2)
+        self.settle_length = settle_length
+        self.settle_unit = settle_unit
+        if settle_index is not None:
+            self.settle_index = get_ms_array(settle_index, ms.int32)
+            if self.settle_index.shape[-1] != 3:
+                raise ValueError('The last dimension of settle_index must 2!')
+            if self.settle_index.ndim == 1:
+                self.settle_index = F.expand_dims(self.settle_index, 0)
+
+            if settle_length is None:
+                raise ValueError('`settle_length` cannot be None when `settle_index` is given')
+            self.settle_length = get_ms_array(settle_length, ms.float32)
+            if self.settle_length.shape[-1] != 2:
+                raise ValueError('The last dimension of settle_index must 2!')
+            if self.settle_length.ndim == 1:
+                self.settle_length = F.expand_dims(self.settle_length, 0)
 
         # (B,1)
         self.tail_atom = tail_atom
@@ -310,6 +333,12 @@ class Residue:
 
     @property
     def name(self) -> str:
+        """
+        Get the name of the residue.
+
+        Returns:
+            str, the name of the residue.
+        """
         return str(self._name)
 
     @classmethod
@@ -347,50 +376,98 @@ class Residue:
     @classmethod
     def _get_bond(cls, template: dict, atom_index: ndarray = None) -> ndarray:
         """get bond from template and atom index"""
-        bond = np.array(template.get('bond'))
+        bonds = template.get('bond')
+        if bonds is None:
+            return None
+        bonds = np.array(bonds, np.int32)
         if atom_index is not None:
-            bond_list = bond.reshape(-1).tolist()
+            bond_list = bonds.reshape(-1).tolist()
             if atom_index.ndim == 2 and atom_index.shape[0] > 1:
                 bond_ = []
                 for serial in atom_index:
                     serial: list = serial.tolist()
                     b = np.array([serial.index(idx)
-                                  for idx in bond_list]).reshape(bond.shape)
+                                  for idx in bond_list]).reshape(bonds.shape)
                     bond_.append(b)
-                bond = np.stack(bond_, axis=0)
+                bonds = np.stack(bond_, axis=0)
             else:
                 serial: list = atom_index.reshape(-1).tolist()
-                bond = np.array([serial.index(idx) for idx in bond_list]).reshape(bond.shape)
-        return bond
+                bonds = np.array([serial.index(idx) for idx in bond_list]).reshape(bonds.shape)
+        return bonds
 
     def build_atom_mass(self, template: dict):
-        """build atom mass"""
+        """
+        According to the name of the atom, find the index of the atom in the template.
+        Get atom mass of the atom with the index in the template and build it into the residue.
+
+        Args:
+            template(dict): Template for residue.
+        """
         atom_index = get_template_index(template, self.atom_name)
         self.atom_mass = Tensor(self._get_atom_mass(template, atom_index), ms.float32)
         return self
 
     def build_atomic_number(self, template: dict):
-        """build atomic number"""
+        """
+        According to the name of the atom, find the index of the atom in the template.
+        Get atomic number of the atom with the index in the template and build it into the residue.
+
+        Args:
+            template(dict): Template for residue.
+        """
         atom_index = get_template_index(template, self.atom_name)
         self.atomic_number = Tensor(self._get_atomic_number(template, atom_index), ms.int32)
         return self
 
     def build_atom_type(self, template: dict):
-        """build atom type"""
+        """
+        According to the name of the atom, find the index of the atom in the template.
+        Get atom type of the atom with the index in the template and build it into the residue.
+
+        Args:
+            template(dict): Template for residue.
+        """
         atom_index = get_template_index(template, self.atom_name)
         self.atom_type = self._get_atom_type(template, atom_index)
         return self
 
     def build_atom_charge(self, template: dict):
-        """build atom type"""
+        """
+        According to the name of the atom, find the index of the atom in the template.
+        Get atom charge of the atom with the index in the template and build it into the residue.
+
+        Args:
+            template(dict): Template for residue.
+        """
         atom_index = get_template_index(template, self.atom_name)
         self.atom_charge = Tensor(self._get_atom_charge(template, atom_index), ms.float32)
         return self
 
     def build_bond(self, template: dict):
-        """build bond"""
+        """
+        According to the name of the atom, find the index of the atom in the template.
+        Get bond of the atom with the index in the template and build it into the residue.
+
+        Args:
+            template(dict): Template for residue.
+        """
         atom_index = get_template_index(template, self.atom_name)
-        self.bond = Tensor(self._get_bond(template, atom_index), ms.int32)
+        bonds = self._get_bond(template, atom_index)
+        self.bonds = get_ms_array(bonds, ms.int32)
+        return self
+
+    def build_settle(self, template: dict):
+        """
+        According to the type of the atoms, find the indices and length for of SETTLE algorithm
+        in the template. Get the indices and length in the template and build it into the residue.
+
+        Args:
+            template(dict): Template for residue.
+        """
+
+
+        atom_index = get_template_index(template, self.atom_name)
+        self.bonds = Tensor(self._get_bond(template, atom_index), ms.int32)
         return self
 
     def add_atom(self,
@@ -400,7 +477,16 @@ class Residue:
                  atom_charge: float = None,
                  atomic_number: str = None,
                  ):
-        """set atom"""
+        """
+        Add an atom to the residue.
+
+        Args:
+            atom_name(str):     Atom name. Default: None
+            atom_type(str):     Atom type. Default: None
+            atom_mass(float):   Atom mass. Default: None
+            atom_charge(float): Atom charge. Default: None
+            atomic_number(str): Atomic number. Default: None
+        """
 
         if atom_name is None and atomic_number is None:
             raise ValueError('atom_name and atomic_number cannot both be None')
@@ -486,7 +572,12 @@ class Residue:
         return self
 
     def broadcast_multiplicity(self, multi_system: int):
-        """broadcast the information to the number of multiple system"""
+        """
+        Broadcast the information to the number of multiple system.
+
+        Args:
+            multi_system(int):  The number of multiple systems.
+        """
         if multi_system <= 0:
             raise ValueError('multi_system must be larger than 0!')
         if self.multi_system > 1:
@@ -504,9 +595,9 @@ class Residue:
         self.natom_tensor = msnp.broadcast_to(self.natom_tensor, (self.multi_system, -1))
         if self.atom_charge is not None:
             self.atom_charge = msnp.broadcast_to(self.atom_charge, (self.multi_system, -1))
-        if self.bond is not None:
-            bond_shape = (self.multi_system,) + self.bond.shape[1:]
-            self.bond = msnp.broadcast_to(self.bond, bond_shape)
+        if self.bonds is not None:
+            bond_shape = (self.multi_system,) + self.bonds.shape[1:]
+            self.bonds = msnp.broadcast_to(self.bonds, bond_shape)
             self.bond_mask = msnp.broadcast_to(self.bond_mask, bond_shape)
         if self.head_atom is not None:
             self.head_atom = msnp.broadcast_to(
@@ -518,12 +609,22 @@ class Residue:
         return self
 
     def set_name(self, name: str):
-        """set residue name"""
+        """
+        Set residue name.
+
+        Args:
+            name(str):  Residue name.
+        """
         self._name = name
         return self
 
     def set_start_index(self, start_index: int):
-        """set the start index"""
+        """
+        Set the start index.
+
+        Args:
+            start_index(int):   The start index.
+        """
         if start_index < 0:
             raise ValueError('The start_index cannot be smaller than 0!')
         self.start_index = get_integer(start_index)

@@ -26,6 +26,7 @@ from .functions import *
 from .units import *
 from .operations import GetVector, GetDistance, VelocityGenerator, \
         GetDistanceShift, GetShiftGrad
+from .quaternion import *
 
 __all__ = []
 __all__.extend(functions.__all__)

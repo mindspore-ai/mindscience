@@ -21,7 +21,7 @@
 # limitations under the License.
 # ============================================================================
 """
-Colvar
+Combine Colvar
 """
 
 from typing import Union, List, Tuple
@@ -32,11 +32,11 @@ from mindspore.ops import functional as F
 from mindspore import Tensor
 from mindspore.nn import CellList
 
-from .colvar import Colvar
-from ..function import get_ms_array, any_none, any_not_none, check_broadcast
+from ..colvar import Colvar
+from ...function import get_ms_array, any_none, any_not_none, check_broadcast
 
 
-class ColvarCombine(Colvar):
+class CombineCV(Colvar):
     r"""Polynomial combination of a set of Colvar :math:`{s_i}` with shape (S_1, S_2, ..., S_n)
 
     Math:
@@ -47,50 +47,35 @@ class ColvarCombine(Colvar):
 
     Args:
 
-        colvar (list or tuple):
-                        Array of `Colvar` to be combined :math:`{s_i}`.
+        colvar (Union[List[Colvar], Tuple[Colvar]]): Array of `Colvar` to be combined :math:`{s_i}`.
 
-        weights (list, tuple, float, Tensor):
-                        Weights :math:`{w_i}` for each Colvar.
-                        If a list or tuple is given, the number of the elements should be equal to the number of CVs.
-                        If a float or Tensor is given, the value will be used for all Colvar.
-                        Default: 1
+        weights (Union[List[float], Tuple[Float], float, Tensor]): Weights :math:`{w_i}` for each Colvar.
+            If a list or tuple is given, the number of the elements should be equal to the number of CVs.
+            If a float or Tensor is given, the value will be used for all Colvar. Default: 1
 
-        offsets (list, tuple, float, Tensor):
-                        Offsets :math:`{o_i}` for each Colvar.
-                        If a list or tuple is given, the number of the elements should be equal to the number of CVs.
-                        If a float or Tensor is given, the value will be used for all Colvar.
-                        Default: 0
+        offsets (Union[List[float], Tuple[Float], float, Tensor]): Offsets :math:`{o_i}` for each Colvar.
+            If a list or tuple is given, the number of the elements should be equal to the number of CVs.
+            If a float or Tensor is given, the value will be used for all Colvar. Default: 0
 
-        exponents (list, tuple, float, Tensor):
-                        Exponents :math:`{p_i}` for each Colvar.
-                        If a list or tuple is given, the number of the elements should be equal to the number of CVs.
-                        If a float or Tensor is given, the value will be used for all Colvar.
-                        Default: 1
+        exponents (Union[List[float], Tuple[Float], float, Tensor]): Exponents :math:`{p_i}` for each Colvar.
+            If a list or tuple is given, the number of the elements should be equal to the number of CVs.
+            If a float or Tensor is given, the value will be used for all Colvar. Default: 1
 
-        normal (bool):  Whether to normalize all weights to 1. Default: False
+        normal (bool): Whether to normalize all weights to 1. Default: False
 
-        periodic_min (float, ndarray, Tensor):
-                        The periodic minimum of the output of the combination of the CVs.
-                        If the output is not periodic, it should be None.
-                        Default: None
+        periodic_min (Union[float, ndarray, Tensor]): The periodic minimum of the output of the combination of the CVs.
+            If the output is not periodic, it should be None. Default: None
 
-        periodic_max (float, ndarray, Tensor):
-                        The periodic maximum of the output of the combination of the CVs.
-                        If the output is not periodic, it should be None.
-                        Default: None
+        periodic_max (Union[float, ndarray, Tensor]): The periodic maximum of the output of the combination of the CVs.
+            If the output is not periodic, it should be None. Default: None
 
-        periodic_mask (Tensor, ndarray):
-                        Mask for the periodicity of the outputs.
-                        The shape of the tensor should be as the same as the outputs, i.e. `(S_1, S_2, ..., S_n)`.
-                        Default: None
+        periodic_mask (Union[Tensor, ndarray): Mask for the periodicity of the outputs.
+            The shape of the tensor should be as the same as the outputs, i.e. `(S_1, S_2, ..., S_n)`. Default: None
 
-        use_pbc (bool): Whether to use periodic boundary condition.
-                        If `None` is given, it will determine whether to use periodic boundary
-                        conditions based on whether the `pbc_box` is provided.
-                        Default: None
+        use_pbc (bool): Whether to use periodic boundary condition. If `None` is given, it will determine whether
+            to use periodic boundary conditions based on whether the `pbc_box` is provided. Default: None
 
-        name (str):     Name of the collective variables. Default: 'colvar_combination'
+        name (str): Name of the collective variables. Default: 'combine'
 
     Supported Platforms:
 
@@ -107,7 +92,7 @@ class ColvarCombine(Colvar):
                  periodic_max: Union[float, ndarray, Tensor] = None,
                  periodic_mask: Union[Tensor, ndarray] = None,
                  use_pbc: bool = None,
-                 name: str = 'colvar_combination',
+                 name: str = 'combine',
                  ):
 
         super().__init__(
@@ -250,3 +235,92 @@ class ColvarCombine(Colvar):
             return period_colvar
 
         return F.select(self.periodic_mask, period_colvar, colvar)
+
+
+class ColvarCombine(CombineCV):
+    r"""See `CombineCV`. NOTE: This module will be removed in a future release, please use `CombineCV` instead.
+
+    Math:
+
+    .. math::
+
+        S = \sum_i^n{w_i (s_i - o_i)^{p_i}}
+
+    Args:
+
+        colvar (list or tuple):
+                        Array of `Colvar` to be combined :math:`{s_i}`.
+
+        weights (list, tuple, float, Tensor):
+                        Weights :math:`{w_i}` for each Colvar.
+                        If a list or tuple is given, the number of the elements should be equal to the number of CVs.
+                        If a float or Tensor is given, the value will be used for all Colvar.
+                        Default: 1
+
+        offsets (list, tuple, float, Tensor):
+                        Offsets :math:`{o_i}` for each Colvar.
+                        If a list or tuple is given, the number of the elements should be equal to the number of CVs.
+                        If a float or Tensor is given, the value will be used for all Colvar.
+                        Default: 0
+
+        exponents (list, tuple, float, Tensor):
+                        Exponents :math:`{p_i}` for each Colvar.
+                        If a list or tuple is given, the number of the elements should be equal to the number of CVs.
+                        If a float or Tensor is given, the value will be used for all Colvar.
+                        Default: 1
+
+        normal (bool):  Whether to normalize all weights to 1. Default: False
+
+        periodic_min (float, ndarray, Tensor):
+                        The periodic minimum of the output of the combination of the CVs.
+                        If the output is not periodic, it should be None.
+                        Default: None
+
+        periodic_max (float, ndarray, Tensor):
+                        The periodic maximum of the output of the combination of the CVs.
+                        If the output is not periodic, it should be None.
+                        Default: None
+
+        periodic_mask (Tensor, ndarray):
+                        Mask for the periodicity of the outputs.
+                        The shape of the tensor should be as the same as the outputs, i.e. `(S_1, S_2, ..., S_n)`.
+                        Default: None
+
+        use_pbc (bool): Whether to use periodic boundary condition.
+                        If `None` is given, it will determine whether to use periodic boundary
+                        conditions based on whether the `pbc_box` is provided.
+                        Default: None
+
+        name (str):     Name of the collective variables. Default: 'colvar_combination'
+
+    Supported Platforms:
+
+        ``Ascend`` ``GPU``
+
+    """
+    def __init__(self,
+                 colvar: Union[List[Colvar], Tuple[Colvar]],
+                 weights: Union[float, List[float], Tuple[float], Tensor] = 1,
+                 offsets: Union[float, List[float], Tuple[float], Tensor] = 0,
+                 exponents: Union[float, List[float], Tuple[float], Tensor] = 1,
+                 normal: bool = False,
+                 periodic_min: Union[float, ndarray, Tensor] = None,
+                 periodic_max: Union[float, ndarray, Tensor] = None,
+                 periodic_mask: Union[Tensor, ndarray] = None,
+                 use_pbc: bool = None,
+                 name: str = 'colvar_combination',
+                 ):
+
+        super().__init__(
+            colvar=colvar,
+            weights=weights,
+            offsets=offsets,
+            exponents=exponents,
+            normal=normal,
+            periodic_min=periodic_min,
+            periodic_max=periodic_max,
+            periodic_mask=periodic_mask,
+            use_pbc=use_pbc,
+            name=name
+        )
+        print('[WARNING] This module will be removed in a future release, please use `CombineCV` instead.')

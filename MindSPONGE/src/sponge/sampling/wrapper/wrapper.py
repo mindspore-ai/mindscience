@@ -24,6 +24,7 @@
 
 from typing import Tuple
 from mindspore import Tensor
+from mindspore import ops
 from mindspore.nn import Cell
 
 from ...function import Units, GLOBAL_UNITS
@@ -62,6 +63,8 @@ class EnergyWrapper(Cell):
         self.units = Units(length_unit, energy_unit)
 
         self._update_pace = get_integer(update_pace)
+
+        self.identity = ops.Identity()
 
     @property
     def update_pace(self) -> int:

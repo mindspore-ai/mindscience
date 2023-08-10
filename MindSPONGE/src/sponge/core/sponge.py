@@ -301,21 +301,6 @@ class Sponge():
         """
         return self._num_biases
 
-    @property
-    def create_time(self):
-        return self._create_time
-
-    @staticmethod
-    def _transform_callbacks(callbacks: Callback):
-        """Transform callback to a list."""
-        if callbacks is None:
-            return []
-
-        if isinstance(callbacks, Iterable):
-            return list(callbacks)
-
-        return [callbacks]
-
     def recompile(self):
         """recompile the simulation network"""
         self._simulation_network.compile_cache.clear()
@@ -651,6 +636,17 @@ class Sponge():
                              "but got 'loss_fn': {}, 'optimizer': {}.".format(self._potential_function,
                                                                               self._optimizer))
 
+    @staticmethod
+    def _transform_callbacks(callbacks: Callback):
+        """Transform callback to a list."""
+        if callbacks is None:
+            return []
+
+        if isinstance(callbacks, Iterable):
+            return list(callbacks)
+
+        return [callbacks]
+
     def _simulation_process(self,
                             epoch: int,
                             cycle_steps: int,
@@ -868,3 +864,7 @@ class Sponge():
         for param in params:
             if param.cache_enable:
                 Tensor(param).flush_from_cache()
+
+    @property
+    def create_time(self):
+        return self._create_time

@@ -30,14 +30,13 @@ from mindspore.nn import Adam
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.append('../../src')
 
     from sponge import Sponge
     from sponge import Molecule
     from sponge import ForceField
     from sponge import UpdaterMD
     from sponge import WithEnergyCell
-    from sponge.control import VelocityVerlet, Langevin
     from sponge.potential import SphericalRestrict
     from sponge.function import VelocityGenerator
     from sponge.callback import WriteH5MD, RunInfo
@@ -66,11 +65,12 @@ if __name__ == "__main__":
     velocity = vgen(system.shape, system.atom_mass)
 
     updater = UpdaterMD(
-        system,
-        integrator=VelocityVerlet(system),
-        thermostat=Langevin(system, temp),
-        velocity=velocity,
+        system=system,
         time_step=1e-3,
+        velocity=velocity,
+        integrator='velocity_verlet',
+        temperature=300,
+        thermostat='langevin',
     )
 
     sim = WithEnergyCell(system, potential, bias=SphericalRestrict(radius=1.5, center=[0, 0, 0]))

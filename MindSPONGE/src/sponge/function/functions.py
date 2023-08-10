@@ -24,22 +24,26 @@
 Common functions
 """
 
-from typing import Union, List, Tuple
+from typing import Union, List, Tuple, Iterable
 from datetime import time, timedelta, date
 import numpy as np
 from numpy import ndarray
 import mindspore as ms
+try:
+    # MindSpore 2.X
+    from mindspore import jit
+except ImportError:
+    # MindSpore 1.X
+    from mindspore import ms_function as jit
 import mindspore.numpy as msnp
-from mindspore import ops
-from mindspore import ms_function
-from mindspore import Tensor, Parameter
+from mindspore.numpy.utils import _to_tensor
+from mindspore import ops, Tensor, Parameter
 from mindspore.ops import functional as F
 from mindspore.common.initializer import Initializer, _INITIALIZER_ALIAS
 
 
 __all__ = [
     'PI',
-    'inv',
     'keepdims_sum',
     'keepdims_mean',
     'keepdims_prod',
@@ -91,32 +95,334 @@ __all__ = [
     'any_not_none',
     'all_not_none',
     'get_arguments',
-    'get_initializer'
+    'get_initializer',
+    'bonds_in'
 ]
 
 PI = 3.141592653589793238462643383279502884197169399375105820974944592307
 r""":math:`\pi`"""
 
-inv = ops.Inv()
-keepdims_sum = ops.ReduceSum(True)
-keepdims_mean = ops.ReduceMean(True)
-keepdims_prod = ops.ReduceProd(True)
-reduce_any = ops.ReduceAny()
-reduce_all = ops.ReduceAll()
-reduce_prod = ops.ReduceProd()
-concat_first_dim = ops.Concat(0)
-concat_last_dim = ops.Concat(-1)
-concat_penulti = ops.Concat(-2)
-stack_first_dim = ops.Stack(0)
-stack_last_dim = ops.Stack(-1)
-stack_penulti = ops.Stack(-2)
-squeeze_first_dim = ops.Squeeze(0)
-squeeze_last_dim = ops.Squeeze(-1)
-squeeze_penulti = ops.Squeeze(-2)
-identity = ops.Identity()
+keepdims_sum_ = ops.ReduceSum(True)
+keepdims_mean_ = ops.ReduceMean(True)
+keepdims_prod_ = ops.ReduceProd(True)
+reduce_any_ = ops.ReduceAny()
+reduce_all_ = ops.ReduceAll()
+reduce_prod_ = ops.ReduceProd()
+concat_first_dim_ = ops.Concat(0)
+concat_last_dim_ = ops.Concat(-1)
+concat_penulti_ = ops.Concat(-2)
+stack_first_dim_ = ops.Stack(0)
+stack_last_dim_ = ops.Stack(-1)
+stack_penulti_ = ops.Stack(-2)
+squeeze_first_dim_ = ops.Squeeze(0)
+squeeze_last_dim_ = ops.Squeeze(-1)
+squeeze_penulti_ = ops.Squeeze(-2)
+identity_ = ops.Identity()
 
 
-@ms_function
+def keepdims_sum(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tensor:
+    """
+    Reduces a dimension to 1 by summing the elements in the dimension of `x` along the axis,
+    and the dimensions of the output and input are the same.
+
+    Args:
+         - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
+           :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+         - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+           Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
+
+    Outputs:
+        Tensor, has the same dtype as the `x`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return keepdims_sum_(x, axis)
+
+
+def keepdims_mean(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tensor:
+    """
+    Reduces a dimension to 1 by averaging the elements in the dimension of `x` along the axis,
+    and the dimensions of the output and input are the same.
+
+    Args:
+         - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
+           :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+         - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+           Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
+
+    Outputs:
+        Tensor, has the same dtype as the `x`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return keepdims_mean_(x, axis)
+
+
+def keepdims_prod(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tensor:
+    """
+    Reduces a dimension to 1 by multiplying the elements in the dimension of `x` along the axis,
+    and the dimensions of the output and input are the same.
+
+    Args:
+         - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
+           :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+         - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+           Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
+
+    Outputs:
+        Tensor, has the same dtype as the `x`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return keepdims_prod_(x, axis)
+
+
+def reduce_any(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tensor:
+    r"""
+    Reduces a dimension of a tensor by the "logical OR" of all elements in the dimension, by default. And also can
+    reduce a dimension of `x` along the axis. See `mindspore.ops.ReduceAny` for detailed information.
+
+    Args:
+        - **x** (Tensor[bool]) - The input tensor. The dtype of the tensor to be reduced is bool.
+          :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+          Only constant value is allowed. Must be in the range [-rank(x), rank(x)).
+
+    Outputs:
+        Tensor, the dtype is bool.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return reduce_any_(x, axis)
+
+
+def reduce_all(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tensor:
+    r"""
+    Reduces a dimension of a tensor by the "logicalAND" of all elements in the dimension, by default. And also can
+    reduce a dimension of `x` along the axis. See `mindspore.ops.ReduceAll` for detailed information.
+
+    Args:
+        - **x** (Tensor[bool]) - The input tensor. The dtype of the tensor to be reduced is bool.
+          :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+          Only constant value is allowed. Must be in the range [-rank(x), rank(x)).
+
+    Outputs:
+        Tensor, the dtype is bool.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return reduce_all_(x, axis)
+
+
+def reduce_prod(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tensor:
+    r"""
+    Reduces a dimension of a tensor by multiplying all elements in the dimension, by default. And also can
+    reduce a dimension of `x` along the axis. See `mindspore.ops.ReduceProd` for detailed information.
+
+    Args:
+        - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
+          :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+          Only constant value is allowed. Must be in the range [-r, r).
+
+    Outputs:
+        Tensor, has the same dtype as the `x`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return reduce_prod_(x, axis)
+
+
+def concat_first_dim(input_x: Tensor) -> Tensor:
+    r"""
+    Connect tensor in the first axis (axis=0).
+
+    Connect input tensors along with the first axis.
+
+    Args:
+        input_x (Union[tuple, list]): A tuple or a list of input tensors.
+
+    Returns:
+        Tensor. A concatenated Tensor with the same type as `input_x`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return concat_first_dim_(input_x)
+
+
+def concat_last_dim(input_x: Tensor) -> Tensor:
+    r"""
+    Connect tensor in the last axis (axis=-1).
+
+    Connect input tensors along with the last axis.
+
+    Args:
+        input_x (Union[tuple, list]): A tuple or a list of input tensors.
+
+    Returns:
+        Tensor. A concatenated Tensor with the same type as `input_x`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return concat_last_dim_(input_x)
+
+
+def concat_penulti(input_x: Tensor) -> Tensor:
+    r"""
+    Connect tensor in the penultimate axis (axis=-2).
+
+    Connect input tensors along with the penultimate axis.
+
+    Args:
+        input_x (Union[tuple, list]): A tuple or a list of input tensors.
+
+    Returns:
+        Tensor. A concatenated Tensor with the same type as `input_x`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return concat_penulti_(input_x)
+
+
+def stack_first_dim(input_x: Tensor) -> Tensor:
+    r"""
+    Stacks a list of tensors in the first axis (axis=0).
+
+    Args:
+        input_x (Union[tuple, list]): A Tuple or list of Tensor objects with the same shape and type.
+
+    Returns:
+        Tensor. A stacked Tensor with the same type as `input_x`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return stack_first_dim_(input_x)
+
+
+def stack_last_dim(input_x: Tensor) -> Tensor:
+    r"""
+    Stacks a list of tensors in the last axis (axis=-1).
+
+    Args:
+        input_x (Union[tuple, list]): A Tuple or list of Tensor objects with the same shape and type.
+
+    Returns:
+        Tensor. A stacked Tensor with the same type as `input_x`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return stack_last_dim_(input_x)
+
+
+def stack_penulti(input_x: Tensor) -> Tensor:
+    r"""
+    Stacks a list of tensors in the penultimate axis (axis=-2).
+
+    Args:
+        input_x (Union[tuple, list]): A Tuple or list of Tensor objects with the same shape and type.
+
+    Returns:
+        Tensor. A stacked Tensor with the same type as `input_x`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return stack_penulti_(input_x)
+
+
+def squeeze_first_dim(input_x: Tensor) -> Tensor:
+    r"""
+    Return the Tensor after deleting the dimension of size 1 from the first axis (axis=0).
+
+    Args:
+        input_x (Tensor): The shape of tensor is :math:`(x_1, x_2, ..., x_R)`.
+
+    Returns:
+        Tensor, the shape of tensor is :math:`(x_2, ..., x_R)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return squeeze_first_dim_(input_x)
+
+
+def squeeze_last_dim(input_x: Tensor) -> Tensor:
+    r"""
+    Return the Tensor after deleting the dimension of size 1 from the last axis (axis=-1).
+
+    Args:
+        input_x (Tensor): The shape of tensor is :math:`(x_1, x_2, ..., x_R)`.
+
+    Returns:
+        Tensor, the shape of tensor is :math:`(x_1, x_2, ..., x_{R-1})`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return squeeze_last_dim_(input_x)
+
+
+def squeeze_penulti(input_x: Tensor) -> Tensor:
+    r"""
+    Return the Tensor after deleting the dimension of size 1 from the penultimate axis (axis=-2).
+
+    Args:
+        input_x (Tensor): The shape of tensor is :math:`(x_1, x_2, ..., x_{R-1}, x_R)`.
+
+    Returns:
+        Tensor, the shape of tensor is :math:`(x_1, x_2, ..., x_R)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return squeeze_penulti_(input_x)
+
+
+def identity(x: Tensor) -> Tensor:
+    r"""
+    Returns a Tensor with the same shape and contents as input.
+
+    Args:
+        - **x** (Tensor) - The shape of tensor is :math:`(x_1, x_2, ..., x_R)`. The data type is Number.
+
+    Returns:
+        Tensor, the shape of tensor and the data type are the same as `input_x`, :math:`(x_1, x_2, ..., x_R)`.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU`` ``CPU``
+
+    """
+    return identity_(x)
+
+
+@jit
 def periodic_variable(variable: Tensor,
                       upper: Tensor,
                       lower: Tensor = 0,
@@ -151,7 +457,7 @@ def periodic_variable(variable: Tensor,
     return F.select(mask, period_value, variable)
 
 
-@ms_function
+@jit
 def periodic_difference(difference: Tensor,
                         period: Tensor,
                         mask: Tensor = None,
@@ -186,7 +492,7 @@ def periodic_difference(difference: Tensor,
     return F.select(mask, period_diff, difference)
 
 
-@ms_function
+@jit
 def gather_vector(tensor: Tensor, index: Tensor) -> Tensor:
     r"""Gather vector from the penultimate axis (`axis=-2`) of the tensor according to index.
 
@@ -224,7 +530,7 @@ def gather_vector(tensor: Tensor, index: Tensor) -> Tensor:
     return F.reshape(vectors, output_shape)
 
 
-@ms_function
+@jit
 def gather_value(tensor: Tensor, index: Tensor) -> Tensor:
     r"""Gather value from the last axis (`axis=-1`) of the tensor according to index.
 
@@ -259,7 +565,7 @@ def gather_value(tensor: Tensor, index: Tensor) -> Tensor:
     return F.reshape(values, origin_shape)
 
 
-@ms_function
+@jit
 def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
     r"""Reshape the pbc_box as the same ndim.
 
@@ -285,7 +591,7 @@ def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
     return F.reshape(pbc_box, shape)
 
 
-@ms_function
+@jit
 def pbc_image(position: Tensor, pbc_box: Tensor, offset: float = 0) -> Tensor:
     r"""calculate the periodic image of the PBC box
 
@@ -312,7 +618,7 @@ def pbc_image(position: Tensor, pbc_box: Tensor, offset: float = 0) -> Tensor:
     return F.cast(image, ms.int32)
 
 
-@ms_function
+@jit
 def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> Tensor:
     r"""get coordinate in main PBC box
 
@@ -340,7 +646,7 @@ def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> T
     return position - pbc_box * F.floor(position / pbc_box - offset)
 
 
-@ms_function
+@jit
 def vector_in_pbc(vector: Tensor, pbc_box: Tensor, offset: float = -0.5) -> Tensor:
     r"""Make the value of vector :math:`\vec{v}` at a single PBC box :math:`\vec{L}`.
 
@@ -369,10 +675,10 @@ def vector_in_pbc(vector: Tensor, pbc_box: Tensor, offset: float = -0.5) -> Tens
     box_nograd = F.stop_gradient(pbc_box)
     inv_box = msnp.reciprocal(box_nograd)
     vector -= box_nograd * F.floor(vector * inv_box - offset)
-    return  vector * inv_box * pbc_box
+    return vector * inv_box * pbc_box
 
 
-@ms_function
+@jit
 def calc_vector_nopbc(initial: Tensor, terminal: Tensor) -> Tensor:
     r"""Compute vector from initial point to terminal point without perodic bundary condition.
 
@@ -397,7 +703,7 @@ def calc_vector_nopbc(initial: Tensor, terminal: Tensor) -> Tensor:
     return terminal - initial
 
 
-@ms_function
+@jit
 def calc_vector_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor) -> Tensor:
     r"""Compute vector from initial point to terminal point at perodic bundary condition.
 
@@ -423,8 +729,7 @@ def calc_vector_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor) -> Tenso
 
     return vector_in_pbc(terminal-initial, pbc_box)
 
-
-@ms_function
+@jit
 def calc_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Tensor:
     r"""Compute vector from initial point to terminal point.
 
@@ -454,7 +759,7 @@ def calc_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Te
     return vector_in_pbc(vector, pbc_box)
 
 
-@ms_function
+@jit
 def calc_distance_nopbc(position_a: Tensor,
                         position_b: Tensor,
                         keepdims: bool = False,
@@ -485,7 +790,7 @@ def calc_distance_nopbc(position_a: Tensor,
     return msnp.norm(vec, axis=-1, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_distance_pbc(position_a: Tensor,
                       position_b: Tensor,
                       pbc_box: Tensor = None,
@@ -520,7 +825,7 @@ def calc_distance_pbc(position_a: Tensor,
     return msnp.norm(vec, axis=-1, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_distance(position_a: Tensor,
                   position_b: Tensor,
                   pbc_box: Tensor = None,
@@ -557,7 +862,7 @@ def calc_distance(position_a: Tensor,
     return msnp.norm(vec, axis=-1, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_angle_by_vectors(vector1: Tensor,
                           vector2: Tensor,
                           keepdims: bool = False
@@ -600,7 +905,7 @@ def calc_angle_by_vectors(vector1: Tensor,
     return F.acos(cos_theta)
 
 
-@ms_function
+@jit
 def calc_angle_nopbc(position_a: Tensor,
                      position_b: Tensor,
                      position_c: Tensor,
@@ -639,7 +944,7 @@ def calc_angle_nopbc(position_a: Tensor,
     return calc_angle_by_vectors(vec_ba, vec_bc, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_angle_pbc(position_a: Tensor,
                    position_b: Tensor,
                    position_c: Tensor,
@@ -680,7 +985,7 @@ def calc_angle_pbc(position_a: Tensor,
     return calc_angle_by_vectors(vec_ba, vec_bc, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_angle(position_a: Tensor,
                position_b: Tensor,
                position_c: Tensor,
@@ -720,7 +1025,7 @@ def calc_angle(position_a: Tensor,
     return calc_angle_pbc(position_a, position_b, position_c, pbc_box=pbc_box, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_torsion_by_vectors(vector1: Tensor,
                             vector2: Tensor,
                             axis_vector: Tensor = None,
@@ -772,7 +1077,7 @@ def calc_torsion_by_vectors(vector1: Tensor,
     return F.atan2(sin_phi, cos_phi)
 
 
-@ms_function
+@jit
 def calc_torsion_nopbc(position_a: Tensor,
                        position_b: Tensor,
                        position_c: Tensor,
@@ -812,7 +1117,7 @@ def calc_torsion_nopbc(position_a: Tensor,
     return calc_torsion_by_vectors(vec_ba, vec_cd, axis_vector=vec_bc, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_torsion_pbc(position_a: Tensor,
                      position_b: Tensor,
                      position_c: Tensor,
@@ -856,7 +1161,7 @@ def calc_torsion_pbc(position_a: Tensor,
     return calc_torsion_by_vectors(vec_ba, vec_cd, axis_vector=vec_bc, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def calc_torsion(position_a: Tensor,
                  position_b: Tensor,
                  position_c: Tensor,
@@ -903,7 +1208,7 @@ def calc_torsion(position_a: Tensor,
         position_a, position_b, position_c, position_d, pbc_box=pbc_box, keepdims=keepdims)
 
 
-@ms_function
+@jit
 def coulomb_interaction(q_i: Tensor,
                         q_j: Tensor,
                         r_ij: Tensor,
@@ -945,7 +1250,7 @@ def coulomb_interaction(q_i: Tensor,
     return energy * mask
 
 
-@ms_function
+@jit
 def lennard_jones_potential(epsilon: Tensor, sigma: Tensor, r_ij: Tensor, mask: Tensor = None) -> Tensor:
     r"""Calculate Lennard-Jones (LJ) potential with :math:`\epsilon` and :math:`\sigma`.
 
@@ -987,7 +1292,7 @@ def lennard_jones_potential(epsilon: Tensor, sigma: Tensor, r_ij: Tensor, mask: 
     return energy * mask
 
 
-@ms_function
+@jit
 def lennard_jones_potential2(epsilon: Tensor, r_0: Tensor, r_ij: Tensor, mask: Tensor = None) -> Tensor:
     r"""Calculate Lennard-Jones (LJ) potential with :math:`\epsilon` and :math:`r_0`.
 
@@ -1093,16 +1398,15 @@ def get_tensor(value: Union[float, int, Tensor, Parameter, ndarray, List[float],
     if value is None:
         return None
 
-    if isinstance(value, (float, int, list, tuple, ndarray)):
+    if isinstance(value, ndarray):
         value = Tensor(value, dtype)
-    else:
-        if isinstance(value, Parameter):
-            value = identity(value)
-        elif not isinstance(value, Tensor):
-            raise TypeError(f'The type of input value must be '
-                            f'Tensor, Parameter, ndarray, list or tuple but got: {type(value)}')
-        if dtype is not None:
-            value = F.cast(value, dtype)
+    elif isinstance(value, Parameter):
+        value = identity(value)
+    elif not isinstance(value, Tensor):
+        (value,) = _to_tensor((value,))
+
+    if dtype is not None and dtype != value.dtype:
+        value = F.cast(value, dtype)
 
     return value
 
@@ -1128,12 +1432,15 @@ def get_ms_array(value: Union[float, int, Tensor, Parameter, ndarray, list, tupl
     if value is None:
         return None
 
-    if isinstance(value, (Tensor, Parameter)):
-        if dtype is not None and value.dtype != dtype:
-            value = F.cast(value, dtype)
-        return value
+    if isinstance(value, ndarray):
+        value = Tensor(value, dtype)
+    elif not isinstance(value, (Tensor, Parameter)):
+        (value,) = _to_tensor((value,))
 
-    return Tensor(value, dtype)
+    if dtype is not None and value.dtype != dtype:
+        value = F.cast(value, dtype)
+
+    return value
 
 
 def check_broadcast(shape0: tuple, shape1: tuple) -> tuple:
@@ -1175,11 +1482,11 @@ def check_broadcast(shape0: tuple, shape1: tuple) -> tuple:
     return shape
 
 
-def any_none(iterable: Union[list, tuple]) -> bool:
+def any_none(iterable: Iterable) -> bool:
     r"""Return True if ANY values x in the iterable is None.
 
     Args:
-        iterable (Union[list, tuple]): Iterable variable
+        iterable (Iterable): Iterable variable
 
     Returns:
         any (bool):  If any values x in the iterable is None
@@ -1191,11 +1498,11 @@ def any_none(iterable: Union[list, tuple]) -> bool:
     return any([i is None for i in iterable])
 
 
-def all_none(iterable: Union[list, tuple]) -> bool:
+def all_none(iterable: Iterable) -> bool:
     r"""Return True if ALL values `x` in the `iterable` is None..
 
     Args:
-        iterable (Union[list, tuple]): Iterable variable
+        iterable (Iterable): Iterable variable
 
     Returns:
         all (bool):  If all values `x` in the `iterable` is None
@@ -1207,11 +1514,11 @@ def all_none(iterable: Union[list, tuple]) -> bool:
     return all([i is None for i in iterable])
 
 
-def any_not_none(iterable: Union[list, tuple]) -> bool:
+def any_not_none(iterable: Iterable) -> bool:
     r"""Return True if ANY values `x` in the `iterable` is NOT None.
 
     Args:
-        iterable (Union[list, tuple]): Iterable variable
+        iterable (Iterable): Iterable variable
 
     Returns:
         any (bool):  If any values `x` in the `iterable` is not None
@@ -1223,11 +1530,11 @@ def any_not_none(iterable: Union[list, tuple]) -> bool:
     return any([i is not None for i in iterable])
 
 
-def all_not_none(iterable: Union[list, tuple]) -> bool:
+def all_not_none(iterable: Iterable) -> bool:
     r"""Return True if ALL values `x` in the `iterable` is Not None.
 
     Args:
-        iterable (Union[list, tuple]): Iterable variable
+        iterable (Iterable): Iterable variable
 
     Returns:
         all (bool):  If all values `x` in the `iterable` is Not None
@@ -1346,3 +1653,20 @@ def get_initializer(cls_name: Union[Initializer, str, dict, Tensor], **kwargs) -
         return init(**kwargs)
 
     raise TypeError(f'The cls_name must be Initializer, str, dict or Tensor but got: {init}')
+
+
+def _bonds_in(bonds, bond):
+    """ Check bonds exists in both sets. """
+    return (bonds == bond).all(-1)
+
+
+def bonds_in(bonds, batch_bond):
+    """ Return if batch_bond exists in bonds.
+    Args:
+        bonds: The total bonds set.
+        batch_bond: The input bond set.
+
+    Returns:
+        If batch_bond exists in bonds, the mask will be 1, else 0.
+    """
+    return ops.vmap(_bonds_in, in_axes=(None, -2), out_axes=0)(bonds, batch_bond).sum(axis=-3)

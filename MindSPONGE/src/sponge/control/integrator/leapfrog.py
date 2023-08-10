@@ -28,7 +28,7 @@ from typing import Tuple
 
 from mindspore import Tensor
 
-from .integrator import Integrator
+from .integrator import Integrator, _integrator_register
 from ..thermostat import Thermostat
 from ..barostat import Barostat
 from ..constraint import Constraint
@@ -36,6 +36,7 @@ from ...system import Molecule
 from ...function import get_arguments
 
 
+@_integrator_register('leap_frog')
 class LeapFrog(Integrator):
     r"""A leap-frog integrator based on "middle scheme" developed by Jian Liu, et al. It is a subclass of `Integrator`.
 

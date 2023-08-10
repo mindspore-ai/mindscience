@@ -24,15 +24,12 @@
 Constraint
 """
 
-from typing import Union, Tuple
+from typing import Tuple
 
-import numpy as np
-import mindspore as ms
-from mindspore import Tensor, Parameter
+from mindspore import Tensor
 
 from .. import Controller
 from ...system import Molecule
-from ...potential import PotentialCell
 from ...function.operations import GetVector, GetDistance
 from ...function import get_arguments
 
@@ -61,8 +58,6 @@ class Constraint(Controller):
 
     def __init__(self,
                  system: Molecule,
-                 bonds: Union[Tensor, str] = 'h-bonds',
-                 potential: PotentialCell = None,
                  **kwargs,
                  ):
 
@@ -72,38 +67,8 @@ class Constraint(Controller):
         )
         self._kwargs = get_arguments(locals(), kwargs)
 
-        if potential is None:
-            self.all_bonds = system.bond
-            self.h_bonds = system.hydrogen_bond
-        else:
-            self.all_bonds = potential.bond
-            self.h_bonds = potential.hydrogen_bond
-
-        if isinstance(bonds, (Tensor, Parameter, np.ndarray)):
-            self.bonds = Tensor(bonds, ms.int32)
-        elif isinstance(bonds, str):
-            if bonds.lower() == 'h-bonds':
-                self.bonds = self.h_bonds
-            elif bonds.lower() == 'all-bonds':
-                self.bonds = self.all_bonds
-            else:
-                raise ValueError(f'"bonds" must be "h-bonds" or "all-bonds" but got: {bonds}')
-        else:
-            raise TypeError(f'The type of "bonds" must be Tensor or str, but got: {type(bonds)}')
-
-        if self.bonds.ndim != 2:
-            if self.bonds.ndim != 3:
-                raise ValueError(f'The rank of "bonds" must be 2 or 3 but got: {self.bonds.ndim}')
-
-            if self.bonds.shape[0] != 1:
-                raise ValueError(f'For constraint, the batch size of "bonds" must be 1 but got: {self.bonds[0]}')
-            self.bonds = self.bonds[0]
-
-        if self.bonds.shape[-1] != 2:
-            raise ValueError(f'The last dimension of "bonds" but got: {self.bonds.shape[-1]}')
-
         # C
-        self.num_constraints = self.bonds.shape[-2]
+        self.num_constraints = 0
 
         self.use_pbc = self._pbc_box is not None
 

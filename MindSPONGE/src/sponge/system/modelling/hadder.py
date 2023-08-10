@@ -722,9 +722,13 @@ def add_hydrogen(pdb_in, pdb_out):
     new_res_names = []
     new_res_ids = []
     for i, crd in enumerate(crds):
-        for _ in range(crd.shape[0]):
+        for _ in range(len(crd)):
             new_res_names.append(res_names[i])
             new_res_ids.append(i + 1)
+
+    if new_crds.size == 0:
+        print('[Error] Adding hydrogen atoms failed.')
+        raise ValueError('The value of crd after adding hydrogen is empty!')
 
     gen_pdb(new_crds[None, :], new_atom_names,
             new_res_names, new_res_ids, new_pdb_name)
@@ -735,12 +739,14 @@ def add_hydrogen(pdb_in, pdb_out):
             round(len(new_crds), 3), round(end_time - start_time, 3)))
 
 
-def read_pdb(pdb_name: str, rebuild_hydrogen: bool = False, rebuild_suffix: str = '_addH'):
+def read_pdb(pdb_name: str, rebuild_hydrogen: bool = False, rebuild_suffix: str = '_addH',
+             remove_hydrogen: bool = False):
     """ Entry function for parse pdb files.
     Args:
         pdb_name(str): The pdb file name, absolute path is suggested.
         rebuild_hydrogen(Bool): Set to rebuild all hydrogen in pdb files or not.
         rebuild_suffix(str): If rebuild the hydrogen system, a new pdb file with suffix will be stored.
+        remove_hydrogen(bool): Set to True if we don't want hydrogen in our system.
     Returns:
         atom_names(list): 1-dimension list contain all atom names in each residue.
         res_names(list): 1-dimension list of all residue names.
@@ -755,6 +761,6 @@ def read_pdb(pdb_name: str, rebuild_hydrogen: bool = False, rebuild_suffix: str 
     if rebuild_hydrogen:
         out_name = pdb_name.replace('.pdb', '{}.pdb'.format(rebuild_suffix))
         add_hydrogen(pdb_name, out_name)
-        return _read_pdb(out_name)
+        return _read_pdb(out_name, remove_hydrogen=remove_hydrogen)
 
-    return _read_pdb(pdb_name)
+    return _read_pdb(pdb_name, remove_hydrogen=remove_hydrogen)

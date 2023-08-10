@@ -70,7 +70,6 @@ class WithForceCell(Cell):
     def __init__(self,
                  system: Molecule = None,
                  force: ForceCell = None,
-                 cutoff: float = None,
                  neighbour_list: NeighbourList = None,
                  modifier: ForceModifier = None,
                  ):
@@ -127,15 +126,15 @@ class WithForceCell(Cell):
             self.units = self.system.units
 
             self.neighbour_list = neighbour_list
-            if neighbour_list is None:
-                self.neighbour_list = NeighbourList(
-                    system, cutoff, exclude_index=self.force_function.exclude_index)
-            else:
+            self.neighbour_index = None
+            self.neighbour_mask = None
+            self.num_neighbours = 0
+            if neighbour_list is not None:
                 self.neighbour_list.set_exclude_index(self.force_function.exclude_index)
+                self.neighbour_index = self.neighbour_list.neighbours
+                self.neighbour_mask = self.neighbour_list.neighbour_mask
+                self.num_neighbours = self.neighbour_list.num_neighbours
 
-            self.neighbour_index = self.neighbour_list.neighbours
-            self.neighbour_mask = self.neighbour_list.neighbour_mask
-            self.num_neighbours = self.neighbour_list.num_neighbours
             self.force_function.set_pbc(self.pbc_box is not None)
 
             self.length_unit_scale = Tensor(self.units.convert_length_to(
@@ -288,7 +287,12 @@ class WithForceCell(Cell):
             if pbc_box is not None:
                 pbc_box *= self.length_unit_scale
 
-            neigh_idx, neigh_vec, neigh_dis, neigh_mask = self.neighbour_list(coordinate, pbc_box)
+            neigh_idx = None
+            neigh_vec = None
+            neigh_dis = None
+            neigh_mask = None
+            if self.neighbour_list is not None:
+                neigh_idx, neigh_vec, neigh_dis, neigh_mask = self.neighbour_list(coordinate, pbc_box)
 
             energy, force, virial = self.force_function(
                 coordinate=coordinate,

@@ -23,6 +23,8 @@
 """Angle energy"""
 
 from typing import Union, List
+from operator import itemgetter
+import numpy as np
 from numpy import ndarray
 
 import mindspore as ms
@@ -30,12 +32,15 @@ from mindspore import Tensor
 from mindspore import Parameter
 from mindspore.ops import functional as F
 
-from .energy import EnergyCell
+from .energy import EnergyCell, _energy_register
 from ...colvar import Angle
+from ...system import Molecule
+from ...data import get_bonded_types
 from ...function import functions as func
 from ...function import get_ms_array, get_arguments
 
 
+@_energy_register('angle_energy')
 class AngleEnergy(EnergyCell):
     r"""Energy term of bond angles
 
@@ -86,14 +91,15 @@ class AngleEnergy(EnergyCell):
     """
 
     def __init__(self,
+                 system: Molecule = None,
+                 parameters: dict = None,
                  index: Union[Tensor, ndarray, List[int]] = None,
                  force_constant: Union[Tensor, ndarray, List[float]] = None,
                  bond_angle: Union[Tensor, ndarray, List[float]] = None,
-                 parameters: dict = None,
                  use_pbc: bool = None,
                  length_unit: str = 'nm',
                  energy_unit: str = 'kj/mol',
-                 name: str = 'angle',
+                 name: str = 'angle_energy',
                  **kwargs,
                  ):
 
@@ -104,15 +110,17 @@ class AngleEnergy(EnergyCell):
             energy_unit=energy_unit,
         )
         self._kwargs = get_arguments(locals(), kwargs)
+        if 'exclude_index' in self._kwargs.keys():
+            self._kwargs.pop('exclude_index')
 
         if parameters is not None:
+            if system is None:
+                raise ValueError('`system` cannot be None when using `parameters`!')
             length_unit = parameters.get('length_unit')
             energy_unit = parameters.get('energy_unit')
             self.units.set_units(length_unit, energy_unit)
-
-            index = parameters.get('index')
-            force_constant = parameters.get('force_constant')
-            bond_angle = parameters.get('bond_angle')
+            self._use_pbc = system.use_pbc
+            index, force_constant, bond_angle = self.get_parameters(system, parameters)
 
         # (1,a,3)
         index = get_ms_array(index, ms.int32)
@@ -149,6 +157,60 @@ class AngleEnergy(EnergyCell):
         if bond_angle.ndim > 2:
             raise ValueError('The rank of bond_angle cannot be larger than 2!')
         self.bond_angle = Parameter(bond_angle, name='bond_angle')
+
+    @staticmethod
+    def check_system(system: Molecule) -> bool:
+        """Check if the system needs to calculate this energy term"""
+        return system.angles is not None
+
+    @staticmethod
+    def get_parameters(system: Molecule, parameters: dict):
+        """
+        Get the force field bond parameters.
+
+        Args:
+            system (Molecule): Simulation system.
+            parameters (dict): parameters.
+
+        Returns:
+            index (ndarray)
+            force_constant (ndarray)
+            bond_length (ndarray)
+
+        """
+        atom_type = system.atom_type[0]
+        index = system.angles.asnumpy()
+
+        angle_atoms = np.take(atom_type, index, -1)
+
+        k_index = parameters['parameter_names']["pattern"].index('force_constant')
+        t_index = parameters['parameter_names']["pattern"].index('bond_angle')
+
+        angle_params: dict = parameters['parameters']
+        params = {}
+        for k, v in angle_params.items():
+            [a, b, c] = k.split('-')
+            if a != c:
+                params[c + '-' + b + '-' + a] = v
+        angle_params.update(params)
+
+        angle_type = get_bonded_types(angle_atoms)
+        type_list: list = angle_type.reshape(-1).tolist()
+
+        if len(type_list) == 1:
+            bond_angle = [angle_params[type_list[0]][t_index]]
+            force_constant = [angle_params[type_list[0]][k_index]]
+        else:
+            bond_angle = []
+            force_constant = []
+            for params in itemgetter(*type_list)(angle_params):
+                bond_angle.append(params[t_index])
+                force_constant.append(params[k_index])
+
+        force_constant = np.array(force_constant, np.float32).reshape(angle_type.shape)
+        bond_angle = np.array(bond_angle, np.float32).reshape(angle_type.shape) / 180 * np.pi
+
+        return index, force_constant, bond_angle
 
     def set_pbc(self, use_pbc: bool):
         self._use_pbc = use_pbc
