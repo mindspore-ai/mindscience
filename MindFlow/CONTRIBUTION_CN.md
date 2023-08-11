@@ -22,9 +22,15 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 
 【必须】Jupyter Notebook中英文：为用户提供逐行的代码实现方式，详细讲解案例的实现方式和运行结果。
 
-【必须】参数文件：案例中具体参数的值放在这里，为了方便查看，按照优化器、模型等进行分类。
+【必须】`images`：包含了README、notebook等文件里的所有图片。
 
-【必须】训练脚本：案例的训练和验证脚本。
+【必须】`src`：为了保证训练代码的整洁性，可以抽取的函数和类可以统一放在src目录中，`__init__.py`一般为必须，`dataset.py`中包含数据集相关函数和类，`model.py`中包含模型相关函数和类，`utils.py`中包含工具函数和类，外部文件的调用统一从src导入。
+
+【必须】参数文件：案例中具体参数的配置，一般采用ymal文件，为了方便查看，按照优化器、模型等进行分类。
+
+【必须】训练脚本：案例的训练和验证脚本，在训练时除特殊情况，必须有测试集进行验证；训练脚本中的代码应该尽量简洁，复杂的调用封装到后端函数里。
+
+* 注意：类和函数中需要避免'Hard Code'，变量名需要有实际含义；尽量避免使用'Magic Number'，必要的需要在注释里说明；超过50行以上的代码可以考虑抽取出函数调用，减少重复代码；函数的功能尽可能单一，遵从'高内聚，低耦合'原则。
 
 ### 单个案例目录格式
 
@@ -135,7 +141,6 @@ def parse_args():
 
 
 def train(input_args):
-    # 训练和验证函数，采用MindSpore函数式编程范式编写，注意打印内容尽量统一，即："epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) * 1000 :.3f}ms"
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
     # 读取训练配置
     config = load_yaml_config(input_args.config_file_path)
@@ -162,9 +167,17 @@ def train(input_args):
     for epoch in range(1, config["epochs"] + 1):
         model.set_train()
         train()
+        # 训练和验证函数，采用MindSpore函数式编程范式编写，注意打印内容尽量统一
+        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time:  {time.time() - time_beg:.2f}s")
         # 验证
         if epoch % config['eval_interval'] == 0:
+            model.set_train(False)
+            print("================================Start Evaluation================================")
             eval()
+            print(f"epoch: {epoch} eval loss: {step_train_loss} epoch time:  {time.time() - time_beg:.2f}s")
+            print("=================================End Evaluation=================================")
+        if epoch % config['save_ckpt_interval'] == 0:
+            save_checkpoint(model, 'my_model.ckpt')
 
 
 if __name__ == '__main__':
@@ -189,12 +202,6 @@ if __name__ == '__main__':
 ## README文件格式
 
 其中，总目录中的README对整体背景、技术路线、结果进行讲解，在每个案例中，可以分别在案例的角度描述，注意整体和局部的详略关系，避免重复描述和重复代码。
-
-【必须】`images`：包含了README文件里的所有图片。
-
-【必须】`src`：为了保证训练代码的整洁性，可以单独抽取的函数和类可以统一放在src目录中，`__init__.py`一般为必须，`dataset.py`中包含数据集相关函数和类，`model.py`中包含模型相关函数和类，`utils.py`中包含工具函数和类。
-
-* 注意：类和函数中需要避免'Hard Code'，变量名需要有实际含义，必要的'Magic Number'需要在注释里说明。
 
 【必须】README.md和README_CN.md，中英文README文件，一般包含以下部分：
 
@@ -230,13 +237,32 @@ python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_targ
 
 用1-2张图的方式展示模型推理的效果，最好为gif。
 
+## 性能（可选）
+
+如果案例涉及到GPU和Ascend双后端，则需要用表格的形式展示训练的主要性能指标进行对比。
+
+|        参数         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend910A, 显存32G；CPU: 2.6HZ, 192核      |      NVIDIA V100 显存16G；CPU: 2.6HZ, 192核       |
+|     MindSpore版本   |        2.0.0             |      模型架构       |
+|        训练损失      |        0.010               |       0.010       |
+|        验证损失      |        0.015               |       0.015       |
+|        速度          |     10秒/步或10秒/轮        |    10秒/步或10秒/轮  |
+
 ## Contributor
 
-代码贡献者的gitee id:
-代码贡献者的email:
+gitee id: [Brian-K](https://gitee.com/Brian-K)
+
+email: brian_k2023@163.com
 
 ```
 
+## Jupyter Notebook文件格式
+
+Jupyter Notebook文件格式可参考[2D_steady_CN.ipynb](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_driven/airfoil/2D_steady/2D_steady_CN.ipynb)。
+
+将主要代码模块从训练脚本中抽出，有序分块放入Jupyter Notebook文件。Jupyter Notebook一般包含`概述`、`问题背景`、`技术路径`、`依赖导入`、`数据集制作`、`模型搭建`、`模型训练`、`结果展示`等部分。在每个部分，应当对代码重要内容进行说明，保证按照说明执行代码块能正常运行。
+
 ## PR创建和合入
 
-请参考[MindScience贡献指南](https://gitee.com/mindspore/mindscience/blob/master/CONTRIBUTION.md)
+请认真阅读[MindScience贡献指南](https://gitee.com/mindspore/mindscience/blob/master/CONTRIBUTION.md)，提高代码合入效率。在确认代码完成度接近完成后，联系代码仓管理员进行代码review，根据review意见修改，代码仓门禁通过后，需要2位审核人通过审核，完成合入。
