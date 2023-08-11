@@ -2,6 +2,8 @@
 
 本文档介绍如何向MindFlow合入代码，包括合入前需要准备的文件、数据，合入步骤以及需要注意的事项，帮助贡献者更高效地进行代码合入。
 
+如果缺少调试代码的硬件环境，可以参考[启智社区算力使用](https://download.mindspore.cn/mindscience/mindflow/tutorials/%E5%90%AF%E6%99%BA%E4%BA%91%E8%84%91%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.pdf)的文档。
+
 ## API代码
 
 API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提供高效、易用的公共API接口，因此API代码编写时需要注意以下几点：
