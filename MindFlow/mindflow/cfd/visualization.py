@@ -13,11 +13,13 @@
 # limitations under the License.
 # ==============================================================================
 """visualization tools"""
+import os
+import stat
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-def vis_1d(pri_var, file_name='vis.jpg'):
+def vis_1d(pri_var, file_name='vis.jpg', permission=stat.S_IREAD + stat.S_IWRITE):
     """
     Visualize the 1d flow field.
 
@@ -42,9 +44,10 @@ def vis_1d(pri_var, file_name='vis.jpg'):
     ax[2].set_title = 'p'
     ax[2].plot(cell_centers, data[4, :, 0, 0])
     plt.savefig(file_name)
+    os.chmod(file_name, permission)
 
 
-def vis_2d(pri_var, file_name='vis.jpg'):
+def vis_2d(pri_var, file_name='vis.jpg', permission=stat.S_IREAD + stat.S_IWRITE):
     """
     Visualize the 2d flow field.
 
@@ -96,3 +99,4 @@ def vis_2d(pri_var, file_name='vis.jpg'):
 
     plt.subplots_adjust(left=0.05, right=0.97, top=0.9, bottom=0.1)
     plt.savefig(file_name)
+    os.chmod(file_name, permission)
