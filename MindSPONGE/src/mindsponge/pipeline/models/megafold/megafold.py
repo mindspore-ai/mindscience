@@ -36,7 +36,6 @@ from mindspore import jit, context, nn
 from mindspore.context import ParallelMode
 
 from mindsponge.common.protein import to_pdb, from_prediction
-from mindsponge.pipeline.cell.amp import amp_convert
 from mindsponge.pipeline.cell.mask import LayerNormProcess
 from .module.fold_wrapcell import TrainOneStepCell, WithLossCell
 from .module.lr import cos_decay_lr
@@ -70,6 +69,7 @@ class MEGAFold(Model):
             'https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt'
 
         context.set_context(memory_optimize_level="O1", max_call_depth=6000, mode=ms.GRAPH_MODE)
+        self.fp32_white_list = None
         if context.get_context("device_target") == "GPU":
             self.mixed_precision = False
             context.set_context(graph_kernel_flags="--disable_expand_ops=Softmax \
@@ -77,16 +77,15 @@ class MEGAFold(Model):
                                 enable_graph_kernel=True)
         else:
             self.mixed_precision = True
+            self.fp32_white_list = (ms.nn.Softmax, ms.nn.LayerNorm, LayerNormProcess)
 
         self.use_jit = self.config.use_jit
         megafold = Megafold(self.config, self.mixed_precision)
-        if self.mixed_precision:
-            fp32_white_list = (nn.Softmax, nn.LayerNorm, LayerNormProcess)
-            amp_convert(megafold, fp32_white_list)
         self.network = megafold
 
         self.checkpoint_path = "./MEGA_Fold_1.ckpt"
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name,
+                         white_list=self.fp32_white_list, mixed_precision=self.mixed_precision)
 
         if self.config.is_training:
             if config.train.is_parallel:

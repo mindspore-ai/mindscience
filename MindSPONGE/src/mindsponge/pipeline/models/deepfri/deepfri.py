@@ -32,7 +32,6 @@ class DeepFri(Model):
                                                    "--composite_op_limit_size=50", enable_graph_kernel=True)
         else:
             self.mixed_precision = True
-            context.set_context(device_target="Ascend")
         self.config = config
         self.checkpoint_url = \
             f"https://download.mindspore.cn/mindscience/mindsponge/DeepFri/checkpoint/" \
@@ -40,7 +39,8 @@ class DeepFri(Model):
         self.checkpoint_path = f"./DeepFRI_{self.config.prefix}.ckpt"
         self.use_jit = self.config.use_jit
         self.network = Predictor(self.config.prefix, self.config, gcn=True)
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network,
+                         mixed_precision=self.mixed_precision)
 
     def forward(self, data):
         pass

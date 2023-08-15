@@ -29,7 +29,6 @@ from mindspore import Tensor
 from mindspore import jit, context
 import mindspore as ms
 from mindsponge.common.protein import to_pdb, from_prediction
-from mindsponge.pipeline.cell.amp import amp_convert
 from mindsponge.pipeline.cell.mask import LayerNormProcess
 from .nn_arch import Rasp, compute_confidence
 from ..model import Model
@@ -70,11 +69,10 @@ class RASP(Model):
         self.config = config
         self.use_jit = self.config.use_jit
         self.network = Rasp(self.config, self.mixed_precision)
-        if self.mixed_precision:
-            fp32_white_list = (ms.nn.Softmax, ms.nn.LayerNorm, LayerNormProcess)
-            amp_convert(self.network, fp32_white_list)
+        self.fp32_white_list = (ms.nn.Softmax, ms.nn.LayerNorm, LayerNormProcess)
         self.checkpoint_path = "./rasp.ckpt"
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name,
+                         white_list=self.fp32_white_list, mixed_precision=self.mixed_precision)
 
     def forward(self, data):
         "forward"

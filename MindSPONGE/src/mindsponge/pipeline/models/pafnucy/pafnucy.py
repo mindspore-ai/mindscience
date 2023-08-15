@@ -37,6 +37,10 @@ class PAFNUCY(Model):
         context.set_context(memory_optimize_level="O1", max_call_depth=6000)
         self.config = config
         self.use_jit = self.config.use_jit
+        if context.get_context("device_target") == "GPU":
+            self.mixed_precision = False
+        else:
+            self.mixed_precision = True
         self.is_training = self.config.is_training
         self.checkpoint_url = 'https://download.mindspore.cn/mindscience/mindsponge/Pafnucy/checkpoint/pafnucy.ckpt'
         self.checkpoint_path = "./pafnucy.ckpt"
@@ -59,7 +63,8 @@ class PAFNUCY(Model):
                                      isize=config.isize, keep_prob=1.0)
             self.network.set_train(False)
 
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network,
+                         mixed_precision=self.mixed_precision)
 
 
     def forward(self, data):

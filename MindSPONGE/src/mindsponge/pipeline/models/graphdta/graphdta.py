@@ -16,7 +16,7 @@
 import numpy as np
 
 from mindspore import jit, nn
-from mindspore import Tensor
+from mindspore import Tensor, context
 from mindspore.common import mutable
 from mindspore.nn import TrainOneStepCell
 
@@ -33,6 +33,10 @@ class GraphDTA(Model):
         self.config = config
         self.use_jit = self.config.use_jit
         self.white_list = (nn.Softmax, nn.LayerNorm)
+        if context.get_context("device_target") == "GPU":
+            self.mixed_precision = False
+        else:
+            self.mixed_precision = True
         self.checkpoint_url = \
             "https://download.mindspore.cn/mindscience/mindsponge/GraphDTA/checkpoint/graphdta_model.ckpt"
         self.network = Graphdta(self.config)
@@ -47,7 +51,8 @@ class GraphDTA(Model):
         else:
             self.network.set_train(False)
 
-        super().__init__(self.checkpoint_url, network=self.network, name=self.name, white_list=self.white_list)
+        super().__init__(self.checkpoint_url, network=self.network, name=self.name, white_list=self.white_list,
+                         mixed_precision=self.mixed_precision)
 
     @jit
     def backward(self, data):

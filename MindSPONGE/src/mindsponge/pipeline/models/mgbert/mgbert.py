@@ -62,7 +62,8 @@ class MGBert(Model):
             self.trained_epoch = config.trained_epoch
             loss_net = CustomWithLossCell(self.network, loss_fn)
             self.train_net = nn.TrainOneStepCell(loss_net, opt)
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name,
+                         mixed_precision=self.mixed_precision)
 
     # pylint: disable=invalid-name
     def forward(self, data):
