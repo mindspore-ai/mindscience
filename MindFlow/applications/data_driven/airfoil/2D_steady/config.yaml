@@ -25,7 +25,7 @@ data:
   post_dir: "./postprocessing/visualization/"
   max_value_list: [ 4.6, 1.0, 0.18418664581293126]
   min_value_list: [-2.0, -0.18382872836312403, -0.1839052340212462]
-  data_group_size: 50
+  data_group_size: 51
 
 optimizer:
   epochs: 1000

@@ -40,7 +40,7 @@ def parse_args():
     parser.add_argument("--save_graphs_path", type=str, default="./graphs")
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
-    parser.add_argument("--device_id", type=int, default=3, help="ID of the target device")
+    parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
     parser.add_argument("--config_file_path", type=str, default="./burgers1d.yaml")
     input_args = parser.parse_args()
     return input_args
