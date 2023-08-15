@@ -187,10 +187,9 @@ class GVPTransformerEncoder(nn.Cell):
         components = dict()
         coord_mask = ops.IsFinite()(coords).all(axis=-1).all(axis=-1)
         coords = nan_to_num(coords)
-        mask_tokens = (
-            padding_mask * self.dictionary.padding_idx +
-            ~padding_mask * self.dictionary.get_idx("<mask>")
-        )
+        padding_mask_cast = ops.cast(padding_mask, ms.int32)
+        mask_tokens = padding_mask_cast * self.dictionary.padding_idx + \
+            (1 - padding_mask_cast) * self.dictionary.get_idx("<mask>")
         components["tokens"] = self.embed_tokens(mask_tokens) * self.embed_scale
         components["diherals"] = self.embed_dihedrals(coords)
 

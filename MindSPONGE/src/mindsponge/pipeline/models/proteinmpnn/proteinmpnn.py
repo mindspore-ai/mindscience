@@ -35,7 +35,6 @@ class ProteinMpnn(Model):
             self.mixed_precision = False
         else:
             self.mixed_precision = True
-            context.set_context(device_target="Ascend")
 
         self.config = config
         self.use_jit = self.config.use_jit
@@ -56,7 +55,8 @@ class ProteinMpnn(Model):
             self.checkpoint_url = \
                 'https://download.mindspore.cn/mindscience/mindsponge/ProteinMPNN/checkpoint/proteinmpnn.ckpt'
             self.checkpoint_path = "./proteinmpnn.ckpt"
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name, self.white_list)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name, self.white_list,
+                         mixed_precision=self.mixed_precision)
 
     def forward(self, data):
         pass

@@ -43,7 +43,8 @@ class MEGAEvoGen(Model):
             'https://download.mindspore.cn/mindscience/mindsponge/MEGAEvoGen/checkpoint/MEGAEvoGen.ckpt'
         self.checkpoint_path = "./MEGAEvoGen.ckpt"
         self.network = MegaEvogen(self.config, self.mixed_precision)
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name,
+                         mixed_precision=self.mixed_precision)
 
     # pylint: disable=invalid-name
     def forward(self, data):

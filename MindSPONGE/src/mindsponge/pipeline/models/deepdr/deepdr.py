@@ -21,7 +21,7 @@
 """DeepDR"""
 import numpy as np
 import mindspore as ms
-from mindspore import Tensor, jit, nn, ops
+from mindspore import Tensor, jit, nn, ops, context
 from mindspore.common import mutable
 
 from ..model import Model
@@ -50,6 +50,10 @@ class DeepDR(Model):
     def __init__(self, config):
         self.config = config
         self.use_jit = self.config.use_jit
+        if context.get_context("device_target") == "GPU":
+            self.mixed_precision = False
+        else:
+            self.mixed_precision = True
         self.is_training = self.config.is_training
         self.checkpoint_url = 'https://download.mindspore.cn/mindscience/mindsponge/deepdr/checkpoint/cvae.ckpt'
         self.checkpoint_path = "./cvae.ckpt"
@@ -96,7 +100,8 @@ class DeepDR(Model):
             self.train_wrapper.set_train()
         else:
             self.train_wrapper.set_train(False)
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network,
+                         mixed_precision=self.mixed_precision)
 
 
     def forward(self, data):

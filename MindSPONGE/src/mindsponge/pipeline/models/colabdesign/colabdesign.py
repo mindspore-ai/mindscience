@@ -20,7 +20,6 @@ from mindspore import Parameter
 from mindspore import Tensor
 from mindspore import jit, context
 from mindspore.common import mutable
-from mindsponge.pipeline.cell.amp import amp_convert
 from mindsponge.pipeline.cell.mask import LayerNormProcess
 
 from .module.design_wrapcell import TrainOneStepCell, WithLossCell
@@ -43,12 +42,14 @@ class COLABDESIGN(Model):
 
     def __init__(self, config):
         context.set_context(memory_optimize_level="O1", max_call_depth=6000)
+        self.fp32_white_list = None
         if context.get_context("device_target") == "GPU":
             self.mixed_precision = False
             context.set_context(graph_kernel_flags="--disable_expand_ops=Softmax --disable_cluster_ops=ReduceSum "
                                                    "--composite_op_limit_size=50", enable_graph_kernel=True)
         else:
             self.mixed_precision = True
+            self.fp32_white_list = (ms.nn.Softmax, ms.nn.LayerNorm, LayerNormProcess)
 
         self.config = config
         self.use_jit = self.config.use_jit
@@ -58,10 +59,8 @@ class COLABDESIGN(Model):
         seq_vector = 0.01 * np.random.normal(0, 1, size=(1, 100, 20))
         self.network = Colabdesign(self.config, self.mixed_precision, Tensor(seq_vector, ms.float32), 100,
                                    protocol=self.config.protocol)
-        if self.mixed_precision:
-            fp32_white_list = (ms.nn.Softmax, ms.nn.LayerNorm, LayerNormProcess)
-            amp_convert(self.network, fp32_white_list)
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name,
+                         white_list=self.fp32_white_list, mixed_precision=self.mixed_precision)
         net_with_criterion = WithLossCell(self.network)
         soft_weights, _, temp_weights = get_weights(self.config, self.config.soft_iters, self.config.temp_iters,
                                                     self.config.hard_iters)

@@ -52,6 +52,10 @@ class KGNN(Model):
     """KGNN Model"""
     def __init__(self, config):
         context.set_context(memory_optimize_level="O1", max_call_depth=6000)
+        if context.get_context("device_target") == "GPU":
+            self.mixed_precision = False
+        else:
+            self.mixed_precision = True
         self.config = config
         self.use_jit = self.config.use_jit
         self.is_training = self.config.is_training
@@ -67,7 +71,8 @@ class KGNN(Model):
             self.train_wrapper.set_train()
         else:
             self.network.set_train(False)
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network,
+                         mixed_precision=self.mixed_precision)
 
 
     def forward(self, data):

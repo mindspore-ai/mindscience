@@ -28,6 +28,10 @@ class ESM2(Model):
         context.set_context(memory_optimize_level="O1", max_call_depth=6000)
         self.config = config
         self.use_jit = self.config.use_jit
+        if context.get_context("device_target") == "GPU":
+            self.mixed_precision = False
+        else:
+            self.mixed_precision = True
         self.checkpoint_url = 'https://download.mindspore.cn/mindscience/mindsponge/esm2/checkpoint/esm2.ckpt'
         self.checkpoint_path = "./esm2.ckpt"
         self.network = esm2(num_layers=self.config.encoder_layers,
@@ -36,7 +40,8 @@ class ESM2(Model):
                             alphabet=self.config.alphabet,
                             token_dropout=self.config.token_dropout,
                             return_contacts=self.config.return_contacts)
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name,
+                         mixed_precision=self.mixed_precision)
 
     def forward(self, data):
         if self.use_jit:

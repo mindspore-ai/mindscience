@@ -53,7 +53,8 @@ class Multimer(Model):
             'https://download.mindspore.cn/mindscience/mindsponge/Multimer/checkpoint/Multimer_Model_1.ckpt'
         self.checkpoint_path = "./Multimer_Model_1.ckpt"
         self.network = MultimerArch(self.config, self.mixed_precision)
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name, self.white_list)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name, self.white_list,
+                         mixed_precision=self.mixed_precision)
 
     def forward(self, data):
         if self.use_jit:

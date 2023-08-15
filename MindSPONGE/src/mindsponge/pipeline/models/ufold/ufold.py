@@ -24,7 +24,7 @@
 import mindspore as ms
 from mindspore import jit, nn
 from mindspore import ops
-from mindspore import Tensor
+from mindspore import Tensor, context
 from mindspore.nn import TrainOneStepCell
 from mindspore.common import dtype as mstype
 from mindspore.common import mutable
@@ -65,7 +65,10 @@ class UFold(Model):
     def __init__(self, config):
         self.config = config
         self.use_jit = self.config.use_jit
-
+        if context.get_context("device_target") == "GPU":
+            self.mixed_precision = False
+        else:
+            self.mixed_precision = True
         self.dataset_ckpt_name = {
             'ArchiveII': 'ufold_train',
             'bpnew': 'ufold_train',
@@ -98,7 +101,8 @@ class UFold(Model):
         self.train_net = TrainOneStepCell(self.loss_net, self.u_optimizer)
         if self.config.is_training:
             self.train_net.set_train()
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network,
+                         mixed_precision=self.mixed_precision)
 
 
     def forward(self, data):

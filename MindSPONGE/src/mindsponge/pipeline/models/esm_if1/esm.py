@@ -14,7 +14,7 @@
 # ============================================================================
 """esm model"""
 import mindspore as ms
-from mindspore import jit, context, nn
+from mindspore import jit, nn
 from mindspore import ops
 # pylint: disable=relative-beyond-top-level
 from .module.esm_wrapcell import TrainOneStepCell
@@ -28,10 +28,7 @@ class ESM(Model):
     name = "ESM"
 
     def __init__(self, config):
-        if context.get_context("device_target") == "GPU":
-            self.mixed_precision = False
-        else:
-            self.mixed_precision = True
+        self.mixed_precision = False
         self.config = config
         self.use_jit = self.config.use_jit
         self.temperature = self.config.temperature
@@ -47,7 +44,8 @@ class ESM(Model):
             opt = nn.Adam(net_with_loss.trainable_params(), learning_rate=0.0001, eps=1e-6)
             self.train_net = TrainOneStepCell(net_with_loss, opt)
             self.train_net.set_train()
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name,
+                         mixed_precision=self.mixed_precision)
 
     def forward(self, data):
         if self.use_jit:

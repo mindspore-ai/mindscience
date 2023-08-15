@@ -14,7 +14,7 @@
 # ============================================================================
 """grover"""
 import mindspore as ms
-from mindspore import jit, nn
+from mindspore import jit, nn, context
 from mindspore.common import mutable
 from ..model import Model
 from .nn_arch import GROVEREmbedding, GroverFinetuneTask, GroverFpGenerationTask, GroverPretrainTask
@@ -94,6 +94,10 @@ class Grover(Model):
     def __init__(self, config, **kwargs):
         self.config = config
         self.use_jit = self.config.use_jit
+        if context.get_context("device_target") == "GPU":
+            self.mixed_precision = False
+        else:
+            self.mixed_precision = True
         self.checkpoint_url = 'https://download.mindspore.cn/mindscience/mindsponge/grover/checkpoint/grover.ckpt'
         self.checkpoint_path = "./grover.ckpt"
         if self.config.parser_name == "eval":
@@ -152,7 +156,8 @@ class Grover(Model):
                 network = nn.TrainOneStepCell(network=network, optimizer=opt)
             network.set_train(True)
         self.network = network
-        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name)
+        super().__init__(self.checkpoint_url, self.checkpoint_path, self.network, self.name,
+                         mixed_precision=self.mixed_precision)
 
     # pylint: disable=arguments-differ
     def forward(self, input_graph, scope, features_batch):

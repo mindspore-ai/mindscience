@@ -25,7 +25,6 @@ from abc import ABCMeta, abstractmethod
 import os
 import ssl
 import urllib.request
-import mindspore as ms
 import mindspore.common.dtype as mstype
 from mindspore import load_checkpoint
 from mindsponge.pipeline.cell.amp import amp_convert
@@ -33,7 +32,8 @@ from mindsponge.pipeline.cell.amp import amp_convert
 
 class Model(metaclass=ABCMeta):
     """Model"""
-    def __init__(self, checkpoint_url=None, checkpoint_path=None, network=None, name=None, white_list=None):
+    def __init__(self, checkpoint_url=None, checkpoint_path=None, network=None, name=None, white_list=None,
+                 mixed_precision=True):
         self.cache = None
         self.ckpt_path = None
         self.checkpoint_url = checkpoint_url
@@ -41,7 +41,8 @@ class Model(metaclass=ABCMeta):
         self.name = name
         self.network = network
         self.white_list = white_list
-        if ms.get_context("device_target") == "Ascend":
+        self.mixed_precision = mixed_precision
+        if self.mixed_precision:
             self.network.to_float(mstype.float16)
             amp_convert(self.network, self.white_list)
         self._check_initialize()
