@@ -78,12 +78,9 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
         model.set_train()
         for _ in range(steps):
             cur_loss = sink_process()
-            print("epoch: %s, loss is %s" % (cur_epoch, cur_loss), flush=True)
         local_time_end = time.time()
         epoch_seconds = (local_time_end - local_time_beg) * 1000
-        step_seconds = epoch_seconds / steps
-        print("Train epoch time: {:5.3f} ms, per step time: {:5.3f} ms".format
-              (epoch_seconds, step_seconds), flush=True)
+        print(f"epoch: {cur_epoch} train loss: {cur_loss} epoch time: {epoch_seconds:5.3f}ms", flush=True)
 
         if cur_epoch % config_param["save_epoch_interval"] == 0:
             ckpt_file_name = "ckpt/step_{}".format(step)
