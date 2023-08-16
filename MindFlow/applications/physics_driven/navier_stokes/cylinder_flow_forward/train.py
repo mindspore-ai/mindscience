@@ -133,7 +133,9 @@ def train():
         model.set_train(False)
         if epoch % config["eval_interval_epochs"] == 0:
             # eval
+            eval_time_start = time.time()
             calculate_l2_error(model, inputs, label, config)
+            print(f'evaluation total time: {time.time() - eval_time_start}s')
 
         if epoch % config["save_checkpoint_epochs"] == 0 and config["save_ckpt"]:
             if not os.path.exists(os.path.abspath("./ckpt")):
