@@ -1,0 +1,24 @@
+epochs: 10
+batch_size: 256
+data_path: "../dataset/experiment/changeCondition_20230605163432"
+model_path: "../checkpoints/3d_net_best.ckpt"
+
+ResMLP:
+  input_num: 10
+  width: 64
+  depth: 10
+  output_num: 1
+
+lr_scheduler:
+  learning_rate: 3e-4
+  epoch_size: 20
+  gamma: 0.5
+  warmup_epochs: 10
+
+visualization:
+  near_wall_dis: 0.02
+  shock_wave_x_min: 0.6
+  shock_wave_x_max: 1
+  plt_dis_internal: 0.02
+  plt_error_internal: 0.1
+  figure_bins: 10
