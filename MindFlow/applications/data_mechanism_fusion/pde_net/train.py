@@ -90,7 +90,10 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
             mindspore.save_checkpoint(model, os.path.join(ckpt_dir, ckpt_name))
 
         if cur_epoch % config_param['eval_interval'] == 0:
+            eval_time_start = time.time()
             calculate_lp_loss_error(problem, eval_dataset, config_param["batch_size"])
+            print(f'evaluation total time: {time.time() - eval_time_start}s')
+
 
 
 def train(config_param):

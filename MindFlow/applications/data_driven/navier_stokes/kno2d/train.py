@@ -21,8 +21,7 @@ import datetime
 import argparse
 import numpy as np
 
-import mindspore
-from mindspore import nn, context, ops, Tensor, set_seed, dtype
+from mindspore import nn, context, ops, Tensor, set_seed, dtype, save_checkpoint, data_sink
 from mindspore.nn.loss import MSELoss
 
 from mindflow.cell import KNO2D
@@ -118,7 +117,7 @@ def train(input_args):
         loss = ops.depend(loss, optimizer(grads))
         return loss, l_recons, l_pred
 
-    train_sink = mindspore.data_sink(train_step, train_dataset, sink_size=1)
+    train_sink = data_sink(train_step, train_dataset, sink_size=1)
 
     summary_dir = os.path.join(config["summary_dir"], model_name)
     os.makedirs(summary_dir, exist_ok=True)
@@ -137,14 +136,18 @@ def train(input_args):
         train_recons_full = train_recons_full / train_size
         train_pred_full = train_pred_full / train_size
         train_full = train_full / train_size
-        print(f"epoch: {epoch}, time cost: {(time.time() - time_beg):>8f}s,"
-              f" recons loss: {train_recons_full:>8f}, pred loss: {train_pred_full:>8f}, Total loss: {train_full:>8f}")
+        print(f"epoch: {epoch} recons loss: {train_recons_full:>8f} pred loss: {train_pred_full:>8f}"
+              f" train loss: {train_full:>8f} epoch time: {(time.time() - time_beg):>8f}s")
 
         if epoch % config['eval_interval'] == 0:
+            eval_time_start = time.time()
+            print("================================Start Evaluation================================")
             l_recons_all, l_pred_all = problem.test(test_input, test_label)
             print(f'Eval epoch: {epoch}, recons loss: {l_recons_all},'
                   f' relative pred loss: {l_pred_all}')
-            mindspore.save_checkpoint(model, ckpt_file_name=summary_dir + '/save_model.ckpt')
+            print("=================================End Evaluation=================================")
+            print(f'evaluation total time: {time.time() - eval_time_start}s')
+            save_checkpoint(model, ckpt_file_name=summary_dir + '/save_model.ckpt')
 
     # Infer and plot some data.
     visual(problem, test_input, test_label, t_out=10)

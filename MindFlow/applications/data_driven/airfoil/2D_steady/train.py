@@ -157,7 +157,9 @@ def train():
         model.set_train(False)
         # eval
         if epoch % eval_interval == 0:
+            eval_time_start = time.time()
             calculate_eval_error(eval_dataset, model)
+            print(f'evaluation total time: {time.time() - eval_time_start}s')
         # plot
         if epoch % plot_interval == 0:
             plot_u_and_cp(eval_dataset=eval_dataset, model=model,
