@@ -129,11 +129,13 @@ def train(input_args):
         print(f"epoch: {epoch} train loss: {cur_loss.asnumpy()} epoch time: {time.time() - local_time_beg:.2f}s")
 
         if epoch % config['eval_interval'] == 0:
+            eval_time_start = time.time()
             model.set_train(False)
             print("================================Start Evaluation================================")
             rms_error = problem.get_loss(test_input, test_label)/test_input.shape[0]
             print(f"mean rms_error: {rms_error}")
             print("=================================End Evaluation=================================")
+            print(f'evaluation total time: {time.time() - eval_time_start}s')
             save_checkpoint(model, os.path.join(ckpt_dir, f"{model_params['name']}_epoch{epoch}"))
 
 
