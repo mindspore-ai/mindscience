@@ -99,7 +99,6 @@ class SingleTemplateEmbedding(nn.Cell):
         template_layers = nn.CellList()
         for _ in range(self.config.template_pair_stack.num_block):
             template_pair_stack_block = TemplatePairStack(config)
-            template_pair_stack_block.recompute()
             template_layers.append(template_pair_stack_block)
         self.template_pair_stack = template_layers
 
@@ -163,8 +162,11 @@ class SingleTemplateEmbedding(nn.Cell):
             act = act + (P.Squeeze()(act_tmp[i]),)
 
         output = []
+        slice_act = None
         for i in range(self.batch_block):
             act_batch = act[i]
+            if i > 0:
+                act_batch = F.depend(act_batch, slice_act)
             for j in range(self.num_block):
                 act_batch = self.template_pair_stack[j](act_batch, mask_2d)
             slice_act = P.Reshape()(act_batch, ((1,) + P.Shape()(act_batch)))

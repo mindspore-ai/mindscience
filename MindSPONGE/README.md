@@ -81,14 +81,14 @@ print("confidence:", confidence)
 ```bash
 import numpy as np
 from mindspore import context
-from mindsponge import Sponge
-from mindsponge import Molecule
-from mindsponge import ForceFieldBase
-from mindsponge import DynamicUpdater
-from mindsponge.potential import BondEnergy, AngleEnergy
-from mindsponge.callback import WriteH5MD, RunInfo
-from mindsponge.function import VelocityGenerator
-from mindsponge.control import LeapFrog
+from sponge import Sponge
+from sponge import Molecule
+from sponge import ForceFieldBase
+from sponge import DynamicUpdater
+from sponge.potential import BondEnergy, AngleEnergy
+from sponge.callback import WriteH5MD, RunInfo
+from sponge.function import VelocityGenerator
+from sponge.control import LeapFrog
 
 context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 

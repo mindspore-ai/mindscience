@@ -30,28 +30,27 @@ from mindspore import context
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.append('../../src')
 
-    from mindsponge import Sponge
-    from mindsponge import Molecule
-    from mindsponge import ForceFieldBase
-    from mindsponge import UpdaterMD
+    from sponge import Sponge
+    from sponge import Molecule
+    from sponge import ForceFieldBase
+    from sponge import UpdaterMD
 
-    from mindsponge.potential import BondEnergy, AngleEnergy
-    from mindsponge.callback import WriteH5MD, RunInfo
-    from mindsponge.function import VelocityGenerator
-    from mindsponge.control import LeapFrog, BerendsenThermostat
+    from sponge.potential import BondEnergy, AngleEnergy
+    from sponge.callback import WriteH5MD, RunInfo
+    from sponge.function import VelocityGenerator
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 
     system = Molecule(
         atoms=['O', 'H', 'H'],
         coordinate=[[0, 0, 0], [0.1, 0, 0], [-0.0333, 0.0943, 0]],
-        bond=[[[0, 1], [0, 2]]],
+        bonds=[[[0, 1], [0, 2]]],
     )
 
     bond_energy = BondEnergy(
-        index=system.bond,
+        index=system.bonds,
         force_constant=[[345000, 345000]],
         bond_length=[[0.1, 0.1]],
     )
@@ -65,14 +64,15 @@ if __name__ == "__main__":
     potential = ForceFieldBase(energy=[bond_energy, angle_energy])
 
     vgen = VelocityGenerator(300)
-    velocity = vgen(system.coordinate.shape, system.atom_mass)
+    velocity = vgen(system.shape, system.atom_mass)
 
     updater = UpdaterMD(
-        system,
-        integrator=LeapFrog(system),
-        thermostat=BerendsenThermostat(system, 300),
+        system=system,
         time_step=1e-3,
-        velocity=velocity
+        velocity=velocity,
+        integrator='leap_frog',
+        temperature=300,
+        thermostat='berendsen',
     )
 
     md = Sponge(system, potential, updater)

@@ -24,39 +24,38 @@
 MindSPONGE basic tutorial 05: MD simulation with periodic boundary condition.
 """
 
-from mindspore import context
+from mindspore import context, set_seed, nn
 
 if __name__ == "__main__":
+    set_seed(0)
 
     import sys
-    sys.path.append('..')
+    sys.path.append('../../src')
 
-    from mindsponge import Sponge
-    from mindsponge import Molecule
-    from mindsponge import ForceField
-    from mindsponge import UpdaterMD
-    from mindsponge import WithEnergyCell
-    from mindsponge.control import VelocityVerlet
-    from mindsponge.control import Langevin, BerendsenBarostat
-    from mindsponge.function import VelocityGenerator
-    from mindsponge.callback import WriteH5MD, RunInfo
-    from mindsponge.optimizer import SteepestDescent
-    from mindsponge import set_global_units
+    from sponge import Sponge
+    from sponge import Molecule
+    from sponge import ForceField
+    from sponge import UpdaterMD
+    from sponge import WithEnergyCell
+    from sponge.function import VelocityGenerator
+    from sponge.callback import WriteH5MD, RunInfo
+    from sponge import set_global_units
+    from sponge.partition import NeighbourList
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 
     set_global_units('nm', 'kj/mol')
 
-    system = Molecule(template='water.spce.yaml')
-    system.set_pbc_box([0.32, 0.32, 0.32])
+    system = Molecule(template='water.tip3p.yaml')
+    system.set_pbc_box([0.4, 0.4, 0.4])
+    system.repeat_box([5, 5, 5])
 
-    system.repeat_box([10, 10, 10])
+    potential = ForceField(system, parameters='TIP3P')
 
-    potential = ForceField(system, parameters='SPCE')
+    opt = nn.Adam(system.trainable_params(), 1e-03)
 
-    opt = SteepestDescent(system.trainable_params(), 1e-6)
-
-    sim = WithEnergyCell(system, potential, cutoff=1.0)
+    neighbours = NeighbourList(system, cast_fp16=True)
+    sim = WithEnergyCell(system, potential, neighbour_list=neighbours)
     mini = Sponge(sim, optimizer=opt)
 
     run_info = RunInfo(10)
@@ -64,19 +63,22 @@ if __name__ == "__main__":
 
     temp = 300
     vgen = VelocityGenerator(temp)
-    velocity = vgen(system.coordinate.shape, system.atom_mass)
+    velocity = vgen(system.shape, system.atom_mass)
 
     updater = UpdaterMD(
-        system,
-        integrator=VelocityVerlet(system),
-        thermostat=Langevin(system, temp),
-        barostat=BerendsenBarostat(system, 1),
-        velocity=velocity,
+        system=system,
         time_step=1e-3,
+        velocity=velocity,
+        integrator='velocity_verlet',
+        temperature=300,
+        thermostat='langevin',
+        pressure=1,
+        barostat='berendsen',
     )
 
     md = Sponge(sim, optimizer=updater)
 
-    cb_h5md = WriteH5MD(system, 'tutorial_b05.h5md', save_freq=50)
+    cb_h5md = WriteH5MD(system, 'tutorial_b05.h5md', save_freq=10)
 
-    md.run(10000, callbacks=[run_info, cb_h5md])
+    run_info = RunInfo(10)
+    md.run(3000, callbacks=[run_info, cb_h5md])

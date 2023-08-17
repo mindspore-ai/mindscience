@@ -29,22 +29,22 @@ from mindspore import context
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.insert(0, '../../src')
 
-    from mindsponge import Sponge
-    from mindsponge import ForceField
-    from mindsponge import set_global_units
-    from mindsponge import Protein
-    from mindsponge import WithEnergyCell
-    from mindsponge import UpdaterMD
-    from mindsponge.optimizer import SteepestDescent
-    from mindsponge.control import VelocityVerlet
-    from mindsponge.callback import WriteH5MD, RunInfo
-    from mindsponge.control import Langevin
-    from mindsponge.sampling import Metadynamics, ITS
-    from mindsponge.function import VelocityGenerator
-    from mindsponge.colvar import Torsion
-    from mindsponge.function import PI
+    from sponge import Sponge
+    from sponge import ForceField
+    from sponge import set_global_units
+    from sponge import Protein
+    from sponge import WithEnergyCell
+    from sponge import UpdaterMD
+    from sponge.optimizer import SteepestDescent
+    from sponge.control import VelocityVerlet
+    from sponge.callback import WriteH5MD, RunInfo
+    from sponge.control import Langevin
+    from sponge.sampling import Metadynamics, ITS
+    from sponge.function import VelocityGenerator
+    from sponge.colvar import Torsion
+    from sponge.function import PI
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 
@@ -87,13 +87,14 @@ if __name__ == "__main__":
     sim = WithEnergyCell(system, potential, bias=metad, wrapper=its)
 
     vgen = VelocityGenerator(300)
-    velocity = vgen(system.coordinate.shape, system.atom_mass)
+    velocity = vgen(system.shape, system.atom_mass)
+
     opt = UpdaterMD(
         system,
+        velocity=velocity,
+        time_step=1e-3,
         integrator=VelocityVerlet(system),
         thermostat=Langevin(system, 300),
-        time_step=1e-3,
-        velocity=velocity
     )
 
     md = Sponge(sim, optimizer=opt, metrics={'phi': phi, 'psi': psi})

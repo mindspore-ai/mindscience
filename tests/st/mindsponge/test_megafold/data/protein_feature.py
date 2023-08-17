@@ -19,7 +19,7 @@ protein feature generation module.
 import numpy as np
 from absl import logging
 
-from mindsponge.data.data_transform import convert_monomer_features, convert_unnecessary_leading_dim_feats
+from mindsponge.data_transform import convert_monomer_features, convert_unnecessary_leading_dim_feats
 from mindsponge.common import residue_constants
 from data.templates import TemplateHitFeaturizer
 from data.hhsearch import HHSearch

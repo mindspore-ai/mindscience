@@ -29,18 +29,16 @@ from mindspore import context
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.append('../../src')
 
-    from mindsponge import Sponge
-    from mindsponge import ForceField
-    from mindsponge import set_global_units
-    from mindsponge import Protein
-    from mindsponge import UpdaterMD
-    from mindsponge.optimizer import SteepestDescent
-    from mindsponge.control import VelocityVerlet
-    from mindsponge.callback import WriteH5MD, RunInfo
-    from mindsponge.control import Langevin
-    from mindsponge.function import VelocityGenerator
+    from sponge import Sponge
+    from sponge import ForceField
+    from sponge import set_global_units
+    from sponge import Protein
+    from sponge import UpdaterMD, WithEnergyCell
+    from sponge.optimizer import SteepestDescent
+    from sponge.callback import WriteH5MD, RunInfo
+    from sponge.function import VelocityGenerator
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 
@@ -53,20 +51,22 @@ if __name__ == "__main__":
 
     min_opt = SteepestDescent(system.trainable_params(), 1e-7)
 
-    md = Sponge(system, energy, min_opt)
+    sim = WithEnergyCell(system, energy, cutoff=1.0)
+    md = Sponge(sim, optimizer=min_opt)
 
     run_info = RunInfo(10)
     md.run(500, callbacks=[run_info])
 
     vgen = VelocityGenerator(300)
-    velocity = vgen(system.coordinate.shape, system.atom_mass)
+    velocity = vgen(system.shape, system.atom_mass)
 
     updater = UpdaterMD(
-        system,
-        integrator=VelocityVerlet(system),
-        thermostat=Langevin(system, 300),
+        system=system,
         time_step=1e-3,
-        velocity=velocity
+        velocity=velocity,
+        integrator='velocity_verlet',
+        temperature=300,
+        thermostat='langevin',
     )
 
     cb_h5md = WriteH5MD(system, 'tutorial_b06.h5md', save_freq=10)
