@@ -1,9 +1,0 @@
-mindsponge.optimizer
-====================
-
-.. mscnplatformautosummary::
-    :toctree: optimizer
-    :nosignatures:
-    :template: classtemplate.rst
-
-    mindsponge.optimizer.Updater

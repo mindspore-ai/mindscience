@@ -22,7 +22,7 @@ from mindspore.common.tensor import Tensor
 from mindspore import Parameter
 import mindsponge.common.residue_constants as residue_constants
 from mindsponge.common.utils import dgram_from_positions, pseudo_beta_fn, atom37_to_torsion_angles
-from mindsponge.data.data_transform import get_chi_atom_pos_indices
+from mindsponge.data_transform import get_chi_atom_pos_indices
 from mindsponge.cell.initializer import lecun_init
 from module.template_embedding import TemplateEmbedding
 from module.evoformer import Evoformer

@@ -18,11 +18,12 @@ import mindspore.common.dtype as mstype
 import mindspore.nn as nn
 import mindspore.numpy as mnp
 from mindspore.ops import operations as P
+from mindspore.ops import functional as F
 from mindspore.common.tensor import Tensor
 from mindspore import Parameter
 import mindsponge.common.residue_constants as residue_constants
 from mindsponge.common.utils import dgram_from_positions, pseudo_beta_fn, atom37_to_torsion_angles
-from mindsponge.data.data_transform import get_chi_atom_pos_indices
+from mindsponge.data_transform import get_chi_atom_pos_indices
 from mindsponge.cell.initializer import lecun_init
 from module.template_embedding import TemplateEmbedding
 from module.evoformer import Evoformer
@@ -222,6 +223,7 @@ class MegaFold(nn.Cell):
                                                                    template_mask, template_pseudo_beta_mask,
                                                                    template_pseudo_beta, mask_2d)
             pair_activations += template_pair_representation
+        extra_msa = F.depend(extra_msa, pair_activations)
         msa_1hot = self.extra_msa_one_hot(extra_msa)
         extra_msa_feat = mnp.concatenate((msa_1hot, extra_has_deletion[..., None], extra_deletion_value[..., None]),
                                          axis=-1)

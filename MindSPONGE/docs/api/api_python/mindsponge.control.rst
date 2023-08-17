@@ -1,9 +1,0 @@
-mindsponge.control
-==================
-
-.. mscnplatformautosummary::
-    :toctree: control
-    :nosignatures:
-    :template: classtemplate.rst
-
-    mindsponge.control.Controller

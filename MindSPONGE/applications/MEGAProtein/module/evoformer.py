@@ -16,6 +16,7 @@
 
 import mindspore.nn as nn
 from mindspore.ops import operations as P
+from mindspore.ops import functional as F
 from mindsponge.cell import MSARowAttentionWithPairBias, Transition, OuterProductMean, \
     TriangleAttention, TriangleMultiplication, \
     MSAColumnGlobalAttention, MSAColumnAttention
@@ -51,6 +52,7 @@ class Evoformer(nn.Cell):
         '''construct'''
         msa_act = self.msa_act(msa_act, pair_act, msa_mask, index)
         pair_act = self.pair_act(msa_act, pair_act, msa_mask, extra_msa_norm, pair_mask, index)
+        msa_act = F.depend(msa_act, pair_act)
         return msa_act, pair_act
 
 

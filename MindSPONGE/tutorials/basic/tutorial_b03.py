@@ -30,12 +30,12 @@ from mindspore.nn import Adam
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.append('../../src')
 
-    from mindsponge import Sponge
-    from mindsponge import Molecule
-    from mindsponge import ForceField
-    from mindsponge.callback import WriteH5MD, RunInfo
+    from sponge import Sponge
+    from sponge import Molecule
+    from sponge import ForceField
+    from sponge.callback import WriteH5MD, RunInfo
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 

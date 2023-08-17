@@ -30,17 +30,16 @@ from mindspore.nn import Adam
 if __name__ == "__main__":
 
     import sys
-    sys.path.append('..')
+    sys.path.append('../../src')
 
-    from mindsponge import Sponge
-    from mindsponge import Molecule
-    from mindsponge import ForceField
-    from mindsponge import UpdaterMD
-    from mindsponge import WithEnergyCell
-    from mindsponge.control import VelocityVerlet, Langevin
-    from mindsponge.potential import SphericalRestrict
-    from mindsponge.function import VelocityGenerator
-    from mindsponge.callback import WriteH5MD, RunInfo
+    from sponge import Sponge
+    from sponge import Molecule
+    from sponge import ForceField
+    from sponge import UpdaterMD
+    from sponge import WithEnergyCell
+    from sponge.potential import SphericalRestrict
+    from sponge.function import VelocityGenerator
+    from sponge.callback import WriteH5MD, RunInfo
 
     context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 
@@ -63,14 +62,15 @@ if __name__ == "__main__":
 
     temp = 300
     vgen = VelocityGenerator(temp)
-    velocity = vgen(system.coordinate.shape, system.atom_mass)
+    velocity = vgen(system.shape, system.atom_mass)
 
     updater = UpdaterMD(
-        system,
-        integrator=VelocityVerlet(system),
-        thermostat=Langevin(system, temp),
-        velocity=velocity,
+        system=system,
         time_step=1e-3,
+        velocity=velocity,
+        integrator='velocity_verlet',
+        temperature=300,
+        thermostat='langevin',
     )
 
     sim = WithEnergyCell(system, potential, bias=SphericalRestrict(radius=1.5, center=[0, 0, 0]))
