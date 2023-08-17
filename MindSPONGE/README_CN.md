@@ -78,12 +78,12 @@ print("confidence:", confidence)
 ### 一个简单的分子动力学模拟案例
 
 ```bash
-from mindsponge import Sponge
-from mindsponge import Molecule
-from mindsponge import ForceField
+from sponge import Sponge
+from sponge import Molecule
+from sponge import ForceField
 from mindspore import context
 from mindspore.nn import Adam
-from mindsponge.callback import WriteH5MD, RunInfo
+from sponge.callback import WriteH5MD, RunInfo
 
 context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
 

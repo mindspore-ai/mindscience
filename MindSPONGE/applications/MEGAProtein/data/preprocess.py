@@ -15,7 +15,7 @@
 """data process"""
 import numpy as np
 
-from mindsponge.data.data_transform import one_hot, correct_msa_restypes, randomly_replace_msa_with_unknown, \
+from mindsponge.data_transform import one_hot, correct_msa_restypes, randomly_replace_msa_with_unknown, \
     fix_templates_aatype, pseudo_beta_fn, make_atom14_masks, \
     block_delete_msa_indices, sample_msa, make_masked_msa, \
     nearest_neighbor_clusters, summarize_clusters, crop_extra_msa, \

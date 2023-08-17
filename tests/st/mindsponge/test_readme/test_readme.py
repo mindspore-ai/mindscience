@@ -13,13 +13,8 @@
 # limitations under the License.
 # ============================================================================
 """Test README EXAMPLES."""
+import os
 import pytest
-from mindsponge import ForceField, Molecule, Sponge
-from mindsponge.callback import RunInfo, WriteH5MD
-from mindspore import context
-from mindspore.nn import Adam
-
-context.set_context(mode=context.GRAPH_MODE)
 
 
 @pytest.mark.level0
@@ -33,6 +28,13 @@ def test_md_run():
     Description: None
     Expectation: finish simulation
     """
+    os.environ['MS_JIT_MODULES'] = 'sponge'
+    from sponge import ForceField, Molecule, Sponge
+    from sponge.callback import RunInfo, WriteH5MD
+    from mindspore import context
+    from mindspore.nn import Adam
+
+    context.set_context(mode=context.GRAPH_MODE)
     system = Molecule(template='water.spce.yaml')
 
     system.reduplicate([0.3, 0, 0])

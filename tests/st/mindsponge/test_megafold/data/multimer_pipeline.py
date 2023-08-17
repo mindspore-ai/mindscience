@@ -20,7 +20,7 @@ import pandas as pd
 import scipy.linalg
 
 from mindsponge.common import residue_constants
-from mindsponge.data.data_transform import process_unmerged_features, get_crop_size, correct_msa_restypes, \
+from mindsponge.data_transform import process_unmerged_features, get_crop_size, correct_msa_restypes, \
     make_seq_mask, make_msa_mask, add_padding
 
 REQUIRED_FEATURES = frozenset({
