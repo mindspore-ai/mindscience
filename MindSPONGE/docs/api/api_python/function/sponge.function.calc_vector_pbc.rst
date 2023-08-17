@@ -1,0 +1,18 @@
+sponge.function.calc_vector_pbc
+=======================================
+
+.. py:function:: sponge.function.calc_vector_pbc(initial, terminal, pbc_box)
+
+    在有周期性边界条件的情况下，计算从起点到终点的向量。
+
+    参数：
+        - **initial** (Tensor) - 起点坐标，shape为(B, ..., D)。
+        - **terminal** (Tensor) - 终点坐标，shape为(B, ..., D)。
+        - **pbc_box** (Tensor) - PBC box，shape为(B, D)。
+
+    输出：
+        Tensor。计算所得向量。shape为(B, ..., D)。
+
+    符号：
+        - **B** - Batch size。
+        - **D** - 模拟系统的维度。
