@@ -24,6 +24,20 @@ AIChemist
 """
 
 import time
+from mindspore import train
+from mindspore import nn
+from . import nets
+from . import scenarios
+from . import data
+from . import losses
+from . import utils
+from . import configs
+from . import core
+from . import datasets
+from . import layers
+from . import metrics
+from . import transforms
+from .configs import Registry as R
 
 
 def _mindspore_version_check():
@@ -69,3 +83,9 @@ def _mindspore_version_check():
 
 
 _mindspore_version_check()
+R.put(nn.Adam, 'optim.adam')
+R.put(train.MAE, 'metric.mae')
+R.put(train.MSE, 'metric.mse')
+R.put(nn.ReLU, 'activation.relu')
+R.put(nn.SiLU, 'activation.silu')
+R.put(nn.ReLU, 'activation.tanh')
