@@ -157,7 +157,7 @@ def _merge_init(irreps_in1, irreps_in2, irreps_out_filter):
             for ir in ir_1 * ir_2:
                 if ir in irreps_out_filter:
                     k = len(irreps_out_list)
-                    irreps_out.append((mul, ir))
+                    irreps_out_list.append((mul, ir))
                     instr.append((i_1, i_2, k, 'uvu', True))
 
     irreps_out = Irreps(irreps_out_list)
@@ -335,32 +335,38 @@ class TensorProduct(nn.Cell):
 
         instructions (Union[str, List[Tule[int, int, int, str, bool, (float)]]]): List of tensor product path instructions. Default: 'full'.
             For `str` in {'full', 'connect', 'element', 'linear', 'mearge'}, the instructions are constructed automatically according to the different modes:
-                 - 'full': each output irrep for every pair of input irreps — is created and returned independently. The outputs are not mixed with each other. 
-                    Corresponding to the standard tensor product `FullTensorProduct` if `irreps_out` is not specified.
-                 - 'connect': each output is a learned weighted sum of compatible paths. This allows the operator to produce outputs with any multiplicity.
-                    Corresponding to `FullyConnectedTensorProduct`.
-                 - 'element': the irreps are multiplied one-by-one. The inputs will be split and that the multiplicities of the outputs match with the multiplicities of the input.
-                    Corresponding to `ElementwiseTensorProduct`.
-                 - 'linear': linear operation equivariant on the first irreps, while the second irreps is set to be '0e'. This can be regarded as the geometric tensors version of teh dense layer.
-                    Corresponding to `Linear`.
-                 - 'merge': Automatically build 'uvu' mode instructions with trainable parameters. The `irreps_out` here plays the role of output filters.
+            
+                - 'full': each output irrep for every pair of input irreps — is created and returned independently. The outputs are not mixed with each other. 
+                  Corresponding to the standard tensor product `FullTensorProduct` if `irreps_out` is not specified.
+                - 'connect': each output is a learned weighted sum of compatible paths. This allows the operator to produce outputs with any multiplicity.
+                  Corresponding to `FullyConnectedTensorProduct`.
+                - 'element': the irreps are multiplied one-by-one. The inputs will be split and that the multiplicities of the outputs match with the multiplicities of the input.
+                  Corresponding to `ElementwiseTensorProduct`.
+                - 'linear': linear operation equivariant on the first irreps, while the second irreps is set to be '0e'. This can be regarded as the geometric tensors version of teh dense layer.
+                  Corresponding to `Linear`.
+                - 'merge': Automatically build 'uvu' mode instructions with trainable parameters. The `irreps_out` here plays the role of output filters.
+
             For `List[Tule[int, int, int, str, bool, (float)]]`, the instructions are constructed manually.
                 Each instruction contain a tuple: (i_in1, i_in2, i_out, mode, has_weight, (optional: path_weight)).
                 Each instruction puts ``in1[i_in1]`` :math:`\otimes` ``in2[i_in2]`` into ``out[i_out]``.
+                
                  - `i_in1`, `i_in2`, `i_out`: int, the index of the irrep in irreps for `irreps_in1`, `irreps_in2` and `irreps_out` correspondingly.
                  - `mode`: str in {'uvw', 'uvu', 'uvv', 'uuw', 'uuu', 'uvuv'}, the way of the multiplicities of each path are treated. 'uvw' is the fully mixed mode.
                  - `has_weight`: bool, `True` if this path should have learnable weights, otherwise `False`.
                  - `path_weight`:float, a multiplicative weight to apply to the output of this path. Defaults: 1.0.
 
         irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations. Default: 'component'. Default: 'component'.
+        
              - 'norm': :math:` \| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = 1`
 
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
+        
              - 'element': each output is normalized by the total number of elements (independently of their paths).
              - 'path': each path is normalized by the total number of elements in the path, then each output is normalized by the number of paths.
 
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal', 'xavier_uniform'}, the initial method of weights. Default: 'normal'.
         weight_mode (str): {'inner', 'share', 'custom'} determine the weights' mode. Default: 'inner'.
+        
              - 'inner': weights will initialized in the tensor product internally.
              - 'share': weights should given manually without batch dimension.
              - 'custom': weights should given manually with batch dimension.
