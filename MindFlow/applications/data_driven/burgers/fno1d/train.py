@@ -135,7 +135,7 @@ def train(input_args):
             rms_error = problem.get_loss(test_input, test_label)/test_input.shape[0]
             print(f"mean rms_error: {rms_error}")
             print("=================================End Evaluation=================================")
-            print(f'evaluation total time: {time.time() - eval_time_start}s')
+            print(f'evaluation time: {time.time() - eval_time_start}s')
             save_checkpoint(model, os.path.join(ckpt_dir, f"{model_params['name']}_epoch{epoch}"))
 
 

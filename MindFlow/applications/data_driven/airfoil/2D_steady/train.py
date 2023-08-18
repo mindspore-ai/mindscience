@@ -33,7 +33,7 @@ from mindflow.common import get_warmup_cosine_annealing_lr
 from mindflow.pde import SteadyFlowWithLoss
 from mindflow.loss import WaveletTransformLoss
 from mindflow.cell import ViT
-from mindflow.utils import load_yaml_config
+from mindflow.utils import load_yaml_config, print_log, log_config
 
 from src import AirfoilDataset, plot_u_and_cp, get_ckpt_summ_dir, plot_u_v_p, calculate_eval_error
 
@@ -44,7 +44,7 @@ np.random.seed(0)
 def train():
     '''Train and evaluate the network'''
     mode = args.train_mode
-    print(f'train mode: {mode}')
+    print_log(f'train mode: {mode}')
     # read params
     config = load_yaml_config(args.config_file_path)
     data_params = config["data"]
@@ -99,7 +99,7 @@ def train():
         # load pretrained model
         param_dict = load_checkpoint(ckpt_params['ckpt_path'])
         load_param_into_net(model, param_dict)
-        print("Load pre-trained model successfully")
+        print_log("Load pre-trained model successfully")
         if mode == 'finetune':
             optimizer_params["epochs"] = 200
             ckpt_params["save_ckpt_interval"] = 200
@@ -152,14 +152,14 @@ def train():
         model.set_train(True)
         for _ in range(steps_per_epoch):
             step_train_loss = train_sink_process()
-        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {time.time() - time_beg:.2f}s")
+        print_log(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {time.time() - time_beg:.2f}s")
 
         model.set_train(False)
         # eval
         if epoch % eval_interval == 0:
             eval_time_start = time.time()
             calculate_eval_error(eval_dataset, model)
-            print(f'evaluation total time: {time.time() - eval_time_start}s')
+            print_log(f'evaluation time: {time.time() - eval_time_start}s')
         # plot
         if epoch % plot_interval == 0:
             plot_u_and_cp(eval_dataset=eval_dataset, model=model,
@@ -168,12 +168,13 @@ def train():
         if epoch % save_ckt_interval == 0:
             ckpt_name = f"epoch_{epoch}.ckpt"
             save_checkpoint(model, os.path.join(ckpt_dir, ckpt_name))
-            print(f'{ckpt_name} save success')
+            print_log(f'{ckpt_name} save success')
 
 
 if __name__ == '__main__':
-    print(f'pid: {os.getpid()}')
-    print(datetime.datetime.now())
+    log_config('./logs', 'vit2d')
+    print_log(f'pid: {os.getpid()}')
+    print_log(datetime.datetime.now())
 
     parser = argparse.ArgumentParser(description='Airfoil 2D_steady Simulation')
     parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
@@ -185,7 +186,7 @@ if __name__ == '__main__':
     parser.add_argument('--device_id', type=int, default=0, help="ID of the target device")
     parser.add_argument('--device_target', type=str, default='Ascend', choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
-    parser.add_argument("--config_file_path", type=str, default="./config.yaml")
+    parser.add_argument("--config_file_path", type=str, default="./configs/vit.yaml")
     parser.add_argument("--save_graphs_path", type=str, default="./graphs")
     args = parser.parse_args()
 
@@ -197,6 +198,6 @@ if __name__ == '__main__':
                         device_id=args.device_id)
 
     use_ascend = (args.device_target == "Ascend")
-    print(f'use_ascend : {use_ascend}')
-    print(f'device_id: {context.get_context("device_id")}')
+    print_log(f'use_ascend : {use_ascend}')
+    print_log(f'device_id: {context.get_context("device_id")}')
     train()
