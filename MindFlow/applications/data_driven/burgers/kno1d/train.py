@@ -158,7 +158,7 @@ def train(input_args):
             print(f'Eval epoch: {epoch}, recons loss: {l_recons_eval},'
                   f' relative pred loss: {l_pred_eval}')
             print("---------------------------end evaluation---------------------------")
-            print(f'evaluation total time: {time.time() - eval_time_start}s')
+            print(f'evaluation time: {time.time() - eval_time_start}s')
             mindspore.save_checkpoint(model, ckpt_file_name=summary_dir + '/save_model.ckpt')
 
     # Infer and plot some data.

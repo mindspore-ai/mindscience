@@ -14,7 +14,8 @@
 # ============================================================================
 """init"""
 from .load_config import load_yaml_config
+from .log_utils import print_log, log_config
 
-__all__ = ['load_yaml_config']
+__all__ = ['load_yaml_config', 'print_log', 'log_config']
 
 __all__.sort()

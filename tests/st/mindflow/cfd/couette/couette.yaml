@@ -28,22 +28,22 @@ space_solver:
 
   is_convective_flux: False
   convective_flux:
-    reconstructor: 'WENO5'
-    riemann_computer: 'Rusanov'
+    reconstructor: "WENO5"
+    riemann_computer: "Rusanov"
 
   is_viscous_flux: True
   viscous_flux:
-    interpolator: 'CentralFourthOrderInterpolator'
-    face_derivative_computer: 'FourthOrderFaceDerivativeComputer'
-    central_derivative_computer: 'FourthOrderCentralDerivativeComputer'
+    interpolator: "CentralFourthOrderInterpolator"
+    face_derivative_computer: "FourthOrderFaceDerivativeComputer"
+    central_derivative_computer: "FourthOrderCentralDerivativeComputer"
 
 boundary_conditions:
   x_min:
-    type: 'Periodic'
+    type: "Periodic"
   x_max:
-    type: 'Periodic'
+    type: "Periodic"
   y_min:
-    type: 'Wall'
+    type: "Wall"
   y_max:
-    type: 'Wall'
+    type: "Wall"
     velocity_x: 0.1

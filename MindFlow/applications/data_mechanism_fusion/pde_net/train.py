@@ -92,7 +92,7 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
         if cur_epoch % config_param['eval_interval'] == 0:
             eval_time_start = time.time()
             calculate_lp_loss_error(problem, eval_dataset, config_param["batch_size"])
-            print(f'evaluation total time: {time.time() - eval_time_start}s')
+            print(f'evaluation time: {time.time() - eval_time_start}s')
 
 
 

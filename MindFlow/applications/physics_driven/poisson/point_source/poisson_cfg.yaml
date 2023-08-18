@@ -8,13 +8,13 @@ data:
     domain:
         random_sampling: True
         size: 1000000
-        # sampler: 'uniform'
-        sampler: 'lhs'
+        # sampler: "uniform"
+        sampler: "lhs"
     BC:
         random_sampling: True
         size: 1000000
-        # sampler: 'uniform'
-        sampler: 'lhs'
+        # sampler: "uniform"
+        sampler: "lhs"
 batch_size: 5000
 optimizer:
     initial_lr: 1.0e-3

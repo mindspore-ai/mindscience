@@ -10,8 +10,8 @@ model:
   out_dims: 4                         # The number of channels of the flow snapshot as output
   base: 64                            # The number of channels for the first layer to extract features
   batch_size: 10                      # Initialization method of neural network weights
-  loss_fn: 'GradientRRMSE'            # Class selection for loss functions
-  metric_fn: 'RRMSE'                  # Class selection for metric functions
+  loss_fn: "GradientRRMSE"            # Class selection for loss functions
+  metric_fn: "RRMSE"                  # Class selection for metric functions
   loss_weight: 100.0                  # Artificially specified gradient loss weights
   dynamic_flag: True                  # Dynamic adjustment strategy
 optimizer:
