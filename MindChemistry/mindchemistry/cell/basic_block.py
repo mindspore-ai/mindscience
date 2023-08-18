@@ -212,8 +212,7 @@ class FCNet(nn.Cell):
 
     Args:
         channels (List): the list of numbers of channel of each fully connected layers.
-        weight_init (Union[str, float, mindspore.common.initializer, List]):
-        The initializer of the weights of dense layer.
+        weight_init (Union[str, float, mindspore.common.initializer, List]): initialize layer weights.
             if weight_init was List, each element corresponds to each layer.
         has_bias (Union[bool, List]): The switch for whether the dense layers has bias.
             if has_bias was List, each element corresponds to each dense layer.
@@ -398,7 +397,7 @@ class AutoEncoder(nn.Cell):
         if weight_init was List, each element corresponds to each layer.
             has_bias (Union[bool, List]): The switch for whether the dense layers has bias.
         if has_bias was List, each element corresponds to each dense layer.
-            bias_init (Union[str, float, mindspore.common.initializer, List]):initialize layer parameters
+            bias_init (Union[str, float, mindspore.common.initializer, List]): initialize layer parameters
         if bias_init was List, each element corresponds to each dense layer.
             has_dropout (Union[bool, List]): The switch for whether linear block has a dropout layer.
         if has_dropout was List, each element corresponds to each layer.
