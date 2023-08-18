@@ -122,7 +122,7 @@ def train():
         if epoch % config["eval_interval_epochs"] == 0:
             eval_time_start = time.time()
             calculate_l2_error(model, inputs, label, config["train_batch_size"])
-            print(f'evaluation total time: {time.time() - eval_time_start}s')
+            print(f'evaluation time: {time.time() - eval_time_start}s')
 
     visual(model, epochs=epochs, resolution=config["visual_resolution"])
 

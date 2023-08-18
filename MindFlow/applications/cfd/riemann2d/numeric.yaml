@@ -25,17 +25,17 @@ space_solver:
 
   is_convective_flux: True
   convective_flux:
-    reconstructor: 'WENO5'
-    riemann_computer: 'Rusanov'
+    reconstructor: "WENO5"
+    riemann_computer: "Rusanov"
 
   is_viscous_flux: False
 
 boundary_conditions:
   x_min:
-    type: 'Neumann'
+    type: "Neumann"
   x_max:
-    type: 'Neumann'
+    type: "Neumann"
   y_min:
-    type: 'Neumann'
+    type: "Neumann"
   y_max:
-    type: 'Neumann'
+    type: "Neumann"

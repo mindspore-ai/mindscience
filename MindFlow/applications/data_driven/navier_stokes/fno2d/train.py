@@ -132,7 +132,7 @@ def train(input_args):
         if epoch % config['eval_interval'] == 0:
             eval_time_start = time.time()
             calculate_l2_error(model, test_input, test_label, config["test_batch_size"])
-            print(f'evaluation total time: {time.time() - eval_time_start}s')
+            print(f'evaluation time: {time.time() - eval_time_start}s')
 
 
 if __name__ == '__main__':
