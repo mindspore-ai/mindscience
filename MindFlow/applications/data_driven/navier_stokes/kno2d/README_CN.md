@@ -24,7 +24,30 @@ $$
 w_t \mapsto w(\cdot, t+1)
 $$
 
-[详见](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_driven/navier_stokes/kno2d/KNO2D_CN.ipynb)
+![](images/kno.jpg)
+
+[详见](./KNO2D_CN.ipynb)
+
+## 快速开始
+
+### 训练方式一：在命令行中调用`train.py`脚本
+
+```shell
+python --mode GRAPH --device_target Ascend --device_id 0 --config_file_path ./configs/navier_stokes_2d.yaml
+```
+
+其中，
+`--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式，默认值'GRAPH'；
+
+`--device_target`表示使用的计算平台类型，可以选择'Ascend'或'GPU'，默认值'Ascend'；
+
+`--device_id`表示使用的计算卡编号，可按照实际情况填写，默认值0；
+
+`--config_file_path`表示参数文件的路径，默认值'./configs/navier_stokes_2d.yaml'；
+
+### 训练方式二：运行Jupyter Notebook
+
+您可以使用[中文版](./KNO2D_CN.ipynb)和[英文版](./KNO2D.ipynb) Jupyter Notebook逐行运行训练和验证代码。
 
 ## 结果展示
 
@@ -42,7 +65,7 @@ $$
 |        验证损失      |        3e-2               |       3e-2    |
 |        速度          |     25s/epoch        |    160s/epoch  |
 
-## Contributor
+## 贡献者
 
 gitee id：[dyonghan](https://gitee.com/dyonghan)
 

@@ -21,6 +21,6 @@ channels: 1
 perodic_padding: True
 if_frozen: False
 enable_moment: True
-summary_dir: "./summary_dir/summary"
+summary_dir: "./checkpoints/"
 mindrecord_data_dir: "./data"
 figure_out_dir: "figure"

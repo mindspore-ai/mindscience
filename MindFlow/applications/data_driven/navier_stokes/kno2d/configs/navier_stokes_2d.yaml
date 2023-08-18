@@ -20,5 +20,5 @@ optimizer:
   lr: 0.001
   weight_decay: 0.0001
 
-summary_dir: "./summary_dir/"
+summary_dir: "./checkpoints/"
 eval_interval: 10
