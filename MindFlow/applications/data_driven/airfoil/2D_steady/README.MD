@@ -60,6 +60,30 @@ Aiming at the technical difficulties mentioned above, we designed an AI model-ba
 
 ![img-1.png](images/img_1.png)
 
+## QuickStart
+
+You can download dataset from [data_driven/airfoil/2D_steady](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_steady/) for model evaluation. Save these dataset at `./dataset`.
+
+### Run Method 1: Call `train.py` from command line
+
+```shell
+python train.py --config_file_path ./configs/vit.yaml --mode GRAPH --device_target Ascend --device_id 0
+```
+
+where:
+
+`--config_file_path` indicates the path of the parameter file. Default './configs/vit.yaml'；
+
+`--device_target` indicates the computing platform. You can choose 'Ascend' or 'GPU'. Default 'Ascend'.
+
+`--device_id` indicates the index of NPU or GPU. Default 0.
+
+`--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode. 
+
+### Run Method 2: Run Jupyter Notebook
+
+You can run the training and validation code line by line using the Chinese or English version of the Jupyter Notebook [Chinese Version](./2D_steady_CN.ipynb) and [English Version](./2D_steady.ipynb).
+
 ## Results Display
 
 When the airfoil geometry changes, the surface pressure distribution, flow field distribution, and error statistics predicted by AI and CFD are as follows:

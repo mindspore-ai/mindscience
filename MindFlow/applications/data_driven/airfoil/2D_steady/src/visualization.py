@@ -24,6 +24,8 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from pylab import minorticks_on
 
+from mindflow.utils import print_log
+
 from .utils import get_label_and_pred, save_label_and_pred, unpatchify, check_file_path
 
 
@@ -59,18 +61,18 @@ def plot_u_v_p(eval_dataset, model, data_params):
         labels = data["labels"]
         pred = model(inputs)
         inputs = inputs.asnumpy()
-        print("shape of inputs {} type {} max {}".format(inputs.shape, type(inputs), inputs.max()))
-        print("shape of labels {} type {} max {}".format(labels.shape, type(labels), labels.max()))
-        print("shape of pred {} type {} max {}".format(pred.shape, type(pred), pred.max()))
+        print_log("shape of inputs {} type {} max {}".format(inputs.shape, type(inputs), inputs.max()))
+        print_log("shape of labels {} type {} max {}".format(labels.shape, type(labels), labels.max()))
+        print_log("shape of pred {} type {} max {}".format(pred.shape, type(pred), pred.max()))
         break
     save_img_dir = os.path.join(data_params['post_dir'], 'uvp_ViT')
     check_file_path(save_img_dir)
-    print(f'save img dir: {save_img_dir}')
+    print_log(f'save img dir: {save_img_dir}')
     model_name = "ViT_"
     save_label_and_pred(labels, pred, data_params['post_dir'])
-    print("save res done!")
+    print_log("save res done!")
     for i in range(data_params['batch_size']):
-        print("plot {} / {} done".format(i + 1, data_params['batch_size']))
+        print_log("plot {} / {} done".format(i + 1, data_params['batch_size']))
         plot_contourf(labels, pred, i, save_img_dir, data_params['grid_path'], model_name)
 
 
@@ -162,7 +164,7 @@ def set_fig_range(xgrid, ygrid, u, min_value, max_value, title, flag=False):
 
 def plot_u_and_cp(eval_dataset, model, grid_path, save_dir):
     """plot_u_and_cp"""
-    print("================================Start Plotting================================")
+    print_log("================================Start Plotting================================")
     time_beg = time.time()
     for data in eval_dataset.create_dict_iterator():
         label, pred = get_label_and_pred(data, model)
@@ -191,8 +193,8 @@ def plot_u_and_cp(eval_dataset, model, grid_path, save_dir):
         plt.xticks(())
         plt.yticks(())
     save_img = f"{save_dir}/U_and_cp_compare.png"
-    print(save_img)
+    print_log(save_img)
     fig.savefig(save_img, bbox_inches='tight', pad_inches=0.15)
     plt.close()
-    print("================================End Plotting================================")
-    print("Plot total time: {} s".format(time.time() - time_beg))
+    print_log("================================End Plotting================================")
+    print_log("Plot total time: {} s".format(time.time() - time_beg))

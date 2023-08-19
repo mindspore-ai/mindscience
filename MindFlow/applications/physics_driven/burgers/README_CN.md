@@ -20,7 +20,7 @@ python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_targ
 
 `--config_file_path`表示参数文件的路径，默认值'./burgers_cfg.yaml'；
 
-`--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式，详见[MindSpore官网](https://www.mindspore.cn/docs/zh-CN/r2.0.0-alpha/design/dynamic_graph_and_static_graph.html?highlight=pynative)，默认值'GRAPH'；
+`--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式，默认值'GRAPH'；
 
 `--device_target`表示使用的计算平台类型，可以选择'Ascend'或'GPU'，默认值'Ascend'；
 
@@ -28,7 +28,7 @@ python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_targ
 
 ### 训练方式二：运行Jupyter Notebook
 
-您可以使用[中文版](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/burgers/burgers1D_CN.ipynb)和[英文版](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/burgers/burgers1D.ipynb)Jupyter Notebook逐行运行训练和验证代码。
+您可以使用[中文版](./burgers1D_CN.ipynb)和[英文版](./burgers1D.ipynb)Jupyter Notebook逐行运行训练和验证代码。
 
 ## 结果展示
 

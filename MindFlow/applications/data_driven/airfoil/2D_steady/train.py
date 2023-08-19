@@ -166,13 +166,13 @@ def train():
                           grid_path=data_params['grid_path'], save_dir=summary_dir)
         # save checkpoint
         if epoch % save_ckt_interval == 0:
-            ckpt_name = f"epoch_{epoch}.ckpt"
+            ckpt_name = f"vit_epoch_{epoch}.ckpt"
             save_checkpoint(model, os.path.join(ckpt_dir, ckpt_name))
             print_log(f'{ckpt_name} save success')
 
 
 if __name__ == '__main__':
-    log_config('./logs', 'vit2d')
+    log_config('./logs', 'vit')
     print_log(f'pid: {os.getpid()}')
     print_log(datetime.datetime.now())
 
