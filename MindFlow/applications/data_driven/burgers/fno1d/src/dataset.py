@@ -17,7 +17,7 @@ import os
 import numpy as np
 
 from mindflow.data import Dataset, ExistedDataConfig
-
+from mindflow.utils import print_log
 
 EPS = 1e-8
 
@@ -35,7 +35,7 @@ def create_npy(config, sub=8):
     if not os.path.exists(train_path):
         os.makedirs(train_path)
     else:
-        print("Data preparation finished")
+        print_log("Data preparation finished")
         return
     if not os.path.exists(test_path):
         os.makedirs(test_path)
@@ -72,9 +72,9 @@ def create_training_dataset(config, shuffle=True, drop_remainder=True, is_train=
     if is_train:
         train_path = os.path.abspath(os.path.join(data_path, "train"))
         input_path = os.path.join(train_path, "inputs.npy")
-        print('input_path: ', np.load(input_path).shape)
+        print_log('input_path: ', np.load(input_path).shape)
         label_path = os.path.join(train_path, "label.npy")
-        print('label_path: ', np.load(label_path).shape)
+        print_log('label_path: ', np.load(label_path).shape)
     else:
         test_path = os.path.abspath(os.path.join(data_path, "test"))
         input_path = os.path.join(test_path, "inputs.npy")

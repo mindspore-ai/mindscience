@@ -20,7 +20,7 @@ where:
 
 `--config_file_path` indicates the path of the parameter file. Default './burgers_cfg.yaml'；
 
-`--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode. You can refer to [MindSpore official website](https://www.mindspore.cn/docs/en/r2.0.0-alpha/design/dynamic_graph_and_static_graph.html) for details.Default 'GRAPH'.
+`--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode. Default 'GRAPH'.
 
 `--device_target` indicates the computing platform. You can choose 'Ascend' or 'GPU'. Default 'Ascend'.
 
@@ -28,7 +28,7 @@ where:
 
 ### Run Option 2: Run Jupyter Notebook
 
-You can use [Chinese](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/burgers/burgers1D_CN.ipynb) or [English](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/burgers/burgers1D.ipynb)Jupyter Notebook to run the training and evaluation code line-by-line.
+You can use [Chinese](./burgers1D_CN.ipynb) or [English](./burgers1D.ipynb)Jupyter Notebook to run the training and evaluation code line-by-line.
 
 ## Results
 

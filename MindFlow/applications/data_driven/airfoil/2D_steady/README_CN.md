@@ -60,6 +60,30 @@
 
 ![img-1.png](images/img_1.png)
 
+## 快速开始
+
+数据集下载地址：[data_driven/airfoil/2D_steady](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_steady/). 将数据集保存在`./dataset`路径下.
+
+### 训练方式一：在命令行中调用`train.py`脚本
+
+```shell
+python train.py --config_file_path ./configs/vit.yaml --device_target GPU --device_id 0 --mode GRAPH
+```
+
+其中，
+
+`--config_file_path`表示配置文件的路径，默认值'./configs/vit.yaml'；
+
+`--device_target`表示使用的计算平台类型，可以选择'Ascend'或'GPU'，默认值'GPU'；
+
+`--device_id`表示使用的计算卡编号，可按照实际情况填写，默认值 0；
+
+`--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式。
+
+### 训练方式二：运行 Jupyter Notebook
+
+您可以使用[中文版](./2D_steady_CN.ipynb)和[英文版](./2D_steady.ipynb)Jupyter Notebook 逐行运行训练和验证代码。
+
 ## 结果展示
 
 翼型几何形状发生改变时，AI和CFD预测的表面压力分布，流场分布及其误差统计如下：
