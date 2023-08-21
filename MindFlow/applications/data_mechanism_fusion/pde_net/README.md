@@ -40,6 +40,16 @@ Among them,
 
 You can run training and validation code line by line using both the [Chinese version](pde_net_CN.ipynb) and the [English version](pde_net.ipynb) of Jupyter Notebook.
 
+## Performance
+
+|        Parameter         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA V100 32G       |
+|     MindSpore version   |        2.1            |      2.1       |
+|        train loss      |        0.9               |       0.6       |
+|        valid loss      |        6e-2               |       4e-2    |
+|        speed          |     45ms/epoch        |    150ms/epoch  |
+
 ## Contributor
 
 gitee id：[liulei277](https://gitee.com/liulei277)

@@ -76,7 +76,7 @@ The results show the velocity of different locations in the flow field over time
 
 |        Parameter         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend910A, 32G；CPU: 2.6HZ, 192 cores      |      NVIDIA V100 32G；CPU: 2.6HZ, 192 cores       |
+|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA V100 32G       |
 |     MindSpore version   |        2.0.0             |      2.0.0       |
 |        train loss      |        6.315e-6               |       6.614e-6       |
 |        valid loss      |        2.688e-3               |       2.503e-3    |
