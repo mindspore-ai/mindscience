@@ -10,27 +10,6 @@
 
 # **MindFlow**
 
-- [Introduction](#Introduction)
-- [Latest News](#Latest-News)
-- [MindFlow Features](#MindFlow-Features)
-- [Applications](#Applications)
-    - [Physics Driven](#Physics-Driven)
-    - [Data Driven](#Data-Driven)
-    - [Data-Mechanism Fusion](#Data-Mechanism-Fusion)
-    - [CFD](#CFD)
-- [Installation](#Installation)
-    - [Version Dependency](#Version-Dependency)
-    - [Install Dependency](#Install-Dependency)
-    - [Hardware](#Hardware)
-    - [pip install](#pip-install)
-    - [source code install](#source-code-install)
-- [Community](#Community)
-    - [SIG](#Join-MindFlow-SIG)
-    - [Core Contributor](#Core-Contributor)
-    - [Community Partners](#Community-Partners)
-- [Contribution Guide](#Contribution-Guide)
-- [License](#License)
-
 ## **Introduction**
 
 Flow simulation aims to solve the fluid governing equation under a given boundary condition by numerical methods, so as to realize the flow analysis, prediction and control. It is widely used in engineering design in aerospace, ship manufacturing, energy and power industries. The numerical methods of traditional flow simulation, such as finite volume method and finite difference method, are mainly implemented by commercial software, requiring physical modeling, mesh generation, numerical dispersion, iterative solution and other steps. The simulation process is complex and the calculation cycle is long. AI has powerful learning fitting and natural parallel inference capabilities, which can improve the efficiency of the flow simulation.
@@ -98,10 +77,11 @@ Huang X, Liu H, Shi B, et al. A Universal PINNs Method for Solving Partial Diffe
 |[2D Riemann Problem](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm)       |  [2D Riemann Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/riemann/)       |     CAE-LSTM      |   ✔️     |   ✔️   |
 |[shu-osher Problem](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm)     |   [1D shu-osher Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/shu_osher/)    |      CAE-LSTM      |   ✔️     |   ✔️   |
 |[sod Problem](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm)   |  [1D sod Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)         |     CAE-LSTM    |   ✔️     |   ✔️   |
-|[KH pelblem](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm/)         |  [2D K-H Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/kh/)            |  CAE-LSTM     |   ✔️     |   ✔️   |
+|[KH Problem](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm/)         |  [2D K-H Problem Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/kh/)            |  CAE-LSTM     |   ✔️     |   ✔️   |
 |[2D Airfoil Buffet](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/transonic_buffet_ehdnn)          |  [2D Airfoil Buffet Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_unsteady/)           |      ehdnn    |   ✔️     |   ✔️   |
 |[Move Boundary Hdnn](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/move_boundary_hdnn)          |  [Move Boundary Hdnn Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/move_boundary_hdnn)           |      hdnn    |   ✔️     |   ✔️   |
 |[3d Unsteady Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/flow_around_sphere)          |  [3d Unsteady Flow Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/3d_unsteady_flow/)           |      ResUnet3D    |   ✔️     |   ✔️   |
+|[Low Reynolds 2D Cylinder Flow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_transformer)          |  [Low Reynolds Cylinder Flow Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-transformer/)           |      CAE-Transformer    |   ✔️     |   ✔️   |
 
 ### Data-Mechanism Fusion
 
