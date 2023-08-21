@@ -23,33 +23,33 @@ MindSPONGE还集成了20个自研以及业界主流模型，主要涵盖分子�
 
 ## **目录**
 
-- [分子动力学](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/)
-    - [蛋白质松弛](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/protein_relaxation)
-    - [传统分子动力学](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/tradition)
+- 分子动力学
+    - 蛋白质松弛 (To be released)
+    - 传统分子动力学 (To be released)
 - 分子表征
-    - [MolCT](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/cybertron)
-    - [SchNet](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/cybertron)
-    - [PyhsNet](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/cybertron)
+    - MolCT (To be released)
+    - SchNet (To be released)
+    - PyhsNet (To be released)
 - 结构预测
     - [MEGA-Protein](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
         - [MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/fold.py)
         - [MEGA-EvoGen](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/evogen.py)
         - [MEGA-Assessment](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/assessment.py)
     - [FAAST&RASP](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/FAAST)
-    - [Multimer-AlphaFold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/Multimer)
-    - [UFold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/UFold)
+    - [Multimer-AlphaFold](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/afmultimer.md)
+    - [UFold](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/UFold.md)
 - 性质预测
-    - [KGNN](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/KGNN)
-    - [DeepDR](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/DeepDR)
-    - [pafnucy](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/pafnucy)
-    - [JTVAE](https://gitee.com/mindspore/mindscience/pulls/685)
-    - [DeepFRI](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/DeepFRI)
-    - [GraphDTA](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/GraphDTA)
+    - KGNN (To be released)
+    - DeepDR (To be released)
+    - [pafnucy](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/pafnucy.md)
+    - [JTVAE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/JT-VAE)
+    - [DeepFRI](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/DeepFri.md)
+    - [GraphDTA](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/GraphDTA.MD)
 - 分子设计
-    - [ProteinMPNN](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/ProteinMPNN)
-    - [ESM-IF1](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/esm)
+    - [ProteinMPNN](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/ProteinMPNN.MD)
+    - [ESM-IF1](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/ESM-IF1.md)
     - [DeepHops](https://gitee.com/mindspore/mindscience/pulls/848)
-    - [ColabDesign](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/Colabdesign)
+    - [ColabDesign](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/ColabDesign.md)
 - 基础模型
-    - [GROVER](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/grover)
-    - [MG-BERT](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/MG_BERT)
+    - [GROVER](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/GROVER.MD)
+    - [MG-BERT](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/MGBERT.MD)

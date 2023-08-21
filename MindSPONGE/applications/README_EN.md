@@ -24,32 +24,33 @@ MindSPONGE also integrates 20 self-developed or third party SOTA models covering
 
 ## **Contents**
 
-- [Molecular Dynamics](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/)
-    - [Protein Relaxation](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/protein_relaxation)
-    - [Traditional MD](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/tradition)
+- Molecular Dynamics
+    - Protein Relaxation (To be released)
+    - Traditional MD (To be released)
 - Molecular Representation
-    - [MolCT](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/cybertron)
-    - [SchNet](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/cybertron)
-    - [PyhsNet](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/cybertron)
+    - MolCT (To be released)
+    - SchNet (To be released)
+    - PyhsNet (To be released)
 - Structure Prediction
     - [MEGA-Protein](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
         - [MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/fold.py)
         - [MEGA-EvoGen](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/evogen.py)
         - [MEGA-Assessment](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/model/assessment.py)
-    - [Multimer-AlphaFold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/Multimer)
-    - [UFold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/UFold)
+    - [FAAST&RASP](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/FAAST)
+    - [Multimer-AlphaFold](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/afmultimer.md)
+    - [UFold](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/UFold.md)
 - Properties Prediction
-    - [KGNN](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/KGNN)
-    - [DeepDR](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/DeepDR)
-    - [pafnucy](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/pafnucy)
-    - [JTVAE](https://gitee.com/mindspore/mindscience/pulls/685)
-    - [DeepFRI](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/DeepFRI)
-    - [GraphDTA](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/GraphDTA)
+    - KGNN (To be released)
+    - DeepDR (To be released)
+    - [pafnucy](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/pafnucy.md)
+    - [JTVAE](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/JT-VAE)
+    - [DeepFRI](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/DeepFri.md)
+    - [GraphDTA](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/GraphDTA.MD)
 - Molecular Design
-    - [ProteinMPNN](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/ProteinMPNN)
-    - [ESM-IF1](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/esm)
+    - [ProteinMPNN](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/ProteinMPNN.MD)
+    - [ESM-IF1](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/ESM-IF1.md)
     - [DeepHops](https://gitee.com/mindspore/mindscience/pulls/848)
-    - [ColabDesign](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/Colabdesign)
+    - [ColabDesign](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/ColabDesign.md)
 - Foundation Model
-    - [GROVER](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/grover)
-    - [MG-BERT](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/MG_BERT)
+    - [GROVER](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/GROVER.MD)
+    - [MG-BERT](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model%20cards/MGBERT.MD)
