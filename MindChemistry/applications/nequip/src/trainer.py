@@ -22,8 +22,8 @@ import mindspore as ms
 
 from mindchemistry.cell import EnergyNet
 
-from dataset import create_training_dataset, _unpack
-from utils import training_bar
+from src.dataset import create_training_dataset, _unpack
+from src.utils import training_bar
 
 
 def train(dtype=ms.float32, configs=None):

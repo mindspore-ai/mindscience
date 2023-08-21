@@ -34,12 +34,12 @@ def read_version():
 version = read_version()
 
 required_package = [
-    'numpy >= 1.24.2',
-    'scipy >= 1.10.0',
-    'matplotlib >= 3.7.0',
+    'numpy >= 1.21.6',
+    'scipy >= 1.7.3',
+    'matplotlib >= 3.5.3',
     'psutil >= 5.9.4',
-    'pandas >= 1.5.3',
-    'scikit-learn >= 1.2.2',
+    'pandas >= 1.3.5',
+    'scikit-learn >= 1.0.2',
     'lightgbm >= 3.3.5',
     'joblib >= 1.2.0',
     'seaborn >= 0.12.2',
@@ -77,4 +77,3 @@ setup(
     include_package_data=True,
     install_requires=required_package,
     classifiers=['License :: OSI Approved :: Apache Software License'])
-
