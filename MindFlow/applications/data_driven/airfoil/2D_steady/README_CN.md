@@ -106,7 +106,7 @@ python train.py --config_file_path ./configs/vit.yaml --device_target GPU --devi
 |     MindSpore版本   |        2.1            |      2.1       |
 |        训练损失      |        7e-2               |       4e-2       |
 |        验证损失      |        2e-4               |       2e-4    |
-|        速度          |     11秒/轮        |    40秒/轮  |
+|        速度          |     11s/epoch        |    40s/epoch  |
 
 ## 贡献者
 
