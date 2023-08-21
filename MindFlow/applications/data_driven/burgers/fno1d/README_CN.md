@@ -78,7 +78,7 @@ python train.py --config_file_path ./configs/fno1d.yaml --device_target GPU --de
 |     MindSpore版本   |        2.1             |      2.1       |
 |        训练损失      |        5e-3               |       4e-3      |
 |        验证损失      |        9e-4               |       8e-4    |
-|        速度          |     4.2秒/轮        |    3.9秒/轮  |
+|        速度          |     4.2s/epoch        |    3.9s/epoch  |
 
 ## Contributor
 

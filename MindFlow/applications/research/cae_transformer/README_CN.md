@@ -87,7 +87,7 @@ CAE-Transformer的基本框架主要基于[论文1](https://doi.org/10.13700/j.b
 |     MindSpore版本   |        2.0.0             |      2.0.0       |
 |        训练损失      |        6.315e-6               |       6.614e-6       |
 |        验证损失      |        2.688e-3               |       2.503e-3    |
-|        速度          |     12.2秒/轮        |    11.4秒/轮  |
+|        速度          |     12.2s/epoch        |    11.4s/epoch  |
 
 ## Contributor
 
