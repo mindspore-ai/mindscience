@@ -72,6 +72,16 @@ python train.py --config_file_path ./configs/fno1d.yaml --device_target GPU --de
 
 ![FNO1D求解Burgers方程](images/result.jpg)
 
+## Performance
+
+|        Parameter         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA V100 32G       |
+|     MindSpore version   |        2.1             |      2.1       |
+|        train loss      |        5e-3               |       4e-3      |
+|        valid loss      |        9e-4               |       8e-4    |
+|        speed          |     4.2s/epoch        |    3.9s/epoch  |
+
 ## Contributor
 
 gitee id：[liulei277](https://gitee.com/liulei277)

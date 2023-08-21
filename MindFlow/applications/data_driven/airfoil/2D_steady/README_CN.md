@@ -98,6 +98,16 @@ python train.py --config_file_path ./configs/vit.yaml --device_target GPU --devi
 
 ![Ma_var.gif](images/Ma_var.gif)
 
+## 性能
+
+|        参数         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.1            |      2.1       |
+|        训练损失      |        7e-2               |       4e-2       |
+|        验证损失      |        2e-4               |       2e-4    |
+|        速度          |     11秒/轮        |    40秒/轮  |
+
 ## 贡献者
 
 gitee id: [Brian-K](https://gitee.com/Brian-K)
