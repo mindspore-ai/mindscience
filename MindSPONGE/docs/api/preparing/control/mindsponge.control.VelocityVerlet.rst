@@ -33,4 +33,4 @@ mindsponge.control.VelocityVerlet
 
         参数：
             - **velocity_half** (Tensor) - 前半步的速度。
-            - **success** (bool) - 是否速度被成功设定。默认值：True。
+            - **success** (bool) - 是否速度被成功设定。默认值： ``True`` 。

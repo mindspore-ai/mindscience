@@ -49,13 +49,13 @@ class WithEnergyCell(Cell):
     Args:
         system(Molecule):               Simulation system.
         potential(PotentialCell):       Potential energy function cell.
-        bias(Union[Bias, List[Bias]]):  Bias potential function cell. Default: None
+        bias(Union[Bias, List[Bias]]):  Bias potential function cell. Default: ``None``.
         cutoff(float):                  Cut-off distance for neighbour list. If None is given, it will be assigned
                                         as the cutoff value of the of potential energy.
-                                        Defulat: None
-        neighbour_list(NeighbourList):  Neighbour list. Default: None
+                                        Default: ``None``.
+        neighbour_list(NeighbourList):  Neighbour list. Default: ``None``.
         wrapper(EnergyWrapper):         Network to wrap and process potential and bias.
-                                        Default: None
+                                        Default: ``None``.
 
     Inputs:
         - **\*inputs** (Tuple(Tensor)) - Tuple of input tensors of 'WithEnergyCell'.

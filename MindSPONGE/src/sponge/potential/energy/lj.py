@@ -70,11 +70,11 @@ class LennardJonesEnergy(NonbondEnergy):
                             The shape of array is `(B, 1)`, and the data type is float.
                             Default: 0
 
-        parameters (dict):  Force field parameters. Default: None
+        parameters (dict):  Force field parameters. Default: ``None``.
 
-        cutoff (float):     Cutoff distance. Default: None
+        cutoff (float):     Cutoff distance. Default: ``None``.
 
-        use_pbc (bool):     Whether to use periodic boundary condition. Default: None
+        use_pbc (bool):     Whether to use periodic boundary condition. Default: ``None``.
 
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
                             Default: 'nm'
@@ -253,7 +253,7 @@ class LennardJonesEnergy(NonbondEnergy):
             inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.
                                             Reciprocal of distances.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: None
+                                            Tensor of PBC box. Default: ``None``.
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.

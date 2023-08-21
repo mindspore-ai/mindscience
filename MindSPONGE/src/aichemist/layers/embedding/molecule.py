@@ -56,9 +56,9 @@ class MolEmbedding(GraphEmbedding):
 
         emb_bond (bool): Whether to embed the bond.
 
-        cutoff (Union[Length, float, Tensor]): Cut-off radius. Default: None
+        cutoff (Union[Length, float, Tensor]): Cut-off radius. Default: ``None``.
 
-        activation: Union[Cell, str]: Activation function. Default: None
+        activation: Union[Cell, str]: Activation function. Default: ``None``.
 
         length_unit: Union[str, Units]: Length unit. Default: Global length unit
 

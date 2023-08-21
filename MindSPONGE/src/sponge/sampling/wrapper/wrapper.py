@@ -39,10 +39,10 @@ class EnergyWrapper(Cell):
         update_pace (int):  Frequency for updating the wrapper. Default: 0
 
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
-                            Default: None
+                            Default: ``None``.
 
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
-                            Default: None
+                            Default: ``None``.
 
     Supported Platforms:
 
@@ -82,7 +82,7 @@ class EnergyWrapper(Cell):
             potentials (Tensor):    Tensor of shape `(B, U)`. Data type is float.
                                     Potential energies.
             biases (Tensor):        The shape of tensor is `(B, V)`. The data type is float.
-                                    Bias potential energies. Default: None
+                                    Bias potential energies. Default: ``None``.
 
         Return:
             energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.

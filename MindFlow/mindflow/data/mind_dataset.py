@@ -41,7 +41,7 @@ class MindDataset(Data):
             function. Default: ``"Label"``. Other supported types can be found in `mindflow.data.Dataset`.
         shuffle (Union[bool, Shuffle level], optional): Perform reshuffling of the data every epoch
             If `shuffle` is ``False``, no shuffling will be performed.
-            If `shuffle` is ``True``, performs global shuffle. Default: True.
+            If `shuffle` is ``True``, performs global shuffle. Default: ``True``.
             Otherwise, there are two levels of shuffling:
 
             - ``Shuffle.GLOBAL``: Shuffle both the files and sample.

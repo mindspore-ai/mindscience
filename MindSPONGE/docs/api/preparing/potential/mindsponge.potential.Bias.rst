@@ -7,7 +7,7 @@ mindsponge.potential.Bias
 
     参数：
         - **colvar** (Colvar) - 可收集变量。默认值："None"。
-        - **multiple_walkers** (bool) - 是否使用多线程。默认值：False。
+        - **multiple_walkers** (bool) - 是否使用多线程。默认值： ``False`` 。
         - **length_unit** (str) - 长度单位。默认值："None"。
         - **energy_unit** (str) - 能量单位。默认值："None"。
         - **units** (Units) - 长度和能量单位。默认值：global_units。

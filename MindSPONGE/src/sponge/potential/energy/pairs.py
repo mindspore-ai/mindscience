@@ -373,7 +373,7 @@ class NonbondPairwiseEnergy(EnergyCell):
             inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.
                                             Reciprocal of distances.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: None
+                                            Tensor of PBC box. Default: ``None``.
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.

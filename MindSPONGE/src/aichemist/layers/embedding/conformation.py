@@ -51,9 +51,9 @@ class ConformationEmbedding(MolEmbedding):
 
         emb_bond (bool): Whether to embed the bond.
 
-        cutoff (Union[Length, float, Tensor]): Cut-off distance. Default: None
+        cutoff (Union[Length, float, Tensor]): Cut-off distance. Default: ``None``.
 
-        activation: Union[Cell, str]: Activation function. Default: None
+        activation: Union[Cell, str]: Activation function. Default: ``None``.
 
         length_unit: Union[str, Units]: Length unit. Default: Global length unit
 

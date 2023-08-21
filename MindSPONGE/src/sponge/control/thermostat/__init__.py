@@ -44,7 +44,7 @@ def get_thermostat(cls_name: Union[str, dict, Thermostat],
         cls_name (Union[str, dict, Thermostat]): Class name, arguments or object of a thermostat.
         system (Molecule): Simulation system.
         temperature (float): Reference temperature for temperature coupling. If `None` is given and
-            the type of `cls_name` is `str`, `None` will be returned. Default: None
+            the type of `cls_name` is `str`, `None` will be returned. Default: ``None``.
         **kwargs: Other arguments
 
     Return:

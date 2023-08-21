@@ -45,10 +45,10 @@ def get_atoms(atoms: Union[AtomsBase, List[AtomsBase], Tuple[AtomsBase], Tensor,
                             List of atoms.
 
         batched (bool):     Whether the first dimension of index is the batch size.
-                            Default: False
+                            Default: ``False``.
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: False
+                            Default: ``False``.
 
     Returns:
 

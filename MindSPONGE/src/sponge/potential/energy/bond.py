@@ -64,7 +64,7 @@ class BondEnergy(EnergyCell):
                             Array of the equilibrium value :math:`b^0` for the bond length.
                             The shape of array is `(1, b)`, and the data type is float.
 
-        parameters (dict):  Force field parameters. Default: None
+        parameters (dict):  Force field parameters. Default: ``None``.
 
         use_pbc (bool):     Whether to use periodic boundary condition.
 
@@ -243,7 +243,7 @@ class BondEnergy(EnergyCell):
             inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.
                                             Reciprocal of distances.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: None
+                                            Tensor of PBC box. Default: ``None``.
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.

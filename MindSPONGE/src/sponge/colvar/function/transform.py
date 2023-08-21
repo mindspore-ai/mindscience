@@ -47,12 +47,12 @@ class TransformCV(Colvar):
 
         function (Callable): Transformation function :math:`f(x)`.
 
-        periodic (bool): Whether the transformed collective variables is periodic. Default: False
+        periodic (bool): Whether the transformed collective variables is periodic. Default: ``False``.
 
         shape (Tuple[int]): Shape of the transformed collective variables. If None is given,
-            then it will be assigned to the shape of the original `colvar`. Default: None
+            then it will be assigned to the shape of the original `colvar`. Default: ``None``.
 
-        unit (str): Unit of the collective variables. Default: None
+        unit (str): Unit of the collective variables. Default: ``None``.
             NOTE: This is not the `Units` Cell that wraps length and energy.
 
         name (str): Name of the collective variables. Default: 'transform'
@@ -100,7 +100,7 @@ class TransformCV(Colvar):
             coordinate (Tensor):Tensor of shape `(B, A, D)`. Data type is float.
                 Position coordinate of colvar in system
             pbc_box (Tensor): Tensor of shape `(B, D)`. Data type is float.
-                Tensor of PBC box. Default: None
+                Tensor of PBC box. Default: ``None``.
 
         Returns:
             cos_cv (Tensor):       Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.

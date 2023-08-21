@@ -51,7 +51,7 @@ class IndexColvar(Cell):
 
         use_pbc (bool):     Whether to calculate the CV at periodic boundary condition (PBC).
                             If `None` is given, it will be determined at runtime based on
-                            whether the `pbc_box` is given or not. Default: None
+                            whether the `pbc_box` is given or not. Default: ``None``.
 
     Supported Platforms:
 
@@ -87,7 +87,7 @@ class IndexDistances(IndexColvar):
     r"""Calculate distance between atoms by neighbour index
 
     Args:
-        use_pbc (bool):     Whether to use periodic boundary condition. Default: False
+        use_pbc (bool):     Whether to use periodic boundary condition. Default: ``False``.
 
         large_dis (float):  A large value that added to the distance equal to zero to
                             prevent them from becoming zero values after Norm operation,
@@ -130,7 +130,7 @@ class IndexDistances(IndexColvar):
                                     Mask of neighbour index
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
                                     Periodic boundary condition Box.
-                                    Default: None
+                                    Default: ``None``.
 
         Returns:
             distances (Tensor):     Tensor of shape (B, A, N). Data type is float.
@@ -248,9 +248,9 @@ class IndexVectors(IndexColvar):
     r"""Get vectors by index
 
     Args:
-        use_pbc (bool):     Whether to use periodic boundary condition. Default: False
+        use_pbc (bool):     Whether to use periodic boundary condition. Default: ``False``.
 
-        length_unit (str):  Length unit. Default: None
+        length_unit (str):  Length unit. Default: ``None``.
 
     Supported Platforms:
 
@@ -274,7 +274,7 @@ class IndexVectors(IndexColvar):
                                     Mask of neighbour index
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
                                     Periodic boundary condition Box.
-                                    Default: None
+                                    Default: ``None``.
 
         Returns:
             vector (Tensor):        Tensor of shape (B, A, D). Data type is float.

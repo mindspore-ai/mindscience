@@ -50,11 +50,11 @@ class PhysNet(MolecularGNN):
 
         n_interaction (int):        Number of interaction layers. Default: 5
 
-        coupled_interaction (bool): Whether to use coupled (shared) interaction layer. Default: False
+        coupled_interaction (bool): Whether to use coupled (shared) interaction layer. Default: ``False``.
 
-        use_graph_norm (bool):      Whether to use graph normalization. Default: False
+        use_graph_norm (bool):      Whether to use graph normalization. Default: ``False``.
 
-        public_dis_filter (bool):   Whether to use public (shared) filter for distance. Default: False
+        public_dis_filter (bool):   Whether to use public (shared) filter for distance. Default: ``False``.
 
         n_inter_residual (int):     Number of blocks in the inside pre-activation residual block. Default: 3
 
@@ -62,7 +62,7 @@ class PhysNet(MolecularGNN):
 
         length_unit (bool):         Unit of position coordinates. Default: 'nm'
 
-        hyper_param (dict):         Hyperparameter for molecular model. Default: None
+        hyper_param (dict):         Hyperparameter for molecular model. Default: ``None``.
 
     Symbols:
 

@@ -54,8 +54,8 @@ def get_energy_cell(cls_name: Union[str, dict, EnergyCell],
     Args:
         cls_name (Union[str, dict, Thermostat]): Class name, arguments or object of a energy cell.
         system (Molecule): Simulation system.
-        parameters (dict): Dict of force field parameters. Default: None
-        exclude_index (Tensor): Tensor of exclude index for neighbour list. Default: None
+        parameters (dict): Dict of force field parameters. Default: ``None``.
+        exclude_index (Tensor): Tensor of exclude index for neighbour list. Default: ``None``.
         **kwargs: Other arguments
 
     Return:

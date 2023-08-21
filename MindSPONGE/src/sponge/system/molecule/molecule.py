@@ -77,22 +77,22 @@ class Molecule(Cell):
 
     Args:
         atoms(Union[List[Union[str, int]], ndarray]):       Array of atoms. The data in array can be str of atom
-                                                            name or int of atomic number. Defulat: None
-        atom_name(Union[List[str], ndarray]):               Array of atom name with data type `str`. Defulat: None
-        atom_type(Union[List[str], ndarray]):               Array of atom type with data type `str`. Defulat: None
+                                                            name or int of atomic number. Default: ``None``.
+        atom_name(Union[List[str], ndarray]):               Array of atom name with data type `str`. Default: ``None``.
+        atom_type(Union[List[str], ndarray]):               Array of atom type with data type `str`. Default: ``None``.
         atom_mass(Union[Tensor, ndarray, List[float]]):     Array of atom mass of shape `(B, A)` with data type
-                                                            `float`. Defulat: None
+                                                            `float`. Default: ``None``.
         atom_charge(Union[Tensor, ndarray, List[float]]):   Array of atom charge of shape `(B, A)` with data type
-                                                            `float`. Defulat: None
+                                                            `float`. Default: ``None``.
         atomic_number(Union[Tensor, ndarray, List[float]]): Array of atomic number of shape `(B, A)` with data type
-                                                            `int`. Defulat: None
+                                                            `int`. Default: ``None``.
         bond(Union[Tensor, ndarray, List[int]]):            Array of bond connection of shape `(B, b, 2)` with data
-                                                            type `int`. Defulat: None
+                                                            type `int`. Default: ``None``.
         coordinate(Union[Tensor, ndarray, List[float]]):    Tensor of atomic coordinates :math:`R` of shape
-                                                            `(B, A, D)` with data type `float`. Default: None
+                                                            `(B, A, D)` with data type `float`. Default: ``None``.
         pbc_box(Union[Tensor, ndarray, List[float]]):       Tensor of box size :math:`\vec{L}` of periodic boundary
                                                             condition (PBC). The shape of tensor is `(B, D)`,
-                                                            and the data type is `float`. Default: None
+                                                            and the data type is `float`. Default: ``None``.
         template(Union[dict, str, List[Union[dict, str]]]): Template for molecule. It can be a `dict` in MindSPONGE
                                                             template format or a `str` for the filename of a
                                                             MindSPONGE template file. If a `str` is given,
@@ -100,16 +100,16 @@ class Molecule(Cell):
                                                             current directory. If the file does not exist, it will
                                                             search in the built-in template directory of
                                                             MindSPONGE (`mindsponge.data.template`).
-                                                            Default: None.
+                                                            Default: ``None``.
         residue(Union[Residue, List[Residue]]):             Residue or a list of residues. If template is not None,
                                                             only the residues in the template will be used.
-                                                            Default: None.
+                                                            Default: ``None``.
         length_unit(str):                                   Length unit. If `None` is given, the global length
-                                                            units will be used. Default: None
+                                                            units will be used. Default: ``None``.
 
     Outputs:
-        - coordinate, Tensor of shape `(B, A, D)`. Data type is float.
-        - pbc_box, Tensor of shape `(B, D)`. Data type is float.
+        - coordinate, Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - pbc_box, Tensor of shape :math:`(B, D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -330,7 +330,7 @@ class Molecule(Cell):
         Move the coordinate of the system.
 
         Args:
-            shift(Tensor): The displacement distance of the system. Default: None
+            shift(Tensor): The displacement distance of the system. Default: ``None``.
         """
         if shift is not None:
             self.update_coordinate(self.coordinate + Tensor(shift, ms.float32))
@@ -341,7 +341,7 @@ class Molecule(Cell):
         Return a Molecule that copy the parameters of this molecule.
 
         Args:
-            shift(Tensor): The displacement distance of the system. Default: None
+            shift(Tensor): The displacement distance of the system. Default: ``None``.
 
         Returns:
             class, class Molecule that copy the parameters of this molecule.
@@ -362,7 +362,7 @@ class Molecule(Cell):
 
         Args:
             residue(class): a Residue class of the residue added in the system.
-            coordinate(Tensor): The coordinate of the input residue. Default: None
+            coordinate(Tensor): The coordinate of the input residue. Default: ``None``.
         """
         if not isinstance(residue, list):
             if isinstance(residue, Residue):
@@ -709,12 +709,12 @@ class Molecule(Cell):
                 for selection in selections:
                     if angles is None:
                         angles = np.insert(idx[selection], 1, self.angle_vertices[counter])[
-                                 None, :]
+                            None, :]
                     else:
                         angles = np.append(
                             angles,
                             np.insert(idx[selection], 1, self.angle_vertices[counter])[
-                            None, :],
+                                None, :],
                             axis=0,
                         )
                 counter += 1
@@ -791,8 +791,8 @@ class Molecule(Cell):
                 dangles = angles[
                     np.where(
                         (
-                                np.isin(angles, dihedral_middle_id[i]).sum(axis=1)
-                                * np.isin(angles[:, 1], dihedral_middle_id[i])
+                            np.isin(angles, dihedral_middle_id[i]).sum(axis=1)
+                            * np.isin(angles[:, 1], dihedral_middle_id[i])
                         )
                         > 1
                     )[0]
@@ -1024,7 +1024,7 @@ class Molecule(Cell):
 
         Args:
             recurse(bool):  If true, yields parameters of this cell and all subcells. Otherwise, only yield parameters
-                            that are direct members of this cell. Default: True
+                            that are direct members of this cell. Default: ``True``.
 
         Returns:
             list, all trainable system parameters.
@@ -1113,7 +1113,7 @@ class Molecule(Cell):
 
         Args:
             pbc_box(Tensor):    Set the PBC box of the system. If it's None, the system won't use PBC box.
-                                Default: None
+                                Default: ``None``.
 
         Returns:
             Tensor, system PBC box.
@@ -1210,7 +1210,7 @@ class Molecule(Cell):
 
         Args:
             shift(float):   Offset ratio :math:`c` relative to box size :math:`\vec{L}`.
-                            Default: 0
+                            Default: ``0``.
 
         Returns:
             Tensor, the image of coordinate.
@@ -1227,7 +1227,7 @@ class Molecule(Cell):
         Update the image of coordinate.
 
         Args:
-            image(Tensor):  The image of coordinate used to update the image of system coordinate. Default: None
+            image(Tensor):  The image of coordinate used to update the image of system coordinate. Default: ``None``.
 
         Returns:
             bool, whether successfully update the image of coordinate.
@@ -1289,7 +1289,7 @@ class Molecule(Cell):
 
         Args:
             atoms(class):   Base class for specific atoms group, used as the "atoms group module" in MindSPONGE.
-                            Default: None
+                            Default: ``None``.
 
         Returns:
             Tensor. Coordinate. Data type is float.
@@ -1314,6 +1314,7 @@ class Molecule(Cell):
     def fill_water(self, edge: float = None, gap: float = None, box: ndarray = None, pdb_out: str = None,
                    template: str = None):
         """ The inner function in Molecule class to add water in a given box.
+
         Args:
             edge(float): The water edge around the system.
             gap(float): The minimum gap between system atoms and water atoms.
@@ -1362,8 +1363,8 @@ class Molecule(Cell):
 
         if box is None:
             box = np.array([size_x + 2 * edge,
-                           size_y + 2 * edge,
-                           size_z + 2 * edge], np.float32)
+                            size_y + 2 * edge,
+                            size_z + 2 * edge], np.float32)
         else:
             box = box * length_convert(self.length_unit, 'A')
         final_box = box + 0.5 * AVGDIS

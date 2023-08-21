@@ -59,17 +59,17 @@ class SchNet(MolecularGNN):
 
         rbf (Cell):                 Radical baiss function. Default: 'gaussian'
 
-        normalize_filter (bool):    Whether to normalize the filter network. Default: False
+        normalize_filter (bool):    Whether to normalize the filter network. Default: ``False``.
 
-        coupled_interaction (bool): Whether to use coupled (shared) interaction layer. Default: False
+        coupled_interaction (bool): Whether to use coupled (shared) interaction layer. Default: ``False``.
 
-        use_graph_norm (bool):      Whether to use graph normalization. Default: False
+        use_graph_norm (bool):      Whether to use graph normalization. Default: ``False``.
 
-        public_dis_filter (bool):   Whether to use public (shared) filter for distance. Default: False
+        public_dis_filter (bool):   Whether to use public (shared) filter for distance. Default: ``False``.
 
         length_unit (bool):         Unit of position coordinates. Default: 'nm'
 
-        hyper_param (dict):         Hyperparameter for molecular model. Default: None
+        hyper_param (dict):         Hyperparameter for molecular model. Default: ``None``.
 
     Symbols:
 

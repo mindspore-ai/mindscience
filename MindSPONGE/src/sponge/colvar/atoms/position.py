@@ -48,10 +48,10 @@ class Position(AtomsBase):
                             The shape of Tensor is (a_1, a_2, ..., a_n, D), and the data type is float.
 
         batched (bool):     Whether the first dimension of coordinate is the batch size.
-                            Default: False
+                            Default: ``False``.
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: False
+                            Default: ``False``.
 
         dimension (int):    Space dimension of system. Default: 3
 
@@ -118,7 +118,7 @@ class Position(AtomsBase):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
 
         Returns:
             position (Tensor):  Tensor of shape (B, a_1, a_2, ..., a_n, D). Data type is float.
@@ -150,7 +150,7 @@ class BatchedPosition(Position):
                                 Position coordinate(s) of virtual atom(s).
 
         keep_in_box (bool):     Whether to displace the coordinate in PBC box.
-                                Default: False
+                                Default: ``False``.
 
         dimension (int):        Space dimension of system. Default: 3
 

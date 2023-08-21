@@ -56,17 +56,20 @@ class Updater(Optimizer):
         system(Molecule):                                   Simulation system.
         controller(Union[Controller, List[Controller]]):    Controller or list of controllers to control the seven
                                                             variables (coordinate, velocity, force, energy, kinetics,
-                                                            virial and pbc_box) of the simulation system. Default: None
-        time_step(float):                                   Time step. Defulat: 1e-3
+                                                            virial and pbc_box) of the simulation system.
+                                                            Default: ``None``.
+        time_step(float):                                   Time step. Default: 1e-3
         velocity(Union[Tensor, ndarray, List[float]]):      Array of atomic velocity. The shape of array is `(A, D)`
-                                                            or `(B, A, D)`, and the data type is float. Default: None
+                                                            or `(B, A, D)`, and the data type is float.
+                                                            Default: ``None``.
         weight_decay(float):                                An value for the weight decay. Default: 0.0
         loss_scale(float):                                  A value for the loss scale. Default: 1.0
 
     Inputs:
         - **energy** (Tensor) - Energy of the system. Tensor of shape `(B, A, D)`. Data type is float.
         - **force** (Tensor) - Force of the system. Tensor of shape `(B, A, D)`. Data type is float.
-        - **virial** (Tensor) - Virial of the system. Tensor of shape `(B, A, D)`. Data type is float. Default: None
+        - **virial** (Tensor) - Virial of the system. Tensor of shape `(B, A, D)`. Data type is float.
+          Default: ``None``.
 
     Outputs:
         bool, whether successfully finish the current optimization step and move to next step.
@@ -227,7 +230,7 @@ class Updater(Optimizer):
 
         Args:
             coordinate(Tensor): Tensor of atomic coordinates. Data type is float.
-            success(bool):      Whether to update the coordinate. Default: True
+            success(bool):      Whether to update the coordinate. Default: ``True``.
 
         Returns:
             bool, whether successfully update the coordinate.
@@ -240,7 +243,7 @@ class Updater(Optimizer):
 
         Args:
             pbc_box(Tensor):    Tensor of PBC box. Data type is float.
-            success(bool):      Whether to update the pbc_box. Default: True
+            success(bool):      Whether to update the pbc_box. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of PBC box.
@@ -255,7 +258,7 @@ class Updater(Optimizer):
 
         Args:
             velocity(Tensor):   Tensor of atomic velocities. Data type is float.
-            success(bool):      Whether to update the velocities. Default: True
+            success(bool):      Whether to update the velocities. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of atomic velocities.
@@ -268,7 +271,7 @@ class Updater(Optimizer):
 
         Args:
             kinetics(Tensor):   Tensor of kinetics. Data type is float.
-            success(bool):      Whether to update the kinetics. Default: True
+            success(bool):      Whether to update the kinetics. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of kinetics.
@@ -283,7 +286,7 @@ class Updater(Optimizer):
 
         Args:
             temperature(Tensor):    Tensor of temperature. Data type is float.
-            success(bool):          Whether to update the temperature. Default: True
+            success(bool):          Whether to update the temperature. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of temperature.
@@ -298,7 +301,7 @@ class Updater(Optimizer):
 
         Args:
             virial(Tensor): Tensor of virial. Data type is float.
-            success(bool):  Whether to update the virial. Default: True
+            success(bool):  Whether to update the virial. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of virial.
@@ -313,7 +316,7 @@ class Updater(Optimizer):
 
         Args:
             pressure(Tensor):   Tensor of pressure. Data type is float.
-            success(bool):      Whether to update the pressure. Default: True
+            success(bool):      Whether to update the pressure. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of pressure.
@@ -354,7 +357,7 @@ class Updater(Optimizer):
         Get temperature.
 
         Args:
-            kinetics(Tensor):   Tensor of kinetics. Data type is float. Default: None
+            kinetics(Tensor):   Tensor of kinetics. Data type is float. Default: ``None``.
 
         Returns:
             Tensor, the temperature of the system.
@@ -396,7 +399,7 @@ class Updater(Optimizer):
         Finish the current optimization step and move to next step.
 
         Args:
-            success(bool):  Whether to finish the current optimization step and move to next step. Default: True
+            success(bool):  Whether to finish the current optimization step and move to next step. Default: ``True``.
 
         Returns:
             bool, whether successfully finish the current optimization step and move to next step.
@@ -409,7 +412,7 @@ class Updater(Optimizer):
 
         Args:
             force(Tensor):  Tensor of force. Data type is float.
-            virial(Tensor): Tensor of virial. Data type is float. Default: None
+            virial(Tensor): Tensor of virial. Data type is float. Default: ``None``.
 
         Returns:
             - Tensor, Tensor of force after weight decay and gradient scale.

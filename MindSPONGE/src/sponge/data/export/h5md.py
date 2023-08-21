@@ -54,7 +54,7 @@ class H5MD:
 
         filename (str):         Name of output H5MD hdf5_file.
 
-        directory (str):        Directory of the output hdf5_file. Default: None
+        directory (str):        Directory of the output hdf5_file. Default: ``None``.
 
         mode (str):             I/O mode for HDF5. Default: 'w'
                                 'w'          Create file, truncate if exists
@@ -65,15 +65,15 @@ class H5MD:
                                 Default:  False
 
         write_force (bool):     Whether to write the forece of the system to the H5MD file.
-                                Default: False
+                                Default: ``False``.
 
         length_unit (str):      Length unit for coordinates.
                                 If given "None", it will be equal to the length unit of the system.
-                                Default: None
+                                Default: ``None``.
 
         energy_unit (str):      Energy unit.
                                 If given "None", it will be equal to the global energy unit.
-                                Default: None.
+                                Default: ``None``.
 
         compression (str):      Compression strategy for HDF5. Default: 'gzip'
 

@@ -48,7 +48,7 @@ class Constraint(Controller):
                                     Tensor of shape (K, 2). Data type is int.
                                     Alternative: "h-bonds" or "all-bonds".
 
-        potential (PotentialCell):  Potential Cell. Default: None
+        potential (PotentialCell):  Potential Cell. Default: ``None``.
 
     Supported Platforms:
 

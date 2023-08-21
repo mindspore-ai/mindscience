@@ -38,17 +38,17 @@ class Readout(Cell):
 
         dim_output (int): Dimension of outputs. Default: 1
 
-        dim_node_rep (int): Dimension of node vectors. Default: None
+        dim_node_rep (int): Dimension of node vectors. Default: ``None``.
 
-        dim_edge_rep (int): Dimension of edge vectors. Default: None
+        dim_edge_rep (int): Dimension of edge vectors. Default: ``None``.
 
-        activation (Cell): Activation function, Default: None
+        activation (Cell): Activation function, Default: ``None``.
 
         scale (float): Scale factor for outputs. Default: 1
 
         shift (float): Shift factor for outputs. Default: 0
 
-        unit (str): Unit of output. Default: None
+        unit (str): Unit of output. Default: ``None``.
 
     Symbols:
 
@@ -150,7 +150,7 @@ class Readout(Cell):
             edge_emb (Tensor): Tensor of shape `(B, A, N, K)`. Data type is float.
                 Edge embedding vector.
             atom_type (Tensor): Tensor of shape `(B, A)`. Data type is int.
-                Index of atom types. Default: None
+                Index of atom types. Default: ``None``.
             atom_mask (Tensor): Tensor of shape `(B, A)`. Data type is bool
                 Mask for atom types
             distance (Tensor): Tensor of shape `(B, A, N)`. Data type is float.

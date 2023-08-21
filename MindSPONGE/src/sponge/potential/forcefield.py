@@ -51,20 +51,20 @@ class ForceFieldBase(PotentialCell):
     Args:
 
         Energy (Union[EnergyCell, List[EnergyCell]]):
-                                List of `EnergyCell` objects. Default: None
+                                List of `EnergyCell` objects. Default: ``None``.
 
-        cutoff (Union[float, Length, Tensor]):  Cutoff distance. Default: None
+        cutoff (Union[float, Length, Tensor]):  Cutoff distance. Default: ``None``.
 
         exclude_index (Union[Tensor, ndarray, List[int]]):
                                 Array of indexes of atoms that should be excluded from neighbour list.
                                 The shape of the tensor is `(B, A, Ex)`. The data type is int.
-                                Default: None
+                                Default: ``None``.
 
         length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
-                                Default: None
+                                Default: ``None``.
 
         energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
-                                Default: None
+                                Default: ``None``.
 
         use_pbc (bool):         Whether to use periodic boundary condition.
 
@@ -218,15 +218,15 @@ class ForceFieldBase(PotentialCell):
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: None
+                                            Index of neighbour atoms. Default: ``None``.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour atoms. Default: None
+                                            Mask for neighbour atoms. Default: ``None``.
             neighbour_vector (Tensor):       Tensor of shape (B, A, N, D). Data type is bool.
                                             Vectors from central atom to neighbouring atoms.
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: None
+                                            Distance between neighbours atoms. Default: ``None``.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: None
+                                            Tensor of PBC box. Default: ``None``.
 
         Returns:
             potential (Tensor): Tensor of shape (B, E). Data type is float.
@@ -277,17 +277,17 @@ class ForceField(ForceFieldBase):
                                 is present in different parameters, then the atom type in the parameter
                                 at the back of the array will replace the one at the front.
 
-        cutoff (float):         Cutoff distance. Default: None
+        cutoff (float):         Cutoff distance. Default: ``None``.
 
         rebuild_system (bool):  Whether to rebuild the atom types and bond connection of the system
                                 based on the template in parameters.
-                                Default: True
+                                Default: ``True``.
 
         length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
-                                Default: None
+                                Default: ``None``.
 
         energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
-                                Default: None
+                                Default: ``None``.
 
     Returns:
 

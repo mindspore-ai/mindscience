@@ -43,7 +43,7 @@ class ExistedDataset(Data):
             `data_config` is ``None``, the `columns_list` should not be ``None``.
         data_format (str, optional): the format of existed data files. Default: ``'npy'``.
         constraint_type (str, optional): specifies the constraint type of the created dataset. Default: "Label".
-        random_merge (bool, optional): specifies whether randomly merge the given datasets. Default: True.
+        random_merge (bool, optional): specifies whether randomly merge the given datasets. Default: ``True``.
         data_config (ExistedDataConfig, optional): Instance of ExistedDataConfig which collect the info
             described above. Default: ``None``. If it's not ``None``, the dataset class will be create by
             using it for simplifying. If it's ``None``, the info of (name, data_dir, columns_list, data_format,

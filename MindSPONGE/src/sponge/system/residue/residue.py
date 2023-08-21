@@ -53,34 +53,36 @@ class Residue:
     such as a water molecule, an inorganic salt ion, etc. This means that the `Residue` Cell has
     a similar concept to the "residue" in a PDB file.
 
-    NOTE: `Residue` Cell is only used to represent the atomic properties and bond connections,
-            but does NOT contain atomic coordinates.
+    Note:
+        `Residue` Cell is only used to represent the atomic properties and bond connections,
+        but does NOT contain atomic coordinates.
 
     Args:
-        atom_name (Union[List[str], ndarray]): Array of atom name with data type `str`. Defulat: None
-        atom_type (Union[List[str], ndarray]): Array of atom type with data type `str`. Defulat: None
-        atom_mass (Union[Tensor, ndarray, List[float]]): Array of atom mass of shape `(B, A)`
-            with data type `float`. Defulat: None
-        atom_charge (Union[Tensor, ndarray, List[float]]): Array of atom charge of shape `(B, A)
-            with data type `float`. Defulat: None
-        atomic_number (Union[Tensor, ndarray, List[float]]): Array of atomic number of shape `(B, A)`
-            with data type `int`. Defulat: None
-        bonds (Union[Tensor, ndarray, List[int]]): Array of bond connection of shape `(B, b, 2)`
-            with data type `int`. Defulat: None
+        atom_name (Union[List[str], ndarray]): Array of atom name with data type `str`. Default: ``None``.
+        atom_type (Union[List[str], ndarray]): Array of atom type with data type `str`. Default: ``None``.
+        atom_mass (Union[Tensor, ndarray, List[float]]): Array of atom mass of shape :math:`(B, A)`
+            with data type `float`. Default: ``None``.
+        atom_charge (Union[Tensor, ndarray, List[float]]): Array of atom charge of shape :math:`(B, A)`
+            with data type `float`. Default: ``None``.
+        atomic_number (Union[Tensor, ndarray, List[float]]): Array of atomic number of shape :math:`(B, A)`
+            with data type `int`. Default: ``None``.
+        bonds (Union[Tensor, ndarray, List[int]]): Array of bond connection of shape :math:`(B, b, 2)`
+            with data type `int`. Default: ``None``.
         settle_index (Union[Tensor, ndarray, List[int]]): Array of atom indices for SETTLE constraint algorithm,
-            The shape of the array is `(B, 3)` with data type `int`. The order of index is vertex atoms and two
-            base atoms. Defulat: None
+            The shape of the array is :math:`(B, 3)` with data type `int`. The order of index is vertex atoms and two
+            base atoms. Default: ``None``.
         settle_length (Union[Tensor, ndarray, List[float]]): Array of length for SETTLE constraint algorithm,
-            The shape of the array is `(B, 2)` with data type `int`. The order of length is leg and base. Defulat: None
-        head_atom (int): Index of the head atom to connect with the previous residue. Default: None
-        tail_atom (int): Index of the tail atom to connect with the next residue. Default: None
-        start_index (int): The start index of the first atom in this residue. Default: 0
-        name (str): Name of the residue. Default: 'MOL'
+            The shape of the array is :math:`(B, 2)` with data type `int`. The order of length is leg and base.
+            Default: ``None``.
+        head_atom (int): Index of the head atom to connect with the previous residue. Default: ``None``.
+        tail_atom (int): Index of the tail atom to connect with the next residue. Default: ``None``.
+        start_index (int): The start index of the first atom in this residue. Default: ``0``.
+        name (str): Name of the residue. Default: ``'MOL'``.
         template (Union[dict, str]): Template for residue. It can be a `dict` in MindSPONGE template
             format or a `str` for the filename of a MindSPONGE template file. If a `str` is given,
             it will first look for a file with the same name in the current directory. If file does
             not exist, it will search in the built-in template directory of MindSPONGE
-            (`mindsponge.data.template`). Default: None.
+            (`mindsponge.data.template`). Default: ``None``.
 
     Symbols:
         B:  Batchsize, i.e. number of walkers in simulation
@@ -481,11 +483,11 @@ class Residue:
         Add an atom to the residue.
 
         Args:
-            atom_name(str):     Atom name. Default: None
-            atom_type(str):     Atom type. Default: None
-            atom_mass(float):   Atom mass. Default: None
-            atom_charge(float): Atom charge. Default: None
-            atomic_number(str): Atomic number. Default: None
+            atom_name(str):     Atom name. Default: ``None``.
+            atom_type(str):     Atom type. Default: ``None``.
+            atom_mass(float):   Atom mass. Default: ``None``.
+            atom_charge(float): Atom charge. Default: ``None``.
+            atomic_number(str): Atomic number. Default: ``None``.
         """
 
         if atom_name is None and atomic_number is None:

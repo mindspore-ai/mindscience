@@ -40,29 +40,29 @@ class Distance(Colvar):
     Args:
 
         atoms (AtomsBase):  Atoms of shape `(..., 2, D)` to calculate distance of shape `(...)` or `(..., 1)`.
-                            Cannot be used with `atoms0` or `atoms1`. Default: None
+                            Cannot be used with `atoms0` or `atoms1`. Default: ``None``.
 
         atoms0 (AtomsBase): Initial point of atoms with shape `(..., D)` of the distance with shape
                             `(...)` or `(..., 1)`. Must be used with `atoms1`, and cannot be used with `atoms`.
-                            Default: None
+                            Default: ``None``.
 
         atoms1 (AtomsBase): Terminal point of atoms with shape `(..., D)` of the distance with shape
                             `(...)` or `(..., 1)`. Must be used with `atoms0`, and cannot be used with `atoms`.
-                            Default: None
+                            Default: ``None``.
 
         vector (Vector):    Vector with shape `(..., D)` of the distance with shape `(...)` or `(..., 1)`
 
         use_pbc (bool):     Whether to calculate distance under periodic boundary condition.
-                            Default: None
+                            Default: ``None``.
 
         batched (bool):     Whether the first dimension of the input index in atoms is the batch size.
-                            Default: False
+                            Default: ``False``.
 
         keepdims (bool):    If True, the last axis will be left, and the output shape will be `(..., 1)`.
                             If False, the shape of distance will be `(...)`
                             if None, its value will be determined according to the rank of vector:
                             False if the rank is greater than 1, otherwise True.
-                            Default: None
+                            Default: ``None``.
 
         axis (int):         Axis along which the coordinate of atoms are take, of which the dimension must be 2.
                             It only works when initialized with `atoms`, `atoms0`, or `atoms1`.
@@ -143,7 +143,7 @@ class Distance(Colvar):
         Args:
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Default: None
+                                    Default: ``None``.
 
         Returns:
             distance (Tensor):       Tensor of shape `(B, ...)`. Data type is float.

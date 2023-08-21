@@ -44,7 +44,7 @@ class AnalysisCell(Cell):
 
         potential (PotentialCell):      Potential energy.
 
-        neighbour_list (NeighbourList): Neighbour list. Default: None
+        neighbour_list (NeighbourList): Neighbour list. Default: ``None``.
 
     Supported Platforms:
 
@@ -93,9 +93,9 @@ class AnalysisCell(Cell):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system. Default: None
+                                    Position coordinate of atoms in system. Default: ``None``.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
             energy (Tensor):        Tensor of shape (B, 1). Data type is float.
                                     Total potential energy of the simulation system. Default: 0
             force (Tensor):         Tensor of shape (B, A, D). Data type is float.
