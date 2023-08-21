@@ -40,6 +40,16 @@ python train.py --config_file_path ./pde_net.yaml --device_target Ascend --devic
 
 您可以使用[中文版](pde_net_CN.ipynb)和[英文版](pde_net.ipynb)Jupyter Notebook逐行运行训练和验证代码。
 
+## 性能
+
+|        参数         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.1            |      2.1       |
+|        训练损失      |        0.9               |       0.6       |
+|        验证损失      |        6e-2               |       4e-2    |
+|        速度          |     45ms/epoch        |    150ms/epoch  |
+
 ## 贡献者
 
 gitee id：[liulei277](https://gitee.com/liulei277)

@@ -70,6 +70,16 @@ python train.py --config_file_path ./configs/fno1d.yaml --device_target GPU --de
 
 ![FNO1D Solves Burgers](images/result.jpg)
 
+## 性能
+
+|        参数         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.1             |      2.1       |
+|        训练损失      |        5e-3               |       4e-3      |
+|        验证损失      |        9e-4               |       8e-4    |
+|        速度          |     4.2秒/轮        |    3.9秒/轮  |
+
 ## Contributor
 
 gitee id：[liulei277](https://gitee.com/liulei277)

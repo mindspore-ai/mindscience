@@ -96,6 +96,16 @@ When the incoming Mach number changes, the surface pressure distribution, flow f
 
 ! [Ma_var.gif](images/Ma_var.gif)
 
+## Performance
+
+|        Parameter         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA V100 32G       |
+|     MindSpore version   |        2.1            |      2.1       |
+|        train loss      |        7e-2               |       4e-2       |
+|        valid loss      |        2e-4               |       2e-4    |
+|        speed          |     11s/epoch        |    40s/epoch  |
+
 ## Contributor
 
 gitee id: [Brian-K](https://gitee.com/Brian-K)
