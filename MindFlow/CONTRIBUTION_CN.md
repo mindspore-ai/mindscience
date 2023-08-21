@@ -249,7 +249,7 @@ python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_targ
 |     MindSpore版本   |        2.0.0             |      2.0.0       |
 |        训练损失      |        0.010               |       0.010       |
 |        验证损失      |        0.015               |       0.015       |
-|        速度          |     10秒/步或10秒/轮        |    10秒/步或10秒/轮  |
+|        速度          |     10s/epoch        |    10s/epoch  |
 
 ## Contributor
 
