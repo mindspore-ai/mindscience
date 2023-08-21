@@ -135,7 +135,6 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 **More Cases**：👀
 
 - [NMR Data Automatic Analysis FAAST](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/FAAST)
-- [Protein Relaxation](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/molecular_dynamics/protein_relaxation)
 - [Protein Structure Prediction MEGA-Fold](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
 - [Protein Structure Assessment MEGA-Assessment](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
 - [Evolution Engine MEGA-EvoGen](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
