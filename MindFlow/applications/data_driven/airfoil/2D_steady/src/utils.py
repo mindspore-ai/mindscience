@@ -19,6 +19,7 @@ import os
 import numpy as np
 
 from mindspore import ops
+from mindflow.utils import print_log
 
 
 def check_file_path(path):
@@ -53,23 +54,22 @@ def get_ckpt_summ_dir(callback_params, model_name, method):
     summary_dir = os.path.join(f"{callback_params['summary_dir']}/summary_{method}", model_name)
     ckpt_dir = os.path.join(summary_dir, "ckpt_dir")
     check_file_path(ckpt_dir)
-    print(f'model_name: {model_name}')
-    print(f'summary_dir: {summary_dir}')
-    print(f'ckpt_dir: {ckpt_dir}')
+    print_log(f'model_name: {model_name}')
+    print_log(f'summary_dir: {summary_dir}')
+    print_log(f'ckpt_dir: {ckpt_dir}')
     return ckpt_dir, summary_dir
 
 
 def display_error(error_name, error, error_list):
     """display error"""
-    print(f'mean {error_name} : {error}, max {error_name} : {max(error_list)},'
-          f' average {error_name} : {np.mean(error_list)},'
-          f' min {error_name} : {min(error_list)}, median {error_name} : {np.median(error_list)}'
-          )
+    print_log(f'mean {error_name} : {error}, max {error_name} : {max(error_list)},'
+              f' average {error_name} : {np.mean(error_list)},'
+              f' min {error_name} : {min(error_list)}, median {error_name} : {np.median(error_list)}')
 
 
 def calculate_eval_error(dataset, model, save_error=False, post_dir=None):
     """calculate evaluation error"""
-    print("================================Start Evaluation================================")
+    print_log("================================Start Evaluation================================")
     length = dataset.get_dataset_size()
     l1_error, l1_error_u, l1_error_v, l1_error_p, l1_error_cp = 0.0, 0.0, 0.0, 0.0, 0.0
     l1_error_list, l1_error_u_list, l1_error_v_list, l1_error_p_list, l1_error_cp_list, l1_avg_list = \
@@ -106,14 +106,14 @@ def calculate_eval_error(dataset, model, save_error=False, post_dir=None):
     if save_error:
         save_dir = os.path.join(post_dir, "ViT")
         check_file_path(save_dir)
-        print(f"eval error save dir: {save_dir}")
+        print_log(f"eval error save dir: {save_dir}")
         np.save(os.path.join(save_dir, 'l1_error_list'), l1_error_list)
         np.save(os.path.join(save_dir, 'l1_error_u_list'), l1_error_u_list)
         np.save(os.path.join(save_dir, 'l1_error_v_list'), l1_error_v_list)
         np.save(os.path.join(save_dir, 'l1_error_p_list'), l1_error_p_list)
         np.save(os.path.join(save_dir, 'l1_error_cp_list'), l1_error_cp_list)
         np.save(os.path.join(save_dir, 'l1_error_avg_list'), l1_avg_list)
-    print("=================================End Evaluation=================================")
+    print_log("=================================End Evaluation=================================")
 
 
 def calculate_mean_error(label, pred):
@@ -140,7 +140,7 @@ def calculate_max_error(label, pred):
 def save_label_and_pred(label, pred, save_img_dir):
     """save abel and pred"""
     save_dir = os.path.join(save_img_dir, 'label_pred')
-    print(f'label_and_pred: {save_dir}')
+    print_log(f'label_and_pred: {save_dir}')
     check_file_path(save_dir)
     label = unpatchify(label)
     pred = unpatchify(pred)

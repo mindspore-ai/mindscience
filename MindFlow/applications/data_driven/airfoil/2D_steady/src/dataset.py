@@ -19,6 +19,8 @@ import os
 import math
 import numpy as np
 import mindspore.dataset as ds
+from mindflow.utils import print_log
+
 
 np.random.seed(0)
 ds.config.set_seed(0)
@@ -46,9 +48,9 @@ class AirfoilDataset:
             eval_dataset = ds.MindDataset(dataset_files=eval_files_list, shuffle=shuffle)
             eval_dataset = eval_dataset.project(["inputs", "labels"])
             data_set_norm_eval = eval_dataset.map(operations=self._process_fn, input_columns=["inputs"])
-            print("{} eval dataset size: {}".format(mode, data_set_norm_eval.get_dataset_size()))
+            print_log("{} eval dataset size: {}".format(mode, data_set_norm_eval.get_dataset_size()))
             data_set_batch_eval = data_set_norm_eval.batch(batch_size, drop_remainder)
-            print("{} eavl batch dataset size: {}".format(mode, data_set_batch_eval.get_dataset_size()))
+            print_log("{} eavl batch dataset size: {}".format(mode, data_set_batch_eval.get_dataset_size()))
             return None, data_set_batch_eval
 
         files_list = self._select_shards(data_path, train_num_list)
@@ -67,14 +69,14 @@ class AirfoilDataset:
         data_set_norm_eval = eval_dataset.map(operations=self._process_fn,
                                               input_columns=["inputs"])
 
-        print("{} dataset : {}".format(mode, train_num_list))
-        print("train dataset size: {}".format(data_set_norm_train.get_dataset_size()))
-        print("test dataset size: {}".format(data_set_norm_eval.get_dataset_size()))
+        print_log("{} dataset : {}".format(mode, train_num_list))
+        print_log("train dataset size: {}".format(data_set_norm_train.get_dataset_size()))
+        print_log("test dataset size: {}".format(data_set_norm_eval.get_dataset_size()))
 
         data_set_batch_train = data_set_norm_train.batch(batch_size, drop_remainder)
         data_set_batch_eval = data_set_norm_eval.batch(batch_size, drop_remainder)
-        print("train batch : {}".format(data_set_batch_train.get_dataset_size()))
-        print("test batch : {}".format(data_set_batch_eval.get_dataset_size()))
+        print_log("train batch : {}".format(data_set_batch_train.get_dataset_size()))
+        print_log("test batch : {}".format(data_set_batch_eval.get_dataset_size()))
         return data_set_batch_train, data_set_batch_eval
 
     def _process_fn(self, data):
