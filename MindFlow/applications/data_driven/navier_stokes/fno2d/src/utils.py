@@ -21,6 +21,8 @@ import numpy as np
 from mindspore import Tensor
 from mindspore import dtype as mstype
 
+from mindflow.utils import print_log
+
 
 def _calculate_error(label, prediction, batch_size):
     """calculate l2-error to evaluate accuracy"""
@@ -39,7 +41,7 @@ def calculate_l2_error(model, inputs, label, batch_size):
         label (Array): Label data of prediction.
         batch_size (int): size of prediction batch.
     """
-    print("================================Start Evaluation================================")
+    print_log("================================Start Evaluation================================")
     time_beg = time.time()
     rel_rmse_error = 0.0
     prediction = 0.0
@@ -58,6 +60,6 @@ def calculate_l2_error(model, inputs, label, batch_size):
             rel_rmse_error += rel_rmse_error_step
 
     rel_rmse_error = rel_rmse_error / (length * 10)
-    print("mean rel_rmse_error:", rel_rmse_error)
-    print("=================================End Evaluation=================================")
-    print("predict total time: {} s".format(time.time() - time_beg))
+    print_log("mean rel_rmse_error:", rel_rmse_error)
+    print_log("=================================End Evaluation=================================")
+    print_log("predict total time: {} s".format(time.time() - time_beg))
