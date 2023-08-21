@@ -10,26 +10,6 @@
 
 # **MindFlow**
 
-- [MindFlow介绍](#MindFlow介绍)
-- [最新消息](#最新消息)
-- [MindFlow特性](#Mindflow特性)
-- [应用案例](#应用案例)
-    - [物理驱动](#物理驱动)
-    - [数据驱动](#数据驱动)
-    - [数据机理融合](#数据机理融合)
-    - [CFD](#CFD)
-- [安装教程](#安装教程)
-    - [依赖安装](#依赖安装)
-    - [硬件支持情况](#硬件支持情况)
-    - [pip安装](#pip安装)
-    - [源码安装](#源码安装)
-- [社区](#社区)
-  - [SIG](#加入MindFlow-SIG)
-  - [核心贡献者](#核心贡献者)
-  - [合作伙伴](#合作伙伴)
-- [贡献指南](#贡献指南)
-- [许可证](#许可证)
-
 ## **MindFlow介绍**
 
 流体仿真是指通过数值计算对给定边界条件下的流体控制方程进行求解，从而实现流动的分析、预测和控制，其在航空航天、船舶制造以及能源电力等行业领域的工程设计中应用广泛。传统流体仿真的数值方法如有限体积、有限差分等，主要依赖商业软件实现，需要进行物理建模、网格划分、数值离散、迭代求解等步骤，仿真过程较为复杂，计算周期长。AI具备强大的学习拟合和天然的并行推理能力，可以有效地提升流体仿真效率。
@@ -101,6 +81,7 @@ Huang X, Liu H, Shi B, et al. A Universal PINNs Method for Solving Partial Diffe
 |[ehdnn求解抖振流场](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/transonic_buffet_ehdnn)          |  [二维翼型抖振数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_unsteady/)           |      ehdnn    |   ✔️     |   ✔️   |
 |[动边界非定常流场预测](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/move_boundary_hdnn)          |  [动边界流场数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/move_boundary_hdnn)           |      hdnn    |   ✔️     |   ✔️   |
 |[三维非定常流动](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/flow_around_sphere)          |  [三维非定常流动数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/3d_unsteady_flow/)           |      ResUnet3D    |   ✔️     |   ✔️   |
+|[CAE-Transformer求解二维圆柱绕流问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_transformer)          |  [低雷诺数圆柱绕流数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-transformer/)           |      CAE-Transformer    |   ✔️     |   ✔️   |
 
 ### 数据-机理融合驱动
 
