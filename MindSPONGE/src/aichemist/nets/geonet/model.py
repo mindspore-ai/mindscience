@@ -46,9 +46,9 @@ class MolecularGNN(nn.Cell):
 
         n_interaction (int):        Number of interaction layers. Default: 3
 
-        activation (Cell):          Activation function. Default: None
+        activation (Cell):          Activation function. Default: ``None``.
 
-        coupled_interaction (bool): Whether to use coupled (shared) interaction layer. Default: False
+        coupled_interaction (bool): Whether to use coupled (shared) interaction layer. Default: ``False``.
 
         length_unit (bool):         Unit of position coordinates. Default: 'nm'
 

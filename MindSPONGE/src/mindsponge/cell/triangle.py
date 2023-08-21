@@ -20,10 +20,10 @@ from mindspore import Parameter
 from mindspore.common.tensor import Tensor
 from mindspore.ops import operations as P
 from mindspore.common.initializer import initializer
+from mindsponge.common.utils import _memory_reduce
 from .basic import Attention
 from .initializer import lecun_init
 from .mask import MaskedLayerNorm
-from mindsponge.common.utils import _memory_reduce
 
 
 class TriangleAttention(nn.Cell):
@@ -152,7 +152,7 @@ class TriangleMultiplication(nn.Cell):
                                             corresponding to 'incoming' and 'outgoing',
                                             :math:`(ikc,jkc->ijc, kjc,kic->ijc)`.
         layer_norm_dim (int):               The last dimension length of the layer norm.
-        batch_size (int):                   The batch size of parameters in triangle multiplication. Default: None.
+        batch_size (int):                   The batch size of parameters in triangle multiplication. Default: ``None``.
 
     Inputs:
         - **pair_act** (Tensor) - Tensor of pair_act. shape :math:`(N{res}, N{res}, layer\_norm\_dim)`.

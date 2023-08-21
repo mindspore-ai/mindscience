@@ -53,11 +53,11 @@ class NeuralInteractionUnit(Interaction):
 
         activation (Cell):          Activation function. Default: 'silu'
 
-        filter_net (Cell):          Filter network for edge vector. Default: None
+        filter_net (Cell):          Filter network for edge vector. Default: ``None``.
 
-        fixed_cycles (bool):        Whether to fixed number of cyles to do ACT. Default: False
+        fixed_cycles (bool):        Whether to fixed number of cyles to do ACT. Default: ``False``.
 
-        use_feed_forward (bool):    Whether to use feed forward network. Default: False
+        use_feed_forward (bool):    Whether to use feed forward network. Default: ``False``.
 
         act_threshold (float):      Threshold value for ACT. Default: 0.9
 

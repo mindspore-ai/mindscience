@@ -35,7 +35,7 @@ class Aggregate(Cell):
 
         axis (int):     Axis to aggregate.
 
-        mean (bool):    Whether to average the Tensor. Default: False
+        mean (bool):    Whether to average the Tensor. Default: ``False``.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

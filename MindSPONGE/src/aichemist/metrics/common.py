@@ -611,7 +611,7 @@ class MaxError(Metric):
 
         indexes (tuple):        Indexes for label and predicted data. Default: (1, 2)
 
-        reduce_dims (bool): Whether to summation the data of all atoms in molecule. Default: True
+        reduce_dims (bool): Whether to summation the data of all atoms in molecule. Default: ``True``.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -653,7 +653,7 @@ class Error(Metric):
 
         index (int): Index of the output for which error to be calculated. Default: 0
 
-        per_atom (bool): Calculate the error per atom. Default: False
+        per_atom (bool): Calculate the error per atom. Default: ``False``.
 
         reduction (str): The way to reduce the shape of the output tensor from `(B, Y)` to `(B, 1)`.
             The optional values are "mean", "sum", and "none". Default: "mean".
@@ -792,7 +792,7 @@ class MAE(Error):
 
         index (int): Index of the output for which error to be calculated. Default: 0
 
-        per_atom (bool): Calculate the error per atom. Default: False
+        per_atom (bool): Calculate the error per atom. Default: ``False``.
 
         reduction (str): The way to reduce the shape of the output tensor from `(B, Y)` to `(B, 1)`.
             The optional values are "mean", "sum", and "none". Default: "mean".
@@ -832,7 +832,7 @@ class MSE(Error):
 
         index (int): Index of the output for which error to be calculated. Default: 0
 
-        per_atom (bool): Calculate the error per atom. Default: False
+        per_atom (bool): Calculate the error per atom. Default: ``False``.
 
         reduction (str): The way to reduce the shape of the output tensor from `(B, Y)` to `(B, 1)`.
             The optional values are "mean", "sum", and "none". Default: "mean".
@@ -872,7 +872,7 @@ class MNE(Error):
 
         index (int): Index of the output for which error to be calculated. Default: 0
 
-        per_atom (bool): Calculate the error per atom. Default: False
+        per_atom (bool): Calculate the error per atom. Default: ``False``.
 
         reduction (str): The way to reduce the shape of the output tensor from `(B, Y)` to `(B, 1)`.
             The optional values are "mean", "sum", and "none". Default: "mean".
@@ -913,7 +913,7 @@ class RMSE(Error):
 
         index (int): Index of the output for which error to be calculated. Default: 0
 
-        per_atom (bool): Calculate the error per atom. Default: False
+        per_atom (bool): Calculate the error per atom. Default: ``False``.
 
         reduction (str): The way to reduce the shape of the output tensor from `(B, Y)` to `(B, 1)`.
             The optional values are "mean", "sum", and "none". Default: "mean".

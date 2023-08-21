@@ -82,9 +82,9 @@ class SETTLE(Constraint):
     Args:
         system (Molecule): Simulation system.
         index (Union[Tensor, ndarray, List[int]]): Array of settle index of shape `(C, 3)` or `(B, C, 3)`,
-            and the type is int. If `None` is given, the `settle_index` in `system` will be used. Default: None
+            and the type is int. If `None` is given, the `settle_index` in `system` will be used. Default: ``None``.
         distance (Union[Tensor, ndarray, List[float]]): Array of settle distance of shape (C, 2) or `(B, C, 2)`,
-            and the type is float. If `None` is given, the `settle_dis` in `system` will be used. Default: None
+            and the type is float. If `None` is given, the `settle_dis` in `system` will be used. Default: ``None``.
 
     Inputs:
         - **coordinate** (Tensor) - The coordinates of the system.
@@ -92,8 +92,8 @@ class SETTLE(Constraint):
         - **force** (Tensor) - The force of the system.
         - **energy** (Tensor) - The energy of the system.
         - **kinetics** (Tensor) - The kinetics of the system.
-        - **virial** (Tensor) - The virial of the system. Default: None
-        - **pbc_box** (Tensor) - PBC box of the system. Default: None
+        - **virial** (Tensor) - The virial of the system. Default: ``None``.
+        - **pbc_box** (Tensor) - PBC box of the system. Default: ``None``.
         - **step** (int) - The step of the system. Default: 0
 
     Return:

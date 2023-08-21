@@ -51,7 +51,7 @@ class MolecularLoss(LossBase):
         force_dis (float): A average norm value of force, which used to scale the force. Default: 1
 
         atomwise (bool): Whether to average over each atom when calculating the loss function.
-            Default: None
+            Default: ``None``.
 
         reduction (str): Type of reduction to be applied to loss. The optional values are "mean", "sum", and "none".
             Default: "mean".
@@ -101,7 +101,7 @@ class MolecularLoss(LossBase):
                                     Default: 1
             atom_mask (Tensor):     Tensor with shape (B, A). Data type is bool.
                                     Mask of atoms in each molecule.
-                                    Default: None
+                                    Default: ``None``.
 
         Symbols:
             B:  Batch size
@@ -164,7 +164,7 @@ class MAELoss(MolecularLoss):
         force_dis (float):      A average norm value of force, which used to scale the force.
                                 Default: 1
 
-        ratio_normlize (bool):  Whether to do normalize the ratio of energy and force. Default: True
+        ratio_normlize (bool):  Whether to do normalize the ratio of energy and force. Default: ``True``.
 
         reduction (str):        Method to reduction the output Tensor. Default: 'mean'
 
@@ -202,7 +202,7 @@ class MSELoss(MolecularLoss):
         force_dis (float):      A average norm value of force, which used to scale the force.
                                 Default: 1
 
-        ratio_normlize (bool):  Whether to do normalize the ratio of energy and force. Default: True
+        ratio_normlize (bool):  Whether to do normalize the ratio of energy and force. Default: ``True``.
 
         reduction (str):        Method to reduction the output Tensor. Default: 'mean'
 
@@ -235,7 +235,7 @@ class CrossEntropyLoss(LossBase):
 
         reduction (str):    Method to reduction the output Tensor. Default: 'mean'
 
-        use_sigmoid (bool): Whether to use sigmoid function for output. Default: False
+        use_sigmoid (bool): Whether to use sigmoid function for output. Default: ``False``.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

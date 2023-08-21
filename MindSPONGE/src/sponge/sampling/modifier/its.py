@@ -55,29 +55,29 @@ class ModiferITS(ForceModifier):
 
         temp_min (float):       Minimum temperature for integration.
                                 Only used when `temperature` is None.
-                                Default: None
+                                Default: ``None``.
 
         temp_max (float):       Minimum temperature for integration.
                                 Only used when `temperature` is None.
-                                Default: None
+                                Default: ``None``.
 
         temp_bin (int):         Number of temperatures for integration.
                                 Only used when `temperature` is None.
-                                Default: None
+                                Default: ``None``.
 
         unlinear_temp (bool)    Whether to generate unlinear integration temperatures
-                                Default: False
+                                Default: ``False``.
 
         temperatures (Tensor):  Temperatures for integration.
                                 The shape of tensor is `(B, T)`, the data type is float.
-                                Default: None
+                                Default: ``None``.
 
         update_pace (int):      Freuency for updating ITS. Default: 100
 
-        multi_walkers (bool):   Whether to use multiple-walkers ITS. Default: True
+        multi_walkers (bool):   Whether to use multiple-walkers ITS. Default: ``True``.
 
         num_walker (int):       Number of simulation walkers.
-                                Cannot be None when `multi_walkers` is False. Default: None
+                                Cannot be None when `multi_walkers` is False. Default: ``None``.
 
         energy_shift (float):   Initial shift value for potential energy. Default: 0
 
@@ -91,10 +91,10 @@ class ModiferITS(ForceModifier):
                                 Defatul: 0
 
         length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
-                                Default: None
+                                Default: ``None``.
 
         energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
-                                Default: None
+                                Default: ``None``.
 
     Supported Platforms:
 
@@ -354,7 +354,7 @@ class ModiferITS(ForceModifier):
             temperature (Tensor):   Tensor of shape `(B, ...)`. Data type is float.
                                     Temperature to reweight. If None is given,
                                     the simulation temperature will be used.
-                                    Default: None
+                                    Default: ``None``.
 
         Returns:
             rct (Tensor):   Tensor of shape `(B, ...)`. Data type is float.

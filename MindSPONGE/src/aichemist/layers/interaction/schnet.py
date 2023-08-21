@@ -52,7 +52,7 @@ class SchNetInteraction(Interaction):
 
         activation (nn.Cell):       Activation function. Default: 'ssp'
 
-        normalize_filter (bool):    Whether to nomalize filter network. Default: False
+        normalize_filter (bool):    Whether to nomalize filter network. Default: ``False``.
 
     """
 

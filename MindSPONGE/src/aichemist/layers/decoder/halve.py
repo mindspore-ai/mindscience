@@ -44,7 +44,7 @@ class HalveDecoder(Decoder):
 
         dim_out (int): Output dimension. Default: 1
 
-        activation (Union[Cell, str]): Activation function. Default: None
+        activation (Union[Cell, str]): Activation function. Default: ``None``.
 
         n_layers (int): Number of hidden layers. Default: 1
 

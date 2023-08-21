@@ -59,7 +59,7 @@ class TrainMonitor(Callback):
 
         file_name (str):            Name of the file to record the training information.
 
-        directory (str):            Name of output directory. Default: None
+        directory (str):            Name of output directory. Default: ``None``.
 
         per_epoch (int):            The epoch interval for outputting training information. Default: 1
 
@@ -69,9 +69,9 @@ class TrainMonitor(Callback):
                                     If 0 is given, the loss will be averaged over all previous steps.
                                     Default: 0
 
-        eval_dataset (Dataset):     Evaluate dataset. Default: None
+        eval_dataset (Dataset):     Evaluate dataset. Default: ``None``.
 
-        best_ckpt_metrics (str):    Reference metric to record the best parameters. Default: None
+        best_ckpt_metrics (str):    Reference metric to record the best parameters. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

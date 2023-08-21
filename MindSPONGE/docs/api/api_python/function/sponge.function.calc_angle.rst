@@ -13,7 +13,7 @@ sponge.function.calc_angle
         - **position_a** (Tensor) - 位置a，shape为 :math:`(B, ..., D)` ，数据类型为float。
         - **position_b** (Tensor) - 位置b，shape为 :math:`(B, ..., D)` ，数据类型为float。
         - **position_c** (Tensor) - 位置c，shape为 :math:`(B, ..., D)` ，数据类型为float。
-        - **pbc_box** (Tensor) - PBC box，shape为 :math:`(B, D)` ，数据类型为float。默认值："None"。
+        - **pbc_box** (Tensor) - PBC box，shape为 :math:`(B, D)` ，数据类型为float。默认值： ``None`` 。
 
     输出：
         Tensor。计算所得角，取值范围为 :math:`(0, \pi)` 。shape为 :math:`(B, ..., 1)` ，数据类型为float。

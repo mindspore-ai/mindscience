@@ -51,7 +51,7 @@ def get_template(template: Union[dict, str, List[Union[dict, str]], Tuple[Union[
 
         residue_name (str): Name of the residue to be extracted.
                             If `None` is given, the full template dict will be return.
-                            Default: None
+                            Default: ``None``.
 
     Returns:
 

@@ -59,19 +59,19 @@ class NodeReadout(Readout):
         shift (float):              Shift value for output. Default: 0
 
         type_ref (Tensor):          Tensor of shape `(T, Y)`. Data type is float.
-                                    Reference value for atom types. Default: None
+                                    Reference value for atom types. Default: ``None``.
 
         atomwise_scaleshift (bool): To use atomwise scaleshift (True) or graph scaleshift (False).
-                                    Default: False
+                                    Default: ``False``.
 
         axis (int):                 Axis to readout. Default: -2
 
         n_decoder_layers (list):    number of neurons in each hidden layer of the decoder network.
                                     Default: 1
 
-        energy_unit (str):          Energy unit of output. Default: None
+        energy_unit (str):          Energy unit of output. Default: ``None``.
 
-        hyper_param (dict):         Hyperparameter. Default: None
+        hyper_param (dict):         Hyperparameter. Default: ``None``.
 
     Symbols:
 
@@ -182,19 +182,19 @@ class AtomwiseReadout(NodeReadout):
         shift (float):              Shift value for output. Default: 0
 
         type_ref (Tensor):          Tensor of shape `(T, Y)`. Data type is float.
-                                    Reference value for atom types. Default: None
+                                    Reference value for atom types. Default: ``None``.
 
         atomwise_scaleshift (bool): To use atomwise scaleshift (True) or graph scaleshift (False).
-                                    Default: False
+                                    Default: ``False``.
 
         axis (int):                 Axis to readout. Default: -2
 
         n_decoder_layers (list):    number of neurons in each hidden layer of the decoder network.
                                     Default: 1
 
-        energy_unit (str):          Energy unit of output. Default: None
+        energy_unit (str):          Energy unit of output. Default: ``None``.
 
-        hyper_param (dict):         Hyperparameter. Default: None
+        hyper_param (dict):         Hyperparameter. Default: ``None``.
 
     Symbols:
 
@@ -283,19 +283,19 @@ class GraphReadout(NodeReadout):
         shift (float):              Shift value for output. Default: 0
 
         type_ref (Tensor):          Tensor of shape `(T, Y)`. Data type is float.
-                                    Reference value for atom types. Default: None
+                                    Reference value for atom types. Default: ``None``.
 
         atomwise_scaleshift (bool): To use atomwise scaleshift (True) or graph scaleshift (False).
-                                    Default: False
+                                    Default: ``False``.
 
         axis (int):                 Axis to readout. Default: -2
 
         n_decoder_layers (list):    number of neurons in each hidden layer of the decoder network.
                                     Default: 1
 
-        energy_unit (str):          Energy unit of output. Default: None
+        energy_unit (str):          Energy unit of output. Default: ``None``.
 
-        hyper_param (dict):         Hyperparameter. Default: None
+        hyper_param (dict):         Hyperparameter. Default: ``None``.
 
     Symbols:
 

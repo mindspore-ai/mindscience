@@ -62,29 +62,29 @@ class ITS(EnergyWrapper):
 
         temp_min (float):       Minimum temperature for integration.
                                 Only used when `temperature` is None.
-                                Default: None
+                                Default: ``None``.
 
         temp_max (float):       Minimum temperature for integration.
                                 Only used when `temperature` is None.
-                                Default: None
+                                Default: ``None``.
 
         temp_bin (int):         Number of temperatures for integrationintergration.
                                 Only used when `temperature` is None.
-                                Default: None
+                                Default: ``None``.
 
         unlinear_temp (bool)    Whether to generate unlinear integration temperatures
-                                Default: False
+                                Default: ``False``.
 
         temperatures (Tensor):  Temperatures for integration.
                                 The shape of tensor is `(B, T)`, the data type is float.
-                                Default: None
+                                Default: ``None``.
 
         update_pace (int):      Freuency for updating ITS. Default: 100
 
         num_walker (int):       Number of multiple walkers.
-                                Cannot be None when `share_parameter` is False. Default: None
+                                Cannot be None when `share_parameter` is False. Default: ``None``.
 
-        share_parameter (bool): Whether to share ITS parameters for all walkers. Default: True
+        share_parameter (bool): Whether to share ITS parameters for all walkers. Default: ``True``.
 
         energy_shift (float):   Initial shift value for potential energy. Default: 0
 
@@ -106,10 +106,10 @@ class ITS(EnergyWrapper):
                                 Defatul: 0
 
         length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
-                                Default: None
+                                Default: ``None``.
 
         energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
-                                Default: None
+                                Default: ``None``.
 
     Supported Platforms:
 
@@ -390,7 +390,7 @@ class ITS(EnergyWrapper):
             temperature (Tensor):   Tensor of shape `(B, ...)`. Data type is float.
                                     Temperature to reweight. If None is given,
                                     the simulation temperature will be used.
-                                    Default: None
+                                    Default: ``None``.
 
         Returns:
             rct (Tensor):   Tensor of shape `(B, ...)`. Data type is float.
@@ -525,7 +525,7 @@ class ITS(EnergyWrapper):
             potentials (Tensor):    Tensor of shape `(B, U)`. Data type is float.
                                     Potential energies.
             biases (Tensor):        The shape of tensor is `(B, V)`. The data type is float.
-                                    Bias potential energies. Default: None
+                                    Bias potential energies. Default: ``None``.
 
         Return:
             energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.

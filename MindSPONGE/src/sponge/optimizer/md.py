@@ -50,16 +50,16 @@ class UpdaterMD(Updater):
 
         system (Molecule): Simulation system.
 
-        time_step (float): Time step. Defulat: 1e-3
+        time_step (float): Time step. Default: 1e-3
 
         velocity (Union[Tensor, ndarray, List[float]]): Array of atomic velocity.
-            The shape of array is `(A, D)` or `(B, A, D)`, and the data type is float. Default: None
+            The shape of array is `(A, D)` or `(B, A, D)`, and the data type is float. Default: ``None``.
 
         temperature (float): Reference temperature for coupling. Only valid if `thermostat` is set to
-            type `str`. Default: None
+            type `str`. Default: ``None``.
 
         pressure (float): Reference pressure for temperature coupling. Only valid if `barostat` is set
-            to type `str`. Default: None
+            to type `str`. Default: ``None``.
 
         integrator (Union[Integrator, str]): Integrator for MD simulation. It can be an object of
             `Integrator` or the `str` of an integrator name. Default: 'leap_frog'
@@ -73,10 +73,10 @@ class UpdaterMD(Updater):
             valid if the `pressure` is not `None`. Default: 'berendsen'
 
         constraint (Union[Constraint, List[Constraint]]): Constraint controller(s) for bond constraint.
-            Default: None
+            Default: ``None``.
 
         controller (Union[Controller, List[Controller]]): Other controller(s). It will work after the
-            four specific controllers (integrator, thermostat, barostat and constraint). Default: None
+            four specific controllers (integrator, thermostat, barostat and constraint). Default: ``None``.
 
         weight_decay (float): An value for the weight decay. Default: 0
 

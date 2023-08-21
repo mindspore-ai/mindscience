@@ -123,7 +123,7 @@ sponge.control.Controller
 
         参数：
             - **coordinate** (Tensor) - 原子坐标的Tensor。shape为 `(B, A, D)` 。数据类型为float。
-            - **keepdims** (bool) - 如果为True，在结果中保持第二根轴对应的维度且长度为1。默认值：True。
+            - **keepdims** (bool) - 如果为True，在结果中保持第二根轴对应的维度且长度为1。默认值： ``True`` 。
 
         返回：
             Tensor。质心坐标。shape为 `(B, A, D)` 或 `(B, D)` 。数据类型为float。
@@ -134,7 +134,7 @@ sponge.control.Controller
 
         参数：
             - **velocity** (Tensor) - 速度的Tensor。shape为 `(B, A, D)` 。数据类型为float。
-            - **keepdims** (bool) - 如果为True，在结果中保持第二根轴对应的维度且长度为1。默认值：True。
+            - **keepdims** (bool) - 如果为True，在结果中保持第二根轴对应的维度且长度为1。默认值： ``True`` 。
 
         返回：
             Tensor。质心速度。shape为 `(B, A, D)` 或 `(B, D)` 。数据类型为float。

@@ -39,7 +39,7 @@ class Filter(nn.Cell):
 
         dim_out (int):   Dimension of output filter Tensor.
 
-        activation (Cell):  Activation function. Default: None
+        activation (Cell):  Activation function. Default: ``None``.
 
         n_hidden (int):     Number of hidden layers. Default: 1
 
@@ -72,7 +72,7 @@ class DenseFilter(Filter):
 
         dim_out (int):   Dimension of output filter Tensor.
 
-        activation (Cell):  Activation function. Default: None
+        activation (Cell):  Activation function. Default: ``None``.
 
         n_hidden (int):     Number of hidden layers. Default: 1
 
@@ -110,7 +110,7 @@ class ResFilter(Filter):
 
         dim_out (int):   Dimension of output filter Tensor.
 
-        activation (Cell):  Activation function. Default: None
+        activation (Cell):  Activation function. Default: ``None``.
 
         n_hidden (int):     Number of hidden layers. Default: 1
 

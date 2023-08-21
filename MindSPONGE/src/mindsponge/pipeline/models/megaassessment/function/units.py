@@ -643,8 +643,8 @@ class Units:
     Unit class to record and convert the length and energy units.
 
     Args:
-        length_unit (str):  Length unit. Default: None
-        energy_unit (str):  Energy unit. Default: None
+        length_unit (str):  Length unit. Default: ``None``.
+        energy_unit (str):  Energy unit. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -939,10 +939,10 @@ class Units:
 
         Args:
             length_unit (str):  Length unit. Only valid when `units` is None.
-                                Default: None
+                                Default: ``None``.
             energy_unit (str):  Energy unit. Only valid when `units` is None.
-                                Default: None
-            units (Units):      `Units` object. Default: None
+                                Default: ``None``.
+            units (Units):      `Units` object. Default: ``None``.
 
         """
         if units is None:
@@ -1091,10 +1091,10 @@ def set_global_units(length_unit: Union[str, Units, Length, float, int] = None,
 
     Args:
         length_unit (Union[str, Units, Length, float, int]):
-                        Length unit. Only valid when `units` is None. Default: None
+                        Length unit. Only valid when `units` is None. Default: ``None``.
         energy_unit (Union[str, Units, Length, float, int]):
-                        Energy unit. Only valid when `units` is None. Default: None
-        units (Units):  `Units` object. Default: None
+                        Energy unit. Only valid when `units` is None. Default: ``None``.
+        units (Units):  `Units` object. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

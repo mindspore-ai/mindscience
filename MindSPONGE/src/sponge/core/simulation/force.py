@@ -45,13 +45,13 @@ class WithForceCell(Cell):
 
         force (PotentialCell):          Atomic force calculation cell.
 
-        cutoff (float):                 Cutoff distance. Defulat: None
+        cutoff (float):                 Cutoff distance. Default: ``None``.
 
-        neighbour_list (NeighbourList): Neighbour list. Default: None
+        neighbour_list (NeighbourList): Neighbour list. Default: ``None``.
 
-        modifier (ForceModifier):       Force modifier. Default: None
+        modifier (ForceModifier):       Force modifier. Default: ``None``.
 
-        bias (Bias):                    Bias potential: Default: None
+        bias (Bias):                    Bias potential: Default: ``None``.
 
     Supported Platforms:
 

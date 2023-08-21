@@ -108,7 +108,7 @@ class GradientRRMSE(nn.LossBase):
 
     Args:
         loss_weight(float): Weight of gradient loss. Default: ``1``.
-        dynamic_flag(bool): Flag to use MTLWeightedLossCell. Default: True.
+        dynamic_flag(bool): Flag to use MTLWeightedLossCell. Default: ``True``.
 
     Inputs:
     - **logits** (Tensor) - The prediction value of the network. Tensor of shape :math:`(N, T, C,  D, H,

@@ -50,7 +50,7 @@ class GraphEmbedding(nn.Cell):
 
         cutoff (Union[Length, float, Tensor]): Cut-off distance. Default: Length(1, 'nm')
 
-        activation: Union[Cell, str]: Activation function. Default: None
+        activation: Union[Cell, str]: Activation function. Default: ``None``.
 
         length_unit: Union[str, Units]: Length unit. Default: Global length unit
 
@@ -128,7 +128,7 @@ class GraphEmbedding(nn.Cell):
 
         Args:
             atom_type (Tensor): Tensor of shape (B, A). Data type is int.
-                Index of atom types. Default: None
+                Index of atom types. Default: ``None``.
             atom_mask (Tensor): Tensor of shape (B, A). Data type is bool
                 Mask for atom types
             distance (Tensor): Tensor of shape (B, A, A). Data type is float.

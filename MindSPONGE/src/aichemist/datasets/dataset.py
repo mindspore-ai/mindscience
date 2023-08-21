@@ -48,7 +48,7 @@ class MolSet(BaseDataset):
     Args:
             lazy (bool, optional):          if True, the molecules are processed in the dataloader. This may slow
                                             down the data loading process, but save a lot of CPU memory and dataset
-                                            loading time. Default: False
+                                            loading time. Default: ``False``.
             verbose (int, optional):        verbose (int, optional): output verbose level. Defaults to 0.
             transform (Callable, optional): transform (Callable, optional): data transformation function.
                                             Defaults to None.

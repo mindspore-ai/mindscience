@@ -123,7 +123,7 @@ class ColvarGroup(Colvar):
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
                                     Position coordinate of colvar in system
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
 
         Returns:
             position (Tensor):  Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.

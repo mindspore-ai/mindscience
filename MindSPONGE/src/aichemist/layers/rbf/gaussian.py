@@ -54,11 +54,11 @@ class GaussianBasis(RadicalBasisFunctions):
 
         num_basis (int):        Number of basis functions. Defatul: None
 
-        clip_distance (bool):   Whether to clip the value of distance. Default: False
+        clip_distance (bool):   Whether to clip the value of distance. Default: ``False``.
 
         length_unit (str):      Unit for distance. Default: = 'nm',
 
-        hyper_param (dict):     Hyperparameter. Default: None
+        hyper_param (dict):     Hyperparameter. Default: ``None``.
 
     """
 

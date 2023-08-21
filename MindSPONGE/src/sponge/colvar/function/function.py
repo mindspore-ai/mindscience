@@ -51,9 +51,9 @@ class FunctionCV(Colvar):
 
         shape (tuple): Shape of custom collective variables. If None is given and all CVs in the `colvar`
             have the same shape, then it will be assigned the shape. If the shape of each CV in `colvar`
-            is not exactly the same, the `shape` must be set. Default: None
+            is not exactly the same, the `shape` must be set. Default: ``None``.
 
-        unit (str): Unit of the collective variables. Default: None
+        unit (str): Unit of the collective variables. Default: ``None``.
             NOTE: This is not the `Units` Cell that wraps length and energy.
 
         name (str): Name of the collective variables. Default: 'combine'
@@ -127,7 +127,7 @@ class FunctionCV(Colvar):
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
                                     Position coordinate of colvar in system
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
 
         Returns:
             combine (Tensor):       Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.

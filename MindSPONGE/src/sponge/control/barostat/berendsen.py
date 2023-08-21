@@ -52,7 +52,7 @@ class BerendsenBarostat(Barostat):
                                     Default: 1
 
         anisotropic (bool):         Whether to perform anisotropic pressure control.
-                                    Default: False
+                                    Default: ``False``.
 
         control_step (int):         Step interval for controller execution. Default: 1
 

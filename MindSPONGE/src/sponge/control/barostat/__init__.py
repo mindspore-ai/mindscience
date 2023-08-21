@@ -44,7 +44,7 @@ def get_barostat(cls_name: Union[str, dict, Barostat],
         cls_name (Union[str, dict, Barostat]): Class name, arguments or object of a barostat.
         system (Molecule): Simulation system.
         pressure (float): Reference pressure for pressure coupling. If `None` is given and
-            the type of `cls_name` is `str`, `None` will be returned. Default: None
+            the type of `cls_name` is `str`, `None` will be returned. Default: ``None``.
         **kwargs:   Other arguments
 
     Return:

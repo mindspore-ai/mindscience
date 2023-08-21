@@ -59,7 +59,7 @@ class Solver:
         metrics (Union[dict, set]): A Dictionary or a set of metrics to be evaluated by the model during
             training and inference. eg: {``'accuracy'``, ``'recall'``}. Default: ``None``.
         eval_network (Cell): Network for evaluation. If not defined, `network` and `loss_fn` would be wrapped as
-            `eval_network` . Default: None. Note that eval_network do not need to be set in ``"PINNs"`` mode.
+            `eval_network` . Default: ``None``. Note that eval_network do not need to be set in ``"PINNs"`` mode.
         eval_indexes (list): When defining the `eval_network`, if `eval_indexes` is ``None``, all outputs of the
             `eval_network` would be passed to metrics, otherwise `eval_indexes` must contain three
             elements, including the positions of loss value, predicted value and label. The loss

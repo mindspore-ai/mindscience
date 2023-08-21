@@ -54,7 +54,7 @@ class AtomsBase(Colvar):
     Args:
 
         keep_in_box (bool): Whether to keep the coordinate in PBC box.
-                            Default: False
+                            Default: ``False``.
 
         dimension (int):    Spatial dimension of the simulation system. Default: 3
 
@@ -130,7 +130,7 @@ class AtomsBase(Colvar):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
 
         Returns:
             position (Tensor):  Tensor of shape (B, ..., D). Data type is float.
@@ -174,10 +174,10 @@ class Atoms(AtomsBase):
                             data type is int.
 
         batched (bool):     Whether the first dimension of index is the batch size.
-                            Default: False
+                            Default: ``False``.
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: False
+                            Default: ``False``.
 
         dimension (int):    Spatial dimension of the simulation system. Default: 3
 
@@ -243,7 +243,7 @@ class Atoms(AtomsBase):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
 
         Returns:
             position (Tensor):  Tensor of shape (B, a_1, a_2, ..., a_{n}, D). Data type is float.
@@ -275,7 +275,7 @@ class BatchedAtoms(Atoms):
                             The shape of tensor is (B, a_1, a_2, ..., a_{n}), and the data type is int
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: False
+                            Default: ``False``.
 
         dimension (int):    Spatial dimension of the simulation system. Default: 3
 

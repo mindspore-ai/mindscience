@@ -415,7 +415,7 @@ def calc_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Te
         terminal (Tensor):  Tensor of shape `(..., D)`. Data type is float.
                             Position coordinate of terminal point.
         pbc_box (Tensor):   Tensor of shape `(D)` or `(B, D)`. Data type is float.
-                            Default: None
+                            Default: ``None``.
 
     Returns:
         vector (Tensor):    Tensor of shape `(..., D)`. Data type is float.
@@ -443,16 +443,16 @@ def calc_distance_nopbc(position_a: Tensor,
     r"""Compute distance between position A and B without perodic bundary condition.
 
     Args:
-        position_a (Tensor):    Tensor of shape `(..., D)`. Data type is float.
+        position_a (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
                                 Position coordinate of point :math:`A`.
-        position_b (Tensor):    Tensor of shape `(..., D)`. Data type is float.
+        position_b (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
-        keepdims (bool):        If this is set to True, the last axis will be left
+        keepdims (bool):        If this is set to ``True``, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: False
+                                Default: ``False``.
 
     Returns:
-        distance (Tensor):      Tensor of shape `(...)` or `(..., 1)`. Data type is float.
+        distance (Tensor):      Tensor of shape :math:`(...)` or :math:(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -483,7 +483,7 @@ def calc_distance_pbc(position_a: Tensor,
                                 Size of PBC box :math:`\vec{L}`
         keepdims (bool):        If this is set to `True`, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: False
+                                Default: ``False``.
 
     Returns:
         distance (Tensor):      Tensor of shape `(...)` or `(..., 1)`. Data type is float.
@@ -518,7 +518,7 @@ def calc_distance(position_a: Tensor,
                                 Size of PBC box :math:`\vec{L}`
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: False
+                                Default: ``False``.
 
     Returns:
         distance (Tensor):      Tensor of shape `(...)` or `(..., 1)`. Data type is float.
@@ -559,7 +559,7 @@ def calc_angle_by_vectors(vector1: Tensor,
                              Vector of :math:`\vec{v_2}`.
         keepdims (bool):     If this is set to True, the last axis will be left
                              in the result as dimensions with size one.
-                             Default: False
+                             Default: ``False``.
 
     Returns:
         angle (Tensor):      Tensor of shape `(...)` or `(..., 1)`. Data type is float.
@@ -599,7 +599,7 @@ def calc_angle_nopbc(position_a: Tensor,
                                 Position coordinate of point :math:`C`.
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: False
+                                Default: ``False``.
 
     Returns:
         angle (Tensor):         Tensor of shape `(...)` or `(..., 1)`. Data type is float.
@@ -641,7 +641,7 @@ def calc_angle_pbc(position_a: Tensor,
                                 Size of PBC box :math:`\vec{L}`
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: False
+                                Default: ``False``.
 
     Returns:
         angle (Tensor):         Tensor of shape (...) or (..., 1). Data type is float.
@@ -679,10 +679,10 @@ def calc_angle(position_a: Tensor,
         position_c (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`C`.
         pbc_box (Tensor):       Tensor of shape `(D)` or `(B, D)`. Data type is float.
-                                Size of PBC box :math:`\vec{L}`. Default: None
+                                Size of PBC box :math:`\vec{L}`. Default: ``None``.
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: False
+                                Default: ``False``.
 
     Returns:
         angle (Tensor):         Tensor of shape `(...)` or `(..., 1)`. Data type is float.
@@ -717,10 +717,10 @@ def calc_torsion_by_vectors(vector1: Tensor,
                                 Direction vector :math:`\vec{v_2}`
         axis_vector (Tensor):   Tensor of shape `(..., D)`. Data type is float.
                                 Axis vector :math:`\vec{v_{axis}}`.
-                                Default: None
+                                Default: ``None``.
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: False
+                                Default: ``False``.
 
     Returns:
         torsion (Tensor):   Tensor of shape `(...)` or `(..., 1)`. Data type is float.
@@ -774,7 +774,7 @@ def calc_torsion_nopbc(position_a: Tensor,
                                 Position coordinate of point :math:`D`.
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: False
+                                Default: ``False``.
 
     Returns:
         torsion (Tensor):   Tensor of shape `(...)` or `(..., 1)`. Data type is float.
@@ -817,7 +817,7 @@ def calc_torsion_pbc(position_a: Tensor,
                                 Size of PBC box :math:`\vec{L}`.
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: False
+                                Default: ``False``.
 
     Returns:
         torsion (Tensor):   Tensor of shape `(...)` or `(..., 1)`. Data type is float.
@@ -859,10 +859,10 @@ def calc_torsion(position_a: Tensor,
         position_d (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`D`.
         pbc_box (Tensor):       Tensor of shape `(D)` or `(B, D)`. Data type is float.
-                                Size of PBC box :math:`\vec{L}`. Default: None
+                                Size of PBC box :math:`\vec{L}`. Default: ``None``.
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: False
+                                Default: ``False``.
 
     Returns:
         torsion (Tensor):   Tensor of shape `(...)` or `(..., 1)`. Data type is float.
@@ -907,7 +907,7 @@ def coulomb_interaction(q_i: Tensor,
         r_ij (Tensor):          Tensor of shape `(...)`. Data type is float.
                                 Distance :math:`r_{ij}` between atoms :math:`i` and :math:`i`.
         mask (Tensor):          Tensor of shape `(...)`. Data type is bool.
-                                Mask for distance :math:`r_{ij}`. Default: None
+                                Mask for distance :math:`r_{ij}`. Default: ``None``.
         coulomb_const (float):  Coulomb constant :math:`k`. Default: 1
 
     Returns:
@@ -945,7 +945,7 @@ def lennard_jones_potential(epsilon: Tensor, sigma: Tensor, r_ij: Tensor, mask: 
         r_ij (Tensor):      Tensor of shape `(...)`. Data type is float.
                             Distance :math:`r_{ij}` between atoms :math:`i` and :math:`i`.
         mask (Tensor):      Tensor of shape `(...)`. Data type is bool.
-                            Mask for distances :math:`r_{ij}`. Default: None
+                            Mask for distances :math:`r_{ij}`. Default: ``None``.
 
     Returns:
         E_coulomb (Tensor):     Tensor of shape (...). Data type is float.
@@ -987,7 +987,7 @@ def lennard_jones_potential2(epsilon: Tensor, r_0: Tensor, r_ij: Tensor, mask: T
         r_ij (Tensor):      Tensor of shape `(...)`. Data type is float.
                             Distance :math:`r_{ij}` between atoms :math:`i` and :math:`i`.
         mask (Tensor):      Tensor of shape `(...)`. Data type is bool.
-                            Mask for distances :math:`r_{ij}`. Default: None
+                            Mask for distances :math:`r_{ij}`. Default: ``None``.
     Returns:
         E_coulomb (Tensor):     Tensor of shape `(...)`. Data type is float.
 
@@ -1035,7 +1035,7 @@ def get_ndarray(value: Union[Tensor, Parameter, ndarray, List[float], Tuple[floa
 
     Args:
         value (Union[Tensor, Parameter, ndarray]):  Input value
-        dtype (type):                               Data type. Default: None
+        dtype (type):                               Data type. Default: ``None``.
 
     Returns:
         array (ndarray)
@@ -1062,7 +1062,7 @@ def get_tensor(value: Union[float, int, Tensor, Parameter, ndarray, List[float],
     Args:
         value (Union[float, int, Tensor, Parameter, ndarray, list, tuple]):
                         Input value
-        dtype (type):   Data type. Default: None
+        dtype (type):   Data type. Default: ``None``.
 
     Returns:
         tensor (Tensor)
@@ -1096,7 +1096,7 @@ def get_ms_array(value: Union[float, int, Tensor, Parameter, ndarray, list, tupl
     Args:
         value (Union[float, int, Tensor, Parameter, ndarray, list, tuple]):
                         Input value
-        dtype (type):   Data type. Default: None
+        dtype (type):   Data type. Default: ``None``.
 
     Returns:
         array (Tensor or Parameter)

@@ -46,19 +46,19 @@ class Protein(Molecule):
 
     Args:
 
-        pdb (str):                  Filename of the PDB (Protein Data Bank) file. Defulat: None
+        pdb (str):                  Filename of the PDB (Protein Data Bank) file. Default: ``None``.
 
-        sequence (List[str]):       Sequence of the protein moleulce. Defulat: None
+        sequence (List[str]):       Sequence of the protein moleulce. Default: ``None``.
 
         coordinate (Union[Tensor, ndarray, List[float]]):
                                     Array of the position coordinates of atoms of the simulation system.
                                     The shape of the array is (A, D) or (B, A, D), and the data type is float.
-                                    Default: None
+                                    Default: ``None``.
 
         pbc_box (Union[Tensor, ndarray, List[float]]):
                                     Array of the Box of periodic boundary condition.
                                     The shape of the array is (D) or (B, D), and the data type is float.
-                                    Default: None
+                                    Default: ``None``.
 
         template (Union[dict, str]):
                                     Template for protein molecule. It can be a `dict` of template,
@@ -68,12 +68,12 @@ class Protein(Molecule):
                                     in MindSPONGE's built-in templates.
 
         rebuild_hydrogen (bool):    Whether to rebuild the hydrogen atoms of the protein molecule from PDB file.
-                                    Default: False
+                                    Default: ``False``.
 
         rebuild_suffix (str):       The suffix of the PDB file of the protetin module with rebuilt hydrogen.
                                     Default: '_addH'
 
-        length_unit (str):          Length unit for position coordinates. Default: None
+        length_unit (str):          Length unit for position coordinates. Default: ``None``.
 
     Symbols:
 

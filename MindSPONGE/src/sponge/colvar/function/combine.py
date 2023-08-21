@@ -61,19 +61,20 @@ class CombineCV(Colvar):
             If a list or tuple is given, the number of the elements should be equal to the number of CVs.
             If a float or Tensor is given, the value will be used for all Colvar. Default: 1
 
-        normal (bool): Whether to normalize all weights to 1. Default: False
+        normal (bool): Whether to normalize all weights to 1. Default: ``False``.
 
         periodic_min (Union[float, ndarray, Tensor]): The periodic minimum of the output of the combination of the CVs.
-            If the output is not periodic, it should be None. Default: None
+            If the output is not periodic, it should be None. Default: ``None``.
 
         periodic_max (Union[float, ndarray, Tensor]): The periodic maximum of the output of the combination of the CVs.
-            If the output is not periodic, it should be None. Default: None
+            If the output is not periodic, it should be None. Default: ``None``.
 
         periodic_mask (Union[Tensor, ndarray): Mask for the periodicity of the outputs.
-            The shape of the tensor should be as the same as the outputs, i.e. `(S_1, S_2, ..., S_n)`. Default: None
+            The shape of the tensor should be as the same as the outputs, i.e. `(S_1, S_2, ..., S_n)`.
+            Default: ``None``.
 
         use_pbc (bool): Whether to use periodic boundary condition. If `None` is given, it will determine whether
-            to use periodic boundary conditions based on whether the `pbc_box` is provided. Default: None
+            to use periodic boundary conditions based on whether the `pbc_box` is provided. Default: ``None``.
 
         name (str): Name of the collective variables. Default: 'combine'
 
@@ -206,7 +207,7 @@ class CombineCV(Colvar):
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
                                     Position coordinate of colvar in system
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
 
         Returns:
             combine (Tensor):       Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.
@@ -269,27 +270,27 @@ class ColvarCombine(CombineCV):
                         If a float or Tensor is given, the value will be used for all Colvar.
                         Default: 1
 
-        normal (bool):  Whether to normalize all weights to 1. Default: False
+        normal (bool):  Whether to normalize all weights to 1. Default: ``False``.
 
         periodic_min (float, ndarray, Tensor):
                         The periodic minimum of the output of the combination of the CVs.
                         If the output is not periodic, it should be None.
-                        Default: None
+                        Default: ``None``.
 
         periodic_max (float, ndarray, Tensor):
                         The periodic maximum of the output of the combination of the CVs.
                         If the output is not periodic, it should be None.
-                        Default: None
+                        Default: ``None``.
 
         periodic_mask (Tensor, ndarray):
                         Mask for the periodicity of the outputs.
                         The shape of the tensor should be as the same as the outputs, i.e. `(S_1, S_2, ..., S_n)`.
-                        Default: None
+                        Default: ``None``.
 
         use_pbc (bool): Whether to use periodic boundary condition.
                         If `None` is given, it will determine whether to use periodic boundary
                         conditions based on whether the `pbc_box` is provided.
-                        Default: None
+                        Default: ``None``.
 
         name (str):     Name of the collective variables. Default: 'colvar_combination'
 

@@ -60,11 +60,11 @@ class MolCT(MolecularGNN):
 
         activation (Cell):          Activation function. Default: 'silu'
 
-        coupled_interaction (bool): Whether to use coupled (shared) interaction layer. Default: False
+        coupled_interaction (bool): Whether to use coupled (shared) interaction layer. Default: ``False``.
 
-        fixed_cycles (bool):        Whether to use the fixed cycle number to do ACT. Default: False
+        fixed_cycles (bool):        Whether to use the fixed cycle number to do ACT. Default: ``False``.
 
-        use_feed_forward (bool):    Whether to use feed forward after multi-head attention. Default: False
+        use_feed_forward (bool):    Whether to use feed forward after multi-head attention. Default: ``False``.
 
         act_threshold (float):      Threshold of adapative computation time. Default: 0.9
 

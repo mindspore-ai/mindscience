@@ -280,11 +280,11 @@ class BindingSite(core.BaseDataset):
     Args:
         data_path(str):                     Pathway of database.
         site_file(str):                     Coordinate file of ligand. Default: 'ligand.mol2'
-        protein_cavity_same_feature(bool):  If the cavity use the same feature as protein. Default: False
+        protein_cavity_same_feature(bool):  If the cavity use the same feature as protein. Default: ``False``.
         resolution_scale(float):            Resolution of grid. Default: 0.5
         max_distance(int):                  Max number of grids. Default: 35
         max_translation(int or float):      Max distance of translation. Default: 3
-        footprint(int or np.ndarray):       If margin for pocket based on ligand structure. Default: None
+        footprint(int or np.ndarray):       If margin for pocket based on ligand structure. Default: ``None``.
         fmt(str):                           File form of ligand. Default:'mol2'
         surface_scale(float):               Cutoff to search the protein surface atoms using SASA. Default:1.4
         is_training(bool):                  If train the model. Default:False

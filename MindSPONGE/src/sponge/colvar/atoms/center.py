@@ -48,20 +48,20 @@ class Center(AtomsBase):
                             Array of the mass of the atoms to calculate the center of mass (COM).
                             The shape of Tensor is (..., G) or (B, ..., G), and the data type is float.
                             If it is None, the geometric center of coordinate will be calculated.
-                            Default: None
+                            Default: ``None``.
 
         batched (bool):     Whether the first dimension of index and mass is the batch size.
-                            Default: False
+                            Default: ``False``.
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: False
+                            Default: ``False``.
 
         keepdims (bool):    If this is set to True, the axis which is reduced will be left,
                             and the shape the center will be (..., 1, D).
                             If this is set to False, the shape of the center will be (..., D).
                             if None, its value will be determined according to the rank (number of dimension) of
                             the input atoms: False if the rank is greater than 2, otherwise True.
-                            Default: None
+                            Default: ``None``.
 
         axis (int):         Axis along which the average of position are coumputed. Default: -2
 
@@ -155,7 +155,7 @@ class Center(AtomsBase):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
 
         Returns:
             center (Tensor):        Tensor of shape (B, ..., D). Data type is float.

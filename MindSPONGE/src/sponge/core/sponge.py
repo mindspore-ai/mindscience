@@ -128,15 +128,15 @@ class Sponge():
         network (Union[Molecule, WithEnergyCell, RunOneStepCell]):
                                     Cell of the simulation system.
 
-        potential (PotentialCell):  Potential energy. Defulat: None
+        potential (PotentialCell):  Potential energy. Default: ``None``.
 
-        optimizer (Optimizer):      Optimizer. Defulat: None
+        optimizer (Optimizer):      Optimizer. Default: ``None``.
 
         metrics (dict):             A Dictionary of metrics for system analysis. The key type of the `dict` should
                                     be `str`, and the value type of the `dict` should be `Metric` or `Colvar`.
-                                    Defulat: None
+                                    Default: ``None``.
 
-        analysis (AnalysisCell):    Analysis network. Defulat: None
+        analysis (AnalysisCell):    Analysis network. Default: ``None``.
 
     Supported Platforms:
 
@@ -438,8 +438,8 @@ class Sponge():
             steps (int):            Simulation steps.
             callbacks (Union[Callback, List[Callback]]):
                                     Callback function(s) to obtain the information of the system during
-                                    the simulation. Default: None
-            dataset (Dataset):      Dataset used at simulation process. Default: None
+                                    the simulation. Default: ``None``.
+            dataset (Dataset):      Dataset used at simulation process. Default: ``None``.
 
         Example:
             >>> from mindsponge import Sponge
@@ -588,9 +588,9 @@ class Sponge():
             NOTE: To use this API, the `metrics` must be set at `Sponge` initialization.
 
         Args:
-            dataset (Dataset):  Dataset of simulation to be analysed. Default: None
+            dataset (Dataset):  Dataset of simulation to be analysed. Default: ``None``.
             callbacks (Union[Callback, List(Callback)]): List of callback objects which should be executed
-                while training. Default: None.
+                while training. Default: ``None``.
 
         Returns:
             Dict, the key is the metric name defined by users and the value is the metrics value for
@@ -668,8 +668,8 @@ class Sponge():
                                      returned and passed to the network. Otherwise, a tuple (data, label) should
                                      be returned. The data and label would be passed to the network and loss
                                      function respectively.
-            list_callback (Callback): Executor of callback list. Default: None.
-            cb_params (_InternalCallbackParam): Callback parameters. Default: None.
+            list_callback (Callback): Executor of callback list. Default: ``None``.
+            cb_params (_InternalCallbackParam): Callback parameters. Default: ``None``.
         """
         self._exec_preprocess(True)
 
@@ -765,8 +765,8 @@ class Sponge():
 
         Args:
             valid_dataset (Dataset): Dataset to evaluate the model.
-            list_callback (Callback): Executor of callback list. Default: None.
-            cb_params (_InternalCallbackParam): Callback parameters. Default: None.
+            list_callback (Callback): Executor of callback list. Default: ``None``.
+            cb_params (_InternalCallbackParam): Callback parameters. Default: ``None``.
 
         Returns:
             Dict, which returns the loss value and metrics values for the model in the test mode.

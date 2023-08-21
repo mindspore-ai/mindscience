@@ -54,7 +54,7 @@ class GetVector(Cell):
         use_pbc (bool): Whether to calculate vector under periodic boundary condition.
                         If `None` is given, it will determine whether to use periodic boundary
                         conditions based on whether the `pbc_box` is provided.
-                        Default: None
+                        Default: ``None``.
 
     """
 
@@ -121,7 +121,7 @@ class GetVector(Cell):
             terminal (Tensor):  Tensor of shape (B, ..., D). Data type is float.
                                 Coordinate of terminal point
             pbc_box (Tensor):   Tensor of shape (B, D). Data type is float.
-                                Default: None
+                                Default: ``None``.
 
         Returns:
             vector (Tensor):    Tensor of shape (B, ..., D). Data type is float.
@@ -142,11 +142,11 @@ class GetDistance(GetVector):
         use_pbc (bool):     Whether to calculate distance under periodic boundary condition.
                             If this is "None", it will determine whether to calculate the distance under
                             periodic boundary condition based on whether the pbc_box is given.
-                            Default: None
+                            Default: ``None``.
 
         keepdims (bool):    Whether to keep the last dimension of the output Tensor of distance after norm.
                             If this is "True", the last dimension of the output Tensor will be 1.
-                            Default: False
+                            Default: ``False``.
 
         axis (int):         The axis of the space dimension of the coordinate. Default: -1
 
@@ -177,7 +177,7 @@ class GetDistance(GetVector):
             terminal (Tensor):  Tensor of shape (B, ..., D). Data type is float.
                                 Coordinate of terminal point
             pbc_box (Tensor):   Tensor of shape (B, D). Data type is float.
-                                Default: None
+                                Default: ``None``.
 
         Returns:
             distance (Tensor):  Tensor of shape (B, ...). Data type is float.
@@ -203,15 +203,15 @@ class VelocityGenerator(Cell):
         temperature (float):        Temperature
 
         remove_translation (bool):  Whether to calculate distance under periodic boundary condition.
-                                    Default: True
+                                    Default: ``True``.
 
         seed (int):                 Random seed for standard normal. Default: 0
 
         seed2 (int):                Random seed2 for standard normal. Default: 0
 
-        length_unit (str):          Length unit. Default: None
+        length_unit (str):          Length unit. Default: ``None``.
 
-        energy_unit (str):          energy unit. Default: None
+        energy_unit (str):          energy unit. Default: ``None``.
 
     """
     #pylint: disable=invalid-name
@@ -262,7 +262,7 @@ class VelocityGenerator(Cell):
             atom_mass (Tensor): Tensor of shape (B, A). Data type is float.
                                 Atom mass in system.
             mask (Tensor):      Tensor of shape (B, A). Data type is bool.
-                                Mask for atoms. Default: None
+                                Mask for atoms. Default: ``None``.
 
         Returns:
             velocity (Tensor):  Tensor of shape (B, A, D). Data type is float.

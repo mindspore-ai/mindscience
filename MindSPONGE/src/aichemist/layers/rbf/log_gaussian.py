@@ -54,13 +54,13 @@ class LogGaussianBasis(RadicalBasisFunctions):
 
         num_basis (int):        Number of basis functions. Defatul: None
 
-        rescale (bool):         Whether to rescale the output of RBF from -1 to 1. Default: True
+        rescale (bool):         Whether to rescale the output of RBF from -1 to 1. Default: ``True``.
 
-        clip_distance (bool):   Whether to clip the value of distance. Default: False
+        clip_distance (bool):   Whether to clip the value of distance. Default: ``False``.
 
         length_unit (str):      Unit for distance. Default: = 'nm',
 
-        hyper_param (dict):     Hyperparameter. Default: None
+        hyper_param (dict):     Hyperparameter. Default: ``None``.
 
         r_ref (Length):         Reference distance. Default: 1 nm
 
