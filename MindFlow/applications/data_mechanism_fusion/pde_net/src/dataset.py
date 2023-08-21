@@ -19,6 +19,7 @@ import os
 import numpy as np
 import mindspore.dataset as ds
 from mindspore.mindrecord import FileWriter
+from mindflow.utils import print_log
 
 from .pde_solvers import initgen, VariantCoeLinear2d
 
