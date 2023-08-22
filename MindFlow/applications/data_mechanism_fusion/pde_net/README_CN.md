@@ -14,27 +14,25 @@ PDE-Net是Zichao Long等人提出的一种前馈深度网络用于从数据中�
 
 ![extrapolation](images/extrapolation.jpg)
 
-[详见](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_mechanism_fusion/pde_net/pde_net_CN.ipynb)
+[详见](./pde_net_CN.ipynb)
 
 ## 快速开始
 
 ### 训练方式一：在命令行中调用`train.py`脚本
 
-python train.py --config_file_path ./pde_net.yaml --device_target Ascend --device_id 0 --mode GRAPH --save_graphs False --save_graphs_path ./summary
+```shell
+python train.py --config_file_path ./configs/pde_net.yaml --device_target Ascend --device_id 0 --mode GRAPH
+```
 
 其中，
 
-`--config_file_path`表示参数和路径控制文件，默认值'./pde_net.yaml'
+`--config_file_path`表示参数和路径控制文件，默认值'./configs/pde_net.yaml'
 
 `--device_target`表示使用的计算平台类型，可以选择'Ascend'或'GPU'，默认值'Ascend'；
 
 `--device_id`表示使用的计算卡编号，可按照实际情况填写，默认值0；
 
 `--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式， 默认值'GRAPH'；
-
-`--save_graphs`表示是否保存计算图，默认值'False'；
-
-`--save_graphs_path`表示计算图保存的路径，默认值'./summary'；
 
 ### 训练方式二：运行Jupyter Notebook
 

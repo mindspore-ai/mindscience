@@ -25,7 +25,7 @@ from mindspore.common import set_seed
 from mindspore import nn, Tensor, context, ops, jit
 from mindspore.train.serialization import load_param_into_net
 
-from mindflow.utils import load_yaml_config
+from mindflow.utils import load_yaml_config, print_log
 from mindflow.loss import RelativeRMSELoss
 from mindflow.pde import UnsteadyFlowWithLoss
 
@@ -38,7 +38,7 @@ np.random.seed(0)
 
 def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
     """train PDE-Net with advancing steps"""
-    print("Current step for train loop: {}".format(step,))
+    print_log("Current step for train loop: {}".format(step,))
     model = init_model(config_param)
 
     epoch = config_param["epochs"]
@@ -49,11 +49,11 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
     elif step == 2:
         param_dict = get_param_dic(config_param["summary_dir"], step - 1, epoch * 10)
         load_param_into_net(model, param_dict)
-        print("Load pre-trained model successfully")
+        print_log("Load pre-trained model successfully")
     else:
         param_dict = get_param_dic(config_param["summary_dir"], step - 1, epoch)
         load_param_into_net(model, param_dict)
-        print("Load pre-trained model successfully")
+        print_log("Load pre-trained model successfully")
 
     optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
     problem = UnsteadyFlowWithLoss(model, t_out=step, loss_fn=RelativeRMSELoss(), data_format="NTCHW")
@@ -80,10 +80,10 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
             cur_loss = sink_process()
         local_time_end = time.time()
         epoch_seconds = (local_time_end - local_time_beg) * 1000
-        print(f"epoch: {cur_epoch} train loss: {cur_loss} epoch time: {epoch_seconds:5.3f}ms", flush=True)
+        print_log(f"epoch: {cur_epoch} train loss: {cur_loss} epoch time: {epoch_seconds:5.3f}ms", flush=True)
 
         if cur_epoch % config_param["save_epoch_interval"] == 0:
-            ckpt_file_name = "ckpt/step_{}".format(step)
+            ckpt_file_name = "pdenet_step_{}".format(step)
             ckpt_dir = os.path.join(config_param["summary_dir"], ckpt_file_name)
             make_dir(ckpt_dir)
             ckpt_name = "pdenet-{}.ckpt".format(cur_epoch,)
@@ -92,8 +92,7 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
         if cur_epoch % config_param['eval_interval'] == 0:
             eval_time_start = time.time()
             calculate_lp_loss_error(problem, eval_dataset, config_param["batch_size"])
-            print(f'evaluation time: {time.time() - eval_time_start}s')
-
+            print_log(f'evaluation time: {time.time() - eval_time_start}s')
 
 
 def train(config_param):
@@ -108,27 +107,22 @@ def train(config_param):
 
 
 if __name__ == '__main__':
-    print("pid:", os.getpid())
+    print_log("pid:", os.getpid())
 
     parser = argparse.ArgumentParser(description="pde net train")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Running in GRAPH_MODE OR PYNATIVE_MODE")
-    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                        help="Whether to save intermediate compilation graphs")
-    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-    parser.add_argument("--config_file_path", type=str, default="./pde_net.yaml")
+    parser.add_argument("--config_file_path", type=str, default="./configs/pde_net.yaml")
     args = parser.parse_args()
 
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") \
                         else context.PYNATIVE_MODE,
-                        save_graphs=args.save_graphs,
-                        save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target,
                         device_id=args.device_id)
-    print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
+    print_log(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
     config = load_yaml_config(args.config_file_path)
     make_dir(config["mindrecord_data_dir"])
     train(config)

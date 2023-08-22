@@ -30,9 +30,33 @@ $$
 w_t \mapsto w(\cdot, t+1)
 $$
 
-[See More](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_driven/navier_stokes/kno2d/KNO2D.ipynb)
+![](images/kno.jpg)
 
-## Results Display
+[See More](./KNO2D.ipynb)
+
+## Train
+
+### Run Option 1: Call `train.py` from command line
+
+```shell
+python --mode GRAPH --save_graphs_path ./graphs --device_target Ascend --device_id 0 --config_file_path ./configs/navier_stokes_2d.yaml
+```
+
+where:
+
+`--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode. Default 'GRAPH'.
+
+`--device_target` indicates the computing platform. You can choose 'Ascend' or 'GPU'. Default 'Ascend'.
+
+`--device_id` indicates the index of NPU or GPU. Default 0.
+
+`--config_file_path` indicates the path of the parameter file. Default './configs/navier_stokes_2d.yaml'；
+
+### Run Option 2: Run Jupyter Notebook
+
+You can use [Chinese](./KNO2D_CN.ipynb) or [English](./KNO2D.ipynb) Jupyter Notebook to run the training and evaluation code line-by-line.
+
+## Results
 
 Take 1 samples, and do 10 consecutive steps of prediction. Visualize the prediction as follows.
 

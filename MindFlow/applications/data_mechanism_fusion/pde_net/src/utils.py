@@ -50,7 +50,7 @@ def init_model(config):
 
 def calculate_lp_loss_error(problem, test_dataset, batch_size):
     """Calculates loss error"""
-    print("================================Start Evaluation================================")
+    print_log("================================Start Evaluation================================")
     time_beg = time.time()
     lploss_error = 0.0
     max_error = 0.0
@@ -65,15 +65,15 @@ def calculate_lp_loss_error(problem, test_dataset, batch_size):
             max_error = lploss_error_step
 
     lploss_error = lploss_error / length
-    print("LpLoss_error:", lploss_error)
-    print("=================================End Evaluation=================================")
-    print("predict total time: {} s".format(time.time() - time_beg))
+    print_log("LpLoss_error:", lploss_error)
+    print_log("=================================End Evaluation=================================")
+    print_log("predict total time: {} s".format(time.time() - time_beg))
 
 
 def scheduler(lr_scheduler_step, step, lr):
     if step % lr_scheduler_step == 0:
         lr *= 0.5
-        print("learning rate reduced to {}".format(lr))
+        print_log("learning rate reduced to {}".format(lr))
     return lr
 
 
@@ -194,7 +194,7 @@ def plot_test_error(problem, loss_fn, item, step, mesh_size, figure_out_dir="./f
     x = Tensor(u0.reshape(1, 1, 1, mesh_size, mesh_size), dtype=mstype.float32)
     y = Tensor(u_t.reshape(1, 1, mesh_size, mesh_size), dtype=mstype.float32)
     y_predict = problem.step(x)[:, -1, ...]
-    print("sample {}, MSE Loss {}".format(step, loss_fn(y_predict, y)))
+    print_log("sample {}, MSE Loss {}".format(step, loss_fn(y_predict, y)))
     error = y_predict - y
 
     plt.figure(figsize=(16, 4))
@@ -257,7 +257,7 @@ def plot_extrapolation_error(config, dataset, max_step=40):
         error_data.append(error)
         p25 = np.percentile(error, 25)
         p75 = np.percentile(error, 75)
-        print("step = {:.0f}, p25 = {:.5f}, p75 = {:.5f}".format(i, p25, p75))
+        print_log("step = {:.0f}, p25 = {:.5f}, p75 = {:.5f}".format(i, p25, p75))
         plot_data[i - 1, :] = [i, p25, p75]
 
     plt.semilogy(plot_data[:, 0], plot_data[:, 1], color='orange')

@@ -26,7 +26,7 @@ from mindspore.nn.loss import MSELoss
 
 from mindflow.cell import KNO2D
 from mindflow.common import get_warmup_cosine_annealing_lr
-from mindflow.utils import load_yaml_config
+from mindflow.utils import load_yaml_config, print_log, log_config
 
 from src import create_training_dataset, NavierStokesWithLoss, visual
 
@@ -39,13 +39,10 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Navier Stokes problem')
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Context mode, support 'GRAPH', 'PYNATIVE'")
-    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                        help="Whether to save intermediate compilation graphs")
-    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-    parser.add_argument("--config_file_path", type=str, default="./navier_stokes_2d.yaml")
+    parser.add_argument("--config_file_path", type=str, default="./configs/navier_stokes_2d.yaml")
     input_args = parser.parse_args()
     return input_args
 
@@ -53,7 +50,7 @@ def parse_args():
 def train(input_args):
     '''Train and evaluate the network'''
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
-    print(f"use_ascend: {use_ascend}")
+    print_log(f"use_ascend: {use_ascend}")
 
     config = load_yaml_config(input_args.config_file_path)
     data_params = config["data"]
@@ -64,8 +61,8 @@ def train(input_args):
     train_dataset = create_training_dataset(data_params, shuffle=True)
     test_input = np.load(os.path.join(data_params["path"], "test/inputs.npy"))
     test_label = np.load(os.path.join(data_params["path"], "test/label.npy"))
-    print('test_input: ', test_input.shape)
-    print('test_label: ', test_label.shape)
+    print_log('test_input: ', test_input.shape)
+    print_log('test_label: ', test_label.shape)
 
     model = KNO2D(in_channels=data_params['in_channels'],
                   channels=model_params['channels'],
@@ -79,7 +76,7 @@ def train(input_args):
     for k, v in model_params.items():
         model_params_list.append(f"{k}:{v}")
     model_name = "_".join(model_params_list)
-    print(model_name)
+    print_log(model_name)
 
     train_size = train_dataset.get_dataset_size()
 
@@ -121,7 +118,7 @@ def train(input_args):
 
     summary_dir = os.path.join(config["summary_dir"], model_name)
     os.makedirs(summary_dir, exist_ok=True)
-    print(summary_dir)
+    print_log(summary_dir)
 
     for epoch in range(1, optimizer_params["epochs"] + 1):
         time_beg = time.time()
@@ -136,31 +133,31 @@ def train(input_args):
         train_recons_full = train_recons_full / train_size
         train_pred_full = train_pred_full / train_size
         train_full = train_full / train_size
-        print(f"epoch: {epoch} recons loss: {train_recons_full:>8f} pred loss: {train_pred_full:>8f}"
-              f" train loss: {train_full:>8f} epoch time: {(time.time() - time_beg):>8f}s")
+        print_log(f"epoch: {epoch} recons loss: {train_recons_full:>8f} pred loss: {train_pred_full:>8f}"
+                  f" train loss: {train_full:>8f} epoch time: {(time.time() - time_beg):>8f}s")
 
         if epoch % config['eval_interval'] == 0:
             eval_time_start = time.time()
-            print("================================Start Evaluation================================")
+            print_log("================================Start Evaluation================================")
             l_recons_all, l_pred_all = problem.test(test_input, test_label)
-            print(f'Eval epoch: {epoch}, recons loss: {l_recons_all},'
-                  f' relative pred loss: {l_pred_all}')
-            print("=================================End Evaluation=================================")
-            print(f'evaluation time: {time.time() - eval_time_start}s')
-            save_checkpoint(model, ckpt_file_name=summary_dir + '/save_model.ckpt')
+            print_log(f'Eval epoch: {epoch}, recons loss: {l_recons_all},'
+                      f' relative pred loss: {l_pred_all}')
+            print_log("=================================End Evaluation=================================")
+            print_log(f'evaluation time: {time.time() - eval_time_start}s')
+            save_checkpoint(model, ckpt_file_name=summary_dir + '/kno2d.ckpt')
 
     # Infer and plot some data.
     visual(problem, test_input, test_label, t_out=10)
 
 
 if __name__ == '__main__':
-    print("pid:", os.getpid())
-    print(datetime.datetime.now())
+    log_config('./logs', 'kno2d')
+    print_log("pid:", os.getpid())
+    print_log(datetime.datetime.now())
     args = parse_args()
 
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                        save_graphs=args.save_graphs, save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target, device_id=args.device_id)
 
-    print(f"device_id: {context.get_context(attr_key='device_id')}")
+    print_log(f"device_id: {context.get_context(attr_key='device_id')}")
     train(args)

@@ -35,8 +35,8 @@ def create_training_dataset(config,
         test_path = os.path.join(data_path, "test")
         input_path = os.path.join(test_path, "inputs.npy")
         label_path = os.path.join(test_path, "label.npy")
-    print('input_path: ', np.load(input_path).shape)
-    print('label_path: ', np.load(label_path).shape)
+    print_log('input_path: ', np.load(input_path).shape)
+    print_log('label_path: ', np.load(label_path).shape)
     ns_2d_data = ExistedDataConfig(name=config["name"],
                                    data_dir=[input_path, label_path],
                                    columns_list=["inputs", "label"],

@@ -87,7 +87,7 @@ class DataGenerator():
             data_writer.write_raw_data(samples)
         data_writer.commit()
 
-        print("Mindrecorder saved")
+        print_log("Mindrecorder saved")
 
     def _generate_data_test_mode(self):
         """generate data in test process"""
