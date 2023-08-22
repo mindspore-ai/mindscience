@@ -17,8 +17,8 @@ dataset
 """
 import numpy as np
 
-# prepare test input and label
-def test_data_prepare(config):
+
+def data_prepare(config):
     """create test dataset"""
     coord_min = config["coord_min"]
     coord_max = config["coord_max"]
