@@ -29,6 +29,7 @@ from mindflow.cell import FNO2D
 from mindflow.common import get_warmup_cosine_annealing_lr
 from mindflow.loss import RelativeRMSELoss
 from mindflow.utils import load_yaml_config
+from mindflow.utils import log_config, print_log
 from mindflow.pde import UnsteadyFlowWithLoss
 from src import calculate_l2_error, create_training_dataset
 
@@ -47,7 +48,7 @@ def parse_args():
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-    parser.add_argument("--config_file_path", type=str, default="./navier_stokes_2d.yaml")
+    parser.add_argument("--config_file_path", type=str, default="./configs/fno2d.yaml")
     input_args = parser.parse_args()
     return input_args
 
@@ -55,7 +56,7 @@ def parse_args():
 def train(input_args):
     '''train and evaluate the network'''
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
-    print(f"use_ascend: {use_ascend}")
+    print_log(f"use_ascend: {use_ascend}")
 
     config = load_yaml_config(input_args.config_file_path)
     data_params = config["data"]
@@ -86,11 +87,10 @@ def train(input_args):
     model_params_list = []
     for k, v in model_params.items():
         model_params_list.append(f"{k}-{v}")
-    model_name = "_".join(model_params_list)
 
     # prepare optimizer
     steps_per_epoch = train_dataset.get_dataset_size()
-    print("steps_per_epoch: ", steps_per_epoch)
+    print_log("steps_per_epoch: ", steps_per_epoch)
     lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["initial_lr"],
                                         last_epoch=optimizer_params["train_epochs"],
                                         steps_per_epoch=steps_per_epoch,
@@ -113,8 +113,7 @@ def train(input_args):
         return loss
 
     sink_process = mindspore.data_sink(train_step, train_dataset, sink_size=1)
-    summary_dir = os.path.join(config["summary_dir"], model_name)
-    ckpt_dir = os.path.join(summary_dir, "ckpt")
+    ckpt_dir = config["ckpt_dir"]
     if not os.path.exists(ckpt_dir):
         os.makedirs(ckpt_dir)
 
@@ -123,25 +122,26 @@ def train(input_args):
         model.set_train(True)
         for _ in range(steps_per_epoch):
             cur_loss = sink_process()
-        print(f"epoch: {epoch} train loss: {cur_loss} epoch time: {time.time() - local_time_beg:.2f}s")
+        print_log(f"epoch: {epoch} train loss: {cur_loss} epoch time: {time.time() - local_time_beg:.2f}s")
 
         model.set_train(False)
         if epoch % config["save_ckpt_interval"] == 0:
-            save_checkpoint(model, os.path.join(ckpt_dir, model_params["name"]))
+            save_checkpoint(model, os.path.join(ckpt_dir, f"{model_params['name']}_epoch{epoch}"))
 
         if epoch % config['eval_interval'] == 0:
             eval_time_start = time.time()
             calculate_l2_error(model, test_input, test_label, config["test_batch_size"])
-            print(f'evaluation time: {time.time() - eval_time_start}s')
+            print_log(f'evaluation time: {time.time() - eval_time_start}s')
 
 
 if __name__ == '__main__':
-    print(f"pid: {os.getpid()}")
-    print(datetime.datetime.now())
+    log_config('./logs', 'fno2d')
+    print_log(f"pid: {os.getpid()}")
+    print_log(datetime.datetime.now())
     args = parse_args()
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
                         save_graphs=args.save_graphs, save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target, device_id=args.device_id)
 
-    print(f"device_id: {context.get_context(attr_key='device_id')}")
+    print_log(f"device_id: {context.get_context(attr_key='device_id')}")
     train(args)
