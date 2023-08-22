@@ -25,7 +25,7 @@ from mindspore.common import set_seed
 from mindspore import nn, Tensor, context, ops, jit
 from mindspore.train.serialization import load_param_into_net
 
-from mindflow.utils import load_yaml_config, print_log
+from mindflow.utils import load_yaml_config, print_log, log_config
 from mindflow.loss import RelativeRMSELoss
 from mindflow.pde import UnsteadyFlowWithLoss
 
@@ -38,7 +38,7 @@ np.random.seed(0)
 
 def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
     """train PDE-Net with advancing steps"""
-    print_log("Current step for train loop: {}".format(step,))
+    print_log(f"Current step for train loop: {step}")
     model = init_model(config_param)
 
     epoch = config_param["epochs"]
@@ -80,13 +80,13 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
             cur_loss = sink_process()
         local_time_end = time.time()
         epoch_seconds = (local_time_end - local_time_beg) * 1000
-        print_log(f"epoch: {cur_epoch} train loss: {cur_loss} epoch time: {epoch_seconds:5.3f}ms", flush=True)
+        print_log(f"epoch: {cur_epoch} train loss: {cur_loss} epoch time: {epoch_seconds:5.3f}ms")
 
         if cur_epoch % config_param["save_epoch_interval"] == 0:
-            ckpt_file_name = "pdenet_step_{}".format(step)
+            ckpt_file_name = f"step_{step}"
             ckpt_dir = os.path.join(config_param["summary_dir"], ckpt_file_name)
             make_dir(ckpt_dir)
-            ckpt_name = "pdenet-{}.ckpt".format(cur_epoch,)
+            ckpt_name = f"pdenet-{cur_epoch}.ckpt"
             mindspore.save_checkpoint(model, os.path.join(ckpt_dir, ckpt_name))
 
         if cur_epoch % config_param['eval_interval'] == 0:
@@ -98,7 +98,7 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
 def train(config_param):
     lr = config_param["lr"]
     for i in range(1, config_param["multi_step"] + 1):
-        db_name = "train_step{}.mindrecord".format(i)
+        db_name = f"train_step{i}.mindrecord"
         dataset = create_dataset(config_param, i, db_name, "train", data_size=2 * config_param["batch_size"])
         train_dataset, eval_dataset = dataset.create_train_dataset()
         lr = scheduler(int(config_param["multi_step"] / config_param["learning_rate_reduce_times"]), step=i, lr=lr)
@@ -107,6 +107,7 @@ def train(config_param):
 
 
 if __name__ == '__main__':
+    log_config('./logs', 'pde_net')
     print_log("pid:", os.getpid())
 
     parser = argparse.ArgumentParser(description="pde net train")

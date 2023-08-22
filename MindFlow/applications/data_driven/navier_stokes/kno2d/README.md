@@ -39,7 +39,7 @@ $$
 ### Run Option 1: Call `train.py` from command line
 
 ```shell
-python --mode GRAPH --save_graphs_path ./graphs --device_target Ascend --device_id 0 --config_file_path ./configs/navier_stokes_2d.yaml
+python --mode GRAPH --save_graphs_path ./graphs --device_target Ascend --device_id 0 --config_file_path ./configs/kno2d.yaml
 ```
 
 where:
@@ -50,7 +50,7 @@ where:
 
 `--device_id` indicates the index of NPU or GPU. Default 0.
 
-`--config_file_path` indicates the path of the parameter file. Default './configs/navier_stokes_2d.yaml'；
+`--config_file_path` indicates the path of the parameter file. Default './configs/kno2d.yaml'；
 
 ### Run Option 2: Run Jupyter Notebook
 

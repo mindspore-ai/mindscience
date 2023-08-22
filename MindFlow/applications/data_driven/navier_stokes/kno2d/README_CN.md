@@ -33,7 +33,7 @@ $$
 ### 训练方式一：在命令行中调用`train.py`脚本
 
 ```shell
-python --mode GRAPH --device_target Ascend --device_id 0 --config_file_path ./configs/navier_stokes_2d.yaml
+python --mode GRAPH --device_target Ascend --device_id 0 --config_file_path ./configs/kno2d.yaml
 ```
 
 其中，
@@ -43,7 +43,7 @@ python --mode GRAPH --device_target Ascend --device_id 0 --config_file_path ./co
 
 `--device_id`表示使用的计算卡编号，可按照实际情况填写，默认值0；
 
-`--config_file_path`表示参数文件的路径，默认值'./configs/navier_stokes_2d.yaml'；
+`--config_file_path`表示参数文件的路径，默认值'./configs/kno2d.yaml'；
 
 ### 训练方式二：运行Jupyter Notebook
 
