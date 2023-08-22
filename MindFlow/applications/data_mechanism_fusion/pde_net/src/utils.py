@@ -65,15 +65,15 @@ def calculate_lp_loss_error(problem, test_dataset, batch_size):
             max_error = lploss_error_step
 
     lploss_error = lploss_error / length
-    print_log("LpLoss_error:", lploss_error)
+    print_log(f"LpLoss_error: {lploss_error}")
     print_log("=================================End Evaluation=================================")
-    print_log("predict total time: {} s".format(time.time() - time_beg))
+    print_log(f"predict total time: {time.time() - time_beg}s")
 
 
 def scheduler(lr_scheduler_step, step, lr):
     if step % lr_scheduler_step == 0:
         lr *= 0.5
-        print_log("learning rate reduced to {}".format(lr))
+        print_log(f"learning rate reduced to {lr}")
     return lr
 
 
@@ -95,7 +95,7 @@ def make_dir(path):
 
 
 def get_param_dic(summary_dir, current_step, epochs):
-    file_dir = "ckpt/step_{}/pdenet-{}.ckpt".format(current_step, epochs)
+    file_dir = "step_{}/pdenet-{}.ckpt".format(current_step, epochs)
     checkpoint_dir = os.path.join(summary_dir, file_dir)
     param_dict = load_checkpoint(checkpoint_dir)
     return param_dict

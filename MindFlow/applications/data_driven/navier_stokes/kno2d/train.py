@@ -42,7 +42,7 @@ def parse_args():
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-    parser.add_argument("--config_file_path", type=str, default="./configs/navier_stokes_2d.yaml")
+    parser.add_argument("--config_file_path", type=str, default="./configs/kno2d.yaml")
     input_args = parser.parse_args()
     return input_args
 
@@ -71,12 +71,6 @@ def train(input_args):
                   resolution=model_params['resolution'],
                   compute_dtype=dtype.float16 if use_ascend else dtype.float32
                   )
-
-    model_params_list = []
-    for k, v in model_params.items():
-        model_params_list.append(f"{k}:{v}")
-    model_name = "_".join(model_params_list)
-    print_log(model_name)
 
     train_size = train_dataset.get_dataset_size()
 
@@ -116,9 +110,8 @@ def train(input_args):
 
     train_sink = data_sink(train_step, train_dataset, sink_size=1)
 
-    summary_dir = os.path.join(config["summary_dir"], model_name)
-    os.makedirs(summary_dir, exist_ok=True)
-    print_log(summary_dir)
+    ckpt_dir = config["ckpt_dir"]
+    os.makedirs(ckpt_dir, exist_ok=True)
 
     for epoch in range(1, optimizer_params["epochs"] + 1):
         time_beg = time.time()
@@ -144,7 +137,7 @@ def train(input_args):
                       f' relative pred loss: {l_pred_all}')
             print_log("=================================End Evaluation=================================")
             print_log(f'evaluation time: {time.time() - eval_time_start}s')
-            save_checkpoint(model, ckpt_file_name=summary_dir + '/kno2d.ckpt')
+            save_checkpoint(model, ckpt_file_name=os.path.join(ckpt_dir, 'kno2d.ckpt'))
 
     # Infer and plot some data.
     visual(problem, test_input, test_label, t_out=10)
