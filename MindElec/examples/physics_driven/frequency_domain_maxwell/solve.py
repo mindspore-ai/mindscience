@@ -19,7 +19,7 @@ import copy
 import os
 
 import numpy as np
-from mindspore import nn, ops, context, ms_function
+from mindspore import nn, context
 from mindspore.common import set_seed
 from mindspore.train import LossMonitor, DynamicLossScaleManager
 
@@ -27,12 +27,12 @@ from mindelec.common import L2
 from mindelec.data import Dataset
 from mindelec.geometry import Rectangle, create_config_from_edict
 from mindelec.loss import Constraints
-from mindelec.operators import SecondOrderGrad as Hessian
-from mindelec.solver import Solver, Problem
+from mindelec.solver import Solver
 from src.callback import PredictCallback, TimeMonitor
 from src.config import rectangle_sampling_config, helmholtz_2d_config
-from src.dataset import test_data_prepare
+from src.dataset import data_prepare
 from src.model import FFNN
+from src.helmholtz import Helmholtz2D
 
 
 def load_config():
@@ -41,47 +41,6 @@ def load_config():
     rectangle_config = copy.deepcopy(rectangle_sampling_config)
     config.update(rectangle_config)
     return config
-
-
-# define problem
-class Helmholtz2D(Problem):
-    """2D Helmholtz equation"""
-
-    def __init__(self, domain_name, bc_name, net, wavenumber=2):
-        super(Helmholtz2D, self).__init__()
-        self.domain_name = domain_name
-        self.bc_name = bc_name
-        self.type = "Equation"
-        self.wave_number = wavenumber
-        self.grad_xx = Hessian(net, input_idx1=0, input_idx2=0, output_idx=0)
-        self.grad_yy = Hessian(net, input_idx1=1, input_idx2=1, output_idx=0)
-        self.reshape = ops.Reshape()
-
-    @ms_function
-    def governing_equation(self, *output, **kwargs):
-        """governing equation"""
-        u = output[0]
-        x = kwargs[self.domain_name][:, 0]
-        y = kwargs[self.domain_name][:, 1]
-        x = self.reshape(x, (-1, 1))
-        y = self.reshape(y, (-1, 1))
-
-        u_xx = self.grad_xx(kwargs[self.domain_name])
-        u_yy = self.grad_yy(kwargs[self.domain_name])
-
-        return u_xx + u_yy + self.wave_number ** 2 * u
-
-    @ms_function
-    def boundary_condition(self, *output, **kwargs):
-        """boundary condition"""
-        u = output[0]
-        x = kwargs[self.bc_name][:, 0]
-        y = kwargs[self.bc_name][:, 1]
-        x = self.reshape(x, (-1, 1))
-        y = self.reshape(y, (-1, 1))
-
-        test_label = ops.sin(self.wave_number * x)
-        return 100 * (u - test_label)
 
 
 def train(args):
@@ -100,7 +59,7 @@ def train(args):
     train_dataset = Dataset(geom_dict)
     train_data = train_dataset.create_dataset(batch_size=args.get("batch_size", 128),
                                               shuffle=True, drop_remainder=True)
-    test_input, test_label = test_data_prepare(args)
+    test_input, test_label = data_prepare(args)
 
     # define problem and constraints
     train_prob_dict = {geom_name: Helmholtz2D(domain_name=geom_name + "_domain_points",
@@ -138,10 +97,14 @@ def train(args):
     assert l2_error <= 0.05
 
 
-if __name__ == '__main__':
+def main():
     set_seed(0)
     np.random.seed(0)
     print("pid:", os.getpid())
     context.set_context(mode=context.GRAPH_MODE, save_graphs=False, device_target="Ascend")
     config_ = load_config()
     train(config_)
+
+
+if __name__ == '__main__':
+    main()

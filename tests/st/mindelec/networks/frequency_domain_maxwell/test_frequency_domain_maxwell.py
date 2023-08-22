@@ -20,78 +20,27 @@ import pytest
 import numpy as np
 
 import mindspore.nn as nn
-import mindspore.ops as ops
-from mindspore import context, ms_function
+from mindspore import context
 from mindspore.common import set_seed
 from mindspore.train.callback import LossMonitor
 from mindspore.train.loss_scale_manager import DynamicLossScaleManager
 
-from mindelec.solver import Solver, Problem
+from mindelec.solver import Solver
 from mindelec.geometry import Rectangle, create_config_from_edict
 from mindelec.common import L2
 from mindelec.data import Dataset
-from mindelec.operators import SecondOrderGrad as Hessian
 from mindelec.loss import Constraints
 
 from src.config import rectangle_sampling_config, helmholtz_2d_config
 from src.model import FFNN
-from src.dataset import test_data_prepare
+from src.dataset import data_prepare
 from src.callback import PredictCallback, TimeMonitor
+from src.helmholtz import Helmholtz2D
+
 
 set_seed(0)
 np.random.seed(0)
-
 print("pid:", os.getpid())
-
-
-# define problem
-class Helmholtz2D(Problem):
-    """2D Helmholtz equation"""
-    def __init__(self, domain_name, bc_name, net, wavenumber=2):
-        super(Helmholtz2D, self).__init__()
-        self.domain_name = domain_name
-        self.bc_name = bc_name
-        self.type = "Equation"
-        self.wave_number = wavenumber
-        self.grad_xx = Hessian(net, input_idx1=0, input_idx2=0, output_idx=0)
-        self.grad_yy = Hessian(net, input_idx1=1, input_idx2=1, output_idx=0)
-        self.reshape = ops.Reshape()
-
-    @ms_function
-    def governing_equation(self, *output, **kwargs):
-        """governing equation"""
-        u = output[0]
-        value = kwargs.get(self.domain_name)
-        if value is not None:
-            x = value[:, 0]
-            y = value[:, 1]
-            x = self.reshape(x, (-1, 1))
-            y = self.reshape(y, (-1, 1))
-        else:
-            print("key doesn't exist")
-            return u
-
-        u_xx = self.grad_xx(value)
-        u_yy = self.grad_yy(value)
-
-        return u_xx + u_yy + self.wave_number**2 * u
-
-    @ms_function
-    def boundary_condition(self, *output, **kwargs):
-        """boundary condition"""
-        u = output[0]
-        value = kwargs.get(self.bc_name)
-        if value is not None:
-            x = value[:, 0]
-            y = value[:, 1]
-            x = self.reshape(x, (-1, 1))
-            y = self.reshape(y, (-1, 1))
-        else:
-            print("key doesn't exist")
-            return u
-
-        test_label = ops.sin(self.wave_number * x)
-        return 100 * (u - test_label)
 
 
 @pytest.mark.level0
@@ -116,7 +65,7 @@ def test_frequency_domain_maxwell():
     train_dataset = Dataset(geom_dict)
     train_data = train_dataset.create_dataset(batch_size=helmholtz_2d_config.get("batch_size", 128),
                                               shuffle=True, drop_remainder=False)
-    test_input, test_label = test_data_prepare(helmholtz_2d_config)
+    test_input, test_label = data_prepare(helmholtz_2d_config)
 
     # define problem and constraints
     train_prob_dict = {geom_name: Helmholtz2D(domain_name=geom_name + "_domain_points",
