@@ -19,7 +19,7 @@ import os
 import numpy as np
 
 from mindflow.data import Dataset, ExistedDataConfig
-
+from mindflow.utils import print_log
 
 def create_training_dataset(config,
                             shuffle=True,
