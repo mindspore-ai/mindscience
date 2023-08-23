@@ -1,0 +1,51 @@
+"""Required Configurations"""
+
+input_data: "./data/input/"
+level: 4
+resolution: 1.4
+resolution_file: "grid_long_lat_coordinates_r{resolution}.npy"
+mesh_node: "mesh_node_level{level}_origin.npy"
+mesh_edge: "mesh_edge_level{level}_origin.npy"
+
+# Optional Configuration
+parallel_configuration_enabled: true
+number_of_parallels: 40
+geometry: "geometry_level{level}_resolution{resolution}"
+
+long_lat_features: "grid_node_features_r{resolution}.csv"
+long_lat_features_npy: "grid_node_features_r{resolution}.npy"
+long_lat_with_xyz: "grid_node_xyz_r{resolution}.csv"
+
+mesh_node_features: "mesh_node_features_level{level}_r{resolution}.csv"
+mesh_node_features_npy: "mesh_node_features_level{level}_r{resolution}.npy"
+mesh_node_with_xyz: "mesh_node_xyz_level{level}_r{resolution}.csv"
+
+mesh_edge_features: "mesh_edge_features_level{level}_r{resolution}.csv"
+mesh_edge_features_merged_npy: "mesh_edge_features_level0_{level}_r{resolution}.npy"
+mesh_edge_features_merged_csv: "mesh_edge_features_level0_{level}_r{resolution}.csv"
+mesh_edge_features_merged_normalization: "mesh_edge_normalization_level0_{level}_r{resolution}.npy"
+
+mesh_sender: "mesh_edge_sender_level{level}_r{resolution}.csv"
+mesh_receiver: "mesh_edge_receiver_level{level}_r{resolution}.csv"
+mesh_merged_all_sender_npy: "mesh_edge_sender_level0_{level}_r{resolution}.npy"
+mesh_merged_all_sender_csv: "mesh_edge_sender_level0_{level}_r{resolution}.csv"
+mesh_merged_all_receiver_npy: "mesh_edge_receiver_level0_{level}_r{resolution}.npy"
+mesh_merged_all_receiver_csv: "mesh_edge_receiver_level0_{level}_r{resolution}.csv"
+
+grid2mesh_edge: "g2m_edge_level{level}_r{resolution}.csv"
+grid2mesh_edge_features: "g2m_edge_features_level{level}_r{resolution}.csv"
+grid2mesh_edge_features_npy: "g2m_edge_features_level{level}_r{resolution}.npy"
+g2m_edge_normalization: "g2m_edge_normalization_level{level}_r{resolution}.npy"
+g2m_sender: "g2m_sender_level{level}_r{resolution}.csv"
+g2m_sender_npy: "g2m_sender_level{level}_r{resolution}.npy"
+g2m_receiver: "g2m_receiver_level{level}_r{resolution}.csv"
+g2m_receiver_npy: "g2m_receiver_level{level}_r{resolution}.npy"
+
+mesh2grid_edge: "m2m_edge_level{level}_r{resolution}.csv"
+mesh2grid_edge_feats: "m2g_edge_features_level{level}_r{resolution}.csv"
+mesh2grid_edge_feats_npy: "m2g_edge_features_level{level}_r{resolution}.npy"
+m2g_edge_normalization: "m2g_edge_normalization_level{level}_r{resolution}.npy"
+m2g_sender: "m2g_sender_level{level}_r{resolution}.csv"
+m2g_sender_npy: "m2g_sender_level{level}_r{resolution}.npy"
+m2g_receiver: "m2g_receiver_level{level}_r{resolution}.csv"
+m2g_receiver_npy: "m2g_receiver_level{level}_r{resolution}.npy"

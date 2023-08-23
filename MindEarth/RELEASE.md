@@ -16,7 +16,7 @@ cyclones, extra-tropical cyclones, and atmospheric rivers.
 
 * ViT-KNO
 
-Koopman neural operator (KNO) is a representative demonstration and outperforms other state-of-theart alternatives in
+Koopman neural operator (KNO) is a representative demonstration and outperforms other state-of-the art alternatives in
 terms of accuracy and efficiency.
 Beyond the original version of KNO, there are
 multiple new variants of KNO based on different neural network architectures to improve the general applicability of our
@@ -37,6 +37,6 @@ at the equator and can create a six-day forecast every 10 hours for five surface
 
 Thanks goes to these wonderful people:
 
-wangzidong, liuhongsheng, zhouhongye, liboka, liulei
+yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyonghan, zhouchuansai
 
 Contributions of any kind are welcome!
