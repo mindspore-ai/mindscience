@@ -890,7 +890,7 @@ def rots_from_tensor(rots, use_numpy=False):
 
     Args:
         rots(Tensor):       Represent the rotation matrix, shape is :math:`(..., 3, 3)` .
-        use_numpy(bool):    Whether to use numpy to calculate. Default: False.
+        use_numpy(bool):    Whether to use numpy to calculate. Default: ``False``.
 
     Returns:
         Tuple, rots represented by vectors, rots is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
@@ -924,7 +924,7 @@ def rots_to_tensor(rots, use_numpy=False):
 
     Args:
         rots(Tuple):        Rots represented by vectors, shape is :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` .
-        use_numpy(bool):    Whether to use numpy to calculate. Default: False.
+        use_numpy(bool):    Whether to use numpy to calculate. Default: ``False``.
 
     Returns:
         Tensor, concat the tensor in last dims, shape :math:`(N_{res}, 3, 3)`.
@@ -960,10 +960,10 @@ def quat_affine(quaternion, translation, rotation=None, normalize=True, unstack_
     Args:
         quaternion(tensor):     Shape is :math:`(N_{res}, 4)`.
         translation(tensor):    Shape is :math:`(N_{res}, 3)`.
-        rotation(tensor):       Rots, shape is :math:`(N_{res}, 9)`. Default: None.
-        normalize(bool):        Whether to use normalization. Default: True.
-        unstack_inputs(bool):   Whether input is vector(True) of Tensor(False). Default: False.
-        use_numpy(bool):        Whether to use numpy. Default: False.
+        rotation(tensor):       Rots, shape is :math:`(N_{res}, 9)`. Default: ``None``.
+        normalize(bool):        Whether to use normalization. Default: ``True``.
+        unstack_inputs(bool):   Whether input is vector(True) of Tensor(False). Default: ``False``.
+        use_numpy(bool):        Whether to use numpy. Default: ``False``.
 
     Returns:
         result after quat affine.
@@ -1056,7 +1056,7 @@ def initial_affine(num_residues, use_numpy=False):
 
     Args:
         num_residues(int):  Number of residues.
-        use_numpy(bool):    Whether to use numpy. Default: False.
+        use_numpy(bool):    Whether to use numpy. Default: ``False``.
 
     Returns:
         result after quat affine.
@@ -1187,8 +1187,8 @@ def invert_point(transformed_point, rotation, translation, extra_dims=0, stack=F
         translation (Tuple):        The translation vector shape is :math:`(x, y, z)`,
                                     where x, y and z are Tensor and have the same shape.
         extra_dims (int):           Control whether to expand dims. Default: 0.
-        stack (bool):               Control whether to transform to tuple. Default: False.
-        use_numpy(bool):            Control whether to use numpy. Default: False.
+        stack (bool):               Control whether to transform to tuple. Default: ``False``.
+        use_numpy(bool):            Control whether to use numpy. Default: ``False``.
 
     Returns:
         Tuple, the transformed coordinate of invert point.Length is 3.
@@ -1389,7 +1389,7 @@ def quaternion_from_tensor(tensor, normalize=False):
         tensor(Tensor):     An initial Tensor :math:`[(xx, xy, xz, yx, yy, yz, zz)]` .
                             :math:`[(xx, xy, xz, yx)]` is the same with `quaternion`.
                             :math:`(yy, yz, zz)` is the same with `translation`.
-        normalize(bool):    Control whether to find the norm during quat_affine. Default: False.
+        normalize(bool):    Control whether to find the norm during quat_affine. Default: ``False``.
 
     Returns:
         - Tensor, new quaternion.Tensor of shape :math:`(..., 4)` .

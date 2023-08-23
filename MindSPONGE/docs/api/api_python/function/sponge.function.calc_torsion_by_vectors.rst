@@ -1,4 +1,4 @@
-sponge.function.calc_torsion_for_vectors
+sponge.function.calc_torsion_by_vectors
 ============================================
 
 .. py:function:: sponge.function.calc_torsion_by_vectors(vector1, vector2, vector3)

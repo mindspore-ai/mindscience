@@ -44,10 +44,10 @@ class Group(AtomsBase):
                             List of AtomsBase. Member should be the subclass of AtomsBase.
 
         batched (bool):     Whether the first dimension of index is the batch size.
-                            Default: False
+                            Default: ``False``.
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                                Default: False
+                                Default: ``False``.
 
         axis (int):         Axis to concatenate the coordinates of atoms.
 
@@ -131,7 +131,7 @@ class Group(AtomsBase):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
 
         Returns:
             position (Tensor):  Tensor of shape (B, a_1, a_2, ..., a_n, D). Data type is float.

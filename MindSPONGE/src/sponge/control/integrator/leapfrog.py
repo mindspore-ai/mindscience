@@ -50,11 +50,11 @@ class LeapFrog(Integrator):
 
         system (Molecule):          Simulation system
 
-        thermostat (Thermostat):    Thermostat for temperature coupling. Default: None
+        thermostat (Thermostat):    Thermostat for temperature coupling. Default: ``None``.
 
-        barostat (Barostat):        Barostat for pressure coupling. Default: None
+        barostat (Barostat):        Barostat for pressure coupling. Default: ``None``.
 
-        constraint (Constraint):    Constraint algorithm. Default: None
+        constraint (Constraint):    Constraint algorithm. Default: ``None``.
 
 
     Supported Platforms:

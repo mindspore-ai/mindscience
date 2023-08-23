@@ -65,7 +65,7 @@ class EnergyCell(Cell):
                             Default: 'nm'
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
                             Default: 'kj/mol'
-        use_pbc (bool):     Whether to use periodic boundary condition. Default: None
+        use_pbc (bool):     Whether to use periodic boundary condition. Default: ``None``.
 
     Returns:
         Tensor of energy, Tensor of shape `(B, 1)`. Data type is float.
@@ -187,7 +187,7 @@ class EnergyCell(Cell):
 
         Args:
             cutoff(float):  Cutoff distances.
-            unit(str):      Length unit. Default: None
+            unit(str):      Length unit. Default: ``None``.
         """
         if cutoff is None:
             self.cutoff = None
@@ -244,15 +244,15 @@ class EnergyCell(Cell):
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: None
+                                            Index of neighbour atoms. Default: ``None``.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour index. Default: None
+                                            Mask for neighbour index. Default: ``None``.
             neighbour_vector (Tensor):       Tensor of shape (B, A, N). Data type is bool.
-                                            Vectors from central atom to neighbouring atoms. Default: None
+                                            Vectors from central atom to neighbouring atoms. Default: ``None``.
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: None
+                                            Distance between neighbours atoms. Default: ``None``.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: None
+                                            Tensor of PBC box. Default: ``None``.
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
@@ -273,7 +273,7 @@ class NonbondEnergy(EnergyCell):
 
         name (str):             Name of energy.
 
-        cutoff (Union[float, Length, Tensor]):  cutoff distance. Default: None
+        cutoff (Union[float, Length, Tensor]):  cutoff distance. Default: ``None``.
 
         length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
                                 Default: 'nm'
@@ -281,7 +281,7 @@ class NonbondEnergy(EnergyCell):
         energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
                                 Default: 'kj/mol'
 
-        use_pbc (bool):         Whether to use periodic boundary condition. Default: None
+        use_pbc (bool):         Whether to use periodic boundary condition. Default: ``None``.
 
     """
     def __init__(self,
@@ -320,17 +320,17 @@ class NonbondEnergy(EnergyCell):
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: None
+                                            Index of neighbour atoms. Default: ``None``.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour index. Default: None
+                                            Mask for neighbour index. Default: ``None``.
             neighbour_vector (Tensor):       Tensor of shape (B, A, N). Data type is bool.
-                                            Vectors from central atom to neighbouring atoms. Default: None
+                                            Vectors from central atom to neighbouring atoms. Default: ``None``.
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: None
+                                            Distance between neighbours atoms. Default: ``None``.
             inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.
-                                            Reciprocal of distances. Default: None
+                                            Reciprocal of distances. Default: ``None``.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: None
+                                            Tensor of PBC box. Default: ``None``.
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.

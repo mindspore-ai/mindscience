@@ -156,7 +156,7 @@ class ADFDTD:
         ns (int): Number of sources.
         designer (BaseTopologyDesigner): Customized Topology designer.
         cfs_pml (CFSParameters): CFS parameter class.
-        init_weights (Tensor): Initial weights, default: None.
+        init_weights (Tensor): Initial weights, Default: ``None``.
 
     Returns:
         outputs (Tensor): Customized outputs.

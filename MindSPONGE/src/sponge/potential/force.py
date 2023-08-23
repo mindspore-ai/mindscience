@@ -57,7 +57,7 @@ class ForceCell(Cell):
 
         force (Tensor):     Tensor of shape `(B, A, D)`. Data type is float.
 
-        virial (Tensor):    Tensor of shape `(B, D)`. Data type is float. Default: None
+        virial (Tensor):    Tensor of shape `(B, D)`. Data type is float. Default: ``None``.
 
     Supported Platforms:
 
@@ -171,21 +171,21 @@ class ForceCell(Cell):
             coordinates (Tensor):           Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: None
+                                            Index of neighbour atoms. Default: ``None``.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour atoms. Default: None
+                                            Mask for neighbour atoms. Default: ``None``.
             neighbour_vector (Tensor):       Tensor of shape (B, A, N, D). Data type is bool.
                                             Vectors from central atom to neighbouring atoms.
             neighbour_distances (Tensor):   Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: None
+                                            Distance between neighbours atoms. Default: ``None``.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: None
+                                            Tensor of PBC box. Default: ``None``.
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
             force (Tensor):     Tensor of shape (B, A, D). Data type is float.
             virial (Tensor):    Tensor of shape (B, D). Data type is float.
-                                Default: None
+                                Default: ``None``.
 
         Symbols:
             B:  Batchsize, i.e. number of walkers in simulation

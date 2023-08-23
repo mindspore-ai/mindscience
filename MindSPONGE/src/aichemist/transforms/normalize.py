@@ -44,9 +44,9 @@ class ScaleShift(Cell):
         shift (float): Shift value. Default: 0
 
         type_ref (Union[Tensor, ndarray]): Tensor of shape (T, E). Data type is float
-            Reference values of label for each atom type. Default: None
+            Reference values of label for each atom type. Default: ``None``.
 
-        by_atoms (bool): Whether to do atomwise scale and shift. Default: None
+        by_atoms (bool): Whether to do atomwise scale and shift. Default: ``None``.
 
         axis (int): Axis to summation the reference value of molecule. Default: -2
 
@@ -162,7 +162,7 @@ class ScaleShift(Cell):
             label (Tensor):       Tensor with shape (B, ...). Data type is float.
             num_atoms (Tensor):     Tensor with shape (B, 1). Data type is int.
             atom_type (Tensor):    Tensor with shape (B, A). Data type is float.
-                                    Default: None
+                                    Default: ``None``.
 
         Returns:
             outputs (Tensor):       Tensor with shape (B, ...). Data type is float.
@@ -195,7 +195,7 @@ class ScaleShift(Cell):
             outputs (Tensor):       Tensor with shape (B, ...). Data type is float.
             num_atoms (Tensor):     Tensor with shape (B, 1). Data type is int.
             atom_type (Tensor):     Tensor with shape (B, A). Data type is float.
-                                    Default: None
+                                    Default: ``None``.
 
         Returns:
             outputs (Tensor):       Tensor with shape (B, ...). Data type is float.

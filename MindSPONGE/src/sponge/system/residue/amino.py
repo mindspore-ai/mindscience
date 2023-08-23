@@ -43,10 +43,10 @@ class AminoAcid(Residue):
 
         name (str):         Name of the residue. Default: ''
 
-        template (dict):    Template of Residue. Default: None
+        template (dict):    Template of Residue. Default: ``None``.
 
         atom_name (Union[str, List[str], ndarray]):
-                            Atom name. Can be ndarray or list of str. Defulat: None
+                            Atom name. Can be ndarray or list of str. Default: ``None``.
 
         start_index (int):  The start index of the first atom in this residue.
 

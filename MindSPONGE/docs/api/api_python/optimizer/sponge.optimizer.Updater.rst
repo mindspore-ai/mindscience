@@ -62,7 +62,7 @@ sponge.optimizer.Updater
 
         参数：
             - **coordinate** (Tensor) - 原子的位置坐标的Tensor。数据类型为float。
-            - **success** (bool) - 判断是否更新坐标。默认值：True。
+            - **success** (bool) - 判断是否更新坐标。默认值： ``True`` 。
 
         返回：
             bool，是否成功更新了坐标的参数。
@@ -73,7 +73,7 @@ sponge.optimizer.Updater
 
         参数：
             - **pbc_box** (Tensor) - 周期性边界条件box的Tensor。数据类型为float。
-            - **success** (bool) - 判断是否更新周期性边界条件箱的参数。默认值：True。
+            - **success** (bool) - 判断是否更新周期性边界条件箱的参数。默认值： ``True`` 。
 
         返回：
             bool，是否成功更新了周期性边界条件箱的参数。
@@ -84,7 +84,7 @@ sponge.optimizer.Updater
 
         参数：
             - **velocity** (Tensor) - 原子速度的Tensor。数据类型为float。
-            - **success** (bool) - 判断是否更新速度参数。默认值：True。
+            - **success** (bool) - 判断是否更新速度参数。默认值： ``True`` 。
 
         返回：
             bool，是否成功更新了速度参数。
@@ -95,7 +95,7 @@ sponge.optimizer.Updater
 
         参数：
             - **kinetics** (Tensor) - 动力学的Tensor。数据类型为float。
-            - **success** (bool) - 判断是否更新动力学参数。默认值：True。
+            - **success** (bool) - 判断是否更新动力学参数。默认值： ``True`` 。
 
         返回：
             bool。是否成功更新了动力学参数。
@@ -106,7 +106,7 @@ sponge.optimizer.Updater
 
         参数：
             - **temperature** (Tensor) - 温度的Tensor。数据类型为float。
-            - **success** (bool) - 判断是否更新温度参数。默认值：True。
+            - **success** (bool) - 判断是否更新温度参数。默认值： ``True`` 。
 
         返回：
             bool。是否成功更新了温度参数。
@@ -117,7 +117,7 @@ sponge.optimizer.Updater
 
         参数：
             - **virial** (Tensor) - 维里的Tensor。数据类型为float。
-            - **success** (bool, 可选) - 判断是否更新维里参数。默认值：True。
+            - **success** (bool, 可选) - 判断是否更新维里参数。默认值： ``True`` 。
 
         返回：
             bool。是否成功更新了维里参数。
@@ -128,7 +128,7 @@ sponge.optimizer.Updater
 
         参数：
             - **pressure** (Tensor) - 压力的Tensor。数据类型为float。
-            - **success** (bool, 可选) - 判断是否更新压力参数。默认值：True。
+            - **success** (bool, 可选) - 判断是否更新压力参数。默认值： ``True`` 。
 
         返回：
             bool。是否成功更新了压力参数。
@@ -184,7 +184,7 @@ sponge.optimizer.Updater
         完成当前优化step并且进行到下一个step。
 
         参数：
-            - **success** (bool) - 是否完成当前优化step并且移动到下一步。默认值：True。
+            - **success** (bool) - 是否完成当前优化step并且移动到下一步。默认值： ``True`` 。
 
         返回：
             bool，是否成功完成当前优化step并且移动到下一步。

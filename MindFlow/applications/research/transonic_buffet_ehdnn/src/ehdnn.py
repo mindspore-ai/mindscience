@@ -34,7 +34,7 @@ class ConvolutionalLayer(nn.Cell):
             same as input `input` . For the values of str, refer to the function `initializer`. Default:'XavierUniform'.
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype is
             same as input `input` . The values of str refer to the function `initializer`. Default: "zeros".
-        has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
+        has_bias (bool): Specifies whether the layer uses a bias vector. Default: ``True``.
         activation (Union[str, Cell, Primitive, None]): activate function applied to the output of the fully connected
             layer. Default: nn.LeakyReLU().
 
@@ -102,7 +102,7 @@ class MemoryLayer(nn.Cell):
             same as input `input` . For the values of str, refer to the function `initializer`. Default:'XavierUniform'.
         bias_init (Union[Tensor, str, Initializer, numbers.Number]): The trainable bias_init parameter. The dtype is
             same as input `input` . The values of str refer to the function `initializer`. Default: "zeros".
-        has_bias (bool): Specifies whether the layer uses a bias vector. Default: True.
+        has_bias (bool): Specifies whether the layer uses a bias vector. Default: ``True``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(*, in\_channels)`.

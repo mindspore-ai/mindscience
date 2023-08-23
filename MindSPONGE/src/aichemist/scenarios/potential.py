@@ -62,27 +62,27 @@ class Cybertron(Cell):
 
         dim_output (int):       Output dimension. Default: 1.
 
-        num_atoms (int):        Maximum number of atoms in system. Default: None.
+        num_atoms (int):        Maximum number of atoms in system. Default: ``None``.
 
         atom_type (Tensor):    Tensor of shape (B, A). Data type is int.
                                 Index of atom types.
-                                Default: None,
+                                Default: ``None``.,
 
         bond_types (Tensor):    Tensor of shape (B, A, N). Data type is int.
-                                Index of bond types. Default: None.
+                                Index of bond types. Default: ``None``.
 
         num_atom_types (int):   Maximum number of atomic types. Default: 64
 
         pbc_box (Tensor):       Tensor of shape (B, D).
-                                Box size of periodic boundary condition. Default: None
+                                Box size of periodic boundary condition. Default: ``None``.
 
-        use_pbc (bool):         Whether to use periodic boundary condition. Default: None
+        use_pbc (bool):         Whether to use periodic boundary condition. Default: ``None``.
 
-        length_unit (str):      Unit of position coordinate. Default: None
+        length_unit (str):      Unit of position coordinate. Default: ``None``.
 
-        energy_unit (str):      Unit of output energy. Default: None.
+        energy_unit (str):      Unit of output energy. Default: ``None``.
 
-        hyper_param (dict):     Hyperparameters of Cybertron. Default: None.
+        hyper_param (dict):     Hyperparameters of Cybertron. Default: ``None``.
 
     Symbols:
 

@@ -199,7 +199,7 @@ class Controller(Cell):
         Calculate temperature according to velocity.
 
         Args:
-            kinetics(Tensor):   Tensor of kinetics. Tensor shape is `(B, D)`. Data type is float. Default: None
+            kinetics(Tensor):   Tensor of kinetics. Tensor shape is `(B, D)`. Data type is float. Default: ``None``.
 
         Returns:
             Tensor, Tensor of temperature. The shape of the Tensor is `(B)`. Data type is float.
@@ -251,7 +251,7 @@ class Controller(Cell):
         Args:
             coordinate(Tensor): Tensor of atomic coordinates. Tensor shape is `(B, A, D)`. Data type is float.
             keepdims(bool):     If this is set to `True`, the second axis will be left
-                                in the result as dimensions with size one. Default: True
+                                in the result as dimensions with size one. Default: ``True``.
 
         Returns:
             Tensor, Tensor of the coordinate of the center of mass. Tensor shape is `(B, A, D)` or `(B, D)`.
@@ -284,7 +284,7 @@ class Controller(Cell):
         Args:
             velocity(Tensor):   Tensor of velocity. Tensor shape is `(B, A, D)`. Data type is float.
             keepdims(bool):     If this is set to `True`, the second axis will be left
-                                in the result as dimensions with size one. Default: True
+                                in the result as dimensions with size one. Default: ``True``.
 
         Returns:
             Tensor, Tensor of the velocity of the center of mass.

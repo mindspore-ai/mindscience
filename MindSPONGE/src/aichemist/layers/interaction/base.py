@@ -38,11 +38,11 @@ class Interaction(Cell):
 
         dim_feature (int):          Feature dimension.
 
-        activation (Cell):          Activation function. Default: None
+        activation (Cell):          Activation function. Default: ``None``.
 
-        use_distance (bool):        Whether to use distance between atoms. Default: True
+        use_distance (bool):        Whether to use distance between atoms. Default: ``True``.
 
-        use_bond (bool):            Whether to use bond information. Default: False
+        use_bond (bool):            Whether to use bond information. Default: ``False``.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

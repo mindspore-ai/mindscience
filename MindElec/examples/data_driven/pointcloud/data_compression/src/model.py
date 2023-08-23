@@ -27,7 +27,7 @@ class EncoderDecoder(nn.Cell):
         target_shape (list or tuple): Output DWH shape.
         base_channels (int): base channel, all intermediate layers' channels are multiple of this value.
         decoding (bool): Enable Decoder, True if the reconstructed input is need,
-                         for example, the training. Default: False
+                         for example, the training. Default: ``False``.
 
     Returns:
         Tensor, output tensor, compressed encodings (encoding=False) or reconstructed input (encoding=True).
@@ -206,7 +206,7 @@ class DoubleConvTranspose(nn.Cell):
     Args:
         input_dim (int): Input channel.
         out_channel (int): Output channel.
-        mid_channels (int): Mid channels. Default: None.
+        mid_channels (int): Mid channels. Default: ``None``.
 
     Returns:
         Tensor, output tensor.
@@ -256,9 +256,9 @@ class Up(nn.Cell):
     Args:
         in_channel (int): Input channel.
         out_channel (int): Output channel.
-        input_shape (list or tuple): Input DWH shape. Default: None.
-        target_shape (list or tuple): Output DWH shape. Default: None.
-        pad (bool): Enable manual padding, only needed in the first layer of the Decoder. Default: True.
+        input_shape (list or tuple): Input DWH shape. Default: ``None``.
+        target_shape (list or tuple): Output DWH shape. Default: ``None``.
+        pad (bool): Enable manual padding, only needed in the first layer of the Decoder. Default: ``True``.
 
     Returns:
         Tensor, output tensor.

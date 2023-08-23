@@ -56,13 +56,13 @@ class CoulombEnergy(NonbondEnergy):
         atom_charge (Union[Tensor, ndarray, List[float]]):
             Array of atomic charge. The shape of array is `(B, A)`, and the data type is float.
 
-        cutoff (Union[float, Length, Tensor]):  Cut-off distance. Default: None
+        cutoff (Union[float, Length, Tensor]):  Cut-off distance. Default: ``None``.
 
         pbc_box (Union[Tensor, ndarray, List[float]]):
-            Array of PBC box with shape `(B, A, D)`, and the data type is float. Default: None
+            Array of PBC box with shape `(B, A, D)`, and the data type is float. Default: ``None``.
 
         exclude_index (Union[Tensor, ndarray, List[int]]):
-            Tensor of the exclude index, required by PME. Default: None
+            Tensor of the exclude index, required by PME. Default: ``None``.
 
         damp_dis (Union[float, Length, Tensor]):
             A distance :math:`l_{\alpha}` to calculate the damping factor :math:`\alpha = l_{\alpha}^-1`
@@ -72,9 +72,9 @@ class CoulombEnergy(NonbondEnergy):
 
         use_pme (bool): Whether to use particle mesh ewald (PME) method to calculate the coulomb interaction
             of the system in PBC box. If `False` is given, the damped shifted force (DSF) method
-            will be used for PBC. Default: True
+            will be used for PBC. Default: ``True``.
 
-        parameters (dict): Force field parameters. Default: None
+        parameters (dict): Force field parameters. Default: ``None``.
 
         length_unit (str): Length unit. If None is given, it will be assigned with the global length unit.
             Default: 'nm'
@@ -226,7 +226,7 @@ class CoulombEnergy(NonbondEnergy):
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: None
+                                            Tensor of PBC box. Default: ``None``.
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
@@ -435,13 +435,13 @@ class ParticleMeshEwaldCoulomb(Cell):
     Args:
 
         pbc_box (Union[Tensor, ndarray, List[float]]):
-            Array of PBC box with shape `(B, A, D)`, and the data type is float. Default: None
+            Array of PBC box with shape `(B, A, D)`, and the data type is float. Default: ``None``.
 
         cutoff (Union[float, Length, Tensor]): Cutoff distance. Default: Length(1, 'nm')
 
         exclude_index (Union[Tensor, ndarray, List[int]]):
             Array of indexes of atoms that should be excluded from neighbour list.
-            The shape of the tensor is `(B, A, Ex)`. The data type is int. Default: None
+            The shape of the tensor is `(B, A, Ex)`. The data type is int. Default: ``None``.
 
         accuracy (float): Accuracy for PME. Default: 1e-4
 

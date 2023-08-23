@@ -66,12 +66,12 @@ class Integrator(Controller):
 
         system (Molecule):          Simulation system
 
-        thermostat (Thermostat):    Thermostat for temperature coupling. Default: None
+        thermostat (Thermostat):    Thermostat for temperature coupling. Default: ``None``.
 
-        barostat (Barostat):        Barostat for pressure coupling. Default: None
+        barostat (Barostat):        Barostat for pressure coupling. Default: ``None``.
 
         constraint (Union[Constraint, list]):
-                                    Constraint algorithm. Default: None
+                                    Constraint algorithm. Default: ``None``.
 
 
     Supported Platforms:

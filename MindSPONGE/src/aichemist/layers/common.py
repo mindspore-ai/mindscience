@@ -55,10 +55,10 @@ class MLP(nn.Cell):
 
     Args:
         input_dims (int): The number of channels in the input space.
-        hidden_dims (List[int]): Dimension of hidden layers.Default: None
-        activation (Cell): Activation function. Default: None.
-        short_cut (bool): Add inputs or not. Default: False
-        batch_norm (bol): Batch normalization for each layer or not. Default: False.
+        hidden_dims (List[int]): Dimension of hidden layers.Default: ``None``.
+        activation (Cell): Activation function. Default: ``None``.
+        short_cut (bool): Add inputs or not. Default: ``False``.
+        batch_norm (bol): Batch normalization for each layer or not. Default: ``False``.
         weight_init (Union[Initializer, str]): The trainable weight_init parameter. Default: 'xavier_uniform'
         bias_init (Union[Initializer, str]): The trainable bias_init parameter. Default: 'zeros'
 
@@ -126,7 +126,7 @@ class SmoothReciprocal(Cell):
 
         dmax (float):           Maximum distance
 
-        cutoff_network (Cell):  Cutoff network. Default: None
+        cutoff_network (Cell):  Cutoff network. Default: ``None``.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -211,11 +211,11 @@ class PositionalEmbedding(Cell):
 
         dim (int):                      Last dimension of Tensor.
 
-        use_distances (bool):           Whether to use distance information. Default: True
+        use_distances (bool):           Whether to use distance information. Default: ``True``.
 
-        use_bonds (bool):               Whether to use bond information. Default: False
+        use_bonds (bool):               Whether to use bond information. Default: ``False``.
 
-        use_public_layer_norm (bool):   Whether to share layer normalization network. Default: True
+        use_public_layer_norm (bool):   Whether to share layer normalization network. Default: ``True``.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

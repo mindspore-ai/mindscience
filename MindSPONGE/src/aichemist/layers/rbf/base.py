@@ -43,17 +43,17 @@ class RadicalBasisFunctions(Cell):
 
         sigma (float):          Simga. Default: 0
 
-        delta (float):          Space interval. Default: None
+        delta (float):          Space interval. Default: ``None``.
 
         num_basis (int):        Number of basis functions. Defatul: None
 
-        rescale (bool):         Whether to rescale the output of RBF from -1 to 1. Default: False
+        rescale (bool):         Whether to rescale the output of RBF from -1 to 1. Default: ``False``.
 
-        clip_distance (bool):   Whether to clip the value of distance. Default: False
+        clip_distance (bool):   Whether to clip the value of distance. Default: ``False``.
 
         length_unit (str):      Unit for distance. Default: = 'nm',
 
-        hyper_param (dict):     Hyperparameter. Default: None
+        hyper_param (dict):     Hyperparameter. Default: ``None``.
 
     """
 

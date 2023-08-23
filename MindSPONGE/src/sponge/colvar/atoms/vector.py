@@ -38,21 +38,21 @@ class Vector(AtomsBase):
 
         atoms (AtomsBase):  Atoms of shape `(..., 2, D)` to form a vector of shape `(..., D)` or `(..., 1, D)`.
                             Cannot be used with `atoms0` or `atoms1`.
-                            Default: None
+                            Default: ``None``.
 
         atoms0 (AtomsBase): The initial point of atoms of shape `(..., D)` to form a vector of shape `(..., D)`.
                             Must be used with `atoms1`, and cannot be used with `atoms`.
-                            Default: None
+                            Default: ``None``.
 
         atoms1 (AtomsBase): The terminal point of atoms of shape `(..., D)` to form a vector of shape `(..., D)`.
                             Must be used with `atoms0`, and cannot be used with `atoms`.
-                            Default: None
+                            Default: ``None``.
 
         batched (bool):     Whether the first dimension of index is the batch size.
-                            Default: False
+                            Default: ``False``.
 
         use_pbc (bool):     Whether to calculate distance under periodic boundary condition.
-                            Default: None
+                            Default: ``None``.
 
         keepdims (bool):    If this is set to True, the axis which is take from the `atoms` will be left,
                             and the shape of the vector will be `(..., 1, D)`
@@ -60,7 +60,7 @@ class Vector(AtomsBase):
                             if None, its value will be determined according to the rank (number of dimension) of
                             the input atoms: False if the rank is greater than 2, otherwise True.
                             It only works when initialized with `atoms`.
-                            Default: None
+                            Default: ``None``.
 
         axis (int):         Axis along which the coordinate of atoms are take, of which the dimension must be 2.
                             It only works when initialized with `atoms`.
@@ -175,7 +175,7 @@ class Vector(AtomsBase):
         Args:
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Default: None
+                                    Default: ``None``.
 
         Returns:
             vector (Tensor):        Tensor of shape `(B, ..., D)`. Data type is float.

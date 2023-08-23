@@ -28,7 +28,7 @@ def print_log(*msg, level=logging.INFO, enable_log=True):
         *msg (any): Message(s) to print and log.
         level (int): Log level. Default: logging.INFO.
         enable_log (bool): Whether to log the message. In some cases, like before logging configuration, this flag would
-            be set as False. Default: True.
+            be set as False. Default: ``True``.
     """
 
     def log_help_func(*messages):

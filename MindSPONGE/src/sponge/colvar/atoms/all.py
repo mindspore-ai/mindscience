@@ -36,13 +36,13 @@ class AllAtoms(AtomsBase):
 
     Args:
 
-        system (Molecule):  Simulation system. Default: None
+        system (Molecule):  Simulation system. Default: ``None``.
 
         num_atoms (int):    Number of atoms. The number of atoms must be given when `system` is None.
-                            Default: None
+                            Default: ``None``.
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: False
+                            Default: ``False``.
 
         dimension (int):    Spatial dimension of the simulation system. Default: 3
 
@@ -94,7 +94,7 @@ class AllAtoms(AtomsBase):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
 
         Returns:
             center (Tensor):        Tensor of shape (B, ..., D). Data type is float.

@@ -43,10 +43,10 @@ class MaskedDriven(ForceModifier):
         update_pace (int): Frequency for updating the modifier. Default: 0
 
         length_unit (str): Length unit. If None is given, it will be assigned with the global length unit.
-            Default: None
+            Default: ``None``.
 
         energy_unit (str): Energy unit. If None is given, it will be assigned with the global energy unit.
-            Default: None
+            Default: ``None``.
 
     Supported Platforms:
 

@@ -66,18 +66,18 @@ class Colvar(Cell):
 
         ndim (int):         Rank (number of dimensions) of collective variables. Default: 0
 
-        periodic (bool):    Whether the collective variables is periodic. Default: False
+        periodic (bool):    Whether the collective variables is periodic. Default: ``False``.
 
         use_pbc (bool):     Whether to use periodic boundary condition.
                             If `None` is given, it will determine whether to use periodic boundary
                             conditions based on whether the `pbc_box` is provided.
-                            Default: None
+                            Default: ``None``.
 
         name (str):         Name of the collective variables. Default: 'colvar'
 
         unit (str):         Unit of the collective variables.
                             NOTE: This is not the `Units` Cell that wraps length and energy.
-                            Default: None
+                            Default: ``None``.
 
         dtype (type):       Data type of the collective variables. Default: float32
 
@@ -244,7 +244,7 @@ class Colvar(Cell):
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
                                     Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Tensor of PBC box. Default: None
+                                    Tensor of PBC box. Default: ``None``.
 
         Returns:
             colvar (Tensor):        Tensor of shape `(B, S_1, S_2, ..., S_n)`.

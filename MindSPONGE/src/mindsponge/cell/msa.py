@@ -21,17 +21,16 @@ from mindspore.common.tensor import Tensor
 from mindspore.ops import operations as P
 from .basic import Attention, GlobalAttention
 from .mask import MaskedLayerNorm
-from mindsponge.common.utils import _memory_reduce
 
 
 class MSARowAttentionWithPairBias(nn.Cell):
     r"""
     MSA row attention. Information from pair action value is made as the bias of the matrix of MSARowAttention,
-        in order to update the state of MSA using pair information.
+    in order to update the state of MSA using pair information.
 
     Reference:
         `Jumper et al. (2021) Suppl. Alg. 7 'MSARowAttentionWithPairBias'
-            <https://www.nature.com/articles/s41586-021-03819-2>`_.
+        <https://www.nature.com/articles/s41586-021-03819-2>`_.
 
     Args:
         num_head (int):         The number of the attention head.
@@ -40,20 +39,20 @@ class MSARowAttentionWithPairBias(nn.Cell):
         msa_act_dim (int):      The dimension of the msa_act.
         pair_act_dim (int):     The dimension of the pair_act.
         batch_size (int):       The batch size of parameters in MSA row attention, used in while control flow.
-                                Default: None.
-        slice_num (int):        The number of slices to be made to reduce memory. Default: 0.
+                                Default: ``None``.
+        slice_num (int):        The number of slices to be made to reduce memory. Default: ``0``.
 
     Inputs:
         - **msa_act** (Tensor) - Tensor of msa_act with shape :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` .
         - **msa_mask** (Tensor) - The mask for MSA row attention matrix with shape :math:`(N_{seqs}, N_{res})` .
         - **pair_act** (Tensor) - Tensor of pair_act with shape :math:`(N_{res}, N_{res}, pair\_act\_dim)` .
           Data type is float.
-        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: "None".
+        - **index** (Tensor) - The index of while loop, only used in case of while control flow. Default: ``None``.
         - **norm_msa_mask** (Tensor) - The mask of msa_act when to do layernorm with shape :math:`(N_{seqs}, N_{res})`,
-          Default: "None".
+          Default: ``None``.
         - **norm_pair_mask** (Tensor) - The mask of pair_act when to do layernorm with shape :math:`(N_{res}, N_{res})`,
-          Default: "None".
-        - **res_idx** (Tensor) - The residue index used to perform ROPE with shape :math:`(N_{res})`, Default: "None".
+          Default: ``None``.
+        - **res_idx** (Tensor) - The residue index used to perform ROPE with shape :math:`(N_{res})`, Default: ``None``.
 
     Outputs:
         Tensor, the float tensor of the msa_act of the layer with shape :math:`(N_{seqs}, N_{res}, msa\_act\_dim)` .
@@ -151,7 +150,8 @@ class MSARowAttentionWithPairBias(nn.Cell):
         Args:
             msa_act (Tensor):           Tensor of msa_act.
             mask (Tensor):              The mask for MSA row attention matrix.
-            index (Tensor):             The index of while loop, only used in case of while control flow. Default: None
+            index (Tensor):             The index of while loop, only used in case of while control flow.
+                Default: ``None``.
             nonbatched_bias(Tensor):    Tensor of non batched bias matrix.
 
         Outputs:
@@ -267,7 +267,7 @@ class MSAColumnGlobalAttention(nn.Cell):
         gating (bool):          Indicator of if the attention is gated.
         msa_act_dim (int):      The dimension of the msa_act.
         batch_size (int):       The batch size of parameters in MSAColumnGlobalAttention, used
-                                in while control flow. Default: None.
+                                in while control flow. Default: ``None``.
         slice_num (int):        The number of slices to be made to reduce memory. Default: 0
 
     Inputs:
@@ -348,7 +348,7 @@ class MSAColumnGlobalAttention(nn.Cell):
             msa_act (Tensor):       Tensor of msa_act.
             msa_mask (Tensor):      The mask for msa_act matrix.
             index (Tensor):         The index of while loop, only used in case of while
-                                    control flow. Default: None
+                                    control flow. Default: ``None``.
 
         Outputs:
             - **msa_act** (Tensor)- Tensor, the float tensor of the msa_act of the attention layer.
@@ -437,7 +437,8 @@ class MSARowAttentionWithPairBiasContact(nn.Cell):
         Args:
             msa_act (Tensor):           Tensor of msa_act.
             mask (Tensor):              The mask for MSA row attention matrix.
-            index (Tensor):             The index of while loop, only used in case of while control flow. Default: None
+            index (Tensor):             The index of while loop, only used in case of while control flow.
+                Default: ``None``.
             nonbatched_bias(Tensor):    Tensor of non batched bias matrix.
 
         Outputs:

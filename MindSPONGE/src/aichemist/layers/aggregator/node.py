@@ -90,10 +90,10 @@ class NodeAggregator(nn.Cell):
                                 Output vectors for each atom (node).
             atom_mask (Tensor): Tensor of shape (B, A). Data type is bool.
                                 Mask for atoms.
-                                Default: None
+                                Default: ``None``.
             num_atoms (Tensor): Tensor of shape (B, 1). Data type is int.
                                 Number of atoms.
-                                Default: None
+                                Default: ``None``.
 
         Returns:
             output (Tensor):    Tensor of shape (B, X). Data type is float.
@@ -108,7 +108,7 @@ class TensorSummation(NodeAggregator):
 
     Args:
 
-        dim (int):  Feature dimension. Default: None
+        dim (int):  Feature dimension. Default: ``None``.
 
         axis (int): Axis to aggregate. Default: -2
 
@@ -147,10 +147,10 @@ class TensorSummation(NodeAggregator):
                                 Output vectors for each atom (node).
             atom_mask (Tensor): Tensor of shape (B, A). Data type is bool.
                                 Mask for atoms.
-                                Default: None
+                                Default: ``None``.
             num_atoms (Tensor): Tensor of shape (B, 1). Data type is int.
                                 Number of atoms.
-                                Default: None
+                                Default: ``None``.
 
         Returns:
             output (Tensor):    Tensor of shape (B, X). Data type is float.
@@ -170,7 +170,7 @@ class TensorMean(NodeAggregator):
 
     Args:
 
-        dim (int):  Feature dimension. Default: None
+        dim (int):  Feature dimension. Default: ``None``.
 
         axis (int): Axis to aggregate. Default: -2
 
@@ -209,10 +209,10 @@ class TensorMean(NodeAggregator):
                                 Output vectors for each atom (node).
             atom_mask (Tensor): Tensor of shape (B, A). Data type is bool.
                                 Mask for atoms.
-                                Default: None
+                                Default: ``None``.
             num_atoms (Tensor): Tensor of shape (B, 1). Data type is int.
                                 Number of atoms.
-                                Default: None
+                                Default: ``None``.
 
         Returns:
             output (Tensor):    Tensor of shape (B, X). Data type is float.
@@ -283,10 +283,10 @@ class SoftmaxGeneralizedAggregator(NodeAggregator):
                                 Output vectors for each atom (node).
             atom_mask (Tensor): Tensor of shape (B, A). Data type is bool.
                                 Mask for atoms.
-                                Default: None
+                                Default: ``None``.
             num_atoms (Tensor): Tensor of shape (B, 1). Data type is int.
                                 Number of atoms.
-                                Default: None
+                                Default: ``None``.
 
         Returns:
             output (Tensor):    Tensor of shape (B, X). Data type is float.
@@ -358,10 +358,10 @@ class PowermeanGeneralizedAggregator(NodeAggregator):
                                 Output vectors for each atom (node).
             atom_mask (Tensor): Tensor of shape (B, A). Data type is bool.
                                 Mask for atoms.
-                                Default: None
+                                Default: ``None``.
             num_atoms (Tensor): Tensor of shape (B, 1). Data type is int.
                                 Number of atoms.
-                                Default: None
+                                Default: ``None``.
 
         Returns:
             output (Tensor):    Tensor of shape (B, X). Data type is float.
@@ -435,10 +435,10 @@ class TransformerAggregator(NodeAggregator):
                                 Output vectors for each atom (node).
             atom_mask (Tensor): Tensor of shape (B, A). Data type is bool.
                                 Mask for atoms.
-                                Default: None
+                                Default: ``None``.
             num_atoms (Tensor): Tensor of shape (B, 1). Data type is int.
                                 Number of atoms.
-                                Default: None
+                                Default: ``None``.
 
         Returns:
             output (Tensor):    Tensor of shape (B, X). Data type is float.

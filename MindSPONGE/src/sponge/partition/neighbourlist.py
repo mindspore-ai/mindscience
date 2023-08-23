@@ -50,17 +50,17 @@ class NeighbourList(Cell):
 
         cutoff (float):         Cut-off distance. If None is given under periodic boundary condition (PBC),
                                 the cutoff will be assigned with the default value of 1 nm.
-                                Default: None
+                                Default: ``None``.
 
         pace (int):             Update frequency for neighbour list. Default: 20
 
         exclude_index (Tensor): Tensor of the indices of the neighbouring atoms which could be excluded from the
                                 neighbour list. The shape of Tensor is `(B, A, Ex)`, and the data type is int.
-                                Default: None
+                                Default: ``None``.
 
         num_neighbours (int):   Maximum number of neighbours. If `None` is given, this value will be calculated
                                 by the ratio of the number of neighbouring grids to the total number of grids.
-                                Default: None
+                                Default: ``None``.
 
         num_cell_cut (int):     Number of subdivision of grid cells according to cutoff. Default: 1
 
@@ -74,11 +74,11 @@ class NeighbourList(Cell):
         large_dis (float):      A large number to fill in the distances to the masked neighbouring atoms.
                                 Default: 1e4
 
-        use_grids (bool):       Whether to use grids to calculate the neighbour list. Default: None
+        use_grids (bool):       Whether to use grids to calculate the neighbour list. Default: ``None``.
 
         cast_fp16 (bool):       If this is set to `True`, the data will be cast to float16 before sort.
                                 For use with some devices that only support sorting of float16 data.
-                                Default: False
+                                Default: ``False``.
 
     Supported Platforms:
 

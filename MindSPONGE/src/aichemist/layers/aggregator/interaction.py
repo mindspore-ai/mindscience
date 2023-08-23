@@ -56,11 +56,11 @@ class InteractionAggregator(nn.Cell):
 
         dim (int):          Feature dimension.
 
-        num_agg (int):      Number of interaction layer to be aggregate. Default: None
+        num_agg (int):      Number of interaction layer to be aggregate. Default: ``None``.
 
         n_hidden (int):     Number of hidden layers. Default: 0
 
-        activation (Cell):  Activation function. Default: None
+        activation (Cell):  Activation function. Default: ``None``.
 
     Symbols:
 
@@ -84,7 +84,7 @@ class InteractionAggregator(nn.Cell):
         Args:
             ylist (list):       List of representation of interactions layers.
             atom_mask (Tensor): Tensor of shape (B, A). Data type is bool.
-                                Mask for atoms.Default: None
+                                Mask for atoms.Default: ``None``.
 
         Returns:
             output (Tensor):    Tensor of shape (B, X). Data type is float.
@@ -101,11 +101,11 @@ class InteractionSummation(InteractionAggregator):
 
         dim (int):          Feature dimension.
 
-        num_agg (int):      Number of interaction layer to be aggregate. Default: None
+        num_agg (int):      Number of interaction layer to be aggregate. Default: ``None``.
 
         n_hidden (int):     Number of hidden layers. Default: 0
 
-        activation (Cell):  Activation function. Default: None
+        activation (Cell):  Activation function. Default: ``None``.
 
     Symbols:
 
@@ -141,11 +141,11 @@ class InteractionMean(InteractionAggregator):
 
         dim (int):          Feature dimension.
 
-        num_agg (int):      Number of interaction layer to be aggregate. Default: None
+        num_agg (int):      Number of interaction layer to be aggregate. Default: ``None``.
 
         n_hidden (int):     Number of hidden layers. Default: 0
 
-        activation (Cell):  Activation function. Default: None
+        activation (Cell):  Activation function. Default: ``None``.
 
     Symbols:
 
@@ -181,11 +181,11 @@ class LinearTransformation(InteractionAggregator):
 
         dim (int):          Feature dimension.
 
-        num_agg (int):      Number of interaction layer to be aggregate. Default: None
+        num_agg (int):      Number of interaction layer to be aggregate. Default: ``None``.
 
         n_hidden (int):     Number of hidden layers. Default: 0
 
-        activation (Cell):  Activation function. Default: None
+        activation (Cell):  Activation function. Default: ``None``.
 
     Symbols:
 
@@ -226,11 +226,11 @@ class MultipleChannelRepresentation(InteractionAggregator):
 
         dim (int):          Feature dimension.
 
-        num_agg (int):      Number of interaction layer to be aggregate. Default: None
+        num_agg (int):      Number of interaction layer to be aggregate. Default: ``None``.
 
         n_hidden (int):     Number of hidden layers. Default: 0
 
-        activation (Cell):  Activation function. Default: None
+        activation (Cell):  Activation function. Default: ``None``.
 
     Symbols:
 

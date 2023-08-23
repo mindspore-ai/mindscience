@@ -44,9 +44,9 @@ class PotentialCell(EnergyCell):
         num_energies(int):                      Number of the outputs of energy terms. Default: 1
         energy_names(Union[str, List[str]]):    Names of energy terms. Default: "potential".
         length_unit(str):                       Length unit. If None is given, it will be assigned
-                                                with the global length unit. Default: None
+                                                with the global length unit. Default: ``None``.
         energy_unit(str):                       Energy unit. If None is given, it will be assigned
-                                                with the global energy unit. Default: None
+                                                with the global energy unit. Default: ``None``.
         use_pbc(bool):                          Whether to use periodic boundary condition.
         name(str):                              Name of energy. Default: "potential"
 
@@ -54,14 +54,14 @@ class PotentialCell(EnergyCell):
         - **coordinates** (Tensor) - Tensor of shape (B, A, D). Data type is float.
           Position coordinate of atoms in system.
         - **neighbour_index** (Tensor) - Tensor of shape (B, A, N). Data type is int.
-          Index of neighbour atoms. Default: None
+          Index of neighbour atoms. Default: ``None``.
         - **neighbour_mask** (Tensor) - Tensor of shape (B, A, N). Data type is bool.
-          Mask for neighbour atoms. Default: None
+          Mask for neighbour atoms. Default: ``None``.
         - **neighbour_vector** (Tensor) - Tensor of shape (B, A, N, D). Data type is bool.
-          Vectors from central atom to neighbouring atoms. Default: None
+          Vectors from central atom to neighbouring atoms. Default: ``None``.
         - **neighbour_distances** (Tensor) - Tensor of shape (B, A, N). Data type is float.
-          Distance between neighbours atoms. Default: None
-        - **pbc_box** (Tensor) - Tensor of shape (B, D). Data type is float. Tensor of PBC box. Default: None
+          Distance between neighbours atoms. Default: ``None``.
+        - **pbc_box** (Tensor) - Tensor of shape (B, D). Data type is float. Tensor of PBC box. Default: ``None``.
 
     Outputs:
         potential, Tensor of shape `(B, E)`. Data type is float.
@@ -182,15 +182,15 @@ class PotentialCell(EnergyCell):
             coordinates (Tensor):           Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: None
+                                            Index of neighbour atoms. Default: ``None``.
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour atoms. Default: None
+                                            Mask for neighbour atoms. Default: ``None``.
             neighbour_vector (Tensor):       Tensor of shape (B, A, N, D). Data type is bool.
                                             Vectors from central atom to neighbouring atoms.
             neighbour_distances (Tensor):   Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: None
+                                            Distance between neighbours atoms. Default: ``None``.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: None
+                                            Tensor of PBC box. Default: ``None``.
 
         Returns:
             potential (Tensor): Tensor of shape (B, E). Data type is float.

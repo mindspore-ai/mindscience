@@ -44,5 +44,5 @@ sponge.function
     sponge.function.set_global_energy_unit
     sponge.function.set_global_units
     sponge.function.Units
-    sponge.function.vector_in_box
+    sponge.function.vector_in_pbc
     sponge.function.VelocityGenerator

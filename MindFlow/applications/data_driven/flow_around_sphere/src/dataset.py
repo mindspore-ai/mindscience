@@ -33,7 +33,7 @@ class FlowDataset:
         skip(int): Number of sampling intervals for flow field snapshots. Default: 1.
         scale(float): The magnification of the flow field label. Default: 1000.
         residual(bool): If true, the target of the prediction is the change between the future and the current moment.
-                        Default: True.
+                        Default: ``True``.
     """
 
     def __init__(self, data, t_in=1, t_out=1, skip=1, residual=True, scale=1000.0):

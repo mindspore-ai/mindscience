@@ -65,7 +65,7 @@ class ImproperEnergy(DihedralEnergy):
                             Array of the phase shift :math:`\gamma_n` for the dihedral angles.
                             The shape of array is `(B, d)`, and the data type is float.
 
-        parameters (dict):  Force field parameters. Default: None
+        parameters (dict):  Force field parameters. Default: ``None``.
 
         use_pbc (bool):     Whether to use periodic boundary condition.
 
