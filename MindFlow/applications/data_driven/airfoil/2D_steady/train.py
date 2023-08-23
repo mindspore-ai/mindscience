@@ -35,44 +35,52 @@ from mindflow.loss import WaveletTransformLoss
 from mindflow.cell import ViT
 from mindflow.utils import load_yaml_config, print_log, log_config
 
-from src import AirfoilDataset, plot_u_and_cp, get_ckpt_summ_dir, plot_u_v_p, calculate_eval_error
+from src import AirfoilDataset, plot_u_and_cp, get_ckpt_summary_dir, plot_u_v_p, calculate_test_error
 
 set_seed(0)
 np.random.seed(0)
 
 
-def train():
-    '''Train and evaluate the network'''
-    mode = args.train_mode
-    print_log(f'train mode: {mode}')
+def parse_args():
+    '''Parse input args'''
+    parser = argparse.ArgumentParser(description='Airfoil 2D_steady Simulation')
+    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
+                        help="Whether to save intermediate compilation graphs")
+    parser.add_argument("--context_mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+                        help="Support context mode: 'GRAPH', 'PYNATIVE'")
+    parser.add_argument('--train_mode', type=str, default='train', choices=["train", "test", "finetune"],
+                        help="Support run mode: 'train', 'test', 'finetune'")
+    parser.add_argument('--device_id', type=int, default=4, help="ID of the target device")
+    parser.add_argument('--device_target', type=str, default='Ascend', choices=["GPU", "Ascend"],
+                        help="The target device to run, support 'Ascend', 'GPU'")
+    parser.add_argument("--config_file_path", type=str, default="./configs/vit.yaml")
+    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
+    input_args = parser.parse_args()
+    return input_args
+
+
+def train(input_args):
+    '''Train and test the network'''
+    mode = input_args.train_mode
+    print_log(f'running mode: {mode}')
     # read params
-    config = load_yaml_config(args.config_file_path)
+    config = load_yaml_config(input_args.config_file_path)
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
-    ckpt_params = config["ckpt"]
-    eval_params = config["eval"]
     # prepare dataset
     max_value_list = data_params['max_value_list']
     min_value_list = data_params['min_value_list']
-    data_group_size = data_params['data_group_size']
-    method = model_params['method']
-    dataset = AirfoilDataset(max_value_list, min_value_list, data_group_size)
+    method = model_params['encoding_method']
+    dataset = AirfoilDataset(max_value_list, min_value_list)
     batch_size = data_params['batch_size']
 
-    if mode == 'finetune':
-        train_num_list, eval_num_list = data_params['finetune_num_list'], None
-    elif mode == 'eval':
-        train_num_list, eval_num_list = None, data_params['eval_num_list']
-    else:
-        train_num_list, eval_num_list = data_params['train_num_list'], None
-    train_dataset, eval_dataset = dataset.create_dataset(data_params['data_path'],
-                                                         train_num_list,
-                                                         eval_num_list,
+    train_dataset, test_dataset = dataset.create_dataset(train_dataset_path=data_params['train_dataset_path'],
+                                                         test_dataset_path=data_params['test_dataset_path'],
+                                                         finetune_dataset_path=data_params['finetune_dataset_path'],
                                                          batch_size=batch_size,
                                                          shuffle=False,
                                                          mode=mode,
-                                                         train_size=data_params['train_size'],
                                                          finetune_size=data_params['finetune_size'],
                                                          drop_remainder=True)
     # prepare loss scaler
@@ -85,8 +93,8 @@ def train():
         compute_dtype = mstype.float32
 
     # model construction
-    model = ViT(in_channels=model_params[method]['input_dims'],
-                out_channels=model_params['output_dims'],
+    model = ViT(in_channels=model_params['in_channels'],
+                out_channels=model_params['out_channels'],
                 encoder_depths=model_params['encoder_depth'],
                 encoder_embed_dim=model_params['encoder_embed_dim'],
                 encoder_num_heads=model_params['encoder_num_heads'],
@@ -95,22 +103,22 @@ def train():
                 decoder_num_heads=model_params['decoder_num_heads'],
                 compute_dtype=compute_dtype
                 )
-    if mode in ('finetune', 'eval'):
+    if mode in ('finetune', 'test'):
         # load pretrained model
-        param_dict = load_checkpoint(ckpt_params['ckpt_path'])
+        param_dict = load_checkpoint(config['pretrained_ckpt_path'])
         load_param_into_net(model, param_dict)
         print_log("Load pre-trained model successfully")
         if mode == 'finetune':
             optimizer_params["epochs"] = 200
-            ckpt_params["save_ckpt_interval"] = 200
+            config["save_ckpt_interval"] = 200
         else:
-            plot_u_v_p(eval_dataset, model, data_params)
-            calculate_eval_error(eval_dataset, model, True, data_params['post_dir'])
+            plot_u_v_p(test_dataset, model, data_params['grid_path'], config['postprocess_dir'])
+            calculate_test_error(test_dataset, model, True, config['postprocess_dir'])
             return
 
     model_name = "_".join([model_params['name'], method, "bs", str(batch_size)])
     # prepare loss
-    ckpt_dir, summary_dir = get_ckpt_summ_dir(ckpt_params, model_name, method)
+    ckpt_dir, summary_dir = get_ckpt_summary_dir(config['summary_dir'], model_name, method)
     wave_loss = WaveletTransformLoss(wave_level=optimizer_params['wave_level'])
     problem = SteadyFlowWithLoss(model, loss_fn=wave_loss)
     # prepare optimizer
@@ -141,12 +149,11 @@ def train():
         return loss
 
     train_sink_process = data_sink(train_step, train_dataset, sink_size=1)
-
-    eval_interval = eval_params['eval_interval']
-    plot_interval = eval_params['plot_interval']
-    save_ckt_interval = ckpt_params['save_ckpt_interval']
+    test_interval = config['test_interval']
+    plot_interval = config['plot_interval']
+    save_ckpt_interval = config['save_ckpt_interval']
     # train process
-    for epoch in range(1, 1+epochs):
+    for epoch in range(1, 1 + epochs):
         # train
         time_beg = time.time()
         model.set_train(True)
@@ -155,18 +162,16 @@ def train():
         print_log(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {time.time() - time_beg:.2f}s")
 
         model.set_train(False)
-        # eval
-        if epoch % eval_interval == 0:
-            eval_time_start = time.time()
-            calculate_eval_error(eval_dataset, model)
-            print_log(f'evaluation time: {time.time() - eval_time_start}s')
+        # test
+        if epoch % test_interval == 0:
+            calculate_test_error(test_dataset, model)
         # plot
         if epoch % plot_interval == 0:
-            plot_u_and_cp(eval_dataset=eval_dataset, model=model,
+            plot_u_and_cp(test_dataset=test_dataset, model=model,
                           grid_path=data_params['grid_path'], save_dir=summary_dir)
         # save checkpoint
-        if epoch % save_ckt_interval == 0:
-            ckpt_name = f"vit_epoch_{epoch}.ckpt"
+        if epoch % save_ckpt_interval == 0:
+            ckpt_name = f"epoch_{epoch}.ckpt"
             save_checkpoint(model, os.path.join(ckpt_dir, ckpt_name))
             print_log(f'{ckpt_name} save success')
 
@@ -176,28 +181,17 @@ if __name__ == '__main__':
     print_log(f'pid: {os.getpid()}')
     print_log(datetime.datetime.now())
 
-    parser = argparse.ArgumentParser(description='Airfoil 2D_steady Simulation')
-    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                        help="Whether to save intermediate compilation graphs")
-    parser.add_argument("--context_mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
-                        help="Support context mode: 'GRAPH', 'PYNATIVE'")
-    parser.add_argument('--train_mode', type=str, default='train', choices=["train", "eval", "finetune"],
-                        help="Support run mode: 'train', 'eval', 'finetune'")
-    parser.add_argument('--device_id', type=int, default=0, help="ID of the target device")
-    parser.add_argument('--device_target', type=str, default='Ascend', choices=["GPU", "Ascend"],
-                        help="The target device to run, support 'Ascend', 'GPU'")
-    parser.add_argument("--config_file_path", type=str, default="./configs/vit.yaml")
-    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-    args = parser.parse_args()
+    args = parse_args()
 
     context.set_context(mode=context.GRAPH_MODE if args.context_mode.upper().startswith("GRAPH") \
-                        else context.PYNATIVE_MODE,
+        else context.PYNATIVE_MODE,
                         save_graphs=args.save_graphs,
                         save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target,
                         device_id=args.device_id)
-
+    print_log(f"Running in {args.context_mode.upper()} mode, using device id: {args.device_id}.")
+    start_time = time.time()
     use_ascend = (args.device_target == "Ascend")
     print_log(f'use_ascend : {use_ascend}')
-    print_log(f'device_id: {context.get_context("device_id")}')
-    train()
+    train(args)
+    print_log("End-to-End total time: {} s".format(time.time() - start_time))
