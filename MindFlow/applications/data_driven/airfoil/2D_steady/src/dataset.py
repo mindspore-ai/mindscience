@@ -15,12 +15,11 @@
 """
 dataset
 """
-import os
 import math
 import numpy as np
 import mindspore.dataset as ds
-from mindflow.utils import print_log
 
+from mindflow.utils import print_log
 
 np.random.seed(0)
 ds.config.set_seed(0)
@@ -33,82 +32,64 @@ class AirfoilDataset:
         ``Ascend`` ``GPU``
 
     """
-    def __init__(self, max_value, min_value, data_group_size):
+
+    def __init__(self, max_value, min_value):
         self.max_value_list = max_value
         self.min_value_list = min_value
-        self.data_group_size = data_group_size
 
-    def create_dataset(self, data_path, train_num_list, eval_num_list, mode="train", batch_size=8, train_size=0.8,
-                       finetune_size=0.2, shuffle=False, drop_remainder=False):
+    def create_dataset(self,
+                       train_dataset_path,
+                       test_dataset_path,
+                       finetune_dataset_path,
+                       finetune_size=0.2,
+                       mode="train",
+                       batch_size=8,
+                       shuffle=False,
+                       drop_remainder=False):
         """
-        creeate dataset
+        create dataset
         """
-        if mode == 'eval':
-            eval_files_list = self._select_shards(data_path, eval_num_list)
-            eval_dataset = ds.MindDataset(dataset_files=eval_files_list, shuffle=shuffle)
-            eval_dataset = eval_dataset.project(["inputs", "labels"])
-            data_set_norm_eval = eval_dataset.map(operations=self._process_fn, input_columns=["inputs"])
-            print_log("{} eval dataset size: {}".format(mode, data_set_norm_eval.get_dataset_size()))
-            data_set_batch_eval = data_set_norm_eval.batch(batch_size, drop_remainder)
-            print_log("{} eavl batch dataset size: {}".format(mode, data_set_batch_eval.get_dataset_size()))
-            return None, data_set_batch_eval
-
-        files_list = self._select_shards(data_path, train_num_list)
-        dataset = ds.MindDataset(dataset_files=files_list, shuffle=shuffle)
-        dataset = dataset.project(["inputs", "labels"])
-        if mode == 'finetune':
-            train_dataset, eval_dataset = dataset.split([finetune_size, 1 - finetune_size])
-        elif mode == 'train':
-            train_dataset, eval_dataset = dataset.split([train_size, 1 - train_size])
+        if mode == "finetune":
+            dataset = ds.MindDataset(dataset_files=finetune_dataset_path, shuffle=shuffle)
+            train_dataset, test_dataset = dataset.split([finetune_size, 1 - finetune_size])
+        else:
+            train_dataset = ds.MindDataset(dataset_files=train_dataset_path, shuffle=shuffle)
+            test_dataset = ds.MindDataset(dataset_files=test_dataset_path, shuffle=False)
         train_dataset = train_dataset.shuffle(batch_size * 4)
-        eval_dataset = eval_dataset.shuffle(batch_size * 4)
 
-        data_set_norm_train = train_dataset.map(operations=self._process_fn,
-                                                input_columns=["inputs"])
+        train_dataset_norm = train_dataset.map(operations=self._process_fn,
+                                               input_columns=["inputs"])
+        test_dataset_norm = test_dataset.map(operations=self._process_fn,
+                                             input_columns=["inputs"])
 
-        data_set_norm_eval = eval_dataset.map(operations=self._process_fn,
-                                              input_columns=["inputs"])
+        print_log("train dataset size: {}".format(train_dataset_norm.get_dataset_size()))
+        print_log("test dataset size: {}".format(test_dataset_norm.get_dataset_size()))
 
-        print_log("{} dataset : {}".format(mode, train_num_list))
-        print_log("train dataset size: {}".format(data_set_norm_train.get_dataset_size()))
-        print_log("test dataset size: {}".format(data_set_norm_eval.get_dataset_size()))
-
-        data_set_batch_train = data_set_norm_train.batch(batch_size, drop_remainder)
-        data_set_batch_eval = data_set_norm_eval.batch(batch_size, drop_remainder)
-        print_log("train batch : {}".format(data_set_batch_train.get_dataset_size()))
-        print_log("test batch : {}".format(data_set_batch_eval.get_dataset_size()))
-        return data_set_batch_train, data_set_batch_eval
+        train_dataset_batch = train_dataset_norm.batch(batch_size, drop_remainder)
+        test_dataset_batch = test_dataset_norm.batch(batch_size, drop_remainder)
+        print_log("train batch : {}".format(train_dataset_batch.get_dataset_size()))
+        print_log("test batch : {}".format(test_dataset_batch.get_dataset_size()))
+        return train_dataset_batch, test_dataset_batch
 
     def _process_fn(self, data):
         """
         preprocess data
         """
         _, h, w = data.shape
-        xex = np.linspace(0, 5, h)
-        f4 = np.array([math.exp(-x0) for x0 in xex])
-        f4 = np.repeat(f4[:, np.newaxis], w, axis=1)
+        x = np.linspace(0, 5, h)
+        scale_fn = np.array([math.exp(-x0) for x0 in x])
+        scale = np.repeat(scale_fn[:, np.newaxis], w, axis=1)
 
         aoa = data[0:1, ...]
         x = data[1:2, ...]
         y = data[2:3, ...]
-        f4_x = x * f4
-        f4_y = y * f4
-        data = np.vstack((aoa, f4_x, f4_y))
+
+        scaled_x = x * scale
+        scaled_y = y * scale
+        data = np.vstack((aoa, scaled_x, scaled_y))
         eps = 1e-8
 
         for i in range(0, data.shape[0]):
             max_value, min_value = self.max_value_list[i], self.min_value_list[i]
             data[i, :, :] = (data[i, :, :] - min_value) / (max_value - min_value + eps)
         return data.astype('float32')
-
-    def _select_shards(self, data_path, num_list, prefix="flowfield"):
-        """
-        select shards file
-        """
-        name_list = []
-        for num in num_list:
-            suffix = "_" + (str(num).rjust(3, '0')) + \
-                        "_" + (str(num + self.data_group_size - 1).rjust(3, '0')) + '.mind'
-            file_name = os.path.join(data_path, prefix + suffix)
-            name_list.append(file_name)
-        return name_list
