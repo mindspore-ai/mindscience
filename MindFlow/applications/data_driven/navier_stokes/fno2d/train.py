@@ -84,10 +84,6 @@ def train(input_args):
                   compute_dtype=compute_type
                   )
 
-    model_params_list = []
-    for k, v in model_params.items():
-        model_params_list.append(f"{k}-{v}")
-
     # prepare optimizer
     steps_per_epoch = train_dataset.get_dataset_size()
     print_log("steps_per_epoch: ", steps_per_epoch)
