@@ -49,9 +49,9 @@ def unpatchify(labels, img_size=(192, 384), patch_size=16, nchw=False):
     return labels
 
 
-def get_ckpt_summ_dir(callback_params, model_name, method):
+def get_ckpt_summary_dir(callback_params, model_name, method):
     """get ckpt and summary dir"""
-    summary_dir = os.path.join(f"{callback_params['summary_dir']}/summary_{method}", model_name)
+    summary_dir = os.path.join(f"{callback_params}/summary_{method}", model_name)
     ckpt_dir = os.path.join(summary_dir, "ckpt_dir")
     check_file_path(ckpt_dir)
     print_log(f'model_name: {model_name}')
@@ -64,12 +64,13 @@ def display_error(error_name, error, error_list):
     """display error"""
     print_log(f'mean {error_name} : {error}, max {error_name} : {max(error_list)},'
               f' average {error_name} : {np.mean(error_list)},'
-              f' min {error_name} : {min(error_list)}, median {error_name} : {np.median(error_list)}')
+              f' min {error_name} : {min(error_list)}, median {error_name} : {np.median(error_list)}'
+              )
 
 
-def calculate_eval_error(dataset, model, save_error=False, post_dir=None):
+def calculate_test_error(dataset, model, save_error=False, postprocess_dir=None):
     """calculate evaluation error"""
-    print_log("================================Start Evaluation================================")
+    print_log("================================Start evaluation================================")
     length = dataset.get_dataset_size()
     l1_error, l1_error_u, l1_error_v, l1_error_p, l1_error_cp = 0.0, 0.0, 0.0, 0.0, 0.0
     l1_error_list, l1_error_u_list, l1_error_v_list, l1_error_p_list, l1_error_cp_list, l1_avg_list = \
@@ -104,16 +105,16 @@ def calculate_eval_error(dataset, model, save_error=False, post_dir=None):
     display_error('p_error', l1_error_p, l1_error_p_list)
     display_error('cp_error', l1_error_cp, l1_error_cp_list)
     if save_error:
-        save_dir = os.path.join(post_dir, "ViT")
+        save_dir = os.path.join(postprocess_dir, "ViT")
         check_file_path(save_dir)
-        print_log(f"eval error save dir: {save_dir}")
+        print_log(f"test error save dir: {save_dir}")
         np.save(os.path.join(save_dir, 'l1_error_list'), l1_error_list)
         np.save(os.path.join(save_dir, 'l1_error_u_list'), l1_error_u_list)
         np.save(os.path.join(save_dir, 'l1_error_v_list'), l1_error_v_list)
         np.save(os.path.join(save_dir, 'l1_error_p_list'), l1_error_p_list)
         np.save(os.path.join(save_dir, 'l1_error_cp_list'), l1_error_cp_list)
         np.save(os.path.join(save_dir, 'l1_error_avg_list'), l1_avg_list)
-    print_log("=================================End Evaluation=================================")
+    print_log("=================================End evaluation=================================")
 
 
 def calculate_mean_error(label, pred):

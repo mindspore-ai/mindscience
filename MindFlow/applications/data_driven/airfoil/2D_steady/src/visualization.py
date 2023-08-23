@@ -53,10 +53,10 @@ def set_font(small_size=25, medium_size=28, bigger_size=45):
     return font_title, font_legend
 
 
-def plot_u_v_p(eval_dataset, model, data_params):
+def plot_u_v_p(test_dataset, model, grid_path, postprocess_dir):
     """plot u v p image"""
     set_font(small_size=15)
-    for data in eval_dataset.create_dict_iterator(output_numpy=False):
+    for data in test_dataset.create_dict_iterator(output_numpy=False):
         inputs = data["inputs"]
         labels = data["labels"]
         pred = model(inputs)
@@ -65,15 +65,16 @@ def plot_u_v_p(eval_dataset, model, data_params):
         print_log("shape of labels {} type {} max {}".format(labels.shape, type(labels), labels.max()))
         print_log("shape of pred {} type {} max {}".format(pred.shape, type(pred), pred.max()))
         break
-    save_img_dir = os.path.join(data_params['post_dir'], 'uvp_ViT')
+    batch_size = inputs.shape[0]
+    save_img_dir = os.path.join(postprocess_dir, 'uvp_contourf')
     check_file_path(save_img_dir)
     print_log(f'save img dir: {save_img_dir}')
     model_name = "ViT_"
-    save_label_and_pred(labels, pred, data_params['post_dir'])
+    save_label_and_pred(labels, pred, postprocess_dir)
     print_log("save res done!")
-    for i in range(data_params['batch_size']):
-        print_log("plot {} / {} done".format(i + 1, data_params['batch_size']))
-        plot_contourf(labels, pred, i, save_img_dir, data_params['grid_path'], model_name)
+    for i in range(batch_size):
+        print_log("plot {} / {} done".format(i + 1, batch_size))
+        plot_contourf(labels, pred, i, save_img_dir, grid_path, model_name)
 
 
 def plot_config(xgrid, ygrid, data, index, title_name=None):
@@ -162,11 +163,11 @@ def set_fig_range(xgrid, ygrid, u, min_value, max_value, title, flag=False):
         plt.title(title, y=0.7)
 
 
-def plot_u_and_cp(eval_dataset, model, grid_path, save_dir):
+def plot_u_and_cp(test_dataset, model, grid_path, save_dir):
     """plot_u_and_cp"""
     print_log("================================Start Plotting================================")
     time_beg = time.time()
-    for data in eval_dataset.create_dict_iterator():
+    for data in test_dataset.create_dict_iterator():
         label, pred = get_label_and_pred(data, model)
         break
     num = 0
