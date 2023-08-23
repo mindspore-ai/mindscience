@@ -34,7 +34,7 @@ python -u ./main.py \
 --grid_resolution 网格分辨率，默认值1.4。
 --output_dir 输出文件的路径，默认值"./summary"。
 
-### 运行方式2: 运行Jupyter Notebook
+### 运行方式二: 运行Jupyter Notebook
 
 使用'Chinese'或'English' Jupyter Notebook可以逐行运行训练和推理代码
 
