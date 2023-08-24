@@ -95,7 +95,9 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
             print_log(f'evaluation time: {time.time() - eval_time_start}s')
 
 
-def train(config_param):
+def train(input_args):
+    config_param = load_yaml_config(input_args.config_file_path)
+    make_dir(config["mindrecord_data_dir"])
     lr = config_param["lr"]
     for i in range(1, config_param["multi_step"] + 1):
         db_name = f"train_step{i}.mindrecord"
@@ -106,10 +108,7 @@ def train(config_param):
                           eval_dataset=eval_dataset)
 
 
-if __name__ == '__main__':
-    log_config('./logs', 'pde_net')
-    print_log("pid:", os.getpid())
-
+def parse_args():
     parser = argparse.ArgumentParser(description="pde net train")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Running in GRAPH_MODE OR PYNATIVE_MODE")
@@ -117,13 +116,19 @@ if __name__ == '__main__':
                         help="The target device to run, support 'Ascend', 'GPU'")
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
     parser.add_argument("--config_file_path", type=str, default="./configs/pde_net.yaml")
-    args = parser.parse_args()
+    input_args = parser.parse_args()
+    return input_args
 
+
+if __name__ == '__main__':
+    log_config('./logs', 'pde_net')
+    print_log("pid:", os.getpid())
+
+    args = parse_args()
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") \
                         else context.PYNATIVE_MODE,
                         device_target=args.device_target,
                         device_id=args.device_id)
     print_log(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
-    config = load_yaml_config(args.config_file_path)
-    make_dir(config["mindrecord_data_dir"])
-    train(config)
+
+    train(args)
