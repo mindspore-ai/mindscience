@@ -16,9 +16,12 @@
 """tools"""
 import numpy as np
 import matplotlib.pyplot as plt
+import imageio
+
+from mindflow.utils import print_log
 
 
-def post_process_v2(output, truth, low_res, xmin, xmax, ymin, ymax, num, fig_save_path):
+def plot_error_image(output, truth, low_res, xmin, xmax, ymin, ymax, num, fig_save_path):
     '''num: Number of time step'''
     x = np.linspace(0, 1, 101)
     y = np.linspace(0, 1, 101)
@@ -103,3 +106,38 @@ def post_process_v2(output, truth, low_res, xmin, xmax, ymin, ymax, num, fig_sav
     diff_norms = np.square(pred - label).sum()
     label_norms = np.square(label).sum()
     return diff_norms / label_norms, fig_path
+
+
+def post_process(trainer):
+    '''post_process'''
+    output = trainer.get_output(1800)
+    output = ops.concat((output, output[:, :, :, 0:1]), axis=3)
+    output = ops.concat((output, output[:, :, 0:1, :]), axis=2)
+    truth_clean = np.concatenate(
+        (trainer.truth_clean, trainer.truth_clean[:, :, :, 0:1]), axis=3)
+    truth_clean = np.concatenate(
+        (truth_clean, truth_clean[:, :, 0:1, :]), axis=2)
+    low_res = truth_clean[:, :, ::2, ::2]
+    output = output.asnumpy()
+
+    print_log(output.shape, truth_clean.shape, low_res.shape)
+
+    err_list = []
+    img_path = []
+    for i in range(0, 1801, 10):
+        err, fig_path = plot_error_image(output, truth_clean, low_res, xmin=0, xmax=1, ymin=0, ymax=1,
+                                         num=i, fig_save_path='figures_' + args.pattern)
+        print_log('infer step:', i, ', relative l2 error', err)
+        err_list.append([i, err])
+        img_path.append(fig_path)
+    gif_images = []
+    for path in img_path:
+        gif_images.append(imageio.imread(path))
+    imageio.mimsave('results.gif', gif_images, duration=0.01)
+    err_list = np.array(err_list)
+
+    plt.figure(figsize=(6, 4))
+    plt.plot(err_list[:, 0], err_list[:, 1])
+    plt.xlabel('infer_step')
+    plt.ylabel('relative_l2_error')
+    plt.savefig("error.png")

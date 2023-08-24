@@ -15,7 +15,7 @@
 """init"""
 from .constant import dx_2d_op, dy_2d_op, lap_2d_op
 from .model import RecurrentCNNCell, UpScaler, RecurrentCNNCellBurgers
-from .tools import post_process_v2
+from .tools import post_process
 from .trainer import Trainer
 
 __all__ = [
@@ -26,5 +26,5 @@ __all__ = [
     "UpScaler",
     "RecurrentCNNCellBurgers",
     "Trainer",
-    "post_process_v2",
+    "post_process",
 ]
