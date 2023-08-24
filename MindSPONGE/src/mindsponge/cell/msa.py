@@ -19,9 +19,9 @@ import mindspore.common.dtype as mstype
 from mindspore import Parameter
 from mindspore.common.tensor import Tensor
 from mindspore.ops import operations as P
+from mindsponge.common.utils import _memory_reduce
 from .basic import Attention, GlobalAttention
 from .mask import MaskedLayerNorm
-
 
 class MSARowAttentionWithPairBias(nn.Cell):
     r"""
