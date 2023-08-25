@@ -40,13 +40,17 @@ LEVELS = [-80, -70, -60, -52, -48, -44, -40, -36, -32, -28, -24, -20, -16, -12, 
 
 def plt_global_field_data(data, feature_name, std, mean, fig_title, is_surface=False):
     """
-    Visualization of global field data.
+    Visualization of global field weather data.
 
     Args:
         data (numpy.array): The global field points.
         feature_name (str): The name of the feature to be visualized.
         std (numpy.array): The standard deviation of per-varibale-level.
         mean (numpy.array): The mean value of per-varibale-level.
+        is_surface(bool): Whether or not a surface feature.
+
+    Supported Platforms:
+        ``Ascend`` ``CPU`` ``GPU``
     """
     level_num, feat_num = FEATURE_DICT.get(feature_name)
     feature_data = data[0, level_num + feat_num * 13]
@@ -73,6 +77,9 @@ def plt_metrics(x, y, title, label, loc="upper right"):
         title (str): The name of the figure.
         label (str): The label of the visualization curve.
         loc (str): The position of legend in the figure.
+
+    Supported Platforms:
+        ``Ascend`` ``CPU`` ``GPU``
     """
     plt.title(title, fontdict={"family": 'serif', 'size': 20})
     plt.plot(x, y, 'bo-', label=label, markersize=3)
@@ -132,7 +139,7 @@ def plt_wind_quiver(grid_resolution,
     Plot a wind vector diagram.
 
     Args:
-        grid_resolution (tuple): The start date of data.
+        grid_resolution (float): The resolution of grid.
         root_dir (str): The root dir of data, which include train_surface_static, train_surface, etc.
         data_mode (str): The mode of data, such as train, test, and valid.
         start_date (tuple): The begin date of the data, a tuple of year, month, day, hour, minute, second,
