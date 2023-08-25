@@ -85,7 +85,7 @@ def get_datapath_from_date(start_date, idx):
     Get data file name of given start date and index of the data.
 
     Args:
-        start_date (tuple): The start date of data.
+        start_date (datetime.datetime): The start date of data.
         idx (int): The index of data.
 
     Returns:
@@ -95,6 +95,14 @@ def get_datapath_from_date(start_date, idx):
 
     Supported Platforms:
         ``Ascend`` ``CPU`` ``GPU``
+
+    Examples:
+        >>> from mindearth.utils import get_datapath_from_date
+        >>> date = datetime.datetime(2019, 1, 1, 0, 0, 0)
+        >>> idx = 1
+        >>> date_file_name, static_file_name = get_datapath_from_date(date, idx)
+        >>> print(f"date_file_name: {date_file_name}, static_file_name: {static_file_name}")
+        date_file_name: 2019/2019_01_01_2.npy, static_file_name: 2019/2019.npy
     """
     t0 = start_date
     t = t0 + datetime.timedelta(hours=idx)
