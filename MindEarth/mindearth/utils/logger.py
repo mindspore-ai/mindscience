@@ -16,17 +16,32 @@
 import logging
 
 
-def create_logger(path="./log.log"):
-    """create logger"""
+def create_logger(path="./log.log", level=logging.INFO):
+    """
+    Create logger
+    Args:
+        path (str): Directory to save log.
+        level (int): Log level. Default: logging.INFO.
+
+    Returns:
+        logging.RootLogger. Logger for log information.
+
+    Supported Platforms:
+        ``Ascend`` ``CPU`` ``GPU``
+
+    Examples:
+        >>> from mindearth.utils import create_logger
+        >>> logger = create_logger("/path/to/log.log")
+    """
     logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+    logger.setLevel(level)
 
     logfile = path
     fh = logging.FileHandler(logfile, mode='a', encoding='utf-8')
-    fh.setLevel(logging.INFO)
+    fh.setLevel(level)
 
     ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
+    ch.setLevel(level)
 
     formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
     fh.setFormatter(formatter)
