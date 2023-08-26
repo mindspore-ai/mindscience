@@ -56,7 +56,7 @@ class RelativeRMSELoss(nn.LossBase):
         >>> loss_fn = RelativeRMSELoss()
         >>> loss = loss_fn(prediction, labels)
         >>> print(loss)
-        0.33333334
+        0.11111112
     """
 
     def construct(self, prediction, labels):
