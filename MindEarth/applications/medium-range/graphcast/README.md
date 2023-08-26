@@ -1,3 +1,5 @@
+ENGLISH | [简体中文](README_CN.md)
+
 # Medium-range Global Weather Forecasting Based on GNN
 
 ## Overview
