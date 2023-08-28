@@ -12,7 +12,7 @@ Flow past cylinder problem is a two-dimensional low velocity steady flow around 
 
 ![Time Error](images/TimeError_epoch5000.png)
 
-[See More](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/navier_stokes/cylinder_flow_forward/navier_stokes2D_CN.ipynb)
+[See More](.navier_stokes2D_CN.ipynb)
 
 ## Contributor
 

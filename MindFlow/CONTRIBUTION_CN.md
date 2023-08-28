@@ -28,7 +28,7 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 
 【必须】`src`：为了保证训练代码的整洁性，可以抽取的函数和类可以统一放在src目录中，`__init__.py`一般为必须，`dataset.py`中包含数据集相关函数和类，`model.py`中包含模型相关函数和类，`utils.py`中包含工具函数和类，外部文件的调用统一从src导入。
 
-【必须】参数文件：案例中具体参数的配置，一般采用ymal文件，为了方便查看，按照优化器、模型等进行分类。
+【必须】参数文件：案例中具体参数的配置，一般采用yaml文件，为了方便查看，按照优化器、模型等进行分类。
 
 【必须】训练脚本：案例的训练和验证脚本，在训练时除特殊情况，必须有测试集进行验证；训练脚本中的代码应该尽量简洁，复杂的调用封装到后端函数里。
 
@@ -48,6 +48,8 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 │  ├──dataset.py
 │  ├──model.py
 │  └──utils.py
+├──configs
+│  ├──fno1d.yaml
 ├──README.md
 ├──README_CN.md
 ├──problem.ipynb
@@ -73,6 +75,8 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 │  ├──dataset.py
 │  ├──model.py
 │  └──utils.py
+├──configs
+│  ├──fno1d.yaml
 ├──README.md
 ├──README_CN.md
 ├──problem.ipynb
@@ -199,6 +203,32 @@ if __name__ == '__main__':
     # 调用训练函数
     train(args)
     print("End-to-End total time: {} s".format(time.time() - start_time))
+```
+
+## 配置文件格式
+
+参数按照模型、数据、优化器等类别分类，放在"./configs"目录下，配置中的路径参数都是根目录的相对路径。参数命名规范统一格式，格式如下：
+
+```yaml
+model:
+  in_channels: 3
+  out_channels: 3
+  height: 192
+  width: 384
+  encoder_depth: 6
+  decoder_depth: 6
+  decoder_num_heads: 16
+
+data:
+  train_dataset_path: "./dataset/test.npy"
+  test_dataset_path: "./dataset/train.npy"
+  grid_path: "./dataset/grid.npy"
+  batch_size: 32
+
+optimizer:
+  epochs: 1000
+  lr: 0.0005
+  wave_level: 1
 ```
 
 ## README文件格式

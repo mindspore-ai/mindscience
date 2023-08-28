@@ -28,8 +28,22 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable, axes_size
 from mindspore import Tensor
 from mindspore import dtype as mstype
 
+from mindflow.utils import print_log
 
 plt.rcParams['figure.dpi'] = 300
+
+
+def init_video(path, epochs):
+    """init video file"""
+    if not os.path.isdir(os.path.abspath(path)):
+        os.makedirs(path)
+
+    fourcc = cv2.VideoWriter_fourcc('D', 'I', 'V', 'X')
+    fps = 10
+    frame_size = (1920, 1440)
+    video = cv2.VideoWriter(os.path.join(
+        path, f"FlowField_{epochs + 1}.avi"), fourcc, fps, frame_size)
+    return video
 
 
 def visual(model, epochs, input_data, label, path="./videos"):
@@ -45,14 +59,7 @@ def visual(model, epochs, input_data, label, path="./videos"):
     vmax_list = [u_vmax, v_vmax, p_vmax]
 
     output_names = ["U", "V", "P"]
-
-    if not os.path.isdir(os.path.abspath(path)):
-        os.makedirs(path)
-
-    fourcc = cv2.VideoWriter_fourcc('D', 'I', 'V', 'X')
-    fps = 10
-    size = (1920, 1440)
-    video = cv2.VideoWriter(os.path.join(path, "FlowField_" + str(epochs + 1) + ".avi"), fourcc, fps, size)
+    video = init_video(path, epochs)
 
     t_set = []
     if sample_t < 100:
@@ -143,17 +150,21 @@ def visual(model, epochs, input_data, label, path="./videos"):
     label = label.reshape((numt, -1, output_size))
     predict = predict.reshape((numt, -1, output_size))
     error = label - predict
-    l2_error_u = np.sqrt(np.sum(np.square(error[:, :, 0]), axis=1)) / np.sqrt(np.sum(np.square(label[:, :, 0]), axis=1))
-    l2_error_v = np.sqrt(np.sum(np.square(error[:, :, 1]), axis=1)) / np.sqrt(np.sum(np.square(label[:, :, 1]), axis=1))
-    l2_error_p = np.sqrt(np.sum(np.square(error[:, :, 2]), axis=1)) / np.sqrt(np.sum(np.square(label[:, :, 2]), axis=1))
+    l2_error_u = np.sqrt(np.sum(np.square(
+        error[:, :, 0]), axis=1)) / np.sqrt(np.sum(np.square(label[:, :, 0]), axis=1))
+    l2_error_v = np.sqrt(np.sum(np.square(
+        error[:, :, 1]), axis=1)) / np.sqrt(np.sum(np.square(label[:, :, 1]), axis=1))
+    l2_error_p = np.sqrt(np.sum(np.square(
+        error[:, :, 2]), axis=1)) / np.sqrt(np.sum(np.square(label[:, :, 2]), axis=1))
     l2_error_total = np.sqrt(np.sum(np.square(error[:, :, :]), axis=(1, 2))) / \
-                     np.sqrt(np.sum(np.square(label[:, :, :]), axis=(1, 2)))
+        np.sqrt(np.sum(np.square(label[:, :, :]), axis=(1, 2)))
 
     plt.figure()
     plt.plot(input_data[:, 0, 0, 2], l2_error_u, 'b--', label="l2_error of U")
     plt.plot(input_data[:, 0, 0, 2], l2_error_v, 'g-.', label="l2_error of V")
     plt.plot(input_data[:, 0, 0, 2], l2_error_p, 'k:', label="l2_error of P")
-    plt.plot(input_data[:, 0, 0, 2], l2_error_total, 'r-', label="l2_error of All")
+    plt.plot(input_data[:, 0, 0, 2], l2_error_total,
+             'r-', label="l2_error of All")
     plt.legend()
     plt.xlabel('time')
     plt.ylabel('l2_error')
@@ -161,16 +172,21 @@ def visual(model, epochs, input_data, label, path="./videos"):
     plt.savefig(os.path.join(path, "TimeError_" + str(epochs) + ".png"))
 
 
-CylinderFlowError = collections.namedtuple("CylinderFlowError", ["l2_error", "l2_error_u", "l2_error_v", "l2_error_p"])
+CylinderFlowError = collections.namedtuple(
+    "CylinderFlowError", ["l2_error", "l2_error_u", "l2_error_v", "l2_error_p"])
 
 
 def _calculate_error(label, prediction):
     '''calculate l2-error to evaluate accuracy'''
     error = label - prediction
-    l2_error_u = np.sqrt(np.sum(np.square(error[..., 0]))) / np.sqrt(np.sum(np.square(label[..., 0])))
-    l2_error_v = np.sqrt(np.sum(np.square(error[..., 1]))) / np.sqrt(np.sum(np.square(label[..., 1])))
-    l2_error_p = np.sqrt(np.sum(np.square(error[..., 2]))) / np.sqrt(np.sum(np.square(label[..., 2])))
-    l2_error = np.sqrt(np.sum(np.square(error))) / np.sqrt(np.sum(np.square(label)))
+    l2_error_u = np.sqrt(
+        np.sum(np.square(error[..., 0]))) / np.sqrt(np.sum(np.square(label[..., 0])))
+    l2_error_v = np.sqrt(
+        np.sum(np.square(error[..., 1]))) / np.sqrt(np.sum(np.square(label[..., 1])))
+    l2_error_p = np.sqrt(
+        np.sum(np.square(error[..., 2]))) / np.sqrt(np.sum(np.square(label[..., 2])))
+    l2_error = np.sqrt(np.sum(np.square(error))) / \
+        np.sqrt(np.sum(np.square(label)))
     errors = CylinderFlowError(l2_error, l2_error_u, l2_error_v, l2_error_p)
     return errors
 
@@ -192,7 +208,8 @@ def _get_prediction(model, inputs, label_shape, config):
         prediction[index: index_end, :] = model(test_batch).asnumpy()
         index = index_end
 
-    print("    predict total time: {} ms".format((time.time() - time_beg)*1000))
+    print_log("    predict total time: {} ms".format(
+        (time.time() - time_beg)*1000))
     prediction = prediction.reshape(label_shape)
     prediction = prediction.reshape((-1, output_size))
     return prediction
@@ -214,6 +231,7 @@ def calculate_l2_error(model, inputs, label, config):
     output_size = config.get("output_size", 3)
     label = label.reshape((-1, output_size))
     l2_errors = _calculate_error(label, prediction)
-    print("    l2_error, U: ", l2_errors.l2_error_u, ", V: ", l2_errors.l2_error_v, ", P: ", l2_errors.l2_error_p,
-          ", Total: ", l2_errors.l2_error)
-    print("==================================================================================================")
+    print_log("    l2_error, U: ", l2_errors.l2_error_u, ", V: ", l2_errors.l2_error_v, ", P: ", l2_errors.l2_error_p,
+              ", Total: ", l2_errors.l2_error)
+    print_log(
+        "==================================================================================================")
