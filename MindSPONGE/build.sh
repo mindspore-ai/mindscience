@@ -135,12 +135,12 @@ build_mindsponge()
   fi
   if [[ "X$ENABLE_D" = "Xon" ]]; then
     echo "build ascend backend"
-    export SPONGE_PACKAGE_NAME=mindsponge
+    export SPONGE_PACKAGE_NAME=mindsponge_ascend
     CMAKE_FLAG="-DENABLE_D=ON"
   fi
   if [[ "X$ENABLE_GPU" = "Xon" ]]; then
     echo "build gpu backend"
-    export SPONGE_PACKAGE_NAME=mindsponge
+    export SPONGE_PACKAGE_NAME=mindsponge_gpu
     CMAKE_FLAG="-DENABLE_GPU=ON"
     if [[ "X$ENABLE_MD" = "Xon" ]]; then
       CMAKE_FLAG="${CMAKE_FLAG} -DENABLE_MD=ON"
