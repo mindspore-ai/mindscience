@@ -23,7 +23,7 @@ from mindspore import log as logger
 from .geometry_base import Geometry, DATA_TYPES, GEOM_TYPES, SamplingConfig
 from .geometry_nd import HyperCube
 from .geom_utils import sample, polar_sample, generate_mesh
-from .shapes import adapter, simplex, pentagon
+from .shapes import adapter, simplex, pentagon, polygon
 from ..utils.check_func import check_param_type, check_param_type_value
 
 _SPACE = " "
@@ -342,5 +342,46 @@ class Pentagon(adapter.Geometry):
         )
 
 
-class Polygon(Geometry):
-    pass
+class Polygon(adapter.Geometry):
+    r"""
+    Definition of polygon object.
+
+    Args:
+        name (str): name of the polygon.
+        vertices (numpy.ndarray): vertices of the polygon in an anti-clockwise order.
+        boundary_type (str): this can be ``'uniform'`` or ``'unweighted'``. Default: ``'uniform'``.
+
+            - ``'uniform'``, the expected number of samples in each boundary is proportional to the
+              area (length) of the boundary.
+            - ``'unweighted'``, the expected number of samples in each boundary is the same.
+
+        dtype (numpy.dtype): data type of sampled point data type. Default: ``np.float32``.
+        sampling_config (SamplingConfig): sampling configuration. Default: ``none``.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindflow.geometry import generate_sampling_config, Polygon
+        >>> polygon_mesh = dict({'domain': dict({'random_sampling': True, 'size': 300}),
+        ...                      'BC': dict({'random_sampling': True, 'size': 300, 'with_normal': False,}),})
+        >>> vertices = np.array([[0., 0], [1, 0], [1, 1], [.5, 1], [0.5, 0.5], [0, 0.5]])
+        >>> polygon = Polygon("polygon", vertices,
+        ...                   sampling_config=generate_sampling_config(polygon_mesh))
+        >>> domain = polygon.sampling(geom_type="domain")
+        >>> bc = polygon.sampling(geom_type="bc")
+        >>> print(domain.shape)
+        (300, 2)
+    """
+
+    def __init__(self, name, vertices,
+                 boundary_type="uniform", dtype=np.float32, sampling_config=None):
+        super(Polygon, self).__init__(
+            name=name,
+            shape=polygon.Polygon(vertices, boundary_type),
+            dim=2,
+            coord_min=np.min(vertices, axis=0),
+            coord_max=np.max(vertices, axis=0),
+            dtype=dtype,
+            sampling_config=sampling_config,
+        )
