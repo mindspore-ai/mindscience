@@ -27,6 +27,7 @@ from mindspore.common import set_seed
 from mindspore import dtype as mstype
 
 from mindflow import get_warmup_cosine_annealing_lr, load_yaml_config
+from mindflow.utils import print_log
 from mindflow.cell.neural_operators.fno3d import FNO3D
 
 from src import LpLoss, UnitGaussianNormalizer, create_training_dataset
@@ -40,15 +41,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Navier Stokes 3D problem')
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Context mode, support 'GRAPH', 'PYNATIVE'")
-    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                        help="Whether to save intermediate compilation graphs")
-    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
     parser.add_argument("--device_id", type=int, default=3,
                         help="ID of the target device")
     parser.add_argument("--config_file_path", type=str,
-                        default="./navier_stokes_3d.yaml")
+                        default="./configs/fno3d.yaml")
     input_args = parser.parse_args()
     return input_args
 
@@ -56,7 +54,7 @@ def parse_args():
 def train(input_args):
     '''train and evaluate the network'''
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
-    print(f"use_ascend: {use_ascend}")
+    print_log(f"use_ascend: {use_ascend}")
 
     config = load_yaml_config(input_args.config_file_path)
     data_params = config["data"]
@@ -79,14 +77,14 @@ def train(input_args):
     test_u = Tensor(np.load(os.path.join(
         data_params["path"], "test_u.npy")), mstype.float32)
 
-    print(train_a.shape, test_a.shape)
+    print_log(train_a.shape, test_a.shape)
 
     train_loader = create_training_dataset(data_params,
                                            shuffle=True)
 
     t2 = default_timer()
 
-    print('preprocessing finished, time used:', t2-t1)
+    print_log('preprocessing finished, time used:', t2-t1)
 
     if use_ascend:
         compute_type = mstype.float16
@@ -120,6 +118,13 @@ def train(input_args):
     a_normalizer = UnitGaussianNormalizer(train_a)
     y_normalizer = UnitGaussianNormalizer(train_u)
 
+    if use_ascend:
+        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
+        loss_scaler = DynamicLossScaler(1024, 2, 100)
+        auto_mixed_precision(model, 'O2')
+    else:
+        loss_scaler = None
+
     def forward_fn(data, label):
         bs = data.shape[0]
         data = a_normalizer.encode(data)
@@ -130,6 +135,8 @@ def train(input_args):
         logits = y_normalizer.decode(logits)
         label = y_normalizer.decode(label)
         loss = loss_fn(logits.reshape(bs, -1), label.reshape(bs, -1))
+        if use_ascend:
+            loss = loss_scaler.scale(loss)
         return loss
 
     grad_fn = ops.value_and_grad(
@@ -138,7 +145,15 @@ def train(input_args):
     @jit
     def train_step(data, label):
         loss, grads = grad_fn(data, label)
-        loss = ops.depend(loss, optimizer(grads))
+        if use_ascend:
+            loss = loss_scaler.unscale(loss)
+            is_finite = all_finite(grads)
+            if is_finite:
+                grads = loss_scaler.unscale(grads)
+                loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
+        else:
+            loss = ops.depend(loss, optimizer(grads))
         return loss
 
     def calculate_l2_error(model, inputs, labels):
@@ -151,7 +166,7 @@ def train(input_args):
             labels (Tensor): the true output value of given inputs.
 
         """
-        print("================================Start Evaluation================================")
+        print_log("================================Start Evaluation================================")
         time_beg = time.time()
         rms_error = 0.0
         for i in range(labels.shape[0]):
@@ -170,9 +185,9 @@ def train(input_args):
             rms_error += rms_error_step
 
         rms_error = rms_error / labels.shape[0]
-        print("mean rms_error:", rms_error)
-        print("predict total time: {} s".format(time.time() - time_beg))
-        print("=================================End Evaluation=================================")
+        print_log("mean rms_error:", rms_error)
+        print_log("predict total time: {} s".format(time.time() - time_beg))
+        print_log("=================================End Evaluation=================================")
 
     sink_process = data_sink(train_step, train_loader, sink_size=100)
     summary_dir = os.path.join(config["summary_dir"], model_name)
@@ -183,11 +198,11 @@ def train(input_args):
     for step in range(1, 1 + optimizer_params["train_epochs"]):
         local_time_beg = time.time()
         cur_loss = sink_process()
-        print(
+        print_log(
             f"epoch: {step} train loss: {cur_loss} epoch time: {time.time() - local_time_beg:.2f}s")
         if step % 10 == 0:
-            print(f"loss: {cur_loss.asnumpy():>7f}")
-            print("step: {}, time elapsed: {}ms".format(
+            print_log(f"loss: {cur_loss.asnumpy():>7f}")
+            print_log("step: {}, time elapsed: {}ms".format(
                 step, (time.time() - local_time_beg) * 1000))
             calculate_l2_error(model, test_a, test_u)
             save_checkpoint(model, os.path.join(
@@ -195,14 +210,12 @@ def train(input_args):
 
 
 if __name__ == "__main__":
-    print(f"pid: {os.getpid()}")
-    print(datetime.datetime.now())
+    print_log(f"pid: {os.getpid()}")
+    print_log(datetime.datetime.now())
 
     args = parse_args()
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                        save_graphs=args.save_graphs, save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target, device_id=args.device_id)
 
-
-    print(f"device_id: {context.get_context(attr_key='device_id')}")
+    print_log(f"device_id: {context.get_context(attr_key='device_id')}")
     train(args)
