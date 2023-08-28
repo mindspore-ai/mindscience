@@ -33,7 +33,7 @@ class FNOBlock(nn.Cell):
         super().__init__()
         resolution = to_3tuple(resolution)
         self.conv = SpectralConv3d(in_channels, out_channels, modes1, modes1,
-                                   modes1, resolution[0], resolution[1], resolution[2], compute_dtype=compute_dtype)
+                                   modes1, resolution[0], resolution[1], resolution[2])
         self.w = nn.Conv3d(in_channels, out_channels,
                            1).to_float(compute_dtype)
 
@@ -149,6 +149,7 @@ class FNO3D(nn.Cell):
         batch_size = x.shape[0]
 
         grid = self.grid.repeat(batch_size, axis=0)
+        grid = ops.cast(grid, x.dtype)
         x = P.Concat(-1)((x, grid))
         x = self.fc0(x)
         x = P.Transpose()(x, (0, 4, 1, 2, 3))

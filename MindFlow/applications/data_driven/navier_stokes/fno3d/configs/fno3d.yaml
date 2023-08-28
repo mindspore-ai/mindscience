@@ -10,7 +10,7 @@ model:
   output_timestep: 40
   input_timestep: 10
 data:
-  name: "navier_stoke_3d"
+  name: "fno3d"
   path: "./dataset"
   batch_size: 10
   sub: 1
@@ -21,7 +21,7 @@ optimizer:
   train_epochs: 150
   weight_decay: 0.0001
 
-summary_dir: "./summary"
+summary_dir: "./checkpoints"
 eval_interval: 10
 save_ckpt_interval: 50
 test_batch_size: 1
