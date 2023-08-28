@@ -17,16 +17,17 @@ import numpy as np
 
 from mindflow.data import Dataset, ExistedDataConfig
 from mindflow.geometry import Rectangle, TimeDomain, GeometryWithTime, generate_sampling_config
+from mindflow.utils import print_log
 
 
 def create_test_dataset(test_data_path):
     """load labeled data for evaluation"""
     # check data
-    print("get dataset path: {}".format(test_data_path))
+    print_log("get dataset path: {}".format(test_data_path))
     paths = [test_data_path + '/eval_points.npy', test_data_path + '/eval_label.npy']
     inputs = np.load(paths[0])
     label = np.load(paths[1])
-    print("check eval dataset length: {}".format(inputs.shape))
+    print_log("check eval dataset length: {}".format(inputs.shape))
     return inputs, label
 
 
@@ -43,7 +44,7 @@ def create_training_dataset(config):
     geom_dict = {domain_region: ["domain"]}
 
     data_path = config["train_data_path"]
-    print(data_path)
+    print_log(data_path)
     config_bc = ExistedDataConfig(name="bc",
                                   data_dir=[data_path + "/bc_points.npy", data_path + "/bc_label.npy"],
                                   columns_list=["points", "label"],
