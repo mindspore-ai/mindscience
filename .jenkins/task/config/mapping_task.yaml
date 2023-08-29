@@ -1,0 +1,50 @@
+MS_ALL:
+    Merge
+MS_DOCS:
+    README.md
+    README_CN.md
+    RELEASE.md
+    CONTRIBUTING.md
+    models.md
+    version.txt
+    LICENSE
+    OWNERS
+    Third_Party_Open_Source_Software_Notice
+    .gitignore
+    docker/
+    docs/
+    scripts/
+MS_CI:
+    .jenkins
+MS_UT:
+    tests/ut/
+MS_MindSPONGE:
+    MindSPONGE/
+    tests/st/mindsponge
+    tests/ut/mindsponge
+    .jenkins/test/config/sponge_config/dependent_packages.yaml
+MS_MindElec:
+    MindElec/
+    tests/st/mindelec
+    tests/ut/mindelec
+    .jenkins/test/config/elec_config/dependent_packages.yaml
+MS_MindFlow:
+    MindFlow/
+    tests/st/mindflow
+    tests/ut/mindflow
+    .jenkins/test/config/flow_config/dependent_packages.yaml
+MS_MindChemistry:
+    MindChemistry/
+    tests/st/mindchemistry
+    tests/ut/mindchemistry
+    .jenkins/test/config/chemistry_config/dependent_packages.yaml
+MS_MindEarth:
+    MindEarth/
+    tests/st/mindearth
+    tests/ut/mindearth
+    .jenkins/test/config/earth_config/dependent_packages.yaml
+MS_SciAi:
+    SciAi/
+    tests/st/sciai
+    tests/ut/sciai
+    .jenkins/test/config/sciai_config/dependent_packages.yaml
