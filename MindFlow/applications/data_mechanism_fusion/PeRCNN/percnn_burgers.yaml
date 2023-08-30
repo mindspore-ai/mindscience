@@ -23,6 +23,7 @@ data_driven:
   post_infer_step: 1800
   fig_save_path: "./figures/data_driven"
   ckpt_file_name: "./model/checkpointtrain.ckpt"
+  dataset_path: "./data/Burgers_2001x2x100x100_[dt=00025].mat"
 
 physics_driven:
   dx: 0.01
@@ -54,3 +55,4 @@ physics_driven:
     name_conf: "train"
   post_infer_step: 1800
   fig_save_path: "./figures/physics_driven"
+  dataset_path: "./data/Burgers_2001x2x100x100_[dt=00025].mat"
