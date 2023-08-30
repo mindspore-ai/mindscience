@@ -191,10 +191,7 @@ class Era5Data(Data):
         validator.check_value_type("test_dir", self.test_dir, [str, none_type])
         validator.check_value_type("valid_dir", self.valid_dir, [str, none_type])
 
-        self.mean_pressure_level = np.load(os.path.join(self.statistic_dir, 'mean.npy'))
-        self.std_pressure_level = np.load(os.path.join(self.statistic_dir, 'std.npy'))
-        self.mean_surface = np.load(os.path.join(self.statistic_dir, 'mean_s.npy'))
-        self.std_surface = np.load(os.path.join(self.statistic_dir, 'std_s.npy'))
+        self.get_statistic()
 
         self.run_mode = run_mode
         self.t_in = data_params['t_in']
@@ -312,6 +309,12 @@ class Era5Data(Data):
                 tmp_lst = os.listdir(os.path.join(path, f))
                 count += len(tmp_lst)
         return count
+
+    def get_statistic(self):
+        self.mean_pressure_level = np.load(os.path.join(self.statistic_dir, 'mean.npy'))
+        self.std_pressure_level = np.load(os.path.join(self.statistic_dir, 'std.npy'))
+        self.mean_surface = np.load(os.path.join(self.statistic_dir, 'mean_s.npy'))
+        self.std_surface = np.load(os.path.join(self.statistic_dir, 'std_s.npy'))
 
     def normalize(self, x, x_surface):
         x = (x - self.mean_pressure_level) / self.std_pressure_level

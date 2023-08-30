@@ -1,0 +1,50 @@
+model:
+  name: "GraphCast"
+  data_sink: False
+data:
+  name: "era5"
+  root_dir: "./test_data"
+  feature_dims: 69
+  pressure_level_num: 13
+  vm_in_channels: 3
+  em_in_channels: 4
+  eg2m_in_channels: 4
+  em2g_in_channels: 4
+  batch_size: 1
+  t_in: 1
+  t_out_train: 1
+  t_out_valid: 1
+  t_out_test: 1
+  train_interval: 1
+  valid_interval: 1
+  test_interval: 1
+  pred_lead_time: 6
+  data_frequency: 6
+  train_period: [2015, 2015]
+  valid_period: [2016, 2016]
+  test_period: [2017, 2017]
+  patch: False
+  start_rollout_step: 1
+  h_size: 128
+  w_size: 256
+  mesh_level: 4
+  grid_resolution: 1.4
+  num_workers: 1
+optimizer:
+  epochs: 1
+  initial_lr: 0.00025
+  name: "adamw"
+  finetune_lr: 0.0000003
+  warmup_epochs: 1
+  weight_decay: 0.1
+  gamma: 0.5
+summary:
+  summary_dir: ""
+  save_checkpoint_steps: 10
+  keep_checkpoint_max: 10
+  plt_key_info: False
+  key_info_timestep: [6, 72, 120]
+train:
+  name: "oop"
+  distribute: False
+  amp_level: "O2"
