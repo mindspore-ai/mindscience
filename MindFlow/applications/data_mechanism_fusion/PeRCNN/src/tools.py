@@ -14,6 +14,7 @@
 # limitations under the License.
 # ============================================================================
 """tools"""
+from mindspore import ops
 import numpy as np
 import matplotlib.pyplot as plt
 import imageio

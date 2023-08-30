@@ -97,7 +97,7 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
 
 def train(input_args):
     config_param = load_yaml_config(input_args.config_file_path)
-    make_dir(config["mindrecord_data_dir"])
+    make_dir(config_param["mindrecord_data_dir"])
     lr = config_param["lr"]
     for i in range(1, config_param["multi_step"] + 1):
         db_name = f"train_step{i}.mindrecord"
