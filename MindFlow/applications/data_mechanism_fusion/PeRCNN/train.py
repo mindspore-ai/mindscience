@@ -14,6 +14,7 @@
 # limitations under the License.
 # ============================================================================
 """train"""
+import os
 import argparse
 import time
 import numpy as np
@@ -69,8 +70,8 @@ def train_stage(trainer, stage, pattern, config):
     best_loss = 100000
     for epoch in range(1, 1 + config['epochs']):
         time_beg = time.time()
-        upconv.set_train(True)
-        recurrent_cnn.set_train(True)
+        trainer.upconv.set_train(True)
+        trainer.recurrent_cnn.set_train(True)
         if stage == 'pretrain':
             step_train_loss = train_step()
             print_log(
@@ -82,10 +83,10 @@ def train_stage(trainer, stage, pattern, config):
             if step_train_loss < best_loss:
                 best_loss = step_train_loss
                 print_log('best loss', best_loss, 'save model')
-                save_checkpoint(upconv, os.path.join("./model", pattern,
-                                                     f"{config['name_conf']}_upconv.ckpt"))
-                save_checkpoint(recurrent_cnn, os.path.join("./model", pattern,
-                                                            f"{config['name_conf']}_recurrent_cnn.ckpt"))
+                save_checkpoint(trainer.upconv, os.path.join("./model", pattern,
+                                                             f"{config['name_conf']}_upconv.ckpt"))
+                save_checkpoint(trainer.recurrent_cnn, os.path.join("./model", pattern,
+                                                                    f"{config['name_conf']}_recurrent_cnn.ckpt"))
     if pattern == 'physics_driven':
         trainer.recurrent_cnn.show_coef()
 
@@ -137,6 +138,7 @@ def train(input_args):
                              dx=burgers_config['dx'],
                              dt=burgers_config['dy'],
                              nu=burgers_config['nu'],
+                             dataset_path=burgers_config['dataset_path'],
                              compute_dtype=mstype.float32)
 
     train_stage(percnn_trainer, 'pretrain', pattern, burgers_config['pretrain'])
