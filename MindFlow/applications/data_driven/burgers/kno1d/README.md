@@ -1,6 +1,8 @@
-# 1D Burgers Equation
+# Koopman Neural Operator Solves 1D Burgers Equation
 
 ## Overview
+
+### Problem Description
 
 Burgers' equation is a nonlinear partial differential equation that simulates the propagation and
 reflection of shock waves. It is widely used in the fields of fluid mechanics, nonlinear acoustics,
@@ -25,56 +27,58 @@ $$
 u_0 \mapsto u(\cdot, 1)
 $$
 
-## Train
+### Technical Path
 
-The training log, training loss, and validation loss is shown as follows.
+The following figure shows the architecture of the Koopman Neural Operator, which contains the upper and lower main branches and corresponding outputs. In the figure, Input represents the initial vorticity. In the upper branch, the input vector is lifted to higher dimension channel space by the Encoding layer. Then the mapping result is used as the input of the Koopman layer to perform nonlinear transformation of the frequency domain information. Finally, the Decoding layer maps the transformation result to the Prediction. At the same time, the lower branch does high-dimensional mapping of the input vector through the Encoding Layer, and then reconstructs the input through the Decoding Layer. The Encoding layers of the upper and lower branches share the weight, and the Decoding layers share the weight too. Prediction is used to calculate the prediction error with Label, and Reconstruction is used to calculate the reconstruction error with Input. The two errors together guide the gradient calculation of the model.
 
-```text
-Data preparation finished
-input_path:  (1000, 1024, 1)
-label_path:  (1000, 1024)
-Data preparation finished
-input_path:  (200, 1024, 1)
-label_path:  (200, 1024)
-name:KNO1D_channels:32_modes:64_depths:4_resolution:1024
-./summary_dir/name:KNO1D_channels:32_modes:64_depths:4_resolution:1024
-epoch: 1, time cost: 21.623394, recons loss: 0.295491, pred loss: 0.085095
-epoch: 2, time cost: 2.527564, recons loss: 0.161590, pred loss: 0.002210
-epoch: 3, time cost: 2.598942, recons loss: 0.027091, pred loss: 0.000967
-epoch: 4, time cost: 2.517585, recons loss: 0.000775, pred loss: 0.000502
-epoch: 5, time cost: 2.573697, recons loss: 0.000057, pred loss: 0.000282
-epoch: 6, time cost: 2.562175, recons loss: 0.000048, pred loss: 0.000244
-epoch: 7, time cost: 2.491402, recons loss: 0.000048, pred loss: 0.000214
-epoch: 8, time cost: 2.530793, recons loss: 0.000048, pred loss: 0.000237
-epoch: 9, time cost: 2.504641, recons loss: 0.000048, pred loss: 0.000231
-epoch: 10, time cost: 2.544668, recons loss: 0.000049, pred loss: 0.000227
----------------------------start evaluation-------------------------
-Eval epoch: 10, recons loss: 4.7650219457864295e-05, relative pred loss: 0.01156728882342577
----------------------------end evaluation---------------------------
+The Koopman Neural Operator consists of the Encoding Layer, Koopman Layers, Decoding Layer and two branches.
 
-...
+The Koopman Layer is shown in the dotted box, which could be repeated. Start from input: apply the Fourier transform(FFT); apply a linear transformation on the lower Fourier modes and filters out the higher modes; then apply the inverse Fourier transform(iFFT). Then the output is added into input. Finally, the Koopman Layer output vector is obtained through the activation function.
 
-epoch: 91, time cost: 2.539794, recons loss: 0.000042, pred loss: 0.000006
-epoch: 92, time cost: 2.521379, recons loss: 0.000042, pred loss: 0.000007
-epoch: 93, time cost: 3.142074, recons loss: 0.000042, pred loss: 0.000006
-epoch: 94, time cost: 2.569737, recons loss: 0.000042, pred loss: 0.000006
-epoch: 95, time cost: 2.545627, recons loss: 0.000042, pred loss: 0.000006
-epoch: 96, time cost: 2.568123, recons loss: 0.000042, pred loss: 0.000006
-epoch: 97, time cost: 2.547843, recons loss: 0.000042, pred loss: 0.000006
-epoch: 98, time cost: 2.709663, recons loss: 0.000042, pred loss: 0.000006
-epoch: 99, time cost: 2.529918, recons loss: 0.000042, pred loss: 0.000006
-epoch: 100, time cost: 2.502929, recons loss: 0.000042, pred loss: 0.000006
----------------------------start evaluation-------------------------
-Eval epoch: 100, recons loss: 4.1765865171328186e-05, relative pred loss: 0.004054672718048095
----------------------------end evaluation---------------------------
+![Koopman Layer structure](images/kno.jpg)
+
+## QuickStart
+
+You can download dataset from [data_driven/airfoil/2D_steady](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_steady/) for model evaluation. Save these dataset at `./dataset`.
+
+### Run Method 1: Call `train.py` from command line
+
+```shell
+python train.py --config_file_path ./configs/kno1d.yaml --mode GRAPH --device_target Ascend --device_id 0
 ```
 
-## Test
+where:
+
+`--config_file_path` indicates the path of the parameter file. Default './configs/kno1d.yaml'；
+
+`--device_target` indicates the computing platform. You can choose 'Ascend' or 'GPU'. Default 'Ascend'.
+
+`--device_id` indicates the index of NPU or GPU. Default 0.
+
+`--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode.
+
+### Run Method 2: Run Jupyter Notebook
+
+You can run the training and validation code line by line using the Chinese or English version of the Jupyter Notebook [Chinese Version](.KNO1D_CN.ipynb) and [English Version](.KNO1D.ipynb).
+
+## Results Display
 
 Take 6 samples, and do 10 consecutive steps of prediction. Visualize the prediction as follows.
 
-![](images/result.jpg)
+![KNO Solves Burgers Equation](images/result.jpg)
+
+## Performance
+
+|     Parameter     |                  Ascend                  |       GPU       |
+| :---------------: | :--------------------------------------: | :-------------: |
+|     Hardware      | Ascend 910A, 32G；CPU: 2.6GHz, 192 cores | NVIDIA V100 32G |
+| MindSpore version |                  2.0.0                   |      2.0.0      |
+|    train loss     |                   3e-5                   |      3e-5       |
+|    valid loss     |                   3e-3                   |      3e-3       |
+|       speed       |                 2s/epoch                 |    7s/epoch     |
 
 ## Contributor
 
-dyonghan
+gitee id：[dyonghan](https://gitee.com/dyonghan)
+
+email: dyonghan@qq.com

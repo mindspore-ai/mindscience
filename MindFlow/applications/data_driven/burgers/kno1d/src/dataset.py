@@ -19,6 +19,7 @@ import os
 import numpy as np
 
 from mindflow.data import Dataset, ExistedDataConfig
+from mindflow.utils import print_log
 
 EPS = 1e-8
 
@@ -36,7 +37,7 @@ def create_npy(config, sub=32):
     if not os.path.exists(train_path):
         os.makedirs(train_path)
     else:
-        print("Data preparation finished")
+        print_log("Data preparation finished")
         return
     if not os.path.exists(test_path):
         os.makedirs(test_path)
@@ -78,8 +79,8 @@ def create_training_dataset(config, shuffle=True, drop_remainder=False, is_train
         test_path = os.path.join(data_path, "test")
         input_path = os.path.join(test_path, "inputs.npy")
         label_path = os.path.join(test_path, "label.npy")
-    print('input_path: ', np.load(input_path).shape)
-    print('label_path: ', np.load(label_path).shape)
+    print_log('input_path: ', np.load(input_path).shape)
+    print_log('label_path: ', np.load(label_path).shape)
     burgers_1d_data = ExistedDataConfig(name=config["name"],
                                         data_dir=[input_path, label_path],
                                         columns_list=["inputs", "label"],

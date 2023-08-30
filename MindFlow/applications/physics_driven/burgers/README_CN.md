@@ -34,6 +34,16 @@ python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_targ
 
 ![Burgers PINNs](images/result.jpg)
 
+## 性能
+
+|        参数         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.0.0             |      2.0.0       |
+|        训练损失      |        1e-3               |       1e-4      |
+|        验证损失      |        1e-2               |       1e-2    |
+|        速度          |     10ms/epoch        |    44ms/epoch  |
+
 ## Contributor
 
 gitee id：[liulei277](https://gitee.com/liulei277)
