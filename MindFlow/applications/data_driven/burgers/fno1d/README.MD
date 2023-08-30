@@ -43,34 +43,33 @@ Fourier layers: Start from input V. On top: apply the Fourier transform $\mathca
 
 ![Fourier Layer structure](images/FNO-2.png)
 
-## 快速开始
+## QuickStart
 
-数据集下载地址：[data_driven/burgers/fno1d/dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/dataset/). 将数据集保存在`./dataset`路径下.
+You can download dataset from [data_driven/burgers/](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/). Save these dataset at `./dataset`.
 
-### 训练方式一：在命令行中调用`train.py`脚本
+### Run Method 1: Call `train.py` from command line
 
 ```shell
-python train.py --config_file_path ./configs/fno1d.yaml --device_target GPU --device_id 0 --mode GRAPH 
+python train.py --config_file_path ./configs/fno1d.yaml --mode GRAPH --device_target Ascend --device_id 0
 ```
 
-其中，
+where:
 
-`--config_file_path`表示配置文件的路径，默认值'./configs/fno1d.yaml'；
+`--config_file_path` indicates the path of the parameter file. Default './configs/fno1d.yaml'；
 
-`--device_target`表示使用的计算平台类型，可以选择'Ascend'或'GPU'，默认值'GPU'；
+`--device_target` indicates the computing platform. You can choose 'Ascend' or 'GPU'. Default 'Ascend'.
 
-`--device_id`表示使用的计算卡编号，可按照实际情况填写，默认值 0；
+`--device_id` indicates the index of NPU or GPU. Default 0.
 
-`--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式。
+`--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode. 
 
+### Run Method 2: Run Jupyter Notebook
 
-### 训练方式二：运行 Jupyter Notebook
+You can run the training and validation code line by line using the Chinese or English version of the Jupyter Notebook [Chinese Version](./FNO1D_CN.ipynb) and [English Version](./FNO1D.ipynb).
 
-您可以使用[中文版](./FNO1D_CN.ipynb)和[英文版](./FNO1D.ipynb)Jupyter Notebook 逐行运行训练和验证代码。
+## Results Display
 
-## 结果展示
-
-![FNO1D求解Burgers方程](images/result.jpg)
+![FNO1D Solves Burgers Equation](images/result.jpg)
 
 ## Performance
 
