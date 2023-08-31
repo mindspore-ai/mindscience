@@ -6,8 +6,8 @@ sponge.function.Units
     记录和转换长度和能量单位。
 
     参数：
-        - **length_unit** (str) - 长度单位。默认值："None"。
-        - **energy_unit** (str) - 能量单位。默认值："None"。
+        - **length_unit** (str) - 长度单位。默认值： ``None`` 。
+        - **energy_unit** (str) - 能量单位。默认值： ``None`` 。
 
     .. py:method:: acceleration_ref()
 
@@ -143,6 +143,21 @@ sponge.function.Units
 
         返回：
             float。气体常数。
+
+    .. py:method:: get_boltzmann(energy_unit)
+
+        获取指定单位下的玻尔兹曼常数。
+
+        参数：
+            - **energy_unit** (str) - 能量单位。
+    
+    .. py:method:: get_coulomb(length_unit, energy_unit)
+
+        获取指定单位下的库伦常数。
+
+        参数：
+            - **length_unit** (str) - 长度单位。
+            - **energy_unit** (str) - 能量单位。
 
     .. py:method:: kinetic_ref()
 

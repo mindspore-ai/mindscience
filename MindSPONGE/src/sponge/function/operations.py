@@ -52,9 +52,9 @@ class GetVector(Cell):
     Args:
 
         use_pbc (bool): Whether to calculate vector under periodic boundary condition.
-                        If `None` is given, it will determine whether to use periodic boundary
-                        conditions based on whether the `pbc_box` is provided.
-                        Default: ``None``.
+                        If ``None`` is given, it will determine whether to use periodic boundary
+                        conditions based on whether the ``pbc_box`` is provided.
+                        Default: ``None`` .
 
     """
 
@@ -100,15 +100,57 @@ class GetVector(Cell):
         return self
 
     def calc_vector_default(self, initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Tensor:
-        """get vector"""
+        """
+        get vector.
+
+        Args:
+            initial (Tensor):   Tensor of shape :math:`(B, ..., D)` .
+                                B means batchsize, i.e. number of walkers in simulation.
+                                D means spatial dimension of the simulation system. Usually is 3.
+                                Data type is float.
+                                Coordinate of initial point
+            terminal (Tensor):  Tensor of shape :math:`(B, ..., D)` . Data type is float.
+                                Coordinate of terminal point
+            pbc_box (Tensor):   Tensor of shape :math:`(B, D)` . Data type is float.
+                                Default: ``None``.
+
+        """
         return func.calc_vector(initial, terminal, pbc_box)
 
     def calc_vector_pbc(self, initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Tensor:
-        """get vector with perodic bundary condition"""
+        """
+        get vector with perodic bundary condition.
+
+        Args:
+            initial (Tensor):   Tensor of shape :math:`(B, ..., D)` .
+                                B means batchsize, i.e. number of walkers in simulation.
+                                D means spatial dimension of the simulation system. Usually is 3.
+                                Data type is float.
+                                Coordinate of initial point
+            terminal (Tensor):  Tensor of shape :math:`(B, ..., D)` . Data type is float.
+                                Coordinate of terminal point
+            pbc_box (Tensor):   Tensor of shape :math:`(B, D)` . Data type is float.
+                                Default: ``None``.
+
+        """
         return func.calc_vector_pbc(initial, terminal, pbc_box)
 
     def calc_vector_nopbc(self, initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Tensor:
-        """get vector without perodic bundary condition"""
+        """
+        get vector without perodic bundary condition.
+
+        Args:
+            initial (Tensor):   Tensor of shape :math:`(B, ..., D)` .
+                                B means batchsize, i.e. number of walkers in simulation.
+                                D means spatial dimension of the simulation system. Usually is 3.
+                                Data type is float.
+                                Coordinate of initial point
+            terminal (Tensor):  Tensor of shape :math:`(B, ..., D)` . Data type is float.
+                                Coordinate of terminal point
+            pbc_box (Tensor):   Tensor of shape :math:`(B, D)` . Data type is float.
+                                Default: ``None``.
+
+        """
         #pylint: disable=unused-argument
         return terminal - initial
 
@@ -116,19 +158,18 @@ class GetVector(Cell):
         r"""Compute vector from initial point to terminal point.
 
         Args:
-            initial (Tensor):   Tensor of shape (B, ..., D). Data type is float.
+            initial (Tensor):   Tensor of shape :math:`(B, ..., D)` .
+                                B means batchsize, i.e. number of walkers in simulation.
+                                D means spatial dimension of the simulation system. Usually is 3.
+                                Data type is float.
                                 Coordinate of initial point
-            terminal (Tensor):  Tensor of shape (B, ..., D). Data type is float.
+            terminal (Tensor):  Tensor of shape :math:`(B, ..., D)` . Data type is float.
                                 Coordinate of terminal point
-            pbc_box (Tensor):   Tensor of shape (B, D). Data type is float.
+            pbc_box (Tensor):   Tensor of shape :math:`(B, D)` . Data type is float.
                                 Default: ``None``.
 
         Returns:
-            vector (Tensor):    Tensor of shape (B, ..., D). Data type is float.
-
-        Symbols:
-            B:  Batchsize, i.e. number of walkers in simulation
-            D:  Spatial dimension of the simulation system. Usually is 3.
+            vector (Tensor):    Tensor of shape :math:`(B, ..., D)` . Data type is float.
 
         """
         return self.calc_vector(initial, terminal, pbc_box)
@@ -203,15 +244,15 @@ class VelocityGenerator(Cell):
         temperature (float):        Temperature
 
         remove_translation (bool):  Whether to calculate distance under periodic boundary condition.
-                                    Default: ``True``.
+                                    Default: ``True``
 
-        seed (int):                 Random seed for standard normal. Default: 0
+        seed (int):                 Random seed for standard normal. Default: ``0``
 
-        seed2 (int):                Random seed2 for standard normal. Default: 0
+        seed2 (int):                Random seed2 for standard normal. Default: ``0``
 
-        length_unit (str):          Length unit. Default: ``None``.
+        length_unit (str):          Length unit. Default: ``None``
 
-        energy_unit (str):          energy unit. Default: ``None``.
+        energy_unit (str):          energy unit. Default: ``None``
 
     """
     #pylint: disable=invalid-name
@@ -247,7 +288,12 @@ class VelocityGenerator(Cell):
         self.multi_temp = False
 
     def set_temperature(self, temperature: float):
-        """set temperature"""
+        """
+        set temperature.
+
+        Args:
+            temperature (float): temperature
+        """
         self.temperature = Tensor(temperature, ms.float32).reshape(-1, 1, 1)
         self.multi_temp = False
         if self.temperature is not None and self.temperature.size > 1:
@@ -383,12 +429,14 @@ class GetShiftGrad(Cell):
 
     Args:
 
-        bonds (Tensor):     Tensor of shape (C, 2). Data type is int.
-                            Bonds need to be constraint.
-
         num_atoms (int):    Number of atoms in system.
 
+        bonds (Tensor):     Tensor of shape :math:`(C, 2)` . Data type is int.
+                            Bonds need to be constraint.
+
         num_walkers (int):  Number of multiple walkers.
+
+        dimension (int):    Dimension.
 
         use_pbc (bool):     Whether to use periodic boundary condition.
 
@@ -421,14 +469,14 @@ class GetShiftGrad(Cell):
         """Module for calculating the differentiation of B matrix whose dimensions are: K*N*D.
 
         Args:
-            coordinate_new (Tensor):    Tensor of shape (B,A,D). Data type is float.
+            coordinate_new (Tensor):    Tensor of shape :math:`(B,A,D)` . Data type is float.
                                         The new coordinates of the system.
-            coordinate_old (Tensor):    Tensor of shape (B,A,D). Data type is float.
+            coordinate_old (Tensor):    Tensor of shape :math:`(B,A,D)` . Data type is float.
                                         The old coordinates of the system.
-            pbc_box (Tensor):           Tensor of shape (B,D). Data type is float.
+            pbc_box (Tensor):           Tensor of shape :math:`(B,D)` . Data type is float.
                                         Tensor of PBC box
         Return:
-            shift (Tensor): Tensor of shape (B,A,D). Data type is float.
+            shift (Tensor): Tensor of shape :math:`(B,A,D)` . Data type is float.
 
         """
         # (B,C,A,D)
