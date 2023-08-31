@@ -34,6 +34,16 @@ You can use [Chinese](./burgers1D_CN.ipynb) or [English](./burgers1D.ipynb)Jupyt
 
 ![Burgers PINNs](images/result.jpg)
 
+## Performance
+
+|        Parameter         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA V100 32G       |
+|     MindSpore version   |        2.0.0             |      2.0.0       |
+|        train loss      |        1e-3               |       1e-4      |
+|        valid loss      |        1e-2               |       1e-2    |
+|        speed          |     10ms/epoch        |    44ms/epoch  |
+
 ## Contributor
 
 gitee id：[liulei277](https://gitee.com/liulei277)

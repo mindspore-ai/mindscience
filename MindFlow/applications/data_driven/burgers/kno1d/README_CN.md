@@ -1,6 +1,8 @@
-# 一维伯格斯方程
+# KNO神经算子求解一维伯格斯方程
 
 ## 概述
+
+### 问题描述
 
 伯格斯方程（Burgers' equation）是一个模拟冲击波的传播和反射的非线性偏微分方程，被广泛应用于流体力学，非线性声学，
 气体动力学等领域，它以约翰内斯·马丁斯汉堡（1895-1981）的名字命名。
@@ -23,58 +25,58 @@ $$
 u_0 \mapsto u(\cdot, 1)
 $$
 
-[详见](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_driven/burgers/kno1d/KNO1D_CN.ipynb)
+### 技术路径
 
-## 训练
+Koopman Neural Operator模型构架如下图所示，包含上下两个主要分支和对应输出。图中Input表示初始涡度，上路分支通过Encoding Layer实现输入向量的高维映射，然后将映射结果作为Koopman Layer的输入，进行频域信息的非线性变换，最后由Decoding Layer将变换结果映射至最终的预测结果Prediction。同时，下路分支通过Encoding Layer实现输入向量的高维映射，然后通过Decoding Layer对输入进行重建。上下两个分支的Encoding Layer之间共享权重，Decoding Layer之间也共享权重。Prediction用于和Label计算预测误差，Reconstruction用于和Input计算重建误差。两个误差共同指导模型的梯度计算。
 
-训练日志、训练Loss以及验证Loss如下。
+Encoding Layer、Koopman Layer、Decoding Layer以及两分支共同组成了Koopman Neural Operator。
 
-```text
-Data preparation finished
-input_path:  (1000, 1024, 1)
-label_path:  (1000, 1024)
-Data preparation finished
-input_path:  (200, 1024, 1)
-label_path:  (200, 1024)
-name:KNO1D_channels:32_modes:64_depths:4_resolution:1024
-./summary_dir/name:KNO1D_channels:32_modes:64_depths:4_resolution:1024
-epoch: 1, time cost: 21.623394, recons loss: 0.295491, pred loss: 0.085095
-epoch: 2, time cost: 2.527564, recons loss: 0.161590, pred loss: 0.002210
-epoch: 3, time cost: 2.598942, recons loss: 0.027091, pred loss: 0.000967
-epoch: 4, time cost: 2.517585, recons loss: 0.000775, pred loss: 0.000502
-epoch: 5, time cost: 2.573697, recons loss: 0.000057, pred loss: 0.000282
-epoch: 6, time cost: 2.562175, recons loss: 0.000048, pred loss: 0.000244
-epoch: 7, time cost: 2.491402, recons loss: 0.000048, pred loss: 0.000214
-epoch: 8, time cost: 2.530793, recons loss: 0.000048, pred loss: 0.000237
-epoch: 9, time cost: 2.504641, recons loss: 0.000048, pred loss: 0.000231
-epoch: 10, time cost: 2.544668, recons loss: 0.000049, pred loss: 0.000227
----------------------------start evaluation-------------------------
-Eval epoch: 10, recons loss: 4.7650219457864295e-05, relative pred loss: 0.01156728882342577
----------------------------end evaluation---------------------------
+Koopman Layer结构如虚线框所示，可重复堆叠。向量经过傅里叶变换后，再经过线性变换，过滤高频信息，然后进行傅里叶逆变换；输出结果与输入相加，最后通过激活函数，得到输出向量。
 
-...
+![KNO网络结构](images/kno.jpg)
 
-epoch: 91, time cost: 2.539794, recons loss: 0.000042, pred loss: 0.000006
-epoch: 92, time cost: 2.521379, recons loss: 0.000042, pred loss: 0.000007
-epoch: 93, time cost: 3.142074, recons loss: 0.000042, pred loss: 0.000006
-epoch: 94, time cost: 2.569737, recons loss: 0.000042, pred loss: 0.000006
-epoch: 95, time cost: 2.545627, recons loss: 0.000042, pred loss: 0.000006
-epoch: 96, time cost: 2.568123, recons loss: 0.000042, pred loss: 0.000006
-epoch: 97, time cost: 2.547843, recons loss: 0.000042, pred loss: 0.000006
-epoch: 98, time cost: 2.709663, recons loss: 0.000042, pred loss: 0.000006
-epoch: 99, time cost: 2.529918, recons loss: 0.000042, pred loss: 0.000006
-epoch: 100, time cost: 2.502929, recons loss: 0.000042, pred loss: 0.000006
----------------------------start evaluation-------------------------
-Eval epoch: 100, recons loss: 4.1765865171328186e-05, relative pred loss: 0.004054672718048095
----------------------------end evaluation---------------------------
+## 快速开始
+
+数据集下载地址：[data_driven/burgers/kno1d/dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/dataset/). 将数据集保存在`./dataset`路径下.
+
+### 训练方式一：在命令行中调用`train.py`脚本
+
+```shell
+python train.py --config_file_path ./configs/kno1d.yaml --device_target GPU --device_id 0 --mode GRAPH
 ```
 
-## 测试
+其中，
+
+`--config_file_path`表示配置文件的路径，默认值'./configs/kno1d.yaml'；
+
+`--device_target`表示使用的计算平台类型，可以选择'Ascend'或'GPU'，默认值'GPU'；
+
+`--device_id`表示使用的计算卡编号，可按照实际情况填写，默认值 0；
+
+`--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式。
+
+### 训练方式二：运行 Jupyter Notebook
+
+您可以使用[中文版](./KNO1D_CN.ipynb)和[英文版](./KNO1D.ipynb)Jupyter Notebook 逐行运行训练和验证代码。
+
+## 结果展示
 
 取6个样本做连续10步预测，并可视化。
 
-![](images/result.jpg)
+![KNO求解burgers方程](images/result.jpg)
+
+## 性能
+
+|        参数         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.0.0             |      2.0.0       |
+|        训练损失      |        3e-5               |       3e-5      |
+|        验证损失      |        3e-3               |       3e-3    |
+|        速度          |     2s/epoch        |    7s/epoch  |
 
 ## Contributor
 
-dyonghan
+gitee id：[dyonghan](https://gitee.com/dyonghan)
+
+email: dyonghan@qq.com
