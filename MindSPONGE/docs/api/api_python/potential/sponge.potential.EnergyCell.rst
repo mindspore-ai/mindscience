@@ -42,6 +42,22 @@ sponge.potential.EnergyCell
         返回：
             str，能量单位。
 
+    .. py:method:: check_system(system)
+
+        检查系统是否需要计算这个能量形式。
+
+        参数：
+            - **system** (str) - 系统。
+
+    .. py:method:: set_units(length_unit=None, energy_unit=None, units=None)
+
+        设置长度、能量单位。
+
+        参数：
+            - **length_unit** (str) - 长度单位。默认值： ``None`` 。
+            - **energy_unit** (str) - 能量单位。默认值： ``None`` 。
+            - **units** (Units) - 单位。默认值： ``None`` 。
+
     .. py:method:: set_input_unit(length_unit)
 
         设置输入坐标的长度单位。
