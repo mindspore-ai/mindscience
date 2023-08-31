@@ -649,8 +649,8 @@ class Units:
     Unit class to record and convert the length and energy units.
 
     Args:
-        length_unit (str):  Length unit. Default: ``None``.
-        energy_unit (str):  Energy unit. Default: ``None``.
+        length_unit (str):  Length unit. Default: ``None``
+        energy_unit (str):  Energy unit. Default: ``None``
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -899,14 +899,25 @@ class Units:
         return _BAR_DEFAULT_REF * self.__energy_ref / math.pow(self.__length_ref, 3)
 
     def get_boltzmann(self, energy_unit: str = None) -> float:
-        """get the Boltzmann constant for a specific unit"""
+        """
+        get the Boltzmann constant for a specific unit
+
+        Args:
+            energy_unit (str): Energy unit. Default: ``None`` .
+        """
         if energy_unit is None:
             return self.__boltzmann
         energy_ref = get_energy_ref(energy_unit)
         return _BOLTZMANN_DEFAULT_REF / energy_ref
 
     def get_coulomb(self, length_unit: str = None, energy_unit: str = None) -> float:
-        """get the Coulomb constant for a specific unit"""
+        """
+        get the Coulomb constant for a specific unit
+
+        Args:
+            length_unit (str): Length unit. Default: ``None`` .
+            energy_unit (str): Energy unit. Default: ``None`` .
+        """
         if length_unit is None and energy_unit is None:
             return self.__coulomb
         length_ref = get_length_ref(length_unit)

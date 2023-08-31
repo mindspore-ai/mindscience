@@ -9,25 +9,20 @@ sponge.system.Molecule
         - **atoms** (Union[List[Union[str, int]], ndarray]) - 体系中的原子。数据可以是原子名称的字符串，也可以是原子序号的int值。默认值： ``None`` 。
         - **atom_name** (Union[List[str], ndarray]) - 原子名称字符串的array。默认值： ``None`` 。
         - **atom_type** (Union[List[str], ndarray]) - 原子种类字符串的array。默认值： ``None`` 。
-        - **atom_mass** (Union[Tensor, ndarray, List[float]]) - 原子质量的array，类型为float，shape为 `(B, A)` 。默认值： ``None`` 。
-        - **atom_charge** (Union[Tensor, ndarray, List[float]]) - 原子电荷数的array，类型为float，shape为 `(B, A)` 。默认值： ``None`` 。
-        - **atomic_number** (Union[Tensor, ndarray, List[float]]) - 原子序数的array，类型为int，shape为 `(B, A)` 。默认值： ``None`` 。
-        - **bond** (Union[Tensor, ndarray, List[int]]) - 键连接的array，数据类型为int，shape为 `(B, b, 2)` 。默认值： ``None`` 。
-        - **coordinate** (Union[Tensor, ndarray, List[float]]) - 原子位置坐标 :math:`R` 的Tensor，shape为 :math:`(B, A, D)` ，数据类型为float。默认值： ``None`` 。
+        - **atom_mass** (Union[Tensor, ndarray, List[float]]) - 原子质量的array，类型为float，shape为 :math:`(B, A)` 其中B表示batch size， A表示原子数量。默认值： ``None`` 。
+        - **atom_charge** (Union[Tensor, ndarray, List[float]]) - 原子电荷数的array，类型为float，shape为 :math:`(B, A)` 。默认值： ``None`` 。
+        - **atomic_number** (Union[Tensor, ndarray, List[float]]) - 原子序数的array，类型为int，shape为 :math:`(B, A)` 。默认值： ``None`` 。
+        - **bond** (Union[Tensor, ndarray, List[int]]) - 键连接的array，数据类型为int，shape为 :math:`(B, b, 2)` 其中b表示键数量。默认值： ``None`` 。
+        - **coordinate** (Union[Tensor, ndarray, List[float]]) - 原子位置坐标 :math:`R` 的Tensor，shape为 :math:`(B, A, D)` 其中D表示模拟体系的维度，一般为3，数据类型为float。默认值： ``None`` 。
         - **pbc_box** (Union[Tensor, ndarray, List[float]]) - 周期性边界条件的box，shape为 :math:`(B, D)` 或者 :math:`(1, D)` 。默认值： ``None`` 。
         - **template** (Union[dict, str]) - 分子的模板。可以是一个MindSPONGE模板格式的字典，也可以是一个MindSPONGE模板文件的字符串。如果输入是一个字符串，该类会优先在MindSPONGE模板的构建路径下( `mindsponge.data.template` )搜索与输入同名的文件。默认值： ``None`` 。
         - **residue** (Union[Residue, List[Residue]]) - 残基或残基列表。如果 `template` 不是 ``None`` 的话，只有模板里的残基会被使用。默认值： ``None`` 。
         - **length_unit** (str) - 长度单位。如果为 ``None`` ，则使用全局长度单位。默认值： ``None`` 。
 
     输出：
-        - 坐标，shape为 `(B, A, D)` 的Tensor。数据类型为float。
-        - 周期性边界条件盒子，shape为 `(B, D)` 的Tensor。数据类型为float。
+        - 坐标，shape为 :math:`(B, A, D)` 的Tensor，其中B表示batch size， A表示原子数量，D表示模拟体系的维度，一般为3。数据类型为float。
+        - 周期性边界条件盒子，shape为 :math:`(B, D)` 的Tensor，其中B表示batch size， D表示模拟体系的维度，一般为3。数据类型为float。
 
-    符号：
-        - **B** - Batch size。
-        - **A** - 原子数量。
-        - **b** - 键数量。
-        - **D** - 模拟体系的维度，一般为3。
 
     .. py:method:: add_residue(residue, coordinate=None)
 
@@ -165,6 +160,13 @@ sponge.system.Molecule
 
         参数：
             - **shift** (Tensor) - 从原始系统移动的距离。
+
+    .. py:method:: set_atom_charge(atom_charge)
+
+        设置原子电荷。
+
+        参数：
+            - **atom_charge** (Tensor) - 原子电荷。
 
     .. py:method:: set_bond_length(bond_length)
 
@@ -347,3 +349,17 @@ sponge.system.Molecule
 
         返回：
             Tensor。周期性边界条件箱。
+
+    .. py:method:: fill_water(edge=None, gap=None, box=None, pdb_out=None, template=None)
+
+        Molecule类中给周期性边界条件箱加水的内部方法。
+
+        参数：
+            - **edge** (float) - 系统周围水的边长，默认值 ``None`` 。
+            - **gap** (float) - 系统原子和水原子之间的最小间隔，默认值 ``None`` 。
+            - **box** (Tensor) - 周期性边界条件箱，默认值 ``None`` 。
+            - **pdb_out** (str) - 存放加水后的系统信息的pdb文件的名字，默认值 ``None`` 。
+            - **template** (str) - 加的水分子的补充模板，默认值 ``None`` 。
+
+        返回：
+            Tensor，加水后的周期性边界条件箱。

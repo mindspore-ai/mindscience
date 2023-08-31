@@ -1,7 +1,7 @@
 sponge.function.calc_distance
 =================================
 
-.. py:function:: sponge.function.calc_distance(position_a, position_b, pbc_box)
+.. py:function:: sponge.function.calc_distance(position_a, position_b, pbc_box, keep_dims: bool = False)
 
     计算位置A和B之间的距离。
 
@@ -11,13 +11,10 @@ sponge.function.calc_distance
     在没有周期性边界条件的情况下计算位置A和B之间的距离，用绝对坐标计算。
 
     参数：
-        - **position_a** (Tensor) - 位置A的坐标，shape为 :math:`(B, ..., D)`。
-        - **position_b** (Tensor) - 位置B的坐标，shape为 :math:`(B, ..., D)`。
-        - **pbc_box** (Tensor) - 周期性盒子，shape为 :math:`(B, D)`。
+        - **position_a** (Tensor) - 位置A的坐标，shape为 :math:`(..., D)` ，D是模拟系统的空间维度, 一般为3。
+        - **position_b** (Tensor) - 位置B的坐标，shape为 :math:`(..., D)` 。
+        - **pbc_box** (Tensor) - 周期性盒子，shape为 :math:`(D)` 或者 :math:`(B, D)` ，B是Batch size。
+        - **keepdims** (bool) - 如果设置为 ``True`` ，最后一个维度会被保留，默认值 ``False`` 。
 
     输出：
-        Tensor。A和B之间的距离。shape为 :math:`(B, ..., 1)`。
-
-    符号：
-        - **B** - Batch size。
-        - **D** - 模拟系统的空间维度, 一般为3。
+        Tensor。A和B之间的距离。shape为 :math:`(...)` 或者 :math:`(B, ..., 1)` 。

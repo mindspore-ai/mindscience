@@ -142,12 +142,26 @@ class EnergyCell(Cell):
 
     @staticmethod
     def check_system(system: Molecule) -> bool:
-        """Check if the system needs to calculate this energy term"""
+        """
+        Check if the system needs to calculate this energy term
+
+        Args:
+            system (Molecule): System.
+        """
         #pylint:disable=unused-argument
         return True
 
     def set_units(self, length_unit: str = None, energy_unit: str = None, units: Units = None):
-        r"""set length and energy units"""
+        r"""
+        Set length and energy units.
+
+        Args:
+            length_unit (str):  Length unit. Only valid when `units` is ``None`` .
+                                Default: ``None``
+            energy_unit (str):  Energy unit. Only valid when `units` is ``None`` .
+                                Default: ``None``
+            units (Units):      `Units` object. Default: ``None``
+        """
         if units is None:
             if length_unit is None:
                 length_unit = GLOBAL_UNITS.length_unit
