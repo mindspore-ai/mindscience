@@ -5,3 +5,4 @@ pyevtk >= 1.4.1
 opencv-python >= 4.1.2.30
 pythonocc-core >= 7.4.0
 easydict >= 1.9   # for st test and examples
+SALib >= 1.4.5
