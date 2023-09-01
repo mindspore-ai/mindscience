@@ -156,7 +156,7 @@ def make_restraint_info(ori_seq_len, ur_path, distance_threshold=1, sample_ur_ra
 
 def eval_main(prot_names, megafold, model_cfg, data_cfg, feature_generator):
     'eval_main'
-    peaklist_path = arguments.peaklist_path
+    peaklist_path = arguments.peak_and_cs_path
     for prot_file in prot_names:
         res_path = "./megaassign/"
         res_path_all = "./oriassign/"

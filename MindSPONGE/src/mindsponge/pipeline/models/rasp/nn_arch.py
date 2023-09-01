@@ -124,7 +124,7 @@ class Rasp(nn.Cell):
         self.chi_atom_indices, self.chi_angles_mask, self.mirror_psi_mask, self.chi_pi_periodic, \
         self.indices0, self.indices1 = caculate_constant_array(self.cfg.seq_length)
         self.contact_one_hot = nn.OneHot(depth=2, axis=-1)
-        self.preprocess_contact = nn.Dense(2, 32).to_float(mstype.float16)
+        self.preprocess_contact = nn.Dense(2, 32)
         self.preprocess_1d = nn.Dense(model_cfg.common.target_feat_dim, model_cfg.msa_channel,
                                       weight_init=lecun_init(model_cfg.common.target_feat_dim))
         self.preprocess_msa = nn.Dense(model_cfg.common.msa_feat_dim, model_cfg.msa_channel,
