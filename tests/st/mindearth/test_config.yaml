@@ -43,7 +43,7 @@ summary:
   save_checkpoint_steps: 10
   keep_checkpoint_max: 10
   plt_key_info: False
-  key_info_timestep: [6, 72, 120]
+  key_info_timestep: [6,]
 train:
   name: "oop"
   distribute: False
