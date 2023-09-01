@@ -114,7 +114,7 @@ class MegaFold(nn.Cell):
         self.indices0, self.indices1 = caculate_constant_array(self.cfg.seq_length)
 
         self.contact_one_hot = nn.OneHot(depth=2, axis=-1)
-        self.preprocess_contact = nn.Dense(2, 32).to_float(mstype.float16)
+        self.preprocess_contact = nn.Dense(2, 32)
 
         self.preprocess_1d = nn.Dense(self.cfg.common.target_feat_dim, self.cfg.msa_channel,
                                       weight_init=lecun_init(self.cfg.common.target_feat_dim))

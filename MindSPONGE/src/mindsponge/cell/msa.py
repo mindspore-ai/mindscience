@@ -381,7 +381,7 @@ class MSARowAttentionWithPairBiasContact(nn.Cell):
         query_norm_beta = P.Gather()(self.query_norm_betas, index, 0)
         feat_2d_norm_gamma = P.Gather()(self.feat_2d_norm_gammas, index, 0)
         feat_2d_norm_beta = P.Gather()(self.feat_2d_norm_betas, index, 0)
-        feat_2d_weight = P.Cast()(P.Gather()(self.feat_2d_weights, index, 0), mstype.float16)
+        feat_2d_weight = P.Gather()(self.feat_2d_weights, index, 0)
         contact_norm_gamma = P.Gather()(self.contact_norm_gammas, index, 0)
         contact_norm_beta = P.Gather()(self.contact_norm_betas, index, 0)
         contact_weight = P.Cast()(P.Gather()(self.contact_weights, index, 0), mstype.float16)
@@ -391,12 +391,12 @@ class MSARowAttentionWithPairBiasContact(nn.Cell):
         bias = 1e9 * (msa_mask - 1.0)
         bias = P.ExpandDims()(P.ExpandDims()(bias, 1), 2)
 
-        msa_act = P.Cast()(msa_act, mstype.float32)
-        pair_act = P.Cast()(pair_act, mstype.float32)
+
+
         msa_act, _, _ = self.norm(msa_act, query_norm_gamma, query_norm_beta)
         pair_act, _, _ = self.norm(pair_act, feat_2d_norm_gamma, feat_2d_norm_beta)
-        msa_act = P.Cast()(msa_act, mstype.float16)
-        pair_act = P.Cast()(pair_act, mstype.float16)
+
+
         pair_act = P.Reshape()(pair_act, (-1, pair_act.shape[-1]))
         pair_act_bias = P.Transpose()(P.Reshape()(self.matmul(pair_act, feat_2d_weight), (q, k, self.num_head)),
                                       (2, 0, 1))
