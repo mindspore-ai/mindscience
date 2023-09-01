@@ -40,6 +40,9 @@ def parse_args():
     parser.add_argument('--Gen_per_train', type=int, default=3, help='Train Generator times per training iteration')
     parser.add_argument('--train_iters', type=int, default=5001,
                         help='The number of iterations for training in WGAN model.')
+    parser.add_argument("--download_data", type=str, default="metasurface_holograms", help="Project name of remote "
+                                                                                           "data")
+    parser.add_argument("--force_download", type=bool, default=False, help="Whether forcely download data in sciai")
     args = parser.parse_args()
     return args
 
@@ -276,10 +279,10 @@ def train(args):
 
     d_optimizer = nn.Adam(discriminator.trainable_params(), learning_rate=d_learning_rate, beta1=b1, beta2=b2)
     g_optimizer = nn.Adam(generator.trainable_params(), learning_rate=g_learning_rate, beta1=b1, beta2=b2)
-    g_loss_step = amp.build_train_network(g_loss_cell, g_optimizer, level="O3")
-    g_mse_step = amp.build_train_network(g_mse_cell, g_optimizer, level="O3")
-    d_real_step = amp.build_train_network(d_loss_real_cell, d_optimizer, level="O3")
-    d_fake_step = amp.build_train_network(d_loss_fake_cell, d_optimizer, level="O3")
+    g_loss_step = amp.build_train_network(g_loss_cell, g_optimizer, level="O0")
+    g_mse_step = amp.build_train_network(g_mse_cell, g_optimizer, level="O0")
+    d_real_step = amp.build_train_network(d_loss_real_cell, d_optimizer, level="O0")
+    d_fake_step = amp.build_train_network(d_loss_fake_cell, d_optimizer, level="O0")
     gradient_penalty_step = amp.build_train_network(gradient_penalty_cell, d_optimizer, level="O0")
 
     train_dataset = create_dataset_mnist(batch_size, args.train_data_path)

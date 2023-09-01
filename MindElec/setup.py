@@ -38,6 +38,7 @@ required_package = [
     'scipy >= 1.7.0',
     'matplotlib >= 3.1.3',
     'pyevtk >= 1.4.1',
+    'SALib >= 1.4.5'
 ]
 
 package_data = {
