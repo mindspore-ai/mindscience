@@ -22,6 +22,7 @@
 # ============================================================================
 """loss module"""
 
+import numpy as np
 import mindspore as ms
 import mindspore.nn as nn
 import mindspore.numpy as mnp
@@ -90,7 +91,7 @@ class LossNet(nn.Cell):
         self.n_one_hot = nn.OneHot(depth=14)
         self.zeros = Tensor(0, ms.int32)
         self.twos = Tensor(2, ms.int32)
-        self.dists_mask_i = mnp.eye(14, 14)
+        self.dists_mask_i = Tensor(np.eye(14, 14).astype(np.int32))
         self.cys_sg_idx = Tensor(5, ms.int32)
         self.train_fold = train_fold
         self.sigmoid_cross_entropy = P.SigmoidCrossEntropyWithLogits()

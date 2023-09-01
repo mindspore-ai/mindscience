@@ -24,7 +24,6 @@
 Metrics for collective variables
 """
 
-from typing import Union
 import numpy as np
 import mindspore.common.dtype as mstype
 import mindspore.communication.management as D
@@ -88,13 +87,13 @@ class BalancedMSE(nn.Cell):
         self.last_break = last_break
         self.num_bins = num_bins
 
-        self.breaks = mnp.linspace(self.first_break, self.last_break, self.num_bins)
+        self.breaks = np.linspace(self.first_break, self.last_break, self.num_bins)
         self.width = self.breaks[1] - self.breaks[0]
         bin_width = 2
         start_n = 1
         stop = self.num_bins * 2
-        centers = mnp.divide(mnp.arange(start=start_n, stop=stop, step=bin_width), num_bins * 2.0)
-        self.centers = centers/(self.last_break-self.first_break) + self.first_break
+        centers = np.divide(np.arange(start=start_n, stop=stop, step=bin_width), num_bins * 2.0)
+        self.centers = Tensor(centers/(self.last_break-self.first_break) + self.first_break, mstype.float32)
 
         self.log_noise_scale = Parameter(Tensor([0.], mstype.float32))
         self.p_bins = Parameter(Tensor(np.ones((self.num_bins)) / self.num_bins, dtype=mstype.float32), \

@@ -17,7 +17,7 @@
 import numpy as np
 from Bio import Align
 from Bio.Align import substitution_matrices
-from mindspore import nn
+from mindspore import nn, ops
 import mindspore.numpy as mnp
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
@@ -87,7 +87,7 @@ def dgram_from_positions(positions, num_bins, min_bin, max_bin, ret_type):
     def squared_difference(x, y):
         return mnp.square(x - y)
 
-    lower_breaks = mnp.linspace(min_bin, max_bin, num_bins)
+    lower_breaks = ops.linspace(min_bin, max_bin, num_bins)
     lower_breaks = mnp.square(lower_breaks)
     upper_breaks = mnp.concatenate([lower_breaks[1:], mnp.array([1e8], dtype=mnp.float32)], axis=-1)
     dist2 = mnp.sum(squared_difference(mnp.expand_dims(positions, axis=-2),

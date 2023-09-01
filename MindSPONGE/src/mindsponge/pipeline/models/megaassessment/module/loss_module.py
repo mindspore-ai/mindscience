@@ -14,6 +14,7 @@
 # ============================================================================
 """loss module"""
 
+import numpy as np
 import mindspore as ms
 import mindspore.communication.management as D
 import mindspore.nn as nn
@@ -63,9 +64,9 @@ class LossNetAssessment(nn.Cell):
                                                             reducer_flag=self.reducer_flag)
         self.cameo_focal_loss = BinaryFocal(alpha=0.2, gamma=0.5, feed_in=True, not_focal=False)
         self.distogram_one_hot = nn.OneHot(depth=self.num_bins, axis=-1)
-        self.breaks = mnp.linspace(2.0, 22.0, self.num_bins)
+        self.breaks = np.linspace(2.0, 22.0, self.num_bins)
         self.width = self.breaks[1] - self.breaks[0]
-        self.centers = self.breaks + 0.5 * self.width
+        self.centers = ms.Tensor(self.breaks + 0.5 * self.width, ms.float32)
 
     def distogram_loss(self, logits, bin_edges, pseudo_beta, pseudo_beta_mask):
         """Log loss of a distogram."""
@@ -218,18 +219,18 @@ class RegressionLosses(nn.Cell):
         self.first_break = first_break
         self.last_break = last_break
         self.num_bins = num_bins
-        self.breaks = mnp.linspace(self.first_break, self.last_break, self.num_bins)
+        self.breaks = np.linspace(self.first_break, self.last_break, self.num_bins)
         self.width = self.breaks[1] - self.breaks[0]
 
         bin_width = 2
         start_n = 1
         stop = self.num_bins * 2
-        centers = mnp.divide(mnp.arange(start=start_n, stop=stop, step=bin_width), self.num_bins * 2.0)
-        self.centers = centers / (self.last_break - self.first_break) + self.first_break
+        centers = np.divide(np.arange(start=start_n, stop=stop, step=bin_width), self.num_bins * 2.0)
+        self.centers = ms.Tensor(centers / (self.last_break - self.first_break) + self.first_break, ms.float32)
 
         if bin_shift:
-            centers = mnp.linspace(self.first_break, self.last_break, self.num_bins)
-            self.centers = centers + 0.5 * self.width
+            centers = np.linspace(self.first_break, self.last_break, self.num_bins)
+            self.centers = ms.Tensor(centers + 0.5 * self.width, ms.float32)
         self.mse = nn.MSELoss()
         self.mae = nn.L1Loss()
         self.bmse = BalancedMSE(first_break, last_break, num_bins, beta, reducer_flag)
