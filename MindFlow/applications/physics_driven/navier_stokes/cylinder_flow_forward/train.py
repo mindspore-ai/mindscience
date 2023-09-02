@@ -124,7 +124,8 @@ def train(input_args):
     epochs = config["train_epochs"]
     steps_per_epochs = cylinder_dataset.get_dataset_size()
     sink_process = data_sink(train_step, cylinder_dataset, sink_size=1)
-
+    if not os.path.exists(config['ckpt_dir']):
+        os.makedirs(config['ckpt_dir'])
     for epoch in range(1, 1 + epochs):
         # train
         time_beg = time.time()
@@ -140,11 +141,9 @@ def train(input_args):
             calculate_l2_error(model, inputs, label, config)
             print_log(f'evaluation time: {time.time() - eval_time_start}s')
 
-        if epoch % config["save_checkpoint_epochs"] == 0 and config["save_ckpt"]:
-            if not os.path.exists(os.path.abspath("./ckpt")):
-                os.makedirs(os.path.abspath("./ckpt"))
-            ckpt_name = "ns-{}.ckpt".format(epoch + 1)
-            save_checkpoint(model, os.path.join("./ckpt", ckpt_name))
+        if epoch % config["save_checkpoint_epochs"] == 0:
+            ckpt_name = f"ns_cylinder_flow-{epoch}.ckpt"
+            save_checkpoint(model, os.path.join(config['ckpt_dir'], ckpt_name))
 
 
 if __name__ == '__main__':
