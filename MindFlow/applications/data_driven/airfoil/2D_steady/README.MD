@@ -108,7 +108,7 @@ When the incoming Mach number changes, the surface pressure distribution, flow f
 
 ## Contributor
 
-gitee id: [Brian-K](https://gitee.com/Brian-K)
+gitee id: [Brian-K](https://gitee.com/b_rookie)
 
 email: brian_k2023@163.com
 

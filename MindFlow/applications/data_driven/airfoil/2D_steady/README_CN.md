@@ -110,6 +110,6 @@ python train.py --config_file_path ./configs/vit.yaml --device_target GPU --devi
 
 ## 贡献者
 
-gitee id: [Brian-K](https://gitee.com/Brian-K)
+gitee id: [Brian-K](https://gitee.com/b_rookie)
 
 email: brian_k2023@163.com

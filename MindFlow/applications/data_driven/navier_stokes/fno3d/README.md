@@ -58,21 +58,21 @@ You can use [Chinese](./FNO3D_CN.ipynb) or [English](./FNO3D.ipynb)Jupyter Noteb
 
 get the prediction as follows.
 
-epoch: 141 train loss: 0.019202268 epoch time: 19.43s
-epoch: 142 train loss: 0.01606355 epoch time: 19.24s
-epoch: 143 train loss: 0.027023558 epoch time: 19.28s
-epoch: 144 train loss: 0.017647993 epoch time: 19.36s
-epoch: 145 train loss: 0.017342577 epoch time: 19.29s
-epoch: 146 train loss: 0.01618614 epoch time: 19.29s
-epoch: 147 train loss: 0.018703096 epoch time: 19.31s
-epoch: 148 train loss: 0.014269419 epoch time: 19.29s
-epoch: 149 train loss: 0.02165638 epoch time: 19.32s
-epoch: 150 train loss: 0.016264874 epoch time: 19.32s
-loss: 0.016265
-step: 150, time elapsed: 19317.4147605896ms
-================================Start Evaluation================================
-mean rms_error: 0.01986466
-predict total time: 8.004547119140625 s
+epoch: 141 train loss: 0.019202268 epoch time: 19.43s<br>
+epoch: 142 train loss: 0.01606355 epoch time: 19.24s<br>
+epoch: 143 train loss: 0.027023558 epoch time: 19.28s<br>
+epoch: 144 train loss: 0.017647993 epoch time: 19.36s<br>
+epoch: 145 train loss: 0.017342577 epoch time: 19.29s<br>
+epoch: 146 train loss: 0.01618614 epoch time: 19.29s<br>
+epoch: 147 train loss: 0.018703096 epoch time: 19.31s<br>
+epoch: 148 train loss: 0.014269419 epoch time: 19.29s<br>
+epoch: 149 train loss: 0.02165638 epoch time: 19.32s<br>
+epoch: 150 train loss: 0.016264874 epoch time: 19.32s<br>
+loss: 0.016265<br>
+step: 150, time elapsed: 19317.4147605896ms<br>
+================================Start Evaluation================================<br>
+mean rms_error: 0.01986466<br>
+predict total time: 8.004547119140625 s<br>
 =================================End Evaluation=================================
 
 ## Performance

@@ -50,9 +50,9 @@ Among them,
 
 You can use the Chinese and English versions of Jupyter Notebook to run training and verification code line by line:
 
-Chinese version: [train_CN.ipynb](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_driven/cae_transformer/cae_transformer_CN.ipynb)
+Chinese version: [train_CN.ipynb](./cae_transformer_CN.ipynb)
 
-English version: [train.ipynb](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_driven/cae_transformer/cae_transformer.ipynb)
+English version: [train.ipynb](./cae_transformer.ipynb)
 
 ## Visualization of prediction results
 
