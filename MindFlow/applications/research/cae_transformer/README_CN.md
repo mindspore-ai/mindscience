@@ -55,9 +55,9 @@ CAE-Transformer的基本框架主要基于[论文1](https://doi.org/10.13700/j.b
 
 您可以使用中英文版本的Jupyter Notebook逐行运行训练和验证代码：
 
-中文版本: [train_CN.ipynb](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_driven/cae_transformer/cae_transformer_CN.ipynb)
+中文版本: [train_CN.ipynb](./cae_transformer_CN.ipynb)
 
-英文版本: [train.ipynb](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/data_driven/cae_transformer/cae_transformer.ipynb)
+英文版本: [train.ipynb](./cae_transformer.ipynb)
 
 ## 预测结果可视化
 
