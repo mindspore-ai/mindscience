@@ -1,0 +1,57 @@
+dataset:
+  path: "./dataset/Burgers.npz"
+  choose_train: 5000
+  choose_validate: 10000
+  train_batch: 5000
+  validate_batch: 10000
+  noise_level: 5
+  noise_save_path: "./noise_data"
+model:
+  in_channels: 2
+  neurons: 50
+  out_channels: 1
+  layers: 5
+  residual: false
+  activation: "sin"
+  amp_level: O3
+optimizer:
+  initial_lr: 0.01
+  epochs: 20000
+meta_data:
+  nx: 400
+  nt: 300
+  x_min: -0.8
+  x_max: 0.8
+  t_min: 0.1
+  t_max: 0.9
+  meta_data_save_path: "./meta_data"
+ga:
+  max_iter: 5
+  partial_prob: 0.6
+  genes_prob: 0.6
+  cross_rate: 0.8
+  mutate_rate: 0.3
+  delete_rate: 0.5
+  add_rate: 0.4
+  pop_size: 400
+  n_generations: 100
+  delete_num: 10
+  epi: 0.01
+  left_term: "u_t"
+pinn:
+  dataset:
+    path: "./dataset/Burgers.npz"
+    choose_train: 10000
+    choose_validate: 10000
+    train_batch: 10000
+    validate_batch: 10000
+    noise_level: 0
+    noise_save_path: "./noise_data"
+  GA_num: 0
+  kesi: 0.0001
+  L1_norm: 0.01
+  divide: 8
+summary:
+  validate_interval_epochs: 10
+  save_checkpoint_epochs: 10
+  save_ckpt_path: "./checkpoints"

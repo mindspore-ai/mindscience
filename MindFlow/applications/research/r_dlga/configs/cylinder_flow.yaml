@@ -1,0 +1,61 @@
+dataset:
+  points_path: "./dataset/eval_points.npy"
+  label_path: "./dataset/eval_label.npy"
+  choose_train: 36000
+  choose_validate: 72000
+  train_batch: 10000
+  validate_batch: 10000
+  noise_level: 5 
+  noise_save_path: "./noise_data"
+model:
+  in_channels: 3
+  neurons: 128
+  out_channels: 3
+  layers: 10
+  residual: false
+  activation: "tanh"
+  amp_level: O3
+optimizer:
+  initial_lr: 0.001
+  epochs: 20000
+meta_data:
+  nx: 36
+  ny: 100
+  nt: 50
+  x_min: 1.0
+  x_max: 8.0
+  y_min: -2.0
+  y_max: 2.0
+  t_min: 0.0
+  t_max: 7.0
+  meta_data_save_path: "./meta_data"
+ga:
+  max_iter: 15
+  partial_prob: 0.75
+  genes_prob: 0.75
+  cross_rate: 0.75
+  mutate_rate: 0.45
+  delete_rate: 0.5
+  add_rate: 0.4
+  pop_size: 400
+  n_generations: 100
+  delete_num: 10
+  epi: 0.0001
+  left_term: "u_t"
+eq_counts: 3
+pinn:
+  dataset:
+    points_path: "./dataset/eval_points.npy"
+    label_path: "./dataset/eval_label.npy"
+    choose_train: 36000
+    choose_validate: 72000
+    noise_level: 0
+    noise_save_path: "./noise_data"
+  GA_num: 0
+  kesi: 0.0001
+  L1_norm: 0.0001
+  divide: 5
+summary:
+  validate_interval_epochs: 10
+  save_checkpoint_epochs: 10
+  save_ckpt_path: "./checkpoints"
