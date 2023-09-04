@@ -160,8 +160,6 @@ def get_waveform_t(nt, dt, fmax):
 
 def solve(args):
     """solve process"""
-    context.set_context(max_call_depth=args.max_call_depth,
-                        device_target=args.device_target)
     # set up problem
     nt = args.nt
     dataset_dir = args.dataset_dir
@@ -216,5 +214,8 @@ if __name__ == '__main__':
     args_ = parse_args()
     if args_.device_target is not None:
         context.set_context(device_target=args_.device_target)
-    context.set_context(mode=context.PYNATIVE_MODE)  # memory problem unsolved in graph mode
+    if args_.device_id is not None:
+        context.set_context(device_id=args_.device_id)
+    context.set_context(mode=context.PYNATIVE_MODE,  # memory problem unsolved in graph mode
+                        max_call_depth=args_.max_call_depth)
     solve(args_)

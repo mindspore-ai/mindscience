@@ -34,6 +34,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='FDTD-Based Electromagnetics Forward-Problem Solver')
     parser.add_argument('--device_target', type=str, default=None)
+    parser.add_argument('--device_id', type=int, default=None)
     parser.add_argument('--nt', type=int, default=7000,
                         help='Number of time steps.')
     parser.add_argument('--max_call_depth', type=int, default=1000)
@@ -105,10 +106,6 @@ def get_invert_f_antenna(air_buffers, npml):
 def solve(args):
     """solve process"""
     # set up problem
-    if args.device_target is not None:
-        context.set_context(device_target=args.device_target)
-    context.set_context(mode=context.GRAPH_MODE,
-                        max_call_depth=args.max_call_depth)
     nt = args.nt
     fmax = args.fmax
     cfl_number = args.cfl_number
@@ -155,4 +152,9 @@ def solve(args):
 
 if __name__ == '__main__':
     args_ = parse_args()
+    if args_.device_target is not None:
+        context.set_context(device_target=args_.device_target)
+    if args_.device_id is not None:
+        context.set_context(device_id=args_.device_id)
+    context.set_context(mode=context.GRAPH_MODE, max_call_depth=args_.max_call_depth)
     solve(args_)
