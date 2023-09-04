@@ -21,6 +21,7 @@
 # limitations under the License.
 # ============================================================================
 """structure module"""
+import numpy as np
 import mindspore.common.dtype as mstype
 import mindspore.nn as nn
 import mindspore.numpy as mnp
@@ -190,10 +191,10 @@ class EstogramHead(nn.Cell):
         self.last_break = last_break
         self.num_bins = num_bins
 
-        self.breaks = mnp.linspace(self.first_break, self.last_break, self.num_bins)
+        self.breaks = np.linspace(self.first_break, self.last_break, self.num_bins)
         self.width = self.breaks[1] - self.breaks[0]
 
-        self.centers = self.breaks + 0.5 * self.width
+        self.centers = Tensor(self.breaks + 0.5 * self.width, mstype.float32)
 
         self.softmax = nn.Softmax(-1)
         self.zero = Tensor([0.])
