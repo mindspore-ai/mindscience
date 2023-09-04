@@ -231,7 +231,9 @@ def calculate_l2_error(model, inputs, label, config):
     output_size = config.get("output_size", 3)
     label = label.reshape((-1, output_size))
     l2_errors = _calculate_error(label, prediction)
-    print_log("    l2_error, U: ", l2_errors.l2_error_u, ", V: ", l2_errors.l2_error_v, ", P: ", l2_errors.l2_error_p,
-              ", Total: ", l2_errors.l2_error)
     print_log(
-        "==================================================================================================")
+        '================================Start Evaluation================================')
+    print_log(f"l2_error, U: {l2_errors.l2_error_u}, V: {l2_errors.l2_error_v}, P: {l2_errors.l2_error_p},"
+              " , total error: {l2_errors.l2_error}")
+    print_log(
+        '================================End Evaluation================================')
