@@ -15,10 +15,10 @@
 # ============================================================================
 """model"""
 import numpy as np
-from mindspore import nn, ops, Tensor, Parameter
+from mindspore import Parameter, Tensor, nn, ops
 from prettytable import PrettyTable
 
-from .constant import lap_2d_op, dx_2d_op, dy_2d_op
+from .constant import dx_2d_op, dy_2d_op, lap_2d_op
 
 
 class UpScaler(nn.Cell):
@@ -76,28 +76,28 @@ class RecurrentCNNCell(nn.Cell):
 
         # Parallel layer for u
         self.wh0_u = nn.Conv2d(in_channels=input_channels, out_channels=hidden_channels, kernel_size=kernel_size,
-                               stride=self.input_stride, pad_mode="valid", has_bias=True,)
+                               stride=self.input_stride, pad_mode="valid", has_bias=True,).to_float(self.compute_dtype)
         self.wh1_u = nn.Conv2d(in_channels=input_channels, out_channels=hidden_channels, kernel_size=kernel_size,
-                               stride=self.input_stride, pad_mode="valid", has_bias=True,)
+                               stride=self.input_stride, pad_mode="valid", has_bias=True,).to_float(self.compute_dtype)
         self.wh2_u = nn.Conv2d(in_channels=input_channels, out_channels=hidden_channels, kernel_size=kernel_size,
-                               stride=self.input_stride, pad_mode="valid", has_bias=True,)
+                               stride=self.input_stride, pad_mode="valid", has_bias=True,).to_float(self.compute_dtype)
         self.wh3_u = nn.Conv2d(in_channels=input_channels, out_channels=hidden_channels, kernel_size=kernel_size,
-                               stride=self.input_stride, pad_mode="valid", has_bias=True,)
+                               stride=self.input_stride, pad_mode="valid", has_bias=True,).to_float(self.compute_dtype)
         # 1x1 layer for u
         self.wh4_u = nn.Conv2d(in_channels=hidden_channels,
-                               out_channels=1, kernel_size=1, stride=1, has_bias=True)
+                               out_channels=1, kernel_size=1, stride=1, has_bias=True).to_float(self.compute_dtype)
         # Parallel layer for v
         self.wh0_v = nn.Conv2d(in_channels=input_channels, out_channels=hidden_channels, kernel_size=kernel_size,
-                               stride=self.input_stride, pad_mode="valid", has_bias=True,)
+                               stride=self.input_stride, pad_mode="valid", has_bias=True,).to_float(self.compute_dtype)
         self.wh1_v = nn.Conv2d(in_channels=input_channels, out_channels=hidden_channels, kernel_size=kernel_size,
-                               stride=self.input_stride, pad_mode="valid", has_bias=True,)
+                               stride=self.input_stride, pad_mode="valid", has_bias=True,).to_float(self.compute_dtype)
         self.wh2_v = nn.Conv2d(in_channels=input_channels, out_channels=hidden_channels, kernel_size=kernel_size,
-                               stride=self.input_stride, pad_mode="valid", has_bias=True,)
+                               stride=self.input_stride, pad_mode="valid", has_bias=True,).to_float(self.compute_dtype)
         self.wh3_v = nn.Conv2d(in_channels=input_channels, out_channels=hidden_channels, kernel_size=kernel_size,
-                               stride=self.input_stride, pad_mode="valid", has_bias=True,)
+                               stride=self.input_stride, pad_mode="valid", has_bias=True,).to_float(self.compute_dtype)
         # 1x1 layer for v
         self.wh4_v = nn.Conv2d(in_channels=hidden_channels,
-                               out_channels=1, kernel_size=1, stride=1, has_bias=True)
+                               out_channels=1, kernel_size=1, stride=1, has_bias=True).to_float(self.compute_dtype)
 
     def construct(self, h):
         """construct function of RecurrentCNNCell"""

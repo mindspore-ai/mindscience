@@ -26,7 +26,7 @@ from .constant import dx_2d_op, dy_2d_op, lap_2d_op
 class Trainer:
     """Trainer"""
 
-    def __init__(self, upconv, recurrent_cnn, timesteps_for_train, dx, dt, nu, dataset_path, compute_dtype=float32):
+    def __init__(self, upconv, recurrent_cnn, timesteps_for_train, dx, dt, nu, data_path, compute_dtype=float32):
         self.upconv = upconv
         self.recurrent_cnn = recurrent_cnn
         self.loss = nn.MSELoss()
@@ -37,7 +37,7 @@ class Trainer:
         self.pec = 0.05
         self.timesteps_for_train = timesteps_for_train
 
-        mat = sio.loadmat(dataset_path)['uv']
+        mat = sio.loadmat(data_path)['uv']
         self.truth_clean = mat[100:1901]
         uv = self.add_noise(self.truth_clean)
 
