@@ -14,25 +14,26 @@
 # limitations under the License.
 # ============================================================================
 """train"""
-import os
 import argparse
+import os
 import time
-import numpy as np
 
-from mindspore import ops, context, nn, set_seed, save_checkpoint, jit
+import numpy as np
+from mindspore import context, jit, nn, ops, save_checkpoint, set_seed
 import mindspore.common.dtype as mstype
 from mindflow.utils import load_yaml_config, print_log, log_config
-
-from src import RecurrentCNNCell, UpScaler, RecurrentCNNCellBurgers
-from src import Trainer
-from src import post_process
+from src import RecurrentCNNCell, RecurrentCNNCellBurgers, Trainer, UpScaler, post_process
 
 set_seed(123456)
 np.random.seed(123456)
 
 
-def train_stage(trainer, stage, pattern, config):
+def train_stage(trainer, stage, pattern, config, use_ascend):
     """train stage"""
+    if use_ascend:
+        from mindspore.amp import DynamicLossScaler, all_finite
+        loss_scaler = DynamicLossScaler(2**10, 2, 100)
+
     if 'milestone_num' in config.keys():
         milestone = list([(config['epochs']//config['milestone_num'])*(i + 1)
                           for i in range(config['milestone_num'])])
@@ -46,15 +47,18 @@ def train_stage(trainer, stage, pattern, config):
     if stage == 'pretrain':
         params = trainer.upconv.trainable_params()
     else:
-        params = trainer.upconv.trainable_params(
-        ) + trainer.recurrent_cnn.trainable_params()
+        params = trainer.upconv.trainable_params() + trainer.recurrent_cnn.trainable_params()
 
     optimizer = nn.Adam(params, learning_rate=learning_rate)
 
     def forward_fn():
         if stage == 'pretrain':
-            return trainer.get_ic_loss()
-        return trainer.get_loss()
+            loss = trainer.get_ic_loss()
+        else:
+            loss = trainer.get_loss()
+        if use_ascend:
+            loss = loss_scaler.scale(loss)
+        return loss
 
     if stage == 'pretrain':
         grad_fn = ops.value_and_grad(forward_fn, None, params, has_aux=False)
@@ -63,9 +67,17 @@ def train_stage(trainer, stage, pattern, config):
 
     @ jit
     def train_step():
-        res, grads = grad_fn()
-        res = ops.depend(res, optimizer(grads))
-        return res
+        loss, grads = grad_fn()
+        if use_ascend:
+            loss = loss_scaler.unscale(loss)
+            is_finite = all_finite(grads)
+            if is_finite:
+                grads = loss_scaler.unscale(grads)
+                loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
+        else:
+            loss = ops.depend(loss, optimizer(grads))
+        return loss
 
     best_loss = 100000
     for epoch in range(1, 1 + config['epochs']):
@@ -78,15 +90,14 @@ def train_stage(trainer, stage, pattern, config):
                 f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) :.3f} s")
         else:
             step_train_loss, loss_data, loss_ic, loss_phy, loss_valid = train_step()
-            print_log(f"epoch: {epoch} train loss: {step_train_loss} ic_loss: {loss_ic} data_loss: {loss_data}\
-                   val_loss: {loss_valid} phy_loss: {loss_phy} epoch time: {(time.time() - time_beg): .3f} s")
+            print_log(f"epoch: {epoch} train loss: {step_train_loss} ic_loss: {loss_ic} data_loss: {loss_data} \
+val_loss: {loss_valid} phy_loss: {loss_phy} epoch time: {(time.time() - time_beg): .3f} s")
             if step_train_loss < best_loss:
                 best_loss = step_train_loss
                 print_log('best loss', best_loss, 'save model')
-                save_checkpoint(trainer.upconv, os.path.join("./model", pattern,
-                                                             f"{config['name_conf']}_upconv.ckpt"))
-                save_checkpoint(trainer.recurrent_cnn, os.path.join("./model", pattern,
-                                                                    f"{config['name_conf']}_recurrent_cnn.ckpt"))
+                save_checkpoint(trainer.upconv, os.path.join("./model", pattern, f"{config['name_conf']}_upconv.ckpt"))
+                save_checkpoint(trainer.recurrent_cnn,
+                                os.path.join("./model", pattern, f"{config['name_conf']}_recurrent_cnn.ckpt"))
     if pattern == 'physics_driven':
         trainer.recurrent_cnn.show_coef()
 
@@ -99,9 +110,9 @@ def parse_args():
     parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
                         help="Whether to save intermediate compilation graphs")
     parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-    parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
+    parser.add_argument("--device_target", type=str, default="Ascend", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
-    parser.add_argument("--device_id", type=int, default=2,
+    parser.add_argument("--device_id", type=int, default=0,
                         help="ID of the target device")
     parser.add_argument("--config_file_path", type=str,
                         default="./percnn_burgers.yaml")
@@ -115,6 +126,14 @@ def train(input_args):
     pattern = input_args.pattern
     burgers_config = load_yaml_config(input_args.config_file_path)[pattern]
 
+    use_ascend = context.get_context(attr_key='device_target') == "Ascend"
+    print_log(f"use_ascend: {use_ascend}")
+
+    if use_ascend:
+        compute_type = mstype.float16
+    else:
+        compute_type = mstype.float32
+
     upconv = UpScaler(in_channels=burgers_config['input_channel'],
                       out_channels=burgers_config['out_channels'],
                       hidden_channels=burgers_config['upscaler_hidden_channel'],
@@ -122,15 +141,19 @@ def train(input_args):
                       stride=burgers_config['stride'],
                       has_bais=True)
 
+    if use_ascend:
+        from mindspore.amp import auto_mixed_precision
+        auto_mixed_precision(upconv, 'O1')
+
     if pattern == 'data_driven':
         recurrent_cnn = RecurrentCNNCell(input_channels=burgers_config['input_channel'],
                                          hidden_channels=burgers_config['rcnn_hidden_channel'],
                                          kernel_size=burgers_config['kernel_size'],
-                                         compute_dtype=mstype.float32)
+                                         compute_dtype=compute_type)
     else:
         recurrent_cnn = RecurrentCNNCellBurgers(kernel_size=burgers_config['kernel_size'],
                                                 init_coef=burgers_config['init_coef'],
-                                                compute_dtype=mstype.float32)
+                                                compute_dtype=compute_type)
 
     percnn_trainer = Trainer(upconv=upconv,
                              recurrent_cnn=recurrent_cnn,
@@ -138,12 +161,11 @@ def train(input_args):
                              dx=burgers_config['dx'],
                              dt=burgers_config['dy'],
                              nu=burgers_config['nu'],
-                             dataset_path=burgers_config['dataset_path'],
-                             compute_dtype=mstype.float32)
+                             compute_dtype=compute_type)
 
-    train_stage(percnn_trainer, 'pretrain', pattern, burgers_config['pretrain'])
-    train_stage(percnn_trainer, 'finetune', pattern, burgers_config['finetune'])
-    post_process(percnn_trainer)
+    train_stage(percnn_trainer, 'pretrain', pattern, burgers_config['pretrain'], use_ascend)
+    train_stage(percnn_trainer, 'finetune', pattern, burgers_config['finetune'], use_ascend)
+    post_process(percnn_trainer, pattern)
 
 
 if __name__ == '__main__':
@@ -157,5 +179,4 @@ if __name__ == '__main__':
                         max_call_depth=99999999)
     print_log("pid:", os.getpid())
     print_log(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
-    use_ascend = context.get_context(attr_key='device_target') == "Ascend"
     train(args)

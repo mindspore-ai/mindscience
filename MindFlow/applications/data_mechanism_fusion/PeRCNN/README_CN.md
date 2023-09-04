@@ -67,3 +67,19 @@ python train.py --mode GRAPH --save_graphs_path ./graphs --device_target Ascend 
 ## 结果展示
 
 ![Burgers PINNs](images/results.gif)
+
+## 性能
+
+|        参数         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.1.0             |      2.1.0       |
+|        训练损失      |        0.00125               |       0.00122      |
+|        验证损失      |        0.14               |       0.10    |
+|        速度          |     0.04s/epoch        |    0.14s/epoch  |
+
+## Contributor
+
+gitee id：[yi-zhang95](https://gitee.com/yi-zhang95), [chengzrz](https://gitee.com/chengzrz)
+
+email: zhang_yi_1995@163.com
