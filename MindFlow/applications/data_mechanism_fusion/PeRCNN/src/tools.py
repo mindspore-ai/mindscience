@@ -14,10 +14,11 @@
 # limitations under the License.
 # ============================================================================
 """tools"""
-from mindspore import ops
-import numpy as np
-import matplotlib.pyplot as plt
+import time
 import imageio
+import matplotlib.pyplot as plt
+import numpy as np
+from mindspore import ops
 
 from mindflow.utils import print_log
 
@@ -109,8 +110,10 @@ def plot_error_image(output, truth, low_res, xmin, xmax, ymin, ymax, num, fig_sa
     return diff_norms / label_norms, fig_path
 
 
-def post_process(trainer):
+def post_process(trainer, pattern):
     '''post_process'''
+    print_log("================================Start Evaluation================================")
+    time_beg = time.time()
     output = trainer.get_output(1800)
     output = ops.concat((output, output[:, :, :, 0:1]), axis=3)
     output = ops.concat((output, output[:, :, 0:1, :]), axis=2)
@@ -127,8 +130,7 @@ def post_process(trainer):
     img_path = []
     for i in range(0, 1801, 10):
         err, fig_path = plot_error_image(output, truth_clean, low_res, xmin=0, xmax=1, ymin=0, ymax=1,
-                                         num=i, fig_save_path='figures_' + args.pattern)
-        print_log('infer step:', i, ', relative l2 error', err)
+                                         num=i, fig_save_path='figures_' + pattern)
         err_list.append([i, err])
         img_path.append(fig_path)
     gif_images = []
@@ -142,3 +144,6 @@ def post_process(trainer):
     plt.xlabel('infer_step')
     plt.ylabel('relative_l2_error')
     plt.savefig("error.png")
+    print_log('Infer stage, mean relative l2 error', err)
+    print_log("=================================End Evaluation=================================")
+    print_log("predict total time: {} s".format(time.time() - time_beg))
