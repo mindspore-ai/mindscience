@@ -9,6 +9,7 @@ data_driven:
   out_channels: 2
   kernel_size: 5
   data_path: './dataset/Burgers_2001x2x100x100_[dt=00025].mat'
+  ckpt_dir: './checkpoints'
   stride: 2
   use_timestep: 40
   pretrain:
@@ -35,6 +36,7 @@ physics_driven:
   out_channels: 2
   kernel_size: 5
   data_path: './dataset/Burgers_2001x2x100x100_[dt=00025].mat'
+  ckpt_dir: './checkpoints'
   stride: 2
   use_timestep: 200
   init_coef:

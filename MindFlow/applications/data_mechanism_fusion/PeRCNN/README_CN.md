@@ -38,7 +38,7 @@ python train.py --mode GRAPH --save_graphs_path ./graphs --device_target Ascend 
 
 `--device_id`表示使用的计算卡编号，可按照实际情况填写，默认值0；
 
-`--config_file_path`表示参数文件的路径，默认值'./percnn_burgers.yaml'；
+`--config_file_path`表示参数文件的路径，默认值'./configs/percnn_burgers.yaml'；
 
 `--pattern`表示模型范式，该阶段应选择'data_driven'；
 
@@ -60,7 +60,7 @@ python train.py --mode GRAPH --save_graphs_path ./graphs --device_target Ascend 
 
 其中，
 
-`--config_file_path`表示参数文件的路径，默认值'./percnn_burgers.yaml'；
+`--config_file_path`表示参数文件的路径，默认值'./configs/percnn_burgers.yaml'；
 
 `--pattern`表示模型范式，该阶段应选择'physics_driven'；
 
