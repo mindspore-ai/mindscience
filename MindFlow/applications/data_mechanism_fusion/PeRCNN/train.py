@@ -115,7 +115,7 @@ def parse_args():
     parser.add_argument("--device_id", type=int, default=0,
                         help="ID of the target device")
     parser.add_argument("--config_file_path", type=str,
-                        default="./percnn_burgers.yaml")
+                        default="./configs/percnn_burgers.yaml")
     parser.add_argument("--pattern", type=str, default="data_driven")
     input_args = parser.parse_args()
     return input_args
@@ -130,9 +130,9 @@ def train(input_args):
     print_log(f"use_ascend: {use_ascend}")
 
     if use_ascend:
-        compute_type = mstype.float16
+        compute_dtype = mstype.float16
     else:
-        compute_type = mstype.float32
+        compute_dtype = mstype.float32
 
     upconv = UpScaler(in_channels=burgers_config['input_channel'],
                       out_channels=burgers_config['out_channels'],
@@ -149,11 +149,11 @@ def train(input_args):
         recurrent_cnn = RecurrentCNNCell(input_channels=burgers_config['input_channel'],
                                          hidden_channels=burgers_config['rcnn_hidden_channel'],
                                          kernel_size=burgers_config['kernel_size'],
-                                         compute_dtype=compute_type)
+                                         compute_dtype=compute_dtype)
     else:
         recurrent_cnn = RecurrentCNNCellBurgers(kernel_size=burgers_config['kernel_size'],
                                                 init_coef=burgers_config['init_coef'],
-                                                compute_dtype=compute_type)
+                                                compute_dtype=compute_dtype)
 
     percnn_trainer = Trainer(upconv=upconv,
                              recurrent_cnn=recurrent_cnn,
@@ -161,7 +161,8 @@ def train(input_args):
                              dx=burgers_config['dx'],
                              dt=burgers_config['dy'],
                              nu=burgers_config['nu'],
-                             compute_dtype=compute_type)
+                             data_path=burgers_config['data_path'],
+                             compute_dtype=compute_dtype)
 
     train_stage(percnn_trainer, 'pretrain', pattern, burgers_config['pretrain'], use_ascend)
     train_stage(percnn_trainer, 'finetune', pattern, burgers_config['finetune'], use_ascend)
