@@ -36,7 +36,7 @@ where
 
 `--device_id` represents the calculation card number used, which can be filled in according to the actual situation, default 0;
 
-`--config_file_path` represents the parameter and path control file, default './percnn_burgers.yaml';
+`--config_file_path` represents the parameter and path control file, default './configs/percnn_burgers.yaml';
 
 `--pattern` represents research pattern. Choose 'data_driven' in this stage;
 
@@ -58,7 +58,7 @@ python train.py --mode GRAPH --save_graphs_path ./graphs --device_target Ascend 
 
 where,
 
-`--config_file_path` represents the parameter and path control file, default './percnn_burgers.yaml'；
+`--config_file_path` represents the parameter and path control file, default './configs/percnn_burgers.yaml'；
 
 `--pattern` represents research pattern. Choose 'physics_driven' in this stage;
 
