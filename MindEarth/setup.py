@@ -37,10 +37,8 @@ required_package = [
     'numpy >= 1.17.0',
     'scipy >= 1.7.0',
     'matplotlib >= 3.1.3',
-    'mindspore >= 1.8.1',
     'pyyaml >= 5.0',
     'spherical-geometry >= 1.2.22',
-    'pandas >= 1.5.0'
 ]
 
 package_data = {
