@@ -79,6 +79,9 @@ def train_stage(trainer, stage, pattern, config, use_ascend):
             loss = ops.depend(loss, optimizer(grads))
         return loss
 
+    ckpt_dir = config["ckpt_dir"]
+    if not os.path.exists(ckpt_dir):
+        os.makedirs(ckpt_dir)
     best_loss = 100000
     for epoch in range(1, 1 + config['epochs']):
         time_beg = time.time()
@@ -95,9 +98,9 @@ val_loss: {loss_valid} phy_loss: {loss_phy} epoch time: {(time.time() - time_beg
             if step_train_loss < best_loss:
                 best_loss = step_train_loss
                 print_log('best loss', best_loss, 'save model')
-                save_checkpoint(trainer.upconv, os.path.join("./model", pattern, f"{config['name_conf']}_upconv.ckpt"))
+                save_checkpoint(trainer.upconv, os.path.join(ckpt_dir, f"{pattern}_{config['name_conf']}_upconv.ckpt"))
                 save_checkpoint(trainer.recurrent_cnn,
-                                os.path.join("./model", pattern, f"{config['name_conf']}_recurrent_cnn.ckpt"))
+                                os.path.join(ckpt_dir, f"{pattern}_{config['name_conf']}_recurrent_cnn.ckpt"))
     if pattern == 'physics_driven':
         trainer.recurrent_cnn.show_coef()
 

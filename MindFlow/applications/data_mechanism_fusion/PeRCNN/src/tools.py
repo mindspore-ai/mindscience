@@ -14,6 +14,7 @@
 # limitations under the License.
 # ============================================================================
 """tools"""
+import os
 import time
 import imageio
 import matplotlib.pyplot as plt
@@ -128,9 +129,12 @@ def post_process(trainer, pattern):
 
     err_list = []
     img_path = []
+    fig_save_path = './summary/figures_' + pattern
+    if not os.path.exists(fig_save_path):
+        os.makedirs(fig_save_path)
     for i in range(0, 1801, 10):
         err, fig_path = plot_error_image(output, truth_clean, low_res, xmin=0, xmax=1, ymin=0, ymax=1,
-                                         num=i, fig_save_path='figures_' + pattern)
+                                         num=i, fig_save_path=fig_save_path)
         err_list.append([i, err])
         img_path.append(fig_path)
     gif_images = []
