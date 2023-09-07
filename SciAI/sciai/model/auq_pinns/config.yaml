@@ -1,0 +1,28 @@
+model_name: auq_pinns
+description: auq_pinns
+case: second_order_ode
+layers_p: [2, 50, 50, 50, 50, 1]
+layers_q: [2, 50, 50, 50, 50, 1]
+layers_t: [2, 50, 50, 1]
+print_interval: 100
+save_fig: true
+save_ckpt: true
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+load_ckpt_path: [./checkpoints/discriminator/model_iter_30000_float32.ckpt, ./checkpoints/generator/model_iter_150000_float32.ckpt]
+ckpt_interval: 400
+figures_path: ./figures
+load_data_path: ./data
+log_path: ./logs
+lam: 1.5
+beta: 1
+n_col: 100
+n_bound: 20
+epochs: 30001
+lr: 0.0001
+term_t: 1
+term_kl: 5
+download_data: auq_pinns
+force_download: false
+amp_level: O2
+mode: 0

@@ -1,0 +1,50 @@
+model_name: fpinns
+problem: fractional_diffusion_1d
+diffusion_1d:
+  description: diffusion_1d
+  case: diffusion_1d
+  layers: [2, 32, 32, 32, 1]
+  x_range: [-1, 1]
+  t_range: [0, 1]
+  num_domain: 40
+  num_boundary: 20
+  num_initial: 10
+  num_test: 150
+  lr: 0.001
+  save_ckpt: true
+  save_fig: true
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints/diffusion_1d
+  load_ckpt_path: ./checkpoints/diffusion_1d/model_iter_10000_float16.ckpt
+  figures_path: ./figures/diffusion_1d
+  log_path: ./logs
+  print_interval: 100
+  epochs: 10001
+  download_data: fpinns
+  force_download: false
+  amp_level: O3
+  mode: 0
+fractional_diffusion_1d:
+  description: fractional_diffusion_1d
+  case: fractional_diffusion_1d
+  layers: [2, 20, 20, 20, 20, 1]
+  x_range: [0, 1]
+  t_range: [0, 1]
+  num_domain: 400
+  num_boundary: 0
+  num_initial: 0
+  num_test: 400
+  lr: 0.001
+  save_ckpt: true
+  save_fig: true
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints/fractional_diffusion_1d
+  load_ckpt_path: ./checkpoints/fractional_diffusion_1d/model_iter_10000_float32.ckpt
+  figures_path: ./figures/fractional_diffusion_1d
+  log_path: ./logs
+  print_interval: 100
+  epochs: 10001
+  download_data: fpinns
+  force_download: false
+  amp_level: O0
+  mode: 0

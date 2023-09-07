@@ -1,0 +1,19 @@
+model_name: gradient_pathologies_pinns
+description: gradient_pathologies_pinns
+case: 2d_helmholtz
+method: M4
+layers: [2, 50, 50, 50, 1]
+save_ckpt: true
+save_fig: true
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+load_ckpt_path: ./checkpoints/helmholtz_M4_float32.ckpt
+figures_path: ./figures
+log_path: ./logs
+lr: 0.001
+epochs: 40001
+batch_size: 128
+download_data: gradient_pathologies_pinns
+force_download: false
+amp_level: O0
+mode: 0

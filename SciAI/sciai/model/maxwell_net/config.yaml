@@ -1,0 +1,68 @@
+model_name: maxwell_net
+problem: te
+te:
+  description: maxwell net transverse electric case
+  in_channels: 1
+  out_channels: 2
+  depth: 6
+  filter: 16
+  norm: weight
+  up_mode: upconv
+  wavelength: 1
+  dpl: 20
+  nx: 160
+  nz: 192
+  pml_thickness: 30
+  symmetry_x: true
+  high_order: 4
+  lr: 0.0005
+  lr_decay: 0.5
+  lr_decay_step: 50000
+  epochs: 250001
+  print_interval: 10
+  ckpt_interval: 50000
+  save_ckpt: true
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints
+  load_ckpt_path: ./checkpoints/te_latest.ckpt
+  load_data_path: ./data/spheric_te
+  save_fig: true
+  figures_path: ./figures
+  log_path: ./logs
+  download_data: maxwell_net
+  force_download: false
+  amp_level: O0
+  mode: 0
+tm:
+  description: maxwell net transverse magnetic case
+  in_channels: 2
+  out_channels: 4
+  depth: 6
+  filter: 32
+  norm: weight
+  up_mode: upconv
+  wavelength: 1
+  dpl: 20
+  nx: 160
+  nz: 192
+  pml_thickness: 30
+  symmetry_x: true
+  high_order: 4
+  lr: 0.0005
+  lr_decay: 0.5
+  lr_decay_step: 5000
+  epochs: 25001
+  print_interval: 10
+  ckpt_interval: 5000
+  save_ckpt: true
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints
+  load_ckpt_path: ./checkpoints/tm_latest.ckpt
+  load_data_path: ./data/spheric_tm
+  save_fig: true
+  figures_path: ./figures
+  log_path: ./logs
+  download_data: maxwell_net
+  force_download: false
+  amp_level: O0
+  mode: 0

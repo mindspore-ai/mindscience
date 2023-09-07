@@ -1,0 +1,24 @@
+model_name: label_free_dnn_surrogate
+description: label free dnn surrogate
+case: Navier_Stokes
+layers: [3, 20, 20, 20, 1]
+save_ckpt: true
+save_fig: true
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+load_ckpt_path: [./checkpoints/geo_para_axisy_sigma0.1_epoch500hard_u.ckpt, ./checkpoints/geo_para_axisy_sigma0.1_epoch500hard_v.ckpt,
+  ./checkpoints/geo_para_axisy_sigma0.1_epoch500hard_P.ckpt]
+load_data_path: ./data
+save_data_path: ./data
+figures_path: ./figures
+log_path: ./logs
+lr: 0.001
+epochs_train: 500
+epochs_val: 400
+batch_size: 50
+print_interval: 100
+nu: 0.001
+download_data: label_free_dnn_surrogate
+force_download: false
+amp_level: O0
+mode: 0

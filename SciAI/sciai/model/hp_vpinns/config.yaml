@@ -1,0 +1,25 @@
+model_name: hp_vpinns
+description: hp_vpinns
+case: hp_vpinns
+layers: [1, 20, 20, 20, 20, 1]
+save_ckpt: true
+load_ckpt: false
+save_fig: true
+save_ckpt_path: ./checkpoints
+load_ckpt_path: ./checkpoints/model_40001.ckpt
+figures_path: ./figures
+log_path: ./logs
+lr: 0.001
+epochs: 40001
+early_stop_loss: 2.0e-32
+var_form: 1
+n_element: 4
+n_testfcn: 60
+n_quad: 80
+n_f: 500
+lossb_weight: 1
+font: 24
+download_data: hp_vpinns
+force_download: false
+amp_level: O3
+mode: 1
