@@ -1,0 +1,36 @@
+model_name: pinns
+problem: Schrodinger
+Schrodinger:
+  description: PINNs Schrodinger equation scenario
+  case: Schrodinger
+  n0: 50
+  nb: 50
+  nf: 20000
+  num_neuron: 100
+  seed: 2
+  save_ckpt_path: ./checkpoints/sch
+  load_ckpt_path: ./checkpoints/sch/checkpoint_PINNs_Schrodinger-50000_1.ckpt
+  log_path: ./logs
+  load_data_path: ./data/NLS.mat
+  export_file_name: export_PINNs_Schrodinger
+  lr: 0.0001
+  epoch: 50000
+  download_data: pinns
+  force_download: false
+NavierStokes:
+  description: PINNs Navier-Stokes equation scenario
+  case: NavierStokes
+  batch_size: 500
+  noise: 0.0
+  num_neuron: 20
+  seed : 7
+  n_train: 5000
+  save_ckpt_path: ./checkpoints/ns
+  load_ckpt_path: ./checkpoints/ns/best_result.ckpt
+  log_path: ./logs
+  load_data_path: ./data/cylinder_nektar_wake.mat
+  export_file_name: export_PINNs_NavierStokes
+  lr: 0.01
+  epoch: 19000
+  download_data: pinns
+  force_download: false

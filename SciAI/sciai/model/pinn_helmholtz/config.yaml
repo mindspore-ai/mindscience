@@ -1,0 +1,24 @@
+model_name: pinn_helmholtz
+description: PINN_Helmholtz
+case: fixed_sine
+layers: [2, 40, 40, 40, 40, 40, 40, 40, 40, 2]
+save_ckpt: true
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+load_ckpt_path: ./checkpoints/model_adam_100000_float32.ckpt
+load_data_path: ./data
+save_fig: true
+figures_path: ./figures
+save_results: true
+results_path: ./data/results
+print_interval: 20
+log_path: ./logs
+lr: 0.001
+epochs: 100000
+num_batch: 1
+lbfgs: false
+epochs_lbfgs: 50000
+download_data: pinn_helmholtz
+force_download: false
+amp_level: O0
+mode: 0

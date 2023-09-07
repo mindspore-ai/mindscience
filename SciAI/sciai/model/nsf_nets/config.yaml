@@ -1,0 +1,18 @@
+model_name: nsf_nets
+description: nsf_nets
+case: "Navier\u9225\u63DDtokes"
+layers: [2, 50, 50, 50, 50, 3]
+save_ckpt: true
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+load_ckpt_path: ./checkpoints/model_final_float32.ckpt
+log_path: ./logs
+print_interval: 10
+n_train: 2601
+n_bound: 200
+lr: [0.001, 0.0001, 1.0e-05, 1.0e-06]
+epochs: [5000, 5000, 50000, 50000]
+download_data: nsf_nets
+force_download: false
+amp_level: O2
+mode: 0

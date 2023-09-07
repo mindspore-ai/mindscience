@@ -1,0 +1,25 @@
+model_name: pinn_heattransfer
+description: heat_transfer
+case: inf_cont_heat
+layers: [2, 20, 20, 20, 20, 20, 20, 20, 20, 1]
+save_ckpt: true
+save_fig: true
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+load_ckpt_path: ./checkpoints/model_200adam_float32.ckpt
+load_data_path: ./data
+figures_path: ./figures
+log_path: ./logs
+print_interval: 10
+ckpt_interval: 10
+lr: 0.03
+n_t: 200
+n_f: 10000
+b1: 0.9
+epochs: 200
+lbfgs: false
+nt_epochs: 200
+download_data: pinn_heattransfer
+force_download: false
+amp_level: O0
+mode: 0

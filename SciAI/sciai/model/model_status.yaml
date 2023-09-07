@@ -1,0 +1,509 @@
+#model_name:
+#  kit: MindScience kit.
+#  model_path: original model path
+#  data_status: whether the data has been downloaded
+#  funcs: model funcs
+#    train_module: train function module
+#    train_func: train function name
+#    train_args_module: train args_parser function module
+#    eval_args_func: train args_parser function name
+#    eval_module: evaluation function module
+#    eval_func: evaluation function name
+#    eval_args_module: evaluation args_parser function module
+#    eval_args_func: evaluation args_parser function name
+auq_pinns:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/auq_pinns
+  remote_data_path: mindscience/SciAI/sciai/model/auq_pinns
+  data_status: False
+cpinns:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/cpinns
+  remote_data_path: mindscience/SciAI/sciai/model/cpinns
+  data_status: False
+deep_hpms:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/deep_hpms
+  remote_data_path: mindscience/SciAI/sciai/model/deep_hpms
+  data_status: False
+deep_ritz:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/deep_ritz
+  remote_data_path: mindscience/SciAI/sciai/model/deep_ritz
+  data_status: False
+dgm:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/dgm
+  remote_data_path: mindscience/SciAI/sciai/model/dgm
+  data_status: False
+enso:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/enso
+  remote_data_path: mindscience/SciAI/sciai/model/enso
+  data_status: False
+fbsnns:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/fbsnns
+  remote_data_path: mindscience/SciAI/sciai/model/fbsnns
+  data_status: False
+fpinns:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/fpinns
+  remote_data_path: mindscience/SciAI/sciai/model/fpinns
+  data_status: False
+gradient_pathologies_pinns:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/gradient_pathologies_pinns
+  remote_data_path: mindscience/SciAI/sciai/model/gradient_pathologies_pinns
+  data_status: False
+hfm:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/hfm
+  remote_data_path: mindscience/SciAI/sciai/model/hfm
+  data_status: False
+hp_vpinns:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/hp_vpinns
+  remote_data_path: mindscience/SciAI/sciai/model/hp_vpinns
+  data_status: False
+laaf:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/laaf
+  remote_data_path: mindscience/SciAI/sciai/model/laaf
+  data_status: False
+label_free_dnn_surrogate:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/label_free_dnn_surrogate
+  remote_data_path: mindscience/SciAI/sciai/model/label_free_dnn_surrogate
+  data_status: False
+mgnet:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/mgnet
+  remote_data_path: mindscience/SciAI/sciai/model/mgnet
+  data_status: False
+multiscale_pinns:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/multiscale_pinns
+  remote_data_path: mindscience/SciAI/sciai/model/multiscale_pinns
+  data_status: False
+nsf_nets:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/nsf_nets
+  remote_data_path: mindscience/SciAI/sciai/model/nsf_nets
+  data_status: False
+phygeonet:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/phygeonet
+  remote_data_path: mindscience/SciAI/sciai/model/phygeonet
+  data_status: False
+pi_deeponet:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/pi_deeponet
+  remote_data_path: mindscience/SciAI/sciai/model/pi_deeponet
+  data_status: False
+pinn_elastodynamics:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/pinn_elastodynamics
+  remote_data_path: mindscience/SciAI/sciai/model/pinn_elastodynamics
+  data_status: False
+pinn_heattransfer:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/pinn_heattransfer
+  remote_data_path: mindscience/SciAI/sciai/model/pinn_heattransfer
+  data_status: False
+pinn_helmholtz:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/pinn_helmholtz
+  remote_data_path: mindscience/SciAI/sciai/model/pinn_helmholtz
+  data_status: False
+pinns_ntk:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/pinns_ntk
+  remote_data_path: mindscience/SciAI/sciai/model/pinns_ntk
+  data_status: False
+pinns_swe:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/pinns_swe
+  remote_data_path: mindscience/SciAI/sciai/model/pinns_swe
+  data_status: False
+ppinns:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/ppinns
+  remote_data_path: mindscience/SciAI/sciai/model/ppinns
+  data_status: False
+sympnets:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/sympnets
+  remote_data_path: mindscience/SciAI/sciai/model/sympnets
+  data_status: False
+xpinns:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/xpinns
+  remote_data_path: mindscience/SciAI/sciai/model/xpinns
+  data_status: False
+maxwell_net:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/maxwell_net
+  remote_data_path: mindscience/SciAI/sciai/model/maxwell_net
+  data_status: False
+deeponet:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/deeponet
+  remote_data_path: mindscience/SciAI/sciai/model/deeponet
+  data_status: False
+deepbsde:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/deepbsde
+  remote_data_path: mindscience/SciAI/sciai/model/deepbsde
+  data_status: False
+pfnn:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/pfnn
+  remote_data_path: mindscience/SciAI/sciai/model/pfnn
+  data_status: False
+ocean_model:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/ocean_model
+  remote_data_path: mindscience/SciAI/sciai/model/ocean_model
+  data_status: False
+inversion_net:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/inversion_net
+  remote_data_path: mindscience/SciAI/sciai/model/inversion_net
+pinns:
+  kit: SciAI
+  model_path: mindscience/SciAI/sciai/model/pinns
+  remote_data_path: mindscience/SciAI/sciai/model/pinns
+  data_status: False
+burgers_fno1d:
+  kit: MindFlow
+  model_path: mindscience/MindFlow/applications/data_driven/burgers/fno1d
+  data_status: False
+  funcs:
+    train_module: train
+    train_func: train
+    train_args_module: train
+    train_args_func: parse_args
+burgers_kno1d:
+  kit: MindFlow
+  model_path: mindscience/MindFlow/applications/data_driven/burgers/kno1d
+  data_status: False
+  funcs:
+    train_module: train
+    train_func: train
+    train_args_module: train
+    train_args_func: parse_args
+navier_stokes_fno2d:
+  kit: MindFlow
+  model_path: mindscience/MindFlow/applications/data_driven/navier_stokes/fno2d
+  data_status: False
+  funcs:
+    train_module: train
+    train_func: train
+    train_args_module: train
+    train_args_func: parse_args
+navier_stokes_kno2d:
+  kit: MindFlow
+  model_path: mindscience/MindFlow/applications/data_driven/navier_stokes/kno2d
+  data_status: False
+  funcs:
+    train_module: train
+    train_func: train
+    train_args_module: train
+    train_args_func: parse_args
+navier_stokes_fno3d:
+  kit: MindFlow
+  model_path: mindscience/MindFlow/applications/data_driven/navier_stokes/fno3d
+  data_status: False
+  funcs:
+    train_module: train
+    train_func: train
+    train_args_module: train
+    train_args_func: parse_args
+pde_net:
+  kit: MindFlow
+  model_path: mindscience/MindFlow/applications/data_mechanism_fusion/pde_net
+  data_status: False
+  funcs:
+    train_module: train
+    train_func: train
+    train_args_module: train
+    train_args_func: parse_args
+percnn:
+  kit: MindFlow
+  model_path: mindscience/MindFlow/applications/data_mechanism_fusion/PeRCNN
+  data_status: False
+  funcs:
+    train_module: train
+    train_func: train
+    train_args_module: train
+    train_args_func: parse_args
+meta_auto_decoder:
+  kit: MindElec
+  model_path: mindscience/MindElec/examples/physics_driven/incremental_learning
+  data_status: False
+  funcs:
+    train_module : mad
+    train_func : piad2d
+    train_args_module : mad
+    train_args_func : parse_args
+pinn_fwi:
+  kit: MindElec
+  model_path: mindscience/MindElec/examples/physics_driven/pinn_fwi
+  data_status: False
+  funcs:
+    train_module : train
+    train_func : train
+    train_args_module : train
+    train_args_func : parse_args
+    eval_module : eval
+    eval_func : evaluate
+    eval_args_module : eval
+    eval_args_func : parse_args
+time_domain_maxwell:
+  kit: MindElec
+  model_path: mindscience/MindElec/examples/physics_driven/time_domain_maxwell
+  remote_data_path: mindscience/mindelec/time_domain_maxwell
+  data_status: False
+  funcs:
+    train_module : train
+    train_func : train
+    train_args_module : train
+    train_args_func : load_config
+    eval_module : eval
+    eval_func : evaluation
+    eval_args_module : eval
+    eval_args_func : load_config
+frequency_domain_maxwell:
+  kit: MindElec
+  model_path: mindscience/MindElec/examples/physics_driven/frequency_domain_maxwell
+  data_status: False
+  funcs:
+    train_module : solve
+    train_func : train
+    train_args_module : solve
+    train_args_func : load_config
+frequency_domain_maxwell_3D_dielectric_slab:
+  kit: MindElec
+  model_path: mindscience/MindElec/examples/physics_driven/frequency_domain_maxwell_3D/dielectric_slab_3d
+  data_status: False
+  funcs:
+    train_module: train
+    train_func : train
+    train_args_module : train
+    train_args_func : load_config
+    eval_module : eval
+    eval_func : evaluation
+    eval_args_module : eval
+    eval_args_func : load_config
+frequency_domain_maxwell_3D_waveguide_cavity:
+  kit: MindElec
+  model_path: mindscience/MindElec/examples/physics_driven/frequency_domain_maxwell_3D/waveguide_cavity_3d
+  data_status: False
+  funcs:
+    train_module : train
+    train_func : train
+    train_args_module : train
+    train_args_func : load_config
+    eval_module : eval
+    eval_func : evaluation
+    eval_args_module : eval
+    eval_args_func : load_config
+AD_FDTD_invert_f:
+  kit: MindElec
+  model_path: mindscience/MindElec/examples/AD_FDTD/fdtd_forward
+  data_status: False
+  funcs:
+    train_module: solve_invert_f
+    train_func: solve
+    train_args_module: solve_invert_f
+    train_args_func: parse_args
+AD_FDTD_microstrip_filter:
+  kit: MindElec
+  model_path: mindscience/MindElec/examples/AD_FDTD/fdtd_forward
+  data_status: False
+  funcs:
+    train_module: solve_microstrip_filter
+    train_func: solve
+    train_args_module: solve_microstrip_filter
+    train_args_func: parse_args
+AD_FDTD_inverse:
+  kit: MindElec
+  model_path: mindscience/MindElec/examples/AD_FDTD/fdtd_inverse
+  data_status: False
+  funcs:
+    train_module: solve
+    train_func: solve
+    train_args_module: solve
+    train_args_func: parse_args
+SED_ANN:
+  kit: MindElec
+  model_path: mindscience/MindElec/examples/data_driven/sed_ann
+  remote_data_path: mindscience/mindelec/SED
+  data_status: False
+  funcs:
+    train_module: train
+    train_func: train
+    train_args_module: train
+    train_args_func: parse_args
+    eval_module: eval
+    eval_func: evaluation
+    eval_args_module: eval
+    eval_args_func: parse_args
+metasurface_holograms:
+  kit: MindElec
+  model_path: mindscience/MindElec/examples/metasurface/metasurface_holograms
+  remote_data_path: mindscience/mindelec/metasurface
+  data_status: False
+  funcs:
+    train_module: main
+    train_func: train
+    train_args_module: main
+    train_args_func: parse_args
+MEGAFold:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/MEGAProtein
+  data_status: False
+  modes: ["predict", "train"]
+  remote_data_path: mindscience/mindsponge/MEGAFold
+  default_args:
+    data_path: examples
+    ckpt_path: checkpoint/MEGA_Fold_1.ckpt
+    config_key: initial_training
+MEGAEvoGen:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/MEGAProtein
+  data_status: False
+  modes: ["predict"]
+  remote_data_path: mindscience/mindsponge/MEGAEvoGen
+  default_args:
+    data_path: None
+    ckpt_path: checkpoint/MEGAEvoGen.ckpt
+    config_key: evogen_predict_256
+MEGAAssessment:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/MEGAProtein
+  data_status: False
+  modes: ["predict", "train"]
+  remote_data_path: mindscience/mindsponge/MEGAAssessment
+  default_args:
+    data_path: None
+    ckpt_path: checkpoint/MEGA_Assessment.ckpt
+    config_key: training
+ColabDesign:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/research/Colabdesign
+  data_status: False
+  modes: ["predict"]
+  remote_data_path: mindscience/mindsponge/ColabDesign
+  default_args:
+    data_path: None
+    ckpt_path: checkpoint/ColabDesign.ckpt
+    config_key: fold_design
+DeepDR:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/research/DeepDR
+  data_status: False
+  remote_data_path: mindscience/mindsponge/deepdr
+  default_args:
+    data_path: None
+    ckpt_path: checkpoint/cvae.ckpt
+    config_key: deepdr_config
+DeepFri:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/research/DeepFRI
+  data_status: False
+  modes: ["predict"]
+  remote_data_path: mindscience/mindsponge/DeepFri
+  default_args:
+    data_path: None
+    ckpt_path: checkpoint/DeepFRI_mf.ckpt
+    config_key: deepfri_mf
+KGNN:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/research/KGNN
+  data_status: False
+  remote_data_path: mindscience/mindsponge/kgnn
+  default_args:
+    data_path: examples
+    ckpt_path: checkpoint/kgnn.ckpt
+    config_key: config
+MGBERT:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/research/MG_BERT
+  data_status: False
+  modes: ["predict", "train"]
+  remote_data_path: mindscience/mindsponge/MGBert
+  default_args:
+    data_path: examples
+    ckpt_path: checkpoint/kgnn.ckpt
+    config_key: mgbert_pretrain
+Multimer:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/research/Multimer
+  data_status: False
+  modes: ["predict"]
+  remote_data_path: mindscience/mindsponge/Multimer
+  default_args:
+    data_path: examples/6T36.pkl
+    ckpt_path: checkpoint/Multimer_Model_1.ckpt
+    config_key: predict_256
+Proteinmpnn:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/research/ProteinMPNN
+  data_status: False
+  modes: ["predict", "train"]
+  remote_data_path: mindscience/mindsponge/ProteinMPNN
+  default_args:
+    data_path: examples/
+    ckpt_path: checkpoint/proteinmpnn.ckpt
+    config_key: proteinmpnnpredict
+UFold:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/research/UFold
+  data_status: False
+  modes: ["predict", "train"]
+  remote_data_path: mindscience/mindsponge/ufold
+  default_args:
+    data_path: examples/
+    ckpt_path: checkpoint/ufold_train.ckpt
+    config_key: ufold_config
+ESM_IF1:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/research/esm
+  data_status: False
+  modes: ["train", "predict"]
+  remote_data_path: mindscience/mindsponge/esm
+  default_args:
+    data_path: examples/chain_set.jsonl
+    ckpt_path: checkpoint/esm_if1.ckpt
+    config_key: training
+ESM2:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/mindsponge/python/pipeline/models/esm2
+  data_status: False
+  modes: ["predict"]
+  remote_data_path: mindscience/mindsponge/esm2
+  default_args:
+    data_path: None
+    ckpt_path: checkpoint/esm2.ckpt
+    config_key: config
+Grover:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/research/grover
+  data_status: False
+  modes: ["predict", "train"]
+  remote_data_path: mindscience/mindsponge/grover
+  default_args:
+    data_path: examples
+    ckpt_path: checkpoint/grover.ckpt
+    config_key: eval
+pafnucy:
+  kit: MindSPONGE
+  model_path: mindscience/MindSPONGE/applications/research/pafnucy
+  data_status: False
+  remote_data_path: mindscience/mindsponge/Pafnucy
+  default_args:
+    data_path: examples
+    ckpt_path: checkpoint/pafnucy.ckpt
+    config_key: config
