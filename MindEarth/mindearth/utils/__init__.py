@@ -15,7 +15,7 @@
 """init"""
 from .tools import get_datapath_from_date, load_yaml_config, make_dir
 from .logger import create_logger
-from .visual import plt_global_field_data, plt_metrics, plt_wind_quiver
+from .visual import plt_global_field_data, plt_metrics
 
 __all__ = ['create_logger', 'get_datapath_from_date', 'load_yaml_config', 'make_dir', 'plt_global_field_data',
-           'plt_metrics', 'plt_wind_quiver']
+           'plt_metrics']
