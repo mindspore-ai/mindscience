@@ -44,7 +44,7 @@ MS_MindEarth:
     tests/ut/mindearth
     .jenkins/test/config/earth_config/dependent_packages.yaml
 MS_SciAi:
-    SciAi/
+    SciAI/
     tests/st/sciai
     tests/ut/sciai
     .jenkins/test/config/sciai_config/dependent_packages.yaml
