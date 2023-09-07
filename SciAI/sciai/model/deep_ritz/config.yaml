@@ -1,0 +1,66 @@
+model_name: deep_ritz
+problem: poisson_hole
+poisson_ls:
+  description: Deep_Ritz
+  case: ls
+  layers: [2, 8, 8, 8, 1]
+  save_ckpt: true
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints/ls
+  load_ckpt_path: ./checkpoints/ls/model_50000_float32.ckpt
+  save_fig: true
+  figures_path: ./figures
+  save_data: true
+  save_data_path: ./data/ls
+  log_path: ./logs
+  lr: 0.01
+  train_epoch: 50000
+  train_epoch_pre: 0
+  body_batch: 1024
+  bdry_batch: 1024
+  write_step: 50
+  sample_step: 10
+  step_size: 5000
+  num_quad: 40000
+  radius: 1
+  penalty: 500
+  diff: 0.001
+  gamma: 0.3
+  decay: 1.0e-05
+  autograd: true
+  download_data: deep_ritz
+  force_download: false
+  amp_level: O2
+  mode: 0
+poisson_hole:
+  description: Deep_Ritz
+  case: hole
+  layers: [2, 8, 8, 8, 1]
+  save_ckpt: true
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints/hole
+  load_ckpt_path: ./checkpoints/hole/model_50000_float32.ckpt
+  save_fig: true
+  figures_path: ./figures
+  save_data: true
+  save_data_path: ./data/hole
+  log_path: ./logs
+  lr: 0.01
+  train_epoch: 50000
+  train_epoch_pre: 0
+  body_batch: 1024
+  bdry_batch: 1024
+  write_step: 50
+  sample_step: 10
+  step_size: 5000
+  num_quad: 40000
+  radius: 1
+  penalty: 500
+  diff: 0.001
+  gamma: 0.3
+  decay: 1.0e-05
+  autograd: true
+  download_data: deep_ritz
+  force_download: false
+  amp_level: O2
+  mode: 0

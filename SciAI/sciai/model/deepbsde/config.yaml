@@ -1,0 +1,25 @@
+model_name: deepbsde
+eqn_name: HJBLQ
+save_ckpt : true
+load_ckpt : false
+save_ckpt_path : ./checkpoints
+load_ckpt_path : ./checkpoints/deepbsde_HJBLQ_end.ckpt
+log_path: ./logs
+print_interval: 100
+total_time: 1.0
+dim: 100
+num_time_interval: 20
+y_init_range: [0, 1]
+num_hiddens: [110, 110]
+lr_values: [0.01, 0.01]
+lr_boundaries: [1000]
+num_iterations: 2000
+batch_size: 64
+valid_size: 256
+sink_size: 100
+file_format: MINDIR
+amp_level: O0
+epochs: 2001
+force_download: false
+download_data: deepbsde
+mode: 0

@@ -1,0 +1,56 @@
+model_name: deep_hpms
+problem: burgers_different
+burgers_different:
+  description: burgers_different
+  case: burgers_different
+  u_layers: [2, 50, 50, 50, 50, 1]
+  pde_layers: [3, 100, 100, 1]
+  layers: [2, 50, 50, 50, 50, 1]
+  save_ckpt: true
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints
+  load_ckpt_path: ./checkpoints/burgers_diff_final.ckpt
+  save_fig: true
+  figures_path: ./figures
+  load_data_idn_path: ./data/burgers_sine.mat
+  load_data_sol_path: ./data/burgers.mat
+  log_path: ./logs
+  lr: 0.001
+  train_epoch: 30001
+  train_epoch_lbfgs: 0
+  print_interval: 100
+  lb_idn: [0.0, -8.0]
+  ub_idn: [10.0, 8.0]
+  lb_sol: [0.0, -8.0]
+  ub_sol: [10.0, 8.0]
+  download_data: deep_hpms
+  force_download: false
+  amp_level: O3
+  mode: 0
+kdv_same:
+  description: kdv_same
+  case: kdv_same
+  u_layers: [2, 50, 50, 50, 50, 1]
+  pde_layers: [4, 100, 100, 1]
+  layers: [2, 50, 50, 50, 50, 1]
+  save_ckpt: true
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints
+  load_ckpt_path: ./checkpoints/kdv_same_final.ckpt
+  save_fig: true
+  figures_path: ./figures
+  load_data_idn_path: ./data/KdV_sine.mat
+  load_data_sol_path: ./data/KdV_sine.mat
+  log_path: ./logs
+  lr: 0.001
+  train_epoch: 30000
+  train_epoch_lbfgs: 0
+  print_interval: 100
+  lb_idn: [0.0, -20.0]
+  ub_idn: [40.0, 20.0]
+  lb_sol: [0.0, -20.0]
+  ub_sol: [40.0, 20.0]
+  download_data: deep_hpms
+  force_download: false
+  amp_level: O3
+  mode: 0

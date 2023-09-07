@@ -1,0 +1,21 @@
+model_name: laaf
+description: adaptive_activation_function
+case: adaptive_activation_function
+layers: [1, 50, 50, 50, 50, 1]
+save_ckpt: true
+load_ckpt: false
+save_fig: true
+save_data: true
+save_ckpt_path: ./checkpoints
+figures_path: ./figures
+load_ckpt_path: ./checkpoints/model_15001.ckpt
+save_data_path: ./data
+log_path: ./logs
+lr: 0.0002
+epochs: 15001
+num_grid: 300
+sol_epochs: [2000, 8000, 15000]
+download_data: laaf
+force_download: false
+amp_level: O3
+mode: 0
