@@ -23,6 +23,8 @@ import matplotlib.pyplot as plt
 from mindspore import Tensor
 from mindspore import dtype as mstype
 
+from mindflow.utils import print_log
+
 
 def visual(model, epochs=1, resolution=100):
     """visulization of ex/ey/hz"""
@@ -78,7 +80,7 @@ def _get_prediction(model, inputs, label_shape, batch_size):
         prediction[index: index_end, :] = model(test_batch).asnumpy()
         index = index_end
 
-    print("    predict total time: {} ms".format((time.time() - time_beg)*1000))
+    print_log("    predict total time: {} ms".format((time.time() - time_beg)*1000))
     prediction = prediction.reshape(label_shape)
     prediction = prediction.reshape((-1, label_shape[1]))
     return prediction
@@ -99,5 +101,5 @@ def calculate_l2_error(model, inputs, label, batch_size):
     prediction = _get_prediction(model, inputs, label_shape, batch_size)
     label = label.reshape((-1, label_shape[1]))
     l2_error = _calculate_error(label, prediction)
-    print("    l2_error: ", l2_error)
-    print("==================================================================================================")
+    print_log("    l2_error: ", l2_error)
+    print_log("==================================================================================================")

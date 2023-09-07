@@ -25,6 +25,7 @@ from mindspore import context, nn, ops, jit, set_seed
 from mindspore import load_checkpoint, load_param_into_net
 
 from mindflow.cell import MultiScaleFCSequential
+from mindflow.utils import print_log
 from mindflow.utils import load_yaml_config
 
 from src import create_training_dataset, create_test_dataset, visual, calculate_l2_error, Burgers1D
@@ -37,7 +38,7 @@ np.random.seed(123456)
 def parse_args():
     '''Parse input args'''
     parser = argparse.ArgumentParser(description="burgers train")
-    parser.add_argument("--config_file_path", type=str, default="./burgers_cfg.yaml")
+    parser.add_argument("--config_file_path", type=str, default="./configs/burgers.yaml")
     parser.add_argument("--device_target", type=str, default="Ascend", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
@@ -52,7 +53,7 @@ def parse_args():
 
 
 def train():
-    '''Train and evaluate the network'''
+    '''Train and evaluate the pinns network'''
     # load configurations
     config = load_yaml_config(args.config_file_path)
 
@@ -117,18 +118,18 @@ def train():
         model.set_train(True)
         for _ in range(steps_per_epochs):
             step_train_loss = sink_process()
-        print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) * 1000 :.3f}ms")
+        print_log(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) * 1000 :.3f}ms")
         model.set_train(False)
         if epoch % config["eval_interval_epochs"] == 0:
             eval_time_start = time.time()
             calculate_l2_error(model, inputs, label, config["train_batch_size"])
-            print(f'evaluation time: {time.time() - eval_time_start}s')
+            print_log(f'evaluation time: {time.time() - eval_time_start}s')
 
     visual(model, epochs=epochs, resolution=config["visual_resolution"])
 
 
 if __name__ == '__main__':
-    print("pid:", os.getpid())
+    print_log("pid:", os.getpid())
     start_time = time.time()
     args = parse_args()
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
@@ -136,7 +137,7 @@ if __name__ == '__main__':
                         save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target,
                         device_id=args.device_id)
-    print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
+    print_log(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
     train()
-    print("End-to-End total time: {} s".format(time.time() - start_time))
+    print_log("End-to-End total time: {} s".format(time.time() - start_time))
