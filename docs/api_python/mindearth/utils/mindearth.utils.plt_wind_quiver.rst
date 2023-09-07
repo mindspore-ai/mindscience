@@ -25,3 +25,6 @@ mindearth.utils.plt_wind_quiver
     返回：
         str，数据文件名。
         str，static数据文件名。
+
+    .. note::
+        接口``plt_wind_quiver`` 要求Python版本 >= 3.9且安装cartopy三方库。
