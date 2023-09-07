@@ -1,0 +1,9 @@
+MindFlow:
+  branch: master
+  commit_id: 11f7016a212b967e0e8cac4ce2f17b2eb870ac56
+MindElec:
+  branch: master
+  commit_id: 11f7016a212b967e0e8cac4ce2f17b2eb870ac56
+MindSPONGE:
+  branch: dev-md
+  commit_id: ad84f9c164809296ec5a57fb702ee01a24f36d61

@@ -1,0 +1,23 @@
+model_name: pi_deeponet
+description: pi_deeponet
+case: pi_deeponet
+branch_layers: [100, 100, 100, 100, 100, 100]
+trunk_layers: [2, 100, 100, 100, 100, 100]
+save_ckpt: true
+save_data: true
+save_fig: true
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+load_ckpt_path: ./checkpoints/dr_float32_final.ckpt
+save_data_path: ./data
+figures_path: ./figures
+log_path: ./logs
+print_interval: 100
+lr: 0.0008
+epochs: 200001
+n_train: 10000
+batch_size: 10000
+download_data: pi_deeponet
+force_download: false
+amp_level: O3
+mode: 0

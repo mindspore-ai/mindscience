@@ -1,0 +1,92 @@
+model_name: sympnets
+problem: pendulum
+pendulum:
+  description: pendulum
+  case: pendulum
+  layers: [2, 50, 50, 50, 50, 3]
+  save_ckpt: true
+  save_data: true
+  save_fig: true
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints
+  load_ckpt_path: ./checkpoints/model_pendulum_LASympNet_iter50000.ckpt
+  save_data_path: ./data
+  figures_path: ./figures
+  log_path: ./logs
+  print_interval: 1000
+  lr: 0.001
+  batch_size: null
+  epochs: 50000
+  net_type: LA
+  la_layers: 3
+  la_sublayers: 2
+  g_layers: 5
+  g_width: 30
+  activation: sigmoid
+  h_layers: 4
+  h_width: 30
+  h_activation: tanh
+  download_data: sympnets
+  force_download: false
+  amp_level: O3
+  mode: 0
+double_pendulum:
+  description: double_pendulum
+  case: double_pendulum
+  layers: [2, 50, 50, 50, 50, 3]
+  save_ckpt: true
+  save_data: true
+  save_fig: true
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints
+  load_ckpt_path: ./checkpoints/model_double_pendulum_LASympNet_iter48000.ckpt
+  save_data_path: ./data
+  figures_path: ./figures
+  log_path: ./logs
+  print_interval: 1000
+  lr: 0.001
+  batch_size: null
+  epochs: 50000
+  net_type: LA
+  la_layers: 8
+  la_sublayers: 5
+  g_layers: 8
+  g_width: 50
+  activation: sigmoid
+  h_layers: 4
+  h_width: 50
+  h_activation: tanh
+  download_data: sympnets
+  force_download: false
+  amp_level: O3
+  mode: 0
+three_body:
+  description: three_body
+  case: three_body
+  layers: [2, 50, 50, 50, 50, 3]
+  save_ckpt: true
+  save_data: true
+  save_fig: true
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints
+  load_ckpt_path: ./checkpoints/model_three_body_GSympNet_iter300000.ckpt
+  save_data_path: ./data
+  figures_path: ./figures
+  log_path: ./logs
+  print_interval: 100
+  lr: 0.001
+  batch_size: null
+  epochs: 300000
+  net_type: G
+  la_layers: 20
+  la_sublayers: 4
+  g_layers: 20
+  g_width: 50
+  activation: sigmoid
+  h_layers: 6
+  h_width: 50
+  h_activation: tanh
+  download_data: sympnets
+  force_download: false
+  amp_level: O3
+  mode: 0
