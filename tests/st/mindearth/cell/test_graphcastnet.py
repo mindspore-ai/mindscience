@@ -34,26 +34,35 @@ def test_graphcastnet():
     Expectation: Success or throw AssertionError.
     """
     context.set_context(mode=context.GRAPH_MODE)
-    g2m_src_idx = Tensor(np.random.randint(0, 32768, size=[50184]), ms.int32)
-    g2m_dst_idx = Tensor(np.random.randint(0, 32768, size=[50184]), ms.int32)
-    m2m_src_idx = Tensor(np.random.randint(0, 2562, size=[20460]), ms.int32)
-    m2m_dst_idx = Tensor(np.random.randint(0, 2562, size=[20460]), ms.int32)
-    m2g_src_idx = Tensor(np.random.randint(0, 2562, size=[98304]), ms.int32)
-    m2g_dst_idx = Tensor(np.random.randint(0, 2562, size=[98304]), ms.int32)
-    mesh_node_feats = Tensor(np.random.rand(2560, 3).astype(np.float32), ms.float32)
-    mesh_edge_feats = Tensor(np.random.rand(20460, 4).astype(np.float32), ms.float32)
-    g2m_edge_feats = Tensor(np.random.rand(50184, 4).astype(np.float32), ms.float32)
-    m2g_edge_feats = Tensor(np.random.rand(98304, 4).astype(np.float32), ms.float32)
-    per_variable_level_mean = Tensor(np.random.rand(69,).astype(np.float32), ms.float32)
-    per_variable_level_std = Tensor(np.random.rand(69,).astype(np.float32), ms.float32)
-    grid_node_feats = Tensor(np.random.rand(32768, 69).astype(np.float32), ms.float32)
-    context.set_context(mode=context.GRAPH_MODE)
-    graphcast_model = GraphCastNet(vg_in_channels=69,
-                                   vg_out_channels=69,
-                                   vm_in_channels=3,
-                                   em_in_channels=4,
-                                   eg2m_in_channels=4,
-                                   em2g_in_channels=4,
+    mesh_node_num = 2562
+    grid_node_num = 32768
+    mesh_edge_num = 20460
+    g2m_edge_num = 50184
+    m2g_edge_num = 98304
+    vm_in_channels = 3
+    em_in_channels = 4
+    eg2m_in_channels = 4
+    em2g_in_channels = 4
+    feature_num = 69
+    g2m_src_idx = Tensor(np.random.randint(0, grid_node_num, size=[g2m_edge_num]), ms.int32)
+    g2m_dst_idx = Tensor(np.random.randint(0, mesh_node_num, size=[g2m_edge_num]), ms.int32)
+    m2m_src_idx = Tensor(np.random.randint(0, mesh_node_num, size=[mesh_edge_num]), ms.int32)
+    m2m_dst_idx = Tensor(np.random.randint(0, mesh_node_num, size=[mesh_edge_num]), ms.int32)
+    m2g_src_idx = Tensor(np.random.randint(0, mesh_node_num, size=[m2g_edge_num]), ms.int32)
+    m2g_dst_idx = Tensor(np.random.randint(0, grid_node_num, size=[m2g_edge_num]), ms.int32)
+    mesh_node_feats = Tensor(np.random.rand(mesh_node_num, vm_in_channels).astype(np.float32), ms.float32)
+    mesh_edge_feats = Tensor(np.random.rand(mesh_edge_num, em_in_channels).astype(np.float32), ms.float32)
+    g2m_edge_feats = Tensor(np.random.rand(g2m_edge_num, eg2m_in_channels).astype(np.float32), ms.float32)
+    m2g_edge_feats = Tensor(np.random.rand(m2g_edge_num, em2g_in_channels).astype(np.float32), ms.float32)
+    per_variable_level_mean = Tensor(np.random.rand(feature_num,).astype(np.float32), ms.float32)
+    per_variable_level_std = Tensor(np.random.rand(feature_num,).astype(np.float32), ms.float32)
+    grid_node_feats = Tensor(np.random.rand(grid_node_num, feature_num).astype(np.float32), ms.float32)
+    graphcast_model = GraphCastNet(vg_in_channels=feature_num,
+                                   vg_out_channels=feature_num,
+                                   vm_in_channels=vm_in_channels,
+                                   em_in_channels=em_in_channels,
+                                   eg2m_in_channels=eg2m_in_channels,
+                                   em2g_in_channels=em2g_in_channels,
                                    latent_dims=512,
                                    processing_steps=4,
                                    g2m_src_idx=g2m_src_idx,
@@ -69,4 +78,5 @@ def test_graphcastnet():
                                    per_variable_level_mean=per_variable_level_mean,
                                    per_variable_level_std=per_variable_level_std)
     out = graphcast_model(Tensor(grid_node_feats, ms.float32))
-    assert out.shape == (32768, 69), f"For `GraphCastNet`, the output should be (32768, 69), but got {out.shape}."
+    assert out.shape == (grid_node_num, feature_num), f"For `GraphCastNet`, the output should be\
+         ({grid_node_num}, {feature_num}), but got {out.shape}."

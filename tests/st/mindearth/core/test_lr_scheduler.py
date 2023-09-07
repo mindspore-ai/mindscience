@@ -34,7 +34,7 @@ def test_get_warmup_cosine_annealing_lr():
     steps_per_epoch = 3
     last_epoch = 5
     warmup_epochs = 1
-    lr = get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch, warmup_epochs=warmup_epochs).asnumpy()
+    lr = get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch, warmup_epochs=warmup_epochs)
     ans = [3.3333333e-04, 6.6666666e-04, 1.0000000e-03, 9.0460398e-04, 9.0460398e-04,
            9.0460398e-04, 6.5485400e-04, 6.5485400e-04, 6.5485400e-04, 3.4614600e-04,
            3.4614600e-04, 3.4614600e-04, 9.6396012e-05, 9.6396012e-05, 9.6396012e-05]

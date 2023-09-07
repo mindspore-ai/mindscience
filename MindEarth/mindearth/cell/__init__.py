@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """initialization for cells"""
+from .activation import get_activation
 from .graphcast import GraphCastNet
 from .neural_operators import ViTKNO
 from .neural_operators import AFNONet
@@ -20,4 +21,4 @@ from .demnet import DEMNet
 # from .dgmr import DgmrGenerator, DgmrDiscriminator
 
 
-__all__ = ['GraphCastNet', 'AFNONet', 'ViTKNO', 'DEMNet'] # , 'DgmrGenerator', 'DgmrDiscriminator'
+__all__ = ['get_activation', 'GraphCastNet', 'AFNONet', 'ViTKNO', 'DEMNet'] # , 'DgmrGenerator', 'DgmrDiscriminator'
