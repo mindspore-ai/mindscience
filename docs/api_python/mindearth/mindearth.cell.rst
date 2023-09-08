@@ -7,4 +7,5 @@ mindearth.cell
     :template: classtemplate.rst
 
     mindearth.cell.AFNONet
+    mindearth.cell.GraphCastNet
     mindearth.cell.ViTKNO
