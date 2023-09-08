@@ -13,12 +13,12 @@
 ### 训练方式一：在命令行中调用`train.py`脚本
 
 ```shell
-python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_target Ascend --device_id 0
+python train.py --config_file_path ./configs/burgers.yaml --mode GRAPH --device_target Ascend --device_id 0
 ```
 
 其中，
 
-`--config_file_path`表示参数文件的路径，默认值'./burgers_cfg.yaml'；
+`--config_file_path`表示参数文件的路径，默认值'./configs/burgers.yaml'；
 
 `--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式，默认值'GRAPH'；
 

@@ -13,12 +13,12 @@ You can download dataset from [physics_driven/burgers_pinns/dataset](https://dow
 ### Run Option 1: Call `train.py` from command line
 
 ```shell
-python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_target Ascend --device_id 0
+python train.py --config_file_path ./configs/burgers.yaml --mode GRAPH --device_target Ascend --device_id 0
 ```
 
 where:
 
-`--config_file_path` indicates the path of the parameter file. Default './burgers_cfg.yaml'；
+`--config_file_path` indicates the path of the parameter file. Default './configs/burgers.yaml'；
 
 `--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode. Default 'GRAPH'.
 
