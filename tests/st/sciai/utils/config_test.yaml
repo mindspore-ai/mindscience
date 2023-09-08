@@ -1,0 +1,17 @@
+description : cpinn
+case : burgers_shock
+nn_depth : [4, 6, 6, 4]
+nn_width : [20, 20, 20, 20]
+save_ckpt : false
+save_fig : false
+load_ckpt : false
+save_ckpt_path : ./checkpoints
+load_ckpt_path : ./checkpoints/model_final.ckpt
+load_data_path : ./data/
+save_data_path : ./data
+figures_path : ./figures
+log_path : ./logs
+print_interval : 10
+lr : 0.0008
+epochs : 21
+data_type : float32

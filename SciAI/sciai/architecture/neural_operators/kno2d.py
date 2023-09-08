@@ -1,0 +1,99 @@
+"""KNO2D"""
+import mindspore.common.dtype as mstype
+from mindspore import ops, nn, Tensor
+
+from sciai.architecture.neural_operators.dft import SpectralConv2dDft
+from sciai.utils.check_utils import _check_type
+
+
+class KNO2D(nn.Cell):
+    r"""
+    The 2-dimensional Koopman Neural Operator (KNO2D) contains a encoder layer and a decoder layer,
+    multiple Koopman layers.
+    The details can be found in `KoopmanLab: machine learning for solving complex physics equations
+     <https://arxiv.org/pdf/2301.01104.pdf>`_.
+
+    Args:
+        in_channels (int): The number of channels in the input space. Default: ``1``.
+        channels (int): The number of channels after dimension lifting of the input. Default: ``32``.
+        modes (int): The number of low-frequency components to keep. Default: ``16``.
+        resolution (int): The spatial resolution of the input. Default: ``1024``.
+        depths (int): The number of KNO layers. Default: ``4``.
+        compute_dtype (dtype.Number): The computation type of dense. Default: ``mstype.float16``.
+            Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
+            the GPU backend, mstype.float16 is recommended for the Ascend backend.
+
+    Inputs:
+        - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, in\_channels)`.
+
+    Outputs:
+        Tensor, the output of this KNO network.
+
+        - **output** (Tensor) -Tensor of shape :math:`(batch\_size, resolution, in\_channels)`.
+
+    Raises:
+        TypeError: If `in_channels` is not an int.
+        TypeError: If `channels` is not an int.
+        TypeError: If `modes` is not an int.
+        TypeError: If `depths` is not an int.
+        TypeError: If `resolution` is not an int.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import numpy as np
+        >>> from sciai.architecture.neural_operators import KNO2D
+        >>> input_ = Tensor(np.ones([32, 64, 64, 10]), mstype.float32)
+        >>> net = KNO2D()
+        >>> x, x_reconstruct = net(input_)
+        >>> print(x.shape, x_reconstruct.shape)
+        (32, 64, 64, 10) (32, 64, 64, 10)
+    """
+
+    def __init__(self,
+                 in_channels=10,
+                 channels=32,
+                 modes=16,
+                 depths=4,
+                 resolution=64,
+                 compute_dtype=mstype.float32):
+        super().__init__()
+        _check_type(in_channels, "in_channels", target_type=int, exclude_type=bool)
+        _check_type(channels, "channels", target_type=int, exclude_type=bool)
+        _check_type(modes, "modes", target_type=int, exclude_type=bool)
+        _check_type(depths, "depths", target_type=int, exclude_type=bool)
+        _check_type(resolution, "resolution", target_type=int, exclude_type=bool)
+        self.in_channels = in_channels
+        self.channels = channels
+        self.modes = modes
+        self.depths = depths
+        self.resolution = resolution
+        self.enc = nn.Dense(in_channels, channels, has_bias=True)
+        self.dec = nn.Dense(channels, in_channels, has_bias=True)
+        self.koopman_layer = SpectralConv2dDft(channels, channels, modes, modes, resolution,
+                                               resolution, dtype=compute_dtype)
+        self.w0 = nn.Conv2d(channels, channels, 1, has_bias=True)
+
+    def construct(self, x: Tensor):
+        """KNO2D forward function.
+        Args:
+            x (Tensor): Input Tensor.
+        """
+        # reconstruct
+        x_reconstruct = self.enc(x)
+        x_reconstruct = ops.tanh(x_reconstruct)
+        x_reconstruct = self.dec(x_reconstruct)
+
+        # predict
+        x = self.enc(x)
+        x = ops.tanh(x)
+        x = x.transpose(0, 3, 1, 2)
+        x_w = x
+        for _ in range(self.depths):
+            x1 = self.koopman_layer(x)
+            x = ops.tanh(x + x1)
+        x = ops.tanh(self.w0(x_w) + x)
+        x = x.transpose(0, 2, 3, 1)
+        x = self.dec(x)
+        return x, x_reconstruct
