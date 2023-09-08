@@ -1,14 +1,7 @@
 mindearth.utils.plt_wind_quiver
 ==============================================
 
-.. py:function:: mindearth.utils.plt_wind_quiver(grid_resolution,
-                                                 root_dir,
-                                                 data_mode,
-                                                 start_date=(2015, 1, 1, 0, 0, 0),
-                                                 data_interval=6,
-                                                 frames=20,
-                                                 save_fig_path="./wind_quiver",
-                                                 is_videos=False)
+.. py:function:: mindearth.utils.plt_wind_quiver(grid_resolution, root_dir, data_mode, start_date=(2015, 1, 1, 0, 0, 0), data_interval=6, frames=20, save_fig_path="./wind_quiver", is_videos=False)
 
     绘制风矢图。
 

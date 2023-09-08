@@ -1,7 +1,7 @@
 mindearth.utils
 ==================
 
-.. mscnplatformautosummary::
+.. msplatformautosummary::
     :toctree: utils
     :nosignatures:
     :template: classtemplate.rst
@@ -10,4 +10,3 @@ mindearth.utils
     mindearth.utils.get_datapath_from_date
     mindearth.utils.plt_global_field_data
     mindearth.utils.plt_metrics
-    mindearth.utils.plt_wind_quiver
