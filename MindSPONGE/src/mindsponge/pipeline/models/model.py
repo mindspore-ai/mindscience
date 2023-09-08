@@ -66,8 +66,7 @@ class Model(metaclass=ABCMeta):
     def set_cache(self, path):
         self.cache = path
 
-    def from_pretrained(self, ckpt_path=None):
-        "from_pretrained"
+    def get_checkpoint_path(self, ckpt_path):
         if ckpt_path is not None:
             self.checkpoint_path = ckpt_path
         if self.checkpoint_path is None:
@@ -77,6 +76,10 @@ class Model(metaclass=ABCMeta):
             # pylint: disable=protected-access
             ssl._create_default_https_context = ssl._create_unverified_context
             urllib.request.urlretrieve(self.checkpoint_url, self.checkpoint_path)
+
+    def from_pretrained(self, ckpt_path=None):
+        "from_pretrained"
+        self.get_checkpoint_path(ckpt_path)
         load_checkpoint(self.checkpoint_path, self.network)
 
     def _check_initialize(self):

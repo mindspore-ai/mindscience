@@ -65,6 +65,9 @@ class MEGAFold(Model):
     def __init__(self, config):
         self.config = config
 
+        self.use_template_average = False
+        if hasattr(config.model, 'use_template_average') and config.model.use_template_average:
+            self.use_template_average = True
         self.checkpoint_url =\
             'https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/checkpoint/MEGA_Fold_1.ckpt'
 
@@ -122,6 +125,32 @@ class MEGAFold(Model):
 
         res = prev_pos, prev_msa_first_row, prev_pair, predicted_lddt_logits
         return res
+
+
+    def from_pretrained(self, ckpt_path=None):
+        "from_pretrained"
+        self.get_checkpoint_path(ckpt_path)
+        param_dict = ms.load_checkpoint(self.checkpoint_path)
+        if self.use_template_average:
+            key_map = {
+                'template_embedding.template_pointwise_attention.linear_output_weights':
+                    'template_embedding.template_embedder.template_pointwise_attention.linear_output_weights',
+                'template_embedding.template_pointwise_attention.linear_v_weights':
+                    'template_embedding.template_embedder.template_pointwise_attention.linear_v_weights',
+                'template_embedding.template_pointwise_attention.linear_k_weights':
+                    'template_embedding.template_embedder.template_pointwise_attention.linear_k_weights',
+                'template_embedding.template_pointwise_attention.linear_q_weights':
+                    'template_embedding.template_embedder.template_pointwise_attention.linear_q_weights',
+                'template_embedding.template_pointwise_attention.o_biases':
+                    'template_embedding.template_embedder.template_pointwise_attention.o_biases'
+            }
+            for origin_key, average_key in key_map.items():
+                if average_key in param_dict:
+                    param_dict[average_key] = param_dict[origin_key]
+                    del param_dict[origin_key]
+
+        param_not_load, _ = ms.load_param_into_net(self.network, param_dict)
+        print(f'param not load: {param_not_load}')
 
 
     def predict(self, data, **kwargs):
