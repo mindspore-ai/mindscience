@@ -36,7 +36,7 @@ from mindsponge.data_transform import get_chi_atom_pos_indices
 from mindsponge.common import residue_constants
 from mindsponge.common.utils import dgram_from_positions, pseudo_beta_fn, atom37_to_torsion_angles
 from mindsponge.cell.initializer import lecun_init
-from .module.template_embedding import TemplateEmbedding
+from .module.template_embedding import TemplateEmbedding, TemplateEmbeddingAverage
 from .module.evoformer import Evoformer
 from .module.structure import StructureModule
 from .module.head import DistogramHead, ExperimentallyResolvedHead, MaskedMsaHead, \
@@ -143,9 +143,11 @@ class Megafold(nn.Cell):
         self.one_hot = nn.OneHot(depth=model_cfg.max_relative_feature * 2 + 1, axis=-1)
         self.extra_msa_activations = nn.Dense(25, model_cfg.extra_msa_channel,
                                               weight_init=lecun_init(25))
-        self.template_embedding = TemplateEmbedding(model_cfg,
-                                                    self.is_training,
-                                                    mixed_precision)
+
+        if hasattr(model_cfg, 'use_template_average') and model_cfg.use_template_average:
+            self.template_embedding = TemplateEmbeddingAverage(model_cfg, self.is_training, mixed_precision)
+        else:
+            self.template_embedding = TemplateEmbedding(model_cfg, self.is_training, mixed_precision)
 
         self.matmul_trans_b = P.MatMul(transpose_b=True)
         self.batch_matmul_trans_b = P.BatchMatMul(transpose_b=True)
