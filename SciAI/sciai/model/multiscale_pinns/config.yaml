@@ -1,0 +1,21 @@
+model_name: multiscale_pinns
+description: multiscale_pinns
+case: 1d_heat
+layers: [2, 100, 100, 100, 1]
+save_ckpt: true
+save_fig: true
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+figures_path: ./figures
+load_ckpt_path: ./checkpoints/model_10000.ckpt
+log_path: ./logs
+lr: 0.001
+epochs: 40000
+batch_size: 128
+net_type: net_st_ff
+print_interval: 100
+nnum: 1000
+download_data: multiscale_pinns
+force_download: false
+amp_level: O3
+mode: 0

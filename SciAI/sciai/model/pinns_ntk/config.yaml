@@ -1,0 +1,19 @@
+model_name: pinns_ntk
+description: pinns_ntk
+case: 1D-Poisson
+layers: [1, 512, 1]
+save_ckpt: true
+save_fig: true
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+load_ckpt_path: ./checkpoints/model_final_float32.ckpt
+figures_path: ./figures
+log_path: ./logs
+print_interval: 100
+num: 100
+lr: 0.0001
+epochs: 40001
+download_data: pinns_ntk
+force_download: false
+amp_level: O2
+mode: 0

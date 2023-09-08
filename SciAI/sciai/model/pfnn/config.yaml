@@ -1,0 +1,19 @@
+problem: pfnn
+problem_type: 1
+bound: [-1.0, 1.0, -1.0, 1.0]
+inset_nx: [60, 60]
+bdset_nx: [60, 60]
+teset_nx: [101, 101]
+g_epochs: 6000
+f_epochs: 6000
+g_lr: 0.01
+f_lr: 0.01
+tests_num: 5
+log_path: ./logs
+load_ckpt: false
+save_ckpt_path: ./checkpoints/
+load_ckpt_path: [./checkpoints/optimal_state_g_pfnn.ckpt, ./checkpoints/optimal_state_f_pfnn.ckpt]
+force_download: false
+download_data: pfnn
+amp_level: O0
+mode: 0

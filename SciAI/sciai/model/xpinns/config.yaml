@@ -1,0 +1,22 @@
+model_name: xpinns
+description: xpinns
+case: 2d_poissons
+layers1: [2, 30, 30, 1]
+layers2: [2, 20, 20, 20, 20, 1]
+layers3: [2, 25, 25, 25, 1]
+save_ckpt: true
+save_fig: true
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+load_data_path: ./data
+load_ckpt_path: ./checkpoints/model_final_float32.ckpt
+figures_path: ./figures
+log_path: ./logs
+print_interval: 20
+ckpt_interval: 20
+lr: 0.0008
+epochs: 501
+download_data: xpinns
+force_download: false
+amp_level: O3
+mode: 0
