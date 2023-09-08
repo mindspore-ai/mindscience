@@ -28,7 +28,7 @@ set_seed(123456)
 np.random.seed(123456)
 
 
-def train_stage(trainer, stage, pattern, config, use_ascend):
+def train_stage(trainer, stage, pattern, config, ckpt_dir, use_ascend):
     """train stage"""
     if use_ascend:
         from mindspore.amp import DynamicLossScaler, all_finite
@@ -79,9 +79,6 @@ def train_stage(trainer, stage, pattern, config, use_ascend):
             loss = ops.depend(loss, optimizer(grads))
         return loss
 
-    ckpt_dir = config["ckpt_dir"]
-    if not os.path.exists(ckpt_dir):
-        os.makedirs(ckpt_dir)
     best_loss = 100000
     for epoch in range(1, 1 + config['epochs']):
         time_beg = time.time()
@@ -167,8 +164,12 @@ def train(input_args):
                              data_path=burgers_config['data_path'],
                              compute_dtype=compute_dtype)
 
-    train_stage(percnn_trainer, 'pretrain', pattern, burgers_config['pretrain'], use_ascend)
-    train_stage(percnn_trainer, 'finetune', pattern, burgers_config['finetune'], use_ascend)
+    ckpt_dir = config["ckpt_dir"]
+    if not os.path.exists(ckpt_dir):
+        os.makedirs(ckpt_dir)
+
+    train_stage(percnn_trainer, 'pretrain', pattern, burgers_config['pretrain'], ckpt_dir, use_ascend)
+    train_stage(percnn_trainer, 'finetune', pattern, burgers_config['finetune'], ckpt_dir, use_ascend)
     post_process(percnn_trainer, pattern)
 
 
