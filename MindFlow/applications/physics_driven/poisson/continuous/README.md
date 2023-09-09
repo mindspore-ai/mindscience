@@ -32,7 +32,7 @@ $$
 
 and we set the geometric boundary conditions to satisfy the Dirichlet boundary conditions.
 
-For the one-dimensional problem, this case study uses the one-dimensional axis interval as the solution domain. For the two-dimensional problem, it demonstrates solving the equation in rectangular, circular, triangular, and pentagonal regions. For the three-dimensional problem, we solve the equation in tetrahedral, cylindrical, and conical regions.
+For the one-dimensional problem, this case study uses the one-dimensional axis interval as the solution domain. For the two-dimensional problem, it demonstrates solving the equation in rectangular, circular, triangular, L-type, and pentagonal regions. For the three-dimensional problem, we solve the equation in tetrahedral, cylindrical, and conical regions.
 
 ## Quick Start
 
@@ -44,13 +44,9 @@ In the command line, enter the following command to start the training:
 python train.py --geom_name disk --mode GRAPH --save_graphs_path ./graphs --device_target GPU --device_id 0 --config_file_path ./poisson_cfg.yaml
 ```
 
-where `--geom_name` specifies the name of the geometric shape, and you can choose from `'interval'`, `'rectangle'`, `'disk'`, `'triangle'`, `'pentagon'`, `'tetrahedron'`, `'cylinder'`, `'cone'`, with the default value `'disk'`.
+where `--geom_name` specifies the name of the geometric shape, and you can choose from `'interval'`, `'rectangle'`, `'disk'`, `'triangle'`, `'polygon'`, `'pentagon'`, `'tetrahedron'`, `'cylinder'`, `'cone'`, with the default value `'disk'`.
 
 `--mode` specifies the running mode, with `'GRAPH'` indicating static graph mode, and `'PYNATIVE'` indicating dynamic graph mode. Refer to the MindSpore official website for more details, with the default value `'GRAPH'`.
-
-`--save_graphs` specifies whether to save the computation graph, with the default value `'False'`.
-
-`--save_graphs_path` specifies the path to save the computation graph, with the default value `'./graphs'`.
 
 `--device_target` specifies the computing platform type, and you can choose from `'Ascend'` or `'GPU'`, with the default value `'GPU'`.
 
@@ -60,7 +56,7 @@ where `--geom_name` specifies the name of the geometric shape, and you can choos
 
 `--n_epochs` specifies the number of training epochs.
 
-`--config_file_path` specifies the path to the parameter file, with the default value `'./poisson_cfg.yaml'`.
+`--config_file_path` specifies the path to the parameter file, with the default value `'./configs/poisson_cfg.yaml'`.
 
 ### Training Method 2: Run Jupyter Notebook
 

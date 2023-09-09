@@ -32,7 +32,7 @@ $$
 
 并且我们设定几何边界条件满足狄利克雷边界条件。
 
-对于一维问题，本案例使用一维数轴区间作为求解域，对于二维问题，本例演示在矩形，圆形，三角形和五边形区域求解方程，而对于三维问题，我们将在四面体，圆柱和圆锥区域内求解方程。
+对于一维问题，本案例使用一维数轴区间作为求解域，对于二维问题，本例演示在矩形，圆形，三角形，L形和五边形区域求解方程，而对于三维问题，我们将在四面体，圆柱和圆锥区域内求解方程。
 
 ## 快速开始
 
@@ -41,16 +41,12 @@ $$
 在命令行中输入以下命令，即可开始训练:
 
 ```bash
-python train.py --geom_name disk --mode GRAPH --save_graphs_path ./graphs --device_target GPU --device_id 0 --config_file_path ./poisson_cfg.yaml
+python train.py --geom_name disk --mode GRAPH --save_graphs_path ./graphs --device_target GPU --device_id 0 --config_file_path ./configs/poisson_cfg.yaml
 ```
 
-其中， `--geom_name`表示几何形状的名称，可以选择`'interval'`，`'rectangle'`，`'disk'`，`'triangle'`，`'pentagon'`，`'tetrahedron'`，`'cylinder'`，`'cone'`，默认值`'disk'`；
+其中， `--geom_name`表示几何形状的名称，可以选择`'interval'`，`'rectangle'`，`'disk'`，`'triangle'`，`'polygon'`，`'pentagon'`，`'tetrahedron'`，`'cylinder'`，`'cone'`，默认值`'disk'`；
 
 `--mode`表示运行的模式，`'GRAPH'`表示静态图模式, `'PYNATIVE'`表示动态图模式，详见MindSpore官网，默认值'GRAPH'；
-
-`--save_graphs`表示是否保存计算图，默认值'False'；
-
-`--save_graphs_path`表示计算图保存的路径，默认值'./graphs'
 
 `--device_target`表示使用的计算平台类型，可以选择'Ascend'或'GPU'，默认值'GPU'；
 
@@ -60,7 +56,7 @@ python train.py --geom_name disk --mode GRAPH --save_graphs_path ./graphs --devi
 
 `--n_epochs`表示训练epoch数量；
 
-`--config_file_path`表示参数文件的路径，默认值'./poisson_cfg.yaml'；
+`--config_file_path`表示参数文件的路径，默认值'./configs/poisson_cfg.yaml'；
 
 ### 训练方式二：运行Jupyter Notebook
 

@@ -29,7 +29,7 @@ class Polygon(Union):
         def is_ear(triangle: Simplex, vertices):
             # Check if the triangle is an ear of the polygon.
             # ref: https://en.wikipedia.org/wiki/Polygon_triangulation
-            return np.all(triangle.is_inside(vertices) is False)
+            return np.all(triangle.is_inside(vertices) != 1)
 
         def is_convex(vertices):
             """Check if the given triangle is convex."""

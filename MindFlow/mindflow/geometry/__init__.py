@@ -15,7 +15,7 @@
 """init"""
 from .geometry_base import Geometry, PartSamplingConfig, SamplingConfig
 from .geometry_1d import Interval
-from .geometry_2d import Disk, Rectangle, Triangle, Pentagon
+from .geometry_2d import Disk, Rectangle, Triangle, Pentagon, Polygon
 from .geometry_3d import Cuboid, Cylinder, Cone, Tetrahedron
 from .geometry_nd import FixedPoint, HyperCube
 from .geometry_td import TimeDomain, GeometryWithTime
@@ -31,6 +31,7 @@ __all__ = [
     "Rectangle",
     "Triangle",
     "Pentagon",
+    "Polygon",
     "Cuboid",
     "Cylinder",
     "Cone",
@@ -43,7 +44,7 @@ __all__ = [
     "CSGDifference",
     "CSGUnion",
     "CSGXOR",
-    "generate_sampling_config"
+    "generate_sampling_config",
 ]
 
 __all__.sort()
