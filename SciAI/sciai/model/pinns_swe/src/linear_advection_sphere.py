@@ -1,9 +1,25 @@
+# Copyright 2023 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+"""Linear advection sphere definition"""
 import random
 
 from mindspore import ops, nn
 
 
 class NetGrad(nn.Cell):
+    """Gradient network"""
     def __init__(self, net):
         super().__init__()
         self.net = net
@@ -15,6 +31,7 @@ class NetGrad(nn.Cell):
 
 
 class Net(nn.Cell):
+    """Backbone network"""
     def __init__(self, model, alpha, u00, u):
         super().__init__()
         self.model = model
@@ -48,6 +65,7 @@ class Net(nn.Cell):
 
 
 class TrainOneStepCell(nn.Cell):
+    """One-step training process"""
     def __init__(self, network, optimizer):
         super().__init__()
         self.network = network
@@ -73,10 +91,10 @@ class TrainOneStepCell(nn.Cell):
             dice = random.choice([0, 1])
             if dice < 0.5:
                 proj = ops.reduce_sum(mul_res) / ops.reduce_sum(ops.square(grad_ivp_f))
-                grad_pde = tuple(gPDE - proj * gIVP for gPDE, gIVP in zip(grad_pde, grad_ivp))
+                grad_pde = tuple(g_pde - proj * g_ivp for g_pde, g_ivp in zip(grad_pde, grad_ivp))
             else:
                 proj = ops.reduce_sum(mul_res) / ops.reduce_sum(ops.square(grad_pde_f))
-                grad_ivp = tuple(gIVP - proj * gPDE for gPDE, gIVP in zip(grad_pde, grad_ivp))
+                grad_ivp = tuple(g_ivp - proj * g_pde for g_pde, g_ivp in zip(grad_pde, grad_ivp))
 
         grads = tuple(g_pde + g_ivp for g_pde, g_ivp in zip(grad_pde, grad_ivp))
         self.optimizer(grads)

@@ -1,3 +1,18 @@
+# Copyright 2023 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+"""plotting functions"""
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,6 +22,7 @@ from scipy.interpolate import griddata
 
 
 def plot_inf_cont_results(*inputs, save_path=None, save_hp=None):
+    """Plot 2d domain and three slices"""
     x_star, u_pred, x_train, u_train, u, x_mesh, t_mesh, x, t = inputs
     x_u_pred = griddata(x_star, u_pred, (x_mesh, t_mesh), method='cubic')
 
@@ -28,6 +44,7 @@ def plot_inf_cont_results(*inputs, save_path=None, save_hp=None):
 
 
 def plot_slice(gs1, u, x, x_u_pred):
+    """Plot slices"""
     ax = plt.subplot(gs1[0, 0])
     ax.plot(x, u[25, :], 'b-', linewidth=2, label='Exact')
     ax.plot(x, x_u_pred[25, :], 'r--', linewidth=2, label='Prediction')
@@ -61,6 +78,7 @@ def plot_slice(gs1, u, x, x_u_pred):
 
 
 def plot_domain(*inputs):
+    """Plot domain"""
     fig, x, t, x_u_pred, x_train, u_train = inputs
     gs0 = gridspec.GridSpec(1, 2)
     gs0.update(top=1 - 0.06, bottom=1 - 1 / 3, left=0.15, right=0.85, wspace=0)
