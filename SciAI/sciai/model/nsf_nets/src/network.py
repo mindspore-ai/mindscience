@@ -1,3 +1,18 @@
+# Copyright 2023 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+"""Network definitions"""
 import mindspore as ms
 from mindspore import nn, ops
 
@@ -7,7 +22,7 @@ from sciai.operators import grad
 
 
 class VPNSFnet(nn.Cell):
-    # Initialize the class
+    """VPNSF network"""
     def __init__(self, xb, yb, ub, vb, x, y, layers):
         super().__init__()
         # remove the second bracket
@@ -37,8 +52,8 @@ class VPNSFnet(nn.Cell):
     def construct(self, *inputs):
         """Network forward pass"""
         xb, yb, ub, vb, x, y = inputs
-        u_boundary_pred, v_boundary_pred, p_boundary_pred = self.neural_net(xb, yb)
-        u_pred, v_pred, p_pred, f_u_pred, f_v_pred, f_e_pred = self.net_f_ns(x, y)
+        u_boundary_pred, v_boundary_pred, _ = self.neural_net(xb, yb)
+        _, _, _, f_u_pred, f_v_pred, f_e_pred = self.net_f_ns(x, y)
 
         # set loss function
         loss = self.alpha * self.mse(ub - u_boundary_pred) + self.alpha * self.mse(vb - v_boundary_pred) + \
@@ -47,6 +62,7 @@ class VPNSFnet(nn.Cell):
 
 
 class NetFNS(nn.Cell):
+    """FNS network"""
     def __init__(self, neural_net):
         super().__init__()
         self.neural_net = neural_net
@@ -80,6 +96,7 @@ class NetFNS(nn.Cell):
 
 
 class Net(nn.Cell):
+    """MLP network"""
     def __init__(self, layers, lowb, upb):
         super().__init__()
         self.lowb, self.upb = lowb, upb

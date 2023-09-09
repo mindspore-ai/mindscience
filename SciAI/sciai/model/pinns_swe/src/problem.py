@@ -1,3 +1,17 @@
+# Copyright 2023 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
 """problem definition"""
 import time
 
@@ -133,7 +147,7 @@ class Problem:
         inits_ = np.column_stack([t_init, x_init, y_init, h_init])
         ds, model, train_cell = self.generate_model(pdes, inits_)
         print_log("Load weights from trained model...")
-        ckpt_path = f"{self.load_ckpt_path}/model4_{self.data_type_str}.ckpt"
+        ckpt_path = f"{self.load_ckpt_path}/Optim_swe_4_{self.amp_level}.ckpt"
         ms.load_checkpoint(ckpt_path, model)
         loss = 0
         for pdes_inits in ds.create_dict_iterator():
@@ -162,7 +176,7 @@ class Problem:
             if self.load_ckpt_path.endswith(".ckpt"):
                 ms.load_checkpoint(self.load_ckpt_path, model)
             else:
-                ckpt_path = f"{self.load_ckpt_path}/model{i + 1}_{self.data_type_str}.ckpt"
+                ckpt_path = f"{self.load_ckpt_path}/Optim_swe_{i + 1}_{self.amp_level}.ckpt"
                 ms.load_checkpoint(ckpt_path, model)
             model.to_float(self.data_type)
             tt = ms.Tensor(t[i * steps_per_model:(i + 1) * steps_per_model, :], self.data_type)

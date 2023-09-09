@@ -1,12 +1,23 @@
 # -*- coding: utf-8 -*-
+# Copyright 2023 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
 """
-Created on Tue Sep 15 20:00:21 2020
-
-@author: Wsf12
+Network definitions
 """
-
-import mindspore as ms
 import numpy as np
+import mindspore as ms
 from mindspore import nn, ops
 from mindspore.common.initializer import XavierNormal
 
@@ -15,9 +26,11 @@ from sciai.operators import grad
 
 
 class NetNN(nn.Cell):
+    """NN network"""
     def __init__(self, layers, sigma):
         super().__init__()
         self.mlp = MLP(layers, weight_init=XavierNormal(), bias_init="zeros", activation="tanh")
+        self.sigma = sigma
 
     def construct(self, t, x):
         """Network forward pass"""
@@ -27,6 +40,7 @@ class NetNN(nn.Cell):
 
 
 class NetFF(nn.Cell):
+    """FF network"""
     def __init__(self, layers, sigma):
         super().__init__()
         self.w = ms.Tensor(np.random.normal(size=(2, layers[0] // 2)) * sigma, dtype=ms.float32)
@@ -43,6 +57,7 @@ class NetFF(nn.Cell):
 
 
 class NetSTFF(nn.Cell):
+    """STFF network"""
     def __init__(self, layers, sigma):
         super().__init__()
         self.w_t = ms.Tensor(np.random.normal(size=(1, layers[0] // 2)), dtype=ms.float32)
@@ -66,6 +81,7 @@ class NetSTFF(nn.Cell):
 
 
 class Operator(nn.Cell):
+    """Operations"""
     def __init__(self, net, k, sigma_t, sigma_x):
         super().__init__()
         self.net = net
@@ -76,13 +92,14 @@ class Operator(nn.Cell):
     def construct(self, t, x):
         """Network forward pass"""
         u_t, u_x = self.u_grad(t, x)
-        u_xt, u_xx = self.u_x_grad(t, x)
+        _, u_xx = self.u_x_grad(t, x)
         u_t, u_x, u_xx = u_t / self.sigma_t, u_x / self.sigma_x, u_xx / self.sigma_x
         residual = u_t - self.k * u_xx
         return residual
 
 
 class Heat1D(nn.Cell):
+    """1D heat loss"""
     def __init__(self, k, res_sampler, net_u):
         super().__init__()
         x, _ = res_sampler.sample(np.int32(1e5))
