@@ -1,0 +1,42 @@
+model_name: fbsnns
+problem: black_scholes_barenblatt_100D
+allen_cahn_20D:
+  description: allen_cahn_20D
+  case: allen_cahn_20D
+  layers: [21, 256, 256, 256, 256, 1]
+  save_ckpt: true
+  load_ckpt: false
+  save_fig: true
+  save_ckpt_path: ./checkpoints/ac
+  load_ckpt_path: ./checkpoints/ac/model_100000_float16.ckpt
+  figures_path: ./figures
+  lr: [0.001, 0.0001, 1.0e-05, 1.0e-06]
+  epochs: [20000, 30000, 30000, 20000]
+  batch_size: 100
+  num_snapshots: 15
+  terminal_time: 0.3
+  log_path: ./logs
+  download_data: fbsnns
+  force_download: false
+  amp_level: O3
+  mode: 0
+black_scholes_barenblatt_100D:
+  description: black_scholes_barenblatt_100D
+  case: black_scholes_barenblatt_100D
+  layers: [101, 256, 256, 256, 256, 1]
+  save_ckpt: true
+  load_ckpt: false
+  save_fig: true
+  save_ckpt_path: ./checkpoints/bsb
+  load_ckpt_path: ./checkpoints/bsb/model_100000_float16.ckpt
+  figures_path: ./figures
+  lr: [0.001, 0.0001, 1.0e-05, 1.0e-06]
+  epochs: [20000, 30000, 30000, 20000]
+  batch_size: 100
+  num_snapshots: 50
+  terminal_time: 1.0
+  log_path: ./logs
+  download_data: fbsnns
+  force_download: false
+  amp_level: O3
+  mode: 0

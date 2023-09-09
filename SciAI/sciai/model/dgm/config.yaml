@@ -1,0 +1,20 @@
+model_name: dgm
+description: DGMNet
+case: DGM
+layers: [1, 10, 10, 10, 1]
+save_ckpt: true
+load_ckpt: false
+save_fig: true
+save_anim: true
+save_ckpt_path: ./checkpoints
+load_ckpt_path: ./checkpoints/model_iter_2000_float32.ckpt
+log_path: ./logs
+figures_path: ./figures
+print_interval: 20
+lr: 0.01
+epochs: 2001
+batch_size: 256
+download_data: dgm
+force_download: false
+amp_level: O0
+mode: 0
