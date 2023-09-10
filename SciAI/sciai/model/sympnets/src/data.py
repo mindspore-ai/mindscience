@@ -2,7 +2,7 @@
 import mindspore as ms
 import numpy as np
 
-from sciai.utils import data_type_dict_amp
+from sciai.utils import amp2datatype
 
 
 class Data:
@@ -33,7 +33,7 @@ class Data:
 
     @dtype.setter
     def dtype(self, d):
-        data_type = data_type_dict_amp.get(d)
+        data_type = amp2datatype(d)
         for data in ['x_train', 'y_train', 'x_test', 'y_test']:
             if isinstance(getattr(self, data), np.ndarray):
                 setattr(self, data, ms.Tensor(getattr(self, data), data_type))

@@ -3,7 +3,7 @@ import mindspore as ms
 from mindspore import amp
 
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp
+from sciai.utils import print_log, amp2datatype
 from sciai.utils.python_utils import print_time
 from src.plot import write_result, visualize
 from src.utils import prepare
@@ -11,7 +11,7 @@ from src.utils import prepare
 
 @print_time("eval")
 def main(args, problem):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     _, ritz_net = problem.init_net()
     ritz_net = amp.auto_mixed_precision(ritz_net, args.amp_level)

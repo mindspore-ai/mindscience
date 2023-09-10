@@ -4,7 +4,7 @@ import os
 import mindspore as ms
 
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp, print_time, calc_ckpt_name
+from sciai.utils import amp2datatype, print_time, calc_ckpt_name
 
 from src.brain import Brain
 from src.nn.hnn import HNN
@@ -14,7 +14,7 @@ from src.process import prepare
 
 @print_time("train")
 def main(args, problem):
-    dtype = data_type_dict_amp.get(args.amp_level)
+    dtype = amp2datatype(args.amp_level)
     criterion, data = problem.init_data(args)
     net = get_net(args, data.dim)
     if args.load_ckpt:

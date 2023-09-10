@@ -4,7 +4,7 @@ import os
 import mindspore as ms
 
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp, calc_ckpt_name
+from sciai.utils import amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 
 from src.network import PiDeepONet
@@ -15,7 +15,7 @@ from eval import evaluate
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     # GRF
     d_t = 1.0
     ics_dataset, bcs_dataset, res_dataset = generate_training_data(d_t, args.batch_size, args.n_train, dtype)

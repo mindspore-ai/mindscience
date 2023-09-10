@@ -2,7 +2,7 @@
 import numpy as np
 import mindspore as ms
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp
+from sciai.utils import print_log, amp2datatype
 from sciai.utils.python_utils import print_time
 
 from src.network import XPINN
@@ -21,7 +21,7 @@ def evaluate(model, u_exact, x_star1, x_star2, x_star3):
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     layers1, layers2, layers3 = args.layers1, args.layers2, args.layers3
     x_f1_train, x_f2_train, x_f3_train, x_fi1_train, x_fi2_train, x_star1, x_star2, x_star3, x_ub_train, \
         _, u_exact, _, _, xb, xi1, xi2, yb, yi1, yi2 = generate_data(args.load_data_path, dtype)

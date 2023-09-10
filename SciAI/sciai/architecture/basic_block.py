@@ -313,6 +313,9 @@ class MSE(nn.Cell):
         1.0
     """
 
+    def __init__(self):  # pylint: disable=W0235
+        super().__init__()
+
     def construct(self, x):
         return ops.reduce_mean(ops.square(x))
 
@@ -340,6 +343,9 @@ class SSE(nn.Cell):
         >>> print(res)
         6.0
     """
+
+    def __init__(self):  # pylint: disable=W0235
+        super().__init__()
 
     def construct(self, x):
         return ops.reduce_sum(ops.square(x))

@@ -16,13 +16,12 @@
 import time
 import numpy as np
 
-import mindspore as ms
 from mindspore import Tensor
 from mindspore import nn
 from mindspore import load_param_into_net, load_checkpoint
 
 from sciai.context import init_project
-from sciai.utils import print_time, print_log, data_type_dict_amp
+from sciai.utils import print_time, print_log, amp2datatype
 from src import pfnnmodel
 from src.process import prepare, calerror, train_netg, train_netloss
 from data import gendata, dataset
@@ -50,7 +49,7 @@ def trainer(*inputs):
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     errors = np.zeros(args.tests_num)
 

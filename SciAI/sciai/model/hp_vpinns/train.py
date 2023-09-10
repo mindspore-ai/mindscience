@@ -7,7 +7,7 @@ from mindspore import nn
 
 from sciai.common import TrainCellWithCallBack
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_np, data_type_dict_amp, calc_ckpt_name
+from sciai.utils import print_log, datatype2np, amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 from src.network import VPINN
 from src.plot import plot_fig
@@ -33,8 +33,8 @@ def train(args, model, u_train, x_u_train):
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
-    np_dtype = data_type_dict_np.get(dtype)
+    dtype = amp2datatype(args.amp_level)
+    np_dtype = datatype2np(dtype)
     f_ext_total, w_quad_train, x_quad_train, x_test, x_u_train, grid, u_test, u_train \
         = get_data(args, dtype, np_dtype)
 

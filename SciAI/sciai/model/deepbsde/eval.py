@@ -14,10 +14,9 @@
 # ============================================================================
 """DeepBSDE evaluation script"""
 from mindspore import load_checkpoint
-import mindspore as ms
 
 from sciai.context import init_project
-from sciai.utils import print_time, print_log, data_type_dict_amp
+from sciai.utils import print_time, print_log, amp2datatype
 from src.net import DeepBSDE, WithLossCell
 from src.config import prepare
 from src.equation import get_bsde
@@ -26,7 +25,7 @@ from src.eval_utils import apply_eval
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     bsde = get_bsde(args)
     net = DeepBSDE(args, bsde)

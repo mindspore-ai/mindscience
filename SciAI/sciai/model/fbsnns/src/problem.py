@@ -6,7 +6,7 @@ import mindspore as ms
 from mindspore import nn
 
 from sciai.common import TrainCellWithCallBack
-from sciai.utils import to_tensor, print_log, lazy_property, data_type_dict_amp, calc_ckpt_name
+from sciai.utils import to_tensor, print_log, lazy_property, amp2datatype, calc_ckpt_name
 
 
 class Problem:
@@ -29,7 +29,7 @@ class Problem:
         pass
 
     def build_param(self):
-        self.data_type = data_type_dict_amp.get(self.args.amp_level, ms.float16)
+        self.data_type = amp2datatype(self.args.amp_level)
         self.dim = self.args.layers[0] - 1  # number of dimensions
         self.net = self.net_class(self.args.terminal_time, self.args.batch_size,
                                   self.args.num_snapshots, self.dim, self.args.layers, self.data_type)

@@ -4,20 +4,56 @@ import random
 
 import numpy as np
 import mindspore as ms
-from mindspore import nn
+from mindspore import nn, dtype
 from mindspore._c_expression import typing
 
 from sciai.utils.check_utils import to_tuple, _check_type, _recursive_type_check
 
-# map from auto mixed precision level string to mindspore data type.
-data_type_dict = {"float16": ms.float16, "float32": ms.float32, "float64": ms.float64}
-data_type_dict_amp = {"O0": ms.float32, "O1": ms.float16, "O2": ms.float16, "O3": ms.float16}
 
-# map from mindspore data type to numpy data type.
-data_type_dict_np = {ms.float16: np.float16, ms.float32: np.float32, ms.float64: np.float64}
+def str2datatype(type_str: str):
+    """
+    Map from float data type string to mindspore data type.
+
+    Args:
+        type_str (str): Float data type string.
+
+    Returns:
+        dtype, Mindspore Tensor data type.
+    """
+    type_dict = {"float16": ms.float16, "float32": ms.float32, "float64": ms.float64}
+    return type_dict.get(type_str, ms.float32)
 
 
-def to_tensor(tensors, dtype=ms.float32):
+def amp2datatype(type_str: str):
+    """
+    Map from auto mixed precision level string to mindspore data type.
+    Support amp level from `O0` to `O3`.
+
+    Args:
+        type_str (str): Auto mixed precision level string.
+
+    Returns:
+        dtype, Mindspore Tensor data type.
+    """
+    type_dict = {"O0": ms.float32, "O1": ms.float16, "O2": ms.float16, "O3": ms.float16}
+    return type_dict.get(type_str)
+
+
+def datatype2np(ms_type: dtype):
+    """
+    Map from mindspore data type to numpy data type.
+
+    Args:
+        ms_type (dtype): Mindspore Tensor data type.
+
+    Returns:
+        numpy.dtype, NumPy data type.
+    """
+    type_dict = {ms.float16: np.float16, ms.float32: np.float32, ms.float64: np.float64}
+    return type_dict.get(ms_type)
+
+
+def to_tensor(tensors, dtype=ms.float32):  # pylint: disable=W0621
     """
     Cast array(ies)/tensor(s) to a given mindspore data type.
 
@@ -47,7 +83,7 @@ def to_tensor(tensors, dtype=ms.float32):
     tensors = to_tuple(tensors)
     for tensor in tensors:
         _check_type(tensor, "single tensor", (typing.Number, np.floating, numbers.Number, ms.Tensor, np.ndarray))
-    np_type = data_type_dict_np.get(dtype)
+    np_type = datatype2np(dtype)
     dtype_tensors = []
     for tensor in tensors:
         if isinstance(tensor, np.ndarray):
@@ -81,7 +117,7 @@ def to_float(cells, target_type=ms.float32):
 
     Args:
         cells (Union[Cell, list[Cell], tuple[Cell]]): Cells to cast.
-        target_type (typing.Number): Target mindspore data type that the cell(s) would be converted to.
+        target_type (dtype): Target mindspore data type that the cell(s) would be converted to.
     """
     _recursive_type_check(cells, nn.Cell)
     _check_type(target_type, "target_type", typing.Number)
@@ -111,8 +147,8 @@ def calc_ckpt_name(args):
     Args:
         args (Namespace): Argument namespace.
 
-    Return:
-        str, the concatenated checkpoint filename.
+    Returns:
+        str, The concatenated checkpoint filename.
     """
     components = ["Optim"]
     if hasattr(args, "model_name"):

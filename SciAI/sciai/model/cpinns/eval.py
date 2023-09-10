@@ -2,7 +2,7 @@
 import numpy as np
 import mindspore as ms
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp, data_type_dict_np, print_log
+from sciai.utils import amp2datatype, datatype2np, print_log
 from sciai.utils.python_utils import print_time
 
 from src.network import PINN
@@ -23,8 +23,8 @@ def evaluate(model, np_dtype, total_dict):
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
-    np_dtype = data_type_dict_np.get(dtype)
+    dtype = amp2datatype(args.amp_level)
+    np_dtype = datatype2np(dtype)
     nu = 0.01 / np.pi  # 0.0025
     nn_layers_total, t_mesh, x_mesh, x_star, u_star, x_interface, total_dict = get_data(args, np_dtype)
     model = PINN(nn_layers_total, nu, x_interface, dtype)

@@ -8,7 +8,7 @@ from mindspore import ops, nn, Model, ModelCheckpoint, get_context
 from mindspore.train import Callback
 
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp, calc_ckpt_name
+from sciai.utils import print_log, amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 
 from src.network import MgNet
@@ -92,7 +92,7 @@ def main(args):
     if get_context('device_target') == 'GPU' and args.amp_level in ('O1', 'O3'):
         raise ValueError(f'For MgNet, auto mixed precision level {args.amp_level} is not supported on GPU. '
                          'Please use level O0 instead, or use with Ascend devices.')
-    dtype = data_type_dict_amp.get(args.amp_level)
+    dtype = amp2datatype(args.amp_level)
     train_set, test_set, num_classes = load_data(args.load_data_path, args.batch_size, args.dataset)
     net = MgNet(args, dtype, num_classes=num_classes)
     if args.load_ckpt:

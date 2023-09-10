@@ -7,7 +7,7 @@ from mindspore.common.initializer import HeUniform
 
 from sciai.architecture import MLP
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp, print_log
+from sciai.utils import amp2datatype, print_log
 from sciai.utils.python_utils import print_time
 from src.advection import Advection
 from src.plot import visualize
@@ -16,7 +16,7 @@ from src.process import prepare
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     net = MLP(args.layers, weight_init=HeUniform(negative_slope=math.sqrt(5)), bias_init="zeros", activation=ops.Tanh())
     advection = Advection(net)

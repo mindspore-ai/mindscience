@@ -6,7 +6,7 @@ import mindspore as ms
 from mindspore import nn, Tensor, ops
 from sciai.common import TrainCellWithCallBack, lbfgs_train
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp
+from sciai.utils import print_log, amp2datatype
 from sciai.utils.python_utils import print_time
 
 from src.network import PhysicsInformedNN, LossCellHelmholtz
@@ -53,7 +53,7 @@ def train(args, model, train_param, train_tensor):
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     data = scipy.io.loadmat(f'{args.load_data_path}/Marmousi_3Hz_singlesource_ps.mat')
     train_param, train_tensor, bounds = generate_data(args, data, dtype)

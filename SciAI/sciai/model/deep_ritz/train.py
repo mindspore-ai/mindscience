@@ -4,7 +4,7 @@ import os
 import mindspore as ms
 
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp, calc_ckpt_name
+from sciai.utils import print_log, amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 from src.network import count_parameters
 from src.plot import write_result, visualize
@@ -13,7 +13,7 @@ from src.utils import prepare
 
 @print_time("train")
 def main(args, problem):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     train_net, ritz_net = problem.init_net()
     print_log("The number of parameters is %s," % count_parameters(ritz_net))

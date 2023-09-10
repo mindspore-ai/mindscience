@@ -7,7 +7,7 @@ import numpy as np
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp
+from sciai.utils import print_log, amp2datatype
 from sciai.utils.python_utils import print_time
 from src.network import MaxwellNet, LossNet
 from src.process import load_data, prepare
@@ -115,7 +115,7 @@ def plot_tm(args, ri, scat_pot_np, total_np, xz):
 @print_time("eval")
 def main(args):
     """main"""
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     scat_pot_ms, ri_ms = load_data(args, dtype)
     model = MaxwellNet(args)
     ms.load_checkpoint(args.load_ckpt_path, model)

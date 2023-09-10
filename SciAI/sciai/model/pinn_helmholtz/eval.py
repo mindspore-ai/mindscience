@@ -6,7 +6,7 @@ from mindspore import Tensor, ops
 import scipy.io
 
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp
+from sciai.utils import print_log, amp2datatype
 from sciai.utils.python_utils import print_time
 
 from src.network import PhysicsInformedNN
@@ -29,7 +29,7 @@ def evaluate(data, dtype, model):
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     data = scipy.io.loadmat(f'{args.load_data_path}/Marmousi_3Hz_singlesource_ps.mat')
     _, _, bounds = generate_data(args, data, dtype)

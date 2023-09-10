@@ -8,7 +8,7 @@ from mindspore import nn
 from eval import evaluate
 from sciai.common import TrainCellWithCallBack
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp, calc_ckpt_name
+from sciai.utils import print_log, amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 from src.network import PINN
 from src.plot import plot_figures, plot_loss
@@ -48,7 +48,7 @@ def train(model, log_ntk, log_weights, args):
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     a = 4
     dom_coords = np.array([[0.0], [1.0]])
     # Training data on u(x) -- Dirichlet boundary conditions
