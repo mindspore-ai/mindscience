@@ -58,7 +58,7 @@ def lazy_func(func, *args, **kwargs):
     Returns:
         Function, the fabricateed lazy function without arguments.
 
-    Example:
+    Examples:
         >>> from sciai.utils import lazy_func
         >>> def funct(a):
         >>>     print(a)

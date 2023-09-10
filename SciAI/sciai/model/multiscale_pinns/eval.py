@@ -3,7 +3,7 @@ import mindspore as ms
 import numpy as np
 
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp
+from sciai.utils import print_log, amp2datatype
 from sciai.utils.python_utils import print_time
 
 from src.network import Heat1D, NetNN, NetFF, NetSTFF
@@ -21,7 +21,7 @@ def evaluate(dtype, model, u_star, x_star):
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level)
+    dtype = amp2datatype(args.amp_level)
     x_star, f_star, u_star, samplers, k, sigma, t, x = get_data(args)
 
     net_u = {"net_nn": NetNN,  # NetNN: Plain MLP

@@ -4,7 +4,7 @@ from mindspore import ops
 
 from sciai.architecture.basic_block import MLPAAF
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp, print_log
+from sciai.utils import amp2datatype, print_log
 from sciai.utils.python_utils import print_time
 from src.plot import plot_eval
 from src.process import get_data, prepare
@@ -12,7 +12,7 @@ from src.process import get_data, prepare
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     x, y = get_data(args.num_grid, dtype)
     net = MLPAAF(args.layers, activation=ops.tanh, a_value=0.1, scale=10, share_type="layer_wise")
     if dtype == ms.float16:

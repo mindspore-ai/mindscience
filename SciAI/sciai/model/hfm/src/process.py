@@ -8,7 +8,7 @@ import scipy.io
 import mindspore as ms
 from mindspore import ops, Tensor
 
-from sciai.utils import print_log, data_type_dict_amp, to_tensor, parse_arg, flatten_add_dim
+from sciai.utils import print_log, amp2datatype, to_tensor, parse_arg, flatten_add_dim
 from .network import HFM
 
 
@@ -73,7 +73,7 @@ def tile_data(t_star, x_star, y_star):
 def full_evaluation(*inputs):
     """Full evaluation"""
     args, model, c_star, p_star, u_star, v_star, t_star, x_star, y_star = inputs
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     t_star_tile, x_star_tile, y_star_tile = tile_data(t_star, x_star, y_star)
 
     c_pred_container = Tensor(0 * c_star)
@@ -116,7 +116,7 @@ def full_evaluation(*inputs):
 def simple_evaluate(*inputs):
     """Simple evaluate"""
     args, model, c_star, p_star, u_star, v_star, t_star, x_star, y_star = inputs
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     t_star_tile, x_star_tile, y_star_tile = tile_data(t_star, x_star, y_star)
 
     snap = np.array([100])

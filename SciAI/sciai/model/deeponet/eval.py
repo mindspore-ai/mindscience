@@ -5,7 +5,7 @@ import mindspore as ms
 import numpy as np
 
 from sciai.context import init_project
-from sciai.utils import print_log, to_tensor, data_type_dict_amp
+from sciai.utils import print_log, to_tensor, amp2datatype
 from sciai.utils.python_utils import print_time
 from src.network import DeepONet, SampleNet
 from src.plot import plot_prediction
@@ -31,7 +31,7 @@ def evaluation(feed_test, feed_test0, loss_net):
 @print_time("eval")
 def main(args):
     """main"""
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     _, feed_test, feed_test0 = load_data(args.load_data_path)
     net = DeepONet(args.layers_u, args.layers_y)
     loss_net = SampleNet(net)

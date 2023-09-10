@@ -22,7 +22,7 @@ from mindspore.nn.dynamic_lr import piecewise_constant_lr
 
 from sciai.common import TrainCellWithCallBack
 from sciai.context import init_project
-from sciai.utils import print_time, data_type_dict_amp, to_tensor, print_log, calc_ckpt_name
+from sciai.utils import print_time, amp2datatype, to_tensor, print_log, calc_ckpt_name
 
 from src.net import DeepBSDE, WithLossCell
 from src.config import prepare
@@ -32,7 +32,7 @@ from src.eval_utils import apply_eval
 
 def train(args, bsde, net, net_loss):
     """Model Training"""
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     args.lr_boundaries.append(args.num_iterations)
     lr = Tensor(piecewise_constant_lr(args.lr_boundaries, args.lr_values), dtype=dtype)

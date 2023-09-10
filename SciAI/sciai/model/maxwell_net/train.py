@@ -6,7 +6,7 @@ from mindspore import nn
 
 from sciai.common import TrainCellWithCallBack
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp, calc_ckpt_name
+from sciai.utils import print_log, amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 from src.network import MaxwellNet, LossNet
 from src.process import prepare, load_data
@@ -35,7 +35,7 @@ def train(args, net, scat_pot_ms, ri_value_ms):
 @print_time("train")
 def main(args):
     """main"""
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     scat_pot_ms, ri_value_ms = load_data(args, dtype)
     net = MaxwellNet(args)
     if args.load_ckpt:

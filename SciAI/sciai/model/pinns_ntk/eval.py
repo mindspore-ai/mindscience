@@ -3,7 +3,7 @@ import numpy as np
 import mindspore as ms
 
 from sciai.context import init_project
-from sciai.utils import print_log, to_tensor, data_type_dict_amp
+from sciai.utils import print_log, to_tensor, amp2datatype
 from sciai.utils.python_utils import print_time
 from src.network import PINN
 from src.plot import plot_loss
@@ -29,7 +29,7 @@ def evaluate(a, dom_coords, model, dtype):
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     a = 4
     dom_coords = np.array([[0.0], [1.0]])
     x_r, x_u, y_r, y_u = generate_data(a, dom_coords, args.num, dtype)

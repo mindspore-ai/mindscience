@@ -7,7 +7,7 @@ from mindspore import nn, Tensor, dataset
 from mindspore.dataset import transforms
 
 from sciai.common import TrainCellWithCallBack
-from sciai.utils import print_log, data_type_dict_amp, to_tensor
+from sciai.utils import print_log, amp2datatype, to_tensor
 
 from .linear_advection_sphere import Net
 from .network import Model
@@ -17,7 +17,7 @@ class Problem:
     """problem definition"""
     def __init__(self, args):
         self.data_type_str_dict = {"O0": "float32", "O1": "float16", "O2": "float16", "O3": "float16"}
-        self.data_type = data_type_dict_amp.get(args.amp_level)
+        self.data_type = amp2datatype(args.amp_level)
         self.data_type_str = self.data_type_str_dict.get(args.amp_level)
         self.amp_level = args.amp_level
         self.save_ckpt_path = args.save_ckpt_path

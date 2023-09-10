@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from sciai.utils import data_type_dict_amp
+from sciai.utils import amp2datatype
 from .problem import Problem
 from ..data import Data
 from ..nn.hnn import HNN
@@ -126,7 +126,7 @@ class ThreeBody(Problem):
         train_traj_num = 4000
         test_traj_num = 1000
         # net
-        dtype = data_type_dict_amp.get(args.amp_level)
+        dtype = amp2datatype(args.amp_level)
         net_type = args.net_type
         add_h = net_type == 'HNN'
         criterion = None if net_type == 'HNN' else 'MSE'

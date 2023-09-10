@@ -9,7 +9,7 @@ from mindspore import ops, nn
 from eval import evaluation
 from sciai.common import TrainCellWithCallBack
 from sciai.context import init_project
-from sciai.utils import print_log, to_tensor, data_type_dict_amp, calc_ckpt_name
+from sciai.utils import print_log, to_tensor, amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 from src.network import DeepONet, SampleNet
 from src.plot import save_loss_fig, plot_prediction
@@ -78,7 +78,7 @@ def update_records(i, loss_train, loss_test, loss_test0, records):
 @print_time("train")
 def main(args):
     """main"""
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     feed_train, feed_test, feed_test0 = load_data(args.load_data_path)
     net = DeepONet(args.layers_u, args.layers_y)
     loss_net = SampleNet(net)

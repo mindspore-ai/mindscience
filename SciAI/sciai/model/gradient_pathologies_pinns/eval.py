@@ -4,7 +4,7 @@ import numpy as np
 
 from sciai.common import Sampler
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp
+from sciai.utils import print_log, amp2datatype
 from sciai.utils.python_utils import print_time
 from src.network import Helmholtz2D, HelmholtzEqn
 from src.plot import plot, plot_elements_namedtuple
@@ -23,7 +23,7 @@ def main(args):
     res_sampler = Sampler(2, dom_coords, helm.f, name='Forcing')
 
     # build and load Helmholtz model
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     model = Helmholtz2D(args.layers, res_sampler, 1.0, args.method, dtype)
     if dtype == ms.float16:
         model.to_float(ms.float16)

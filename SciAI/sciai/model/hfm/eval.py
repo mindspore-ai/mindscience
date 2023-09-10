@@ -3,14 +3,14 @@ import mindspore as ms
 import scipy.io
 
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp
+from sciai.utils import amp2datatype
 from sciai.utils.python_utils import print_time
 from src.process import full_evaluation, prepare_network, prepare_training_data, prepare
 
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     data = scipy.io.loadmat(f'{args.load_data_path}/Cylinder2D_flower.mat')
     t_star = data['t_star']  # t_num x 1
     x_star = data['x_star']  # x_num x 1

@@ -18,7 +18,7 @@ class Swish(nn.Cell):
     Inputs:
         - **x** (Tensor) - The input of Swish(Silu).
 
-    Returns:
+    Outputs:
         Tensor, activated output with the same type and shape as `x`.
 
     Supported Platforms:
@@ -36,6 +36,9 @@ class Swish(nn.Cell):
          [0.73105854 0.73105854 0.73105854]]
     """
 
+    def __init__(self):  # pylint: disable=W0235
+        super().__init__()
+
     def construct(self, x):
         return x * ops.sigmoid(x)
 
@@ -48,7 +51,7 @@ class SReLU(nn.Cell):
     Inputs:
         - **x** (Tensor) - The input of SReLU.
 
-    Returns:
+    Outputs:
         Tensor, activated output with the same type and shape as `x`.
 
     Supported Platforms:
@@ -132,7 +135,7 @@ class AdaptActivation(nn.Cell):
     Inputs:
         - **x** (Tensor) - The input of AdaptActivation.
 
-    Returns:
+    Outputs:
         Tensor, activated output with the same type and shape as `x`.
 
     Raises:

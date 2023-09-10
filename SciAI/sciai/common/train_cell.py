@@ -34,7 +34,7 @@ class TrainCellWithCallBack:
         amp_level (str): Mixed precision level, which supports ["O0", "O1", "O2", "O3"]. Default: "O0".
         ckpt_dir (str): Checkpoints saving path. Default: "./checkpoints".
         clip_grad (bool): Whether clip grad or not. Default: False.
-        clip_norm (Union(float, int)): The clipping ratio, it should be greater than 0. Only enabled when `clip_grad`
+        clip_norm (Union[float, int]): The clipping ratio, it should be greater than 0. Only enabled when `clip_grad`
             is True. Default: 1e-3.
         model_name (str): Model name which influences the checkpoint filename.
 
@@ -280,7 +280,7 @@ class TrainStepCell(nn.Cell):
         grad_first (bool): If True, only the first output of the network would participate in the gradient
             descent. Otherwise, the sum of all outputs of the network would be taken into account. Default: False.
         clip_grad (bool): Whether clip grad or not. Default: False.
-        clip_norm (Union(float, int)): The clipping ratio, it should be greater than 0. Only enabled when `clip_grad`
+        clip_norm (Union[float, int]): The clipping ratio, it should be greater than 0. Only enabled when `clip_grad`
             is True. Default: 1e-3.
 
     Inputs:

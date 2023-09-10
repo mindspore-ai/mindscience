@@ -9,7 +9,7 @@ from mindspore.common.initializer import HeUniform
 
 from sciai.architecture import MLP
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp, calc_ckpt_name
+from sciai.utils import print_log, amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 from src.advection import Advection
 from src.network import Train
@@ -19,7 +19,7 @@ from src.plot import plot_report, plot_activation_mean, visualize
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     net = MLP(args.layers, weight_init=HeUniform(negative_slope=math.sqrt(5)), bias_init="zeros", activation=ops.Tanh())
     advection = Advection(net)
     if args.load_ckpt:

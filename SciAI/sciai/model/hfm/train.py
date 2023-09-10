@@ -7,7 +7,7 @@ import numpy as np
 
 from sciai.common import TrainCellWithCallBack
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp, to_tensor
+from sciai.utils import amp2datatype, to_tensor
 from sciai.utils.python_utils import print_time
 from src.network import MyWithLossCell
 from src.process import simple_evaluate, prepare_network, prepare_training_data, obtain_data, prepare
@@ -53,7 +53,7 @@ def train(args, model, dtype, *data):
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     c_star, p_star, t_star, u_star, v_star, x_star, y_star = obtain_data(args)
 
     t_data, x_data, y_data, c_data, t_eqns, x_eqns, y_eqns = prepare_training_data(args, c_star, t_star, x_star, y_star)

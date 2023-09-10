@@ -3,11 +3,10 @@ import os
 
 import yaml
 import numpy as np
-import mindspore as ms
 from mindspore import ops
 
 from sciai.utils import to_tensor, print_log, parse_arg
-from sciai.utils.ms_utils import data_type_dict_amp
+from sciai.utils.ms_utils import amp2datatype
 from .plot import plot_prediction_with_noise, plot_two_sigma_region, plot_probability_density_kernel_estimation
 
 
@@ -27,7 +26,7 @@ class ValDataset:
     """Class of validation dataset"""
 
     def __init__(self, args):
-        self.dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+        self.dtype = amp2datatype(args.amp_level)
 
         self.x_val, self.y_val = self._generate_val_data()
         self.x_mean = self.x_val.mean(axis=0)
@@ -46,7 +45,7 @@ class TrainDataset:
     """Class of training dataset"""
 
     def __init__(self, args):
-        self.dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+        self.dtype = amp2datatype(args.amp_level)
 
         x_col, x_bound, y_bound = self._generate_train_data(args)
 

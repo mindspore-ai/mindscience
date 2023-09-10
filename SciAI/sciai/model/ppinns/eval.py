@@ -4,7 +4,7 @@ import mindspore as ms
 import numpy as np
 from mpi4py import MPI
 from sciai.context import init_project
-from sciai.utils import to_tensor, data_type_dict_amp, print_log
+from sciai.utils import to_tensor, amp2datatype, print_log
 from sciai.utils.python_utils import print_time
 
 from src.finesolver import FineSolver
@@ -19,7 +19,7 @@ def main(args):
     comm_size = comm.Get_size()
     num = comm_size - 1
     chunks = np.linspace(args.t_range[0], args.t_range[1], num + 1)
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     fine_solver = FineSolver(comm, comm_rank, chunks, args) if comm_rank > 0 else None
 

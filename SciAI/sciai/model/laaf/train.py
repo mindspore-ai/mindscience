@@ -9,7 +9,7 @@ from mindspore.common.initializer import Normal
 from sciai.architecture.basic_block import MLPAAF
 from sciai.common import TrainCellWithCallBack
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp, calc_ckpt_name
+from sciai.utils import print_log, amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 from src.network import RecoverySlopeLoss
 from src.plot import plot_train
@@ -39,7 +39,7 @@ def train(loss_cell, args, x, y):
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     x, y = get_data(args.num_grid, dtype)
     normal = Normal(sigma=0.1, mean=0.0)
     net = MLPAAF(args.layers, weight_init=normal, bias_init=normal, activation=ops.tanh,

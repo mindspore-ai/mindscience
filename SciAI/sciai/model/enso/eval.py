@@ -2,7 +2,7 @@
 import mindspore as ms
 
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp
+from sciai.utils import amp2datatype
 from sciai.utils.python_utils import print_time
 from src.network import ENSO
 from src.plot import evaluate
@@ -11,7 +11,7 @@ from src.process import fetch_dataset_nino34, prepare
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     net = ENSO()
     if dtype == ms.float16:
         net.to_float(ms.float16)

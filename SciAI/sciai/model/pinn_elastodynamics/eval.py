@@ -3,7 +3,7 @@
 import mindspore as ms
 
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp
+from sciai.utils import print_log, amp2datatype
 from sciai.utils.python_utils import print_time
 from src.network import DeepElasticWave
 from src.process import generate_data, plot_res, prepare
@@ -23,7 +23,7 @@ def evaluate(input_data, model):
 @print_time("eval")
 def main(args):
     """main"""
-    dtype = data_type_dict_amp.get(args.amp_level)
+    dtype = amp2datatype(args.amp_level)
     max_t, n_t, input_data, srcs = generate_data(dtype)
     model = DeepElasticWave(args.uv_layers, dtype)
     if dtype == ms.float16:

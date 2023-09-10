@@ -14,17 +14,16 @@
 # ============================================================================
 """DeepBSDE export model script"""
 from mindspore import load_checkpoint, export
-import mindspore as ms
 
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp, to_tensor
+from sciai.utils import amp2datatype, to_tensor
 from src.net import DeepBSDE
 from src.config import prepare
 from src.equation import get_bsde
 
 
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     bsde = get_bsde(args)
     net = DeepBSDE(args, bsde)

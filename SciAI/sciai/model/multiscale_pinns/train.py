@@ -7,7 +7,7 @@ from mindspore import nn
 import numpy as np
 from sciai.common import TrainCellWithCallBack
 from sciai.context import init_project
-from sciai.utils import to_tensor, data_type_dict_amp, calc_ckpt_name
+from sciai.utils import to_tensor, amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 
 from src.network import Heat1D, NetNN, NetFF, NetSTFF
@@ -57,7 +57,7 @@ def train(args, samplers, model, dtype, *data):
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level)
+    dtype = amp2datatype(args.amp_level)
     x_star, f_star, u_star, samplers, k, sigma, t, x = get_data(args)
 
     net_u = {"net_nn": NetNN,  # NetNN: Plain MLP
