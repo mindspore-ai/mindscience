@@ -164,7 +164,7 @@ def train(input_args):
                              data_path=burgers_config['data_path'],
                              compute_dtype=compute_dtype)
 
-    ckpt_dir = config["ckpt_dir"]
+    ckpt_dir = burgers_config["ckpt_dir"]
     if not os.path.exists(ckpt_dir):
         os.makedirs(ckpt_dir)
 
