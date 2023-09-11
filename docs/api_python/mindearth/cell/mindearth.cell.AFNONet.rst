@@ -1,7 +1,7 @@
-mindflow.cell.AFNONet
+mindearth.cell.AFNONet
 =========================
 
-.. py:class:: mindflow.cell.AFNONet(image_size=(128, 256), in_channels=1,  out_chanels=1, patch_size=8, encoder_depths=12, encoder_embed_dim=768, mlp_ratio=4, dropout_rate=1.0, compute_dtype=mindspore.float32)
+.. py:class:: mindearth.cell.AFNONet(image_size=(128, 256), in_channels=1,  out_chanels=1, patch_size=8, encoder_depths=12, encoder_embed_dim=768, mlp_ratio=4, dropout_rate=1.0, compute_dtype=mindspore.float32)
 
     自适应傅里叶神经算子（AFNO）是一种高效的学习混合token混频器在傅里叶域中使用ViT网络。
     有关更多详细信息，请参考论文 `Adaptive Fourier Neural Operators: Efficient Token Mixers For Transformers <https://arxiv.org/pdf/2111.13587.pdf>`_ 。

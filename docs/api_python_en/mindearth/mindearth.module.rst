@@ -1,7 +1,7 @@
 mindearth.module
 ==================
 
-.. mscnplatformautosummary::
+.. msplatformautosummary::
     :toctree: module
     :nosignatures:
     :template: classtemplate.rst
