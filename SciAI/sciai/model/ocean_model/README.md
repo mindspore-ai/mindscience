@@ -88,10 +88,10 @@ python train.py \
 │   ├──src
 │   │   ├── GOMO.py                  # GOMO model
 │   │   ├── Grid.py                  # grid initial
-│   │   ├── stencil.py               # averaging and differential stencil oprator
+│   │   ├── stencil.py               # averaging and differential stencil operator
 │   │   ├── oa_operator.py           # averaging and differential kernel operator
 │   │   ├── read_var.py              # read variables from nc file
-│   │   └── utils.py                 # read variables from nc file
+│   │   └── utils.py                 # model setup
 │   ├── config.yaml                  # hyper-parameters configuration
 │   ├── README.md                    # English model descriptions
 │   ├── README_CN.md                 # Chinese model description
@@ -109,22 +109,33 @@ python train.py \
 
 ## [Model Description](#contents)
 
-Important parameters in `train.py` are as follows:
+Model parameters are defined as follows:
 
-| parameter | description                                 | default value |
-|-----------|---------------------------------------------|---------------|
-| device_id | device id to set                            | None          |
-| mode      | MindSpore Graph mode(0) or Pynative mode(1) | 0             |
+| parameter      | description                                            | default value                  |
+|----------------|--------------------------------------------------------|--------------------------------|
+| load_data_path | path to load data                                      | ./data                         |
+| output_path    | path to save result                                    | ./data/outputs                 |
+| save_ckpt      | whether save checkpoint or not                         | true                           |
+| save_ckpt_path | checkpoint saving path                                 | ./checkpoints                  |
+| load_ckpt_path | checkpoint loading path                                | ./checkpoints/model_final.ckpt |
+| force_download | whether to enforce dataset download                    | false                          |
+| download_data  | the model of which dataset/checkpoint need to download | ocean_model                    |
+| amp_level      | MindSpore auto mixed precision level                   | O0                             |
+| mode           | MindSpore Graph mode(0) or Pynative mode(1)            | 0                              |
+| device_id      | device id to set                                       | None                           |
+| im             | GOMO parameter im                                      | 65                             |
+| jm             | GOMO parameter jm                                      | 49                             |
+| kb             | GOMO parameter kb                                      | 21                             |
+| stencil_width  | stencil width as in stencil computation                | 1                              |
+| epochs         | number of epochs                                       | 10                             |
 
 ### [Evaluation Performance](#contents)
 
-| Parameters          | GPU                                                                             |
-|---------------------|---------------------------------------------------------------------------------|
-| Resource            | GPU(Tesla V100 SXM2)，Memory 16G                                                 |
-| uploaded Date       ||
-| MindSpore Version   ||
-| Dataset             | Seamount                                                                        |
-| Training Parameters | step=10, im=65, km=49, kb=21                                                    |
-| Outputs             | numpy file                                                                      |
-| Speed               | 17 ms/step                                                                      |
-| Total time          | 3 mins                                                                          |
+| parameter           | value                           |
+|---------------------|---------------------------------|
+| Resource            | GPU(Tesla V100 SXM2)，Memory 16G |
+| Dataset             | Seamount                        |
+| Training Parameters | step=10, im=65, km=49, kb=21    |
+| Outputs             | numpy file                      |
+| Speed               | 17 ms/step                      |
+| Total time          | 3 mins                          |

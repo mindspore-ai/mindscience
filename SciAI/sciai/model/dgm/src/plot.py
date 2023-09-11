@@ -1,9 +1,26 @@
+# Copyright 2023 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+
+"""dgm plot"""
 import matplotlib.pyplot as plt
 import numpy as np
 from sciai.utils import print_log
 
 
 def visualize(advection, figures_path, x_range, y):
+    """visualize"""
     path = figures_path + "/exact_solution.png"
     fig = plt.figure()
     plt.plot(x_range, y)
@@ -19,6 +36,7 @@ def visualize(advection, figures_path, x_range, y):
 
 
 def plot_activation_mean(train_process):
+    """plot activation mean"""
     if not train_process.debug:
         print_log("plot activation mean: debug is off , turn it on and train again")
         return
@@ -36,6 +54,7 @@ def plot_activation_mean(train_process):
 
 
 def plot_report(train_process):
+    """plot report"""
     if not train_process.debug:
         print_log("plot report: debug is off , turn it on and train again")
         return

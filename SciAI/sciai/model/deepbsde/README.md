@@ -1,6 +1,7 @@
-﻿# Contents
+﻿ENGLISH | [简体中文](README_CN.md)
 
-- [Contents](#contents)
+# Contents
+
 - [DeepBSDE Description](#DeepBSDE-description)
 - [Environment Requirements](#environment-requirements)
 - [Quick Start](#quick-start)
@@ -13,7 +14,6 @@
     - [Evaluation Performance](#Evaluation-Performance)
     - [Inference Performance](#Inference-Performance)
 - [Description of Random Situation](#description-of-random-situation)
-- [ModelZoo Homepage](#modelzoo-homepage)
 
 # [DeepBSDE Description](#contents)
 
@@ -132,7 +132,7 @@ Parameters for both training and evaluation can be set in `config.yaml`
 - Running on GPU
 
   ```bash
-  python train.py --config_path=./config/HJBLQ_config.yaml > train.log 2>&1 &
+  python train.py
   ```
 
 - The python command above will run in the background, you can view the results through the file `train.log`。
@@ -198,8 +198,4 @@ Parameters for both training and evaluation can be set in `config.yaml`
 
 # [Description of Random Situation](#contents)
 
-We use random in equation.py，which can be set seed to fixed randomness.
-
-# [ModelZoo Homepage](#contents)
-
- Please check the official [homepage](https:#gitee.com/mindspore/models).  
+We use random sampling in equation.py, which can be set seed to fixed randomness.

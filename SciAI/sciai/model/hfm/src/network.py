@@ -1,17 +1,37 @@
-import mindspore as ms
+# Copyright 2023 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+
+"""HFM network"""
 import numpy as np
+import mindspore as ms
 from mindspore import nn, ops
 from sciai.architecture import MSE
 from sciai.operators import grad
 
 
 class HFM(nn.Cell):
-    # notational conventions
-    # _ms: mindspore input/output data and points used to regress the equations
-    # _pred: output of neural network
-    # _eqns: points used to regress the equations
-    # _data: input-output data
-    # _star: predictions
+    """
+    HFM
+
+    notational conventions
+    _ms: mindspore input/output data and points used to regress the equations
+    _pred: output of neural network
+    _eqns: points used to regress the equations
+    _data: input-output data
+    _star: predictions
+    """
 
     def __init__(self, t_data, x_data, y_data, layers, pec, rey):
         super().__init__()
@@ -40,12 +60,12 @@ class HFM(nn.Cell):
         t_data_ms, x_data_ms, y_data_ms, c_data_ms, t_eqns_ms, x_eqns_ms, y_eqns_ms = inputs
 
         c_data_pred, u_data_pred, v_data_pred, p_data_pred = self.net_cuvp(t_data_ms, x_data_ms, y_data_ms)
-        c_eqns_pred, u_eqns_pred, v_eqns_pred, p_eqns_pred = self.net_cuvp(t_eqns_ms, x_eqns_ms, y_eqns_ms)
+        _, u_eqns_pred, v_eqns_pred, _ = self.net_cuvp(t_eqns_ms, x_eqns_ms, y_eqns_ms)
 
         c_t, c_x, c_y = self.net_grad_c(t_eqns_ms, x_eqns_ms, y_eqns_ms)
         u_t, u_x, u_y = self.net_grad_u(t_eqns_ms, x_eqns_ms, y_eqns_ms)
         v_t, v_x, v_y = self.net_grad_v(t_eqns_ms, x_eqns_ms, y_eqns_ms)
-        p_t, p_x, p_y = self.net_grad_p(t_eqns_ms, x_eqns_ms, y_eqns_ms)
+        _, p_x, p_y = self.net_grad_p(t_eqns_ms, x_eqns_ms, y_eqns_ms)
 
         c_xx = self.net_grad_cxx(t_eqns_ms, x_eqns_ms, y_eqns_ms)
         c_yy = self.net_grad_cyy(t_eqns_ms, x_eqns_ms, y_eqns_ms)
@@ -72,17 +92,18 @@ class MyWithLossCell(nn.Cell):
 
     def construct(self, *inputs):
         """Network forward pass"""
-        loss, c_data_pred, u_data_pred, v_data_pred, p_data_pred = self.net(*inputs)
+        loss = self.net(*inputs)[0]
         return loss
 
 
 class NeuralNet(nn.Cell):
+    """Neural net"""
     def __init__(self, *inputs, layers):
         super().__init__()
         self.layers = layers
         self.num_layers = len(self.layers)
 
-        if len(inputs) == 0:
+        if not inputs:
             in_dim = self.layers[0]
             self.x_mean = ops.zeros((1, in_dim))
             self.x_std = ops.ones((1, in_dim), dtype=ms.float32)
@@ -115,6 +136,7 @@ class NeuralNet(nn.Cell):
         return c, u, v, p
 
     def nn_init(self, layers):
+        """initialize nn"""
         weights = []
         biases = []
         gammas = []
