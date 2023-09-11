@@ -26,6 +26,7 @@ def vis_1d(pri_var, file_name='vis.jpg', permission=stat.S_IREAD + stat.S_IWRITE
     Args:
         pri_var (Tensor): The primitive variables.
         file_name (str): The name of the picture. Default: ``'vis.jpg'``.
+        permission (int): The file permission. Default: ``stat.S_IREAD + stat.S_IWRITE``.
 
     Supported Platforms:
         ``GPU``
@@ -54,6 +55,7 @@ def vis_2d(pri_var, file_name='vis.jpg', permission=stat.S_IREAD + stat.S_IWRITE
     Args:
         pri_var (Tensor): The primitive variables.
         file_name (str): The name of the picture. Default: ``'vis.jpg'``.
+        permission (int): The file permission. Default: ``stat.S_IREAD + stat.S_IWRITE``.
 
     Supported Platforms:
         ``GPU``
