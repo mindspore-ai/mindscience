@@ -1,12 +1,28 @@
+# Copyright 2023 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+
+"""fbsnns network"""
 from abc import abstractmethod
 
-import mindspore as ms
 from mindspore import ops, nn
 from sciai.architecture import MLP, MSE
 from sciai.common.initializer import XavierTruncNormal
 
 
-class NeuralNetwork(nn.Cell):  # Forward-Backward Stochastic Neural Network
+class NeuralNetwork(nn.Cell):
+    """Neural network"""
     def __init__(self, layers):
         super().__init__()
         self.mlp = MLP(layers, weight_init=XavierTruncNormal(), bias_init="zeros",
@@ -19,7 +35,8 @@ class NeuralNetwork(nn.Cell):  # Forward-Backward Stochastic Neural Network
         return h
 
 
-class NetU(nn.Cell):  # Forward-Backward Stochastic Neural Network
+class NetU(nn.Cell):
+    """Neural network with Grad"""
     def __init__(self, net):
         super().__init__()
         self.net = net
@@ -29,11 +46,12 @@ class NetU(nn.Cell):  # Forward-Backward Stochastic Neural Network
     def construct(self, t, x):  # M x 1, M x D
         """Network forward pass"""
         u = self.net(t, x)  # M x 1
-        u_t, u_x = self.net_u(t, x)
+        _, u_x = self.net_u(t, x)
         return u, u_x
 
 
-class FBSNN(nn.Cell):  # Forward-Backward Stochastic Neural Network
+class FBSNN(nn.Cell):
+    """Forward-Backward Stochastic Neural Network"""
     def __init__(self, terminal, m, n, dim, layers, data_type):
         super().__init__()
         self.terminal = terminal  # terminal time

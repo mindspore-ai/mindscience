@@ -1,3 +1,18 @@
+# Copyright 2023 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+
 """Networks structure"""
 import numpy as np
 from mindspore import nn, ops
@@ -40,6 +55,7 @@ class FNN(nn.Cell):
 
 
 class FNNWithTransform(nn.Cell):
+    """FNN with transform"""
     def __init__(self, layers):
         super(FNNWithTransform, self).__init__()
         self.mlp = MLP(layers, weight_init=XavierUniform(), bias_init="zeros", activation="tanh")
@@ -53,6 +69,7 @@ class FNNWithTransform(nn.Cell):
 
 
 class Net(nn.Cell):
+    """Net"""
     def __init__(self, layers):
         super().__init__()
         self.fnn = FNN(layers)
@@ -66,6 +83,7 @@ class Net(nn.Cell):
 
 
 class MyWithLossCell(nn.Cell):
+    """Loss Cell"""
     def __init__(self, backbone, loss_fn):
         super(MyWithLossCell, self).__init__()
         self._backbone = backbone
