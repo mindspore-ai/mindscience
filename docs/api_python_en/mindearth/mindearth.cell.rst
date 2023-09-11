@@ -1,7 +1,7 @@
 mindearth.cell
 ==================
 
-.. mscnplatformautosummary::
+.. msplatformautosummary::
     :toctree: cell
     :nosignatures:
     :template: classtemplate.rst
