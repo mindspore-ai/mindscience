@@ -1,7 +1,7 @@
-mindflow.cell.ViTKNO
+mindearth.cell.ViTKNO
 =========================
 
-.. py:class:: mindflow.cell.ViTKNO(image_size=(128, 256), patch_size=8, in_channels=1, out_channels=1, encoder_embed_dims=768, encoder_depths=16, mlp_ratio=4,dropout_rate=1., drop_path_rate=0., num_blocks=16, settings="MLP",high_freq=True, encoder_network=False, compute_dtype=mstype.float32)
+.. py:class:: mindearth.cell.ViTKNO(image_size=(128, 256), patch_size=8, in_channels=1, out_channels=1, encoder_embed_dims=768, encoder_depths=16, mlp_ratio=4,dropout_rate=1., drop_path_rate=0., num_blocks=16, settings="MLP",high_freq=True, encoder_network=False, compute_dtype=mstype.float32)
 
     ViTKNO算子用于处理更加复杂的问题。
     有关更多详细信息，请参考论文 `KoopmanLab: machine learning for solving complex physics equations <https://arxiv.org/pdf/2301.01104.pdf>`_ 。
