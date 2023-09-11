@@ -7,7 +7,7 @@ from mindspore import nn
 from eval import evaluate
 from sciai.common import TrainCellWithCallBack
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp, calc_ckpt_name
+from sciai.utils import amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 from src.dataset import generate_data
 from src.network import VPNSFnet
@@ -28,7 +28,7 @@ def train(n_iter, learning_rate, net, args, *data):
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     lam, ub_train, vb_train, x_train, xb_train, y_train, yb_train = generate_data(args, dtype)
     net = VPNSFnet(xb_train, yb_train, ub_train, vb_train, x_train, y_train, args.layers)
     if args.load_ckpt:

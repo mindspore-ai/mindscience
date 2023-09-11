@@ -14,12 +14,11 @@
 # ============================================================================
 """Evaler"""
 import numpy as np
-import mindspore as ms
 from mindspore import Tensor
 from mindspore import load_param_into_net, load_checkpoint
 
 from sciai.context import init_project
-from sciai.utils import print_log, print_time, data_type_dict_amp
+from sciai.utils import print_log, print_time, amp2datatype
 from src import pfnnmodel
 from src.process import prepare, calerror
 from data import gendata
@@ -27,7 +26,7 @@ from data import gendata
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     bound = np.array(args.bound).reshape(2, 2)
     test_set = gendata.TestSet(bound, args.teset_nx, args.problem_type)

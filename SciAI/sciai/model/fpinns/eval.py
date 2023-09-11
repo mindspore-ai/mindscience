@@ -3,7 +3,7 @@ import mindspore as ms
 from mindspore import nn
 
 from sciai.context import init_project
-from sciai.utils import print_log, to_tensor, data_type_dict_amp
+from sciai.utils import print_log, to_tensor, amp2datatype
 from sciai.utils.python_utils import print_time
 from src.process import prepare
 
@@ -11,7 +11,7 @@ from src.process import prepare
 @print_time("eval")
 def main(args, problem):
     """main"""
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     print_log('initializing net......')
     net = problem.setup_networks(args)

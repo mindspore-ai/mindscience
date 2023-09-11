@@ -8,7 +8,7 @@ from mindspore.nn import optim
 from sciai.architecture.basic_block import FirstOutputCell
 from sciai.common import TrainCellWithCallBack, lbfgs_train
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp, calc_ckpt_name
+from sciai.utils import print_log, amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 from src.network import DeepElasticWave
 from src.process import generate_data, plot_res, prepare
@@ -37,7 +37,7 @@ def train(args, model, input_data):
 @print_time("train")
 def main(args):
     """main"""
-    dtype = data_type_dict_amp.get(args.amp_level)
+    dtype = amp2datatype(args.amp_level)
 
     # Network configuration, there is only Dirichlet boundary (u,v)
     max_t, n_t, input_data, srcs = generate_data(dtype)

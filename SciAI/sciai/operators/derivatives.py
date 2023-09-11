@@ -130,13 +130,13 @@ def grad(net, output_index=0, input_index=-1):
     Inputs:
         - **\*inputs** (tuple[Tensor]) - The inputs of the original network.
 
-    Returns:
+    Outputs:
         Union(Tensor, tuple[Tensor]), The outputs of the fist order derivative net.
 
     Raises:
         TypeError: If out_index is not int.
         TypeError: If input_index is neither int nor tuple/list of int.
-        TypeError: If output of the nerwork are neither Tensor, not tuple of Tensors.
+        TypeError: If output of the network are neither Tensor, not tuple of Tensors.
         TypeError: If input_index type is neither int nor tuple of int.
         IndexError: If input_index or output_index is out of range.
     """

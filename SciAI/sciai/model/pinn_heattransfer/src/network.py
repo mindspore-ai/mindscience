@@ -6,7 +6,7 @@ from mindspore.common.initializer import XavierNormal
 from mindspore.nn import optim
 from sciai.architecture import MLP, Normalize
 from sciai.common import TrainCellWithCallBack, lbfgs_train
-from sciai.utils import data_type_dict_amp, to_tensor
+from sciai.utils import amp2datatype, to_tensor
 
 
 class NeuralNetwork:
@@ -25,7 +25,7 @@ class NeuralNetwork:
         self.ckpt_interval = 50 if args.save_ckpt else 0
         self.amp_level = args.amp_level
         self.model_name = args.model_name
-        self.dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+        self.dtype = amp2datatype(args.amp_level)
         self.use_lbfgs = args.lbfgs
         self.x_f, self.t_f = to_tensor((x_f[:, 0:1], x_f[:, 1:2]), dtype=self.dtype)
 

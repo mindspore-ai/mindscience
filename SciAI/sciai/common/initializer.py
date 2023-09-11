@@ -29,6 +29,9 @@ class LeCunNormal(Initializer):
         >>> tensor = initializer(LeCunNormal(), [1, 2, 3], mindspore.float32)
     """
 
+    def __init__(self):  # pylint: disable=W0235
+        super().__init__()
+
     def _initialize(self, arr):
         shape = arr.shape
         in_dim, out_dim = (shape[0], shape[1]) if len(shape) == 2 else (1, shape[0])
@@ -62,6 +65,9 @@ class LeCunUniform(Initializer):
         >>> tensor = initializer(LeCunUniform(), [1, 2, 3], mindspore.float32)
     """
 
+    def __init__(self):  # pylint: disable=W0235
+        super().__init__()
+
     def _initialize(self, arr):
         shape = arr.shape
         in_dim, out_dim = (shape[0], shape[1]) if len(shape) == 2 else (1, shape[0])
@@ -90,6 +96,9 @@ class StandardUniform(Initializer):
         >>> from sciai.common.initializer import StandardUniform
         >>> tensor = initializer(StandardUniform(), [1, 2, 3], mindspore.float32)
     """
+
+    def __init__(self):  # pylint: disable=W0235
+        super().__init__()
 
     def _initialize(self, arr):
         shape = arr.shape

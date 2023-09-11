@@ -3,7 +3,7 @@ import numpy as np
 import mindspore as ms
 
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp
+from sciai.utils import print_log, amp2datatype
 from sciai.utils.python_utils import print_time
 from src.dataset import generate_data, generate_test_data
 from src.network import VPNSFnet
@@ -26,7 +26,7 @@ def evaluate(lam, net):
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     lam, ub_train, vb_train, x_train, xb_train, y_train, yb_train = generate_data(args, dtype)
     net = VPNSFnet(xb_train, yb_train, ub_train, vb_train, x_train, y_train, args.layers)
     if dtype == ms.float16:

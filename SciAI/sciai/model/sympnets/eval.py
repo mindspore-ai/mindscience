@@ -2,7 +2,7 @@
 import mindspore as ms
 
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp, print_time
+from sciai.utils import amp2datatype, print_time
 
 from src.brain import Brain
 from src.process import prepare
@@ -11,7 +11,7 @@ from train import get_net
 
 @print_time("eval")
 def main(args, problem):
-    dtype = data_type_dict_amp.get(args.amp_level)
+    dtype = amp2datatype(args.amp_level)
     criterion, data = problem.init_data(args)
     net = get_net(args, data.dim)
     net.to_float(dtype)

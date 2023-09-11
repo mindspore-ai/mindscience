@@ -4,7 +4,7 @@ import mindspore as ms
 from sklearn.metrics import mean_squared_error as cal_mse
 
 from sciai.context import init_project
-from sciai.utils import print_log, data_type_dict_amp
+from sciai.utils import print_log, amp2datatype
 from sciai.utils.python_utils import print_time
 from src.network import Net, USCNN
 from src.plot import plot_train_process
@@ -34,7 +34,7 @@ def evaluate(net, args, dataset, ofv_sb):
 
 @print_time("eval")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     dataset, h, nvar_input, nvar_output, nx, ny, ofv_sb = get_data(args)
     model = USCNN(h, nx, ny, nvar_input, nvar_output)
     net = Net(model, args.batch_size, h)

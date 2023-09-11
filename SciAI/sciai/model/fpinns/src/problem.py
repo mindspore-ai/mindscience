@@ -1,16 +1,15 @@
 """problem structure"""
 from abc import abstractmethod, ABC
 
-import mindspore as ms
 from matplotlib import pyplot as plt
-from sciai.utils import data_type_dict_amp, data_type_dict_np
+from sciai.utils import amp2datatype, datatype2np
 
 
 class Problem(ABC):
     """Problem definition"""
     def __init__(self, args):
-        self.dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
-        self.dtype_np = data_type_dict_np.get(self.dtype)
+        self.dtype = amp2datatype(args.amp_level)
+        self.dtype_np = datatype2np(self.dtype)
         self.epochs = args.epochs
 
         self.num_domain = args.num_domain

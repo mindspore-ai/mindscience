@@ -1,7 +1,7 @@
 """deep hpms eval"""
 import mindspore as ms
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp
+from sciai.utils import amp2datatype
 from sciai.utils.python_utils import print_time
 from src.plot import plot_train
 from src.process import load_data, prepare
@@ -9,7 +9,7 @@ from src.process import load_data, prepare
 
 @print_time("eval")
 def main(args, problem):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
 
     x_sol_star_, exact_sol, t_sol, x_sol, tensors = load_data(args, dtype)
     lb_idn, ub_idn, lb_sol, ub_sol, _, _, _, \

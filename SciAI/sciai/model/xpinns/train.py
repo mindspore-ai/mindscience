@@ -7,7 +7,7 @@ import mindspore as ms
 from mindspore import nn
 from sciai.common import TrainCellWithCallBack
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp, calc_ckpt_name
+from sciai.utils import amp2datatype, calc_ckpt_name
 from sciai.utils.python_utils import print_time
 
 from src.network import XPINN
@@ -47,7 +47,7 @@ def train(model, inputs, stars, exacts, args):
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     layers1, layers2, layers3 = args.layers1, args.layers2, args.layers3
     x_f1_train, x_f2_train, x_f3_train, x_fi1_train, x_fi2_train, x_star1, x_star2, x_star3, x_ub_train, model_inputs, \
         u_exact, u_exact2, u_exact3, xb, xi1, xi2, yb, yi1, yi2 = generate_data(args.load_data_path, dtype)

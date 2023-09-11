@@ -4,7 +4,7 @@ from mindspore import nn
 import numpy as np
 from sciai.common import TrainCellWithCallBack
 from sciai.context import init_project
-from sciai.utils import data_type_dict_amp
+from sciai.utils import amp2datatype
 from sciai.utils.python_utils import print_time
 
 from src.network import WithLossCell, UVPNet
@@ -46,7 +46,7 @@ def train(args, dataset_iter, rho, uvp_net, sigma):
 
 @print_time("train")
 def main(args):
-    dtype = data_type_dict_amp.get(args.amp_level, ms.float32)
+    dtype = amp2datatype(args.amp_level)
     d_p, dataset_iter, l, mu, r_inlet, rho, sigma, x_end, x_start = get_data(args)
     uvp_net = UVPNet(args.layers, sigma, mu, r_inlet, x_start, d_p, l, x_end)
     if dtype == ms.float16:
