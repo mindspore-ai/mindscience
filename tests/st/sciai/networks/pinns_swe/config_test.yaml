@@ -1,0 +1,20 @@
+model_name: pinns_swe
+description: pinnSWE
+case: pinnSWE
+layers: [4, 20, 20, 20, 20, 1]
+save_fig: false
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+load_ckpt_path: ./checkpoints/model4_float32.ckpt
+figures_path: ./figures
+lr: 0.001
+epochs: 10
+log_path: ./logs
+n_pde: 100000
+n_iv: 10000
+u: 1
+h: 1000
+days: 12
+download_data: pinns_swe
+force_download: false
+amp_level: O3

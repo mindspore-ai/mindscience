@@ -1,0 +1,20 @@
+model_name: laaf
+description: LAAF
+case: LAAF
+layers: [1, 50, 50, 50, 50, 1]
+save_ckpt: false
+load_ckpt: false
+save_fig: false
+save_data: false
+save_ckpt_path: ./checkpoints
+figures_path: ./figures
+load_ckpt_path: ./checkpoints/model_15001.ckpt
+save_data_path: ./data
+log_path: ./logs
+lr: 0.0002
+epochs: 15001
+num_grid: 300
+sol_epochs: [50, 100, 150]
+download_data: laaf
+force_download: false
+amp_level: O3
