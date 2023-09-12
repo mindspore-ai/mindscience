@@ -76,7 +76,7 @@ class ForceFieldBase(PotentialCell):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:  Batchsize, i.e. number of walkers in simulation.
         E:  Number of energy terms.
@@ -231,7 +231,7 @@ class ForceFieldBase(PotentialCell):
         Returns:
             potential (Tensor): Tensor of shape (B, E). Data type is float.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.
@@ -297,7 +297,7 @@ class ForceField(ForceFieldBase):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:  Batchsize, i.e. number of walkers in simulation.
         E:  Number of energy terms.

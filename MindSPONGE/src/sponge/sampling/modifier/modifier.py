@@ -111,7 +111,7 @@ class ForceModifier(Cell):
             virial (Tensor):    Tensor of shape (B, D). Data type is float.
                                 Total virial for simulation.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.

@@ -54,7 +54,7 @@ def get_molecule(pdb_name: str, pbc_box: Union[Tensor, ndarray, List[float]] = N
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         A:  Number of atoms.
         b:  Number of bonds.

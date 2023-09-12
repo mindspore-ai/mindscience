@@ -63,7 +63,7 @@ class ForceCell(Cell):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:  Batchsize, i.e. number of walkers in simulation
 
@@ -187,7 +187,7 @@ class ForceCell(Cell):
             virial (Tensor):    Tensor of shape (B, D). Data type is float.
                                 Default: ``None``.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.

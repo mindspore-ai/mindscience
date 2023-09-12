@@ -80,7 +80,7 @@ class GridNeighbours(Cell):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 

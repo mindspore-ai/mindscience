@@ -502,7 +502,7 @@ def gather_vector(tensor: Tensor, index: Tensor) -> Tensor:
         index (Tensor):     Tensor of shape :math:`(B, ...,)`. Data type is int.
 
     Returns:
-        vector (Tensor):    Tensor of shape :math:`(B, ..., D)`
+        vector (Tensor), a tensor of shape :math:`(B, ..., D)`
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -535,7 +535,7 @@ def gather_value(tensor: Tensor, index: Tensor) -> Tensor:
         index (Tensor):     Tensor of shape `(B, ...,)`. Data type is int.
 
     Returns:
-        value (Tensor): Tensor of shape `(B, ...,)` .
+        value (Tensor), a tensor of shape `(B, ...,)` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -567,7 +567,7 @@ def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
         ndim (int):         The rank (number of dimension) of the pbc_box
 
     Returns:
-        pbc_box (Tensor):   Tensor of shape :math:`(B, 1, .., 1, D)`. Data type is float.
+        pbc_box (Tensor), a tensor of shape :math:`(B, 1, .., 1, D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -593,7 +593,7 @@ def pbc_image(position: Tensor, pbc_box: Tensor, offset: float = 0) -> Tensor:
                             Default: ``0``
 
     Returns:
-        image (Tensor): Tensor of shape :math:`(B, ..., D)`. Data type is int32.
+        image (Tensor), a tensor of shape :math:`(B, ..., D)`. Data type is int32.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -623,7 +623,7 @@ def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> T
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -635,27 +635,27 @@ def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> T
 
 @jit
 def vector_in_pbc(vector: Tensor, pbc_box: Tensor, offset: float = -0.5) -> Tensor:
-    r"""Make the value of vector :math:`\vec{v}` at a single PBC box :math:`\vec{L}`.
+    r"""
+    Make the value of vector :math:`\vec{v}` at a single PBC box :math:`\vec{L}`.
 
-    Args:
-        vector (Tensor):    Tensor of shape `(B, ..., D)`. Data type is float.
-                            Vector :math:`\vec{v}`
-        pbc_box (Tensor):   Tensor of shape `(B, D)`. Data type is float.
-                            Size of PBC box :math:`\vec{L}`
-        offset (float):     Offset ratio :math:`c` of the vector relative to box size :math:`\vec{L}`.
-                            The value of vector will be between :math:`c \vec{L}` and :math:`(c+1) \vec{L}`
-                            Default: -0.5
-
-    Returns:
-        pbc_vector (Tensor):    Tensor of shape `(B, ..., D)`. Data type is float.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
+    Args:
+        vector (Tensor):    Tensor of shape `(B, ..., D)`. Data type is float.
+                            Vector :math:`\vec{v}`.
+        pbc_box (Tensor):   Tensor of shape `(B, D)`. Data type is float.
+                            Size of PBC box :math:`\vec{L}`.
+        offset (float):     Offset ratio :math:`c` of the vector relative to box size :math:`\vec{L}`.
+                            The value of vector will be between :math:`c \vec{L}` and
+                            :math:`(c+1) \vec{L}`. Default: ``-0.5``.
+
+    Returns:
+        pbc_vector (Tensor), a tensor of shape `(B, ..., D)`. Data type is float.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
 
     pbc_box = pbc_box_reshape(pbc_box, vector.ndim)
@@ -677,7 +677,7 @@ def calc_vector_nopbc(initial: Tensor, terminal: Tensor) -> Tensor:
                             Position coordinate of terminal point
 
     Returns:
-        vector (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        vector (Tensor), a tensor of shape :math:`(..., D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -702,7 +702,7 @@ def calc_vector_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor) -> Tenso
                             Size of PBC box.
 
     Returns:
-        vector (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        vector (Tensor), a tensor of shape :math:`(..., D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -726,7 +726,7 @@ def calc_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Te
                             Default: ``None``
 
     Returns:
-        vector (Tensor):    Tensor of shape `(..., D)`. Data type is float.
+        vector (Tensor, a tensor of shape `(..., D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -757,7 +757,7 @@ def calc_distance_nopbc(position_a: Tensor,
                                 Default: ``False``.
 
     Returns:
-        distance (Tensor):      Tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        distance (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -790,7 +790,7 @@ def calc_distance_pbc(position_a: Tensor,
                                 Default: ``False``.
 
     Returns:
-        distance (Tensor):      Tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        distance (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -821,7 +821,7 @@ def calc_distance(position_a: Tensor,
                                 Default: ``False`` .
 
     Returns:
-        distance (Tensor):      Tensor of shape :math:`(...)` or :math:`(..., 1)` . Data type is float.
+        distance (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)` . Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -859,7 +859,7 @@ def calc_angle_by_vectors(vector1: Tensor,
                              Default: ``False``.
 
     Returns:
-        angle (Tensor):      Tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        angle (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -897,8 +897,8 @@ def calc_angle_nopbc(position_a: Tensor,
                                 Default: ``False``.
 
     Returns:
-        angle (Tensor):         Tensor of shape `(...)` or `(..., 1)`. Data type is float.
-                                Value of angle :math:`\angle{ABC}`.
+        angle (Tensor), a tensor of shape `(...)` or `(..., 1)`. Data type is float.
+        Value of angle :math:`\angle{ABC}`.
 
 
     Supported Platforms:
@@ -938,7 +938,7 @@ def calc_angle_pbc(position_a: Tensor,
                                 Default: ``False`` .
 
     Returns:
-        angle (Tensor):         Tensor of shape :math:`(...)` or :math:`(..., 1)` . Data type is float.
+        angle (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)` . Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -978,7 +978,7 @@ def calc_angle(position_a: Tensor,
                                 Default: ``False``.
 
     Returns:
-        angle (Tensor):         Tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        angle (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1013,7 +1013,7 @@ def calc_torsion_by_vectors(vector1: Tensor,
                                 Default: ``False``.
 
     Returns:
-        torsion (Tensor):   Tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        torsion (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1047,8 +1047,9 @@ def calc_torsion_nopbc(position_a: Tensor,
                        position_d: Tensor,
                        keepdims: bool = False,
                        ) -> Tensor:
-    r"""Compute torsion angle :math:`A-B-C-D` formed by four positions :math:`A`, :math:`B`, :math:`C` and :math:`D`
-        without periodic boundary condition.
+    r"""
+    Compute torsion angle `A-B-C-D` formed by four positions :math:`A`, :math:`B`,
+    :math:`C` and :math:`D` without periodic boundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
@@ -1058,14 +1059,14 @@ def calc_torsion_nopbc(position_a: Tensor,
                                 Position coordinate of point :math:`B`.
         position_c (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
                                 Position coordin:math:ate of point :math:`C`.
-        position_d (Tensor):    Tensor of shape `(..., D)`. Data type is float.
+        position_d (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
                                 Position coordinate of point :math:`D`.
         keepdims (bool):        If this is set to ``True``, the last axis will be left
                                 in the result as dimensions with size one.
                                 Default: ``False``.
 
     Returns:
-        torsion (Tensor):   Tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        torsion (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1086,8 +1087,9 @@ def calc_torsion_pbc(position_a: Tensor,
                      pbc_box: Tensor,
                      keepdims: bool = False,
                      ) -> Tensor:
-    r"""Compute torsion angle :math:`A-B-C-D` formed by four positions :math:`A`, :math:`B`, :math:`C` and :math:`D`
-        at periodic boundary condition.
+    r"""
+    Compute torsion angle `A-B-C-D` formed by four positions :math:`A`, :math:`B`,
+    :math:`C` and :math:`D` at periodic boundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
@@ -1107,7 +1109,7 @@ def calc_torsion_pbc(position_a: Tensor,
                                 Default: ``False``.
 
     Returns:
-        torsion (Tensor):   Tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        torsion (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1150,7 +1152,7 @@ def calc_torsion(position_a: Tensor,
                                 Default: ``False`` .
 
     Returns:
-        torsion (Tensor):   Tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        torsion (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

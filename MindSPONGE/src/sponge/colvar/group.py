@@ -128,7 +128,7 @@ class ColvarGroup(Colvar):
         Returns:
             position (Tensor):  Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.
 
-        Symbols:
+        Note:
             B:      Batchsize, i.e. number of walkers in simulation
             A:      Number of colvar in system.
             {S_i}:  Dimensions of collective variables.

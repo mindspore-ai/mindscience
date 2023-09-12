@@ -135,7 +135,7 @@ class IndexDistances(IndexColvar):
         Returns:
             distances (Tensor):     Tensor of shape (B, A, N). Data type is float.
 
-        Symbols:
+        Note:
 
             B:  Batchsize, i.e. number of simulation walker.
             A:  Number of atoms.
@@ -208,7 +208,7 @@ class Vector2Distance(Cell):
         Returns:
             distances (Tensor):     Tensor of shape (B, A, N). Data type is float.
 
-        Symbols:
+        Note:
 
             B:  Batchsize, i.e. number of simulation walker.
             A:  Number of atoms.
@@ -279,7 +279,7 @@ class IndexVectors(IndexColvar):
         Returns:
             vector (Tensor):        Tensor of shape (B, A, D). Data type is float.
 
-        Symbols:
+        Note:
 
             B:  Batchsize, i.e. number of simulation walker.
             A:  Number of atoms.

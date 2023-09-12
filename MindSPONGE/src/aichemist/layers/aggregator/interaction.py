@@ -62,7 +62,7 @@ class InteractionAggregator(nn.Cell):
 
         activation (Cell):  Activation function. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 
@@ -107,7 +107,7 @@ class InteractionSummation(InteractionAggregator):
 
         activation (Cell):  Activation function. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 
@@ -147,7 +147,7 @@ class InteractionMean(InteractionAggregator):
 
         activation (Cell):  Activation function. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 
@@ -187,7 +187,7 @@ class LinearTransformation(InteractionAggregator):
 
         activation (Cell):  Activation function. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 
@@ -232,7 +232,7 @@ class MultipleChannelRepresentation(InteractionAggregator):
 
         activation (Cell):  Activation function. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 

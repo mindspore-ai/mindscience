@@ -48,7 +48,7 @@ class AllAtoms(AtomsBase):
 
         name (str):         Name of the Colvar. Default: 'all_atoms'
 
-    Symbols:
+    Note:
 
         B:  Batchsize, i.e. number of walkers in simulation
 
@@ -100,7 +100,7 @@ class AllAtoms(AtomsBase):
             center (Tensor):        Tensor of shape (B, ..., D). Data type is float.
                                     Position of the center of the atoms.
 
-        Symbols:
+        Note:
             B:      Batchsize, i.e. number of walkers in simulation
             A:      Number of atoms in system.
             D:      Dimension of the simulation system. Usually is 3.

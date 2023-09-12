@@ -75,7 +75,7 @@ class Protein(Molecule):
 
         length_unit (str):          Length unit for position coordinates. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B:  Batchsize, i.e. number of walkers in simulation
 

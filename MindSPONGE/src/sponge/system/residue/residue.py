@@ -84,7 +84,7 @@ class Residue:
             not exist, it will search in the built-in template directory of MindSPONGE
             (`mindsponge.data.template`). Default: ``None``.
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         A:  Number of atoms.
         b:  Number of bonds.

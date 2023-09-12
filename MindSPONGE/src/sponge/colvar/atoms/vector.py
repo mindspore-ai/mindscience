@@ -72,7 +72,7 @@ class Vector(AtomsBase):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:  Batchsize, i.e. number of walkers in simulation
 

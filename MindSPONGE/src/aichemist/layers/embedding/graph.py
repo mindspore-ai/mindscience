@@ -152,7 +152,7 @@ class GraphEmbedding(nn.Cell):
             edge_cutoff (Tensor): Tensor of shape (B, A, A). Data type is float.
                 Cutoff for edge.
 
-        Symbols:
+        Note:
             B:  Batch size.
             A:  Number of atoms in system.
             E:  Dimension of node embedding vector

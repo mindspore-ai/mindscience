@@ -123,7 +123,7 @@ class AnalysisCell(Cell):
             biases (Tensor):        Tensor of shape (B, V). Data type is float
                                     Original bias potential energies from bias functions.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms of the simulation system.
             D:  Dimension of the space of the simulation system. Usually is 3.

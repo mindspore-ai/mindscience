@@ -103,7 +103,7 @@ class MolecularLoss(LossBase):
                                     Mask of atoms in each molecule.
                                     Default: ``None``.
 
-        Symbols:
+        Note:
             B:  Batch size
             A:  Number of atoms
             D:  Dimension of position coordinate. Usually is 3.
