@@ -14,6 +14,14 @@
 
 MindScience是基于MindSpore融合架构打造的科学计算行业套件，包含了业界领先的数据集、基础模型、预置高精度模型和前后处理工具，加速了科学行业应用开发。
 
+### [MindEarth](https://gitee.com/mindspore/mindscience/tree/master/MindEarth)
+
+地球科学领域套件MindEarth支持多时空尺度气象预报、数据前后处理等任务，致力于高效使能AI+气象海洋的融合研究。
+
+MindEarth内置多个中期气象预报模型，预报性能较传统模式提升1000+倍；内置短临降水模型与海陆DEM超分模型。MindEarth还提供ERA5再分析模型、雷达回波数据集、高分辨率DEM数据，支持短临、中期等预报模型的训练与评估。
+
+基于上述功能和数据集，MindEarth已成功孵化一系列有影响力的成果，集成多个短临、中期气象预报SOTA模型，显著提升预报速度。
+
 ### [MindFlow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow)
 
 计算流体求解套件MindFlow支持物理驱动、数据驱动和数据机理融合驱动的AI流体仿真；对接国产CFD求解器PHengLei，实现AI和传统流体求解的耦合；内置可微分CFD求解器，实现流场求解的端到端微分。
