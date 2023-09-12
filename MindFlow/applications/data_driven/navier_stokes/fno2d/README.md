@@ -56,7 +56,7 @@ You can use [Chinese](./FNO2D_CN.ipynb) or [English](./FNO2D.ipynb)Jupyter Noteb
 
 Take 1 samples, and do 10 consecutive steps of prediction. Visualize the prediction as follows.
 
-[Inference Error](images/result.gif)
+![Inference Error](./images/result.gif)
 
 ## Performance
 

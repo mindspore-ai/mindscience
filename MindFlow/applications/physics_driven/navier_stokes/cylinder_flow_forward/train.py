@@ -147,7 +147,7 @@ def train(input_args):
 
 
 if __name__ == '__main__':
-    log_config('/configs', 'navier_stokes_2d')
+    log_config('./logs', 'navier_stokes_2d')
     print_log("pid:", os.getpid())
     args = parse_args()
     print_log(f"device id: {args.device_id}")

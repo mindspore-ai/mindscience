@@ -25,7 +25,7 @@ from mindspore import context, nn, ops, jit, set_seed
 from mindspore import load_checkpoint, load_param_into_net
 
 from mindflow.cell import MultiScaleFCSequential
-from mindflow.utils import print_log
+from mindflow.utils import print_log, log_config
 from mindflow.utils import load_yaml_config
 
 from src import create_training_dataset, create_test_dataset, visual, calculate_l2_error, Burgers1D
@@ -129,6 +129,7 @@ def train():
 
 
 if __name__ == '__main__':
+    log_config('./logs', 'burgers')
     print_log("pid:", os.getpid())
     start_time = time.time()
     args = parse_args()
