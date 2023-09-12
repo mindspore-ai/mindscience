@@ -1211,12 +1211,12 @@ class Molecule(Cell):
         return func.coordinate_in_pbc(coordinate, pbc_box, shift)
 
     def calc_image(self, shift: float = 0) -> Tensor:
-        """
+        r"""
         Calculate the image of coordinate.
 
         Args:
             shift(float):   Offset ratio :math:`c` relative to box size :math:`\vec{L}`.
-                            Default: ``0`` .
+                Default: ``0`` .
 
         Returns:
             Tensor, the image of coordinate.
@@ -1329,7 +1329,7 @@ class Molecule(Cell):
             template(str): The supplemental template of the water molecules filled.
 
         Returns:
-            new_pbc_box(Tensor): This function will return a pbc_box after filling water.
+            new_pbc_box(Tensor), this function will return a pbc_box after filling water.
         """
         if template is None:
             raise ValueError('The template when filling water must be given!')
@@ -1464,7 +1464,7 @@ class Molecule(Cell):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.
@@ -1494,7 +1494,7 @@ class MoleculeFromMol2(Molecule):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         A:  Number of atoms.
         b:  Number of bonds.
@@ -1530,7 +1530,7 @@ class _MoleculeFromPDB(Molecule):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         A:  Number of atoms.
         b:  Number of bonds.

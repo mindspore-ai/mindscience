@@ -401,7 +401,7 @@ class Sponge():
             energies (Tensor):  Tensor of shape `(B, U)`. Data type is float.
                                 Energy terms.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             U:  Number of potential energy terms.
 
@@ -417,7 +417,7 @@ class Sponge():
             biases (Tensor):    Tensor of shape `(B, V)`. Data type is float.
                                 Energy terms.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             V:  Number of bias potential terms.
 

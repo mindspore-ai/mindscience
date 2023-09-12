@@ -86,7 +86,14 @@ class GetVector(Cell):
         self.set_pbc(use_pbc_)
 
     def set_pbc(self, use_pbc: bool):
-        """set whether to use periodic boundary condition"""
+        """
+        set whether to use periodic boundary condition.
+
+        Args:
+            use_pbc (bool): Whether to calculate vector under periodic boundary condition.
+                Default: ``None``.
+
+        """
         self._use_pbc = use_pbc
         if use_pbc is None:
             self.calc_vector = self.calc_vector_default
@@ -223,7 +230,7 @@ class GetDistance(GetVector):
         Returns:
             distance (Tensor):  Tensor of shape (B, ...). Data type is float.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation
             D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -313,7 +320,7 @@ class VelocityGenerator(Cell):
         Returns:
             velocity (Tensor):  Tensor of shape (B, A, D). Data type is float.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms
             D:  Spatial dimension of the simulation system. Usually is 3.

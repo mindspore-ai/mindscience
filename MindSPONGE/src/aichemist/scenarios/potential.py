@@ -84,7 +84,7 @@ class Cybertron(Cell):
 
         hyper_param (dict):     Hyperparameters of Cybertron. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 

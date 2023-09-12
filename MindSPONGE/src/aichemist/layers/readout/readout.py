@@ -50,7 +50,7 @@ class Readout(Cell):
 
         unit (str): Unit of output. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B: Batch size.
 
@@ -167,7 +167,7 @@ class Readout(Cell):
         Returns:
             output: (Tensor): Tensor of shape `(B, ...)`. Data type is float
 
-        Symbols:
+        Note:
             B:  Batch size.
             A:  Number of atoms in system.
             F:  Feature dimension of node representation vector.

@@ -114,7 +114,7 @@ class Interaction(Cell):
         Returns:
             y: (Tensor)             Tensor of shape (B, A, F). Data type is float
 
-        Symbols:
+        Note:
 
             B:  Batch size.
             A:  Number of atoms in system.

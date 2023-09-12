@@ -64,7 +64,7 @@ class AtomsBase(Colvar):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:      Batchsize, i.e. number of walkers in simulation
 
@@ -135,7 +135,7 @@ class AtomsBase(Colvar):
         Returns:
             position (Tensor):  Tensor of shape (B, ..., D). Data type is float.
 
-        Symbols:
+        Note:
             B:      Batchsize, i.e. number of walkers in simulation
             A:      Number of atoms in system.
             D:      Dimension of the simulation system. Usually is 3.
@@ -187,7 +187,7 @@ class Atoms(AtomsBase):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:      Batchsize, i.e. number of walkers in simulation
 
@@ -248,7 +248,7 @@ class Atoms(AtomsBase):
         Returns:
             position (Tensor):  Tensor of shape (B, a_1, a_2, ..., a_{n}, D). Data type is float.
 
-        Symbols:
+        Note:
             B:      Batchsize, i.e. number of walkers in simulation
             A:      Number of atoms in system.
             a_{i}:  Dimension of specific atoms.
@@ -285,7 +285,7 @@ class BatchedAtoms(Atoms):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         a_{i}:  Dimension of specific atoms.
 

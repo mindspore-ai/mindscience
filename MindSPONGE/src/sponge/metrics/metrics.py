@@ -110,7 +110,7 @@ class Metric(_Metric):
             biases (Tensor):        Tensor of shape (B, V). Data type is float
                                     All bias potential energies.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms of the simulation system.
             D:  Dimension of the space of the simulation system. Usually is 3.
@@ -178,7 +178,7 @@ class MetricCV(Metric):
             biases (Tensor):        Tensor of shape (B, V). Data type is float.
                                     Original bias potential energies from bias functions. Default: ``None``.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms of the simulation system.
             D:  Dimension of the space of the simulation system. Usually is 3.
@@ -240,7 +240,7 @@ class Average(Metric):
             biases (Tensor):        Tensor of shape (B, V). Data type is float.
                                     Original bias potential energies from bias functions. Default: ``None``.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms of the simulation system.
             D:  Dimension of the space of the simulation system. Usually is 3.

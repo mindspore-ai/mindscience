@@ -52,7 +52,7 @@ class MolecularGNN(nn.Cell):
 
         length_unit (bool):         Unit of position coordinates. Default: 'nm'
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker
 
@@ -213,7 +213,7 @@ class MolecularGNN(nn.Cell):
         Returns:
             representation: (Tensor)    Tensor of shape (B, A, F). Data type is float
 
-        Symbols:
+        Note:
 
             B:  Batch size.
             A:  Number of atoms in system.

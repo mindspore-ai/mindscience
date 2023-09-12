@@ -106,7 +106,7 @@ class Constraint(Controller):
             virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
 
-        Symbols:
+        Note:
             B:  Number of walkers in simulation.
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.

@@ -90,7 +90,7 @@ class EnergyWrapper(Cell):
             bias (Tensor):      Tensor of shape `(B, 1)`. Data type is float.
                                 Total bias potential used for reweighting calculation.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation.
             U:  Dimension of potential energy.
             V:  Dimension of bias potential.

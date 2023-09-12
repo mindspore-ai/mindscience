@@ -64,7 +64,7 @@ class PhysNet(MolecularGNN):
 
         hyper_param (dict):         Hyperparameter for molecular model. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 

@@ -125,7 +125,7 @@ class GetVector(Cell):
         Returns:
             vector (Tensor):    Tensor of shape (B, ..., D). Data type is float.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation
             D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -175,7 +175,7 @@ class GetDistance(GetVector):
         Returns:
             distance (Tensor):  Tensor of shape (B, ...). Data type is float.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation
             D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -256,7 +256,7 @@ class VelocityGenerator(Cell):
         Returns:
             velocity (Tensor):  Tensor of shape (B, A, D). Data type is float.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms
             D:  Spatial dimension of the simulation system. Usually is 3.

@@ -255,7 +255,7 @@ class PositionalEmbedding(Cell):
             x_i (Tensor): Tensor with shape `(B, A, F)`. Data type is float.
             g_ij (Tensor): Tensor with shape `(B, A, A, F)`. Data type is float.
 
-        Symbols:
+        Note:
             B:  Batch size
             A:  Number of atoms
             F:  Dimensions of feature space
@@ -302,7 +302,7 @@ class MultiheadAttention(Cell):
 
         dim_tensor (int):   Dimension of input tensor (D). Default: 4
 
-    Symbols:
+    Note:
 
         X:  Dimension to be aggregated
 

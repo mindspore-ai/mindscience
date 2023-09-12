@@ -70,7 +70,7 @@ class DistanceNeighbours(Cell):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 
@@ -201,7 +201,7 @@ class DistanceNeighbours(Cell):
             neighbours (Tensor):        Tensor of (B, A, N). Data type is int.
             neighbour_mask (Tensor):    Tensor of (B, A, N). Data type is bool.
 
-        Symbols:
+        Note:
             B:  Batch size.
             A:  Number of atoms in system.
             N:  Number of neighbour atoms.

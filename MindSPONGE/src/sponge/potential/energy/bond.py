@@ -80,7 +80,7 @@ class BondEnergy(EnergyCell):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:  Batchsize, i.e. number of walkers in simulation
 
@@ -248,7 +248,7 @@ class BondEnergy(EnergyCell):
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.

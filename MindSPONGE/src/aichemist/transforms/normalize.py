@@ -50,7 +50,7 @@ class ScaleShift(Cell):
 
         axis (int): Axis to summation the reference value of molecule. Default: -2
 
-    Symbols:
+    Note:
 
         B:  Batch size
 

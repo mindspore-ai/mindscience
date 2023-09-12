@@ -66,7 +66,7 @@ class TiwaryBerne(PotentialCell):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         S:  Number of metastable state(s).
         D:  Spatial dimension of the toy model. Usually is 2.
@@ -154,7 +154,7 @@ class TiwaryBerne(PotentialCell):
         Returns:
             potential (Tensor): Tensor of shape (B, E). Data type is float.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.

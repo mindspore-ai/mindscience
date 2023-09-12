@@ -57,7 +57,7 @@ class WithForceCell(Cell):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:  Batchsize, i.e. number of walkers of the simulation.
 
@@ -242,7 +242,7 @@ class WithForceCell(Cell):
             neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
                                     Mask for neighbour list `neigh_idx`.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.
@@ -269,7 +269,7 @@ class WithForceCell(Cell):
             force (Tensor):     Tensor of shape (B, A, D). Data type is float.
             virial (Tensor):    Tensor of shape (B, D). Data type is float.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             D:  Spatial dimension of the simulation system. Usually is 3.

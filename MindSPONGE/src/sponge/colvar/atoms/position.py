@@ -62,7 +62,7 @@ class Position(AtomsBase):
         ``Ascend`` ``GPU``
 
 
-    Symbols:
+    Note:
 
         B:      Batchsize, i.e. number of walkers in simulation
 
@@ -123,7 +123,7 @@ class Position(AtomsBase):
         Returns:
             position (Tensor):  Tensor of shape (B, a_1, a_2, ..., a_n, D). Data type is float.
 
-        Symbols:
+        Note:
             B:      Batchsize, i.e. number of walkers in simulation
             A:      Number of atoms in system.
             a_{i}:  Dimension of specific atoms.

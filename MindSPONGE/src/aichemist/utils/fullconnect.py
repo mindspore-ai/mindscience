@@ -102,7 +102,7 @@ class FullConnectNeighbours(Cell):
             neighbours (Tensor):    Tensor of shape (B, A, N). Data type is int.
             neighbour_mask (Tensor) Tensor of shape (B, A, N). Data type is bool.
 
-        Symbols:
+        Note:
             B:  Batch size.
             A:  Number of atoms in system.
             N:  Number of neighbour atoms.

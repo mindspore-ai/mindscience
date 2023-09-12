@@ -181,7 +181,7 @@ def gather_vector(tensor: Tensor, index: Tensor) -> Tensor:
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation.
         D:  Spatial dimension of the simulation system. Usually is 3.
         X:  Arbitrary value.
@@ -219,7 +219,7 @@ def gather_value(tensor: Tensor, index: Tensor) -> Tensor:
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation.
         X:  Arbitrary value.
 
@@ -254,7 +254,7 @@ def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -282,7 +282,7 @@ def pbc_image(position: Tensor, pbc_box: Tensor, offset: float = 0) -> Tensor:
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -311,7 +311,7 @@ def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> T
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -340,7 +340,7 @@ def vector_in_pbc(vector: Tensor, pbc_box: Tensor, offset: float = -0.5) -> Tens
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -369,7 +369,7 @@ def calc_vector_nopbc(initial: Tensor, terminal: Tensor) -> Tensor:
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -396,7 +396,7 @@ def calc_vector_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor) -> Tenso
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -423,7 +423,7 @@ def calc_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Te
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -457,7 +457,7 @@ def calc_distance_nopbc(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
@@ -491,7 +491,7 @@ def calc_distance_pbc(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -526,7 +526,7 @@ def calc_distance(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -567,7 +567,7 @@ def calc_angle_by_vectors(vector1: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
@@ -609,7 +609,7 @@ def calc_angle_nopbc(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
@@ -649,7 +649,7 @@ def calc_angle_pbc(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -690,7 +690,7 @@ def calc_angle(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -728,7 +728,7 @@ def calc_torsion_by_vectors(vector1: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
@@ -782,7 +782,7 @@ def calc_torsion_nopbc(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
@@ -825,7 +825,7 @@ def calc_torsion_pbc(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 
@@ -870,7 +870,7 @@ def calc_torsion(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         D:  Spatial dimension of the simulation system. Usually is 3.
 

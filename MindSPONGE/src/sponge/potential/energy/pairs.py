@@ -98,7 +98,7 @@ class NonbondPairwiseEnergy(EnergyCell):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:  Batchsize, i.e. number of walkers in simulation
 
@@ -378,7 +378,7 @@ class NonbondPairwiseEnergy(EnergyCell):
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             p:  Number of non-bonded atom pairs.
