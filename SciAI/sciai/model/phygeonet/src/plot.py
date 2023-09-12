@@ -1,4 +1,6 @@
 """plot functions for phygeonet"""
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import tikzplotlib
@@ -26,6 +28,7 @@ def plot_train(args, ev_hist, m_res_hist, time_spent):
     tikzplotlib.save(f'{args.figures_path}/error.tikz')
     ev_hist = np.asarray(ev_hist)
     m_res_hist = np.asarray(m_res_hist)
+    os.makedirs(args.save_data_path, exist_ok=True)
     np.savetxt(f'{args.save_data_path}/ev_hist.txt', ev_hist)
     np.savetxt(f'{args.save_data_path}/m_res_hist.txt', m_res_hist)
     np.savetxt(f'{args.save_data_path}/time_spent.txt', np.zeros([2, 2]) + time_spent)

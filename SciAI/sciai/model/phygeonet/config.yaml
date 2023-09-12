@@ -7,7 +7,7 @@ save_fig: true
 save_ckpt_path: ./checkpoints
 load_ckpt_path: ./checkpoints/model_final.ckpt
 log_path: ./logs
-figures_path: /figures
+figures_path: ./figures
 load_data_path: ./data/case0
 save_data_path: ./data/case0
 lr: 0.001
