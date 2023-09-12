@@ -107,7 +107,7 @@ class Problem:
                 ds, model, train_cell = self.generate_model(pdes, inits_)
                 if self.load_ckpt:
                     print_log("Load weights from trained model...")
-                    ckpt_path = f"{self.load_ckpt_path}/Optim_swe_{self.nr_models}_{self.amp_level}.ckpt"
+                    ckpt_path = f"{self.save_ckpt_path}/Optim_swe_{self.nr_models}_{self.amp_level}.ckpt"
                     ms.load_checkpoint(ckpt_path, model)
                 else:
                     print_log("Copy over weights from previous model...")
@@ -147,7 +147,7 @@ class Problem:
         inits_ = np.column_stack([t_init, x_init, y_init, h_init])
         ds, model, train_cell = self.generate_model(pdes, inits_)
         print_log("Load weights from trained model...")
-        ckpt_path = f"{self.load_ckpt_path}/Optim_swe_4_{self.amp_level}.ckpt"
+        ckpt_path = f"{self.load_ckpt_path}"
         ms.load_checkpoint(ckpt_path, model)
         loss = 0
         for pdes_inits in ds.create_dict_iterator():
