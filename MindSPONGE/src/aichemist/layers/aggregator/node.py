@@ -55,7 +55,7 @@ class NodeAggregator(nn.Cell):
 
         axis (int): Axis to aggregate. Default: -2
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 
@@ -112,7 +112,7 @@ class TensorSummation(NodeAggregator):
 
         axis (int): Axis to aggregate. Default: -2
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 
@@ -174,7 +174,7 @@ class TensorMean(NodeAggregator):
 
         axis (int): Axis to aggregate. Default: -2
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 
@@ -240,7 +240,7 @@ class SoftmaxGeneralizedAggregator(NodeAggregator):
 
         axis (int): Axis to aggregate. Default: -2
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 
@@ -320,7 +320,7 @@ class PowermeanGeneralizedAggregator(NodeAggregator):
 
         axis (int): Axis to aggregate. Default: -2
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 
@@ -389,7 +389,7 @@ class TransformerAggregator(NodeAggregator):
 
         axis (int): Axis to aggregate. Default: -2
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 

@@ -395,7 +395,7 @@ class OuterProductMean(nn.Cell):
 
     Outputs:
         Tensor, the float tensor of the output of OuterProductMean layer with
-          shape :math:`(dim_2, dim_2, num\_output\_channel)`.
+        shape :math:`(dim_2, dim_2, num\_output\_channel)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

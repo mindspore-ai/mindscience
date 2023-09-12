@@ -66,7 +66,7 @@ class WithEnergyCell(Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers of the simulation.
         A:  Number of the atoms in the simulation system.
         N:  Number of the maximum neighbouring atoms.
@@ -352,7 +352,7 @@ class WithEnergyCell(Cell):
             - neigh_mask, Tensor. Tensor of shape `(B, A, N)`. Data type is bool.
               Mask for neighbour list `neigh_idx`.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.
@@ -366,7 +366,7 @@ class WithEnergyCell(Cell):
         Return:
             Tensor, Tensor of shape `(B, U)`. Data type is float. Energy terms.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             U:  Number of potential energy terms.
         """
@@ -398,7 +398,7 @@ class WithEnergyCell(Cell):
         Return:
             Tensor, Tensor of shape `(B, V)`. Data type is float. Bias potential terms.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             V:  Number of bias potential terms.
         """
@@ -435,7 +435,7 @@ class WithEnergyCell(Cell):
             energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
                                 Total potential energy.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
 
         """

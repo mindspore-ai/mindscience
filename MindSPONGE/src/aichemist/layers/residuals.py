@@ -126,7 +126,7 @@ class Residual(Cell):
         Returns:
             y (Tensor): Tensor of shape (..., Y). Data type is float.
 
-        Symbols:
+        Note:
             X:  Input dimension
             Y:  output dimension
 
@@ -169,7 +169,7 @@ class PreActDense(Cell):
         Returns:
             y (Tensor): Tensor of shape (..., Y). Data type is float.
 
-        Symbols:
+        Note:
             X:  Input dimension
             Y:  output dimension
 
@@ -207,7 +207,7 @@ class PreActResidual(Cell):
         Returns:
             y (Tensor): Tensor of shape (..., Y). Data type is float.
 
-        Symbols:
+        Note:
             X:  Input dimension
             Y:  output dimension
 
@@ -253,7 +253,7 @@ class SeqPreActResidual(Cell):
         Returns:
             y (Tensor): Tensor of shape (..., Y). Data type is float.
 
-        Symbols:
+        Note:
             X:  Input dimension
             Y:  output dimension
 

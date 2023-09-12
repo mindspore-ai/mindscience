@@ -70,7 +70,7 @@ class RunOneStepCell(Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers of the simulation.
         A:  Number of the atoms in the simulation system.
         D:  Spatial dimension of the simulation system. Usually is 3.
@@ -363,7 +363,7 @@ class RunOneStepCell(Cell):
             - energy, Tensor of shape `(B, 1)`. Data type is float. Total potential energy.
             - force, Tensor of shape `(B, A, D)`. Data type is float. Atomic force.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             D:  Spatial dimension of the simulation system. Usually is 3.
@@ -380,7 +380,7 @@ class RunOneStepCell(Cell):
                 - energy, Tensor of shape `(B, 1)`. Data type is float. Total potential energy.
                 - force, Tensor of shape `(B, A, D)`. Data type is float. Atomic force.
 
-            Symbols:
+            Note:
                 B:  Batchsize, i.e. number of walkers of the simulation.
                 A:  Number of the atoms in the simulation system.
                 D:  Spatial dimension of the simulation system. Usually is 3.

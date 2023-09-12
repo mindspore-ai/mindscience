@@ -84,7 +84,7 @@ class NeighbourList(Cell):
 
         ``Ascend`` ``GPU``
 
-    Symbols:
+    Note:
 
         B:  Batchsize, i.e. number of walkers of the simulation.
 
@@ -257,7 +257,7 @@ class NeighbourList(Cell):
             neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
                                     Mask for neighbour list `neigh_idx`.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.
@@ -296,7 +296,7 @@ class NeighbourList(Cell):
             neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
                                     Mask for neighbour list `neigh_idx`.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.
@@ -324,7 +324,7 @@ class NeighbourList(Cell):
             neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
                                     Mask for neighbour list `neigh_idx`.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.
@@ -362,7 +362,7 @@ class NeighbourList(Cell):
             neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
                                     Mask for neighbour list `neigh_idx`.
 
-        Symbols:
+        Note:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.

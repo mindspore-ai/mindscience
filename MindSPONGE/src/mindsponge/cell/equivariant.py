@@ -35,7 +35,7 @@ class InvariantPointAttention(nn.Cell):
     and b , which is th bias, obtained from the pair representation (the second inputs -- inputs_2d).
 
     .. math::
-        a_{ij} = Softmax(w_l(c_1{q_i}^Tk_j+b{ij}-c_2\sum {\left \| T_i\circ q'_i-T_j\circ k'_j \right \| ^{2 } })
+        a_{ij} = Softmax(w_l(c_1{q_i}^Tk_j+b{ij}-c_2\sum {\left \| T_i\circ q'_i-T_j\circ k'_j \right \| ^{2 } }))
 
     where i and j represent the ith and jth amino acids in the sequence, respectively,
     and T is the rotation and translation in the input.

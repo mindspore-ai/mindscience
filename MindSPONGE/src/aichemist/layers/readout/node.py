@@ -73,7 +73,7 @@ class NodeReadout(Readout):
 
         hyper_param (dict):         Hyperparameter. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B:  Batch size.
 
@@ -196,7 +196,7 @@ class AtomwiseReadout(NodeReadout):
 
         hyper_param (dict):         Hyperparameter. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B:  Batch size.
 
@@ -297,7 +297,7 @@ class GraphReadout(NodeReadout):
 
         hyper_param (dict):         Hyperparameter. Default: ``None``.
 
-    Symbols:
+    Note:
 
         B:  Batch size.
 

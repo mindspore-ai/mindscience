@@ -68,7 +68,7 @@ class MolCT(MolecularGNN):
 
         act_threshold (float):      Threshold of adapative computation time. Default: 0.9
 
-    Symbols:
+    Note:
 
         B:  Number of simulation walker.
 
