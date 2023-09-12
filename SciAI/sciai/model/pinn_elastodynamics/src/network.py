@@ -1,3 +1,18 @@
+# Copyright 2023 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+"""Network definitions"""
 import pickle
 
 import mindspore as ms
@@ -9,6 +24,7 @@ from sciai.utils import print_log
 
 
 class DeepElasticWave(nn.Cell):
+    """Loss for elastic wave"""
     # Initialize the class
     def __init__(self, uv_layers, dtype, uv_path=''):
         super().__init__()
@@ -56,12 +72,13 @@ class DeepElasticWave(nn.Cell):
         return loss, loss_f_uv, loss_f_s, loss_src, loss_ic, loss_fix
 
     def net_f_sig(self, x, y, t):
+        """calculations for f"""
         e, mu, rho = self.e, self.mu, self.rho
 
-        u, v, ut, vt, s11, s22, s12 = self.net_uv(x, y, t)
+        _, v, ut, vt, s11, s22, s12 = self.net_uv(x, y, t)
         # Strains
-        (u_x, u_y, u_t), (v_x, v_y, v_t), (ut_x, ut_y, ut_t), (vt_x, vt_y, vt_t), (s11_x, s11_y, s11_t), (
-            s22_x, s22_y, s22_t), (s12_x, s12_y, s12_t) = self.nn_e(x, y, t)
+        (u_x, u_y, u_t), (v_x, _, v_t), (_, _, ut_t), (_, _, vt_t), (s11_x, _, _), (
+            _, s22_y, _), (s12_x, s12_y, _) = self.nn_e(x, y, t)
 
         # Strains
         e11, e22, e12 = u_x, v, u_y + v_x
@@ -89,7 +106,7 @@ class DeepElasticWave(nn.Cell):
         return f_u, f_v, f_ut, f_vt, f_s11, f_s22, f_s12
 
     def predict(self, x_star, y_star, t_star):
-        grad_u, grad_v, grad_ut, grad_vt, grad_s11, grad_s22, grad_s12 = self.nn_e(x_star, y_star, t_star)
+        grad_u, grad_v, _, _, _, _, _ = self.nn_e(x_star, y_star, t_star)
         e11_star, e22_star, e12_star = grad_u[0], grad_v[1], grad_u[1] + grad_v[0]
         u_star, v_star, _, _, s11_star, s22_star, s12_star = self.net_uv(x_star, y_star, t_star)
         return u_star.asnumpy(), v_star.asnumpy(), s11_star.asnumpy(), s22_star.asnumpy(), s12_star.asnumpy(), \
@@ -97,6 +114,7 @@ class DeepElasticWave(nn.Cell):
 
 
 class NetGrad(nn.Cell):
+    """Grad network"""
     def __init__(self, net_uv):
         super().__init__()
         self.grad_net_u = grad(net_uv, output_index=0, input_index=-1)
@@ -121,6 +139,7 @@ class NetGrad(nn.Cell):
 
 
 class Net(nn.Cell):
+    """Network"""
     def __init__(self, pickle_path, layers, dtype):
         super().__init__()
         self.cell_list = nn.SequentialCell()
@@ -153,6 +172,7 @@ class Net(nn.Cell):
 
 
 class NetUV(nn.Cell):
+    """UV network"""
     def __init__(self, net):
         super().__init__()
         self.nn_uv = net
