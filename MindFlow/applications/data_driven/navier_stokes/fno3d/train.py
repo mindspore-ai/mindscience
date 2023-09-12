@@ -27,7 +27,7 @@ from mindspore.common import set_seed
 from mindspore import dtype as mstype
 
 from mindflow import get_warmup_cosine_annealing_lr, load_yaml_config
-from mindflow.utils import print_log
+from mindflow.utils import print_log, log_config
 from mindflow.cell.neural_operators.fno3d import FNO3D
 
 from src import LpLoss, UnitGaussianNormalizer, create_training_dataset
@@ -210,6 +210,7 @@ def train(input_args):
 
 
 if __name__ == "__main__":
+    log_config('./logs', 'fno3d')
     print_log(f"pid: {os.getpid()}")
     print_log(datetime.datetime.now())
 

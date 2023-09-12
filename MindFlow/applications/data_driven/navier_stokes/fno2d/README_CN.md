@@ -52,7 +52,7 @@ python train.py --config_file_path ./configs/fno2d.yaml --mode GRAPH --device_ta
 
 取1个样本做连续10步预测，并可视化。
 
-[推理误差](images/result.gif)
+![推理误差](./images/result.gif)
 
 ## 性能
 

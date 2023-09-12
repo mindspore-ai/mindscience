@@ -60,7 +60,7 @@ You can use [Chinese](./KNO2D_CN.ipynb) or [English](./KNO2D.ipynb) Jupyter Note
 
 Take 1 samples, and do 10 consecutive steps of prediction. Visualize the prediction as follows.
 
-[Inference Error](images/result.gif)
+![Inference Error](images/result.gif)
 
 ## Performance
 
