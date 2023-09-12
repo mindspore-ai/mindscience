@@ -14,6 +14,14 @@
 
 MindScience is a scientific computing industry toolkit based on the MindSpore framework, which contains the industry-leading datasets, foundational models, pretrained checkpoints high-precision models, and pre- and post-processing tools, accelerating the development of scientific computing applications.
 
+### [MindEarth](https://gitee.com/mindspore/mindscience/tree/master/MindEarth)
+
+MindEarth, a suite in the field of Earth sciences, supports tasks such as multi-temporal-spatial-scale meteorological forecasting and data preprocessing, committed to efficiently enabling AI+meteorological/ocean fusion research.
+
+MindEarth provides multiple medium-range weather forecasting models, which improve its forecasting performance by over 1000 times compared to traditional models; it also provides precipitation nowcasting models and DEM super-resolution models. MindEarth also provides ERA5 reanalysis dataset, radar echo dataset and high-resolution DEM dataset, supporting the training and evaluation of nowcasting, medium-range, and other forecasting models.
+
+Based on these functionalities and datasets, MindEarth has successfully incubated a series of influential achievements. It has integrated multi-temporal-spatial-scale meteorological forecasting SOTA models, significantly improving prediction speed.
+
 ### [MindFlow](https://gitee.com/mindspore/mindscience/tree/master/MindFlow)
 
 MindFlow, a computational fluid dynamics solver suite, supports AI fluid simulation driven by physics, data, and data-mechanism fusion; it interfaces with the domestic CFD solver PHengLei, achieving the coupling of AI and traditional fluid solvers; it has a built-in differentiable CFD solver, realizing the end-to-end differentiation of flow field simulations.
