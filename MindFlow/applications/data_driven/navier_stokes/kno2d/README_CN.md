@@ -53,7 +53,7 @@ python --mode GRAPH --device_target Ascend --device_id 0 --config_file_path ./co
 
 取1个样本做连续10步预测，并可视化。
 
-[推理误差](images/result.gif)
+![推理误差](images/result.gif)
 
 ## 性能
 
