@@ -9,9 +9,9 @@ mindearth.cell.GraphCastNet
         - **vg_in_channels** (int) - grid网格节点的维度。
         - **vg_out_channels** (int) - grid网格节点的最终维度。
         - **vm_in_channels** (int) - mesh网格节点的维度。
-        - **em_in_channels** (int) - mesh网格边缘的维度。
-        - **eg2m_in_channels** (int) - grid网格到mesh网格边缘的维度。
-        - **em2g_in_channels** (int) - mesh网格到grid网格边缘的维度。
+        - **em_in_channels** (int) - mesh网格边的维度。
+        - **eg2m_in_channels** (int) - grid网格到mesh网格边的维度。
+        - **em2g_in_channels** (int) - mesh网格到grid网格边的维度。
         - **latent_dims** (int) - 隐藏层数。
         - **processing_steps** (int) - 处理步骤数。
         - **g2m_src_idx** (Tensor) - grid网格到mesh网格边的源节点索引。
