@@ -21,7 +21,7 @@ import numpy as np
 from ..data import FEATURE_DICT
 
 
-def plt_global_field_data(data, feature_name, std, mean, fig_title, is_surface=False):
+def plt_global_field_data(data, feature_name, std, mean, fig_title, is_surface=False, is_error=False):
     """
     Visualization of global field weather data.
 
@@ -31,17 +31,23 @@ def plt_global_field_data(data, feature_name, std, mean, fig_title, is_surface=F
         std (numpy.array): The standard deviation of per-varibale-level.
         mean (numpy.array): The mean value of per-varibale-level.
         is_surface(bool): Whether or not a surface feature.
+        is_surface(bool): Whether or not plot error.
 
     Supported Platforms:
         ``Ascend`` ``CPU`` ``GPU``
     """
     level_num, feat_num = FEATURE_DICT.get(feature_name)
     feature_data = data[0, level_num + feat_num * 13]
-
     if is_surface:
-        feature_data = feature_data * std[level_num] + mean[level_num]
+        if is_error:
+            feature_data = feature_data * std[level_num]
+        else:
+            feature_data = feature_data * std[level_num] + mean[level_num]
     else:
-        feature_data = feature_data * std[level_num, 0, 0, feat_num] + mean[level_num, 0, 0, feat_num]
+        if is_error:
+            feature_data = feature_data * std[level_num, 0, 0, feat_num]
+        else:
+            feature_data = feature_data * std[level_num, 0, 0, feat_num] + mean[level_num, 0, 0, feat_num]
     norm = matplotlib.colors.Normalize(vmin=np.min(feature_data), vmax=np.max(feature_data))
     plt.imshow(X=feature_data, cmap='RdBu', norm=norm)
     plt.axis('off')

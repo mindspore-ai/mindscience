@@ -12,3 +12,4 @@ mindearth.utils.plt_global_field_data
         - **mean** (int) - 每一等级变量的均值。
         - **fig_title** (int) - 图像名称。
         - **is_surface** (bool): 是否是表面特征，默认值：False。
+        - **is_error** (bool): 是否是绘制误差，默认值：False。
