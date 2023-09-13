@@ -6,7 +6,7 @@ mindearth.module.WeatherForecast
     WeatherForecast类是气象预测模型推理的基类。
     所有用户自定义的预测模型推理都应该继承WeatherForecast类。
     WeatherForecast类可以在训练回调或推理通过加载模型参数后被调用。
-    通过调用WeatherForecast类，模型可以根据输入模型的自定义预测方法推理执行推理。t_out_test表示模型前向推理的次数。通过_get_metric方法可获得推理的相关结果和计算出纬度加权RMSE。
+    通过调用WeatherForecast类，模型可以根据输入模型的自定义预测方法执行推理。t_out_test表示模型前向推理的次数。通过_get_metric方法可获得推理的相关结果和计算出纬度加权指标。
 
     参数：
         - **model** (mindspore.nn.Cell) - 用于训练的网络。

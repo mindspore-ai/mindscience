@@ -3,7 +3,7 @@ mindearth.data.Dataset
 
 .. py:class:: mindearth.data.Dataset(dataset_generator, distribute=False, num_workers=1, shuffle=True)
 
-    将数据集合并在一起。
+    创建训练，验证和测试的数据集，并且输出mindspore.dataset.GeneratorDataset类的实例。
 
     参数：
         - **dataset_generator** (Data) - 气象数据的数据生成器。
@@ -14,7 +14,7 @@ mindearth.data.Dataset
 
     .. py:method:: mindearth.data.Dataset.create_dataset(batch_size)
 
-        创建最终的MindSpore类型数据集以合并所有子数据集。
+        创建数据集。
 
         参数：
             - **batch_size** (int, 可选) - 每个批处理创建的行数，int值。默认值： ``1``。
