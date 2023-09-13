@@ -24,7 +24,9 @@ from .afno2d import AFNOBlock, Mlp, PatchEmbed
 
 class ViTKNO(nn.Cell):
     r"""
-    The ViTKNO is proposed for dealing with more intricate situations.
+    The ViT-KNO is a deep learning model that based on the Koopman theory and the Vision Transformer structure.
+    This model is based on the Koopman neural operator which mapped the original nonlinear dynamical system to
+    linear dynamical system and conducted the time deduction in linear domain.
     The details can be found in `KoopmanLab: machine learning for
     solving complex physics equations <https://arxiv.org/pdf/2301.01104.pdf>`_.
 

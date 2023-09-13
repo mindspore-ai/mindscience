@@ -495,7 +495,8 @@ class DemData(Data):
 
 class Dataset:
     """
-    Create the final mindspore type dataset.
+    Create the dataset for training, validation and testing,
+    and output an instance of class mindspore.dataset.GeneratorDataset.
 
     Args:
         dataset_generator (Data): the data generator of weather dataset.
