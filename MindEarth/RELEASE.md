@@ -17,30 +17,15 @@ understanding seafloor tectonic movements and seafloor establishment processes.
 
 * FourCastNet
 
-FourCastNet, short for Fourier Forecasting Neural Network, is a global data-driven weather forecasting model that
-provides accurate short to medium-range global predictions at 0.25∘ resolution. FourCastNet accurately forecasts
-high-resolution, fast-timescale variables such as the surface wind speed, precipitation, and atmospheric water vapor. It
-has important implications for planning wind energy resources, predicting extreme weather events such as tropical
-cyclones, extra-tropical cyclones, and atmospheric rivers.
+FourCastNet adopts the adaptive Fourier neural operator AFNO, which is an improvement on the Vision Transformer model. It constructs a continuous global convolution of the mixing operation steps and effectively implements it through FFT in the Fourier domain, reducing the spatial mixing complexity to O(NlogN). This model is the first AI prediction model that can compare its prediction accuracy with the high-resolution integrated prediction system (IFS) model of the European Centre for Medium Range Weather Forecasting (ECMWF).
 
 * ViT-KNO
 
-Koopman neural operator (KNO) is a representative demonstration and outperforms other state-of-the art alternatives in
-terms of accuracy and efficiency.
-Beyond the original version of KNO, there are
-multiple new variants of KNO based on different neural network architectures to improve the general applicability of our
-module, such as ViT-KNO. These variants are validated by mesh-independent and long-term prediction experiments
-implemented on representative
-PDEs.
+Koopman Neural Operator is a lightweight, grid independent model designed based on Koopman's global linearization theory and combined with neural operator ideas. This model was developed in collaboration between Huawei ACS lab and Tsinghua University. By embedding complex dynamics into the linear structure to constrain the reconstruction process, this model can capture complex nonlinear behavior while maintaining its lightweight and computational effectiveness. Compared with FNO, KNO has more efficient training performance and better prediction accuracy.
 
 * GraphCast
 
-GraphCast is a new ML-based weather simulator surpasses the world's most accurate deterministic operational medium-range
-weather forecast system and all ML baselines. The GraphCast autoregressive model was trained using meteorological data
-from the ERA5 reanalysis archive of the European Centre for Medium Range Weather Forecasts (ECMWF). The model is based
-on a neural network and a novel high-resolution multi-scale grid representation. It has a resolution of about 25 × 25 km
-at the equator and can create a six-day forecast every 10 hours for five surfaces and six atmospheric variables, each at
-37 vertical pressure levels.
+GraphCast was proposed by Google DeepMind, which uses GNN to autoregressively generate prediction results in the "encoding-processing-decoding" architecture. The encoder maps the latitude-longitude input grid of meteorological elements at historical times to a multi-scale icosahedral grid representation. The processor performs multiple rounds of message passing on a multi grid representation. The decoder maps the multi grid representation back to the latitude-longitude grid as the prediction for the next time step. In addition, MindEarth has implemented multi-step iterative training to reduce model error accumulation in response to the attenuation of multiple prediction accuracy.
 
 ### Nowcasting precipitation predictions
 
