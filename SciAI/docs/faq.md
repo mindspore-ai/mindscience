@@ -66,15 +66,10 @@ if `evaluate` is not supported, please try `train` instead.
 
 ## Running with Method 2 (source code) Related
 
-**Q: Error message `ImportError: cannot import name 'AutoModel' from 'sciai' (xxx/mindscience/SciAI/sciai/__init__.py)`
-is reported.**  
-A: Please refer to the readme.md steps and execute `source .env` in the `SciAI` directory. See details
-in [README.md](../README.md#Method-2:-Launch-by-Source-code).
-
 **Q: When running a model with method 2 (source code), error message `Module not found error: No module named 'sciai'`
-is reported.**  
-A: This error is caused by not setting `PYTHONPATH`, you can `cd` to the `SciAI` directory and execute `source .env` to
-fix it.
+or `ImportError: cannot import name 'xxx' from 'sciai.xxx' (xxx/mindscience/SciAI/sciai/xxx)` is reported.**  
+A: This error is caused by not setting `PYTHONPATH`, and you can `cd` to the `SciAI` directory and execute
+`source .env` to fix it.
 
 **Q: When running a model with method 2 (source code) and having modified the source code, it is found that the
 modified place does not take effect during script execution.**  
