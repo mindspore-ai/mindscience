@@ -1,0 +1,22 @@
+model_name: ppinns
+description: ppinns
+case: burgers_equation
+t_range: [0, 10]
+nt_coarse: 1001
+nt_fine: 200001
+n_train: 10000
+layers: [1, 20, 20, 1]
+save_ckpt: false
+save_fig: false
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+save_output: false
+save_data_path: ./data
+load_ckpt_path: ../../../../../SciAI/sciai/model/ppinns/checkpoints/fine_solver_1_float16/result_iter_1.ckpt
+figures_path: ./figures
+log_path: ./logs
+print_interval: 10
+epochs: 300
+lbfgs: false
+lbfgs_epochs: 300
+amp_level: O3

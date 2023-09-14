@@ -1,0 +1,16 @@
+model_name: GOMO
+load_data_path: ./data
+data_name: seamount65_49_21.nc
+output_path: ./data/outputs
+im: 65
+jm: 49
+kb: 21
+stencil_width: 1
+epochs: 10
+save_ckpt: true
+save_ckpt_path: ./checkpoints
+load_ckpt_path: ./checkpoints/model_final.ckpt
+force_download: false
+download_data: ocean_model
+amp_level: O0
+mode: 0

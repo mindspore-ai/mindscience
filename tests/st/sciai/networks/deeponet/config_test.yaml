@@ -1,0 +1,48 @@
+model_name: deeponet
+problem: 1d_caputo
+1d_caputo:
+  description: 1d caputo
+  case: 1d_caputo
+  layers_u: [15, 80, 80, 80]
+  layers_y: [2, 80, 80, 80]
+  save_ckpt: false
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints/1d_caputo
+  load_ckpt_path: ./checkpoints/1d_caputo/1d_caputo.ckpt
+  save_fig: false
+  figures_path: ./figures/1d_caputo
+  save_data: false
+  load_data_path: ./data/1d_caputo
+  save_data_path: ./data/1d_caputo
+  log_path: ./logs
+  lr: 0.001
+  epochs: 51
+  batch_size: 100000
+  print_interval: 10
+  download_data: deeponet
+  force_download: false
+  amp_level: O3
+  mode: 0
+2d_fractional_laplacian:
+  description: 2d fractional laplacian
+  case: 2d_fractional_laplacian
+  layers_u: [225, 60, 60, 60]
+  layers_y: [3, 60, 60, 60]
+  save_ckpt: false
+  load_ckpt: false
+  save_ckpt_path: ./checkpoints/2d_fractional_laplacian
+  load_ckpt_path: ./checkpoints/2d_fractional_laplacian/2d_fractional_laplacian.ckpt
+  save_fig: false
+  figures_path: ./figures/2d_fractional_laplacian
+  save_data: false
+  load_data_path: ./data/2d_fractional_laplacian
+  save_data_path: ./data/2d_fractional_laplacian
+  log_path: ./logs
+  lr: 0.001
+  epochs: 11
+  batch_size: 10000
+  print_interval: 10
+  download_data: deeponet
+  force_download: false
+  amp_level: O3
+  mode: 0
