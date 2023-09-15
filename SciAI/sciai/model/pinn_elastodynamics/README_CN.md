@@ -83,8 +83,8 @@ python train.py \
     --print_interval 1 \
     --lr 1e-3 \
     --epochs 100000 \
-    --use_lbfgs true \
-    --max_iter_lbfgs null \
+    --use_lbfgs false \
+    --max_iter_lbfgs 10000 \
     --download_data pinn_elastodynamics \
     --force_download false \
     --amp_level O3 \
@@ -138,7 +138,7 @@ train.py中的重要参数如下:
 | ckpt_interval  | checkpoint保存间隔             | 1000                                       |
 | lr             | 学习率                        | 1e-3                                       |
 | epochs         | 时期（迭代次数）                   | 100000                                     |
-| use_lbfgs      | 是否在adam后使用L-BFGS           | true                                       |
+| use_lbfgs      | 是否在adam后使用L-BFGS           | false                                      |
 | max_iter_lbfgs | L-BFGS最大迭代次数               | null                                       |
 | download_data  | 模型所需数据集与(或)checkpoints     | pinn_elastodynamics                        |
 | force_download | 是否强制下载数据                   | false                                      |
