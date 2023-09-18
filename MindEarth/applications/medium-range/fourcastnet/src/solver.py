@@ -21,8 +21,8 @@ from .callback import EvaluateCallBack
 class FCNTrainer(Trainer):
     def __init__(self, config, model, loss_fn, logger):
         super(FCNTrainer, self).__init__(config, model, loss_fn, logger)
-        self.pred_cb = self._get_callback()
+        self.pred_cb = self.get_callback()
 
-    def _get_callback(self):
+    def get_callback(self):
         pred_cb = EvaluateCallBack(self.model, self.valid_dataset, self.config, self.logger)
         return pred_cb
