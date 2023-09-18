@@ -72,7 +72,7 @@ def solve_adr(t_, nx, nt, length_scale):
     # Generate a GP sample
     n = 512
     gp_params = (10.0, length_scale)
-    jitter = 5e-5
+    jitter = 5e-4
     x_ = mnp.linspace(xmin, xmax, n)[:, None]
     k_ = rbf(x_, x_, gp_params)
     l_ = ops.cholesky(k_ + jitter * mnp.eye(n))

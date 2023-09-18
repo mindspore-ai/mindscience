@@ -54,11 +54,9 @@ A：该模型不支持`train` 或不支持`evaluate`。如果不支持`train`，
 
 ## 方式二启动（源码启动）相关
 
-**Q：源码运行模型时，报错 `Module not found error：No module named 'sciai'`。**  
+**Q：源码运行模型时，报错 `Module not found error: No module named 'sciai'`
+或 `ImportError: cannot import name 'xxx' from 'sciai.xxx' (xxx/mindscience/SciAI/sciai/xxx)`。**  
 A：该错误由于未设置`PYTHONPATH`引起，可 `cd` 至 `SciAI` 目录下执行 `source .env` 修复。
-
-**Q：报错 `ImportError：cannot import name 'AutoModel' from 'sciai' (xxx/mindscience/SciAI/sciai/__init__.py)`。**  
-A：参考readme.md步骤，于`SciAI`目录下执行 `source .env`。
 
 **Q：使用方式二启动（源码启动）并对源码有修改的情况下，发现修改点在运行中不生效。**  
 A：该问题原因为以方式二启动（源码启动）却未设置`PYTHONPATH`, 且环境又安装了SciAI软件包。可 `cd` 至 `SciAI`
