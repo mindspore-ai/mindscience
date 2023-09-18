@@ -234,6 +234,6 @@ def calculate_l2_error(model, inputs, label, config):
     print_log(
         '================================Start Evaluation================================')
     print_log(f"l2_error, U: {l2_errors.l2_error_u}, V: {l2_errors.l2_error_v}, P: {l2_errors.l2_error_p},"
-              " , total error: {l2_errors.l2_error}")
+              f" , total error: {l2_errors.l2_error}")
     print_log(
         '================================End Evaluation================================')
