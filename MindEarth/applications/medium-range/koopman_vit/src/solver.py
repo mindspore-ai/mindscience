@@ -47,9 +47,9 @@ class ViTKNOTrainer(Trainer):
     """
     def __init__(self, config, model, loss_fn, logger):
         super(ViTKNOTrainer, self).__init__(config, model, loss_fn, logger)
-        self.pred_cb = self._get_callback()
+        self.pred_cb = self.get_callback()
 
-    def _get_dataset(self):
+    def get_dataset(self):
         """
         Get train and valid dataset.
 
@@ -68,11 +68,11 @@ class ViTKNOTrainer(Trainer):
         valid_dataset = valid_dataset.create_dataset(self.data_params['batch_size'])
         return train_dataset, valid_dataset
 
-    def _get_callback(self):
+    def get_callback(self):
         pred_cb = EvaluateCallBack(self.model, self.valid_dataset, self.config, self.logger)
         return pred_cb
 
-    def _get_solver(self):
+    def get_solver(self):
         loss_scale = DynamicLossScaleManager()
         solver = Model(self.loss_fn,
                        optimizer=self.optimizer,
