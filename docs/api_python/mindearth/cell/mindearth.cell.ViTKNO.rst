@@ -3,7 +3,7 @@ mindearth.cell.ViTKNO
 
 .. py:class:: mindearth.cell.ViTKNO(image_size=(128, 256), patch_size=8, in_channels=1, out_channels=1, encoder_embed_dims=768, encoder_depths=16, mlp_ratio=4,dropout_rate=1., drop_path_rate=0., num_blocks=16, settings="MLP",high_freq=True, encoder_network=False, compute_dtype=mstype.float32)
 
-    ViTKNO算子用于处理更加复杂的问题。
+    ViTKNO是一个基于Koopman理论并结合Vision Transformer结构的深度学习模型。该模型基于KNO神经算子，将原始非线性动力系统映射为线性动力系统，在线性空间进行时间推演。
     有关更多详细信息，请参考论文 `KoopmanLab: machine learning for solving complex physics equations <https://arxiv.org/pdf/2301.01104.pdf>`_ 。
 
     参数：

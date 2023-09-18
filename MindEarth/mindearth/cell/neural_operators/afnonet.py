@@ -24,8 +24,8 @@ from .afno2d import ForwardFeatures
 
 class AFNONet(nn.Cell):
     r"""
-    The Adaptive Fourier Neural Operator (AFNO) is an efficient token mixer that learns to mix
-    in the Fourier domain which using the ViT graphcast.
+    The AFNO model is a deep learning model that based on the
+    Fourier Neural Operator (AFNO) and the Vision Transformer structure.
     The details can be found in `Adaptive Fourier Neural Operators: Efficient
     Token Mixers For Transformers <https://arxiv.org/pdf/2111.13587.pdf>`_.
 

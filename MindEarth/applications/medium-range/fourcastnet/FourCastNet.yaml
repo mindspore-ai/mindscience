@@ -4,6 +4,8 @@ model:
   encoder_embed_dim: 768
   mlp_ratio: 4
   dropout_rate: 1.0
+  distribute: False
+  amp_level: 'O2'
 data:
   name: "era5"
   root_dir: "/path/to/data"
@@ -24,13 +26,22 @@ data:
   patch: True
   patch_size: 8
   batch_size: 1
+  grid_resolution: 1.4
+  num_workers: 1
 optimizer:
   name: "adam"
   weight_decay: 0.0
+  epochs: 10
+  finetune_epochs: 1
+  warmup_epochs: 1
+  initial_lr: 0.0005
 summary:
   save_checkpoint_steps: 1
   keep_checkpoint_max: 10
   plt_key_info: True
   key_info_timestep: [ 6, 72, 120 ]
+  valid_frequency: 10
+  summary_dir: './summary'
 train:
   name: "oop"
+  data_sink: True
