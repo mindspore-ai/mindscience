@@ -17,8 +17,39 @@ mindearth.module.Trainer
         - **TypeError** - 如果 `model` 或 `loss_fn` mindspore.nn.Cell
         - **NotImplementedError** - 如果 `_get_callback` 的方法没有实现。
 
+    .. py:method:: mindearth.module.Trainer.get_dataset()
+
+        获得训练数据集和验证数据集。
+
+        返回：
+            Dataset，训练数据集。
+            Dataset，验证数据集。
+
+    .. py:method:: mindearth.module.Trainer.get_optimizer()
+
+        获得模型训练的优化器。
+
+        返回：
+            Optimizer，模型的优化器。
+
+    .. py:method:: mindearth.module.Trainer.get_checkpoint()
+
+        获得模型的checkpoint实例。
+
+        返回：
+            Callback，模型的checkpoint实例.
+
+    .. py:method:: mindearth.module.Trainer.get_callback()
+
+        用于定义模型的回调类。用户必须自定义重写该方法。
+
+    .. py:method:: mindearth.module.Trainer.get_solver()
+
+        获得模型训练的求解器。
+
+        返回：
+            Model，模型的求解器。
+
     .. py:method:: mindearth.module.Trainer.train()
 
         执行模型训练。
-
-

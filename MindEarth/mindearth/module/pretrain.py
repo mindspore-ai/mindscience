@@ -166,13 +166,13 @@ class Trainer:
         self.weather_data_source = weather_data_source
         self.loss_scale = loss_scale
 
-        self.train_dataset, self.valid_dataset = self._get_dataset()
-        self.optimizer = self._get_optimizer()
-        self.ckpt_cb = self._get_checkpoint()
-        self.pred_cb = self._get_callback()
-        self.solver = self._get_solver()
+        self.train_dataset, self.valid_dataset = self.get_dataset()
+        self.optimizer = self.get_optimizer()
+        self.ckpt_cb = self.get_checkpoint()
+        self.pred_cb = self.get_callback()
+        self.solver = self.get_solver()
 
-    def _get_dataset(self):
+    def get_dataset(self):
         """
         Get train and valid dataset.
 
@@ -198,7 +198,7 @@ class Trainer:
         valid_dataset = valid_dataset.create_dataset(self.data_params['batch_size'])
         return train_dataset, valid_dataset
 
-    def _get_optimizer(self):
+    def get_optimizer(self):
         """
         Get the training optimizer.
 
@@ -225,7 +225,7 @@ class Trainer:
                 "self.optimizer_params['name'] not implemented, please overwrite _get_optimizer()")
         return optimizer
 
-    def _get_checkpoint(self):
+    def get_checkpoint(self):
         """
         Get the checkpoint callback of the model.
 
@@ -247,13 +247,13 @@ class Trainer:
         ckpt_cb = ModelCheckpoint(prefix=ckpt_name, directory=ckpt_dir, config=ckpt_config)
         return ckpt_cb
 
-    def _get_callback(self):
+    def get_callback(self):
         """
         Used to build a Callback class. You can use this mechanism to do some custom operations.
         """
         raise NotImplementedError
 
-    def _get_solver(self):
+    def get_solver(self):
         """
         Get the model solver for training.
 
