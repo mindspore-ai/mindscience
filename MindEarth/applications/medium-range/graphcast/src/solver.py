@@ -37,11 +37,11 @@ class GraphCastTrainer(Trainer):
     """
     def __init__(self, config, model, loss_fn, logger):
         super().__init__(config, model, loss_fn, logger)
-        self.train_dataset, self.valid_dataset = self._get_dataset()
-        self.pred_cb = self._get_callback()
-        self.solver = self._get_solver()
+        self.train_dataset, self.valid_dataset = self.get_dataset()
+        self.pred_cb = self.get_callback()
+        self.solver = self.get_solver()
 
-    def _get_solver(self):
+    def get_solver(self):
         """
         define the solver of the model, abstract method.
         """
@@ -53,7 +53,7 @@ class GraphCastTrainer(Trainer):
                        )
         return solver
 
-    def _get_callback(self):
+    def get_callback(self):
         """
         define the callback of the model, abstract method.
         """

@@ -28,17 +28,23 @@ python -u ./main.py \
 ```
 
 其中，
---device_target 表示设备类型，默认Ascend。
---device_id 表示运行设备的编号，默认值0。
---processing_steps 处理模块运行的次数， 默认值16。
---latent_dims 隐藏层的维度，默认值512。
---mesh_level 网格分别率等级，默认值4。
---grid_resolution 网格分辨率，默认值1.4。
---output_dir 输出文件的路径，默认值"./summary"。
+`--device_target` 表示设备类型，默认Ascend。
+
+`--device_id` 表示运行设备的编号，默认值0。
+
+`--processing_steps` 处理模块运行的次数， 默认值16。
+
+`--latent_dims` 隐藏层的维度，默认值512。
+
+`--mesh_level` 网格分别率等级，默认值4。
+
+`--grid_resolution` 网格分辨率，默认值1.4。
+
+`--output_dir` 输出文件的路径，默认值"./summary"。
 
 ### 运行方式二: 运行Jupyter Notebook
 
-使用'Chinese'或'English' Jupyter Notebook可以逐行运行训练和推理代码
+使用[中文](https://gitee.com/mindspore/mindscience/raw/master/MindEarth/applications/medium-range/graphcast/graphcast_CN.ipynb)或[英文](https://gitee.com/mindspore/mindscience/raw/master/MindEarth/applications/medium-range/graphcast/graphcast.ipynb) Jupyter Notebook可以逐行运行训练和推理代码
 
 ### 结果展示
 
@@ -53,5 +59,6 @@ python -u ./main.py \
 
 ## 贡献者
 
-gitee id: Bokai Li, liulei277
-email: 1052173504@qq.com, liulei2770919@163.com
+gitee id: liulei277, email: liulei2770919@163.com
+
+gitee id: Bokai Li, email: 1052173504@qq.com

@@ -254,8 +254,8 @@ class Lploss(nn.LossBase):
         """Get loss"""
         num_examples = x.shape[0]
 
-        diff_norms = ops.norm(x.reshape(num_examples, -1) - y.reshape(num_examples, -1), 1, self.p)
-        y_norms = ops.norm(y.reshape(num_examples, -1), 1, self.p)
+        diff_norms = ops.norm(x.reshape(num_examples, -1) - y.reshape(num_examples, -1), dim=1, ord=self.p)
+        y_norms = ops.norm(y.reshape(num_examples, -1), dim=1, ord=self.p)
 
         if self.reduction:
             if self.size_average:
