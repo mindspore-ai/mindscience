@@ -8,7 +8,7 @@ sciai.operators.grad
     参数：
         - **net** (Cell) - 用于自动微分的网络。
         - **output_index** (int) - 输出索引，从0开始计数。默认值：0。
-        - **input_index** (Union[int, tuple[int]]) - 需要求导的输入索引，从0开始计数，只允许正向索引。若为-1，则所有指定输入将用于分别求导。
+        - **input_index** (Union(int, tuple[int])) - 需要求导的输入索引，从0开始计数，只允许正向索引。若为-1，则所有指定输入将用于分别求导。
             默认值：-1。
 
     输入：

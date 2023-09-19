@@ -16,7 +16,7 @@ sciai.common.TrainStepCell
         - **\*inputs** (tuple[Tensor]) - 输入张量的元组，形状为 :math:`(N, \ldots)`。
 
     输出：
-        Union[Tensor, tuple[Tensor]]，若干loss的Tensor，其形状通常是 :math:`()`。
+        Union(Tensor, tuple[Tensor])，若干loss的Tensor，其形状通常是 :math:`()`。
 
     异常：
         - **TypeError** - 如果 `network` 或 `optimizer` 的类型不正确。

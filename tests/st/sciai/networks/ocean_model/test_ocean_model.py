@@ -54,7 +54,6 @@ def test_auto_model(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE])
 def test_comb_should_fast_enough(mode):
@@ -76,7 +75,6 @@ def test_comb_should_fast_enough(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE])
 def test_comb_should_run_with_full_command(mode):
@@ -109,7 +107,6 @@ def test_comb_should_run_with_full_command(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE])
 def test_comb_should_eval(mode):

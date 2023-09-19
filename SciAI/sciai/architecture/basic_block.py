@@ -125,7 +125,7 @@ class MLPAAF(nn.Cell):
     <https://royalsocietypublishing.org/doi/10.1098/rspa.2020.0334>`_.
 
     Args:
-        layers (Union(tuple[int], list[int]): List of numbers of neurons in each layer, e.g., [2, 10, 10, 1].
+        layers (Union(tuple[int], list[int])): List of numbers of neurons in each layer, e.g., [2, 10, 10, 1].
         weight_init (Union[str, Initializer]): The `weight_init` parameter for Dense.
             The dtype is the same as `x`. The values of str refer to the function `initializer`.
             Default: 'xavier_trunc_normal'.
@@ -226,15 +226,15 @@ class MLPShortcut(nn.Cell):
 
     Args:
         layers (Union(tuple[int], list[int]): List of numbers of neurons in each layer, e.g., [2, 10, 10, 1].
-        weight_init (Union[str, Initializer]): The `weight_init` parameter for Dense.
+        weight_init (Union(str, Initializer)): The `weight_init` parameter for Dense.
             The dtype is the same as `x`. The values of str refer to the function `initializer`.
             Default: 'xavier_trunc_normal'.
-        bias_init (Union[str, Initializer]): The `bias_init` parameter for Dense. The
+        bias_init (Union(str, Initializer)): The `bias_init` parameter for Dense. The
             dtype is same as `x`. The values of str refer to the function `initializer`. Default: 'zeros'.
-        activation (Union[str, Cell, Primitive, FunctionType, None]): Activation function applied to the output of each
+        activation (Union(str, Cell, Primitive, FunctionType, None)): Activation function applied to the output of each
             fully connected layer excluding the last layer. Both activation name, e.g. 'relu', and mindspore activation
             function, e.g. nn.ReLU(), are supported. Default: 'tanh'.
-        last_activation (Union[str, Cell, Primitive, FunctionType, None]): Activation function applied to the output of
+        last_activation (Union(str, Cell, Primitive, FunctionType, None)): Activation function applied to the output of
             the last dense layer. The type rule is the same as `activation`.
 
     Inputs:
