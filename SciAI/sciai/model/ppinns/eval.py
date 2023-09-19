@@ -61,5 +61,4 @@ def main(args):
 
 if __name__ == "__main__":
     args_ = prepare()
-    init_project(args=args_[0])
     main(*args_)
