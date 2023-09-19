@@ -28,17 +28,23 @@ python -u ./main.py \
 ```
 
 where:
---device_target decice type, default Ascend.
---device_id NPU id, default 0。
---processing_steps preocessing steps, default 16.
---latent_dims hidden layer dimensions, default 512.
---mesh_level mesh node levels, default 4.
---grid_resolution grid resolution, default 1.4.
---output_dir the path of output file, default "./summary".
+`--device_target` device type, default 'Ascend'.
+
+`--device_id` NPU id, default 0.
+
+`--processing_steps` preocessing steps, default 16.
+
+`--latent_dims` hidden layer dimensions, default 512.
+
+`--mesh_level` mesh node levels, default 4.
+
+`--grid_resolution` grid resolution, default 1.4.
+
+`--output_dir` the path of output file, default "./summary".
 
 ### Run Option 2: Run Jupyter Notebook
 
-You can use 'Chinese' or 'English' Jupyter Notebook to run the training and evaluation code line-by-line.
+You can use [Chinese](https://gitee.com/mindspore/mindscience/raw/master/MindEarth/applications/medium-range/graphcast/graphcast_CN.ipynb) or [English](https://gitee.com/mindspore/mindscience/raw/master/MindEarth/applications/medium-range/graphcast/graphcast.ipynb) Jupyter Notebook to run the training and evaluation code line-by-line.
 
 ### Analysis
 
@@ -53,5 +59,6 @@ Summary of skill score for 6-hours to 5-days lead time is shown below.
 
 ## Contributor
 
-gitee id: Bokai Li, liulei277
-email: 1052173504@qq.com, liulei2770919@163.com
+gitee id: liulei277, email: liulei2770919@163.com
+
+gitee id: Bokai Li, email: 1052173504@qq.com

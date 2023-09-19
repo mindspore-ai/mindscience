@@ -358,8 +358,8 @@ class AFNO2D(nn.Cell):
         o2_real = self.cast(o2_real, self.compute_type)
         o2_imag = self.cast(o2_imag, self.compute_type)
 
-        o2_real = ops.soft_shrink(o2_real, lambd=self.sparsity_threshold)
-        o2_imag = ops.soft_shrink(o2_imag, lambd=self.sparsity_threshold)
+        o2_real = ops.softshrink(o2_real, lambd=self.sparsity_threshold)
+        o2_imag = ops.softshrink(o2_imag, lambd=self.sparsity_threshold)
 
         o2_real = o2_real.reshape(b, o2_real.shape[1], o2_real.shape[2], c)
         o2_imag = o2_imag.reshape(b, o2_imag.shape[1], o2_imag.shape[2], c)

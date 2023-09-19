@@ -11,7 +11,7 @@ model:
   amp_level: 'O2'
 data:
   name: "era5"
-  root_dir: "/path/to/data"
+  root_dir: "./dataset"
   feature_dims: 69
   pressure_level_num: 13
   patch: True

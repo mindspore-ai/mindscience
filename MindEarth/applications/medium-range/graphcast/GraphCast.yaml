@@ -2,7 +2,7 @@ model:
   name: "GraphCast"
 data:
   name: "era5"
-  root_dir: "/path/to/data"
+  root_dir: "./dataset"
   feature_dims: 69
   pressure_level_num: 13
   vm_in_channels: 3
