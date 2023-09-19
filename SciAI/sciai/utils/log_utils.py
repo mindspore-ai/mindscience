@@ -15,6 +15,7 @@
 """log utils"""
 import logging
 import os
+import mindspore as ms
 
 from sciai.utils.time_utils import time_str
 
@@ -33,6 +34,9 @@ def set_log(args):
             project_name_list.append(args.problem)
         if hasattr(args, "amp_level"):
             project_name_list.append(args.amp_level)
+        if hasattr(args, "model_name") and args.model_name == "ppinns":
+            device_id = ms.get_context("device_id")
+            project_name_list.append(str(device_id))
         project_name = "_".join(project_name_list)
         log_config(args.log_path, project_name)
 
