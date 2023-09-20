@@ -49,7 +49,7 @@ class GraphCastTrainer(Trainer):
         solver = Model(network=self.loss_fn,
                        optimizer=self.optimizer,
                        loss_scale_manager=loss_scale,
-                       amp_level=self.train_params['amp_level'],
+                       amp_level=self.train_params.get('amp_level', 'O2'),
                        )
         return solver
 

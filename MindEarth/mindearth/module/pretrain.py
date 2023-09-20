@@ -43,8 +43,8 @@ class Trainer:
     Base class of Weather Forecast model training.
     All user-define forecast model should be inherited from this class during training.
     This class generates datasets, optimizer, callbacks, and solver components based on the input model, loss function,
-    and related configurations. For example, if you want to train your model, you can rewrite the _get_dataset(),
-    _get_optimizer(), or other member functions to suit your needs, or instantiate the class directly.
+    and related configurations. For example, if you want to train your model, you can rewrite the get_dataset(),
+    get_optimizer(), or other member functions to suit your needs, or instantiate the class directly.
     Then you can use the Trainer.train() function to start model training.
 
     Args:
@@ -153,12 +153,12 @@ class Trainer:
         validator.check_value_type("loss_fn", loss_fn, nn.Cell)
 
         self.config = config
-        self.model_params = config["model"]
-        self.data_params = config["data"]
-        self.train_params = config["train"]
-        self.optimizer_params = config["optimizer"]
-        self.callback_params = config["summary"]
-        self.step = self.data_params["t_out_train"]
+        self.model_params = config.get("model")
+        self.data_params = config.get("data")
+        self.train_params = config.get("train")
+        self.optimizer_params = config.get("optimizer")
+        self.callback_params = config.get("summary")
+        self.step = self.data_params.get("t_out_train")
 
         self.logger = logger
         self.model = model
@@ -187,15 +187,18 @@ class Trainer:
             train_dataset_generator = DemData(data_params=self.data_params, run_mode='train')
             valid_dataset_generator = DemData(data_params=self.data_params, run_mode='valid')
         else:
-            train_dataset_generator = None
-            valid_dataset_generator = None
+            raise NotImplementedError(
+                f"{self.weather_data_source} not implemented")
 
-        train_dataset = Dataset(train_dataset_generator, distribute=self.train_params['distribute'],
-                                num_workers=self.data_params['num_workers'])
-        valid_dataset = Dataset(valid_dataset_generator, distribute=False, num_workers=self.data_params['num_workers'],
+        train_dataset = Dataset(train_dataset_generator,
+                                distribute=self.train_params.get('distribute'),
+                                num_workers=self.data_params.get('num_workers'))
+        valid_dataset = Dataset(valid_dataset_generator,
+                                distribute=False,
+                                num_workers=self.data_params.get('num_workers'),
                                 shuffle=False)
-        train_dataset = train_dataset.create_dataset(self.data_params['batch_size'])
-        valid_dataset = valid_dataset.create_dataset(self.data_params['batch_size'])
+        train_dataset = train_dataset.create_dataset(self.data_params.get('batch_size'))
+        valid_dataset = valid_dataset.create_dataset(self.data_params.get('batch_size'))
         return train_dataset, valid_dataset
 
     def get_optimizer(self):
@@ -209,20 +212,19 @@ class Trainer:
         if self.logger:
             self.logger.info(f'steps_per_epoch: {self.steps_per_epoch}')
         if self.step == 1:
-            lr = get_warmup_cosine_annealing_lr(self.optimizer_params['initial_lr'], self.steps_per_epoch,
-                                                self.optimizer_params["epochs"],
-                                                warmup_epochs=self.optimizer_params["warmup_epochs"])
+            lr = get_warmup_cosine_annealing_lr(self.optimizer_params.get('initial_lr'), self.steps_per_epoch,
+                                                self.optimizer_params.get("epochs"),
+                                                warmup_epochs=self.optimizer_params.get("warmup_epochs"))
         else:
-            lr = self.optimizer_params['finetune_lr']
+            lr = self.optimizer_params.get('finetune_lr')
 
-        if self.optimizer_params['name']:
-            optimizer = _optimizer_metric.get(self.optimizer_params['name'])(self.model.trainable_params(),
-                                                                             learning_rate=Tensor(lr),
-                                                                             weight_decay=self.optimizer_params[
-                                                                                 'weight_decay'])
+        if self.optimizer_params.get('name'):
+            optimizer = _optimizer_metric.get(self.optimizer_params.get('name'))(self.model.trainable_params(),
+                                                                                 learning_rate=Tensor(lr),
+                                                                                 weight_decay=self.optimizer_params.get(
+                                                                                     'weight_decay'))
         else:
-            raise NotImplementedError(
-                "self.optimizer_params['name'] not implemented, please overwrite _get_optimizer()")
+            raise NotImplementedError(f"{self.optimizer_params.get('name')} not implemented")
         return optimizer
 
     def get_checkpoint(self):
@@ -233,17 +235,17 @@ class Trainer:
             Callback, The checkpoint callback of the model.
         """
         ckpt_file_name = "ckpt/step_{}".format(self.step)
-        ckpt_dir = os.path.join(self.callback_params['summary_dir'], ckpt_file_name)
+        ckpt_dir = os.path.join(self.callback_params.get('summary_dir'), ckpt_file_name)
         make_dir(ckpt_dir)
-        model_name = self.model_params['name']
-        if self.train_params['distribute']:
+        model_name = self.model_params.get('name')
+        if self.train_params.get('distribute'):
             rank_id = D.get_rank()
             ckpt_name = "{}-device{}".format(model_name, rank_id)
         else:
             ckpt_name = model_name
         ckpt_config = CheckpointConfig(
-            save_checkpoint_steps=self.callback_params["save_checkpoint_steps"] * self.steps_per_epoch,
-            keep_checkpoint_max=self.callback_params["keep_checkpoint_max"])
+            save_checkpoint_steps=self.callback_params.get("save_checkpoint_steps") * self.steps_per_epoch,
+            keep_checkpoint_max=self.callback_params.get("keep_checkpoint_max"))
         ckpt_cb = ModelCheckpoint(prefix=ckpt_name, directory=ckpt_dir, config=ckpt_config)
         return ckpt_cb
 
@@ -251,7 +253,7 @@ class Trainer:
         """
         Used to build a Callback class. You can use this mechanism to do some custom operations.
         """
-        raise NotImplementedError
+        raise NotImplementedError("get_callback not implemented")
 
     def get_solver(self):
         """
@@ -264,7 +266,7 @@ class Trainer:
                        optimizer=self.optimizer,
                        loss_scale_manager=self.loss_scale,
                        loss_fn=self.loss_fn,
-                       amp_level=self.train_params['amp_level'],
+                       amp_level=self.train_params.get('amp_level'),
                        )
         return solver
 
@@ -273,15 +275,15 @@ class Trainer:
         callback_lst = [LossMonitor(), TimeMonitor()]
         if self.pred_cb:
             callback_lst.append(self.pred_cb)
-        if not self.train_params['distribute'] or D.get_rank() == 0:
+        if not self.train_params.get('distribute') or D.get_rank() == 0:
             callback_lst.append(self.ckpt_cb)
         if self.step == 1:
-            self.solver.train(epoch=self.optimizer_params["epochs"],
+            self.solver.train(epoch=self.optimizer_params.get("epochs"),
                               train_dataset=self.train_dataset,
                               callbacks=callback_lst,
-                              dataset_sink_mode=self.model_params['data_sink'])
+                              dataset_sink_mode=self.model_params.get('data_sink'))
         else:
-            self.solver.train(epoch=self.optimizer_params["finetune_epochs"],
+            self.solver.train(epoch=self.optimizer_params.get("finetune_epochs"),
                               train_dataset=self.train_dataset,
                               callbacks=callback_lst,
-                              dataset_sink_mode=self.model_params['data_sink'])
+                              dataset_sink_mode=self.model_params.get('data_sink'))
