@@ -20,6 +20,7 @@ from mindsponge import PipeLine
 
 from sciai.utils import print_log, log_config
 from sciai.utils.python_utils import download_resource, _load_model_configs
+from sciai.utils.file_utils import make_sciai_dirs
 
 
 class AutoSPONGE:
@@ -46,6 +47,7 @@ class AutoSPONGE:
         self.func_args = self.__init_func_args()
 
         log_config("./", model_name)
+        make_sciai_dirs()
         download_resource(self.model_name)
 
     def train(self, data_source=None, num_epochs=1, **kwargs):
