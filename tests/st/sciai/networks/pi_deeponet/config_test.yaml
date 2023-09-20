@@ -15,8 +15,8 @@ log_path: ./logs
 print_interval: 100
 lr: 0.0008
 epochs: 301
-batch_size: 1
-n_train: 1
+batch_size: 256
+n_train: 256
 download_data: pi_deeponet
 force_download: false
 amp_level: O3
