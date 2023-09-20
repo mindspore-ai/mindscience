@@ -66,10 +66,10 @@ class MyTrainer(Trainer):
         super(MyTrainer, self).__init__(config, model, loss_fn, logger)
         self.feature_dims = feature_dims
 
-    def _get_callback(self):
+    def get_callback(self):
         return 0
 
-    def _get_dataset(self):
+    def get_dataset(self):
         dataset = ds.GeneratorDataset(source=MyIterable(), column_names=["inputs", "labels"])
         return dataset, dataset
 

@@ -34,8 +34,7 @@ def test_vit_kno():
     Description: The forward output should has expected shape.
     Expectation: Success or throw AssertionError.
     """
-    # attention: error in mindspore 9.5 with graph mode
-    context.set_context(mode=context.PYNATIVE_MODE)
+    context.set_context(mode=context.GRAPH_MODE)
     B, C, H, W = 16, 69, 128, 256
     input_ = initializer(Normal(), [B, C, H, W])
     net = ViTKNO(image_size=(H, W), in_channels=C, out_channels=C, compute_dtype=mstype.float32)

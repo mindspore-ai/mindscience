@@ -15,6 +15,7 @@
 """test mindearth WeatherForecast"""
 import os
 import numpy as np
+import pytest
 
 from mindspore import nn, context, ops
 
@@ -112,6 +113,12 @@ class MyInference(WeatherForecast):
         acc = a / b
         return acc
 
+
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend_training
+@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_x86_gpu_training
+@pytest.mark.env_onecard
 def test_forecast():
     """
     Feature: Test WeatherForecast in platform gpu and ascend.
