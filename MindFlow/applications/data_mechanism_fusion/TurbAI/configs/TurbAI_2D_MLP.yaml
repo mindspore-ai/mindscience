@@ -1,0 +1,30 @@
+epochs: 10
+batch_size: 256
+feature_norm: "MinMax" # {"MinMax", "Std"}
+label_norm: "MinMax" # {"MinMax", "Std"}
+data_path: "../dataset/experiment/changeCondition_20230605163432"
+model_path: "../checkpoints/2d_net_best.ckpt"
+
+
+MLP:
+  input_num: 8
+  layer1_output: 64
+  layer2_output: 128
+  layer3_output: 128
+  layer4_output: 64
+  layer5_output: 1
+  activation_function: "ReLU"
+
+lr_scheduler:
+  learning_rate: 0.005
+  epoch_size: 20
+  gamma: 0.5
+  warmup_epochs: 0
+
+visualization:
+  near_wall_dis: 0.02
+  shock_wave_x_min: 0.6
+  shock_wave_x_max: 1
+  plt_dis_internal: 0.02
+  plt_error_internal: 0.1
+  figure_bins: 10
