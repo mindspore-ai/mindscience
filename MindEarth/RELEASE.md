@@ -4,6 +4,15 @@ Initial release of MindEarth.
 
 ## Major Features
 
+### Super-resolution reconstruction of global DEM
+
+* DemNet
+
+DemNet, short for digital elevation model network, can provide accurate basic geographical data and therefore plays a
+vital role in research fields such as global climate change, ocean tidal movement, and material exchange on the Earth's
+sphere. Global ocean DEM is a cutting-edge branch of marine geology and ocean mapping, providing direct reference for
+understanding seafloor tectonic movements and seafloor establishment processes.
+
 ### Medium-range global predictions
 
 * FourCastNet
@@ -32,6 +41,17 @@ from the ERA5 reanalysis archive of the European Centre for Medium Range Weather
 on a neural network and a novel high-resolution multi-scale grid representation. It has a resolution of about 25 × 25 km
 at the equator and can create a six-day forecast every 10 hours for five surfaces and six atmospheric variables, each at
 37 vertical pressure levels.
+
+### Nowcasting precipitation predictions
+
+* Dgmr
+
+DgmrNet (Deep Generative Model of Radar Network) is a deep generative model for the probabilistic nowcasting of
+precipitation from radar developed by researchers from DeepMind. It produces realistic and spatiotemporally consistent
+predictions over regions up to 1,536 km x 1,280 km and with lead times from 5-90 min ahead. Using a systematic
+evaluation by more than 50 expert meteorologists, this method show that DgmrNet ranked first for its accuracy and
+usefulness in 89% of cases against two competitive methods. It can provide probalilistic predictions that improve
+forecast value and support operational utility, and at resolutions and lead times where alternative methods struggle.
 
 ## Contributors
 

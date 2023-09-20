@@ -376,7 +376,7 @@ class Era5Data(Data):
 
 class RadarData(Data):
     """
-    This class is used to process Dgmr radar data, and is used to generate the dataset generator supported by
+    This class is used to process dgmr radar data, and is used to generate the dataset generator supported by
     MindSpore. This class inherits the Data class.
 
     Args:
