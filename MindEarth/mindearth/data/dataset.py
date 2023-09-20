@@ -172,9 +172,9 @@ class Era5Data(Data):
                  data_params,
                  run_mode='train'):
 
-        super(Era5Data, self).__init__(data_params['root_dir'])
+        super(Era5Data, self).__init__(data_params.get('root_dir'))
         none_type = type(None)
-        root_dir = data_params['root_dir']
+        root_dir = data_params.get('root_dir')
         self.train_surface_dir = os.path.join(root_dir, "train_surface")
         self.valid_surface_dir = os.path.join(root_dir, "valid_surface")
         self.test_surface_dir = os.path.join(root_dir, "test_surface")
@@ -194,25 +194,25 @@ class Era5Data(Data):
         self.get_statistic()
 
         self.run_mode = run_mode
-        self.t_in = data_params['t_in']
-        self.h_size = data_params['h_size']
-        self.w_size = data_params['w_size']
-        self.data_frequency = data_params['data_frequency']
-        self.valid_interval = data_params['valid_interval'] * self.data_frequency
-        self.test_interval = data_params['test_interval'] * self.data_frequency
-        self.train_interval = data_params['train_interval'] * self.data_frequency
-        self.pred_lead_time = data_params['pred_lead_time']
-        self.train_period = data_params['train_period']
-        self.valid_period = data_params['valid_period']
-        self.test_period = data_params['test_period']
-        self.feature_dims = data_params['feature_dims']
-        self.output_dims = data_params['feature_dims']
-        self.patch = data_params['patch']
+        self.t_in = data_params.get('t_in')
+        self.h_size = data_params.get('h_size')
+        self.w_size = data_params.get('w_size')
+        self.data_frequency = data_params.get('data_frequency')
+        self.valid_interval = data_params.get('valid_interval') * self.data_frequency
+        self.test_interval = data_params.get('test_interval') * self.data_frequency
+        self.train_interval = data_params.get('train_interval') * self.data_frequency
+        self.pred_lead_time = data_params.get('pred_lead_time')
+        self.train_period = data_params.get('train_period')
+        self.valid_period = data_params.get('valid_period')
+        self.test_period = data_params.get('test_period')
+        self.feature_dims = data_params.get('feature_dims')
+        self.output_dims = data_params.get('feature_dims')
+        self.patch = data_params.get('patch')
         if self.patch:
-            self.patch_size = data_params['patch_size']
+            self.patch_size = data_params.get('patch_size')
 
         if run_mode == 'train':
-            self.t_out = data_params['t_out_train']
+            self.t_out = data_params.get('t_out_train')
             self.path = self.train_dir
             self.surface_path = self.train_surface_dir
             self.static_path = self.train_static
