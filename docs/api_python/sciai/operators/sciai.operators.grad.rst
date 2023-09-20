@@ -8,14 +8,13 @@ sciai.operators.grad
     参数：
         - **net** (Cell) - 用于自动微分的网络。
         - **output_index** (int) - 输出索引，从0开始计数。默认值：0。
-        - **input_index** (Union(int, tuple[int])) - 需要求导的输入索引，从0开始计数，只允许正向索引。若为-1，则所有指定输入将用于分别求导。
-            默认值：-1。
+        - **input_index** (Union(int, tuple[int])) - 需要求导的输入索引，从0开始计数，只允许正向索引。若为-1，则所有指定输入将用于分别求导。默认值：-1。
 
     输入：
         - **\*inputs** (tuple[Tensor]) - 原网络的输入。
 
     输出：
-        Union(Tensor, tuple[Tensor]) - 一阶导函数网络的输出。
+        Union(Tensor, tuple[Tensor])，一阶导函数网络的输出。
 
     异常：
         - **TypeError** - 如果 out_index 不是 int。

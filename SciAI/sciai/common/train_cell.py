@@ -39,7 +39,7 @@ class TrainCellWithCallBack:
         time_interval (int): Step interval to print time. if 0, it wouldn't print time. Default: 0.
         ckpt_interval (int): Epoch interval to save checkpoint, calculated according to batch_num. If 0,
             it wouldn't save checkpoint. Default: 0.
-        loss_names (Union[str, tuple[str], list[str]]): Loss names in order of network outputs. It can accept n or n+1
+        loss_names (Union(str, tuple[str], list[str])): Loss names in order of network outputs. It can accept n or n+1
             strings, where n is the count of network outputs. If n, each string corresponds to the loss in the same
             position; if n + 1, the first loss name represents the sum of all outputs. Default:("loss",).
         batch_num (int): How many batches per epoch. Default: 1.
@@ -53,7 +53,7 @@ class TrainCellWithCallBack:
         model_name (str): Model name which influences the checkpoint filename.
 
     Inputs:
-        - **\*args**(tuple[Tensor]) - Tuple of input tensors of the network.
+        - **\*args** (tuple[Tensor]) - Tuple of input tensors of the network.
 
     Outputs:
         Union[Tensor, tuple[Tensor]], Tensor(s) of the loss(es).
