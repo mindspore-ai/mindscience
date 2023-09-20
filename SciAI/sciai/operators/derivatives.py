@@ -138,7 +138,7 @@ def grad(net, output_index=0, input_index=-1):
     Args:
         net (Cell): Net to be auto-differentiated.
         output_index (int): Output index starting from 0. Default: 0.
-        input_index (Union[int, tuple[int]]): Input index(es) starting from 0, and only forward indexes are allowed.
+        input_index (Union(int, tuple[int])): Input index(es) starting from 0, and only forward indexes are allowed.
             If -1, all specified inputs would be differentiated respectively. Default: -1.
 
     Inputs:
