@@ -18,13 +18,13 @@ import random
 
 import numpy as np
 import mindspore as ms
-from mindspore import nn, dtype
+from mindspore import nn
 from mindspore._c_expression import typing
 
 from sciai.utils.check_utils import to_tuple, _check_type, _recursive_type_check
 
 
-def str2datatype(type_str: str):
+def str2datatype(type_str):
     """
     Map from float data type string to mindspore data type.
 
@@ -32,13 +32,13 @@ def str2datatype(type_str: str):
         type_str (str): Float data type string.
 
     Returns:
-        dtype, Mindspore Tensor data type.
+        dtype, MindSpore Tensor data type.
     """
     type_dict = {"float16": ms.float16, "float32": ms.float32, "float64": ms.float64}
     return type_dict.get(type_str, ms.float32)
 
 
-def amp2datatype(type_str: str):
+def amp2datatype(type_str):
     """
     Map from auto mixed precision level string to mindspore data type.
     Support amp level from `O0` to `O3`.
@@ -47,13 +47,13 @@ def amp2datatype(type_str: str):
         type_str (str): Auto mixed precision level string.
 
     Returns:
-        dtype, Mindspore Tensor data type.
+        dtype, MindSpore Tensor data type.
     """
     type_dict = {"O0": ms.float32, "O1": ms.float16, "O2": ms.float16, "O3": ms.float16}
     return type_dict.get(type_str)
 
 
-def datatype2np(ms_type: dtype):
+def datatype2np(ms_type):
     """
     Map from mindspore data type to numpy data type.
 

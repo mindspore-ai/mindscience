@@ -30,7 +30,7 @@ sciai.common.TrainCellWithCallBack
         - **\*args** (tuple[Tensor]) - 网络输入张量的元组.
 
     输出:
-        Union[Tensor, tuple[Tensor]] - 网络输出的单项或多项loss.
+        Union(Tensor, tuple[Tensor]) - 网络输出的单项或多项loss.
 
     异常：
         - **TypeError** - 如果输入参数不是要求的类型。

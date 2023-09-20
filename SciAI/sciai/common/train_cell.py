@@ -48,7 +48,7 @@ class TrainCellWithCallBack:
         amp_level (str): Mixed precision level, which supports ["O0", "O1", "O2", "O3"]. Default: "O0".
         ckpt_dir (str): Checkpoints saving path. Default: "./checkpoints".
         clip_grad (bool): Whether clip grad or not. Default: False.
-        clip_norm (Union[float, int]): The clipping ratio, it should be greater than 0. Only enabled when `clip_grad`
+        clip_norm (Union(float, int)): The clipping ratio, it should be greater than 0. Only enabled when `clip_grad`
             is True. Default: 1e-3.
         model_name (str): Model name which influences the checkpoint filename.
 
@@ -301,7 +301,7 @@ class TrainStepCell(nn.Cell):
         - **\*inputs** (tuple[Tensor]) - Tuple of input tensors with shape :math:`(N, \ldots)`.
 
     Outputs:
-        Union[Tensor, tuple[Tensor]], tensor(s) of the loss value(s), the shape of which is(are) usually :math:`()`.
+        Union(Tensor, tuple[Tensor]), tensor(s) of the loss value(s), the shape of which is(are) usually :math:`()`.
 
     Raises:
         TypeError: If `network` or `optimizer` is not of correct type.

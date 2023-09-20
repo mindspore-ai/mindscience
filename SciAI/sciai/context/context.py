@@ -26,11 +26,11 @@ def init_project(mode=None, device_id=None, seed=1234, args=None):
     Initialize one project with context setting, random seed setting, directory creation and log level setting.
 
     Args:
-        mode (Union[int, None]): ms.PYNATIVE_MODE for dynamic graph, ms.GRAPHE_MODE for static graph. If None,
+        mode (Union(int, None)): ms.PYNATIVE_MODE for dynamic graph, ms.GRAPHE_MODE for static graph. If None,
             ms.GRAPHE_MODE would be set. Default: None.
         device_id (Union[int, None]): Set device_id if given, which suppresses args.device_id. Default: None.
         seed (int): Random seed. Default: 1234.
-        args (Union[None, Namespace]): Arguments namespace. Default: None.
+        args (Union(None, Namespace)): Arguments namespace. Default: None.
 
     Raises:
         ValueError: If input parameters are not legal.
