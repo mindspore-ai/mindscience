@@ -89,9 +89,8 @@ def get_datapath_from_date(start_date, idx):
         idx (int): The index of data.
 
     Returns:
-        date_file_name (str): The data file name.
-        static_file_name (str): The static file name.
-
+        date_file_name (str). The data file name.
+        static_file_name (str). The static file name.
 
     Supported Platforms:
         ``Ascend`` ``CPU`` ``GPU``

@@ -19,8 +19,9 @@ import logging
 def create_logger(path="./log.log", level=logging.INFO):
     """
     Create logger
+
     Args:
-        path (str): Directory to save log.
+        path (str): Directory to save log. Default: "./log.log".
         level (int): Log level. Default: logging.INFO.
 
     Returns:
