@@ -60,7 +60,7 @@ Here, two dielectric circles with $\varepsilon_r=4$ are to be reconstructed. The
     - [MindSpore](https://www.mindspore.cn/install)　　
 - For more information, see the following resources:
     - [MindSpore Tutorial](https://www.mindspore.cn/tutorials/en/master/index.html)
-    - [MindSpore Python API](https://www.mindspore.cn/docs/api/en/master/index.html)
+    - [MindSpore Python API](https://www.mindspore.cn/docs/en/master/index.html)
 
 ## Script Description
 
