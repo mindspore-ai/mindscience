@@ -31,8 +31,7 @@ class WeatherForecast:
     All user-define forecast model should be inherited from this class during inference.
     This class can be called in the callback of the trainer or during inference through loading the checkpoint.
     By calling this class, the model can perform inference based on the input model using the custom forecast member
-    function. t_out_test defines the number of forward inference passes to be made by the model. The _get_metric
-    function obtains the corresponding inference results and calculates the latitude weighted metric.
+    function. t_out_test defines the number of forward inference passes to be made by the model.
 
     Args:
         model (mindspore.nn.Cell): the network for training.
@@ -84,7 +83,7 @@ class WeatherForecast:
         ...     },
         ...     "data": {
         ...         'name': 'era5',
-        ...         'root_dir': '/path/to/data',
+        ...         'root_dir': './dataset',
         ...         'feature_dims': 69,
         ...         't_in': 1,
         ...         't_out_train': 1,

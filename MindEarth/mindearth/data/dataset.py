@@ -140,7 +140,7 @@ class Era5Data(Data):
         >>> from mindearth.data import Era5Data
         >>> data_params = {
         ...     'name': 'era5',
-        ...     'root_dir': '/path/to/data',
+        ...     'root_dir': './dataset',
         ...     'feature_dims': 69,
         ...     't_in': 1,
         ...     't_out_train': 1,
@@ -390,7 +390,7 @@ class RadarData(Data):
         >>> from mindearth.data import RadarData
         >>> data_params = {
         ...     'name': 'radar',
-        ...     'root_dir': '/path/to/data',
+        ...     'root_dir': './dataset',
         ...     'batch_size': 4,
         ...     'num_workers': 1,
         ...     't_out_train': '',
@@ -455,7 +455,7 @@ class DemData(Data):
         >>> from mindearth.data import RadarData
         >>> data_params = {
         ...     'name': 'nasadem',
-        ...     'root_dir': '/path/to/data',
+        ...     'root_dir': './dataset',
         ...     'patch_size': 32,
         ...     'batch_size': 64,
         ...     'epoch_size': 10,
@@ -510,7 +510,7 @@ class Dataset:
         >>> from mindearth.data import Era5Data, Dataset
         >>> data_params = {
         ...     'name': 'era5',
-        ...     'root_dir': '/data1/lbk/WB_demo_69',
+        ...     'root_dir': './dataset',
         ...     'feature_dims': 69,
         ...     't_in': 1,
         ...     't_out_train': 1,
