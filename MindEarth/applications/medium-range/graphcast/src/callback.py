@@ -51,13 +51,14 @@ class InferenceModule(WeatherForecast):
     def __init__(self, model, config, logger):
         super(InferenceModule, self).__init__(model, config, logger)
         self.model = model
-        self.w_size = config['data']['w_size']
-        self.h_size = config['data']['h_size']
-        self.feature_dims = config['data']['feature_dims']
-        self.t_out_test = config['data']['t_out_test']
+        data_params = config.get('data')
+        self.w_size = data_params.get('w_size')
+        self.h_size = data_params.get('h_size')
+        self.feature_dims = data_params.get('feature_dims')
+        self.t_out_test = data_params.get('t_out_test')
         self.logger = logger
-        self.batch_size = config['data']['batch_size']
-        self.t_in = config['data']['t_in']
+        self.batch_size = data_params.get('batch_size')
+        self.t_in = data_params.get('t_in')
 
     def _get_metrics(self, inputs, labels):
         """Get lat_weight_rmse and lat_weight_acc metrics"""
@@ -108,11 +109,8 @@ class LossNet(nn.Cell):
 
     def __init__(self, ai, wj, sj_std, feature_dims):
         super().__init__()
-        self.sj_std = sj_std
-        self.wj = wj
-        self.ai = ai
         self.feature_dims = feature_dims
-        self.err_weight = self.wj * self.ai / self.sj_std
+        self.err_weight = wj * ai / sj_std
 
     def construct(self, label, pred):
         pred = ops.cast(pred, mstype.float32)
@@ -138,9 +136,9 @@ class EvaluateCallBack(Callback):
                  ):
         super(EvaluateCallBack, self).__init__()
         self.config = config
-        summary_params = config['summary']
-        self.summary_dir = summary_params['summary_dir']
-        self.predict_interval = summary_params['eval_interval']
+        summary_params = config.get('summary')
+        self.summary_dir = summary_params.get('summary_dir')
+        self.predict_interval = summary_params.get('eval_interval')
         self.logger = logger
         self.valid_dataset = valid_dataset
         self.eval_net = InferenceModule(model, config, logger=self.logger)
@@ -164,7 +162,8 @@ class EvaluateCallBack(Callback):
         if cb_params.cur_epoch_num % self.predict_interval == 0:
             self.eval_time += 1
             lat_weight_rmse, lat_weight_acc = self.eval_net.eval(self.valid_dataset)
-            if self.config['summary']['plt_key_info']:
+            summary_params = self.config.get('summary')
+            if summary_params.get('plt_key_info'):
                 plt_key_info(lat_weight_rmse, self.config, self.eval_time * self.predict_interval, metrics_type="RMSE",
                              loc="upper left")
                 plt_key_info(lat_weight_acc, self.config, self.eval_time * self.predict_interval, metrics_type="ACC",
@@ -181,9 +180,9 @@ class CustomWithLossCell(nn.Cell):
         self._backbone = backbone
         self._loss_fn = loss_fn
 
-        self.feature_dims = data_params['feature_dims']
-        self.t_out_train = data_params['t_out_train']
-        self.t_in = data_params['t_in']
+        self.feature_dims = data_params.get('feature_dims')
+        self.t_out_train = data_params.get('t_out_train')
+        self.t_in = data_params.get('t_in')
 
     def construct(self, data, labels):
         """Custom loss forward function"""
