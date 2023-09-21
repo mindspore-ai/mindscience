@@ -381,17 +381,8 @@ class ContextConditioningStack(nn.Cell):
                  out_channels=768,
                  num_context_steps=4,
                  conv_type="standard",
-                 use_spectral_norm=True,
-                 **kwargs):
+                 use_spectral_norm=True):
         super().__init__()
-        config = locals()
-        config.pop("__class__")
-        config.pop("self")
-        self.config = kwargs.get("config", config)
-        in_channels = self.config["in_channels"]
-        out_channels = self.config["out_channels"]
-        num_context_steps = self.config["num_context_steps"]
-        conv_type = self.config["conv_type"]
 
         conv2d = get_conv_layer(conv_type)
         self.space2depth = PixelUnshuffle(downscale_factor=2)
@@ -578,17 +569,8 @@ class LatentConditioningStack(nn.Cell):
                  shape=(8, 8, 8, 1),
                  out_channels=768,
                  use_attention=True,
-                 use_spectral_norm=True,
-                 **kwargs):
+                 use_spectral_norm=True):
         super().__init__()
-        config = locals()
-        config.pop("__class__")
-        config.pop("self")
-        self.config = kwargs.get("config", config)
-        shape = self.config["shape"]
-        out_channels = self.config["out_channels"]
-        use_attention = self.config["use_attention"]
-
         self.shape = shape
         self.use_attention = use_attention
         self.distribution = msd.Normal(0.0, 1.0, seed=42)
@@ -794,17 +776,9 @@ class Sampler(nn.Cell):
                  latent_channels=768,
                  context_channels=384,
                  out_channels=1,
-                 use_spectral_norm=False,
-                 **kwargs):
+                 use_spectral_norm=False):
         super().__init__()
-        config = locals()
-        config.pop("__class__")
-        config.pop("self")
-        self.config = kwargs.get("config", config)
         self.forecast_steps = forecast_steps
-        latent_channels = self.config["latent_channels"]
-        context_channels = self.config["context_channels"]
-        out_channels = self.config["out_channels"]
 
         self.conv_gru1 = ConvGRU(
             in_channels=latent_channels + context_channels,
@@ -959,18 +933,8 @@ class TemporalDiscriminator(nn.Cell):
                  in_channels=12,
                  num_layers=3,
                  conv_type="standard",
-                 use_spectral_norm=True,
-                 hidden_channels=48,
-                 **kwargs):
+                 use_spectral_norm=True):
         super().__init__()
-        config = locals()
-        config.pop("__class__")
-        config.pop("self")
-        self.config = kwargs.get("config", config)
-        in_channels = self.config["in_channels"]
-        num_layers = self.config["num_layers"]
-        conv_type = self.config["conv_type"]
-
         self.downsample = ops.AvgPool3D(kernel_size=(1, 2, 2), strides=(1, 2, 2))
         self.space2depth = PixelUnshuffle(downscale_factor=2)
         hidden_channels = 48
@@ -1057,18 +1021,8 @@ class SpatialDiscriminator(nn.Cell):
             num_timesteps=8,
             num_layers=4,
             conv_type="standard",
-            use_spectral_norm=True,
-            hidden_channels=24,
-            **kwargs):
+            use_spectral_norm=True):
         super().__init__()
-        config = locals()
-        config.pop("__class__")
-        config.pop("self")
-        self.config = kwargs.get("config", config)
-        in_channels = self.config["in_channels"]
-        num_timesteps = self.config["num_timesteps"]
-        num_layers = self.config["num_layers"]
-        conv_type = self.config["conv_type"]
         self.num_timesteps = num_timesteps
         self.mean_pool = nn.AvgPool2d(kernel_size=2, stride=2)
         self.downsample = ops.AvgPool3D(kernel_size=(1, 2, 2), strides=(1, 2, 2))

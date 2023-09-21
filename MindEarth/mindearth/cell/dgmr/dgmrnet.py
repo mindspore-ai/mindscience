@@ -53,17 +53,9 @@ class DgmrDiscriminator(Cell):
             self,
             in_channels=1,
             num_spatial_frames=8,
-            conv_type="standard",
-            **kwargs
+            conv_type="standard"
     ):
         super().__init__()
-        config = locals()
-        config.pop("__class__")
-        config.pop("self")
-        self.config = kwargs.get("config", config)
-        in_channels = self.config["in_channels"]
-        num_spatial_frames = self.config["num_spatial_frames"]
-        conv_type = self.config["conv_type"]
 
         self.spatial_discriminator = SpatialDiscriminator(
             in_channels=in_channels, num_timesteps=num_spatial_frames, conv_type=conv_type
@@ -139,21 +131,9 @@ class DgmrGenerator(Cell):
             conv_type="standard",
             latent_channels=768,
             context_channels=384,
-            generation_steps=1,
-            **kwargs
+            generation_steps=1
     ):
         super().__init__()
-        config = locals()
-        config.pop("__class__")
-        config.pop("self")
-
-        self.config = kwargs.get("config", config)
-        in_channels = self.config["in_channels"]
-        forecast_steps = self.config["forecast_steps"]
-        out_channels = self.config["out_channels"]
-        conv_type = self.config["conv_type"]
-        latent_channels = self.config["latent_channels"]
-        context_channels = self.config["context_channels"]
         self.latent_channels = latent_channels
         self.context_channels = context_channels
         self.in_channels = in_channels

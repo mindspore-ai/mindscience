@@ -38,7 +38,7 @@ required_package = [
     'scipy >= 1.7.0',
     'matplotlib >= 3.1.3',
     'pyyaml >= 5.0',
-    'spherical-geometry >= 1.2.22',
+    'spherical-geometry == 1.2.22',
 ]
 
 package_data = {
