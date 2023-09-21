@@ -1,6 +1,6 @@
 ENGLISH | [简体中文](README_CN.md)
 
-# Medium-range Global Weather Forecasting Based on GNN
+# GraphCast: Medium-range Global Weather Forecasting
 
 ## Overview
 
@@ -12,35 +12,23 @@ This tutorial introduces the research background and technical path of GraphCast
 
 ## QuickStart
 
-You can download dataset from graphcast/dataset for model evaluation. Save these dataset at `./dataset`.
+You can download dataset from [graphcast/dataset](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/) for model evaluation. Save these dataset at `./dataset`.
 
 ### Run Option 1: Call `main.py` from command line
 
 ```shell
 python -u ./main.py \
+  --config_file_path \
   --device_target Ascend \
   --device_id 0 \
-  --processing_steps 16\
-  --latent_dims 512 \
-  --mesh_level 4 \
-  --grid_resolution 1.4
-  --output_dir ./summary \
 ```
 
 where:
+`--config_file_path` the path of config file, default "./GraphCast.yaml".
+
 `--device_target` device type, default 'Ascend'.
 
 `--device_id` NPU id, default 0.
-
-`--processing_steps` preocessing steps, default 16.
-
-`--latent_dims` hidden layer dimensions, default 512.
-
-`--mesh_level` mesh node levels, default 4.
-
-`--grid_resolution` grid resolution, default 1.4.
-
-`--output_dir` the path of output file, default "./summary".
 
 ### Run Option 2: Run Jupyter Notebook
 
@@ -57,8 +45,26 @@ Summary of skill score for 6-hours to 5-days lead time is shown below.
 ![image_earth](images/Eval_RMSE_epoch100.png)
 ![image_earth](images/Eval_ACC_epoch100.png)
 
+## Performance
+
+|        Parameter         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA V100 32G       |
+|     MindSpore   |        2.2.0             |      2.2.0       |
+|        Dataset      |        [WeatherBench 1.4°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)               |       [WeatherBench 1.4°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)      |
+|        Parameters      |                       |             |
+|        Train parameters      |        batch_size=1,steps_per_epoch=403,epochs=100               |       batch_size=1,steps_per_epoch=403,epochs=100      |
+|        Test parameters      |        batch_size=1,steps=8               |       batch_size=1,steps=8      |
+|        Optimizer      |        Adam               |       Adam      |
+|        Train loss(RMSE)      |        0.0009               |       0.0009      |
+|        Valid WeightedRMSE(z500/5days)      |           889            |       870    |
+|        Valid WeightedRMSE(t850/5days)      |           3.97            |       3.86    |
+|        Valid WeightedRMSE(z500/5days <16years data>)      |           314            |          |
+|        Valid WeightedRMSE(t850/5days <16years data>)     |           1.79            |           |
+|        Speed(ms/step)          |     148        |    226  |
+
 ## Contributor
 
-gitee id: liulei277, email: liulei2770919@163.com
+gitee id: liulei277, Bokai Li
 
-gitee id: Bokai Li, email: 1052173504@qq.com
+email: liulei2770919@163.com, 1052173504@qq.com

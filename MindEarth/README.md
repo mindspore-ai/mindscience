@@ -32,7 +32,7 @@ Weather phenomena are closely related to human production and life, social econo
 
 ![mindearth_2d](docs/mindearth_2d.gif)
 
-MindEarth is a meteorological and oceanographic suite developed based on [MindSpore](https://www.mindspore.cn/). It supports AI meteorological prediction of short-term, medium-term, and long-term weather and catastrophic weather such as precipitation and typhoon. The aim is to provide efficient and easy-to-use AI meteorological prediction software for industrial scientific research engineers, college teachers and students.
+MindEarth is an earth science suite developed based on [MindSpore](https://www.mindspore.cn/). It supports AI meteorological prediction of short-term, medium-term, and long-term weather and catastrophic weather such as precipitation and typhoon. The aim is to provide efficient and easy-to-use AI meteorological prediction software for industrial scientific research engineers, college teachers and students.
 
 <div align=center><img src="docs/mindearth_archi_en.png" alt="MindEarth Architecture" width="700"/></div>
 

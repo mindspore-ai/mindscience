@@ -1,7 +1,7 @@
 mindearth.utils.plt_global_field_data
 ==============================================
 
-.. py:function:: mindearth.utils.plt_global_field_data(data, feature_name, std, mean, fig_title, is_surface=False)
+.. py:function:: mindearth.utils.plt_global_field_data(data, feature_name, std, mean, fig_title, is_surface=False, is_error=False)
 
     绘制全球领域气象数据图。
 

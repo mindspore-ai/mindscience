@@ -1,7 +1,7 @@
 mindearth.cell.GraphCastNet
 ============================
 
-.. py:class:: mindearth.cell.GraphCastNet(vg_in_channels, vg_out_channels, vm_in_channels, em_in_channels, eg2m_in_channels, em2g_in_channels, latent_dims, processing_steps, g2m_src_idx, g2m_dst_idx, m2m_src_idx, m2m_dst_idx, m2g_src_idx, m2g_dst_idx, mesh_node_feats, mesh_edge_feats, g2m_edge_feats, m2g_edge_feats, per_variable_level_mean, per_variable_level_std)
+.. py:class:: mindearth.cell.GraphCastNet(vg_in_channels, vg_out_channels, vm_in_channels, em_in_channels, eg2m_in_channels, em2g_in_channels, latent_dims, processing_steps, g2m_src_idx, g2m_dst_idx, m2m_src_idx, m2m_dst_idx, m2g_src_idx, m2g_dst_idx, mesh_node_feats, mesh_edge_feats, g2m_edge_feats, m2g_edge_feats, per_variable_level_mean, per_variable_level_std, recompute=False)
 
     GraphCast 基于一种新颖的基于图神经网络的高分辨率多尺度网格表示自回归模型。
     有关更多详细信息，请参考论文 `GraphCast: Learning skillful medium-range global weather forecasting <https://arxiv.org/pdf/2212.12794.pdf>`_ 。
@@ -27,6 +27,7 @@ mindearth.cell.GraphCastNet
         - **m2g_edge_feats** (Tensor) - mesh网格到grid网格边的特征。
         - **per_variable_level_mean** (Tensor) - 每个变量特定尺度的平均值。
         - **per_variable_level_std** (Tensor) - 每个变量特定尺度的方差。
+        - **recompute** (bool, optional) - 设置是否重计算。 默认值：False.
 
     输入：
         - **input** (Tensor) - shape为 :math:`(batch\_size, height\_size * width\_size, feature\_size)` 的Tensor。
