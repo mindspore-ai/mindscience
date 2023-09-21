@@ -39,7 +39,6 @@ def test_dgmrgenerator():
         forecast_steps=18,
         in_channels=1,
         out_channels=256,
-        visualize=False,
         conv_type="standard",
         latent_channels=768,
         context_channels=384,

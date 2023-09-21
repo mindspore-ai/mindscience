@@ -25,11 +25,11 @@ class DgmrTrainer:
     r"""Self-define forecast model for dgmr."""
     def __init__(self, config, g_model, d_model, g_loss_fn, d_loss_fn, logger):
         self.config = config
-        self.model_params = config["model"]
-        self.data_params = config["data"]
-        self.train_params = config["train"]
-        self.optimizer_params = config["optimizer"]
-        self.callback_params = config["summary"]
+        self.model_params = config.get("model")
+        self.data_params = config.get("data")
+        self.train_params = config.get("train")
+        self.optimizer_params = config.get("optimizer")
+        self.callback_params = config.get("summary")
         self.logger = logger
 
         self.train_dataset, self.valid_dataset = self.get_dataset()
@@ -55,13 +55,13 @@ class DgmrTrainer:
         train_dataset_generator = RadarData(data_params=self.data_params, run_mode='train')
         valid_dataset_generator = RadarData(data_params=self.data_params, run_mode='valid')
 
-        train_dataset = Dataset(train_dataset_generator, distribute=self.train_params['distribute'],
-                                num_workers=self.data_params['num_workers'])
-        valid_dataset = Dataset(valid_dataset_generator, distribute=self.train_params['distribute'],
-                                num_workers=self.data_params['num_workers'],
+        train_dataset = Dataset(train_dataset_generator, distribute=self.train_params.get('distribute'),
+                                num_workers=self.data_params.get('num_workers'))
+        valid_dataset = Dataset(valid_dataset_generator, distribute=self.train_params.get('distribute'),
+                                num_workers=self.data_params.get('num_workers'),
                                 shuffle=False)
-        train_dataset = train_dataset.create_dataset(self.data_params['batch_size'])
-        valid_dataset = valid_dataset.create_dataset(self.data_params['batch_size'])
+        train_dataset = train_dataset.create_dataset(self.data_params.get('batch_size'))
+        valid_dataset = valid_dataset.create_dataset(self.data_params.get('batch_size'))
         return train_dataset, valid_dataset
 
     def get_optimizer(self):
@@ -75,24 +75,23 @@ class DgmrTrainer:
         if self.logger:
             self.logger.info(f'steps_per_epoch: {self.steps_per_epoch}')
 
-        if self.optimizer_params['name']:
-            beta1 = self.config["optimizer"]["beta1"]
-            beta2 = self.config["optimizer"]["beta2"]
+        if self.optimizer_params.get('name'):
+            beta1 = self.config.get("optimizer").get("beta1")
+            beta2 = self.config.get("optimizer").get("beta2")
             g_optimizer = nn.Adam(self.g_model.trainable_params(),
-                                  self.config["optimizer"]["gen_lr"],
+                                  self.config.get("optimizer").get("gen_lr"),
                                   beta1=beta1,
                                   beta2=beta2)
             d_optimizer = nn.Adam(self.d_model.trainable_params(),
-                                  self.config["optimizer"]["disc_lr"],
+                                  self.config.get("optimizer").get("disc_lr"),
                                   beta1=beta1,
                                   beta2=beta2)
         else:
-            raise NotImplementedError(
-                "self.optimizer_params['name'] not implemented, please overwrite get_optimizer()")
+            return NotImplemented
         return g_optimizer, d_optimizer
 
     def get_solver(self):
-        loss_scale = nn.FixedLossScaleUpdateCell(loss_scale_value=self.config["optimizer"]["loss_scale"])
+        loss_scale = nn.FixedLossScaleUpdateCell(loss_scale_value=self.config.get("optimizer").get("loss_scale"))
 
         g_solver = nn.TrainOneStepWithLossScaleCell(self.g_loss_fn, self.g_optimizer, scale_sense=loss_scale)
         d_solver = nn.TrainOneStepWithLossScaleCell(self.d_loss_fn, self.d_optimizer, scale_sense=loss_scale)
@@ -102,15 +101,15 @@ class DgmrTrainer:
     def train(self):
         """dgmr train function"""
         evaluator = EvaluateCallBack(config=self.config, dataset_size=self.dataset_size, logger=self.logger)
-        for epoch in range(self.config["train"]["epochs"]):
+        for epoch in range(self.config.get("train").get("epochs")):
             evaluator.epoch_start()
             for data in self.train_dataset.create_dict_iterator():
-                images = ops.cast(data["inputs"], ms.float32)
-                future_images = ops.cast(data["labels"], ms.float32)
+                images = ops.cast(data.get("inputs"), ms.float32)
+                future_images = ops.cast(data.get("labels"), ms.float32)
                 for _ in range(2):
                     d_res = self.d_solver(images, future_images)
                 g_res = self.g_solver(images, future_images)
             evaluator.print_loss(g_res, d_res)
-            if epoch % self.callback_params["save_checkpoint_steps"] == 0:
+            if epoch % self.callback_params.get("save_checkpoint_steps") == 0:
                 evaluator.save_ckpt(self.g_solver)
         evaluator.summary()

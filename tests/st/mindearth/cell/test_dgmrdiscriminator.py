@@ -35,7 +35,7 @@ def test_dgmrdiscriminator():
     """
     context.set_context(mode=context.GRAPH_MODE)
     real_and_generator = np.random.rand(2, 22, 1, 256, 256).astype(np.float32)
-    net = DgmrDiscriminator(in_channels=1, num_spatial_frames=8, con_type="standard")
+    net = DgmrDiscriminator(in_channels=1, num_spatial_frames=8, conv_type="standard")
     output = net(Tensor(real_and_generator, ms.float32))
     assert output.shape == (2, 2, 1), f"For `DgmrDiscriminator`, the output should be (2, 2, 1), \
         but got {output.shape}."

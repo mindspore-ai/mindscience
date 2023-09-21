@@ -16,7 +16,6 @@
 import os
 import abc
 import datetime
-import pickle
 import random
 
 import h5py
@@ -404,7 +403,7 @@ class RadarData(Data):
     def __init__(self,
                  data_params,
                  run_mode='train'):
-        super(RadarData, self).__init__(data_params['root_dir'])
+        super(RadarData, self).__init__(data_params.get("root_dir"))
         self.run_mode = run_mode
         if run_mode == 'train':
             file_list = os.walk(self.train_dir)
@@ -415,7 +414,7 @@ class RadarData(Data):
         self.data = []
         for root, _, files in file_list:
             for file in files:
-                if not file.endswith(".pickle"):
+                if not file.endswith(".npy"):
                     continue
                 json_path = os.path.join(root, file)
                 self.data.append(json_path)
@@ -424,15 +423,14 @@ class RadarData(Data):
         return len(self.data)
 
     def __getitem__(self, idx):
-        pkl_dir = self.data[idx]
-        with open(pkl_dir, "rb") as pkl:
-            sample = pickle.load(pkl)
-        if sample is None or sample["radar_frames"] is None:
+        npy_dir = self.data[idx]
+        with open(npy_dir, "rb") as file:
+            radar_frames = np.load(file)
+        if radar_frames is None:
             random.seed()
             new_idx = random.randint(0, len(self.data) - 1)
             return self.__getitem__(new_idx)
 
-        radar_frames = sample["radar_frames"]
         input_frames = radar_frames[-RadarData.NUM_TARGET_FRAMES - RadarData.NUM_INPUT_FRAMES:
                                     -RadarData.NUM_TARGET_FRAMES]
         target_frames = radar_frames[-RadarData.NUM_TARGET_FRAMES:]
