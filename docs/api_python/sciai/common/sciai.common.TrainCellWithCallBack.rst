@@ -16,20 +16,20 @@ sciai.common.TrainCellWithCallBack
         - **time_interval** (int) - 打印时间的步长间隔。 如果为 0，则不会打印时间。 默认值：0。
         - **ckpt_interval** (int) - 保存checkpoint的epoch间隔，根据 `batch_num` 计算，如果为0，则不会保存checkpoint。 默认值：0。
           如果是n个，则每个字符串对应同一位置的loss；如果是n+1个，第一个损失名称代表所有输出的总和，其他一一对应。默认值：("loss",)。
-        - **loss_names** (Union[str, tuple[str], list[str]]) - 各损失的名字，按照网络输出的顺序排列。 它可以接受n个或n+1个字符串，
+        - **loss_names** (Union(str, tuple[str], list[str])) - 各损失的名字，按照网络输出的顺序排列。 它可以接受n个或n+1个字符串，
           其中n为网络输出的个数。如果n个，每个字符串对应同一位置的loss；如果n+1个，第一个字符串为所有输出的总和的损失名。 默认值：(“loss”,)。
         - **batch_num** (int) - 每个时期有多少批次。 默认值：1。
         - **grad_first** (bool) - 若为True，则只有网络的第一个输出参与梯度下降。 否则所有输出之和参与梯度下降。默认值：False。
         - **amp_level** (str) - 混合精度等级，目前支持["O0", "O1", "O2", "O3"]. 默认值："O0".
         - **ckpt_dir** (str) - checkpoint保存路径。 默认值："./checkpoints"。
         - **clip_grad** (bool) - 是否裁剪梯度。默认值：False.
-        - **clip_norm** (Union[float, int]): 梯度裁剪率，需为正数. 仅当 `clip_grad` 为True时生效. 默认值：1e-3.
+        - **clip_norm** (Union(float, int)) - 梯度裁剪率，需为正数. 仅当 `clip_grad` 为True时生效. 默认值：1e-3.
         - **model_name** (str) - 模型名，影响ckpt名字。 默认："model"。
 
-    输入:
+    输入：
         - **\*args** (tuple[Tensor]) - 网络输入张量的元组.
 
-    输出:
+    输出：
         Union(Tensor, tuple[Tensor]) - 网络输出的单项或多项loss.
 
     异常：

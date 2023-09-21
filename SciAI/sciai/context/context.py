@@ -28,7 +28,7 @@ def init_project(mode=None, device_id=None, seed=1234, args=None):
     Args:
         mode (Union(int, None)): ms.PYNATIVE_MODE for dynamic graph, ms.GRAPHE_MODE for static graph. If None,
             ms.GRAPHE_MODE would be set. Default: None.
-        device_id (Union[int, None]): Set device_id if given, which suppresses args.device_id. Default: None.
+        device_id (Union(int, None)): Set device_id if given, which suppresses args.device_id. Default: None.
         seed (int): Random seed. Default: 1234.
         args (Union(None, Namespace)): Arguments namespace. Default: None.
 
@@ -58,7 +58,7 @@ def set_context_auto(mode=ms.GRAPH_MODE, device_id=None):
 
     Args:
         mode (int): Mindspore running mode, which can be ms.PYNATIVE_MODE or ms.GRAPH_MODE. Default: ms.GRAPH_MODE.
-        device_id (Union[int, None]): Set device_id if given. Default: None.
+        device_id (Union(int, None)): Set device_id if given. Default: None.
 
     Raises:
         ValueError: If device_id is illegal.

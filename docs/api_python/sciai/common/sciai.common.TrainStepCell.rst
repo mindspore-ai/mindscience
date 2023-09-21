@@ -10,7 +10,7 @@ sciai.common.TrainStepCell
         - **optimizer** (Union[Cell]) - 用于更新网络参数的优化器。
         - **grad_first** (bool) - 若为True，则只有网络的第一个输出参与梯度下降。 否则所有输出之和参与梯度下降。默认值：False。
         - **clip_grad** (bool) - 是否裁剪梯度。默认值：False。
-        - **clip_norm** (Union[float, int]): 梯度裁剪率，需为正数. 仅当 `clip_grad` 为True时生效. 默认值：1e-3。
+        - **clip_norm** (Union[float, int]) - 梯度裁剪率，需为正数. 仅当 `clip_grad` 为True时生效. 默认值：1e-3。
 
     输入：
         - **\*inputs** (tuple[Tensor]) - 输入张量的元组，形状为 :math:`(N, \ldots)`。
