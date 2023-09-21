@@ -18,6 +18,7 @@ import numpy as np
 from mindspore import ops, nn, Tensor, Parameter
 from mindspore import dtype as mstype
 from mindspore.common.initializer import initializer, Normal, TruncatedNormal
+from mindspore.nn.probability.distribution import Bernoulli
 
 from .dft import dft2, idft2
 
@@ -42,7 +43,7 @@ class DropPath(nn.Cell):
         self.drop_prob = drop_prob
         self.keep_prob = 1.0 - self.drop_prob
         self.scale_by_keep = scale_by_keep
-        self.bernoulli = msd.Bernoulli(probs=self.keep_prob)
+        self.bernoulli = Bernoulli(probs=self.keep_prob)
         self.div = ops.Div()
 
     def construct(self, x):
