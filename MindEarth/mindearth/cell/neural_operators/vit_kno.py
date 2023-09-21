@@ -39,8 +39,9 @@ class ViTKNO(nn.Cell):
         encoder_embed_dims (int, optional): The encoder embedding dimension of encoder layer. Default: 768.
         mlp_ratio (int, optional): The rate of mlp layer. Default: 4.
         dropout_rate (float, optional): The rate of dropout layer. Default: 1.0.
-        drop_path_rate (float, optional): The rate of droppath layer. Default: 0.0.
+        drop_path_rate (float, optional): The rate of drop path layer. Default: 0.0.
         num_blocks: (int, optional): The number of blocks. Default: 16.
+        settings: (str, optional): The construction of first decoder layer. Default: 'MLP'.
         high_freq (bool, optional): if high-frequency information complement is applied. Default: True.
         encoder_network (bool, optional): if encoder_network is applied. Default: False
         compute_dtype (dtype, optional): The data type for encoder, decoding_embedding, decoder and dense layer.

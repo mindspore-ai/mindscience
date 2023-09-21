@@ -52,11 +52,13 @@ class Trainer:
         model (mindspore.nn.Cell): network for training.
         loss_fn (mindspore.nn.Cell): loss function.
         logger (rootLogger, optional): logger of the training process. Default: None.
-        weatherdata_type (mindearth.data.Data, optional): the dataset type. Default: Era5Data.
+        weatherdata_type (str, optional): the dataset type. Default: 'Era5Data'.
+        loss_scale (mindspore.amp.LossScaleManager, optional): the class of loss scale manager when using mixed
+            precision. Default: mindspore.amp.DynamicLossScaleManager().
 
     Raises:
         TypeError: If `model` or `loss_fn` is not mindspore.nn.Cell.
-        NotImplementedError: If the member function `_get_callback` is not implemented.
+        NotImplementedError: If the member function `get_callback` is not implemented.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -88,7 +90,7 @@ class Trainer:
         ...     },
         ...     "data": {
         ...         'name': 'era5',
-        ...         'root_dir': '/data1/lbk/WB_demo_69',
+        ...         'root_dir': './dataset',
         ...         'feature_dims': 69,
         ...         't_in': 1,
         ...         't_out_train': 1,
