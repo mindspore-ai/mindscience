@@ -76,7 +76,10 @@ class AFNONet(nn.Cell):
                  compute_dtype=mindspore.float32):
         super(AFNONet, self).__init__()
         image_size = to_2tuple(image_size)
-        grid_size = (image_size[0] // patch_size, image_size[1] // patch_size)
+        try:
+            grid_size = (image_size[0] // patch_size, image_size[1] // patch_size)
+        except ZeroDivisionError:
+            ops.Print()("Patch size can't be Zero")
 
         self.image_size = image_size
         self.patch_size = patch_size

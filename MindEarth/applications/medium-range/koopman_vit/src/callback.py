@@ -129,16 +129,15 @@ class InferenceModule(WeatherForecast):
     def __init__(self, model, config, logger):
         super(InferenceModule, self).__init__(model, config, logger)
 
-        mean = np.load(os.path.join(config["data"]["root_dir"], "statistic", "mean.npy"))
+        mean = np.load(os.path.join(config.get("data").get("root_dir"), "statistic", "mean.npy"))
         mean = mean.transpose(1, 2, 3, 0)  # HWFL(1, 1, 5, 13)
         mean = mean.reshape((1, -1))
         mean = np.squeeze(mean, axis=0)
-        mean_s = np.load(os.path.join(config["data"]["root_dir"], "statistic", "mean_s.npy"))
-        self.total_std = self._get_total_std(config)
-        self.feature_dims = config['data']['feature_dims']
-        # self.total_std = np.concatenate(self.total_std, axis=-1)
+        mean_s = np.load(os.path.join(config.get("data").get("root_dir"), "statistic", "mean_s.npy"))
+        self.std_all = self._get_total_std(config)
+        self.feature_dims = config.get("data").get('feature_dims')
         self.mean_all = np.concatenate([mean, mean_s], axis=-1)
-        self.climate = np.load(os.path.join(config["data"]["root_dir"], "statistic", "climate_69_1.4.npy"))  # (XXX, 69)
+        self.climate = np.load(os.path.join(config.get("data").get("root_dir"), "statistic", "climate_69_1.4.npy"))  # (XXX, 69)
 
     def _get_metrics(self, inputs, labels):
         """Get metrics"""
@@ -215,7 +214,7 @@ class EvaluateCallBack(Callback):
         self.eval_time = 0
         self.model = model
         self.valid_dataset = valid_dataset
-        self.predict_interval = config['summary']["valid_frequency"]
+        self.predict_interval = config.get('summary').get("valid_frequency")
         self.logger = logger
         self.eval_net = InferenceModule(model,
                                         config,
@@ -232,7 +231,7 @@ class EvaluateCallBack(Callback):
         if cb_params.cur_epoch_num % self.predict_interval == 0:
             self.eval_time += 1
             lat_weight_rmse, lat_weight_acc = self.eval_net.eval(self.valid_dataset)
-            if self.config['summary']['plt_key_info']:
+            if self.config.get('summary').get('plt_key_info'):
                 plt_key_info(lat_weight_rmse, self.config, self.eval_time * self.predict_interval, metrics_type="RMSE",
                              loc="upper left")
                 plt_key_info(lat_weight_acc, self.config, self.eval_time * self.predict_interval, metrics_type="ACC",
