@@ -96,18 +96,21 @@ class ViTKNO(nn.Cell):
         self.settings = settings
         self.encoder_network = encoder_network
 
+        try:
+            self.h = image_size[0] // self.patch_size
+            self.w = image_size[1] // self.patch_size
+        except ZeroDivisionError:
+            ops.Print()("Patch size can't be Zero")
+
         self.patch_embed = PatchEmbed(in_channels=in_channels, embed_dims=self.encoder_embed_dims,
                                       patch_size=self.patch_size, compute_dtype=mstype.float32)
-        num_patches = (self.image_size[1] // self.patch_size) * (self.image_size[0] // self.patch_size)
+        num_patches = self.w * self.h
 
         self.pos_embed = Parameter(np.zeros((1, num_patches, encoder_embed_dims)))
         self.pos_drop = nn.Dropout(dropout_rate)
 
         dpr = [x for x in ops.linspace(Tensor(0, mindspore.float32), Tensor(drop_path_rate, mindspore.float32),
                                        self.encoder_depths)]
-
-        self.h = image_size[0] // self.patch_size
-        self.w = image_size[1] // self.patch_size
 
         self.blocks = nn.CellList([
             AFNOBlock(embed_dims=self.encoder_embed_dims, mlp_ratio=mlp_ratio, dropout_rate=dropout_rate,

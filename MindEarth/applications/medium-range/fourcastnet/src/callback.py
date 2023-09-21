@@ -35,7 +35,7 @@ class InferenceModule(WeatherForecast):
         for _ in range(self.t_out_test):
             pred = self.model(inputs)
             pred = unpatchify(pred, (self.h_size, self.w_size),
-                              self.config['data']['patch_size'])
+                              self.config.get('data').get('patch_size'))
             pred = pred.transpose(0, 3, 1, 2)
             pred_lst.append(pred)
             inputs = pred
@@ -60,7 +60,7 @@ class EvaluateCallBack(Callback):
         self.eval_time = 0
         self.model = model
         self.valid_dataset = valid_dataset
-        self.predict_interval = config['summary']["valid_frequency"]
+        self.predict_interval = config.get('summary').get("valid_frequency")
         self.logger = logger
         self.eval_net = InferenceModule(model,
                                         config,
@@ -78,7 +78,7 @@ class EvaluateCallBack(Callback):
             self.eval_time += 1
             lat_weight_rmse, lat_weight_acc = self.eval_net.eval(
                 self.valid_dataset)
-            if self.config['summary']['plt_key_info']:
+            if self.config.get('summary').get('plt_key_info'):
                 plt_key_info(lat_weight_rmse, self.config, self.eval_time * self.predict_interval, metrics_type="RMSE",
                              loc="upper left")
                 plt_key_info(lat_weight_acc, self.config, self.eval_time * self.predict_interval, metrics_type="ACC",
