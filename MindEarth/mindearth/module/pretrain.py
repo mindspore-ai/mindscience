@@ -283,9 +283,9 @@ class Trainer:
             self.solver.train(epoch=self.optimizer_params.get("epochs"),
                               train_dataset=self.train_dataset,
                               callbacks=callback_lst,
-                              dataset_sink_mode=self.model_params.get('data_sink'))
+                              dataset_sink_mode=self.data_params.get('data_sink'))
         else:
             self.solver.train(epoch=self.optimizer_params.get("finetune_epochs"),
                               train_dataset=self.train_dataset,
                               callbacks=callback_lst,
-                              dataset_sink_mode=self.model_params.get('data_sink'))
+                              dataset_sink_mode=self.data_params.get('data_sink'))
