@@ -42,9 +42,9 @@ def init_project(mode=None, device_id=None, seed=1234, args=None):
     else:
         mode = ms.GRAPH_MODE
     device_id = args.device_id if device_id is None and hasattr(args, "device_id") else device_id
-    set_context_auto(mode, device_id)
     make_sciai_dirs()
     set_log(args)
+    set_context_auto(mode, device_id)
     if args is not None:
         print_args(args)
     set_seed(seed)
