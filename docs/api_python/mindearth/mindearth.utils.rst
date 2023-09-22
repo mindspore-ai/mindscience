@@ -6,7 +6,6 @@ mindearth.utils
     :nosignatures:
     :template: classtemplate.rst
 
-    mindearth.utils.create_logger
     mindearth.utils.get_datapath_from_date
     mindearth.utils.plt_global_field_data
     mindearth.utils.plt_metrics

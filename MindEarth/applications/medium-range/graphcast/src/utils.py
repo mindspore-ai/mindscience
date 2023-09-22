@@ -51,19 +51,24 @@ def load_dir_data(dirs, file_name, dtype=mstype.int32):
     return Tensor(np.load(path), dtype)
 
 
-def init_model(config):
+def init_model(config, run_mode="train"):
     """Init model"""
     data_params = config.get("data")
     model_params = config.get("model")
     train_params = config.get("train")
     summary_params = config.get("summary")
+    train_params['load_ckpt'] = run_mode == "test"
+    model_params['recompute'] = data_params.get("grid_resolution") < 1.0
+    data_params['h_size'], data_params['w_size'] = SIZE_DICT[data_params.get("grid_resolution")]
+    summary_params["summary_dir"] = get_model_summary_dir(config)
+    make_dir(os.path.join(summary_params.get("summary_dir"), "image"))
     grid_mesh_info = GridMeshInfo(data_params)
     model = GraphCastNet(vg_in_channels=data_params.get('feature_dims') * data_params.get('t_in'),
                          vg_out_channels=data_params.get('feature_dims'),
-                         vm_in_channels=data_params.get('vm_in_channels'),
-                         em_in_channels=data_params.get('em_in_channels'),
-                         eg2m_in_channels=data_params.get('eg2m_in_channels'),
-                         em2g_in_channels=data_params.get('em2g_in_channels'),
+                         vm_in_channels=model_params.get('vm_in_channels'),
+                         em_in_channels=model_params.get('em_in_channels'),
+                         eg2m_in_channels=model_params.get('eg2m_in_channels'),
+                         em2g_in_channels=model_params.get('em2g_in_channels'),
                          latent_dims=model_params.get('latent_dims'),
                          processing_steps=model_params.get('processing_steps'),
                          g2m_src_idx=grid_mesh_info.g2m_src_idx,
@@ -99,38 +104,6 @@ def get_model_summary_dir(config):
     summary_dir += '_{}'.format(optimizer_params.get('name'))
     summary_dir += '_{}'.format(train_params.get('name'))
     return summary_dir
-
-
-def update_config(args, config):
-    """Update config by user specified args"""
-    config['train']['distribute'] = args.distribute
-    config['train']['device_target'] = args.device_target
-    config['train']['device_id'] = args.device_id
-    config['train']['amp_level'] = args.amp_level
-    config['train']['run_mode'] = args.run_mode
-    config['train']['load_ckpt'] = args.load_ckpt
-    if config['train']['run_mode'] == 'test':
-        config['train']['load_ckpt'] = True
-
-    config['model']['data_sink'] = args.data_sink
-    config['model']['latent_dims'] = args.latent_dims
-    config['model']['processing_steps'] = args.processing_steps
-    config['model']['recompute'] = args.grid_resolution < 1.0
-
-    config['data']['num_workers'] = args.num_workers
-    config['data']['mesh_level'] = args.mesh_level
-    config['data']['grid_resolution'] = args.grid_resolution
-    config['data']['h_size'], config['data']['w_size'] = SIZE_DICT[args.grid_resolution]
-
-    config['optimizer']['epochs'] = args.epochs
-    config['optimizer']['finetune_epochs'] = args.finetune_epochs
-    config['optimizer']['initial_lr'] = args.initial_lr
-
-    config['summary']["eval_interval"] = args.eval_interval
-    summary_dir = get_model_summary_dir(config)
-    config['summary']["summary_dir"] = os.path.join(args.output_dir, summary_dir)
-    make_dir(os.path.join(config['summary']["summary_dir"], "image"))
-    config['summary']["ckpt_path"] = args.ckpt_path
 
 
 def get_logger(config):
