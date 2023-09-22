@@ -31,7 +31,7 @@
 
 ![mindearth_2d](docs/mindearth_2d.gif)
 
-MindEarth是基于[昇思MindSpore](https://www.mindspore.cn/)开发的气象海洋领域套件，支持短临、中期、长期等多时空尺度以及降水、台风等灾害性天气的AI气象预测，旨在于为广大的工业界科研工程人员、高校老师及学生提供高效易用的AI气象预测软件。
+MindEarth是基于[昇思MindSpore](https://www.mindspore.cn/)开发的地球科学领域套件，支持短临、中期、长期等多时空尺度以及降水、台风等灾害性天气的AI气象预测，旨在于为广大的工业界科研工程人员、高校老师及学生提供高效易用的AI气象预测软件。
 
 <div align=center><img src="docs/mindearth_archi_cn.png" alt="Mindearth Architecture" width="700"/></div>
 

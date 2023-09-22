@@ -195,8 +195,8 @@ python main.py --config_file_path ./GraphCast.yaml --device_target Ascend --devi
 
 ## Contributor
 
-代码贡献者的gitee id:
-代码贡献者的email:
+gitee id:
+email:
 
 ```
 

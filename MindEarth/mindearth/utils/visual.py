@@ -30,8 +30,9 @@ def plt_global_field_data(data, feature_name, std, mean, fig_title, is_surface=F
         feature_name (str): The name of the feature to be visualized.
         std (numpy.array): The standard deviation of per-varibale-level.
         mean (numpy.array): The mean value of per-varibale-level.
-        is_surface(bool): Whether or not a surface feature.
-        is_surface(bool): Whether or not plot error.
+        fig_title (str): The title of the figure.
+        is_surface(bool): Whether or not a surface feature. Default: False.
+        is_surface(bool): Whether or not plot error. Default: False.
 
     Supported Platforms:
         ``Ascend`` ``CPU`` ``GPU``

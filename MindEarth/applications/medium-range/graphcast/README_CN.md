@@ -1,6 +1,6 @@
 [ENGLISH](README.md) | 简体中文
 
-# 基于图神经网络的全球中期天气预报
+# GraphCast: 全球中期天气预报
 
 ## 概述
 
@@ -12,35 +12,23 @@ GraphCast是由DeepMind和Google的研究人员开发的一个基于数据驱动
 
 ## 快速开始
 
-在`graphcast/dataset`下载数据并保存在`./dataset`。
+在[graphcast/dataset](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)下载数据并保存在`./dataset`。
 
 ### 运行方式一: 在命令行调用`main.py`脚本
 
 ```shell
 python -u ./main.py \
+  --config_file_path ./GraphCast.yaml \
   --device_target Ascend \
-  --device_id 0 \
-  --processing_steps 16\
-  --latent_dims 512 \
-  --mesh_level 4 \
-  --grid_resolution 1.4
-  --output_dir ./summary \
+  --device_id 0
 ```
 
 其中，
+`--config_file_path` 配置文件的路径，默认值"./GraphCast.yaml"。
+
 `--device_target` 表示设备类型，默认Ascend。
 
 `--device_id` 表示运行设备的编号，默认值0。
-
-`--processing_steps` 处理模块运行的次数， 默认值16。
-
-`--latent_dims` 隐藏层的维度，默认值512。
-
-`--mesh_level` 网格分别率等级，默认值4。
-
-`--grid_resolution` 网格分辨率，默认值1.4。
-
-`--output_dir` 输出文件的路径，默认值"./summary"。
 
 ### 运行方式二: 运行Jupyter Notebook
 
@@ -57,8 +45,26 @@ python -u ./main.py \
 ![image_earth](images/Eval_RMSE_epoch100.png)
 ![image_earth](images/Eval_ACC_epoch100.png)
 
+## 性能
+
+|        参数         |        Ascend               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.2.0             |      2.2.0       |
+|        数据集      |        [WeatherBench 1.4°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)               |       [WeatherBench 1.4°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)      |
+|        参数量      |                       |             |
+|        训练参数      |        batch_size=1,steps_per_epoch=403,epochs=100               |       batch_size=1,steps_per_epoch=403,epochs=100      |
+|        测试参数      |        batch_size=1,steps=8               |       batch_size=1,steps=8      |
+|        优化器      |        Adam               |       Adam      |
+|        训练损失(RMSE)      |        0.0009               |       0.0009      |
+|        验证加权损失(z500/5天)      |           889            |       870    |
+|        验证加权损失(t850/5天)      |           3.97            |       3.86    |
+|        验证加权损失(z500/5天 <16years data>)      |           314            |           |
+|        验证加权损失(t850/5天 <16years data>)      |           1.79            |          |
+|        速度(ms/step)          |     148        |    226  |
+
 ## 贡献者
 
-gitee id: liulei277, email: liulei2770919@163.com
+gitee id: liulei277, Bokai Li
 
-gitee id: Bokai Li, email: 1052173504@qq.com
+email: liulei2770919@163.com, 1052173504@qq.com
