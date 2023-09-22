@@ -1,0 +1,16 @@
+model_name: phylstm2
+description: physics-informed_double-lstm_network
+case: meta-modeling_nonlinear_structural_system
+print_interval: 1
+ckpt_interval: 1
+save_fig: true
+save_ckpt: true
+load_ckpt: false
+save_ckpt_path: ./checkpoints
+load_ckpt_path: ./checkpoints/your_model.ckpt
+figures_path: ./figures
+load_data_path: ./data/data_boucwen.mat
+save_data_path: ./data
+epochs: 8000
+lr: 1e-4
+mode: train
