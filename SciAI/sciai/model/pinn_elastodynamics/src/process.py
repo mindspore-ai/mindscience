@@ -150,8 +150,7 @@ def post_process(field, figures_path, data_path, num):
     x_pred, y_pred, _, u_pred, v_pred, s11_pred, s22_pred, s12_pred = field
     amp_pred = (u_pred ** 2 + v_pred ** 2) ** 0.5
 
-    if not os.path.exists(figures_path):
-        os.mkdir(figures_path)
+    os.makedirs(figures_path, exist_ok=True)
 
     plot_uvmag(x_star, y_star, u_star, v_star, a_star, x_pred, y_pred, u_pred, v_pred,
                figures_path, num, amp_pred)

@@ -75,13 +75,13 @@ class DeepElasticWave(nn.Cell):
         """calculations for f"""
         e, mu, rho = self.e, self.mu, self.rho
 
-        _, v, ut, vt, s11, s22, s12 = self.net_uv(x, y, t)
+        _, _, ut, vt, s11, s22, s12 = self.net_uv(x, y, t)
         # Strains
-        (u_x, u_y, u_t), (v_x, _, v_t), (_, _, ut_t), (_, _, vt_t), (s11_x, _, _), (
+        (u_x, u_y, u_t), (v_x, v_y, v_t), (_, _, ut_t), (_, _, vt_t), (s11_x, _, _), (
             _, s22_y, _), (s12_x, s12_y, _) = self.nn_e(x, y, t)
 
         # Strains
-        e11, e22, e12 = u_x, v, u_y + v_x
+        e11, e22, e12 = u_x, v_y, u_y + v_x
 
         # Plane stress problem
         sp11 = e / (1 - mu * mu) * e11 + e * mu / (1 - mu * mu) * e22

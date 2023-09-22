@@ -86,8 +86,8 @@ python train.py \
     --ckpt_interval 1000 \
     --lr 1e-3 \
     --epochs 100000 \
-    --use_lbfgs true \
-    --max_iter_lbfgs null \
+    --use_lbfgs false \
+    --max_iter_lbfgs 10000 \
     --download_data pinn_elastodynamics \
     --force_download false \
     --amp_level O3 \
@@ -141,7 +141,7 @@ Important parameters in train.py are as follows:
 | ckpt_interval  | checkpoint interval                          | 1000                                       |
 | lr             | learning rate                                | 1e-3                                       |
 | epochs         | number of epochs                             | 100000                                     |
-| use_lbfgs      | whether to use L-BFGS after Adam or not      | true                                       |
+| use_lbfgs      | whether to use L-BFGS after Adam or not      | false                                      |
 | max_iter_lbfgs | maximum iteration of lbfgs                   | null                                       |
 | download_data  | necessary dataset and/or checkpoints         | pinn_elastodynamics                        |
 | force_download | whether download the dataset or not by force | false                                      |
