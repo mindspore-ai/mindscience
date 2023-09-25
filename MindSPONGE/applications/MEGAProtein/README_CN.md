@@ -6,19 +6,19 @@
 
 MEGA-Protein主要由三部分组成：
 
-- **蛋白质结构预测工具MEGA-Fold**，网络模型部分与AlphaFold2相同，在数据预处理的多序列对比环节采用了[MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup>进行序列检索，相比于原版端到端速度提升2-3倍；同时借助内存复用大幅提升内存利用效率，同硬件条件下支持更长序列的推理（基于32GB内存的Ascend910运行时最长支持3072长度序列推理）；我们还提供了结构预测模型训练能力，我们自己训练的权重获得了CAMEO-3D蛋白质结构预测赛道22年4月月榜第一。
+- **蛋白质结构预测工具MEGA-Fold**，网络模型部分与AlphaFold2相同，在数据预处理的多序列对比环节采用了[MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup>进行序列检索，相比于原版端到端速度提升2-3倍；同时借助内存复用大幅提升内存利用效率，同硬件条件下支持更长序列的推理，基于32GB内存的Ascend910运行时最长支持2048长度序列推理（以[Pipeline](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/src/mindsponge/pipeline/models/megafold)模式运行，可以支持3072长度序列推理）；我们还提供了结构预测模型训练能力，我们自己训练的权重获得了CAMEO-3D蛋白质结构预测赛道22年4月月榜第一。
 
 <div align=center>
 <img src="../../docs/megafold_contest.png" alt="MEGA-Fold获得CAMEO-3D蛋白质结构预测赛道月榜第一" width="600"/>
 </div>
 
-- **MSA生成工具MEGA-EvoGen**，能显著提升单序列的预测速度，并且能够在MSA较少（few shot）甚至没有MSA（zero-shot，即单序列）的情况下，帮助MEGA-Fold/AlphaFold2等模型维持甚至提高推理精度，突破了在「孤儿序列」、高异变序列和人造蛋白等MSA匮乏场景下无法做出准确预测的限制，该方法获得了CAMEO-3D蛋白质结构预测赛道22年7月月榜第一
+- **MSA生成工具MEGA-EvoGen**，能显著提升单序列的预测速度，并且能够在MSA较少（few shot）甚至没有MSA（zero-shot，即单序列）的情况下，帮助MEGA-Fold/AlphaFold2等模型维持甚至提高推理精度，突破了在「孤儿序列」、高异变序列和人造蛋白等MSA匮乏场景下无法做出准确预测的限制。基于32GB内存的Ascend910运行时最长支持768长度序列推理。该方法获得了CAMEO-3D蛋白质结构预测赛道22年7月月榜第一。
 
 <div align=center>
 <img src="../../docs/evogen_contest.jpg" alt="MEGA-EvoGen方法获得CAMEO-3D蛋白质结构预测赛道月榜第一" width="600"/>
 </div>
 
-- **蛋白质结构评分工具MEGA-Assessment**，该工具可以评价蛋白质结构每个残基的准确性以及残基-残基之间的距离误差，同时可以基于评价结果对蛋白结构作出进一步的优化，该方法获得了CAMEO-QE结构质量评估赛道22年7月月榜第一
+- **蛋白质结构评分工具MEGA-Assessment**，该工具可以评价蛋白质结构每个残基的准确性以及残基-残基之间的距离误差，同时可以基于评价结果对蛋白结构作出进一步的优化。基于32GB内存的Ascend910运行时最长支持2048长度序列推理。该方法获得了CAMEO-QE结构质量评估赛道22年7月月榜第一。
 
 <div align=center>
 <img src="../../docs/assess_contest.png" alt="MEGA-Assessment方法获得CAMEO-QE结构质量评估赛道月榜第一" width="600"/>

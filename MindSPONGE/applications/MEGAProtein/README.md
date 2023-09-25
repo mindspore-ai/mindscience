@@ -8,19 +8,19 @@ In response to these problems, Yi Qin Gao Lab cooperated with the MindScience te
 
 MEGA-Protein mainly consists of three parts:
 
-- **Protein Structure Prediction Tool MEGA-Fold** The nerual network architecture of this tool is the same as AlphaFold, and [MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup> is applied to query MSA data(refer to ColabFold). The end-to-end speed is increased by 2-3 times compared with the original version. With memory optimization, MEGA-Fold supports longer sequence prediction (up to 3072 with 32GB RAM Ascend910). MEGA-Fold is also trainable, models trained on our PSP training dataset won the first place in the CAMEO-3D contest in April 2022.
+- **Protein Structure Prediction Tool MEGA-Fold** The nerual network architecture of this tool is the same as AlphaFold, and [MMseqs2](https://www.biorxiv.org/content/10.1101/2021.08.15.456425v1.full.pdf)<sup>[3]</sup> is applied to query MSA data(refer to ColabFold). The end-to-end speed is increased by 2-3 times compared with the original version. With memory optimization, MEGA-Fold supports longer sequence prediction, up to 2048 with 32GB RAM Ascend910 (it can support 3072 length sequence inference with [Pipeline](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/src/mindsponge/pipeline/models/megafold) mode). MEGA-Fold is also trainable, models trained on our PSP training dataset won the first place in the CAMEO-3D contest in April 2022.
 
 <div align=center>
 <img src="../../docs/megafold_contest.png" alt="MEGA-Fold won the first place in the CAMEO-3D contest in April 2022" width="600"/>
 </div>
 
-- **MSA Generation Tool MEGA-EvoGen** This tool significantly improves the prediction speed of single sequence, and can help predictive models such as MEGA-Fold/AlphaFold2 to maintain/improve the accuracy when there is less MSA (few shot) or even no MSA (zero-shot). This model aims to make accurate predictions in MSA-deficient scenarios such as "orphan sequences", highly mutated sequences and artificial proteins. It won the first place in the CAMEO-3D contest in July 2022.
+- **MSA Generation Tool MEGA-EvoGen** This tool significantly improves the prediction speed of single sequence, and can help predictive models such as MEGA-Fold/AlphaFold2 to maintain/improve the accuracy when there is less MSA (few shot) or even no MSA (zero-shot). This model aims to make accurate predictions in MSA-deficient scenarios such as "orphan sequences", highly mutated sequences and artificial proteins. It can support 768 length sequence inference with 32GB RAM Ascend910. It won the first place in the CAMEO-3D contest in July 2022.
 
 <div align=center>
 <img src="../../docs/evogen_contest.jpg" alt="MEGA-EvoGen wins CAMEO-3D monthly 1st" width="600"/>
 </div>
 
-- **Protein Structure Assessment Tool MEGA-Assessment** This tool evaluates the prediction accuracy of each residue in the protein structure and the inter-residue distance error. It further optimizes the protein structure based on the evaluation results. This method obtains the CAMEO-QE No. 1 on the monthly list in July 2022.
+- **Protein Structure Assessment Tool MEGA-Assessment** This tool evaluates the prediction accuracy of each residue in the protein structure and the inter-residue distance error. It further optimizes the protein structure based on the evaluation results. It can support 2048 length sequence inference with 32GB RAM Ascend910. This method obtains the CAMEO-QE No. 1 on the monthly list in July 2022.
 
 <div align=center>
 <img src="../../docs/assess_contest.png" alt="MEGA-Assessment wins CAMEO-QE monthly 1st" width="600"/>
