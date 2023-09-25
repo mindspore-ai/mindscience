@@ -8,7 +8,7 @@ mindsponge.cell.InvariantPointAttention
     以及从氨基酸对表示（输入中的inputs_2d）中得到的偏移b。
 
     .. math::
-        a_{ij} = Softmax(w_l(c_1{q_i}^Tk_j+b{ij}-c_2\sum {\left \| T_i\circ q'_i-T_j\circ k'_j \right \| ^{2 } })
+        a_{ij} = Softmax(w_l(c_1{q_i}^Tk_j+b{ij}-c_2\sum {\left \| T_i\circ q'_i-T_j\circ k'_j \right \| ^{2 } }))
 
     其中i,j分别表示序列中第i、第j个氨基酸，T即输入中的rotation和translation。
 
