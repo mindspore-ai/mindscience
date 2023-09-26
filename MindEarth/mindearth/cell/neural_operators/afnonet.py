@@ -45,8 +45,8 @@ class AFNONet(nn.Cell):
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, image\_height, image\_width)`.
 
     Outputs:
-        - **output** (Tensor) -Tensor of shape :math:`(batch\_size, patchify\_size, embed\_dim)`,
-          where patchify_size = (image_height * image_width) / (patch_size * patch_size)
+        - **output** (Tensor) -Tensor of shape :math:`(batch\_size, patch\_size, embed\_dim)`,
+          where :math:`patch\_size = (image\_height * image\_width) / (patch\_size * patch\_size)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
