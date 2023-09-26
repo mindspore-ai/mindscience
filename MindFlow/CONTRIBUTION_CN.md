@@ -36,7 +36,7 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 
 ### 单个案例目录格式
 
-单一的案例代码如[`PINNs求解Burgers`](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)为例，代码目录分成以下结构：
+单一的案例代码如[`PINNs求解Burgers`](./applications/physics_driven/burgers)为例，代码目录分成以下结构：
 
 ```shell
 .
@@ -202,7 +202,7 @@ if __name__ == '__main__':
     start_time = time.time()
     # 调用训练函数
     train(args)
-    print("End-to-End total time: {} s".format(time.time() - start_time))
+    print("End-to-End total time: {}s".format(time.time() - start_time))
 ```
 
 ## 配置文件格式
@@ -250,7 +250,7 @@ optimizer:
 
 ### 训练方式一：在命令行中调用`train.py`脚本
 
-python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_target Ascend --device_id 0
+python train.py --config_file_path ./configs/burgers.yaml --mode GRAPH --device_target Ascend --device_id 0
 
 其中，
 `--config_file_path`表示参数文件的路径，默认值'./burgers_cfg.yaml'；
@@ -277,15 +277,20 @@ python train.py --config_file_path ./burgers_cfg.yaml --mode GRAPH --device_targ
 |:----------------------:|:--------------------------:|:---------------:|
 |     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
 |     MindSpore版本   |        2.0.0             |      2.0.0       |
-|        训练损失      |        0.010               |       0.010       |
-|        验证损失      |        0.015               |       0.015       |
-|        速度          |     10s/epoch        |    10s/epoch  |
+|     数据集         |      [Burgers数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)             |      [Burgers数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)       |
+|      参数量       |       6e4       |         6e4         |
+|      训练参数     |    batch_size=8192, steps_per_epoch=1, epochs=15000 | batch_size=8192, steps_per_epoch=1, epochs=15000 |
+|     测试参数      |  batch_size=8192, steps=4   | batch_size=8192, steps=4 |
+|     优化器         |        Adam     |        Adam         |
+|     训练损失(MSE)    |      0.001        |     0.0001       |
+|        验证损失(RMSE)     |        0.010       |       0.008       |
+|     速度(ms/step)   |     10       |    130  |
 
-## Contributor
+## 贡献者
 
-gitee id: [Brian-K](https://gitee.com/b_rookie)
+gitee id: [id](开发者gitee个人空间的链接)
 
-email: brian_k2023@163.com
+email: myemail@163.com
 
 ```
 
