@@ -54,7 +54,7 @@ def train(feed_train, feed_test, feed_test0, loss_net, args, dtype):
     for i in range(args.epochs):
         ind_shuffled = ops.shuffle(ind_range)
         for j in range(batch_num):
-            indexes_interval = ms.Tensor(ind_shuffled[j * args.batch_size: (j + 1) * args.batch_size], dtype=ms.int32)
+            indexes_interval = ops.cast(ind_shuffled[j * args.batch_size: (j + 1) * args.batch_size], ms.int32)
             loss, _ = train_cell(x_u_train_ms, x_y_train_ms, y_train_ms, indexes_interval)
             del indexes_interval
         if i % args.print_interval == 0 and loss < loss_train:
