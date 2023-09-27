@@ -25,7 +25,6 @@ from sciai.utils import print_log
 
 class DeepElasticWave(nn.Cell):
     """Loss for elastic wave"""
-    # Initialize the class
     def __init__(self, uv_layers, dtype, uv_path=''):
         super().__init__()
 

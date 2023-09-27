@@ -14,8 +14,8 @@ print_interval: 1
 ckpt_interval: 1000
 lr: 0.001
 epochs: 2
-use_lbfgs: true
-max_iter_lbfgs: 5
+use_lbfgs: false
+max_iter_lbfgs: 1
 download_data: pinn_elastodynamics
 force_download: false
 amp_level: O0

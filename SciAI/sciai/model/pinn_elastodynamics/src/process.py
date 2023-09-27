@@ -64,7 +64,7 @@ def generate_data(dtype):
     fixed, ic = init_condition(lb, max_t)
     xyt_c = collocation_point(lb, ub, srcs, n_f, max_t)  # Collocation point
     src = wave_src(max_t, srcs)  # Wave source, Gauss pulse
-    x_c, y_c, t_c = xyt_c[:1, :1], xyt_c[:1, 1:2], xyt_c[:1, 2:3]  # Collocation point
+    x_c, y_c, t_c = xyt_c[:, :1], xyt_c[:, 1:2], xyt_c[:, 2:3]  # Collocation point
     x_src, y_src, t_src, u_src, v_src = src[:, :1], src[:, 1:2], src[:, 2:3], src[:, 3:4], src[:, 4:5]  # Source wave
     x_ic, y_ic, t_ic = ic[:, :1], ic[:, 1:2], ic[:, 2:3]  # Initial condition point, t: 0
     x_fix, y_fix, t_fix = fixed[:, :1], fixed[:, 1:2], fixed[:, 2:3]
