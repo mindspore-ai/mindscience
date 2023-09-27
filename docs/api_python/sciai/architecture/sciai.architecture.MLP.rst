@@ -8,7 +8,7 @@ sciai.architecture.MLP
     `layers` 中的第一个值应等于输入Tensor中的最后一个轴的size `in_channels` 。
 
     参数：
-        - **layers** (Union(tuple[int], list[int]) - 每层神经元数量的列表，例如：[2, 10, 10, 1]。
+        - **layers** (Union(tuple[int], list[int])) - 每层神经元数量的列表，例如：[2, 10, 10, 1]。
         - **weight_init** (Union[str, Initializer]) - `Dense` 权重参数的初始化方法。数据类型与 `x` 相同。
           str的值引用自函数 `initializer` 。默认值：'xavier_trunc_normal'。
         - **bias_init** (Union[str, Initializer]) - `Dense` 偏置参数的初始化方法。数据类型与 `x` 相同。

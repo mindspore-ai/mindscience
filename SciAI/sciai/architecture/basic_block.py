@@ -33,7 +33,7 @@ class MLP(nn.Cell):
     The first value in `layers` in Args should be equal to the size of last axis `in_channels` in input Tensor.
 
     Args:
-        layers (Union(tuple[int], list[int]): List of numbers of neurons in each layer, e.g., [2, 10, 10, 1].
+        layers (Union(tuple[int], list[int])): List of numbers of neurons in each layer, e.g., [2, 10, 10, 1].
         weight_init (Union[str, Initializer]): The `weight_init` parameter for Dense.
             The dtype is the same as `x`. The values of str refer to the function `initializer`.
             Default: 'xavier_trunc_normal'.
@@ -225,7 +225,7 @@ class MLPShortcut(nn.Cell):
     <https://arxiv.org/abs/2001.04536>`_.
 
     Args:
-        layers (Union(tuple[int], list[int]): List of numbers of neurons in each layer, e.g., [2, 10, 10, 1].
+        layers (Union(tuple[int], list[int])): List of numbers of neurons in each layer, e.g., [2, 10, 10, 1].
         weight_init (Union(str, Initializer)): The `weight_init` parameter for Dense.
             The dtype is the same as `x`. The values of str refer to the function `initializer`.
             Default: 'xavier_trunc_normal'.
