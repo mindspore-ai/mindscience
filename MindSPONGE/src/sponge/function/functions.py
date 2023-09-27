@@ -1058,7 +1058,7 @@ def calc_torsion_nopbc(position_a: Tensor,
         position_b (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
         position_c (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
-                                Position coordin:math:ate of point :math:`C`.
+                                Position coordinate of point :math:`C`.
         position_d (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
                                 Position coordinate of point :math:`D`.
         keepdims (bool):        If this is set to ``True``, the last axis will be left
@@ -1098,7 +1098,7 @@ def calc_torsion_pbc(position_a: Tensor,
         position_b (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
         position_c (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
-                                Position coordin:math:ate of point :math:`C`.
+                                Position coordinate of point :math:`C`.
         position_d (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
                                 Position coordinate of point :math:`D`.
         pbc_box (Tensor):       Tensor of shape :math:`(D)` or :math:`(B, D)`. Data type is float.
