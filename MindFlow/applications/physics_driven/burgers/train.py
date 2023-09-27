@@ -103,10 +103,13 @@ def train():
         loss, grads = grad_fn(pde_data, ic_data, bc_data)
         if use_ascend:
             loss = loss_scaler.unscale(loss)
-            if all_finite(grads):
+            is_finite = all_finite(grads)
+            if is_finite:
                 grads = loss_scaler.unscale(grads)
-
-        loss = ops.depend(loss, optimizer(grads))
+                loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
+        else:
+            loss = ops.depend(loss, optimizer(grads))
         return loss
 
     epochs = config["train_epochs"]
@@ -134,8 +137,6 @@ if __name__ == '__main__':
     start_time = time.time()
     args = parse_args()
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                        save_graphs=args.save_graphs,
-                        save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target,
                         device_id=args.device_id)
     print_log(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
