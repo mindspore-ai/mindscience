@@ -9,7 +9,7 @@ sciai.architecture.MLPShortcut
     <https://arxiv.org/abs/2001.04536>`_ 。
 
     参数：
-        - **layers** (Union(tuple[int], list[int]) - 每层神经元数量的列表，例如：[2, 10, 10, 1]。
+        - **layers** (Union(tuple[int], list[int])) - 每层神经元数量的列表，例如：[2, 10, 10, 1]。
         - **weight_init** (Union(str, Initializer)) - `Dense` 权重参数的初始化方法。数据类型与 `x` 相同。str的值引用自函数 `initializer` 。默认值：'xavier_trunc_normal'。
         - **bias_init** (Union(str, Initializer)) - `Dense` 偏置参数的初始化方法。数据类型与 `x` 相同。str的值引用自函数 `initializer` 。默认值：'zeros'。
         - **activation** (Union(str, Cell, Primitive, FunctionType, None)) - 应用于全连接层输出的激活函数，不包括最后一层。可指定激活函数名，如 'relu'，或具体激活函数，如 `nn.ReLU()` 。默认值：'tanh'。

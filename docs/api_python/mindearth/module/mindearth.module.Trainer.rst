@@ -13,8 +13,8 @@ mindearth.module.Trainer
         - **config** (dict) - 输入参数。例如，模型参数、数据参数、训练参数。
         - **loss_fn** (mindspore.nn.Cell): 损失函数。
         - **logger** (logging.RootLogger, 可选) - 训练过程中的日志模块。默认值： ``None``。
-        - **weatherdata_type** (str, , 可选) - 数据的类型。默认值： ``Era5Data``。
-        - **loss_scale** (mindspore.amp.LossScaleManager, , 可选) - 使用混合精度时，用于管理损失缩放系数的类。默认值： ``mindspore.amp.DynamicLossScaleManager()``。
+        - **weatherdata_type** (str, 可选) - 数据的类型。默认值： ``Era5Data``。
+        - **loss_scale** (mindspore.amp.LossScaleManager, 可选) - 使用混合精度时，用于管理损失缩放系数的类。默认值： ``mindspore.amp.DynamicLossScaleManager()``。
 
 
     异常：

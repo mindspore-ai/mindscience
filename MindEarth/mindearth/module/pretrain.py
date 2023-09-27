@@ -51,7 +51,7 @@ class Trainer:
         config (dict): configurations of model, dataset, train details, etc.
         model (mindspore.nn.Cell): network for training.
         loss_fn (mindspore.nn.Cell): loss function.
-        logger (rootLogger, optional): logger of the training process. Default: None.
+        logger (logging.RootLogger, optional): logger of the training process. Default: None.
         weatherdata_type (str, optional): the dataset type. Default: 'Era5Data'.
         loss_scale (mindspore.amp.LossScaleManager, optional): the class of loss scale manager when using mixed
             precision. Default: mindspore.amp.DynamicLossScaleManager().

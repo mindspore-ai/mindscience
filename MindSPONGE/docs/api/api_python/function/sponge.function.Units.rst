@@ -1,7 +1,7 @@
 sponge.function.Units
 =========================
 
-.. py:class:: sponge.function.Units(length_unit=None, energy_unit=None)
+.. py:class:: sponge.function.Units(length_unit: str = None, energy_unit: str = None)
 
     记录和转换长度和能量单位。
 
@@ -42,7 +42,7 @@ sponge.function.Units
         从指定单位转换能量。
 
         参数：
-            - **unit** (str) - 能量单位。
+            - **unit** (Union[str, Units, Energy, float, int]) - 能量单位。
 
         返回：
             float。从指定单位转换来的能量。
@@ -52,7 +52,7 @@ sponge.function.Units
         把能量转换到指定单位。
 
         参数：
-            - **unit** (str) - 能量单位。
+            - **unit** (Union[str, Units, Energy, float, int]) - 能量单位。
 
         返回：
             float。转换到指定单位的能量。
@@ -62,7 +62,7 @@ sponge.function.Units
         从指定单位转换长度。
 
         参数：
-            - **unit** (str) - 长度单位。
+            - **unit** (Union[str, Units, Length, float, int]) - 长度单位。
 
         返回：
             float。从指定单位转换来的长度。
@@ -72,7 +72,7 @@ sponge.function.Units
         把长度转换到指定单位。
 
         参数：
-            - **unit** (str) - 长度单位。
+            - **unit** (Union[str, Units, Length, float, int]) - 长度单位。
 
         返回：
             float。转换到指定单位的长度。

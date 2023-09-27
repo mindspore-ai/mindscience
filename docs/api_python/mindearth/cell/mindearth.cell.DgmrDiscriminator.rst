@@ -1,5 +1,5 @@
-mindearth.cell.DgmrNet
-=========================
+mindearth.cell.DgmrDiscriminator
+================================
 
 .. py:class:: mindearth.cell.DgmrDiscriminator(in_channels=1, num_spatial_frames=18, conv_type="standard")
 
