@@ -32,14 +32,15 @@ SciAI由以下主要目录组成。
 
 ```text
 ├── SciAI
-│   ├── cmake               # 编译相关
+│   ├── cmake               # 编译脚本
 │   ├── docs                # 文档
-│   ├── sciai               # SciAI基础框架
+│   │   ├── FAQ             # 常见问题解答
+│   ├── sciai               # SciAI主目录
 │   │   ├── architecture    # 神经网络基本模块
-│   │   ├── common          # 通用模块，包含参数初始化方法、训练函数等
+│   │   ├── common          # 通用模块
 │   │   ├── context         # 上下文设置
-│   │   ├── model           # **科学计算高频模型**
-│   │   ├── operators       # 高阶求导函数
+│   │   ├── model           # **AI4SCI高频模型**
+│   │   ├── operators       # 高阶微分
 │   │   └── utils           # 其他辅助功能
 │   └── tutorial            # 教学模型
 ```
@@ -205,7 +206,7 @@ SciAI基础模型库对外提供两种模型的训练和评估方式，为开发
 
 使用`AutoModel.from_pretrained`接口获取已支持的网络模型。
 使用`AutoModel.train`实现模型的训练，并且在执行训练之前，
-训练前可使用`AutoModel.update_config`调整训练参数或加载`.ckpt`文件实现模型微调。
+可使用`AutoModel.update_config`调整训练参数或加载`.ckpt`文件实现模型微调。
 接口`AutoModel.update_config`可选参数依赖于模型类型，
 具体可参考[网络模型库](#网络模型库)中`MindSpore实现与网络参数`链接。
 
