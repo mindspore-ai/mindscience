@@ -38,11 +38,12 @@ The hierarchy of project SciAI is given below.
 ├── SciAI
 │   ├── cmake               # compilation related
 │   ├── docs                # documentation
+│   │   ├── FAQ             # frequently asked questions
 │   ├── sciai               # SciAI framework
-│   │   ├── architecture    # Base modules for neural networks
-│   │   ├── common          # common modules, including initializer, trainer class etc.
+│   │   ├── architecture    # base neural networks modules
+│   │   ├── common          # common modules
 │   │   ├── context         # context functions
-│   │   ├── model           # **models library**
+│   │   ├── model           # **AI4SCI high-frequency model library**
 │   │   ├── operators       # high order derivatives
 │   │   └── utils           # Other auxiliary functions
 │   └── tutorial            # tutorial models

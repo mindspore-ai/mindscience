@@ -17,7 +17,7 @@ problem: 1d_caputo
   log_path: ./logs
   lr: 0.001
   epochs: 20001
-  batch_size: 100000
+  batch_size: 10000
   print_interval: 10
   download_data: deeponet
   force_download: false
