@@ -23,4 +23,4 @@ mindearth.cell.AFNONet
     输出：
         Tensor，AFNO网络的输出。
 
-        - **output** (Tensor) - shape为 :math:`(batch\_size, patch\_size, embed\_dim)` 的Tensor。其中， :math:`patch_size = (image\_height * image\_width) / (patch\_size * patch\_size)` 。
+        - **output** (Tensor) - shape为 :math:`(batch\_size, patch\_size, embed\_dim)` 的Tensor。其中， :math:`patch\_size = (image\_height * image\_width) / (patch\_size * patch\_size)` 。
