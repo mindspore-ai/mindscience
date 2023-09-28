@@ -8,6 +8,7 @@
     - [MindElec](#mindelec)
     - [MindChemistry](#mindchemistry)
     - [MindSPONGE](#mindsponge)
+    - [SciAI](#sciai)
 - [Architecture](#Architecture)
 - [Cooperations](#Cooperations)
 
@@ -54,6 +55,10 @@ MindSPONGE is a computational biology toolkit that supports high-performance, mo
 MindSPONGE provides a million-level protein structure prediction dataset with high coverage and diversity - PSP, which supports protein structure training and inference.
 
 Based on these functionalities and datasets, MindSPONGE has successfully incubated a series of influential achievements. These include collaborating with Professor Yiqin Gao’s team to release a molecular simulation software that supports differentiable programming and high-throughput simulation; releasing a end-to-end protein structure prediction tool MEGA-Protein, which supports high-performance and high-precision prediction of protein structure; and automatic analysis of NMR spectroscopy data by FAAST, which reduces the NMR data analysis time from months to hours.
+
+### [SciAI](https://gitee.com/mindspore/mindscience/tree/master/SciAI)
+
+SciAI is a model library with 60+ built-in most frequently used and cited AI4Science models, cover from physics-informed (PINNs, DeepRitz, PFNN, etc.) to neural operators (FNO, DeepONet), ranking No.1 in the world in terms of coverage, provides the developers and users with high-level APIs, allowing an immediate deployment.
 
 ## Architecture
 
