@@ -8,6 +8,7 @@
     - [MindElec](#mindelec)
     - [MindChemistry](#mindchemistry)
     - [MindSPONGE](#mindsponge)
+    - [SciAI](#sciai)
 - [架构图](#架构图)
 - [合作伙伴](#合作伙伴)
 
@@ -55,6 +56,10 @@ MindSPONGE提供了高覆盖度和多样性的百万级蛋白质结构预测数�
 
 基于上述功能和数据集，MindSPONGE已经成功孵化一系列有影响力的成果。包括与高毅勤老师团队合作，发布分子模拟软件，支持可微分编程和高通量模拟；发布全流程蛋白质结构预测工具
 MEGA-Protein，支持高性能高精度预测蛋白质结构；以及核磁共振波谱法数据自动解析FAAST，实现了NMR数据解析时间从数月到数小时的缩短。
+
+### [SciAI](https://gitee.com/mindspore/mindscience/tree/master/SciAI)
+
+AI4Science高频模型套件SciAI，内置60+高频模型，覆盖物理感知（如PINNs、DeepRitz以及PFNN）和神经算子（如FNO、DeepONet）等主流模型，覆盖度全球第一；提供了高阶API，开发者和用户开箱即用。
 
 ## 架构图
 

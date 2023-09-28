@@ -62,6 +62,8 @@ Dataset Use:
 
 ## [Quick Start](#contents)
 
+> Note: `tm` case does not support Pynative mode
+
 After installing MindSpore via the official website and the required [dataset](#dataset) above, you can start training
 and evaluation as follows:
 
