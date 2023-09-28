@@ -3,6 +3,7 @@
 [查看中文](README_CN.md)
 
 - [Overview of MindScience](#Overview)
+    - [MindEarth](#mindearth)
     - [MindFlow](#mindflow)
     - [MindElec](#mindelec)
     - [MindChemistry](#mindchemistry)
