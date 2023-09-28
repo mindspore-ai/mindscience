@@ -1,0 +1,49 @@
+geometry:
+  coord_dim: 1
+  time_dim: 1
+  coord_min: -1.0
+  coord_max: 1.0
+  time_min: 0.0
+  time_max: 1.0
+data:
+  domain:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+  BC:
+    size: 800
+    random_sampling: true
+    sampler: "uniform"
+  IC:
+    size: 400
+    random_sampling: true
+    sampler: "uniform"
+  time:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+model:
+  name: MLP_with_Residual
+  in_channels: 2
+  out_channels: 1
+  activation: "tanh"
+  layers: 6
+  neurons: 128
+  residual: true
+optimizer:
+  initial_lr: 0.0001
+  warmup_epochs: 1
+  weight_decay: 0.0
+  gamma: 0.5
+name: Allen Cahn
+train_batch_size: 400
+train_epochs: 15000
+eval_interval_epochs: 100
+save_checkpoint_epochs: 50
+keep_checkpoint_max: 10
+test_dataset_path: "./dataset"
+load_ckpt: true
+save_ckpt: true
+save_ckpt_path: "./ckpt"
+load_ckpt_path: "/path/to/ckpt"
+visual_resolution: 100
