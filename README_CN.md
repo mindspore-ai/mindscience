@@ -3,6 +3,7 @@
 [View English](README.md)
 
 - [MindScience概述](#概述)
+    - [MindEarth](#mindearth)
     - [MindFlow](#mindflow)
     - [MindElec](#mindelec)
     - [MindChemistry](#mindchemistry)
