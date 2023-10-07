@@ -7,4 +7,4 @@ sciai.utils.to_float
 
     参数：
         - **cells** (Union[Cell, list[Cell], tuple[Cell]]) - 要转换的若干个 `Cell`。
-        - **target_type** (dtype) - `cells` 将被转换成的目标 mindspore 数据类型。
+        - **target_type** (dtype) - `cells` 将被转换成的目标 MindSpore 数据类型。
