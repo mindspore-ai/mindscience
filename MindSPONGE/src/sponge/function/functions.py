@@ -726,7 +726,7 @@ def calc_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Te
                             Default: ``None``
 
     Returns:
-        vector (Tensor, a tensor of shape `(..., D)`. Data type is float.
+        vector (Tensor, a tensor of shape `(..., D)`). Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

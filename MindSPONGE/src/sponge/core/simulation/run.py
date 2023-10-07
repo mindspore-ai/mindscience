@@ -347,7 +347,7 @@ class RunOneStepCell(Cell):
         set steps for JIT.
 
         Args:
-            step(int):  Simulation step for JIT.
+            steps(int): Simulation step for JIT.
         """
         self.steps = get_integer(steps)
         return self

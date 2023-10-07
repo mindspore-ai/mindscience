@@ -3,7 +3,7 @@ sponge.system.Residue
 
 .. py:class:: sponge.system.Residue(atom_name: Union[List[str], ndarray] = None, atom_type: Union[List[str], ndarray] = None, atom_mass: Union[Tensor, ndarray, List[float]] = None, atom_charge: Union[Tensor, ndarray, List[float]] = None, atomic_number: Union[Tensor, ndarray, List[float]] = None, bond: Union[Tensor, ndarray, List[int]] = None, head_atom: int = None, tail_atom: int = None, start_index: int = 0, name: str = 'MOL', template: Union[dict, str] = None)
 
-    残基的基类。 `Residue` 神经元是 `Molecule`(system) 的组成部分。 `Residue` 不止可以代表单一的氨基酸残基，还可以代表分子系统中的一个小分子，例如一个水分子，一个无机盐离子等。这代表着 `Residue` 和PDB文件中的 "residue" 有着相似的概念。
+    残基的基类。 `Residue` 神经元是 `Molecule` (system) 的组成部分。 `Residue` 不止可以代表单一的氨基酸残基，还可以代表分子系统中的一个小分子，例如一个水分子，一个无机盐离子等。这代表着 `Residue` 和PDB文件中的 "residue" 有着相似的概念。
 
     .. Note::
         `Residue` 只用来表示原子属性和键连接关系，不包含原子坐标。

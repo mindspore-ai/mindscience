@@ -114,35 +114,35 @@ sponge.core.RunOneStepCell
 
         更新邻居列表。
 
-    .. py:method:: update_bias(step)
+    .. py:method:: update_bias(step: int)
 
         更新偏置势。
 
         参数：
             - **step** (int) - 更新偏置势的仿真step。
 
-    .. py:method:: update_wrapper(step)
+    .. py:method:: update_wrapper(step: int)
 
         更新能量包。
 
         参数：
             - **step** (int) - 更新能量包的仿真step。
 
-    .. py:method:: update_modifier(step)
+    .. py:method:: update_modifier(step: int)
 
         更新力修饰器。
 
         参数：
             - **step** (int) - 更新力修饰器的仿真step。
 
-    .. py:method:: set_pbc_grad(value)
+    .. py:method:: set_pbc_grad(value: bool)
 
         设定是否计算周期性边界条件箱的梯度。
 
         参数：
             - **value** (bool) - 用于判断是否计算周期性边界条件箱的梯度的标志符。
 
-    .. py:method:: set_steps(step)
+    .. py:method:: set_steps(steps)
 
         设置JIT的步数。
 

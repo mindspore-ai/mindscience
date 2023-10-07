@@ -1,7 +1,7 @@
 sponge.function.Length
 ==========================
 
-.. py:class:: sponge.function.Length(value, unit="nm")
+.. py:class:: sponge.function.Length(value: float, unit: str = "nm")
 
     获取长度。
 
@@ -21,7 +21,7 @@ sponge.function.Length
         改变单位。
 
         参数：
-            - **unit** (str) - 长度单位。
+            - **unit** (Union[str, Units, float, int]) - 长度单位。
 
     .. py:method:: ref()
 
