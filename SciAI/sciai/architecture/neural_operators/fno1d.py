@@ -67,7 +67,7 @@ class FNO1D(nn.Cell):
         ValueError: If `modes` is less than 1.
 
     Supported Platforms:
-        `Ascend` `GPU`
+        ``Ascend`` ``GPU``
 
     Examples:
         >>> import numpy as np

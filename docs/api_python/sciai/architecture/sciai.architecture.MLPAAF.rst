@@ -25,7 +25,7 @@ sciai.architecture.MLPAAF
         - **share_type** (str) - 自适应函数可训练参数的共享级别，可以是'layer_wise'，'global'。默认值：'layer_wise'。
 
     输入：
-        - **x** (Tensor) - shape为 :math:`(*, in_channels)` 的Tensor。
+        - **x** (Tensor) - shape为 :math:`(*, in\_channels)` 的Tensor。
 
     输出：
         Union(Tensor, tuple[Tensor])，网络的输出。

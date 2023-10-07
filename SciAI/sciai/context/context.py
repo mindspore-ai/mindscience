@@ -32,6 +32,9 @@ def init_project(mode=None, device_id=None, seed=1234, args=None):
         seed (int): Random seed. Default: 1234.
         args (Union(None, Namespace)): Arguments namespace. Default: None.
 
+    Supported Platforms:
+        ``GPU`` ``CPU`` ``Ascend``
+
     Raises:
         ValueError: If input parameters are not legal.
     """
@@ -62,6 +65,9 @@ def set_context_auto(mode=ms.GRAPH_MODE, device_id=None):
 
     Raises:
         ValueError: If device_id is illegal.
+
+    Supported Platforms:
+        ``GPU`` ``CPU`` ``Ascend``
 
     Examples:
         >>> import mindspore as ms
