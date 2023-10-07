@@ -231,6 +231,11 @@ class WeatherForecast:
         temp_rmse = lat_weight_rmse.transpose(1, 0)
         denormalized_lat_weight_rmse = temp_rmse * self.total_std
         denormalized_lat_weight_rmse = denormalized_lat_weight_rmse.transpose(1, 0)
+        if self.config.get("summary").get("save_rmse_acc"):
+            np.save(os.path.join(self.config.get("summary").get("summary_dir"),
+                                 "denormalized_lat_weight_rmse.npy"), denormalized_lat_weight_rmse)
+            np.save(os.path.join(self.config.get("summary").get("summary_dir"),
+                                 "lat_weight_acc.npy"), lat_weight_acc)
         self._print_key_metrics(denormalized_lat_weight_rmse, lat_weight_acc)
 
         self.logger.info("================================End Evaluation================================")

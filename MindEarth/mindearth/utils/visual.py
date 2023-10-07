@@ -31,8 +31,8 @@ def plt_global_field_data(data, feature_name, std, mean, fig_title, is_surface=F
         std (numpy.array): The standard deviation of per-varibale-level.
         mean (numpy.array): The mean value of per-varibale-level.
         fig_title (str): The title of the figure.
-        is_surface(bool): Whether or not a surface feature. Default: False.
-        is_surface(bool): Whether or not plot error. Default: False.
+        is_surface (bool): Whether or not a surface feature. Default: False.
+        is_error (bool): Whether or not plot error. Default: False.
 
     Supported Platforms:
         ``Ascend`` ``CPU`` ``GPU``
@@ -57,7 +57,7 @@ def plt_global_field_data(data, feature_name, std, mean, fig_title, is_surface=F
     cb.ax.tick_params(labelsize=40)
 
 
-def plt_metrics(x, y, title, label, loc="upper right"):
+def plt_metrics(x, y, title, label, ylabel="", loc="upper right"):
     """
     Visualization of latitude weighted rmse or acc.
 
@@ -66,14 +66,17 @@ def plt_metrics(x, y, title, label, loc="upper right"):
         y (numpy.array): The y value in the figure.
         title (str): The name of the figure.
         label (str): The label of the visualization curve.
-        loc (str): The position of legend in the figure.
+        ylabel (str): The label of the axis y. Default: "".
+        loc (str): The position of legend in the figure. Default: "upper right".
 
     Supported Platforms:
         ``Ascend`` ``CPU`` ``GPU``
     """
+    fontdict = {"family": "serif", "fontsize": 16}
     plt.title(title, fontdict={"family": 'serif', 'size': 20})
     plt.plot(x, y, 'bo-', label=label, markersize=3)
     plt.legend(loc=loc)
-    plt.xlabel('Forecast Time (hours)', style='italic', fontsize=16)
+    plt.ylabel(ylabel, fontdict=fontdict)
+    plt.xlabel('Forecast Time (hours)', fontdict=fontdict)
     plt.xticks(fontsize=10, fontfamily='serif')
     plt.yticks(fontsize=10, fontfamily='serif')

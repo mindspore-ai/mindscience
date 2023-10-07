@@ -1,6 +1,6 @@
 ENGLISH | [简体中文](README_CN.md)
 
-# GraphCast: Medium-range Global Weather Forecasting
+# GraphCast: Medium-range Global Weather Forecasting Based on GNN
 
 ## Overview
 

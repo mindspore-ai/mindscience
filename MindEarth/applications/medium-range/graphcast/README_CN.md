@@ -1,6 +1,6 @@
 [ENGLISH](README.md) | 简体中文
 
-# GraphCast: 全球中期天气预报
+# GraphCast: 基于图神经网络的全球中期天气预报
 
 ## 概述
 

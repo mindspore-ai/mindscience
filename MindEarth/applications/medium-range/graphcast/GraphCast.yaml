@@ -45,11 +45,12 @@ summary:
   eval_interval: 10
   save_checkpoint_steps: 10
   keep_checkpoint_max: 10
+  save_rmse_acc: False
   plt_key_info: True
   key_info_timestep: [6, 72, 120]
+  ckpt_path: ""
 train:
   name: "oop"
   distribute: False
   amp_level: O2
   load_ckpt: False
-  ckpt_path: ""
