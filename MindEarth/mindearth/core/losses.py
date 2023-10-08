@@ -36,7 +36,7 @@ class RelativeRMSELoss(nn.LossBase):
         - **prediction** (Tensor) - Tensor of shape :math:`(N, *)` where :math:`*` means, any number of
           additional dimensions.
         - **labels** (Tensor) - Tensor of shape :math:`(N, *)`, same shape as the `prediction` in common cases.
-          However, it supports the shape of `label` is different from the shape of `label`
+          However, it supports the shape of `prediction` is different from the shape of `label`
           and they should be broadcasted to each other.
 
     Outputs:
