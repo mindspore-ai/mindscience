@@ -1,7 +1,7 @@
 mindearth.utils.plt_metrics
 ==============================================
 
-.. py:function:: mindearth.utils.plt_metrics(x, y, title, label, loc="upper right")
+.. py:function:: mindearth.utils.plt_metrics(x, y, title, label, ylabel="", loc="upper right")
 
     根据给定的日期和数据索引获取数据文件名称。
 
@@ -10,4 +10,5 @@ mindearth.utils.plt_metrics
         - **y** (numpy.array) - 绘图中的纵坐标。
         - **title** (str) - 绘图的标题。
         - **label** (str) - 绘图的标签。
-        - **loc** (str) - 图例的位置。
+        - **ylabel** (str) - y轴的标签，默认值：""。
+        - **loc** (str) - 图例的位置，默认值："upper right"。

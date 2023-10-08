@@ -15,7 +15,7 @@
 """init"""
 from .callback import InferenceModule, LossNet, EvaluateCallBack, CustomWithLossCell
 from .solver import GraphCastTrainer
-from .utils import init_data_parallel, init_model, update_config, get_coe, get_logger, get_param_dict, GridMeshInfo
+from .utils import init_data_parallel, init_model, get_coe, get_logger, get_param_dict, GridMeshInfo
 
 
 __all__ = ['get_coe',
@@ -23,7 +23,6 @@ __all__ = ['get_coe',
            'get_param_dict',
            'init_data_parallel',
            'init_model',
-           'update_config',
            'CustomWithLossCell',
            'EvaluateCallBack',
            'GraphCastTrainer',
