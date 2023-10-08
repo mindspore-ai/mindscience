@@ -50,7 +50,7 @@ uninstall()
 echo "---------------- SciAI: install starts ----------------"
 checkopts "$@"
 uninstall
-pip install sciai*.whl
+pip install output/sciai*.whl
 if [[ "X$?" == "X1" ]]; then
   pip install sciai -i https://pypi.tuna.tsinghua.edu.cn/simple
 fi
