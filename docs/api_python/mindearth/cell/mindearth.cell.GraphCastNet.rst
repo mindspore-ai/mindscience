@@ -27,7 +27,7 @@ mindearth.cell.GraphCastNet
         - **m2g_edge_feats** (Tensor) - mesh网格到grid网格边的特征。
         - **per_variable_level_mean** (Tensor) - 每个变量特定尺度的平均值。
         - **per_variable_level_std** (Tensor) - 每个变量特定尺度的方差。
-        - **recompute** (bool, optional) - 设置是否重计算。 默认值：False.
+        - **recompute** (bool, optional) - 设置是否重计算。 默认值： ``False`` 。
 
     输入：
         - **input** (Tensor) - shape为 :math:`(batch\_size, height\_size * width\_size, feature\_size)` 的Tensor。
