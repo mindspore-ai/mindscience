@@ -47,13 +47,13 @@ class GraphCastNet(nn.Cell):
          per_variable_level_mean (Tensor): The mean of the per-variable-level inverse variance of time differences.
          per_variable_level_std (Tensor): The standard deviation of the per-variable-level inverse variance of time
                                           differences.
-         recompute (bool, optional): Determine whether to recompute. Default: False.
+         recompute (bool, optional): Determine whether to recompute. Default: ``False`` .
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(batch\_size, height\_size * width\_size, feature\_size)`.
+        - **input** (Tensor) - Tensor of shape :math:`(batch\_size, height\_size * width\_size, feature\_size)` .
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(height\_size * width\_size, feature\_size)`.
+        - **output** (Tensor) - Tensor of shape :math:`(height\_size * width\_size, feature\_size)` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
