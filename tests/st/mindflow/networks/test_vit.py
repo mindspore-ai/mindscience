@@ -17,14 +17,13 @@
 import pytest
 import numpy as np
 
-from mindspore import Tensor
+from mindspore import Tensor, context
 from mindspore import dtype as mstype
 from mindflow.cell import ViT
 
 
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
 @pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 def test_vit_output():
@@ -33,6 +32,7 @@ def test_vit_output():
     Description: None.
     Expectation: Success or throw AssertionError.
     """
+    context.set_context(mode=context.GRAPH_MODE)
     input_tensor = Tensor(np.ones((32, 3, 192, 384)), mstype.float32)
     print('input_tensor.shape: ', input_tensor.shape)
     print('input_tensor.dtype: ', input_tensor.dtype)
