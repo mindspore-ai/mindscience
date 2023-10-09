@@ -107,24 +107,19 @@ def parse_args():
     parser = argparse.ArgumentParser(description="burgers train")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Running in GRAPH_MODE OR PYNATIVE_MODE")
-    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                        help="Whether to save intermediate compilation graphs")
-    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
     parser.add_argument("--device_target", type=str, default="Ascend", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
     parser.add_argument("--device_id", type=int, default=0,
                         help="ID of the target device")
     parser.add_argument("--config_file_path", type=str,
-                        default="./configs/percnn_burgers.yaml")
-    parser.add_argument("--pattern", type=str, default="data_driven")
+                        default="./configs/data_driven_percnn_burgers.yaml")
     input_args = parser.parse_args()
     return input_args
 
 
 def train(input_args):
     """train"""
-    pattern = input_args.pattern
-    burgers_config = load_yaml_config(input_args.config_file_path)[pattern]
+    burgers_config = load_yaml_config(input_args.config_file_path)
 
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
     print_log(f"use_ascend: {use_ascend}")
@@ -134,42 +129,48 @@ def train(input_args):
     else:
         compute_dtype = mstype.float32
 
-    upconv = UpScaler(in_channels=burgers_config['input_channel'],
-                      out_channels=burgers_config['out_channels'],
-                      hidden_channels=burgers_config['upscaler_hidden_channel'],
-                      kernel_size=burgers_config['kernel_size'],
-                      stride=burgers_config['stride'],
+    data_config = burgers_config['data']
+    optimizer_config = burgers_config['optimizer']
+    model_config = burgers_config['model']
+    summary_config = burgers_config['summary']
+
+    upconv = UpScaler(in_channels=model_config['input_channel'],
+                      out_channels=model_config['out_channels'],
+                      hidden_channels=model_config['upscaler_hidden_channel'],
+                      kernel_size=model_config['kernel_size'],
+                      stride=model_config['stride'],
                       has_bais=True)
 
     if use_ascend:
         from mindspore.amp import auto_mixed_precision
         auto_mixed_precision(upconv, 'O1')
 
+    pattern = data_config['pattern']
     if pattern == 'data_driven':
-        recurrent_cnn = RecurrentCNNCell(input_channels=burgers_config['input_channel'],
-                                         hidden_channels=burgers_config['rcnn_hidden_channel'],
-                                         kernel_size=burgers_config['kernel_size'],
+        recurrent_cnn = RecurrentCNNCell(input_channels=model_config['in_channel'],
+                                         hidden_channels=model_config['rcnn_hidden_channel'],
+                                         kernel_size=model_config['kernel_size'],
                                          compute_dtype=compute_dtype)
     else:
-        recurrent_cnn = RecurrentCNNCellBurgers(kernel_size=burgers_config['kernel_size'],
-                                                init_coef=burgers_config['init_coef'],
+        recurrent_cnn = RecurrentCNNCellBurgers(kernel_size=model_config['kernel_size'],
+                                                init_coef=model_config['init_coef'],
                                                 compute_dtype=compute_dtype)
 
     percnn_trainer = Trainer(upconv=upconv,
                              recurrent_cnn=recurrent_cnn,
-                             timesteps_for_train=burgers_config['use_timestep'],
-                             dx=burgers_config['dx'],
-                             dt=burgers_config['dy'],
-                             nu=burgers_config['nu'],
-                             data_path=burgers_config['data_path'],
+                             timesteps_for_train=data_config['rollout_steps'],
+                             dx=data_config['dx'],
+                             dt=data_config['dy'],
+                             nu=data_config['nu'],
+                             data_path=data_config['data_path'],
                              compute_dtype=compute_dtype)
 
-    ckpt_dir = burgers_config["ckpt_dir"]
+    ckpt_dir = summary_config["ckpt_dir"]
     if not os.path.exists(ckpt_dir):
         os.makedirs(ckpt_dir)
 
-    train_stage(percnn_trainer, 'pretrain', pattern, burgers_config['pretrain'], ckpt_dir, use_ascend)
-    train_stage(percnn_trainer, 'finetune', pattern, burgers_config['finetune'], ckpt_dir, use_ascend)
+    train_stage(percnn_trainer, 'pretrain', pattern, optimizer_config['pretrain'], ckpt_dir, use_ascend)
+    train_stage(percnn_trainer, 'finetune', pattern, optimizer_config['finetune'], ckpt_dir, use_ascend)
     post_process(percnn_trainer, pattern)
 
 
@@ -177,8 +178,6 @@ if __name__ == '__main__':
     log_config('./logs', 'percnn')
     args = parse_args()
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                        save_graphs=args.save_graphs,
-                        save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target,
                         device_id=args.device_id,
                         max_call_depth=99999999)
