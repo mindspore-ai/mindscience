@@ -98,7 +98,7 @@ where:
 
 ### Run Option 2: Run Jupyter Notebook
 
-You can use [Chinese](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cma_es_mgda_CN.ipynb) or [English](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cma_es_mgda.ipynb)Jupyter Notebook to run the training and evaluation code line-by-line.
+You can use [Chinese](./cma_es_mgda_CN.ipynb) or [English](./cma_es_mgda.ipynb)Jupyter Notebook to run the training and evaluation code line-by-line.
 
 ## Result
 
