@@ -104,7 +104,7 @@ python --case burgers --mode GRAPH --device_target Ascend --device_id 0 --config
 
 ### 训练方式二：运行Jupyter Notebook
 
-您可以使用[中文版](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cma_es_mgda_CN.ipynb)和[英文版](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cma_es_mgda.ipynb)Jupyter Notebook逐行运行训练和验证代码。
+您可以使用[中文版](./cma_es_mgda_CN.ipynb)和[英文版](./cma_es_mgda.ipynb)Jupyter Notebook逐行运行训练和验证代码。
 
 ## 结果展示
 
