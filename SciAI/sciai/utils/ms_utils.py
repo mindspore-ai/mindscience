@@ -26,7 +26,7 @@ from sciai.utils.check_utils import to_tuple, _check_type, _recursive_type_check
 
 def str2datatype(type_str):
     """
-    Map from float data type string to mindspore data type.
+    Map from float data type string to MindSpore data type.
 
     Args:
         type_str (str): Float data type string.
@@ -40,7 +40,7 @@ def str2datatype(type_str):
 
 def amp2datatype(type_str):
     """
-    Map from auto mixed precision level string to mindspore data type.
+    Map from auto mixed precision level string to MindSpore data type.
     Support amp level from `O0` to `O3`.
 
     Args:
@@ -55,7 +55,7 @@ def amp2datatype(type_str):
 
 def datatype2np(ms_type):
     """
-    Map from mindspore data type to numpy data type.
+    Map from MindSpore data type to numpy data type.
 
     Args:
         ms_type (dtype): Mindspore Tensor data type.
@@ -69,11 +69,11 @@ def datatype2np(ms_type):
 
 def to_tensor(tensors, dtype=ms.float32):  # pylint: disable=W0621
     """
-    Cast array(ies)/tensor(s) to a given mindspore data type.
+    Cast array(ies)/tensor(s) to a given MindSpore data type.
 
     Args:
         tensors (Union[Tensor, ndarray, Number, np.floating, tuple[Tensor, ndarray]]): Tensor(s) to cast.
-        dtype (type): Mindspore Tensor data type. Default: ms.float32.
+        dtype (type): MindSpore Tensor data type. Default: ms.float32.
 
     Returns:
         Union(Tensor, tuple(Tensor)), Single one or tuple of cast tensor(s).
@@ -131,7 +131,7 @@ def to_float(cells, target_type=ms.float32):
 
     Args:
         cells (Union[Cell, list[Cell], tuple[Cell]]): Cells to cast.
-        target_type (dtype): Target mindspore data type that the cell(s) would be converted to.
+        target_type (dtype): Target MindSpore data type that the cell(s) would be converted to.
     """
     _recursive_type_check(cells, nn.Cell)
     _check_type(target_type, "target_type", typing.Number)

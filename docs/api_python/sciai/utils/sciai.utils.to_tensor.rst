@@ -3,7 +3,7 @@ sciai.utils.to_tensor
 
 .. py:function:: sciai.utils.to_tensor(tensors, dtype=ms.float32)
 
-    将数组/张量转换为给定的mindspore数据类型。
+    将数组/张量转换为给定的MindSpore数据类型。
 
     参数：
         - **tensors** (Union[Tensor, ndarray, Number, np.floating, tuple[Tensor, ndarray]]) - 要转换的若干Tensor。

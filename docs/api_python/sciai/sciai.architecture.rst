@@ -3,7 +3,7 @@ sciai.architecture
 
 包含激活函数、神经网络基本模块、损失函数等。
 
-.. mscnplatformautosummary::
+.. mscnautosummary::
     :toctree: architecture
     :nosignatures:
     :template: classtemplate.rst

@@ -3,7 +3,7 @@ sciai.operators
 
 为科学计算提供的算子，包括权重雅可比矩阵算子和网络求导算子。
 
-.. mscnplatformautosummary::
+.. mscnautosummary::
     :toctree: operators
     :nosignatures:
     :template: classtemplate.rst

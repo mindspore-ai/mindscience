@@ -19,7 +19,7 @@ sciai.architecture.MLP
           一致。默认值：None。
 
     输入：
-        - **x** (Tensor) - shape为 :math:`(*, in_channels)` 的Tensor。
+        - **x** (Tensor) - shape为 :math:`(*, in\_channels)` 的Tensor。
 
     输出：
         Union(Tensor, tuple[Tensor])，网络的输出。
