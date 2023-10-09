@@ -75,8 +75,12 @@ class MyInference(WeatherForecast):
         return pred_lst
 
     @staticmethod
-    def _get_total_std(config):
+    def _get_total_sample_description(config, info_mode="std"):
         return np.random.rand(69,).astype(np.float32)
+
+    @staticmethod
+    def _get_history_climate_mean(config):
+        return np.random.rand(259200, 69).astype(np.float32)
 
     def _get_metrics(self, inputs, labels):
         pred = self.forecast(inputs)

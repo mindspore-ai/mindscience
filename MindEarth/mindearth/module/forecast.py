@@ -147,21 +147,33 @@ class WeatherForecast:
         self.model = amp.auto_mixed_precision(model, config['train']['amp_level'])
         self.logger = logger
         self.config = config
-        self.total_std = self._get_total_std(config)
+        self.total_std = self._get_total_sample_description(config, "std")
+        self.total_mean = self._get_total_sample_description(config, "mean")
+        self.climate_mean = self._get_history_climate_mean(config)
         self.h_size, self.w_size = SIZE_DICT[config['data'].get('grid_resolution', 1.4)]
         self.t_out_test = config['data'].get("t_out_test", 20)
         self.pred_lead_time = config['data']['pred_lead_time']
 
     @staticmethod
-    def _get_total_std(config):
-        std_pressure_levels = np.load(os.path.join(config["data"]["root_dir"], "statistic", "std.npy"))
-        std_pressure_levels = std_pressure_levels.transpose(1, 2, 3, 0)
-        std_pressure_levels = std_pressure_levels.reshape((1, -1))
-        std_pressure_levels = np.squeeze(std_pressure_levels, axis=0)
-        std_surface = np.load(os.path.join(config["data"]["root_dir"], "statistic", "std_s.npy"))
-        total_std = np.append(std_pressure_levels, std_surface)
+    def _get_total_sample_description(config, info_mode):
+        """get total sample std or mean description."""
+        sample_info_pressure_levels = np.load(
+            os.path.join(config["data"]["root_dir"], "statistic", info_mode + ".npy"))
+        sample_info_pressure_levels = sample_info_pressure_levels.transpose(1, 2, 3, 0)
+        sample_info_pressure_levels = sample_info_pressure_levels.reshape((1, -1))
+        sample_info_pressure_levels = np.squeeze(sample_info_pressure_levels, axis=0)
+        sample_info_surface = np.load(os.path.join(config["data"]["root_dir"], "statistic",
+                                                   info_mode + "_s.npy"))
+        total_sample_info = np.append(sample_info_pressure_levels, sample_info_surface)
 
-        return total_std
+        return total_sample_info
+
+    @staticmethod
+    def _get_history_climate_mean(config):
+        """get history climate mean."""
+        climate_mean = np.load(os.path.join(config['data']["root_dir"], "statistic", "climate_0.5.npy"))
+
+        return climate_mean
 
     def _get_absolute_idx(self, idx):
         return idx[1] * self.config['data']['pressure_level_num'] + idx[0]

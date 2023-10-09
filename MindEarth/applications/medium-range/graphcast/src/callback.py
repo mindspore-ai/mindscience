@@ -76,6 +76,11 @@ class InferenceModule(WeatherForecast):
                                                                                                           0).asnumpy()
 
         # acc
+        pred = pred * ms.Tensor(self.total_std, ms.float32) + ms.Tensor(self.total_mean, ms.float32)
+        labels = labels * ms.Tensor(self.total_std, ms.float32) + ms.Tensor(self.total_mean, ms.float32)
+        pred = pred - ms.Tensor(self.climate_mean, ms.float32)
+        labels = labels - ms.Tensor(self.climate_mean, ms.float32)
+
         acc_numerator = pred * labels
         acc_numerator = acc_numerator.transpose(0, 1, 3, 2).reshape(
             self.batch_size * self.t_out_test * self.feature_dims, -1)
