@@ -52,16 +52,24 @@ python -u ./main.py \
 |     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
 |     MindSpore版本   |        2.2.0             |      2.2.0       |
 |        数据集      |        [WeatherBench 1.4°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)               |       [WeatherBench 1.4°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)      |
-|        参数量      |                       |             |
+|        参数量      |             35809280          |      35809280       |
 |        训练参数      |        batch_size=1,steps_per_epoch=403,epochs=100               |       batch_size=1,steps_per_epoch=403,epochs=100      |
 |        测试参数      |        batch_size=1,steps=8               |       batch_size=1,steps=8      |
 |        优化器      |        Adam               |       Adam      |
 |        训练损失(RMSE)      |        0.0009               |       0.0009      |
 |        验证加权损失(z500/5天)      |           889            |       870    |
 |        验证加权损失(t850/5天)      |           3.97            |       3.86    |
-|        验证加权损失(z500/5天 <16years data>)      |           314            |           |
-|        验证加权损失(t850/5天 <16years data>)      |           1.79            |          |
 |        速度(ms/step)          |     148        |    226  |
+
+使用[WeatherBench 1.40625°](https://github.com/pangeo-data/WeatherBench)更多数据训练可以获得如下结果:
+
+|        RMSE      |     Z500(3 / 5 days)      |     T850(3 / 5 days)     |    U10(3 / 5 days)      |    T2m(3 / 5 days)     |
+|:----------------:|:--------------:|:---------------:|:--------------:|:---------------:|
+|        Operational IFS     |     152.2 / 331.38     |     1.34 / 2.01     |    1.92 / 2.89      |    1.3 / 1.71     |
+|        ours(4yr)     |     162 / 350.18     |     1.27 / 2.03     |     1.79 / 2.8     |    1.35 / 1.88     |
+|        ours(16yr)     |     145 / 314     |     1.12 / 1.78     |    1.62 / 2.54      |    1.13 / 1.58     |
+
+![image_earth](images/RMSE_multi_years.png)
 
 ## 贡献者
 

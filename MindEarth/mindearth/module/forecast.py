@@ -157,12 +157,13 @@ class WeatherForecast:
     @staticmethod
     def _get_total_sample_description(config, info_mode):
         """get total sample std or mean description."""
+        root_dir = config.get('data').get('root_dir')
         sample_info_pressure_levels = np.load(
-            os.path.join(config["data"]["root_dir"], "statistic", info_mode + ".npy"))
+            os.path.join(root_dir, "statistic", info_mode + ".npy"))
         sample_info_pressure_levels = sample_info_pressure_levels.transpose(1, 2, 3, 0)
         sample_info_pressure_levels = sample_info_pressure_levels.reshape((1, -1))
         sample_info_pressure_levels = np.squeeze(sample_info_pressure_levels, axis=0)
-        sample_info_surface = np.load(os.path.join(config["data"]["root_dir"], "statistic",
+        sample_info_surface = np.load(os.path.join(root_dir, "statistic",
                                                    info_mode + "_s.npy"))
         total_sample_info = np.append(sample_info_pressure_levels, sample_info_surface)
 
@@ -171,7 +172,9 @@ class WeatherForecast:
     @staticmethod
     def _get_history_climate_mean(config):
         """get history climate mean."""
-        climate_mean = np.load(os.path.join(config['data']["root_dir"], "statistic", "climate_0.5.npy"))
+        data_params = config.get('data')
+        climate_mean = np.load(os.path.join(data_params.get("root_dir"), "statistic",
+                                            f"climate_{data_params.get('grid_resolution')}.npy"))
 
         return climate_mean
 
