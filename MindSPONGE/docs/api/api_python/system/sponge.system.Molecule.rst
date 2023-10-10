@@ -39,6 +39,10 @@ sponge.system.Molecule
         参数：
             - **system** (Molecule) - 添加进该分子系统的另一个分子系统。
 
+    .. py:method:: build_angle()
+
+        构建系统的角度。
+
     .. py:method:: build_atom_charge()
 
         构建原子电荷数。
@@ -46,6 +50,18 @@ sponge.system.Molecule
     .. py:method:: build_atom_type()
 
         构建原子种类。
+
+    .. py:method:: build_dihedrals()
+
+        构建系统的二面角。
+
+    .. py:method:: build_h_bonds()
+
+        构建氢原子键。
+
+    .. py:method:: build_improper()
+
+        构建系统不适当的二面角。    
 
     .. py:method:: build_space(coordinate, pbc_box=None)
 
@@ -299,14 +315,14 @@ sponge.system.Molecule
         返回：
             Tensor，系统的周期性边界条件箱。
 
-    .. py:method:: repeat_box(lattices)
+    .. py:method:: repeat_box(lattices: list)
 
         根据周期性边界条件的box的格点重复系统。
 
         参数：
             - **lattices** (list) - 周期性边界条件箱的格点。
 
-    .. py:method:: update_image(image=None)
+    .. py:method:: update_image(image: Tensor=None)
 
         更新坐标图。
 
@@ -323,7 +339,7 @@ sponge.system.Molecule
         参数：
             - **unit** (Union[str, Units, Length, float, int]) - 长度单位。
 
-    .. py:method:: get_atoms(atoms)
+    .. py:method:: get_atoms(atoms: Union[Tensor, Parameter, ndarray, str, list, tuple])
 
         从系统中获取原子。
 
@@ -333,7 +349,7 @@ sponge.system.Molecule
         返回：
             class。原子或一些原子。
 
-    .. py:method:: get_coordinate(atoms=None)
+    .. py:method:: get_coordinate(atoms: AtomsBase = None)
 
         获取坐标的Tensor。
 
@@ -350,7 +366,7 @@ sponge.system.Molecule
         返回：
             Tensor。周期性边界条件箱。
 
-    .. py:method:: fill_water(edge=None, gap=None, box=None, pdb_out=None, template=None)
+    .. py:method:: fill_water(edge: float = None, gap: float = None, box: ndarray = None, pdb_out: str = None, template: str = None)
 
         Molecule类中给周期性边界条件箱加水的内部方法。
 
