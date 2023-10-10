@@ -3,7 +3,7 @@ sciai.common
 
 常用模块包括数据集生成器、参数初始化器、优化器和训练器等。
 
-.. mscnautosummary::
+.. msplatformautosummary::
     :toctree: common
     :nosignatures:
     :template: classtemplate.rst

@@ -6,6 +6,7 @@ MS_DOCS:
     RELEASE.md
     CONTRIBUTING.md
     models.md
+    models_en.md
     version.txt
     LICENSE
     OWNERS
