@@ -56,6 +56,7 @@ class WithEnergyCell(Cell):
         neighbour_list(NeighbourList):  Neighbour list. Default: ``None``.
         wrapper(EnergyWrapper):         Network to wrap and process potential and bias.
                                         Default: ``None``.
+        kwargs(dict):                   other args
 
     Inputs:
         - **\*inputs** (Tuple(Tensor)) - Tuple of input tensors of 'WithEnergyCell'.
@@ -351,11 +352,6 @@ class WithEnergyCell(Cell):
               Index of neighbouring atoms of each atoms in system.
             - neigh_mask, Tensor. Tensor of shape `(B, A, N)`. Data type is bool.
               Mask for neighbour list `neigh_idx`.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers of the simulation.
-            A:  Number of the atoms in the simulation system.
-            N:  Number of the maximum neighbouring atoms.
         """
         return self.neighbour_list.get_neighbour_list()
 
@@ -365,10 +361,6 @@ class WithEnergyCell(Cell):
 
         Return:
             Tensor, Tensor of shape `(B, U)`. Data type is float. Energy terms.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers of the simulation.
-            U:  Number of potential energy terms.
         """
 
         neigh_idx, neigh_vec, neigh_dis, neigh_mask = self.neighbour_list(self.coordinate, self.pbc_box)
@@ -397,10 +389,6 @@ class WithEnergyCell(Cell):
 
         Return:
             Tensor, Tensor of shape `(B, V)`. Data type is float. Bias potential terms.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers of the simulation.
-            V:  Number of bias potential terms.
         """
         if self.bias_function is None:
             return None
