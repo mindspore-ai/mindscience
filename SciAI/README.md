@@ -8,6 +8,7 @@ ENGLISH | [简体中文](README_CN.md)
     - [Confirming the System Environment Information](#confirming-the-system-environment-information)
     - [Method 1: Install with Pip](#Method-1:-Install-With-Pip)
     - [Method 2: Install From Source Code](#Method-2:-Install-From-Source-Code)
+    - [Installation Verification](#Installation-Verification)
 - [Quick Start](#quick-start)
     - [Method 1: Launch by Advanced API (recommended)](#Method-1:-Launch-by-Advanced-API-(recommended))
     - [Method 2: Launch by Source code](#Method-2:-Launch-by-Source-code)
@@ -19,14 +20,10 @@ ENGLISH | [简体中文](README_CN.md)
 
 ## MindSpore SciAI Introduction
 
-Based on MindSpore, SciAI is a model library with 60+ built-in most frequently used and cited AI4Sci(AI for Science)
-models,
-ranking No.1 in the world in terms of coverage. SciAI provides the developers and users with high-level APIs,
-allowing an immediate deployment. The precision and performance reach the SOTA level in the AI4Sci field.
-Specifically, the models provided by SciAI cover from physics-informed (PINNs, DeepRitz, PFNN, etc.)
-to neural operators (FNO, DeepONet) and cover a wide variety of scientific computation fields,
-including fluid dynamics, electromagnetism, sound, heat, solid and biology, etc.
-With these features, SciAI provides developers and users with an efficient and convenient AI4SCI computation platform.
+Based on MindSpore, SciAI is a model library with 60 built-in most frequently used and cited AI4Sci(AI for Science) models, which cover SOTA models from physics-informed (PINNs, DeepRitz, PFNN, etc.) to neural operators (FNO, DeepONet, PDENet), ranking No.1 in the world in terms of coverage.
+MindSpore SciAI provides the developers and users with a high-level API (auto configuration, auto instantiation, training and fine-tuning, etc.), allowing an immediate deployment.
+With these features, MindSpore SciAI covers a wide variety of scientific computation fields,
+including fluid dynamics, electromagnetism, sound, heat, solid and biology, providing developers and users with an efficient and convenient AI4SCI computation platform.
 
 <div align=center>
 <img src="docs/architecture.png" alt="SciAI Architecture" width="600"/>
@@ -54,70 +51,70 @@ The hierarchy of project SciAI is given below.
 SciAI model library provides a wide variety of models that are frequently used and cited in scientific computation.
 The following table summarizes the current available neural networks and their corresponding domains.
 
-| Domain              | Network                                                                                                               |                                                                                                                            MindSpore Implementation and Parameters                                                                                                                             | Ascend | GPU |
-|---------------------|-----------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------:|:---:|
-| General Physics     | [auq_pinns](https://www.sciencedirect.com/science/article/pii/S0021999119303584)                                      |                                                                                                                  [link](./sciai/model/auq_pinns/README.md#script-parameters)                                                                                                                   |   ✅    |  ✅  |
-| General Physics     | [cpinns](https://www.sciencedirect.com/science/article/abs/pii/S0045782520302127)                                     |                                                                                                                    [link](./sciai/model/cpinns/README.md#script-parameters)                                                                                                                    |   ✅    |  ✅  |
-| General Physics     | [deep_hpms](https://www.jmlr.org/papers/volume19/18-046/18-046.pdf)                                                   |                                                                                                                  [link](./sciai/model/deep_hpms/README.md#script-parameters)                                                                                                                   |   ✅    |  ✅  |
-| General Physics     | [deep_ritz](https://arxiv.org/abs/1710.00211)                                                                         |                                                                                                                  [link](./sciai/model/deep_ritz/README.md#script-parameters)                                                                                                                   |   ✅    |  ✅  |
-| General Physics     | [deepbsde](https://www.pnas.org/doi/10.1073/pnas.1718942115)                                                          |                                                                                                                   [link](./sciai/model/deepbsde/README.md#script-parameters)                                                                                                                   |        |  ✅  |
-| General Physics     | [deeponet](https://www.nature.com/articles/s42256-021-00302-5)                                                        |                                                                                                                   [link](./sciai/model/deeponet/README.md#script-parameters)                                                                                                                   |   ✅    |  ✅  |
-| General Physics     | [dgm](https://arxiv.org/abs/1708.07469)                                                                               |                                                                                                                     [link](./sciai/model/dgm/README.md#script-parameters)                                                                                                                      |   ✅    |  ✅  |
-| General Physics     | [fbsnns](https://arxiv.org/abs/1804.07010)                                                                            |                                                                                                                    [link](./sciai/model/fbsnns/README.md#script-parameters)                                                                                                                    |   ✅    |  ✅  |
-| General Physics     | [fpinns](https://arxiv.org/abs/1811.08967)                                                                            |                                                                                                                    [link](./sciai/model/fpinns/README.md#script-parameters)                                                                                                                    |   ✅    |  ✅  |
-| General Physics     | [gradient_pathologies_pinns](https://arxiv.org/abs/2001.04536)                                                        |                                                                                                          [link](./sciai/model/gradient_pathologies_pinns/README.md#script-parameters)                                                                                                          |   ✅    |  ✅  |
-| General Physics     | [hp_vpinns](https://arxiv.org/abs/2003.05385)                                                                         |                                                                                                                  [link](./sciai/model/hp_vpinns/README.md#script-parameters)                                                                                                                   |   ✅    |  ✅  |
-| General Physics     | [laaf](https://doi.org/10.1016/j.jcp.2019.109136)                                                                     |                                                                                                                     [link](./sciai/model/laaf/README.md#script-parameters)                                                                                                                     |   ✅    |  ✅  |
-| General Physics     | [mgnet](https://link.springer.com/article/10.1007/s11425-019-9547-2)                                                  |                                                                                                                    [link](./sciai/model/mgnet/README.md#script-parameters)                                                                                                                     |   ✅    |  ✅  |
-| General Physics     | [multiscale_pinns](https://www.sciencedirect.com/science/article/abs/pii/S0045782521002759)                           |                                                                                                               [link](./sciai/model/multiscale_pinns/README.md#script-parameters)                                                                                                               |   ✅    |  ✅  |
-| General Physics     | [pfnn](https://www.sciencedirect.com/science/article/abs/pii/S0021999120308597)                                       |                                                                                                                     [link](./sciai/model/pfnn/README.md#script-parameters)                                                                                                                     |        |  ✅  |
-| General Physics     | [phygeonet](https://www.sciencedirect.com/science/article/abs/pii/S0021999120308536)                                  |                                                                                                                  [link](./sciai/model/phygeonet/README.md#script-parameters)                                                                                                                   |   ✅    |  ✅  |
-| General Physics     | [pi_deeponet](https://www.sciencedirect.com/science/article/abs/pii/S0021999122009184)                                |                                                                                                                 [link](./sciai/model/pi_deeponet/README.md#script-parameters)                                                                                                                  |        |  ✅  |
-| General Physics     | [pinns](https://www.sciencedirect.com/science/article/abs/pii/S0021999118307125)                                      |                                                                                                                    [link](./sciai/model/pinns/README.md#script-parameters)                                                                                                                     |        |  ✅  |
-| General Physics     | [pinns_ntk](https://www.sciencedirect.com/science/article/pii/S002199912100663X)                                      |                                                                                                                  [link](./sciai/model/pinns_ntk/README.md#script-parameters)                                                                                                                   |   ✅    |  ✅  |
-| General Physics     | [ppinns](https://www.sciencedirect.com/science/article/abs/pii/S0045782520304357)                                     |                                                                                                                    [link](./sciai/model/ppinns/README.md#script-parameters)                                                                                                                    |   ✅    |  ✅  |
-| General Physics     | [xpinns](https://doi.org/10.4208/cicp.OA-2020-0164)                                                                   |                                                                                                                    [link](./sciai/model/xpinns/README.md#script-parameters)                                                                                                                    |   ✅    |  ✅  |
-| Hamiltonian Systems | [sympnets](https://www.sciencedirect.com/science/article/pii/S0893608020303063)                                       |                                                                                                                   [link](./sciai/model/sympnets/README.md#script-parameters)                                                                                                                   |   ✅    |  ✅  |
-| Fluid Dynamic       | [hfm](https://www.science.org/doi/abs/10.1126/science.aaw4741)                                                        |                                                                                                                     [link](./sciai/model/hfm/README.md#script-parameters)                                                                                                                      |   ✅    |  ✅  |
-| Fluid Dynamic       | [label_free_dnn_surrogate](https://www.sciencedirect.com/science/article/pii/S004578251930622X)                       |                                                                                                           [link](./sciai/model/label_free_dnn_surrogate/README.md#script-parameters)                                                                                                           |   ✅    |  ✅  |
-| Fluid Dynamic       | [nsf_nets](https://www.sciencedirect.com/science/article/pii/S0021999120307257)                                       |                                                                                                                   [link](./sciai/model/nsf_nets/README.md#script-parameters)                                                                                                                   |   ✅    |  ✅  |
-| Fluid Dynamic       | [*burgers_fno](https://arxiv.org/abs/2010.08895)                                                                      |                                                                                                             [link](../MindFlow/applications/data_driven/burgers/fno1d/FNO1D.ipynb)                                                                                                             |   ✅    |  ✅  |
-| Fluid Dynamic       | [*burgers_kno](https://arxiv.org/abs/2301.10022)                                                                      |                                                                                                             [link](../MindFlow/applications/data_driven/burgers/kno1d/KNO1D.ipynb)                                                                                                             |   ✅    |  ✅  |
-| Fluid Dynamic       | [*navier_stokes_fno](https://arxiv.org/abs/2010.08895)                                                                |                                                                                                          [link](../MindFlow/applications/data_driven/navier_stokes/fno2d/FNO2D.ipynb)                                                                                                          |   ✅    |  ✅  |
-| Fluid Dynamic       | [*navier_stokes_kno](https://arxiv.org/abs/2301.10022)                                                                |                                                                                                          [link](../MindFlow/applications/data_driven/navier_stokes/kno2d/KNO2D.ipynb)                                                                                                          |   ✅    |  ✅  |
-| Fluid Dynamic       | [*navier_stokes_3d_fno](https://arxiv.org/abs/2010.08895)                                                             |                                                                                                          [link](../MindFlow/applications/data_driven/navier_stokes/fno3d/FNO3D.ipynb)                                                                                                          |   ✅    |  ✅  |
-| Fluid Dynamic       | [*pde_net](https://arxiv.org/abs/1710.09668)                                                                          |                                                                                                            [link](../MindFlow/applications/data_mechanism_fusion/pde_net/README.md)                                                                                                            |   ✅    |  ✅  |
-| Fluid Dynamic       | [*percnn](https://www.nature.com/articles/s42256-023-00685-7)                                                         |                                                                                                           [link](../MindFlow/applications/data_mechanism_fusion/PeRCNN/README_CN.md)                                                                                                           |   ✅    |  ✅  |
-| Elastodynamics      | [pinn_elastodynamics](https://arxiv.org/abs/2006.08472)                                                               |                                                                                                             [link](./sciai/model/pinn_elastodynamics/README.md#script-parameters)                                                                                                              |   ✅    |  ✅  |
-| Thermodynamics      | [pinn_heattransfer](https://arxiv.org/abs/1711.10561)                                                                 |                                                                                                              [link](./sciai/model/pinn_heattransfer/README.md#script-parameters)                                                                                                               |   ✅    |  ✅  |
-| Meteorology         | [enso](https://doi.org/10.1038/s41586-019-1559-7)                                                                     |                                                                                                                     [link](./sciai/model/enso/README.md#script-parameters)                                                                                                                     |   ✅    |  ✅  |
-| Geology             | [inversion_net](https://ieeexplore.ieee.org/abstract/document/8918045/)                                               |                                                                                                                [link](./sciai/model/inversion_net/README.md#script-parameters)                                                                                                                 |   ✅    |  ✅  |
-| Geology             | [pinn_helmholtz](https://academic.oup.com/gji/article-abstract/228/3/1750/6409132)                                    |                                                                                                                [link](./sciai/model/pinn_helmholtz/README.md#script-parameters)                                                                                                                |   ✅    |  ✅  |
-| Oceanic Physics     | [ocean_model](https://gmd.copernicus.org/articles/12/4729/2019/)                                                      |                                                                                                                 [link](./sciai/model/ocean_model/README.md#Model-Description)                                                                                                                  |        |  ✅  |
-| Oceanic Physics     | [pinns_swe](https://arxiv.org/abs/2104.00615)                                                                         |                                                                                                                  [link](./sciai/model/pinns_swe/README.md#script-parameters)                                                                                                                   |   ✅    |  ✅  |
-| Electromagnetism    | [maxwell_net](https://arxiv.org/abs/2107.06164)                                                                       |                                                                                                                 [link](./sciai/model/maxwell_net/README.md#script-parameters)                                                                                                                  |   ✅    |  ✅  |
-| Electromagnetism    | [*AD_FDTD_invert_f](https://www.mindspore.cn/mindelec/docs/en/r0.2/AD_FDTD.html)                                      |                                                                                                         [link](../MindElec/examples/AD_FDTD/fdtd_forward/README.md#script-parameters)                                                                                                          |        |  ✅  |
-| Electromagnetism    | [*AD_FDTD_microstrip_filter](https://www.mindspore.cn/mindelec/docs/en/r0.2/AD_FDTD.html)                             |                                                                                                         [link](../MindElec/examples/AD_FDTD/fdtd_forward/README.md#script-parameters)                                                                                                          |        |  ✅  |
-| Electromagnetism    | [*AD_FDTD_inverse](https://www.mindspore.cn/mindelec/docs/en/r0.2/AD_FDTD.html)                                       |                                                                                                         [link](../MindElec/examples/AD_FDTD/fdtd_inverse/README.md#script-parameters)                                                                                                          |        |  ✅  |
-| Electromagnetism    | [*frequency_domain_maxwell](https://arxiv.org/abs/2107.06164)                                                         |                                                                                                [link](../MindElec/examples/physics_driven/frequency_domain_maxwell/README.md#script-parameters)                                                                                                |   ✅    |  ✅  |
-| Electromagnetism    | [*frequency_domain_maxwell_3D_dielectric_slab](https://arxiv.org/abs/2107.06164)                                      |                                                                                           [link](../MindElec/examples/physics_driven/frequency_domain_maxwell_3D/dielectric_slab_3d/README.md#脚本参数)                                                                                            |   ✅    |  ✅  |
-| Electromagnetism    | [*frequency_domain_maxwell_3D_waveguide_cavity](https://arxiv.org/abs/2107.06164)                                     |                                                                                           [link](../MindElec/examples/physics_driven/frequency_domain_maxwell_3D/waveguide_cavity_3d/README.md#脚本参数)                                                                                           |   ✅    |  ✅  |
-| Electromagnetism    | [*meta_auto_decoder](https://arxiv.org/abs/2111.08823)                                                                |                                                                                                  [link](../MindElec/examples/physics_driven/incremental_learning/README.md#script-parameters)                                                                                                  |   ✅    |  ✅  |
-| Electromagnetism    | [*pinn_fwi](https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2021JB023120)                                     |                                                                                                                 [link](../MindElec/examples/physics_driven/pinn_fwi/README.md)                                                                                                                 |   ✅    |  ✅  |
-| Electromagnetism    | [*SED_ANN](https://gitee.com/mindspore/mindscience/tree/master/MindElec/examples/data_driven/sed_ann)                 |                                                                                                                 [link](../MindElec/examples/data_driven/sed_ann/README_CN.md)                                                                                                                  |   ✅    |  ✅  |
-| Electromagnetism    | [*time_domain_maxwell](https://www.ijcai.org/proceedings/2022/533)                                                    |                                                                                                  [link](../MindElec/examples/physics_driven/time_domain_maxwell/README.md#script-parameters)                                                                                                   |   ✅    |  ✅  |
-| Electromagnetism    | [*metasurface_holograms](https://www.researching.cn/articles/OJ44d3746c3db8c1e1)                                      |                                                                                                      [link](../MindElec/examples/metasurface/metasurface_holograms/README.md#parameters)                                                                                                       |   ✅    |  ✅  |
-| Biology             | [*MEGA-Fold](https://arxiv.org/abs/2206.12240v1)                                                                      |       [link (inference)](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/README.md#mega-fold-inference)  [link (training)](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/README.md#mega-fold-training)       |   ✅    |  ✅  |
-| Biology             | [*MEGA-EvoGen](https://arxiv.org/abs/2208.09652)                                                                      |                                                                                [link](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/README.md#mega-evogen-inference)                                                                                 |   ✅    |  ✅  |
-| Biology             | [*MEGA-Assessment](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/README.md) | [link (inference)](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/README.md#mega-assessment-inference)  [link (training)](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/README.md#mega-assessment-training) |   ✅    |  ✅  |
-| Biology             | [*ColabDesign](https://www.biorxiv.org/content/10.1101/2021.11.10.468128.abstract)                                    |                                                                                                                [link](../MindSPONGE/applications/model%20cards/ColabDesign.md)                                                                                                                 |   ✅    |  ✅  |
-| Biology             | [*DeepFRI](https://www.nature.com/articles/s41467-021-23303-9)                                                        |                                                                                                                  [link](../MindSPONGE/applications/model%20cards/DeepFri.md)                                                                                                                   |   ✅    |  ✅  |
-| Biology             | [*Multimer](https://www.biorxiv.org/content/10.1101/2021.10.04.463034v1)                                              |                                                                                                                 [link](../MindSPONGE/applications/model%20cards/afmultimer.md)                                                                                                                 |   ✅    |  ✅  |
-| Biology             | [*ProteinMPNN](https://www.science.org/doi/abs/10.1126/science.add2187)                                               |                                                                                                                [link](../MindSPONGE/applications/model%20cards/ProteinMPNN.MD)                                                                                                                 |   ✅    |  ✅  |
-| Biology             | [*UFold](https://doi.org/10.1093/nar/gkab1074)                                                                        |                                                                                                                   [link](../MindSPONGE/applications/model%20cards/UFold.md)                                                                                                                    |   ✅    |  ✅  |
-| Biology             | [*esm-if1](https://proceedings.mlr.press/v162/hsu22a.html)                                                            |                                                                                                                  [link](../MindSPONGE/applications/model%20cards/ESM-IF1.md)                                                                                                                   |   ✅    |  ✅  |
-| Biology             | [*esm2](https://www.biorxiv.org/content/10.1101/2022.07.20.500902v1.full.pdf)                                         |                                                                                                                   [link](../MindSPONGE/applications/model%20cards/ESM-2.md)                                                                                                                    |   ✅    |  ✅  |
-| Biology             | [*grover](https://proceedings.neurips.cc/paper/2020/file/94aef38441efa3380a3bed3faf1f9d5d-Paper.pdf)                  |                                                                                                                   [link](../MindSPONGE/applications/model%20cards/GROVER.MD)                                                                                                                   |   ✅    |  ✅  |
+| Domain              | Network                                                                                              |                                                                           MindSpore Implementation and Parameters                                                                            | Ascend | GPU |
+|---------------------|------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------:|:---:|
+| General Physics     | [auq_pinns](https://www.sciencedirect.com/science/article/pii/S0021999119303584)                     |                                                                 [link](./sciai/model/auq_pinns/README.md#script-parameters)                                                                  |   ✅    |  ✅  |
+| General Physics     | [cpinns](https://www.sciencedirect.com/science/article/abs/pii/S0045782520302127)                    |                                                                   [link](./sciai/model/cpinns/README.md#script-parameters)                                                                   |   ✅    |  ✅  |
+| General Physics     | [deep_hpms](https://www.jmlr.org/papers/volume19/18-046/18-046.pdf)                                  |                                                                 [link](./sciai/model/deep_hpms/README.md#script-parameters)                                                                  |   ✅    |  ✅  |
+| General Physics     | [deep_ritz](https://arxiv.org/abs/1710.00211)                                                        |                                                                 [link](./sciai/model/deep_ritz/README.md#script-parameters)                                                                  |   ✅    |  ✅  |
+| General Physics     | [deepbsde](https://www.pnas.org/doi/10.1073/pnas.1718942115)                                         |                                                                  [link](./sciai/model/deepbsde/README.md#script-parameters)                                                                  |        |  ✅  |
+| General Physics     | [deeponet](https://www.nature.com/articles/s42256-021-00302-5)                                       |                                                                  [link](./sciai/model/deeponet/README.md#script-parameters)                                                                  |   ✅    |  ✅  |
+| General Physics     | [dgm](https://arxiv.org/abs/1708.07469)                                                              |                                                                    [link](./sciai/model/dgm/README.md#script-parameters)                                                                     |   ✅    |  ✅  |
+| General Physics     | [fbsnns](https://arxiv.org/abs/1804.07010)                                                           |                                                                   [link](./sciai/model/fbsnns/README.md#script-parameters)                                                                   |   ✅    |  ✅  |
+| General Physics     | [fpinns](https://arxiv.org/abs/1811.08967)                                                           |                                                                   [link](./sciai/model/fpinns/README.md#script-parameters)                                                                   |   ✅    |  ✅  |
+| General Physics     | [gradient_pathologies_pinns](https://arxiv.org/abs/2001.04536)                                       |                                                         [link](./sciai/model/gradient_pathologies_pinns/README.md#script-parameters)                                                         |   ✅    |  ✅  |
+| General Physics     | [hp_vpinns](https://arxiv.org/abs/2003.05385)                                                        |                                                                 [link](./sciai/model/hp_vpinns/README.md#script-parameters)                                                                  |   ✅    |  ✅  |
+| General Physics     | [laaf](https://doi.org/10.1016/j.jcp.2019.109136)                                                    |                                                                    [link](./sciai/model/laaf/README.md#script-parameters)                                                                    |   ✅    |  ✅  |
+| General Physics     | [mgnet](https://link.springer.com/article/10.1007/s11425-019-9547-2)                                 |                                                                   [link](./sciai/model/mgnet/README.md#script-parameters)                                                                    |   ✅    |  ✅  |
+| General Physics     | [multiscale_pinns](https://www.sciencedirect.com/science/article/abs/pii/S0045782521002759)          |                                                              [link](./sciai/model/multiscale_pinns/README.md#script-parameters)                                                              |   ✅    |  ✅  |
+| General Physics     | [pfnn](https://www.sciencedirect.com/science/article/abs/pii/S0021999120308597)                      |                                                                         [link](./sciai/model/pfnn/README_CN.md#脚本说明)                                                                         |        |  ✅  |
+| General Physics     | [phygeonet](https://www.sciencedirect.com/science/article/abs/pii/S0021999120308536)                 |                                                                 [link](./sciai/model/phygeonet/README.md#script-parameters)                                                                  |   ✅    |  ✅  |
+| General Physics     | [pi_deeponet](https://www.sciencedirect.com/science/article/abs/pii/S0021999122009184)               |                                                                [link](./sciai/model/pi_deeponet/README.md#script-parameters)                                                                 |        |  ✅  |
+| General Physics     | [pinns](https://www.sciencedirect.com/science/article/abs/pii/S0021999118307125)                     |                                                                   [link](./sciai/model/pinns/README.md#script-parameters)                                                                    |        |  ✅  |
+| General Physics     | [pinns_ntk](https://www.sciencedirect.com/science/article/pii/S002199912100663X)                     |                                                                 [link](./sciai/model/pinns_ntk/README.md#script-parameters)                                                                  |   ✅    |  ✅  |
+| General Physics     | [ppinns](https://www.sciencedirect.com/science/article/abs/pii/S0045782520304357)                    |                                                                   [link](./sciai/model/ppinns/README.md#script-parameters)                                                                   |   ✅    |  ✅  |
+| General Physics     | [xpinns](https://doi.org/10.4208/cicp.OA-2020-0164)                                                  |                                                                   [link](./sciai/model/xpinns/README.md#script-parameters)                                                                   |   ✅    |  ✅  |
+| Hamiltonian Systems | [sympnets](https://www.sciencedirect.com/science/article/pii/S0893608020303063)                      |                                                                  [link](./sciai/model/sympnets/README.md#script-parameters)                                                                  |   ✅    |  ✅  |
+| Fluid Dynamic       | [hfm](https://www.science.org/doi/abs/10.1126/science.aaw4741)                                       |                                                                    [link](./sciai/model/hfm/README.md#script-parameters)                                                                     |   ✅    |  ✅  |
+| Fluid Dynamic       | [label_free_dnn_surrogate](https://www.sciencedirect.com/science/article/pii/S004578251930622X)      |                                                          [link](./sciai/model/label_free_dnn_surrogate/README.md#script-parameters)                                                          |   ✅    |  ✅  |
+| Fluid Dynamic       | [nsf_nets](https://www.sciencedirect.com/science/article/pii/S0021999120307257)                      |                                                                  [link](./sciai/model/nsf_nets/README.md#script-parameters)                                                                  |   ✅    |  ✅  |
+| Fluid Dynamic       | [*burgers_fno](https://arxiv.org/abs/2010.08895)                                                     |                                                             [link](../MindFlow/applications/data_driven/burgers/fno1d/README.MD)                                                             |   ✅    |  ✅  |
+| Fluid Dynamic       | [*burgers_kno](https://arxiv.org/abs/2301.10022)                                                     |                                                             [link](../MindFlow/applications/data_driven/burgers/kno1d/README.md)                                                             |   ✅    |  ✅  |
+| Fluid Dynamic       | [*navier_stokes_fno](https://arxiv.org/abs/2010.08895)                                               |                                                          [link](../MindFlow/applications/data_driven/navier_stokes/fno2d/README.md)                                                          |   ✅    |  ✅  |
+| Fluid Dynamic       | [*navier_stokes_kno](https://arxiv.org/abs/2301.10022)                                               |                                                          [link](../MindFlow/applications/data_driven/navier_stokes/kno2d/README.md)                                                          |   ✅    |  ✅  |
+| Fluid Dynamic       | [*navier_stokes_3d_fno](https://arxiv.org/abs/2010.08895)                                            |                                                          [link](../MindFlow/applications/data_driven/navier_stokes/fno3d/README.md)                                                          |   ✅    |  ✅  |
+| Fluid Dynamic       | [*pde_net](https://arxiv.org/abs/1710.09668)                                                         |                                                           [link](../MindFlow/applications/data_mechanism_fusion/pde_net/README.md)                                                           |   ✅    |  ✅  |
+| Fluid Dynamic       | [*percnn](https://www.nature.com/articles/s42256-023-00685-7)                                        |                                                          [link](../MindFlow/applications/data_mechanism_fusion/PeRCNN/README_CN.md)                                                          |   ✅    |  ✅  |
+| Elastodynamics      | [pinn_elastodynamics](https://arxiv.org/abs/2006.08472)                                              |                                                            [link](./sciai/model/pinn_elastodynamics/README.md#script-parameters)                                                             |   ✅    |  ✅  |
+| Thermodynamics      | [pinn_heattransfer](https://arxiv.org/abs/1711.10561)                                                |                                                             [link](./sciai/model/pinn_heattransfer/README.md#script-parameters)                                                              |   ✅    |  ✅  |
+| Meteorology         | [enso](https://doi.org/10.1038/s41586-019-1559-7)                                                    |                                                                    [link](./sciai/model/enso/README.md#script-parameters)                                                                    |   ✅    |  ✅  |
+| Geology             | [inversion_net](https://ieeexplore.ieee.org/abstract/document/8918045/)                              |                                                               [link](./sciai/model/inversion_net/README.md#script-parameters)                                                                |   ✅    |  ✅  |
+| Geology             | [pinn_helmholtz](https://academic.oup.com/gji/article-abstract/228/3/1750/6409132)                   |                                                               [link](./sciai/model/pinn_helmholtz/README.md#script-parameters)                                                               |   ✅    |  ✅  |
+| Oceanic Physics     | [ocean_model](https://gmd.copernicus.org/articles/12/4729/2019/)                                     |                                                                [link](./sciai/model/ocean_model/README.md#Model-Description)                                                                 |        |  ✅  |
+| Oceanic Physics     | [pinns_swe](https://arxiv.org/abs/2104.00615)                                                        |                                                                 [link](./sciai/model/pinns_swe/README.md#script-parameters)                                                                  |   ✅    |  ✅  |
+| Electromagnetism    | [maxwell_net](https://arxiv.org/abs/2107.06164)                                                      |                                                                [link](./sciai/model/maxwell_net/README.md#script-parameters)                                                                 |   ✅    |  ✅  |
+| Electromagnetism    | [*AD_FDTD_invert_f](https://www.mindspore.cn/mindelec/docs/en/r0.2/AD_FDTD.html)                     |                                                        [link](../MindElec/examples/AD_FDTD/fdtd_forward/README.md#script-parameters)                                                         |        |  ✅  |
+| Electromagnetism    | [*AD_FDTD_microstrip_filter](https://www.mindspore.cn/mindelec/docs/en/r0.2/AD_FDTD.html)            |                                                        [link](../MindElec/examples/AD_FDTD/fdtd_forward/README.md#script-parameters)                                                         |        |  ✅  |
+| Electromagnetism    | [*AD_FDTD_inverse](https://www.mindspore.cn/mindelec/docs/en/r0.2/AD_FDTD.html)                      |                                                        [link](../MindElec/examples/AD_FDTD/fdtd_inverse/README.md#script-parameters)                                                         |        |  ✅  |
+| Electromagnetism    | [*frequency_domain_maxwell](https://arxiv.org/abs/2107.06164)                                        |                                               [link](../MindElec/examples/physics_driven/frequency_domain_maxwell/README.md#script-parameters)                                               |   ✅    |  ✅  |
+| Electromagnetism    | [*frequency_domain_maxwell_3D_dielectric_slab](https://arxiv.org/abs/2107.06164)                     |                                          [link](../MindElec/examples/physics_driven/frequency_domain_maxwell_3D/dielectric_slab_3d/README.md#脚本参数)                                           |   ✅    |  ✅  |
+| Electromagnetism    | [*frequency_domain_maxwell_3D_waveguide_cavity](https://arxiv.org/abs/2107.06164)                    |                                          [link](../MindElec/examples/physics_driven/frequency_domain_maxwell_3D/waveguide_cavity_3d/README.md#脚本参数)                                          |   ✅    |  ✅  |
+| Electromagnetism    | [*meta_auto_decoder](https://arxiv.org/abs/2111.08823)                                               |                                                 [link](../MindElec/examples/physics_driven/incremental_learning/README.md#script-parameters)                                                 |   ✅    |  ✅  |
+| Electromagnetism    | [*pinn_fwi](https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2021JB023120)                    |                                                                [link](../MindElec/examples/physics_driven/pinn_fwi/README.md)                                                                |   ✅    |  ✅  |
+| Electromagnetism    | [*SED_ANN](../MindElec/examples/data_driven/sed_ann)                                                 |                                                                [link](../MindElec/examples/data_driven/sed_ann/README_CN.md)                                                                 |   ✅    |  ✅  |
+| Electromagnetism    | [*time_domain_maxwell](https://www.ijcai.org/proceedings/2022/533)                                   |                                                 [link](../MindElec/examples/physics_driven/time_domain_maxwell/README.md#script-parameters)                                                  |   ✅    |  ✅  |
+| Electromagnetism    | [*metasurface_holograms](https://www.researching.cn/articles/OJ44d3746c3db8c1e1)                     |                                                     [link](../MindElec/examples/metasurface/metasurface_holograms/README.md#parameters)                                                      |   ✅    |  ✅  |
+| Biology             | [*MEGA-Fold](https://arxiv.org/abs/2206.12240v1)                                                     |       [link (inference)](../MindSPONGE/applications/MEGAProtein/README.md#mega-fold-inference)  [link (training)](../MindSPONGE/applications/MEGAProtein/README.md#mega-fold-training)       |   ✅    |  ✅  |
+| Biology             | [*MEGA-EvoGen](https://arxiv.org/abs/2208.09652)                                                     |                                                        [link](../MindSPONGE/applications/MEGAProtein/README.md#mega-evogen-inference)                                                        |   ✅    |  ✅  |
+| Biology             | [*MEGA-Assessment](../MindSPONGE/applications/MEGAProtein/README.md)                                 | [link (inference)](../MindSPONGE/applications/MEGAProtein/README.md#mega-assessment-inference)  [link (training)](../MindSPONGE/applications/MEGAProtein/README.md#mega-assessment-training) |   ✅    |  ✅  |
+| Biology             | [*ColabDesign](https://www.biorxiv.org/content/10.1101/2021.11.10.468128.abstract)                   |                                                               [link](../MindSPONGE/applications/model%20cards/ColabDesign.md)                                                                |   ✅    |  ✅  |
+| Biology             | [*DeepFRI](https://www.nature.com/articles/s41467-021-23303-9)                                       |                                                                 [link](../MindSPONGE/applications/model%20cards/DeepFri.md)                                                                  |   ✅    |  ✅  |
+| Biology             | [*Multimer](https://www.biorxiv.org/content/10.1101/2021.10.04.463034v1)                             |                                                                [link](../MindSPONGE/applications/model%20cards/afmultimer.md)                                                                |   ✅    |  ✅  |
+| Biology             | [*ProteinMPNN](https://www.science.org/doi/abs/10.1126/science.add2187)                              |                                                               [link](../MindSPONGE/applications/model%20cards/ProteinMPNN.MD)                                                                |   ✅    |  ✅  |
+| Biology             | [*UFold](https://doi.org/10.1093/nar/gkab1074)                                                       |                                                                  [link](../MindSPONGE/applications/model%20cards/UFold.md)                                                                   |   ✅    |  ✅  |
+| Biology             | [*esm-if1](https://proceedings.mlr.press/v162/hsu22a.html)                                           |                                                                 [link](../MindSPONGE/applications/model%20cards/ESM-IF1.md)                                                                  |   ✅    |  ✅  |
+| Biology             | [*esm2](https://www.biorxiv.org/content/10.1101/2022.07.20.500902v1.full.pdf)                        |                                                                  [link](../MindSPONGE/applications/model%20cards/ESM-2.md)                                                                   |   ✅    |  ✅  |
+| Biology             | [*grover](https://proceedings.neurips.cc/paper/2020/file/94aef38441efa3380a3bed3faf1f9d5d-Paper.pdf) |                                                                  [link](../MindSPONGE/applications/model%20cards/GROVER.MD)                                                                  |   ✅    |  ✅  |
 
 Note: the "*" in the model names indicates that these models have already been released at an earlier time by MindSpore
 and MindScience.
@@ -159,7 +156,7 @@ Note: This installation method is not currently supported.
 It will be supported after Mindspore 2.2.0 official release.
 
 ```bash
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/mindscience/{arch}/sciai-{version}-cp3-cp3m-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{ms_version}/mindscience/{arch}/sciai-{version}-cp3-cp3m-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 > - When the network is connected, dependencies of the SciAI installation package are automatically downloaded during
@@ -171,39 +168,39 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/mindscienc
 
 The following table provides the corresponding installation commands to each architecture and Python version.
 
-| Device | Architecture | Python    | Command                                                                                                                                                                        |
-|--------|--------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Ascend | x86_64       | Python3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/mindscience/x86_64/sciai-0.1.0-cp3-cp3m-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple`   |
-|        | aarch64      | Python3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/mindscience/aarch64/sciai-0.1.0-cp3-cp3m-linux_aarch64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple` |
-| GPU    | x86_64       | Python3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/mindscience/x86_64/sciai-0.1.0-cp3-cp3m-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple`   |
+| Device | Architecture | Python      | Command                                                                                                                                                                        |
+|--------|--------------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Ascend | x86_64       | Python>=3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/mindscience/x86_64/sciai-0.1.0-cp3-cp3m-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple`   |
+|        | aarch64      | Python>=3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/mindscience/aarch64/sciai-0.1.0-cp3-cp3m-linux_aarch64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple` |
+| GPU    | x86_64       | Python>=3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/mindscience/x86_64/sciai-0.1.0-cp3-cp3m-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple`   |
 
-Note: If you have installed other MindScience packages in your conda or python env, such as `MindElec`, `MindFlow`
-, `MindSponge`, Please uninstall the MindScience package in the environment first to avoid pip conflicts behavior.
+Note: If you have other MindScience package(s) installed in your conda or python env, such as `MindElec`, `MindFlow`
+, `MindSponge`,
+please uninstall the MindScience package(s) in the environment first to avoid pip behavior conflicts.
 
 ### Method 2: Install From Source Code
 
-Clone the source code from the Git repository of MindScience.
+1. Clone the source code from the Git repository of MindScience.
 
-```bash
-cd ~
-git clone https://gitee.com/mindspore/mindscience.git
-```
+    ```bash
+    cd ~
+    git clone https://gitee.com/mindspore/mindscience.git
+    ```
 
-Build SciAI with script `build.sh`.
+2. Build SciAI with script `build.sh`.
 
-- Ascend backend
+    ```bash
+    cd mindscience/SciAI
+    bash build.sh -j8
+    ```
 
-```bash
-cd mindscience/SciAI
-bash build.sh -j8
-```
+3. Install the `.whl` package
 
-Install the `.whl` package
+    ```bash
+    bash install.sh
+    ```
 
-```bash
-cd mindscience/SciAI/output
-pip install sciai_*.whl
-```
+### Installation Verification
 
 To verify the installation, run the following commands. If the error message `No module named 'sciai'` is not displayed,
 the installation is successful.
@@ -258,15 +255,62 @@ from sciai.model import AutoModel
 model = AutoModel.from_pretrained("cpinns")
 # load the default ckpt file and evaluate the model
 model.evaluate()
-# or load the ckpt file provided by the user
+# or load the ckpt file provided by the user(Optional)
 model.update_config(load_ckpt=True, load_ckpt_path="./checkpoints/your_checkpoint_file.ckpt")
 # and then evaluate the model
 model.evaluate()
 ```
 
+- View training and validation results
+
+Users can find a directory named `auto_model_xxx` in the script running directory, which contains `checkpoints`, `data`
+, `figures`, `logs` four subdirectories, containing checkpoints, data, pictures, and logs respectively.
+Users can view training results in these directories. For example:
+
+```text
+├── auto_model_cpinns
+│   ├── checkpoints                  # checkpoint files
+│   ├── data                         # data files
+│   ├── figures                      # plot figures
+│   └── logs                         # log files
+```
+
+- 可配置参数:
+
+`AutoModel.update_config(**kwargs)` 支持修改网络参数，包括学习率、训练周期、混合精度等级、动静态图、数据读取保存路径、checkpoints文件加载路径等，
+具体请参考[网络模型库](#网络模型库)中`MindSpore实现与网络参数`链接。常用的可配置参数见下表：
+
+- Configurable parameters:
+
+`AutoModel.update_config(**kwargs)` supports modifying network parameters, including learning rate, training epochs,
+auto mixed precision level, graph or pynative mode, data loading and saving path, checkpoints file loading path, etc.
+For details, please refer to the link in `MindSpore implementation and network parameters` column
+in [Model Library](#Model-Library). Commonly used configurable parameters are shown in the table below:
+
+| parameter      | description                                  | default values                 |
+|----------------|----------------------------------------------|--------------------------------|
+| save_ckpt      | whether save checkpoint or not               | true                           |
+| save_fig       | whether save and plot figures or not         | true                           |
+| load_ckpt      | whether load checkpoint or not               | false                          |
+| save_ckpt_path | checkpoint saving path                       | ./checkpoints                  |
+| load_ckpt_path | checkpoint loading path                      | ./checkpoints/model_final.ckpt |
+| load_data_path | path to load data                            | ./data                         |
+| save_data_path | path to save data                            | ./data                         |
+| figures_path   | figures saving path                          | ./figures                      |
+| log_path       | log saving path                              | ./logs                         |
+| print_interval | time and loss print interval                 | 10                             |
+| ckpt_interval  | checkpoint saving interval                   | 1000                           |
+| lr             | learning rate                                | 8e-4                           |
+| epochs         | number of epochs                             | 15001                          |
+| download_data  | necessary dataset and/or checkpoints         | cpinns                         |
+| force_download | whether download the dataset or not by force | false                          |
+| amp_level      | MindSpore auto mixed precision level         | O3                             |
+| device_id      | device id to set                             | None                           |
+| mode           | MindSpore Graph mode(0) or Pynative mode(1)  | 0                              |
+
 - Recover Checkpoints and Dataset
 
-Users may encounter with the situation that the automatically downloaded checkpoints or dataset are missing or deleted,
+Users may encounter the situation that the automatically downloaded checkpoints or dataset are missing or deleted,
 while they can always be re-downloaded by updating the config as follows.
 
 ```python
@@ -324,10 +368,9 @@ while they can always be re-downloaded with the following solutions:
 
 ## Documents
 
-For more details about the installation guides, tutorials, and APIs, see [SciAI Documents].  
+For more details about the installation guides, tutorials, and APIs,
+see [SciAI Documents](https://www.mindspore.cn/sciai/docs/en/master/index.html).  
 If you encounter problems with SciAI, please refer to [FAQ](docs/faq.md).
-
-[//]: # (TODO: Waiting for release...)
 
 ## Community
 
