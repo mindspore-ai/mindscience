@@ -89,7 +89,7 @@ class DEMNet(nn.Cell):
     Inputs:
          - **input** (Tensor) - Tensor of shape :math:`(batch\_size, channels, height\_size, width\_size)`.
     outputs:
-         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, channels, new_height\_size, new_width\_size)
+         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, channels, new_height\_size, new_width\_size)`.
     Supported Platforms:
         ``Ascend`` ``GPU``
 
@@ -98,9 +98,9 @@ class DEMNet(nn.Cell):
         >>> import mindspore as ms
         >>> from mindspore import ops, Tensor
         >>> from mindspore.nn import Cell
-        >>> from mindearth.cell.dem_srnet.dem_srnet import DEM_SRNet
+        >>> from mindearth.cell import DEMNet
         >>> input_images = np.random.rand(64, 1, 32, 32).astype(np.float32)
-        >>> net = DEM_SRNet(in_channels=1, channels=256, kernel_size=3, scale=5, num_blocks=42)
+        >>> net = DEMNet(in_channels=1, channels=256, kernel_size=3, scale=5, num_blocks=42)
         >>> out = net(Tensor(input_images, ms.float32))
         >>> print(out.shape)
         (64, 1, 160, 160)
