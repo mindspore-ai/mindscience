@@ -39,10 +39,9 @@ def main(args):
     """main"""
     dtype = amp2datatype(args.amp_level)
     max_t, n_t, input_data, srcs = generate_data(dtype)
-    model = DeepElasticWave(args.uv_layers, dtype)
+    model = load_checkpoint(args, dtype)
     if dtype == ms.float16:
         model.to_float(ms.float16)
-    model = load_checkpoint(args, dtype)
 
     evaluate(input_data, model)
     if args.save_fig:

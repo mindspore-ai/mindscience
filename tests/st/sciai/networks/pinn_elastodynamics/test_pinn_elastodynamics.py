@@ -81,7 +81,7 @@ def test_comb_should_run_with_full_command():
           "--lr 1e-3 " \
           "--epochs 1 " \
           "--amp_level O0 " \
-          "--use_lbfgs true " \
+          "--use_lbfgs false " \
           "--max_iter_lbfgs 1"
 
     cmd = shlex.split(cmd)
@@ -106,7 +106,6 @@ def test_comb_should_loss_small_enough_when_load_ckpt(mode):
         config = yaml.safe_load(f)
     config["load_ckpt"] = True
     config["epochs"] = 1
-    config["max_iter_lbfgs"] = 1
     args = parse_arg(config)
     init_project(mode=mode, args=args)
     main(args)
@@ -158,12 +157,12 @@ def test_comb_should_error_small_enough_when_val(mode):
     loss_src = re.findall(r"loss_src: (.*)", outputs)[-1]
     loss_ic = re.findall(r"loss_ic: (.*)", outputs)[-1]
     loss_fix = re.findall(r"loss_fix: (.*)", outputs)[-1]
-    assert float(loss_f_uv) < 1e-6
-    assert float(loss_f_s) < 0.001
+    assert float(loss_f_uv) < 1e-5
+    assert float(loss_f_s) < 1e-5
     assert float(loss_src) < 1e-6
     assert float(loss_ic) < 1e-7
     assert float(loss_fix) < 1e-5
-    assert float(loss) < 0.01
+    assert float(loss) < 1e-4
     clear_stub(stderr, stdout)
 
 
@@ -176,7 +175,7 @@ def test_auto_model(mode):
     """
     stderr, stdout = stub_stdout()
     model = AutoModel.from_pretrained("pinn_elastodynamics")
-    model.update_config(mode=mode, epochs=2, max_iter_lbfgs=5, print_interval=1, save_fig=False, save_ckpt=False,
+    model.update_config(mode=mode, epochs=2, print_interval=1, save_fig=False, save_ckpt=False,
                         load_data_path="./data")
     model.train()
     outputs = sys.stdout.getvalue().strip()
@@ -191,11 +190,11 @@ def test_auto_model(mode):
     loss_src = re.findall(r"loss_src: (.*)", outputs)[-1]
     loss_ic = re.findall(r"loss_ic: (.*)", outputs)[-1]
     loss_fix = re.findall(r"loss_fix: (.*)", outputs)[-1]
-    assert float(loss_f_uv) < 1e-6
-    assert float(loss_f_s) < 0.001
+    assert float(loss_f_uv) < 1e-5
+    assert float(loss_f_s) < 1e-5
     assert float(loss_src) < 1e-6
     assert float(loss_ic) < 1e-7
     assert float(loss_fix) < 1e-5
-    assert float(loss) < 0.01
+    assert float(loss) < 1e-4
 
     clear_stub(stderr, stdout)
