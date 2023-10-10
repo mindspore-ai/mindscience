@@ -59,6 +59,7 @@ class RunOneStepCell(Cell):
         steps(int):             Steps for JIT. Default: 1
         sens(float):            The scaling number to be filled as the input of backpropagation.
                                 Default: 1.0
+        kwargs(dict):                 other args
 
     Inputs:
         - **\*inputs** (Tuple(Tensor)) - Tuple of input tensors of `WithEnergyCell`.
@@ -70,7 +71,7 @@ class RunOneStepCell(Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
         B:  Batchsize, i.e. number of walkers of the simulation.
         A:  Number of the atoms in the simulation system.
         D:  Spatial dimension of the simulation system. Usually is 3.

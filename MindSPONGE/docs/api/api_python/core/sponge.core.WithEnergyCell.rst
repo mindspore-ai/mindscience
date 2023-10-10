@@ -1,31 +1,32 @@
 sponge.core.WithEnergyCell
 ==============================
 
-.. py:class:: sponge.core.WithEnergyCell(system: Molecule, potential: PotentialCell, bias: Union[Bias, List[Bias]] = None, cutoff: float = None, neighbour_list: NeighbourList = None, wrapper: EnergyWrapper = None)
+.. py:class:: sponge.core.WithEnergyCell(system: Molecule, potential: PotentialCell, bias: Union[Bias, List[Bias]] = None, cutoff: float = None, neighbour_list: NeighbourList = None, wrapper: EnergyWrapper = None, **kwargs)
 
     用势能函数封装仿真系统的神经网络层。
     该神经网络层用于计算并返回系统在当前坐标处的势能值。
 
-    参数:
+    参数：
         - **system** (Molecule) - 仿真系统。
         - **potential** (PotentialCell) - 势能函数层。
         - **bias** (Union[Bias, List[Bias]]) - 偏差势能函数层。默认值："None"。
         - **cutoff** (float) - 邻居列表的截断距离。如果为None，则将其赋值为势能的截止值。默认值："None"。
         - **neighbour_list** (NeighbourList) - 邻居列表。默认值："None"。
         - **wrapper** (EnergyWrapper) - 包裹和处理势和偏差的网络。默认值："None"。
+        - **kwargs** (dict) - 其他参数。
 
-    输入:
+    输入：
         - **\*inputs** (Tuple(Tensor)) - 'WithEnergyCell'的输入Tensor对。
 
-    输出:
+    输出：
         整个系统的势能, shape为 `(B, 1)` 的Tensor。数据类型为float。
 
-    .. py:method:: biases()
-
-        偏置势分量的Tensor。
-
-        返回：
-            偏置势分量的Tensor。shape为 `(B, V)` ，数据类型为float。
+    符号：
+        B: batch size，比如分子模拟中walker的数量。 
+        A: 分子模拟中原子的数量。 
+        N: 最大相邻原子数。 
+        U: 势能项的数量。 
+        V: bias potential项的数量。 
 
     .. py:method:: bias()
 
@@ -33,6 +34,13 @@ sponge.core.WithEnergyCell
 
         返回：
             Tensor，shape为 `(B, 1)` ，数据类型为float。
+
+    .. py:method:: biases()
+
+        偏置势分量的Tensor。
+
+        返回：
+            偏置势分量的Tensor。shape为 `(B, V)` ，数据类型为float。
 
     .. py:method:: bias_names()
 
@@ -51,13 +59,6 @@ sponge.core.WithEnergyCell
         返回：
             int，更新频率。
 
-    .. py:method:: calc_energies()
-
-        计算势能的能量项。
-
-        返回：
-            能量项，shape为 `(B, U)` 的Tensor。数据类型为float。
-
     .. py:method:: calc_biases()
 
         计算偏置势项。
@@ -65,19 +66,19 @@ sponge.core.WithEnergyCell
         返回：
             偏置势项，shape为 `(B, V)` 的Tensor。数据类型为float。
 
+    .. py:method:: calc_energies()
+
+        计算势能的能量项。
+
+        返回：
+            能量项，shape为 `(B, U)` 的Tensor。数据类型为float。
+
     .. py:method:: cutoff()
 
         邻居列表的截断距离。
 
         返回：
             Tensor，截断距离。
-
-    .. py:method:: energy_unit()
-
-        能量单位，
-
-        返回：
-            str，能量单位。
 
     .. py:method:: energies()
 
@@ -92,6 +93,13 @@ sponge.core.WithEnergyCell
 
         返回：
             list[str]，能量项的名字列表。
+
+    .. py:method:: energy_unit()
+
+        能量单位。
+
+        返回：
+            str，能量单位。
 
     .. py:method:: get_neighbour_list()
 
@@ -115,19 +123,19 @@ sponge.core.WithEnergyCell
         返回：
             int，更新步长。
 
-    .. py:method:: num_energies()
-
-        能量项 :math:`U` 的数量。
-
-        返回：
-            int，能量项的数量。
-
     .. py:method:: num_biases()
 
         偏置势能 :math:`V` 的数量。
 
         返回：
             int，偏置势能的数量。
+
+    .. py:method:: num_energies()
+
+        能量项 :math:`U` 的数量。
+
+        返回：
+            int，能量项的数量。
 
     .. py:method:: set_pbc_grad(grad_box: bool)
 
