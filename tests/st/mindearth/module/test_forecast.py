@@ -80,7 +80,7 @@ class MyInference(WeatherForecast):
 
     @staticmethod
     def _get_history_climate_mean(config):
-        return np.random.rand(259200, 69).astype(np.float32)
+        return np.random.rand(32768, 69).astype(np.float32)
 
     def _get_metrics(self, inputs, labels):
         pred = self.forecast(inputs)
