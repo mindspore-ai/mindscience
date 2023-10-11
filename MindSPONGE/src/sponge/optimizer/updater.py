@@ -64,6 +64,7 @@ class Updater(Optimizer):
                                                             Default: ``None``.
         weight_decay(float):                                An value for the weight decay. Default: 0.0
         loss_scale(float):                                  A value for the loss scale. Default: 1.0
+        kwargs(dict):                                       other args
 
     Inputs:
         - **energy** (Tensor) - Energy of the system. Tensor of shape `(B, A, D)`. Data type is float.
@@ -77,7 +78,7 @@ class Updater(Optimizer):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
         B:  Batchsize, i.e. number of walkers in simulation
         A:  Number of atoms.
         D:  Spatial dimension of the simulation system. Usually is 3.
