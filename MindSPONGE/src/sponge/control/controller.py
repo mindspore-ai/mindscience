@@ -48,6 +48,7 @@ class Controller(Cell):
     Args:
         system(Molecule):   Simulation system
         control_step(int):  Step interval for controller execution. Default: 1
+        kwargs(dict):       Other parameters for extension
 
     Inputs:
         - **coordinate** (Tensor) - Tensor of shape `(B, A, D)`. Data type is float.
