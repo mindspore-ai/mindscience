@@ -167,6 +167,7 @@ class Length:
     Args:
         value (float):   length value.
         unit (str):      length value unit. Default: 'nm'
+        kwargs:          other arguments.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -304,6 +305,7 @@ class Energy:
     Args:
         value (float):   energy value.
         unit (str):      energy value unit. Default: 'kl/mol'
+        kwargs:          other arguments.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -651,6 +653,7 @@ class Units:
     Args:
         length_unit (str):  Length unit. Default: ``None``
         energy_unit (str):  Energy unit. Default: ``None``
+        kwargs:  other arguments.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

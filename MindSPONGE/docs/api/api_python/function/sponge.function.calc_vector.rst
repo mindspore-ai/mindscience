@@ -1,7 +1,7 @@
 sponge.function.calc_vector
 ==============================
 
-.. py:function:: sponge.function.calc_vector(initial, terminal, pbc_box)
+.. py:function:: sponge.function.calc_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None)
 
     计算从起点到终点的向量。
 

@@ -8,5 +8,5 @@ sponge.function.get_integer
     参数：
         - **value** (Union[int, Tensor, Parameter, ndarray]) - 输入的值。
 
-    输出：
+    返回：
         int。输入value的整型类型。

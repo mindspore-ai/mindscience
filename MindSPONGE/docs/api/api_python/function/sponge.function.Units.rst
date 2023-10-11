@@ -1,13 +1,14 @@
 sponge.function.Units
 =========================
 
-.. py:class:: sponge.function.Units(length_unit: str = None, energy_unit: str = None)
+.. py:class:: sponge.function.Units(length_unit: str = None, energy_unit: str = None, **kwargs)
 
     记录和转换长度和能量单位。
 
     参数：
         - **length_unit** (str) - 长度单位。默认值： ``None`` 。
         - **energy_unit** (str) - 能量单位。默认值： ``None`` 。
+        - **kwargs** - 其他参数。
 
     .. py:method:: acceleration_ref()
 
@@ -84,13 +85,13 @@ sponge.function.Units
         返回：
             float。当前单位下的库伦常数。
 
-    .. py:method:: energy(value, unit)
+    .. py:method:: energy(value, value: float, unit = None)
 
         获取当前单位的能量值。
 
         参数：
             - **value** (float) - 能量值。
-            - **unit** (str) - 能力单位。
+            - **unit** (Union[str, Units, Energy, float, int]) - 能力单位。
 
         返回：
             float。能量值。
@@ -144,14 +145,14 @@ sponge.function.Units
         返回：
             float。气体常数。
 
-    .. py:method:: get_boltzmann(energy_unit)
+    .. py:method:: get_boltzmann(energy_unit: str = None)
 
         获取指定单位下的玻尔兹曼常数。
 
         参数：
             - **energy_unit** (str) - 能量单位。
     
-    .. py:method:: get_coulomb(length_unit, energy_unit)
+    .. py:method:: get_coulomb(length_unit: str = None, energy_unit: str = None)
 
         获取指定单位下的库伦常数。
 
@@ -166,13 +167,13 @@ sponge.function.Units
         返回：
             float。动力学的参考值。
 
-    .. py:method:: length(value, unit)
+    .. py:method:: length(value: float, unit = None)
 
         获取当前单位的长度值。
 
         参数：
             - **value** (float) - 长度值。
-            - **unit** (str) - 长度单位。
+            - **unit** (Union[str, Units, Length, float, int]) - 长度单位。
 
         返回：
             float。长度值。
@@ -198,28 +199,35 @@ sponge.function.Units
         返回：
             str。长度单位的名称。
 
-    .. py:method:: set_energy_unit(unit)
+    .. py:method:: pressure_ref()
+
+        获取压力的参考值。
+
+        返回：
+            float。压力的参考值。
+
+    .. py:method:: set_energy_unit(unit: str = None)
 
         设置能量单位。
 
         参数：
             - **unit** (str) - 能量单位。
 
-    .. py:method:: set_length_unit(unit)
+    .. py:method:: set_length_unit(unit: str = None)
 
         设置长度单位。
 
         参数：
             - **unit** (str) - 长度单位。
 
-    .. py:method:: set_units(length_unit, energy_unit, units)
+    .. py:method:: set_units(length_unit: str = None, energy_unit: str = None, units=None)
 
         设置长度单位。
 
         参数：
             - **length_unit** (str) - 长度单位。
             - **energy_unit** (str) - 能量单位。
-            - **units** (str) - 单位。
+            - **units** (Units) - 单位。
 
     .. py:method:: velocity_unit()
 

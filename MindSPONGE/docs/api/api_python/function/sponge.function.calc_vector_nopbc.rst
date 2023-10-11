@@ -9,5 +9,5 @@ sponge.function.calc_vector_nopbc
         - **initial** (Tensor) - 起点坐标，shape为 :math:`(..., D)` 。其中， :math:`D` 表示模拟系统的维度（通常为3）。
         - **terminal** (Tensor) - 终点坐标，shape为 :math:`(..., D)` 。
 
-    输出：
+    返回：
         Tensor。计算所得向量。shape为 :math:`(..., D)`。

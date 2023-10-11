@@ -10,5 +10,5 @@ sponge.function.pbc_image
         - **pbc_box** (Tensor) - PBC box，数据类型为float，shape为 :math:`(B, D)` 。
         - **offset** (float) - 偏移率。默认值： ``0.0`` 。
 
-    输出：
+    返回：
         Tensor。周期图，shape为 :math:`(B, ..., D)` ，数据类型为int32。

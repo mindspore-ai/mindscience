@@ -196,7 +196,7 @@ class GetDistance(GetVector):
                             If this is "True", the last dimension of the output Tensor will be 1.
                             Default: ``False``.
 
-        axis (int):         The axis of the space dimension of the coordinate. Default: -1
+        axis (int):         The axis of the space dimension of the coordinate. Default: ``-1`` .
 
     """
 

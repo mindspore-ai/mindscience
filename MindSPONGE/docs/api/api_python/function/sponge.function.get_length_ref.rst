@@ -8,5 +8,5 @@ sponge.function.get_length_ref
     参数：
         - **unit** (Union[str, Units, Length, float, int]) - 长度单位。
 
-    输出：
-        Union[str, Units, Length, float, int]。参考长度。
+    返回：
+        Union[str, float, int]。参考长度。

@@ -16,5 +16,5 @@ sponge.function.calc_angle_pbc
         - **pbc_box** (Tensor) - PBC box，shape为 :math:`(B, D)` ，数据类型为float。
         - **keepdims** (bool) - 如果设置为True，则在结果中，最后一个轴将保留为大小为1的维度。默认值： ``False``。
 
-    输出：
+    返回：
         Tensor。计算所得角。shape为 :math:`(B, ..., 1)` ，数据类型为float。
