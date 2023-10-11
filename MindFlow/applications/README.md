@@ -27,8 +27,8 @@ MindFlow覆盖了物理驱动、数据驱动、数据机理融合的AI流体仿�
     - [FNO3D方法求解NS方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes/fno3d)
     - [KNO方法求解NS方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/navier_stokes/kno2d)
     - [CAE-LSTM方法求解二维黎曼问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm)
-    - [CAE-LSTM方法求解shu-osher](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm)
-    - [CAE-LSTM方法求解sod激波管问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm)
+    - [CAE-LSTM方法求解Shu-Osher问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm)
+    - [CAE-LSTM方法求解Sod激波管问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm)
     - [CAE-LSTM方法求解KH问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm)
     - [eHDNN方法求解抖振流场](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/transonic_buffet_ehdnn)
     - [eHDNN方法预测非定常流场](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/move_boundary_hdnn)
@@ -51,8 +51,8 @@ MindFlow覆盖了物理驱动、数据驱动、数据机理融合的AI流体仿�
     - [PINNs方法求解Allen-Cahn方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/allen_cahn)
     - [CMA-ES&多目标梯度下降算法加速PINNs收敛](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cma_es_mgda)
 - CFD
-    - [sod激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
-    - [lax激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
+    - [Sod激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
+    - [Lax激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
     - [二维黎曼问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/riemann2d)
     - [库埃特流动](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/couette)
 
