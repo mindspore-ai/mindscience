@@ -12,6 +12,7 @@ save_figure: false
 figures_path: ./figures
 log_path: ./logs
 print_interval: 10
+ckpt_interval: 10
 lr: 0.01
 epochs: 10
 batch_size: 400
