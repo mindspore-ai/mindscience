@@ -11,6 +11,3 @@ sponge.function.GetShiftGrad
         - **num_walkers** (int) - 多线程的数量。默认值： ``1`` 。
         - **dimension** (int) - 维度数量。默认值： ``3`` 。
         - **use_pbc** (bool) - 是否使用周期性边界条件。如果是 ``None`` ，则根据是否提供pbc_box决定是否在周期性边界中计算距离。默认值： ``None`` 。
-
-    输出：
-        Tensor。计算所得B矩阵的微分，shape为 :math:`(B, A, D)` ，B是Batch size，A是模拟系统中原子总数，。

@@ -12,5 +12,5 @@ sponge.function.calc_torsion_nopbc
         - **position_d** (Tensor) - 位置d，shape为 :math:`(..., D)` 。
         - **keepdims** (bool) - 设置为 ``True`` 的话，最后一个维度会保留，默认值 ``False`` 。
 
-    输出：
+    返回：
         Tensor。计算所得扭转角。shape为 :math:`(...)` 或 :math:`(..., 1)` 。

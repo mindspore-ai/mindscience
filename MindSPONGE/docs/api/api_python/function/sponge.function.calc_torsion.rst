@@ -13,7 +13,7 @@ sponge.function.calc_torsion
         - **pbc_box** (Tensor) - PBC box，shape为 :math:`(D)` 或 :math:`(B, D)`，其中B表示batch size，D表示模拟系统的维度，一般为3，数据类型为float。PBC box尺寸为 :math:`\vec{L}`。默认值 ``"None"``。
         - **keepdims** (bool) - 如果被设置为 ``"True"``，则最后一个轴将作为大小为 1 的维度保留在结果中。默认值 ``"False"``。
 
-    输出：
+    返回：
         Tensor。计算所得扭转角。shape为 :math:`(...)` 或者 :math:`(..., 1)` ，数据类型为float。
     
     支持平台：

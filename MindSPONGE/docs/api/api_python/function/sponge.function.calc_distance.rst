@@ -16,5 +16,5 @@ sponge.function.calc_distance
         - **pbc_box** (Tensor) - 周期性盒子，shape为 :math:`(D)` 或者 :math:`(B, D)` ，B是Batch size。
         - **keepdims** (bool) - 如果设置为 ``True`` ，最后一个维度会被保留，默认值 ``False`` 。
 
-    输出：
+    返回：
         Tensor。A和B之间的距离。shape为 :math:`(...)` 或者 :math:`(B, ..., 1)` 。

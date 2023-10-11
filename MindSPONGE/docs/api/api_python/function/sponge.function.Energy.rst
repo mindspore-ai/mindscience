@@ -1,13 +1,14 @@
 sponge.function.Energy
 ==========================
 
-.. py:class:: sponge.function.Energy(value, unit="kj/mol")
+.. py:class:: sponge.function.Energy(value, unit="kj/mol", **kwargs)
 
     能量。
 
     参数：
         - **value** (float) - 能量值。
         - **unit** (str) - 能量单位。默认值："kj/mol"。
+        - **kwargs** - 其他参数。
 
     .. py:method:: abs_size()
 
@@ -21,7 +22,7 @@ sponge.function.Energy
         改变单位。
 
         参数：
-            - **unit** (str) - 能量单位。
+            - **unit** (Union[str, Units, float, int]) - 能量单位。
 
     .. py:method:: ref()
 
