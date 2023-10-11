@@ -190,7 +190,7 @@ class Era5Data(Data):
         validator.check_value_type("test_dir", self.test_dir, [str, none_type])
         validator.check_value_type("valid_dir", self.valid_dir, [str, none_type])
 
-        self.get_statistic()
+        self._get_statistic()
 
         self.run_mode = run_mode
         self.t_in = data_params.get('t_in')
@@ -270,7 +270,7 @@ class Era5Data(Data):
             x_surface_static = np.load(os.path.join(self.static_surface_path, year_name)).astype(np.float32)
             x = self._get_origin_data(x, x_static)
             x_surface = self._get_origin_data(x_surface, x_surface_static)
-            x, x_surface = self.normalize(x, x_surface)
+            x, x_surface = self._normalize(x, x_surface)
             inputs_lst.append(x)
             inputs_surface_lst.append(x_surface)
 
@@ -283,7 +283,7 @@ class Era5Data(Data):
             label_surface_static = np.load(os.path.join(self.static_surface_path, year_name)).astype(np.float32)
             label = self._get_origin_data(label, label_static)
             label_surface = self._get_origin_data(label_surface, label_surface_static)
-            label, label_surface = self.normalize(label, label_surface)
+            label, label_surface = self._normalize(label, label_surface)
 
             label_lst.append(label)
             label_surface_lst.append(label_surface)
@@ -292,7 +292,7 @@ class Era5Data(Data):
         x_surface = np.squeeze(np.stack(inputs_surface_lst, axis=0), axis=1).astype(np.float32)
         label = np.squeeze(np.stack(label_lst, axis=0), axis=1).astype(np.float32)
         label_surface = np.squeeze(np.stack(label_surface_lst, axis=0), axis=1).astype(np.float32)
-        return self.process_fn(x, x_surface, label, label_surface)
+        return self._process_fn(x, x_surface, label, label_surface)
 
     @staticmethod
     def _get_origin_data(x, static):
@@ -309,18 +309,18 @@ class Era5Data(Data):
                 count += len(tmp_lst)
         return count
 
-    def get_statistic(self):
+    def _get_statistic(self):
         self.mean_pressure_level = np.load(os.path.join(self.statistic_dir, 'mean.npy'))
         self.std_pressure_level = np.load(os.path.join(self.statistic_dir, 'std.npy'))
         self.mean_surface = np.load(os.path.join(self.statistic_dir, 'mean_s.npy'))
         self.std_surface = np.load(os.path.join(self.statistic_dir, 'std_s.npy'))
 
-    def normalize(self, x, x_surface):
+    def _normalize(self, x, x_surface):
         x = (x - self.mean_pressure_level) / self.std_pressure_level
         x_surface = (x_surface - self.mean_surface) / self.std_surface
         return x, x_surface
 
-    def process_fn(self, x, x_surface, label, label_surface):
+    def _process_fn(self, x, x_surface, label, label_surface):
         '''process_fn'''
         _, level_size, _, _, feature_size = x.shape
         surface_size = x_surface.shape[-1]
@@ -549,7 +549,15 @@ class Dataset:
             self.rank_size = get_group_size()
 
     def create_dataset(self, batch_size):
-        """ create dataset """
+        """
+        create dataset.
+
+        Args:
+            batch_size (int, optional): An int number of rows each batch is created with.
+
+        Returns:
+            BatchDataset, dataset batched.
+        """
         ds.config.set_prefetch_size(1)
         dataset = ds.GeneratorDataset(self.dataset_generator,
                                       ['inputs', 'labels'],
