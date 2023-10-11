@@ -3,7 +3,7 @@ sciai.context
 
 MindSpore context模块，包含自动选卡、自动后端平台识别等功能。
 
-.. mscnautosummary::
+.. msplatformautosummary::
     :toctree: context
     :nosignatures:
     :template: classtemplate.rst

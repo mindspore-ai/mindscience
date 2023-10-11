@@ -107,7 +107,7 @@ python train.py \
   python train.py
   ```
 
-## [Model Description](#contents)
+## Model Description
 
 Model parameters are defined as follows:
 
