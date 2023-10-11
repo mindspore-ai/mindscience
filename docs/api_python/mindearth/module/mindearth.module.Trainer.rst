@@ -9,8 +9,8 @@ mindearth.module.Trainer
     然后可以使用Trainer.train()方法开始训练模型。
 
     参数：
-        - **model** (mindspore.nn.Cell) - 用于训练的网络。
         - **config** (dict) - 输入参数。例如，模型参数、数据参数、训练参数。
+        - **model** (mindspore.nn.Cell) - 用于训练的网络。
         - **loss_fn** (mindspore.nn.Cell): 损失函数。
         - **logger** (logging.RootLogger, 可选) - 训练过程中的日志模块。默认值： ``None``。
         - **weatherdata_type** (str, 可选) - 数据的类型。默认值： ``Era5Data``。
@@ -18,8 +18,19 @@ mindearth.module.Trainer
 
 
     异常：
-        - **TypeError** - 如果 `model` 或 `loss_fn` mindspore.nn.Cell
+        - **TypeError** - 如果 `model` 或 `loss_fn` 不是mindspore.nn.Cell。
         - **NotImplementedError** - 如果 `get_callback` 的方法没有实现。
+
+    .. py:method:: mindearth.module.Trainer.get_callback()
+
+        用于定义模型的回调类。用户必须自定义重写该方法。
+
+    .. py:method:: mindearth.module.Trainer.get_checkpoint()
+
+        获得模型的checkpoint实例。
+
+        返回：
+            Callback，模型的checkpoint实例.
 
     .. py:method:: mindearth.module.Trainer.get_dataset()
 
@@ -35,17 +46,6 @@ mindearth.module.Trainer
 
         返回：
             Optimizer，模型的优化器。
-
-    .. py:method:: mindearth.module.Trainer.get_checkpoint()
-
-        获得模型的checkpoint实例。
-
-        返回：
-            Callback，模型的checkpoint实例.
-
-    .. py:method:: mindearth.module.Trainer.get_callback()
-
-        用于定义模型的回调类。用户必须自定义重写该方法。
 
     .. py:method:: mindearth.module.Trainer.get_solver()
 
