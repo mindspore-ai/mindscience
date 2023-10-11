@@ -1,7 +1,7 @@
 sponge.system.Molecule
 ==========================
 
-.. py:class:: sponge.system.Molecule(atoms: Union[List[Union[str, int]], ndarray] = None, atom_name: Union[List[str], ndarray] = None, atom_type: Union[List[str], ndarray] = None, atom_mass: Union[Tensor, ndarray, List[float]] = None, atom_charge: Union[Tensor, ndarray, List[float]] = None, atomic_number: Union[Tensor, ndarray, List[float]] = None, bond: Union[Tensor, ndarray, List[int]] = None, coordinate: Union[Tensor, ndarray, List[float]] = None, pbc_box: Union[Tensor, ndarray, List[float]] = None, template: Union[dict, str] = None, residue: Union[Residue, List[Residue]] = None, length_unit: str = None)
+.. py:class:: sponge.system.Molecule(atoms: Union[List[Union[str, int]], ndarray] = None, atom_name: Union[List[str], ndarray] = None, atom_type: Union[List[str], ndarray] = None, atom_mass: Union[Tensor, ndarray, List[float]] = None, atom_charge: Union[Tensor, ndarray, List[float]] = None, atomic_number: Union[Tensor, ndarray, List[float]] = None, bonds: Union[Tensor, ndarray, List[int]] = None, coordinate: Union[Tensor, ndarray, List[float]] = None, pbc_box: Union[Tensor, ndarray, List[float]] = None, template: Union[dict, str] = None, residue: Union[Residue, List[Residue]] = None, length_unit: str = None, **kwargs)
 
     分子体系层。
 
@@ -18,13 +18,14 @@ sponge.system.Molecule
         - **template** (Union[dict, str]) - 分子的模板。可以是一个MindSPONGE模板格式的字典，也可以是一个MindSPONGE模板文件的字符串。如果输入是一个字符串，该类会优先在MindSPONGE模板的构建路径下( `mindsponge.data.template` )搜索与输入同名的文件。默认值： ``None`` 。
         - **residue** (Union[Residue, List[Residue]]) - 残基或残基列表。如果 `template` 不是 ``None`` 的话，只有模板里的残基会被使用。默认值： ``None`` 。
         - **length_unit** (str) - 长度单位。如果为 ``None`` ，则使用全局长度单位。默认值： ``None`` 。
+        - **kwargs** (dict) - 其他参数，用于扩展。
 
     输出：
         - 坐标，shape为 :math:`(B, A, D)` 的Tensor，其中B表示batch size， A表示原子数量，D表示模拟体系的维度，一般为3。数据类型为float。
         - 周期性边界条件盒子，shape为 :math:`(B, D)` 的Tensor，其中B表示batch size， D表示模拟体系的维度，一般为3。数据类型为float。
 
 
-    .. py:method:: add_residue(residue, coordinate=None)
+    .. py:method:: add_residue(residue: Residue, coordinate: Tensor = None)
 
         向当前分子系统增加残基。
 
@@ -63,7 +64,7 @@ sponge.system.Molecule
 
         构建系统不适当的二面角。    
 
-    .. py:method:: build_space(coordinate, pbc_box=None)
+    .. py:method:: build_space(coordinate: Tensor, pbc_box: Tensor = None)
 
         构建坐标系和周期性边界条件箱。
     
@@ -75,7 +76,7 @@ sponge.system.Molecule
 
         通过残基构建系统。
 
-    .. py:method:: calc_colvar(colvar)
+    .. py:method:: calc_colvar(colvar: Colvar) -> Tensor
 
         计算系统中特定的集体变量的值。
 
@@ -85,7 +86,7 @@ sponge.system.Molecule
         返回：
             Tensor，集体变量 :math:`s(R)` 的值。
 
-    .. py:method:: calc_image(shift=0)
+    .. py:method:: calc_image(shift: float = 0) -> Tensor
 
         计算坐标图。
 
@@ -115,7 +116,7 @@ sponge.system.Molecule
         返回：
             float，根据特定单位换算所得长度。
 
-    .. py:method:: coordinate_in_pbc(shift=0)
+    .. py:method:: coordinate_in_pbc(shift: float = 0) -> Tensor
 
         获取在整个周期性边界条件箱中的坐标。
 
@@ -153,14 +154,14 @@ sponge.system.Molecule
         返回：
             Tensor，重原子的掩码。
 
-    .. py:method:: move(shift=None)
+    .. py:method:: move(shift: Tensor = None)
 
         移动系统的坐标。
 
         参数：
             - **shift** (Tensor) - 系统的移动距离。默认值： ``None`` 。
 
-    .. py:method:: copy(shift=None)
+    .. py:method:: copy(shift: Tensor = None)
 
         返回一个复制当前 `Molecule` 参数的 `Molecule` 类。
 
@@ -170,28 +171,28 @@ sponge.system.Molecule
         返回：
             class，复制了当前 `Molecule` 类的参数的 `Molecule` 类。
 
-    .. py:method:: reduplicate(shift)
+    .. py:method:: reduplicate(shift: Tensor)
 
         复制系统让其扩大到原来的两倍。
 
         参数：
             - **shift** (Tensor) - 从原始系统移动的距离。
 
-    .. py:method:: set_atom_charge(atom_charge)
+    .. py:method:: set_atom_charge(atom_charge: Tensor)
 
         设置原子电荷。
 
         参数：
             - **atom_charge** (Tensor) - 原子电荷。
 
-    .. py:method:: set_bond_length(bond_length)
+    .. py:method:: set_bond_length(bond_length: Tensor)
 
         设置键长。
 
         参数：
             - **bond_length** (Tensor) - 设置系统的键长。
 
-    .. py:method:: residue_index(res_id)
+    .. py:method:: residue_index(res_id: int)
 
         获得残基的索引。
 
@@ -201,7 +202,7 @@ sponge.system.Molecule
         返回：
             Tensor。残基在系统中的索引。
 
-    .. py:method:: residue_bond(res_id)
+    .. py:method:: residue_bond(res_id: int)
 
         获得残基键的索引。
 
@@ -211,7 +212,7 @@ sponge.system.Molecule
         返回：
             Tensor。残基键的索引。
 
-    .. py:method:: residue_head(res_id)
+    .. py:method:: residue_head(res_id: int)
 
         获取残基的头索引。
 
@@ -221,7 +222,7 @@ sponge.system.Molecule
         返回：
             Tensor。残基的头索引。
 
-    .. py:method:: residue_tail(res_id)
+    .. py:method:: residue_tail(res_id: int)
 
         获得残基的尾索引。
 
@@ -231,7 +232,7 @@ sponge.system.Molecule
         返回：
             Tensor。残基的尾索引。
 
-    .. py:method:: residue_coordinate(res_id)
+    .. py:method:: residue_coordinate(res_id: int)
 
         获得残基坐标。
 
@@ -265,7 +266,7 @@ sponge.system.Molecule
         返回：
             list，所有可训练参数的list。
 
-    .. py:method:: update_coordinate(coordinate)
+    .. py:method:: update_coordinate(coordinate: Tensor)
 
         更新坐标的参数。
 
@@ -275,7 +276,7 @@ sponge.system.Molecule
         返回：
             Tensor。更新后的系统坐标。
 
-    .. py:method:: set_coordianate(coordinate)
+    .. py:method:: set_coordianate(coordinate: Tensor)
 
         设定坐标的值。
 
@@ -285,7 +286,7 @@ sponge.system.Molecule
         返回：
             Tensor，系统的坐标。
 
-    .. py:method:: update_pbc_box(pbc_box)
+    .. py:method:: update_pbc_box(pbc_box: Tensor)
 
         更新周期性边界条件箱。
 
@@ -295,7 +296,7 @@ sponge.system.Molecule
         返回：
             Tensor，更新后的周期性边界条件箱。
 
-    .. py:method:: set_pbc_grad(grad_box)
+    .. py:method:: set_pbc_grad(grad_box: bool)
 
         设置是否计算周期性边界条件箱的梯度。
 
@@ -305,7 +306,7 @@ sponge.system.Molecule
         返回：
             bool，是否计算周期性边界条件箱的梯度。
 
-    .. py:method:: set_pbc_box(pbc_box=None)
+    .. py:method:: set_pbc_box(pbc_box: Tensor = None) -> Tensor
 
         设置周期性边界条件箱。
 

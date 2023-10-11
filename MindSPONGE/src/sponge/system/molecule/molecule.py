@@ -111,6 +111,7 @@ class Molecule(Cell):
                                                             Default: ``None``.
         length_unit(str):                                   Length unit. If ``None`` is given, the global length
                                                             units will be used. Default: ``None``
+        kwargs(dict):                                       Other parameters for extension
 
     Outputs:
         - coordinate, Tensor of shape `(B, A, D)`. Data type is float.
@@ -388,7 +389,7 @@ class Molecule(Cell):
         Append a system to this molecule system.
 
         Args:
-            system(class): Another molecule system that will be added to this molecule system.
+            system(Molecule): Another molecule system that will be added to this molecule system.
         """
         if not isinstance(system, Molecule):
             raise TypeError(f'For append, the type of system must be "Molecule" but got: {type(system)}')
