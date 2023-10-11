@@ -8,5 +8,5 @@ sponge.function.get_energy_unit
     参数：
         - **unit** (Union[str, Units, Length, float, int]) - 能量单位。
 
-    输出：
+    返回：
         str。能量单位。

@@ -8,5 +8,5 @@ sponge.function.get_energy_ref
     参数：
         - **unit** (Union[str, Units, Length, float, int]) - 能量单位。
 
-    输出：
+    返回：
         Union[str, float, int]。参考能量。

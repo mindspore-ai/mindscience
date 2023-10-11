@@ -10,5 +10,5 @@ sponge.function.calc_distance_nopbc
         - **position_b** (Tensor) - 位置B的坐标，shape为 :math:`(..., D)` 。
         - **keepdims** (bool) - 默认值： ``False`` 。
 
-    输出：
+    返回：
         Tensor。A和B之间的距离。shape为 :math:`(..., 1)` 。
