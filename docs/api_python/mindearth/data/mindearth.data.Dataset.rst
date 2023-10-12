@@ -17,7 +17,7 @@ mindearth.data.Dataset
         创建数据集。
 
         参数：
-            - **batch_size** (int, 可选) - 每个批处理创建的行数，int值。默认值： ``1``。
+            - **batch_size** (int, 可选) - 每个批处理创建的行数，int值。
 
         返回：
             BatchDataset，批处理之后的数据集。

@@ -16,18 +16,18 @@ mindearth.module.WeatherForecast
     .. note::
         需要重写其中的成员函数 `forecast` 用于定义模型推理的前向过程。
 
-    .. py:method:: mindearth.module.WeatherForecast.forecast(inputs, labels)
-
-        模型的预测方法。
-
-        参数：
-            - **inputs** (Tensor) - 模型的输入数据。
-            - **labels** (Tensor) - 样本真实数据。
-
     .. py:method:: mindearth.module.WeatherForecast.eval(dataset)
 
         根据验证集数据或测试集数据执行模型推理。
 
         参数：
-            - **dataset** (Tensor) - 模型推理数据集，包括输入值和样本值。
+            - **dataset** (mindspore.dataset) - 模型推理数据集，包括输入值和样本值。
+
+    .. py:method:: mindearth.module.WeatherForecast.forecast(inputs, labels=None)
+
+        模型的预测方法。
+
+        参数：
+            - **inputs** (Tensor) - 模型的输入数据。
+            - **labels** (Tensor) - 样本真实数据。默认值： ``None``。
 
