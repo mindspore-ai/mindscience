@@ -1,7 +1,7 @@
 sponge.function.calc_torsion_nopbc
 ============================================
 
-.. py:function:: sponge.function.calc_torsion_nopbc(position_a, position_b, position_c, position_d, keep_dims: bool = False)
+.. py:function:: sponge.function.calc_torsion_nopbc(position_a: Tensor, position_b: Tensor, position_c: Tensor, position_d: Tensor, keepdims: bool = False)
 
     在没有周期性边界条件的情况下计算由四个位置A，B，C，D形成的扭转角。
 

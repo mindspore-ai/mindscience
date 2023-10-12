@@ -6,7 +6,7 @@ sponge.function.get_energy_unit_name
     获得能量单位的名称。
 
     参数：
-        - **unit** (Union[str, Units, Length, float, int]) - 能量单位。
+        - **unit** (Union[str, Units, Energy, float, int]) - 能量单位。
 
     返回：
         str。能量单位的名称。

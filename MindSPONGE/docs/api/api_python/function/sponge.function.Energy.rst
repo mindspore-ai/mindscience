@@ -1,7 +1,7 @@
 sponge.function.Energy
 ==========================
 
-.. py:class:: sponge.function.Energy(value, unit="kj/mol", **kwargs)
+.. py:class:: sponge.function.Energy(value: float, unit: str = 'kj/mol', **kwargs)
 
     能量。
 

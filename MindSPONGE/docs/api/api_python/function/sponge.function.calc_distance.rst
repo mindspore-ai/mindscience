@@ -1,7 +1,7 @@
 sponge.function.calc_distance
 =================================
 
-.. py:function:: sponge.function.calc_distance(position_a, position_b, pbc_box, keep_dims: bool = False)
+.. py:function:: sponge.function.calc_distance(position_a: Tensor, position_b: Tensor, pbc_box: Tensor = None, keepdims: bool = False)
 
     计算位置A和B之间的距离。
 
