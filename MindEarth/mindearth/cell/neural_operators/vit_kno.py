@@ -132,13 +132,13 @@ class ViTKNO(nn.Cell):
 
         self.pos_embed.set_data(initializer(TruncatedNormal(sigma=0.02), self.pos_embed.shape, self.pos_embed.dtype))
 
-        self.init_weights()
+        self._init_weights()
 
     @staticmethod
-    def no_weight_decay():
+    def _no_weight_decay():
         return {'pos_embed', 'cls_token'}
 
-    def init_weights(self):
+    def _init_weights(self):
         """init_weights"""
         for _, cell in self.cells_and_names():
             if isinstance(cell, nn.Dense):
@@ -149,7 +149,7 @@ class ViTKNO(nn.Cell):
                 cell.gamma.set_data(initializer(One(), cell.gamma.shape, cell.gamma.dtype))
                 cell.beta.set_data(initializer(Zero(), cell.beta.shape, cell.beta.dtype))
 
-    def encoder(self, x):
+    def _encoder(self, x):
         '''encoder'''
         b = x.shape[0]
         x = self.patch_embed(x)
@@ -160,7 +160,7 @@ class ViTKNO(nn.Cell):
         x = x.reshape(b, self.h, self.w, self.encoder_embed_dims)
         return x
 
-    def decoder(self, x):
+    def _decoder(self, x):
         '''decoder'''
         if self.settings == "MLP":
             x = self.head(x)
@@ -178,9 +178,9 @@ class ViTKNO(nn.Cell):
 
     def construct(self, x):
         '''construct'''
-        x = self.encoder(x)
+        x = self._encoder(x)
         # Reconstruction
-        recons = self.decoder(x)
+        recons = self._decoder(x)
         # Prediction
         b, h, w, c = x.shape
         x = x.reshape(b, h * w, c)
