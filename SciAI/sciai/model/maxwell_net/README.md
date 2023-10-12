@@ -88,8 +88,8 @@ python train.py \
     --up_mode upconv \
     --wavelength 1 \
     --dpl 20 \
-    --Nx 160 \
-    --Nz 192 \
+    --nx 160 \
+    --nz 192 \
     --pml_thickness 30 \
     --symmetry_x true \
     --high_order 4 \
@@ -158,8 +158,8 @@ For each problem case, the parameters are as follows.
 | up_mode        | upsample mode of UNet. 'upcov' for transpose convolution, 'upsample' for upsampling                                                                                                 | upconv                       |
 | wavelength     | wavelength                                                                                                                                                                          | 1                            |
 | dpl            | one pixel size is 'wavelength / dpl'                                                                                                                                                | 20                           |
-| Nx             | pixel number along the x-axis, equivalent to the pixel number along the x-axis of scattering sample                                                                                 | 160                          |
-| Nz             | pixel number along the z-axis (light propagation direction), equivalent to the pixel number along the z-axis of scattering sample                                                   | 192                          |
+| nx             | pixel number along the x-axis, equivalent to the pixel number along the x-axis of scattering sample                                                                                 | 160                          |
+| nz             | pixel number along the z-axis (light propagation direction), equivalent to the pixel number along the z-axis of scattering sample                                                   | 192                          |
 | pml_thickness  | perfectly-matched-layer (PML) thickness in pixel number. 'pml_thickness * wavelength / dpl' is the actual thickness of PML layer in micrometers                                     | 30                           |
 | symmetry_x     | whether input scattering sample is symmetric along the x-axis. If symmetry_x True, Nx=100, Nz=200 and symmetric along the x-axis, it suffices only half(Nx=50, Nz=200) in train.npz | true                         |
 | high_order     | 2 or 4. It decides which order (2nd or 4th order) to calculate the gradient. 4 is more accurate than 2                                                                              | 4                            |

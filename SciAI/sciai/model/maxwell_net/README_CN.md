@@ -85,8 +85,8 @@ python train.py \
     --up_mode upconv \
     --wavelength 1 \
     --dpl 20 \
-    --Nx 160 \
-    --Nz 192 \
+    --nx 160 \
+    --nz 192 \
     --pml_thickness 30 \
     --symmetry_x true \
     --high_order 4 \
@@ -155,8 +155,8 @@ python train.py \
 | up_mode        | UNet的上采样模式. 转置卷积：'upcov'；上采样：'upsample'。                                      | upconv                       |
 | wavelength     | 波长                                                                            | 1                            |
 | dpl            | 单像素点尺寸为 wavelength / dpl                                                      | 20                           |
-| Nx             | 沿x轴的像素数，等效于沿x轴的散射样本的像素数                                                       | 160                          |
-| Nz             | 沿z轴的像素数(光传播方向)，等效于沿z轴的散射样本的像素数                                                | 192                          |
+| nx             | 沿x轴的像素数，等效于沿x轴的散射样本的像素数                                                       | 160                          |
+| nz             | 沿z轴的像素数(光传播方向)，等效于沿z轴的散射样本的像素数                                                | 192                          |
 | pml_thickness  | 以像素数表示的完全匹配层（PML）厚度。'pml_thickness * wavelength/ dpl' 是PML层的实际厚度，单位为微米        | 30                           |
 | symmetry_x     | 输入散射样本是否沿x轴对称。本项为True时, 若Nx=100, Nz=200且沿x轴对称，则在train.npz中仅一半(Nx=50,Nz=200)即可 | true                         |
 | high_order     | 2或4。它决定计算梯度的阶数（2阶或4阶）。4比2更准确                                                  | 4                            |

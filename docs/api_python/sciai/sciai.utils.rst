@@ -3,7 +3,7 @@ sciai.utils
 
 工具模块，包含常用Python工具、MindSpore工具和画图工具等。
 
-.. mscnautosummary::
+.. autosummary::
     :toctree: utils
     :nosignatures:
     :template: classtemplate.rst
