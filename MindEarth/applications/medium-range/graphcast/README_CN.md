@@ -8,7 +8,7 @@ GraphCast是由DeepMind和Google的研究人员开发的一个基于数据驱动
 
 ![winde_quiver](images/wind_quiver_0.25.png)
 
-本教程介绍了GraphCast的研究背景和技术路径，并展示了如何通过MindEarth训练和快速推理模型。 更多信息参见[文章] (https://arxiv.org/abs/2212.12794)。本教程中使用分辨率为1.4°的部分数据集，结果如下所示。
+本教程介绍了GraphCast的研究背景和技术路径，并展示了如何通过MindEarth训练和快速推理模型。 更多信息参见[文章](https://arxiv.org/abs/2212.12794)。本教程中使用分辨率为1.4°的部分数据集，结果如下所示。
 
 ## 快速开始
 
