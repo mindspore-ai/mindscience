@@ -1,12 +1,16 @@
 sponge.potential.PotentialCell
 ==================================
 
-.. py:class:: sponge.potential.PotentialCell(num_energies: int = 1, energy_names: Union[str, List[str]] = 'potential', length_unit: str = None, energy_unit: str = None, use_pbc: bool = None, name: str = 'potential')
+.. py:class:: sponge.potential.PotentialCell(num_energies: int = 1, energy_names: Union[str, List[str]] = 'potential', length_unit: str = None, energy_unit: str = None, use_pbc: bool = None, name: str = 'potential', kwargs: dict)
 
     势能的基类。
 
     `PotentialCell` 是 `EnergyCell` 的一个特殊子类。普通的 `EnergyCell` 只输出一个能量项，所以 `EnergyCell` 返回一个shape为 `(B, 1)` 的Tensor。
     `PotentialCell` 能够返回多个能量项，所以它的返回值是shape为 :math:`(B, E)` 的Tensor。除此之外，默认情况下， 'PotentialCell' 的单位等于全局单位。
+
+    .. note::
+        - **B** - 批处理大小，用于模拟的walkers数目
+        - **E** - 能量条目数
 
     参数：
         - **num_energies** (int) - 输出的能量项的数量。默认值：1
@@ -15,7 +19,7 @@ sponge.potential.PotentialCell
         - **energy_unit** (str) - 能量单位。如果未被给出，则使用全局能量单位。默认值：``None``。
         - **use_pbc** (bool) - 是否使用周期性边界条件。如果为None，则不使用周期性边界条件。默认值：``None``。
         - **name** (str) - 能量的名字。默认值："potential"。
-        - **kwargs** (dic) - 其他参数字典
+        - **kwargs** (dict) - 其他参数字典
 
     输入：
         - **coordinates** (Tensor) - 系统中原子的位置坐标。shape为 :math:`(B, A, D)` 的Tensor。数据类型为float。
