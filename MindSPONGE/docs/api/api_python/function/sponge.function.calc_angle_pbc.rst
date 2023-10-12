@@ -1,7 +1,7 @@
 sponge.function.calc_angle_pbc
 =======================================
 
-.. py:function:: sponge.function.calc_angle_pbc(position_a, position_b, position_c, pbc_box, keep_dims: bool = False)
+.. py:function:: sponge.function.calc_angle_pbc(position_a: Tensor, position_b: Tensor, position_c: Tensor, pbc_box: Tensor, keepdims: bool = False)
 
     计算周期性边界条件下三个空间位点A，B，C所形成的角度 :math:`\angle ABC`。输入A，B，C三点坐标与pbc_box，返回夹角 :math:`\angle ABC` 大小。
     

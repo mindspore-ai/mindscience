@@ -1,7 +1,7 @@
 sponge.function.calc_angle_nopbc
 ==========================================
 
-.. py:function:: sponge.function.calc_angle_nopbc(position_a, position_b, position_c, keep_dims: bool = False)
+.. py:function:: sponge.function.calc_angle_nopbc(position_a: Tensor, position_b: Tensor, position_c: Tensor, keepdims: bool = False)
 
     计算非周期性边界条件下三个空间位点A，B，C所形成的角度 :math:`\angle ABC`。
 

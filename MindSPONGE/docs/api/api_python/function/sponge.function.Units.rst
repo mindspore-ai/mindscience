@@ -79,6 +79,7 @@ sponge.function.Units
             float。转换到指定单位的长度。
 
     .. py:method:: coulomb()
+        :property:
 
         获取当前单位下的库伦常数。
 

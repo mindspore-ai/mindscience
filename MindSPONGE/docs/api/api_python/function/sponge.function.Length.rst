@@ -8,7 +8,7 @@ sponge.function.Length
     参数：
         - **value** (float) - 长度值。
         - **unit** (str) - 长度单位。默认值："nm"。
-        - **kwargs** (str) - 其他参数。
+        - **kwargs** - 其他参数。
 
     .. py:method:: abs_size()
 

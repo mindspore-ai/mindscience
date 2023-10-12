@@ -1,7 +1,7 @@
 sponge.function.get_integer
 ===============================
 
-.. py:function:: sponge.function.get_integer(value)
+.. py:function:: sponge.function.get_integer(value: Union[int, Tensor, Parameter, ndarray])
 
     获取输入的整数类型。
 

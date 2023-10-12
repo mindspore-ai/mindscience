@@ -1,7 +1,7 @@
 sponge.function.calc_angle_by_vectors
 ==============================================
 
-.. py:function:: sponge.function.calc_angle_by_vectors(vector1, vector2, keep_dims: bool = False)
+.. py:function:: sponge.function.calc_angle_by_vectors(vector1: Tensor, vector2: Tensor, keepdims: bool = False)
 
     计算两个向量之间的夹角。对于向量 :math:`\vec {V_1} = (x_1, x_2, x_3, ..., x_n)` 和向量 :math:`\vec {V_2} = (y_1, y_2, y_3, ..., y_n)` ，两向量间夹角计算公式为：
 

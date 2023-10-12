@@ -1,7 +1,7 @@
 sponge.function.calc_distance_pbc
 ==========================================
 
-.. py:function:: sponge.function.calc_distance_pbc(position_a, position_b, pbc_box, keepdims: bool = False)
+.. py:function:: sponge.function.calc_distance_pbc(position_a: Tensor, position_b: Tensor, pbc_box: Tensor = None, keepdims: bool = False)
 
     在有周期性边界条件的情况下计算位置A和B之间的距离，需要转化为同一个 pbc_box 内坐标计算 A 和B 的距离
 
