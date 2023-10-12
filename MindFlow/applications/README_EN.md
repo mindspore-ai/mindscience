@@ -11,11 +11,11 @@ MindFlow covers physics-driven, data-driven, data-mechanism fusion AI fluid simu
 
 Physics-driven AI fluid simulation introduces physical equations into the neural network's loss function. These equations participate in network training, ensuring the learning results align with physical laws. The module is specially designed to handle forward solving of PDE equations. It also focuses on inverse problems based on data fusion and applications like data assimilation.
 
-Data-driven AI fluid simulation relies on abundant fluid simulation data. With a purposefully designed neural network, it's capable of extracting the physical laws among data samples. The simulation is recognized for its efficient parallelism and fast reasoning capabilities, and certain parameter generalization capabilities. This module is mainly aimed at application scenarios such as fast inference with a large amount of label data and parameter space design optimization.
+Data-driven AI fluid simulation relies on abundant fluid simulation data. With a purposefully designed neural network, the module is capable of extracting the physical laws among data samples. The simulation is recognized for its efficient parallelism and fast reasoning capabilities, and certain parameter generalization capabilities. This module is mainly aimed at application scenarios such as fast inference with a large amount of label data and parameter space design optimization.
 
-Data-mechanism fusion driven AI fluid simulation, such as PDENet and PeRCNN. They're adept at learning partial differential equations from data. They can accurately predict the dynamic characteristics of complex systems and reveal potential PDE models. This module is mainly oriented to the application scenarios of small scientific data samples and known control equations. A significant benefit is the reduction in data requisites for neural networks, further enhancing the network's generalization due to embedded flow field equation information.
+Data-mechanism fusion driven AI fluid simulation, such as PDENet and PeRCNN. These simulation methods adept at learning partial differential equations from data, and can accurately predict the dynamic characteristics of complex systems and reveal potential PDE models. This module is mainly oriented to the application scenarios of small scientific data samples and known control equations. A significant benefit is the reduction in data requisites for neural networks, further enhancing the network's generalization due to embedded flow field equation information.
 
-The differentiable CFD solver mainly solves the control equation of fluid dynamics in the computer through numerical methods. So it realizes the analysis, prediction and control of flow. Underpinned by the AI framework MindFlow, this solver boasts features such as JIT instant compilation and vmap automatic vectorization. Additionally, it offers autograd end-to-end automatic differentiation and compatibility with diverse hardware. Its proficiency makes it suitable for resolving classical flow problems.
+The differentiable CFD solver mainly solves the control equation of fluid dynamics in the computer through numerical methods. So this solver realizes the analysis, prediction and control of flow. Underpinned by the AI framework MindFlow, this solver boasts features such as JIT instant compilation and vmap automatic vectorization. Additionally, this solver offers autograd end-to-end automatic differentiation and compatibility with diverse hardware. Its proficiency makes it suitable for resolving classical flow problems.
 
 ## **Contents**
 
@@ -36,7 +36,7 @@ The differentiable CFD solver mainly solves the control equation of fluid dynami
     - [Solve 2D Cylinder Flow by CAE-Transformer](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_transformer)
 - Data-Mechanism Fusion
     - [Solve Convection-Diffusion Equation by PDE-NET](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/pde_net)
-    - [Solve PDE Equation by PeRCNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/PeRCNN)
+    - [Solve 2D Burgers Equation by PeRCNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/PeRCNN/burgers_2d)
 - Physics Driven
     - [Solve Burgers Equation by PINNs](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
     - [Solve 2D Cylinder Flow by PINNs](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/navier_stokes/cylinder_flow_forward)
