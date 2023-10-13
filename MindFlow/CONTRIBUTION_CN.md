@@ -14,9 +14,9 @@ API代码主要指合入`MindFlow/mindflow`目录的代码，主要为案例提�
 
 3、API的存放位置需根据MindFlow的套件架构决定，注意更新`__init__.py`文件和`cmake/package.cmake`文件；
 
-3、API文档包含两部分，一个是代码注释部分，一个是`mindscience/docs/api_python/mindflow`和`mindscience/docs/api_python_en/mindflow`中的中英文文档；
+4、API文档包含两部分，一个是代码注释部分，一个是`mindscience/docs/api_python/mindflow`和`mindscience/docs/api_python_en/mindflow`中的中英文文档；
 
-4、API相关测试用例来进行维护，保证其随时可用，测试用例提交在`mindscience/tests`中，可根据具体用例修改，但运行时间不宜过长，结果检查合理；
+5、API相关测试用例来进行维护，保证其随时可用，测试用例提交在`mindscience/tests`中，可根据具体用例修改，但运行时间不宜过长，结果检查合理；
 
 ## 案例目录格式
 
