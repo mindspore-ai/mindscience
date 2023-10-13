@@ -67,7 +67,7 @@ class WithEnergyCell(Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
         B:  Batchsize, i.e. number of walkers of the simulation.
         A:  Number of the atoms in the simulation system.
         N:  Number of the maximum neighbouring atoms.

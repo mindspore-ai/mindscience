@@ -32,13 +32,6 @@ sponge.core.RunOneStepCell
         返回：
             Tensor，shape为 `(B, 1)` ，数据类型为float。
 
-    .. py:method:: biases()
-
-        偏置势的组成部分的Tensor。
-
-        返回：
-            Tensor，shape为 `(B, V)` ，数据类型为float。
-
     .. py:method:: bias_function()
 
         偏置势函数的网络层。
@@ -52,6 +45,13 @@ sponge.core.RunOneStepCell
 
         返回：
             list[str]，偏置势能的名字列表。
+
+    .. py:method:: biases()
+
+        偏置势的组成部分的Tensor。
+
+        返回：
+            Tensor，shape为 `(B, V)` ，数据类型为float。
 
     .. py:method:: energies()
 

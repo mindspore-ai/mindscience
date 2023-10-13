@@ -35,13 +35,6 @@ sponge.core.WithEnergyCell
         返回：
             Tensor，shape为 `(B, 1)` ，数据类型为float。
 
-    .. py:method:: biases()
-
-        偏置势分量的Tensor。
-
-        返回：
-            偏置势分量的Tensor。shape为 `(B, V)` ，数据类型为float。
-
     .. py:method:: bias_names()
 
         偏置势能的名字。
@@ -58,6 +51,13 @@ sponge.core.WithEnergyCell
 
         返回：
             int，更新频率。
+
+    .. py:method:: biases()
+
+        偏置势分量的Tensor。
+
+        返回：
+            偏置势分量的Tensor。shape为 `(B, V)` ，数据类型为float。
 
     .. py:method:: calc_biases()
 
