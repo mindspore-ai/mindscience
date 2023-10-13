@@ -8,7 +8,7 @@ Allen-Cahn 方程（以 John W. Cahn 和 Sam Allen 命名）是数学物理的�
 
 ## 快速开始
 
-从[physics_driven/allen_cahn/dataset] 中下载验证所需要的数据集，并保存在`./dataset`目录下。
+从[dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/research/allen_cahn/) 中下载验证所需要的数据集，并保存在`./dataset`目录下。
 
 ### 训练方式一：在命令行中调用`train.py`脚本
 

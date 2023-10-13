@@ -8,7 +8,7 @@ The Allen-Cahn euqation (after John W. Cahn and Sam Allen) is a reaction-diffusi
 
 ## QuickStart
 
-You can download dataset from [physics_driven/allen_cahn/dataset] for model evaluation. Save these dataset at `./dataset`.
+You can download dataset from [dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/research/allen_cahn/) for model evaluation. Save these dataset at `./dataset`.
 
 ### Run Option 1: Call `train.py` from command line
 
