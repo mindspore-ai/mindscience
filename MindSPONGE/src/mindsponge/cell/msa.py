@@ -254,7 +254,7 @@ class MSAColumnAttention(nn.Cell):
 class MSAColumnGlobalAttention(nn.Cell):
     r"""
     MSA column global attention. Transpose MSA information at sequence axis and residue axis, then use `GlobalAttention
-    <https://www.mindspore.cn/mindsponge/docs/zh-CN/master/cell/mindsponge.cell.GlobalAttention.html>` to
+    <https://www.mindspore.cn/mindsponge/docs/zh-CN/r1.0rc2/cell/mindsponge.cell.GlobalAttention.html>` to
     do Attention between input sequences without dealing with the relationship between residues in sequence.
     Comparing with MSAColumnAttention, it uses GlobalAttention to deal with longer input sequence.
 

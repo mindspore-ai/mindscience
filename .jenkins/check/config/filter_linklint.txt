@@ -4,3 +4,7 @@
 https://api.colabfold.com
 https://a3m.mmseqs.com
 https://www.mindspore.cn/community/SIG/detail/?name=mindflow+SIG
+
+https://mindspore.cn*/r2.2/*
+https://www.mindspore.cn*/r2.2/*
+https://www.mindspore.cn*/r1.0rc2/*
