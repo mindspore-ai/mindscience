@@ -101,6 +101,13 @@ class SympyTranslation:
         elif item.is_Pow:
             node = self._parse_pow(item)
 
+        elif item.is_Add:
+            nodes = []
+            for cur_item in item.args:
+                cur_node = self._parse_item(cur_item)
+                nodes.append(cur_node)
+            node = AddNode(nodes=nodes)
+
         else:
             raise ValueError("For parsing sympy expression: {} is not supported!".format(item))
 
