@@ -78,7 +78,7 @@ sponge.function.Units
         返回：
             float。转换到指定单位的长度。
 
-    .. py:method:: coulomb()
+    .. py:method:: coulomb
         :property:
 
         获取当前单位下的库伦常数。
@@ -86,7 +86,7 @@ sponge.function.Units
         返回：
             float。当前单位下的库伦常数。
 
-    .. py:method:: energy(value, value: float, unit = None)
+    .. py:method:: energy(value: float, unit = None)
 
         获取当前单位的能量值。
 
