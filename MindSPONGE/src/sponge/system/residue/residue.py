@@ -74,6 +74,7 @@ class Residue:
         settle_length (Union[Tensor, ndarray, List[float]]): Array of length for SETTLE constraint algorithm,
             The shape of the array is :math:`(B, 2)` with data type `int`. The order of length is leg and base.
             Default: ``None``.
+        settle_unit (str): Unit value for SETTLE constraint algorithm. Default: ``None``.
         head_atom (int): Index of the head atom to connect with the previous residue. Default: ``None``.
         tail_atom (int): Index of the tail atom to connect with the next residue. Default: ``None``.
         start_index (int): The start index of the first atom in this residue. Default: ``0``.
@@ -83,6 +84,8 @@ class Residue:
             it will first look for a file with the same name in the current directory. If file does
             not exist, it will search in the built-in template directory of MindSPONGE
             (`mindsponge.data.template`). Default: ``None``.
+        length_unit (str): Unit of length. Default: ``None``.
+        kwargs (dict): Other parameters dictionary.
 
     Note:
         B:  Batchsize, i.e. number of walkers in simulation

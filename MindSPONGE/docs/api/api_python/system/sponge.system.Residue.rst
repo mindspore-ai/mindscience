@@ -1,7 +1,7 @@
 sponge.system.Residue
 =========================
 
-.. py:class:: sponge.system.Residue(atom_name: Union[List[str], ndarray] = None, atom_type: Union[List[str], ndarray] = None, atom_mass: Union[Tensor, ndarray, List[float]] = None, atom_charge: Union[Tensor, ndarray, List[float]] = None, atomic_number: Union[Tensor, ndarray, List[float]] = None, bond: Union[Tensor, ndarray, List[int]] = None, head_atom: int = None, tail_atom: int = None, start_index: int = 0, name: str = 'MOL', template: Union[dict, str] = None)
+.. py:class:: sponge.system.Residue(atom_name: Union[List[str], ndarray] = None, atom_type: Union[List[str], ndarray] = None, atom_mass: Union[Tensor, ndarray, List[float]] = None, atom_charge: Union[Tensor, ndarray, List[float]] = None, atomic_number: Union[Tensor, ndarray, List[float]] = None, bonds: Union[Tensor, ndarray, List[int]] = None, settle_index: Union[Tensor, ndarray, List[int]] = None, settle_length: Union[Tensor, ndarray, List[float]] = None, settle_unit: str = None, head_atom: int = None, tail_atom: int = None, start_index: int = 0, name: str = 'MOL', template: Union[dict, str] = None, length_unit: str = None, **kwargs)
 
     残基的基类。 `Residue` 神经元是 `Molecule` (system) 的组成部分。 `Residue` 不止可以代表单一的氨基酸残基，还可以代表分子系统中的一个小分子，例如一个水分子，一个无机盐离子等。这代表着 `Residue` 和PDB文件中的 "residue" 有着相似的概念。
 
@@ -17,11 +17,14 @@ sponge.system.Residue
         - **bonds** (Union[Tensor, ndarray, List[int]]) - 键连的array，shape为 :math:`(B, b, 2)` ，数据类型为int。默认值为：``None``。
         - **settle_index** (Union[Tensor, ndarray, List[int]]) - 用于SETTLE限制算法的原子序数的array，shape为 :math:`(B, 3)` ，数据类型为int。索引的顺序是订点原子和两个基原子。默认值为： ``None`` 。
         - **settle_length** (Union[Tensor, ndarray, List[float]]) - 用于SETTLE限制算法的长度array，shape为 :math:`(B, 2)` ，数据类型为int。索引的顺序是leg和base。默认值为：``None``。
+        - **settle_unit** (str) - 用于SETTLE限制算法的单位。默认值：``None``。
         - **head_atom** (int) - 与前一个残基相连接的头原子的索引。默认值：``None``。
         - **tail_atom** (int) - 与下一个残基相连的尾原子的索引。默认值：``None``。
         - **start_index** (int) - 残基中第一个原子的开始索引。默认值：0。
         - **name** (str) - 残基名称。默认值：'MOL'。
         - **template** (Union[dict, str]) - 残基的模板。默认值：``None``。
+        - **length_unit** (str) - 长度单位。默认值：``None``。
+        - **kwargs** (dict) - 其他参数字典
 
     符号：
         - **B** - Batch size。
