@@ -69,6 +69,11 @@ class Controller(Cell):
         - virial, Tensor of shape `(B, D)`. Data type is float.
         - pbc_box, Tensor of shape `(B, D)`. Data type is float.
 
+    Note:
+        B:  Number of walkers in simulation.
+        A:  Number of atoms.
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     Supported Platforms:
         ``Ascend`` ``GPU``
     """
@@ -343,11 +348,6 @@ class Controller(Cell):
             kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
             virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-
-        Note:
-            B:  Number of walkers in simulation.
-            A:  Number of atoms.
-            D:  Spatial dimension of the simulation system. Usually is 3.
 
         """
         #pylint: disable=unused-argument
