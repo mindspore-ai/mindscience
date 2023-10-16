@@ -73,4 +73,3 @@ sponge.potential.PotentialCell
 
         参数：
             - **use_pbc** (bool) - 是否使用周期性边界条件。
-            

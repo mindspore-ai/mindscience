@@ -106,4 +106,3 @@ sponge.potential.EnergyCell
 
         返回：
             bool，返回一个标志来判断是否使用了周期性边界条件。
-            
