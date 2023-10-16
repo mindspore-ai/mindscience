@@ -1,0 +1,31 @@
+model:
+  name: DgmrNet
+  forecast_steps: 18
+  in_channels: 1
+  out_channels: 256
+  conv_type: "standard"
+  num_samples: 6
+  grid_lambda: 20.0
+  latent_channels: 768
+  context_channels: 384
+  generation_steps: 1
+  num_spatial_frames: 8
+data:
+  name: "radar"
+  root_dir: "dataset_radar"
+  batch_size: 1
+optimizer:
+  name: "adam"
+  gen_lr: 0.00005
+  disc_lr: 0.0002
+  beta1: 0.0001
+  beta2: 0.999
+  loss_scale: 512
+summary:
+  csi_thresholds: 0.3
+  save_checkpoint_steps: 1
+  keep_checkpoint_max: 5
+train:
+  name: "fp"
+  epochs: 20
+

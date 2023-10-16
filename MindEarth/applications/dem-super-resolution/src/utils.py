@@ -27,7 +27,7 @@ def init_model(config):
     r"""init model."""
     model_params = config["model"]
     model = DEMNet(in_channels=model_params["in_channels"],
-                   channels=model_params["channels"],
+                   out_channels=model_params["out_channels"],
                    kernel_size=model_params["kernel_size"],
                    scale=model_params["scale"])
 

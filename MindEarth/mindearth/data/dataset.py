@@ -478,8 +478,8 @@ class DemData(Data):
         else:
             path = os.path.join(self.test_dir, "test.h5")
         data = h5py.File(path, 'r')
-        data_lr = data.get('32_32').astype(np.float32)
-        data_hr = data.get('160_160').astype(np.float32)
+        data_lr = data.get('32_32')
+        data_hr = data.get('160_160')
 
         self.__data_lr = data_lr
         self.__data_hr = data_hr
