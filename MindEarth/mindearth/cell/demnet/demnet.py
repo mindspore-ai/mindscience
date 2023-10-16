@@ -116,16 +116,16 @@ class DEMNet(nn.Cell):
     """
     def __init__(self,
                  in_channels=1,
-                 channels=256,
+                 out_channels=256,
                  kernel_size=3,
                  scale=5,
                  num_blocks=42):
         super(DEMNet, self).__init__()
         self.scale = scale
-        self.conv1 = nn.Conv2d(in_channels, channels, kernel_size, pad_mode='same')
-        self.conv2 = nn.Conv2d(channels, channels, kernel_size, pad_mode='same')
-        self.conv_up = nn.Conv2d(channels, channels, kernel_size, pad_mode='same')
-        self.conv_out = nn.Conv2d(channels, in_channels, kernel_size, pad_mode='same')
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size, pad_mode='same')
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size, pad_mode='same')
+        self.conv_up = nn.Conv2d(out_channels, out_channels, kernel_size, pad_mode='same')
+        self.conv_out = nn.Conv2d(out_channels, in_channels, kernel_size, pad_mode='same')
         self.body = self.make_layer(ResBlock, num_blocks)
 
     def make_layer(self, block, layers):

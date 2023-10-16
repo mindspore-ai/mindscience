@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""test mindearth Era5Data"""
+"""test mindearth Era5Data DemData RadarData"""
 
 import os
 
+import h5py
 import numpy as np
 import pytest
 
-from mindearth.data import Era5Data, Dataset
+from mindearth.data import DemData, RadarData, Era5Data, Dataset
 from mindearth.utils import load_yaml_config, make_dir
 
 
@@ -77,3 +78,70 @@ def test_era5data():
         assert x.shape == (1, 32768, 69), f"The input shape should be (1, 32768, 69), but got {x.shape}."
         label = data['labels']
         assert label.shape == (1, 32768, 69), f"The label shape should be (1, 32768, 69), but got {label.shape}."
+
+
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend_training
+@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_x86_gpu_training
+@pytest.mark.env_onecard
+def test_demdata():
+    """
+    Feature: Test DemData in platform gpu and ascend.
+    Description: The DemData output should has expected shape.
+    Expectation: Success or throw AssertionError.
+    """
+    file_path = os.path.abspath(__file__)
+    yaml_path = os.path.abspath(os.path.join(os.path.dirname(file_path), "..", "test_dem_config.yaml"))
+    data_path = os.path.abspath(os.path.join(os.path.dirname(file_path), "dataset_dem"))
+    train_dir = os.path.join(data_path, "train")
+    make_dir(train_dir)
+    train_32_32 = np.random.rand(10, 1, 32, 32)
+    train_160_160 = np.random.rand(10, 1, 160, 160)
+    f = h5py.File(os.path.join(train_dir, "train.h5"), "w")
+    f.create_dataset(name='32_32', data=train_32_32)
+    f.create_dataset(name='160_160', data=train_160_160)
+    f.close()
+    config = load_yaml_config(yaml_path)
+    config['data']['root_dir'] = data_path
+    data_params = config['data']
+    dataset_gen = DemData(data_params)
+    dataset = Dataset(dataset_gen)
+    test_dataset = dataset.create_dataset(1)
+    for data in test_dataset.create_dict_iterator():
+        x = data["inputs"]
+        assert x.shape == (1, 1, 32, 32), f"The input shape should be (1, 1, 32, 32), but got {x.shape}."
+        label = data["labels"]
+        assert label.shape == (1, 1, 160, 160), f"The label shape should be (1, 1, 160, 160), but got {label.shape}."
+
+
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend_training
+@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_x86_gpu_training
+@pytest.mark.env_onecard
+def test_radardata():
+    """
+    Feature: Test RadarData in platform gpu and ascend.
+    Description: The RadarData output should has expected shape.
+    Expectation: Success or throw AssertionError.
+    """
+    file_path = os.path.abspath(__file__)
+    yaml_path = os.path.abspath(os.path.join(os.path.dirname(file_path), "..", "test_dem_config.yaml"))
+    data_path = os.path.abspath(os.path.join(os.path.dirname(file_path), "dataset_radar"))
+    train_dir = os.path.join(data_path, "train")
+    make_dir(train_dir)
+    data = np.random.rand(24, 256, 256, 1)
+    np.save(os.path.join(train_dir, "train.npy"), data)
+    config = load_yaml_config(yaml_path)
+    config['data']['root_dir'] = data_path
+    data_params = config['data']
+    dataset_gen = RadarData(data_params)
+    dataset = Dataset(dataset_gen)
+    test_dataset = dataset.create_dataset(1)
+    for data in test_dataset.create_dict_iterator():
+        x = data["inputs"]
+        assert x.shape == (1, 4, 1, 256, 256), f"The input shape should be (1, 4, 1, 256, 256), but got {x.shape}."
+        label = data["labels"]
+        assert label.shape == (1, 18, 1, 256, 256), \
+            f"The input shape should be (1, 18, 1, 256, 256), but got {x.shape}."
