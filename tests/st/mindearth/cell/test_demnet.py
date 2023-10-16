@@ -35,7 +35,7 @@ def test_demnet():
     """
     context.set_context(mode=context.GRAPH_MODE)
     input_images = np.random.rand(64, 1, 32, 32).astype(np.float32)
-    net = DEMNet(in_channels=1, channels=256, kernel_size=3, scale=5, num_blocks=42)
+    net = DEMNet(in_channels=1, out_channels=256, kernel_size=3, scale=5, num_blocks=42)
     output = net(Tensor(input_images, ms.float32))
     assert output.shape == (64, 1, 160, 160), f"For `DEMNet`, the output should be (64, 1, 160, 160), \
         but got {output.shape}."

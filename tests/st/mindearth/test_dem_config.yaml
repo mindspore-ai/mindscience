@@ -1,0 +1,22 @@
+model:
+  name: DEMNet
+  scale: 5
+  out_channels: 256
+  kernel_size: 3
+  in_channels: 1
+data:
+  name: "nasadem"
+  root_dir: "dataset_dem"
+  patch_size: 32
+  batch_size: 64
+  epochs: 100
+optimizer:
+  name: "adam"
+  learning_rate: 0.00001
+  eps: 0.0000001
+  finetune_lr: 0.00001
+summary:
+  save_checkpoint_steps: 1
+  keep_checkpoint_max: 1
+train:
+  name: "oop"
