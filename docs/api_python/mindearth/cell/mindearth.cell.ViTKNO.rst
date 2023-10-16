@@ -7,7 +7,7 @@ mindearth.cell.ViTKNO
     有关更多详细信息，请参考论文 `KoopmanLab: machine learning for solving complex physics equations <https://arxiv.org/pdf/2301.01104.pdf>`_ 。
 
     参数：
-        - **image_size** (tuple[int], 可选) - 输入图像的尺寸。默认值： (128, 256)。
+        - **image_size** (tuple[int], 可选) - 输入图像的尺寸。默认值： ``(128, 256)`` 。
         - **patch_size** (int, 可选) - 图像的path尺寸。默认值： ``8``。
         - **in_channels** (int, 可选) - 输入中的通道数。默认值： ``1``。
         - **out_channels** (int, 可选) - 输出中的通道数。默认值： ``1``。
