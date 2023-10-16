@@ -28,55 +28,6 @@ sponge.system.Residue
         - **A** - 原子总数。
         - **b** - 键总数。
 
-    .. py:method:: name()
-
-        获取残基的名称。
-
-        返回：
-            str，残基名称。
-
-    .. py:method:: build_atom_mass(template: dict)
-
-        按照模板中原子名称对应的原子索引，获取模板对应索引的原子质量并加到残基对应原子上。
-
-        参数：
-            - **template** (dict) - 残基的模板。
-
-    .. py:method:: build_atomic_number(template: dict)
-
-        按照模板中原子名称对应的原子索引，获取模板对应索引的原子数并加到残基对应原子上。
-
-        参数：
-            - **template** (dict) - 残基的模板。
-
-    .. py:method:: build_atom_type(template: dict)
-
-        按照模板中原子名称对应的原子索引，获取模板对应索引的原子种类并加到残基对应原子上。
-
-        参数：
-            - **template** (dict) - 残基的模板。
-
-    .. py:method:: build_atom_charge(template: dict)
-
-        按照模板中原子名称对应的原子索引，获取模板对应索引的原子电荷数并加到残基对应原子上。
-
-        参数：
-            - **template** (dict) - 残基的模板。
-
-    .. py:method:: build_bond(template: dict)
-
-        按照模板中原子名称对应的原子索引，获取模板对应索引的原子的化学键并加到残基对应原子上。
-
-        参数：
-            - **template** (Union[dict, str]) - 残基的模板。
-
-    .. py:method:: build_settle(template: dict)
-
-        按照模板中原子类型对应的原子索引，为SETTLE算法获取模板对应索引和长度并加到残基对应原子上。
-
-        参数：
-            - **template** (Union[dict, str]) - 残基的模板。
-
     .. py:method:: add_atom(atom_name: str = None, atom_type: str = None, atom_mass: float = None, atom_charge: float = None, atomic_number: str = None)
 
         把一个原子添加到残基中。
@@ -94,6 +45,55 @@ sponge.system.Residue
 
         参数：
             - **multi_system** (int) - 多系统中系统的数量。
+
+    .. py:method:: build_atom_charge(template: dict)
+
+        按照模板中原子名称对应的原子索引，获取模板对应索引的原子电荷数并加到残基对应原子上。
+
+        参数：
+            - **template** (dict) - 残基的模板。
+
+    .. py:method:: build_atom_mass(template: dict)
+
+        按照模板中原子名称对应的原子索引，获取模板对应索引的原子质量并加到残基对应原子上。
+
+        参数：
+            - **template** (dict) - 残基的模板。
+
+    .. py:method:: build_atom_type(template: dict)
+
+        按照模板中原子名称对应的原子索引，获取模板对应索引的原子种类并加到残基对应原子上。
+
+        参数：
+            - **template** (dict) - 残基的模板。
+
+    .. py:method:: build_atomic_number(template: dict)
+
+        按照模板中原子名称对应的原子索引，获取模板对应索引的原子数并加到残基对应原子上。
+
+        参数：
+            - **template** (dict) - 残基的模板。
+
+    .. py:method:: build_bond(template: dict)
+
+        按照模板中原子名称对应的原子索引，获取模板对应索引的原子的化学键并加到残基对应原子上。
+
+        参数：
+            - **template** (dict) - 残基的模板。
+
+    .. py:method:: build_settle(template: dict)
+
+        按照模板中原子类型对应的原子索引，为SETTLE算法获取模板对应索引和长度并加到残基对应原子上。
+
+        参数：
+            - **template** (dict) - 残基的模板。
+    
+    .. py:method:: name()
+
+        获取残基的名称。
+
+        返回：
+            str，残基名称。
 
     .. py:method:: set_name(name: str)
 

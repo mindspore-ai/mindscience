@@ -1,16 +1,19 @@
 sponge.potential.EnergyCell
 ===============================
 
-.. py:class:: sponge.potential.EnergyCell(name: str = 'energy', length_unit: str = 'nm', energy_unit: str = 'kj/mol', use_pbc: bool = None)
+.. py:class:: sponge.potential.EnergyCell(name: str = 'energy', length_unit: str = 'nm', energy_unit: str = 'kj/mol', use_pbc: bool = None, kwargs: dict)
 
     能量项的基础类。 `EnergyCell` 通常被用作传统力场中单独的能量项的一个基类。力场参数通常有单位，因此作为能量项的 `EnergyCell` 的单位必须与力场参数的单位保持一致，而不是与全局单位相同。
+
+    .. note::
+        - **B** - 批处理大小，用于模拟的walkers数目
 
     参数：
         - **name** (str) - 能量的名称。默认值："energy"。
         - **length_unit** (str) - 长度单位。如果是None的话，与全局长度单位保持一致。默认值："nm"。
         - **energy_unit** (str) - 能量单位。如果是None的话，与全局能量单位保持一致。默认值："kj/mol"。。
         - **use_pbc** (bool) - 是否使用周期性边界条件。默认值：``None``。
-        - **kwargs** (dic) - 其他参数字典
+        - **kwargs** (dict) - 其他参数字典
 
     返回：
         Tensor。能量，shape为 :math:`(B, 1)` ，数据类型为float。
@@ -103,3 +106,4 @@ sponge.potential.EnergyCell
 
         返回：
             bool，返回一个标志来判断是否使用了周期性边界条件。
+            
