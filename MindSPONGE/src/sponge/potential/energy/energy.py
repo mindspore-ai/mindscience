@@ -59,6 +59,9 @@ class EnergyCell(Cell):
     As the force field parameters usually has units, the units of the `EnergyCell` as an energy term
     should be the same as the units of the force field parameters, and not equal to the global units.
 
+    Note:
+        B:  Batchsize, i.e. number of walkers in simulation
+
     Args:
         name (str):         Name of energy. Default: 'energy'
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
@@ -66,6 +69,7 @@ class EnergyCell(Cell):
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
                             Default: 'kj/mol'
         use_pbc (bool):     Whether to use periodic boundary condition. Default: ``None``.
+        kwargs (dict):      Other parameters dictionary.
 
     Returns:
         Tensor of energy, Tensor of shape `(B, 1)`. Data type is float.
@@ -73,8 +77,6 @@ class EnergyCell(Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Note:
-        B:  Batchsize, i.e. number of walkers in simulation
     """
     def __init__(self,
                  name: str = 'energy',

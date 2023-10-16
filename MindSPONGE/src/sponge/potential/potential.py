@@ -40,6 +40,10 @@ class PotentialCell(EnergyCell):
     the shape `(B, 1)`. And a `PotentialCell` can output multiple energy items, so it returns a Tensor
     of the shape `(B, E)`. Besides, by default the units of `PotentialCell` are equal to the global units.
 
+    Note:
+        B:  Batchsize, i.e. number of walkers in simulation.
+        E:  Number of energy terms.
+
     Args:
         num_energies(int):                      Number of the outputs of energy terms. Default: 1
         energy_names(Union[str, List[str]]):    Names of energy terms. Default: "potential".
@@ -49,6 +53,7 @@ class PotentialCell(EnergyCell):
                                                 with the global energy unit. Default: ``None``.
         use_pbc(bool):                          Whether to use periodic boundary condition.
         name(str):                              Name of energy. Default: "potential"
+        kwargs(dict):                           Other parameters dictionary
 
     Inputs:
         - **coordinates** (Tensor) - Tensor of shape (B, A, D). Data type is float.
@@ -68,10 +73,6 @@ class PotentialCell(EnergyCell):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
-
-    Note:
-        B:  Batchsize, i.e. number of walkers in simulation.
-        E:  Number of energy terms.
     """
 
     def __init__(self,
