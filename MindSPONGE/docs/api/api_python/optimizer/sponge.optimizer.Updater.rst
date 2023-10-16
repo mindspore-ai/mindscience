@@ -24,7 +24,7 @@ sponge.optimizer.Updater
     输出：
         bool，是否成功完成当前优化单步并且移动到下一步。
 
-    符号：
+    .. note::
         - **B** - Batch size。
         - **A** - 原子总数。
         - **D** - 模拟系统的维度，一般为3。
@@ -55,7 +55,7 @@ sponge.optimizer.Updater
         返回：
             float。当前单步的学习率。
 
-    .. py:method:: get_kinetics(velocity)
+    .. py:method:: get_kinetics(velocity: Tensor)
 
         获取动力学。
 
@@ -65,7 +65,7 @@ sponge.optimizer.Updater
         返回：
             Tensor，系统中的动力学。
 
-    .. py:method:: get_pressure(kinetics, virial, pbc_box)
+    .. py:method:: get_pressure(kinetics: Tensor, virial: Tensor, pbc_box: Tensor)
 
         获得压力。
 
@@ -77,7 +77,7 @@ sponge.optimizer.Updater
         返回：
             Tensor，系统的压力。
 
-    .. py:method:: get_temperature(kinetics=None)
+    .. py:method:: get_temperature(kinetics: Tensor = None)
 
         获取温度。
 
