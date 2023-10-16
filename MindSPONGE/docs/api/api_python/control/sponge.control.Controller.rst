@@ -30,7 +30,7 @@ sponge.control.Controller
         - 维里，shape为 `(B, D)` 的Tensor。数据类型是float。
         - 周期性边界条件PBC box，shape为 `(B, D)` 的Tensor。数据类型是float。
 
-    符号：
+    .. note::
         - **B** - Batch size。
         - **A** - 原子总数。
         - **D** - 仿真系统的空间维度。通常是3。
@@ -41,82 +41,6 @@ sponge.control.Controller
 
         返回：
             float。当前单元中的玻尔兹曼常数。
-
-    .. py:method:: set_time_step(dt: float)
-
-        设置模拟单步时间。
-
-        参数：
-            - **dt** (float) - 单步时长。
-
-    .. py:method:: set_degrees_of_freedom(dofs: int)
-
-        设置自由度(DOFs)。
-
-        参数：
-            - **dofs** (int) - 自由度。
-
-    .. py:method:: update_coordinate(coordinate: Tensor) -> Tensor
-
-        更新模拟系统的坐标。
-
-        参数：
-            - **coordinate** (Tensor) - 原子坐标的Tensor。shape为 `(B, A, D)` 。数据类型为float。
-
-        返回：
-            Tensor。更新后的坐标的Tensor，shape和数据类型与原来一致。
-
-    .. py:method:: update_pbc_box(pbc_box: Tensor) -> Tensor
-
-        更新周期性边界条件box的参数。
-
-        参数：
-            - **pbc_box** (Tensor) - 周期性边界条件box的Tensor。shape为 `(B, D)` 。数据类型为float。
-
-        返回：
-            Tensor。更新后的PBC box的Tensor，shape和数据类型与原来的 `pbc_box` 一致。
-
-    .. py:method:: get_kinetics(velocity: Tensor) -> Tensor
-
-        根据速度计算动力学。
-
-        参数：
-            - **velocity** (Tensor) - 原子速度的Tensor。shape为 `(B, A, D)` 。数据类型为float。
-
-        返回：
-            Tensor，动力学。shape为 `(B, A, D)` 。数据类型为float。
-
-    .. py:method:: get_temperature(kinetics: Tensor = None) -> Tensor
-
-        根据速度计算温度。
-
-        参数：
-            - **kinetics** (Tensor) - 动力学的Tensor。shape为 `(B, D)` 。数据类型为float。默认值："None"。
-
-        返回：
-            Tensor，温度。shape为 `(B)` 。数据类型为float。
-
-    .. py:method:: get_volume(pbc_box: Tensor) -> Tensor:
-
-        根据周期性边界条件box计算容积。
-
-        参数：
-            - **pbc_box** (Tensor) - 用于计算容积的周期性边界条件。shape为 `(B, D)` 。数据类型为float。
-
-        返回：
-            Tensor，容积。shape为 `(B)` 。数据类型为float。
-
-    .. py:method:: get_pressure(kinetics: Tensor, virial: Tensor, pbc_box: Tensor) -> Tensor
-
-        根据动力学，维里和周期性边界条件计算压力。
-
-        参数：
-            - **kinetics** (Tensor) - 动力学的Tensor。shape为 `(B, D)` 。数据类型为float。
-            - **virial** (Tensor) - 维里的Tensor。shape为 `(B, D)` 。数据类型为float。
-            - **pbc_box** (Tensor) - 周期性边界条件box的Tensor。shape为 `(B, D)` 。数据类型为float。
-
-        返回：
-            Tensor。根据动力学，维里，周期性边界条件box计算压力。shape为 `(B, D)` 。数据类型为float。
 
     .. py:method:: get_com(coordinate: Tensor, keepdims: bool = True) -> Tensor
 
@@ -139,3 +63,79 @@ sponge.control.Controller
 
         返回：
             Tensor。质心速度。shape为 `(B, A, D)` 或 `(B, D)` 。数据类型为float。
+
+    .. py:method:: get_kinetics(velocity: Tensor) -> Tensor
+
+        根据速度计算动力学。
+
+        参数：
+            - **velocity** (Tensor) - 原子速度的Tensor。shape为 `(B, A, D)` 。数据类型为float。
+
+        返回：
+            Tensor，动力学。shape为 `(B, A, D)` 。数据类型为float。
+
+    .. py:method:: get_pressure(kinetics: Tensor, virial: Tensor, pbc_box: Tensor) -> Tensor
+
+        根据动力学，维里和周期性边界条件计算压力。
+
+        参数：
+            - **kinetics** (Tensor) - 动力学的Tensor。shape为 `(B, D)` 。数据类型为float。
+            - **virial** (Tensor) - 维里的Tensor。shape为 `(B, D)` 。数据类型为float。
+            - **pbc_box** (Tensor) - 周期性边界条件box的Tensor。shape为 `(B, D)` 。数据类型为float。
+
+        返回：
+            Tensor。根据动力学，维里，周期性边界条件box计算压力。shape为 `(B, D)` 。数据类型为float。
+
+    .. py:method:: get_temperature(kinetics: Tensor = None) -> Tensor
+
+        根据速度计算温度。
+
+        参数：
+            - **kinetics** (Tensor) - 动力学的Tensor。shape为 `(B, D)` 。数据类型为float。默认值："None"。
+
+        返回：
+            Tensor，温度。shape为 `(B)` 。数据类型为float。
+
+    .. py:method:: get_volume(pbc_box: Tensor) -> Tensor:
+
+        根据周期性边界条件box计算容积。
+
+        参数：
+            - **pbc_box** (Tensor) - 用于计算容积的周期性边界条件。shape为 `(B, D)` 。数据类型为float。
+
+        返回：
+            Tensor，容积。shape为 `(B)` 。数据类型为float。
+
+    .. py:method:: set_degrees_of_freedom(dofs: int)
+
+        设置自由度(DOFs)。
+
+        参数：
+            - **dofs** (int) - 自由度。
+
+    .. py:method:: set_time_step(dt: float)
+
+        设置模拟单步时间。
+
+        参数：
+            - **dt** (float) - 单步时长。
+
+    .. py:method:: update_coordinate(coordinate: Tensor) -> Tensor
+
+        更新模拟系统的坐标。
+
+        参数：
+            - **coordinate** (Tensor) - 原子坐标的Tensor。shape为 `(B, A, D)` 。数据类型为float。
+
+        返回：
+            Tensor。更新后的坐标的Tensor，shape和数据类型与原来一致。
+
+    .. py:method:: update_pbc_box(pbc_box: Tensor) -> Tensor
+
+        更新周期性边界条件box的参数。
+
+        参数：
+            - **pbc_box** (Tensor) - 周期性边界条件box的Tensor。shape为 `(B, D)` 。数据类型为float。
+
+        返回：
+            Tensor。更新后的PBC box的Tensor，shape和数据类型与原来的 `pbc_box` 一致。

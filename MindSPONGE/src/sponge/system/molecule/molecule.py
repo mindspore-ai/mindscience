@@ -133,7 +133,7 @@ class Molecule(Cell):
                  bonds: Union[Tensor, ndarray, List[int]] = None,
                  coordinate: Union[Tensor, ndarray, List[float]] = None,
                  pbc_box: Union[Tensor, ndarray, List[float]] = None,
-                 template: Union[dict, str] = None,
+                 template: Union[dict, str, List[Union[dict, str]]] = None,
                  residue: Union[Residue, List[Residue]] = None,
                  length_unit: str = None,
                  **kwargs,
@@ -1264,7 +1264,7 @@ class Molecule(Cell):
         Calculate the value of specific collective variables in the system.
 
         Args:
-            colvar(class):  Base class for generalized collective variables (CVs) :math:`s(R)`.
+            colvar(Colvar):  Base class for generalized collective variables (CVs) :math:`s(R)`.
 
         Returns:
             Tensor, the value of a collective variables :math:`s(R)`.
