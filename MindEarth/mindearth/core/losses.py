@@ -32,6 +32,10 @@ class RelativeRMSELoss(nn.LossBase):
     .. math::
         loss = \sqrt{\frac{\frac{1}{N}\sum_{i=1}^{N}{(x_i-y_i)^2}}{sum_{i=1}^{N}{(y_i)^2}}}
 
+    Args:
+        reduction (str): Type of reduction to be applied to loss. The optional values are ``"mean"``,
+            ``"sum"``, and ``"none"``. Default: ``"sum"``.
+
     Inputs:
         - **prediction** (Tensor) - Tensor of shape :math:`(N, *)` where :math:`*` means, any number of
           additional dimensions.
@@ -40,7 +44,9 @@ class RelativeRMSELoss(nn.LossBase):
           and they should be broadcasted to each other.
 
     Outputs:
-        Tensor, weighted loss float tensor and its shape is ().
+        Tensor, weighted loss float tensor.
+
+        - **output** (Tensor) - Tensor of shape :math:`()`
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

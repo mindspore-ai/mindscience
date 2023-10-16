@@ -27,13 +27,17 @@ class DgmrDiscriminator(Cell):
 
     Args:
         in_channels (int): The channels of input frame.
-        num_spatial_frames (int): Random frames out of 18 lead times.
+        num_spatial_frames (int): 8 Random frames out of lead times.
         conv_type (str): convolutional layer's type.
 
     Inputs:
-         - **input** (Tensor) - Tensor of shape :math:`(2, frames\_size, channels, height\_size, width\_size)`.
-    outputs:
+         - **x** (Tensor) - Tensor of shape :math:`(2, frames\_size, channels, height\_size, width\_size)`.
+
+    Outputs:
+        Tensor, the output of the DgmrDiscriminator.
+
          - **output** (Tensor) - Tensor of shape :math:`(2, 2, 1)`
+
     Supported Platforms:
         ``Ascend`` ``GPU``
 
@@ -86,7 +90,7 @@ class DgmrGenerator(Cell):
         forecast_steps (int): The steps of forecast frames.
         in_channels (int): The channels of input frame.
         out_channels (int): Shape of the output predictions, generally should be same as the input shape.
-        conv_type (string): The convolution type.
+        conv_type (str): The convolution type.
         latent_channels (int): Latent channels according to network.
         context_channels (int): Context channels according to network.
         generation_steps (int): Number of generation steps to use in forward pass,
@@ -95,11 +99,15 @@ class DgmrGenerator(Cell):
                                 so less might work better for training.
 
     Inputs:
-         - **input** (Tensor) - Tensor of shape :math:`(batch\_size, input\_frames,
-                                                        channels, height\_size, width\_size)`.
-    outputs:
+         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, input\_frames,
+           out_channels, height\_size, width\_size)`.
+
+    Outputs:
+        Tensor，the output of Dgmr Generator。
+
          - **output** (Tensor) - Tensor of shape :math:`(batch\_size, output\_frames,
-                                                        channels, height\_size, width\_size)`.
+           out_channels, height\_size, width\_size)`.
+
     Supported Platforms:
         ``Ascend`` ``GPU``
 
