@@ -31,21 +31,21 @@ class ViTKNO(nn.Cell):
     solving complex physics equations <https://arxiv.org/pdf/2301.01104.pdf>`_.
 
     Args:
-        image_size (tuple[int], optional): The size of the input image. Default: (128, 256).
-        patch_size (int, optional): The patch size of image. Default: 8.
-        in_channels (int, optional): The number of channels in the input space. Default: 1.
-        out_channels (int, optional): The number of channels in the output space. Default: 1.
-        encoder_depths (int, optional): The encoder depth of encoder layer. Default: 12.
+        image_size (tuple[int], optional): The size of the input image. Default: ``(128, 256)``.
+        patch_size (int, optional): The patch size of image. Default: ``8``.
+        in_channels (int, optional): The number of channels in the input space. Default: ``1``.
+        out_channels (int, optional): The number of channels in the output space. Default: ``1``.
+        encoder_depths (int, optional): The encoder depth of encoder layer. Default: ``12``.
         encoder_embed_dims (int, optional): The encoder embedding dimension of encoder layer. Default: 768.
-        mlp_ratio (int, optional): The rate of mlp layer. Default: 4.
-        dropout_rate (float, optional): The rate of dropout layer. Default: 1.0.
-        drop_path_rate (float, optional): The rate of drop path layer. Default: 0.0.
-        num_blocks: (int, optional): The number of blocks. Default: 16.
-        settings: (str, optional): The construction of first decoder layer. Default: 'MLP'.
-        high_freq (bool, optional): if high-frequency information complement is applied. Default: True.
-        encoder_network (bool, optional): if encoder_network is applied. Default: False
+        mlp_ratio (int, optional): The rate of mlp layer. Default: ``4``.
+        dropout_rate (float, optional): The rate of dropout layer. Default: ``1.0``.
+        drop_path_rate (float, optional): The rate of drop path layer. Default: ``0.0``.
+        num_blocks (int, optional): The number of blocks. Default: ``16``.
+        settings (str, optional): The construction of first decoder layer. Default: ``'MLP'``.
+        high_freq (bool, optional): if high-frequency information complement is applied. Default: ``True``.
+        encoder_network (bool, optional): if encoder_network is applied. Default: ``False``.
         compute_dtype (dtype, optional): The data type for encoder, decoding_embedding, decoder and dense layer.
-                Default: mindspore.float32.
+            Default: ``mindspore.float32``.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, image\_height, image\_width)`.
