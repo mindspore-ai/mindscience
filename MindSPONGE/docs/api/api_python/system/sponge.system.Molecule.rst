@@ -290,7 +290,7 @@ sponge.system.Molecule
         参数：
             - **bond_length** (Tensor) - 设置系统的键长。
 
-    .. py:method:: set_coordinate(coordinate: Tensor)
+    .. py:method:: set_coordianate(coordinate: Tensor)
 
         设定坐标的值。
 
