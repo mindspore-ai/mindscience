@@ -189,5 +189,5 @@ class ViTKNO(nn.Cell):
             x = blk(x)
         b, _, c = x.shape
         x = x.reshape(b, h, w, c)
-        output = self.decoder(x)
+        output = self._decoder(x)
         return output, recons
