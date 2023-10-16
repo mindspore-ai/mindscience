@@ -25,7 +25,7 @@ from mindearth.utils import load_yaml_config, make_dir
 
 class MyEra5Data(Era5Data):
     """Self-defined Era5Data"""
-    def get_statistic(self):
+    def _get_statistic(self):
         self.mean_pressure_level = np.random.rand(13, 1, 1, 5).astype(np.float32)
         self.std_pressure_level = np.random.rand(13, 1, 1, 5).astype(np.float32)
         self.mean_surface = np.random.rand(4,).astype(np.float32)
