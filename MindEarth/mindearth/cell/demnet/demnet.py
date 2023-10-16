@@ -38,10 +38,15 @@ class ResBlock(nn.Cell):
 
     Inputs:
          - **input** (Tensor) - Tensor of shape :math:`(batch\_size, channels, height\_size, width\_size)`.
-    outputs:
-         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, channels, new_height\_size, new_width\_size)
+
+    Outputs:
+        Tensor, the output of the DEMNet.
+
+         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, channels, new_height\_size, new_width\_size)`.
+
     Supported Platforms:
         ``Ascend`` ``GPU``
+
     Examples:
         >>> import numpy as np
         >>> import mindspore as ms
@@ -81,15 +86,19 @@ class DEMNet(nn.Cell):
 
     Args:
         in_channels(int): The channels of input image.
-        channels (int): The number of output channels.
+        out_channels (int): The number of output channels.
         kernel_size (int): Kernel size.
         scale (int): The scale factor of new size of the tensor.
         num_blocks (int): The number of blocks in the DEMNet.
 
     Inputs:
-         - **input** (Tensor) - Tensor of shape :math:`(batch\_size, channels, height\_size, width\_size)`.
-    outputs:
-         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, channels, new_height\_size, new_width\_size)`.
+         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, out_channels, height\_size, width\_size)`.
+
+    Outputs:
+        Tensor, the output of the DEMNet.
+
+         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, out_channels, new_height\_size, new_width\_size)`.
+
     Supported Platforms:
         ``Ascend`` ``GPU``
 
@@ -100,7 +109,7 @@ class DEMNet(nn.Cell):
         >>> from mindspore.nn import Cell
         >>> from mindearth.cell import DEMNet
         >>> input_images = np.random.rand(64, 1, 32, 32).astype(np.float32)
-        >>> net = DEMNet(in_channels=1, channels=256, kernel_size=3, scale=5, num_blocks=42)
+        >>> net = DEMNet(in_channels=1, out_channels=256, kernel_size=3, scale=5, num_blocks=42)
         >>> out = net(Tensor(input_images, ms.float32))
         >>> print(out.shape)
         (64, 1, 160, 160)

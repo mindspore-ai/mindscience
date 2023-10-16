@@ -1,7 +1,7 @@
 model:
   name: DEMNet
   scale: 5
-  channels: 256
+  out_channels: 256
   kernel_size: 3
   in_channels: 1
 data:

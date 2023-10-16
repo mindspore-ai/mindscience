@@ -452,7 +452,7 @@ class DemData(Data):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from mindearth.data import RadarData
+        >>> from mindearth.data import DemData
         >>> data_params = {
         ...     'name': 'nasadem',
         ...     'root_dir': './dataset',
