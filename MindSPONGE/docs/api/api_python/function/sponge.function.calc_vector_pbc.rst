@@ -1,7 +1,7 @@
 sponge.function.calc_vector_pbc
 =======================================
 
-.. py:function:: sponge.function.calc_vector_pbc(initial, terminal, pbc_box)
+.. py:function:: sponge.function.calc_vector_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor)
 
     在有周期性边界条件的情况下，计算从起点到终点的向量。
 

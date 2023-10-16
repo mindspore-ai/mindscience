@@ -1,7 +1,7 @@
 sponge.function.calc_torsion_by_vectors
 ============================================
 
-.. py:function:: sponge.function.calc_torsion_by_vectors(vector1, vector2, axis_vector, keep_dims: bool = False)
+.. py:function:: sponge.function.calc_torsion_by_vectors(vector1: Tensor, vector2: Tensor, axis_vector: Tensor = None, keepdims: bool = False)
 
     计算由三个向量形成的扭转角。
 

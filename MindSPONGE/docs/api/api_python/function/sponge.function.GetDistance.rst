@@ -1,7 +1,7 @@
 sponge.function.GetDistance
 ===============================
 
-.. py:class:: sponge.function.GetDistance(use_pbc=None, keepdims=False, axis=-1)
+.. py:class:: sponge.function.GetDistance(use_pbc: bool = None, keepdims: bool = False, axis: int = -1)
 
     获取有或者没有PBC box的距离。
 

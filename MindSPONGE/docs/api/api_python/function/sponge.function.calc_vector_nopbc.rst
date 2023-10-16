@@ -1,7 +1,7 @@
 sponge.function.calc_vector_nopbc
 ==========================================
 
-.. py:function:: sponge.function.calc_vector_nopbc(initial, terminal)
+.. py:function:: sponge.function.calc_vector_nopbc(initial: Tensor, terminal: Tensor)
 
     在没有周期性边界条件的情况下，计算从起点到终点的向量。
 

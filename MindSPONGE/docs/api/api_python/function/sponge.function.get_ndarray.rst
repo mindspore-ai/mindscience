@@ -1,12 +1,12 @@
 sponge.function.get_ndarray
 ===============================
 
-.. py:function:: sponge.function.get_ndarray(value, dtype=None)
+.. py:function:: sponge.function.get_ndarray(value: Union[Tensor, Parameter, ndarray, List[float], Tuple[float]], dtype: type = None)
 
     获取输入的ndarray类型。
 
     参数：
-        - **value** (Union[int, Tensor, Parameter, ndarray]) - 输入的值。
+        - **value** (Union[Tensor, Parameter, ndarray, List[float], Tuple[float]]) - 输入的值。
         - **dtype** (type) - 数据类型。默认值： ``None`` 。
 
     返回：

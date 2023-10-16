@@ -1,7 +1,7 @@
 sponge.function.VelocityGenerator
 =====================================
 
-.. py:class:: sponge.function.VelocityGenerator(temperature=300.0, remove_translation=True, seed=0, seed2=0, length_unit=None, energy_unit=None)
+.. py:class:: sponge.function.VelocityGenerator(temperature: float = 300, remove_translation: bool = True, seed: int = 0, seed2: int = 0, length_unit: str = None, energy_unit: str = None)
 
     根据温度产生系统中原子的速度。
 
@@ -13,7 +13,7 @@ sponge.function.VelocityGenerator
         - **length_unit** (str) - 长度单位。默认值： ``None`` 。
         - **energy_unit** (str) - 能量单位。默认值： ``None`` 。
 
-    .. py:method:: set_temperature(temperature)
+    .. py:method:: set_temperature(temperature: float)
 
         设定温度。
 

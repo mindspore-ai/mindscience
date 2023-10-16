@@ -1317,7 +1317,7 @@ def get_ndarray(value: Union[Tensor, Parameter, ndarray, List[float], Tuple[floa
     r"""get ndarray type of the input value
 
     Args:
-        value (Union[Tensor, Parameter, ndarray]):  Input value
+        value (Union[Tensor, Parameter, ndarray, List[float], Tuple[float]]):  Input value
         dtype (type):                               Data type. Default: ``None``.
 
     Returns:

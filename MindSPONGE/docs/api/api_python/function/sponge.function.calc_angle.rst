@@ -1,7 +1,7 @@
 sponge.function.calc_angle
 ==============================
 
-.. py:function:: sponge.function.calc_angle(position_a, position_b: Tensor, position_c: Tensor, pbc_box: Tensor = None, keep_dims: bool = False)
+.. py:function:: sponge.function.calc_angle(position_a: Tensor, position_b: Tensor, position_c: Tensor, pbc_box: Tensor = None, keepdims: bool = False)
 
     计算三个空间位点A，B，C所形成的角度 :math:`\angle ABC`。
 

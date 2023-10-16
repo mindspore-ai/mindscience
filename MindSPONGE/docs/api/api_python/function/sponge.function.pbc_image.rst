@@ -1,7 +1,7 @@
 sponge.function.pbc_image
 ==================================
 
-.. py:function:: sponge.function.pbc_image(position, pbc_box, offset=0.0)
+.. py:function:: sponge.function.pbc_image(position: Tensor, pbc_box: Tensor, offset: float = 0)
 
     计算PBC box的周期图。
 

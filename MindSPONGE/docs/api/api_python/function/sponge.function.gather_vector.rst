@@ -1,7 +1,7 @@
 sponge.function.gather_vector
 ==================================
 
-.. py:function:: sponge.function.gather_vector(tensor, index)
+.. py:function:: sponge.function.gather_vector(tensor: Tensor, index: Tensor)
 
     根据指标从张量的倒数第二轴收集向量。
 

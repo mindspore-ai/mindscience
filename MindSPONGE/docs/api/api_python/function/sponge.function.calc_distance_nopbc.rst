@@ -1,7 +1,7 @@
 sponge.function.calc_distance_nopbc
 =============================================
 
-.. py:function:: sponge.function.calc_distance_nopbc(position_a, position_b, keepdims: bool = False)
+.. py:function:: sponge.function.calc_distance_nopbc(position_a: Tensor, position_b: Tensor, keepdims: bool = False)
 
     在没有周期性边界条件的情况下计算位置A和B之间的距离，用绝对坐标计算。
 
