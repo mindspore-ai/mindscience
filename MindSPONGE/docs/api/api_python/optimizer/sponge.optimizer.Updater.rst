@@ -24,7 +24,7 @@ sponge.optimizer.Updater
     输出：
         bool，是否成功完成当前优化单步并且移动到下一步。
 
-    符号：
+    说明：
         - **B** - Batch size。
         - **A** - 原子总数。
         - **D** - 模拟系统的维度，一般为3。
@@ -65,7 +65,7 @@ sponge.optimizer.Updater
         返回：
             Tensor，系统中的动力学。
 
-    .. py:method:: get_pressure(pressure: Tensor, success: bool = True)
+    .. py:method:: get_pressure(kinetics: Tensor, virial: Tensor, pbc_box: Tensor)
 
         获得压力。
 
