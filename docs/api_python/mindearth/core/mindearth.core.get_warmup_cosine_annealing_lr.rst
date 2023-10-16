@@ -1,7 +1,7 @@
 mindearth.core.get_warmup_cosine_annealing_lr
 ==============================================
 
-.. py:class:: mindearth.core.get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch, warmup_epochs=0, warmup_lr_init=0.0, eta_min=1e-6)
+.. py:function:: mindearth.core.get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch, warmup_epochs=0, warmup_lr_init=0.0, eta_min=1e-6)
 
     基于余弦衰减函数计算学习率。如果指定了 `warmup epoch` ，那么 `warmup epoch` 将通过线性退火进行预热。
     对于第i步，余弦decayed_learning_rate[i]的计算公式为：
