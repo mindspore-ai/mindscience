@@ -11,7 +11,7 @@ f_lr: 0.01
 tests_num: 5
 log_path: ./logs
 load_ckpt: false
-save_ckpt_path: ./checkpoints/
+save_ckpt_path: ./checkpoints
 load_ckpt_path: [./checkpoints/optimal_state_g_pfnn.ckpt, ./checkpoints/optimal_state_f_pfnn.ckpt]
 force_download: false
 download_data: pfnn

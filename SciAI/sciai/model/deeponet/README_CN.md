@@ -175,7 +175,7 @@ train.py中的重要参数如下:
    python train.py
    ```
 
-  训练期间的损失值将打印在控制台中， 也可以训练后在日志文件中查看。
+  训练期间的损失值将打印在控制台中，也可以训练后在日志文件中查看。
 
    ```bash
    # grep "loss:" log
@@ -198,8 +198,7 @@ train.py中的重要参数如下:
 
 ### [推理流程](#目录)
 
-在运行下面的命令之前，请检查使用的`config.yaml` 中的checkpoint加载路径`load_ckpt_path`
-进行推理。
+  在运行下面的命令之前，请检查使用的`config.yaml` 中的checkpoint加载路径`load_ckpt_path`进行推理。
 
 - 在 GPU/Ascend 上运行
 

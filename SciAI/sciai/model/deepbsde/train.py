@@ -42,7 +42,7 @@ def train(args, bsde, net, net_loss):
                                        time_interval=args.print_interval,
                                        amp_level=args.amp_level)
 
-    for i in range(args.epochs):
+    for i in range(args.num_iterations):
         dw, x = bsde[i]
         dw, x = to_tensor((dw, x), dtype)
         train_cell(dw, x)

@@ -3,6 +3,7 @@
 # Contents
 
 - [DeepBSDE Description](#DeepBSDE-description)
+- [HJB equation](#HJB-equation)
 - [Environment Requirements](#environment-requirements)
 - [Quick Start](#quick-start)
 - [Script Description](#script-description)
@@ -10,12 +11,9 @@
     - [Script Parameters](#script-parameters)
     - [Training Process](#training-process)
     - [Evaluation Process](#evaluation-process)
-- [Model Description](#Model-Description)
-    - [Evaluation Performance](#Evaluation-Performance)
-    - [Inference Performance](#Inference-Performance)
 - [Description of Random Situation](#description-of-random-situation)
 
-# [DeepBSDE Description](#contents)
+## [DeepBSDE Description](#contents)
 
 DeepBSDE is a power of deep neural networks by developing a strategy for solving a large class of high-dimensional nonlinear PDEs using deep learning. The class of PDEs that we deal with is (nonlinear) parabolic PDEs.
 
@@ -23,9 +21,10 @@ DeepBSDE is a power of deep neural networks by developing a strategy for solving
 
 ## [HJB equation](#Contents)
 
-Hamilton–Jacobi–Bellman Equation which is the term curse of dimensionality was first used explicitly by Richard Bellman in the context of dynamic programming, which has now become the cornerstone in many areas such as economics, behavioral science, computer science, and even biology, where intelligent decision making is the main issue.
+The Hamilton-Jacobi-Bellman (HJB) equation is the continuous-time analog to the discrete deterministic dynamic programming algorithm, which has now become
+the cornerstone in many areas such as economics, behavioral science, computer science, and even biology, where intelligent decision-making is the key issue.
 
-# [Environment Requirements](#contents)
+## [Environment Requirements](#contents)
 
 - Hardware(GPU)
     - Prepare hardware environment with GPU processor.
@@ -35,7 +34,7 @@ Hamilton–Jacobi–Bellman Equation which is the term curse of dimensionality w
     - [MindSpore Tutorials](https:#www.mindspore.cn/tutorial/training/en/master/index.html)
     - [MindSpore Python API](https:#www.mindspore.cn/doc/api_python/en/master/index.html)
 
-# [Quick Start](#contents)
+## [Quick Start](#contents)
 
 After installing MindSpore via the official website, you can start training and evaluation as follows:
 
@@ -63,39 +62,36 @@ python train.py \
     --num_hiddens 110 110 \
     --lr_values 0.01 0.01 \
     --lr_boundaries 1000 \
-    --num_iterations 2000 \
+    --num_iterations 1001 \
     --batch_size 64 \
     --valid_size 256 \
     --sink_size 100 \
     --file_format MINDIR \
-    --epochs 1001 \
     --amp_level O0 \
     --device_id 0 \
     --mode 0
 ```
 
-# [Script Description](#contents)
+## [Script Description](#contents)
 
-## [Script and Sample Code](#contents)
+### [Script and Sample Code](#contents)
 
 ```text
 .
-├── config
-│     └── HJBLQ_config.yaml    # default config for HJB equation.
 ├── src
-│     ├── config.py            # config parse script.
-│     ├── equation.py          # equation definition and dataset helper.
-│     ├── eval_utils.py        # evaluation callback and evaluation utils.
-│     └── net.py               # DeepBSDE network structure.
-├── eval.py                    # evaluation API entry.
-├── export.py                  # export models API entry.
+│     ├── config.py            # config parse script
+│     ├── equation.py          # equation definition and dataset helper
+│     ├── eval_utils.py        # evaluation callback and evaluation utils
+│     └── net.py               # DeepBSDE network structure
+├── config.yaml                # config file for deepbsde
+├── export.py                  # export models API entry
 ├── README_CN.md
 ├── README.md
-├── requirements.txt           # requirements of third party package.
-└── train.py                   # train API entry.
+└── train.py                   # python training script
+└── eval.py                    # python evaluation script
 ```
 
-## [Script Parameters](#contents)
+### [Script Parameters](#contents)
 
 Parameters for both training and evaluation can be set in `config.yaml`
 
@@ -117,85 +113,50 @@ Parameters for both training and evaluation can be set in `config.yaml`
 | num_hiddens       | a list of hidden layer's filter number      | [110, 110]                                          |
 | lr_values         | lr_values of piecewise_constant_lr          | [0.01, 0.01]                                        |
 | lr_boundaries     | lr_boundaries of piecewise_constant_lr      | [1000]                                              |
-| num_iterations    | iterations numbers                          | 2000                                                |
+| num_iterations    | number of iterations                        | 2001                                                |
 | batch_size        | batch_size when training                    | 64                                                  |
 | valid_size        | batch_size when evaluation                  | 256                                                 |
 | sink_size         | data sink size                              | 100                                                 |
 | file_format       | export model type                           | MINDIR                                              |
-| epochs            | number of training epochs                   | 2001                                                |
 | amp_level         | MindSpore auto mixed precision level        | O0                                                  |
 | device_id         | device id to set                            | None                                                |
 | mode              | MindSpore Graph mode(0) or Pynative mode(1) | 0                                                   |
 
-## [Training Process](#contents)
-
-- Running on GPU
+### [Training Process](#contents)
 
   ```bash
   python train.py
   ```
 
-- The python command above will run in the background, you can view the results through the file `train.log`。
+  The python command above will print the training process to the console:
 
-  The loss value can be achieved as follows:
-
-  ```log
-  epoch: 1 step: 100, loss is 245.3738
-  epoch time: 26883.370 ms, per step time: 268.834 ms
-  total step: 100, eval loss: 1179.300, Y0: 1.400, elapsed time: 34
-  epcoh: 2 step: 100, loss is 149.6593
-  epoch time: 3184.401 ms, per step time: 32.877 ms
-  total step: 200, eval loss: 659.457, Y0: 1.693, elapsed time: 37
+  ```console
+  step: 0, loss: 1225.2937, interval: 8.1262, total: 8.1262
+  eval loss: 4979.3413, Y0: 0.2015
+  step: 100, loss: 320.9811, interval: 11.70984, total: 19.2246
+  eval loss: 1399.8747, Y0: 1.1023
+  step: 200, loss: 160.01154, interval: 6.7937, total: 26.0184
+  eval loss: 807.4655, Y0: 1.4009
   ...
   ```
 
-  After training, you'll get the last checkpoint file under the folder `log_dir` in config.
+  After training, you'll get the last checkpoint file in the `save_ckpt_path` directory, `./checkpoints` by default .
 
-## [Evaluation Process](#contents)
+### [Evaluation Process](#contents)
 
-- Evaluation on GPU
-
-  Before running the command below, please check the checkpoint path used for evaluation. Such as `./log/deepbsde_HJBLQ_end.ckpt`
+  Before running the command below, please check `load_ckpt_path` used for evaluation in `config.yaml`. An example would be `./checkpoints/deepbsde_HJBLQ_end.ckpt`
 
   ```bash
-  python eval.py --config_path=./config/HJBLQ_config.yaml > eval.log  2>&1 &
+  python eval.py
   ```
 
-  The above python command will run in the background. You can view the results through the file "eval.log". The error of evaluation is as follows:
+  The above python command will print the evaluation result to the console:
 
-  ```log
+  ```console
   eval loss: 5.146923065185527, Y0: 4.59813117980957
+  Total time running eval 5.8552136129312079 seconds
   ```
 
-# [Model Description](#contents)
+## [Description of Random Situation](#contents)
 
-## [Evaluation Performance](#contents)
-
-| Parameters                 | GPU                                                     |
-|----------------------------|---------------------------------------------------------|
-| Model Version              | DeepBSDE                                                |
-| Resource                   | NV SMX2 V100-32G                                        |
-| uploaded Date              | 7/5/2021 (month/day/year)                               |
-| MindSpore Version          | 1.2.0                                                   | |
-| Training Parameters        | step=2000, see `./config/HJBLQ_config.yaml` for details |
-| Optimizer                  | Adam                                                    | |
-| Loss                       | 2.11                                                    |
-| Speed                      | 32ms/step                                               |
-| Total time                 | 3 min                                                   |
-| Parameters                 | 650K                                                    |
-| Checkpoint for Fine tuning | 7.8M (.ckpt file)                                       |
-
-## [Inference Performance](#contents)
-
-| Parameters        | GPU                       |
-|-------------------|---------------------------|
-| Model Version     | DeepBSDE                  |
-| Resource          | NV SMX2 V100-32G          |
-| uploaded Date     | 7/5/2021 (month/day/year) |
-| MindSpore Version | 1.2.0                     |
-| outputs           | eval loss & Y0            |
-| Y0                | Y0: 4.59                  |
-
-# [Description of Random Situation](#contents)
-
-We use random sampling in equation.py, which can be set seed to fixed randomness.
+  We use random sampling in equation.py, which can be set seed to fixed randomness.

@@ -1,24 +1,19 @@
-# PFNN
+[ENGLISH](README.md) | 简体中文
 
-## [目录](#目录)
+## 目录
 
-- [描述](#描述)
-
+- [PFNN 描述](#PFNN-描述)
 - [模型架构](#模型架构)
-
 - [数据集](#数据集)
-
 - [环境要求](#环境要求)
-
 - [快速开始](#快速开始)
-
 - [脚本说明](#脚本说明)
+    - [脚本和示例代码](#脚本和示例代码)
+    - [脚本参数](#脚本参数)
+    - [训练流程](#训练流程)
+    - [推理流程](#推理流程)
 
-- [模型性能](#模型性能)
-
-- [ModelZoo主页](https://gitee.com/mindspore/models)
-
-## [描述](#目录)
+## [PFNN 描述](#目录)
 
 PFNN (Penalty-free neural network)方法是一种基于神经网络的微分方程求解方法，适用于求解复杂区域上的二阶微分方程。该方法克服了已有类似方法在处理问题光滑性约束和边界约束上的缺陷，具有更高的精度，效率和稳定性。
 
@@ -42,7 +37,7 @@ PFNN根据方程信息和计算区域信息生成训练集和测试集。
 
 ## [环境要求](#目录)
 
-- 硬件（GPU/CPU）
+- 硬件（Ascend/GPU/CPU）
 - 框架
     - [Mindspore](https://www.mindspore.cn/install/en)
 - 如需查看详情，请参见如下资源：
@@ -51,65 +46,71 @@ PFNN根据方程信息和计算区域信息生成训练集和测试集。
 
 ## [快速开始](#目录)
 
-### 训练过程
+通过官网安装好MindSpore后，就可以开始训练和验证如下:
 
-```shell
-bash run_standalone_train_gpu.sh
-python train.py --problem_type [PROBLEM] --g_epochs [G_EPOCHS] --f_epochs [F_EPOCHS] --g_lr [G_LR] --f_lr [F_LR] --device [DEVICE]
-```
+- 在 Ascend 或 GPU 上运行
 
-### 评估过程
+默认:
 
-```shell
-bash run_standalone_eval_gpu.sh
-python eval.sh --problem_type [PROBLEM] --device [DEVICE]
+```bash
+python train.py
 ```
 
 ## [脚本说明](#目录)
 
-### 文件描述
+### [脚本和示例代码](#目录)
+
+文件结构如下:
 
 ```text
 ├── data
-│   ├── data.py                     #根据方程生成数据
-│   ├── dataset.py                  #生成数据集
-│   └── __init__.py
-├── eval.py                         #测试函数
-├── README_CN.md
-├── requirement.txt
-├── scripts
-│   ├── run_standalone_eval_gpu.sh  #测试执行脚本
-│   └── run_standalone_train_gpu.sh #训练执行脚本
+│   ├── gendata.py             # 根据方程生成数据
+│   └── dataset.py             # 生成数据集
 ├── src
-│   ├── callback.py
-│   ├── __init__.py
-│   └── model.py                    #网络模型
-└── train.py                        #训练代码
+│   ├── callback.py            # 回调模块
+│   ├── process.py             # 训练准备
+│   └── pfnnmodel.py           # 网络模型
+├── README_CN.md               # 模型中文说明
+├── README.md                  # 模型英文说明
+├── config.yaml                # 超参数配置
+├── train.py                   # python训练脚本
+└── eval.py                    # python验证脚本
 ```
 
-train.py中的重要参数如下:
+### [脚本参数](#目录)
 
-| 参数             | 描述                         | 默认值                                    |
-|----------------|----------------------------|----------------------------------------|
-| device_id      | 需要设置的设备号                   | None                                   |
-| mode           | MindSpore静态图模式（0）或动态图模式（1） | 0                                      |
+训练和评估的超参数设置可以在 `config.yaml` 文件中进行配置
 
-## [模型性能](#目录)
+| 参数             | 描述                         | 默认值                                                                                |
+|----------------|----------------------------|------------------------------------------------------------------------------------|
+| problem_type   | 问题类型                       | 1                                                                                  |
+| bound          | 边界                         | [-1.0, 1.0, -1.0, 1.0]                                                             |
+| inset_nx       | InnerSet数量                 | [60, 60]                                                                           |
+| bdset_nx       | BoundarySet数量              | [60, 60]                                                                           |
+| teset_nx       | TestSet数量                  | [101, 101]                                                                         |
+| g_epochs       | g_net时期（迭代次数）              | 6000                                                                               |
+| f_epochs       | f_net时期（迭代次数）              | 6000                                                                               |
+| g_lr           | g_net学习率                   | 0.01                                                                               |
+| f_lr           | f_net学习率                   | 0.01                                                                               |
+| tests_num      | 测试次数                       | 5                                                                                  |
+| log_path       | 日志保存路径                     | ./logs                                                                             |
+| load_ckpt_path | checkpoint路径               | [./checkpoints/optimal_state_g_pfnn.ckpt, ./checkpoints/optimal_state_f_pfnn.ckpt] |
+| force_download | 是否强制下载数据集与checkpoint       | false                                                                              |
+| amp_level      | MindSpore自动混合精度等级          | O0                                                                                 |
+| mode           | MindSpore静态图模式（0）或动态图模式（1） | 0                                                                                  |
 
-| 参数          | GPU                                                                      |
-|-------------|--------------------------------------------------------------------------|
-| 资源          | GPU(Tesla V100 PCI-E), Memory 16G                                        |
-| 更新时间        | 2021.10.25                                                               |
-| Mindspore版本 | 1.5.0-rc1                                                                |
-| 数据集         | 根据方程信息和计算区域信息生成                                                          |
-| 问题          | Anisotropic Diffusion                                                    |
-| 输出          | 精度                                                                       |
-| 优化器         | Adam                                                                     |
-| Speed       | 12.2ms/step                                                              |
-| 精度          | 0.00043                                                                  |
-| 训练耗时        | 55s                                                                      |
-| Scripts     | [Link](https://gitee.com/mindspore/models/tree/master/research/hpc/pfnn) |
+### [训练流程](#目录)
 
-## [ModelZoo主页](#目录)
+  ```bash
+  python train.py --problem_type [PROBLEM] --g_epochs [G_EPOCHS] --f_epochs [F_EPOCHS] --g_lr [G_LR] --f_lr [F_LR]
+  ```
 
-请浏览官网[主页](https://gitee.com/mindspore/models)
+### [推理流程](#目录)
+
+ 在运行下面的命令之前，请检查使用的`config.yaml` 中的checkpoint加载路径`load_ckpt_path`进行推理。
+
+- 在 GPU/Ascend 上运行
+
+   ```bash
+   python eval.py
+   ```

@@ -13,13 +13,12 @@ y_init_range: [0, 1]
 num_hiddens: [110, 110]
 lr_values: [0.01, 0.01]
 lr_boundaries: [1000]
-num_iterations: 2000
+num_iterations: 2001
 batch_size: 64
 valid_size: 256
 sink_size: 100
 file_format: MINDIR
 amp_level: O0
-epochs: 2001
 force_download: false
 download_data: deepbsde
 mode: 0
