@@ -25,8 +25,9 @@ from src.callback import EvaluateCallBack
 
 
 class ViTKNOEra5Data(Era5Data):
-    def _patch(self, x):
+    def _patch(self, *args):
         """ Partition the data into patches. """
+        x = args[0]
         if self.run_mode == 'valid' or self.run_mode == 'test':
             x = x.transpose(1, 0, 2, 3)
         return x
