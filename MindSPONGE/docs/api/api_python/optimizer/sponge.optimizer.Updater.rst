@@ -9,12 +9,12 @@ sponge.optimizer.Updater
 
     参数：
         - **system** (Molecule) - 模拟系统。
-        - **controller** (Union[Controller, List[Controller]]) - 控制器或控制器列表来控制模拟系统中的七个变量（坐标、速度、力、能量、动力学、维里和周期性边界条件箱）。默认值："None"。
-        - **time_step** (float) - 单步时间。默认值：1e-3。
-        - **velocity** (Union[Tensor, ndarray, List[float]]) - 原子速度的array，shape为 `(A, D)` 或 `(B, A, D)`，数据类型为float。默认值："None"。
-        - **weight_decay** (float) - 权重衰减值。默认值：0.0。
-        - **loss_scale** (float) - 梯度缩放系数。默认值：1.0。
-        - **kwargs** (dict) - 其他参数
+        - **controller** (Union[Controller, List[Controller]]) - 控制器或控制器列表来控制模拟系统中的七个变量（坐标、速度、力、能量、动力学、维里和周期性边界条件箱）。默认值： ``None``。
+        - **time_step** (float) - 单步时间。默认值： ``1e-3``。
+        - **velocity** (Union[Tensor, ndarray, List[float]]) - 原子速度的array，shape为 :math:`(A, D)` 或 :math:`(B, A, D)` ，数据类型为float。默认值： ``None``。
+        - **weight_decay** (float) - 权重衰减值。默认值： ``0.0``。
+        - **loss_scale** (float) - 梯度缩放系数。默认值： ``1.0``。
+        - **kwargs** (dict) - 其他参数。
 
     输入：
         - **energy** (Tensor) - 系统的能量。 shape为 `(B, A, D)` 的Tensor。数据类型为float。

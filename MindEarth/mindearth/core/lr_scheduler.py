@@ -67,9 +67,9 @@ def get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch,
         lr_init (float): init learning rate, positive float value.
         steps_per_epoch (int): number of steps to each epoch, positive int value.
         last_epoch (int): total epoch of training, positive int value.
-        warmup_epochs (int): total epoch of warming up, default:0.
-        warmup_lr_init (float): warmup init learning rate, default:0.0.
-        eta_min (float): minimum learning rate, default: 1e-6.
+        warmup_epochs (int): total epoch of warming up, default: ``0``.
+        warmup_lr_init (float): warmup init learning rate, default: ``0.0``.
+        eta_min (float): minimum learning rate, default: ``1e-6``.
 
     Returns:
         Numpy.array, learning rate array.

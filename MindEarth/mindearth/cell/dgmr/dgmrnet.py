@@ -36,7 +36,7 @@ class DgmrDiscriminator(Cell):
     Outputs:
         Tensor, the output of the DgmrDiscriminator.
 
-         - **output** (Tensor) - Tensor of shape :math:`(2, 2, 1)`
+        - **output** (Tensor) - Tensor of shape :math:`(2, 2, 1)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -103,10 +103,10 @@ class DgmrGenerator(Cell):
            out_channels, height\_size, width\_size)`.
 
     Outputs:
-        Tensor，the output of Dgmr Generator。
+        Tensor, the output of Dgmr Generator.
 
-         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, output\_frames,
-           out_channels, height\_size, width\_size)`.
+        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, output\_frames,
+          out_channels, height\_size, width\_size)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

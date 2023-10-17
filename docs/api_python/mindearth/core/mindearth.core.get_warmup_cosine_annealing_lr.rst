@@ -16,7 +16,7 @@ mindearth.core.get_warmup_cosine_annealing_lr
     .. math::
         warmup\_learning\_rate[i] = (lr\_init - warmup\_lr\_init) * i / warmup\_steps + warmup\_lr\_init
 
-    参数:
+    参数：
         - **lr_init** (float) - 初始学习率，正浮点值。
         - **steps_per_epoch** (int) - 每一轮迭代的训练步数，正整数。
         - **last_epoch** (int) - 每个epoch的步数，正整数。
@@ -24,7 +24,7 @@ mindearth.core.get_warmup_cosine_annealing_lr
         - **warmup_lr_init** (float) - 预热初始化学习率，默认： ``0.0`` 。
         - **eta_min** (float) - 最小学习率，默认： ``1e-6`` 。
 
-    返回:
+    返回：
         numpy.array，学习率数组。
 
     异常：

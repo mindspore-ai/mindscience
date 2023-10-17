@@ -34,7 +34,7 @@ class RelativeRMSELoss(nn.LossBase):
 
     Args:
         reduction (str): Type of reduction to be applied to loss. The optional values are ``"mean"``,
-            ``"sum"``, and ``"none"``. Default: ``"sum"``.
+            ``"sum"``, and ``"none"``. Default: ``"mean"``.
 
     Inputs:
         - **prediction** (Tensor) - Tensor of shape :math:`(N, *)` where :math:`*` means, any number of
