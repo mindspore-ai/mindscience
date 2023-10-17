@@ -75,13 +75,13 @@ class Updater(Optimizer):
     Outputs:
         bool, whether successfully finish the current optimization step and move to next step.
 
-    Supported Platforms:
-        ``Ascend`` ``GPU``
-
-    Symbols:
+    Note:
         B:  Batchsize, i.e. number of walkers in simulation
         A:  Number of atoms.
         D:  Spatial dimension of the simulation system. Usually is 3.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
     """
     @opt_init_args_register
     def __init__(self,

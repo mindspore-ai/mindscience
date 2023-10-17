@@ -21,7 +21,7 @@ sponge.core.WithEnergyCell
     输出：
         整个系统的势能, shape为 `(B, 1)` 的Tensor。数据类型为float。
 
-    符号：
+    .. note::
         B: batch size，比如分子模拟中walker的数量。 
         A: 分子模拟中原子的数量。 
         N: 最大相邻原子数。 
@@ -34,13 +34,6 @@ sponge.core.WithEnergyCell
 
         返回：
             Tensor，shape为 `(B, 1)` ，数据类型为float。
-
-    .. py:method:: biases()
-
-        偏置势分量的Tensor。
-
-        返回：
-            偏置势分量的Tensor。shape为 `(B, V)` ，数据类型为float。
 
     .. py:method:: bias_names()
 
@@ -58,6 +51,13 @@ sponge.core.WithEnergyCell
 
         返回：
             int，更新频率。
+
+    .. py:method:: biases()
+
+        偏置势分量的Tensor。
+
+        返回：
+            偏置势分量的Tensor。shape为 `(B, V)` ，数据类型为float。
 
     .. py:method:: calc_biases()
 
