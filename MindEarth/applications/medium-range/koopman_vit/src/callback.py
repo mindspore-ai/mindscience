@@ -14,7 +14,6 @@
 # ==============================================================================
 """The callback of koopman_vit"""
 
-import os
 import numpy as np
 import mindspore as ms
 
@@ -24,7 +23,7 @@ from mindspore.train.callback import Callback
 
 from mindearth.module import WeatherForecast
 
-from utils import plt_key_info
+from .utils import plt_key_info
 
 
 
@@ -128,16 +127,7 @@ class InferenceModule(WeatherForecast):
 
     def __init__(self, model, config, logger):
         super(InferenceModule, self).__init__(model, config, logger)
-
-        mean = np.load(os.path.join(config.get("data").get("root_dir"), "statistic", "mean.npy"))
-        mean = mean.transpose(1, 2, 3, 0)  # HWFL(1, 1, 5, 13)
-        mean = mean.reshape((1, -1))
-        mean = np.squeeze(mean, axis=0)
-        mean_s = np.load(os.path.join(config.get("data").get("root_dir"), "statistic", "mean_s.npy"))
-        self.std_all = self._get_total_std(config)
         self.feature_dims = config.get("data").get('feature_dims')
-        self.mean_all = np.concatenate([mean, mean_s], axis=-1)
-        self.climate = np.load(os.path.join(config.get("data").get("root_dir"), "statistic", "climate_69_1.4.npy"))  # (XXX, 69)
 
     def _get_metrics(self, inputs, labels):
         """Get metrics"""
@@ -158,10 +148,10 @@ class InferenceModule(WeatherForecast):
                                                                                                           0).asnumpy()
 
         # acc
-        pred = pred * ms.Tensor(self.std_all, ms.float32) + ms.Tensor(self.mean_all, ms.float32)
-        labels = labels * ms.Tensor(self.std_all, ms.float32) + ms.Tensor(self.mean_all, ms.float32)
-        pred = pred - ms.Tensor(self.climate, ms.float32)
-        labels = labels - ms.Tensor(self.climate, ms.float32)
+        pred = pred * ms.Tensor(self.total_std, ms.float32) + ms.Tensor(self.total_mean, ms.float32)
+        labels = labels * ms.Tensor(self.total_std, ms.float32) + ms.Tensor(self.total_mean, ms.float32)
+        pred = pred - ms.Tensor(self.climate_mean, ms.float32)
+        labels = labels - ms.Tensor(self.climate_mean, ms.float32)
 
         acc_numerator = pred * labels
         acc_numerator = acc_numerator.transpose(0, 1, 3, 2).reshape(

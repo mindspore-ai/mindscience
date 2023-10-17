@@ -13,6 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 """The callback of fourcastnet"""
+import numpy as np
 from mindspore.train.callback import Callback
 from mindearth.module import WeatherForecast
 
@@ -40,6 +41,20 @@ class InferenceModule(WeatherForecast):
             pred_lst.append(pred)
             inputs = pred
         return pred_lst
+
+    def _get_metrics(self, inputs, labels):
+        """get metrics for plot"""
+        pred = self.forecast(inputs)
+        feature_num = labels.shape[1]
+        lat_weight_rmse = np.zeros((feature_num, self.t_out_test))
+        lat_weight_acc = np.zeros((feature_num, self.t_out_test))
+        for t in range(self.t_out_test):
+            for f in range(feature_num):
+                lat_weight_rmse[f, t] = self._calculate_lat_weighted_rmse(
+                    labels[:, f, t].asnumpy(), pred[t][:, f].asnumpy())  # label(B,C,T,H W) pred(B,C,H W)
+                lat_weight_acc[f, t] = self._calculate_lat_weighted_acc(
+                    labels[:, f, t].asnumpy(), pred[t][:, f].asnumpy())
+        return lat_weight_rmse, lat_weight_acc
 
 
 class EvaluateCallBack(Callback):

@@ -37,6 +37,7 @@ def _get_absolute_idx(feature_tuple, pressure_level_num):
 
 def plt_key_info(key_info, config, epochs=1, metrics_type='RMSE', loc='upper right'):
     """ Visualize the rmse or acc results, metrics_type is 'Acc' or 'RMSE' """
+    make_dir(f"{config['summary']['summary_dir']}/image/")
     pred_lead_time = config['data'].get('pred_lead_time', 6)
     x = range(pred_lead_time, config['data'].get('t_out_valid', 20)*pred_lead_time + 1, pred_lead_time)
     z500_idx = _get_absolute_idx(FEATURE_DICT.get("Z500"), config['data']['pressure_level_num'])
