@@ -97,7 +97,7 @@ class DEMNet(nn.Cell):
     Outputs:
         Tensor, the output of the DEMNet.
 
-         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, out_channels, new_height\_size, new_width\_size)`.
+        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, out_channels, new_height\_size, new_width\_size)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

@@ -58,13 +58,13 @@ class Updater(Optimizer):
                                                             variables (coordinate, velocity, force, energy, kinetics,
                                                             virial and pbc_box) of the simulation system.
                                                             Default: ``None``.
-        time_step(float):                                   Time step. Default: 1e-3
+        time_step(float):                                   Time step. Default: ``1e-3``.
         velocity(Union[Tensor, ndarray, List[float]]):      Array of atomic velocity. The shape of array is `(A, D)`
                                                             or `(B, A, D)`, and the data type is float.
                                                             Default: ``None``.
-        weight_decay(float):                                An value for the weight decay. Default: 0.0
-        loss_scale(float):                                  A value for the loss scale. Default: 1.0
-        kwargs(dict):                                       other args
+        weight_decay(float):                                An value for the weight decay. Default: ``0.0``.
+        loss_scale(float):                                  A value for the loss scale. Default: ``1.0``.
+        kwargs(dict):                                       other args.
 
     Inputs:
         - **energy** (Tensor) - Energy of the system. Tensor of shape `(B, A, D)`. Data type is float.

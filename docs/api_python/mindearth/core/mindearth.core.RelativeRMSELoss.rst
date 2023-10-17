@@ -1,7 +1,7 @@
 mindearth.core.RelativeRMSELoss
 ================================
 
-.. py:class:: mindearth.core.RelativeRMSELoss()
+.. py:class:: mindearth.core.RelativeRMSELoss(reduction='mean')
 
     相对均方根误差（RRMSE）是由均方根值归一化的均方根误差，其中每个残差都是根据实际值缩放的。
     Relative RMSELoss用来测量 :math:`x` 和 :math:`y` 之间的相对均方根误差，其中 :math:`x` 是预测值， :math:`y` 是目标值。
@@ -12,7 +12,7 @@ mindearth.core.RelativeRMSELoss
         loss = \sqrt{\frac{\frac{1}{N}\sum_{i=1}^{N}{(x_i-y_i)^2}}{sum_{i=1}^{N}{(y_i)^2}}}
 
     参数：
-        - **reduction** (str) - `reduction` 决定了计算模式。有三种模式可选： ``"mean"``、 ``"sum"`` 和 ``"none"``。默认值： ``"sum"``。
+        - **reduction** (str) - `reduction` 决定了计算模式。有三种模式可选： ``"mean"``、 ``"sum"`` 和 ``"none"``。默认值： ``"mean"``。
 
     输入：
         - **prediction** (Tensor) - 预测值，公式中的 :math:`x` ，shape为 :math:`(N, *)` 的Tensor， :math:`*` 代表任意数量的其他维度。
