@@ -45,15 +45,15 @@ class PotentialCell(EnergyCell):
         E:  Number of energy terms.
 
     Args:
-        num_energies(int):                      Number of the outputs of energy terms. Default: 1
-        energy_names(Union[str, List[str]]):    Names of energy terms. Default: "potential".
+        num_energies(int):                      Number of the outputs of energy terms. Default: ``1``.
+        energy_names(Union[str, List[str]]):    Names of energy terms. Default: ``"potential"``.
         length_unit(str):                       Length unit. If None is given, it will be assigned
                                                 with the global length unit. Default: ``None``.
         energy_unit(str):                       Energy unit. If None is given, it will be assigned
                                                 with the global energy unit. Default: ``None``.
         use_pbc(bool):                          Whether to use periodic boundary condition.
-        name(str):                              Name of energy. Default: "potential"
-        kwargs(dict):                           Other parameters dictionary
+        name(str):                              Name of energy. Default: ``"potential"``.
+        kwargs(dict):                           Other parameters dictionary.
 
     Inputs:
         - **coordinates** (Tensor) - Tensor of shape (B, A, D). Data type is float.

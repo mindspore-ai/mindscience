@@ -13,21 +13,21 @@ sponge.potential.PotentialCell
         - **E** - 能量条目数
 
     参数：
-        - **num_energies** (int) - 输出的能量项的数量。默认值：1
-        - **energy_names** (Union[str, List[str]]) - 能量项的名字。默认值："potential"。
-        - **length_unit** (str) - 长度单位。如果未被给出，则使用全局长度单位。默认值：``None``。
-        - **energy_unit** (str) - 能量单位。如果未被给出，则使用全局能量单位。默认值：``None``。
-        - **use_pbc** (bool) - 是否使用周期性边界条件。如果为None，则不使用周期性边界条件。默认值：``None``。
-        - **name** (str) - 能量的名字。默认值："potential"。
-        - **kwargs** (dict) - 其他参数字典
+        - **num_energies** (int) - 输出的能量项的数量。默认值： ``1`` 。
+        - **energy_names** (Union[str, List[str]]) - 能量项的名字。默认值： ``"potential"`` 。
+        - **length_unit** (str) - 长度单位。如果未被给出，则使用全局长度单位。默认值： ``None``。
+        - **energy_unit** (str) - 能量单位。如果未被给出，则使用全局能量单位。默认值： ``None``。
+        - **use_pbc** (bool) - 是否使用周期性边界条件。如果为None，则不使用周期性边界条件。默认值： ``None``。
+        - **name** (str) - 能量的名字。默认值： ``"potential"`` 。
+        - **kwargs** (dict) - 其他参数字典。
 
     输入：
         - **coordinates** (Tensor) - 系统中原子的位置坐标。shape为 :math:`(B, A, D)` 的Tensor。数据类型为float。
-        - **neighbour_index** (Tensor) - 相邻原子的目录。shape为 :math:`(B, A, N)` 的Tensor。数据类型为int。默认值：``None``。
-        - **neighbour_mask** (Tensor) - 相邻原子的掩码。shape为  :math:`(B, A, N)` 的Tensor。数据类型为bool。默认值：``None``。
-        - **neighbour_vector** (Tensor) - 从中心原子指向相邻原子的向量。shape为 :math:`(B, A, N, D)` 的Tensor。数据类型为bool。默认值：``None``。
-        - **neighbour_distances** (Tensor) - 相邻原子之间的距离。shape为 :math:`(B, A, N)` 的Tensor。数据类型为float。默认值：``None``。
-        - **pbc_box** (Tensor) - PBC box。shape为 :math:`(B, D)` 的Tensor。数据类型为float。默认值：``None``。
+        - **neighbour_index** (Tensor) - 相邻原子的目录。shape为 :math:`(B, A, N)` 的Tensor。数据类型为int。默认值： ``None``。
+        - **neighbour_mask** (Tensor) - 相邻原子的掩码。shape为  :math:`(B, A, N)` 的Tensor。数据类型为bool。默认值： ``None``。
+        - **neighbour_vector** (Tensor) - 从中心原子指向相邻原子的向量。shape为 :math:`(B, A, N, D)` 的Tensor。数据类型为bool。默认值： ``None``。
+        - **neighbour_distances** (Tensor) - 相邻原子之间的距离。shape为 :math:`(B, A, N)` 的Tensor。数据类型为float。默认值： ``None``。
+        - **pbc_box** (Tensor) - PBC box。shape为 :math:`(B, D)` 的Tensor。数据类型为float。默认值： ``None``。
 
     输出：
         势，shape为 :math:`(B, E)` 的Tensor。数据类型为float。
