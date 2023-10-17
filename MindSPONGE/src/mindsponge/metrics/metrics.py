@@ -87,8 +87,9 @@ class BalancedMSE(nn.Cell):
         self.last_break = last_break
         self.num_bins = num_bins
 
-        self.breaks = np.linspace(self.first_break, self.last_break, self.num_bins)
-        self.width = self.breaks[1] - self.breaks[0]
+        breaks = np.linspace(self.first_break, self.last_break, self.num_bins)
+        self.width = breaks[1] - breaks[0]
+        self.breaks = Tensor(breaks, mstype.float32)
         bin_width = 2
         start_n = 1
         stop = self.num_bins * 2
