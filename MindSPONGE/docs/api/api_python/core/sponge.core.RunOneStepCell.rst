@@ -20,7 +20,7 @@ sponge.core.RunOneStepCell
         - 整体的势能，shape为 `(B, 1)` 的Tensor，数据类型为float。
         - 原子力，shape为 `(B, A, D)` 的Tensor，数据类型为float。
 
-    符号：
+    .. note::
         B: batch size，比如分子模拟中walker的数量。 
         A: 分子模拟中原子的数量。 
         D: 分子模拟中的空间维度，通常是3。 

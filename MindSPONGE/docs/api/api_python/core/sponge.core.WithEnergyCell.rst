@@ -21,7 +21,7 @@ sponge.core.WithEnergyCell
     输出：
         整个系统的势能, shape为 `(B, 1)` 的Tensor。数据类型为float。
 
-    符号：
+    .. note::
         B: batch size，比如分子模拟中walker的数量。 
         A: 分子模拟中原子的数量。 
         N: 最大相邻原子数。 

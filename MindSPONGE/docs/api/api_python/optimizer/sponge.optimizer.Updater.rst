@@ -24,7 +24,7 @@ sponge.optimizer.Updater
     输出：
         bool，是否成功完成当前优化单步并且移动到下一步。
 
-    说明：
+    .. note::
         - **B** - Batch size。
         - **A** - 原子总数。
         - **D** - 模拟系统的维度，一般为3。
