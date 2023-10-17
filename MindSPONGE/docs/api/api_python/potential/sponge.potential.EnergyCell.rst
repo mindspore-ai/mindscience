@@ -1,7 +1,7 @@
 sponge.potential.EnergyCell
 ===============================
 
-.. py:class:: sponge.potential.EnergyCell(name: str = 'energy', length_unit: str = 'nm', energy_unit: str = 'kj/mol', use_pbc: bool = None, kwargs: dict)
+.. py:class:: sponge.potential.EnergyCell(name: str = 'energy', length_unit: str = 'nm', energy_unit: str = 'kj/mol', use_pbc: bool = None, **kwargs)
 
     能量项的基础类。 `EnergyCell` 通常被用作传统力场中单独的能量项的一个基类。力场参数通常有单位，因此作为能量项的 `EnergyCell` 的单位必须与力场参数的单位保持一致，而不是与全局单位相同。
 
@@ -17,9 +17,7 @@ sponge.potential.EnergyCell
 
     返回：
         Tensor。能量，shape为 :math:`(B, 1)` ，数据类型为float。
-
-    符号：
-        - **B** - 批处理大小，用于模拟的walkers数目
+        
 
     .. py:method:: check_system(system: Molecule)
 

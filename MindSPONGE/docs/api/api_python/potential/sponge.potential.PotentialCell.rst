@@ -1,7 +1,7 @@
 sponge.potential.PotentialCell
 ==================================
 
-.. py:class:: sponge.potential.PotentialCell(num_energies: int = 1, energy_names: Union[str, List[str]] = 'potential', length_unit: str = None, energy_unit: str = None, use_pbc: bool = None, name: str = 'potential', kwargs: dict)
+.. py:class:: sponge.potential.PotentialCell(num_energies: int = 1, energy_names: Union[str, List[str]] = 'potential', length_unit: str = None, energy_unit: str = None, use_pbc: bool = None, name: str = 'potential', **kwargs)
 
     势能的基类。
 
@@ -27,14 +27,10 @@ sponge.potential.PotentialCell
         - **neighbour_mask** (Tensor) - 相邻原子的掩码。shape为  :math:`(B, A, N)` 的Tensor。数据类型为bool。默认值：``None``。
         - **neighbour_vector** (Tensor) - 从中心原子指向相邻原子的向量。shape为 :math:`(B, A, N, D)` 的Tensor。数据类型为bool。默认值：``None``。
         - **neighbour_distances** (Tensor) - 相邻原子之间的距离。shape为 :math:`(B, A, N)` 的Tensor。数据类型为float。默认值：``None``。
-        - **pbc_box** (Tensor) - PBC box。shape为 :math:``(B, D)`` 的Tensor。数据类型为float。默认值：``None``。
+        - **pbc_box** (Tensor) - PBC box。shape为 :math:`(B, D)` 的Tensor。数据类型为float。默认值：``None``。
 
     输出：
         势，shape为 :math:`(B, E)` 的Tensor。数据类型为float。
-
-    符号：
-        - **B** - 批处理大小，用于模拟的walkers数目
-        - **E** - 能量条目数
 
     .. py:method:: energy_names()
 

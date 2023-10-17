@@ -1,4 +1,4 @@
-mindsponge.potential
+sponge.potential
 ====================
 
 .. mscnplatformautosummary::
