@@ -21,7 +21,7 @@ import numpy as np
 
 from mindspore import context, nn, ops, jit, set_seed, data_sink
 
-from mindflow.utils import load_yaml_config
+from mindflow.utils import load_yaml_config, print_log, log_timer
 from mindflow.cell import FCSequential
 
 from src import create_training_dataset, create_test_dataset
@@ -51,7 +51,7 @@ context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRA
 print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
 use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
-
+@log_timer
 def train(config):
     """training process"""
     geom_name = "flow_region"
@@ -106,6 +106,7 @@ def train(config):
 
     epochs = config["train_epoch"]
     steps_per_epochs = train_data.get_dataset_size()
+    print_log(f"number of steps_per_epochs: {steps_per_epochs}")
     sink_process = data_sink(train_step, train_data, sink_size=1)
     model.set_train()
 
@@ -114,7 +115,11 @@ def train(config):
         model.set_train(True)
         for _ in range(steps_per_epochs):
             cur_loss = sink_process()
-        print(f"epoch: {epoch} train loss: {cur_loss} epoch time: {(time.time() - local_time_beg) * 1000 :.3f}ms")
+        local_time_end = time.time()
+        epoch_seconds = local_time_end - local_time_beg
+        step_seconds = (epoch_seconds/steps_per_epochs) * 1000
+        print_log(f"epoch: {epoch} train loss: {cur_loss} \
+                  epoch time: {epoch_seconds:5.3f}s step time: {step_seconds:5.3f}ms")
         model.set_train(False)
         if epoch % config["eval_interval_epochs"] == 0:
             calculate_l2_error(model, test_input, test_label, config["train_batch_size"])
@@ -125,6 +130,4 @@ def train(config):
 if __name__ == "__main__":
     print("pid:", os.getpid())
     configs = load_yaml_config("darcy_cfg.yaml")
-    time_beg = time.time()
     train(configs)
-    print(f"End-to-End total time: {format(time.time() - time_beg)} s")

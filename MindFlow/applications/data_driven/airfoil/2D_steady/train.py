@@ -33,7 +33,7 @@ from mindflow.common import get_warmup_cosine_annealing_lr
 from mindflow.pde import SteadyFlowWithLoss
 from mindflow.loss import WaveletTransformLoss
 from mindflow.cell import ViT
-from mindflow.utils import load_yaml_config, print_log, log_config
+from mindflow.utils import load_yaml_config, print_log, log_config, log_timer
 
 from src import AirfoilDataset, plot_u_and_cp, get_ckpt_summary_dir, plot_u_v_p, calculate_test_error
 
@@ -58,7 +58,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
-
+@log_timer
 def train(input_args):
     '''Train and test the network'''
     mode = input_args.train_mode
@@ -123,6 +123,7 @@ def train(input_args):
     problem = SteadyFlowWithLoss(model, loss_fn=wave_loss)
     # prepare optimizer
     steps_per_epoch = train_dataset.get_dataset_size()
+    print_log(f"number of steps_per_epochs: {steps_per_epoch}")
     epochs = optimizer_params["epochs"]
     lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["lr"],
                                         last_epoch=epochs,
@@ -155,11 +156,15 @@ def train(input_args):
     # train process
     for epoch in range(1, 1 + epochs):
         # train
-        time_beg = time.time()
+        local_time_beg = time.time()
         model.set_train(True)
         for _ in range(steps_per_epoch):
             step_train_loss = train_sink_process()
-        print_log(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {time.time() - time_beg:.2f}s")
+        local_time_end = time.time()
+        epoch_seconds = local_time_end - local_time_beg
+        step_seconds = (epoch_seconds/steps_per_epoch)*1000
+        print_log(f"epoch: {epoch} train loss: {step_train_loss} \
+                  epoch time: {epoch_seconds:.3f}s step time: {step_seconds:5.3f}ms")
 
         model.set_train(False)
         # test
@@ -190,8 +195,6 @@ if __name__ == '__main__':
                         device_target=args.device_target,
                         device_id=args.device_id)
     print_log(f"Running in {args.context_mode.upper()} mode, using device id: {args.device_id}.")
-    start_time = time.time()
     use_ascend = (args.device_target == "Ascend")
     print_log(f'use_ascend : {use_ascend}')
     train(args)
-    print_log("End-to-End total time: {} s".format(time.time() - start_time))

@@ -29,7 +29,7 @@ from mindflow.cell import FNO2D
 from mindflow.common import get_warmup_cosine_annealing_lr
 from mindflow.loss import RelativeRMSELoss
 from mindflow.utils import load_yaml_config
-from mindflow.utils import log_config, print_log
+from mindflow.utils import log_config, print_log, log_timer
 from mindflow.pde import UnsteadyFlowWithLoss
 from src import calculate_l2_error, create_training_dataset
 
@@ -52,7 +52,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
-
+@log_timer
 def train(input_args):
     '''train and evaluate the network'''
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
@@ -86,7 +86,7 @@ def train(input_args):
 
     # prepare optimizer
     steps_per_epoch = train_dataset.get_dataset_size()
-    print_log("steps_per_epoch: ", steps_per_epoch)
+    print_log(f"number of steps_per_epochs: {steps_per_epoch}")
     lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["initial_lr"],
                                         last_epoch=optimizer_params["train_epochs"],
                                         steps_per_epoch=steps_per_epoch,
@@ -118,7 +118,11 @@ def train(input_args):
         model.set_train(True)
         for _ in range(steps_per_epoch):
             cur_loss = sink_process()
-        print_log(f"epoch: {epoch} train loss: {cur_loss} epoch time: {time.time() - local_time_beg:.2f}s")
+        local_time_end = time.time()
+        epoch_seconds = local_time_end - local_time_beg
+        step_seconds = (epoch_seconds/steps_per_epoch)*1000
+        print_log(f"epoch: {epoch} train loss: {cur_loss} \
+                  epoch time: {epoch_seconds:.3f}s step time: {step_seconds:5.3f}ms")
 
         model.set_train(False)
         if epoch % config["save_ckpt_interval"] == 0:

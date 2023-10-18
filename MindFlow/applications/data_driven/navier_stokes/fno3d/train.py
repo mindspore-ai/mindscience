@@ -27,7 +27,7 @@ from mindspore.common import set_seed
 from mindspore import dtype as mstype
 
 from mindflow import get_warmup_cosine_annealing_lr, load_yaml_config
-from mindflow.utils import print_log, log_config
+from mindflow.utils import print_log, log_config, log_timer
 from mindflow.cell.neural_operators.fno3d import FNO3D
 
 from src import LpLoss, UnitGaussianNormalizer, create_training_dataset
@@ -50,7 +50,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
-
+@log_timer
 def train(input_args):
     '''train and evaluate the network'''
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
@@ -110,6 +110,9 @@ def train(input_args):
                                         last_epoch=optimizer_params["train_epochs"],
                                         steps_per_epoch=train_loader.get_dataset_size(),
                                         warmup_epochs=optimizer_params["warmup_epochs"])
+
+    steps_per_epoch = train_loader.get_dataset_size()
+    print_log(f"number of steps_per_epochs: {steps_per_epoch}")
 
     optimizer = nn.optim.Adam(model.trainable_params(),
                               learning_rate=Tensor(lr), weight_decay=optimizer_params['weight_decay'])
@@ -195,15 +198,18 @@ def train(input_args):
     if not os.path.exists(ckpt_dir):
         os.makedirs(ckpt_dir)
     model.set_train()
-    for step in range(1, 1 + optimizer_params["train_epochs"]):
+    for epoch in range(1, 1 + optimizer_params["train_epochs"]):
         local_time_beg = time.time()
         cur_loss = sink_process()
+        local_time_end = time.time()
+        epoch_seconds = local_time_end - local_time_beg
+        step_seconds = (epoch_seconds/1)*1000
         print_log(
-            f"epoch: {step} train loss: {cur_loss} epoch time: {time.time() - local_time_beg:.2f}s")
-        if step % 10 == 0:
+            f"epoch: {epoch} train loss: {cur_loss} epoch time: {epoch_seconds:.3f}s step time: {step_seconds:5.3f}ms")
+        if epoch % 10 == 0:
             print_log(f"loss: {cur_loss.asnumpy():>7f}")
             print_log("step: {}, time elapsed: {}ms".format(
-                step, (time.time() - local_time_beg) * 1000))
+                epoch, (time.time() - local_time_beg) * 1000))
             calculate_l2_error(model, test_a, test_u)
             save_checkpoint(model, os.path.join(
                 ckpt_dir, model_params["name"]))

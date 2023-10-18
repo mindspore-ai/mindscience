@@ -25,7 +25,7 @@ from mindspore.common import set_seed
 from mindspore import nn, Tensor, context, ops, jit
 from mindspore.train.serialization import load_param_into_net
 
-from mindflow.utils import load_yaml_config, print_log, log_config
+from mindflow.utils import load_yaml_config, print_log, log_config, log_timer
 from mindflow.loss import RelativeRMSELoss
 from mindflow.pde import UnsteadyFlowWithLoss
 
@@ -80,7 +80,9 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
             cur_loss = sink_process()
         local_time_end = time.time()
         epoch_seconds = (local_time_end - local_time_beg) * 1000
-        print_log(f"epoch: {cur_epoch} train loss: {cur_loss} epoch time: {epoch_seconds:5.3f}ms")
+        step_seconds = epoch_seconds/steps
+        print_log(f"epoch: {cur_epoch} train loss: {cur_loss} \
+                  epoch time: {epoch_seconds:5.3f}ms step time: {step_seconds:5.3f}ms")
 
         if cur_epoch % config_param["save_epoch_interval"] == 0:
             ckpt_file_name = f"step_{step}"
@@ -94,8 +96,9 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
             calculate_lp_loss_error(problem, eval_dataset, config_param["batch_size"])
             print_log(f'evaluation time: {time.time() - eval_time_start}s')
 
-
+@log_timer
 def train(input_args):
+    '''Train and evaluate the network'''
     config_param = load_yaml_config(input_args.config_file_path)
     make_dir(config_param["mindrecord_data_dir"])
     lr = config_param["lr"]

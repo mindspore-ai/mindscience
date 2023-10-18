@@ -26,7 +26,7 @@ from mindspore.nn.loss import MSELoss
 
 from mindflow.cell import KNO2D
 from mindflow.common import get_warmup_cosine_annealing_lr
-from mindflow.utils import load_yaml_config, print_log, log_config
+from mindflow.utils import load_yaml_config, print_log, log_config, log_timer
 
 from src import create_training_dataset, NavierStokesWithLoss, visual
 
@@ -46,7 +46,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
-
+@log_timer
 def train(input_args):
     '''Train and evaluate the network'''
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
@@ -73,7 +73,7 @@ def train(input_args):
                   )
 
     train_size = train_dataset.get_dataset_size()
-
+    print_log(f"number of steps_per_epochs: {train_size}")
     lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["lr"],
                                         last_epoch=optimizer_params["epochs"],
                                         steps_per_epoch=train_size,
@@ -114,7 +114,7 @@ def train(input_args):
     os.makedirs(ckpt_dir, exist_ok=True)
 
     for epoch in range(1, optimizer_params["epochs"] + 1):
-        time_beg = time.time()
+        local_time_beg = time.time()
         train_recons_full = 0.0
         train_pred_full = 0.0
         train_full = 0.0
@@ -126,8 +126,11 @@ def train(input_args):
         train_recons_full = train_recons_full / train_size
         train_pred_full = train_pred_full / train_size
         train_full = train_full / train_size
+        local_time_end = time.time()
+        epoch_seconds = local_time_end - local_time_beg
+        step_seconds = (epoch_seconds/train_size)*1000
         print_log(f"epoch: {epoch} recons loss: {train_recons_full:>8f} pred loss: {train_pred_full:>8f}"
-                  f" train loss: {train_full:>8f} epoch time: {(time.time() - time_beg):>8f}s")
+                  f" train loss: {train_full:>8f} epoch time: {epoch_seconds:.3f}s step time: {step_seconds:5.3f}ms")
 
         if epoch % config['eval_interval'] == 0:
             eval_time_start = time.time()

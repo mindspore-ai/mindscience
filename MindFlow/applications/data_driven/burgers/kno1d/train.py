@@ -26,7 +26,7 @@ from mindspore.nn.loss import MSELoss
 
 from mindflow.cell import KNO1D
 from mindflow.common import get_warmup_cosine_annealing_lr
-from mindflow.utils import load_yaml_config, print_log, log_config
+from mindflow.utils import load_yaml_config, print_log, log_config, log_timer
 
 from src import create_training_dataset, BurgersWithLoss, visual
 
@@ -51,7 +51,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
-
+@log_timer
 def train(input_args):
     '''Train and evaluate the network'''
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
@@ -84,6 +84,7 @@ def train(input_args):
 
     train_size = train_dataset.get_dataset_size()
     eval_size = eval_dataset.get_dataset_size()
+    print_log(f"number of steps_per_epochs: {train_size}")
 
     lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["lr"],
                                         last_epoch=optimizer_params["epochs"],
@@ -132,7 +133,7 @@ def train(input_args):
     print_log(summary_dir)
 
     for epoch in range(1, optimizer_params["epochs"] + 1):
-        time_beg = time.time()
+        local_time_beg = time.time()
         l_recons_train = 0.0
         l_pred_train = 0.0
         l_train = 0.0
@@ -144,8 +145,11 @@ def train(input_args):
         l_recons_train = l_recons_train / train_size
         l_pred_train = l_pred_train / train_size
         l_train = l_train / train_size
+        local_time_end = time.time()
+        epoch_seconds = local_time_end - local_time_beg
+        step_seconds = (epoch_seconds/train_size)*1000
         print_log(f"epoch: {epoch} recons loss: {l_recons_train:>8f} pred loss: {l_pred_train:>8f}"
-                  f" train loss: {l_train:>8f} epoch time: {(time.time() - time_beg):>8f}s")
+                  f" train loss: {l_train} epoch time: {epoch_seconds:.3f}s step time: {step_seconds:5.3f}ms")
 
         if epoch % config['eval_interval'] == 0:
             eval_time_start = time.time()

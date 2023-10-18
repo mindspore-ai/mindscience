@@ -25,7 +25,7 @@ from mindspore import context, nn, ops, jit, set_seed
 from mindspore import load_checkpoint, load_param_into_net
 
 from mindflow.cell import MultiScaleFCSequential
-from mindflow.utils import print_log, log_config
+from mindflow.utils import print_log, log_config, log_timer
 from mindflow.utils import load_yaml_config
 
 from src import create_training_dataset, create_test_dataset, visual, calculate_l2_error, Burgers1D
@@ -51,7 +51,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
-
+@log_timer
 def train():
     '''Train and evaluate the pinns network'''
     # load configurations
@@ -113,15 +113,19 @@ def train():
         return loss
 
     epochs = config["train_epochs"]
-    steps_per_epochs = train_dataset.get_dataset_size()
+    steps_per_epoch = train_dataset.get_dataset_size()
     sink_process = mindspore.data_sink(train_step, train_dataset, sink_size=1)
     for epoch in range(1, 1 + epochs):
         # train
-        time_beg = time.time()
+        local_time_beg = time.time()
         model.set_train(True)
-        for _ in range(steps_per_epochs):
+        for _ in range(steps_per_epoch):
             step_train_loss = sink_process()
-        print_log(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) * 1000 :.3f}ms")
+        local_time_end = time.time()
+        epoch_seconds = (local_time_end - local_time_beg) * 1000
+        step_seconds = epoch_seconds/steps_per_epoch
+        print_log(f"epoch: {epoch} train loss: {step_train_loss} \
+                  epoch time: {epoch_seconds:5.3f}s step time: {step_seconds:5.3f}ms")
         model.set_train(False)
         if epoch % config["eval_interval_epochs"] == 0:
             eval_time_start = time.time()
@@ -134,7 +138,6 @@ def train():
 if __name__ == '__main__':
     log_config('./logs', 'burgers')
     print_log("pid:", os.getpid())
-    start_time = time.time()
     args = parse_args()
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
                         device_target=args.device_target,
@@ -142,4 +145,4 @@ if __name__ == '__main__':
     print_log(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
     train()
-    print_log("End-to-End total time: {} s".format(time.time() - start_time))
+    

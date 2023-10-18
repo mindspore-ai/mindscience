@@ -21,7 +21,7 @@ import time
 import numpy as np
 from mindspore import context, jit, nn, ops, save_checkpoint, set_seed
 import mindspore.common.dtype as mstype
-from mindflow.utils import load_yaml_config, print_log, log_config
+from mindflow.utils import load_yaml_config, print_log, log_config, log_timer
 from src import RecurrentCNNCell, RecurrentCNNCellBurgers, Trainer, UpScaler, post_process
 
 set_seed(123456)
@@ -87,11 +87,15 @@ def train_stage(trainer, stage, pattern, config, ckpt_dir, use_ascend):
         if stage == 'pretrain':
             step_train_loss = train_step()
             print_log(
-                f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) :.3f} s")
+                f"epoch: {epoch} train loss: {step_train_loss} \
+                    epoch time: {(time.time() - time_beg)*1000 :5.3f}ms \
+                    step time: {(time.time() - time_beg)*1000 :5.3f}ms")
         else:
             step_train_loss, loss_data, loss_ic, loss_phy, loss_valid = train_step()
             print_log(f"epoch: {epoch} train loss: {step_train_loss} ic_loss: {loss_ic} data_loss: {loss_data} \
-val_loss: {loss_valid} phy_loss: {loss_phy} epoch time: {(time.time() - time_beg): .3f} s")
+                      val_loss: {loss_valid} phy_loss: {loss_phy} \
+                      epoch time: {(time.time() - time_beg)*1000 :5.3f}ms \
+                      step time: {(time.time() - time_beg)*1000 :5.3f}ms")
             if step_train_loss < best_loss:
                 best_loss = step_train_loss
                 print_log('best loss', best_loss, 'save model')
@@ -116,7 +120,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
-
+@log_timer
 def train(input_args):
     """train"""
     burgers_config = load_yaml_config(input_args.config_file_path)

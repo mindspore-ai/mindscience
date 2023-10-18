@@ -23,7 +23,7 @@ from mindspore import context, nn, Tensor, set_seed, ops, data_sink, jit, save_c
 from mindspore import dtype as mstype
 from mindflow import FNO1D, RelativeRMSELoss, load_yaml_config, get_warmup_cosine_annealing_lr
 from mindflow.pde import UnsteadyFlowWithLoss
-from mindflow.utils import log_config, print_log
+from mindflow.utils import log_config, print_log, log_timer
 
 from src import create_training_dataset
 
@@ -46,7 +46,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
-
+@log_timer
 def train(input_args):
     '''Train and evaluate the network'''
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
@@ -74,6 +74,7 @@ def train(input_args):
                   depths=model_params["depth"])
 
     steps_per_epoch = train_dataset.get_dataset_size()
+    print_log(f"number of steps_per_epochs: {steps_per_epoch}")
     lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["initial_lr"],
                                         last_epoch=optimizer_params["train_epochs"],
                                         steps_per_epoch=steps_per_epoch,
@@ -120,7 +121,11 @@ def train(input_args):
         local_time_beg = time.time()
         for _ in range(steps_per_epoch):
             cur_loss = sink_process()
-        print_log(f"epoch: {epoch} train loss: {cur_loss.asnumpy()} epoch time: {time.time() - local_time_beg:.2f}s")
+        local_time_end = time.time()
+        epoch_seconds = local_time_end - local_time_beg
+        step_seconds = (epoch_seconds/steps_per_epoch)*1000
+        print_log(f"epoch: {epoch} train loss: {cur_loss.asnumpy()} \
+                   epoch time: {epoch_seconds:.3f}s step time: {step_seconds:5.3f}ms")
 
         if epoch % config['eval_interval'] == 0:
             eval_time_start = time.time()

@@ -8,7 +8,7 @@ import mindspore as ms
 from mindspore import context, save_checkpoint, nn, ops, jit, set_seed
 
 import mindflow as mf
-from mindflow import load_yaml_config
+from mindflow import load_yaml_config, print_log, log_timer
 
 from src.model import create_model
 from src.lr_scheduler import OneCycleLR
@@ -64,7 +64,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
-
+@log_timer
 def train(geom_name, file_cfg, ckpt_dir, n_epochs):
     """Train a model."""
     # Load config
@@ -114,16 +114,19 @@ def train(geom_name, file_cfg, ckpt_dir, n_epochs):
         return loss
 
     def train_epoch(model, dataset, i_epoch):
-        n_step = dataset.get_dataset_size()
+        steps_per_epochs = dataset.get_dataset_size()
+        print_log(f"number of steps_per_epochs: {steps_per_epochs}")
         model.set_train()
         for i_step, (pde_data, bc_data) in enumerate(dataset):
             local_time_beg = time.time()
             loss = train_step(pde_data, bc_data)
 
-            if i_step % 50 == 0 or i_step + 1 == n_step:
-                print(
-                    f"\repoch: {i_epoch} train loss: {float(loss)} epoch time: {time.time() - local_time_beg:.2f}s"
-                )
+            if i_step % 50 == 0 or i_step + 1 == steps_per_epochs:
+                local_time_end = time.time()
+                epoch_seconds = (local_time_end - local_time_beg) * 1000
+                step_seconds = epoch_seconds/steps_per_epochs
+                print(f"\repoch: {i_epoch} train loss: {float(loss)} \
+                      epoch time: {epoch_seconds:5.3f}ms step time: {step_seconds:5.3f}ms")
 
     keep_ckpt_max = config["keep_checkpoint_max"]
 
@@ -154,7 +157,6 @@ def test(geom_name, checkpoint, file_cfg, n_samps):
 
 if __name__ == "__main__":
     print(f"pid: {os.getpid()}")
-    time_beg = time.time()
     args = parse_args()
     context.set_context(
         mode=context.GRAPH_MODE
@@ -165,6 +167,5 @@ if __name__ == "__main__":
     )
     use_ascend = context.get_context(attr_key="device_target") == "Ascend"
     train(args.geom_name, args.config_file_path, args.ckpt_dir, args.n_epochs)
-    print("End-to-End total time: {:.1f} s".format(time.time() - time_beg))
     ckpt = os.path.join(args.ckpt_dir, "{}_{}d_{}.ckpt".format(args.geom_name, 2, 1))
     test(args.geom_name, ckpt, args.config_file_path, 5000)
