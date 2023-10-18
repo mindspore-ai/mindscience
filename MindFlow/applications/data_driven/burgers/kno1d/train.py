@@ -47,7 +47,7 @@ def parse_args():
     parser.add_argument("--device_id", type=int, default=1,
                         help="ID of the target device")
     parser.add_argument("--config_file_path", type=str,
-                        default="./configs/burgers1d.yaml")
+                        default="./configs/kno1d.yaml")
     input_args = parser.parse_args()
     return input_args
 

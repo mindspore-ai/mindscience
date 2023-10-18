@@ -59,7 +59,7 @@ where:
 
 ### Run Method 2: Run Jupyter Notebook
 
-You can run the training and validation code line by line using the Chinese or English version of the Jupyter Notebook [Chinese Version](.KNO1D_CN.ipynb) and [English Version](.KNO1D.ipynb).
+You can run the training and validation code line by line using the Chinese or English version of the Jupyter Notebook [Chinese Version](KNO1D_CN.ipynb) and [English Version](KNO1D.ipynb).
 
 ## Results Display
 
