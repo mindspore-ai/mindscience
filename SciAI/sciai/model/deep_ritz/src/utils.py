@@ -40,8 +40,8 @@ def generate_args(config):
     common_config = {k: v for k, v in config.items() if not isinstance(v, dict)}
     problem_name = find_problem(config)
     problem_config = config.get(problem_name)
-    problem_config.update(common_config)
-    args = parse_arg(problem_config)
+    concat_config = {**common_config, **problem_config}
+    args = parse_arg(concat_config)
     problem: Problem = {"poisson_hole": PoissonHole, "poisson_ls": PoissonLs}.get(problem_name, PoissonHole)(args)
     return args, problem
 
