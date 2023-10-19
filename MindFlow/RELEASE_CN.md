@@ -6,7 +6,7 @@
 
 ### 主要特性和增强
 
-- [STABLE] [`PeRCNN`](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/PeRCNN)): 支持物理编码递归卷积神经网络（Physics-encoded Recurrent Convolutional Neural Network，PeRCNN）。
+- [STABLE] [`PeRCNN`](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/PeRCNN): 支持物理编码递归卷积神经网络(Physics-encoded Recurrent Convolutional Neural Network，PeRCNN)。
 - [STABLE] [`Boltzmann`](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/boltzmann): 支持PINNs方法求解玻尔兹曼方程。
 - [STABLE] [`Poisson with Point Source`](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/poisson/point_source): 支持PINNs方法求解带点源的泊松方程。
 - [STABLE] [`CAE-LSTM`](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_lstm): 支持数据驱动的卷积自编码器–长短时记忆神经网络求解非定常可压缩流动。
