@@ -150,7 +150,7 @@ class Residue:
             if atom_charge is not None:
                 atom_charge = np.array(atom_charge, np.float32)
 
-            bonds = template.get('bond')
+            bonds = template.get('bonds')
             if bonds is not None:
                 bonds = np.array(bonds, np.int32)
 
@@ -189,7 +189,7 @@ class Residue:
 
         if settle:
             settle_index = get_template_index(template, self.atom_name)
-
+            settle_unit = settle.get('length_unit')
             distance = settle.get('distance')
             settle_length = np.array([[distance['OW-HW'], distance['HW-HW']]], np.float32)
 
@@ -236,7 +236,7 @@ class Residue:
 
         self.start_index = get_integer(start_index)
         # (A'')
-        self._index = msnp.arange(self.num_atoms)
+        self._index = Tensor(np.arange(self.num_atoms), ms.int32)
         self.system_index = self._index + start_index
 
         # (1,A') or (B,A')
@@ -261,10 +261,10 @@ class Residue:
 
         # (B,A')
         self.atom_mask = F.logical_and(self.atomic_number > 0, self.atom_mass > 0)
-        self.inv_mass = msnp.where(
-            self.atom_mask, msnp.reciprocal(self.atom_mass), 0)
+        self.inv_mass = Tensor(np.where(self.atom_mask.asnumpy(),
+                                        np.reciprocal(self.atom_mass.asnumpy()), 0))
         # (B,1)
-        self.natom_tensor = msnp.sum(F.cast(self.atom_mask, ms.float32), -1, keepdims=True)
+        self.natom_tensor = msnp.sum(self.atom_mask, -1, keepdims=True)
         self.total_mass = msnp.sum(self.atom_mass, -1, keepdims=True)
 
         # (B,A')
@@ -381,7 +381,7 @@ class Residue:
     @classmethod
     def _get_bond(cls, template: dict, atom_index: ndarray = None) -> ndarray:
         """get bond from template and atom index"""
-        bonds = template.get('bond')
+        bonds = template.get('bonds')
         if bonds is None:
             return None
         bonds = np.array(bonds, np.int32)
@@ -397,7 +397,10 @@ class Residue:
                 bonds = np.stack(bond_, axis=0)
             else:
                 serial: list = atom_index.reshape(-1).tolist()
-                bonds = np.array([serial.index(idx) for idx in bond_list]).reshape(bonds.shape)
+                bond_list = np.array(bond_list).reshape((-1, 2))
+                itsct = np.where(np.isin(bond_list, serial).sum(axis=-1) > 1)[0]
+                bond_list = bond_list[itsct].reshape(-1)
+                bonds = np.array([serial.index(idx) for idx in bond_list]).reshape((-1, 2))
         return bonds
 
     def build_atom_mass(self, template: dict):
@@ -541,7 +544,7 @@ class Residue:
                              f'the shape of "atom_name" {atom_name}!')
 
         atom_mask = F.logical_and(atomic_number > 0, atom_mass > 0)
-        inv_mass = msnp.where(atom_mask, msnp.reciprocal(atom_mass), 0)
+        inv_mass = Tensor(np.where(atom_mask.asnumpy(), np.reciprocal(atom_mass.asnumpy()), 0))
 
         if atom_type is None:
             atom_type = atom_name.copy()
@@ -570,8 +573,7 @@ class Residue:
         self.num_atoms = self.atom_name.shape[-1]
         self._index = msnp.arange(self.num_atoms)
         self.system_index = self._index + self.start_index
-        self.natom_tensor = msnp.sum(
-            F.cast(self.atom_mask, ms.int32), -1, keepdims=True)
+        self.natom_tensor = msnp.sum(self.atom_mask, -1, keepdims=True)
         self.total_mass = msnp.sum(self.atom_mass, -1, keepdims=True)
 
         return self

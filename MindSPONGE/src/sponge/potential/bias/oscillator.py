@@ -58,6 +58,7 @@ class OscillatorBias(Bias):
         self.k = Tensor(k, ms.float32)
         self.nonh_mask = Tensor(1 - nonh_mask, ms.int32)
 
+    @ms.jit
     def construct(self,
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,

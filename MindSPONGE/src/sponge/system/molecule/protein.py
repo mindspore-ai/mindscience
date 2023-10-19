@@ -24,17 +24,20 @@
 Protein modeling.
 """
 
-from typing import Union, List
+from typing import Union, List, Tuple
 import numpy as np
 from numpy import ndarray
 from mindspore.common import Tensor
 from .molecule import Molecule
 from ..residue.amino import AminoAcid
+from ..residue import Residue
 from ..modelling.hadder import read_pdb
 from ...data.template import get_template
 from ...function import get_arguments
 
 
+RESIDUE_NAMES = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS', 'GLN', 'GLU', 'GLY', 'HID', 'HIS',
+                 'ILE', 'LEU', 'LYS', 'MET', 'PHE', 'PRO', 'SER', 'THR', 'TRP', 'TYR', 'VAL']
 backbone_atoms = np.array(['N', 'CA', 'C', 'O'], np.str_)
 include_backbone_atoms = np.array(['OXT'], np.str_)
 
@@ -90,7 +93,7 @@ class Protein(Molecule):
                  sequence: List[str] = None,
                  coordinate: Union[Tensor, ndarray, List[float]] = None,
                  pbc_box: Union[Tensor, ndarray, List[float]] = None,
-                 template: Union[dict, str] = 'protein0.yaml',
+                 template: Union[dict, str, List[Union[dict, str]], Tuple[Union[dict, str]]] = 'protein0.yaml',
                  rebuild_hydrogen: bool = False,
                  rebuild_suffix: str = '_addH',
                  length_unit: str = None,
@@ -112,24 +115,48 @@ class Protein(Molecule):
             flatten_crds = pdb_obj.flatten_crds
             init_res_names = pdb_obj.init_res_names
             init_res_ids = pdb_obj.init_res_ids
+            chain_id = pdb_obj.chain_id
+            self.chain_id = chain_id
 
-            if len(residue_name) > 1:
-                if residue_name[0] != 'ACE':
-                    residue_name[0] = 'N' + residue_name[0]
-                if residue_name[-1] != 'NME':
-                    residue_name[-1] = 'C' + residue_name[-1]
+            residue_names = np.array(RESIDUE_NAMES, np.str_)
+            is_amino = np.isin(residue_name, residue_names)
+
+            for i, res in enumerate(residue_name):
+                if res == 'HIE':
+                    residue_name[i] = 'HIS'
+                if res == 'HOH':
+                    residue_name[i] = 'WAT'
+                if not is_amino[i]:
+                    continue
+                if i == 0:
+                    residue_name[i] = 'N' * (res != 'ACE') + res
+                    continue
+                elif i == len(residue_name) - 1:
+                    residue_name[i] = 'C' * (res != 'NME') + res
+                    break
+                if chain_id[i] < chain_id[i + 1]:
+                    residue_name[i] = 'C' * (res != 'ACE') + res
+                if chain_id[i] > chain_id[i - 1]:
+                    residue_name[i] = 'N' * (res != 'ACE') + res
 
             self.init_resname = init_res_names
             self.init_resid = init_res_ids
             num_residue = len(residue_name)
             residue_pointer = np.append(residue_pointer, len(flatten_atoms))
+            self.template = template
             template = get_template(template)
 
             self.residue = []
             for i in range(num_residue):
                 name = residue_name[i]
+                if name == 'HIE':
+                    name = 'HIS'
                 atom_name = flatten_atoms[residue_pointer[i]: residue_pointer[i + 1]][None, :]
-                residue = AminoAcid(name=name, template=template, atom_name=atom_name)
+                if name in RESIDUE_NAMES:
+                    residue = AminoAcid(name=name, template=template, atom_name=atom_name)
+                else:
+                    residue = Residue(name=name, template=template, atom_name=atom_name,
+                                      length_unit=self.units.length_unit)
                 self.residue.append(residue)
 
             coordinate = flatten_crds * self.units.convert_length_from('A')

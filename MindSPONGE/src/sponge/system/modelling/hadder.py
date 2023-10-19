@@ -24,12 +24,16 @@
 """
 H-Adder Module.
 """
+import os
 import sys
 import time
 import numpy as np
 from .add_missing_atoms import add_h
 from .pdb_generator import gen_pdb
 from .pdb_parser import _read_pdb
+
+RESIDUE_NAMES = np.array(['ALA', 'ARG', 'ASN', 'ASP', 'CYS', 'GLN', 'GLU', 'GLY', 'HID', 'HIS',
+                          'ILE', 'LEU', 'LYS', 'MET', 'PHE', 'PRO', 'SER', 'THR', 'TRP', 'TYR', 'VAL'], np.str_)
 
 hnames = {'ACE': {'CH3': ['H1', 'H2', 'H3']},
           'ALA': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB1', 'HB2', 'HB3']},
@@ -132,6 +136,8 @@ hnames = {'ACE': {'CH3': ['H1', 'H2', 'H3']},
                   'CE2': ['HE2'], 'CD2': ['HD2']},
           'VAL': {'N': ['H'], 'CA': ['HA'], 'CB': ['HB'], 'CG1': ['HG11', 'HG12', 'HG13'], 'CG2': ['HG21',
                                                                                                    'HG22', 'HG23']},
+          'WAT': {'O': ['H1', 'H2']},
+          'HOH': {'O': ['H1', 'H2']}
           }
 
 hbond_type = {
@@ -631,6 +637,12 @@ hbond_type = {
     'NME': {
         'N': np.array(['c6', 'CH3', 'C']),
         'CH3': np.array(['ch3', 'N', 'C'])
+    },
+    'WAT': {
+        'O': np.array(['wat', 'O', 'O'])
+    },
+    'HOH': {
+        'O': np.array(['wat', 'O', 'O'])
     }
 }
 
@@ -639,7 +651,8 @@ addhs = {'c6': 1,
          'c2h4': 2,
          'ch3': 3,
          'cc3': 1,
-         'c2h2': 2}
+         'c2h2': 2,
+         'wat': 2}
 
 sys.path.append('../')
 
@@ -658,21 +671,43 @@ def add_hydrogen(pdb_in, pdb_out):
     pdb_obj = _read_pdb(pdb_name, rebuild_hydrogen=True)
     atom_names = pdb_obj.atom_names
     res_names = pdb_obj.res_names
+
     crds = pdb_obj.crds
+    chain_id = pdb_obj.chain_id
+    is_amino = np.isin(res_names, RESIDUE_NAMES)
 
     for i, res in enumerate(res_names):
-        res = 'N' * (i == 0 and res != 'ACE') + res
-        res = 'C' * (i == (len(res_names) - 1) and res != 'NME') + res
+        if res == 'HIE':
+            res_names[i] = 'HIS'
+        if res == 'HOH':
+            res_names[i] = 'WAT'
+        if not is_amino[i]:
+            continue
+        if i == 0:
+            res_names[i] = 'N' * (res != 'ACE') + res
+            continue
+        elif i == len(res_names) - 1:
+            res_names[i] = 'C' * (res != 'NME') + res
+            break
+        if chain_id[i] < chain_id[i + 1]:
+            res_names[i] = 'C' * (res != 'ACE') + res
+        if chain_id[i] > chain_id[i - 1]:
+            res_names[i] = 'N' * (res != 'ACE') + res
+
+    for i, res in enumerate(res_names):
         h_names = []
         crds[i] = np.array(crds[i])
+
         if res == 'NME':
             c_index = np.where(np.array(atom_names[i - 1]) == 'C')
             atom_names[i].insert(0, 'C')
             crds[i] = np.append(crds[i - 1][c_index], crds[i], axis=-2)
+
         for atom in atom_names[i]:
             if atom == 'C' and len(res) == 4 and res.startswith(
                     'C') and np.isin(atom_names[i], 'OXT').sum() == 1:
                 continue
+
             if atom in hbond_type[res].keys() and len(
                     hbond_type[res][atom].shape) == 1:
                 addh_type = hbond_type[res][atom][0]
@@ -690,6 +725,7 @@ def add_hydrogen(pdb_in, pdb_out):
                                 j=n,
                                 k=o)
                 crds[i] = np.append(crds[i], new_crd, axis=0)
+
             elif atom in hbond_type[res].keys():
                 for j, hbond in enumerate(hbond_type[res][atom]):
                     addh_type = hbond[0]
@@ -703,8 +739,10 @@ def add_hydrogen(pdb_in, pdb_out):
                                     j=n,
                                     k=o)
                     crds[i] = np.append(crds[i], new_crd, axis=0)
+
             else:
                 continue
+
         atom_names[i].extend(h_names)
 
         if res == 'NME':
@@ -730,13 +768,17 @@ def add_hydrogen(pdb_in, pdb_out):
         print('[Error] Adding hydrogen atoms failed.')
         raise ValueError('The value of crd after adding hydrogen is empty!')
 
+    # Clear old pdb files.
+    if os.path.exists(new_pdb_name):
+        os.remove(new_pdb_name)
+
     gen_pdb(new_crds[None, :], new_atom_names,
-            new_res_names, new_res_ids, new_pdb_name)
+            new_res_names, new_res_ids, chain_id=chain_id, pdb_name=new_pdb_name)
 
     end_time = time.time()
     print(
-        '[MindSPONGE] Adding {} hydrogen atoms for the protein molecule in {} seconds.'.format(
-            round(len(new_crds), 3), round(end_time - start_time, 3)))
+        '[MindSPONGE] 1 H-Adding task with {} atoms complete in {} seconds.'.format(
+            new_crds.shape[-2], round(end_time - start_time, 3)))
 
 
 def read_pdb(pdb_name: str, rebuild_hydrogen: bool = False, rebuild_suffix: str = '_addH',

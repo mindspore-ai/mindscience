@@ -44,7 +44,7 @@ def _read_pdb(pdb_name, rebuild_hydrogen=False, remove_hydrogen=False):
         init_res_ids(list): The residue id of each atom.
     """
     pdb_obj = namedtuple('PDBObject', ['atom_names', 'res_names', 'crds', 'res_pointer', 'flatten_atoms',
-                                       'flatten_crds', 'init_res_names', 'init_res_ids'])
+                                       'flatten_crds', 'init_res_names', 'init_res_ids', 'chain_id'])
     with open(pdb_name, 'r') as pdb:
         lines = pdb.readlines()
     atom_names = []
@@ -58,19 +58,26 @@ def _read_pdb(pdb_name, rebuild_hydrogen=False, remove_hydrogen=False):
     res_pointer = []
     flatten_atoms = []
     flatten_crds = []
-    for index, line in enumerate(lines):
-        if not line.startswith('ATOM') and index < len(lines) - 1:
-            continue
-        if not line.startswith('ATOM') and index == len(lines) - 1:
+    chain_id = []
+    c_id = 0
+    for _, line in enumerate(lines):
+        if line.startswith('END'):
             atom_names.append(atom_group)
             crds.append(crd_group)
             break
+        if line.startswith('TER'):
+            c_id += 1
+            continue
+        if not (line.startswith('ATOM') or line.startswith('HETATM')):
+            continue
+
         atom_name = line[12:16].strip()
         if rebuild_hydrogen and atom_name.startswith('H'):
             continue
         if remove_hydrogen and atom_name.startswith('H'):
             continue
         res_name = line[17:20].strip()
+
         res_id = int(line[22:26].strip())
         crd = [float(line[30:38]),
                float(line[38:46]),
@@ -86,6 +93,7 @@ def _read_pdb(pdb_name, rebuild_hydrogen=False, remove_hydrogen=False):
             atom_group.append(atom_name)
             crd_group.append(crd)
             res_pointer.append(0)
+            chain_id.append(c_id)
         elif res_id != res_ids[-1]:
             atom_names.append(atom_group)
             crds.append(crd_group)
@@ -96,17 +104,18 @@ def _read_pdb(pdb_name, rebuild_hydrogen=False, remove_hydrogen=False):
             atom_group.append(atom_name)
             crd_group.append(crd)
             res_pointer.append(pointer)
+            chain_id.append(c_id)
         else:
             atom_group.append(atom_name)
             crd_group.append(crd)
-        if index == len(lines) - 1:
-            atom_names.append(atom_group)
-            crds.append(crd_group)
+
+    atom_names.append(atom_group)
+    crds.append(crd_group)
 
     flatten_atoms = np.array(flatten_atoms, np.str_)
     flatten_crds = np.array(flatten_crds, np.float32)
     init_res_names = np.array(init_res_names)
     init_res_ids = np.array(init_res_ids, np.int32)
     res_pointer = np.array(res_pointer, np.int32)
-
-    return pdb_obj(atom_names, res_names, crds, res_pointer, flatten_atoms, flatten_crds, init_res_names, init_res_ids)
+    return pdb_obj(atom_names, res_names, crds, res_pointer, flatten_atoms, flatten_crds, init_res_names, init_res_ids,
+                   chain_id)
