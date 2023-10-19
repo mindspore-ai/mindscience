@@ -55,7 +55,7 @@ def test_comb_should_run_with_full_command(mode):
           "--sample_temporal 1 " \
           "--lambda_g1v 1.0 " \
           "--lambda_g2v 1.0 " \
-          "--batch_size 128 " \
+          "--batch_size 64 " \
           "--lr 1.0e-4 " \
           "--lr_milestones 100 200 " \
           "--momentum 0.9 " \
@@ -65,7 +65,7 @@ def test_comb_should_run_with_full_command(mode):
           "--start_epoch 0 " \
           "--epoch_block 10 " \
           "--num_block 1 " \
-          "--workers 8 " \
+          "--workers 2 " \
           "--k 1 " \
           "--print_freq 50 " \
           "--save_fig false " \
@@ -203,7 +203,14 @@ def test_auto_model(mode):
     """
     stderr, stdout = stub_stdout()
     model = AutoModel.from_pretrained("inversion_net")
-    model.update_config(mode=mode, num_block=1, epoch_block=10, save_fig=False, save_ckpt=False)
+    model.update_config(
+        mode=mode,
+        num_block=1,
+        epoch_block=10,
+        batch_size=64,
+        workers=2,
+        save_fig=False,
+        save_ckpt=False)
     model.train()
     outputs = sys.stdout.getvalue().strip()
     final_losses = re.findall(r"Epoch:.*loss: (\d+\.\d+).*loss_g1v: (\d+.\d+).*loss_g2v: (\d+.\d+).*time:", outputs)[-1]
