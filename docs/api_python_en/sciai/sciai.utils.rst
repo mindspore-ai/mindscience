@@ -3,7 +3,7 @@ sciai.utils
 
 Util module, containing commonly used Python utils, MindSpore utils, plot utils, etc.
 
-.. mscnautosummary::
+.. autosummary::
     :toctree: utils
     :nosignatures:
     :template: classtemplate.rst
