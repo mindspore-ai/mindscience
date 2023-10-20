@@ -128,7 +128,7 @@ version from [MindSpore Download Guide](https://www.mindspore.cn/versions).
 
 | SciAI Version | Branch  | MindSpore Version | Python Version |
 |:--------------|:--------|:------------------|:---------------|
-| 0.1.0         | master  | \>=2.1.0          | \>=3.7         |
+| 0.1.0         | master  | \>=2.2.0          | =3.7           |
 
 For other dependencies, see [requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/requirements.txt),
 and they can be installed via the following command.
@@ -156,7 +156,7 @@ Note: This installation method is not currently supported.
 It will be supported after Mindspore 2.2.0 official release.
 
 ```bash
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{ms_version}/mindscience/{arch}/sciai-{version}-cp3-cp3m-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/MindScience/sciai/gpu/{arch}/cuda-11.1/sciai-{version}-cp37-cp37m-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 > - When the network is connected, dependencies of the SciAI installation package are automatically downloaded during
@@ -168,11 +168,11 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{ms_version}/min
 
 The following table provides the corresponding installation commands to each architecture and Python version.
 
-| Device | Architecture | Python      | Command                                                                                                                                                                        |
-|--------|--------------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Ascend | x86_64       | Python>=3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/mindscience/x86_64/sciai-0.1.0-cp3-cp3m-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple`   |
-|        | aarch64      | Python>=3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/mindscience/aarch64/sciai-0.1.0-cp3-cp3m-linux_aarch64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple` |
-| GPU    | x86_64       | Python>=3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/mindscience/x86_64/sciai-0.1.0-cp3-cp3m-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple`   |
+| Device | Architecture | Python     | Command                                                                                                                                                                                            |
+|--------|--------------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Ascend | x86_64       | Python=3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/MindScience/sciai/gpu/x86_64/cuda-11.1/sciai-0.1.0-cp37-cp37m-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple` |
+|        | aarch64      | Python=3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/MindScience/sciai/ascend/aarch64/sciai-0.1.0-cp37-cp37m-linux_aarch64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple`      |
+| GPU    | x86_64       | Python=3.7 | `pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/MindScience/sciai/gpu/x86_64/cuda-11.1/sciai-0.1.0-cp37-cp37m-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple` |
 
 Note: If you have other MindScience package(s) installed in your conda or python env, such as `MindElec`, `MindFlow`
 , `MindSponge`,
