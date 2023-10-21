@@ -92,12 +92,15 @@ class ESM2(nn.Cell):
         # last hidden representation should have layer norm applied
         hidden_representations = x
         x = self.lm_head(x)
-        attentions = mnp.stack(attn_weights, 1)
-        attention_mask = 1 - padding_mask
-        attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
-        attentions = attentions * attention_mask[:, None, None, :, :]
-        contacts = self.contact_head(tokens, attentions)
-        result = x, hidden_representations, attentions, contacts
+        if need_head_weights:
+            attentions = mnp.stack(attn_weights, 1)
+            attention_mask = 1 - padding_mask
+            attention_mask = attention_mask.unsqueeze(1) * attention_mask.unsqueeze(2)
+            attentions = attentions * attention_mask[:, None, None, :, :]
+            contacts = self.contact_head(tokens, attentions)
+            result = x, hidden_representations, attentions, contacts
+        else:
+            result = x, hidden_representations
         return result
 
     def _init_submodules(self):
