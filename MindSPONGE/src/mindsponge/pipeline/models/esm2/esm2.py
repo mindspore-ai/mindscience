@@ -33,6 +33,7 @@ class ESM2(Model):
         else:
             self.mixed_precision = True
         self.checkpoint_url = 'https://download.mindspore.cn/mindscience/mindsponge/esm2/checkpoint/esm2.ckpt'
+        self.return_contacts = self.config.return_contacts
         self.checkpoint_path = "./esm2.ckpt"
         self.network = esm2(num_layers=self.config.encoder_layers,
                             embed_dim=self.config.encoder_embed_dim,
@@ -44,18 +45,29 @@ class ESM2(Model):
                          mixed_precision=self.mixed_precision)
 
     def forward(self, data):
-        if self.use_jit:
-            x, hidden_representations, attentions, contacts = self._jit_forward(data)
+        if self.return_contacts:
+            if self.use_jit:
+                x, hidden_representations, attentions, contacts = self._jit_forward(data)
+            else:
+                x, hidden_representations, attentions, contacts = self._pynative_forward(data)
+            result = (x, hidden_representations, attentions, contacts)
         else:
-            x, hidden_representations, attentions, contacts = self._pynative_forward(data)
-        result = (x, hidden_representations, attentions, contacts)
+            if self.use_jit:
+                x, hidden_representations = self._jit_forward(data)
+            else:
+                x, hidden_representations = self._pynative_forward(data)
+            result = (x, hidden_representations)
         return result
 
     def predict(self, data, **kwargs):
         batch_tokens = mutable(data)
         forward_data = batch_tokens
-        x, hidden_representations, attentions, contacts = self.forward(forward_data)
-        result = (x, hidden_representations, attentions, contacts)
+        if self.return_contacts:
+            x, hidden_representations, attentions, contacts = self.forward(forward_data)
+            result = (x, hidden_representations, attentions, contacts)
+        else:
+            x, hidden_representations = self.network(data)
+            result = (x, hidden_representations)
         return result
 
     def loss(self, data):
@@ -72,11 +84,19 @@ class ESM2(Model):
 
     @jit
     def _jit_forward(self, data):
-        x, hidden_representations, attentions, contacts = self.network(data)
-        result = (x, hidden_representations, attentions, contacts)
+        if self.return_contacts:
+            x, hidden_representations, attentions, contacts = self.network(data)
+            result = (x, hidden_representations, attentions, contacts)
+        else:
+            x, hidden_representations = self.network(data)
+            result = (x, hidden_representations)
         return result
 
     def _pynative_forward(self, data):
-        x, hidden_representations, attentions, contacts = self.network(data)
-        result = (x, hidden_representations, attentions, contacts)
+        if self.return_contacts:
+            x, hidden_representations, attentions, contacts = self.network(data)
+            result = (x, hidden_representations, attentions, contacts)
+        else:
+            x, hidden_representations = self.network(data)
+            result = (x, hidden_representations)
         return result
