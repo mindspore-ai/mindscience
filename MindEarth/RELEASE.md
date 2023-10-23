@@ -1,36 +1,36 @@
-[ENGLISH](RELEASE_EN.md) | 简体中文
+ENGLISH | [简体中文](RELEASE_CN.md)
 
 # MindEarth 0.1.0 Release Notes
 
-## 主要特性
+## Major Features
 
-### 中期天气预报预测
+### Medium-range global predictions
 
 * FourCastNet
 
-    FourCastNet采用自适应傅里叶神经算子AFNO，这种神经网络架构是对Vision Transformer模型的改进，他将混合操作步骤构建成连续的全局卷积，在傅里叶域中通过FFT有效实现，将空间混合复杂度降低到O(NlogN)。该模型为第一个预报精度能与欧洲中期天气预报中心（ECMWF）的高分辨率综合预测系统（IFS）模型比较的AI预报模型。
+    FourCastNet adopts the adaptive Fourier neural operator AFNO, which is an improvement on the Vision Transformer model. It constructs a continuous global convolution of the mixing operation steps and effectively implements it through FFT in the Fourier domain, reducing the spatial mixing complexity to O(NlogN). This model is the first AI prediction model that can compare its prediction accuracy with the high-resolution integrated prediction system (IFS) model of the European Centre for Medium Range Weather Forecasting (ECMWF).
 
 * ViT-KNO
 
-    Koopman Neural Operator是一个基于Koopman的全局线性化理论并结合神经算子思想设计的一个轻量化的、网格无关的模型。该模型由华为先进计算与存储实验室与清华大学合作推出。通过在线性结构中嵌入复杂的动力学来约束重建过程，此模型能够捕获复杂的非线性行为，同时保持模型轻量级和计算有效性。与FNO相比，KNO具有更高效的训练性能与更优的预测精度。
+    Koopman Neural Operator is a lightweight, grid independent model designed based on Koopman's global linearization theory and combined with neural operator ideas. This model was developed in collaboration between Huawei ACS lab and Tsinghua University. By embedding complex dynamics into the linear structure to constrain the reconstruction process, this model can capture complex nonlinear behavior while maintaining its lightweight and computational effectiveness. Compared with FNO, KNO has more efficient training performance and better prediction accuracy.
 
 * GraphCast
 
-    GraphCast由谷歌DeepMind提出，该模型使用GNN在“编码-处理-解码”架构中自回归地生成预报结果。编码器将历史时刻的气象要素的纬度-经度输入网格映射到多尺度正二十面体网格表示；处理器在多网格表示上执行多轮消息传递；解码器将多网格表示映射回纬度-经度网络，作为下一时间步骤的预测。另外，针对多部预测精度衰减，MindEarth实现了多步迭代训练，以降低模型误差累积。
+    GraphCast was proposed by Google DeepMind, which uses GNN to autoregressively generate prediction results in the "encoding-processing-decoding" architecture. The encoder maps the latitude-longitude input grid of meteorological elements at historical times to a multi-scale icosahedral grid representation. The processor performs multiple rounds of message passing on a multi grid representation. The decoder maps the multi grid representation back to the latitude-longitude grid as the prediction for the next time step. In addition, MindEarth has implemented multi-step iterative training to reduce model error accumulation in response to the attenuation of multiple prediction accuracy.
 
-### 短临降水预报
+### Nowcasting precipitation predictions
 
 * Dgmr
 
-    Dgmr（雷达网络深度生成模型）是由DeepMind的研究人员开发的雷达降水概率临近预报的深度生成模型。该模型的主体是一个生成器，配合时间和空间判别器损失以及额外的正则化项进行对抗训练。模型从前四帧雷达序列学习上下文表示，用作采样器的输入，采样器是一个由卷积门控循环单元（GRU）构成的递归网络，它将上下文表示和从高斯分布中取样的潜向量作输入，对未来18个雷达场进行预测。
+    Dgmr (Deep Generative Model of Radar Network) is a deep generative model for the probabilistic nowcasting of precipitation from radar developed by researchers from DeepMind. The main body of the model is a generator, which is trained adversarially with temporal and spatial discriminator losses and additional regularization terms. The model learns contextual representations from the first four frames of the radar sequence, which are used as input to the sampler. The sampler is a recurrent network composed of convolutional gated recurrent units (GRU), which takes context representations and latent vectors sampled from a Gaussian distribution as input to predict 18 future radar fields.
 
-### 数字高程模型超分
+### Super-resolution reconstruction of global DEM
 
 * DEM-SRNet
 
-    DEM-SRNet是一个数字高程模型的超分辨率模型，该模型基于30m分辨率的NASADEM卫星影像、联合国政府间海洋学委员会的450m分辨率GEBCO_2021公开数据和部分区域高分辨率海洋地形数据，采用深度残差预训练神经网络和迁移学习（Transfer Learning）相结合技术，生成全球90m高分辨率DEM。该数据集可以提供更加准确的基础地理信息，在全球气候变化、海洋潮汐运动、地球圈物质交换等研究领域发挥着至关重要的作用。
+    DEM-SRNet is a super-resolution model of a digital elevation model. The model is based on 30m resolution NASADEM satellite images, 450m resolution GEBCO_2021 public data of the United Nations Intergovernmental Oceanographic Commission and high-resolution ocean terrain data of some areas, using a combination of deep residual pre-trained neural network and transfer learning technology to generate a global 90m high-resolution DEM. This data set can provide more accurate basic geographical information and plays a vital role in research fields such as global climate change, ocean tidal movements, and material exchange in the geosphere.
 
-## 贡献者
+## Contributors
 
 Thanks goes to these wonderful people:
 
