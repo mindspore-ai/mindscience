@@ -24,7 +24,7 @@ $$
 ### Run Option 1: Call `train.py` from command line
 
 ```shell
-python --mode GRAPH --save_graphs_path ./graphs --device_target Ascend --device_id 0 --n_epochs 250 --config_file_path ./poisson_cfg.yaml
+python train.py --mode GRAPH --save_graphs_path ./graphs --device_target Ascend --device_id 0 --n_epochs 250 --config_file_path ./poisson_cfg.yaml
 ```
 
 where:
