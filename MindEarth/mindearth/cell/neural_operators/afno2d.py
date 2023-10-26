@@ -309,7 +309,7 @@ class AFNO2D(nn.Cell):
         self.hard_thresholding_fraction = 1.0
 
         self.high_freq = high_freq
-        self.w = nn.Conv2d(embed_dims, embed_dims, 1)  # High Frequency
+        self.w = nn.Dense(embed_dims, embed_dims, has_bias=False)  # High Frequency
 
         self.cast = ops.Cast()
 
@@ -326,7 +326,7 @@ class AFNO2D(nn.Cell):
             b, n, c = x.shape
             h, w = self.h_size, self.w_size
             x = x.reshape(b, h, w, c)
-            bias = self.w(x.transpose((0, 3, 1, 2))).transpose((0, 2, 3, 1))
+            bias = self.w(x)
             bias = bias.reshape(b, h * w, c)
         else:
             bias = x
