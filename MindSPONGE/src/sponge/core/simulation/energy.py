@@ -64,15 +64,15 @@ class WithEnergyCell(Cell):
     Outputs:
         energy, Tensor of shape `(B, 1)`. Data type is float. Total potential energy.
 
+    Note:
+        - B:  Batchsize, i.e. number of walkers of the simulation.
+        - A:  Number of the atoms in the simulation system.
+        - N:  Number of the maximum neighbouring atoms.
+        - U:  Number of potential energy terms.
+        - V:  Number of bias potential terms.
+
     Supported Platforms:
         ``Ascend`` ``GPU``
-
-    Symbols:
-        B:  Batchsize, i.e. number of walkers of the simulation.
-        A:  Number of the atoms in the simulation system.
-        N:  Number of the maximum neighbouring atoms.
-        U:  Number of potential energy terms.
-        V:  Number of bias potential terms.
     """
 
     def __init__(self,

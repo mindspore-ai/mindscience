@@ -22,11 +22,11 @@ sponge.core.WithEnergyCell
         整个系统的势能, shape为 `(B, 1)` 的Tensor。数据类型为float。
 
     .. note::
-        B: batch size，比如分子模拟中walker的数量。 
-        A: 分子模拟中原子的数量。 
-        N: 最大相邻原子数。 
-        U: 势能项的数量。 
-        V: bias potential项的数量。 
+        - B: batch size，比如分子模拟中walker的数量。 
+        - A: 分子模拟中原子的数量。 
+        - N: 最大相邻原子数。 
+        - U: 势能项的数量。 
+        - V: bias potential项的数量。 
 
     .. py:method:: bias()
 
