@@ -46,6 +46,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
+
 @log_timer
 def train(input_args):
     '''Train and evaluate the network'''
@@ -103,9 +104,13 @@ def train(input_args):
         (loss, l_recons, l_pred), grads = grad_fn(inputs, labels)
         if use_ascend:
             loss = loss_scaler.unscale(loss)
-            if all_finite(grads):
+            is_finite = all_finite(grads)
+            if is_finite:
                 grads = loss_scaler.unscale(grads)
-        loss = ops.depend(loss, optimizer(grads))
+                loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
+        else:
+            loss = ops.depend(loss, optimizer(grads))
         return loss, l_recons, l_pred
 
     train_sink = data_sink(train_step, train_dataset, sink_size=1)

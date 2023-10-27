@@ -58,6 +58,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
+
 @log_timer
 def train(input_args):
     '''Train and test the network'''
@@ -144,9 +145,13 @@ def train(input_args):
         loss, grads = grad_fn(x, y)
         if use_ascend:
             loss = loss_scaler.unscale(loss)
-            if all_finite(grads):
+            is_finite = all_finite(grads)
+            if is_finite:
                 grads = loss_scaler.unscale(grads)
-        loss = ops.depend(loss, optimizer(grads))
+                loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
+        else:
+            loss = ops.depend(loss, optimizer(grads))
         return loss
 
     train_sink_process = data_sink(train_step, train_dataset, sink_size=1)

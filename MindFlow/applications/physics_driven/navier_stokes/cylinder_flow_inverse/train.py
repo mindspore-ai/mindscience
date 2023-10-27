@@ -32,31 +32,29 @@ from src import visual, plot_params
 set_seed(0)
 np.random.seed(0)
 
-parser = argparse.ArgumentParser(description="cylinder flow train")
-parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
-                    help="Running in GRAPH_MODE OR PYNATIVE_MODE")
-parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                    help="Whether to save intermediate compilation graphs")
-parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
-                    help="The target device to run, support 'Ascend', 'GPU'")
-parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-parser.add_argument("--config_file_path", type=str, default="./navier_stokes_inverse.yaml")
-args = parser.parse_args()
 
-context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                    save_graphs=args.save_graphs,
-                    save_graphs_path=args.save_graphs_path,
-                    device_target=args.device_target,
-                    device_id=args.device_id)
-print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
-use_ascend = context.get_context(attr_key='device_target') == "Ascend"
+def parse_args():
+    """"Parse input args"""
+    parser = argparse.ArgumentParser(description="cylinder flow train")
+    parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+                        help="Running in GRAPH_MODE OR PYNATIVE_MODE")
+    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
+                        help="Whether to save intermediate compilation graphs")
+    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
+    parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
+                        help="The target device to run, support 'Ascend', 'GPU'")
+    parser.add_argument("--device_id", type=int, default=0,
+                        help="ID of the target device")
+    parser.add_argument("--config_file_path", type=str,
+                        default="./navier_stokes_inverse.yaml")
+    return parser.parse_args()
+
 
 @log_timer
-def train():
+def train(input_args):
     '''Train and evaluate the network'''
     # load configurations
-    config = load_yaml_config(args.config_file_path)
+    config = load_yaml_config(input_args.config_file_path)
 
     # create dataset
     inv_ns_train_dataset = create_training_dataset(config)
@@ -67,8 +65,10 @@ def train():
     # create  test dataset
     inputs, label = create_test_dataset(config)
 
-    coord_min = np.array(config["geometry"]["coord_min"] + [config["geometry"]["time_min"]]).astype(np.float32)
-    coord_max = np.array(config["geometry"]["coord_max"] + [config["geometry"]["time_max"]]).astype(np.float32)
+    coord_min = np.array(config["geometry"]["coord_min"] +
+                         [config["geometry"]["time_min"]]).astype(np.float32)
+    coord_max = np.array(config["geometry"]["coord_max"] +
+                         [config["geometry"]["time_max"]]).astype(np.float32)
     input_center = list(0.5 * (coord_max + coord_min))
     input_scale = list(2.0 / (coord_max - coord_min))
 
@@ -86,10 +86,12 @@ def train():
         param_dict = load_checkpoint(config["load_ckpt_path"])
         load_param_into_net(model, param_dict)
 
-    theta = mindspore.Parameter(mindspore.Tensor(np.array([0.0, 0.0]).astype(np.float32)), name="theta")
+    theta = mindspore.Parameter(mindspore.Tensor(
+        np.array([0.0, 0.0]).astype(np.float32)), name="theta")
     params = model.trainable_params()
     params.append(theta)
-    optimizer = nn.Adam(params, learning_rate=config["optimizer"]["initial_lr"])
+    optimizer = nn.Adam(
+        params, learning_rate=config["optimizer"]["initial_lr"])
     problem = InvNavierStokes(model, params)
 
     if use_ascend:
@@ -103,16 +105,19 @@ def train():
             loss = loss_scaler.scale(loss)
         return loss
 
-    grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
+    grad_fn = ops.value_and_grad(
+        forward_fn, None, optimizer.parameters, has_aux=False)
 
     @jit
     def train_step(pde_data, train_points, train_label):
         loss, grads = grad_fn(pde_data, train_points, train_label)
         if use_ascend:
             loss = loss_scaler.unscale(loss)
-            if all_finite(grads):
+            is_finite = all_finite(grads)
+            if is_finite:
                 grads = loss_scaler.unscale(grads)
                 loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
         else:
             loss = ops.depend(loss, optimizer(grads))
         return loss
@@ -147,4 +152,13 @@ def train():
 
 if __name__ == '__main__':
     print("pid:", os.getpid())
-    train()
+    args = parse_args()
+    context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
+                        save_graphs=args.save_graphs,
+                        save_graphs_path=args.save_graphs_path,
+                        device_target=args.device_target,
+                        device_id=args.device_id)
+    print(
+        f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
+    use_ascend = context.get_context(attr_key='device_target') == "Ascend"
+    train(args)

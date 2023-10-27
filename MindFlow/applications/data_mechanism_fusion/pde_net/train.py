@@ -96,6 +96,7 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
             calculate_lp_loss_error(problem, eval_dataset, config_param["batch_size"])
             print_log(f'evaluation time: {time.time() - eval_time_start}s')
 
+
 @log_timer
 def train(input_args):
     '''Train and evaluate the network'''

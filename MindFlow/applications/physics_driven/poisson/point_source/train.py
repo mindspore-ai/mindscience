@@ -85,9 +85,13 @@ def train(file_cfg, ckpt_dir, n_epochs):
         loss, grads = grad_fn(pde_data, bc_data, src_data)
         if use_ascend:
             loss = loss_scaler.unscale(loss)
-            if all_finite(grads):
+            is_finite = all_finite(grads)
+            if is_finite:
                 grads = loss_scaler.unscale(grads)
-        loss = ops.depend(loss, optimizer(grads))
+                loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
+        else:
+            loss = ops.depend(loss, optimizer(grads))
         return loss
 
     def train_epoch(model, dataset, i_epoch):

@@ -120,6 +120,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
+
 @log_timer
 def train(input_args):
     """train"""

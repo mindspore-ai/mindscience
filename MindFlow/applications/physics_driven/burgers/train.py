@@ -51,6 +51,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
+
 @log_timer
 def train():
     '''Train and evaluate the pinns network'''
@@ -145,4 +146,3 @@ if __name__ == '__main__':
     print_log(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
     train()
-    

@@ -31,29 +31,29 @@ from src import visual, calculate_l2_error
 set_seed(123456)
 np.random.seed(123456)
 
-parser = argparse.ArgumentParser(description="darcy flow")
-parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
-                    help="Running in GRAPH_MODE OR PYNATIVE_MODE")
-parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                    help="Whether to save intermediate compilation graphs")
-parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
-                    help="The target device to run, support 'Ascend', 'GPU'")
-parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-parser.add_argument("--config_file_path", type=str, default="./darcy_cfg.yaml")
-args = parser.parse_args()
 
-context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                    save_graphs=args.save_graphs,
-                    save_graphs_path=args.save_graphs_path,
-                    device_target=args.device_target,
-                    device_id=args.device_id)
-print(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
-use_ascend = context.get_context(attr_key='device_target') == "Ascend"
+def parse_args():
+    """Parse input args"""
+    parser = argparse.ArgumentParser(description="darcy flow")
+    parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+                        help="Running in GRAPH_MODE OR PYNATIVE_MODE")
+    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
+                        help="Whether to save intermediate compilation graphs")
+    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
+    parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
+                        help="The target device to run, support 'Ascend', 'GPU'")
+    parser.add_argument("--device_id", type=int, default=0,
+                        help="ID of the target device")
+    parser.add_argument("--config_file_path", type=str,
+                        default="./darcy_cfg.yaml")
+    input_args = parser.parse_args()
+    return input_args
+
 
 @log_timer
-def train(config):
+def train(input_args):
     """training process"""
+    config = load_yaml_config(input_args.config_file_path)
     geom_name = "flow_region"
     # create train dataset
     flow_train_dataset = create_training_dataset(config, geom_name)
@@ -92,15 +92,19 @@ def train(config):
             loss = loss_scaler.scale(loss)
         return loss
 
-    grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
+    grad_fn = ops.value_and_grad(
+        forward_fn, None, optimizer.parameters, has_aux=False)
 
     @jit
     def train_step(pde_data, bc_data):
         loss, grads = grad_fn(pde_data, bc_data)
         if use_ascend:
             loss = loss_scaler.unscale(loss)
-            if all_finite(grads):
+            is_finite = all_finite(grads)
+            if is_finite:
                 grads = loss_scaler.unscale(grads)
+                loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
         loss = ops.depend(loss, optimizer(grads))
         return loss
 
@@ -122,12 +126,21 @@ def train(config):
                   epoch time: {epoch_seconds:5.3f}s step time: {step_seconds:5.3f}ms")
         model.set_train(False)
         if epoch % config["eval_interval_epochs"] == 0:
-            calculate_l2_error(model, test_input, test_label, config["train_batch_size"])
+            calculate_l2_error(model, test_input, test_label,
+                               config["train_batch_size"])
 
     visual(model, config)
 
 
 if __name__ == "__main__":
     print("pid:", os.getpid())
-    configs = load_yaml_config("darcy_cfg.yaml")
-    train(configs)
+    args = parse_args()
+    context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
+                        save_graphs=args.save_graphs,
+                        save_graphs_path=args.save_graphs_path,
+                        device_target=args.device_target,
+                        device_id=args.device_id)
+    print(
+        f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
+    use_ascend = (args.device_target == "Ascend")
+    train(args)

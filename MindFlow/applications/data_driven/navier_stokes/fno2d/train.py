@@ -52,6 +52,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
+
 @log_timer
 def train(input_args):
     '''train and evaluate the network'''
@@ -96,8 +97,17 @@ def train(input_args):
                                    weight_decay=optimizer_params['weight_decay'])
     problem = UnsteadyFlowWithLoss(model, loss_fn=RelativeRMSELoss(), data_format="NHWTC")
 
+    if use_ascend:
+        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
+        loss_scaler = DynamicLossScaler(1024, 2, 100)
+        auto_mixed_precision(model, 'O3')
+    else:
+        loss_scaler = None
+
     def forward_fn(train_inputs, train_label):
         loss = problem.get_loss(train_inputs, train_label)
+        if use_ascend:
+            loss = loss_scaler.scale(loss)
         return loss
 
     grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
@@ -105,7 +115,15 @@ def train(input_args):
     @jit
     def train_step(train_inputs, train_label):
         loss, grads = grad_fn(train_inputs, train_label)
-        loss = ops.depend(loss, optimizer(grads))
+        if use_ascend:
+            loss = loss_scaler.unscale(loss)
+            is_finite = all_finite(grads)
+            if is_finite:
+                grads = loss_scaler.unscale(grads)
+                loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
+        else:
+            loss = ops.depend(loss, optimizer(grads))
         return loss
 
     sink_process = mindspore.data_sink(train_step, train_dataset, sink_size=1)

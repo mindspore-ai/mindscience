@@ -74,7 +74,7 @@ def train():
     eval_dataset = eval_loader.batch(1, drop_remainder=False)
 
     # prepare model
-    model = ResUnet3D(in_channels=model_params['in_dims'], base=model_params['base'],
+    model = ResUnet3D(in_channels=model_params['in_dims'], base_channels=model_params['base'],
                       out_channels=model_params['out_dims'])
 
     if use_ascend:
@@ -110,9 +110,13 @@ def train():
         loss, grads = grad_fn(train_inputs, train_label)
         if use_ascend:
             loss = loss_scaler.unscale(loss)
-            if all_finite(grads):
+            is_finite = all_finite(grads)
+            if is_finite:
                 grads = loss_scaler.unscale(grads)
-        loss = ops.depend(loss, optimizer(grads))
+                loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
+        else:
+            loss = ops.depend(loss, optimizer(grads))
         return loss
 
     # data sink

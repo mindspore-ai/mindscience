@@ -49,6 +49,7 @@ def parse_args():
     return args_ret
 
 
+
 def train(input_args):
     '''Train and evaluate the network'''
     # load configurations
@@ -98,8 +99,11 @@ def train(input_args):
         loss, grads = grad_fn(pde_data, data, label)
         if use_ascend:
             loss = loss_scaler.unscale(loss)
-            grads = loss_scaler.unscale(grads)
-            loss = ops.depend(loss, optimizer(grads))
+            is_finite = all_finite(grads)
+            if is_finite:
+                grads = loss_scaler.unscale(grads)
+                loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
         else:
             loss = ops.depend(loss, optimizer(grads))
         return loss
