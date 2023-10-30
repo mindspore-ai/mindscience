@@ -82,7 +82,7 @@ The default output path for post-processing is './prediction_result', which can 
 
 |        Parameter         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192core      |      RTX4090, 24G       |
+|     Hardware         |     Ascend      |      RTX4090, 24G       |
 |     MindSpore version   |        2.0.0             |      2.0.0       |
 |        Train loss      |        9.38e-4               |       8.44e-4       |
 |        Evaluation loss      |        0.181              |       0.185       |

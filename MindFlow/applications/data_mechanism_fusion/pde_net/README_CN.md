@@ -42,7 +42,7 @@ python train.py --config_file_path ./configs/pde_net.yaml --device_target Ascend
 
 |        参数         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     硬件资源         |     Ascend      |      NVIDIA V100 显存32G       |
 |     MindSpore版本   |        2.1            |      2.1       |
 |        训练损失      |        0.9               |       0.6       |
 |        验证损失      |        6e-2               |       4e-2    |

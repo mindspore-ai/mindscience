@@ -35,7 +35,7 @@ You can also run the Jupyter Notebook for this example, available in [Chinese ve
 
 |     Parameter     |             Ascend             |                 GPU                 |
 | :---------------: | :----------------------------: | :---------------------------------: |
-|     Hardware      | Ascend 910, 32G；CPU: 24 cores | NVIDIA RTX 3090, 24G；CPU: 40 cores |
+|     Hardware      | Ascend | NVIDIA RTX 3090, 24G；CPU: 40 cores |
 | MindSpore version |            2.0.dev             |                 2.0                 |
 |    train loss     |             6.5e-5             |               4.4e-5                |
 |    valid loss     |              4e-3              |                3e-3                 |

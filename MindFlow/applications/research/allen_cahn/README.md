@@ -38,7 +38,7 @@ You can use [Chinese](allen_cahn_CN.ipynb) or [English](allen_cahn.ipynb) Jupyte
 
 |        Parameter         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA GeForce RTX 4070 Ti       |
+|     Hardware         |     Ascend      |      NVIDIA GeForce RTX 4070 Ti       |
 |     MindSpore版本   |        2.0.0rc1            |      2.0.0rc1       |
 |        train loss      |       0.12                |       1.2e-06       |
 |        valid loss      |        0.2               |       0.005    |

@@ -38,7 +38,7 @@ python train.py --config_file_path ./configs/burgers.yaml --mode GRAPH --device_
 
 |        参数         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     硬件资源         |     Ascend      |      NVIDIA V100 显存32G       |
 |     MindSpore版本   |        2.0.0             |      2.0.0       |
 |     数据集         |      [Burgers数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)             |      [Burgers数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)       |
 |      参数量       |       6e4       |         6e4         |

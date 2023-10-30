@@ -75,7 +75,7 @@ You can run the training and validation code line by line using the Chinese or E
 
 |        Parameter         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA V100 32G       |
+|     Hardware         |     Ascend      |      NVIDIA V100 32G       |
 |     MindSpore version   |        2.1             |      2.1       |
 |        train loss      |        5e-3               |       4e-3      |
 |        valid loss      |        9e-4               |       8e-4    |

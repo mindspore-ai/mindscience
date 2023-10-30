@@ -144,7 +144,7 @@ python --case burgers --mode GRAPH --device_target Ascend --device_id 0 --config
 
 |        参数         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend910A, 显存32G；CPU: 2.6HZ, 192核      |      NVIDIA V100, 显存32G       |
+|     硬件资源         |     Ascend      |      NVIDIA V100, 显存32G       |
 |     MindSpore版本   |        2.0.0             |      2.0.0       |
 |        训练损失      |        6.44e-4               |       7.28e-4       |
 |        验证损失      |        0.020              |       0.058       |
@@ -154,7 +154,7 @@ python --case burgers --mode GRAPH --device_target Ascend --device_id 0 --config
 
 |        参数         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend910A, 显存32G；CPU: 2.6HZ, 192核      |      NVIDIA V100, 显存32G       |
+|     硬件资源         |     Ascend      |      NVIDIA V100, 显存32G       |
 |     MindSpore版本   |        2.0.0             |      2.0.0       |
 |        训练损失      |        3.46e-4               |       3.23e-4      |
 |        验证损失      |        0.091              |       0.124       |
@@ -164,7 +164,7 @@ python --case burgers --mode GRAPH --device_target Ascend --device_id 0 --config
 
 |        参数         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend910A, 显存32G；CPU: 2.6HZ, 192核      |      NVIDIA V100, 显存32G       |
+|     硬件资源         |     Ascend      |      NVIDIA V100, 显存32G       |
 |     MindSpore版本   |        2.0.0             |      2.0.0       |
 |        训练损失      |        8.92e-05          |   1.06e-4       |
 |        验证损失      |           0.115           |   0.125           |

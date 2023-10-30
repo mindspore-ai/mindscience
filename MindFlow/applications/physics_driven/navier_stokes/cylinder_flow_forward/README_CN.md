@@ -68,7 +68,7 @@ python train.py --config_file_path ./configs/cylinder_flow.yaml --device_target 
 
 |      参数      |                   Ascend                   |         GPU          |
 | :------------: | :----------------------------------------: | :------------------: |
-|    硬件资源    | Ascend 910A, 显存 32G；CPU: 2.6GHz, 192 核 | NVIDIA V100 显存 32G |
+|    硬件资源    | Ascend | NVIDIA V100 显存 32G |
 | MindSpore 版本 |                   2.0.0                    |        2.0.0         |
 |    训练损失    |                    5e-5                    |         6e-5         |
 |    验证损失    |                    2e-2                    |         2e-2         |

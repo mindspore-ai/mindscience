@@ -35,7 +35,7 @@ python train.py --mode GRAPH --device_target GPU --device_id 0 --config_file_pat
 
 |     参数      |             Ascend             |                 GPU                 |
 | :-----------: | :----------------------------: | :---------------------------------: |
-|   硬件资源    | Ascend 910, 显存32G；CPU: 24核 | NVIDIA RTX 3090, 显存24G；CPU: 40核 |
+|   硬件资源    | Ascend | NVIDIA RTX 3090, 显存24G；CPU: 40核 |
 | MindSpore版本 |            2.0.dev             |                 2.0                 |
 |   训练损失    |             6.5e-5             |               4.4e-5                |
 |   验证损失    |              4e-3              |                3e-3                 |

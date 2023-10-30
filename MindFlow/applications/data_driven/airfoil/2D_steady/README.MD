@@ -100,7 +100,7 @@ When the incoming Mach number changes, the surface pressure distribution, flow f
 
 |        Parameter         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA V100 32G       |
+|     Hardware         |     Ascend      |      NVIDIA V100 32G       |
 |     MindSpore version   |        2.1            |      2.1       |
 |        train loss      |        7e-2               |       4e-2       |
 |        valid loss      |        2e-4               |       2e-4    |

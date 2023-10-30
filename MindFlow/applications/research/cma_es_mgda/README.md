@@ -140,7 +140,7 @@ After the training of 160 epochs, the predicted value of the model is matched wi
 
 |        Parameter         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend910A, Memory：32G；CPU: 2.6HZ, 192 cores      |      NVIDIA V100, Memory：32G       |
+|     Hardware         |     Ascend      |      NVIDIA V100, Memory：32G       |
 |     MindSpore version   |        2.0.0             |      2.0.0       |
 |        Train loss      |        6.44e-4               |       7.28e-4       |
 |        Validation loss      |        0.020              |       0.058       |
@@ -150,7 +150,7 @@ After the training of 160 epochs, the predicted value of the model is matched wi
 
 |        Parameter         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend910A, Memory32G；CPU: 2.6HZ, 192 cores      |      NVIDIA V100, Memory32G       |
+|     Hardware         |     Ascend      |      NVIDIA V100, Memory32G       |
 |     MindSpore version   |        2.0.0             |      2.0.0       |
 |        Train loss      |        3.46e-4               |       3.23e-4      |
 |        Validation loss      |        0.091              |       0.124       |
@@ -160,7 +160,7 @@ After the training of 160 epochs, the predicted value of the model is matched wi
 
 |        Parameter         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend910A, Memory32G；CPU: 2.6HZ, 192 cores      |      NVIDIA V100, Memory32G       |
+|     Hardware         |     Ascend      |      NVIDIA V100, Memory32G       |
 |     MindSpore version   |        2.0.0             |      2.0.0       |
 |        Train loss      |        8.92e-05               |       1.06e-4      |
 |        Validation loss      |        0.115              |       0.125       |

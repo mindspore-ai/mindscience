@@ -59,7 +59,7 @@ python --mode GRAPH --device_target Ascend --device_id 0 --config_file_path ./co
 
 |        参数         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     硬件资源         |     Ascend      |      NVIDIA V100 显存32G       |
 |     MindSpore版本   |        2.1            |      2.1       |
 |        训练损失      |       0.17                |       0.16       |
 |        验证损失      |        3e-2               |       3e-2    |

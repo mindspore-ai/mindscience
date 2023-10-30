@@ -38,7 +38,7 @@ You can use [Chinese](./burgers1D_CN.ipynb) or [English](./burgers1D.ipynb)Jupyt
 
 |        Parameter         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA V100 32G       |
+|     Hardware         |     Ascend      |      NVIDIA V100 32G       |
 |     MindSpore version   |        2.0.0             |      2.0.0       |
 |     dataset         |      [Burgers Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)             |      [Burgers Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)       |
 |      Parameters       |       6e4       |         6e4         |

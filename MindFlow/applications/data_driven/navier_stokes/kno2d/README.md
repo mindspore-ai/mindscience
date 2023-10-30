@@ -66,7 +66,7 @@ Take 1 samples, and do 10 consecutive steps of prediction. Visualize the predict
 
 |        Parameter         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA V100 32G       |
+|     Hardware         |     Ascend      |      NVIDIA V100 32G       |
 |     MindSpore版本   |        2.1            |      2.1       |
 |        train loss      |       0.17                |       0.16       |
 |        valid loss      |        3e-2               |       3e-2    |

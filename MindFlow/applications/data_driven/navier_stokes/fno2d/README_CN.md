@@ -58,7 +58,7 @@ python train.py --config_file_path ./configs/fno2d.yaml --mode GRAPH --device_ta
 
 |        参数         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     硬件资源         |     Ascend      |      NVIDIA V100 显存32G       |
 |     MindSpore版本   |        2.1            |      2.1       |
 |        训练损失      |       0.7                |       0.7       |
 |        验证损失      |        6e-2               |       5e-2    |

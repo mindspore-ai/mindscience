@@ -69,7 +69,7 @@ python train.py --config_file_path ./configs/kno1d.yaml --device_target GPU --de
 
 |        参数         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
+|     硬件资源         |     Ascend      |      NVIDIA V100 显存32G       |
 |     MindSpore版本   |        2.0.0             |      2.0.0       |
 |        训练损失      |        3e-5               |       3e-5      |
 |        验证损失      |        3e-3               |       3e-3    |

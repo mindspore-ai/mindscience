@@ -37,7 +37,7 @@ python train.py --mode GRAPH --device_target Ascend --device_id 0 --config_file_
 
 |        参数         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA GeForce RTX 4070 Ti       |
+|     硬件资源         |     Ascend      |      NVIDIA GeForce RTX 4070 Ti       |
 |     MindSpore版本   |        2.0.0rc1            |      2.0.0rc1       |
 |        训练损失      |       0.12                |       1.2e-06       |
 |        验证损失      |        0.2               |       0.005    |
