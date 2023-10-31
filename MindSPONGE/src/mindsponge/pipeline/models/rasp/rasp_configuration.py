@@ -23,20 +23,20 @@
 """rasp_configuration"""
 
 rasp_configuration = {
-    "predict_256":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_256.yaml",
-    "predict_512":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_512.yaml",
-    "predict_768":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_768.yaml",
-    "predict_1024":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_1024.yaml",
-    "predict_1280":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_1280.yaml",
-    "predict_1536":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_1536.yaml",
-    "predict_1792":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_1792.yaml",
-    "predict_2048":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/predict_2048.yaml"
+    "rasp_predict_256":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_256.yaml",
+    "rasp_predict_512":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_512.yaml",
+    "rasp_predict_768":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_768.yaml",
+    "rasp_predict_1024":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_1024.yaml",
+    "rasp_predict_1280":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_1280.yaml",
+    "rasp_predict_1536":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_1536.yaml",
+    "rasp_predict_1792":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_1792.yaml",
+    "rasp_predict_2048":
+        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_2048.yaml"
 }
