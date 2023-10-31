@@ -34,6 +34,6 @@ ENGLISH | [简体中文](RELEASE_CN.md)
 
 Thanks goes to these wonderful people:
 
-yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyonghan, zhouchuansai
+hsliu_ustc, hong-ye-zhou, liulei277, kevinli123, alancheng511
 
 Contributions of any kind are welcome!

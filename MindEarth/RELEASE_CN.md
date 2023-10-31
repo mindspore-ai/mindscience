@@ -32,8 +32,8 @@
 
 ## 贡献者
 
-Thanks goes to these wonderful people:
+感谢以下开发者做出的贡献:
 
-yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyonghan, zhouchuansai
+hsliu_ustc, hong-ye-zhou, liulei277, kevinli123, alancheng511
 
-Contributions of any kind are welcome!
+欢迎任何形式的贡献！

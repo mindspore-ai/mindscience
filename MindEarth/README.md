@@ -71,6 +71,7 @@ Because MindEarth is dependent on MindSpore, please click [MindSpore Download Pa
 | MindEarth |                                  Branch                                |  MindSpore  |Python |
 |:--------:|:----------------------------------------------------------------------:|:-----------:|:-------:|
 |  master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindEarth) |        \       | \>=3.7 |
+|  0.1.0  | [r0.5](https://gitee.com/mindspore/mindscience/tree/r0.5/MindEarth) |        >=1.8.1       | \>=3.7 |
 
 ### Install Dependency
 
@@ -91,7 +92,12 @@ pip install -r requirements.txt
 
 ### **pip install**
 
-Coming soon ...
+```bash
+# GPU version
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/MindScience/mindearth/gpu/x86_64/cuda-11.1/mindearth_gpu-0.1.0-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# Ascend version
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/MindScience/mindearth/ascend/aarch64/mindearth_ascend-0.1.0-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
 
 ### **source code install**
 
