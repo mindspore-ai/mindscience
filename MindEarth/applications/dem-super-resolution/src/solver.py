@@ -13,7 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 """dem solver"""
-from mindspore import nn
+from mindspore import nn, Tensor
 from mindspore.train.callback import LossMonitor, TimeMonitor
 
 from mindearth.module import Trainer
@@ -38,9 +38,9 @@ class DemSrTrainer(Trainer):
     def __init__(self, config, model, loss_fn, logger):
         super(DemSrTrainer, self).__init__(config, model, loss_fn, logger, weather_data_source="DemSR")
         self.optimizer_params = config["optimizer"]
-        self.train_dataset, self.valid_dataset = self._get_dataset()
+        self.train_dataset, self.valid_dataset = self.get_dataset()
         self.optimizer = self.get_optimizer()
-        self.solver = self._get_solver()
+        self.solver = self.get_solver()
 
     def get_optimizer(self):
         r"""define the optimizer of the model, abstract method."""

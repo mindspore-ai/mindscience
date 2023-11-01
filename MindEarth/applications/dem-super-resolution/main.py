@@ -46,7 +46,7 @@ def get_args():
 
     parser.add_argument('--epochs', type=int, default=100)
 
-    parser.add_argument('--valid_frequency', type=int, default=5)
+    parser.add_argument('--valid_frequency', type=int, default=100)
     parser.add_argument('--output_dir', type=str, default='./summary')
     parser.add_argument('--ckpt_path', type=str, default='')
 
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     print(datetime.datetime.now())
     args = get_args()
     config = load_yaml_config(args.config_file_path)
-    update_config(opt, config)
+    update_config(args, config)
 
     use_ascend = args.device_target == 'Ascend'
 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     if config['train']['distribute']:
         init_data_parallel(use_ascend)
     else:
-        context.set_context(mode=context.GRAPH_MODE, device_target=opt.device_target,
+        context.set_context(mode=context.GRAPH_MODE, device_target=args.device_target,
                             device_id=config['train']['device_id'])
 
     dem_model = init_model(config)

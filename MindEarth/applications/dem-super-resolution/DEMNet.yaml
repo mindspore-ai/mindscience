@@ -9,12 +9,12 @@ data:
   root_dir: "/path/to/data"
   patch_size: 32
   batch_size: 64
-  epochs: 100
 optimizer:
   name: "adam"
   learning_rate: 0.00001
   eps: 0.0000001
   finetune_lr: 0.00001
+  epochs: 100
 summary:
   save_checkpoint_steps: 1
   keep_checkpoint_max: 1
