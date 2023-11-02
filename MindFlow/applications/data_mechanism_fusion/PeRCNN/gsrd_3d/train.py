@@ -91,8 +91,8 @@ def train_stage(trainer, stage, config, ckpt_dir, use_ascend):
                 f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) :.3f} s")
         else:
             step_train_loss, loss_data, loss_ic, loss_phy, loss_valid = train_step()
-            print_log(f"epoch: {epoch} train loss: {step_train_loss} ic_loss: {loss_ic} data_loss: {loss_data} \
-val_loss: {loss_valid} phy_loss: {loss_phy} epoch time: {(time.time() - time_beg): .3f} s")
+            print_log(f"epoch: {epoch} train loss: {step_train_loss} ic_loss: {loss_ic} data_loss: {loss_data}"
+                      f"val_loss: {loss_valid} phy_loss: {loss_phy} epoch time: {(time.time() - time_beg): .3f}s")
             if step_train_loss < best_loss:
                 best_loss = step_train_loss
                 print_log('best loss', best_loss, 'save model')

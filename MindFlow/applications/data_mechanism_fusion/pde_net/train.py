@@ -81,8 +81,8 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
         local_time_end = time.time()
         epoch_seconds = (local_time_end - local_time_beg) * 1000
         step_seconds = epoch_seconds/steps
-        print_log(f"epoch: {cur_epoch} train loss: {cur_loss} \
-                  epoch time: {epoch_seconds:5.3f}ms step time: {step_seconds:5.3f}ms")
+        print_log(f"epoch: {cur_epoch} train loss: {cur_loss}"
+                  f"epoch time: {epoch_seconds:5.3f}ms step time: {step_seconds:5.3f}ms")
 
         if cur_epoch % config_param["save_epoch_interval"] == 0:
             ckpt_file_name = f"step_{step}"

@@ -168,8 +168,8 @@ def train(input_args):
         local_time_end = time.time()
         epoch_seconds = local_time_end - local_time_beg
         step_seconds = (epoch_seconds/steps_per_epoch)*1000
-        print_log(f"epoch: {epoch} train loss: {step_train_loss} \
-                  epoch time: {epoch_seconds:.3f}s step time: {step_seconds:5.3f}ms")
+        print_log(f"epoch: {epoch} train loss: {step_train_loss}"
+                  f"epoch time: {epoch_seconds:.3f}s step time: {step_seconds:5.3f}ms")
 
         model.set_train(False)
         # test
