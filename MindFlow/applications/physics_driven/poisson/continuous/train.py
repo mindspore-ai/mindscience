@@ -171,6 +171,8 @@ if __name__ == "__main__":
         device_id=args.device_id,
     )
     use_ascend = context.get_context(attr_key="device_target") == "Ascend"
+    if not os.path.exists(args.ckpt_dir):
+        os.mkdir(args.ckpt_dir)
     train(args.geom_name, args.config_file_path, args.ckpt_dir, args.n_epochs)
     ckpt = os.path.join(args.ckpt_dir, "{}_{}d_{}.ckpt".format(args.geom_name, 2, 1))
     test(args.geom_name, ckpt, args.config_file_path, 5000)

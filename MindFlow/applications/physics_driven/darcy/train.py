@@ -105,7 +105,8 @@ def train(input_args):
                 grads = loss_scaler.unscale(grads)
                 loss = ops.depend(loss, optimizer(grads))
             loss_scaler.adjust(is_finite)
-        loss = ops.depend(loss, optimizer(grads))
+        else:
+            loss = ops.depend(loss, optimizer(grads))
         return loss
 
     epochs = config["train_epoch"]

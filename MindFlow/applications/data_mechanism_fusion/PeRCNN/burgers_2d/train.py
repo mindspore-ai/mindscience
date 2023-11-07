@@ -139,7 +139,7 @@ def train(input_args):
     model_config = burgers_config['model']
     summary_config = burgers_config['summary']
 
-    upconv = UpScaler(in_channels=model_config['input_channel'],
+    upconv = UpScaler(in_channels=model_config['in_channel'],
                       out_channels=model_config['out_channels'],
                       hidden_channels=model_config['upscaler_hidden_channel'],
                       kernel_size=model_config['kernel_size'],
