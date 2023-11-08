@@ -37,7 +37,7 @@ parser.add_argument('--input_path', default="./examples/pkl", help='processed ra
 parser.add_argument('--checkpoint_path', default="./MEGA_Fold_1.ckpt", help='checkpoint path')
 parser.add_argument('--device_id', default=0, type=int, help='DEVICE_ID')
 parser.add_argument('--seq_len', type=int, help='Run pdb assessment.')
-parser.add_argument('--is_910a', type=ast.literal_eval, default=False, help='is is_910a or not')
+parser.add_argument('--is_910a', type=bool, default=False, help='is is_910a or not')
 arguments = parser.parse_args()
 
 if arguments.is_910a:
