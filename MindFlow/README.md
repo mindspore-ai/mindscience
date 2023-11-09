@@ -20,6 +20,7 @@ MindFlow是基于[昇思MindSpore](https://www.mindspore.cn/)开发的流体仿�
 
 ## **最新消息**
 
+- 🔥`2023.11.04`中国(西安)人工智能高峰论坛在西安市雁塔区高新国际会议中心召开，由西北工业大学与华为联合研发的首个面向飞行器的流体力学大模型“秦岭·翱翔”正式发布。该模型是西工大流体力学智能化国际联合研究所携手华为AI4Sci Lab在国产开源流体计算软件风雷的基础上，依托昇腾AI澎湃算力及昇思MindSpore AI框架共同研发的面向飞行器流体仿真的智能化模型，[相关新闻](https://mp.weixin.qq.com/s/Rhpiyf3VJYm_lMBWTRDtGA)。
 - 🔥`2023.08.02` MindFlow 0.1.0版本发布，详见[MindFlow 0.1.0](https://mindspore.cn/mindflow/docs/zh-CN/r0.1/index.html)。
 - 🔥`2023.07.06` 以“智联世界 生成未来”为主题的2023世界人工智能大会在上海世博中心开幕，来自中国商用飞机有限责任公司上海飞机设计研究院的三维超临界机翼流体仿真重器“东方.翼风”获得世界人工智能大会最高奖项——SAIL奖，该模型是由中国商用飞机有限责任公司上海飞机设计研究院与华为基于国产昇腾AI基础软硬件平台及昇思MindSpore AI框架研发的面向机翼复杂流动仿真场景的智能化模型，[相关新闻](https://www.thepaper.cn/newsDetail_forward_23769936)。
 - 🔥`2023.05.21` 智能流体力学产业联合体第二次全体会议在杭州西湖大学成功举办，昇思MindSpore协办本次会议，三位中国科学院院士、产业联合体代表及关心联合体的学术界、产业界专家共计百位嘉宾现场参会。面向飞行器的首个流体力学大模型————“秦岭·翱翔”大模型预发布，该模型是由西北工业大学流体力学智能化国际联合研究所与华为基于国产昇腾AI基础软硬件平台及昇思MindSpore AI框架，共同研发的面向飞行器流体仿真的智能化模型，[相关新闻](http://science.china.com.cn/2023-05/23/content_42378458.htm)。
@@ -77,6 +78,7 @@ Huang X, Liu H, Shi B, et al. A Universal PINNs Method for Solving Partial Diffe
 |:-------------------------:|:--------------------------:|:---------------:|:-------:|:------:|
 | [PDE-NET方法求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/pde_net)   | -           |    PDE-Net    |   ✔️     |   ✔️   |
 |   [PeRCNN方法求解二维Burgers方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/PeRCNN)  |    [PeRCNN数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN/) |  PeRCNN  |   ✔️     |   ✔️   |
+| [AI湍流模型](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/TurbAI)   | -           |    MLP    |   ✔️     |   ✔️   |
 
 ### 物理驱动
 
