@@ -119,9 +119,10 @@ def check_res(final_atom_positions, confidence, compile_time, exec_time, args):
     with open("pos_target.pkl", "rb") as f:
         final_atom_positions_gt = pickle.load(f)
     pos_error = np.mean(np.abs(final_atom_positions_gt - final_atom_positions).astype(np.float64))
-    # print()
-    print("pos_error, confidence, compile_time, exec_time")
-    print(pos_error, confidence, compile_time, exec_time, flush=True)
+    print("pos_error:", pos_error, flush=True)
+    print("confidence:", confidence, flush=True)
+    print("compile_time:", compile_time, flush=True)
+    print("exec_time:", exec_time, flush=True)
     out_res = "pos_error, confidence, compile_time, exec_time\n" + \
         " ".join([str(val) for val in [pos_error, confidence, compile_time, exec_time]])
     os_flags = os.O_RDWR | os.O_CREAT
