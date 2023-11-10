@@ -65,7 +65,7 @@ def train_stage(trainer, stage, pattern, config, ckpt_dir, use_ascend):
     else:
         grad_fn = ops.value_and_grad(forward_fn, None, params, has_aux=True)
 
-    @ jit
+    @jit
     def train_step():
         loss, grads = grad_fn()
         if use_ascend:
@@ -99,9 +99,9 @@ def train_stage(trainer, stage, pattern, config, ckpt_dir, use_ascend):
             if step_train_loss < best_loss:
                 best_loss = step_train_loss
                 print_log('best loss', best_loss, 'save model')
-                save_checkpoint(trainer.upconv, os.path.join(ckpt_dir, f"{pattern}_{config['name_conf']}_upconv.ckpt"))
+                save_checkpoint(trainer.upconv, os.path.join(ckpt_dir, f"{pattern}_{config['name']}_upconv.ckpt"))
                 save_checkpoint(trainer.recurrent_cnn,
-                                os.path.join(ckpt_dir, f"{pattern}_{config['name_conf']}_recurrent_cnn.ckpt"))
+                                os.path.join(ckpt_dir, f"{pattern}_{config['name']}_recurrent_cnn.ckpt"))
     if pattern == 'physics_driven':
         trainer.recurrent_cnn.show_coef()
 
@@ -139,9 +139,9 @@ def train(input_args):
     model_config = burgers_config['model']
     summary_config = burgers_config['summary']
 
-    upconv = UpScaler(in_channels=model_config['in_channel'],
+    upconv = UpScaler(in_channels=model_config['in_channels'],
                       out_channels=model_config['out_channels'],
-                      hidden_channels=model_config['upscaler_hidden_channel'],
+                      hidden_channels=model_config['upscaler_hidden_channels'],
                       kernel_size=model_config['kernel_size'],
                       stride=model_config['stride'],
                       has_bais=True)
@@ -152,8 +152,8 @@ def train(input_args):
 
     pattern = data_config['pattern']
     if pattern == 'data_driven':
-        recurrent_cnn = RecurrentCNNCell(input_channels=model_config['in_channel'],
-                                         hidden_channels=model_config['rcnn_hidden_channel'],
+        recurrent_cnn = RecurrentCNNCell(input_channels=model_config['in_channels'],
+                                         hidden_channels=model_config['rcnn_hidden_channels'],
                                          kernel_size=model_config['kernel_size'],
                                          compute_dtype=compute_dtype)
     else:
@@ -167,10 +167,10 @@ def train(input_args):
                              dx=data_config['dx'],
                              dt=data_config['dy'],
                              nu=data_config['nu'],
-                             data_path=data_config['data_path'],
+                             data_path=os.path.join(data_config['root_dir'], data_config['file_name']),
                              compute_dtype=compute_dtype)
 
-    ckpt_dir = summary_config["ckpt_dir"]
+    ckpt_dir = os.path.join(summary_config["root_dir"], summary_config['ckpt_dir'])
     if not os.path.exists(ckpt_dir):
         os.makedirs(ckpt_dir)
 

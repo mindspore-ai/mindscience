@@ -30,8 +30,8 @@ optimizer:
     name: 'Adam'
     learning_rate: 2e-3
     gamma: 0.975
-    milestone_num: 150
-    epochs: 10000
+    milestone_num: 250
+    epochs: 12000
 summary:
   ckpt_dir: './checkpoints'
   save_checkpoint_steps: 1

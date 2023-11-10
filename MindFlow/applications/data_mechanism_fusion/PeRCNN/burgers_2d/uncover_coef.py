@@ -43,8 +43,8 @@ class STRidgeTrainer:
         if normalize != 0:
             mreg = np.zeros((d, 1))
             for i in range(d):
-                mreg[i] = 1.0 / (np.linalg.norm(R0[:, i], normalize))
-                r[:, i] = mreg[i] * R0[:, i]
+                mreg[i] = 1.0 / (np.linalg.norm(self.r0[:, i], normalize))
+                r[:, i] = mreg[i] * self.r0[:, i]
             normalize_inner = 0
         else:
             r = r0
@@ -83,8 +83,8 @@ class STRidgeTrainer:
         tol = d_tol
 
         # Get the standard least squares estimator
-        w_best = np.linalg.lstsq(self.train_r, self.TrainY)[0]
-        err_f = np.mean((self.TestY - self.TestR.dot(w_best))**2)
+        w_best = np.linalg.lstsq(self.train_r, self.train_y)[0]
+        err_f = np.mean((self.test_y - self.test_r.dot(w_best))**2)
         err_w = np.count_nonzero(w_best)
 
         if l0_penalty is None:
@@ -178,7 +178,7 @@ class STRidgeTrainer:
                 num_relevant = len(new_biginds)
 
             # Also make sure we didn't just lose all the coefficients
-            if not new_biginds: # len of new_biginds is 0
+            if not new_biginds:  # len of new_biginds is 0
                 if j == 0:
                     print(
                         'Warning: initial tolerance %.4f too large, all coefficients under threshold!' % tol)
@@ -218,33 +218,8 @@ def gen_library():
     return library
 
 
-def gen_data_matrix(terms_dict, lib, idx):
-    """
-    Note: deprecated!
-    :param terms_dict: dict of possible terms, e.g., {'u':u, 'v':v, 'u_x': u_x, ...}
-    :param library: LIST type, library of the possible combinations of term, e.g., ['u*v', 'u_x*v', 'lap_u', ...]
-    :param idx: downsampling index for the training data set
-    :return: coef * lhs = rhs
-    """
-    # Construct the lhs and rhs
-    idx = idx
-    for key in terms_dict.keys():
-        expression = key + '=terms_dict[\'' + str(key) + '\'][idx, :]'
-        print('Execute expression:', expression)
-        # pylint: disable=exec-used
-        exec(expression)
-
-    # pylint: disable=eval-used
-    lhs_columns = [eval(exp) for exp in lib]
-    lhs = np.concatenate(lhs_columns, axis=1)
-    rhs = eval('u_t')
-    return lhs, rhs
-
-
 def uncover(sym, data_path):
     """uncover"""
-    # pylint: disable=exec-used, eval-used
-
     # read data of u, v
     uv = sio.loadmat(data_path)['uv']
 
@@ -273,20 +248,42 @@ def uncover(sym, data_path):
         elif name in ('v*' + sym + '_y', 'u*' + sym + '_x'):
             coef[i] = -1
 
-    print(lib)
-
+    n = terms_dict.get('v', None)
+    if n is None:
+        raise KeyError('v should be in the dict.')
+    n = n.shape[0]
+    idx = np.random.choice(n, int(n * 0.2), replace=False)
     # randomly subsample 10% of the measurements clip
+    terms_table = {}
     for key in terms_dict:
         expression = key + '=terms_dict[\'' + str(key) + '\'][idx, :]'
         print('Execute expression:', expression)
-        exec(expression)
+        terms_table[key] = terms_dict[key][idx, :]
 
     # Check the residual of ground truth (if you are interested)
     lhs_columns = []
-    for exp in lib:
-        lhs_columns.append(eval(exp))
+    list_a = []
+    try:
+        list_a.extend(
+            (terms_table['ones'], terms_table['u'], terms_table['v']))
+        list_a.extend((terms_table['u']**2, terms_table['u']*terms_table['v'],
+                       terms_table['v']**2, terms_table['u']**3, terms_table['v']**3))
+        list_a.extend((terms_table['u']**2*terms_table['v'],
+                       terms_table['u']*terms_table['v']**2))
+        list_b = [terms_table['ones'], terms_table['u_x'], terms_table['u_y'],
+                  terms_table['v_x'], terms_table['v_y'], terms_table['lap_u'], terms_table['lap_v']]
+    except KeyError as e:
+        print(f"Error: {e}")
+
+    for a in list_a:
+        for b in list_b:
+            lhs_columns.append(a*b)
+
     lhs = np.concatenate(lhs_columns, axis=1)
-    rhs = eval(sym+'_t')
+    rhs = terms_table.get(sym+'_t', None)
+
+    if rhs is None:
+        raise KeyError(f'{sym}_t not found.')
 
     trainer = STRidgeTrainer(r0=lhs, ut=rhs, normalize=2, split_ratio=0.8)
 
@@ -333,7 +330,7 @@ if __name__ == '__main__':
     parser.add_argument("--device_id", type=int, default=2,
                         help="ID of the target device")
     parser.add_argument("--data_path", type=str,
-                        default="./data/Burgers_2001x2x100x100_[dt=00025].mat")
+                        default="./dataset/Burgers_2001x2x100x100_[dt=00025].mat")
     args = parser.parse_args()
 
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
