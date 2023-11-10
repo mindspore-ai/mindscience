@@ -139,6 +139,8 @@ def update_config(opt, config):
 
     config['train']['distribute'] = opt.distribute
     config['train']['device_id'] = opt.device_id
+    if opt.device_target == "GPU":
+        opt.amp_level = "O0"
     config['train']['amp_level'] = opt.amp_level
     config['train']['run_mode'] = opt.run_mode
     config['train']['load_ckpt'] = opt.load_ckpt
