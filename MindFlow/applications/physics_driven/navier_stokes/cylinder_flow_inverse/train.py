@@ -138,7 +138,7 @@ def train(input_args):
         local_time_end = time.time()
         epoch_seconds = (local_time_end - local_time_beg) * 1000
         step_seconds = epoch_seconds/steps_per_epochs
-        print_log(f"epoch: {epoch} train loss: {step_train_loss}"
+        print_log(f"epoch: {epoch} train loss: {step_train_loss} "
                   f"epoch time: {epoch_seconds:5.3f}ms step time: {step_seconds:5.3f}ms")
         model.set_train(False)
         if epoch % config["eval_interval_epochs"] == 0:

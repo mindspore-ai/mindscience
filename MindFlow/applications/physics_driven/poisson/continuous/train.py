@@ -130,8 +130,8 @@ def train(geom_name, file_cfg, ckpt_dir, n_epochs):
                 local_time_end = time.time()
                 epoch_seconds = (local_time_end - local_time_beg) * 1000
                 step_seconds = epoch_seconds/steps_per_epochs
-                print(f"\repoch: {i_epoch} train loss: {float(loss)} \
-                      epoch time: {epoch_seconds:5.3f}ms step time: {step_seconds:5.3f}ms")
+                print(f"epoch: {i_epoch} train loss: {float(loss)} "
+                      f"epoch time: {epoch_seconds:5.3f}ms step time: {step_seconds:5.3f}ms")
 
     keep_ckpt_max = config["keep_checkpoint_max"]
 
