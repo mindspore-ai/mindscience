@@ -112,4 +112,5 @@ class DgmrTrainer:
             evaluator.print_loss(g_res, d_res)
             if epoch % self.callback_params.get("save_checkpoint_steps") == 0:
                 evaluator.save_ckpt(self.g_solver)
+            evaluator.epoch_end(self.valid_dataset, self.g_solver.network.generator)
         evaluator.summary()

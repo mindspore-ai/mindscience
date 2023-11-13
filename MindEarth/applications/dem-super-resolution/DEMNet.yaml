@@ -6,7 +6,7 @@ model:
   in_channels: 1
 data:
   name: "nasadem"
-  root_dir: "/path/to/data"
+  root_dir: "./dataset/"
   patch_size: 32
   batch_size: 64
 optimizer:

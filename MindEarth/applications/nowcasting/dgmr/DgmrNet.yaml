@@ -12,7 +12,7 @@ model:
   num_spatial_frames: 8
 data:
   name: "radar"
-  root_dir: "/path/to/data/"
+  root_dir: "./dataset/"
   batch_size: 1
 optimizer:
   name: "adam"

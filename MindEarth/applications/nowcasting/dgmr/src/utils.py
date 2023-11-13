@@ -51,8 +51,6 @@ def init_model(config):
         in_channels=model_params["in_channels"],
         out_channels=model_params["out_channels"],
         conv_type=model_params["conv_type"],
-        num_samples=model_params["num_samples"],
-        grid_lambda=model_params["grid_lambda"],
         latent_channels=model_params["latent_channels"],
         context_channels=model_params["context_channels"],
         generation_steps=model_params["generation_steps"]
