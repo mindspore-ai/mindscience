@@ -119,15 +119,14 @@ def check_res(final_atom_positions, confidence, compile_time, exec_time, args):
     with open("pos_target.pkl", "rb") as f:
         final_atom_positions_gt = pickle.load(f)
     pos_error = np.mean(np.abs(final_atom_positions_gt - final_atom_positions).astype(np.float64))
-    print("pos_error:", pos_error, flush=True)
-    print("confidence:", confidence, flush=True)
-    print("compile_time:", compile_time, flush=True)
-    print("exec_time:", exec_time, flush=True)
-    out_res = "pos_error, confidence, compile_time, exec_time\n" + \
-        " ".join([str(val) for val in [pos_error, confidence, compile_time, exec_time]])
+    out_res = f"pos_error:{pos_error} \n" \
+              f"confidence: {confidence} \n" \
+              f"compile_time: {compile_time} \n" \
+              f"exec_time: {exec_time} \n"
+    print(out_res)
     os_flags = os.O_RDWR | os.O_CREAT
     os_modes = stat.S_IRWXU
-    res_path = './result.log'
+    res_path = f'./Megafold_{args.seq_len}_result.log'
     with os.fdopen(os.open(res_path, os_flags, os_modes), 'w') as fout:
         fout.write(out_res)
 
