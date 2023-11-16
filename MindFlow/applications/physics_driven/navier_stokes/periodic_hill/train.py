@@ -22,6 +22,7 @@ import numpy as np
 
 import mindspore
 from mindspore import context, nn, ops, jit, set_seed, load_checkpoint, load_param_into_net, data_sink
+from mindspore.amp import all_finite
 from mindflow.cell import FCSequential
 from mindflow.utils import load_yaml_config
 
@@ -57,6 +58,7 @@ def train(input_args):
     data_params = config["data"]
     model_params = config["model"]
     optim_params = config["optimizer"]
+    summary_params = config["summary"]
 
     # create training dataset
     dataset = create_train_dataset(data_params["data_path"], data_params["batch_size"],)
@@ -71,11 +73,11 @@ def train(input_args):
                          residual=model_params["residual"],
                          act='tanh')
 
-    if config["load_ckpt"]:
-        param_dict = load_checkpoint(config["load_ckpt_path"])
+    if summary_params["load_ckpt"]:
+        param_dict = load_checkpoint(summary_params["load_ckpt_path"])
         load_param_into_net(model, param_dict)
-    if not os.path.exists(os.path.abspath(config['ckpt_path'])):
-        os.makedirs(os.path.abspath(config['ckpt_path']))
+    if not os.path.exists(os.path.abspath(summary_params['ckpt_path'])):
+        os.makedirs(os.path.abspath(summary_params['ckpt_path']))
 
     params = model.trainable_params()
     optimizer = nn.Adam(params, optim_params["initial_lr"], weight_decay=optim_params["weight_decay"])
@@ -108,7 +110,7 @@ def train(input_args):
             loss = ops.depend(loss, optimizer(grads))
         return loss
 
-    epochs = config["train_epochs"]
+    epochs = optim_params["train_epochs"]
     sink_process = data_sink(train_step, dataset, sink_size=1)
     train_data_size = dataset.get_dataset_size()
 
@@ -120,13 +122,13 @@ def train(input_args):
             step_train_loss = sink_process()
         print(f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg)*1000 :.3f}ms")
         model.set_train(False)
-        if epoch % config["eval_interval_epochs"] == 0:
+        if epoch % summary_params["eval_interval_epochs"] == 0:
             # eval
             calculate_l2_error(model, inputs, label, config)
-            predict(model=model, epochs=epoch, input_data=inputs, label=label, path=config["visual_dir"])
-        if epoch % config["save_checkpoint_epochs"] == 0:
+            predict(model=model, epochs=epoch, input_data=inputs, label=label, path=summary_params["visual_dir"])
+        if epoch % summary_params["save_checkpoint_epochs"] == 0:
             ckpt_name = "rans_{}.ckpt".format(epoch + 1)
-            mindspore.save_checkpoint(model, os.path.join(config['ckpt_path'], ckpt_name))
+            mindspore.save_checkpoint(model, os.path.join(summary_params['ckpt_path'], ckpt_name))
 
 
 if __name__ == '__main__':

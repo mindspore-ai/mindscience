@@ -74,13 +74,18 @@ The results show the velocity of different locations in the flow field over time
 
 ## Performance
 
-|        Parameter         |        Ascend               |    GPU       |
+|        Parameter         |        NPU               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend      |      NVIDIA V100 32G       |
+|     Hardware         |     Ascend, Memory32G   |      NVIDIA V100, Memory32G       |
 |     MindSpore version   |        2.0.0             |      2.0.0       |
-|        train loss      |        6.315e-6               |       6.614e-6       |
-|        valid loss      |        2.688e-3               |       2.503e-3    |
-|        speed          |     12.2s/epoch        |    11.4s/epoch  |
+| Dataset | [Cylinder_flow](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-transformer/2D_cylinder_flow.npy) | [Cylinder_flow](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-transformer/2D_cylinder_flow.npy) |
+|  Parameters | 3.8e5 | 3.8e5 |
+|  Training hyperparameters | batch_size=32, epochs=100 | batch_size=32, epochs=100 |
+|  Testing hyperparameters | batch_size=32 | batch_size=32 |
+|  Optimizer | Adam | Adam |
+|        Train loss      |        1.21e-6               |       1.21e-6      |
+|        Validation loss      |        3.85e-7              |       3.86e-7       |
+|        Speed          |     216ms/step        |    220ms/step  |
 
 ## Contributor
 

@@ -28,8 +28,8 @@ plt.rcParams['figure.dpi'] = 300
 
 def _calculate_error(label, prediction):
     '''calculate l2-error to evaluate accuracy'''
-    error = collections.namedtuple("PeriodicHillError", ["l2_error", "l2_error_u", "l2_error_v", "l2_error_p",
-                                                         "l2_error_uu", "l2_error_uv", "l2_error_vv"])
+    errors = collections.namedtuple("PeriodicHillError", ["l2_error", "l2_error_u", "l2_error_v", "l2_error_p",
+                                                          "l2_error_uu", "l2_error_uv", "l2_error_vv"])
     error = label - prediction
     # x, y, u, v, p, uu, uv, vv, rho, nu
     l2_error_u = np.sqrt(np.sum(np.square(error[..., 0]))) / np.sqrt(np.sum(np.square(label[..., 0])))
@@ -41,8 +41,8 @@ def _calculate_error(label, prediction):
 
 
     l2_error = np.sqrt(np.sum(np.square(error))) / np.sqrt(np.sum(np.square(label)))
-    errors = error(l2_error, l2_error_u, l2_error_v, l2_error_p,
-                   l2_error_uu, l2_error_uv, l2_error_vv)
+    errors = errors(l2_error, l2_error_u, l2_error_v, l2_error_p,
+                    l2_error_uu, l2_error_uv, l2_error_vv)
     return errors
 
 

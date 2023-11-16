@@ -11,7 +11,7 @@
 **雷诺平均动量方程：**
 
 $$
-\rho \bar{u}_j \frac{\partial \bar{u}_i}{\partial x_j}=\rho \bar{f}i+\frac{\partial}{\partial x_j}\left[-\bar{p} \delta{i j}+\mu\left(\frac{\partial \bar{u}_i}{\partial x_j}+\frac{\partial \bar{u}_j}{\partial x_i}\right)-\rho \overline{u_i^{\prime} u_j^{\prime}}\right]
+\rho \bar{u}_j \frac{\partial \bar{u}_i}{\partial x_j}=\rho \bar{f}_i+\frac{\partial}{\partial x_j}\left[-\bar{p} \delta_{i j}+\mu\left(\frac{\partial \bar{u}_i}{\partial x_j}+\frac{\partial \bar{u}_j}{\partial x_i}\right)-\rho \overline{u_i^{\prime} u_j^{\prime}}\right]
 $$
 
 **连续方程：**
@@ -98,13 +98,18 @@ python -u eval.py
 
 ## 性能
 
-|        参数         |        Ascend               |    GPU       |
+|        参数         |        NPU               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend      |      RTX4090 显存24G       |
+|     硬件资源         |     Ascend, 显存32G   |      NVIDIA V100, 显存32G       |
 |     MindSpore版本   |        2.0.0             |      2.0.0       |
-|        训练损失      |        9.38e-4               |       8.44e-4       |
-|        验证损失      |        0.181              |       0.185       |
-|        速度          |     170毫秒/步        |    228毫秒/步  |
+| 数据集 | [Periodic_hill](https://download.mindspore.cn/mindscience/mindflow/dataset/periodic_hill_2d/) | [Periodic_hill](https://download.mindspore.cn/mindscience/mindflow/dataset/periodic_hill_2d/) |
+|  参数量 | 1.3e5 | 1.3e5 |
+|  训练参数 | batch_size=4002, epochs=1600, steps_per_epoch=50| batch_size=4002, epochs=1600, steps_per_epoch=50 |
+|  测试参数 | batch_size=4002 | batch_size=4002 |
+|  优化器 | Adam | Adam |
+|        训练损失      |        6.21e-4          |   5.30e-4       |
+|        验证损失      |          0.103          |   0.113           |
+|        速度          |     180毫秒/步       |   389毫秒/步  |
 
 ## Contributor
 

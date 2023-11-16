@@ -17,7 +17,7 @@
 import numpy as np
 
 import mindspore as ms
-from mindspore import ops, nn, dtype
+from mindspore import ops, nn
 from mindspore.ops.function import broadcast_to
 from mindspore import numpy as ms_np
 
@@ -43,7 +43,7 @@ class FullAttention(nn.Cell):
         scores = ops.BatchMatMul()(queries.transpose(0, 2, 1, 3), keys.transpose(0, 2, 3, 1))
         if self.mask_flag:
             if attn_mask is None:
-                attn_mask = ops.stop_gradient(nn.Triu()(ops.ones((b, h, l, l), type=dtype.bool_), k=1))
+                attn_mask = ops.stop_gradient(nn.Triu()(ops.ones((b, h, l, l), dtype=ms.bool_), k=1))
             scores = mask_fill(attn_mask, scores, -np.inf)
         if self.scale is None:
             a = self.dropout(ops.Softmax()((1./self.sqrt(self.d_value)) * scores))

@@ -11,7 +11,7 @@ The Reynolds-Averaged Navier-Stokes equations (RANS) are a commonly used numeric
 **Reynolds-Averaged Momentum Equation:**
 
 $$
-\rho \bar{u}_j \frac{\partial \bar{u}_i}{\partial x_j}=\rho \bar{f}i+\frac{\partial}{\partial x_j}\left[-\bar{p} \delta{i j}+\mu\left(\frac{\partial \bar{u}_i}{\partial x_j}+\frac{\partial \bar{u}_j}{\partial x_i}\right)-\rho \overline{u_i^{\prime} u_j^{\prime}}\right]
+\rho \bar{u}_j \frac{\partial \bar{u}_i}{\partial x_j}=\rho \bar{f}_i+\frac{\partial}{\partial x_j}\left[-\bar{p} \delta_{i j}+\mu\left(\frac{\partial \bar{u}_i}{\partial x_j}+\frac{\partial \bar{u}_j}{\partial x_i}\right)-\rho \overline{u_i^{\prime} u_j^{\prime}}\right]
 $$
 
 **Continuity Equation:**
@@ -80,13 +80,18 @@ The default output path for post-processing is './prediction_result', which can 
 
 ## Performance
 
-|        Parameter         |        Ascend               |    GPU       |
+|        Parameter         |        NPU               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend      |      RTX4090, 24G       |
+|     Hardware         |     Ascend, Memory32G    |      NVIDIA V100, Memory32G       |
 |     MindSpore version   |        2.0.0             |      2.0.0       |
-|        Train loss      |        9.38e-4               |       8.44e-4       |
-|        Evaluation loss      |        0.181              |       0.185       |
-|        Speed          |     170ms/step        |    228ms/step  |
+| Dataset | [Periodic_hill](https://download.mindspore.cn/mindscience/mindflow/dataset/periodic_hill_2d/) | [Periodic_hill](https://download.mindspore.cn/mindscience/mindflow/dataset/periodic_hill_2d/) |
+|  Parameters | 1.3e5 | 1.3e5 |
+|  Training hyperparameters |  batch_size=4002, epochs=1600, steps_per_epoch=50 | batch_size=4002, epochs=1600, steps_per_epoch=50 |
+|  Testing hyperparameters | batch_size=4002 | batch_size=4002 |
+|  Optimizer | Adam | Adam |
+|        Train loss      |        6.21e-4          |   5.30e-4       |
+|        Validation loss      |        0.103          |   0.113           |
+|        Speed          |     180ms/step        |    389ms/step  |
 
 ## Results Display
 

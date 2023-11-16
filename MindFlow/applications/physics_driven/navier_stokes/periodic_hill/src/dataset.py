@@ -35,7 +35,7 @@ class PeriodicHillDataset():
 
 def create_test_dataset(data_path):
     """load labeled data for evaluation"""
-    data = np.loadtxt(data_path)  # shape=(700*300, 10)  x, y, u, v, p, uu, uv, vv, rho, nu
+    data = np.load(data_path)  # shape=(700*300, 10)  x, y, u, v, p, uu, uv, vv, rho, nu
     data = data.reshape((700, 300, 10)).astype(np.float32)
     data = data[:, :, :8]
     test_data = data.reshape((-1, 8))
@@ -46,7 +46,7 @@ def create_test_dataset(data_path):
 
 def create_train_dataset(data_path, batch_size):
     """create training dataset by online sampling"""
-    data = np.loadtxt(data_path)  # shape=(700*300, 10)  x, y, u, v, p, uu, uv, vv, rho, nu
+    data = np.load(data_path)  # shape=(700*300, 10)  x, y, u, v, p, uu, uv, vv, rho, nu
     data = np.reshape(data, (300, 700, 10)).astype(np.float32)
     data = data[:, :, :8]
 

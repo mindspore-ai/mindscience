@@ -81,13 +81,18 @@ CAE-Transformer的基本框架主要基于[论文1](https://doi.org/10.13700/j.b
 
 ## 性能
 
-|        参数         |        Ascend               |    GPU       |
+|        参数         |        NPU               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend      |      NVIDIA V100 显存32G       |
+|     硬件资源         |     Ascend, 显存32G      |      NVIDIA V100, 显存32G       |
 |     MindSpore版本   |        2.0.0             |      2.0.0       |
-|        训练损失      |        6.315e-6               |       6.614e-6       |
-|        验证损失      |        2.688e-3               |       2.503e-3    |
-|        速度          |     12.2s/epoch        |    11.4s/epoch  |
+| 数据集 | [Cylinder_flow数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-transformer/2D_cylinder_flow.npy) | [Cylinder_flow数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-transformer/2D_cylinder_flow.npy) |
+|  参数量 | 3.8e5 | 3.8e5 |
+|  训练参数 | batch_size=32, epochs=100, steps_per_epoch=97 | batch_size=32, epochs=100, steps_per_epoch=97 |
+|  测试参数 | batch_size=32 | batch_size=32 |
+|  优化器 | Adam | Adam |
+|        训练损失      |        1.21e-6          |   1.21e-6       |
+|        验证损失      |          3.85e-7          |   3.86e-7           |
+|        速度          |     216毫秒/步       |   220毫秒/步  |
 
 ## Contributor
 
