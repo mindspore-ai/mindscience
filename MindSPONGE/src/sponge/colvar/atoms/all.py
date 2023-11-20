@@ -48,16 +48,6 @@ class AllAtoms(AtomsBase):
 
         name (str):         Name of the Colvar. Default: 'all_atoms'
 
-    Note:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
-        A:  Number of atoms in system.
-
-        G:  Number of the group of atoms to be averaged.
-
-        D:  Spatial dimension of the simulation system. Usually is 3.
-
     Supported Platforms:
 
         ``Ascend`` ``GPU``
@@ -92,18 +82,16 @@ class AllAtoms(AtomsBase):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system
+                                    Position coordinate of atoms in system.
+                                    B means Batchsize, i.e. number of walkers in simulation.
+                                    A means Number of colvar in system.
+                                    D means Dimension of the simulation system. Usually is 3.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
                                     Tensor of PBC box. Default: ``None``.
 
         Returns:
             center (Tensor):        Tensor of shape (B, ..., D). Data type is float.
                                     Position of the center of the atoms.
-
-        Note:
-            B:      Batchsize, i.e. number of walkers in simulation
-            A:      Number of atoms in system.
-            D:      Dimension of the simulation system. Usually is 3.
         """
 
         if self.do_reshape:

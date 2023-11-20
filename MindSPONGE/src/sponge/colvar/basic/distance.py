@@ -41,7 +41,7 @@ class Distance(Colvar):
 
         atoms (AtomsBase):  Atoms of shape `(..., 2, D)` to calculate distance of shape `(...)` or `(..., 1)`.
                             Cannot be used with `atoms0` or `atoms1`. Default: ``None``.
-
+                            `D` means spatial dimension of the simulation system. Usually is 3.
         atoms0 (AtomsBase): Initial point of atoms with shape `(..., D)` of the distance with shape
                             `(...)` or `(..., 1)`. Must be used with `atoms1`, and cannot be used with `atoms`.
                             Default: ``None``.
@@ -73,14 +73,6 @@ class Distance(Colvar):
     Supported Platforms:
 
         ``Ascend`` ``GPU``
-
-    Note:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
-        A:  Number of atoms in system.
-
-        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
 
@@ -142,11 +134,13 @@ class Distance(Colvar):
 
         Args:
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+                                    `B` means batchsize, i.e. number of walkers in simulation.
+                                    `A` means number of atoms in system.
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
                                     Default: ``None``.
 
         Returns:
-            distance (Tensor):       Tensor of shape `(B, ...)`. Data type is float.
+            distance (Tensor):      Tensor of shape `(B, ...)`. Data type is float.
 
         """
 

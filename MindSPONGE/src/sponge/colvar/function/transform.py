@@ -97,22 +97,19 @@ class TransformCV(Colvar):
         r"""return the cosine value of the collective variables (CVs).
 
         Args:
-            coordinate (Tensor):Tensor of shape `(B, A, D)`. Data type is float.
-                Position coordinate of colvar in system
-            pbc_box (Tensor): Tensor of shape `(B, D)`. Data type is float.
-                Tensor of PBC box. Default: ``None``.
+            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+                                    Position coordinate of colvar in system.
+                                    `B` means batchsize, i.e. number of walkers in simulation.
+                                    `A` means number of colvar in system.
+                                    `D` means dimension of the simulation system. Usually is 3.
+            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
+                                    Tensor of PBC box. Default: ``None``.
 
         Returns:
-            cos_cv (Tensor):       Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.
-
-        Note:
-            B:      Batchsize, i.e. number of walkers in simulation
-            A:      Number of colvar in system.
-            {S_i}:  Dimensions of collective variables.
-            D:      Dimension of the simulation system. Usually is 3.
+            cos_cv (Tensor):        Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.
+                                    `{S_i}` means dimensions of collective variables.
 
         """
-
         colvar = self.colvar(coordinate, pbc_box)
 
         return self.function(colvar)

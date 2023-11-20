@@ -44,7 +44,7 @@ class Colvar(Cell):
         the atomistic coordinate :math:`R` of the simulation system, which should refer to
         the variable describing the slow motion in the process of interest.
 
-        In MindSPONGE, Colvar Cell is the base class for "generalized" CVs. A narrow CV is
+        In MindSPONGE, Colvar Cell is the base class for ``"generalized"`` CVs. A narrow CV is
         generally a vector, i.e., its rank (ndim) is 1. For example, a CV of shape `(S)`.
         Whereas a Colvar Cell can be of higher rank (ndim), for example, a Colvar of
         shape `(S_1, S_2, ..., S_n)`
@@ -53,6 +53,10 @@ class Colvar(Cell):
         Therefore, for a Colvar Cell of shape `(S_1, S_2, ... , S_n)`, a calculation using
         the `B` set of atomic coordinates represented by a tensor with shape `(B, A, D)`
         yields a Tensor with shape `(B, S_1, S_2, ... , S_n)`.
+        `B` means Batchsize, i.e. number of walkers in simulation.
+        `A` means Number of colvar in system.
+        `D` means Dimension of the simulation system. Usually is 3.
+        `{S_i}` means Dimensions of the collective variables.
 
     Reference:
 
@@ -63,8 +67,6 @@ class Colvar(Cell):
     Args:
 
         shape (tuple):      Shape of collective variables. Default: ()
-
-        ndim (int):         Rank (number of dimensions) of collective variables. Default: 0
 
         periodic (bool):    Whether the collective variables is periodic. Default: ``False``.
 
@@ -84,16 +86,6 @@ class Colvar(Cell):
     Supported Platforms:
 
         ``Ascend`` ``GPU``
-
-    Note:
-
-        B:      Batchsize, i.e. number of walkers in simulation
-
-        A:      Number of atoms in system.
-
-        D:      Spatial dimension of the simulation system. Usually is 3.
-
-        {S_i}:  Dimensions of the collective variables.
 
     """
 
@@ -206,7 +198,7 @@ class Colvar(Cell):
 
     @classmethod
     def vector_in_pbc(cls, vector: Tensor, pbc_box: Tensor) -> Tensor:
-        """Make the difference of vecters at the range from -0.5 box to 0.5 box"""
+        """Make the difference of vectors at the range from -0.5 box to 0.5 box"""
         return func.vector_in_pbc(vector, pbc_box)
 
     def set_name(self, name: str):
@@ -248,12 +240,6 @@ class Colvar(Cell):
 
         Returns:
             colvar (Tensor):        Tensor of shape `(B, S_1, S_2, ..., S_n)`.
-
-        Note:
-            B:      Batchsize, i.e. number of walkers in simulation
-            A:      Number of atoms in system.
-            D:      Spatial dimension of the simulation system. Usually is 3.
-            {S_i}:  Dimensions of the collective variables.
 
         """
 

@@ -49,7 +49,8 @@ class AtomsBase(Colvar):
         The `AtomsBase` Cell is a special subclass of `Colvar`. It has the shape `(a_1, a_2, ... , a_n, D)`,
         where `D` is the dimension of the atomic coordinates (usually 3). As with the Colvar Cell, when it takes
         as input coordinates of shape `(B, A, D)`, it returns the shape of the Tensor with an extra dimension `B`,
-        i.e. `(B, a_1, a_2, ... , a_n, D)`.
+        i.e. `(B, a_1, a_2, ... , a_n, D)`. B means Batchsize, i.e. number of walkers in simulation.
+        {a_i} means Dimensions of the Atoms Cell.
 
     Args:
 
@@ -63,14 +64,6 @@ class AtomsBase(Colvar):
     Supported Platforms:
 
         ``Ascend`` ``GPU``
-
-    Note:
-
-        B:      Batchsize, i.e. number of walkers in simulation
-
-        D:      Spatial dimension of the simulation system. Usually is 3.
-
-        {a_i}:  Dimensions of the Atoms Cell.
 
     """
     def __init__(self,
@@ -134,11 +127,6 @@ class AtomsBase(Colvar):
 
         Returns:
             position (Tensor):  Tensor of shape (B, ..., D). Data type is float.
-
-        Note:
-            B:      Batchsize, i.e. number of walkers in simulation
-            A:      Number of atoms in system.
-            D:      Dimension of the simulation system. Usually is 3.
         """
 
         # (B, a_1, a_2, ..., a_n, D)
@@ -159,7 +147,8 @@ class Atoms(AtomsBase):
 
         To set a common atomic index, set `batched` to `False`, where the shape of the `index` is the same as
         the shape of the `Atoms` Cell, which is `(a_1, a_2, ... , a_n)`, while the shape of the returned Tensor is
-        `(B, a_1, a_2, ... , a_n, D)`.
+        `(B, a_1, a_2, ... , a_n, D)`. `B` means Batchsize, i.e. number of walkers in simulation.
+        `{a_i}` means Dimensions of the Atoms Cell. `D` means Dimension of the simulation system. Usually is 3.
 
         To set a separate atomic index for each walker, set `Batched` to `True`. In this case, the shape of `index`
         should be `(B, a_1, a_2, ... , a_n)`, while the shape of the `Atoms` Cell would be `(a_1, a_2, ... , a_n)`.
@@ -186,14 +175,6 @@ class Atoms(AtomsBase):
     Supported Platforms:
 
         ``Ascend`` ``GPU``
-
-    Note:
-
-        B:      Batchsize, i.e. number of walkers in simulation
-
-        a_i:    Dimension of specific atoms.
-
-        D:      Dimension of the simulation system. Usually is 3.
 
     """
     def __init__(self,
@@ -241,18 +222,13 @@ class Atoms(AtomsBase):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system
+                                    Position coordinate of atoms in system. `A` means Number of atoms in system.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
                                     Tensor of PBC box. Default: ``None``.
 
         Returns:
             position (Tensor):  Tensor of shape (B, a_1, a_2, ..., a_{n}, D). Data type is float.
 
-        Note:
-            B:      Batchsize, i.e. number of walkers in simulation
-            A:      Number of atoms in system.
-            a_{i}:  Dimension of specific atoms.
-            D:      Dimension of the simulation system. Usually is 3.
         """
         # (B, a_1, a_2, ..., a_{n}, D) <- (B, A, D)
         atoms = func.gather_vector(coordinate, self.index)
@@ -267,6 +243,7 @@ class BatchedAtoms(Atoms):
         the shape of `index` should be `(B, a_1, a_2, ... , a_n)`, while the shape of the `Atoms` Cell would be
         `(a_1, a_2, ... , a_n)`. The batch size `B` of the atomic indices should be the same as the batch size
         of the simulation system. The shape of the returned Tensor of the `Atoms` Cell is `(B, a_1, a_2, ... , a_n, D)`.
+        `{a_i}` means Dimensions of the Atoms Cell. `D` means Dimension of the simulation system. Usually is 3.
 
     Args:
 
@@ -284,12 +261,6 @@ class BatchedAtoms(Atoms):
     Supported Platforms:
 
         ``Ascend`` ``GPU``
-
-    Note:
-
-        a_{i}:  Dimension of specific atoms.
-
-        D:      Dimension of the simulation system. Usually is 3.
 
     """
     def __init__(self,

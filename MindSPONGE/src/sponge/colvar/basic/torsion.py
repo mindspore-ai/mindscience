@@ -44,7 +44,7 @@ class Torsion(Colvar):
 
         atoms (AtomsBase):      Atoms of shape `(..., 4, D)` to form a torsional angle of shape `(...)` or `(..., 1)`.
                                 Cannot be used with `atoms_a` or `atoms_b`.
-                                Default: ``None``.
+                                Default: ``None``. `D` means spatial dimension of the simulation system. Usually is 3.
 
         atoms_a (AtomsBase):    Atoms A with shape `(..., D)` to form a torsional angle of shape `(...)` or `(..., 1)`.
                                 Must be used with `atoms_b`, `atoms_c` and `atoms_d`. Cannot be used with `atoms`.
@@ -92,14 +92,6 @@ class Torsion(Colvar):
     Supported Platforms:
 
         ``Ascend`` ``GPU``
-
-    Note:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
-        A:  Number of atoms in system.
-
-        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
 
@@ -235,12 +227,13 @@ class Torsion(Colvar):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
+                                    `B` means batchsize, i.e. number of walkers in simulation.
+                                    `A` means number of atoms in system.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
                                     Default: ``None``.
 
         Returns:
             torsion (Tensor):       Tensor of shape (B, ...) or (B, ..., 1). Data type is float.
-
         """
 
         axis_vector = None

@@ -43,12 +43,13 @@ class Center(AtomsBase):
 
         atoms (Union[AtomsBase, Tensor, ndarray, list]):
                             Specific atoms or virtual atoms of shape (..., G, D).
-
+                            `G` means number of the group of atoms to be averaged.
+                            `D` means spatial dimension of the simulation system. Usually is 3.
         mass (Union[Tensor, ndarray, list]):
                             Array of the mass of the atoms to calculate the center of mass (COM).
                             The shape of Tensor is (..., G) or (B, ..., G), and the data type is float.
                             If it is None, the geometric center of coordinate will be calculated.
-                            Default: ``None``.
+                            Default: ``None``. `B` means Batchsize, i.e. number of walkers in simulation.
 
         batched (bool):     Whether the first dimension of index and mass is the batch size.
                             Default: ``False``.
@@ -70,16 +71,6 @@ class Center(AtomsBase):
     Supported Platforms:
 
         ``Ascend`` ``GPU``
-
-    Note:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
-        A:  Number of atoms in system.
-
-        G:  Number of the group of atoms to be averaged.
-
-        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
     def __init__(self,
@@ -153,18 +144,13 @@ class Center(AtomsBase):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system
+                                    Position coordinate of atoms in system. A means number of atoms in system.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
                                     Tensor of PBC box. Default: ``None``.
 
         Returns:
             center (Tensor):        Tensor of shape (B, ..., D). Data type is float.
                                     Position of the center of the atoms.
-
-        Note:
-            B:      Batchsize, i.e. number of walkers in simulation
-            A:      Number of atoms in system.
-            D:      Dimension of the simulation system. Usually is 3.
         """
         # (B, ..., G, D) <- (B, A, D)
         atoms = self.atoms(coordinate, pbc_box)

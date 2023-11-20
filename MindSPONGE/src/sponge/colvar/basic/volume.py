@@ -68,8 +68,7 @@ class Volume(Colvar):
                                     Default: ``None``.
 
         Returns:
-            angle (Tensor):         Tensor of shape (B, ...) or (B, ..., 1). Data type is float.
-
+            volume (Tensor):         Tensor of shape (B, ...) or (B, ..., 1). Data type is float.
         """
         #pylint: disable=unused-argument
 

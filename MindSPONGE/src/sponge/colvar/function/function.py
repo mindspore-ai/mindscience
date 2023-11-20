@@ -125,18 +125,16 @@ class FunctionCV(Colvar):
 
         Args:
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-                                    Position coordinate of colvar in system
+                                    Position coordinate of colvar in system.
+                                    `B` means batchsize, i.e. number of walkers in simulation.
+                                    `A` means number of colvar in system.
+                                    `D` means dimension of the simulation system. Usually is 3.
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
                                     Tensor of PBC box. Default: ``None``.
 
         Returns:
             combine (Tensor):       Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.
-
-        Note:
-            B:      Batchsize, i.e. number of walkers in simulation
-            A:      Number of colvar in system.
-            {S_i}:  Dimensions of collective variables.
-            D:      Dimension of the simulation system. Usually is 3.
+                                    `{S_i}` means dimensions of collective variables.
 
         """
         colvar = ()

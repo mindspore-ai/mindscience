@@ -39,7 +39,7 @@ class ConstantValue(Colvar):
 
     Args:
 
-        value (Union[Tensor, ndarray, list, tuple]): Constant value
+        value (Union[Tensor, ndarray, list, tuple]): Constant value.
 
         name (str): Name of the Colvar. Default: 'constant'
 
@@ -72,7 +72,7 @@ class ConstantValue(Colvar):
                                     Default: ``None``.
 
         Returns:
-            angle (Tensor):         Tensor of shape (B, ...) or (B, ..., 1). Data type is float.
+            constant value (Tensor):         Tensor of shape (B, ...) or (B, ..., 1). Data type is float.
 
         """
         #pylint: disable=unused-argument

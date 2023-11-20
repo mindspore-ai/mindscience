@@ -43,9 +43,11 @@ class ColvarGroup(Colvar):
                     Array of `Colvar` to be concatenated.
 
         axis (int): Axis to be concatenated. NOTE: This refers to the axis of the output Tensor
-                    with the shape `(B, S_1, S_2, ..., S_n)`. Default: -1
+                    with the shape `(B, S_1, S_2, ..., S_n)`. Default： -1.
 
-        name (str): Name of the collective variables. Default: 'colvar_group'
+        use_pbc (bool): Whether to use periodic boundary condition. Default： ``None``.
+
+        name (str): Name of the collective variables. Default: 'colvar_group'.
 
     Supported Platforms:
 
@@ -121,18 +123,15 @@ class ColvarGroup(Colvar):
 
         Args:
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-                                    Position coordinate of colvar in system
+                                    B means Batchsize, i.e. number of walkers in simulation.
+                                    A means Number of colvar in system.
+                                    D means Dimension of the simulation system. Usually is 3.
+                                    Position coordinate of colvar in system.
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
                                     Tensor of PBC box. Default: ``None``.
 
         Returns:
             position (Tensor):  Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.
-
-        Note:
-            B:      Batchsize, i.e. number of walkers in simulation
-            A:      Number of colvar in system.
-            {S_i}:  Dimensions of collective variables.
-            D:      Dimension of the simulation system. Usually is 3.
 
         """
         colvar = ()

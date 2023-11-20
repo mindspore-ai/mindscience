@@ -41,6 +41,13 @@ def get_colvar(colvar_: Union[Colvar, List[Colvar], Tuple[Colvar]],
 
         colvar (Union[Colvar, List[Colvar], Tuple[Colvar]]): Colvar or array of colvars.
 
+        axis (int): Axis to be concatenated. Default： -1.
+
+        use_pbc (bool): Whether to use periodic boundary condition. Default： ``None``.
+
+        name (str): Name. Default: ``None``.
+
+
     Returns:
 
         colvar (Union[Atoms, Group]): Atoms or group

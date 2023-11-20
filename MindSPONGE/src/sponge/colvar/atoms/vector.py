@@ -38,7 +38,7 @@ class Vector(AtomsBase):
 
         atoms (AtomsBase):  Atoms of shape `(..., 2, D)` to form a vector of shape `(..., D)` or `(..., 1, D)`.
                             Cannot be used with `atoms0` or `atoms1`.
-                            Default: ``None``.
+                            Default: ``None``. `D` means Spatial dimension of the simulation system. Usually is 3.
 
         atoms0 (AtomsBase): The initial point of atoms of shape `(..., D)` to form a vector of shape `(..., D)`.
                             Must be used with `atoms1`, and cannot be used with `atoms`.
@@ -71,14 +71,6 @@ class Vector(AtomsBase):
     Supported Platforms:
 
         ``Ascend`` ``GPU``
-
-    Note:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
-        A:  Number of atoms in system.
-
-        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
     def __init__(self,
@@ -174,6 +166,8 @@ class Vector(AtomsBase):
 
         Args:
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
+                                    `B` means batchsize, i.e. number of walkers in simulation.
+                                    `A` means number of atoms in system.
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
                                     Default: ``None``.
 
