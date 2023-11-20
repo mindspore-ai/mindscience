@@ -4,21 +4,20 @@ model:
   modes: 16  # alternative 24, 12
   depths: 4
   resolution: 64
-
 data:
   name: "navier_stoke_2d"
-  path: "./dataset"
+  root_dir: "./dataset"
   in_channels: 1
   out_channels: 1
   train_size: 19000
   test_size: 3800
   batch_size: 19
   sub: 2
-
 optimizer:
   epochs: 50
-  lr: 0.001
+  learning_rate: 0.001
   weight_decay: 0.0001
-
-ckpt_dir: "./checkpoints/"
-eval_interval: 10
+summary:
+  root_dir: "./summary" 
+  ckpt_dir: "./checkpoints/"
+  test_interval: 10

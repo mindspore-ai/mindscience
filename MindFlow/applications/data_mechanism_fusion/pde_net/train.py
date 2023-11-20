@@ -39,30 +39,37 @@ np.random.seed(0)
 def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
     """train PDE-Net with advancing steps"""
     print_log(f"Current step for train loop: {step}")
-    model = init_model(config_param)
+    model = init_model(config_param["model"])
+    data_params = config_param["data"]
+    summary_params = config_param["summary"]
+    optimizer_params = config_param["optimizer"]
 
-    epoch = config_param["epochs"]
+    epoch = optimizer_params["epochs"]
     warm_up_epoch_scale = 10
     if step == 1:
         model.if_fronzen = True
         epoch = warm_up_epoch_scale * epoch
     elif step == 2:
-        param_dict = get_param_dic(config_param["summary_dir"], step - 1, epoch * 10)
+        param_dict = get_param_dic(os.path.join(
+            summary_params["root_dir"], summary_params["ckpt_dir"]), step - 1, epoch * 10)
         load_param_into_net(model, param_dict)
         print_log("Load pre-trained model successfully")
     else:
-        param_dict = get_param_dic(config_param["summary_dir"], step - 1, epoch)
+        param_dict = get_param_dic(os.path.join(
+            summary_params["root_dir"], summary_params["ckpt_dir"]), step - 1, epoch)
         load_param_into_net(model, param_dict)
         print_log("Load pre-trained model successfully")
 
     optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
-    problem = UnsteadyFlowWithLoss(model, t_out=step, loss_fn=RelativeRMSELoss(), data_format="NTCHW")
+    problem = UnsteadyFlowWithLoss(
+        model, t_out=step, loss_fn=RelativeRMSELoss(), data_format="NTCHW")
 
     def forward_fn(u0, u_t):
         loss = problem.get_loss(u0, u_t)
         return loss
 
-    grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
+    grad_fn = ops.value_and_grad(
+        forward_fn, None, optimizer.parameters, has_aux=False)
 
     @jit
     def train_step(u0, u_t):
@@ -84,16 +91,18 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
         print_log(f"epoch: {cur_epoch} train loss: {cur_loss} "
                   f"epoch time: {epoch_seconds:5.3f}ms step time: {step_seconds:5.3f}ms")
 
-        if cur_epoch % config_param["save_epoch_interval"] == 0:
+        if cur_epoch % summary_params["save_epoch_interval"] == 0:
             ckpt_file_name = f"step_{step}"
-            ckpt_dir = os.path.join(config_param["summary_dir"], ckpt_file_name)
+            ckpt_dir = os.path.join(
+                summary_params["root_dir"], summary_params["ckpt_dir"], ckpt_file_name)
             make_dir(ckpt_dir)
             ckpt_name = f"pdenet-{cur_epoch}.ckpt"
             mindspore.save_checkpoint(model, os.path.join(ckpt_dir, ckpt_name))
 
-        if cur_epoch % config_param['eval_interval'] == 0:
+        if cur_epoch % summary_params['test_interval'] == 0:
             eval_time_start = time.time()
-            calculate_lp_loss_error(problem, eval_dataset, config_param["batch_size"])
+            calculate_lp_loss_error(
+                problem, eval_dataset, data_params["batch_size"])
             print_log(f'evaluation time: {time.time() - eval_time_start}s')
 
 
@@ -101,25 +110,34 @@ def train_single_step(step, config_param, lr, train_dataset, eval_dataset):
 def train(input_args):
     '''Train and evaluate the network'''
     config_param = load_yaml_config(input_args.config_file_path)
-    make_dir(config_param["mindrecord_data_dir"])
-    lr = config_param["lr"]
-    for i in range(1, config_param["multi_step"] + 1):
+    data_params = config_param["data"]
+    optimizer_params = config_param["optimizer"]
+
+    db_path = data_params["mindrecord_data_dir"]
+    make_dir(db_path)
+    lr = optimizer_params["learning_rate"]
+    for i in range(1, optimizer_params["multi_step"] + 1):
         db_name = f"train_step{i}.mindrecord"
-        dataset = create_dataset(config_param, i, db_name, "train", data_size=2 * config_param["batch_size"])
+        dataset = create_dataset(
+            config_param, i, db_name, "train", data_size=2 * data_params["batch_size"])
         train_dataset, eval_dataset = dataset.create_train_dataset()
-        lr = scheduler(int(config_param["multi_step"] / config_param["learning_rate_reduce_times"]), step=i, lr=lr)
+        lr = scheduler(int(
+            optimizer_params["multi_step"] / optimizer_params["learning_rate_reduce_times"]), step=i, lr=lr)
         train_single_step(step=i, config_param=config_param, lr=lr, train_dataset=train_dataset,
                           eval_dataset=eval_dataset)
 
 
 def parse_args():
+    """parse arguments"""
     parser = argparse.ArgumentParser(description="pde net train")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Running in GRAPH_MODE OR PYNATIVE_MODE")
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
-    parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-    parser.add_argument("--config_file_path", type=str, default="./configs/pde_net.yaml")
+    parser.add_argument("--device_id", type=int, default=0,
+                        help="ID of the target device")
+    parser.add_argument("--config_file_path", type=str,
+                        default="./configs/pde_net.yaml")
     input_args = parser.parse_args()
     return input_args
 
@@ -129,10 +147,11 @@ if __name__ == '__main__':
     print_log("pid:", os.getpid())
 
     args = parse_args()
-    context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") \
+    context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH")
                         else context.PYNATIVE_MODE,
                         device_target=args.device_target,
                         device_id=args.device_id)
-    print_log(f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
+    print_log(
+        f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
 
     train(args)

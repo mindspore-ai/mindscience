@@ -25,7 +25,7 @@ EPS = 1e-8
 
 def create_npy(config, sub=8):
     '''Create inputs and label data for trainset and testset.'''
-    data_path = config["path"]
+    data_path = config["root_dir"]
     train_size = config["train_size"]
     test_size = config["test_size"]
     s = 2 ** 13 // config["sub"]
@@ -73,7 +73,7 @@ def create_training_dataset(config,
                             is_train=True):
     """create dataset"""
     create_npy(config, input_resolution)
-    data_path = config["path"]
+    data_path = config["root_dir"]
     if is_train:
         train_path = os.path.join(data_path, "train")
         input_path = os.path.join(train_path, "inputs.npy")

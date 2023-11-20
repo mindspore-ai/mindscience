@@ -51,7 +51,8 @@ def init_model(config):
 
 def calculate_lp_loss_error(problem, test_dataset, batch_size):
     """Calculates loss error"""
-    print_log("================================Start Evaluation================================")
+    print_log(
+        "================================Start Evaluation================================")
     time_beg = time.time()
     lploss_error = 0.0
     max_error = 0.0
@@ -59,7 +60,8 @@ def calculate_lp_loss_error(problem, test_dataset, batch_size):
     for data in test_dataset.create_dict_iterator():
         test_label = data["uT"]
         test_data = data["u0"]
-        lploss_error_step = problem.get_loss(test_data, test_label) / batch_size
+        lploss_error_step = problem.get_loss(
+            test_data, test_label) / batch_size
         lploss_error += lploss_error_step
 
         if lploss_error_step >= max_error:
@@ -67,7 +69,8 @@ def calculate_lp_loss_error(problem, test_dataset, batch_size):
 
     lploss_error = lploss_error / length
     print_log(f"LpLoss_error: {lploss_error}")
-    print_log("=================================End Evaluation=================================")
+    print_log(
+        "=================================End Evaluation=================================")
     print_log(f"predict total time: {time.time() - time_beg}s")
 
 
@@ -89,7 +92,8 @@ def make_dir(path):
         mode = permissions << 6
         os.makedirs(path, mode=mode, exist_ok=True)
     except PermissionError as e:
-        mindspore.log.critical("No write permission on the directory(%r), error = %r", path, e)
+        mindspore.log.critical(
+            "No write permission on the directory(%r), error = %r", path, e)
         raise TypeError("No write permission on the directory.") from e
     finally:
         pass
@@ -124,9 +128,11 @@ def plot_coe(coes, img_dir, prefix="coe", step=0, title="coes"):
             pass
 
         if idx < 2:
-            img = ax.imshow(coe.T, vmin=coe.min(), vmax=coe.max(), cmap=plt.get_cmap("turbo"), origin='lower')
+            img = ax.imshow(coe.T, vmin=coe.min(), vmax=coe.max(),
+                            cmap=plt.get_cmap("turbo"), origin='lower')
         else:
-            img = ax.imshow(coe.T, vmin=-0.75, vmax=0.75, cmap=plt.get_cmap("turbo"), origin='lower')
+            img = ax.imshow(coe.T, vmin=-0.75, vmax=0.75,
+                            cmap=plt.get_cmap("turbo"), origin='lower')
         plt.axis('off')
 
         aspect = 20
@@ -154,7 +160,8 @@ def get_label_coe(max_order, resolution):
     mesh_x, mesh_y = np.meshgrid(x_cord, y_cord)
 
     coe_dict = dict()
-    coe_dict['10'] = 0.5 * (np.cos(mesh_y) + mesh_x * (2 * math.pi - mesh_x) * np.sin(mesh_x)) + 0.6
+    coe_dict['10'] = 0.5 * (np.cos(mesh_y) + mesh_x *
+                            (2 * math.pi - mesh_x) * np.sin(mesh_x)) + 0.6
     coe_dict['01'] = 2 * (np.cos(mesh_y) + np.sin(mesh_x)) + 0.8
     coe_dict['20'] = 0.2 * np.ones((resolution, resolution))
     coe_dict['02'] = 0.3 * np.ones((resolution, resolution))
@@ -203,7 +210,8 @@ def plot_test_error(problem, loss_fn, item, step, mesh_size, figure_out_dir="./f
     plt_y = y.asnumpy()[0, 0, :, :].reshape(-1, 1)
     plt.subplot(1, 3, 1)
     plt.title("label")
-    plt.scatter(x_grid, y_grid, c=plt_y, cmap=plt.cm.rainbow, vmin=min(plt_y[:]), vmax=max(plt_y[:]))
+    plt.scatter(x_grid, y_grid, c=plt_y, cmap=plt.cm.rainbow,
+                vmin=min(plt_y[:]), vmax=max(plt_y[:]))
     plt.colorbar()
 
     plt_y_predict = y_predict.asnumpy()[0, 0, :, :].reshape(-1, 1)
@@ -216,7 +224,8 @@ def plot_test_error(problem, loss_fn, item, step, mesh_size, figure_out_dir="./f
     error_val = error.asnumpy()[0, 0, :, :].reshape(-1, 1)
     plt.subplot(1, 3, 3)
     plt.title("error")
-    plt.scatter(x_grid, y_grid, c=error_val, cmap=plt.cm.rainbow, vmin=min(error_val[:]), vmax=max(error_val[:]))
+    plt.scatter(x_grid, y_grid, c=error_val, cmap=plt.cm.rainbow,
+                vmin=min(error_val[:]), vmax=max(error_val[:]))
     plt.colorbar()
 
     plt.subplots_adjust(left=0.05, right=0.97, top=0.9, bottom=0.1)
@@ -225,15 +234,23 @@ def plot_test_error(problem, loss_fn, item, step, mesh_size, figure_out_dir="./f
 
 def _extapolation(config, extra_step, test_data_iterator):
     """long time prediction test for given ckpt"""
-    model = init_model(config)
+    model_params = config["model"]
+    summary_params = config["summary"]
+    optimizer_params = config["optimizer"]
+
+    model = init_model(model_params)
     if extra_step == 1:
         model.if_fronzen = True
-
-    param_dict = get_param_dic(config["summary_dir"], config["multi_step"], config["epochs"])
+    param_dict = get_param_dic(
+        os.path.join(summary_params["root_dir"],
+                     summary_params["ckpt_dir"]),
+        optimizer_params["multi_step"],
+        optimizer_params["epochs"])
     load_param_into_net(model, param_dict)
 
     cast = ops.Cast()
-    problem = UnsteadyFlowWithLoss(model, t_out=extra_step, loss_fn=RelativeRMSELoss(), data_format="NTCHW")
+    problem = UnsteadyFlowWithLoss(
+        model, t_out=extra_step, loss_fn=RelativeRMSELoss(), data_format="NTCHW")
 
     error_list = []
     for item in test_data_iterator:
@@ -241,8 +258,10 @@ def _extapolation(config, extra_step, test_data_iterator):
         ut = item["u_step{:.0f}".format(extra_step)]
         u0 = cast(u0, mstype.float32)
         ut = cast(ut, mstype.float32)
-        u0 = u0.reshape(-1, 1, 1, config["mesh_size"], config["mesh_size"])
-        ut = ut.reshape(-1, 1, 1, config["mesh_size"], config["mesh_size"])
+        u0 = u0.reshape(-1, 1, 1,
+                        model_params["mesh_size"], model_params["mesh_size"])
+        ut = ut.reshape(-1, 1, 1,
+                        model_params["mesh_size"], model_params["mesh_size"])
         error_list.append(problem.get_loss(u0, ut).asnumpy().reshape(1)[0])
     return error_list
 
@@ -258,12 +277,16 @@ def plot_extrapolation_error(config, dataset, max_step=40):
         error_data.append(error)
         p25 = np.percentile(error, 25)
         p75 = np.percentile(error, 75)
-        print_log("step = {:.0f}, p25 = {:.5f}, p75 = {:.5f}".format(i, p25, p75))
+        print_log(
+            "step = {:.0f}, p25 = {:.5f}, p75 = {:.5f}".format(i, p25, p75))
         plot_data[i - 1, :] = [i, p25, p75]
 
+    summary_params = config["summary"]
     plt.semilogy(plot_data[:, 0], plot_data[:, 1], color='orange')
     plt.semilogy(plot_data[:, 0], plot_data[:, 2], color='orange')
-    plt.fill_between(plot_data[:, 0], plot_data[:, 1], plot_data[:, 2], facecolor='orange', alpha=0.5)
+    plt.fill_between(plot_data[:, 0], plot_data[:, 1],
+                     plot_data[:, 2], facecolor='orange', alpha=0.5)
     plt.xlim(1, max_step)
     plt.ylim(0.01, 100)
-    plt.savefig(os.path.join(config["figure_out_dir"], 'extrapolation.jpg'))
+    plt.savefig(os.path.join(
+        summary_params["root_dir"], summary_params["visualization_dir"], 'extrapolation.jpg'))

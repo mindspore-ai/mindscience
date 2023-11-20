@@ -161,9 +161,9 @@ class DataPrepare():
 
 
 def create_dataset(config, step, db_name, mode, data_size=0):
-    """crate dataset"""
-    file_name = os.path.join(config["mindrecord_data_dir"], db_name)
-    data = DataGenerator(step=step, config=config, mode=mode, data_size=data_size, file_name=file_name)
+    """create dataset"""
+    file_name = os.path.join(config["data"]["mindrecord_data_dir"], db_name)
+    data = DataGenerator(step=step, config=config["data"], mode=mode, data_size=data_size, file_name=file_name)
     data.process()
-    dataset = DataPrepare(config=config, data_file=file_name)
+    dataset = DataPrepare(config=config["data"], data_file=file_name)
     return dataset

@@ -26,7 +26,7 @@ def create_training_dataset(config,
                             drop_remainder=True,
                             is_train=True):
     """create dataset"""
-    data_path = config["path"]
+    data_path = config["root_dir"]
     if is_train:
         train_path = os.path.join(data_path, "train")
         input_path = os.path.join(train_path, "inputs.npy")

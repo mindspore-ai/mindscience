@@ -61,22 +61,23 @@ def train(input_args):
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
+    summary_params = config["summary"]
 
     t1 = default_timer()
 
     sub = data_params["sub"]
     grid_size = model_params["input_resolution"] // sub
     input_timestep = model_params["input_timestep"]
-    output_timestep = model_params["output_timestep"]
+    output_timestep = model_params["extrapolations"]
 
     train_a = Tensor(np.load(os.path.join(
-        data_params["path"], "train_a.npy")), mstype.float32)
+        data_params["root_dir"], "train_a.npy")), mstype.float32)
     train_u = Tensor(np.load(os.path.join(
-        data_params["path"], "train_u.npy")), mstype.float32)
+        data_params["root_dir"], "train_u.npy")), mstype.float32)
     test_a = Tensor(np.load(os.path.join(
-        data_params["path"], "test_a.npy")), mstype.float32)
+        data_params["root_dir"], "test_a.npy")), mstype.float32)
     test_u = Tensor(np.load(os.path.join(
-        data_params["path"], "test_u.npy")), mstype.float32)
+        data_params["root_dir"], "test_u.npy")), mstype.float32)
 
     print_log(train_a.shape, test_a.shape)
 
@@ -107,8 +108,8 @@ def train(input_args):
         model_params_list.append(f"{k}-{v}")
     model_name = "_".join(model_params_list)
 
-    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["initial_lr"],
-                                        last_epoch=optimizer_params["train_epochs"],
+    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["learning_rate"],
+                                        last_epoch=optimizer_params["epochs"],
                                         steps_per_epoch=train_loader.get_dataset_size(),
                                         warmup_epochs=optimizer_params["warmup_epochs"])
 
@@ -194,12 +195,12 @@ def train(input_args):
         print_log("=================================End Evaluation=================================")
 
     sink_process = data_sink(train_step, train_loader, sink_size=100)
-    summary_dir = os.path.join(config["summary_dir"], model_name)
-    ckpt_dir = os.path.join(summary_dir, "ckpt")
+    summary_dir = os.path.join(summary_params["root_dir"], model_name)
+    ckpt_dir = os.path.join(summary_dir, summary_params["ckpt_dir"])
     if not os.path.exists(ckpt_dir):
         os.makedirs(ckpt_dir)
     model.set_train()
-    for epoch in range(1, 1 + optimizer_params["train_epochs"]):
+    for epoch in range(1, 1 + optimizer_params["epochs"]):
         local_time_beg = time.time()
         cur_loss = sink_process()
         local_time_end = time.time()

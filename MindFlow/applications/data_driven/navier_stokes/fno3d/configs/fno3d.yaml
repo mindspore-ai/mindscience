@@ -1,5 +1,4 @@
 model:
-  work_space: "./"
   name: FNO3D_time
   in_channels: 10
   out_channels: 1
@@ -7,21 +6,22 @@ model:
   modes: 8
   width: 20
   depth: 4
-  output_timestep: 40
+  extrapolations: 40
   input_timestep: 10
 data:
   name: "fno3d"
-  path: "./dataset"
+  root_dir: "./dataset"
   batch_size: 10
   sub: 1
   resolution: 64
 optimizer:
-  initial_lr: 0.01
+  learning_rate: 0.01
   warmup_epochs: 1
-  train_epochs: 150
+  epochs: 150
   weight_decay: 0.0001
-
-summary_dir: "./checkpoints"
-eval_interval: 10
-save_ckpt_interval: 50
-test_batch_size: 1
+summary:
+  root_dir: "./summary"
+  ckpt_dir: "./checkpoints"
+  test_interval: 10
+  save_ckpt_interval: 50
+  test_batch_size: 1
