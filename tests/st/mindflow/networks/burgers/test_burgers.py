@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""train process"""
+"""burgers pinns st case"""
 
 import pytest
 
