@@ -149,7 +149,8 @@ class Dataset(Data):
                        num_parallel_workers=1,
                        num_shards=None,
                        shard_id=None,
-                       python_multiprocessing=False):
+                       python_multiprocessing=False,
+                       sampler=None):
         """
         create the final mindspore type dataset to merge all the sub-datasets.
 
@@ -226,6 +227,10 @@ class Dataset(Data):
         logger.info("Dataset constraints map: {}".format(
             self.dataset_constraint_map))
 
+        if sampler:
+            logger.info("Dataset uses sampler")
+            dataset.use_sampler(sampler)
+
         if preprocess_fn:
             input_columns = copy.deepcopy(self.columns_list)
             check_param_type(input_output_columns_map,
@@ -249,9 +254,9 @@ class Dataset(Data):
             dataset = dataset.map(operations=preprocess_fn,
                                   input_columns=input_columns,
                                   output_columns=output_columns,
-                                  column_order=output_columns,
                                   num_parallel_workers=num_parallel_workers,
                                   python_multiprocessing=python_multiprocessing)
+            dataset = dataset.project(output_columns)
             logger.info("Get all dataset columns names after preprocess: {}".format(
                 self.columns_list))
 
