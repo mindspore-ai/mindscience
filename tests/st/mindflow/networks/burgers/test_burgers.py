@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """burgers pinns st case"""
-
+import time
 import pytest
 
 import numpy as np
@@ -154,10 +154,15 @@ def test_mindflow_burgers_pinns():
 
     for epoch in range(1, 1 + 10):
         model.set_train(True)
+        time_beg = time.time()
         train_loss = train_step(pde_data, ic_data, bc_data)
-        print(f"epoch: {epoch} train loss: {train_loss}")
+        epoch_time = time.time() - time_beg
+        print(f"epoch: {epoch} train loss: {train_loss} epoch time: {epoch_time}s")
+
     model.set_train(False)
     eval_error = calculate_l2_error(model, inputs, label, 5)
     print("eval_error:", eval_error)
-    assert 0.3 < train_loss < 0.8
-    assert 0.3 < eval_error < 0.8
+
+    assert epoch_time < 0.01
+    assert train_loss < 0.6
+    assert eval_error < 0.8
