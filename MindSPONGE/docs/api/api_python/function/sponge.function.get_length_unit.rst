@@ -9,4 +9,4 @@ sponge.function.get_length_unit
         - **unit** (Union[str, Units, Length, float, int]) - 长度单位。
 
     返回：
-        str。长度单位。
+        Union[str, float, int]。长度单位。

@@ -37,10 +37,10 @@ sponge.function.Units
     .. py:method:: boltzmann_def()
         :property:
 
-        获取kj/mol单位下的玻尔兹曼常数。
+        获取kJ/mol单位下的玻尔兹曼常数。
 
         返回：
-            float。kj/mol单位下的玻尔兹曼常数。
+            float。kJ/mol单位下的玻尔兹曼常数。
 
     .. py:method:: convert_energy_from(unit)
 
@@ -115,7 +115,7 @@ sponge.function.Units
         获取能量单位。
 
         返回：
-            Union[str, float, int]。能量单位。
+            str。能量单位。
 
     .. py:method:: energy_unit_name()
         :property:
@@ -162,15 +162,15 @@ sponge.function.Units
         获取指定单位下的玻尔兹曼常数。
 
         参数：
-            - **energy_unit** (str) - 能量单位。
+            - **energy_unit** (str) - 能量单位。默认值： ``None``。
     
     .. py:method:: get_coulomb(length_unit: str = None, energy_unit: str = None)
 
         获取指定单位下的库伦常数。
 
         参数：
-            - **length_unit** (str) - 长度单位。
-            - **energy_unit** (str) - 能量单位。
+            - **length_unit** (str) - 长度单位。默认值： ``None``。
+            - **energy_unit** (str) - 能量单位。默认值： ``None``。
 
     .. py:method:: kinetic_ref()
         :property:
@@ -205,7 +205,7 @@ sponge.function.Units
         获取长度单位。
 
         返回：
-            Union[str, float, int]。 长度单位。
+            str。 长度单位。
 
     .. py:method:: length_unit_name()
         :property:
@@ -242,9 +242,9 @@ sponge.function.Units
         设置长度单位。
 
         参数：
-            - **length_unit** (str) - 长度单位。
-            - **energy_unit** (str) - 能量单位。
-            - **units** (Units) - 单位。
+            - **length_unit** (str) - 长度单位。默认值： ``None``。
+            - **energy_unit** (str) - 能量单位。默认值： ``None``。
+            - **units** (Units) - 单位。默认值： ``None``。
 
     .. py:method:: velocity_unit()
         :property:
@@ -277,3 +277,7 @@ sponge.function.Units
 
         返回：
             str。容积单位的名称。
+
+    .. py:method:: _set_constants()
+
+        设置常量值。

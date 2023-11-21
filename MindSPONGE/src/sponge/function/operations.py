@@ -222,6 +222,8 @@ class GetDistance(GetVector):
         Args:
             initial (Tensor):   Tensor of shape (B, ..., D). Data type is float.
                                 Coordinate of initial point
+                                B means batchsize, i.e. number of walkers in simulation.
+                                D means spatial dimension of the simulation system. Usually is 3.
             terminal (Tensor):  Tensor of shape (B, ..., D). Data type is float.
                                 Coordinate of terminal point
             pbc_box (Tensor):   Tensor of shape (B, D). Data type is float.
@@ -229,10 +231,6 @@ class GetDistance(GetVector):
 
         Returns:
             distance (Tensor):  Tensor of shape (B, ...). Data type is float.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers in simulation
-            D:  Spatial dimension of the simulation system. Usually is 3.
 
         """
         vector = self.calc_vector(initial, terminal, pbc_box)
@@ -314,16 +312,14 @@ class VelocityGenerator(Cell):
             shape (tuple):      Shape of velocity
             atom_mass (Tensor): Tensor of shape (B, A). Data type is float.
                                 Atom mass in system.
+                                B means batchsize, i.e. number of walkers in simulation.
+                                A means number of atoms
             mask (Tensor):      Tensor of shape (B, A). Data type is bool.
                                 Mask for atoms. Default: ``None``.
 
         Returns:
             velocity (Tensor):  Tensor of shape (B, A, D). Data type is float.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers in simulation
-            A:  Number of atoms
-            D:  Spatial dimension of the simulation system. Usually is 3.
+                                D means spatial dimension of the simulation system. Usually is 3.
 
         """
         # (B,A,1)

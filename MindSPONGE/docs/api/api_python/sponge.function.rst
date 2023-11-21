@@ -46,3 +46,43 @@ sponge.function
     sponge.function.Units
     sponge.function.vector_in_pbc
     sponge.function.VelocityGenerator
+    sponge.function._bonds_in
+    sponge.function._constant_multiply
+    sponge.function._quaternion_multiply
+    sponge.function.all_none
+    sponge.function.all_not_none
+    sponge.function.any_none
+    sponge.function.any_not_none
+    sponge.function.bonds_in
+    sponge.function.check_broadcast
+    sponge.function.concat_first_dim
+    sponge.function.concat_last_dim
+    sponge.function.concat_penulti
+    sponge.function.coordinate_in_pbc
+    sponge.function.coulomb_interaction
+    sponge.function.get_arguments
+    sponge.function.get_energy
+    sponge.function.get_initializer
+    sponge.function.get_length
+    sponge.function.get_ms_array
+    sponge.function.get_tensor
+    sponge.function.hamiltonian_product
+    sponge.function.identity
+    sponge.function.keepdims_mean
+    sponge.function.keepdims_prod
+    sponge.function.keepdims_sum
+    sponge.function.lennard_jones_potential
+    sponge.function.lennard_jones_potential2
+    sponge.function.periodic_difference
+    sponge.function.periodic_variable
+    sponge.function.quaternion_inverse
+    sponge.function.quaternion_multiply
+    sponge.function.reduce_all
+    sponge.function.reduce_any
+    sponge.function.reduce_prod
+    sponge.function.squeeze_first_dim
+    sponge.function.squeeze_last_dim
+    sponge.function.squeeze_penulti
+    sponge.function.stack_first_dim
+    sponge.function.stack_last_dim
+    sponge.function.stack_penulti    

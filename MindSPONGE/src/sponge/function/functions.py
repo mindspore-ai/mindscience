@@ -612,6 +612,8 @@ def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> T
     Args:
         position (Tensor):  Tensor of shape `(B, ..., D)`. Data type is float.
                             Position coordinate :math:`R`
+                            B means batchsize, i.e. number of walkers in simulation.
+                            D means spatial dimension of the simulation system. Usually is 3.
         pbc_box (Tensor):   Tensor of shape `(B, D)`. Data type is float.
                             Size of PBC box :math:`\vec{L}`
         offset (float):     Offset ratio :math:`c` relative to box size :math:`\vec{L}`.
@@ -622,10 +624,6 @@ def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> T
 
     Supported Platforms:
         ``Ascend`` ``GPU``
-
-    Note:
-        B:  Batchsize, i.e. number of walkers in simulation
-        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
 
@@ -638,13 +636,11 @@ def vector_in_pbc(vector: Tensor, pbc_box: Tensor, offset: float = -0.5) -> Tens
     r"""
     Make the value of vector :math:`\vec{v}` at a single PBC box :math:`\vec{L}`.
 
-    Note:
-        B:  Batchsize, i.e. number of walkers in simulation
-        D:  Spatial dimension of the simulation system. Usually is 3.
-
     Args:
         vector (Tensor):    Tensor of shape `(B, ..., D)`. Data type is float.
                             Vector :math:`\vec{v}`.
+                            B means batchsize, i.e. number of walkers in simulation.
+                            D means spatial dimension of the simulation system. Usually is 3.
         pbc_box (Tensor):   Tensor of shape `(B, D)`. Data type is float.
                             Size of PBC box :math:`\vec{L}`.
         offset (float):     Offset ratio :math:`c` of the vector relative to box size :math:`\vec{L}`.

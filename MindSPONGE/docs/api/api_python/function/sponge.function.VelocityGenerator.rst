@@ -19,3 +19,16 @@ sponge.function.VelocityGenerator
 
         参数：
             - **temperature** (float) - 温度值。
+
+    .. py:method:: construct(shape: tuple, atom_mass: Tensor, mask: Tensor = None)
+
+        随机生成系统中原子的速度。
+
+        参数：
+            - **shape** (tuple) - 速度的shape
+            - **atom_mass** (Tensor) - 系统的原子质量。张量的shape为 :math:`(B, A)` ，数据类型为float。
+                                       其中，B表示batchsize，例如，模拟中的步行者数量。A表示原子的数量。
+            - **mask** (Tensor) - 原子的掩码。张量的shape为 :math:`(B, A)` ，数据类型为bool。默认值： ``None``。
+
+        返回：
+            Tensor。速度。张量的shape为 :math:`(B, A, D)` ，数据类型为float。其中D表示仿真系统的空间维度。通常为3。
