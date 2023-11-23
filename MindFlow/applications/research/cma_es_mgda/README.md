@@ -75,6 +75,12 @@ $$
 (x, y, t) \mapsto (u, v, p)
 $$
 
+#### Introduction to the Reynolds-averaged Navier-Stokes equation
+
+The Reynolds-averaged Navier-Stokes equation is used to simulate the periodic mountain flow problem in the field of fluid mechanics and meteorology, studying the behavior of air or fluid flow over periodic mountain topography. The Reynolds-averaged momentum equation is given by:
+
+$$\rho \bar{u}_j \frac{\partial \bar{u}_i}{\partial x_j}=\rho {\bar{f}}_i + \frac{\partial}{\partial x_j}\left[-\bar{p} {\delta \_ {i j}+}\mu\left(\frac{\partial \bar{u}_i}{\partial x_j}+\frac{\partial \bar{u}_j}{\partial x_i}\right)-\rho \overline{u_i^{\prime} u_j^{\prime}}\right]$$
+
 ## Quick start
 
 You can download dataset from [physics_driven/burgers_pinns/dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/dataset/)、[physics_driven/cylinder_flow_pinns/dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/flow_past_cylinder/dataset/)  for model evaluation. Save these dataset at `./dataset`.
@@ -82,7 +88,7 @@ You can download dataset from [physics_driven/burgers_pinns/dataset](https://dow
 ### Run Option 1: Call `train.py` from command line
 
 ```shell
-python --case burgers --mode GRAPH --device_target Ascend --device_id 0 --config_file_path ./configs/burgers.yaml
+python train.py --case burgers --mode GRAPH --device_target Ascend --device_id 0 --config_file_path ./configs/burgers.yaml
 ```
 
 where:
@@ -138,33 +144,48 @@ After the training of 160 epochs, the predicted value of the model is matched wi
 
 ### Burgers equation
 
-|        Parameter         |        Ascend               |    GPU       |
-|:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend      |      NVIDIA V100, Memory：32G       |
-|     MindSpore version   |        2.0.0             |      2.0.0       |
-|        Train loss      |        6.44e-4               |       7.28e-4       |
-|        Validation loss      |        0.020              |       0.058       |
-|        Speed          |     970ms/step        |    1330ms/step  |
+|       Parameter        |                            NPU                            |                             GPU                              |
+| :--------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|        Hardware        |       Ascend, 32GB Memory       |                   NVIDIA V100, 32GB Memory                   |
+|   MindSpore Version    |                            2.0.0                             |                            2.0.0                             |
+|        Dataset         | [Burgers dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/) | [Burgers dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/) |
+|       Parameters       |                             2751                             |                             2751                             |
+|  Training Parameters   |       batch_size=8192, steps_per_epoch=1, epochs=4000        |       batch_size=8192, steps_per_epoch=1, epochs=4000        |
+|   Testing Parameters   |                   batch_size=8192 steps=1                    |                   batch_size=8192 steps=1                    |
+|       Optimizer        |                         cma_es_mgda                          |                         cma_es_mgda                          |
+|  Training Loss (MSE)   |                           6.44e-4                            |                           7.28e-4                            |
+| Validation Loss (RMSE) |                            0.020                             |                            0.058                             |
+|    Speed (ms/step)     |                             970                              |                             1330                             |
 
-### Navier-Stokes equations
+### Navier-Stokes equation
 
-|        Parameter         |        Ascend               |    GPU       |
-|:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend      |      NVIDIA V100, Memory32G       |
-|     MindSpore version   |        2.0.0             |      2.0.0       |
-|        Train loss      |        3.46e-4               |       3.23e-4      |
-|        Validation loss      |        0.091              |       0.124       |
-|        Speed          |     1220ms/step        |    1150ms/step  |
+|       Parameter        | NPU                                                       | GPU                                                          |
+| :--------------------: | :------------------------------------------------------------: | :------------------------------------------------------------: |
+|        Hardware        | Ascend, 32GB Memory             | NVIDIA V100, 32GB Memory                                     |
+|   MindSpore Version    | 2.0.0                                                        | 2.0.0                                                        |
+|        Dataset         | [Cylinder Flow dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/flow_past_cylinder/dataset/) | [Cylinder Flow dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/flow_past_cylinder/dataset/) |
+|       Parameters       | 17411                                                        | 17411                                                        |
+|  Training Parameters   | batch_size=8192, steps_per_epoch=2, epochs=4000              | batch_size=8192, steps_per_epoch=2, epochs=4000              |
+|   Testing Parameters   | batch_size=8192 steps=2                                      | batch_size=8192 steps=2                                      |
+|       Optimizer        | cma_es_mgda                                                  | cma_es_mgda                                                  |
+|  Training Loss (MSE)   | 3.46e-4                                                      | 3.23e-4                                                      |
+| Validation Loss (RMSE) | 0.091                                                        | 0.124                                                        |
+|    Speed (ms/step)     | 1220                                                         | 1150                                                         |
 
-### Raynold-averaged Navier-Stokes equations
+### Navier-Stokes equation
 
-|        Parameter         |        Ascend               |    GPU       |
-|:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend      |      NVIDIA V100, Memory32G       |
-|     MindSpore version   |        2.0.0             |      2.0.0       |
-|        Train loss      |        8.92e-05               |       1.06e-4      |
-|        Validation loss      |        0.115              |       0.125       |
-|        Speed          |     1650ms/step        |    2250ms/step  |
+|       Parameter        | NPU                                                       | GPU                                                          |
+| :--------------------: | :------------------------------------------------------------: | :------------------------------------------------------------: |
+|        Hardware        | Ascend, 32GB Memory             | NVIDIA V100, 32GB Memory                                     |
+|   MindSpore Version    | 2.0.0                                                        | 2.0.0                                                        |
+|        Dataset         | [Periodic Hill dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/periodic_hill_2d/) | [Periodic Hill dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/periodic_hill_2d/) |
+|       Parameters       | 17383                                                        | 17383                                                        |
+|  Training Parameters   | batch_size=1000, steps_per_epoch=80, epochs=160              | batch_size=1000, steps_per_epoch=80, epochs=160              |
+|   Testing Parameters   | batch_size=20000 steps=4                                     | batch_size=20000 steps=4                                     |
+|       Optimizer        | cma_es_mgda                                                  | cma_es_mgda                                                  |
+|  Training Loss (MSE)   | 8.92e-05                                                     | 1.06e-4                                                      |
+| Validation Loss (RMSE) | 0.115                                                        | 0.125                                                        |
+|    Speed (ms/step)     | 1650                                                         | 2250                                                         |
 
 ## Contributor
 

@@ -18,6 +18,8 @@ import numpy as np
 from mindspore import Tensor, ops
 from mindspore import dtype as mstype
 
+from mindflow.utils import print_log
+
 
 def flatten_grads(grads):
     r"""
@@ -91,7 +93,7 @@ def gradient_normalizers(grads, losses, normalization_type):
         for t in range(grads_count):
             result_grads.append(grads[t])
     else:
-        print('ERROR: Invalid Normalization Type')
+        print_log('ERROR: Invalid Normalization Type')
     return result_grads
 
 

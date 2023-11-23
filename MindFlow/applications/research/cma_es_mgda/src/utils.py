@@ -29,6 +29,7 @@ from mindspore import Tensor
 from mindspore import dtype as mstype
 
 from mindflow.cell import MultiScaleFCSequential
+from mindflow.utils import print_log
 
 from .model import Burgers1D, NavierStokes2D, NavierStokesRANS
 from .dataset import create_burgers_train_dataset, create_burgers_test_dataset
@@ -93,7 +94,8 @@ def get_burgers_prediction(model, inputs, label_shape):
         prediction[index: index_end, :] = model(test_batch).asnumpy()
         index = index_end
 
-    print("predict total time: {} ms".format((time.time() - time_beg)*1000))
+    print_log("predict total time: {} ms".format(
+        (time.time() - time_beg)*1000))
     prediction = prediction.reshape(label_shape)
     prediction = prediction.reshape((-1, label_shape[1]))
     return prediction
@@ -113,8 +115,9 @@ def calculate_burgers_l2_error(model, inputs, label):
     prediction = get_burgers_prediction(model, inputs, label_shape)
     label = label.reshape((-1, label_shape[1]))
     l2_error = calculate_burgers_error(label, prediction)
-    print("    l2_error: ", l2_error)
-    print("==================================================================================================")
+    print_log("    l2_error: ", l2_error)
+    print_log(
+        "==================================================================================================")
 
 
 plt.rcParams['figure.dpi'] = 300
@@ -305,12 +308,14 @@ def get_cylinder_flow_prediction(model, inputs, label_shape, config):
 
     index = 0
     while index < inputs.shape[0]:
-        index_end = min(index + config["test_batch_size"], inputs.shape[0])
+        index_end = min(index + config["data"]
+                        ["test_batch_size"], inputs.shape[0])
         test_batch = Tensor(inputs[index: index_end, :], mstype.float32)
         prediction[index: index_end, :] = model(test_batch).asnumpy()
         index = index_end
 
-    print("    predict total time: {} ms".format((time.time() - time_beg)*1000))
+    print_log("    predict total time: {} ms".format(
+        (time.time() - time_beg)*1000))
     prediction = prediction.reshape(label_shape)
     prediction = prediction.reshape((-1, output_size))
     return prediction
@@ -333,9 +338,10 @@ def calculate_cylinder_flow_l2_error(model, inputs, label, config):
     output_size = config.get("output_size", 3)
     label = label.reshape((-1, output_size))
     l2_errors = calculate_cylinder_flow_error(label, prediction)
-    print("l2_error, U: ", l2_errors.l2_error_u, ", V: ", l2_errors.l2_error_v, ", P: ", l2_errors.l2_error_p,
-          ", Total: ", l2_errors.l2_error)
-    print("==================================================================================================")
+    print_log("l2_error, U: ", l2_errors.l2_error_u, ", V: ", l2_errors.l2_error_v, ", P: ", l2_errors.l2_error_p,
+              ", Total: ", l2_errors.l2_error)
+    print_log(
+        "==================================================================================================")
 
 
 def calculate_periodic_hill_error(label, prediction):
@@ -379,12 +385,14 @@ def get_periodic_hill_prediction(model, inputs, label_shape, config):
 
     index = 0
     while index < inputs.shape[0]:
-        index_end = min(index + config['test_batch_size'], inputs.shape[0])
+        index_end = min(index + config["data"]
+                        ['test_batch_size'], inputs.shape[0])
         test_batch = Tensor(inputs[index: index_end, :], mstype.float32)
         prediction[index: index_end, :] = model(test_batch).asnumpy()
         index = index_end
 
-    print("    predict total time: {} ms".format((time.time() - time_beg)*1000))
+    print_log("    predict total time: {} ms".format(
+        (time.time() - time_beg)*1000))
     prediction = prediction.reshape(label_shape)
     prediction = prediction.reshape((-1, output_size))
     return prediction
@@ -407,11 +415,13 @@ def calculate_periodic_hill_l2_error(model, inputs, label, config):
     output_size = config["model"]["out_channels"]
     label = label.reshape((-1, output_size))
     l2_errors = calculate_periodic_hill_error(label, prediction)
-    print("    l2_error, U: ", l2_errors.l2_error_u, ", V: ",
-          l2_errors.l2_error_v, ", P: ", l2_errors.l2_error_p)
-    print("    l2_error, uu: ", l2_errors.l2_error_uu, ", uv: ", l2_errors.l2_error_uv, ", vv: ", l2_errors.l2_error_vv,
-          ", Total: ", l2_errors.l2_error)
-    print("==================================================================================================")
+    print_log("    l2_error, U: ", l2_errors.l2_error_u, ", V: ",
+              l2_errors.l2_error_v, ", P: ", l2_errors.l2_error_p)
+    print_log("    l2_error, uu: ", l2_errors.l2_error_uu, ", \
+              uv: ", l2_errors.l2_error_uv, ", vv: ", l2_errors.l2_error_vv,
+              ", Total: ", l2_errors.l2_error)
+    print_log(
+        "==================================================================================================")
 
 
 def visual_periodic_hill(model, epochs, input_data, label, path="./images"):
@@ -456,9 +466,10 @@ create_test_dataset_hooks = {'burgers': create_burgers_test_dataset,
 
 def create_dataset(case_name, config):
     r"""create dataset for training loss and calculating loss"""
+    data_config = config["data"]
     pre_train_dataset = create_dataset_hooks[case_name](config)
     if case_name != "periodic_hill":
-        train_dataset = pre_train_dataset.create_dataset(batch_size=config["train_batch_size"],
+        train_dataset = pre_train_dataset.create_dataset(batch_size=data_config["train_batch_size"],
                                                          shuffle=True,
                                                          prebatched_data=True,
                                                          drop_remainder=True)
@@ -467,7 +478,7 @@ def create_dataset(case_name, config):
     # create dataset for calculating loss
     pre_loss_dataset = create_dataset_hooks[case_name](config)
     if case_name != "periodic_hill":
-        loss_dataset = pre_loss_dataset.create_dataset(batch_size=config["test_batch_size"],
+        loss_dataset = pre_loss_dataset.create_dataset(batch_size=data_config["test_batch_size"],
                                                        shuffle=True,
                                                        prebatched_data=True,
                                                        drop_remainder=True)
@@ -475,28 +486,30 @@ def create_dataset(case_name, config):
         loss_dataset = pre_loss_dataset
     # create dataset for test
     inputs, label = create_test_dataset_hooks[case_name](
-        config["test_data_path"])
+        data_config["test_data_path"])
     return train_dataset, loss_dataset, inputs, label
 
 
 def create_model(case_name, config):
     r"""create model"""
     if case_name == "cylinder_flow":
-        coord_min = np.array(config["geometry"]["coord_min"] +
-                             [config["geometry"]["time_min"]]).astype(np.float32)
-        coord_max = np.array(config["geometry"]["coord_max"] +
-                             [config["geometry"]["time_max"]]).astype(np.float32)
+        geometry_config = config["geometry"]
+        coord_min = np.array(geometry_config["coord_min"] +
+                             [geometry_config["time_min"]]).astype(np.float32)
+        coord_max = np.array(geometry_config["coord_max"] +
+                             [geometry_config["time_max"]]).astype(np.float32)
         input_center = list(0.5 * (coord_max + coord_min))
         input_scale = list(2.0 / (coord_max - coord_min))
     else:
         input_scale = None
         input_center = None
-    model = MultiScaleFCSequential(in_channels=config["model"]["in_channels"],
-                                   out_channels=config["model"]["out_channels"],
-                                   layers=config["model"]["layers"],
-                                   neurons=config["model"]["neurons"],
-                                   residual=config["model"]["residual"],
-                                   act=config["model"]["activation"],
+    model_config = config["model"]
+    model = MultiScaleFCSequential(in_channels=model_config["in_channels"],
+                                   out_channels=model_config["out_channels"],
+                                   layers=model_config["layers"],
+                                   neurons=model_config["neurons"],
+                                   residual=model_config["residual"],
+                                   act=model_config["activation"],
                                    num_scales=1,
                                    input_scale=input_scale,
                                    input_center=input_center)
@@ -520,7 +533,7 @@ def visual(case_name, model, epoch, config, inputs, label):
     r"""visualize the result"""
     if case_name == "burgers":
         visual_burgers(model=model, epochs=epoch,
-                       resolution=config["visual_resolution"])
+                       resolution=config["summary"]["visual_resolution"])
     elif case_name == "cylinder_flow":
         visual_cylinder_flow(
             model=model, epochs=epoch, input_data=inputs, label=label)

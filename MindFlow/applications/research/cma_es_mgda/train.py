@@ -24,6 +24,7 @@ import numpy as np
 from mindspore import context, nn, set_seed, save_checkpoint, data_sink
 from mindspore.amp import DynamicLossScaler, auto_mixed_precision
 from mindflow.utils import load_yaml_config
+from mindflow.utils import print_log, log_config, log_timer
 
 from src import create_dataset, create_model
 from src import get_losses, evaluate, visual
@@ -51,12 +52,19 @@ def parse_args():
     return result_args
 
 
+@log_timer
 def train(args):
     '''Train and evaluate the network'''
     # load configuration
     case_name = args.case
     config = load_yaml_config(args.config_file_path)
-    epochs = config["train_epochs"]
+    model_config = config["model"]
+    optimizer_config = config["optimizer"]
+    cma_es_config = config["cmaes"]
+    mgda_config = config["mgda"]
+    summary_config = config["summary"]
+
+    epochs = optimizer_config["train_epochs"]
 
     # create dataset for training, calculating loss and testing
     train_dataset, loss_dataset, inputs, label = create_dataset(
@@ -64,11 +72,11 @@ def train(args):
 
     model = create_model(case_name, config)
     optimizer = nn.Adam(model.trainable_params(),
-                        config["optimizer"]["initial_lr"])
+                        optimizer_config["initial_lr"])
 
     if use_ascend:
         loss_scaler = DynamicLossScaler(1024, 2, 100)
-        auto_mixed_precision(model, config["amp_level"])
+        auto_mixed_precision(model, model_config["amp_level"])
     else:
         loss_scaler = None
 
@@ -85,11 +93,11 @@ def train(args):
 
     # define cma-es strategy
     cma_es = cma.CMAEvolutionStrategy(
-        params, config["cmaes"]["std"], {'seed': 0})
+        params, cma_es_config["std"], {'seed': 0})
 
     # create ckpt dir
-    if not os.path.exists(os.path.abspath(config["save_ckpt_path"])):
-        os.makedirs(os.path.abspath(config["save_ckpt_path"]))
+    if not os.path.exists(os.path.abspath(summary_config["save_ckpt_path"])):
+        os.makedirs(os.path.abspath(summary_config["save_ckpt_path"]))
 
     # train loop for cma_es_mgda
     for epoch in range(1, epochs + 1):
@@ -104,7 +112,7 @@ def train(args):
 
         # step2: random choose some solutions and apply multi-gradient descent algorithm to chosen solutions
         steps_per_epochs = train_dataset.get_dataset_size()
-        mgda_number = round(config["mgda"]["ratio"] * cma_es.popsize)
+        mgda_number = round(mgda_config["ratio"] * cma_es.popsize)
         popn_list = np.arange(0, mgda_number, 1).tolist()
         random_index = random.sample(popn_list, mgda_number)
         for index in random_index:
@@ -128,23 +136,23 @@ def train(args):
         step_train_loss = cma_es.best.f
 
         # current epoch loss
-        print(
+        print_log(
             f"epoch: {epoch} train loss: {step_train_loss} epoch time: {(time.time() - time_beg) * 1000 :.3f}ms")
 
         # set model to eval mode
         model.set_train(False)
 
         # evaluate best_params if current epoch reaches setting
-        if epoch % config["eval_interval_epochs"] == 0:
+        if epoch % summary_config["eval_interval_epochs"] == 0:
             model.trainable_parameters = best_params
             evaluate(case_name, model, inputs, label, config)
 
         # save checkpoint
-        if epoch % config["save_checkpoint_epochs"] == 0:
+        if epoch % summary_config["save_checkpoint_epochs"] == 0:
             ckpt_name = "ns-{}.ckpt".format(epoch + 1)
             model.trainable_parameters = best_params
             save_checkpoint(model, os.path.join(
-                config["save_ckpt_path"], ckpt_name))
+                summary_config["save_ckpt_path"], ckpt_name))
             visual(case_name, model, epoch, config, inputs, label)
 
     # visual best params
@@ -158,11 +166,12 @@ if __name__ == '__main__':
                         else context.PYNATIVE_MODE,
                         device_target=input_args.device_target,
                         device_id=input_args.device_id)
-    print(
+    log_config('./logs', f'{input_args.case}')
+    print_log(
         f"Running in {input_args.mode.upper()} mode, using device id: {input_args.device_id}.")
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
-    print(use_ascend)
-    print("pid:", os.getpid())
+    print_log(use_ascend)
+    print_log("pid:", os.getpid())
     start_time = time.time()
     train(input_args)
-    print("End-to-End total time: {} s".format(time.time() - start_time))
+    print_log("End-to-End total time: {} s".format(time.time() - start_time))

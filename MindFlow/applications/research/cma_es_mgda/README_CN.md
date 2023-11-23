@@ -79,7 +79,7 @@ $$
 
 雷诺平均Navier-Stokes方程求解周期山流动问题是流体力学和气象学领域中的一个经典数值模拟案例，用于研究空气或流体在周期性山地地形上的流动行为。雷诺平均动量方程如下：
 
-$$\rho \bar{u}_j \frac{\partial \bar{u}_i}{\partial x_j}=\rho \bar{f}i+\frac{\partial}{\partial x_j}\left[-\bar{p} \delta{i j}+\mu\left(\frac{\partial \bar{u}_i}{\partial x_j}+\frac{\partial \bar{u}_j}{\partial x_i}\right)-\rho \overline{u_i^{\prime} u_j^{\prime}}\right]$$
+$$\rho \bar{u}_j \frac{\partial \bar{u}_i}{\partial x_j}=\rho \bar{f}_i + \frac{\partial}{\partial x_j}\left[-\bar{p} {\delta \_ {i j}+}\mu\left(\frac{\partial \bar{u}_i}{\partial x_j}+\frac{\partial \bar{u}_j}{\partial x_i}\right)-\rho \overline{u_i^{\prime} u_j^{\prime}}\right]$$
 
 ## 快速开始
 
@@ -88,7 +88,7 @@ $$\rho \bar{u}_j \frac{\partial \bar{u}_i}{\partial x_j}=\rho \bar{f}i+\frac{\pa
 ### 训练方式一：在命令行中调用`train.py`脚本
 
 ```shell
-python --case burgers --mode GRAPH --device_target Ascend --device_id 0 --config_file_path ./configs/burgers.yaml
+python train.py --case burgers --mode GRAPH --device_target Ascend --device_id 0 --config_file_path ./configs/burgers.yaml
 ```
 
 其中，
@@ -130,7 +130,7 @@ python --case burgers --mode GRAPH --device_target Ascend --device_id 0 --config
 
 ### 雷诺平均Navier-Stokes方程上的验证效果
 
-对相同神经网络组成（5层神经网络、每层64个神经元）的PINNS进行个epoch的训练，蓝色曲线为采用本方法（cma_es遗传算法与多目标梯度下降相结合方法）的loss曲线，橙色曲线为采用Adam进行训练的loss曲线，充分说明了本方法的有效性：
+对相同神经网络组成（5层神经网络、每层64个神经元）的PINNS进行160个epoch的训练，蓝色曲线为采用本方法（cma_es遗传算法与多目标梯度下降相结合方法）的loss曲线，橙色曲线为采用Adam进行训练的loss曲线，充分说明了本方法的有效性：
 
 ![periodic_hill](images/periodic_hill_contrast.png)
 
@@ -142,33 +142,48 @@ python --case burgers --mode GRAPH --device_target Ascend --device_id 0 --config
 
 ### Burgers方程
 
-|        参数         |        Ascend               |    GPU       |
-|:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend      |      NVIDIA V100, 显存32G       |
-|     MindSpore版本   |        2.0.0             |      2.0.0       |
-|        训练损失      |        6.44e-4               |       7.28e-4       |
-|        验证损失      |        0.020              |       0.058       |
-|        速度          |     970毫秒/步      |   1330毫秒/步  |
+|      参数      |                            NPU                            |                             GPU                              |
+| :------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|    硬件资源    |           Ascend, 显存32G           |                     NVIDIA V100 显存32G                      |
+| MindSpore版本  |                            2.0.0                             |                            2.0.0                             |
+|     数据集     | [Burgers数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/) | [Burgers数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/) |
+|     参数量     |                             2751                             |                             2751                             |
+|    训练参数    |       batch_size=8192, steps_per_epoch=1, epochs=4000        |       batch_size=8192, steps_per_epoch=1, epochs=4000        |
+|    测试参数    |                   batch_size=8192, steps=1                    |                   batch_size=8192, steps=1                    |
+|     优化器     |                             cma_es_mgda                             |                             cma_es_mgda                             |
+| 训练损失(MSE)  |                           6.44e-4                            |                           7.28e-4                            |
+| 验证损失(RMSE) |                            0.020                             |                            0.058                             |
+| 速度(ms/step)  |                             970                              |                             1330                             |
 
 ### Navier-Stokes方程
 
-|        参数         |        Ascend               |    GPU       |
-|:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend      |      NVIDIA V100, 显存32G       |
-|     MindSpore版本   |        2.0.0             |      2.0.0       |
-|        训练损失      |        3.46e-4               |       3.23e-4      |
-|        验证损失      |        0.091              |       0.124       |
-|        速度          |     1220毫秒/步       |   1150毫秒/步  |
+|      参数      | NPU                                                       | GPU                                                          |
+| :------------: | :------------------------------------------------------------: | :------------------------------------------------------------: |
+|    硬件资源    | Ascend, 显存32G                     | NVIDIA V100 显存32G                                          |
+| MindSpore版本  | 2.0.0                                                        | 2.0.0                                                        |
+|     数据集     | [cylinder_flow数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/flow_past_cylinder/dataset/) | [cylinder_flow数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/flow_past_cylinder/dataset/) |
+|     参数量     | 17411                                                        | 17411                                                        |
+|    训练参数    | batch_size=8192, steps_per_epoch=2, epochs=4000              | batch_size=8192, steps_per_epoch=2, epochs=4000              |
+|    测试参数    | batch_size=8192, steps=2                                      | batch_size=8192, steps=2                                      |
+|     优化器     | cma_es_mgda                                                         | cma_es_mgda                                                         |
+| 训练损失(MSE)  | 3.46e-4                                                      | 3.23e-4                                                      |
+| 验证损失(RMSE) | 0.091                                                        | 0.124                                                        |
+| 速度(ms/step)  | 1220                                                         | 1150                                                         |
 
-### 雷诺平均 Navier-Stokes方程
+### 雷诺平均Navier-Stokes方程方程
 
-|        参数         |        Ascend               |    GPU       |
-|:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend      |      NVIDIA V100, 显存32G       |
-|     MindSpore版本   |        2.0.0             |      2.0.0       |
-|        训练损失      |        8.92e-05          |   1.06e-4       |
-|        验证损失      |           0.115           |   0.125           |
-|        速度          |     1650毫秒/步       |   2250毫秒/步  |
+|      参数      | NPU                                                       | GPU                                                          |
+| :------------: | :------------------------------------------------------------: | :------------------------------------------------------------: |
+|    硬件资源    | Ascend, 显存32G                     | NVIDIA V100 显存32G                                          |
+| MindSpore版本  | 2.0.0                                                        | 2.0.0                                                        |
+|     数据集     | [Periodic_hill数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/periodic_hill_2d/) | [Periodic_hill数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/periodic_hill_2d/) |
+|     参数量     | 17383                                                        | 17383                                                        |
+|    训练参数    | batch_size=1000, steps_per_epoch=80, epochs=160              | batch_size=1000, steps_per_epoch=80, epochs=160              |
+|    测试参数    | batch_size=20000, steps=4                                     | batch_size=20000, steps=4                                     |
+|     优化器     | cma_es_mgda                                                         | cma_es_mgda                                                         |
+| 训练损失(MSE)  | 8.92e-05                                                     | 1.06e-4                                                      |
+| 验证损失(RMSE) | 0.115                                                        | 0.125                                                        |
+| 速度(ms/step)  | 1650                                                         | 2250                                                         |
 
 ## Contributor
 

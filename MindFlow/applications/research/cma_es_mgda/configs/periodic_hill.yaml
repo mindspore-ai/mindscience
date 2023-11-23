@@ -6,7 +6,7 @@ model:
   layers: 5
   neurons: 64
   residual: false
-amp_level: O3
+  amp_level: O3
 data:
   domain:
     size: 8192
@@ -24,7 +24,12 @@ data:
     size: 8192
     random_sampling: true
     sampler: "uniform"
+  train_batch_size: 1000
+  test_batch_size: 20000
+  train_data_path: "./dataset"
+  test_data_path: "./dataset"
 optimizer:
+  train_epochs: 160
   initial_lr: 0.001
   warmup_epochs: 1
   weight_decay: 0.0
@@ -36,18 +41,14 @@ cmaes:
 mgda:
   norm_type: "l2" # other choice l2/loss/loss+/none
   ratio: 0.1
-train_batch_size: 1000
-test_batch_size: 20000
-train_data_path: "/home/LAB/liulin/NRE/dataset"
-test_data_path: "/home/LAB/liulin/NRE/dataset"
-train_epochs: 100
-eval_interval_epochs: 10
-save_checkpoint_epochs: 50
-visual_resolution: 100  
-keep_checkpoint_max: 10
-train_with_eval: true
-load_ckpt: false
-save_ckpt: true
-save_ckpt_path: "./ckpt"
-summary_dir: "./summary"
-visual_dir: "./vision"
+summary:
+  eval_interval_epochs: 10
+  save_checkpoint_epochs: 50
+  visual_resolution: 100
+  keep_checkpoint_max: 10
+  train_with_eval: true
+  load_ckpt: false
+  save_ckpt: true
+  save_ckpt_path: "./ckpt"
+  summary_dir: "./summary"
+  visual_dir: "./vision"

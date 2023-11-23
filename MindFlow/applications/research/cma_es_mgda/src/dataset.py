@@ -22,6 +22,7 @@ from mindspore import dtype as mstype
 from mindflow.data import Dataset, ExistedDataConfig
 from mindflow.geometry import Rectangle, Interval, TimeDomain, GeometryWithTime
 from mindflow.geometry import generate_sampling_config
+from mindflow.utils import print_log
 
 
 def create_burgers_train_dataset(config):
@@ -56,12 +57,12 @@ def create_burgers_test_dataset(test_data_path):
 def create_cylinder_flow_test_dataset(test_data_path):
     """load labeled data for evaluation"""
     # check data
-    print("get dataset path: {}".format(test_data_path))
+    print_log("get dataset path: {}".format(test_data_path))
     paths = [test_data_path + '/eval_points.npy',
              test_data_path + '/eval_label.npy']
     inputs = np.load(paths[0])
     label = np.load(paths[1])
-    print("check eval dataset length: {}".format(inputs.shape))
+    print_log("check eval dataset length: {}".format(inputs.shape))
     return inputs, label
 
 
@@ -79,8 +80,8 @@ def create_cylinder_flow_train_dataset(config):
 
     geom_dict = {domain_region: ["domain"]}
 
-    data_path = config["train_data_path"]
-    print(data_path)
+    data_path = data_config["train_data_path"]
+    print_log(data_path)
     config_bc = ExistedDataConfig(name="bc",
                                   data_dir=[data_path + "/bc_points.npy",
                                             data_path + "/bc_label.npy"],
@@ -128,8 +129,9 @@ def create_periodic_hill_test_dataset(test_data_path):
 
 def create_periodic_hill_train_dataset(config):
     """create training dataset by online sampling"""
-    train_data_path = config["train_data_path"]
-    batch_size = config["train_batch_size"]
+    data_config = config["data"]
+    train_data_path = data_config["train_data_path"]
+    batch_size = data_config["train_batch_size"]
     # shape=(700*300, 10)  x, y, u, v, p, uu, uv, vv, rho, nu
     data = np.load(os.path.join(train_data_path, "periodic_hill.npy"))
     data = np.reshape(data, (300, 700, 10)).astype(np.float32)
