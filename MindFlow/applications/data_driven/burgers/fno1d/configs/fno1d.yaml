@@ -2,25 +2,25 @@ model:
   name: FNO1D
   in_channels: 1
   out_channels: 1
-  resolution: 1024
   modes: 16
-  width: 64
-  depth: 4
+  hidden_channels: 64
+  depths: 4
 data:
   name: "burgers1d"
-  path: "./dataset"
-  train_size: 1000
-  test_size: 200
+  root_dir: "./dataset"
+  train:
+    num_samples: 1000
+  test:
+    num_samples: 200
   batch_size: 8
   resolution: 1024
-  channels: 1
   t_in: 1
   t_out: 1
-  sub: 8
+  step: 8
 optimizer:
-  initial_lr: 0.001
-  train_epochs: 100
-  valid_epochs: 10
-eval_interval: 10
-epochs: 100
-summary_dir: "./summary"
+  learning_rate: 0.001
+  epochs: 100
+summary:
+  test_interval: 10
+  summary_dir: "./summary"
+  ckpt_dir: "./checkpoints"

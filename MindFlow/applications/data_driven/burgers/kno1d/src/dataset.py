@@ -24,15 +24,15 @@ from mindflow.utils import print_log
 EPS = 1e-8
 
 
-def create_npy(config, sub=32):
+def create_npy(config, step=32):
     '''create inputs and label data for trainset and testset'''
-    data_path = config["path"]
-    train_size = config["train_size"]
-    test_size = config["test_size"]
-    s = 2 ** 13 // config["sub"]
+    data_dir = config["root_dir"]
+    train_size = config["train"]["num_samples"]
+    test_size = config["test"]["num_samples"]
+    s = 2 ** 13 // config["step"]
 
-    train_path = os.path.join(data_path, "train")
-    test_path = os.path.join(data_path, "test")
+    train_path = os.path.join(data_dir, "train")
+    test_path = os.path.join(data_dir, "test")
 
     if not os.path.exists(train_path):
         os.makedirs(train_path)
@@ -42,13 +42,13 @@ def create_npy(config, sub=32):
     if not os.path.exists(test_path):
         os.makedirs(test_path)
 
-    inputs = np.load(os.path.join(data_path, "inputs.npy"))
-    label = np.load(os.path.join(data_path, "label.npy"))
+    inputs = np.load(os.path.join(data_dir, "inputs.npy"))
+    label = np.load(os.path.join(data_dir, "label.npy"))
 
-    x_train = inputs[:train_size, :][:, ::sub]
-    y_train = label[:train_size, :][:, ::sub]
-    x_test = inputs[-test_size:, :][:, ::sub]
-    y_test = label[-test_size:, :][:, ::sub]
+    x_train = inputs[:train_size, :][:, ::step]
+    y_train = label[:train_size, :][:, ::step]
+    x_test = inputs[-test_size:, :][:, ::step]
+    y_test = label[-test_size:, :][:, ::step]
     x_train = x_train.reshape(train_size, s, 1)
     x_test = x_test.reshape(test_size, s, 1)
 
@@ -70,13 +70,13 @@ def create_npy(config, sub=32):
 def create_training_dataset(config, shuffle=True, drop_remainder=False, is_train=True):
     """create dataset"""
     create_npy(config)
-    data_path = config["path"]
+    data_dir = config["root_dir"]
     if is_train:
-        train_path = os.path.join(data_path, "train")
+        train_path = os.path.join(data_dir, "train")
         input_path = os.path.join(train_path, "inputs.npy")
         label_path = os.path.join(train_path, "label.npy")
     else:
-        test_path = os.path.join(data_path, "test")
+        test_path = os.path.join(data_dir, "test")
         input_path = os.path.join(test_path, "inputs.npy")
         label_path = os.path.join(test_path, "label.npy")
     print_log('input_path: ', np.load(input_path).shape)

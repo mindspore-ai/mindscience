@@ -24,7 +24,8 @@ def create_test_dataset(test_data_path):
     """load labeled data for evaluation"""
     # check data
     print_log("get dataset path: {}".format(test_data_path))
-    paths = [test_data_path + '/eval_points.npy', test_data_path + '/eval_label.npy']
+    paths = [test_data_path + '/eval_points.npy',
+             test_data_path + '/eval_label.npy']
     inputs = np.load(paths[0])
     label = np.load(paths[1])
     print_log("check eval dataset length: {}".format(inputs.shape))
@@ -36,22 +37,26 @@ def create_training_dataset(config):
     geom_config = config["geometry"]
     data_config = config["data"]
 
-    time_interval = TimeDomain("time", geom_config["time_min"], geom_config["time_max"])
-    spatial_region = Rectangle("rect", geom_config["coord_min"], geom_config["coord_max"])
+    time_interval = TimeDomain(
+        "time", geom_config["time_min"], geom_config["time_max"])
+    spatial_region = Rectangle(
+        "rect", geom_config["coord_min"], geom_config["coord_max"])
     domain_region = GeometryWithTime(spatial_region, time_interval)
     domain_region.set_sampling_config(generate_sampling_config(data_config))
 
     geom_dict = {domain_region: ["domain"]}
 
-    data_path = config["train_data_path"]
-    print_log(data_path)
+    data_dir = data_config["root_dir"]
+    print_log(data_dir)
     config_bc = ExistedDataConfig(name="bc",
-                                  data_dir=[data_path + "/bc_points.npy", data_path + "/bc_label.npy"],
+                                  data_dir=[os.path.join(
+                                      data_dir, "bc_points.npy"), os.path.join(data_dir, "bc_label.npy")],
                                   columns_list=["points", "label"],
                                   constraint_type="BC",
                                   data_format="npy")
     config_ic = ExistedDataConfig(name="ic",
-                                  data_dir=[data_path + "/ic_points.npy", data_path + "/ic_label.npy"],
+                                  data_dir=[os.path.join(
+                                      data_dir, "ic_points.npy"), os.path.join(data_dir, "ic_label.npy")],
                                   columns_list=["points", "label"],
                                   constraint_type="IC",
                                   data_format="npy")

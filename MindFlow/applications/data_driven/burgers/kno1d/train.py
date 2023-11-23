@@ -39,9 +39,6 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Burgers 1D problem')
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Context mode, support 'GRAPH', 'PYNATIVE'")
-    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                        help="Whether to save intermediate compilation graphs")
-    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
     parser.add_argument("--device_id", type=int, default=1,
@@ -62,7 +59,7 @@ def train(input_args):
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
-
+    summary_params = config["summary"]
     # create training dataset
     train_dataset = create_training_dataset(data_params, shuffle=True)
 
@@ -87,7 +84,7 @@ def train(input_args):
     eval_size = eval_dataset.get_dataset_size()
     print_log(f"number of steps_per_epochs: {train_size}")
 
-    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["lr"],
+    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["learning_rate"],
                                         last_epoch=optimizer_params["epochs"],
                                         steps_per_epoch=train_size,
                                         warmup_epochs=1)
@@ -133,7 +130,7 @@ def train(input_args):
     train_sink = data_sink(train_step, train_dataset, sink_size=1)
     eval_sink = data_sink(eval_step, eval_dataset, sink_size=1)
 
-    summary_dir = os.path.join(config["summary_dir"], model_name)
+    summary_dir = summary_params["summary_dir"]
     os.makedirs(summary_dir, exist_ok=True)
     print_log(summary_dir)
 
@@ -156,7 +153,7 @@ def train(input_args):
         print_log(f"epoch: {epoch} recons loss: {l_recons_train:>8f} pred loss: {l_pred_train:>8f}"
                   f" train loss: {l_train} epoch time: {epoch_seconds:.3f}s step time: {step_seconds:5.3f}ms")
 
-        if epoch % config['eval_interval'] == 0:
+        if epoch % summary_params['test_interval'] == 0:
             eval_time_start = time.time()
             l_recons_eval = 0.0
             l_pred_eval = 0.0
@@ -178,7 +175,7 @@ def train(input_args):
 
     # Infer and plot some data.
     inputs = np.load(os.path.join(
-        data_params["path"], "test/inputs.npy"))  # (200,1024,1)
+        data_params["root_dir"], "test/inputs.npy"))  # (200,1024,1)
     problem = BurgersWithLoss(model, 10, loss_fn)
     visual(problem, inputs)
 
@@ -189,7 +186,6 @@ if __name__ == '__main__':
     print_log(datetime.datetime.now())
     args = parse_args()
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                        save_graphs=args.save_graphs, save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target, device_id=args.device_id)
 
     print_log(f"device_id: {context.get_context(attr_key='device_id')}")

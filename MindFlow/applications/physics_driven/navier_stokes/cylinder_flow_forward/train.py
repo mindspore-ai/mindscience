@@ -20,7 +20,7 @@ import time
 
 import numpy as np
 
-from mindspore import context, nn, ops, jit, set_seed, load_checkpoint, load_param_into_net
+from mindspore import context, nn, ops, jit, set_seed
 from mindspore import save_checkpoint, data_sink
 
 from mindflow.cell import MultiScaleFCSequential
@@ -57,28 +57,32 @@ def train(input_args):
     '''Train and evaluate the network'''
     # load configurations
     config = load_yaml_config(input_args.config_file_path)
-
+    data_params = config["data"]
+    model_params = config["model"]
+    optimizer_params = config["optimizer"]
+    summary_params = config["summary"]
+    geo_params = config["geometry"]
     # create training dataset
     cylinder_flow_train_dataset = create_training_dataset(config)
-    cylinder_dataset = cylinder_flow_train_dataset.create_dataset(batch_size=config["train_batch_size"],
+    cylinder_dataset = cylinder_flow_train_dataset.create_dataset(batch_size=data_params["batch_size"],
                                                                   shuffle=True,
                                                                   prebatched_data=True,
                                                                   drop_remainder=True)
 
     # create test dataset
-    inputs, label = create_test_dataset(config["test_data_path"])
+    inputs, label = create_test_dataset(data_params['root_dir'])
 
-    coord_min = np.array(config["geometry"]["coord_min"] +
-                         [config["geometry"]["time_min"]]).astype(np.float32)
-    coord_max = np.array(config["geometry"]["coord_max"] +
-                         [config["geometry"]["time_max"]]).astype(np.float32)
+    coord_min = np.array(geo_params["coord_min"] +
+                         [geo_params["time_min"]]).astype(np.float32)
+    coord_max = np.array(geo_params["coord_max"] +
+                         [geo_params["time_max"]]).astype(np.float32)
     input_center = list(0.5 * (coord_max + coord_min))
     input_scale = list(2.0 / (coord_max - coord_min))
-    model = MultiScaleFCSequential(in_channels=config["model"]["in_channels"],
-                                   out_channels=config["model"]["out_channels"],
-                                   layers=config["model"]["layers"],
-                                   neurons=config["model"]["neurons"],
-                                   residual=config["model"]["residual"],
+    model = MultiScaleFCSequential(in_channels=model_params["in_channels"],
+                                   out_channels=model_params["out_channels"],
+                                   layers=model_params["num_layers"],
+                                   neurons=model_params["hidden_channels"],
+                                   residual=model_params["residual"],
                                    act='tanh',
                                    num_scales=1,
                                    input_scale=input_scale,
@@ -87,13 +91,8 @@ def train(input_args):
     mtl = MTLWeightedLoss(num_losses=cylinder_flow_train_dataset.num_dataset)
     print_log("Use MTLWeightedLoss, num loss: {}".format(mtl.num_losses))
 
-    if config["load_ckpt"]:
-        param_dict = load_checkpoint(config["load_ckpt_path"])
-        load_param_into_net(model, param_dict)
-        load_param_into_net(mtl, param_dict)
-
     params = model.trainable_params() + mtl.trainable_params()
-    optimizer = nn.Adam(params, config["optimizer"]["initial_lr"])
+    optimizer = nn.Adam(params, optimizer_params["learning_rate"])
     problem = NavierStokes2D(model)
 
     if use_ascend:
@@ -124,17 +123,16 @@ def train(input_args):
             loss = ops.depend(loss, optimizer(grads))
         return loss
 
-    epochs = config["train_epochs"]
+    epochs = optimizer_params["epochs"]
     steps_per_epochs = cylinder_dataset.get_dataset_size()
     print_log(f"number of steps_per_epochs: {steps_per_epochs}")
     sink_process = data_sink(train_step, cylinder_dataset, sink_size=1)
-    if not os.path.exists(config['ckpt_dir']):
-        os.makedirs(config['ckpt_dir'])
+    os.makedirs(summary_params['ckpt_dir'], exist_ok=True)
     for epoch in range(1, 1 + epochs):
         # train
         local_time_beg = time.time()
         model.set_train(True)
-        for _ in range(steps_per_epochs + 1):
+        for _ in range(steps_per_epochs):
             step_train_loss = sink_process()
         local_time_end = time.time()
         epoch_seconds = (local_time_end - local_time_beg) * 1000
@@ -143,15 +141,17 @@ def train(input_args):
             f"epoch: {epoch} train loss: {step_train_loss} "
             f"epoch time: {epoch_seconds:5.3f}ms step time: {step_seconds:5.3f}ms")
         model.set_train(False)
-        if epoch % config["eval_interval_epochs"] == 0:
+        if epoch % summary_params["test_interval"] == 0:
             # eval
             eval_time_start = time.time()
-            calculate_l2_error(model, inputs, label, config)
+            calculate_l2_error(model, inputs, label,
+                               model_params, data_params["batch_size"])
             print_log(f'evaluation time: {time.time() - eval_time_start}s')
 
-        if epoch % config["save_checkpoint_epochs"] == 0:
+        if epoch % summary_params["save_ckpt_interval"] == 0:
             ckpt_name = f"ns_cylinder_flow-{epoch}.ckpt"
-            save_checkpoint(model, os.path.join(config['ckpt_dir'], ckpt_name))
+            save_checkpoint(model, os.path.join(
+                summary_params['ckpt_dir'], ckpt_name))
 
 
 if __name__ == '__main__':

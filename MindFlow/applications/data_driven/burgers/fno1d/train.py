@@ -36,9 +36,6 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Burgers 1D problem')
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Context mode, support 'GRAPH', 'PYNATIVE'")
-    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                        help="Whether to save intermediate compilation graphs")
-    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
@@ -57,27 +54,28 @@ def train(input_args):
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
+    summary_params = config["summary"]
 
     # create training dataset
-    train_dataset = create_training_dataset(data_params, shuffle=True)
+    train_dataset = create_training_dataset(data_params, model_params, shuffle=True)
 
     # create test dataset
-    test_input, test_label = np.load(os.path.join(data_params["path"], "test/inputs.npy")), \
-                             np.load(os.path.join(data_params["path"], "test/label.npy"))
+    test_input, test_label = np.load(os.path.join(data_params["root_dir"], "test/inputs.npy")), \
+                             np.load(os.path.join(data_params["root_dir"], "test/label.npy"))
     test_input = Tensor(np.expand_dims(test_input, -2), mstype.float32)
     test_label = Tensor(np.expand_dims(test_label, -2), mstype.float32)
 
     model = FNO1D(in_channels=model_params["in_channels"],
                   out_channels=model_params["out_channels"],
-                  resolution=model_params["resolution"],
+                  resolution=data_params["resolution"],
                   modes=model_params["modes"],
-                  channels=model_params["width"],
-                  depths=model_params["depth"])
+                  channels=model_params["hidden_channels"],
+                  depths=model_params["depths"])
 
     steps_per_epoch = train_dataset.get_dataset_size()
     print_log(f"number of steps_per_epochs: {steps_per_epoch}")
-    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["initial_lr"],
-                                        last_epoch=optimizer_params["train_epochs"],
+    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["learning_rate"],
+                                        last_epoch=optimizer_params["epochs"],
                                         steps_per_epoch=steps_per_epoch,
                                         warmup_epochs=1)
     optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
@@ -91,8 +89,8 @@ def train(input_args):
 
     problem = UnsteadyFlowWithLoss(model, loss_fn=RelativeRMSELoss(), data_format="NHWTC")
 
-    summary_dir = config["summary_dir"]
-    print_log(summary_dir)
+    summary_dir = summary_params["summary_dir"]
+    os.makedirs(summary_dir, exist_ok=True)
 
     def forward_fn(data, label):
         loss = problem.get_loss(data, label)
@@ -117,11 +115,10 @@ def train(input_args):
         return loss
 
     sink_process = data_sink(train_step, train_dataset, 1)
-    ckpt_dir = "./checkpoints"
-    if not os.path.exists(ckpt_dir):
-        os.makedirs(ckpt_dir)
+    ckpt_dir = summary_params['ckpt_dir']
+    os.makedirs(ckpt_dir, exist_ok=True)
 
-    for epoch in range(1, config["epochs"] + 1):
+    for epoch in range(1, optimizer_params["epochs"] + 1):
         model.set_train()
         local_time_beg = time.time()
         for _ in range(steps_per_epoch):
@@ -132,7 +129,7 @@ def train(input_args):
         print_log(f"epoch: {epoch} train loss: {cur_loss.asnumpy()} "
                   f"epoch time: {epoch_seconds:.3f}s step time: {step_seconds:5.3f}ms")
 
-        if epoch % config['eval_interval'] == 0:
+        if epoch % summary_params['test_interval'] == 0:
             eval_time_start = time.time()
             model.set_train(False)
             print_log("================================Start Evaluation================================")
@@ -144,12 +141,11 @@ def train(input_args):
 
 
 if __name__ == '__main__':
-    log_config('./logs', 'fno1d')
+    log_config("./logs", "fno1d")
     print_log(f"pid: {os.getpid()}")
     print_log(datetime.datetime.now())
     args = parse_args()
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                        save_graphs=args.save_graphs, save_graphs_path=args.save_graphs_path,
                         device_target=args.device_target, device_id=args.device_id)
 
     print_log(f"device_id: {context.get_context(attr_key='device_id')}")

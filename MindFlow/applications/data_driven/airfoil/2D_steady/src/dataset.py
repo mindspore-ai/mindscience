@@ -15,6 +15,7 @@
 """
 dataset
 """
+import os
 import math
 import numpy as np
 import mindspore.dataset as ds
@@ -38,9 +39,10 @@ class AirfoilDataset:
         self.min_value_list = min_value
 
     def create_dataset(self,
-                       train_dataset_path,
-                       test_dataset_path,
-                       finetune_dataset_path,
+                       dataset_dir,
+                       train_file_name,
+                       test_file_name,
+                       finetune_file_name,
                        finetune_size=0.2,
                        mode="train",
                        batch_size=8,
@@ -49,6 +51,9 @@ class AirfoilDataset:
         """
         create dataset
         """
+        train_dataset_path = os.path.join(dataset_dir, train_file_name)
+        test_dataset_path = os.path.join(dataset_dir, test_file_name)
+        finetune_dataset_path = os.path.join(dataset_dir, finetune_file_name)
         if mode == "finetune":
             dataset = ds.MindDataset(dataset_files=finetune_dataset_path, shuffle=shuffle)
             train_dataset, test_dataset = dataset.split([finetune_size, 1 - finetune_size])

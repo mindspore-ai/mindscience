@@ -49,9 +49,9 @@ def unpatchify(labels, img_size=(192, 384), patch_size=16, nchw=False):
     return labels
 
 
-def get_ckpt_summary_dir(callback_params, model_name, method):
+def get_ckpt_summary_dir(callback_params, model_name):
     """get ckpt and summary dir"""
-    summary_dir = os.path.join(f"{callback_params}/summary_{method}", model_name)
+    summary_dir = os.path.join(f"{callback_params}/summary", model_name)
     ckpt_dir = os.path.join(summary_dir, "ckpt_dir")
     check_file_path(ckpt_dir)
     print_log(f'model_name: {model_name}')

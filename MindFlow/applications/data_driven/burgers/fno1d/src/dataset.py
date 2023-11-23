@@ -22,12 +22,12 @@ from mindflow.utils import print_log
 EPS = 1e-8
 
 
-def create_npy(config, sub=8):
+def create_npy(data_params, step=8):
     '''create inputs and label data for trainset and testset'''
-    data_path = config["path"]
-    train_size = config["train_size"]
-    test_size = config["test_size"]
-    s = 2 ** 13 // config["sub"]
+    data_path = data_params["root_dir"]
+    train_size = data_params["train"]["num_samples"]
+    test_size = data_params["test"]["num_samples"]
+    s = 2 ** 13 // data_params["step"]
 
     train_path = os.path.join(data_path, "train")
     test_path = os.path.join(data_path, "test")
@@ -43,10 +43,10 @@ def create_npy(config, sub=8):
     inputs = np.load(os.path.join(train_path, "inputs.npy"))
     label = np.load(os.path.join(train_path, "label.npy"))
 
-    x_train = inputs[:train_size, :][:, ::sub]
-    y_train = label[:train_size, :][:, ::sub]
-    x_test = inputs[-test_size:, :][:, ::sub]
-    y_test = label[-test_size:, :][:, ::sub]
+    x_train = inputs[:train_size, :][:, ::step]
+    y_train = label[:train_size, :][:, ::step]
+    x_test = inputs[-test_size:, :][:, ::step]
+    y_test = label[-test_size:, :][:, ::step]
     x_train = x_train.reshape(train_size, s, 1)
     x_test = x_test.reshape(test_size, s, 1)
 
@@ -65,10 +65,10 @@ def create_npy(config, sub=8):
         np.save(f, y_test)
 
 
-def create_training_dataset(config, shuffle=True, drop_remainder=True, is_train=True):
+def create_training_dataset(data_params, model_params, shuffle=True, drop_remainder=True, is_train=True):
     """create dataset"""
-    create_npy(config)
-    data_path = config["path"]
+    create_npy(data_params)
+    data_path = data_params["root_dir"]
     if is_train:
         train_path = os.path.abspath(os.path.join(data_path, "train"))
         input_path = os.path.join(train_path, "inputs.npy")
@@ -79,16 +79,18 @@ def create_training_dataset(config, shuffle=True, drop_remainder=True, is_train=
         test_path = os.path.abspath(os.path.join(data_path, "test"))
         input_path = os.path.join(test_path, "inputs.npy")
         label_path = os.path.join(test_path, "label.npy")
-    burgers_1d_data = ExistedDataConfig(name=config["name"],
+    burgers_1d_data = ExistedDataConfig(name=data_params["name"],
                                         data_dir=[input_path, label_path],
                                         columns_list=["inputs", "label"],
                                         data_format="npy")
     dataset = Dataset(existed_data_list=[burgers_1d_data])
-    data_loader = dataset.create_dataset(batch_size=config["batch_size"],
+    data_loader = dataset.create_dataset(batch_size=data_params["batch_size"],
                                          shuffle=shuffle,
                                          drop_remainder=drop_remainder)
 
-    operations = [lambda x, y: (x.reshape(-1, config["resolution"], config["t_in"], config["channels"]),
-                                y.reshape(-1, config["resolution"], config["t_out"], config["channels"]))]
+    operations = [lambda x, y: (x.reshape(-1, data_params["resolution"],
+                                          data_params["t_in"], model_params["out_channels"]),
+                                y.reshape(-1, data_params["resolution"],
+                                          data_params["t_out"], model_params["out_channels"]))]
     data_loader = data_loader.map(operations, input_columns=["burgers1d_inputs", "burgers1d_label"])
     return data_loader

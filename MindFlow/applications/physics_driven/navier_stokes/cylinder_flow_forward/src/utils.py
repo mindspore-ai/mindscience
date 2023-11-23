@@ -191,10 +191,10 @@ def _calculate_error(label, prediction):
     return errors
 
 
-def _get_prediction(model, inputs, label_shape, config):
+def _get_prediction(model, inputs, label_shape, model_params, batch_size):
     '''calculate the prediction respect to the given inputs'''
-    output_size = config.get("output_size", 3)
-    input_size = config.get("input_size", 3)
+    output_size = model_params["out_channels"]
+    input_size = model_params["in_channels"]
     prediction = np.zeros(label_shape)
     prediction = prediction.reshape((-1, output_size))
     inputs = inputs.reshape((-1, input_size))
@@ -203,7 +203,7 @@ def _get_prediction(model, inputs, label_shape, config):
 
     index = 0
     while index < inputs.shape[0]:
-        index_end = min(index + config["test_batch_size"], inputs.shape[0])
+        index_end = min(index + batch_size, inputs.shape[0])
         test_batch = Tensor(inputs[index: index_end, :], mstype.float32)
         prediction[index: index_end, :] = model(test_batch).asnumpy()
         index = index_end
@@ -215,7 +215,7 @@ def _get_prediction(model, inputs, label_shape, config):
     return prediction
 
 
-def calculate_l2_error(model, inputs, label, config):
+def calculate_l2_error(model, inputs, label, model_params, batch_size):
     """
     Evaluate the model respect to input data and label.
 
@@ -227,8 +227,8 @@ def calculate_l2_error(model, inputs, label, config):
 
     """
     label_shape = label.shape
-    prediction = _get_prediction(model, inputs, label_shape, config)
-    output_size = config.get("output_size", 3)
+    prediction = _get_prediction(model, inputs, label_shape, model_params, batch_size)
+    output_size = model_params["out_channels"]
     label = label.reshape((-1, output_size))
     l2_errors = _calculate_error(label, prediction)
     print_log(

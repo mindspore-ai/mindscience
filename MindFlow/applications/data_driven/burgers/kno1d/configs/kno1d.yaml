@@ -7,18 +7,21 @@ model:
 
 data:
   name: "burgers1d"
-  path: "./dataset"
+  root_dir: "./dataset"
   in_channels: 1
   out_channels: 1
-  train_size: 1000
-  test_size: 200
+  train:
+    num_samples: 1000
+  test:
+    num_samples: 200
   batch_size: 8
-  sub: 32
+  step: 32
 
 optimizer:
   epochs: 100
-  lr: 0.001
+  learning_rate: 0.001
   weight_decay: 0.0001
 
-summary_dir: "./summary_dir/"
-eval_interval: 10
+summary:
+  summary_dir: "./summary_dir/"
+  test_interval: 10
