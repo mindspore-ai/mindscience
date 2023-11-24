@@ -20,6 +20,7 @@ sponge.potential.EnergyCell
         
 
     .. py:method:: check_system(system: Molecule)
+        :property:
 
         检查系统是否需要计算这个能量形式。
 
@@ -47,6 +48,7 @@ sponge.potential.EnergyCell
             float，从内部单位换算到外部单位的能量数值。
 
     .. py:method:: energy_unit()
+        :property:
 
         能量单位。
 
@@ -54,6 +56,7 @@ sponge.potential.EnergyCell
             str，能量单位。
 
     .. py:method:: length_unit()
+        :property:
 
         长度单位。
 
@@ -61,6 +64,7 @@ sponge.potential.EnergyCell
             str，长度单位。
 
     .. py:method:: name()
+        :property:
         
         能量的名称。
 
@@ -99,6 +103,7 @@ sponge.potential.EnergyCell
             - **units** (Units) - 单位。默认值： ``None`` 。
 
     .. py:method:: use_pbc()
+        :property:
 
         判断是否使用周期性边界条件。
 

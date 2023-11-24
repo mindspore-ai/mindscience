@@ -185,6 +185,7 @@ sponge.system.Molecule
             Tensor。系统的容积。如果没有使用周期性边界条件箱，容积为None。
 
     .. py:method:: heavy_atom_mask()
+        :property:
 
         重原子（非氢原子）的掩码。
 
@@ -192,6 +193,7 @@ sponge.system.Molecule
             Tensor，重原子的掩码。
 
     .. py:method:: length_unit()
+        :property:
 
         长度单位。
 
@@ -206,6 +208,7 @@ sponge.system.Molecule
             - **shift** (Tensor) - 系统的移动距离。默认值： ``None`` 。
 
     .. py:method:: ndim()
+        :property:
 
         原子坐标的维度数量。
 
@@ -328,6 +331,7 @@ sponge.system.Molecule
             bool，是否计算周期性边界条件箱的梯度。
 
     .. py:method:: shape()
+        :property:
 
         原子坐标的shape。
 

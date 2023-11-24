@@ -33,6 +33,7 @@ sponge.potential.PotentialCell
         势，shape为 :math:`(B, E)` 的Tensor。数据类型为float。
 
     .. py:method:: energy_names()
+        :property:
 
         获取能量名称的列表。
 
@@ -40,6 +41,7 @@ sponge.potential.PotentialCell
             list[str]，能量名称的列表。
 
     .. py:method:: exclude_index()
+        :property:
 
         排除索引。
 
@@ -47,6 +49,7 @@ sponge.potential.PotentialCell
             Tensor。排除索引。
 
     .. py:method:: num_energies()
+        :property:
 
         获取能量分量的数量。
 
