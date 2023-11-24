@@ -15,17 +15,14 @@
 """train process"""
 
 import time
-import os
 import pytest
 
-from mindspore import nn, ops, set_seed, jit
-import mindspore as ms
+from mindspore import nn, ops, set_seed, jit, data_sink
 
 from mindflow.cell import MultiScaleFCSequential
 from mindflow.utils import load_yaml_config
 
-from tests.st.mindflow.networks.poisson_ring.src import create_training_dataset, \
-    create_test_dataset, calculate_l2_error, Poisson2D
+from src import create_training_dataset, create_test_dataset, calculate_l2_error, Poisson2D
 
 set_seed(123456)
 
@@ -33,8 +30,7 @@ set_seed(123456)
 def train():
     '''train and evaluate the network'''
     # load configurations
-    path = os.path.split(os.path.realpath(__file__))[0]
-    config = load_yaml_config(f'{path}/poisson2d_cfg.yaml')
+    config = load_yaml_config(f'./poisson2d_cfg.yaml')
 
     # create training dataset
     dataset = create_training_dataset(config)
@@ -71,31 +67,31 @@ def train():
         loss = ops.depend(loss, optimizer(grads))
         return loss
 
-    steps = config["train_steps"]
-    sink_process = ms.data_sink(train_step, train_dataset, sink_size=1)
+    sink_process = data_sink(train_step, train_dataset, sink_size=1)
     model.set_train()
-    l2_error = 0.0
-    for step in range(steps):
+    steps = 100
+    for step in range(1, 1+steps):
         local_time_beg = time.time()
         cur_loss = sink_process()
-        if step % 100 == 0:
-            print(f"loss: {cur_loss.asnumpy():>7f}")
-            print("step: {}, time elapsed: {}ms".format(
-                step, (time.time() - local_time_beg) * 1000))
-            l2_error = calculate_l2_error(
-                model, inputs, label, config["train_batch_size"])
+        print(
+            f"step: {step} loss: {cur_loss.asnumpy():>7f} epoch time : {time.time() - local_time_beg}s")
+    l2_error = calculate_l2_error(
+        model, inputs, label, config["train_batch_size"])
 
-    return l2_error
+    return cur_loss.asnumpy(), l2_error
 
 
 @pytest.mark.level0
+@pytest.mark.platform_arm_ascend_training
+@pytest.mark.platform_x86_ascend_training
 @pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
-def test_poisson_ring_gpu():
+def test_poisson_ring():
     """
-    Feature: poisson ring model test in the gpu
+    Feature: poisson ring model test
     Description: None.
-    Expectation: Success or throw error when error is larger than 15
+    Expectation: Success or throw error when l2_error is larger than 0.5 or train_loss is larger than 0.2
     """
-    l2_error = train()
-    assert l2_error < 15
+    train_loss, l2_error = train()
+    assert train_loss < 0.2
+    assert l2_error < 0.5

@@ -10,11 +10,11 @@ out_disk:
   radius: 2.0
 data:
   domain:
-    size: 8192
+    size: 1024
     random_sampling: true
     sampler: "uniform"
   BC:
-    size: 8192
+    size: 1024
     random_sampling: true
     sampler: "uniform"
     with_normal: true
@@ -23,11 +23,11 @@ model:
   in_channels: 2
   out_channels: 1
   activation: "tanh"
-  layers: 6
-  neurons: 128
+  layers: 5
+  neurons: 16
   residual: false
 optimizer:
-  initial_lr: 0.001
+  initial_lr: 0.003
 
-train_batch_size: 8192
+train_batch_size: 1024
 train_steps: 10

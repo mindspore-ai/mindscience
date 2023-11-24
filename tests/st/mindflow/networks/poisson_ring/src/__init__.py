@@ -13,10 +13,9 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from tests.st.mindflow.networks.poisson_ring.src.dataset import create_training_dataset, \
-    create_test_dataset
-from tests.st.mindflow.networks.poisson_ring.src.utils import calculate_l2_error
-from tests.st.mindflow.networks.poisson_ring.src.model import Poisson2D
+from .dataset import create_training_dataset, create_test_dataset
+from .utils import calculate_l2_error
+from .model import Poisson2D
 
 
 __all__ = [
