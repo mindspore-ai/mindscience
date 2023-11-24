@@ -1,14 +1,14 @@
 [ENGLISH](README.md) | 简体中文
 
-# DEMNet: 全球3弧秒（90m）海陆高分辨率数字高程模型
+# DEM-SRNet: 全球3弧秒（90m）海陆高分辨率数字高程模型
 
 ## 概述
 
-DEMNet是一个预训练地面DEM数据的深度残差网络，设计的预训练结构源自增强型深度超分辨率网络（EDSR）。
+DEM-SRNet是一个预训练地面DEM数据的深度残差网络，设计的预训练结构源自增强型深度超分辨率网络（EDSR）。
 
-![dem](images/dem_DEMNet.png)
+![dem](images/dem_DEM-SRNet.png)
 
-本教程介绍了DEMNet的研究背景和技术路径，并展示了如何通过MindEarth训练和快速推理模型。更多信息可以在[论文](https://pubmed.ncbi.nlm.nih.gov/36604030/)中找到。
+本教程介绍了DEM-SRNet的研究背景和技术路径，并展示了如何通过MindEarth训练和快速推理模型。更多信息可以在[论文](https://pubmed.ncbi.nlm.nih.gov/36604030/)中找到。
 
 ## 快速开始
 
@@ -30,7 +30,7 @@ python -u ./main.py \
 
 ### 运行方式二: 运行Jupyter Notebook
 
-使用'[Chinese](DEMNet_CN.ipynb)'或'[English](DEMNet.ipynb)'Jupyter Notebook可以逐行运行训练和推理代码
+使用'[Chinese](DEM-SRNet_CN.ipynb)'或'[English](DEM-SRNet.ipynb)'Jupyter Notebook可以逐行运行训练和推理代码
 
 ## 结果展示
 

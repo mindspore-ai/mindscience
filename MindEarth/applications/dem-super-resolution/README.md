@@ -1,14 +1,14 @@
 ENGLISH | [简体中文](README_CN.md)
 
-# DEMNet: Super-resolution reconstruction of a 3 arc-second global DEM dataset
+# DEM-SRNet: Super-resolution reconstruction of a 3 arc-second global DEM dataset
 
 ## Overview
 
-A deep residual network called DEMNet is proposed to pretrain the terrestrial DEM data. The designed pre-training structure is derived from the enhanced deep superresolution network (EDSR).
+A deep residual network called DEM-SRNet is proposed to pretrain the terrestrial DEM data. The designed pre-training structure is derived from the enhanced deep superresolution network (EDSR).
 
 ![dem](images/dem_Dem_Sr.png)
 
-This tutorial introduces the research background and technical path of DEMNet, and shows how to train and fast infer the model through MindEarth. More information can be found in [paper](https://pubmed.ncbi.nlm.nih.gov/36604030/).
+This tutorial introduces the research background and technical path of DEM-SRNet, and shows how to train and fast infer the model through MindEarth. More information can be found in [paper](https://pubmed.ncbi.nlm.nih.gov/36604030/).
 
 ## QuickStart
 
@@ -30,7 +30,7 @@ where:
 
 ### Run Option 2: Run Jupyter Notebook
 
-You can use '[Chinese](DEMNet_CN.ipynb)' or '[English](DEMNet.ipynb)' Jupyter Notebook to run the training and evaluation code line-by-line.
+You can use '[Chinese](DEM-SRNet_CN.ipynb)' or '[English](DEM-SRNet.ipynb)' Jupyter Notebook to run the training and evaluation code line-by-line.
 
 ## Analysis
 
