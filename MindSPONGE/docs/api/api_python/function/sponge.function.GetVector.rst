@@ -44,6 +44,7 @@ sponge.function.GetVector
             - **use_pbc** (bool) - 是否使用周期性边界条件。默认值： ``None`` 。
 
     .. py:method:: use_pbc()
+        :property:
 
         是否使用周期性边界条件。
 

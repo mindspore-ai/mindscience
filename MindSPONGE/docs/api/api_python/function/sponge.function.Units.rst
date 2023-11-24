@@ -11,6 +11,7 @@ sponge.function.Units
         - **kwargs** - 其他参数。
 
     .. py:method:: acceleration_ref()
+        :property:
 
         获取加速度的参考值。
 
@@ -18,6 +19,7 @@ sponge.function.Units
             float。加速度参考值。
 
     .. py:method:: avogadro()
+        :property:
 
         获取阿佛加德罗数。
 
@@ -25,6 +27,7 @@ sponge.function.Units
             float。阿佛加德罗数。
 
     .. py:method:: boltzmann()
+        :property:
 
         获取当前单位的玻尔兹曼常数。
 
@@ -32,6 +35,7 @@ sponge.function.Units
             float。当前单位的玻尔兹曼常数。
 
     .. py:method:: boltzmann_def()
+        :property:
 
         获取kj/mol单位下的玻尔兹曼常数。
 
@@ -98,6 +102,7 @@ sponge.function.Units
             float。能量值。
 
     .. py:method:: energy_ref()
+        :property:
 
         获取能量参考值。
 
@@ -105,6 +110,7 @@ sponge.function.Units
             float。能量参考值。
 
     .. py:method:: energy_unit()
+        :property:
 
         获取能量单位。
 
@@ -112,6 +118,7 @@ sponge.function.Units
             Union[str, float, int]。能量单位。
 
     .. py:method:: energy_unit_name()
+        :property:
 
         获取能量单位的名称。
 
@@ -119,6 +126,7 @@ sponge.function.Units
             str。能量单位的名称。
 
     .. py:method:: force_ref()
+        :property:
 
         获取力的参考值。
 
@@ -126,6 +134,7 @@ sponge.function.Units
             float。力的参考值。
 
     .. py:method:: force_unit()
+        :property:
 
         获取力的单位。
 
@@ -133,6 +142,7 @@ sponge.function.Units
             str。力的单位。
 
     .. py:method:: force_unit_name()
+        :property:
 
         获取力的单位名称。
 
@@ -140,6 +150,7 @@ sponge.function.Units
             str。力的单位名称。
 
     .. py:method:: gas_constant()
+        :property:
 
         获取气体常数。
 
@@ -162,6 +173,7 @@ sponge.function.Units
             - **energy_unit** (str) - 能量单位。
 
     .. py:method:: kinetic_ref()
+        :property:
 
         获取动力学的参考值。
 
@@ -180,6 +192,7 @@ sponge.function.Units
             float。长度值。
 
     .. py:method:: length_ref()
+        :property:
 
         获取长度的参考值。
 
@@ -187,6 +200,7 @@ sponge.function.Units
             float。长度的参考值。
 
     .. py:method:: length_unit()
+        :property:
 
         获取长度单位。
 
@@ -194,6 +208,7 @@ sponge.function.Units
             Union[str, float, int]。 长度单位。
 
     .. py:method:: length_unit_name()
+        :property:
 
         获取长度单位的名称。
 
@@ -201,6 +216,7 @@ sponge.function.Units
             str。长度单位的名称。
 
     .. py:method:: pressure_ref()
+        :property:
 
         获取压力的参考值。
 
@@ -231,6 +247,7 @@ sponge.function.Units
             - **units** (Units) - 单位。
 
     .. py:method:: velocity_unit()
+        :property:
 
         获取速度单位。
 
@@ -238,6 +255,7 @@ sponge.function.Units
             str。速度单位。
 
     .. py:method:: velocity_unit_name()
+        :property:
 
         获取速度单位的名称。
 
@@ -245,6 +263,7 @@ sponge.function.Units
             str。速度单位的名称。
 
     .. py:method:: volume_unit()
+        :property:
 
         获取容积单位。
 
@@ -252,6 +271,7 @@ sponge.function.Units
             str。容积单位。
 
     .. py:method:: volume_unit_name()
+        :property:
 
         获取容积单位的名称。
 

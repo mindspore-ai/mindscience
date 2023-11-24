@@ -11,6 +11,7 @@ sponge.function.Energy
         - **kwargs** - 其他参数。
 
     .. py:method:: abs_size()
+        :property:
 
         获取能量绝对值。
 
@@ -25,6 +26,7 @@ sponge.function.Energy
             - **unit** (Union[str, Units, float, int]) - 能量单位。
 
     .. py:method:: ref()
+        :property:
 
         获取能量参考值。
 
@@ -32,6 +34,7 @@ sponge.function.Energy
             float。一个能量参考值。
 
     .. py:method:: unit()
+        :property:
 
         获取能量单位。
 
@@ -39,6 +42,7 @@ sponge.function.Energy
             str。能量单位。
 
     .. py:method:: unit_name()
+        :property:
 
         获取能量单位的名称。
 
@@ -46,6 +50,7 @@ sponge.function.Energy
             str。能量单位的名称。
 
     .. py:method:: value()
+        :property:
 
         获取能量值。
 
