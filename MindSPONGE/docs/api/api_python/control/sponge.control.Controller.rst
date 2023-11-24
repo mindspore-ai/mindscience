@@ -36,6 +36,7 @@ sponge.control.Controller
         - **D** - 仿真系统的空间维度。通常是3。
 
     .. py:method:: boltzmann()
+        :property:
 
         获取当前单元中的玻尔兹曼常数。
 

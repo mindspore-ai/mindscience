@@ -92,6 +92,7 @@ sponge.system.Residue
             - **template** (dict) - 残基的模板。
     
     .. py:method:: name()
+        :property:
 
         获取残基的名称。
 

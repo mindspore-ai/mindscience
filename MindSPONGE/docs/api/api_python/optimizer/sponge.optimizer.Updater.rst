@@ -30,6 +30,7 @@ sponge.optimizer.Updater
         - **D** - 模拟系统的维度，一般为3。
 
     .. py:method:: boltzmann()
+        :property:
 
         当前单位下的布尔兹曼常数。
 
@@ -105,6 +106,7 @@ sponge.optimizer.Updater
             bool，是否成功完成当前优化step并且移动到下一步。
 
     .. py:method:: press_unit_scale()
+        :property:
 
         压力的参考值。
 

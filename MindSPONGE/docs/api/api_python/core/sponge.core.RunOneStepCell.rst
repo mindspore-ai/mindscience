@@ -26,6 +26,7 @@ sponge.core.RunOneStepCell
         D: 分子模拟中的空间维度，通常是3。 
 
     .. py:method:: bias()
+        :property:
 
         整个偏置势的Tensor。
 
@@ -33,6 +34,7 @@ sponge.core.RunOneStepCell
             Tensor，shape为 `(B, 1)` ，数据类型为float。
 
     .. py:method:: bias_function()
+        :property:
 
         偏置势函数的网络层。
 
@@ -40,6 +42,7 @@ sponge.core.RunOneStepCell
             Cell，偏置势函数。
 
     .. py:method:: bias_names()
+        :property:
 
         偏置势能的名字。
 
@@ -47,6 +50,7 @@ sponge.core.RunOneStepCell
             list[str]，偏置势能的名字列表。
 
     .. py:method:: biases()
+        :property:
 
         偏置势的组成部分的Tensor。
 
@@ -54,6 +58,7 @@ sponge.core.RunOneStepCell
             Tensor，shape为 `(B, V)` ，数据类型为float。
 
     .. py:method:: energies()
+        :property:
 
         势能组成部分的Tensor。
 
@@ -61,6 +66,7 @@ sponge.core.RunOneStepCell
             Tensor，shape为 `(B, U)` ，数据类型为float。
 
     .. py:method:: energy_cutoff()
+        :property:
 
         `WithEnergyCell` 中邻居列表的截断距离。
 
@@ -68,6 +74,7 @@ sponge.core.RunOneStepCell
             Tensor， `WithEnergyCell` 中邻居列表的截断距离。
 
     .. py:method:: energy_names()
+        :property:
 
         能量项的名字。
 
@@ -75,6 +82,7 @@ sponge.core.RunOneStepCell
             list[str]，能量项的名字列表。
 
     .. py:method:: energy_unit()
+        :property:
 
         能量单位。
 
@@ -82,6 +90,7 @@ sponge.core.RunOneStepCell
             str，能量单位。
 
     .. py:method:: force_cutoff()
+        :property:
 
         `WithForceCell` 中邻居列表的截断距离。
 
@@ -89,6 +98,7 @@ sponge.core.RunOneStepCell
             Tensor， `WithForceCell` 中邻居列表的截断距离。
 
     .. py:method:: length_unit()
+        :property:
 
         长度单位。
 
@@ -96,6 +106,7 @@ sponge.core.RunOneStepCell
             str，长度单位。
 
     .. py:method:: neighbour_list_pace()
+        :property:
 
         更新邻居列表所需的step。
 
@@ -103,6 +114,7 @@ sponge.core.RunOneStepCell
             int，更新邻居列表所需的step数。
 
     .. py:method:: num_biases()
+        :property:
 
         偏置势能 :math:`V` 的数量。
 
@@ -110,6 +122,7 @@ sponge.core.RunOneStepCell
             int，偏置势能的数量。
 
     .. py:method:: num_energies()
+        :property:
 
         能量项 :math:`U` 的数量。
 

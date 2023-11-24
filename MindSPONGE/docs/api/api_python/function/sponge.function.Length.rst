@@ -25,6 +25,7 @@ sponge.function.Length
             - **unit** (Union[str, Units, float, int]) - 长度单位。
 
     .. py:method:: ref()
+        :property:
 
         获取度参考值。
 
@@ -32,6 +33,7 @@ sponge.function.Length
             float。一个长度参考值。
 
     .. py:method:: unit()
+        :property:
 
         获取长度单位。
 
@@ -39,6 +41,7 @@ sponge.function.Length
             str。长度单位。
 
     .. py:method:: unit_name()
+        :property:
 
         获取长度单位的名称。
 
@@ -46,6 +49,7 @@ sponge.function.Length
             str。长度单位的名称。
 
     .. py:method:: value()
+        :property:
 
         获取长度值。
 

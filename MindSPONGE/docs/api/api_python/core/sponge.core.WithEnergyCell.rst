@@ -29,6 +29,7 @@ sponge.core.WithEnergyCell
         - V: bias potential项的数量。 
 
     .. py:method:: bias()
+        :property:
 
         整体偏置势的Tensor。
 
@@ -36,6 +37,7 @@ sponge.core.WithEnergyCell
             Tensor，shape为 `(B, 1)` ，数据类型为float。
 
     .. py:method:: bias_names()
+        :property:
 
         偏置势能的名字。
 
@@ -53,6 +55,7 @@ sponge.core.WithEnergyCell
             int，更新频率。
 
     .. py:method:: biases()
+        :property:
 
         偏置势分量的Tensor。
 
@@ -74,6 +77,7 @@ sponge.core.WithEnergyCell
             能量项，shape为 `(B, U)` 的Tensor。数据类型为float。
 
     .. py:method:: cutoff()
+        :property:
 
         邻居列表的截断距离。
 
@@ -81,6 +85,7 @@ sponge.core.WithEnergyCell
             Tensor，截断距离。
 
     .. py:method:: energies()
+        :property:
 
         势能分量的Tensor。
 
@@ -88,6 +93,7 @@ sponge.core.WithEnergyCell
             势能分量的Tensor，shape为 `(B, U)` ，数据类型为float。
 
     .. py:method:: energy_names()
+        :property:
 
         能量项的名字。
 
@@ -95,6 +101,7 @@ sponge.core.WithEnergyCell
             list[str]，能量项的名字列表。
 
     .. py:method:: energy_unit()
+        :property:
 
         能量单位。
 
@@ -110,6 +117,7 @@ sponge.core.WithEnergyCell
             - neigh_mask，neigh_idx的掩码。shape为 `(B, A, N)` 的Tensor，数量类型为bool。
 
     .. py:method:: length_unit()
+        :property:
 
         长度单位。
 
@@ -117,6 +125,7 @@ sponge.core.WithEnergyCell
             str，长度单位。
 
     .. py:method:: neighbour_list_pace()
+        :property:
 
         邻居列表的更新步长。
 
@@ -124,6 +133,7 @@ sponge.core.WithEnergyCell
             int，更新步长。
 
     .. py:method:: num_biases()
+        :property:
 
         偏置势能 :math:`V` 的数量。
 
@@ -131,6 +141,7 @@ sponge.core.WithEnergyCell
             int，偏置势能的数量。
 
     .. py:method:: num_energies()
+        :property:
 
         能量项 :math:`U` 的数量。
 
