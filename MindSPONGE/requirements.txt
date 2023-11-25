@@ -6,7 +6,7 @@ dataclasses >= 0.6
 glob2 >= 0.6
 h5py >= 3.6.0
 absl-py >= 1.1.0
-biotite >= 0.36.1
+biotite >= 0.38
 descriptastorus == 2.6.0
 pyparsing >= 3.0.7
 rdkit
