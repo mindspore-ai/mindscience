@@ -62,19 +62,10 @@ def cae_train():
     loss_fn = nn.MSELoss()
     cae_opt = nn.Adam(cae.trainable_params(), optimizer_params["lr"], weight_decay=optimizer_params["weight_decay"])
 
-    if use_ascend:
-        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
-        loss_scaler = DynamicLossScaler(1024, 2, 100)
-        auto_mixed_precision(cae, 'O1')
-    else:
-        loss_scaler = None
-
     # Define forward function
     def forward_fn(data, label):
         logits = cae(data)
         loss = loss_fn(logits, label)
-        if use_ascend:
-            loss = loss_scaler.scale(loss)
         return loss
 
     # Get gradient function
@@ -83,10 +74,6 @@ def cae_train():
     @jit
     def train_step(data, label):
         loss, grads = grad_fn(data, label)
-        if use_ascend:
-            loss = loss_scaler.unscale(loss)
-            if all_finite(grads):
-                grads = loss_scaler.unscale(grads)
         loss = ops.depend(loss, cae_opt(grads))
         return loss
 
@@ -121,9 +108,6 @@ if __name__ == '__main__':
                         help="Which case to run, support 'sod', 'shu_osher', 'riemann', 'kh', 'cylinder")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Context mode, support 'GRAPH', 'PYNATIVE'")
-    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
-                        help="Whether to save intermediate compilation graphs")
-    parser.add_argument("--save_graphs_path", type=str, default="./graphs")
     parser.add_argument("--device_target", type=str, default="GPU", choices=["GPU", "Ascend"],
                         help="The target device to run, support 'Ascend', 'GPU'")
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")

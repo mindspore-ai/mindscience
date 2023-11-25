@@ -47,26 +47,22 @@ Shu-Osher问题：坐标x范围为[-5, 5]，计算时间t范围为[0, 1.8]，平
 
 + 训练CAE网络：
 
-`python -u cae_train.py --case sod --mode GRAPH --save_graphs False --save_graphs_path ./graphs --device_target GPU --device_id 0 --config_file_path ./config.yaml`
+`python -u cae_train.py --case sod --mode GRAPH --device_target GPU --device_id 0 --config_file_path ./config.yaml`
 
 + 训练LSTM网络：
 
-`python -u lstm_train.py --case sod --mode GRAPH --save_graphs False --save_graphs_path ./graphs --device_target GPU --device_id 0 --config_file_path ./config.yaml`
+`python -u lstm_train.py --case sod --mode GRAPH --device_target GPU --device_id 0 --config_file_path ./config.yaml`
 
 其中，
 `--case`表示运行的算例，可以选择'sod'，'shu_osher'，'riemann'，'kh'和'cylinder', ，默认值'sod'，其中'sod'和'shu_osher'为一维算例，'riemann'，'kh'和'cylinder'为二维算例
 
-`--config_file_path`表示配置文件的路径，默认值'./config.yaml'
+`--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式，默认值'GRAPH'，详见[MindSpore 官网](https://www.mindspore.cn/docs/zh-CN/master/design/dynamic_graph_and_static_graph.html)
 
 `--device_target`表示使用的计算平台类型，可以选择'Ascend'或'GPU'，默认值'GPU'
 
 `--device_id`表示使用的计算卡编号，可按照实际情况填写，默认值 0
 
-`--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式，默认值'GRAPH'，详见[MindSpore 官网](https://www.mindspore.cn/docs/zh-CN/master/design/dynamic_graph_and_static_graph.html)
-
-`--save_graphs`表示是否保存计算图，默认值'False'
-
-`--save_graphs_path`表示计算图保存的路径，默认值'./graphs'
+`--config_file_path`表示配置文件的路径，默认值'./config.yaml'
 
 ### 训练方式二：运行Jupyter Notebook
 
@@ -77,7 +73,7 @@ Shu-Osher问题：坐标x范围为[-5, 5]，计算时间t范围为[0, 1.8]，平
 以下分别为五个算例的真实流场，CAE-LSTM预测结果和预测误差。
 
 对于前四个算例，每个算例的前两个流场结果展现了流场中不同位置的密度随时间的变化情况，第三个误差曲线展现了CAE-LSTM流场与真实流场label的平均相对误差随时间的变化情况。
-对于圆柱绕流算例，以Re = 300的结果为例，前两个流场结果展现了流场中不同位置的流向速度随时间的变化情况，因速度有0值，故第三个误差曲线展现了CAE-LSTM流场与真实流场label的平均误差随时间的变化情况。整个预测时间误差都较小，满足流场预测精度需求。
+对于圆柱绕流算例，以Re = 300的数据集进行训练，使用Re = 200的数据集进行推理预测，前两个流场结果展现了流场中不同位置的流向速度随时间的变化情况，因速度有0值，故第三个误差曲线展现了CAE-LSTM流场与真实流场label的平均误差随时间的变化情况。整个预测时间误差都较小，满足流场预测精度需求。
 
 Sod激波管：
 <figure class="harf">
@@ -103,11 +99,78 @@ Shu-Osher问题：
     <img src="./images/kh_cae_lstm_error.png" title="kh_cae_lstm_error" width="250"/>
 </figure>
 
-圆柱绕流（Re = 300）：
+圆柱绕流（Re = 200）：
 <figure class="harf">
     <img src="./images/cylinder_cae_lstm_predict.gif" title="cylinder_cae_lstm_predict" width="500"/>
     <img src="./images/cylinder_cae_lstm_error.png" title="cylinder_cae_lstm_error" width="250"/>
 </figure>
+
+## 性能
+
+Sod激波管：
+
+|        参数         |        NPU               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend: 显存32G      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.0.0             |      2.0.0       |
+|     数据集         |      [Sod激波管数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)             |      [Sod激波管数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)       |
+|      参数量       |       6e4       |         6e4         |
+|      训练参数     |    cae_batch_size=8, lstm_batch_size=4, steps_per_epoch=1, epochs=4400 | cae_batch_size=8, lstm_batch_size=4, steps_per_epoch=1, epochs=4400 |
+|     优化器         |        Adam     |        Adam         |
+|     训练损失(MSE)    |      5e-6(cae), 1e-3(lstm)        |     3e-6(cae), 5e-5(lstm)       |
+|     训练速度(ms/step)   |     320(cae), 1350(lstm)       |    400(cae), 800(lstm)  |
+
+Shu-Osher问题：
+
+|        参数         |        NPU               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend: 显存32G      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.0.0             |      2.0.0       |
+|     数据集         |      [Shu-Osher数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)             |      [Shu-Osher数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)       |
+|      参数量       |       6e4       |         6e4         |
+|      训练参数     |    cae_batch_size=16, lstm_batch_size=16, steps_per_epoch=1, epochs=4400 | cae_batch_size=16, lstm_batch_size=16, steps_per_epoch=1, epochs=4400 |
+|     优化器         |        Adam     |        Adam         |
+|     训练损失(MSE)    |      0.0015(cae), 0.001(lstm)        |     0.0015(cae), 0.0003(lstm)       |
+|     训练速度(ms/step)   |     900(cae), 7350(lstm)       |    750(cae), 4300(lstm)  |
+
+黎曼问题：
+
+|        参数         |        NPU               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend: 显存32G      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.0.0             |      2.0.0       |
+|     数据集         |      [黎曼问题数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/riemann/)             |      [黎曼问题数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/riemann/)       |
+|      参数量       |       6e4       |         6e4         |
+|      训练参数     |    cae_batch_size=16, lstm_batch_size=32, steps_per_epoch=1, epochs=4400 | cae_batch_size=16, lstm_batch_size=32, steps_per_epoch=1, epochs=4400 |
+|     优化器         |        Adam     |        Adam         |
+|     训练损失(MSE)    |      1e-4(cae), 5e-3(lstm)        |     5e-5(cae), 1e-4(lstm)       |
+|     训练速度(ms/step)   |     900(cae), 700(lstm)       |    1000(cae), 800(lstm)  |
+
+亥姆霍兹不稳定性问题：
+
+|        参数         |        NPU               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend: 显存32G      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.0.0             |      2.0.0       |
+|     数据集         |      [亥姆霍兹不稳定性问题数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/kh/)             |      [亥姆霍兹不稳定性问题数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/kh/)       |
+|      参数量       |       6e4       |         6e4         |
+|      训练参数     |    cae_batch_size=32, lstm_batch_size=32, steps_per_epoch=1, epochs=4400 | cae_batch_size=32, lstm_batch_size=32, steps_per_epoch=1, epochs=4400 |
+|     优化器         |        Adam     |        Adam         |
+|     训练损失(MSE)    |      1e-3(cae), 5e-4(lstm)        |     1e-3(cae), 1e-5(lstm)       |
+|     训练速度(ms/step)   |     2000(cae), 1300(lstm)       |    2200(cae), 1500(lstm)  |
+
+圆柱绕流（Re = 200）：
+
+|        参数         |        NPU               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     硬件资源         |     Ascend: 显存32G      |      NVIDIA V100 显存32G       |
+|     MindSpore版本   |        2.0.0             |      2.0.0       |
+|     数据集         |      [圆柱绕流数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/cylinder_flow/)             |      [圆柱绕流数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/cylinder_flow/)       |
+|      参数量       |       6e4       |         6e4         |
+|      训练参数     |    cae_batch_size=8, lstm_batch_size=16, steps_per_epoch=1, epochs=4400 | cae_batch_size=8, lstm_batch_size=16, steps_per_epoch=1, epochs=4400 |
+|     优化器         |        Adam     |        Adam         |
+|     训练损失(MSE)    |      1e-4(cae), 1e-4(lstm)        |     5e-5(cae), 1e-4(lstm)       |
+|     训练速度(ms/step)   |     500(cae), 200(lstm)       |    500(cae), 200(lstm)  |
 
 ## 代码贡献
 

@@ -46,26 +46,22 @@ The download address for the dataset is: [data_driven/cae-lstm/dataset](https://
 
 + Train the CAE network:
 
-`python -u cae_train.py --case sod --mode GRAPH --save_graphs False --save_graphs_path ./graphs --device_target GPU --device_id 0 --config_file_path ./config.yaml`
+`python -u cae_train.py --case sod --mode GRAPH --device_target GPU --device_id 0 --config_file_path ./config.yaml`
 
 + Train the LSTM network:
 
-`python -u lstm_train.py --case sod --mode GRAPH --save_graphs False --save_graphs_path ./graphs --device_target GPU --device_id 0 --config_file_path ./config.yaml`
+`python -u lstm_train.py --case sod --mode GRAPH --device_target GPU --device_id 0 --config_file_path ./config.yaml`
 
 where:
 `--case` indicates the case to run. You can choose 'sod', 'shu_osher', riemann', 'kh' or 'cylinder'. Default 'sod'，where 'sod' and 'shu_osher' are one dimension cases, 'riemann', 'kh' and 'cylinder' are two dimension cases
 
-`--config_file_path` indicates the path of the parameter file. Default './config.yaml'.
+`--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode. You can refer to [MindSpore official website](https://www.mindspore.cn/docs/zh-CN/master/design/dynamic_graph_and_static_graph.html) for details.Default 'GRAPH'.
 
 `--device_target` indicates the computing platform. You can choose 'Ascend' or 'GPU'. Default 'Ascend'.
 
 `--device_id` indicates the index of NPU or GPU. Default 0.
 
-`--mode` is the running mode. 'GRAPH' indicates static graph mode. 'PYNATIVE' indicates dynamic graph mode. You can refer to [MindSpore official website](https://www.mindspore.cn/docs/zh-CN/master/design/dynamic_graph_and_static_graph.html) for details.Default 'GRAPH'.
-
-`--save_graphs` indicates whether to save the computational graph. Default 'False'.
-
-`--save_graphs_path` indicates the path to save the computational graph. Default './graphs'.
+`--config_file_path` indicates the path of the parameter file. Default './config.yaml'.
 
 ### Run Option 2: Run Jupyter Notebook
 
@@ -101,11 +97,78 @@ Kelvin-Helmholtz instability problem:
     <img src="./images/kh_cae_lstm_error.png" title="kh_cae_lstm_error" width="250"/>
 </figure>
 
-cylinder flow (Re = 300)：
+cylinder flow (Re = 200)：
 <figure class="harf">
     <img src="./images/cylinder_cae_lstm_predict.gif" title="cylinder_cae_lstm_predict" width="500"/>
     <img src="./images/cylinder_cae_lstm_error.png" title="cylinder_cae_lstm_error" width="250"/>
 </figure>
+
+## Performance
+
+Sod：
+
+|        Parameter         |        NPU               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     Hardware         |     Ascend: Memory32G       |      NVIDIA V100 cores 32G       |
+|     MindSpore version   |        2.0.0         |2.0.0|
+|     Dataset          |      [Sod](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)             |      [Sod](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)       |
+|      Parameters       |       6e4       |         6e4         |
+|      Training hyperparameters     |    cae_batch_size=8, lstm_batch_size=4, steps_per_epoch=1, epochs=4400 | cae_batch_size=8, lstm_batch_size=4, steps_per_epoch=1, epochs=4400 |
+|     Optimizer         |        Adam     |        Adam         |
+|     Train loss   |      5e-6(cae), 1e-3(lstm)        |     3e-6(cae), 5e-5(lstm)       |
+|      Speed (ms/step)   |     320(cae), 1350(lstm)       |    400(cae), 800(lstm)  |
+
+Shu-Osher：
+
+|        Parameter         |        NPU               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     Hardware         |     Ascend: Memory32G       |      NVIDIA V100 cores 32G       |
+|     MindSpore version   |        2.0.0             |      2.0.0       |
+|     Dataset          |      [Shu-Osher](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)             |      [Shu-Osher](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/sod/)       |
+|      Parameters       |       6e4       |         6e4         |
+|      Training hyperparameters     |    cae_batch_size=16, lstm_batch_size=16, steps_per_epoch=1, epochs=4400 | cae_batch_size=16, lstm_batch_size=16, steps_per_epoch=1, epochs=4400 |
+|     Optimizer         |        Adam     |        Adam         |
+|     Train loss    |      0.0015(cae), 0.001(lstm)        |     0.0015(cae), 0.0003(lstm)       |
+|     Speed (ms/step)   |     900(cae), 7350(lstm)       |    750(cae), 4300(lstm)  |
+
+Riemann：
+
+|        Parameter         |        NPU               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     Hardware         |     Ascend: Memory32G       |      NVIDIA V100 cores 32G       |
+|     MindSpore version   |        2.0.0             |      2.0.0       |
+|     Dataset          |      [Riemann](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/riemann/)             |      [Riemann](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/riemann/)       |
+|      Parameters       |       6e4       |         6e4         |
+|      Training hyperparameters     |    cae_batch_size=16, lstm_batch_size=32, steps_per_epoch=1, epochs=4400 | cae_batch_size=16, lstm_batch_size=32, steps_per_epoch=1, epochs=4400 |
+|     Optimizer         |        Adam     |        Adam         |
+|     Train loss    |      1e-4(cae), 5e-3(lstm)        |     5e-5(cae), 1e-4(lstm)       |
+|     Speed (ms/step)   |     900(cae), 700(lstm)       |    1000(cae), 800(lstm)  |
+
+KH：
+
+|        Parameter         |        NPU               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     Hardware         |     Ascend: Memory32G       |      NVIDIA V100 cores 32G       |
+|     MindSpore version   |        2.0.0             |      2.0.0       |
+|     Dataset          |      [KH](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/kh/)             |      [KH](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/kh/)       |
+|      Parameters       |       6e4       |         6e4         |
+|      Training hyperparameters     |    cae_batch_size=32, lstm_batch_size=32, steps_per_epoch=1, epochs=4400 | cae_batch_size=32, lstm_batch_size=32, steps_per_epoch=1, epochs=4400 |
+|     Optimizer         |        Adam     |        Adam         |
+|     Train loss    |      1e-3(cae), 5e-4(lstm)        |     1e-3(cae), 1e-5(lstm)       |
+|     Speed (ms/step)   |     2000(cae), 1300(lstm)       |    2200(cae), 1500(lstm)  |
+
+Cylinder（Re = 200）：
+
+|        Parameter         |        NPU               |    GPU       |
+|:----------------------:|:--------------------------:|:---------------:|
+|     Hardware         |     Ascend: Memory32G       |      NVIDIA V100 cores 32G       |
+|     MindSpore version   |        2.0.0             |      2.0.0       |
+|     Dataset          |      [Cylinder](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/cylinder_flow/)             |      [Cylinder](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/cae-lstm/cylinder_flow/)       |
+|      Parameters       |       6e4       |         6e4         |
+|      Training hyperparameters     |    cae_batch_size=8, lstm_batch_size=16, steps_per_epoch=1, epochs=4400 | cae_batch_size=8, lstm_batch_size=16, steps_per_epoch=1, epochs=4400 |
+|     Optimizer         |        Adam     |        Adam         |
+|     Train loss    |      1e-4(cae), 1e-4(lstm)        |     5e-5(cae), 1e-4(lstm)       |
+|     Speed (ms/step)   |     500(cae), 200(lstm)       |    500(cae), 200(lstm)  |
 
 ## Contributor
 

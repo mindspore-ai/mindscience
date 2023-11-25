@@ -18,9 +18,8 @@ import os
 import argparse
 
 import numpy as np
-import mindspore as ms
 
-from mindspore import load_checkpoint, load_param_into_net, set_seed, Tensor
+from mindspore import load_checkpoint, load_param_into_net, set_seed, Tensor, context
 from mindflow.utils import load_yaml_config
 from src import create_cae_dataset, create_lstm_dataset, CaeNet1D, CaeNet2D, Lstm, plot_cae_lstm_eval
 from cae_eval import cae_eval
@@ -84,7 +83,7 @@ def cae_lstm_eval(encoded):
         input_seq_pred[0, -1, :] = output_seq_pred[sample, :]
     print(f"===================End Lstm eval====================")
     lstm_latent = np.expand_dims(output_seq_pred, 1)
-    lstm_latent = ms.Tensor(lstm_latent.astype(np.float32))
+    lstm_latent = Tensor(lstm_latent.astype(np.float32))
     if args.case == 'sod' or args.case == 'shu_osher':
         cae_lstm_predict = np.squeeze(cae.decoder(lstm_latent).asnumpy())
         cae_lstm_predict = cae_lstm_predict / cae_data_params["multiple"]
@@ -98,13 +97,15 @@ def cae_lstm_eval(encoded):
                 np.squeeze(cae.decoder(lstm_latent[time_predict_start: time_predict_end]).asnumpy())
         cae_lstm_predict = cae_lstm_predict / cae_data_params["multiple"]
 
-    plot_cae_lstm_eval(lstm_latent, cae_lstm_predict, true_data, prediction_params["prediction_result_dir"],
-                       lstm_data_params["time_size"], lstm_data_params["time_window"])
+    cae_lstm_error_mean = plot_cae_lstm_eval(lstm_latent, cae_lstm_predict, true_data,
+                                             prediction_params["prediction_result_dir"], lstm_data_params["time_size"],
+                                             lstm_data_params["time_window"])
+    print("CaeLstm prediction mean error: " + str(cae_lstm_error_mean))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='CaeLstm eval')
-    parser.add_argument("--case", type=str, default="cylinder",
+    parser.add_argument("--case", type=str, default="sod",
                         choices=["sod", "shu_osher", "riemann", "kh", "cylinder"],
                         help="Which case to run, support 'sod', 'shu_osher', 'riemann', 'kh', 'cylinder")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
@@ -114,6 +115,13 @@ if __name__ == "__main__":
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
     parser.add_argument("--config_file_path", type=str, default="./config.yaml")
     args = parser.parse_args()
+
+    context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
+                        save_graphs=args.save_graphs,
+                        save_graphs_path=args.save_graphs_path,
+                        device_target=args.device_target,
+                        device_id=args.device_id)
+    use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
     print(f"pid:{os.getpid()}")
     cae_latent = cae_eval(args.config_file_path, args.case)

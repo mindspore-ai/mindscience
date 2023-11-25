@@ -3,6 +3,7 @@
   data_path: "./dataset/sod.npy"    # ./dataset/sod.npy or ./dataset/shu_osher.npy
   batch_size: 8    # 8 for sod, 16 for shu_osher
   time_size: 531      # The numbers of the snapshots, 531 for sod, 2093 for shu_osher
+  multiple: 1      # 1 for all 1D data
 1D_cae_optimizer:
   lr: 0.001
   weight_decay: 0.000001

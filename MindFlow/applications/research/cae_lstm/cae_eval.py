@@ -18,10 +18,9 @@ import os
 import argparse
 
 import numpy as np
-import mindspore as ms
 import mindspore.common.dtype as mstype
 
-from mindspore import load_checkpoint, load_param_into_net, set_seed, Tensor, ops
+from mindspore import load_checkpoint, load_param_into_net, set_seed, Tensor, ops, context
 from mindflow.utils import load_yaml_config
 from src import create_cae_dataset, CaeNet1D, CaeNet2D, plot_cae_eval
 
@@ -72,13 +71,14 @@ def cae_eval(config_file_path, case):
             time_predict_start, time_predict_end = \
                 prediction_params["encoder_time_spilt"][i], prediction_params["encoder_time_spilt"][i + 1]
             encoded[time_predict_start: time_predict_end] = \
-                cae.encoder(ms.Tensor(data_set[time_predict_start: time_predict_end]))
+                cae.encoder(Tensor(data_set[time_predict_start: time_predict_end]))
             cae_predict[time_predict_start: time_predict_end] = \
-                np.squeeze(cae(ms.Tensor(data_set[time_predict_start: time_predict_end])).asnumpy())
+                np.squeeze(cae(Tensor(data_set[time_predict_start: time_predict_end])).asnumpy())
     print(f"===================End CaeNet eval====================")
 
-    plot_cae_eval(encoded, cae_predict, true_data, data_params["multiple"],
-                  prediction_params["prediction_result_dir"], data_params["time_size"])
+    cae_error_mean = plot_cae_eval(encoded, cae_predict, true_data, data_params["multiple"],
+                                   prediction_params["prediction_result_dir"], data_params["time_size"])
+    print("Cae prediction mean error: " + str(cae_error_mean))
     return encoded
 
 
@@ -94,6 +94,13 @@ if __name__ == "__main__":
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
     parser.add_argument("--config_file_path", type=str, default="./config.yaml")
     args = parser.parse_args()
+
+    context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
+                        save_graphs=args.save_graphs,
+                        save_graphs_path=args.save_graphs_path,
+                        device_target=args.device_target,
+                        device_id=args.device_id)
+    use_ascend = context.get_context(attr_key='device_target') == "Ascend"
 
     print(f"pid:{os.getpid()}")
     cae_eval(args.config_file_path, args.case)

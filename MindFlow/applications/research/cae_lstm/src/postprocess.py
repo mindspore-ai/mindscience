@@ -51,6 +51,7 @@ def plot_cae_eval(cae_encoded, cae_predict, true_data, multiple, plot_dir, time_
     cae_predict = cae_predict / multiple
     for time in np.arange(time_size):
         cae_error[time] = error(true_data[time, :], cae_predict[time, :])
+    cae_error_mean = np.mean(cae_error)
 
     plt.plot(time_true, cae_error, 'k-')
     plt.title('relative error')
@@ -63,6 +64,8 @@ def plot_cae_eval(cae_encoded, cae_predict, true_data, multiple, plot_dir, time_
     np.save(f'{plot_dir}/cae_encoded.npy', np.squeeze(cae_encoded.asnumpy()))
     np.save(f'{plot_dir}/cae_predict.npy', cae_predict)
     np.save(f'{plot_dir}/cae_error.npy', cae_error)
+
+    return cae_error_mean
 
 
 def plot_cae_lstm_eval(lstm_latent, cae_lstm_predict, true_data, plot_dir, time_size, time_window):
@@ -79,6 +82,7 @@ def plot_cae_lstm_eval(lstm_latent, cae_lstm_predict, true_data, plot_dir, time_
 
     for time in np.arange(time_size - time_window):
         cae_lstm_error[time] = error(true_data[time + time_window, :], cae_lstm_predict[time, :])
+    cae_lstm_error_mean = np.mean(cae_lstm_error)
 
     plt.plot(time_predict, cae_lstm_error, 'k-')
     plt.title('relative error')
@@ -91,3 +95,5 @@ def plot_cae_lstm_eval(lstm_latent, cae_lstm_predict, true_data, plot_dir, time_
     np.save(f'{plot_dir}/lstm_latent.npy', lstm_latent.asnumpy())
     np.save(f'{plot_dir}/cae_lstm_predict.npy', cae_lstm_predict)
     np.save(f'{plot_dir}/cae_lstm_error.npy', cae_lstm_error)
+
+    return cae_lstm_error_mean
