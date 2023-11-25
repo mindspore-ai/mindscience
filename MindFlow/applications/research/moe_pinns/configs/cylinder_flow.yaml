@@ -1,0 +1,53 @@
+# case cylinder_flow
+geometry:
+  coord_dim: 2
+  time_dim: 1
+  coord_min: [1.0, -2.0]
+  coord_max: [8.0, 2.0]
+  time_min: 0.0
+  time_max: 7.0
+model:
+  name: moe-pinns
+  in_channels: 3
+  out_channels: 3
+  activation: "tanh"
+  layers: 10
+  neurons: 128
+  residual: false
+  n_experts: 4
+data:
+  domain:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+  BC:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+  IC:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+  time:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+  train_data_path: "./dataset/"
+  test_data_path: "./dataset/"
+  train_batch_size: 8192
+  test_batch_size: 8192
+optimizer:
+  initial_lr: 0.001
+  warmup_epochs: 1
+  train_epochs: 10000
+  weight_decay: 0.0
+  gamma: 0.1
+  milestones: [2000, 4000]
+  amp_level: O3
+summary:
+  save_ckpt_path: "./ckpt"
+  visual_dir: "./vision"
+  keep_checkpoint_max: 10
+  save_checkpoint_epochs: 500
+  eval_interval_epochs: 20
+  visual_resolution: 100
