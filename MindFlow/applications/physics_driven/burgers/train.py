@@ -60,12 +60,12 @@ def train():
 
     # create dataset
     burgers_train_dataset = create_training_dataset(config)
-    train_dataset = burgers_train_dataset.create_dataset(batch_size=config["train_batch_size"],
+    train_dataset = burgers_train_dataset.create_dataset(batch_size=config["data"]["train"]["batch_size"],
                                                          shuffle=True,
                                                          prebatched_data=True,
                                                          drop_remainder=True)
     # create  test dataset
-    inputs, label = create_test_dataset(config["test_dataset_path"])
+    inputs, label = create_test_dataset(config["data"]["root_dir"])
 
     # define models and optimizers
     model = MultiScaleFCSequential(in_channels=config["model"]["in_channels"],
@@ -75,12 +75,13 @@ def train():
                                    residual=config["model"]["residual"],
                                    act=config["model"]["activation"],
                                    num_scales=1)
-    if config["load_ckpt"]:
-        param_dict = load_checkpoint(config["load_ckpt_path"])
+
+    if config["model"]["load_ckpt"]:
+        param_dict = load_checkpoint(config["summary"]["ckpt_dir"])
         load_param_into_net(model, param_dict)
 
     # define optimizer
-    optimizer = nn.Adam(model.trainable_params(), config["optimizer"]["initial_lr"])
+    optimizer = nn.Adam(model.trainable_params(), config["optimizer"]["learning_rate"])
     problem = Burgers1D(model)
 
     if use_ascend:
@@ -113,7 +114,7 @@ def train():
             loss = ops.depend(loss, optimizer(grads))
         return loss
 
-    epochs = config["train_epochs"]
+    epochs = config["data"]["train"]["epochs"]
     steps_per_epoch = train_dataset.get_dataset_size()
     sink_process = mindspore.data_sink(train_step, train_dataset, sink_size=1)
     for epoch in range(1, 1 + epochs):
@@ -128,12 +129,12 @@ def train():
         print_log(f"epoch: {epoch} train loss: {step_train_loss} "
                   f"epoch time: {epoch_seconds:5.3f}s step time: {step_seconds:5.3f}ms")
         model.set_train(False)
-        if epoch % config["eval_interval_epochs"] == 0:
+        if epoch % config["summary"]["eval_interval_epochs"] == 0:
             eval_time_start = time.time()
-            calculate_l2_error(model, inputs, label, config["train_batch_size"])
+            calculate_l2_error(model, inputs, label, config["data"]["train"]["batch_size"])
             print_log(f'evaluation time: {time.time() - eval_time_start}s')
 
-    visual(model, epochs=epochs, resolution=config["visual_resolution"])
+    visual(model, epochs=epochs, resolution=config["summary"]["visual_resolution"])
 
 
 if __name__ == '__main__':

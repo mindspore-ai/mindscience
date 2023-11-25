@@ -33,13 +33,13 @@ def visual(model, config):
     """visual result of model prediction and ground-truth"""
     name = "result"
     test_input, label = create_test_dataset(config)
-    visual_input = test_input.reshape(-1, config["model"]["input_size"])
-    visual_label = label.reshape(-1, config["model"]["output_size"])
+    visual_input = test_input.reshape(-1, config["model"]["in_channels"])
+    visual_label = label.reshape(-1, config["model"]["out_channels"])
     prediction = np.zeros(label.shape)
     index = 0
     while index < len(visual_input):
-        index_end = min(index + config["train_batch_size"], len(visual_input))
-        for i in range(config["model"]["output_size"]):
+        index_end = min(index + config["data"]["train"]["batch_size"], len(visual_input))
+        for i in range(config["model"]["in_channels"]):
             test_batch = Tensor(visual_input[index:index_end, :], dtype=mstype.float32)
             predict = model(test_batch)
             predict = predict.asnumpy()

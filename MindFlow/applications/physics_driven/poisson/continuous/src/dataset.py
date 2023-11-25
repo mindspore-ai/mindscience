@@ -35,7 +35,7 @@ def create_dataset(geom_name, config, n_samps=None):
         config = deepcopy(config)
         config["data"]["domain"]["size"] = n_samps
         config["data"]["BC"]["size"] = n_samps
-        config["batch_size"] = n_samps
+        config["data"]["train"]["batch_size"] = n_samps
     sampling_config = generate_sampling_config(config["data"])
     try:
         cls_shape = shape_factory[geom_name]
@@ -46,7 +46,7 @@ def create_dataset(geom_name, config, n_samps=None):
     )
     dataset = Dataset({region: ["domain", "BC"]})
     ds_create = dataset.create_dataset(
-        batch_size=config["batch_size"],
+        batch_size=config["data"]["train"]["batch_size"],
         shuffle=True,
         prebatched_data=True,
         drop_remainder=True,

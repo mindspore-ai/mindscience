@@ -58,14 +58,14 @@ def train(input_args):
     # create train dataset
     flow_train_dataset = create_training_dataset(config, geom_name)
     train_data = flow_train_dataset.create_dataset(
-        batch_size=config["train_batch_size"], shuffle=True, drop_remainder=True
+        batch_size=config['data']['train']["batch_size"], shuffle=True, drop_remainder=True
     )
     # create test dataset
     test_input, test_label = create_test_dataset(config)
 
     # network model
-    model = FCSequential(in_channels=config["model"]["input_size"],
-                         out_channels=config["model"]["output_size"],
+    model = FCSequential(in_channels=config["model"]["in_channels"],
+                         out_channels=config["model"]["out_channels"],
                          neurons=config["model"]["neurons"],
                          layers=config["model"]["layers"],
                          residual=config["model"]["residual"],
@@ -77,7 +77,7 @@ def train(input_args):
 
     # optimizer
     params = model.trainable_params()
-    optimizer = nn.Adam(params, learning_rate=config["optimizer"]["lr"])
+    optimizer = nn.Adam(params, learning_rate=config["optimizer"]["learning_rate"])
     # prepare loss scaler
     if use_ascend:
         from mindspore.amp import DynamicLossScaler, all_finite, auto_mixed_precision
@@ -109,7 +109,7 @@ def train(input_args):
             loss = ops.depend(loss, optimizer(grads))
         return loss
 
-    epochs = config["train_epoch"]
+    epochs = config["data"]["train"]["epochs"]
     steps_per_epochs = train_data.get_dataset_size()
     print_log(f"number of steps_per_epochs: {steps_per_epochs}")
     sink_process = data_sink(train_step, train_data, sink_size=1)
@@ -126,9 +126,9 @@ def train(input_args):
         print_log(f"epoch: {epoch} train loss: {cur_loss} "
                   f"epoch time: {epoch_seconds:5.3f}s step time: {step_seconds:5.3f}ms")
         model.set_train(False)
-        if epoch % config["eval_interval_epochs"] == 0:
+        if epoch % config["summary"]["eval_interval_epochs"] == 0:
             calculate_l2_error(model, test_input, test_label,
-                               config["train_batch_size"])
+                               config["data"]["train"]["batch_size"])
 
     visual(model, config)
 

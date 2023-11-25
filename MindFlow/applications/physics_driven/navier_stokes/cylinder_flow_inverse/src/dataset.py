@@ -21,7 +21,7 @@ from mindflow.geometry import Rectangle, TimeDomain, GeometryWithTime, generate_
 def create_test_dataset(config):
     """load labeled data for evaluation"""
     # check data
-    test_data_path = config["test_data_path"]
+    test_data_path = config["data"]["root_dir"]
     print("get dataset path: {}".format(test_data_path))
     paths = [test_data_path + '/eval_points.npy', test_data_path + '/eval_label.npy']
     inputs = np.load(paths[0])
@@ -42,7 +42,7 @@ def create_training_dataset(config):
 
     geom_dict = {domain_region: ["domain"]}
 
-    data_path = config["train_data_path"]
+    data_path = config["data"]["root_dir"]
     print(data_path)
     train_data = ExistedDataConfig(name="train",
                                    data_dir=[data_path + "/train_points.npy", data_path + "/train_label.npy"],

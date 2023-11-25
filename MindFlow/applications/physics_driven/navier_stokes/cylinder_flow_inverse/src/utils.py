@@ -187,7 +187,7 @@ def _get_prediction(model, inputs, label_shape, config):
 
     index = 0
     while index < inputs.shape[0]:
-        index_end = min(index + config["test_batch_size"], inputs.shape[0])
+        index_end = min(index + config["data"]["test"]["batch_size"], inputs.shape[0])
         test_batch = Tensor(inputs[index: index_end, :], mstype.float32)
         prediction[index: index_end, :] = model(test_batch).asnumpy()
         index = index_end

@@ -46,7 +46,7 @@ def parse_args():
     parser.add_argument("--device_id", type=int, default=0,
                         help="ID of the target device")
     parser.add_argument("--config_file_path", type=str,
-                        default="./navier_stokes_inverse.yaml")
+                        default="./configs/navier_stokes_inverse.yaml")
     return parser.parse_args()
 
 
@@ -58,7 +58,7 @@ def train(input_args):
 
     # create dataset
     inv_ns_train_dataset = create_training_dataset(config)
-    train_dataset = inv_ns_train_dataset.create_dataset(batch_size=config["train_batch_size"],
+    train_dataset = inv_ns_train_dataset.create_dataset(batch_size=config["data"]["train"]["batch_size"],
                                                         shuffle=True,
                                                         prebatched_data=True,
                                                         drop_remainder=True)
@@ -77,13 +77,13 @@ def train(input_args):
                                    layers=config["model"]["layers"],
                                    neurons=config["model"]["neurons"],
                                    residual=config["model"]["residual"],
-                                   act='tanh',
+                                   act=["model"]["activation"],
                                    num_scales=1,
                                    input_scale=input_scale,
                                    input_center=input_center)
 
-    if config["load_ckpt"]:
-        param_dict = load_checkpoint(config["load_ckpt_path"])
+    if config["model"]["load_ckpt"]:
+        param_dict = load_checkpoint(config["summary"]["ckpt_dir"])
         load_param_into_net(model, param_dict)
 
     theta = mindspore.Parameter(mindspore.Tensor(
@@ -91,7 +91,7 @@ def train(input_args):
     params = model.trainable_params()
     params.append(theta)
     optimizer = nn.Adam(
-        params, learning_rate=config["optimizer"]["initial_lr"])
+        params, learning_rate=config["optimizer"]["learning_rate"])
     problem = InvNavierStokes(model, params)
 
     if use_ascend:
@@ -122,7 +122,7 @@ def train(input_args):
             loss = ops.depend(loss, optimizer(grads))
         return loss
 
-    epochs = config["train_epochs"]
+    epochs = config["data"]["train"]["epochs"]
     steps_per_epochs = train_dataset.get_dataset_size()
     print_log(f"number of steps_per_epochs: {steps_per_epochs}")
     sink_process = mindspore.data_sink(train_step, train_dataset, sink_size=1)
@@ -141,7 +141,7 @@ def train(input_args):
         print_log(f"epoch: {epoch} train loss: {step_train_loss} "
                   f"epoch time: {epoch_seconds:5.3f}ms step time: {step_seconds:5.3f}ms")
         model.set_train(False)
-        if epoch % config["eval_interval_epochs"] == 0:
+        if epoch % config["summary"]["eval_interval_epochs"] == 0:
             print(f"Params are{params[-1].value()}")
             param1_hist.append(params[-1].value()[0])
             param2_hist.append(params[-1].value()[1])

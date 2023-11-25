@@ -1,3 +1,15 @@
+data:
+    name: possion
+    train:
+        batch_size: 5000
+    domain:
+        random_sampling: True
+        size: 1000000
+        sampler: "uniform"
+    BC:
+        random_sampling: True
+        size: 1000000
+        sampler: "uniform"
 geometry:
     interval:
         coord_min: 0.2
@@ -28,16 +40,6 @@ geometry:
         h_min: 0.
         h_max: 1.
         h_axis: 2
-data:
-    domain:
-        random_sampling: True
-        size: 1000000
-        sampler: "uniform"
-    BC:
-        random_sampling: True
-        size: 1000000
-        sampler: "uniform"
-batch_size: 5000
 model:
     1d:
         input_size: 1

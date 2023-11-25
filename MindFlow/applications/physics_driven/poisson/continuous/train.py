@@ -80,7 +80,7 @@ def train(geom_name, file_cfg, ckpt_dir, n_epochs):
     # Create the problem and optimizer
     problem = Poisson(model, n_dim)
     params = model.trainable_params() + problem.loss_fn.trainable_params()
-    steps_per_epoch = config["data"]["domain"]["size"] // config["batch_size"]
+    steps_per_epoch = config["data"]["domain"]["size"] // config["data"]["train"]["batch_size"]
     learning_rate = OneCycleLR(
         total_steps=steps_per_epoch * n_epochs, **config["optimizer"]
     )

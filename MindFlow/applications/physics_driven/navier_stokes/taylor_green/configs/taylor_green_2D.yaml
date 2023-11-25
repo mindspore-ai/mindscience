@@ -1,0 +1,57 @@
+data:
+  name: taylor_green_2D
+  train:
+    batch_size: 1024
+    epochs: 300
+  test:
+    batch_size: 1024
+  domain:
+    size: 65536
+    random_sampling: true
+    sampler: "uniform"
+  time:
+    size: 65536
+    random_sampling: true
+    sampler: "uniform"
+  IC:
+    size: 16384
+    random_sampling: true
+  BC:
+    size: 10000
+    random_sampling: true
+geometry:
+  coord_dim: 2
+  time_dim: 1
+  coord_min: [0.0, 0.0]
+  coord_max: [6.28,6.28]
+  time_min: 0.0
+  time_max: 2.0
+model:
+  name: FullConnectedNet
+  in_channels: 3
+  out_channels: 3
+  activation: tanh
+  layers: 10
+  neurons: 128
+  residual: false
+  load_ckpt: false
+optimizer:
+  name: Adam
+  learning_rate: 0.001
+  weight_decay: 0.0
+  gamma: 0.1
+  milestones: [2000, 4000]
+loss:
+  train:
+    name: MSE
+summary:
+  root_dir: "./summary"
+  ckpt_dir: "./summary/checkpoints"
+  save_ckpt: false
+  Re: 1.0
+  eval_interval_epochs: 20
+  train_with_eval: true
+  visual_dir: "./images"
+  save_checkpoint_steps: 50
+  keep_checkpoint_max: 10
+  save_ckpt: false

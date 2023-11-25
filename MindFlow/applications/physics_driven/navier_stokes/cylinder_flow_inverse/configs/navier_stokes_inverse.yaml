@@ -1,47 +1,38 @@
 data:
-  name: Burgers1D
+  name: navier_stokes_inverse
   root_dir: "./dataset"
   train:
     batch_size: 8192
-    epochs: 15000
+    epochs: 10000
+  test:
+    batch_size: 1024
   domain:
-    size: 8192
-    random_sampling: true
-    sampler: "uniform"
-  BC:
-    size: 8192
-    random_sampling: true
-    sampler: "uniform"
-  IC:
-    size: 8192
+    size: 16384
     random_sampling: true
     sampler: "uniform"
   time:
-    size: 8192
+    size: 16384
     random_sampling: true
     sampler: "uniform"
 geometry:
-  coord_dim: 1
+  coord_dim: 2
   time_dim: 1
-  coord_min: -1.0
-  coord_max: 1.0
+  coord_min: [1.0, -2.0]
+  coord_max: [8.0, 2.0]
   time_min: 0.0
-  time_max: 1.0
+  time_max: 20.0
 model:
-  name: MLP_with_Residual
-  in_channels: 2
-  out_channels: 1
+  name: Fullconnected
+  in_channels: 3
+  out_channels: 3
   activation: tanh
-  layers: 6
-  neurons: 128
-  residual: true
+  layers: 10
+  neurons: 20
+  residual: false
   load_ckpt: false
 optimizer:
   name: Adam
-  learning_rate: 0.0001
-  warmup_epochs: 1
-  weight_decay: 0.0
-  gamma: 0.5
+  learning_rate: 0.001
 loss:
   train:
     name: MSE
@@ -49,7 +40,8 @@ summary:
   root_dir: "./summary"
   ckpt_dir: "./summary/checkpoints"
   save_ckpt: false
+  vision_dir: "./images"
   eval_interval_epochs: 100
+  train_with_eval: true
   save_checkpoint_steps: 50
   keep_checkpoint_max: 10
-  visual_resolution: 100
