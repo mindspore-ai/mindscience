@@ -1,0 +1,67 @@
+# case periodic hill
+data:
+  domain:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+  BC:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+  IC:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+  time:
+    size: 8192
+    random_sampling: true
+    sampler: "uniform"
+  train_batch_size: 1000
+  test_batch_size: 20000
+  train_data_path: "./dataset"
+  test_data_path: "./dataset"
+geometry:
+  coord_dim: 2
+  time_dim: 1
+  coord_min: [1.0, -2.0]
+  coord_max: [8.0, 2.0]
+  time_min: 0.0
+  time_max: 7.0
+model:
+  in_channels: 2
+  out_channels: 6
+  activation: "tanh"
+  layers: 10
+  neurons: 128
+  residual: false
+  amp_level: O3
+optimizer:
+  initial_lr: 0.001
+meta_train:
+  inner_loop:
+    iterations: 2
+  outer_loop:
+    iterations: 50
+  eva_loop:
+    iterations: 1
+  reinit_lamda: 5
+  reinit_epoch: 10
+  eva_interval_outer: 5
+meta_test:
+  iterations: 2000
+  cal_l2_interval: 10
+  if_adam: true
+lamda:
+  initial_lamda: 1.1
+  eva_lamda: 1
+  lamda_min: 0.8
+  lamda_max: 1.2
+hyperparameter:
+  w_min: 1
+  w_max: 2
+  c_min: 0.00000001
+summary:
+  save_ckpt_path: "./checkpoints"
+  summary_dir: "./summary"
+  save_checkpoint_epochs: 20
+  visual_dir: "./vision"

@@ -1,0 +1,68 @@
+# case lburgers
+data:
+  domain:
+    size: 1000
+    random_sampling: true
+    sampler: "uniform"
+  BC:
+    size: 100
+    random_sampling: true
+    sampler: "uniform"
+  IC:
+    size: 200
+    random_sampling: true
+    sampler: "uniform"
+  time:
+    size: 200
+    random_sampling: true
+    sampler: "uniform"
+  train_batch_size: 10000
+  test_batch_size: 10000
+  train_data_path: "./dataset"
+  test_data_path: "./dataset"
+geometry:
+  coord_dim: 1
+  time_dim: 1
+  coord_min: -1.5
+  coord_max: 4.5
+  time_min: 0.0
+  time_max: 2.0
+model:
+  name: MLP_with_Residual
+  in_channels: 2
+  out_channels: 1
+  activation: "tanh"
+  layers: 6
+  neurons: 128
+  residual: false
+  amp_level: O3
+optimizer:
+  initial_lr: 0.001
+meta_train:
+  inner_loop:
+    iterations: 20
+  outer_loop:
+    iterations: 1000
+  eva_loop:
+    iterations: 50
+  reinit_lamda: 10
+  reinit_epoch: 100
+  eva_interval_outer: 100
+meta_test:
+  iterations: 10000
+  cal_l2_interval: 100
+  if_adam: true
+lamda:
+  initial_lamda: 0.015
+  lamda_min: 0.01
+  lamda_max: 0.03
+  eva_lamda: 0.02
+hyperparameter:
+  w_min: 1
+  w_max: 2
+  c_min: 0.00000001
+summary:  
+  save_ckpt_path: "./checkpoints"
+  summary_dir: "./summary"
+  save_checkpoint_epochs: 100
+  visual_dir: "./vision"
