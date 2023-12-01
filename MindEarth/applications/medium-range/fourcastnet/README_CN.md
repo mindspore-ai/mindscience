@@ -8,7 +8,7 @@ FNO充份利用了AFNO模型，提高在高分辨率的预测精度。AFNO是一
 
 ## 快速开始
 
-在`fourcastnet/dataset`下载数据并保存在`./dataset`。
+在[dataset](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)下载数据并保存在`./dataset`。
 
 ### 运行方式一: 在命令行调用`main.py`脚本
 

@@ -6,7 +6,7 @@ ViT-KNO is a deep learning model that leverages the Vision Transformer structure
 
 ## QuickStart
 
-You can download dataset from koopman_vit/dataset for model evaluation. Save these dataset at `./dataset`.
+You can download dataset from [dataset](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/) for model evaluation. Save these dataset at `./dataset`.
 
 ### Run Option 1: Call `main.py` from command line
 
