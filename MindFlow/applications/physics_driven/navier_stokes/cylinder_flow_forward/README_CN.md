@@ -66,13 +66,18 @@ python train.py --config_file_path ./configs/cylinder_flow.yaml --device_target 
 
 ## 性能
 
-|      参数      |                   Ascend                   |         GPU          |
-| :------------: | :----------------------------------------: | :------------------: |
-|    硬件资源    | Ascend | NVIDIA V100 显存 32G |
-| MindSpore 版本 |                   2.0.0                    |        2.0.0         |
-|    训练损失    |                    5e-5                    |         6e-5         |
-|    验证损失    |                    2e-2                    |         2e-2         |
-|      速度      |                 0.2s/epoch                 |       1s/epoch       |
+| 参数               | Ascend               | GPU                |
+|:----------------------:|:--------------------------:|:---------------:|
+| 硬件资源                | Ascend, 显存32G            | NVIDIA V100, 显存32G    |
+| MindSpore版本           | >=2.0.0                 | >=2.0.0                   |
+| 数据集                  | [圆柱绕流流场数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/physics_driven/flow_past_cylinder/)      | [圆柱绕流流场数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/physics_driven/flow_past_cylinder/)                   |
+| 参数量                  | 1.3e5                   | 1.3e5                   |
+| 训练参数                | batch_size=8192, steps_per_epoch=2, epochs=12000 | batch_size=8192, steps_per_epoch=2, epochs=12000 |
+| 测试参数                | batch_size=8192      | batch_size=8192               |
+| 优化器                  | Adam                 | Adam                   |
+| 训练损失(MSE)           | 9e-5                 | 4e-5               |
+| 验证损失(RMSE)          | 2e-2                 | 2e-2               |
+| 速度(ms/step)           | 100                  | 450                |
 
 ## 贡献者
 

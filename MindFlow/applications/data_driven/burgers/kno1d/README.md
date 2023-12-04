@@ -69,13 +69,18 @@ Take 6 samples, and do 10 consecutive steps of prediction. Visualize the predict
 
 ## Performance
 
-|     Parameter     |                  Ascend                  |       GPU       |
-| :---------------: | :--------------------------------------: | :-------------: |
-|     Hardware      | Ascend | NVIDIA V100 32G |
-| MindSpore version |                  2.0.0                   |      2.0.0      |
-|    train loss     |                   3e-5                   |      3e-5       |
-|    valid loss     |                   3e-3                   |      3e-3       |
-|       speed       |                 2s/epoch                 |    7s/epoch     |
+| Parameter               | Ascend               | GPU                |
+|:----------------------:|:--------------------------:|:---------------:|
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.0.0                | >=2.0.0                   |
+| dataset                 | [1D Burgers Equation Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      | [1D Burgers Equation Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)                   |
+| Parameters              | 1.3e5                  | 1.3e5                   |
+| Train Config            | batch_size=8, steps_per_epoch=125, epochs=100 | batch_size=8, steps_per_epoch=125, epochs=100 |
+| Evaluation Config       | batch_size=8      | batch_size=8               |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 3e-05                | 3e-05             |
+| Evaluation Error(RMSE)  | 0.003                | 0.003              |
+| Speed(ms/step)          | 25                   | 70                 |
 
 ## Contributor
 

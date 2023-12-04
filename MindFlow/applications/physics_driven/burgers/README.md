@@ -36,18 +36,18 @@ You can use [Chinese](./burgers1D_CN.ipynb) or [English](./burgers1D.ipynb)Jupyt
 
 ## Performance
 
-|        Parameter         |        Ascend               |    GPU       |
+| Parameter               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend      |      NVIDIA V100 32G       |
-|     MindSpore version   |        2.0.0             |      2.0.0       |
-|     dataset         |      [Burgers Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)             |      [Burgers Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)       |
-|      Parameters       |       6e4       |         6e4         |
-|      Train Config     |    batch_size=8192, steps_per_epoch=1, epochs=15000 | batch_size=8192, steps_per_epoch=1, epochs=15000 |
-|     Evaluation Config      |  batch_size=8192, steps=4   | batch_size=8192, steps=4 |
-|     Optimizer         |        Adam     |        Adam         |
-|     Train Loss(MSE)    |      0.001        |     0.0001       |
-|        Evaluation Error(RMSE)     |        0.010       |       0.008       |
-|     Speed(ms/step)   |     10       |    130  |
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.0.0                | >=2.0.0                   |
+| dataset                 | [Burgers Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)      | [Burgers Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)                   |
+| Parameters              | 6e4                  | 6e4                   |
+| Train Config            | batch_size=8192, steps_per_epoch=1, epochs=15000 | batch_size=8192, steps_per_epoch=1, epochs=15000 |
+| Evaluation Config       | batch_size=8192, steps=4      | batch_size=8192, steps=4               |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 0.001                | 0.0001             |
+| Evaluation Error(RMSE)  | 0.010                | 0.008              |
+| Speed(ms/step)          | 10                   | 40                |
 
 ## Contributor
 

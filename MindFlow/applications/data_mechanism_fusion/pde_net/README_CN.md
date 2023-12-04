@@ -42,11 +42,15 @@ python train.py --config_file_path ./configs/pde_net.yaml --device_target Ascend
 
 |        参数         |        Ascend               |    GPU       |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend      |      NVIDIA V100 显存32G       |
-|     MindSpore版本   |        2.1            |      2.1       |
-|        训练损失      |        0.9               |       0.6       |
-|        验证损失      |        6e-2               |       4e-2    |
-|        速度          |     45ms/epoch        |    150ms/epoch  |
+|     硬件资源         |     Ascend, 显存32G      |      NVIDIA V100, 显存32G       |
+|     MindSpore版本   |        >=2.1.0             |      >=2.1.0       |
+|      参数量       |       3.5e4       |         3.5e4         |
+|      训练参数     |    batch_size=16, steps_per_epoch=70, epochs=500 | batch_size=16, steps_per_epoch=70, epochs=500 |
+|     测试参数      |  batch_size=16   | batch_size=16  |
+|     优化器         |        Adam     |        Adam         |
+|     训练损失(MSE)    |      0.9        |     0.6       |
+|        验证损失(RMSE)     |        0.06       |       0.04       |
+|     训练速度(ms/step)   |     45       |    105  |
 
 ## 贡献者
 

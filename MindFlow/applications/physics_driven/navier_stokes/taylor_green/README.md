@@ -12,4 +12,18 @@ In fluid dynamics, the Taylor–Green vortex is an unsteady flow of a decaying v
 
 ![Time Error](images/TimeError_30000.png)
 
-[详见](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/navier_stokes/taylor_green/taylor_green_2D.ipynb)
+[See More](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/navier_stokes/taylor_green/taylor_green_2D.ipynb)
+
+## Performance
+
+| Parameter               | Ascend               | GPU                |
+|:----------------------:|:--------------------------:|:---------------:|
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.0.0                | >=2.0.0                   |
+| Parameters              | 1.3e5                  | 1.3e5                   |
+| Train Config            | batch_size=1024, steps_per_epoch=64, epochs=300 | batch_size=1024, steps_per_epoch=64, epochs=300 |
+| Evaluation Config       | batch_size=1024      | batch_size=1024                |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 0.0004                | 0.0001             |
+| Evaluation Error(RMSE)  | 0.06                | 0.01              |
+| Speed(ms/step)          | 15                   | 50                |

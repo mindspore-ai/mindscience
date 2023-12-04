@@ -98,13 +98,18 @@ When the incoming Mach number changes, the surface pressure distribution, flow f
 
 ## Performance
 
-|        Parameter         |        Ascend               |    GPU       |
-|:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend      |      NVIDIA V100 32G       |
-|     MindSpore version   |        2.1            |      2.1       |
-|        train loss      |        7e-2               |       4e-2       |
-|        valid loss      |        2e-4               |       2e-4    |
-|        speed          |     11s/epoch        |    40s/epoch  |
+| Parameter               | Ascend               | GPU                |
+|-------------------------|----------------------|--------------------|
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.1.0                | >=2.1.0                   |
+| dataset                 | [2D Airfoil Flow Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_steady/)      | [2D Airfoil Flow Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_steady/)                   |
+| Parameters              | 6e7                  | 6e7                   |
+| Train Config            | batch_size=32, steps_per_epoch=70, epochs=1000 |  batch_size=32, steps_per_epoch=70, epochs=1000 |
+| Evaluation Config       | batch_size=32      | batch_size=32               |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 0.07                | 0.04             |
+| Evaluation Error(RMSE)  | 0.0002                | 0.0001              |
+| Speed(ms/step)          | 150                   | 500                 |
 
 ## Contributor
 

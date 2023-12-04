@@ -61,3 +61,17 @@ where `--geom_name` specifies the name of the geometric shape, and you can choos
 ### Training Method 2: Run Jupyter Notebook
 
 You can run the training and validation code line by line using the Chinese or English version of the Jupyter Notebook.
+
+## Performance
+
+| Parameter               | Ascend               | GPU                |
+|:----------------------:|:--------------------------:|:---------------:|
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.0.0                | >=2.0.0                   |
+| Parameters              | 1e5                  | 1e5                   |
+| Train Config            | batch_size=5000, steps_per_epoch=200, epochs=50 | batch_size=5000, steps_per_epoch=200, epochs=50 |
+| Evaluation Config       | batch_size=5000      | batch_size=5000               |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 0.001                | 0.001             |
+| Evaluation Error(RMSE)  | 0.01                 | 0.01              |
+| Speed(ms/step)          | 0.3                  | 1                |

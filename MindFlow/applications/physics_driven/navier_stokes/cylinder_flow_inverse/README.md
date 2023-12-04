@@ -18,3 +18,18 @@ The inverse problem of Navier-Stokes is that of solving the fluid properties (e.
 |$v_t + (u v_x + v v_x) = - p_y + 0.01(v_{xx} + v_{yy})$|$v_t + 0.9984444 (u v_x + v v_x) = - p_y + 0.01072927(v_{xx} + v_{yy})$|
 
 [See More](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/navier_stokes/cylinder_flow_inverse/navier_stokes_inverse_CN.ipynb)
+
+## Performance
+
+| Parameter               | Ascend               | GPU                |
+|:----------------------:|:--------------------------:|:---------------:|
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.0.0                | >=2.0.0                   |
+| dataset                 | [Navier-Stoken Inverse Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/physics_driven/inverse_navier_stokes/)      | [Navier-Stoken Inverse Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/physics_driven/inverse_navier_stokes/)                   |
+| Parameters              | 3.5e3                  | 3.5e3                   |
+| Train Config            | batch_size=8192, steps_per_epoch=39, epochs=10000 | batch_size=8192, steps_per_epoch=39, epochs=10000 |
+| Evaluation Config       | batch_size=1024      | batch_size=1024               |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 0.0001               | 0.0001             |
+| Evaluation Error(RMSE)  | 0.01                 | 0.01              |
+| Speed(ms/step)          | 40                   | 40                |

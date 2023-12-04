@@ -60,13 +60,18 @@ Take 1 samples, and do 10 consecutive steps of prediction. Visualize the predict
 
 ## Performance
 
-|        Parameter         |        Ascend               |    GPU       |
+| Parameter               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend      |      NVIDIA V100 32G       |
-|     MindSpore版本   |        2.1            |      2.1       |
-|        train loss      |       0.7                |       0.7       |
-|        valid loss      |        6e-2               |       5e-2    |
-|        speed          |     15s/epoch        |    47s/epoch  |
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.1.0                | >=2.1.0                   |
+| dataset                 | [2D Navier-Stokes Equation Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)      | [2D Navier-Stokes Equation Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)                   |
+| Parameters              | 9e5                  | 9e5                   |
+| Train Config            | batch_size=19, steps_per_epoch=1000, epochs=150 | batch_size=19, steps_per_epoch=1000, epochs=150 |
+| Evaluation Config       | batch_size=1      | batch_size=1               |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 0.7                 | 0.7             |
+| Evaluation Error(RMSE)  | 0.06                | 0.06              |
+| Speed(ms/step)          | 15                   | 45                 |
 
 ## Contributor
 

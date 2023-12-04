@@ -60,13 +60,18 @@ where,
 
 ## Performance
 
-|        Parameter         |        Ascend               |    GPU       |
+| Parameter               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend 910A, 32G；CPU: 2.6GHz, 192 cores      |      NVIDIA V100 32G       |
-|     MindSpore   |        2.1.0             |      2.1.0       |
-|        train loss      |        0.00125               |       0.00122      |
-|        valid liss      |        0.14               |       0.10    |
-|        speed          |     0.04s/epoch        |    0.14s/epoch  |
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.1.0                 | >=2.1.0                   |
+| dataset                 | [PeRCNN Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN/)      | [PeRCNN Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN/)                   |
+| Parameters              | 4e3                  | 4e3                   |
+| Train Config            | batch_size=1, steps_per_epoch=1, epochs=15000 | batch_size=8, steps_per_epoch=1, epochs=15000 |
+| Evaluation Config       | batch_size=1      | batch_size=1               |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 0.001                | 0.001             |
+| Evaluation Error(RMSE)  | 0.06                | 0.10              |
+| Speed(ms/step)          | 40                   | 150                 |
 
 ## Contributor
 

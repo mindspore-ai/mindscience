@@ -77,13 +77,18 @@ predict total time: 8.004547119140625 s<br>
 
 ## Performance
 
-|        Parameter         |        Ascend               |    GPU       |
+| Parameter               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend      |      NVIDIA V100 32G       |
-|     MindSpore版本   |        2.1            |      2.1       |
-|        train loss      |       0.016                |       0.016       |
-|        valid loss      |        2e-2               |       2e-2    |
-|        speed          |     19s/epoch        |    116s/epoch  |
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.1.0                | >=2.1.0                   |
+| dataset                 | [2D Navier-Stokes Equation Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)      | [2D Navier-Stokes Equation Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)                   |
+| Parameters              | 6.5e6                  | 6.5e6                    |
+| Train Config            | batch_size=10, steps_per_epoch=1, epochs=150 | batch_size=10, steps_per_epoch=1, epochs=150 |
+| Evaluation Config       | batch_size=1      | batch_size=1               |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 0.02                | 0.02             |
+| Evaluation Error(RMSE)  | 0.02                | 0.02              |
+| Speed(ms/step)          | 20000                   | 50000                 |
 
 ## Contributor
 

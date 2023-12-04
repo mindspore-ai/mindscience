@@ -36,18 +36,18 @@ python train.py --config_file_path ./configs/burgers.yaml --mode GRAPH --device_
 
 ## 性能
 
-|        参数         |        Ascend               |    GPU       |
+| 参数               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend      |      NVIDIA V100 显存32G       |
-|     MindSpore版本   |        2.0.0             |      2.0.0       |
-|     数据集         |      [Burgers数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)             |      [Burgers数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)       |
-|      参数量       |       6e4       |         6e4         |
-|      训练参数     |    batch_size=8192, steps_per_epoch=1, epochs=15000 | batch_size=8192, steps_per_epoch=1, epochs=15000 |
-|     测试参数      |  batch_size=8192, steps=4   | batch_size=8192, steps=4 |
-|     优化器         |        Adam     |        Adam         |
-|     训练损失(MSE)    |      0.001        |     0.0001       |
-|        验证损失(RMSE)     |        0.010       |       0.008       |
-|     速度(ms/step)   |     10       |    130  |
+| 硬件资源                | Ascend, 显存32G            | NVIDIA V100, 显存32G    |
+| MindSpore版本           | >=2.0.0                 | >=2.0.0                    |
+| 数据集                  | [Burgers数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)      | [Burgers数据集](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)                   |
+| 参数量                  | 6e4                   | 6e4                   |
+| 训练参数                | batch_size=8192, steps_per_epoch=1, epochs=15000 | batch_size=8192, steps_per_epoch=1, epochs=15000 |
+| 测试参数                | batch_size=8192, steps=4      | batch_size=8192, steps=4           |
+| 优化器                  | Adam                 | Adam                   |
+| 训练损失(MSE)           | 0.001                | 0.0001             |
+| 验证损失(RMSE)          | 0.010                | 0.008              |
+| 速度(ms/step)           | 10                   | 40                |
 
 ## Contributor
 

@@ -60,13 +60,18 @@ python train.py --mode GRAPH --save_graphs_path ./graphs --device_target Ascend 
 
 ## 性能
 
-|        参数         |        Ascend               |    GPU       |
+| 参数               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend 910A, 显存32G；CPU: 2.6GHz, 192核      |      NVIDIA V100 显存32G       |
-|     MindSpore版本   |        2.1.0             |      2.1.0       |
-|        训练损失      |        0.00125               |       0.00122      |
-|        验证损失      |        0.14               |       0.10    |
-|        速度          |     0.04s/epoch        |    0.14s/epoch  |
+| 硬件资源                | Ascend, 显存32G            | NVIDIA V100, 显存32G    |
+| MindSpore版本           | >=2.1.0                 | >=2.1.0                   |
+| 数据集                  | [PeRCNN数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN/)      | [PeRCNN数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN/)                   |
+| 参数量                  | 4e3                   | 4e3                  |
+| 训练参数                | batch_size=1, steps_per_epoch=1, epochs=15000 | batch_size=8, steps_per_epoch=1, epochs=15000 |
+| 测试参数                | batch_size=1          | batch_size=1               |
+| 优化器                  | Adam                 | Adam                   |
+| 训练损失(MSE)           | 0.001                | 0.001             |
+| 验证损失(RMSE)          | 0.06                | 0.10              |
+| 速度(ms/step)           | 40                   | 150                |
 
 ## Contributor
 

@@ -73,13 +73,18 @@ predict total time: 8.004547119140625 s
 
 ## 性能
 
-|        参数         |        Ascend               |    GPU       |
+| 参数               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend      |      NVIDIA V100 显存32G       |
-|     MindSpore版本   |        2.1            |      2.1       |
-|        训练损失      |       0.016                |       0.016       |
-|        验证损失      |        2e-2               |       2e-2    |
-|        速度          |     19s/epoch        |    116s/epoch  |
+| 硬件资源                | Ascend, 显存32G            | NVIDIA V100, 显存32G    |
+| MindSpore版本           | >=2.1.0                 | >=2.1.0                   |
+| 数据集                  | [二维NS方程数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)      | [二维NS方程数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)                   |
+| 参数量                  | 6.5e6                   | 6.5e6                   |
+| 训练参数                | batch_size=10, steps_per_epoch=1, epochs=150 | batch_size=10, steps_per_epoch=1, epochs=150 |
+| 测试参数                | batch_size=1          | batch_size=1               |
+| 优化器                  | Adam                 | Adam                   |
+| 训练损失(MSE)           | 0.02                | 0.02             |
+| 验证损失(RMSE)          | 0.02                | 0.02              |
+| 速度(ms/step)           | 20000                   | 50000                |
 
 ## Contributor
 

@@ -73,13 +73,18 @@ You can run the training and validation code line by line using the Chinese or E
 
 ## Performance
 
-|        Parameter         |        Ascend               |    GPU       |
+| Parameter               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend      |      NVIDIA V100 32G       |
-|     MindSpore version   |        2.1             |      2.1       |
-|        train loss      |        5e-3               |       4e-3      |
-|        valid loss      |        9e-4               |       8e-4    |
-|        speed          |     4.2s/epoch        |    3.9s/epoch  |
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.1.0                | >=2.1.0                   |
+| dataset                 | [1D Burgers Equation Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      | [1D Burgers Equation Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)                   |
+| Parameters              | 5.5e5                  | 5.5e5                   |
+| Train Config            | batch_size=8, steps_per_epoch=1000, epochs=100 |batch_size=8, steps_per_epoch=1000, epochs=100 |
+| Evaluation Config       | batch_size=8      | batch_size=8               |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 0.005                | 0.005             |
+| Evaluation Error(RMSE)  | 0.0008                | 0.0008              |
+| Speed(ms/step)          | 33                   | 33                 |
 
 ## Contributor
 

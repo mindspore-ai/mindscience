@@ -18,3 +18,18 @@ Navier-Stokes的反问题是指，在已知某些流体运动特征（如流量�
 |$v_t + (u v_x + v v_x) = - p_y + 0.01(v_{xx} + v_{yy})$|$v_t + 0.9984444 (u v_x + v v_x) = - p_y + 0.01072927(v_{xx} + v_{yy})$|
 
 [详见](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/physics_driven/navier_stokes/cylinder_flow_inverse/navier_stokes_inverse_CN.ipynb)
+
+## 性能
+
+| 参数               | Ascend               | GPU                |
+|:----------------------:|:--------------------------:|:---------------:|
+| 硬件资源                | Ascend, 显存32G            | NVIDIA V100, 显存32G    |
+| MindSpore版本           | >=2.0.0                 | >=2.0.0                   |
+| 数据集                  | [NS方程反问题数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/physics_driven/inverse_navier_stokes/)      | [NS方程反问题数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/physics_driven/inverse_navier_stokes/)                   |
+| 参数量                  | 3.5e3                   | 3.5e3                    |
+| 训练参数                | batch_size=8192, steps_per_epoch=39, epochs=10000 | batch_size=8192, steps_per_epoch=39, epochs=10000 |
+| 测试参数                | batch_size=1024      | batch_size=1024               |
+| 优化器                  | Adam                 | Adam                   |
+| 训练损失(MSE)           | 0.0001                | 0.0001             |
+| 验证损失(RMSE)          | 0.01                  | 0.01              |
+| 速度(ms/step)           | 40                   | 40                |

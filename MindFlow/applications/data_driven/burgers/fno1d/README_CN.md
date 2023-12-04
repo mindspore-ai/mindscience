@@ -72,13 +72,18 @@ python train.py --config_file_path ./configs/fno1d.yaml --device_target GPU --de
 
 ## 性能
 
-|        参数         |        Ascend               |    GPU       |
+| 参数               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend      |      NVIDIA V100 显存32G       |
-|     MindSpore版本   |        2.1             |      2.1       |
-|        训练损失      |        5e-3               |       4e-3      |
-|        验证损失      |        9e-4               |       8e-4    |
-|        速度          |     4.2s/epoch        |    3.9s/epoch  |
+| 硬件资源                | Ascend, 显存32G            | NVIDIA V100, 显存32G    |
+| MindSpore版本           | >=2.1.0                 | >=2.1.0                   |
+| 数据集                  | [一维Burgers方程数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      | [一维Burgers方程数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)                   |
+| 参数量                  | 5.5e5                   | 5.5e5                   |
+| 训练参数                | batch_size=8, steps_per_epoch=1000, epochs=100 | batch_size=8, steps_per_epoch=1000, epochs=100 |
+| 测试参数                | batch_size=8          | batch_size=8               |
+| 优化器                  | Adam                 | Adam                   |
+| 训练损失(MSE)           | 0.005                | 0.005             |
+| 验证损失(RMSE)          | 0.0008                | 0.0008              |
+| 速度(ms/step)           | 33                   | 33                |
 
 ## Contributor
 

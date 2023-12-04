@@ -57,13 +57,18 @@ python --mode GRAPH --device_target Ascend --device_id 0 --config_file_path ./co
 
 ## 性能
 
-|        参数         |        Ascend               |    GPU       |
+| 参数               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend      |      NVIDIA V100 显存32G       |
-|     MindSpore版本   |        2.1            |      2.1       |
-|        训练损失      |       0.17                |       0.16       |
-|        验证损失      |        3e-2               |       3e-2    |
-|        速度          |     25s/epoch        |    160s/epoch  |
+| 硬件资源                | Ascend, 显存32G            | NVIDIA V100, 显存32G    |
+| MindSpore版本           | >=2.1.0                 | >=2.1.0                   |
+| 数据集                  | [二维NS方程数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)      | [二维NS方程数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/navier_stokes/)                   |
+| 参数量                  | 4e5                   | 4e5                   |
+| 训练参数                | batch_size=19, steps_per_epoch=1000, epochs=50 | batch_size=19, steps_per_epoch=1000, epochs=50 |
+| 测试参数                | batch_size=19          | batch_size=19               |
+| 优化器                  | Adam                 | Adam                   |
+| 训练损失(MSE)           | 0.2                 | 0.2             |
+| 验证损失(RMSE)          | 0.03                | 0.03              |
+| 速度(ms/step)           | 30                   | 40                |
 
 ## 贡献者
 

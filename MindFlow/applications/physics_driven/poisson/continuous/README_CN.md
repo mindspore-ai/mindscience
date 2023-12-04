@@ -61,3 +61,17 @@ python train.py --geom_name disk --mode GRAPH --save_graphs_path ./graphs --devi
 ### 训练方式二：运行Jupyter Notebook
 
 您可以使用中文版和英文版Jupyter Notebook逐行运行训练和验证代码。
+
+## 性能
+
+| 参数               | Ascend               | GPU                |
+|:----------------------:|:--------------------------:|:---------------:|
+| 硬件资源                | Ascend, 显存32G            | NVIDIA V100, 显存32G    |
+| MindSpore版本           | >=2.0.0                 | >=2.0.0                   |
+| 参数量                  | 1e5                   | 1e5                   |
+| 训练参数                | batch_size=5000, steps_per_epoch=200, epochs=50 | batch_size=5000, steps_per_epoch=200, epochs=50 |
+| 测试参数                | batch_size=5000      | batch_size=5000               |
+| 优化器                  | Adam                 | Adam                    |
+| 训练损失(MSE)           | 0.001                | 0.001             |
+| 验证损失(RMSE)          | 0.01                 | 0.01              |
+| 速度(ms/step)           | 0.3                  | 1                |

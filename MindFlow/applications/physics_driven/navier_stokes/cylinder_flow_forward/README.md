@@ -68,13 +68,18 @@ You can run the training and validation code line by line using the Chinese or E
 
 ## Performance
 
-|     Parameter     |                  Ascend                  |       GPU       |
-| :---------------: | :--------------------------------------: | :-------------: |
-|     Hardware      | Ascend | NVIDIA V100 32G |
-| MindSpore version |                  2.0.0                   |      2.0.0      |
-|    train loss     |                   5e-5                   |      6e-5       |
-|    valid loss     |                   2e-2                   |      2e-2       |
-|       speed       |                0.2s/epoch                |    1s/epoch     |
+| Parameter               | Ascend               | GPU                |
+|:----------------------:|:--------------------------:|:---------------:|
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.0.0                | >=2.0.0                   |
+| dataset                 | [2D Cylinder Fow Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)      | [2D Cylinder Fow Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/physics_driven/burgers_pinns/)                    |
+| Parameters              | 1.3e5                  | 1.3e5                   |
+| Train Config            | batch_size=8192, steps_per_epoch=2, epochs=12000 | batch_size=8192, steps_per_epoch=2, epochs=12000 |
+| Evaluation Config       | batch_size=8192      | batch_size=8192               |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 9e-5                 | 4e-5             |
+| Evaluation Error(RMSE)  | 2e-2                 | 2e-2              |
+| Speed(ms/step)          | 100                  | 450                |
 
 ## Contributor
 

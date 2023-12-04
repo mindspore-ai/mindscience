@@ -40,13 +40,17 @@ You can run training and validation code line by line using both the [Chinese ve
 
 ## Performance
 
-|        Parameter         |        Ascend               |    GPU       |
+| Parameter               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend      |      NVIDIA V100 32G       |
-|     MindSpore version   |        2.1            |      2.1       |
-|        train loss      |        0.9               |       0.6       |
-|        valid loss      |        6e-2               |       4e-2    |
-|        speed          |     45ms/epoch        |    150ms/epoch  |
+| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
+| MindSpore version       | >=2.1.0                | >=2.1.0                   |
+| Parameters              | 3.5e4       |         3.5e4                   |
+| Train Config            | batch_size=16, steps_per_epoch=70, epochs=500 | batch_size=16, steps_per_epoch=70, epochs=500 |
+| Evaluation Config       | batch_size=16   | batch_size=16               |
+| Optimizer               | Adam                 | Adam                   |
+| Train Loss(MSE)         | 0.9        |     0.6             |
+| Evaluation Error(RMSE)  | 0.06       |       0.04              |
+| Speed(ms/step)          | 45       |    105                 |
 
 ## Contributor
 

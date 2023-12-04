@@ -100,13 +100,18 @@ python train.py --config_file_path ./configs/vit.yaml --device_target GPU --devi
 
 ## 性能
 
-|        参数         |        Ascend               |    GPU       |
+| 参数               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-|     硬件资源         |     Ascend       |      NVIDIA V100 显存32G       |
-|     MindSpore版本   |        2.1            |      2.1       |
-|        训练损失      |        7e-2               |       4e-2       |
-|        验证损失      |        2e-4               |       2e-4    |
-|        速度          |     11s/epoch        |    40s/epoch  |
+| 硬件资源                | Ascend, 显存32G            | NVIDIA V100, 显存32G    |
+| MindSpore版本           | >=2.1.0                 | >=2.1.0                   |
+| 数据集                  | [二维翼型流场数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_steady/)      | [二维翼型流场数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_steady/)                   |
+| 参数量                  | 6e7                   | 6e7                   |
+| 训练参数                | batch_size=32, steps_per_epoch=70, epochs=1000 | batch_size=32, steps_per_epoch=70, epochs=1000 |
+| 测试参数                | batch_size=32          | batch_size=32               |
+| 优化器                  | Adam                 | Adam                   |
+| 训练损失(MSE)           | 0.07                | 0.04             |
+| 验证损失(RMSE)          | 0.0002                | 0.0001              |
+| 速度(ms/step)           | 150                   | 500                |
 
 ## 贡献者
 
