@@ -32,7 +32,7 @@ data:
   mesh_level: 4
   grid_resolution: 1.4
 optimizer:
-  name: "adam"
+  name: "adamw"
   initial_lr: 2.5e-4
   finetune_lr: 0.0000003
   finetune_epochs: 1
