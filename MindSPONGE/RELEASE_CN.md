@@ -2,6 +2,26 @@
 
 [View English](./RELEASE.md)
 
+## MindSPONGE 1.0.0rc2 Release Notes
+
+### RASP & FAAST
+
+- [STABLE] RASP & FAAST是昌平实验室高毅勤团队开发的蛋白质结构解析工具。RASP（Restraints Assisted Structure Predictor）模型能接受抽象或实验约束，使它能根据抽象或实验、稀疏或密集的约束生成结构，可用于多种应用，包括改进多结构域蛋白和msa较少的蛋白的结构预测。FAAST（iterative Folding Assisted peak ASsignmenT）方法通过结合RASP与传统核磁共振数据解析方法，实现了核磁共振数据全自动解析。
+
+### Bug Fixes
+
+- [I8G9N5] 修复SPONGE中的分子模拟样例tutorial_b01.py get_item报错问题。
+- [I78EJO] 修复mindsponge.cell.TriangleAttention问题（shape不一致）。
+- [I7QZVK] 修复MEGA-Protein支持序列长度与文档不一致的问题。
+
+## 贡献者
+
+感谢以下人员做出的贡献:
+
+yangyi, zhangjun, liusirui, xiayijie, chendiqing, huangyupeng,  yufan, wangzidong, niningxi, chenmengyun, chuhaotian, fengxun, huyingtong, liqingguo, liushuo, luxingyu, pantianyuan, wangmin, xuchen, zhangweijie
+
+欢迎以任何形式对项目提供贡献！
+
 ## MindSpore SPONGE 1.0.0-rc1 Release Notes
 
 MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)是基于昇思MindSpore的计算生物领域套件，支持分子动力学、蛋白质折叠等常用功能，旨在于为广大的科研人员、老师及学生提供高效易用的AI计算生物软件。
