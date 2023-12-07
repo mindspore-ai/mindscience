@@ -410,10 +410,10 @@ def identity(x: Tensor) -> Tensor:
     Returns a Tensor with the same shape and contents as input.
 
     Args:
-        - **x** (Tensor) - The shape of tensor is :math:`(x_1, x_2, ..., x_R)`. The data type is Number.
+        x (Tensor): The shape of tensor is :math:`(x_1, x_2, ..., x_R)`. The data type is Number.
 
     Returns:
-        Tensor, the shape of tensor and the data type are the same as `input_x`, :math:`(x_1, x_2, ..., x_R)`.
+        Tensor, the shape of tensor and the data type are the same as `x`, :math:`(x_1, x_2, ..., x_R)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -441,7 +441,7 @@ def periodic_variable(variable: Tensor,
                             Mask for the periodic variable.
 
     Returns:
-        period_value (Tensor):  Tensor of shape `(...)`. Data type is float.
+        period_value (Tensor), Tensor of shape `(...)`. Data type is float.
                                 Variable with value in the periodic range.
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -476,7 +476,7 @@ def periodic_difference(difference: Tensor,
                             Default: -0.5
 
     Returns:
-        period_diff (Tensor):   Tensor of shape `(...)`. Data type is float.
+        period_diff (Tensor), Tensor of shape `(...)`. Data type is float.
                                 Variable with value in the periodic range.
 
     Supported Platforms:
@@ -620,7 +620,7 @@ def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> T
                             Default: 0
 
     Returns:
-        coordinate (Tensor):    Tensor of shape `(B, ..., D)`. Data type is float.
+        coordinate (Tensor), Tensor of shape `(B, ..., D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1190,7 +1190,7 @@ def coulomb_interaction(q_i: Tensor,
         coulomb_const (float):  Coulomb constant :math:`k`. Default: 1
 
     Returns:
-        E_coulomb (Tensor):     Tensor of shape `(...)`. Data type is float.
+        E_coulomb (Tensor), Tensor of shape `(...)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1227,7 +1227,7 @@ def lennard_jones_potential(epsilon: Tensor, sigma: Tensor, r_ij: Tensor, mask: 
                             Mask for distances :math:`r_{ij}`. Default: ``None``.
 
     Returns:
-        E_coulomb (Tensor):     Tensor of shape (...). Data type is float.
+        E_coulomb (Tensor), Tensor of shape (...). Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1268,7 +1268,7 @@ def lennard_jones_potential2(epsilon: Tensor, r_0: Tensor, r_ij: Tensor, mask: T
         mask (Tensor):      Tensor of shape `(...)`. Data type is bool.
                             Mask for distances :math:`r_{ij}`. Default: ``None``.
     Returns:
-        E_coulomb (Tensor):     Tensor of shape `(...)`. Data type is float.
+        E_coulomb (Tensor), Tensor of shape `(...)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1406,7 +1406,7 @@ def check_broadcast(shape0: tuple, shape1: tuple) -> tuple:
         shape1 (tuple): Second shape
 
     Returns:
-        shape (tuple):  Shape after broadcast
+        shape (tuple), Shape after broadcast
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -1444,7 +1444,7 @@ def any_none(iterable: Iterable) -> bool:
         iterable (Iterable): Iterable variable
 
     Returns:
-        any (bool):  If any values x in the iterable is None
+        any (bool), If any values x in the iterable is None
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -1460,7 +1460,7 @@ def all_none(iterable: Iterable) -> bool:
         iterable (Iterable): Iterable variable
 
     Returns:
-        all (bool):  If all values `x` in the `iterable` is None
+        all (bool), If all values `x` in the `iterable` is None
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -1476,7 +1476,7 @@ def any_not_none(iterable: Iterable) -> bool:
         iterable (Iterable): Iterable variable
 
     Returns:
-        any (bool):  If any values `x` in the `iterable` is not None
+        any (bool), If any values `x` in the `iterable` is not None
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -1492,7 +1492,7 @@ def all_not_none(iterable: Iterable) -> bool:
         iterable (Iterable): Iterable variable
 
     Returns:
-        all (bool):  If all values `x` in the `iterable` is Not None
+        all (bool), If all values `x` in the `iterable` is Not None
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -1509,7 +1509,7 @@ def get_arguments(locals_: dict, kwargs: dict = None) -> dict:
         kwargs (dict): Dictionary of keyword arguments (kwargs) of the class.
 
     Returns:
-        args (dict): Dictionary of arguments
+        args (dict), Dictionary of arguments
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -1617,9 +1617,10 @@ def _bonds_in(bonds, bond):
 
 def bonds_in(bonds, batch_bond):
     """ Return if batch_bond exists in bonds.
+
     Args:
-        bonds: The total bonds set.
-        batch_bond: The input bond set.
+        bonds (Tensor): The total bonds set.
+        batch_bond (Tensor): The input bond set.
 
     Returns:
         If batch_bond exists in bonds, the mask will be 1, else 0.

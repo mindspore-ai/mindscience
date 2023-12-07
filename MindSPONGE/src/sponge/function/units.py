@@ -1071,7 +1071,16 @@ class Units:
 
 
 def get_length(length: Union[Length, float], unit: Union[str, Units] = None) -> float:
-    """get Tensor of length in specific unit"""
+    """
+    Get the tensor of length in specific unit
+
+    Args:
+        length (Union[Length, float]):  Length value.
+        unit (Union[str, Units], optional):   Length unit. Default: ``None``.
+
+    Returns:
+        Float, a tensor of length in specific unit.
+    """
     if isinstance(length, dict):
         length = Length(**length)
     if isinstance(length, Length):
@@ -1080,7 +1089,16 @@ def get_length(length: Union[Length, float], unit: Union[str, Units] = None) -> 
 
 
 def get_energy(energy: Union[Energy, float], unit: Union[str, Units] = None) -> float:
-    """get Tensor of energy in specific unit"""
+    """
+    Get the tensor of energy in specific unit
+
+    Args:
+        energy (Union[Energy, float]):  Energy value.
+        unit (Union[str, Units], optional):   Energy unit. Default: ``None``.
+
+    Returns:
+        Float, a tensor of energy in specific unit.
+    """
     if isinstance(energy, dict):
         energy = Energy(**energy)
     if isinstance(energy, Energy):

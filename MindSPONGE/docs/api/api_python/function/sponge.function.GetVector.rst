@@ -57,10 +57,6 @@ sponge.function.GetVector
         返回：
             bool。是否使用周期性边界条件。
 
-    .. py:method:: use_pbc(use_pbc_: bool)
-
-        设置是否使用周期性边界条件
-
     .. py:method:: construct(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None)
 
         计算从初始点到终点的向量。

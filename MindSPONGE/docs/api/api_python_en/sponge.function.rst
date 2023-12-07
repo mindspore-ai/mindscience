@@ -46,9 +46,6 @@ sponge.function
     sponge.function.Units
     sponge.function.vector_in_pbc
     sponge.function.VelocityGenerator
-    sponge.function._bonds_in
-    sponge.function._constant_multiply
-    sponge.function._quaternion_multiply
     sponge.function.all_none
     sponge.function.all_not_none
     sponge.function.any_none
