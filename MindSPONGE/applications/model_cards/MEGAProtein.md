@@ -102,47 +102,47 @@ MEGAEvoGen，MEGAFold，MEGAAssessment均支持多种不同场景下的不同输
 
 - MEGAEvoGen
 
-  - 序列作为输入，样例如下：
+    - 序列作为输入，样例如下：
 
-  ```bash
-  from mindsponge import PipeLine
-  from mindsponge.common.config_load import load_config
+    ```bash
+    from mindsponge import PipeLine
+    from mindsponge.common.config_load import load_config
 
-  fasta = "GYDKDLCEWSMTADQTEVETQIEADIMNIVKRDRPEMKAEVQKQLKSGGVMQYNYVLYCDKNFNNKNIIAEVVGE"
-  msa_generator = PipeLine(name="MEGAEvoGen")
+    fasta = "GYDKDLCEWSMTADQTEVETQIEADIMNIVKRDRPEMKAEVQKQLKSGGVMQYNYVLYCDKNFNNKNIIAEVVGE"
+    msa_generator = PipeLine(name="MEGAEvoGen")
 
-  # 未获取config文件时，执行如下两行命令即可自动下载config文件，之后所有案例同理替换，仅提供代码样例，不做相同说明
-  # from mindsponge.pipeline.pipeline import download_config
-  # conf = download_config(msa_generator.config["evogen_predict_256"], msa_generator.config_path + "evogen_predict_256.yaml")
+    # 未获取config文件时，执行如下两行命令即可自动下载config文件，之后所有案例同理替换，仅提供代码样例，不做相同说明
+    # from mindsponge.pipeline.pipeline import download_config
+    # conf = download_config(msa_generator.config["evogen_predict_256"], msa_generator.config_path + "evogen_predict_256.yaml")
 
-  conf = load_config({YOUR_CONFIG_PATH})
-  conf.use_pkl = False
-  msa_generator.initialize(conf=conf)
-  msa_generator.model.from_pretrained()
-  feature = msa_generator.predict(fasta)
-  print(feature.shape, feature.dtype)
-  ```
+    conf = load_config({YOUR_CONFIG_PATH})
+    conf.use_pkl = False
+    msa_generator.initialize(conf=conf)
+    msa_generator.model.from_pretrained()
+    feature = msa_generator.predict(fasta)
+    print(feature.shape, feature.dtype)
+    ```
 
-  - 序列搜索MSA后所获得的pickle文件作为输入，样例如下：
-  
-  ```bash
-  import pickle
-  from mindsponge import PipeLine
+    - 序列搜索MSA后所获得的pickle文件作为输入，样例如下：
 
-  with open({YOUR_PICKLE_PATH}, "rb") as f:
-      data = pickle.load(f)
-  msa_generator = PipeLine(name="MEGAEvoGen")
+    ```bash
+    import pickle
+    from mindsponge import PipeLine
 
-  # from mindsponge.pipeline.pipeline import download_config
-  # conf = download_config(msa_generator.config["evogen_predict_256"], msa_generator.config_path + "evogen_predict_256.yaml")
+    with open({YOUR_PICKLE_PATH}, "rb") as f:
+        data = pickle.load(f)
+    msa_generator = PipeLine(name="MEGAEvoGen")
 
-  conf = load_config({YOUR_CONFIG_PATH})
-  conf.use_pkl = True
-  msa_generator.initialize(conf=conf)
-  msa_generator.model.from_pretrained()
-  feature, mask = msa_generator.predict(data)
-  print(feature.shape, feature.dtype)
-  ```
+    # from mindsponge.pipeline.pipeline import download_config
+    # conf = download_config(msa_generator.config["evogen_predict_256"], msa_generator.config_path + "evogen_predict_256.yaml")
+
+    conf = load_config({YOUR_CONFIG_PATH})
+    conf.use_pkl = True
+    msa_generator.initialize(conf=conf)
+    msa_generator.model.from_pretrained()
+    feature, mask = msa_generator.predict(data)
+    print(feature.shape, feature.dtype)
+    ```
 
 - MEGAFold
 
@@ -250,8 +250,9 @@ pipe.train({YOUR_DATA_PATH}, num_epochs=1)
 
   然后下载MSA所需数据库：
 
-  - [uniref30_2103](http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz)：压缩包68G，解压后375G
-  - [colabfold_envdb_202108](http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz)：压缩包110G，解压后949G
+    - [uniref30_2103](http://wwwuser.gwdg.de/~compbiol/colabfold/uniref30_2103.tar.gz)：压缩包68G，解压后375G
+
+    - [colabfold_envdb_202108](http://wwwuser.gwdg.de/~compbiol/colabfold/colabfold_envdb_202108.tar.gz)：压缩包110G，解压后949G
 
   下载完成后需解压并使用MMseqs2处理数据库，数据处理参考[colabfold](http://colabfold.mmseqs.com)，主要命令如下：
 
