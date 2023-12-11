@@ -30,7 +30,7 @@ $$
 \Delta u = -\sin(4\pi x)\sin(4\pi y)\sin(4\pi z),
 $$
 
-and we set the geometric boundary conditions to satisfy the Dirichlet boundary conditions.
+and we can choose the boundary conditions to be used by modifying the BC_type in YAML, which currently includes: Dirichlet boundary, Robin boundary, and periodic boundary conditions.
 
 For the one-dimensional problem, this case study uses the one-dimensional axis interval as the solution domain. For the two-dimensional problem, it demonstrates solving the equation in rectangular, circular, triangular, L-type, and pentagonal regions. For the three-dimensional problem, we solve the equation in tetrahedral, cylindrical, and conical regions.
 
@@ -58,9 +58,35 @@ where `--geom_name` specifies the name of the geometric shape, and you can choos
 
 `--config_file_path` specifies the path to the parameter file, with the default value `'./configs/poisson_cfg.yaml'`.
 
+You can choose the boundary condition function to use by modifying the BC_type in poisson_cfg.yaml, and the following is a table based on the case parameters under each boundary condition and sampling interval：
+
+| Boundary Condition |                                               Dirichlet                                               |                                                robin                                                |                                               Periodic                                               |
+| :-----------------: | :---------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------: |
+|      hardware      |                                        GPU: 1\*T4,<br />CPU: 4                                        |                                      GPU: 1\*T4,<br /> CPU: 4                                      |                                       GPU: 1\*T4,<br />CPU: 4                                       |
+|  MindSpore version  |                                                 2.2.0                                                 |                                                2.2.0                                                |                                                2.2.0                                                |
+| Training parameters | n_epochs=50,<br />batch_size=5000,<br />BC_size=1000000, <br />domain_size=1000000,<br />max_lr=5e-4 | n_epochs=50,<br />batch_size=5000,<br />BC_size=2000000,<br />domain_size=2000000,<br />max_lr=5e-4 | n_epochs=100,<br />batch_size=5000,<br />BC_size=2000000,<br />domain_size=2000000,<br />max_lr=5e-4 |
+| Testing Parameters |                                            batch_size=5000                                            |                                           batch_size=5000                                           |                                           batch_size=5000                                           |
+|  Sampling interval  |                                               rectangle                                               |                                              rectangle                                              |                                              rectangle                                              |
+|   training error   |                                                0.00818                                                |                                               0.00258                                               |                                               0.01809                                               |
+|      Optimizer      |                                                 Adam                                                 |                                                Adam                                                |                                                 Adam                                                 |
+|     test error     |                                                0.0028                                                |                                               0.0812                                               |                                                0.8790                                                |
+|   per step time   |                                                163.4ms                                                |                                               286.1ms                                               |                                               146.0ms                                               |
+|     parameters     |                                                1688002                                                |                                               1688002                                               |                                               1688002                                               |
+
+The results of the training parameters in other sampling intervals are [here](./evaluation_table.md)
+
 ### Training Method 2: Run Jupyter Notebook
 
-You can run the training and validation code line by line using the Chinese or English version of the Jupyter Notebook.
+You can run the training and validation code line by line using the [Chinese](./poisson_CN.ipynb) or [English](./poisson.ipynb) version of the Jupyter Notebook.
+
+### Result
+
+<p align = "center">
+<img src="./images/dirichlet-rectangle.png" width="180"/>
+<img src="./images/periodic-rectangle.png" width="180"/>
+<img src="./images/robin-rectangle.png" width="180"/>
+<img src="./images/dirichlet-tetrahedron.png" width="180"/>
+</p>
 
 ## Performance
 

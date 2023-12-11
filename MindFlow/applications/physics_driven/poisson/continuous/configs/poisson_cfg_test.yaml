@@ -10,6 +10,7 @@ data:
         random_sampling: True
         size: 1000000
         sampler: "uniform"
+        BC_type: "dirichlet"
 geometry:
     interval:
         coord_min: 0.2

@@ -3,6 +3,7 @@ import os
 import time
 import argparse
 import numpy as np
+import sympy
 
 import mindspore as ms
 from mindspore import context, save_checkpoint, nn, ops, jit, set_seed
@@ -15,6 +16,7 @@ from src.lr_scheduler import OneCycleLR
 from src.dataset import create_dataset
 from src.poisson import Poisson
 from src.utils import calculate_l2_error
+from src.boundary import get_bc
 
 set_seed(123456)
 np.random.seed(123456)
@@ -64,6 +66,17 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
+def pde(out_vars, in_vars):
+    """ define the PDE"""
+    poisson = 0
+    src_term = 1
+    sym_u = out_vars[0]
+    for var in in_vars:
+        poisson += sympy.diff(sym_u, (var, 2))
+        src_term *= sympy.sin(4 * sympy.pi * var)
+    poisson += src_term
+    equations = {"poisson": poisson}
+    return equations
 
 @log_timer
 def train(geom_name, file_cfg, ckpt_dir, n_epochs):
@@ -78,7 +91,8 @@ def train(geom_name, file_cfg, ckpt_dir, n_epochs):
     model = create_model(**config["model"][f"{n_dim}d"])
 
     # Create the problem and optimizer
-    problem = Poisson(model, n_dim)
+    problem = Poisson(model, n_dim, pde, get_bc(
+        config['data']['BC']['BC_type']))
     params = model.trainable_params() + problem.loss_fn.trainable_params()
     steps_per_epoch = config["data"]["domain"]["size"] // config["data"]["train"]["batch_size"]
     learning_rate = OneCycleLR(

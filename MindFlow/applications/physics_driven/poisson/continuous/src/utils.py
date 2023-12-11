@@ -1,5 +1,7 @@
 """Utilities for the Poisson example."""
 import math
+import numpy as np
+import matplotlib.pyplot as plt
 import mindspore as ms
 from mindspore import numpy as ms_np
 from mindspore import nn, ops
@@ -7,6 +9,7 @@ from mindspore import nn, ops
 
 class AnalyticSolution(nn.Cell):
     """Analytic solution."""
+
     def __init__(self, n_dim):
         super(AnalyticSolution, self).__init__()
         self.prod = ops.ReduceProd(keep_dims=True)
@@ -46,3 +49,23 @@ def calculate_l2_error(model, ds_test, n_dim):
             )
         )
         print("")
+
+
+def draw2d(model, nmaps):
+    '''draw the cloud map'''
+    # Create the dataset
+    x = np.linspace(0., 1., nmaps)
+    y = np.linspace(0., 1., nmaps)
+    x, y = np.meshgrid(x, y)
+    x = np.reshape(x, (nmaps*nmaps, 1))
+    y = np.reshape(y, (nmaps*nmaps, 1))
+    z = np.concatenate((x, y), axis=1)
+    z = model(ms.Tensor(z, dtype=ms.float32)).asnumpy()
+
+    plt.figure()
+    plt.subplot(111)
+    plt.scatter(x, y, c=z, cmap=plt.cm.rainbow,
+                vmin=min(z), vmax=max(z))
+    plt.text(50, 50, r'DNN', {'color': 'b', 'fontsize': 20})
+    plt.colorbar()
+    plt.show()
