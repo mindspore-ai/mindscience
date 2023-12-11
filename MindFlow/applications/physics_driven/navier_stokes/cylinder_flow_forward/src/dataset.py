@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """create dataset"""
+import os
 import numpy as np
 
 from mindflow.data import Dataset, ExistedDataConfig

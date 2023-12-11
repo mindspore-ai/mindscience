@@ -77,7 +77,7 @@ def train(input_args):
                                    layers=config["model"]["layers"],
                                    neurons=config["model"]["neurons"],
                                    residual=config["model"]["residual"],
-                                   act=["model"]["activation"],
+                                   act=config["model"]["activation"],
                                    num_scales=1,
                                    input_scale=input_scale,
                                    input_center=input_center)

@@ -14,8 +14,8 @@ model:
 
 data:
   root_dir: "./dataset"
-  train_file_name: "train_dataset.mind"
-  test_file_name: "test_dataset.mind"
+  train_file_name: "train/train_dataset.mind"
+  test_file_name: "test/test_dataset.mind"
   finetune_file_name: "finetune_dataset.mind"
   grid_file_name: "grid.npy"
   finetune_ratio: 0.2
