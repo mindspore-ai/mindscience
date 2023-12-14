@@ -547,7 +547,10 @@ class Molecule(Cell):
         self.atom_name = np.concatenate(atom_name, axis=-1)
         self.atom_type = np.concatenate(atom_type, axis=-1)
         self.atom_mass = msnp.concatenate(atom_mass, axis=-1)
-        self.atom_mask = msnp.concatenate(atom_mask, axis=-1)
+        new_atom_mask = []
+        for small_t in atom_mask:
+            new_atom_mask.append(ops.Cast()(small_t, ms.int32))
+        self.atom_mask = msnp.concatenate(new_atom_mask, axis=-1).bool()
         self.atomic_number = msnp.concatenate(atomic_number, axis=-1)
         self.inv_mass = msnp.concatenate(inv_mass, axis=-1)
         self.atom_charge = None
