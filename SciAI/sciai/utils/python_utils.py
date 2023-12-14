@@ -165,7 +165,7 @@ def download_resource(model_name: str, is_force=False):
     data_status_folder = _is_folder_non_empty("checkpoints")
     data_status_config = model_status.get("data_status")
     cmd_download = f'wget -r -np -nH -R *.html* ' \
-                   f'https://download.mindspore.cn/{data_path}/ --no-check-certificate '
+                   f'https://download-mindspore.osinfra.cn/{data_path}/ --no-check-certificate '
     cmd_download = shlex.split(cmd_download)
     if is_force or (not data_status_config and not data_status_folder):
         try:
