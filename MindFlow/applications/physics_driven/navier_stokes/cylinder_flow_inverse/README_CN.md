@@ -27,9 +27,9 @@ Navier-Stokes的反问题是指，在已知某些流体运动特征（如流量�
 | MindSpore版本           | >=2.0.0                 | >=2.0.0                   |
 | 数据集                  | [NS方程反问题数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/physics_driven/inverse_navier_stokes/)      | [NS方程反问题数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/physics_driven/inverse_navier_stokes/)                   |
 | 参数量                  | 3.5e3                   | 3.5e3                    |
-| 训练参数                | batch_size=8192, steps_per_epoch=39, epochs=10000 | batch_size=8192, steps_per_epoch=39, epochs=10000 |
+| 训练参数                | batch_size=1024, steps_per_epoch=39, epochs=10000 | batch_size=1024, steps_per_epoch=39, epochs=10000 |
 | 测试参数                | batch_size=1024      | batch_size=1024               |
 | 优化器                  | Adam                 | Adam                   |
 | 训练损失(MSE)           | 0.0001                | 0.0001             |
 | 验证损失(RMSE)          | 0.01                  | 0.01              |
-| 速度(ms/step)           | 40                   | 40                |
+| 速度(ms/step)           | 20                   | 30                |

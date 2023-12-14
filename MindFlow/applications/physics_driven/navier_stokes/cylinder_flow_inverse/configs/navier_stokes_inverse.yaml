@@ -2,7 +2,7 @@ data:
   name: navier_stokes_inverse
   root_dir: "./dataset"
   train:
-    batch_size: 8192
+    batch_size: 1024
     epochs: 10000
   test:
     batch_size: 1024

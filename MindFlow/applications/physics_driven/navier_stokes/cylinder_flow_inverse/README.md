@@ -27,7 +27,7 @@ The inverse problem of Navier-Stokes is that of solving the fluid properties (e.
 | MindSpore version       | >=2.0.0                | >=2.0.0                   |
 | dataset                 | [Navier-Stoken Inverse Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/physics_driven/inverse_navier_stokes/)      | [Navier-Stoken Inverse Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/physics_driven/inverse_navier_stokes/)                   |
 | Parameters              | 3.5e3                  | 3.5e3                   |
-| Train Config            | batch_size=8192, steps_per_epoch=39, epochs=10000 | batch_size=8192, steps_per_epoch=39, epochs=10000 |
+| Train Config            | batch_size=1024, steps_per_epoch=39, epochs=10000 | batch_size=1024, steps_per_epoch=39, epochs=10000 |
 | Evaluation Config       | batch_size=1024      | batch_size=1024               |
 | Optimizer               | Adam                 | Adam                   |
 | Train Loss(MSE)         | 0.0001               | 0.0001             |
