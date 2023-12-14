@@ -31,8 +31,8 @@ from src import init_model, update_config, init_data_parallel
 
 def get_args():
     """Get user specified parameters."""
-    parser = argparse.ArgumentParser(description='DEMNet')
-    parser.add_argument('--config_file_path', type=str, default='DEMNet.yaml')
+    parser = argparse.ArgumentParser(description='DEM-SRNet')
+    parser.add_argument('--config_file_path', type=str, default='DEM-SRNet.yaml')
     parser.add_argument('--device_target', '-d', type=str,
                         choices=["Ascend", "GPU"], default="Ascend")
     parser.add_argument('--device_id', type=int, default=3)
