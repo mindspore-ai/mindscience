@@ -15,7 +15,7 @@ MindSpore Flow是基于昇思MindSpore开发的流体仿真领域套件，支持
 
 #### 数据-机理融合驱动
 
-- [STABLE] [`PeRCNN`](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/PeRCNN): 支持物理编码递归卷积神经网络(Physics-encoded Recurrent Convolutional Neural Network，PeRCNN)。
+- [STABLE] [`PeRCNN`](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/percnn): 支持物理编码递归卷积神经网络(Physics-encoded Recurrent Convolutional Neural Network，PeRCNN)。
 
 #### 物理驱动
 

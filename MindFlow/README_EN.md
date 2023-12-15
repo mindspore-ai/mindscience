@@ -77,8 +77,8 @@ Huang X, Liu H, Shi B, et al. A Universal PINNs Method for Solving Partial Diffe
 |                                                                         Case                                                                         |                                                         Dataset                                                         | Network | GPU | NPU |
 | :--------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------: | :-----: | :-: | :-: |
 | [Solve Convection-Diffusion Equation by PDE-NET](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/pde_net) |                                                            -                                                            | PDE-Net | ✔️  | ✔️  |
-|                   [Solve 2D Burgers Equation by PeRCNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/PeRCNN)                   | [PeRCNN Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN/) | PeRCNN  | ✔️  | ✔️  |
-| [AI Turb Model](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/TurbAI)   | -           |    MLP    |   ✔️     |   ✔️   |
+|                   [Solve 2D Burgers Equation by PeRCNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/percnn)                   | [PeRCNN Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN/) | PeRCNN  | ✔️  | ✔️  |
+| [AI Turb Model](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/ai_turbulence_modeling)   | -           |    MLP    |   ✔️     |   ✔️   |
 
 ### Physics Driven
 

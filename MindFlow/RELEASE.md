@@ -15,7 +15,7 @@ MindSpore Flow is a flow simulation suite developed based on MindSpore. It suppo
 
 #### Data-Mechanism Fusion
 
-- [STABLE] [`PeRCNN`](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/PeRCNN) : Support physical encoded recursive Convolutional neural network (PeRCNN).
+- [STABLE] [`PeRCNN`](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/percnn) : Support physical encoded recursive Convolutional neural network (PeRCNN).
 
 #### Physics Driven
 
