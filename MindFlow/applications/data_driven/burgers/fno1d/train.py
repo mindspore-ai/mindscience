@@ -80,6 +80,17 @@ def train(input_args):
                                         warmup_epochs=1)
     optimizer = nn.Adam(model.trainable_params(), learning_rate=Tensor(lr))
 
+    model_params_list = []
+    for k, v in model_params.items():
+        model_params_list.append(f"{k}:{v}")
+    model_name = "_".join(model_params_list)
+    print(model_name)
+    total = 0
+    for param in model.get_parameters():
+        print_log(param.shape)
+        total += param.size
+    print_log(f"Toatal Parameters:{total}")
+
     if use_ascend:
         from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
         loss_scaler = DynamicLossScaler(1024, 2, 100)

@@ -75,19 +75,23 @@ You can run the training and validation code line by line using the Chinese or E
 
 | Parameter               | Ascend               | GPU                |
 |:----------------------:|:--------------------------:|:---------------:|
-| Hardware                | Ascend 32G           | NVIDIA V100 32G    |
-| MindSpore version       | >=2.1.0                | >=2.1.0                   |
-| dataset                 | [1D Burgers Equation Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      | [1D Burgers Equation Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)                   |
-| Parameters              | 5.5e5                  | 5.5e5                   |
-| Train Config            | batch_size=8, steps_per_epoch=1000, epochs=100 |batch_size=8, steps_per_epoch=1000, epochs=100 |
-| Evaluation Config       | batch_size=8      | batch_size=8               |
-| Optimizer               | Adam                 | Adam                   |
-| Train Loss(MSE)         | 0.005                | 0.005             |
-| Evaluation Error(RMSE)  | 0.0008                | 0.0008              |
-| Speed(ms/step)          | 33                   | 33                 |
+| Hardware                | Ascend, 32G            | NVIDIA V100, 32G    |
+| MindSpore版本           | >=2.1.0                 | >=2.1.0                   |
+| Dataset                  | [1D Burgers Equation Resolution Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      | [1D Burgers Equation Resolution Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)                   |
+| Parameters                  | 5.5e5                   | 5.5e5                   |
+| Train Config                | resolution=256, modes=16, hidden_channels=64, depth=10, batch_size=64, epoch=1000 | resolution=256, modes=16, hidden_channels=64, depth=10, batch_size=64, epoch=1000 |
+| Evaluation Config                | batch_size=64          | batch_size=64               |
+| Optimizer                  | Adam                 | Adam                   |
+| Train Loss(MSE)           | 0.018363               |  0.011212             |
+| Evaluation Error(RMSE)          | 0.000503                | 0.000279             |
+| Speed(ms/step)           | 33                   | 17                |
+
+The datasets at different resolutions are taken for testing and according to the following results it can be concluded that the dataset resolution has no effect on the training results.
+
+![FNO Solves Burgers Equation](images/resolution_test.jpg)
 
 ## Contributor
 
-gitee id：[liulei277](https://gitee.com/liulei277)
+gitee id：[liulei277](https://gitee.com/liulei277), [yezhenghao2023](https://gitee.com/yezhenghao2023)
 
-email: liulei2770919@163.com
+email: liulei2770919@163.com, yezhenghao@isrc.iscas.ac.cn

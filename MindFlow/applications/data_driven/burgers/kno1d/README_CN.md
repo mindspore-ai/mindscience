@@ -71,17 +71,21 @@ python train.py --config_file_path ./configs/kno1d.yaml --device_target GPU --de
 |:----------------------:|:--------------------------:|:---------------:|
 | 硬件资源                | Ascend, 显存32G            | NVIDIA V100, 显存32G    |
 | MindSpore版本           | >=2.0.0                 | >=2.0.0                   |
-| 数据集                  | [一维Burgers方程数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      | [一维Burgers方程数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)                   |
+| 数据集                  | [一维Burgers方程分辨率数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      | [一维Burgers方程分辨率数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)                   |
 | 参数量                  | 1.3e5                   | 1.3e5                   |
-| 训练参数                | batch_size=8, steps_per_epoch=125, epochs=100 | batch_size=8, steps_per_epoch=125, epochs=100 |
-| 测试参数                | batch_size=8          | batch_size=8               |
+| 训练参数                | channels=8, modes=10, depth=10, batch_size=64, epochs=15000 | channels=8, modes=10, depth=10, batch_size=64, epochs=15000 |
+| 测试参数                | batch_size=64          | batch_size=64               |
 | 优化器                  | Adam                 | Adam                   |
-| 训练损失(MSE)           | 3e-05                | 3e-05             |
-| 验证损失(RMSE)          | 0.003                | 0.003              |
-| 速度(ms/step)           | 25                   | 70                |
+| 训练损失(MSE)           | 1e-06                | 6e-05             |
+| 验证损失(RMSE)          | 0.002197                | 0.223467              |
+| 速度(ms/step)           | 20                   | 30                |
+
+取不同分辨率下的数据集进行测试，根据以下结果可得出数据集分辨率对训练结果没有影响。
+
+![KNO求解burgers方程](images/resolution_test.jpg)
 
 ## Contributor
 
-gitee id：[dyonghan](https://gitee.com/dyonghan)
+gitee id：[dyonghan](https://gitee.com/dyonghan), [yezhenghao2023](https://gitee.com/yezhenghao2023)
 
-email: dyonghan@qq.com
+email: dyonghan@qq.com, yezhenghao@isrc.iscas.ac.cn

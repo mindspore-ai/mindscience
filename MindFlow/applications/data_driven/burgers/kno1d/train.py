@@ -79,6 +79,11 @@ def train(input_args):
         model_params_list.append(f"{k}:{v}")
     model_name = "_".join(model_params_list)
     print_log(model_name)
+    total = 0
+    for param in model.get_parameters():
+        print_log(param.shape)
+        total += param.size
+    print_log(f"Toatal Parameters:{total}")
 
     train_size = train_dataset.get_dataset_size()
     eval_size = eval_dataset.get_dataset_size()
@@ -165,7 +170,7 @@ def train(input_args):
                 l_pred_eval += l_pred.asnumpy()
             l_recons_eval = l_recons_eval / eval_size
             l_pred_eval = l_pred_eval / eval_size
-            print_log(f'recons loss: {l_recons_eval}'
+            print_log(f'Eval epoch: {epoch}, recons loss: {l_recons_eval},'
                       f' relative pred loss: {l_pred_eval}')
             print_log(
                 "---------------------------end evaluation---------------------------")

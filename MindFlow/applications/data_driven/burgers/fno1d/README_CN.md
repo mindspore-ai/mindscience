@@ -76,17 +76,21 @@ python train.py --config_file_path ./configs/fno1d.yaml --device_target GPU --de
 |:----------------------:|:--------------------------:|:---------------:|
 | 硬件资源                | Ascend, 显存32G            | NVIDIA V100, 显存32G    |
 | MindSpore版本           | >=2.1.0                 | >=2.1.0                   |
-| 数据集                  | [一维Burgers方程数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      | [一维Burgers方程数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)                   |
+| 数据集                  | [一维Burgers方程分辨率数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)      | [一维Burgers方程分辨率数据集](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/)                   |
 | 参数量                  | 5.5e5                   | 5.5e5                   |
-| 训练参数                | batch_size=8, steps_per_epoch=1000, epochs=100 | batch_size=8, steps_per_epoch=1000, epochs=100 |
-| 测试参数                | batch_size=8          | batch_size=8               |
+| 训练参数                | resolution=256, modes=16, hidden_channels=64, depth=10, batch_size=64, epoch=1000 | resolution=256, modes=16, hidden_channels=64, depth=10, batch_size=64, epoch=1000 |
+| 测试参数                | batch_size=64          | batch_size=64               |
 | 优化器                  | Adam                 | Adam                   |
-| 训练损失(MSE)           | 0.005                | 0.005             |
-| 验证损失(RMSE)          | 0.0008                | 0.0008              |
-| 速度(ms/step)           | 33                   | 33                |
+| 训练损失(MSE)           | 0.018363               |  0.011212             |
+| 验证损失(RMSE)          | 0.000503                | 0.000279             |
+| 速度(ms/step)           | 33                   | 17                |
+
+取不同分辨率下的数据集进行测试，根据以下结果可得出数据集分辨率对训练结果没有影响。
+
+![FNO求解burgers方程](images/resolution_test.jpg)
 
 ## Contributor
 
-gitee id：[liulei277](https://gitee.com/liulei277)
+gitee id：[liulei277](https://gitee.com/liulei277), [yezhenghao2023](https://gitee.com/yezhenghao2023)
 
-email: liulei2770919@163.com
+email: liulei2770919@163.com, yezhenghao@isrc.iscas.ac.cn

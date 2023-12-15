@@ -4,7 +4,7 @@ model:
   out_channels: 1
   modes: 16
   hidden_channels: 64
-  depths: 4
+  depths: 10
 data:
   name: "burgers1d"
   root_dir: "./dataset"
@@ -12,14 +12,14 @@ data:
     num_samples: 1000
   test:
     num_samples: 200
-  batch_size: 8
+  batch_size: 64
   resolution: 1024
   t_in: 1
   t_out: 1
   step: 8
 optimizer:
   learning_rate: 0.001
-  epochs: 100
+  epochs: 1000
 summary:
   test_interval: 10
   summary_dir: "./summary"
