@@ -1,7 +1,7 @@
 sponge.system.Torsion
 =========================
 
-.. py:class:: Torsion(atoms: AtomsBase = None, atoms_a: AtomsBase = None, atoms_b: AtomsBase = None, atoms_c: AtomsBase = None, atoms_d: AtomsBase = None, vector1: Vector = None, vector2: Vector = None, axis_vector: Vector = None, use_pbc: bool = None, batched: bool = False, keepdims: bool = None, axis: int = -2, name: str = 'torsion')
+.. py:class:: sponge.colvar.Torsion(atoms: AtomsBase = None, atoms_a: AtomsBase = None, atoms_b: AtomsBase = None, atoms_c: AtomsBase = None, atoms_d: AtomsBase = None, vector1: Vector = None, vector2: Vector = None, axis_vector: Vector = None, use_pbc: bool = None, batched: bool = False, keepdims: bool = None, axis: int = -2, name: str = 'torsion')
 
     扭转角(二面角)的集合变量。
 
@@ -18,14 +18,11 @@ sponge.system.Torsion
         - **batched** (bool) - 判断以原子为单位的输入索引的第一维是否为批大小。默认值：``False``。
         - **keepdims** (bool) - 是否保留向量最后一个维度的维度。默认值：``False``。
         - **axis** (int) - 从原子坐标中收集点的轴。默认值：-2。
-        - **name** (str) - Colvar的名称。默认值：'torsion'
-
-    支持的平台：
-        ``Ascend`` ``GPU``
+        - **name** (str) - Colvar的名称。默认值：'torsion'。
 
     .. py:method:: construct(coordinate: Tensor, pbc_box: bool = None)
 
-        计算扭转角
+        计算扭转角。
 
         参数:
             - **coordinate** (Tensor) - 张量的shape为 (B, A, D) 。数据类型为float。其中，B表示批量大小，即模拟中的步行者数量。A表示系统中的原子数。

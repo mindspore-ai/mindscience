@@ -1,9 +1,9 @@
 sponge.colvar.Angle
 ========================
 
-.. py:class:: Angle(atoms: AtomsBase = None, atoms_a: AtomsBase = None, atoms_b: AtomsBase = None, atoms_c: AtomsBase = None, vector1: Vector = None, vector2: Vector = None, use_pbc: bool = None, batched: bool = False, keepdims: bool = None, axis: int = -2, name: str = 'angle')
+.. py:class:: sponge.colvar.Angle(atoms: AtomsBase = None, atoms_a: AtomsBase = None, atoms_b: AtomsBase = None, atoms_c: AtomsBase = None, vector1: Vector = None, vector2: Vector = None, use_pbc: bool = None, batched: bool = False, keepdims: bool = None, axis: int = -2, name: str = 'angle')
 
-    角度的集合变量
+    角度的集合变量。
 
     参数：
         - **atoms** (AtomsBase) - shape为 (..., 3, D) 的原子形成shape为 (...) 或 (..., 1) 的角度。不能与`atoms_a` 或`atoms_b` 一起使用。默认值：``None``。其中，D表示仿真系统的维度。通常为3。        
@@ -16,18 +16,15 @@ sponge.colvar.Angle
         - **batched** (bool) - 索引的第一个维度是否为批大小。默认值：``False``。
         - **keepdims** (bool) - 是否保留向量最后一个维度。默认值：``False``。
         - **axis** (int) - 从原子坐标中收集点的轴。默认值：-2。
-        - **name** (str) - Colvar的名称。默认值：'angle'
+        - **name** (str) - Colvar的名称。默认值：'angle'。
 
-    支持的平台：
-        ``Ascend`` ``GPU``
-    
     .. py:method:: construct(coordinate: Tensor, pbc_box: bool = None)
-        
-        计算角度
+
+        计算角度。
 
         参数：
             - **coordinate** (Tensor) - 张量的shape (B, A, D) 。数据类型为float。其中，B表示批量大小，即模拟中的步行者数量。A表示系统中的原子数。
             - **pbc_box** (Tensor) - 张量的shape (B, D) 。数据类型为float。默认值：``None``。
-        
+
         返回：
             角度(Tensor): 张量的shape (B, ...) 或 (B, ..., 1) 。数据类型为float。

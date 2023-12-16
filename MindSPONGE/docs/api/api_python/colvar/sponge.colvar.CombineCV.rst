@@ -1,7 +1,7 @@
 sponge.colvar.CombineCV
 ============================
 
-.. py:class:: CombineCV(colvar: Union[List[Colvar], Tuple[Colvar]], weights: Union[float, List[float], Tuple[float], Tensor] = 1,offsets: Union[float, List[float], Tuple[float], Tensor] = 0, exponents: Union[float, List[float], Tuple[float], Tensor] = 1, normal: bool = False, periodic_min: Union[float, ndarray, Tensor] = None, periodic_max: Union[float, ndarray, Tensor] = None, periodic_mask: Union[Tensor, ndarray] = None, use_pbc: bool = None, name: str = 'combine')
+.. py:class:: sponge.colvar.CombineCV(colvar: Union[List[Colvar], Tuple[Colvar]], weights: Union[float, List[float], Tuple[float], Tensor] = 1,offsets: Union[float, List[float], Tuple[float], Tensor] = 0, exponents: Union[float, List[float], Tuple[float], Tensor] = 1, normal: bool = False, periodic_min: Union[float, ndarray, Tensor] = None, periodic_max: Union[float, ndarray, Tensor] = None, periodic_mask: Union[Tensor, ndarray] = None, use_pbc: bool = None, name: str = 'combine')
 
     一组 Colvar :math:`{s_i}` 与shape为 (S_1， S_2， ...， S_n) 的多项式组合。{S_i}表示集合变量的维度。
 
@@ -20,22 +20,19 @@ sponge.colvar.CombineCV
         - **periodic_max** (Union[float, ndarray, Tensor]) - CVs 组合输出的周期性最大值。如果输出不是周期性的，则应为空。默认值：``None``。
         - **periodic_mask** (Union[Tensor, ndarray]) - 输出周期性的掩码。张量的shape应与输出相同，即 (S_1, S_2, ..., S_n) 。默认值：``None``。
         - **use_pbc** (bool) - 是否使用周期边界条件。如果给出``None``，它将确定是否使用基于是否提供`pbc_box`的周期性边界条件。默认值：``None``。
-        - **name** (str) - 集合变量的名称。默认值：'combine'
-
-    支持的平台：
-        ``Ascend`` ``GPU``
+        - **name** (str) - 集合变量的名称。默认值：'combine'。
 
     .. py:method:: set_pbc(use_pbc: bool)
 
-        设置是否使用周期边界条件
+        设置是否使用周期边界条件。
 
     .. py:method:: construct(coordinate: Tensor, pbc_box: Tensor = None)
 
-        获取 colvar 组的位置坐标
+        获取 colvar 组的位置坐标。
 
         参数：
             - **coordinate** (Tensor) - shape为 (B, A, D) 的张量。数据类型为float。colvar 在系统中的位置坐标。B表示批量大小，即模拟中的步行者数量。A表示系统中的原子数。D表示仿真系统的维度。通常为3。
             - **pbc_box** (Tensor) - shape为 (B, D) 的张量。数据类型为float。PBC box的张量。默认值：``None``。
-        
+
         返回：
             结合(Tensor): shape为 (B, S_1, S_2, ..., S_n) 的张量。数据类型为float。

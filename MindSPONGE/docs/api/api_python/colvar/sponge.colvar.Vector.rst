@@ -1,7 +1,7 @@
 sponge.colvar.Vector
 ========================
 
-.. py:class:: Vector(atoms: AtomsBase = None, atoms0: AtomsBase = None, atoms1: AtomsBase = None, batched: bool = False, use_pbc: bool = None, keepdims: bool = None, axis: int = -2, name: str = 'vector')
+.. py:class:: sponge.colvar.Vector(atoms: AtomsBase = None, atoms0: AtomsBase = None, atoms1: AtomsBase = None, batched: bool = False, use_pbc: bool = None, keepdims: bool = None, axis: int = -2, name: str = 'vector')
 
     特定原子或虚拟原子之间的向量
 
@@ -15,20 +15,17 @@ sponge.colvar.Vector
         - **axis** (int) - 沿其取原子坐标的轴，其维度必须为 2。它仅在使用`atoms`初始化时有效。默认值：-2。
         - **name** (str) - Colvar的名称。默认值：'vector'
 
-    支持的平台：
-        ``Ascend`` ``GPU``
-    
     .. py:method:: ndim()
 
-        向量的秩（维数）
+        向量的秩（维数）。
 
     .. py:method:: shape()
 
-        向量的shape
+        向量的shape。
 
     .. py:method:: construct(coordinate: Tensor, pbc_box: Tensor = None)
 
-        获取特定原子或虚拟原子之间的向量
+        获取特定原子或虚拟原子之间的向量。
 
         参数：
             - **coordinate** (Tensor) - 张量的shape (B, A, D) 。数据类型为float。其中，B表示批量大小，即模拟中的步行者数量。A表示系统中的原子数。

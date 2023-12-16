@@ -1,7 +1,7 @@
 sponge.colvar.Distance
 ===========================
 
-.. py:class:: Distance(atoms: AtomsBase = None, atoms0: AtomsBase = None, atoms1: AtomsBase = None, vector: Vector = None, use_pbc: bool = None, batched: bool = False, keepdims: bool = None, axis: int = -2, name: str = 'distance')
+.. py:class:: sponge.colvar.Distance(atoms: AtomsBase = None, atoms0: AtomsBase = None, atoms1: AtomsBase = None, vector: Vector = None, use_pbc: bool = None, batched: bool = False, keepdims: bool = None, axis: int = -2, name: str = 'distance')
 
     距离的集合变量
 
@@ -13,23 +13,20 @@ sponge.colvar.Distance
         - **use_pbc** (bool) - 是否在周期边界条件下计算距离。默认值：``None``。
         - **batched** (bool) - 判断以原子为单位的输入索引的第一维是否为批大小。默认值：``False``。
         - **keepdims** (bool) - 如果为 True，则最后一根轴将保留，输出shape为 (..., 1) 。如果为 False，则距离的shape将为 (...) 。如果是 None，则其值将根据向量的秩：如果秩大于 1，则为False，否则为 True。默认值：``None``。
-        - **axis** (int) - 沿其取原子坐标的轴，其维度必须为 2。仅在使用 `atoms`, `atoms0`, 或 `atoms1` 初始化时有效。默认值：-2
-        - **name** (str) - Colvar的名称。默认值：'distance'
-
-    支持的平台：
-        ``Ascend`` ``GPU``
+        - **axis** (int) - 沿其取原子坐标的轴，其维度必须为 2。仅在使用 `atoms`、 `atoms0` 或 `atoms1` 初始化时有效。默认值：-2。
+        - **name** (str) - Colvar的名称。默认值：'distance'。
 
     .. py:method:: get_unit(units: Units = None)
 
-        集合变量的返回单位
-    
+        集合变量的返回单位。
+
     .. py:method:: construct(coordinate: Tensor, pbc_box: bool = None)
 
-        计算距离
+        计算距离。
 
         参数：
             - **coordinate** (Tensor) - 张量的shape (B, A, D) 。数据类型为float。其中，B表示批量大小，即模拟中的步行者数量。A表示系统中的原子数。
             - **pbc_box** (Tensor) - 张量的shape (B, D) 。数据类型为float。默认值：``None``。
-        
+
         返回：
             距离(Tensor): 张量的shape (B, ...) 。数据类型为float。

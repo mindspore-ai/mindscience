@@ -1,10 +1,10 @@
 sponge.colvar.get_atoms
 ===========================
 
-.. py:method:: get_atoms(atoms: Union[AtomsBase, List[AtomsBase], Tuple[AtomsBase], Tensor, Parameter, ndarray], batched: bool = False,
+.. py:method:: sponge.colvar.get_atoms(atoms: Union[AtomsBase, List[AtomsBase], Tuple[AtomsBase], Tensor, Parameter, ndarray], batched: bool = False,
  keep_in_box: bool = False)
-    
-    获取原子或组
+
+    获取原子或组。
 
     参数：
         - **atoms** (Union[list, tuple, AtomsBase, Tensor, Parameter, ndarray]) - 原子的列表。
@@ -12,4 +12,4 @@ sponge.colvar.get_atoms
         - **keep_in_box** (bool) - 是否置换PBC box中的坐标。默认值：``False``。
 
     返回：
-        atoms(Union[Atoms, Group])：原子或组
+        atoms(Union[Atoms, Group])：原子或组。
