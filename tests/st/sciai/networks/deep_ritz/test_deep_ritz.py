@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """test deep ritz"""
+import os
 import re
 import shlex
 import subprocess
@@ -20,14 +21,16 @@ import sys
 import yaml
 import pytest
 from mindspore import context
+from tests.st.sciai.test_utils.func_utils import find_card, copy_dataset
+from tests.st.sciai.test_utils.test_base import stub_stdout, clear_stub
 
 from sciai.context import init_project
 from sciai.model import AutoModel
 from sciai.model.deep_ritz.eval import main as main_eval
 from sciai.model.deep_ritz.src.utils import generate_args
 from sciai.model.deep_ritz.train import main
-from tests.st.sciai.test_utils.func_utils import find_card
-from tests.st.sciai.test_utils.test_base import stub_stdout, clear_stub
+
+copy_dataset(os.path.dirname(os.path.abspath(__file__)))
 
 
 @pytest.mark.level0

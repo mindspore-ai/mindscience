@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """test hp_vpinns"""
+import os
 import re
 import sys
 import shlex
@@ -29,6 +30,9 @@ from sciai.model.hp_vpinns.eval import main as main_eval
 from sciai.model import AutoModel
 
 from tests.st.sciai.test_utils.test_base import stub_stdout, clear_stub
+from tests.st.sciai.test_utils.func_utils import copy_dataset
+
+copy_dataset(os.path.dirname(os.path.abspath(__file__)))
 
 
 @pytest.mark.level0

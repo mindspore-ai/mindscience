@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """utilities for sciai tests"""
-
+import os
 import subprocess
 
 import mindspore as ms
@@ -106,3 +106,15 @@ def _find_source(card_space_line, param_dict, used_start_key, total_start_key):
     card_space_total = float(card_space_line[total_start_index: total_start_index + 5])
     card_space_remain = card_space_total - card_space_used
     return card_space_remain
+
+
+DATA_PATH = os.getenv("DATASET_PATH", "/home/workspace/mindspore_dataset")
+DEFAULT_CI_BASE_PATH = os.path.join(DATA_PATH, "sciai_data")
+
+
+def copy_dataset(cur_dir, origin_data_path=DEFAULT_CI_BASE_PATH):
+    dir_path, model_dir_name = os.path.split(cur_dir)
+    origin_data_dir = os.path.join(origin_data_path, model_dir_name)
+    cmd_copy = ['cp', '-rf', origin_data_dir, dir_path]
+    subprocess.Popen(cmd_copy, stdout=subprocess.PIPE, shell=False).communicate(timeout=100)
+    print_log(f"Data copy to current directory successfully.")

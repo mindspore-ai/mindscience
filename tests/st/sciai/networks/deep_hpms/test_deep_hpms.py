@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """test deep hpms"""
+import os
 import sys
 import re
 import subprocess
@@ -21,13 +22,16 @@ import yaml
 import pytest
 
 from mindspore import context
+from tests.st.sciai.test_utils.func_utils import copy_dataset
+from tests.st.sciai.test_utils.test_base import stub_stdout, clear_stub
 
 from sciai.context import init_project
+from sciai.model import AutoModel
+from sciai.model.deep_hpms.eval import main as main_eval
 from sciai.model.deep_hpms.src.process import generate_args
 from sciai.model.deep_hpms.train import main
-from sciai.model.deep_hpms.eval import main as main_eval
-from sciai.model import AutoModel
-from tests.st.sciai.test_utils.test_base import stub_stdout, clear_stub
+
+copy_dataset(os.path.dirname(os.path.abspath(__file__)))
 
 
 @pytest.mark.level0

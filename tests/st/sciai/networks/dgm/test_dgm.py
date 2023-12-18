@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """test dgm"""
+import os
 import sys
 import re
 import subprocess
@@ -28,7 +29,9 @@ from sciai.model.dgm.eval import main as main_eval
 from sciai.model import AutoModel
 
 from tests.st.sciai.test_utils.test_base import stub_stdout, clear_stub
-from tests.st.sciai.test_utils.func_utils import find_card
+from tests.st.sciai.test_utils.func_utils import find_card, copy_dataset
+
+copy_dataset(os.path.dirname(os.path.abspath(__file__)))
 
 
 @pytest.mark.level0

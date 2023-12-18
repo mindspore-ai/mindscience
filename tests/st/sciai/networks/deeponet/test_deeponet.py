@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """test deeponet"""
+import os
 import re
 import sys
 import shlex
@@ -27,7 +28,10 @@ from sciai.model.deeponet.src.process import generate_args
 from sciai.model.deeponet.eval import main as main_eval
 from sciai.model import AutoModel
 
+from tests.st.sciai.test_utils.func_utils import copy_dataset
 from tests.st.sciai.test_utils.test_base import stub_stdout, clear_stub
+
+copy_dataset(os.path.dirname(os.path.abspath(__file__)))
 
 
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])

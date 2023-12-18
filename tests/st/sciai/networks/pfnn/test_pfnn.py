@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """test pfnn"""
+import os
 import re
 import subprocess
 import sys
@@ -27,7 +28,10 @@ from sciai.model.pfnn.train import main
 from sciai.model.pfnn.eval import main as main_eval
 from sciai.model import AutoModel
 
+from tests.st.sciai.test_utils.func_utils import copy_dataset
 from tests.st.sciai.test_utils.test_base import stub_stdout, clear_stub
+
+copy_dataset(os.path.dirname(os.path.abspath(__file__)))
 
 
 @pytest.mark.level0
