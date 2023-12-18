@@ -236,7 +236,9 @@ class MEGAFold(Model):
         keys = self.feature_list + self.label_list
         feat = []
         for key in keys:
-            feat.append(inputs.get(key, Tensor([])))
+            if key not in inputs:
+                raise KeyError(f"Input data has no key: {key}")
+            feat.append(inputs.get(key))
         feat = mutable(feat)
         t1 = time.time()
         loss = self.backward(feat)
