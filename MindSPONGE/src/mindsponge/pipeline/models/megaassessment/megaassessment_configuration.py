@@ -15,7 +15,7 @@
 """megaassessment_configuration"""
 
 megaassessment_configuration = {
-    "training": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/initial_train.yaml",
+    "assessment_training": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/initial_train.yaml",
     "predict_256": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_256.yaml",
     "predict_512": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_512.yaml",
     "predict_768": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_768.yaml",

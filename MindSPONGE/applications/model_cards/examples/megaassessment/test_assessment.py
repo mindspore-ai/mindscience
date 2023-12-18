@@ -13,7 +13,9 @@
 # limitations under the License.
 # ============================================================================
 """megaassessment test script"""
+import os
 import time
+import stat
 import pickle
 import argparse
 import numpy as np
@@ -66,4 +68,9 @@ res = {
     "execute_time": min(execute_time0, execute_time1),
     "correctness": float(np.mean(res))
 }
+os_flags = os.O_RDWR | os.O_CREAT
+os_modes = stat.S_IRWXU
+res_path = f'./MEGAAssessment_result.log'
+with os.fdopen(os.open(res_path, os_flags, os_modes), 'w') as fout:
+    fout.write(res)
 print(res)
