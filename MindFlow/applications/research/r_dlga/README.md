@@ -94,7 +94,7 @@ where:
 
 ### Training method 2: Run Jupyter Notebook
 
-You can use the [Chinese version](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cma_es_mgda_CN.ipynb) and [English version](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cma_es_mgda.ipynb)Jupyter Notebook runs the training and validation code line by line.
+You can use the [Chinese version](https://gitee.com/xingzhongfan/mindscience/blob/master/MindFlow/applications/research/r_dlga/r_dlga_part1_CN.ipynb) and [English version](https://gitee.com/xingzhongfan/mindscience/blob/master/MindFlow/applications/research/r_dlga/r_dlga_part1.ipynb)Jupyter Notebook runs the training and validation code line by line.
 
 ## Result show
 
