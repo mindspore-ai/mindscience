@@ -94,7 +94,7 @@ python train_pinn.py --case burgers --mode GRAPH --device_target Ascend --device
 
 ### 训练方式二：运行Jupyter Notebook
 
-您可以使用[中文版](https://gitee.com/xingzhongfan/mindscience/blob/master/MindFlow/applications/research/r_dlga/r_dlga_part1_CN.ipynb)和[英文版](https://gitee.com/xingzhongfan/mindscience/blob/master/MindFlow/applications/research/r_dlga/r_dlga_part1.ipynb)Jupyter Notebook逐行运行训练和验证代码。
+您可以使用[中文版](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/research/r_dlga/r_dlga_part1_CN.ipynb)和[英文版](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/applications/research/r_dlga/r_dlga_part1.ipynb)Jupyter Notebook逐行运行训练和验证代码。
 
 ## 结果展示
 
