@@ -5,13 +5,12 @@ sponge.colvar.FunctionCV
 
     组合一组集合变量（CVs）的复合 Colvar :math:`{s_i(R)}` 使用自定义函数 :math:`f(s_1(R), s_2(R), ... s_i(R))`。
 
-    数学公式：
     .. math::
 
         S = f(s_1(R), s_2(R), ... s_i(R))
 
     参数：
-        - **colvar** (Union[Colvar, List[Colvar], Tuple[Colvar]) - 要组合的集合变量 :math:`{s_i(R)}`。
+        - **colvar** (Union[Colvar, List[Colvar], Tuple[Colvar]]) - 要组合的集合变量 :math:`{s_i(R)}`。
         - **function** (callable) - 自定义函数 :math:`f(s_1(R), s_2(R), ... s_i(R))`。
         - **periodic** (bool) - 自定义集合变量是否为周期性变量。
         - **shape** (tuple) - 自定义集合变量的形状。如果给出空并且所有 CVs 都在 `colvar` 中具有相同的shape，然后它将被分配shape。如果每个 CVs 的shape在 `colvar` 中不完全一样，必须设置 `shape`。默认值：``None``。

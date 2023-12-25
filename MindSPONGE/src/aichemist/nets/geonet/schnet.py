@@ -44,7 +44,6 @@ class SchNet(MolecularGNN):
         The Journal of Chemical Physics, 2018, 148(24): 241722.
 
     Args:
-
         dim_feature (int):          Dimension of atomic representation. Default: 64
 
         dim_filter (int):           Dimension of filter network. Default: 64

@@ -124,7 +124,6 @@ class Sponge():
             psi [[3.1415927]]
 
     Args:
-
         network (Union[Molecule, WithEnergyCell, RunOneStepCell]):
                                     Cell of the simulation system.
 
@@ -139,7 +138,6 @@ class Sponge():
         analysis (AnalysisCell):    Analysis network. Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -275,7 +273,7 @@ class Sponge():
     def energy_names(self) -> List[str]:
         """names of energy terms
 
-        Return:
+        Returns:
             list of str, names of energy terms
 
         """
@@ -285,7 +283,7 @@ class Sponge():
     def num_energies(self) -> int:
         """number of energy terms
 
-        Return:
+        Returns:
             int, number of energy terms
 
         """
@@ -295,7 +293,7 @@ class Sponge():
     def num_biases(self) -> int:
         """number of bias potential energies V
 
-        Return:
+        Returns:
             int, number of bias potential energies
 
         """
@@ -385,7 +383,7 @@ class Sponge():
     def calc_energy(self) -> Tensor:
         """calculate the total potential energy (potential energy and bias potential) of the simulation system.
 
-        Return:
+        Returns:
             energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
                                 Total potential energy.
 
@@ -397,7 +395,7 @@ class Sponge():
     def calc_energies(self) -> Tensor:
         """calculate the energy terms of the potential energy.
 
-        Return:
+        Returns:
             energies (Tensor):  Tensor of shape `(B, U)`. Data type is float.
                                 Energy terms.
 
@@ -413,7 +411,7 @@ class Sponge():
     def calc_biases(self) -> Tensor:
         """calculate the bias potential terms.
 
-        Return:
+        Returns:
             biases (Tensor):    Tensor of shape `(B, V)`. Data type is float.
                                 Energy terms.
 

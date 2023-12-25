@@ -42,11 +42,9 @@ class EinsumWrapper(ms.nn.Cell):
     """Implement particular Einsum operation
 
     Args:
-
         equation (str):  en equation represent the operation.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -96,7 +94,7 @@ class SETTLE(Constraint):
         - **pbc_box** (Tensor) - PBC box of the system. Default: ``None``.
         - **step** (int) - The step of the system. Default: 0
 
-    Return:
+    Returns:
         - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
         - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
         - force (Tensor), Tensor of shape (B, A, D). Data type is float.

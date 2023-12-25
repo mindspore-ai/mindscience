@@ -52,7 +52,6 @@ class CoulombEnergy(NonbondEnergy):
         E_{ele}(r_{ij}) = \sum_{ij} k_{coulomb} \frac{q_i q_j}{r_ij}
 
     Args:
-
         atom_charge (Union[Tensor, ndarray, List[float]]):
             Array of atomic charge. The shape of array is `(B, A)`, and the data type is float.
 
@@ -85,7 +84,6 @@ class CoulombEnergy(NonbondEnergy):
         name (str): Name of the energy. Default: 'coulomb'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -277,7 +275,6 @@ class DampedShiftedForceCoulomb(Cell):
         Computational Materials Science, 2016, 115: 60-71.
 
     Args:
-
         cutoff (Union[float, Length, Tensor]): Cutoff distance.
 
         damp_dis (Union[float, Length, Tensor]):
@@ -433,7 +430,6 @@ class ParticleMeshEwaldCoulomb(Cell):
         The Journal of Chemical Physics, 1995, 103(19): 8577-8593.
 
     Args:
-
         pbc_box (Union[Tensor, ndarray, List[float]]):
             Array of PBC box with shape `(B, A, D)`, and the data type is float. Default: ``None``.
 

@@ -45,7 +45,6 @@ class NeighbourList(Cell):
     r"""Neighbour list
 
     Args:
-
         system (Molecule):      Simulation system.
 
         cutoff (float):         Cut-off distance. If None is given under periodic boundary condition (PBC),
@@ -81,7 +80,6 @@ class NeighbourList(Cell):
                                 Default: ``False``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:
@@ -213,7 +211,7 @@ class NeighbourList(Cell):
     def pace(self) -> int:
         r"""Update frequency for neighbour list
 
-        return:
+        Returns:
             int, update pace
 
         """

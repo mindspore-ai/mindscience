@@ -7,10 +7,8 @@ sponge.function.get_tensor
 
     参数：
         - **value** (Union[float, int, Tensor, Parameter, ndarray, list, tuple]) - 输入值
-        - **dtype** (type) - 数据类型。默认值: ``None``。
+        - **dtype** (type) - 数据类型。默认值： ``None``。
 
     返回：
         Tensor。张量。
 
-    支持的平台：
-        ``Ascend`` ``GPU`` ``CPU``

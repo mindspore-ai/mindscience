@@ -45,7 +45,6 @@ class PhysNetModule(Interaction):
     r"""PhysNet Module (Interaction layer)
 
     Args:
-
         dim_feature (int):          Feature dimension.
 
         activation (nn.Cell):       Activation function. Default: 'ssp'

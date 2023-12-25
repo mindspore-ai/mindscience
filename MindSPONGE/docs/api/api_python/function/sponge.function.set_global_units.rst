@@ -10,5 +10,3 @@ sponge.function.set_global_units
         - **energy_unit** (Union[str, Units, Length, float, int]) - 能量单位。仅当 `units` 为 None 时才有效。默认值： ``None``。
         - **units** (Units) - 单位。默认值： ``None``。
 
-    支持的平台：
-        ``Ascend`` ``GPU`` ``CPU``

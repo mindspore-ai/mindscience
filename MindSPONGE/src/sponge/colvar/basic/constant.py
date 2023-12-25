@@ -38,13 +38,11 @@ class ConstantValue(Colvar):
     r"""Constant value.
 
     Args:
-
         value (Union[Tensor, ndarray, list, tuple]): Constant value.
 
         name (str): Name of the Colvar. Default: 'constant'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU`` ``CPU``
 
     """

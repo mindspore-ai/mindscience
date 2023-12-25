@@ -7,7 +7,7 @@ sponge.colvar.AllAtoms
 
     参数：
         - **system** (Molecule) - 模拟系统。默认值：``None``。
-        - **num_atoms** (int) - 原子的数量。当`system`为空时，必须给出原子的数量。默认值：``None``。
+        - **num_atoms** (int) - 原子的数量。当 `system` 为空时，必须给出原子的数量。默认值：``None``。
         - **keep_in_box** (bool) - 是否在PBC框中替换坐标。默认值：``False``。
         - **dimension** (int) - 仿真系统的空间维度。默认值：3。
         - **name** (str) - Colvar 的名称。默认值：'all_atoms'。
@@ -16,7 +16,7 @@ sponge.colvar.AllAtoms
 
         获取特定原子的位置坐标。
     
-        参数:
+        参数：
             - **coordinate** (Tensor) - 张量的shape (B， A， D) 。数据类型为float。原子在系统中的位置坐标。其中B是批量大小，即模拟中的步行者数量。A是系统中的原子数。D是仿真系统的维度。通常为3。
             - **pbc_box** (Tensor) - 张量的shape (B， D) 。数据类型为float。PBC box 的张量。默认值：``None``。
             

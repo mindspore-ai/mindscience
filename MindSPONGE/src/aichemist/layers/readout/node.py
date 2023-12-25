@@ -45,7 +45,6 @@ class NodeReadout(Readout):
     Readout function
 
     Args:
-
         dim_output (int):           Output dimension.
 
         activation (Cell):          Activation function
@@ -168,7 +167,6 @@ class AtomwiseReadout(NodeReadout):
     Readout function
 
     Args:
-
         dim_output (int):           Output dimension.
 
         activation (Cell):          Activation function
@@ -269,7 +267,6 @@ class GraphReadout(NodeReadout):
     Readout function
 
     Args:
-
         dim_output (int):           Output dimension.
 
         activation (Cell):          Activation function

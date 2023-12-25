@@ -50,7 +50,6 @@ class GetVector(Cell):
     r"""The class to get vector with or without PBC box
 
     Args:
-
         use_pbc (bool): Whether to calculate vector under periodic boundary condition.
                         If ``None`` is given, it will determine whether to use periodic boundary
                         conditions based on whether the ``pbc_box`` is provided.
@@ -74,7 +73,7 @@ class GetVector(Cell):
     def use_pbc(self) -> bool:
         """whether to use periodic boundary condition
 
-        Return:
+        Returns:
             bool, whether to use periodic boundary condition
 
         """
@@ -186,7 +185,6 @@ class GetDistance(GetVector):
     r"""The class to calculate distance with or without PBC box
 
     Args:
-
         use_pbc (bool):     Whether to calculate distance under periodic boundary condition.
                             If this is "None", it will determine whether to calculate the distance under
                             periodic boundary condition based on whether the pbc_box is given.
@@ -245,7 +243,6 @@ class VelocityGenerator(Cell):
     r"""A class to generate velocities for atoms in system according to temperature
 
     Args:
-
         temperature (float):        Temperature
 
         remove_translation (bool):  Whether to calculate distance under periodic boundary condition.
@@ -408,7 +405,7 @@ class GetDistanceShift(Cell):
                                         The old coordinates of the system.
             pbc_box (Tensor):           Tensor of shape (B,D). Data type is float.
                                         Tensor of PBC box
-        Return:
+        Returns:
             shift (Tensor): Tensor of shape (B,A,D). Data type is float.
 
         """
@@ -431,7 +428,6 @@ class GetShiftGrad(Cell):
     """Module for calculating the differentiation of B matrix whose dimensions are: K*N*D.
 
     Args:
-
         num_atoms (int):    Number of atoms in system.
 
         bonds (Tensor):     Tensor of shape :math:`(C, 2)` . Data type is int.
@@ -478,7 +474,7 @@ class GetShiftGrad(Cell):
                                         The old coordinates of the system.
             pbc_box (Tensor):           Tensor of shape :math:`(B,D)` . Data type is float.
                                         Tensor of PBC box
-        Return:
+        Returns:
             shift (Tensor): Tensor of shape :math:`(B,A,D)` . Data type is float.
 
         """

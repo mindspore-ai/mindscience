@@ -38,7 +38,6 @@ class TransformerLR(LearningRateSchedule):
     r"""A transformer type dynamic learning rate schedule.
 
     Args:
-
         learning_rate (float):  Reference learning rate. Default: 1.0
 
         warmup_steps (int):     Warm up steps. Default: 4000

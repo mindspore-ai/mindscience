@@ -58,7 +58,7 @@ def get_energy_cell(cls_name: Union[str, dict, EnergyCell],
         exclude_index (Tensor): Tensor of exclude index for neighbour list. Default: ``None``.
         **kwargs: Other arguments
 
-    Return:
+    Returns:
         energy (EnergyCell): Object of energy cell
 
     """

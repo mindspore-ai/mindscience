@@ -45,7 +45,6 @@ class PhysNet(MolecularGNN):
         The Journal of Chemical Theory and Computation, 2019, 15(6): 3678-3693.
 
     Args:
-
         dim_feature (int):          Dimension of atomic representation. Default: 128
 
         n_interaction (int):        Number of interaction layers. Default: 5

@@ -48,7 +48,6 @@ class MolCT(MolecularGNN):
         arXiv preprint, 2020: arXiv:2012.11816 [2020-12-22]. https://arxiv.org/abs/2012.11816
 
     Args:
-
         dim_feature (int):          Dimension of atomic representation. Default: 128
 
         n_interaction (int):        Number of interaction layers. Default: 3

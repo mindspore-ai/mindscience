@@ -35,10 +35,9 @@ from ...function import Units
 
 
 class Distance(Colvar):
-    r"""Colvar for distance
+    r"""Colvar for distance.
 
     Args:
-
         atoms (AtomsBase):  Atoms of shape `(..., 2, D)` to calculate distance of shape `(...)` or `(..., 1)`.
                             Cannot be used with `atoms0` or `atoms1`. Default: ``None``.
                             `D` means spatial dimension of the simulation system. Usually is 3.
@@ -66,12 +65,11 @@ class Distance(Colvar):
 
         axis (int):         Axis along which the coordinate of atoms are take, of which the dimension must be 2.
                             It only works when initialized with `atoms`, `atoms0`, or `atoms1`.
-                            Default: -2
+                            Default: -2.
 
-        name (str):         Name of the Colvar. Default: 'distance'
+        name (str):         Name of the Colvar. Default: 'distance'.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

@@ -45,7 +45,6 @@ class Langevin(Thermostat):
         Journal of Chemical Theory and Computation, 2012, 8(10): 3637-3649.
 
     Args:
-
         system (Molecule):      Simulation system
 
         temperature (float):    Reference temperature :math:`T_{ref}` in unit Kelvin for temperature coupling.
@@ -62,7 +61,6 @@ class Langevin(Thermostat):
 
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

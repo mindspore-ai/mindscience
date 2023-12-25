@@ -41,7 +41,6 @@ class Torsion(Colvar):
     r"""Colvar for torsional (dihedral) angle.
 
     Args:
-
         atoms (AtomsBase):      Atoms of shape `(..., 4, D)` to form a torsional angle of shape `(...)` or `(..., 1)`.
                                 Cannot be used with `atoms_a` or `atoms_b`.
                                 Default: ``None``. `D` means spatial dimension of the simulation system. Usually is 3.
@@ -85,12 +84,11 @@ class Torsion(Colvar):
         keepdims (bool):        Whether to keep the dimension of the last dimension of vector.
                                 Default: ``False``.
 
-        axis (int):             Axis to gather the points from coordinate of atoms. Default: -2
+        axis (int):             Axis to gather the points from coordinate of atoms. Default: -2.
 
-        name (str):             Name of the Colvar. Default: 'torsion'
+        name (str):             Name of the Colvar. Default: 'torsion'.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

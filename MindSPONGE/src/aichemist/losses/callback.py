@@ -54,7 +54,6 @@ class TrainMonitor(Callback):
     r"""A callback to show and record the information during training process.
 
     Args:
-
         model (Model):              Mindspore model.
 
         file_name (str):            Name of the file to record the training information.

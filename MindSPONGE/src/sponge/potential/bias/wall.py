@@ -46,7 +46,6 @@ class WallBias(Bias):
     r"""Bias potential to limit the values of the collective variables (CVs) to a certain range.
 
     Args:
-
         colvar (Colvar):    Collective variables (CVs) :math:`s(R)` to be limited.
 
         depth (Union[float, Tensor, ndarray]):
@@ -66,7 +65,6 @@ class WallBias(Bias):
         name (str):         Name of the bias potential. Default: 'wall'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -170,7 +168,6 @@ class UpperWall(WallBias):
         V(R) = k \log{\left [ 1 + e^{\frac{s(R) - s_0}{\sigma}} \right ]}
 
     Args:
-
         colvar (Colvar):    Collective variables (CVs) :math:`s(R)` to be limited.
 
         boundary (Union[float, Tensor, ndarray]):
@@ -193,7 +190,6 @@ class UpperWall(WallBias):
         name (str):         Name of the bias potential. Default: 'upper_wall'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -235,7 +231,6 @@ class LowerWall(WallBias):
         V(R) = k \log{\left [ 1 + e^{\frac{s_0 - s(R)}{\sigma}} \right ]}
 
     Args:
-
         colvar (Colvar):    Collective variables (CVs) :math:`s(R)` to be limited.
 
         boundary (Union[float, Tensor, ndarray]):
@@ -258,7 +253,6 @@ class LowerWall(WallBias):
         name (str):         Name of the bias potential. Default: 'lower_wall'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

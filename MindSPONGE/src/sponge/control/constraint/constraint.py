@@ -41,7 +41,6 @@ class Constraint(Controller):
         the atomic forces and the virial of the system during the simulation process.
 
     Args:
-
         system (Molecule):          Simulation system.
 
         bonds (Union[Tensor, str]): Bonds to be constraint.
@@ -51,7 +50,6 @@ class Constraint(Controller):
         potential (PotentialCell):  Potential Cell. Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

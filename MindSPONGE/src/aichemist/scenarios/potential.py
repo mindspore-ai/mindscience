@@ -55,7 +55,6 @@ class Cybertron(Cell):
     """Cybertron: An architecture to perform deep molecular model for molecular modeling.
 
     Args:
-
         model (Cell):           Deep molecular model.
 
         readout (Cell):         Readout function.

@@ -32,7 +32,6 @@ class OscillatorBias(Bias):
     """ Add a restraint for heavy atoms in a molecule.
 
     Args:
-
         old_crd(Tensor):    The origin coordinates of all atoms.
 
         k(float):           The elasticity coefficient of all atoms, assuming to be the same.
@@ -42,7 +41,6 @@ class OscillatorBias(Bias):
         name (str):         Name of the bias potential. Default: 'oscillator'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

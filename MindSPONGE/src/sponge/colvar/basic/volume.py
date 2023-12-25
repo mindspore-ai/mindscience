@@ -34,11 +34,9 @@ class Volume(Colvar):
     r"""Volume of simulation system.
 
     Args:
-
-        name (str): Name of the Colvar. Default: 'volume'
+        name (str): Name of the Colvar. Default: 'volume'.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

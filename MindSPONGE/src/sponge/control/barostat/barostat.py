@@ -63,7 +63,6 @@ class Barostat(Controller):
         the PBC box of the system during the simulation process.
 
     Args:
-
         system (Molecule):          Simulation system
 
         pressure (float):           Reference pressure :math:`P_{ref}` in unit bar for pressure coupling.
@@ -81,7 +80,6 @@ class Barostat(Controller):
                                     Default: 1
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

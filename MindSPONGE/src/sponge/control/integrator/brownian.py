@@ -42,7 +42,6 @@ class Brownian(Integrator):
     r"""A Brownian integrator module, which is a subclass of `Integrator`.
 
     Args:
-
         system (Molecule):              Simulation system
 
         temperature (float):            Simulation temperature T (K). Default: 300
@@ -51,7 +50,6 @@ class Brownian(Integrator):
 
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

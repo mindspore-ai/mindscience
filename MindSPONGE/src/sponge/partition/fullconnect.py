@@ -38,11 +38,9 @@ class FullConnectNeighbours(Cell):
     r"""Full connected neighbour list
 
     Args:
-
         num_atoms (int):    Number of atoms
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

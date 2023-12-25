@@ -38,7 +38,6 @@ class ColvarGroup(Colvar):
     r"""Concatenate a group of `Colvar` classes into one `Colvar` class
 
     Args:
-
         colvar (list or tuple):
                     Array of `Colvar` to be concatenated.
 
@@ -48,7 +47,6 @@ class ColvarGroup(Colvar):
         name (str): Name of the collective variables. Default: 'colvar_group'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

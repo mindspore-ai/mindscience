@@ -12,5 +12,3 @@ sponge.function.check_broadcast
     返回：
         tuple。shape。播出之后的shape。
     
-    支持的平台：
-        ``Ascend`` ``GPU`` ``CPU``

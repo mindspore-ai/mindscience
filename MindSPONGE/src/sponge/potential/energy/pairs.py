@@ -55,7 +55,6 @@ class NonbondPairwiseEnergy(EnergyCell):
                             C_{ij}^p \cdot 4 \epsilon_{ij} \frac{\sigma_{ij}^{12}}{r_{ij}^{12}}
 
     Args:
-
         index (Union[Tensor, ndarray, List[int]]):
                             Array of the indices of the non-bonded pair atoms.
                             The shape of Tensor is `(B, p, 2)`, and the data type is int.
@@ -95,7 +94,6 @@ class NonbondPairwiseEnergy(EnergyCell):
         name (str):         Name of the energy. Default: 'nb_pairs'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:

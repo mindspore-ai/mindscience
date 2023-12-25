@@ -47,7 +47,6 @@ class HarmonicOscillator(Bias):
         V[s(R)] = 1 / 2 * k * [s(R) - s_0]^2
 
     Args:
-
         colvar (Colvar):    Collective variables (CVs) :math:`s(R)` to be limited.
 
         offset (Union[float, Tensor, ndarray]):
@@ -67,7 +66,6 @@ class HarmonicOscillator(Bias):
         name (str):         Name of the bias potential. Default: 'harmonic_oscillator'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

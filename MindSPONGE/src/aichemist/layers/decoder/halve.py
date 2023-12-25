@@ -39,7 +39,6 @@ class HalveDecoder(Decoder):
     r"""A MLP decoder with halve number of layers.
 
     Args:
-
         dim_in (int): Input dimension.
 
         dim_out (int): Output dimension. Default: 1

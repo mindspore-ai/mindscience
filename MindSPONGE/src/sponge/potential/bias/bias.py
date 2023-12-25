@@ -33,7 +33,6 @@ class Bias(EnergyCell):
     r"""Basic cell for bias potential
 
     Args:
-
         name (str):         Name of the bias potential. Default: 'bias'
 
         colvar (Colvar):    Collective variables. Default: ``None``.
@@ -49,7 +48,6 @@ class Bias(EnergyCell):
         use_pbc (bool):     Whether to use periodic boundary condition.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

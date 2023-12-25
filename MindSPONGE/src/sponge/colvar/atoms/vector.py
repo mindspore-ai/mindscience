@@ -32,10 +32,9 @@ from ...function import get_integer, check_broadcast, all_none, any_not_none
 
 
 class Vector(AtomsBase):
-    r"""Vector between specific atoms or virtual atoms
+    r"""Vector between specific atoms or virtual atoms.
 
     Args:
-
         atoms (AtomsBase):  Atoms of shape `(..., 2, D)` to form a vector of shape `(..., D)` or `(..., 1, D)`.
                             Cannot be used with `atoms0` or `atoms1`.
                             Default: ``None``. `D` means Spatial dimension of the simulation system. Usually is 3.
@@ -64,12 +63,11 @@ class Vector(AtomsBase):
 
         axis (int):         Axis along which the coordinate of atoms are take, of which the dimension must be 2.
                             It only works when initialized with `atoms`.
-                            Default: -2
+                            Default: -2.
 
-        name (str):         Name of the Colvar. Default: 'vector'
+        name (str):         Name of the Colvar. Default: 'vector'.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

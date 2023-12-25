@@ -61,7 +61,6 @@ class Thermostat(Controller):
         of the system during the simulation process.
 
     Args:
-
         system (Molecule): Simulation system
 
         temperature (Union[float, ndarray, Tensor]): Reference temperature :math:`T_{ref}` in unit Kelvin
@@ -73,7 +72,6 @@ class Thermostat(Controller):
             Default: 0.5
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

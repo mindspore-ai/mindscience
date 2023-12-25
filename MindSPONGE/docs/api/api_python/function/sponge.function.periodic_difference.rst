@@ -13,5 +13,3 @@ sponge.function.periodic_difference
     返回：
         Tensor。period_diff。张量的shape为 (...) 。数据类型为float。值在周期范围内的变量。
 
-    支持的平台：
-        ``Ascend`` ``GPU`` ``CPU``

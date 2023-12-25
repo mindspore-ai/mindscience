@@ -37,7 +37,6 @@ class SimulationCell(WithEnergyCell):
         NOTE: This Cell will be removed a future release, Please use `WithEnergyCell` instead.
 
     Args:
-
         system (Molecule):              Simulation system.
 
         potential (PotentialCell):      Potential energy function cell.
@@ -54,7 +53,6 @@ class SimulationCell(WithEnergyCell):
                                         Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

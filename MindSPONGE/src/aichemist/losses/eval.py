@@ -41,7 +41,6 @@ class MolWithEvalCell(MoleculeWrapper):
     r"""Basic cell to combine the network and the loss/evaluate function.
 
     Args:
-
         datatypes (str):        Data types of the inputs.
 
         network (Cybertron):    Neural network of Cybertron

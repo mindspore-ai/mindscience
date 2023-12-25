@@ -40,7 +40,6 @@ class WithForceCell(Cell):
     r"""Cell that wraps the simulation system with the atomic force function.
 
     Args:
-
         system (Molecule):              Simulation system.
 
         force (PotentialCell):          Atomic force calculation cell.
@@ -54,7 +53,6 @@ class WithForceCell(Cell):
         bias (Bias):                    Bias potential: Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:
@@ -155,7 +153,7 @@ class WithForceCell(Cell):
     def cutoff(self) -> Tensor:
         r"""cutoff distance for neighbour list
 
-        Return:
+        Returns:
             Tensor, cutoff
 
         """
@@ -167,7 +165,7 @@ class WithForceCell(Cell):
     def neighbour_list_pace(self) -> int:
         r"""update step for neighbour list
 
-        Return:
+        Returns:
             int, step
 
         """
@@ -179,7 +177,7 @@ class WithForceCell(Cell):
     def length_unit(self) -> str:
         r"""length unit
 
-        Return:
+        Returns:
             str, length unit
 
         """
@@ -189,7 +187,7 @@ class WithForceCell(Cell):
     def energy_unit(self) -> str:
         r"""energy unit
 
-        Return:
+        Returns:
             str, energy unit
 
         """
@@ -264,7 +262,7 @@ class WithForceCell(Cell):
             force_ad (Tensor):  Tensor of shape (B, A, D). Data type is float.
                                 Atomic forces from automatic differentiation.
 
-        Return:
+        Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
             force (Tensor):     Tensor of shape (B, A, D). Data type is float.
             virial (Tensor):    Tensor of shape (B, D). Data type is float.

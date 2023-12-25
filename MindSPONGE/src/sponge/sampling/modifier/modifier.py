@@ -34,7 +34,6 @@ class ForceModifier(Cell):
     r"""Cell to modify atomic force.
 
     Args:
-
         update_pace (int):  Frequency for updating the modifier. Default: 0
 
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
@@ -44,7 +43,6 @@ class ForceModifier(Cell):
                             Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -68,7 +66,7 @@ class ForceModifier(Cell):
     def update_pace(self) -> int:
         r"""frequency for updating the modifier
 
-        Return:
+        Returns:
             int, frequency for updating the modifier
 
         """
@@ -103,7 +101,7 @@ class ForceModifier(Cell):
             virial_ad (Tensor): Tensor of shape (B, D). Data type is float.
                                 Virial calculated calculated by automatic differentiation.
 
-        Return:
+        Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
                                 Totoal potential energy for simulation.
             force (Tensor):     Tensor of shape (B, A, D). Data type is float.

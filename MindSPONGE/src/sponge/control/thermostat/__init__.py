@@ -47,7 +47,7 @@ def get_thermostat(cls_name: Union[str, dict, Thermostat],
             the type of `cls_name` is `str`, `None` will be returned. Default: ``None``.
         **kwargs: Other arguments
 
-    Return:
+    Returns:
         thermostat (Thermostat): Object of thermostat
 
     """

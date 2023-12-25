@@ -37,16 +37,15 @@ from ...function import get_ms_array, any_none, any_not_none, check_broadcast
 
 
 class CombineCV(Colvar):
-    r"""Polynomial combination of a set of Colvar :math:`{s_i}` with shape (S_1, S_2, ..., S_n). `{S_i}` means dimensions of collective variables.
-
-    Math:
+    r"""
+    Polynomial combination of a set of Colvar :math:`{s_i}` with shape (S_1, S_2, ..., S_n).
+    `{S_i}` means dimensions of collective variables.
 
     .. math::
 
         S = \sum_i^n{w_i (s_i - o_i)^{p_i}}
 
     Args:
-
         colvar (Union[List[Colvar], Tuple[Colvar]]): Array of `Colvar` to be combined :math:`{s_i}`.
 
         weights (Union[List[float], Tuple[Float], float, Tensor]): Weights :math:`{w_i}` for each Colvar.
@@ -79,7 +78,6 @@ class CombineCV(Colvar):
         name (str): Name of the collective variables. Default: 'combine'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -236,18 +234,15 @@ class CombineCV(Colvar):
 
 
 class ColvarCombine(CombineCV):
-    r"""See `CombineCV`. NOTE: This module will be removed in a future release, please use `CombineCV` instead.
-
-    Math:
+    r"""
+    See `CombineCV`. NOTE: This module will be removed in a future release, please use `CombineCV` instead.
 
     .. math::
 
         S = \sum_i^n{w_i (s_i - o_i)^{p_i}}
 
     Args:
-
-        colvar (list or tuple):
-                        Array of `Colvar` to be combined :math:`{s_i}`.
+        colvar (list or tuple): Array of `Colvar` to be combined :math:`{s_i}`.
 
         weights (list, tuple, float, Tensor):
                         Weights :math:`{w_i}` for each Colvar.
@@ -292,7 +287,6 @@ class ColvarCombine(CombineCV):
         name (str):     Name of the collective variables. Default: 'colvar_combination'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

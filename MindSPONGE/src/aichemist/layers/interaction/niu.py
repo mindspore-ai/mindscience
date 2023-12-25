@@ -44,7 +44,6 @@ class NeuralInteractionUnit(Interaction):
     r"""Neural interaction unit for MolCT.
 
     Args:
-
         dim_feature (int):          Feature dimension.
 
         n_heads (int):              Number of head for multi-head attention. Default: 8

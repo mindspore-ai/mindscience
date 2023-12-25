@@ -35,22 +35,20 @@ def get_colvar(colvar_: Union[Colvar, List[Colvar], Tuple[Colvar]],
                use_pbc: bool = None,
                name: str = None,
                ) -> Colvar:
-    r"""get group of collective variables
+    r"""
+    get group of collective variables.
 
     Args:
-
         colvar (Union[Colvar, List[Colvar], Tuple[Colvar]]): Colvar or array of colvars.
 
-        axis (int): Axis to be concatenated. Default： -1.
+        axis (int): Axis to be concatenated. Default: -1.
 
-        use_pbc (bool): Whether to use periodic boundary condition. Default： ``None``.
+        use_pbc (bool): Whether to use periodic boundary condition. Default: ``None``.
 
         name (str): Name. Default: ``None``.
 
-
     Returns:
-
-        colvar (Union[Atoms, Group]): Atoms or group
+        colvar (Union[Atoms, Group]), Atoms or group.
 
     """
     if colvar_ is None:

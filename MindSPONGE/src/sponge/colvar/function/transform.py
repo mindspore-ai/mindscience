@@ -33,16 +33,14 @@ from ..colvar import Colvar
 
 
 class TransformCV(Colvar):
-    r"""Transformation of the values of the a collective variable :math:`s(R)` using a specific functions :math:`f(x)`.
-
-    Math:
+    r"""
+    Transformation of the values of the a collective variable :math:`s(R)` using a specific functions :math:`f(x)`.
 
     .. math::
 
         s' = f[s(R)]
 
     Args:
-
         colvar (Colvar): Collective variables (CVs) :math:`s(R)`.
 
         function (Callable): Transformation function :math:`f(x)`.
@@ -55,10 +53,9 @@ class TransformCV(Colvar):
         unit (str): Unit of the collective variables. Default: ``None``.
             NOTE: This is not the `Units` Cell that wraps length and energy.
 
-        name (str): Name of the collective variables. Default: 'transform'
+        name (str): Name of the collective variables. Default: 'transform'.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

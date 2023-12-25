@@ -83,7 +83,7 @@ def quaternion_inverse(tensor_1):
     Args:
         tensor_1 (Tensor): A tensor to calculate.
 
-    Return:
+    Returns:
         tensor_2(Tensor), The multiplication result with shape (B, 4).
     """
     if tensor_1.ndim == 1:

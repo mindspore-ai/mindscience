@@ -590,7 +590,7 @@ def clipped_policy_gradient_objective(policy, agent, reward, eps=0.2):
         reward (ms.Tensor): reward value.
         eps (float, optional): epsilon value.
 
-    Return:
+    Returns:
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

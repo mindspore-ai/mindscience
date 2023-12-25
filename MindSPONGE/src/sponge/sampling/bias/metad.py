@@ -63,7 +63,6 @@ class Metadynamics(Bias):
         \omega (t) = w e ^ {-\frac{1}{\gamma - 1} \beta V[R(t)]}
 
     Args:
-
         colvar (Colvar):        Collective variables (CVs) :math:`s(R)`.
 
         update_pace (int):      Frequency for hill addition.
@@ -99,7 +98,6 @@ class Metadynamics(Bias):
                                 Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -470,7 +468,7 @@ class Metadynamics(Bias):
     def calc_reweight_factor(self) -> Tensor:
         r"""calculate the reweighting factor :math:`c(t)` of metadynamics
 
-        Return:
+        Returns:
             rct (Tensor):   Tensor of shape `(B, 1)`. Data type is float.
                             Reweighting factor :math:`c(t)`.
         """

@@ -36,10 +36,10 @@ from ...function import get_integer
 
 
 class Group(AtomsBase):
-    r"""Group of atoms
+    r"""
+    Group of atoms.
 
     Args:
-
         atoms (Union[List[AtomsBase], Tuple[AtomsBase]]):
                             List of AtomsBase. Member should be the subclass of AtomsBase.
 
@@ -51,10 +51,9 @@ class Group(AtomsBase):
 
         axis (int):         Axis to concatenate the coordinates of atoms.
 
-        name (str):         Name of the Colvar. Default: 'atoms_group'
+        name (str):         Name of the Colvar. Default: 'atoms_group'.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

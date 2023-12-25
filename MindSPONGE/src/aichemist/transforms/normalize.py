@@ -38,7 +38,6 @@ class ScaleShift(Cell):
     r"""A network to scale and shift the label of dataset or prediction.
 
     Args:
-
         scale (float): Scale value. Default: 1
 
         shift (float): Shift value. Default: 0

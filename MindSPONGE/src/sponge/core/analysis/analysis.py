@@ -39,7 +39,6 @@ class AnalysisCell(Cell):
     r"""Cell for analysis
 
     Args:
-
         system (Molecule):              Simulation system.
 
         potential (PotentialCell):      Potential energy.
@@ -47,7 +46,6 @@ class AnalysisCell(Cell):
         neighbour_list (NeighbourList): Neighbour list. Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

@@ -32,7 +32,6 @@ class Aggregate(Cell):
     r"""A network to aggregate Tensor
 
     Args:
-
         axis (int):     Axis to aggregate.
 
         mean (bool):    Whether to average the Tensor. Default: ``False``.

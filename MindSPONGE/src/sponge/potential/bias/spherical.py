@@ -44,7 +44,6 @@ class SphericalRestrict(Bias):
         V(R) = k \log{\left ( 1 + e^{\frac{|R - R_0| - r_0}{\sigma}} \right )}
 
     Args:
-
         radius (float):         Radius of sphere (r_0).
 
         center (Tensor):        Coordinate of the center of sphere (R_0).
@@ -64,7 +63,6 @@ class SphericalRestrict(Bias):
         name (str):             Name of the bias potential. Default: 'spherical'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

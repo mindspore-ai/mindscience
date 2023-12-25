@@ -36,15 +36,14 @@ def get_colvar(
         use_pbc: bool = None,
         name: str = None,
         ) -> Colvar:
-    r"""get group of collective variables
+    r"""
+    get group of collective variables.
 
     Args:
-
         colvar (Union[Colvar, List[Colvar], Tuple[Colvar]]): Colvar or array of colvars.
 
     Returns:
-
-        colvar (Union[Atoms, Group]): Atoms or group
+        colvar (Union[Atoms, Group]), Atoms or group.
 
     """
     if colvar is None:

@@ -16,16 +16,17 @@ sponge.colvar.Colvar
         Enhanced Sampling in Molecular Dynamics [J].
         The Journal of Chemical Physics, 2019, 151(7): 070902.
 
-    参数:
+    参数：
         - **shape** (Tuple) - 集合变量的shape。默认值：()
         - **ndim** (int) - 集合变量的秩（维度数）。默认值：0
         - **periodic** (bool) - 判断集合变量是否是周期性的。默认值：``False``。
-        - **use_pbc** (bool) - 是否使用周期边界条件。如果给出`None`，它将根据是否提供`pbc_box`来确定是否使用周期性边界条件。默认值：``None``。
+        - **use_pbc** (bool) - 是否使用周期边界条件。如果给出 `None`，它将根据是否提供 `pbc_box` 来确定是否使用周期性边界条件。默认值：``None``。
         - **name** (str) - 集合变量的名称。默认值：'colvar'。
-        - **unit** (str) - 集合变量的单位。注意：这不是包裹长度和能量的`Units`单元格。默认值：``None``。
+        - **unit** (str) - 集合变量的单位。注意：这不是包裹长度和能量的 `Units` 单元格。默认值：``None``。
         - **dtype** (type) - 集合变量的数据类型。默认值：float32。
 
     .. py:method:: use_pbc()
+        :property:
 
         判断是否使用周期边界条件。
 
@@ -33,6 +34,7 @@ sponge.colvar.Colvar
             bool，判断是否使用周期边界条件。
 
     .. py:method:: shape()
+        :property:
 
         集合变量的shape (S_1, S_2, ..., S_n) 
 
@@ -40,6 +42,7 @@ sponge.colvar.Colvar
             shape(tuple)：Colvar的shape。
 
     .. py:method:: name()
+        :property:
 
         集合变量的名称。
 
@@ -47,6 +50,7 @@ sponge.colvar.Colvar
             str，集合变量的名称。
 
     .. py:method:: ndim()
+        :property:
 
         集合变量的秩（维度数）。
 
@@ -54,6 +58,7 @@ sponge.colvar.Colvar
             整型，集合变量的秩。
 
     .. py:method:: dtype()
+        :property:
 
         集合变量的数据类型。
 
@@ -61,18 +66,22 @@ sponge.colvar.Colvar
             类型，Colvar的数据类型。
 
     .. py:method:: periodic()
+        :property:
 
-        返回数据类型为`bool`的张量，以指示CV是否是周期性的。
+        返回数据类型为 `bool` 的张量，以指示CV是否是周期性的。
 
     .. py:method:: any_periodic()
+        :property:
 
         判断任一维度是否为周期性的。
 
     .. py:method:: all_periodic()
+        :property:
 
         判断所有维度是否为周期性的。
 
-    .. py:method:: vector_in_pbc(cls, vector: Tensor, pbc_box: Tensor)
+    .. py:method:: vector_in_pbc(vector: Tensor, pbc_box: Tensor)
+        :classmethod:
 
         在 -0.5box 到 0.5box 的范围内计算出向量的差异。
 
@@ -96,7 +105,7 @@ sponge.colvar.Colvar
 
         在系统坐标 :math:`R` 处获取shape (B, S_1, S_2, ..., S_n) 的集合变量 :math:`s(R)`的值。
 
-        参数:
+        参数：
             - **coordinate** (Tensor) - 张量的shape为 (B， A， D) 。数据类型为浮点型。系统中原子位置坐标。
             - **pbc_box** (Tensor) - 张量的shape为 (B， D) 。数据类型为浮点型。PBC box 的张量。默认值：``None``。
 

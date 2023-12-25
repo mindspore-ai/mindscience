@@ -35,7 +35,6 @@ class Interaction(Cell):
     r"""Interaction layer network
 
     Args:
-
         dim_feature (int):          Feature dimension.
 
         activation (Cell):          Activation function. Default: ``None``.

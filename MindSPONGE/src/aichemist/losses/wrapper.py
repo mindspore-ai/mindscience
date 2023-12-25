@@ -42,7 +42,6 @@ class MoleculeWrapper(Cell):
     r"""Base cell to combine the network and the loss/evaluate function.
 
     Args:
-
         datatypes (str):        Data types of the inputs.
 
         network (Cybertron):    Neural network of Cybertron
@@ -274,7 +273,6 @@ class WithAdversarialLossCell(Cell):
     r"""Adversarial network.
 
     Args:
-
         network (Cell): Neural network.
 
         loss_fn (Cell): Loss function.

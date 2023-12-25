@@ -12,5 +12,3 @@ sponge.function.get_arguments
     返回：
         dict。参数。参数字典
     
-    支持的平台：
-        ``Ascend`` ``GPU`` ``CPU``

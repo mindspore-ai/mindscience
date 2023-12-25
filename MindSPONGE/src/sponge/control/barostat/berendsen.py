@@ -45,7 +45,6 @@ class BerendsenBarostat(Barostat):
         The Journal of Chemical Physics, 1984, 81(8): 3684.
 
     Args:
-
         system (Molecule):          Simulation system
 
         pressure (float):           Reference pressure :math:`P_{ref}` in unit bar for pressure coupling.
@@ -63,7 +62,6 @@ class BerendsenBarostat(Barostat):
                                     Default: 1
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

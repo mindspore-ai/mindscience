@@ -47,7 +47,6 @@ class UpdaterMD(Updater):
         bond constraint.
 
     Args:
-
         system (Molecule): Simulation system.
 
         time_step (float): Time step. Default: 1e-3
@@ -83,7 +82,6 @@ class UpdaterMD(Updater):
         loss_scale (float): A value for the loss scale. Default: 1
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:

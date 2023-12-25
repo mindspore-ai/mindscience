@@ -11,5 +11,3 @@ sponge.function.all_not_none
     返回：
         bool。all。如果 `iterable` 中的所有值 `x` 不为 None。
 
-    支持的平台：
-        ``Ascend`` ``GPU`` ``CPU``

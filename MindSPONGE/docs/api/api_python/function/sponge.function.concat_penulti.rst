@@ -12,5 +12,3 @@ sponge.function.concat_penulti
     返回：
         Tensor。与 `input_x` 类型相同的级联张量。
 
-    支持的平台：
-        ``Ascend`` ``GPU`` ``CPU``

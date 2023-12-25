@@ -63,7 +63,6 @@ class Integrator(Controller):
         The `Integrator` module used to control the atomic coordinates and velocities during the simulation process.
 
     Args:
-
         system (Molecule):          Simulation system
 
         thermostat (Thermostat):    Thermostat for temperature coupling. Default: ``None``.
@@ -75,7 +74,6 @@ class Integrator(Controller):
 
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

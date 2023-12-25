@@ -48,7 +48,6 @@ class Protein(Molecule):
         Protein Cell can be initialized by accepting a PDB file, thus creating a `Molecule` Cell for the protein.
 
     Args:
-
         pdb (str):                  Filename of the PDB (Protein Data Bank) file. Default: ``None``.
 
         sequence (List[str]):       Sequence of the protein moleulce. Default: ``None``.

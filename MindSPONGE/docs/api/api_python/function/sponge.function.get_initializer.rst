@@ -11,6 +11,3 @@ sponge.function.get_initializer
     
     返回：
         初始化设定项。
-    
-    支持的平台：
-        ``Ascend`` ``GPU`` ``CPU``

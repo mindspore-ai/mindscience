@@ -51,7 +51,6 @@ class AngleEnergy(EnergyCell):
         E_{angle}(\theta_{ijk}) = \frac{1}{2} k_{ijk}^{\theta} (\theta_{ijk} - \theta_{ijk}^0) ^ 2
 
     Args:
-
         index (Union[Tensor, ndarray, List[int]]):
                             Array of the indices of the atoms forming the bond angles.
                             The shape of array is `(B, a, 3)`, and the data type is int.
@@ -77,7 +76,6 @@ class AngleEnergy(EnergyCell):
         name (str):         Name of the energy. Default: 'angle'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:

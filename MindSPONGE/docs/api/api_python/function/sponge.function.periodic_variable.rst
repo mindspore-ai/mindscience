@@ -14,5 +14,3 @@ sponge.function.periodic_variable
     返回：
         Tensor。period_value。张量的shape为 (...) 。数据类型为float。值在周期范围内的变量。
     
-    支持的平台：
-        ``Ascend`` ``GPU`` ``CPU``

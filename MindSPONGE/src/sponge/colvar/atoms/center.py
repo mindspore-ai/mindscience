@@ -37,10 +37,10 @@ from ...function import get_ms_array, get_integer
 
 
 class Center(AtomsBase):
-    r"""Center of specific atoms
+    r"""
+    Center of specific atoms
 
     Args:
-
         atoms (Union[AtomsBase, Tensor, ndarray, list]):
                             Specific atoms or virtual atoms of shape (..., G, D).
                             `G` means number of the group of atoms to be averaged.
@@ -69,7 +69,6 @@ class Center(AtomsBase):
         name (str):         Name of the Colvar. Default: 'atoms_center'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

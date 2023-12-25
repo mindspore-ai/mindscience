@@ -55,7 +55,6 @@ class LennardJonesEnergy(NonbondEnergy):
 
     Args:
 
-
         epsilon (Union[Tensor, ndarray, List[float]]):
                             Parameter :math:`\epsilon` for LJ potential.
                             The shape of array is `(B, A)`, and the data type is float.
@@ -85,7 +84,6 @@ class LennardJonesEnergy(NonbondEnergy):
         name (str):         Name of the energy. Default: 'vdw'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:

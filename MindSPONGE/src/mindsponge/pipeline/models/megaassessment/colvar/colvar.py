@@ -60,7 +60,6 @@ class Colvar(Cell):
         The Journal of Chemical Physics, 2019, 151(7): 070902.
 
     Args:
-
         shape (tuple):      Shape of collective variables. Default: ()
 
         ndim (int):         Rank (number of dimensions) of collective variables. Default: 0
@@ -81,7 +80,6 @@ class Colvar(Cell):
         dtype (type):       Data type of the collective variables. Default: float32
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:
@@ -132,7 +130,7 @@ class Colvar(Cell):
     def use_pbc(self) -> bool:
         """whether to use periodic boundary condition
 
-        Return:
+        Returns:
             bool, whether to use periodic boundary condition
 
         """
@@ -147,7 +145,7 @@ class Colvar(Cell):
     def shape(self) -> tuple:
         """shape of the collective variables (S_1, S_2, ..., S_n)
 
-        Return:
+        Returns:
             shape (tuple):  Shape of the Colvar
 
         """
@@ -162,7 +160,7 @@ class Colvar(Cell):
     def name(self) -> str:
         r"""name of the collective variables
 
-        Return:
+        Returns:
             str, name of the CV
 
         """
@@ -172,7 +170,7 @@ class Colvar(Cell):
     def ndim(self) -> int:
         r"""rank (number of dimensions) of the collective variables
 
-        Return:
+        Returns:
             int, rank of the CV
 
         """
@@ -182,7 +180,7 @@ class Colvar(Cell):
     def dtype(self) -> type:
         """data type of the collective variables.
 
-        Return:
+        Returns:
             type, data type of the Colvar
 
         """

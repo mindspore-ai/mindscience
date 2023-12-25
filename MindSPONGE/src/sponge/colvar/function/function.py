@@ -32,17 +32,15 @@ from ..colvar import Colvar
 
 
 class FunctionCV(Colvar):
-    r"""A composite Colvar that combines a set of collective variables (CVs) :math:`{s_i(R)}`
-        using a custom function :math:`f(s_1(R), s_2(R), ... s_i(R))`.
-
-    Math:
+    r"""
+    A composite Colvar that combines a set of collective variables (CVs) :math:`{s_i(R)}`
+    using a custom function :math:`f(s_1(R), s_2(R), ... s_i(R))`.
 
     .. math::
 
         S = f(s_1(R), s_2(R), ... s_i(R))
 
     Args:
-
         colvar (Union[Colvar, List[Colvar], Tuple[Colvar]]): Collective variables to be combined :math:`{s_i(R)}`.
 
         function (callable): Custom function :math:`f(s_1(R), s_2(R), ... s_i(R))`.
@@ -56,10 +54,9 @@ class FunctionCV(Colvar):
         unit (str): Unit of the collective variables. Default: ``None``.
             NOTE: This is not the `Units` Cell that wraps length and energy.
 
-        name (str): Name of the collective variables. Default: 'combine'
+        name (str): Name of the collective variables. Default: 'combine'.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

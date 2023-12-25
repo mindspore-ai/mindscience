@@ -39,10 +39,10 @@ __all__ = ['Position', 'BatchedPosition']
 
 
 class Position(AtomsBase):
-    r"""Virtual atom(s) in fixed position(s)
+    r"""
+    Virtual atom(s) in fixed position(s).
 
     Args:
-
         coordinate (Union[Tensor, Parameter, ndarray]):
                             Array of th position coordinate(s) of specific virtual atom(s).
                             The shape of Tensor is (a_1, a_2, ..., a_n, D), and the data type is float.
@@ -55,12 +55,11 @@ class Position(AtomsBase):
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
                             Default: ``False``.
 
-        dimension (int):    Space dimension of system. Default: 3
+        dimension (int):    Space dimension of system. Default: 3.
 
-        name (str):         Name of the Colvar. Default: 'position'
+        name (str):         Name of the Colvar. Default: 'position'.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -131,10 +130,10 @@ class Position(AtomsBase):
 
 
 class BatchedPosition(Position):
-    r"""Virtual atom(s) in fixed position(s) with batched coordinate
+    r"""
+    Virtual atom(s) in fixed position(s) with batched coordinate
 
     Args:
-
         coordinate (Tensor):    Tensor of shape (B, a_1, a_2, ..., a_n, D). Data type is float.
                                 Position coordinate(s) of virtual atom(s).
 
@@ -146,7 +145,6 @@ class BatchedPosition(Position):
         name (str):             Name of the Colvar. Default: 'position'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

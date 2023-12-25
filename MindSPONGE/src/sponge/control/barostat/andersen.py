@@ -44,7 +44,6 @@ class AndersenBarostat(Barostat):
         Journal of Chemical Physics, 1980, 72: 2384-2393.
 
     Args:
-
         system (Molecule):          Simulation system
 
         pressure (float):           Reference pressure :math:`P_{ref}` in unit bar for pressure coupling.
@@ -62,7 +61,6 @@ class AndersenBarostat(Barostat):
                                     Default: 1
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

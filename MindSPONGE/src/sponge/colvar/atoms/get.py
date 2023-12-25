@@ -37,10 +37,10 @@ def get_atoms(atoms: Union[AtomsBase, List[AtomsBase], Tuple[AtomsBase], Tensor,
               batched: bool = False,
               keep_in_box: bool = False,
               ) -> AtomsBase:
-    r"""get atom(s) or group
+    r"""
+    get atom(s) or group.
 
     Args:
-
         atoms (Union[list, tuple, AtomsBase, Tensor, Parameter, ndarray]):
                             List of atoms.
 
@@ -51,8 +51,7 @@ def get_atoms(atoms: Union[AtomsBase, List[AtomsBase], Tuple[AtomsBase], Tensor,
                             Default: ``False``.
 
     Returns:
-
-        atoms (Union[Atoms, Group]): Atoms or group
+        atoms (Union[Atoms, Group]), Atoms or group.
 
     """
     #pylint: disable=bare-except

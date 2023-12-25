@@ -47,7 +47,6 @@ class LeapFrog(Integrator):
         Chinese Science Bulletin, 2018, 63(33): 3467-3483.
 
     Args:
-
         system (Molecule):          Simulation system
 
         thermostat (Thermostat):    Thermostat for temperature coupling. Default: ``None``.
@@ -58,7 +57,6 @@ class LeapFrog(Integrator):
 
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

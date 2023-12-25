@@ -43,7 +43,6 @@ class SchNetInteraction(Interaction):
     r"""Interaction layer of SchNet.
 
     Args:
-
         dim_feature (int):          Feature dimension.
 
         dim_filter (int):           Dimension of filter network.

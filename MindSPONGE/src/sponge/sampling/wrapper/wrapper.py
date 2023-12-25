@@ -35,7 +35,6 @@ class EnergyWrapper(Cell):
     r"""A network to process and merge the potential and bias during the simulation.
 
     Args:
-
         update_pace (int):  Frequency for updating the wrapper. Default: 0
 
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
@@ -45,7 +44,6 @@ class EnergyWrapper(Cell):
                             Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -84,7 +82,7 @@ class EnergyWrapper(Cell):
             biases (Tensor):        The shape of tensor is `(B, V)`. The data type is float.
                                     Bias potential energies. Default: ``None``.
 
-        Return:
+        Returns:
             energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
                                 Total energy (potential energy and bias energy).
             bias (Tensor):      Tensor of shape `(B, 1)`. Data type is float.

@@ -47,7 +47,6 @@ class FeedForward(Cell):
     r"""Feed forward network for transformer.
 
     Args:
-
         dim (int):          Last dimension of Tensor
 
         activation (Cell):  Activation function.
@@ -75,7 +74,6 @@ class FeedForward(Cell):
         """Compute feed forward network.
 
         Args:
-
             x (Tensor): Tensor with shape (B, A, F). Data type is float.
 
         Returns:

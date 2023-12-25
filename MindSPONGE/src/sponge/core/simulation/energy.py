@@ -178,7 +178,7 @@ class WithEnergyCell(Cell):
         r"""
         Cutoff distance for neighbour list.
 
-        Return:
+        Returns:
             Tensor, cutoff distance.
         """
         return self.neighbour_list.cutoff
@@ -188,7 +188,7 @@ class WithEnergyCell(Cell):
         r"""
         Update step for neighbour list.
 
-        Return:
+        Returns:
             int, update steps.
         """
         return self.neighbour_list.pace
@@ -198,7 +198,7 @@ class WithEnergyCell(Cell):
         r"""
         Length unit.
 
-        Return:
+        Returns:
             str, length unit.
         """
         return self.units.length_unit
@@ -208,7 +208,7 @@ class WithEnergyCell(Cell):
         r"""
         Energy unit.
 
-        Return:
+        Returns:
             str, energy unit.
         """
         return self.units.energy_unit
@@ -218,7 +218,7 @@ class WithEnergyCell(Cell):
         r"""
         Number of energy terms :math:`U`.
 
-        Return:
+        Returns:
             int, number of energy terms.
         """
         return self.potential_function.num_energies
@@ -228,7 +228,7 @@ class WithEnergyCell(Cell):
         r"""
         Number of bias potential energies :math:`V`.
 
-        Return:
+        Returns:
             int, number of bias potential energies.
         """
         return self._num_biases
@@ -238,7 +238,7 @@ class WithEnergyCell(Cell):
         r"""
         Names of energy terms.
 
-        Return:
+        Returns:
             list[str], names of energy terms.
         """
         return self.potential_function.energy_names
@@ -248,7 +248,7 @@ class WithEnergyCell(Cell):
         r"""
         Name of bias potential energies.
 
-        Return:
+        Returns:
             list[str], the bias potential energies.
         """
         return self._bias_names
@@ -258,7 +258,7 @@ class WithEnergyCell(Cell):
         r"""
         Tensor of potential energy components.
 
-        Return:
+        Returns:
             Tensor, Tensor of shape `(B, U)`. Data type is float.
         """
         return self.identity(self._energies)
@@ -268,7 +268,7 @@ class WithEnergyCell(Cell):
         r"""
         Tensor of bias potential components.
 
-        Return:
+        Returns:
             Tensor, Tensor of shape `(B, V)`. Data type is float.
         """
         if self.bias_function is None:
@@ -280,7 +280,7 @@ class WithEnergyCell(Cell):
         r"""
         Tensor of the total bias potential.
 
-        Return:
+        Returns:
             Tensor, Tensor of shape `(B, 1)`. Data type is float.
         """
         return self.identity(self._bias)
@@ -359,7 +359,7 @@ class WithEnergyCell(Cell):
         """
         Calculate the energy terms of the potential energy.
 
-        Return:
+        Returns:
             Tensor, Tensor of shape `(B, U)`. Data type is float. Energy terms.
         """
 
@@ -387,7 +387,7 @@ class WithEnergyCell(Cell):
         """
         Calculate the bias potential terms.
 
-        Return:
+        Returns:
             Tensor, Tensor of shape `(B, V)`. Data type is float. Bias potential terms.
         """
         if self.bias_function is None:
@@ -419,7 +419,7 @@ class WithEnergyCell(Cell):
     def construct(self, *inputs) -> Tensor:
         """calculate the total potential energy (potential energy and bias potential) of the simulation system.
 
-        Return:
+        Returns:
             energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
                                 Total potential energy.
 

@@ -608,7 +608,6 @@ class MaxError(Metric):
     r"""Metric to calcaulte the max error.
 
     Args:
-
         indexes (tuple):        Indexes for label and predicted data. Default: (1, 2)
 
         reduce_dims (bool): Whether to summation the data of all atoms in molecule. Default: ``True``.
@@ -650,7 +649,6 @@ class Error(Metric):
     r"""Metric to calcaulte the error.
 
     Args:
-
         index (int): Index of the output for which error to be calculated. Default: 0
 
         per_atom (bool): Calculate the error per atom. Default: ``False``.
@@ -789,7 +787,6 @@ class MAE(Error):
     r"""Metric to calcaulte the mean absolute error.
 
     Args:
-
         index (int): Index of the output for which error to be calculated. Default: 0
 
         per_atom (bool): Calculate the error per atom. Default: ``False``.
@@ -829,7 +826,6 @@ class MSE(Error):
     r"""Metric to calcaulte the mean square error.
 
     Args:
-
         index (int): Index of the output for which error to be calculated. Default: 0
 
         per_atom (bool): Calculate the error per atom. Default: ``False``.
@@ -869,7 +865,6 @@ class MNE(Error):
     r"""Metric to calcaulte the mean norm error.
 
     Args:
-
         index (int): Index of the output for which error to be calculated. Default: 0
 
         per_atom (bool): Calculate the error per atom. Default: ``False``.
@@ -910,7 +905,6 @@ class RMSE(Error):
     r"""Metric to calcaulte the root mean square error.
 
     Args:
-
         index (int): Index of the output for which error to be calculated. Default: 0
 
         per_atom (bool): Calculate the error per atom. Default: ``False``.
@@ -955,7 +949,6 @@ class Loss(Metric):
     r"""Metric to calcaulte the loss function.
 
     Args:
-
         indexes (int):            Index for loss function. Default: 0
 
     Supported Platforms:

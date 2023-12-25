@@ -35,7 +35,6 @@ class Readout(Cell):
     r"""Readout function that merges and converts representation vectors into predicted properties.
 
     Args:
-
         dim_output (int): Dimension of outputs. Default: 1
 
         dim_node_rep (int): Dimension of node vectors. Default: ``None``.

@@ -48,7 +48,6 @@ class ImproperEnergy(DihedralEnergy):
         E_{dihedral}(\omega) = \sum_n \frac{1}{2} V_n [1 - \cos{(n \omega - \gamma_n)}]
 
     Args:
-
         index (Union[Tensor, ndarray, List[int]]):
                             Array of the indices of the atoms forming the dihedral angles.
                             The shape of array is `(B, d, 4)`, and the data type is int.
@@ -78,7 +77,6 @@ class ImproperEnergy(DihedralEnergy):
         name (str):         Name of the energy. Default: 'dihedral'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:

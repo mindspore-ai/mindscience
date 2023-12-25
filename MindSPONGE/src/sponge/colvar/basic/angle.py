@@ -37,10 +37,10 @@ from ..atoms import AtomsBase, Vector, get_atoms
 
 
 class Angle(Colvar):
-    r"""Colvar for angle.
+    r"""
+    Colvar for angle.
 
     Args:
-
         atoms (AtomsBase):      Atoms of shape `(..., 3, D)` to form a angle of shape `(...)` or `(..., 1)`.
                                 Cannot be used with `atoms_a` or `atoms_b`.
                                 Default: ``None``.  `D` means spatial dimension of the simulation system. Usually is 3.
@@ -79,7 +79,6 @@ class Angle(Colvar):
         name (str):             Name of the Colvar. Default: 'angle'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

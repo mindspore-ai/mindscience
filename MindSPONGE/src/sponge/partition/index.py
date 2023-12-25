@@ -48,13 +48,11 @@ class IndexColvar(Cell):
     r"""Collective variables based on index
 
     Args:
-
         use_pbc (bool):     Whether to calculate the CV at periodic boundary condition (PBC).
                             If `None` is given, it will be determined at runtime based on
                             whether the `pbc_box` is given or not. Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -97,7 +95,6 @@ class IndexDistances(IndexColvar):
                             dimensions with size one.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -177,7 +174,6 @@ class Vector2Distance(Cell):
         keepdims (bool): If this is `True`, the last axis will be left in the result as dimensions with size one.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -253,7 +249,6 @@ class IndexVectors(IndexColvar):
         length_unit (str):  Length unit. Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

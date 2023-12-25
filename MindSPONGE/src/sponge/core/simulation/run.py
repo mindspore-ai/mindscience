@@ -144,7 +144,7 @@ class RunOneStepCell(Cell):
         r"""
         update step for neighbour list.
 
-        Return:
+        Returns:
             int, the number of steps needed for neighbour list updating.
         """
         return self._neighbour_list_pace
@@ -154,7 +154,7 @@ class RunOneStepCell(Cell):
         r"""
         cutoff distance for neighbour list in WithEnergyCell.
 
-        Return:
+        Returns:
             Tensor, cutoff distance for neighbour list in WithEnergyCell.
         """
         if self.system_with_energy is None:
@@ -166,7 +166,7 @@ class RunOneStepCell(Cell):
         r"""
         cutoff distance for neighbour list in WithForceCell.
 
-        Return:
+        Returns:
             Tensor, cutoff distance for neighbour list in WithForceCell.
         """
         if self.system_with_force is None:
@@ -178,7 +178,7 @@ class RunOneStepCell(Cell):
         r"""
         length unit.
 
-        Return:
+        Returns:
             str, length unit.
         """
         return self.units.length_unit
@@ -188,7 +188,7 @@ class RunOneStepCell(Cell):
         r"""
         energy unit.
 
-        Return:
+        Returns:
             str, energy unit.
         """
         return self.units.energy_unit
@@ -198,7 +198,7 @@ class RunOneStepCell(Cell):
         r"""
         number of energy terms :math:`U`.
 
-        Return:
+        Returns:
             int, number of energy terms.
         """
         if self.system_with_energy is None:
@@ -210,7 +210,7 @@ class RunOneStepCell(Cell):
         r"""
         names of energy terms.
 
-        Return:
+        Returns:
             list[str], names of energy terms.
         """
         if self.system_with_energy is None:
@@ -222,7 +222,7 @@ class RunOneStepCell(Cell):
         r"""
         name of bias potential energies.
 
-        Return:
+        Returns:
             list[str], the bias potential energies.
         """
         if self.system_with_energy is None:
@@ -234,7 +234,7 @@ class RunOneStepCell(Cell):
         r"""
         number of bias potential energies :math:`V`.
 
-        Return:
+        Returns:
             int, number of bias potential energies.
         """
         if self.system_with_energy is None:
@@ -246,7 +246,7 @@ class RunOneStepCell(Cell):
         r"""
         Tensor of potential energy components.
 
-        Return:
+        Returns:
             Tensor, Tensor of shape `(B, U)`. Data type is float.
         """
         if self.system_with_energy is None:
@@ -258,7 +258,7 @@ class RunOneStepCell(Cell):
         r"""
         Tensor of bias potential components.
 
-        Return:
+        Returns:
             Tensor, Tensor of shape `(B, V)`. Data type is float.
         """
         if self.system_with_energy is None:
@@ -270,7 +270,7 @@ class RunOneStepCell(Cell):
         r"""
         Tensor of the total bias potential.
 
-        Return:
+        Returns:
             Tensor, Tensor of shape `(B, 1)`. Data type is float.
         """
         if self.system_with_energy is None:
@@ -282,7 +282,7 @@ class RunOneStepCell(Cell):
         r"""
         Cell of bias potential function.
 
-        Return:
+        Returns:
             Cell, bias potential function.
         """
         if self.system_with_energy is None:

@@ -45,7 +45,7 @@ def get_integrator(cls_name: Union[str, dict, Integrator],
         system (Molecule): Simulation system.
         **kwargs: Other arguments
 
-    Return:
+    Returns:
         integrator (Integrator): Object of integrator
 
     """

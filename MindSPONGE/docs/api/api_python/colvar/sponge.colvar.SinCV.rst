@@ -5,7 +5,6 @@ sponge.colvar.SinCV
 
     集合变量（CVs）的正弦值 :math:`s(R)`。返回值与输入CVs有相同的shape。
 
-    数学公式：
     .. math::
 
         s' = \sin{s(R)}

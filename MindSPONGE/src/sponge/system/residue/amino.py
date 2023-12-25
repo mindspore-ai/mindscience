@@ -40,7 +40,6 @@ class AminoAcid(Residue):
     r"""Residue for amino acid
 
     Args:
-
         name (str):         Name of the residue. Default: ''
 
         template (dict):    Template of Residue. Default: ``None``.
@@ -51,7 +50,6 @@ class AminoAcid(Residue):
         start_index (int):  The start index of the first atom in this residue.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:

@@ -43,13 +43,13 @@ BUILTIN_FF_PATH = THIS_PATH.replace('potential/forcefield.py', 'data/forcefield/
 
 
 class ForceFieldBase(PotentialCell):
-    r"""Base class for the potential energy of classical force filed. It is a subclass of `PotentialCell`.
+    r"""
+    Base class for the potential energy of classical force filed. It is a subclass of `PotentialCell`.
 
-        A `ForceFieldBase` object contains multiple `EnergyCell` objects. The last dimension of its output Tensor
-        is equal to the number of `EnergyCell` objects it contains.
+    A `ForceFieldBase` object contains multiple `EnergyCell` objects. The last dimension of its output Tensor
+    is equal to the number of `EnergyCell` objects it contains.
 
     Args:
-
         Energy (Union[EnergyCell, List[EnergyCell]]):
                                 List of `EnergyCell` objects. Default: ``None``.
 
@@ -69,15 +69,12 @@ class ForceFieldBase(PotentialCell):
         use_pbc (bool):         Whether to use periodic boundary condition.
 
     Returns:
-
-        energy (Tensor):    Tensor of shape `(B, E)`. Data type is float.
+        energy (Tensor), Tensor of shape `(B, E)`. Data type is float.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:
-
         B:  Batchsize, i.e. number of walkers in simulation.
         E:  Number of energy terms.
 
@@ -258,12 +255,12 @@ class ForceFieldBase(PotentialCell):
 
 
 class ForceField(ForceFieldBase):
-    r"""Potential energy of classical force field. It is a subclass of `ForceFieldBase`.
+    r"""
+    Potential energy of classical force field. It is a subclass of `ForceFieldBase`.
 
-        The `ForceField` class use force field parameter files to build the potential energy.
+    The `ForceField` class use force field parameter files to build the potential energy.
 
     Args:
-
         system (Molecule):      Simulation system.
 
         parameters (Union[dict, str, List[Union[dict, str]]]):
@@ -290,15 +287,12 @@ class ForceField(ForceFieldBase):
                                 Default: ``None``.
 
     Returns:
-
-        energy (Tensor):    Tensor of shape `(B, E)`. Data type is float.
+        energy (Tensor), Tensor of shape `(B, E)`. Data type is float.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:
-
         B:  Batchsize, i.e. number of walkers in simulation.
         E:  Number of energy terms.
 

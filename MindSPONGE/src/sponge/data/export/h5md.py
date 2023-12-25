@@ -49,7 +49,6 @@ class H5MD:
         Computer Physics Communications, 2014, 185(6): 1546-1553.
 
     Args:
-
         system (Molecule):      Simulation system
 
         filename (str):         Name of output H5MD hdf5_file.
@@ -80,7 +79,6 @@ class H5MD:
         compression_opts (int): Compression settings for HDF5. Default: 4
 
     Supported Platforms:
-
         ``Ascend`` ``GPU`` ``CPU``
 
     """

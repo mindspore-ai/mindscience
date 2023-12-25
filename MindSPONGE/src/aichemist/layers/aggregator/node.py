@@ -50,7 +50,6 @@ class NodeAggregator(nn.Cell):
     r"""Network to aggregate the outputs of each atoms.
 
     Args:
-
         dim (int):  Feature dimension.
 
         axis (int): Axis to aggregate. Default: -2
@@ -107,7 +106,6 @@ class TensorSummation(NodeAggregator):
     r"""A aggregator to sum all the tensors.
 
     Args:
-
         dim (int):  Feature dimension. Default: ``None``.
 
         axis (int): Axis to aggregate. Default: -2
@@ -169,7 +167,6 @@ class TensorMean(NodeAggregator):
     r"""A aggregator to average all the tensors.
 
     Args:
-
         dim (int):  Feature dimension. Default: ``None``.
 
         axis (int): Axis to aggregate. Default: -2
@@ -235,7 +232,6 @@ class SoftmaxGeneralizedAggregator(NodeAggregator):
     r"""A Softmax-based generalized mean-max-sum aggregator.
 
     Args:
-
         dim (int):  Feature dimension.
 
         axis (int): Axis to aggregate. Default: -2
@@ -315,7 +311,6 @@ class PowermeanGeneralizedAggregator(NodeAggregator):
     r"""A PowerMean-based generalized mean-max-sum aggregator.
 
     Args:
-
         dim (int):  Feature dimension.
 
         axis (int): Axis to aggregate. Default: -2
@@ -384,7 +379,6 @@ class TransformerAggregator(NodeAggregator):
     r"""A transformer-type aggregator.
 
     Args:
-
         dim (int):  Feature dimension.
 
         axis (int): Axis to aggregate. Default: -2

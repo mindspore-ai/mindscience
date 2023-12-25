@@ -123,7 +123,6 @@ class SmoothReciprocal(Cell):
     r"""A smooth reciprocal function
 
     Args:
-
         dmax (float):           Maximum distance
 
         cutoff_network (Cell):  Cutoff network. Default: ``None``.
@@ -173,7 +172,6 @@ class SoftmaxWithMask(Cell):
     r"""Softmax function with mask
 
     Args:
-
         axis (int): Axis of Tensor to do softmax. Default: -1
 
     Supported Platforms:
@@ -208,7 +206,6 @@ class PositionalEmbedding(Cell):
     r"""Positional embedding to generate query, key and value for self-attention
 
     Args:
-
         dim (int):                      Last dimension of Tensor.
 
         use_distances (bool):           Whether to use distance information. Default: ``True``.
@@ -295,7 +292,6 @@ class MultiheadAttention(Cell):
     r"""Multi-head attention.
 
     Args:
-
         dim_feature (int):  Diension of feature space (F).
 
         n_heads (int):      Number of heads (h). Default: 8
@@ -356,7 +352,6 @@ class MultiheadAttention(Cell):
         """Compute multi-head attention.
 
         Args:
-
             query (Tensor):     Tensor with shape (..., Q, F). Data type is float.
             key (Tensor):       Tensor with shape (..., X, F). Data type is float.
             value (Tensor):     Tensor with shape (..., X, F). Data type is float.
@@ -426,7 +421,6 @@ class Pondering(Cell):
     r"""Pondering network for adapetive computation time.
 
     Args:
-
         n_in (int):         Dimension of input Tensor
 
         n_hidden (int):     Number of hidden layers. Default: 0
@@ -467,7 +461,6 @@ class Pondering(Cell):
         """Calculate pondering network.
 
         Args:
-
             x (Tensor): Tensor with shape (B, A, X). Data type is float.
 
         Returns:
@@ -483,7 +476,6 @@ class ACTWeight(Cell):
         https://github.com/andreamad8/Universal-Transformer-Pytorch/blob/master/models/UTransformer.py
 
     Args:
-
         n_in (int):         Dimension of input Tensor
 
         n_hidden (int):     Number of hidden layers. Default: 0
@@ -504,7 +496,6 @@ class ACTWeight(Cell):
         """Calculate Adapetive computation time.
 
         Args:
-
             prob (Tensor):          Tensor with shape (B, A, 1). Data type is float.
             halting_prob (Tensor):  Tensor with shape (B, A, 1). Data type is float.
 

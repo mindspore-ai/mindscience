@@ -51,7 +51,6 @@ class VelocityVerlet(Integrator):
         The Journal of Chemical Physics, 2017, 147(3): 034109.
 
     Args:
-
         system (Molecule):          Simulation system
 
         thermostat (Thermostat):    Thermostat for temperature coupling. Default: ``None``.
@@ -62,7 +61,6 @@ class VelocityVerlet(Integrator):
 
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

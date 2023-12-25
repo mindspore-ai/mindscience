@@ -14,10 +14,8 @@ sponge.function.lennard_jones_potential
         - **epsilon** (Tensor) - 张量的shape为 :math:`(...)` 。数据类型为float。井深 :math:`\epsilon`。
         - **sigma** (Tensor) - 张量的shape为 :math:`(...)` 。数据类型为float。特征距离 :math:`\sigma`。
         - **r_ij** (Tensor) - 张量的shape为 :math:`(...)` 。数据类型为float。原子 :math:`i` 和 :math:`i` 之间的距离 :math:`r_{ij}`。
-        - **mask** (Tensor) - 张量的shape为 :math:`(...)` 。数据类型为bool。距离的掩码 :math:`r_{ij}`。默认值: ``None``。
+        - **mask** (Tensor) - 张量的shape为 :math:`(...)` 。数据类型为bool。距离的掩码 :math:`r_{ij}`。默认值： ``None``。
 
     返回：
         Tensor。E_coulomb。张量的shape为 :math:`(...)` 。数据类型为float。
 
-    支持的平台：
-        ``Ascend`` ``GPU``

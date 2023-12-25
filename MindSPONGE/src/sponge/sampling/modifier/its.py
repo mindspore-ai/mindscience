@@ -50,7 +50,6 @@ class ModiferITS(ForceModifier):
         U_{eff}(R) = -\frac{1}{\beta_0} \log{\sum_k ^ N {n_k e ^ {-\beta_k U(R)}}}
 
     Args:
-
         sim_temp (float):       Simulation temperature.
 
         temp_min (float):       Minimum temperature for integration.
@@ -97,7 +96,6 @@ class ModiferITS(ForceModifier):
                                 Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:
@@ -486,7 +484,7 @@ class ModiferITS(ForceModifier):
             virial_ad (Tensor): Tensor of shape (B, D). Data type is float.
                                 Virial calculated calculated by automatic differentiation.
 
-        Return:
+        Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
                                 Totoal potential energy for simulation.
             force (Tensor):     Tensor of shape (B, A, D). Data type is float.

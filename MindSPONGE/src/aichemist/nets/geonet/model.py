@@ -41,7 +41,6 @@ class MolecularGNN(nn.Cell):
         The Journal of Physical Chemistry A, 2020, 124(34): 6745-6763.
 
     Args:
-
         dim_feature (int):          Dimension of atomic representation. Default: 128
 
         n_interaction (int):        Number of interaction layers. Default: 3

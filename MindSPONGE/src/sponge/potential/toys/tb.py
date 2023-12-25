@@ -36,16 +36,15 @@ from ...function import get_ms_array, keepdims_sum
 
 
 class TiwaryBerne(PotentialCell):
-    r"""Potential energy of a toy model developed by Tiwary and Berne.
+    r"""
+    Potential energy of a toy model developed by Tiwary and Berne.
 
     Reference:
-
         Tiwary, P.; Berne, B. J.
         Predicting Reaction Coordinates in Energy Landscapes with Diffusion Anisotropy [J].
         The Journal of Chemical Physics, 2017, 147(15): 152701.
 
     Args:
-
         location: Union[Tensor, ndarray, List[float], Tuple[float]]:
             Array of location(s) of metastable state(s) on the potential energy surface (PES).
             The shape of the array is `(S, D)`, and the data type is float.
@@ -59,15 +58,12 @@ class TiwaryBerne(PotentialCell):
         name (str): Name of the energy. Default: 'tiwary_berne'
 
     Returns:
-
-        energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
+        energy (Tensor), Tensor of shape `(B, 1)`. Data type is float.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:
-
         S:  Number of metastable state(s).
         D:  Spatial dimension of the toy model. Usually is 2.
 

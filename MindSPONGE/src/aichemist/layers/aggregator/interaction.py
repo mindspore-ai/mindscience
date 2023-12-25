@@ -53,7 +53,6 @@ class InteractionAggregator(nn.Cell):
     r"""Network to aggregate the representation of each interaction layer.
 
     Args:
-
         dim (int):          Feature dimension.
 
         num_agg (int):      Number of interaction layer to be aggregate. Default: ``None``.
@@ -98,7 +97,6 @@ class InteractionSummation(InteractionAggregator):
     r"""A interaction aggregator to summation all representations of interaction layers
 
     Args:
-
         dim (int):          Feature dimension.
 
         num_agg (int):      Number of interaction layer to be aggregate. Default: ``None``.
@@ -138,7 +136,6 @@ class InteractionMean(InteractionAggregator):
     r"""A interaction aggregator to average all representations of interaction layers
 
     Args:
-
         dim (int):          Feature dimension.
 
         num_agg (int):      Number of interaction layer to be aggregate. Default: ``None``.
@@ -178,7 +175,6 @@ class LinearTransformation(InteractionAggregator):
         by using linear transformation
 
     Args:
-
         dim (int):          Feature dimension.
 
         num_agg (int):      Number of interaction layer to be aggregate. Default: ``None``.
@@ -223,7 +219,6 @@ class MultipleChannelRepresentation(InteractionAggregator):
         aggregate all representations of interaction layers
 
     Args:
-
         dim (int):          Feature dimension.
 
         num_agg (int):      Number of interaction layer to be aggregate. Default: ``None``.

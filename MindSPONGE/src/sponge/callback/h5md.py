@@ -41,7 +41,6 @@ class WriteH5MD(Callback):
     r"""Callback to write HDF5 molecular data (H5MD) file
 
     Args:
-
         system (Molecule):      Simulation system (system module of MindSPONGE).
 
         filename (str):         Name of output H5MD file.
@@ -79,7 +78,6 @@ class WriteH5MD(Callback):
                                 the value should be string format pdb file name. Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

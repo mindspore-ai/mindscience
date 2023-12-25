@@ -15,8 +15,8 @@ sponge.function.GetVector
 
         参数：
             - **initial** (Tensor) - 起始位置的坐标。张量的shape为 :math:`(B, ..., D)` 。
-                                     B表示batchsize，例如，模拟中的步行者数量。D表示仿真系统的空间维度。通常为3。
-                                     数据类型为float。
+              B表示batchsize，例如，模拟中的步行者数量。D表示仿真系统的空间维度。通常为3。
+              数据类型为float。
             - **terminal** (Tensor) - 终止位置的坐标。张量的shape为 :math:`(B, ..., D)`。数据类型为float。
             - **pbc_box** (Tensor) - 张量的shape为 :math:`(B, D)`。数据类型为float。默认值： ``None`` 。
 
@@ -26,8 +26,8 @@ sponge.function.GetVector
 
         参数：
             - **initial** (Tensor) - 起始位置的坐标。张量的shape为 :math:`(B, ..., D)` 。
-                                     B表示batchsize，例如，模拟中的步行者数量。D表示仿真系统的空间维度。通常为3。
-                                     数据类型为float。
+              B表示batchsize，例如，模拟中的步行者数量。D表示仿真系统的空间维度。通常为3。
+              数据类型为float。
             - **terminal** (Tensor) - 终止位置的坐标。张量的shape为 :math:`(B, ..., D)`。数据类型为float。
             - **pbc_box** (Tensor) - 张量的shape为 :math:`(B, D)`。数据类型为float。默认值： ``None`` 。
 
@@ -37,8 +37,8 @@ sponge.function.GetVector
 
         参数：
             - **initial** (Tensor) - 起始位置的坐标。张量的shape为 :math:`(B, ..., D)` 。
-                                     B表示batchsize，例如，模拟中的步行者数量。D表示仿真系统的空间维度。通常为3。
-                                     数据类型为float。
+              B表示batchsize，例如，模拟中的步行者数量。D表示仿真系统的空间维度。通常为3。
+              数据类型为float。
             - **terminal** (Tensor) - 终止位置的坐标。张量的shape为 :math:`(B, ..., D)`。数据类型为float。
             - **pbc_box** (Tensor) - 张量的shape为 :math:`(B, D)`。数据类型为float。默认值： ``None`` 。
 
@@ -63,8 +63,8 @@ sponge.function.GetVector
 
         参数：
             - **initial** (Tensor) - 起始位置的坐标。张量的shape为 :math:`(B, ..., D)` 。
-                                     B表示batchsize，例如，模拟中的步行者数量。D表示仿真系统的空间维度。通常为3。
-                                     数据类型为float。
+              B表示batchsize，例如，模拟中的步行者数量。D表示仿真系统的空间维度。通常为3。
+              数据类型为float。
             - **terminal** (Tensor) - 终止位置的坐标。张量的shape为 :math:`(B, ..., D)`。数据类型为float。
             - **pbc_box** (Tensor) - 张量的shape为 :math:`(B, D)`。数据类型为float。默认值： ``None``。
 

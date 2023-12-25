@@ -11,6 +11,7 @@ sponge.function.Length
         - **kwargs** - 其他参数。
 
     .. py:method:: abs_size()
+        :property:
 
         获取长度绝对值。
 

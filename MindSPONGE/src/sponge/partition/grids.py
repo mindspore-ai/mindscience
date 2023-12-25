@@ -42,7 +42,6 @@ class GridNeighbours(Cell):
     r"""Neighbour list calculated by grids
 
     Args:
-
         cutoff (float):         Cutoff distance.
 
         coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float32.
@@ -77,7 +76,6 @@ class GridNeighbours(Cell):
                                 If `num_neighbours` is not None, it will not be used. Default: 1.5
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:

@@ -11,5 +11,3 @@ sponge.function.any_none
     返回：
         bool。any。如果可迭代对象中的任一值 x 为 None。
 
-    支持的平台：
-        ``Ascend`` ``GPU`` ``CPU``

@@ -286,7 +286,6 @@ class NonbondEnergy(EnergyCell):
     r"""Base cell for non-bonded energy terms.
 
     Args:
-
         name (str):             Name of energy.
 
         cutoff (Union[float, Length, Tensor]):  cutoff distance. Default: ``None``.

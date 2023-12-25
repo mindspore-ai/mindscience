@@ -34,7 +34,6 @@ def get_forcefield(forcefield: Union[str, dict, list, tuple]) -> Tuple[dict, dic
     """ Get force field parameters from YAML file.
 
     Args:
-
         forcefield (dict, str, list or tuple):
                             Force field parameters. It can be a `dict` of force field parameters,
                             a `str` of filename of a force field file in MindSPONGE YAML format,
@@ -47,10 +46,8 @@ def get_forcefield(forcefield: Union[str, dict, list, tuple]) -> Tuple[dict, dic
                             at the back of the array will replace the one at the front.
 
     Returns:
-
-        parameters (dict):  Force field parameters.
-
-        template (dict):    Molecular template.
+        parameters (dict), Force field parameters.
+        template (dict), Molecular template.
 
     """
 

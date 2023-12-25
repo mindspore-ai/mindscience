@@ -34,7 +34,6 @@ class Decoder(Cell):
     r"""Decoder network to reduce the dimension of representation
 
     Args:
-
         dim_in (int): Input dimension.
 
         dim_out (int): Output dimension. Default: 1

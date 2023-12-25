@@ -43,7 +43,6 @@ class BerendsenThermostat(Thermostat):
         The Journal of Chemical Physics, 1984, 81(8): 3684.
 
     Args:
-
         system (Molecule):      Simulation system
 
         temperature (float):    Reference temperature :math:`T_{ref}` in unit Kelvin for temperature coupling.
@@ -60,7 +59,6 @@ class BerendsenThermostat(Thermostat):
 
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

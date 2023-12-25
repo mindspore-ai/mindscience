@@ -231,10 +231,10 @@ def reduce_prod(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tens
     reduce a dimension of `x` along the axis. See `mindspore.ops.ReduceProd` for detailed information.
 
     Args:
-        - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
-          :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-        - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
-          Only constant value is allowed. Must be in the range [-r, r).
+        x (Tensor[Number]): The input tensor. The dtype of the tensor to be reduced is number.
+            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
+            Only constant value is allowed. Must be in the range [-r, r).
 
     Outputs:
         Tensor, has the same dtype as the `x`.
@@ -1502,14 +1502,14 @@ def all_not_none(iterable: Iterable) -> bool:
 
 
 def get_arguments(locals_: dict, kwargs: dict = None) -> dict:
-    r"""get arguments of a class
+    r"""get arguments of a class.
 
     Args:
-        locals_ (dict): Dictionary of the arguments from `locals()`.
+        locals\_ (dict): Dictionary of the arguments from `locals()`.
         kwargs (dict): Dictionary of keyword arguments (kwargs) of the class.
 
     Returns:
-        args (dict), Dictionary of arguments
+        args (dict), Dictionary of arguments.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -1579,14 +1579,14 @@ def get_arguments(locals_: dict, kwargs: dict = None) -> dict:
 
 
 def get_initializer(cls_name: Union[Initializer, str, dict, Tensor], **kwargs) -> Initializer:
-    r"""get initializer by name
+    r"""get initializer by name.
 
     Args:
         cls_name (Union[Initializer, str, dict, Tensor]): Class name of Initializer.
         kwargs (dict): Dictionary of keyword arguments (kwargs) of the class.
 
     Returns:
-        Initializer
+        Initializer.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

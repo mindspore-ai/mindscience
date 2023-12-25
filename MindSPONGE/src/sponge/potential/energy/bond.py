@@ -51,7 +51,6 @@ class BondEnergy(EnergyCell):
         E_{bond}(b_{ij}) = \frac{1}{2} k_{ij}^b (b_{ij} - b_{ij}^0) ^ 2
 
     Args:
-
         index (Union[Tensor, ndarray, List[int]]):
                             Array of the indices of the atoms forming the chemical bond.
                             The shape of array is `(B, b, 2)`, and the data type is int.
@@ -77,7 +76,6 @@ class BondEnergy(EnergyCell):
         name (str):         Name of the energy. Default: 'bond'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:

@@ -57,7 +57,6 @@ class ITS(EnergyWrapper):
         U_{eff}(R) = -\frac{1}{\beta_0} \log{\sum_k ^ N {n_k e ^ {-\beta_k U(R)}}}
 
     Args:
-
         sim_temp (float):       Simulation temperature.
 
         temp_min (float):       Minimum temperature for integration.
@@ -112,7 +111,6 @@ class ITS(EnergyWrapper):
                                 Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:
@@ -527,7 +525,7 @@ class ITS(EnergyWrapper):
             biases (Tensor):        The shape of tensor is `(B, V)`. The data type is float.
                                     Bias potential energies. Default: ``None``.
 
-        Return:
+        Returns:
             energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
                                 Total energy (potential energy and bias energy).
             bias (Tensor):      Tensor of shape `(B, 1)`. Data type is float.

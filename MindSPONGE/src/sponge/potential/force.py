@@ -34,38 +34,36 @@ from ..function.units import Units, GLOBAL_UNITS
 
 
 class ForceCell(Cell):
-    r"""Base Cell for calculating atomic forces. It returns three terms: energy, force and virial.
+    r"""
+    Base Cell for calculating atomic forces. It returns three terms: energy, force and virial.
 
-        NOTE: The `energy` cannot be None. If the `energy` cannot be calculated, it needs to be assigned to
-              a Tensor of shape `(B,1)` and value 0.
-              When under periodic boundary conditions, the `virial` cannot be None. If the `virial` cannot
-              be calculated, it needs to be assigned to a Tensor of shape (B,D) and value 0.
+    Note:
+        The `energy` cannot be None. If the `energy` cannot be calculated, it needs to be assigned to
+        a Tensor of shape `(B,1)` and value 0.
+        When under periodic boundary conditions, the `virial` cannot be None. If the `virial` cannot
+        be calculated, it needs to be assigned to a Tensor of shape (B,D) and value 0.
 
     Args:
-
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
-                            Default: 'nm'
+                            Default: 'nm'.
 
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
-                            Default: 'kj/mol'
+                            Default: 'kj/mol'.
 
         use_pbc (bool):     Whether to use periodic boundary condition.
 
     returns:
+        energy (Tensor), Tensor of shape `(B, 1)`. Data type is float.
 
-        energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
+        force (Tensor), Tensor of shape `(B, A, D)`. Data type is float.
 
-        force (Tensor):     Tensor of shape `(B, A, D)`. Data type is float.
-
-        virial (Tensor):    Tensor of shape `(B, D)`. Data type is float. Default: ``None``.
+        virial (Tensor), Tensor of shape `(B, D)`. Data type is float. Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:
-
-        B:  Batchsize, i.e. number of walkers in simulation
+        B:  Batchsize, i.e. number of walkers in simulation.
 
         A:  Number of atoms.
 

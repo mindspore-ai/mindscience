@@ -47,7 +47,6 @@ class MolecularLoss(LossBase):
     r"""Loss function of the energy and force of molecule.
 
     Args:
-
         force_dis (float): A average norm value of force, which used to scale the force. Default: 1
 
         atomwise (bool): Whether to average over each atom when calculating the loss function.
@@ -156,7 +155,6 @@ class MAELoss(MolecularLoss):
     r"""Mean-absolute-error-type Loss function for energy and force.
 
     Args:
-
         ratio_energy (float):   Ratio of energy in loss function. Default: 1
 
         ratio_forces (float):   Ratio of forces in loss function. Default: 100
@@ -194,7 +192,6 @@ class MSELoss(MolecularLoss):
     r"""Mean-square-error-type Loss function for energy and force.
 
     Args:
-
         ratio_energy (float):   Ratio of energy in loss function. Default: 1
 
         ratio_forces (float):   Ratio of forces in loss function. Default: 100
@@ -232,7 +229,6 @@ class CrossEntropyLoss(LossBase):
     r"""Cross entropy Loss function for positive and negative samples.
 
     Args:
-
         reduction (str):    Method to reduction the output Tensor. Default: 'mean'
 
         use_sigmoid (bool): Whether to use sigmoid function for output. Default: ``False``.

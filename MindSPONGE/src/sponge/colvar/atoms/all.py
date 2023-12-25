@@ -35,7 +35,6 @@ class AllAtoms(AtomsBase):
     r"""All atoms of the simulation system.
 
     Args:
-
         system (Molecule):  Simulation system. Default: ``None``.
 
         num_atoms (int):    Number of atoms. The number of atoms must be given when `system` is None.
@@ -49,7 +48,6 @@ class AllAtoms(AtomsBase):
         name (str):         Name of the Colvar. Default: 'all_atoms'
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

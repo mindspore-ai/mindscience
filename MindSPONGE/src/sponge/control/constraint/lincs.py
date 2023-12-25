@@ -43,11 +43,9 @@ class EinsumWrapper(ms.nn.Cell):
     """Implement particular Einsum operation
 
     Args:
-
         equation (str):  en equation represent the operation.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -103,7 +101,6 @@ class Lincs(Constraint):
     """A LINCS (LINear Constraint Solver) constraint module, which is a subclass of `Constraint`.
 
     Args:
-
         system (Molecule):          Simulation system.
 
         bonds (Union[Tensor, str]): Bonds to be constraint.
@@ -113,7 +110,6 @@ class Lincs(Constraint):
         potential (PotentialCell):  Potential Cell. Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

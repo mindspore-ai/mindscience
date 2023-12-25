@@ -34,10 +34,10 @@ from ..data import update_dict, read_yaml
 
 def get_template(template: Union[dict, str, List[Union[dict, str]], Tuple[Union[dict, str]]],
                  residue_name: str = None) -> dict:
-    """ Get template for molecule or residue.
+    """
+    Get template for molecule or residue.
 
     Args:
-
         template (Union[dict, str, List[Union[dict, str]], Tuple[Union[dict, str]]]):
                             Template for molecule or residue. It can be a `dict` of template,
                             a `str` of filename of a template file in MindSPONGE YAML format,
@@ -54,8 +54,7 @@ def get_template(template: Union[dict, str, List[Union[dict, str]], Tuple[Union[
                             Default: ``None``.
 
     Returns:
-
-        template (dict):  Template for molecule or residue
+        template (dict), Template for molecule or residue
 
     """
 
@@ -111,15 +110,14 @@ def get_template_index(template: dict, names: ndarray, key: str = 'atom_name') -
 
 
 def get_molecule(template: Union[dict, str]) -> Tuple[dict, dict]:
-    """ Get molecular template.
+    """
+    Get molecular template.
 
     Args:
-
         template (str or dict): The file name of template.
 
     Returns:
-
-        template (dict):  Molecular template
+        template (dict), Molecular template.
 
     """
 

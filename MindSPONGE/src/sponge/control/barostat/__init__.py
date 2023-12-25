@@ -47,7 +47,7 @@ def get_barostat(cls_name: Union[str, dict, Barostat],
             the type of `cls_name` is `str`, `None` will be returned. Default: ``None``.
         **kwargs:   Other arguments
 
-    Return:
+    Returns:
         barostat (Barostat): Object of barostat
 
     """

@@ -40,7 +40,6 @@ class DistanceNeighbours(Cell):
     r"""Neighbour list calculated by distance
 
     Args:
-
         cutoff (float):         Cutoff distance.
 
         num_neighbours (int):   Number of neighbours. If `None` is given, this value will be calculated by
@@ -67,7 +66,6 @@ class DistanceNeighbours(Cell):
                                 Default: ``False``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:

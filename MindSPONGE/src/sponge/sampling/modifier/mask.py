@@ -36,7 +36,6 @@ class MaskedDriven(ForceModifier):
     r"""Only drive part of atoms via modifying atomic force.
 
     Args:
-
         mask (Union[Tensor, ndarray]): Array of atomic mask to calculate the force.
             The shape of array is `(A)` or `(B, A)`, and the type is bool.
 
@@ -49,7 +48,6 @@ class MaskedDriven(ForceModifier):
             Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """
@@ -93,7 +91,7 @@ class MaskedDriven(ForceModifier):
             virial_ad (Tensor): Tensor of shape (B, D). Data type is float.
                                 Virial calculated calculated by automatic differentiation.
 
-        Return:
+        Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
                                 Totoal potential energy for simulation.
             force (Tensor):     Tensor of shape (B, A, D). Data type is float.

@@ -38,19 +38,16 @@ class ColvarGroup(Colvar):
     r"""Concatenate a group of `Colvar` classes into one `Colvar` class
 
     Args:
-
-        colvar (list or tuple):
-                    Array of `Colvar` to be concatenated.
+        colvar (list or tuple): Array of `Colvar` to be concatenated.
 
         axis (int): Axis to be concatenated. NOTE: This refers to the axis of the output Tensor
-                    with the shape `(B, S_1, S_2, ..., S_n)`. Default： -1.
+                    with the shape `(B, S_1, S_2, ..., S_n)`. Default: -1.
 
-        use_pbc (bool): Whether to use periodic boundary condition. Default： ``None``.
+        use_pbc (bool): Whether to use periodic boundary condition. Default: ``None``.
 
         name (str): Name of the collective variables. Default: 'colvar_group'.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

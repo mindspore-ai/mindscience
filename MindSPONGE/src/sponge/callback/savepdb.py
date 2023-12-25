@@ -43,7 +43,6 @@ class SaveLastPdb(Callback):
         save_freq (int):   Frequency to save the information
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     """

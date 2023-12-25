@@ -42,7 +42,6 @@ class ResidualOutputBlock(Decoder):
     r"""Residual block type decoder
 
     Args:
-
         dim_in (int): Input dimension.
 
         dim_out (int): Output dimension. Default: 1

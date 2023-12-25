@@ -34,7 +34,6 @@ class Filter(nn.Cell):
     r"""Base class for filter network.
 
     Args:
-
         dim_in (int):    Number of basis functions.
 
         dim_out (int):   Dimension of output filter Tensor.
@@ -67,7 +66,6 @@ class DenseFilter(Filter):
     r"""Dense type filter network.
 
     Args:
-
         dim_in (int):    Number of basis functions.
 
         dim_out (int):   Dimension of output filter Tensor.
@@ -105,7 +103,6 @@ class ResFilter(Filter):
     r"""Residual type filter network.
 
     Args:
-
         dim_in (int):    Number of basis functions.
 
         dim_out (int):   Dimension of output filter Tensor.

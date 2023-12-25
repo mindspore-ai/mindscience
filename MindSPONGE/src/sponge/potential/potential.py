@@ -117,7 +117,7 @@ class PotentialCell(EnergyCell):
         """
         Exclude index.
 
-        Return:
+        Returns:
             Tensor, exclude index.
         """
         if self._exclude_index is None:
@@ -129,7 +129,7 @@ class PotentialCell(EnergyCell):
         """
         Number of energy components.
 
-        Return:
+        Returns:
             int, number of energy components.
         """
         return self._num_energies
@@ -139,7 +139,7 @@ class PotentialCell(EnergyCell):
         """
         List of strings of energy names.
 
-        Return:
+        Returns:
             List[str], strings of energy names.
         """
         return self._energy_names
@@ -151,7 +151,7 @@ class PotentialCell(EnergyCell):
         Args:
             exclude_index(Tensor):  Excluded index of the system.
 
-        Return:
+        Returns:
             Tensor, excluded index.
         """
         self._exclude_index = self._check_exclude_index(exclude_index)

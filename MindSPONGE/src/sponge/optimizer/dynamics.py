@@ -36,7 +36,6 @@ class DynamicUpdater(UpdaterMD):
         This updater will be removed a future release. Please use `UpdaterMD` instead.
 
     Args:
-
         system (Molecule):          Simulation system.
 
         integrator (Integrator):    MD integrator.
@@ -59,7 +58,6 @@ class DynamicUpdater(UpdaterMD):
         loss_scale (float):         A value for the loss scale. Default: 1
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
 
     Note:
