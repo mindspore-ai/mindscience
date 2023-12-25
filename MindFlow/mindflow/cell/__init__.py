@@ -15,10 +15,10 @@
 """init"""
 from .activation import get_activation
 from .basic_block import LinearBlock, ResBlock, InputScale, FCSequential, MultiScaleFCSequential
-from .neural_operators import FNO1D, FNO2D, KNO1D, KNO2D, PDENet
+from .neural_operators import FNO1D, FNO2D, KNO1D, KNO2D, PDENet, PeRCNN
 from .transformer import ViT
 from .unet2d import UNet2D
 
-__all__ = ['FNO1D', 'FNO2D', 'KNO1D', 'KNO2D', 'ViT', 'PDENet', 'UNet2D']
+__all__ = ['FNO1D', 'FNO2D', 'KNO1D', 'KNO2D', 'ViT', 'PDENet', 'UNet2D', 'PeRCNN']
 __all__.extend(activation.__all__)
 __all__.extend(basic_block.__all__)
