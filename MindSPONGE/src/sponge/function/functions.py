@@ -126,10 +126,10 @@ def keepdims_sum(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Ten
     and the dimensions of the output and input are the same.
 
     Args:
-         - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
-           :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-         - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
-           Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
+        x (Tensor[Number]): The input tensor. The dtype of the tensor to be reduced is number.
+            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
+            Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
 
     Outputs:
         Tensor, has the same dtype as the `x`.
@@ -147,10 +147,10 @@ def keepdims_mean(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Te
     and the dimensions of the output and input are the same.
 
     Args:
-         - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
-           :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-         - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
-           Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
+        x (Tensor[Number]): The input tensor. The dtype of the tensor to be reduced is number.
+            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
+            Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
 
     Outputs:
         Tensor, has the same dtype as the `x`.
@@ -168,10 +168,10 @@ def keepdims_prod(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Te
     and the dimensions of the output and input are the same.
 
     Args:
-         - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
-           :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-         - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
-           Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
+        x (Tensor[Number]): The input tensor. The dtype of the tensor to be reduced is number.
+            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
+            Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
 
     Outputs:
         Tensor, has the same dtype as the `x`.
@@ -189,10 +189,10 @@ def reduce_any(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tenso
     reduce a dimension of `x` along the axis. See `mindspore.ops.ReduceAny` for detailed information.
 
     Args:
-        - **x** (Tensor[bool]) - The input tensor. The dtype of the tensor to be reduced is bool.
-          :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-        - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
-          Only constant value is allowed. Must be in the range [-rank(x), rank(x)).
+        x (Tensor[bool]): The input tensor. The dtype of the tensor to be reduced is bool.
+            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
+            Only constant value is allowed. Must be in the range [-rank(x), rank(x)).
 
     Outputs:
         Tensor, the dtype is bool.
@@ -210,10 +210,10 @@ def reduce_all(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tenso
     reduce a dimension of `x` along the axis. See `mindspore.ops.ReduceAll` for detailed information.
 
     Args:
-        - **x** (Tensor[bool]) - The input tensor. The dtype of the tensor to be reduced is bool.
-          :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-        - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
-          Only constant value is allowed. Must be in the range [-rank(x), rank(x)).
+        x (Tensor[bool]): The input tensor. The dtype of the tensor to be reduced is bool.
+            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
+            Only constant value is allowed. Must be in the range [-rank(x), rank(x)).
 
     Outputs:
         Tensor, the dtype is bool.

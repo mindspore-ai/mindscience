@@ -18,7 +18,6 @@ sponge.colvar.Colvar
 
     参数：
         - **shape** (Tuple) - 集合变量的shape。默认值：()
-        - **ndim** (int) - 集合变量的秩（维度数）。默认值：0
         - **periodic** (bool) - 判断集合变量是否是周期性的。默认值：``False``。
         - **use_pbc** (bool) - 是否使用周期边界条件。如果给出 `None`，它将根据是否提供 `pbc_box` 来确定是否使用周期性边界条件。默认值：``None``。
         - **name** (str) - 集合变量的名称。默认值：'colvar'。
@@ -30,7 +29,7 @@ sponge.colvar.Colvar
 
         判断是否使用周期边界条件。
 
-        返回:
+        返回：
             bool，判断是否使用周期边界条件。
 
     .. py:method:: shape()

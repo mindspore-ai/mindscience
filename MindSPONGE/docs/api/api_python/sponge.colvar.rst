@@ -2,7 +2,7 @@ sponge.colvar
 ===============
 
 .. mscnplatformautosummary::
-    :tortree: colvar
+    :toctree: colvar
     :nosignatures:
     :template: classtemplate.rst
 

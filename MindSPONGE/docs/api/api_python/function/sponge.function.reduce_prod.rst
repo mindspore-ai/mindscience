@@ -1,7 +1,7 @@
 sponge.function.reduce_prod
 ===============================
 
-.. py:function:: sponge.function.reduce_prod()
+.. py:function:: sponge.function.reduce_prod(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ())
 
     默认情况下，通过乘以维度中所有元素来减少张量的维度。
     并且还可以沿轴减小 `x` 的维度。有关详细信息请参见 `mindspore.ops.ReduceProd` 。

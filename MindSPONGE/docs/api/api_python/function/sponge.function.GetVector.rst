@@ -7,7 +7,7 @@ sponge.function.GetVector
 
     参数：
         - **use_pbc** (bool) - 计算向量时是否使用周期性边界条件。
-                               如果给出 ``None`` ，它将根据是否提供了 ``pbc_box`` 来决定是否使用周期性边界条件。默认值： ``None`` 。
+          如果给出 ``None`` ，它将根据是否提供了 ``pbc_box`` 来决定是否使用周期性边界条件。默认值： ``None`` 。
 
     .. py:method:: calc_vector_default(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None)
 
