@@ -83,42 +83,43 @@ pip install -r requirements.txt
 | 硬件平台      | 操作系统        | 状态 |
 | :------------ | :-------------- | :--- |
 | Ascend 910    | Ubuntu-x86      | ✔️ |
-| Ubuntu-aarch64  | ✔️ |
-| EulerOS-aarch64 | ✔️ |
-| CentOS-x86      | ✔️ |
-| CentOS-aarch64  | ✔️ |
+|               | Ubuntu-aarch64  | ✔️ |
+|               | EulerOS-aarch64 | ✔️ |
+|               | CentOS-x86      | ✔️ |
+|               | CentOS-aarch64  | ✔️ |
 | GPU CUDA 11.1 | Ubuntu-x86      | ✔️ |
 
 ### pip安装
 
 ```bash
-# GPU version
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/MindScience/mindearth/gpu/x86_64/cuda-11.1/mindearth_gpu-0.1.0-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
-# Ascend version
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.0/MindScience/mindearth/ascend/aarch64/mindearth_ascend-0.1.0-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# gpu and ascend are supported
+export DEVICE_NAME=gpu
+pip install mindearth_${DEVICE_NAME}
 ```
 
 ### 源码安装
+
+- 从Gitee下载源码。
 
 ```bash
 git clone https://gitee.com/mindspore/mindscience.git
 cd {PATH}/mindscience/MindEarth
 ```
 
-- 昇腾Ascend后端
+- 编译Ascend后端源码。
 
 ```bash
 bash build.sh -e ascend -j8
 ```
 
-- GPU后端
+- 编译GPU后端源码。
 
 ```bash
 export CUDA_PATH={your_cuda_path}
 bash build.sh -e gpu -j8
 ```
 
-- 安装编译所得whl包
+- 安装编译所得whl包。
 
 ```bash
 cd {PATH}/mindscience/MindEarth/output

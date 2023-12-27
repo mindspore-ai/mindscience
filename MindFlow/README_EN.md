@@ -138,34 +138,34 @@ pip install -r requirements.txt
 ### **pip install**
 
 ```bash
-
-# GPU version
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.1.0/MindScience/gpu/x86_64/cuda-11.1/mindflow_gpu-0.1.0-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
-# Ascend version
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.1.0/MindScience/ascend/aarch64/mindflow_ascend-0.1.0-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# gpu and ascend are supported
+export DEVICE_NAME=gpu
+pip install mindflow_${DEVICE_NAME}
 ```
 
 ### **source code install**
+
+- Download source code from Gitee.
 
 ```bash
 git clone https://gitee.com/mindspore/mindscience.git
 cd {PATH}/mindscience/MindFlow
 ```
 
-- Ascend backend
+- Compile in Ascend backend.
 
 ```bash
 bash build.sh -e ascend -j8
 ```
 
-- GPU backend
+- Compile in GPU backend.
 
 ```bash
 export CUDA_PATH={your_cuda_path}
 bash build.sh -e gpu -j8
 ```
 
-- Install whl package
+- Install the compiled .whl file.
 
 ```bash
 cd {PATH}/mindscience/MindFLow/output

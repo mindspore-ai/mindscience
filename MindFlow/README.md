@@ -138,34 +138,34 @@ pip install -r requirements.txt
 ### pip安装
 
 ```bash
-
-# GPU version
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.1.0/MindScience/gpu/x86_64/cuda-11.1/mindflow_gpu-0.1.0-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
-# Ascend version
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.1.0/MindScience/ascend/aarch64/mindflow_ascend-0.1.0-py3-none-any.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://pypi.tuna.tsinghua.edu.cn/simple
+# gpu and ascend are supported
+export DEVICE_NAME=gpu
+pip install mindflow_${DEVICE_NAME}
 ```
 
 ### 源码安装
+
+- 从Gitee下载源码。
 
 ```bash
 git clone https://gitee.com/mindspore/mindscience.git
 cd {PATH}/mindscience/MindFlow
 ```
 
-- 昇腾Ascend后端
+- 编译Ascend后端源码。
 
 ```bash
 bash build.sh -e ascend -j8
 ```
 
-- GPU后端
+- 编译GPU后端源码。
 
 ```bash
 export CUDA_PATH={your_cuda_path}
 bash build.sh -e gpu -j8
 ```
 
-- 安装编译所得whl包
+- 安装编译所得whl包。
 
 ```bash
 cd {PATH}/mindscience/MindFLow/output
