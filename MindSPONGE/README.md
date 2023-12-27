@@ -17,6 +17,8 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **Latest News** 📰
 
+- 🔥`2023.12.07` The antibody design model Tiangong won the "2023 AIIA Top Ten Pioneer Application Cases of Artificial Intelligence", [Related News](https://mp.weixin.qq.com/s/UQStKzm0fdXbA4RQgLE8fw)
+- 🔥`2023.11.10` MEGA-EvoGen Paper "Unsupervisedly Prompting AlphaFold2 for Accurate Few-Shot Protein Structure Prediction" is published in JCTC. Please refer to [paper](https://pubs.acs.org/doi/10.1021/acs.jctc.3c00528?cookieSet=1) and [code](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein).
 - 🔥`2023.8.21—2023.8.25` MindSpore SPONGE SIG [**Summer School**](https://mp.weixin.qq.com/s/oOaJ9KlUnWbptZWqSvam7g) is coming soon !
 - 🔥 [**open source internship task**](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue) has been released! Everyone is welcome to claim it~
 - 🔥`2023.6.26` MindSPONGE Paper "Artificial Intelligence Enhanced Molecular Simulations" is published in JCTC and achieve Most Read Articles. Please refer to [paper](https://pubs.acs.org/doi/10.1021/acs.jctc.3c00214).

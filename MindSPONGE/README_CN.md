@@ -16,6 +16,8 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 ## **最新消息** 📰
 
+- 🔥`2023.12.07` 抗体设计天工大模型荣获“2023 AIIA人工智能十大先锋应用案例”, [相关新闻](https://mp.weixin.qq.com/s/UQStKzm0fdXbA4RQgLE8fw)
+- 🔥`2023.11.10` MSA生成增强模型MEGA-EvoGen论文"Unsupervisedly Prompting AlphaFold2 for Accurate Few-Shot Protein Structure Prediction"发表于计算化学期刊JCTC，详情参见[论文](https://pubs.acs.org/doi/10.1021/acs.jctc.3c00528?cookieSet=1)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein)
 - 🔥`2023.8.21—2023.8.25` MindSpore SPONGE SIG[**暑期学校活动**](https://mp.weixin.qq.com/s/oOaJ9KlUnWbptZWqSvam7g)火热报名中！
 - 🔥 [**开源实习任务**](https://gitee.com/mindspore/community/issues/I561LI?from=project-issue)发布！欢迎大家认领~
 - 🔥`2023.6.26` MindSPONGE论文"Artificial Intelligence Enhanced Molecular Simulations"发表于计算化学期刊JCTC，同时当选Most Read Articles，详情参见[论文](https://pubs.acs.org/doi/10.1021/acs.jctc.3c00214)
