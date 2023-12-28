@@ -34,7 +34,7 @@ from ..colvar import Colvar
 class FunctionCV(Colvar):
     r"""
     A composite Colvar that combines a set of collective variables (CVs) :math:`{s_i(R)}`
-    using a custom function :math:`f(s_1(R), s_2(R), ... s_i(R))`.
+    using a custom function :math:`f(s_1(R), s_2(R), ..., s_i(R))`.
 
     .. math::
 

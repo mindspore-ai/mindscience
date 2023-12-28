@@ -3,7 +3,7 @@ sponge.colvar.FunctionCV
 
 .. py:class:: sponge.colvar.FunctionCV(colvar: Union[Colvar, List[Colvar], Tuple[Colvar]], function: Callable, periodic: bool, shape: Tuple[int] = None, unit: str = None, use_pbc: bool = None, name: str = 'function')
 
-    组合一组集合变量（CVs）的复合 Colvar :math:`{s_i(R)}` 使用自定义函数 :math:`f(s_1(R), s_2(R), ... s_i(R))`。
+    组合一组集合变量（CVs）的复合 Colvar :math:`{s_i(R)}` 使用自定义函数 :math:`f(s_1(R), s_2(R), ..., s_i(R))`。
 
     .. math::
 

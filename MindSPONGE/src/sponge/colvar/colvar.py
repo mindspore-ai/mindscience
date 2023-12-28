@@ -65,7 +65,7 @@ class Colvar(Cell):
         The Journal of Chemical Physics, 2019, 151(7): 070902.
 
     Args:
-        shape (tuple):      Shape of collective variables. Default: ()
+        shape (Tuple):      Shape of collective variables. Default: ()
 
         periodic (bool):    Whether the collective variables is periodic. Default: ``False``.
 
