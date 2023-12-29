@@ -277,7 +277,3 @@ sponge.function.Units
 
         返回：
             str。容积单位的名称。
-
-    .. py:method:: _set_constants()
-
-        设置常量值。
