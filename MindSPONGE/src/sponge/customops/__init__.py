@@ -14,8 +14,8 @@
 # ============================================================================
 """Custom Operators"""
 
-from .fftop import FFTOP
+from .fftop import RFFT3D, IRFFT3D
 
-__all__ = ['FFTOP']
+__all__ = ['RFFT3D', 'IRFFT3D']
 
 __all__.sort()

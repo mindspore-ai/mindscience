@@ -17,50 +17,77 @@
 import os
 import mindspore.common.dtype as mstype
 import mindspore.ops as ops
-from mindspore.ops import DataType, CustomRegOp
+from mindspore import nn
 
 
-class FFTOP():
-    """Class for registering FFT Operators"""
+_lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../libs/libfft.so"))
+
+class RFFT3D(nn.Cell):
+    """
+    Forward FFT with Three-Dimensional Input.
+
+    .. warning::
+        This is an experimental prototype that is subject to change and/or deletion.
+
+    Inputs:
+        - **input_tensor** (Tensor) - Three dimensional tensor, supported
+          data type is float32.
+
+    Outputs:
+        - **output_tensor** (Tensor) - The tensor after undergoing fast Fourier
+          transform, the data type is complex64.
+
+    Supported Platforms:
+        ``GPU``
+    """
 
     def __init__(self):
-        lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../libs/libfft.so"))
-        self.fft3d_func = lib_path + ":FFT3D"
-        self.ifft3d_func = lib_path + ":IFFT3D"
-        self.fft3d_reg_info = CustomRegOp() \
-            .input(0, "input_tensor") \
-            .output(0, "output_tensor") \
-            .dtype_format(DataType.F32_Default, DataType.C64_Default) \
-            .target("GPU") \
-            .get_op_info()
-        self.ifft3d_reg_info = CustomRegOp() \
-            .input(0, "input_tensor") \
-            .output(0, "output_tensor") \
-            .dtype_format(DataType.C64_Default, DataType.F32_Default) \
-            .target("GPU") \
-            .get_op_info()
+        super().__init__()
+        def bprop():
+            op = ops.Custom(_lib_path + ":IFFT3D", out_shape=lambda x: (x[0], x[1], (x[2]-1)*2),
+                            out_dtype=mstype.float32, func_type="aot")
+            def custom_bprop(x, out, dout):
+            # pylint: disable=unused-argument
+                dx = op(dout)
+                return (dx,)
+            return custom_bprop
+        self.op = ops.Custom(_lib_path + ":FFT3D", out_shape=lambda x: (x[0], x[1], x[2]//2+1),
+                             out_dtype=mstype.complex64, bprop=bprop(), func_type="aot")
 
-    @staticmethod
-    def fft3d_infer_shape(input_shape):
-        return [input_shape[0], input_shape[1], int(input_shape[2] / 2) + 1]
+    def construct(self, x):
+        return self.op(x)
 
-    @staticmethod
-    def fft3d_infer_dtype(input_dtype):
-        # pylint: disable=unused-argument
-        return mstype.complex64
+class IRFFT3D(nn.Cell):
+    """
+    Inverse FFT with Three-Dimensional Input.
 
-    @staticmethod
-    def ifft3d_infer_shape(input_shape):
-        return [input_shape[0], input_shape[1], (input_shape[2] - 1) * 2]
+    .. warning::
+        This is an experimental prototype that is subject to change and/or deletion.
 
-    @staticmethod
-    def ifft3d_infer_dtype(input_dtype):
-        # pylint: disable=unused-argument
-        return mstype.float32
+    Inputs:
+        - **input_tensor** (Tensor) - Three dimensional input tensor, supported data
+          type is complex64.
 
-    def register(self):
-        fft3d_op = ops.Custom(self.fft3d_func, out_shape=self.fft3d_infer_shape, out_dtype=self.fft3d_infer_dtype,
-                              func_type="aot", reg_info=self.fft3d_reg_info)
-        ifft3d_op = ops.Custom(self.ifft3d_func, out_shape=self.ifft3d_infer_shape, out_dtype=self.ifft3d_infer_dtype,
-                               func_type="aot", reg_info=self.ifft3d_reg_info)
-        return fft3d_op, ifft3d_op
+    Outputs:
+        - **output_tensor** (Tensor) - Returns the tensor after undergoing
+          inverse Fourier transform, the data type is float32.
+
+    Supported Platforms:
+        ``GPU``
+    """
+
+    def __init__(self):
+        super().__init__()
+        def bprop():
+            op = ops.Custom(_lib_path + ":FFT3D", out_shape=lambda x: (x[0], x[1], x[2]//2+1),
+                            out_dtype=mstype.complex64, func_type="aot")
+            def custom_bprop(x, out, dout):
+            # pylint: disable=unused-argument
+                dx = op(dout)
+                return (dx,)
+            return custom_bprop
+        self.op = ops.Custom(_lib_path + ":IFFT3D", out_shape=lambda x: (x[0], x[1], (x[2]-1)*2),
+                             out_dtype=mstype.float32, bprop=bprop(), func_type="aot")
+
+    def construct(self, x):
+        return self.op(x)
