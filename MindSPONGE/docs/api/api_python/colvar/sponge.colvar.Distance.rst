@@ -19,14 +19,3 @@ sponge.colvar.Distance
     .. py:method:: get_unit(units: Units = None)
 
         集合变量的返回单位。
-
-    .. py:method:: construct(coordinate: Tensor, pbc_box: bool = None)
-
-        计算距离。
-
-        参数：
-            - **coordinate** (Tensor) - 张量的shape (B, A, D) 。数据类型为float。其中，B表示批量大小，即模拟中的步行者数量。A表示系统中的原子数。
-            - **pbc_box** (Tensor) - 张量的shape (B, D) 。数据类型为float。默认值：``None``。
-
-        返回：
-            距离(Tensor): 张量的shape (B, ...) 。数据类型为float。

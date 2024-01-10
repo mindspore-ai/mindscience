@@ -17,14 +17,3 @@ sponge.colvar.Center
     .. py:method:: set_mass(mass: Tensor, batched: bool = False)
 
         设置原子块。
-
-    .. py:method:: construct(coordinate: Tensor, pbc_box: Tensor = None)
-
-        计算特定原子的中心位置坐标。
-
-        参数：
-            - **coordinate** (Tensor) - 张量的shape (B, A, D) 。数据类型为float。原子在系统中的位置坐标。其中，A代表系统中的原子数。
-            - **pbc_box** (Tensor) - 张量的shape (B, D) 。数据类型为float。PBC box的张量。默认值：``None``。
-
-        返回：
-            中心位置(Tensor)：张量的shape (B, ..., D) 。数据类型为float。原子的中心坐标。

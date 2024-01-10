@@ -24,21 +24,27 @@ sponge.colvar.Colvar
         - **unit** (str) - 集合变量的单位。注意：这不是包裹长度和能量的 `Units` 单元格。默认值：``None``。
         - **dtype** (type) - 集合变量的数据类型。默认值：float32。
 
-    .. py:method:: use_pbc()
+    .. py:method:: all_periodic()
         :property:
 
-        判断是否使用周期边界条件。
+        判断所有维度是否为周期性的。
 
-        返回：
-            bool，判断是否使用周期边界条件。
-
-    .. py:method:: shape()
+    .. py:method:: any_periodic()
         :property:
 
-        集合变量的shape (S_1, S_2, ..., S_n) 
+        判断任一维度是否为周期性的。
+
+    .. py:method:: dtype()
+        :property:
+
+        集合变量的数据类型。
 
         返回：
-            shape(tuple)：Colvar的shape。
+            类型，Colvar的数据类型。
+
+    .. py:method:: get_unit(units: Units = None)
+
+        返回集合变量的单位。
 
     .. py:method:: name()
         :property:
@@ -56,57 +62,40 @@ sponge.colvar.Colvar
         返回：
             整型，集合变量的秩。
 
-    .. py:method:: dtype()
-        :property:
-
-        集合变量的数据类型。
-
-        返回：
-            类型，Colvar的数据类型。
-
     .. py:method:: periodic()
         :property:
 
-        返回数据类型为 `bool` 的张量，以指示CV是否是周期性的。
-
-    .. py:method:: any_periodic()
-        :property:
-
-        判断任一维度是否为周期性的。
-
-    .. py:method:: all_periodic()
-        :property:
-
-        判断所有维度是否为周期性的。
-
-    .. py:method:: vector_in_pbc(vector: Tensor, pbc_box: Tensor)
-        :classmethod:
-
-        在 -0.5box 到 0.5box 的范围内计算出向量的差异。
-
-    .. py:method:: set_name(name: str)
-
-        设置集合变量的名称。
-
-    .. py:method:: get_unit(units: Units = None)
-
-        返回集合变量的单位。
+        返回数据类型为 `bool` 的张量，以指示CV是否是周期性的。    
 
     .. py:method:: reshape(input_shape: tuple)
 
         重新排列shape。
 
+    .. py:method:: set_name(name: str)
+
+        设置集合变量的名称。
+
     .. py:method:: set_pbc(use_pbc: bool)
 
         设置是否使用周期边界条件。
 
-    .. py::method:: construct(coordinate: Tensor, pbc_box: Tensor = None)
+    .. py:method:: shape()
+        :property:
 
-        在系统坐标 :math:`R` 处获取shape (B, S_1, S_2, ..., S_n) 的集合变量 :math:`s(R)`的值。
+        集合变量的shape (S_1, S_2, ..., S_n) 
 
-        参数：
-            - **coordinate** (Tensor) - 张量的shape为 (B， A， D) 。数据类型为浮点型。系统中原子位置坐标。
-            - **pbc_box** (Tensor) - 张量的shape为 (B， D) 。数据类型为浮点型。PBC box 的张量。默认值：``None``。
+        返回：
+            shape(tuple)：Colvar的shape。
 
-        返回值：
-            colvar(张量)：张量的shape (B, S_1, S_2, ..., S_n) 。
+    .. py:method:: use_pbc()
+        :property:
+
+        判断是否使用周期边界条件。
+
+        返回：
+            bool，判断是否使用周期边界条件。
+
+    .. py:method:: vector_in_pbc(vector: Tensor, pbc_box: Tensor)
+        :classmethod:
+
+        在 -0.5box 到 0.5box 的范围内计算出向量的差异。

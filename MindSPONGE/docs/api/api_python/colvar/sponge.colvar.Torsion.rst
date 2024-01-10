@@ -18,15 +18,4 @@ sponge.colvar.Torsion
         - **batched** (bool) - 判断以原子为单位的输入索引的第一维是否为批大小。默认值：``False``。
         - **keepdims** (bool) - 是否保留向量最后一个维度的维度。默认值：``False``。
         - **axis** (int) - 从原子坐标中收集点的轴。默认值：-2。
-        - **name** (str) - Colvar的名称。默认值：'torsion'。
-
-    .. py:method:: construct(coordinate: Tensor, pbc_box: bool = None)
-
-        计算扭转角。
-
-        参数：
-            - **coordinate** (Tensor) - 张量的shape为 (B, A, D) 。数据类型为float。其中，B表示批量大小，即模拟中的步行者数量。A表示系统中的原子数。
-            - **pbc_box** (Tensor) - 张量的shape为 (B, D) 。数据类型为float。默认值：``None``。
-
-        返回：
-            扭转(Tensor): 张量的shape为 (B, ...) 或 (B, ..., 1) 。数据类型为float。    
+        - **name** (str) - Colvar的名称。默认值：'torsion'。  

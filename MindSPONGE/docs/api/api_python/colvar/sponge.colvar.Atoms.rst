@@ -21,14 +21,3 @@ sponge.colvar.Atoms
     .. py:method:: reshape(input_shape: tuple)
 
         重新排列原子的shape。
-
-    .. py:method:: construct(coordinate: Tensor, pbc_box: Tensor = None) 
-
-        获取特定原子的位置坐标。
-
-        参数：
-            - **coordinate** (Tensor) - 张量的shape (B, A, D) 。数据类型为float。原子在系统中的位置坐标。A是系统中的原子数。
-            - **pbc_box** (Tensor) - 张量的shape (B, D)。数据类型为float。PBC box的张量。默认值：``None``。
-
-        返回：
-            位置（张量）：张量的shape (B, a_1, a_2, ..., a_{n}, D) 。数据类型为float。

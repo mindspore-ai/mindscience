@@ -12,17 +12,6 @@ sponge.colvar.AtomsBase
         - **dimension** (int) - 仿真系统的空间维度。默认值：3。
         - **name** (str) - Colvar的名字。默认值：'atoms'。
 
-    .. py:method:: construct(coordinate: Tensor, pbc_box: Tensor = None) 
-
-        获取特定原子的位置坐标。
-
-        参数：
-            - **coordinate** (Tensor) - 张量的shape (B, A, D) 。数据类型为float。原子在系统中的位置坐标
-            - **pbc_box** (Tensor) - 张量的shape (B, D) 。数据类型为float。PBC box的张量。默认值：``None``。
-
-        返回：
-            位置 (Tensor)：张量的shape (B, ..., D) 。数据类型为float。
-
     .. py:method:: coordinate_in_pbc(coordinate: Tensor, pbc_box: Tensor = None)
 
         置换PBC box中的坐标。
@@ -43,3 +32,8 @@ sponge.colvar.AtomsBase
     .. py:method:: set_dimension(dimension: int = 3)
         
         设置模拟系统的空间维度。
+    
+    .. py:method:: shape()
+        :property:
+        
+        获取原子的shape。
