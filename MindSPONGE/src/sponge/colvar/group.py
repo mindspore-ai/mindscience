@@ -25,6 +25,7 @@ Atom group
 """
 
 from typing import Union, List, Tuple
+import mindspore
 from mindspore import ops
 from mindspore.ops import functional as F
 from mindspore import Tensor
@@ -105,7 +106,8 @@ class ColvarGroup(Colvar):
 
         self.concat = ops.Concat(axis)
 
-        self._periodic = F.squeeze(self.concat(periodic), 0)
+        periodic_int = [p.astype(mindspore.int32) for p in periodic]
+        self._periodic = F.squeeze(self.concat(periodic_int), 0).astype(mindspore.bool_)
 
     def set_pbc(self, use_pbc: bool):
         """set whether to use periodic boundary condition"""
