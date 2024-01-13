@@ -250,7 +250,8 @@ class DistanceNeighbours(Cell):
             exclude_index = self.exclude_index
         if exclude_index is not None:
             # (B, A, n, Ex) <- (B, A, n, 1) != (B, A, 1, E)
-            exc_mask = F.expand_dims(neighbours, -1) != F.expand_dims(exclude_index, -2)
+            exc_idx = Tensor(F.expand_dims(exclude_index, -2), dtype=ms.int64)
+            exc_mask = F.expand_dims(neighbours, -1) != exc_idx
             # (B,A,n)
             exc_mask = reduce_all(exc_mask, -1)
             neighbour_mask = F.logical_and(neighbour_mask, exc_mask)
@@ -263,6 +264,8 @@ class DistanceNeighbours(Cell):
         no_idx = msnp.arange(num_atoms).reshape(1, -1, 1)
         # (B, A, n)
         no_idx = msnp.broadcast_to(no_idx, neighbours.shape)
-        neighbours = F.select(neighbour_mask, neighbours, no_idx)
+        no_idx_tmp = no_idx.astype("int64")
+        neighbours_tmp = neighbours.astype("int64")
+        neighbours = F.select(neighbour_mask, neighbours_tmp, no_idx_tmp)
 
         return distances, neighbours, neighbour_mask
