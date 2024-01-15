@@ -48,14 +48,13 @@ class UpConv(nn.Cell):
     def __init__(self, ch_in, ch_out):
         super(UpConv, self).__init__()
 
-        self.up = nn.ResizeBilinear()
         self.conv = nn.Conv2d(ch_in, ch_out, kernel_size=3, stride=1, pad_mode="pad", padding=1, has_bias=True)
         self.bn = nn.BatchNorm2d(ch_out, use_batch_statistics=True)
         self.relu = nn.ReLU()
 
 
     def construct(self, x):
-        x = self.up(x, scale_factor=2, align_corners=True)
+        x = ops.interpolate(input=x, mode='bilinear', align_corners=True, recompute_scale_factor=True, scale_factor=2.0)
         x = self.conv(x)
         x = self.bn(x)
         x = self.relu(x)
