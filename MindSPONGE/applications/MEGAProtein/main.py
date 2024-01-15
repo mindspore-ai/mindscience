@@ -484,10 +484,17 @@ if __name__ == "__main__":
                             device_id=arguments.device_id)
         arguments.mixed_precision = 1
     elif arguments.run_platform == 'Ascend' and arguments.is_training:
+        os.environ['MS_ENABLE_GE'] = 1
+        os.environ['MS_GE_TRAIN'] = 1
+        os.environ['MS_ENABLE_REF_MODE'] = 1
+        os.environ['MS_ASCEND_CHECK_OVERFLOW_MODE'] = "SATURATION_MODE"
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="Ascend",
-                            max_device_memory="29GB",
-                            device_id=arguments.device_id)
+                            device_id=arguments.device_id,
+                            jit_syntax_level=ms.STRICT,
+                            ascend_config={"precision_mode": "must_keep_origin_dtype",
+                                           "jit_compile": True,
+                                           "atomic_clean_policy": 1,})
         arguments.mixed_precision = 1
     elif arguments.run_platform == 'GPU':
         context.set_context(mode=context.GRAPH_MODE,

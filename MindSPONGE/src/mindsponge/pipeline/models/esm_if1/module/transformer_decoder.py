@@ -197,7 +197,7 @@ class TransformerDecoder(nn.Cell):
                 or self._future_mask.shape[0] < dim
         ):
             self._future_mask = fill_with_neg_inf(ops.Zeros()((dim, dim), ms.float32))
-            mask = ms.nn.Triu()(ms.ops.ones(self._future_mask.shape, ms.bool_), 1)
+            mask = ms.nn.Triu()(ms.ops.ones(self._future_mask.shape, ms.float32), 1)
             self._future_mask[ms.numpy.logical_not(mask)] = 0
 
         self._future_mask = self._future_mask.astype(tensor.dtype)

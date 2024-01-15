@@ -79,6 +79,14 @@ class MEGAFold(Model):
                                 --disable_cluster_ops=ReduceSum --composite_op_limit_size=50",
                                 enable_graph_kernel=True)
         else:
+            os.environ['MS_ENABLE_GE'] = 1
+            os.environ['MS_GE_TRAIN'] = 1
+            os.environ['MS_ENABLE_REF_MODE'] = 1
+            os.environ['MS_ASCEND_CHECK_OVERFLOW_MODE'] = "SATURATION_MODE"
+            context.set_context(jit_syntax_level=ms.STRICT,
+                                ascend_config={"precision_mode": "must_keep_origin_dtype",
+                                               "jit_compile": True,
+                                               "atomic_clean_policy": 1,})
             self.mixed_precision = True
             self.fp32_white_list = (ms.nn.Softmax, ms.nn.LayerNorm, LayerNormProcess)
 

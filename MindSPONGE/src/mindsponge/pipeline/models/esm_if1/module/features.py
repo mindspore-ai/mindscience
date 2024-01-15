@@ -362,9 +362,10 @@ class GVPGraphEmbedding(GVPInputFeaturizer):
             ops.ExpandDims()((~coord_mask_src).astype(np.float32), -1),
             ops.ExpandDims()((~coord_mask_dest).astype(np.float32), -1)])
         e_residue_mask = ops.Cast()(e_residue_mask, ms.bool_)
-        edge_index = edge_index.masked_fill(~e_residue_mask, -1)
+        fill_value = ms.Tensor(-1, dtype=edge_index.dtype)
+        edge_index = edge_index.masked_fill(~e_residue_mask, fill_value)
 
         if self.remove_edges_without_coords:
-            edge_index = ops.masked_fill(edge_index, ~e_coord_mask.squeeze(-1), -1)
+            edge_index = ops.masked_fill(edge_index, ~e_coord_mask.squeeze(-1), fill_value)
 
         return (edge_s, edge_v), ms_transpose(edge_index, 0, 1)
