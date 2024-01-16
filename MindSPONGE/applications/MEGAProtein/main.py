@@ -21,6 +21,7 @@ import time
 import ast
 import numpy as np
 
+import mindspore as ms
 import mindspore.context as context
 import mindspore.common.dtype as mstype
 from mindspore import Tensor, nn, save_checkpoint, load_checkpoint, load_param_into_net
@@ -484,9 +485,9 @@ if __name__ == "__main__":
                             device_id=arguments.device_id)
         arguments.mixed_precision = 1
     elif arguments.run_platform == 'Ascend' and arguments.is_training:
-        os.environ['MS_ENABLE_GE'] = 1
-        os.environ['MS_GE_TRAIN'] = 1
-        os.environ['MS_ENABLE_REF_MODE'] = 1
+        os.environ['MS_ENABLE_GE'] = '1'
+        os.environ['MS_GE_TRAIN'] = '1'
+        os.environ['MS_ENABLE_REF_MODE'] = '1'
         os.environ['MS_ASCEND_CHECK_OVERFLOW_MODE'] = "SATURATION_MODE"
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="Ascend",
