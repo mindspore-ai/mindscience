@@ -131,7 +131,7 @@ class MEGAAssessment(Model):
         """train one step"""
         num_recycle = np.random.randint(low=0, high=4)
         self.train_net.add_flags_recursive(train_backward=False)
-        self.train_net.phase = 'train_forward'
+        self.train_net.phase = 'forward'
         recycle_feature_name = self.feature_list[:-5]
         prev_pos = Tensor(data['prev_pos'])
         prev_msa_first_row = Tensor(data['prev_msa_first_row'])
@@ -159,7 +159,7 @@ class MEGAAssessment(Model):
         for key in self.label_list:
             inputs[key] = Tensor(data[key])
         self.train_net.add_flags_recursive(train_backward=True)
-        self.train_net.phase = 'train_backward'
+        self.train_net.phase = 'train'
         keys = self.feature_list[:-2] + self.label_list
         feat = []
         for key in keys:

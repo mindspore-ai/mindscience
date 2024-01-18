@@ -203,7 +203,7 @@ def fold_train(args):
                        d["filter_by_solution"], d["chi_mask"]
         # forward recycle 3 steps
         train_net.add_flags_recursive(train_backward=False)
-        train_net.phase = 'train_forward'
+        train_net.phase = 'forward'
         ground_truth = [Tensor(gt) for gt in ground_truth]
         for recycle in range(max_recycle):
             inputs_feat = [Tensor(feat[recycle]) for feat in inputs_feats]
@@ -212,7 +212,7 @@ def fold_train(args):
         inputs_feat = [Tensor(feat[max_recycle]) for feat in inputs_feats]
         # forward + backward
         train_net.add_flags_recursive(train_backward=True)
-        train_net.phase = 'train_backward'
+        train_net.phase = 'train'
         loss = train_net(*inputs_feat, prev_pos, prev_msa_first_row, prev_pair, *ground_truth)
         loss_info = f"step is: {step}, total_loss: {loss[0]}, fape_sidechain_loss: {loss[1]}," \
                     f" fape_backbone_loss: {loss[2]}, angle_norm_loss: {loss[3]}, distogram_loss: {loss[4]}," \
