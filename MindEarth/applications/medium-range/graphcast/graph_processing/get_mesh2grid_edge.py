@@ -50,7 +50,8 @@ def preprocess_mesh_polygon(mesh):
     return triangles_polygon
 
 
-def func_wrapper(long_lat, polygon, last_position=(-1,)):
+#pylint: disable=W0102
+def func_wrapper(long_lat, polygon, last_position=[-1,]):
     """wrapper function"""
     x, y = long_lat[0], long_lat[1]
     ret = -1

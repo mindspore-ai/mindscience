@@ -23,7 +23,7 @@ from graph_processing import make_dir
 if __name__ == '__main__':
     current_directory = os.path.dirname(os.path.abspath(__file__))
     logger = create_logger(path=os.path.join(current_directory, "results.log"))
-    config = load_yaml_config('./graph_processing/graph_construct.yml')
+    config = load_yaml_config('./graph_processing/graph_construct.yaml')
     make_dir(config)
     generate_grid_node(config)
     generate_mesh_node(config)

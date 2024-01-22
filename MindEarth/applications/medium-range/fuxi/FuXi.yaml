@@ -1,0 +1,54 @@
+model:
+  name: "FuXi"
+  depths: 18
+  in_channels: 96
+  out_channels: 192
+data:
+  name: "era5"
+  root_dir: "./dataset/"
+  feature_dims: 69
+  pressure_level_num: 13
+  level_feature_size: 5
+  surface_feature_size: 4
+  h_size: 720
+  w_size: 1440
+  data_sink: False
+  batch_size: 1
+  t_in: 1
+  t_out_train: 1
+  t_out_valid: 20
+  t_out_test: 20
+  train_interval: 6
+  valid_interval: 6
+  test_interval: 6
+  pred_lead_time: 6
+  data_frequency: 6
+  train_period: [2015, 2015]
+  valid_period: [2016, 2016]
+  test_period: [2017, 2017]
+  num_workers: 1
+  grid_resolution: 0.25
+optimizer:
+  name: "adam"
+  initial_lr: 2.5e-4
+  finetune_lr: 0.00001
+  finetune_epochs: 1
+  warmup_epochs: 1
+  weight_decay: 0.0
+  loss_weight: 0.25
+  gamma: 0.5
+  epochs: 100
+summary:
+  summary_dir: "./summary"
+  eval_interval: 10
+  save_checkpoint_steps: 10
+  keep_checkpoint_max: 50
+  plt_key_info: True
+  key_info_timestep: [6, 72, 120]
+  ckpt_path: "/path/to/ckpt"
+train:
+  name: "oop"
+  distribute: False
+  amp_level: O2
+  load_ckpt: True
+  mixed_precision: True
