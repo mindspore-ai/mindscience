@@ -45,7 +45,7 @@ def parse_args():
     parser.add_argument("--device_id", type=int, default=0,
                         help="ID of the target device")
     parser.add_argument("--config_file_path", type=str,
-                        default="./configs/darcy_cfg.yaml")
+                        default="./configs/darcy.yaml")
     input_args = parser.parse_args()
     return input_args
 
