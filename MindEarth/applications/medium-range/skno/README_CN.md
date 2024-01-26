@@ -161,7 +161,7 @@ train:
 |:----------------------:|:--------------------------:|:---------------:|
 |     Hardware         |     Ascend memory 32G      |      NVIDIA V100 memory 32G       |
 |     MindSpore version   |        2.2.0             |      2.2.0       |
-|     dataset      |      [ERA5_1_4_tiny400](https://www.ecmwf.int/en/forecasts/dataset/ecmwf-reanalysis-v5)             |     [ERA5_1_4_tiny400](https://www.ecmwf.int/en/forecasts/dataset/ecmwf-reanalysis-v5)      |
+|     dataset      |      [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)             |     [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)      |
 |     parameters      |       91214592         |     91214592    |
 |     training config    |        batch_size=1, steps_per_epoch=408, epochs=200             |     batch_size=1, steps_per_epoch=408, epochs=200       |
 |     optimizer      |        Adamw              |    Adamw     |
@@ -195,7 +195,7 @@ python -u ./main.py \
 
 ### 运行方式二: 运行Jupyter Notebook
 
-使用[中文](https://gitee.com/mindspore/mindscience/raw/master/MindEarth/applications/medium-range/SKNO/SKNO_CN.ipynb)或[英文](https://gitee.com/mindspore/mindscience/raw/master/MindEarth/applications/medium-range/SKNO/SKNO.ipynb) Jupyter Notebook可以逐行运行训练和推理代码
+使用[中文](https://gitee.com/mindspore/mindscience/blob/master/MindEarth/applications/medium-range/skno/SKNO.ipynb) Jupyter Notebook可以逐行运行训练和推理代码
 
 ## 四、参考文献
 
