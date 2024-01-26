@@ -71,8 +71,33 @@ Training with more data from [WeatherBench 1.40625°](https://github.com/pangeo-
 
 ![image_earth](images/RMSE_multi_years.png)
 
+## Precipitation
+
+You need a pre-trained [ckpt](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/medium_precipitation/tiny_datasets/ckpt/) of GraphCast. Set `tp: True` and modify `tp_dir`, `backbone_ckpt_path` in `GraphCastTp.yaml`.
+
+## Run: Call `.sh` from command line
+
+## Single-Device
+
+```shell
+cd scripts
+bash run_standalone_train.sh $device_id
+```
+
+## Distribution
+
+```shell
+cd scripts
+bash run_distributed_train.sh $path/to/rank_table.json $device_num $device_start_id
+```
+
+### Visualization
+
+The following figure shows the ground truth, predicion using the checkpoint of training epoch 20.
+![tp](./images/tp_comparison.png)
+
 ## Contributor
 
-gitee id: liulei277, Bokai Li
+gitee id: liulei277, Bokai Li, Zhou Chuansai
 
-email: liulei2770919@163.com, 1052173504@qq.com
+email: liulei2770919@163.com, 1052173504@qq.com, chuansaizhou@163.com

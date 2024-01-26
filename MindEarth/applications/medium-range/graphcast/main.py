@@ -23,16 +23,14 @@ import random
 import time
 
 import numpy as np
-
-from mindspore import set_seed
-from mindspore import context
+from mindspore import set_seed, context, nn
 from mindspore.train.serialization import load_param_into_net
 
 from mindearth.utils import load_yaml_config
 from mindearth.data import Dataset, Era5Data
-
-from src import init_data_parallel, init_model, get_coe, get_param_dict, get_logger
-from src import LossNet, GraphCastTrainer, CustomWithLossCell, InferenceModule
+from src import init_data_parallel, init_model, get_coe, get_param_dict, get_logger, init_tp_model
+from src import LossNet, GraphCastTrainer, GraphCastTrainerTp, CustomWithLossCell, InferenceModule, InferenceModuleTp
+from src import Era5DataTp
 
 
 set_seed(0)
@@ -69,10 +67,15 @@ def train(cfg, model, logger):
             load_param_into_net(model, param_dict)
             logger.info(f"Load pre-trained model successfully, {file_dir}")
             rollout_ckpt_pth = None
-
-        loss_fn = LossNet(ai, wj, sj_std, data_params.get('feature_dims'))
-        loss_cell = CustomWithLossCell(backbone=model, loss_fn=loss_fn, data_params=data_params)
-        trainer = GraphCastTrainer(cfg, model, loss_cell, logger)
+        if not data_params.get("tp", False):
+            loss_fn = LossNet(ai, wj, sj_std, data_params.get('feature_dims'))
+            loss_cell = CustomWithLossCell(backbone=model, loss_fn=loss_fn, data_params=data_params)
+            trainer = GraphCastTrainer(cfg, model, loss_cell, logger)
+        else:
+            loss_scale = nn.DynamicLossScaleUpdateCell(loss_scale_value=2 ** 12, scale_factor=2, scale_window=1000)
+            loss_fn = LossNet(ai, wj, sj_std, data_params.get('feature_dims'), data_params.get("tp"))
+            loss_cell = CustomWithLossCell(backbone=model, loss_fn=loss_fn, data_params=data_params)
+            trainer = GraphCastTrainerTp(cfg, model, loss_cell, logger, loss_scale)
         trainer.train()
         steps_per_epoch = trainer.steps_per_epoch
 
@@ -80,8 +83,12 @@ def train(cfg, model, logger):
 def test(cfg, model, logger):
     """GraphCast test function"""
     data_params = cfg.get('data')
-    inference_module = InferenceModule(model, cfg, logger)
-    test_dataset_generator = Era5Data(data_params=data_params, run_mode='test')
+    if data_params.get("tp", False):
+        inference_module = InferenceModuleTp(model, cfg, logger)
+        test_dataset_generator = Era5DataTp(data_params=data_params, run_mode='test')
+    else:
+        inference_module = InferenceModule(model, cfg, logger)
+        test_dataset_generator = Era5Data(data_params=data_params, run_mode='test')
     test_dataset = Dataset(test_dataset_generator, distribute=False,
                            num_workers=data_params.get('num_workers'), shuffle=False)
     test_dataset = test_dataset.create_dataset(data_params.get('batch_size'))
@@ -101,7 +108,10 @@ if __name__ == '__main__':
         init_data_parallel(use_ascend)
     else:
         context.set_context(device_id=args.device_id)
-    graphcast_model = init_model(config, args.run_mode)
+    if config.get("data").get("tp"):
+        graphcast_model = init_tp_model(config, run_mode=args.run_mode)
+    else:
+        graphcast_model = init_model(config, args.run_mode)
     logger_obj = get_logger(config)
     start_time = time.time()
     if args.run_mode == 'train':

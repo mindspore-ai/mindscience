@@ -71,8 +71,33 @@ python -u ./main.py \
 
 ![image_earth](images/RMSE_multi_years.png)
 
+## 中期降水模块
+
+在`GraphCastTp.yaml`文件中设置`tp: True`，修改`tp_dir`，此外还需要一个预训练的GraphCast [ckpt](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/medium_precipitation/tiny_datasets/ckpt/), 设置`backbone_ckpt_path`的路径。
+
+### 运行方式: 在命令行调用`.sh`脚本
+
+### 单卡训练
+
+```shell
+cd scripts
+bash run_standalone_train.sh $device_id
+```
+
+### 多卡训练
+
+```shell
+cd scripts
+bash run_distributed_train.sh $path/to/rank_table.json $device_num $device_start_id
+```
+
+### 结果展示
+
+下图展示使用训练的第20个epoch绘制成的降水预报结果。
+![tp](./images/tp_comparison.png)
+
 ## 贡献者
 
-gitee id: liulei277, Bokai Li
+gitee id: liulei277, Bokai Li, Zhou Chuansai
 
-email: liulei2770919@163.com, 1052173504@qq.com
+email: liulei2770919@163.com, 1052173504@qq.com, chuansaizhou@163.com

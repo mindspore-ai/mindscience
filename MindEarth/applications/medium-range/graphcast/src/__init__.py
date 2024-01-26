@@ -13,9 +13,10 @@
 # limitations under the License.
 # ==============================================================================
 """init"""
-from .callback import InferenceModule, LossNet, EvaluateCallBack, CustomWithLossCell
-from .solver import GraphCastTrainer
-from .utils import init_data_parallel, init_model, get_coe, get_logger, get_param_dict, GridMeshInfo
+from .callback import InferenceModule, InferenceModuleTp, LossNet, EvaluateCallBack, CustomWithLossCell
+from .solver import GraphCastTrainer, GraphCastTrainerTp
+from .utils import init_data_parallel, init_model, init_tp_model, get_coe, get_logger, get_param_dict, GridMeshInfo
+from .precip_dataset import Era5DataTp
 
 
 __all__ = ['get_coe',
@@ -23,10 +24,14 @@ __all__ = ['get_coe',
            'get_param_dict',
            'init_data_parallel',
            'init_model',
+           'init_tp_model',
            'CustomWithLossCell',
            'EvaluateCallBack',
            'GraphCastTrainer',
+           'GraphCastTrainerTp',
            'InferenceModule',
+           'InferenceModuleTp',
            'LossNet',
            'GridMeshInfo',
+           'Era5DataTp',
            ]

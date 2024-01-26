@@ -17,16 +17,47 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
-
 import mindspore.common.dtype as mstype
 import mindspore.communication.management as D
 from mindspore.communication import init
-from mindspore import context, Tensor
+from mindspore import context, Tensor, ops, nn
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
 
 from mindearth.cell import GraphCastNet
 from mindearth.data import FEATURE_DICT, SIZE_DICT
 from mindearth.utils import make_dir, create_logger, plt_metrics
+from .precip import PrecipNet
+
+
+class OutputTo16(nn.Cell):
+    "Wrap cell for amp. Cast network output back to float16"
+
+    def __init__(self, op):
+        super(OutputTo16, self).__init__(auto_prefix=False)
+        self._op = op
+
+    def construct(self, *x):
+        return ops.functional.cast(self._op(*x), mstype.float16)
+
+
+#pylint: disable=W0212
+def amp_convert(network, black_list=None):
+    """Do keep cell fp32."""
+    network.to_float(mstype.float16)
+    if black_list is not None:
+        cells = network.name_cells()
+        change = False
+        for name in cells:
+            subcell = cells[name]
+            if subcell == network:
+                continue
+            elif isinstance(subcell, black_list):
+                network._cells[name] = OutputTo16(subcell.to_float(mstype.float32))
+                change = True
+            else:
+                amp_convert(subcell, black_list)
+        if isinstance(network, nn.SequentialCell) and change:
+            network.cell_list = list(network.cells())
 
 
 def init_data_parallel(use_ascend):
@@ -87,6 +118,26 @@ def init_model(config, run_mode="train"):
     if train_params.get('load_ckpt'):
         params = load_checkpoint(summary_params.get("ckpt_path"))
         load_param_into_net(model, params)
+    return model
+
+
+def init_tp_model(config, run_mode="train"):
+    """Init precipitation model"""
+    gc_no_grad = init_model(config)
+    summary_params = config.get("summary")
+    train_params = config.get("train")
+    if run_mode == "train":
+        params = load_checkpoint(summary_params.get("backbone_ckpt_path"))
+        load_param_into_net(gc_no_grad, params)
+    gc_grad = init_model(config)
+    model = PrecipNet(gc_no_grad, gc_grad, config.get("data"))
+    train_params['load_ckpt'] = run_mode == "test"
+    if train_params.get("load_ckpt", False):
+        params = load_checkpoint(config['summary']["ckpt_path"])
+        load_param_into_net(model, params)
+    if train_params.get("mixed_precision", True):
+        fp32_black_list = (nn.GELU, nn.Softmax, nn.BatchNorm2d, nn.LayerNorm)
+        amp_convert(model, fp32_black_list)
     return model
 
 
@@ -182,6 +233,11 @@ def plt_key_info(key_info, config, epochs=1, metrics_type='RMSE', loc='upper rig
     ax4.xaxis.set_major_locator(xaxis_interval)
     plt.subplots_adjust(wspace=0.25, hspace=0.6)
     plt.savefig(f"{summary_params.get('summary_dir')}/image/Eval_{metrics_type}_epoch{epochs}.png", bbox_inches="tight")
+
+
+def unlog_trans(x, eps=1e-5):
+    """Inverse transformation of log(TP / epsilon + 1)"""
+    return eps * (ops.exp(x) - 1)
 
 
 class GridMeshInfo:

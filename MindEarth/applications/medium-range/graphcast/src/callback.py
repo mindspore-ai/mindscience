@@ -13,18 +13,19 @@
 # limitations under the License.
 # ==============================================================================
 """earth with loss"""
-import numpy as np
+import math
 
+import numpy as np
 import mindspore as ms
-import mindspore.numpy as msnp
+import mindspore.numpy as mnp
 from mindspore import dtype as mstype
 from mindspore import ops, nn
 from mindspore.train.callback import Callback
 from mindspore.train.summary import SummaryRecord
 
 from mindearth.module import WeatherForecast
-
-from .utils import plt_key_info
+from .utils import plt_key_info, unlog_trans
+from .precip_forecast import WeatherForecastTp
 
 
 def _forecast_multi_step(inputs, model, feature_dims, t_out, t_in):
@@ -38,7 +39,25 @@ def _forecast_multi_step(inputs, model, feature_dims, t_out, t_in):
             if t_in == 1:
                 inputs = pred
             else:
-                data_list = (inputs[..., feature_dims:feature_dims * t_in], pred)
+                data_list = [inputs[..., feature_dims:feature_dims * t_in], pred]
+                inputs = ops.concat(data_list, axis=-1).reshape(-1, feature_dims * t_in)
+    return pred_list
+
+
+def _forecast_tp_multi_step(inputs, model, feature_dims, t_out, t_in):
+    """Precipitation forecast multiple steps with given inputs"""
+    pred_list, data_list = [], []
+    for _ in range(t_out):
+        pred, pred_recon = model(inputs)
+        pred = ops.cast(pred, inputs.dtype)
+        pred_recon = ops.cast(pred_recon, inputs.dtype)
+        inputs = inputs.squeeze()
+        pred_list.append(pred)
+        if t_out > 1:
+            if t_in == 1:
+                inputs = pred_recon
+            else:
+                data_list = [inputs[..., feature_dims:feature_dims * t_in], pred_recon]
                 inputs = ops.concat(data_list, axis=-1).reshape(-1, feature_dims * t_in)
     return pred_list
 
@@ -72,8 +91,8 @@ class InferenceModule(WeatherForecast):
             self.batch_size * self.t_out_test * self.feature_dims, -1)
         weight = ms.Tensor(self._calculate_lat_weight().reshape(-1, 1))
         lat_weight_rmse_step = ops.matmul(error, weight)
-        lat_weight_rmse_step = lat_weight_rmse_step.reshape(self.t_out_test, self.feature_dims).transpose(1,
-                                                                                                          0).asnumpy()
+        lat_weight_rmse_step = lat_weight_rmse_step.reshape(self.t_out_test,
+                                                            self.feature_dims).transpose(1, 0).asnumpy()
 
         # acc
         pred = pred * ms.Tensor(self.total_std, ms.float32) + ms.Tensor(self.total_mean, ms.float32)
@@ -109,22 +128,163 @@ class InferenceModule(WeatherForecast):
         return pred_list
 
 
+class InferenceModuleTp(WeatherForecastTp):
+    """
+    Perform multiple rounds of precipitation model inference.
+    """
+
+    def __init__(self, model, config, logger):
+        super().__init__(model, config, logger)
+        self.model = model
+        data_params = config.get('data')
+        self.w_size = data_params.get("w_size", 720)
+        self.h_size = data_params.get("h_size", 360)
+        self.feature_dims = data_params.get("feature_dims", 69)
+        self.t_out_test = data_params.get("t_out_test", 20)
+        self.logger = logger
+        self.batch_size = data_params.get("batch_size", 1)
+        self.t_in = data_params.get("t_in", 1)
+        self.resolution = data_params.get("grid_resolution", 0.5)
+        self.percentile = (1. - np.logspace(-1, -4, 50)) * 100
+        self.tp_unit_trans = 1000
+
+    def _get_metrics(self, inputs, labels):
+        """Get lat_weight_rmse, lat_weight_acc and rqe metrics"""
+        pred = self.forecast(inputs)
+        labels = unlog_trans(labels).asnumpy()
+        pred = unlog_trans(pred).asnumpy()
+        lat_weight_rmse_step = self._calculate_lat_weighted_error(labels * self.tp_unit_trans,
+                                                                  pred * self.tp_unit_trans)
+        rqe_step = self._calculate_rqe(labels, pred)
+        labels = labels - self.climate_mean
+        pred = pred - self.climate_mean
+        lat_weight_acc_step = self._calculate_lat_weighted_acc(labels, pred)
+        return lat_weight_acc_step, lat_weight_rmse_step, rqe_step
+
+    def _calculate_lat_weight(self):
+        """Get latitude weight"""
+        lat_t = np.arange(0, self.h_size)
+        s = np.sum(np.cos(math.pi / 180. * self._lat(lat_t)))
+        weight = self._latitude_weighting_factor(lat_t, s)
+        grid_lat_weight = np.repeat(weight, self.w_size, axis=0).reshape(-1)
+        return grid_lat_weight.astype(np.float32)
+
+    def _calculate_rqe(self, label, prediction):
+        """Get rqe"""
+        label = label.reshape(self.t_out_test, -1)
+        prediction = prediction.reshape(self.t_out_test, -1)
+        quantile_label = np.percentile(label, self.percentile, axis=1)
+        quantile_pred = np.percentile(prediction, self.percentile, axis=1)
+        try:
+            rqe = np.mean((quantile_pred - quantile_label) / quantile_label, axis=0)
+        except ZeroDivisionError:
+            return np.zeros(self.t_out_test)
+        return rqe
+
+    def _calculate_lat_weighted_error(self, label, prediction):
+        """Get rmse"""
+        batch_size = label.shape[0]
+        lat_t = np.arange(0, self.h_size)
+        s = np.sum(np.cos(math.pi / 180. * self._lat(lat_t)))
+        weight = self._latitude_weighting_factor(lat_t, s)
+        grid_node_weight = np.repeat(weight, self.w_size, axis=0).reshape(1, 1, -1)
+        error = np.square(np.reshape(label, (batch_size, self.t_out_test, -1)) - np.reshape(prediction, (
+            batch_size, self.t_out_test, -1)))
+        lat_weight_error = np.sum(error * grid_node_weight, axis=(0, 2))
+        return lat_weight_error
+
+    def _calculate_lat_weighted_acc(self, label, prediction):
+        """Get acc"""
+        batch_size = label.shape[0]
+        lat_t = np.arange(0, self.h_size)
+
+        s = np.sum(np.cos(math.pi / 180. * self._lat(lat_t)))
+        weight = self._latitude_weighting_factor(lat_t, s)
+        grid_node_weight = np.repeat(weight, self.w_size, axis=0).reshape(1, 1, -1)
+        pred_prime = np.reshape(prediction, (batch_size, self.t_out_test, -1))
+        label_prime = np.reshape(label, (batch_size, self.t_out_test, -1))
+        a = np.sum(pred_prime * label_prime * grid_node_weight, axis=(0, 2))
+        b = np.sqrt(
+            np.sum(pred_prime ** 2 * grid_node_weight, axis=(0, 2)) * np.sum(label_prime ** 2 * grid_node_weight,
+                                                                             axis=(0, 2)))
+        try:
+            acc = a / b
+        except ZeroDivisionError:
+            return np.zeros(self.t_out_test)
+        return acc
+
+    def forecast(self, inputs):
+        """Get the precipitation forecast"""
+        pred_list = _forecast_tp_multi_step(inputs, self.model, self.feature_dims, self.t_out_test, self.t_in)
+        pred_list = ops.concat(pred_list, axis=1)
+        return pred_list
+
+    def eval(self, dataset):
+        """
+        Eval the model using test dataset or validation dataset.
+
+        Args:
+            dataset (mindspore.dataset): The dataset for eval, including inputs and labels.
+        """
+        self.logger.info("================================Start Evaluation================================")
+        data_length = 0
+        eval_data_length = 0
+        lat_weight_rmse = 0.
+        lat_weight_acc = 0.
+        rqe = 0.
+        for data in dataset.create_dict_iterator():
+            inputs = data['inputs']
+            batch_size = inputs.shape[0]
+            labels = data['labels']
+            lat_weight_acc_step, lat_weight_rmse_step, rqe_step = self._get_metrics(inputs, labels)
+            lat_weight_acc += lat_weight_acc_step
+            lat_weight_rmse += lat_weight_rmse_step
+            rqe += rqe_step
+            eval_data_length += batch_size
+            self.logger.info(eval_data_length)
+        self.logger.info(f'test dataset size: {data_length}')
+        try:
+            lat_weight_acc = lat_weight_acc / eval_data_length
+            lat_weight_rmse = np.sqrt(
+                lat_weight_rmse / (eval_data_length * self.w_size * self.h_size))
+            rqe = rqe / eval_data_length
+        except ZeroDivisionError:
+            return np.zeros(self.t_out_test), np.zeros(self.t_out_test), np.zeros(self.t_out_test)
+        self._print_key_metrics(lat_weight_rmse, lat_weight_acc, rqe)
+        self.logger.info(lat_weight_acc)
+        self.logger.info("================================End Evaluation================================")
+        return lat_weight_rmse, lat_weight_acc, rqe
+
+
 class LossNet(nn.Cell):
     """ LossNet definition """
 
-    def __init__(self, ai, wj, sj_std, feature_dims):
+    def __init__(self, ai, wj, sj_std, feature_dims, tp=False):
         super().__init__()
         self.feature_dims = feature_dims
         self.err_weight = wj * ai / sj_std
+        self.tp = tp
 
     def construct(self, label, pred):
+        """
+        forward function.
+        if tp is True, this function will calculate LP Loss.
+        """
+        if self.tp:
+            batch_size = pred.shape[0]
+            diff_norms = ops.norm(pred.reshape((batch_size, -1)) - label.reshape((batch_size, -1)), dim=1, ord=2.0)
+            y_norms = ops.norm(label.reshape((batch_size, -1)), dim=1, ord=2.0)
+            try:
+                return (diff_norms / y_norms).mean()
+            except ZeroDivisionError:
+                return diff_norms.mean()
         pred = ops.cast(pred, mstype.float32)
         label = ops.squeeze(label[..., :self.feature_dims])
         pred = ops.squeeze(pred)
-        err = msnp.square(pred - label)
+        err = mnp.square(pred - label)
         weighted_err = err * self.err_weight
-        weighted_err = msnp.reshape(weighted_err, (pred.shape[-2], -1))
-        loss = msnp.average(weighted_err)
+        weighted_err = mnp.reshape(weighted_err, (pred.shape[-2], -1))
+        loss = mnp.average(weighted_err)
         return loss
 
 
@@ -142,11 +302,15 @@ class EvaluateCallBack(Callback):
         super(EvaluateCallBack, self).__init__()
         self.config = config
         summary_params = config.get('summary')
+        data_params = config.get('data')
         self.summary_dir = summary_params.get('summary_dir')
         self.predict_interval = summary_params.get('eval_interval')
         self.logger = logger
         self.valid_dataset = valid_dataset
-        self.eval_net = InferenceModule(model, config, logger=self.logger)
+        if data_params.get("tp", False):
+            self.eval_net_tp = InferenceModuleTp(model, config, logger=self.logger)
+        else:
+            self.eval_net = InferenceModule(model, config, logger=self.logger)
         self.eval_time = 0
 
     def __enter__(self):
@@ -166,13 +330,15 @@ class EvaluateCallBack(Callback):
         cb_params = run_context.original_args()
         if cb_params.cur_epoch_num % self.predict_interval == 0:
             self.eval_time += 1
-            lat_weight_rmse, lat_weight_acc = self.eval_net.eval(self.valid_dataset)
-            summary_params = self.config.get('summary')
-            if summary_params.get('plt_key_info'):
-                plt_key_info(lat_weight_rmse, self.config, self.eval_time * self.predict_interval, metrics_type="RMSE",
-                             loc="upper left")
-                plt_key_info(lat_weight_acc, self.config, self.eval_time * self.predict_interval, metrics_type="ACC",
-                             loc="lower left")
+            if self.config['data']['tp']:
+                lat_weight_rmse, lat_weight_acc, _ = self.eval_net_tp.eval(self.valid_dataset)
+            else:
+                lat_weight_rmse, lat_weight_acc = self.eval_net.eval(self.valid_dataset)
+                if self.config['summary']['plt_key_info']:
+                    plt_key_info(lat_weight_rmse, self.config, self.eval_time * self.predict_interval,
+                                 metrics_type="RMSE", loc="upper left")
+                    plt_key_info(lat_weight_acc, self.config, self.eval_time * self.predict_interval,
+                                 metrics_type="ACC", loc="lower left")
 
 
 class CustomWithLossCell(nn.Cell):
@@ -188,10 +354,14 @@ class CustomWithLossCell(nn.Cell):
         self.feature_dims = data_params.get('feature_dims')
         self.t_out_train = data_params.get('t_out_train')
         self.t_in = data_params.get('t_in')
+        self.tp = data_params.get("tp", False)
 
     def construct(self, data, labels):
         """Custom loss forward function"""
-        pred_list = _forecast_multi_step(data, self._backbone, self.feature_dims, self.t_out_train, self.t_in)
+        if self.tp:
+            pred_list = _forecast_tp_multi_step(data, self._backbone, self.feature_dims, self.t_out_train, self.t_in)
+        else:
+            pred_list = _forecast_multi_step(data, self._backbone, self.feature_dims, self.t_out_train, self.t_in)
         loss = 0
         for t in range(self.t_out_train):
             pred = pred_list[t]
