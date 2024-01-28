@@ -30,10 +30,6 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 - `2022.06.27` 论文"PSP: Million-level Protein Sequence Dataset for Protein Structure Prediction" arxiv 预印，详情参见[论文](https://arxiv.org/pdf/2206.12240v1.pdf)和[代码](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein/)
 - `2022.04.21` MEGA-Fold CAMEO竞赛月榜第一, [相关新闻](https://www.huawei.com/cn/news/2022/4/mindspore-cameo-protein-ascend)
 
-## **即将到来** 🚀
-
-- 第三期暑期学校活动将于2023年8月21日——8月25日在北京大学举行，[**报名ing**](https://mp.weixin.qq.com/s/oOaJ9KlUnWbptZWqSvam7g)！
-
 ## **初体验**
 
 ### 蛋白质多聚体结构预测
@@ -77,40 +73,6 @@ print("confidence:", confidence)
     <img src="docs/multimer.gif" width=30%>
 </div>
 
-### 一个简单的分子动力学模拟案例
-
-```bash
-from sponge import Sponge
-from sponge import Molecule
-from sponge import ForceField
-from mindspore import context
-from mindspore.nn import Adam
-from sponge.callback import WriteH5MD, RunInfo
-
-context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
-
-system = Molecule(template='water.spce.yaml')
-
-system.reduplicate([0.3, 0, 0])
-system.reduplicate([0, 0.3, 0])
-new_sys = system.copy([0, 0, -0.3])
-system.reduplicate([0, 0, 0.3])
-system.append(new_sys)
-
-potential = ForceField(system, parameters='SPCE')
-
-opt = Adam(system.trainable_params(), 1e-3)
-
-md = Sponge(system, potential, opt)
-
-run_info = RunInfo(10)
-cb_h5md = WriteH5MD(system, 'tutorial_b03.h5md', save_freq=10)
-
-md.run(1000, callbacks=[run_info, cb_h5md])
-```
-
-<div align=left><img src="docs/tutorial_b03.gif" width="220"/></div>
-
 **更多应用案例请见**：👀
 
 - [NMR数据自动解析 FAAST](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/FAAST)
@@ -123,19 +85,6 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 - 化合物分子表征模型(TO BE DONE)
 
 ## **安装教程**
-
-### 版本依赖关系
-
-由于MindSPONGE与MindSpore有依赖关系，请根据下表中所指示的对应关系，在[MindSpore下载页面](https://www.mindspore.cn/versions)下载并安装对应的whl包。
-
-| MindSPONGE |                                 分支                                 | MindSpore | Python |
-| :--------: | :-------------------------------------------------------------------: | :-------: | :----: |
-|   master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) | \>=2.0.0 | \>=3.7 |
-|   1.0.0   | [r0.2.0](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindSPONGE) | \>=2.0.0 | \>=3.7 |
-
-```bash
-pip install -r requirements.txt
-```
 
 ### 硬件支持情况
 
@@ -153,14 +102,22 @@ pip install -r requirements.txt
 
 ### pip安装
 
+- 昇腾后端
+
 ```bash
-pip install mindsponge-[gpu|ascend]
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.1/MindScience/mindsponge/ascend/aarch64/mindsponge_ascend-1.0.0rc2-py3-none-any.whl
 ```
 
-pip install安装的mindsponge包对应gitee仓中r0.2.0-alpha分支代码。可使用以下指令在本地获取该分支代码
+- GPU后端
 
 ```bash
-git clone -b r0.2.0-alpha https://gitee.com/mindspore/mindscience.git
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.1/MindScience/mindsponge/gpu/x86_64/cuda-10.1/mindsponge_gpu-1.0.0rc2-py3-none-any.whl
+```
+
+pip install安装的mindsponge包对应gitee仓中r0.5分支代码。可使用以下指令在本地获取该分支代码
+
+```bash
+git clone -b r0.5 https://gitee.com/mindspore/mindscience.git
 ```
 
 ### 源码安装
@@ -178,13 +135,9 @@ bash build.sh -e ascend -j32
 
 - GPU后端
 
-若使用Cybetron，开启编译选项 `c`
-
-若使用传统分子动力学sponge，开启编译选项 `t`
-
 ```bash
 export CUDA_PATH={your_cuda_path}
-bash build.sh -e gpu -j32 -t on -c on
+bash build.sh -e gpu -j32
 ```
 
 - 安装编译所得whl包
@@ -193,7 +146,6 @@ bash build.sh -e gpu -j32 -t on -c on
 cd {PATH}/mindscience/MindSPONGE/output
 pip install mindsponge_ascend*.whl # 昇腾安装指令
 pip install mindsponge_gpu*.whl # GPU安装指令
-pip install cybertron*.whl # if "-c on" is used
 ```
 
 ### API
