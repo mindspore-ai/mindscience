@@ -1,0 +1,41 @@
+model:
+  name: "CTEFNet"
+  cov_hidden_channels: 50
+  cov_out_channels: 16
+  heads: 2
+  num_layer: 4
+  feedforward_dims: 256
+  dropout: 0.1
+data:
+  root_dir: "./dataset"
+  train_dataset: "CMIP5"
+  valid_dataset: "Reanalysis"
+  train_period: [1861, 2004]
+  valid_period: [1941, 1983]
+  test_period: [1984, 2008]
+  obs_time: 12
+  pred_time: 23
+  train_batch_size: 512
+  valid_batch_size: 5000
+  t_in: 1
+  t_out_train: 1
+  data_sink: False
+optimizer:
+  name: "adam"
+  initial_lr: 0.0008
+  weight_decay: 0
+  epochs: 3
+  warmup_epochs: 1
+  loss_alpha: 1
+  loss_beta: 0.02
+  loss_gamma: 0.6
+  corr_point: 0.5
+summary:
+  summary_dir: "./summary"
+  eval_interval: 1
+  save_checkpoint_steps: 5
+  keep_checkpoint_max: 5
+  plot_line: 1
+train:
+  distribute: False
+  amp_level: O2
