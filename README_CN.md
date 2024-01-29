@@ -110,6 +110,77 @@ AI4Science高频模型套件SciAI，内置60+高频模型，覆盖物理感知�
                 <img src="MindFlow/docs/partners/RenminUniversity.jpeg" />
             </td>
         </tr>
+        <tr id='tr4'>
+            <td>
+                <img src="./docs/cooperative_partner/qinghua.jpg" />
+            </td>
+            <td>
+                <img src="./docs/cooperative_partner/zheda.jpg" />
+            </td>
+            <td>
+                <img src="./docs/cooperative_partner/zhongkeda.jpg" />
+            </td>
+        </tr>
+        <tr id='tr5'>
+            <td>
+                <img src="./docs/cooperative_partner/shanda.jpg" />
+            </td>
+            <td>
+                <img src="./docs/cooperative_partner/zhongshandaxue.jpg" />
+            </td>
+            <td>
+                <img src="./docs/cooperative_partner/beihang.jpg" />
+            </td>
+        </tr>
+        <tr id='tr6'>
+            <td>
+                <img src="./docs/cooperative_partner/dongfangdianqi.jpg" />
+            </td>
+            <td>
+                <img src="./docs/cooperative_partner/laoshan.jpg" />
+            </td>
+            <td>
+                <img src="./docs/cooperative_partner/nanxinda.jpg" />
+            </td>
+        </tr>
+        <tr id='tr7'>
+            <td>
+                <img src="./docs/cooperative_partner/dalian_huawusuo.png" />
+            </td>
+            <td>
+                <img src="./docs/cooperative_partner/shenzhen_xianjin_yanjiusuo.jpg" />
+            </td>
+            <td>
+                 <img src="./docs/cooperative_partner/changping.PNG" />
+            </td>
+        </tr>
+        <tr id='tr8'>
+            <td>
+                <img src="./docs/cooperative_partner/guangzhouchaosuan.png" />
+            </td>
+            <td>
+                <img src="./docs/cooperative_partner/zhongguo_kongqi_dongli.PNG" />
+            </td>
+            <td>
+                <img src="./docs/cooperative_partner/zhongguo_hangkong_gongye.PNG" />
+            </td>
+        </tr>
+        <tr id='tr9'>
+            <td>
+                <img src="./docs/cooperative_partner/zhongkeyuan_weishengwusuo.PNG" />
+            </td>
+            <td>
+                <img src="./docs/cooperative_partner/yingfeizhiyao.png" />
+            </td>
+            <td>
+                <img src="./docs/cooperative_partner/zhongkeyuan_shanghai_yaowusuo.png"/>
+            </td>
+        </tr>
+        <tr id='tr10'>
+            <td>
+                <img src="./docs/cooperative_partner/beishengsuo.png" />
+            </td>
+        </tr>
     </table>
 </body>
 </html>
