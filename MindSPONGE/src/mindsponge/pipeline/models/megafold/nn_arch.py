@@ -102,9 +102,9 @@ class Megafold(nn.Cell):
 
     def __init__(self, config, mixed_precision):
         super(Megafold, self).__init__()
-
         self.cfg = config
         self.train_backward = False
+        self.is_ascend = config.is_ascend
         if mixed_precision:
             self._type = mstype.float16
         else:
@@ -246,7 +246,7 @@ class Megafold(nn.Cell):
             extra_msa_activations, pair_activations = \
                 self.extra_msa_stack[i](extra_msa_activations, pair_activations,
                                         extra_msa_mask, extra_msa_norm,
-                                        mask_2d)
+                                        mask_2d, None)
         if self.template_enabled and self.template_embed_torsion_angles:
             num_templ, num_res = template_aatype.shape
             aatype_one_hot = self.template_aatype_one_hot(template_aatype)
@@ -272,7 +272,17 @@ class Megafold(nn.Cell):
             for i in range(self.msa_stack_num):
                 msa_activations, pair_activations = self.msa_stack[i](msa_activations,
                                                                       pair_activations, msa_mask,
-                                                                      msa_mask_norm, mask_2d)
+                                                                      msa_mask_norm, mask_2d, None)
+        elif self.is_ascend:
+            self.idx_evoformer_block = self.idx_evoformer_block * 0
+            for _ in range(self.evoformer_num_block_eval):
+                msa_activations, pair_activations = self.msa_stack(msa_activations,
+                                                                   pair_activations,
+                                                                   msa_mask,
+                                                                   msa_mask_norm,
+                                                                   mask_2d,
+                                                                   self.idx_evoformer_block)
+                self.idx_evoformer_block += 1
         else:
             self.idx_evoformer_block = self.idx_evoformer_block * 0
             while self.idx_evoformer_block < self.evoformer_num_block_eval:

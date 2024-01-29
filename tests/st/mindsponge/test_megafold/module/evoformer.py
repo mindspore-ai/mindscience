@@ -19,11 +19,13 @@ from mindspore.ops import operations as P
 from mindsponge.cell import MSARowAttentionWithPairBias, Transition, OuterProductMean, \
     TriangleAttention, TriangleMultiplication, \
     MSAColumnGlobalAttention, MSAColumnAttention
+from mindsponge.common.utils import cus_lazy_inline
 
 
 class Evoformer(nn.Cell):
     '''evoformer'''
 
+    @cus_lazy_inline
     def __init__(self, config, msa_act_dim, pair_act_dim, is_extra_msa, batch_size):
         super(Evoformer, self).__init__()
         if is_extra_msa:
@@ -47,7 +49,7 @@ class Evoformer(nn.Cell):
         if config.is_training:
             self.pair_act.recompute()
 
-    def construct(self, msa_act, pair_act, msa_mask, extra_msa_norm, pair_mask, index=None):
+    def construct(self, msa_act, pair_act, msa_mask, extra_msa_norm, pair_mask, index):
         '''construct'''
         msa_act = self.msa_act(msa_act, pair_act, msa_mask, index)
         pair_act = self.pair_act(msa_act, pair_act, msa_mask, extra_msa_norm, pair_mask, index)
