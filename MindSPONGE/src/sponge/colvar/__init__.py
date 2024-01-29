@@ -28,7 +28,7 @@ from .function import ColvarCombine, CombineCV, SinCV, CosCV, TransformCV, Funct
 from .get import get_colvar
 from .basic import Distance, Angle, Torsion, ConstantValue, Volume
 from .atoms import AtomsBase, Atoms, BatchedAtoms, Group, Center, Vector, \
-        Position, BatchedPosition, get_atoms
+        Position, BatchedPosition, get_atoms, AllAtoms
 
 __all__ = ['Colvar', 'ColvarGroup', 'get_colvar']
 __all__.extend(atoms.__all__)
