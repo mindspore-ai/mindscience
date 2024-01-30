@@ -126,7 +126,7 @@ def get_model_summary_dir(config):
 def update_config(opt, config):
     """Update config by user specified args"""
     make_dir(opt.output_dir)
-    config['model']['data_sink'] = opt.data_sink
+    config['data']['data_sink'] = opt.data_sink
 
     config['train']['distribute'] = opt.distribute
     config['train']['device_id'] = opt.device_id

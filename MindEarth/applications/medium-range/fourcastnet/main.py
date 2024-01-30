@@ -38,7 +38,7 @@ def get_args():
                         choices=["Ascend", "GPU"], default="Ascend")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Context mode, support 'GRAPH', 'PYNATIVE'")
-    parser.add_argument('--device_id', type=int, default=3)
+    parser.add_argument('--device_id', type=int, default=0)
     parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
                         help="Whether to save intermediate compilation graphs")
 
