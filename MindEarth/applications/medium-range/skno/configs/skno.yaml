@@ -16,7 +16,7 @@ data:
   pressure_level_num: 13
   data_sink: True
   patch: True
-  patch_size: 4  # 8
+  patch_size: 4
   batch_size: 1
   t_in: 1
   t_out_train: 1
@@ -30,7 +30,7 @@ data:
   train_period: [2015, 2015]  
   valid_period: [2016, 2016]
   test_period: [2018, 2018]
-  num_workers: 1
+  num_workers: 8
   grid_resolution: 1.4
 optimizer:
   name: "adam"
@@ -40,13 +40,13 @@ optimizer:
   warmup_epochs: 1
   weight_decay: 0
   gamma: 0.5
-  epochs: 100
+  epochs: 200
 summary:
   output_dir: "./summary"
   save_checkpoint_steps: 5
   keep_checkpoint_max: 20
   valid_frequency: 10
-  key_info_timestep: [6]
+  key_info_timestep: [6,72,120]
   ckpt_path: ""
 train:
   name: "oop"

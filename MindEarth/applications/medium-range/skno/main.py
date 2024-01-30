@@ -43,7 +43,7 @@ def get_args():
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Context mode, support 'GRAPH', 'PYNATIVE'")
     parser.add_argument('--device_id', type=int, default=0)
-    parser.add_argument("--save_graphs", type=bool, default=True, choices=[True, False],
+    parser.add_argument("--save_graphs", type=bool, default=False, choices=[True, False],
                         help="Whether to save intermediate compilation graphs")
     parser.add_argument('--run_mode', type=str, choices=["train", "test"], default='train')
 
