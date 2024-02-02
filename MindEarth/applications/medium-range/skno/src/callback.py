@@ -27,13 +27,13 @@ def divide_function(numerator, denominator):
     r"""
     Check denominator, and compute the divide
     """
-    if isinstance(denominator, np.ndarray):
-        if denominator.all() != 0:
+    if isinstance(denominator, (int, float)):
+        if denominator != 0:
             result = numerator / denominator
         else:
             raise ValueError("The numerator is divided by Zero!")
     else:
-        if denominator != 0:
+        if denominator.all() != 0:
             result = numerator / denominator
         else:
             raise ValueError("The numerator is divided by Zero!")
@@ -122,11 +122,11 @@ class MultiMSELoss(nn.LossBase):
         label2 = label2.reshape(-1, self.feature_dims)
 
         err1 = msnp.square(prediction1 - label1)
-        weighted_err1 = err1 * self.wj * divide_function(self.ai, self.sj_std)
+        weighted_err1 = err1 * self.wj * ops.div(self.ai, self.sj_std)
         l1 = msnp.average(weighted_err1)
 
         err2 = msnp.square(prediction2 - label2)
-        weighted_err2 = err2 * self.wj * divide_function(self.ai, self.sj_std)
+        weighted_err2 = err2 * self.wj * ops.div(self.ai, self.sj_std)
         l2 = msnp.average(weighted_err2)
         return weight1 * l1 + weight2 * l2
 
@@ -199,9 +199,9 @@ class InferenceModule(WeatherForecast):
             batch_size, self.t_out_test * self.feature_dims, -1)
 
         acc_denominator = ops.sqrt(ops.matmul(pred_square, weight) * ops.matmul(label_square, weight))
-        lat_weight_acc = divide_function(acc_numerator, acc_denominator)
+        lat_weight_acc = np.divide(acc_numerator.asnumpy(), acc_denominator.asnumpy())
         lat_weight_acc_step = lat_weight_acc.sum(axis=0).reshape(self.t_out_test,
-                                                                 self.feature_dims).transpose(1, 0).asnumpy()
+                                                                 self.feature_dims).transpose(1, 0)
         return lat_weight_rmse_step, lat_weight_acc_step
 
     def _calculate_lat_weight(self):
@@ -300,11 +300,11 @@ class Lploss(nn.LossBase):
 
         if self.reduction:
             if self.size_average:
-                loss = ops.mean(divide_function(diff_norms, y_norms))
+                loss = ops.mean(ops.div(diff_norms, y_norms))
             else:
-                loss = Tensor.sum(divide_function(diff_norms, y_norms))
+                loss = Tensor.sum(ops.div(diff_norms, y_norms))
         else:
-            loss = divide_function(diff_norms, y_norms)
+            loss = ops.div(diff_norms, y_norms)
         return loss
 
     def construct(self, prediction1, prediction2, label1, label2, weight1=0.8, weight2=0.2):

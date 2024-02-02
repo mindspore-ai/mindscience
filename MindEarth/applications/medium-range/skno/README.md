@@ -167,13 +167,12 @@ train:
 |     parameters      |       91214592         |     91214592    |
 |     training config    |        batch_size=1, steps_per_epoch=408, epochs=200             |     batch_size=1, steps_per_epoch=408, epochs=200       |
 |     optimizer      |        Adamw              |    Adamw     |
-|       Memory      |        xxx            |     xxx  |
-|        training loss(Lp)      |        xxx             |    xxx   |
-|        Z500(6h,72h,120h)(RMSE)      |       xxx    |       xxx      |
-|        T2M(6h,72h,120h)(RMSE)      |      xxx       |       xxx      |
-|        T850(6h,72h,120h)(RMSE)      |     xxx           |       xxx      |
-|        U10(6h,72h,120h)(RMSE)      |       xxx         |       xxx      |
-|        speed(ms/step)          |       xxx       |   xxx |
+|        training loss(Lp)      |        0.136             |    0.093   |
+|        Z500(6h,72h,120h)(RMSE)      |       150,539,772    |       160,605,819      |
+|        T2M(6h,72h,120h)(RMSE)      |      1.84,3.19,3.60       |       1.86,3.86.4.63      |
+|        T850(6h,72h,120h)(RMSE)      |     1.33,3.02,3.57           |       1.30,3.31,4.29      |
+|        U10(6h,72h,120h)(RMSE)      |       1.26,3.46,4.35         |       1.42,3.82,4.71      |
+|        speed(ms/step)          |       640       |      340     |
 
 ## 3. QuickStart
 
