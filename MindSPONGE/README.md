@@ -31,10 +31,6 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 - `2022.06.27` Paper "PSP: Million-level Protein Sequence Dataset for Protein Structure Prediction" is preprinted in arxiv. Please refer to [paper](https://arxiv.org/pdf/2206.12240v1.pdf) and [codes](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/MEGAProtein).
 - `2022.04.21` MEGA-Fold wins CAMEO-3D monthly 1st. [Related News](https://www.huawei.com/cn/news/2022/4/mindspore-cameo-protein-ascend)
 
-## **Coming Soon** 🚀
-
-- The third Summer School activity will be held in Peking University from August 21 to August 25, 2023. The activity is in preparation. Please [join](https://mp.weixin.qq.com/s/oOaJ9KlUnWbptZWqSvam7g) us!
-
 ## **Quick Start**
 
 ### Protein Multimer Structure Prediction
@@ -78,62 +74,6 @@ print("confidence:", confidence)
     <img src="docs/multimer.gif" width=30%>
 </div>
 
-### A simple example for molecular dynamics
-
-```bash
-import numpy as np
-from mindspore import context
-from sponge import Sponge
-from sponge import Molecule
-from sponge import ForceFieldBase
-from sponge import DynamicUpdater
-from sponge.potential import BondEnergy, AngleEnergy
-from sponge.callback import WriteH5MD, RunInfo
-from sponge.function import VelocityGenerator
-from sponge.control import LeapFrog
-
-context.set_context(mode=context.GRAPH_MODE, device_target="GPU")
-
-system = Molecule(
-    atoms=['O', 'H', 'H'],
-    coordinate=[[0, 0, 0], [0.1, 0, 0], [-0.0333, 0.0943, 0]],
-    bond=[[[0, 1], [0, 2]]],
-)
-
-bond_energy = BondEnergy(
-    index=system.bond,
-    force_constant=[[345000, 345000]],
-    bond_length=[[0.1, 0.1]],
-)
-
-angle_energy = AngleEnergy(
-    index=[[1, 0, 2]],
-    force_constant=[[383]],
-    bond_angle=[[109.47 / 180 * np.pi]],
-)
-
-energy = ForceFieldBase(energy=[bond_energy, angle_energy])
-
-velocity_generator = VelocityGenerator(300)
-velocity = velocity_generator(system.coordinate.shape, system.atom_mass)
-
-opt = DynamicUpdater(
-    system,
-    integrator=LeapFrog(system),
-    time_step=1e-3,
-    velocity=velocity,
-)
-
-md = Sponge(system, energy, opt)
-
-run_info = RunInfo(10)
-cb_h5md = WriteH5MD(system, 'test.h5md', save_freq=10, write_velocity=True, write_force=True)
-
-md.run(1000, callbacks=[run_info, cb_h5md])
-```
-
-<div align=left><img src="docs/tutorial_b03.gif" width="220"/></div>
-
 **More Cases**：👀
 
 - [NMR Data Automatic Analysis FAAST](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/research/FAAST)
@@ -146,19 +86,6 @@ md.run(1000, callbacks=[run_info, cb_h5md])
 - Molecular representation model (TO BE DONE)
 
 ## **Installation**
-
-### Version dependency
-
-Due to the dependency between MindSPONGE and MindSpore, please follow the table below and install the corresponding MindSpore version from [MindSpore download page](https://www.mindspore.cn/versions).
-
-| MindSPONGE Version |                                  Branch                                  | MindSpore Version | Python Version |
-|:------------------:|:------------------------------------------------------------------------:|:-----------------:|:--------------:|
-|   master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE) | \>=2.0.0 | \>=3.7 |
-|   1.0.0   | [r0.2.0](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindSPONGE) | \>=2.0.0 | \>=3.7 |
-
-```bash
-pip install -r requirements.txt
-```
 
 ### Hardware
 
@@ -176,14 +103,22 @@ pip install -r requirements.txt
 
 ### **pip install**
 
+- Ascend backend
+
 ```bash
-pip install mindsponge-[gpu|ascend]
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.1/MindScience/mindsponge/ascend/aarch64/mindsponge_ascend-1.0.0rc2-py3-none-any.whl
 ```
 
-The version of mindsponge installed by pip corresponds to the r0.2.0-alpha branch code. The code can be downloaded using the following instruct.
+- GPU backend
 
 ```bash
-git clone -b r0.2.0-alpha https://gitee.com/mindspore/mindscience.git
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.1/MindScience/mindsponge/gpu/x86_64/cuda-10.1/mindsponge_gpu-1.0.0rc2-py3-none-any.whl
+```
+
+The version of mindsponge installed by pip corresponds to the r0.5 branch code. The code can be downloaded using the following instruct.
+
+```bash
+git clone -b r0.5 https://gitee.com/mindspore/mindscience.git
 ```
 
 ### **source code install**
@@ -201,13 +136,9 @@ bash build.sh -e ascend
 
 - GPU backend
 
-Enable `c` if you want to use Cybertron.
-
-Enable `t` if you want to use traditional MD.
-
 ```bash
 export CUDA_PATH={your_cuda_path}
-bash build.sh -e gpu -j32 -t on -c on
+bash build.sh -e gpu -j32
 ```
 
 - Install whl package
@@ -216,7 +147,6 @@ bash build.sh -e gpu -j32 -t on -c on
 cd {PATH}/mindscience/MindSPONGE/output
 pip install mindsponge_ascend*.whl # Ascend
 pip install mindsponge-gpu*.whl # GPU
-pip install cybertron*.whl # if "-c on" is used
 ```
 
 ### API
