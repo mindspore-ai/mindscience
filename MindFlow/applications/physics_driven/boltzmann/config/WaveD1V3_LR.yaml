@@ -1,0 +1,43 @@
+dataset:
+  iv_points: 100
+  bv_points: 100
+  in_points: 700
+xtmesh:
+  bdc:
+    - periodic
+  tmax: 0.1
+  tmin: 0.0
+  xmax: 0.5
+  xmin: -0.5
+  nx: 400
+kn: 0.01
+omega: 0.81
+vmesh:
+  nv: [24, 24, 24]
+  vmax: [10, 10, 10]
+  vmin: [-10, -10, -10]
+collision: LR
+rank: 40
+model:
+  in_channels: 2
+  out_channels: 1
+  activation: "sin"
+  layers: 6
+  neurons: 80
+  residual: false
+optim:
+  Adam_steps: 10000
+  AdaptiveWeight: true
+  L-BFGS_steps: 0
+  lr_scheduler:
+    max_lr: 0.001
+    min_lr: 1.0e-05
+    name: CosineDecayLR
+name: BoltzmannWave1D_BGK
+train_batch_size: 512
+load_ckpt: false
+save_ckpt: false
+save_points: false
+save_ckpt_path: "path/to/ckpt"
+visual_resolution: 200
+ref_solution: ""

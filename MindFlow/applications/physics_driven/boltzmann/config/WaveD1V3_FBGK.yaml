@@ -16,7 +16,7 @@ vmesh:
   nv: [24, 24, 24]
   vmax: [10, 10, 10]
   vmin: [-10, -10, -10]
-collision: BGK
+collision: FBGK
 model:
   in_channels: 2
   out_channels: 1
@@ -32,9 +32,11 @@ optim:
     max_lr: 0.001
     min_lr: 1.0e-05
     name: CosineDecayLR
-name: BoltzmannBGKWave1D
+name: BoltzmannWave1D_BGK
 train_batch_size: 512
 load_ckpt: false
 save_ckpt: false
+save_points: true
 save_ckpt_path: "path/to/ckpt"
 visual_resolution: 200
+ref_solution: ""

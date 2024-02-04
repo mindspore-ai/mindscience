@@ -16,15 +16,32 @@
 """train process"""
 import time
 import argparse
+import numpy as np
 
 from mindspore import nn, ops
 import mindspore as ms
 
 from mindflow.utils import load_yaml_config
 
-from src.boltzmann import BoltzmannBGK, BoltzmannFSM
-from src.utils import get_vdis, visual, get_potential, get_mu, get_kn_bzm
-from src.cells import SplitNet
+from src.boltzmann import (
+    BoltzmannBGK,
+    BoltzmannFBGK,
+    BoltzmannFSM,
+    BoltzmannLA,
+    BoltzmannLR,
+    get_reduced_kernel,
+)
+from src.utils import (
+    get_vdis,
+    get_vtuple,
+    visual,
+    get_potential,
+    get_mu,
+    get_kn_bzm,
+    valid_model,
+    save_points,
+)
+from src.cells import SplitNet, SplitNetLR
 from src.dataset import Wave1DDataset
 
 ms.set_seed(0)
@@ -38,14 +55,6 @@ parser.add_argument(
     help="Running in GRAPH_MODE OR PYNATIVE_MODE",
 )
 parser.add_argument(
-    "--save_graphs",
-    type=bool,
-    default=False,
-    choices=[True, False],
-    help="Whether to save intermediate compilation graphs",
-)
-parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-parser.add_argument(
     "--device_target",
     type=str,
     default="GPU",
@@ -53,7 +62,7 @@ parser.add_argument(
     help="The target device to run, support 'Ascend', 'GPU'",
 )
 parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-parser.add_argument("--config_file_path", type=str, default="./WaveD1V3.yaml")
+parser.add_argument("--config_file_path", type=str, default="./WaveD1V3_BGK.yaml")
 
 
 def train():
@@ -65,17 +74,22 @@ def train():
         mode=ms.context.GRAPH_MODE
         if args.mode.upper().startswith("GRAPH")
         else ms.context.PYNATIVE_MODE,
-        save_graphs=args.save_graphs,
-        save_graphs_path=args.save_graphs_path,
         device_target=args.device_target,
         device_id=args.device_id,
     )
 
     dataset = Wave1DDataset(config)
     vdis, _ = get_vdis(config["vmesh"])
+    vt, _ = get_vtuple(config["vmesh"])
     if config["collision"] == "BGK":
         model = SplitNet(2, config["model"]["layers"], config["model"]["neurons"], vdis)
         problem = BoltzmannBGK(model, config["kn"], config["vmesh"])
+    elif config["collision"] == "FBGK":
+        model = SplitNet(2, config["model"]["layers"], config["model"]["neurons"], vdis)
+        omega = config["omega"]
+        alpha = get_potential(omega)
+        mu_ref = get_mu(alpha, omega, config["kn"])
+        problem = BoltzmannFBGK(model, mu_ref, config["vmesh"])
     elif config["collision"] == "FSM":
         model = SplitNet(2, config["model"]["layers"], config["model"]["neurons"], vdis)
         omega = config["omega"]
@@ -84,9 +98,23 @@ def train():
         kn_bzm = get_kn_bzm(alpha, mu_ref)
         problem = BoltzmannFSM(model, kn_bzm, config["vmesh"])
     elif config["collision"] == "LR":
-        raise ValueError
+        model = SplitNetLR(
+            2, config["model"]["layers"], config["model"]["neurons"], vt, config["rank"]
+        )
+        problem = BoltzmannLR(model, config["kn"], config["vmesh"])
     elif config["collision"] == "LA":
-        raise ValueError
+        model = SplitNet(2, config["model"]["layers"], config["model"]["neurons"], vdis)
+        omega = config["omega"]
+        alpha = get_potential(omega)
+        mu_ref = get_mu(alpha, omega, config["kn"])
+        kn_bzm = get_kn_bzm(alpha, mu_ref)
+
+        traindata = np.load(config["approx_data"])["f"]
+        kernel_f, kernel_g, kernel_k = get_reduced_kernel(config, traindata)
+        kernel_f = ms.Tensor(kernel_f, dtype=ms.float32)
+        kernel_g = ms.Tensor(kernel_g, dtype=ms.float32)
+        kernel_k = ms.Tensor(kernel_k, dtype=ms.float32)
+        problem = BoltzmannLA(model, kn_bzm, config["vmesh"], kernel_f, kernel_k, kernel_g)
     else:
         raise ValueError
 
@@ -105,21 +133,29 @@ def train():
         optim(grads)
         return loss
 
+    ds = dataset()
     for i in range(1, config["optim"]["Adam_steps"] + 1):
         time_beg = time.time()
-        ds = dataset()
-        loss, _ = train_step(*ds)
+        loss, _ = train_step(ds[0], ds[1], ds[2][0], ds[2][1])
         if i % 100 == 0:
             e_sum = loss.mean().asnumpy().item()
             print(
                 f"epoch: {i} train loss: {e_sum:.3e} epoch time: {(time.time() - time_beg) * 1000 :.3f}ms"
             )
+            if config["ref_solution"]:
+                valid_model(config, problem)
     ms.save_checkpoint(problem, f'./model_{config["collision"]}_kn{config["kn"]}.ckpt')
     visual(
         problem,
         config["visual_resolution"],
         f'Wave_{config["collision"]}_kn{config["kn"]}.png',
     )
+    if config["save_points"] and (config["collision"] != "LR"):
+        save_points(
+            problem,
+            points=1000,
+            filename=f'{config["collision"]}_kn{config["kn"]}.npz',
+        )
 
 
 if __name__ == "__main__":
