@@ -16,7 +16,6 @@
 import math
 
 import numpy as np
-import mindspore as ms
 import mindspore.numpy as mnp
 from mindspore import dtype as mstype
 from mindspore import ops, nn
@@ -79,53 +78,51 @@ class InferenceModule(WeatherForecast):
         self.batch_size = data_params.get('batch_size')
         self.t_in = data_params.get('t_in')
 
-    def _get_metrics(self, inputs, labels):
-        """Get lat_weight_rmse and lat_weight_acc metrics"""
-        pred = self.forecast(inputs)
-        pred = ops.stack(pred, 0).reshape(self.batch_size, self.t_out_test, self.h_size * self.w_size,
-                                          self.feature_dims)
-        pred = ops.cast(pred, ms.float32)
-
-        # rmse
-        error = ops.square(pred - labels).transpose(0, 1, 3, 2).reshape(
-            self.batch_size * self.t_out_test * self.feature_dims, -1)
-        weight = ms.Tensor(self._calculate_lat_weight().reshape(-1, 1))
-        lat_weight_rmse_step = ops.matmul(error, weight)
-        lat_weight_rmse_step = lat_weight_rmse_step.reshape(self.t_out_test,
-                                                            self.feature_dims).transpose(1, 0).asnumpy()
-
-        # acc
-        pred = pred * ms.Tensor(self.total_std, ms.float32) + ms.Tensor(self.total_mean, ms.float32)
-        labels = labels * ms.Tensor(self.total_std, ms.float32) + ms.Tensor(self.total_mean, ms.float32)
-        pred = pred - ms.Tensor(self.climate_mean, ms.float32)
-        labels = labels - ms.Tensor(self.climate_mean, ms.float32)
-
-        acc_numerator = pred * labels
-        acc_numerator = acc_numerator.transpose(0, 1, 3, 2).reshape(
-            self.batch_size * self.t_out_test * self.feature_dims, -1)
-        acc_numerator = ops.matmul(acc_numerator, weight)
-
-        pred_square = ops.square(pred).transpose(0, 1, 3, 2).reshape(
-            self.batch_size * self.t_out_test * self.feature_dims, -1)
-        label_square = ops.square(labels).transpose(0, 1, 3, 2).reshape(
-            self.batch_size * self.t_out_test * self.feature_dims, -1)
-
-        acc_denominator = ops.sqrt(ops.matmul(pred_square, weight) * ops.matmul(label_square, weight))
-        lat_weight_acc = acc_numerator / acc_denominator
-        lat_weight_acc_step = lat_weight_acc.reshape(self.t_out_test, self.feature_dims).transpose(1, 0).asnumpy()
-
-        return lat_weight_rmse_step, lat_weight_acc_step
-
-    def _calculate_lat_weight(self):
-        lat_t = np.arange(0, self.h_size)
-        s = np.sum(np.cos(3.1416 / 180. * self._lat(lat_t)))
-        weight = self._latitude_weighting_factor(lat_t, s)
-        grid_lat_weight = np.repeat(weight, self.w_size, axis=0).reshape(-1)
-        return grid_lat_weight.astype(np.float32)
-
     def forecast(self, inputs):
         pred_list = _forecast_multi_step(inputs, self.model, self.feature_dims, self.t_out_test, self.t_in)
         return pred_list
+
+    def _get_lat_weight(self):
+        lat_t = np.arange(0, self.h_size)
+        s = np.sum(np.cos(math.pi / 180. * self._lat(lat_t)))
+        weight = self._latitude_weighting_factor(lat_t, s)
+        return weight
+
+    def _get_metrics(self, inputs, labels):
+        """Get lat_weight_rmse and lat_weight_acc metrics"""
+        pred = self.forecast(inputs)
+        pred = ops.stack(pred, axis=0).asnumpy()
+        labels = labels.asnumpy()
+
+        lat_weight_rmse_step = self._calculate_lat_weighted_error(labels, pred).transpose()
+        lat_weight_acc = self._calculate_lat_weighted_acc(labels, pred).transpose()
+
+        return lat_weight_rmse_step, lat_weight_acc
+
+    def _calculate_lat_weighted_error(self, label, prediction):
+        """calculate latitude weighted error"""
+        weight = self._get_lat_weight()
+        grid_node_weight = np.repeat(weight, self.w_size, axis=0).reshape(-1, 1)
+        error = np.square(label[0] - prediction) # the index 0 of label shape is batch_size
+        lat_weight_error = np.sum(error * grid_node_weight, axis=1)
+        return lat_weight_error
+
+    def _calculate_lat_weighted_acc(self, label, prediction):
+        """calculate latitude weighted acc"""
+        prediction = prediction * self.total_std.reshape((1, 1, -1)) + self.total_mean.reshape((1, 1, -1))
+        label = label * self.total_std.reshape((1, 1, 1, -1)) + self.total_mean.reshape((1, 1, 1, -1))
+        prediction = prediction - self.climate_mean
+        label = label - self.climate_mean
+        weight = self._get_lat_weight()
+        grid_node_weight = np.repeat(weight, self.w_size, axis=0).reshape(1, -1, 1)
+        acc_numerator = np.sum(prediction * label[0] * grid_node_weight, axis=1)
+        acc_denominator = np.sqrt(np.sum(prediction ** 2 * grid_node_weight,
+                                         axis=1) * np.sum(label[0] ** 2 * grid_node_weight, axis=1))
+        if acc_denominator:
+            acc = acc_numerator / acc_denominator
+        else:
+            raise ValueError("The acc_numerator is divided by zero!")
+        return acc
 
 
 class InferenceModuleTp(WeatherForecastTp):
