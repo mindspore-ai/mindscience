@@ -25,6 +25,26 @@ set_seed(0)
 np.random.seed(0)
 
 
+class GraphCastSiLU(nn.Cell):
+    r"""
+    A self-defined SwiGlu.
+
+    Inputs:
+        - **x** (Tensor) - Tensor.
+
+    Outputs:
+        Tensor. x = x * sigmod(x).
+    """
+    def __init__(self):
+        super().__init__()
+        self.sigmoid = nn.Sigmoid()
+        self.mul = ops.Mul()
+
+    def construct(self, x):
+        """GraphCastSiLU forward function."""
+        return self.mul(x, self.sigmoid(x))
+
+
 class MLPNet(nn.Cell):
     """
     The MLPNet Network. Applies a series of fully connected layers to the incoming data among which hidden layers have
@@ -56,26 +76,21 @@ class MLPNet(nn.Cell):
         (2, 8)
 
     """
-
     def __init__(self,
                  in_channels,
                  out_channels,
-                 latent_dims,
-                 has_layernorm=True):
+                 latent_dims):
         super(MLPNet, self).__init__()
-        cell_list = [nn.Dense(in_channels,
-                              latent_dims,
-                              has_bias=False,
-                              activation=None),
-                     nn.SiLU(),
-                     nn.Dense(latent_dims,
-                              out_channels,
-                              has_bias=False,
-                              activation=None),
-                     ]
-        if has_layernorm:
-            cell_list.append(nn.LayerNorm([out_channels]))
-        self.network = nn.SequentialCell(cell_list)
+        self.dense_in = nn.Dense(in_channels,
+                                 latent_dims,
+                                 has_bias=False,
+                                 activation=None)
+        self.silu = GraphCastSiLU()
+        self.dense_out = nn.Dense(latent_dims,
+                                  out_channels,
+                                  has_bias=False,
+                                  activation=None)
+        self.layer_norm = nn.LayerNorm([out_channels])
 
     def construct(self, x: Tensor):
         '''MLPNet forward function
@@ -83,7 +98,11 @@ class MLPNet(nn.Cell):
         Args:
             x (Tensor): Input Tensor.
         '''
-        return self.network(x)
+        x = self.dense_in(x)
+        x = self.silu(x)
+        x = self.dense_out(x)
+        x = self.layer_norm(x)
+        return x
 
 
 class Embedder(nn.Cell):
@@ -332,8 +351,7 @@ class Decoder(nn.Cell):
                               dst_idx)
         self.node_fn = MLPNet(in_channels=node_in_channels,
                               out_channels=node_final_dims,
-                              latent_dims=latent_dims,
-                              has_layernorm=False)
+                              latent_dims=latent_dims)
 
     def construct(self, m2g_edge_feats, mesh_node_feats, grid_node_feats):
         '''Decoder forward function'''

@@ -173,9 +173,12 @@ def get_coe(config):
     coe_dir = os.path.join(data_params.get("root_dir"), "coe")
     sj_std = load_dir_data(coe_dir, 'sj_std.npy', mstype.float32)
     wj = load_dir_data(coe_dir, 'wj.npy', mstype.float32)
-    ai = load_dir_data(coe_dir, 'ai_norm.npy', mstype.float32).repeat(
-        w_size, axis=-1).reshape(
-            (1, -1)).repeat(data_params.get('batch_size'), axis=0).reshape(-1, 1)
+    ori_ai = np.load(os.path.join(coe_dir, "ai_norm.npy"))
+    ori_ai = np.repeat(ori_ai, w_size, axis=-1)
+    ori_ai = ori_ai.reshape(1, -1)
+    ori_ai = np.repeat(ori_ai, data_params.get('batch_size'), axis=0)
+    ori_ai = ori_ai.reshape(-1, 1)
+    ai = Tensor(ori_ai, mstype.float32)
     return sj_std, wj, ai
 
 

@@ -206,6 +206,9 @@ class Era5Data(Data):
         self.test_period = data_params.get('test_period')
         self.feature_dims = data_params.get('feature_dims')
         self.output_dims = data_params.get('feature_dims')
+        self.surface_feature_size = data_params.get('surface_feature_size', 4)
+        self.level_feature_size = (self.feature_dims -
+                                   self.surface_feature_size) // data_params.get('pressure_level_num', 13)
         self.patch = data_params.get('patch')
         if self.patch:
             self.patch_size = data_params.get('patch_size')
@@ -264,10 +267,14 @@ class Era5Data(Data):
         for t in range(self.t_in):
             cur_input_data_idx = idx + t * self.pred_lead_time
             input_date, year_name = get_datapath_from_date(self.start_date, cur_input_data_idx.item())
-            x = np.load(os.path.join(self.path, input_date))[:, :, :self.h_size, ...].astype(np.float32)
-            x_surface = np.load(os.path.join(self.surface_path, input_date))[:, :self.h_size, ...].astype(np.float32)
-            x_static = np.load(os.path.join(self.static_path, year_name)).astype(np.float32)
-            x_surface_static = np.load(os.path.join(self.static_surface_path, year_name)).astype(np.float32)
+            x = np.load(os.path.join(self.path, input_date))[:, :, :self.h_size, :,
+                                                             :self.level_feature_size].astype(np.float32)
+            x_surface = np.load(os.path.join(self.surface_path,
+                                             input_date))[:, :self.h_size, :,
+                                                          :self.surface_feature_size].astype(np.float32)
+            x_static = np.load(os.path.join(self.static_path, year_name))[:self.level_feature_size].astype(np.float32)
+            x_surface_static = np.load(os.path.join(self.static_surface_path,
+                                                    year_name))[:self.surface_feature_size].astype(np.float32)
             x = self._get_origin_data(x, x_static)
             x_surface = self._get_origin_data(x_surface, x_surface_static)
             x, x_surface = self._normalize(x, x_surface)
@@ -277,11 +284,15 @@ class Era5Data(Data):
         for t in range(self.t_out):
             cur_label_data_idx = idx + (self.t_in + t) * self.pred_lead_time
             label_date, year_name = get_datapath_from_date(self.start_date, cur_label_data_idx.item())
-            label = np.load(os.path.join(self.path, label_date))[:, :, :self.h_size, ...].astype(np.float32)
+            label = np.load(os.path.join(self.path, label_date))[:, :, :self.h_size, :,
+                                                                 :self.level_feature_size].astype(np.float32)
             label_surface = np.load(os.path.join(self.surface_path,
-                                                 label_date))[:, :self.h_size, ...].astype(np.float32)
-            label_static = np.load(os.path.join(self.static_path, year_name)).astype(np.float32)
-            label_surface_static = np.load(os.path.join(self.static_surface_path, year_name)).astype(np.float32)
+                                                 label_date))[:, :self.h_size, :,
+                                                              :self.surface_feature_size].astype(np.float32)
+            label_static = np.load(os.path.join(self.static_path,
+                                                year_name))[:self.level_feature_size].astype(np.float32)
+            label_surface_static = np.load(os.path.join(self.static_surface_path,
+                                                        year_name))[:self.surface_feature_size].astype(np.float32)
             label = self._get_origin_data(label, label_static)
             label_surface = self._get_origin_data(label_surface, label_surface_static)
             label, label_surface = self._normalize(label, label_surface)
