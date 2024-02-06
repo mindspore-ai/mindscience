@@ -600,9 +600,10 @@ def extrct2013ids(in_paths):
     modes = stat.S_IWUSR | stat.S_IRUSR
     filepath = os.path.join(in_paths, './v2013-core')
     file_idx = os.listdir(filepath)
-    for items in file_idx:
-        with os.fdopen(os.open(os.path.join(in_paths, 'core_pdbbind2013.ids'), flags, modes), 'a') as fout:
+    with os.fdopen(os.open(os.path.join(in_paths, 'core_pdbbind2013.ids'), flags, modes), 'w') as fout:
+        for items in file_idx:
             fout.write(items+'\n')
+    fout.close()
     print("extract 2013 index done!")
 
 

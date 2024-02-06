@@ -199,19 +199,16 @@ class PAFNUCYDataSet(PDBBind):
         extrct2013ids(data_src)
         affinity_data = parseandclean(data_src)
         self.data_size = len(affinity_data)
+        invalid_pocket = ["5c7f", "3eko", "3znc", "4an1"]
         for i in range(self.data_size):
             pdbid = affinity_data.iloc[i, 0]
             pdbset = affinity_data.iloc[i, 3]
-            ligand_path, pocket_path = self.get_path(pdbid, pdbset)
-            ligand = next(pybel.readfile('mol2', ligand_path))
-            try:
-                pocket = next(pybel.readfile('mol2', pocket_path))
-            except ValueError:
-                print(ValueError)
+            _, pocket_path = self.get_path(pdbid, pdbset)
+            pocket_path_list = pocket_path.split('/')
+            pocket_name = pocket_path_list[-2]
+            if pocket_name in invalid_pocket:
+                print(f"{pocket_name} is invalid data, it will not be add to the dataset")
                 continue
-            if ligand is None or pocket is None:
-                continue
-
             if affinity_data.iloc[i, 2]:
                 self.pdbs[pdbset].append([pdbid, pdbset])
             else:
