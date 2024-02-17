@@ -1,0 +1,45 @@
+model:
+  in_channels: 3
+  out_channels: 3
+  resolution: 128
+  load_ckpt: False
+  unet2d:
+    kernel_size: 2
+    stride: 2
+    base_channels: 64
+  fno2d:
+    modes: 12
+    channels: 64
+    depths: 4
+    mlp_ratio: 4
+
+data:
+  root_dir: "./dataset/"
+  dataset_name: "vel_2D_9997_128_128_3.npz"
+  data_size: 3600
+  train_size: 3000
+  means: [0.5803, 0.0401, 0.6564]
+  stds: [0.3523, 0.0885, 0.1459]
+  T_in: 8
+  T_out: 32
+  train_batch_size: 8
+  test_batch_size: 8
+
+optimizer:
+  epochs: 200
+  save_epoch: 100
+  warm_up_epochs: 1
+  gamma: 0.2
+  weight_decay: 0.001
+  amp_level:
+    fno2d: "O2"
+    unet2d: "O1"
+  lr:
+    fno2d: 0.001
+    unet2d: 0.0001
+
+summary:
+  summary_dir: "./summary_dir/"
+  pretrained_ckpt_dir: "path/to/ckpt"
+  save_ckpt_interval: 10
+  test_interval: 10
