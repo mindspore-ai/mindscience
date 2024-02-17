@@ -64,9 +64,7 @@ class Wave1DDataset(nn.Cell):
         in_x = self.uniform((self.in_points, 1)) - 0.5
         in_t = self.uniform((self.in_points, 1)) * 0.1
 
-        return {
-            "in": ops.concat([in_x, in_t], axis=-1),
-            "iv": ops.concat([iv_x, iv_t], axis=-1),
-            "bv1": ops.concat([bv_x1, bv_t1], axis=-1),
-            "bv2": ops.concat([bv_x2, bv_t2], axis=-1),
-        }
+        return (ops.concat([in_x, in_t], axis=-1),
+                ops.concat([iv_x, iv_t], axis=-1),
+                (ops.concat([bv_x1, bv_t1], axis=-1),
+                 ops.concat([bv_x2, bv_t2], axis=-1)))
