@@ -9,7 +9,7 @@ model:
   em2g_in_channels: 4
 data:
   name: "era5"
-  root_dir: "/path/to/data"
+  root_dir: "./dataset"
   feature_dims: 69
   pressure_level_num: 13
   data_sink: False
@@ -31,7 +31,7 @@ data:
   mesh_level: 5
   grid_resolution: 0.5
   tp: True
-  tp_dir: '/path/to/data'
+  tp_dir: './dataset/tp_log_data/'
 optimizer:
   name: "adamw"
   initial_lr: 1.25e-4
@@ -49,7 +49,7 @@ summary:
   save_rmse_acc: False
   plt_key_info: True
   key_info_timestep: [6, 72, 120]
-  ckpt_path: "/path/to/ckpt"
+  ckpt_path: ""
   backbone_ckpt_path: "/path/to/ckpt"
 train:
   name: "oop"

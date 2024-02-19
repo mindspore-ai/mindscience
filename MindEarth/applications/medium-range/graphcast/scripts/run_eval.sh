@@ -21,16 +21,24 @@ echo "For example: bash run_eval.sh 4"
 echo "This example is expected to run on the Ascend environment."
 echo "=============================================================================================================="
 ID_N=$1
+DEVICE_TARGET=$2
+CONFIG_FILE_PATH=$(realpath $3)
+echo "CONFIG_FILE_PATH=${CONFIG_FILE_PATH}"
+
 rm -rf single_device$ID_N
 mkdir single_device$ID_N
-cp ../main.py ./single_device$ID_N
-cp ../GraphCastTp.yaml ./single_device$ID_N
-cp -r ../src ./single_device$ID_N
-cp -r ../../../../mindearth ./single_device$ID_N
+cp ./main.py ./single_device$ID_N
+cp ${CONFIG_FILE_PATH} ./single_device$ID_N
+cp -r ./src ./single_device$ID_N
 cd ./single_device$ID_N
 export DEVICE_ID=$ID_N
 export GLOG_v=3
 echo "start training for device $ID_N"
 env > env$ID_N.log
-nohup python -u main.py --device_id $ID_N --run_mode test --config_file_path ./GraphCastTp.yaml >single_subset.log 2>&1 &
+nohup python -u main.py\
+    --device_id $ID_N\
+    --run_mode "test"\
+    --config_file_path ${CONFIG_FILE_PATH}\
+    --device_target ${DEVICE_TARGET}\
+    >eval${ID_N}.log 2>&1 &
 cd ../
