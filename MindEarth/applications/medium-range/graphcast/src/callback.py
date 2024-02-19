@@ -118,10 +118,10 @@ class InferenceModule(WeatherForecast):
         acc_numerator = np.sum(prediction * label[0] * grid_node_weight, axis=1)
         acc_denominator = np.sqrt(np.sum(prediction ** 2 * grid_node_weight,
                                          axis=1) * np.sum(label[0] ** 2 * grid_node_weight, axis=1))
-        if acc_denominator:
+        try:
             acc = acc_numerator / acc_denominator
-        else:
-            raise ValueError("The acc_numerator is divided by zero!")
+        except ZeroDivisionError as e:
+            print(repr(e))
         return acc
 
 

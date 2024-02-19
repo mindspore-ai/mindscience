@@ -92,6 +92,8 @@ class InferenceModule(WeatherForecast):
         self.logger = logger
         self.batch_size = data_params.get('batch_size', 1)
         self.t_in = data_params.get('t_in', 1)
+        self.fuxi_climate_mean = self.climate_mean.reshape(-1, self.w_size,
+                                                           self.feature_dims)[:-1].reshape(-1, self.feature_dims)
 
     def forecast(self, inputs):
         """InferenceModule forecast"""
@@ -134,15 +136,17 @@ class InferenceModule(WeatherForecast):
         lat_weight_rmse_step = np.sum(error * weight, axis=1).transpose()
 
         # acc
+        pred = pred - self.fuxi_climate_mean
+        labels = labels - self.fuxi_climate_mean
         acc_numerator = pred * labels[0]
         acc_numerator = np.sum(acc_numerator * weight, axis=1)
         pred_square = np.square(pred)
         label_square = np.square(labels[0])
         acc_denominator = np.sqrt(np.sum(pred_square * weight, axis=1) * np.sum(label_square * weight, axis=1))
-        if acc_denominator:
+        try:
             lat_weight_acc = acc_numerator / acc_denominator
-        else:
-            raise ValueError("The acc_numerator is divided by zero!")
+        except ZeroDivisionError as e:
+            print(repr(e))
         lat_weight_acc_step = lat_weight_acc.transpose()
 
         return lat_weight_rmse_step, lat_weight_acc_step
@@ -189,7 +193,6 @@ class EvaluateCallBack(Callback):
             lat_weight_rmse, lat_weight_acc = self.eval_net.eval(self.valid_dataset)
             summary_params = self.config.get('summary')
             if summary_params.get('plt_key_info'):
-                print("Test C")
                 plt_key_info(lat_weight_rmse, self.config, self.eval_time * self.predict_interval, metrics_type="RMSE",
                              loc="upper left")
                 plt_key_info(lat_weight_acc, self.config, self.eval_time * self.predict_interval, metrics_type="ACC",
