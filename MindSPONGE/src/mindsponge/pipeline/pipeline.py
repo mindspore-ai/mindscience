@@ -15,6 +15,7 @@
 """Pipeline"""
 import os
 import ssl
+import logging
 import urllib.request
 import mindspore as ms
 from mindspore import context
@@ -33,6 +34,7 @@ from .models import RASP, RASPDataSet, rasp_configuration
 from .models import Multimer, MultimerDataSet, multimer_configuration
 from .models import ProteinMpnn, ProteinMpnnDataset, proteinmpnn_configuration
 from .models import UFold, UFoldDataSet, ufold_configuration
+
 
 model_card = {
     "ColabDesign": {"model": COLABDESIGN, "dataset": ColabDesignDataSet, "config": colabdesign_configuration},
@@ -53,6 +55,28 @@ model_card = {
 }
 
 
+extend_model = ["Pafnucy"]
+
+def run_check(name):
+    """check the valid of model name"""
+    if name not in model_card and name not in extend_model:
+        raise TypeError(f"The {name} model is not yet supported in this version of MindSPONGE,"
+                        f" please select from {list(model_card.keys()) + extend_model}")
+    if name in extend_model:
+        try:
+            # pylint: disable=W0611
+            from openbabel import openbabel
+            from openbabel import pybel
+        # pylint: disable=W0703
+        except Exception as e:
+            # pylint: disable=W1203
+            logging.error(f"{e}.\nOpen Babel is not correctly installed or version of Open Babel is lower than 3.0.0, "
+                          "please refer to: https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/"
+                          "model_cards/pafnucy.md#%E4%BD%BF%E7%94%A8%E9%99%90%E5%88%B6")
+        from .models.pafnucy import PAFNUCY, PAFNUCYDataSet, pafnucy_configuration
+        extend_card = {"Pafnucy": {"model": PAFNUCY, "dataset": PAFNUCYDataSet, "config": pafnucy_configuration}}
+        model_card.update(extend_card)
+
 def download_config(url, save_path):
     """Download the config file"""
     if not os.path.exists(save_path):
@@ -71,6 +95,7 @@ class PipeLine:
     """PipeLine"""
 
     def __init__(self, name):
+        run_check(name)
         self.model_cls = model_card[name]["model"]
         self.dataset_cls = model_card[name]["dataset"]
         self.config = model_card[name]["config"]
@@ -95,6 +120,7 @@ class PipeLine:
         self.model = self.model_cls(config, **kwargs)
         self.dataset = self.dataset_cls(config)
 
+
     def set_device_id(self, device_id):
         """set device id"""
 
@@ -112,6 +138,7 @@ class PipeLine:
 
         self.dataset.set_training_data_src(data_source, **kwargs)
         data_iter = self.dataset.create_iterator(num_epochs, **kwargs)
+
         for _ in range(num_epochs):
             for d in data_iter:
                 loss = self.model.train_step(d)

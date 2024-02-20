@@ -12,16 +12,10 @@ Pafnucy模型由卷积模块和线性模块两部分组成，层与层之间的�
 
 Open Babel依赖于低版本python，所以安装前请确保 `python <= 3.7.16`。
 
-可从[源码下载地址](https://github.com/openbabel/openbabel/releases)获取openbabel软件源码压缩包用于后续解压编译安装，安装流程可参考：
+可使用conda安装Open Babel软件，具体安装指令如下：
 
 ```bash
-tar zxf openbabel-3.1.1.tar.bz2
-cd openbabel-3.1.1
-mkdir build
-cd build/
-cmake ..
-make
-sudo make install
+conda install conda-forge::openbabel
 ```
 
 可在终端使用如下指令验证Open Babel是否安装成功：
@@ -30,41 +24,33 @@ sudo make install
 obabel --help
 ```
 
-还可使用conda安装Open Babel软件，具体安装指令如下：
-
-```bash
-conda install -c openbabel openbabel
-```
-
-conda安装Open Babel版本为2.4.1，由于Open Babel版本之间冲突，运行模型时会因关键词不同导致运行报错，如需运行可将mindsponge.pipeline.models.pafnucy.pafnucy_data.py中
-
-```bash
-self.NAMED_PROPS = ['hyb', 'heavydegree', 'heterodegree', 'partialcharge']
-```
-
-修改为
-
-```bash
-self.NAMED_PROPS = ['hyb', 'heavyvalence', 'heterovalence', 'partialcharge']
-```
-
-即可。
-
 ## 数据集
 
 模型所使用数据集为PDBBind v2016，数据集大小约为2.5G。
 
-- Index files of PDBbind
-- Protein-ligand complexes: The general set minus refined set
-- Protein-ligand complexes: The refined set
-- Protein-protein complexes
-- Ligand molecules in the general set (Mol2 format)
-- Ligand molecules in the general set (SDF format)
-- pdbbind_v2013_core_set.tar.gz
+- [Index files of PDBbind](http://www.pdbbind.org.cn/download/PDBbind_2016_plain_text_index.tar.gz)
+- [Protein-ligand complexes: The general set minus refined set](http://www.pdbbind.org.cn/download/pdbbind_v2016_general-set-except-refined.tar.gz)
+- [Protein-ligand complexes: The refined set](http://www.pdbbind.org.cn/download/pdbbind_v2016_refined.tar.gz)
+- [Protein-protein complexes](http://www.pdbbind.org.cn/download/PDBbind_v2016_PP.tar.gz)
+- [Ligand molecules in the general set (Mol2 format)](http://www.pdbbind.org.cn/download/PDBbind_v2016_mol2.tar.gz)
+- [Ligand molecules in the general set (SDF format)](http://www.pdbbind.org.cn/download/PDBbind_v2016_sdf.tar.gz)
+- [pdbbind_v2013_core_set.tar.gz](http://www.pdbbind.org.cn/download/pdbbind_v2013_core_set.tar.gz)
 
 ### 数据集下载
 
-Pipeline中提供了数据集下载脚本，在训练时即可自动进行数据集的下载。
+用户可以登录[PDBbind-CN Database](http://www.pdbbind.org.cn/download.php)根据自己的需求进行数据下载，也可以根据[数据集](https://gitee.com/mindspore/mindscience/blob/master/MindSPONGE/applications/model_cards/pafnucy.md#%E6%95%B0%E6%8D%AE%E9%9B%86)提供的链接下载数据到同一个文件夹中，并使用如下命令进行解压。
+
+```bash
+mkdir PDBbind_2016_plain_text_index
+tar -zxvf PDBbind_2016_plain_text_index.tar.gz -C PDBbind_2016_plain_text_index
+tar -zxvf pdbbind_v2013_core_set.tar.gz
+tar -zxvf pdbbind_v2016_general-set-except-refined.tar.gz
+tar -zxvf PDBbind_v2016_mol2.tar.gz
+tar -zxvf PDBbind_v2016_PP.tar.gz
+tar -zxvf pdbbind_v2016_refined.tar.gz
+tar -zxvf PDBbind_v2016_sdf.tar.gz
+cp index/INDEX_core_data.2016 PDBbind_2016_plain_text_index/index
+```
 
 ## 如何使用
 
@@ -77,9 +63,9 @@ from openbabel import pybel
 pocket_path = {YOUR_POCKET_PATH}
 ligand_path = {YOUR_LIGAND_PATH}
 raw_data = [pocket_path, ligand_path]
-pipe = PipeLine(name = "pafnucy")
+pipe = PipeLine(name="Pafnucy")
 pipe.set_device_id(0)
-pipe.initialize("config")
+pipe.initialize("pafnucy_predict")
 pipe.model.from_pretrained()
 result = pipe.predict(raw_data)
 print(result)
@@ -91,10 +77,10 @@ print(result)
 
 ```bash
 from mindsponge import PipeLine
-pipe = PipeLine(name = "pafnucy")
+pipe = PipeLine(name="Pafnucy")
 pipe.set_device_id(0)
-pipe.initialize("config")
-pipe.train({YOUR_DATA_PATH}, num_epochs = 1)
+pipe.initialize("pafnucy_training")
+pipe.train({YOUR_DATA_PATH}, num_epochs=1)
 ```
 
 ## 引用
