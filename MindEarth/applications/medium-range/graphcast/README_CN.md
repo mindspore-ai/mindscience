@@ -48,7 +48,7 @@ $$
 
 ### 基础Backbone
 
-运行前需先准备训练使用的数据，可根据需要下载[1.40625°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)或[0.25°](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/ERA5_0_25/)数据并保存在`./dataset`。
+运行前需先准备训练使用的数据，可根据需要下载[1.40625°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)或[0.25°](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/ERA5_0_25_tiny400/)数据并保存在`./dataset`。
 
 #### 快速开始
 
@@ -175,7 +175,7 @@ bash ./scripts/run_distributed_train.sh $rank_table_file $device_num $device_sta
 |:------------------------:|:--------------------------:|:---------------:|:---------------:|:---------------:|:---------------:|
 |     硬件资源         |    Ascend, Memory 64G  |   Ascend, Memory 64G  | Ascend, Memory 32G  |  Ascend, Memory 32G  |  V100, Memory 32G  |  
 |     MindSpore版本   |        2.2.10          |      2.2.10       |       2.2.10      |      2.2.10       |      2.2.10       |
-|        数据集      |  [ERA5_0_25_tiny400](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/ERA5_0_25/) |ERA5_0_25_20yr |  [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)     | ERA5_1_4_16yr |  [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)  |
+|        数据集      |  [ERA5_0_25_tiny400](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/ERA5_0_25_tiny400/) |ERA5_0_25_20yr |  [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)     | ERA5_1_4_16yr |  [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)  |
 |        参数量      |      35 mil.          |      35 mil.       |      35 mil.       |      35 mil.      |      35 mil.    |
 |        训练参数      |    batch_size=1<br>steps_per_epoch=404<br>epochs=50 | batch_size=1<br>steps_per_epoch=914<br>epochs=200 |    batch_size=1<br>steps_per_epoch=403<br>epochs=100    | batch_size=1<br>steps_per_epoch=9313<br>epochs=200 |   batch_size=1<br>steps_per_epoch=403<br>epochs=100   |
 |        测试参数      |    batch_size=1<br>steps=9 | batch_size=1<br>steps=39 |    batch_size=1<br>steps=8   |batch_size=1<br>steps=39  |    batch_size=1<br>steps=8   |

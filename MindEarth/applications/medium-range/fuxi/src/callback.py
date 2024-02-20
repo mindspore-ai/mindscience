@@ -136,6 +136,8 @@ class InferenceModule(WeatherForecast):
         lat_weight_rmse_step = np.sum(error * weight, axis=1).transpose()
 
         # acc
+        pred = pred * self.total_std.reshape((1, 1, -1)) + self.total_mean.reshape((1, 1, -1))
+        labels = labels * self.total_std.reshape((1, 1, 1, -1)) + self.total_mean.reshape((1, 1, 1, -1))
         pred = pred - self.fuxi_climate_mean
         labels = labels - self.fuxi_climate_mean
         acc_numerator = pred * labels[0]

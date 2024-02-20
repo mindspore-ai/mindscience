@@ -48,7 +48,7 @@ Where $tp$ represents the original value of `Total Precipitation`, in our experi
 
 ### Base Backbone
 
-Before running, it is necessary to prepare the training data, which can be downloaded in [1.40625°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/) or [0.25°](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/ERA5_0_25/) as needed, and saved in the `./dataset`.
+Before running, it is necessary to prepare the training data, which can be downloaded in [1.40625°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/) or [0.25°](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/ERA5_0_25_tiny400/) as needed, and saved in the `./dataset`.
 
 #### Quick Start
 
@@ -175,7 +175,7 @@ By using ERA5 0.5° resolution data and conducting 6-hour interval data training
 |:------------------------:|:--------------------------:|:---------------:|:---------------:|:---------------:|:---------------:|
 |     Hardware         |    Ascend, Memory 64G  |   Ascend, Memory 64G  | Ascend, Memory 32G  |  Ascend, Memory 32G  |  V100, Memory 32G  |
 |     MindSpore  |        2.2.10          |      2.2.10       |       2.2.10      |      2.2.10       |      2.2.10       |
-|         Dataset     |  [ERA5_0_25_tiny400](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/ERA5_0_25/) |ERA5_0_25_20yr |  [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)     | ERA5_1_4_16yr |  [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)  |
+|         Dataset     |  [ERA5_0_25_tiny400](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/ERA5_0_25_tiny400/) |ERA5_0_25_20yr |  [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)     | ERA5_1_4_16yr |  [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)  |
 |        Parameters      |      35 mil.         |      35 mil.      |      35 mil.       |      35 mil.       |      35 mil.      |
 |         Train parameters     |    batch_size=1<br>steps_per_epoch=404<br>epochs=50 | batch_size=1<br>steps_per_epoch=914<br>epochs=200 |    batch_size=1<br>steps_per_epoch=403<br>epochs=100    | batch_size=1<br>steps_per_epoch=9313<br>epochs=200 |   batch_size=1<br>steps_per_epoch=403<br>epochs=100   |
 |        Test parameters      |    batch_size=1   steps=9 | batch_size=1  steps=39 |    batch_size=1   steps=8   |batch_size=1   steps=39  |    batch_size=1   steps=8  |
