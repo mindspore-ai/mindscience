@@ -141,6 +141,10 @@ Summary of skill score for 6-hours to 5-days lead time is shown below.
 ![image_earth](images/Eval_RMSE_epoch100.png)
 ![image_earth](images/Eval_ACC_epoch100.png)
 
+Summary of skill score for 6-hours to 78-hours lead time is shown below.
+
+![image_earth](images/ACC_0.5_tiny_tp.png)
+
 #### Visualization of Precipitation
 
 The following figure shows the precipitation result using the 0.5° [ERA5_0_5_tiny400](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/medium_precipitation/tiny_datasets/) training checkpoint of epoch 20.
@@ -164,7 +168,9 @@ By using ERA5 0.25° resolution data and conducting 6-hour interval data trainin
 
 ### Medium-range Precipitation
 
-By using ERA5 0.5° resolution data and conducting 6-hour interval data training, the following figure shows the precipitation result of training using 10 years dataset.
+By using ERA5 0.5° resolution data and conducting 6-hour interval data training, the following figure shows the comparison of key meteorological indicators with IFS results over a period of 78 hours and the precipitation result of training using 10 years dataset.
+
+![image_earth](images/ACC_0.5_multi_years_tp.png)
 ![tp](./images/tp_comparison_10yr.png)
 
 ## Performance

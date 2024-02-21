@@ -271,10 +271,8 @@ class LossNet(nn.Cell):
             batch_size = pred.shape[0]
             diff_norms = ops.norm(pred.reshape((batch_size, -1)) - label.reshape((batch_size, -1)), dim=1, ord=2.0)
             y_norms = ops.norm(label.reshape((batch_size, -1)), dim=1, ord=2.0)
-            try:
-                return (diff_norms / y_norms).mean()
-            except ZeroDivisionError:
-                return diff_norms.mean()
+            loss = ops.div(diff_norms, y_norms)
+            return loss.mean()
         pred = ops.cast(pred, mstype.float32)
         label = ops.squeeze(label[..., :self.feature_dims])
         pred = ops.squeeze(pred)
