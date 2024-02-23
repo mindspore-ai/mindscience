@@ -39,7 +39,7 @@ random.seed(0)
 def get_args():
     """Get user specified parameters."""
     parser = argparse.ArgumentParser(description='FuXi')
-    parser.add_argument('--config_file_path', type=str, default='./FuXi.yaml')
+    parser.add_argument('--config_file_path', type=str, default='./configs/FuXi.yaml')
     parser.add_argument('--device_target', '-d', type=str,
                         choices=["Ascend", "GPU"], default="Ascend")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
