@@ -176,6 +176,7 @@ class FoldIteration(nn.Cell):
             self.mu_side_chain(rotation1, translation1, act, initial_act, aatype)
         affine_output = quaternion_to_tensor(quaternion, translation)
         quaternion = F.stop_gradient(quaternion)
+        rotation = F.stop_gradient(rotation)
         res = (act, quaternion, translation, rotation, affine_output, angles_sin_cos, \
                unnormalized_angles_sin_cos, atom_pos, frames)
         return res
