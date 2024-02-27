@@ -42,7 +42,7 @@ class ResBlock(nn.Cell):
     Outputs:
         Tensor, the output of the DEMNet.
 
-         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, channels, new_height\_size, new_width\_size)`.
+         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, channels, new\_height\_size, new_width\_size)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -92,12 +92,13 @@ class DEMNet(nn.Cell):
         num_blocks (int): The number of blocks in the DEMNet.
 
     Inputs:
-         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, out_channels, height\_size, width\_size)`.
+         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, out\_channels, height\_size, width\_size)`.
 
     Outputs:
         Tensor, the output of the DEMNet.
 
-        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, out_channels, new_height\_size, new_width\_size)`.
+        - **output** (Tensor) - Tensor of shape
+          :math:`(batch\_size, out\_channels, new\_height\_size, new_width\_size)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

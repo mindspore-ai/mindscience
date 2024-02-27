@@ -7,8 +7,8 @@ mindsponge.common.apply_to_point
 
     .. math::
         \begin{split}
-        &rot_point = rotation \cdot point \\
-        &result = rot_point + translation \\
+        &rot\_point = rotation \cdot point \\
+        &result = rot\_point + translation \\
         \end{split}
 
     具体的乘法过程与加法过程可以参考 `mindsponge.common.rots_mul_vecs` 和 `mindsponge.common.vecs_add` API。

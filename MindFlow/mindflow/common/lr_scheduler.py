@@ -26,8 +26,8 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
     r"""
     Generate polynomial decay learning rate array.
     The learning rate decays in a polynomial manner as training goes along.
-    it follows :math:`lr = step * (lr_max - lr_init)/warmup_steps` ,
-    then :math:`lr = lr_end + (lr_max - lr_end) * [(1- i + step)/(total_steps - warmup_steps)]**poly_power`
+    it follows :math:`lr = step * (lr\_max - lr\_init)/warmup\_steps` ,
+    then :math:`lr = lr\_end + (lr\_max - lr\_end) * [(1 - i + step)/(total\_steps - warmup\_steps)]**poly\_power`
 
     Args:
         global_step (int): current step number, non-negtive int value.

@@ -592,7 +592,7 @@ def rigids_mul_vecs(rigids, v):
     and add the translations of rigid. The result is the output vector.
 
     .. math::
-        v = r_rv+r_t
+        v = r_rv + r_t
 
     Args:
         rigids (tuple): rigid.
@@ -1429,8 +1429,8 @@ def apply_to_point(rotation, translation, point, extra_dims=0):
 
     .. math::
         \begin{split}
-        &rot_point = rotation \cdot point \\
-        &result = rot_point + translation \\
+        &rot\_point = rotation \cdot point \\
+        &result = rot\_point + translation \\
         \end{split}
 
     For specific multiplication and addition procedures, refer to the rots_mul_vecs and vecs_add apis.

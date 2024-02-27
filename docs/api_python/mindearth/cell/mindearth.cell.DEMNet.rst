@@ -14,9 +14,9 @@ mindearth.cell.DEMNet
         - **num_blocks** (int) - 网络中的子模块数目。默认值： ``42``。
 
     输入：
-        - **x** (Tensor) - shape为 :math:`(batch\_size, out_channels, height\_size, width\_size)` 的Tensor。
+        - **x** (Tensor) - shape为 :math:`(batch\_size, out\_channels, height\_size, width\_size)` 的Tensor。
 
     输出：
         Tensor，DEM网络的输出。
 
-        - **output** (Tensor) - shape为 :math:`(batch\_size, out_channels, new_height\_size, new_width\_size)` 的Tensor。
+        - **output** (Tensor) - shape为 :math:`(batch\_size, out\_channels, new\_height\_size, new_width\_size)` 的Tensor。

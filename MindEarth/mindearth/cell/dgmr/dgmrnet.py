@@ -100,13 +100,13 @@ class DgmrGenerator(Cell):
 
     Inputs:
          - **x** (Tensor) - Tensor of shape :math:`(batch\_size, input\_frames,
-           out_channels, height\_size, width\_size)`.
+           out\_channels, height\_size, width\_size)`.
 
     Outputs:
         Tensor, the output of Dgmr Generator.
 
         - **output** (Tensor) - Tensor of shape :math:`(batch\_size, output\_frames,
-          out_channels, height\_size, width\_size)`.
+          out\_channels, height\_size, width\_size)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

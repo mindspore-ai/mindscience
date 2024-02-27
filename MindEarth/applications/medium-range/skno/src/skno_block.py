@@ -180,7 +180,7 @@ def precompute_legpoly(mmax, lmax, tq, norm="ortho", inverse=False, csphase=True
 
 
 class RealSHT(nn.Cell):
-    """
+    r"""
     The forward transformation of SHT. The input features are decomposed by spherical harmonic transformation.
 
     Args:
@@ -193,11 +193,11 @@ class RealSHT(nn.Cell):
         csphase (bool, optional): If changing the phase in legpoly precomputation. Default: True.
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(batch_size, latent_dims, nlat, nlon)`.
+        - **input** (Tensor) - Tensor of shape :math:`(batch\_size, latent\_dims, nlat, nlon)`.
 
     Outputs:
-        - **output[0]** (Tensor) - Tensor of shape :math:`(batch_size, latent_dims, lmax, mmax)`.
-        - **output[1]** (Tensor) - Tensor of shape :math:`(batch_size, latent_dims, lmax, mmax)`.
+        - **output[0]** (Tensor) - Tensor of shape :math:`(batch\_size, latent\_dims, lmax, mmax)`.
+        - **output[1]** (Tensor) - Tensor of shape :math:`(batch\_size, latent\_dims, lmax, mmax)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -266,7 +266,7 @@ class RealSHT(nn.Cell):
 
 
 class InverseRealSHT(nn.Cell):
-    """
+    r"""
     The forward transformation of SHT. The input features are decomposed by spherical harmonic transformation.
 
     Args:
@@ -280,10 +280,10 @@ class InverseRealSHT(nn.Cell):
 
     Inputs:
         - **input** Tuple(Tensor, Tensor) - Two Tensors have the same shape :math:
-        `(batch_size, latent_dims, lmax, mmax)`.
+          `(batch\_size, latent\_dims, lmax, mmax)`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(batch_size, latent_dims, nlat, nlon)`.
+        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, latent\_dims, nlat, nlon)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -353,7 +353,7 @@ class InverseRealSHT(nn.Cell):
 
 
 class DropPath(nn.Cell):
-    """
+    r"""
     The Dropout operation during training. DropPath prevents co-adaptation of parallel paths in networks
         by randomly dropping operands of the join layers.
 
@@ -362,10 +362,10 @@ class DropPath(nn.Cell):
             scale_by_keep (bool, optional): If keeping the feature size after dropping out. Default: True.
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(batch_size, h_size*w_size, latent_dims)`.
+        - **input** (Tensor) - Tensor of shape :math:`(batch\_size, h\_size*w\_size, latent\_dims)`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(batch_size, h_size*w_size, latent_dims)`.
+        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, h\_size*w\_size, latent\_dims)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -419,10 +419,10 @@ class SKNO1D(nn.Cell):
         compute_dtype (:class:`mindspore.dtype`): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(batch_size, h_size*w_size, latent_dims)`.
+        - **input** (Tensor) - Tensor of shape :math:`(batch\_size, h\_size*w\_size, latent\_dims)`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(batch_size, h_size*w_size, latent_dims)`.
+        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, h\_size*w\_size, latent\_dims)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -550,7 +550,7 @@ class SKNO1D(nn.Cell):
 
 
 class MLPNet(nn.Cell):
-    """
+    r"""
     The MLPNet Network. Applies a series of fully connected layers to the incoming data among which hidden layers have
         mlp_ratio times number of dims.
 
@@ -561,10 +561,10 @@ class MLPNet(nn.Cell):
         compute_dtype (:class:`mindspore.dtype`): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(batch_size, h_size*w_size, latent_dims)`.
+        - **input** (Tensor) - Tensor of shape :math:`(batch\_size, h\_size*w\_size, latent\_dims)`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(batch_size, h_size*w_size, latent_dims)`.
+        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, h\_size*w\_size, latent\_dims)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -613,7 +613,7 @@ class MLPNet(nn.Cell):
 
 
 class PatchEmbed(nn.Cell):
-    """
+    r"""
     The Patch Embedding Operation. Encoding the input feature to the patch embedding with the convolutional layer, where
         the stride is equal to the patch size.
 
@@ -624,10 +624,10 @@ class PatchEmbed(nn.Cell):
         compute_dtype (:class:`mindspore.dtype`): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(batch_size, in_channels, h_size, w_size)`.
+        - **input** (Tensor) - Tensor of shape :math:`(batch\_size, in\_channels, h\_size, w\_size)`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(batch_size, h_size*w_size, latent_dims)`.
+        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, h\_size*w\_size, latent\_dims)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -672,7 +672,7 @@ class PatchEmbed(nn.Cell):
 
 
 class SKNOBlock(nn.Cell):
-    """
+    r"""
     The block of the SKNO metwork. During training, the SKNOBlock services as the main part of SKNO algorithm.
 
     Args:
@@ -688,10 +688,10 @@ class SKNOBlock(nn.Cell):
         compute_dtype (:class:`mindspore.dtype`): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(batch_size, h_size*w_size, latent_dims)`.
+        - **input** (Tensor) - Tensor of shape :math:`(batch\_size, h\_size*w\_size, latent\_dims)`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(batch_size, h_size*w_size, latent_dims)`.
+        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, h\_size*w\_size, latent\_dims)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

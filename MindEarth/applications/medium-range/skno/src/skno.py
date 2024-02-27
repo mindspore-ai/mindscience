@@ -46,11 +46,11 @@ class SKNO(nn.Cell):
                 Default: mindspore.float32.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(batch_size, feature_size, h_size, w_size)`.
+        - **x** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, h\_size, w\_size)`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(batch_size, feature_size, h_size, w_size)`.
-        - **recons** (Tensor) - Tensor of shape :math:`(batch_size, feature_size, h_size, w_size)`.
+        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, h\_size, w\_size)`.
+        - **recons** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, h\_size, w\_size)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

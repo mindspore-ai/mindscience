@@ -53,7 +53,7 @@ def get_2d_sin_cos_pos_embed(embed_dim, grid_size):
         grid_size (tuple(int)): The grid height and width.
 
     Returns:
-        The numpy array with shape of :math:`(1, grid\_height*grid_width, embed\_dim)`
+        The numpy array with shape of :math:`(1, grid\_height*grid\_width, embed\_dim)`
 
     """
     grid_size = to_2tuple(grid_size)
