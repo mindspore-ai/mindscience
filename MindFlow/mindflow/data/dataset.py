@@ -183,6 +183,7 @@ class Dataset(Data):
                 only when num_shards is also specified. Random accessible input is required. Default: ``None``.
             python_multiprocessing (bool, optional): Parallelize Python function per_batch_map with multi-processing.
                 This option could be beneficial if the function is computational heavy. Default: ``False``.
+            sampler (Sampler, optional): Dataset Sampler. Default: ``None``.
 
         Returns:
             BatchDataset, dataset batched.
