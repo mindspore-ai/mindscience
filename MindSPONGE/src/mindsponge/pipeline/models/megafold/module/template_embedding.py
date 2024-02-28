@@ -26,7 +26,7 @@ import mindspore.nn as nn
 from mindspore.ops import functional as F
 from mindspore.ops import operations as P
 from mindsponge.cell.initializer import lecun_init
-from mindsponge.common.utils import dgram_from_positions, _memory_reduce
+from mindsponge.common.utils import dgram_from_positions, _memory_reduce, cus_lazy_inline
 from mindsponge.common.geometry import make_transform_from_reference, quat_affine, invert_point
 from mindsponge.common.residue_constants import atom_order
 from mindsponge.cell import Attention, TriangleAttention, Transition, TriangleMultiplication
@@ -35,6 +35,7 @@ from mindsponge.cell import Attention, TriangleAttention, Transition, TriangleMu
 class TemplatePairStack(nn.Cell):
     '''template pair stack'''
 
+    @cus_lazy_inline
     def __init__(self, config):
         super(TemplatePairStack, self).__init__()
         self.config = config.template.template_pair_stack

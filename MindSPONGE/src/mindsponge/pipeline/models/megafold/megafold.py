@@ -74,11 +74,13 @@ class MEGAFold(Model):
         context.set_context(memory_optimize_level="O1", max_call_depth=6000, mode=ms.GRAPH_MODE)
         self.fp32_white_list = None
         if context.get_context("device_target") == "GPU":
+            self.config.is_ascend = False
             self.mixed_precision = False
             context.set_context(graph_kernel_flags="--disable_expand_ops=Softmax \
                                 --disable_cluster_ops=ReduceSum --composite_op_limit_size=50",
                                 enable_graph_kernel=True)
         else:
+            self.config.is_ascend = True
             os.environ['MS_ENABLE_GE'] = '1'
             os.environ['MS_GE_TRAIN'] = '1'
             os.environ['MS_ENABLE_REF_MODE'] = '1'

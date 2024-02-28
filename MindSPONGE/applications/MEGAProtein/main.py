@@ -70,7 +70,7 @@ def fold_infer(args):
     slice_key = "seq_" + str(model_cfg.seq_length)
     slice_val = vars(model_cfg.slice)[slice_key]
     model_cfg.slice = slice_val
-
+    model_cfg.is_ascend = args.is_ascend
     megafold = MegaFold(model_cfg, mixed_precision=args.mixed_precision)
     load_checkpoint(args.checkpoint_path, megafold)
     if args.mixed_precision:
@@ -147,7 +147,7 @@ def fold_train(args):
     slice_key = "seq_" + str(model_cfg.seq_length)
     slice_val = vars(model_cfg.slice)[slice_key]
     model_cfg.slice = slice_val
-
+    model_cfg.is_ascend = args.is_ascend
     megafold = MegaFold(model_cfg, mixed_precision=args.mixed_precision)
     if args.mixed_precision:
         fp32_white_list = (nn.Softmax, nn.LayerNorm, LayerNormProcess)
@@ -484,6 +484,7 @@ if __name__ == "__main__":
                             max_call_depth=6000,
                             device_id=arguments.device_id)
         arguments.mixed_precision = 1
+        arguments.is_ascend = True
     elif arguments.run_platform == 'Ascend' and arguments.is_training:
         os.environ['MS_ENABLE_GE'] = '1'
         os.environ['MS_GE_TRAIN'] = '1'
@@ -497,6 +498,7 @@ if __name__ == "__main__":
                                            "jit_compile": True,
                                            "atomic_clean_policy": 1,})
         arguments.mixed_precision = 1
+        arguments.is_ascend = True
     elif arguments.run_platform == 'GPU':
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="GPU",
@@ -506,6 +508,7 @@ if __name__ == "__main__":
                             device_id=arguments.device_id,
                             enable_graph_kernel=True)
         arguments.mixed_precision = 0
+        arguments.is_ascend = False
     else:
         raise Exception("Only support GPU or Ascend")
 

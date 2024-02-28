@@ -21,8 +21,19 @@ from mindspore import nn, ops
 import mindspore.numpy as mnp
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
+from mindspore import lazy_inline, get_context
 from . import geometry
 from . import residue_constants, protein
+
+
+def null_decorator(func):
+    return func
+
+
+if get_context("device_target") == "Ascend":
+    cus_lazy_inline = lazy_inline
+else:
+    cus_lazy_inline = null_decorator
 
 
 def _memory_reduce(body, batched_inputs, nonbatched_inputs, slice_num, dim=0):
