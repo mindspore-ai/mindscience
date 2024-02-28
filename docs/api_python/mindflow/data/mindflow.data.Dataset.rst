@@ -18,7 +18,7 @@ mindflow.data.Dataset
         - **TypeError** - 如果 `existed_data_list` 的元素不是ExistedDataConfig的实例。
         - **TypeError** - 如果 `dataset_list` 的元素不是Data的实例。
 
-    .. py:method:: create_dataset(batch_size=1, preprocess_fn=None, input_output_columns_map=None, shuffle=True, drop_remainder=True, prebatched_data=False, num_parallel_workers=1, num_shards=None, shard_id=None, python_multiprocessing=False)
+    .. py:method:: create_dataset(batch_size=1, preprocess_fn=None, input_output_columns_map=None, shuffle=True, drop_remainder=True, prebatched_data=False, num_parallel_workers=1, num_shards=None, shard_id=None, python_multiprocessing=False, sampler=None)
 
         创建最终的MindSpore类型数据集以合并所有子数据集。
 
@@ -33,6 +33,7 @@ mindflow.data.Dataset
             - **num_shards** (int, 可选) - 数据集将被划成的分片数。需要随机可访问的输入。指定此参数时，`num_samples` 反映每个分片的最大样本数。默认值： ``None``。
             - **shard_id** (int, 可选) - `num_shards` 内的shard ID。需要随机可访问的输入。仅当同时指定了 `num_shards` 时必须指定此参数。默认值： ``None``。
             - **python_multiprocessing** (bool, 可选) - 并行使用多处理Python函数per_batch_map和multi-processing。 如果函数计算量很大，此选项可能会很有用。默认值： ``False``。
+            - **sampler** (Sampler, 可选) - 数据集采样器。默认值： ``None``。
 
         返回：
             BatchDataset，批处理之后的数据集。
