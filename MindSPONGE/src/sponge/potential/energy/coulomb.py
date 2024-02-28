@@ -49,7 +49,7 @@ class CoulombEnergy(NonbondEnergy):
     Math:
 
     .. math::
-        E_{ele}(r_{ij}) = \sum_{ij} k_{coulomb} \frac{q_i q_j}{r_ij}
+        E_{ele}(r_{ij}) = \sum_{ij} k_{coulomb} \frac{q_i q_j}{r_{ij}}
 
     Args:
         atom_charge (Union[Tensor, ndarray, List[float]]):

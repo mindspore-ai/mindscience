@@ -36,6 +36,7 @@ sciai.common.TrainCellWithCallBack
         - **TypeError** - 如果输入参数不是要求的类型。
 
     .. py:method:: sciai.common.TrainCellWithCallBack.calc_ckpt_name(iter_str, model_name, postfix="")
+        :staticmethod:
 
         计算检查点文件名。
 
@@ -48,6 +49,7 @@ sciai.common.TrainCellWithCallBack
             str，checkpoint的文件名。
 
     .. py:method:: sciai.common.TrainCellWithCallBack.calc_optim_ckpt_name(model_name, postfix="")
+        :staticmethod:
 
         计算最新的检查点文件名。
 

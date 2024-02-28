@@ -24,6 +24,7 @@ mindearth.module.WeatherForecast
             - **dataset** (mindspore.dataset) - 模型推理数据集，包括输入值和样本值。
 
     .. py:method:: mindearth.module.WeatherForecast.forecast(inputs, labels=None)
+        :staticmethod:
 
         模型的预测方法。
 

@@ -184,7 +184,7 @@ def _bias_init(fan_in, fan_out):
 
 class InputScale(nn.Cell):
     r"""
-    Scale the input value to specified region based on :math:`(x_i - input_center)*input_scale`
+    Scale the input value to specified region based on :math:`(x_i - input\_center)*input\_scale`
 
     Args:
         input_scale (list): The scale factor of input.

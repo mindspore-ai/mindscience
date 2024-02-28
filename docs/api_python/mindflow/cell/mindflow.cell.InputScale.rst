@@ -3,7 +3,7 @@ mindflow.cell.InputScale
 
 .. py:class:: mindflow.cell.InputScale(input_scale, input_center=None)
 
-    将输入值缩放到指定的区域。按照 :math:`(x_i - input_center)*input_scale` 变换。
+    将输入值缩放到指定的区域。按照 :math:`(x_i - input\_center)*input\_scale` 变换。
 
     参数：
         - **input_scale** (list) - 输入的比例因子。
