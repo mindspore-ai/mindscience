@@ -1,7 +1,7 @@
 mindflow.cell
 ==================
 
-.. msplatformautosummary::
+.. mscnplatformautosummary::
     :toctree: cell
     :nosignatures:
     :template: classtemplate.rst
@@ -16,3 +16,4 @@ mindflow.cell
     mindflow.cell.ResBlock
     mindflow.cell.ViT
     mindflow.cell.get_activation
+    mindflow.cell.UNet2D
