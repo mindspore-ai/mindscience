@@ -16,6 +16,7 @@
 import os
 import ssl
 import logging
+import urllib
 import urllib.request
 import mindspore as ms
 from mindspore import context
@@ -83,13 +84,14 @@ def download_config(url, save_path):
         prefix, _ = os.path.split(save_path)
         if not os.path.exists(prefix):
             os.makedirs(prefix)
-        print("Download config to ", save_path)
-        # pylint: disable=W0212
-        ssl._create_default_https_context = ssl._create_unverified_context
-        urllib.request.urlretrieve(url, save_path)
-    config = load_config(save_path)
-    return config
-
+        logging.info("Download config to %s", save_path)
+        try:
+            # pylint: disable=W0212
+            ssl._create_default_https_context = ssl._create_unverified_context
+            urllib.request.urlretrieve(url, save_path)
+        except Exception as e:
+            logging.error("Downloading from %s failed with %s.", url, str(e))
+            raise e
 
 class PipeLine:
     """PipeLine"""
@@ -103,20 +105,42 @@ class PipeLine:
         self.dataset = None
         self.config_path = "./config/"
 
+    def set_config_path(self, config_path):
+        self.config_path = config_path
+
     def initialize(self, key=None, conf=None, config_path=None, **kwargs):
         """initialize"""
 
-        if conf is None:
-            if config_path is not None:
-                if config_path.endswith(".yaml"):
-                    config = load_config(config_path)
-                else:
-                    self.config_path = config_path
-                    config = download_config(self.config[key], self.config_path + key + ".yaml")
-            else:
-                config = download_config(self.config[key], self.config_path + key + ".yaml")
-        else:
+        if sum(x is not None for x in (key, conf, config_path)) != 1:
+            raise ValueError("Only one of key, conf, config_path can be not None")
+
+        if conf is not None:
+            logging.info("Initialize with user passed conf object")
             config = conf
+
+        if config_path is not None:
+            logging.info("Initialize with local config yaml file %s", config_path)
+            config = load_config(config_path)
+
+        if key is not None:
+            logging.info("Initialize with standard config key %s", key)
+            config_file = self.config_path + key + '.yaml'
+            url = self.config.get(key)
+            if not url:
+                keys_supported = ', '.join(list(self.config.keys()))
+                raise KeyError(f"User passed key {key} is not valid, valid keys are {keys_supported}")
+            if os.path.exists(config_file):
+                logging.warning("Using local config file for %s: %s", key, config_file)
+            else:
+                logging.warning("Local config file for %s not exist, download from %s", key, url)
+                try:
+                    download_config(url, config_file)
+                except Exception as exc:
+                    raise FileNotFoundError(f"Downloading standard config for {key} failed, possible solutions:\n\
+                          1. delete {config_file} and retry\n\
+                          2. manually download {url} to {config_file}") from exc
+            config = load_config(config_file)
+
         self.model = self.model_cls(config, **kwargs)
         self.dataset = self.dataset_cls(config)
 

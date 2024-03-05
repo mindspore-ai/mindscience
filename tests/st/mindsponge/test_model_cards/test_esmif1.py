@@ -18,6 +18,7 @@ import os
 import pytest
 from mindsponge import PipeLine
 from mindsponge.pipeline.pipeline import download_config
+from mindsponge.common.config_load import load_config
 
 
 @pytest.mark.level0
@@ -33,7 +34,8 @@ def test_esmif1():
     os.system(cmd)
 
     pipe = PipeLine(name="ESM_IF1")
-    conf = download_config(pipe.config["sampling"], pipe.config_path + "sampling.yaml")
+    download_config(pipe.config["sampling"], pipe.config_path + "sampling.yaml")
+    conf = load_config(pipe.config_path + "sampling.yaml")
     pipe.initialize(conf=conf)
     pipe.model.from_pretrained(ckpt_path="/home/workspace/mindspore_ckpt/ckpt/esm_if1.ckpt")
     res = pipe.predict(data="./6t36.pdb")
