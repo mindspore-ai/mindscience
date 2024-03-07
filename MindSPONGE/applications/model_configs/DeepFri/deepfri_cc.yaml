@@ -1,0 +1,665 @@
+prefix: cc
+use_jit: True
+input_dim: 26
+output_dim: 320
+gc_dims:
+- 512
+- 512
+- 512
+fc_dims: 1024
+dropout: 0.3
+l2_reg: 0.0002
+lr: 0.0001
+gc_layer: MultiGraphConv
+epochs: 50
+batch_size: 64
+pad_len: 1024
+ontology: cc
+lm_model_name: trained_models/DeepFRI_LSTM.ckpt
+cmap_type: ca
+cmap_thresh: 10.0
+train_tfrecord_fn: /data/shouzheng/SWISS-MODEL-GO/train/
+valid_tfrecord_fn: /data/shouzheng/SWISS-MODEL-GO/valid/
+annot_fn: ../data/nrPDB-GO_2019.06.18_annot.tsv
+goterms:
+- GO:0031974
+- GO:0005925
+- GO:0005769
+- GO:1990351
+- GO:0016607
+- GO:0005761
+- GO:0098857
+- GO:0031253
+- GO:0030133
+- GO:0000775
+- GO:0020002
+- GO:0030027
+- GO:0030659
+- GO:0031981
+- GO:0005694
+- GO:0005763
+- GO:0098562
+- GO:0022625
+- GO:0032040
+- GO:0046930
+- GO:0005773
+- GO:0008021
+- GO:0099081
+- GO:1902495
+- GO:0046540
+- GO:0042581
+- GO:0031226
+- GO:0035770
+- GO:0009522
+- GO:0030076
+- GO:0043235
+- GO:1902911
+- GO:0098805
+- GO:0005777
+- GO:0009535
+- GO:0070069
+- GO:0005730
+- GO:0030662
+- GO:0034708
+- GO:0042175
+- GO:0030016
+- GO:0005768
+- GO:0031984
+- GO:0012505
+- GO:0031012
+- GO:0036477
+- GO:0030141
+- GO:0097060
+- GO:0009536
+- GO:1902554
+- GO:0033647
+- GO:0031461
+- GO:0016604
+- GO:0005839
+- GO:0101002
+- GO:0030139
+- GO:0071944
+- GO:0099568
+- GO:0030880
+- GO:0016469
+- GO:0022626
+- GO:0005838
+- GO:0000315
+- GO:0016592
+- GO:0030017
+- GO:0015934
+- GO:0005684
+- GO:0009521
+- GO:0031968
+- GO:0019013
+- GO:0042995
+- GO:0005770
+- GO:0019028
+- GO:0070013
+- GO:0033648
+- GO:0098794
+- GO:0005764
+- GO:0044391
+- GO:0098590
+- GO:0000785
+- GO:0055035
+- GO:0005576
+- GO:0099513
+- GO:0048471
+- GO:0030658
+- GO:1902494
+- GO:0005643
+- GO:0035097
+- GO:0015629
+- GO:0098803
+- GO:0005774
+- GO:0044423
+- GO:0005654
+- GO:0099512
+- GO:0043228
+- GO:0030089
+- GO:0030425
+- GO:0009279
+- GO:0032153
+- GO:0009898
+- GO:0000790
+- GO:0055036
+- GO:0098800
+- GO:0005840
+- GO:0009579
+- GO:0005635
+- GO:0097525
+- GO:0030964
+- GO:0009295
+- GO:0070469
+- GO:0098984
+- GO:0009288
+- GO:0009986
+- GO:0033644
+- GO:1905368
+- GO:0019030
+- GO:0005833
+- GO:1990904
+- GO:0034357
+- GO:0005657
+- GO:0005739
+- GO:0019031
+- GO:0000502
+- GO:0005829
+- GO:0005759
+- GO:0000151
+- GO:0030288
+- GO:0061695
+- GO:0097447
+- GO:0043656
+- GO:1902493
+- GO:0099080
+- GO:0030135
+- GO:0120025
+- GO:0098793
+- GO:0043025
+- GO:0010008
+- GO:0045335
+- GO:0019897
+- GO:0005813
+- GO:0000228
+- GO:0098858
+- GO:0030684
+- GO:0000123
+- GO:0098687
+- GO:0000776
+- GO:1903561
+- GO:0012506
+- GO:0070161
+- GO:0070382
+- GO:0031975
+- GO:0098978
+- GO:0022624
+- GO:0000781
+- GO:0000323
+- GO:0098589
+- GO:0030532
+- GO:0005856
+- GO:1905369
+- GO:0000313
+- GO:0005887
+- GO:0000322
+- GO:1904949
+- GO:0045121
+- GO:0070603
+- GO:0031982
+- GO:0015935
+- GO:1904813
+- GO:0030687
+- GO:0071005
+- GO:0043657
+- GO:0009897
+- GO:0042025
+- GO:0005746
+- GO:0031224
+- GO:0005789
+- GO:0043230
+- GO:0031983
+- GO:0098802
+- GO:0031965
+- GO:0005783
+- GO:0032993
+- GO:0090575
+- GO:0015630
+- GO:0005798
+- GO:0030117
+- GO:0005875
+- GO:0005747
+- GO:0034703
+- GO:0042651
+- GO:0099503
+- GO:0030667
+- GO:0005681
+- GO:0019898
+- GO:0005794
+- GO:0005615
+- GO:0019814
+- GO:0072562
+- GO:0045177
+- GO:0045261
+- GO:0043292
+- GO:0000428
+- GO:0000794
+- GO:1905348
+- GO:0000314
+- GO:0005938
+- GO:0042611
+- GO:0022627
+- GO:0097708
+- GO:0005634
+- GO:0005929
+- GO:0005758
+- GO:0009523
+- GO:0005911
+- GO:0098791
+- GO:0043232
+- GO:0005791
+- GO:0032279
+- GO:0060205
+- GO:0016324
+- GO:0000932
+- GO:0030660
+- GO:0031248
+- GO:0042579
+- GO:0000793
+- GO:0055052
+- GO:0048500
+- GO:0005788
+- GO:0009534
+- GO:0031976
+- GO:0034705
+- GO:0000786
+- GO:0033643
+- GO:0098852
+- GO:0098552
+- GO:0098533
+- GO:0031300
+- GO:0031966
+- GO:0005815
+- GO:0033646
+- GO:0097014
+- GO:0016021
+- GO:0005667
+- GO:0030424
+- GO:0005765
+- GO:0005775
+- GO:0019866
+- GO:0030055
+- GO:1990391
+- GO:0005874
+- GO:0043005
+- GO:0000779
+- GO:0042571
+- GO:0034774
+- GO:0036464
+- GO:0030427
+- GO:0005618
+- GO:0030054
+- GO:0034702
+- GO:0036338
+- GO:0071013
+- GO:0098798
+- GO:0150034
+- GO:0030313
+- GO:0031090
+- GO:1902555
+- GO:0098588
+- GO:0005886
+- GO:0044297
+- GO:0009538
+- GO:0042597
+- GO:0031970
+- GO:0005740
+- GO:0019012
+- GO:0031252
+- GO:0048475
+- GO:0005732
+- GO:0019867
+- GO:0097526
+- GO:0070062
+- GO:0005766
+- GO:1990234
+- GO:0033177
+- GO:0045263
+- GO:0032838
+- GO:0005819
+- GO:0031967
+- GO:0016591
+- GO:0055029
+- GO:0098797
+- GO:0098796
+- GO:0005741
+- GO:0014069
+- GO:0030430
+- GO:0018995
+- GO:0033178
+- GO:0000777
+- GO:0045271
+- GO:0043233
+- GO:0031410
+- GO:0062023
+- GO:0016459
+- GO:0031301
+- GO:0099572
+- GO:0071011
+- GO:0030686
+- GO:1990204
+- GO:0043190
+- GO:0042582
+- GO:0045202
+- GO:0005743
+- GO:0044815
+- GO:0120114
+- GO:0005665
+- GO:0000139
+- GO:0045259
+- GO:0009507
+- GO:0030312
+- GO:0009289
+- GO:0005762
+gonames:
+- membrane-enclosed lumen
+- focal adhesion
+- early endosome
+- transporter complex
+- nuclear speck
+- mitochondrial ribosome
+- membrane microdomain
+- cell projection membrane
+- transport vesicle
+- chromosome, centromeric region
+- host cell plasma membrane
+- lamellipodium
+- cytoplasmic vesicle membrane
+- nuclear lumen
+- chromosome
+- mitochondrial small ribosomal subunit
+- cytoplasmic side of membrane
+- cytosolic large ribosomal subunit
+- small-subunit processome
+- pore complex
+- vacuole
+- synaptic vesicle
+- supramolecular polymer
+- transmembrane transporter complex
+- U4/U6 x U5 tri-snRNP complex
+- specific granule
+- intrinsic component of plasma membrane
+- ribonucleoprotein granule
+- photosystem I
+- light-harvesting complex
+- receptor complex
+- protein kinase complex
+- whole membrane
+- peroxisome
+- chloroplast thylakoid membrane
+- cytochrome complex
+- nucleolus
+- coated vesicle membrane
+- methyltransferase complex
+- nuclear outer membrane-endoplasmic reticulum membrane network
+- myofibril
+- endosome
+- organelle subcompartment
+- endomembrane system
+- extracellular matrix
+- somatodendritic compartment
+- secretory granule
+- synaptic membrane
+- plastid
+- serine/threonine protein kinase complex
+- host intracellular organelle
+- cullin-RING ubiquitin ligase complex
+- nuclear body
+- proteasome core complex
+- ficolin-1-rich granule
+- endocytic vesicle
+- cell periphery
+- cytoplasmic region
+- RNA polymerase complex
+- proton-transporting two-sector ATPase complex
+- cytosolic ribosome
+- proteasome regulatory particle
+- organellar large ribosomal subunit
+- mediator complex
+- sarcomere
+- large ribosomal subunit
+- U2-type spliceosomal complex
+- photosystem
+- organelle outer membrane
+- viral nucleocapsid
+- cell projection
+- late endosome
+- viral capsid
+- intracellular organelle lumen
+- host intracellular membrane-bounded organelle
+- postsynapse
+- lysosome
+- ribosomal subunit
+- plasma membrane region
+- chromatin
+- plastid thylakoid membrane
+- extracellular region
+- polymeric cytoskeletal fiber
+- perinuclear region of cytoplasm
+- transport vesicle membrane
+- catalytic complex
+- nuclear pore
+- histone methyltransferase complex
+- actin cytoskeleton
+- respiratory chain complex
+- vacuolar membrane
+- virion part
+- nucleoplasm
+- supramolecular fiber
+- non-membrane-bounded organelle
+- phycobilisome
+- dendrite
+- cell outer membrane
+- cell division site
+- cytoplasmic side of plasma membrane
+- nuclear chromatin
+- virion membrane
+- inner mitochondrial membrane protein complex
+- ribosome
+- thylakoid
+- nuclear envelope
+- spliceosomal snRNP complex
+- NADH dehydrogenase complex
+- nucleoid
+- respirasome
+- neuron to neuron synapse
+- bacterial-type flagellum
+- cell surface
+- host cell membrane
+- peptidase complex
+- icosahedral viral capsid
+- hemoglobin complex
+- ribonucleoprotein complex
+- photosynthetic membrane
+- replication fork
+- mitochondrion
+- viral envelope
+- proteasome complex
+- cytosol
+- mitochondrial matrix
+- ubiquitin ligase complex
+- outer membrane-bounded periplasmic space
+- transferase complex, transferring phosphorus-containing groups
+- dendritic tree
+- host intracellular region
+- acetyltransferase complex
+- supramolecular complex
+- coated vesicle
+- plasma membrane bounded cell projection
+- presynapse
+- neuronal cell body
+- endosome membrane
+- phagocytic vesicle
+- extrinsic component of plasma membrane
+- centrosome
+- nuclear chromosome
+- actin-based cell projection
+- preribosome
+- histone acetyltransferase complex
+- chromosomal region
+- kinetochore
+- extracellular vesicle
+- vesicle membrane
+- anchoring junction
+- exocytic vesicle
+- envelope
+- glutamatergic synapse
+- proteasome accessory complex
+- chromosome, telomeric region
+- lytic vacuole
+- membrane region
+- small nuclear ribonucleoprotein complex
+- cytoskeleton
+- endopeptidase complex
+- organellar ribosome
+- integral component of plasma membrane
+- storage vacuole
+- ATPase complex
+- membrane raft
+- SWI/SNF superfamily-type complex
+- vesicle
+- small ribosomal subunit
+- ficolin-1-rich granule lumen
+- preribosome, large subunit precursor
+- U2-type precatalytic spliceosome
+- host cell
+- external side of plasma membrane
+- host cell nucleus
+- mitochondrial respirasome
+- intrinsic component of membrane
+- endoplasmic reticulum membrane
+- extracellular organelle
+- vesicle lumen
+- plasma membrane signaling receptor complex
+- nuclear membrane
+- endoplasmic reticulum
+- protein-DNA complex
+- RNA polymerase II transcription regulator complex
+- microtubule cytoskeleton
+- Golgi-associated vesicle
+- membrane coat
+- microtubule associated complex
+- mitochondrial respiratory chain complex I
+- cation channel complex
+- thylakoid membrane
+- secretory vesicle
+- secretory granule membrane
+- spliceosomal complex
+- extrinsic component of membrane
+- Golgi apparatus
+- extracellular space
+- immunoglobulin complex
+- blood microparticle
+- apical part of cell
+- proton-transporting ATP synthase complex, catalytic core F(1)
+- contractile fiber
+- DNA-directed RNA polymerase complex
+- condensed nuclear chromosome
+- endonuclease complex
+- organellar small ribosomal subunit
+- cell cortex
+- MHC protein complex
+- cytosolic small ribosomal subunit
+- intracellular vesicle
+- nucleus
+- cilium
+- mitochondrial intermembrane space
+- photosystem II
+- cell-cell junction
+- Golgi apparatus subcompartment
+- intracellular non-membrane-bounded organelle
+- rough endoplasmic reticulum
+- asymmetric synapse
+- cytoplasmic vesicle lumen
+- apical plasma membrane
+- P-body
+- Golgi-associated vesicle membrane
+- protein acetyltransferase complex
+- microbody
+- condensed chromosome
+- ATP-binding cassette (ABC) transporter complex, substrate-binding subunit-containing
+- signal recognition particle
+- endoplasmic reticulum lumen
+- chloroplast thylakoid
+- plastid thylakoid
+- potassium channel complex
+- nucleosome
+- host cell part
+- lytic vacuole membrane
+- side of membrane
+- ATPase dependent transmembrane transport complex
+- intrinsic component of organelle membrane
+- mitochondrial membrane
+- microtubule organizing center
+- host intracellular part
+- ciliary plasm
+- integral component of membrane
+- transcription regulator complex
+- axon
+- lysosomal membrane
+- vacuolar lumen
+- organelle inner membrane
+- cell-substrate junction
+- DNA repair complex
+- microtubule
+- neuron projection
+- condensed chromosome, centromeric region
+- immunoglobulin complex, circulating
+- secretory granule lumen
+- cytoplasmic ribonucleoprotein granule
+- site of polarized growth
+- cell wall
+- cell junction
+- ion channel complex
+- viral membrane
+- catalytic step 2 spliceosome
+- mitochondrial protein complex
+- distal axon
+- cell envelope
+- organelle membrane
+- endoribonuclease complex
+- bounding membrane of organelle
+- plasma membrane
+- cell body
+- photosystem I reaction center
+- periplasmic space
+- organelle envelope lumen
+- mitochondrial envelope
+- virion
+- cell leading edge
+- coated membrane
+- small nucleolar ribonucleoprotein complex
+- outer membrane
+- spliceosomal tri-snRNP complex
+- extracellular exosome
+- primary lysosome
+- transferase complex
+- proton-transporting two-sector ATPase complex, proton-transporting domain
+- proton-transporting ATP synthase complex, coupling factor F(o)
+- plasma membrane bounded cell projection cytoplasm
+- spindle
+- organelle envelope
+- RNA polymerase II, holoenzyme
+- nuclear DNA-directed RNA polymerase complex
+- plasma membrane protein complex
+- membrane protein complex
+- mitochondrial outer membrane
+- postsynaptic density
+- host cell cytoplasm
+- host cellular component
+- proton-transporting two-sector ATPase complex, catalytic domain
+- condensed chromosome kinetochore
+- respiratory chain complex I
+- organelle lumen
+- cytoplasmic vesicle
+- collagen-containing extracellular matrix
+- myosin complex
+- integral component of organelle membrane
+- postsynaptic specialization
+- precatalytic spliceosome
+- 90S preribosome
+- oxidoreductase complex
+- ATP-binding cassette (ABC) transporter complex
+- azurophil granule
+- synapse
+- mitochondrial inner membrane
+- DNA packaging complex
+- Sm-like protein family complex
+- RNA polymerase II, core complex
+- Golgi membrane
+- proton-transporting ATP synthase complex
+- chloroplast
+- external encapsulating structure
+- pilus
+- mitochondrial large ribosomal subunit

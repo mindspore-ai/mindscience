@@ -24,19 +24,19 @@
 
 rasp_configuration = {
     "rasp_predict_256":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_256.yaml",
+        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/RASP/rasp_predict_256.yaml",
     "rasp_predict_512":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_512.yaml",
+        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/RASP/rasp_predict_512.yaml",
     "rasp_predict_768":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_768.yaml",
+        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/RASP/rasp_predict_768.yaml",
     "rasp_predict_1024":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_1024.yaml",
+        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/RASP/rasp_predict_1024.yaml",
     "rasp_predict_1280":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_1280.yaml",
+        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/RASP/rasp_predict_1280.yaml",
     "rasp_predict_1536":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_1536.yaml",
+        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/RASP/rasp_predict_1536.yaml",
     "rasp_predict_1792":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_1792.yaml",
+        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/RASP/rasp_predict_1792.yaml",
     "rasp_predict_2048":
-        "https://download.mindspore.cn/mindscience/mindsponge/FAAST/config/rasp_predict_2048.yaml"
+        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/RASP/rasp_predict_2048.yaml"
 }

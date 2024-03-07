@@ -1,0 +1,26 @@
+model: 'mda' # 'mda' or 'cvae'
+is_training: True
+use_jit: True
+
+mda_select_nets: [1, 2, 3, 4, 5, 6, 7, 8, 10]
+select_arch: 3
+batch_size_mda: 64
+noise_factor: 0.5
+ORG: 'drug'
+modeltype: 'mda' # 'mda' or 'ae'
+nf: 0.5
+std: 1.0
+input_dims: [1519, 1519, 1519, 1519, 1519, 1519, 1519, 1519, 1519, 1519]
+
+a: 6
+b: 0.1
+batch_size_cvae: 100
+learn_rate: 0.001
+rate: True
+a_rate: 15
+b_rate: 3
+load: 0
+rate_ckpt_path: ''
+vae_encoder_layer_sizes: [1519, 1000]
+vae_latent_size: 100
+vae_decoder_layer_sizes: [1000, 1519]

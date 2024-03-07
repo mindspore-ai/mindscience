@@ -14,5 +14,5 @@
 # ============================================================================
 """esm2 configuration"""
 esm2_configuration = {
-    "esm2_config": "https://download.mindspore.cn/mindscience/mindsponge/esm2/config/esm2_config.yaml"
+    "esm2_config": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/ESM2/esm2_config.yaml"
 }

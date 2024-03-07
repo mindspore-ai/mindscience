@@ -1,0 +1,1017 @@
+prefix: mf
+use_jit: True
+input_dim: 26
+output_dim: 489
+gc_dims:
+- 512
+- 512
+- 512
+fc_dims: 1024
+dropout: 0.3
+l2_reg: 0.0002
+lr: 0.0001
+gc_layer: MultiGraphConv
+epochs: 50
+batch_size: 64
+pad_len: 1024
+ontology: mf
+lm_model_name: trained_models/DeepFRI_LSTM.ckpt
+cmap_type: ca
+cmap_thresh: 10.0
+train_tfrecord_fn: /data/shouzheng/SWISS-MODEL-GO/train/
+valid_tfrecord_fn: /data/shouzheng/SWISS-MODEL-GO/valid/
+annot_fn: ../data/nrPDB-GO_2019.06.18_annot.tsv
+goterms:
+- GO:0016681
+- GO:0005126
+- GO:0008134
+- GO:0016168
+- GO:0045182
+- GO:0004532
+- GO:0003918
+- GO:0003755
+- GO:0004540
+- GO:0032559
+- GO:0008144
+- GO:0019843
+- GO:0008320
+- GO:0016884
+- GO:0016893
+- GO:0016151
+- GO:0043178
+- GO:0004364
+- GO:0004180
+- GO:0003823
+- GO:0008422
+- GO:1901982
+- GO:0022857
+- GO:0019825
+- GO:0030234
+- GO:0003714
+- GO:0051920
+- GO:0008658
+- GO:0016655
+- GO:0034061
+- GO:0016614
+- GO:0042054
+- GO:0008289
+- GO:0002020
+- GO:0042379
+- GO:0070011
+- GO:0008236
+- GO:0016861
+- GO:0003700
+- GO:0016651
+- GO:0016743
+- GO:0004520
+- GO:0016301
+- GO:0015144
+- GO:0030597
+- GO:0004713
+- GO:0016769
+- GO:0017171
+- GO:0015078
+- GO:0016709
+- GO:0050897
+- GO:0008483
+- GO:0052689
+- GO:0019904
+- GO:0016638
+- GO:0004812
+- GO:0005230
+- GO:0016829
+- GO:0016894
+- GO:0019239
+- GO:0022829
+- GO:1901681
+- GO:0098772
+- GO:0008009
+- GO:0070063
+- GO:0070003
+- GO:0015079
+- GO:0048029
+- GO:0008080
+- GO:0046812
+- GO:0016774
+- GO:0008242
+- GO:0008170
+- GO:0008017
+- GO:0016746
+- GO:0016857
+- GO:0008135
+- GO:0004185
+- GO:0004536
+- GO:0008235
+- GO:0101005
+- GO:0016825
+- GO:0030674
+- GO:0004177
+- GO:0004722
+- GO:0043177
+- GO:0019200
+- GO:0005319
+- GO:0017076
+- GO:0016775
+- GO:0019842
+- GO:0004298
+- GO:0072341
+- GO:0015925
+- GO:0016813
+- GO:0051539
+- GO:0005249
+- GO:0048030
+- GO:0005524
+- GO:0008810
+- GO:0016855
+- GO:0008081
+- GO:0060090
+- GO:0019840
+- GO:0051015
+- GO:0008198
+- GO:0046912
+- GO:0009055
+- GO:0090079
+- GO:0008121
+- GO:0004312
+- GO:0017069
+- GO:0140318
+- GO:0004784
+- GO:0035639
+- GO:0016765
+- GO:0016679
+- GO:0008238
+- GO:0015103
+- GO:0004869
+- GO:0051087
+- GO:0004553
+- GO:0038023
+- GO:0005344
+- GO:0140097
+- GO:0018024
+- GO:0016721
+- GO:0008234
+- GO:0031406
+- GO:0004112
+- GO:0016798
+- GO:0016730
+- GO:0042887
+- GO:0019887
+- GO:0004197
+- GO:0005509
+- GO:0050660
+- GO:0016462
+- GO:0004550
+- GO:0031625
+- GO:0034062
+- GO:0061629
+- GO:0019001
+- GO:0016702
+- GO:0042393
+- GO:0030247
+- GO:0008138
+- GO:0004402
+- GO:0032550
+- GO:0015002
+- GO:0070180
+- GO:0043022
+- GO:0003690
+- GO:0004386
+- GO:0031267
+- GO:0019901
+- GO:0016817
+- GO:0003707
+- GO:0008047
+- GO:0004518
+- GO:0008168
+- GO:0005085
+- GO:0102567
+- GO:0004857
+- GO:0005504
+- GO:0097599
+- GO:0016877
+- GO:0015926
+- GO:0140104
+- GO:0001664
+- GO:0042803
+- GO:0015631
+- GO:0060089
+- GO:0004623
+- GO:0000981
+- GO:0019787
+- GO:0032561
+- GO:0046789
+- GO:0016903
+- GO:0042562
+- GO:0070851
+- GO:0099094
+- GO:0008276
+- GO:0016410
+- GO:0047661
+- GO:0140110
+- GO:0005096
+- GO:0051082
+- GO:0016667
+- GO:0003697
+- GO:0008061
+- GO:0030246
+- GO:0008233
+- GO:0044325
+- GO:0031369
+- GO:0016879
+- GO:0034212
+- GO:0004888
+- GO:0019208
+- GO:0046914
+- GO:0008408
+- GO:0061783
+- GO:0016868
+- GO:0019205
+- GO:0004089
+- GO:0016747
+- GO:0016742
+- GO:0004519
+- GO:0003712
+- GO:0005216
+- GO:0016891
+- GO:0003887
+- GO:0016881
+- GO:0005262
+- GO:0005198
+- GO:0003678
+- GO:0019900
+- GO:0022804
+- GO:0016849
+- GO:0045296
+- GO:0016846
+- GO:0017080
+- GO:0005525
+- GO:0015252
+- GO:0005125
+- GO:0016833
+- GO:0016676
+- GO:0005539
+- GO:0016705
+- GO:0050839
+- GO:0016209
+- GO:0022803
+- GO:0019871
+- GO:0008757
+- GO:0003924
+- GO:1990837
+- GO:0016838
+- GO:0005267
+- GO:0004601
+- GO:0061733
+- GO:0016776
+- GO:0004896
+- GO:0019899
+- GO:0004252
+- GO:0016818
+- GO:0036459
+- GO:0004549
+- GO:0042578
+- GO:0016782
+- GO:0008092
+- GO:0016853
+- GO:0032182
+- GO:0016830
+- GO:0097367
+- GO:0017016
+- GO:0022853
+- GO:0003725
+- GO:0003677
+- GO:0030546
+- GO:0030695
+- GO:0003684
+- GO:0003954
+- GO:0016773
+- GO:0044389
+- GO:0046906
+- GO:0004308
+- GO:0005506
+- GO:0003779
+- GO:0031072
+- GO:0016675
+- GO:0000049
+- GO:0051427
+- GO:0003968
+- GO:0003777
+- GO:0016811
+- GO:0019902
+- GO:0016741
+- GO:0140102
+- GO:0016645
+- GO:0140375
+- GO:0019783
+- GO:0030594
+- GO:0004672
+- GO:0071949
+- GO:0061659
+- GO:0004725
+- GO:0004129
+- GO:0016836
+- GO:0046933
+- GO:0019888
+- GO:0061135
+- GO:0008083
+- GO:0099106
+- GO:0051540
+- GO:0016772
+- GO:0004867
+- GO:0008194
+- GO:0051537
+- GO:0003727
+- GO:0030598
+- GO:0043565
+- GO:0015267
+- GO:0016646
+- GO:0016799
+- GO:0016278
+- GO:0042626
+- GO:0016783
+- GO:0140101
+- GO:0016814
+- GO:0008800
+- GO:0051213
+- GO:0004033
+- GO:0016701
+- GO:0016840
+- GO:0001883
+- GO:0015035
+- GO:0004222
+- GO:0042625
+- GO:0070279
+- GO:0003682
+- GO:0004659
+- GO:0016725
+- GO:0016875
+- GO:0005543
+- GO:0016597
+- GO:0008324
+- GO:0022834
+- GO:0001067
+- GO:0004807
+- GO:0022832
+- GO:0022835
+- GO:0005179
+- GO:0050145
+- GO:0005507
+- GO:0016279
+- GO:0061630
+- GO:0016859
+- GO:0032555
+- GO:0015318
+- GO:0030554
+- GO:0070008
+- GO:0004497
+- GO:0016758
+- GO:0016812
+- GO:0060589
+- GO:0016810
+- GO:0030414
+- GO:0016668
+- GO:0016661
+- GO:0050136
+- GO:0008237
+- GO:0017048
+- GO:0015276
+- GO:0016788
+- GO:0015288
+- GO:0016835
+- GO:0090729
+- GO:0016684
+- GO:0019865
+- GO:0032549
+- GO:0004674
+- GO:0102568
+- GO:0016722
+- GO:0016248
+- GO:0003743
+- GO:0008200
+- GO:0004714
+- GO:0019104
+- GO:0008201
+- GO:0070001
+- GO:0051536
+- GO:0000977
+- GO:0140297
+- GO:0019213
+- GO:0022836
+- GO:0010181
+- GO:0003713
+- GO:0042802
+- GO:0016874
+- GO:0019199
+- GO:0019829
+- GO:0070566
+- GO:0046983
+- GO:0046982
+- GO:0008270
+- GO:0051287
+- GO:0004175
+- GO:0015075
+- GO:0016790
+- GO:0017137
+- GO:0008094
+- GO:0046527
+- GO:0016628
+- GO:0015929
+- GO:0015077
+- GO:0016796
+- GO:0008171
+- GO:0003735
+- GO:0033293
+- GO:0000287
+- GO:0005261
+- GO:0004521
+- GO:0016887
+- GO:0008374
+- GO:0016779
+- GO:0016888
+- GO:0008175
+- GO:0005102
+- GO:0017056
+- GO:0016997
+- GO:0036361
+- GO:0016831
+- GO:0003774
+- GO:0000976
+- GO:0022890
+- GO:0050661
+- GO:0035091
+- GO:0015291
+- GO:0003899
+- GO:0003724
+- GO:0016854
+- GO:0008173
+- GO:0008199
+- GO:0140098
+- GO:0005516
+- GO:0016791
+- GO:0061134
+- GO:0015085
+- GO:0005215
+- GO:0016832
+- GO:1904680
+- GO:0047429
+- GO:0016866
+- GO:0070403
+- GO:0043021
+- GO:0016298
+- GO:0048018
+- GO:0001882
+- GO:0016896
+- GO:0005496
+- GO:0017111
+- GO:0030545
+- GO:0022824
+- GO:0004866
+- GO:0004620
+- GO:0020037
+- GO:0008066
+- GO:0008509
+- GO:0033218
+- GO:0005244
+- GO:0016860
+- GO:0048038
+- GO:0044877
+- GO:0042277
+- GO:0004527
+- GO:0030170
+- GO:0070492
+- GO:0016757
+- GO:0003746
+- GO:0003916
+- GO:0030145
+- GO:0022884
+- GO:0016627
+- GO:0003723
+- GO:0019207
+- GO:0004930
+- GO:0097747
+- GO:0005088
+- GO:0016763
+- GO:0003796
+- GO:0008137
+- GO:0008649
+- GO:0022843
+- GO:0004721
+- GO:0015036
+- GO:0140096
+- GO:0016247
+- GO:0046873
+- GO:0034987
+- GO:0051020
+- GO:0015399
+- GO:0004190
+- GO:0016407
+- GO:0016616
+- GO:0004842
+- GO:0004970
+- GO:0016620
+- GO:0003729
+- GO:0032553
+gonames:
+- oxidoreductase activity, acting on diphenols and related substances as donors, cytochrome
+     as acceptor
+- cytokine receptor binding
+- transcription factor binding
+- chlorophyll binding
+- translation regulator activity
+- exoribonuclease activity
+- DNA topoisomerase type II (double strand cut, ATP-hydrolyzing) activity
+- peptidyl-prolyl cis-trans isomerase activity
+- ribonuclease activity
+- adenyl ribonucleotide binding
+- drug binding
+- rRNA binding
+- protein transmembrane transporter activity
+- carbon-nitrogen ligase activity, with glutamine as amido-N-donor
+- endonuclease activity, active with either ribo- or deoxyribonucleic acids and producing
+     5'-phosphomonoesters
+- nickel cation binding
+- alcohol binding
+- glutathione transferase activity
+- carboxypeptidase activity
+- antigen binding
+- beta-glucosidase activity
+- maltose binding
+- transmembrane transporter activity
+- oxygen binding
+- enzyme regulator activity
+- transcription corepressor activity
+- peroxiredoxin activity
+- penicillin binding
+- oxidoreductase activity, acting on NAD(P)H, quinone or similar compound as acceptor
+- DNA polymerase activity
+- oxidoreductase activity, acting on CH-OH group of donors
+- histone methyltransferase activity
+- lipid binding
+- protease binding
+- chemokine receptor binding
+- peptidase activity, acting on L-amino acid peptides
+- serine-type peptidase activity
+- intramolecular oxidoreductase activity, interconverting aldoses and ketoses
+- DNA-binding transcription factor activity
+- oxidoreductase activity, acting on NAD(P)H
+- carboxyl- or carbamoyltransferase activity
+- endodeoxyribonuclease activity
+- kinase activity
+- carbohydrate transmembrane transporter activity
+- RNA glycosylase activity
+- protein tyrosine kinase activity
+- transferase activity, transferring nitrogenous groups
+- serine hydrolase activity
+- proton transmembrane transporter activity
+- oxidoreductase activity, acting on paired donors, with incorporation or reduction
+     of molecular oxygen, NAD(P)H as one donor, and incorporation of one atom of oxygen
+- cobalt ion binding
+- transaminase activity
+- carboxylic ester hydrolase activity
+- protein domain specific binding
+- oxidoreductase activity, acting on the CH-NH2 group of donors
+- aminoacyl-tRNA ligase activity
+- extracellular ligand-gated ion channel activity
+- lyase activity
+- endonuclease activity, active with either ribo- or deoxyribonucleic acids and producing
+     3'-phosphomonoesters
+- deaminase activity
+- wide pore channel activity
+- sulfur compound binding
+- molecular function regulator
+- chemokine activity
+- RNA polymerase binding
+- threonine-type peptidase activity
+- potassium ion transmembrane transporter activity
+- monosaccharide binding
+- N-acetyltransferase activity
+- host cell surface binding
+- phosphotransferase activity, carboxyl group as acceptor
+- omega peptidase activity
+- N-methyltransferase activity
+- microtubule binding
+- transferase activity, transferring acyl groups
+- racemase and epimerase activity, acting on carbohydrates and derivatives
+- translation factor activity, RNA binding
+- serine-type carboxypeptidase activity
+- deoxyribonuclease activity
+- metalloexopeptidase activity
+- ubiquitinyl hydrolase activity
+- hydrolase activity, acting on acid phosphorus-nitrogen bonds
+- protein-macromolecule adaptor activity
+- aminopeptidase activity
+- protein serine/threonine phosphatase activity
+- organic acid binding
+- carbohydrate kinase activity
+- lipid transporter activity
+- purine nucleotide binding
+- phosphotransferase activity, nitrogenous group as acceptor
+- vitamin binding
+- threonine-type endopeptidase activity
+- modified amino acid binding
+- galactosidase activity
+- hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds, in linear
+     amidines
+- 4 iron, 4 sulfur cluster binding
+- voltage-gated potassium channel activity
+- disaccharide binding
+- ATP binding
+- cellulase activity
+- racemase and epimerase activity, acting on amino acids and derivatives
+- phosphoric diester hydrolase activity
+- molecular adaptor activity
+- isoprenoid binding
+- actin filament binding
+- ferrous iron binding
+- transferase activity, transferring acyl groups, acyl groups converted into alkyl
+     on transfer
+- electron transfer activity
+- translation regulator activity, nucleic acid binding
+- ubiquinol-cytochrome-c reductase activity
+- fatty acid synthase activity
+- snRNA binding
+- protein transporter activity
+- superoxide dismutase activity
+- purine ribonucleoside triphosphate binding
+- transferase activity, transferring alkyl or aryl (other than methyl) groups
+- oxidoreductase activity, acting on diphenols and related substances as donors
+- exopeptidase activity
+- inorganic anion transmembrane transporter activity
+- cysteine-type endopeptidase inhibitor activity
+- chaperone binding
+- hydrolase activity, hydrolyzing O-glycosyl compounds
+- signaling receptor activity
+- oxygen carrier activity
+- catalytic activity, acting on DNA
+- histone-lysine N-methyltransferase activity
+- oxidoreductase activity, acting on superoxide radicals as acceptor
+- cysteine-type peptidase activity
+- carboxylic acid binding
+- cyclic-nucleotide phosphodiesterase activity
+- hydrolase activity, acting on glycosyl bonds
+- oxidoreductase activity, acting on iron-sulfur proteins as donors
+- amide transmembrane transporter activity
+- protein kinase regulator activity
+- cysteine-type endopeptidase activity
+- calcium ion binding
+- flavin adenine dinucleotide binding
+- pyrophosphatase activity
+- nucleoside diphosphate kinase activity
+- ubiquitin protein ligase binding
+- 5'-3' RNA polymerase activity
+- RNA polymerase II-specific DNA-binding transcription factor binding
+- guanyl nucleotide binding
+- oxidoreductase activity, acting on single donors with incorporation of molecular
+     oxygen, incorporation of two atoms of oxygen
+- histone binding
+- polysaccharide binding
+- protein tyrosine/serine/threonine phosphatase activity
+- histone acetyltransferase activity
+- purine ribonucleoside binding
+- heme-copper terminal oxidase activity
+- large ribosomal subunit rRNA binding
+- ribosome binding
+- double-stranded DNA binding
+- helicase activity
+- small GTPase binding
+- protein kinase binding
+- hydrolase activity, acting on acid anhydrides
+- steroid hormone receptor activity
+- enzyme activator activity
+- nuclease activity
+- methyltransferase activity
+- guanyl-nucleotide exchange factor activity
+- phospholipase A2 activity (consuming 1,2-dipalmitoylphosphatidylcholine)
+- enzyme inhibitor activity
+- fatty acid binding
+- xylanase activity
+- ligase activity, forming carbon-sulfur bonds
+- glucosidase activity
+- molecular carrier activity
+- G protein-coupled receptor binding
+- protein homodimerization activity
+- tubulin binding
+- molecular transducer activity
+- phospholipase A2 activity
+- DNA-binding transcription factor activity, RNA polymerase II-specific
+- ubiquitin-like protein transferase activity
+- guanyl ribonucleotide binding
+- host cell surface receptor binding
+- oxidoreductase activity, acting on the aldehyde or oxo group of donors
+- hormone binding
+- growth factor receptor binding
+- ligand-gated cation channel activity
+- protein methyltransferase activity
+- N-acyltransferase activity
+- amino-acid racemase activity
+- transcription regulator activity
+- GTPase activator activity
+- unfolded protein binding
+- oxidoreductase activity, acting on a sulfur group of donors
+- single-stranded DNA binding
+- chitin binding
+- carbohydrate binding
+- peptidase activity
+- ion channel binding
+- translation initiation factor binding
+- ligase activity, forming carbon-nitrogen bonds
+- peptide N-acetyltransferase activity
+- transmembrane signaling receptor activity
+- phosphatase regulator activity
+- transition metal ion binding
+- 3'-5' exonuclease activity
+- peptidoglycan muralytic activity
+- intramolecular transferase activity, phosphotransferases
+- nucleobase-containing compound kinase activity
+- carbonate dehydratase activity
+- transferase activity, transferring acyl groups other than amino-acyl groups
+- hydroxymethyl-, formyl- and related transferase activity
+- endonuclease activity
+- transcription coregulator activity
+- ion channel activity
+- endoribonuclease activity, producing 5'-phosphomonoesters
+- DNA-directed DNA polymerase activity
+- acid-amino acid ligase activity
+- calcium channel activity
+- structural molecule activity
+- DNA helicase activity
+- kinase binding
+- active transmembrane transporter activity
+- phosphorus-oxygen lyase activity
+- cadherin binding
+- carbon-sulfur lyase activity
+- sodium channel regulator activity
+- GTP binding
+- proton channel activity
+- cytokine activity
+- oxo-acid-lyase activity
+- oxidoreductase activity, acting on a heme group of donors, oxygen as acceptor
+- glycosaminoglycan binding
+- oxidoreductase activity, acting on paired donors, with incorporation or reduction
+     of molecular oxygen
+- cell adhesion molecule binding
+- antioxidant activity
+- passive transmembrane transporter activity
+- sodium channel inhibitor activity
+- S-adenosylmethionine-dependent methyltransferase activity
+- GTPase activity
+- sequence-specific double-stranded DNA binding
+- carbon-oxygen lyase activity, acting on phosphates
+- potassium channel activity
+- peroxidase activity
+- peptide-lysine-N-acetyltransferase activity
+- phosphotransferase activity, phosphate group as acceptor
+- cytokine receptor activity
+- enzyme binding
+- serine-type endopeptidase activity
+- hydrolase activity, acting on acid anhydrides, in phosphorus-containing anhydrides
+- thiol-dependent ubiquitinyl hydrolase activity
+- tRNA-specific ribonuclease activity
+- phosphoric ester hydrolase activity
+- transferase activity, transferring sulfur-containing groups
+- cytoskeletal protein binding
+- isomerase activity
+- ubiquitin-like protein binding
+- carbon-carbon lyase activity
+- carbohydrate derivative binding
+- Ras GTPase binding
+- active ion transmembrane transporter activity
+- double-stranded RNA binding
+- DNA binding
+- signaling receptor activator activity
+- GTPase regulator activity
+- damaged DNA binding
+- NADH dehydrogenase activity
+- phosphotransferase activity, alcohol group as acceptor
+- ubiquitin-like protein ligase binding
+- tetrapyrrole binding
+- exo-alpha-sialidase activity
+- iron ion binding
+- actin binding
+- heat shock protein binding
+- oxidoreductase activity, acting on a heme group of donors
+- tRNA binding
+- hormone receptor binding
+- RNA-directed 5'-3' RNA polymerase activity
+- microtubule motor activity
+- hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds, in linear
+     amides
+- phosphatase binding
+- transferase activity, transferring one-carbon groups
+- catalytic activity, acting on a rRNA
+- oxidoreductase activity, acting on the CH-NH group of donors
+- immune receptor activity
+- ubiquitin-like protein-specific protease activity
+- neurotransmitter receptor activity
+- protein kinase activity
+- FAD binding
+- ubiquitin-like protein ligase activity
+- protein tyrosine phosphatase activity
+- cytochrome-c oxidase activity
+- hydro-lyase activity
+- proton-transporting ATP synthase activity, rotational mechanism
+- protein phosphatase regulator activity
+- endopeptidase regulator activity
+- growth factor activity
+- ion channel regulator activity
+- metal cluster binding
+- transferase activity, transferring phosphorus-containing groups
+- serine-type endopeptidase inhibitor activity
+- UDP-glycosyltransferase activity
+- 2 iron, 2 sulfur cluster binding
+- single-stranded RNA binding
+- rRNA N-glycosylase activity
+- sequence-specific DNA binding
+- channel activity
+- oxidoreductase activity, acting on the CH-NH group of donors, NAD or NADP as acceptor
+- hydrolase activity, hydrolyzing N-glycosyl compounds
+- lysine N-methyltransferase activity
+- ATPase-coupled transmembrane transporter activity
+- sulfurtransferase activity
+- catalytic activity, acting on a tRNA
+- hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds, in cyclic
+     amidines
+- beta-lactamase activity
+- dioxygenase activity
+- aldo-keto reductase (NADP) activity
+- oxidoreductase activity, acting on single donors with incorporation of molecular
+     oxygen
+- carbon-nitrogen lyase activity
+- purine nucleoside binding
+- protein disulfide oxidoreductase activity
+- metalloendopeptidase activity
+- ATPase-coupled ion transmembrane transporter activity
+- vitamin B6 binding
+- chromatin binding
+- prenyltransferase activity
+- oxidoreductase activity, acting on CH or CH2 groups
+- ligase activity, forming carbon-oxygen bonds
+- phospholipid binding
+- amino acid binding
+- cation transmembrane transporter activity
+- ligand-gated channel activity
+- regulatory region nucleic acid binding
+- triose-phosphate isomerase activity
+- voltage-gated channel activity
+- transmitter-gated channel activity
+- hormone activity
+- nucleoside monophosphate kinase activity
+- copper ion binding
+- protein-lysine N-methyltransferase activity
+- ubiquitin protein ligase activity
+- cis-trans isomerase activity
+- purine ribonucleotide binding
+- inorganic molecular entity transmembrane transporter activity
+- adenyl nucleotide binding
+- serine-type exopeptidase activity
+- monooxygenase activity
+- transferase activity, transferring hexosyl groups
+- hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds, in cyclic
+     amides
+- nucleoside-triphosphatase regulator activity
+- hydrolase activity, acting on carbon-nitrogen (but not peptide) bonds
+- peptidase inhibitor activity
+- oxidoreductase activity, acting on a sulfur group of donors, NAD(P) as acceptor
+- oxidoreductase activity, acting on other nitrogenous compounds as donors
+- NADH dehydrogenase (quinone) activity
+- metallopeptidase activity
+- Rho GTPase binding
+- ligand-gated ion channel activity
+- hydrolase activity, acting on ester bonds
+- porin activity
+- carbon-oxygen lyase activity
+- toxin activity
+- oxidoreductase activity, acting on peroxide as acceptor
+- immunoglobulin binding
+- ribonucleoside binding
+- protein serine/threonine kinase activity
+- phospholipase A2 activity consuming 1,2-dioleoylphosphatidylethanolamine)
+- oxidoreductase activity, oxidizing metal ions
+- channel inhibitor activity
+- translation initiation factor activity
+- ion channel inhibitor activity
+- transmembrane receptor protein tyrosine kinase activity
+- DNA N-glycosylase activity
+- heparin binding
+- aspartic-type peptidase activity
+- iron-sulfur cluster binding
+- RNA polymerase II transcription regulatory region sequence-specific DNA binding
+- DNA-binding transcription factor binding
+- deacetylase activity
+- gated channel activity
+- FMN binding
+- transcription coactivator activity
+- identical protein binding
+- ligase activity
+- transmembrane receptor protein kinase activity
+- ATPase-coupled cation transmembrane transporter activity
+- adenylyltransferase activity
+- protein dimerization activity
+- protein heterodimerization activity
+- zinc ion binding
+- NAD binding
+- endopeptidase activity
+- ion transmembrane transporter activity
+- thiolester hydrolase activity
+- Rab GTPase binding
+- DNA-dependent ATPase activity
+- glucosyltransferase activity
+- oxidoreductase activity, acting on the CH-CH group of donors, NAD or NADP as acceptor
+- hexosaminidase activity
+- monovalent inorganic cation transmembrane transporter activity
+- exonuclease activity, active with either ribo- or deoxyribonucleic acids and producing
+     5'-phosphomonoesters
+- O-methyltransferase activity
+- structural constituent of ribosome
+- monocarboxylic acid binding
+- magnesium ion binding
+- cation channel activity
+- endoribonuclease activity
+- ATPase activity
+- O-acyltransferase activity
+- nucleotidyltransferase activity
+- endodeoxyribonuclease activity, producing 5'-phosphomonoesters
+- tRNA methyltransferase activity
+- signaling receptor binding
+- structural constituent of nuclear pore
+- alpha-sialidase activity
+- racemase activity, acting on amino acids and derivatives
+- carboxy-lyase activity
+- motor activity
+- transcription regulatory region sequence-specific DNA binding
+- inorganic cation transmembrane transporter activity
+- NADP binding
+- phosphatidylinositol binding
+- secondary active transmembrane transporter activity
+- DNA-directed 5'-3' RNA polymerase activity
+- RNA helicase activity
+- racemase and epimerase activity
+- RNA methyltransferase activity
+- ferric iron binding
+- catalytic activity, acting on RNA
+- calmodulin binding
+- phosphatase activity
+- peptidase regulator activity
+- calcium ion transmembrane transporter activity
+- transporter activity
+- aldehyde-lyase activity
+- peptide transmembrane transporter activity
+- nucleoside-triphosphate diphosphatase activity
+- intramolecular transferase activity
+- NAD+ binding
+- ribonucleoprotein complex binding
+- lipase activity
+- receptor ligand activity
+- nucleoside binding
+- exoribonuclease activity, producing 5'-phosphomonoesters
+- steroid binding
+- nucleoside-triphosphatase activity
+- receptor regulator activity
+- transmitter-gated ion channel activity
+- endopeptidase inhibitor activity
+- phospholipase activity
+- heme binding
+- glutamate receptor activity
+- anion transmembrane transporter activity
+- amide binding
+- voltage-gated ion channel activity
+- intramolecular oxidoreductase activity
+- quinone binding
+- protein-containing complex binding
+- peptide binding
+- exonuclease activity
+- pyridoxal phosphate binding
+- oligosaccharide binding
+- transferase activity, transferring glycosyl groups
+- translation elongation factor activity
+- DNA topoisomerase activity
+- manganese ion binding
+- macromolecule transmembrane transporter activity
+- oxidoreductase activity, acting on the CH-CH group of donors
+- RNA binding
+- kinase regulator activity
+- G protein-coupled receptor activity
+- RNA polymerase activity
+- Ras guanyl-nucleotide exchange factor activity
+- transferase activity, transferring pentosyl groups
+- lysozyme activity
+- NADH dehydrogenase (ubiquinone) activity
+- rRNA methyltransferase activity
+- voltage-gated cation channel activity
+- phosphoprotein phosphatase activity
+- disulfide oxidoreductase activity
+- catalytic activity, acting on a protein
+- channel regulator activity
+- metal ion transmembrane transporter activity
+- immunoglobulin receptor binding
+- GTPase binding
+- primary active transmembrane transporter activity
+- aspartic-type endopeptidase activity
+- acetyltransferase activity
+- oxidoreductase activity, acting on the CH-OH group of donors, NAD or NADP as acceptor
+- ubiquitin-protein transferase activity
+- ionotropic glutamate receptor activity
+- oxidoreductase activity, acting on the aldehyde or oxo group of donors, NAD or NADP
+     as acceptor
+- mRNA binding
+- ribonucleotide binding

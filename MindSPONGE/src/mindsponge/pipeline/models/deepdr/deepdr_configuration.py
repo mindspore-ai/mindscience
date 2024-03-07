@@ -20,5 +20,5 @@
 # ============================================================================
 """deepdr configuration"""
 deepdr_configuration = {
-    "deepdr_config": "https://download.mindspore.cn/mindscience/mindsponge/deepdr/config/deepdr_config.yaml"
+    "deepdr_config": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/DeepDR/deepdr_config.yaml"
 }

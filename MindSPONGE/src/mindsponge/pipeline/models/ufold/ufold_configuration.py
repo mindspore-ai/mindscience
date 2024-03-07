@@ -22,5 +22,5 @@
 # ============================================================================
 """ufold config"""
 ufold_configuration = {
-    "ufold_config": "https://download.mindspore.cn/mindscience/mindsponge/ufold/config/ufold_config.yaml"
+    "ufold_config": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/UFold/ufold_config.yaml"
 }
