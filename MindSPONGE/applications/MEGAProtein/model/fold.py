@@ -20,7 +20,7 @@ import mindspore.numpy as mnp
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
 from mindspore.common.tensor import Tensor
-from mindspore import Parameter
+from mindspore import Parameter, context
 import mindsponge.common.residue_constants as residue_constants
 from mindsponge.common.utils import dgram_from_positions, pseudo_beta_fn, atom37_to_torsion_angles
 from mindsponge.data_transform import get_chi_atom_pos_indices
@@ -92,7 +92,10 @@ class MegaFold(nn.Cell):
     def __init__(self, config, mixed_precision):
         super(MegaFold, self).__init__()
         self.cfg = config
-        self.is_ascend = self.cfg.is_ascend
+        if context.get_context("device_target") == "GPU":
+            self.is_ascend = False
+        else:
+            self.is_ascend = True
         if mixed_precision:
             self._type = mstype.float16
         else:

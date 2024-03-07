@@ -30,7 +30,7 @@ import mindspore.numpy as mnp
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
 from mindspore.common.tensor import Tensor
-from mindspore import Parameter
+from mindspore import Parameter, context
 from mindsponge.data_transform import get_chi_atom_pos_indices
 
 from mindsponge.common import residue_constants
@@ -104,7 +104,10 @@ class Megafold(nn.Cell):
         super(Megafold, self).__init__()
         self.cfg = config
         self.train_backward = False
-        self.is_ascend = config.is_ascend
+        if context.get_context("device_target") == "GPU":
+            self.is_ascend = False
+        else:
+            self.is_ascend = True
         if mixed_precision:
             self._type = mstype.float16
         else:
