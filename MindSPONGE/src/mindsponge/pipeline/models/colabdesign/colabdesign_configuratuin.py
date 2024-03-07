@@ -14,5 +14,5 @@
 # ============================================================================
 """colabdesign_configuration"""
 colabdesign_configuration = {
-    "fold_design": "https://download.mindspore.cn/mindscience/mindsponge/ColabDesign/config/fold_design.yaml"
+    "fold_design": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/ColabDesign/predict_256.yaml"
 }

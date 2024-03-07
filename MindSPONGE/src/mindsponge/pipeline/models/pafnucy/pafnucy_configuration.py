@@ -22,6 +22,6 @@
 # ============================================================================
 """pafnucy configuration"""
 pafnucy_configuration = {
-    "pafnucy_training": "https://download.mindspore.cn/mindscience/mindsponge/Pafnucy/config/pafnucy_training.yaml",
-    "pafnucy_predict": "https://download.mindspore.cn/mindscience/mindsponge/Pafnucy/config/pafnucy_predict.yaml"
+    "pafnucy_training": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/PAFNUCY/pafnucy_training.yaml",
+    "pafnucy_predict": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/PAFNUCY/pafnucy_predict.yaml"
 }

@@ -15,7 +15,7 @@
 "proteinmpnnconfigure"
 proteinmpnn_configuration = {
     "proteinmpnnpredict":
-        "https://download.mindspore.cn/mindscience/mindsponge/ProteinMPNN/config/proteinmpnn_predict.yaml",
+        "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/Proteinmpnn/proteinmpnn_predict.yaml",
     "proteinmpnntrain":
-        "https://download.mindspore.cn/mindscience/mindsponge/ProteinMPNN/config/proteinmpnn_train.yaml"
+        "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/Proteinmpnn/proteinmpnn_train.yaml"
 }

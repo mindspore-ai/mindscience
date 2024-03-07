@@ -1,0 +1,29 @@
+device: 'Ascend'
+task_name: 'pretrain'
+use_jit: True
+pretraining: 0
+trained_epoch: 100
+vocab_size: 17
+addH: True
+smiles_field: 'canonical_smiles'
+normalize: False
+batch: 16
+model_task: small
+small:
+  num_layers: 3
+  num_heads: 4
+  d_model: 128
+medium3:
+  num_layers: 6
+  num_heads: 4
+  d_model: 256
+
+medium:
+  num_layers: 6
+  num_heads: 8
+  d_model: 256
+
+large:
+  num_layers: 12
+  num_heads: 12
+  d_model: 576
