@@ -175,7 +175,7 @@ class MegaFold(nn.Cell):
                                        is_extra_msa=False,
                                        batch_size=self.msa_stack_num)
         self.idx_evoformer_block = Parameter(Tensor(0, mstype.int32), requires_grad=False)
-        self.evoformer_num_block_eval = Tensor(self.msa_stack_num, mstype.int32)
+        self.evoformer_num_block_eval = self.msa_stack_num
 
         self.structure_module = StructureModule(self.cfg,
                                                 self.cfg.seq_channel,
