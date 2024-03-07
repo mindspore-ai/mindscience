@@ -18,6 +18,7 @@ import os
 import pytest
 from mindsponge import PipeLine
 from mindsponge.pipeline.pipeline import download_config
+from mindsponge.common.config_load import load_config
 
 
 @pytest.mark.level0
@@ -34,7 +35,8 @@ def test_ufold():
     cmd = "wget https://download.mindspore.cn/mindscience/mindsponge/ufold/examples/Acid.caps._TRW-240015_1-352.ct"
     os.system(cmd)
     pipe = PipeLine(name="UFold")
-    conf = download_config(pipe.config["ufold_config"], pipe.config_path + "ufold_config.yaml")
+    download_config(pipe.config["ufold_config"], pipe.config_path + "ufold_config.yaml")
+    conf = load_config(pipe.config_path + "ufold_config.yaml")
     conf.is_training = False
     conf.test_ckpt = 'All'
     pipe.initialize(conf=conf)
