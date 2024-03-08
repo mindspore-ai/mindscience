@@ -15,35 +15,32 @@
 """
 unet2d
 """
-import mindspore.nn as nn
-import mindspore.ops as ops
-from mindspore.ops import operations as P
-
-from ..utils.check_func import check_param_type
+import torch
+import torch.nn as nn
 
 
-class DoubleConv(nn.Cell):
+class DoubleConv(nn.Module):
     """double conv"""
 
     def __init__(self, in_channels, out_channels, mid_channels=None):
         super().__init__()
         if not mid_channels:
             mid_channels = out_channels
-        self.double_conv = nn.SequentialCell(
-            nn.Conv2d(in_channels, mid_channels, kernel_size=3),
+        self.double_conv = nn.Sequential(
+            nn.Conv2d(in_channels, mid_channels, kernel_size=3, bias=False, padding=1, padding_mode='zeros'),
             nn.BatchNorm2d(mid_channels),
-            nn.ReLU(),
-            nn.Conv2d(mid_channels, out_channels, kernel_size=3),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(mid_channels, out_channels, kernel_size=3, bias=False, padding=1, padding_mode='zeros'),
             nn.BatchNorm2d(out_channels),
-            nn.ReLU()
+            nn.ReLU(inplace=True)
         )
 
-    def construct(self, x):
+    def forward(self, x):
         """forward"""
         return self.double_conv(x)
 
 
-class Down(nn.Cell):
+class Down(nn.Module):
     """down"""
 
     def __init__(self, in_channels, out_channels, kernel_size=2, stride=2):
@@ -51,37 +48,33 @@ class Down(nn.Cell):
         self.conv = DoubleConv(in_channels, out_channels)
         self.maxpool = nn.MaxPool2d(kernel_size=kernel_size, stride=stride)
 
-    def construct(self, x):
+    def forward(self, x):
         """forward"""
         x = self.maxpool(x)
         return self.conv(x)
 
 
-class Up(nn.Cell):
+class Up(nn.Module):
     """up"""
 
     def __init__(self, in_channels, out_channels, kernel_size=2, stride=2):
         super().__init__()
-        self.up = nn.Conv2dTranspose(in_channels, in_channels // 2, kernel_size=kernel_size, stride=stride)
+        self.up = nn.ConvTranspose2d(in_channels, in_channels // 2, kernel_size=kernel_size, stride=stride, bias=False)
         self.conv = DoubleConv(in_channels, out_channels)
-        self.cat = ops.Concat(axis=1)
 
-    def construct(self, x1, x2):
+    def forward(self, x1, x2):
         """forward"""
         x1 = self.up(x1)
 
-        _, _, h1, w1 = ops.shape(x1)
-        _, _, h2, w2 = ops.shape(x2)
+        diff_y = x2.size()[2] - x1.size()[2]
+        diff_x = x2.size()[3] - x1.size()[3]
 
-        diff_y = w2 - w1
-        diff_x = h2 - h1
-
-        x1 = ops.Pad(((0, 0), (0, 0), (diff_x // 2, diff_x - diff_x // 2), (diff_y // 2, diff_y - diff_y // 2)))(x1)
-        x = self.cat((x2, x1))
+        x1 = nn.functional.pad(x1, [diff_x // 2, diff_x - diff_x // 2, diff_y // 2, diff_y - diff_y // 2])
+        x = torch.cat((x2, x1), 1)
         return self.conv(x)
 
 
-class UNet2D(nn.Cell):
+class UNet2D(nn.Module):
     r"""
     The 2-dimensional U-Net model.
     U-Net is a U-shaped convolutional neural network for biomedical image segmentation.
@@ -109,12 +102,10 @@ class UNet2D(nn.Cell):
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> import mindspore as ms
-        >>> from mindspore import Tensor
-        >>> import mindspore.common.dtype as mstype
-        >>> ms.set_context(mode=ms.GRAPH_MODE, save_graphs=False, device_target="GPU")
-        >>> x=Tensor(np.ones([2, 128, 128, 3]), mstype.float32)
-        >>> unet = Unet2D(in_channels=3, out_channels=3, base_channels=3)
+        >>> import torch
+        >>> import numpy as np
+        >>> x = torch.Tensor(np.ones([2, 128, 128, 3]))
+        >>> unet = Unet2D(in_channels=3, out_channels=3, base_channels=64)
         >>> output = unet(x)
         >>> print(output.shape)
         (2, 128, 128, 3)
@@ -122,17 +113,6 @@ class UNet2D(nn.Cell):
 
     def __init__(self, in_channels, out_channels, base_channels, data_format="NHWC", kernel_size=2, stride=2):
         super().__init__()
-        check_param_type(in_channels, "in_channels",
-                         data_type=int, exclude_type=bool)
-        check_param_type(out_channels, "out_channels",
-                         data_type=int, exclude_type=bool)
-        check_param_type(base_channels, "base_channels",
-                         data_type=int, exclude_type=bool)
-        check_param_type(data_format, "data_format",
-                         data_type=str, exclude_type=bool)
-        if data_format not in ("NHWC", "NCHW"):
-            raise ValueError(
-                "data_format must be 'NHWC' or 'NCHW', but got data_format: {}".format(data_format))
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.kernel_size = kernel_size
@@ -149,14 +129,13 @@ class UNet2D(nn.Cell):
         self.up2 = Up(self.base_channels * 8, self.base_channels * 4, self.kernel_size, self.stride)
         self.up3 = Up(self.base_channels * 4, self.base_channels * 2, self.kernel_size, self.stride)
         self.up4 = Up(self.base_channels * 2, self.base_channels, self.kernel_size, self.stride)
-        self.outc = nn.Conv2d(self.base_channels + self.in_channels, self.out_channels, kernel_size=3, stride=1)
-        self.transpose = P.Transpose()
-        self.cat = P.Concat(axis=1)
+        self.outc = nn.Conv2d(self.base_channels + self.in_channels, self.out_channels, kernel_size=3, stride=1,
+                              bias=False, padding=1, padding_mode='zeros')
 
-    def construct(self, x):
+    def forward(self, x):
         """forward"""
         if self.data_format == "NHWC":
-            x0 = self.transpose(x, (0, 3, 1, 2))
+            x0 = x.permute(0, 3, 1, 2)
         else:
             x0 = x
         x1 = self.inc(x0)
@@ -168,10 +147,10 @@ class UNet2D(nn.Cell):
         x = self.up2(x, x3)
         x = self.up3(x, x2)
         x = self.up4(x, x1)
-        x = self.cat((x, x0))
+        x = torch.cat([x, x0], 1)
         x = self.outc(x)
         if self.data_format == "NHWC":
-            out = self.transpose(x, (0, 2, 3, 1))
+            out = x.permute(0, 2, 3, 1)
         else:
             out = x
 
