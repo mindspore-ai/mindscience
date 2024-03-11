@@ -141,6 +141,10 @@ bash ./scripts/run_distributed_train.sh $rank_table_file $device_num $device_sta
 ![image_earth](images/Eval_RMSE_epoch100.png)
 ![image_earth](images/Eval_ACC_epoch100.png)
 
+6小时至78小时的中期降水预报指标见下图。
+
+![image_earth](images/ACC_0.5_tiny_tp.png)
+
 #### 降水可视化
 
 下图展示使用0.5°数据[ERA5_0_5_tiny400](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/medium_precipitation/tiny_datasets/)训练的第20个epoch绘制成的降水预报结果。
@@ -164,7 +168,9 @@ bash ./scripts/run_distributed_train.sh $rank_table_file $device_num $device_sta
 
 ### 中期降水
 
-使用ERA5 0.5°分辨率数据，进行6小时间隔数据训练，下图展示了10年数据训练后绘制成的降水预报结果。
+使用ERA5 0.5°分辨率数据，进行6小时间隔数据训练，可实现10年数据训练结果超越IFS。下图展示了在78小时内同IFS结果的对比，以及10年数据训练后绘制成的降水预报结果。
+
+![image_earth](images/ACC_0.5_multi_years_tp.png)
 ![tp](./images/tp_comparison_10yr.png)
 
 ## 性能汇总
