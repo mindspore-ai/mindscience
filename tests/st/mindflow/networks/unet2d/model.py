@@ -93,10 +93,10 @@ class UNet2D(nn.Module):
             or a tuple of two int numbers that represent height and width of movement respectively. Default: 2.
 
     Inputs:
-            - **input** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, resolution, channels)`.
+        - **x** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, resolution, channels)`.
 
     Outputs:
-            - **output** (Tensor) - Tensor of shape :math:`((batch\_size, resolution, resolution, channels)`.
+        - **output** (Tensor) - Tensor of shape :math:`(batch\_size, resolution, resolution, channels)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
