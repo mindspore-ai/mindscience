@@ -137,8 +137,7 @@ def update_config(opt, config):
         config['train']['load_ckpt'] = True
 
     config['data']['num_workers'] = opt.num_workers
-    config['data']['grid_resolution'] = opt.grid_resolution
-    config['data']['h_size'], config['data']['w_size'] = SIZE_DICT[opt.grid_resolution]
+    config['data']['h_size'], config['data']['w_size'] = SIZE_DICT[config['data']['grid_resolution']]
 
     config['optimizer']['epochs'] = opt.epochs
     config['optimizer']['finetune_epochs'] = opt.finetune_epochs

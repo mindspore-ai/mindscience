@@ -49,7 +49,6 @@ def get_args():
     parser.add_argument('--load_ckpt', type=bool, default=False)
     parser.add_argument('--data_sink', type=bool, default=False)
 
-    parser.add_argument('--grid_resolution', type=float, default=1.4)
     parser.add_argument('--num_workers', type=int, default=1)
 
     parser.add_argument('--initial_lr', type=float, default=0.0005)

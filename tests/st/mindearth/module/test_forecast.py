@@ -79,7 +79,7 @@ class MyInference(WeatherForecast):
         return np.random.rand(69,).astype(np.float32)
 
     @staticmethod
-    def _get_history_climate_mean(config):
+    def _get_history_climate_mean(config, w_size, adjust_size=False):
         return np.random.rand(32768, 69).astype(np.float32)
 
     def _get_metrics(self, inputs, labels):
