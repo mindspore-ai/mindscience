@@ -6,6 +6,8 @@
 
 ## MindFlow
 mindscience/MindFlow/mindflow/cfd/space_solver/riemann_computer/roe.py:eigen_composition
+mindscience/MindChemistry/mindchemistry/e3/o3/spherical_harmonics.py:_spherical_harmonics
+mindscience/MindChemistry/mindchemistry/SO2_conv/wigner.py:wigner_D
 
 # MindSPONGE
 mindscience/MindSPONGE/src/sponge/system/modelling/mol2_parser.py:mol2parser
