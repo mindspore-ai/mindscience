@@ -182,7 +182,6 @@ pip install mindflow_*.whl
     <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
 </head>
 <body>
-
 <table id="t2" style="text-align:center" align="center">
     <tr id="tr2">
         <td>
@@ -203,8 +202,15 @@ pip install mindflow_*.whl
                 中国人民大学 孙浩
             </p>
         </td>
+                <td>
+            <img src="docs/co-chairs/马浩.jpeg" width="200" height="243"/>
+            <p align="center">
+                郑州航空工业管理学院 马浩
+            </p>
+        </td>
     </tr>
 </table>
+
 </body>
 </html>
 
