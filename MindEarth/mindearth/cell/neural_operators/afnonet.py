@@ -92,6 +92,8 @@ class AFNONet(nn.Cell):
         self.transpose = ops.Transpose()
 
         self.forward_features = ForwardFeatures(grid_size=grid_size,
+                                                h_size=image_size[0],
+                                                w_size=image_size[1],
                                                 in_channels=in_channels,
                                                 patch_size=patch_size,
                                                 depth=encoder_depths,

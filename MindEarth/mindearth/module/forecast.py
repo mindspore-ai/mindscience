@@ -147,10 +147,16 @@ class WeatherForecast:
         self.model = amp.auto_mixed_precision(model, config['train']['amp_level'])
         self.logger = logger
         self.config = config
+        self.adjust_size = False
+        self.h_size, self.w_size = SIZE_DICT[config['data'].get('grid_resolution', 1.4)]
+        if self.config['data'].get('patch', False):
+            patch_size = [config['data'].get('patch_size', 8)]
+            self.h_size = self.h_size - self.h_size % patch_size[0]
+            self.adjust_size = True
+
         self.total_std = self._get_total_sample_description(config, "std")
         self.total_mean = self._get_total_sample_description(config, "mean")
-        self.climate_mean = self._get_history_climate_mean(config)
-        self.h_size, self.w_size = SIZE_DICT[config['data'].get('grid_resolution', 1.4)]
+        self.climate_mean = self._get_history_climate_mean(config, self.w_size, self.adjust_size)
         self.t_out_test = config['data'].get("t_out_test", 20)
         self.pred_lead_time = config['data']['pred_lead_time']
 
@@ -170,11 +176,14 @@ class WeatherForecast:
         return total_sample_info
 
     @staticmethod
-    def _get_history_climate_mean(config):
+    def _get_history_climate_mean(config, w_size, adjust_size=False):
         """get history climate mean."""
         data_params = config.get('data')
         climate_mean = np.load(os.path.join(data_params.get("root_dir"), "statistic",
                                             f"climate_{data_params.get('grid_resolution')}.npy"))
+        feature_dims = climate_mean.shape[-1]
+        if adjust_size:
+            climate_mean = climate_mean.reshape(-1, w_size, feature_dims)[:-1].reshape(-1, feature_dims)
 
         return climate_mean
 

@@ -208,6 +208,8 @@ class ForwardFeatures(nn.Cell):
     """
     def __init__(self,
                  grid_size,
+                 h_size,
+                 w_size,
                  in_channels,
                  patch_size,
                  depth,
@@ -223,8 +225,8 @@ class ForwardFeatures(nn.Cell):
         self.layer = nn.CellList([])
         self.encoder_norm = nn.LayerNorm([embed_dims], epsilon=1e-6).to_float(compute_dtype)
         for _ in range(depth):
-            self.layer.append(AFNOBlock(embed_dims, mlp_ratio, dropout_rate, patch_size=patch_size,
-                                        compute_dtype=compute_dtype))
+            self.layer.append(AFNOBlock(embed_dims, mlp_ratio, dropout_rate, h_size=h_size, w_size=w_size,
+                                        patch_size=patch_size, compute_dtype=compute_dtype))
 
         self.pos_drop = nn.Dropout(keep_prob=dropout_rate)
         self.h = grid_size[0]
