@@ -42,20 +42,20 @@ class Convolution(nn.Cell):
         avg_num_neighbors: Number of neighbors to divide by, default None => no normalization.
         use_sc(bool): use self-connection or not
     """
-    def __init__(
-            self,
-            irreps_node_input,
-            irreps_node_attr,
-            irreps_node_output,
-            irreps_edge_attr,
-            irreps_edge_scalars,
-            invariant_layers=1,
-            invariant_neurons=8,
-            avg_num_neighbors=None,
-            use_sc=True,
-            nonlin_scalars=None,
-            dtype=float32
-    ):
+
+    def __init__(self,
+                 irreps_node_input,
+                 irreps_node_attr,
+                 irreps_node_output,
+                 irreps_edge_attr,
+                 irreps_edge_scalars,
+                 invariant_layers=1,
+                 invariant_neurons=8,
+                 avg_num_neighbors=None,
+                 use_sc=True,
+                 nonlin_scalars=None,
+                 dtype=float32,
+                 ncon_dtype=float32):
         super().__init__()
         self.avg_num_neighbors = avg_num_neighbors
         self.use_sc = use_sc
@@ -64,35 +64,37 @@ class Convolution(nn.Cell):
         self.irreps_node_attr = Irreps(irreps_node_attr)
         self.irreps_node_output = Irreps(irreps_node_output)
         self.irreps_edge_attr = Irreps(irreps_edge_attr)
-        self.irreps_edge_scalars = Irreps(
-            [(irreps_edge_scalars.num_irreps, (0, 1))])
+        self.irreps_edge_scalars = Irreps([(irreps_edge_scalars.num_irreps, (0, 1))])
 
-        self.lin1 = Linear(self.irreps_node_input,
-                           self.irreps_node_input, dtype=dtype)
+        self.lin1 = Linear(self.irreps_node_input, self.irreps_node_input, dtype=dtype)
 
-        tp = TensorProduct(self.irreps_node_input, self.irreps_edge_attr,
-                           self.irreps_node_output, 'merge', weight_mode='custom', dtype=dtype)
+        tp = TensorProduct(self.irreps_node_input,
+                           self.irreps_edge_attr,
+                           self.irreps_node_output,
+                           'merge',
+                           weight_mode='custom',
+                           dtype=dtype,
+                           ncon_dtype=ncon_dtype)
 
-        self.fc = FullyConnectedNet(
-            [self.irreps_edge_scalars.num_irreps]
-            + invariant_layers * [invariant_neurons]
-            + [tp.weight_numel],
-            {
-                "ssp": shift_softplus,
-                "silu": ops.silu,
-            }[nonlin_scalars["e"]],
-            dtype=dtype
-        )
+        self.fc = FullyConnectedNet([self.irreps_edge_scalars.num_irreps] + invariant_layers * [invariant_neurons] +
+                                    [tp.weight_numel], {
+                                        "ssp": shift_softplus,
+                                        "silu": ops.silu,
+                                    }.get(nonlin_scalars.get("e", None), None), dtype=dtype)
+
         self.tp = tp
         self.scatter = Scatter()
 
-        self.lin2 = Linear(tp.irreps_out.simplify(),
-                           self.irreps_node_output, dtype=dtype)
+        self.lin2 = Linear(tp.irreps_out.simplify(), self.irreps_node_output, dtype=dtype)
 
         self.sc = None
         if self.use_sc:
-            self.sc = TensorProduct(self.irreps_node_input, self.irreps_node_attr,
-                                    self.irreps_node_output, 'connect', dtype=dtype)
+            self.sc = TensorProduct(self.irreps_node_input,
+                                    self.irreps_node_attr,
+                                    self.irreps_node_output,
+                                    'connect',
+                                    dtype=dtype,
+                                    ncon_dtype=ncon_dtype)
 
     def construct(self, node_input, node_attr, edge_src, edge_dst, edge_attr, edge_scalars):
         """Evaluate interaction Block with resnet"""
@@ -102,11 +104,10 @@ class Convolution(nn.Cell):
 
         edge_features = self.tp(node_features[edge_src], edge_attr, weight)
 
-        node_features = self.scatter(
-            edge_features, edge_dst, dim_size=node_input.shape[0])
+        node_features = self.scatter(edge_features, edge_dst, dim_size=node_input.shape[0])
 
         if self.avg_num_neighbors is not None:
-            node_features = node_features.div(self.avg_num_neighbors ** 0.5)
+            node_features = node_features.div(self.avg_num_neighbors**0.5)
 
         node_features = self.lin2(node_features)
 

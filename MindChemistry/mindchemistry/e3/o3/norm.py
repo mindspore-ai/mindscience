@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""norm"""
 from mindspore import nn, ops, float32
 
 from .irreps import Irreps
@@ -37,7 +38,7 @@ class Norm(nn.Cell):
 
     """
 
-    def __init__(self, irreps_in, squared=False, dtype=float32):
+    def __init__(self, irreps_in, squared=False, dtype=float32, ncon_dtype=float32):
         super().__init__()
 
         self.squared = squared
@@ -46,7 +47,13 @@ class Norm(nn.Cell):
 
         instr = [(i, i, i, "uuu", False, ir.dim) for i, (mul, ir) in enumerate(irreps_in)]
 
-        self.tp = TensorProduct(irreps_in, irreps_in, irreps_out, instr, irrep_norm="component", dtype=dtype)
+        self.tp = TensorProduct(irreps_in,
+                                irreps_in,
+                                irreps_out,
+                                instr,
+                                irrep_norm="component",
+                                dtype=dtype,
+                                ncon_dtype=ncon_dtype)
 
         self.irreps_in = irreps_in
         self.irreps_out = irreps_out.simplify()
@@ -56,8 +63,7 @@ class Norm(nn.Cell):
         out = self.tp(v, v)
         if self.squared:
             return out
-        else:
-            return ops.sqrt(ops.relu(out))
+        return ops.sqrt(ops.relu(out))
 
     def __repr__(self):
         return f"{self.__class__.__name__} ({self.irreps_in})"

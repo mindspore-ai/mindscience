@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""gate"""
 from mindspore import nn, ops, float32
 
 from .activation import Activation
@@ -36,15 +37,16 @@ class _Extract(nn.Cell):
                 raise ValueError('inputs are illegal')
 
     def construct(self, x):
+        """construct"""
         out = []
         for i in range(len(self.irreps_outs)):
-            if self.instr[i] == tuple(range(len(self.irreps_in))):
+            if self.instr[i] == tuple(range(len(self.irreps_in.data))):
                 out.append(x)
             else:
                 out_i = []
                 for i_in in self.instr[i]:
                     out_i.append(narrow(x, -1, *self.irreps_in.slice_tuples[i_in]))
-                if len(out_i) != 0:
+                if out_i:
                     out.append(ops.concat(out_i, -1))
         return out
 
@@ -75,26 +77,34 @@ class _Sortcut(nn.Cell):
 
 class Gate(nn.Cell):
     r"""
-    Gate activation function. The input contain three parts: the first part `irreps_scalars` are scalars that only be affected by activation functions `acts`;
-    the second part `irreps_gates` are scalars that be affected by activation functions `act_gates` and be multiplied on the third part.
+    Gate activation function. The input contain three parts: the first part `irreps_scalars` are scalars that only be
+    affected by activation functions `acts`;
+    the second part `irreps_gates` are scalars that be affected by activation functions `act_gates` and be multiplied
+    on the third part.
 
     .. math::
         \left(\bigoplus_i \phi_i(x_i) \right) \oplus \left(\bigoplus_j \phi_j(g_j) y_j \right)
 
-    where :math:`x_i` and :math:`\phi_i` are from `irreps_scalars` and `acts`, and :math:`g_j`, :math:`\phi_j`, and :math:`y_j` are from `irreps_gates`, `act_gates`, and `irreps_gated`.
+    where :math:`x_i` and :math:`\phi_i` are from `irreps_scalars` and `acts`, and :math:`g_j`, :math:`\phi_j`,
+    and :math:`y_j` are from `irreps_gates`, `act_gates`, and `irreps_gated`.
 
     Args:
-        irreps_scalars (Union[str, Irrep, Irreps]): the input scalar irreps that will be passed through the activation functions `acts`.
-        acts (List[Func]): a list of activation functions for each part of `irreps_scalars`. 
-            The length of the `acts` will be clipped or filled by identity functions to match the length of `irreps_scalars`.
-        irreps_gates (Union[str, Irrep, Irreps]): the input scalar irreps that will be passed through the activation functions `act_gates` and multiplied by `irreps_gated`.
-        act_gates (List[Func]): a list of activation functions for each part of `irreps_gates`. 
-            The length of the `acts` will be clipped or filled by identity functions to match the length of `irreps_gates`.
+        irreps_scalars (Union[str, Irrep, Irreps]): the input scalar irreps that will be passed through the
+        activation functions `acts`.
+        acts (List[Func]): a list of activation functions for each part of `irreps_scalars`.
+            The length of the `acts` will be clipped or filled by identity functions to match the length of
+            `irreps_scalars`.
+        irreps_gates (Union[str, Irrep, Irreps]): the input scalar irreps that will be passed through the activation
+        functions `act_gates` and multiplied by `irreps_gated`.
+        act_gates (List[Func]): a list of activation functions for each part of `irreps_gates`.
+            The length of the `acts` will be clipped or filled by identity functions to match the length of
+            `irreps_gates`.
         irreps_gated (Union[str, Irrep, Irreps]): the input irreps that will be gated.
 
     Raises:
         ValueError: If `irreps_scalars` or `irreps_gates` contain non-scalar irrep.
-        ValueError: If the total multiplication of `irreps_gates` do not match the total multiplication of `irreps_gated`.
+        ValueError: If the total multiplication of `irreps_gates` do not match the total multiplication of
+        `irreps_gated`.
 
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
@@ -104,21 +114,20 @@ class Gate(nn.Cell):
         Gate (2x0e+1x0o+2x0e+2x1o+1x2e -> 2x0e+2x1o+1x2e)
     """
 
-    def __init__(self, irreps_scalars, acts, irreps_gates, act_gates, irreps_gated, dtype=float32):
+    def __init__(self, irreps_scalars, acts, irreps_gates, act_gates, irreps_gated, dtype=float32, ncon_dtype=float32):
         super().__init__()
         irreps_scalars = Irreps(irreps_scalars)
         irreps_gates = Irreps(irreps_gates)
         irreps_gated = Irreps(irreps_gated)
 
+        # pylint: disable=C1801
         if len(irreps_gates) > 0 and irreps_gates.lmax > 0:
-            raise ValueError(
-                f"Gate scalars must be scalars, instead got irreps_gates = {irreps_gates}")
+            raise ValueError(f"Gate scalars must be scalars, instead got irreps_gates = {irreps_gates}")
+        # pylint: disable=C1801
         if len(irreps_scalars) > 0 and irreps_scalars.lmax > 0:
-            raise ValueError(
-                f"Scalars must be scalars, instead got irreps_scalars = {irreps_scalars}")
+            raise ValueError(f"Scalars must be scalars, instead got irreps_scalars = {irreps_scalars}")
         if not irreps_gates.num_irreps == irreps_gated.num_irreps:
-            raise ValueError(
-                f"There are {irreps_gated.num_irreps} irreps in irreps_gated, \
+            raise ValueError(f"There are {irreps_gated.num_irreps} irreps in irreps_gated, \
                     but a different number ({irreps_gates.num_irreps}) of gate scalars in irreps_gates")
 
         self.sc = _Sortcut(irreps_scalars, irreps_gates, irreps_gated)
@@ -130,16 +139,10 @@ class Gate(nn.Cell):
             self._has_scalar = True
             self.act_pass = Activation(irreps_scalars, acts, dtype=dtype)
             irreps_scalars = self.act_pass.irreps_out
-
         self.act_gates = Activation(irreps_gates, act_gates, dtype=dtype)
         irreps_gates = self.act_gates.irreps_out
 
-        self.tp = TensorProduct(
-            irreps_gated,
-            irreps_gates,
-            instructions='element',
-            dtype=dtype
-        )
+        self.tp = TensorProduct(irreps_gated, irreps_gates, instructions='element', dtype=dtype, ncon_dtype=ncon_dtype)
         irreps_gated = self.tp.irreps_out
 
         self.irreps_in = self.sc.irreps_in
@@ -148,19 +151,19 @@ class Gate(nn.Cell):
     def construct(self, x):
         """Implement the gate activation function for the input tensor."""
 
-        parts = self.sc(x)
+        scalars, gates, gated = self.sc(x)
         if self._has_scalar:
-            parts[0] = self.act_pass(parts[0])
+            scalars = self.act_pass(scalars)
 
-        if parts[-2].shape[-1] > 0:
-            parts[-2] = self.act_gates(parts[-2])
-            parts[-1] = self.tp(parts[-1], parts[-2])
+        if gates.shape[-1] > 0:
+            gates = self.act_gates(gates)
+            gated = self.tp(gated, gates)
             if self._has_scalar:
-                x = ops.concat([parts[0], parts[-1]], axis=-1)
+                x = ops.concat([scalars, gated], axis=-1)
             else:
-                x = parts[-1]
+                x = gated
         else:
-            x = parts[0]
+            x = scalars
 
         return x
 

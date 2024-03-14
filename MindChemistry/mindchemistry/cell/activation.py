@@ -1,4 +1,4 @@
-# Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2024 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ _activation = {
     'softmax': activation.Softmax,
     'logsoftmax': activation.LogSoftmax,
     'relu': activation.ReLU,
+    'silu': activation.SiLU,
     'relu6': activation.ReLU6,
     'tanh': activation.Tanh,
     'gelu': activation.GELU,

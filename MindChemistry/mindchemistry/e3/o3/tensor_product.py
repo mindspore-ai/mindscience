@@ -12,15 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-from mindspore import Tensor, nn, ops, Parameter, get_context, float32, int32
+from mindspore import Tensor, nn, ops, Parameter, get_context, float32, int32,  vmap
 from mindspore.common.initializer import initializer
-
+import mindspore as ms
 from .irreps import Irreps
 from .wigner import wigner_3j
 from ..utils.ncon import Ncon
 from ..utils.func import narrow
 from ..utils.initializer import renormal_initializer
-
+import numpy as np
+from mindspore.numpy import tensordot
 
 def _prod(x):
     out = 1
@@ -30,7 +31,7 @@ def _prod(x):
 
 
 sqrt = ops.Sqrt()
-
+zeros = ops.Zeros()
 
 def _sqrt(x, dtype=float32):
     """sqrt operator with producing a tensor"""
@@ -44,7 +45,7 @@ def _sum_tensors(xs, shape, dtype):
         for x in xs[1:]:
             out = out + x.reshape(shape)
         return out
-    return ops.zeros(shape, dtype=dtype)
+    return zeros(shape, dtype)
 
 
 def _compose(tensors, ir_data, instructions, batch_shape):
@@ -269,10 +270,23 @@ def _init_ncon(mode, ls):
     return ncon
 
 
+class uvw_ncon_v2(nn.Cell):
+    def __init__(self):
+        super(uvw_ncon_v2, self).__init__()
+        self.tensordot1 = tensordot
+        self.tensordot2 = tensordot
+        self.tensordot3 = vmap(tensordot, (0,0,None), 0)
+    def construct(self, m1, m2, m3, m4):
+        temp1 = self.tensordot1(m3, m1 , [2,1])
+        temp2 = self.tensordot1(m2, m4 , [1,0])
+        res = self.tensordot3(temp2, temp1, ([0,1],[1,0]))
+        return res
+
 def _init_ncon_weight(mode, weight_mode, ls):
     """tensor graph contractions with weights"""
     if mode == 'uvw':
-        con_list = [[1, 2, -3], [-1, 3, 1], [-1, 4, 2], [3, 4, -2]]
+        einsum = uvw_ncon_v2()
+        return einsum
     elif mode == 'uuu':
         con_list = [[1, 2, -3], [-1, -2, 1], [-1, -2, 2], [-2]]
     elif mode == 'uuw':
@@ -291,8 +305,8 @@ def _init_ncon_weight(mode, weight_mode, ls):
 
 def _run_continue(ir1_data, ir2_data, irout_data, ins):
     """check trivial computations"""
-    mir_in1 = ir1_data[ins['i_in1']]
-    mir_in2 = ir2_data[ins['i_in2']]
+    mir_in1 = ir1_data[ins['indice_one']]
+    mir_in2 = ir2_data[ins['indice_two']]
     mir_out = irout_data[ins['i_out']]
     if mir_in1.dim == 0 or mir_in2.dim == 0 or mir_out.dim == 0:
         return True
@@ -347,10 +361,10 @@ class TensorProduct(nn.Cell):
                 - 'merge': Automatically build 'uvu' mode instructions with trainable parameters. The `irreps_out` here plays the role of output filters.
 
             For `List[Tule[int, int, int, str, bool, (float)]]`, the instructions are constructed manually.
-                Each instruction contain a tuple: (i_in1, i_in2, i_out, mode, has_weight, (optional: path_weight)).
-                Each instruction puts ``in1[i_in1]`` :math:`\otimes` ``in2[i_in2]`` into ``out[i_out]``.
+                Each instruction contain a tuple: (indice_one, indice_two, i_out, mode, has_weight, (optional: path_weight)).
+                Each instruction puts ``in1[indice_one]`` :math:`\otimes` ``in2[indice_two]`` into ``out[i_out]``.
                 
-                 - `i_in1`, `i_in2`, `i_out`: int, the index of the irrep in irreps for `irreps_in1`, `irreps_in2` and `irreps_out` correspondingly.
+                 - `indice_one`, `indice_two`, `i_out`: int, the index of the irrep in irreps for `irreps_in1`, `irreps_in2` and `irreps_out` correspondingly.
                  - `mode`: str in {'uvw', 'uvu', 'uvv', 'uuw', 'uuu', 'uvuv'}, the way of the multiplicities of each path are treated. 'uvw' is the fully mixed mode.
                  - `has_weight`: bool, `True` if this path should have learnable weights, otherwise `False`.
                  - `path_weight`:float, a multiplicative weight to apply to the output of this path. Defaults: 1.0.
@@ -370,6 +384,7 @@ class TensorProduct(nn.Cell):
              - 'inner': weights will initialized in the tensor product internally.
              - 'share': weights should given manually without batch dimension.
              - 'custom': weights should given manually with batch dimension.
+
 
     Raises:
         ValueError: If `irreps_out` is not legal.
@@ -441,7 +456,8 @@ class TensorProduct(nn.Cell):
             path_norm='element',
             weight_init='normal',
             weight_mode='inner',
-            core_mode='ncon'
+            core_mode='ncon',
+            ncon_dtype = float32
     ):
         super().__init__()
 
@@ -457,6 +473,8 @@ class TensorProduct(nn.Cell):
         self.weight_mode = weight_mode
         self.dtype = dtype
         self.core_mode = core_mode
+        self.ones = ops.Ones()
+        self.zeros = ops.Zeros()
 
         self.irreps_in1 = Irreps(irreps_in1).simplify()
         if irreps_in2 is None:
@@ -473,11 +491,14 @@ class TensorProduct(nn.Cell):
 
         self.weight_numel = sum(_prod(ins['path_shape'])
                                 for ins in self.instr if ins['has_weight'])
+        
         self.weights = self._weight_init(weight_init)
 
         self.output_mask = self._init_mask()
-
+        
         self._normalization(irrep_norm=irrep_norm, path_norm=path_norm)
+
+        self.ncon_dtype = ncon_dtype
 
     def construct(self, v1, v2=None, weight=None):
         """Implement tensor product for input tensors."""
@@ -489,7 +510,7 @@ class TensorProduct(nn.Cell):
 
             if self._mode == 'linear':
                 v2_shape = v1.shape[:-1] + (1,)
-                v2 = ops.ones(v2_shape, v1.dtype)
+                v2 = self.ones(v2_shape, v1.dtype)
             else:
                 v2 = v1.copy()
         else:
@@ -498,68 +519,56 @@ class TensorProduct(nn.Cell):
                     f"This tensor product should input 2 tensors.")
             if self._mode == 'linear':
                 v2_shape = v1.shape[:-1] + (1,)
-                v2 = ops.ones(v2_shape, v1.dtype)
+                v2 = self.ones(v2_shape, v1.dtype)
 
         batch_shape = v1.shape[:-1]
-
         v1s = self.irreps_in1.decompose(v1, batch=True)
         v2s = self.irreps_in2.decompose(v2, batch=True)
         weight = self._get_weights(weight)
-        batch_numel = v1s[0].shape[0]
-
         if not (v1.shape[-1] == self.irreps_in1.dim and v2.shape[-1] == self.irreps_in2.dim):
             raise ValueError(f"The shape of input tensors do not match.")
-
         v3_list = []
         weight_ind = 0
         fn = 0
-        for ins in self.instr:
 
+        for ins in self.instr:
             if _run_continue(self.irreps_in1.data, self.irreps_in2.data, self.irreps_out.data, ins):
                 continue
-
             fn = self._ncons[ins['i_ncon']]
-
             if ins['has_weight']:
                 l = _prod(ins['path_shape'])
                 w = narrow(weight, -1, weight_ind, l).reshape(((-1,)
-                                                               if self.weight_mode == 'custom' else ()) + ins[
-                    'path_shape'])
+                                                            if self.weight_mode == 'custom' else ()) + ins['path_shape']).astype(self.ncon_dtype)
                 weight_ind += l
-
                 if self.core_mode == 'einsum':
-                    v3 = fn(
-                        (ins['w3j'], v1s[ins['i_in1']], v2s[ins['i_in2']], w))
+                    v3 = fn((ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype), w))
                 else:
-                    v3 = fn([ins['w3j'], v1s[ins['i_in1']], v2s[ins['i_in2']], w])
+                    if ins['mode'] == 'uvw':
+                        v3 = fn(ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype), w)
+                    else:
+                        v3 = fn([ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype), w])
             else:
                 if self.core_mode == 'einsum':
-                    v3 = fn(
-                        (ins['w3j'], v1s[ins['i_in1']], v2s[ins['i_in2']]))
+                    v3 = fn((ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype)))
                 else:
-                    v3 = fn([ins['w3j'], v1s[ins['i_in1']], v2s[ins['i_in2']]])
+                    v3 = fn([ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype)])
+            v3_list.append(ins['path_weight'].astype(self.dtype) * v3.astype(self.dtype))
 
-            v3_list.append(ins['path_weight'] * v3)
-
-        v_out = _compose(v3_list, self.irreps_out.data,
-                         self.instr, batch_shape)
-
+        v_out = _compose(v3_list, self.irreps_out.data, self.instr, batch_shape)
         return v_out
 
     def __repr__(self):
-        return f'TensorProduct [{self._mode}] ({self.irreps_in1.__repr__()} x {self.irreps_in2.__repr__()} -> {self.irreps_out.simplify().__repr__()} | {self.weight_numel} weights)'
+        return f'TensorProduct [{self._mode}] ({self.irreps_in1.simplify().__repr__()} x {self.irreps_in2.simplify().__repr__()} -> {self.irreps_out.simplify().__repr__()} | {self.weight_numel} weights)'
 
     @property
     def instructions(self):
         return [tuple(ins.values())[:5] for ins in self.instr]
 
     def _input_init(self, irreps_in1, irreps_in2, irreps_out, instructions):
-
         if not isinstance(instructions, str):
             irreps_out = irreps_in1 * \
                 irreps_in2 if irreps_out is None else Irreps(irreps_out)
             self._mode = 'custom'
-
         else:
             if instructions == 'connect':
                 irreps_out, instructions = _connect_init(
@@ -599,15 +608,15 @@ class TensorProduct(nn.Cell):
         ncons = []
 
         for ins in raw_ins:
-            i_in1 = ins[0]
-            i_in2 = ins[1]
+            indice_one = ins[0]
+            indice_two = ins[1]
             i_out = ins[2]
             mode = ins[3]
             has_weight = ins[4]
             path_weight = ins[5]
 
             mirs = (
-                self.irreps_in1.data[i_in1], self.irreps_in2.data[i_in2], self.irreps_out.data[i_out])
+                self.irreps_in1.data[indice_one], self.irreps_in2.data[indice_two], self.irreps_out.data[i_out])
             muls = (mirs[0].mul, mirs[1].mul, mirs[2].mul)
 
             _raw_ins_check(*mirs, ins)
@@ -632,7 +641,7 @@ class TensorProduct(nn.Cell):
 
             ls = (mirs[0].ir.l, mirs[1].ir.l, mirs[2].ir.l)
 
-            d, op = self._ins_dict(i_in1, i_in2, i_out, mode, has_weight,
+            d, op = self._ins_dict(indice_one, indice_two, i_out, mode, has_weight,
                                    path_weight, path_shape, num_elements, wigner_3j(*ls, self.dtype), ls)
             ncons.append(op)
             d['i_ncon'] = len(ncons) - 1
@@ -645,8 +654,8 @@ class TensorProduct(nn.Cell):
     def _ins_dict(self, *args):
         """generate reformed instructions"""
         d = {}
-        keys = ['i_in1', 'i_in2', 'i_out', 'mode', 'has_weight',
-                'path_weight', 'path_shape', 'num_elements', 'w3j', 'ls']
+        keys = ['indice_one', 'indice_two', 'i_out', 'mode', 'has_weight',
+                'path_weight', 'path_shape', 'num_elements', 'wigner_matrix', 'ls']
         for i, arg in enumerate(args):
             d[keys[i]] = arg
 
@@ -670,8 +679,7 @@ class TensorProduct(nn.Cell):
         init_method = renormal_initializer(init_method)
 
         if self.weight_numel > 0 and self.weight_mode == 'inner':
-            weights = Parameter(initializer(
-                init_method, (1, self.weight_numel), dtype=self.dtype).flatten())
+            weights = Parameter(initializer(init_method, (1, self.weight_numel), dtype=self.dtype).init_data().flatten())
         else:
             weights = None
 
@@ -680,13 +688,13 @@ class TensorProduct(nn.Cell):
     def _init_mask(self):
         if self.irreps_out.dim > 0:
             output_mask = ops.cat([
-                ops.ones(mul * ir.dim, dtype=int32)
+                self.ones(mul * ir.dim, int32)
                 if any(
                     (ins['i_out'] == i_out) and (ins['path_weight']
                                                  != 0) and (0 not in ins['path_shape'])
                     for ins in self.instr
                 )
-                else ops.zeros(mul * ir.dim, dtype=int32)
+                else self.zeros(mul * ir.dim, int32)
                 for i_out, (mul, ir) in enumerate(self.irreps_out.data)
             ])
         else:
@@ -697,8 +705,8 @@ class TensorProduct(nn.Cell):
     def _normalization(self, irrep_norm, path_norm):
         """path normalization"""
         for ins in self.instr:
-            mir_in1 = self.irreps_in1.data[ins['i_in1']]
-            mir_in2 = self.irreps_in2.data[ins['i_in2']]
+            mir_in1 = self.irreps_in1.data[ins['indice_one']]
+            mir_in2 = self.irreps_in2.data[ins['indice_two']]
             mir_out = self.irreps_out.data[ins['i_out']]
 
             alpha = 1.

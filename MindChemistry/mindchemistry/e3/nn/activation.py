@@ -12,20 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""activation"""
 import numpy as np
 
-from mindspore import Tensor, nn, ops, float32, set_seed
-
+from mindspore import Tensor, nn, ops, float32
 from ..o3.irreps import Irreps
 
 identity = ops.Identity()
-NTOL = 1e-3
-set_seed(123)
+NTOL = 1e-5
 
 
 def _moment(f, n, dtype=float32):
     x = Tensor(np.random.randn(1000000), dtype=dtype)
     y = f(x).pow(n).mean().pow(-0.5)
+    y = ops.cast(y, float32)
 
     return y
 
@@ -35,13 +35,13 @@ def _parity_function(f, dtype=float32):
     y1, y2 = f(x).asnumpy(), f(-x).asnumpy()
     if np.max(np.abs(y1 - y2)) < NTOL:
         return 1
-    elif np.max(np.abs(y1 + y2)) < NTOL:
+    if np.max(np.abs(y1 + y2)) < NTOL:
         return -1
-    else:
-        return 0
+    return 0
 
 
 class _Normalize(nn.Cell):
+    """_Normalize"""
 
     def __init__(self, f, dtype=float32):
         super().__init__()
@@ -55,18 +55,18 @@ class _Normalize(nn.Cell):
     def construct(self, x):
         if self._is_id:
             return self.f(x)
-        else:
-            return self.f(x).mul(self.factor)
+        return self.f(x).mul(ops.cast(self.factor, float32))
 
 
 class Activation(nn.Cell):
     r"""
-    Activation function for scalar-tensors. The parities of irreps may be changed according to the parity of each activation functions.
+    Activation function for scalar-tensors. The parities of irreps may be changed according to the parity of each
+    activation functions.
     Odd scalars require the corresponding activation functions to be odd or even.
 
     Args:
         irreps_in (Union[str, Irrep, Irreps]): the input irreps.
-        acts (List[Func]): a list of activation functions for each part of `irreps_in`. 
+        acts (List[Func]): a list of activation functions for each part of `irreps_in`.
             The length of the `acts` will be clipped or filled by identity functions to match the length of `irreps_in`.
 
     Raises:
@@ -91,15 +91,15 @@ class Activation(nn.Cell):
         for (mul, (l_in, p_in)), act in zip(irreps_in.data, acts):
             if act is not None:
                 if l_in != 0:
-                    raise ValueError(
-                        f"Activation cannot apply an activation function to a non-scalar input.")
+                    raise ValueError(f"Activation cannot apply an activation function to a non-scalar input.")
 
                 acts_out.append(_Normalize(act, dtype=dtype))
                 p_out = _parity_function(acts_out[-1]) if p_in == -1 else p_in
 
                 if p_out == 0:
                     raise ValueError(
-                        f"Activation parity is not match. The input scalar is odd but the activation is neither even nor odd.")
+                        "Parity is not match. The input scalar is odd but the activation is neither even nor odd."
+                    )
 
                 irreps_out.append((mul, (0, p_out)))
 
@@ -115,7 +115,6 @@ class Activation(nn.Cell):
         """Implement the activation function for the input tensor."""
         vs = self.irreps_in.decompose(v)
         batch_shape = v.shape[:-1]
-
         out_list = []
         i = 0
         for act in self.acts:
