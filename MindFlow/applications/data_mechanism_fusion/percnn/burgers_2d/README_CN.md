@@ -8,7 +8,12 @@
 
 ## 快速开始
 
-从[链接](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN) 中下载验证所需要的数据集，并保存在`./data`目录下。
+从[链接](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN) 中下载验证所需要的数据集，并保存在`./dataset`目录下。需要安装`prettytable`和`imageio`库。
+
+```shell
+pip install prettytable
+pip install imageio
+```
 
 ### Stage 1：调用`train.py`脚本实现数据驱动的PeRCNN仿真
 

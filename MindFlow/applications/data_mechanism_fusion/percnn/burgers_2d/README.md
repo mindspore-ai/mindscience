@@ -8,7 +8,12 @@ Burgers' equation is a nonlinear partial differential equation that simulates th
 
 ## Quick Start
 
-Download the data from [link](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN) and save them in `./dataset`.
+Download the data from [link](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN) and save them in `./dataset`. Need to install `prettytable` and `imageio` packages.
+
+```shell
+pip install prettytable
+pip install imageio
+```
 
 ### Stage 1: call `train.py` to carry out data-driven PeRCNN simulation
 
