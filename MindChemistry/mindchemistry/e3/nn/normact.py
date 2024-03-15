@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""normact"""
 from mindspore import nn, Parameter, float32, ops
 from mindspore.common.initializer import initializer
 
@@ -21,14 +22,17 @@ from ..o3.norm import Norm
 
 
 class NormActivation(nn.Cell):
-    r"""Activation function for the norm of irreps. 
-    Applies a scalar activation to the norm of each irrep and outputs a (normalized) version of that irrep multiplied by the scalar output of the scalar activation.
+    r"""Activation function for the norm of irreps.
+    Applies a scalar activation to the norm of each irrep and outputs a (normalized) version of that irrep multiplied
+      by the scalar output of the scalar activation.
 
     Args:
         irreps_in (Union[str, Irrep, Irreps]): the input irreps.
-        act (Func): an activation function for each part of the norm of `irreps_in`. 
-        normalize (bool): whether to normalize the input features before multiplying them by the scalars from the nonlinearity. Default: True.
-        epsilon (float): when ``normalize``ing, norms smaller than ``epsilon`` will be clamped up to ``epsilon`` to avoid division by zero. Not allowed when `normalize` is False. Default: None.
+        act (Func): an activation function for each part of the norm of `irreps_in`.
+        normalize (bool): whether to normalize the input features before multiplying them by the scalars from the
+          nonlinearity. Default: True.
+        epsilon (float): when ``normalize``ing, norms smaller than ``epsilon`` will be clamped up to ``epsilon``
+          to avoid division by zero. Not allowed when `normalize` is False. Default: None.
         bias (bool): whether to apply a learnable additive bias to the inputs of the `act`. Default: False.
 
     Raises:
@@ -37,13 +41,21 @@ class NormActivation(nn.Cell):
 
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
-    
+
     Examples:
         >>> NormActivation("2x1e", ops.sigmoid, bias=True)
         NormActivation [sigmoid] (2x1e -> 2x1e)
     """
 
-    def __init__(self, irreps_in, act, normalize=True, epsilon=None, bias=False, init_method='zeros', dtype=float32):
+    def __init__(self,
+                 irreps_in,
+                 act,
+                 normalize=True,
+                 epsilon=None,
+                 bias=False,
+                 init_method='zeros',
+                 dtype=float32,
+                 ncon_dtype=float32):
         super().__init__()
 
         self.irreps_in = Irreps(irreps_in)
@@ -70,8 +82,11 @@ class NormActivation(nn.Cell):
         else:
             self.bias = None
 
-        self.scalar_multiplier = TensorProduct(irreps_in1=self.norm.irreps_out, irreps_in2=irreps_in,
-                                               instructions='element', dtype=dtype)
+        self.scalar_multiplier = TensorProduct(irreps_in1=self.norm.irreps_out,
+                                               irreps_in2=irreps_in,
+                                               instructions='element',
+                                               dtype=dtype,
+                                               ncon_dtype=ncon_dtype)
 
     def construct(self, v):
         """Implement the norm-activation function for the input tensor."""
