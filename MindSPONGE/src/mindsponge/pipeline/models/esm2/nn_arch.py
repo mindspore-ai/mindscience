@@ -18,6 +18,7 @@ import mindspore as ms
 from mindspore import ops, nn
 from mindspore.nn import LayerNorm
 import mindspore.numpy as mnp
+from mindspore import context
 # pylint: disable=relative-beyond-top-level
 from ..esm_if1.module.util import Alphabet
 from .module.transformer_layer import TransformerLayer
@@ -55,6 +56,10 @@ class ESM2(nn.Cell):
         self.return_contacts = return_contacts
         self.need_head_weights = need_head_weights
         self._init_submodules()
+        if context.get_context("device_target") == "GPU":
+            self.fill_value = ms.Tensor(0, dtype=ms.float32)
+        else:
+            self.fill_value = ms.Tensor(0, dtype=ms.float16)
 
     def construct(self, tokens):
         """ESM2 Model structure"""
@@ -66,8 +71,7 @@ class ESM2(nn.Cell):
         if self.token_dropout:
             mask = tokens == self.mask_idx
             mask = ops.unsqueeze(mask, dim=-1)
-            fill_value = ms.Tensor(0, dtype=ms.float16)
-            x = ops.masked_fill(x, mask, fill_value)
+            x = ops.masked_fill(x, mask, self.fill_value)
             # x: B x T x C
             mask_ratio_train = 0.15 * 0.8
             src_lengths = (~padding_mask).sum(-1)
