@@ -14,7 +14,6 @@
 # limitations under the License.
 # ============================================================================
 '''
-
 import numpy as np
 from scipy.linalg import dft
 
@@ -504,237 +503,213 @@ def idft1(shape, modes, dim=(-1,), compute_dtype=mindspore.float32):
     return _idftn(shape, modes, dim=dim, compute_dtype=compute_dtype)
 
 
-class SpectralConv1dDft(nn.Cell):
-    def __init__(self, in_channels, out_channels, modes1, resolution, compute_dtype=mstype.float32):
+class SpectralConvDft(nn.Cell):
+    """Base Class for Fourier Layer, including DFT, linear transform, and Inverse DFT"""
+
+    def __init__(self, in_channels, out_channels, n_modes, resolutions, compute_dtype=mstype.float32):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.modes1 = modes1
-        self.resolution = resolution
+        if isinstance(n_modes, int):
+            n_modes = [n_modes]
+        self.n_modes = n_modes
+        if isinstance(resolutions, int):
+            resolutions = [resolutions]
+        self.resolutions = resolutions
+        if len(self.n_modes) != len(self.resolutions):
+            raise ValueError(
+                "The dimension of n_modes should be equal to that of resolutions, \
+                but got dimension of n_modes {} and dimension of resolutions {}".format(len(self.n_modes),
+                                                                                        len(self.resolutions)))
         self.compute_dtype = compute_dtype
 
-        self.scale = (1. / (in_channels * out_channels))
-        w_re = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1),
-                      dtype=mstype.float32)
-        w_im = Tensor(self.scale * np.random.rand(in_channels, out_channels, self.modes1),
-                      dtype=mstype.float32)
-        self.w_re = Parameter(w_re, requires_grad=True)
-        self.w_im = Parameter(w_im, requires_grad=True)
-        self.dft1_cell = dft1(shape=(self.resolution,),
-                              modes=modes1, compute_dtype=compute_dtype)
-        self.idft1_cell = idft1(shape=(self.resolution,),
-                                modes=modes1, compute_dtype=compute_dtype)
+    def construct(self, x: Tensor):
+        raise NotImplementedError()
 
-    @staticmethod
-    def mul1d(inputs, weights):
+    def _einsum(self, inputs, weights):
         weights = weights.expand_dims(0)
         inputs = inputs.expand_dims(2)
         out = inputs * weights
         return out.sum(1)
 
+
+class SpectralConv1dDft(SpectralConvDft):
+    """1D Fourier Layer. It does DFT, linear transform, and Inverse DFT."""
+
+    def __init__(self, in_channels, out_channels, n_modes, resolutions, compute_dtype=mstype.float32):
+        super().__init__(in_channels, out_channels, n_modes, resolutions)
+        self._scale = (1. / (self.in_channels * self.out_channels))
+        w_re = Tensor(self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0]),
+                      dtype=mstype.float32)
+        w_im = Tensor(self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0]),
+                      dtype=mstype.float32)
+        self._w_re = Parameter(w_re, requires_grad=True)
+        self._w_im = Parameter(w_im, requires_grad=True)
+        self._dft1_cell = dft1(shape=(self.resolutions[0],), modes=self.n_modes[0], compute_dtype=self.compute_dtype)
+        self._idft1_cell = idft1(shape=(self.resolutions[0],), modes=self.n_modes[0], compute_dtype=self.compute_dtype)
+
     def construct(self, x: Tensor):
         x_re = x
         x_im = ops.zeros_like(x_re)
-        x_ft_re, x_ft_im = self.dft1_cell((x_re, x_im))
-        compute_dtype = self.compute_dtype
-        w_re = P.Cast()(self.w_re, compute_dtype)
-        w_im = P.Cast()(self.w_im, compute_dtype)
-        out_ft_re = \
-            self.mul1d(x_ft_re[:, :, :self.modes1], w_re) \
-            - self.mul1d(x_ft_im[:, :, :self.modes1], w_im)
-        out_ft_im = \
-            self.mul1d(x_ft_re[:, :, :self.modes1], w_im) \
-            + self.mul1d(x_ft_im[:, :, :self.modes1], w_re)
+        x_ft_re, x_ft_im = self._dft1_cell((x_re, x_im))
+        w_re = P.Cast()(self._w_re, self.compute_dtype)
+        w_im = P.Cast()(self._w_im, self.compute_dtype)
+        out_ft_re = self._einsum(x_ft_re[:, :, :self.n_modes[0]], w_re) - self._einsum(x_ft_im[:, :, :self.n_modes[0]],
+                                                                                       w_im)
+        out_ft_im = self._einsum(x_ft_re[:, :, :self.n_modes[0]], w_im) + self._einsum(x_ft_im[:, :, :self.n_modes[0]],
+                                                                                       w_re)
 
-        x, _ = self.idft1_cell((out_ft_re, out_ft_im))
+        x, _ = self._idft1_cell((out_ft_re, out_ft_im))
+
         return x
 
 
-class SpectralConv2dDft(nn.Cell):
-    def __init__(self, in_channels, out_channels, modes1, modes2, column_resolution, raw_resolution,
-                 compute_dtype=mstype.float16):
-        super().__init__()
+class SpectralConv2dDft(SpectralConvDft):
+    """2D Fourier Layer. It does DFT, linear transform, and Inverse DFT."""
 
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-        self.modes1 = modes1
-        self.modes2 = modes2
-        self.column_resolution = column_resolution
-        self.raw_resolution = raw_resolution
-        self.compute_dtype = compute_dtype
-
-        self.scale = (1. / (in_channels * out_channels))
-
+    def __init__(self, in_channels, out_channels, n_modes, resolutions, compute_dtype=mstype.float32):
+        super().__init__(in_channels, out_channels, n_modes, resolutions)
+        self._scale = (1. / (self.in_channels * self.out_channels))
         w_re1 = Tensor(
-            self.scale * np.random.rand(in_channels,
-                                        out_channels, modes1, modes2),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1]),
+            dtype=self.compute_dtype)
         w_im1 = Tensor(
-            self.scale * np.random.rand(in_channels,
-                                        out_channels, modes1, modes2),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1]),
+            dtype=self.compute_dtype)
         w_re2 = Tensor(
-            self.scale * np.random.rand(in_channels,
-                                        out_channels, modes1, modes2),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1]),
+            dtype=self.compute_dtype)
         w_im2 = Tensor(
-            self.scale * np.random.rand(in_channels,
-                                        out_channels, modes1, modes2),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1]),
+            dtype=self.compute_dtype)
 
-        self.w_re1 = Parameter(w_re1, requires_grad=True)
-        self.w_im1 = Parameter(w_im1, requires_grad=True)
-        self.w_re2 = Parameter(w_re2, requires_grad=True)
-        self.w_im2 = Parameter(w_im2, requires_grad=True)
+        self._w_re1 = Parameter(w_re1, requires_grad=True)
+        self._w_im1 = Parameter(w_im1, requires_grad=True)
+        self._w_re2 = Parameter(w_re2, requires_grad=True)
+        self._w_im2 = Parameter(w_im2, requires_grad=True)
 
-        self.dft2_cell = dft2(shape=(column_resolution, raw_resolution), modes=(modes1, modes2),
-                              compute_dtype=compute_dtype)
-        self.idft2_cell = idft2(shape=(column_resolution, raw_resolution), modes=(modes1, modes2),
-                                compute_dtype=compute_dtype)
-        self.mat = Tensor(shape=(1, out_channels, column_resolution - 2 * modes1, modes2), dtype=compute_dtype,
-                          init=Zero())
-        self.concat = ops.Concat(-2)
-
-    @staticmethod
-    def mul2d(inputs, weights):
-        weight = weights.expand_dims(0)
-        data = inputs.expand_dims(2)
-        out = weight * data
-        return out.sum(1)
+        self._dft2_cell = dft2(shape=(self.resolutions[0], self.resolutions[1]),
+                               modes=(self.n_modes[0], self.n_modes[1]), compute_dtype=self.compute_dtype)
+        self._idft2_cell = idft2(shape=(self.resolutions[0], self.resolutions[1]),
+                                 modes=(self.n_modes[0], self.n_modes[1]), compute_dtype=self.compute_dtype)
+        self._mat = Tensor(shape=(1, self.out_channels, self.resolutions[1] - 2 * self.n_modes[0], self.n_modes[1]),
+                           dtype=self.compute_dtype, init=Zero())
+        self._concat = ops.Concat(-2)
 
     def construct(self, x: Tensor):
         x_re = x
         x_im = ops.zeros_like(x_re)
-        x_ft_re, x_ft_im = self.dft2_cell((x_re, x_im))
+        x_ft_re, x_ft_im = self._dft2_cell((x_re, x_im))
 
-        out_ft_re1 = \
-            self.mul2d(x_ft_re[:, :, :self.modes1, :self.modes2], self.w_re1) \
-            - self.mul2d(x_ft_im[:, :, :self.modes1, :self.modes2], self.w_im1)
-        out_ft_im1 = \
-            self.mul2d(x_ft_re[:, :, :self.modes1, :self.modes2], self.w_im1) \
-            + self.mul2d(x_ft_im[:, :, :self.modes1, :self.modes2], self.w_re1)
+        out_ft_re1 = self._einsum(x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_re1) - self._einsum(
+            x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_im1)
+        out_ft_im1 = self._einsum(x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_im1) + self._einsum(
+            x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_re1)
 
-        out_ft_re2 = \
-            self.mul2d(x_ft_re[:, :, -self.modes1:, :self.modes2], self.w_re2) \
-            - self.mul2d(x_ft_im[:, :, -self.modes1:, :self.modes2], self.w_im2)
-        out_ft_im2 = \
-            self.mul2d(x_ft_re[:, :, -self.modes1:, :self.modes2], self.w_im2) \
-            + self.mul2d(x_ft_im[:, :, -self.modes1:, :self.modes2], self.w_re2)
+        out_ft_re2 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_re2) - self._einsum(
+            x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_im2)
+        out_ft_im2 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_im2) + self._einsum(
+            x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_re2)
 
         batch_size = x.shape[0]
-        mat = self.mat.repeat(batch_size, 0)
-        out_re = self.concat((out_ft_re1, mat, out_ft_re2))
-        out_im = self.concat((out_ft_im1, mat, out_ft_im2))
+        mat = self._mat.repeat(batch_size, 0)
+        out_re = self._concat((out_ft_re1, mat, out_ft_re2))
+        out_im = self._concat((out_ft_im1, mat, out_ft_im2))
 
-        x, _ = self.idft2_cell((out_re, out_im))
+        x, _ = self._idft2_cell((out_re, out_im))
+
         return x
 
 
-class SpectralConv3d(nn.Cell):
+class SpectralConv3dDft(SpectralConvDft):
     """3D Fourier layer. It does DFT, linear transform, and Inverse DFT."""
-    def __init__(self, in_channels, out_channels, modes1, modes2, modes3,
-                 column_resolution, row_resolution, bar_resolution,
-                 compute_dtype=mstype.float32):
-        super(SpectralConv3d, self).__init__()
 
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-        # Number of Fourier modes to multiply, at most floor(N/2) + 1
-        self.modes1 = modes1
-        self.modes2 = modes2
-        self.modes3 = modes3
-        self.column_resolution = column_resolution
-        self.row_resolution = row_resolution
-        self.bar_resolution = bar_resolution
-        self.compute_dtype = compute_dtype
-
-        self.scale = (1 / (in_channels * out_channels))
+    def __init__(self, in_channels, out_channels, n_modes, resolutions, compute_dtype=mstype.float32):
+        super().__init__(in_channels, out_channels, n_modes, resolutions)
+        self._scale = (1 / (self.in_channels * self.out_channels))
 
         w_re1 = Tensor(
-            self.scale * np.random.rand(in_channels,
-                                        out_channels, modes1, modes2, modes3),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1],
+                                         self.n_modes[2]), dtype=self.compute_dtype)
         w_im1 = Tensor(
-            self.scale * np.random.rand(in_channels,
-                                        out_channels, modes1, modes2, modes3),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1],
+                                         self.n_modes[2]), dtype=self.compute_dtype)
         w_re2 = Tensor(
-            self.scale * np.random.rand(in_channels,
-                                        out_channels, modes1, modes2, modes3),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1],
+                                         self.n_modes[2]), dtype=self.compute_dtype)
         w_im2 = Tensor(
-            self.scale * np.random.rand(in_channels,
-                                        out_channels, modes1, modes2, modes3),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1],
+                                         self.n_modes[2]), dtype=self.compute_dtype)
         w_re3 = Tensor(
-            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2, modes3),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1],
+                                         self.n_modes[2]), dtype=self.compute_dtype)
         w_im3 = Tensor(
-            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2, modes3),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1],
+                                         self.n_modes[2]), dtype=self.compute_dtype)
         w_re4 = Tensor(
-            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2, modes3),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1],
+                                         self.n_modes[2]), dtype=self.compute_dtype)
         w_im4 = Tensor(
-            self.scale * np.random.rand(in_channels, out_channels, modes1, modes2, modes3),
-            dtype=compute_dtype)
+            self._scale * np.random.rand(self.in_channels, self.out_channels, self.n_modes[0], self.n_modes[1],
+                                         self.n_modes[2]), dtype=self.compute_dtype)
 
-        self.w_re1 = Parameter(w_re1, requires_grad=True)
-        self.w_im1 = Parameter(w_im1, requires_grad=True)
-        self.w_re2 = Parameter(w_re2, requires_grad=True)
-        self.w_im2 = Parameter(w_im2, requires_grad=True)
-        self.w_re3 = Parameter(w_re3, requires_grad=True)
-        self.w_im3 = Parameter(w_im3, requires_grad=True)
-        self.w_re4 = Parameter(w_re4, requires_grad=True)
-        self.w_im4 = Parameter(w_im4, requires_grad=True)
+        self._w_re1 = Parameter(w_re1, requires_grad=True)
+        self._w_im1 = Parameter(w_im1, requires_grad=True)
+        self._w_re2 = Parameter(w_re2, requires_grad=True)
+        self._w_im2 = Parameter(w_im2, requires_grad=True)
+        self._w_re3 = Parameter(w_re3, requires_grad=True)
+        self._w_im3 = Parameter(w_im3, requires_grad=True)
+        self._w_re4 = Parameter(w_re4, requires_grad=True)
+        self._w_im4 = Parameter(w_im4, requires_grad=True)
 
-        self.dft3_cell = dft3(shape=(column_resolution, row_resolution, bar_resolution),
-                              modes=(modes1, modes2, modes3),
-                              compute_dtype=compute_dtype)
-        self.idft3_cell = idft3(shape=(column_resolution, row_resolution, bar_resolution),
-                                modes=(modes1, modes2, modes3),
-                                compute_dtype=compute_dtype)
-        self.mat_x = Tensor(shape=(1, out_channels, column_resolution - 2 * modes1, modes2,  modes3),
-                            dtype=compute_dtype, init=Zero())
-        self.mat_y = Tensor(shape=(1, out_channels, column_resolution, row_resolution - 2 * modes2,  modes3),
-                            dtype=compute_dtype, init=Zero())
-        self.concat = ops.Concat(-2)
-
-    # Complex multiplication
-    def mul3d(self, inputs, weights):
-        weight = weights.expand_dims(0)
-        data = inputs.expand_dims(2)
-        out = weight * data
-        return out.sum(1)
+        self._dft3_cell = dft3(shape=(self.resolutions[0], self.resolutions[1], self.resolutions[2]),
+                               modes=(self.n_modes[0], self.n_modes[1], self.n_modes[2]),
+                               compute_dtype=self.compute_dtype)
+        self._idft3_cell = idft3(shape=(self.resolutions[0], self.resolutions[1], self.resolutions[2]),
+                                 modes=(self.n_modes[0], self.n_modes[1], self.n_modes[2]),
+                                 compute_dtype=self.compute_dtype)
+        self._mat_x = Tensor(
+            shape=(1, self.out_channels, self.resolutions[0] - 2 * self.n_modes[0], self.n_modes[1], self.n_modes[2]),
+            dtype=self.compute_dtype, init=Zero())
+        self._mat_y = Tensor(
+            shape=(1, self.out_channels, self.resolutions[0], self.resolutions[1] - 2 * self.n_modes[1],
+                   self.n_modes[2]),
+            dtype=self.compute_dtype, init=Zero())
+        self._concat = ops.Concat(-2)
 
     def construct(self, x: Tensor):
         x_re = x
         x_im = ops.zeros_like(x_re)
-        x_ft_re, x_ft_im = self.dft3_cell((x_re, x_im))
+        x_ft_re, x_ft_im = self._dft3_cell((x_re, x_im))
 
-        out_ft_re1 = self.mul3d(x_ft_re[:, :, :self.modes1, :self.modes2, :self.modes3], self.w_re1) \
-            - self.mul3d(x_ft_im[:, :, :self.modes1, :self.modes2, :self.modes3], self.w_im1)
-        out_ft_im1 = self.mul3d(x_ft_re[:, :, :self.modes1, :self.modes2, :self.modes3], self.w_im1) \
-            + self.mul3d(x_ft_im[:, :, :self.modes1, :self.modes2, :self.modes3], self.w_re1)
-
-        out_ft_re2 = self.mul3d(x_ft_re[:, :, -self.modes1:, :self.modes2, :self.modes3], self.w_re2) \
-            - self.mul3d(x_ft_im[:, :, -self.modes1:, :self.modes2, :self.modes3], self.w_im2)
-        out_ft_im2 = self.mul3d(x_ft_re[:, :, -self.modes1:, :self.modes2, :self.modes3], self.w_im2) \
-            + self.mul3d(x_ft_im[:, :, -self.modes1:, :self.modes2, :self.modes3], self.w_re2)
-
-        out_ft_re3 = self.mul3d(x_ft_re[:, :, :self.modes1, -self.modes2:, :self.modes3], self.w_re3) \
-            - self.mul3d(x_ft_im[:, :, :self.modes1, -self.modes2:, :self.modes3], self.w_im3)
-        out_ft_im3 = self.mul3d(x_ft_re[:, :, :self.modes1, -self.modes2:, :self.modes3], self.w_im3) \
-            + self.mul3d(x_ft_im[:, :, :self.modes1, -self.modes2:, :self.modes3], self.w_re3)
-
-        out_ft_re4 = self.mul3d(x_ft_re[:, :, -self.modes1:, -self.modes2:, :self.modes3], self.w_re4) \
-            - self.mul3d(x_ft_im[:, :, -self.modes1:, -self.modes2:, :self.modes3], self.w_im4)
-        out_ft_im4 = self.mul3d(x_ft_re[:, :, -self.modes1:, -self.modes2:, :self.modes3], self.w_im4) \
-            + self.mul3d(x_ft_im[:, :, -self.modes1:, -self.modes2:, :self.modes3], self.w_re4)
+        out_ft_re1 = self._einsum(x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1], :self.n_modes[2]],
+                                  self._w_re1) - self._einsum(x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1],
+                                                                      :self.n_modes[2]], self._w_im1)
+        out_ft_im1 = self._einsum(x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1], :self.n_modes[2]],
+                                  self._w_im1) + self._einsum(x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1],
+                                                                      :self.n_modes[2]], self._w_re1)
+        out_ft_re2 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1], :self.n_modes[2]],
+                                  self._w_re2) - self._einsum(x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1],
+                                                                      :self.n_modes[2]], self._w_im2)
+        out_ft_im2 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1], :self.n_modes[2]],
+                                  self._w_im2) + self._einsum(x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1],
+                                                                      :self.n_modes[2]], self._w_re2)
+        out_ft_re3 = self._einsum(x_ft_re[:, :, :self.n_modes[0], -self.n_modes[1]:, :self.n_modes[2]],
+                                  self._w_re3) - self._einsum(x_ft_im[:, :, :self.n_modes[0], -self.n_modes[1]:,
+                                                                      :self.n_modes[2]], self._w_im3)
+        out_ft_im3 = self._einsum(x_ft_re[:, :, :self.n_modes[0], -self.n_modes[1]:, :self.n_modes[2]],
+                                  self._w_im3) + self._einsum(x_ft_im[:, :, :self.n_modes[0], -self.n_modes[1]:,
+                                                                      :self.n_modes[2]], self._w_re3)
+        out_ft_re4 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, -self.n_modes[1]:, :self.n_modes[2]],
+                                  self._w_re4) - self._einsum(x_ft_im[:, :, -self.n_modes[0]:, -self.n_modes[1]:,
+                                                                      :self.n_modes[2]], self._w_im4)
+        out_ft_im4 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, -self.n_modes[1]:, :self.n_modes[2]],
+                                  self._w_im4) + self._einsum(x_ft_im[:, :, -self.n_modes[0]:, -self.n_modes[1]:,
+                                                                      :self.n_modes[2]], self._w_re4)
 
         batch_size = x.shape[0]
-        mat_x = self.mat_x.repeat(batch_size, 0)
-        mat_y = self.mat_y.repeat(batch_size, 0)
+        mat_x = self._mat_x.repeat(batch_size, 0)
+        mat_y = self._mat_y.repeat(batch_size, 0)
 
         out_re1 = ops.concat((out_ft_re1, mat_x, out_ft_re2), -3)
         out_im1 = ops.concat((out_ft_im1, mat_x, out_ft_im2), -3)
@@ -743,5 +718,6 @@ class SpectralConv3d(nn.Cell):
         out_im2 = ops.concat((out_ft_im3, mat_x, out_ft_im4), -3)
         out_re = ops.concat((out_re1, mat_y, out_re2), -2)
         out_im = ops.concat((out_im1, mat_y, out_im2), -2)
-        x, _ = self.idft3_cell((out_re, out_im))
+        x, _ = self._idft3_cell((out_re, out_im))
+
         return x

@@ -16,20 +16,22 @@
 math operators
 '''
 import numpy as np
-import mindspore.numpy as mnp
 
 from ..cell.utils import to_2tuple, to_3tuple
 
-__all__ = ['get_grid_1d', 'get_grid_2d', 'get_grid_3d', 'fftshift', 'ifftshift']
+__all__ = ['get_grid_1d', 'get_grid_2d', 'get_grid_3d']
 
 
 def get_grid_1d(resolution):
-    grid_x = np.linspace(0, 1, resolution)
-    return grid_x.reshape(1, resolution, 1)
+    """get grid 1d"""
+    grid_x = np.linspace(0, 1, resolution).reshape(1, resolution, 1) \
+        if isinstance(resolution, int) else np.linspace(0, 1, resolution[0]).reshape(1, resolution[0], 1)
+    return grid_x
 
 
 def get_grid_2d(resolution):
-    resolution = to_2tuple(resolution)
+    """get grid 2d"""
+    resolution = to_2tuple(resolution) if isinstance(resolution, int) else resolution
     res_x = resolution[0]
     res_y = resolution[1]
     grid_x = np.linspace(0, 1, res_x).reshape(1, res_x, 1, 1)
@@ -41,7 +43,7 @@ def get_grid_2d(resolution):
 
 def get_grid_3d(resolution):
     """get grid 3d"""
-    resolution = to_3tuple(resolution)
+    resolution = to_3tuple(resolution) if isinstance(resolution, int) else resolution
     res_x = resolution[0]
     res_y = resolution[1]
     res_z = resolution[2]
@@ -56,25 +58,3 @@ def get_grid_3d(resolution):
     grid_z = np.repeat(grid_z, res_y, axis=2)
 
     return np.concatenate((grid_x, grid_y, grid_z), axis=-1)
-
-
-def fftshift(x, axes=None):
-    if axes is None:
-        axes = tuple(range(x.ndim))
-        shift = [dim // 2 for dim in x.shape]
-    elif isinstance(axes, int):
-        shift = x.shape[axes] // 2
-    else:
-        shift = [x.shape[ax] // 2 for ax in axes]
-    return mnp.roll(x, shift, axes)
-
-
-def ifftshift(x, axes=None):
-    if axes is None:
-        axes = tuple(range(x.ndim))
-        shift = [-(dim // 2) for dim in x.shape]
-    elif isinstance(axes, int):
-        shift = -(x.shape[axes] // 2)
-    else:
-        shift = [-(x.shape[ax] // 2) for ax in axes]
-    return mnp.roll(x, shift, axes)

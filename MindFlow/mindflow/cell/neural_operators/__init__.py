@@ -13,14 +13,12 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .fno1d import FNO1D
-from .fno2d import FNO2D
-from .fno3d import FNO3D
+from .fno import FNOBlocks, FNO1D, FNO2D, FNO3D
 from .kno1d import KNO1D
 from .kno2d import KNO2D
 from .pdenet import PDENet
 from .percnn import PeRCNN
 
-__all__ = ["FNO1D", "FNO2D", "FNO3D", "KNO1D", "KNO2D", "PDENet", "PeRCNN"]
+__all__ = ["FNOBlocks", "FNO1D", "FNO2D", "FNO3D", "KNO1D", "KNO2D", "PDENet", "PeRCNN"]
 
 __all__.sort()

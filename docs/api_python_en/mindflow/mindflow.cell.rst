@@ -9,6 +9,7 @@ mindflow.cell
     mindflow.cell.FCSequential
     mindflow.cell.FNO1D
     mindflow.cell.FNO2D
+    mindflow.cell.FNO3D
     mindflow.cell.InputScale
     mindflow.cell.LinearBlock
     mindflow.cell.MultiScaleFCSequential
