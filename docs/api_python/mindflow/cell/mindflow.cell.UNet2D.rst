@@ -5,7 +5,7 @@ mindflow.cell.UNet2D
 
     二维UNet模型。
     UNet是一个呈U型的卷积神经网络。它由一个捕捉上下文的编码器和一个实现精确定位的解码器组成。
-    具体细节可以参见`U-Net: Convolutional Networks for Biomedical Image Segmentation <https://arxiv.org/abs/1505.04597>`_ 。
+    具体细节可以参见 `U-Net: Convolutional Networks for Biomedical Image Segmentation <https://arxiv.org/abs/1505.04597>`_ 。
 
     参数：
         - **in_channels** (int) - 输入的输入特征维度。

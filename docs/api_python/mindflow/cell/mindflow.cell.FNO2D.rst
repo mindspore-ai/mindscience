@@ -13,9 +13,9 @@ mindflow.cell.FNO2D
         - **resolutions** (Union[int, list(int)]) - 输入中的维度。支持整型或由两个整型数组成的列表。
         - **hidden_channels** (int) - FNOBlock的输入输出通道数。默认值： ``20``。
         - **lifting_channels** (int) - 提升层中的中间层的通道数。默认值： None。
-        - **hidden_channels** (int) - 解码器层中的中间层的通道数。默认值： ``128``。
+        - **projection_channels** (int) - 解码器层中的中间层的通道数。默认值： ``128``。
         - **n_layers** (int) - 傅里叶层的嵌套层数。默认值： ``4``。
-        - **data_format** (str) - 输入中的数据排布顺序。默认值： ``channels_last``。支持以下类型：``channels_last``和``channels_first``。
+        - **data_format** (str) - 输入中的数据排布顺序。默认值： ``channels_last``。支持以下类型： ``"channels_last"`` 和 ``"channels_first"`` 。
         - **fnoblock_act** (Union[str, class]) - FNOBlock层的激活函数，支持字符串或激活函数类。默认值： ``identity``。
         - **mlp_act** (Union[str, class]) - MLP层的激活函数，支持字符串或激活函数类。默认值： ``gelu``。
         - **add_residual** (bool) - 是否在FNOBlock层加上残差。默认值： ``False``。

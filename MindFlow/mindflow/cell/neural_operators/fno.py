@@ -347,7 +347,8 @@ class FNO1D(FNO):
         lifting_channels (int): The number of channels of the lifting layer mid channels. Default: None.
         projection_channels (int): The number of channels of the projection layer mid channels. Default: ``128``.
         n_layers (int): The number that Fourier Layer nests. Default: ``4``.
-        data_format (str): The input data channel sequence. Default: ``channels_last``.
+        data_format (str): The input data channel sequence. Default: ``"channels_last"``.
+            Support value: ``"channels_last"``, ``"channels_first"``.
         fnoblock_act (Union[str, class]): The activation function for FNOBlock, could be either str or class.
             Default: ``identity``.
         mlp_act (Union[str, class]): The activation function for MLP layers, could be either str or class.
@@ -383,9 +384,11 @@ class FNO1D(FNO):
 
     Examples:
         >>> import numpy as np
+        >>> import mindspore
+        >>> import mindflow
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell.neural_operators import FNO1D
+        >>> from mindflow.cell import FNO1D
         >>> data = Tensor(np.ones([2, 128, 3]), mstype.float32)
         >>> net = FNO1D(in_channels=3, out_channels=3, n_modes=[20], resolutions=[128])
         >>> out = net(data)
@@ -447,6 +450,7 @@ class FNO2D(FNO):
         projection_channels (int): The number of channels of the projection layer mid channels. Default: ``128``.
         n_layers (int): The number that Fourier Layer nests. Default: ``4``.
         data_format (str): The input data channel sequence. Default: ``channels_last``.
+            Support value: ``"channels_last"``, ``"channels_first"``.
         fnoblock_act (Union[str, class]): The activation function for FNOBlock, could be either str or class.
             Default: ``identity``.
         mlp_act (Union[str, class]): The activation function for MLP layers, could be either str or class.
@@ -482,9 +486,11 @@ class FNO2D(FNO):
 
     Examples:
         >>> import numpy as np
+        >>> import mindspore
+        >>> import mindflow
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell.neural_operators import FNO2D
+        >>> from mindflow.cell import FNO2D
         >>> data = Tensor(np.ones([2, 128, 128, 3]), mstype.float32)
         >>> net = FNO2D(in_channels=3, out_channels=3, n_modes=[20, 20], resolutions=[128, 128])
         >>> out = net(data)
@@ -546,6 +552,7 @@ class FNO3D(FNO):
         projection_channels (int): The number of channels of the projection layer mid channels. Default: ``128``.
         n_layers (int): The number that Fourier Layer nests. Default: ``4``.
         data_format (str): The input data channel sequence. Default: ``channels_last``.
+            Support value: ``"channels_last"``, ``"channels_first"``.
         fnoblock_act (Union[str, class]): The activation function for FNOBlock, could be either str or class.
             Default: ``identity``.
         mlp_act (Union[str, class]): The activation function for MLP layers, could be either str or class.
@@ -583,11 +590,13 @@ class FNO3D(FNO):
 
     Examples:
         >>> import numpy as np
+        >>> import mindspore
+        >>> import mindflow
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from mindflow.cell.neural_operators import FNO2D
+        >>> from mindflow.cell import FNO3D
         >>> data = Tensor(np.ones([2, 128, 128, 128, 3]), mstype.float32)
-        >>> net = FNO2D(in_channels=3, out_channels=3, n_modes=[20, 20, 20], resolutions=[128, 128, 128])
+        >>> net = FNO3D(in_channels=3, out_channels=3, n_modes=[20, 20, 20], resolutions=[128, 128, 128])
         >>> out = net(data)
         >>> print(data.shape, out.shape)
         (2, 128, 128, 128, 3) (2, 128, 128, 128, 3)
