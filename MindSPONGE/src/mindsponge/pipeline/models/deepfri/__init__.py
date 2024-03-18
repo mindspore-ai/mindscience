@@ -14,5 +14,5 @@
 # ============================================================================
 """deepfri"""
 from .deepfridataset import DeepFriDataSet
-from .deepfi_configuration import deepfri_configuration
+from .deepfri_configuration import deepfri_configuration
 from .deepfri import DeepFri

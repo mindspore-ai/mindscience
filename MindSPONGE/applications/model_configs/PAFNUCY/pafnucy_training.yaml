@@ -1,0 +1,19 @@
+grid_spacing: 1.0
+lr: 1e-5
+momentum: 0.9
+weight_decay: 0.001
+epoch_size: 1
+batch_size: 20
+max_dist: 10.0
+conv_patch: 5
+pool_patch: 2
+conv_channels: [64, 128, 256]
+dense_sizes: [1000, 500, 200]
+keep_prob: 0.5
+isize: 21
+lmbda: 0.001
+rotations: 24
+charge_scaler: 0.425896
+size_val: 1000
+is_training: True
+use_jit: True

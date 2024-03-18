@@ -1,0 +1,3914 @@
+prefix: bp
+use_jit: True
+input_dim: 26
+output_dim: 1943
+gc_dims:
+- 512
+- 512
+- 512
+fc_dims: 2048
+dropout: 0.3
+l2_reg: 0.0002
+lr: 0.0001
+gc_layer: MultiGraphConv
+epochs: 50
+batch_size: 64
+pad_len: 1024
+ontology: bp
+lm_model_name: trained_models/DeepFRI_LSTM.ckpt
+cmap_type: ca
+cmap_thresh: 10.0
+train_tfrecord_fn: /data/shouzheng/SWISS-MODEL-GO/train/
+valid_tfrecord_fn: /data/shouzheng/SWISS-MODEL-GO/valid/
+annot_fn: ../data/nrPDB-GO_2019.06.18_annot.tsv
+goterms:
+- GO:0006228
+- GO:0009135
+- GO:0002699
+- GO:0000463
+- GO:0009179
+- GO:0030183
+- GO:0032496
+- GO:0045935
+- GO:0006304
+- GO:0072528
+- GO:2000116
+- GO:0000413
+- GO:0009966
+- GO:0031099
+- GO:2000027
+- GO:0006575
+- GO:0043491
+- GO:0051726
+- GO:1901615
+- GO:0030593
+- GO:0043242
+- GO:0048513
+- GO:0022898
+- GO:0006979
+- GO:0002833
+- GO:0017148
+- GO:1902105
+- GO:0030336
+- GO:0051236
+- GO:0048017
+- GO:0051674
+- GO:0006816
+- GO:0000162
+- GO:0071702
+- GO:0051173
+- GO:0046907
+- GO:0070585
+- GO:0050778
+- GO:0006163
+- GO:0006450
+- GO:0051321
+- GO:0001819
+- GO:0009235
+- GO:0006650
+- GO:0048522
+- GO:0030001
+- GO:0008033
+- GO:0006355
+- GO:0046940
+- GO:0002694
+- GO:0031326
+- GO:0009142
+- GO:0050829
+- GO:0009211
+- GO:0043112
+- GO:0009893
+- GO:0010951
+- GO:0006508
+- GO:0043299
+- GO:0044282
+- GO:0008360
+- GO:0043933
+- GO:0007229
+- GO:0051271
+- GO:0042119
+- GO:0046718
+- GO:0009162
+- GO:0006520
+- GO:0022411
+- GO:0044703
+- GO:0006956
+- GO:0032386
+- GO:0009435
+- GO:0051704
+- GO:0000045
+- GO:0048514
+- GO:0009914
+- GO:0000469
+- GO:0030042
+- GO:0000075
+- GO:0051054
+- GO:0043462
+- GO:0019318
+- GO:0002685
+- GO:0030435
+- GO:2000147
+- GO:0000305
+- GO:0120035
+- GO:0031497
+- GO:0002683
+- GO:0009200
+- GO:0006406
+- GO:0009653
+- GO:0016241
+- GO:0032412
+- GO:0010608
+- GO:0018298
+- GO:0071709
+- GO:0031669
+- GO:0006206
+- GO:0010639
+- GO:0097435
+- GO:0019748
+- GO:0000165
+- GO:0048589
+- GO:0006401
+- GO:0038094
+- GO:0090501
+- GO:0031323
+- GO:0006970
+- GO:0030198
+- GO:0006260
+- GO:0045834
+- GO:0009719
+- GO:0002793
+- GO:0010647
+- GO:0051252
+- GO:0009617
+- GO:0034250
+- GO:0015947
+- GO:0042981
+- GO:0050731
+- GO:0098813
+- GO:0006801
+- GO:0052200
+- GO:0002703
+- GO:0032465
+- GO:0051603
+- GO:0007601
+- GO:0045892
+- GO:0008213
+- GO:0034471
+- GO:0009267
+- GO:0009314
+- GO:0002521
+- GO:1901571
+- GO:0006399
+- GO:1901654
+- GO:0071396
+- GO:0009116
+- GO:0022008
+- GO:1902806
+- GO:0033993
+- GO:0034284
+- GO:0034340
+- GO:0060070
+- GO:0000904
+- GO:0009185
+- GO:0014074
+- GO:0007584
+- GO:0006099
+- GO:0034329
+- GO:0098754
+- GO:0016925
+- GO:0018393
+- GO:0046394
+- GO:0042493
+- GO:0009100
+- GO:0006522
+- GO:0009968
+- GO:0042455
+- GO:0010817
+- GO:0002573
+- GO:0018904
+- GO:0031163
+- GO:0048869
+- GO:0140053
+- GO:0006553
+- GO:0035335
+- GO:0072594
+- GO:0030155
+- GO:0034220
+- GO:0019363
+- GO:1901879
+- GO:0050804
+- GO:0006165
+- GO:0046395
+- GO:0006091
+- GO:0031175
+- GO:0098609
+- GO:0030100
+- GO:0006081
+- GO:0045493
+- GO:0000462
+- GO:0072527
+- GO:0007249
+- GO:0120036
+- GO:0009157
+- GO:0006935
+- GO:0001816
+- GO:1901700
+- GO:0070661
+- GO:0034660
+- GO:0097659
+- GO:0075136
+- GO:0099003
+- GO:0016064
+- GO:0009231
+- GO:0006576
+- GO:0002831
+- GO:0061640
+- GO:1901214
+- GO:0002764
+- GO:0018209
+- GO:0009141
+- GO:1901070
+- GO:0099537
+- GO:0031109
+- GO:0043408
+- GO:0040013
+- GO:0010035
+- GO:0034401
+- GO:1901698
+- GO:0007569
+- GO:0032984
+- GO:0001932
+- GO:0007423
+- GO:0051304
+- GO:0032270
+- GO:0042727
+- GO:0043467
+- GO:0043605
+- GO:0016192
+- GO:0006612
+- GO:1903530
+- GO:0046451
+- GO:0030900
+- GO:0030243
+- GO:0035999
+- GO:0090502
+- GO:0042724
+- GO:0009063
+- GO:0009725
+- GO:0072001
+- GO:1901137
+- GO:0007015
+- GO:0048878
+- GO:0009072
+- GO:0001510
+- GO:0007051
+- GO:0006753
+- GO:0006464
+- GO:0015698
+- GO:0071705
+- GO:1905330
+- GO:0034605
+- GO:0006415
+- GO:0043085
+- GO:0030833
+- GO:0018193
+- GO:1903046
+- GO:0016071
+- GO:0050657
+- GO:0045927
+- GO:0071806
+- GO:0007266
+- GO:0051291
+- GO:0030203
+- GO:0032259
+- GO:0000270
+- GO:0071322
+- GO:0051640
+- GO:0050953
+- GO:0006749
+- GO:0009173
+- GO:0009891
+- GO:0010498
+- GO:0051249
+- GO:0006812
+- GO:0051208
+- GO:0015979
+- GO:0072331
+- GO:0006974
+- GO:0002097
+- GO:0002449
+- GO:0006547
+- GO:0051928
+- GO:0090529
+- GO:0006164
+- GO:1901019
+- GO:0044042
+- GO:0000398
+- GO:0033002
+- GO:0043549
+- GO:0051100
+- GO:0032886
+- GO:0007219
+- GO:0006094
+- GO:0048518
+- GO:0043312
+- GO:0030168
+- GO:0042435
+- GO:0044728
+- GO:0045786
+- GO:0051262
+- GO:0009062
+- GO:0090132
+- GO:0044264
+- GO:0051092
+- GO:0007586
+- GO:0048870
+- GO:0046434
+- GO:0017144
+- GO:0007611
+- GO:0031330
+- GO:0070887
+- GO:0046165
+- GO:1903409
+- GO:1901068
+- GO:0055086
+- GO:0006354
+- GO:0016137
+- GO:0044068
+- GO:0043648
+- GO:0042537
+- GO:0070372
+- GO:0050769
+- GO:0032271
+- GO:0009888
+- GO:0010558
+- GO:0046034
+- GO:0022604
+- GO:0016070
+- GO:0006473
+- GO:0044242
+- GO:0016042
+- GO:0022406
+- GO:1903578
+- GO:0006730
+- GO:0009130
+- GO:0043101
+- GO:0008610
+- GO:0001934
+- GO:0035194
+- GO:0016998
+- GO:1990845
+- GO:0006760
+- GO:0071310
+- GO:0006754
+- GO:0051648
+- GO:0032261
+- GO:0042026
+- GO:0030072
+- GO:0008154
+- GO:0009582
+- GO:0006793
+- GO:0019222
+- GO:0031400
+- GO:0006183
+- GO:0009225
+- GO:0006635
+- GO:0051223
+- GO:0018022
+- GO:0007420
+- GO:0006779
+- GO:1902533
+- GO:0090150
+- GO:1901652
+- GO:0006470
+- GO:0035821
+- GO:0034440
+- GO:0030041
+- GO:0019835
+- GO:0006412
+- GO:0071347
+- GO:1901653
+- GO:0007596
+- GO:0046677
+- GO:0071621
+- GO:0002366
+- GO:0046417
+- GO:0070588
+- GO:0048812
+- GO:0009607
+- GO:0061008
+- GO:2001057
+- GO:0080134
+- GO:0050790
+- GO:0071692
+- GO:0097190
+- GO:0048584
+- GO:0016072
+- GO:0006826
+- GO:0099177
+- GO:0006790
+- GO:0071267
+- GO:0016052
+- GO:0016477
+- GO:0007610
+- GO:0030036
+- GO:0009117
+- GO:0009199
+- GO:0070374
+- GO:0034968
+- GO:0010921
+- GO:0006310
+- GO:0051047
+- GO:0006084
+- GO:0060047
+- GO:0031929
+- GO:0072657
+- GO:0051282
+- GO:0009765
+- GO:0034614
+- GO:0009408
+- GO:0045936
+- GO:0048666
+- GO:0006383
+- GO:0035239
+- GO:0072521
+- GO:0042180
+- GO:0031638
+- GO:0048729
+- GO:0007283
+- GO:0015986
+- GO:0032101
+- GO:0042451
+- GO:0042445
+- GO:0007155
+- GO:0030162
+- GO:1903320
+- GO:0034976
+- GO:0048638
+- GO:0009228
+- GO:0006767
+- GO:1904892
+- GO:0009201
+- GO:0009061
+- GO:0006614
+- GO:0035384
+- GO:2001234
+- GO:0098869
+- GO:0007010
+- GO:0045944
+- GO:0006323
+- GO:0002237
+- GO:0040029
+- GO:0051156
+- GO:0045666
+- GO:0010564
+- GO:0003015
+- GO:0032414
+- GO:0000086
+- GO:0002790
+- GO:0008277
+- GO:0009166
+- GO:0032309
+- GO:0009156
+- GO:0055065
+- GO:0009605
+- GO:0043279
+- GO:0006665
+- GO:0006909
+- GO:0006166
+- GO:0043254
+- GO:0043102
+- GO:0062012
+- GO:0003018
+- GO:0010563
+- GO:0007165
+- GO:0006885
+- GO:0042357
+- GO:0009311
+- GO:0008299
+- GO:0008037
+- GO:0008217
+- GO:0021700
+- GO:1903532
+- GO:0023014
+- GO:1901663
+- GO:0051046
+- GO:0097529
+- GO:0042254
+- GO:0006873
+- GO:0033559
+- GO:0000288
+- GO:0000281
+- GO:0050801
+- GO:2000145
+- GO:1905114
+- GO:0009792
+- GO:0071331
+- GO:0008202
+- GO:0001889
+- GO:0033865
+- GO:0007626
+- GO:0034308
+- GO:0007507
+- GO:1901293
+- GO:0060548
+- GO:0051129
+- GO:1903037
+- GO:0071450
+- GO:0044273
+- GO:0050777
+- GO:0002700
+- GO:0071495
+- GO:0016571
+- GO:0017038
+- GO:0046683
+- GO:0010721
+- GO:0016126
+- GO:0065009
+- GO:0010466
+- GO:0014070
+- GO:0042127
+- GO:2000113
+- GO:0019362
+- GO:0006090
+- GO:0072359
+- GO:0046486
+- GO:0043650
+- GO:0001523
+- GO:0000466
+- GO:0051961
+- GO:0042440
+- GO:0009086
+- GO:0071482
+- GO:0045087
+- GO:0002682
+- GO:0043434
+- GO:0050768
+- GO:0031668
+- GO:0036293
+- GO:0009890
+- GO:0042221
+- GO:0009790
+- GO:0045931
+- GO:1901701
+- GO:0030595
+- GO:0030154
+- GO:0006413
+- GO:0051222
+- GO:0009581
+- GO:0051179
+- GO:0015671
+- GO:0019395
+- GO:1901264
+- GO:0042255
+- GO:0071407
+- GO:0006869
+- GO:0030073
+- GO:0065008
+- GO:0060255
+- GO:0051283
+- GO:0046051
+- GO:0019438
+- GO:0097549
+- GO:0035304
+- GO:0046939
+- GO:0070126
+- GO:0034248
+- GO:0032502
+- GO:0007160
+- GO:0097306
+- GO:0002478
+- GO:0006772
+- GO:0010876
+- GO:0031401
+- GO:0061025
+- GO:0006283
+- GO:0006397
+- GO:0072329
+- GO:0006486
+- GO:0035023
+- GO:0034219
+- GO:0000375
+- GO:0006261
+- GO:0051301
+- GO:0046700
+- GO:0046349
+- GO:0015031
+- GO:0042402
+- GO:0043069
+- GO:0000209
+- GO:0006558
+- GO:0048858
+- GO:0051099
+- GO:0120161
+- GO:0010629
+- GO:0009064
+- GO:0034285
+- GO:0019684
+- GO:0006595
+- GO:0071840
+- GO:0032147
+- GO:0071248
+- GO:0006605
+- GO:0008544
+- GO:0009749
+- GO:0010212
+- GO:0035383
+- GO:0009253
+- GO:0046031
+- GO:0008654
+- GO:0060322
+- GO:0071805
+- GO:0071428
+- GO:0061061
+- GO:0071466
+- GO:0051480
+- GO:0006914
+- GO:0051272
+- GO:0036260
+- GO:0023052
+- GO:0019884
+- GO:0009396
+- GO:0007005
+- GO:0051347
+- GO:0006370
+- GO:0046578
+- GO:0043086
+- GO:0006720
+- GO:0071356
+- GO:0034767
+- GO:0006071
+- GO:0051146
+- GO:0032102
+- GO:0009263
+- GO:0009167
+- GO:0044036
+- GO:0017157
+- GO:0006633
+- GO:0043412
+- GO:0006886
+- GO:0045010
+- GO:1901606
+- GO:0044839
+- GO:0031331
+- GO:0016358
+- GO:0090066
+- GO:0045637
+- GO:0010638
+- GO:0019877
+- GO:0019682
+- GO:0051384
+- GO:0042274
+- GO:0006396
+- GO:0042129
+- GO:0032409
+- GO:0006144
+- GO:0071333
+- GO:0042063
+- GO:0043010
+- GO:0019216
+- GO:0046390
+- GO:0140352
+- GO:0032269
+- GO:0050727
+- GO:0050658
+- GO:1902275
+- GO:0009251
+- GO:0097305
+- GO:0051270
+- GO:0006783
+- GO:0032989
+- GO:1901678
+- GO:0032940
+- GO:0009611
+- GO:0009791
+- GO:0006568
+- GO:2000112
+- GO:0051101
+- GO:0030307
+- GO:0001655
+- GO:0016050
+- GO:2000146
+- GO:0007267
+- GO:0000003
+- GO:0030004
+- GO:0070589
+- GO:2001020
+- GO:0016114
+- GO:0014706
+- GO:0006259
+- GO:0044766
+- GO:0031348
+- GO:0099504
+- GO:0001525
+- GO:0048667
+- GO:0070482
+- GO:0002262
+- GO:0016197
+- GO:0040017
+- GO:0035303
+- GO:0044659
+- GO:0042726
+- GO:0016579
+- GO:0006405
+- GO:0006875
+- GO:0071363
+- GO:0009103
+- GO:0050792
+- GO:0012501
+- GO:0009124
+- GO:0097588
+- GO:0009247
+- GO:0051275
+- GO:0072525
+- GO:0030097
+- GO:0009892
+- GO:0050729
+- GO:0008283
+- GO:0006418
+- GO:0007186
+- GO:0022618
+- GO:0070727
+- GO:0001944
+- GO:0009310
+- GO:0039694
+- GO:0055080
+- GO:0009221
+- GO:0035195
+- GO:1902680
+- GO:0001959
+- GO:0006353
+- GO:0032200
+- GO:0006611
+- GO:0046500
+- GO:0052548
+- GO:1903522
+- GO:0042822
+- GO:0006662
+- GO:0019400
+- GO:0009097
+- GO:0044038
+- GO:0046653
+- GO:0051239
+- GO:0030490
+- GO:1903047
+- GO:0023061
+- GO:0044106
+- GO:0051091
+- GO:0015772
+- GO:0006119
+- GO:0045597
+- GO:0051048
+- GO:2000241
+- GO:1902905
+- GO:0010410
+- GO:0060828
+- GO:0006367
+- GO:0015937
+- GO:0002697
+- GO:0032787
+- GO:0044403
+- GO:0043066
+- GO:0032355
+- GO:0043270
+- GO:0042326
+- GO:0044272
+- GO:0016441
+- GO:0042775
+- GO:0050690
+- GO:0006596
+- GO:0051189
+- GO:0044764
+- GO:0001907
+- GO:0051336
+- GO:0033037
+- GO:0009612
+- GO:0031346
+- GO:0043094
+- GO:0009423
+- GO:0035296
+- GO:0071554
+- GO:0046385
+- GO:0034654
+- GO:0031399
+- GO:1901880
+- GO:0040011
+- GO:0046039
+- GO:0071426
+- GO:0006563
+- GO:0006811
+- GO:0010243
+- GO:0030522
+- GO:0006887
+- GO:0050730
+- GO:0009628
+- GO:0043207
+- GO:0034470
+- GO:0016101
+- GO:0045937
+- GO:0032508
+- GO:0042327
+- GO:0044248
+- GO:0030163
+- GO:0009401
+- GO:0031329
+- GO:0031345
+- GO:0006534
+- GO:1901617
+- GO:0034504
+- GO:1901987
+- GO:0001906
+- GO:0030334
+- GO:0009119
+- GO:0071166
+- GO:0042325
+- GO:1902749
+- GO:0043523
+- GO:0016458
+- GO:0051651
+- GO:0042401
+- GO:0006664
+- GO:0032501
+- GO:0048699
+- GO:0044085
+- GO:1903506
+- GO:2001257
+- GO:0042430
+- GO:1901269
+- GO:0032388
+- GO:0002791
+- GO:0009177
+- GO:0009132
+- GO:2001141
+- GO:0060401
+- GO:0009144
+- GO:0006188
+- GO:0034622
+- GO:0006771
+- GO:2001233
+- GO:0032272
+- GO:0046112
+- GO:0050870
+- GO:0046184
+- GO:0098655
+- GO:0106106
+- GO:0038095
+- GO:0070125
+- GO:0046490
+- GO:0016075
+- GO:0051254
+- GO:0022414
+- GO:0002696
+- GO:0015980
+- GO:0019941
+- GO:0006813
+- GO:0015672
+- GO:0051224
+- GO:1903311
+- GO:0007623
+- GO:0000184
+- GO:0016125
+- GO:1902221
+- GO:0007033
+- GO:1901661
+- GO:0009127
+- GO:0032543
+- GO:0033365
+- GO:0009967
+- GO:0017001
+- GO:0070302
+- GO:0071214
+- GO:0030653
+- GO:0031334
+- GO:1903008
+- GO:0007049
+- GO:0046777
+- GO:0061013
+- GO:0032504
+- GO:0050852
+- GO:0051234
+- GO:0001817
+- GO:0002768
+- GO:0019076
+- GO:0002283
+- GO:0061024
+- GO:1901342
+- GO:0045321
+- GO:0007276
+- GO:0043393
+- GO:0019320
+- GO:0035150
+- GO:0007600
+- GO:0048468
+- GO:0010975
+- GO:0090276
+- GO:0007162
+- GO:0007268
+- GO:0006915
+- GO:0006952
+- GO:0048002
+- GO:0045471
+- GO:0007548
+- GO:0007034
+- GO:0006040
+- GO:0052547
+- GO:0046794
+- GO:0050920
+- GO:0048646
+- GO:0002684
+- GO:0009236
+- GO:0015850
+- GO:0042178
+- GO:0006950
+- GO:0031098
+- GO:0048232
+- GO:0050673
+- GO:0002443
+- GO:0033157
+- GO:0006541
+- GO:0050867
+- GO:0006265
+- GO:0044770
+- GO:0140014
+- GO:0010557
+- GO:1903829
+- GO:0007346
+- GO:0009615
+- GO:0019722
+- GO:0033674
+- GO:0046854
+- GO:0050866
+- GO:0031589
+- GO:0046474
+- GO:0006566
+- GO:0006555
+- GO:0019430
+- GO:0072529
+- GO:0045926
+- GO:1901215
+- GO:0045184
+- GO:0009070
+- GO:0006096
+- GO:0044003
+- GO:0052803
+- GO:0010605
+- GO:0031145
+- GO:0071715
+- GO:0051094
+- GO:0009073
+- GO:0044283
+- GO:0006820
+- GO:0010038
+- GO:0009085
+- GO:0034341
+- GO:0009308
+- GO:0070206
+- GO:0006366
+- GO:0046365
+- GO:0045055
+- GO:0002444
+- GO:0060627
+- GO:0043122
+- GO:0072659
+- GO:0006207
+- GO:0035890
+- GO:0032784
+- GO:0008380
+- GO:0007178
+- GO:1903508
+- GO:0042593
+- GO:0006221
+- GO:0006796
+- GO:0000122
+- GO:0016567
+- GO:0003012
+- GO:0044262
+- GO:0070507
+- GO:0046942
+- GO:0140013
+- GO:0002822
+- GO:0034599
+- GO:0000097
+- GO:0009306
+- GO:0007059
+- GO:0015774
+- GO:0051924
+- GO:0043624
+- GO:0051983
+- GO:0097485
+- GO:0050878
+- GO:0050877
+- GO:0050848
+- GO:0042278
+- GO:0032392
+- GO:0048534
+- GO:0006637
+- GO:0061136
+- GO:0016485
+- GO:0002009
+- GO:0050793
+- GO:0031960
+- GO:0022407
+- GO:0006805
+- GO:0051128
+- GO:0043666
+- GO:0006911
+- GO:0010941
+- GO:0050796
+- GO:0006606
+- GO:0009712
+- GO:0030335
+- GO:0044344
+- GO:0006814
+- GO:0007156
+- GO:0006954
+- GO:0098742
+- GO:1903050
+- GO:0015849
+- GO:0009730
+- GO:0090068
+- GO:0001539
+- GO:1902600
+- GO:0007018
+- GO:0009081
+- GO:0046835
+- GO:0006739
+- GO:0006066
+- GO:0048880
+- GO:0051962
+- GO:0043410
+- GO:0009309
+- GO:0043067
+- GO:0019062
+- GO:0005977
+- GO:0034765
+- GO:0007163
+- GO:0001667
+- GO:0006281
+- GO:0006360
+- GO:0034404
+- GO:0046903
+- GO:0032970
+- GO:0044257
+- GO:0060537
+- GO:0002455
+- GO:0009074
+- GO:0060284
+- GO:0150063
+- GO:1902679
+- GO:0045861
+- GO:0065003
+- GO:0098656
+- GO:0006757
+- GO:0050714
+- GO:0019751
+- GO:0044265
+- GO:0019054
+- GO:0010631
+- GO:0007399
+- GO:0016032
+- GO:0019220
+- GO:0005996
+- GO:0071453
+- GO:0090305
+- GO:0072503
+- GO:0034763
+- GO:0002920
+- GO:0006525
+- GO:0071346
+- GO:0001822
+- GO:0009129
+- GO:0065002
+- GO:0042398
+- GO:0043174
+- GO:0001894
+- GO:0003006
+- GO:0071326
+- GO:0019856
+- GO:0048511
+- GO:0060402
+- GO:0001678
+- GO:0071345
+- GO:0002440
+- GO:0071897
+- GO:0046822
+- GO:0010033
+- GO:0071478
+- GO:0042744
+- GO:0002376
+- GO:0006839
+- GO:1901605
+- GO:0009084
+- GO:0052126
+- GO:0032535
+- GO:2001235
+- GO:0006469
+- GO:0045814
+- GO:0044406
+- GO:0045893
+- GO:0045732
+- GO:0018394
+- GO:0031570
+- GO:0009410
+- GO:0007166
+- GO:0042823
+- GO:0060968
+- GO:1990748
+- GO:0019083
+- GO:0000819
+- GO:0071973
+- GO:0043604
+- GO:0016570
+- GO:0016236
+- GO:0006690
+- GO:1901607
+- GO:0072524
+- GO:0046164
+- GO:0097530
+- GO:0019080
+- GO:0060341
+- GO:0006959
+- GO:0010976
+- GO:0050865
+- GO:0045664
+- GO:1901292
+- GO:0006518
+- GO:0019724
+- GO:0006222
+- GO:0046348
+- GO:0007088
+- GO:0000096
+- GO:0055082
+- GO:0015768
+- GO:0006468
+- GO:0009583
+- GO:0033692
+- GO:0045491
+- GO:0000956
+- GO:0006936
+- GO:0010821
+- GO:0070997
+- GO:0009452
+- GO:0006549
+- GO:0071456
+- GO:0050832
+- GO:0051276
+- GO:0051588
+- GO:1902653
+- GO:0006357
+- GO:0034656
+- GO:0002431
+- GO:0039633
+- GO:0044347
+- GO:0006024
+- GO:0006898
+- GO:0007259
+- GO:0006220
+- GO:0097746
+- GO:0043903
+- GO:0009416
+- GO:0043632
+- GO:0051302
+- GO:0001654
+- GO:0090503
+- GO:0048608
+- GO:0009394
+- GO:0006778
+- GO:0032411
+- GO:0050767
+- GO:0006026
+- GO:0060759
+- GO:0031667
+- GO:0006140
+- GO:0009896
+- GO:0055067
+- GO:0001505
+- GO:0071496
+- GO:0009065
+- GO:0046686
+- GO:0043200
+- GO:0007265
+- GO:0032273
+- GO:0043244
+- GO:0001558
+- GO:0031640
+- GO:0051402
+- GO:0022412
+- GO:0048015
+- GO:0071451
+- GO:0042592
+- GO:0080135
+- GO:0042559
+- GO:0006457
+- GO:0006536
+- GO:0099536
+- GO:0006325
+- GO:0010257
+- GO:0010389
+- GO:0045859
+- GO:0070555
+- GO:0007017
+- GO:0002274
+- GO:0048193
+- GO:0030488
+- GO:0051259
+- GO:0043542
+- GO:0032870
+- GO:0007517
+- GO:0042542
+- GO:0051253
+- GO:0072358
+- GO:0042743
+- GO:0098771
+- GO:0022607
+- GO:0044057
+- GO:1901575
+- GO:0045595
+- GO:0044270
+- GO:0018958
+- GO:0009057
+- GO:0034754
+- GO:0030099
+- GO:0071774
+- GO:0080090
+- GO:0036230
+- GO:0044803
+- GO:0046364
+- GO:0098916
+- GO:0046916
+- GO:0051273
+- GO:0002429
+- GO:0017000
+- GO:2000142
+- GO:0040007
+- GO:0018108
+- GO:0009168
+- GO:0006400
+- GO:0043065
+- GO:0031503
+- GO:0006644
+- GO:0030098
+- GO:0009174
+- GO:0019344
+- GO:0044091
+- GO:0045930
+- GO:0019730
+- GO:0051260
+- GO:1900542
+- GO:0031047
+- GO:0006996
+- GO:0019064
+- GO:0006189
+- GO:0051641
+- GO:0038096
+- GO:0015074
+- GO:0008652
+- GO:0032981
+- GO:0043271
+- GO:0198738
+- GO:0009889
+- GO:1901071
+- GO:0070663
+- GO:0090407
+- GO:0042168
+- GO:0045229
+- GO:0044419
+- GO:0050871
+- GO:0000105
+- GO:0043487
+- GO:0015985
+- GO:0051346
+- GO:0043628
+- GO:0000070
+- GO:0051701
+- GO:0000245
+- GO:0033500
+- GO:0050921
+- GO:0045727
+- GO:0006910
+- GO:0048771
+- GO:0016049
+- GO:0019953
+- GO:0009991
+- GO:0071427
+- GO:0060048
+- GO:0008219
+- GO:0033044
+- GO:0097237
+- GO:0043009
+- GO:0007409
+- GO:0000902
+- GO:0050864
+- GO:0033209
+- GO:0006836
+- GO:0006586
+- GO:0030682
+- GO:0051348
+- GO:0010675
+- GO:0043039
+- GO:0009260
+- GO:0009205
+- GO:0000027
+- GO:0002446
+- GO:1903708
+- GO:0042391
+- GO:0048524
+- GO:0050863
+- GO:1901616
+- GO:0006338
+- GO:0006810
+- GO:1901570
+- GO:0055076
+- GO:0036211
+- GO:0051241
+- GO:0051251
+- GO:0051050
+- GO:0009265
+- GO:0015669
+- GO:1901657
+- GO:0009894
+- GO:0000041
+- GO:0030030
+- GO:1990778
+- GO:0009208
+- GO:0044179
+- GO:0010648
+- GO:0046425
+- GO:0008643
+- GO:0006368
+- GO:0061572
+- GO:0006270
+- GO:1902652
+- GO:0006937
+- GO:0006544
+- GO:0019752
+- GO:0046174
+- GO:0001666
+- GO:0051495
+- GO:1901361
+- GO:0002218
+- GO:1904064
+- GO:0043043
+- GO:0006694
+- GO:0048585
+- GO:0019058
+- GO:0000272
+- GO:0043570
+- GO:0030111
+- GO:0071222
+- GO:0046219
+- GO:0099024
+- GO:0051209
+- GO:0051172
+- GO:0046128
+- GO:0050670
+- GO:0051649
+- GO:0016999
+- GO:0050890
+- GO:0051169
+- GO:0030838
+- GO:0031328
+- GO:0019932
+- GO:0010720
+- GO:0046148
+- GO:0051017
+- GO:1901565
+- GO:0050851
+- GO:0034032
+- GO:0031333
+- GO:0046651
+- GO:0006073
+- GO:0006414
+- GO:0043068
+- GO:0006766
+- GO:0090316
+- GO:1903362
+- GO:0000725
+- GO:0010952
+- GO:0050776
+- GO:0019319
+- GO:0002263
+- GO:0045765
+- GO:0006351
+- GO:0051716
+- GO:0044843
+- GO:0001676
+- GO:0009266
+- GO:1905475
+- GO:0006913
+- GO:0098657
+- GO:0000303
+- GO:0015748
+- GO:0002520
+- GO:0048609
+- GO:0048872
+- GO:0045787
+- GO:0070201
+- GO:0006631
+- GO:0010562
+- GO:0044275
+- GO:0015766
+- GO:0009229
+- GO:0000377
+- GO:0051883
+- GO:0071216
+- GO:0002474
+- GO:0051248
+- GO:1903827
+- GO:0044255
+- GO:0019882
+- GO:0015711
+- GO:0002250
+- GO:0060429
+- GO:0019068
+- GO:0006446
+- GO:0010646
+- GO:0051604
+- GO:0009101
+- GO:0008015
+- GO:0015931
+- GO:0016573
+- GO:0006958
+- GO:0009593
+- GO:0050805
+- GO:0006098
+- GO:1901991
+- GO:0007204
+- GO:0002433
+- GO:0008284
+- GO:0006006
+- GO:0008218
+- GO:0050954
+- GO:0009451
+- GO:0019184
+- GO:0009620
+- GO:0050900
+- GO:0042692
+- GO:0031396
+- GO:0043281
+- GO:0006333
+- GO:0031324
+- GO:0051338
+- GO:0048583
+- GO:0045785
+- GO:0000271
+- GO:2000377
+- GO:0051817
+- GO:0000724
+- GO:0042364
+- GO:0007275
+- GO:0034637
+- GO:0009746
+- GO:0007568
+- GO:0030178
+- GO:0042181
+- GO:0048856
+- GO:0042330
+- GO:0010556
+- GO:1901658
+- GO:0000302
+- GO:0043062
+- GO:0046049
+- GO:0022613
+- GO:0044409
+- GO:0051205
+- GO:0071941
+- GO:0043488
+- GO:0043934
+- GO:0031167
+- GO:0038093
+- GO:0031647
+- GO:0002252
+- GO:0071695
+- GO:0009259
+- GO:0043545
+- GO:0009755
+- GO:0008285
+- GO:0032990
+- GO:0006955
+- GO:0007599
+- GO:0035592
+- GO:0051960
+- GO:0046209
+- GO:0035556
+- GO:0050821
+- GO:0002706
+- GO:0033866
+- GO:0000460
+- GO:0051707
+- GO:0032879
+- GO:0009262
+- GO:0006928
+- GO:0009089
+- GO:0015936
+- GO:0034764
+- GO:0010604
+- GO:0009148
+- GO:0002377
+- GO:0002757
+- GO:0071824
+- GO:0032774
+- GO:0009112
+- GO:0071616
+- GO:0061458
+- GO:0019359
+- GO:0038061
+- GO:0051783
+- GO:0045017
+- GO:0046879
+- GO:0032869
+- GO:0030258
+- GO:0070838
+- GO:0009126
+- GO:1903507
+- GO:0030217
+- GO:0072523
+- GO:0007605
+- GO:0009887
+- GO:0002224
+- GO:0031347
+- GO:0022904
+- GO:0019637
+- GO:1990266
+- GO:0006403
+- GO:0044706
+- GO:0009250
+- GO:0002275
+- GO:0120031
+- GO:1901568
+- GO:0005975
+- GO:0009240
+- GO:0010468
+- GO:0006629
+- GO:0008361
+- GO:0007411
+- GO:0042819
+- GO:0034249
+- GO:0009067
+- GO:0019439
+- GO:0045934
+- GO:0001503
+- GO:1903039
+- GO:0002688
+- GO:0009147
+- GO:0009165
+- GO:0044092
+- GO:0034762
+- GO:0051090
+- GO:0016569
+- GO:0033875
+- GO:0000226
+- GO:0051170
+- GO:1902903
+- GO:0055074
+- GO:1901988
+- GO:0033014
+- GO:0009056
+- GO:0051493
+- GO:0031327
+- GO:0098542
+- GO:0006941
+- GO:0044247
+- GO:0071555
+- GO:0035891
+- GO:0023056
+- GO:0048285
+- GO:0006526
+- GO:0009743
+- GO:0043446
+- GO:0060326
+- GO:0071383
+- GO:0034033
+- GO:0006109
+- GO:0071265
+- GO:0007264
+- GO:0008104
+- GO:0051051
+- GO:0048284
+- GO:0045333
+- GO:0031325
+- GO:0042723
+- GO:0030003
+- GO:0006275
+- GO:0050707
+- GO:0099643
+- GO:0006241
+- GO:0010256
+- GO:0046129
+- GO:0010324
+- GO:0043173
+- GO:0042113
+- GO:0007269
+- GO:0070897
+- GO:0007417
+- GO:0032103
+- GO:0048731
+- GO:0015977
+- GO:0051240
+- GO:0010001
+- GO:0044093
+- GO:0006417
+- GO:0046488
+- GO:0030031
+- GO:0072507
+- GO:0034661
+- GO:0006643
+- GO:0098660
+- GO:1901990
+- GO:0006591
+- GO:0050808
+- GO:0001775
+- GO:0043603
+- GO:0006545
+- GO:1904950
+- GO:0001701
+- GO:0006364
+- GO:0097191
+- GO:0009163
+- GO:0009202
+- GO:0071417
+- GO:0006284
+- GO:0044550
+- GO:0009220
+- GO:0009078
+- GO:0050678
+- GO:0051345
+- GO:0045862
+- GO:0018105
+- GO:0043547
+- GO:0009219
+- GO:0061564
+- GO:0032944
+- GO:0006475
+- GO:0065004
+- GO:0045088
+- GO:0032268
+- GO:0001101
+- GO:0031344
+- GO:0046496
+- GO:0050708
+- GO:0046040
+- GO:0006022
+- GO:0023051
+- GO:0034613
+- GO:0008203
+- GO:0051098
+- GO:0048871
+- GO:0060249
+- GO:2001251
+- GO:0062197
+- GO:0033043
+- GO:0048863
+- GO:0033036
+- GO:1903706
+- GO:0042176
+- GO:0045292
+- GO:0043543
+- GO:0010906
+- GO:0022610
+- GO:0045047
+- GO:0051028
+- GO:0031124
+- GO:1901659
+- GO:0051289
+- GO:0051247
+- GO:2000045
+- GO:0019725
+- GO:0070848
+- GO:0001933
+- GO:0052173
+- GO:0016311
+- GO:0072655
+- GO:0051650
+- GO:0023057
+- GO:0002687
+- GO:0045860
+- GO:0022409
+- GO:0042060
+- GO:0006302
+- GO:0061077
+- GO:0034286
+- GO:0016051
+- GO:0015833
+- GO:0016043
+- GO:0051261
+- GO:0009110
+- GO:1901136
+- GO:0016055
+- GO:0015909
+- GO:2000026
+- GO:0055085
+- GO:0043433
+- GO:0009209
+- GO:1901135
+- GO:0010499
+- GO:0036294
+- GO:0046834
+- GO:1904062
+- GO:0071375
+- GO:0035295
+- GO:0009123
+- GO:0042816
+- GO:0019693
+- GO:0007159
+- GO:0046883
+- GO:0032446
+- GO:0006167
+- GO:0050482
+- GO:0008653
+- GO:0000028
+- GO:0042157
+- GO:0044205
+- GO:1902850
+- GO:0000966
+- GO:0051130
+- GO:0033673
+- GO:0002253
+- GO:0051174
+- GO:0043087
+- GO:0051235
+- GO:0042558
+- GO:0006342
+- GO:0016053
+- GO:0046928
+- GO:0009069
+- GO:0072522
+- GO:0050663
+- GO:0007093
+- GO:0051171
+- GO:0042098
+- GO:0098781
+- GO:0043269
+- GO:0030182
+- GO:0098662
+- GO:0031032
+- GO:0006879
+- GO:0006888
+- GO:0031123
+- GO:0043406
+- GO:0007050
+- GO:0043405
+- GO:0000470
+- GO:0034289
+- GO:0009226
+- GO:0072593
+- GO:0015718
+- GO:0009405
+- GO:0006082
+- GO:0010769
+- GO:0051258
+- GO:0009161
+- GO:0006027
+- GO:0045596
+- GO:0051056
+- GO:1903509
+- GO:0072511
+- GO:1903034
+- GO:0002819
+- GO:0090087
+- GO:0072330
+- GO:0032880
+- GO:1905037
+- GO:0046036
+- GO:0015908
+- GO:0070301
+- GO:0043038
+- GO:0120039
+- GO:0031341
+- GO:0003008
+- GO:0051403
+- GO:0070085
+- GO:0097553
+- GO:0033108
+- GO:0030837
+- GO:0071241
+- GO:0006511
+- GO:0090130
+- GO:0042956
+- GO:0005984
+- GO:0051093
+- GO:0019321
+- GO:0051715
+- GO:0051606
+- GO:0032868
+- GO:0030449
+- GO:0009152
+- GO:0046649
+- GO:0042110
+- GO:1903531
+- GO:0048523
+- GO:0019219
+- GO:0030029
+- GO:0042546
+- GO:0019048
+- GO:0072338
+- GO:0000278
+- GO:1902532
+- GO:0006897
+- GO:0045454
+- GO:0009218
+- GO:0000280
+- GO:0009066
+- GO:0046173
+- GO:0032872
+- GO:0097193
+- GO:0072599
+- GO:0050853
+- GO:0009145
+- GO:0006352
+- GO:0040012
+- GO:0007281
+- GO:0034330
+- GO:0009150
+- GO:0003013
+- GO:0010383
+- GO:0006120
+- GO:0070371
+- GO:0071219
+- GO:0071902
+- GO:0009312
+- GO:0072340
+- GO:0006023
+- GO:0044089
+- GO:0046890
+- GO:0032956
+- GO:0000082
+- GO:0110053
+- GO:0022603
+- GO:0061919
+- GO:1902904
+- GO:0055072
+- GO:0070925
+- GO:0045089
+- GO:1902531
+- GO:0031349
+- GO:1901699
+- GO:0007167
+- GO:0019221
+- GO:0044087
+- GO:0048732
+- GO:0034097
+- GO:0048545
+- GO:0044800
+- GO:0001568
+- GO:0034728
+- GO:0042742
+- GO:0002181
+- GO:0009082
+- GO:0006551
+- GO:0007154
+- GO:0030655
+- GO:0044650
+- GO:0000160
+- GO:0001659
+- GO:0034655
+- GO:0010632
+- GO:0051246
+- GO:0050817
+- GO:0010506
+- GO:0048519
+- GO:0016054
+- GO:0019692
+- GO:0022402
+- GO:0032943
+- GO:1902579
+- GO:0051052
+- GO:0051656
+- GO:0033554
+- GO:0043413
+- GO:0042886
+- GO:0009060
+- GO:0006874
+- GO:0000387
+- GO:0005976
+- GO:0010628
+- GO:0009206
+- GO:0043687
+- GO:0001818
+- GO:0048598
+- GO:0034612
+- GO:0071900
+- GO:0046654
+- GO:0040008
+- GO:0051592
+- GO:1901796
+- GO:0002460
+- GO:0043436
+- GO:0016310
+- GO:0006289
+- GO:0070647
+- GO:0050830
+- GO:0006479
+- GO:0032506
+- GO:0009273
+- GO:0097696
+- GO:0019079
+- GO:0030855
+- GO:0001501
+- GO:0051494
+- GO:0010948
+- GO:0002221
+- GO:0008016
+- GO:0034288
+- GO:0042273
+- GO:0030245
+- GO:0044772
+- GO:0046467
+- GO:0070646
+- GO:0043414
+- GO:0051168
+- GO:0006865
+- GO:0022900
+- GO:0009636
+- GO:0006613
+- GO:0042594
+- GO:0006740
+- GO:0051049
+- GO:0104004
+- GO:0015749
+- GO:0010565
+- GO:0000154
+- GO:0000723
+- GO:0006721
+- GO:0033013
+- GO:0090257
+- GO:0018208
+- GO:1903169
+- GO:0034030
+- GO:0046033
+- GO:1903963
+- GO:0018205
+- GO:0009252
+- GO:0006402
+- GO:2001242
+- GO:0010959
+- GO:0043161
+- GO:0009176
+- GO:0009164
+- GO:0018212
+- GO:0007169
+- GO:0009411
+- GO:0009895
+- GO:0000910
+- GO:0061982
+- GO:0039663
+- GO:0010942
+- GO:0006112
+- GO:0008637
+- GO:0030832
+- GO:0051607
+- GO:1904951
+- GO:0071103
+- GO:0071826
+- GO:0070972
+- GO:0062013
+- GO:0008064
+- GO:0016226
+- GO:0042773
+gonames:
+- UTP biosynthetic process
+- purine nucleoside diphosphate metabolic process
+- positive regulation of immune effector process
+- maturation of LSU-rRNA from tricistronic rRNA transcript (SSU-rRNA, 5.8S rRNA, LSU-rRNA)
+- purine ribonucleoside diphosphate metabolic process
+- B cell differentiation
+- response to lipopolysaccharide
+- positive regulation of nucleobase-containing compound metabolic process
+- DNA modification
+- pyrimidine-containing compound biosynthetic process
+- regulation of cysteine-type endopeptidase activity
+- protein peptidyl-prolyl isomerization
+- regulation of signal transduction
+- regeneration
+- regulation of animal organ morphogenesis
+- cellular modified amino acid metabolic process
+- protein kinase B signaling
+- regulation of cell cycle
+- organic hydroxy compound metabolic process
+- neutrophil chemotaxis
+- negative regulation of protein-containing complex disassembly
+- animal organ development
+- regulation of transmembrane transporter activity
+- response to oxidative stress
+- positive regulation of response to biotic stimulus
+- negative regulation of translation
+- regulation of leukocyte differentiation
+- negative regulation of cell migration
+- establishment of RNA localization
+- inositol lipid-mediated signaling
+- localization of cell
+- calcium ion transport
+- tryptophan biosynthetic process
+- organic substance transport
+- positive regulation of nitrogen compound metabolic process
+- intracellular transport
+- protein localization to mitochondrion
+- positive regulation of immune response
+- purine nucleotide metabolic process
+- regulation of translational fidelity
+- meiotic cell cycle
+- positive regulation of cytokine production
+- cobalamin metabolic process
+- glycerophospholipid metabolic process
+- positive regulation of cellular process
+- metal ion transport
+- tRNA processing
+- regulation of transcription, DNA-templated
+- nucleoside monophosphate phosphorylation
+- regulation of leukocyte activation
+- regulation of cellular biosynthetic process
+- nucleoside triphosphate biosynthetic process
+- defense response to Gram-negative bacterium
+- pyrimidine deoxyribonucleoside triphosphate metabolic process
+- receptor metabolic process
+- positive regulation of metabolic process
+- negative regulation of endopeptidase activity
+- proteolysis
+- leukocyte degranulation
+- small molecule catabolic process
+- regulation of cell shape
+- protein-containing complex subunit organization
+- integrin-mediated signaling pathway
+- negative regulation of cellular component movement
+- neutrophil activation
+- viral entry into host cell
+- deoxyribonucleoside monophosphate metabolic process
+- cellular amino acid metabolic process
+- cellular component disassembly
+- multi-organism reproductive process
+- complement activation
+- regulation of intracellular transport
+- NAD biosynthetic process
+- multi-organism process
+- autophagosome assembly
+- blood vessel morphogenesis
+- hormone transport
+- cleavage involved in rRNA processing
+- actin filament depolymerization
+- cell cycle checkpoint
+- positive regulation of DNA metabolic process
+- regulation of ATPase activity
+- hexose metabolic process
+- regulation of leukocyte migration
+- sporulation resulting in formation of a cellular spore
+- positive regulation of cell motility
+- response to oxygen radical
+- regulation of plasma membrane bounded cell projection organization
+- chromatin assembly
+- negative regulation of immune system process
+- deoxyribonucleoside triphosphate metabolic process
+- mRNA export from nucleus
+- anatomical structure morphogenesis
+- regulation of macroautophagy
+- regulation of ion transmembrane transporter activity
+- posttranscriptional regulation of gene expression
+- protein-chromophore linkage
+- membrane assembly
+- cellular response to nutrient levels
+- pyrimidine nucleobase metabolic process
+- negative regulation of organelle organization
+- supramolecular fiber organization
+- secondary metabolic process
+- MAPK cascade
+- developmental growth
+- RNA catabolic process
+- Fc-gamma receptor signaling pathway
+- RNA phosphodiester bond hydrolysis
+- regulation of cellular metabolic process
+- response to osmotic stress
+- extracellular matrix organization
+- DNA replication
+- positive regulation of lipid metabolic process
+- response to endogenous stimulus
+- positive regulation of peptide secretion
+- positive regulation of cell communication
+- regulation of RNA metabolic process
+- response to bacterium
+- positive regulation of cellular amide metabolic process
+- methane metabolic process
+- regulation of apoptotic process
+- positive regulation of peptidyl-tyrosine phosphorylation
+- nuclear chromosome segregation
+- superoxide metabolic process
+- response to host defenses
+- regulation of leukocyte mediated immunity
+- regulation of cytokinesis
+- proteolysis involved in cellular protein catabolic process
+- visual perception
+- negative regulation of transcription, DNA-templated
+- protein alkylation
+- ncRNA 5'-end processing
+- cellular response to starvation
+- response to radiation
+- leukocyte differentiation
+- fatty acid derivative transport
+- tRNA metabolic process
+- response to ketone
+- cellular response to lipid
+- nucleoside metabolic process
+- neurogenesis
+- regulation of cell cycle G1/S phase transition
+- response to lipid
+- response to monosaccharide
+- response to type I interferon
+- canonical Wnt signaling pathway
+- cell morphogenesis involved in differentiation
+- ribonucleoside diphosphate metabolic process
+- response to purine-containing compound
+- response to nutrient
+- tricarboxylic acid cycle
+- cell junction assembly
+- detoxification
+- protein sumoylation
+- internal peptidyl-lysine acetylation
+- carboxylic acid biosynthetic process
+- response to drug
+- glycoprotein metabolic process
+- alanine metabolic process
+- negative regulation of signal transduction
+- ribonucleoside biosynthetic process
+- regulation of hormone levels
+- myeloid leukocyte differentiation
+- ether metabolic process
+- metallo-sulfur cluster assembly
+- cellular developmental process
+- mitochondrial gene expression
+- lysine metabolic process
+- peptidyl-tyrosine dephosphorylation
+- establishment of protein localization to organelle
+- regulation of cell adhesion
+- ion transmembrane transport
+- pyridine nucleotide biosynthetic process
+- regulation of protein depolymerization
+- modulation of chemical synaptic transmission
+- nucleoside diphosphate phosphorylation
+- carboxylic acid catabolic process
+- generation of precursor metabolites and energy
+- neuron projection development
+- cell-cell adhesion
+- regulation of endocytosis
+- cellular aldehyde metabolic process
+- xylan catabolic process
+- maturation of SSU-rRNA from tricistronic rRNA transcript (SSU-rRNA, 5.8S rRNA, LSU-rRNA)
+- pyrimidine-containing compound metabolic process
+- I-kappaB kinase/NF-kappaB signaling
+- plasma membrane bounded cell projection organization
+- deoxyribonucleoside monophosphate biosynthetic process
+- chemotaxis
+- cytokine production
+- response to oxygen-containing compound
+- leukocyte proliferation
+- ncRNA metabolic process
+- nucleic acid-templated transcription
+- response to host
+- vesicle-mediated transport in synapse
+- immunoglobulin mediated immune response
+- riboflavin biosynthetic process
+- cellular biogenic amine metabolic process
+- regulation of response to biotic stimulus
+- cytoskeleton-dependent cytokinesis
+- regulation of neuron death
+- immune response-regulating signaling pathway
+- peptidyl-serine modification
+- nucleoside triphosphate metabolic process
+- guanosine-containing compound biosynthetic process
+- trans-synaptic signaling
+- microtubule polymerization or depolymerization
+- regulation of MAPK cascade
+- negative regulation of locomotion
+- response to inorganic substance
+- chromatin organization involved in regulation of transcription
+- response to nitrogen compound
+- cell aging
+- protein-containing complex disassembly
+- regulation of protein phosphorylation
+- sensory organ development
+- chromosome separation
+- positive regulation of cellular protein metabolic process
+- flavin-containing compound biosynthetic process
+- regulation of generation of precursor metabolites and energy
+- cellular amide catabolic process
+- vesicle-mediated transport
+- protein targeting to membrane
+- regulation of secretion by cell
+- diaminopimelate metabolic process
+- forebrain development
+- cellulose metabolic process
+- tetrahydrofolate interconversion
+- RNA phosphodiester bond hydrolysis, endonucleolytic
+- thiamine-containing compound biosynthetic process
+- cellular amino acid catabolic process
+- response to hormone
+- renal system development
+- carbohydrate derivative biosynthetic process
+- actin filament organization
+- chemical homeostasis
+- aromatic amino acid family metabolic process
+- RNA methylation
+- spindle organization
+- nucleoside phosphate metabolic process
+- cellular protein modification process
+- inorganic anion transport
+- nitrogen compound transport
+- regulation of morphogenesis of an epithelium
+- cellular response to heat
+- translational termination
+- positive regulation of catalytic activity
+- regulation of actin filament polymerization
+- peptidyl-amino acid modification
+- meiotic cell cycle process
+- mRNA metabolic process
+- nucleic acid transport
+- positive regulation of growth
+- protein transmembrane transport
+- Rho protein signal transduction
+- protein heterooligomerization
+- glycosaminoglycan metabolic process
+- methylation
+- peptidoglycan metabolic process
+- cellular response to carbohydrate stimulus
+- organelle localization
+- sensory perception of light stimulus
+- glutathione metabolic process
+- pyrimidine ribonucleoside monophosphate metabolic process
+- positive regulation of biosynthetic process
+- proteasomal protein catabolic process
+- regulation of lymphocyte activation
+- cation transport
+- sequestering of calcium ion
+- photosynthesis
+- signal transduction by p53 class mediator
+- cellular response to DNA damage stimulus
+- tRNA wobble base modification
+- lymphocyte mediated immunity
+- histidine metabolic process
+- positive regulation of calcium ion transport
+- cell septum assembly
+- purine nucleotide biosynthetic process
+- regulation of calcium ion transmembrane transporter activity
+- glucan metabolic process
+- mRNA splicing, via spliceosome
+- muscle cell proliferation
+- regulation of kinase activity
+- negative regulation of binding
+- regulation of microtubule-based process
+- Notch signaling pathway
+- gluconeogenesis
+- positive regulation of biological process
+- neutrophil degranulation
+- platelet activation
+- indole-containing compound biosynthetic process
+- DNA methylation or demethylation
+- negative regulation of cell cycle
+- protein tetramerization
+- fatty acid catabolic process
+- epithelium migration
+- cellular polysaccharide metabolic process
+- positive regulation of NF-kappaB transcription factor activity
+- digestion
+- cell motility
+- organophosphate catabolic process
+- drug metabolic process
+- learning or memory
+- negative regulation of cellular catabolic process
+- cellular response to chemical stimulus
+- alcohol biosynthetic process
+- reactive oxygen species biosynthetic process
+- guanosine-containing compound metabolic process
+- nucleobase-containing small molecule metabolic process
+- DNA-templated transcription, elongation
+- glycoside metabolic process
+- modulation by symbiont of host cellular process
+- dicarboxylic acid metabolic process
+- benzene-containing compound metabolic process
+- regulation of ERK1 and ERK2 cascade
+- positive regulation of neurogenesis
+- regulation of protein polymerization
+- tissue development
+- negative regulation of macromolecule biosynthetic process
+- ATP metabolic process
+- regulation of cell morphogenesis
+- RNA metabolic process
+- protein acetylation
+- cellular lipid catabolic process
+- lipid catabolic process
+- membrane docking
+- regulation of ATP metabolic process
+- one-carbon metabolic process
+- pyrimidine nucleoside monophosphate biosynthetic process
+- purine-containing compound salvage
+- lipid biosynthetic process
+- positive regulation of protein phosphorylation
+- post-transcriptional gene silencing by RNA
+- cell wall macromolecule catabolic process
+- adaptive thermogenesis
+- folic acid-containing compound metabolic process
+- cellular response to organic substance
+- ATP biosynthetic process
+- vesicle localization
+- purine nucleotide salvage
+- protein refolding
+- peptide hormone secretion
+- actin polymerization or depolymerization
+- detection of abiotic stimulus
+- phosphorus metabolic process
+- regulation of metabolic process
+- negative regulation of protein modification process
+- GTP biosynthetic process
+- nucleotide-sugar metabolic process
+- fatty acid beta-oxidation
+- regulation of protein transport
+- peptidyl-lysine methylation
+- brain development
+- porphyrin-containing compound biosynthetic process
+- positive regulation of intracellular signal transduction
+- establishment of protein localization to membrane
+- response to peptide
+- protein dephosphorylation
+- modulation of process of other organism
+- lipid oxidation
+- actin filament polymerization
+- cytolysis
+- translation
+- cellular response to interleukin-1
+- cellular response to peptide
+- blood coagulation
+- response to antibiotic
+- granulocyte chemotaxis
+- leukocyte activation involved in immune response
+- chorismate metabolic process
+- calcium ion transmembrane transport
+- neuron projection morphogenesis
+- response to biotic stimulus
+- hepaticobiliary system development
+- reactive nitrogen species metabolic process
+- regulation of response to stress
+- regulation of catalytic activity
+- protein localization to extracellular region
+- apoptotic signaling pathway
+- positive regulation of response to stimulus
+- rRNA metabolic process
+- iron ion transport
+- regulation of trans-synaptic signaling
+- sulfur compound metabolic process
+- L-methionine salvage
+- carbohydrate catabolic process
+- cell migration
+- behavior
+- actin cytoskeleton organization
+- nucleotide metabolic process
+- ribonucleoside triphosphate metabolic process
+- positive regulation of ERK1 and ERK2 cascade
+- histone lysine methylation
+- regulation of phosphatase activity
+- DNA recombination
+- positive regulation of secretion
+- acetyl-CoA metabolic process
+- heart contraction
+- TOR signaling
+- protein localization to membrane
+- regulation of sequestering of calcium ion
+- photosynthesis, light harvesting
+- cellular response to reactive oxygen species
+- response to heat
+- negative regulation of phosphate metabolic process
+- neuron development
+- transcription by RNA polymerase III
+- tube morphogenesis
+- purine-containing compound metabolic process
+- cellular ketone metabolic process
+- zymogen activation
+- tissue morphogenesis
+- spermatogenesis
+- ATP synthesis coupled proton transport
+- regulation of response to external stimulus
+- purine nucleoside biosynthetic process
+- hormone metabolic process
+- cell adhesion
+- regulation of proteolysis
+- regulation of protein modification by small protein conjugation or removal
+- response to endoplasmic reticulum stress
+- regulation of developmental growth
+- thiamine biosynthetic process
+- water-soluble vitamin metabolic process
+- regulation of receptor signaling pathway via STAT
+- ribonucleoside triphosphate biosynthetic process
+- anaerobic respiration
+- SRP-dependent cotranslational protein targeting to membrane
+- thioester biosynthetic process
+- negative regulation of apoptotic signaling pathway
+- cellular oxidant detoxification
+- cytoskeleton organization
+- positive regulation of transcription by RNA polymerase II
+- DNA packaging
+- response to molecule of bacterial origin
+- regulation of gene expression, epigenetic
+- glucose 6-phosphate metabolic process
+- positive regulation of neuron differentiation
+- regulation of cell cycle process
+- heart process
+- positive regulation of ion transmembrane transporter activity
+- G2/M transition of mitotic cell cycle
+- peptide secretion
+- regulation of G protein-coupled receptor signaling pathway
+- nucleotide catabolic process
+- icosanoid secretion
+- ribonucleoside monophosphate biosynthetic process
+- metal ion homeostasis
+- response to external stimulus
+- response to alkaloid
+- sphingolipid metabolic process
+- phagocytosis
+- purine ribonucleoside salvage
+- regulation of protein-containing complex assembly
+- amino acid salvage
+- regulation of small molecule metabolic process
+- vascular process in circulatory system
+- negative regulation of phosphorus metabolic process
+- signal transduction
+- regulation of pH
+- thiamine diphosphate metabolic process
+- oligosaccharide metabolic process
+- isoprenoid biosynthetic process
+- cell recognition
+- regulation of blood pressure
+- developmental maturation
+- positive regulation of secretion by cell
+- signal transduction by protein phosphorylation
+- quinone biosynthetic process
+- regulation of secretion
+- myeloid leukocyte migration
+- ribosome biogenesis
+- cellular ion homeostasis
+- unsaturated fatty acid metabolic process
+- nuclear-transcribed mRNA catabolic process, deadenylation-dependent decay
+- mitotic cytokinesis
+- ion homeostasis
+- regulation of cell motility
+- cell surface receptor signaling pathway involved in cell-cell signaling
+- embryo development ending in birth or egg hatching
+- cellular response to hexose stimulus
+- steroid metabolic process
+- liver development
+- nucleoside bisphosphate metabolic process
+- locomotory behavior
+- primary alcohol metabolic process
+- heart development
+- nucleoside phosphate biosynthetic process
+- negative regulation of cell death
+- negative regulation of cellular component organization
+- regulation of leukocyte cell-cell adhesion
+- cellular response to oxygen radical
+- sulfur compound catabolic process
+- negative regulation of immune response
+- regulation of production of molecular mediator of immune response
+- cellular response to endogenous stimulus
+- histone methylation
+- protein import
+- response to organophosphorus
+- negative regulation of cell development
+- sterol biosynthetic process
+- regulation of molecular function
+- negative regulation of peptidase activity
+- response to organic cyclic compound
+- regulation of cell population proliferation
+- negative regulation of cellular macromolecule biosynthetic process
+- pyridine nucleotide metabolic process
+- pyruvate metabolic process
+- circulatory system development
+- glycerolipid metabolic process
+- dicarboxylic acid biosynthetic process
+- retinoid metabolic process
+- maturation of 5.8S rRNA from tricistronic rRNA transcript (SSU-rRNA, 5.8S rRNA,
+     LSU-rRNA)
+- negative regulation of nervous system development
+- pigment metabolic process
+- methionine biosynthetic process
+- cellular response to light stimulus
+- innate immune response
+- regulation of immune system process
+- response to peptide hormone
+- negative regulation of neurogenesis
+- cellular response to extracellular stimulus
+- response to decreased oxygen levels
+- negative regulation of biosynthetic process
+- response to chemical
+- embryo development
+- positive regulation of mitotic cell cycle
+- cellular response to oxygen-containing compound
+- leukocyte chemotaxis
+- cell differentiation
+- translational initiation
+- positive regulation of protein transport
+- detection of external stimulus
+- localization
+- oxygen transport
+- fatty acid oxidation
+- carbohydrate derivative transport
+- ribosome assembly
+- cellular response to organic cyclic compound
+- lipid transport
+- insulin secretion
+- regulation of biological quality
+- regulation of macromolecule metabolic process
+- negative regulation of sequestering of calcium ion
+- UTP metabolic process
+- aromatic compound biosynthetic process
+- chromatin organization involved in negative regulation of transcription
+- regulation of protein dephosphorylation
+- nucleotide phosphorylation
+- mitochondrial translational termination
+- regulation of cellular amide metabolic process
+- developmental process
+- cell-matrix adhesion
+- cellular response to alcohol
+- antigen processing and presentation of exogenous peptide antigen
+- thiamine metabolic process
+- lipid localization
+- positive regulation of protein modification process
+- membrane fusion
+- transcription-coupled nucleotide-excision repair
+- mRNA processing
+- monocarboxylic acid catabolic process
+- protein glycosylation
+- regulation of Rho protein signal transduction
+- carbohydrate transmembrane transport
+- RNA splicing, via transesterification reactions
+- DNA-dependent DNA replication
+- cell division
+- heterocycle catabolic process
+- amino sugar biosynthetic process
+- protein transport
+- cellular biogenic amine catabolic process
+- negative regulation of programmed cell death
+- protein polyubiquitination
+- L-phenylalanine metabolic process
+- cell projection morphogenesis
+- positive regulation of binding
+- regulation of cold-induced thermogenesis
+- negative regulation of gene expression
+- glutamine family amino acid metabolic process
+- response to disaccharide
+- photosynthesis, light reaction
+- polyamine metabolic process
+- cellular component organization or biogenesis
+- activation of protein kinase activity
+- cellular response to metal ion
+- protein targeting
+- epidermis development
+- response to glucose
+- response to ionizing radiation
+- thioester metabolic process
+- peptidoglycan catabolic process
+- ADP metabolic process
+- phospholipid biosynthetic process
+- head development
+- potassium ion transmembrane transport
+- rRNA-containing ribonucleoprotein complex export from nucleus
+- muscle structure development
+- cellular response to xenobiotic stimulus
+- regulation of cytosolic calcium ion concentration
+- autophagy
+- positive regulation of cellular component movement
+- RNA capping
+- signaling
+- antigen processing and presentation of exogenous antigen
+- folic acid-containing compound biosynthetic process
+- mitochondrion organization
+- positive regulation of transferase activity
+- 7-methylguanosine mRNA capping
+- regulation of Ras protein signal transduction
+- negative regulation of catalytic activity
+- isoprenoid metabolic process
+- cellular response to tumor necrosis factor
+- positive regulation of ion transmembrane transport
+- glycerol metabolic process
+- striated muscle cell differentiation
+- negative regulation of response to external stimulus
+- deoxyribonucleotide biosynthetic process
+- purine ribonucleoside monophosphate metabolic process
+- cell wall macromolecule metabolic process
+- regulation of exocytosis
+- fatty acid biosynthetic process
+- macromolecule modification
+- intracellular protein transport
+- actin nucleation
+- alpha-amino acid catabolic process
+- cell cycle G2/M phase transition
+- positive regulation of cellular catabolic process
+- dendrite development
+- regulation of anatomical structure size
+- regulation of myeloid cell differentiation
+- positive regulation of organelle organization
+- diaminopimelate biosynthetic process
+- glyceraldehyde-3-phosphate metabolic process
+- response to glucocorticoid
+- ribosomal small subunit biogenesis
+- RNA processing
+- regulation of T cell proliferation
+- regulation of transporter activity
+- purine nucleobase metabolic process
+- cellular response to glucose stimulus
+- gliogenesis
+- camera-type eye development
+- regulation of lipid metabolic process
+- ribose phosphate biosynthetic process
+- export from cell
+- negative regulation of cellular protein metabolic process
+- regulation of inflammatory response
+- RNA transport
+- regulation of chromatin organization
+- glucan catabolic process
+- response to alcohol
+- regulation of cellular component movement
+- heme biosynthetic process
+- cellular component morphogenesis
+- iron coordination entity transport
+- secretion by cell
+- response to wounding
+- post-embryonic development
+- tryptophan metabolic process
+- regulation of cellular macromolecule biosynthetic process
+- regulation of DNA binding
+- positive regulation of cell growth
+- urogenital system development
+- vesicle organization
+- negative regulation of cell motility
+- cell-cell signaling
+- reproduction
+- cellular monovalent inorganic cation homeostasis
+- cellular component macromolecule biosynthetic process
+- regulation of response to DNA damage stimulus
+- terpenoid biosynthetic process
+- striated muscle tissue development
+- DNA metabolic process
+- multi-organism transport
+- negative regulation of defense response
+- synaptic vesicle cycle
+- angiogenesis
+- cell morphogenesis involved in neuron differentiation
+- response to oxygen levels
+- myeloid cell homeostasis
+- endosomal transport
+- positive regulation of locomotion
+- regulation of dephosphorylation
+- viral release from host cell by cytolysis
+- flavin-containing compound metabolic process
+- protein deubiquitination
+- RNA export from nucleus
+- cellular metal ion homeostasis
+- cellular response to growth factor stimulus
+- lipopolysaccharide biosynthetic process
+- regulation of viral process
+- programmed cell death
+- nucleoside monophosphate biosynthetic process
+- archaeal or bacterial-type flagellum-dependent cell motility
+- glycolipid biosynthetic process
+- beta-glucan catabolic process
+- pyridine-containing compound biosynthetic process
+- hemopoiesis
+- negative regulation of metabolic process
+- positive regulation of inflammatory response
+- cell population proliferation
+- tRNA aminoacylation for protein translation
+- G protein-coupled receptor signaling pathway
+- ribonucleoprotein complex assembly
+- cellular macromolecule localization
+- vasculature development
+- amine catabolic process
+- viral RNA genome replication
+- cation homeostasis
+- pyrimidine deoxyribonucleotide biosynthetic process
+- gene silencing by miRNA
+- positive regulation of RNA biosynthetic process
+- regulation of cytokine-mediated signaling pathway
+- DNA-templated transcription, termination
+- telomere organization
+- protein export from nucleus
+- S-adenosylmethionine metabolic process
+- regulation of endopeptidase activity
+- regulation of blood circulation
+- pyridoxal phosphate metabolic process
+- glycerol ether metabolic process
+- alditol metabolic process
+- isoleucine biosynthetic process
+- cell wall macromolecule biosynthetic process
+- tetrahydrofolate metabolic process
+- regulation of multicellular organismal process
+- maturation of SSU-rRNA
+- mitotic cell cycle process
+- signal release
+- cellular amine metabolic process
+- positive regulation of DNA-binding transcription factor activity
+- oligosaccharide transport
+- oxidative phosphorylation
+- positive regulation of cell differentiation
+- negative regulation of secretion
+- regulation of reproductive process
+- positive regulation of supramolecular fiber organization
+- hemicellulose metabolic process
+- regulation of canonical Wnt signaling pathway
+- transcription initiation from RNA polymerase II promoter
+- coenzyme A biosynthetic process
+- regulation of immune effector process
+- monocarboxylic acid metabolic process
+- symbiotic process
+- negative regulation of apoptotic process
+- response to estradiol
+- positive regulation of ion transport
+- negative regulation of phosphorylation
+- sulfur compound biosynthetic process
+- posttranscriptional gene silencing
+- mitochondrial ATP synthesis coupled electron transport
+- regulation of defense response to virus by virus
+- polyamine biosynthetic process
+- prosthetic group metabolic process
+- multi-organism cellular process
+- killing by symbiont of host cells
+- regulation of hydrolase activity
+- polysaccharide localization
+- response to mechanical stimulus
+- positive regulation of cell projection organization
+- cellular metabolic compound salvage
+- chorismate biosynthetic process
+- regulation of tube diameter
+- cell wall organization or biogenesis
+- deoxyribose phosphate biosynthetic process
+- nucleobase-containing compound biosynthetic process
+- regulation of protein modification process
+- negative regulation of protein depolymerization
+- locomotion
+- GTP metabolic process
+- ribonucleoprotein complex export from nucleus
+- L-serine metabolic process
+- ion transport
+- response to organonitrogen compound
+- intracellular receptor signaling pathway
+- exocytosis
+- regulation of peptidyl-tyrosine phosphorylation
+- response to abiotic stimulus
+- response to external biotic stimulus
+- ncRNA processing
+- diterpenoid metabolic process
+- positive regulation of phosphate metabolic process
+- DNA duplex unwinding
+- positive regulation of phosphorylation
+- cellular catabolic process
+- protein catabolic process
+- phosphoenolpyruvate-dependent sugar phosphotransferase system
+- regulation of cellular catabolic process
+- negative regulation of cell projection organization
+- cysteine metabolic process
+- organic hydroxy compound biosynthetic process
+- protein localization to nucleus
+- regulation of cell cycle phase transition
+- cell killing
+- regulation of cell migration
+- ribonucleoside metabolic process
+- ribonucleoprotein complex localization
+- regulation of phosphorylation
+- regulation of cell cycle G2/M phase transition
+- regulation of neuron apoptotic process
+- gene silencing
+- maintenance of location in cell
+- cellular biogenic amine biosynthetic process
+- glycolipid metabolic process
+- multicellular organismal process
+- generation of neurons
+- cellular component biogenesis
+- regulation of nucleic acid-templated transcription
+- regulation of cation channel activity
+- indole-containing compound metabolic process
+- lipooligosaccharide metabolic process
+- positive regulation of intracellular transport
+- regulation of peptide secretion
+- pyrimidine deoxyribonucleoside monophosphate biosynthetic process
+- nucleoside diphosphate metabolic process
+- regulation of RNA biosynthetic process
+- cytosolic calcium ion transport
+- purine nucleoside triphosphate metabolic process
+- IMP biosynthetic process
+- cellular protein-containing complex assembly
+- riboflavin metabolic process
+- regulation of apoptotic signaling pathway
+- negative regulation of protein polymerization
+- nucleobase biosynthetic process
+- positive regulation of T cell activation
+- aldehyde biosynthetic process
+- cation transmembrane transport
+- cold-induced thermogenesis
+- Fc-epsilon receptor signaling pathway
+- mitochondrial translational elongation
+- isopentenyl diphosphate metabolic process
+- rRNA catabolic process
+- positive regulation of RNA metabolic process
+- reproductive process
+- positive regulation of leukocyte activation
+- energy derivation by oxidation of organic compounds
+- modification-dependent protein catabolic process
+- potassium ion transport
+- monovalent inorganic cation transport
+- negative regulation of protein transport
+- regulation of mRNA metabolic process
+- circadian rhythm
+- nuclear-transcribed mRNA catabolic process, nonsense-mediated decay
+- sterol metabolic process
+- erythrose 4-phosphate/phosphoenolpyruvate family amino acid metabolic process
+- vacuole organization
+- quinone metabolic process
+- purine nucleoside monophosphate biosynthetic process
+- mitochondrial translation
+- protein localization to organelle
+- positive regulation of signal transduction
+- antibiotic catabolic process
+- regulation of stress-activated protein kinase signaling cascade
+- cellular response to abiotic stimulus
+- beta-lactam antibiotic metabolic process
+- positive regulation of protein-containing complex assembly
+- organelle disassembly
+- cell cycle
+- protein autophosphorylation
+- regulation of mRNA catabolic process
+- multicellular organism reproduction
+- T cell receptor signaling pathway
+- establishment of localization
+- regulation of cytokine production
+- immune response-regulating cell surface receptor signaling pathway
+- viral release from host cell
+- neutrophil activation involved in immune response
+- membrane organization
+- regulation of vasculature development
+- leukocyte activation
+- gamete generation
+- regulation of protein binding
+- hexose catabolic process
+- regulation of tube size
+- sensory perception
+- cell development
+- regulation of neuron projection development
+- regulation of peptide hormone secretion
+- negative regulation of cell adhesion
+- chemical synaptic transmission
+- apoptotic process
+- defense response
+- antigen processing and presentation of peptide antigen
+- response to ethanol
+- sex differentiation
+- vacuolar transport
+- amino sugar metabolic process
+- regulation of peptidase activity
+- transport of virus
+- regulation of chemotaxis
+- anatomical structure formation involved in morphogenesis
+- positive regulation of immune system process
+- cobalamin biosynthetic process
+- organic hydroxy compound transport
+- xenobiotic catabolic process
+- response to stress
+- stress-activated protein kinase signaling cascade
+- male gamete generation
+- epithelial cell proliferation
+- leukocyte mediated immunity
+- regulation of intracellular protein transport
+- glutamine metabolic process
+- positive regulation of cell activation
+- DNA topological change
+- cell cycle phase transition
+- mitotic nuclear division
+- positive regulation of macromolecule biosynthetic process
+- positive regulation of cellular protein localization
+- regulation of mitotic cell cycle
+- response to virus
+- calcium-mediated signaling
+- positive regulation of kinase activity
+- phosphatidylinositol phosphorylation
+- negative regulation of cell activation
+- cell-substrate adhesion
+- glycerophospholipid biosynthetic process
+- threonine metabolic process
+- methionine metabolic process
+- removal of superoxide radicals
+- pyrimidine-containing compound catabolic process
+- negative regulation of growth
+- negative regulation of neuron death
+- establishment of protein localization
+- serine family amino acid biosynthetic process
+- glycolytic process
+- modulation by symbiont of host process
+- imidazole-containing compound metabolic process
+- negative regulation of macromolecule metabolic process
+- anaphase-promoting complex-dependent catabolic process
+- icosanoid transport
+- positive regulation of developmental process
+- aromatic amino acid family biosynthetic process
+- small molecule biosynthetic process
+- anion transport
+- response to metal ion
+- lysine biosynthetic process
+- response to interferon-gamma
+- amine metabolic process
+- protein trimerization
+- transcription by RNA polymerase II
+- monosaccharide catabolic process
+- regulated exocytosis
+- myeloid leukocyte mediated immunity
+- regulation of vesicle-mediated transport
+- regulation of I-kappaB kinase/NF-kappaB signaling
+- protein localization to plasma membrane
+- '''de novo'' pyrimidine nucleobase biosynthetic process'
+- exit from host
+- regulation of DNA-templated transcription, elongation
+- RNA splicing
+- transmembrane receptor protein serine/threonine kinase signaling pathway
+- positive regulation of nucleic acid-templated transcription
+- glucose homeostasis
+- pyrimidine nucleotide biosynthetic process
+- phosphate-containing compound metabolic process
+- negative regulation of transcription by RNA polymerase II
+- protein ubiquitination
+- muscle system process
+- cellular carbohydrate metabolic process
+- regulation of microtubule cytoskeleton organization
+- carboxylic acid transport
+- meiotic nuclear division
+- regulation of adaptive immune response based on somatic recombination of immune
+     receptors built from immunoglobulin superfamily domains
+- cellular response to oxidative stress
+- sulfur amino acid biosynthetic process
+- protein secretion
+- chromosome segregation
+- polysaccharide transport
+- regulation of calcium ion transport
+- cellular protein complex disassembly
+- regulation of chromosome segregation
+- neuron projection guidance
+- regulation of body fluid levels
+- nervous system process
+- regulation of calcium-mediated signaling
+- purine nucleoside metabolic process
+- DNA geometric change
+- hematopoietic or lymphoid organ development
+- acyl-CoA metabolic process
+- regulation of proteasomal protein catabolic process
+- protein processing
+- morphogenesis of an epithelium
+- regulation of developmental process
+- response to corticosteroid
+- regulation of cell-cell adhesion
+- xenobiotic metabolic process
+- regulation of cellular component organization
+- regulation of phosphoprotein phosphatase activity
+- phagocytosis, engulfment
+- regulation of cell death
+- regulation of insulin secretion
+- protein import into nucleus
+- catechol-containing compound metabolic process
+- positive regulation of cell migration
+- cellular response to fibroblast growth factor stimulus
+- sodium ion transport
+- homophilic cell adhesion via plasma membrane adhesion molecules
+- inflammatory response
+- cell-cell adhesion via plasma-membrane adhesion molecules
+- regulation of proteolysis involved in cellular protein catabolic process
+- organic acid transport
+- detection of carbohydrate stimulus
+- positive regulation of cell cycle process
+- cilium or flagellum-dependent cell motility
+- proton transmembrane transport
+- microtubule-based movement
+- branched-chain amino acid metabolic process
+- carbohydrate phosphorylation
+- NADP metabolic process
+- alcohol metabolic process
+- sensory system development
+- positive regulation of nervous system development
+- positive regulation of MAPK cascade
+- amine biosynthetic process
+- regulation of programmed cell death
+- virion attachment to host cell
+- glycogen metabolic process
+- regulation of ion transmembrane transport
+- establishment or maintenance of cell polarity
+- ameboidal-type cell migration
+- DNA repair
+- transcription by RNA polymerase I
+- nucleobase-containing small molecule biosynthetic process
+- secretion
+- regulation of actin filament-based process
+- cellular protein catabolic process
+- muscle tissue development
+- humoral immune response mediated by circulating immunoglobulin
+- aromatic amino acid family catabolic process
+- regulation of cell development
+- visual system development
+- negative regulation of RNA biosynthetic process
+- negative regulation of proteolysis
+- protein-containing complex assembly
+- anion transmembrane transport
+- ATP generation from ADP
+- positive regulation of protein secretion
+- polyol metabolic process
+- cellular macromolecule catabolic process
+- modulation by virus of host cellular process
+- epithelial cell migration
+- nervous system development
+- viral process
+- regulation of phosphate metabolic process
+- monosaccharide metabolic process
+- cellular response to oxygen levels
+- nucleic acid phosphodiester bond hydrolysis
+- cellular divalent inorganic cation homeostasis
+- negative regulation of transmembrane transport
+- regulation of humoral immune response
+- arginine metabolic process
+- cellular response to interferon-gamma
+- kidney development
+- pyrimidine nucleoside monophosphate metabolic process
+- intracellular protein transmembrane transport
+- cellular modified amino acid biosynthetic process
+- nucleoside salvage
+- tissue homeostasis
+- developmental process involved in reproduction
+- cellular response to monosaccharide stimulus
+- pyrimidine nucleobase biosynthetic process
+- rhythmic process
+- calcium ion transport into cytosol
+- cellular glucose homeostasis
+- cellular response to cytokine stimulus
+- production of molecular mediator of immune response
+- DNA biosynthetic process
+- regulation of nucleocytoplasmic transport
+- response to organic substance
+- cellular response to radiation
+- hydrogen peroxide catabolic process
+- immune system process
+- mitochondrial transport
+- alpha-amino acid metabolic process
+- glutamine family amino acid biosynthetic process
+- movement in host environment
+- regulation of cellular component size
+- positive regulation of apoptotic signaling pathway
+- negative regulation of protein kinase activity
+- negative regulation of gene expression, epigenetic
+- adhesion of symbiont to host
+- positive regulation of transcription, DNA-templated
+- positive regulation of protein catabolic process
+- peptidyl-lysine acetylation
+- DNA integrity checkpoint
+- response to xenobiotic stimulus
+- cell surface receptor signaling pathway
+- pyridoxal phosphate biosynthetic process
+- regulation of gene silencing
+- cellular detoxification
+- viral transcription
+- sister chromatid segregation
+- bacterial-type flagellum-dependent cell motility
+- amide biosynthetic process
+- histone modification
+- macroautophagy
+- icosanoid metabolic process
+- alpha-amino acid biosynthetic process
+- pyridine-containing compound metabolic process
+- alcohol catabolic process
+- granulocyte migration
+- viral gene expression
+- regulation of cellular localization
+- humoral immune response
+- positive regulation of neuron projection development
+- regulation of cell activation
+- regulation of neuron differentiation
+- nucleoside phosphate catabolic process
+- peptide metabolic process
+- B cell mediated immunity
+- UMP biosynthetic process
+- amino sugar catabolic process
+- regulation of mitotic nuclear division
+- sulfur amino acid metabolic process
+- cellular chemical homeostasis
+- maltose transport
+- protein phosphorylation
+- detection of light stimulus
+- cellular polysaccharide biosynthetic process
+- xylan metabolic process
+- nuclear-transcribed mRNA catabolic process
+- muscle contraction
+- regulation of mitochondrion organization
+- neuron death
+- 7-methylguanosine RNA capping
+- isoleucine metabolic process
+- cellular response to hypoxia
+- defense response to fungus
+- chromosome organization
+- regulation of neurotransmitter transport
+- secondary alcohol biosynthetic process
+- regulation of transcription by RNA polymerase II
+- nucleobase-containing small molecule catabolic process
+- Fc receptor mediated stimulatory signaling pathway
+- killing by virus of host cell
+- cell wall polysaccharide catabolic process
+- glycosaminoglycan biosynthetic process
+- receptor-mediated endocytosis
+- receptor signaling pathway via JAK-STAT
+- pyrimidine nucleotide metabolic process
+- regulation of blood vessel diameter
+- regulation of symbiotic process
+- response to light stimulus
+- modification-dependent macromolecule catabolic process
+- regulation of cell division
+- eye development
+- RNA phosphodiester bond hydrolysis, exonucleolytic
+- reproductive structure development
+- 2'-deoxyribonucleotide metabolic process
+- porphyrin-containing compound metabolic process
+- positive regulation of transporter activity
+- regulation of neurogenesis
+- aminoglycan catabolic process
+- regulation of response to cytokine stimulus
+- response to nutrient levels
+- regulation of nucleotide metabolic process
+- positive regulation of catabolic process
+- monovalent inorganic cation homeostasis
+- regulation of neurotransmitter levels
+- cellular response to external stimulus
+- glutamine family amino acid catabolic process
+- response to cadmium ion
+- response to amino acid
+- Ras protein signal transduction
+- positive regulation of protein polymerization
+- regulation of protein-containing complex disassembly
+- regulation of cell growth
+- killing of cells of other organism
+- neuron apoptotic process
+- cellular process involved in reproduction in multicellular organism
+- phosphatidylinositol-mediated signaling
+- cellular response to superoxide
+- homeostatic process
+- regulation of cellular response to stress
+- pteridine-containing compound biosynthetic process
+- protein folding
+- glutamate metabolic process
+- synaptic signaling
+- chromatin organization
+- NADH dehydrogenase complex assembly
+- regulation of G2/M transition of mitotic cell cycle
+- regulation of protein kinase activity
+- response to interleukin-1
+- microtubule-based process
+- myeloid leukocyte activation
+- Golgi vesicle transport
+- tRNA methylation
+- protein complex oligomerization
+- endothelial cell migration
+- cellular response to hormone stimulus
+- muscle organ development
+- response to hydrogen peroxide
+- negative regulation of RNA metabolic process
+- cardiovascular system development
+- hydrogen peroxide metabolic process
+- inorganic ion homeostasis
+- cellular component assembly
+- regulation of system process
+- organic substance catabolic process
+- regulation of cell differentiation
+- cellular nitrogen compound catabolic process
+- phenol-containing compound metabolic process
+- macromolecule catabolic process
+- cellular hormone metabolic process
+- myeloid cell differentiation
+- response to fibroblast growth factor
+- regulation of primary metabolic process
+- granulocyte activation
+- multi-organism membrane organization
+- monosaccharide biosynthetic process
+- anterograde trans-synaptic signaling
+- cellular transition metal ion homeostasis
+- beta-glucan metabolic process
+- immune response-activating cell surface receptor signaling pathway
+- antibiotic biosynthetic process
+- regulation of DNA-templated transcription, initiation
+- growth
+- peptidyl-tyrosine phosphorylation
+- purine ribonucleoside monophosphate biosynthetic process
+- tRNA modification
+- positive regulation of apoptotic process
+- protein-containing complex localization
+- phospholipid metabolic process
+- lymphocyte differentiation
+- pyrimidine ribonucleoside monophosphate biosynthetic process
+- cysteine biosynthetic process
+- membrane biogenesis
+- negative regulation of mitotic cell cycle
+- antimicrobial humoral response
+- protein homooligomerization
+- regulation of purine nucleotide metabolic process
+- gene silencing by RNA
+- organelle organization
+- fusion of virus membrane with host plasma membrane
+- '''de novo'' IMP biosynthetic process'
+- cellular localization
+- Fc-gamma receptor signaling pathway involved in phagocytosis
+- DNA integration
+- cellular amino acid biosynthetic process
+- mitochondrial respiratory chain complex I assembly
+- negative regulation of ion transport
+- cell-cell signaling by wnt
+- regulation of biosynthetic process
+- glucosamine-containing compound metabolic process
+- regulation of leukocyte proliferation
+- organophosphate biosynthetic process
+- heme metabolic process
+- external encapsulating structure organization
+- interspecies interaction between organisms
+- positive regulation of B cell activation
+- histidine biosynthetic process
+- regulation of RNA stability
+- energy coupled proton transport, down electrochemical gradient
+- negative regulation of hydrolase activity
+- ncRNA 3'-end processing
+- mitotic sister chromatid segregation
+- interaction with host
+- spliceosomal complex assembly
+- carbohydrate homeostasis
+- positive regulation of chemotaxis
+- positive regulation of translation
+- phagocytosis, recognition
+- tissue remodeling
+- cell growth
+- sexual reproduction
+- response to extracellular stimulus
+- mRNA-containing ribonucleoprotein complex export from nucleus
+- cardiac muscle contraction
+- cell death
+- regulation of chromosome organization
+- cellular response to toxic substance
+- chordate embryonic development
+- axonogenesis
+- cell morphogenesis
+- regulation of B cell activation
+- tumor necrosis factor-mediated signaling pathway
+- neurotransmitter transport
+- indolalkylamine metabolic process
+- mitigation of host defenses by symbiont
+- negative regulation of transferase activity
+- regulation of cellular carbohydrate metabolic process
+- tRNA aminoacylation
+- ribonucleotide biosynthetic process
+- purine ribonucleoside triphosphate metabolic process
+- ribosomal large subunit assembly
+- neutrophil mediated immunity
+- positive regulation of hemopoiesis
+- regulation of membrane potential
+- positive regulation of viral process
+- regulation of T cell activation
+- organic hydroxy compound catabolic process
+- chromatin remodeling
+- transport
+- fatty acid derivative biosynthetic process
+- transition metal ion homeostasis
+- protein modification process
+- negative regulation of multicellular organismal process
+- positive regulation of lymphocyte activation
+- positive regulation of transport
+- 2'-deoxyribonucleotide biosynthetic process
+- gas transport
+- glycosyl compound metabolic process
+- regulation of catabolic process
+- transition metal ion transport
+- cell projection organization
+- protein localization to cell periphery
+- pyrimidine ribonucleoside triphosphate metabolic process
+- hemolysis in other organism
+- negative regulation of cell communication
+- regulation of receptor signaling pathway via JAK-STAT
+- carbohydrate transport
+- transcription elongation from RNA polymerase II promoter
+- actin filament bundle organization
+- DNA replication initiation
+- secondary alcohol metabolic process
+- regulation of muscle contraction
+- glycine metabolic process
+- carboxylic acid metabolic process
+- polyol catabolic process
+- response to hypoxia
+- positive regulation of cytoskeleton organization
+- organic cyclic compound catabolic process
+- activation of innate immune response
+- positive regulation of cation transmembrane transport
+- peptide biosynthetic process
+- steroid biosynthetic process
+- negative regulation of response to stimulus
+- viral life cycle
+- polysaccharide catabolic process
+- maintenance of DNA repeat elements
+- regulation of Wnt signaling pathway
+- cellular response to lipopolysaccharide
+- indolalkylamine biosynthetic process
+- plasma membrane invagination
+- release of sequestered calcium ion into cytosol
+- negative regulation of nitrogen compound metabolic process
+- purine ribonucleoside metabolic process
+- regulation of lymphocyte proliferation
+- establishment of localization in cell
+- antibiotic metabolic process
+- cognition
+- nuclear transport
+- positive regulation of actin filament polymerization
+- positive regulation of cellular biosynthetic process
+- second-messenger-mediated signaling
+- positive regulation of cell development
+- pigment biosynthetic process
+- actin filament bundle assembly
+- organonitrogen compound catabolic process
+- antigen receptor-mediated signaling pathway
+- purine nucleoside bisphosphate metabolic process
+- negative regulation of protein-containing complex assembly
+- lymphocyte proliferation
+- cellular glucan metabolic process
+- translational elongation
+- positive regulation of programmed cell death
+- vitamin metabolic process
+- positive regulation of intracellular protein transport
+- regulation of cellular protein catabolic process
+- recombinational repair
+- positive regulation of peptidase activity
+- regulation of immune response
+- hexose biosynthetic process
+- cell activation involved in immune response
+- regulation of angiogenesis
+- transcription, DNA-templated
+- cellular response to stimulus
+- cell cycle G1/S phase transition
+- long-chain fatty acid metabolic process
+- response to temperature stimulus
+- regulation of protein localization to membrane
+- nucleocytoplasmic transport
+- import into cell
+- response to superoxide
+- organophosphate ester transport
+- immune system development
+- multicellular organismal reproductive process
+- homeostasis of number of cells
+- positive regulation of cell cycle
+- regulation of establishment of protein localization
+- fatty acid metabolic process
+- positive regulation of phosphorus metabolic process
+- cellular carbohydrate catabolic process
+- disaccharide transport
+- thiamine diphosphate biosynthetic process
+- RNA splicing, via transesterification reactions with bulged adenosine as nucleophile
+- killing of cells in other organism involved in symbiotic interaction
+- cellular response to biotic stimulus
+- antigen processing and presentation of peptide antigen via MHC class I
+- negative regulation of protein metabolic process
+- regulation of cellular protein localization
+- cellular lipid metabolic process
+- antigen processing and presentation
+- organic anion transport
+- adaptive immune response
+- epithelium development
+- virion assembly
+- regulation of translational initiation
+- regulation of cell communication
+- protein maturation
+- glycoprotein biosynthetic process
+- blood circulation
+- nucleobase-containing compound transport
+- histone acetylation
+- complement activation, classical pathway
+- detection of chemical stimulus
+- negative regulation of synaptic transmission
+- pentose-phosphate shunt
+- negative regulation of mitotic cell cycle phase transition
+- positive regulation of cytosolic calcium ion concentration
+- immune response-regulating cell surface receptor signaling pathway involved in phagocytosis
+- positive regulation of cell population proliferation
+- glucose metabolic process
+- bioluminescence
+- sensory perception of mechanical stimulus
+- RNA modification
+- nonribosomal peptide biosynthetic process
+- response to fungus
+- leukocyte migration
+- muscle cell differentiation
+- regulation of protein ubiquitination
+- regulation of cysteine-type endopeptidase activity involved in apoptotic process
+- chromatin assembly or disassembly
+- negative regulation of cellular metabolic process
+- regulation of transferase activity
+- regulation of response to stimulus
+- positive regulation of cell adhesion
+- polysaccharide biosynthetic process
+- regulation of reactive oxygen species metabolic process
+- modulation of process of other organism involved in symbiotic interaction
+- double-strand break repair via homologous recombination
+- water-soluble vitamin biosynthetic process
+- multicellular organism development
+- cellular carbohydrate biosynthetic process
+- response to hexose
+- aging
+- negative regulation of Wnt signaling pathway
+- ketone biosynthetic process
+- anatomical structure development
+- taxis
+- regulation of macromolecule biosynthetic process
+- glycosyl compound catabolic process
+- response to reactive oxygen species
+- extracellular structure organization
+- UMP metabolic process
+- ribonucleoprotein complex biogenesis
+- entry into host
+- protein insertion into membrane
+- nitrogen cycle metabolic process
+- regulation of mRNA stability
+- sporulation
+- rRNA methylation
+- Fc receptor signaling pathway
+- regulation of protein stability
+- immune effector process
+- anatomical structure maturation
+- ribonucleotide metabolic process
+- molybdopterin cofactor metabolic process
+- hormone-mediated signaling pathway
+- negative regulation of cell population proliferation
+- cell part morphogenesis
+- immune response
+- hemostasis
+- establishment of protein localization to extracellular region
+- regulation of nervous system development
+- nitric oxide metabolic process
+- intracellular signal transduction
+- protein stabilization
+- regulation of lymphocyte mediated immunity
+- nucleoside bisphosphate biosynthetic process
+- maturation of 5.8S rRNA
+- response to other organism
+- regulation of localization
+- deoxyribonucleotide metabolic process
+- movement of cell or subcellular component
+- lysine biosynthetic process via diaminopimelate
+- coenzyme A metabolic process
+- positive regulation of transmembrane transport
+- positive regulation of macromolecule metabolic process
+- pyrimidine nucleoside triphosphate biosynthetic process
+- immunoglobulin production
+- immune response-activating signal transduction
+- protein-DNA complex subunit organization
+- RNA biosynthetic process
+- nucleobase metabolic process
+- acyl-CoA biosynthetic process
+- reproductive system development
+- nicotinamide nucleotide biosynthetic process
+- NIK/NF-kappaB signaling
+- regulation of nuclear division
+- glycerolipid biosynthetic process
+- hormone secretion
+- cellular response to insulin stimulus
+- lipid modification
+- divalent metal ion transport
+- purine nucleoside monophosphate metabolic process
+- negative regulation of nucleic acid-templated transcription
+- T cell differentiation
+- purine-containing compound catabolic process
+- sensory perception of sound
+- animal organ morphogenesis
+- toll-like receptor signaling pathway
+- regulation of defense response
+- respiratory electron transport chain
+- organophosphate metabolic process
+- neutrophil migration
+- RNA localization
+- multi-multicellular organism process
+- glucan biosynthetic process
+- myeloid cell activation involved in immune response
+- plasma membrane bounded cell projection assembly
+- fatty acid derivative metabolic process
+- carbohydrate metabolic process
+- isopentenyl diphosphate biosynthetic process
+- regulation of gene expression
+- lipid metabolic process
+- regulation of cell size
+- axon guidance
+- vitamin B6 biosynthetic process
+- negative regulation of cellular amide metabolic process
+- aspartate family amino acid biosynthetic process
+- aromatic compound catabolic process
+- negative regulation of nucleobase-containing compound metabolic process
+- ossification
+- positive regulation of leukocyte cell-cell adhesion
+- regulation of leukocyte chemotaxis
+- pyrimidine nucleoside triphosphate metabolic process
+- nucleotide biosynthetic process
+- negative regulation of molecular function
+- regulation of transmembrane transport
+- regulation of DNA-binding transcription factor activity
+- covalent chromatin modification
+- ribonucleoside bisphosphate metabolic process
+- microtubule cytoskeleton organization
+- import into nucleus
+- regulation of supramolecular fiber organization
+- calcium ion homeostasis
+- negative regulation of cell cycle phase transition
+- tetrapyrrole biosynthetic process
+- catabolic process
+- regulation of cytoskeleton organization
+- negative regulation of cellular biosynthetic process
+- defense response to other organism
+- striated muscle contraction
+- cellular polysaccharide catabolic process
+- cell wall organization
+- exit from host cell
+- positive regulation of signaling
+- organelle fission
+- arginine biosynthetic process
+- response to carbohydrate
+- cellular alkane metabolic process
+- cell chemotaxis
+- cellular response to steroid hormone stimulus
+- purine nucleoside bisphosphate biosynthetic process
+- regulation of carbohydrate metabolic process
+- L-methionine biosynthetic process
+- small GTPase mediated signal transduction
+- protein localization
+- negative regulation of transport
+- organelle fusion
+- cellular respiration
+- positive regulation of cellular metabolic process
+- thiamine-containing compound metabolic process
+- cellular cation homeostasis
+- regulation of DNA replication
+- regulation of cytokine secretion
+- signal release from synapse
+- CTP biosynthetic process
+- endomembrane system organization
+- purine ribonucleoside biosynthetic process
+- membrane invagination
+- nucleotide salvage
+- B cell activation
+- neurotransmitter secretion
+- transcription preinitiation complex assembly
+- central nervous system development
+- positive regulation of response to external stimulus
+- system development
+- carbon fixation
+- positive regulation of multicellular organismal process
+- glial cell differentiation
+- positive regulation of molecular function
+- regulation of translation
+- phosphatidylinositol metabolic process
+- cell projection assembly
+- divalent inorganic cation homeostasis
+- ncRNA catabolic process
+- membrane lipid metabolic process
+- inorganic ion transmembrane transport
+- regulation of mitotic cell cycle phase transition
+- ornithine metabolic process
+- synapse organization
+- cell activation
+- cellular amide metabolic process
+- glycine biosynthetic process
+- negative regulation of establishment of protein localization
+- in utero embryonic development
+- rRNA processing
+- extrinsic apoptotic signaling pathway
+- nucleoside biosynthetic process
+- deoxyribonucleoside triphosphate biosynthetic process
+- cellular response to organonitrogen compound
+- base-excision repair
+- secondary metabolite biosynthetic process
+- pyrimidine ribonucleotide biosynthetic process
+- pyruvate family amino acid metabolic process
+- regulation of epithelial cell proliferation
+- positive regulation of hydrolase activity
+- positive regulation of proteolysis
+- peptidyl-serine phosphorylation
+- positive regulation of GTPase activity
+- pyrimidine deoxyribonucleotide metabolic process
+- axon development
+- regulation of mononuclear cell proliferation
+- internal protein amino acid acetylation
+- protein-DNA complex assembly
+- regulation of innate immune response
+- regulation of cellular protein metabolic process
+- response to acid chemical
+- regulation of cell projection organization
+- nicotinamide nucleotide metabolic process
+- regulation of protein secretion
+- IMP metabolic process
+- aminoglycan metabolic process
+- regulation of signaling
+- cellular protein localization
+- cholesterol metabolic process
+- regulation of binding
+- multicellular organismal homeostasis
+- anatomical structure homeostasis
+- negative regulation of chromosome organization
+- cellular response to chemical stress
+- regulation of organelle organization
+- stem cell differentiation
+- macromolecule localization
+- regulation of hemopoiesis
+- regulation of protein catabolic process
+- mRNA cis splicing, via spliceosome
+- protein acylation
+- regulation of glucose metabolic process
+- biological adhesion
+- protein targeting to ER
+- mRNA transport
+- mRNA 3'-end processing
+- glycosyl compound biosynthetic process
+- protein homotetramerization
+- positive regulation of protein metabolic process
+- regulation of G1/S transition of mitotic cell cycle
+- cellular homeostasis
+- response to growth factor
+- negative regulation of protein phosphorylation
+- response to defenses of other organism
+- dephosphorylation
+- establishment of protein localization to mitochondrion
+- establishment of vesicle localization
+- negative regulation of signaling
+- positive regulation of leukocyte migration
+- positive regulation of protein kinase activity
+- positive regulation of cell-cell adhesion
+- wound healing
+- double-strand break repair
+- chaperone-mediated protein folding
+- response to maltose
+- carbohydrate biosynthetic process
+- peptide transport
+- cellular component organization
+- protein depolymerization
+- vitamin biosynthetic process
+- carbohydrate derivative catabolic process
+- Wnt signaling pathway
+- long-chain fatty acid transport
+- regulation of multicellular organismal development
+- transmembrane transport
+- negative regulation of DNA-binding transcription factor activity
+- pyrimidine ribonucleoside triphosphate biosynthetic process
+- carbohydrate derivative metabolic process
+- proteasomal ubiquitin-independent protein catabolic process
+- cellular response to decreased oxygen levels
+- lipid phosphorylation
+- regulation of cation transmembrane transport
+- cellular response to peptide hormone stimulus
+- tube development
+- nucleoside monophosphate metabolic process
+- vitamin B6 metabolic process
+- ribose phosphate metabolic process
+- leukocyte cell-cell adhesion
+- regulation of hormone secretion
+- protein modification by small protein conjugation
+- AMP biosynthetic process
+- arachidonic acid secretion
+- lipopolysaccharide metabolic process
+- ribosomal small subunit assembly
+- lipoprotein metabolic process
+- '''de novo'' UMP biosynthetic process'
+- microtubule cytoskeleton organization involved in mitosis
+- RNA 5'-end processing
+- positive regulation of cellular component organization
+- negative regulation of kinase activity
+- activation of immune response
+- regulation of phosphorus metabolic process
+- regulation of GTPase activity
+- maintenance of location
+- pteridine-containing compound metabolic process
+- chromatin silencing
+- organic acid biosynthetic process
+- regulation of neurotransmitter secretion
+- serine family amino acid metabolic process
+- purine-containing compound biosynthetic process
+- cytokine secretion
+- mitotic cell cycle checkpoint
+- regulation of nitrogen compound metabolic process
+- T cell proliferation
+- ncRNA transcription
+- regulation of ion transport
+- neuron differentiation
+- inorganic cation transmembrane transport
+- actomyosin structure organization
+- cellular iron ion homeostasis
+- endoplasmic reticulum to Golgi vesicle-mediated transport
+- RNA 3'-end processing
+- positive regulation of MAP kinase activity
+- cell cycle arrest
+- regulation of MAP kinase activity
+- maturation of LSU-rRNA
+- detection of maltose stimulus
+- nucleotide-sugar biosynthetic process
+- reactive oxygen species metabolic process
+- monocarboxylic acid transport
+- pathogenesis
+- organic acid metabolic process
+- regulation of cell morphogenesis involved in differentiation
+- protein polymerization
+- ribonucleoside monophosphate metabolic process
+- glycosaminoglycan catabolic process
+- negative regulation of cell differentiation
+- regulation of small GTPase mediated signal transduction
+- liposaccharide metabolic process
+- divalent inorganic cation transport
+- regulation of response to wounding
+- regulation of adaptive immune response
+- regulation of peptide transport
+- monocarboxylic acid biosynthetic process
+- regulation of protein localization
+- autophagosome organization
+- CTP metabolic process
+- fatty acid transport
+- cellular response to hydrogen peroxide
+- amino acid activation
+- plasma membrane bounded cell projection morphogenesis
+- regulation of cell killing
+- system process
+- stress-activated MAPK cascade
+- glycosylation
+- calcium ion transmembrane import into cytosol
+- mitochondrial respiratory chain complex assembly
+- negative regulation of actin filament polymerization
+- cellular response to inorganic substance
+- ubiquitin-dependent protein catabolic process
+- tissue migration
+- maltodextrin transport
+- disaccharide metabolic process
+- negative regulation of developmental process
+- pentose metabolic process
+- cytolysis in other organism
+- detection of stimulus
+- response to insulin
+- regulation of complement activation
+- purine ribonucleotide biosynthetic process
+- lymphocyte activation
+- T cell activation
+- negative regulation of secretion by cell
+- negative regulation of cellular process
+- regulation of nucleobase-containing compound metabolic process
+- actin filament-based process
+- cell wall biogenesis
+- modulation by virus of host process
+- cellular lactam metabolic process
+- mitotic cell cycle
+- negative regulation of intracellular signal transduction
+- endocytosis
+- cell redox homeostasis
+- pyrimidine ribonucleotide metabolic process
+- nuclear division
+- aspartate family amino acid metabolic process
+- polyol biosynthetic process
+- regulation of stress-activated MAPK cascade
+- intrinsic apoptotic signaling pathway
+- establishment of protein localization to endoplasmic reticulum
+- B cell receptor signaling pathway
+- purine nucleoside triphosphate biosynthetic process
+- DNA-templated transcription, initiation
+- regulation of locomotion
+- germ cell development
+- cell junction organization
+- purine ribonucleotide metabolic process
+- circulatory system process
+- cell wall polysaccharide metabolic process
+- mitochondrial electron transport, NADH to ubiquinone
+- ERK1 and ERK2 cascade
+- cellular response to molecule of bacterial origin
+- positive regulation of protein serine/threonine kinase activity
+- oligosaccharide biosynthetic process
+- cellular lactam catabolic process
+- aminoglycan biosynthetic process
+- positive regulation of cellular component biogenesis
+- regulation of lipid biosynthetic process
+- regulation of actin cytoskeleton organization
+- G1/S transition of mitotic cell cycle
+- regulation of actin filament organization
+- regulation of anatomical structure morphogenesis
+- process utilizing autophagic mechanism
+- negative regulation of supramolecular fiber organization
+- iron ion homeostasis
+- organelle assembly
+- positive regulation of innate immune response
+- regulation of intracellular signal transduction
+- positive regulation of defense response
+- cellular response to nitrogen compound
+- enzyme linked receptor protein signaling pathway
+- cytokine-mediated signaling pathway
+- regulation of cellular component biogenesis
+- gland development
+- response to cytokine
+- response to steroid hormone
+- multi-organism membrane fusion
+- blood vessel development
+- nucleosome organization
+- defense response to bacterium
+- cytoplasmic translation
+- branched-chain amino acid biosynthetic process
+- leucine metabolic process
+- cell communication
+- beta-lactam antibiotic catabolic process
+- adhesion of symbiont to host cell
+- phosphorelay signal transduction system
+- temperature homeostasis
+- nucleobase-containing compound catabolic process
+- regulation of epithelial cell migration
+- regulation of protein metabolic process
+- coagulation
+- regulation of autophagy
+- negative regulation of biological process
+- organic acid catabolic process
+- deoxyribose phosphate metabolic process
+- cell cycle process
+- mononuclear cell proliferation
+- multi-organism localization
+- regulation of DNA metabolic process
+- establishment of organelle localization
+- cellular response to stress
+- macromolecule glycosylation
+- amide transport
+- aerobic respiration
+- cellular calcium ion homeostasis
+- spliceosomal snRNP assembly
+- polysaccharide metabolic process
+- positive regulation of gene expression
+- purine ribonucleoside triphosphate biosynthetic process
+- post-translational protein modification
+- negative regulation of cytokine production
+- embryonic morphogenesis
+- response to tumor necrosis factor
+- regulation of protein serine/threonine kinase activity
+- tetrahydrofolate biosynthetic process
+- regulation of growth
+- response to calcium ion
+- regulation of signal transduction by p53 class mediator
+- adaptive immune response based on somatic recombination of immune receptors built
+     from immunoglobulin superfamily domains
+- oxoacid metabolic process
+- phosphorylation
+- nucleotide-excision repair
+- protein modification by small protein conjugation or removal
+- defense response to Gram-positive bacterium
+- protein methylation
+- cytokinetic process
+- peptidoglycan-based cell wall biogenesis
+- receptor signaling pathway via STAT
+- viral genome replication
+- epithelial cell differentiation
+- skeletal system development
+- negative regulation of cytoskeleton organization
+- negative regulation of cell cycle process
+- pattern recognition receptor signaling pathway
+- regulation of heart contraction
+- detection of disaccharide stimulus
+- ribosomal large subunit biogenesis
+- cellulose catabolic process
+- mitotic cell cycle phase transition
+- membrane lipid biosynthetic process
+- protein modification by small protein removal
+- macromolecule methylation
+- nuclear export
+- amino acid transport
+- electron transport chain
+- response to toxic substance
+- cotranslational protein targeting to membrane
+- response to starvation
+- NADPH regeneration
+- regulation of transport
+- cellular response to environmental stimulus
+- monosaccharide transmembrane transport
+- regulation of cellular ketone metabolic process
+- rRNA modification
+- telomere maintenance
+- terpenoid metabolic process
+- tetrapyrrole metabolic process
+- regulation of muscle system process
+- peptidyl-proline modification
+- regulation of calcium ion transmembrane transport
+- ribonucleoside bisphosphate biosynthetic process
+- AMP metabolic process
+- arachidonate transport
+- peptidyl-lysine modification
+- peptidoglycan biosynthetic process
+- mRNA catabolic process
+- regulation of intrinsic apoptotic signaling pathway
+- regulation of metal ion transport
+- proteasome-mediated ubiquitin-dependent protein catabolic process
+- pyrimidine deoxyribonucleoside monophosphate metabolic process
+- nucleoside catabolic process
+- peptidyl-tyrosine modification
+- transmembrane receptor protein tyrosine kinase signaling pathway
+- response to UV
+- negative regulation of catabolic process
+- cytokinesis
+- meiosis I cell cycle process
+- membrane fusion involved in viral entry into host cell
+- positive regulation of cell death
+- energy reserve metabolic process
+- apoptotic mitochondrial changes
+- regulation of actin filament length
+- defense response to virus
+- positive regulation of establishment of protein localization
+- DNA conformation change
+- ribonucleoprotein complex subunit organization
+- protein localization to endoplasmic reticulum
+- positive regulation of small molecule metabolic process
+- regulation of actin polymerization or depolymerization
+- iron-sulfur cluster assembly
+- ATP synthesis coupled electron transport
