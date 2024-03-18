@@ -112,6 +112,8 @@ class UNet2D(nn.Cell):
         >>> import mindspore as ms
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
+        >>> import mindflow
+        >>> from mindflow.cell import Unet2D
         >>> ms.set_context(mode=ms.GRAPH_MODE, save_graphs=False, device_target="GPU")
         >>> x=Tensor(np.ones([2, 128, 128, 3]), mstype.float32)
         >>> unet = Unet2D(in_channels=3, out_channels=3, base_channels=3)
