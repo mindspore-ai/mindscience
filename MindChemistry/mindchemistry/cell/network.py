@@ -12,24 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""network"""
+from mindspore import nn, float32, int32
 
-from mindspore import nn, ops, float32, int32, Tensor
-import numpy as np
-
-from ..e3.o3 import Irreps, SphericalHarmonics, TensorProduct, Linear
-from ..e3.nn import OneHot, Scatter
+from mindchemistry.graph.graph import AggregateNodeToGlobal
+from ..e3.o3 import Irreps, SphericalHarmonics, Linear
+from ..e3.nn import OneHot
 from ..e3.utils import radius_graph
 from .message_passing import MessagePassing
 from .embedding import RadialEdgeEmbedding
 
 
 class AtomwiseLinear(nn.Cell):
+    """AtomwiseLinear"""
 
-    def __init__(self, irreps_in, irreps_out, dtype=float32):
+    def __init__(self, irreps_in, irreps_out, dtype=float32, ncon_dtype=float32):
         super().__init__()
         self.irreps_in = Irreps(irreps_in)
         self.irreps_out = Irreps(irreps_out)
-        self.linear = Linear(self.irreps_in, self.irreps_out, dtype=dtype)
+        self.linear = Linear(self.irreps_in, self.irreps_out, dtype=dtype, ncon_dtype=ncon_dtype)
 
     def construct(self, node_input):
         return self.linear(node_input)
@@ -39,6 +40,7 @@ class AtomwiseLinear(nn.Cell):
 
 
 class EnergyNet(nn.Cell):
+    """EnergyNet"""
 
     def __init__(
             self,
@@ -53,7 +55,8 @@ class EnergyNet(nn.Cell):
             hidden_mul=50,
             lmax=2,
             pred_force=False,
-            dtype=float32
+            dtype=float32,
+            ncon_dtype=float32
     ):
         super().__init__()
         self.r_max = r_max
@@ -71,7 +74,7 @@ class EnergyNet(nn.Cell):
         self.radial_embedding = RadialEdgeEmbedding(r_max, num_basis, cutoff_p, dtype=dtype)
 
         irreps_output = Irreps(chemical_embedding_irreps_out)
-        self.lin_input = AtomwiseLinear(self.one_hot.irreps_output, irreps_output, dtype=dtype)
+        self.lin_input = AtomwiseLinear(self.one_hot.irreps_output, irreps_output, dtype=dtype, ncon_dtype=ncon_dtype)
 
         irreps_edge_scalars = self.radial_embedding.irreps_out
 
@@ -91,16 +94,18 @@ class EnergyNet(nn.Cell):
             nonlin_scalars={"e": "silu", "o": "tanh"},
             nonlin_gates={"e": "silu", "o": "tanh"},
             dtype=dtype,
+            ncon_dtype=ncon_dtype
         )
-        self.lin1 = AtomwiseLinear(self.irreps_conv_out, self.irreps_embedding_out, dtype=dtype)
+        self.lin1 = AtomwiseLinear(self.irreps_conv_out, self.irreps_embedding_out, dtype=dtype, ncon_dtype=ncon_dtype)
 
         irreps_out = '1x0e+1x1o' if pred_force else '1x0e'
 
-        self.lin2 = AtomwiseLinear(self.irreps_embedding_out, irreps_out, dtype=dtype)
+        self.lin2 = AtomwiseLinear(self.irreps_embedding_out, irreps_out, dtype=dtype, ncon_dtype=ncon_dtype)
 
-        self.scatter = Scatter()
+        self.scatter = AggregateNodeToGlobal()
 
     def preprocess(self, data):
+        """preprocess"""
         if "batch" in data:
             batch = data["batch"]
         else:
@@ -114,6 +119,7 @@ class EnergyNet(nn.Cell):
         return batch, edge_src, edge_dst
 
     def construct(self, batch, atom_type, atom_pos, edge_src, edge_dst, batch_size):
+        """construct"""
         edge_vec = atom_pos[edge_dst] - atom_pos[edge_src]
         node_inputs = self.one_hot(atom_type)
         node_attr = node_inputs.copy()
@@ -128,9 +134,9 @@ class EnergyNet(nn.Cell):
         node_features = self.lin2(node_features)
 
         if self.pred_force:
-            energy = self.scatter(node_features[:, :1], batch, dim_size=batch_size)
+            energy = self.scatter(node_attr=node_features[:, :1], batch=batch, dim_size=batch_size)
             forces = node_features[:, 1:]
             return energy, forces
 
-        energy = self.scatter(node_features, batch, dim_size=batch_size)
+        energy = self.scatter(node_attr=node_features, batch=batch, dim_size=batch_size)
         return energy

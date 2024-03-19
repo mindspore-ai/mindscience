@@ -15,6 +15,7 @@
 """
 visualization functions
 """
+import logging
 import os
 import psutil
 
@@ -44,3 +45,25 @@ def training_bar(epoch, size, current, loss=None):
         ratio = (current + 1) / size * 100
         print(f'Training epoch {epoch + 1}: [\033[92m' + '■' * (complete + 1) + '\033[0m' + ' ' * (
             stride - complete - 1) + f'] {ratio:.2f}%    Memory used: {memory:>6.2f} MB   ', end='')
+
+
+def log_config(outdir):
+    """log_config
+
+    Args:
+        outdir: outdir
+    """
+    logger = logging.getLogger()
+    logger.setLevel('INFO')
+    logger.handlers = []
+    formatter = logging.Formatter(fmt='%(asctime)s (%(levelname)s): %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+    ch = logging.StreamHandler()
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+
+    # 创建文件输出器
+    log_file = os.path.join(outdir, 'log.log')
+    fh = logging.FileHandler(log_file)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)

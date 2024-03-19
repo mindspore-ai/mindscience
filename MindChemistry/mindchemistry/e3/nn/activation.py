@@ -25,7 +25,6 @@ NTOL = 1e-5
 def _moment(f, n, dtype=float32):
     x = Tensor(np.random.randn(1000000), dtype=dtype)
     y = f(x).pow(n).mean().pow(-0.5)
-    y = ops.cast(y, float32)
 
     return y
 
@@ -55,7 +54,7 @@ class _Normalize(nn.Cell):
     def construct(self, x):
         if self._is_id:
             return self.f(x)
-        return self.f(x).mul(ops.cast(self.factor, float32))
+        return self.f(x).mul(self.factor)
 
 
 class Activation(nn.Cell):
