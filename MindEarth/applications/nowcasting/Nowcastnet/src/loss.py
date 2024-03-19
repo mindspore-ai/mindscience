@@ -158,7 +158,7 @@ class EvolutionLoss(nn.Cell):
                                   self.config.get('data').get("h_size", 512),
                                   self.config.get('data').get("w_size", 512))).astype(np.float32)
         self.grid = Tensor(make_grid(sample_tensor), ms.float32)
-        self.lamb = config.get('optimizer-evo').get("motion_lambda", 1e-2)
+        self.lamb = float(config.get('optimizer-evo').get("motion_lambda", 1e-2))
 
     def construct(self, inputs):
         """last frame of inputs"""
