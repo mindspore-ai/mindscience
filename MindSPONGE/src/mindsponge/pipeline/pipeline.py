@@ -104,6 +104,7 @@ class PipeLine:
         self.model = None
         self.dataset = None
         self.config_path = "./config/"
+        os.environ['MS_ASCEND_CHECK_OVERFLOW_MODE'] = "SATURATION_MODE"
 
     def set_config_path(self, config_path):
         self.config_path = config_path
