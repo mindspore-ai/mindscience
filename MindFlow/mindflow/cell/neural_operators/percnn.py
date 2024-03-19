@@ -93,7 +93,14 @@ class PeriodicPadding(nn.Cell):
 
 class PeRCNN(nn.Cell):
     r"""
-    Recurrent convolutional neural network Cell.
+    Physics-embedded Recurrent Convolutional Neural Network (PeRCNN) Cell. It forcibly encodes given
+    physics structure to facilitate the learning of the spatiotemporal dynamics in sparse data regimes.
+    PeRCNN can be applied to a variety of problems regarding the PDE system, including forward and
+    inverse analysis, data-driven modeling, and discovery of PDEs.
+
+    For more details, please refers to the paper `Encoding physics to learn reaction–diffusion processes
+    <https://www.nature.com/articles/s42256-023-00685-7>`_ .
+
     lazy_inline is used to accelerate the compile stage, but now it only functions in Ascend backends.
     PeRCNN currently supports input with two physical components. For inputs with different shape, users
     must manually add or remove corresponding parameters and pi_blocks.
@@ -101,29 +108,29 @@ class PeRCNN(nn.Cell):
     Args:
         dim (int): The physical dimension of input. Length of the shape of a 2D input is 4, of a
                     3D input is 5. Data follows `NCHW` or `NCDHW` format.
-        kernel_size (int): Specifies the convolution kernel for parallel convolution layers.
         in_channels (int): The number of channels in the input space.
         hidden_channels (int): Number of channels in the output space of parallel convolution layers.
-        dt (int, float): The time step of PeRCNN.
-        nu (int, float): The coefficient of diffusion term.
-        padding(str): Boundary padding. Now only periodic padding is supported. Default: ``periodic``
+        kernel_size (int): Specifies the convolution kernel for parallel convolution layers.
+        dt (Union[int, float]): The time step of PeRCNN.
+        nu (Union[int, float]): The coefficient of diffusion term.
         laplace_kernel (mindspore.Tensor): For 3D, Set size of kernel is :math:`(\text{kernel_size[0]},
-        \text{kernel_size[1]}, \text{kernel_size[2]})`, then the shape is :math:`(C_{out}, C_{in},
-        \text{kernel_size[0]}, \text{kernel_size[1]}, \text{kernel_size[1]})`. For 2D, Tensor of shape
+            \text{kernel_size[1]}, \text{kernel_size[2]})`, then the shape is :math:`(C_{out}, C_{in},
+            \text{kernel_size[0]}, \text{kernel_size[1]}, \text{kernel_size[1]})`. For 2D, Tensor of shape
             :math:`(N, C_{in} / \text{groups}, \text{kernel_size[0]}, \text{kernel_size[1]})`, then the size of kernel
             is :math:`(\text{kernel_size[0]}, \text{kernel_size[1]})`.
         conv_layers_num (int): Number of parallel convolution layers. Default: ``3``.
+        padding (str): Boundary padding, currently only periodic padding supported. Default: ``periodic``.
         compute_dtype (dtype.Number): The data type of PeRCNN. Default: ``mindspore.float32``.
                 Should be ``mindspore.float16`` or ``mindspore.float32``.
                 mindspore.float32 is recommended for GPU backends,
                 mindspore.float16 is recommended for Ascend backends.
 
     Inputs:
-        **input** (Tensor) - Tensor of shape :math:`(batch\_size, channels, depth, height, width)` for 3D.
-                               Tensor of shape :math:`(batch\_size, channels, height, width)` for 2D.
+      - **x** (Tensor) - Tensor of shape :math:`(batch\_size, channels, depth, height, width)` for 3D.
+            Tensor of shape :math:`(batch\_size, channels, height, width)` for 2D.
 
     Outputs:
-        Tensor, has the same shape as `input`.
+        Tensor, has the same shape as `x`.
 
     Raises:
         TypeError: If `dim`, `in_channels`, `hidden_channels`, `kernel_size` is not an int.
@@ -135,32 +142,29 @@ class PeRCNN(nn.Cell):
     Examples:
         >>> import numpy as np
         >>> import mindspore as ms
-        >>> from mindflow.cell.neural_operators.percnn import PeRCNN
-
+        >>> from mindflow.cell import PeRCNN
         >>> laplace_3d = [[[[[0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0],
-        >>>                 [0.0, 0.0, -0.08333333333333333, 0.0, 0.0],
-        >>>                 [0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]],
-        >>>                 [[0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0],
-        >>>                 [0.0, 0.0, 1.3333333333333333, 0.0, 0.0],
-        >>>                 [0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]],
-        >>>                 [[0.0, 0.0, -0.08333333333333333, 0.0, 0.0],
-        >>>                 [0.0, 0.0, 1.3333333333333333, 0.0, 0.0],
-        >>>                 [-0.08333333333333333, 1.3333333333333333, -7.5, 1.3333333333333333, -0.08333333333333333],
-        >>>                 [0.0, 0.0, 1.3333333333333333, 0.0, 0.0],
-        >>>                 [0.0, 0.0, -0.08333333333333333, 0.0, 0.0]],
-        >>>                 [[0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0],
-        >>>                 [0.0, 0.0, 1.3333333333333333, 0.0, 0.0],
-        >>>                 [0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]],
-        >>>                 [[0.0, 0.0, 0.0, 0.0, 0.0],
-        >>>                 [0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, -0.08333333333333333, 0.0, 0.0],
-        >>>                 [0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]]]]]
+        ...                 [0.0, 0.0, -0.08333333333333333, 0.0, 0.0],
+        ...                 [0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]],
+        ...                 [[0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0],
+        ...                 [0.0, 0.0, 1.3333333333333333, 0.0, 0.0],
+        ...                 [0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]],
+        ...                 [[0.0, 0.0, -0.08333333333333333, 0.0, 0.0],
+        ...                 [0.0, 0.0, 1.3333333333333333, 0.0, 0.0],
+        ...                 [-0.08333333333333333, 1.3333333333333333, -7.5, 1.3333333333333333, -0.08333333333333333],
+        ...                 [0.0, 0.0, 1.3333333333333333, 0.0, 0.0],
+        ...                 [0.0, 0.0, -0.08333333333333333, 0.0, 0.0]],
+        ...                 [[0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0],
+        ...                 [0.0, 0.0, 1.3333333333333333, 0.0, 0.0],
+        ...                 [0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]],
+        ...                 [[0.0, 0.0, 0.0, 0.0, 0.0],
+        ...                 [0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, -0.08333333333333333, 0.0, 0.0],
+        ...                 [0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]]]]]
         >>> laplace = np.array(laplace_3d)
         >>> grid_size = 48
         >>> field = 100
         >>> dx_3d = field / grid_size
-
         >>> laplace_3d_kernel = ms.Tensor(1 / dx_3d**2 * laplace, dtype=ms.float32)
-
         >>> rcnn_ms = PeRCNN(
         >>>     dim=3,
         >>>     in_channels=2,
