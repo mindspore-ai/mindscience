@@ -486,7 +486,6 @@ if __name__ == "__main__":
         os.environ['MS_ENABLE_GE'] = '1'
         os.environ['MS_GE_TRAIN'] = '1'
         os.environ['MS_ENABLE_REF_MODE'] = '1'
-        os.environ['MS_ASCEND_CHECK_OVERFLOW_MODE'] = "SATURATION_MODE"
         context.set_context(mode=context.GRAPH_MODE,
                             device_target="Ascend",
                             device_id=arguments.device_id,
