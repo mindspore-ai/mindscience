@@ -126,8 +126,8 @@ class PeRCNN(nn.Cell):
                 mindspore.float16 is recommended for Ascend backends.
 
     Inputs:
-      - **x** (Tensor) - Tensor of shape :math:`(batch\_size, channels, depth, height, width)` for 3D.
-            Tensor of shape :math:`(batch\_size, channels, height, width)` for 2D.
+        - **x** (Tensor) - Tensor of shape :math:`(batch\_size, channels, depth, height, width)` for 3D.
+          Tensor of shape :math:`(batch\_size, channels, height, width)` for 2D.
 
     Outputs:
         Tensor, has the same shape as `x`.
@@ -166,21 +166,20 @@ class PeRCNN(nn.Cell):
         >>> dx_3d = field / grid_size
         >>> laplace_3d_kernel = ms.Tensor(1 / dx_3d**2 * laplace, dtype=ms.float32)
         >>> rcnn_ms = PeRCNN(
-        >>>     dim=3,
-        >>>     in_channels=2,
-        >>>     hidden_channels=2,
-        >>>     kernel_size=1,
-        >>>     dt=0.5,
-        >>>     nu=0.274,
-        >>>     laplace_kernel=laplace_3d_kernel,
-        >>>     conv_layers_num=3,
-        >>>     compute_dtype=ms.float32,
-        >>>   )
+        ...     dim=3,
+        ...     in_channels=2,
+        ...     hidden_channels=2,
+        ...     kernel_size=1,
+        ...     dt=0.5,
+        ...     nu=0.274,
+        ...     laplace_kernel=laplace_3d_kernel,
+        ...     conv_layers_num=3,
+        ...     compute_dtype=ms.float32,
+        ...   )
         >>> input = np.random.randn(1, 2, 48, 48, 48)
         >>> input = ms.Tensor(input, ms.float32)
         >>> output = rcnn_ms(input)
         >>> print(output.shape)
-
         (1, 2, 48, 48, 48)
     """
 
