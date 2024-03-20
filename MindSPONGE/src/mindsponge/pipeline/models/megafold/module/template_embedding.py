@@ -79,7 +79,7 @@ class TemplatePairStack(nn.Cell):
                                    layer_norm_dim=64,
                                    batch_size=batch_size)
 
-    def construct(self, pair_act, pair_mask, index=None):
+    def construct(self, pair_act, pair_mask, index):
         "construct"
         if not self.num_block:
             return pair_act
@@ -193,7 +193,7 @@ class SingleTemplateEmbedding(nn.Cell):
             if i > 0:
                 act_batch = F.depend(act_batch, slice_act)
             for j in range(self.num_block):
-                act_batch = self.template_pair_stack[j](act_batch, mask_2d)
+                act_batch = self.template_pair_stack[j](act_batch, mask_2d, None)
             slice_act = P.Reshape()(act_batch, ((1,) + P.Shape()(act_batch)))
             output.append(slice_act)
 
@@ -391,7 +391,7 @@ class SingleTemplateEmbeddingAverage(nn.Cell):
 
             act_slice = self.embedding2d(act_slice)
             for j in range(self.num_block):
-                act_slice = self.template_pair_stack[j](act_slice, mask_2d)
+                act_slice = self.template_pair_stack[j](act_slice, mask_2d, None)
 
             act_slice = P.Reshape()(act_slice, ((1,) + P.Shape()(act_slice)))
             act_slice = self.output_layer_norm(act_slice)
