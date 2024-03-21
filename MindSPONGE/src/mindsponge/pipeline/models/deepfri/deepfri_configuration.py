@@ -14,7 +14,7 @@
 # ============================================================================
 """deepfri"""
 deepfri_configuration = {
-    "deepfri_mf": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/DeepFri/deepfri_mf.yaml",
-    "deepfri_cc": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/DeepFri/deepfri_cc.yaml",
-    "deepfri_bp": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/DeepFri/deepfri_bp.yaml",
+    "deepfri_mf": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/DeepFri/deepfri_mf.yaml",
+    "deepfri_cc": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/DeepFri/deepfri_cc.yaml",
+    "deepfri_bp": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/DeepFri/deepfri_bp.yaml",
 }

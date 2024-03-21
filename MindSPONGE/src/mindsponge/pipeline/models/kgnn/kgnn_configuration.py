@@ -22,5 +22,5 @@
 # ============================================================================
 """kgnn config"""
 kgnn_configuration = {
-    "config": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/KGNN/kgnn_config.yaml"
+    "config": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/KGNN/kgnn_config.yaml"
 }

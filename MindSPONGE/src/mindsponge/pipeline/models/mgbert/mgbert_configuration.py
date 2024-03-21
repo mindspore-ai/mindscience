@@ -15,9 +15,9 @@
 """mgbert"""
 mgbert_configuration = {
     "mgbert_classification":
-        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/MGBERT/mgbert_classification.yaml",
+        "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MGBERT/mgbert_classification.yaml",
     "mgbert_regression":
-        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/MGBERT/mgbert_regression.yaml",
+        "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MGBERT/mgbert_regression.yaml",
     "mgbert_pretrain":
-        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/MGBERT/mgbert_pretrain.yaml",
+        "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MGBERT/mgbert_pretrain.yaml",
 }

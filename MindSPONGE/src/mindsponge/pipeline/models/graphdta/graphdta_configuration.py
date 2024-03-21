@@ -15,6 +15,6 @@
 """graphdta_configuration"""
 
 graphdta_configuration = {
-    "train": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/GRAPHDTA/train.yaml",
-    "inference": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/GRAPHDTA/inference.yaml",
+    "train": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/GRAPHDTA/train.yaml",
+    "inference": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/GRAPHDTA/inference.yaml",
 }

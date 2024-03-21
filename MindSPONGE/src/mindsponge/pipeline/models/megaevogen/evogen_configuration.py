@@ -15,5 +15,5 @@
 """evogen"""
 megaevogen_configuration = {
     "evogen_predict_256":
-        "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/MEGAEvoGen/evogen_predict_256.yaml",
+        "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAEvoGen/evogen_predict_256.yaml",
 }
