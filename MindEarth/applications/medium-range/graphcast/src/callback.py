@@ -298,6 +298,7 @@ class EvaluateCallBack(Callback):
         self.config = config
         summary_params = config.get('summary')
         data_params = config.get('data')
+        self.data_params = data_params
         self.summary_dir = summary_params.get('summary_dir')
         self.predict_interval = summary_params.get('eval_interval')
         self.logger = logger
@@ -325,7 +326,7 @@ class EvaluateCallBack(Callback):
         cb_params = run_context.original_args()
         if cb_params.cur_epoch_num % self.predict_interval == 0:
             self.eval_time += 1
-            if self.config['data']['tp']:
+            if self.data_params.get("tp", False):
                 lat_weight_rmse, lat_weight_acc, _ = self.eval_net_tp.eval(self.valid_dataset)
             else:
                 lat_weight_rmse, lat_weight_acc = self.eval_net.eval(self.valid_dataset)
