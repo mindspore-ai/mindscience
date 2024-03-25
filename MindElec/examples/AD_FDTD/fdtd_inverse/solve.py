@@ -35,6 +35,7 @@ def parse_args():
     parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--lr', type=float, default=0.1)
     parser.add_argument('--device_target', type=str, default=None)
+    parser.add_argument('--device_id', type=int, default=None)
     parser.add_argument('--nt', type=int, default=350,
                         help='Number of time steps.')
     parser.add_argument('--max_call_depth', type=int, default=2000)
