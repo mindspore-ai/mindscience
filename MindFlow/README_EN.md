@@ -20,6 +20,7 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 ## **Latest News**
 
+- 🔥`2024.03.20` MindFlow 0.2.0 is released, [Page](RELEASE.md).
 - 🔥`2023.11.07`The China (Xi'an) Artificial Intelligence Summit Forum was held at the High-tech International Conference Center in Yanta District, Xi'an, and the first large-scale fluid dynamics model for aircraft, "Qinling·AoXiang", jointly developed by Northwestern Polytechnical University and Huawei, was officially released. The model is an intelligent model for aircraft fluid simulation jointly developed by the International Joint Institute of Fluid Mechanics and Intelligence of Northwestern Polytechnical University and Huawei AI4Sci Lab on the basis of the domestic open-source fluid computing software Fenglei, relying on the surging computing power of Ascend AI and the MindSpore AI framework, [page](https://mp.weixin.qq.com/s/Rhpiyf3VJYm_lMBWTRDtGA).
 - 🔥`2023.08.02` MindFlow 0.1.0 is released, [Page](https://mindspore.cn/mindflow/docs/zh-CN/r0.1/index.html).
 - 🔥`2023.07.06` The 2023 World Artificial Intelligence Conference with the theme of "Connect the World Intelligently. Generate the Future" was successfully held at the Shanghai World Expo Center. The 3D Supercritical airfoil fluid simulation AI model "Dongfang Yifeng" from Comac Shanghai Aircraft Design and Research Institute won the SAIL Award, the highest award of the World Artificial Intelligence Conference. This model is a large intelligent AI model for wing complex flow simulation scenarios jointly developed by Comac Co., Ltd. Shanghai Aircraft Design and Research Institute and Huawei based on the domestic Shengteng AI basic software and hardware platform and MindSpore AI framework, [Page](https://www.thepaper.cn/newsDetail_forward_23769936).
@@ -71,13 +72,16 @@ Huang X, Liu H, Shi B, et al. A Universal PINNs Method for Solving Partial Diffe
 |           [Predict Unsteady Flow Fields with Move Boundary by eHDNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/move_boundary_hdnn)           |    [Move Boundary eHdnn Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/move_boundary_hdnn)    |      eHDNN       | ✔️  | ✔️  |
 |          [Solve 3D Unsteady Sphere Flow by ResUnet3D](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/flow_around_sphere)           |     [3D Unsteady Flow Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/3d_unsteady_flow/)      |    ResUnet3D    | ✔️  | ✔️  |
 |       [Solve 2D Cylinder Flow by CAE-Transformer](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_transformer)       | [Low Reynolds Cylinder Flow Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/cae-transformer/) | CAE-Transformer | ✔️  | ✔️  |
+|[Predict Multi-timestep Complicated Transonic Airfoil by FNO2D and UNET2D](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/airfoil/2D_unsteady)          |  [2D Transonic Airfoil Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/airfoil/2D_unsteady/)           |      FNO2D/UNET2D    |   ✔️     |   ✔️   |
+|[Predict Fluid-structure Interaction System by HDNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/fluid_structure_interaction)          |  [Fluid-structure Interaction System Dataset](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/data_driven/fluid_structure_interaction/)           |      HDNN    |   ✔️     |   ✔️   |
 
 ### Data-Mechanism Fusion
 
 |                                                                         Case                                                                         |                                                         Dataset                                                         | Network | GPU | NPU |
 | :--------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------: | :-----: | :-: | :-: |
 | [Solve Convection-Diffusion Equation by PDE-NET](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/pde_net) |                                                            -                                                            | PDE-Net | ✔️  | ✔️  |
-|                   [Solve 2D Burgers Equation by PeRCNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/percnn)                   | [PeRCNN Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN/) | PeRCNN  | ✔️  | ✔️  |
+|                   [Solve 2D Burgers Equation by PeRCNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/percnn/burgers_2d)                   | [PeRCNN Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN/) | PeRCNN  | ✔️  | ✔️  |
+|                   [Solve 3D Reaction-Diffusion Equation by PeRCNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/percnn/gsrd_3d)                   | [PeRCNN Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_mechanism_fusion/PeRCNN/) | PeRCNN  | ✔️  | ✔️  |
 | [AI Turb Model](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/ai_turbulence_modeling)   | -           |    MLP    |   ✔️     |   ✔️   |
 
 ### Physics Driven
@@ -96,6 +100,9 @@ Huang X, Liu H, Shi B, et al. A Universal PINNs Method for Solving Partial Diffe
 |         [Solve Periodic Hill Flow by PINNs](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/navier_stokes/periodic_hill)          |                     [Periodic Hill Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/periodic_hill_2d/)                      |  PINNs  | ✔️  | ✔️  |
 |         [Solve Allen-Cahn Equation by PINNs](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/allen_cahn)          |                     [Allen-Cahn Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/research/allen_cahn/)                      |  PINNs  | ✔️  | ✔️  |
 |  [CMA-ES&Multi-objective Gradient Descent Algorithm Accelerates PINNs Convergence](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cma_es_mgda)   |                     [Periodic Hill Dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/periodic_hill_2d/)                      |  PINNs  | ✔️  | ✔️  |
+|[META-PINNs Algorithm](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/meta_pinns)         |             -              |      PINNs      |  ✔️      |  ✔️    |
+|[MOE-PINNs Algorithm](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/moe_pinns)         |             -              |      PINNs      |  ✔️      |  ✔️    |
+|[R-DLGA Algorithm](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/r_dlga)         |             -              |      PINNs      |  ✔️      |  ✔️    |
 
 ### CFD
 
@@ -115,8 +122,9 @@ Because MindFlow is dependent on MindSpore, please click [MindSpore Download Pag
 | MindFlow |                                 Branch                                 |  MindSpore  | Python |
 | :------: | :--------------------------------------------------------------------: | :---------: | :----: |
 |  master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindFlow) |     \       | \>=3.7 |
+| 0.2.0  | [r0.6](https://gitee.com/mindspore/mindscience/tree/r0.6/MindFlow) |   \>=2.2.12  | \>=3.7 |
+| 0.1.0    | [r0.3](https://gitee.com/mindspore/mindscience/tree/r0.3/MindFlow) |   \>=2.0.0  | \>=3.7 |
 | 0.1.0rc1 | [r0.2.0](https://gitee.com/mindspore/mindscience/tree/r0.2.0/MindFlow) | \>=2.0.0rc1 | \>=3.7 |
-|  0.1.0   |   [r0.3](https://gitee.com/mindspore/mindscience/tree/r0.3/MindFlow)   |  \>=2.0.0   | \>=3.7 |
 
 ### Install Dependency
 
@@ -128,12 +136,8 @@ pip install -r requirements.txt
 
 | Hardware      | OS              | Status |
 | :------------ | :-------------- | :----- |
-| Ascend 910    | Ubuntu-x86      | ✔️     |
-|               | Ubuntu-aarch64  | ✔️     |
-|               | EulerOS-aarch64 | ✔️     |
-|               | CentOS-x86      | ✔️     |
-|               | CentOS-aarch64  | ✔️     |
-| GPU CUDA 11.1 | Ubuntu-x86      | ✔️     |
+| Ascend        | Linux           | ✔️ |
+| GPU           | Linux           | ✔️ |
 
 ### **pip install**
 
@@ -222,7 +226,7 @@ We will continue to release [open source internship tasks](https://gitee.com/min
 
 Thanks goes to these wonderful people 🧑‍🤝‍🧑:
 
-yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, guoboqiang, chengzeruizhi, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang, huangxiang, huxin, lizhengyi, lixin, liuziyang, dujiaoxi, xiaoruoye, liangjiaming
+yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, guoboqiang, chengzeruizhi, libokai, yangge, longzichao, qiuyisheng, haojiwei, leiyixiang, huangxiang, huxin,xingzhongfan, mengqinghe, lizhengyi, lixin, liuziyang, dujiaoxi, xiaoruoye, liangjiaming
 
 ### Community Partners
 
@@ -262,6 +266,12 @@ yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, guoboq
             <img src="docs/partners/RenminUniversity.jpeg"/>
             <p align="center">
                 Renmin University of China
+            </p>
+        </td>
+                <td>
+            <img src="docs/partners/HIT.jpeg"/>
+            <p align="center">
+                Harbin Institute of Technology
             </p>
         </td>
     </tr>
