@@ -14,8 +14,8 @@
 # ============================================================================
 """grover configuration"""
 grover_configuration = {
-    "eval": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/Grover/eval.yaml",
-    "gen": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/Grover/gen.yaml",
-    "pretrain": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/Grover/pretrain.yaml",
-    "finetune": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/Grover/finetune.yaml"
+    "eval": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/Grover/eval.yaml",
+    "gen": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/Grover/gen.yaml",
+    "pretrain": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/Grover/pretrain.yaml",
+    "finetune": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/Grover/finetune.yaml"
 }

@@ -14,6 +14,6 @@
 # ============================================================================
 """esm configuration"""
 esm_configuration = {
-    "training": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/ESM_IF1/training.yaml",
-    "sampling": "https://gitee.com/mindspore/mindscience/tree/master/MindSPONGE/applications/model_configs/ESM_IF1/sampling.yaml",
+    "training": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/ESM_IF1/training.yaml",
+    "sampling": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/ESM_IF1/sampling.yaml",
 }
