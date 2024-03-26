@@ -21,4 +21,3 @@ somas_meta
 analyze_fail.dat
 *.h5md
 .markdownlint.json
-**/.DS_Store

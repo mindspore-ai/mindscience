@@ -24,27 +24,27 @@
 
 megafold_configuration = {
     "fine_tuning":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/fine_tuning.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/fine_tuning.yaml",
     "initial_training":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/initial_train.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/initial_train.yaml",
     "test_train":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/test_train.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/test_train.yaml",
     "predict_256":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/predict_256.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_256.yaml",
     "predict_512":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/predict_512.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_512.yaml",
     "predict_768":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/predict_768.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_768.yaml",
     "predict_1024":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/predict_1024.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_1024.yaml",
     "predict_1280":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/predict_1280.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_1280.yaml",
     "predict_1536":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/predict_1536.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_1536.yaml",
     "predict_1792":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/predict_1792.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_1792.yaml",
     "predict_2048":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/predict_2048.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_2048.yaml",
     "predict_2304":
-    "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAFold/predict_2304.yaml",
+    "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_2304.yaml",
 }

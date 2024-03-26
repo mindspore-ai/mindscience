@@ -15,14 +15,14 @@
 """megaassessment_configuration"""
 
 megaassessment_configuration = {
-    "assessment_training": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAAssessment/initial_train.yaml",
-    "predict_256": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAAssessment/predict_256.yaml",
-    "predict_512": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAAssessment/predict_512.yaml",
-    "predict_768": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAAssessment/predict_768.yaml",
-    "predict_1024": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAAssessment/predict_1024.yaml",
-    "predict_1280": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAAssessment/predict_1280.yaml",
-    "predict_1536": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAAssessment/predict_1536.yaml",
-    "predict_1792": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAAssessment/predict_1792.yaml",
-    "predict_2048": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAAssessment/predict_2048.yaml",
-    "predict_2304": "https://gitee.com/mindspore/mindscience/raw/master/MindSPONGE/applications/model_configs/MEGAAssessment/predict_2304.yaml",
+    "assessment_training": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/initial_train.yaml",
+    "predict_256": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_256.yaml",
+    "predict_512": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_512.yaml",
+    "predict_768": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_768.yaml",
+    "predict_1024": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_1024.yaml",
+    "predict_1280": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_1280.yaml",
+    "predict_1536": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_1536.yaml",
+    "predict_1792": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_1792.yaml",
+    "predict_2048": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_2048.yaml",
+    "predict_2304": "https://download.mindspore.cn/mindscience/mindsponge/MEGAFold/config/predict_2304.yaml",
 }
