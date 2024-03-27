@@ -1,0 +1,31 @@
+
+run_mode: train                                                # run mode in [train, infer]
+eval_interval: 1                                               # epoch interval for eval
+profiling: False
+profiling_step: 50                                             # step num for profiling analyse
+log_file: "./loss_tmp.txt"
+
+model:
+  ckpt_file: "./model_tmp.ckpt"
+  num_layers: 3
+  hidden_features: 128
+  lmax_h: 2
+  subspace_type: weight_balanced                                # weight_balanced or balanced
+  norm_type: instance                                           # Normalisation type [instance, batch]
+  pool_type: avg                                                # Pooling type [avg, sum]
+  task: graph                                                   # task for [graph, node]
+  ncon_dtype: "float16"                                         # data type for ncon in Ascend, now can be ['float16', 'float32]
+
+optimizer:
+  num_epoch: 1
+  learning_rate: 5e-4
+  weight_decay: 1e-8
+
+data:
+  dataset_dir: "./dataset/"
+  pre_process_file: "mol_attrs.pkl"
+  batch_size: 128
+  target: alpha
+  radius: 2.0
+  lmax_attr: 3
+  feature_type: one_hot                                         # one_hot or cormorant
