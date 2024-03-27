@@ -14,8 +14,9 @@
 # ============================================================================
 """convolution"""
 from mindspore import nn, ops, float32
+from mindchemistry.graph.graph import AggregateEdgeToNode
 from ..e3.o3 import TensorProduct, Irreps, Linear
-from ..e3.nn import FullyConnectedNet, Scatter
+from ..e3.nn import FullyConnectedNet
 
 softplus = ops.Softplus()
 
@@ -66,7 +67,7 @@ class Convolution(nn.Cell):
         self.irreps_edge_attr = Irreps(irreps_edge_attr)
         self.irreps_edge_scalars = Irreps([(irreps_edge_scalars.num_irreps, (0, 1))])
 
-        self.lin1 = Linear(self.irreps_node_input, self.irreps_node_input, dtype=dtype)
+        self.lin1 = Linear(self.irreps_node_input, self.irreps_node_input, dtype=dtype, ncon_dtype=ncon_dtype)
 
         tp = TensorProduct(self.irreps_node_input,
                            self.irreps_edge_attr,
@@ -83,9 +84,9 @@ class Convolution(nn.Cell):
                                     }.get(nonlin_scalars.get("e", None), None), dtype=dtype)
 
         self.tp = tp
-        self.scatter = Scatter()
+        self.scatter = AggregateEdgeToNode(dim=1)
 
-        self.lin2 = Linear(tp.irreps_out.simplify(), self.irreps_node_output, dtype=dtype)
+        self.lin2 = Linear(tp.irreps_out.simplify(), self.irreps_node_output, dtype=dtype, ncon_dtype=ncon_dtype)
 
         self.sc = None
         if self.use_sc:
@@ -104,7 +105,8 @@ class Convolution(nn.Cell):
 
         edge_features = self.tp(node_features[edge_src], edge_attr, weight)
 
-        node_features = self.scatter(edge_features, edge_dst, dim_size=node_input.shape[0])
+        node_features = self.scatter(edge_attr=edge_features, edge_index=[edge_src, edge_dst],
+                                     dim_size=node_input.shape[0])
 
         if self.avg_num_neighbors is not None:
             node_features = node_features.div(self.avg_num_neighbors**0.5)

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-from mindspore import Tensor, nn, ops, Parameter, get_context, float32, int32,  vmap
+from mindspore import Tensor, nn, ops, Parameter, get_context, float32, int32, vmap
 from mindspore.common.initializer import initializer
 import mindspore as ms
 from .irreps import Irreps
@@ -285,8 +285,7 @@ class uvw_ncon_v2(nn.Cell):
 def _init_ncon_weight(mode, weight_mode, ls):
     """tensor graph contractions with weights"""
     if mode == 'uvw':
-        einsum = uvw_ncon_v2()
-        return einsum
+        con_list = [[1, 2, -3], [-1, 3, 1], [-1, 4, 2], [3, 4, -2]]
     elif mode == 'uuu':
         con_list = [[1, 2, -3], [-1, -2, 1], [-1, -2, 2], [-2]]
     elif mode == 'uuw':
@@ -527,6 +526,7 @@ class TensorProduct(nn.Cell):
         weight = self._get_weights(weight)
         if not (v1.shape[-1] == self.irreps_in1.dim and v2.shape[-1] == self.irreps_in2.dim):
             raise ValueError(f"The shape of input tensors do not match.")
+
         v3_list = []
         weight_ind = 0
         fn = 0
@@ -543,10 +543,7 @@ class TensorProduct(nn.Cell):
                 if self.core_mode == 'einsum':
                     v3 = fn((ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype), w))
                 else:
-                    if ins['mode'] == 'uvw':
-                        v3 = fn(ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype), w)
-                    else:
-                        v3 = fn([ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype), w])
+                    v3 = fn([ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype), w])
             else:
                 if self.core_mode == 'einsum':
                     v3 = fn((ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype)))
