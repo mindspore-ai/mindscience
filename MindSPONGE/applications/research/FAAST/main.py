@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+# pylint: disable=C0411
+# pylint: disable=C0413
+
 """eval script"""
 import argparse
 import os
@@ -19,6 +22,7 @@ import ast
 import stat
 import pickle
 import pynvml
+import sys
 import numpy as np
 
 import mindspore.context as context
@@ -29,12 +33,14 @@ from mindsponge.common.config_load import load_config
 from mindsponge.common.protein import to_pdb, from_prediction
 from mindsponge.common import residue_constants
 from commons.analysis import predur_vs_predpdb, filter_ur_with_pdb
-from run_relax import run_relax
 from data import Feature, RawFeatureGenerator, get_crop_size, get_raw_feature
 from model import MegaFold, compute_confidence
 from assign_settings import assign_all_settings
 from assign.assign import assign_iteration
 from assign.init_assign import init_assign_call
+
+sys.path.append("../../common_utils/")
+from openmm_relaxation.run_relax import run_relax
 
 parser = argparse.ArgumentParser(description='Inputs for eval.py')
 parser.add_argument('--data_config', default="./config/data.yaml", help='data process config')
