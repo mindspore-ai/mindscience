@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-from mindspore import Tensor, nn, ops, Parameter, get_context, float32, int32,  vmap
+from mindspore import Tensor, nn, ops, Parameter, get_context, float32, int32, vmap
 from mindspore.common.initializer import initializer
 import mindspore as ms
 from .irreps import Irreps
@@ -23,6 +23,7 @@ from ..utils.initializer import renormal_initializer
 import numpy as np
 from mindspore.numpy import tensordot
 
+
 def _prod(x):
     out = 1
     for i in x:
@@ -32,6 +33,7 @@ def _prod(x):
 
 sqrt = ops.Sqrt()
 zeros = ops.Zeros()
+
 
 def _sqrt(x, dtype=float32):
     """sqrt operator with producing a tensor"""
@@ -275,18 +277,19 @@ class uvw_ncon_v2(nn.Cell):
         super(uvw_ncon_v2, self).__init__()
         self.tensordot1 = tensordot
         self.tensordot2 = tensordot
-        self.tensordot3 = vmap(tensordot, (0,0,None), 0)
+        self.tensordot3 = vmap(tensordot, (0, 0, None), 0)
+
     def construct(self, m1, m2, m3, m4):
-        temp1 = self.tensordot1(m3, m1 , [2,1])
-        temp2 = self.tensordot1(m2, m4 , [1,0])
-        res = self.tensordot3(temp2, temp1, ([0,1],[1,0]))
+        temp1 = self.tensordot1(m3, m1, [2, 1])
+        temp2 = self.tensordot1(m2, m4, [1, 0])
+        res = self.tensordot3(temp2, temp1, ([0, 1], [1, 0]))
         return res
+
 
 def _init_ncon_weight(mode, weight_mode, ls):
     """tensor graph contractions with weights"""
     if mode == 'uvw':
-        einsum = uvw_ncon_v2()
-        return einsum
+        con_list = [[1, 2, -3], [-1, 3, 1], [-1, 4, 2], [3, 4, -2]]
     elif mode == 'uuu':
         con_list = [[1, 2, -3], [-1, -2, 1], [-1, -2, 2], [-2]]
     elif mode == 'uuw':
@@ -315,21 +318,21 @@ def _run_continue(ir1_data, ir2_data, irout_data, ins):
 
 class TensorProduct(nn.Cell):
     r"""
-    Versatile tensor product operator of two input `Irreps` and a output `Irreps`, that sends two tensors into a tensor 
+    Versatile tensor product operator of two input `Irreps` and a output `Irreps`, that sends two tensors into a tensor
     and keep the geometric tensor properties.
-    This class integrates different typical usages: `TensorSquare`, `FullTensorProduct`, `FullyConnectedTensorProduct`, 
+    This class integrates different typical usages: `TensorSquare`, `FullTensorProduct`, `FullyConnectedTensorProduct`,
     `ElementwiseTensorProduct` and `Linear`.
 
-    A `TensorProduct` class defines an algebraic structure with equivariance. 
-    Ones the `TensorProduct` object is created and initialized, the algorithm is determined. For any given two legal input 
+    A `TensorProduct` class defines an algebraic structure with equivariance.
+    Ones the `TensorProduct` object is created and initialized, the algorithm is determined. For any given two legal input
     tensors, this object will provide a output tensor.
-    If the object do not have learnable weights, the output tensor is deterministic. 
-    When the learnable weights are introduced, this operator will correspond to a general bilinear, equivariant operation, 
+    If the object do not have learnable weights, the output tensor is deterministic.
+    When the learnable weights are introduced, this operator will correspond to a general bilinear, equivariant operation,
     as a generalization of the standard tensor product.
 
     If `irreps_in2` is not specified, it will be assigned as `irreps_in1`, corresponding to `TensorSquare`.
     If `irreps_out` is not specified, this operator will account all possible output irreps.
-    If both `irreps_out` and `instructions` are not specified, this operator is the standard tensor product without 
+    If both `irreps_out` and `instructions` are not specified, this operator is the standard tensor product without
     any learnable weights, corresponding to ``FullTensorProduct``.
 
     Each output irrep should satisfy:
@@ -344,13 +347,13 @@ class TensorProduct(nn.Cell):
         irreps_in2 (Union[str, Irrep, Irreps, None]): Irreps for the second input. Default: None.
             If `irreps_in2` is None, `irreps_in2` will be assigned as '0e' in 'linear' instructions, or be assigned as `irreps_in1` in otherwise, corresponding to `TensorSquare`.
 
-        irreps_out (Union[str, Irrep, Irreps, None]): Irreps for the output in 'connect' and custom instructions, or filter irreps for the output in otherwise. 
+        irreps_out (Union[str, Irrep, Irreps, None]): Irreps for the output in 'connect' and custom instructions, or filter irreps for the output in otherwise.
             If `irreps_out` is None, `irreps_out` will be the full tensor product irreps (including all possible paths). Default: None.
 
         instructions (Union[str, List[Tule[int, int, int, str, bool, (float)]]]): List of tensor product path instructions. Default: 'full'.
             For `str` in {'full', 'connect', 'element', 'linear', 'mearge'}, the instructions are constructed automatically according to the different modes:
-            
-                - 'full': each output irrep for every pair of input irreps — is created and returned independently. The outputs are not mixed with each other. 
+
+                - 'full': each output irrep for every pair of input irreps — is created and returned independently. The outputs are not mixed with each other.
                   Corresponding to the standard tensor product `FullTensorProduct` if `irreps_out` is not specified.
                 - 'connect': each output is a learned weighted sum of compatible paths. This allows the operator to produce outputs with any multiplicity.
                   Corresponding to `FullyConnectedTensorProduct`.
@@ -363,24 +366,24 @@ class TensorProduct(nn.Cell):
             For `List[Tule[int, int, int, str, bool, (float)]]`, the instructions are constructed manually.
                 Each instruction contain a tuple: (indice_one, indice_two, i_out, mode, has_weight, (optional: path_weight)).
                 Each instruction puts ``in1[indice_one]`` :math:`\otimes` ``in2[indice_two]`` into ``out[i_out]``.
-                
+
                  - `indice_one`, `indice_two`, `i_out`: int, the index of the irrep in irreps for `irreps_in1`, `irreps_in2` and `irreps_out` correspondingly.
                  - `mode`: str in {'uvw', 'uvu', 'uvv', 'uuw', 'uuu', 'uvuv'}, the way of the multiplicities of each path are treated. 'uvw' is the fully mixed mode.
                  - `has_weight`: bool, `True` if this path should have learnable weights, otherwise `False`.
                  - `path_weight`:float, a multiplicative weight to apply to the output of this path. Defaults: 1.0.
 
         irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations. Default: 'component'. Default: 'component'.
-        
+
              - 'norm': :math:` \| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = 1`
 
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
-        
+
              - 'element': each output is normalized by the total number of elements (independently of their paths).
              - 'path': each path is normalized by the total number of elements in the path, then each output is normalized by the number of paths.
 
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal', 'xavier_uniform'}, the initial method of weights. Default: 'normal'.
         weight_mode (str): {'inner', 'share', 'custom'} determine the weights' mode. Default: 'inner'.
-        
+
              - 'inner': weights will initialized in the tensor product internally.
              - 'share': weights should given manually without batch dimension.
              - 'custom': weights should given manually with batch dimension.
@@ -415,17 +418,17 @@ class TensorProduct(nn.Cell):
         >>> tp2 = TensorProduct('2x2e+4x1o', '3x1e+3x0o')
         TensorProduct [element] (2x2e+1x1o+3x1o x 2x1e+1x1e+3x0o -> 2x1e+2x2e+2x3e+1x0o+1x1o+1x2o+3x1e)
         >>> tp2.instructions
-        [(0, 0, 0, 'uuu', False), (0, 0, 1, 'uuu', False), (0, 0, 2, 'uuu', False), (1, 1, 3, 'uuu', False), 
+        [(0, 0, 0, 'uuu', False), (0, 0, 1, 'uuu', False), (0, 0, 2, 'uuu', False), (1, 1, 3, 'uuu', False),
         (1, 1, 4, 'uuu', False), (1, 1, 5, 'uuu', False), (2, 2, 6, 'uuu', False)]
 
         Custom tensor product with learnable weights:
 
         >>> tp3 = TensorProduct(
-        ...     '3x2o+2x1o', '2x2e+4x1o+5x0e', '2x3o+8x1e+10x1o', 
+        ...     '3x2o+2x1o', '2x2e+4x1o+5x0e', '2x3o+8x1e+10x1o',
         ...     [
-        ...         (0,0,0,'uvv',True), 
-        ...         (1,0,0,'uuu',True), 
-        ...         (1,1,1,'uvuv',True), 
+        ...         (0,0,0,'uvv',True),
+        ...         (1,0,0,'uuu',True),
+        ...         (1,1,1,'uvuv',True),
         ...         (1,2,2,'uvw',True)
         ...     ]
         ... )
@@ -457,7 +460,7 @@ class TensorProduct(nn.Cell):
             weight_init='normal',
             weight_mode='inner',
             core_mode='ncon',
-            ncon_dtype = float32
+            ncon_dtype=float32
     ):
         super().__init__()
 
@@ -491,11 +494,11 @@ class TensorProduct(nn.Cell):
 
         self.weight_numel = sum(_prod(ins['path_shape'])
                                 for ins in self.instr if ins['has_weight'])
-        
+
         self.weights = self._weight_init(weight_init)
 
         self.output_mask = self._init_mask()
-        
+
         self._normalization(irrep_norm=irrep_norm, path_norm=path_norm)
 
         self.ncon_dtype = ncon_dtype
@@ -527,6 +530,7 @@ class TensorProduct(nn.Cell):
         weight = self._get_weights(weight)
         if not (v1.shape[-1] == self.irreps_in1.dim and v2.shape[-1] == self.irreps_in2.dim):
             raise ValueError(f"The shape of input tensors do not match.")
+
         v3_list = []
         weight_ind = 0
         fn = 0
@@ -538,20 +542,26 @@ class TensorProduct(nn.Cell):
             if ins['has_weight']:
                 l = _prod(ins['path_shape'])
                 w = narrow(weight, -1, weight_ind, l).reshape(((-1,)
-                                                            if self.weight_mode == 'custom' else ()) + ins['path_shape']).astype(self.ncon_dtype)
+                                                               if self.weight_mode == 'custom' else ()) + ins[
+                                                                  'path_shape']).astype(self.ncon_dtype)
                 weight_ind += l
                 if self.core_mode == 'einsum':
-                    v3 = fn((ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype), w))
+                    v3 = fn((ins['wigner_matrix'].astype(self.ncon_dtype),
+                             v1s[ins['indice_one']].astype(self.ncon_dtype),
+                             v2s[ins['indice_two']].astype(self.ncon_dtype), w))
                 else:
-                    if ins['mode'] == 'uvw':
-                        v3 = fn(ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype), w)
-                    else:
-                        v3 = fn([ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype), w])
+                    v3 = fn(
+                        [ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype),
+                         v2s[ins['indice_two']].astype(self.ncon_dtype), w])
             else:
                 if self.core_mode == 'einsum':
-                    v3 = fn((ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype)))
+                    v3 = fn((ins['wigner_matrix'].astype(self.ncon_dtype),
+                             v1s[ins['indice_one']].astype(self.ncon_dtype),
+                             v2s[ins['indice_two']].astype(self.ncon_dtype)))
                 else:
-                    v3 = fn([ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype), v2s[ins['indice_two']].astype(self.ncon_dtype)])
+                    v3 = fn(
+                        [ins['wigner_matrix'].astype(self.ncon_dtype), v1s[ins['indice_one']].astype(self.ncon_dtype),
+                         v2s[ins['indice_two']].astype(self.ncon_dtype)])
             v3_list.append(ins['path_weight'].astype(self.dtype) * v3.astype(self.dtype))
 
         v_out = _compose(v3_list, self.irreps_out.data, self.instr, batch_shape)
@@ -567,7 +577,7 @@ class TensorProduct(nn.Cell):
     def _input_init(self, irreps_in1, irreps_in2, irreps_out, instructions):
         if not isinstance(instructions, str):
             irreps_out = irreps_in1 * \
-                irreps_in2 if irreps_out is None else Irreps(irreps_out)
+                         irreps_in2 if irreps_out is None else Irreps(irreps_out)
             self._mode = 'custom'
         else:
             if instructions == 'connect':
@@ -679,7 +689,8 @@ class TensorProduct(nn.Cell):
         init_method = renormal_initializer(init_method)
 
         if self.weight_numel > 0 and self.weight_mode == 'inner':
-            weights = Parameter(initializer(init_method, (1, self.weight_numel), dtype=self.dtype).init_data().flatten())
+            weights = Parameter(
+                initializer(init_method, (1, self.weight_numel), dtype=self.dtype).init_data().flatten())
         else:
             weights = None
 
