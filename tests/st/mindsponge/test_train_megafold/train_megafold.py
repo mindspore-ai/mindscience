@@ -41,18 +41,15 @@ def find_info(file_path):
     last_loss = float(loss_list[-1])
     return compile_time, execuate_time, last_loss
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='train test')
     parser.add_argument('--device_type', default="910A", help='device type')
     parser.add_argument('--device_id', default=0, help='device id')
     arguments = parser.parse_args()
-
     device_type = arguments.device_type
     device_id = arguments.device_id
     os.environ['DEVICE_ID'] = str(device_id)
-
-    cmd_copy = "cp -r ../../../../MindSPONGE/applications/MEGAProtein/examples ./"
+    cmd_copy = "cp -r ../../../../MindSPONGE/applications/model_cards/examples/MEGA-Protein ./"
     os.system(cmd_copy)
     os.system(f"python3 run.py --device_type {device_type} > megefold_res.log")
     compile_time_res, execuate_time_res, last_loss_res = find_info("megefold_res.log")
