@@ -15,7 +15,7 @@
 """norm"""
 import mindspore as ms
 from mindspore import ops, Parameter, nn
-from graph.graph import AggregateNodeToGlobal, LiftGlobalToNode
+from mindchemistry.graph.graph import AggregateNodeToGlobal, LiftGlobalToNode
 
 
 class BatchNormMask(nn.Cell):
@@ -50,6 +50,9 @@ class BatchNormMask(nn.Cell):
             mask = ops.reshape(mask, shape).astype(x.dtype)
         x = ops.mul(x, mask)
 
+        if num == 0:
+            raise ValueError
+
         # pylint: disable=R1705
         if x.ndim > 2:
             norm_axis = []
@@ -59,20 +62,14 @@ class BatchNormMask(nn.Cell):
                 shape.append(1)
 
             if self.training:
-                if num != 0:
-                    mean = ops.sum(x, 0) / num
-                else:
-                    raise ValueError
+                mean = ops.div(ops.sum(x, 0), num)
                 mean = ops.mean(mean, norm_axis)
                 self.moving_mean = self.momentum * self.moving_mean + (1 - self.momentum) * mean
                 mean = ops.reshape(mean, shape)
                 mean = ops.mul(mean, mask)
                 x = x - mean
 
-                if num != 0:
-                    var = ops.sum(ops.pow(x, 2), 0) / num
-                else:
-                    raise ValueError
+                var = ops.div(ops.sum(ops.pow(x, 2), 0), num)
                 var = ops.mean(var, norm_axis)
                 self.moving_variance = self.momentum * self.moving_variance + (1 - self.momentum) * var
                 std = ops.sqrt(ops.add(var, self.eps))
@@ -93,18 +90,12 @@ class BatchNormMask(nn.Cell):
             return y
         else:
             if self.training:
-                if num != 0:
-                    mean = ops.sum(x, 0) / num
-                else:
-                    raise ValueError
+                mean = ops.div(ops.sum(x, 0), num)
                 self.moving_mean = self.momentum * self.moving_mean + (1 - self.momentum) * mean
                 mean = ops.mul(mean, mask)
                 x = x - mean
 
-                if num != 0:
-                    var = ops.sum(ops.pow(x, 2), 0) / num
-                else:
-                    raise ValueError
+                var = ops.div(ops.sum(ops.pow(x, 2), 0), num)
                 self.moving_variance = self.momentum * self.moving_variance + (1 - self.momentum) * var
                 std = ops.sqrt(ops.add(var, self.eps))
                 y = ops.true_divide(x, std)
