@@ -265,6 +265,24 @@ pipe.initialize(key="initial_training")
 pipe.train({YOUR_DATA_PATH}, num_epochs=1)
 ```
 
+由于训练和推理代码网络结构存在差异，因此利用训练得到的权重进行推理、利用推理权重继续训练时，需要进行权重转换，示例代码如下：
+
+```bash
+from mindsponge.common.utils import get_predict_checkpoint, get_train_checkpoint
+
+# 将训练得到的权重转换为推理权重
+# training.ckpt: 训练得到的权重；
+# 48：msa堆叠层数；
+# predict.ckpt：需要被转换成的预测权重
+get_predict_checkpoint("training.ckpt", 48, "predict.ckpt")
+
+# 将推理时的权重转换为训练权重
+# training.ckpt: 需要进行训练使用的权重；
+# 48：msa堆叠层数；
+# predict.ckpt：预测时使用的权重
+get_train_checkpoint("training.ckpt", 48, "predict.ckpt")
+```
+
 ## 引用
 
 ### 结构预测工具MEGA-Fold与训练数据集PSP
