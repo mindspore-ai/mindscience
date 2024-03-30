@@ -20,6 +20,7 @@ MindSpore Flow is a flow simulation suite developed based on [MindSpore](https:/
 
 ## **Latest News**
 
+- 🔥`2024.03.25` MindSpore Artificial Intelligence Framework Summit 2024 was held in Beijing National Convention Center. Tang Zhigong, academician of Chinese Academy of Sciences and chairman of the Chinese Aerodynamic Society, introduced that the team created the generative aerodynamic design model platform based on MindSpore and MindFlow. Platform is oriented to a variety of application scenarios and breaks the traditional design paradigm. It shortens the design periods from the month level to the minute level, and meet the conceptual design requirements. [News](https://tech.cnr.cn/techph/20240323/t20240323_526636454.shtml)
 - 🔥`2024.03.20` MindFlow 0.2.0 is released, [Page](RELEASE.md).
 - 🔥`2023.11.07`The China (Xi'an) Artificial Intelligence Summit Forum was held at the High-tech International Conference Center in Yanta District, Xi'an, and the first large-scale fluid dynamics model for aircraft, "Qinling·AoXiang", jointly developed by Northwestern Polytechnical University and Huawei, was officially released. The model is an intelligent model for aircraft fluid simulation jointly developed by the International Joint Institute of Fluid Mechanics and Intelligence of Northwestern Polytechnical University and Huawei AI4Sci Lab on the basis of the domestic open-source fluid computing software Fenglei, relying on the surging computing power of Ascend AI and the MindSpore AI framework, [page](https://mp.weixin.qq.com/s/Rhpiyf3VJYm_lMBWTRDtGA).
 - 🔥`2023.08.02` MindFlow 0.1.0 is released, [Page](https://mindspore.cn/mindflow/docs/zh-CN/r0.1/index.html).
@@ -39,7 +40,8 @@ Deng Z, Wang J, Liu H, et al. Prediction of transactional flow over supercritica
 Rao C, Ren P, Wang Q, et al. Encoding physics to learn reaction–diffusion processes[J]. Nature Machine Intelligence, 2023: 1-15. [[Paper]](https://arxiv.org/abs/2106.04781)
 [[Code]](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/percnn)
 
-Li Z, Wang Y, Liu H, et al. Solving Boltzmann equation with neural sparse representation[J]. arXiv preprint arXiv:2302.09233, 2023. [[Paper]](https://arxiv.org/abs/2302.09233)
+Li Z, Wang Y, Liu H, et al. Solving Boltzmann equation with neural sparse representation[J]. SIAM Journal on Scientific Computing, Vol. 46, Iss. 2 (2024).
+[[Paper]](https://epubs.siam.org/doi/abs/10.1137/23M1558227?journalCode=sjoce3)
 [[Code]](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/boltzmann)
 
 Deng Z, Liu H, Shi B, et al. Temporal predictions of periodic flows using a mesh transformation and deep learning-based strategy[J]. Aerospace Science and Technology, 2023, 134: 108081. [[Paper]](https://www.sciencedirect.com/science/article/pii/S1270963822007556)
