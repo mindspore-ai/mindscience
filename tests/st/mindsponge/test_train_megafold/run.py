@@ -28,7 +28,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='run megafold')
     parser.add_argument('--device_type', default="910A", type=str, help='device type')
     arguments = parser.parse_args()
-    train_data_path = "./examples/"
+    train_data_path = "./MEGA-Protein/"
     model_name = 'MEGAFold'
     ms.set_context(mode=ms.GRAPH_MODE)
     pipe = PipeLine(name=model_name)
