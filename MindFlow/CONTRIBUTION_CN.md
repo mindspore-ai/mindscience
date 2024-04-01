@@ -2,7 +2,7 @@
 
 本文档介绍如何向MindFlow合入代码，包括合入前需要准备的文件、数据，合入步骤以及需要注意的事项，帮助贡献者更高效地进行代码合入。
 
-如果缺少调试代码的硬件环境，可以参考[启智社区算力使用](https://download.mindspore.cn/mindscience/mindflow/tutorials/%E5%90%AF%E6%99%BA%E4%BA%91%E8%84%91%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.pdf)的文档。
+如果缺少调试代码的硬件环境，可以参考[启智社区云脑使用指南](https://download-mindspore.osinfra.cn/mindscience/mindflow/tutorials/%E5%90%AF%E6%99%BA%E6%8C%87%E5%8D%97.pdf), [NPU使用录屏](https://download-mindspore.osinfra.cn/mindscience/mindflow/tutorials/npu%E4%BD%BF%E7%94%A8.MP4), [GPU使用录屏](https://download-mindspore.osinfra.cn/mindscience/mindflow/tutorials/gpu%E4%BD%BF%E7%94%A8.MP4)。
 
 ## API代码
 
