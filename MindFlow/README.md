@@ -284,7 +284,7 @@ yufan, wangzidong, liuhongsheng, zhouhongye, zhangyi, dengzhiwen, liulei, guoboq
 ## **贡献指南**
 
 - 如何贡献您的代码，请点击此处查看：[贡献指南](https://gitee.com/mindspore/mindscience/blob/master/MindFlow/CONTRIBUTION_CN.md)
-- 需要算力的用户，请参考[启智社区云脑使用指南](https://download.mindspore.cn/mindscience/mindflow/tutorials/%E5%90%AF%E6%99%BA%E4%BA%91%E8%84%91%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.pdf)。
+- 需要算力的用户，请参考[启智社区云脑使用指南](https://download-mindspore.osinfra.cn/mindscience/mindflow/tutorials/%E5%90%AF%E6%99%BA%E6%8C%87%E5%8D%97.pdf), [NPU使用录屏](https://download-mindspore.osinfra.cn/mindscience/mindflow/tutorials/npu%E4%BD%BF%E7%94%A8.MP4), [GPU使用录屏](https://download-mindspore.osinfra.cn/mindscience/mindflow/tutorials/gpu%E4%BD%BF%E7%94%A8.MP4)
 
 ## **许可证**
 
