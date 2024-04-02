@@ -168,6 +168,7 @@ class PipeLine:
             for d in data_iter:
                 loss = self.model.train_step(d)
                 print(loss)
+        return loss
 
     def save_model(self, ckpt_path=None):
         """save model"""
