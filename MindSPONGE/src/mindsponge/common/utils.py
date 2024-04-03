@@ -17,7 +17,8 @@
 import numpy as np
 from Bio import Align
 from Bio.Align import substitution_matrices
-from mindspore import nn, ops
+import mindspore as ms
+from mindspore import nn, ops, Tensor
 import mindspore.numpy as mnp
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
@@ -35,6 +36,153 @@ if get_context("device_target") == "Ascend":
 else:
     cus_lazy_inline = null_decorator
 
+STACK_NAME = [
+    'msa_act.msa_row_attention_with_pair_bias.query_norm_gammas',
+    'msa_act.msa_row_attention_with_pair_bias.query_norm_betas',
+    'msa_act.msa_row_attention_with_pair_bias.feat_2d_norm_gammas',
+    'msa_act.msa_row_attention_with_pair_bias.feat_2d_norm_betas',
+    'msa_act.msa_row_attention_with_pair_bias.feat_2d_weights',
+    'msa_act.msa_row_attention_with_pair_bias.attn_mod.linear_q_weights',
+    'msa_act.msa_row_attention_with_pair_bias.attn_mod.linear_k_weights',
+    'msa_act.msa_row_attention_with_pair_bias.attn_mod.linear_v_weights',
+    'msa_act.msa_row_attention_with_pair_bias.attn_mod.linear_output_weights',
+    'msa_act.msa_row_attention_with_pair_bias.attn_mod.o_biases',
+    'msa_act.msa_row_attention_with_pair_bias.attn_mod.linear_gating_weights',
+    'msa_act.msa_row_attention_with_pair_bias.attn_mod.gating_biases',
+    'msa_act.msa_transition.input_layer_norm_gammas',
+    'msa_act.msa_transition.input_layer_norm_betas',
+    'msa_act.msa_transition.transition1_weights',
+    'msa_act.msa_transition.transition1_biases',
+    'msa_act.msa_transition.transition2_weights',
+    'msa_act.msa_transition.transition2_biases',
+    'msa_act.attn_mod.query_norm_gammas',
+    'msa_act.attn_mod.query_norm_betas',
+    'msa_act.attn_mod.attn_mod.linear_q_weights',
+    'msa_act.attn_mod.attn_mod.linear_k_weights',
+    'msa_act.attn_mod.attn_mod.linear_v_weights',
+    'msa_act.attn_mod.attn_mod.linear_output_weights',
+    'msa_act.attn_mod.attn_mod.o_biases',
+    'msa_act.attn_mod.attn_mod.linear_gating_weights',
+    'msa_act.attn_mod.attn_mod.gating_biases',
+    'pair_act.outer_product_mean.layer_norm_input_gammas',
+    'pair_act.outer_product_mean.layer_norm_input_betas',
+    'pair_act.outer_product_mean.left_projection_weights',
+    'pair_act.outer_product_mean.left_projection_biases',
+    'pair_act.outer_product_mean.right_projection_weights',
+    'pair_act.outer_product_mean.right_projection_biases',
+    'pair_act.outer_product_mean.linear_output_weights',
+    'pair_act.outer_product_mean.o_biases',
+    'pair_act.triangle_attention_starting_node.query_norm_gammas',
+    'pair_act.triangle_attention_starting_node.query_norm_betas',
+    'pair_act.triangle_attention_starting_node.feat_2d_weights',
+    'pair_act.triangle_attention_starting_node.attn_mod.linear_q_weights',
+    'pair_act.triangle_attention_starting_node.attn_mod.linear_k_weights',
+    'pair_act.triangle_attention_starting_node.attn_mod.linear_v_weights',
+    'pair_act.triangle_attention_starting_node.attn_mod.linear_output_weights',
+    'pair_act.triangle_attention_starting_node.attn_mod.o_biases',
+    'pair_act.triangle_attention_starting_node.attn_mod.linear_gating_weights',
+    'pair_act.triangle_attention_starting_node.attn_mod.gating_biases',
+    'pair_act.triangle_attention_ending_node.query_norm_gammas',
+    'pair_act.triangle_attention_ending_node.query_norm_betas',
+    'pair_act.triangle_attention_ending_node.feat_2d_weights',
+    'pair_act.triangle_attention_ending_node.attn_mod.linear_q_weights',
+    'pair_act.triangle_attention_ending_node.attn_mod.linear_k_weights',
+    'pair_act.triangle_attention_ending_node.attn_mod.linear_v_weights',
+    'pair_act.triangle_attention_ending_node.attn_mod.linear_output_weights',
+    'pair_act.triangle_attention_ending_node.attn_mod.o_biases',
+    'pair_act.triangle_attention_ending_node.attn_mod.linear_gating_weights',
+    'pair_act.triangle_attention_ending_node.attn_mod.gating_biases',
+    'pair_act.pair_transition.input_layer_norm_gammas',
+    'pair_act.pair_transition.input_layer_norm_betas',
+    'pair_act.pair_transition.transition1_weights',
+    'pair_act.pair_transition.transition1_biases',
+    'pair_act.pair_transition.transition2_weights',
+    'pair_act.pair_transition.transition2_biases',
+    'pair_act.triangle_multiplication_outgoing.layer_norm_input_gammas',
+    'pair_act.triangle_multiplication_outgoing.layer_norm_input_betas',
+    'pair_act.triangle_multiplication_outgoing.left_projection_weights',
+    'pair_act.triangle_multiplication_outgoing.left_projection_biases',
+    'pair_act.triangle_multiplication_outgoing.right_projection_weights',
+    'pair_act.triangle_multiplication_outgoing.right_projection_biases',
+    'pair_act.triangle_multiplication_outgoing.left_gate_weights',
+    'pair_act.triangle_multiplication_outgoing.left_gate_biases',
+    'pair_act.triangle_multiplication_outgoing.right_gate_weights',
+    'pair_act.triangle_multiplication_outgoing.right_gate_biases',
+    'pair_act.triangle_multiplication_outgoing.center_layer_norm_gammas',
+    'pair_act.triangle_multiplication_outgoing.center_layer_norm_betas',
+    'pair_act.triangle_multiplication_outgoing.output_projection_weights',
+    'pair_act.triangle_multiplication_outgoing.output_projection_biases',
+    'pair_act.triangle_multiplication_outgoing.gating_linear_weights',
+    'pair_act.triangle_multiplication_outgoing.gating_linear_biases',
+    'pair_act.triangle_multiplication_incoming.layer_norm_input_gammas',
+    'pair_act.triangle_multiplication_incoming.layer_norm_input_betas',
+    'pair_act.triangle_multiplication_incoming.left_projection_weights',
+    'pair_act.triangle_multiplication_incoming.left_projection_biases',
+    'pair_act.triangle_multiplication_incoming.right_projection_weights',
+    'pair_act.triangle_multiplication_incoming.right_projection_biases',
+    'pair_act.triangle_multiplication_incoming.left_gate_weights',
+    'pair_act.triangle_multiplication_incoming.left_gate_biases',
+    'pair_act.triangle_multiplication_incoming.right_gate_weights',
+    'pair_act.triangle_multiplication_incoming.right_gate_biases',
+    'pair_act.triangle_multiplication_incoming.center_layer_norm_gammas',
+    'pair_act.triangle_multiplication_incoming.center_layer_norm_betas',
+    'pair_act.triangle_multiplication_incoming.output_projection_weights',
+    'pair_act.triangle_multiplication_incoming.output_projection_biases',
+    'pair_act.triangle_multiplication_incoming.gating_linear_weights',
+    'pair_act.triangle_multiplication_incoming.gating_linear_biases']
+
+def get_predict_checkpoint(train_ckpt, msa_layers, predict_ckpt):
+    """convert megafold checkpoint: from training checkpoint to predict checkpoint.
+
+    Args:
+        train_ckpt(str): Path of the training checkpoint.
+        msa_layers(int): Number of Msa stack layers.
+        predict_ckpt(str): Save path of the predict checkpoint.
+    """
+    parameters = ms.load_checkpoint(train_ckpt)
+    resave_parameters = []
+    for key, value in parameters.items():
+        if key.replace("msa_stack.", "") in STACK_NAME:
+            continue
+        resave_parameters.append({"name": key, "data": value})
+
+    for name in STACK_NAME:
+        predict_value = []
+        for i in range(msa_layers):
+            predict_name = f"msa_stack.{i}." + name
+            predict_value_part = parameters[predict_name].asnumpy()
+            predict_value.append(predict_value_part)
+        predict_value = Tensor(np.array(predict_value))
+        resave_parameters.append({"name": "msa_stack." + name, "data": predict_value})
+    ms.save_checkpoint(resave_parameters, predict_ckpt)
+
+def get_train_checkpoint(train_ckpt, msa_layers, predict_ckpt):
+    """convert megafold checkpoint: from predict checkpoint to training checkpoint.
+
+    Args:
+        train_ckpt(str): Save path of the training checkpoint.
+        msa_layers(int): Number of Msa stack layers.
+        predict_ckpt(str): Path of the training checkpoint.
+    """
+    predict_name_list = []
+    for name in STACK_NAME:
+        for i in range(msa_layers):
+            predict_name = f"msa_stack.{i}." + name
+            predict_name_list.append(predict_name)
+    parameters = ms.load_checkpoint(predict_ckpt)
+    resave_parameters = []
+    for key, value in parameters.items():
+        if key in predict_name_list:
+            continue
+        resave_parameters.append({"name": key, "data": value})
+
+    for name in STACK_NAME:
+        save_value = parameters["msa_stack." + name]
+        for i in range(msa_layers):
+            train_name = f"msa_stack.{i}." + name
+            train_value = save_value[i]
+            resave_parameters.append({"name": train_name, "data": train_value})
+    ms.save_checkpoint(resave_parameters, train_ckpt)
 
 def _memory_reduce(body, batched_inputs, nonbatched_inputs, slice_num, dim=0):
     """memory reduce function"""
