@@ -387,16 +387,11 @@ class LinearBias(TensorProduct):
                              v1s[ins[index_one]].astype(self.ncon_dtype),
                              v2s[ins[index_two]].astype(self.ncon_dtype), w))
                 else:
-                    if ins['mode'] == 'uvw':
-                        v3 = fn(ins[index_wigner].astype(self.ncon_dtype),
-                                v1s[ins[index_one]].astype(self.ncon_dtype),
-                                v2s[ins[index_two]].astype(self.ncon_dtype), w)
-                    else:
-                        v3 = fn([
-                            ins[index_wigner].astype(self.ncon_dtype),
-                            v1s[ins[index_one]].astype(self.ncon_dtype),
-                            v2s[ins[index_two]].astype(self.ncon_dtype), w
-                        ])
+                    v3 = fn([
+                        ins[index_wigner].astype(self.ncon_dtype),
+                        v1s[ins[index_one]].astype(self.ncon_dtype),
+                        v2s[ins[index_two]].astype(self.ncon_dtype), w
+                    ])
             else:
                 if self.core_mode == 'einsum':
                     v3 = fn((ins[index_wigner].astype(self.ncon_dtype),
