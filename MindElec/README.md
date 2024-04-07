@@ -14,6 +14,7 @@
         - [Publications](#publications)
     - [Installation Guide](#installation-guide)
         - [Confirming the System Environment Information](#confirming-the-system-environment-information)
+        - [Website downloading and installing](#Website-downloading-and-installing)
         - [Installing Using pip](#installing-using-pip)
         - [Installing Using Source Code](#installing-using-source-code)
     - [API](#api)
@@ -89,10 +90,20 @@ Due to the dependency between MindSpore Elec and MindSpore, please follow the ta
 - Install MindSpore by referring to [MindSpore Installation Guide](https://www.mindspore.cn/install/en).
 - For other dependencies, see [requirements.txt](https://gitee.com/mindspore/mindscience/blob/master/MindElec/requirements.txt).
 
+### Website downloading and installing
+
+Download MindSpore Elec wheel package from the [website](https://www.mindspore.cn/versions), and then install
+
+```bash
+pip install mindelec_ascend-0.2.0rc1-cp37-cp37m-linux_x86_64.whl
+```
+
+Besides,the package with ARM architecture is also provided, please review.
+
 ### Installing Using pip
 
 ```bash
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/MindScience/{arch}/mindelec_ascend-{version}-{python_version}-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.0.0rc1/MindScience/{arch}/mindelec_ascend-{version}-{python_version}-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 > - When the network is connected, dependencies of the MindSpore Elec installation package are automatically downloaded during the .whl package installation. For details about dependencies, see [setup.py](https://gitee.com/mindspore/mindscience/blob/master/MindElec/setup.py). Pointcloud data generation depends on [pythonocc](https://github.com/tpaviot/pythonocc-core), please install the dependencies by yourself.
@@ -114,7 +125,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/MindSc
     ```bash
     cd ~/MindElec
     bash build.sh
-    pip install output/mindelec_ascend-{version}-cp37-cp37m-linux_{x86_64}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
+    pip install output/mindelec_ascend-0.2.0rc1-cp37-cp37m-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
 
 ## API

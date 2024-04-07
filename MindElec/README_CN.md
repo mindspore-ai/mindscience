@@ -14,6 +14,7 @@
     - [典型应用案例](#典型应用案例)
 - [安装教程](#安装教程)
     - [确认系统环境信息](#确认系统环境信息)
+    - [网页下载安装](#网页下载安装)
     - [pip安装](#pip安装)
     - [源码安装](#源码安装)
 - [API](#api)
@@ -137,7 +138,7 @@ MindSpore Elec是基于MindSpore开发的AI电磁仿真工具包，由数据构�
 
 ### 版本依赖关系
 
-由于MindSpore Elec与Mindspore有依赖关系，请根据下表中所指示的对应关系，在[Mindspore下载页面](https://www.mindspore.cn/versions)
+由于MindSpore Elec与MindSpore有依赖关系，请根据下表中所指示的对应关系，在[MindSpore下载页面](https://www.mindspore.cn/versions)
 下载并安装对应的whl包。
 
 |   MindSpore Elec 版本  |                                  分支                                    |  MindSpore 运行最低版本 |
@@ -157,13 +158,25 @@ MindSpore Elec是基于MindSpore开发的AI电磁仿真工具包，由数据构�
 |               | CentOS-x86      | ✔️   |
 |               | CentOS-aarch64  | ✔️   |
 
-### pip安装
+### 网页下载安装
+
+在[MindSpore Elec下载页面](https://www.mindspore.cn/versions) 直接下载并安装对应whl包
 
 ```bash
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/MindScience/{arch}/mindelec_ascend-{version}-{python_version}-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install mindelec_ascend-0.2.0rc1-cp37-cp37m-linux_x86_64.whl
 ```
 
-> - 在联网状态下，安装whl包时会自动下载MindSpore Elec安装包的依赖项（依赖项详情参见[setup.py](https://gitee.com/mindspore/mindscience/blob/master/MindElec/setup.py)），点云数据采样依赖[pythonocc](https://github.com/tpaviot/pythonocc-core)，需自行安装。
+此外，还有ARM架构下相应的whl包，请用户查阅。
+
+### pip安装
+
+下载并安装对应的whl包。
+
+```bash
+pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.0.0rc1/MindScience/{arch}/mindelec_ascend-{version}-{python_version}-linux_{arch}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+> -在联网状态下，安装whl包时会自动下载MindSpore Elec安装包的依赖项（依赖项详情参见[setup.py](https://gitee.com/mindspore/mindscience/blob/master/MindElec/setup.py)），点云数据采样依赖[pythonocc](https://github.com/tpaviot/pythonocc-core)，需自行安装。
 > - `{version}`表示MindSpore Elec版本号，例如下载0.1.0版本MindSpore Elec时，`{version}`应写为0.1.0。
 > - `{arch}`表示系统架构，例如使用的Linux系统是x86架构64位时，`{arch}`应写为x86_64。如果系统是ARM架构64位，则写为aarch64。
 > - `{python_version}`表示用户的Python版本，Python版本为3.7.5时，{python_version}应写为cp37-cp37m。Python版本为3.9.0时，则写为cp39-cp39。
@@ -182,7 +195,7 @@ pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/{version}/MindSc
     ```bash
     cd ~/MindElec
     bash build.sh
-    pip install output/mindelec_ascend-{version}-{python_version}-linux_{x86_64}.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
+    pip install output/mindelec_ascend-0.2.0rc1-cp37-cp37m-linux_x86_64.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
 
 ## API
