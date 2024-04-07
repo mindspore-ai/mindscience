@@ -213,7 +213,7 @@ def train(dtype=ms.float32, configs=None, ncon_dtype=None):
         param_dict = ms.load_checkpoint(model_params['ckpt_file'])
         ms.load_param_into_net(net, param_dict)
         test_mae = evaluate(forward, loss_fn, test_loader, target_mean, target_mad)
-        print(f"test MAE: {test_mae}, time used: {time.time()-t_start}")
+        print(f"test MAE: {test_mae:<8.4f}, time used: {time.time()-t_start:.2f}")
         return
 
     backward = ms.value_and_grad(forward, None, optimizer.parameters, has_aux=True)
