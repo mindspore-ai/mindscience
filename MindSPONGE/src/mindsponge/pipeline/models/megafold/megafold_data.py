@@ -25,10 +25,9 @@
 import numpy as np
 from mindsponge.data_transform import one_hot
 from mindsponge.data_transform import make_atom14_masks
-from mindsponge.common import residue_constants
-from ...dataset import curry1
+from mindsponge.common import residue_constants, geometry
 from mindsponge.common.utils import make_atom14_positions
-from mindsponge.common import geometry
+from ...dataset import curry1
 from .megafold_feature import NUM_RES, NUM_MSA_SEQ, NUM_EXTRA_SEQ, NUM_TEMPLATES
 
 
@@ -96,8 +95,7 @@ def dict_del_key(feature=None, filter_list=None):
 @curry1
 def one_hot_convert(feature=None, key=None, axis=None):
     "one_hot_convert"
-    if key in feature and feature[key].shape[0] > 0:
-        feature[key] = np.argmax(feature[key], axis=axis)
+    feature[key] = np.argmax(feature[key], axis=axis)
     return feature
 
 
@@ -269,7 +267,6 @@ def msa_nearest_neighbor_clusters(feature=None, gap_agreement_weight=0.):
     # Make agreement score as weighted Hamming distance
     sample_one_hot = feature["msa_mask"][:, :, None] * one_hot(23, feature['msa'])
     num_seq, num_res, _ = sample_one_hot.shape
-
     array_extra_msa_mask = feature['extra_msa_mask']
     if array_extra_msa_mask.any():
         extra_one_hot = feature['extra_msa_mask'][:, :, None] * one_hot(23, feature['extra_msa'])
@@ -405,7 +402,6 @@ def initial_template_mask(feature=None):
         num_template = 0
     feature['template_mask'] = np.ones([num_template], np.float32)
     feature['msa_mask'] = np.ones(feature['msa'].shape, dtype=np.float32)
-
     feature['seq_length'] = feature['seq_length'][0]
     return feature
 
