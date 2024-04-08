@@ -48,8 +48,8 @@ class IndexColvar(Cell):
     r"""Collective variables based on index
 
     Args:
-        use_pbc (bool):     Whether to calculate the CV at periodic boundary condition (PBC).
-                            If `None` is given, it will be determined at runtime based on
+        use_pbc (bool, optional):     Whether to calculate the CV at periodic boundary condition (PBC).
+                            If ``None`` is given, it will be determined at runtime based on
                             whether the `pbc_box` is given or not. Default: ``None``.
 
     Supported Platforms:
@@ -67,11 +67,26 @@ class IndexColvar(Cell):
         self.identity = ops.Identity()
 
     def vector_in_pbc(self, vector: Tensor, pbc_box: Tensor) -> Tensor:
-        """Make the difference of vecters at the range from -0.5 box to 0.5 box"""
+        r"""Make the difference of vecters at the range from -0.5 box to 0.5 box.
+
+        Args:
+            vector (Tensor):    Tensor of shape :math:`(B, A, D)`. Data type is float.
+                                Coordinate of system
+            pbc_box (Tensor):   Tensor of shape :math:`(B, D)`. Data type is float.
+                                Periodic boundary condition Box.
+
+        """
         return func.vector_in_pbc(vector, pbc_box)
 
     def set_pbc(self, use_pbc: bool):
-        """set periodic boundary condition"""
+        r"""Set periodic boundary condition
+
+        Args:
+            use_pbc (bool):     Whether to calculate the CV at periodic boundary condition (PBC).
+                                If ``None`` is given, it will be determined at runtime based on
+                                whether the `pbc_box` is given or not.
+
+        """
         self.use_pbc = use_pbc
         self.get_vector.set_pbc(use_pbc)
         return self
@@ -85,17 +100,28 @@ class IndexDistances(IndexColvar):
     r"""Calculate distance between atoms by neighbour index
 
     Args:
-        use_pbc (bool):     Whether to use periodic boundary condition. Default: ``False``.
+        use_pbc (bool, optional):     Whether to use periodic boundary condition. Default: ``None``.
 
-        large_dis (float):  A large value that added to the distance equal to zero to
+        large_dis (float, optional):  A large value that added to the distance equal to zero to
                             prevent them from becoming zero values after Norm operation,
-                            which could lead to auto-differentiation errors.
+                            which could lead to auto-differentiation errors. Default: ``100.0``.
 
-        keepdims (bool):    If this is `True`, the last axis will be left in the result as
-                            dimensions with size one.
+        keepdims (bool, optional):    If this is ``True``, the last axis will be left in the result as
+                            dimensions with size one. Default: ``False``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import sponge
+        >>> from sponge.partition import IndexDistances
+        >>> import mindspore
+        >>> from mindspore import Tensor
+        >>> idx_distances = IndexDistances(use_pbc=False)
+        >>> coordinate = Tensor([[[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]])
+        >>> index = Tensor([[[1],[0]]])
+        >>> print(idx_distances(coordinate, index))
+        [[[1.] [1.]]]
 
     """
 
@@ -116,30 +142,29 @@ class IndexDistances(IndexColvar):
             self.norm_last_dim = nn.Norm(-1, self.keepdims)
 
     def construct(self, coordinate: Tensor, index: Tensor, mask: Tensor = None, pbc_box: Tensor = None):
-        r"""Compute distances between atoms according to index.
+        # pylint: disable=missing-docstring
+        # Compute distances between atoms according to index.
 
-        Args:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Coordinate of system
-            index (Tensor):         Tensor of shape (B, A, N). Data type is int.
-                                    Neighbour index
-            mask (Tensor):          Tensor of shape (B, A, N). Data type is bool.
-                                    Mask of neighbour index
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Periodic boundary condition Box.
-                                    Default: ``None``.
+        # Args:
+        #     coordinate (Tensor):    Tensor of shape :math:`(B, A, D)`. Data type is float.
+        #                             Coordinate of system
+        #     index (Tensor):         Tensor of shape :math:`(B, A, N)`. Data type is int.
+        #                             Neighbour index
+        #     mask (Tensor):          Tensor of shape :math:`(B, A, N)`. Data type is bool.
+        #                             Mask of neighbour index
+        #     pbc_box (Tensor):       Tensor of shape :math:`(B, D)`. Data type is float.
+        #                             Periodic boundary condition Box.
+        #                             Default: ``None``.
 
-        Returns:
-            distances (Tensor):     Tensor of shape (B, A, N). Data type is float.
+        # Returns:
+        #     distances (Tensor):     Tensor of shape :math:`(B, A, N)`. Data type is float.
 
-        Note:
+        # Note:
 
-            B:  Batchsize, i.e. number of simulation walker.
-            A:  Number of atoms.
-            N:  Number of neighbour atoms.
-            D:  Dimension of position coordinates.
-
-        """
+        #     - B:  Batchsize, i.e. number of simulation walker.
+        #     - A:  Number of atoms.
+        #     - N:  Number of neighbour atoms.
+        #     - D:  Dimension of position coordinates.
 
         # (B, A, 1, D) <- (B, A, D)
         atoms = F.expand_dims(coordinate, -2)
@@ -166,12 +191,13 @@ class Vector2Distance(Cell):
     r"""Calculate distance of vector
 
     Args:
-        axis (int): Axis of vector to be calculated. Default: -1
+        axis (int, optional): Axis of vector to be calculated. Default: -1
 
-        large_dis (float): A large value that added to the distance equal to zero to prevent them from
+        large_dis (float, optional): A large value that added to the distance equal to zero to prevent them from
             becoming zero values after Norm operation, which could lead to auto-differentiation errors.
 
-        keepdims (bool): If this is `True`, the last axis will be left in the result as dimensions with size one.
+        keepdims (bool, optional): If this is ``True``, the last axis will be left in the result
+                                   as dimensions with size one.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -193,25 +219,24 @@ class Vector2Distance(Cell):
             self.norm_last_dim = nn.Norm(self.axis, self.keepdims)
 
     def construct(self, vector: Tensor, mask: Tensor = None):
-        r"""Compute distances between atoms according to index.
+        # pylint: disable=missing-docstring
+        # Compute distances between atoms according to index.
 
-        Args:
-            coordinate (Tensor):    Tensor of shape (B, ..., D). Data type is float.
-                                    Vector
-            mask (Tensor):          Tensor of shape (B, ...). Data type is bool.
-                                    Mask for Vector
+        # Args:
+        #     coordinate (Tensor):    Tensor of shape :math:`(B, ..., D)`. Data type is float.
+        #                             Vector
+        #     mask (Tensor):          Tensor of shape :math:`(B, ...)`. Data type is bool.
+        #                             Mask for Vector
 
-        Returns:
-            distances (Tensor):     Tensor of shape (B, A, N). Data type is float.
+        # Returns:
+        #     distances (Tensor):     Tensor of shape :math:`(B, A, N)`. Data type is float.
 
-        Note:
+        # Note:
 
-            B:  Batchsize, i.e. number of simulation walker.
-            A:  Number of atoms.
-            N:  Number of neighbour atoms.
-            D:  Dimension of position coordinates.
-
-        """
+        #     - B:  Batchsize, i.e. number of simulation walker.
+        #     - A:  Number of atoms.
+        #     - N:  Number of neighbour atoms.
+        #     - D:  Dimension of position coordinates.
 
         # Add a non-zero value to the vectors whose mask value is False
         # to prevent them from becoming zero values after Norm operation,
@@ -244,12 +269,23 @@ class IndexVectors(IndexColvar):
     r"""Get vectors by index
 
     Args:
-        use_pbc (bool):     Whether to use periodic boundary condition. Default: ``False``.
-
-        length_unit (str):  Length unit. Default: ``None``.
+        use_pbc (bool, optional):     Whether to use periodic boundary condition.
+                                      Default value: ``None``, defaults to ``False``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> import sponge
+        >>> from sponge.partition import IndexVectors
+        >>> import mindspore
+        >>> from mindspore import Tensor
+        >>> idx_vector = IndexVectors(use_pbc=False)
+        >>> coordinate = Tensor([[[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]])
+        >>> index = Tensor([[[1],[0]]])
+        >>> print(idx_vector(coordinate, index))  # B=1, A=2, N=1
+        [[[[ 0.  0.  1.]]
+          [[ 0.  0. -1.]]]]
 
     """
 
@@ -257,31 +293,31 @@ class IndexVectors(IndexColvar):
 
         super().__init__(use_pbc=use_pbc)
 
+
     def construct(self, coordinate: Tensor, index: Tensor, mask: Tensor = None, pbc_box: Tensor = None):
-        r"""get vector by index.
+        # pylint: disable=missing-docstring
+        # get vector by index.
 
-        Args:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Coordinate of system
-            index (Tensor):         Tensor of shape (B, A, N). Data type is int.
-                                    Neighbour index
-            mask (Tensor):          Tensor of shape (B, A, N). Data type is bool.
-                                    Mask of neighbour index
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Periodic boundary condition Box.
-                                    Default: ``None``.
+        # Args:
+        #     coordinate (Tensor):    Tensor of shape :math:`(B, A, D)`. Data type is float.
+        #                             Coordinate of system
+        #     index (Tensor):         Tensor of shape :math:`(B, A, N)`. Data type is int.
+        #                             Neighbour index
+        #     mask (Tensor):          Tensor of shape :math:`(B, A, N)`. Data type is bool.
+        #                             Mask of neighbour index
+        #     pbc_box (Tensor):       Tensor of shape :math:`(B, D)`. Data type is float.
+        #                             Periodic boundary condition Box.
+        #                             Default: ``None``.
 
-        Returns:
-            vector (Tensor):        Tensor of shape (B, A, D). Data type is float.
+        # Returns:
+        #     vector (Tensor):        Tensor of shape :math:`(B, A, D)`. Data type is float.
 
-        Note:
+        # Note:
 
-            B:  Batchsize, i.e. number of simulation walker.
-            A:  Number of atoms.
-            N:  Number of neighbour atoms.
-            D:  Dimension of position coordinates.
-
-        """
+        #     - B:  Batchsize, i.e. number of simulation walker.
+        #     - A:  Number of atoms.
+        #     - N:  Number of neighbour atoms.
+        #     - D:  Dimension of position coordinates.
 
         # (B,A,1,D) <- (B,A,D)
         atoms = F.expand_dims(coordinate, -2)

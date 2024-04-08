@@ -43,6 +43,20 @@ class FullConnectNeighbours(Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import sponge
+        >>> from sponge.partition import FullConnectNeighbours
+        >>> full_connect_neighbours = FullConnectNeighbours(3)
+        >>> full_connect_neighbours()
+        (Tensor(shape=[1, 3, 2], dtype=Int32, value=
+         [[[1, 2],
+         [0, 2],
+         [0, 1]]]),
+         Tensor(shape=[1, 3, 2], dtype=Bool, value=
+         [[[ True,  True],
+         [ True,  True],
+         [ True,  True]]]))
+
     """
 
     def __init__(self, num_atoms: int):
@@ -84,39 +98,38 @@ class FullConnectNeighbours(Cell):
             self.fc_mask = msnp.broadcast_to(Tensor(True), (1,)+self.shape)
 
     def set_exclude_index(self, exclude_index: Tensor) -> Tensor:
-        """Dummy"""
+        # TODO: Dummy
         return exclude_index
 
     def check_neighbour_list(self):
-        """check the number of neighbouring atoms in neighbour list"""
+        # TODO: check the number of neighbouring atoms in neighbour list
         return self
 
     def print_info(self):
-        """print information"""
+        # TODO: print information
         return self
 
     def construct(self,
                   atom_mask: Tensor = None,
                   exclude_index: Tensor = None
                   ) -> Tuple[Tensor, Tensor]:
-        r"""Calculate the full connected neighbour list.
+        # pylint: disable=missing-docstring
+        # Calculate the full connected neighbour list.
 
-        Args:
-            atom_mask (Tensor):     Tensor of shape (B, A). Data type is bool.
-            exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int.
+        # Args:
+        #     atom_mask (Tensor):     Tensor of :math:`(B, A)`. Data type is bool.
+        #     exclude_index (Tensor): Tensor of :math:`(B, A, Ex)`. Data type is int.
 
-        Returns:
-            neighbours (Tensor):    Tensor of shape (B, A, N). Data type is int.
-            neighbour_mask (Tensor) Tensor of shape (B, A, N). Data type is bool.
+        # Returns:
+        #     neighbours (Tensor):    Tensor of :math:`(B, A, N)`. Data type is int.
+        #     neighbour_mask (Tensor) Tensor of :math:`(B, A, N)`. Data type is bool.
 
-        Note:
-            B:  Batch size.
-            A:  Number of atoms in system.
-            N:  Number of neighbour atoms.
-            D:  Dimension of position coordinates.
-            Ex: Maximum number of excluded neighbour atoms.
-
-        """
+        # Note:
+        #     - B:  Batch size.
+        #     - A:  Number of atoms in system.
+        #     - N:  Number of neighbour atoms.
+        #     - D:  Dimension of position coordinates.
+        #     - Ex: Maximum number of excluded neighbour atoms.
 
         if self.fc_idx is None:
             return None, None
