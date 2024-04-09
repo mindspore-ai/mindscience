@@ -25,7 +25,7 @@ data:
         train: [0.1]
         test: [0.1]
 train:
-    total_batch_size: 80
+    total_batch_size: 80  # we use 10 per NPU/GPU device in our experiments
     num_tx_samp_pts: 8192
     lr_init: 1.e-4
     epochs: 1000
@@ -41,7 +41,7 @@ train:
         warmup_epochs: 10
     grad_clip_value: 1  # -1 means no gradient clipping
 test:
-    total_batch_size: 80
+    total_batch_size: 80  # we use 10 per NPU/GPU device in our experiments
     interval: 25
     plot_num_per_cls: 2
 record_dir: "exp/advection-beta-0.1_fno"

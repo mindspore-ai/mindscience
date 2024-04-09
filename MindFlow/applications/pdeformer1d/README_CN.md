@@ -43,11 +43,13 @@ PDEformer 的目标是构建一个方程解的 surrogate model，形式为 $(\ma
 对于一个标量系数 $c$，我们将它的数值输入一个标量编码器（scalar encoder），将编码器给出的 $d_e$ 维的输出作为相应 `SC` 节点的输入特征。
 考虑到标量函数 $s(x)$ 包含的信息相对更为丰富，我们为每个这样的标量函数引入 $N$ 个新的“分支”节点（类型为 $\mathtt{b}_1,\mathtt{b}_2,\dots,\mathtt{b}_N$），用这 $N$ 个节点的输入特征表示 $s(x)$ 所包含的数值信息。
 具体地说，我们使用一个函数编码器（function encoder），其输入为一系列散点 $\{(x_i,s(x_i))\}$（散点的位置与分布可任意选取），而输出的 $d_eN$ 维向量被用于给出 $N$ 个分支节点的输入特征。
-图中的这些分支节点与 $s(x)$ 所对应的 `IC` 或 `CF` 顶点之间有相连的边。
+图中的这些分支节点与 $s(x)$ 所对应的 `IC` 或 `CF` 节点之间有相连的边。
 所有剩余节点的输入特征都设为零（为简化编程实现，实际上是标量编码器接收零输入时的对应输出）。
 
 此外，我们还为每个待求解的场分量引入了 $L$ 个额外节点（类型为 $\mathtt{m}_1,\mathtt{m}_2,\dots,\mathtt{m}_L$），并将它们与相应的 `UF` 节点连接起来。
 后续使用 graph Transformer 处理图数据时，关于这一场分量的预测解的信息将被汇总到这些新节点所对应的嵌入向量当中。
+
+更多实现细节以及 PDE 计算图的实例请参考 [docs/PDE_DAG_CN.md](docs/PDE_DAG_CN.md)。
 
 ### 编码图数据
 
@@ -175,10 +177,18 @@ pip3 install -r pip-requirements.txt
 
 ## 模型运行
 
+我们在 [configs/pretrain](configs/pretrain) 文件夹下提供了不同参数量的 PDEformer 模型的配置文件。对应的经过预训练的 PDEformer 权重，可以在 [北大网盘](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A) `pdeformer/ckpt` 下载。具体如下表所示：
+| 模型 | 参数量 | 配置文件 | 预训练权重文件 |
+| ---- | ---- | ---- | ---- |
+| PDEformer-S | 3.60M | [configs/pretrain/pdeformer-S.yaml](configs/pretrain/pdeformer-S.yaml) | - |
+| PDEformer-M | 6.92M |[configs/pretrain/pdeformer-M.yaml](configs/pretrain/pdeformer-M.yaml) | model-M_3M_pretrained.ckpt |
+| PDEformer-L | 22.40M |[configs/pretrain/pdeformer-L.yaml](configs/pretrain/pdeformer-L.yaml) | model-L_3M_pretrained.ckpt |
+| PDEformer-XL | 58.24M |[configs/pretrain/pdeformer-XL.yaml](configs/pretrain/pdeformer-XL.yaml) | model-XL_3M_pretrained.ckpt |
+
 ### 推理示例
 
 下面的示例代码展示了如何使用 PDEformer 预测给定 PDE 的解，以无粘 Burgers 方程（周期边界）为例。
-运行前需要先下载经过预训练的 PDEformer 权重，并将 [configs/inference_pdeformer-L.yaml](configs/inference_pdeformer-L.yaml) 中 `model/load_ckpt` 参数的值改为相应的权重文件路径。
+运行前需要先从 [北大网盘](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A)  下载经过预训练的 PDEformer 权重 `pdeformer/ckpt/model-L_3M_pretrained.ckpt`，并将 [configs/inference_pdeformer-L.yaml](configs/inference_pdeformer-L.yaml) 中 `model/load_ckpt` 参数的值改为相应的权重文件路径。
 
 ```python
 import numpy as np
@@ -213,7 +223,7 @@ plt.show()
 
 ### 预训练
 
-**生成预训练数据集**
+#### 准备预训练数据集
 
 为了有效地预训练模型，首要任务是准备预训练数据。
 我们采用传统的（谱方法）数值求解器 [Dedalus](https://dedalus-project.org/) 来生成这些预训练数据。
@@ -229,11 +239,12 @@ $$
 其中 $f_i(u) = c_{i1}u+c_{i2}u^2+c_{i3}u^3$，$i=0,1$。
 每个系数 $c_{ik}$ 以概率 $0.5$ 被设为零（从而相应的项不会出现在 PDE 的计算图中），其他情况下从 $U([-3,3])$ 中随机抽取。
 系数场 $s(x),\kappa(x)$ 以一定概率取为（无空间依赖）随机常数或零，其中 $\kappa(x)$ 的取值范围为 $[10^{-3},1]$。
-初始条件 $g(x)$、非常数源项 $s(x)$ 的生成方式与 [PDEBench 数据集](https://arxiv.org/abs/2210.07182)的初始条件生成方式相同。
+初始条件 $g(x)$、非常数源项 $s(x)$ 的生成方式与 [PDEBench 数据集](https://arxiv.org/abs/2210.07182) 的初始条件生成方式相同。
 对于非周期边界情形，边界条件种类从 Dirichlet、Neumann 和 Robin 中随机选取，齐次与否也随机选取，且左右两端点的边界条件独立生成。
-运行预训练数据集生成代码的方法请参考 [data_generation/README.md](data_generation/README.md)。
+运行预训练数据集生成代码的方法请参考 [data_generation/README_CN.md](data_generation/README_CN.md)。
+此外，也可以直接下载我们已经生成的数据，具体方式请看 [docs/DATASET_CN.md](docs/DATASET_CN.md)。
 
-**预训练模型**
+#### 预训练模型
 
 为了预训练 PDEformer-L 模型，我们需要首先调整配置文件 [configs/pretrain/pdeformer-L.yaml](configs/pretrain/pdeformer-L.yaml)。
 在这个配置文件中，我们需要指定数据集的文件路径和文件名（不带 `.hdf5` 后缀）：
@@ -251,7 +262,7 @@ data:
                 - custom_v4.21_sinus0_circ_cU3_k1e-03_1_seed4
                 - custom_v4.21_sinus0_circ_cU3_k1e-03_1_seed5
                 - custom_v4.21_sinus0_circ_cU3_k1e-03_1_seed6
-                - ...
+                # ...
             sinus0_r:  # Robin 边界条件对应的数据集
                 - custom_v4.23_sinus0_robin_cU3_k1e-03_1_seed2
                 - custom_v4.23_sinus0_robin_cU3_k1e-03_1_seed3
@@ -267,6 +278,8 @@ data:
 # ...
 ```
 
+示例中的数据集文件可以使用 [data_generation/custom_sinus.py](data_generation/custom_sinus.py)
+生成，或者从 [北大网盘](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/434EE9473D90449A8B1E4847065BCA89) `pdeformer/sinus0` 下载。
 完成配置文件的修改后，我们可以通过运行如下命令来启动单机 8 卡并行训练：
 
 ```bash
@@ -289,15 +302,13 @@ bash scripts/run_distributed_train.sh
 
 预训练模型的训练日志、模型权重、实验结果可视化等文件将保存在`exp/pdeformer-L`文件夹中。
 
-除了 PDEformer-L 模型，我们还提供了其他参数量的预训练模型的配置文件，用户可以在[configs/pretrain](configs/pretrain)文件夹下找到。
-
 ### PDEBench 推理与微调
 
 经过预训练的 PDEformer 在处理各种方程时展现出了卓越的通用性。
-为了评估它在正问题上的性能，我们可以从 PDEBench 数据集中挑选出一些 1D 方程，包括 Burgers 方程、Advection 方程以及 Reaction-Advection 方程。
+为了评估它在正问题上的性能，我们可以从 PDEBench 数据集中挑选出一些 1D 方程，包括 Burgers 方程、Advection 方程以及 Reaction-Diffusion 方程。
 虽然我们的模型能够直接对这些方程进行求解（zero-shot inference），但为了针对特定类型的方程获得更高的求解精度，我们可以选择对模型进行进一步的微调。
 
-为了用特定的 PDEBench 数据集（这里以 Burgers 方程为例）进行微调，我们需要首先调整配置文件 [configs/finetune/burgers-nu-0.1_pdeformer-L.yaml](configs/finetune/burgers-nu-0.1_pdeformer-L.yaml)。
+为了用特定的 PDEBench 数据集（这里以 Burgers 方程为例）进行微调，我们需要从 [北大网盘](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A)  下载经过预训练的 PDEformer 权重 `pdeformer/ckpt/model-L_3M_pretrained.ckpt`，并下载 PDEBench 数据集中的 [1D_Burgers_Sols_Nu0.1.hdf5](https://darus.uni-stuttgart.de/api/access/datafile/133139)，调整配置文件 [configs/finetune/burgers-nu-0.1_pdeformer-L.yaml](configs/finetune/burgers-nu-0.1_pdeformer-L.yaml)。
 在这个配置文件中，我们需要指定数据集的文件路径和文件名，以及预训练好的模型权重路径 ：
 
 ```yaml
@@ -335,6 +346,8 @@ python train.py --config_file_path $config_path --no_distributed --device_id 0
 bash scripts/run_standalone_train.sh
 ```
 
+要使用其他 PDEBench 中的数据集进行微调，请参考[docs/DATASET_CN.md](docs/DATASET_CN.md)。
+
 ### 反问题
 
 #### 反演标量（方程系数）
@@ -343,7 +356,7 @@ bash scripts/run_standalone_train.sh
 针对每个 PDE，我们将当前估算的方程系数输入预训练的 PDEformer，以得出预测解，并通过最小化与观测数据之间的相对 $L^2$ 误差来获取恢复的系数。
 鉴于此优化问题具有众多局部最小点，我们采用了粒子群优化算法来进行求解。
 
-我们需要首先调整配置文件 [configs/inverse/inverse_scalar.yaml](configs/inverse/inverse_scalar.yaml)。
+我们需要首先从北大网盘下载经过预训练的 [PDEformer 权重](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A) `pdeformer/ckpt/model-L_3M_pretrained.ckpt`，以及 [反问题数据集](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/CDBCBEF0F0D4459C893F3CBBE62F521E) `pdeformer/inverse`。反演标量（方程系数）与反演函数（源项）所用的数据集相同，更多关于反问题数据集的详细信息请参考 [docs/DATASET_CN.md](docs/DATASET_CN.md)。之后，调整配置文件 [configs/inverse/inverse_scalar.yaml](configs/inverse/inverse_scalar.yaml)。
 在这个配置文件中，我们需要指定反问题数据集的文件路径和文件名，以及预训练好的模型权重路径 ：
 
 ```yaml
@@ -383,7 +396,7 @@ bash scripts/run_inverse_scalar.sh
 我们还可以利用预训练好的 PDEformer 来解决函数反演问题（这里的函数指的是源项）。
 针对每个 PDE，我们将当前待估算的源项设为 trainable 参数，并输入到预训练好的 PDEformer，以得出预测解，并通过梯度下降算法来优化源项参数，以最小化与观测数据之间的相对$L^2$误差。
 
-我们需要首先调整配置文件[configs/inverse/inverse_function.yaml](configs/inverse/inverse_function.yaml)。
+我们需要首先从北大网盘下载经过预训练的 [PDEformer 权重](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A) `pdeformer/ckpt/model-L_3M_pretrained.ckpt`，以及 [反问题数据集](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/CDBCBEF0F0D4459C893F3CBBE62F521E) `pdeformer/inverse`。反演标量（方程系数）与反演函数（源项）所用的数据集相同，更多关于反问题数据集的详细信息请参考 [docs/DATASET_CN.md](docs/DATASET_CN.md)。之后，调整配置文件[configs/inverse/inverse_function.yaml](configs/inverse/inverse_function.yaml)。
 在这个配置文件中，我们需要指定反问题数据集的文件路径和文件名，以及预训练好的模型权重路径 ：
 
 ```yaml
