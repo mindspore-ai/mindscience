@@ -14,7 +14,7 @@
 # ============================================================================
 """FuXiTrainer"""
 from mindspore import Model
-from mindspore.train.loss_scale_manager import DynamicLossScaleManager
+from mindspore import amp
 from mindearth.module import Trainer
 
 from .callback import EvaluateCallBack
@@ -39,15 +39,17 @@ class FuXiTrainer(Trainer):
         self.train_dataset, self.valid_dataset = self.get_dataset()
         self.pred_cb = self.get_callback()
         self.solver = self.get_solver()
+        self.train_params = config.get('train')
 
     def get_solver(self):
         """
         define the solver of the model, abstract method.
         """
-        loss_scale = DynamicLossScaleManager()
+        loss_scale = amp.FixedLossScaleManager(128.0, False)
         solver = Model(network=self.loss_fn,
                        optimizer=self.optimizer,
-                       loss_scale_manager=loss_scale
+                       loss_scale_manager=loss_scale,
+                       amp_level=self.train_params.get("amp_level", "O2")
                        )
         return solver
 
