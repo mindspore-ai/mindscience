@@ -89,16 +89,16 @@ data:
     multi_pde:
         train:
             sinus0_c:
-                - custom_v4.21_sinus0_circ_cU3_k1e-03_1_seed2
+                - custom_v4.23_sinus0_circ_cU3_k1e-03_1_seed2
             sinus0_r:
                 - custom_v4.23_sinus0_robin_cU3_k1e-03_1_seed2
         test:
             sinus0_c:
-                - custom_v4.21_sinus0_circ_cU3_k1e-03_1_seed1
+                - custom_v4.23_sinus0_circ_cU3_k1e-03_1_seed1
             sinus0_r:
                 - custom_v4.23_sinus0_robin_cU3_k1e-03_1_seed1
 train:
-    total_batch_size: 10
+    total_batch_size: 10  # we use 10 per NPU/GPU device in our experiments
     num_tx_samp_pts: 8192
     lr_init: 1.e-4
     epochs: 10
@@ -152,7 +152,7 @@ inverse:
         normalize: True
         normalize_eps: 0.05
 test:
-    total_batch_size: 10
+    total_batch_size: 10  # we use 10 per NPU/GPU device in our experiments
     interval: 25
     plot_num_per_cls: 2
 record_dir: "exp/debug"

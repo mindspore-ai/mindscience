@@ -424,6 +424,9 @@ class PDENode:
         return self.src_pde.dx(self)
 
 
+NULL_NODE = None
+
+
 class PDENodesCollector:
     r"""
     This class enables specifying a PDE via Python codes.
@@ -622,8 +625,8 @@ class PDENodesCollector:
         self.node_function.append(function)
 
     def _unary(self, src_node: PDENode, node_type: str) -> PDENode:
-        if src_node is None:
-            return None
+        if src_node is NULL_NODE:
+            return NULL_NODE
         return self._add_node(node_type, predecessors=[src_node.name])
 
     def _multi_predecessor(self, node_type: str, src_nodes: Tuple) -> PDENode:
@@ -639,8 +642,8 @@ class PDENodesCollector:
         # ([node1, node2, ..], ) -> [node1, node2, ..]
         if len(src_nodes) == 1 and isinstance(src_nodes[0], (list, tuple)):
             src_nodes, = src_nodes
-        # remove None entries
-        src_nodes = [node for node in src_nodes if node is not None]
+        # remove NULL_NODE entries
+        src_nodes = [node for node in src_nodes if node is not NULL_NODE]
         # type check; convert number entries into 'coef' nodes in the DAG
         for i, node in enumerate(src_nodes):
             if np.isscalar(node):
@@ -650,9 +653,9 @@ class PDENodesCollector:
                                  + " {PDENode, float, int, NoneType}, but got"
                                  + f" {type(node)}")
         if len(src_nodes) == 0:  # pylint: disable=C1801
-            return None  # this is not a real node
+            return NULL_NODE
         if len(src_nodes) == 1:
-            return src_nodes[0]  # single predecessor, no new node to construct
+            return src_nodes[0]  # single predecessor, no new node to create
         src_node_names = [node.name for node in src_nodes]
 
         return self._add_node(node_type, predecessors=src_node_names)

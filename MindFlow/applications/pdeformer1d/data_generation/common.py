@@ -26,6 +26,7 @@ from numpy.typing import NDArray
 import matplotlib.pyplot as plt
 import dedalus.public as d3
 
+
 class PDETermBase(ABC):
     r""" abstract class for special PDE terms used in PDEDataGenBase class """
 

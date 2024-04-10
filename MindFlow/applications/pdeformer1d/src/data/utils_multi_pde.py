@@ -25,7 +25,7 @@ import h5py
 from omegaconf import DictConfig
 
 from .env import float_dtype, int_dtype
-from .pde_dag import PDENodesCollector, PDENode
+from .pde_dag import PDENodesCollector, PDENode, NULL_NODE
 
 DAG_INFO_DIR = "dag_info_v4.1"
 
@@ -86,7 +86,7 @@ class FieldCoef(PDETermBase):
         if self.coef_type == self.ZERO_COEF:
             if self.keep_zero_coef:
                 return pde.new_coef(0.)
-            return None
+            return NULL_NODE
         if self.coef_type == self.SCALAR_COEF:
             return pde.new_coef(self.field[0])
         if self.coef_type == self.FIELD_COEF:
@@ -284,7 +284,7 @@ def sinusoidal_pde_nodes(h5file_in,
     kappa = FieldCoef(h5file_in["coef/kappa"], idx_pde, keep_zero_coef)
     kappa_node = kappa.nodes(pde, x_coord)
     flux_sum_list = []
-    if kappa_node is not None:
+    if kappa_node is not NULL_NODE:
         flux_sum_list.append(-(kappa_node * get_dx_u()))
     elif inverse_problem:  # keep the kappa node even with zero value
         flux_sum_list.append(-(pde.new_coef(0) * get_dx_u()))
@@ -303,7 +303,7 @@ def sinusoidal_pde_nodes(h5file_in,
     s_node = s_term.nodes(pde, x_coord)
 
     # main PDE terms
-    flux = pde.sum(flux_sum_list)  # may be None when flux_sum_list == []
+    flux = pde.sum(flux_sum_list)  # may be NULL_NODE when flux_sum_list == []
     sum_list = [pde.dt(u_node), pde.dx(flux), s_node] + f0_sum_list
     pde.sum_eq0(sum_list)
 
@@ -391,10 +391,10 @@ class SparseCOOCoef(PDETermBase):
               u_list: List[PDENode]) -> List[List[PDENode]]:
         node_lists = [[] for _ in u_list]
         if self.is_3d:
-            u_square_list = [None for _ in u_list]
+            u_square_list = [NULL_NODE for _ in u_list]
             for (i, j, k, value) in zip(self.coo_i, self.coo_j, self.coo_k, self.coo_vals):
                 if j == k:
-                    if u_square_list[j] is None:
+                    if u_square_list[j] is NULL_NODE:
                         u_square_list[j] = pde.square(u_list[j])
                     node_lists[i].append(value * u_square_list[j])
                 else:
@@ -461,7 +461,7 @@ def multi_component_pde_nodes(h5file_in,
         flux_i_sum_list = a_u_lists[i] + b_u_lists[i]
         if coef_kappa[i] != 0 or keep_zero_coef:
             flux_i_sum_list.append(-(coef_kappa[i] * pde.dx(ui_node)))
-        flux_i = pde.sum(flux_i_sum_list)  # may be None
+        flux_i = pde.sum(flux_i_sum_list)  # may be NULL_NODE
 
         # remaining terms
         sum_i_list = c_u_lists[i] + [pde.dt(ui_node), pde.dx(flux_i)]
@@ -596,7 +596,7 @@ class WaveTerm(FieldCoef):
                 # keep this term, treating zero as a special scalar
                 coef_type = self.SCALAR_COEF
             else:
-                return None
+                return NULL_NODE
 
         if coef_type == self.SCALAR_COEF:
             c_or_c2_val = self.field[0]  # scalar
