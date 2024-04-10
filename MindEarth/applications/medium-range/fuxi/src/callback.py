@@ -105,7 +105,7 @@ class InferenceModule(WeatherForecast):
             pred_surface = pred_surface.reshape(self.surface_feature_size, self.h_size * self.w_size)
 
             all_pred = ops.concat((pred, pred_surface), axis=0).transpose(1, 0)
-            pred_list.append(all_pred)
+            pred_list.append(np.expand_dims(all_pred.asnumpy(), axis=0))
             if self.t_out_test > 1:
                 if self.t_in == 1:
                     inputs = all_pred
@@ -128,7 +128,7 @@ class InferenceModule(WeatherForecast):
         pred = self.forecast(inputs)
         lat_weight_rmse_step = np.zeros((self.feature_dims, self.t_out_test))
         labels = labels.asnumpy()
-        pred = ops.stack(pred, 0).asnumpy()
+        pred = np.concatenate(pred, axis=0)
 
         # rmse
         weight = self._calculate_lat_weight()

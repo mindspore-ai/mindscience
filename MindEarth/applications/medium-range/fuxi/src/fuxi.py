@@ -35,8 +35,9 @@ class CubeEmbed(nn.Cell):
         self.pressure_level_num = pressure_level_num
         self.surface_feature_size = surface_feature_size
         self.layer_norm = nn.LayerNorm([in_channels], epsilon=1e-5)
+        self.conv3d_dtype = mstype.float16
         self.cube3d = nn.Conv3d(level_feature_size, in_channels, kernel_size=(2, 4, 4),
-                                pad_mode="valid", stride=(2, 4, 4), has_bias=True)
+                                pad_mode="valid", stride=(2, 4, 4), has_bias=True, dtype=self.conv3d_dtype)
         self.conv2d = nn.Conv2d(surface_feature_size, in_channels, kernel_size=(4, 4),
                                 pad_mode="valid", stride=(4, 4), has_bias=True)
 
@@ -48,9 +49,11 @@ class CubeEmbed(nn.Cell):
         x = x.reshape(1, self.h_size, self.w_size, self.level_feature_size, self.pressure_level_num)
         x = x.transpose(0, 3, 4, 1, 2)
         x_surface = x_surface.transpose(0, 3, 1, 2)
-        pad_zeros = ops.zeros((1, self.level_feature_size, 1, self.h_size, self.w_size), dtype=mstype.float16)
+        pad_zeros = ops.zeros((1, self.level_feature_size, 1, self.h_size, self.w_size), dtype=x.dtype)
         x = ops.concat((pad_zeros, x), axis=2)
+        x = ops.cast(x, self.conv3d_dtype)
         x = self.cube3d(x)
+        x = ops.cast(x, x_surface.dtype)
         x_surface = self.conv2d(x_surface)
         x_surface = x_surface.reshape(1, self.in_channels, 1, self.h_size // 4, self.w_size // 4)
         x = ops.concat((x, x_surface), axis=2)
@@ -194,7 +197,7 @@ class WindowAttention11(nn.Cell):
 
         attn = attn + self.relative_bias()
         attn = self.softmax(attn)
-        attn = P.Cast()(attn, mstype.float16)
+        attn = P.Cast()(attn, v.dtype)
         x = self.matmul(attn, v).transpose(0, 1, 3, 2, 4).reshape(w_nums, z_h_nums, nums, channels)
         output = self.proj(x)
         return output
@@ -240,7 +243,7 @@ class WindowAttention12(nn.Cell):
                mnp.expand_dims(mnp.expand_dims(mask, axis=2), axis=0)
         attn = attn.reshape(w_nums, z_h_nums, self.num_heads, nums, nums)
         attn = self.softmax(attn)
-        attn = P.Cast()(attn, mindspore.float16)
+        attn = P.Cast()(attn, v.dtype)
         x = self.matmul(attn, v).transpose(0, 1, 3, 2, 4).reshape(w_nums, z_h_nums, nums, channels)
         output = self.proj(x)
         return output

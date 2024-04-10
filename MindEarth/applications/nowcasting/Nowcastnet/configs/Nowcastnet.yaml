@@ -21,13 +21,13 @@ optimizer-gen:
   beta2: 0.9
   g_lr: 1.5e-5
   d_lr: 6e-5
-  epochs: 50
+  epochs: 15
 optimizer-evo:
   name: "adam"
   lr: 0.001
   weight_decay: 0.1
   gamma: 0.5
-  epochs: 50
+  epochs: 15
   motion_lambda: 1e-2
 summary:
   summary_dir: "./summary/"
