@@ -34,9 +34,12 @@ MindFlow覆盖了物理驱动、数据驱动、数据机理融合的AI流体仿�
     - [eHDNN方法预测非定常流场](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/move_boundary_hdnn)
     - [ResUnet3D方法求解三维圆球绕流](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/flow_around_sphere)
     - [CAE-Transformer方法求解二维圆柱绕流问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_transformer)
+    - [FNO2D和UNET2D方法预测多时间步跨声速翼型复杂流场](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/airfoil/2D_unsteady)
+    - [HDNN方法预测流固耦合系统流场](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/fluid_structure_interaction)
 - 数据-机理融合驱动
     - [PDE-NET方法求解对流扩散方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/pde_net)
     - [PeRCNN方法求解二维Burgers方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/percnn/burgers_2d)
+    - [PeRCNN方法求解三维反应扩散方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/percnn/gsrd_3d)
     - [AI湍流模型](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/ai_turbulence_modeling)
 - 物理驱动
     - [PINNs方法求解Burgers方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
@@ -51,6 +54,9 @@ MindFlow覆盖了物理驱动、数据驱动、数据机理融合的AI流体仿�
     - [PINNs方法求解周期山流动问题](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/navier_stokes/periodic_hill)
     - [PINNs方法求解Allen-Cahn方程](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/allen_cahn)
     - [CMA-ES&多目标梯度下降算法加速PINNs收敛](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cma_es_mgda)
+    - [META-PINNs算法](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/meta_pinns)
+    - [MOE-PINNs算法](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/moe_pinns)
+    - [R-DLGA算法](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/r_dlga)
 - CFD
     - [Sod激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
     - [Lax激波管](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)

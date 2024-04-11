@@ -34,9 +34,12 @@ The differentiable CFD solver mainly solves the control equation of fluid dynami
     - [Predict Unsteady Flow Fields with Move Boundary by eHDNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/move_boundary_hdnn)
     - [Solve 3D Unsteady Sphere Flow by ResUnet3D](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/flow_around_sphere)
     - [Solve 2D Cylinder Flow by CAE-Transformer](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cae_transformer)
+    - [Predict Multi-timestep Complicated Transonic Airfoil by FNO2D and UNET2D](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_driven/airfoil/2D_unsteady)
+    - [Predict Fluid-structure Interaction System by HDNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/fluid_structure_interaction)
 - Data-Mechanism Fusion
     - [Solve Convection-Diffusion Equation by PDE-NET](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/pde_net)
     - [Solve 2D Burgers Equation by PeRCNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/percnn/burgers_2d)
+    - [Solve 3D Reaction-Diffusion Equation by PeRCNN](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/percnn/gsrd_3d)
     - [AI Turb Model](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/data_mechanism_fusion/ai_turbulence_modeling)
 - Physics Driven
     - [Solve Burgers Equation by PINNs](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/burgers)
@@ -51,6 +54,9 @@ The differentiable CFD solver mainly solves the control equation of fluid dynami
     - [Solve Periodic Hill Flow by PINNs](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/physics_driven/navier_stokes/periodic_hill)
     - [Solve Allen-Cahn Equation by PINNs](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/allen_cahn)
     - [CMA-ES&Multi-objective Gradient Descent Algorithm Accelerates PINNs Convergence](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/cma_es_mgda)
+    - [META-PINNs Algorithm](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/meta_pinns)
+    - [MOE-PINNs Algorithm](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/moe_pinns)
+    - [R-DLGA Algorithm](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/research/r_dlga)
 - CFD
     - [Sod Shock Tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/sod)
     - [Lax Shock Tube](https://gitee.com/mindspore/mindscience/tree/master/MindFlow/applications/cfd/lax)
