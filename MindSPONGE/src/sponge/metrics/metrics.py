@@ -53,6 +53,20 @@ def get_metrics(metrics: Union[dict, set]) -> dict:
 
     Raises:
         TypeError: If the type of argument `metrics` is not ``None``, dict or set.
+
+    Supported Platforms:
+        ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from mindspore import Tensor
+        >>> from sponge.colvar import Distance
+        >>> from sponge.metrics import MetricCV
+        >>> cv = Distance([0,1])
+        >>> metric = get_metrics({"distance": cv})
+        >>> coordinate = Tensor([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+        >>> metric.update(coordinate)
+        >>> print(metric.eval())
+        [1.]
     """
     if metrics is None:
         return metrics
@@ -81,7 +95,7 @@ def get_metrics(metrics: Union[dict, set]) -> dict:
 
 
 class Metric(_Metric):
-    """Basic Metric Cell for MindSPONGE"""
+    """Metric is fundamental tool used to assess the state and performance of a simulation system. Which provides a mechanism to track the changes in various physical quantities within the simulation system. The base class of Metrics defines a set of methods that are used to update the state information of the simulation system and to calculate the corresponding metrics."""
 
     def update(self,
                coordinate: Tensor,
@@ -97,25 +111,34 @@ class Metric(_Metric):
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            pbc_box (Tensor, optional):       Tensor of shape (B, D). Data type is float.
                                     Tensor of PBC box. Default: ``None``.
-            bias (Tensor):          Tensor of shape (B, 1). Data type is float.
-                                    Total bias energy.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-                                    Total energy of the simulation system.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-                                    Force on each atoms of the simulation system.
-            potentials (Tensor):    Tensor of shape (B, U). Data type is float.
-                                    All potential energies.
-            biases (Tensor):        Tensor of shape (B, V). Data type is float
-                                    All bias potential energies.
+            energy (Tensor, optional):        Tensor of shape (B, 1). Data type is float.
+                                    Total energy of the simulation system. Default: ``None``.
+            force (Tensor, optional):         Tensor of shape (B, A, D). Data type is float.
+                                    Force on each atoms of the simulation system. Default: ``None``.
+            potentials (Tensor, optional):    Tensor of shape (B, U). Data type is float.
+                                    All potential energies. Default: ``None``.
+            total_bias (Tensor, optional):    Tensor of shape (B, 1). Data type is float.
+                                    Total bias energy for reweighting. Default: ``None``.
+            biases (Tensor, optional):        Tensor of shape (B, V). Data type is float
+                                    All bias potential energies. Default: ``None``.
 
         Note:
-            B:  Batchsize, i.e. number of walkers in simulation.
-            A:  Number of atoms of the simulation system.
-            D:  Dimension of the space of the simulation system. Usually is 3.
-            U:  Number of potential energies.
-            V:  Number of bias potential energies.
+            - B:  Batchsize, i.e. number of walkers in simulation.
+            - A:  Number of atoms of the simulation system.
+            - D:  Dimension of the space of the simulation system. Usually is 3.
+            - U:  Number of potential energies.
+            - V:  Number of bias potential energies.
+
+        Supported Platforms:
+            ``Ascend`` ``GPU``
+
+        Examples:
+            >>> import numpy as np
+            >>> from mindspore import Tensor
+            >>> from sponge.metrics import Metric
+            >>> net = Metric()
         """
         #pylint: disable=unused-argument
         raise NotImplementedError
@@ -145,7 +168,12 @@ class MetricCV(Metric):
         return self.colvar.dtype
 
     def get_unit(self, units: Units = None) -> str:
-        """return unit of the collective variables"""
+        r"""Return unit of the collective variables.
+
+        Args:
+            units (Units, optional):  Units of the collective variables. Default: ``None``.
+
+        """
         return self.colvar.get_unit(units)
 
     def clear(self):
@@ -165,25 +193,39 @@ class MetricCV(Metric):
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            pbc_box (Tensor, optional):       Tensor of shape (B, D). Data type is float.
                                     Tensor of PBC box. Default: ``None``.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
+            energy (Tensor, optional):        Tensor of shape (B, 1). Data type is float.
                                     Total potential energy of the simulation system. Default: ``None``.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
+            force (Tensor, optional):         Tensor of shape (B, A, D). Data type is float.
                                     Force on each atoms of the simulation system. Default: ``None``.
-            potentials (Tensor):    Tensor of shape (B, U). Data type is float.
+            potentials (Tensor, optional):    Tensor of shape (B, U). Data type is float.
                                     Original potential energies from force field. Default: ``None``.
-            total_bias (Tensor):    Tensor of shape (B, 1). Data type is float.
+            total_bias (Tensor, optional):    Tensor of shape (B, 1). Data type is float.
                                     Total bias energy for reweighting. Default: ``None``.
-            biases (Tensor):        Tensor of shape (B, V). Data type is float.
+            biases (Tensor, optional):        Tensor of shape (B, V). Data type is float.
                                     Original bias potential energies from bias functions. Default: ``None``.
 
         Note:
-            B:  Batchsize, i.e. number of walkers in simulation.
-            A:  Number of atoms of the simulation system.
-            D:  Dimension of the space of the simulation system. Usually is 3.
-            U:  Number of potential energies.
-            V:  Number of bias potential energies.
+            - B:  Batchsize, i.e. number of walkers in simulation.
+            - A:  Number of atoms of the simulation system.
+            - D:  Dimension of the space of the simulation system. Usually is 3.
+            - U:  Number of potential energies.
+            - V:  Number of bias potential energies.
+
+        Supported Platforms:
+            ``Ascend`` ``GPU``
+
+        Examples:
+            >>> from mindspore import Tensor
+            >>> from sponge.colvar import Distance
+            >>> from sponge.metrics import MetricCV
+            >>> cv = Distance([0,1])
+            >>> coordinate = Tensor([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+            >>> metric = MetricCV(cv)
+            >>> metric.update(coordinate)
+            >>> print(metric.eval())
+            [1.]
         """
         #pylint: disable=unused-argument
 
@@ -227,25 +269,25 @@ class Average(Metric):
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
+            pbc_box (Tensor, optional):       Tensor of shape (B, D). Data type is float.
                                     Tensor of PBC box. Default: ``None``.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
+            energy (Tensor, optional):        Tensor of shape (B, 1). Data type is float.
                                     Total potential energy of the simulation system. Default: ``None``.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
+            force (Tensor, optional):         Tensor of shape (B, A, D). Data type is float.
                                     Force on each atoms of the simulation system. Default: ``None``.
-            potentials (Tensor):    Tensor of shape (B, U). Data type is float.
+            potentials (Tensor, optional):    Tensor of shape (B, U). Data type is float.
                                     Original potential energies from force field. Default: ``None``.
-            total_bias (Tensor):    Tensor of shape (B, 1). Data type is float.
+            total_bias (Tensor, optional):    Tensor of shape (B, 1). Data type is float.
                                     Total bias energy for reweighting. Default: ``None``.
-            biases (Tensor):        Tensor of shape (B, V). Data type is float.
+            biases (Tensor, optional):        Tensor of shape (B, V). Data type is float.
                                     Original bias potential energies from bias functions. Default: ``None``.
 
         Note:
-            B:  Batchsize, i.e. number of walkers in simulation.
-            A:  Number of atoms of the simulation system.
-            D:  Dimension of the space of the simulation system. Usually is 3.
-            U:  Number of potential energies.
-            V:  Number of bias potential energies.
+            - B:  Batchsize, i.e. number of walkers in simulation.
+            - A:  Number of atoms of the simulation system.
+            - D:  Dimension of the space of the simulation system. Usually is 3.
+            - U:  Number of potential energies.
+            - V:  Number of bias potential energies.
         """
         #pylint: disable=unused-argument
 
@@ -264,8 +306,7 @@ class BalancedMSE(nn.Cell):
     Compute Balanced MSE error between the prediction and the ground truth
     to solve unbalanced labels in regression task.
 
-    Reference:
-        `Ren, Jiawei, et al. 'Balanced MSE for Imbalanced Visual Regression' <https://arxiv.org/abs/2203.16427>`_ .
+    Refer to `Ren, Jiawei, et al. 'Balanced MSE for Imbalanced Visual Regression' <https://arxiv.org/abs/2203.16427>`_.
 
     .. math::
         L =-\log \mathcal{N}\left(\boldsymbol{y} ; \boldsymbol{y}_{\text {pred }},
@@ -278,8 +319,8 @@ class BalancedMSE(nn.Cell):
         first_break (float):    The begin value of bin.
         last_break (float):     The end value of bin.
         num_bins (int):         The bin numbers.
-        beta (float):           The moving average coefficient, default: ``0.99``.
-        reducer_flag (bool):    Whether to aggregate the label values of multiple devices, default: ``False``.
+        beta (float, optional):           The moving average coefficient, default: ``0.99``.
+        reducer_flag (bool, optional):    Whether to aggregate the label values of multiple devices, default: ``False``.
 
     Inputs:
         - **prediction** (Tensor) - Predict values, shape is :math:`(batch\_size, ndim)`.
@@ -293,7 +334,7 @@ class BalancedMSE(nn.Cell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindsponge.metrics import BalancedMSE
+        >>> from sponge.metrics import BalancedMSE
         >>> from mindspore import Tensor
         >>> net = BalancedMSE(0, 1, 20)
         >>> prediction = Tensor(np.random.randn(32, 10).astype(np.float32))
@@ -379,17 +420,17 @@ class BalancedMSE(nn.Cell):
 class MultiClassFocal(nn.Cell):
     r"""Focal error for multi-class classifications.
     Compute the multiple classes focal error between `prediction` and the ground truth `target`.
-    Reference:
-    `Lin, Tsung-Yi, et al. 'Focal loss for dense object detection' <https://arxiv.org/abs/1708.02002>`_ .
+
+    Refer to `Lin, Tsung-Yi, et al. 'Focal loss for dense object detection' <https://arxiv.org/abs/1708.02002>`_ .
 
     Args:
         num_class (int):        The class numbers.
-        beta (float):           The moving average coefficient, default: ``0.99``.
-        gamma (float):          The hyperparameters, default: ``2.0``.
-        e (float):              The proportion of focal loss, default: ``0.1``.
-        neighbors(int):         The neighbors to be mask in the target, default ``2``.
-        not_focal (bool):       Whether focal loss, default: ``False``.
-        reducer_flag (bool):    Whether to aggregate the label values of multiple devices, default: ``False``.
+        beta (float, optional):           The moving average coefficient, default: ``0.99``.
+        gamma (float, optional):          The hyperparameters, default: ``2.0``.
+        e (float, optional):              The proportion of focal loss, default: ``0.1``.
+        neighbors(int, optional):         The neighbors to be mask in the target, default ``2``.
+        not_focal (bool, optional):       Whether focal loss, default: ``False``.
+        reducer_flag (bool, optional):    Whether to aggregate the label values of multiple devices, default: ``False``.
 
     Inputs:
         - **prediction** (Tensor) - Predict values, shape is :math:`(batch\_size, ndim)`.
@@ -404,7 +445,7 @@ class MultiClassFocal(nn.Cell):
     Examples:
         >>> import numpy as np
         >>> from mindspore import Tensor
-        >>> from mindsponge.metrics import MultiClassFocal
+        >>> from sponge.metrics import MultiClassFocal
         >>> net = MultiClassFocal(10)
         >>> prediction = Tensor(np.random.randn(32, 10).astype(np.float32))
         >>> target = Tensor(np.random.randn(32, 10).astype(np.float32))
@@ -489,18 +530,17 @@ class BinaryFocal(nn.Cell):
     Focal error for Binary classifications.
     Compute the binary classes focal error between `prediction` and the ground truth `target`.
 
-    Reference:
-        `Lin, Tsung-Yi, et al. 'Focal loss for dense object detection' <https://arxiv.org/abs/1708.02002>`_ .
+    Refer to `Lin, Tsung-Yi, et al. 'Focal loss for dense object detection' <https://arxiv.org/abs/1708.02002>`_ .
 
     .. math::
         \mathrm{FL}\left(p_{\mathrm{t}}\right)=-\alpha_{\mathrm{t}}\left(1-p_{\mathrm{t}}\right)^{\gamma}
         \log \left(p_{\mathrm{t}}\right)
 
     Args:
-        alpha (float):            The weight of cross entropy, default: ``0.25``.
-        gamma (float):          The hyperparameters, modulating loss from hard to easy, default: ``2.0``.
-        feed_in (bool):         Whether to convert prediction, default: ``False``.
-        not_focal (bool):       Whether focal loss, default: ``False``.
+        alpha (float, optional):            The weight of cross entropy, default: ``0.25``.
+        gamma (float, optional):          The hyperparameters, modulating loss from hard to easy, default: ``2.0``.
+        feed_in (bool, optional):         Whether to convert prediction, default: ``False``.
+        not_focal (bool, optional):       Whether focal loss, default: ``False``.
 
     Inputs:
         - **prediction** (Tensor) - Predict values, shape is :math:`(batch\_size, ndim)`.
@@ -515,7 +555,7 @@ class BinaryFocal(nn.Cell):
     Examples:
         >>> import numpy as np
         >>> from mindspore import Tensor
-        >>> from mindsponge.metrics import BinaryFocal
+        >>> from sponge.metrics import BinaryFocal
         >>> net = BinaryFocal()
         >>> prediction = Tensor(np.random.randn(32, 10).astype(np.float32))
         >>> target = Tensor(np.random.randn(32, 10).astype(np.float32))
