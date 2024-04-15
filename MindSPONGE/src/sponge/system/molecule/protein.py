@@ -85,6 +85,19 @@ class Protein(Molecule):
 
         D:  Spatial dimension of the simulation system. Usually is 3.
 
+    Examples:
+        >>> from sponge import Protein
+        >>> system = Protein('case1.pdb', rebuild_hydrogen=True)
+        [MindSPONGE] Adding 57 hydrogen atoms for the protein molecule in 0.007 seconds.
+        >>> print ('The number of atoms in the system is: ', system.num_atoms)
+        The number of atoms in the system is:  57
+        >>> print ('All the atom names in the system are: ', system.atom_name)
+        All the atom names in the system are:  [['N' 'CA' 'CB' 'C' 'O' 'H1' 'H2' 'H3' 'HA' 'HB1' 'HB2' 'HB3' 'N' 'CA'
+        'CB' 'CG' 'CD' 'NE' 'CZ' 'NH1' 'NH2' 'C' 'O' 'H' 'HA' 'HB2' 'HB3' 'HG2'
+        'HG3' 'HD2' 'HD3' 'HE' 'HH11' 'HH12' 'HH21' 'HH22' 'N' 'CA' 'CB' 'C'
+        'O' 'H' 'HA' 'HB1' 'HB2' 'HB3' 'N' 'CA' 'CB' 'C' 'O' 'OXT' 'H' 'HA'
+        'HB1' 'HB2' 'HB3']]
+
     """
 
     def __init__(self,

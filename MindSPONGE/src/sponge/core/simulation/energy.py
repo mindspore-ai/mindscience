@@ -73,6 +73,23 @@ class WithEnergyCell(Cell):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from sponge import WithEnergyCell, RunOneStepCell, Sponge
+        >>> from sponge.callback import RunInfo
+        >>> # system is the Molecule object defined by user.
+        >>> # energy is the Energy object defined by user.
+        >>> # opt is the Optimizer object defined by user.
+        >>> sim = WithEnergyCell(system, energy)
+        >>> one_step = RunOneStepCell(energy=sim, optimizer=opt)
+        >>> md = Sponge(one_step)
+        >>> run_info = RunInfo(800)
+        >>> md.run(2000, callbacks=[run_info])
+        [MindSPONGE] Started simulation at 2023-09-04 17:06:26
+        [MindSPONGE] Step: 800, E_pot: -150.88245, E_kin: 69.84598, E_tot: -81.03647, Temperature: 418.42694
+        [MindSPONGE] Step: 1600, E_pot: -163.72491, E_kin: 57.850487, E_tot: -105.87443, Temperature: 346.56543
+        [MindSPONGE] Finished simulation at 2023-09-04 17:07:13
+        [MindSPONGE] Simulation time: 47.41 seconds.
     """
 
     def __init__(self,

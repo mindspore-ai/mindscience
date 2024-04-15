@@ -120,6 +120,30 @@ class Molecule(Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> from sponge import Molecule
+        >>> system = Molecule(atoms=['O', 'H', 'H'],
+        ...                   coordinate=[[0, 0, 0], [0.1, 0, 0], [-0.0333, 0.0943, 0]],
+        ...                   bonds=[[[0, 1], [0, 2]]])
+        >>> print ('The number of atoms in the system is: ', system.num_atoms)
+        The number of atoms in the system is:  3
+        >>> print ('All the atom names in the system are: ', system.atom_name)
+        All the atom names in the system are:  [['O' 'H' 'H']]
+        >>> print ('The coordinates of atoms are: \n{}'.format(system.coordinate.asnumpy()))
+        The coordinates of atoms are:
+        [[[ 0.      0.      0.    ]
+          [ 0.1     0.      0.    ]
+          [-0.0333  0.0943  0.    ]]]
+        >>> system = Molecule(template='water.spce.yaml')
+        >>> print ('The number of atoms in the system is: ', system.num_atoms)
+        The number of atoms in the system is:  3
+        >>> print ('All the atom names in the system are: ', system.atom_name)
+        All the atom names in the system are:  [['O' 'H1' 'H2']]
+        >>> print ('The coordinates of atoms are: \n{}'.format(system.coordinate.asnumpy()))
+        The coordinates of atoms are:
+        [[[ 0.          0.          0.        ]
+          [ 0.08164904  0.0577359   0.        ]
+          [-0.08164904  0.0577359   0.        ]]]
 
     """
 

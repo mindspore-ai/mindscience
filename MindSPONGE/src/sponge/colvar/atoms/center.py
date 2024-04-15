@@ -71,6 +71,18 @@ class Center(AtomsBase):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import mindspore as ms
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from sponge.colvar import Center
+        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
+        >>> mass = Tensor(np.random.random(4), ms.float32)
+        >>> atoms = Tensor([0, 2], ms.int32)
+        >>> ct = Center(atoms, mass[atoms])
+        >>> ct(crd)
+        Tensor(shape=[1, 3], dtype=Float32, value=
+        [[ 7.61003494e-01,  6.70868099e-01,  5.67968249e-01]])
     """
     def __init__(self,
                  atoms: Union[AtomsBase, Tensor, ndarray, list],
@@ -120,7 +132,7 @@ class Center(AtomsBase):
 
     def set_mass(self, mass: Tensor, batched: bool = False):
         """set the mass of atoms"""
-        self.mass = get_ms_array(mass, ms.int32)
+        self.mass = get_ms_array(mass, ms.float32)
         if self.mass is None:
             self.total_mass = None
         else:

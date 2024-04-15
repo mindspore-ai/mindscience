@@ -91,6 +91,22 @@ class Torsion(Colvar):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> from sponge import Sponge
+        >>> from sponge.colvar import Torsion
+        >>> from sponge.callback import RunInfo
+        >>> cv_dihedral = Torsion([0, 1, 2, 3])
+        >>> # system is the Molecule object defined by user.
+        >>> # energy is the Energy object defined by user.
+        >>> # opt is the Optimizer object defined by user.
+        >>> md = Sponge(system, potential=energy, optimizer=opt, metrics={'dihedral': cv_dihedral})
+        >>> run_info = RunInfo(1000)
+        >>> md.run(2000, callbacks=[run_info])
+        [MindSPONGE] Started simulation at 2024-02-19 15:43:11
+        [MindSPONGE] Step: 1000, E_pot: -117.30916, dihedral: 2.1488183
+        [MindSPONGE] Step: 2000, E_pot: -131.60872, dihedral: 2.143513
+        [MindSPONGE] Finished simulation at 2024-02-19 15:44:03
+        [MindSPONGE] Simulation time: 51.27 seconds.
     """
 
     def __init__(self,
