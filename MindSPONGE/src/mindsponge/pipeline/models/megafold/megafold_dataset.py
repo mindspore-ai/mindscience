@@ -32,6 +32,7 @@ from mindspore import context
 from mindspore.dataset import GeneratorDataset
 from mindspore.communication import get_rank, get_group_size
 from mindsponge.common.protein import from_pdb_string
+from mindsponge.common.residue_constants import atom_type_num
 
 from .megafold_data import correct_restypes, make_atom14_mask, tail_process, \
     dict_replace_key, dict_cast, dict_take, one_hot_convert, initial_hhblits_profile, \
@@ -43,6 +44,18 @@ from .megafold_data import correct_restypes, make_atom14_mask, tail_process, \
 from .megafold_feature import _msa_feature_names, _inference_feature, _training_feature
 from ...dataset import PSP, data_process_run
 
+
+NUM_RES = 'num residues placeholder'
+NUM_TEMPLATES = 'num templates placeholder'
+
+FEATURES = {
+    # Static features of a protein sequence
+    "template_domain_names": (str, [NUM_TEMPLATES]),
+    "template_sum_probs": (np.float32, [NUM_TEMPLATES, 1]),
+    "template_aatype": (np.float32, [NUM_TEMPLATES, NUM_RES, 22]),
+    "template_all_atom_positions": (np.float32, [NUM_TEMPLATES, NUM_RES, atom_type_num, 3]),
+    "template_all_atom_masks": (np.float32, [NUM_TEMPLATES, NUM_RES, atom_type_num, 1]),
+}
 
 class MEGAFoldDataSet(PSP):
     "MEGAFoldDataSet"
@@ -170,10 +183,34 @@ class MEGAFoldDataSet(PSP):
         tuple_feature = tuple([features.get(key, np.array([])) for key in self.feature_list])
         return tuple_feature
 
+    def template_shape(self, data):
+        "reshape the array of template features"
+        num_residues = np.reshape(data['seq_length'].astype(np.int32), (-1,))[0]
+        if "template_domain_names" in data:
+            num_template = len(data["template_domain_names"])
+        else:
+            num_template = 0
+
+        replacements = {NUM_RES: num_residues}
+        if num_template is not None:
+            replacements[NUM_TEMPLATES] = num_template
+
+        template_feature_list = ["template_aatype", "template_all_atom_masks", "template_all_atom_positions",
+                                 "template_sum_probs"]
+        for template_feature in template_feature_list:
+            _, new_shape = FEATURES.get(template_feature)
+            new_shape = [replacements.get(dimension, dimension) for dimension in new_shape]
+            data[template_feature] = np.reshape(data[template_feature], new_shape)
+        final_dim = data["template_all_atom_masks"].shape[-1]
+        if isinstance(final_dim, int) and final_dim == 1:
+            data["template_all_atom_masks"] = np.squeeze(data["template_all_atom_masks"], axis=-1)
+        return data
+
     def process(self, data, label=None, ensemble_num=4):
         if self.is_training:
             labels = data_process_run(label, self.label_fns)
             data.update(labels)
+        data = self.template_shape(data)
         features = data_process_run(data.copy(), self.data_process)
         if self.ensemble is not None:
             res = {}
@@ -198,7 +235,6 @@ class MEGAFoldDataSet(PSP):
         pkl_path = self.training_pkl_items[idx]
         with open(pkl_path, 'rb') as f:
             data = pickle.load(f)
-
         pdb_path = self.training_pdb_items[idx]
         with open(pdb_path, 'r') as f:
             prot_pdb = from_pdb_string(f.read())
