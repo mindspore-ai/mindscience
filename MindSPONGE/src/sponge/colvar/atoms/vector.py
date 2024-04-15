@@ -70,6 +70,22 @@ class Vector(AtomsBase):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import mindspore as ms
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from sponge.colvar import Vector
+        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
+        >>> crd
+        Tensor(shape=[4, 3], dtype=Float32, value=
+        [[ 2.47492954e-01,  9.78153408e-01,  1.44034222e-01],
+         [ 2.36211464e-01,  3.35842371e-01,  8.39536846e-01],
+         [ 8.82235169e-01,  5.98322928e-01,  6.68052316e-01],
+         [ 7.17712820e-01,  4.72498119e-01,  1.69098437e-01]])
+        >>> vc02 = Vector(atoms0=[0], atoms1=[2])
+        >>> vc02(crd)
+        Tensor(shape=[1, 3], dtype=Float32, value=
+        [[ 6.34742200e-01, -3.79830480e-01,  5.24018109e-01]])
     """
     def __init__(self,
                  atoms: AtomsBase = None,
