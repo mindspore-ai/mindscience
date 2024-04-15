@@ -625,6 +625,25 @@ def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> T
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import mindspore as ms
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from sponge.function import coordinate_in_pbc
+        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
+        >>> pbc_box = Tensor([[0.5, 0.5, 0.5]], ms.float32)
+        >>> crd
+        Tensor(shape=[4, 3], dtype=Float32, value=
+        [[ 4.94492769e-01,  4.85243529e-01,  1.63403198e-01],
+         [ 5.60526669e-01,  6.17091954e-01,  3.65307808e-01],
+         [ 7.81092644e-01,  3.17117482e-01,  1.41929969e-01],
+         [ 9.59174633e-01,  3.53236049e-02,  4.85624045e-01]])
+        >>> coordinate_in_pbc(crd, pbc_box)
+        Tensor(shape=[4, 3], dtype=Float32, value=
+        [[ 4.94492769e-01,  4.85243529e-01,  1.63403198e-01],
+         [ 6.05266690e-02,  1.17091954e-01,  3.65307808e-01],
+         [ 2.81092644e-01,  3.17117482e-01,  1.41929969e-01],
+         [ 4.59174633e-01,  3.53236049e-02,  4.85624045e-01]])
     """
 
     pbc_box = pbc_box_reshape(F.stop_gradient(pbc_box), position.ndim)
@@ -703,6 +722,16 @@ def calc_vector_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor) -> Tenso
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import mindspore as ms
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from sponge.function import calc_vector_pbc
+        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
+        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
+        >>> calc_vector_pbc(crd[0], crd[1], pbc_box)
+        Tensor(shape=[1, 3], dtype=Float32, value=
+        [[ 6.60338998e-02,  1.31848425e-01,  2.01904625e-01]])
     """
 
     return vector_in_pbc(terminal-initial, pbc_box)
@@ -727,6 +756,18 @@ def calc_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Te
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import mindspore as ms
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from sponge.function import calc_vector
+        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
+        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
+        >>> calc_vector(crd[0], crd[1])
+        Tensor(shape=[3], dtype=Float32, value= [ 6.60338998e-02,  1.31848425e-01,  2.01904610e-01])
+        >>> calc_vector(crd[0], crd[1], pbc_box)
+        Tensor(shape=[1, 3], dtype=Float32, value=
+        [[ 6.60338998e-02,  1.31848425e-01,  2.01904625e-01]])
     """
 
     vector = terminal - initial
@@ -791,6 +832,15 @@ def calc_distance_pbc(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from sponge.function import calc_distance_pbc
+        >>> tensor_a = Tensor([[1, 2, 3], [4, 5, 6]], ms.float32)
+        >>> tensor_b = Tensor([[1, 2, 4], [6, 8, 10]], ms.float32)
+        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
+        >>> calc_distance_pbc(tensor_a, tensor_b, pbc_box)
+        Tensor(shape=[2], dtype=Float32, value= [ 1.00000000e+00,  1.41421354e+00])
     """
 
     vec = calc_vector_pbc(position_a, position_b, pbc_box)
@@ -822,6 +872,17 @@ def calc_distance(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> from sponge.function import calc_distance
+        >>> tensor_a = Tensor([[1, 2, 3], [4, 5, 6]], ms.float32)
+        >>> tensor_b = Tensor([[1, 2, 4], [6, 8, 10]], ms.float32)
+        >>> calc_distance(tensor_a, tensor_b)
+        Tensor(shape=[2], dtype=Float32, value= [ 1.00000000e+00,  5.38516474e+00])
+        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
+        >>> calc_distance(tensor_a, tensor_b, pbc_box)
+        >>> Tensor(shape=[2], dtype=Float32, value= [ 1.00000000e+00,  1.41421354e+00])
     """
 
     vec = calc_vector_nopbc(position_a, position_b)
@@ -939,6 +1000,15 @@ def calc_angle_pbc(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> import numpy as np
+        >>> from sponge.function import calc_angle_pbc
+        >>> crd = Tensor(np.random.random((3, 3)), ms.float32)
+        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
+        >>> calc_angle_pbc(crd[0], crd[1], crd[2], pbc_box)
+        >>> Tensor(shape=[1], dtype=Float32, value= [ 6.17621064e-01])
     """
 
     # (B, ..., D)
@@ -979,6 +1049,15 @@ def calc_angle(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import Tensor
+        >>> import numpy as np
+        >>> from sponge.function import calc_angle
+        >>> crd = Tensor(np.random.random((3, 3)), ms.float32)
+        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
+        >>> calc_angle(crd[0], crd[1], crd[2], pbc_box)
+        >>> Tensor(shape=[1], dtype=Float32, value= [ 6.17621064e-01])
     """
 
     if pbc_box is None:
@@ -1110,6 +1189,15 @@ def calc_torsion_pbc(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import mindspore as ms
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from sponge.function import calc_torsion_pbc
+        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
+        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
+        >>> calc_torsion_pbc(crd[0], crd[1], crd[2], crd[3], pbc_box)
+        Tensor(shape=[1], dtype=Float32, value= [-2.33294296e+00])
     """
 
     vec_ba = calc_vector_pbc(position_b, position_a, pbc_box)
@@ -1153,6 +1241,15 @@ def calc_torsion(position_a: Tensor,
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> import mindspore as ms
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> from sponge.function import calc_torsion
+        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
+        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
+        >>> calc_torsion(crd[0], crd[1], crd[2], crd[3], pbc_box)
+        Tensor(shape=[1], dtype=Float32, value= [-2.33294296e+00])
     """
 
     if pbc_box is None:

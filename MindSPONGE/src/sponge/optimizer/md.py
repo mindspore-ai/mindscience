@@ -92,6 +92,19 @@ class UpdaterMD(Updater):
 
         D:  Spatial dimension of the simulation system. Usually is 3.
 
+    Examples:
+        >>> from sponge import UpdaterMD
+        >>> from sponge.function import VelocityGenerator
+        >>> vgen = VelocityGenerator(300)
+        >>> # system represents a custom molecular system
+        >>> velocity = vgen(system.shape, system.atom_mass)
+        >>> opt = UpdaterMD(system=system,
+        ...                 time_step=1e-3,
+        ...                 velocity=velocity,
+        ...                 integrator='velocity_verlet',
+        ...                 temperature=300,
+        ...                 thermostat='langevin')
+
     """
     @opt_init_args_register
     def __init__(self,
