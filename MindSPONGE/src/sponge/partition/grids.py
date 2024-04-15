@@ -44,51 +44,66 @@ class GridNeighbours(Cell):
     Args:
         cutoff (float):         Cutoff distance.
 
-        coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float32.
+        coordinate (Tensor):    Tensor of shape :math:`(B, A, D)`. Data type is float32.
                                 position coordinates of atoms in the simulation system.
 
-        pbc_box (Tensor):       Tensor of shape `(B, A, D)`. Data type is float32.
+        pbc_box (Tensor, optional):       Tensor of shape :math:`(B, A, D)`. Data type is float32.
                                 Box size of periodic boundary condition. Default: ``None``.
 
-        atom_mask (Tensor):     Tensor of shape `(B, A)`. Data type is bool_.
+        atom_mask (Tensor, optional):     Tensor of shape :math:`(B, A)`. Data type is bool_.
                                 Mask of atoms in the system.
                                 Default: ``None``.
 
-        exclude_index (Tensor): Tensor of shape `(B, A, Ex)`. Data type is int32.
+        exclude_index (Tensor, optional): Tensor of shape :math:`(B, A, Ex)`. Data type is int32.
                                 Index of neighbour atoms which could be excluded from the neighbour list.
                                 Default: ``None``.
 
-        num_neighbours (int):   Number of neighbours. If `None` is given, this value will be calculated by
+        num_neighbours (int, optional):   Number of neighbours. If ``None`` is given, this value will be calculated by
                                 the ratio of the number of neighbouring grids to the total number of grids.
                                 Default: ``None``.
 
-        cell_capacity (int):    Capacity number of atoms in grid cell. If `None` is given, this value will be multiplied
+        cell_capacity (int, optional):    Capacity number of atoms in grid cell.
+                                If ``None`` is given, this value will be multiplied
                                 by a factor of the maximum number of atoms in the grid cell at the initial coordinate.
                                 Default: ``None``.
 
-        num_cell_cut (int):     Number of subdivision of grid cells according to the cutoff. Default: 1
+        num_cell_cut (int, optional):     Number of subdivision of grid cells according to the cutoff. Default: 1
 
-        cutoff_scale (float):   Factor to scale the cutoff distance. Default: 1.2
+        cutoff_scale (float, optional):   Factor to scale the cutoff distance. Default: 1.2
 
-        cell_cap_scale (float): Factor to scale `cell_capacity`. Default: 1.25
+        cell_cap_scale (float, optional): Factor to scale `cell_capacity`. Default: 1.25
 
-        grid_num_scale (float): Scale factor to calculate `num_neighbours` by the ratio of grids.
-                                If `num_neighbours` is not None, it will not be used. Default: 1.5
+        grid_num_scale (float, optional): Scale factor to calculate `num_neighbours` by the ratio of grids.
+                                If `num_neighbours` is not ``None``, it will not be used. Default: 1.5
+
+    Note:
+        - B:  Number of simulation walker.
+
+        - A:  Number of atoms in system.
+
+        - N:  Number of neighbour atoms.
+
+        - D:  Dimension of position coordinates.
+
+        - Ex: Maximum number of excluded neighbour atoms.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Note:
-
-        B:  Number of simulation walker.
-
-        A:  Number of atoms in system.
-
-        N:  Number of neighbour atoms.
-
-        D:  Dimension of position coordinates.
-
-        Ex: Maximum number of excluded neighbour atoms.
+    Examples:
+        >>> import sponge
+        >>> from sponge.partition import GridNeighbours
+        >>> import mindspore
+        >>> from mindspore import Tensor
+        >>> coordinate = Tensor([[[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]])
+        >>> grid_neighbours = GridNeighbours(0.5, coordinate)
+        >>> grid_neighbours(coordinate)
+        (Tensor(shape=[1, 2, 2], dtype=Int32, value=
+         [[[0, 1],
+         [0, 1]]]),
+         Tensor(shape=[1, 2, 2], dtype=Bool, value=
+         [[[False,  True],
+         [ True, False]]]))
 
     """
 
@@ -283,7 +298,13 @@ class GridNeighbours(Cell):
         self.sort = ops.Sort(-1)
 
     def set_exclude_index(self, exclude_index: Tensor) -> Tensor:
-        """set excluded neighbour index"""
+        r"""Set excluded neighbour index.
+
+        Args:
+            exclude_index (Tensor): Tensor of shape :math:`(B, A, Ex)`. Data type is int.
+                                    Index of atoms that should be exclude from neighbour list.
+
+        """
         # (B, A, Ex)
         self.exclude_index = get_ms_array(exclude_index, ms.int32)
         if self.exclude_index.shape[-2] != self.num_atoms:
@@ -301,7 +322,7 @@ class GridNeighbours(Cell):
         return self
 
     def print_info(self):
-        """print information of neighbour list"""
+        """Print information of neighbour list."""
         print(f'Calculate neighbour list from grids')
         print(f'   Cutoff distance: {self.cutoff}')
         print(f'   Grid cell length: {self.scaled_grid_cutoff}')
@@ -315,7 +336,14 @@ class GridNeighbours(Cell):
         return self
 
     def get_neighbours_from_grids(self, atom_grid_idx: Tensor, num_neighbours: int):
-        """get neighbour list from grids"""
+        r"""Get neighbour list from grids.
+
+        Args:
+            atom_grid_idx (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is int.
+                                    Grid index for each atom.
+            num_neighbours (int):   Number of neighbour atoms.
+
+        """
         #pylint: disable=unused-argument
 
         # (B, A)
@@ -373,30 +401,25 @@ class GridNeighbours(Cell):
                   atom_mask: Tensor = None,
                   exclude_index: Tensor = None,
                   ) -> Tuple[Tensor, Tensor]:
-        """Calculate neighbour list.
+        # pylint: disable=missing-docstring
+        # Calculate neighbour list.
 
-        Args:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Atom coordinates.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    PBC box.Default: ``None``.
-            atom_mask (Tensor):     Tensor of shape (B, A). Data type is bool.
-                                    Mask of atoms. Default: ``None``.
-            exclude_index (Tensor): Tensor of shape (B, A, Ex). Data type is int.
-                                    Index of atoms that should be exclude from neighbour list.
-                                    Default: ``None``.
+        # Args:
+        #     coordinate (Tensor):    Tensor of shape :math:`(B, A, D)`. Data type is float.
+        #                             Atom coordinates.
+        #     pbc_box (Tensor):       Tensor of shape :math:`(B, D)`. Data type is float.
+        #                             PBC box.Default: ``None``.
+        #     atom_mask (Tensor):     Tensor of shape :math:`(B, A)`. Data type is bool.
+        #                             Mask of atoms. Default: ``None``.
+        #     exclude_index (Tensor): Tensor of shape :math:`(B, A, Ex)`. Data type is int.
+        #                             Index of atoms that should be exclude from neighbour list.
+        #                             Default: ``None``.
 
-        Sysmbols:
-
-            B:  Number of simulation walker.
-
-            A:  Number of atoms in system.
-
-            D:  Dimension of position coordinates.
-
-            Ex: Maximum number of excluded neighbour atoms.
-
-        """
+        # Sysmbols:
+        #     - B:  Number of simulation walker.
+        #     - A:  Number of atoms in system.
+        #     - D:  Dimension of position coordinates.
+        #     - Ex: Maximum number of excluded neighbour atoms.
 
         if self.use_pbc:
             if pbc_box is None:
