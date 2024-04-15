@@ -45,7 +45,7 @@ def parse_args():
     '''Parse input args'''
     parser = argparse.ArgumentParser(
         description='Airfoil 2D_steady Simulation')
-    parser.add_argument("--context_mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
+    parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
                         help="Support context mode: 'GRAPH', 'PYNATIVE'")
     parser.add_argument('--train_mode', type=str, default='train', choices=["train", "test", "finetune"],
                         help="Support run mode: 'train', 'test', 'finetune'")
