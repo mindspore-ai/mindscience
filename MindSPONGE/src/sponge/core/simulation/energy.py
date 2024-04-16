@@ -44,32 +44,27 @@ from ...sampling.wrapper import EnergyWrapper
 class WithEnergyCell(Cell):
     r"""
     Cell that wraps the simulation system with the potential energy function.
-    This Cell calculates the value of the potential energy of the system at the current coordinates and returns it.
+    This Cell calculates the value of the potential energy of the system at
+    the current coordinates and returns it.
 
     Args:
-        system(Molecule):               Simulation system.
-        potential(PotentialCell):       Potential energy function cell.
-        bias(Union[Bias, List[Bias]]):  Bias potential function cell. Default: ``None``.
-        cutoff(float):                  Cut-off distance for neighbour list. If None is given, it will be assigned
-                                        as the cutoff value of the of potential energy.
-                                        Default: ``None``.
-        neighbour_list(NeighbourList):  Neighbour list. Default: ``None``.
-        wrapper(EnergyWrapper):         Network to wrap and process potential and bias.
-                                        Default: ``None``.
-        kwargs(dict):                   other args
+        system( :class:`sponge.system.Molecule`): Simulation system.
+        potential( :class:`sponge.potential.PotentialCell`): Potential energy function cell.
+        bias( :class:`sponge.potential.bias.Bias`): Bias potential function cell. Default: ``None``.
+        cutoff(float): Cut-off distance for neighbour list.
+          If ``None`` is given, it will be assigned as the cutoff value of the of potential energy.
+          Default: ``None``.
+        neighbour_list(NeighbourList): Neighbour list. Default: ``None``.
+        wrapper(EnergyWrapper): Network to wrap and process potential and bias. Default: ``None``.
+        kwargs(dict): Other arguments.
 
     Inputs:
         - **\*inputs** (Tuple(Tensor)) - Tuple of input tensors of 'WithEnergyCell'.
 
     Outputs:
-        energy, Tensor of shape `(B, 1)`. Data type is float. Total potential energy.
-
-    Note:
-        - B:  Batchsize, i.e. number of walkers of the simulation.
-        - A:  Number of the atoms in the simulation system.
-        - N:  Number of the maximum neighbouring atoms.
-        - U:  Number of potential energy terms.
-        - V:  Number of bias potential terms.
+        - energy, Tensor of shape :math:`(B, 1)`. Total potential energy.
+          Here `B` is the batch size, i.e. the number of walkers in simulation.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -77,19 +72,28 @@ class WithEnergyCell(Cell):
     Examples:
         >>> from sponge import WithEnergyCell, RunOneStepCell, Sponge
         >>> from sponge.callback import RunInfo
-        >>> # system is the Molecule object defined by user.
-        >>> # energy is the Energy object defined by user.
-        >>> # opt is the Optimizer object defined by user.
-        >>> sim = WithEnergyCell(system, energy)
-        >>> one_step = RunOneStepCell(energy=sim, optimizer=opt)
+        >>> from sponge.system import Molecule
+        >>> from sponge.potential.forcefield import ForceField
+        >>> from sponge.optimizer import Updater
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> potential = ForceField(system, parameters='SPCE')
+        >>> optimizer = Updater(system, controller=None, time_step=1e-3)
+        >>> sim = WithEnergyCell(system, potential)
+        >>> one_step = RunOneStepCell(energy=sim, optimizer=optimizer)
         >>> md = Sponge(one_step)
         >>> run_info = RunInfo(800)
         >>> md.run(2000, callbacks=[run_info])
-        [MindSPONGE] Started simulation at 2023-09-04 17:06:26
-        [MindSPONGE] Step: 800, E_pot: -150.88245, E_kin: 69.84598, E_tot: -81.03647, Temperature: 418.42694
-        [MindSPONGE] Step: 1600, E_pot: -163.72491, E_kin: 57.850487, E_tot: -105.87443, Temperature: 346.56543
-        [MindSPONGE] Finished simulation at 2023-09-04 17:07:13
-        [MindSPONGE] Simulation time: 47.41 seconds.
+        >>> # Output example:
+        >>> # [MindSPONGE] Started simulation at 2024-04-29 01:02:10
+        >>> # [MindSPONGE] Compilation Time: 0.66s
+        >>> # [MindSPONGE] Step: 0, E_pot: 1.4293396, E_kin: 0.0, E_tot: 1.
+        >>> # 4293396, Temperature: 0.0, Time: 662.63ms
+        >>> # [MindSPONGE] Step: 800, E_pot: 1.4293396, E_kin: 0.0, E_tot: 1.
+        >>> # 4293396, Temperature: 0.0, Time: 13.77ms
+        >>> # [MindSPONGE] Step: 1600, E_pot: 1.4293396, E_kin: 0.0, E_tot: 1.
+        >>> # 4293396, Temperature: 0.0, Time: 14.82ms
+        >>> # [MindSPONGE] Finished simulation at 2024-04-29 01:02:39
+        >>> # [MindSPONGE] Simulation time: 29.03 seconds.
     """
 
     def __init__(self,
@@ -132,7 +136,8 @@ class WithEnergyCell(Cell):
 
         self.energy_wrapper = wrapper
         if wrapper is None:
-            self.energy_wrapper = EnergyWrapper(length_unit=self.length_unit, energy_unit=self.energy_unit)
+            self.energy_wrapper = EnergyWrapper(length_unit=self.length_unit,
+                                                energy_unit=self.energy_unit)
 
         self.wrapper_pace = self.energy_wrapper.update_pace
 
@@ -153,12 +158,15 @@ class WithEnergyCell(Cell):
             if self.potential_function.cutoff is None:
                 self.potential_function.set_cutoff(self.neighbour_list.cutoff, self.length_unit)
             else:
-                pot_cutoff = self.units.length(self.potential_function.cutoff, self.potential_function.length_unit)
+                pot_cutoff = self.units.length(self.potential_function.cutoff,
+                                               self.potential_function.length_unit)
                 nl_cutoff = self.neighbour_list.cutoff
                 if self.potential_function.cutoff > self.neighbour_list.cutoff:
-                    raise ValueError(f'The cutoff of the potential function ({pot_cutoff} {self.length_unit}) '
+                    raise ValueError(f'The cutoff of the potential function '
+                                     f'({pot_cutoff} {self.length_unit}) '
                                      f'cannot be greater than '
-                                     f'the cutoff of the neighbour list ({nl_cutoff} {self.length_unit}).')
+                                     f'the cutoff of the neighbour list '
+                                     f'({nl_cutoff} {self.length_unit}).')
 
         self.coordinate = self.system.coordinate
         self.pbc_box = self.system.pbc_box
@@ -178,8 +186,11 @@ class WithEnergyCell(Cell):
 
         self.identity = ops.Identity()
 
-        self._energies = Parameter(msnp.zeros((self.num_walker, self.num_energies),
-                                              dtype=ms.float32), name='energies', requires_grad=False)
+        self._energies = Parameter(msnp.zeros((self.num_walker,
+                                               self.num_energies),
+                                              dtype=ms.float32),
+                                   name='energies',
+                                   requires_grad=False)
 
         bias = msnp.zeros((self.num_walker, 1), dtype=ms.float32)
         if self.bias_function is None:
@@ -187,7 +198,9 @@ class WithEnergyCell(Cell):
             self._bias = bias
         else:
             self._biases = Parameter(msnp.zeros((self.num_walker, self._num_biases),
-                                                dtype=ms.float32), name='biases', requires_grad=False)
+                                                dtype=ms.float32),
+                                     name='biases',
+                                     requires_grad=False)
             self._bias = Parameter(bias, name='bias', requires_grad=False)
 
     @property
@@ -286,7 +299,7 @@ class WithEnergyCell(Cell):
         Tensor of bias potential components.
 
         Returns:
-            Tensor, Tensor of shape `(B, V)`. Data type is float.
+            Tensor, Tensor of shape :math:`(B, V)`. Data type is float.
         """
         if self.bias_function is None:
             return None
@@ -298,7 +311,7 @@ class WithEnergyCell(Cell):
         Tensor of the total bias potential.
 
         Returns:
-            Tensor, Tensor of shape `(B, 1)`. Data type is float.
+            Tensor, Tensor of shape :math:`(B, 1)`. Data type is float.
         """
         return self.identity(self._bias)
 
@@ -307,7 +320,7 @@ class WithEnergyCell(Cell):
         Return the update freqenucy for bias potential.
 
         Args:
-            index(int): Index of bias potential. Default: 0
+            index(int): Index of bias potential. Default: ``0``.
 
         Returns:
             int, update freqenucy.
@@ -329,9 +342,9 @@ class WithEnergyCell(Cell):
         Update neighbour list.
 
         Returns:
-            - neigh_idx, Tensor. Tensor of shape `(B, A, N)`. Data type is int.
+            - neigh_idx, Tensor. Tensor of shape :math:`(B, A, N)`. Data type is int.
               Index of neighbouring atoms of each atoms in system.
-            - neigh_mask, Tensor. Tensor of shape `(B, A, N)`. Data type is bool.
+            - neigh_mask, Tensor. Tensor of shape :math:`(B, A, N)`. Data type is bool.
               Mask for neighbour list `neigh_idx`.
         """
         return self.neighbour_list.update(self.coordinate, self.pbc_box)
@@ -341,7 +354,8 @@ class WithEnergyCell(Cell):
         Update bias potential.
 
         Args:
-            step(int):  Current simulation step. If it can be divided by update frequency, update the bias potential.
+            step(int):  Current simulation step. If it can be divided by
+              update frequency, update the bias potential.
         """
         if self.bias_function is not None:
             for i in range(self._num_biases):
@@ -354,7 +368,8 @@ class WithEnergyCell(Cell):
         Update energy wrapper.
 
         Args:
-            step(int):  Current simulation step. If it can be divided by update frequency, update the energy wrapper.
+            step(int):  Current simulation step. If it can be divided by
+              update frequency, update the energy wrapper.
         """
         if self.wrapper_pace > 0 and step % self.wrapper_pace == 0:
             self.energy_wrapper.update()
@@ -365,9 +380,9 @@ class WithEnergyCell(Cell):
         Get neighbour list.
 
         Returns:
-            - neigh_idx, Tensor. Tensor of shape `(B, A, N)`. Data type is int.
+            - neigh_idx, Tensor. Tensor of shape :math:`(B, A, N)`. Data type is int.
               Index of neighbouring atoms of each atoms in system.
-            - neigh_mask, Tensor. Tensor of shape `(B, A, N)`. Data type is bool.
+            - neigh_mask, Tensor. Tensor of shape :math:`(B, A, N)`. Data type is bool.
               Mask for neighbour list `neigh_idx`.
         """
         return self.neighbour_list.get_neighbour_list()
@@ -377,7 +392,7 @@ class WithEnergyCell(Cell):
         Calculate the energy terms of the potential energy.
 
         Returns:
-            Tensor, Tensor of shape `(B, U)`. Data type is float. Energy terms.
+            Tensor, Tensor of shape :math:`(B, U)`. Data type is float. Energy terms.
         """
 
         neigh_idx, neigh_vec, neigh_dis, neigh_mask = self.neighbour_list(self.coordinate, self.pbc_box)
@@ -405,7 +420,7 @@ class WithEnergyCell(Cell):
         Calculate the bias potential terms.
 
         Returns:
-            Tensor, Tensor of shape `(B, V)`. Data type is float. Bias potential terms.
+            Tensor, Tensor of shape :math:`(B, V)`. Data type is float. Bias potential terms.
         """
         if self.bias_function is None:
             return None
@@ -434,15 +449,15 @@ class WithEnergyCell(Cell):
         return msnp.concatenate(biases, axis=-1)
 
     def construct(self, *inputs) -> Tensor:
-        """calculate the total potential energy (potential energy and bias potential) of the simulation system.
+        r"""
+        Calculate the total potential energy (potential energy and bias
+        potential) of the simulation system.
 
         Returns:
-            energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
-                                Total potential energy.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers of the simulation.
-
+            energy (Tensor): Total potential energy.
+              Tensor of shape :math:`(B, 1)`.
+              Here :math:`B` is the batch size, i.e. the number of walkers in simulation.
+              Data type is float.
         """
         #pylint: disable=unused-argument
         coordinate, pbc_box = self.system()

@@ -36,18 +36,62 @@ from ...partition import NeighbourList
 
 
 class AnalysisCell(Cell):
-    r"""Cell for analysis
+    r"""Cell for analysis.
 
     Args:
-        system (Molecule):              Simulation system.
+        system ( :class:`sponge.system.Molecule`): Simulation system.
+        potential ( :class:`sponge.potential.PotentialCell`): Potential energy.
+        neighbour_list ( :class:`sponge.partition.NeighbourList`): Neighbour list.
+          Default: ``None``.
 
-        potential (PotentialCell):      Potential energy.
+    Inputs:
+        - **coordinate** (Tensor) - Coordinate. Tensor of shape :math:`(B, A, D)`.
+          Data type is float.
+          Here :math:`B` is the number of walkers in simulation,
+          :math:`A` is the number of atoms, and
+          :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+        - **pbc_box** (Tensor) - Periodic boundary condition box.
+          Tensor of shape :math:`(B, D)`. Data type is float.
+        - **energy** (Tensor) - Energy. Tensor of shape :math:`(B, 1)`. Data type is float.
+        - **force** (Tensor) - Force. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **potentials** (Tensor, optional) - Original potential energies from force field.
+          Tensor of shape :math:`(B, U)`.
+          Here :math:`U` is the number of potential energies.
+          Data type is float.  Default: ``0``.
+        - **total_bias** (Tensor, optional) - Total bias energy for reweighting.
+          Tensor of shape :math:`(B, 1)`. Data type is float. Default: ``0``.
+        - **biases** (Tensor, optional) - Original bias potential energies from bias functions.
+          Tensor of shape :math:`(B, V)`.
+          Here `V` is the number of bias potential energies. Data type is float. Default: ``0``.
 
-        neighbour_list (NeighbourList): Neighbour list. Default: ``None``.
+    Outputs:
+        - coordinate, Tensor of shape :math:`(B, A, D)`. Coordinate.
+          Data type is float.
+        - pbc_box, Tensor of shape :math:`(B, D)`, PBC box. Data type is float.
+        - energy, Tensor of shape :math:`(B, 1)`,
+          Total potential energy of the simulation system.
+          Data type is float.
+        - force, Tensor of shape :math:`(B, A, D)`.
+          Force on each atom of the simulation system.
+          Data type is float.
+        - potentials, Tensor of shape :math:`(B, U)`. Original potential energies from force field.
+          Data type is float.
+        - total_bias, Tensor of shape :math:`(B, 1)`. Total bias energy for reweighting.
+          Data type is float.
+        - biases, Tensor of shape :math:`(B, V)`. Bias potential energies from bias functions.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> from sponge.system import Molecule
+        >>> from sponge.potential.forcefield import ForceField
+        >>> from sponge.core.sponge import Sponge
+        >>> from sponge.core.analysis import AnalysisCell
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> potential = ForceField(system, parameters='SPCE')
+        >>> analysis = AnalysisCell(system, potential)
     """
     def __init__(self,
                  system: Molecule,
@@ -88,45 +132,54 @@ class AnalysisCell(Cell):
                   biases: Tensor = 0,
                   ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
         """
-
         Args:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system. Default: ``None``.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-                                    Total potential energy of the simulation system. Default: 0
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-                                    Force on each atoms of the simulation system. Default: 0
-            potentials (Tensor):    Tensor of shape (B, U). Data type is float.
-                                    Original potential energies from force field. Default: 0
-            total_bias (Tensor):    Tensor of shape (B, 1). Data type is float.
-                                    Total bias energy for reweighting. Default: 0
-            biases (Tensor):        Tensor of shape (B, V). Data type is float
-                                    Original bias potential energies from bias functions. Default: 0
+            coordinate (Tensor): Position coordinate of atoms in system.
+              Tensor of shape :math:`(B, A, D)` .
+              Here :math:`B` is the number of walkers in simulation,
+              :math:`A` is the number of atoms,
+              :math:`D` is the spatial dimension of the simulation system,
+              which is usually 3.
+              Data type is float.
+              Default: ``None``.
+            pbc_box (Tensor): Tensor of PBC box.
+              Tensor of shape :math:`(B, D)`. Data type is float.
+              Default: ``None``.
+            energy (Tensor): Total potential energy of the simulation system.
+              Tensor of shape :math:`(B, 1)`.
+              Data type is float.
+              Default: ``0``.
+            force (Tensor): Force on each atoms of the simulation system.
+              Tensor of shape :math:`(B, A, D)`.
+              Data type is float.
+              Default: ``0``.
+            potentials (Tensor): Original potential energies from force field.
+              Tensor of shape :math:`(B, U)`.
+              Here :math:`U` is the number of potential energies. Data type is float.
+              Default: ``0``.
+            total_bias (Tensor): Total bias energy for reweighting.
+              Tensor of shape :math:`(B, 1)`. Data type is float.
+              Default: ``0``.
+            biases (Tensor): Original bias potential energies from bias functions.
+              Tensor of shape :math:`(B, V)`.
+              Here :math:`V` is the number of bias potential energies.
+              Data type is float. Default: ``0``.
 
         Returns:
-            coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system.
-            pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box.
-            energy (Tensor):        Tensor of shape (B, 1). Data type is float.
-                                    Total potential energy of the simulation system.
-            force (Tensor):         Tensor of shape (B, A, D). Data type is float.
-                                    Force on each atoms of the simulation system.
-            potentials (Tensor):    Tensor of shape (B, U). Data type is float.
-                                    Original potential energies from force field.
-            total_bias (Tensor):    Tensor of shape (B, 1). Data type is float.
-                                    Total bias energy for reweighting.
-            biases (Tensor):        Tensor of shape (B, V). Data type is float
-                                    Original bias potential energies from bias functions.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers in simulation.
-            A:  Number of atoms of the simulation system.
-            D:  Dimension of the space of the simulation system. Usually is 3.
-            U:  Number of potential energies.
-            V:  Number of bias potential energies.
+            - coordinate, Tensor of shape :math:`(B, A, D)`. Position
+              coordinate of atoms in system.
+              Data type is float.
+            - pbc_box, Tensor of shape :math:`(B, D)`. PBC box.
+              Data type is float.
+            - energy, Tensor of shape :math:`(B, 1)`. Total potential energy
+              of the simulation system. Data type is float.
+            - force, Tensor of shape :math:`(B, A, D)`. Force on each atoms
+              of the simulation system. Data type is float.
+            - potentials, Tensor of shape :math:`(B, U)`. Original potential
+              energies from force field. Data type is float.
+            - total_bias, Tensor of shape :math:`(B, 1)`. Total bias energy
+              for reweighting. Data type is float.
+            - biases, Tensor of shape :math:`(B, V)`. Original bias potential
+              energies from bias functions. Data type is float.
         """
 
         if coordinate is None:

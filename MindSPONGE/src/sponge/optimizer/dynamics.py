@@ -31,43 +31,32 @@ from ..control.integrator import Integrator
 
 
 class DynamicUpdater(UpdaterMD):
-    r"""Updater for molecular dynamics (MD) simulation.
+    r"""
+    Updater for molecular dynamics (MD) simulation.
 
-        This updater will be removed a future release. Please use `UpdaterMD` instead.
+    This updater will be removed a future release. Please use :class:`sponge.md.UpdaterMD` instead.
 
     Args:
-        system (Molecule):          Simulation system.
-
-        integrator (Integrator):    MD integrator.
-
-        thermostat (Controller):    Thermostat for temperature coupling. Default: ``None``.
-
-        barostat (Controller):      Barostat for pressure coupling. Default: ``None``.
-
-        constraint (Controller):    Constraint for bond.
-
-        controller (Controller):    Other controllers.
-
-        time_step (float):          Time step. Default: 1e-3
-
-        velocity (Tensor):          Atomic velocity. The shape of tensor is `(B, A, D)`.
-                                    The data type is float. Default: ``None``.
-
-        weight_decay (float):       An value for the weight decay. Default: 0
-
-        loss_scale (float):         A value for the loss scale. Default: 1
+        system ( :class:`sponge.system.Molecule`): Simulation system.
+        integrator ( :class:`sponge.control.integrator.Integrator`): MD integrator.
+        thermostat ( :class:`sponge.control.controller.Controller`): Thermostat
+          for temperature coupling.
+          Default: ``None``.
+        barostat ( :class:`sponge.control.controller.Controller`): Barostat for pressure coupling.
+          Default: ``None``.
+        constraint ( :class:`sponge.control.controller.Controller`): Constraint for bond.
+        controller ( :class:`sponge.control.controller.Controller`): Other controllers.
+        time_step (float): Time step. Default: ``1e-3``.
+        velocity (Tensor): Atomic velocity. The shape of tensor is :math:`(B, A, D)`.
+          Here :math:`B` is the number of walkers in simulation,
+          :math: `A` is the number of atoms,
+          and :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+          Data type is float. Default: ``None``.
+        weight_decay (float): An value for the weight decay. Default: ``0.0``.
+        loss_scale (float): A value for the loss scale. Default: ``1.0``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
-
-    Note:
-
-        B:  Batchsize, i.e. number of walkers in simulation
-
-        A:  Number of atoms.
-
-        D:  Spatial dimension of the simulation system. Usually is 3.
-
     """
     def __init__(self,
                  system: Molecule,

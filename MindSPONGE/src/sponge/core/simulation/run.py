@@ -45,53 +45,51 @@ from ...optimizer import Updater
 class RunOneStepCell(Cell):
     r"""
     Cell to run one step simulation.
-    This Cell wraps the `energy` and `force` with the `optimizer`. The backward graph will be created
-    in the construct function to update the atomic coordinates of the simulation system.
+
+    This Cell wraps the `energy` and `force` with the `optimizer`.
+    The backward graph will be created in the construct function
+    to update the atomic coordinates of the simulation system.
 
     Args:
-        energy(WithEnergyCell): Cell that wraps the simulation system with
-                                the potential energy function.
-                                Defatul: None
-        force(WithForceCell):   Cell that wraps the simulation system with
-                                the atomic force function.
-                                Defatul: None
-        optimizer(Optimizer):   Optimizer for simulation. Defatul: None
-        steps(int):             Steps for JIT. Default: 1
-        sens(float):            The scaling number to be filled as the input of backpropagation.
-                                Default: 1.0
-        kwargs(dict):                 other args
+        energy( :class:`sponge.energy.WithEnergyCell`): Cell that wraps
+          the simulation system with the potential energy function.
+          Default: ``None``.
+        force( :class:`sponge.force.WithForceCell`): Cell that wraps the simulation system with
+          the atomic force function.
+          Default: ``None``.
+        optimizer( :class:`mindspore.nn.optim.optimizer.Optimizer`): Optimizer for simulation.
+          Default: ``None``.
+        steps(int): Steps for JIT. Default: ``1``.
+        sens(float): The scaling number to be filled as the input of backpropagation.
+          Default: ``1.0``.
+        kwargs(dict): Other arguments.
 
     Inputs:
         - **\*inputs** (Tuple(Tensor)) - Tuple of input tensors of `WithEnergyCell`.
 
     Outputs:
-        - energy, Tensor of shape `(B, 1)`. Data type is float. Total potential energy.
-        - force, Tensor of shape `(B, A, D)`. Data type is float. Atomic force.
-
-    Note:
-        B:  Batchsize, i.e. number of walkers of the simulation.
-        A:  Number of the atoms in the simulation system.
-        D:  Spatial dimension of the simulation system. Usually is 3.
+        - energy, Tensor of shape :math:`(B, 1)`. Total potential energy.
+          Here :math:`B` is the number of walkers in simulation.
+          Data type is float.
+        - force, Tensor of shape :math:`(B, A, D)`. Atomic force.
+          Here :math:`A` is the number of atoms in the simulation system,
+          :math: `D` is the spatial dimension of the simulation system, which is usually 3.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
     Examples:
         >>> from sponge import WithEnergyCell, RunOneStepCell, Sponge
-        >>> from sponge.callback import RunInfo
-        >>> # system is the Molecule object defined by user.
-        >>> # energy is the Energy object defined by user.
-        >>> # opt is the Optimizer object defined by user.
-        >>> sim = WithEnergyCell(system, energy)
-        >>> one_step = RunOneStepCell(energy=sim, optimizer=opt)
-        >>> md = Sponge(one_step)
-        >>> run_info = RunInfo(800)
-        >>> md.run(2000, callbacks=[run_info])
-        [MindSPONGE] Started simulation at 2023-09-04 17:06:26
-        [MindSPONGE] Step: 800, E_pot: -150.88245, E_kin: 69.84598, E_tot: -81.03647, Temperature: 418.42694
-        [MindSPONGE] Step: 1600, E_pot: -163.72491, E_kin: 57.850487, E_tot: -105.87443, Temperature: 346.56543
-        [MindSPONGE] Finished simulation at 2023-09-04 17:07:13
-        [MindSPONGE] Simulation time: 47.41 seconds.
+        >>> from sponge.system import Molecule
+        >>> from sponge.potential.forcefield import ForceField
+        >>> from sponge.optimizer import Updater
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> potential = ForceField(system, parameters='SPCE')
+        >>> optimizer = Updater(system, controller=None, time_step=1e-3)
+        >>> sys_with_ene = WithEnergyCell(system, potential)
+        >>> one_step = RunOneStepCell(sys_with_ene, optimizer=optimizer)
+        md = Sponge(one_step)
     """
     def __init__(self,
                  energy: WithEnergyCell = None,
@@ -159,7 +157,7 @@ class RunOneStepCell(Cell):
     @property
     def neighbour_list_pace(self) -> int:
         r"""
-        update step for neighbour list.
+        Update step for neighbour list.
 
         Returns:
             int, the number of steps needed for neighbour list updating.
@@ -169,7 +167,7 @@ class RunOneStepCell(Cell):
     @property
     def energy_cutoff(self) -> Tensor:
         r"""
-        cutoff distance for neighbour list in WithEnergyCell.
+        Cutoff distance for neighbour list in WithEnergyCell.
 
         Returns:
             Tensor, cutoff distance for neighbour list in WithEnergyCell.
@@ -181,7 +179,7 @@ class RunOneStepCell(Cell):
     @property
     def force_cutoff(self) -> Tensor:
         r"""
-        cutoff distance for neighbour list in WithForceCell.
+        Cutoff distance for neighbour list in WithForceCell.
 
         Returns:
             Tensor, cutoff distance for neighbour list in WithForceCell.
@@ -193,7 +191,7 @@ class RunOneStepCell(Cell):
     @property
     def length_unit(self) -> str:
         r"""
-        length unit.
+        Length unit.
 
         Returns:
             str, length unit.
@@ -203,7 +201,7 @@ class RunOneStepCell(Cell):
     @property
     def energy_unit(self) -> str:
         r"""
-        energy unit.
+        Energy unit.
 
         Returns:
             str, energy unit.
@@ -213,7 +211,7 @@ class RunOneStepCell(Cell):
     @property
     def num_energies(self) -> int:
         r"""
-        number of energy terms :math:`U`.
+        Number of energy terms :math:`U`.
 
         Returns:
             int, number of energy terms.
@@ -225,7 +223,7 @@ class RunOneStepCell(Cell):
     @property
     def energy_names(self):
         r"""
-        names of energy terms.
+        Names of energy terms.
 
         Returns:
             list[str], names of energy terms.
@@ -237,7 +235,7 @@ class RunOneStepCell(Cell):
     @property
     def bias_names(self) -> List[str]:
         r"""
-        name of bias potential energies.
+        Name of bias potential energies.
 
         Returns:
             list[str], the bias potential energies.
@@ -249,7 +247,7 @@ class RunOneStepCell(Cell):
     @property
     def num_biases(self) -> int:
         r"""
-        number of bias potential energies :math:`V`.
+        Number of bias potential energies :math:`V`.
 
         Returns:
             int, number of bias potential energies.
@@ -307,7 +305,9 @@ class RunOneStepCell(Cell):
         return self.system_with_energy.bias_function
 
     def update_neighbour_list(self):
-        r"""update neighbour list."""
+        r"""
+        Update neighbour list.
+        """
         if self.system_with_energy is not None:
             self.system_with_energy.update_neighbour_list()
         if self.system_with_force is not None and self.system_with_force.neighbour_list is not None:
@@ -316,7 +316,7 @@ class RunOneStepCell(Cell):
 
     def update_bias(self, step: int):
         r"""
-        update bias potential.
+        Update bias potential.
 
         Args:
             step(int):  Simulation step to update bias potential.
@@ -327,7 +327,7 @@ class RunOneStepCell(Cell):
 
     def update_wrapper(self, step: int):
         r"""
-        update energy wrapper.
+        Update energy wrapper.
 
         Args:
             step(int):  Simulation step to update energy wrapper.
@@ -338,7 +338,7 @@ class RunOneStepCell(Cell):
 
     def update_modifier(self, step: int):
         r"""
-        update force modifier.
+        Update force modifier.
 
         Args:
             step(int):  Simulation step to update force modifier.
@@ -349,7 +349,7 @@ class RunOneStepCell(Cell):
 
     def set_pbc_grad(self, value: bool):
         r"""
-        set whether to calculate the gradient of PBC box.
+        Set whether to calculate the gradient of PBC box.
 
         Args:
             value(bool): Flag to judge whether to calculate the gradient of PBC box.
@@ -362,7 +362,7 @@ class RunOneStepCell(Cell):
 
     def set_steps(self, steps: int):
         r"""
-        set steps for JIT.
+        Set steps for JIT.
 
         Args:
             steps(int): Simulation step for JIT.
@@ -378,13 +378,13 @@ class RunOneStepCell(Cell):
             *inputs(list): Inputs of the 'WithEnergyCell'.
 
         Returns:
-            - energy, Tensor of shape `(B, 1)`. Data type is float. Total potential energy.
-            - force, Tensor of shape `(B, A, D)`. Data type is float. Atomic force.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers of the simulation.
-            A:  Number of the atoms in the simulation system.
-            D:  Spatial dimension of the simulation system. Usually is 3.
+            - energy, Tensor of shape :math:`(B, 1)`. Total potential energy.
+              Here :math:`B` is the number of walkers in simulation.
+              Data type is float.
+            - force, Tensor of shape :math:`(B, A, D)`. Atomic force.
+              Here :math:`A` is the number of atoms in the simulation system,
+              :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+              Data type is float.
         """
 
         def _run_one_step(*inputs):
@@ -392,16 +392,18 @@ class RunOneStepCell(Cell):
             Run one step simulation.
 
             Args:
-                *inputs(Tuple(Tensor)): Tuple of input tensors of `WithEnergyCell`.
+                *inputs(Tuple(Tensor)): Tuple of input tensors of
+                    :class:`sponge.energy.WithEnergyCell`.
 
             Returns:
-                - energy, Tensor of shape `(B, 1)`. Data type is float. Total potential energy.
-                - force, Tensor of shape `(B, A, D)`. Data type is float. Atomic force.
-
-            Note:
-                B:  Batchsize, i.e. number of walkers of the simulation.
-                A:  Number of the atoms in the simulation system.
-                D:  Spatial dimension of the simulation system. Usually is 3.
+                - energy, Tensor of shape `(B, 1)`. Total potential energy.
+                  Here `B` is the number of walkers in simulation.
+                  Data type is float.
+                - force, Tensor of shape `(B, A, D)`. Atomic force.
+                  Here `A` is the number of atoms in the simulation system,
+                  `D` is the spatial dimension of the simulation system,
+                  which is usually 3.
+                  Data type is float.
             """
             energy = 0
             force = 0

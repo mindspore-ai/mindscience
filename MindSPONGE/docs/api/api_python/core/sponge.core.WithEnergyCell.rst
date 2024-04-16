@@ -1,32 +1,25 @@
 sponge.core.WithEnergyCell
 ==============================
 
-.. py:class:: sponge.core.WithEnergyCell(system: Molecule, potential: PotentialCell, bias: Union[Bias, List[Bias]] = None, cutoff: float = None, neighbour_list: NeighbourList = None, wrapper: EnergyWrapper = None, **kwargs)
+.. py:class:: sponge.core.WithEnergyCell(system: :class:`sponge.system.Molecule`, potential: :class:`sponge.potential.PotentialCell`, bias: Union[ :class:`sponge.potential.bias.Bias`, List[ :class:`sponge.potential.bias.Bias`]] = None, cutoff: float = None, neighbour_list: :class:`sponge.partition.NeighbourList` = None, wrapper: :class:`sponge.sampling.wrapper.EnergyWrapper` = None, **kwargs)
 
     用势能函数封装仿真系统的神经网络层。
     该神经网络层用于计算并返回系统在当前坐标处的势能值。
 
     参数：
-        - **system** (Molecule) - 仿真系统。
-        - **potential** (PotentialCell) - 势能函数层。
-        - **bias** (Union[Bias, List[Bias]]) - 偏差势能函数层。默认值："None"。
-        - **cutoff** (float) - 邻居列表的截断距离。如果为None，则将其赋值为势能的截止值。默认值："None"。
-        - **neighbour_list** (NeighbourList) - 邻居列表。默认值："None"。
-        - **wrapper** (EnergyWrapper) - 包裹和处理势和偏差的网络。默认值："None"。
-        - **kwargs** (dict) - 其他参数。
+        - **system** ( :class:`sponge.system.Molecule`) - 仿真系统。
+        - **potential** ( :class:`sponge.potential.PotentialCell`) - 势能函数层。
+        - **bias** (Union[ :class:`sponge.potential.bias.Bias`, List[ :class:`sponge.potential.bias.Bias`]], 可选) - 偏置势函数层。默认值： ``None``。
+        - **cutoff** (float, 可选) - 邻居列表的截断距离。如果为 ``None``，则将其赋值为势能的截止值。默认值： ``None``。
+        - **neighbour_list** ( :class:`sponge.partition.NeighbourList`, 可选) - 邻居列表。默认值： ``None``。
+        - **wrapper** ( :class:`sponge.sampling.wrapper.EnergyWrapper`, 可选) - 包裹和处理势能和偏置势的网络。默认值： ``None``。
+        - **kwargs** (dict) - 关键字参数。
 
     输入：
-        - **\*inputs** (Tuple(Tensor)) - 'WithEnergyCell'的输入Tensor对。
+        - **\*inputs** (Tuple(Tensor)) - :class:`sponge.simulation.WithEnergyCell` 的输入Tensor tuple。
 
     输出：
-        整个系统的势能, shape为 `(B, 1)` 的Tensor。数据类型为float。
-
-    .. note::
-        - B: batch size，比如分子模拟中walker的数量。 
-        - A: 分子模拟中原子的数量。 
-        - N: 最大相邻原子数。 
-        - U: 势能项的数量。 
-        - V: bias potential项的数量。 
+        - **energy** (Tensor) - 整个系统的势能。shape为 :math:`(B, 1)` 。数据类型为float。
 
     .. py:method:: bias()
         :property:
@@ -34,7 +27,7 @@ sponge.core.WithEnergyCell
         整体偏置势的Tensor。
 
         返回：
-            Tensor，shape为 `(B, 1)` ，数据类型为float。
+            Tensor，shape为 :math:`(B, 1)` ，数据类型为float。
 
     .. py:method:: bias_names()
         :property:
@@ -60,21 +53,21 @@ sponge.core.WithEnergyCell
         偏置势分量的Tensor。
 
         返回：
-            偏置势分量的Tensor。shape为 `(B, V)` ，数据类型为float。
+            偏置势分量的Tensor。shape为 :math:`(B, V)` ，数据类型为float。
 
     .. py:method:: calc_biases()
 
         计算偏置势项。
 
         返回：
-            偏置势项，shape为 `(B, V)` 的Tensor。数据类型为float。
+            偏置势项，shape为 :math:`(B, V)` 的Tensor。数据类型为float。
 
     .. py:method:: calc_energies()
 
         计算势能的能量项。
 
         返回：
-            能量项，shape为 `(B, U)` 的Tensor。数据类型为float。
+            能量项，shape为 :math:`(B, U)` 的Tensor。数据类型为float。
 
     .. py:method:: cutoff()
         :property:
@@ -90,7 +83,7 @@ sponge.core.WithEnergyCell
         势能分量的Tensor。
 
         返回：
-            势能分量的Tensor，shape为 `(B, U)` ，数据类型为float。
+            势能分量的Tensor，shape为 :math:`(B, U)` ，数据类型为float。
 
     .. py:method:: energy_names()
         :property:
@@ -113,8 +106,8 @@ sponge.core.WithEnergyCell
         获取邻居列表。
 
         返回：
-            - neigh_idx，系统中每个原子邻近原子的目录。shape为 `(B, A, N)` 的Tensor，数量类型为int。
-            - neigh_mask，neigh_idx的掩码。shape为 `(B, A, N)` 的Tensor，数量类型为bool。
+            - neigh_idx，系统中每个原子邻近原子的目录。shape为 :math:`(B, A, N)` 的Tensor，数量类型为int。
+            - neigh_mask，neigh_idx的掩码。shape为 :math:`(B, A, N)` 的Tensor，数量类型为bool。
 
     .. py:method:: length_unit()
         :property:
@@ -167,8 +160,8 @@ sponge.core.WithEnergyCell
         更新邻居列表。
 
         返回：
-            - neigh_idx，系统中每个原子邻近原子的目录。shape为 `(B, A, N)` 的Tensor，数量类型为int。
-            - neigh_mask，neigh_idx的掩码。shape为 `(B, A, N)` 的Tensor，数量类型为bool。
+            - neigh_idx，系统中每个原子邻近原子的目录。shape为 :math:`(B, A, N)` 的Tensor，数量类型为int。
+            - neigh_mask，neigh_idx的掩码。shape为 :math:`(B, A, N)` 的Tensor，数量类型为bool。
 
     .. py:method:: update_wrapper(step: int)
 
