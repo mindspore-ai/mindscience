@@ -25,7 +25,7 @@ from mindspore import Tensor, ops, Parameter, ParameterTuple, jit_class
 import mindspore.nn as nn
 import mindspore as ms
 import numpy as np
-from .utils import irreps_from_l1l2
+from models.utils import irreps_from_l1l2
 
 
 class SkipConnection(nn.Cell):

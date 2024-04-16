@@ -17,6 +17,7 @@ kernel
 """
 import time
 import os
+import logging
 import numpy as np
 import mindspore as ms
 import mindspore.dataset as ds
@@ -25,11 +26,12 @@ from mindspore import ops
 from mindspore.amp import DynamicLossScaler
 from mindchemistry.graph.loss import L2LossMask
 
-from .model import Net
-from .data import AijData
-from .parse_configs import BaseConfig, TrainConfig, EvalConfig
-from .utils import LossRecord, process_targets, set_random_seed, RevertDecayLR
-from .e3modules import E3TensorDecompNet
+from models.model import Net
+from models.e3modules import E3TensorDecompNet
+from models.parse_configs import BaseConfig, TrainConfig, EvalConfig
+from models.utils import LossRecord, process_targets, set_random_seed, RevertDecayLR
+from data.data import AijData
+
 
 class DatasetInfo:
     """
@@ -69,6 +71,7 @@ class DatasetInfo:
         """
         return cls(dataset.info['spinful'], dataset.info['index_to_Z'], dataset.info['orbital_types'])
 
+
 class NetOutInfo:
     """
     NetOutInfo class
@@ -79,7 +82,6 @@ class NetOutInfo:
         self.dataset_info = dataset_info
         self.blocks, self.js, self.slices = process_targets(dataset_info.orbital_types, dataset_info.index_to_z,
                                                             target_blocks)
-
 
     def merge(self, other):
         """
@@ -97,6 +99,7 @@ class Dataset:
     """
     Dataset class
     """
+
     def __init__(self, dataset):
         super(Dataset, self).__init__()
         self.dataset = dataset
@@ -174,7 +177,7 @@ class DeepHE3Kernel:
                                            data_mask_length, batch_input_x, mask_dim1, mask_dim2, mask_dim3)
             return mse_loss, h_pred
 
-        print('\n------- Begin training -------')
+        logging.info("------- Begin training -------")
 
         best_loss = 10000
         train_begin_time = time.time()
@@ -183,7 +186,7 @@ class DeepHE3Kernel:
         batch_input_x = ops.zeros((64, 412))
 
         while epoch < config.num_epoch and learning_rate > config.min_lr:
-            print("=================================epoch: " + str(epoch))
+            logging.info("=================================epoch: %s", epoch)
             train_losses = LossRecord()
             step = 0
             for batch in train_loader:
@@ -191,15 +194,15 @@ class DeepHE3Kernel:
                 train_mse_loss, _ = train_step(batch[0], batch[1], batch[2], batch[9], batch[10], batch[11],
                                                batch_input_x, batch[12], batch[13], batch[14])
                 endtime = time.time()
-                print("----------------------train epoch: " + str(epoch) + "-------step: " + str(step))
-                print("training time", endtime - starttime)
-                print("learning rate", optimizer.learning_rate.value())
-                print("train mse loss", train_mse_loss)
+                logging.info("----------------------train epoch: %s-------step: %s", epoch, step)
+                logging.info("training time: %s", endtime - starttime)
+                logging.info("learning rate: %s", optimizer.learning_rate.value())
+                logging.info("train mse loss: %s", train_mse_loss)
                 train_losses.update(train_mse_loss, batch[11][0])
                 step = step + 1
-            print("epoch: ", epoch)
-            print("last train loss:", train_losses.last_val)
-            print("average train loss:", train_losses.avg)
+            logging.info("epoch: %s", epoch)
+            logging.info("last train loss: %s", train_losses.last_val)
+            logging.info("average train loss: %s", train_losses.avg)
             val_losses = LossRecord()
             step = 0
             for batch in val_loader:
@@ -207,15 +210,15 @@ class DeepHE3Kernel:
                 val_mse_loss, _ = eval_test_step(batch[0], batch[1], batch[2], batch[9], batch[10], batch[11],
                                                  batch_input_x, batch[12], batch[13], batch[14])
                 endtime = time.time()
-                print("----------------------eval epoch: " + str(epoch) + "-------step: " + str(step))
-                print("evaluating time", endtime - starttime)
-                print("learning rate", optimizer.learning_rate.value())
-                print("val mse loss", val_mse_loss)
+                logging.info("----------------------eval epoch: %s-------step: %s", epoch, step)
+                logging.info("evaluating time: %s", endtime - starttime)
+                logging.info("learning rate: %s", optimizer.learning_rate.value())
+                logging.info("val mse loss: %s", val_mse_loss)
                 val_losses.update(val_mse_loss, batch[11][0])
                 step = step + 1
-            print("epoch: ", epoch)
-            print("last eval loss:", val_losses.last_val)
-            print("average eval loss:", val_losses.avg)
+            logging.info("epoch: %s", epoch)
+            logging.info("last train loss: %s", val_losses.last_val)
+            logging.info("average eval loss: %s", val_losses.avg)
 
             if val_losses.avg < best_loss:
                 best_loss = val_losses.avg
@@ -223,9 +226,64 @@ class DeepHE3Kernel:
             scheduler.step(val_losses.avg)
             epoch = scheduler.next_epoch
 
-            print(f'Train finished, cost {time.time() - train_begin_time:.2f}s.')
-            print("best loss: ", best_loss)
-        print('\nTraining finished.')
+            logging.info("Train finished, cost %s s", time.time() - train_begin_time)
+            logging.info("best loss: %s", best_loss)
+        logging.info("Training finished.")
+
+    @staticmethod
+    def val_process(config, scheduler, optimizer, val_loader, net, construct_kernel):
+        """
+        DeepHE3Kernel class train_process
+        """
+        l2_loss_mask = L2LossMask()
+
+        def forward_val(data_x, data_edge_index, data_edge_attr, data_label, data_mask, data_mask_length, batch_input_x,
+                        mask_dim1, mask_dim2, mask_dim3):
+            edge_fea = net(data_x, data_edge_index, data_edge_attr, data_mask_length, batch_input_x, mask_dim1,
+                           mask_dim2, mask_dim3)
+            h_pred = construct_kernel(edge_fea)
+            mse_loss = l2_loss_mask(h_pred, data_label, data_mask, data_mask_length)[0]
+            return mse_loss, h_pred
+
+        def eval_test_step(data_x, data_edge_index, data_edge_attr, data_label, data_mask, data_mask_length,
+                           batch_input_x, mask_dim1, mask_dim2, mask_dim3):
+            mse_loss, h_pred = forward_val(data_x, data_edge_index, data_edge_attr, data_label, data_mask,
+                                           data_mask_length, batch_input_x, mask_dim1, mask_dim2, mask_dim3)
+            return mse_loss, h_pred
+
+        logging.info("------- Begin testing -------")
+
+        best_loss = 10000
+        epoch = scheduler.next_epoch
+        batch_input_x = ops.zeros((64, 412))
+
+        while epoch < config.num_test_epoch:
+            logging.info("=================================epoch: %s", epoch)
+            val_losses = LossRecord()
+            step = 0
+            for batch in val_loader:
+                starttime = time.time()
+                val_mse_loss, _ = eval_test_step(batch[0], batch[1], batch[2], batch[9], batch[10], batch[11],
+                                                 batch_input_x, batch[12], batch[13], batch[14])
+                endtime = time.time()
+                logging.info("----------------------eval epoch: %s-------step: %s", epoch, step)
+                logging.info("evaluating time: %s", endtime - starttime)
+                logging.info("learning rate: %s", optimizer.learning_rate.value())
+                logging.info("val mse loss: %s", val_mse_loss)
+                val_losses.update(val_mse_loss, batch[11][0])
+                step = step + 1
+            logging.info("epoch: %s", epoch)
+            logging.info("last train loss: %s", val_losses.last_val)
+            logging.info("average eval loss: %s", val_losses.avg)
+
+            if val_losses.avg < best_loss:
+                best_loss = val_losses.avg
+
+            scheduler.step(val_losses.avg)
+            epoch = scheduler.next_epoch
+            logging.info("best loss: %s", best_loss)
+        logging.info("Testing finished.")
+
     def load_config(self, train_config_path=None, eval_config_path=None):
         """
         DeepHE3Kernel class load_config
@@ -248,12 +306,18 @@ class DeepHE3Kernel:
         """
         ms.set_seed(1234)
         self.load_config(train_config_path=train_config)
+
+        if not os.path.exists(self.train_config.save_dir):
+            os.makedirs(self.train_config.save_dir)
+
+        if not os.path.exists(self.train_config.save_graph_dir):
+            os.makedirs(self.train_config.save_graph_dir)
+
         config = self.train_config
 
         # = record output =
-        os.makedirs(config.save_dir)
 
-        print('\n------- DeepH-E3 model training begins -------')
+        logging.info("------- DeepH-E3 model training begins -------")
         set_random_seed(config.seed)
         dataset = self.get_graph(config)
         self.config_set_target()
@@ -263,13 +327,13 @@ class DeepHE3Kernel:
         train_loader, val_loader = self.get_loader()
         # = Build net =
         net = self.build_model()
-        print("finish load model")
+        logging.info("------- finish load model -------")
         model_parameters = filter(lambda p: p.requires_grad, net.get_parameters())
         params = sum([np.prod(p.shape) for p in model_parameters])
-        print("The model you built has %d parameters." % params)
+        logging.info("The model you built has %s parameters.", params)
 
         self.register_constructor()
-        print(net)
+        logging.info(net)
 
         learning_rate = 0.003
         optimizer = nn.Adam(params=net.trainable_params(),
@@ -281,13 +345,69 @@ class DeepHE3Kernel:
         scheduler = RevertDecayLR(net, optimizer, config.save_dir, config.revert_decay_patience,
                                   config.revert_decay_rate, config.scheduler_type, config.scheduler_params)
 
-        print('Starting new training process')
+        logging.info("Starting new training process")
+
+        net = self.net
+        config = self.train_config
+        construct_kernel = self.construct_kernel
+        self.train_process(config, scheduler, optimizer, train_loader, val_loader, net, construct_kernel)
+
+    def validate(self, train_config):
+        """
+        DeepHE3Kernel class validation process
+        """
+        ms.set_seed(1234)
+        self.load_config(train_config_path=train_config)
+
+        if not os.path.exists(self.train_config.save_dir):
+            os.makedirs(self.train_config.save_dir)
+
+        if not os.path.exists(self.train_config.save_graph_dir):
+            os.makedirs(self.train_config.save_graph_dir)
+
+        config = self.train_config
+
+        # = record output =
+
+        logging.info("------- DeepH-E3 model test begins -------")
+        set_random_seed(config.seed)
+        dataset = self.get_graph(config)
+        self.config_set_target()
+        # set dataset mask
+        dataset.set_mask(config.target_blocks)
+        # = data loader =
+        _, val_loader = self.get_loader()
+        # = Build net =
+        net = self.build_model()
+        logging.info("------- finish load model -------")
+        model_parameters = filter(lambda p: p.requires_grad, net.get_parameters())
+        params = sum([np.prod(p.shape) for p in model_parameters])
+        logging.info("The model you built has %s parameters.", params)
+
+        self.register_constructor()
+        logging.info(net)
+
+        learning_rate = 0.003
+        optimizer = nn.Adam(params=net.trainable_params(),
+                            learning_rate=learning_rate,
+                            beta1=config.adam_betas[0],
+                            beta2=config.adam_betas[1])
+
+        # = LR scheduler =
+        scheduler = RevertDecayLR(net, optimizer, config.save_dir, config.revert_decay_patience,
+                                  config.revert_decay_rate, config.scheduler_type, config.scheduler_params)
+
+        logging.info("Starting new training process")
 
         net = self.net
         config = self.train_config
         construct_kernel = self.construct_kernel
 
-        self.train_process(config, scheduler, optimizer, train_loader, val_loader, net, construct_kernel)
+        checkpoint_dir = config.checkpoint_dir
+
+        param_dict = ms.load_checkpoint(checkpoint_dir)
+        _, _ = ms.load_param_into_net(net, param_dict)
+        self.val_process(config, scheduler, optimizer, val_loader, net, construct_kernel)
 
     def get_graph(self, config: BaseConfig, inference=False):
         """
@@ -295,7 +415,7 @@ class DeepHE3Kernel:
         """
         process_only = config.__class__ == BaseConfig
         # prepare graph data
-        print('\nProcessing graph data...')
+        logging.info("Processing graph data...")
         dataset = AijData(raw_data_dir=config.processed_data_dir,
                           graph_dir=config.save_graph_dir,
                           target=config.target_data,
@@ -324,7 +444,7 @@ class DeepHE3Kernel:
         config = self.train_config
 
         num_species = len(self.dataset_info.index_to_z)
-        print('Building model...')
+        logging.info("Building model...")
         begin = time.time()
         net = Net(num_species=num_species,
                   irreps_embed_node=config.irreps_embed_node,
@@ -345,7 +465,8 @@ class DeepHE3Kernel:
                   if_sort_irreps=False,
                   escn=True)
 
-        print(f'Finished building model, cost {time.time() - begin:.2f} seconds.')
+        logging.info("Finished building model, cost %s seconds", time.time() - begin)
+
         self.net = net
 
         return net
@@ -384,6 +505,7 @@ class DeepHE3Kernel:
             if data[stru_id_place] == stru_id:
                 return index
         return 0
+
     def get_loader(self):
         """
         DeepHE3Kernel get_loader
@@ -404,7 +526,8 @@ class DeepHE3Kernel:
         np.random.shuffle(indices)
         dataset_tuple = tuple(dataset)
 
-        print(f'size of train set: {len(indices[:train_size])}')
+        logging.info("size of train set: %s", len(indices[:train_size]))
+
         generator_dataset_train = ds.GeneratorDataset(dataset_tuple,
                                                       column_names=[
                                                           "x", "edge_index", "edge_attr", "stru_id", "pos", "lattice",
@@ -414,7 +537,7 @@ class DeepHE3Kernel:
                                                       sampler=ds.SubsetRandomSampler(indices[:train_size]))
 
         val_indices = indices[train_size:train_size + val_size]
-        print(f'size of val set: {len(val_indices)}')
+        logging.info("size of val set: %s", len(val_indices))
 
         generator_dataset_val = ds.GeneratorDataset(dataset_tuple,
                                                     column_names=[
@@ -424,7 +547,6 @@ class DeepHE3Kernel:
                                                     ],
                                                     sampler=ds.SubsetRandomSampler(val_indices))
 
-
-        print(f'Batch size: {config.batch_size}')
+        logging.info("Batch size: %s", config.batch_size)
 
         return generator_dataset_train, generator_dataset_val
