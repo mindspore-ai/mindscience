@@ -36,4 +36,8 @@ dataset:
 checkpoint:
   best_loss_path: "./ckpt/best_matformer.ckpt"
 
+predictor:
+  checkpoint_path: "./checkpoint.ckpt"
+  epoch_size: 10
+
 
