@@ -55,25 +55,57 @@ def _thermostat_register(*aliases):
 
 
 class Thermostat(Controller):
-    r"""Base class for thermostat module in MindSPONGE, which is a subclass of `Controller`.
+    r"""
+    Base class for thermostat module in MindSPONGE, which is a subclass of :class:`sponge.control.Controller`.
 
-        The `Thermostat` module is used for temperature coupling. It controls the atomic velocities and the kinetics
-        of the system during the simulation process.
+    The :class:`sponge.control.thermostat.Thermostat` module is used for
+    temperature coupling. It controls the atomic velocities and the kinetics
+    of the system during the simulation process.
 
     Args:
-        system (Molecule): Simulation system
+        system ( :class:`sponge.system.Molecule`): Simulation system.
+        temperature (Union[float, ndarray, Tensor], optional): Reference temperature :math:`T_{ref}`
+          in unit Kelvin for temperature coupling.
+          Default: ``300.0``.
+        control_step (int, optional): Step interval for controller execution.
+          Default: ``1``.
+        time_constant (float, optional): Time constant :math:`\tau_T`
+          in unit picosecond for temperature coupling.
+          Default: ``0.5``.
 
-        temperature (Union[float, ndarray, Tensor]): Reference temperature :math:`T_{ref}` in unit Kelvin
-            for temperature coupling. Default: 300
+    Inputs:
+        - **coordinate** (Tensor) - Coordinate. Tensor of shape :math:`(B, A, D)`.
+          Data type is float.
+          Here :math:`B` is the number of walkers in simulation,
+          :math:`A` is the number of atoms and
+          :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+        - **velocity** (Tensor) - Velocity. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **force** (Tensor) - Force. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **energy** (Tensor) - Energy. Tensor of shape :math:`(B, 1)`. Data type is float.
+        - **kinetics** (Tensor) - Kinetics. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **virial** (Tensor) - Virial. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **pbc_box** (Tensor) - Pressure boundary condition box. Tensor of shape :math:`(B, D)`.
+          Data type is float.
+        - **step** (int) - Simulation step. Default: ``0``.
 
-        control_step (int): Step interval for controller execution. Default: 1
-
-        time_constant (float): Time constant :math:`\tau_T` in unit picosecond for temperature coupling.
-            Default: 0.5
+    Outputs:
+        - coordinate, Tensor of shape :math:`(B, A, D)`. Coordinate. Data type is float.
+        - velocity, Tensor of shape :math:`(B, A, D)`. Velocity. Data type is float.
+        - force, Tensor of shape :math:`(B, A, D)`. Force. Data type is float.
+        - energy, Tensor of shape :math:`(B, 1)`. Energy. Data type is float.
+        - kinetics, Tensor of shape :math:`(B, D)`. Kinetics. Data type is float.
+        - virial, Tensor of shape :math:`(B, D)`. Virial. Data type is float.
+        - pbc_box, Tensor of shape :math:`(B, D)`. Periodic boundary condition box.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> from sponge import Molecule
+        >>> from sponge.control import Thermostat
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> controller = Thermostat(system)
     """
     def __init__(self,
                  system: Molecule,
@@ -97,37 +129,78 @@ class Thermostat(Controller):
 
     @property
     def temperature(self) -> Tensor:
-        """reference temperature"""
+        r"""
+        Reference temperature.
+
+        Returns:
+            Tensor, reference temperature.
+        """
         return self.identity(self.ref_temp)
 
     @property
     def ref_kinetics(self) -> Tensor:
-        """reference kinetics"""
+        r"""
+        Reference kinetics.
+
+        Returns:
+            Tensor, reference kinetics.
+        """
         return self.get_ref_kinetics()
 
     def get_ref_kinetics(self) -> Tensor:
-        """get reference kinetics"""
+        r"""
+        Get reference kinetics.
+
+        Returns:
+            Tensor, reference kinetics.
+        """
         return 0.5 * self.degrees_of_freedom * self.boltzmann * self.ref_temp
 
     def set_temperature(self, temperature: Union[float, ndarray, Tensor, List[float]]) -> Tensor:
-        r"""set the value of reference temperature.
-            The size of the temperature array must be equal to current temperature.
+        r"""
+        Set the value of reference temperature.
+        The size of the temperature array must be equal to current temperature.
+
+        Args:
+            temperature (Union[float, ndarray, Tensor, List[float]]): temperature.
         """
         return F.assign(self.ref_temp, self._get_mw_tensor(temperature, 'temperature'))
 
     def reconstruct_temperature(self, temperature: Union[float, ndarray, Tensor, List[float]]):
-        r"""reset the reference temperature"""
+        r"""
+        Reset the reference temperature.
+
+        Args:
+            temperature (Union[float, ndarray, Tensor, List[float]]): temperature.
+        """
         temperature = self._get_mw_tensor(temperature, 'temperature')
         self.ref_temp = Parameter(temperature, name='ref_temp', requires_grad=False)
         return self
 
     def set_degrees_of_freedom(self, dofs: int):
-        """set degrees of freedom (DOFs)"""
+        r"""
+        Set degrees of freedom (DOFs).
+
+        Args:
+            dofs (int): degrees of freedom.
+        """
         self.degrees_of_freedom = dofs
         return self
 
     def velocity_scale(self, sim_kinetics: Tensor, ref_kinetics: Tensor, ratio: float = 1) -> Tensor:
-        """calculate the velocity scale factor for temperature coupling"""
+        r"""
+        Calculate the velocity scale factor for temperature coupling.
+
+        Args:
+            sim_kinetics (Tensor): Simulation kinetics. Tensor of shape :math:`(B, D)`.
+              Data type is float.
+            ref_kinetics (Tensor): Reference kinetics. Tensor of shape :math:`(B, D)`.
+              Data type is float.
+            ratio (float, optional): Ratio of temperature coupling. Default: ``1``.
+
+        Returns:
+            Tensor, velocity scale factor.
+        """
         sim_kinetics = self.keepdims_sum(sim_kinetics, -1)
         lambda_ = 1. + ratio * (ref_kinetics / sim_kinetics - 1)
         return F.sqrt(lambda_)
@@ -142,32 +215,32 @@ class Thermostat(Controller):
                   pbc_box: Tensor = None,
                   step: int = 0,
                   ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
-        r"""Control the temperature of the simulation system
+        r"""
+        Control the temperature of the simulation system
 
         Args:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-            step (int):             Simulation step. Default: 0
+            coordinate (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            velocity (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            force (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            energy (Tensor): Tensor of shape :math:`(B, 1)`. Data type is float.
+            kinetics (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            virial (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            pbc_box (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            step (int): Simulation step. Default: ``0``.
 
         Returns:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
+            - **coordinate** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **velocity** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **force** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **energy** (Tensor) - Tensor of shape :math:`(B, 1)`. Data type is float.
+            - **kinetics** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **virial** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **pbc_box** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
 
         Note:
-            B:  Number of walkers in simulation.
-            A:  Number of atoms.
-            D:  Spatial dimension of the simulation system. Usually is 3.
-
+            :math:`B` is the number of walkers in simulation.
+            :math:`A` is the number of atoms.
+            :math:`D` is the spatial dimension of the simulation system. Usually is 3.
         """
 
         raise NotImplementedError

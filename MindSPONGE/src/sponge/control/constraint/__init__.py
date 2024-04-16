@@ -32,9 +32,20 @@ from .settle import SETTLE
 __all__ = ['Constraint', 'Lincs', 'SETTLE', 'get_constraint']
 
 
-def get_constraint(constraint: Union[str, Constraint, List[Constraint]],
-                   system: Molecule):
-    """get constraint object"""
+def get_constraint(constraint: Union[str, Constraint, List[Constraint]], system: Molecule):
+    r"""
+    Get constraint object.
+
+    Args:
+        constraint (Union[str, :class:`sponge.control.Constraint`,
+          List[:class:`sponge.control.Constraint`]]):
+          constraint name,
+         `Constraint` object or list of `Constraint` objects.
+        system (:class:`sponge.system.Molecule`): Simulation system.
+
+    Returns:
+        List[:class:`sponge.control.Constraint`], constraint object list.
+    """
 
     if constraint is None:
         return None

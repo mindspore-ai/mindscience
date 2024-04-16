@@ -58,24 +58,57 @@ def _integrator_register(*aliases):
 
 
 class Integrator(Controller):
-    r"""Base class for thermostat module in MindSPONGE, which is a subclass of `Controller`.
+    r"""
+    Base class for thermostat module in MindSPONGE, which is a subclass of
+    :class:`sponge.control.Controller`.
 
-        The `Integrator` module used to control the atomic coordinates and velocities during the simulation process.
+    The :class:`sponge.control.Integrator` module is used to control
+    the atomic coordinates and velocities during the simulation process.
 
     Args:
-        system (Molecule):          Simulation system
+        system ( :class:`sponge.system.Molecule`): Simulation system.
+        thermostat ( :class:`sponge.control.Thermostat`, optional): Thermostat
+          for temperature coupling.
+          Default: ``None``.
+        barostat ( :class:`sponge.control.Barostat`, optional): Barostat for pressure coupling.
+          Default: ``None``.
+        constraint (Union[ :class:`sponge.control.Constraint`,
+          List[ :class:`sponge.control.Constraint`]], optional):
+          Constraint algorithm. Default: ``None``.
 
-        thermostat (Thermostat):    Thermostat for temperature coupling. Default: ``None``.
+    Inputs:
+        - **coordinate** (Tensor) - Coordinate. Tensor of shape :math:`(B, A, D)`.
+          Data type is float.
+          Here :math:`B` is the number of walkers in simulation,
+          :math:`A` is the number of atoms and
+          :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+        - **velocity** (Tensor) - Velocity. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **force** (Tensor) - Force. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **energy** (Tensor) - Energy. Tensor of shape :math:`(B, 1)`. Data type is float.
+        - **kinetics** (Tensor) - Kinetics. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **virial** (Tensor) - Virial. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **pbc_box** (Tensor) - Pressure boundary condition box. Tensor of shape :math:`(B, D)`.
+          Data type is float.
+        - **step** (int) - Simulation step. Default: ``0``.
 
-        barostat (Barostat):        Barostat for pressure coupling. Default: ``None``.
-
-        constraint (Union[Constraint, list]):
-                                    Constraint algorithm. Default: ``None``.
-
+    Outputs:
+        - coordinate, Tensor of shape :math:`(B, A, D)`. Coordinate. Data type is float.
+        - velocity, Tensor of shape :math:`(B, A, D)`. Velocity. Data type is float.
+        - force, Tensor of shape :math:`(B, A, D)`. Force. Data type is float.
+        - energy, Tensor of shape :math:`(B, 1)`. Energy. Data type is float.
+        - kinetics, Tensor of shape :math:`(B, D)`. Kinetics. Data type is float.
+        - virial, Tensor of shape :math:`(B, D)`. Virial. Data type is float.
+        - pbc_box, Tensor of shape :math:`(B, D)`. Periodic boundary condition box.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> from sponge import Molecule
+        >>> from sponge.control import Integrator
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> controller = Integrator(system)
     """
 
     def __init__(self,
@@ -106,7 +139,12 @@ class Integrator(Controller):
 
     @classmethod
     def get_name(cls, controller: Controller) -> str:
-        """get name of controller"""
+        r"""
+        Get name of controller.
+
+        Args:
+            controller ( :class:`sponge.control.Controller`): Controller object.
+        """
         if controller is None:
             return None
         if isinstance(controller, Controller):
@@ -116,7 +154,12 @@ class Integrator(Controller):
         raise TypeError(f'The type of controller must be Controller or list but got: {type(controller)}')
 
     def set_time_step(self, dt: float):
-        """set simulation time step"""
+        r"""
+        Set simulation time step.
+
+        Args:
+            dt (float):  Simulation time step.
+        """
         self.time_step = Tensor(dt, ms.float32)
         if self.thermostat is not None:
             self.thermostat.set_time_step(dt)
@@ -128,7 +171,12 @@ class Integrator(Controller):
         return self
 
     def set_degrees_of_freedom(self, dofs: int):
-        """set degrees of freedom (DOFs)"""
+        r"""
+        Set degrees of freedom (DOFs).
+
+        Args:
+            dofs (int):  Degrees of freedom.
+        """
         self.degrees_of_freedom = get_integer(dofs)
         if self.thermostat is not None:
             self.thermostat.set_degrees_of_freedom(dofs)
@@ -140,7 +188,12 @@ class Integrator(Controller):
         return self
 
     def set_thermostat(self, thermostat: Thermostat):
-        """set thermostat algorithm for integrator"""
+        r"""
+        Set thermostat algorithm for integrator.
+
+        Args:
+            thermostat (:class:`sponge.control.Thermostat`): Thermostat algorithm.
+        """
         if thermostat is None:
             if self.thermostat is not None:
                 print('Set the thermostat to "None"')
@@ -157,7 +210,12 @@ class Integrator(Controller):
         return self
 
     def set_barostat(self, barostat: Barostat):
-        """set barostat algorithm for integrator"""
+        r"""
+        Set barostat algorithm for integrator.
+
+        Args:
+            barostat (:class:`sponge.control.Barostat`): Barostat algorithm.
+        """
         if barostat is None:
             if self.barostat is not None:
                 print('Set the barostat to "None"')
@@ -174,7 +232,15 @@ class Integrator(Controller):
         return self
 
     def set_constraint(self, constraint: Union[Constraint, List[Constraint]], num_constraints: int = 0):
-        """set constraint algorithm for integrator"""
+        r"""
+        Set constraint algorithm for integrator.
+
+        Args:
+            constraint (Union[:class:`sponge.control.Constraint`,
+              List[:class:`sponge.control.Constraint`]]):  Constraint algorithm.
+            num_constraints (int, optional):  Number of constraints.
+              Default: ``0``.
+        """
         self.num_constraints = num_constraints
         if self.constraint is not None:
             for i in range(self.num_constraint_controller):
@@ -205,7 +271,12 @@ class Integrator(Controller):
         return self
 
     def add_constraint(self, constraint: Constraint):
-        """add constraint algorithm for integrator"""
+        r"""
+        Add constraint algorithm for integrator.
+
+        Args:
+            constraint (:class:`sponge.control.Constraint`):  Constraint algorithm.
+        """
         if isinstance(constraint, Controller):
             constraint = [constraint]
             num_constraint_controller = 1
@@ -238,32 +309,32 @@ class Integrator(Controller):
                   pbc_box: Tensor = None,
                   step: int = 0,
                   ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
-        r"""update simulation step.
+        r"""
+        Update simulation step.
 
         Args:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-            step (int):             Simulation step. Default: 0
+            coordinate (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            velocity (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            force (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            energy (Tensor): Tensor of shape :math:`(B, 1)`. Data type is float.
+            kinetics (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            virial (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            pbc_box (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            step (int): Simulation step. Default: ``0``.
 
         Returns:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
+            - **coordinate** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **velocity** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **force** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **energy** (Tensor) - Tensor of shape :math:`(B, 1)`. Data type is float.
+            - **kinetics** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **virial** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **pbc_box** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
 
         Note:
-            B:  Number of walkers in simulation.
-            A:  Number of atoms.
-            D:  Spatial dimension of the simulation system. Usually is 3.
-
+            :math:`B` is the number of walkers in simulation.
+            :math:`A` is the number of atoms.
+            :math:`D` is the spatial dimension of the simulation system. Usually is 3.
         """
 
         raise NotImplementedError
