@@ -76,6 +76,58 @@ class Controller(Cell):
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from sponge import WithEnergyCell, UpdaterMD, Sponge
+        >>> from sponge.callback import RunInfo
+        >>> from sponge.control import Controller
+        >>> # system is the Molecule object defined by user.
+        >>> # potential is the Energy object defined by user.
+        >>> withenergy = WithEnergyCell(system, potential)
+        >>> updater = UpdaterMD(
+        ...     system=system,
+        ...     time_step=1e-3,
+        ...     velocity=velocity,
+        ...     integrator='velocity_verlet',
+        ...     temperature=300,
+        ... )
+        >>> mini = Sponge(withenergy, optimizer=updater)
+        >>> run_info = RunInfo(1)
+        >>> mini.run(5, callbacks=[run_info])
+        [MindSPONGE] Started simulation at 2024-03-22 14:21:27
+        [MindSPONGE] Step: 1, E_pot: 110.0423, E_kin: 46.251404, E_tot: 156.2937, Temperature: 337.1373
+        [MindSPONGE] Step: 2, E_pot: 107.28819, E_kin: 48.7815, E_tot: 156.0697, Temperature: 355.57977
+        [MindSPONGE] Step: 3, E_pot: 112.72148, E_kin: 43.82708, E_tot: 156.54855, Temperature: 319.46582
+        [MindSPONGE] Step: 4, E_pot: 119.34253, E_kin: 37.759735, E_tot: 157.10226, Temperature: 275.23953
+        [MindSPONGE] Step: 5, E_pot: 119.16531, E_kin: 37.857212, E_tot: 157.02252, Temperature: 275.95004
+        [MindSPONGE] Finished simulation at 2024-03-22 14:21:30
+        [MindSPONGE] Simulation time: 2.96 seconds.
+        --------------------------------------------------------------------------------
+        >>> class MyController(Controller):
+        ...     def construct(self,
+        ...                 coordinate: Tensor,
+        ...                 velocity: Tensor,
+        ...                 **kwargs):
+        ...         return super().construct(coordinate, velocity/100, **kwargs)
+        >>> updater = UpdaterMD(
+        ...     system=system,
+        ...     time_step=1e-3,
+        ...     velocity=velocity,
+        ...     integrator='velocity_verlet',
+        ...     temperature=300,
+        ...     controller=MyController(system)
+        ... )
+        >>> mini = Sponge(withenergy, optimizer=updater)
+        >>> mini.run(5, callbacks=[run_info])
+        [MindSPONGE] Started simulation at 2024-03-22 14:22:54
+        [MindSPONGE] Step: 1, E_pot: 110.0423, E_kin: 0.005846547, E_tot: 110.04814, Temperature: 0.042616848
+        [MindSPONGE] Step: 2, E_pot: 113.94534, E_kin: 0.005484298, E_tot: 113.95083, Temperature: 0.03997633
+        [MindSPONGE] Step: 3, E_pot: 117.96643, E_kin: 0.0051222043, E_tot: 117.97155, Temperature: 0.037336946
+        [MindSPONGE] Step: 4, E_pot: 115.83751, E_kin: 0.005331765, E_tot: 115.84284, Temperature: 0.038864482
+        [MindSPONGE] Step: 5, E_pot: 107.83249, E_kin: 0.006089137, E_tot: 107.83858, Temperature: 0.044385143
+        [MindSPONGE] Finished simulation at 2024-03-22 14:22:57
+        [MindSPONGE] Simulation time: 3.00 seconds.
+        --------------------------------------------------------------------------------
     """
     def __init__(self,
                  system: Molecule,

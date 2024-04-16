@@ -77,6 +77,29 @@ class EnergyCell(Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> from mindspore import Tensor
+        >>> from mindspore.nn import Adam
+        >>> from sponge.potential import EnergyCell, ForceFieldBase
+        >>> from sponge import WithEnergyCell, Sponge
+        >>> from sponge.callback import RunInfo
+        >>> class MyEnergy(EnergyCell):
+        ...     def construct(self, coordinate: Tensor, **kwargs):
+        ...         return coordinate.sum()[None, None]
+        >>> # system represents a custom molecular system
+        >>> potential = MyEnergy(system)
+        >>> forcefield = ForceFieldBase(potential)
+        >>> withenergy = WithEnergyCell(system, forcefield)
+        >>> opt = Adam(system.trainable_params(), 1e-3)
+        >>> mini = Sponge(withenergy, optimizer=opt)
+        >>> run_info = RunInfo(5)
+        >>> mini.run(10, callbacks=[run_info])
+        [MindSPONGE] Started simulation at 2024-03-22 11:08:34
+        [MindSPONGE] Step: 5, E_pot: 0.31788814
+        [MindSPONGE] Step: 10, E_pot: 0.13788882
+        [MindSPONGE] Finished simulation at 2024-03-22 11:08:35
+        [MindSPONGE] Simulation time: 0.98 seconds.
+        --------------------------------------------------------------------------------
     """
     def __init__(self,
                  name: str = 'energy',

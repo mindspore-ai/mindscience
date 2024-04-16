@@ -309,6 +309,14 @@ class Energy:
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
+
+    Examples:
+        >>> from sponge.function import Energy
+        >>> ene = Energy(1.0, 'kcal/mol')
+        >>> ene.change_unit('kj/mol')
+        <sponge.function.units.Energy at 0x7f415483eac0>
+        >>> ene.value
+        4.184
     """
 
     def __init__(self, value: float, unit: str = 'kj/mol', **kwargs):
@@ -657,6 +665,18 @@ class Units:
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
+
+    Examples:
+        >>> from sponge.function import Units
+        >>> unit = Units(length_unit='nm', energy_unit='kj/mol')
+        >>> unit.convert_energy_to('kcal/mol')
+        0.2390057361376673
+        >>> unit.convert_energy_from('kcal/mol')
+        4.184
+        >>> unit.convert_length_to('A')
+        10.0
+        >>> unit.convert_length_from('A')
+        0.1
     """
 
     def __init__(self,
@@ -1098,6 +1118,13 @@ def get_energy(energy: Union[Energy, float], unit: Union[str, Units] = None) -> 
 
     Returns:
         Float, a tensor of energy in specific unit.
+
+    Examples:
+        >>> from sponge.function import get_energy
+        >>> get_energy(ene)
+        4.184
+        >>> get_energy(ene, 'kcal/mol')
+        1.0
     """
     if isinstance(energy, dict):
         energy = Energy(**energy)
@@ -1153,6 +1180,11 @@ def set_global_units(length_unit: Union[str, Units, Length, float, int] = None,
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
+
+    Examples:
+        >>> from sponge import set_global_units
+        >>> set_global_units('nm', 'kj/mol')
+
     """
     global GLOBAL_UNITS
     GLOBAL_UNITS.set_units(length_unit, energy_unit, units)

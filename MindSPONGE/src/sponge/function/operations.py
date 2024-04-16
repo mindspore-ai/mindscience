@@ -55,6 +55,20 @@ class GetVector(Cell):
                         conditions based on whether the ``pbc_box`` is provided.
                         Default: ``None`` .
 
+    Examples:
+        >>> import mindspore as ms
+        >>> import numpy as np
+        >>> from sponge.function import GetVector
+        >>> from mindspore import Tensor
+        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
+        >>> pbc_box = Tensor([[0.5, 0.5, 0.5]], ms.float32)
+        >>> gd = GetVector(use_pbc=True)
+        >>> gd(crd[0], crd[1], pbc_box)
+        Tensor(shape=[1, 3], dtype=Float32, value=
+        [[ 5.14909625e-02, -4.62748706e-02, -1.20763242e-01]])
+        >>> gd = GetVector(use_pbc=False)
+        >>> gd(crd[0], crd[1])
+        Tensor(shape=[3], dtype=Float32, value= [ 5.14909625e-02,  4.53725129e-01, -1.20763242e-01])
     """
 
     def __init__(self, use_pbc: bool = None):
@@ -196,6 +210,19 @@ class GetDistance(GetVector):
 
         axis (int):         The axis of the space dimension of the coordinate. Default: ``-1`` .
 
+    Examples:
+        >>> import mindspore as ms
+        >>> import numpy as np
+        >>> from sponge.function import GetDistance
+        >>> from mindspore import Tensor
+        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
+        >>> pbc_box = Tensor([[0.5, 0.5, 0.5]], ms.float32)
+        >>> gd = GetDistance(use_pbc=True, keepdims=False)
+        >>> gd(crd[0], crd[1], pbc_box)
+        Tensor(shape=[1], dtype=Float32, value= [ 1.39199302e-01])
+        >>> gd = GetDistance(use_pbc=False, keepdims=False)
+        >>> gd(crd[0], crd[1])
+        Tensor(shape=[], dtype=Float32, value= 0.472336)
     """
 
     def __init__(self,
@@ -231,7 +258,10 @@ class GetDistance(GetVector):
             distance (Tensor):  Tensor of shape (B, ...). Data type is float.
 
         """
-        vector = self.calc_vector(initial, terminal, pbc_box)
+        if self._use_pbc:
+            vector = self.calc_vector(initial, terminal, pbc_box)
+        else:
+            vector = self.calc_vector(initial, terminal)
 
         if self.norm is None:
             return ops.norm(vector, None, self.axis, self.keepdims)
@@ -255,6 +285,17 @@ class VelocityGenerator(Cell):
         length_unit (str):          Length unit. Default: ``None``
 
         energy_unit (str):          energy unit. Default: ``None``
+    Examples:
+        >>> from sponge import UpdaterMD
+        >>> from sponge.function import VelocityGenerator
+        >>> vgen = VelocityGenerator(300)
+        >>> velocity = vgen(system.shape, system.atom_mass)
+        >>> opt = UpdaterMD(system=system,
+        ...                 time_step=1e-3,
+        ...                 velocity=velocity,
+        ...                 integrator='velocity_verlet',
+        ...                 temperature=300,
+        ...                 thermostat='langevin')
 
     """
     #pylint: disable=invalid-name
