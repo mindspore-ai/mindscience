@@ -43,7 +43,7 @@ where,
 
 ## 结果展示
 
-![3d GS RD](images/result.png)
+![3d GS RD](images/result.jpg)
 
 ## 性能
 

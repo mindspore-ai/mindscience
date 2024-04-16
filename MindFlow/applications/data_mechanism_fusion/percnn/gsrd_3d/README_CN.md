@@ -43,7 +43,7 @@ python train.py --mode GRAPH --device_target Ascend --device_id 0 --config_file_
 
 ## 结果展示
 
-![3d GS RD](images/result.png)
+![3d GS RD](images/result.jpg)
 
 ## 性能
 
