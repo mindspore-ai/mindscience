@@ -10,7 +10,7 @@ mindelec.architecture.MultiScaleFCCell
         - **out_channel** (int) - 输出空间中的通道数。
         - **layers** (int) - 层总数，包括输入/隐藏/输出层。
         - **neurons** (int) - 隐藏层的神经元数量。
-        - **residual** (bool) - 隐藏层的残差块是否为全连接。默认值：``True``。
+        - **residual** (bool) - 隐藏层的残差块是否为全连接。默认值： ``True``。
         - **act** (Union[str, Cell, Primitive, None]) - 应用于全连接层输出的激活函数，例如 ``"ReLU"``。默认值： ``"sin"``。
         - **weight_init** (Union[Tensor, str, Initializer, numbers.Number]) - 可训练的初始权重值。dtype与输入 `input` 相同。str的值可参考函数 `mindspore.common.initializer`。默认值： ``"normal"``。
         - **has_bias** (bool) - 指定图层是否使用偏置向量。默认值： ``True``。

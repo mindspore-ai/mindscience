@@ -14,7 +14,7 @@ sponge.function.calc_angle
         - **position_b** (Tensor) - 位置b，shape为 :math:`(B, ..., D)` ，数据类型为float。
         - **position_c** (Tensor) - 位置c，shape为 :math:`(B, ..., D)` ，数据类型为float。
         - **pbc_box** (Tensor) - PBC box，shape为 :math:`(B, D)` ，数据类型为float。默认值： ``None`` 。
-        - **keepdims** (bool) - 如果设置为True，则在结果中，最后一个轴将保留为大小为1的维度。默认值：``False``。
+        - **keepdims** (bool) - 如果设置为True，则在结果中，最后一个轴将保留为大小为1的维度。默认值： ``False``。
 
     返回：
         Tensor。计算所得角，取值范围为 :math:`(0, \pi)` 。shape为 :math:`(B, ..., 1)` ，数据类型为float。
