@@ -61,7 +61,7 @@ class DemSrTrainer(Trainer):
         return pred_cb
 
     def train(self):
-        r""" train """
+        r"""Train."""
         callback_lst = [LossMonitor(), TimeMonitor(), self.ckpt_cb]
         if self.pred_cb:
             callback_lst.append(self.pred_cb)

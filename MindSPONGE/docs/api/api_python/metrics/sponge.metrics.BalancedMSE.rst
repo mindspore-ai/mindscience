@@ -14,16 +14,16 @@ sponge.metrics.BalancedMSE
         \cdot \mathcal{N}\left(\boldsymbol{y}_{(i)} ; \boldsymbol{y}_{\text {pred }},
         \sigma_{\text {noise }}^{2} \mathrm{I}\right)
 
-    参数:
+    参数：
         - **first_break** (float) - 箱线的起始值。
         - **last_break** (float) - 箱线的结束值。
         - **num_bins** (int) - 箱线数量。
         - **beta** (float，可选) - 移动平均系数，默认值为 ``0.99``。
         - **reducer_flag** (bool，可选) - 是否聚合多个设备的标签值，默认值为 ``False``。
 
-    输入:
+    输入：
         - **prediction** (Tensor) - 预测值，shape为 :math:`(batch\_size, ndim)`。
         - **target** (Tensor) - 真实标签值，shape为 :math:`(batch\_size, ndim)`。
 
-    输出:
+    输出：
         Tensor，shape为 :math:`(batch\_size, ndim)`。

@@ -13,8 +13,8 @@ sponge.colvar.Atoms
 
     参数：
         - **index** (Union[Tensor, ndarray, List[int]]) - 特定原子的索引数组。张量的shape为 (a_1, a_2, ..., a_n) 或 (B, a_1, a_2, ..., a_n) ，数据类型为int。
-        - **batched** (bool) - 索引的第一个维度是否为批大小。默认值：``False``。
-        - **keep_in_box** (bool) - 是否在PBC box中替换坐标。默认值：``False``。
+        - **batched** (bool) - 索引的第一个维度是否为批大小。默认值： ``False``。
+        - **keep_in_box** (bool) - 是否在PBC box中替换坐标。默认值： ``False``。
         - **dimension** (int) - 仿真系统的空间维度。默认值：3。
         - **name** (str) - Colvar的名称。默认值：'atoms'。
 

@@ -129,7 +129,7 @@ class GraphCastTrainerTp(Trainer):
         return train_dataset, valid_dataset
 
     def train(self):
-        """ train """
+        """Train."""
         callback_lst = [LossMonitor(), TimeMonitor(), self.ckpt_cb]
         if self.pred_cb:
             callback_lst.append(self.pred_cb)

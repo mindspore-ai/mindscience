@@ -60,7 +60,7 @@ def get_metrics(metrics: Union[dict, set]) -> dict:
     Examples:
         >>> from mindspore import Tensor
         >>> from sponge.colvar import Distance
-        >>> from sponge.metrics import MetricCV
+        >>> from sponge.metrics import get_metrics
         >>> cv = Distance([0,1])
         >>> metric = get_metrics({"distance": cv})
         >>> coordinate = Tensor([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
@@ -107,6 +107,7 @@ class Metric(_Metric):
                biases: Tensor = None,
                ):
         """
+        update the state information of the simulation system.
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
@@ -189,6 +190,7 @@ class MetricCV(Metric):
                biases: Tensor = None,
                ):
         """
+        update the state information of the system.
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.

@@ -273,7 +273,7 @@ class Trainer:
         return solver
 
     def train(self):
-        """ train """
+        """Train."""
         callback_lst = [LossMonitor(), TimeMonitor()]
         if self.pred_cb:
             callback_lst.append(self.pred_cb)

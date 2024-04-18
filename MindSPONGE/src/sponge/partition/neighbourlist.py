@@ -93,7 +93,7 @@ class NeighbourList(Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Example:
+    Examples:
         >>> import sponge
         >>> from sponge.partition import NeighbourList
         >>> from sponge.system import Molecule

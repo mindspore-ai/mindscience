@@ -7,7 +7,7 @@ sponge.partition.NeighbourList
 
     参数：
         - **system** (Molecule) - 模拟系统。
-        - **cutoff** (float) - 截断距离。如果在周期性边界条件 (PBC) 下给定了 ``None``，截断距离将被分配为默认值 1 纳米。默认值： ``None``。
+        - **cutoff** (float，可选) - 截断距离。如果在周期性边界条件 (PBC) 下给定了 ``None``，截断距离将被分配为默认值 1 纳米。默认值： ``None``。
         - **pace** (int，可选) - 更新近邻表的模拟频率。默认值： ``20``。
         - **exclude_index** (Tensor，可选) - 可以从近邻表中排除的相邻原子的索引Tensor，shape为 :math:`(B, A, Ex)`，数据类型为 int。默认值： ``None``。
         - **num_neighbours** (int，可选) - 最大近邻数。如果给定了 ``None``，此值将通过相邻网格数与总网格数的比例计算。默认值： ``None``。
@@ -29,11 +29,11 @@ sponge.partition.NeighbourList
         
         计算近邻表。
     
-        参数:
+        参数：
             - **coordinate** (Tensor) - shape为 :math:`(B, A, D)` 的Tensor。数据类型为 float。位置坐标。
             - **pbc_box** (Tensor，可选) - shape为 :math:`(B, D)` 的Tensor。数据类型为 float。PBC（周期性边界条件）盒的大小。默认值： ``None``。
 
-        返回:
+        返回：
             - **neigh_idx** (Tensor) - shape为 :math:`(B, A, N)` 的Tensor。数据类型为 int。系统中每个原子的相邻原子的索引。
             - **neigh_mask** (Tensor) - shape为 :math:`(B, A, N)` 的Tensor。数据类型为 bool。近邻表 `neigh_idx` 的掩码。
 
