@@ -325,7 +325,7 @@ def vecs_cross_vecs(v1, v2):
 
     Returns:
         tuple, cross product result of two vectors, length is 3.
-            Data type is constant or Tensor with same shape.
+        Data type is constant or Tensor with same shape.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -375,7 +375,7 @@ def rots_from_two_vecs(e0_unnormalized, e1_unnormalized):
 
     Returns:
         tuple, rotation matrix :math:`(e_{0x}, e_{1x}, e_{2x}, e_{0y}, e_{1y}, e_{2y}, e_{0z}, e_{1z}, e_{2z})` .
-            Data type is constant or Tensor with same shape.
+        Data type is constant or Tensor with same shape.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -446,7 +446,7 @@ def rigids_from_3_points(point_on_neg_x_axis, origin, point_on_xy_plane):
 
     Returns:
         tuple(rots, trans), rigid, length is 2. Include rots :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`
-            and trans :math:`(x, y, z)` . Data type is constant or Tensor with same shape.
+        and trans :math:`(x, y, z)` . Data type is constant or Tensor with same shape.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -558,8 +558,8 @@ def invert_rigids(rigids):
 
     Returns:
         tuple(rots, trans), group inverse of rigid transformations, length is 2. Include rots
-            :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` and trans :math:`(x, y, z)` .
-            Data type is constant or Tensor with same shape.
+        :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` and trans :math:`(x, y, z)` .
+        Data type is constant or Tensor with same shape.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -674,8 +674,8 @@ def rigids_mul_rigids(a, b):
 
     Returns:
         tuple(rots, trans), rigid :math:`b` changed. Length is 2.
-            Include rots :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`
-            and trans :math:`(x, y, z)` . Data type is constant or Tensor with same shape.
+        Include rots :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`
+        and trans :math:`(x, y, z)` . Data type is constant or Tensor with same shape.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -886,7 +886,7 @@ def make_transform_from_reference(point_a, point_b, point_c):
 def rots_from_tensor(rots, use_numpy=False):
     """
     Amortize and split the 3*3 rotation matrix corresponding to the last two axes of input Tensor
-      to obtain each component of the rotation matrix, inverse of 'rots_to_tensor'.
+    to obtain each component of the rotation matrix, inverse of 'rots_to_tensor'.
 
     Args:
         rots(Tensor):       Represent the rotation matrix, shape is :math:`(..., 3, 3)` .
@@ -1101,8 +1101,8 @@ def vecs_expand_dims(v, axis):
 
     Returns:
         Tuple, if the axis is 0, and the shape of :math:`xx` is :math:`(..., X_R)`, where X_R is any number.
-          The expanded shape is :math:`(1, ..., X_R)`. If the axis is other value, then expand in the other
-          direction. And return expanded :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` .
+        The expanded shape is :math:`(1, ..., X_R)`. If the axis is other value, then expand in the other
+        direction. And return expanded :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)` .
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1134,8 +1134,8 @@ def rots_expand_dims(rots, axis):
 
     Returns:
         Tuple, rots. If the value of axis is 0, and the shape of xx is :math:`(..., X_R)`,
-          where :math:`X_R` is any number, and the expanded shape is :math:`(1, ..., X_R)`.
-          Return expanded :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
+        where :math:`X_R` is any number, and the expanded shape is :math:`(1, ..., X_R)`.
+        Return expanded :math:`(xx, xy, xz, yx, yy, yz, zx, zy, zz)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

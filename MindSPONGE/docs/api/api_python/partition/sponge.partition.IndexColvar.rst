@@ -1,7 +1,7 @@
 sponge.partition.IndexColvar
 =============================
 
-.. py:class:: sponge.optimizer.IndexColvar(use_pbc: bool = None)
+.. py:class:: sponge.partition.IndexColvar(use_pbc: bool = None)
 
     基于索引的集体变量 (Collective variables)。
 

@@ -442,7 +442,8 @@ def periodic_variable(variable: Tensor,
 
     Returns:
         period_value (Tensor), Tensor of shape `(...)`. Data type is float.
-                                Variable with value in the periodic range.
+        Variable with value in the periodic range.
+
     Supported Platforms:
         ``Ascend`` ``GPU``
 
@@ -477,7 +478,7 @@ def periodic_difference(difference: Tensor,
 
     Returns:
         period_diff (Tensor), Tensor of shape `(...)`. Data type is float.
-                                Variable with value in the periodic range.
+        Variable with value in the periodic range.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -896,9 +897,10 @@ def calc_angle_by_vectors(vector1: Tensor,
                           vector2: Tensor,
                           keepdims: bool = False
                           ) -> Tensor:
-    r"""Compute angle between two vectors.
-        For vector :math:`\vec {v_1} = (x_1, x_2, x_3, ..., x_n)` and
-        :math:`\vec {v_2} = (y_1, y_2, y_3, ..., y_n)` , the formula is
+    r"""
+    Compute angle between two vectors.
+    For vector :math:`\vec {v_1} = (x_1, x_2, x_3, ..., x_n)` and
+    :math:`\vec {v_2} = (y_1, y_2, y_3, ..., y_n)` , the formula is
 
     .. math::
 
@@ -938,8 +940,9 @@ def calc_angle_nopbc(position_a: Tensor,
                      position_c: Tensor,
                      keepdims: bool = False,
                      ) -> Tensor:
-    r"""Compute angle :math:`\angle{ABC}` formed by the position coordinates of three positions
-        :math:`A`, :math:`B` and :math:`C` without periodic boundary condition.
+    r"""
+    Compute angle :math:`\angle{ABC}` formed by the position coordinates of three positions
+    :math:`A`, :math:`B` and :math:`C` without periodic boundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape `(..., D)`. Data type is float.
@@ -976,8 +979,9 @@ def calc_angle_pbc(position_a: Tensor,
                    pbc_box: Tensor,
                    keepdims: bool = False,
                    ) -> Tensor:
-    r"""Compute angle :math:`\angle{ABC}` formed by the position coordinates of three positions
-        :math:`A`, :math:`B` and :math:`C` at periodic boundary condition.
+    r"""
+    Compute angle :math:`\angle{ABC}` formed by the position coordinates of three positions
+    :math:`A`, :math:`B` and :math:`C` at periodic boundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
@@ -1071,8 +1075,9 @@ def calc_torsion_by_vectors(vector1: Tensor,
                             axis_vector: Tensor = None,
                             keepdims: bool = False,
                             ) -> Tensor:
-    r"""Compute torsion angle formed by two direction vectors :math:`\vec{v_1}` and :math:`\vec{v_2}`
-        and an axis vector :math:`\vec{v_{axis}}`.
+    r"""
+    Compute torsion angle formed by two direction vectors :math:`\vec{v_1}` and :math:`\vec{v_2}`
+    and an axis vector :math:`\vec{v_{axis}}`.
 
     Args:
         vector1 (Tensor):       Tensor of shape :math:`(..., D)`. Data type is float.
@@ -1215,8 +1220,9 @@ def calc_torsion(position_a: Tensor,
                  keepdims: bool = False,
                  ) -> Tensor:
 
-    r"""Compute torsion angle :math:`A-B-C-D` formed by four positions :math:`A`, :math:`B`, :math:`C` and :math:`D`
-        with or without periodic boundary condition.
+    r"""
+    Compute torsion angle :math:`A-B-C-D` formed by four positions :math:`A`, :math:`B`, :math:`C` and :math:`D`
+    with or without periodic boundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.

@@ -77,7 +77,7 @@ sponge.potential.EnergyCell
 
         参数：
             - **cutoff** (float) - 截断距离。
-            - **unit** (str) - 长度单位。默认值：``None``。
+            - **unit** (str) - 长度单位。默认值： ``None``。
 
     .. py:method:: set_input_unit(length_unit: Union[str, Units, Length])
 

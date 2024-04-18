@@ -7,7 +7,7 @@ sponge.metrics.MultiClassFocal
 
     参考 `Lin, Tsung-Yi, et al. 'Focal loss for dense object detection' <https://arxiv.org/abs/1708.02002>`_ 。
 
-    参数:
+    参数：
         - **num_class** (int) - 类别数量。
         - **beta** (float，可选) - 移动平均系数，默认值为 ``0.99``。
         - **gamma** (float，可选) - 超参数，默认值为 ``2.0``。
@@ -16,9 +16,9 @@ sponge.metrics.MultiClassFocal
         - **not_focal** (bool，可选) - 是否使用焦点损失，默认值为 ``False``。
         - **reducer_flag** (bool，可选) - 是否聚合多个设备的标签值，默认值为 ``False``。
 
-    输入:
+    输入：
         - **prediction** (Tensor) - 预测值，shape为 :math:`(batch\_size, ndim)`。
         - **target** (Tensor) - 标签值，shape为 :math:`(batch\_size, ndim)`。
 
-    输出:
+    输出：
         Tensor，shape为 :math:`(batch\_size,)`。

@@ -138,7 +138,7 @@ class GenerationTrainer:
         return g_solver, d_solver
 
     def train(self):
-        """ train """
+        """Train."""
         for epoch in range(self.epochs):
             self.g_solver.set_train(True)
             self.d_solver.set_train(True)
@@ -268,7 +268,7 @@ class EvolutionTrainer:
         return pred_cb
 
     def train(self):
-        """ train """
+        """Train."""
         callback_lst = [LossMonitor(), TimeMonitor(), self.pred_cb, self.ckpt_cb]
         self.solver.train(epoch=self.optimizer_params.get("epochs", 200),
                           train_dataset=self.train_dataset,

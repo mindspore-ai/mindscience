@@ -37,7 +37,7 @@ sponge.partition.DistanceNeighbours
 
         打印近邻表中的信息。
 
-    .. py:method:: set_exclude_index(exclude_index)
+    .. py:method:: set_exclude_index(exclude_index: Tensor)
 
         设置应从近邻表中排除的原子索引。
 
