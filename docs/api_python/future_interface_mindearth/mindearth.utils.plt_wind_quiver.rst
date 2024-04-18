@@ -12,7 +12,7 @@ mindearth.utils.plt_wind_quiver
         - **start_date** (tuple): 数据的开始日期，年、月、日、小时、分钟、秒组成的元组。默认值（2015，1，1，0，0）。
         - **data_interval** (int): 数据间隔，默认值：6。
         - **frames** (int): 动画的帧率，默认值。
-        - **save_fig_path** (str): 储存图片或动画的路径，默认值：``"./wind_quiver"``。
+        - **save_fig_path** (str): 储存图片或动画的路径，默认值： ``"./wind_quiver"``。
         - **is_videos** (bool): 是否绘制动画，默认值：False。
 
     返回：

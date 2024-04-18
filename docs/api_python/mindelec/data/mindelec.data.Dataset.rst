@@ -6,9 +6,9 @@ mindelec.data.Dataset
     将数据集合并在一起。
 
     参数：
-        - **geometry_dict** (dict, 可选) - 指定要合并的几何数据集。键为几何实例，值为几何体类型的列表。例如，geometry_dict = {geom : [``"domain"``, ``"BC"``, ``"IC"``]}。默认值：``None``。
-        - **existed_data_list** (Union[list, tuple, ExistedDataConfig], 可选) - 指定要合并的现有数据集。例如，existed_data_list = [``ExistedDataConfig_Instance1``, ``ExistedDataConfig_Instance2``]。默认值：``None``。
-        - **dataset_list** (Union[list, tuple, Data], 可选) - 指定要合并的数据实例。例如，dataset_list=[``BoundaryIC_Instance``, ``Equation_Instance``, ``BoundaryBC_Instance``, ``ExistedData_Instance``]。默认值：``None``。
+        - **geometry_dict** (dict, 可选) - 指定要合并的几何数据集。键为几何实例，值为几何体类型的列表。例如，geometry_dict = {geom : [``"domain"``, ``"BC"``, ``"IC"``]}。默认值： ``None``。
+        - **existed_data_list** (Union[list, tuple, ExistedDataConfig], 可选) - 指定要合并的现有数据集。例如，existed_data_list = [``ExistedDataConfig_Instance1``, ``ExistedDataConfig_Instance2``]。默认值： ``None``。
+        - **dataset_list** (Union[list, tuple, Data], 可选) - 指定要合并的数据实例。例如，dataset_list=[``BoundaryIC_Instance``, ``Equation_Instance``, ``BoundaryBC_Instance``, ``ExistedData_Instance``]。默认值： ``None``。
 
     异常：
         - **ValueError** - 如果 `geometry_dict` 、 `existed_data_list` 和 `dataset_list` 都为 ``None``。

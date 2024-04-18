@@ -18,10 +18,10 @@ sponge.colvar.Colvar
 
     参数：
         - **shape** (Tuple) - 集合变量的shape。默认值：()
-        - **periodic** (bool) - 判断集合变量是否是周期性的。默认值：``False``。
-        - **use_pbc** (bool) - 是否使用周期边界条件。如果给出 `None`，它将根据是否提供 `pbc_box` 来确定是否使用周期性边界条件。默认值：``None``。
+        - **periodic** (bool) - 判断集合变量是否是周期性的。默认值： ``False``。
+        - **use_pbc** (bool) - 是否使用周期边界条件。如果给出 `None`，它将根据是否提供 `pbc_box` 来确定是否使用周期性边界条件。默认值： ``None``。
         - **name** (str) - 集合变量的名称。默认值：'colvar'。
-        - **unit** (str) - 集合变量的单位。注意：这不是包裹长度和能量的 `Units` 单元格。默认值：``None``。
+        - **unit** (str) - 集合变量的单位。注意：这不是包裹长度和能量的 `Units` 单元格。默认值： ``None``。
         - **dtype** (type) - 集合变量的数据类型。默认值：float32。
 
     .. py:method:: all_periodic()
