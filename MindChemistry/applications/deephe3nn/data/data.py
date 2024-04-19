@@ -16,6 +16,7 @@
 data
 """
 import os
+import logging
 import stat
 import time
 import pickle
@@ -23,8 +24,8 @@ import tqdm
 from pymatgen.core.structure import Structure
 from pathos.multiprocessing import ProcessingPool as Pool
 import numpy as np
-from .graph import get_graph, load_orbital_types
-from .utils import process_targets
+from data.graph import get_graph, load_orbital_types
+from models.utils import process_targets
 
 
 class AijData():
@@ -126,9 +127,10 @@ raw_data_dir
             self.data_numpy = loaded_dataset[0]
             self.info = loaded_dataset[1]
 
-            print(
-                f'Finish loading the processed {len(self.data_numpy)} structures (spinful: {self.info["spinful"]}, '
-                f'the number of atomic types: {len(self.info["index_to_Z"])}), cost {time.time() - begin:.2f} seconds')
+            logging.info("Finish loading the processed %s structures, spinful: %s", len(self.data_numpy),
+                         self.info["spinful"])
+            logging.info("the number of atomic types: %s), cost %s seconds", len(self.info["index_to_Z"]),
+                         time.time() - begin)
 
     @staticmethod
     def element_statistics(data_list):
@@ -195,7 +197,7 @@ raw_data_dir
         else:
             data_list = [self.process_worker(folder) for folder in tqdm.tqdm(folder_list)]
 
-        print('Finish processing %d structures, have cost %d seconds' % (len(data_list), time.time() - begin))
+        logging.info("Finish processing %d structures, have cost %d seconds", len(data_list), time.time() - begin)
 
         index_to_z, z_to_index, data_list = self.element_statistics(data_list)
 
@@ -220,8 +222,8 @@ raw_data_dir
         with os.fdopen(os.open(self.data_file, flags, modes), 'wb') as f:
             pickle.dump(zip_data, f)
 
-        print('Finished saving %d structures to save_graph_dir, have cost %d seconds' %
-              (len(data_list), time.time() - begin))
+        logging.info("Finished saving %d structures to save_graph_dir, have cost %d seconds", len(data_list),
+                     time.time() - begin)
 
     def process_worker(self, folder):
         """
