@@ -32,6 +32,7 @@ matformer
     │  README.md    README文件
     │  config.yaml    配置文件
     │  train.py     训练启动脚本
+    │  predict.py     推理启动脚本
     │  
     └─data
             data.py  数据集处理
@@ -55,7 +56,15 @@ pip install -r requirements.txt
 python train.py
 ```
 
-训练过程日志
+### 推理
+
+将权重的path写入config文件的predictor.checkpoint_path中
+
+```txt
+python predict.py
+```
+
+### 训练过程日志
 
 ```log
 INFO:root:Loading from saved file...
