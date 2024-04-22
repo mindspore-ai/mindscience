@@ -2,7 +2,7 @@ sponge.partition.GridNeighbours
 ================================
 
 .. py:class:: sponge.partition.GridNeighbours(cutoff: float, coordinate: Tensor, pbc_box: Tensor = None, atom_mask: Tensor = None, exclude_index: Tensor = None, num_neighbours: int = None, cell_capacity: int = None, num_cell_cut: int = 1, cutoff_scale: float = 1.2, cell_cap_scale: float = 1.25, grid_num_scale: float = 1.5)
-    
+
     网格计算近邻表。
 
     参数：
@@ -15,8 +15,8 @@ sponge.partition.GridNeighbours
         - **cell_capacity** (int，可选) - 网格单元中原子的容量。如果给定 ``None``，则该值将乘以初始坐标时网格单元中最大原子数的因子。默认值： ``None``。
         - **num_cell_cut** (int，可选) - 根据截止距离对网格单元进行细分的数量。默认值： ``1``。
         - **cutoff_scale** (float，可选) - 缩放截止距离的因子。默认值： ``1.2``。
-        - **cell_cap_scale** (float，可选) - 缩放 `cell_capacity`的因子。默认值： ``1.25``。
-        - **grid_num_scale** (float，可选) - 通过网格比例计算 `num_neighbours`的缩放因子。如果 `num_neighbours`不为 ``None``，则不会使用。默认值： ``1.5``。
+        - **cell_cap_scale** (float，可选) - 缩放 `cell_capacity` 的因子。默认值： ``1.25``。
+        - **grid_num_scale** (float，可选) - 通过网格比例计算 `num_neighbours` 的缩放因子。如果 `num_neighbours` 不为 ``None``，则不会使用。默认值： ``1.5``。
 
     .. note::
         - B: 模拟walkers的数量。
@@ -32,11 +32,11 @@ sponge.partition.GridNeighbours
     .. py:method:: get_neighbours_from_grids(atom_grid_idx: Tensor, num_neighbours: int)
 
         从网格中获取邻近原子。
-        
+
         参数：
             - **atom_grid_idx** (Tensor) - Tensor，shape为 :math:`(B, A, D)`。数据类型为int。原子在网格中的索引。
             - **num_neighbours** (int) - 邻近原子的数量。
-    
+
     .. py:method:: print_info()
 
         打印近邻表中的信息。

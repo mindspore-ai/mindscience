@@ -2,11 +2,11 @@ sponge.metrics.MetricCV
 ============================
 
 .. py:class:: sponge.metrics.MetricCV(colvar: Colvar)
-    
+
     集体变量（CVs）的度量标准。
 
     .. py:method:: get_unit(units: Units = None)
-        
+
         返回集体变量的单位。
 
         参数：
