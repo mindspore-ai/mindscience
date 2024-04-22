@@ -26,9 +26,9 @@ sponge.partition.NeighbourList
         - Ex：最大排除的近邻原子数。
 
     .. py:method:: calculate(coordinate: Tensor, pbc_box: Tensor = None)
-        
+
         计算近邻表。
-    
+
         参数：
             - **coordinate** (Tensor) - shape为 :math:`(B, A, D)` 的Tensor。数据类型为 float。位置坐标。
             - **pbc_box** (Tensor，可选) - shape为 :math:`(B, D)` 的Tensor。数据类型为 float。PBC（周期性边界条件）盒的大小。默认值： ``None``。
@@ -46,7 +46,7 @@ sponge.partition.NeighbourList
     .. py:method:: get_neighbour_list()
 
         获取近邻表。
-        
+
         返回：
             - **neigh_idx** (Tensor) - Tensor，shape为 :math:`(B, A, N)`。数据类型为int。系统每个原子的邻近原子的索引。
             - **neigh_mask** (Tensor) - Tensor，shape为 :math:`(B, A, N)`。数据类型为bool。近邻表 `neigh_idx` 的掩码。
@@ -76,7 +76,7 @@ sponge.partition.NeighbourList
             - **exclude_index** (Tensor) - shape为 :math:`(B, A, Ex)` 的Tensor。数据类型为 int。
 
     .. py:method:: update(coordinate: Tensor, pbc_box: Tensor = None)
-        
+
         更新近邻表。
 
         参数：
