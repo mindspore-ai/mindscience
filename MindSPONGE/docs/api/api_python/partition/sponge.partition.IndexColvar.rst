@@ -6,7 +6,7 @@ sponge.partition.IndexColvar
     基于索引的集体变量 (Collective variables)。
 
     参数：
-        - **use_pbc** (bool，可选) - 是否在周期边界条件（PBC）下计算CV。如果给定 ``None`` ，则将在运行时基于是否给定 `pbc_box`来确定。默认值： ``None``。
+        - **use_pbc** (bool，可选) - 是否在周期边界条件（PBC）下计算CV。如果给定 ``None`` ，则将在运行时基于是否给定 `pbc_box` 来确定。默认值： ``None``。
 
     .. py:method:: set_pbc(use_pbc: bool)
 
