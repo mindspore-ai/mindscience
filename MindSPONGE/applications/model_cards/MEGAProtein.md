@@ -180,8 +180,7 @@ MEGAEvoGen，MEGAFold，MEGAAssessment均支持多种不同场景下的不同输
   fold_prediction.initialize(key="predict_256")
   fold_prediction.model.from_pretrained()
   res = fold_prediction.predict(feature)
-  protein_structure = res[-1]
-  pdb_file = to_pdb(protein_structure)
+  pdb_file = res[-1]
   os.makedirs(f'res.pdb', exist_ok=True)
   os_flags = os.O_RDWR | os.O_CREAT
   os_modes = stat.S_IRWXU
@@ -265,7 +264,9 @@ pipe.initialize(key="initial_training")
 pipe.train({YOUR_DATA_PATH}, num_epochs=1)
 ```
 
-由于训练和推理代码网络结构存在差异，因此利用训练得到的权重进行推理、利用推理权重继续训练时，需要进行权重转换，示例代码如下：
+由于训练和推理代码网络结构存在差异，因此利用训练得到的权重进行推理、利用推理权重继续训练时，需要进行权重转换。
+当训练完成进行推理时，先进行权重转换，再通过`model.from_pretrained()`接口传入推理权重，即可进行推理。
+示例代码如下：
 
 ```bash
 from mindsponge.common.utils import get_predict_checkpoint, get_train_checkpoint
