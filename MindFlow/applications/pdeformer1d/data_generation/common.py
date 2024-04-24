@@ -201,7 +201,7 @@ class NonNegativeRandomValue(PDETermBase):
             self.value = np.zeros(self.size)
         else:
             value = (self.log_min + self.log_max) / 2
-            self.value = np.zeros(self.size) + value
+            self.value = np.full(self.size, np.exp(value))
 
     def gen_dedalus_ops(self) -> Union[float, NDArray[float]]:
         if self.size is None:

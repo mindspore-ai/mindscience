@@ -97,13 +97,16 @@ pip3 install -r pip-requirements.txt
 │  train.py                                      # 模型训练代码
 ├─configs                                        # 配置文件目录
 │  │  full_config_example.yaml                   # 完整配置文件示例，包含了所有可能的选项
-│  │  inference_pdeformer-L.yaml                 # 加载预训练的 L 规模 PDEformer 用于推理
 │  ├─baseline                                    # Baseline 模型配置
 │  │      advection-beta-0.1_fno.yaml            # FNO 在 Advection beta=0.1 数据集上训练
 │  │      burgers-nu-0.1_deeponet.yaml           # DeepONet 在 Burgers nu=0.1 数据集上训练
 │  │      reacdiff-nu-1.0-rho-1.0_unet.yaml      # U-Net 在 reaction-diffusion nu=1.0 rho=1.0 数据集上训练
 │  ├─finetune                                    # 微调模型训练配置
 │  │      burgers-nu-0.1_pdeformer-L.yaml        # 加载预训练的 L 规模 PDEformer 在 Burgers nu=0.1 数据上微调
+│  ├─inference                                   # 加载预训练的模型参数用于推理
+│  │      pdeformer-L.yaml                       # 加载预训练的 L 规模 PDEformer 用于推理
+│  │      pdeformer-M.yaml                       # 加载预训练的 M 规模 PDEformer 用于推理
+│  │      pdeformer-XL.yaml                      # 加载预训练的 XL 规模 PDEformer 用于推理
 │  ├─inverse                                     # 预训练模型反问题测试配置
 │  │      inverse_function.yaml                  # 反演函数（源项、波方程波速场）配置
 │  │      inverse_scalar.yaml                    # 反演方程标量系数
@@ -188,7 +191,7 @@ pip3 install -r pip-requirements.txt
 ### 推理示例
 
 下面的示例代码展示了如何使用 PDEformer 预测给定 PDE 的解，以无粘 Burgers 方程（周期边界）为例。
-运行前需要先从 [北大网盘](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A)  下载经过预训练的 PDEformer 权重 `pdeformer/ckpt/model-L_3M_pretrained.ckpt`，并将 [configs/inference_pdeformer-L.yaml](configs/inference_pdeformer-L.yaml) 中 `model/load_ckpt` 参数的值改为相应的权重文件路径。
+运行前需要先从 [北大网盘](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A)  下载经过预训练的 PDEformer 权重 `pdeformer/ckpt/model-L_3M_pretrained.ckpt`，并将 [configs/inference/pdeformer-L.yaml](configs/inference/pdeformer-L.yaml) 中 `model/load_ckpt` 参数的值改为相应的权重文件路径。
 
 ```python
 import numpy as np
@@ -199,7 +202,7 @@ from src import load_config, get_model, PDENodesCollector, inference_pde
 
 # 基本设定
 context.set_context(mode=context.PYNATIVE_MODE, device_target="CPU")
-config, _ = load_config("configs/inference_pdeformer-L.yaml")
+config, _ = load_config("configs/inference/pdeformer-L.yaml")
 model = get_model(config, compute_type=mstype.float32)
 
 # 定义时空坐标点

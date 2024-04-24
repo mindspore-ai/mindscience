@@ -94,13 +94,16 @@ pip3 install -r pip-requirements.txt
 │  train.py                                      # Training Code
 ├─configs                                        # config directory
 │  │  full_config_example.yaml                   # Full Configuration Example (Including all possible choices)
-│  │  inference_pdeformer-L.yaml                 # Inference Configuration for PDEformer with scale L
 │  ├─baseline                                    # Baseline Model Config
 │  │      advection-beta-0.1_fno.yaml            # Training FNO on Advection beta=0.1 dataset
 │  │      burgers-nu-0.1_deeponet.yaml           # Training DeepONet on Burgers nu=0.1 dataset
 │  │      reacdiff-nu-1.0-rho-1.0_unet.yaml      # Training U-Net on reaction-diffusion nu=1.0 rho=1.0 dataset
 │  ├─finetune                                    # Finetune Model Config
 │  │      burgers-nu-0.1_pdeformer-L.yaml        # Load pretrained L-scale PDEformer and finetune on Burgers nu=0.1 dataset
+│  ├─inference                                   # Load pretrained PDEformer weights for inference
+│  │      pdeformer-L.yaml                       # Inference Configuration for PDEformer with scale L
+│  │      pdeformer-M.yaml                       # Inference Configuration for PDEformer with scale M
+│  │      pdeformer-XL.yaml                      # Inference Configuration for PDEformer with scale XL
 │  ├─inverse                                     # Pretrain Model on Inverse Problem Config
 │  │      inverse_function.yaml                  # Config for Inverse Problem on Scalar Function (e.g., source term, velocity field in wave equation)
 │  │      inverse_scalar.yaml                    # Config for Inverse Problem on Scalar Coefficients (e.g., diffusion coefficient in reaction-diffusion equation)
@@ -185,7 +188,9 @@ We provide configuration files for PDEformer models with varying numbers of para
 
 ### Inference Example
 
-The example code below demonstrates how to use PDEformer to predict the solution of a given PDE. Before running, it is necessary to download the pre-trained PDEformer weights `pdeformer/ckpt/model-L_3M_pretrained.ckpt` from [PKU Disk](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A) and change the value of the `model/load_ckpt` parameter in `configs/inference_pdeformer-L.yaml` to the path of the corresponding weight file.
+The example code below demonstrates how to use PDEformer to predict the solution of a given PDE.
+Before running, it is necessary to download the pre-trained PDEformer weights `pdeformer/ckpt/model-L_3M_pretrained.ckpt` from [PKU Disk](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A),
+and change the value of the `model/load_ckpt` parameter in [configs/inference/pdeformer-L.yaml](configs/inference/pdeformer-L.yaml) to the path of the corresponding weight file.
 
 ```python
 import numpy as np
@@ -196,7 +201,7 @@ from src import load_config, get_model, PDENodesCollector, inference_pde
 
 # Basic Settings
 context.set_context(mode=context.PYNATIVE_MODE, device_target="CPU")
-config, _ = load_config("configs/inference_pdeformer-L.yaml")
+config, _ = load_config("configs/inference/pdeformer-L.yaml")
 model = get_model(config, compute_type=mstype.float32)
 
 # Define time-space coordinates
