@@ -62,7 +62,7 @@ python train.py configs/Bilayer_graphene_train_numpy.ini
 
 ```txt
 pip install -r requirements.txt
-python predictor.py configs/Bilayer_graphene_train_numpy.ini
+python predict.py configs/Bilayer_graphene_train_numpy.ini
 ```
 
 ### 训练推理过程日志
