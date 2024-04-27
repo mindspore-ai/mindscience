@@ -36,9 +36,12 @@ def test_fno_output():
     Expectation: Success or throw AssertionError.
     """
     context.set_context(mode=context.GRAPH_MODE)
-    model1d = FNO1D(in_channels=2, out_channels=2, n_modes=[2], resolutions=[6])
-    model2d = FNO2D(in_channels=2, out_channels=2, n_modes=[2, 2], resolutions=[6, 6])
-    model3d = FNO3D(in_channels=2, out_channels=2, n_modes=[2, 2, 2], resolutions=[6, 6, 6])
+    model1d = FNO1D(
+        in_channels=2, out_channels=2, n_modes=[2], resolutions=[6], fno_compute_dtype=mstype.float32)
+    model2d = FNO2D(
+        in_channels=2, out_channels=2, n_modes=[2, 2], resolutions=[6, 6], fno_compute_dtype=mstype.float32)
+    model3d = FNO3D(
+        in_channels=2, out_channels=2, n_modes=[2, 2, 2], resolutions=[6, 6, 6], fno_compute_dtype=mstype.float32)
     data1d = Tensor(np.ones((2, 6, 2)), dtype=mstype.float32)
     data2d = Tensor(np.ones((2, 6, 6, 2)), dtype=mstype.float32)
     data3d = Tensor(np.ones((2, 6, 6, 6, 2)), dtype=mstype.float32)

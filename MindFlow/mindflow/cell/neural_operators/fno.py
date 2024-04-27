@@ -231,7 +231,7 @@ class FNO(nn.Cell):
             projection_channels=128,
             n_layers=4,
             data_format="channels_last",
-            fnoblock_act="identity",
+            fnoblock_act="gelu",
             mlp_act="gelu",
             add_residual=False,
             positional_embedding=True,
@@ -279,23 +279,25 @@ class FNO(nn.Cell):
         self._concat = ops.Concat(axis=-1)
         self._positional_embedding, self._input_perm, self._output_perm = self._transpose(len(self.resolutions))
         if self.lifting_channels:
-            self._lifting = nn.SequentialCell()
-            self._lifting.append(nn.Dense(self.in_channels, self.lifting_channels, has_bias=False))
-            self._lifting.append(self.mlp_act)
-            self._lifting.append(nn.Dense(self.lifting_channels, self.hidden_channels, has_bias=False))
+            self._lifting = nn.SequentialCell([
+                nn.Dense(self.in_channels, self.lifting_channels, has_bias=False).to_float(self.fno_compute_dtype),
+                nn.Dense(self.lifting_channels, self.hidden_channels, has_bias=False).to_float(self.fno_compute_dtype)
+            ])
         else:
-            self._lifting = nn.SequentialCell()
-            self._lifting.append(nn.Dense(self.in_channels, self.hidden_channels, has_bias=False))
+            self._lifting = nn.SequentialCell(
+                nn.Dense(self.in_channels, self.hidden_channels, has_bias=False).to_float(self.fno_compute_dtype)
+            )
         self._fno_blocks = nn.SequentialCell()
         for _ in range(self.n_layers):
             self._fno_blocks.append(FNOBlocks(self.hidden_channels, self.hidden_channels, n_modes=self.n_modes,
                                               resolutions=self.resolutions, act=self.fnoblock_act,
                                               add_residual=self.add_residual, dft_compute_dtype=self.dft_compute_dtype,
                                               fno_compute_dtype=self.fno_compute_dtype))
-        self._projection = nn.SequentialCell()
-        self._projection.append(nn.Dense(self.hidden_channels, self.projection_channels, has_bias=False))
-        self._projection.append(self.mlp_act)
-        self._projection.append(nn.Dense(self.projection_channels, self.out_channels, has_bias=False))
+        self._projection = nn.SequentialCell([
+            nn.Dense(self.hidden_channels, self.projection_channels, has_bias=False).to_float(self.fno_compute_dtype),
+            self.mlp_act,
+            nn.Dense(self.projection_channels, self.out_channels, has_bias=False).to_float(self.fno_compute_dtype)
+        ])
 
     def construct(self, x: Tensor):
         """construct"""
@@ -407,7 +409,7 @@ class FNO1D(FNO):
             projection_channels=128,
             n_layers=4,
             data_format="channels_last",
-            fnoblock_act="identity",
+            fnoblock_act="gelu",
             mlp_act="gelu",
             add_residual=False,
             positional_embedding=True,
@@ -509,7 +511,7 @@ class FNO2D(FNO):
             projection_channels=128,
             n_layers=4,
             data_format="channels_last",
-            fnoblock_act="identity",
+            fnoblock_act="gelu",
             mlp_act="gelu",
             add_residual=False,
             positional_embedding=True,
@@ -613,7 +615,7 @@ class FNO3D(FNO):
             projection_channels=128,
             n_layers=4,
             data_format="channels_last",
-            fnoblock_act="identity",
+            fnoblock_act="gelu",
             mlp_act="gelu",
             add_residual=False,
             positional_embedding=True,

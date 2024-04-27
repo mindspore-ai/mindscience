@@ -60,21 +60,21 @@ def train(input_args):
     optimizer_params = config["optimizer"]
 
     # create training dataset
-    train_dataset = create_training_dataset(data_params, shuffle=True)
+    train_dataset = create_training_dataset(data_params, model_params, shuffle=True)
 
     # create test dataset
-    test_input, test_label = np.load(os.path.join(data_params["path"], "test/inputs.npy")), \
-        np.load(os.path.join(data_params["path"], "test/label.npy"))
+    test_input, test_label = np.load(os.path.join(data_params["root_dir"], "test/inputs.npy")), \
+        np.load(os.path.join(data_params["root_dir"], "test/label.npy"))
     test_input = Tensor(np.expand_dims(test_input, -2), mstype.float32)
     test_label = Tensor(np.expand_dims(test_label, -2), mstype.float32)
 
     model = FNO1D(in_channels=model_params["in_channels"],
                   out_channels=model_params["out_channels"],
                   n_modes=model_params["modes"],
-                  resolutions=model_params["resolution"],
-                  hidden_channels=model_params["width"],
-                  n_layers=model_params["depth"],
-                  projection_channels=4*model_params["width"],
+                  resolutions=model_params["resolutions"],
+                  hidden_channels=model_params["hidden_channels"],
+                  n_layers=model_params["depths"],
+                  projection_channels=4*model_params["hidden_channels"],
                   )
 
     steps_per_epoch = train_dataset.get_dataset_size()
@@ -94,7 +94,7 @@ def train(input_args):
     problem = UnsteadyFlowWithLoss(
         model, loss_fn=RelativeRMSELoss(), data_format="NHWTC")
 
-    summary_dir = config["summary_dir"]
+    summary_dir = config["summary"]["summary_dir"]
     print_log(summary_dir)
 
     def forward_fn(data, label):
@@ -121,7 +121,7 @@ def train(input_args):
     if not os.path.exists(ckpt_dir):
         os.makedirs(ckpt_dir)
 
-    for epoch in range(1, config["epochs"] + 1):
+    for epoch in range(1, optimizer_params["epochs"] + 1):
         model.set_train()
         local_time_beg = time.time()
         for _ in range(steps_per_epoch):
@@ -129,7 +129,7 @@ def train(input_args):
         print_log(
             f"epoch: {epoch} train loss: {cur_loss.asnumpy()} epoch time: {time.time() - local_time_beg:.2f}s")
 
-        if epoch % config['eval_interval'] == 0:
+        if epoch % config['summary']['test_interval'] == 0:
             eval_time_start = time.time()
             model.set_train(False)
             print_log(
