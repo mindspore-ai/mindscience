@@ -62,13 +62,14 @@ def train(input_args):
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
+    summary_params = config["summary"]
 
     # prepare dataset
     train_dataset = create_training_dataset(data_params,
                                             input_resolution=model_params["input_resolution"],
                                             shuffle=True)
-    test_input = np.load(os.path.join(data_params["path"], "test/inputs.npy"))
-    test_label = np.load(os.path.join(data_params["path"], "test/label.npy"))
+    test_input = np.load(os.path.join(data_params["root_dir"], "test/inputs.npy"))
+    test_label = np.load(os.path.join(data_params["root_dir"], "test/label.npy"))
 
     if use_ascend:
         compute_type = mstype.float16
@@ -77,8 +78,8 @@ def train(input_args):
     # prepare model
     model = FNO2D(in_channels=model_params["in_channels"],
                   out_channels=model_params["out_channels"],
-                  n_modes=model_params["modes"],
-                  resolutions=model_params["input_resolution"],
+                  n_modes=[model_params["modes"], model_params["modes"]],
+                  resolutions=[model_params["input_resolution"], model_params["input_resolution"]],
                   hidden_channels=model_params["width"],
                   n_layers=model_params["depth"],
                   projection_channels=4*model_params["width"],
@@ -88,8 +89,8 @@ def train(input_args):
     # prepare optimizer
     steps_per_epoch = train_dataset.get_dataset_size()
     print_log("steps_per_epoch: ", steps_per_epoch)
-    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["initial_lr"],
-                                        last_epoch=optimizer_params["train_epochs"],
+    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["learning_rate"],
+                                        last_epoch=optimizer_params["epochs"],
                                         steps_per_epoch=steps_per_epoch,
                                         warmup_epochs=optimizer_params["warmup_epochs"])
 
@@ -97,8 +98,17 @@ def train(input_args):
                                    weight_decay=optimizer_params['weight_decay'])
     problem = UnsteadyFlowWithLoss(model, loss_fn=RelativeRMSELoss(), data_format="NHWTC")
 
+    if use_ascend:
+        from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
+        loss_scaler = DynamicLossScaler(1024, 2, 100)
+        auto_mixed_precision(model, "O3")
+    else:
+        loss_scaler = None
+
     def forward_fn(train_inputs, train_label):
         loss = problem.get_loss(train_inputs, train_label)
+        if use_ascend:
+            loss = loss_scaler.scale(loss)
         return loss
 
     grad_fn = ops.value_and_grad(forward_fn, None, optimizer.parameters, has_aux=False)
@@ -106,15 +116,23 @@ def train(input_args):
     @jit
     def train_step(train_inputs, train_label):
         loss, grads = grad_fn(train_inputs, train_label)
-        loss = ops.depend(loss, optimizer(grads))
+        if use_ascend:
+            loss = loss_scaler.unscale(loss)
+            is_finite = all_finite(grads)
+            if is_finite:
+                grads = loss_scaler.unscale(grads)
+                loss = ops.depend(loss, optimizer(grads))
+            loss_scaler.adjust(is_finite)
+        else:
+            loss = ops.depend(loss, optimizer(grads))
         return loss
 
     sink_process = mindspore.data_sink(train_step, train_dataset, sink_size=1)
-    ckpt_dir = config["ckpt_dir"]
+    ckpt_dir = summary_params["ckpt_dir"]
     if not os.path.exists(ckpt_dir):
         os.makedirs(ckpt_dir)
 
-    for epoch in range(1, 1+optimizer_params["train_epochs"]):
+    for epoch in range(1, 1+optimizer_params["epochs"]):
         local_time_beg = time.time()
         model.set_train(True)
         for _ in range(steps_per_epoch):
@@ -122,12 +140,12 @@ def train(input_args):
         print_log(f"epoch: {epoch} train loss: {cur_loss} epoch time: {time.time() - local_time_beg:.2f}s")
 
         model.set_train(False)
-        if epoch % config["save_ckpt_interval"] == 0:
+        if epoch % summary_params["save_ckpt_interval"] == 0:
             save_checkpoint(model, os.path.join(ckpt_dir, f"{model_params['name']}_epoch{epoch}"))
 
-        if epoch % config['eval_interval'] == 0:
+        if epoch % summary_params['test_interval'] == 0:
             eval_time_start = time.time()
-            calculate_l2_error(model, test_input, test_label, config["test_batch_size"])
+            calculate_l2_error(model, test_input, test_label, summary_params["test_batch_size"])
             print_log(f'evaluation time: {time.time() - eval_time_start}s')
 
 
