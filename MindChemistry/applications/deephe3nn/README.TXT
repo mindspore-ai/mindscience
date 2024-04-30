@@ -16,7 +16,7 @@ The python interpreter version needs to be at least 3.7. The following packages 
 2. 将mindchemistry文件包下载到该目录。
 3. 修改configs/Bilayer_graphene_train.ini 下 save_dir ， processed_data_dir，  save_graph_dir 这三个路径为你自己的路径(即当前路径)
 4. 运行网络: python deephe3_train.py configs/Bilayer_graphene_train.ini
-5. 若要改用GPU或者卡号，更改deephe3-train.py中的set_context()
+5. 若要改用卡号，更改deephe3-train.py中的set_context()
 
 ### 注意
 1. 该版本的deephe3和torch deephe3在模型架构上做了优化，在equiconv中，使用so2代替so3对卷积操作进行了优化，具体可以参考该论文 https://arxiv.org/abs/2302.03655

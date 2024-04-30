@@ -48,8 +48,7 @@ def main():
         "--device_target",
         type=str,
         default="Ascend",
-        choices=["GPU", "Ascend"],
-        help="The target device to run, support 'Ascend', 'GPU'"
+        help="The target device to run, support 'Ascend'"
     )
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
     parser.add_argument("--config_file_path", type=str, default="./rmd.yaml")
