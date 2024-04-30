@@ -60,86 +60,131 @@ from ..metrics import MetricCV, get_metrics
 class Sponge():
     r"""Core engine of MindSPONGE for simulation and analysis.
 
-        This Cell is the top-level wrapper for the three modules system (`Molecule`), potential (`PotentialCell`)
-        and optimizer (`Optimizer`) in MindSPONGE.
+        This Cell is the top-level wrapper for the three modules system (
+        :class:`sponge.system.Molecule`),potential ( :class:`sponge.potential.
+        PotentialCell`) and
+        optimizer ( :class:`mindspore.nn.optim.Optimizer`) in MindSPONGE.
 
-        There are three ways to wraps the modules:
+        There are three ways to wrap the modules:
 
-        1)  Wraps `system`, `potential` and `optimizer` directly into `Sponge`.
+        1)  Wraps `system`, `potential` and `optimizer` directly into :class:`sponge.core.Sponge`.
 
-            Example:
-            >>> from mindsponge import Sponge
-            >>> md = Sponge(system, potential, optimizer)
+            .. code-block::
+
+                from sponge import Sponge
+                from sponge.system import Molecule
+                from sponge.potential.forcefield import ForceField
+                from sponge.optimizer import Updater
+                system = Molecule(template='water.tip3p.yaml')
+                potential = ForceField(system, parameters='SPCE')
+                optimizer = Updater(system, controller=None, time_step=1e-3)
+                md = Sponge(system, potential, optimizer)
 
             In this way ordinary simulations can be achieved
 
-        2)  Wrap `system` and `potential` with `WithEnergyCell` first, then wrap `WithEnergyCell` and `optimizer`
-            with `Sponge`.
+        2)  Wrap `system` and `potential` with :class:`sponge.energy.WithEnergyCell` first,
+        then wrap :class:`sponge.energy.WithEnergyCell` and `optimizer`
+        with :class:`sponge.core.Sponge`.
 
-            Example:
-            >>> from mindsponge import WithEnergyCell, Sponge
-            >>> sys_with_ene = WithEnergyCell(system, potential)
-            >>> md = Sponge(sys_with_ene, optimizer=optimizer)
+            .. code-block::
 
-            In this case, the adjustment of the potential can be achieved by adjusting the `WithEnergyCell`,
-            for example by setting the `neighbour_list` and the `bias` in `WithEnergyCell`.
+                from sponge import WithEnergyCell, Sponge
+                from sponge.system import Molecule
+                from sponge.potential.forcefield import ForceField
+                from sponge.optimizer import Updater
+                system = Molecule(template='water.tip3p.yaml')
+                potential = ForceField(system, parameters='SPCE')
+                optimizer = Updater(system, controller=None, time_step=1e-3)
+                sys_with_ene = WithEnergyCell(system, potential)
+                md = Sponge(sys_with_ene, optimizer=optimizer)
 
-        3)  Wrap `system` and `potential` with `WithEnergyCell` first, then wrap `WithEnergyCell` and `optimizer`
-            with `RunOneStepCell`, and finally pass the `RunOneStepCell` into 'Sponge'.
+            In this case, the adjustment of the potential can be achieved by
+            adjusting the :class:`sponge.energy.WithEnergyCell`,
+            for example by setting the `neighbour_list` and the `bias` in
+            :class:`sponge.energy.WithEnergyCell`.
 
-            Example:
-            >>> from mindsponge import WithEnergyCell, RunOneStepCell, Sponge
-            >>> sys_with_ene = WithEnergyCell(system, potential)
-            >>> one_step = RunOneStepCell(sys_with_ene, optimizer=optimizer)
-            >>> md = Sponge(one_step)
+        3)  Wrap `system` and `potential` with
+        :class:`sponge.energy.WithEnergyCell` first,
+        then wrap :class:`sponge.energy.WithEnergyCell` and `optimizer`
+        with :class:`sponge.core.RunOneStepCell`, and finally pass the
+        :class:`sponge.core.RunOneStepCell` into :class:`sponge.core.Sponge`.
 
-            In this case, the adjustment of the force can be achieved by adjusting the `RunOneStepCell`, for example
-            by adding a `WithForceCell` to the `RunOneStepCell`.
+            .. code-block::
+                from sponge import WithEnergyCell, RunOneStepCell, Sponge
+                from sponge.system import Molecule
+                from sponge.potential.forcefield import ForceField
+                from sponge.optimizer import Updater
+                system = Molecule(template='water.tip3p.yaml')
+                potential = ForceField(system, parameters='SPCE')
+                optimizer = Updater(system, controller=None, time_step=1e-3)
+                sys_with_ene = WithEnergyCell(system, potential)
+                one_step = RunOneStepCell(sys_with_ene, optimizer=optimizer)
+                md = Sponge(one_step)
+
+            In this case, the adjustment of the force can be achieved by
+            adjusting the :class:`sponge.core.RunOneStepCell`, for example by
+            adding a :class:`sponge.force.ForceCell` to the :class:`sponge.core.RunOneStepCell`.
 
         For simulations:
 
-            Simulation can be performed by executing the member function `Sponge.run`.
+            Simulation can be performed by executing the member function
+            :func:`sponge.core.Sponge.run`.
 
-            Example:
-                >>> from mindsponge import Sponge
-                >>> md = Sponge(system, potential, optimizer)
-                >>> md.run(10000)
+            .. code-block::
+                from sponge import Sponge
+                from sponge.system import Molecule
+                from sponge.potential.forcefield import ForceField
+                from sponge.optimizer import Updater
+                system = Molecule(template='water.tip3p.yaml')
+                potential = ForceField(system, parameters='SPCE')
+                optimizer = Updater(system, controller=None, time_step=1e-3)
+                md = Sponge(system, potential, optimizer)
+                md.run(100)
 
         For analysis:
 
-            `Sponge` can also analyse the simulation system by `metrics`. The `metrics` should be a dictionary of
-            `Metric` or `Colvar`. The value of the `metrics` can be calculated by executing the member function
-            `Sponge.analyse`.
+            :class:`sponge.core.Sponge` can also analyse the simulation
+            system by `metrics`. The `metrics` should be a dictionary of
+            :class:`sponge.metrics.Metric` or :class:`sponge.colvar.Colvar`.
+            The value of the `metrics` can be calculated by executing the
+            member function :func:`sponge.core.Sponge.analyse`.
 
-            Example:
-            >>> from mindsponge.colvar import Torsion
-            >>> from mindsponge.colvar import Torsion
-            >>> phi = Torsion([4, 6, 8, 14])
-            >>> psi = Torsion([6, 8, 14, 16])
-            >>> md = Sponge(system, potential, optimizer, metrics={'phi': phi, 'psi': psi})
-            >>> metrics = md.analyse()
-            >>> for k, v in metrics.items():
-            >>>     print(k, v)
-            phi [[3.1415927]]
-            psi [[3.1415927]]
+            .. code-block::
+                from sponge import Sponge
+                from sponge.colvar import Torsion
+                from sponge import Protein
+                from sponge.potential.forcefield import ForceField
+                from sponge.optimizer import SteepestDescent
+                # You can find alad.pdb file under MindSPONGE/tutorials/advanced/alad.pdb
+                system = Protein(pdb='alad.pdb')
+                potential = ForceField(system, 'AMBER.FF14SB')
+                optimizer = SteepestDescent(system.trainable_params(), 1e-7)
+                phi = Torsion([4, 6, 8, 14])
+                psi = Torsion([6, 8, 14, 16])
+                md = Sponge(system, potential, optimizer, metrics={'phi': phi, 'psi': psi})
+                metrics = md.analyse()
+                for k, v in metrics.items():
+                    print(k, v)
 
     Args:
-        network (Union[Molecule, WithEnergyCell, RunOneStepCell]):
-                                    Cell of the simulation system.
 
-        potential (PotentialCell):  Potential energy. Default: ``None``.
-
-        optimizer (Optimizer):      Optimizer. Default: ``None``.
-
-        metrics (dict):             A Dictionary of metrics for system analysis. The key type of the `dict` should
-                                    be `str`, and the value type of the `dict` should be `Metric` or `Colvar`.
-                                    Default: ``None``.
-
-        analysis (AnalysisCell):    Analysis network. Default: ``None``.
+        network (Union[ :class:`sponge.system.Molecule`, :class:`sponge.energy.WithEnergyCell`,
+          :class:`sponge.core.RunOneStepCell`]):
+          Cell of the simulation system.
+        potential (:class:`sponge.potential.PotentialCell`): Potential energy.
+          Default: ``None``.
+        optimizer (:class:`mindsponge.optimizer.Optimizer`): Optimizer.
+          Default: ``None``.
+        metrics (dict): A Dictionary of metrics for system analysis.
+          The key type of the `dict` should be `str`, and the value type of
+          the `dict` should be :class:`sponge.metrics.Metric` or
+          :class:`sponge.colvar.Colvar`. Default: ``None``.
+        analysis (:class:`sponge.core.AnalysisCell`): Analysis network.
+          Default: ``None``.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
 
+        ``Ascend`` ``GPU``
     """
 
     def __init__(self,
@@ -271,7 +316,8 @@ class Sponge():
 
     @property
     def energy_names(self) -> List[str]:
-        """names of energy terms
+        r"""
+        Names of energy terms
 
         Returns:
             list of str, names of energy terms
@@ -281,7 +327,8 @@ class Sponge():
 
     @property
     def num_energies(self) -> int:
-        """number of energy terms
+        r"""
+        Number of energy terms
 
         Returns:
             int, number of energy terms
@@ -291,7 +338,8 @@ class Sponge():
 
     @property
     def num_biases(self) -> int:
-        """number of bias potential energies V
+        r"""
+        Number of bias potential energies V
 
         Returns:
             int, number of bias potential energies
@@ -300,34 +348,46 @@ class Sponge():
         return self._num_biases
 
     def recompile(self):
-        """recompile the simulation network"""
+        r"""
+        Recompile the simulation network
+        """
         self._simulation_network.compile_cache.clear()
         return self
 
     def update_neighbour_list(self):
-        """update neighbour list"""
+        r"""
+        Update neighbour list
+        """
         self._simulation_network.update_neighbour_list()
         return self
 
     def update_bias(self, step: int):
-        """update bias potential"""
+        r"""
+        Update bias potential
+        """
         self._simulation_network.update_bias(step)
 
     def update_wrapper(self, step: int):
-        """update energy wrapper"""
+        r"""
+        Update energy wrapper
+        """
         self._simulation_network.update_wrapper(step)
 
     def update_modifier(self, step: int):
-        """update force modifier"""
+        r"""
+        Update force modifier
+
+        Args:
+            step (int): step of the simulation.
+        """
         self._simulation_network.update_modifier(step)
 
     def change_optimizer(self, optimizer: Optimizer):
-        """
-        change optimizer.
+        r"""
+        Change optimizer.
 
         Args:
-            optimizer (Optimizer): Optimizer will be used.
-
+            optimizer (:class:`mindsponge.optimizer.Optimizer`): Optimizer will be used.
         """
         if self._optimizer is None:
             raise ValueError('Cannot change the optimizer, because the initial optimizer is None '
@@ -358,12 +418,11 @@ class Sponge():
         return self
 
     def change_potential(self, potential: PotentialCell):
-        """
-        change potential energy.
+        r"""
+        Change potential energy.
 
         Args:
-            potential (PotentialCell):  Potential energy will be used.
-
+            potential (:class:`sponge.potential.PotentialCell`): Potential energy will be used.
         """
         if self._potential_function is None:
             raise ValueError('Cannot change the potential, because the initial potential is None '
@@ -381,11 +440,14 @@ class Sponge():
         return self
 
     def calc_energy(self) -> Tensor:
-        """calculate the total potential energy (potential energy and bias potential) of the simulation system.
+        r"""
+        Calculate the total potential energy (potential energy and bias
+        potential) of the simulation system.
 
         Returns:
-            energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
-                                Total potential energy.
+            energy (Tensor):    Tensor of shape :math:`(B, 1)`.
+              Here :math:`B` is the batch size, i.e. the number of walkers of the simulation.
+              Data type is float. Total potential energy.
 
         """
         if self._system_with_energy is None:
@@ -393,32 +455,30 @@ class Sponge():
         return self._system_with_energy()
 
     def calc_energies(self) -> Tensor:
-        """calculate the energy terms of the potential energy.
+        r"""
+        Calculate the energy terms of the potential energy.
 
         Returns:
-            energies (Tensor):  Tensor of shape `(B, U)`. Data type is float.
-                                Energy terms.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers of the simulation.
-            U:  Number of potential energy terms.
-
+            energies (Tensor), Tensor of shape :math:`(B, U)`.
+              Energy terms.
+              Here :math:`B` is the batch size, i.e. the number of walkers of
+              the simulation, `U` is the number of potential energy terms.
+              Data type is float.
         """
         if self._system_with_energy is None:
             return None
         return self._system_with_energy.calc_energies()
 
     def calc_biases(self) -> Tensor:
-        """calculate the bias potential terms.
+        r"""
+        Calculate the bias potential terms.
 
         Returns:
-            biases (Tensor):    Tensor of shape `(B, V)`. Data type is float.
-                                Energy terms.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers of the simulation.
-            V:  Number of bias potential terms.
-
+            biases (Tensor), Tensor of shape :math:`(B, V)`.
+              Bias terms.
+              Here :math:`B` is the batch size,
+              :math:`V` is the number of bias potential terms.
+              Data type is float.
         """
         if self._system_with_energy is None:
             return None
@@ -430,21 +490,29 @@ class Sponge():
             dataset: Dataset = None,
             show_time: bool = True,
             ):
-        """Simulation API.
+        r"""
+        Simulation API.
 
         Args:
-            steps (int):            Simulation steps.
-            callbacks (Union[Callback, List[Callback]]):
-                                    Callback function(s) to obtain the information of the system during
-                                    the simulation. Default: ``None``.
-            dataset (Dataset):      Dataset used at simulation process. Default: ``None``.
+            steps (int): Simulation steps.
+            callbacks (Union[:class:`mindspore.train.callback.Callback`,
+              List[:class:`mindspore.train.callback.Callback`]]):
+              Callback function(s) to obtain the information of the system
+              during the simulation. Default: ``None``.
+            dataset (Dataset): Dataset used at simulation process. Default: ``None``.
+            show_time (bool):  Whether to show the time of the simulation. Default: ``True``.
 
         Example:
-            >>> from mindsponge import Sponge
-            >>> from mindsponge.callback import RunInfo
+            >>> from sponge import Sponge
+            >>> from sponge.system import Molecule
+            >>> from sponge.potential.forcefield import ForceField
+            >>> from sponge.optimizer import Updater
+            >>> from sponge.callback import RunInfo
+            >>> system = Molecule(template='water.tip3p.yaml')
+            >>> potential = ForceField(system, parameters='SPCE')
+            >>> optimizer = Updater(system, controller=None, time_step=1e-3)
             >>> md = Sponge(system, potential, optimizer)
-            >>> md.run(10000, callbacks=[RunInfo(10)])
-
+            >>> md.run(100, callbacks=[RunInfo(10)])
         """
         if self.neighbour_list_pace == 0 or steps < self.neighbour_list_pace:
             epoch = 1
@@ -559,21 +627,54 @@ class Sponge():
         return self
 
     def calc_potential(self) -> Tensor:
-        """calculate and return the potential energy"""
+        r"""
+        Calculate and return the potential energy
+
+        Returns:
+            energy, Tensor of shape :math:`(B, 1)`.
+              Total potential energy.
+              Here `B` is the batch size, i.e. the number of walkers of the
+              simulation. Data type is float.
+        """
         if self._system_with_energy is None:
             return 0
         return self._system_with_energy()
 
     def get_energies(self) -> Tensor:
-        """Tensor of potential energies with shape (B, U). Data type is float."""
+        r"""
+        Get the potential energy terms.
+
+        Returns:
+            energies, Tensor of shape :math:`(B, U)`.
+              Energy terms.
+              Here `B` is the batch size, i.e. the number of walkers of the
+              simulation, :math:`U` is the number of potential energy terms.
+              Data type is float.
+        """
         return self._simulation_network.energies
 
     def get_biases(self) -> Tensor:
-        """Tensor bias potential energies with shape (B, V). Data type is float."""
+        r"""
+        Get the bias potential energies.
+
+        Returns:
+            biases, Tensor of shape :math:`(B, V)`.
+              Bias terms.
+              Here :math:`B` is the batch size, i.e. the number of walkers of the
+              simulation, :math:`V` is the number of bias potential terms.
+              Data type is float.
+        """
         return self._simulation_network.biases
 
     def get_bias(self) -> Tensor:
-        """Tensor of total bias potential with shape (B, 1). Data type is float."""
+        r"""
+        Get the total bias potential energy.
+
+        Returns:
+            bias, Tensor of shape :math:`(B, 1)`.
+                Here :math:`B` is the batch size, i.e. the number of walkers of the simulation.
+                Data type is float.
+        """
         return self._simulation_network.bias
 
     def analyse(self,
@@ -583,12 +684,15 @@ class Sponge():
         """
         Analysis API.
 
-            NOTE: To use this API, the `metrics` must be set at `Sponge` initialization.
+        Note: To use this API, the `metrics` must be set at :class:`spogne.core.Sponge` initialization.
 
         Args:
-            dataset (Dataset):  Dataset of simulation to be analysed. Default: ``None``.
-            callbacks (Union[Callback, List(Callback)]): List of callback objects which should be executed
-                while training. Default: ``None``.
+            dataset (:class:`mindspore.dataset.engine.datasets.Dataset`):
+              Dataset of simulation to be analysed. Default: ``None``.
+            callbacks (Union[:class:`mindspore.train.callback.Callback`,
+            List[:class:`mindspore.train.callback.Callback]]):
+              List of callback objects which should be executed
+              while training. Default: ``None``.
 
         Returns:
             Dict, the key is the metric name defined by users and the value is the metrics value for
@@ -629,7 +733,9 @@ class Sponge():
             return self._analysis_process(dataset, list_callback, cb_params)
 
     def _check_for_graph_cell(self):
-        """Check for graph cell"""
+        r"""
+        Check for graph cell
+        """
         if not isinstance(self._system, nn.GraphCell):
             return
 
@@ -640,7 +746,15 @@ class Sponge():
 
     @staticmethod
     def _transform_callbacks(callbacks: Callback):
-        """Transform callback to a list."""
+        r"""
+        Transform callbacks to a list.
+
+        Args:
+            callbacks (:class:`mindspore.train.callback.Callback`): Callback or iterable of Callback's.
+
+        Returns:
+            List, a list of callbacks.
+        """
         if callbacks is None:
             return []
 
@@ -656,17 +770,14 @@ class Sponge():
                             list_callback: Callback = None,
                             cb_params: _InternalCallbackParam = None
                             ):
-        """
+        r"""
         Training process. The data would be passed to network directly.
 
         Args:
             epoch (int): Total number of iterations on the data.
-            train_dataset (Dataset): A training dataset iterator. If there is no
-                                     loss_fn, a tuple with multiple data (data1, data2, data3, ...) should be
-                                     returned and passed to the network. Otherwise, a tuple (data, label) should
-                                     be returned. The data and label would be passed to the network and loss
-                                     function respectively.
-            list_callback (Callback): Executor of callback list. Default: ``None``.
+            cycle_steps (int): Number of steps in each epoch.
+            rest_steps (int): Number of steps in the last epoch.
+            list_callback (:class: `mindspore.train.callback.Callback`): Executor of callback list. Default: ``None``.
             cb_params (_InternalCallbackParam): Callback parameters. Default: ``None``.
         """
         self._exec_preprocess(True)
@@ -699,7 +810,19 @@ class Sponge():
                        cb_params: _InternalCallbackParam,
                        run_context: RunContext
                        ):
-        """run one epoch simulation"""
+        r"""
+        Run one epoch simulation
+
+        Args:
+            cycles (int): Number of steps in each epoch.
+            list_callback (:class: `mindspore.train.callback.Callback`):
+              Executor of callback list. Default: ``None``.
+            cb_params (_InternalCallbackParam): Callback parameters. Default: ``None``.
+            run_context (:class: `mindspore.train.callback.RunContext`): Context of the current run.
+
+        Returns:
+            bool, whether to stop the training.
+        """
         should_stop = False
         list_callback.epoch_begin(run_context)
         for _ in range(cycles):
@@ -758,16 +881,18 @@ class Sponge():
                           list_callback: Callback = None,
                           cb_params: _InternalCallbackParam = None
                           ):
-        """
+        r"""
         Evaluation. The data would be passed to network directly.
 
         Args:
-            valid_dataset (Dataset): Dataset to evaluate the model.
-            list_callback (Callback): Executor of callback list. Default: ``None``.
+            dataset (:class: `mindspore.dataset.engine.datasets.Dataset`):
+              Dataset to evaluate the model.
+            list_callback (:class: `mindspore.train.callback.Callback`):
+              Executor of callback list. Default: ``None``.
             cb_params (_InternalCallbackParam): Callback parameters. Default: ``None``.
 
         Returns:
-            Dict, which returns the loss value and metrics values for the model in the test mode.
+            Dict, which returns the metrics values for the model in the test mode.
         """
         run_context = RunContext(cb_params)
         list_callback.begin(run_context)
@@ -815,12 +940,19 @@ class Sponge():
         return metrics
 
     def _clear_metrics(self):
-        """Clear metrics local values."""
+        r"""
+        Clear metrics local values.
+        """
         for metric in self._metric_fns.values():
             metric.clear()
 
     def _update_metrics(self, outputs):
-        """Update metrics local values."""
+        r"""
+        Update metrics local values.
+
+        Args:
+            outputs (Tensor): Outputs of the analysis network.
+        """
         if isinstance(outputs, Tensor):
             outputs = (outputs,)
         if not isinstance(outputs, tuple):
@@ -831,14 +963,26 @@ class Sponge():
             metric.update(*outputs)
 
     def _get_metrics(self):
-        """Get metrics local values."""
+        r"""
+        Get metrics local values.
+
+        Returns:
+            Dict, which returns the metrics values.
+        """
         metrics = dict()
         for key, value in self._metric_fns.items():
             metrics[key] = value.eval()
         return metrics
 
     def _exec_preprocess(self, is_run, dataset=None, dataset_helper=None):
-        """Initializes dataset."""
+        r"""
+        Initializes dataset.
+
+        Args:
+            is_run (bool): Whether to run the simulation.
+            dataset (Dataset): Dataset used at simulation process. Default: ``None``.
+            dataset_helper (DatasetHelper): Dataset helper. Default: ``None``.
+        """
         if is_run:
             network = self._simulation_network
             phase = 'simulation'
@@ -861,7 +1005,11 @@ class Sponge():
         return dataset_helper, network
 
     def _flush_from_cache(self, cb_params):
-        """Flush cache data to host if tensor is cache enable."""
+        r"""
+        Flush cache data to host if tensor is cache enable.
+
+        Args:
+            cb_params (_InternalCallbackParam): Callback parameters."""
         params = cb_params.sim_network.get_parameters()
         for param in params:
             if param.cache_enable:
@@ -869,4 +1017,10 @@ class Sponge():
 
     @property
     def create_time(self):
+        r"""
+        Create time of the Sponge instance.
+
+        Returns:
+            int, create time of the Sponge instance.
+        """
         return self._create_time

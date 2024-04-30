@@ -1,29 +1,24 @@
 sponge.core.RunOneStepCell
 ==============================
 
-.. py:class:: sponge.core.RunOneStepCell(energy: WithEnergyCell = None, force: WithForceCell = None, optimizer: Optimizer = None, steps: int = 1, sens: float = 1.0, **kwargs)
+.. py:class:: sponge.core.RunOneStepCell(energy: :class:`sponge.energy.WithEnergyCell` = None, force: :class:`sponge.force.WithForceCell` = None, optimizer: :class:`mindspore.nn.optim.Optimizer` = None, steps: int = 1, sens: float = 1.0, **kwargs)
 
     运行一步模拟的神经网络层。这一层包裹了 `energy` ， `force` 和 `optimizer` 。在construct函数里将会生成一张反向图来更新仿真系统的原子坐标。
 
     参数：
-        - **energy** (WithEnergyCell) - 包含了有势能函数的模拟系统的神经网络层。默认值："None"。该神经网络层用于计算并返回系统在当前坐标处的势能值。
-        - **force** (WithForceCell) - 包含了有原子力函数的模拟系统的神经网络层。默认值："None"。该神经网络层用于计算并返回系统在当前坐标处的力值。
-        - **optimizer** (Optimizer) - 模拟的优化器。默认值："None"。
-        - **steps** (int) - 模拟的步数。默认值：1.0。
-        - **sens** (float) - 作为反向传播的输入要填充的缩放数。默认值：1.0。
-        - **kwargs** (dict) - 其他参数。
+        - **energy** ( :class:`sponge.energy.WithEnergyCell`) - 包含了有势能函数的模拟系统的神经网络层。默认值：``None``。该神经网络层用于计算并返回系统在当前坐标处的势能值。
+        - **force** ( :class:`sponge.force.WithForceCell`) - 包含了有原子力函数的模拟系统的神经网络层。默认值：``None``。该神经网络层用于计算并返回系统在当前坐标处的力值。
+        - **optimizer** ( :class:`mindspore.nn.optim.Optimizer`, 可选) - 模拟的优化器。默认值： ``None``。
+        - **steps** (int, 可选) - 模拟的步数。默认值： ``1``。
+        - **sens** (float, 可选) - 作为反向传播的输入要填充的缩放数。默认值： ``1.0``。
+        - **kwargs** (dict) - 关键字参数。
 
     输入：
-        - **\*inputs** (Tuple(Tensor)) - `WithEnergyCell` 的输入Tensors的tuple。
+        - **\*inputs** (Tuple(Tensor)) - :class:`sponge.energy.WithEnergyCell` 的输入Tensors的tuple。
 
     输出：
-        - 整体的势能，shape为 `(B, 1)` 的Tensor，数据类型为float。
-        - 原子力，shape为 `(B, A, D)` 的Tensor，数据类型为float。
-
-    .. note::
-        B: batch size，比如分子模拟中walker的数量。 
-        A: 分子模拟中原子的数量。 
-        D: 分子模拟中的空间维度，通常是3。 
+        - **energy** (Tensor) - 能量。shape为 :math:`(B, 1)` 。数据类型为float。这里的B是batch size。
+        - **force** (Tensor) - 原子力。shape为 :math:`(B, A, D)` 。数据类型为float。这里的 :math:`B` 是batch size， :math:`A` 是原子数量， :math:`D` 是空间维度，通常为3。
 
     .. py:method:: bias()
         :property:

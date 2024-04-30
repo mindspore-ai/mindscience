@@ -40,29 +40,51 @@ class WithForceCell(Cell):
     r"""Cell that wraps the simulation system with the atomic force function.
 
     Args:
-        system (Molecule):              Simulation system.
+        system ( :class:`sponge.system.Molecule`): Simulation system.
+        force ( :class:`sponge.potential.ForceCell`): Atomic force calculation cell.
+        neighbour_list ( :class:`sponge.partition.NeighbourList`): Neighbour list.
+          Default: ``None``.
+        modifier ( :class:`sponge.sampling.modifier.ForceModifier`): Force modifier.
+          Default: ``None``.
 
-        force (PotentialCell):          Atomic force calculation cell.
+    Inputs:
+        - **energy** (Tensor) - Total potential energy of the simulation system.
+          Tensor of shape :math:`(B, 1)`.
+          Here `B` is batch size, i.e. the number of walkers in simulation. Data type is float.
+        - **force** (Tensor) - Data type is float.Force on each atoms of the simulation system.
+          Tensor of shape :math:`(B, A, D)`.
+          Here :math:`B` is batch size, i.e. the number of walkers in simulation,
+          `A` is the number of atoms,
+          and :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+        - **virial** (Tensor) - Virial tensor of the simulation system.
+          Tensor of shape :math:`(B, D)`. Data type is float.
 
-        cutoff (float):                 Cutoff distance. Default: ``None``.
-
-        neighbour_list (NeighbourList): Neighbour list. Default: ``None``.
-
-        modifier (ForceModifier):       Force modifier. Default: ``None``.
-
-        bias (Bias):                    Bias potential: Default: ``None``.
+    Outputs:
+        - energy, Tensor of shape :math:`(B, 1)`. Total potential energy of the simulation system.
+          Data type is float.
+        - force, Tensor of shape :math:`(B, A, D)`. Force on each atoms of the simulation system.
+          Data type is float.
+        - virial, Tensor of shape :math:`(B, D)`. Virial tensor of the simulation system.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Note:
-
-        B:  Batchsize, i.e. number of walkers of the simulation.
-
-        A:  Number of the atoms in the simulation system.
-
-        D:  Spatial dimension of the simulation system. Usually is 3.
-
+    Examples:
+        >>> # You can find case2.pdb file under MindSPONGE/tutorials/basic/case2.pdb
+        >>> from sponge import Protein
+        >>> from sponge.potential.forcefield import ForceField
+        >>> from sponge.partition import NeighbourList
+        >>> from sponge.core.simulation import WithEnergyCell, WithForceCell
+        >>> from sponge.sampling import MaskedDriven
+        >>> system = Protein(pdb='case2.pdb', rebuild_hydrogen=True)
+        >>> energy = ForceField(system, 'AMBER.FF99SB')
+        >>> neighbour_list = NeighbourList(system, cutoff=None, cast_fp16=True)
+        >>> with_energy = WithEnergyCell(system, energy, neighbour_list=neighbour_list)
+        >>> modifier = MaskedDriven(length_unit=with_energy.length_unit,
+        ...                         energy_unit=with_energy.energy_unit,
+        ...                         mask=system.heavy_atom_mask)
+        >>> with_force = WithForceCell(system, neighbour_list=neighbour_list, modifier=modifier)
     """
 
     def __init__(self,
@@ -151,11 +173,10 @@ class WithForceCell(Cell):
 
     @property
     def cutoff(self) -> Tensor:
-        r"""cutoff distance for neighbour list
+        r"""Cutoff distance for neighbour list
 
         Returns:
             Tensor, cutoff
-
         """
         if self.neighbour_list is None:
             return None
@@ -163,11 +184,10 @@ class WithForceCell(Cell):
 
     @property
     def neighbour_list_pace(self) -> int:
-        r"""update step for neighbour list
+        r"""Update step for neighbour list
 
         Returns:
             int, step
-
         """
         if self.neighbour_list is None:
             return 0
@@ -175,76 +195,78 @@ class WithForceCell(Cell):
 
     @property
     def length_unit(self) -> str:
-        r"""length unit
+        r"""Length unit
 
         Returns:
             str, length unit
-
         """
         return self.units.length_unit
 
     @property
     def energy_unit(self) -> str:
-        r"""energy unit
+        r"""Energy unit
 
         Returns:
             str, energy unit
-
         """
         return self.units.energy_unit
 
     def set_pbc_grad(self, grad_box: bool):
-        r"""set whether to calculate the gradient of PBC box
+        r"""Set whether to calculate the gradient of PBC box
 
         Args:
             grad_box (bool):    Whether to calculate the gradient of PBC box.
-
         """
         self.system.set_pbc_grad(grad_box)
         return self
 
     def update_modifier(self, step: int):
-        r"""update force modifier
+        r"""Update force modifier
 
         Args:
             step (int): Simulatio step.
-
         """
         if self.modifier_pace > 0 and step % self.modifier_pace == 0:
             self.force_modifier.update()
         return self
 
     def update_neighbour_list(self) -> Tuple[Tensor, Tensor]:
-        r"""update neighbour list
+        r"""Update neighbour list
 
         Args:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-                                    Position coordinate.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Size of PBC box.
+            coordinate (Tensor): Position coordinate.
+              Tensor of shape :math:`(B, A, D)`.
+              Here :math:`B` is the number of walkers in simulation,
+              :math:`A` is the number of atoms,
+              :math:`D` is the spatial dimension of the simulation system,
+              which is usually 3.
+              Data type is float.
+            pbc_box (Tensor): Size of PBC box.
+              Tensor of shape :math:`(B, D)`.
+              Data type is float.
 
         Returns:
-            neigh_idx (Tensor):     Tensor of shape `(B, A, N)`. Data type is int.
-                                    Index of neighbouring atoms of each atoms in system.
-            neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
-                                    Mask for neighbour list `neigh_idx`.
+            - neigh_idx, Tensor of shape :math:`(B, A, N)`.
+              Index of neighbouring atoms of each atoms in system.
+              Here :math:`N` is the number of neighbouring atoms. Data type is int.
+            - neigh_mask, Tensor of shape :math:`(B, A, N)`.
+              Mask for neighbour list `neigh_idx`.
+              Data type is bool.
         """
         return self.neighbour_list.update(self.coordinate, self.pbc_box)
 
     def get_neighbour_list(self) -> Tuple[Tensor, Tensor]:
-        r"""get neighbour list
+        r"""Get neighbour list
 
         Returns:
-            neigh_idx (Tensor):     Tensor of shape `(B, A, N)`. Data type is int.
-                                    Index of neighbouring atoms of each atoms in system.
-            neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
-                                    Mask for neighbour list `neigh_idx`.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers of the simulation.
-            A:  Number of the atoms in the simulation system.
-            N:  Number of the maximum neighbouring atoms.
-
+            - neigh_idx, Tensor of shape :math:`(B, A, N)`.
+              Index of neighbouring atoms of each atoms in system.
+              Here :math:`B` is the number of walkers in simulation,
+              `A` is the number of atoms,
+              :math:`N` is the number of neighbouring atoms.
+              Data type is int.
+            - neigh_mask, Tensor of shape :math:`(B, A, N)`. Mask for neighbour list `neigh_idx`.
+              Data type is bool.
         """
         return self.neighbour_list.get_neighbour_list()
 
@@ -254,24 +276,26 @@ class WithForceCell(Cell):
                   virial: Tensor = None,
                   ) -> Tuple[Tensor, Tensor, Tensor]:
 
-        """calculate the energy of system
+        r"""
+        Calculate the energy of system
 
         Args:
-            energy_ad (Tensor): Tensor of shape (B, 1). Data type is float.
-                                Potential energy for automatic differentiation.
-            force_ad (Tensor):  Tensor of shape (B, A, D). Data type is float.
-                                Atomic forces from automatic differentiation.
+            energy_ad (Tensor): Potential energy for automatic differentiation.
+              Tensor of shape :math:`(B, 1)`.
+              Here :math:`B` is the number of walkers in simulation.
+              Data type is float.
+            force_ad (Tensor): Atomic forces from automatic differentiation.
+              Tensor of shape :math:`(B, A, D)`.
+              Here :math:`A` is the number of atoms,
+              :math: `D` is the spatial dimension of the simulation system, which is usually 3.
+              Data type is float.
 
         Returns:
-            energy (Tensor):    Tensor of shape (B, 1). Data type is float.
-            force (Tensor):     Tensor of shape (B, A, D). Data type is float.
-            virial (Tensor):    Tensor of shape (B, D). Data type is float.
-
-        Note:
-            B:  Batchsize, i.e. number of walkers of the simulation.
-            A:  Number of the atoms in the simulation system.
-            D:  Spatial dimension of the simulation system. Usually is 3.
-
+            - energy, Tensor of shape :math:`(B, 1)`. Potential energy of the system.
+              Data type is float.
+            - force, Tensor of shape :math:`(B, A, D)`. Atomic forces. Data type is float.
+            - virial, Tensor of shape :math:`(B, D)`. Virial tensor of the
+              system. Data type is float.
         """
 
         energy_ad = energy

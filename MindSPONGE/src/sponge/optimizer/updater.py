@@ -43,45 +43,78 @@ from ..function import functions as func
 
 class Updater(Optimizer):
     r"""
-    Base class of the MindSPONGE updater, which is a special subclass of the `Optimizer` in MindSpore.
-    The `Updater` updates the atomic coordinates of the simulation system. The updating of atomic coordinates
-    requires atomic forces and atomic velocities, where the force is passed from outside and the velocity is the
-    parameter of the `Updater` itself. And in the case of periodic boundary conditions (PBC), the `Updater`
-    could also update the size of the PBC box by the virial of the simulation system.
-    The "Updater" controls the values of seven variables during the simulation through a series of `Controller`:
-    coordinates, velocity, force, energy, kinetics, virial and pbc_box. If more than one `Controller` is passed in,
-    they will work in sequence.
+    Base class of the MindSPONGE updater, which is a special subclass of the
+    :class:`mindspore.nn.Optimizer` in MindSpore.
+
+    The :class:`sponge.optimizer.Updater` updates the atomic coordinates of
+    the simulation system. The updating of atomic coordinates requires atomic
+    forces and atomic velocities, where the force is passed from outside and
+    the velocity is the parameter of the :class:`sponge.optimizer.Updater`
+    itself. And in the case of periodic boundary conditions (PBC), the
+    :class:`sponge.optimizer.Updater` could also update the size of the PBC
+    box by the virial of the simulation system.
+
+    The :class:`sponge.optimizer.Updater` controls the values of seven
+    variables during the simulation through a series of :class:`sponge.
+    control.Controller`: coordinates, velocity, force, energy, kinetics,
+    virial and pbc_box. If more than one :class:`sponge.control.Controller`
+    is passed in, they will work in sequence.
 
     Args:
-        system(Molecule):                                   Simulation system.
-        controller(Union[Controller, List[Controller]]):    Controller or list of controllers to control the seven
-                                                            variables (coordinate, velocity, force, energy, kinetics,
-                                                            virial and pbc_box) of the simulation system.
-                                                            Default: ``None``.
-        time_step(float):                                   Time step. Default: ``1e-3``.
-        velocity(Union[Tensor, ndarray, List[float]]):      Array of atomic velocity. The shape of array is `(A, D)`
-                                                            or `(B, A, D)`, and the data type is float.
-                                                            Default: ``None``.
-        weight_decay(float):                                An value for the weight decay. Default: ``0.0``.
-        loss_scale(float):                                  A value for the loss scale. Default: ``1.0``.
-        kwargs(dict):                                       other args.
+        system( :class:`sponge.system.Molecule`): Simulation system.
+        controller( :class:`sponge.control.Controller` or list of  :class:
+        `sponge.control.Controller`): Controller
+          or list of controllers to control the seven variables
+          (coordinate, velocity, force, energy, kinetics, virial and
+          pbc_box) of the simulation system. Default: ``None``.
+        time_step(float): Time step. Default: ``1e-3``.
+        velocity(Union[Tensor, ndarray, List[float]]): Array of atomic velocity.
+          The shape of array is :math:`(A, D)` or :math:`(B, A, D)`.
+          Here :math:`A` is the number of atoms,
+          :math:`D` is the spatial dimension of the simulation system,
+          which is usually 3.
+          The data type is float. Default: ``None``.
+        weight_decay(float): An value for the weight decay. Default: ``0.0``.
+        loss_scale(float): A value for the loss scale. Default: ``1.0``.
+        kwargs(dict): Other arguments.
 
     Inputs:
-        - **energy** (Tensor) - Energy of the system. Tensor of shape `(B, A, D)`. Data type is float.
-        - **force** (Tensor) - Force of the system. Tensor of shape `(B, A, D)`. Data type is float.
-        - **virial** (Tensor) - Virial of the system. Tensor of shape `(B, A, D)`. Data type is float.
+        - **energy** (Tensor) - Energy of the system.
+          Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **force** (Tensor) - Force of the system.
+          Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **virial** (Tensor) - Virial of the system.
+          Tensor of shape `(B, A, D)`. Data type is float.
           Default: ``None``.
 
     Outputs:
         bool, whether successfully finish the current optimization step and move to next step.
 
-    Note:
-        B:  Batchsize, i.e. number of walkers in simulation
-        A:  Number of atoms.
-        D:  Spatial dimension of the simulation system. Usually is 3.
-
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from sponge.system import Molecule
+        >>> from sponge.optimizer import Updater
+        >>> from sponge.potential.forcefield import ForceField
+        >>> from sponge.core.sponge import Sponge
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> potential = ForceField(system, parameters='SPCE')
+        >>> updater = Updater(system, controller=None, time_step=1e-3)
+        >>> print(system.coordinate.value())
+        >>> # [[[ 0. 0. 0. ]
+        >>> # [ 0.07907964 0.06120793 0. ]
+        >>> # [-0.07907964 0.06120793 0. ]]]
+        >>> md = Sponge(system, potential, updater)
+        >>> # As controller is None, no change on MD variables happens
+        >>> md.run(1000)
+        >>> # [MindSPONGE] Started simulation at 2024-04-29 01:01:34
+        >>> # [MindSPONGE] Finished simulation at 2024-04-29 01:01:37
+        >>> # [MindSPONGE] Simulation time: 2.54 seconds.
+        >>> print(system.coordinate.value())
+        >>> # [[[ 0. 0. 0. ]
+        >>> # [ 0.07907964 0.06120793 0. ]
+        >>> # [-0.07907964 0.06120793 0. ]]]
     """
     @opt_init_args_register
     def __init__(self,
@@ -183,7 +216,7 @@ class Updater(Optimizer):
 
     @property
     def boltzmann(self) -> float:
-        """
+        r"""
         Boltzmann constant in current unit.
 
         Returns:
@@ -193,7 +226,7 @@ class Updater(Optimizer):
 
     @property
     def press_unit_scale(self) -> float:
-        """
+        r"""
         Reference value of pressure.
 
         Returns:
@@ -202,22 +235,22 @@ class Updater(Optimizer):
         return self.units.pressure_ref
 
     def set_step(self, step: int = 0):
-        """
+        r"""
         Set current step of the system.
 
         Args:
-            step(int):  Current step of the system. Default: 0
+            step(int): Current step of the system. Default: 0
         """
         step = Tensor(step, ms.int32)
         F.depend(True, F.assign(self.step, step))
         return self
 
     def set_degrees_of_freedom(self, dofs: int):
-        """
+        r"""
         Set degrees of freedom (DOFs)
 
         Args:
-            dofs(int):  Degrees of freedom.
+            dofs(int): Degrees of freedom.
         """
         self.degrees_of_freedom = func.get_integer(dofs)
         self.num_constraints = self.sys_dofs - self.degrees_of_freedom
@@ -226,12 +259,12 @@ class Updater(Optimizer):
         return self
 
     def update_coordinate(self, coordinate: Tensor, success: bool = True) -> bool:
-        """
+        r"""
         Update the parameters of coordinate
 
         Args:
             coordinate(Tensor): Tensor of atomic coordinates. Data type is float.
-            success(bool):      Whether to update the coordinate. Default: ``True``.
+            success(bool): Whether to update the coordinate. Default: ``True``.
 
         Returns:
             bool, whether successfully update the coordinate.
@@ -239,12 +272,12 @@ class Updater(Optimizer):
         return F.depend(success, F.assign(self.coordinate, coordinate))
 
     def update_pbc_box(self, pbc_box: Tensor, success: bool = True) -> bool:
-        """
+        r"""
         Update the parameters of PBC box.
 
         Args:
-            pbc_box(Tensor):    Tensor of PBC box. Data type is float.
-            success(bool):      Whether to update the pbc_box. Default: ``True``.
+            pbc_box(Tensor): Tensor of PBC box. Data type is float.
+            success(bool): Whether to update the pbc_box. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of PBC box.
@@ -254,12 +287,12 @@ class Updater(Optimizer):
         return F.depend(success, F.assign(self.pbc_box, pbc_box))
 
     def update_velocity(self, velocity: Tensor, success: bool = True) -> bool:
-        """
+        r"""
         Update the parameters of velocity.
 
         Args:
-            velocity(Tensor):   Tensor of atomic velocities. Data type is float.
-            success(bool):      Whether to update the velocities. Default: ``True``.
+            velocity(Tensor): Tensor of atomic velocities. Data type is float.
+            success(bool): Whether to update the velocities. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of atomic velocities.
@@ -267,12 +300,12 @@ class Updater(Optimizer):
         return F.depend(success, F.assign(self.velocity, velocity))
 
     def update_kinetics(self, kinetics: Tensor, success: bool = True) -> bool:
-        """
+        r"""
         Update the parameters of kinetics.
 
         Args:
-            kinetics(Tensor):   Tensor of kinetics. Data type is float.
-            success(bool):      Whether to update the kinetics. Default: ``True``.
+            kinetics(Tensor): Tensor of kinetics. Data type is float.
+            success(bool): Whether to update the kinetics. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of kinetics.
@@ -282,12 +315,12 @@ class Updater(Optimizer):
         return F.depend(success, F.assign(self.kinetics, kinetics))
 
     def update_temperature(self, temperature: Tensor, success: bool = True) -> bool:
-        """
+        r"""
         Update the parameters of temperature.
 
         Args:
-            temperature(Tensor):    Tensor of temperature. Data type is float.
-            success(bool):          Whether to update the temperature. Default: ``True``.
+            temperature(Tensor): Tensor of temperature. Data type is float.
+            success(bool): Whether to update the temperature. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of temperature.
@@ -297,12 +330,12 @@ class Updater(Optimizer):
         return F.depend(success, F.assign(self.temperature, temperature))
 
     def update_virial(self, virial: Tensor, success: bool = True) -> bool:
-        """
+        r"""
         Update the parameters of virial.
 
         Args:
             virial(Tensor): Tensor of virial. Data type is float.
-            success(bool):  Whether to update the virial. Default: ``True``.
+            success(bool): Whether to update the virial. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of virial.
@@ -312,12 +345,12 @@ class Updater(Optimizer):
         return F.depend(success, F.assign(self.virial, virial))
 
     def update_pressure(self, pressure: Tensor, success: bool = True) -> bool:
-        """
+        r"""
         Update the parameters of pressure.
 
         Args:
-            pressure(Tensor):   Tensor of pressure. Data type is float.
-            success(bool):      Whether to update the pressure. Default: ``True``.
+            pressure(Tensor): Tensor of pressure. Data type is float.
+            success(bool): Whether to update the pressure. Default: ``True``.
 
         Returns:
             bool, whether successfully update the parameters of pressure.
@@ -327,7 +360,7 @@ class Updater(Optimizer):
         return F.depend(success, F.assign(self.pressure, pressure))
 
     def get_velocity(self) -> Tensor:
-        """
+        r"""
         Get velocity.
 
         Returns:
@@ -338,11 +371,11 @@ class Updater(Optimizer):
         return self.identity(self.velocity)
 
     def get_kinetics(self, velocity: Tensor) -> Tensor:
-        """
+        r"""
         Get kinectics.
 
         Args:
-            velocity(Tensor):   Tensor of atom velocities. Data type is float.
+            velocity(Tensor): Tensor of atom velocities. Data type is float.
 
         Returns:
             Tensor, the kinectics of the system.
@@ -354,11 +387,11 @@ class Updater(Optimizer):
         return kinetics * self.kinetic_unit_scale
 
     def get_temperature(self, kinetics: Tensor = None) -> Tensor:
-        """
+        r"""
         Get temperature.
 
         Args:
-            kinetics(Tensor):   Tensor of kinetics. Data type is float. Default: ``None``.
+            kinetics(Tensor): Tensor of kinetics. Data type is float. Default: ``None``.
 
         Returns:
             Tensor, the temperature of the system.
@@ -368,13 +401,13 @@ class Updater(Optimizer):
         return 2 * kinetics / self.degrees_of_freedom / self.boltzmann
 
     def get_pressure(self, kinetics: Tensor, virial: Tensor, pbc_box: Tensor) -> Tensor:
-        """
+        r"""
         Get pressure.
 
         Args:
-            kinetics(Tensor):   Tensor of kinetics. Data type is float.
-            virial(Tensor):     Tensor of virial. Data type is float.
-            pbc_box(Tensor):    Tensor of pbc_box. Data type is float.
+            kinetics(Tensor): Tensor of kinetics. Data type is float.
+            virial(Tensor): Tensor of virial. Data type is float.
+            pbc_box(Tensor): Tensor of pbc_box. Data type is float.
 
         Returns:
             Tensor, the pressure of the system.
@@ -387,7 +420,7 @@ class Updater(Optimizer):
         return pressure * self.press_unit_scale
 
     def get_dt(self):
-        """
+        r"""
         Get the learning rate of current step.
 
         Returns:
@@ -396,11 +429,11 @@ class Updater(Optimizer):
         return self.get_lr()
 
     def next_step(self, success: bool = True) -> bool:
-        """
+        r"""
         Finish the current optimization step and move to next step.
 
         Args:
-            success(bool):  Whether to finish the current optimization step and move to next step. Default: ``True``.
+            success(bool): Whether to finish the current optimization step and move to next step. Default: ``True``.
 
         Returns:
             bool, whether successfully finish the current optimization step and move to next step.
@@ -408,11 +441,11 @@ class Updater(Optimizer):
         return F.depend(success, F.assign(self.step, self.step+1))
 
     def decay_and_scale_grad(self, force: Tensor, virial: Tensor = None) -> Tuple[Tensor, Tensor]:
-        """
+        r"""
         Do weight decay and gradient scale for force and virial.
 
         Args:
-            force(Tensor):  Tensor of force. Data type is float.
+            force(Tensor): Tensor of force. Data type is float.
             virial(Tensor): Tensor of virial. Data type is float. Default: ``None``.
 
         Returns:
@@ -436,7 +469,17 @@ class Updater(Optimizer):
         return force, virial
 
     def construct(self, energy: Tensor, force: Tensor, virial: Tensor = None):
-        """update the parameters of system"""
+        r"""
+        Update the parameters of system
+
+        Args:
+            energy (Tensor): Tensor of energy. Data type is float.
+            force (Tensor): Tensor of force. Data type is float.
+            virial (Tensor): Tensor of virial. Data type is float. Default: ``None``.
+
+        Returns:
+            bool, whether successfully finish the current optimization step and move to next step.
+        """
 
         force, virial = self.decay_and_scale_grad(force, virial)
 
