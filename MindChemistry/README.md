@@ -98,7 +98,6 @@ pip install -r requirements.txt
 |               | EulerOS-aarch64 | ✔️ |
 |               | CentOS-x86      | ✔️ |
 |               | CentOS-aarch64  | ✔️ |
-| GPU CUDA 11.1 | Ubuntu-x86      | ✔️ |
 
 ### source code install
 
@@ -109,17 +108,10 @@ pip install -r requirements.txt
   cd {PATH}/mindscience/MindChemistry
   ```
 
-- **Ascend backend**
+- **Compile in Ascend backend**
 
   ```bash
   bash build.sh -e ascend -j8
-  ```
-
-- **GPU backend**
-
-  ```bash
-  export CUDA_PATH={your_cuda_path}
-  bash build.sh -e gpu -j8
   ```
 
 - **Install whl package**
