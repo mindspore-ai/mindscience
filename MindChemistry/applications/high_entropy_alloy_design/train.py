@@ -15,10 +15,10 @@
 """train process"""
 import os
 import io
-import yaml
 import warnings
 import datetime
 import argparse
+import yaml
 
 import mindspore as ms
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--root", type=str, default=os.path.abspath('.'))
     parser.add_argument("-n", "--exp_name", type=str, default=str(datetime.datetime.now())[:19].replace(" ", "-"))
     parser.add_argument("-m", "--mode", default=ms.GRAPH_MODE)
-    parser.add_argument("-dt", "--device_target", type=str, default='GPU')
+    parser.add_argument("-dt", "--device_target", type=str, default='Ascend')
     parser.add_argument("-di", "--device_id", type=int, default=6)
     parser.add_argument("-c", "--config_path", type=str, default=os.path.abspath('.') + '/config.yml')
     args = parser.parse_args()
