@@ -30,8 +30,8 @@ if __name__ == '__main__':
     parser.add_argument("--save_graphs", type=int, default=0, choices=[1, 0],
                         help="Whether to save intermediate compilation graphs, 0(False), 1(True)")
     parser.add_argument("--save_graphs_path", type=str, default="./graphs")
-    parser.add_argument("--device_target", type=str, default="Ascend", choices=["GPU", "Ascend"],
-                        help="The target device to run, support 'Ascend', 'GPU'")
+    parser.add_argument("--device_target", type=str, default="Ascend",
+                        help="The target device to run, support 'Ascend'")
     parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
     parser.add_argument("--config_file_path", type=str, default="./qm9.yaml")
     parser.add_argument("--dtype", type=str, default='float32',

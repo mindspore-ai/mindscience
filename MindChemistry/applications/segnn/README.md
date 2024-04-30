@@ -44,7 +44,7 @@ python train.py [MODE] [DEVICE_TARGET] [DEVICE_ID] [CONFIG_FILE] [DTYPE]
 
 # 参数说明
 MODE：计算图模式，GRAPH--静态图，PYNATIVE--动态图
-DEVICE_TARGET：运行的目标设备类型，Ascend、GPU
+DEVICE_TARGET：运行的目标设备类型，Ascend
 DEVICE_ID：目标设备的ID
 CONFIG_FILE：配置文件
 DTYPE：模型前向计算的数据类型

@@ -1,5 +1,5 @@
 train:
-  device: Ascend    # Ascend GPU
+  device: Ascend
   device_id: 0
   dataset_dir: "./dataset"
   ckpt_dir: "./ckpt"
