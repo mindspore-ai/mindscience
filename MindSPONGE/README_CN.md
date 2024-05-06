@@ -95,7 +95,6 @@ print("confidence:", confidence)
 |               | EulerOS-aarch64 | ✔️ |
 |               | CentOS-x86      | ✔️ |
 |               | CentOS-aarch64  | ✔️ |
-| GPU CUDA 10.1 | Ubuntu-x86      | ✔️ |
 
 - CUDA>=10.1
 - Ubuntu>=16.04
@@ -106,12 +105,6 @@ print("confidence:", confidence)
 
 ```bash
 pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.1/MindScience/mindsponge/ascend/aarch64/mindsponge_ascend-1.0.0rc2-py3-none-any.whl
-```
-
-- GPU后端
-
-```bash
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.1/MindScience/mindsponge/gpu/x86_64/cuda-10.1/mindsponge_gpu-1.0.0rc2-py3-none-any.whl
 ```
 
 pip install安装的mindsponge包对应gitee仓中r0.5分支代码。可使用以下指令在本地获取该分支代码
@@ -133,19 +126,11 @@ cd {PATH}/mindscience/MindSPONGE
 bash build.sh -e ascend -j32
 ```
 
-- GPU后端
-
-```bash
-export CUDA_PATH={your_cuda_path}
-bash build.sh -e gpu -j32
-```
-
 - 安装编译所得whl包
 
 ```bash
 cd {PATH}/mindscience/MindSPONGE/output
 pip install mindsponge_ascend*.whl # 昇腾安装指令
-pip install mindsponge_gpu*.whl # GPU安装指令
 ```
 
 ### API

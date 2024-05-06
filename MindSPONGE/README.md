@@ -96,7 +96,6 @@ print("confidence:", confidence)
 |               | EulerOS-aarch64 | ✔️ |
 |               | CentOS-x86      | ✔️ |
 |               | CentOS-aarch64  | ✔️ |
-| GPU CUDA 10.1 | Ubuntu-x86      | ✔️ |
 
 - CUDA>=10.1
 - Ubuntu>=16.04
@@ -107,12 +106,6 @@ print("confidence:", confidence)
 
 ```bash
 pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.1/MindScience/mindsponge/ascend/aarch64/mindsponge_ascend-1.0.0rc2-py3-none-any.whl
-```
-
-- GPU backend
-
-```bash
-pip install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.2.1/MindScience/mindsponge/gpu/x86_64/cuda-10.1/mindsponge_gpu-1.0.0rc2-py3-none-any.whl
 ```
 
 The version of mindsponge installed by pip corresponds to the r0.5 branch code. The code can be downloaded using the following instruct.
@@ -134,19 +127,11 @@ cd {PATH}/mindscience/MindSPONGE
 bash build.sh -e ascend
 ```
 
-- GPU backend
-
-```bash
-export CUDA_PATH={your_cuda_path}
-bash build.sh -e gpu -j32
-```
-
 - Install whl package
 
 ```bash
 cd {PATH}/mindscience/MindSPONGE/output
 pip install mindsponge_ascend*.whl # Ascend
-pip install mindsponge-gpu*.whl # GPU
 ```
 
 ### API
