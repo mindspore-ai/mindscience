@@ -1,22 +1,22 @@
 sponge.core.WithEnergyCell
 ==============================
 
-.. py:class:: sponge.core.WithEnergyCell(system: :class:`sponge.system.Molecule`, potential: :class:`sponge.potential.PotentialCell`, bias: Union[ :class:`sponge.potential.bias.Bias`, List[ :class:`sponge.potential.bias.Bias`]] = None, cutoff: float = None, neighbour_list: :class:`sponge.partition.NeighbourList` = None, wrapper: :class:`sponge.sampling.wrapper.EnergyWrapper` = None, **kwargs)
+.. py:class:: sponge.core.WithEnergyCell(system: Molecule, potential: PotentialCell, bias: Union[Bias, List[Bias]] = None, cutoff: float = None, neighbour_list: NeighbourList = None, wrapper: EnergyWrapper = None, **kwargs)
 
     用势能函数封装仿真系统的神经网络层。
     该神经网络层用于计算并返回系统在当前坐标处的势能值。
 
     参数：
-        - **system** ( :class:`sponge.system.Molecule`) - 仿真系统。
-        - **potential** ( :class:`sponge.potential.PotentialCell`) - 势能函数层。
-        - **bias** (Union[ :class:`sponge.potential.bias.Bias`, List[ :class:`sponge.potential.bias.Bias`]], 可选) - 偏置势函数层。默认值： ``None``。
+        - **system** (:class:`sponge.system.Molecule`) - 仿真系统。
+        - **potential** (:class:`sponge.potential.PotentialCell`) - 势能函数层。
+        - **bias** (Union[`sponge.potential.Bias`, List[`sponge.potential.Bias`]], 可选) - 偏置势函数层。默认值： ``None``。
         - **cutoff** (float, 可选) - 邻居列表的截断距离。如果为 ``None``，则将其赋值为势能的截止值。默认值： ``None``。
-        - **neighbour_list** ( :class:`sponge.partition.NeighbourList`, 可选) - 邻居列表。默认值： ``None``。
-        - **wrapper** ( :class:`sponge.sampling.wrapper.EnergyWrapper`, 可选) - 包裹和处理势能和偏置势的网络。默认值： ``None``。
+        - **neighbour_list** (:class:`sponge.partition.NeighbourList`, 可选) - 邻居列表。默认值： ``None``。
+        - **wrapper** (`sponge.sampling.wrapper.EnergyWrapper`, 可选) - 包裹和处理势能和偏置势的网络。默认值： ``None``。
         - **kwargs** (dict) - 关键字参数。
 
     输入：
-        - **\*inputs** (Tuple(Tensor)) - :class:`sponge.simulation.WithEnergyCell` 的输入Tensor tuple。
+        - **\*inputs** (Tuple(Tensor)) - :class:`sponge.core.WithEnergyCell` 的输入Tensor tuple。
 
     输出：
         - **energy** (Tensor) - 整个系统的势能。shape为 :math:`(B, 1)` 。数据类型为float。

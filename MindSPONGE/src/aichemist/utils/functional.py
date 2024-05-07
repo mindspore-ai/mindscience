@@ -80,8 +80,7 @@ def multi_slice(starts, ends):
     """
     Compute the union of indexes in multiple slices.
 
-    Example::
-
+    Examples:
         >>> mask = multi_slice(ms.tensor([0, 1, 4]), ms.tensor([2, 3, 6]), 6)
         >>> assert (mask == ms.tensor([0, 1, 2, 4, 5]).all()
 
@@ -111,8 +110,7 @@ def multi_slice_mask(starts, ends, length):
     """
     Compute the union of multiple slices into a binary mask.
 
-    Example::
-
+    Examples:
         >>> mask = multi_slice_mask(ms.tensor([0, 1, 4]), ms.tensor([2, 3, 6]), 6)
         >>> assert (mask == ms.tensor([1, 1, 1, 0, 1, 1])).all()
 
@@ -153,8 +151,7 @@ def size_to_index(size):
     """
     Convert sizes to variadic indexes.
 
-    Example::
-
+    Examples:
         >>> index = _size_to_index(ms.tensor([3, 2, 1]))
         >>> assert (index == ms.tensor([0, 0, 0, 1, 1, 2])).all()
 
@@ -174,8 +171,7 @@ def extend(data, size, inputs, input_size):
     Extend variadic-sized data with variadic-sized inputs.
     This is a variadic variant of ``ops.concat([data, inputs], axis=-1)``.
 
-    Example::
-
+    Examples:
         >>> data = ms.tensor([0, 1, 2, 3, 4])
         >>> size = ms.tensor([3, 2])
         >>> inputs = ms.tensor([-1, -2, -3])

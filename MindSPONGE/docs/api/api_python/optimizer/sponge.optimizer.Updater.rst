@@ -1,15 +1,15 @@
 sponge.optimizer.Updater
 ============================
 
-.. py:class:: sponge.optimizer.Updater(system: :class:`sponge.molecule.Molecule`, controller: Union[ :class:`sponge.control.Controller`, List[ :class:`sponge.control.Controller`]] = None, time_step: float = 1e-3, velocity: Union[Tensor, ndarray, List[float]] = None, weight_decay: float = 0.0, loss_scale: float = 1.0, **kwargs)
+.. py:class:: sponge.optimizer.Updater(system: Molecule, controller: Union[Controller, List[Controller]] = None, time_step: float = 1e-3, velocity: Union[Tensor, ndarray, List[float]] = None, weight_decay: float = 0.0, loss_scale: float = 1.0, **kwargs)
 
-    MindSPONGE更新器的基类。是MindSpore中 :class:`mindspore.nn.optim.optimizer.Optimizer` 的特殊子类。 :class:`sponge.optimizer.Updater` 更新仿真系统中的原子坐标。原子坐标的更新要求原子受力和原子速度。力是从外界传递而来，速度是 :class:`sponge.optimizer.Updater` 自己的参数。
+    MindSPONGE更新器的基类。是MindSpore中 `mindspore.nn.Optimizer` 的特殊子类。 :class:`sponge.optimizer.Updater` 更新仿真系统中的原子坐标。原子坐标的更新要求原子受力和原子速度。力是从外界传递而来，速度是 :class:`sponge.optimizer.Updater` 自己的参数。
     当使用周期性边界条件的时候， :class:`sponge.optimizer.Updater` 也能够通过仿真系统的维里更新周期性边界条件箱的尺寸。
-    在通过一系列的 :class:`sponge.control.Controller` 控制器的优化过程中， :class:`sponge.optimizer.Updater` 控制着七个变量的值，分别是：坐标、速度、力、能量、动能、维里和周期性边界条件箱。如果传入超过一个 :class:`sponge.controller.Controller` ，它们将按照队列顺序进行工作。
+    在通过一系列的 :class:`sponge.control.Controller` 控制器的优化过程中， :class:`sponge.optimizer.Updater` 控制着七个变量的值，分别是：坐标、速度、力、能量、动能、维里和周期性边界条件箱。如果传入超过一个 :class:`sponge.control.Controller` ，它们将按照队列顺序进行工作。
 
     参数：
-        - **system** ( :class:`sponge.molecule.Molecule`) - 模拟系统。
-        - **controller** (Union[ :class:`sponge.control.Controller`, List[ :class:`sponge.control.Controller`]], 可选) - 控制器或控制器列表来控制模拟系统中的七个变量（坐标、速度、力、能量、动能、维里和周期性边界条件箱）。默认值： ``None``。
+        - **system** (:class:`sponge.system.Molecule`) - 模拟系统。
+        - **controller** (Union[:class:`sponge.control.Controller`, List[:class:`sponge.control.Controller`]], 可选) - 控制器或控制器列表来控制模拟系统中的七个变量（坐标、速度、力、能量、动能、维里和周期性边界条件箱）。默认值： ``None``。
         - **time_step** (float, 可选) - 单步时间。默认值： ``1e-3``。
         - **velocity** (Union[Tensor, ndarray, List[float]], 可选) - 原子速度的array，shape为 `(A, D)` 或 `(B, A, D)` ，这里 `B`是batch size， `A`是原子总数， `D`是模拟系统的维度，一般为3。数据类型为float。默认值： ``None``。
         - **weight_decay** (float, 可选) - 权重衰减值。默认值： ``0.0``。

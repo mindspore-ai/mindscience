@@ -70,10 +70,10 @@ class SteepestDescent(Optimizer):
         applied.
 
     Args:
-        params (Union[list[ :class:`mindspore.Parameter`], list[dict]]): Must be list of
-          `Parameter` or list of `dict`. When the `params` is a list of
-          `dict`, the string "params", "lr", "grad_centralization" and
-          "order_params" are the keys can be parsed.
+        params (Union[list[`mindspore.Parameter`], list[dict]]): Must be list of
+            `Parameter` or list of `dict`. When the `params` is a list of
+            `dict`, the string "params", "lr", "grad_centralization" and
+            "order_params" are the keys can be parsed.
 
             - params: Required. Parameters in current group.
               The value must be a list of `Parameter`.
@@ -97,8 +97,7 @@ class SteepestDescent(Optimizer):
               the element of 'order_params' must be in
               one group of `params`.
 
-        learning_rate (Union[float, int, Tensor, Iterable,
-          :class:`mindspore.nn.learning_rate_schedule.LearningRateSchedule`]):
+        learning_rate (Union[float, int, Tensor, Iterable, LearningRateSchedule], optional):
 
             - float: The fixed learning rate value. Must be equal to or greater than ``0``.
             - int: The fixed learning rate value. Must be equal to or greater than ``0``.
@@ -109,33 +108,39 @@ class SteepestDescent(Optimizer):
               take the i-th value as the learning rate.
             - Iterable: Learning rate is dynamic.
               The i-th step will take the i-th value as the learning rate.
-            - LearningRateSchedule: Learning rate is dynamic.
+            - `mindspore.nn.LearningRateSchedule`: Learning rate is dynamic.
               During training, the optimizer calls the instance of
               LearningRateSchedule with step as the input to get the
               learning rate of current step.
 
-        weight_decay (Union[float, int]): An int or a floating point value for the weight decay.
-          It must be equal to or greater than ``0``.
-          If the type of `weight_decay` input is int,
-          it will be converted to float. Default: ``0.0``.
-        loss_scale (float): A floating point value for the loss scale.
-          It must be greater than ``0``.
-          If the type of `loss_scale` input is int, it will be converted to float.
-          In general, use the default value.
-          Only when  :class:`mindspore.amp.FixedLossScaleManager` is used
-          for training and the `drop_overflow_update` in
-          :class:`mindspore.amp.FixedLossScaleManager` is set to ``False``,
-          this value needs to be the same as the `loss_scale` in
-          :class:`mindspore.amp.FixedLossScaleManager`.
-          Refer to class :class:`mindspore.amp.FixedLossScaleManager` for more details.
-          Default: 1.0.
-        max_shift (float): A floating point value for the max shift. It must be greater than ``0``.
-          It is the bound of the shift distance each iteration in the optimizer.
-          If the max shift is set to be None, we will do nothing to
-          the shift.
-          But if max_shift is a given float number,
-          thus the bound of shift would be: [-max_shift, max_shift]
-          Default: ``None``.
+        weight_decay (Union[float, int], optional): An int or a floating point value for the weight decay.
+            It must be equal to or greater than ``0``.
+            If the type of `weight_decay` input is int,
+            it will be converted to float. Default: ``0.0``.
+        loss_scale (float, optional): A floating point value for the loss scale.
+            It must be greater than ``0``.
+            If the type of `loss_scale` input is int, it will be converted to float.
+            In general, use the default value.
+            Only when  `mindspore.amp.FixedLossScaleManager` is used
+            for training and the `drop_overflow_update` in
+            `mindspore.amp.FixedLossScaleManager` is set to ``False``,
+            this value needs to be the same as the `loss_scale` in
+            `mindspore.amp.FixedLossScaleManager`.
+            Refer to class `mindspore.amp.FixedLossScaleManager` for more details.
+            Default: 1.0.
+        max_shift (float, optional): A floating point value for the max shift. It must be greater than ``0``.
+            It is the bound of the shift distance each iteration in the optimizer.
+            If the max shift is set to be None, we will do nothing to
+            the shift.
+            But if max_shift is a given float number,
+            thus the bound of shift would be: [-max_shift, max_shift]
+            Default: ``None``.
+
+    Inputs:
+        - **gradients** (Tensor) - The gradients of the parameters.
+
+    Outputs:
+        - **success** (bool) - whether the operation is successful.
 
     Raises:
         TypeError: If `learning_rate` is not one of int, float, Tensor,
@@ -147,12 +152,6 @@ class SteepestDescent(Optimizer):
         ValueError: If `weight_decay` is less than ``0``.
         ValueError: If `learning_rate` is a Tensor, but the dimension of
             tensor is greater than ``1``.
-
-    Inputs:
-        - **gradients** (Tensor) - The gradients of the parameters.
-
-    Outputs:
-        bool, whether the operation is successful.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``

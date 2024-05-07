@@ -51,16 +51,16 @@ class RunOneStepCell(Cell):
     to update the atomic coordinates of the simulation system.
 
     Args:
-        energy( :class:`sponge.energy.WithEnergyCell`): Cell that wraps
+        energy(:class:`sponge.core.WithEnergyCell`): Cell that wraps
           the simulation system with the potential energy function.
           Default: ``None``.
-        force( :class:`sponge.force.WithForceCell`): Cell that wraps the simulation system with
+        force(:class:`sponge.core.WithForceCell`): Cell that wraps the simulation system with
           the atomic force function.
           Default: ``None``.
-        optimizer( :class:`mindspore.nn.optim.optimizer.Optimizer`): Optimizer for simulation.
+        optimizer(`mindspore.nn.Optimizer`): Optimizer for simulation.
           Default: ``None``.
-        steps(int): Steps for JIT. Default: ``1``.
-        sens(float): The scaling number to be filled as the input of backpropagation.
+        steps(int, optional): Steps for JIT. Default: ``1``.
+        sens(float, optional): The scaling number to be filled as the input of backpropagation.
           Default: ``1.0``.
         kwargs(dict): Other arguments.
 
@@ -68,12 +68,12 @@ class RunOneStepCell(Cell):
         - **\*inputs** (Tuple(Tensor)) - Tuple of input tensors of `WithEnergyCell`.
 
     Outputs:
-        - energy, Tensor of shape :math:`(B, 1)`. Total potential energy.
+        - **energy** (Tensor) - with shape of :math:`(B, 1)`. Total potential energy.
           Here :math:`B` is the number of walkers in simulation.
           Data type is float.
-        - force, Tensor of shape :math:`(B, A, D)`. Atomic force.
+        - **force** (Tensor) - with shape of :math:`(B, A, D)`. Atomic force.
           Here :math:`A` is the number of atoms in the simulation system,
-          :math: `D` is the spatial dimension of the simulation system, which is usually 3.
+          :math:`D` is the spatial dimension of the simulation system, which is usually 3.
           Data type is float.
 
     Supported Platforms:
@@ -393,7 +393,7 @@ class RunOneStepCell(Cell):
 
             Args:
                 *inputs(Tuple(Tensor)): Tuple of input tensors of
-                    :class:`sponge.energy.WithEnergyCell`.
+                    :class:`sponge.core.WithEnergyCell`.
 
             Returns:
                 - energy, Tensor of shape `(B, 1)`. Total potential energy.

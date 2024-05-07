@@ -893,7 +893,7 @@ class PDEInverseDataGenBase(PDEDataGenBase):
     and then obtain the class for inverse problem data generation via class
     inheritance.
 
-    Example:
+    Examples:
         >>> MyPDE(PDEDataGenBase):
         ...     pass  # your own implementation
         >>>

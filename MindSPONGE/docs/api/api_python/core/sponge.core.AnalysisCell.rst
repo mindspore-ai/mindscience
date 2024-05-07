@@ -1,14 +1,14 @@
 sponge.core.AnalysisCell
 ===========================
 
-.. py:class:: sponge.core.AnalysisCell(system: :class:`sponge.system.Molecule`, potential: :class:`sponge.potential.PotentialCell`, neighbour_list: :class:`sponge.partition.NeighbourList` = None)
+.. py:class:: sponge.core.AnalysisCell(system: Molecule, potential: PotentialCell, neighbour_list: NeighbourList = None)
 
     用于分析的模块。
 
     参数：
-        - **system** ( :class:`sponge.system.Molecule`) - 模拟系统。
-        - **potential** ( :class:`sponge.potential.PotentialCell`) - 势能。
-        - **neighbour_list** ( :class:`sponge.partition.NeighbourList`, 可选) - 邻居列表。默认: ``None``。
+        - **system** (:class:`sponge.system.Molecule`) - 模拟系统。
+        - **potential** (:class:`sponge.potential.PotentialCell`) - 势能。
+        - **neighbour_list** (:class:`sponge.partition.NeighbourList`, 可选) - 邻居列表。默认: ``None``。
 
     输入：
         - **coordinate** (Tensor) - 坐标。shape为 :math:`(B, A, D)` 。数据类型为 float。这里的 :math:`B` 是batch size， :math:`A` 是原子数量，而 :math:`D` 是模拟系统的空间维度，通常为3。

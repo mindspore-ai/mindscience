@@ -40,11 +40,11 @@ class WithForceCell(Cell):
     r"""Cell that wraps the simulation system with the atomic force function.
 
     Args:
-        system ( :class:`sponge.system.Molecule`): Simulation system.
-        force ( :class:`sponge.potential.ForceCell`): Atomic force calculation cell.
-        neighbour_list ( :class:`sponge.partition.NeighbourList`): Neighbour list.
+        system (:class:`sponge.system.Molecule`): Simulation system.
+        force (`sponge.potential.ForceCell`): Atomic force calculation cell.
+        neighbour_list (:class:`sponge.partition.NeighbourList`, optional): Neighbour list.
           Default: ``None``.
-        modifier ( :class:`sponge.sampling.modifier.ForceModifier`): Force modifier.
+        modifier (`sponge.sampling.modifier.ForceModifier`, optional): Force modifier.
           Default: ``None``.
 
     Inputs:
@@ -60,11 +60,11 @@ class WithForceCell(Cell):
           Tensor of shape :math:`(B, D)`. Data type is float.
 
     Outputs:
-        - energy, Tensor of shape :math:`(B, 1)`. Total potential energy of the simulation system.
+        - **energy** (Tensor) - with shape of :math:`(B, 1)`. Total potential energy of the simulation system.
           Data type is float.
-        - force, Tensor of shape :math:`(B, A, D)`. Force on each atoms of the simulation system.
+        - **force** (Tensor) - with shape of :math:`(B, A, D)`. Force on each atoms of the simulation system.
           Data type is float.
-        - virial, Tensor of shape :math:`(B, D)`. Virial tensor of the simulation system.
+        - **virial** (Tensor) - with shape of :math:`(B, D)`. Virial tensor of the simulation system.
           Data type is float.
 
     Supported Platforms:

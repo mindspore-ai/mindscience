@@ -33,19 +33,19 @@ class DataSource:
         aoa_list (list): The value of angle of attack (the value is 10 times the actual angle of attack)
                    (33 ,34 , 35 , 36 , 37 , 38 , 39)
 
-    Outputs
-        data_sample_list (list): the list of array of data sample for train and the array of data sample for prediction
-                             the array of data sample shape=(t, C, H, W) :(data_length,3,200,200)
+    Outputs:
+        data_sample_list (list), the list of array of data sample for train and the array of data sample for prediction
+            the array of data sample shape=(t, C, H, W) :(data_length,3,200,200)
 
-    Example:
-        import numpy as np
-        import h5py
-        data_dir = "./dataset"
-        data_length = 2000
-        aoa_list = [35]
-        datasource = DataSource(data_url,data_length,aoa_list)
-        data_sample_list = datasource.train_data()
-        print(data_sample_list[0].shape)
+    Examples:
+        >>> import numpy as np
+        >>> import h5py
+        >>> data_dir = "./dataset"
+        >>> data_length = 2000
+        >>> aoa_list = [35]
+        >>> datasource = DataSource(data_url,data_length,aoa_list)
+        >>> data_sample_list = datasource.train_data()
+        >>> print(data_sample_list[0].shape)
         (2000,3,200,200)
 
     """
