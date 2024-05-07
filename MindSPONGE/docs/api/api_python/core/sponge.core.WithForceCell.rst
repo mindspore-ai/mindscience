@@ -1,15 +1,15 @@
 sponge.core.WithForceCell
 ==============================
 
-.. py:class:: sponge.core.WithForceCell(self, system: :class:`sponge.system.Molecule`, force: :class:`sponge.potential.ForceCell`, neighbour_list: :class:`sponge.partition.NeighbourList` = None, modifier: :class:`sponge.sampling.modifier.ForceModifier` = None)
+.. py:class:: sponge.core.WithForceCell(self, system: Molecule, force: ForceCell, neighbour_list: NeighbourList = None, modifier: ForceModifier = None)
 
     用于封装带有原子力函数的仿真系统的单元。
 
     参数：
-        - **system** ( :class:`sponge.system.Molecule`) - 仿真系统。
-        - **force** ( :class:`sponge.potential.ForceCell`) - 原子力计算单元。
-        - **neighbour_list** ( :class:`sponge.partition.NeighbourList`, 可选) - 邻居列表。默认值： ``None``。
-        - **modifier** ( :class:`sponge.sampling.modifier.ForceModifier`, 可选) - 力修正器。默认值： ``None``。
+        - **system** (:class:`sponge.system.Molecule`) - 仿真系统。
+        - **force** (`sponge.potential.ForceCell`) - 原子力计算单元。
+        - **neighbour_list** (:class:`sponge.partition.NeighbourList`, 可选) - 邻居列表。默认值： ``None``。
+        - **modifier** (`sponge.sampling.modifier.ForceModifier`, 可选) - 力修正器。默认值： ``None``。
 
     输入：
         - **energy** (Tensor) - 势能。shape为 :math:`(B, 1)` 。数据类型为float。
@@ -21,54 +21,6 @@ sponge.core.WithForceCell
         - **force** (Tensor) - 作用于仿真系统每个原子的力。shape为 :math:`(B, A, D)` 。数据类型为float。这里的 :math:`B` 是batch size， :math:`A` 是原子数量， :math:`D` 是仿真系统的空间维度，通常为3。
         - **virial** (Tensor) - 维里。shape为 :math:`(B, D)` 。数据类型为float。
 
-    .. py:method:: bias()
-        :property:
-
-        整体偏置势的Tensor。
-
-        返回：
-            Tensor，shape为 :math:`(B, 1)` ，数据类型为float。
-
-    .. py:method:: bias_names()
-        :property:
-
-        偏置势能的名字。
-
-        返回：
-            list[str]，偏置势能的名字列表。
-
-    .. py:method:: bias_pace(index: int = 0)
-
-        偏置势的更新频率。
-
-        参数：
-            - **index** (int) - 偏置势的目录。默认值： ``0``。
-
-        返回：
-            int，更新频率。
-
-    .. py:method:: biases()
-        :property:
-
-        偏置势分量的Tensor。
-
-        返回：
-            偏置势分量的Tensor。shape为 :math:`(B, V)` ，数据类型为float。
-
-    .. py:method:: calc_biases()
-
-        计算偏置势项。
-
-        返回：
-            偏置势项，shape为 :math:`(B, V)` 的Tensor。数据类型为float。
-
-    .. py:method:: calc_energies()
-
-        计算势能的能量项。
-
-        返回：
-            能量项，shape为 :math:`(B, U)` 的Tensor。数据类型为float。
-
     .. py:method:: cutoff()
         :property:
 
@@ -76,22 +28,6 @@ sponge.core.WithForceCell
 
         返回：
             Tensor，截断距离。
-
-    .. py:method:: energies()
-        :property:
-
-        势能分量的Tensor。
-
-        返回：
-            势能分量的Tensor，shape为 :math:`(B, U)` ，数据类型为float。
-
-    .. py:method:: energy_names()
-        :property:
-
-        能量项的名字。
-
-        返回：
-            list[str]，能量项的名字列表。
 
     .. py:method:: energy_unit()
         :property:
@@ -125,22 +61,6 @@ sponge.core.WithForceCell
         返回：
             int，更新步长。
 
-    .. py:method:: num_biases()
-        :property:
-
-        偏置势能 :math:`V` 的数量。
-
-        返回：
-            int，偏置势能的数量。
-
-    .. py:method:: num_energies()
-        :property:
-
-        能量项 :math:`U` 的数量。
-
-        返回：
-            int，能量项的数量。
-
     .. py:method:: set_pbc_grad(grad_box: bool)
 
         设置是否计算PBC box的梯度。
@@ -148,12 +68,12 @@ sponge.core.WithForceCell
         参数：
             - **grad_box** (bool) - 是否计算PBC box的梯度。
 
-    .. py:method:: update_bias(step: int)
+    .. py:method:: update_modifier(step: int)
 
-        更新偏置势。
+        更新修饰器。
 
         参数：
-            - **step** (int) - 当前仿真步数，当步数整除更新频率余数为0时，更新偏置势。
+            - **step** (int) - 当前仿真步数，当步数整除更新频率余数为0时，更新修饰。
 
     .. py:method:: update_neighbour_list()
 
@@ -166,10 +86,3 @@ sponge.core.WithForceCell
         返回：
             - neigh_idx，系统中每个原子邻近原子的目录。shape为 :math:`(B, A, N)` 的Tensor，数量类型为int。
             - neigh_mask，neigh_idx的掩码。shape为 :math:`(B, A, N)` 的Tensor，数量类型为bool。
-
-    .. py:method:: update_modifier(step: int)
-
-        更新修饰器。
-
-        参数：
-            - **step** (int) - 当前仿真步数，当步数整除更新频率余数为0时，更新修饰。

@@ -42,7 +42,7 @@ class UpdaterMD(Updater):
     r"""
     A updater for molecular dynamics (MD) simulation, which is the subclass of `Updater`.
 
-    UpdaterMD uses four different `Controller`s to control the different
+    UpdaterMD uses four different `Controllers` to control the different
     variables in the simulation process. The `integrator` is used for update
     the atomic coordinates and velocities, the `thermostat` is used for
     temperature coupling, the `barostat` is used for pressure coupling, and
@@ -50,43 +50,40 @@ class UpdaterMD(Updater):
 
     Args:
         system (:class:`sponge.system.Molecule`): Simulation system.
-        time_step (float): Time step. Default: 1e-3.
-        velocity (Union[Tensor, ndarray, List[float]]): Array of atomic velocity.
+        time_step (float, optional): Time step. Default: 1e-3.
+        velocity (Union[Tensor, ndarray, List[float]], optional): Array of atomic velocity.
           The shape of array is :math:`(A, D)` or :math:`(B, A, D)`.
           Here :math:`B` is the number of walkers in simulation,
           :math:`A` is the number of atoms,
           :math:`D` is the spatial dimension of the simulation system, which is usually 3.
           Data type is float. Default: ``None``.
-        temperature (float): Reference temperature for coupling.
+        temperature (float, optional): Reference temperature for coupling.
           Only valid if `thermostat` is set to type `str`. Default: ``None``.
-        pressure (float): Reference pressure for temperature coupling.
+        pressure (float, optional): Reference pressure for temperature coupling.
           Only valid if `barostat` is set to type `str`. Default: ``None``.
-        integrator (Union[:class:`sponge.control.integrator.Integrator`, str]): Integrator
+        integrator (Union[`sponge.control.Integrator`, str], optional): Integrator
           for MD simulation.
           It can be an object of `Integrator` or the `str` of an integrator name.
           Default: 'leap_frog'
-        thermostat (Union[:class:`sponge.control.thermostat.Thermostat`, str]): Thermostat
+        thermostat (Union[`sponge.control.Thermostat`, str], optional): Thermostat
           for temperature coupling.
-          It can be an object of :class:`spogne.control.Thermostat`
+          It can be an object of `sponge.control.Thermostat`
           or the `str` of a thermostat name.
           If a `str` is given, then it will only valid if the `temperature` is not ``None``.
           Default: 'berendsen'
-        barostat (Union[:class:`sponge.control.barostat.Barostat`, str]): Barostat
+        barostat (Union[`sponge.control.Barostat`, str], optional): Barostat
           for pressure coupling.
           It can be an object of `Barostat` or the `str` of a barostat name.
           If a `str` is given, then it will only valid if the `pressure` is not `None`.
-          Default: 'berendsen'
-        constraint (Union[:class:`sponge.control.constraint.Constraint`,
-          List[:class:`sponge.control.constraint.Constraint`]]):
+          Default: ``'berendsen'``.
+        constraint (Union[`sponge.control.Constraint`, List[`sponge.control.Constraint`]], optional):
           Constraint controller(s) for bond constraint. Default: ``None``.
-        controller (Union[:class:`sponge.control.controller.Controller`,
-          List[:class:`sponge.control.controller.Controller`]]):
-          Other controller(s).
-          It will work after the four specific controllers (integrator,
-          thermostat, barostat and constraint).
+        controller (Union[:class:`sponge.control.Controller`, List[:class:`sponge.control.Controller`]], optional):
+          Other controller(s). It will work after the four specific
+          controllers (integrator, thermostat, barostat and constraint).
           Default: ``None``.
-        weight_decay (float): An value for the weight decay. Default: ``0.0``.
-        loss_scale (float): A value for the loss scale. Default: ``1.0``.
+        weight_decay (float, optional): An value for the weight decay. Default: ``0.0``.
+        loss_scale (float, optional): A value for the loss scale. Default: ``1.0``.
 
     Inputs:
         - **energy** (Tensor) - Total potential energy of the simulation system.
@@ -102,7 +99,7 @@ class UpdaterMD(Updater):
           Data type is float. Default: ``None``.
 
     Outputs:
-        bool, whether successfully finish the current optimization step and move to next step.
+        - **success** (bool) - whether successfully finish the current optimization step and move to next step.
 
 
     Supported Platforms:
@@ -263,11 +260,10 @@ class UpdaterMD(Updater):
 
     def set_constraint(self, constraint: Union[Constraint, List[Constraint]]):
         r"""
-        Set constraint
+        Set constraint.
 
         Args:
-            constraint (Union[:class:`sponge.control.constraint.Constraint`,
-              List[:class:`sponge.control.constraint.Constraint`]]):
+            constraint (Union[`sponge.control.Constraint`, List[`sponge.control.Constraint`]]):
               Constraint controller(s) for bond constraint.
         """
         constraint = get_constraint(constraint, self.system)

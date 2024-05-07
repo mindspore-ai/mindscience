@@ -58,132 +58,134 @@ from ..metrics import MetricCV, get_metrics
 
 
 class Sponge():
-    r"""Core engine of MindSPONGE for simulation and analysis.
+    r"""
+    Core engine of MindSPONGE for simulation and analysis.
 
-        This Cell is the top-level wrapper for the three modules system (
-        :class:`sponge.system.Molecule`),potential ( :class:`sponge.potential.
-        PotentialCell`) and
-        optimizer ( :class:`mindspore.nn.optim.Optimizer`) in MindSPONGE.
+    This Cell is the top-level wrapper for the three modules system (
+    :class:`sponge.system.Molecule`),potential (:class:`sponge.potential.
+    PotentialCell`) and
+    optimizer (`mindspore.nn.Optimizer`) in MindSPONGE.
 
-        There are three ways to wrap the modules:
+    There are three ways to wrap the modules:
 
-        1)  Wraps `system`, `potential` and `optimizer` directly into :class:`sponge.core.Sponge`.
+    1)  Wraps `system`, `potential` and `optimizer` directly into :class:`sponge.core.Sponge`.
 
-            .. code-block::
+    .. code-block::
 
-                from sponge import Sponge
-                from sponge.system import Molecule
-                from sponge.potential.forcefield import ForceField
-                from sponge.optimizer import Updater
-                system = Molecule(template='water.tip3p.yaml')
-                potential = ForceField(system, parameters='SPCE')
-                optimizer = Updater(system, controller=None, time_step=1e-3)
-                md = Sponge(system, potential, optimizer)
+        from sponge import Sponge
+        from sponge.system import Molecule
+        from sponge.potential.forcefield import ForceField
+        from sponge.optimizer import Updater
+        system = Molecule(template='water.tip3p.yaml')
+        potential = ForceField(system, parameters='SPCE')
+        optimizer = Updater(system, controller=None, time_step=1e-3)
+        md = Sponge(system, potential, optimizer)
 
-            In this way ordinary simulations can be achieved
+    In this way ordinary simulations can be achieved
 
-        2)  Wrap `system` and `potential` with :class:`sponge.energy.WithEnergyCell` first,
-        then wrap :class:`sponge.energy.WithEnergyCell` and `optimizer`
-        with :class:`sponge.core.Sponge`.
+    2)  Wrap `system` and `potential` with :class:`sponge.core.WithEnergyCell` first,
+    then wrap :class:`sponge.core.WithEnergyCell` and `optimizer`
+    with :class:`sponge.core.Sponge`.
 
-            .. code-block::
+    .. code-block::
 
-                from sponge import WithEnergyCell, Sponge
-                from sponge.system import Molecule
-                from sponge.potential.forcefield import ForceField
-                from sponge.optimizer import Updater
-                system = Molecule(template='water.tip3p.yaml')
-                potential = ForceField(system, parameters='SPCE')
-                optimizer = Updater(system, controller=None, time_step=1e-3)
-                sys_with_ene = WithEnergyCell(system, potential)
-                md = Sponge(sys_with_ene, optimizer=optimizer)
+        from sponge import WithEnergyCell, Sponge
+        from sponge.system import Molecule
+        from sponge.potential.forcefield import ForceField
+        from sponge.optimizer import Updater
+        system = Molecule(template='water.tip3p.yaml')
+        potential = ForceField(system, parameters='SPCE')
+        optimizer = Updater(system, controller=None, time_step=1e-3)
+        sys_with_ene = WithEnergyCell(system, potential)
+        md = Sponge(sys_with_ene, optimizer=optimizer)
 
-            In this case, the adjustment of the potential can be achieved by
-            adjusting the :class:`sponge.energy.WithEnergyCell`,
-            for example by setting the `neighbour_list` and the `bias` in
-            :class:`sponge.energy.WithEnergyCell`.
+    In this case, the adjustment of the potential can be achieved by
+    adjusting the :class:`sponge.core.WithEnergyCell`,
+    for example by setting the `neighbour_list` and the `bias` in
+    :class:`sponge.core.WithEnergyCell`.
 
-        3)  Wrap `system` and `potential` with
-        :class:`sponge.energy.WithEnergyCell` first,
-        then wrap :class:`sponge.energy.WithEnergyCell` and `optimizer`
-        with :class:`sponge.core.RunOneStepCell`, and finally pass the
-        :class:`sponge.core.RunOneStepCell` into :class:`sponge.core.Sponge`.
+    3)  Wrap `system` and `potential` with
+    :class:`sponge.core.WithEnergyCell` first,
+    then wrap :class:`sponge.core.WithEnergyCell` and `optimizer`
+    with :class:`sponge.core.RunOneStepCell`, and finally pass the
+    :class:`sponge.core.RunOneStepCell` into :class:`sponge.core.Sponge`.
 
-            .. code-block::
-                from sponge import WithEnergyCell, RunOneStepCell, Sponge
-                from sponge.system import Molecule
-                from sponge.potential.forcefield import ForceField
-                from sponge.optimizer import Updater
-                system = Molecule(template='water.tip3p.yaml')
-                potential = ForceField(system, parameters='SPCE')
-                optimizer = Updater(system, controller=None, time_step=1e-3)
-                sys_with_ene = WithEnergyCell(system, potential)
-                one_step = RunOneStepCell(sys_with_ene, optimizer=optimizer)
-                md = Sponge(one_step)
+    .. code-block::
 
-            In this case, the adjustment of the force can be achieved by
-            adjusting the :class:`sponge.core.RunOneStepCell`, for example by
-            adding a :class:`sponge.force.ForceCell` to the :class:`sponge.core.RunOneStepCell`.
+        from sponge import WithEnergyCell, RunOneStepCell, Sponge
+        from sponge.system import Molecule
+        from sponge.potential.forcefield import ForceField
+        from sponge.optimizer import Updater
+        system = Molecule(template='water.tip3p.yaml')
+        potential = ForceField(system, parameters='SPCE')
+        optimizer = Updater(system, controller=None, time_step=1e-3)
+        sys_with_ene = WithEnergyCell(system, potential)
+        one_step = RunOneStepCell(sys_with_ene, optimizer=optimizer)
+        md = Sponge(one_step)
 
-        For simulations:
+    In this case, the adjustment of the force can be achieved by
+    adjusting the :class:`sponge.core.RunOneStepCell`, for example by
+    adding a `sponge.potential.ForceCell` to the :class:`sponge.core.RunOneStepCell`.
 
-            Simulation can be performed by executing the member function
-            :func:`sponge.core.Sponge.run`.
+    For simulations:
 
-            .. code-block::
-                from sponge import Sponge
-                from sponge.system import Molecule
-                from sponge.potential.forcefield import ForceField
-                from sponge.optimizer import Updater
-                system = Molecule(template='water.tip3p.yaml')
-                potential = ForceField(system, parameters='SPCE')
-                optimizer = Updater(system, controller=None, time_step=1e-3)
-                md = Sponge(system, potential, optimizer)
-                md.run(100)
+    Simulation can be performed by executing the member function
+    :func:`sponge.core.Sponge.run`.
 
-        For analysis:
+    .. code-block::
 
-            :class:`sponge.core.Sponge` can also analyse the simulation
-            system by `metrics`. The `metrics` should be a dictionary of
-            :class:`sponge.metrics.Metric` or :class:`sponge.colvar.Colvar`.
-            The value of the `metrics` can be calculated by executing the
-            member function :func:`sponge.core.Sponge.analyse`.
+        from sponge import Sponge
+        from sponge.system import Molecule
+        from sponge.potential.forcefield import ForceField
+        from sponge.optimizer import Updater
+        system = Molecule(template='water.tip3p.yaml')
+        potential = ForceField(system, parameters='SPCE')
+        optimizer = Updater(system, controller=None, time_step=1e-3)
+        md = Sponge(system, potential, optimizer)
+        md.run(100)
 
-            .. code-block::
-                from sponge import Sponge
-                from sponge.colvar import Torsion
-                from sponge import Protein
-                from sponge.potential.forcefield import ForceField
-                from sponge.optimizer import SteepestDescent
-                # You can find alad.pdb file under MindSPONGE/tutorials/advanced/alad.pdb
-                system = Protein(pdb='alad.pdb')
-                potential = ForceField(system, 'AMBER.FF14SB')
-                optimizer = SteepestDescent(system.trainable_params(), 1e-7)
-                phi = Torsion([4, 6, 8, 14])
-                psi = Torsion([6, 8, 14, 16])
-                md = Sponge(system, potential, optimizer, metrics={'phi': phi, 'psi': psi})
-                metrics = md.analyse()
-                for k, v in metrics.items():
-                    print(k, v)
+    For analysis:
+
+    :class:`sponge.core.Sponge` can also analyse the simulation
+    system by `metrics`. The `metrics` should be a dictionary of
+    :class:`sponge.metrics.Metric` or :class:`sponge.colvar.Colvar`.
+    The value of the `metrics` can be calculated by executing the
+    member function :func:`sponge.core.Sponge.analyse`.
+
+    .. code-block::
+
+        from sponge import Sponge
+        from sponge.colvar import Torsion
+        from sponge import Protein
+        from sponge.potential.forcefield import ForceField
+        from sponge.optimizer import SteepestDescent
+        # You can find alad.pdb file under MindSPONGE/tutorials/advanced/alad.pdb
+        system = Protein(pdb='alad.pdb')
+        potential = ForceField(system, 'AMBER.FF14SB')
+        optimizer = SteepestDescent(system.trainable_params(), 1e-7)
+        phi = Torsion([4, 6, 8, 14])
+        psi = Torsion([6, 8, 14, 16])
+        md = Sponge(system, potential, optimizer, metrics={'phi': phi, 'psi': psi})
+        metrics = md.analyse()
+        for k, v in metrics.items():
+            print(k, v)
 
     Args:
-
-        network (Union[ :class:`sponge.system.Molecule`, :class:`sponge.energy.WithEnergyCell`,
-          :class:`sponge.core.RunOneStepCell`]):
-          Cell of the simulation system.
-        potential (:class:`sponge.potential.PotentialCell`): Potential energy.
+        network (Union[Molecule, WithEnergyCell, RunOneStepCell]): Cell of the simulation system.
+          Data type refers to
+          :class:`sponge.system.Molecule`, :class:`sponge.core.WithEnergyCell` and :class:`sponge.core.RunOneStepCell`
+        potential (:class:`sponge.potential.PotentialCell`, optional): Potential energy.
           Default: ``None``.
-        optimizer (:class:`mindsponge.optimizer.Optimizer`): Optimizer.
+        optimizer (`mindspore.nn.Optimizer`, optional): Optimizer.
           Default: ``None``.
-        metrics (dict): A Dictionary of metrics for system analysis.
+        metrics (dict, optional): A Dictionary of metrics for system analysis.
           The key type of the `dict` should be `str`, and the value type of
           the `dict` should be :class:`sponge.metrics.Metric` or
           :class:`sponge.colvar.Colvar`. Default: ``None``.
-        analysis (:class:`sponge.core.AnalysisCell`): Analysis network.
+        analysis (:class:`sponge.core.AnalysisCell`, optional): Analysis network.
           Default: ``None``.
 
     Supported Platforms:
-
         ``Ascend`` ``GPU``
     """
 
@@ -363,13 +365,19 @@ class Sponge():
 
     def update_bias(self, step: int):
         r"""
-        Update bias potential
+        Update bias potential.
+
+        Args:
+            step (int): step of the simulation.
         """
         self._simulation_network.update_bias(step)
 
     def update_wrapper(self, step: int):
         r"""
-        Update energy wrapper
+        Update energy wrapper.
+
+        Args:
+            step (int): step of the simulation.
         """
         self._simulation_network.update_wrapper(step)
 
@@ -445,9 +453,9 @@ class Sponge():
         potential) of the simulation system.
 
         Returns:
-            energy (Tensor):    Tensor of shape :math:`(B, 1)`.
-              Here :math:`B` is the batch size, i.e. the number of walkers of the simulation.
-              Data type is float. Total potential energy.
+            energy (Tensor), Tensor of shape :math:`(B, 1)`.
+            Here :math:`B` is the batch size, i.e. the number of walkers of the simulation.
+            Data type is float. Total potential energy.
 
         """
         if self._system_with_energy is None:
@@ -495,14 +503,13 @@ class Sponge():
 
         Args:
             steps (int): Simulation steps.
-            callbacks (Union[:class:`mindspore.train.callback.Callback`,
-              List[:class:`mindspore.train.callback.Callback`]]):
+            callbacks (Union[`mindspore.train.Callback`, List[`mindspore.train.Callback`]]):
               Callback function(s) to obtain the information of the system
               during the simulation. Default: ``None``.
             dataset (Dataset): Dataset used at simulation process. Default: ``None``.
-            show_time (bool):  Whether to show the time of the simulation. Default: ``True``.
+            show_time (bool): Whether to show the time of the simulation. Default: ``True``.
 
-        Example:
+        Examples:
             >>> from sponge import Sponge
             >>> from sponge.system import Molecule
             >>> from sponge.potential.forcefield import ForceField
@@ -684,13 +691,12 @@ class Sponge():
         """
         Analysis API.
 
-        Note: To use this API, the `metrics` must be set at :class:`spogne.core.Sponge` initialization.
+        Note:
+            To use this API, the `metrics` must be set at :class:`sponge.core.Sponge` initialization.
 
         Args:
-            dataset (:class:`mindspore.dataset.engine.datasets.Dataset`):
-              Dataset of simulation to be analysed. Default: ``None``.
-            callbacks (Union[:class:`mindspore.train.callback.Callback`,
-            List[:class:`mindspore.train.callback.Callback]]):
+            dataset (Dataset): Dataset of simulation to be analysed. Default: ``None``.
+            callbacks (Union[`mindspore.train.Callback`, List[`mindspore.train.Callback`]]):
               List of callback objects which should be executed
               while training. Default: ``None``.
 
@@ -698,7 +704,7 @@ class Sponge():
             Dict, the key is the metric name defined by users and the value is the metrics value for
             the model in the test mode.
 
-        Example:
+        Examples:
             >>> from mindsponge.colvar import Torsion
             >>> from mindsponge.colvar import Torsion
             >>> phi = Torsion([4, 6, 8, 14])
@@ -750,7 +756,7 @@ class Sponge():
         Transform callbacks to a list.
 
         Args:
-            callbacks (:class:`mindspore.train.callback.Callback`): Callback or iterable of Callback's.
+            callbacks (`mindspore.train.Callback`): Callback or iterable of Callback's.
 
         Returns:
             List, a list of callbacks.
@@ -777,7 +783,7 @@ class Sponge():
             epoch (int): Total number of iterations on the data.
             cycle_steps (int): Number of steps in each epoch.
             rest_steps (int): Number of steps in the last epoch.
-            list_callback (:class: `mindspore.train.callback.Callback`): Executor of callback list. Default: ``None``.
+            list_callback (`minspore.train.callback.Callback`): Executor of callback list. Default: ``None``.
             cb_params (_InternalCallbackParam): Callback parameters. Default: ``None``.
         """
         self._exec_preprocess(True)
@@ -815,10 +821,10 @@ class Sponge():
 
         Args:
             cycles (int): Number of steps in each epoch.
-            list_callback (:class: `mindspore.train.callback.Callback`):
+            list_callback (`mindspore.train.Callback`):
               Executor of callback list. Default: ``None``.
             cb_params (_InternalCallbackParam): Callback parameters. Default: ``None``.
-            run_context (:class: `mindspore.train.callback.RunContext`): Context of the current run.
+            run_context (`mindspore.train.callback.RunContext`): Context of the current run.
 
         Returns:
             bool, whether to stop the training.
@@ -885,9 +891,8 @@ class Sponge():
         Evaluation. The data would be passed to network directly.
 
         Args:
-            dataset (:class: `mindspore.dataset.engine.datasets.Dataset`):
-              Dataset to evaluate the model.
-            list_callback (:class: `mindspore.train.callback.Callback`):
+            dataset (Dataset): Dataset to evaluate the model.
+            list_callback (:class: `mindspore.train.Callback`):
               Executor of callback list. Default: ``None``.
             cb_params (_InternalCallbackParam): Callback parameters. Default: ``None``.
 

@@ -34,26 +34,24 @@ from .energy import WithEnergyCell
 
 class SimulationCell(WithEnergyCell):
     r"""
-    Cell for simulation, equivalent to :class:`sponge.energy.WithEnergyCell`.
+    Cell for simulation, equivalent to :class:`sponge.core.WithEnergyCell`.
 
     Note:
         This Cell will be removed a future release.
-        Please use :math:`sponge.energy.WithEnergyCell` instead.
+        Please use :class:`sponge.core.WithEnergyCell` instead.
 
     Args:
-        system ( :class:`sponge.system.Molecule`): Simulation system.
-        potential ( :class:`sponge.potential.PotentialCell`): Potential energy function cell.
-        bias (Union[ :class:`sponge.potential.bias.Bias`,
-          List[ :class:`sponge.potential.bias.Bias`]]):
-          Bias potential function cell.
+        system (:class:`sponge.system.Molecule`): Simulation system.
+        potential (:class:`sponge.potential.PotentialCell`): Potential energy function cell.
+        bias (`sponge.potential.Bias`, optional): Bias potential function cell.
           Default: ``None``.
-        cutoff (float): Cut-off distance for neighbour list.
+        cutoff (float, optional): Cut-off distance for neighbour list.
           If ``None`` is given, it will be assigned as
           the cutoff value of the of potential energy.
           Default: ``None``.
-        neighbour_list ( :class:`sponge.partition.NeighbourList`): Neighbour list.
+        neighbour_list (:class:`sponge.partition.NeighbourList`, optional): Neighbour list.
           Default: ``None``.
-        wrapper ( :class:`sponge.sampling.wrapper.EnergyWrapper`): Network to wrap
+        wrapper (`sponge.sampling.wrapper.EnergyWrapper`, optional): Network to wrap
           and process potential and bias.
           Default: ``None``.
 
@@ -61,19 +59,19 @@ class SimulationCell(WithEnergyCell):
         ``Ascend`` ``GPU``
 
     Examples:
-      >>> # You can find case2.pdb file under MindSPONGE/tutorials/basic/case2.pdb
-      >>> from sponge import Protein
-      >>> from sponge.potential.forcefield import ForceField
-      >>> from sponge.partition import NeighbourList
-      >>> from sponge.core.simulation import SimulationCell
-      >>> system = Protein(pdb='case2.pdb', rebuild_hydrogen=True)
-      >>> potential = ForceField(system, 'AMBER.FF99SB')
-      >>> neighbour_list = NeighbourList(system, cutoff=None, cast_fp16=True)
-      >>> simulation_cell = SimulationCell(
-      ...     system=system,
-      ...     potential=potential,
-      ...      neighbour_list=neighbour_list,
-      ... )
+        >>> # You can find case2.pdb file under MindSPONGE/tutorials/basic/case2.pdb
+        >>> from sponge import Protein
+        >>> from sponge.potential.forcefield import ForceField
+        >>> from sponge.partition import NeighbourList
+        >>> from sponge.core.simulation import SimulationCell
+        >>> system = Protein(pdb='case2.pdb', rebuild_hydrogen=True)
+        >>> potential = ForceField(system, 'AMBER.FF99SB')
+        >>> neighbour_list = NeighbourList(system, cutoff=None, cast_fp16=True)
+        >>> simulation_cell = SimulationCell(
+        ...     system=system,
+        ...     potential=potential,
+        ...     neighbour_list=neighbour_list,
+        ... )
    """
 
     def __init__(self,

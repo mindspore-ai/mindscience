@@ -34,26 +34,26 @@ class DynamicUpdater(UpdaterMD):
     r"""
     Updater for molecular dynamics (MD) simulation.
 
-    This updater will be removed a future release. Please use :class:`sponge.md.UpdaterMD` instead.
+    This updater will be removed a future release. Please use :class:`sponge.optimizer.UpdaterMD` instead.
 
     Args:
-        system ( :class:`sponge.system.Molecule`): Simulation system.
-        integrator ( :class:`sponge.control.integrator.Integrator`): MD integrator.
-        thermostat ( :class:`sponge.control.controller.Controller`): Thermostat
+        system (:class:`sponge.system.Molecule`): Simulation system.
+        integrator (`sponge.control.Integrator`): MD integrator.
+        thermostat (:class:`sponge.control.Controller`, optional): Thermostat
           for temperature coupling.
           Default: ``None``.
-        barostat ( :class:`sponge.control.controller.Controller`): Barostat for pressure coupling.
+        barostat (:class:`sponge.control.Controller`, optional): Barostat for pressure coupling.
           Default: ``None``.
-        constraint ( :class:`sponge.control.controller.Controller`): Constraint for bond.
-        controller ( :class:`sponge.control.controller.Controller`): Other controllers.
-        time_step (float): Time step. Default: ``1e-3``.
-        velocity (Tensor): Atomic velocity. The shape of tensor is :math:`(B, A, D)`.
+        constraint (:class:`sponge.control.Controller`, optional): Constraint for bond.
+        controller (:class:`sponge.control.Controller`, optional): Other controllers.
+        time_step (float, optional): Time step. Default: ``1e-3``.
+        velocity (Tensor, optional): Atomic velocity. The shape of tensor is :math:`(B, A, D)`.
           Here :math:`B` is the number of walkers in simulation,
-          :math: `A` is the number of atoms,
+          :math:`A` is the number of atoms,
           and :math:`D` is the spatial dimension of the simulation system, which is usually 3.
           Data type is float. Default: ``None``.
-        weight_decay (float): An value for the weight decay. Default: ``0.0``.
-        loss_scale (float): A value for the loss scale. Default: ``1.0``.
+        weight_decay (float, optional): An value for the weight decay. Default: ``0.0``.
+        loss_scale (float, optional): A value for the loss scale. Default: ``1.0``.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

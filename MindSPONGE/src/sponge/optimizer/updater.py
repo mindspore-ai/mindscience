@@ -44,7 +44,7 @@ from ..function import functions as func
 class Updater(Optimizer):
     r"""
     Base class of the MindSPONGE updater, which is a special subclass of the
-    :class:`mindspore.nn.Optimizer` in MindSpore.
+    `mindspore.nn.Optimizer` in MindSpore.
 
     The :class:`sponge.optimizer.Updater` updates the atomic coordinates of
     the simulation system. The updating of atomic coordinates requires atomic
@@ -55,27 +55,26 @@ class Updater(Optimizer):
     box by the virial of the simulation system.
 
     The :class:`sponge.optimizer.Updater` controls the values of seven
-    variables during the simulation through a series of :class:`sponge.
-    control.Controller`: coordinates, velocity, force, energy, kinetics,
+    variables during the simulation through a series of
+    :class:`sponge.control.Controller` : coordinates, velocity, force, energy, kinetics,
     virial and pbc_box. If more than one :class:`sponge.control.Controller`
     is passed in, they will work in sequence.
 
     Args:
-        system( :class:`sponge.system.Molecule`): Simulation system.
-        controller( :class:`sponge.control.Controller` or list of  :class:
-        `sponge.control.Controller`): Controller
-          or list of controllers to control the seven variables
+        system(:class:`sponge.system.Molecule`): Simulation system.
+        controller(Union[:class:`sponge.control.Controller`, List[:class:`sponge.control.Controller`]], optional):
+          Controller or list of controllers to control the seven variables
           (coordinate, velocity, force, energy, kinetics, virial and
           pbc_box) of the simulation system. Default: ``None``.
-        time_step(float): Time step. Default: ``1e-3``.
-        velocity(Union[Tensor, ndarray, List[float]]): Array of atomic velocity.
+        time_step(float, optional): Time step. Default: ``1e-3``.
+        velocity(Union[Tensor, ndarray, List[float]], optional): Array of atomic velocity.
           The shape of array is :math:`(A, D)` or :math:`(B, A, D)`.
           Here :math:`A` is the number of atoms,
           :math:`D` is the spatial dimension of the simulation system,
           which is usually 3.
           The data type is float. Default: ``None``.
-        weight_decay(float): An value for the weight decay. Default: ``0.0``.
-        loss_scale(float): A value for the loss scale. Default: ``1.0``.
+        weight_decay(float, optional): An value for the weight decay. Default: ``0.0``.
+        loss_scale(float, optional): A value for the loss scale. Default: ``1.0``.
         kwargs(dict): Other arguments.
 
     Inputs:
@@ -88,7 +87,7 @@ class Updater(Optimizer):
           Default: ``None``.
 
     Outputs:
-        bool, whether successfully finish the current optimization step and move to next step.
+        - **success** (bool) - whether successfully finish the current optimization step and move to next step.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -446,7 +445,7 @@ class Updater(Optimizer):
 
         Args:
             force(Tensor): Tensor of force. Data type is float.
-            virial(Tensor): Tensor of virial. Data type is float. Default: ``None``.
+            virial(Tensor, optional): Tensor of virial. Data type is float. Default: ``None``.
 
         Returns:
             - Tensor, Tensor of force after weight decay and gradient scale.

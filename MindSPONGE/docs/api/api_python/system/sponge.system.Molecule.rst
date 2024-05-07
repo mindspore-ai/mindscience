@@ -15,7 +15,7 @@ sponge.system.Molecule
         - **bond** (Union[Tensor, ndarray, List[int]]) - 键连接的array，数据类型为int，shape为 :math:`(B, b, 2)` 其中b表示键数量。默认值： ``None`` 。
         - **coordinate** (Union[Tensor, ndarray, List[float]]) - 原子位置坐标 :math:`R` 的Tensor，shape为 :math:`(B, A, D)` 其中D表示模拟体系的维度，一般为3，数据类型为float。默认值： ``None`` 。
         - **pbc_box** (Union[Tensor, ndarray, List[float]]) - 周期性边界条件的box，shape为 :math:`(B, D)` 或者 :math:`(1, D)` 。默认值： ``None`` 。
-        - **template** (Union[dict, str, List[Union[dict, str]]]) - 分子的模板。可以是一个MindSPONGE模板格式的字典，也可以是一个MindSPONGE模板文件的字符串。如果输入是一个字符串，该类会优先在MindSPONGE模板的构建路径下( `mindsponge.data.template` )搜索与输入同名的文件。默认值： ``None`` 。
+        - **template** (Union[dict, str, List[Union[dict, str]]]) - 分子的模板。可以是一个MindSPONGE模板格式的字典，也可以是一个MindSPONGE模板文件的字符串。如果输入是一个字符串，该类会优先在MindSPONGE模板的构建路径下(`mindsponge.data.template` )搜索与输入同名的文件。默认值： ``None`` 。
         - **residue** (Union[Residue, List[Residue]]) - 残基或残基列表。如果 `template` 不是 ``None`` 的话，只有模板里的残基会被使用。默认值： ``None`` 。
         - **length_unit** (str) - 长度单位。如果为 ``None`` ，则使用全局长度单位。默认值： ``None`` 。
         - **kwargs** (dict) - 其他参数，用于扩展。

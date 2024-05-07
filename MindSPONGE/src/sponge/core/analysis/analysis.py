@@ -36,12 +36,13 @@ from ...partition import NeighbourList
 
 
 class AnalysisCell(Cell):
-    r"""Cell for analysis.
+    r"""
+    Cell for analysis.
 
     Args:
-        system ( :class:`sponge.system.Molecule`): Simulation system.
-        potential ( :class:`sponge.potential.PotentialCell`): Potential energy.
-        neighbour_list ( :class:`sponge.partition.NeighbourList`): Neighbour list.
+        system (:class:`sponge.system.Molecule`): Simulation system.
+        potential (:class:`sponge.potential.PotentialCell`): Potential energy.
+        neighbour_list (:class:`sponge.partition.NeighbourList`, optional): Neighbour list.
           Default: ``None``.
 
     Inputs:
@@ -65,20 +66,20 @@ class AnalysisCell(Cell):
           Here `V` is the number of bias potential energies. Data type is float. Default: ``0``.
 
     Outputs:
-        - coordinate, Tensor of shape :math:`(B, A, D)`. Coordinate.
+        - **coordinate** (Tensor) - with shape of :math:`(B, A, D)`. Coordinate.
           Data type is float.
-        - pbc_box, Tensor of shape :math:`(B, D)`, PBC box. Data type is float.
-        - energy, Tensor of shape :math:`(B, 1)`,
+        - **pbc_box** (Tensor) - with shape of :math:`(B, D)`, PBC box. Data type is float.
+        - **energy** (Tensor) - with shape of :math:`(B, 1)`,
           Total potential energy of the simulation system.
           Data type is float.
-        - force, Tensor of shape :math:`(B, A, D)`.
+        - **force** (Tensor) - with shape of :math:`(B, A, D)`.
           Force on each atom of the simulation system.
           Data type is float.
-        - potentials, Tensor of shape :math:`(B, U)`. Original potential energies from force field.
+        - **potentials** (Tensor) - with shape of :math:`(B, U)`. Original potential energies from force field.
           Data type is float.
-        - total_bias, Tensor of shape :math:`(B, 1)`. Total bias energy for reweighting.
+        - **total_bias** (Tensor) - with shape of :math:`(B, 1)`. Total bias energy for reweighting.
           Data type is float.
-        - biases, Tensor of shape :math:`(B, V)`. Bias potential energies from bias functions.
+        - **biases** (Tensor) - with shape of :math:`(B, V)`. Bias potential energies from bias functions.
           Data type is float.
 
     Supported Platforms:

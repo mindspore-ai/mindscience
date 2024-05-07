@@ -34,12 +34,13 @@ _SUITE_MODELS_DIR = "suite_models"
 class AutoModel:
     """
     AutoModel is the API for all networks in SciAI
-    Example:
-    >>> from sciai.model import AutoModel
-    >>> model = AutoModel.from_pretrained("cpinns")
-    >>> model.update_config(load_data_path="your_data_path")
-    >>> model.train()
-    >>> model.evaluate()
+
+    Examples:
+        >>> from sciai.model import AutoModel
+        >>> model = AutoModel.from_pretrained("cpinns")
+        >>> model.update_config(load_data_path="your_data_path")
+        >>> model.train()
+        >>> model.evaluate()
     """
 
     def __init__(self):

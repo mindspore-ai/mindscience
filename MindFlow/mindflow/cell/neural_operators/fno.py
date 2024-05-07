@@ -352,7 +352,7 @@ class FNO1D(FNO):
         data_format (str): The input data channel sequence. Default: ``"channels_last"``.
             Support value: ``"channels_last"``, ``"channels_first"``.
         fnoblock_act (Union[str, class]): The activation function for FNOBlock, could be either str or class.
-            Default: ``identity``.
+            Default: ``"gelu"``.
         mlp_act (Union[str, class]): The activation function for MLP layers, could be either str or class.
             Default: ``gelu``.
         add_residual (bool): Whether to add residual in FNOBlock or not. Default: ``False``.
@@ -454,7 +454,7 @@ class FNO2D(FNO):
         data_format (str): The input data channel sequence. Default: ``channels_last``.
             Support value: ``"channels_last"``, ``"channels_first"``.
         fnoblock_act (Union[str, class]): The activation function for FNOBlock, could be either str or class.
-            Default: ``identity``.
+            Default: ``"gelu"``.
         mlp_act (Union[str, class]): The activation function for MLP layers, could be either str or class.
             Default: ``gelu``.
         add_residual (bool): Whether to add residual in FNOBlock or not. Default: ``False``.
@@ -556,7 +556,7 @@ class FNO3D(FNO):
         data_format (str): The input data channel sequence. Default: ``channels_last``.
             Support value: ``"channels_last"``, ``"channels_first"``.
         fnoblock_act (Union[str, class]): The activation function for FNOBlock, could be either str or class.
-            Default: ``identity``.
+            Default: ``"gelu"``.
         mlp_act (Union[str, class]): The activation function for MLP layers, could be either str or class.
             Default: ``gelu``.
         add_residual (bool): Whether to add residual in FNOBlock or not. Default: ``False``.

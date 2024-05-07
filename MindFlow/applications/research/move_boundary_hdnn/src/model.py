@@ -28,12 +28,15 @@ class Encoder(nn.Cell):
         kernel_size(int): The size of Convolutional kernel in Convolutional layer.
         has_bias(bool): Whether set bias for Convolutional layer.
         weight_init(str): The way to perform weight initialization operation.
-    Input:
+
+    Inputs:
         A tensor of size [B, C, H, W] = [16, 3, 192, 128]
-    Output:
+
+    Outputs:
         A tensor of size [B, C, H, W] = [16, 128, 3, 2]
-    Example:
-        >> encoder = Encoder(in_channels=3, num_layers=12, kernel_size=4, has_bias=True, weight_init='XavierUniform')
+
+    Examples:
+        >>> encoder = Encoder(in_channels=3, num_layers=12, kernel_size=4, has_bias=True, weight_init='XavierUniform')
     """
 
     def __init__(self, in_channels, num_layers, kernel_size, has_bias=True, weight_init='XavierUniform',
@@ -68,13 +71,15 @@ class Decoder(nn.Cell):
         num_layers (int): The number of DeConvolutional layer.
         kernel_size(int): The size of DeConvolutional kernel in DeConvolutional layer.
         weight_init(str): The way to perform weight initialization operation.
+
     Input:
         A tensor of size [B, C, H, W] = [16, 128, 3, 2]
+
     Output:
         A tensor of size [B, C, H, W] = [16, 3, 192, 128]
 
-        Example:
-            >> Decoder = Decoder(in_channels=128, num_layers=12, kernel_size=4, weight_init='XavierUniform')
+    Examples:
+        >>> Decoder = Decoder(in_channels=128, num_layers=12, kernel_size=4, weight_init='XavierUniform')
     """
 
     def __init__(self, in_channels, num_layers, kernel_size, weight_init='XavierUniform', activation=nn.LeakyReLU()):

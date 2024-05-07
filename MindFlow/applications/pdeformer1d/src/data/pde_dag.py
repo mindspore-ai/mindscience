@@ -139,7 +139,7 @@ class PDEAsDAG:
     instead of the direct version `pde_dag.spatial_pos` or `pde_dag.attn_bias`
     as the inputs to PDEformer. (This makes no difference if :math:`i=0`.)
 
-    Example:
+    Examples:
         >>> # u_t + u = 0
         >>> pde_nodes = [('u', 'uf'),
         ...              ('u_t', 'dt', 'u'),

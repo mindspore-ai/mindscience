@@ -45,53 +45,53 @@ class _Grad(nn.Cell):
         TypeError: If input_index type is neither int nor tuple of int.
         IndexError: If input_index or output_index is out of range.
 
-    Example:
-    >>> import mindspore as ms
-    >>> class Net(nn.Cell):
-    >>>     def __init__(self):
-    >>>         super().__init__()
-    >>>     def construct(self, x, y):
-    >>>         out1 = x + y
-    >>>         out2 = 2 * x + y
-    >>>         out3 = x * x + 4 * y * y + 3 * y
-    >>>         f, g, h = out1.sum(), out2.sum(), out3.sum()
-    >>>         return f, g, h
-    >>> net = Net() # net: f, g, h = net(x, y)
-    >>> x = ops.ones((2, 3), ms.float32)
-    >>> y = ops.ones((2, 3), ms.float32)
-    >>> first_grad_net = grad(net, 2, 1) # ∂h/∂y, since (f, g, h)[2] == h, (x, y)[1] == y
-    >>> second_grad_net = grad(first_grad_net, 0, 1) # ∂2h/∂y2, since (∂h)[0] == ∂h, (x, y)[1] == y
-    >>> print(first_grad_net(x, y))
-    [[11. 11. 11.]
-     [11. 11. 11.]]
-    >>> print(second_grad_net(x, y))
-    [[8. 8. 8.]
-     [8. 8. 8.]]
-    >>> class Net2(nn.Cell):
-    >>>    def __init__(self):
-    >>>        super().__init__()
-    >>>    def construct(self, x, y):
-    >>>        out1 = 2 * x + y
-    >>>        out2 = x * x + 4 * x * y + 3 * y
-    >>>        f, g = out1.sum(), out2.sum()
-    >>>        return f, g
-    >>> net = Net2()  # output: (f, g), input:(x, y)
-    >>> x = ops.ones((2, 3), ms.float32)
-    >>> y = ops.ones((2, 3), ms.float32)
-    >>> first_grad_net = grad(net, 1, (0, 1))  # (∂g/∂x, ∂g/∂y), since (f, g)[1] == g
-    >>> second_grad_net = grad(first_grad_net, 0, (0, 1))  # (∂2g/∂x2, ∂2g/∂x∂y), since (∂g/∂x, ∂g/∂y)[0] == ∂g/∂x
-    >>> print(first_grad_net(x, y))
-    (Tensor(shape=[2, 3], dtype=Float32, value=
-    [[ 6.00000000e+00,  6.00000000e+00,  6.00000000e+00],
-     [ 6.00000000e+00,  6.00000000e+00,  6.00000000e+00]]), Tensor(shape=[2, 3], dtype=Float32, value=
-    [[ 7.00000000e+00,  7.00000000e+00,  7.00000000e+00],
-     [ 7.00000000e+00,  7.00000000e+00,  7.00000000e+00]]))
-    >>> print(second_grad_net(x, y))
-    (Tensor(shape=[2, 3], dtype=Float32, value=
-    [[ 2.00000000e+00,  2.00000000e+00,  2.00000000e+00],
-     [ 2.00000000e+00,  2.00000000e+00,  2.00000000e+00]]), Tensor(shape=[2, 3], dtype=Float32, value=
-    [[ 4.00000000e+00,  4.00000000e+00,  4.00000000e+00],
-     [ 4.00000000e+00,  4.00000000e+00,  4.00000000e+00]]))
+    Examples:
+        >>> import mindspore as ms
+        >>> class Net(nn.Cell):
+        ...     def __init__(self):
+        ...         super().__init__()
+        ...     def construct(self, x, y):
+        ...         out1 = x + y
+        ...         out2 = 2 * x + y
+        ...         out3 = x * x + 4 * y * y + 3 * y
+        ...         f, g, h = out1.sum(), out2.sum(), out3.sum()
+        ...         return f, g, h
+        >>> net = Net() # net: f, g, h = net(x, y)
+        >>> x = ops.ones((2, 3), ms.float32)
+        >>> y = ops.ones((2, 3), ms.float32)
+        >>> first_grad_net = grad(net, 2, 1) # ∂h/∂y, since (f, g, h)[2] == h, (x, y)[1] == y
+        >>> second_grad_net = grad(first_grad_net, 0, 1) # ∂2h/∂y2, since (∂h)[0] == ∂h, (x, y)[1] == y
+        >>> print(first_grad_net(x, y))
+        [[11. 11. 11.]
+         [11. 11. 11.]]
+        >>> print(second_grad_net(x, y))
+        [[8. 8. 8.]
+         [8. 8. 8.]]
+        >>> class Net2(nn.Cell):
+        ...    def __init__(self):
+        ...        super().__init__()
+        ...    def construct(self, x, y):
+        ...        out1 = 2 * x + y
+        ...        out2 = x * x + 4 * x * y + 3 * y
+        ...        f, g = out1.sum(), out2.sum()
+        ...        return f, g
+        >>> net = Net2()  # output: (f, g), input:(x, y)
+        >>> x = ops.ones((2, 3), ms.float32)
+        >>> y = ops.ones((2, 3), ms.float32)
+        >>> first_grad_net = grad(net, 1, (0, 1))  # (∂g/∂x, ∂g/∂y), since (f, g)[1] == g
+        >>> second_grad_net = grad(first_grad_net, 0, (0, 1))  # (∂2g/∂x2, ∂2g/∂x∂y), since (∂g/∂x, ∂g/∂y)[0] == ∂g/∂x
+        >>> print(first_grad_net(x, y))
+        (Tensor(shape=[2, 3], dtype=Float32, value=
+        [[ 6.00000000e+00,  6.00000000e+00,  6.00000000e+00],
+         [ 6.00000000e+00,  6.00000000e+00,  6.00000000e+00]]), Tensor(shape=[2, 3], dtype=Float32, value=
+        [[ 7.00000000e+00,  7.00000000e+00,  7.00000000e+00],
+         [ 7.00000000e+00,  7.00000000e+00,  7.00000000e+00]]))
+        >>> print(second_grad_net(x, y))
+        (Tensor(shape=[2, 3], dtype=Float32, value=
+        [[ 2.00000000e+00,  2.00000000e+00,  2.00000000e+00],
+         [ 2.00000000e+00,  2.00000000e+00,  2.00000000e+00]]), Tensor(shape=[2, 3], dtype=Float32, value=
+        [[ 4.00000000e+00,  4.00000000e+00,  4.00000000e+00],
+         [ 4.00000000e+00,  4.00000000e+00,  4.00000000e+00]]))
     """
 
     def __init__(self, net, output_index=0, input_index=-1):

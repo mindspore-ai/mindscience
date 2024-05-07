@@ -48,21 +48,25 @@ class WithEnergyCell(Cell):
     the current coordinates and returns it.
 
     Args:
-        system( :class:`sponge.system.Molecule`): Simulation system.
-        potential( :class:`sponge.potential.PotentialCell`): Potential energy function cell.
-        bias( :class:`sponge.potential.bias.Bias`): Bias potential function cell. Default: ``None``.
-        cutoff(float): Cut-off distance for neighbour list.
-          If ``None`` is given, it will be assigned as the cutoff value of the of potential energy.
-          Default: ``None``.
-        neighbour_list(NeighbourList): Neighbour list. Default: ``None``.
-        wrapper(EnergyWrapper): Network to wrap and process potential and bias. Default: ``None``.
+        system(:class:`sponge.system.Molecule`): Simulation system.
+        potential(:class:`sponge.potential.PotentialCell`): Potential energy function cell.
+        bias(Union[`sponge.potential.Bias`, List[`sponge.potential.Bias`]], optional): Bias
+            potential function cell. Default: ``None``.
+        cutoff(float, optional): Cut-off distance for neighbour list.
+            If ``None`` is given, it will be assigned as the cutoff value of the of potential energy.
+            Default: ``None``.
+        neighbour_list(:class:`sponge.partition.NeighbourList`, optional): Neighbour list.
+            Default: ``None``.
+        wrapper(`sponge.sampling.wrapper.EnergyWrapper`, optional): Network to wrap and
+            process potential and bias. Default: ``None``.
         kwargs(dict): Other arguments.
 
     Inputs:
-        - **\*inputs** (Tuple(Tensor)) - Tuple of input tensors of 'WithEnergyCell'.
+        - **\*inputs** (Tuple(Tensor)) - Tuple of input tensors of
+          :class:`sponge.core.WithEnergyCell`.
 
     Outputs:
-        - energy, Tensor of shape :math:`(B, 1)`. Total potential energy.
+        - **energy** (Tensor) - with shape of :math:`(B, 1)`. Total potential energy.
           Here `B` is the batch size, i.e. the number of walkers in simulation.
           Data type is float.
 
