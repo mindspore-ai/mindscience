@@ -81,10 +81,7 @@ _pgf_with_latex = {
     "ytick.labelsize": 8,
     "font.size": 10,
     "figure.figsize": _figsize(1.0),
-    "pgf.preamble": [
-        r"\usepackage[utf8x]{inputenc}",
-        r"\usepackage[T1]{fontenc}",
-    ]
+    "pgf.preamble": r"\usepackage[utf8x]{inputenc} \usepackage[T1]{fontenc}",
 }
 mpl.rcParams.update(_pgf_with_latex)
 
