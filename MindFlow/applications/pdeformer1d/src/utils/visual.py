@@ -14,13 +14,14 @@
 # ============================================================================
 r"""This module provides visualization functions."""
 import os
-from typing import Optional
+from typing import Optional, Union
 import numpy as np
 from numpy.typing import NDArray
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from mpl_toolkits.axes_grid1 import make_axes_locatable, axes_size
-
 
 def plot_1d(u_label: NDArray[float],
             u_predict: NDArray[float],
@@ -365,32 +366,105 @@ def plot_noise_ic(ic_gt: NDArray[float],
     plt.savefig(os.path.join(save_dir, file_name))
     plt.close()
 
-
 def plot_infer_result(u_pred: NDArray[float],
                       x_coord: NDArray[float],
                       t_coord: NDArray[float],
-                      title: str = "Solution Field"):
-    r"""Plot PDEformer inference results."""
-    fig, ax_ = plt.subplots(figsize=(10, 6))
+                      figure: Optional[Figure] = None,
+                      canvas: Optional[FigureCanvas] = None,
+                      periodic: Optional[bool] = None,
+                      title_list: Optional[list[str]] = None,
+                      fontsize: int = 18) -> None:
+    r"""
+    Plot PDEformer inference results with flexibility to adapt to different input scenarios,
+    supporting both class method usage and standalone function.
 
-    cax = ax_.imshow(u_pred, cmap=plt.get_cmap("jet"), origin='lower')
+    The function adapts to provided parameters to fit different execution contexts, either in a GUI environment
+    with `figure` and `canvas` or in a script/notebook. It handles optional parameters like `periodic` and `title_list`
+    to customize plot appearance based on context.
 
-    # Setting up the x and t ticks
-    x_ticks = [x_coord[0], x_coord[len(x_coord) // 2], x_coord[-1]]
-    t_ticks = [t_coord[0], t_coord[len(t_coord) // 2], t_coord[-1]]
-    x_indices = [0, len(x_coord)//2, len(x_coord)-1]
-    t_indices = [0, len(t_coord)//2, len(t_coord)-1]
+    Args:
+        u_pred (NDArray[float]): Predicted results, a 2D array.
+        x_coord (NDArray[float]): x coordinates for the plot.
+        t_coord (NDArray[float]): t coordinates for the plot.
+        figure (Optional[Figure]): Figure object for plotting in class methods.
+        canvas (Optional[FigureCanvas]): Canvas object for redrawing in GUI applications.
+        periodic (Optional[bool]): Flag to determine title placement.
+        title_list (Optional[List[str]]): List of titles for the plot.
+        fontsize (int): Font size for the plot labels and title.
 
-    ax_.set_xticks(x_indices)
-    ax_.set_xticklabels([f"{x:.1f}" for x in x_ticks], fontsize=15)
-    ax_.set_yticks(t_indices)
-    ax_.set_yticklabels([f"{t:.1f}" for t in t_ticks], fontsize=15)
+    Returns:
+        None.
+    """
 
-    ax_.set_xlabel('x', fontsize=15)
-    ax_.set_ylabel('t', fontsize=15)
-    ax_.set_title(title, fontsize=15)
+    if figure is None:
+        figure, _ = plt.subplots(figsize=(10, 6))
 
-    # Create colorbar, attach it to `ax_` and make its size proportional to the plot
-    fig.colorbar(cax, ax=ax_, fraction=0.022, pad=0.04)
+    figure.clear()
+    ax = figure.add_subplot(111)
 
-    plt.show()
+    cax = ax.imshow(u_pred, cmap=plt.get_cmap("jet"), origin='lower')
+
+    ax.set_xticks([0, len(x_coord) // 2, len(x_coord) - 1])
+    ax.set_xticklabels([f"{x:.1f}" for x in (x_coord[0], x_coord[len(x_coord) // 2], x_coord[-1])], fontsize=fontsize)
+    ax.set_yticks([0, len(t_coord) // 2, len(t_coord) - 1])
+    ax.set_yticklabels([f"{t:.1f}" for t in (t_coord[0], t_coord[len(t_coord) // 2], t_coord[-1])], fontsize=fontsize)
+
+    ax.set_xlabel('x', fontsize=fontsize)
+    ax.set_ylabel('t', fontsize=fontsize)
+
+    if title_list is None:
+        ax.set_title("Solution Field", fontsize=fontsize)
+    else:
+        if len(title_list) > 1 and periodic is not None:
+            if periodic:
+                text_positions = [0.9 - idx * 0.07 for idx in range(len(title_list))]
+            else:
+                text_positions = [0.945 - idx * 0.06 for idx in range(len(title_list))]
+            for idx, txt in enumerate(title_list):
+                figure.text(0.5, text_positions[idx], txt, ha='center', fontsize=fontsize + 2)
+            figure.text(0.5, 0.04, "Solution Field", ha='center',
+                        fontdict={'family': 'Times New Roman', 'fontweight': 'bold', 'fontsize': fontsize+15})
+        else:
+            ax.set_title(title_list[0], fontsize=fontsize)
+
+    figure.colorbar(cax, ax=ax, fraction=0.022, pad=0.04)
+
+    if canvas:
+        canvas.draw()  # Redraw the canvas if provided
+    else:
+        plt.show()  # Display the plot if not in a GUI context
+
+def plot_field(figure: Figure,
+               canvas: FigureCanvas,
+               x_coord: NDArray[float],
+               value: Union[float, NDArray[float]],
+               title: Optional[str] = None,
+               fontsize: int = 20) -> None:
+    r"""
+    Plot a field or a constant value against x coordinates on a given matplotlib figure and canvas.
+
+    This function is tailored for plotting within GUI applications using matplotlib, where `figure` and `canvas`
+    are used to handle graph updates.
+
+    Args:
+        figure (Figure): A matplotlib figure object where the plot will be drawn.
+        canvas (FigureCanvas): The matplotlib canvas tied to the figure that allows for GUI updates.
+        x_coord (NDArray[float]): The x coordinates for points on the plot.
+        value (Union[float, NDArray[float]]): A single numerical value or an array of values to plot.
+        title (Optional[str]): An optional string to set as the title of the plot; default is None, meaning no title.
+        fontsize (int): The font size to be used for the plot's title.
+
+    Returns:
+        None.
+    """
+    figure.clear()
+
+    ax = figure.add_subplot(111)
+    if isinstance(value, (float, int)):
+        ax.plot(x_coord, np.full_like(x_coord, value))
+    else:
+        ax.plot(x_coord, value)
+    if title is not None:
+        ax.set_title(title, fontsize=fontsize)
+
+    canvas.draw()

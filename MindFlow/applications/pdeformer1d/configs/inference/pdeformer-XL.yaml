@@ -1,0 +1,10 @@
+base_config: configs/inference/pdeformer-L.yaml
+model:
+    graphormer:
+        num_encoder_layers: 12
+        embed_dim: 768
+        ffn_embed_dim: 768
+    inr:
+        num_layers: 12
+        dim_hidden: 512
+    load_ckpt: path/to/your/downloaded/model-XL_3M_pretrained.ckpt

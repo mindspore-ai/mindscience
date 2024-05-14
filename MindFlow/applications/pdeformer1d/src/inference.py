@@ -81,15 +81,17 @@ def generate_plot(model: PDEformer,
                   robin_theta_l: float = 0.,  # range [0, np.pi]
                   bc_value_l: float = 0.,  # range [-3, 3]
                   robin_theta_r: float = 0.,
-                  bc_value_r: float = 0.) -> None:
+                  bc_value_r: float = 0.,
+                  figure=None,
+                  canvas=None,
+                  ic_latex: str = None,) -> None:
     r"""
-    This function is utilized in notebook 'PDEformer_inference.ipynb'. We
-    generate a plot for the predicted solution, in which the PDE takes the form
+    Generate a plot for the predicted solution, in which the PDE takes the form
     $u_t+f_0(u)+s(x)+(f_1(u)-\kappa(x) u_x)_x=0$, $(t,x)\in[0,1]\times[-1,1]$,
     $u(0,x)=g(x)$, where $f_i(u) = c_{i1}u + c_{i2}u^2 + c_{i3}u^3$.
     When 'periodic' is False, the boundary condition is specified as
-    $(\cos(\theta_L)u + \sin(\theta_R)u_x)|_{x_L} = \gamma_L$,
-    $(\cos(\theta_R)u + \sin(\theta_R)u_x)|_{x_R} = \gamma_R$.
+    $(\cos(\pi \theta_L)u + \sin(\pi \theta_R)u_x)|_{x_L} = \gamma_L$,
+    $(\cos(\pi \theta_R)u + \sin(\pi \theta_R)u_x)|_{x_R} = \gamma_R$.
     """
     c_01, c_02, c_03, c_11, c_12, c_13 = c_list
 
@@ -102,6 +104,7 @@ def generate_plot(model: PDEformer,
     # specify the PDE form
     u_square = pde.square(u_node)
     u_cubic = u_node * u_square
+    u_dx = u_node.dx
 
     if np.isscalar(kappa):
         kappa_node = kappa
@@ -124,42 +127,54 @@ def generate_plot(model: PDEformer,
                 source_node)
 
     if not periodic:
-        pde.set_bv_l(np.cos(robin_theta_l) * u_node + np.sin(robin_theta_l) * u_node.dx,
-                     bc_value_l)
-        pde.set_bv_r(np.cos(robin_theta_r) * u_node + np.sin(robin_theta_r) * u_node.dx,
-                     bc_value_r)
+        if np.abs(np.sin(np.pi * robin_theta_l)) < 1e-5:
+            pde.set_bv_l(u_node, bc_value_l)
+        elif np.abs(np.cos(np.pi * robin_theta_l)) < 1e-5:
+            pde.set_bv_l(u_dx, bc_value_l)
+        else:
+            pde.set_bv_l(np.cos(np.pi * robin_theta_l) * u_node + np.sin(np.pi * robin_theta_l) * u_dx,
+                         bc_value_l)
+        if np.abs(np.sin(np.pi * robin_theta_r)) < 1e-5:
+            pde.set_bv_r(u_node, bc_value_r)
+        elif np.abs(np.cos(np.pi * robin_theta_r)) < 1e-5:
+            pde.set_bv_r(u_dx, bc_value_r)
+        else:
+            pde.set_bv_r(np.cos(np.pi * robin_theta_r) * u_node + np.sin(np.pi * robin_theta_r) * u_dx,
+                         bc_value_r)
 
     # generate predicted solution using PDEformer
     pde_dag = pde.gen_dag(config)
     u_pred = inference_pde(model, pde_dag, t_coord, x_coord)
 
     # plot the results
-    def format_term(coeff, power, is_kappa=False):
-        if coeff == 0 and not is_kappa:
+    def format_term(coeff, power, is_kappa=False, is_source=False):
+        if coeff == 0 and not is_kappa and not is_source:
             return ""
         formatted_coeff = f"{abs(coeff):.3g}"
         if coeff < 0:
             sign = "-"
         else:
             sign = "+" if not is_kappa else ""
-        if is_kappa:
+        if is_kappa or is_source:
             return f"{sign}{formatted_coeff}"
         if power == 1:
             return f" {sign} {formatted_coeff}u"
         return f" {sign} {formatted_coeff}u^{power}"
 
-    def format_title(f0_terms, f1_terms, kappa_term):
+    def format_title(f0_terms, f1_terms, kappa_term, source_term):
         f0_formatted = f"({f0_terms})" if f0_terms.strip() else ""
-        f1_formatted = f"({f1_terms})" if f1_terms.strip() else ""
-        kappa_formatted = f"- {kappa_term} u_{{xx}}" if kappa_term != "0" else ""
+        kappa_formatted = f"- {kappa_term} u_{{x}}" if kappa_term != "0" else ""
+        f1_formatted = f"({f1_terms} {kappa_formatted})" if f1_terms.strip() else ""
 
         title_parts = list(
             filter(None, [f0_formatted, f"{f1_formatted}_x" if f1_formatted else ""]))
-        title = " + ".join(title_parts) + \
-            (f" {kappa_formatted} = 0" if any(
-                title_parts) else f"{kappa_formatted} = 0")
 
-        return rf"$u_t + {title}$" if any(title_parts) else rf"$u_t {title}$"
+        title = " + ".join(title_parts)
+
+        # Adjust here to include s(x) in the equation
+        equation = f"{title} {source_term} = 0" if any(title_parts) else f"{kappa_formatted} {source_term}= 0"
+
+        return rf"$u_t + {equation}$"
 
     f0_components = [format_term(c_01, 1),
                      format_term(c_02, 2),
@@ -169,12 +184,50 @@ def generate_plot(model: PDEformer,
                      format_term(c_13, 3)]
     f0_terms = ''.join(filter(None, f0_components)).lstrip(" +")
     f1_terms = ''.join(filter(None, f1_components)).lstrip(" +")
+
+    if np.isscalar(source):
+        source_term = format_term(source, 1, is_source=True)
+    else:
+        source_term = r"+s(x)"
     if np.isscalar(kappa):
         kappa_term = format_term(kappa, 1, is_kappa=True)
     else:
         kappa_term = r"\kappa(x)"
-    title = format_title(f0_terms, f1_terms, kappa_term)
-    plot_infer_result(u_pred, x_coord, t_coord, title=title)
+    title = format_title(f0_terms, f1_terms, kappa_term, source_term)
+
+    if ic_latex is not None:
+        ic_title = "$u(x,0) = " + ic_latex + "$"
+
+    if periodic:
+        plot_infer_result(u_pred, x_coord, t_coord, figure=figure, canvas=canvas,
+                          periodic=periodic, title_list=[title, ic_title] if ic_latex is not None else [title])
+    else:
+        if np.abs(np.sin(np.pi * robin_theta_l)) < 1e-5:
+            bc_l_title = "$u|_{x=-1} = " + f"{bc_value_l / np.cos(np.pi * robin_theta_l)}$"
+        elif np.abs(np.cos(np.pi * robin_theta_l)) < 1e-5:
+            bc_l_title = "$u_x|_{x=-1} = " + f"{bc_value_l / np.sin(np.pi * robin_theta_l)}$"
+        else:
+            bc_l_title = f"$({np.cos(np.pi * robin_theta_l):.3f}u + " \
+                + f"{np.sin(np.pi * robin_theta_l):.3f}u_x)|_" \
+                + "{x=-1} = " \
+                + f"{bc_value_l}" \
+                + "$"
+        if np.abs(np.sin(np.pi * robin_theta_r)) < 1e-5:
+            bc_r_title = "$u|_{x=1} = " + f"{bc_value_r / np.cos(np.pi * robin_theta_r)}$"
+        elif np.abs(np.cos(np.pi * robin_theta_r)) < 1e-5:
+            bc_r_title = "$u_x|_{x=1} = " + f"{bc_value_r / np.sin(np.pi * robin_theta_r)}$"
+        else:
+            bc_r_title = f"$({np.cos(np.pi * robin_theta_r):.3f}u + " \
+                + f"{np.sin(np.pi * robin_theta_r):.3f}u_x)|_" \
+                + "{x=1} = " \
+                + f"{bc_value_r}" \
+                + "$"
+        bc_title = f"{bc_l_title}, {bc_r_title}"
+
+        plot_infer_result(u_pred, x_coord, t_coord, figure=figure, canvas=canvas,
+                          periodic=periodic, title_list=[title, ic_title, bc_title]
+                          if ic_latex is not None else [title])
+
 
 
 def generate_plot_wave(model: PDEformer,
@@ -194,10 +247,13 @@ def generate_plot_wave(model: PDEformer,
                        bc_value_l: float = 0.,  # range [-3, 3]
                        use_mur_r: bool = False,
                        robin_theta_r: float = 0.,
-                       bc_value_r: float = 0.) -> None:
+                       bc_value_r: float = 0.,
+                       figure=None,
+                       canvas=None,
+                       ic_latex: str = None,
+                       ic_speed_latex: str = None,) -> None:
     r"""
-    This function is utilized in notebook 'PDEformer_inference.ipynb'. We
-    generate a plot for the predicted solution, in which the PDE takes the form
+    Generate a plot for the predicted solution, in which the PDE takes the form
     $u_{tt}+\mu u_t+Lu+bu_x+c_1u+c_2u^2+c^3u^3+s(x)=0$ for
     $(t,x)\in[0,1]\times[-1,1]$, $u(0,x)=g(x)$, $u_t(0,x)=h(x)$. The wave term
     can be the non-divergence form $Lu=-c(x)^2u_{xx}$ (when 'wave_type' is 0),
@@ -222,31 +278,33 @@ def generate_plot_wave(model: PDEformer,
     # wave term Lu
     if wave_type not in [0, 1, 2]:
         raise ValueError(f"'wave_type' supports 0, 1, 2, but got {wave_type}.")
-    dx_u = u_node.dx
+    u_dx = u_node.dx
     c_or_c2_val = wave_speed if wave_type == 1 else wave_speed**2
     if np.isscalar(c_or_c2_val):
         c_or_c2_node = pde.new_coef(c_or_c2_val)
     else:
         c_or_c2_node = pde.new_coef_field(x_coord, c_or_c2_val)
     if wave_type == 0:
-        wave_node = -(c_or_c2_node * pde.dx(dx_u))
+        wave_node = -(c_or_c2_node * pde.dx(u_dx))
     elif wave_type == 1:
-        wave_node = -(c_or_c2_node * pde.dx(c_or_c2_node * dx_u))
+        wave_node = -(c_or_c2_node * pde.dx(c_or_c2_node * u_dx))
     elif wave_type == 2:
-        wave_node = -pde.dx(c_or_c2_node * dx_u)  # pylint: disable=E1130
+        wave_node = -pde.dx(c_or_c2_node * u_dx)  # pylint: disable=E1130
 
     # specify the PDE form
     u_square = pde.square(u_node)
     u_cubic = u_node * u_square
+    u_dt = u_node.dt
+
     if np.isscalar(source):
         source_node = pde.new_coef(source)
     else:
         source_node = pde.new_coef_field(x_coord, source)
 
-    pde.sum_eq0(u_node.dt.dt,
-                mu_value * u_node.dt,
+    pde.sum_eq0(u_dt.dt,
+                mu_value * u_dt,
                 wave_node,
-                b_val * u_node.dx,
+                b_val * u_dx,
                 c_1 * u_node,
                 c_2 * u_square,
                 c_3 * u_cubic,
@@ -259,9 +317,14 @@ def generate_plot_wave(model: PDEformer,
         if use_mur:
             c_arr = wave_speed + np.zeros_like(x_coord)  # float -> array
             c_val = -c_arr[0] if location == "L" else c_arr[-1]
-            bc_node = u_node.dt + c_val * u_node.dx
+            bc_node = u_node.dt + c_val * u_dx
         else:
-            bc_node = np.cos(robin_theta) * u_node + np.sin(robin_theta) * u_node.dx
+            if np.abs(np.sin(np.pi * robin_theta)) < 1e-5:
+                bc_node = u_node
+            elif np.abs(np.cos(np.pi * robin_theta)) < 1e-5:
+                bc_node = u_dx
+            else:
+                bc_node = np.cos(robin_theta) * u_node + np.sin(robin_theta) * u_dx
 
         if location == "L":
             pde.set_bv_l(bc_node, bc_value)
@@ -275,5 +338,90 @@ def generate_plot_wave(model: PDEformer,
     pde_dag = pde.gen_dag(config)
     u_pred = inference_pde(model, pde_dag, t_coord, x_coord)
 
-    title = r"$u_{tt}+\mu u_t+Lu+bu_x+c_1u+c_2u^2+c^3u^3+s(x)=0$"  # TODO
-    plot_infer_result(u_pred, x_coord, t_coord, title=title)
+    def format_term(coeff, power, var='u', is_c=False):
+        if coeff == 0 and not is_c:
+            return ""
+        formatted_coeff = f"{abs(coeff):.3g}"
+        if coeff < 0:
+            sign = "-" if is_c else " -"  # Adjusted here
+        else:
+            sign = "+" if not is_c else ""
+        if var == 'u':
+            if power == 1:
+                return f"{sign} {formatted_coeff}{var}"
+            return f"{sign} {formatted_coeff}{var}^{power}"
+        return f"{sign} {formatted_coeff}{var}"
+
+    def format_title(coef_list, mu_value, c_sq_term, s_term):
+        b_term, c_terms = coef_list[0], coef_list[1:]
+        mu_formatted = format_term(mu_value, 1, var='u_t', is_c=False)
+        b_formatted = format_term(b_term, 1, var='u_x', is_c=False)
+        if wave_type == 0:
+            c_sq_formatted = f"- {c_sq_term}^2u_{{xx}}"
+        elif wave_type == 1:
+            c_sq_formatted = f"- {c_sq_term}({c_sq_term}u_{{x}})_{{x}}"
+        else:
+            c_sq_formatted = f"- ({c_sq_term}^2u_{{x}})_{{x}}"
+        c_formatted = " ".join([format_term(c_terms[p], p+1) for p in range(len(c_terms))])
+        s_formatted = f"+ {s_term}" if s_term.strip() else ""
+        title = f"$u_{{tt}} {mu_formatted}{c_sq_formatted}{b_formatted} {c_formatted} {s_formatted}=0$"
+        return title
+
+    c_sq_term = 'c(x)'  # For c(x)^2
+    if np.isscalar(source):
+        if source == 0:
+            source_term = ""
+        else:
+            source_term = str(source)
+    else:
+        source_term = r"s(x)"
+
+    title = format_title(coef_list, mu_value, c_sq_term, source_term)
+
+    if ic_latex is not None:
+        ic_title = "$u(x,0) = " + ic_latex + "$"
+    if ic_speed_latex is not None:
+        ic_speed_title = "$u_t(x,0) = " + ic_speed_latex + "$"
+
+    if periodic:
+        plot_infer_result(u_pred=u_pred,
+                          x_coord=x_coord,
+                          t_coord=t_coord,
+                          figure=figure,
+                          canvas=canvas,
+                          periodic=periodic,
+                          title_list=[title, ic_title, ic_speed_title])
+    else:
+        if np.abs(np.sin(np.pi * robin_theta_l)) < 1e-5:
+            bc_l_title = "$u|_{x=-1} = " + f"{bc_value_l / np.cos(np.pi * robin_theta_l)}$"
+        elif np.abs(np.cos(np.pi * robin_theta_l)) < 1e-5:
+            bc_l_title = "$u_x|_{x=-1} = " + f"{bc_value_l / np.sin(np.pi * robin_theta_l)}$"
+        else:
+            bc_l_title = f"$({np.cos(np.pi * robin_theta_l):.3f}u + " \
+                + f"{np.sin(np.pi * robin_theta_l):.3f}u_x)|_" \
+                + "{x=-1} = " \
+                + f"{bc_value_l}" \
+                + "$"
+        if np.abs(np.sin(np.pi * robin_theta_r)) < 1e-5:
+            bc_r_title = "$u|_{x=1} = " + f"{bc_value_r / np.cos(np.pi * robin_theta_r)}$"
+        elif np.abs(np.cos(np.pi * robin_theta_r)) < 1e-5:
+            bc_r_title = "$u_x|_{x=1} = " + f"{bc_value_r / np.sin(np.pi * robin_theta_r)}$"
+        else:
+            bc_r_title = f"$({np.cos(np.pi * robin_theta_r):.3f}u + " \
+                + f"{np.sin(np.pi * robin_theta_r):.3f}u_x)|_" \
+                + "{x=1} = " \
+                + f"{bc_value_r}" \
+                + "$"
+        if use_mur_l:
+            bc_l_title = f"$(u_t - c(x)u_x)|_{{x=-1}}={robin_theta_l}$"
+        if use_mur_r:
+            bc_r_title = f"$(u_t + c(x)u_x)|_{{x=1}}={robin_theta_r}$"
+        bc_title = f"{bc_l_title}, {bc_r_title}"
+
+        plot_infer_result(u_pred=u_pred,
+                          x_coord=x_coord,
+                          t_coord=t_coord,
+                          figure=figure,
+                          canvas=canvas,
+                          periodic=periodic,
+                          title_list=[title, ic_title, ic_speed_title, bc_title])
