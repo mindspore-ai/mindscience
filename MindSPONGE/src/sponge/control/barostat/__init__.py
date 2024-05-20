@@ -38,18 +38,19 @@ def get_barostat(cls_name: Union[str, dict, Barostat],
                  system: Molecule,
                  pressure: float = None,
                  **kwargs) -> Barostat:
-    r"""get object of barostat
+    r"""
+    Get object of barostat.
 
     Args:
-        cls_name (Union[str, dict, Barostat]): Class name, arguments or object of a barostat.
-        system (Molecule): Simulation system.
+        cls_name (Union[str, dict, :class:`sponge.control.Barostat`]): Class name,
+          arguments or object of a barostat.
+        system ( :class:`sponge.system.Molecule`): Simulation system.
         pressure (float): Reference pressure for pressure coupling. If `None` is given and
-            the type of `cls_name` is `str`, `None` will be returned. Default: ``None``.
-        **kwargs:   Other arguments
+          the type of `cls_name` is `str`, `None` will be returned. Default: ``None``.
+        **kwargs: Other arguments.
 
     Returns:
-        barostat (Barostat): Object of barostat
-
+        :class:`sponge.control.Barostat`, object of barostat.
     """
 
     if cls_name is None:

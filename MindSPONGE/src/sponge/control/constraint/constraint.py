@@ -35,23 +35,50 @@ from ...function import get_arguments
 
 
 class Constraint(Controller):
-    r"""Base class for constraint module in MindSPONGE, which is a subclass of `Controller`.
+    r"""
+    Base class for constraint module in MindSPONGE, which is a subclass of
+    :class:`sponge.control.Controller`.
 
-        The `Constraint` module is used for bond constraint. It controls the atomic coordinates, the atomic velocities,
-        the atomic forces and the virial of the system during the simulation process.
+    The :class:`sponge.control.Constraint` module is used for bond constraint.
+    It controls the atomic coordinates, the atomic velocities,
+    the atomic forces and the virial of the system during the simulation process.
 
     Args:
-        system (Molecule):          Simulation system.
+        system (:class:`sponge.system.Molecule`): Simulation system.
 
-        bonds (Union[Tensor, str]): Bonds to be constraint.
-                                    Tensor of shape (K, 2). Data type is int.
-                                    Alternative: "h-bonds" or "all-bonds".
+    Inputs:
+        - **coordinate** (Tensor) - Coordinate. Tensor of shape :math:`(B, A, D)`.
+          Data type is float.
+          Here :math:`B` is the number of walkers in simulation,
+          :math:`A` is the number of atoms and
+          :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+        - **velocity** (Tensor) - Velocity. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **force** (Tensor) - Force. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **energy** (Tensor) - Energy. Tensor of shape :math:`(B, 1)`. Data type is float.
+        - **kinetics** (Tensor) - Kinetics. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **virial** (Tensor) - Virial. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **pbc_box** (Tensor) - Pressure boundary condition box. Tensor of shape :math:`(B, D)`.
+          Data type is float.
+        - **step** (int) - Simulation step. Default: ``0``.
 
-        potential (PotentialCell):  Potential Cell. Default: ``None``.
+    Outputs:
+        - coordinate, Tensor of shape :math:`(B, A, D)`. Coordinate. Data type is float.
+        - velocity, Tensor of shape :math:`(B, A, D)`. Velocity. Data type is float.
+        - force, Tensor of shape :math:`(B, A, D)`. Force. Data type is float.
+        - energy, Tensor of shape :math:`(B, 1)`. Energy. Data type is float.
+        - kinetics, Tensor of shape :math:`(B, D)`. Kinetics. Data type is float.
+        - virial, Tensor of shape :math:`(B, D)`. Virial. Data type is float.
+        - pbc_box, Tensor of shape :math:`(B, D)`. Periodic boundary condition box.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> from sponge import Molecule
+        >>> from sponge.control import Constraint
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> controller = Constraint(system)
     """
 
     def __init__(self,
@@ -83,32 +110,9 @@ class Constraint(Controller):
                   pbc_box: Tensor = None,
                   step: int = 0,
                   ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
-        r""" constraint the bonds.
-
-        Args:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-            step (int):             Simulation step. Default: 0
-
-        Returns:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-
-        Note:
-            B:  Number of walkers in simulation.
-            A:  Number of atoms.
-            D:  Spatial dimension of the simulation system. Usually is 3.
-
+        r"""
+        Constrain the bonds.
+        This method will be implemented in the subclass.
         """
 
         raise NotImplementedError

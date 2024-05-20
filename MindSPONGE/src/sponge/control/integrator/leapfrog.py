@@ -38,27 +38,57 @@ from ...function import get_arguments
 
 @_integrator_register('leap_frog')
 class LeapFrog(Integrator):
-    r"""A leap-frog integrator based on "middle scheme" developed by Jian Liu, et al. It is a subclass of `Integrator`.
+    r"""
+    A leap-frog integrator based on "middle scheme" developed by Jian Liu, et al.
+    It is a subclass of :class:`sponge.control.Integrator`.
 
-    Reference:
-
-        Zhang, Z.; Yan, K; Liu, X.; Liu, J.
-        A Leap-Frog Algorithm-based Efficient Unified Thermostat Scheme for Molecular Dynamics [J].
-        Chinese Science Bulletin, 2018, 63(33): 3467-3483.
+    Reference Zhang, Z.; Yan, K; Liu, X.; Liu, J.
+    A Leap-Frog Algorithm-based Efficient Unified Thermostat Scheme for Molecular Dynamics [J].
+    Chinese Science Bulletin, 2018, 63(33).
 
     Args:
-        system (Molecule):          Simulation system
+        system (:class:`sponge.system.Molecule`): Simulation system.
+        thermostat (:class:`sponge.control.Thermostat`, optional): Thermostat
+          for temperature coupling.
+          Default: ``None``.
+        barostat (:class:`sponge.control.Barostat`, optional): Barostat for pressure coupling.
+          Default: ``None``.
+        constraint (:class:`sponge.control.Constraint`, optional): Constraint algorithm.
+          Default: ``None``.
 
-        thermostat (Thermostat):    Thermostat for temperature coupling. Default: ``None``.
+    Inputs:
+        - **coordinate** (Tensor) - Coordinate. Tensor of shape :math:`(B, A, D)`.
+          Data type is float.
+          Here :math:`B` is the number of walkers in simulation,
+          :math:`A` is the number of atoms and
+          :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+        - **velocity** (Tensor) - Velocity. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **force** (Tensor) - Force. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **energy** (Tensor) - Energy. Tensor of shape :math:`(B, 1)`. Data type is float.
+        - **kinetics** (Tensor) - Kinetics. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **virial** (Tensor) - Virial. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **pbc_box** (Tensor) - Pressure boundary condition box. Tensor of shape :math:`(B, D)`.
+          Data type is float.
+        - **step** (int) - Simulation step. Default: ``0``.
 
-        barostat (Barostat):        Barostat for pressure coupling. Default: ``None``.
-
-        constraint (Constraint):    Constraint algorithm. Default: ``None``.
-
+    Outputs:
+        - coordinate, Tensor of shape :math:`(B, A, D)`. Coordinate. Data type is float.
+        - velocity, Tensor of shape :math:`(B, A, D)`. Velocity. Data type is float.
+        - force, Tensor of shape :math:`(B, A, D)`. Force. Data type is float.
+        - energy, Tensor of shape :math:`(B, 1)`. Energy. Data type is float.
+        - kinetics, Tensor of shape :math:`(B, D)`. Kinetics. Data type is float.
+        - virial, Tensor of shape :math:`(B, D)`. Virial. Data type is float.
+        - pbc_box, Tensor of shape :math:`(B, D)`. Periodic boundary condition box.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> from sponge import Molecule
+        >>> from sponge.control import LeapFrog
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> controller = LeapFrog(system)
     """
     def __init__(self,
                  system: Molecule,
@@ -86,7 +116,33 @@ class LeapFrog(Integrator):
                   pbc_box: Tensor = None,
                   step: int = 0,
                   ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+        r"""
+        Update simulation step.
 
+        Args:
+            coordinate (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            velocity (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            force (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            energy (Tensor): Tensor of shape :math:`(B, 1)`. Data type is float.
+            kinetics (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            virial (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            pbc_box (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            step (int): Simulation step. Default: ``0``.
+
+        Returns:
+            - **coordinate** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **velocity** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **force** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **energy** (Tensor) - Tensor of shape :math:`(B, 1)`. Data type is float.
+            - **kinetics** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **virial** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **pbc_box** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+
+        Note:
+            :math:`B` is the number of walkers in simulation.
+            :math:`A` is the number of atoms.
+            :math:`D` is the spatial dimension of the simulation system. Usually is 3.
+        """
         # (B,A,D) = (B,A,D) * (B,A,1)
         acceleration = self.acc_unit_scale * force * self._inv_mass
 

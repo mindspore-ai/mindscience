@@ -38,18 +38,19 @@ def get_thermostat(cls_name: Union[str, dict, Thermostat],
                    system: Molecule,
                    temperature: float = None,
                    **kwargs) -> Thermostat:
-    r"""get object of thermostat
+    r"""get object of thermostat.
 
     Args:
-        cls_name (Union[str, dict, Thermostat]): Class name, arguments or object of a thermostat.
-        system (Molecule): Simulation system.
-        temperature (float): Reference temperature for temperature coupling. If `None` is given and
-            the type of `cls_name` is `str`, `None` will be returned. Default: ``None``.
-        **kwargs: Other arguments
+        cls_name (Union[str, dict, :class:`sponge.control.Thermostat`]): Class name,
+          arguments or object of a thermostat.
+        system (:class:`sponge.system.Molecule`): Simulation system.
+        temperature (float, optional): Reference temperature for temperature coupling.
+          If `None` is given and the type of `cls_name` is `str`, `None` will be returned.
+          Default: ``None``.
+        **kwargs: Other arguments.
 
     Returns:
-        thermostat (Thermostat): Object of thermostat
-
+        :class:`sponge.control.Thermostat`, object of thermostat.
     """
 
     if cls_name is None:

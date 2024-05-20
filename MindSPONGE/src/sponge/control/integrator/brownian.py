@@ -39,19 +39,47 @@ from ...function import get_arguments
 
 @_integrator_register('brownian')
 class Brownian(Integrator):
-    r"""A Brownian integrator module, which is a subclass of `Integrator`.
+    r"""
+    A Brownian integrator module, which is a subclass of :class:`sponge.control.Integrator`.
 
     Args:
-        system (Molecule):              Simulation system
+        system (:class:`sponge.system.Molecule`): Simulation system
+        temperature (float, optional): Simulation temperature T (K). Default: ``300.0``.
+        friction_coefficient (float, optional): Friction coefficient g (amu/ps). Default: ``1e3``.
 
-        temperature (float):            Simulation temperature T (K). Default: 300
+    Inputs:
+        - **coordinate** (Tensor) - Coordinate. Tensor of shape :math:`(B, A, D)`.
+          Data type is float.
+          Here :math:`B` is the number of walkers in simulation,
+          :math:`A` is the number of atoms and
+          :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+        - **velocity** (Tensor) - Velocity. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **force** (Tensor) - Force. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **energy** (Tensor) - Energy. Tensor of shape :math:`(B, 1)`. Data type is float.
+        - **kinetics** (Tensor) - Kinetics. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **virial** (Tensor) - Virial. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **pbc_box** (Tensor) - Pressure boundary condition box. Tensor of shape :math:`(B, D)`.
+          Data type is float.
+        - **step** (int) - Simulation step. Default: ``0``.
 
-        friction_coefficient (float):   Friction coefficient g (amu/ps). Default: 1e3
-
+    Outputs:
+        - coordinate, Tensor of shape :math:`(B, A, D)`. Coordinate. Data type is float.
+        - velocity, Tensor of shape :math:`(B, A, D)`. Velocity. Data type is float.
+        - force, Tensor of shape :math:`(B, A, D)`. Force. Data type is float.
+        - energy, Tensor of shape :math:`(B, 1)`. Energy. Data type is float.
+        - kinetics, Tensor of shape :math:`(B, D)`. Kinetics. Data type is float.
+        - virial, Tensor of shape :math:`(B, D)`. Virial. Data type is float.
+        - pbc_box, Tensor of shape :math:`(B, D)`. Periodic boundary condition box.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> from sponge import Molecule
+        >>> from sponge.control import Brownian
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> controller = Brownian(system)
     """
     def __init__(self,
                  system: Molecule,
@@ -87,25 +115,49 @@ class Brownian(Integrator):
         return self.ref_temp
 
     def set_thermostat(self, thermostat: None = None):
-        """set thermostat algorithm for integrator"""
+        r"""
+        Set thermostat algorithm for integrator.
+
+        Args:
+            thermostat (None): Thermostat algorithm,
+              which needs to be ``None`` for Brownian integrator. Default: ``None``.
+        """
         if thermostat is not None:
             raise ValueError('The Brownian integrator cannot accept thermostat')
         return self
 
     def set_barostat(self, barostat: None = None):
-        """set barostat algorithm for integrator"""
+        r"""
+        Set barostat algorithm for integrator.
+
+        Args:
+            barostat (None): Barostat algorithm,
+              which needs to be ``None`` for Brownian integrator. Default: ``None``.
+        """
         if barostat is not None:
             raise ValueError('The Brownian integrator cannot accept barostat')
         return self
 
     def set_constraint(self, constraint: None = None, num_constraints: int = 0):
-        """set constraint algorithm for integrator"""
+        r"""
+        Set constraint algorithm for integrator.
+
+        Args:
+            constraint (None): Constraint algorithm,
+              which needs to be ``None`` for Brownian integrator. Default: ``None``.
+            num_constraints (int, optional): Number of constraints. Default: ``0.0``.
+        """
         if constraint is not None:
             raise ValueError('The Brownian integrator cannot accept constraint')
         return self
 
     def set_time_step(self, dt: float):
-        """set simulation time step"""
+        r"""
+        Set simulation time step.
+
+        Args:
+            dt (float): Simulation time step.
+        """
         self.time_step = Tensor(dt, ms.float32)
         self.random_scale = F.sqrt(2 * self.boltzmann * self.ref_temp * self.time_step * self.inv_gamma)
         return self
@@ -120,6 +172,33 @@ class Brownian(Integrator):
                   pbc_box: Tensor = None,
                   step: int = 0,
                   ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+        r"""
+        Update simulation step.
+
+        Args:
+            coordinate (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            velocity (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            force (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            energy (Tensor): Tensor of shape :math:`(B, 1)`. Data type is float.
+            kinetics (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            virial (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            pbc_box (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            step (int): Simulation step. Default: ``0``.
+
+        Returns:
+            - **coordinate** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **velocity** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **force** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **energy** (Tensor) - Tensor of shape :math:`(B, 1)`. Data type is float.
+            - **kinetics** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **virial** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **pbc_box** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+
+        Note:
+            :math:`B` is the number of walkers in simulation.
+            :math:`A` is the number of atoms.
+            :math:`D` is the spatial dimension of the simulation system. Usually is 3.
+        """
 
         coordinate += self.acc_unit_scale * force * self.inv_gamma * self.time_step
         coordinate += self.normal(coordinate.shape) * self.random_scale

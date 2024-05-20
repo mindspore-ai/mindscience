@@ -42,73 +42,68 @@ from ..function.functions import get_integer, get_ms_array, get_arguments
 class Controller(Cell):
     r"""
     Base class for the controller module in MindSPONGE.
-    The `Controller` used in `Updater` to control the values of seven variables during the simulation
-    process: coordinate, velocity, force, energy, kinetics, virial and pbc_box.
+    The :class:`sponge.control.Controller` is used in
+    :class:`sponge.control.Updater` to control the values of
+    seven variables during the simulation process, including
+    coordinate, velocity, force, energy, kinetics, virial and pbc_box.
 
     Args:
-        system(Molecule):   Simulation system
-        control_step(int):  Step interval for controller execution. Default: 1
-        kwargs(dict):       Other parameters for extension
+        system(:class:`sponge.system.Molecule`): Simulation system.
+        control_step(int, optional):  Step interval for controller execution. Default: ``1``.
+        kwargs(dict): Other parameters for extension.
 
     Inputs:
-        - **coordinate** (Tensor) - Tensor of shape `(B, A, D)`. Data type is float.
-        - **velocity** (Tensor) - Tensor of shape `(B, A, D)`. Data type is float.
-        - **force** (Tensor) - Tensor of shape `(B, A, D)`. Data type is float.
-        - **energy** (Tensor) - Tensor of shape `(B, 1)`. Data type is float.
-        - **kinetics** (Tensor) - Tensor of shape `(B, D)`. Data type is float.
-        - **virial** (Tensor) - Tensor of shape `(B, D)`. Data type is float.
-        - **pbc_box** (Tensor) - Tensor of shape `(B, D)`. Data type is float.
-        - **step** (int) - Simulation step. Default: 0
+        - **coordinate** (Tensor) - Coordinate. Tensor of shape :math:`(B, A, D)`.
+          Data type is float.
+          Here :math:`B` is the number of walkers in simulation,
+          :math:`A` is the number of atoms and
+          :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+        - **velocity** (Tensor) - Velocity. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **force** (Tensor) - Force. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **energy** (Tensor) - Energy. Tensor of shape :math:`(B, 1)`. Data type is float.
+        - **kinetics** (Tensor) - Kinetics. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **virial** (Tensor) - Virial. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **pbc_box** (Tensor) - Pressure boundary condition box. Tensor of shape :math:`(B, D)`.
+          Data type is float.
+        - **step** (int) - Simulation step. Default: ``0``.
 
     Outputs:
-        - coordinate, Tensor of shape `(B, A, D)`. Data type is float.
-        - velocity, Tensor of shape `(B, A, D)`. Data type is float.
-        - force, Tensor of shape `(B, A, D)`. Data type is float.
-        - energy, Tensor of shape `(B, 1)`. Data type is float.
-        - kinetics, Tensor of shape `(B, D)`. Data type is float.
-        - virial, Tensor of shape `(B, D)`. Data type is float.
-        - pbc_box, Tensor of shape `(B, D)`. Data type is float.
-
-    Note:
-        B:  Number of walkers in simulation.
-        A:  Number of atoms.
-        D:  Spatial dimension of the simulation system. Usually is 3.
+        - coordinate, Tensor of shape :math:`(B, A, D)`. Coordinate. Data type is float.
+        - velocity, Tensor of shape :math:`(B, A, D)`. Velocity. Data type is float.
+        - force, Tensor of shape :math:`(B, A, D)`. Force. Data type is float.
+        - energy, Tensor of shape :math:`(B, 1)`. Energy. Data type is float.
+        - kinetics, Tensor of shape :math:`(B, D)`. Kinetics. Data type is float.
+        - virial, Tensor of shape :math:`(B, D)`. Virial. Data type is float.
+        - pbc_box, Tensor of shape :math:`(B, D)`. Periodic boundary condition box.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from sponge import WithEnergyCell, UpdaterMD, Sponge
-        >>> from sponge.callback import RunInfo
+        >>> from mindspore import Tensor
+        >>> from sponge import Sponge, Molecule, ForceField, UpdaterMD, WithEnergyCell
         >>> from sponge.control import Controller
-        >>> # system is the Molecule object defined by user.
-        >>> # potential is the Energy object defined by user.
+        >>> from sponge.callback import RunInfo
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> potential = ForceField(system, parameters='SPCE')
         >>> withenergy = WithEnergyCell(system, potential)
-        >>> updater = UpdaterMD(
-        ...     system=system,
-        ...     time_step=1e-3,
-        ...     velocity=velocity,
-        ...     integrator='velocity_verlet',
-        ...     temperature=300,
-        ... )
-        >>> mini = Sponge(withenergy, optimizer=updater)
-        >>> run_info = RunInfo(1)
-        >>> mini.run(5, callbacks=[run_info])
-        [MindSPONGE] Started simulation at 2024-03-22 14:21:27
-        [MindSPONGE] Step: 1, E_pot: 110.0423, E_kin: 46.251404, E_tot: 156.2937, Temperature: 337.1373
-        [MindSPONGE] Step: 2, E_pot: 107.28819, E_kin: 48.7815, E_tot: 156.0697, Temperature: 355.57977
-        [MindSPONGE] Step: 3, E_pot: 112.72148, E_kin: 43.82708, E_tot: 156.54855, Temperature: 319.46582
-        [MindSPONGE] Step: 4, E_pot: 119.34253, E_kin: 37.759735, E_tot: 157.10226, Temperature: 275.23953
-        [MindSPONGE] Step: 5, E_pot: 119.16531, E_kin: 37.857212, E_tot: 157.02252, Temperature: 275.95004
-        [MindSPONGE] Finished simulation at 2024-03-22 14:21:30
-        [MindSPONGE] Simulation time: 2.96 seconds.
-        --------------------------------------------------------------------------------
         >>> class MyController(Controller):
         ...     def construct(self,
-        ...                 coordinate: Tensor,
-        ...                 velocity: Tensor,
-        ...                 **kwargs):
-        ...         return super().construct(coordinate, velocity/100, **kwargs)
+        ...             coordinate: Tensor,
+        ...             velocity: Tensor,
+        ...             force: Tensor,
+        ...             energy: Tensor,
+        ...             kinetics: Tensor,
+        ...             virial: Tensor = None,
+        ...             pbc_box: Tensor = None,
+        ...             step: int = 0,
+        ...             **kwargs):
+        ...         return super().construct(coordinate, velocity/100,
+        ...                                 force, energy, kinetics,
+        ...                                 virial, pbc_box, step,
+        ...                                 **kwargs)
+        >>> velocity = Tensor([[0.1008,0.,0.],[-0.8,0.,0.],[-0.8,0.,0.]])
         >>> updater = UpdaterMD(
         ...     system=system,
         ...     time_step=1e-3,
@@ -118,16 +113,8 @@ class Controller(Cell):
         ...     controller=MyController(system)
         ... )
         >>> mini = Sponge(withenergy, optimizer=updater)
+        >>> run_info = RunInfo(1)
         >>> mini.run(5, callbacks=[run_info])
-        [MindSPONGE] Started simulation at 2024-03-22 14:22:54
-        [MindSPONGE] Step: 1, E_pot: 110.0423, E_kin: 0.005846547, E_tot: 110.04814, Temperature: 0.042616848
-        [MindSPONGE] Step: 2, E_pot: 113.94534, E_kin: 0.005484298, E_tot: 113.95083, Temperature: 0.03997633
-        [MindSPONGE] Step: 3, E_pot: 117.96643, E_kin: 0.0051222043, E_tot: 117.97155, Temperature: 0.037336946
-        [MindSPONGE] Step: 4, E_pot: 115.83751, E_kin: 0.005331765, E_tot: 115.84284, Temperature: 0.038864482
-        [MindSPONGE] Step: 5, E_pot: 107.83249, E_kin: 0.006089137, E_tot: 107.83858, Temperature: 0.044385143
-        [MindSPONGE] Finished simulation at 2024-03-22 14:22:57
-        [MindSPONGE] Simulation time: 3.00 seconds.
-        --------------------------------------------------------------------------------
     """
     def __init__(self,
                  system: Molecule,
@@ -190,7 +177,7 @@ class Controller(Cell):
         Set simulation time step.
 
         Args:
-            dt(float):  Time step.
+            dt (float):  Time step.
         """
         self.time_step = get_ms_array(dt, ms.float32)
         return self
@@ -200,7 +187,7 @@ class Controller(Cell):
         Set degrees of freedom (DOFs).
 
         Args:
-            dofs(int):  Degrees of freedom.
+            dofs (int):  Degrees of freedom.
         """
         self.degrees_of_freedom = get_integer(dofs)
         return self
@@ -210,8 +197,8 @@ class Controller(Cell):
         Update the coordinate of the simulation system.
 
         Args:
-            coordinate(Tensor): Tensor of atomic coordinates. Tensor shape is `(B, A, D)`.
-                                Data type is float.
+            coordinate (Tensor): Tensor of atomic coordinates. Tensor shape is :math:`(B, A, D)`.
+              Data type is float.
 
         Returns:
             Tensor, has the same data type and shape as original `coordinate`.
@@ -223,8 +210,8 @@ class Controller(Cell):
         Update the parameter of PBC box.
 
         Args:
-            pbc_box(Tensor):    Tensor of PBC box. Tensor shape is `(B, D)`.
-                                Data type is float.
+            pbc_box (Tensor): Tensor of PBC box. Tensor shape is :math:`(B, D)`.
+              Data type is float.
 
         Returns:
             Tensor, has the same data type and shape as original `pbc_box`.
@@ -238,11 +225,11 @@ class Controller(Cell):
         Calculate kinetics according to velocity.
 
         Args:
-            velocity(Tensor):   Tensor of atomic velocities. Tensor shape is `(B, A, D)`.
-                                Data type is float.
+            velocity (Tensor):  Tensor of atomic velocities. Tensor shape is :math:`(B, A, D)`.
+              Data type is float.
 
         Returns:
-            Tensor, Tensor of kinetics. Tensor shape is `(B, D)`. Data type is float.
+            Tensor, kinetics. Tensor shape is :math:`(B, D)`. Data type is float.
         """
         if velocity is None:
             return None
@@ -257,10 +244,11 @@ class Controller(Cell):
         Calculate temperature according to velocity.
 
         Args:
-            kinetics(Tensor):   Tensor of kinetics. Tensor shape is `(B, D)`. Data type is float. Default: ``None``.
+            kinetics (Tensor): Kinetics. Tensor shape is :math:`(B, D)`.
+            Data type is float. Default: ``None``.
 
         Returns:
-            Tensor, Tensor of temperature. The shape of the Tensor is `(B)`. Data type is float.
+            Tensor, temperature. Tensor shape is :math:`(B)`. Data type is float.
         """
         if kinetics is None:
             return None
@@ -270,13 +258,13 @@ class Controller(Cell):
 
     def get_volume(self, pbc_box: Tensor) -> Tensor:
         r"""
-        Calculate volume according to PBC box
+        Calculate volume according to PBC box.
 
         Args:
-            pbc_box(Tensor):    Tensor of PBC box. Tensor shape is `(B, D)`. Data type is float.
+            pbc_box (Tensor): Tensor of PBC box. Tensor shape is :math:`(B, D)`. Data type is float.
 
         Returns:
-            Tensor, Tensor of volume. The shape of the Tensor is `(B)`, and the data type is float.
+            Tensor, Tensor of volume. Shape is :math:`(B)`. The data type is float.
         """
         if self._pbc_box is None:
             return None
@@ -288,12 +276,12 @@ class Controller(Cell):
         Calculate pressure according to kinetics, viral and PBC box.
 
         Args:
-            kinetics(Tensor):   Tensor of kinetics. Tensor shape is `(B, D)`. Data type is float.
-            virial(Tensor):     Tensor of virial. Tensor shape is `(B, D)`. Data type is float.
-            pbc_box(Tensor):    Tensor of PBC box. Tensor shape is `(B, D)`. Data type is float.
+            kinetics (Tensor): Kinetics. Tensor shape is :math:`(B, D)`. Data type is float.
+            virial (Tensor): Virial. Tensor shape is :math:`(B, D)`. Data type is float.
+            pbc_box (Tensor): PBC box. Tensor shape is :math:`(B, D)`. Data type is float.
 
         Returns:
-            Tensor, Tensor of pressure. Tensor shape is `(B, D)`. Data type is float.
+            Tensor, pressure. Tensor shape is :math:`(B, D)`. Data type is float.
         """
         if self._pbc_box is None:
             return None
@@ -307,13 +295,16 @@ class Controller(Cell):
         Get coordinate of center of mass.
 
         Args:
-            coordinate(Tensor): Tensor of atomic coordinates. Tensor shape is `(B, A, D)`. Data type is float.
-            keepdims(bool):     If this is set to `True`, the second axis will be left
-                                in the result as dimensions with size one. Default: ``True``.
+            coordinate (Tensor): Atomic coordinates. Tensor shape is :math:`(B, A, D)`.
+              Data type is float.
+            keepdims (bool, optional): If this is set to ``True``, the second axis will be left
+              in the result as dimensions with size one.
+              Default: ``True``.
 
         Returns:
-            Tensor, Tensor of the coordinate of the center of mass. Tensor shape is `(B, A, D)` or `(B, D)`.
-                Data type is float.
+            Tensor, the coordinate of the center of mass.
+              The shape is :math:`(B, A, D)` or :math:`(B, D)`.
+              Data type is float.
         """
 
         # (B, A, D) = (B, A, D) * (B, A, 1)
@@ -340,14 +331,13 @@ class Controller(Cell):
         Calculate velocity of center of mass.
 
         Args:
-            velocity(Tensor):   Tensor of velocity. Tensor shape is `(B, A, D)`. Data type is float.
-            keepdims(bool):     If this is set to `True`, the second axis will be left
-                                in the result as dimensions with size one. Default: ``True``.
+            velocity (Tensor): Velocity. The shape is :math:`(B, A, D)`. Data type is float.
+            keepdims(bool): If this is set to ``True``, the second axis will be left
+              in the result as dimensions with size one. Default: ``True``.
 
         Returns:
             Tensor, Tensor of the velocity of the center of mass.
-                Tensor shape is `(B, A, D)` or `(B, D)`. Data type is float.
-
+              The shape is :math:`(B, A, D)` or :math:`(B, D)`. Data type is float.
         """
 
         # (B, A, D) = (B, A, D) * (B, A, 1)
@@ -380,27 +370,32 @@ class Controller(Cell):
                   step: int = 0,
                   ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
 
-        r"""Control the parameters during the simulation
+        r"""
+        Control the parameters during the simulation
 
         Args:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-            step (int):             Simulation step. Default: 0
+            coordinate (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            velocity (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            force (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            energy (Tensor): Tensor of shape :math:`(B, 1)`. Data type is float.
+            kinetics (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            virial (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            pbc_box (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            step (int): Simulation step. Default: ``0``.
 
         Returns:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
+            - **coordinate** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **velocity** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **force** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **energy** (Tensor) - Tensor of shape :math:`(B, 1)`. Data type is float.
+            - **kinetics** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **virial** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **pbc_box** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
 
+        Note:
+            :math:`B` is the number of walkers in simulation.
+            :math:`A` is the number of atoms.
+            :math:`D` is the spatial dimension of the simulation system. Usually is 3.
         """
         #pylint: disable=unused-argument
 

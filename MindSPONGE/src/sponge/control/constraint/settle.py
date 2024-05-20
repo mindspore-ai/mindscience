@@ -39,14 +39,14 @@ from ...function import get_ms_array
 
 
 class EinsumWrapper(ms.nn.Cell):
-    """Implement particular Einsum operation
+    r"""
+    Implement particular Einsum operation.
 
     Args:
-        equation (str):  en equation represent the operation.
+        equation (str):  an equation representing the operation.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
-
     """
     def __init__(self, equation: str):
         super().__init__(auto_prefix=False)
@@ -74,37 +74,51 @@ class SETTLE(Constraint):
     """
     SETTLE constraint controller.
 
-    `SETTLE: An Analytical Version of the SHAKE and RATTLE Algorithm for Rigid Water Models.`
-        by Shuichi Miyamoto and Peter A. Kollman.
+    Reference Shuichi Miyamoto and Peter A. Kollman.
+    SETTLE An Analytical Version of the SHAKE and RATTLE Algorithm for Rigid Water Models.
 
     Args:
-        system (Molecule): Simulation system.
-        index (Union[Tensor, ndarray, List[int]]): Array of settle index of shape `(C, 3)` or `(B, C, 3)`,
-            and the type is int. If `None` is given, the `settle_index` in `system` will be used. Default: ``None``.
-        distance (Union[Tensor, ndarray, List[float]]): Array of settle distance of shape (C, 2) or `(B, C, 2)`,
-            and the type is float. If `None` is given, the `settle_dis` in `system` will be used. Default: ``None``.
+        system (:class:`sponge.system.Molecule`): Simulation system.
+        index (Union[Tensor, ndarray, List[int]], optional): Array of settle index
+          of shape :math:`(C, 3)` or :math:`(B, C, 3)`, and the data type is int.
+          If ``None`` is given, the `settle_index` in `system` will be used. Default: ``None``.
+        distance (Union[Tensor, ndarray, List[float]], optional): Array of settle distance
+          of shape :math:(C, 2) or :math:`(B, C, 2)`, and the type is float.
+          If ``None`` is given, the `settle_dis` in `system` will be used. Default: ``None``.
 
     Inputs:
-        - **coordinate** (Tensor) - The coordinates of the system.
-        - **velocity** (Tensor) - The velocity of the system.
-        - **force** (Tensor) - The force of the system.
-        - **energy** (Tensor) - The energy of the system.
-        - **kinetics** (Tensor) - The kinetics of the system.
-        - **virial** (Tensor) - The virial of the system. Default: ``None``.
-        - **pbc_box** (Tensor) - PBC box of the system. Default: ``None``.
-        - **step** (int) - The step of the system. Default: 0
+        - **coordinate** (Tensor) - Coordinate. Tensor of shape :math:`(B, A, D)`.
+          Data type is float.
+          Here :math:`B` is the number of walkers in simulation,
+          :math:`A` is the number of atoms and
+          :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+        - **velocity** (Tensor) - Velocity. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **force** (Tensor) - Force. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **energy** (Tensor) - Energy. Tensor of shape :math:`(B, 1)`. Data type is float.
+        - **kinetics** (Tensor) - Kinetics. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **virial** (Tensor) - Virial. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **pbc_box** (Tensor) - Pressure boundary condition box. Tensor of shape :math:`(B, D)`.
+          Data type is float.
+        - **step** (int) - Simulation step. Default: ``0``.
 
-    Returns:
-        - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - force (Tensor), Tensor of shape (B, A, D). Data type is float.
-        - energy (Tensor), Tensor of shape (B, 1). Data type is float.
-        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
-        - virial (Tensor), Tensor of shape (B, D). Data type is float.
-        - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
+    Outputs:
+        - coordinate, Tensor of shape :math:`(B, A, D)`. Coordinate. Data type is float.
+        - velocity, Tensor of shape :math:`(B, A, D)`. Velocity. Data type is float.
+        - force, Tensor of shape :math:`(B, A, D)`. Force. Data type is float.
+        - energy, Tensor of shape :math:`(B, 1)`. Energy. Data type is float.
+        - kinetics, Tensor of shape :math:`(B, D)`. Kinetics. Data type is float.
+        - virial, Tensor of shape :math:`(B, D)`. Virial. Data type is float.
+        - pbc_box, Tensor of shape :math:`(B, D)`. Periodic boundary condition box.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Examples:
+        >>> from sponge import Molecule
+        >>> from sponge.control import SETTLE
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> controller = SETTLE(system)
     """
 
     def __init__(self,
@@ -197,11 +211,14 @@ class SETTLE(Constraint):
         self.scatter_update = ops.tensor_scatter_elements
 
 
-    def get_vector_transform(self, vec1, vec2):
-        """ Get the transform quaternion from a vector to another.
+    def get_vector_transform(self, vec1: Tensor, vec2: Tensor):
+        r"""
+        Get the transform quaternion from a vector to another.
+
         Args:
             vec1 (Tensor): The initial vector.
             vec2 (Tensor): The target vector.
+
         Returns:
             q (Tensor): The transform quaternion.
         """
@@ -224,23 +241,31 @@ class SETTLE(Constraint):
         q /= msnp.norm(q, axis=-1, keepdims=True)
         return q
 
-    def get_inverse(self, quater):
-        """ Get the inverse operation of a given quaternion.
+    def get_inverse(self, quater: Tensor):
+        r"""
+         Get the inverse operation of a given quaternion.
+
         Args:
             quater (Tensor): The given quaternion.
+
         Returns:
-            quater^{-1}
+            Tensor, :math:`quater^{-1}`.
         """
         factor = msnp.norm(quater, axis=-1, keepdims=True) ** 2
         return quater * self.inverse_quaternion / factor
 
-    def quaternion_multiply(self, tensor_1, tensor_2):
-        """ Calculate the quaternion multiplication.
+    def quaternion_multiply(self, tensor_1: Tensor, tensor_2: Tensor):
+        r"""
+        Calculate the quaternion multiplication.
+
         Args:
-            tensor_1 (Tensor): The first quaternion, if the size of last dimension is 3, it will be padded to 4 auto.
-            tensor_2 (Tensor): The second quaternion, if the size of last dimension is 3, it will be padded to 4 auto.
+            tensor_1 (Tensor): The first quaternion,
+            if the size of last dimension is 3, it will be padded to 4 auto.
+            tensor_2 (Tensor): The second quaternion,
+            if the size of last dimension is 3, it will be padded to 4 auto.
+
         Returns:
-            q (Tensor): The quaternion product of tensor_1 and tensor_2.
+            Tensor, the quaternion product of tensor_1 and tensor_2.
         """
         # (B, G, 4)
         if tensor_1.shape[-1] == 3:
@@ -267,12 +292,15 @@ class SETTLE(Constraint):
         return q
 
     def hamiltonian_product(self, q, v):
-        """ Perform hamiltonian product.
+        r"""
+        Perform Hamiltonian product.
+
         Args:
             q (Tensor): The transform quaternion.
             v (Tensor): The vector to be transformed.
+
         Returns:
-            qvq^{-1}
+            Tensor, The Hamiltonian product of q and v, :math:`q v q^{-1}`.
         """
         # (B, G, 4)
         iq = self.get_inverse(q)
@@ -281,12 +309,15 @@ class SETTLE(Constraint):
         return res
 
     def group_hamiltonian_product(self, q, vec):
-        """ Perform hamiltonian product in a 4-dimensional vector.
+        r"""
+        Perform hamiltonian product in a 4-dimensional vector.
+
         Args:
             q (Tensor): The transform quaternion.
             vec (Tensor): The vector to be transformed.
+
         Returns:
-            qvq^{-1}
+            Tensor, The Hamiltonian product of q and v, :math:`q v q^{-1}`.
         """
         # (B, G, 1, 4)
         group_q = q[..., None, :]
@@ -302,9 +333,12 @@ class SETTLE(Constraint):
 
 
     def get_transform(self, crd_):
-        """ Get the transform between A0B0C0 and a0b0c0.
+        r"""
+        Get the transform between A0B0C0 and a0b0c0.
+
         Args:
             crd_ (Tensor): The given water molecular coordinates.
+
         Returns:
             This function will return the transform and inverse transform from crd_ SETTLE axis.
         """
@@ -334,8 +368,17 @@ class SETTLE(Constraint):
         combine_itransform = self.quaternion_multiply(inverse_transform_1, inverse_transform_2)
         return combine_transform, combine_itransform
 
-    def apply_transform(self, q, vec):
-        """ Apply the quaternion transform q to a given vector vec. """
+    def apply_transform(self, q: Tensor, vec: Tensor):
+        r"""
+        Apply the quaternion transform q to a given vector vec.
+
+        Args:
+            q (Tensor): The transform quaternion.
+            vec (Tensor): The vector to be transformed.
+
+        Returns:
+            Tensor, The transformed vector.
+        """
         # (B, G, a, D)
         crd = vec.reshape((vec.shape[0], -1, 3, vec.shape[-1]))
         crd -= self.get_mass_center(crd)
@@ -435,7 +478,15 @@ class SETTLE(Constraint):
         return new_crd
 
     def get_mass_center(self, crd_):
-        """ Get the mass center of a given molecule. """
+        r"""
+        Get the mass center of a given molecule.
+
+        Args:
+            crd_ (Tensor): The coordinates.
+
+        Returns:
+            Tensor, The mass center of the molecule.
+        """
         # (B, G, A, D)
         crd = crd_.reshape((crd_.shape[0], -1, 3, crd_.shape[-1]))
         # (B, G, 1, D)
@@ -443,13 +494,16 @@ class SETTLE(Constraint):
         return cm[..., None, :]
 
     def get_vel_force_update(self, crd0_, vel0_):
-        """ Get the update of velocity and force.
+        r"""
+        Get the update of velocity and force.
+
         Args:
             crd0_ (Tensor): The coordinate after SETTLE in the origin axis.
             vel0_ (Tensor): The initial velocity.
+
         Returns:
-            dv (Tensor): The constraint velocity.
-            df (Tensor): The constraint force.
+            Tensor, The constraint velocity.
+            Tensor, The constraint force.
         """
         #pylint: disable=invalid-name
         crd0 = crd0_.reshape((crd0_.shape[0], -1, 3, 3))
@@ -525,6 +579,33 @@ class SETTLE(Constraint):
                   pbc_box: Tensor = None,
                   step: int = 0,
                   ):
+        r"""
+        Control the pressure of the simulation system.
+
+        Args:
+            coordinate (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            velocity (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            force (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            energy (Tensor): Tensor of shape :math:`(B, 1)`. Data type is float.
+            kinetics (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            virial (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            pbc_box (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            step (int): Simulation step. Default: ``0``.
+
+        Returns:
+            - **coordinate** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **velocity** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **force** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **energy** (Tensor) - Tensor of shape :math:`(B, 1)`. Data type is float.
+            - **kinetics** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **virial** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **pbc_box** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+
+        Note:
+            :math:`B` is the number of walkers in simulation.
+            :math:`A` is the number of atoms.
+            :math:`D` is the spatial dimension of the simulation system. Usually is 3.
+        """
         #pylint: disable=invalid-name
         # (B, A, D)
         crd_old_0_0 = msnp.take_along_axis(self._coordinate.copy(), self.settle_index[..., None], axis=-2)

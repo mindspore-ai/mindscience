@@ -38,16 +38,17 @@ _INTEGRATOR_BY_NAME = {cell.__name__: cell for cell in _INTEGRATOR_BY_KEY.values
 def get_integrator(cls_name: Union[str, dict, Integrator],
                    system: Molecule,
                    **kwargs) -> Integrator:
-    r"""get object of integrator
+    r"""
+    Get an object of an integrator.
 
     Args:
-        cls_name (Union[str, dict, Integrator]): Class name, arguments or object of a integrator
-        system (Molecule): Simulation system.
-        **kwargs: Other arguments
+        cls_name (Union[str, dict, :class:`sponge.control.Integrator`]): Class name,
+          arguments or object of a integrator
+        system (:class:`sponge.system.Molecule`): Simulation system.
+        **kwargs: Other arguments.
 
     Returns:
-        integrator (Integrator): Object of integrator
-
+        :class:`sponge.control.Integrator`, object of integrator.
     """
 
     if cls_name is None:

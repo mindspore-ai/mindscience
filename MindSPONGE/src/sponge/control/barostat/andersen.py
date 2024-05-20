@@ -35,34 +35,60 @@ from ...function import get_arguments
 
 @_barostat_register('andersen')
 class AndersenBarostat(Barostat):
-    r"""A Andersen barostat module, which is a subclass of `Barostat`.
+    r"""
+    An Andersen barostat module, which is a subclass of `Barostat`.
 
-    Reference:
-
-        Andersen, Hans Christian.
-        Molecular dynamics simulations at constant pressure and/or temperature [J].
-        Journal of Chemical Physics, 1980, 72: 2384-2393.
+    Reference Andersen, Hans Christian.
+    Molecular dynamics simulations at constant pressure and/or temperature [J].
+    Journal of Chemical Physics, 1980, 72.
 
     Args:
-        system (Molecule):          Simulation system
+        system (:class:`sponge.system.Molecule`): Simulation system.
+        pressure (float, optional): Reference pressure :math:`P_{ref}` in unit bar for pressure coupling.
+          Default: ``1.0``.
+        anisotropic (bool, optional): Whether to perform anisotropic pressure control.
+          Default: ``False``.
+        control_step (int, optional): Step interval for controller execution. Default: ``1``.
+        compressibility (float, optional): Isothermal compressibility :math:`\beta` in unit bar^-1.
+          Default: ``4.6e-5``.
+        time_constant (float, optional): Time constant :math:`\tau_p` in unit picosecond
+          for pressure coupling.
+          Default: ``1.0``.
 
-        pressure (float):           Reference pressure :math:`P_{ref}` in unit bar for pressure coupling.
-                                    Default: 1
 
-        anisotropic (bool):         Whether to perform anisotropic pressure control.
-                                    Default: ``False``.
+    Inputs:
+        - **coordinate** (Tensor) - Coordinate. Tensor of shape :math:`(B, A, D)`.
+          Data type is float.
+          Here :math:`B` is the number of walkers in simulation,
+          :math:`A` is the number of atoms and
+          :math:`D` is the spatial dimension of the simulation system, which is usually 3.
+        - **velocity** (Tensor) - Velocity. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **force** (Tensor) - Force. Tensor of shape :math:`(B, A, D)`. Data type is float.
+        - **energy** (Tensor) - Energy. Tensor of shape :math:`(B, 1)`. Data type is float.
+        - **kinetics** (Tensor) - Kinetics. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **virial** (Tensor) - Virial. Tensor of shape :math:`(B, D)`. Data type is float.
+        - **pbc_box** (Tensor) - Pressure boundary condition box. Tensor of shape :math:`(B, D)`.
+          Data type is float.
+        - **step** (int) - Simulation step. Default: ``0``.
 
-        control_step (int):         Step interval for controller execution. Default: 1
-
-        compressibility (float):    Isothermal compressibility :math:`\beta` in unit bar^-1.
-                                    Default: 4.6e-5
-
-        time_constant (float)       Time constant :math:`\tau_p` in unit picosecond for pressure coupling.
-                                    Default: 1
+    Outputs:
+        - coordinate, Tensor of shape :math:`(B, A, D)`. Coordinate. Data type is float.
+        - velocity, Tensor of shape :math:`(B, A, D)`. Velocity. Data type is float.
+        - force, Tensor of shape :math:`(B, A, D)`. Force. Data type is float.
+        - energy, Tensor of shape :math:`(B, 1)`. Energy. Data type is float.
+        - kinetics, Tensor of shape :math:`(B, D)`. Kinetics. Data type is float.
+        - virial, Tensor of shape :math:`(B, D)`. Virial. Data type is float.
+        - pbc_box, Tensor of shape :math:`(B, D)`. Periodic boundary condition box.
+          Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
+    Examples:
+        >>> from sponge import Molecule
+        >>> from sponge.control import AndersenBarostat
+        >>> system = Molecule(template='water.tip3p.yaml')
+        >>> controller = AndersenBarostat(system)
     """
     def __init__(self,
                  system: Molecule,
@@ -96,6 +122,33 @@ class AndersenBarostat(Barostat):
                   pbc_box: Tensor = None,
                   step: int = 0,
                   ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+        r"""
+        Control the pressure of the system.
+
+        Args:
+            coordinate (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            velocity (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            force (Tensor): Tensor of shape :math:`(B, A, D)`. Data type is float.
+            energy (Tensor): Tensor of shape :math:`(B, 1)`. Data type is float.
+            kinetics (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            virial (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            pbc_box (Tensor): Tensor of shape :math:`(B, D)`. Data type is float.
+            step (int): Simulation step. Default: ``0``.
+
+        Returns:
+            - **coordinate** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **velocity** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **force** (Tensor) - Tensor of shape :math:`(B, A, D)`. Data type is float.
+            - **energy** (Tensor) - Tensor of shape :math:`(B, 1)`. Data type is float.
+            - **kinetics** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **virial** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+            - **pbc_box** (Tensor) - Tensor of shape :math:`(B, D)`. Data type is float.
+
+        Note:
+            :math:`B` is the number of walkers in simulation.
+            :math:`A` is the number of atoms.
+            :math:`D` is the spatial dimension of the simulation system. Usually is 3.
+        """
 
         if self.control_step == 1 or step % self.control_step == 0:
             crd_scale_factor = 0
