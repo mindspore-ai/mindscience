@@ -203,12 +203,12 @@ if __name__ == '__main__':
 
     args = parse_args()
 
-    context.set_context(mode=context.GRAPH_MODE if args.context_mode.upper().startswith("GRAPH")
+    context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH")
                         else context.PYNATIVE_MODE,
                         device_target=args.device_target,
                         device_id=args.device_id)
     print_log(
-        f"Running in {args.context_mode.upper()} mode, using device id: {args.device_id}.")
+        f"Running in {args.mode.upper()} mode, using device id: {args.device_id}.")
     use_ascend = (args.device_target == "Ascend")
     print_log(f'use_ascend : {use_ascend}')
     train(args)
