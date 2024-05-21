@@ -32,13 +32,14 @@
     │  rmd.yaml  配置文件
     │  run.sh   并行训练脚本
     │  train.py 训练启动脚本
+    │  predict.py  推理评估启动脚本
     │  
     └─src
             allegro_embedding.py    embedding模块
             dataset.py  数据集处理
-            potential.py    势能网络模块
-            reduce_lr_on_plateau.py LR衰减模块
+            potential.py  势能网络模块
             trainer.py  训练脚本
+            predicter.py  推理评估脚本
 ```
 
 ## 训练过程
@@ -85,4 +86,19 @@ bash run.sh
 .
 .
 
+```
+
+## 推理评估过程
+
+### 推理评估
+
+```txt
+1.将权重checkpoint文件保存至 `/checkpoint/`目录下（默认读取目录）
+2.执行推理脚本：python predict.py
+```
+
+推理评估结果
+
+```txt
+可以通过 predict.log 文件查看结果; 推理输出文件为 pred.npy
 ```

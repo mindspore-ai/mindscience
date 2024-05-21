@@ -205,6 +205,26 @@ def create_training_dataset(config, dtype, pred_force, parallel_mode="NONE"):
                          num_type).get_tuple_data()
 
 
+def create_test_dataset(config, dtype, pred_force):
+    """create_training_dataset"""
+    with np.load(config['path']) as rmd_data:
+        shift = 0
+        num_type = get_num_type(rmd_data)
+        evalset, eval_edge_index, eval_batch = generate_dataset(
+            RMD17(
+                rmd_data,
+                start=shift,
+                end=config['n_val'] + shift,
+                get_force=pred_force,
+                dtype=dtype
+            ),
+            embed=False,
+            batch_size=config['batch_size_eval']
+        )
+    return HandleDataSet(None, None, None, evalset, eval_edge_index, eval_batch,
+                         num_type).get_tuple_data()
+
+
 class HandleData:
     """CommonData"""
 

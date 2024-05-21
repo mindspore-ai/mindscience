@@ -47,7 +47,7 @@ def training_bar(epoch, size, current, loss=None):
             stride - complete - 1) + f'] {ratio:.2f}%    Memory used: {memory:>6.2f} MB   ', end='')
 
 
-def log_config(outdir):
+def log_config(outdir, file_name='log.log'):
     """log_config
 
     Args:
@@ -63,7 +63,7 @@ def log_config(outdir):
     logger.addHandler(ch)
 
     # 创建文件输出器
-    log_file = os.path.join(outdir, 'log.log')
+    log_file = os.path.join(outdir, file_name)
     fh = logging.FileHandler(log_file)
     fh.setFormatter(formatter)
     logger.addHandler(fh)

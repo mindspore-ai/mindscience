@@ -24,12 +24,12 @@ import yaml
 import numpy as np
 import mindspore as ms
 from mindspore import nn
+from mindspore.experimental import optim
 
 from mindchemistry.cell.geonet import Allegro
 from src.allegro_embedding import AllegroEmbedding
 from src.dataset import create_training_dataset
 from src.potential import Potential
-from src.reduce_lr_on_plateau import ReduceLROnPlateau
 
 
 def build(num_type, configs):
@@ -88,15 +88,6 @@ def build(num_type, configs):
     )
 
     return net
-
-
-def load_yaml_config_from_path(file_path):
-    """load_yaml_config_from_path"""
-    # Read YAML experiment definition file
-    with open(file_path, 'r') as stream:
-        config = yaml.safe_load(stream)
-
-    return config
 
 
 def log_config(outdir):
@@ -180,8 +171,8 @@ def train(configs, dtype=ms.float32, parallel_mode="NONE"):
     # Instantiate loss function and optimizer
     loss_fn = nn.MSELoss()
     metric_fn = nn.MAELoss()
-    optimizer = nn.Adam(params=model.trainable_params(), learning_rate=learning_rate)
-    lr_scheduler = ReduceLROnPlateau(optimizer, 'min', factor=factor, patience=patience)
+    optimizer = optim.Adam(params=model.trainable_params(), lr=learning_rate)
+    lr_scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor=factor, patience=patience)
 
     # 1. Define forward function
     def forward(x, pos, edge_index, batch, batch_size, energy):
@@ -292,7 +283,7 @@ def train(configs, dtype=ms.float32, parallel_mode="NONE"):
 
         if lrdecay:
             lr_scheduler.step(test_loss)
-            last_lr = optimizer.learning_rate.value()
+            last_lr = optimizer.param_groups[0].get('lr').value()
             logging.info("lr: %.10f\n", last_lr)
 
         if (t + 1) % 50 == 0:

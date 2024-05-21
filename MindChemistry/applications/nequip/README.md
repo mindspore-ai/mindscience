@@ -28,11 +28,13 @@
     │  README.md    README文件
     │  rmd.yaml     配置文件
     │  train.py     训练启动脚本
+    │  predict.py     推理评估启动脚本
     │  
     └─src
             dataset.py  数据集处理
             plot.py     结果作图
             trainer.py  训练脚本
+            predicter.py  推理评估脚本
             utils.py    工具模块
 ```
 
@@ -61,4 +63,19 @@ python train.py
 .
 .
 .
+```
+
+## 推理评估过程
+
+### 推理评估
+
+```txt
+1.将权重checkpoint文件保存至 `/checkpoints/`目录下（默认读取目录）
+2.执行推理脚本：python predict.py
+```
+
+推理评估结果
+
+```txt
+可以通过 predict.log 文件查看结果; 推理输出文件为 pred.npy
 ```
