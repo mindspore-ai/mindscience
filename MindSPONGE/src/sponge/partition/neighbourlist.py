@@ -278,7 +278,8 @@ class NeighbourList(Cell):
         return self
 
     def update(self, coordinate: Tensor, pbc_box: Tensor = None) -> Tuple[Tensor, Tensor]:
-        r"""update neighbour list
+        r"""
+        update neighbour list.
 
         Args:
             coordinate (Tensor):    Tensor of shape :math:`(B, A, D)`. Data type is float.
@@ -287,10 +288,11 @@ class NeighbourList(Cell):
                                     Size of PBC box.
 
         Returns:
-            neigh_idx (Tensor):     Tensor of shape :math:`(B, A, N)`. Data type is int.
-                                    Index of neighbouring atoms of each atoms in system.
-            neigh_mask (Tensor):    Tensor of shape :math:`(B, A, N)`. Data type is bool.
-                                    Mask for neighbour list `neigh_idx`.
+            neigh_idx (Tensor), Tensor of shape :math:`(B, A, N)`. Data type is int.
+            Index of neighbouring atoms of each atoms in system.
+
+            neigh_mask (Tensor), Tensor of shape :math:`(B, A, N)`. Data type is bool.
+            Mask for neighbour list `neigh_idx`.
 
         Note:
             - B:  Batchsize, i.e. number of walkers of the simulation.
@@ -317,7 +319,8 @@ class NeighbourList(Cell):
         return neighbours, neighbour_mask
 
     def calculate(self, coordinate: Tensor, pbc_box: Tensor = None) -> Tuple[Tensor, Tensor]:
-        r"""calculate neighbour list
+        r"""
+        calculate neighbour list.
 
         Args:
             coordinate (Tensor):    Tensor of shape :math:`(B, A, D)`. Data type is float.
@@ -326,10 +329,11 @@ class NeighbourList(Cell):
                                     Size of PBC box.
 
         Returns:
-            neigh_idx (Tensor):     Tensor of shape :math:`(B, A, N)`. Data type is int.
-                                    Index of neighbouring atoms of each atoms in system.
-            neigh_mask (Tensor):    Tensor of shape :math:`(B, A, N)`. Data type is bool.
-                                    Mask for neighbour list `neigh_idx`.
+            neigh_idx (Tensor), Tensor of shape :math:`(B, A, N)`. Data type is int.
+            Index of neighbouring atoms of each atoms in system.
+
+            neigh_mask (Tensor), Tensor of shape :math:`(B, A, N)`. Data type is bool.
+            Mask for neighbour list `neigh_idx`.
 
         Note:
             - B:  Batchsize, i.e. number of walkers of the simulation.
@@ -351,13 +355,15 @@ class NeighbourList(Cell):
         return index, mask
 
     def get_neighbour_list(self) -> Tuple[Tensor, Tensor]:
-        r"""get neighbour list
+        r"""
+        get neighbour list.
 
         Returns:
-            neigh_idx (Tensor):     Tensor of shape :math:`(B, A, N)`. Data type is int.
-                                    Index of neighbouring atoms of each atoms in system.
-            neigh_mask (Tensor):    Tensor of shape :math:`(B, A, N)`. Data type is bool.
-                                    Mask for neighbour list `neigh_idx`.
+            neigh_idx (Tensor), Tensor of shape :math:`(B, A, N)`. Data type is int.
+            Index of neighbouring atoms of each atoms in system.
+
+            neigh_mask (Tensor):, Tensor of shape :math:`(B, A, N)`. Data type is bool.
+            Mask for neighbour list `neigh_idx`.
 
         Note:
             - B:  Batchsize, i.e. number of walkers of the simulation.

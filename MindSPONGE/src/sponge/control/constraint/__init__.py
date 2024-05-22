@@ -37,10 +37,8 @@ def get_constraint(constraint: Union[str, Constraint, List[Constraint]], system:
     Get constraint object.
 
     Args:
-        constraint (Union[str, :class:`sponge.control.Constraint`,
-          List[:class:`sponge.control.Constraint`]]):
-          constraint name,
-         `Constraint` object or list of `Constraint` objects.
+        constraint (Union[str, :class:`sponge.control.Constraint`, List[:class:`sponge.control.Constraint`]]):
+            constraint name, `Constraint` object or list of `Constraint` objects.
         system (:class:`sponge.system.Molecule`): Simulation system.
 
     Returns:

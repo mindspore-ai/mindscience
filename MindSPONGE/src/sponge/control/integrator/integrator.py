@@ -66,15 +66,14 @@ class Integrator(Controller):
     the atomic coordinates and velocities during the simulation process.
 
     Args:
-        system ( :class:`sponge.system.Molecule`): Simulation system.
-        thermostat ( :class:`sponge.control.Thermostat`, optional): Thermostat
-          for temperature coupling.
-          Default: ``None``.
-        barostat ( :class:`sponge.control.Barostat`, optional): Barostat for pressure coupling.
-          Default: ``None``.
-        constraint (Union[ :class:`sponge.control.Constraint`,
-          List[ :class:`sponge.control.Constraint`]], optional):
-          Constraint algorithm. Default: ``None``.
+        system (:class:`sponge.system.Molecule`): Simulation system.
+        thermostat (:class:`sponge.control.Thermostat`, optional): Thermostat
+            for temperature coupling.
+            Default: ``None``.
+        barostat (:class:`sponge.control.Barostat`, optional): Barostat for pressure coupling.
+            Default: ``None``.
+        constraint (Union[:class:`sponge.control.Constraint`, List[:class:`sponge.control.Constraint`]], optional):
+            Constraint algorithm. Default: ``None``.
 
     Inputs:
         - **coordinate** (Tensor) - Coordinate. Tensor of shape :math:`(B, A, D)`.
@@ -236,10 +235,10 @@ class Integrator(Controller):
         Set constraint algorithm for integrator.
 
         Args:
-            constraint (Union[:class:`sponge.control.Constraint`,
-              List[:class:`sponge.control.Constraint`]]):  Constraint algorithm.
-            num_constraints (int, optional):  Number of constraints.
-              Default: ``0``.
+            constraint (Union[:class:`sponge.control.Constraint`, List[:class:`sponge.control.Constraint`]]):
+                Constraint algorithm.
+            num_constraints (int, optional): Number of constraints.
+                Default: ``0``.
         """
         self.num_constraints = num_constraints
         if self.constraint is not None:
