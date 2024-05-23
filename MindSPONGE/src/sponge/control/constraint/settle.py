@@ -83,7 +83,7 @@ class SETTLE(Constraint):
           of shape :math:`(C, 3)` or :math:`(B, C, 3)`, and the data type is int.
           If ``None`` is given, the `settle_index` in `system` will be used. Default: ``None``.
         distance (Union[Tensor, ndarray, List[float]], optional): Array of settle distance
-          of shape :math:(C, 2) or :math:`(B, C, 2)`, and the type is float.
+          of shape :math:`(C, 2)` or :math:`(B, C, 2)`, and the type is float.
           If ``None`` is given, the `settle_dis` in `system` will be used. Default: ``None``.
 
     Inputs:
@@ -220,7 +220,7 @@ class SETTLE(Constraint):
             vec2 (Tensor): The target vector.
 
         Returns:
-            q (Tensor): The transform quaternion.
+            Tensor, the transform quaternion.
         """
         # (B, G, D)
         cross_vector = msnp.cross(vec1, vec2, axisc=-1)
@@ -243,7 +243,7 @@ class SETTLE(Constraint):
 
     def get_inverse(self, quater: Tensor):
         r"""
-         Get the inverse operation of a given quaternion.
+        Get the inverse operation of a given quaternion.
 
         Args:
             quater (Tensor): The given quaternion.
@@ -260,9 +260,9 @@ class SETTLE(Constraint):
 
         Args:
             tensor_1 (Tensor): The first quaternion,
-            if the size of last dimension is 3, it will be padded to 4 auto.
+                if the size of last dimension is 3, it will be padded to 4 auto.
             tensor_2 (Tensor): The second quaternion,
-            if the size of last dimension is 3, it will be padded to 4 auto.
+                if the size of last dimension is 3, it will be padded to 4 auto.
 
         Returns:
             Tensor, the quaternion product of tensor_1 and tensor_2.

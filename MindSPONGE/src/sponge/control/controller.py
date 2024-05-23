@@ -245,7 +245,7 @@ class Controller(Cell):
 
         Args:
             kinetics (Tensor): Kinetics. Tensor shape is :math:`(B, D)`.
-            Data type is float. Default: ``None``.
+                Data type is float. Default: ``None``.
 
         Returns:
             Tensor, temperature. Tensor shape is :math:`(B)`. Data type is float.

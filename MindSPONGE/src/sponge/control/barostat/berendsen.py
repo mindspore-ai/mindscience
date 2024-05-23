@@ -47,17 +47,17 @@ class BerendsenBarostat(Barostat):
     Args:
         system (:class:`sponge.system.Molecule`): Simulation system.
         pressure (float, optional): Reference pressure :math:`P_{ref}`
-        in unit :math:`bar` for pressure coupling.
-          Default: ``1.0``.
+            in unit :math:`bar` for pressure coupling.
+            Default: ``1.0``.
         anisotropic (bool, optional): Whether to perform anisotropic pressure control.
-           Default: ``False``.
+            Default: ``False``.
         control_step (int, optional): Step interval for controller execution. Default: ``1``.
         compressibility (float, optional): Isothermal compressibility :math:`\beta`
-          in unit :math:`bar^{-1}`.
-          Default: ``4.6e-5``.
+            in unit :math:`bar^{-1}`.
+            Default: ``4.6e-5``.
         time_constant (float, optional): Time constant :math:`\tau_p` in
-          unit picosecond for pressure coupling.
-          Default: ``1``.
+            unit picosecond for pressure coupling.
+            Default: ``1``.
 
     Inputs:
         - **coordinate** (Tensor) - Coordinate. Tensor of shape :math:`(B, A, D)`.
@@ -120,7 +120,7 @@ class BerendsenBarostat(Barostat):
         Set simulation time step.
 
         Args:
-            - **dt** (float) - Simulation time step.
+            dt (float): Simulation time step.
 
         Returns:
             :class:`sponge.control.BerendsenBarostat`, current object of :class:`sponge.control.BerendsenBarostat`.
