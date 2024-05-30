@@ -88,7 +88,7 @@ def idft_2d_ms(x_re, x_im, shape, mode, dim=(-1)):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_dft1d():
     """
@@ -107,7 +107,7 @@ def test_dft1d():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_dft2d():
     """

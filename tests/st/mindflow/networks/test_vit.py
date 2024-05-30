@@ -22,15 +22,15 @@ from mindspore import dtype as mstype
 from mindflow.cell import ViT
 
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.level1
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_vit_output():
     """
     Feature: Test ViT network in platform gpu and ascend.
     Description: None.
     Expectation: Success or throw AssertionError.
+    Need to adaptive 910B
     """
     context.set_context(mode=context.GRAPH_MODE)
     input_tensor = Tensor(np.ones((32, 3, 192, 384)), mstype.float32)

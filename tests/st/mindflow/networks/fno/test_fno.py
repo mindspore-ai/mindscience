@@ -25,15 +25,15 @@ from mindflow.cell.neural_operators.dft import SpectralConv1dDft, SpectralConv2d
 RTOL = 0.001
 set_seed(123456)
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.level1
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_fno_output():
     """
     Feature: Test FNO1D, FNO2D and FNO3D network in platform gpu and ascend.
     Description: None.
     Expectation: Success or throw AssertionError.
+    Need to adaptive 910B
     """
     context.set_context(mode=context.GRAPH_MODE)
     model1d = FNO1D(
@@ -56,15 +56,15 @@ def test_fno_output():
     assert output3d.dtype == mstype.float32
 
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.level1
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_spectralconvdft_output():
     """
     Feature: Test SpectralConv1dDft, SpectralConv2dDft and SpectralConv3dDft network in platform gpu and ascend.
     Description: None.
     Expectation: Success or throw AssertionError.
+    Need to adaptive 910B
     """
     context.set_context(mode=context.GRAPH_MODE)
     model1d = SpectralConv1dDft(in_channels=2, out_channels=2, n_modes=[2], resolutions=[6])
