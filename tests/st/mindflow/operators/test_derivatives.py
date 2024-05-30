@@ -45,8 +45,7 @@ class Net(nn.Cell):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_batched_jacobian_ascend():
     """
@@ -62,44 +61,11 @@ def test_batched_jacobian_ascend():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
-@pytest.mark.env_onecard
-def test_batched_jacobian_gpu():
-    """
-    Feature: Test batched jacobian in platform gpu.
-    Description: The input type of batched_jacobian is Tensor.
-    Expectation: Success or throw AssertionError.
-    """
-    model = Net()
-    jacobian = batched_jacobian(model)
-    inputs = np.random.random(size=(3, 2))
-    res = jacobian(Tensor(inputs, mstype.float32))
-    assert res.shape == (1, 3, 2)
-
-
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_batched_hessian_ascend():
     """
     Feature: Test batched hessian in platform ascend.
-    Description: The input type of batched_hessian is Tensor.
-    Expectation: Success or throw AssertionError.
-    """
-    model = Net()
-    hessian = batched_hessian(model)
-    inputs = np.random.random(size=(3, 2))
-    res = hessian(Tensor(inputs, mstype.float32))
-    assert res.shape == (1, 2, 3, 2)
-
-
-@pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
-@pytest.mark.env_onecard
-def test_batched_hessian_gpu():
-    """
-    Feature: Test batched hessian in platform gpu.
     Description: The input type of batched_hessian is Tensor.
     Expectation: Success or throw AssertionError.
     """

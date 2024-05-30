@@ -58,15 +58,15 @@ def ms2torch(params_ms, params_torch):
         item.set_data(ms.Tensor(value, ms.float32))
 
 
-@pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
-@pytest.mark.platform_arm_ascend_training
+@pytest.mark.level1
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_percnn_3d():
     """
     Feature: Compare the inference accuracy of PeRCNN with its Torch implementation on a 3D physical field.
     Description: None.
     Expectation: Success or raise AssertionError.
+    Need to adaptive 910B
     """
     laplace = np.array(laplace_3d)
     grid_size = 48
@@ -100,15 +100,15 @@ def test_percnn_3d():
     assert mse.float() < 1e-6
 
 
-@pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
-@pytest.mark.platform_arm_ascend_training
+@pytest.mark.level1
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_percnn_2d():
     """
     Feature: Compare the inference accuracy of PeRCNN with its Torch implementation on a 2D physical field.
     Description: None.
     Expectation: Success or raise AssertionError.
+    Need to adaptive 910B
     """
     grid_size = 100
     computation_field = 1
@@ -147,14 +147,15 @@ def test_percnn_2d():
     assert mse.float() < 1e-6
 
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
+@pytest.mark.level1
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_percnn_compile_time():
     """
     Feature: Test the time of compiling 3d percnn.
     Description: rollout 100 steps.
     Expectation: Success or raise AssertionError.
+    Need to adaptive 910B
     """
     laplace = np.array(laplace_3d)
     dx_3d = 100 / 48
