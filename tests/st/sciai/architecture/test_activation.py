@@ -22,10 +22,8 @@ import pytest
 from sciai.architecture import Swish, SReLU, get_activation, AdaptActivation
 
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.level1
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_swish_should_success_when_right(mode):
@@ -33,6 +31,7 @@ def test_comb_swish_should_success_when_right(mode):
     Feature: ALL TO ALL
     Description:  test cases for
     Expectation: pass
+    Need to adaptive 910B
     """
     context.set_context(mode=mode)
     swish = Swish()
@@ -43,10 +42,8 @@ def test_comb_swish_should_success_when_right(mode):
     assert mnp.isclose(y, expected, equal_nan=True).all()
 
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.level1
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_srelu_should_success_when_right(mode):
@@ -54,6 +51,7 @@ def test_comb_srelu_should_success_when_right(mode):
     Feature: ALL TO ALL
     Description:  test cases for
     Expectation: pass
+    Need to adaptive 910B
     """
     context.set_context(mode=mode)
     srelu = SReLU()
@@ -65,9 +63,7 @@ def test_comb_srelu_should_success_when_right(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_get_activation_should_success_when_right(mode):
@@ -87,10 +83,8 @@ def test_comb_get_activation_should_success_when_right(mode):
         get_activation("abc")
 
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.level1
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_adaptive_activation_should_success_when_right(mode):
@@ -98,6 +92,7 @@ def test_comb_adaptive_activation_should_success_when_right(mode):
     Feature: ALL TO ALL
     Description:  test cases for
     Expectation: pass
+    Need to adaptive 910B
     """
     context.set_context(mode=mode)
     a = ms.Tensor(0.1, ms.float32)

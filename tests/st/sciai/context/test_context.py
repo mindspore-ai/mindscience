@@ -22,9 +22,7 @@ from sciai.context import set_context_auto
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_set_context_auto_should_mode_right_when_right(mode):
@@ -38,9 +36,7 @@ def test_comb_set_context_auto_should_mode_right_when_right(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_set_context_auto_should_raise_value_error_when_card_negative(mode):

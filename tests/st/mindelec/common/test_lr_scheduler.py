@@ -21,8 +21,7 @@ from mindelec.common import LearningRate, get_poly_lr
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_learning_rate():
     """test LearningRate"""
@@ -33,8 +32,7 @@ def test_learning_rate():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_learning_rate_power_value_error():
     context.set_context(mode=context.GRAPH_MODE)
@@ -43,8 +41,7 @@ def test_learning_rate_power_value_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_learning_rate_warmup_steps_type_error():
     """test TypeError cases"""
@@ -65,8 +62,7 @@ def test_learning_rate_warmup_steps_type_error():
         LearningRate(0.1, 0.001, 1, -10, 0.5)
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_get_poly_lr():
     """test get_poly_lr"""
@@ -85,8 +81,7 @@ def test_get_poly_lr():
         get_poly_lr(100, 0.001, 0.1, 0.0001, 1000, 10000, -0.5)
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_get_poly_lr1():
     """test get_poly_lr"""

@@ -28,7 +28,6 @@ from tests.st.sciai.test_utils.test_base import stub_stdout, clear_stub
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_train_cell_should_print_double_loss_with_right_names(mode):
@@ -51,9 +50,7 @@ def test_comb_train_cell_should_print_double_loss_with_right_names(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_print_double_loss_with_wrong_names(mode):
@@ -76,7 +73,6 @@ def test_comb_should_print_double_loss_with_wrong_names(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_print_double_loss_with_default_names(mode):
@@ -99,9 +95,7 @@ def test_comb_should_print_double_loss_with_default_names(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_print_single_loss_with_right_name_str(mode):
@@ -124,7 +118,6 @@ def test_comb_should_print_single_loss_with_right_name_str(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_print_single_loss_with_wrong_name_tuple(mode):
@@ -147,7 +140,6 @@ def test_comb_should_print_single_loss_with_wrong_name_tuple(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_print_single_loss_with_default_name(mode):
@@ -170,7 +162,6 @@ def test_comb_should_print_single_loss_with_default_name(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_print_loss_when_loss_is_number(mode):
@@ -193,9 +184,7 @@ def test_comb_should_print_loss_when_loss_is_number(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_print_ckpt_saved_when_ckpt_interval_gt_0(mode):
@@ -262,7 +251,6 @@ def test_comb_should_print_ckpt_saved_when_batch_num_not_1(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_train_step_cell_should_return_multi_loss_when_multi_loss(mode):

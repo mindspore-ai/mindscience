@@ -51,8 +51,7 @@ class Net1(nn.Cell):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_grad_error():
     """test grad error"""
@@ -95,8 +94,7 @@ def test_grad_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_grad():
     """test grad"""
@@ -110,8 +108,7 @@ def test_grad():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_grad_two_input():
     """test_grad_two_input"""
@@ -127,8 +124,7 @@ def test_grad_two_input():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_second_order_grad_error():
     """test_second_order_grad_error"""
@@ -171,8 +167,7 @@ def test_second_order_grad_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_second_order_grad():
     """test_second_order_grad"""
@@ -185,8 +180,7 @@ def test_second_order_grad():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_class_jacobian_type_error():
     context.set_context(mode=context.GRAPH_MODE)
@@ -195,8 +189,7 @@ def test_class_jacobian_type_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_class_jacobian():
     """test Jacobian"""
@@ -217,8 +210,7 @@ def test_class_jacobian():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_class_hessian_type_error():
     context.set_context(mode=context.GRAPH_MODE)
@@ -227,8 +219,7 @@ def test_class_hessian_type_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_class_hessian():
     """test Hessian"""

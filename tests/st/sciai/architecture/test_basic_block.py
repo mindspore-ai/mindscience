@@ -25,9 +25,7 @@ from tests.st.sciai.test_utils.basic_nets import Net2In3Out, Net2In2Out
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_mlp_should_success_when_right(mode):
@@ -51,9 +49,7 @@ def test_comb_mlp_should_success_when_right(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_mlpaaf_should_success_when_layerwise(mode):
@@ -78,9 +74,7 @@ def test_comb_mlpaaf_should_success_when_layerwise(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_mlpaaf_should_success_when_global(mode):
@@ -105,9 +99,7 @@ def test_comb_mlpaaf_should_success_when_global(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_mlpshortcut_should_success_when_right(mode):
@@ -129,9 +121,7 @@ def test_comb_mlpshortcut_should_success_when_right(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_mse_should_success_when_right(mode):
@@ -150,9 +140,7 @@ def test_comb_mse_should_success_when_right(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_sse_should_success_when_right(mode):
@@ -171,9 +159,7 @@ def test_comb_sse_should_success_when_right(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_first_out_net_should_success_when_right(mode):
@@ -192,9 +178,7 @@ def test_comb_first_out_net_should_success_when_right(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_no_args_net_should_success_when_right(mode):
@@ -212,10 +196,8 @@ def test_comb_no_args_net_should_success_when_right(mode):
     assert float(res1) == pytest.approx(18.0, 0.000001)
 
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.level1
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_normalize_should_success_when_right(mode):
@@ -223,6 +205,7 @@ def test_comb_normalize_should_success_when_right(mode):
     Feature: ALL TO ALL
     Description:  test cases for
     Expectation: pass
+    Need to adaptive 910B
     """
     context.set_context(mode=mode)
     x = ops.ones((3, 2), ms.float32)

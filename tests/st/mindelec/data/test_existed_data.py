@@ -19,24 +19,21 @@ from mindelec.data import ExistedDataset, ExistedDataConfig
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_data_value_error():
     with pytest.raises(ValueError):
         ExistedDataset()
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_data_cnfig_type_error():
     with pytest.raises(TypeError):
         ExistedDataset(data_config=1)
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_config():
     """test various errors"""

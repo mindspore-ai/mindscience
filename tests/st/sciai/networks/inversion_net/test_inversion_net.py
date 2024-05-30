@@ -35,7 +35,6 @@ copy_dataset(os.path.dirname(os.path.abspath(__file__)))
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_run_with_full_command(mode):
@@ -97,7 +96,6 @@ def test_comb_should_run_with_full_command(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_loss_small_enough_when_epoch_10(mode):
@@ -128,7 +126,6 @@ def test_comb_should_loss_small_enough_when_epoch_10(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_loss_small_enough_when_load_ckpt(mode):
@@ -162,7 +159,6 @@ def test_comb_should_loss_small_enough_when_load_ckpt(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_error_small_enough_when_val(mode):
@@ -196,7 +192,6 @@ def test_comb_should_error_small_enough_when_val(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_auto_model(mode):

@@ -106,8 +106,7 @@ def check_cuboid_mesh(cuboid_config):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_cuboid_random():
     """test_check_cuboid_random"""
@@ -115,8 +114,7 @@ def test_check_cuboid_random():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_cuboid_random_nodomain_error():
     """test_check_cuboid_random"""
@@ -124,8 +122,7 @@ def test_check_cuboid_random_nodomain_error():
         check_cuboid_random(cuboid_random2)
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_cuboid_mesh():
     """test_check_cuboid_mesh"""
@@ -133,8 +130,7 @@ def test_check_cuboid_mesh():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_cuboid_mesh_meshsize_error():
     """test_check_cuboid_mesh"""

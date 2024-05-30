@@ -32,8 +32,7 @@ class Net(nn.Cell):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_srelu():
     """test srelu activation"""
@@ -55,8 +54,7 @@ class Net1(nn.Cell):
         return self.sin(x)
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_sin():
     """test sin activation"""
@@ -68,8 +66,7 @@ def test_sin():
     print(output.asnumpy())
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_activation_type_error():
     context.set_context(mode=context.GRAPH_MODE)
@@ -78,8 +75,7 @@ def test_activation_type_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_get_activation():
     context.set_context(mode=context.GRAPH_MODE)

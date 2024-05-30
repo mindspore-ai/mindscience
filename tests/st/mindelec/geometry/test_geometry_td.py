@@ -251,8 +251,7 @@ def check_rect_with_time_set_config(config):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_rect_with_time_init_config():
     """test_check_rect_with_time_init_config"""
@@ -263,8 +262,7 @@ def test_check_rect_with_time_init_config():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_rect_with_time_init_config_error():
     """test_check_rect_with_time_init_config"""
@@ -272,8 +270,7 @@ def test_check_rect_with_time_init_config_error():
         check_rect_with_time_init_config(rectangle_mesh, time_mesh3)
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_rect_with_time_set_config():
     """test_check_rect_with_time_set_config"""
@@ -284,8 +281,7 @@ def test_check_rect_with_time_set_config():
     check_rect_with_time_set_config(reset_geom_time_config4)
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_rect_with_time_set_config2():
     """test_check_rect_with_time_set_config"""

@@ -20,8 +20,7 @@ from mindelec.vision import plot_s11, plot_eh
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_plane_plot_s11():
     """test plane plot S11"""
@@ -32,8 +31,7 @@ def test_plane_plot_s11():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_plane_plot_eh():
     """test plane plot eh"""

@@ -36,9 +36,7 @@ copy_dataset(os.path.dirname(os.path.abspath(__file__)))
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_comb_should_run_with_full_command():
     """
@@ -78,10 +76,8 @@ def test_comb_should_run_with_full_command():
     clear_stub(stderr, stdout)
 
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.level1
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_loss_and_error_small_enough_when_load_ckpt(mode):
@@ -89,6 +85,7 @@ def test_comb_should_loss_and_error_small_enough_when_load_ckpt(mode):
     Feature: ALL TO ALL
     Description:  test cases for
     Expectation: pass
+    Need to adaptive 910B
     """
     stderr, stdout = stub_stdout()
     with open("./config_test.yaml") as f:
@@ -110,10 +107,8 @@ def test_comb_should_loss_and_error_small_enough_when_load_ckpt(mode):
     clear_stub(stderr, stdout)
 
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.level1
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_m1_m3_adaptive_not_vary_and_loss_small_enough_when_epoch_21(mode):
@@ -121,6 +116,7 @@ def test_comb_should_m1_m3_adaptive_not_vary_and_loss_small_enough_when_epoch_21
     Feature: ALL TO ALL
     Description:  test cases for
     Expectation: pass
+    Need to adaptive 910B
     """
     stderr, stdout = stub_stdout()
     with open("./config_test.yaml") as f:
@@ -145,10 +141,8 @@ def test_comb_should_m1_m3_adaptive_not_vary_and_loss_small_enough_when_epoch_21
     clear_stub(stderr, stdout)
 
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.level1
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_m2_m4_adaptive_vary_and_loss_small_enough_when_epoch_21(mode):
@@ -156,6 +150,7 @@ def test_comb_should_m2_m4_adaptive_vary_and_loss_small_enough_when_epoch_21(mod
     Feature: ALL TO ALL
     Description:  test cases for
     Expectation: pass
+    Need to adaptive 910B
     """
     stderr, stdout = stub_stdout()
     with open("./config_test.yaml") as f:
@@ -182,9 +177,7 @@ def test_comb_should_m2_m4_adaptive_vary_and_loss_small_enough_when_epoch_21(mod
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_error_small_enough_when_val(mode):
@@ -208,9 +201,7 @@ def test_comb_should_error_small_enough_when_val(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_comb_should_error_small_enough_with_full_command_val():
     """
