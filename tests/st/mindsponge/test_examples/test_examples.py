@@ -35,9 +35,7 @@ set_seed(123)
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_attention():
     """
@@ -56,9 +54,7 @@ def test_attention():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_globalattention():
     """
@@ -77,9 +73,7 @@ def test_globalattention():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_invariantpointattention():
     """
@@ -103,9 +97,7 @@ def test_invariantpointattention():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_msarowattentionwithpairbias():
     """
@@ -126,9 +118,7 @@ def test_msarowattentionwithpairbias():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_msacolumnattention():
     """
@@ -147,9 +137,7 @@ def test_msacolumnattention():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_msacolumnglobalattention():
     """
@@ -168,9 +156,7 @@ def test_msacolumnglobalattention():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_transition():
     """
@@ -186,9 +172,7 @@ def test_transition():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_triangleattention():
     """
@@ -206,9 +190,7 @@ def test_triangleattention():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_trianglemultiplication():
     """
@@ -226,9 +208,7 @@ def test_trianglemultiplication():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_outerproductmean():
     """
@@ -247,8 +227,7 @@ def test_outerproductmean():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_get_aligned_seq():
     """
