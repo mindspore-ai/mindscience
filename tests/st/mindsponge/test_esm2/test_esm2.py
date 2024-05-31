@@ -19,7 +19,7 @@ from mindsponge.pipeline import PipeLine
 
 
 @pytest.mark.level0
-@platfrom_arm_ascend910b_training
+@pytest.mark.platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_esm2():
     """

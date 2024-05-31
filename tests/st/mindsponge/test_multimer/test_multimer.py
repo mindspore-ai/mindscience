@@ -20,7 +20,7 @@ from mindsponge.common.config_load import load_config
 
 
 @pytest.mark.level0
-@platfrom_arm_ascend910b_training
+@pytest.mark.platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_multimer_seq_256():
     """
