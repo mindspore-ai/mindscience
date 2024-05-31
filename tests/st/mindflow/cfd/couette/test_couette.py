@@ -80,7 +80,7 @@ def train():
 
 
 @pytest.mark.level0
-@platfrom_arm_ascend910b_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_couette_gpu():
     """

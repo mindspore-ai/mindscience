@@ -81,15 +81,14 @@ def train():
     return cur_loss.asnumpy(), l2_error
 
 
-@pytest.mark.level1
-@platfrom_arm_ascend910b_training
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_poisson_ring():
     """
     Feature: poisson ring model test
     Description: None.
     Expectation: Success or throw error when l2_error is larger than 0.5 or train_loss is larger than 0.2
-    Need to adaptive 910B
     """
     train_loss, l2_error = train()
     assert train_loss < 0.2

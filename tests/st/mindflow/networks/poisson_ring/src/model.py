@@ -35,8 +35,9 @@ class Poisson2D(Poisson):
         ``Ascend`` ``GPU``
     """
 
-    def __init__(self, model, loss_fn=nn.MSELoss()):
-        super(Poisson2D, self).__init__(model, loss_fn=loss_fn)
+    def __init__(self, model):
+        super(Poisson2D, self).__init__(model)
+        self.loss_fn = nn.MSELoss()
         self.bc_outer_nodes = sympy_to_mindspore(self.bc_outer(), self.in_vars, self.out_vars)
         self.bc_inner_nodes = sympy_to_mindspore(self.bc_inner(), self.in_vars, self.out_vars)
 
