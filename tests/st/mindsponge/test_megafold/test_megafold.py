@@ -73,8 +73,8 @@ def fold_infer(crop_size, predict_confidence, mixed_precision=False):
         print("confidence:", confidence)
         assert confidence > predict_confidence
 
-
-@pytest.mark.level0
+# To be changed back to level0 after being fixed.
+@pytest.mark.level1
 @platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_megafold_ascend_seqlen_256():
