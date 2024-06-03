@@ -87,14 +87,15 @@ def idft_2d_ms(x_re, x_im, shape, mode, dim=(-1)):
     return x_ms.asnumpy()
 
 
-@pytest.mark.level0
-@platfrom_arm_ascend910b_training
+@pytest.mark.level1
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_dft1d():
     """
     Feature: Test dft1d in platform gpu and ascend.
     Description: None.
     Expectation: Success or throw AssertionError.
+    Torch problem, need to adaptive 910B
     """
     x = np.random.randn(1, 6, 8, 2)
     x_re_torch1d, x_im_torch1d = dft_1d_torch(x, dim=-2)
@@ -106,14 +107,15 @@ def test_dft1d():
     assert np.sum(x_torch1d - x_ms1d) < 0.001
 
 
-@pytest.mark.level0
-@platfrom_arm_ascend910b_training
+@pytest.mark.level1
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_dft2d():
     """
     Feature: Test dft2d in platform gpu and ascend.
     Description: None.
     Expectation: Success or throw AssertionError.
+    Torch problem, need to adaptive 910B
     """
     x = np.random.randn(1, 6, 8, 2)
     x_re_torch2d, x_im_torch2d = dft_2d_torch(x, dim=(-3, -2))

@@ -59,7 +59,7 @@ def ms2torch(params_ms, params_torch):
 
 
 @pytest.mark.level1
-@platfrom_arm_ascend910b_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_percnn_3d():
     """
@@ -101,7 +101,7 @@ def test_percnn_3d():
 
 
 @pytest.mark.level1
-@platfrom_arm_ascend910b_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_percnn_2d():
     """
@@ -148,7 +148,7 @@ def test_percnn_2d():
 
 
 @pytest.mark.level1
-@platfrom_arm_ascend910b_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_percnn_compile_time():
     """

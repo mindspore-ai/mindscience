@@ -65,9 +65,9 @@ def calculate_l2_error(model, inputs, label, batch_size):
 
 class Net(nn.Cell):
     """MLP"""
-    def __init__(self, in_channels=2, hidden_channels=128, out_channels=1, act=nn.Tanh()):
+    def __init__(self, in_channels=2, hidden_channels=128, out_channels=1):
         super().__init__()
-        self.act = act
+        self.act = nn.Tanh()
         self.layers = nn.SequentialCell(
             nn.Dense(in_channels, hidden_channels, activation=self.act),
             nn.Dense(hidden_channels, hidden_channels, activation=self.act),
@@ -81,7 +81,7 @@ class Net(nn.Cell):
 
 
 @pytest.mark.level0
-@platfrom_arm_ascend910b_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_mindflow_burgers_pinns():
     """

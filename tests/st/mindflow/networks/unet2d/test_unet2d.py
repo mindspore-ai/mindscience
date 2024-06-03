@@ -64,15 +64,14 @@ def inference_alignment(base_channels):
     return output_torch, output_mindspore
 
 
-@pytest.mark.level1
-@platfrom_arm_ascend910b_training
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_unet2d_precision():
     """
     Feature: Test UNet2D network precision on platform cpu.
     Description: None.
     Expectation: Success or throw AssertionError.
-    Need to adaptive 910B
     """
     ms.set_context(mode=ms.GRAPH_MODE)
     for base_channels in [4, 8, 16, 32, 64]:
@@ -80,15 +79,14 @@ def test_unet2d_precision():
         assert np.average(abs(abs(output_mindspore) - abs(output_torch))) / np.average(abs(output_torch)) < RTOL
 
 
-@pytest.mark.level1
-@platfrom_arm_ascend910b_training
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_unet2d_shape():
     """
     Feature: Test UNet2D network output shape on platform cpu.
     Description: None.
     Expectation: Success or throw AssertionError.
-    Need to adaptive 910B
     """
     ms.set_context(mode=ms.GRAPH_MODE)
     input_tensor = Tensor(np.ones((2, 128, 128, 3)), mstype.float32)

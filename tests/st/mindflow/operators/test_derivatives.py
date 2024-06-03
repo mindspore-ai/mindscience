@@ -45,7 +45,7 @@ class Net(nn.Cell):
 
 
 @pytest.mark.level0
-@platfrom_arm_ascend910b_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_batched_jacobian_ascend():
     """
@@ -61,7 +61,7 @@ def test_batched_jacobian_ascend():
 
 
 @pytest.mark.level0
-@platfrom_arm_ascend910b_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_batched_hessian_ascend():
     """
