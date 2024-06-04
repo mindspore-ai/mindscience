@@ -1,0 +1,30 @@
+model:
+  name: SNO3D_time
+  in_channels: 10
+  out_channels: 1
+  modes: 15
+  sno_layers: 5
+  hidden_channels: 64
+  kernel_size: 7
+  extrapolations: 40
+  input_timestep: 10
+data:
+  name: "sno3d"
+  root_dir: "./dataset"
+  batch_size: 5
+  resolution: 64
+  input_timestep: 10
+  output_timestep: 40
+  poly_type: "Legendre"
+optimizer:
+  learning_rate: 0.0006
+  warmup_epochs: 1
+  epochs: 120
+  weight_decay: 0.002
+  eps: 2e-5
+summary:
+  root_dir: "./summary"
+  ckpt_dir: "./checkpoints"
+  test_interval: 10
+  save_ckpt_interval: 40
+  test_batch_size: 1
