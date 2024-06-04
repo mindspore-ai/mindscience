@@ -137,7 +137,10 @@ def train(input_args):
         model.set_train(True)
         for _ in range(steps_per_epoch):
             cur_loss = sink_process()
-        print_log(f"epoch: {epoch} train loss: {cur_loss} epoch time: {time.time() - local_time_beg:.2f}s")
+        print_log(
+            f"epoch: {epoch} train loss: {cur_loss:.8f}"\
+            f" epoch time: {time.time() - local_time_beg:.2f}s"\
+            f" step time: {(time.time() - local_time_beg)/steps_per_epoch:.4f}s")
 
         model.set_train(False)
         if epoch % summary_params["save_ckpt_interval"] == 0:
