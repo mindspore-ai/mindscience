@@ -94,7 +94,7 @@ class DataGenerator():
         """generate data in test process"""
         time_steps = [i * self.dt for i in range(1, self.step + 1)]
         init = initgen(mesh_size=self.mesh_size, freq=self.initfreq, boundary=self.boundary)
-        u = np.zeros([self.step + 1] + list(init.shape))
+        u = np.zeros([self.step + 1] + list(init.shape), np.float32)
         u[0, :, :] = init[:, :]
         cur_u = init
         time_steps = [0] + time_steps
@@ -106,7 +106,7 @@ class DataGenerator():
     def _generate_data_train_mode(self):
         """generate data in train process"""
         init = initgen(mesh_size=self.mesh_size, freq=self.initfreq, boundary=self.boundary)
-        u = np.zeros([2] + list(init.shape))
+        u = np.zeros([2] + list(init.shape), np.float32)
         u[0, :, :] = init[:, :]
         time_step = self.step * self.dt
         u[1, :, :] = self.pde.predict(init, time_step)
