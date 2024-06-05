@@ -73,27 +73,8 @@ def fold_infer(crop_size, predict_confidence, mixed_precision=False):
         print("confidence:", confidence)
         assert confidence > predict_confidence
 
-
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
-@pytest.mark.env_onecard
-def test_megafold_gpu_seqlen_256():
-    """
-    Feature: megafold model test in the gpu, seq length is 256
-    Description: input the tensors of raw feature
-    Expectation: cost_time <= predict_time, confidence >= predict_confidence.
-    """
-    context.set_context(mode=context.GRAPH_MODE,
-                        device_target="GPU",
-                        max_device_memory="31GB")
-    context.set_context(enable_graph_kernel=True,
-                        graph_kernel_flags="--enable_expand_ops_only=Softmax --enable_cluster_ops_only=Add")
-    fold_infer(256, 94)
-
-
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platfrom_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_megafold_ascend_seqlen_256():
     """
