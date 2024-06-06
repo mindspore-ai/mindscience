@@ -242,7 +242,6 @@ class FNO(nn.Cell):
         check_param_type(in_channels, "in_channels", data_type=int, exclude_type=bool)
         check_param_type(out_channels, "out_channels", data_type=int, exclude_type=bool)
         check_param_type(hidden_channels, "hidden_channels", data_type=int, exclude_type=bool)
-        check_param_type(projection_channels, "projection_channels", data_type=int, exclude_type=bool)
         check_param_type(n_layers, "n_layers", data_type=int, exclude_type=bool)
         check_param_type(data_format, "data_format", data_type=str, exclude_type=bool)
         check_param_type(positional_embedding, "positional_embedding", data_type=bool, exclude_type=str)
@@ -293,24 +292,32 @@ class FNO(nn.Cell):
                                               resolutions=self.resolutions, act=self.fnoblock_act,
                                               add_residual=self.add_residual, dft_compute_dtype=self.dft_compute_dtype,
                                               fno_compute_dtype=self.fno_compute_dtype))
-        self._projection = nn.SequentialCell([
-            nn.Dense(self.hidden_channels, self.projection_channels, has_bias=False).to_float(self.fno_compute_dtype),
-            self.mlp_act,
-            nn.Dense(self.projection_channels, self.out_channels, has_bias=False).to_float(self.fno_compute_dtype)
-        ])
+        if self.projection_channels:
+            self._projection = nn.SequentialCell([
+                nn.Dense(self.hidden_channels, self.projection_channels, has_bias=False).to_float(
+                    self.fno_compute_dtype),
+                self.mlp_act,
+                nn.Dense(self.projection_channels, self.out_channels, has_bias=False).to_float(self.fno_compute_dtype)
+            ])
+        else:
+            self._projection = nn.SequentialCell(
+                nn.Dense(self.hidden_channels, self.out_channels, has_bias=False).to_float(self.fno_compute_dtype))
 
     def construct(self, x: Tensor):
         """construct"""
         batch_size = x.shape[0]
         grid = self._positional_embedding.repeat(batch_size, axis=0).astype(x.dtype)
-        x = self._concat((x, grid))
-        x = self._lifting(x)
-        if self.data_format == "channels_last":
-            x = ops.transpose(x, input_perm=self._input_perm)
-        x = self._fno_blocks(x)
-        if self.data_format == "channels_last":
+        if self.data_format != "channels_last":
             x = ops.transpose(x, input_perm=self._output_perm)
+        if self.positional_embedding:
+            x = self._concat((x, grid))
+        x = self._lifting(x)
+        x = ops.transpose(x, input_perm=self._input_perm)
+        x = self._fno_blocks(x)
+        x = ops.transpose(x, input_perm=self._output_perm)
         x = self._projection(x)
+        if self.data_format != "channels_last":
+            x = ops.transpose(x, input_perm=self._input_perm)
         return x
 
     def _transpose(self, n_dim):
@@ -518,6 +525,18 @@ class FNO2D(FNO):
             dft_compute_dtype=mstype.float32,
             fno_compute_dtype=mstype.float16
     ):
+        if isinstance(n_modes, int):
+            n_modes = [n_modes, n_modes]
+        if isinstance(resolutions, int):
+            resolutions = [resolutions, resolutions]
+        if len(n_modes) != 2:
+            raise ValueError(
+                "The dimension of n_modes should be equal to 2 when using FNO2D\
+                 but got dimension of n_modes {}".format(len(n_modes)))
+        if len(resolutions) != 2:
+            raise ValueError(
+                "The dimension of resolutions should be equal to 2 when using FNO2D\
+                 but got dimension of resolutions {}".format(len(resolutions)))
         super().__init__(
             in_channels,
             out_channels,
@@ -622,6 +641,18 @@ class FNO3D(FNO):
             dft_compute_dtype=mstype.float32,
             fno_compute_dtype=mstype.float16
     ):
+        if isinstance(n_modes, int):
+            n_modes = [n_modes, n_modes, n_modes]
+        if isinstance(resolutions, int):
+            resolutions = [resolutions, resolutions, resolutions]
+        if len(n_modes) != 3:
+            raise ValueError(
+                "The dimension of n_modes should be equal to 3 when using FNO3D\
+                 but got dimension of n_modes {}".format(len(n_modes)))
+        if len(resolutions) != 3:
+            raise ValueError(
+                "The dimension of resolutions should be equal to 3 when using FNO3D\
+                 but got dimension of resolutions {}".format(len(resolutions)))
         super().__init__(
             in_channels,
             out_channels,
