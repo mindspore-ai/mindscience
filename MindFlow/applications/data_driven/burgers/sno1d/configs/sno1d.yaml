@@ -1,0 +1,29 @@
+model:
+  root_dir: "./"
+  name: SNO1D
+  in_channels: 1
+  out_channels: 1
+  hidden_channels: 128
+  sno_layers: 6
+  modes: 15
+data:
+  name: "burgers1d"
+  root_dir: "./dataset"
+  train:
+    num_samples: 1000
+  test:
+    num_samples: 200
+  batch_size: 50
+  resolution: 1024
+  poly_type: "Chebyshev_t"
+optimizer:
+  learning_rate: 0.0005
+  epochs: 500
+  weight_decay: 0.01
+  grad_clip_norm: 1.
+summary:
+  test_interval: 10
+  summary_dir: "./summary"
+  ckpt_dir: "./checkpoints"
+  test_interval: 10
+  save_ckpt_interval: 100
