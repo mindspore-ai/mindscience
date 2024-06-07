@@ -88,7 +88,7 @@ predict total time: 8.004547119140625 s<br>
 | Optimizer               | Adam                 | Adam                   |
 | Train Loss(MSE)         | 0.02                | 0.02             |
 | Evaluation Error(RMSE)  | 0.02                | 0.02              |
-| Speed(ms/step)          | 20000                   | 50000                 |
+| Speed(ms/epoch)          | 20000                   | 50000                 |
 
 ## Contributor
 

@@ -6,7 +6,7 @@ model:
   modes: 8
   width: 20
   depth: 4
-  extrapolations: 40
+  output_timestep: 40
   input_timestep: 10
 data:
   name: "fno3d"
