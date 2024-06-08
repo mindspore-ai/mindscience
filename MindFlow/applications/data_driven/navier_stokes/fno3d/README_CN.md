@@ -84,7 +84,7 @@ predict total time: 8.004547119140625 s
 | 优化器                  | Adam                 | Adam                   |
 | 训练损失(MSE)           | 0.02                | 0.02             |
 | 验证损失(RMSE)          | 0.02                | 0.02              |
-| 速度(ms/step)           | 20000                   | 50000                |
+| 速度(ms/epoch)           | 20000                   | 50000                |
 
 ## Contributor
 

@@ -60,6 +60,7 @@ def train(input_args):
     data_params = config["data"]
     model_params = config["model"]
     optimizer_params = config["optimizer"]
+    summary_params = config["summary"]
 
     t1 = default_timer()
 
@@ -69,19 +70,19 @@ def train(input_args):
     output_timestep = model_params["output_timestep"]
 
     train_a = Tensor(np.load(os.path.join(
-        data_params["path"], "train_a.npy")), mstype.float32)
+        data_params["root_dir"], "train_a.npy")), mstype.float32)
     train_u = Tensor(np.load(os.path.join(
-        data_params["path"], "train_u.npy")), mstype.float32)
+        data_params["root_dir"], "train_u.npy")), mstype.float32)
     test_a = Tensor(np.load(os.path.join(
-        data_params["path"], "test_a.npy")), mstype.float32)
+        data_params["root_dir"], "test_a.npy")), mstype.float32)
     test_u = Tensor(np.load(os.path.join(
-        data_params["path"], "test_u.npy")), mstype.float32)
+        data_params["root_dir"], "test_u.npy")), mstype.float32)
 
     print_log(train_a.shape, test_a.shape)
 
     train_loader = create_training_dataset(data_params,
                                            shuffle=True)
-
+    steps_per_epoch = train_loader.get_dataset_size()
     t2 = default_timer()
 
     print_log('preprocessing finished, time used:', t2-t1)
@@ -107,9 +108,9 @@ def train(input_args):
         model_params_list.append(f"{k}-{v}")
     model_name = "_".join(model_params_list)
 
-    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["initial_lr"],
-                                        last_epoch=optimizer_params["train_epochs"],
-                                        steps_per_epoch=train_loader.get_dataset_size(),
+    lr = get_warmup_cosine_annealing_lr(lr_init=optimizer_params["learning_rate"],
+                                        last_epoch=optimizer_params["epochs"],
+                                        steps_per_epoch=steps_per_epoch,
                                         warmup_epochs=optimizer_params["warmup_epochs"])
 
     optimizer = nn.optim.Adam(model.trainable_params(),
@@ -191,17 +192,18 @@ def train(input_args):
         print_log("=================================End Evaluation=================================")
 
     sink_process = data_sink(train_step, train_loader, sink_size=100)
-    summary_dir = os.path.join(config["summary_dir"], model_name)
+    summary_dir = os.path.join(summary_params["root_dir"], model_name)
     ckpt_dir = os.path.join(summary_dir, "ckpt")
     if not os.path.exists(ckpt_dir):
         os.makedirs(ckpt_dir)
     model.set_train()
-    for step in range(1, 1 + optimizer_params["train_epochs"]):
+    for step in range(1, 1 + optimizer_params["epochs"]):
         local_time_beg = time.time()
         cur_loss = sink_process()
         print_log(
-            f"epoch: {step} train loss: {cur_loss} epoch time: {time.time() - local_time_beg:.2f}s")
-        if step % 10 == 0:
+            f"epoch: {step} train loss: {cur_loss:.6f} epoch time: {time.time() - local_time_beg:.2f}s"\
+            f" step time: {(time.time() - local_time_beg)/steps_per_epoch:.2f}s")
+        if step % summary_params["test_interval"] == 0:
             print_log(f"loss: {cur_loss.asnumpy():>7f}")
             print_log("step: {}, time elapsed: {}ms".format(
                 step, (time.time() - local_time_beg) * 1000))
