@@ -118,7 +118,7 @@ def main():
     device_ips: Dict[Any, Any] = {}
     try:
         for device_id in device_num_list:
-            ret = os.popen("hccn_tool -i {device_id::d} -ip -g").readlines()
+            ret = os.popen(f"hccn_tool -i {device_id} -ip -g").readlines()
             device_ips[str(device_id)] = ret[0].split(":")[1].replace('\n', '')
     except IndexError:
         print("Failed to call hccn_tool, try to read /etc/hccn.conf instead")

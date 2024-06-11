@@ -97,7 +97,7 @@ def get_1d_sin_cos_pos_embed_from_grid(embed_dim, pos):
     Returns:
         The numpy array with shape of :math:`(M, embed\_dim)`
     """
-    omega = np.arange(embed_dim // 2, dtype=np.float)
+    omega = np.arange(embed_dim // 2, dtype=np.float32)
     omega /= embed_dim / 2.
     omega = 1. / 10000 ** omega  # (D/2,)
 
