@@ -90,8 +90,8 @@ class KNO2D(nn.Cell):
         self.resolution = resolution
         self.enc = nn.Dense(in_channels, channels, has_bias=True)
         self.dec = nn.Dense(channels, in_channels, has_bias=True)
-        self.koopman_layer = SpectralConv2dDft(channels, channels, modes, modes, resolution,
-                                               resolution, compute_dtype=compute_dtype)
+        self.koopman_layer = SpectralConv2dDft(channels, channels, [modes, modes], [resolution, resolution],
+                                               compute_dtype=compute_dtype)
         self.w0 = nn.Conv2d(channels, channels, 1, has_bias=True)
 
     def construct(self, x: Tensor):

@@ -201,7 +201,7 @@ def train(input_args):
         local_time_beg = time.time()
         cur_loss = sink_process()
         print_log(
-            f"epoch: {step} train loss: {cur_loss:.6f} epoch time: {time.time() - local_time_beg:.2f}s"\
+            f"epoch: {step} train loss: {cur_loss.asnumpy():.6f} epoch time: {time.time() - local_time_beg:.2f}s"\
             f" step time: {(time.time() - local_time_beg)/steps_per_epoch:.2f}s")
         if step % summary_params["test_interval"] == 0:
             print_log(f"loss: {cur_loss.asnumpy():>7f}")
