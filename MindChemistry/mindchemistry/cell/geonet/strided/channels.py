@@ -14,7 +14,7 @@
 # ==============================================================================
 """init"""
 
-from mindspore import Tensor, nn, int32
+from mindspore import Tensor, nn, int32, ops
 
 from mindchemistry.e3.utils import Ncon
 
@@ -33,6 +33,8 @@ class MakeWeightedChannels(nn.Cell):
         self.multiplicity_out = multiplicity_out
         self.weight_numel = len(irreps_in) * multiplicity_out
         self.ncon = Ncon([[-1, -3], [-1, -2, -3]])
+        self.axis = 2
 
     def construct(self, edge_attr, weights):
-        return self.ncon([edge_attr, weights.view(-1, self.multiplicity_out, self.num_irreps)[:, :, self.w_index]])
+        return self.ncon([edge_attr, ops.index_select(weights.view(-1, self.multiplicity_out, self.num_irreps),
+                                                      self.axis, self.w_index)])

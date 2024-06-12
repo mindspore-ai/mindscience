@@ -64,9 +64,11 @@ class Contractor(nn.Cell):
             # pylint: disable=W0613
             shared_weights: bool = False,
             sparse_mode: Optional[str] = None,
-            normalization: str = "component"
+            normalization: str = "component",
+            dtype=float32,
     ):
         super().__init__()
+        self.dtype = dtype
 
         in1_var = [1.0 for _ in irreps_in1]
         in2_var = [1.0 for _ in irreps_in2]
@@ -238,10 +240,20 @@ class Contractor(nn.Cell):
             )
 
     def construct(self, features, local_env_per_edge):
-        if self.w3j_is_ij_diagonal:
-            tmp = self.ncon1([features.astype(float16), local_env_per_edge.astype(float16)]).astype(float32)
-            features = self.ncon2([tmp.astype(float16), self.w3j.astype(float16)]).astype(float32)
+        """construct
+        """
+        if self.dtype == float16:
+            if self.w3j_is_ij_diagonal:
+                tmp = self.ncon1([features.astype(float16), local_env_per_edge.astype(float16)]).astype(float32)
+                features = self.ncon2([tmp.astype(float16), self.w3j.astype(float16)]).astype(float32)
+            else:
+                tmp = self.ncon1([features.astype(float16), self.w3j.astype(float16)]).astype(float32)
+                features = self.ncon2([tmp.astype(float16), local_env_per_edge.astype(float16)]).astype(float32)
         else:
-            tmp = self.ncon1([features.astype(float16), self.w3j.astype(float16)]).astype(float32)
-            features = self.ncon2([tmp.astype(float16), local_env_per_edge.astype(float16)]).astype(float32)
+            if self.w3j_is_ij_diagonal:
+                tmp = self.ncon1([features, local_env_per_edge])
+                features = self.ncon2([tmp, self.w3j])
+            else:
+                tmp = self.ncon1([features, self.w3j])
+                features = self.ncon2([tmp, local_env_per_edge])
         return features

@@ -16,7 +16,7 @@
 """
 
 import mindspore as ms
-from mindspore import Tensor, ops
+from mindspore import Tensor, ops, float16, float32
 from mindspore.nn import Cell, CellList, Identity
 
 from mindchemistry.cell.basic_block import MLPMixPrecision as MLP
@@ -64,6 +64,7 @@ class Allegro(Cell):
             latent_kwargs=None,
             env_embed_kwargs=None,
             irreps_in=None,
+            enable_mix_precision=False,
     ):
         literal_hidden_dims = 'hidden_dims'
         literal_activation = 'activation'
@@ -76,6 +77,15 @@ class Allegro(Cell):
         self.env_embed_mul = env_embed_multi
         self.scatter = AggregateEdgeToNode(dim=1)
         self.lift = LiftNodeToEdge(dim=1)
+        self.enable_mix_precision = enable_mix_precision
+        if self.enable_mix_precision:
+            self.mlp_dtype = float16
+            self.linear_dtype = float16
+            self.contract_dtype = float16
+        else:
+            self.mlp_dtype = float32
+            self.linear_dtype = float32
+            self.contract_dtype = float32
 
         # need modified
         self.field = "edge_attrs"
@@ -197,7 +207,8 @@ class Allegro(Cell):
                 pad_to_alignment=1,
                 sparse_mode=None,
                 instr=instr,
-                normalization="component"
+                normalization="component",
+                dtype=self.contract_dtype,
             )
             self.tps.append(tp)
 
@@ -214,7 +225,8 @@ class Allegro(Cell):
                 irreps_in=full_out_irreps,
                 irreps_out=[(env_embed_multi, ir) for _, ir in out_irreps],
                 instructions=None,
-                pad_to_alignment=1
+                pad_to_alignment=1,
+                dtype=self.linear_dtype
             )
             self.linears.append(linear)
 
@@ -226,7 +238,8 @@ class Allegro(Cell):
                         hidden_dims=two_body_kwargs.get(literal_hidden_dims, None),
                         activation_fn=two_body_kwargs.get(literal_activation, None),
                         weight_init=two_body_kwargs.get(literal_weight_init, None),
-                        has_bias=False
+                        has_bias=False,
+                        dtype=self.mlp_dtype
                     )
                 )
             else:
@@ -236,7 +249,8 @@ class Allegro(Cell):
                         hidden_dims=latent_kwargs.get(literal_hidden_dims, None),
                         activation_fn=latent_kwargs.get(literal_activation, None),
                         weight_init=latent_kwargs.get(literal_weight_init, None),
-                        has_bias=False
+                        has_bias=False,
+                        dtype=self.mlp_dtype
                     )
                 )
 
@@ -246,7 +260,8 @@ class Allegro(Cell):
                     hidden_dims=env_embed_kwargs.get(literal_hidden_dims, None) + [generate_n_weights],
                     activation_fn=env_embed_kwargs.get(literal_activation, None),
                     weight_init=env_embed_kwargs.get(literal_weight_init, None),
-                    has_bias=False
+                    has_bias=False,
+                    dtype=self.mlp_dtype
                 )
             )
 
@@ -255,7 +270,8 @@ class Allegro(Cell):
             hidden_dims=latent_kwargs.get(literal_hidden_dims, None),
             activation_fn=latent_kwargs.get(literal_activation, None),
             weight_init=latent_kwargs.get(literal_weight_init, None),
-            has_bias=False
+            has_bias=False,
+            dtype=self.mlp_dtype
         )
         self.latent_dim = self.final_latent.dims[-1]
         # -- end build modules --

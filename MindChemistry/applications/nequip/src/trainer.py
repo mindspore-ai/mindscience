@@ -46,6 +46,11 @@ def train(dtype=ms.float32, configs=None):
     optimizer_params = configs.get('optimizer')
     pred_force = configs.get('pred_force')
     is_profiling = configs.get('profiling')
+    enable_mix_precision = configs.get('enable_mix_precision')
+    if enable_mix_precision:
+        ncon_dtype = ms.float16
+    else:
+        ncon_dtype = ms.float32
 
     load_ckpt = configs.get('load_ckpt')
     load_ckpt_path = configs.get('load_ckpt_path')
@@ -69,7 +74,7 @@ def train(dtype=ms.float32, configs=None):
                     hidden_mul=model_params.get('hidden_mul'),
                     pred_force=pred_force,
                     dtype=dtype,
-                    ncon_dtype=ms.float16
+                    ncon_dtype=ncon_dtype
                     )
 
     if load_ckpt:

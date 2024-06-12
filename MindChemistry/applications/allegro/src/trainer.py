@@ -78,6 +78,7 @@ def build(num_type, configs):
             literal_activation: None,
             literal_weight_init: literal_uniform
         },
+        enable_mix_precision=configs['enable_mix_precision'],
     )
 
     net = Potential(
@@ -193,7 +194,7 @@ def train(configs, dtype=ms.float32, parallel_mode="NONE"):
     if parallel_mode == "DATA_PARALLEL":
         grad_reducer = nn.DistributedGradReducer(optimizer.parameters)
 
-    # 3. Define function of one-step training
+    # 3. Define function of one-step training and validation
     @ms.jit
     def train_step(x, pos, edge_index, batch, batch_size, energy):
         loss_, grads_ = backward(x, pos, edge_index, batch, batch_size, energy)
@@ -201,6 +202,10 @@ def train(configs, dtype=ms.float32, parallel_mode="NONE"):
             grads_ = grad_reducer(grads_)
         optimizer(grads_)
         return loss_
+
+    @ms.jit
+    def test_step(x, pos, edge_index, batch, batch_size):
+        return model(x, pos, edge_index, batch, batch_size)
 
     def _unpack(data):
         return (data['x'], data['pos']), data['energy']
@@ -243,7 +248,7 @@ def train(configs, dtype=ms.float32, parallel_mode="NONE"):
             else:
                 raise ValueError("batch_size should not be zero")
             square_atom_num = atom_num ** 2
-            pred = model(inputs[0], inputs[1], edge_index, batch, batch_size)
+            pred = test_step(inputs[0], inputs[1], edge_index, batch, batch_size)
             if square_atom_num != 0:
                 test_loss += loss_fn(pred, label).asnumpy() / square_atom_num
             else:

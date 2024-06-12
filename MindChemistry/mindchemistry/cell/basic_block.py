@@ -405,7 +405,7 @@ class MLPMixPrecision(nn.Cell):
             weight_init: Union[Initializer, str] = 'xavier_uniform',
             bias_init: Union[Initializer, str] = 'zeros',
             dropout=0,
-            dtype=float16
+            dtype=float32
     ):
         super().__init__()
         self.dtype = dtype
@@ -446,7 +446,10 @@ class MLPMixPrecision(nn.Cell):
         norm_from_last = 1.0
         for i, layer in enumerate(self.layers):
             sqrt_dim = ops.sqrt(Tensor(float(self.dims[i])))
-            hidden = self.div(layer(hidden).astype(float32) * norm_from_last, sqrt_dim)
+            layer_hidden = layer(hidden)
+            if self.dtype == float16:
+                layer_hidden = layer_hidden.astype(float16)
+            hidden = self.div(layer_hidden * norm_from_last, sqrt_dim)
             norm_from_last = self.nonlinear_const
             if i < len(self.layers) - 1:
                 if self.batch_norms is not None:
