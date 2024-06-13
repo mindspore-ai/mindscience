@@ -24,7 +24,7 @@ from mindspore import context, nn, ops, jit, set_seed
 from mindspore import save_checkpoint, data_sink
 
 from mindflow.cell import MultiScaleFCSequential
-from mindflow.loss import MTLWeightedLoss
+from mindflow.core import MTLWeightedLoss
 from mindflow.utils import load_yaml_config, log_config, print_log, log_timer
 
 from src import create_training_dataset, create_test_dataset, calculate_l2_error, NavierStokes2D

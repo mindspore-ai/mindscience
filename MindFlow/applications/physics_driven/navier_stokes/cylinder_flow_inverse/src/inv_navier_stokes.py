@@ -18,7 +18,7 @@ from sympy import diff, Function, symbols
 from mindspore import ops
 from mindspore import numpy as mnp
 
-from mindflow.loss import get_loss_metric
+from mindflow.core import get_loss_metric
 from mindflow.pde import PDEWithLoss
 from mindflow.pde import sympy_to_mindspore
 

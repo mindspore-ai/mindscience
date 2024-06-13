@@ -20,7 +20,7 @@ from mindspore import ops, Tensor
 from mindspore import dtype as mstype
 from mindflow.pde import PDEWithLoss
 from mindflow.pde.sympy2mindspore import sympy_to_mindspore
-from mindflow.loss import get_loss_metric
+from mindflow.core import get_loss_metric
 
 
 class NavierStokesRANS(PDEWithLoss):

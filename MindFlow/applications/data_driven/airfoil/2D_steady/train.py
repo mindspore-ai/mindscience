@@ -29,9 +29,9 @@ from mindspore import save_checkpoint, jit, data_sink
 from mindspore.common import set_seed
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
 
-from mindflow.common import get_warmup_cosine_annealing_lr
+from mindflow.core import get_warmup_cosine_annealing_lr
 from mindflow.pde import SteadyFlowWithLoss
-from mindflow.loss import WaveletTransformLoss
+from mindflow.core import WaveletTransformLoss
 from mindflow.cell import ViT
 from mindflow.utils import load_yaml_config, print_log, log_config, log_timer
 

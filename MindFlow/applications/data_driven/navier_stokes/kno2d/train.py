@@ -25,7 +25,7 @@ from mindspore import nn, context, ops, Tensor, set_seed, dtype, save_checkpoint
 from mindspore.nn.loss import MSELoss
 
 from mindflow.cell import KNO2D
-from mindflow.common import get_warmup_cosine_annealing_lr
+from mindflow.core import get_warmup_cosine_annealing_lr
 from mindflow.utils import load_yaml_config, print_log, log_config, log_timer
 
 from src import create_training_dataset, NavierStokesWithLoss, visual

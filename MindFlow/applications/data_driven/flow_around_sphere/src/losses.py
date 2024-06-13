@@ -18,7 +18,7 @@ from mindspore import nn, ops
 from mindspore import dtype as mstype
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
-from mindflow.loss import MTLWeightedLoss
+from mindflow.core import MTLWeightedLoss
 
 
 class RRMSE(nn.LossBase):

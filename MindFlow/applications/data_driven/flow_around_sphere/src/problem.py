@@ -16,7 +16,7 @@
 """self-defined problem: 3D Unsteady Flow"""
 from mindspore import nn, ops, jit_class
 
-from mindflow.loss import get_loss_metric
+from mindflow.core import get_loss_metric
 from mindflow.pde import UnsteadyFlowWithLoss
 from mindflow.utils.check_func import check_param_type
 

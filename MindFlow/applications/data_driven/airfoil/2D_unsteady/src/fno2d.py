@@ -22,7 +22,7 @@ from mindspore.ops import operations as P
 from mindspore.common.initializer import Zero
 
 from mindflow.utils.check_func import check_param_type
-from mindflow.common.math import get_grid_2d
+from mindflow.core.math import get_grid_2d
 from mindflow.cell.neural_operators.dft import dft2, idft2
 
 

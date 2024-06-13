@@ -22,7 +22,7 @@ import pytest
 from mindspore import dtype as mstype
 from mindspore import nn, ops, Tensor
 
-from mindflow.operators import batched_jacobian, batched_hessian
+from mindflow.core import batched_jacobian, batched_hessian
 
 np.random.seed(123456)
 

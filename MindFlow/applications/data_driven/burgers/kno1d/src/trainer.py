@@ -18,7 +18,7 @@ User-defined wrapper for training and testing.
 import mindspore.common.dtype as mstype
 from mindspore import ops, jit_class
 from mindflow.pde import FlowWithLoss
-from mindflow.loss import RelativeRMSELoss
+from mindflow.core import RelativeRMSELoss
 
 
 @jit_class
