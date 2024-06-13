@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-
+"""MessagePassing"""
 from mindspore import nn, ops, float32
 
 from ..e3.o3 import Irreps
@@ -33,14 +33,15 @@ class Compose(nn.Cell):
         self.first = first
         self.second = second
 
-    def construct(self, *input):
-        x = self.first(*input)
+    def construct(self, *inputs):
+        x = self.first(*inputs)
         x = self.second(x)
         return x
 
 
 class MessagePassing(nn.Cell):
-
+    """MessagePassing"""
+    # pylint: disable=W0102
     def __init__(
             self,
             irreps_node_input,
@@ -55,10 +56,11 @@ class MessagePassing(nn.Cell):
             nonlin_type="gate",
             nonlin_scalars={"e": "ssp", "o": "tanh"},
             nonlin_gates={"e": "ssp", "o": "abs"},
-            dtype=float32
+            dtype=float32,
+            ncon_dtype=float32
     ):
         super().__init__()
-        if not nonlin_type in ("gate", "norm"):
+        if nonlin_type not in ('gate', 'norm'):
             raise ValueError(f"Unexpected nonlin_type {nonlin_type}.")
 
         nonlin_scalars = {
@@ -111,7 +113,8 @@ class MessagePassing(nn.Cell):
                     irreps_gates,
                     [acts[nonlin_gates[ir.p]] for _, ir in irreps_gates],
                     irreps_gated,
-                    dtype=dtype
+                    dtype=dtype,
+                    ncon_dtype=ncon_dtype
                 )
 
                 conv_irreps_out = nonlinear.irreps_in
@@ -124,7 +127,8 @@ class MessagePassing(nn.Cell):
                     normalize=True,
                     epsilon=1e-8,
                     bias=False,
-                    dtype=dtype
+                    dtype=dtype,
+                    ncon_dtype=ncon_dtype
                 )
 
             conv = Convolution(
@@ -134,7 +138,8 @@ class MessagePassing(nn.Cell):
                 irreps_edge_attr=self.irreps_edge_attr,
                 irreps_edge_scalars=self.irreps_edge_scalars,
                 **convolution_kwargs,
-                dtype=dtype
+                dtype=dtype,
+                ncon_dtype=ncon_dtype
             )
             irreps_node = nonlinear.irreps_out
 
@@ -147,6 +152,7 @@ class MessagePassing(nn.Cell):
             irreps_prev = irreps_node
 
     def construct(self, node_input, node_attr, edge_src, edge_dst, edge_attr, edge_scalars):
+        """construct"""
         layer_in = node_input
         for i in range(len(self.layers)):
             layer_out = self.layers[i](

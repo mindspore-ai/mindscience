@@ -50,9 +50,6 @@ class BatchNormMask(nn.Cell):
             mask = ops.reshape(mask, shape).astype(x.dtype)
         x = ops.mul(x, mask)
 
-        if num == 0:
-            raise ValueError
-
         # pylint: disable=R1705
         if x.ndim > 2:
             norm_axis = []

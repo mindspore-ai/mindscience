@@ -15,43 +15,75 @@
 """
 User-defined wrapper for training and testing.
 """
+import logging
+import math
+import os
 import time
 
-from mindspore import nn
 import mindspore as ms
+from mindspore import Profiler
+from mindspore import nn
+from src.dataset import create_training_dataset, _unpack
+from src.utils import training_bar
 
 from mindchemistry.cell import EnergyNet
 
-from src.dataset import create_training_dataset, _unpack
-from src.utils import training_bar
+
+def generate_learning_rate(learning_rate, warmup_steps, step_num):
+    warmup_scale = warmup_steps ** -1.5
+    lr = []
+    for s in range(1, step_num + 1):
+        lr1 = s ** -0.5
+        lr2 = s * warmup_scale
+        lr.append(learning_rate * min(lr1, lr2))
+    return lr
 
 
 def train(dtype=ms.float32, configs=None):
     """Train the model on the train dataset."""
-    data_params = configs['data']
-    model_params = configs['model']
-    optimizer_params = configs['optimizer']
-    pred_force = configs['pred_force']
+    data_params = configs.get('data')
+    model_params = configs.get('model')
+    optimizer_params = configs.get('optimizer')
+    pred_force = configs.get('pred_force')
+    is_profiling = configs.get('profiling')
 
-    print('\rLoading data...                ', end='')
+    load_ckpt = configs.get('load_ckpt')
+    load_ckpt_path = configs.get('load_ckpt_path')
+    save_ckpt = configs.get('save_ckpt')
+    save_ckpt_interval = configs.get('save_ckpt_interval')
+    save_ckpt_path = configs.get('save_ckpt_path')
+    if save_ckpt:
+        os.makedirs(save_ckpt_path, exist_ok=True)
+
+    logging.info('Loading data...')
     trainset, train_edge_index, train_batch, evalset, eval_edge_index, eval_batch, num_type = create_training_dataset(
-        config=data_params, dtype=dtype, pred_force=configs['pred_force'])
+        config=data_params, dtype=dtype, pred_force=configs.get('pred_force'))
     # == Model ==
-    print('\rInitializing model...              ', end='')
-    net = EnergyNet(irreps_embedding_out=model_params['irreps_embedding_out'],
-                    irreps_conv_out=model_params['irreps_conv_out'],
-                    chemical_embedding_irreps_out=model_params['chemical_embedding_irreps_out'],
-                    num_layers=model_params['num_layers'],
+    logging.info('Initializing model...')
+    net = EnergyNet(irreps_embedding_out=model_params.get('irreps_embedding_out'),
+                    irreps_conv_out=model_params.get('irreps_conv_out'),
+                    chemical_embedding_irreps_out=model_params.get('chemical_embedding_irreps_out'),
+                    num_layers=model_params.get('num_layers'),
                     num_type=num_type,
-                    r_max=model_params['r_max'],
-                    hidden_mul=model_params['hidden_mul'],
+                    r_max=model_params.get('r_max'),
+                    hidden_mul=model_params.get('hidden_mul'),
                     pred_force=pred_force,
-                    dtype=dtype
+                    dtype=dtype,
+                    ncon_dtype=ms.float16
                     )
 
+    if load_ckpt:
+        logging.info('Loading checkpoint: %s', load_ckpt_path)
+        ms.load_checkpoint(load_ckpt_path, net)
+
     loss_fn = nn.MSELoss()
-    optimizer = nn.Adam(net.trainable_params(), learning_rate=optimizer_params['learning_rate'],
-                        use_amsgrad=optimizer_params['use_amsgrad'])
+    metric_fn = nn.MAELoss()
+    total_steps_num = optimizer_params.get('num_epoch') * math.ceil(
+        data_params.get('n_train') / data_params.get('batch_size'))
+    lr_schedule = generate_learning_rate(optimizer_params.get('learning_rate'), optimizer_params.get('warmup_steps'),
+                                         total_steps_num)
+    optimizer = nn.Adam(net.trainable_params(), learning_rate=lr_schedule,
+                        use_amsgrad=optimizer_params.get('use_amsgrad'))
 
     def forward(batch, x, pos, edge_src, edge_dst, energy, force, batch_size, sep):
         pred = net(batch, x, pos, edge_src, edge_dst, batch_size)
@@ -65,62 +97,102 @@ def train(dtype=ms.float32, configs=None):
 
     backward = ms.value_and_grad(forward, None, optimizer.parameters)
 
-    # == Training ==
-    print('\rInitializing train...         ', end='')
-    loss_eval = []
-    loss_train = []
-    for epoch in range(optimizer_params['num_epoch']):
-        total_train = 0
-        t0 = time.time()
-        for current, data_dict in enumerate(trainset.create_dict_iterator()):
-            batch_size_train = trainset.get_batch_size()
-            inputs, label = _unpack(data_dict)
+    @ms.jit
+    def train_step(batch, x, pos, edge_src, edge_dst, energy, force, size, sep):
+        loss_, grads_ = backward(batch,
+                                 x, pos,
+                                 edge_src,
+                                 edge_dst,
+                                 energy, force,
+                                 size, sep)
+        optimizer(grads_)
+        return loss_
 
-            loss, grads = backward(train_batch,
-                                   *inputs,
-                                   train_edge_index[0],
-                                   train_edge_index[1],
-                                   *label,
-                                   batch_size_train,
-                                   False)
-            optimizer(grads)
-            total_train += loss.asnumpy()
+    def validation(eval_batch, eval_edge_index, evalset):
+        dataset_size = evalset.get_dataset_size()
+        total_eval = 0
+        total_eval_energy = 0
+        total_eval_force = 0
+        total_metric = 0
+        total_metric_energy = 0
+        total_metric_force = 0
+        for _, data_dict_val in enumerate(evalset.create_dict_iterator()):
+            batch_size_val = evalset.get_batch_size()
+            inputs_val, label_val = _unpack(data_dict_val)
+            pred = net(eval_batch, inputs_val[0], inputs_val[1], eval_edge_index[0], eval_edge_index[1], batch_size_val)
+
+            if not pred_force:
+                loss_val = loss_fn(pred, label_val[0]).asnumpy()
+                metric = metric_fn(pred, label_val[0]).asnumpy()
+                total_eval += loss_val
+                total_metric += metric
+            else:
+                loss_val_energy = loss_fn(pred[0], label_val[0]).asnumpy()
+                loss_val_force = loss_fn(pred[1], label_val[1]).asnumpy()
+                metric_energy = metric_fn(pred[0], label_val[0]).asnumpy()
+                metric_force = metric_fn(pred[1], label_val[1]).asnumpy()
+                total_eval_energy += loss_val_energy
+                total_eval_force += loss_val_force
+                total_metric_energy += metric_energy
+                total_metric_force += metric_force
+
+        if not pred_force:
+            loss = total_eval / dataset_size
+            metric_mean = total_metric / dataset_size
+            logging.info('eval loss: %8.8f   metric: %.8f', loss, metric_mean)
+        else:
+            loss = (total_eval_energy / dataset_size, total_eval_force / dataset_size)
+            metric_mean = (total_metric_energy / dataset_size, total_metric_force / dataset_size)
+            logging.info('eval energy loss:  %8.8f eval force loss: %8.8f  metric energy: %.8f  metric force: %.8f',
+                         loss[0], loss[1], metric_mean[0], metric_mean[1])
+        return loss, metric_mean
+
+    # == Training ==
+    t0 = time.time()
+
+    if is_profiling:
+        logging.info('Initializing profiler...')
+        profiler = Profiler(output_path="profiler_data")
+
+    logging.info('Initializing train...')
+    loss_train = []
+    loss_eval = []
+    metric = []
+    eval_steps = optimizer_params.get('eval_steps')
+    for epoch in range(optimizer_params.get('num_epoch')):
+        epoch_loss = 0
+        ti = time.time()
+        for current, data_dict in enumerate(trainset.create_dict_iterator()):
+            inputs, label = _unpack(data_dict)
+            batch_size_train = trainset.get_batch_size()
+
+            loss = train_step(train_batch,
+                              inputs[0], inputs[1],
+                              train_edge_index[0], train_edge_index[1],
+                              label[0], label[1], batch_size_train, False)
+
+            epoch_loss += loss.asnumpy()
             training_bar(epoch, size=trainset.get_dataset_size(), current=current)
 
-        loss_train += [total_train / trainset.get_dataset_size()]
+        epoch_loss = epoch_loss / trainset.get_dataset_size()
+        loss_train.append(epoch_loss)
+        t_now = time.time()
+        t_gap = t_now - ti
+        t_all = t_now - t0
+        logging.info('epoch %d:  train loss: %8.8f, time gap: %.2f, total time used: %.2f', (epoch + 1), epoch_loss,
+                     t_gap, t_all)
 
-        if epoch % 10 == 0:
-            print('\n', end='')
-            if epoch == 0:
-                print('Initializing eval...       ', end='')
-            if not pred_force:
-                total_eval = 0
-            else:
-                eval_energy, eval_force = 0, 0
-            for current, data_dict in enumerate(evalset.create_dict_iterator()):
-                batch_size_eval = evalset.get_batch_size()
-                inputs, label = _unpack(data_dict)
+        if (epoch + 1) % eval_steps == 0:
+            loss, metric_mean = validation(eval_batch, eval_edge_index, evalset)
+            loss_eval.append(loss)
+            metric.append(metric_mean)
+        if save_ckpt and epoch % save_ckpt_interval == 0:
+            logging.info('Saving checkpoint file ...')
+            ms.save_checkpoint(net, f"{save_ckpt_path}/NequIP_rmd_{epoch}.ckpt")
 
-                loss = forward(eval_batch,
-                               *inputs,
-                               eval_edge_index[0],
-                               eval_edge_index[1],
-                               *label,
-                               batch_size_eval,
-                               True)
-                if not pred_force:
-                    total_eval += loss.asnumpy()
-                else:
-                    eval_energy += loss[0].asnumpy()
-                    eval_force += loss[1].asnumpy()
+    if is_profiling:
+        profiler.analyse()
+    if save_ckpt:
+        ms.save_checkpoint(net, f"{save_ckpt_path}/NequIP_rmd.ckpt")
 
-            if not pred_force:
-                loss_eval.append(total_eval / evalset.get_dataset_size())
-            else:
-                loss_eval.append((eval_energy / evalset.get_dataset_size(),
-                                  eval_force / evalset.get_dataset_size()))
-
-            print(
-                f'\rtrain loss: {loss_train[-1]:<8.8f}, eval loss: {loss_eval[-1]}, time used: {time.time() - t0:.2f}')
-        else:
-            print(f'\rtrain loss: {loss_train[-1]:<8.8f}, time used: {time.time() - t0:.2f}   ')
+    return loss_train, loss_eval, metric, lr_schedule
