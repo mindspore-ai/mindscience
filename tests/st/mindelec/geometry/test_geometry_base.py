@@ -187,8 +187,7 @@ def check_geometry_case4():
         print("get geom data type error")
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_part_sampling_config():
     """test_check_part_sampling_config"""
@@ -202,8 +201,7 @@ def test_check_part_sampling_config():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_sampling_config_case1():
     """test_check_sampling_config_case1"""
@@ -211,8 +209,7 @@ def test_check_sampling_config_case1():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_sampling_config_case2():
     """test_check_sampling_config_case2"""
@@ -220,8 +217,7 @@ def test_check_sampling_config_case2():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_sampling_config_case3():
     """test_check_sampling_config_case3"""
@@ -229,8 +225,7 @@ def test_check_sampling_config_case3():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_geometry_case1():
     """test_check_geometry_case1"""
@@ -238,8 +233,7 @@ def test_check_geometry_case1():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_geometry_case2():
     """test_check_geometry_case2"""
@@ -247,8 +241,7 @@ def test_check_geometry_case2():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_geometry_case3():
     """test_check_geometry_case3"""
@@ -256,8 +249,7 @@ def test_check_geometry_case3():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_geometry_case4():
     """test_check_geometry_case4"""

@@ -48,8 +48,7 @@ sampling_config_csg2 = edict({
 })
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_csg_union():
     """test check union"""
@@ -74,8 +73,7 @@ def test_check_csg_union():
         print(bc, bc_normal, domain)
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_csg_difference():
     """test_check_csg_difference"""
@@ -101,8 +99,7 @@ def test_check_csg_difference():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_csg_intersection():
     """test_check_csg_intersection"""
@@ -128,8 +125,7 @@ def test_check_csg_intersection():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_csg_xor():
     """test_check_csg_xor"""
@@ -193,8 +189,7 @@ no_src_sampling_config4 = edict({
 })
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_point_src_csg():
     """test_check_point_src_csg"""

@@ -147,8 +147,7 @@ class RectPde1(Problem):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_netwithloss():
     """test netwithloss function"""
@@ -175,8 +174,7 @@ def test_netwithloss():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_netwithloss1():
     """test netwithloss function1"""
@@ -199,8 +197,7 @@ def test_netwithloss1():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_netwitheval():
     """test netwitheval function"""

@@ -29,8 +29,8 @@ from tests.st.sciai.test_utils.func_utils import copy_dataset
 copy_dataset(os.path.dirname(os.path.abspath(__file__)))
 
 
+
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 def test_auto_model():
     """
@@ -67,8 +67,8 @@ def test_auto_model():
     clear_stub(stderr, stdout)
 
 
+
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('problem', ['Schrodinger', 'NavierStokes'])
 def test_full_command(problem):
@@ -93,8 +93,8 @@ def test_full_command(problem):
     assert float(loss) < 0.5
 
 
+
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 def test_eval_full_command_ns():
     """
@@ -121,7 +121,6 @@ def test_eval_full_command_ns():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 def test_eval_full_command_sch():
     """

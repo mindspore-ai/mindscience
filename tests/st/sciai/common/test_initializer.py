@@ -26,7 +26,6 @@ from sciai.common.initializer import LeCunNormal, LeCunUniform, StandardUniform,
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_lecun_normal_should_initialize_right_when_right(mode):
@@ -58,10 +57,8 @@ def test_comb_lecun_uniform_should_initialize_right_when_right(mode):
     assert mnp.isclose(tensor.std(), ms.Tensor(1 / math.sqrt(20)), rtol=0.05, equal_nan=True)
 
 
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
-@pytest.mark.platform_x86_gpu_training
+@pytest.mark.level1
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_standard_uniform_should_initialize_right_when_right(mode):
@@ -69,6 +66,7 @@ def test_comb_standard_uniform_should_initialize_right_when_right(mode):
     Feature: ALL TO ALL
     Description:  test cases for
     Expectation: pass
+    Need to adaptive 910B
     """
     context.set_context(mode=mode)
     np.random.seed(1234)
@@ -78,7 +76,6 @@ def test_comb_standard_uniform_should_initialize_right_when_right(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_xavier_trunc_normal_should_initialize_right_when_right(mode):

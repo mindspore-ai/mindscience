@@ -39,8 +39,7 @@ class Net(nn.Cell):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_linear():
     """test linear block"""
@@ -54,8 +53,7 @@ def test_linear():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_linear_nobias():
     """test linear block with no bias"""
@@ -84,8 +82,7 @@ class Net1(nn.Cell):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_res():
     """test res block"""
@@ -99,8 +96,7 @@ def test_res():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_res_nobias():
     """test res block with no bias"""
@@ -113,8 +109,7 @@ def test_res_nobias():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_res_activation():
     """test res block with activation"""
@@ -128,8 +123,7 @@ def test_res_activation():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_res_channel_error():
     context.set_context(mode=context.GRAPH_MODE)
@@ -138,8 +132,7 @@ def test_res_channel_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_input_scale():
     """test input scale cell"""
@@ -157,8 +150,7 @@ def test_input_scale():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_fc_sequential():
     """test fc sequential cell"""
@@ -172,8 +164,7 @@ def test_fc_sequential():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_mulscale_without_latent():
     """test multi-scale net without latent vector"""
@@ -191,8 +182,7 @@ def test_mulscale_without_latent():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_mulscale_with_latent():
     """test multi-scale net with latent vector and input scale"""
@@ -214,8 +204,7 @@ def test_mulscale_with_latent():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_mulscale_with_latent_noscale():
     """test multi-scale net with latent vector"""

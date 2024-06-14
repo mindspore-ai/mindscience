@@ -182,8 +182,7 @@ def check_rectangle_mesh(config):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_disk_random():
     """test_check_disk_random"""
@@ -191,8 +190,7 @@ def test_check_disk_random():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_disk_mesh():
     """test_check_disk_mesh"""
@@ -200,8 +198,7 @@ def test_check_disk_mesh():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_disk_mesh_wrong_meshsize_error():
     """test_check_disk_mesh"""
@@ -210,8 +207,7 @@ def test_check_disk_mesh_wrong_meshsize_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_disk_mesh_nodomain_error():
     """test_check_disk_mesh"""
@@ -220,8 +216,7 @@ def test_check_disk_mesh_nodomain_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_disk_mesh_nobc_error():
     """test_check_disk_mesh"""
@@ -230,8 +225,7 @@ def test_check_disk_mesh_nobc_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_rectangle_random():
     """test_check_rectangle_random"""
@@ -239,8 +233,7 @@ def test_check_rectangle_random():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_rectangle_mesh():
     """test_check_rectangle_mesh"""

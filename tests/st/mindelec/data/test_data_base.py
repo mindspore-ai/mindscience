@@ -20,8 +20,7 @@ from mindelec.data.data_base import Data
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_data_config_name_error():
     with pytest.raises(TypeError):
@@ -29,8 +28,7 @@ def test_existed_data_config_name_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_data_config_data_dir_error():
     with pytest.raises(TypeError):
@@ -38,8 +36,7 @@ def test_existed_data_config_data_dir_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_data_config_column_list_error():
     with pytest.raises(TypeError):
@@ -50,8 +47,7 @@ def test_existed_data_config_column_list_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_data_config_constraint_type_error():
     with pytest.raises(TypeError):
@@ -62,8 +58,7 @@ def test_existed_data_config_constraint_type_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_data_config_data_format_typeerror():
     with pytest.raises(TypeError):
@@ -74,8 +69,7 @@ def test_existed_data_config_data_format_typeerror():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_data_config_data_format_valueerror():
     with pytest.raises(ValueError):
@@ -86,8 +80,7 @@ def test_existed_data_config_data_format_valueerror():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_data_config_data_constraint_type_valueerror():
     with pytest.raises(TypeError):
@@ -97,8 +90,7 @@ def test_existed_data_config_data_constraint_type_valueerror():
         ExistedDataConfig("a", input_path, "data", constraint_type='1')
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_data_config_data_constraint_type_valueerror1():
     with pytest.raises(TypeError):
@@ -108,8 +100,7 @@ def test_existed_data_config_data_constraint_type_valueerror1():
         ExistedDataConfig("a", input_path, "data", constraint_type='test')
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_existed_data_config_random_merge_error():
     with pytest.raises(TypeError):
@@ -120,8 +111,7 @@ def test_existed_data_config_random_merge_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_data_name_type_error():
     with pytest.raises(TypeError):
@@ -129,8 +119,7 @@ def test_data_name_type_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_data_columns_list_type_error():
     with pytest.raises(TypeError):
@@ -138,8 +127,7 @@ def test_data_columns_list_type_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_data_constraint_type_type_error():
     with pytest.raises(TypeError):
@@ -147,8 +135,7 @@ def test_data_constraint_type_type_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_data_constraint_type_type_error1():
     with pytest.raises(TypeError):
@@ -156,8 +143,7 @@ def test_data_constraint_type_type_error1():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_data_set_constraint_type_type_error():
     with pytest.raises(TypeError):
@@ -166,8 +152,7 @@ def test_data_set_constraint_type_type_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_data_create_dataset_nie_error():
     with pytest.raises(NotImplementedError):
@@ -176,8 +161,7 @@ def test_data_create_dataset_nie_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_data_get_item_nie_error():
     with pytest.raises(NotImplementedError):
@@ -186,8 +170,7 @@ def test_data_get_item_nie_error():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_data_len_nie_error():
     with pytest.raises(NotImplementedError):

@@ -35,7 +35,6 @@ copy_dataset(os.path.dirname(os.path.abspath(__file__)))
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_fast_enough_when_epoch_100(mode):
@@ -58,7 +57,6 @@ def test_comb_should_fast_enough_when_epoch_100(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 def test_comb_should_fast_enough_when_load_ckpt(mode):
@@ -83,7 +81,6 @@ def test_comb_should_fast_enough_when_load_ckpt(mode):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_x86_gpu_training
 @pytest.mark.env_onecard
 def test_comb_should_run_with_full_command():
     """

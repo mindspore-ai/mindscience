@@ -101,8 +101,7 @@ def check_rect_with_time_set_config(config):
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_rect_with_time_set_config():
     """test_check_rect_with_time_set_config"""

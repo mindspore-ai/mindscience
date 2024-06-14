@@ -107,8 +107,7 @@ def check_time_interval(line_config):
     print(domain)
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_time_interval():
     """test_check_time_interval"""
@@ -116,8 +115,7 @@ def test_check_time_interval():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_line_interval_case1():
     """test_check_time_interval"""
@@ -125,8 +123,7 @@ def test_check_line_interval_case1():
 
 
 @pytest.mark.level0
-@pytest.mark.platform_arm_ascend_training
-@pytest.mark.platform_x86_ascend_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_check_line_interval_case2():
     """test_check_time_interval"""
