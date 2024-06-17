@@ -15,10 +15,12 @@
 """init"""
 from .activation import get_activation
 from .basic_block import LinearBlock, ResBlock, InputScale, FCSequential, MultiScaleFCSequential
-from .neural_operators import FNO1D, FNO2D, FNO3D, KNO1D, KNO2D, PDENet, PeRCNN
+from .neural_operators import FNO1D, FNO2D, FNO3D, KNO1D, KNO2D, PDENet, PeRCNN, SNO1D, SNO2D, SNO3D
 from .transformer import ViT
 from .unet2d import UNet2D
+from .sno_utils import poly_data, get_poly_transform, interpolate_1d_dataset, interpolate_2d_dataset
 
-__all__ = ['FNO1D', 'FNO2D', 'FNO3D', 'KNO1D', 'KNO2D', 'ViT', 'PDENet', 'UNet2D', 'PeRCNN']
+__all__ = ['FNO1D', 'FNO2D', 'FNO3D', 'KNO1D', 'KNO2D', 'ViT', 'PDENet', 'UNet2D', 'PeRCNN', 'SNO1D', 'SNO2D', 'SNO3D']
 __all__.extend(activation.__all__)
 __all__.extend(basic_block.__all__)
+__all__.extend(sno_utils.__all__)

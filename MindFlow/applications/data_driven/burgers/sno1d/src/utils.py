@@ -22,8 +22,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from mindflow import RelativeRMSELoss
 from mindflow.utils import print_log
-
-from .sno_utils import poly_data
+from mindflow.cell import poly_data
 
 
 def test_error(model, input_tensor, label_tensor, label_unif, data_config):

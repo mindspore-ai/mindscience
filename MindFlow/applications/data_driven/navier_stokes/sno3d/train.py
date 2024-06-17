@@ -23,11 +23,10 @@ import numpy as np
 from mindspore import nn, ops, jit, data_sink, context, Tensor
 from mindspore.common import set_seed
 from mindspore import dtype as mstype
-from mindflow import get_warmup_cosine_annealing_lr, load_yaml_config
+from mindflow import SNO3D, get_poly_transform, get_warmup_cosine_annealing_lr, load_yaml_config
 from mindflow.utils import print_log, log_config, log_timer
 
-from src import SNO3D, get_poly_transform, calculate_l2_error, UnitGaussianNormalizer, \
-    create_training_dataset, load_interp_data
+from src import calculate_l2_error, UnitGaussianNormalizer, create_training_dataset, load_interp_data
 
 set_seed(0)
 np.random.seed(0)

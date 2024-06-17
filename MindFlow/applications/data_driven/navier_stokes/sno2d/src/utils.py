@@ -24,8 +24,7 @@ import matplotlib.animation as animation
 from mindspore import Tensor
 from mindspore import dtype as mstype
 from mindflow.utils import print_log
-
-from .sno_utils import poly_data
+from mindflow.cell import poly_data
 
 
 def _calculate_error(label, prediction):

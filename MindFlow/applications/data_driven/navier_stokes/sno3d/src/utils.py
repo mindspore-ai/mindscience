@@ -24,8 +24,7 @@ import matplotlib.animation as animation
 from mindspore import jit_class, Tensor
 from mindflow.loss import RelativeRMSELoss
 from mindflow.utils import print_log
-
-from .sno_utils import poly_data
+from mindflow.cell import poly_data
 
 
 @jit_class

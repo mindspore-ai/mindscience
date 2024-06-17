@@ -15,11 +15,11 @@
 """sno"""
 import mindspore.common.dtype as mstype
 from mindspore import ops, nn
-from mindflow.cell.activation import get_activation
-from mindflow.utils.check_func import check_param_type, check_param_type_value
 
 from .sp_transform import ConvCell, TransformCell, Dim
-from .custom_unet2d import CustomUNet2D
+from ..activation import get_activation
+from ..unet2d import UNet2D
+from ...utils.check_func import check_param_type, check_param_type_value
 
 
 class SNOKernelCell(nn.Cell):
@@ -56,7 +56,7 @@ class SNOKernelCell(nn.Cell):
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from sno import SNOKernelCell
+        >>> from mindflow.cell.neural_operators.sno import SNOKernelCell
         >>> resolution, modes = 100, 12
         >>> matr = Tensor(np.random.rand(modes, resolution), mstype.float32)
         >>> inv_matr = Tensor(np.random.rand(resolution, modes), mstype.float32)
@@ -132,7 +132,9 @@ class USNOKernelCell2D(SNOKernelCell):
             activation, compute_dtype)
 
         check_param_type(num_strides, "num_strides", data_type=int, exclude_type=bool)
-        self.unet = CustomUNet2D(in_channels, out_channels, n_layers=num_strides, activation=activation)
+        self.unet = UNet2D(in_channels, out_channels, base_channels=in_channels,
+                           n_layers=num_strides, data_format='NCHW',
+                           activation=activation, enable_bn=False)
         self.skip_conv = None
 
     def construct(self, x):
@@ -181,7 +183,7 @@ class SNO(nn.Cell):
         TypeError: If `hidden_channels` is not an int.
         TypeError: If `num_sno_layers` is not an int.
         TypeError: If `transforms` is not a list.
-        ValueError: If `len(transforms)` is not in (1, 2).
+        ValueError: If `len(transforms)` is not in (1, 2, 3).
         TypeError: If `num_usno_layers` is not an int.
 
     Supported Platforms:
@@ -191,7 +193,7 @@ class SNO(nn.Cell):
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from sno import SNO
+        >>> from mindflow.cell.neural_operators.sno import SNO
         >>> resolution, modes = 100, 12
         >>> matr = Tensor(np.random.rand(modes, resolution), mstype.float32)
         >>> inv_matr = Tensor(np.random.rand(resolution, modes), mstype.float32)
@@ -221,7 +223,7 @@ class SNO(nn.Cell):
         check_param_type(hidden_channels, "hidden_channels", data_type=int, exclude_type=bool)
         check_param_type(num_sno_layers, "num_sno_layers", data_type=int, exclude_type=bool)
         check_param_type(transforms, "transforms", data_type=list)
-        check_param_type_value(len(transforms), "dim", valid_value=(1, 2), data_type=int)
+        check_param_type_value(len(transforms), "dim", valid_value=(1, 2, 3), data_type=int)
         check_param_type(num_usno_layers, "num_usno_layers", data_type=int, exclude_type=bool)
 
         if data_format not in ("channels_first", "channels_last"):
@@ -299,7 +301,7 @@ class SNO1D(SNO):
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from sno import SNO1D
+        >>> from mindflow.cell import SNO1D
         >>> resolution, modes = 100, 12
         >>> matr = Tensor(np.random.rand(modes, resolution), mstype.float32)
         >>> inv_matr = Tensor(np.random.rand(resolution, modes), mstype.float32)
@@ -343,7 +345,7 @@ class SNO2D(SNO):
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
-        >>> from sno import SNO2D
+        >>> from mindflow.cell import SNO2D
         >>> resolution, modes = 100, 12
         >>> matr = Tensor(np.random.rand(modes, resolution), mstype.float32)
         >>> inv_matr = Tensor(np.random.rand(resolution, modes), mstype.float32)
@@ -379,5 +381,53 @@ class SNO2D(SNO):
             kernel_size=kernel_size,
             num_usno_layers=num_usno_layers,
             num_unet_strides=num_unet_strides,
+            activation=activation,
+            compute_dtype=compute_dtype)
+
+
+class SNO3D(SNO):
+    r"""
+    The 3D SNO, which contains a lifting layer (encoder),
+    multiple spectral transform layers and a projection layer (decoder).
+    See documentation for base class, `SNO`.
+
+    Example:
+        >>> import numpy as np
+        >>> from mindspore import Tensor
+        >>> import mindspore.common.dtype as mstype
+        >>> from mindflow.cell import SNO3D
+        >>> grid_size, grid_size_z, modes = 64, 40, 12
+        >>> matr = Tensor(np.random.rand(modes, grid_size), mstype.float32)
+        >>> inv_matr = Tensor(np.random.rand(grid_size, modes), mstype.float32)
+        >>> matr_1 = Tensor(np.random.rand(modes, grid_size_z), mstype.float32)
+        >>> inv_matr_1 = Tensor(np.random.rand(grid_size_z, modes), mstype.float32)
+        >>> net = SNO3D(in_channels=10, out_channels=1,
+        >>>             transforms=[[matr, inv_matr]] * 2 + [[matr_1, inv_matr_1]])
+        >>> x = Tensor(np.random.rand(10, 10, resolution, resolution, grid_size_z), mstype.float32)
+        >>> y = net(x)
+        >>> print(x.shape, y.shape)
+        (10, 10, 64, 64, 40) (10, 1, 64, 64, 40)
+    """
+
+    def __init__(
+            self,
+            in_channels,
+            out_channels,
+            hidden_channels=64,
+            num_sno_layers=3,
+            data_format="channels_first",
+            transforms=None,
+            kernel_size=5,
+            activation="gelu",
+            compute_dtype=mstype.float32):
+
+        super().__init__(
+            in_channels=in_channels,
+            out_channels=out_channels,
+            hidden_channels=hidden_channels,
+            num_sno_layers=num_sno_layers,
+            data_format=data_format,
+            transforms=transforms,
+            kernel_size=kernel_size,
             activation=activation,
             compute_dtype=compute_dtype)
