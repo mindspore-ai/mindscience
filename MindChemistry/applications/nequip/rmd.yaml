@@ -1,4 +1,3 @@
-
 pred_force: False
 profiling: False
 load_ckpt: False
@@ -6,6 +5,7 @@ load_ckpt_path: "./checkpoints/NequIP_rmd.ckpt"
 save_ckpt: True
 save_ckpt_interval: 200
 save_ckpt_path: "./checkpoints"
+enable_mix_precision: False
 
 model:
   irreps_embedding_out: 16x0e

@@ -56,8 +56,10 @@ class Linear(nn.Cell):
             irreps_out,
             instructions: Optional[List[Tuple[int, int]]] = None,
             pad_to_alignment: int = 1,
+            dtype=float32,
     ):
         super().__init__()
+        self.dtype = dtype
 
         irreps_in = Irreps(irreps_in)
         irreps_out = Irreps(irreps_out)
@@ -186,7 +188,13 @@ class Linear(nn.Cell):
 
             this_w = ws[w_index:w_index + n_weight].reshape(layout_out[5], layout_in[5], n)
 
-            outs[ins_grp[0][1]].append(self.ncon([this_w.astype(float16), to_mix.astype(float16)]).astype(float32))
+            if self.dtype == float16:
+                this_w = this_w.astype(float16)
+                to_mix = to_mix.astype(float16)
+            ncon_out = self.ncon([this_w, to_mix])
+            if self.dtype == float16:
+                ncon_out = ncon_out.astype(float32)
+            outs[ins_grp[0][1]].append(ncon_out)
             w_index += n_weight
 
         outs = [
