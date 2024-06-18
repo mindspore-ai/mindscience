@@ -1,0 +1,43 @@
+train:
+  device: Ascend
+  device_id: 0
+  dataset_dir: "./dataset"
+  ckpt_dir: "./ckpt"
+  props: "formation_energy_peratom"
+  epoch_size: 500
+  batch_size: 64
+  seed: 1234
+
+model:
+  conv_layers: 5
+  edge_layers: 0
+  atom_input_features: 92
+  edge_features: 128
+  node_features: 128
+  fc_features: 128
+  output_features: 1
+  node_layer_head: 4
+  link: 'identity'
+  use_angle: False
+  classification: False
+  angle_lattice: False
+  batch_size_max: 64
+
+dataset:
+  x_train_path: "./dataset/x_train.pkl"
+  edge_index_train_path: "./dataset/edge_index_train.pkl"
+  edge_attr_train_path: "./dataset/edge_attr_train.pkl"
+  label_train_path: "./dataset/label_train.pkl"
+  x_val_path: "./dataset/x_val.pkl"
+  edge_index_val_path: "./dataset/edge_index_val.pkl"
+  edge_attr_val_path: "./dataset/edge_attr_val.pkl"
+  label_val_path: "./dataset/label_val.pkl"
+
+checkpoint:
+  best_loss_path: "./ckpt/best_matformer.ckpt"
+
+predictor:
+  checkpoint_path: "./checkpoint.ckpt"
+  epoch_size: 10
+
+

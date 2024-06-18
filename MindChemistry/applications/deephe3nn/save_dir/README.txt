@@ -1,1 +1,0 @@
-Directory under which training result will be saved
