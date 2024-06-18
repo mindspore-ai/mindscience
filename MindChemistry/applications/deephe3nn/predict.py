@@ -23,13 +23,16 @@ Training of network model
 
 import os
 import argparse
+import logging
 import mindspore as ms
-from deephe3.kernel import DeepHE3Kernel
+from models.kernel import DeepHE3Kernel
 
+logging.basicConfig(level=logging.INFO)
 
 parser = argparse.ArgumentParser(description='Train DeepH-E3 network')
 parser.add_argument('config', type=str, metavar='CONFIG', help='Config file for training')
 parser.add_argument('-n', type=int, default=None, help='Maximum number of threads')
+parser.add_argument('-device_id', type=int, default=0, help='Device id')
 args = parser.parse_args()
 
 if args.n is not None:
@@ -39,8 +42,7 @@ if args.n is not None:
     os.environ["OPENBLAS_NUM_THREADS"] = f"{args.n}"
     os.environ["VECLIB_MAXIMUM_THREADS"] = f"{args.n}"
 
-
-ms.set_context(device_target="Ascend", device_id=1, mode=ms.GRAPH_MODE, max_call_depth=3000)
+ms.set_context(device_target="Ascend", device_id=args.device_id, mode=ms.GRAPH_MODE, max_call_depth=3000)
 
 kernel = DeepHE3Kernel()
-kernel.train(args.config)
+kernel.validate(args.config)

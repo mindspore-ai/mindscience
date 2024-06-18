@@ -31,8 +31,8 @@ import mindspore as ms
 import mindspore.nn as nn
 from mindspore import ops
 from mindspore.common.initializer import Uniform
-from .utils import tp_path_exists, GaussianBasis
-from .e3modules import SeparateWeightTensorProduct, E3ElementWise, E3LayerNorm, SkipConnection, SelfTp, SortIrreps
+from models.utils import tp_path_exists, GaussianBasis
+from models.e3modules import SeparateWeightTensorProduct, E3ElementWise, E3LayerNorm, SkipConnection, SelfTp, SortIrreps
 
 epsilon = 1e-8
 
@@ -137,7 +137,6 @@ class EquiConv(nn.Cell):
 
         sqrt128 = math.sqrt(128)
         sqrt64 = math.sqrt(64)
-
 
         if sqrt64 != 0:
             weightinit2 = Uniform(scale=1 / sqrt64)
@@ -285,7 +284,6 @@ class NodeUpdateBlock(nn.Cell):
                                   act=act,
                                   act_gates=act_gates,
                                   escn=self.escn)
-
         self.lin_post_node = LinearBias(irreps_in=self.conv_node.irreps_out,
                                         irreps_out=self.conv_node.irreps_out,
                                         has_bias=True,
@@ -728,6 +726,7 @@ class Net(nn.Cell):
                                    irreps_out=irreps_out_edge,
                                    has_bias=True,
                                    ncon_dtype=ms.float16)
+
     def __repr__(self):
         info = '===== DeepH-E3 model structure: ====='
         if self.use_sbf:
@@ -745,6 +744,7 @@ class Net(nn.Cell):
         info += f'\noutput edge: ({self.irreps_out_edge})'
 
         return info
+
     def construct(self, data_x, data_edge_index, data_edge_attr,
                   data_mask_length, batch_input_x, mask_dim1, mask_dim2,
                   mask_dim3):
@@ -755,7 +755,7 @@ class Net(nn.Cell):
         edge_one_hot = ops.one_hot(
             self.num_species * data_x[data_edge_index[0]] +
             data_x[data_edge_index[1]],
-            self.num_species**2,
+            self.num_species ** 2,
             1.0,
             0.0,
             axis=-1)

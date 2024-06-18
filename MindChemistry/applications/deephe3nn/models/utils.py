@@ -18,6 +18,7 @@ utils
 import os
 import shutil
 import random
+import logging
 import numpy as np
 from mindspore.train import ReduceLROnPlateau
 import mindspore as ms
@@ -52,6 +53,7 @@ def tp_path_exists(irreps_in1, irreps_in2, ir_out):
             if ir_out in ir1 * ir2:
                 return True
     return False
+
 
 def jn(r, n):
     """
@@ -185,6 +187,7 @@ class MaskMSELoss(nn.Cell):
 
     def __init__(self) -> None:
         pass
+
     def construct(self, inputs: ms.Tensor, target: ms.Tensor, mask: ms.Tensor) -> ms.Tensor:
         """
         MaskMSELoss class construct process
@@ -202,6 +205,7 @@ class MaskMAELoss(nn.Cell):
 
     def __init__(self) -> None:
         pass
+
     def construct(self, inputs: ms.Tensor, target: ms.Tensor, mask: ms.Tensor) -> ms.Tensor:
         """
         Masked MSELoss class construct process
@@ -317,7 +321,7 @@ class SlipSlopLR:
         last_lr = self.optimizer.learning_rate.value()
         self.optimizer.learning_rate.set_data(last_lr * self.decay_rate)
         new_lr = self.optimizer.learning_rate.value()
-        print(f'Learning rate {num_lr} is decayed from {last_lr} to {new_lr}.')
+        logging.info("Learning rate %s is decayed from %s to %s", num_lr, last_lr, new_lr)
 
     def state_dict(self):
         """
@@ -412,7 +416,7 @@ class RevertDecayLR:
                 self.save_model(epoch, val_loss, is_best=is_best)
                 save_complete = True
             except KeyboardInterrupt:
-                print('Interrupting while saving model might cause the saved model to be deprecated')
+                logging.info("Interrupting while saving model might cause the saved model to be deprecated")
 
     def revert(self):
         """
@@ -442,6 +446,7 @@ class RevertDecayLR:
         if is_best:
             shutil.copyfile(os.path.join(self.save_model_dir, model_ckpt),
                             os.path.join(self.save_model_dir, 'best_model.ckpt'))
+
 
 def process_targets(orbital_types, index_to_z, targets):
     """

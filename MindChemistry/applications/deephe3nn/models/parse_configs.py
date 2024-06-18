@@ -24,7 +24,7 @@ from configparser import ConfigParser
 import numpy as np
 import mindspore as ms
 from mindchemistry.e3.o3.irreps import Irreps
-from .utils import orbital_analysis
+from models.utils import orbital_analysis
 
 
 class BaseConfig:
@@ -111,9 +111,9 @@ class TrainConfig(BaseConfig):
         if self.use_new_hypp:
             self.get_hypp_section()
 
-        if self.checkpoint_dir:
-            config1_path = os.path.join(os.path.dirname(self.checkpoint_dir), 'src/train.ini')
-            self.get_config(config1_path, config_file_default=train_default)
+        # if self.checkpoint_dir:
+        #     config1_path = os.path.join(os.path.dirname(self.checkpoint_dir), 'src/train.ini')
+        #     self.get_config(config1_path, config_file_default=train_default)
 
         # overwrite settings using those in config
         if not self.use_new_hypp:
@@ -178,6 +178,7 @@ class TrainConfig(BaseConfig):
         index_train = 'train'
         self.batch_size = self._config.getint(index_train, 'batch_size')
         self.num_epoch = self._config.getint(index_train, 'num_epoch')
+        self.num_test_epoch = self._config.getint(index_train, 'num_test_epoch')
 
         self.min_lr = self._config.getfloat(index_train, 'min_lr')
 
@@ -241,7 +242,7 @@ class TrainConfig(BaseConfig):
         sbf_irreps = self._config.get(index_network, 'spherical_basis_irreps')
         if sh_lmax:
             sh_lmax = int(sh_lmax)
-            self.irreps_sh = Irreps([(1, (i, 1 if self.no_parity else (-1)**i)) for i in range(sh_lmax + 1)])
+            self.irreps_sh = Irreps([(1, (i, 1 if self.no_parity else (-1) ** i)) for i in range(sh_lmax + 1)])
             self.use_sbf = False
         else:
             self.irreps_sh = Irreps(sbf_irreps)
@@ -295,7 +296,6 @@ class TrainConfig(BaseConfig):
             self._net_out_irreps = Irreps(self._net_out_irreps).sort().irreps.simplify()
 
         self._target_set_flag = True
-
 
 
 class EvalConfig(BaseConfig):
