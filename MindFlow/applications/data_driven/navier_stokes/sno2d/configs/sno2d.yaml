@@ -22,6 +22,7 @@ optimizer:
   learning_rate: 0.0005
   epochs: 90
   weight_decay: 0.001
+  warmup_epochs: 1
   grad_clip_norm: 1.
 summary:
   root_dir: "./summary"

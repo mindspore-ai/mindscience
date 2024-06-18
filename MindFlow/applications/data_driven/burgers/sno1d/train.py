@@ -21,11 +21,11 @@ import datetime
 import numpy as np
 from mindspore import context, nn, Tensor, set_seed, ops, data_sink, jit, save_checkpoint
 from mindspore import dtype as mstype
-from mindflow import RelativeRMSELoss, load_yaml_config, get_warmup_cosine_annealing_lr
+from mindflow import SNO1D, get_poly_transform, RelativeRMSELoss, load_yaml_config, get_warmup_cosine_annealing_lr
 from mindflow.pde import UnsteadyFlowWithLoss
 from mindflow.utils import log_config, print_log, log_timer
 
-from src import SNO1D, get_poly_transform, create_training_dataset, load_interp_data, test_error, visual
+from src import create_training_dataset, load_interp_data, test_error, visual
 
 
 set_seed(0)

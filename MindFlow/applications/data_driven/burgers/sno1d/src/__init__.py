@@ -15,12 +15,8 @@
 """init"""
 from .dataset import create_training_dataset, load_interp_data
 from .utils import test_error, visual
-from .sno import SNO1D
-from .sno_utils import get_poly_transform
 
 __all__ = [
-    "SNO1D",
-    "get_poly_transform",
     "create_training_dataset",
     "load_interp_data",
     "test_error",

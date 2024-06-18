@@ -13,14 +13,10 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .sno import SNO3D
-from .sno_utils import get_poly_transform
 from .dataset import create_training_dataset, load_interp_data
 from .utils import UnitGaussianNormalizer, calculate_l2_error, visual
 
 __all__ = [
-    "SNO3D",
-    "get_poly_transform",
     "create_training_dataset",
     "load_interp_data",
     "calculate_l2_error",

@@ -14,10 +14,10 @@
 # ============================================================================
 """dataset"""
 import os
-import numpy as np
 
+import numpy as np
 from mindflow.data import Dataset, ExistedDataConfig
-from .sno_utils import interpolate_1d_dataset
+from mindflow.cell import interpolate_1d_dataset
 
 
 def load_interp_data(data_config, dataset_type='train', kind='cubic'):

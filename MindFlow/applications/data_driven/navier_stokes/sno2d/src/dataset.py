@@ -17,8 +17,7 @@ import os
 
 import numpy as np
 from mindflow.data import Dataset, ExistedDataConfig
-
-from .sno_utils import interpolate_2d_dataset
+from mindflow.cell import interpolate_2d_dataset
 
 
 def load_interp_data(data_config, dataset_type='train', kind='cubic'):

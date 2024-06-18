@@ -62,7 +62,7 @@ where:
 
 ### Run Option 2: Run Jupyter Notebook
 
-You can use [Chinese](./SNO2D_CN.ipynb) or [English](./SNO2D.ipynb)Jupyter Notebook to run the training and evaluation code line-by-line.
+You can use [English](./SNO2D.ipynb) Jupyter Notebook to run the training and evaluation code line-by-line.
 
 ## Results
 

@@ -59,7 +59,7 @@ where:
 
 ### Run Option 2: Run Jupyter Notebook
 
-You can use [Chinese](./SNO3D_CN.ipynb) or [English](./SNO3D.ipynb)Jupyter Notebook to run the training and evaluation code line-by-line.
+You can use [English](./SNO3D.ipynb) Jupyter Notebook to run the training and evaluation code line-by-line.
 
 ## Results
 

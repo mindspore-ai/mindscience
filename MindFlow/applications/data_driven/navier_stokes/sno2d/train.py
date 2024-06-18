@@ -22,10 +22,10 @@ import numpy as np
 from mindspore import nn, context, ops, Tensor, data_sink, jit, set_seed, save_checkpoint
 from mindspore import dtype as mstype
 from mindflow.pde import UnsteadyFlowWithLoss
-from mindflow import RelativeRMSELoss, get_warmup_cosine_annealing_lr
+from mindflow import SNO2D, get_poly_transform, RelativeRMSELoss, get_warmup_cosine_annealing_lr
 from mindflow.utils import load_yaml_config, log_config, print_log, log_timer
 
-from src import SNO2D, get_poly_transform, create_training_dataset, load_interp_data, calculate_l2_error, visual
+from src import create_training_dataset, load_interp_data, calculate_l2_error, visual
 
 set_seed(0)
 np.random.seed(0)
