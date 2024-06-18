@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""rotation"""
 import math
 import random
 
@@ -41,8 +42,8 @@ def identity_angles(*shape, dtype=float32):
         gamma (Tensor) - The gamma Euler angles.
 
     Raises:
-        TypeError: If dtype of 'shape' is not tuple. 
-        TypeError: If dtype of the element of 'shape' is not int. 
+        TypeError: If dtype of 'shape' is not tuple.
+        TypeError: If dtype of the element of 'shape' is not int.
     """
     if not isinstance(shape, tuple):
         raise TypeError
@@ -65,8 +66,8 @@ def rand_angles(*shape):
         gamma (Tensor) - The gamma Euler angles.
 
     Raises:
-        TypeError: If dtype of 'shape' is not tuple. 
-        TypeError: If dtype of the element of 'shape' is not int. 
+        TypeError: If dtype of 'shape' is not tuple.
+        TypeError: If dtype of the element of 'shape' is not int.
     """
     if not isinstance(shape, tuple):
         raise TypeError
@@ -86,16 +87,24 @@ def compose_angles(a1, b1, c1, a2, b2, c2):
         R(a, b, c) = R(a_1, b_1, c_1) \circ R(a_2, b_2, c_2)
 
     Note:
-        - The second set of Euler angles 'a2, b2, c2' are applied first, while the first set of Euler angles 'a2, b2, c2' are applied Second.
-        - The elements of Euler angles should be one of the following types: float, float32, np.float32.
+        - The second set of Euler angles 'a2, b2, c2' are applied first,
+            while the first set of Euler angles a2, b2, c2' are applied Second.
+        - The elements of Euler angles should be one of the following types:
+            float, float32, np.float32.
 
     Args:
-        a1 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The second applied alpha Euler angles. 
-        b1 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The second applied beta Euler angles. 
-        c1 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The second applied gamma Euler angles. 
-        a2 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The first applied alpha Euler angles. 
-        b2 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The first applied beta Euler angles. 
-        c2 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The first applied gamma Euler angles. 
+        a1 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The second applied alpha Euler angles.
+        b1 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The second applied beta Euler angles.
+        c1 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The second applied gamma Euler angles.
+        a2 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The first applied alpha Euler angles.
+        b2 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The first applied beta Euler angles.
+        c2 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The first applied gamma Euler angles.
 
     Returns:
         alpha (Tensor) - The composed alpha Euler angles.
@@ -113,7 +122,8 @@ def matrix_x(angle):
     Give the rotation matrices around x axis for given angle.
 
     Args:
-        angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The rotation angles around x axis.
+        angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The rotation angles around x axis.
             The shape of 'angle' is :math:'(...)'
 
     Returns:
@@ -136,7 +146,8 @@ def matrix_y(angle):
     Give the rotation matrices around y axis for given angle.
 
     Args:
-        angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The rotation angles around y axis.
+        angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The rotation angles around y axis.
             The shape of 'angle' is :math:'(...)'
 
     Returns:
@@ -159,7 +170,8 @@ def matrix_z(angle):
     Give the rotation matrices around z axis for given angle.
 
     Args:
-        angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The rotation angles around z axis.
+        angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The rotation angles around z axis.
             The shape of 'angle' is :math:'(...)'
 
     Returns:
@@ -182,12 +194,12 @@ def angles_to_matrix(alpha, beta, gamma):
     Conversion from angles to matrix.
 
     Args:
-        alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The alpha Euler angles.
-            tensor of shape :math:`(...)`
-        beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The beta Euler angles.
-            tensor of shape :math:`(...)`
-        gamma (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The gamma Euler angles.
-            tensor of shape :math:`(...)`
+        alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The alpha Euler angles. tensor of shape :math:`(...)`
+        beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The beta Euler angles. tensor of shape :math:`(...)`
+        gamma (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The gamma Euler angles. tensor of shape :math:`(...)`
 
     Returns:
         Tensor, the rotation matrices.
@@ -198,7 +210,7 @@ def angles_to_matrix(alpha, beta, gamma):
     return ops.matmul(ops.matmul(matrix_y(alpha), matrix_x(beta)), matrix_y(gamma))
 
 
-def matrix_to_angles(R):
+def matrix_to_angles(r_param):
     r"""
     Conversion from matrix to angles.
 
@@ -217,15 +229,15 @@ def matrix_to_angles(R):
     Raise:
         ValueError: If the det(R) is not equal to 1.
     """
-    if not np.allclose(np.linalg.det(R.asnumpy()), 1., 1e-3, 1e-5):
+    if not np.allclose(np.linalg.det(r_param.asnumpy()), 1., 1e-3, 1e-5):
         raise ValueError
 
-    x = ops.matmul(R, Tensor([0.0, 1.0, 0.0]))
+    x = ops.matmul(r_param, Tensor([0.0, 1.0, 0.0]))
     a, b = xyz_to_angles(x)
-    tmp_R = angles_to_matrix(a, b, ops.zeros_like(a))
-    perm = tuple(range(len(tmp_R.shape)))
-    R = ops.matmul(tmp_R.transpose(perm[:-2] + (perm[-1],) + (perm[-2],)), R)
-    c = ops.atan2(R[..., 0, 2], R[..., 0, 0])
+    tmp_r_param = angles_to_matrix(a, b, ops.zeros_like(a))
+    perm = tuple(range(len(tmp_r_param.shape)))
+    r_param = ops.matmul(tmp_r_param.transpose(perm[:-2] + (perm[-1],) + (perm[-2],)), r_param)
+    c = ops.atan2(r_param[..., 0, 2], r_param[..., 0, 0])
     return a, b, c
 
 
@@ -234,10 +246,10 @@ def angles_to_xyz(alpha, beta):
     Convert :math:`(\alpha, \beta)` into a point :math:`(x, y, z)` on the sphere.
 
     Args:
-        alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The alpha Euler angles.
-            tensor of shape :math:`(...)`
-        beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): The beta Euler angles.
-            tensor of shape :math:`(...)`
+        alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The alpha Euler angles. tensor of shape :math:`(...)`
+        beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
+        The beta Euler angles. tensor of shape :math:`(...)`
 
     Returns:
         Tensor, the point :math:`(x, y, z)` on the sphere.
@@ -268,7 +280,7 @@ def xyz_to_angles(xyz):
             tensor of shape :math:`(...)`
     """
     xyz = xyz / norm_keep(xyz, axis=-1)
-    xyz = ops.clip_by_value(xyz, -1, 1)
+    xyz = ops.nan_to_num(ops.clamp(xyz, -1, 1), 1.0)
 
     beta = ops.acos(xyz[..., 1])
     alpha = ops.atan2(xyz[..., 0], xyz[..., 2])
