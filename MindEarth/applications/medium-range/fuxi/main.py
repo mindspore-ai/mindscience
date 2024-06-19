@@ -21,12 +21,11 @@ import datetime
 import os
 import random
 import time
-
 import numpy as np
 
 from mindspore import set_seed, context
 from mindearth.utils import load_yaml_config
-from mindearth.data import Dataset, Era5Data
+from mindearth.data import Era5Data
 
 from src import init_data_parallel, init_model, get_logger
 from src import MAELossForMultiLabel, FuXiTrainer, CustomWithLossCell, InferenceModule
@@ -34,7 +33,6 @@ from src import MAELossForMultiLabel, FuXiTrainer, CustomWithLossCell, Inference
 set_seed(0)
 np.random.seed(0)
 random.seed(0)
-
 
 def get_args():
     """Get user specified parameters."""
@@ -46,7 +44,6 @@ def get_args():
                         help="Context mode, support 'GRAPH', 'PYNATIVE'")
     parser.add_argument('--device_id', type=int, default=0)
     parser.add_argument('--run_mode', type=str, choices=["train", "test"], default='train')
-
     params = parser.parse_args()
     return params
 
@@ -65,11 +62,8 @@ def test(cfg, model, logger):
     """FuXi test function"""
     data_params = cfg.get('data')
     test_dataset_generator = Era5Data(data_params=data_params, run_mode='test')
-    test_dataset = Dataset(test_dataset_generator, distribute=False,
-                           num_workers=data_params.get('num_workers'), shuffle=False)
-    test_dataset = test_dataset.create_dataset(data_params.get('batch_size'))
     inference_module = InferenceModule(model, cfg, logger)
-    inference_module.eval(test_dataset)
+    inference_module.eval(test_dataset_generator, generator_flag=True)
 
 
 if __name__ == '__main__':
@@ -79,18 +73,15 @@ if __name__ == '__main__':
     config = load_yaml_config(args.config_file_path)
     use_ascend = args.device_target == 'Ascend'
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                        device_target=args.device_target)
+                        )
 
     if config.get('train').get('distribute', False):
         init_data_parallel(use_ascend)
     else:
         context.set_context(device_id=args.device_id)
-
     fuxi_model = init_model(config, args.run_mode)
-
     logger_obj = get_logger(config)
     start_time = time.time()
-
     if args.run_mode == "train":
         train(config, fuxi_model, logger_obj)
     else:

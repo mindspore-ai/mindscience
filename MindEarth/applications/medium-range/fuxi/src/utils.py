@@ -51,6 +51,8 @@ def init_model(config, run_mode="train"):
     summary_params = config.get("summary")
     train_params["load_ckpt"] = run_mode == "test"
     model_params["recompute"] = data_params.get("grid_resolution") < 1.0
+    if run_mode != 'train':
+        model_params["recompute"] = False
     data_params["h_size"], data_params["w_size"] = data_params.get("h_size", 720), data_params.get("w_size", 1440)
     summary_params["summary_dir"] = get_model_summary_dir(config)
     make_dir(os.path.join(summary_params.get("summary_dir"), "image"))
@@ -58,7 +60,10 @@ def init_model(config, run_mode="train"):
                     out_channels=model_params.get("out_channels", 192), h_size=data_params.get("h_size", 720),
                     w_size=data_params.get("w_size", 1440), level_feature_size=data_params.get("level_feature_size", 5),
                     pressure_level_num=data_params.get("pressure_level_num", 13),
-                    surface_feature_size=data_params.get("surface_feature_size", 4))
+                    surface_feature_size=data_params.get("surface_feature_size", 4),
+                    batch_size=data_params.get("batch_size", 1),
+                    recompute=model_params["recompute"]
+                    )
     if train_params.get('load_ckpt'):
         params = load_checkpoint(summary_params.get("ckpt_path"))
         load_param_into_net(model, params)

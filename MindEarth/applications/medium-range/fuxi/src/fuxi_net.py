@@ -91,21 +91,19 @@ class FuXiNet(nn.Cell):
                  level_feature_size=5,
                  pressure_level_num=13,
                  surface_feature_size=4,
-                 kernel_size=(2, 4, 4)):
+                 batch_size=1,
+                 kernel_size=(2, 4, 4),
+                 recompute=False):
         super().__init__()
         self.out_channels = out_channels
         self.input_shape = [int(mnp.ceil(pressure_level_num / 2) + 1), h_size // 8, w_size // 8]
         self.cube_embed = CubeEmbed(in_channels, h_size, w_size, level_feature_size,
-                                    pressure_level_num, surface_feature_size)
+                                    pressure_level_num, surface_feature_size, batch_size)
         self.down_sample = DownSample(in_channels=in_channels, out_channels=out_channels)
-
-        swin_list = []
-        for _ in range(depths):
-            swin_list.append(BaseBlock(in_channels=out_channels, input_shape=self.input_shape))
-        self.swin_block = nn.SequentialCell(swin_list)
-
+        self.swin_block = nn.CellList([BaseBlock(in_channels=out_channels,
+                                                 input_shape=self.input_shape,
+                                                 recompute=recompute) for _ in range(depths)])
         self.up_sample = UpSample(in_channels=in_channels * 4, out_channels=out_channels)
-
         self.patch_recover = PatchRecover(out_channels, h_size, w_size, level_feature_size,
                                           pressure_level_num, surface_feature_size, kernel_size)
 
@@ -117,15 +115,13 @@ class FuXiNet(nn.Cell):
         """
         out = self.cube_embed(inputs)
         out_down_sample = self.down_sample(out)
-        _, z_size, h_size, w_size, _ = out_down_sample.shape
-        out_skip = out_down_sample.reshape(1, -1, self.out_channels)
-
-        out_swin_block = self.swin_block(out_down_sample)
-        out_swin_block = out_swin_block.reshape(1, -1, self.out_channels)
+        batch_size, z_size, h_size, w_size = out_down_sample.shape
+        out_skip = out_down_sample.reshape(batch_size, -1, self.out_channels)
+        out_swin_block = out_skip
+        for swin_block in self.swin_block:
+            out_swin_block = swin_block(out_swin_block, batch_size, z_size, h_size, w_size)
         out_swin_block = ops.concat((out_skip, out_swin_block), axis=2)
-        out_swin_block = out_swin_block.reshape(1, z_size, h_size, w_size, self.out_channels * 2)
-
+        out_swin_block = out_swin_block.reshape(batch_size, z_size, h_size, w_size, self.out_channels * 2)
         out_up_sample = self.up_sample(out_swin_block)
         output, output_surface = self.patch_recover(out_up_sample)
-
         return output, output_surface
