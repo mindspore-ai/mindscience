@@ -26,7 +26,7 @@ from mindspore import nn, Tensor, context, ops, jit
 from mindspore.train.serialization import load_param_into_net
 
 from mindflow.utils import load_yaml_config, print_log, log_config, log_timer
-from mindflow.loss import RelativeRMSELoss
+from mindflow.core import RelativeRMSELoss
 from mindflow.pde import UnsteadyFlowWithLoss
 
 from src import init_model, create_dataset, calculate_lp_loss_error

@@ -26,8 +26,8 @@ from mindspore import nn, context, ops, Tensor, jit, set_seed, save_checkpoint
 import mindspore.common.dtype as mstype
 
 from mindflow.cell import FNO2D
-from mindflow.common import get_warmup_cosine_annealing_lr
-from mindflow.loss import RelativeRMSELoss
+from mindflow.core import get_warmup_cosine_annealing_lr
+from mindflow.core import RelativeRMSELoss
 from mindflow.utils import load_yaml_config
 from mindflow.utils import log_config, print_log
 from mindflow.pde import UnsteadyFlowWithLoss

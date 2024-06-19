@@ -24,8 +24,8 @@ import numpy as np
 from mindspore import nn, Tensor, context, ops, jit, set_seed, data_sink, save_checkpoint
 from mindspore import dtype as mstype
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
-from mindflow.common import get_warmup_cosine_annealing_lr
-from mindflow.loss import RelativeRMSELoss
+from mindflow.core import get_warmup_cosine_annealing_lr
+from mindflow.core import RelativeRMSELoss
 from mindflow.utils import load_yaml_config, log_config, print_log
 
 from src import Trainer, init_dataset, init_model, plt_log, check_file_path, count_params

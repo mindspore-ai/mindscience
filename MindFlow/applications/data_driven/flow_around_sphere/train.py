@@ -25,7 +25,7 @@ from mindspore import nn, context, ops, jit, set_seed
 from mindspore import Tensor
 
 from mindflow.utils import load_yaml_config
-from mindflow.common import get_warmup_cosine_annealing_lr
+from mindflow.core import get_warmup_cosine_annealing_lr
 
 from src import ResUnet3D, create_dataset, UnsteadyFlow3D, check_file_path, calculate_metric
 

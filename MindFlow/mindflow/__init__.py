@@ -62,10 +62,8 @@ _mindspore_version_check()
 
 from .data import *
 from .geometry import *
-from .common import *
-from .operators import *
+from .core import *
 from .pde import *
-from .loss import *
 from .cell import *
 from .cfd import *
 from .utils import *
@@ -73,10 +71,8 @@ from .utils import *
 __all__ = []
 __all__.extend(data.__all__)
 __all__.extend(geometry.__all__)
-__all__.extend(common.__all__)
-__all__.extend(operators.__all__)
+__all__.extend(core.__all__)
 __all__.extend(pde.__all__)
-__all__.extend(loss.__all__)
 __all__.extend(cell.__all__)
 __all__.extend(cfd.__all__)
 __all__.extend(utils.__all__)

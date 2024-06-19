@@ -21,7 +21,7 @@ from mindspore import dtype as mstype
 from sympy import Function, symbols, sin, cos, pi
 
 from mindflow.pde import PDEWithLoss, sympy_to_mindspore
-from mindflow.loss import get_loss_metric
+from mindflow.core import get_loss_metric
 
 
 class Darcy2D(PDEWithLoss):

@@ -62,7 +62,7 @@ parser.add_argument(
     help="The target device to run, support 'Ascend', 'GPU'",
 )
 parser.add_argument("--device_id", type=int, default=0, help="ID of the target device")
-parser.add_argument("--config_file_path", type=str, default="./WaveD1V3_BGK.yaml")
+parser.add_argument("--config_file_path", type=str, default="./config/WaveD1V3_BGK.yaml")
 
 
 def train():

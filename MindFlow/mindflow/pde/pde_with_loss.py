@@ -21,8 +21,8 @@ import numpy as np
 from mindspore import jit_class
 
 from .sympy2mindspore import sympy_to_mindspore
-from ..operators import batched_hessian, batched_jacobian
-from ..loss import get_loss_metric
+from ..core import batched_hessian, batched_jacobian
+from ..core import get_loss_metric
 
 
 @jit_class

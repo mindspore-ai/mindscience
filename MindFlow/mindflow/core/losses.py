@@ -268,6 +268,7 @@ class WaveletTransformLoss(nn.LossBase):
                 self.mtl = MTLWeightedLoss(num_losses=self.wave_level + 1)
 
     def construct(self, logit, label):
+        """get total loss"""
         l1_loss = P.ReduceMean()(self.abs(logit - label))
         logit = unpatchify(logit)
         label = unpatchify(label)
@@ -295,6 +296,7 @@ class WaveletTransformLoss(nn.LossBase):
 
     @staticmethod
     def _split_data(data, axis=1):
+        """split data"""
         data_shape = data.shape
         data_re = []
         if axis == 1:

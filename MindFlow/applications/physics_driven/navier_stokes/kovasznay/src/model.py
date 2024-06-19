@@ -22,7 +22,7 @@ from mindspore import numpy as ms_np
 from mindspore import ops
 
 from mindflow import PDEWithLoss, sympy_to_mindspore
-from mindflow.loss import get_loss_metric
+from mindflow.core import get_loss_metric
 
 
 class Kovasznay(PDEWithLoss):

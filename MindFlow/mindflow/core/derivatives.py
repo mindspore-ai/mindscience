@@ -67,7 +67,7 @@ def batched_jacobian(model):
         ...         self.fc2 = nn.Dense(hidden, hidden)
         ...         self.fcout = nn.Dense(hidden, cout)
         ...         self.act = ops.Tanh()
-        ...     
+        ...
         ...     def construct(self, x):
         ...         x = self.act(self.fc1(x))
         ...         x = self.act(self.fc2(x))
@@ -115,7 +115,7 @@ def batched_hessian(model):
         ...         self.fc2 = nn.Dense(hidden, hidden)
         ...         self.fcout = nn.Dense(hidden, cout)
         ...         self.act = ops.Tanh()
-        ...     
+        ...
         ...     def construct(self, x):
         ...         x = self.act(self.fc1(x))
         ...         x = self.act(self.fc2(x))

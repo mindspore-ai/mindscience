@@ -20,7 +20,7 @@ from mindspore import jit_class
 from mindspore import ops
 from mindspore import Tensor
 from mindflow.pde import FlowWithLoss
-from mindflow.loss import RelativeRMSELoss
+from mindflow.core import RelativeRMSELoss
 
 
 @jit_class

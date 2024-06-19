@@ -21,7 +21,7 @@ import mindspore.common.dtype as mstype
 
 from .dft import SpectralConv1dDft, SpectralConv2dDft, SpectralConv3dDft
 from ..activation import get_activation
-from ...common.math import get_grid_1d, get_grid_2d, get_grid_3d
+from ...core.math import get_grid_1d, get_grid_2d, get_grid_3d
 from ...utils.check_func import check_param_type
 
 
