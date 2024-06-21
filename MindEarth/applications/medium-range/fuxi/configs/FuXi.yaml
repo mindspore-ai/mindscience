@@ -18,9 +18,9 @@ data:
   t_out_train: 1
   t_out_valid: 20
   t_out_test: 20
-  train_interval: 6
-  valid_interval: 1
-  test_interval: 1
+  train_interval: 1 
+  valid_interval: 6
+  test_interval: 6
   pred_lead_time: 6
   data_frequency: 6
   train_period: [2015, 2015]
@@ -44,7 +44,6 @@ summary:
   save_checkpoint_steps: 10
   keep_checkpoint_max: 50
   plt_key_info: True
-  save_rmse_acc: False
   key_info_timestep: [6, 72, 120]
   ckpt_path: ""
 train:
@@ -52,3 +51,4 @@ train:
   distribute: False
   amp_level: O2
   load_ckpt: False
+  mixed_precision: True

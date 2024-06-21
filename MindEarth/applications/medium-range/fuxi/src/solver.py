@@ -19,7 +19,6 @@ from mindearth.module import Trainer
 
 from .callback import EvaluateCallBack
 
-
 class FuXiTrainer(Trainer):
     r"""
     Self-define forecast model inherited from `Trainer`.
@@ -36,20 +35,17 @@ class FuXiTrainer(Trainer):
     """
     def __init__(self, config, model, loss_fn, logger):
         super().__init__(config, model, loss_fn, logger)
-        self.train_dataset, self.valid_dataset = self.get_dataset()
         self.pred_cb = self.get_callback()
         self.solver = self.get_solver()
-        self.train_params = config.get('train')
 
     def get_solver(self):
         """
         define the solver of the model, abstract method.
         """
-        loss_scale = amp.FixedLossScaleManager(128.0, False)
         solver = Model(network=self.loss_fn,
                        optimizer=self.optimizer,
-                       loss_scale_manager=loss_scale,
-                       amp_level=self.train_params.get("amp_level", "O2")
+                       loss_scale_manager=amp.DynamicLossScaleManager(2 ** 24, 2, 2000),
+                       amp_level='O2'
                        )
         return solver
 
@@ -57,5 +53,5 @@ class FuXiTrainer(Trainer):
         """
         define the callback of the model, abstract method.
         """
-        pred_cb = EvaluateCallBack(self.model, self.valid_dataset, self.config, self.logger)
+        pred_cb = EvaluateCallBack(self.model, self.valid_dataset_generator, self.config, self.logger)
         return pred_cb

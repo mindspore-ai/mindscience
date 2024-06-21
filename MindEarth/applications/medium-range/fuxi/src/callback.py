@@ -13,8 +13,11 @@
 # limitations under the License.
 # ==============================================================================
 """callback for fuxi"""
-import math
+import os
+import time
 import numpy as np
+
+import mindspore as ms
 from mindspore import ops, nn
 from mindspore.train.callback import Callback
 from mindspore.train.summary import SummaryRecord
@@ -26,10 +29,11 @@ from .utils import plt_key_info
 class MAELossForMultiLabel(nn.LossBase):
     """ MAELossForMultiLabel definition """
 
-    def __init__(self, reduction="mean", data_params=None, optimizer_params=None):
-        super(MAELossForMultiLabel, self).__init__(reduction)
+    def __init__(self, data_params=None, optimizer_params=None):
+        super(MAELossForMultiLabel, self).__init__()
         self.abs = ops.Abs()
         self.data_params = data_params
+        self.batch_size = data_params.get('batch_size', 1)
         self.optimizer_params = optimizer_params
         self.loss_weight = optimizer_params.get("loss_weight", 0.25)
         self.h_size = data_params.get("h_size", 720)
@@ -39,15 +43,28 @@ class MAELossForMultiLabel(nn.LossBase):
         self.pressure_level_num = data_params.get("pressure_level_num", 13)
         self.surface_feature_size = self.feature_dims - self.level_feature_size * self.pressure_level_num
 
+    def get_loss(self, x):
+        """
+        Computes the loss.
+        Args:
+            x (Tensor)
+        Returns:
+            Return the loss.
+        """
+        input_dtype = x.dtype
+        x = ops.cast(x, ms.float32)
+        x = ops.mean(x)
+        x = ops.cast(x, input_dtype)
+        return x
     def construct(self, x, x_surface, labels):
-        """"MAELossForMultiLabel forward function."""
+        """MAELossForMultiLabel forward function."""
         label = labels[..., :-self.surface_feature_size]
         label_surface = labels[..., -self.surface_feature_size:]
-        label = label.reshape(1, self.h_size, self.w_size, self.level_feature_size, self.pressure_level_num)
+        label = label.reshape(self.batch_size, self.h_size, self.w_size, self.level_feature_size,
+                              self.pressure_level_num)
         label = label.transpose(0, 3, 4, 1, 2)
-        label_surface = label_surface.reshape(1, self.h_size, self.w_size, -1)
+        label_surface = label_surface.reshape(self.batch_size, self.h_size, self.w_size, -1)
         label_surface = label_surface.transpose(0, 3, 1, 2)
-
         x1 = self.abs(x - label)
         x2 = self.abs(x_surface - label_surface)
         loss_x = self.get_loss(x1)
@@ -88,25 +105,28 @@ class InferenceModule(WeatherForecast):
         self.pressure_level_num = data_params.get('pressure_level_num', 13)
         self.surface_feature_size = data_params.get('surface_feature_size', 4)
         self.feature_dims = data_params.get('feature_dims', 69)
-        self.t_out_test = data_params.get('t_out_test', 1)
         self.logger = logger
         self.batch_size = data_params.get('batch_size', 1)
         self.t_in = data_params.get('t_in', 1)
-        self.fuxi_climate_mean = self.climate_mean.reshape(-1, self.w_size,
-                                                           self.feature_dims)[:-1].reshape(-1, self.feature_dims)
+        climate_mean = np.load(os.path.join(data_params.get("root_dir"), "statistic",
+                                            f"climate_{data_params.get('grid_resolution')}.npy"))
+        self.climate_mean = climate_mean.reshape(-1, self.w_size, self.feature_dims)[:-1].reshape(-1, self.feature_dims)
 
     def forecast(self, inputs):
         """InferenceModule forecast"""
         pred_list, data_list = [], []
-        for _ in range(self.t_out_test):
-            inputs = inputs.reshape(1, self.h_size * self.w_size, -1)
+        for _ in range(self.t_out):
+            inputs = inputs.squeeze()
+            cur_infer_start_time = time.time()
             pred, pred_surface = self.model(inputs)
-            pred = pred.reshape(self.level_feature_size * self.pressure_level_num, self.h_size * self.w_size)
-            pred_surface = pred_surface.reshape(self.surface_feature_size, self.h_size * self.w_size)
-
-            all_pred = ops.concat((pred, pred_surface), axis=0).transpose(1, 0)
-            pred_list.append(np.expand_dims(all_pred.asnumpy(), axis=0))
-            if self.t_out_test > 1:
+            cur_infer_end_time = time.time()
+            print(f"out shape:{pred.shape}, time cost:{cur_infer_end_time - cur_infer_start_time}")
+            pred = pred.reshape(self.batch_size, self.level_feature_size * self.pressure_level_num,
+                                self.h_size * self.w_size)
+            pred_surface = pred_surface.reshape(self.batch_size, self.surface_feature_size, self.h_size * self.w_size)
+            all_pred = ops.concat((pred, pred_surface), axis=1).transpose(0, 2, 1)
+            pred_list.append(all_pred.asnumpy())
+            if self.t_out > 1:
                 if self.t_in == 1:
                     inputs = all_pred
                 else:
@@ -114,51 +134,11 @@ class InferenceModule(WeatherForecast):
                     inputs = ops.concat(data_list, axis=-1).reshape(-1, self.feature_dims * self.t_in)
         return pred_list
 
-    def _calculate_lat_weight(self):
-        """Calculate weight according to """
-        lat_t = np.arange(0, self.h_size)
-        s = np.sum(np.cos(math.pi / 180. * self._lat(lat_t)))
-        weight = self._latitude_weighting_factor(lat_t, s)
-        grid_lat_weight = np.repeat(weight, self.w_size, axis=0).reshape(-1, 1)
-
-        return grid_lat_weight
-
-    def _get_metrics(self, inputs, labels):
-        """Get lat_weight_rmse and lat_weight_acc metrics"""
-        pred = self.forecast(inputs)
-        lat_weight_rmse_step = np.zeros((self.feature_dims, self.t_out_test))
-        labels = labels.asnumpy()
-        pred = np.concatenate(pred, axis=0)
-
-        # rmse
-        weight = self._calculate_lat_weight()
-        error = np.square(labels[0] - pred)
-        lat_weight_rmse_step = np.sum(error * weight, axis=1).transpose()
-
-        # acc
-        pred = pred * self.total_std.reshape((1, 1, -1)) + self.total_mean.reshape((1, 1, -1))
-        labels = labels * self.total_std.reshape((1, 1, 1, -1)) + self.total_mean.reshape((1, 1, 1, -1))
-        pred = pred - self.fuxi_climate_mean
-        labels = labels - self.fuxi_climate_mean
-        acc_numerator = pred * labels[0]
-        acc_numerator = np.sum(acc_numerator * weight, axis=1)
-        pred_square = np.square(pred)
-        label_square = np.square(labels[0])
-        acc_denominator = np.sqrt(np.sum(pred_square * weight, axis=1) * np.sum(label_square * weight, axis=1))
-        try:
-            lat_weight_acc = acc_numerator / acc_denominator
-        except ZeroDivisionError as e:
-            print(repr(e))
-        lat_weight_acc_step = lat_weight_acc.transpose()
-
-        return lat_weight_rmse_step, lat_weight_acc_step
-
 
 class EvaluateCallBack(Callback):
     """
     Monitor the prediction accuracy in training.
     """
-
     def __init__(self,
                  model,
                  valid_dataset,
@@ -192,7 +172,7 @@ class EvaluateCallBack(Callback):
         cb_params = run_context.original_args()
         if cb_params.cur_epoch_num % self.predict_interval == 0:
             self.eval_time += 1
-            lat_weight_rmse, lat_weight_acc = self.eval_net.eval(self.valid_dataset)
+            lat_weight_rmse, lat_weight_acc = self.eval_net.eval(self.valid_dataset, generator_flag=True)
             summary_params = self.config.get('summary')
             if summary_params.get('plt_key_info'):
                 plt_key_info(lat_weight_rmse, self.config, self.eval_time * self.predict_interval, metrics_type="RMSE",
