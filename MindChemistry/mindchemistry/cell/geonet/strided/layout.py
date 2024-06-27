@@ -16,7 +16,7 @@
 
 import math
 
-from mindchemistry.e3.o3 import Irreps
+from ....e3.o3 import Irreps
 
 
 class StridedLayout:

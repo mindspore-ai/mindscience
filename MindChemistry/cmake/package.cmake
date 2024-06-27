@@ -34,6 +34,8 @@ install(
         ${CMAKE_SOURCE_DIR}/mindchemistry/cell
         ${CMAKE_SOURCE_DIR}/mindchemistry/e3
         ${CMAKE_SOURCE_DIR}/mindchemistry/utils
+        ${CMAKE_SOURCE_DIR}/mindchemistry/graph
+        ${CMAKE_SOURCE_DIR}/mindchemistry/so2_conv
     DESTINATION ${INSTALL_PY_DIR}
     COMPONENT mindchemistry
 )

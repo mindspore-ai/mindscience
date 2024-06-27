@@ -16,7 +16,7 @@
 
 from mindspore import Tensor, nn, int32, ops
 
-from mindchemistry.e3.utils import Ncon
+from ....e3.utils import Ncon
 
 
 class MakeWeightedChannels(nn.Cell):
