@@ -14,7 +14,7 @@
 # ============================================================================
 """convolution"""
 from mindspore import nn, ops, float32
-from mindchemistry.graph.graph import AggregateEdgeToNode
+from ..graph.graph import AggregateEdgeToNode
 from ..e3.o3 import TensorProduct, Irreps, Linear
 from ..e3.nn import FullyConnectedNet
 

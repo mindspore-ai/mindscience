@@ -15,7 +15,7 @@
 """network"""
 from mindspore import nn, float32, int32
 
-from mindchemistry.graph.graph import AggregateNodeToGlobal
+from ..graph.graph import AggregateNodeToGlobal
 from ..e3.o3 import Irreps, SphericalHarmonics, Linear
 from ..e3.nn import OneHot
 from ..e3.utils import radius_graph

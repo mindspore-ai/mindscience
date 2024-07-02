@@ -21,8 +21,8 @@ import numpy as np
 import scipy as sp
 from mindspore import Tensor, nn, float32, float16
 
-from mindchemistry.e3.o3 import Irreps, wigner_3j
-from mindchemistry.e3.utils import Ncon
+from ....e3.o3 import Irreps, wigner_3j
+from ....e3.utils import Ncon
 from .layout import StridedLayout
 
 

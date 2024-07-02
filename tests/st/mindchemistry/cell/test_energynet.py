@@ -14,6 +14,7 @@
 # ============================================================================
 """test mindchemistry EnergyNet"""
 
+import os
 import numpy as np
 import pytest
 
@@ -31,6 +32,7 @@ def test_energynet():
     Description: The forward output should has expected shape.
     Expectation: Success or throw AssertionError.
     """
+    os.environ['MS_JIT_MODULES'] = "mindchemistry"
     context.set_context(mode=context.GRAPH_MODE)
     nergy_net = EnergyNet(
         irreps_embedding_out='16x0e',

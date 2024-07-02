@@ -15,7 +15,7 @@
 """norm"""
 import mindspore as ms
 from mindspore import ops, Parameter, nn
-from mindchemistry.graph.graph import AggregateNodeToGlobal, LiftGlobalToNode
+from .graph import AggregateNodeToGlobal, LiftGlobalToNode
 
 
 class BatchNormMask(nn.Cell):

@@ -14,6 +14,7 @@
 # ============================================================================
 """test mindchemistry Allegro"""
 
+import os
 import numpy as np
 import pytest
 
@@ -31,6 +32,7 @@ def test_allegro():
     Description: The forward output should has expected shape.
     Expectation: Success or throw AssertionError.
     """
+    os.environ['MS_JIT_MODULES'] = "mindchemistry"
     context.set_context(mode=context.GRAPH_MODE)
     allegro_model = Allegro(
         l_max=3,

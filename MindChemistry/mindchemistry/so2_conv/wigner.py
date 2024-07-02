@@ -20,7 +20,7 @@ wigner file
 
 from mindspore import ops
 import mindspore as ms
-from mindchemistry.e3.utils.func import broadcast_args
+from ..e3.utils.func import broadcast_args
 
 
 def wigner_D(lv, alpha, beta, gamma):

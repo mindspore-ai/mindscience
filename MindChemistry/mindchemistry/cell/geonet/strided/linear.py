@@ -20,8 +20,8 @@ from typing import List, Optional, Tuple
 from mindspore import Tensor, nn, ops, Parameter, float32, float16
 from mindspore.common.initializer import Normal, initializer
 
-from mindchemistry.e3.o3 import Irreps
-from mindchemistry.e3.utils import Ncon
+from ....e3.o3 import Irreps
+from ....e3.utils import Ncon
 from .layout import StridedLayout
 
 

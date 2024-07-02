@@ -18,8 +18,8 @@ so3 file
 import mindspore as ms
 from mindspore import nn, ops, vmap, jit_class
 from mindspore.numpy import tensordot
-from mindchemistry.e3 import o3
-from mindchemistry.e3.o3 import Irreps
+from ..e3 import o3
+from ..e3.o3 import Irreps
 
 from .wigner import wigner_D
 

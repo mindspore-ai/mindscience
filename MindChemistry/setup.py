@@ -35,7 +35,7 @@ version = read_version()
 
 required_package = [
     'numpy >= 1.21.6',
-    'scipy >= 1.7.3',
+    'scipy >= 1.9.0',
     'matplotlib >= 3.5.3',
     'psutil >= 5.9.4',
     'pandas >= 1.3.5',

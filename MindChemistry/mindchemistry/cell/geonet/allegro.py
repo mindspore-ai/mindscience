@@ -19,9 +19,9 @@ import mindspore as ms
 from mindspore import Tensor, ops, float16, float32
 from mindspore.nn import Cell, CellList, Identity
 
-from mindchemistry.cell.basic_block import MLPMixPrecision as MLP
-from mindchemistry.e3.o3 import Irreps, Irrep, Linear, SphericalHarmonics
-from mindchemistry.graph.graph import AggregateEdgeToNode, LiftNodeToEdge
+from ...cell.basic_block import MLPMixPrecision as MLP
+from ...e3.o3 import Irreps, Irrep, Linear, SphericalHarmonics
+from ...graph.graph import AggregateEdgeToNode, LiftNodeToEdge
 from .strided import MakeWeightedChannels, Contractor, Allegro_Linear
 
 
