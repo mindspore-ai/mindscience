@@ -1,0 +1,23 @@
+ensem_params:
+  charges : [6, 6, 6, 6, 6, 6, 1, 1, 1, 1, 1, 8, 1]
+  data_dir : './Dataset/'
+  workspace_dir : './phenol/'
+  train_dir : 'phenol_train/'
+  test_dir : 'phenol_test/'
+  n_trainings : [1000]
+  n_test : 500
+  gaussian_width : 0.42
+  spacing : 0.20
+  energy_types : ['diff']
+  metric : ['L-1', 1]
+  verbose : 0
+  density_kernel_type : 'rbf'
+  energy_kernel_type : 'rbf'
+  invariance: False
+
+train_params:
+  opt_type : 'adam'
+
+norm_params:
+  mean_std_density : [0.0, 1.0]
+  mean_std_energy : [-142429.3332, 1.1881]
