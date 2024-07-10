@@ -33,7 +33,7 @@
 
 ## 最新消息
 
-- `2024.04.30` 2024年4月30日 MindChemistry 0.1.0版本发布。
+- `2024.07.30` 2024年7月30日 MindChemistry 0.1.0版本发布。
 
 ## 特性
 
@@ -56,12 +56,12 @@
 - **电子结构预测**：
     - **体系**：材料化学
     - **数据**：双层石墨烯数据集。该数据集包含了原子位置、原子数等描述信息以及哈密顿量等性质信息。
-    - **任务**：密度泛函理论哈密顿量预测。我们集成了DeephE3nn模型，基于E3的等变神经网络，利用原子的结构去预测其的哈密顿量。
+    - **任务**：密度泛函理论哈密顿量预测。我们集成了DeephE3nn模型[4]，基于E3的等变神经网络，利用原子的结构去预测其的哈密顿量。
 
 - **晶体材料性质预测**：
     - **体系**：材料化学
     - **数据**：JARVIS-DFT 3D数据集。该数据集包含了晶体材料的原子位置、原子数等描述信息以及能量、力场等性质信息。
-    - **任务**：晶体材料性质预测。我们集成了Matformer模型，基于图神经网络和Transformer架构的模型，用于预测晶体材料的各种性质。
+    - **任务**：晶体材料性质预测。我们集成了Matformer模型[5]，基于图神经网络和Transformer架构的模型，用于预测晶体材料的各种性质。
 
 ### 功能模块
 
@@ -77,10 +77,10 @@
 
 由于MindChemistry与MindSpore有依赖关系，请根据下表中所指示的对应关系，在[MindSpore下载页面](https://www.mindspore.cn/versions)下载并安装对应的whl包。
 
-| MindChemistry | 分支   | MindSpore  | Python |
-| :------------ | :----- | :--------  | :----- |
-| master        | master  |      \      | >=3.8  |
-| 0.1.0         | r0.6    |   >=2.2.12  | >=3.8  |
+| MindChemistry | 分支   | MindSpore | Python |
+| :------------ | :----- |:----------| :----- |
+| master        | master  | >=2.3     | >=3.8  |
+| 0.1.0         | r0.6    | >=2.2.12  | >=3.8  |
 
 ### 依赖安装
 
@@ -143,3 +143,7 @@ yufan, wangzidong, liuhongsheng, gongyue, gengchenhua, linghejing, yanchaojie, s
 [2] Batzner S, Musaelian A, Sun L, et al. E(3)-equivariant graph neural networks for data-efficient and accurate interatomic potentials[J]. Nature communications, 2022, 13(1): 2453.
 
 [3] Musaelian A, Batzner S, Johansson A, et al. Learning local equivariant representations for large-scale atomistic dynamics[J]. Nature communications, 2023, 14(1): 579.
+
+[4] Xiaoxun Gong, He Li, Nianlong Zou, et al. General framework for E(3)-equivariant neural network representation of density functional theory Hamiltonian[J]. Nature communications, 2023, 14: 2848.
+
+[5] Keqiang Yan, Yi Liu, Yuchao Lin, Shuiwang ji, et al. Periodic Graph Transformers for Crystal Material Property Prediction[J]. arXiv:2209.11807v1 [cs.LG] 23 sep 2022.

@@ -49,7 +49,75 @@ def tp_path_exists(irreps_in1, irreps_in2, ir_out):
 
 
 class Allegro(Cell):
-    """Allegro
+    r"""
+    Allegro model.
+
+    Args:
+        - **l_max** (int): max irreps order of spherical_harmonics embeddings. Default: ``1``.
+        - **parity_setting** (string): the parity settings. Default: ``"o3_full"``.
+        - **num_layers** (int): layer number of allegro network. Default: ``1``.
+        - **env_embed_multi** (int): the number of channels of the feature in the network. Default: ``8``.
+        - **avg_num_neighbor** (float): average number of neighborhood atoms. Default: ``1.0``.
+        - **two_body_kwargs** (dict): arguments of two body latent MLP. Default: ``None``.
+        - **latent_kwargs** (dict): arguments of latent MLP. Default: ``None``.
+        - **env_embed_kwargs** (dict): arguments of environment embedded MLP. Default: ``None``.
+        - **irreps_in** (Irreps): the irreps dims of input arguments. Default: ``None``.
+
+    Inputs:
+        - **embedding_out** (tuple(Tensor)) - Tuple of tensor.
+        - **edge_index** (Tensor) - Tensor of shape :math:`(2, edge_num)`.
+        - **atom_types** (Tensor) - Tensor.
+
+    Outputs:
+        - **output** (Tensor) - Tensor of shape :math:`(edge_num, final_latent_out)`.
+
+    Raises:
+        ValueError: If irreps_in is None.
+        ValueError: If required fields not in irreps_in.
+        ValueError: If wrong mul in input_irreps.
+        ValueError: If env_embed_irreps not start with scalars.
+        ValueError: If new_tps_irreps not have equal length with tps_irreps.
+        ValueError: If order of tps_irreps not zero.
+        ValueError: If order of full_out_irreps not zero.
+        ValueError: If order of out_irreps not zero.
+
+    Supported Platforms:
+        ``Ascend``
+
+    Examples:
+        >>> import os
+        >>> import numpy as np
+        >>> import mindspore as ms
+        >>> from mindspore import context, Tensor
+        >>> from mindchemistry.cell.allegro import Allegro
+        >>> context.set_context(mode=context.GRAPH_MODE)
+        >>> allegro_model = Allegro(
+        >>>     l_max=3,
+        >>>     irreps_in={'pos': '1x1o', 'edge_index': None, 'node_attrs': '4x0e', 'node_features': '4x0e',
+        >>>                 'edge_embedding': '8x0e'},
+        >>>     avg_num_neighbor=11.0,
+        >>>     num_layers=3,
+        >>>     env_embed_multi=128,
+        >>>     two_body_kwargs={'hidden_dims': [128, 256, 512, 1024], 'activation': 'silu', 'weight_init': 'uniform'},
+        >>>     latent_kwargs={'hidden_dims': [1024, 1024, 1024], 'activation': 'silu', 'weight_init': 'uniform'},
+        >>>     env_embed_kwargs={'hidden_dims': [], 'activation': None, 'weight_init': 'uniform'}
+        >>>     )
+        >>> edges = 660
+        >>> final_latent_out = 1024
+        >>> embedding_out = (
+        >>>     Tensor(np.random.rand(60, 4), ms.float32),
+        >>>     Tensor(np.random.rand(60, 4), ms.float32),
+        >>>     Tensor(np.random.rand(660, 3), ms.float32),
+        >>>     Tensor(np.random.rand(660), ms.float32),
+        >>>     Tensor(np.random.rand(660, 8), ms.float32),
+        >>>     Tensor(np.random.rand(660), ms.float32),
+        >>>     Tensor(np.ones(660), ms.bool_)
+        >>>     )
+        >>> edge_index = Tensor(np.ones((2, 660)), ms.int32)
+        >>> atom_types = Tensor(np.ones((60, 1)), ms.int32)
+        >>> out = allegro_model(embedding_out, edge_index, atom_types)
+        >>> print(out.shape)
+        (660, 1024)
     """
 
     # pylint: disable=W0102

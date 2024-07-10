@@ -30,10 +30,21 @@ class NormActivation(nn.Cell):
         irreps_in (Union[str, Irrep, Irreps]): the input irreps.
         act (Func): an activation function for each part of the norm of `irreps_in`.
         normalize (bool): whether to normalize the input features before multiplying them by the scalars from the
-          nonlinearity. Default: True.
+            nonlinearity. Default: True.
         epsilon (float): when ``normalize``ing, norms smaller than ``epsilon`` will be clamped up to ``epsilon``
-          to avoid division by zero. Not allowed when `normalize` is False. Default: None.
+            to avoid division by zero. Not allowed when `normalize` is False. Default: None.
         bias (bool): whether to apply a learnable additive bias to the inputs of the `act`. Default: False.
+        init_method  (Union[str, float, mindspore.common.initializer]): initialize parameters.
+            Default: ``'normal'``.
+        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            Default: ``mindspore.float32``.
+
+    Inputs:
+        - **input** (Tensor) - Tensor of shape :math:`(..., irreps_in.dim)`.
+
+    Outputs:
+        - **output** (Tensor) - Tensor of shape :math:`(..., irreps_in.dim)`.
 
     Raises:
         ValueError: If `epsilon` is not None and `normalize` is False.
@@ -43,8 +54,16 @@ class NormActivation(nn.Cell):
         ``CPU``, ``GPU``, ``Ascend``
 
     Examples:
-        >>> NormActivation("2x1e", ops.sigmoid, bias=True)
+        >>> from mindchemistry.e3.nn import NormActivation
+        >>> from mindspore import ops, Tensor
+        >>> set_context(device_id=6)
+        >>> norm_activation = NormActivation("2x1e", ops.sigmoid, bias=True)
+        >>> print(norm_activation)
         NormActivation [sigmoid] (2x1e -> 2x1e)
+        >>> inputs = Tensor(ops.ones((4, 6)))
+        >>> outputs = norm_activation(inputs)
+        >>> print(outputs.shape)
+        (4, 6)
     """
 
     def __init__(self,

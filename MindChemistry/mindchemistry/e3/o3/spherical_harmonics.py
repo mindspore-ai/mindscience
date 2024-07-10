@@ -36,6 +36,15 @@ class SphericalHarmonics(nn.Cell):
         Default: 'integral'.
         irreps_out (Union[str, `Irreps`, None]): irreducible representations of input for spherical harmonics.
         Default: None.
+        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
+
+    Inputs:
+        x (Tensor): tensor for construct spherical harmonics.
+            tensor of shape :math:`x` of shape ``(..., 3)``
+
+    Outputs:
+        Tensor, the spherical harmonics :math:`Y^l(x)`.
+            tensor of shape ``(..., 2l+1)``
 
     Raise:
         ValueError: If `normalization` is not in {'integral', 'component', 'norm'}.
@@ -47,6 +56,12 @@ class SphericalHarmonics(nn.Cell):
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
 
+    Examples:
+    >>> sh = SphericalHarmonics(0, False, normalization='component')
+    >>> x = ops.rand(2,3)
+    >>> m = sh(x)
+    [[1.]
+    [1.]]
     """
 
     def __init__(self, irreps_out, normalize, normalization='integral', irreps_in=None, dtype=float32):
@@ -115,6 +130,15 @@ class SphericalHarmonics(nn.Cell):
         Returns:
             Tensor, the spherical harmonics :math:`Y^l(x)`.
                 tensor of shape ``(..., 2l+1)``
+
+        Examples:
+            >>> sh = SphericalHarmonics(irreps_out="1o + 2x2e", normalize=True)
+            >>> input = ops.ones([1,3])
+            >>> output = sh(input)
+            >>> print(output)
+            [[0.28209478 0.28209478 0.28209478 0.36418277 0.36418277 0
+              0.36418277 0          0.36418277 0.36418277 0 0.36418277
+              0]]
         """
         last_dim = x.shape[-1]
         if not last_dim == 3:

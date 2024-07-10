@@ -383,7 +383,23 @@ class TensorProduct(nn.Cell):
              - 'inner': weights will initialized in the tensor product internally.
              - 'share': weights should given manually without batch dimension.
              - 'custom': weights should given manually with batch dimension.
+        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
+        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            Default: ``mindspore.float32`` .
 
+    Inputs:
+        - **x** (Tensor) - Tensor of shape ``(..., irreps_in1.dim)``
+        - **y** (Tensor) - Tensor of shape ``(..., irreps_in2.dim)``
+        - **weight** (Tensor) - `Tensor` or list of `Tensor`, optional
+          required if ``internal_weights`` is ``False``
+          tensor of shape ``(self.weight_numel,)`` if ``shared_weights`` is ``True``
+          tensor of shape ``(..., self.weight_numel)`` if ``shared_weights`` is ``False``
+          or list of tensors of shapes ``weight_shape`` / ``(...) + weight_shape``.
+          Use ``self.instructions`` to know what are the weights used for.
+          Tensor of shape ``(..., irreps_out.dim)``
+
+    Outputs:
+        - **outputs** (Tensor) - Tensor of shape ``(..., irreps_out.dim)``
 
     Raises:
         ValueError: If `irreps_out` is not legal.

@@ -35,6 +35,7 @@ def identity_angles(*shape, dtype=float32):
 
     Args:
         shape (Tuple[int]): The shape of additional dimensions.
+        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
 
     Returns:
         alpha (Tensor) - The alpha Euler angles.
@@ -44,6 +45,14 @@ def identity_angles(*shape, dtype=float32):
     Raises:
         TypeError: If dtype of 'shape' is not tuple.
         TypeError: If dtype of the element of 'shape' is not int.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import ops
+        >>> m = identity_angles((1))
+        >>> print(m)
+        (Tensor(shape=[1], dtype=Float32, value= [ 0.00000000e+00]), Tensor(shape=[1], dtype=Float32,
+        value= [ 0.00000000e+00]), Tensor(shape=[1], dtype=Float32, value= [ 0.00000000e+00]))
     """
     if not isinstance(shape, tuple):
         raise TypeError
@@ -68,6 +77,14 @@ def rand_angles(*shape):
     Raises:
         TypeError: If dtype of 'shape' is not tuple.
         TypeError: If dtype of the element of 'shape' is not int.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import ops
+        >>> m = rand_angles((1))
+        >>> print(m)
+        (Tensor(shape=[1], dtype=Float32, value= [ 4.00494671e+00]), Tensor(shape=[1], dtype=Float32,
+        value= [ 1.29240000e+00]), Tensor(shape=[1], dtype=Float32, value= [ 5.71690750e+00]))
     """
     if not isinstance(shape, tuple):
         raise TypeError
@@ -111,6 +128,13 @@ def compose_angles(a1, b1, c1, a2, b2, c2):
         beta (Tensor) - The composed beta Euler angles.
         gamma (Tensor) - The composed gamma Euler angles.
 
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import ops
+        >>> m = compose_angles(0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
+        >>> print(m)
+        (Tensor(shape=[], dtype=Float32, value= 1.34227), Tensor(shape=[], dtype=Float32, value= 1.02462),
+        Tensor(shape=[], dtype=Float32, value= 1.47115))
     """
 
     a1, b1, c1, a2, b2, c2 = broadcast_args(a1, b1, c1, a2, b2, c2)
@@ -130,6 +154,14 @@ def matrix_x(angle):
         Tensor, the rotation matrices around x axis.
             The shape of output is :math:'(..., 3, 3)'
 
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import ops
+        >>> m = matrix_x(0.4)
+        >>> print(m)
+        [[ 1.          0.          0.        ]
+        [ 0.          0.92106086 -0.38941833]
+        [ 0.          0.38941833  0.92106086]]
     """
     angle = _to_tensor(angle)
     o = ops.ones_like(angle)
@@ -154,6 +186,14 @@ def matrix_y(angle):
         Tensor, the rotation matrices around y axis.
             The shape of output is :math:'(..., 3, 3)'
 
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import ops
+        >>> m = matrix_y(0.5)
+        >>> print(m)
+        [[ 0.87758255  0.          0.47942555]
+        [ 0.          1.          0.        ]
+        [-0.47942555  0.          0.87758255]]
     """
     angle = _to_tensor(angle)
     o = ops.ones_like(angle)
@@ -178,6 +218,14 @@ def matrix_z(angle):
         Tensor, the rotation matrices around z axis.
             The shape of output is :math:'(..., 3, 3)'
 
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import ops
+        >>> m = matrix_z(0.6)
+        >>> print(m)
+        [[ 0.8253357 -0.5646425  0.       ]
+        [ 0.5646425  0.8253357  0.       ]
+        [ 0.         0.         1.       ]]
     """
     angle = _to_tensor(angle)
     o = ops.ones_like(angle)
@@ -205,6 +253,14 @@ def angles_to_matrix(alpha, beta, gamma):
         Tensor, the rotation matrices.
             matrices of shape :math:`(..., 3, 3)`
 
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import ops
+        >>> m = angles_to_matrix(0.4, 0.5, 0.6)
+        >>> print(m)
+        [[ 0.5672197   0.1866971   0.8021259 ]
+        [ 0.27070403  0.87758255 -0.395687  ]
+        [-0.77780527  0.44158012  0.4472424 ]]
     """
     alpha, beta, gamma = broadcast_args(alpha, beta, gamma)
     return ops.matmul(ops.matmul(matrix_y(alpha), matrix_x(beta)), matrix_y(gamma))
@@ -228,6 +284,16 @@ def matrix_to_angles(r_param):
 
     Raise:
         ValueError: If the det(R) is not equal to 1.
+
+    Examples:
+        >>> import mindspore as ms
+        >>> from mindspore import ops
+        >>> input = ms.Tensor([[0.5672197, 0.1866971, 0.8021259], [0.27070403, 0.87758255, -0.395687],
+        >>>                    [-0.77780527, 0.44158012,0.4472424]])
+        >>> m = matrix_to_angles(input)
+        >>> print(m)
+        (Tensor(shape=[], dtype=Float32, value= 0.4), Tensor(shape=[], dtype=Float32, value= 0.5),
+        Tensor(shape=[], dtype=Float32, value= 0.6))
     """
     if not np.allclose(np.linalg.det(r_param.asnumpy()), 1., 1e-3, 1e-5):
         raise ValueError
@@ -254,6 +320,11 @@ def angles_to_xyz(alpha, beta):
     Returns:
         Tensor, the point :math:`(x, y, z)` on the sphere.
             tensor of shape :math:`(..., 3)`
+
+    Examples
+    >>> import mindspore as ms
+    >>> print(angles_to_xyz(ms.Tensor(1.7), ms.Tensor(0.0)).abs())
+    [0., 1., 0.]
     """
     alpha, beta = broadcast_args(alpha, beta)
     x = sin(beta) * sin(alpha)
@@ -278,6 +349,13 @@ def xyz_to_angles(xyz):
             tensor of shape :math:`(...)`
         beta (Tensor) - The beta Euler angles.
             tensor of shape :math:`(...)`
+
+    Examples:
+        >>> import mindspore as ms
+        >>> input = ms.Tensor([3, 3, 3])
+        >>> m = xyz_to_angles(input)
+        >>> print(m)
+        (Tensor(shape=[], dtype=Float32, value= 0.785398), Tensor(shape=[], dtype=Float32, value= 0.955318))
     """
     xyz = xyz / norm_keep(xyz, axis=-1)
     xyz = ops.nan_to_num(ops.clamp(xyz, -1, 1), 1.0)

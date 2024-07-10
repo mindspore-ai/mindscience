@@ -35,7 +35,14 @@ def change_basis_real_to_complex(l, dtype=float32):
         dtype (dtype):{float32, float64} data type of the real basis. Default: float32.
 
     Returns:
-        Tensor, the complex basis with dtpye complex64 for `dtype`=float32 and complex128 for `dtype`=float64.
+        Tensor, the complex basis with dtype complex64 for `dtype`=float32 and complex128 for `dtype`=float64.
+
+    Examples:
+        >>> m = change_basis_real_to_complex(1)
+        >>> print(m)
+        [[-0.70710677+0.j          0.        +0.j          0.        -0.70710677j]
+        [ 0.        +0.j          0.        -1.j          0.        +0.j        ]
+        [-0.70710677+0.j          0.        +0.j          0.        +0.70710677j]]
     """
     q = np.zeros((2 * l + 1, 2 * l + 1), np.complex128)
     for m in range(-l, 0):
@@ -69,6 +76,30 @@ def su2_generators(j, dtype=complex64):
 
     Raise:
         TypeError: If `j` is not int.
+
+    Examples:
+        >>> m = su2_generators(1)
+        >>> print(m)
+        [[[ 0.        +0.j          0.70710677+0.j
+            0.        +0.j        ]
+        [-0.70710677+0.j          0.        +0.j
+            0.70710677+0.j        ]
+        [ 0.        +0.j         -0.70710677+0.j
+            0.        +0.j        ]]
+
+        [[-0.        -1.j          0.        +0.j
+            0.        +0.j        ]
+        [ 0.        +0.j          0.        +0.j
+            0.        +0.j        ]
+        [ 0.        +0.j          0.        +0.j
+            0.        +1.j        ]]
+
+        [[ 0.        -0.j          0.        +0.70710677j
+            0.        -0.j        ]
+        [ 0.        +0.70710677j  0.        -0.j
+            0.        +0.70710677j]
+        [ 0.        -0.j          0.        +0.70710677j
+            0.        -0.j        ]]]
     """
     if not isinstance(j, int):
         raise TypeError
@@ -101,6 +132,21 @@ def so3_generators(l, dtype=float32):
     Raise:
         TypeError: If `l` is not int.
         ValueError: If matrices data are inconsistent.
+
+    Examples:
+        >>> m = so3_generators(1)
+        >>> print(m)
+        [[[ 0.          0.          0.        ]
+        [ 0.          0.         -0.99999994]
+        [ 0.          0.99999994  0.        ]]
+
+        [[ 0.          0.          0.99999994]
+        [ 0.          0.          0.        ]
+        [-0.99999994  0.          0.        ]]
+
+        [[ 0.         -0.99999994  0.        ]
+        [ 0.99999994  0.          0.        ]
+        [ 0.          0.          0.        ]]]
     """
     if not isinstance(l, int):
         raise TypeError
@@ -139,6 +185,14 @@ def wigner_D(l, alpha, beta, gamma):
     Returns:
         Tensor, Wigner D matrix :math:`D^l(\alpha, \beta, \gamma)`.
             tensor of shape :math:`(2l+1, 2l+1)`
+
+    Examples:
+        >>> m = wigner_D(1,1,1,1)
+        >>> print(m)
+        [[-0.09064701  0.7080733   0.70029646]
+        [ 0.7080733   0.54030234 -0.45464867]
+        [-0.7002964   0.45464864 -0.5503447 ]]
+
     """
 
     alpha, beta, gamma = broadcast_args(alpha, beta, gamma)
@@ -164,6 +218,7 @@ def wigner_3j(l1, l2, l3, dtype=float32):
         l1 (int): :math:`l_1`.
         l2 (int): :math:`l_2`.
         l3 (int): :math:`l_3`.
+        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
 
     Returns:
         Tensor, Wigner 3j symbols :math:`C_{lmn}`.
@@ -172,6 +227,21 @@ def wigner_3j(l1, l2, l3, dtype=float32):
     Raise:
         TypeError: If `l1`, `l2` or `l3` are not int.
         ValueError: If `l1`, `l2` and `l3` do not satisfy abs(l2 - l3) <= l1 <= l2 + l3.
+
+    Examples:
+        >>> m = wigner_3j(1,1,1)
+        >>> print(m)
+        [[[ 0.         0.         0.       ]
+        [ 0.         0.         0.4082483]
+        [ 0.        -0.4082483  0.       ]]
+
+        [[ 0.         0.        -0.4082483]
+        [ 0.         0.         0.       ]
+        [ 0.4082483  0.         0.       ]]
+
+        [[ 0.         0.4082483  0.       ]
+        [-0.4082483  0.         0.       ]
+        [ 0.         0.         0.       ]]]
     """
     if not isinstance(l1, int) and isinstance(l2, int) and isinstance(l3, int):
         raise TypeError

@@ -37,7 +37,8 @@ class FullyConnectedTensorProduct(TensorProduct):
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
         'xavier_uniform'}, the initial method of weights. Default: 'normal'.
-
+        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            Default: ``mindspore.float32`` .
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
 
@@ -77,7 +78,8 @@ class FullTensorProduct(TensorProduct):
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
         'xavier_uniform'}, the initial method of weights. Default: 'normal'.
-
+        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            Default: ``mindspore.float32`` .
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
 
@@ -117,6 +119,8 @@ class ElementwiseTensorProduct(TensorProduct):
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
             'xavier_uniform'}, the initial method of weights. Default: 'normal'.
+        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            Default: ``mindspore.float32`` .
 
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
@@ -155,6 +159,8 @@ class Linear(TensorProduct):
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
             'xavier_uniform'}, the initial method of weights. Default: 'normal'.
+        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            Default: ``mindspore.float32`` .
 
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
@@ -258,6 +264,8 @@ class LinearBias(TensorProduct):
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
         'xavier_uniform'}, the initial method of weights. Default: 'normal'.
         has_bias (bool): whether add bias to calculation
+        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            Default: ``mindspore.float32`` .
 
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
@@ -439,6 +447,8 @@ class TensorSquare(TensorProduct):
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
         'xavier_uniform'}, the initial method of weights. Default: 'normal'.
+        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            Default: ``mindspore.float32`` .
 
     Raises:
         ValueError: If both `irreps_out` and `filter_ir_out` are not None.

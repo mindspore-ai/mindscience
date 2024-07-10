@@ -1,0 +1,15 @@
+mindchemistry.e3.o3.Linear
+============================
+
+.. py:class:: mindchemistry.e3.o3.Linear(irreps_in1, irreps_in2, filter_ir_out, ncon_dtype, **kwargs)
+
+    线性运算是等变的。
+    相当于带有"instructions='linear'"的"TensorProduct'"。有关详细信息，请参阅"mindchemistry.e3.TensorProduct"。
+
+    参数:
+        - **irreps_in1** (Union[str, Irrep, Irreps]) - 第一个输入的Irreps。
+        - **irreps_in2** (Union[str, Irrep, Irreps]) - 第二个输入的Irreps。
+        - **irrep_norm** (str) - {'component'，'norm'｝，输入和输出表示的假定归一化。默认值: ``"component"``。
+        - **path_norm** (str) - ｛'element'，'path'｝，路径权重的规范化方法。默认值:``'element'``。
+        - **weight_init** (str) - ｛'zeros'，'ones'，'truncatedNormal'，'normal'，'uniform'，'he_uniform'，'she_normal'，'xavier_uniform'}，权重的初始方法。默认值:``"normal"``。
+        - **ncon_dtype** (mindspore.dtype) - ncon 计算模块输入张量的类型。默认值：``mindspore.float32`` 。

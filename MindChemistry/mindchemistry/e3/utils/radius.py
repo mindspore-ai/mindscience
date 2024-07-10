@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""radius"""
 from scipy.spatial import cKDTree
 import numpy as np
 
 
 def _reshape_and_batch(x, batch_x):
+    """_reshape_and_batch"""
     if x.ndim > 2:
         if batch_x is None:
             batch_x = np.broadcast_to(np.arange(0, x.shape[0]).reshape(-1, 1), (x.shape[0], x.shape[1])).flatten()
@@ -37,15 +39,31 @@ def radius(x, y, r, batch_x=None, batch_y=None, max_num_neighbors=32):
         x (ndarray): node feature matrix.
         y (ndarray): node feature matrix.
         r (ndarray, float): the radius.
-        batch_x (ndarray): batch vector. Default: None.
-        batch_y (ndarray): batch vector. Default: None.
-        max_num_neighbors (int): The maximum number of neighbors to return for each element in `y`.
+        batch_x (ndarray): batch vector. Default: ``None``.
+        batch_y (ndarray): batch vector. Default: ``None``.
+        max_num_neighbors (int): The maximum number of neighbors to return for each element in `y`. Dufault: ``32``.
 
     Returns:
-        ndarray, including edges of source and destination.
+        - **edge_index** (numpy.ndarray): including edges of source and destination.
+        - **batch_x** (numpy.ndarray): batch vector.
+        - **batch_y** (numpy.ndarray): batch vector.
 
     Raises:
         ValueError: If the last dimension of `x` and `y` do not match.
+
+    Examples:
+        >>> from mindchemistry.e3.utils import radius
+        >>> import numpy as np
+        >>> np.random.seed(1)
+        >>> x = np.random.random((5, 12, 3))
+        >>> r = 0.5
+        >>> edge_index, batch_x, batch_y = radius(x, x, r)
+        >>> print(edge_index.shape)
+        (2, 222)
+        >>> print(batch_x.shape)
+        (60,)
+        >>> print(batch_y.shape)
+        (60,)
 
     """
     if not x.shape[-1] == y.shape[-1]:
@@ -69,6 +87,8 @@ def radius(x, y, r, batch_x=None, batch_y=None, max_num_neighbors=32):
     return np.stack([row[mask], col[mask]], axis=0), batch_x, batch_y
 
 
+# pylint: disable=C0103
+# pylint: disable=W0612
 def radius_graph(x, r, batch=None, loop=False, max_num_neighbors=32, flow='source_to_target'):
     r"""
     Computes graph edges to all points within a given distance.
@@ -76,13 +96,30 @@ def radius_graph(x, r, batch=None, loop=False, max_num_neighbors=32, flow='sourc
     Args:
         x (Tensor): node feature matrix.
         r (Tensor, float): the radius.
-        batch (Tensor): batch vector. Default: None.
-        loop (bool): whether contain self-loops in the graph. Dufault: False.
-        max_num_neighbors (int): The maximum number of neighbors to return for each element in `y`.
-        flow (str): {'source_to_target', 'target_to_source'}, the flow direction when using in combination with message passing. Dufault: 'source_to_target'.
+        batch (Tensor): batch vector. Default: ``None``.
+        loop (bool): whether contain self-loops in the graph. Dufault: ``False``.
+        max_num_neighbors (int): The maximum number of neighbors to return for each element in `y`. Dufault: ``32``.
+        flow (str): {'source_to_target', 'target_to_source'}, the flow direction when using in combination with
+            message passing. Dufault: ``'source_to_target'``.
 
     Raises:
         ValueError: If `flow` is not in {'source_to_target', 'target_to_source'}.
+
+    Returns:
+        - **edge_index** (ndarray): including edges of source and destination.
+        - **batch** (ndarray): batch vector.
+
+    Examples:
+        >>> from mindchemistry.e3.utils import radius_graph
+        >>> import numpy as np
+        >>> np.random.seed(1)
+        >>> x = np.random.random((5, 12, 3))
+        >>> r = 0.5
+        >>> edge_index, batch = radius_graph(x, r)
+        >>> print(edge_index.shape)
+        (2, 162)
+        >>> print(batch.shape)
+        (60,)
     """
 
     if flow not in ['source_to_target', 'target_to_source']:
@@ -96,6 +133,36 @@ def radius_graph(x, r, batch=None, loop=False, max_num_neighbors=32, flow='sourc
 
 
 def radius_full(x, y, batch_x=None, batch_y=None):
+    r"""
+    Find all points in `x` for each element in `y`.
+
+    Args:
+        x (Tensor): node feature matrix.
+        y (Tensor): node feature matrix.
+        batch_x (ndarray): batch vector. Default: ``None``.
+        batch_y (ndarray): batch vector. Default: ``None``.
+
+    Returns:
+        - **edge_index** (numpy.ndarray): including edges of source and destination.
+        - **batch_x** (numpy.ndarray): batch vector.
+        - **batch_y** (numpy.ndarray): batch vector.
+
+    Raises:
+        ValueError: If the last dimension of `x` and `y` do not match.
+
+    Examples:
+        >>> from mindchemistry.e3.utils import radius_full
+        >>> from mindspore import ops, Tensor
+        >>> x = Tensor(ops.ones((5, 12, 3)))
+        >>> edge_index, batch_x, batch_y = radius_full(x, x)
+        >>> print(edge_index.shape)
+        (2, 720)
+        >>> print(batch_x.shape)
+        (60,)
+        >>> print(batch_y.shape)
+        (60,)
+
+    """
     if not x.shape[-1] == y.shape[-1]:
         raise ValueError(f"Feature size do not match.")
 
@@ -123,6 +190,34 @@ def radius_full(x, y, batch_x=None, batch_y=None):
 
 
 def radius_graph_full(x, batch=None, loop=False, flow='source_to_target'):
+    r"""
+    Computes graph edges to all points within a given distance.
+
+    Args:
+        x (Tensor): node feature matrix.
+        batch (Tensor): batch vector. Default: ``None``.
+        loop (bool): whether contain self-loops in the graph. Dufault: ``False``.
+        flow (str): {'source_to_target', 'target_to_source'}, the flow direction when using in combination with
+            message passing. Dufault: ``'source_to_target'``.
+
+    Returns:
+        - **edge_index** (ndarray): including edges of source and destination.
+        - **batch** (ndarray): batch vector.
+
+    Raises:
+        ValueError: If `flow` is not in {'source_to_target', 'target_to_source'}.
+
+    Examples:
+        >>> from mindchemistry.e3.utils import radius_graph_full
+        >>> from mindspore import ops, Tensor
+        >>> x = Tensor(ops.ones((5, 12, 3)))
+        >>> edge_index, batch = radius_graph_full(x)
+        >>> print(edge_index.shape)
+        (2, 660)
+        >>> print(batch.shape)
+        (60,)
+
+    """
     if flow not in ['source_to_target', 'target_to_source']:
         raise ValueError(f'`flow` should be in ["source_to_target", "target_to_source"].')
 

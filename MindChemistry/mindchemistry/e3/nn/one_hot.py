@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""OneHot"""
 import math
 
 import numpy as np
@@ -22,7 +23,6 @@ from mindspore import numpy as mnp
 from ..o3.irreps import Irreps
 
 TMAP = {"MixedPrecisionType.FP16": float16, "MixedPrecisionType.FP32": float32}
-
 
 def soft_unit_step(x):
     r"""
@@ -36,6 +36,14 @@ def soft_unit_step(x):
 
     Returns:
         Tensor, the output of the unit step function.
+
+    Examples:
+        >>> from mindchemistry.e3.nn import soft_unit_step
+        >>> from mindspore import ops, set_context, Tensor
+        >>> x = Tensor(ops.linspace(-1.0, 10.0, 1000))
+        >>> outputs = soft_unit_step(x)
+        >>> print(outputs.shape)
+        (1000,)
 
     """
     return ops.relu(x) * ops.exp(- 1 / x) / x
@@ -63,6 +71,8 @@ class OneHot(nn.Cell):
         return f'OneHot [num_types: {self.num_types}] ( -> {self.irreps_output})'
 
 
+# pylint: disable=C0103
+# pylint: disable=R1705
 class SoftOneHotLinspace(nn.Cell):
     r"""
     Projection on a basis of functions. Returns a set of :math:`\{y_i(x)\}_{i=1}^N`,
@@ -79,21 +89,35 @@ class SoftOneHotLinspace(nn.Cell):
     Note that `bessel` basis cannot be normalized.
 
     Args:
-        x (Tensor): the input tensor of the functions.
         start (float): minimum value span by the basis.
         end (float): maximum  value span by the basis.
         number (int): number of basis functions :math:`N`.
-        basis (str): {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}, the basis family. Default: 'smooth_finite'.
-        cutoff (bool): whether require the :math:`y_i(x)` from the outside domain of (`start`, `end`) to be vanished. Default: True.
+        basis (str): {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}, the basis family.
+            Default: ``'smooth_finite'``.
+        cutoff (bool): whether require the :math:`y_i(x)` from the outside domain of (`start`, `end`) to be
+            vanished. Default: ``True``.
+        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+
+    Inputs:
+        - **x** (Tensor) - Tensor of shape :math:`(...)`.
+
+    Outputs:
+        - **output** (Tensor) - Tensor of shape :math:`(..., N)`.
+
+    Raises:
+        ValueError: If `basis` is not in {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}.
 
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
 
-    Returns:
-        Tensor, the outputs of the basis functions :math:`y_i(x)`.
-
-    Raises:
-        ValueError: If `basis` is not in {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}.
+    Examples:
+        >>> from mindchemistry.e3.nn import SoftOneHotLinspace
+        >>> from mindspore import ops, Tensor
+        >>> soft_one_hot_linspace = SoftOneHotLinspace(-0.5, 1.5, number=4)
+        >>> x = Tensor(ops.ones((4, 6)))
+        >>> outputs = soft_one_hot_linspace(x)
+        >>> print(outputs.shape)
+        (4, 6, 4)
 
     """
 
@@ -124,6 +148,7 @@ class SoftOneHotLinspace(nn.Cell):
         self.bessel_roots = mnp.arange(1, self.number + 1) * self.PI
 
     def construct(self, x):
+        """construct"""
         diff = (x.expand_dims(-1) - self.values) / self.step
 
         if self.basis == 'gaussian':
@@ -142,7 +167,7 @@ class SoftOneHotLinspace(nn.Cell):
                 return ops.cos(self.PI * i * x) / self.consts[1]
             else:
                 i = mnp.arange(1, self.number + 1)
-                return ops.sin(self.PI * i * x) / self.consts[1] * (0 < x) * (x < 1)
+                return ops.sin(self.PI * i * x) / self.consts[1] * (x > 0) * (x < 1)
 
         if self.basis == 'bessel':
             x = x.expand_dims(-1) - self.start
@@ -151,7 +176,7 @@ class SoftOneHotLinspace(nn.Cell):
             if not self.cutoff:
                 return out
             else:
-                return out * ((x / self.c) < 1) * (0 < x)
+                return out * ((x / self.c) < 1) * (x > 0)
 
         else:
             raise ValueError(f"Unsupported basis: {self.basis}.")
@@ -179,18 +204,28 @@ def soft_one_hot_linspace(x, start, end, number, basis='smooth_finite', cutoff=T
     Note that `bessel` basis cannot be normalized.
 
     Args:
-        x (Tensor): the input tensor of the functions.
+        x (Tensor): Tensor of shape :math:`(...)`.
         start (float): minimum value span by the basis.
         end (float): maximum  value span by the basis.
         number (int): number of basis functions :math:`N`.
-        basis (str): {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}, the basis family. Default: 'smooth_finite'.
-        cutoff (bool): whether require the :math:`y_i(x)` from the outside domain of (`start`, `end`) to be vanished. Default: True.
+        basis (str): {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}, the basis family.
+            Default: ``'smooth_finite'``.
+        cutoff (bool): whether require the :math:`y_i(x)` from the outside domain of (`start`, `end`) to be
+            vanished. Default: ``True``.
 
     Returns:
-        Tensor, the outputs of the basis functions :math:`y_i(x)`.
+        Tensor of shape :math:`(..., N)`.
 
     Raises:
         ValueError: If `basis` is not in {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}.
+
+    Examples:
+        >>> from mindchemistry.e3.nn import soft_one_hot_linspace
+        >>> from mindspore import ops, Tensor
+        >>> x = Tensor(ops.ones((4, 6)))
+        >>> outputs = soft_one_hot_linspace(x, -0.5, 1.5, number=4)
+        >>> print(outputs.shape)
+        (4, 6, 4)
 
     """
     soft = SoftOneHotLinspace(start, end, number, basis=basis, cutoff=cutoff, dtype=x.dtype)

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""batchnorm"""
 
 from mindspore import nn, Parameter, ops, float32
 
@@ -26,13 +27,20 @@ class BatchNorm(nn.Cell):
     Irreducible representations `wigner_D` are orthonormal.
 
     Args:
-        irreps (Union[str, Irrep, Irreps]): the input irreps.
-        eps (float): avoid division by zero when we normalize by the variance. Default: 1e-5.
-        momentum (float): momentum of the running average. Default: 0.1.
-        affine (bool): do we have weight and bias parameters. Default: True.
-        reduce (str): {'mean', 'max'}, method used to reduce. Default: 'mean'.
-        instance (bool): apply instance norm instead of batch norm. Default: Flase.
-        normalization (str): {'component', 'norm'}, normalization method. Default: 'component'.
+        - **irreps** (Union[str, Irrep, Irreps]): the input irreps.
+        - **eps** (float): avoid division by zero when we normalize by the variance. Default: ``1e-5``.
+        - **momentum** (float): momentum of the running average. Default: ``0.1``.
+        - **affine** (bool): do we have weight and bias parameters. Default: ``True``.
+        - **reduce** (str): {'mean', 'max'}, method used to reduce. Default: ``'mean'``.
+        - **instance** (bool): apply instance norm instead of batch norm. Default: ``Flase``.
+        - **normalization** (str): {'component', 'norm'}, normalization method. Default: ``'component'``.
+        - **dtype**  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+
+    Inputs:
+        - **input** (Tensor) - Tensor of shape :math:`(batch, ..., irreps.dim)`.
+
+    Outputs:
+        - **output** (Tensor) - Tensor of shape :math:`(batch, ..., irreps.dim)`.
 
     Raises:
         ValueError: If `reduce` is not in ['mean', 'max'].
@@ -41,6 +49,16 @@ class BatchNorm(nn.Cell):
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
 
+    Examples:
+        >>> from mindchemistry.e3.nn import BatchNorm
+        >>> from mindspore import ops, Tensor
+        >>> bn = BatchNorm('3x0o+2x0e+1x0o')
+        >>> print(bn)
+        BatchNorm (3x0o+2x0e+1x0o, eps=1e-05, momentum=0.1)
+        >>> inputs = Tensor(ops.ones((4, 6)))
+        >>> outputs = bn(inputs)
+        >>> print(outputs.shape)
+        (4, 6)
     """
 
     def __init__(self, irreps, eps=1e-5, momentum=0.1, affine=True, reduce='mean', instance=False,
@@ -73,6 +91,7 @@ class BatchNorm(nn.Cell):
         return f"{self.__class__.__name__} ({self.irreps}, eps={self.eps}, momentum={self.momentum})"
 
     def construct(self, inputs):
+        """construct"""
         inputs_shape = inputs.shape
         batch = inputs_shape[0]
         dim = inputs_shape[-1]
