@@ -158,7 +158,8 @@ def plot_2dxn(u_list: list,
             data.T, vmin=vmin_u,
             vmax=vmax_u,
             cmap=plt.get_cmap("jet"),
-            origin='lower')
+            origin='lower',
+            interpolation='none')
 
         ax_.set_title(sub_titles[i], fontsize=10)
         plt.xticks(())
@@ -366,6 +367,7 @@ def plot_noise_ic(ic_gt: NDArray[float],
     plt.savefig(os.path.join(save_dir, file_name))
     plt.close()
 
+
 def plot_infer_result(u_pred: NDArray[float],
                       x_coord: NDArray[float],
                       t_coord: NDArray[float],
@@ -433,6 +435,7 @@ def plot_infer_result(u_pred: NDArray[float],
         canvas.draw()  # Redraw the canvas if provided
     else:
         plt.show()  # Display the plot if not in a GUI context
+
 
 def plot_field(figure: Figure,
                canvas: FigureCanvas,

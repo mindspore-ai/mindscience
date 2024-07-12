@@ -24,25 +24,25 @@ if [ $# -gt 0 ]; then
     echo "Run ut mindelec."
     cd "$PROJECT_DIR" || exit
     UT_PATH="$PROJECT_DIR/tests/ut/mindelec/"
-    pytest "$UT_PATH"
+    python -m pytest "$UT_PATH"
     echo "Test all mindelec use cases success."
   elif [ $1 == "mindsponge" ]; then
     echo "Run ut mindsponge."
     cd "$PROJECT_DIR" || exit
     UT_PATH="$PROJECT_DIR/tests/ut/mindsponge/"
-    pytest "$UT_PATH"
+    python -m pytest "$UT_PATH"
     echo "Test all mindsponge use cases success."
   elif [ $1 == "mindflow" ]; then
     echo "Run ut mindflow."
     cd "$PROJECT_DIR" || exit
     UT_PATH="$PROJECT_DIR/tests/ut/mindflow/"
-    pytest "$UT_PATH"
+    python -m pytest "$UT_PATH"
     echo "Test all mindflow ut cases success."
   elif [ $1 == "mindchemistry" ]; then
     echo "Run ut mindchemistry."
     cd "$PROJECT_DIR" || exit
     UT_PATH="$PROJECT_DIR/tests/ut/mindchemistry/"
-    pytest "$UT_PATH"
+    python -m pytest "$UT_PATH"
     echo "Test all mindchemistry use cases success."
   fi
 else
@@ -51,6 +51,6 @@ else
   echo "Run all ut."
   cd "$PROJECT_DIR" || exit
   UT_PATH="$PROJECT_DIR/tests/ut/"
-  pytest "$UT_PATH"
+  python -m pytest "$UT_PATH"
   echo "Test all use cases success."
   fi
