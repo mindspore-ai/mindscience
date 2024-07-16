@@ -15,7 +15,8 @@
 """initialization for cells"""
 from .network import EnergyNet
 from .basic_block import AutoEncoder, FCNet, MLPNet
+from .elastic_net import ElasticNet
 
 __all__ = [
-    "EnergyNet", 'AutoEncoder', 'FCNet', 'MLPNet'
+    "EnergyNet", 'AutoEncoder', 'FCNet', 'MLPNet', 'ElasticNet'
 ]
