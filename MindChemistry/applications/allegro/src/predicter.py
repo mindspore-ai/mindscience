@@ -22,7 +22,7 @@ import numpy as np
 import mindspore as ms
 from mindspore import nn
 
-from mindchemistry.cell.geonet import Allegro
+from mindchemistry.cell.allegro import Allegro
 from src.allegro_embedding import AllegroEmbedding
 from src.dataset import create_test_dataset
 from src.potential import Potential

@@ -13,13 +13,13 @@
 
 ## 环境要求
 
-> 1. 安装`mindspore（2.2.12）`
+> 1. 安装`mindspore`
+> 2. 安装`mindchemistry`
 
 ## 快速入门
 
-> 将数据集下载到当前目录
-> 将Mindchemistry/mindchemistry文件包下载到当前目录
-> 训练命令： `python train.py`
+> 1. 将数据集下载到当前目录
+> 2. 训练命令： `python train.py`
 
 ## 脚本说明
 
@@ -39,10 +39,6 @@ matformer
             feature.py   特性处理
             generate.py  图数据生成
             graph.py   图数据结构
-    └─models
-            matformer.py  模型主架构
-            transformer.py   transformer卷积架构模块
-            utils.py  工具模块
 ```
 
 ## 训练过程

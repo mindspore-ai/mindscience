@@ -26,10 +26,10 @@ from mindspore import ops
 from mindspore.amp import DynamicLossScaler
 from mindchemistry.graph.loss import L2LossMask
 
-from models.model import Net
-from models.e3modules import E3TensorDecompNet
+from mindchemistry.cell.deephe3nn.model import Net
+from mindchemistry.cell.deephe3nn.e3modules import E3TensorDecompNet
+from mindchemistry.cell.deephe3nn.utils import LossRecord, process_targets, set_random_seed, RevertDecayLR
 from models.parse_configs import BaseConfig, TrainConfig, EvalConfig
-from models.utils import LossRecord, process_targets, set_random_seed, RevertDecayLR
 from data.data import AijData
 
 

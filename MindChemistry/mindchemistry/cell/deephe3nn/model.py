@@ -27,12 +27,12 @@ from mindchemistry.e3.o3.spherical_harmonics import SphericalHarmonics
 from mindchemistry.so2_conv import SO3Rotation, SO2Convolution
 from mindchemistry.so2_conv.init_edge_rot_mat import init_edge_rot_mat
 from mindchemistry.graph.graph import LiftNodeToEdge, Aggregate
+from mindchemistry.cell.deephe3nn.utils import tp_path_exists, GaussianBasis
+from mindchemistry.cell.deephe3nn.e3modules import SeparateWeightTensorProduct, E3ElementWise, E3LayerNorm, SkipConnection, SelfTp, SortIrreps
 import mindspore as ms
 import mindspore.nn as nn
 from mindspore import ops
 from mindspore.common.initializer import Uniform
-from models.utils import tp_path_exists, GaussianBasis
-from models.e3modules import SeparateWeightTensorProduct, E3ElementWise, E3LayerNorm, SkipConnection, SelfTp, SortIrreps
 
 epsilon = 1e-8
 

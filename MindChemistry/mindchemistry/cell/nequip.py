@@ -39,7 +39,7 @@ class AtomwiseLinear(nn.Cell):
         return self.linear.__repr__()
 
 
-class EnergyNet(nn.Cell):
+class Nequip(nn.Cell):
     """EnergyNet"""
 
     def __init__(

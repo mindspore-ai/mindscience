@@ -26,7 +26,7 @@ from mindspore.train import save_checkpoint
 from mindspore.train._utils import _make_directory
 
 from mindchemistry.cell.basic_block import MLPMixPrecision as MLP
-from mindchemistry.cell.geonet import Allegro
+from mindchemistry.cell.allegro import Allegro
 from mindchemistry.graph.graph import AggregateEdgeToNode, AggregateNodeToGlobal
 from src.allegro_embedding import AllegroEmbedding
 

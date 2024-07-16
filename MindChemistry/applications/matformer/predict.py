@@ -23,8 +23,8 @@ import numpy as np
 import mindspore as ms
 from mindspore import set_seed
 from data.generate import get_prop_model
-from models.matformer import Matformer
-from models.utils import LossRecord
+from mindchemistry.cell.matformer.matformer import Matformer
+from mindchemistry.cell.matformer.utils import LossRecord
 from mindchemistry.graph.loss import L1LossMask, L2LossMask
 from mindchemistry.graph.dataloader import DataLoaderBase as DataLoader
 

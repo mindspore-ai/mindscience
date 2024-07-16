@@ -26,7 +26,7 @@ import mindspore as ms
 from mindspore import nn
 from mindspore.experimental import optim
 
-from mindchemistry.cell.geonet import Allegro
+from mindchemistry.cell.allegro import Allegro
 from src.allegro_embedding import AllegroEmbedding
 from src.dataset import create_training_dataset
 from src.potential import Potential

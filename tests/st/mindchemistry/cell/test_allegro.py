@@ -21,7 +21,7 @@ import pytest
 import mindspore as ms
 from mindspore import context, Tensor
 
-from mindchemistry.cell.geonet import Allegro
+from mindchemistry.cell.allegro import Allegro
 
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training

@@ -8,23 +8,23 @@
 
 ## 数据集
 
-> 从https://zenodo.org/records/7553640  下载 jdft_3d-12-12-2022.json 下载  Bilayer_graphene_dataset.zip 到当前目录并解压， 不要修改其文件名。
+> 从https://zenodo.org/records/7553640  下载  Bilayer_graphene_dataset.zip 到当前目录并解压， 不要修改其文件名。
 
 ## 环境要求
 
-> 1. 安装`mindspore（2.2.12）`
+> 1. 安装`mindspore`
 > 2. 安装`numpy`
+> 3. 安装`mindchemistry`
 
 ## 快速入门
 
-> 将数据集下载到当前目录
-> 将Mindchemistry/mindchemistry文件包下载到当前目录
-> 训练命令： `python train.py configs/Bilayer_graphene_train.ini`
+> 1. 将数据集下载到当前目录
+> 2. 训练命令： `python train.py configs/Bilayer_graphene_train.ini`
 
 ## 脚本说明
 
-> train.py 包括了图数据的生成和模型的训练
-> predictor.py 模型推理脚本
+> 1. train.py 包括了图数据的生成和模型的训练
+> 2. predict.py 模型推理脚本
 
 ### 代码目录结构
 
@@ -40,9 +40,6 @@ deephe3nn
     │  
     └─models
             kernel.py 主执行流程
-            model.py 主模型代码
-            e3modules.py e3相关模型代码
-            utils.py 工具模块
             parse_configs.py  config处理文件
     └─configs
             Bilayer_graphene_train_numpy.ini  模型config文件

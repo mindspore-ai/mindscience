@@ -14,7 +14,7 @@
 ## 环境要求
 
 > 1. 安装`mindspore`
-> 2. 将`mindscience/MindChemistry`目录下的`mindchemistry`子文件夹放置于项目根目录，以便`allegro`目录下的文件直接调用（即非安装mindchemistry方式）
+> 2. 安装`mindchemistry`
 
 ## 快速入门
 

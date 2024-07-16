@@ -24,7 +24,7 @@ import warnings
 import numpy as np
 import h5py
 
-from models.utils import flt2cplx, convert2numpyt
+from mindchemistry.cell.deephe3nn.utils import flt2cplx, convert2numpyt
 
 
 def load_orbital_types(path, return_orbital_types=False):
