@@ -1,4 +1,4 @@
-# PDEformer-1: A Fundamental Model for One-dimensional PDEs
+# PDEformer-1: A Foundation Model for One-Dimensional PDEs
 
 [![demo_video](images/video.png)](https://www.bilibili.com/video/BV1wm411C7Sq)
 
@@ -177,7 +177,9 @@ pip3 install -r pip-requirements.txt
 
 ## Model Execution
 
-We provide configuration files for PDEformer models with varying numbers of parameters in the [configs/pretrain](configs/pretrain) folder. The corresponding checkpoints can be downloaded from [PKU Disk](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A) `pdeformer/ckpt`. The details are as follows:
+We provide configuration files for PDEformer models with different numbers of parameters in the [configs/pretrain](configs/pretrain) folder.
+The corresponding checkpoints can be downloaded from [PKU Disk](https://disk.pku.edu.cn/anyshare/en-us/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A) `pdeformer/ckpt`.
+The details are as follows:
 
 | Model | Parameters | Configuration File | Checkpoint File |
 | ---- | ---- | ---- | ---- |
@@ -189,7 +191,7 @@ We provide configuration files for PDEformer models with varying numbers of para
 ### Inference Example
 
 The example code below demonstrates how to use PDEformer to predict the solution of a given PDE.
-Before running, it is necessary to download the pre-trained PDEformer weights `pdeformer/ckpt/model-L_3M_pretrained.ckpt` from [PKU Disk](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A),
+Before running, it is necessary to download the pre-trained PDEformer weights `pdeformer/ckpt/model-L_3M_pretrained.ckpt` from [PKU Disk](https://disk.pku.edu.cn/anyshare/en-us/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A),
 and change the value of the `model/load_ckpt` parameter in [configs/inference/pdeformer-L.yaml](configs/inference/pdeformer-L.yaml) to the path of the corresponding weight file.
 
 ```python
@@ -223,9 +225,9 @@ plt.show()
 
 For more examples, please refer to the [PDEformer_inference_CN.ipynb](PDEformer_inference_CN.ipynb) notebook.
 
-### Pre-training
+### Pre-Training
 
-**Generating Pre-training Dataset**
+**Generating Pre-Training Dataset**
 
 In order to pre-train the model effectively, the primary task is to prepare the pre-training data.
 We use the traditional spectral numerical solver [Dedalus](https://dedalus-project.org/) to generate this pre-training data.
@@ -246,7 +248,7 @@ For non-periodic boundary conditions, the type of boundary conditions is randoml
 For instructions on running the pre-training dataset generation code, please refer to [data_generation/README.md](data_generation/README.md).
 Alternatively, you can download the dataset that we have generated, as described in [docs/DATASET.md](docs/DATASET.md).
 
-#### Pre-training the Model
+#### Pre-Training the Model
 
 To pre-train the PDEformer-L model, we first need to adjust the configuration file [configs/pretrain/pdeformer-L.yaml](configs/pretrain/pdeformer-L.yaml).
 In this configuration file, we need to specify the file path and filename of the dataset (without the `.hdf5` suffix):
@@ -280,7 +282,7 @@ data:
 # ...
 ```
 
-The dataset files used in the example can be generated using [data_generation/custom_sinus.py](data_generation/custom_sinus.py), or can be downloaded from [PKU Disk](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/434EE9473D90449A8B1E4847065BCA89)  `pdeformer/sinus0`.
+The dataset files used in the example can be generated using [data_generation/custom_sinus.py](data_generation/custom_sinus.py), or can be downloaded from [PKU Disk](https://disk.pku.edu.cn/anyshare/en-us/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/434EE9473D90449A8B1E4847065BCA89)  `pdeformer/sinus0`.
 After completing the modifications to the configuration file, we can initiate single-machine, 8-card parallel training by running the following command:
 
 ```bash
@@ -303,11 +305,12 @@ bash scripts/run_distributed_train.sh
 
 The training logs, model weights, and files for visualization of experimental results of the pre-trained model will be saved in the `exp/pdeformer-L` directory.
 
-### PDEBench Inference and Fine-tuning
+### PDEBench Inference and Fine-Tuning
 
 The pre-trained PDEformer has shown exceptional generality in handling various equations. To assess its performance on forward problems, we can select some 1D equations from the PDEBench dataset, including the Burgers equation, the Advection equation, and the Reaction-Diffusion equation. Although our model can directly solve these equations (zero-shot inference), to achieve higher solving accuracy for specific types of equations, we can opt to further fine-tune the model.
 
-To fine-tune with a specific PDEBench dataset (here using the Burgers equation as an example), we need to download the pretrained PDEformer weights `pdeformer/ckpt/model-L_3M_pretrained.ckpt` from [PKU Disk](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A), and download [1D_Burgers_Sols_Nu0.1.hdf5](https://darus.uni-stuttgart.de/api/access/datafile/133139) from the PDEBench dataset, then adjust the configuration file [configs/finetune/burgers-nu-0.1_pdeformer-L.yaml](configs/finetune/burgers-nu-0.1_pdeformer-L.yaml). In this configuration file, we need to specify the file path and filename of the dataset, as well as the path to the pre-trained model weights:
+To fine-tune with a specific PDEBench dataset (here using the Burgers equation as an example), we need to download the pretrained PDEformer weights `pdeformer/ckpt/model-L_3M_pretrained.ckpt` from [PKU Disk](https://disk.pku.edu.cn/anyshare/en-us/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A), and download [1D_Burgers_Sols_Nu0.1.hdf5](https://darus.uni-stuttgart.de/api/access/datafile/133139) from the PDEBench dataset, then adjust the configuration file [configs/finetune/burgers-nu-0.1_pdeformer-L.yaml](configs/finetune/burgers-nu-0.1_pdeformer-L.yaml).
+In this configuration file, we need to specify the file path and filename of the dataset, as well as the path to the pre-trained model weights:
 
 ```yaml
 # ...
@@ -354,7 +357,11 @@ In addition to solving forward problems, we can also use the pre-trained PDEform
 For each PDE, we input the currently estimated coefficients into the pre-trained PDEformer to produce a predicted solution and obtain the recovered coefficients by minimizing the relative $L^2$ error with respect to the observational data.
 Given that this optimization problem has many local minima, we employ the Particle Swarm Optimization (PSO) algorithm for the solution.
 
-First, we need to download the pretrained [PDEformer weights](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A) `pdeformer/ckpt/model-L_3M_pretrained.ckpt` from PKU Disk, as well as the [inverse problem dataset](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/CDBCBEF0F0D4459C893F3CBBE62F521E) `pdeformer/inverse`. The datasets used for inverting scalars (equation coefficients) and inverting functions (source terms) are the same. For more detailed information about the inverse problem dataset, please refer to docs/DATASET_CN.md. Afterwards, adjust the configuration file [configs/inverse/inverse_scalar.yaml](configs/inverse/inverse_scalar.yaml). In this configuration file, we need to specify the file path and filename of the inverse problem dataset, as well as the path to the pretrained model weights:
+First, we need to download the pretrained [PDEformer weights](https://disk.pku.edu.cn/anyshare/en-us/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A) `pdeformer/ckpt/model-L_3M_pretrained.ckpt` from PKU Disk, as well as the [inverse problem dataset](https://disk.pku.edu.cn/anyshare/en-us/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/CDBCBEF0F0D4459C893F3CBBE62F521E) `pdeformer/inverse`.
+The datasets used for recovering scalars (equation coefficients) and functions (source terms) are the same.
+For more detailed information about the inverse problem dataset, please refer to docs/DATASET_CN.md.
+Afterwards, adjust the configuration file [configs/inverse/inverse_scalar.yaml](configs/inverse/inverse_scalar.yaml).
+In this configuration file, we need to specify the file path and filename of the inverse problem dataset, as well as the path to the pretrained model weights:
 
 ```yaml
 # ...
@@ -393,7 +400,10 @@ bash scripts/run_inverse_scalar.sh
 We can also use the pre-trained PDEformer to address the function inversion problem (here, the function refers to the source term).
 For each PDE, we set the current source term to be estimated as a trainable parameter, and input it into the pre-trained PDEformer to produce a predicted solution. We then use a gradient descent algorithm to optimize the source term parameters, aiming to minimize the relative $L^2$ error with respect to the observational data.
 
-First, we need to download the pretrained [PDEformer weights](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A) `pdeformer/ckpt/model-L_3M_pretrained.ckpt` from PKU Disk, as well as the [inverse problem dataset](https://disk.pku.edu.cn/anyshare/zh-cn/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/CDBCBEF0F0D4459C893F3CBBE62F521E) `pdeformer/inverse`. The datasets used for inverting scalars (equation coefficients) and inverting functions (source terms) are the same. Afterwards, adjust the configuration file [configs/inverse/inverse_function.yaml](configs/inverse/inverse_function.yaml). In this configuration file, we need to specify the file path and filename of the inverse problem dataset, as well as the path to the pretrained model weights:
+First, we need to download the pretrained [PDEformer weights](https://disk.pku.edu.cn/anyshare/en-us/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/C62E2F6D95624A79AB80EBD0AD9A7C1A) `pdeformer/ckpt/model-L_3M_pretrained.ckpt` from PKU Disk, as well as the [inverse problem dataset](https://disk.pku.edu.cn/anyshare/en-us/link/AA6ABF7FEB034446069108D0B6B3920C35/768396ABFD014CF8B81FA886E6577D23/44E9E35239854ED8817718DFCCEA3B4D/CDBCBEF0F0D4459C893F3CBBE62F521E) `pdeformer/inverse`.
+The datasets used for recovering scalars (equation coefficients) and functions (source terms) are the same.
+Afterwards, adjust the configuration file [configs/inverse/inverse_function.yaml](configs/inverse/inverse_function.yaml).
+In this configuration file, we need to specify the file path and filename of the inverse problem dataset, as well as the path to the pretrained model weights:
 
 ```yaml
 # ...
@@ -424,6 +434,22 @@ or through the following shell script:
 
 ```bash
 bash scripts/run_inverse_function.sh
+```
+
+## Citation
+
+If you find this project useful, you can cite our paper as follows:
+
+```bibtex
+@misc{pdeformer1d,
+      title={PDEformer-1: A Foundation Model for One-Dimensional Partial Differential Equations},
+      author={Zhanhong Ye and Xiang Huang and Leheng Chen and Zining Liu and Bingyang Wu and Hongsheng Liu and Zidong Wang and Bin Dong},
+      year={2024},
+      eprint={2407.06664},
+      archivePrefix={arXiv},
+      primaryClass={math.NA},
+      url={https://arxiv.org/abs/2407.06664},
+}
 ```
 
 ## References

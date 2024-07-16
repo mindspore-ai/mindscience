@@ -14,6 +14,7 @@
 # ============================================================================
 r"""Record experimental results and various outputs."""
 import os
+import sys
 import stat
 import time
 import logging
@@ -46,7 +47,7 @@ def create_logger(path: str = "./log.log") -> logging.Logger:
     fh = logging.FileHandler(logfile, mode='a', encoding='utf-8')
     fh.setLevel(logging.DEBUG)
 
-    ch = logging.StreamHandler()
+    ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter("%(asctime)s - %(levelname)s: %(message)s")

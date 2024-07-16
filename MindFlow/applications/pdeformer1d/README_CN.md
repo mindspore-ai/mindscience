@@ -433,6 +433,22 @@ python inverse_function.py --config_file_path $config_path --device_id 0
 bash scripts/run_inverse_function.sh
 ```
 
+## 引用
+
+如果您觉得这个项目有用，欢迎您引用我们的论文：
+
+```bibtex
+@misc{pdeformer1d,
+      title={PDEformer-1: A Foundation Model for One-Dimensional Partial Differential Equations},
+      author={Zhanhong Ye and Xiang Huang and Leheng Chen and Zining Liu and Bingyang Wu and Hongsheng Liu and Zidong Wang and Bin Dong},
+      year={2024},
+      eprint={2407.06664},
+      archivePrefix={arXiv},
+      primaryClass={math.NA},
+      url={https://arxiv.org/abs/2407.06664},
+}
+```
+
 ## 参考文献
 
 * [Ye Z, Huang X, Chen L, et al. PDEformer: Towards a Foundation Model for One-Dimensional Partial Differential Equations[J]. arXiv preprint arXiv:2402.12652, 2024.](https://arxiv.org/abs/2402.12652)

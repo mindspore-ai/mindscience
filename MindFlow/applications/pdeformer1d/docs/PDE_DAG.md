@@ -13,7 +13,7 @@ Here is a more complex example, with a Robin condition on the left boundary and 
 
 ![](../images/PDEformer-BC-RobinMur2.png)
 
-## Non-constant Coefficients
+## Non-Constant Coefficients
 
 If the coefficients involved in the PDE are not constants but a space-dependent coefficient field $s(x)$, such coefficients can be represented by a `CF` node.
 The example shown below appears in equations that include a non-constant diffusion term:
@@ -24,13 +24,13 @@ Coefficients that depend on time (i.e., of the form $s(t)$, which is a function 
 By introducing additional product nodes, a variable coefficient field of the form $s^\mathrm{T}(t)s^\mathrm{X}(x)$ (which has separable variables) can be expressed in the computational graph.
 The current code does not yet support representing general variable coefficient fields $s(t,x)$.
 
-## Second-order Time Derivative
+## Second-Order Time Derivative
 
 The following diagram uses a simple wave equation as an example to show how equations containing second-order time derivatives can be represented through computational graphs:
 
 ![](../images/PDEformer-waveEqn-v2.png)
 
-## Multivariable Equations
+## Multi-Variable (Multi-Component) Equations
 
 Systems of partial differential equations that contain multiple variables (multiple components of the equation solution) can also be represented using computational graphs. A simple example is shown below (although we currently do not provide model parameters trained on multi-component equation data):
 
