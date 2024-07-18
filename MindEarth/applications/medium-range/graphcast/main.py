@@ -102,7 +102,7 @@ if __name__ == '__main__':
     config = load_yaml_config(args.config_file_path)
     use_ascend = args.device_target == 'Ascend'
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                        device_target=args.device_target)
+                        device_target=args.device_target, jit_level="O2")
 
     if config.get('train').get('distribute', False):
         init_data_parallel(use_ascend)
