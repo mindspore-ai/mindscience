@@ -26,7 +26,7 @@ from mindspore import nn
 from src.dataset import create_training_dataset, _unpack
 from src.utils import training_bar
 
-from mindchemistry.cell import EnergyNet
+from mindchemistry.cell import Nequip
 
 
 def generate_learning_rate(learning_rate, warmup_steps, step_num):
@@ -65,17 +65,17 @@ def train(dtype=ms.float32, configs=None):
         config=data_params, dtype=dtype, pred_force=configs.get('pred_force'))
     # == Model ==
     logging.info('Initializing model...')
-    net = EnergyNet(irreps_embedding_out=model_params.get('irreps_embedding_out'),
-                    irreps_conv_out=model_params.get('irreps_conv_out'),
-                    chemical_embedding_irreps_out=model_params.get('chemical_embedding_irreps_out'),
-                    num_layers=model_params.get('num_layers'),
-                    num_type=num_type,
-                    r_max=model_params.get('r_max'),
-                    hidden_mul=model_params.get('hidden_mul'),
-                    pred_force=pred_force,
-                    dtype=dtype,
-                    ncon_dtype=ncon_dtype
-                    )
+    net = Nequip(irreps_embedding_out=model_params.get('irreps_embedding_out'),
+                 irreps_conv_out=model_params.get('irreps_conv_out'),
+                 chemical_embedding_irreps_out=model_params.get('chemical_embedding_irreps_out'),
+                 num_layers=model_params.get('num_layers'),
+                 num_type=num_type,
+                 r_max=model_params.get('r_max'),
+                 hidden_mul=model_params.get('hidden_mul'),
+                 pred_force=pred_force,
+                 dtype=dtype,
+                 ncon_dtype=ncon_dtype
+                 )
 
     if load_ckpt:
         logging.info('Loading checkpoint: %s', load_ckpt_path)

@@ -23,7 +23,7 @@ import mindspore as ms
 from mindspore import nn
 from src.dataset import create_training_dataset, _unpack
 
-from mindchemistry.cell import EnergyNet
+from mindchemistry.cell import Nequip
 
 
 def evaluation(dtype, configs):
@@ -39,17 +39,17 @@ def evaluation(dtype, configs):
         config=data_params, dtype=dtype, pred_force=configs.get('pred_force'))
 
     logging.info('Initializing model...')
-    net = EnergyNet(irreps_embedding_out=model_params.get('irreps_embedding_out'),
-                    irreps_conv_out=model_params.get('irreps_conv_out'),
-                    chemical_embedding_irreps_out=model_params.get('chemical_embedding_irreps_out'),
-                    num_layers=model_params.get('num_layers'),
-                    num_type=num_type,
-                    r_max=model_params.get('r_max'),
-                    hidden_mul=model_params.get('hidden_mul'),
-                    pred_force=pred_force,
-                    dtype=dtype,
-                    # ncon_dtype=ms.float16
-                    )
+    net = Nequip(irreps_embedding_out=model_params.get('irreps_embedding_out'),
+                 irreps_conv_out=model_params.get('irreps_conv_out'),
+                 chemical_embedding_irreps_out=model_params.get('chemical_embedding_irreps_out'),
+                 num_layers=model_params.get('num_layers'),
+                 num_type=num_type,
+                 r_max=model_params.get('r_max'),
+                 hidden_mul=model_params.get('hidden_mul'),
+                 pred_force=pred_force,
+                 dtype=dtype,
+                 # ncon_dtype=ms.float16
+                 )
     loss_fn = nn.MSELoss()
     metric_fn = nn.MAELoss()
 

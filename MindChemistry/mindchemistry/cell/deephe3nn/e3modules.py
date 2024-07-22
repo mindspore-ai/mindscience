@@ -21,11 +21,11 @@ from mindchemistry.e3.nn.gate import _Extract
 from mindchemistry.e3.o3.sub import Linear
 from mindchemistry.e3.o3.wigner import wigner_3j
 from mindchemistry.graph.graph import AggregateNodeToGlobal, LiftGlobalToNode
+from mindchemistry.cell.deephe3nn.utils import irreps_from_l1l2
 from mindspore import Tensor, ops, Parameter, ParameterTuple, jit_class
 import mindspore.nn as nn
 import mindspore as ms
 import numpy as np
-from models.utils import irreps_from_l1l2
 
 
 class SkipConnection(nn.Cell):

@@ -16,8 +16,8 @@
 from mindspore import nn, ops
 import mindspore as ms
 from mindchemistry.graph.graph import AggregateNodeToGlobal
-from models.utils import RBFExpansion
-from models.transformer import MatformerConv, Silu
+from mindchemistry.cell.matformer.utils import RBFExpansion
+from mindchemistry.cell.matformer.transformer import MatformerConv, Silu
 
 
 class Matformer(nn.Cell):

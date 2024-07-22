@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""test mindchemistry EnergyNet"""
+"""test mindchemistry NequIP"""
 
 import os
 import numpy as np
@@ -21,20 +21,21 @@ import pytest
 import mindspore as ms
 from mindspore import context, Tensor
 
-from mindchemistry.cell import EnergyNet
+from mindchemistry.cell import Nequip
+
 
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_energynet():
+def test_nequip():
     """
-    Feature: Test EnergyNet in platform ascend.
+    Feature: Test NequIP in platform ascend.
     Description: The forward output should has expected shape.
     Expectation: Success or throw AssertionError.
     """
     os.environ['MS_JIT_MODULES'] = "mindchemistry"
     context.set_context(mode=context.GRAPH_MODE)
-    nergy_net = EnergyNet(
+    nequip_model = Nequip(
         irreps_embedding_out='16x0e',
         irreps_conv_out='64x0o+64x0e+64x1o+64x1e+64x2o+64x2e',
         chemical_embedding_irreps_out='64x0e',
@@ -44,7 +45,7 @@ def test_energynet():
         hidden_mul=64,
         pred_force=False,
         dtype=ms.float32
-        )
+    )
 
     batch = Tensor(np.ones(60), ms.int32)
     x = Tensor(np.ones(60), ms.int32)
@@ -55,6 +56,6 @@ def test_energynet():
 
     final_out = 1
 
-    out = nergy_net(batch, x, pos, edge_src, edge_dst, batch_size)
-    assert out.shape == (batch_size, final_out), f"For `EnergyNet`, the output should be\
+    out = nequip_model(batch, x, pos, edge_src, edge_dst, batch_size)
+    assert out.shape == (batch_size, final_out), f"For `NequIP`, the output should be\
          ({batch_size}, {final_out}), but got {out.shape}."
