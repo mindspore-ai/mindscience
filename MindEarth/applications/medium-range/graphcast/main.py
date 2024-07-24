@@ -21,13 +21,15 @@ import datetime
 import os
 import random
 import time
-
 import numpy as np
+
+import mindspore
 from mindspore import set_seed, context, nn
 from mindspore.train.serialization import load_param_into_net
 
 from mindearth.utils import load_yaml_config
 from mindearth.data import Dataset, Era5Data
+
 from src import init_data_parallel, init_model, get_coe, get_param_dict, get_logger, init_tp_model
 from src import LossNet, GraphCastTrainer, GraphCastTrainerTp, CustomWithLossCell, InferenceModule, InferenceModuleTp
 from src import Era5DataTp
@@ -56,7 +58,6 @@ def get_args():
 def train(cfg, model, logger):
     """GraphCast train function"""
     sj_std, wj, ai = get_coe(cfg)
-    data_params = cfg.get('data')
     summary_params = cfg.get('summary')
     rollout_ckpt_pth = summary_params.get("ckpt_path")
     steps_per_epoch = 0
@@ -82,7 +83,6 @@ def train(cfg, model, logger):
 
 def test(cfg, model, logger):
     """GraphCast test function"""
-    data_params = cfg.get('data')
     if data_params.get("tp", False):
         inference_module = InferenceModuleTp(model, cfg, logger)
         test_dataset_generator = Era5DataTp(data_params=data_params, run_mode='test')
@@ -102,8 +102,16 @@ if __name__ == '__main__':
     config = load_yaml_config(args.config_file_path)
     use_ascend = args.device_target == 'Ascend'
     context.set_context(mode=context.GRAPH_MODE if args.mode.upper().startswith("GRAPH") else context.PYNATIVE_MODE,
-                        device_target=args.device_target, jit_level="O2")
-
+                        device_target=args.device_target, jit_config={"jit_level": "O2"})
+    data_params = config.get('data')
+    grid_resolution = data_params.get("grid_resolution")
+    if grid_resolution == 0.25:
+        context.set_context(memory_offload='ON', max_device_memory='60GB',
+                            memory_optimize_level='O0')
+        offload_config = {"offload_param": "cpu", "auto_offload": True, "offload_cpu_size": "512GB",
+                          "offload_disk_size": "1024GB", "offload_path": "./offload/"}
+        mindspore.set_offload_context(offload_config=offload_config)
+        os.environ["MS_DEV_RUNTIME_CONF"] = "switch_inline:False"
     if config.get('train').get('distribute', False):
         init_data_parallel(use_ascend)
     else:
