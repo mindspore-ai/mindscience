@@ -28,7 +28,7 @@ import mindspore
 from mindspore import ops, Tensor
 import mindspore.common.dtype as mstype
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
-from mindflow.loss import RelativeRMSELoss
+from mindflow.core import RelativeRMSELoss
 from mindflow.pde import UnsteadyFlowWithLoss
 from mindflow.cell import PDENet
 from mindflow.utils import print_log
