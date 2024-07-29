@@ -67,6 +67,13 @@ class Activation(nn.Cell):
         irreps_in (Union[str, Irrep, Irreps]): the input irreps.
         acts (List[Func]): a list of activation functions for each part of `irreps_in`.
             The length of the `acts` will be clipped or filled by identity functions to match the length of `irreps_in`.
+        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+
+    Inputs:
+        - **inputs** (Tensor) - Tensor of shape :math:`(*, irreps_in.dim)`.
+
+    Outputs:
+        - **outputs** (Tensor) - Tensor of shape :math:`(*, irreps_in.dim)`.
 
     Raises:
         ValueError: If `irreps_in` contain non-scalar irrep.
@@ -76,8 +83,15 @@ class Activation(nn.Cell):
         ``CPU``, ``GPU``, ``Ascend``
 
     Examples:
-        >>> Activation('3x0o+2x0e+1x0o', [ops.abs, ops.tanh])
+        >>> from mindchemistry.e3.nn import Activation
+        >>> from mindspore import ops, Tensor
+        >>> act = Activation('3x0o+2x0e+1x0o', [ops.abs, ops.tanh])
+        >>> print(act)
         Activation [xx-] (3x0o+2x0e+1x0o -> 3x0e+2x0e+1x0o)
+        >>> inputs = Tensor(ops.ones((4,6)))
+        >>> outputs = act(inputs)
+        >>> print(outputs.shape)
+        (4, 6)
     """
 
     def __init__(self, irreps_in, acts, dtype=float32):

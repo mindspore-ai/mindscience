@@ -136,6 +136,13 @@ class Irrep:
         Returns:
             Tensor, representation wigner D matrix of O(3).
                 tensor of shape :math:`(..., 2l+1, 2l+1)`
+
+        Examples:
+        >>> m = Irrep(1, -1).wigD_from_angles(0, 0 ,0, 1)
+        >>> print(m)
+        [[-1,  0,  0],
+        [ 0, -1,  0],
+        [ 0,  0, -1]]
         """
         if k is None:
             k = ops.zeros_like(_to_tensor(alpha))
@@ -159,6 +166,13 @@ class Irrep:
 
         Raises:
             TypeError: If `R` is not a Tensor.
+
+        Examples:
+        >>> m = Irrep(1, -1).wigD_from_matrix(-ops.eye(3))
+        >>> print(m)
+        [[-1,  0,  0],
+        [ 0, -1,  0],
+        [ 0,  0, -1]]
         """
         if not isinstance(R, Tensor):
             raise TypeError
@@ -339,35 +353,39 @@ class Irreps:
             elif irreps is None:
                 pass
             else:
-                for mir in irreps:
-
-                    if isinstance(mir, str):
-                        if 'x' in mir:
-                            mul, ir = mir.split('x')
-                            mul = int(mul)
-                            ir = Irrep(ir)
-                        else:
-                            mul = 1
-                            ir = Irrep(mir)
-                    elif isinstance(mir, Irrep):
-                        mul = 1
-                        ir = mir
-                    elif isinstance(mir, _MulIr):
-                        mul, ir = mir
-                    elif isinstance(mir, int):
-                        mul, ir = 1, Irrep(l=mir, p=1)
-                    elif len(mir) == 2:
-                        mul, ir = mir
-                        ir = Irrep(ir)
-
-                    if not (isinstance(mul, int) and mul >= 0 and ir is not None):
-                        raise ValueError
-
-                    out += (_MulIr(mul, ir),)
+                out = self.handle_irreps(irreps, out)
             self.data = out
             self.dim = self._dim()
             self.slice = self._slices()
             self.slice_tuples = [(s.start, s.stop - s.start) for s in self.slice]
+
+    def handle_irreps(self, irreps, out):
+        for mir in irreps:
+
+            if isinstance(mir, str):
+                if 'x' in mir:
+                    mul, ir = mir.split('x')
+                    mul = int(mul)
+                    ir = Irrep(ir)
+                else:
+                    mul = 1
+                    ir = Irrep(mir)
+            elif isinstance(mir, Irrep):
+                mul = 1
+                ir = mir
+            elif isinstance(mir, _MulIr):
+                mul, ir = mir
+            elif isinstance(mir, int):
+                mul, ir = 1, Irrep(l=mir, p=1)
+            elif len(mir) == 2:
+                mul, ir = mir
+                ir = Irrep(ir)
+
+            if not (isinstance(mul, int) and mul >= 0 and ir is not None):
+                raise ValueError
+
+            out += (_MulIr(mul, ir),)
+        return out
 
     def __iter__(self):
         return iter(self.data)
@@ -492,6 +510,10 @@ class Irreps:
 
         Returns:
             int, total multiplicity of `ir`.
+
+        Examples:
+            >>> Irreps("1o + 3x2e").count("2e")
+            3
         """
         ir = Irrep(ir)
         res = 0
@@ -588,6 +610,12 @@ class Irreps:
 
         Raises:
             ValueError: If both `keep` and `drop` are not `None`.
+
+        Examples:
+            >>> Irreps("1o + 2e").filter(keep="1o")
+            1x1o
+            >>> Irreps("1o + 2e").filter(drop="1o")
+            1x2e
         """
         if keep is None and drop is None:
             return self
@@ -617,6 +645,14 @@ class Irreps:
         Raises:
             TypeError: If v is not Tensor.
             ValueError: If length of the vector `v` is not matching with dimension of `Irreps`.
+
+        Examples:
+            >>> import mindspore as ms
+            >>> input = ms.Tensor([1, 2, 3])
+            >>> m = Irreps("1o").decompose(input)
+            >>> print(m)
+            [Tensor(shape=[1,3], dtype=Int64, value=
+            [[1,2,3]])]
         """
         if not isinstance(v, Tensor):
             raise TypeError(
@@ -710,6 +746,13 @@ class Irreps:
         Returns:
             Tensor, representation wigner D matrix of O(3).
                 tensor of shape :math:`(..., 2l+1, 2l+1)`
+
+        Examples:
+        >>> m = Irreps("1o").wigD_from_angles(0, 0 ,0, 1)
+        >>> print(m)
+        [[-1,  0,  0],
+        [ 0, -1,  0],
+        [ 0,  0, -1]]
         """
         return _direct_sum(*[ir.wigD_from_angles(alpha, beta, gamma, k) for mul, ir in self for _ in range(mul)])
 
@@ -729,6 +772,13 @@ class Irreps:
 
         Raises:
             TypeError: If `R` is not a Tensor.
+
+        Examples:
+        >>> m = Irreps("1o").wigD_from_matrix(-ops.eye(3))
+        >>> print(m)
+        [[-1,  0,  0],
+        [ 0, -1,  0],
+        [ 0,  0, -1]]
         """
         if not isinstance(R, Tensor):
             raise TypeError

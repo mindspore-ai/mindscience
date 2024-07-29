@@ -34,7 +34,7 @@ The synergy between AI and chemistry offers unprecedented opportunities to overc
 
 ## Latest News
 
-- 🔥`2024.04.30` MindChemistry 0.1.0 is released.
+- 🔥`2024.07.30` MindChemistry 0.1.0 is released.
 
 ## Features
 
@@ -57,12 +57,12 @@ The synergy between AI and chemistry offers unprecedented opportunities to overc
 - **Electronic Structure Prediction**：
     - **Scenario**: Materials
     - **Dataset**: Bilayer graphene dataset. The dataset contains descriptive information such as atomic positions and atomic numbers, as well as property information such as Hamiltonian.
-    - **Task**: Density Functional Theory Hamiltonian Prediction. We integrate the DeephE3nn model, an equivariant neural network based on E3, to predict a Hamiltonian by using the structure of atoms.
+    - **Task**: Density Functional Theory Hamiltonian Prediction. We integrate the DeephE3nn model [4], an equivariant neural network based on E3, to predict a Hamiltonian by using the structure of atoms.
 
 - **Prediction of crystalline material properties**:
     - **Scenario**: Materials
     - **Dataset**: JARVIS-DFT 3D dataset. The dataset contains descriptive information such as atomic position and atomic number of crystal materials, as well as property information such as energy and force field.
-    - **Task**: Prediction of crystalline material properties. We integrate the Matformer model based on graph neural networks and Transformer architectures, for predicting various properties of crystalline materials.
+    - **Task**: Prediction of crystalline material properties. We integrate the Matformer model [5] based on graph neural networks and Transformer architectures, for predicting various properties of crystalline materials.
 
 ### Modules
 
@@ -80,7 +80,7 @@ Because MindChemistry is dependent on MindSpore, please click [MindSpore Downloa
 
 | MindChemistry | Branch  |  MindSpore  | Python |
 |:--------      | :------ | :--------   | :------|
-| master        | master  |      \      | >=3.8  |
+| master        | master  |   >=2.3     | >=3.8  |
 | 0.1.0         | r0.6    |   >=2.2.12  | >=3.8  |
 
 ### Dependency
@@ -127,7 +127,7 @@ pip install -r requirements.txt
 
 Thanks goes to these wonderful people 🧑‍🤝‍🧑:
 
-yufan, wangzidong, liuhongsheng, gongyue, gengchenhua, linghejing, yanchaojie
+yufan, wangzidong, liuhongsheng, gongyue, gengchenhua, linghejing, yanchaojie, suyun, wujian, caowenbin
 
 ## Contribution Guide
 
@@ -144,3 +144,7 @@ yufan, wangzidong, liuhongsheng, gongyue, gengchenhua, linghejing, yanchaojie
 [2] Batzner S, Musaelian A, Sun L, et al. E(3)-equivariant graph neural networks for data-efficient and accurate interatomic potentials[J]. Nature communications, 2022, 13(1): 2453.
 
 [3] Musaelian A, Batzner S, Johansson A, et al. Learning local equivariant representations for large-scale atomistic dynamics[J]. Nature communications, 2023, 14(1): 579.
+
+[4] Xiaoxun Gong, He Li, Nianlong Zou, et al. General framework for E(3)-equivariant neural network representation of density functional theory Hamiltonian[J]. Nature communications, 2023, 14: 2848.
+
+[5] Keqiang Yan, Yi Liu, Yuchao Lin, Shuiwang ji, et al. Periodic Graph Transformers for Crystal Material Property Prediction[J]. arXiv:2209.11807v1 [cs.LG] 23 sep 2022.

@@ -414,6 +414,12 @@ class Ncon(nn.Cell):
     Raises:
         ValueError: If the number of commands is not match the number of operations.
 
+    Inputs:
+        - **input** (List[Tensor]) - Tensor List.
+
+    Outputs:
+        - **output** (Tensor) - Tensor of shape depends on the input and the computation process.
+
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
 

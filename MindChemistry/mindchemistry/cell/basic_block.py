@@ -216,29 +216,30 @@ class FCNet(nn.Cell):
     Args:
         channels (List): the list of numbers of channel of each fully connected layers.
         weight_init (Union[str, float, mindspore.common.initializer, List]): initialize layer weights.
-            if weight_init was List, each element corresponds to each layer.
+            if weight_init was List, each element corresponds to each layer. Default: ``'normal'`` .
         has_bias (Union[bool, List]): The switch for whether the dense layers has bias.
-            if has_bias was List, each element corresponds to each dense layer.
-        bias_init (Union[str, float, mindspore.common.initializer, List]): The initializer of the bias of dense layer
-            if bias_init was List, each element corresponds to each dense layer.
+            if has_bias was List, each element corresponds to each dense layer. Default: ``True`` .
+        bias_init (Union[str, float, mindspore.common.initializer, List]): The initializer of the bias of dense
+            layer. if bias_init was List, each element corresponds to each dense layer. Default: ``'zeros'`` .
         has_dropout (Union[bool, List]): The switch for whether linear block has a dropout layer.
-            if has_dropout was List, each element corresponds to each layer.
+            if has_dropout was List, each element corresponds to each layer. Default: ``False`` .
         dropout_rate (float): The dropout rate for dropout layer, the dropout rate must be a float in range (0, 1]
-            if dropout_rate was List, each element corresponds to each dropout layer.
+            if dropout_rate was List, each element corresponds to each dropout layer. Default: ``0.5`` .
         has_layernorm (Union[bool, List]): The switch for whether linear block has a layer normalization layer.
-            if has_layernorm was List, each element corresponds to each layer.
+            if has_layernorm was List, each element corresponds to each layer. Default: ``False`` .
         layernorm_epsilon (float): The hyper parameter epsilon for layer normalization layer.
             if layernorm_epsilon was List, each element corresponds to each layer normalization layer.
+            Default: ``1e-7`` .
         has_activation (Union[bool, List]): The switch for whether linear block has an activation layer.
-            if has_activation was List, each element corresponds to each layer.
+            if has_activation was List, each element corresponds to each layer. Default: ``True`` .
         act (Union[str, None, List]): The activation function in linear block.
-            if act was List, each element corresponds to each activation layer.
+            if act was List, each element corresponds to each activation layer. Default: ``'relu'`` .
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(*, channels[0])
+        - **input** (Tensor) - Tensor of shape :math:`(*, channels[0])`.
 
     Returns:
-        - **output** (Tensor) - Tensor of shape :math:`(*, channels[-1])
+        - **output** (Tensor) - Tensor of shape :math:`(*, channels[-1])`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -315,29 +316,30 @@ class MLPNet(nn.Cell):
         layers (int): the number of layers.
         neurons (int): the number of channels of hidden layers.
         weight_init (Union[str, float, mindspore.common.initializer, List]): initialize layer weights
-            if weight_init was List, each element corresponds to each layer.
+            if weight_init was List, each element corresponds to each layer. Default: ``'normal'`` .
         has_bias (Union[bool, List]): The switch for whether the dense layers has bias.
-            if has_bias was List, each element corresponds to each dense layer.
-        bias_init (Union[str, float, mindspore.common.initializer, List]): The initializer of the bias of dense layer
-            if bias_init was List, each element corresponds to each dense layer.
+            if has_bias was List, each element corresponds to each dense layer. Default: ``True`` .
+        bias_init (Union[str, float, mindspore.common.initializer, List]): The initializer of the bias of dense
+            layer. if bias_init was List, each element corresponds to each dense layer. Default: ``'zeros'`` .
         has_dropout (Union[bool, List]): The switch for whether linear block has a dropout layer.
-            if has_dropout was List, each element corresponds to each layer.
+            if has_dropout was List, each element corresponds to each layer. Default: ``False`` .
         dropout_rate (float): The dropout rate for dropout layer, the dropout rate must be a float in range (0, 1]
-            if dropout_rate was List, each element corresponds to each dropout layer.
+            if dropout_rate was List, each element corresponds to each dropout layer. Default: ``0.5`` .
         has_layernorm (Union[bool, List]): The switch for whether linear block has a layer normalization layer.
-            if has_layernorm was List, each element corresponds to each layer.
+            if has_layernorm was List, each element corresponds to each layer. Default: ``False`` .
         layernorm_epsilon (float): The hyper parameter epsilon for layer normalization layer.
             if layernorm_epsilon was List, each element corresponds to each layer normalization layer.
+            Default: ``1e-7`` .
         has_activation (Union[bool, List]): The switch for whether linear block has an activation layer.
-            if has_activation was List, each element corresponds to each layer.
+            if has_activation was List, each element corresponds to each layer. Default: ``True`` .
         act (Union[str, None, List]): The activation function in linear block.
-            if act was List, each element corresponds to each activation layer.
+            if act was List, each element corresponds to each activation layer. Default: ``'relu'`` .
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(*, channels[0])
+        - **input** (Tensor) - Tensor of shape :math:`(*, channels[0])`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(*, channels[-1])
+        - **output** (Tensor) - Tensor of shape :math:`(*, channels[-1])`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -471,31 +473,32 @@ class AutoEncoder(nn.Cell):
     Args:
         channels (list): The number of channels of each encoder and decoder layer.
         weight_init (Union[str, float, mindspore.common.initializer, List]): initialize layer parameters
-        if weight_init was List, each element corresponds to each layer.
-            has_bias (Union[bool, List]): The switch for whether the dense layers has bias.
-        if has_bias was List, each element corresponds to each dense layer.
-            bias_init (Union[str, float, mindspore.common.initializer, List]): initialize layer parameters
-        if bias_init was List, each element corresponds to each dense layer.
-            has_dropout (Union[bool, List]): The switch for whether linear block has a dropout layer.
-        if has_dropout was List, each element corresponds to each layer.
-            dropout_rate (float): The dropout rate for dropout layer, the dropout rate must be a float in range (0, 1]
-        if dropout_rate was List, each element corresponds to each dropout layer.
-            has_layernorm (Union[bool, List]): The switch for whether linear block has a layer normalization layer.
-        if has_layernorm was List, each element corresponds to each layer.
-            layernorm_epsilon (float): The hyper parameter epsilon for layer normalization layer.
-        if layernorm_epsilon was List, each element corresponds to each layer normalization layer.
-            has_activation (Union[bool, List]): The switch for whether linear block has an activation layer.
-        if has_activation was List, each element corresponds to each layer.
+            if weight_init was List, each element corresponds to each layer. Default: ``'normal'`` .
+        has_bias (Union[bool, List]): The switch for whether the dense layers has bias.
+            if has_bias was List, each element corresponds to each dense layer. Default: ``True`` .
+        bias_init (Union[str, float, mindspore.common.initializer, List]): initialize layer parameters
+            if bias_init was List, each element corresponds to each dense layer. Default: ``'zeros'`` .
+        has_dropout (Union[bool, List]): The switch for whether linear block has a dropout layer.
+            if has_dropout was List, each element corresponds to each layer. Default: ``False`` .
+        dropout_rate (float): The dropout rate for dropout layer, the dropout rate must be a float in range (0, 1]
+            if dropout_rate was List, each element corresponds to each dropout layer. Default: ``0.5`` .
+        has_layernorm (Union[bool, List]): The switch for whether linear block has a layer normalization layer.
+            if has_layernorm was List, each element corresponds to each layer. Default: ``False`` .
+        layernorm_epsilon (float): The hyper parameter epsilon for layer normalization layer.
+            if layernorm_epsilon was List, each element corresponds to each layer normalization layer.
+            Default: ``1e-7`` .
+        has_activation (Union[bool, List]): The switch for whether linear block has an activation layer.
+            if has_activation was List, each element corresponds to each layer. Default: ``True`` .
         act (Union[str, None, List]): The activation function in linear block.
-            if act was List, each element corresponds to each activation layer.
-        out_act (Union[None, str, mindspore.nn.Cell]): The activation function to output layer.
+            if act was List, each element corresponds to each activation layer. Default: ``'relu'`` .
+        out_act (Union[None, str, mindspore.nn.Cell]): The activation function to output layer. Default: ``None`` .
 
     Inputs:
-        - x (Tensor) - Tensor of shape :math:`(*, channels[0])`.
+        - **x** (Tensor) - Tensor of shape :math:`(*, channels[0])`.
 
     Outputs:
-        - latents (Tensor) - Tensor of shape :math:`(*, channels[-1])`.
-        - x_recon (Tensor) - Tensor of shape :math:`(*, channels[0])`.
+        - **latents** (Tensor) - Tensor of shape :math:`(*, channels[-1])`.
+        - **x_recon** (Tensor) - Tensor of shape :math:`(*, channels[0])`.
 
     Supported Platforms:
         ``GPU``

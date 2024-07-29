@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""FullyConnectedNet"""
 from mindspore import Tensor, nn, Parameter, float32, ops
 from mindspore.common.initializer import initializer
 
@@ -52,15 +53,22 @@ class FullyConnectedNet(nn.SequentialCell):
     Fully-connected Neural Network with normalized activation on scalars.
 
     Args:
-        h_list (List[int]): a list of input, internal and output dimensions for dense layers.
-        act (Func): activation function which will be automatically normalized. Default: None
-        out_act (bool): whether apply the activation function on the output. Default: False
+        - **h_list** (List[int]): a list of input, internal and output dimensions for dense layers.
+        - **act** (Func): activation function which will be automatically normalized. Default: ``None``.
+        - **out_act** (bool): whether apply the activation function on the output. Default: ``False``.
+        - **dtype**  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
 
-    Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+    Inputs:
+        - **input** (Tensor) - Tensor of shape :math:`(h_list[0])`.
+
+    Outputs:
+        - **output** (Tensor) - Tensor of shape :math:`(h_list[-1])`.
 
     Raises:
         TypeError: If the elements `h_list` are not `int`.
+
+    Supported Platforms:
+        ``CPU``, ``GPU``, ``Ascend``
 
     Examples:
         >>> fc = FullyConnectedNet([4,10,20,12,6], ops.tanh)

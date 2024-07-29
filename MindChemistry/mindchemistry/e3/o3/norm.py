@@ -26,6 +26,15 @@ class Norm(nn.Cell):
     Args:
         irreps_in (Union[str, Irrep, Irreps]): Irreps for the input.
         squared (bool): whether to return the squared norm. Default: False.
+        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
+        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            Default: ``mindspore.float32`` .
+
+    Inputs:
+        v (Tensor): Tensor of shape ``(..., irreps_in.dim)``
+
+    Outputs:
+        output (Tensor):, Tensor of shape ``(..., irreps_out.dim)``
 
     Supported Platforms:
         ``CPU``, ``GPU``, ``Ascend``
