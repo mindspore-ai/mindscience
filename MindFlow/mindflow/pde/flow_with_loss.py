@@ -69,7 +69,7 @@ class SteadyFlowWithLoss(FlowWithLoss):
         >>> from mindspore import Tensor, nn
         >>> import mindspore
         >>> from mindflow.pde import SteadyFlowWithLoss
-        >>> from mindflow.loss import RelativeRMSELoss
+        >>> from mindflow.core import RelativeRMSELoss
         ...
         >>> class Net(nn.Cell):
         ...    def __init__(self, num_class=10, num_channel=1):
@@ -139,7 +139,7 @@ class UnsteadyFlowWithLoss(FlowWithLoss):
         >>> import mindspore
         >>> from mindflow.pde import UnsteadyFlowWithLoss
         >>> from mindflow.cell import FNO2D
-        >>> from mindflow.loss import RelativeRMSELoss
+        >>> from mindflow.core import RelativeRMSELoss
         ...
         >>> model = FNO2D(in_channels=1, out_channels=1, resolution=64, modes=12)
         >>> problem = UnsteadyFlowWithLoss(model, loss_fn=RelativeRMSELoss(), data_format='NHWTC')

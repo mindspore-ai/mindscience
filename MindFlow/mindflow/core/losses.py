@@ -59,7 +59,7 @@ def get_loss_metric(name):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.loss import get_loss_metric
+        >>> from mindflow.core import get_loss_metric
         >>> import mindspore
         >>> from mindspore import Tensor
         >>> l1_loss = get_loss_metric('l1_loss')
@@ -97,7 +97,7 @@ class RegularizedLossCell(nn.Cell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.loss import RegularizedLossCell
+        >>> from mindflow.core import RegularizedLossCell
         >>> from mindspore import Parameter, Tensor
         >>> import mindspore.common.dtype as ms_type
         >>> latent_init = np.ones((2, 3))
@@ -174,7 +174,7 @@ class MTLWeightedLoss(WeightedLossCell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.loss import MTLWeightedLoss
+        >>> from mindflow.core import MTLWeightedLoss
         >>> import mindspore
         >>> from mindspore import Tensor
         >>> net = MTLWeightedLoss(num_losses=2)
@@ -240,7 +240,7 @@ class WaveletTransformLoss(nn.LossBase):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.loss import WaveletTransformLoss
+        >>> from mindflow.core import WaveletTransformLoss
         >>> import mindspore
         >>> from mindspore import Tensor
         >>> net = WaveletTransformLoss(wave_level=2)
