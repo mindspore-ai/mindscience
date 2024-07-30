@@ -24,7 +24,7 @@ from ..o3.norm import Norm
 class NormActivation(nn.Cell):
     r"""Activation function for the norm of irreps.
     Applies a scalar activation to the norm of each irrep and outputs a (normalized) version of that irrep multiplied
-      by the scalar output of the scalar activation.
+    by the scalar output of the scalar activation.
 
     Args:
         irreps_in (Union[str, Irrep, Irreps]): the input irreps.
@@ -34,24 +34,24 @@ class NormActivation(nn.Cell):
         epsilon (float): when ``normalize``ing, norms smaller than ``epsilon`` will be clamped up to ``epsilon``
             to avoid division by zero. Not allowed when `normalize` is False. Default: None.
         bias (bool): whether to apply a learnable additive bias to the inputs of the `act`. Default: False.
-        init_method  (Union[str, float, mindspore.common.initializer]): initialize parameters.
+        init_method (Union[str, float, mindspore.common.initializer]): initialize parameters.
             Default: ``'normal'``.
-        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
-        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
             Default: ``mindspore.float32``.
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(..., irreps_in.dim)`.
+        - **input** (Tensor) - The shape of Tensor is :math:`(..., irreps_in.dim)`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(..., irreps_in.dim)`.
+        - **output** (Tensor) - The shape of Tensor is :math:`(..., irreps_in.dim)`.
 
     Raises:
         ValueError: If `epsilon` is not None and `normalize` is False.
         ValueError: If `epsilon` is not positive.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.nn import NormActivation

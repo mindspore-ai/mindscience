@@ -70,17 +70,17 @@ class Activation(nn.Cell):
         dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
 
     Inputs:
-        - **inputs** (Tensor) - Tensor of shape :math:`(*, irreps_in.dim)`.
+        - **inputs** (Tensor) - The shape of Tensor is :math:`(*, irreps_in.dim)`.
 
     Outputs:
-        - **outputs** (Tensor) - Tensor of shape :math:`(*, irreps_in.dim)`.
+        - **outputs** (Tensor) - The shape of Tensor is :math:`(*, irreps_in.dim)`.
 
     Raises:
         ValueError: If `irreps_in` contain non-scalar irrep.
         ValueError: If a irrep in `irreps_in` is odd, but the corresponding activation function is neither even nor odd.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.nn import Activation

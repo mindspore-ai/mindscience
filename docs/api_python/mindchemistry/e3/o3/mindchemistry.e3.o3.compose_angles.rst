@@ -22,6 +22,6 @@ mindchemistry.e3.o3.compose_angles
         - **c2** (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): 第一次应用的 gamma 欧拉角。
 
     返回：
-        - **alpha** (Tensor): 组合后的 alpha 欧拉角。
-        - **beta** (Tensor): 组合后的 beta 欧拉角。
-        - **gamma** (Tensor): 组合后的 gamma 欧拉角。
+        - **alpha** (Tensor) - 组合后的 alpha 欧拉角。
+        - **beta** (Tensor) - 组合后的 beta 欧拉角。
+        - **gamma** (Tensor) - 组合后的 gamma 欧拉角。

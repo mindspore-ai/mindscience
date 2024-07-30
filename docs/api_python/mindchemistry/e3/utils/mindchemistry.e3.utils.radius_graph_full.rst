@@ -7,7 +7,7 @@ mindchemistry.e3.utils.radius_graph_full
 
     参数：
         - **x** (Tensor) - 节点特征矩阵。
-        - **batch** (Tensor) - 批向量。默认值：``None``。
+        - **batch** (Tensor) - 批向量。如果为 None，则计算并返回。默认值：``None``。
         - **loop** (bool) - 图中是否包含自环。默认值：``False``。
         - **flow** (str) - {'source_to_target', 'target_to_source'}，与消息传递结合使用时的流向。默认值：``'source_to_target'``。
 

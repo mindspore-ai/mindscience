@@ -91,13 +91,13 @@ pip install -r requirements.txt
 
 ### Hardware
 
-| Hardware      | OS              | Status |
-|:--------------| :-------------- | :--- |
-| Ascend 910    | Ubuntu-x86      | ✔️ |
-|               | Ubuntu-aarch64  | ✔️ |
-|               | EulerOS-aarch64 | ✔️ |
-|               | CentOS-x86      | ✔️ |
-|               | CentOS-aarch64  | ✔️ |
+| Hardware                | OS              | Status      |
+|:------------------------| :-------------- |:------------|
+| AtlasA2 training series | Ubuntu-x86      | ✔️          |
+|                         | Ubuntu-aarch64  | ✔️          |
+|                         | EulerOS-aarch64 | ✔️          |
+|                         | CentOS-x86      | ✔️          |
+|                         | CentOS-aarch64  | ✔️          |
 
 ### source code install
 

@@ -4,6 +4,7 @@ mindchemistry.e3.nn.Activation
 .. py:class:: mindchemistry.e3.nn.Activation(irreps_in, acts, dtype=float32)
 
     标量张量的激活函数。根据每个激活函数的奇偶性可能改变不可约表示的奇偶性。
+    奇数标量需要对应的激活函数是奇数或偶数。
 
     参数：
         - **irreps_in** (Union[str, Irrep, Irreps]) - 输入的不可约表示。

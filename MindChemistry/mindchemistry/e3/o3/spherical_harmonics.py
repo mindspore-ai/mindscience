@@ -26,42 +26,40 @@ class SphericalHarmonics(nn.Cell):
     r"""
     Return Spherical harmonics layer.
 
-    Refer to :func:`o3.sherical_harmonics` for more detail.
-
     Args:
         irreps_out (Union[str, `Irreps`]): irreducible representations of output for spherical harmonics.
         normalize (bool): whether to normalize the input Tensor to unit vectors that lie on the sphere before
-        projecting onto the spherical harmonics.
+            projecting onto the spherical harmonics.
         normalization (str): {'integral', 'component', 'norm'}, normalization method of the output tensors.
-        Default: 'integral'.
+            Default: ``'integral'``.
         irreps_out (Union[str, `Irreps`, None]): irreducible representations of input for spherical harmonics.
-        Default: None.
-        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
+            Default: ``None``.
+        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
 
     Inputs:
-        x (Tensor): tensor for construct spherical harmonics.
-            tensor of shape :math:`x` of shape ``(..., 3)``
+        x (Tensor): Tensor for construct spherical harmonics. The shape of Tensor is :math:`x` of shape ``(..., 3)``
 
     Outputs:
-        Tensor, the spherical harmonics :math:`Y^l(x)`.
-            tensor of shape ``(..., 2l+1)``
+        Tensor, the spherical harmonics :math:`Y^l(x)`. The shape of Tensor is ``(..., 2l+1)``.
 
     Raise:
         ValueError: If `normalization` is not in {'integral', 'component', 'norm'}.
         ValueError: If `irreps_in` for SphericalHarmonics is not neither a vector (`1x1o`) nor a pseudovector (`1x1e`).
         ValueError: If the `l` and `p` of `irreps_out` are not consistent with `irreps_in` for spherical harmonics.
-        The output parity should have been p = {input_p**l}.
+            The output parity should have been p = {input_p**l}.
         NotImplementedError: If `l` is larger than 11.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
-    >>> sh = SphericalHarmonics(0, False, normalization='component')
-    >>> x = ops.rand(2,3)
-    >>> m = sh(x)
-    [[1.]
-    [1.]]
+        >>> from mindchemistry.e3.o3 import SphericalHarmonics
+        >>> from mindspore import ops
+        >>> sh = SphericalHarmonics(0, False, normalization='component')
+        >>> x = ops.rand(2,3)
+        >>> m = sh(x)
+        [[1.]
+        [1.]]
     """
 
     def __init__(self, irreps_out, normalize, normalization='integral', irreps_in=None, dtype=float32):
@@ -124,12 +122,10 @@ class SphericalHarmonics(nn.Cell):
         Compute spherical harmonics of vector `x`.
 
         Args:
-            x (Tensor): tensor for construct spherical harmonics.
-                tensor of shape :math:`x` of shape ``(..., 3)``
+            x (Tensor): Tensor for construct spherical harmonics. The shape of Tensor is :math:`x` of shape ``(..., 3)``
 
         Returns:
-            Tensor, the spherical harmonics :math:`Y^l(x)`.
-                tensor of shape ``(..., 2l+1)``
+            Tensor, the spherical harmonics :math:`Y^l(x)`. The shape of Tensor is ``(..., 2l+1)``
 
         Examples:
             >>> sh = SphericalHarmonics(irreps_out="1o + 2x2e", normalize=True)
@@ -186,7 +182,7 @@ def spherical_harmonics(l, x, normalize=True, normalization='integral'):
     Args:
         l (Union[int, List[int]]): degree of the spherical harmonics.
         x (Tensor): tensor for construct spherical harmonics.
-            tensor of shape :math:`x` of shape ``(..., 3)``
+            The shape of Tensor is :math:`x` of shape ``(..., 3)``
         normalize (bool): whether to normalize the ``x`` to unit vectors that lie on the sphere before projecting onto
             the spherical harmonics.
         normalization (str): {'integral', 'component', 'norm'}, normalization method of the output tensors.
@@ -196,8 +192,7 @@ def spherical_harmonics(l, x, normalize=True, normalization='integral'):
             'integral': :math:`\int_{S^2} Y^l_m(x)^2 dx = 1`, ``component / sqrt(4pi)``
 
     Returns:
-        Tensor, the spherical harmonics :math:`Y^l(x)`.
-            tensor of shape ``(..., 2l+1)``
+        Tensor, the spherical harmonics :math:`Y^l(x)`. The shape of Tensor is ``(..., 2l+1)``.
 
     Raise:
         ValueError: If `normalization` is not in {'integral', 'component', 'norm'}.

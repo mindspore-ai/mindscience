@@ -3,88 +3,90 @@ mindchemistry.e3.o3.Irreps
 
 .. py:class:: mindchemistry.e3.o3.Irreps(irreps)
 
-    O（3）的不可约表示的直和。这个类不包含任何数据，它是一个描述表示的结构。它通常用作库的其他类的参数，以定义函数的输入和输出表示。
+    O(3)的不可约表示的直和。这个类不包含任何数据，它是一个描述表示的结构。它通常用作库的其他类的参数，以定义函数的输入和输出表示。
 
     参数:
         - **irreps** (Union[str, Irrep, Irreps, List[Tuple[int]]]) - 表示不可约表示的直和的字符串。
 
-    .. py:method:: mindchemistry.e3.o3.Irreps.count(ir)
+    异常:
+        - **ValueError** - 如果 `irreps` 无法转换为 `Irreps`。
+        - **ValueError** - 如果 `irreps` 的 mul 部分为负。
+        - **TypeError** - 如果 `irreps` 的 mul 部分不是 int 类型。
+
+    .. py:method:: count(ir)
 
         计算该"ir"的多重性。
 
         参数:
-            - **ir** (Irrep) - Irrep。
+            - **ir** (Irrep) - 不可约表示。
 
         返回:
             int，该"ir"的多重性总数。
 
-    .. py:method:: mindchemistry.e3.o3.Irrep.simplify()
+    .. py:method:: simplify()
 
-        简化Irreps的表达。
-
-        参数:
-            - 无。
+        简化Irreps的表示。
 
         返回:
             `Irreps`
 
-    .. py:method:: mindchemistry.e3.o3.Irrep.remove_zero_multiplicities()
+    .. py:method:: remove_zero_multiplicities()
 
-        删除任何倍数为零的Irreps。
-
-        参数:
-            - 无。
+        删除任何多重性为零的Irreps。
 
         返回:
             `Irreps`。
 
-    .. py:method:: mindchemistry.e3.o3.Irrep.sort()
+    .. py:method:: sort()
 
-        按递增的程度对表达进行排序。
-
-        参数:
-            - 无。
+        按度数对表示进行递增排序。
 
         返回:
-            irreps（`irreps`）-排序`irreps`。
-            p（tuple[int]）-置换顺序 `p[old_index] = new_index`。
-            inv（tuple[int]）-反转排列顺序 `p[new_index] = old_index`。
+            - **irreps** (`Irreps`) - 排序后的 `Irreps`。
+            - **p** (tuple[int]) - 置换顺序 `p[old_index] = new_index`。
+            - **inv** (tuple[int]) - 反转排列顺序 `p[new_index] = old_index`。
 
-    .. py:method:: mindchemistry.e3.o3.Irreps.filter(keep, drop)
+    .. py:method:: filter(keep, drop)
 
-        计算该"ir"的多重性。
+        通过 `keep` 或 `drop` 过滤 `Irreps`。
 
         参数:
-            - **keep** (Union[str, Irrep, Irreps, List[str, Irrep]]) - 要保留的不可恢复的列表。默认值:None。
-            - **drop** (Union[str, Irrep, Irreps, List[str, Irrep]]) - 要删除的不可恢复的列表。默认值:None。
+            - **keep** (Union[str, Irrep, Irreps, List[str, Irrep]]) - 要保留的 irrep 列表。默认值: ``None``。
+            - **drop** (Union[str, Irrep, Irreps, List[str, Irrep]]) - 要删除的 irrep 列表。默认值: ``None``。
 
         返回:
-            `Irreps`，过滤过的Irreps。
+            `Irreps`，过滤后的 irreps。
 
-    .. py:method:: mindchemistry.e3.o3.Irreps.decompose(v, batch=False)
+        异常:
+            - **ValueError** - 如果 `keep` 和 `drop` 都不为 `None`。
 
-        计算该"ir"的多重性。
+    .. py:method:: decompose(v, batch=False)
+
+        通过 `Irreps` 对向量进行分解。
 
         参数:
             - **v** (Tensor) - 要分解的向量。
-            - **batch** (bool) - 是否重新整形结果，使其至少有一个批维度。默认值:"False"。
+            - **batch** (bool) - 是否重塑结果，使其至少有一个批次维度。默认值: ``False``。
 
         返回:
-            张量列表，按"Irreps"分解的向量。
+            Tensors 列表，通过 `Irreps` 分解后的向量。
 
-    .. py:method:: mindchemistry.e3.o3.Irreps.spherical_harmonics(lmax, p)
+        异常:
+            - **TypeError** - 如果 `v` 不是 Tensor。
+            - **ValueError** - 如果向量 `v` 的长度与 `Irreps` 的维度不匹配。
 
-        计算该"ir"的多重性。
+    .. py:method:: spherical_harmonics(lmax, p)
+
+        球面谐波的表示。
 
         参数:
-            - **lmax** (int) - "l"的最大值。
-            - **p** (int) - ｛1，-1｝，表示的奇偶性。
+            - **lmax** (int) - `l` 的最大值。
+            - **p** (int) - {1, -1}，表示的奇偶性。
 
         返回:
-            `Irreps`，表示:math:`(Y^0, Y^1, \dots, Y^{\mathrm{lmax}})`。
+            `Irreps`，表示 :math:`(Y^0, Y^1, \dots, Y^{\mathrm{lmax}})`。
 
-
-    .. py:method:: mindchemistry.e3.o3.Irreps.randn(*size, normalization)
+    .. py:method:: randn(*size, normalization)
 
         随机张量。
 
@@ -93,11 +95,11 @@ mindchemistry.e3.o3.Irreps
             - **normalization** (str) - ｛'component'，'norm'｝，规一化方法的类型。
 
         返回:
-            张量，形状为"size"的张量，其中"-1"被"self.dim"代替。
+            张量，形状为"size"，其中"-1"被"self.dim"代替。
 
-    .. py:method:: mindchemistry.e3.o3.Irreps.wigD_from_angles(alpha, beta, gamma, k)
+    .. py:method:: wigD_from_angles(alpha, beta, gamma, k)
 
-        从欧拉角表示O（3）的wigner D矩阵。
+        从欧拉角计算 O(3) 的 Wigner D 矩阵表示。
 
         参数:
             - **alpha** (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]) - 围绕Y轴旋转:math:`\alpha`，作用于第三维。
@@ -106,14 +108,17 @@ mindchemistry.e3.o3.Irreps
             - **k** (Union[None, Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]) - 应用奇偶校验的次数。默认值: ``None``。
 
         返回:
-            O（3）的张量表示wigner D矩阵。形状为:math:`（...，2l+1,2l+1）` 的张量。
+            O(3)的张量表示wigner D矩阵。形状为:math:`(..., 2l+1, 2l+1)` 的张量。
 
-    .. py:method:: mindchemistry.e3.o3.Irreps.wigD_from_matrix(R)
+    .. py:method:: wigD_from_matrix(R)
 
-        从旋转矩阵表示O（3）的wigner D矩阵。
+        从旋转矩阵中得到 O(3) 的 Wigner D 矩阵表示。
 
         参数:
-            - **R** (Tensor) - 旋转矩阵。形状为:math:`（...，3，3）` 的张量。
+            - **R** (Tensor) - 旋转矩阵。形状为:math:`(..., 3, 3)` 的张量。
 
         返回:
-            O（3）的张量表示wigner D矩阵。形状为:math:`（...，2l+1,2l+1）` 的张量。
+            O(3)的张量表示wigner D矩阵。形状为:math:`(..., 2l+1, 2l+1)` 的张量。
+
+        异常:
+            - **TypeError** - 如果 `R` 不是张量。

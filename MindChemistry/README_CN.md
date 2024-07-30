@@ -90,13 +90,13 @@ pip install -r requirements.txt
 
 ### 硬件支持情况
 
-| 硬件平台      | 操作系统        | 状态 |
-| :------------ | :-------------- | :--- |
-| Ascend 910    | Ubuntu-x86      | ✔️ |
-|               | Ubuntu-aarch64  | ✔️ |
-|               | EulerOS-aarch64 | ✔️ |
-|               | CentOS-x86      | ✔️ |
-|               | CentOS-aarch64  | ✔️ |
+| 硬件平台                  | 操作系统        | 状态 |
+|:----------------------| :-------------- | :--- |
+| Atlas A2训练系列产品        | Ubuntu-x86      | ✔️ |
+|                       | Ubuntu-aarch64  | ✔️ |
+|                       | EulerOS-aarch64 | ✔️ |
+|                       | CentOS-x86      | ✔️ |
+|                       | CentOS-aarch64  | ✔️ |
 
 ### 源码安装
 

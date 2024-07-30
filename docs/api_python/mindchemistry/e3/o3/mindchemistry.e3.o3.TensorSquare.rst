@@ -4,7 +4,7 @@ mindchemistry.e3.o3.TensorSquare
 .. py:class:: mindchemistry.e3.o3.TensorSquare(irreps_in1, irreps_in2, filter_ir_out, ncon_dtype, **kwargs)
 
     计算张量的平方张量积。
-    等价于 `TensorProduct` 使用 `irreps_in2=None` 和 `instructions='full'` 或 `'connect'`。详细信息见 `mindchemistry.e3.TensorProduct`。
+    等价于 `TensorProduct` 使用 `irreps_in2=None` 且 `instructions='full'` 或 `'connect'`。详细信息见 :class:`mindchemistry.e3.o3.TensorProduct`。
     如果提供了 `irreps_out`，此操作将是完全连接的。如果未提供 `irreps_out`，则此操作没有参数，类似于完全张量积。
 
     参数：
@@ -16,5 +16,5 @@ mindchemistry.e3.o3.TensorSquare
         - **weight_init** (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal', 'xavier_uniform'}，权重的初始化方法。默认值: ``'normal'``。
         - **ncon_dtype** (mindspore.dtype): `ncon` 计算模块的输入张量的类型。默认值: ``mindspore.float32``。
 
-    抛出:
+    异常:
         - **ValueError**: 如果 `irreps_out` 和 `filter_ir_out` 都不为 None。

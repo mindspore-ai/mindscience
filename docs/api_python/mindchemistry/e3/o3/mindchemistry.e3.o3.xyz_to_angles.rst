@@ -3,7 +3,7 @@ mindchemistry.e3.o3.xyz_to_angles
 
 .. py:function:: mindchemistry.e3.o3.xyz_to_angles(xyz)
 
-    将球体上的点 :math:`\vec r = (x, y, z)`转换为角度 :math:`(\alpha, \beta)`。
+    将球体上的点 :math:`\vec r = (x, y, z)` 转换为角度 :math:`(\alpha, \beta)`。
 
     .. math::
         \vec r = R(\alpha, \beta, 0) \vec e_z

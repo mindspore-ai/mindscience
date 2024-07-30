@@ -26,23 +26,26 @@ class FullyConnectedTensorProduct(TensorProduct):
     r"""
     Fully-connected weighted tensor product. All the possible path allowed by :math:`|l_1 - l_2| \leq l_{out} \leq l_1
     + l_2` are made.
-    Equivalent to `TensorProduct` with `instructions='connect'`. For details, see `mindchemistry.e3.TensorProduct`.
+    Equivalent to `TensorProduct` with `instructions='connect'`.
+    For details, see :class:`mindchemistry.e3.o3.TensorProduct`.
 
     Args:
         irreps_in1 (Union[str, Irrep, Irreps]): Irreps for the first input.
         irreps_in2 (Union[str, Irrep, Irreps]): Irreps for the second input.
         irreps_out (Union[str, Irrep, Irreps]): Irreps for the output.
         irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations.
-        Default: 'component'. Default: 'component'.
+            Default: 'component'. Default: 'component'.
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
-        'xavier_uniform'}, the initial method of weights. Default: 'normal'.
-        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            'xavier_uniform'}, the initial method of weights. Default: 'normal'.
+        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
             Default: ``mindspore.float32`` .
+
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
+        >>> from mindchemistry.e3.o3 import FullyConnectedTensorProduct
         >>> FullyConnectedTensorProduct('2x1o', '1x1o+3x0e', '5x2e+4x1o')
         TensorProduct [connect] (2x1o x 1x1o+3x0e -> 5x2e+4x1o)
 
@@ -66,24 +69,27 @@ class FullTensorProduct(TensorProduct):
     r"""
     Full tensor product between two irreps.
 
-    Equivalent to `TensorProduct` with `instructions='full'`. For details, see `mindchemistry.e3.TensorProduct`.
+    Equivalent to `TensorProduct` with `instructions='full'`.
+    For details, see :class:`mindchemistry.e3.o3.TensorProduct`.
 
     Args:
         irreps_in1 (Union[str, Irrep, Irreps]): Irreps for the first input.
         irreps_in2 (Union[str, Irrep, Irreps]): Irreps for the second input.
         filter_ir_out (Union[str, Irrep, Irreps, None]): Filter to select only specific `Irrep`
-        of the output. Default: None.
+            of the output. Default: None.
         irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations.
         Default: 'component'. Default: 'component'.
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
-        'xavier_uniform'}, the initial method of weights. Default: 'normal'.
-        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            'xavier_uniform'}, the initial method of weights. Default: 'normal'.
+        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
             Default: ``mindspore.float32`` .
+
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
+        >>> from mindchemistry.e3.o3 import FullTensorProduct
         >>> FullTensorProduct('2x1o+4x0o', '1x1o+3x0e')
         TensorProduct [full] (2x1o+4x0o x 1x1o+3x0e -> 2x0e+12x0o+6x1o+2x1e+4x1e+2x2e)
 
@@ -107,7 +113,8 @@ class ElementwiseTensorProduct(TensorProduct):
     r"""
     Elementwise connected tensor product.
 
-    Equivalent to `TensorProduct` with `instructions='element'`. For details, see `mindchemistry.e3.TensorProduct`.
+    Equivalent to `TensorProduct` with `instructions='element'`.
+    For details, see :class:`mindchemistry.e3.o3.TensorProduct`.
 
     Args:
         irreps_in1 (Union[str, Irrep, Irreps]): Irreps for the first input.
@@ -119,13 +126,14 @@ class ElementwiseTensorProduct(TensorProduct):
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
             'xavier_uniform'}, the initial method of weights. Default: 'normal'.
-        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
             Default: ``mindspore.float32`` .
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
+        >>> from mindchemistry.e3.o3 import ElementwiseTensorProduct
         >>> ElementwiseTensorProduct('2x2e+4x1o', '3x1e+3x0o')
         TensorProduct [element] (2x2e+1x1o+3x1o x 2x1e+1x1e+3x0o -> 2x1e+2x2e+2x3e+1x0o+1x1o+1x2o+3x1e)
 
@@ -149,23 +157,25 @@ class Linear(TensorProduct):
     r"""
     Linear operation equivariant.
 
-    Equivalent to `TensorProduct` with `instructions='linear'`. For details, see `mindchemistry.e3.TensorProduct`.
+    Equivalent to `TensorProduct` with `instructions='linear'`.
+    For details, see :class:`mindchemistry.e3.o3.TensorProduct`.
 
     Args:
         irreps_in (Union[str, Irrep, Irreps]): Irreps for the input.
         irreps_out (Union[str, Irrep, Irreps]): Irreps for the output.
         irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations.
-            Default: 'component'. Default: 'component'.
-        path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
+            Default: ``'component'``.
+        path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: ``'element'``.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
-            'xavier_uniform'}, the initial method of weights. Default: 'normal'.
-        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            'xavier_uniform'}, the initial method of weights. Default: ``'normal'``.
+        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
             Default: ``mindspore.float32`` .
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
+        >>> from mindchemistry.e3.o3 import Linear
         >>> Linear('2x2e+3x1o+3x0e', '3x2e+5x1o+2x0e')
         TensorProduct [linear] (2x2e+3x1o+3x0e x 1x0e -> 3x2e+5x1o+2x0e)
 
@@ -253,24 +263,25 @@ class LinearBias(TensorProduct):
     Linear operation equivariant with option to add bias.
 
     Equivalent to `TensorProduct` with `instructions='linear'` with option to add bias. For details,
-    see `mindchemistry.e3.TensorProduct`.
+    see  :class:`mindchemistry.e3.o3.TensorProduct`.
 
     Args:
         irreps_in (Union[str, Irrep, Irreps]): Irreps for the input.
         irreps_out (Union[str, Irrep, Irreps]): Irreps for the output.
         irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations.
-        Default: 'component'. Default: 'component'.
-        path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
+            Default: ``'component'``.
+        path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: ``'element'``.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
-        'xavier_uniform'}, the initial method of weights. Default: 'normal'.
+            'xavier_uniform'}, the initial method of weights. Default: ``'normal'``.
         has_bias (bool): whether add bias to calculation
-        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
             Default: ``mindspore.float32`` .
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
+        >>> from mindchemistry.e3.o3 import LinearBias
         >>> LinearBias('2x2e+3x1o+3x0e', '3x2e+5x1o+2x0e')
         TensorProduct [linear] (2x2e+3x1o+3x0e x 1x0e -> 3x2e+5x1o+2x0e)
 
@@ -432,31 +443,32 @@ class TensorSquare(TensorProduct):
     Compute the square tensor product of a tensor.
 
     Equivalent to `TensorProduct` with `irreps_in2=None and instructions='full' or 'connect'`. For details,
-    see `mindchemistry.e3.TensorProduct`.
+    see :class:`mindchemistry.e3.o3.TensorProduct`.
 
     If `irreps_out` is given, this operation is fully connected.
     If `irreps_out` is not given, the operation has no parameter and is like full tensor product.
 
     Args:
         irreps_in (Union[str, Irrep, Irreps]): Irreps for the input.
-        irreps_out (Union[str, Irrep, Irreps, None]): Irreps for the output. Default: None.
-        filter_ir_out (Union[str, Irrep, Irreps, None]): Filter to select only specific `Irrep`
-        of the output. Default: None.
+        irreps_out (Union[str, Irrep, Irreps, None]): Irreps for the output. Default: ``None``.
+        filter_ir_out (Union[str, Irrep, Irreps, None]): Filter to select only specific `Irrep` of the output.
+            Default: ``None``.
         irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations.
-        Default: 'component'. Default: 'component'.
-        path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
+            Default: ``'component'``.
+        path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: ``'element'``.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
-        'xavier_uniform'}, the initial method of weights. Default: 'normal'.
-        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+            'xavier_uniform'}, the initial method of weights. Default: 'normal'.
+        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
             Default: ``mindspore.float32`` .
 
     Raises:
         ValueError: If both `irreps_out` and `filter_ir_out` are not None.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
+        >>> from mindchemistry.e3.o3 import TensorSquare
         >>> TensorSquare('2x1o', irreps_out='5x2e+4x1e+7x1o')
         TensorProduct [connect] (2x1o x 2x1o -> 5x2e+4x1e)
         >>> TensorSquare('2x1o+3x0e', filter_ir_out='5x2o+4x1e+2x0e')

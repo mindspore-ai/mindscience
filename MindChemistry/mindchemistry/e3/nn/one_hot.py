@@ -96,19 +96,19 @@ class SoftOneHotLinspace(nn.Cell):
             Default: ``'smooth_finite'``.
         cutoff (bool): whether require the :math:`y_i(x)` from the outside domain of (`start`, `end`) to be
             vanished. Default: ``True``.
-        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(...)`.
+        - **x** (Tensor) - The shape of Tensor is :math:`(...)`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(..., N)`.
+        - **output** (Tensor) - The shape of Tensor is :math:`(..., N)`.
 
     Raises:
         ValueError: If `basis` is not in {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.nn import SoftOneHotLinspace
@@ -204,7 +204,7 @@ def soft_one_hot_linspace(x, start, end, number, basis='smooth_finite', cutoff=T
     Note that `bessel` basis cannot be normalized.
 
     Args:
-        x (Tensor): Tensor of shape :math:`(...)`.
+        x (Tensor): The shape of Tensor is :math:`(...)`.
         start (float): minimum value span by the basis.
         end (float): maximum  value span by the basis.
         number (int): number of basis functions :math:`N`.
@@ -214,7 +214,7 @@ def soft_one_hot_linspace(x, start, end, number, basis='smooth_finite', cutoff=T
             vanished. Default: ``True``.
 
     Returns:
-        Tensor of shape :math:`(..., N)`.
+        Tensor, shape is :math:`(..., N)`.
 
     Raises:
         ValueError: If `basis` is not in {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}.
