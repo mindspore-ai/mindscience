@@ -28,7 +28,7 @@ class Scatter(nn.Cell):
         ValueError: If `mode` is not legal.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     """
 

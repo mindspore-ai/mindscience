@@ -339,67 +339,66 @@ class TensorProduct(nn.Cell):
 
     Args:
         irreps_in1 (Union[str, Irrep, Irreps]): Irreps for the first input.
-
-        irreps_in2 (Union[str, Irrep, Irreps, None]): Irreps for the second input. Default: None.
+        irreps_in2 (Union[str, Irrep, Irreps, None]): Irreps for the second input. Default: ``None``.
             If `irreps_in2` is None, `irreps_in2` will be assigned as '0e' in 'linear' instructions, or be assigned as `irreps_in1` in otherwise, corresponding to `TensorSquare`.
-
         irreps_out (Union[str, Irrep, Irreps, None]): Irreps for the output in 'connect' and custom instructions, or filter irreps for the output in otherwise. 
-            If `irreps_out` is None, `irreps_out` will be the full tensor product irreps (including all possible paths). Default: None.
-
-        instructions (Union[str, List[Tule[int, int, int, str, bool, (float)]]]): List of tensor product path instructions. Default: 'full'.
+            If `irreps_out` is None, `irreps_out` will be the full tensor product irreps (including all possible paths). Default: ``None``.
+        instructions (Union[str, List[Tule[int, int, int, str, bool, (float)]]]): List of tensor product path instructions. Default: ``'full'``.
             For `str` in {'full', 'connect', 'element', 'linear', 'mearge'}, the instructions are constructed automatically according to the different modes:
-            
-                - 'full': each output irrep for every pair of input irreps — is created and returned independently. The outputs are not mixed with each other. 
-                  Corresponding to the standard tensor product `FullTensorProduct` if `irreps_out` is not specified.
-                - 'connect': each output is a learned weighted sum of compatible paths. This allows the operator to produce outputs with any multiplicity.
-                  Corresponding to `FullyConnectedTensorProduct`.
-                - 'element': the irreps are multiplied one-by-one. The inputs will be split and that the multiplicities of the outputs match with the multiplicities of the input.
-                  Corresponding to `ElementwiseTensorProduct`.
-                - 'linear': linear operation equivariant on the first irreps, while the second irreps is set to be '0e'. This can be regarded as the geometric tensors version of teh dense layer.
-                  Corresponding to `Linear`.
-                - 'merge': Automatically build 'uvu' mode instructions with trainable parameters. The `irreps_out` here plays the role of output filters.
+
+            - 'full': each output irrep for every pair of input irreps — is created and returned independently. The outputs are not mixed with each other.
+              Corresponding to the standard tensor product `FullTensorProduct` if `irreps_out` is not specified.
+            - 'connect': each output is a learned weighted sum of compatible paths. This allows the operator to produce outputs with any multiplicity.
+              Corresponding to `FullyConnectedTensorProduct`.
+            - 'element': the irreps are multiplied one-by-one. The inputs will be split and that the multiplicities of the outputs match with the multiplicities of the input.
+              Corresponding to `ElementwiseTensorProduct`.
+            - 'linear': linear operation equivariant on the first irreps, while the second irreps is set to be '0e'. This can be regarded as the geometric tensors version of teh dense layer.
+              Corresponding to `Linear`.
+            - 'merge': Automatically build 'uvu' mode instructions with trainable parameters. The `irreps_out` here plays the role of output filters.
 
             For `List[Tule[int, int, int, str, bool, (float)]]`, the instructions are constructed manually.
-                Each instruction contain a tuple: (indice_one, indice_two, i_out, mode, has_weight, (optional: path_weight)).
-                Each instruction puts ``in1[indice_one]`` :math:`\otimes` ``in2[indice_two]`` into ``out[i_out]``.
-                
-                 - `indice_one`, `indice_two`, `i_out`: int, the index of the irrep in irreps for `irreps_in1`, `irreps_in2` and `irreps_out` correspondingly.
-                 - `mode`: str in {'uvw', 'uvu', 'uvv', 'uuw', 'uuu', 'uvuv'}, the way of the multiplicities of each path are treated. 'uvw' is the fully mixed mode.
-                 - `has_weight`: bool, `True` if this path should have learnable weights, otherwise `False`.
-                 - `path_weight`:float, a multiplicative weight to apply to the output of this path. Defaults: 1.0.
 
-        irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations. Default: 'component'. Default: 'component'.
-        
+            Each instruction contain a tuple: (indice_one, indice_two, i_out, mode, has_weight, (optional: path_weight)).
+            Each instruction puts ``in1[indice_one]`` :math:`\otimes` ``in2[indice_two]`` into ``out[i_out]``.
+
+            - `indice_one`, `indice_two`, `i_out`: int, the index of the irrep in irreps for `irreps_in1`, `irreps_in2` and `irreps_out` correspondingly.
+            - `mode`: str in {'uvw', 'uvu', 'uvv', 'uuw', 'uuu', 'uvuv'}, the way of the multiplicities of each path are treated. 'uvw' is the fully mixed mode.
+            - `has_weight`: bool, `True` if this path should have learnable weights, otherwise `False`.
+            - `path_weight`:float, a multiplicative weight to apply to the output of this path. Defaults: 1.0.
+
+        irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations. Default: ``'component'``.
+
              - 'norm': :math:` \| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = 1`
 
-        path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
-        
+        path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: ``'element'``.
+
              - 'element': each output is normalized by the total number of elements (independently of their paths).
              - 'path': each path is normalized by the total number of elements in the path, then each output is normalized by the number of paths.
 
-        weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal', 'xavier_uniform'}, the initial method of weights. Default: 'normal'.
-        weight_mode (str): {'inner', 'share', 'custom'} determine the weights' mode. Default: 'inner'.
-        
+        weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal', 'xavier_uniform'}, the initial method of weights. Default: ``'normal'``.
+        weight_mode (str): {'inner', 'share', 'custom'} determine the weights' mode. Default: ``'inner'``.
+
              - 'inner': weights will initialized in the tensor product internally.
              - 'share': weights should given manually without batch dimension.
              - 'custom': weights should given manually with batch dimension.
-        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
-        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+
+        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
+        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
             Default: ``mindspore.float32`` .
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape ``(..., irreps_in1.dim)``
-        - **y** (Tensor) - Tensor of shape ``(..., irreps_in2.dim)``
+        - **x** (Tensor) - The shape of Tensor is ``(..., irreps_in1.dim)``
+        - **y** (Tensor) - The shape of Tensor is ``(..., irreps_in2.dim)``
         - **weight** (Tensor) - `Tensor` or list of `Tensor`, optional
-          required if ``internal_weights`` is ``False``
-          tensor of shape ``(self.weight_numel,)`` if ``shared_weights`` is ``True``
-          tensor of shape ``(..., self.weight_numel)`` if ``shared_weights`` is ``False``
+          required if ``internal_weights`` is ``False``.
+          The shape of Tensor is ``(self.weight_numel,)`` if ``shared_weights`` is ``True``.
+          The shape of Tensor is ``(..., self.weight_numel)`` if ``shared_weights`` is ``False``
           or list of tensors of shapes ``weight_shape`` / ``(...) + weight_shape``.
           Use ``self.instructions`` to know what are the weights used for.
-          Tensor of shape ``(..., irreps_out.dim)``
+          The shape of Tensor is ``(..., irreps_out.dim)``.
 
     Outputs:
-        - **outputs** (Tensor) - Tensor of shape ``(..., irreps_out.dim)``
+        - **outputs** (Tensor) - The shape of Tensor is ``(..., irreps_out.dim)``.
 
     Raises:
         ValueError: If `irreps_out` is not legal.
@@ -413,10 +412,12 @@ class TensorProduct(nn.Cell):
         ValueError: If the number of input tensors is not match to the number of input irreps.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
         Standard tensor product:
+        >>> import mindspore as ms
+        >>> from mindchemistry.e3.o3 import TensorProduct
 
         >>> tp1 = TensorProduct('2x1o+4x0o', '1x1o+3x0e')
         TensorProduct [full] (2x1o+4x0o x 1x1o+3x0e -> 2x0e+12x0o+6x1o+2x1e+4x1e+2x2e)
@@ -452,7 +453,7 @@ class TensorProduct(nn.Cell):
 
         >>> tp4 = TensorProduct('2x1o', irreps_out='5x2e+4x1e+7x1o', instructions='connect')
         TensorProduct [linear] (2x2e+3x1o+3x0e x 1x0e -> 3x2e+5x1o+2x0e)
-        >>> v1 = ms.Tensor(np.linspace(1., 2., tp.irreps_in1.dim), dtype=ms.float32)
+        >>> v1 = ms.Tensor(np.linspace(1., 2., tp4.irreps_in1.dim), dtype=ms.float32)
         >>> tp4(v1).shape
         (1, 32)
 

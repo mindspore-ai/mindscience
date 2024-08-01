@@ -36,17 +36,17 @@ def radius(x, y, r, batch_x=None, batch_y=None, max_num_neighbors=32):
     Find all points in `x` for each element in `y` within distance `r`.
 
     Args:
-        x (ndarray): node feature matrix.
-        y (ndarray): node feature matrix.
+        x (ndarray): node feature matrix of x.
+        y (ndarray): node feature matrix of y.
         r (ndarray, float): the radius.
-        batch_x (ndarray): batch vector. Default: ``None``.
-        batch_y (ndarray): batch vector. Default: ``None``.
+        batch_x (ndarray): batch vector of x. If it is none, then calculate based on x and return. Default: ``None``.
+        batch_y (ndarray): batch vector of y. If it is none, then calculate based on y and return. Default: ``None``.
         max_num_neighbors (int): The maximum number of neighbors to return for each element in `y`. Dufault: ``32``.
 
     Returns:
         - **edge_index** (numpy.ndarray): including edges of source and destination.
-        - **batch_x** (numpy.ndarray): batch vector.
-        - **batch_y** (numpy.ndarray): batch vector.
+        - **batch_x** (numpy.ndarray): batch vector of x.
+        - **batch_y** (numpy.ndarray): batch vector of y.
 
     Raises:
         ValueError: If the last dimension of `x` and `y` do not match.
@@ -96,7 +96,7 @@ def radius_graph(x, r, batch=None, loop=False, max_num_neighbors=32, flow='sourc
     Args:
         x (Tensor): node feature matrix.
         r (Tensor, float): the radius.
-        batch (Tensor): batch vector. Default: ``None``.
+        batch (Tensor): batch vector. If it is none, then calculate and return. Default: ``None``.
         loop (bool): whether contain self-loops in the graph. Dufault: ``False``.
         max_num_neighbors (int): The maximum number of neighbors to return for each element in `y`. Dufault: ``32``.
         flow (str): {'source_to_target', 'target_to_source'}, the flow direction when using in combination with
@@ -139,13 +139,13 @@ def radius_full(x, y, batch_x=None, batch_y=None):
     Args:
         x (Tensor): node feature matrix.
         y (Tensor): node feature matrix.
-        batch_x (ndarray): batch vector. Default: ``None``.
-        batch_y (ndarray): batch vector. Default: ``None``.
+        batch_x (ndarray): batch vector of x. If it is none, then calculate based on x and return. Default: ``None``.
+        batch_y (ndarray): batch vector of y. If it is none, then calculate based on y and return. Default: ``None``.
 
     Returns:
         - **edge_index** (numpy.ndarray): including edges of source and destination.
-        - **batch_x** (numpy.ndarray): batch vector.
-        - **batch_y** (numpy.ndarray): batch vector.
+        - **batch_x** (numpy.ndarray): batch vector of x.
+        - **batch_y** (numpy.ndarray): batch vector of y.
 
     Raises:
         ValueError: If the last dimension of `x` and `y` do not match.
@@ -195,7 +195,7 @@ def radius_graph_full(x, batch=None, loop=False, flow='source_to_target'):
 
     Args:
         x (Tensor): node feature matrix.
-        batch (Tensor): batch vector. Default: ``None``.
+        batch (Tensor): batch vector. If it is none, then calculate and return. Default: ``None``.
         loop (bool): whether contain self-loops in the graph. Dufault: ``False``.
         flow (str): {'source_to_target', 'target_to_source'}, the flow direction when using in combination with
             message passing. Dufault: ``'source_to_target'``.

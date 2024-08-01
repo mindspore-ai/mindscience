@@ -30,14 +30,15 @@ def change_basis_real_to_complex(l, dtype=float32):
     r"""
     Convert a real basis of spherical harmonics in term of complex.
 
-    Arg:
+    Args:
         l (int): degree of spherical harmonics.
-        dtype (dtype):{float32, float64} data type of the real basis. Default: float32.
+        dtype (dtype): {float32, float64} data type of the real basis. Default: float32.
 
     Returns:
         Tensor, the complex basis with dtype complex64 for `dtype`=float32 and complex128 for `dtype`=float64.
 
     Examples:
+        >>> from mindchemistry.e3.o3 import change_basis_real_to_complex
         >>> m = change_basis_real_to_complex(1)
         >>> print(m)
         [[-0.70710677+0.j          0.        +0.j          0.        -0.70710677j]
@@ -78,6 +79,7 @@ def su2_generators(j, dtype=complex64):
         TypeError: If `j` is not int.
 
     Examples:
+        >>> from mindchemistry.e3.o3 import su2_generators
         >>> m = su2_generators(1)
         >>> print(m)
         [[[ 0.        +0.j          0.70710677+0.j
@@ -134,6 +136,7 @@ def so3_generators(l, dtype=float32):
         ValueError: If matrices data are inconsistent.
 
     Examples:
+        >>> from mindchemistry.e3.o3 import so3_generators
         >>> m = so3_generators(1)
         >>> print(m)
         [[[ 0.          0.          0.        ]
@@ -176,17 +179,17 @@ def wigner_D(l, alpha, beta, gamma):
     Args:
         l (int): degree of representation.
         alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\alpha` around Y axis, applied third.
-            tensor of shape :math:`(...)`
+            The shape of Tensor is :math:`(...)`.
         beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\beta` around X axis, applied second.
-            tensor of shape :math:`(...)`
+            The shape of Tensor is :math:`(...)`.
         gamma (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\gamma` around Y axis, applied first.
-            tensor of shape :math:`(...)`
+            The shape of Tensor is :math:`(...)`.
 
     Returns:
-        Tensor, Wigner D matrix :math:`D^l(\alpha, \beta, \gamma)`.
-            tensor of shape :math:`(2l+1, 2l+1)`
+        Tensor, Wigner D matrix :math:`D^l(\alpha, \beta, \gamma)`. The shape of Tensor is :math:`(2l+1, 2l+1)`.
 
     Examples:
+        >>> from mindchemistry.e3.o3 import wigner_D
         >>> m = wigner_D(1,1,1,1)
         >>> print(m)
         [[-0.09064701  0.7080733   0.70029646]
@@ -218,17 +221,17 @@ def wigner_3j(l1, l2, l3, dtype=float32):
         l1 (int): :math:`l_1`.
         l2 (int): :math:`l_2`.
         l3 (int): :math:`l_3`.
-        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
+        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
 
     Returns:
-        Tensor, Wigner 3j symbols :math:`C_{lmn}`.
-            tensor of shape :math:`(2l_1+1, 2l_2+1, 2l_3+1)`
+        Tensor, Wigner 3j symbols :math:`C_{lmn}`. The shape of Tensor is :math:`(2l_1+1, 2l_2+1, 2l_3+1)`.
 
     Raise:
         TypeError: If `l1`, `l2` or `l3` are not int.
         ValueError: If `l1`, `l2` and `l3` do not satisfy abs(l2 - l3) <= l1 <= l2 + l3.
 
     Examples:
+        >>> from mindchemistry.e3.o3 import wigner_3j
         >>> m = wigner_3j(1,1,1)
         >>> print(m)
         [[[ 0.         0.         0.       ]

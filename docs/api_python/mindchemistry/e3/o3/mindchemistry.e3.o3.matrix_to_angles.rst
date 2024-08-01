@@ -14,6 +14,6 @@ mindchemistry.e3.o3.matrix_to_angles
         - **gamma** (Tensor) - Gamma 欧拉角。形状为 :math:`(...)` 的张量。
 
     异常：
-        - **ValueError**: 如果 det(R) 不等于 1。
+        - **ValueError** - 如果 det(R) 不等于 1。
 
 

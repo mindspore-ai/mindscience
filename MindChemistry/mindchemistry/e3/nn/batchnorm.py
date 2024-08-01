@@ -27,27 +27,27 @@ class BatchNorm(nn.Cell):
     Irreducible representations `wigner_D` are orthonormal.
 
     Args:
-        - **irreps** (Union[str, Irrep, Irreps]): the input irreps.
-        - **eps** (float): avoid division by zero when we normalize by the variance. Default: ``1e-5``.
-        - **momentum** (float): momentum of the running average. Default: ``0.1``.
-        - **affine** (bool): do we have weight and bias parameters. Default: ``True``.
-        - **reduce** (str): {'mean', 'max'}, method used to reduce. Default: ``'mean'``.
-        - **instance** (bool): apply instance norm instead of batch norm. Default: ``Flase``.
-        - **normalization** (str): {'component', 'norm'}, normalization method. Default: ``'component'``.
-        - **dtype**  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+        irreps (Union[str, Irrep, Irreps]): the input irreps.
+        eps (float): avoid division by zero when we normalize by the variance. Default: ``1e-5``.
+        momentum (float): momentum of the running average. Default: ``0.1``.
+        affine (bool): do we have weight and bias parameters. Default: ``True``.
+        reduce (str): {'mean', 'max'}, method used to reduce. Default: ``'mean'``.
+        instance (bool): apply instance norm instead of batch norm. Default: ``Flase``.
+        normalization (str): {'component', 'norm'}, normalization method. Default: ``'component'``.
+        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(batch, ..., irreps.dim)`.
+        - **input** (Tensor) - The shape of Tensor is :math:`(batch, ..., irreps.dim)`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(batch, ..., irreps.dim)`.
+        - **output** (Tensor) - The shape of Tensor is :math:`(batch, ..., irreps.dim)`.
 
     Raises:
         ValueError: If `reduce` is not in ['mean', 'max'].
         ValueError: If `normalization` is not in ['component', 'norm'].
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.nn import BatchNorm

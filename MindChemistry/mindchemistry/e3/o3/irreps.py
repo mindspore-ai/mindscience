@@ -36,7 +36,7 @@ class Irrep:
 
     Args:
         l (Union[int, str]): non-negative integer, the degree of the representation, :math:`l = 0, 1, \dots`. Or string to indicate the degree and parity.
-        p (int): {1, -1}, the parity of the representation.
+        p (int): {1, -1}, the parity of the representation.  Default: ``None``.
 
     Raises:
         NotImplementedError: If method is not implemented.
@@ -45,9 +45,10 @@ class Irrep:
         TypeError: If `l` is not int or str.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
+        >>> from mindchemistry.e3.o3 import Irrep
         >>> Irrep(0, 1)
         0e
         >>> Irrep("1y")
@@ -125,24 +126,19 @@ class Irrep:
 
         Args:
             alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\alpha` around Y axis, applied third.
-                tensor of shape :math:`(...)`
             beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\beta` around X axis, applied second.
-                tensor of shape :math:`(...)`
             gamma (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\gamma` around Y axis, applied first.
-                tensor of shape :math:`(...)`
-            k (Union[None, Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): How many times the parity is applied. Default: None.
-                tensor of shape :math:`(...)`
+            k (Union[None, Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): How many times the parity is applied. Default: ``None`` .
 
         Returns:
-            Tensor, representation wigner D matrix of O(3).
-                tensor of shape :math:`(..., 2l+1, 2l+1)`
+            Tensor, representation wigner D matrix of O(3). The shape of Tensor is :math:`(..., 2l+1, 2l+1)` .
 
         Examples:
-        >>> m = Irrep(1, -1).wigD_from_angles(0, 0 ,0, 1)
-        >>> print(m)
-        [[-1,  0,  0],
-        [ 0, -1,  0],
-        [ 0,  0, -1]]
+            >>> m = Irrep(1, -1).wigD_from_angles(0, 0 ,0, 1)
+            >>> print(m)
+            [[-1,  0,  0],
+            [ 0, -1,  0],
+            [ 0,  0, -1]]
         """
         if k is None:
             k = ops.zeros_like(_to_tensor(alpha))
@@ -154,25 +150,22 @@ class Irrep:
         r"""
         Representation wigner D matrices of O(3) from rotation matrices.
 
-        Arg:
-        R (Tensor): rotation matrices.
-            tensor of shape :math:`(..., 3, 3)`
-        k (Union[None, Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): How many times the parity is applied. Default: None.
-                tensor of shape :math:`(...)`
+        Args:
+            R (Tensor): Rotation matrices. The shape of Tensor is :math:`(..., 3, 3)`.
 
         Returns:
-            Tensor, representation wigner D matrix of O(3).
-                tensor of shape :math:`(..., 2l+1, 2l+1)`
+            Tensor, representation wigner D matrix of O(3). The shape of Tensor is :math:`(..., 2l+1, 2l+1)`.
 
         Raises:
             TypeError: If `R` is not a Tensor.
 
         Examples:
-        >>> m = Irrep(1, -1).wigD_from_matrix(-ops.eye(3))
-        >>> print(m)
-        [[-1,  0,  0],
-        [ 0, -1,  0],
-        [ 0,  0, -1]]
+            >>> from mindspore import ops
+            >>> m = Irrep(1, -1).wigD_from_matrix(-ops.eye(3))
+            >>> print(m)
+            [[-1,  0,  0],
+            [ 0, -1,  0],
+            [ 0,  0, -1]]
         """
         if not isinstance(R, Tensor):
             raise TypeError
@@ -208,7 +201,7 @@ class Irrep:
         r"""
         Return `Irreps` of multiple `Irrep`.
 
-        Arg:
+        Args:
             other (int): multiple number of the `Irrep`.
 
         Returns:
@@ -299,9 +292,10 @@ class Irreps:
         TypeError: If the mul part of `irreps` part is not int.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
+        >>> from mindchemistry.e3.o3 import Irreps
         >>> x = Irreps([(100, (0, 1)), (50, (1, 1))])
         100x0e+50x1e
         >>> x.dim
@@ -503,8 +497,6 @@ class Irreps:
         r"""
         Multiplicity of `ir`.
 
-        Warning: do not suppose GRAPH_MODE in construct functions.
-
         Args:
             ir (Irrep): `Irrep`
 
@@ -601,7 +593,7 @@ class Irreps:
         r"""
         Filter the `Irreps` by either `keep` or `drop`.
 
-        Arg:
+        Args:
             keep (Union[str, Irrep, Irreps, List[str, Irrep]]): list of irrep to keep. Default: None.
             drop (Union[str, Irrep, Irreps, List[str, Irrep]]): list of irrep to drop. Default: None.
 
@@ -704,7 +696,7 @@ class Irreps:
             normalization (str): {'component', 'norm'}, type of normalization method.
 
         Returns:
-            Tensor, tensor of shape `size` where `-1` is replaced by `self.dim`.
+            Tensor, the shape is `size` where `-1` is replaced by `self.dim`.
 
         Examples:
             >>> Irreps("5x0e + 10x1o").randn(5, -1, 5, normalization='norm').shape
@@ -735,24 +727,19 @@ class Irreps:
 
         Args:
             alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\alpha` around Y axis, applied third.
-                tensor of shape :math:`(...)`
             beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\beta` around X axis, applied second.
-                tensor of shape :math:`(...)`
             gamma (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\gamma` around Y axis, applied first.
-                tensor of shape :math:`(...)`
             k (Union[None, Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): How many times the parity is applied. Default: None.
-                tensor of shape :math:`(...)`
 
         Returns:
-            Tensor, representation wigner D matrix of O(3).
-                tensor of shape :math:`(..., 2l+1, 2l+1)`
+            Tensor, representation wigner D matrix of O(3). The shape of Tensor is :math:`(..., 2l+1, 2l+1)`
 
         Examples:
-        >>> m = Irreps("1o").wigD_from_angles(0, 0 ,0, 1)
-        >>> print(m)
-        [[-1,  0,  0],
-        [ 0, -1,  0],
-        [ 0,  0, -1]]
+            >>> m = Irreps("1o").wigD_from_angles(0, 0 ,0, 1)
+            >>> print(m)
+            [[-1,  0,  0],
+            [ 0, -1,  0],
+            [ 0,  0, -1]]
         """
         return _direct_sum(*[ir.wigD_from_angles(alpha, beta, gamma, k) for mul, ir in self for _ in range(mul)])
 
@@ -761,24 +748,20 @@ class Irreps:
         Representation wigner D matrices of O(3) from rotation matrices.
 
         Args:
-        R (Tensor): rotation matrices.
-            tensor of shape :math:`(..., 3, 3)`
-        k (Union[None, Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): How many times the parity is applied. Default: None.
-                tensor of shape :math:`(...)`
+            R (Tensor): Rotation matrices. The shape of Tensor is :math:`(..., 3, 3)`.
 
         Returns:
-            Tensor, representation wigner D matrix of O(3).
-                tensor of shape :math:`(..., 2l+1, 2l+1)`
+            Tensor, representation wigner D matrix of O(3). The shape of Tensor is :math:`(..., 2l+1, 2l+1)`
 
         Raises:
             TypeError: If `R` is not a Tensor.
 
         Examples:
-        >>> m = Irreps("1o").wigD_from_matrix(-ops.eye(3))
-        >>> print(m)
-        [[-1,  0,  0],
-        [ 0, -1,  0],
-        [ 0,  0, -1]]
+            >>> m = Irreps("1o").wigD_from_matrix(-ops.eye(3))
+            >>> print(m)
+            [[-1,  0,  0],
+            [ 0, -1,  0],
+            [ 0,  0, -1]]
         """
         if not isinstance(R, Tensor):
             raise TypeError

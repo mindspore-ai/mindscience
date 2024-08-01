@@ -90,36 +90,37 @@ class Gate(nn.Cell):
 
     Args:
         irreps_scalars (Union[str, Irrep, Irreps]): the input scalar irreps that will be passed through the
-        activation functions `acts`.
+            activation functions `acts`.
         acts (List[Func]): a list of activation functions for each part of `irreps_scalars`.
             The length of the `acts` will be clipped or filled by identity functions to match the length of
             `irreps_scalars`.
         irreps_gates (Union[str, Irrep, Irreps]): the input scalar irreps that will be passed through the
-            activation
-        functions `act_gates` and multiplied by `irreps_gated`.
+            activation functions `act_gates` and multiplied by `irreps_gated`.
         act_gates (List[Func]): a list of activation functions for each part of `irreps_gates`.
             The length of the `acts` will be clipped or filled by identity functions to match the length of
             `irreps_gates`.
         irreps_gated (Union[str, Irrep, Irreps]): the input irreps that will be gated.
-        dtype  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
-        ncon_dtype  (mindspore.dtype): The type of input tensors of ncon computation module.
+        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+        ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
             Default: ``mindspore.float32``.
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(..., irreps_in.dim)`.
+        - **input** (Tensor) - The shape of Tensor is :math:`(..., irreps_in.dim)`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(..., irreps_out.dim)`.
+        - **output** (Tensor) - The shape of Tensor is :math:`(..., irreps_out.dim)`.
 
     Raises:
         ValueError: If `irreps_scalars` or `irreps_gates` contain non-scalar irrep.
         ValueError: If the total multiplication of `irreps_gates` do not match the total multiplication of
-        `irreps_gated`.
+            `irreps_gated`.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
+        >>> from mindspore import ops
+        >>> from mindchemistry.e3.nn import Gate
         >>> Gate('2x0e', [ops.tanh], '1x0o+2x0e', [ops.abs], '2x1o+1x2e')
         Gate (2x0e+1x0o+2x0e+2x1o+1x2e -> 2x0e+2x1o+1x2e)
     """

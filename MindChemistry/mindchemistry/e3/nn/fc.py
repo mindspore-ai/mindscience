@@ -53,24 +53,26 @@ class FullyConnectedNet(nn.SequentialCell):
     Fully-connected Neural Network with normalized activation on scalars.
 
     Args:
-        - **h_list** (List[int]): a list of input, internal and output dimensions for dense layers.
-        - **act** (Func): activation function which will be automatically normalized. Default: ``None``.
-        - **out_act** (bool): whether apply the activation function on the output. Default: ``False``.
-        - **dtype**  (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
+        h_list (List[int]): a list of input, internal and output dimensions for dense layers.
+        act (Func): activation function which will be automatically normalized. Default: ``None``.
+        out_act (bool): whether apply the activation function on the output. Default: ``False``.
+        dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
 
     Inputs:
-        - **input** (Tensor) - Tensor of shape :math:`(h_list[0])`.
+        - **input** (Tensor) - The shape of Tensor is :math:`(h_list[0])`.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape :math:`(h_list[-1])`.
+        - **output** (Tensor) - The shape of Tensor is :math:`(h_list[-1])`.
 
     Raises:
         TypeError: If the elements `h_list` are not `int`.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
+        >>> import mindspore as ms
+        >>> from mindchemistry.e3.nn import FullyConnectedNet
         >>> fc = FullyConnectedNet([4,10,20,12,6], ops.tanh)
         FullyConnectedNet [4, 10, 20, 12, 6]
         >>> v = ms.Tensor([.1,.2,.3,.4])

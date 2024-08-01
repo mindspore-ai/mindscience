@@ -10,5 +10,9 @@ mindchemistry.e3.o3.rand_angles
 
     返回:
         - **alpha** (Tensor) - alpha 欧拉角。
-        - **β** (Tensor) - beta 欧拉角。
+        - **beta** (Tensor) - beta 欧拉角。
         - **gamma** (Tensor) - gamma 欧拉角。
+
+    异常:
+        - **TypeError** - 如果 `shape` 的类型不是 tuple。
+        - **TypeError** - 如果 `shape` 元素的类型不是 int。

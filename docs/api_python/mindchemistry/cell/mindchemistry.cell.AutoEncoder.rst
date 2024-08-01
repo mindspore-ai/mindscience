@@ -3,7 +3,7 @@ mindchemistry.cell.AutoEncoder
 
 .. py:class:: mindchemistry.cell.AutoEncoder(channels, weight_init='normal', has_bias=True, bias_init='zeros', has_dropout=False, dropout_rate=0.5, has_layernorm=False, layernorm_epsilon=1e-7, has_activation=True, act='relu', out_act=None)
 
-    自编码器。应用编码器获取隐层编码，并应用解码器获取重构数据。
+    自编码器网络。应用编码器获取隐层编码，并应用解码器获取重构数据。
 
     参数：
         - **channels** (list) - 每个编码器和解码器层的通道数。

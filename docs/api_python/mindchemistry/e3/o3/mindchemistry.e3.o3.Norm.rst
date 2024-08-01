@@ -14,9 +14,9 @@ mindchemistry.e3.o3.Norm
     输入:
         Tensor，Norm网络的输入。
 
-        - **v** (Tensor) - 输入Tensor。
+        - **v** (Tensor) - 形状为 ``(..., irreps_in.dim)`` 的张量。
 
     输出:
         Tensor，Norm网络的输出。
 
-        - **output** (Tensor) - 输出Tensor。
+        - **output** (Tensor) - 形状为 ``(..., irreps_out.dim)`` 的张量。

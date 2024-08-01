@@ -407,23 +407,25 @@ class Ncon(nn.Cell):
 
     Args:
         con_list (List[List[int]]): lists of indices for each tensor.
-            The the number of each list in `con_list` should coincide with the corresponding tensor's dimensions.
+            The number of each list in `con_list` should coincide with the corresponding tensor's dimensions.
             The positive indices indicate the dimensions to be contracted or summed.
             The negative indices indicate the dimensions to be keeped (as batch dimensions).
-
-    Raises:
-        ValueError: If the number of commands is not match the number of operations.
 
     Inputs:
         - **input** (List[Tensor]) - Tensor List.
 
     Outputs:
-        - **output** (Tensor) - Tensor of shape depends on the input and the computation process.
+        - **output** (Tensor) - The shape of tensor depends on the input and the computation process.
+
+    Raises:
+        ValueError: If the number of commands is not match the number of operations.
 
     Supported Platforms:
-        ``CPU``, ``GPU``, ``Ascend``
+        ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
+        >>> from mindspore import ops
+        >>> from mindchemistry.e3.utils import Ncon
         Trace of a matrix:
         >>> a = ops.ones((3, 3))
         >>> Ncon([[1, 1]])([a])

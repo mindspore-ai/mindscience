@@ -3,8 +3,8 @@ mindchemistry.e3.o3.Linear
 
 .. py:class:: mindchemistry.e3.o3.Linear(irreps_in1, irreps_in2, filter_ir_out, ncon_dtype, **kwargs)
 
-    线性运算是等变的。
-    相当于带有"instructions='linear'"的"TensorProduct'"。有关详细信息，请参阅"mindchemistry.e3.TensorProduct"。
+    线性等变操作。
+    等效于"instructions='linear'"的"TensorProduct'"。有关详细信息，请参阅 :class:`mindchemistry.e3.o3.TensorProduct`。
 
     参数:
         - **irreps_in1** (Union[str, Irrep, Irreps]) - 第一个输入的Irreps。
