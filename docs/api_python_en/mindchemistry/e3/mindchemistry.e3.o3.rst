@@ -2,7 +2,7 @@ mindchemistry.e3.o3
 ====================
 
 .. msplatformautosummary::
-    :toctree: utils
+    :toctree: o3
     :nosignatures:
     :template: classtemplate.rst
 

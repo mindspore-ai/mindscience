@@ -29,7 +29,7 @@ mindchemistry.e3.o3.Irrep
         返回:
             张量，O(3) 的 Wigner D 矩阵表示。张量形状为 :math:`(..., 2l+1, 2l+1)` 。
 
-    .. py:method:: wigD_from_matrix(R)。
+    .. py:method:: wigD_from_matrix(R)
 
         从旋转矩阵中得到 O(3) 的 Wigner D 矩阵表示。
 

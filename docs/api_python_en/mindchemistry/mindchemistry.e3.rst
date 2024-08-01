@@ -1,11 +1,9 @@
 mindchemistry.e3
 ==================
 
-.. msplatformautosummary::
-    :toctree: e3
-    :nosignatures:
-    :template: classtemplate.rst
+.. toctree::
+    :maxdepth: 1
 
-    mindchemistry.e3.nn
-    mindchemistry.e3.o3
-    mindchemistry.e3.utils
+    e3/mindchemistry.e3.nn
+    e3/mindchemistry.e3.o3
+    e3/mindchemistry.e3.utils
