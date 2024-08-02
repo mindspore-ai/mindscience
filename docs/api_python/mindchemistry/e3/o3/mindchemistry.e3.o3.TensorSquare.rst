@@ -16,5 +16,5 @@ mindchemistry.e3.o3.TensorSquare
         - **weight_init** (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal', 'xavier_uniform'}，权重的初始化方法。默认值: ``'normal'``。
         - **ncon_dtype** (mindspore.dtype): `ncon` 计算模块的输入张量的类型。默认值: ``mindspore.float32``。
 
-    异常:
+    异常：
         - **ValueError**: 如果 `irreps_out` 和 `filter_ir_out` 都不为 None。

@@ -14,15 +14,15 @@ mindchemistry.e3.o3.wigner_3j
     .. math::
         C_{ijk} C_{ijk} = 1
 
-    参数:
+    参数：
         - **l1** (int) - :math:`l_1`。
         - **l2** (int) - :math:`l_2`。
         - **l3** (int) - :math:`l_3`。
         - **dtype** (mindspore.dtype) - 输入张量的类型。默认值：``mindspore.float32`` 。
 
-    返回:
+    返回：
         - **output** (Tensor) - 张量，Wigner 3j符号 :math:`C_{lmn}`。形状为 :math:`(2l_1+1, 2l_2+1, 2l_3+1)` 的张量。
 
-    异常:
+    异常：
         - **TypeError** - 如果 `l1`、 `l2` 或 `l3` 不是整型。
         - **ValueError** - 如果`l1`、 `l2` 和 `l3` 不满足 `abs(l2 - l3) <= l1 <= l2 + l3` 。

@@ -6,4 +6,4 @@ mindchemistry.utils
     :nosignatures:
     :template: classtemplate.rst
 
-    mindchemistry.e3.utils.load_yaml_config
+    mindchemistry.utils.load_yaml_config
