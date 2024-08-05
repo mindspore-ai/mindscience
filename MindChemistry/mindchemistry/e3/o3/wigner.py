@@ -35,15 +35,15 @@ def change_basis_real_to_complex(l, dtype=float32):
         dtype (dtype): {float32, float64} data type of the real basis. Default: float32.
 
     Returns:
-        Tensor, the complex basis with dtype complex64 for `dtype`=float32 and complex128 for `dtype`=float64.
+        Tensor, the complex basis with dtype complex64 for `dtype` = float32 and complex128 for `dtype` = float64.
 
     Examples:
         >>> from mindchemistry.e3.o3 import change_basis_real_to_complex
         >>> m = change_basis_real_to_complex(1)
         >>> print(m)
         [[-0.70710677+0.j          0.        +0.j          0.        -0.70710677j]
-        [ 0.        +0.j          0.        -1.j          0.        +0.j        ]
-        [-0.70710677+0.j          0.        +0.j          0.        +0.70710677j]]
+         [ 0.        +0.j          0.        -1.j          0.        +0.j        ]
+         [-0.70710677+0.j          0.        +0.j          0.        +0.70710677j]]
     """
     q = np.zeros((2 * l + 1, 2 * l + 1), np.complex128)
     for m in range(-l, 0):
@@ -211,11 +211,14 @@ def wigner_3j(l1, l2, l3, dtype=float32):
     Wigner 3j symbols :math:`C_{lmn}`.
 
     It satisfies the following two properties:
-        .. math::
-            C_{lmn} = C_{ijk} D_{il}(g) D_{jm}(g) D_{kn}(g) \qquad \forall g \in SO(3)
-        where :math:`D` are given by `wigner_D`.
-        .. math::
-            C_{ijk} C_{ijk} = 1
+
+    .. math::
+        C_{lmn} = C_{ijk} D_{il}(g) D_{jm}(g) D_{kn}(g) \qquad \forall g \in SO(3)
+
+    where :math:`D` are given by `wigner_D`.
+
+    .. math::
+        C_{ijk} C_{ijk} = 1
 
     Args:
         l1 (int): :math:`l_1`.
@@ -235,16 +238,14 @@ def wigner_3j(l1, l2, l3, dtype=float32):
         >>> m = wigner_3j(1,1,1)
         >>> print(m)
         [[[ 0.         0.         0.       ]
-        [ 0.         0.         0.4082483]
-        [ 0.        -0.4082483  0.       ]]
-
-        [[ 0.         0.        -0.4082483]
-        [ 0.         0.         0.       ]
-        [ 0.4082483  0.         0.       ]]
-
-        [[ 0.         0.4082483  0.       ]
-        [-0.4082483  0.         0.       ]
-        [ 0.         0.         0.       ]]]
+          [ 0.         0.         0.4082483]
+          [ 0.        -0.4082483  0.       ]]
+         [[ 0.         0.        -0.4082483]
+          [ 0.         0.         0.       ]
+          [ 0.4082483  0.         0.       ]]
+         [[ 0.         0.4082483  0.       ]
+          [-0.4082483  0.         0.       ]
+          [ 0.         0.         0.       ]]]
     """
     if not isinstance(l1, int) and isinstance(l2, int) and isinstance(l3, int):
         raise TypeError

@@ -6,7 +6,7 @@ mindchemistry.e3.o3.LinearBias
     具有添加偏置选项的线性等变操作。
     等效于"instructions='linear'"的"TensorProduct"，带有添加偏差的选项。关于细节，请参阅 :class:`mindchemistry.e3.o3.TensorProduct`。
 
-    参数:
+    参数：
         - **irreps_in1** (Union[str, Irrep, Irreps]) - 第一个输入的Irreps。
         - **irreps_in2** (Union[str, Irrep, Irreps]) - 第二个输入的Irreps。
         - **irrep_norm** (str) - {'component'，'norm'｝，输入和输出表示的假定归一化。默认值:``"component"``。
