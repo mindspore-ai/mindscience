@@ -1,13 +1,14 @@
 numpy >= 1.17.0
 scipy >= 1.7.0
-biopython == 1.79
+biopython == 1.83
 pyyaml >= 5.4.1
 dataclasses >= 0.6
 glob2 >= 0.6
 h5py >= 3.6.0
 absl-py >= 1.1.0
-biotite == 0.38
-descriptastorus == 2.6.0
+biotite == 0.41.1
+descriptastorus == 2.6.1
 pyparsing >= 3.0.7
 rdkit
-mindspore-gl
+bio
+scikit-learn
