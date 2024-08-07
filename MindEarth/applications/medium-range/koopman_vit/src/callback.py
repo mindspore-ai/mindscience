@@ -14,9 +14,6 @@
 # ==============================================================================
 """The callback of koopman_vit"""
 
-import numpy as np
-import mindspore as ms
-
 import mindspore.numpy as msnp
 from mindspore import nn, ops, Tensor
 from mindspore.train.callback import Callback
@@ -77,18 +74,18 @@ class MultiMSELoss(nn.LossBase):
         ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
-        >>> import numpy as np
-        >>> import mindspore
-        >>> from mindspore import Tensor
-        >>> from mindearth.loss import MultiMSELoss
-        >>> # Case: prediction.shape = labels.shape = (3, 3)
-        >>> prediction1 = Tensor(np.array([[1, 2, 3],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
-        >>> prediction2 = Tensor(np.array([[1, 2, 3],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
-        >>> label1 = Tensor(np.array([[1, 2, 2],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
-        >>> label2 = Tensor(np.array([[1, 2, 2],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
-        >>> loss_fn = MultiMSELoss()
-        >>> loss = loss_fn(prediction1, prediction2, label1, label2)
-        >>> print(loss)
+        # >>> import numpy as np
+        # >>> import mindspore
+        # >>> from mindspore import Tensor
+        # >>> from mindearth.loss import MultiMSELoss
+        # >>> # Case: prediction.shape = labels.shape = (3, 3)
+        # >>> prediction1 = Tensor(np.array([[1, 2, 3],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
+        # >>> prediction2 = Tensor(np.array([[1, 2, 3],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
+        # >>> label1 = Tensor(np.array([[1, 2, 2],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
+        # >>> label2 = Tensor(np.array([[1, 2, 2],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
+        # >>> loss_fn = MultiMSELoss()
+        # >>> loss = loss_fn(prediction1, prediction2, label1, label2)
+        # >>> print(loss)
         0.111111
     """
 
@@ -126,62 +123,16 @@ class InferenceModule(WeatherForecast):
     """
 
     def __init__(self, model, config, logger):
-        super(InferenceModule, self).__init__(model, config, logger)
-        self.feature_dims = config.get("data").get('feature_dims')
-
-    def _get_metrics(self, inputs, labels):
-        """Get metrics"""
-        batch_size = inputs.shape[0]
-        pred = self.forecast(inputs)
-        pred = ops.stack(pred, 1).transpose(0, 1, 3, 4, 2)  # (B,T,C,H W)->BTHWC
-        labels = labels.transpose(0, 2, 3, 4, 1)  # (B,C,T,H W)->BTHWC
-
-        pred = pred.reshape(batch_size, self.t_out_test, self.h_size * self.w_size, self.feature_dims)
-        labels = labels.reshape(batch_size, self.t_out_test, self.h_size * self.w_size, self.feature_dims)
-
-        # rmse
-        error = ops.square(pred - labels).transpose(0, 1, 3, 2).reshape(
-            batch_size, self.t_out_test * self.feature_dims, -1)
-        weight = ms.Tensor(self._calculate_lat_weight().reshape(-1, 1))
-        lat_weight_rmse_step = ops.matmul(error, weight).sum(axis=0)  # 消除N,HW
-        lat_weight_rmse_step = lat_weight_rmse_step.reshape(self.t_out_test, self.feature_dims).transpose(1,
-                                                                                                          0).asnumpy()
-
-        # acc
-        pred = pred * ms.Tensor(self.total_std, ms.float32) + ms.Tensor(self.total_mean, ms.float32)
-        labels = labels * ms.Tensor(self.total_std, ms.float32) + ms.Tensor(self.total_mean, ms.float32)
-        pred = pred - ms.Tensor(self.climate_mean, ms.float32)
-        labels = labels - ms.Tensor(self.climate_mean, ms.float32)
-
-        acc_numerator = pred * labels
-        acc_numerator = acc_numerator.transpose(0, 1, 3, 2).reshape(
-            batch_size, self.t_out_test * self.feature_dims, -1)
-        acc_numerator = ops.matmul(acc_numerator, weight)  # 消除HW
-
-        pred_square = ops.square(pred).transpose(0, 1, 3, 2).reshape(
-            batch_size, self.t_out_test * self.feature_dims, -1)
-        label_square = ops.square(labels).transpose(0, 1, 3, 2).reshape(
-            batch_size, self.t_out_test * self.feature_dims, -1)
-
-        acc_denominator = ops.sqrt(ops.matmul(pred_square, weight) * ops.matmul(label_square, weight))  # 消除HW
-        lat_weight_acc = acc_numerator / acc_denominator
-        lat_weight_acc_step = lat_weight_acc.sum(axis=0).reshape(self.t_out_test, self.feature_dims).transpose(1,
-                                                                                                               0).asnumpy()  # 消除N
-
-        return lat_weight_rmse_step, lat_weight_acc_step
-
-    def _calculate_lat_weight(self):
-        lat_t = np.arange(0, self.h_size)
-        s = np.sum(np.cos(3.1416 / 180. * self._lat(lat_t)))
-        weight = self._latitude_weighting_factor(lat_t, s)
-        grid_lat_weight = np.repeat(weight, self.w_size, axis=0).reshape(-1)  # HW
-        return grid_lat_weight.astype(np.float32)
+        super(InferenceModule, self).__init__()
+        self.model = model
+        self.config = config
+        self.logger = logger
 
     def forecast(self, inputs):
         pred_lst = []
-        for _ in range(self.t_out_test):
+        for _ in range(self.t_out):
             pred, _ = self.model(inputs)
-            pred_lst.append(pred)
+            pred_lst.append(pred.transpose(0, 2, 3, 1).reshape(self.batch_size, -1, self.feature_dims).asnumpy())
             inputs = pred
         return pred_lst
 
@@ -220,7 +171,7 @@ class EvaluateCallBack(Callback):
         cb_params = run_context.original_args()
         if cb_params.cur_epoch_num % self.predict_interval == 0:
             self.eval_time += 1
-            lat_weight_rmse, lat_weight_acc = self.eval_net.eval(self.valid_dataset)
+            lat_weight_rmse, lat_weight_acc = self.eval_net.eval(self.valid_dataset, generator_flag=True)
             if self.config.get('summary').get('plt_key_info'):
                 plt_key_info(lat_weight_rmse, self.config, self.eval_time * self.predict_interval, metrics_type="RMSE",
                              loc="upper left")

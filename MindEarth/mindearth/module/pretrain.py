@@ -16,14 +16,14 @@
 
 import os
 
+import mindspore.communication.management as D
 from mindspore import nn, Model, Tensor
 from mindspore.train.callback import LossMonitor, TimeMonitor, CheckpointConfig, ModelCheckpoint
 from mindspore.train.loss_scale_manager import DynamicLossScaleManager
-import mindspore.communication.management as D
 
-from ..utils import make_dir
-from ..data import Era5Data, DemData, Dataset
 from ..core import get_warmup_cosine_annealing_lr
+from ..data import Era5Data, DemData, Dataset
+from ..utils import make_dir
 
 # MindSpore 2.0 has changed the APIs of _checkparam, the following try except is for compatibility
 try:
@@ -167,21 +167,26 @@ class Trainer:
         self.loss_fn = loss_fn
         self.weather_data_source = weather_data_source
         self.loss_scale = loss_scale
-
+        self.train_dataset_generator, self.valid_dataset_generator = self.get_data_generator()
         self.train_dataset, self.valid_dataset = self.get_dataset()
         self.optimizer = self.get_optimizer()
         self.ckpt_cb = self.get_checkpoint()
         self.pred_cb = self.get_callback()
         self.solver = self.get_solver()
 
-    def get_dataset(self):
+    def get_data_generator(self):
         """
-        Get train and valid dataset.
+            Generate data generators for training and validation datasets.
 
-        Returns:
-            Dataset, train dataset.
-            Dataset, valid dataset.
-        """
+            The function creates data generators based on the specified weather data source.
+            It supports 'ERA5' and 'DemSR' data sources, and will raise an error for unsupported sources.
+
+            Returns:
+                A tuple containing the training and validation data generators.
+
+            Raises:
+                NotImplementedError: If an unsupported data source is specified.
+            """
         if self.weather_data_source == 'ERA5':
             train_dataset_generator = Era5Data(data_params=self.data_params, run_mode='train')
             valid_dataset_generator = Era5Data(data_params=self.data_params, run_mode='valid')
@@ -191,11 +196,20 @@ class Trainer:
         else:
             raise NotImplementedError(
                 f"{self.weather_data_source} not implemented")
+        return train_dataset_generator, valid_dataset_generator
 
-        train_dataset = Dataset(train_dataset_generator,
+    def get_dataset(self):
+        """
+        Get train and valid dataset.
+
+        Returns:
+            Dataset, train dataset.
+            Dataset, valid dataset.
+        """
+        train_dataset = Dataset(self.train_dataset_generator,
                                 distribute=self.train_params.get('distribute'),
                                 num_workers=self.data_params.get('num_workers'))
-        valid_dataset = Dataset(valid_dataset_generator,
+        valid_dataset = Dataset(self.valid_dataset_generator,
                                 distribute=False,
                                 num_workers=self.data_params.get('num_workers'),
                                 shuffle=False)
@@ -273,7 +287,7 @@ class Trainer:
         return solver
 
     def train(self):
-        """Train."""
+        """ train """
         callback_lst = [LossMonitor(), TimeMonitor()]
         if self.pred_cb:
             callback_lst.append(self.pred_cb)

@@ -8,21 +8,20 @@ VIT-KNO是一种深度学习模型，它利用Vision Transformer结构和Koopman
 
 在[dataset](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)下载数据并保存在`./dataset`。
 
-### 运行方式一: 在命令行调用`main.py`脚本
+### 运行方式一: 命令行启动
 
 ```shell
-python -u ./main.py \
-  --device_target Ascend \
-  --device_id 0 \
-  --grid_resolution 1.4 \
-  --output_dir ./summary \
+bash ./scripts/run_standalone_train.sh $device_id $device_target $config_file_path
 ```
 
 其中，
---device_target 表示设备类型，默认Ascend。
---device_id 表示运行设备的编号，默认值0。
---grid_resolution 网格分辨率，默认值1.4。
---output_dir 输出文件的路径，默认值"./summary"。
+`--device_id` 表示运行设备的编号。
+
+`--device_target` 表示设备类型，默认"Ascend"。
+
+`--config_file_path` 配置文件的路径，默认值"./configs/vit_kno_1.4.yaml"。
+
+若运行0.25°分别率训练任务，`config_file_path`传入"./configs/vit_kno_0.25.yaml"即可。
 
 ### 运行方式二: 运行Jupyter Notebook
 
