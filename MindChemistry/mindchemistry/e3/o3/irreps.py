@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+
 import itertools
 import collections
 import dataclasses
@@ -26,6 +27,7 @@ from ..utils.func import broadcast_args, _to_tensor, norm_keep, _expand_last_dim
 from ..utils.perm import _inverse
 from ..utils.linalg import _direct_sum
 
+# pylint: disable=C0111
 
 @jit_class
 @dataclasses.dataclass(init=False, frozen=True)
@@ -105,14 +107,6 @@ class Irrep:
 
     @classmethod
     def iterator(cls, lmax=None):
-        r"""
-        Iterator through all the irreps of :math:`O(3)`.
-
-        Examples:
-            >>> it = Irrep.iterator()
-            >>> next(it), next(it), next(it), next(it)
-            (0e, 0o, 1o, 1e)
-        """
         for l in itertools.count():
             yield Irrep(l, (-1) ** l)
             yield Irrep(l, -(-1) ** l)
@@ -176,11 +170,9 @@ class Irrep:
 
     @property
     def dim(self) -> int:
-        """The dimension of the representation, :math:`2 l + 1`."""
         return 2 * self.l + 1
 
     def is_scalar(self) -> bool:
-        """Equivalent to `l == 0 and p == 1`."""
         return self.l == 0 and self.p == 1
 
     def __mul__(self, other):
@@ -255,7 +247,6 @@ class _MulIr:
 
     @property
     def dim(self):
-        """The dimension of the representations."""
         return self.mul * self.ir.dim
 
     def __repr__(self):
@@ -475,12 +466,10 @@ class Irreps:
 
     @property
     def num_irreps(self):
-        """The total multiplications for each irrep."""
         return sum(mul for mul, _ in self.data)
 
     @property
     def ls(self):
-        """List of degrees for each irrep."""
         res = []
         for mul, (l, _) in self.data:
             res.extend([l] * mul)
@@ -488,7 +477,6 @@ class Irreps:
 
     @property
     def lmax(self):
-        """Max degree of `Irreps`."""
         if len(self) == 0:
             raise ValueError("Cannot get lmax of empty Irreps")
         return max(self.ls)

@@ -343,7 +343,7 @@ class TensorProduct(nn.Cell):
             If `irreps_in2` is None, `irreps_in2` will be assigned as '0e' in 'linear' instructions, or be assigned as `irreps_in1` in otherwise, corresponding to `TensorSquare`.
         irreps_out (Union[str, Irrep, Irreps, None]): Irreps for the output in 'connect' and custom instructions, or filter irreps for the output in otherwise. 
             If `irreps_out` is None, `irreps_out` will be the full tensor product irreps (including all possible paths). Default: ``None``.
-        instructions (Union[str, List[Tule[int, int, int, str, bool, (float)]]]): List of tensor product path instructions. Default: ``'full'``.
+        instructions (Union[str, List[Tuple[int, int, int, str, bool, (float)]]]): List of tensor product path instructions. Default: ``'full'``.
             For `str` in {'full', 'connect', 'element', 'linear', 'mearge'}, the instructions are constructed automatically according to the different modes:
 
             - 'full': each output irrep for every pair of input irreps — is created and returned independently. The outputs are not mixed with each other.
@@ -356,7 +356,7 @@ class TensorProduct(nn.Cell):
               Corresponding to `Linear`.
             - 'merge': Automatically build 'uvu' mode instructions with trainable parameters. The `irreps_out` here plays the role of output filters.
 
-            For `List[Tule[int, int, int, str, bool, (float)]]`, the instructions are constructed manually.
+            For `List[Tuple[int, int, int, str, bool, (float)]]`, the instructions are constructed manually.
 
             Each instruction contain a tuple: (indice_one, indice_two, i_out, mode, has_weight, (optional: path_weight)).
             Each instruction puts ``in1[indice_one]`` :math:`\otimes` ``in2[indice_two]`` into ``out[i_out]``.
@@ -368,7 +368,7 @@ class TensorProduct(nn.Cell):
 
         irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations. Default: ``'component'``.
 
-             - 'norm': :math:` \| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = 1`
+             - 'norm': :math:`\| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = 1`
 
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: ``'element'``.
 
@@ -418,24 +418,19 @@ class TensorProduct(nn.Cell):
         Standard tensor product:
         >>> import mindspore as ms
         >>> from mindchemistry.e3.o3 import TensorProduct
-
         >>> tp1 = TensorProduct('2x1o+4x0o', '1x1o+3x0e')
         TensorProduct [full] (2x1o+4x0o x 1x1o+3x0e -> 2x0e+12x0o+6x1o+2x1e+4x1e+2x2e)
         >>> v1 = ms.Tensor(np.linspace(1., 2., tp1.irreps_in1.dim), dtype=ms.float32)
         >>> v2 = ms.Tensor(np.linspace(2., 3., tp1.irreps_in2.dim), dtype=ms.float32)
         >>> tp1(v1, v2).shape
         (1, 60)
-
         Elementwise tensor product:
-
         >>> tp2 = TensorProduct('2x2e+4x1o', '3x1e+3x0o')
         TensorProduct [element] (2x2e+1x1o+3x1o x 2x1e+1x1e+3x0o -> 2x1e+2x2e+2x3e+1x0o+1x1o+1x2o+3x1e)
         >>> tp2.instructions
         [(0, 0, 0, 'uuu', False), (0, 0, 1, 'uuu', False), (0, 0, 2, 'uuu', False), (1, 1, 3, 'uuu', False), 
         (1, 1, 4, 'uuu', False), (1, 1, 5, 'uuu', False), (2, 2, 6, 'uuu', False)]
-
         Custom tensor product with learnable weights:
-
         >>> tp3 = TensorProduct(
         ...     '3x2o+2x1o', '2x2e+4x1o+5x0e', '2x3o+8x1e+10x1o', 
         ...     [
@@ -448,15 +443,12 @@ class TensorProduct(nn.Cell):
         TensorProduct [custom] (3x2o+2x1o x 2x2e+4x1o+5x0e -> 2x3o+8x1e+10x1o)
         >>> [w.shape for w in tp3.weights]
         [(3, 2), (2,), (2, 4), (2, 5, 10)]
-
         Linear operation with an output filter:
-
         >>> tp4 = TensorProduct('2x1o', irreps_out='5x2e+4x1e+7x1o', instructions='connect')
         TensorProduct [linear] (2x2e+3x1o+3x0e x 1x0e -> 3x2e+5x1o+2x0e)
         >>> v1 = ms.Tensor(np.linspace(1., 2., tp4.irreps_in1.dim), dtype=ms.float32)
         >>> tp4(v1).shape
         (1, 32)
-
     """
     __slots__ = ('irreps_in1', 'irreps_in2', 'irreps_out',
                  'weights', '_in2_is_none', '_mode', '_device', 'output_mask', 'core_mode')

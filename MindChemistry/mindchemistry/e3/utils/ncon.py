@@ -430,17 +430,14 @@ class Ncon(nn.Cell):
         >>> a = ops.ones((3, 3))
         >>> Ncon([[1, 1]])([a])
         3.0
-
         Diagonal of a matrix:
         >>> Ncon([[-1, -1]])([a])
         [1. 1. 1.]
-
         Outer product:
         >>> b = ops.ones((2))
         >>> c = ops.ones((3))
         >>> Ncon([[-1], [-2]])([b, c]).shape
         (2, 3)
-
         Batch matrix multiplication
         >>> d = ops.ones((2, 3, 4))
         >>> e = ops.ones((2, 4, 1))

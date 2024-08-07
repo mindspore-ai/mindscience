@@ -31,10 +31,10 @@ class Norm(nn.Cell):
             Default: ``mindspore.float32`` .
 
     Inputs:
-        v (Tensor): The shape of Tensor is ``(..., irreps_in.dim)``.
+        - **v** (Tensor) - The shape of Tensor is ``(..., irreps_in.dim)``.
 
     Outputs:
-        output (Tensor): The shape of Tensor is ``(..., irreps_out.dim)``.
+        - **output** (Tensor) - The shape of Tensor is ``(..., irreps_out.dim)``.
 
     Supported Platforms:
         ``CPU`` ``GPU`` ``Ascend``

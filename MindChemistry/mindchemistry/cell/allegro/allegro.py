@@ -62,6 +62,7 @@ class Allegro(Cell):
         latent_kwargs (dict): arguments of latent MLP. Default: ``None``.
         env_embed_kwargs (dict): arguments of environment embedded MLP. Default: ``None``.
         irreps_in (Irreps): the irreps dims of input arguments. Default: ``None``.
+        enable_mix_precision (bool): whether use mix precision. Default: ``False``.
 
     Inputs:
         - **embedding_out** (tuple(Tensor)) - Tuple of tensor.
@@ -121,6 +122,7 @@ class Allegro(Cell):
     """
 
     # pylint: disable=W0102
+    # pylint: disable=C0111
     def __init__(
             self,
             l_max: int = 1,
@@ -352,14 +354,6 @@ class Allegro(Cell):
         self._latent_resnent_update_params = self._zero(self.num_layers, ms.common.dtype.float32)
 
     def remove_unneed_paths(self, env_embed_irreps, tps_irreps, out_irreps, new_tps_irreps):
-        """remove_unneed_paths
-
-        Args:
-            env_embed_irreps: env_embed_irreps
-            tps_irreps: tps_irreps
-            out_irreps: out_irreps
-            new_tps_irreps: new_tps_irreps
-        """
         for arg_irreps in reversed(tps_irreps[:-1]):
             new_arg_irreps = []
             for mul, arg_ir in arg_irreps.data:
@@ -372,14 +366,6 @@ class Allegro(Cell):
             out_irreps = new_arg_irreps
 
     def create_irreps(self, num_layers, env_embed_irreps, arg_irreps, tps_irreps):
-        """create_irreps
-
-        Args:
-            num_layers: num_layers
-            env_embed_irreps: env_embed_irreps
-            arg_irreps: arg_irreps
-            tps_irreps: tps_irreps
-        """
         for layer_idx in range(num_layers):
             if layer_idx == 0:
                 ir_out = []

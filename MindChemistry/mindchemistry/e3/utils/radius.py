@@ -94,8 +94,8 @@ def radius_graph(x, r, batch=None, loop=False, max_num_neighbors=32, flow='sourc
     Computes graph edges to all points within a given distance.
 
     Args:
-        x (Tensor): node feature matrix.
-        r (Tensor, float): the radius.
+        x (ndarray): node feature matrix.
+        r (ndarray, float): the radius.
         batch (Tensor): batch vector. If it is none, then calculate and return. Default: ``None``.
         loop (bool): whether contain self-loops in the graph. Dufault: ``False``.
         max_num_neighbors (int): The maximum number of neighbors to return for each element in `y`. Dufault: ``32``.

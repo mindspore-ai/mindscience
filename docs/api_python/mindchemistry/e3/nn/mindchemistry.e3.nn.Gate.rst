@@ -17,14 +17,14 @@ mindchemistry.e3.nn.Gate
         - **irreps_gates** (Union[str, Irrep, Irreps]) - 将通过激活函数 `act_gates` 并与 `irreps_gated` 相乘的输入标量不可约表示。
         - **act_gates** (List[Func]) - 每个 `irreps_gates` 部分的激活函数列表。 `acts` 的长度将被剪切或填充为恒等函数，以匹配 `irreps_gates` 的长度。
         - **irreps_gated** (Union[str, Irrep, Irreps]) - 将被门控的输入不可约表示。
-        - **dtype** (mindspore.dtype): 输入张量的类型。默认值：``mindspore.float32`` 。
+        - **dtype** (mindspore.dtype) - 输入张量的类型。默认值：``mindspore.float32`` 。
         - **ncon_dtype** (mindspore.dtype) - ncon 计算模块输入张量的类型。默认值：``mindspore.float32`` 。
 
     输入：
-        - **inputs** (Tensor) - 形状为 :math:`(..., irreps_in.dim)` 的张量。
+        - **input** (Tensor) - 形状为 :math:`(..., irreps_in.dim)` 的张量。
 
     输出：
-        - **outputs** (Tensor) - 形状为 :math:`(..., irreps_out.dim)` 的张量。
+        - **output** (Tensor) - 形状为 :math:`(..., irreps_out.dim)` 的张量。
 
     异常：
         - **ValueError**: 如果 `irreps_scalars` 或 `irreps_gates` 包含非标量的不可约表示。

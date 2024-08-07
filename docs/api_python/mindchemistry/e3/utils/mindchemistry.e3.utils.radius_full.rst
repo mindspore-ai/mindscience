@@ -6,10 +6,10 @@ mindchemistry.e3.utils.radius_full
     找到 `x` 中每个元素在 `y` 中的所有点。
 
     参数：
-        - **x** (ndarray) - x 节点特征矩阵。
-        - **y** (ndarray) - y 节点特征矩阵。
-        - **batch_x** (ndarray): x 批向量。如果为 None，则根据 x 计算并返回。默认值：``None``。
-        - **batch_y** (ndarray): y 批向量。如果为 None，则根据 y 计算并返回。默认值：``None``。
+        - **x** (Tensor) - x 节点特征矩阵。
+        - **y** (Tensor) - y 节点特征矩阵。
+        - **batch_x** (ndarray) - x 批向量。如果为 None，则根据 x 计算并返回。默认值：``None``。
+        - **batch_y** (ndarray) - y 批向量。如果为 None，则根据 y 计算并返回。默认值：``None``。
 
     返回：
         - **edge_index** (numpy.ndarray) - 包括边的起点与终点。

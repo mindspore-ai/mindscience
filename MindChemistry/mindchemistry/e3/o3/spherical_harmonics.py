@@ -32,15 +32,15 @@ class SphericalHarmonics(nn.Cell):
             projecting onto the spherical harmonics.
         normalization (str): {'integral', 'component', 'norm'}, normalization method of the output tensors.
             Default: ``'integral'``.
-        irreps_out (Union[str, `Irreps`, None]): irreducible representations of input for spherical harmonics.
+        irreps_in (Union[str, `Irreps`, None]): irreducible representations of input for spherical harmonics.
             Default: ``None``.
         dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
 
     Inputs:
-        x (Tensor): Tensor for construct spherical harmonics. The shape of Tensor is :math:`x` of shape ``(..., 3)``
+        - **x** (Tensor) - Tensor for construct spherical harmonics. The shape of Tensor is :math:`(..., 3)`.
 
     Outputs:
-        Tensor, the spherical harmonics :math:`Y^l(x)`. The shape of Tensor is ``(..., 2l+1)``.
+        - **outputs** (Tensor) - the spherical harmonics :math:`Y^l(x)`. The shape of Tensor is ``(..., 2l+1)``.
 
     Raise:
         ValueError: If `normalization` is not in {'integral', 'component', 'norm'}.

@@ -1,7 +1,7 @@
 mindchemistry.e3.o3.su2_generators
 =========================================
 
-.. py:function:: mindchemistry.e3.o3.su2_generators(j, dtype)
+.. py:function:: mindchemistry.e3.o3.su2_generators(j, dtype=complex64)
 
     计算su(2)李代数生成元。
 

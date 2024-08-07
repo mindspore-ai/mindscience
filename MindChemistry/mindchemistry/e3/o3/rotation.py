@@ -102,10 +102,9 @@ def compose_angles(a1, b1, c1, a2, b2, c2):
         R(a, b, c) = R(a_1, b_1, c_1) \circ R(a_2, b_2, c_2)
 
     Note:
-        - The second set of Euler angles 'a2, b2, c2' are applied first,
-            while the first set of Euler angles a2, b2, c2' are applied Second.
-        - The elements of Euler angles should be one of the following types:
-            float, float32, np.float32.
+        The second set of Euler angles 'a2, b2, c2' are applied first,
+        while the first set of Euler angles a2, b2, c2' are applied Second.
+        The elements of Euler angles should be one of the following types: float, float32, np.float32.
 
     Args:
         a1 (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
@@ -122,9 +121,9 @@ def compose_angles(a1, b1, c1, a2, b2, c2):
             The first applied gamma Euler angles.
 
     Returns:
-        alpha (Tensor) - The composed alpha Euler angles.
-        beta (Tensor) - The composed beta Euler angles.
-        gamma (Tensor) - The composed gamma Euler angles.
+        - alpha (Tensor), The composed alpha Euler angles.
+        - beta (Tensor), The composed beta Euler angles.
+        - gamma (Tensor), The composed gamma Euler angles.
 
     Examples:
         >>> from mindchemistry.e3.o3 import compose_angles
@@ -135,7 +134,8 @@ def compose_angles(a1, b1, c1, a2, b2, c2):
     """
 
     a1, b1, c1, a2, b2, c2 = broadcast_args(a1, b1, c1, a2, b2, c2)
-    return matrix_to_angles(ops.matmul(angles_to_matrix(a1, b1, c1), angles_to_matrix(a2, b2, c2)))
+    return matrix_to_angles(
+        ops.matmul(angles_to_matrix(a1, b1, c1), angles_to_matrix(a2, b2, c2)))
 
 
 def matrix_x(angle):
@@ -145,10 +145,10 @@ def matrix_x(angle):
     Args:
         angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
             The rotation angles around x axis.
-            The shape of 'angle' is :math:'(...)'.
+            The shape of 'angle' is :math:`(...)`.
 
     Returns:
-        Tensor, the rotation matrices around x axis. The shape of output is :math:'(..., 3, 3)'
+        Tensor, the rotation matrices around x axis. The shape of output is :math:`(..., 3, 3)`
 
     Examples:
         >>> from mindchemistry.e3.o3 import matrix_x
@@ -165,7 +165,8 @@ def matrix_x(angle):
         ops.stack([o, z, z], axis=-1),
         ops.stack([z, cos(angle), -sin(angle)], axis=-1),
         ops.stack([z, sin(angle), cos(angle)], axis=-1),
-    ], axis=-2)
+    ],
+                     axis=-2)
 
 
 def matrix_y(angle):
@@ -175,10 +176,10 @@ def matrix_y(angle):
     Args:
         angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
             The rotation angles around y axis.
-            The shape of 'angle' is :math:'(...)'.
+            The shape of 'angle' is :`(...)`.
 
     Returns:
-        Tensor, the rotation matrices around y axis. The shape of output is :math:'(..., 3, 3)'
+        Tensor, the rotation matrices around y axis. The shape of output is :math:`(..., 3, 3)`
 
     Examples:
         >>> from mindchemistry.e3.o3 import matrix_y
@@ -195,7 +196,8 @@ def matrix_y(angle):
         ops.stack([cos(angle), z, sin(angle)], axis=-1),
         ops.stack([z, o, z], axis=-1),
         ops.stack([-sin(angle), z, cos(angle)], axis=-1),
-    ], axis=-2)
+    ],
+                     axis=-2)
 
 
 def matrix_z(angle):
@@ -205,10 +207,10 @@ def matrix_z(angle):
     Args:
         angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
             The rotation angles around z axis.
-            The shape of 'angle' is :math:'(...)'.
+            The shape of 'angle' is :math:`(...)`.
 
     Returns:
-        Tensor, the rotation matrices around z axis. The shape of output is :math:'(..., 3, 3)'
+        Tensor, the rotation matrices around z axis. The shape of output is :math:`(..., 3, 3)`.
 
     Examples:
         >>> from mindchemistry.e3.o3 import matrix_z
@@ -225,7 +227,8 @@ def matrix_z(angle):
         ops.stack([cos(angle), -sin(angle), z], axis=-1),
         ops.stack([sin(angle), cos(angle), z], axis=-1),
         ops.stack([z, z, o], axis=-1),
-    ], axis=-2)
+    ],
+                     axis=-2)
 
 
 def angles_to_matrix(alpha, beta, gamma):
@@ -252,7 +255,8 @@ def angles_to_matrix(alpha, beta, gamma):
         [-0.77780527  0.44158012  0.4472424 ]]
     """
     alpha, beta, gamma = broadcast_args(alpha, beta, gamma)
-    return ops.matmul(ops.matmul(matrix_y(alpha), matrix_x(beta)), matrix_y(gamma))
+    return ops.matmul(ops.matmul(matrix_y(alpha), matrix_x(beta)),
+                      matrix_y(gamma))
 
 
 def matrix_to_angles(r_param):
@@ -263,12 +267,9 @@ def matrix_to_angles(r_param):
         R (Tensor): The rotation matrices. Matrices of shape :math:`(..., 3, 3)`.
 
     Returns:
-        alpha (Tensor) - The alpha Euler angles.
-            The shape of Tensor is :math:`(...)`.
-        beta (Tensor) - The beta Euler angles.
-            The shape of Tensor is :math:`(...)`.
-        gamma (Tensor) - The gamma Euler angles.
-            The shape of Tensor is :math:`(...)`.
+        - alpha (Tensor), The alpha Euler angles. The shape of Tensor is :math:`(...)`.
+        - beta (Tensor), The beta Euler angles. The shape of Tensor is :math:`(...)`.
+        - gamma (Tensor), The gamma Euler angles. The shape of Tensor is :math:`(...)`.
 
     Raise:
         ValueError: If the det(R) is not equal to 1.
@@ -290,7 +291,9 @@ def matrix_to_angles(r_param):
     a, b = xyz_to_angles(x)
     tmp_r_param = angles_to_matrix(a, b, ops.zeros_like(a))
     perm = tuple(range(len(tmp_r_param.shape)))
-    r_param = ops.matmul(tmp_r_param.transpose(perm[:-2] + (perm[-1],) + (perm[-2],)), r_param)
+    r_param = ops.matmul(
+        tmp_r_param.transpose(perm[:-2] + (perm[-1],) + (perm[-2],)),
+        r_param)
     c = ops.atan2(r_param[..., 0, 2], r_param[..., 0, 0])
     return a, b, c
 

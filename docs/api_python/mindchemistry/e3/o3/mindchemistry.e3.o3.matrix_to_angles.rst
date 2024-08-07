@@ -6,7 +6,7 @@ mindchemistry.e3.o3.matrix_to_angles
     从矩阵到角度的转换。
 
     参数：
-        - **R** (Tensor): 旋转矩阵。形状为 :math:`(..., 3, 3)` 的矩阵。
+        - **R** (Tensor) - 旋转矩阵。形状为 :math:`(..., 3, 3)` 的矩阵。
 
     返回：
         - **alpha** (Tensor) - Alpha 欧拉角。形状为 :math:`(...)` 的张量。

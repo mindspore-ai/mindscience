@@ -1,7 +1,7 @@
 mindchemistry.e3.o3.FullTensorProduct
 =========================================
 
-.. py:class:: mindchemistry.e3.o3.FullTensorProduct(irreps_in1, irreps_in2, filter_ir_out, ncon_dtype, **kwargs)
+.. py:class:: mindchemistry.e3.o3.FullTensorProduct(irreps_in1, irreps_in2, filter_ir_out=None, ncon_dtype=float32, **kwargs)
 
     完全张量积。
 

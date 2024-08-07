@@ -1,7 +1,7 @@
 mindchemistry.e3.o3.ElementwiseTensorProduct
 ======================================================
 
-.. py:class:: mindchemistry.e3.o3.ElementwiseTensorProduct(irreps_in1, irreps_in2, filter_ir_out, ncon_dtype, **kwargs)
+.. py:class:: mindchemistry.e3.o3.ElementwiseTensorProduct(irreps_in1, irreps_in2, filter_ir_out=None, ncon_dtype=float32, **kwargs)
 
     元素级连接张量积。
 
@@ -9,7 +9,7 @@ mindchemistry.e3.o3.ElementwiseTensorProduct
 
     参数：
         - **irreps_in1** (Union[str, Irrep, Irreps]) - 第一个输入的 Irreps。
-        - **irreps_in2** (Union[str, Irreps, Irreps]) - 第二个输入的 Irreps。
+        - **irreps_in2** (Union[str, Irrep, Irreps]) - 第二个输入的 Irreps。
         - **filter_ir_out** (Union[str, Irrep, Irreps, None]) - 过滤器，仅选择特定的输出 `Irrep`。默认值：``None``。
         - **irrep_norm** (str) - {'component', 'norm'}，输入和输出表示的假定归一化。默认值：``component``。
         - **path_norm** (str) - {'element', 'path'}，路径权重的归一化方法。默认值：``element``。

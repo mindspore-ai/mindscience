@@ -9,8 +9,8 @@ mindchemistry.e3.utils.radius
         - **x** (ndarray) - x 节点特征矩阵。
         - **y** (ndarray) - y 节点特征矩阵。
         - **r** (ndarray, float) - 半径。
-        - **batch_x** (ndarray): x 批向量。如果为 None，则根据 x 计算并返回。默认值：``None``。
-        - **batch_y** (ndarray): y 批向量。如果为 None，则根据 y 计算并返回。默认值：``None``。
+        - **batch_x** (ndarray) - x 批向量。如果为 None，则根据 x 计算并返回。默认值：``None``。
+        - **batch_y** (ndarray) - y 批向量。如果为 None，则根据 y 计算并返回。默认值：``None``。
         - **max_num_neighbors** (int) - 返回每个 `y` 元素的最大邻居数量。默认值：``32``。
 
     返回：
