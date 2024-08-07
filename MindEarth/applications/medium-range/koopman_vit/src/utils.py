@@ -19,11 +19,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import mindspore.communication.management as D
-
 from mindspore import Tensor
 from mindspore import context
-from mindspore.communication import init
 from mindspore import dtype as mstype
+from mindspore.communication import init
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
 
 from mindearth.cell import ViTKNO
@@ -124,7 +123,6 @@ def get_model_summary_dir(config):
     summary_dir = model_name
     for k in config['model'].keys():
         if k == 'name':
-            print(str(k))
             continue
         summary_dir += '_{}_{}'.format(k, str(config['model'][k]))
     summary_dir += '_{}'.format(config['optimizer']['name'])
@@ -134,33 +132,12 @@ def get_model_summary_dir(config):
 
 def update_config(opt, config):
     """Update config by user specified args"""
-    make_dir(opt.output_dir)
-    config['data']['data_sink'] = opt.data_sink
-
-    config['train']['distribute'] = opt.distribute
     config['train']['device_id'] = opt.device_id
-    if opt.device_target == "GPU":
-        opt.amp_level = "O0"
-    config['train']['amp_level'] = opt.amp_level
     config['train']['run_mode'] = opt.run_mode
-    config['train']['load_ckpt'] = opt.load_ckpt
     if config['train']['run_mode'] == 'test':
         config['train']['load_ckpt'] = True
-
-    config['data']['num_workers'] = opt.num_workers
-    config['data']['grid_resolution'] = opt.grid_resolution
-    config['data']['h_size'], config['data']['w_size'] = SIZE_DICT[opt.grid_resolution]
-
-    config['optimizer']['epochs'] = opt.epochs
-    config['optimizer']['finetune_epochs'] = opt.finetune_epochs
-    config['optimizer']['warmup_epochs'] = opt.warmup_epochs
-    config['optimizer']['initial_lr'] = opt.initial_lr
-
-    config['summary']["valid_frequency"] = opt.valid_frequency
-    summary_dir = get_model_summary_dir(config)
-    config['summary']["summary_dir"] = os.path.join(opt.output_dir, summary_dir)
+    config['data']['h_size'], config['data']['w_size'] = SIZE_DICT[config['data']['grid_resolution']]
     make_dir(config['summary']["summary_dir"])
-    config['summary']["ckpt_path"] = opt.ckpt_path
 
 
 def load_dir_data(file_dir, file_name, dtype=mstype.int32):

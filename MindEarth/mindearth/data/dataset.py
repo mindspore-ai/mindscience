@@ -13,24 +13,24 @@
 # limitations under the License.
 # ============================================================================
 '''Module providing dataset functions'''
-import os
+from threading import Thread
+
 import abc
 import datetime
+import os
 import random
-
 import h5py
 import numpy as np
 
 import mindspore.dataset as ds
-from mindspore.communication import get_rank, get_group_size
-
-from ..utils import get_datapath_from_date
-
 # MindSpore 2.0 has changed the APIs of _checkparam, the following try except is for compatibility
 try:
     from mindspore._checkparam import Validator as validator
 except ImportError:
     import mindspore._checkparam as validator
+from mindspore.communication import get_rank, get_group_size
+
+from ..utils import get_datapath_from_date
 
 # https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020MS002203
 PRESSURE_LEVELS_WEATHERBENCH_13 = (
@@ -169,7 +169,8 @@ class Era5Data(Data):
     #  data_frequency, patch/patch_size
     def __init__(self,
                  data_params,
-                 run_mode='train'):
+                 run_mode='train',
+                 kno_patch=False):
 
         super(Era5Data, self).__init__(data_params.get('root_dir'))
         none_type = type(None)
@@ -193,9 +194,11 @@ class Era5Data(Data):
         self._get_statistic()
 
         self.run_mode = run_mode
+        self.kno_patch = kno_patch
         self.t_in = data_params.get('t_in')
-        self.h_size = data_params.get('h_size')
-        self.w_size = data_params.get('w_size')
+        self.h_size, self.w_size = SIZE_DICT[data_params.get('grid_resolution', 1.4)]
+        if data_params.get('h_size', None):
+            self.h_size = data_params.get('h_size', None)
         self.data_frequency = data_params.get('data_frequency')
         self.valid_interval = data_params.get('valid_interval') * self.data_frequency
         self.test_interval = data_params.get('test_interval') * self.data_frequency
@@ -258,49 +261,7 @@ class Era5Data(Data):
         return length
 
     def __getitem__(self, idx):
-        inputs_lst = []
-        inputs_surface_lst = []
-        label_lst = []
-        label_surface_lst = []
-        idx = idx * self.interval
-
-        for t in range(self.t_in):
-            cur_input_data_idx = idx + t * self.pred_lead_time
-            input_date, year_name = get_datapath_from_date(self.start_date, cur_input_data_idx.item())
-            x = np.load(os.path.join(self.path, input_date))[:, :, :self.h_size].astype(np.float32)
-            x_surface = np.load(os.path.join(self.surface_path,
-                                             input_date))[:, :self.h_size].astype(np.float32)
-            x_static = np.load(os.path.join(self.static_path, year_name)).astype(np.float32)
-            x_surface_static = np.load(os.path.join(self.static_surface_path,
-                                                    year_name)).astype(np.float32)
-            x = self._get_origin_data(x, x_static)
-            x_surface = self._get_origin_data(x_surface, x_surface_static)
-            x, x_surface = self._normalize(x, x_surface)
-            inputs_lst.append(x)
-            inputs_surface_lst.append(x_surface)
-
-        for t in range(self.t_out):
-            cur_label_data_idx = idx + (self.t_in + t) * self.pred_lead_time
-            label_date, year_name = get_datapath_from_date(self.start_date, cur_label_data_idx.item())
-            label = np.load(os.path.join(self.path, label_date))[:, :, :self.h_size].astype(np.float32)
-            label_surface = np.load(os.path.join(self.surface_path,
-                                                 label_date))[:, :self.h_size].astype(np.float32)
-            label_static = np.load(os.path.join(self.static_path,
-                                                year_name)).astype(np.float32)
-            label_surface_static = np.load(os.path.join(self.static_surface_path,
-                                                        year_name)).astype(np.float32)
-            label = self._get_origin_data(label, label_static)
-            label_surface = self._get_origin_data(label_surface, label_surface_static)
-            label, label_surface = self._normalize(label, label_surface)
-
-            label_lst.append(label)
-            label_surface_lst.append(label_surface)
-
-        x = np.squeeze(np.stack(inputs_lst, axis=0), axis=1).astype(np.float32)
-        x_surface = np.squeeze(np.stack(inputs_surface_lst, axis=0), axis=1).astype(np.float32)
-        label = np.squeeze(np.stack(label_lst, axis=0), axis=1).astype(np.float32)
-        label_surface = np.squeeze(np.stack(label_surface_lst, axis=0), axis=1).astype(np.float32)
-        return self._process_fn(x, x_surface, label, label_surface)
+        return self.gen_data(idx=idx.item())
 
     @staticmethod
     def _get_origin_data(x, static):
@@ -327,6 +288,81 @@ class Era5Data(Data):
         x = (x - self.mean_pressure_level) / self.std_pressure_level
         x_surface = (x_surface - self.mean_surface) / self.std_surface
         return x, x_surface
+
+    def gen_data(self, idx=0):
+        idx = idx * self.interval
+        inputs_lst, inputs_surface_lst = self._get_data_with_threads(idx, self.t_in, 0)
+        label_lst, label_surface_lst = self._get_data_with_threads(idx, self.t_out, self.t_in)
+
+        x = np.squeeze(np.stack(inputs_lst, axis=0), axis=1).astype(np.float32)
+        x_surface = np.squeeze(np.stack(inputs_surface_lst, axis=0), axis=1).astype(np.float32)
+        label = np.squeeze(np.stack(label_lst, axis=0), axis=1).astype(np.float32)
+        label_surface = np.squeeze(np.stack(label_surface_lst, axis=0), axis=1).astype(np.float32)
+        return self._process_fn(x, x_surface, label, label_surface)
+
+    def _get_data_with_threads(self, idx, period, start_time):
+        """
+               Retrieve data using multiple threads for efficiency.
+
+               This method creates and starts threads to retrieve data in parallel.
+               It is designed to handle a time series of data points, where each point
+               is retrieved based on an index and a starting time, with a specified
+               prediction lead time.
+
+               Parameters:
+                   idx (int): The base index for data retrieval.
+                   period (int): The number of time steps to retrieve data for.
+                   start_time (int): The starting time offset for data retrieval.
+
+               Returns:
+                   tuple: A tuple containing two lists, `level_lst` and `surface_lst`,
+                          which are populated with the retrieved data.
+               """
+        threads = []
+        level_lst = [None] * period
+        surface_lst = [None] * period
+        for period_idx in range(period):
+            cur_data_idx = idx + (start_time + period_idx) * self.pred_lead_time
+            t = Thread(target=self._get_norm_origin_data_lists,
+                       args=(level_lst, surface_lst, cur_data_idx, period_idx))
+            threads.append(t)
+            t.start()
+        for t in threads:
+            t.join()
+        return level_lst, surface_lst
+
+    def _get_norm_origin_data_lists(self, level_lst, surface_lst, cur_label_data_idx, period_idx):
+        """
+           Normalize and process data for a given period index.
+
+           This method loads and normalizes the meteorological data for a specific
+           time period, separating it into level data and surface data. It also
+           incorporates static data for both types.
+
+           Parameters:
+               level_lst (list): List to store the normalized level data.
+               surface_lst (list): List to store the normalized surface data.
+               cur_label_data_idx (int): The current data index for loading.
+               period_idx (int): The index representing the current period in the time series.
+
+           Returns:
+               None: This method modifies the level_lst and surface_lst lists in place.
+
+           Notes:
+               - Assumes that the input dates and paths are correctly formatted and exist.
+               - The method uses NumPy for data manipulation and assumes that the necessary
+                 static data files are available at the specified paths.
+           """
+        input_date, year_name = get_datapath_from_date(self.start_date, cur_label_data_idx)
+        x = np.load(os.path.join(self.path, input_date))[:, :, :self.h_size].astype(np.float32)
+        x_surface = np.load(os.path.join(self.surface_path, input_date))[:, :self.h_size].astype(np.float32)
+        x_static = np.load(os.path.join(self.static_path, year_name)).astype(np.float32)
+        x_surface_static = np.load(os.path.join(self.static_surface_path, year_name)).astype(np.float32)
+        x = self._get_origin_data(x, x_static)
+        x_surface = self._get_origin_data(x_surface, x_surface_static)
+        x, x_surface = self._normalize(x, x_surface)
+        level_lst[period_idx] = x
+        surface_lst[period_idx] = x_surface
 
     def _process_fn(self, x, x_surface, label, label_surface):
         '''process_fn'''
@@ -368,16 +404,19 @@ class Era5Data(Data):
         labels = np.squeeze(labels)
         return inputs, labels
 
-    def _patch(self, x, img_size, patch_size, output_dims):
+    def _patch(self, data, img_size, patch_size, output_dims):
         """ Partition the data into patches. """
         if self.run_mode == 'train':
-            x = x.transpose(0, 2, 3, 1)
-            h, w = img_size[0] // patch_size, img_size[1] // patch_size
-            x = x.reshape(x.shape[0], h, patch_size, w, patch_size, output_dims)
-            x = x.transpose(0, 1, 3, 2, 4, 5)
-            x = np.squeeze(x.reshape(x.shape[0], h * w, patch_size * patch_size * output_dims))
+            if self.kno_patch:
+                x = data
+            else:
+                x = data.transpose(0, 2, 3, 1)
+                h, w = img_size[0] // patch_size, img_size[1] // patch_size
+                x = x.reshape(x.shape[0], h, patch_size, w, patch_size, output_dims)
+                x = x.transpose(0, 1, 3, 2, 4, 5)
+                x = np.squeeze(x.reshape(x.shape[0], h * w, patch_size * patch_size * output_dims))
         else:
-            x = x.transpose(1, 0, 2, 3)
+            x = data.transpose(0, 2, 3, 1).reshape(-1, self.h_size * self.w_size, self.feature_dims)
         return x
 
 

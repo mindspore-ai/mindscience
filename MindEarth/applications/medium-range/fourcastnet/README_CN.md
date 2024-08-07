@@ -10,21 +10,21 @@ FNO充份利用了AFNO模型，提高在高分辨率的预测精度。AFNO是一
 
 在[dataset](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)下载数据并保存在`./dataset`。
 
-### 运行方式一: 在命令行调用`main.py`脚本
+### 方式一：命令行启动
 
 ```shell
-python -u ./main.py \
-  --device_target Ascend \
-  --device_id 0 \
-  --grid_resolution 1.4 \
-  --output_dir ./summary \
+bash ./scripts/run_standalone_train.sh $device_id $device_target $config_file_path
 ```
 
-其中，
---device_target 表示设备类型，默认Ascend。
---device_id 表示运行设备的编号，默认值0。
---grid_resolution 网格分辨率，默认值1.4。
---output_dir 输出文件的路径，默认值"./summary"。
+其中：
+
+`--device_id` 表示运行设备的编号。
+
+`--device_target` 表示设备类型，默认"Ascend"。
+
+`--config_file_path` 配置文件的路径，默认值"./configs/FourCastNet.yaml"。
+
+若运行0.25°分别率训练任务，将./configs/FourCastNet.yaml中的grid_resolution修改为0.25，并且修改root_dir为0.25数据集地址即可。
 
 ### 运行方式二: 运行Jupyter Notebook
 

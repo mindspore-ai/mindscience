@@ -26,6 +26,7 @@ from mindearth.module import WeatherForecast
 from .utils import plt_key_info, unlog_trans
 from .precip_forecast import WeatherForecastTp
 
+PI = math.pi
 
 def _forecast_multi_step(inputs, model, feature_dims, t_out, t_in):
     """Forecast multiple steps with given inputs"""
@@ -124,6 +125,50 @@ class InferenceModule(WeatherForecast):
             print(repr(e))
         return acc
 
+    def eval(self, dataset):
+        '''
+        Eval the model using test dataset or validation dataset.
+
+        Args:
+            dataset (mindspore.dataset): The dataset for eval, including inputs and labels.
+        '''
+        self.logger.info("================================Start Evaluation================================")
+        data_length = 0
+        lat_weight_rmse = []
+        lat_weight_acc = []
+        for data in dataset.create_dict_iterator():
+            inputs = data['inputs']
+            batch_size = inputs.shape[0]
+            labels = data['labels']
+            lat_weight_rmse_step, lat_weight_acc_step = self._get_metrics(inputs, labels)
+            if data_length == 0:
+                lat_weight_rmse = lat_weight_rmse_step
+                lat_weight_acc = lat_weight_acc_step
+            else:
+                lat_weight_rmse += lat_weight_rmse_step
+                lat_weight_acc += lat_weight_acc_step
+
+            data_length += batch_size
+
+        self.logger.info(f'test dataset size: {data_length}')
+        # (69, 20)
+        lat_weight_rmse = np.sqrt(
+            lat_weight_rmse / (data_length * self.w_size * self.h_size))
+        lat_weight_acc = lat_weight_acc / data_length
+        temp_rmse = lat_weight_rmse.transpose(1, 0)
+        denormalized_lat_weight_rmse = temp_rmse * self.total_std
+        denormalized_lat_weight_rmse = denormalized_lat_weight_rmse.transpose(1, 0)
+        if self.config.get("summary").get("save_rmse_acc"):
+            np.save(os.path.join(self.config.get("summary").get("summary_dir"),
+                                 "denormalized_lat_weight_rmse.npy"), denormalized_lat_weight_rmse)
+            np.save(os.path.join(self.config.get("summary").get("summary_dir"),
+                                 "lat_weight_acc.npy"), lat_weight_acc)
+        self._print_key_metrics(denormalized_lat_weight_rmse, lat_weight_acc)
+
+        self.logger.info("================================End Evaluation================================")
+        return denormalized_lat_weight_rmse, lat_weight_acc
+    def _latitude_weighting_factor(self, j, s):
+        return self.h_size * np.cos(PI / 180. * self._lat(j)) / s
 
 class InferenceModuleTp(WeatherForecastTp):
     """

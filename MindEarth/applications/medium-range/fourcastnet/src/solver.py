@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """FCNTrainer"""
-from mindearth.module import Trainer
+from mindearth import Trainer
 
 from .callback import EvaluateCallBack
 
@@ -24,5 +24,5 @@ class FCNTrainer(Trainer):
         self.pred_cb = self.get_callback()
 
     def get_callback(self):
-        pred_cb = EvaluateCallBack(self.model, self.valid_dataset, self.config, self.logger)
+        pred_cb = EvaluateCallBack(self.model, self.valid_dataset_generator, self.config, self.logger)
         return pred_cb
