@@ -17,10 +17,10 @@ mindchemistry.e3.nn.NormActivation
         - **ncon_dtype** (mindspore.dtype) - ncon 计算模块输入张量的类型。默认值：``mindspore.float32`` 。
 
     输入：
-        - **inputs** (Tensor) - 形状为 :math:`(..., irreps_in.dim)` 的张量。
+        - **input** (Tensor) - 形状为 :math:`(..., irreps_in.dim)` 的张量。
 
     输出：
-        - **outputs** (Tensor) - 形状为 :math:`(..., irreps_in.dim)` 的张量。
+        - **output** (Tensor) - 形状为 :math:`(..., irreps_in.dim)` 的张量。
 
     异常：
         - **ValueError**: 如果 `epsilon` 不为 None 且 `normalize` 为 False。

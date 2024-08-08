@@ -1,20 +1,21 @@
 mindchemistry.cell.Allegro
 ============================
 
-.. py:class:: mindchemistry.cell.Allegro()
+.. py:class:: mindchemistry.cell.Allegro(l_max: int = 1, parity_setting="o3_full", num_layers: int = 1, env_embed_multi: int = 8, avg_num_neighbor: float = 1.0, two_body_kwargs=None, latent_kwargs=None, env_embed_kwargs=None, irreps_in=None, enable_mix_precision=False)
 
     Allegro网络。
 
     参数：
-        - **l_max** (int): 球谐函数特征的最大阶数。默认值：``1``。
-        - **parity_setting** (string): 对称性相关设置。默认值：``"o3_full"``。
-        - **num_layers** (int): Allegro 网络的层数。默认值：``1``。
-        - **env_embed_multi** (int): 网络中特征的通道数。默认值：``8``。
-        - **avg_num_neighbor** (float): 平均邻近原子数量。默认值：``1.0``。
-        - **two_body_kwargs** (dict): 二体隐层 MLP 的参数。默认值：``None``。
-        - **latent_kwargs** (dict): 隐层 MLP 的参数。默认值：``None``。
-        - **env_embed_kwargs** (dict): 环境嵌入 MLP 的参数。默认值：``None``。
-        - **irreps_in** (Irreps): 输入参数的 irreps 维度。默认值：``None``。
+        - **l_max** (int) - 球谐函数特征的最大阶数。默认值：``1``。
+        - **parity_setting** (string) - 对称性相关设置。默认值：``"o3_full"``。
+        - **num_layers** (int) - Allegro 网络的层数。默认值：``1``。
+        - **env_embed_multi** (int) - 网络中特征的通道数。默认值：``8``。
+        - **avg_num_neighbor** (float) - 平均邻近原子数量。默认值：``1.0``。
+        - **two_body_kwargs** (dict) - 二体隐层 MLP 的参数。默认值：``None``。
+        - **latent_kwargs** (dict) - 隐层 MLP 的参数。默认值：``None``。
+        - **env_embed_kwargs** (dict) - 环境嵌入 MLP 的参数。默认值：``None``。
+        - **irreps_in** (Irreps) - 输入参数的 irreps 维度。默认值：``None``。
+        - **enable_mix_precision** (bool) - 是否启用混合精度。默认值：``False``。
 
     输入：
         - **embedding_out** (tuple(Tensor)) - 张量元组。

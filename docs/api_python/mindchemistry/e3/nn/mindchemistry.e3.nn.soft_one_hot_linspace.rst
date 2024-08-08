@@ -1,7 +1,7 @@
 mindchemistry.e3.nn.soft_one_hot_linspace
 ==========================================
 
-.. py:function:: mindchemistry.e3.nn.soft_one_hot_linspace(x, start, end, number, basis='smooth_finite', cutoff=True, dtype=float32)
+.. py:function:: mindchemistry.e3.nn.soft_one_hot_linspace(x, start, end, number, basis='smooth_finite', cutoff=True)
 
     投影到函数基上。返回一组 :math:`\{y_i(x)\}_{i=1}^N`，
 

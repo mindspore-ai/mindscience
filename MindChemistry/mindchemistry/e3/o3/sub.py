@@ -24,8 +24,8 @@ from ..utils.func import narrow
 
 class FullyConnectedTensorProduct(TensorProduct):
     r"""
-    Fully-connected weighted tensor product. All the possible path allowed by :math:`|l_1 - l_2| \leq l_{out} \leq l_1
-    + l_2` are made.
+    Fully-connected weighted tensor product. All the possible path allowed
+    by :math:`|l_1 - l_2| \leq l_{out} \leq l_1 + l_2` are made.
     Equivalent to `TensorProduct` with `instructions='connect'`.
     For details, see :class:`mindchemistry.e3.o3.TensorProduct`.
 
@@ -78,7 +78,7 @@ class FullTensorProduct(TensorProduct):
         filter_ir_out (Union[str, Irrep, Irreps, None]): Filter to select only specific `Irrep`
             of the output. Default: None.
         irrep_norm (str): {'component', 'norm'}, the assumed normalization of the input and output representations.
-        Default: 'component'. Default: 'component'.
+            Default: 'component'. Default: 'component'.
         path_norm (str): {'element', 'path'}, the normalization method of path weights. Default: 'element'.
         weight_init (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal',
             'xavier_uniform'}, the initial method of weights. Default: 'normal'.

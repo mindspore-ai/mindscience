@@ -31,7 +31,7 @@ class NormActivation(nn.Cell):
         act (Func): an activation function for each part of the norm of `irreps_in`.
         normalize (bool): whether to normalize the input features before multiplying them by the scalars from the
             nonlinearity. Default: True.
-        epsilon (float): when ``normalize``ing, norms smaller than ``epsilon`` will be clamped up to ``epsilon``
+        epsilon (float): when ``normalize``, norms smaller than ``epsilon`` will be clamped up to ``epsilon``
             to avoid division by zero. Not allowed when `normalize` is False. Default: None.
         bias (bool): whether to apply a learnable additive bias to the inputs of the `act`. Default: False.
         init_method (Union[str, float, mindspore.common.initializer]): initialize parameters.

@@ -238,7 +238,7 @@ class FCNet(nn.Cell):
     Inputs:
         - **input** (Tensor) - The shape of Tensor is :math:`(*, channels[0])`.
 
-    Returns:
+    Outputs:
         - **output** (Tensor) - The shape of Tensor is :math:`(*, channels[-1])`.
 
     Supported Platforms:
@@ -308,7 +308,7 @@ class FCNet(nn.Cell):
 class MLPNet(nn.Cell):
     r"""
     The MLPNet Network. Applies a series of fully connected layers to the incoming data among which hidden layers have
-        same number of channels.
+    same number of channels.
 
     Args:
         in_channels (int): the number of input layer channel.

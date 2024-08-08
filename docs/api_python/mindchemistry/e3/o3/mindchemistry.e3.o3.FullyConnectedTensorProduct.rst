@@ -1,7 +1,7 @@
 mindchemistry.e3.o3.FullyConnectedTensorProduct
 ======================================================
 
-.. py:class:: mindchemistry.e3.o3.FullyConnectedTensorProduct(irreps_in1, irreps_in2, irreps_out, ncon_dtype, **kwargs)
+.. py:class:: mindchemistry.e3.o3.FullyConnectedTensorProduct(irreps_in1, irreps_in2, irreps_out, ncon_dtype=float32, **kwargs)
 
     全连接加权张量积。所有满足 :math:`|l_1 - l_2| \leq l_{out} \leq l_1 + l_2` 的路径都将被考虑。
     等效于 `TensorProduct` 的 `instructions='connect'`。详细信息请参见  :class:`mindchemistry.e3.o3.TensorProduct` 。

@@ -1,7 +1,7 @@
 mindchemistry.e3.o3.TensorProduct
 =========================================
 
-.. py:class:: mindchemistry.e3.o3.TensorProduct(irreps_in1, irreps_in2, filter_ir_out, ncon_dtype, **kwargs)
+.. py:class:: mindchemistry.e3.o3.TensorProduct(irreps_in1, irreps_in2=None, irreps_out=None, instructions='full', dtype=float32, irrep_norm='component', path_norm='element', weight_init='normal', weight_mode='inner', core_mode='ncon', ncon_dtype = float32, **kwargs)
 
     多功能张量乘积运算符，适用于两个输入 `Irreps` 和一个输出 `Irreps`，将两个张量发送到一个张量中并保持几何张量属性。
     该类集成了不同的典型用法：`TensorSquare`、`FullTensorProduct`、`FullyConnectedTensorProduct`、`ElementwiseTensorProduct` 和 `Linear`。
@@ -50,24 +50,24 @@ mindchemistry.e3.o3.TensorProduct
           - `has_weight`: bool，如果此路径应具有可学习权重，则为 `True`，否则为 `False`。
           - `path_weight`: float，应用于此路径输出的乘法权重。默认值：1.0。
 
-        - **irrep_norm** (str): {'component', 'norm'}，假定输入和输出表示的规范化方式。默认值：``'component'``。
+        - **irrep_norm** (str) - {'component', 'norm'}，假定输入和输出表示的规范化方式。默认值：``'component'``。
 
-          - 'norm': :math:` \| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = 1`
+          - 'norm': :math:`\| x \| = \| y \| = 1 \Longrightarrow \| x \otimes y \| = 1`
 
-        - **path_norm** (str): {'element', 'path'}，路径权重的规范化方法。默认值：``'element'``。
+        - **path_norm** (str) - {'element', 'path'}，路径权重的规范化方法。默认值：``'element'``。
 
           - 'element': 每个输出按元素总数规范化（独立于其路径）。
           - 'path': 每个路径按路径中的元素总数规范化，然后每个输出按路径数目规范化。
 
-        - **weight_init** (str): {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal', 'xavier_uniform'}，权重的初始化方法。默认值：``'normal'``。
-        - **weight_mode** (str): {'inner', 'share', 'custom'} 确定权重的模式。默认值：``'inner'``。
+        - **weight_init** (str) - {'zeros', 'ones', 'truncatedNormal', 'normal', 'uniform', 'he_uniform', 'he_normal', 'xavier_uniform'}，权重的初始化方法。默认值：``'normal'``。
+        - **weight_mode** (str) - {'inner', 'share', 'custom'} 确定权重的模式。默认值：``'inner'``。
 
           - 'inner': 权重将在张量乘积中内部初始化。
           - 'share': 权重应手动给定且无批次维度。
           - 'custom': 权重应手动给定且有批次维度。
 
-        - **dtype** (mindspore.dtype): 输入张量的类型。默认值：``mindspore.float32``。
-        - **ncon_dtype** (mindspore.dtype): ncon 计算模块输入张量的类型。默认值：``mindspore.float32``。
+        - **dtype** (mindspore.dtype) - 输入张量的类型。默认值：``mindspore.float32``。
+        - **ncon_dtype** (mindspore.dtype) - ncon 计算模块输入张量的类型。默认值：``mindspore.float32``。
 
     输入：
         - **x** (Tensor) - 形状为 ``(..., irreps_in1.dim)`` 的张量。

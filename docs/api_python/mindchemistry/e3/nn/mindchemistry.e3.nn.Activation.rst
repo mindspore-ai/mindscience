@@ -9,7 +9,7 @@ mindchemistry.e3.nn.Activation
     参数：
         - **irreps_in** (Union[str, Irrep, Irreps]) - 输入的不可约表示。
         - **acts** (List[Func]) - 用于 `irreps_in` 每部分的激活函数列表。 `acts` 的长度将被剪切或填充为恒等函数，以匹配 `irreps_in` 的长度。
-        - **dtype** (mindspore.dtype): 输入张量的类型。默认值：``mindspore.float32`` 。
+        - **dtype** (mindspore.dtype) - 输入张量的类型。默认值：``mindspore.float32`` 。
 
     输入：
         - **inputs** (Tensor) - 形状为 :math:`(*, irreps_in.dim)` 的张量。

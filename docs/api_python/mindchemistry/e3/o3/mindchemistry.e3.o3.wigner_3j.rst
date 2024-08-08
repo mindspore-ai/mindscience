@@ -1,7 +1,7 @@
 mindchemistry.e3.o3.wigner_3j
 ==============================
 
-.. py:function:: mindchemistry.e3.o3.wigner_3j(l1, l2, l3, dtype)
+.. py:function:: mindchemistry.e3.o3.wigner_3j(l1, l2, l3, dtype=float32)
 
     Wigner 3j符号 :math:`C_{lmn}`。
     它满足以下两个性质:
@@ -25,4 +25,4 @@ mindchemistry.e3.o3.wigner_3j
 
     异常：
         - **TypeError** - 如果 `l1`、 `l2` 或 `l3` 不是整型。
-        - **ValueError** - 如果`l1`、 `l2` 和 `l3` 不满足 `abs(l2 - l3) <= l1 <= l2 + l3` 。
+        - **ValueError** - 如果 `l1`、 `l2` 和 `l3` 不满足 `abs(l2 - l3) <= l1 <= l2 + l3` 。
