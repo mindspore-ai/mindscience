@@ -102,8 +102,8 @@ def compose_angles(a1, b1, c1, a2, b2, c2):
         R(a, b, c) = R(a_1, b_1, c_1) \circ R(a_2, b_2, c_2)
 
     Note:
-        The second set of Euler angles 'a2, b2, c2' are applied first,
-        while the first set of Euler angles a2, b2, c2' are applied Second.
+        The second set of Euler angles 'a2, b2, c2' are applied first, while the first set of Euler angles a2, b2, c2'
+        are applied Second.
         The elements of Euler angles should be one of the following types: float, float32, np.float32.
 
     Args:
@@ -176,7 +176,6 @@ def matrix_y(angle):
     Args:
         angle (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]):
             The rotation angles around y axis.
-            The shape of 'angle' is :`(...)`.
 
     Returns:
         Tensor, the rotation matrices around y axis. The shape of output is :math:`(..., 3, 3)`

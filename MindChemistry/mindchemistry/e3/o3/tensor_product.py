@@ -382,6 +382,7 @@ class TensorProduct(nn.Cell):
              - 'share': weights should given manually without batch dimension.
              - 'custom': weights should given manually with batch dimension.
 
+        core_mode (str): {'ncon', 'einsum'} determine the core computation mode. Default: ``'ncon'``.
         dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
         ncon_dtype (mindspore.dtype): The type of input tensors of ncon computation module.
             Default: ``mindspore.float32`` .

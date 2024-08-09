@@ -24,6 +24,7 @@ mindchemistry.e3.o3
     mindchemistry.e3.o3.matrix_z
     mindchemistry.e3.o3.Norm
     mindchemistry.e3.o3.rand_angles
+    mindchemistry.e3.o3.so3_generators
     mindchemistry.e3.o3.SphericalHarmonics
     mindchemistry.e3.o3.su2_generators
     mindchemistry.e3.o3.TensorProduct

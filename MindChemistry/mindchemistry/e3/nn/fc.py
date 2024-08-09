@@ -56,6 +56,7 @@ class FullyConnectedNet(nn.SequentialCell):
         h_list (List[int]): a list of input, internal and output dimensions for dense layers.
         act (Func): activation function which will be automatically normalized. Default: ``None``.
         out_act (bool): whether apply the activation function on the output. Default: ``False``.
+        init_method (Union[str, mindspore.common.initializer]): initialize parameters. Default: ``'normal'``.
         dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
 
     Inputs:

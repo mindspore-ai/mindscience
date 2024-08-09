@@ -40,7 +40,7 @@ class SphericalHarmonics(nn.Cell):
         - **x** (Tensor) - Tensor for construct spherical harmonics. The shape of Tensor is :math:`(..., 3)`.
 
     Outputs:
-        - **outputs** (Tensor) - the spherical harmonics :math:`Y^l(x)`. The shape of Tensor is ``(..., 2l+1)``.
+        - **output** (Tensor) - the spherical harmonics :math:`Y^l(x)`. The shape of Tensor is ``(..., 2l+1)``.
 
     Raise:
         ValueError: If `normalization` is not in {'integral', 'component', 'norm'}.
