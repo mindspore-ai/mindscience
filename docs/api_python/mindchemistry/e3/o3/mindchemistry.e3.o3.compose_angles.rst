@@ -9,7 +9,7 @@ mindchemistry.e3.o3.compose_angles
 
         R(a, b, c) = R(a_1, b_1, c_1) \circ R(a_2, b_2, c_2)
 
-    .. note:：
+    .. note::
         第二组欧拉角 `a2, b2, c2` 首先应用，而第一组欧拉角 `a1, b1, c1` 随后应用。
         欧拉角的元素应为以下类型之一：float, float32, np.float32。
 

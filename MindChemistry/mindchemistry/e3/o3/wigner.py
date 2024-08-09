@@ -179,11 +179,8 @@ def wigner_D(l, alpha, beta, gamma):
     Args:
         l (int): degree of representation.
         alpha (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\alpha` around Y axis, applied third.
-            The shape of Tensor is :math:`(...)`.
         beta (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\beta` around X axis, applied second.
-            The shape of Tensor is :math:`(...)`.
         gamma (Union[Tensor[float32], List[float], Tuple[float], ndarray[np.float32], float]): rotation :math:`\gamma` around Y axis, applied first.
-            The shape of Tensor is :math:`(...)`.
 
     Returns:
         Tensor, Wigner D matrix :math:`D^l(\alpha, \beta, \gamma)`. The shape of Tensor is :math:`(2l+1, 2l+1)`.

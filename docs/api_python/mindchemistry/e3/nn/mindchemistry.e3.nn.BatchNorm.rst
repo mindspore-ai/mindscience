@@ -19,10 +19,10 @@ mindchemistry.e3.nn.BatchNorm
         - **dtype** (mindspore.dtype) - 输入张量的类型。默认值：``mindspore.float32`` 。
 
     输入：
-        - **inputs** (Tensor) - 形状为 :math:`(batch, ..., irreps.dim)` 的张量。
+        - **input** (Tensor) - 形状为 :math:`(batch, ..., irreps.dim)` 的张量。
 
     输出：
-        - **outputs** (Tensor) - 形状为 :math:`(batch, ..., irreps.dim)` 的张量。
+        - **output** (Tensor) - 形状为 :math:`(batch, ..., irreps.dim)` 的张量。
 
     异常：
         - **ValueError**: 如果 `reduce` 不是 'mean' 或 'max'。
