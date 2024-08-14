@@ -129,10 +129,7 @@ def train(input_args):
     use_ascend = context.get_context(attr_key='device_target') == "Ascend"
     print_log(f"use_ascend: {use_ascend}")
 
-    if use_ascend:
-        compute_dtype = mstype.float16
-    else:
-        compute_dtype = mstype.float32
+    compute_dtype = mstype.float32
 
     data_config = burgers_config['data']
     optimizer_config = burgers_config['optimizer']
