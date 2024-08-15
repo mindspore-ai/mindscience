@@ -36,24 +36,25 @@ from ...function import get_integer
 
 
 class Group(AtomsBase):
-    r"""
-    Group of atoms.
+    r"""Group of atoms
 
     Args:
+
         atoms (Union[List[AtomsBase], Tuple[AtomsBase]]):
                             List of AtomsBase. Member should be the subclass of AtomsBase.
 
         batched (bool):     Whether the first dimension of index is the batch size.
-                            Default: ``False``.
+                            Default: False
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                                Default: ``False``.
+                                Default: False
 
         axis (int):         Axis to concatenate the coordinates of atoms.
 
-        name (str):         Name of the Colvar. Default: 'atoms_group'.
+        name (str):         Name of the Colvar. Default: 'atoms_group'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -123,21 +124,28 @@ class Group(AtomsBase):
 
         self._periodic = F.squeeze(self.concat(periodic), 0)
 
+    def set_dimension(self, dimension: int = 3):
+        for i in range(self.num_groups):
+            self.atoms[i].set_dimension(dimension)
+        return self
+
     def construct(self, coordinate: Tensor, pbc_box: Tensor = None):
         r"""get position coordinates of atoms group
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system.
-                                    `B` means batchsize, i.e. number of walkers in simulation.
-                                    `A` means number of colvar in system.
-                                    `D` means dimension of the simulation system. Usually is 3.
+                                    Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+                                    Tensor of PBC box. Default: None
 
         Returns:
             position (Tensor):  Tensor of shape (B, a_1, a_2, ..., a_n, D). Data type is float.
-            `a_{i}` means Dimension of specific atoms.
+
+        Symbols:
+            B:      Batchsize, i.e. number of walkers in simulation
+            A:      Number of atoms in system.
+            a_{i}:  Dimension of specific atoms.
+            D:      Dimension of the simulation system. Usually is 3.
         """
         atoms = ()
         for i in range(self.num_groups):

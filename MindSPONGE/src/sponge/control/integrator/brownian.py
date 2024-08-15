@@ -24,7 +24,7 @@
 Brownian integrator
 """
 
-from typing import Tuple
+from typing import Dict
 
 import mindspore as ms
 import mindspore.numpy as msnp
@@ -42,6 +42,7 @@ class Brownian(Integrator):
     r"""A Brownian integrator module, which is a subclass of `Integrator`.
 
     Args:
+
         system (Molecule):              Simulation system
 
         temperature (float):            Simulation temperature T (K). Default: 300
@@ -50,6 +51,7 @@ class Brownian(Integrator):
 
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -115,13 +117,19 @@ class Brownian(Integrator):
                   velocity: Tensor,
                   force: Tensor,
                   energy: Tensor,
-                  kinetics: Tensor,
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+                  **kwargs
+                  ) -> Dict[str, Tensor]:
 
         coordinate += self.acc_unit_scale * force * self.inv_gamma * self.time_step
         coordinate += self.normal(coordinate.shape) * self.random_scale
 
-        return coordinate, velocity, force, energy, kinetics, virial, pbc_box
+        return {'coordinate': coordinate,
+                'velocity': velocity,
+                'force': force,
+                'energy': energy,
+                'virial': virial,
+                'pbc_box': pbc_box,
+                }

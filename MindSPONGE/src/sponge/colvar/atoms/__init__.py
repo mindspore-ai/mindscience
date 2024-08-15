@@ -30,8 +30,7 @@ from .group import Group
 from .center import Center
 from .vector import Vector
 from .get import get_atoms
-from .all import AllAtoms
 
-__all__ = ['Group', 'Center', 'Vector', 'get_atoms', 'AllAtoms']
+__all__ = ['Group', 'Center', 'Vector', 'get_atoms']
 __all__.extend(atoms.__all__)
 __all__.extend(position.__all__)

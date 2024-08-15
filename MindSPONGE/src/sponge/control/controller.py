@@ -24,7 +24,7 @@
 Controller
 """
 
-from typing import Union, Tuple, List
+from typing import Union, Dict, List
 from numpy import ndarray
 
 import mindspore as ms
@@ -48,7 +48,6 @@ class Controller(Cell):
     Args:
         system(Molecule):   Simulation system
         control_step(int):  Step interval for controller execution. Default: 1
-        kwargs(dict):       Other parameters for extension
 
     Inputs:
         - **coordinate** (Tensor) - Tensor of shape `(B, A, D)`. Data type is float.
@@ -69,65 +68,8 @@ class Controller(Cell):
         - virial, Tensor of shape `(B, D)`. Data type is float.
         - pbc_box, Tensor of shape `(B, D)`. Data type is float.
 
-    Note:
-        B:  Number of walkers in simulation.
-        A:  Number of atoms.
-        D:  Spatial dimension of the simulation system. Usually is 3.
-
     Supported Platforms:
         ``Ascend`` ``GPU``
-
-    Examples:
-        >>> from sponge import WithEnergyCell, UpdaterMD, Sponge
-        >>> from sponge.callback import RunInfo
-        >>> from sponge.control import Controller
-        >>> # system is the Molecule object defined by user.
-        >>> # potential is the Energy object defined by user.
-        >>> withenergy = WithEnergyCell(system, potential)
-        >>> updater = UpdaterMD(
-        ...     system=system,
-        ...     time_step=1e-3,
-        ...     velocity=velocity,
-        ...     integrator='velocity_verlet',
-        ...     temperature=300,
-        ... )
-        >>> mini = Sponge(withenergy, optimizer=updater)
-        >>> run_info = RunInfo(1)
-        >>> mini.run(5, callbacks=[run_info])
-        [MindSPONGE] Started simulation at 2024-03-22 14:21:27
-        [MindSPONGE] Step: 1, E_pot: 110.0423, E_kin: 46.251404, E_tot: 156.2937, Temperature: 337.1373
-        [MindSPONGE] Step: 2, E_pot: 107.28819, E_kin: 48.7815, E_tot: 156.0697, Temperature: 355.57977
-        [MindSPONGE] Step: 3, E_pot: 112.72148, E_kin: 43.82708, E_tot: 156.54855, Temperature: 319.46582
-        [MindSPONGE] Step: 4, E_pot: 119.34253, E_kin: 37.759735, E_tot: 157.10226, Temperature: 275.23953
-        [MindSPONGE] Step: 5, E_pot: 119.16531, E_kin: 37.857212, E_tot: 157.02252, Temperature: 275.95004
-        [MindSPONGE] Finished simulation at 2024-03-22 14:21:30
-        [MindSPONGE] Simulation time: 2.96 seconds.
-        --------------------------------------------------------------------------------
-        >>> class MyController(Controller):
-        ...     def construct(self,
-        ...                 coordinate: Tensor,
-        ...                 velocity: Tensor,
-        ...                 **kwargs):
-        ...         return super().construct(coordinate, velocity/100, **kwargs)
-        >>> updater = UpdaterMD(
-        ...     system=system,
-        ...     time_step=1e-3,
-        ...     velocity=velocity,
-        ...     integrator='velocity_verlet',
-        ...     temperature=300,
-        ...     controller=MyController(system)
-        ... )
-        >>> mini = Sponge(withenergy, optimizer=updater)
-        >>> mini.run(5, callbacks=[run_info])
-        [MindSPONGE] Started simulation at 2024-03-22 14:22:54
-        [MindSPONGE] Step: 1, E_pot: 110.0423, E_kin: 0.005846547, E_tot: 110.04814, Temperature: 0.042616848
-        [MindSPONGE] Step: 2, E_pot: 113.94534, E_kin: 0.005484298, E_tot: 113.95083, Temperature: 0.03997633
-        [MindSPONGE] Step: 3, E_pot: 117.96643, E_kin: 0.0051222043, E_tot: 117.97155, Temperature: 0.037336946
-        [MindSPONGE] Step: 4, E_pot: 115.83751, E_kin: 0.005331765, E_tot: 115.84284, Temperature: 0.038864482
-        [MindSPONGE] Step: 5, E_pot: 107.83249, E_kin: 0.006089137, E_tot: 107.83858, Temperature: 0.044385143
-        [MindSPONGE] Finished simulation at 2024-03-22 14:22:57
-        [MindSPONGE] Simulation time: 3.00 seconds.
-        --------------------------------------------------------------------------------
     """
     def __init__(self,
                  system: Molecule,
@@ -257,7 +199,7 @@ class Controller(Cell):
         Calculate temperature according to velocity.
 
         Args:
-            kinetics(Tensor):   Tensor of kinetics. Tensor shape is `(B, D)`. Data type is float. Default: ``None``.
+            kinetics(Tensor):   Tensor of kinetics. Tensor shape is `(B, D)`. Data type is float. Default: None
 
         Returns:
             Tensor, Tensor of temperature. The shape of the Tensor is `(B)`. Data type is float.
@@ -309,7 +251,7 @@ class Controller(Cell):
         Args:
             coordinate(Tensor): Tensor of atomic coordinates. Tensor shape is `(B, A, D)`. Data type is float.
             keepdims(bool):     If this is set to `True`, the second axis will be left
-                                in the result as dimensions with size one. Default: ``True``.
+                                in the result as dimensions with size one. Default: True
 
         Returns:
             Tensor, Tensor of the coordinate of the center of mass. Tensor shape is `(B, A, D)` or `(B, D)`.
@@ -342,7 +284,7 @@ class Controller(Cell):
         Args:
             velocity(Tensor):   Tensor of velocity. Tensor shape is `(B, A, D)`. Data type is float.
             keepdims(bool):     If this is set to `True`, the second axis will be left
-                                in the result as dimensions with size one. Default: ``True``.
+                                in the result as dimensions with size one. Default: True
 
         Returns:
             Tensor, Tensor of the velocity of the center of mass.
@@ -374,37 +316,42 @@ class Controller(Cell):
                   velocity: Tensor,
                   force: Tensor,
                   energy: Tensor,
-                  kinetics: Tensor,
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+                  **kwargs
+                  ) -> Dict[str, Tensor]:
 
         r"""Control the parameters during the simulation
 
         Args:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-            step (int):             Simulation step. Default: 0
+            coordinate (Tensor): Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor): Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor): Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor): Tensor of shape `(B, 1)`. Data type is float.
+            virial (Tensor): Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor): Tensor of shape `(B, D)`. Data type is float.
+            step (int): Simulation step. Default: 0
 
         Returns:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
+            variables (Dict[str, Tensor]): Dictionary of controller variables with seven keys
+                'coordinate', 'velocity', 'force', 'energy', 'virial', and 'pbc_box'.
+
+        Symbols:
+            B:  Number of walkers in simulation.
+            A:  Number of atoms.
+            D:  Spatial dimension of the simulation system. Usually is 3.
 
         """
         #pylint: disable=unused-argument
 
-        return coordinate, velocity, force, energy, kinetics, virial, pbc_box
+        return {'coordinate': coordinate,
+                'velocity': velocity,
+                'force': force,
+                'energy': energy,
+                'virial': virial,
+                'pbc_box': pbc_box,
+                }
 
     def _get_mw_tensor(self,
                        value: Union[float, ndarray, Tensor, List[float]],

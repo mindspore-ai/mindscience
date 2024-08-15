@@ -37,52 +37,50 @@ from ...function import get_ms_array, get_integer
 
 
 class Center(AtomsBase):
-    r"""
-    Center of specific atoms
+    r"""Center of specific atoms
 
     Args:
+
         atoms (Union[AtomsBase, Tensor, ndarray, list]):
                             Specific atoms or virtual atoms of shape (..., G, D).
-                            `G` means number of the group of atoms to be averaged.
-                            `D` means spatial dimension of the simulation system. Usually is 3.
+
         mass (Union[Tensor, ndarray, list]):
                             Array of the mass of the atoms to calculate the center of mass (COM).
                             The shape of Tensor is (..., G) or (B, ..., G), and the data type is float.
                             If it is None, the geometric center of coordinate will be calculated.
-                            Default: ``None``. `B` means Batchsize, i.e. number of walkers in simulation.
+                            Default: None
 
         batched (bool):     Whether the first dimension of index and mass is the batch size.
-                            Default: ``False``.
+                            Default: False
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: ``False``.
+                            Default: False
 
         keepdims (bool):    If this is set to True, the axis which is reduced will be left,
                             and the shape the center will be (..., 1, D).
                             If this is set to False, the shape of the center will be (..., D).
                             if None, its value will be determined according to the rank (number of dimension) of
                             the input atoms: False if the rank is greater than 2, otherwise True.
-                            Default: ``None``.
+                            Default: None
 
         axis (int):         Axis along which the average of position are coumputed. Default: -2
 
         name (str):         Name of the Colvar. Default: 'atoms_center'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Examples:
-        >>> import mindspore as ms
-        >>> import numpy as np
-        >>> from mindspore import Tensor
-        >>> from sponge.colvar import Center
-        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
-        >>> mass = Tensor(np.random.random(4), ms.float32)
-        >>> atoms = Tensor([0, 2], ms.int32)
-        >>> ct = Center(atoms, mass[atoms])
-        >>> ct(crd)
-        Tensor(shape=[1, 3], dtype=Float32, value=
-        [[ 7.61003494e-01,  6.70868099e-01,  5.67968249e-01]])
+    Symbols:
+
+        B:  Batchsize, i.e. number of walkers in simulation
+
+        A:  Number of atoms in system.
+
+        G:  Number of the group of atoms to be averaged.
+
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
     def __init__(self,
                  atoms: Union[AtomsBase, Tensor, ndarray, list],
@@ -100,7 +98,7 @@ class Center(AtomsBase):
         )
 
         self.axis = get_integer(axis)
-        if self.axis == 0 or self.axis == -1:
+        if self.axis not in (0, -1):
             raise ValueError(f'The axis ({self.axis}) cannot be 0 or -1!')
 
         self.atoms = get_atoms(atoms, batched)
@@ -130,6 +128,10 @@ class Center(AtomsBase):
         self.total_mass = None
         self.set_mass(mass, batched)
 
+    def set_dimension(self, dimension: int = 3):
+        self.atoms.set_dimension(dimension)
+        return self
+
     def set_mass(self, mass: Tensor, batched: bool = False):
         """set the mass of atoms"""
         self.mass = get_ms_array(mass, ms.float32)
@@ -155,13 +157,18 @@ class Center(AtomsBase):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system. A means number of atoms in system.
+                                    Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+                                    Tensor of PBC box. Default: None
 
         Returns:
             center (Tensor):        Tensor of shape (B, ..., D). Data type is float.
                                     Position of the center of the atoms.
+
+        Symbols:
+            B:      Batchsize, i.e. number of walkers in simulation
+            A:      Number of atoms in system.
+            D:      Dimension of the simulation system. Usually is 3.
         """
         # (B, ..., G, D) <- (B, A, D)
         atoms = self.atoms(coordinate, pbc_box)

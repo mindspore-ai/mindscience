@@ -40,21 +40,22 @@ class DistanceNeighbours(Cell):
     r"""Neighbour list calculated by distance
 
     Args:
+
         cutoff (float):         Cutoff distance.
 
         num_neighbours (int):   Number of neighbours. If `None` is given, this value will be calculated by
                                 the ratio of the number of neighbouring grids to the total number of grids.
-                                Default: ``None``.
+                                Default: None
 
         atom_mask (Tensor):     Tensor of shape `(B, A)`. Data type is bool_.
                                 Mask of atoms in the system.
-                                Default: ``None``.
+                                Default: None
 
         exclude_index (Tensor): Tensor of shape `(B, A, Ex)`. Data type is int32.
                                 Index of neighbour atoms which could be excluded from the neighbour list.
-                                Default: ``None``.
+                                Default: None
 
-        use_pbc (bool):         Whether to use periodic boundary condition. Default: ``None``.
+        use_pbc (bool):         Whether to use periodic boundary condition. Default: None
 
         cutoff_scale (float):   Factor to scale the cutoff distance. Default: 1.2
 
@@ -63,12 +64,13 @@ class DistanceNeighbours(Cell):
 
         cast_fp16 (bool):       If this is set to `True`, the data will be cast to float16 before sort.
                                 For use with some devices that only support sorting of float16 data.
-                                Default: ``False``.
+                                Default: False
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
 
         B:  Number of simulation walker.
 
@@ -161,18 +163,23 @@ class DistanceNeighbours(Cell):
         return self.exclude_index
 
     def print_info(self):
-        print(f'[MindSPONGE] Neighbour list: DistanceNeighbours')
+        print('[MindSPONGE] Neighbour list: DistanceNeighbours')
         print(f'[MindSPONGE]     Cut-off distance: {self.cutoff}')
         print(f'[MindSPONGE]     Scaled cut-off: {self.scaled_cutoff}')
         print(f'[MindSPONGE]     Max number of neighbour atoms: {self.num_neighbours}')
         return self
 
-    def check_neighbour_list(self):
+    def check_neighbour_list(self, raise_error: bool = True) -> bool:
         """check the number of neighbouring atoms in neighbour list"""
         if self.num_neighbours is not None and self.max_neighbours > self.num_neighbours:
-            raise RuntimeError(f'The max number of neighbour atoms ({self.max_neighbours.asnumpy()}) is larger than '
-                               f'the initial neighbouring number of neighbour list ({self.num_neighbours}!')
-        return self
+            if raise_error:
+                raise RuntimeError(f'The max number of neighbour atoms ({self.max_neighbours.asnumpy()}) '
+                                   f'is larger than the initial neighbouring number of neighbour list '
+                                   f'({self.num_neighbours}!')
+            print('[WARNING] The max number of neighbour atoms exceeds '
+                  'the initial neighbouring number of neighbour list!')
+            return False
+        return True
 
     def construct(self,
                   coordinate: Tensor,
@@ -187,19 +194,19 @@ class DistanceNeighbours(Cell):
                                     Position coordinates of atoms
             pbc_box (Tensor):       Tensor of (B, D). Data type is bool.
                                     Periodic boundary condition box.
-                                    Default: ``None``.
+                                    Default: None
             atom_mask (Tensor):     Tensor of (B, A). Data type is bool.
                                     Atomic mask
             exclude_index (Tensor): Tensor of (B, A, Ex). Data type is int.
                                     Index of the atoms that should be excluded from the neighbour list.
-                                    Default: ``None``.
+                                    Default: None
 
         Returns:
             distances (Tensor):         Tensor of (B, A, N). Data type is float.
             neighbours (Tensor):        Tensor of (B, A, N). Data type is int.
             neighbour_mask (Tensor):    Tensor of (B, A, N). Data type is bool.
 
-        Note:
+        Symbols:
             B:  Batch size.
             A:  Number of atoms in system.
             N:  Number of neighbour atoms.
@@ -263,8 +270,6 @@ class DistanceNeighbours(Cell):
         no_idx = msnp.arange(num_atoms).reshape(1, -1, 1)
         # (B, A, n)
         no_idx = msnp.broadcast_to(no_idx, neighbours.shape)
-        no_idx_tmp = no_idx.astype("int64")
-        neighbours_tmp = neighbours.astype("int64")
-        neighbours = F.select(neighbour_mask, neighbours_tmp, no_idx_tmp)
+        neighbours = F.select(neighbour_mask, neighbours, no_idx)
 
         return distances, neighbours, neighbour_mask

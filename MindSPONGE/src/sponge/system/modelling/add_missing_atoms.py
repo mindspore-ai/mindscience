@@ -120,6 +120,11 @@ def add_h(crd, atype=None, i=None, j=None, k=None):
         h2 = (h2 + crd[i])[None, :]
         return np.append(h1, h2, axis=0)
 
+    if atype == 'wat':
+        h1 = np.array([0.79079641, 0.61207927, 0.0], np.float32) + crd[i]
+        h2 = np.array([-0.79079641, 0.61207927, 0.0], np.float32) + crd[i]
+        return np.append(h1[None, :], h2[None, :], axis=0)
+
     if atype == 'h2o':
         if i is None:
             raise ValueError('The index of O atom should be given.')

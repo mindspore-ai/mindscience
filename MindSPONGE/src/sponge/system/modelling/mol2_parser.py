@@ -39,7 +39,8 @@ def mol2parser(file_name: str):
         charges(np.float32): The charge of each atom.
         bond_indexes(np.int32): The bond information.
     """
-    mol2_obj = namedtuple('Mol2Object', ['atom_names', 'atom_types', 'crds', 'charges', 'bond_indexes'])
+    mol2_obj = namedtuple('Mol2Object', ['atom_names', 'atom_types', 'crds',
+                                         'charges', 'bond_indexes', 'res_ids', 'residue_atoms'])
     with open(file_name) as f:
         lines = f.readlines()
 
@@ -78,7 +79,18 @@ def mol2parser(file_name: str):
     atom_names = np.array([[name for name in atom.split()[1:2]] for atom in atoms], np.str_).flatten()
     atom_types = np.array([[typ.upper() for typ in atom.split()[5:6]] for atom in atoms], np.str_).flatten()
     crds = np.array([[float(crd) for crd in atom.split()[2:5]] for atom in atoms], np.float32)
+    res_ids = np.array([[int(res_id) for res_id in atom.split()[6:7]] for atom in atoms], np.int32).flatten() - 1
     charges = np.array([[float(charge) for charge in atom.split()[-1:]] for atom in atoms], np.float32).flatten()
     bond_index = np.array([[int(b) for b in bond.split()[1:3]] for bond in bonds], np.int32) - 1
 
-    return mol2_obj(atom_names, atom_types, crds, charges, bond_index)
+    residue_atoms = [[]]
+    last_resid = res_ids[0]
+    res_count = 0
+    for i, rid in enumerate(res_ids):
+        if rid != last_resid:
+            residue_atoms.append([])
+            res_count += 1
+            last_resid = rid
+        residue_atoms[res_count].append(i)
+
+    return mol2_obj(atom_names, atom_types, crds, charges, bond_index, res_ids, residue_atoms)

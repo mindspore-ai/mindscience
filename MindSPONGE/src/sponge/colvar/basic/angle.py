@@ -37,66 +37,59 @@ from ..atoms import AtomsBase, Vector, get_atoms
 
 
 class Angle(Colvar):
-    r"""
-    Colvar for angle.
+    r"""Colvar for angle.
 
     Args:
+
         atoms (AtomsBase):      Atoms of shape `(..., 3, D)` to form a angle of shape `(...)` or `(..., 1)`.
                                 Cannot be used with `atoms_a` or `atoms_b`.
-                                Default: ``None``.  `D` means spatial dimension of the simulation system. Usually is 3.
+                                Default: None
 
         atoms_a (AtomsBase):    Atoms A with shape `(..., D)` to form a angle of shape `(...)` or `(..., 1)`.
                                 Must be used with `atoms_b` and `atoms_c`. Cannot be used with `atoms`.
-                                Default: ``None``.
+                                Default: None
 
         atoms_b (AtomsBase):    Atoms B with shape `(..., D)` to form a angle of shape `(...)` or `(..., 1)`.
                                 Must be used with `atoms_a` and `atoms_c`. Cannot be used with `atoms`.
-                                Default: ``None``.
+                                Default: None
 
         atoms_c (AtomsBase):    Atoms C with shape `(..., D)` to form a angle of shape `(...)` or `(..., 1)`.
                                 Must be used with `atoms_a` and `atoms_b`. Cannot be used with `atoms`.
-                                Default: ``None``.
+                                Default: None
 
         vector1 (Vector):       Vector 1 of shape `(..., D)` to form of a angle with shape `(...)` or `(..., 1)`.
                                 Must be used with `vector2`. Cannot be used with Atoms.
-                                Default: ``None``.
+                                Default: None
 
         vector2 (Vector):       Vector 2 of shape `(..., D)` to form of a angle with shape `(...)` or `(..., 1)`.
                                 Must be used with `vector1`. Cannot be used with Atoms.
-                                Default: ``None``.
+                                Default: None
 
         use_pbc (bool):         Whether to calculate distance under periodic boundary condition.
-                                Default: ``None``.
+                                Default: None
 
         batched (bool):         Whether the first dimension of the input index in atoms is the batch size.
-                                Default: ``False``.
+                                Default: False
 
         keepdims (bool):        Whether to keep the dimension of the last dimension of vector.
-                                Default: ``False``.
+                                Default: False
 
         axis (int):             Axis to gather the points from coordinate of atoms. Default: -2
 
         name (str):             Name of the Colvar. Default: 'angle'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Examples:
-        >>> from sponge import Sponge
-        >>> from sponge.colvar import Angle
-        >>> from sponge.callback import RunInfo
-        >>> cv_angle = Angle([0, 1, 2])
-        >>> # system is the Molecule object defined by user.
-        >>> # energy is the Energy object defined by user.
-        >>> # opt is the Optimizer object defined by user.
-        >>> md = Sponge(system, potential=energy, optimizer=opt, metrics={'angle': cv_angle})
-        >>> run_info = RunInfo(1000)
-        >>> md.run(2000, callbacks=[run_info])
-        [MindSPONGE] Started simulation at 2024-02-19 15:43:11
-        [MindSPONGE] Step: 1000, E_pot: -117.30916, angle: 1.9461793
-        [MindSPONGE] Step: 2000, E_pot: -131.60872, angle: 1.9336755
-        [MindSPONGE] Finished simulation at 2024-02-19 15:44:03
-        [MindSPONGE] Simulation time: 51.27 seconds.
+    Symbols:
+
+        B:  Batchsize, i.e. number of walkers in simulation
+
+        A:  Number of atoms in system.
+
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
 
     def __init__(self,
@@ -215,13 +208,12 @@ class Angle(Colvar):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    `B` means batchsize, i.e. number of walkers in simulation.
-                                    `A` means Number of atoms in system.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Default: ``None``.
+                                    Default: None
 
         Returns:
             angle (Tensor):         Tensor of shape (B, ...) or (B, ..., 1). Data type is float.
+
         """
 
         if self.atoms is None:

@@ -22,7 +22,7 @@
 # ============================================================================
 """Berendsen barostat"""
 
-from typing import Tuple
+from typing import Dict
 
 import mindspore.numpy as msnp
 from mindspore import Tensor
@@ -44,13 +44,14 @@ class AndersenBarostat(Barostat):
         Journal of Chemical Physics, 1980, 72: 2384-2393.
 
     Args:
+
         system (Molecule):          Simulation system
 
         pressure (float):           Reference pressure :math:`P_{ref}` in unit bar for pressure coupling.
                                     Default: 1
 
         anisotropic (bool):         Whether to perform anisotropic pressure control.
-                                    Default: ``False``.
+                                    Default: False
 
         control_step (int):         Step interval for controller execution. Default: 1
 
@@ -61,6 +62,7 @@ class AndersenBarostat(Barostat):
                                     Default: 1
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -91,14 +93,15 @@ class AndersenBarostat(Barostat):
                   velocity: Tensor,
                   force: Tensor,
                   energy: Tensor,
-                  kinetics: Tensor,
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+                  **kwargs
+                  ) -> Dict[str, Tensor]:
 
         if self.control_step == 1 or step % self.control_step == 0:
             crd_scale_factor = 0
+            kinetics = self.get_kinetics(velocity)
             # (B, D)
             pressure = self.get_pressure(kinetics, virial, pbc_box)
             volume0 = self.get_volume(pbc_box)
@@ -110,4 +113,10 @@ class AndersenBarostat(Barostat):
             pbc_box *= crd_scale_factor
             velocity *= msnp.reciprocal(crd_scale_factor)
 
-        return coordinate, velocity, force, energy, kinetics, virial, pbc_box
+        return {'coordinate': coordinate,
+                'velocity': velocity,
+                'force': force,
+                'energy': energy,
+                'virial': virial,
+                'pbc_box': pbc_box,
+                }

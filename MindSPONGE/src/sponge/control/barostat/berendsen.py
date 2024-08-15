@@ -22,7 +22,7 @@
 # ============================================================================
 """Berendsen barostat"""
 
-from typing import Tuple
+from typing import Dict
 
 import mindspore as ms
 import mindspore.numpy as msnp
@@ -45,13 +45,14 @@ class BerendsenBarostat(Barostat):
         The Journal of Chemical Physics, 1984, 81(8): 3684.
 
     Args:
+
         system (Molecule):          Simulation system
 
         pressure (float):           Reference pressure :math:`P_{ref}` in unit bar for pressure coupling.
                                     Default: 1
 
         anisotropic (bool):         Whether to perform anisotropic pressure control.
-                                    Default: ``False``.
+                                    Default: False
 
         control_step (int):         Step interval for controller execution. Default: 1
 
@@ -62,6 +63,7 @@ class BerendsenBarostat(Barostat):
                                     Default: 1
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -98,13 +100,14 @@ class BerendsenBarostat(Barostat):
                   velocity: Tensor,
                   force: Tensor,
                   energy: Tensor,
-                  kinetics: Tensor,
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+                  **kwargs
+                  ) -> Dict[str, Tensor]:
 
         if self.control_step == 1 or step % self.control_step == 0:
+            kinetics = self.get_kinetics(velocity)
             # (B, D)
             pressure = self.get_pressure(kinetics, virial, pbc_box)
             if not self.anisotropic:
@@ -121,4 +124,10 @@ class BerendsenBarostat(Barostat):
             # (B, D)
             pbc_box *= scale
 
-        return coordinate, velocity, force, energy, kinetics, virial, pbc_box
+        return {'coordinate': coordinate,
+                'velocity': velocity,
+                'force': force,
+                'energy': energy,
+                'virial': virial,
+                'pbc_box': pbc_box,
+                }

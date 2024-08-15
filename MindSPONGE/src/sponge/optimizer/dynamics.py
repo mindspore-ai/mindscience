@@ -36,31 +36,33 @@ class DynamicUpdater(UpdaterMD):
         This updater will be removed a future release. Please use `UpdaterMD` instead.
 
     Args:
+
         system (Molecule):          Simulation system.
 
         integrator (Integrator):    MD integrator.
 
-        thermostat (Controller):    Thermostat for temperature coupling. Default: ``None``.
+        thermostat (Controller):    Thermostat for temperature coupling. Default: None
 
-        barostat (Controller):      Barostat for pressure coupling. Default: ``None``.
+        barostat (Controller):      Barostat for pressure coupling. Default: None
 
         constraint (Controller):    Constraint for bond.
 
         controller (Controller):    Other controllers.
 
-        time_step (float):          Time step. Default: 1e-3
+        time_step (float):          Time step. Defulat: 1e-3
 
         velocity (Tensor):          Atomic velocity. The shape of tensor is `(B, A, D)`.
-                                    The data type is float. Default: ``None``.
+                                    The data type is float. Default: None
 
         weight_decay (float):       An value for the weight decay. Default: 0
 
         loss_scale (float):         A value for the loss scale. Default: 1
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
 
         B:  Batchsize, i.e. number of walkers in simulation
 

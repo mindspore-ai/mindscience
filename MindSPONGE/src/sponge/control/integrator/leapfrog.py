@@ -24,7 +24,7 @@
 Leap-frog integrator
 """
 
-from typing import Tuple
+from typing import Dict
 
 from mindspore import Tensor
 
@@ -47,16 +47,18 @@ class LeapFrog(Integrator):
         Chinese Science Bulletin, 2018, 63(33): 3467-3483.
 
     Args:
+
         system (Molecule):          Simulation system
 
-        thermostat (Thermostat):    Thermostat for temperature coupling. Default: ``None``.
+        thermostat (Thermostat):    Thermostat for temperature coupling. Default: None
 
-        barostat (Barostat):        Barostat for pressure coupling. Default: ``None``.
+        barostat (Barostat):        Barostat for pressure coupling. Default: None
 
-        constraint (Constraint):    Constraint algorithm. Default: ``None``.
+        constraint (Constraint):    Constraint algorithm. Default: None
 
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -81,11 +83,11 @@ class LeapFrog(Integrator):
                   velocity: Tensor,
                   force: Tensor,
                   energy: Tensor,
-                  kinetics: Tensor,
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+                  **kwargs
+                  ) -> Dict[str, Tensor]:
 
         # (B,A,D) = (B,A,D) * (B,A,1)
         acceleration = self.acc_unit_scale * force * self._inv_mass
@@ -94,26 +96,30 @@ class LeapFrog(Integrator):
         velocity_half = velocity + acceleration * self.time_step
         # (B,A,D) = (B,A,D) - (B,1,D)
         velocity_half -= self.get_com_velocity(velocity_half)
-        kinetics = self.get_kinetics(velocity_half)
 
         # R(t+0.5) = R(t) + v(t+0.5) * dt
         coordinate_half = coordinate + velocity_half * self.time_step * 0.5
 
+        variables = {'coordinate': coordinate_half,
+                     'velocity': velocity_half,
+                     'force': force,
+                     'energy': energy,
+                     'virial': virial,
+                     'pbc_box': pbc_box,
+                     }
+
         if self.thermostat is not None:
             # v'(t+0.5) = f_T[v(t+0.5)]
-            coordinate_half, velocity_half, force, energy, kinetics, virial, pbc_box = \
-                self.thermostat(coordinate_half, velocity_half, force, energy, kinetics, virial, pbc_box, step)
+            variables = self.thermostat(**variables, step=step)
 
         # R(t+1) = R(t+0.5) + v'(t+0.5) * dt
-        coordinate_new = coordinate_half + velocity_half * self.time_step * 0.5
+        variables['coordinate'] = variables['coordinate'] + variables['velocity'] * self.time_step * 0.5
 
         if self.constraint is not None:
             for i in range(self.num_constraint_controller):
-                coordinate_new, velocity_half, force, energy, kinetics, virial, pbc_box = \
-                    self.constraint[i](coordinate_new, velocity_half, force, energy, kinetics, virial, pbc_box, step)
+                variables = self.constraint[i](**variables, step=step)
 
         if self.barostat is not None:
-            coordinate_new, velocity_half, force, energy, kinetics, virial, pbc_box = \
-                self.barostat(coordinate_new, velocity_half, force, energy, kinetics, virial, pbc_box, step)
+            variables = self.barostat(**variables, step=step)
 
-        return coordinate_new, velocity_half, force, energy, kinetics, virial, pbc_box
+        return variables

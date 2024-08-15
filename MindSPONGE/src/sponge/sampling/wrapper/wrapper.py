@@ -23,7 +23,7 @@
 """Energy wrapper"""
 
 from typing import Tuple
-from mindspore import Tensor
+from mindspore import Tensor, Parameter
 from mindspore import ops
 from mindspore.nn import Cell
 
@@ -35,15 +35,17 @@ class EnergyWrapper(Cell):
     r"""A network to process and merge the potential and bias during the simulation.
 
     Args:
+
         update_pace (int):  Frequency for updating the wrapper. Default: 0
 
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
-                            Default: ``None``.
+                            Default: None
 
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
-                            Default: ``None``.
+                            Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -64,10 +66,56 @@ class EnergyWrapper(Cell):
 
         self.identity = ops.Identity()
 
+        self._num_biases = 0
+        self._bias_names = []
+        self._biases: Parameter = None
+
     @property
     def update_pace(self) -> int:
         """frequency for updating the wrapper"""
         return self._update_pace
+
+    @property
+    def num_biases(self) -> int:
+        r"""
+        Number of bias potential energies :math:`V`.
+
+        Return:
+            int, number of bias potential energies.
+        """
+        return self._num_biases
+
+    @property
+    def bias_names(self) -> list:
+        r"""
+        Name of bias potential energies.
+
+        Return:
+            list[str], the bias potential energies.
+        """
+        return self._bias_names
+
+    @property
+    def biases(self) -> Tensor:
+        r"""
+        Tensor of bias potential components.
+
+        Return:
+            Tensor, Tensor of shape `(B, V)`. Data type is float.
+        """
+        return self.get_biases()
+
+    def get_biases(self) -> Tensor:
+        r"""
+        Tensor of bias potential components.
+
+        Return:
+            Tensor, Tensor of shape `(B, V)`. Data type is float.
+        """
+        # avoiding bugs for property
+        if self._biases is None:
+            return None
+        return self.identity(self._biases)
 
     def update(self):
         """update energy wrapper"""
@@ -80,15 +128,15 @@ class EnergyWrapper(Cell):
             potentials (Tensor):    Tensor of shape `(B, U)`. Data type is float.
                                     Potential energies.
             biases (Tensor):        The shape of tensor is `(B, V)`. The data type is float.
-                                    Bias potential energies. Default: ``None``.
+                                    Bias potential energies. Default: None
 
-        Returns:
+        Return:
             energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
                                 Total energy (potential energy and bias energy).
             bias (Tensor):      Tensor of shape `(B, 1)`. Data type is float.
                                 Total bias potential used for reweighting calculation.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation.
             U:  Dimension of potential energy.
             V:  Dimension of bias potential.

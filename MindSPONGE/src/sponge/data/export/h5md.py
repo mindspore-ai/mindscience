@@ -49,11 +49,12 @@ class H5MD:
         Computer Physics Communications, 2014, 185(6): 1546-1553.
 
     Args:
+
         system (Molecule):      Simulation system
 
         filename (str):         Name of output H5MD hdf5_file.
 
-        directory (str):        Directory of the output hdf5_file. Default: ``None``.
+        directory (str):        Directory of the output hdf5_file. Default: None
 
         mode (str):             I/O mode for HDF5. Default: 'w'
                                 'w'          Create file, truncate if exists
@@ -64,21 +65,26 @@ class H5MD:
                                 Default:  False
 
         write_force (bool):     Whether to write the forece of the system to the H5MD file.
-                                Default: ``False``.
+                                Default: False
 
         length_unit (str):      Length unit for coordinates.
                                 If given "None", it will be equal to the length unit of the system.
-                                Default: ``None``.
+                                Default: None
 
         energy_unit (str):      Energy unit.
                                 If given "None", it will be equal to the global energy unit.
-                                Default: ``None``.
+                                Default: None.
 
-        compression (str):      Compression strategy for HDF5. Default: 'gzip'
+        compression (str):      Compression strategy for HDF5. Default: 'gzip'.
 
-        compression_opts (int): Compression settings for HDF5. Default: 4
+        compression_opts (int): Compression settings for HDF5. Default: 4.
+
+        num_walker (int):       The number of batch size.
+                                If no value is set, the system num_walker will be used.
+                                Default: None.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU`` ``CPU``
 
     """
@@ -92,6 +98,8 @@ class H5MD:
                  energy_unit: str = None,
                  compression: str = 'gzip',
                  compression_opts: int = 4,
+                 rigid_system: bool = False,
+                 num_walker: int = None
                  ):
 
         if directory is not None:
@@ -118,10 +126,16 @@ class H5MD:
         if energy_unit is None:
             energy_unit = GLOBAL_UNITS.energy_unit
         self.units = Units(length_unit, energy_unit)
-
-        self.num_walker = system.num_walker
-        self.num_atoms = system.num_atoms
-        self.dimension = system.dimension
+        if num_walker is None:
+            self.num_walker = system.num_walker
+        else:
+            self.num_walker = num_walker
+        if not rigid_system:
+            self.num_atoms = system.num_atoms
+            self.dimension = system.dimension
+        else:
+            self.num_atoms = system.num_atoms * 3
+            self.dimension = 3
         self.coordinate = system.coordinate.asnumpy()
         self.crd_shape = (None, self.num_atoms, self.dimension)
 
@@ -177,8 +191,12 @@ class H5MD:
         bond_from = None
         bond_to = None
         if system.bonds is not None:
-            bond_from = system.bonds[0][..., 0].asnumpy() + 1
-            bond_to = system.bonds[0][..., 1].asnumpy() + 1
+            if self.num_walker == 1:
+                bond_from = system.bonds[0][..., 0].asnumpy() + 1
+                bond_to = system.bonds[0][..., 1].asnumpy() + 1
+            else:
+                bond_from = system.bonds[0][..., 0].asnumpy() + 1
+                bond_to = system.bonds[0][..., 1].asnumpy() + 1
 
         species = np.arange(self.num_atoms, dtype=np.int32)
 
@@ -257,19 +275,21 @@ class H5MD:
                        ) -> h5py.Group:
         """create element in H5MD file"""
         element = group.create_group(name)
+        try:
+            if create_step:
+                element.create_dataset('step', shape=(0,), dtype='int32', maxshape=(None,),
+                                       compression=self.compression, compression_opts=self.compression_opts)
+            else:
+                element['step'] = group['step']
 
-        if create_step:
-            element.create_dataset('step', shape=(0,), dtype='int32', maxshape=(None,),
-                                   compression=self.compression, compression_opts=self.compression_opts)
-        else:
-            element['step'] = group['step']
-
-        if create_time:
-            element.create_dataset('time', shape=(0,), dtype='float32', maxshape=(None,),
-                                   compression=self.compression, compression_opts=self.compression_opts)
-            element['time'].attrs['unit'] = self.time_unit.encode('ascii', 'ignore')
-        else:
-            element['time'] = group['time']
+            if create_time:
+                element.create_dataset('time', shape=(0,), dtype='float32', maxshape=(None,),
+                                       compression=self.compression, compression_opts=self.compression_opts)
+                element['time'].attrs['unit'] = self.time_unit.encode('ascii', 'ignore')
+            else:
+                element['time'] = group['time']
+        except KeyError:
+            pass
 
         element.create_dataset('value', shape=(0,)+shape, dtype=dtype, maxshape=(None,)+shape,
                                compression=self.compression, compression_opts=self.compression_opts)
@@ -288,7 +308,6 @@ class H5MD:
                              bond_to: ndarray = None,
                              ) -> h5py.Group:
         """create HDF5 group of 'vmd_structure'"""
-
         vmd_structure = self.parameters.create_group('vmd_structure')
         vmd_structure.create_dataset(
             'indexOfSpecies', dtype='int32', data=species,
@@ -346,6 +365,8 @@ class H5MD:
         """create HDF5 group of observables"""
         obs_group = self.observables.create_group(name)
         obs_group.attrs['dimension'] = self.dimension
+        obs_group.create_dataset('value', shape=(0,), dtype='int32', maxshape=(None,),
+                                 compression=self.compression, compression_opts=self.compression_opts)
         obs_group.create_dataset('particle_number', dtype='int32', data=[self.num_atoms],
                                  compression=self.compression, compression_opts=self.compression_opts)
         if create_step:
@@ -355,6 +376,7 @@ class H5MD:
         if create_time:
             obs_group.create_dataset('time', shape=(0,), dtype='float32', maxshape=(None,),
                                      compression=self.compression, compression_opts=self.compression_opts)
+
         return obs_group
 
     def create_position(self,
@@ -524,6 +546,10 @@ class H5MD:
             traj_step = self.trajectory['step']
             traj_step.resize(traj_step.shape[0]+1, axis=0)
             traj_step[-1] = step
+
+            obs_step = self.obs_group['value']
+            obs_step.resize(obs_step.shape[0] + 1, axis=0)
+            obs_step[-1] = step
 
             obs_step = self.obs_group['step']
             obs_step.resize(obs_step.shape[0]+1, axis=0)

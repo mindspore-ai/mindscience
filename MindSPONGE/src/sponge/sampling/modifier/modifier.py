@@ -34,15 +34,17 @@ class ForceModifier(Cell):
     r"""Cell to modify atomic force.
 
     Args:
+
         update_pace (int):  Frequency for updating the modifier. Default: 0
 
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
-                            Default: ``None``.
+                            Default: None
 
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
-                            Default: ``None``.
+                            Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -66,7 +68,7 @@ class ForceModifier(Cell):
     def update_pace(self) -> int:
         r"""frequency for updating the modifier
 
-        Returns:
+        Return:
             int, frequency for updating the modifier
 
         """
@@ -101,7 +103,7 @@ class ForceModifier(Cell):
             virial_ad (Tensor): Tensor of shape (B, D). Data type is float.
                                 Virial calculated calculated by automatic differentiation.
 
-        Returns:
+        Return:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
                                 Totoal potential energy for simulation.
             force (Tensor):     Tensor of shape (B, A, D). Data type is float.
@@ -109,7 +111,7 @@ class ForceModifier(Cell):
             virial (Tensor):    Tensor of shape (B, D). Data type is float.
                                 Total virial for simulation.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.

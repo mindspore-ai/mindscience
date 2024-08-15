@@ -31,19 +31,22 @@ from ..colvar import Colvar
 
 
 class CosCV(TransformCV):
-    r"""
-    Cosine of collective variables (CVs) :math:`s(R)`. The return value has the same shape as the input CVs.
+    r"""Cosine of collective variables (CVs) :math:`s(R)`. The return value has the same shape as the input CVs.
+
+    Math:
 
     .. math::
 
         s' = \cos{s(R)}
 
     Args:
+
         colvar (Colvar): Collective variables (CVs) :math:`s(R)`.
 
-        name (str): Name of the collective variables. Default: 'cosine'.
+        name (str): Name of the collective variables. Default: 'cosine'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """

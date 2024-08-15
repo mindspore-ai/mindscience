@@ -25,11 +25,19 @@ Callback to write H5MD trajectory file
 """
 
 import signal
+import os
 import sys
 from typing import List
 import numpy as np
 
 from mindspore.train.callback import Callback, RunContext
+from mindspore import log as logger
+try:
+    # MindSpore 1.X
+    from mindspore._checkparam import Validator
+except ImportError:
+    # MindSpore 2.X
+    from mindspore import _checkparam as Validator
 
 from ..system import Molecule
 from ..optimizer import Updater
@@ -41,6 +49,7 @@ class WriteH5MD(Callback):
     r"""Callback to write HDF5 molecular data (H5MD) file
 
     Args:
+
         system (Molecule):      Simulation system (system module of MindSPONGE).
 
         filename (str):         Name of output H5MD file.
@@ -76,8 +85,11 @@ class WriteH5MD(Callback):
                                 the simulation process. Default: ``True``.
         save_last_pdb (str):    Decide to store the last crd in a pdb format file or not. If choose to store the pdb,
                                 the value should be string format pdb file name. Default: ``None``.
+        batch_index (int):      The batch index of system for H5MD file to store.
+                                Default: ``None``.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -98,25 +110,32 @@ class WriteH5MD(Callback):
                  compression: str = 'gzip',
                  compression_opts: int = 4,
                  auto_close: bool = True,
-                 save_last_pdb: str = None
+                 save_last_pdb: str = None,
+                 batch_index: int = None
                  ):
 
         if mode not in ['w', 'w-', 'x', 'a']:
-            raise ValueError(f'WriteH5MD only support "w", "w-", "x" and "a" but got: {mode}')
+            raise ValueError(f'[WriteH5MD] The supported type of `mode` are "w", "w-", "x" and "a", '
+                             f'but got: {mode}')
 
         self.system = system
-        self.num_walker = system.num_walker
         self.units = system.units
+        self.batch_index = batch_index
+        if batch_index is not None:
+            self.num_walker = 1
+        else:
+            self.num_walker = system.num_walker
         self.h5md = H5MD(self.system, filename, directory, mode=mode,
                          length_unit=length_unit, energy_unit=energy_unit,
-                         compression=compression, compression_opts=compression_opts)
+                         compression=compression, compression_opts=compression_opts,
+                         num_walker=self.num_walker)
 
         self.convert_to_angstram = self.system.units.convert_length_to('A')
         self.use_pbc = system.pbc_box is not None
         self.const_volume = True
         self.dtype = dtype
-        self.save_freq = save_freq
-        self.auto_close = auto_close
+        self.save_freq = Validator.check_non_negative_int(save_freq)
+        self.auto_close = Validator.check_bool(auto_close)
 
         self.potential = 0
         self.energies = 0
@@ -128,9 +147,9 @@ class WriteH5MD(Callback):
         self.bias = 0
         self.biases = 0
 
-        self.write_image = write_image
-        self.write_velocity = write_velocity
-        self.write_force = write_force
+        self.write_image = Validator.check_bool(write_image)
+        self.write_velocity = Validator.check_bool(write_velocity)
+        self.write_force = Validator.check_bool(write_force)
 
         if save_last_pdb is None:
             self.last_pdb_name = None
@@ -138,6 +157,9 @@ class WriteH5MD(Callback):
         else:
             self.save_pdb = True
             self.last_pdb_name = save_last_pdb
+
+            if os.path.exists(self.last_pdb_name):
+                os.remove(self.last_pdb_name)
 
         if mode == 'a':
             self.init_h5md = False
@@ -200,6 +222,11 @@ class WriteH5MD(Callback):
 
         cb_params = run_context.original_args()
 
+        if cb_params.sink_mode and self.save_freq > 0 and self.save_freq % cb_params.cycle_steps != 0:
+            raise ValueError(f"[WriteH5MD] For sink mode, the save_freq must be "
+                             f"an integer multiple of the cycle steps ({cb_params.cycle_steps}), "
+                             f"but got: {self.save_freq}.")
+
         def _init_energies(num_energies: int, energy_names: List[str]):
             if num_energies == 0:
                 return
@@ -245,11 +272,11 @@ class WriteH5MD(Callback):
                 self.h5md.set_box(True)
             if self.write_velocity and not isinstance(cb_params.optimizer, Updater):
                 self.write_velocity = False
-                print(f'Warning! The optimizer "{cb_params.optimizer}" does not has the attribute "velocity".')
+                logger.info(f'The optimizer "{cb_params.optimizer}" does not has the attribute "velocity".')
 
         if cb_params.metrics is None:
             if self.write_metrics:
-                print('[WARNING] No Metrics found. Metrics will not be output to H5MD file.')
+                logger.info('No Metrics found. Metrics will not be output to H5MD file.')
             self.write_metrics = False
         else:
             if self.write_metrics is None:
@@ -286,29 +313,6 @@ class WriteH5MD(Callback):
             run_context (RunContext): Include some information of the model.
         """
 
-        if self.count % self.save_freq == 0:
-            cb_params = run_context.original_args()
-            step = cb_params.cur_step
-            self.h5md.write_step(step)
-            time = cb_params.cur_time
-            self.h5md.write_time(time)
-            if self.use_updater:
-                self.kinetics = cb_params.kinetics.copy().asnumpy().squeeze()
-                self.h5md.write_observables('kinetic_energy', self.kinetics)
-                self.temperature = cb_params.temperature.copy().asnumpy().squeeze()
-                self.h5md.write_observables('temperature', self.temperature)
-            cb_params = run_context.original_args()
-            coordinate = cb_params.coordinate.copy().asnumpy().squeeze()
-            self.h5md.write_position(coordinate)
-
-            if self.use_pbc:
-                if not self.const_volume:
-                    pbc_box = cb_params.pbc_box.copy().asnumpy().squeeze()
-                    self.h5md.write_box(pbc_box)
-                if self.write_image:
-                    image = self.system.calc_image().asnumpy().squeeze()
-                    self.h5md.write_image(image)
-
     def step_end(self, run_context: RunContext):
         """
         Called after each step finished.
@@ -317,47 +321,124 @@ class WriteH5MD(Callback):
             run_context (RunContext): Include some information of the model.
         """
 
-        if self.count % self.save_freq == 0:
-            cb_params = run_context.original_args()
+        cb_params = run_context.original_args()
+        if cb_params.cur_step % self.save_freq == 0:
+            self.call_end(run_context)
+        self.count += 1
 
-            self.potential = cb_params.potential.copy().asnumpy().squeeze()
+    def call_begin(self, run_context: RunContext):
+        """
+        Called before each step beginning.
+
+        Args:
+            run_context (RunContext): Include some information of the model.
+        """
+
+    def call_end(self, run_context: RunContext):
+        """
+        Called after each step finished.
+
+        Args:
+            run_context (RunContext): Include some information of the model.
+        """
+
+        cb_params = run_context.original_args()
+
+        step = cb_params.cur_step
+        self.h5md.write_step(step)
+        time = cb_params.cur_time
+        self.h5md.write_time(time)
+        if self.use_updater:
+            self.kinetics = cb_params.kinetics.copy().asnumpy().squeeze()
+            self.temperature = cb_params.temperature.copy().asnumpy().squeeze()
+            if self.batch_index is None:
+                self.h5md.write_observables('kinetic_energy', self.kinetics)
+                self.h5md.write_observables('temperature', self.temperature)
+            else:
+                self.h5md.write_observables('kinetic_energy', self.kinetics[self.batch_index])
+                self.h5md.write_observables('temperature', self.temperature[self.batch_index])
+        coordinate = cb_params.coordinate.copy().asnumpy().squeeze()
+        if self.batch_index is None:
+            self.h5md.write_position(coordinate)
+        else:
+            self.h5md.write_position(coordinate[self.batch_index])
+
+        if self.use_pbc:
+            if not self.const_volume:
+                pbc_box = cb_params.pbc_box.copy().asnumpy().squeeze()
+                self.h5md.write_box(pbc_box)
+            if self.write_image:
+                image = self.system.calc_image().asnumpy().squeeze()
+                self.h5md.write_image(image)
+
+        self.potential = cb_params.potential.copy().asnumpy().squeeze()
+        if self.batch_index is None:
             self.h5md.write_observables('potential_energy', self.potential)
+        else:
+            self.h5md.write_observables('potential_energy', self.potential[self.batch_index])
 
-            if self.write_energies:
-                self.energies = cb_params.energies.copy().asnumpy().squeeze()
+        if self.write_energies:
+            self.energies = cb_params.energies.copy().asnumpy().squeeze()
+            if self.batch_index is None:
                 self.h5md.write_observables('energies', self.energies)
+            else:
+                self.h5md.write_observables('energies', self.energies[self.batch_index])
 
-            if self.write_bias:
-                self.bias = cb_params.bias.copy().asnumpy().squeeze()
+        def write_bias_info(cb_params):
+            self.bias = cb_params.bias.copy().asnumpy().squeeze()
+            self.biases = cb_params.biases.copy().asnumpy().squeeze()
+            if self.batch_index is None:
                 self.h5md.write_observables('bias_potential', self.bias)
-                self.biases = cb_params.biases.copy().asnumpy().squeeze()
                 self.h5md.write_observables('biases', self.biases)
+            else:
+                self.h5md.write_observables('bias_potential', self.bias[self.batch_index])
+                self.h5md.write_observables('biases', self.biases[self.batch_index])
+        if self.write_bias:
+            write_bias_info(cb_params)
 
+        def calculate_and_write_total_energy(cb_params):
             self.tot_energy = self.potential
             if self.use_updater:
-                self.tot_energy += + self.kinetics
+                self.tot_energy += self.kinetics
                 if self.use_pbc:
                     self.pressure = cb_params.pressure.copy().asnumpy().squeeze()
-                    self.h5md.write_observables('pressure', self.pressure)
                     self.volume = cb_params.volume.copy().asnumpy().squeeze()
-                    self.h5md.write_observables('volume', self.volume)
-            self.h5md.write_observables('total_energy', self.tot_energy)
+                    if self.batch_index is None:
+                        self.h5md.write_observables('pressure', self.pressure)
+                        self.h5md.write_observables('volume', self.volume)
+                    else:
+                        self.h5md.write_observables('pressure', self.pressure[self.batch_index])
+                        self.h5md.write_observables('volume', self.volume[self.batch_index])
+            if self.batch_index is None:
+                self.h5md.write_observables('total_energy', self.tot_energy)
+            else:
+                self.h5md.write_observables('total_energy', self.tot_energy[self.batch_index])
 
-            if self.write_metrics:
-                metrics: dict = cb_params.analyse()
-                for metric, value in metrics.items():
+        calculate_and_write_total_energy(cb_params)
+
+        if self.write_metrics:
+            metrics: dict = cb_params.analyse()
+            for metric, value in metrics.items():
+                if self.batch_index is None:
                     self.h5md.write_observables(metric, value)
+                else:
+                    self.h5md.write_observables(metric, value[self.batch_index])
 
-            if self.write_velocity:
-                velocity = cb_params.velocity.copy().asnumpy().squeeze()
+        if self.write_velocity:
+            velocity = cb_params.velocity.copy().asnumpy().squeeze()
+            if self.batch_index is None:
                 self.h5md.write_velocity(velocity)
-            if self.write_force:
-                force = cb_params.force.copy().asnumpy().squeeze()
+            else:
+                self.h5md.write_velocity(velocity[self.batch_index])
+        if self.write_force:
+            force = cb_params.force.copy().asnumpy().squeeze()
+            if self.batch_index is None:
                 self.h5md.write_force(force)
+            else:
+                self.h5md.write_force(force[self.batch_index])
 
-            self.count_records += 1
-
-        self.count += 1
+        self.count_records += 1
+        self.h5md.hdf5_file.flush()
 
     def end(self, run_context: RunContext):
         """
@@ -374,12 +455,49 @@ class WriteH5MD(Callback):
         """ Save the system information into a pdb file.
         """
         last_resname = self.system.residue_name
-        if len(last_resname[0]) == 4:
-            last_resname[0] = last_resname[0][1:]
-        if len(last_resname[-1]) == 4:
-            last_resname[-1] = last_resname[-1][1:]
-        gen_pdb(self.system.coordinate.asnumpy() * self.convert_to_angstram,
-                self.system.atom_name[0],
-                np.take(last_resname, self.system.atom_resid),
-                self.system.atom_resid.asnumpy() + 1,
-                pdb_name=self.last_pdb_name)
+        for i, name in enumerate(last_resname):
+            last_resname[i] = name[-3:]
+        if self.batch_index is None:
+            if self.system.coordinate.shape[0] == 1:
+                gen_pdb(self.system.coordinate.asnumpy()[0] * self.convert_to_angstram,
+                        self.system.atom_name[0],
+                        np.take(last_resname, self.system.atom_resid),
+                        self.system.atom_resid.asnumpy() + 1,
+                        chain_id=self.system.atom_chain_id,
+                        pdb_name=self.last_pdb_name,
+                        bonds=self.system.bonds[0])
+            elif self.system.bonds.shape[0] == 1:
+                for s in range(self.system.coordinate.shape[0]):
+                    gen_pdb(self.system.coordinate.asnumpy()[s] * self.convert_to_angstram,
+                            self.system.atom_name[0],
+                            np.take(last_resname, self.system.atom_resid),
+                            self.system.atom_resid.asnumpy() + 1,
+                            chain_id=self.system.atom_chain_id,
+                            pdb_name=self.last_pdb_name.replace('.pdb', '_{}.pdb'.format(s)),
+                            bonds=self.system.bonds[0])
+            else:
+                for s in range(self.system.coordinate.shape[0]):
+                    gen_pdb(self.system.coordinate.asnumpy()[s] * self.convert_to_angstram,
+                            self.system.atom_name[0],
+                            np.take(last_resname, self.system.atom_resid),
+                            self.system.atom_resid.asnumpy() + 1,
+                            chain_id=self.system.atom_chain_id,
+                            pdb_name=self.last_pdb_name.replace('.pdb', '_{}.pdb'.format(s)),
+                            bonds=self.system.bonds[s])
+        else:
+            if self.system.bonds.shape[0] == 1:
+                gen_pdb(self.system.coordinate.asnumpy()[self.batch_index] * self.convert_to_angstram,
+                        self.system.atom_name[0],
+                        np.take(last_resname, self.system.atom_resid),
+                        self.system.atom_resid.asnumpy() + 1,
+                        chain_id=self.system.atom_chain_id,
+                        pdb_name=self.last_pdb_name,
+                        bonds=self.system.bonds[0])
+            else:
+                gen_pdb(self.system.coordinate.asnumpy()[self.batch_index] * self.convert_to_angstram,
+                        self.system.atom_name[0],
+                        np.take(last_resname, self.system.atom_resid),
+                        self.system.atom_resid.asnumpy() + 1,
+                        chain_id=self.system.atom_chain_id,
+                        pdb_name=self.last_pdb_name,
+                        bonds=self.system.bonds[self.batch_index])

@@ -55,6 +55,7 @@ class NonbondPairwiseEnergy(EnergyCell):
                             C_{ij}^p \cdot 4 \epsilon_{ij} \frac{\sigma_{ij}^{12}}{r_{ij}^{12}}
 
     Args:
+
         index (Union[Tensor, ndarray, List[int]]):
                             Array of the indices of the non-bonded pair atoms.
                             The shape of Tensor is `(B, p, 2)`, and the data type is int.
@@ -94,9 +95,10 @@ class NonbondPairwiseEnergy(EnergyCell):
         name (str):         Name of the energy. Default: 'nb_pairs'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
 
         B:  Batchsize, i.e. number of walkers in simulation
 
@@ -131,7 +133,7 @@ class NonbondPairwiseEnergy(EnergyCell):
             energy_unit=energy_unit,
         )
         self._kwargs = get_arguments(locals(), kwargs)
-        if 'exclude_index' in self._kwargs.keys():
+        if 'exclude_index' in self._kwargs:
             self._kwargs.pop('exclude_index')
 
         if parameters is not None:
@@ -143,7 +145,7 @@ class NonbondPairwiseEnergy(EnergyCell):
             self._use_pbc = system.use_pbc
 
             index, qiqj, epsilon_ij, sigma_ij, r_scale, r6_scale, r12_scale = \
-                self.get_parameters(system, parameters)
+                self._get_parameters(system, parameters)
 
         # (1,p,2)
         index = get_ms_array(index, ms.int32)
@@ -279,7 +281,7 @@ class NonbondPairwiseEnergy(EnergyCell):
         )[0]
         return pair_index[include_index]
 
-    def get_parameters(self, system: Molecule, parameters: dict):
+    def _get_parameters(self, system: Molecule, parameters: dict):
         """
         Return all the pair parameters.
 
@@ -371,12 +373,12 @@ class NonbondPairwiseEnergy(EnergyCell):
             inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.
                                             Reciprocal of distances.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: ``None``.
+                                            Tensor of PBC box. Default: None
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             p:  Number of non-bonded atom pairs.

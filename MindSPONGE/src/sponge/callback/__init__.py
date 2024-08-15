@@ -26,5 +26,6 @@ from .h5md import WriteH5MD
 from .information import RunInfo
 from .savepdb import SaveLastPdb
 from .force import ForceEarlyStopping
+from .xyz import XyzCallback
 
-__all__ = ['WriteH5MD', 'RunInfo', 'SaveLastPdb', 'ForceEarlyStopping']
+__all__ = ['WriteH5MD', 'RunInfo', 'SaveLastPdb', 'ForceEarlyStopping', 'XyzCallback']

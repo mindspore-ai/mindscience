@@ -22,7 +22,7 @@
 # ============================================================================
 """Langevin thermostat"""
 
-from typing import Tuple
+from typing import Dict
 
 import mindspore.numpy as msnp
 from mindspore import Tensor
@@ -45,6 +45,7 @@ class Langevin(Thermostat):
         Journal of Chemical Theory and Computation, 2012, 8(10): 3637-3649.
 
     Args:
+
         system (Molecule):      Simulation system
 
         temperature (float):    Reference temperature :math:`T_{ref}` in unit Kelvin for temperature coupling.
@@ -61,6 +62,7 @@ class Langevin(Thermostat):
 
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -112,14 +114,20 @@ class Langevin(Thermostat):
                   velocity: Tensor,
                   force: Tensor,
                   energy: Tensor,
-                  kinetics: Tensor,
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+                  **kwargs
+                  ) -> Dict[str, Tensor]:
 
         if self.control_step == 1 or step % self.control_step == 0:
             velocity += -self.friction * velocity + F.sqrt(self.random_const * self.ref_temp) * \
                 self._inv_sqrt_mass * self.standard_normal(velocity.shape)
 
-        return coordinate, velocity, force, energy, kinetics, virial, pbc_box
+        return {'coordinate': coordinate,
+                'velocity': velocity,
+                'force': force,
+                'energy': energy,
+                'virial': virial,
+                'pbc_box': pbc_box,
+                }

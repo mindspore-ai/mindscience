@@ -22,7 +22,7 @@
 # ============================================================================
 """Berendsen thermostat"""
 
-from typing import Tuple
+from typing import Dict
 
 from mindspore import Tensor
 from mindspore import ops
@@ -43,6 +43,7 @@ class BerendsenThermostat(Thermostat):
         The Journal of Chemical Physics, 1984, 81(8): 3684.
 
     Args:
+
         system (Molecule):      Simulation system
 
         temperature (float):    Reference temperature :math:`T_{ref}` in unit Kelvin for temperature coupling.
@@ -59,6 +60,7 @@ class BerendsenThermostat(Thermostat):
 
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -96,15 +98,22 @@ class BerendsenThermostat(Thermostat):
                   velocity: Tensor,
                   force: Tensor,
                   energy: Tensor,
-                  kinetics: Tensor,
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+                  **kwargs
+                  ) -> Dict[str, Tensor]:
 
         if self.control_step == 1 or step % self.control_step == 0:
+            kinetics = self.get_kinetics(velocity)
             scale = self.velocity_scale(kinetics, self.get_ref_kinetics(), self.ratio)
             scale = ops.clip_by_value(scale, self.scale_min, self.scale_max)
             velocity *= scale
 
-        return coordinate, velocity, force, energy, kinetics, virial, pbc_box
+        return {'coordinate': coordinate,
+                'velocity': velocity,
+                'force': force,
+                'energy': energy,
+                'virial': virial,
+                'pbc_box': pbc_box,
+                }

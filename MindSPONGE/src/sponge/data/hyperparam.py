@@ -106,7 +106,7 @@ def get_class_parameters(hyper_param: dict, prefix: str, num_class: int = 1) -> 
             if name.find(prefix) == 0 \
                     and (name == prefix or name[len(prefix)] == "." or (prefix and prefix[-1] == ".")):
                 new_params[name[idx:]] = param
-        if 'name' in new_params.keys():
+        if 'name' in new_params:
             new_params['name'] = get_hyper_string(new_params, 'name')
             if len(new_params) == 1:
                 new_params = new_params.get('name')
@@ -173,7 +173,7 @@ def set_hyper_parameter(hyper_param: dict, prefix: str, param: None):
     Args:
         hyper_param (dict):         A dict of hyperparameters.
         prefix (str):               Only parameters starting with the prefix will be loaded.
-        param (Union[str, Tensor]): Parameters need to be put into the hyperparameter dict. Default: ``None``.
+        param (Union[str, Tensor]): Parameters need to be put into the hyperparameter dict. Default: None
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -291,7 +291,7 @@ def load_hyperparam(ckpt_file_name, prefix='hyperparam', dec_key=None, dec_mode=
         prefix (Union[str, list[str], tuple[str]]): Only parameters starting with the prefix
                                                     will be loaded. Default: 'hyperparam'
         dec_key (Union[None, bytes]):               Byte type key used for decryption. If the value is None,
-                                                    the decryption is not required. Default: ``None``.
+                                                    the decryption is not required. Default: None
         dec_mode (str):                             This parameter is valid only when dec_key is not set to None.
                                                     Specifies the decryption mode, currently supports 'AES-GCM'
                                                     and 'AES-CBC'. Default: 'AES-GCM'

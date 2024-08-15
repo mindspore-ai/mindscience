@@ -124,7 +124,7 @@ def fill_water(pdb_in: str, pdb_out: str, gap: float = 4.0, box: ndarray = None,
     res_names = np.concatenate((res_names, water_res))
     res_ids = np.concatenate((res_ids, max(res_ids) + 1 + water_resid))
 
-    gen_pdb(new_crd[None, :], atom_names, res_names, res_ids, pdb_name=pdb_out)
+    gen_pdb(new_crd, atom_names, res_names, res_ids, pdb_name=pdb_out)
     print('[MindSPONGE] Adding water molecule task finished!')
     if return_pdb_obj:
         return read_pdb(pdb_out)

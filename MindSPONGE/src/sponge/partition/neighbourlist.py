@@ -45,21 +45,22 @@ class NeighbourList(Cell):
     r"""Neighbour list
 
     Args:
+
         system (Molecule):      Simulation system.
 
         cutoff (float):         Cut-off distance. If None is given under periodic boundary condition (PBC),
                                 the cutoff will be assigned with the default value of 1 nm.
-                                Default: ``None``.
+                                Default: None
 
         pace (int):             Update frequency for neighbour list. Default: 20
 
         exclude_index (Tensor): Tensor of the indices of the neighbouring atoms which could be excluded from the
                                 neighbour list. The shape of Tensor is `(B, A, Ex)`, and the data type is int.
-                                Default: ``None``.
+                                Default: None
 
         num_neighbours (int):   Maximum number of neighbours. If `None` is given, this value will be calculated
                                 by the ratio of the number of neighbouring grids to the total number of grids.
-                                Default: ``None``.
+                                Default: None
 
         num_cell_cut (int):     Number of subdivision of grid cells according to cutoff. Default: 1
 
@@ -73,16 +74,17 @@ class NeighbourList(Cell):
         large_dis (float):      A large number to fill in the distances to the masked neighbouring atoms.
                                 Default: 1e4
 
-        use_grids (bool):       Whether to use grids to calculate the neighbour list. Default: ``None``.
+        use_grids (bool):       Whether to use grids to calculate the neighbour list. Default: None
 
         cast_fp16 (bool):       If this is set to `True`, the data will be cast to float16 before sort.
                                 For use with some devices that only support sorting of float16 data.
-                                Default: ``False``.
+                                Default: False
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
 
         B:  Batchsize, i.e. number of walkers of the simulation.
 
@@ -211,7 +213,7 @@ class NeighbourList(Cell):
     def pace(self) -> int:
         r"""Update frequency for neighbour list
 
-        Returns:
+        return:
             int, update pace
 
         """
@@ -235,6 +237,10 @@ class NeighbourList(Cell):
             F.assign(self.neighbour_mask, mask)
         return self
 
+    def check_neighbour_list(self, raise_error: bool = True) -> bool:
+        """check the number of neighbouring atoms in neighbour list"""
+        return self.neighbour_list.check_neighbour_list(raise_error)
+
     def print_info(self):
         r"""print information of neighbour list"""
         self.neighbour_list.print_info()
@@ -255,7 +261,7 @@ class NeighbourList(Cell):
             neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
                                     Mask for neighbour list `neigh_idx`.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.
@@ -271,7 +277,7 @@ class NeighbourList(Cell):
             pbc_box = F.stop_gradient(pbc_box)
 
         neighbours, neighbour_mask = self.calculate(coordinate, pbc_box)
-        neighbours = F.depend(neighbours, self.neighbour_list.check_neighbour_list())
+        neighbours = F.depend(neighbours, self.check_neighbour_list(False))
 
         neighbours = F.depend(neighbours, F.assign(self.neighbours, neighbours))
         if self.neighbour_mask is not None:
@@ -294,7 +300,7 @@ class NeighbourList(Cell):
             neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
                                     Mask for neighbour list `neigh_idx`.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.
@@ -322,7 +328,7 @@ class NeighbourList(Cell):
             neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
                                     Mask for neighbour list `neigh_idx`.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.
@@ -360,7 +366,7 @@ class NeighbourList(Cell):
             neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
                                     Mask for neighbour list `neigh_idx`.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.

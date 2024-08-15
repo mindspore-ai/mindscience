@@ -27,11 +27,11 @@ Core engine of MindSPONGE
 import os
 from typing import Union, List
 import time
-import datetime
 from collections.abc import Iterable
 
 from mindspore import nn
 from mindspore import ops
+from mindspore import log as logger
 from mindspore.ops import functional as F
 from mindspore.common import Tensor
 from mindspore.nn.optim import Optimizer
@@ -41,14 +41,22 @@ from mindspore.context import ParallelMode
 from mindspore.train.callback import Callback, RunContext, _InternalCallbackParam, _CallbackManager
 from mindspore.parallel._utils import _get_parallel_mode, _get_device_num, _get_global_rank, \
     _get_parameter_broadcast, _device_number_check
-from mindspore.parallel._ps_context import _is_role_pserver
+from mindspore.parallel._ps_context import _is_role_pserver, _is_ps_mode, _cache_enable
 from mindspore.train.model import _StepSync, _transfer_tensor_to_tuple
 from mindspore.dataset.engine.datasets import Dataset
 from mindspore.train.dataset_helper import DatasetHelper
 from mindspore.dataset.engine.datasets import _set_training_dataset
 
+try:
+    # MindSpore 1.X
+    from mindspore._checkparam import Validator
+except ImportError:
+    # MindSpore 2.X
+    from mindspore import _checkparam as Validator
+
 from .simulation import WithEnergyCell, WithForceCell
 from .simulation import RunOneStepCell
+from .simulation.sink import SinkCell, WithNeighListSinkCell
 from .analysis import AnalysisCell
 from ..function import any_not_none, get_arguments
 from ..potential import PotentialCell, ForceCell
@@ -68,7 +76,7 @@ class Sponge():
         1)  Wraps `system`, `potential` and `optimizer` directly into `Sponge`.
 
             Example:
-            >>> from mindsponge import Sponge
+            >>> from sponge import Sponge
             >>> md = Sponge(system, potential, optimizer)
 
             In this way ordinary simulations can be achieved
@@ -77,7 +85,7 @@ class Sponge():
             with `Sponge`.
 
             Example:
-            >>> from mindsponge import WithEnergyCell, Sponge
+            >>> from sponge import WithEnergyCell, Sponge
             >>> sys_with_ene = WithEnergyCell(system, potential)
             >>> md = Sponge(sys_with_ene, optimizer=optimizer)
 
@@ -88,7 +96,7 @@ class Sponge():
             with `RunOneStepCell`, and finally pass the `RunOneStepCell` into 'Sponge'.
 
             Example:
-            >>> from mindsponge import WithEnergyCell, RunOneStepCell, Sponge
+            >>> from sponge import WithEnergyCell, RunOneStepCell, Sponge
             >>> sys_with_ene = WithEnergyCell(system, potential)
             >>> one_step = RunOneStepCell(sys_with_ene, optimizer=optimizer)
             >>> md = Sponge(one_step)
@@ -101,7 +109,7 @@ class Sponge():
             Simulation can be performed by executing the member function `Sponge.run`.
 
             Example:
-                >>> from mindsponge import Sponge
+                >>> from sponge import Sponge
                 >>> md = Sponge(system, potential, optimizer)
                 >>> md.run(10000)
 
@@ -112,8 +120,8 @@ class Sponge():
             `Sponge.analyse`.
 
             Example:
-            >>> from mindsponge.colvar import Torsion
-            >>> from mindsponge.colvar import Torsion
+            >>> from sponge.colvar import Torsion
+            >>> from sponge.colvar import Torsion
             >>> phi = Torsion([4, 6, 8, 14])
             >>> psi = Torsion([6, 8, 14, 16])
             >>> md = Sponge(system, potential, optimizer, metrics={'phi': phi, 'psi': psi})
@@ -124,20 +132,22 @@ class Sponge():
             psi [[3.1415927]]
 
     Args:
+
         network (Union[Molecule, WithEnergyCell, RunOneStepCell]):
                                     Cell of the simulation system.
 
-        potential (PotentialCell):  Potential energy. Default: ``None``.
+        potential (PotentialCell):  Potential energy. Defulat: None
 
-        optimizer (Optimizer):      Optimizer. Default: ``None``.
+        optimizer (Optimizer):      Optimizer. Defulat: None
 
         metrics (dict):             A Dictionary of metrics for system analysis. The key type of the `dict` should
                                     be `str`, and the value type of the `dict` should be `Metric` or `Colvar`.
-                                    Default: ``None``.
+                                    Defulat: None
 
-        analysis (AnalysisCell):    Analysis network. Default: ``None``.
+        analysis (AnalysisCell):    Analysis network. Defulat: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -234,6 +244,11 @@ class Sponge():
 
         self.neighbour_list_pace = self._simulation_network.neighbour_list_pace
 
+        if self.neighbour_list_pace > 0:
+            self._sink_network = WithNeighListSinkCell(self._simulation_network)
+        else:
+            self._sink_network = SinkCell(self._simulation_network)
+
         self.energy_cutoff = self._simulation_network.energy_cutoff
         self.force_cutoff = self._simulation_network.force_cutoff
 
@@ -273,7 +288,7 @@ class Sponge():
     def energy_names(self) -> List[str]:
         """names of energy terms
 
-        Returns:
+        Return:
             list of str, names of energy terms
 
         """
@@ -283,7 +298,7 @@ class Sponge():
     def num_energies(self) -> int:
         """number of energy terms
 
-        Returns:
+        Return:
             int, number of energy terms
 
         """
@@ -293,7 +308,7 @@ class Sponge():
     def num_biases(self) -> int:
         """number of bias potential energies V
 
-        Returns:
+        Return:
             int, number of bias potential energies
 
         """
@@ -340,10 +355,6 @@ class Sponge():
         else:
             self.use_updater = False
 
-        self._simulation_network = RunOneStepCell(
-            energy=self._system_with_energy, optimizer=self._optimizer)
-        self._simulation_network.set_pbc_grad(self.use_updater)
-
         lr = self._optimizer.learning_rate
         if self._optimizer.dynamic_lr:
             if self._optimizer.is_group_lr:
@@ -354,6 +365,15 @@ class Sponge():
             else:
                 lr = self._optimizer.learning_rate(0)
         self.time_step = lr.asnumpy()
+
+        self._simulation_network = RunOneStepCell(
+            energy=self._system_with_energy, optimizer=self._optimizer)
+        self._simulation_network.set_pbc_grad(self.use_updater)
+
+        if self.neighbour_list_pace > 0:
+            self._sink_network = WithNeighListSinkCell(self._simulation_network)
+        else:
+            self._sink_network = SinkCell(self._simulation_network)
 
         return self
 
@@ -383,7 +403,7 @@ class Sponge():
     def calc_energy(self) -> Tensor:
         """calculate the total potential energy (potential energy and bias potential) of the simulation system.
 
-        Returns:
+        Return:
             energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
                                 Total potential energy.
 
@@ -395,11 +415,11 @@ class Sponge():
     def calc_energies(self) -> Tensor:
         """calculate the energy terms of the potential energy.
 
-        Returns:
+        Return:
             energies (Tensor):  Tensor of shape `(B, U)`. Data type is float.
                                 Energy terms.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             U:  Number of potential energy terms.
 
@@ -411,11 +431,11 @@ class Sponge():
     def calc_biases(self) -> Tensor:
         """calculate the bias potential terms.
 
-        Returns:
+        Return:
             biases (Tensor):    Tensor of shape `(B, V)`. Data type is float.
                                 Energy terms.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             V:  Number of bias potential terms.
 
@@ -427,8 +447,9 @@ class Sponge():
     def run(self,
             steps: int,
             callbacks: Union[Callback, List[Callback]] = None,
+            sink_mode: bool = False,
+            sink_size: int = 100,
             dataset: Dataset = None,
-            show_time: bool = True,
             ):
         """Simulation API.
 
@@ -436,126 +457,43 @@ class Sponge():
             steps (int):            Simulation steps.
             callbacks (Union[Callback, List[Callback]]):
                                     Callback function(s) to obtain the information of the system during
-                                    the simulation. Default: ``None``.
-            dataset (Dataset):      Dataset used at simulation process. Default: ``None``.
+                                    the simulation. Default: None
+            dataset (Dataset):      Dataset used at simulation process. Default: None
 
         Example:
-            >>> from mindsponge import Sponge
-            >>> from mindsponge.callback import RunInfo
+            >>> from sponge import Sponge
+            >>> from sponge.callback import RunInfo
             >>> md = Sponge(system, potential, optimizer)
             >>> md.run(10000, callbacks=[RunInfo(10)])
 
         """
-        if self.neighbour_list_pace == 0 or steps < self.neighbour_list_pace:
-            epoch = 1
-            cycle_steps = steps
-            rest_steps = 0
-        else:
-            epoch = steps // self.neighbour_list_pace
-            cycle_steps = self.neighbour_list_pace
-            rest_steps = steps - epoch * cycle_steps
 
-        cb_params = _InternalCallbackParam()
-        cb_params.sim_network = self._simulation_network
-        cb_params.analyse = None
-        cb_params.metrics = None
-        cb_params.metrics_shape = None
-        cb_params.metrics_units = None
-        if self._analysis_network is not None:
-            cb_params.analyse = self.analyse
-            cb_params.metrics = self._metric_key
-            cb_params.metrics_shape = self._metric_shape
-            cb_params.metrics_units = self._metric_units
+        device_target = context.get_context("device_target")
+        if _is_ps_mode() and not _cache_enable() and (device_target in ["Ascend", "CPU"]) and sink_mode:
+            logger.info("For PS mode, reset sink mode to False when using Ascend or CPU backend.")
+            sink_mode = False
 
-        cb_params.with_energy = self._system_with_energy is not None
-        cb_params.with_force = self._system_with_force is not None
+        sink_mode = Validator.check_bool(sink_mode)
 
-        cb_params.num_steps = steps
-        cb_params.time_step = self.time_step
-        cb_params.num_epoch = epoch
-        cb_params.cycle_steps = cycle_steps
-        cb_params.rest_steps = rest_steps
+        if isinstance(self._simulation_network, nn.GraphCell) and sink_mode:
+            raise ValueError("Sink mode is currently not supported when training with a GraphCell.")
 
-        cb_params.mode = "simulation"
-        cb_params.sim_network = self._simulation_network
-        cb_params.system = self._system
-        cb_params.potential_network = self._potential_function
-        cb_params.optimizer = self._optimizer
-        cb_params.parallel_mode = self._parallel_mode
-        cb_params.device_number = self._device_number
-        cb_params.simulation_dataset = dataset
-        cb_params.list_callback = self._transform_callbacks(callbacks)
-        if context.get_context("mode") == context.PYNATIVE_MODE:
-            cb_params.list_callback.insert(0, _StepSync())
-            callbacks = cb_params.list_callback
+        _device_number_check(self._parallel_mode, self._device_number)
 
-        cb_params.coordinate = self.coordinate
-        cb_params.pbc_box = self.pbc_box
-        cb_params.energy = 0
-        cb_params.force = 0
-        cb_params.potential = 0
-        cb_params.energies = 0
-        cb_params.num_energies = self._num_energies
-        cb_params.energy_names = self._energy_names
+        steps = Validator.check_positive_int(steps)
 
-        cb_params.num_biases = self._num_biases
+        if sink_mode and self.neighbour_list_pace > 0 and steps % self.neighbour_list_pace != 0:
+            raise ValueError(f'For sink mode, the simulation steps must be divisible by '
+                             f'the number of neighbour list update pace, '
+                             f'but got a simulation steps of {steps} with '
+                             f'a update pace of {self.neighbour_list_pace}.')
 
-        if self._num_biases > 0:
-            cb_params.bias = 0
-            cb_params.biases = 0
-            cb_params.bias_names = self._simulation_network.bias_names
-        else:
-            cb_params.bias = None
-            cb_params.biases = None
-            cb_params.bias_names = None
+        self._run(steps=steps,
+                  callbacks=callbacks,
+                  sink_mode=sink_mode,
+                  sink_size=sink_size,
+                  dataset=dataset)
 
-        cb_params.volume = self._system.get_volume()
-        if self.use_updater:
-            self._optimizer.set_step(0)
-            cb_params.velocity = self._optimizer.velocity
-            kinetics = F.reduce_sum(self._optimizer.kinetics, -1)
-            cb_params.kinetics = kinetics
-            cb_params.temperature = self._optimizer.temperature
-            pressure = self._optimizer.pressure
-            if pressure is not None:
-                # (B) <- (B,D)
-                pressure = self.reduce_mean(pressure, -1)
-            cb_params.pressure = pressure
-
-            cb_params.thermostat = None
-            cb_params.barostat = None
-            cb_params.constraint = None
-            if isinstance(self._optimizer, UpdaterMD):
-                cb_params.thermostat = self._optimizer.thermostat
-                cb_params.barostat = self._optimizer.barostat
-                cb_params.constraint = self._optimizer.constraint
-
-        beg_time = datetime.datetime.now()
-        if show_time:
-            print('[MindSPONGE] Started simulation at', beg_time.strftime('%Y-%m-%d %H:%M:%S'))
-        # build callback list
-        with _CallbackManager(callbacks) as list_callback:
-            self._simulation_process(epoch, cycle_steps, rest_steps, list_callback, cb_params)
-        end_time = datetime.datetime.now()
-
-        if show_time:
-            print('[MindSPONGE] Finished simulation at', end_time.strftime('%Y-%m-%d %H:%M:%S'))
-            used_time = end_time - beg_time
-            d = used_time.days
-            s = used_time.seconds
-            m, s = divmod(s, 60)
-            h, m = divmod(m, 60)
-            if d >= 1:
-                print('[MindSPONGE] Simulation time: %d days, %d hours, %d minutes and %d seconds.' % (d, h, m, s))
-            elif h >= 1:
-                print('[MindSPONGE] Simulation time: %d hours %d minutes %d seconds.' % (h, m, s))
-            elif m >= 1:
-                s += used_time.microseconds / 1e6
-                print('[MindSPONGE] Simulation time: %d minutes %1.1f seconds.' % (m, s))
-            else:
-                s += used_time.microseconds / 1e6
-                print('[MindSPONGE] Simulation time: %1.2f seconds.' % s)
-            print('-'*80)
         return self
 
     def calc_potential(self) -> Tensor:
@@ -566,15 +504,15 @@ class Sponge():
 
     def get_energies(self) -> Tensor:
         """Tensor of potential energies with shape (B, U). Data type is float."""
-        return self._simulation_network.energies
+        return self._simulation_network.get_energies()
 
     def get_biases(self) -> Tensor:
         """Tensor bias potential energies with shape (B, V). Data type is float."""
-        return self._simulation_network.biases
+        return self._simulation_network.get_biases()
 
     def get_bias(self) -> Tensor:
         """Tensor of total bias potential with shape (B, 1). Data type is float."""
-        return self._simulation_network.bias
+        return self._simulation_network.get_bias()
 
     def analyse(self,
                 dataset: Dataset = None,
@@ -586,17 +524,17 @@ class Sponge():
             NOTE: To use this API, the `metrics` must be set at `Sponge` initialization.
 
         Args:
-            dataset (Dataset):  Dataset of simulation to be analysed. Default: ``None``.
+            dataset (Dataset):  Dataset of simulation to be analysed. Default: None
             callbacks (Union[Callback, List(Callback)]): List of callback objects which should be executed
-                while training. Default: ``None``.
+                while training. Default: None.
 
         Returns:
             Dict, the key is the metric name defined by users and the value is the metrics value for
             the model in the test mode.
 
         Example:
-            >>> from mindsponge.colvar import Torsion
-            >>> from mindsponge.colvar import Torsion
+            >>> from sponge.colvar import Torsion
+            >>> from sponge.colvar import Torsion
             >>> phi = Torsion([4, 6, 8, 14])
             >>> psi = Torsion([6, 8, 14, 16])
             >>> md = Sponge(system, potential, optimizer, metrics={'phi': phi, 'psi': psi})
@@ -634,9 +572,8 @@ class Sponge():
             return
 
         if self._potential_function is not None or self._optimizer is not None:
-            raise ValueError("For 'Model', 'loss_fn' and 'optimizer' should be None when network is a GraphCell, "
-                             "but got 'loss_fn': {}, 'optimizer': {}.".format(self._potential_function,
-                                                                              self._optimizer))
+            raise ValueError(f"For 'Sponge', 'potential' and 'optimizer' should be None when network is a GraphCell, "
+                             f"but got 'potential': {self._potential_function}, 'optimizer': {self._optimizer}.")
 
     @staticmethod
     def _transform_callbacks(callbacks: Callback):
@@ -649,15 +586,15 @@ class Sponge():
 
         return [callbacks]
 
-    def _simulation_process(self,
-                            epoch: int,
-                            cycle_steps: int,
-                            rest_steps: int,
-                            list_callback: Callback = None,
-                            cb_params: _InternalCallbackParam = None
-                            ):
+    def _run(self,
+             steps: int,
+             callbacks: Union[Callback, List[Callback]] = None,
+             sink_mode: bool = False,
+             sink_size: int = 100,
+             dataset: Dataset = None,
+             ):
         """
-        Training process. The data would be passed to network directly.
+        Running process. The data would be passed to network directly.
 
         Args:
             epoch (int): Total number of iterations on the data.
@@ -666,49 +603,143 @@ class Sponge():
                                      returned and passed to the network. Otherwise, a tuple (data, label) should
                                      be returned. The data and label would be passed to the network and loss
                                      function respectively.
-            list_callback (Callback): Executor of callback list. Default: ``None``.
-            cb_params (_InternalCallbackParam): Callback parameters. Default: ``None``.
+            list_callback (Callback): Executor of callback list. Default: None.
+            cb_params (_InternalCallbackParam): Callback parameters. Default: None.
         """
-        self._exec_preprocess(True)
+
+        if self._parameter_broadcast:
+            self._simulation_network.set_broadcast_flag()
+
+        cycles = self.neighbour_list_pace
+        if sink_mode and self.neighbour_list_pace == 0 and sink_size is not None:
+            if steps % sink_size != 0:
+                raise ValueError(f'The simulation steps must be divisible by the sink size, '
+                                 f'but got a simulation steps of {steps} with '
+                                 f'a sink size of {sink_size}.')
+            cycles = sink_size
+
+        if cycles == 0:
+            epoch = 1
+            rest_cycles = 0
+            cycles = steps
+        else:
+            epoch = steps // cycles
+            rest_cycles = steps % cycles
+
+        num_epoch = epoch if rest_cycles == 0 else epoch + 1
+
+        cb_params = _InternalCallbackParam()
+        cb_params.sim_network = self._simulation_network
+        cb_params.analyse = None
+        cb_params.metrics = None
+        cb_params.metrics_shape = None
+        cb_params.metrics_units = None
+        if self._analysis_network is not None:
+            cb_params.analyse = self.analyse
+            cb_params.metrics = self._metric_key
+            cb_params.metrics_shape = self._metric_shape
+            cb_params.metrics_units = self._metric_units
+
+        cb_params.with_energy = self._system_with_energy is not None
+        cb_params.with_force = self._system_with_force is not None
+
+        cb_params.num_steps = steps
+        cb_params.time_step = self.time_step
+        cb_params.num_epoch = num_epoch
+        cb_params.cycle_steps = cycles
+        cb_params.rest_steps = rest_cycles
+
+        cb_params.mode = "simulation"
+        cb_params.sim_network = self._simulation_network
+        cb_params.system = self._system
+        cb_params.potential_network = self._potential_function
+        cb_params.optimizer = self._optimizer
+        cb_params.parallel_mode = self._parallel_mode
+        cb_params.device_number = self._device_number
+        cb_params.simulation_dataset = dataset
+        cb_params.list_callback = self._transform_callbacks(callbacks)
+        if context.get_context("mode") == context.PYNATIVE_MODE:
+            cb_params.list_callback.insert(0, _StepSync())
+            callbacks = cb_params.list_callback
+
+        cb_params.energy = 0
+        cb_params.force = 0
+        cb_params.potential = 0
+        cb_params.energies = 0
+        cb_params.num_energies = self._num_energies
+        cb_params.energy_names = self._energy_names
+
+        cb_params.num_biases = self._num_biases
+
+        if self._num_biases > 0:
+            cb_params.bias = 0
+            cb_params.biases = 0
+            cb_params.bias_names = self._simulation_network.bias_names
+        else:
+            cb_params.bias = None
+            cb_params.biases = None
+            cb_params.bias_names = None
+
+        cb_params.volume = self._system.get_volume()
+        if self.use_updater:
+            cb_params.coordinate = self._optimizer.current_coordinate
+            cb_params.pbc_box = self._optimizer.current_pbc_box
+            cb_params.new_coordinate = self.coordinate
+            cb_params.new_pbc_box = self.pbc_box
+
+            self._optimizer.set_step(0)
+            cb_params.velocity = self._optimizer.velocity
+            kinetics = F.reduce_sum(self._optimizer.kinetics, -1)
+            cb_params.kinetics = kinetics
+            cb_params.temperature = self._optimizer.temperature
+            pressure = self._optimizer.pressure
+            if pressure is not None:
+                # (B) <- (B,D)
+                pressure = self.reduce_mean(pressure, -1)
+            cb_params.pressure = pressure
+
+            cb_params.thermostat = None
+            cb_params.barostat = None
+            cb_params.constraint = None
+            if isinstance(self._optimizer, UpdaterMD):
+                cb_params.thermostat = self._optimizer.thermostat
+                cb_params.barostat = self._optimizer.barostat
+                cb_params.constraint = self._optimizer.constraint
+        else:
+            cb_params.coordinate = self.coordinate
+            cb_params.pbc_box = self.pbc_box
+
+        cb_params.sink_mode = sink_mode
 
         self.sim_step = 0
         self.sim_time = 0.0
-        run_context = RunContext(cb_params)
-        list_callback.begin(run_context)
-        # used to stop training for early stop, such as stopAtTIme or stopATStep
-        should_stop = False
 
-        for i in range(epoch):
-            cb_params.cur_epoch = i
-            self.update_neighbour_list()
-            should_stop = self._run_one_epoch(cycle_steps, list_callback, cb_params, run_context)
-            should_stop = should_stop or run_context.get_stop_requested()
-            if should_stop:
-                break
+        # build callback list
+        with _CallbackManager(callbacks) as list_callback:
+            if sink_mode:
+                self._run_sink_mode(epoch=epoch,
+                                    cycles=cycles,
+                                    list_callback=list_callback,
+                                    cb_params=cb_params)
+            else:
+                self._run_process(epoch=epoch,
+                                  cycles=cycles,
+                                  rest_cycles=rest_cycles,
+                                  list_callback=list_callback,
+                                  cb_params=cb_params)
 
-        if rest_steps > 0:
-            self.update_neighbour_list()
-            self._run_one_epoch(rest_steps, list_callback,
-                                cb_params, run_context)
-
-        list_callback.end(run_context)
-
-    def _run_one_epoch(self,
-                       cycles: int,
-                       list_callback: Callback,
-                       cb_params: _InternalCallbackParam,
-                       run_context: RunContext
-                       ):
+    def _run_process(self,
+                     epoch: int,
+                     cycles: int,
+                     rest_cycles: int,
+                     list_callback: Callback,
+                     cb_params: _InternalCallbackParam,
+                     ):
         """run one epoch simulation"""
-        should_stop = False
-        list_callback.epoch_begin(run_context)
-        for _ in range(cycles):
 
-            cb_params.cur_step = self.sim_step
-            cb_params.cur_time = self.sim_time
-            list_callback.step_begin(run_context)
-
+        def _one_step(cb_params):
             cb_params.volume = self._system.get_volume()
+            cb_params.coordinate = self._system.get_coordinate()
 
             self._potential, self._force = self._simulation_network()
             self.update_bias(self.sim_step)
@@ -735,8 +766,143 @@ class Sponge():
                     pressure = self.reduce_mean(pressure, -1)
                 cb_params.pressure = pressure
 
-            self.sim_step += 1
-            self.sim_time += self.time_step
+        self._exec_preprocess(True)
+
+        run_context = RunContext(cb_params)
+        list_callback.begin(run_context)
+
+        # used to stop training for early stop, such as stopAtTIme or stopATStep
+        should_stop = False
+
+        cb_params.cur_epoch = 0
+        cb_params.cur_step = 0
+        cb_params.cur_time = 0
+        for i in range(epoch):
+            list_callback.epoch_begin(run_context)
+
+            for _ in range(cycles):
+                list_callback.step_begin(run_context)
+
+                _one_step(cb_params)
+
+                self.sim_step += 1
+                self.sim_time += self.time_step
+
+                cb_params.cur_step = self.sim_step
+                cb_params.cur_time = self.sim_time
+
+                list_callback.step_end(run_context)
+                should_stop = should_stop or run_context.get_stop_requested()
+
+                #pylint: disable = protected-access
+                if _is_role_pserver():
+                    os._exit(0)
+                if should_stop:
+                    break
+
+            self.update_neighbour_list()
+            self._simulation_network.check_neighbour_list()
+
+            # if param is cache enable, flush data from cache to host before epoch end
+            self._flush_from_cache(cb_params)
+
+            cb_params.cur_epoch = i + 1
+            list_callback.epoch_end(run_context)
+
+            should_stop = should_stop or run_context.get_stop_requested()
+            if should_stop:
+                break
+
+        if rest_cycles > 0:
+            list_callback.epoch_begin(run_context)
+            for _ in range(rest_cycles):
+                cb_params.cur_step = self.sim_step
+                cb_params.cur_time = self.sim_time
+                list_callback.step_begin(run_context)
+
+                _one_step(cb_params)
+
+                self.sim_step += 1
+                self.sim_time += self.time_step
+                list_callback.step_end(run_context)
+                should_stop = should_stop or run_context.get_stop_requested()
+
+                #pylint: disable = protected-access
+                if _is_role_pserver():
+                    os._exit(0)
+                if should_stop:
+                    break
+            self.update_neighbour_list()
+            self._simulation_network.check_neighbour_list()
+
+            # if param is cache enable, flush data from cache to host before epoch end
+            self._flush_from_cache(cb_params)
+            cb_params.cur_epoch += 1
+            list_callback.epoch_end(run_context)
+
+        list_callback.end(run_context)
+
+    def _run_sink_mode(self,
+                       epoch: int,
+                       cycles: int,
+                       list_callback: Callback,
+                       cb_params: _InternalCallbackParam,
+                       ):
+        """run one epoch simulation"""
+
+        if self.neighbour_list_pace == 0:
+            self._sink_network.set_cycles(cycles)
+
+        self._exec_preprocess(True)
+
+        run_context = RunContext(cb_params)
+        list_callback.begin(run_context)
+
+        # used to stop training for early stop, such as stopAtTIme or stopATStep
+        should_stop = False
+        cb_params.cur_epoch = 0
+        cb_params.cur_step = 0
+        cb_params.cur_time = 0
+
+        for i in range(epoch):
+            list_callback.epoch_begin(run_context)
+
+            list_callback.step_begin(run_context)
+
+            cb_params.volume = self._system.get_volume()
+
+            self._potential, self._force = self._sink_network()
+            self._simulation_network.check_neighbour_list()
+
+            self.update_bias(self.sim_step)
+            self.update_wrapper(self.sim_step)
+            self.update_modifier(self.sim_step)
+
+            cb_params.potential = self._potential
+            cb_params.force = self._force
+
+            cb_params.energies = self.get_energies()
+            if self._num_biases > 0:
+                cb_params.bias = self.get_bias()
+                cb_params.biases = self.get_biases()
+
+            if self.use_updater:
+                cb_params.velocity = self._optimizer.velocity
+                # (B) <- (B,D)
+                kinetics = F.reduce_sum(self._optimizer.kinetics, -1)
+                cb_params.kinetics = kinetics
+                cb_params.temperature = self._optimizer.temperature
+                pressure = self._optimizer.pressure
+                if pressure is not None:
+                    # (B) <- (B,D)
+                    pressure = self.reduce_mean(pressure, -1)
+                cb_params.pressure = pressure
+
+            self.sim_step += cycles
+            self.sim_time += self.time_step * cycles
+
+            cb_params.cur_step = self.sim_step
+            cb_params.cur_time = self.sim_time
 
             list_callback.step_end(run_context)
 
@@ -747,11 +913,18 @@ class Sponge():
             if should_stop:
                 break
 
-        # if param is cache enable, flush data from cache to host before epoch end
-        self._flush_from_cache(cb_params)
+            # if param is cache enable, flush data from cache to host before epoch end
+            self._flush_from_cache(cb_params)
 
-        list_callback.epoch_end(run_context)
-        return should_stop
+            cb_params.cur_epoch = i + 1
+
+            list_callback.epoch_end(run_context)
+
+            should_stop = should_stop or run_context.get_stop_requested()
+            if should_stop:
+                break
+
+        list_callback.end(run_context)
 
     def _analysis_process(self,
                           dataset: Dataset = None,
@@ -763,8 +936,8 @@ class Sponge():
 
         Args:
             valid_dataset (Dataset): Dataset to evaluate the model.
-            list_callback (Callback): Executor of callback list. Default: ``None``.
-            cb_params (_InternalCallbackParam): Callback parameters. Default: ``None``.
+            list_callback (Callback): Executor of callback list. Default: None.
+            cb_params (_InternalCallbackParam): Callback parameters. Default: None.
 
         Returns:
             Dict, which returns the loss value and metrics values for the model in the test mode.
@@ -772,15 +945,22 @@ class Sponge():
         run_context = RunContext(cb_params)
         list_callback.begin(run_context)
         dataset_helper, _ = self._exec_preprocess(False)
-        list_callback.epoch_begin(run_context)
 
         if dataset is None:
             cb_params.cur_step_num += 1
+            list_callback.epoch_begin(run_context)
             list_callback.step_begin(run_context)
 
+            if self.use_updater:
+                coordinate = self._optimizer.current_coordinate
+                pbc_box = self._optimizer.current_pbc_box
+            else:
+                coordinate = self.coordinate
+                pbc_box = self.pbc_box
+
             inputs = (
-                self.coordinate,
-                self.pbc_box,
+                coordinate,
+                pbc_box,
                 self._potential,
                 self._force,
                 self.get_energies(),
@@ -832,7 +1012,7 @@ class Sponge():
 
     def _get_metrics(self):
         """Get metrics local values."""
-        metrics = dict()
+        metrics = {}
         for key, value in self._metric_fns.items():
             metrics[key] = value.eval()
         return metrics

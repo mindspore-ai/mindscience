@@ -40,22 +40,24 @@ class WithForceCell(Cell):
     r"""Cell that wraps the simulation system with the atomic force function.
 
     Args:
+
         system (Molecule):              Simulation system.
 
         force (PotentialCell):          Atomic force calculation cell.
 
-        cutoff (float):                 Cutoff distance. Default: ``None``.
+        cutoff (float):                 Cutoff distance. Defulat: None
 
-        neighbour_list (NeighbourList): Neighbour list. Default: ``None``.
+        neighbour_list (NeighbourList): Neighbour list. Default: None
 
-        modifier (ForceModifier):       Force modifier. Default: ``None``.
+        modifier (ForceModifier):       Force modifier. Default: None
 
-        bias (Bias):                    Bias potential: Default: ``None``.
+        bias (Bias):                    Bias potential: Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
 
         B:  Batchsize, i.e. number of walkers of the simulation.
 
@@ -153,7 +155,7 @@ class WithForceCell(Cell):
     def cutoff(self) -> Tensor:
         r"""cutoff distance for neighbour list
 
-        Returns:
+        Return:
             Tensor, cutoff
 
         """
@@ -165,7 +167,7 @@ class WithForceCell(Cell):
     def neighbour_list_pace(self) -> int:
         r"""update step for neighbour list
 
-        Returns:
+        Return:
             int, step
 
         """
@@ -177,7 +179,7 @@ class WithForceCell(Cell):
     def length_unit(self) -> str:
         r"""length unit
 
-        Returns:
+        Return:
             str, length unit
 
         """
@@ -187,7 +189,7 @@ class WithForceCell(Cell):
     def energy_unit(self) -> str:
         r"""energy unit
 
-        Returns:
+        Return:
             str, energy unit
 
         """
@@ -240,7 +242,7 @@ class WithForceCell(Cell):
             neigh_mask (Tensor):    Tensor of shape `(B, A, N)`. Data type is bool.
                                     Mask for neighbour list `neigh_idx`.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             N:  Number of the maximum neighbouring atoms.
@@ -262,12 +264,12 @@ class WithForceCell(Cell):
             force_ad (Tensor):  Tensor of shape (B, A, D). Data type is float.
                                 Atomic forces from automatic differentiation.
 
-        Returns:
+        Return:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
             force (Tensor):     Tensor of shape (B, A, D). Data type is float.
             virial (Tensor):    Tensor of shape (B, D). Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers of the simulation.
             A:  Number of the atoms in the simulation system.
             D:  Spatial dimension of the simulation system. Usually is 3.

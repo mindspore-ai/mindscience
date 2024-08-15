@@ -39,28 +39,36 @@ __all__ = ['Position', 'BatchedPosition']
 
 
 class Position(AtomsBase):
-    r"""
-    Virtual atom(s) in fixed position(s).
+    r"""Virtual atom(s) in fixed position(s)
 
     Args:
+
         coordinate (Union[Tensor, Parameter, ndarray]):
                             Array of th position coordinate(s) of specific virtual atom(s).
                             The shape of Tensor is (a_1, a_2, ..., a_n, D), and the data type is float.
-                            `a_{i}` means dimension of specific atoms.
-                            `D` means dimension of the simulation system. Usually is 3.
 
         batched (bool):     Whether the first dimension of coordinate is the batch size.
-                            Default: ``False``.
+                            Default: False
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: ``False``.
+                            Default: False
 
-        dimension (int):    Space dimension of system. Default: 3.
+        dimension (int):    Space dimension of system. Default: 3
 
-        name (str):         Name of the Colvar. Default: 'position'.
+        name (str):         Name of the Colvar. Default: 'position'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
+
+    Symbols:
+
+        B:      Batchsize, i.e. number of walkers in simulation
+
+        a_{i}:  Dimension of specific atoms.
+
+        D:      Dimension of the simulation system. Usually is 3.
 
     """
     def __init__(self,
@@ -90,6 +98,9 @@ class Position(AtomsBase):
 
         self.identity = ops.Identity()
 
+    def set_dimension(self, dimension: int = 3):
+        raise NotImplementedError('"Position" cannot reset dimension!')
+
     def update(self, coordinate: Tensor):
         self.coordinate = coordinate
         return self
@@ -108,14 +119,18 @@ class Position(AtomsBase):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system.
-                                    `B` means batchsize, i.e. number of walkers in simulation.
-                                    `A` means number of atoms in system.
+                                    Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+                                    Tensor of PBC box. Default: None
 
         Returns:
             position (Tensor):  Tensor of shape (B, a_1, a_2, ..., a_n, D). Data type is float.
+
+        Symbols:
+            B:      Batchsize, i.e. number of walkers in simulation
+            A:      Number of atoms in system.
+            a_{i}:  Dimension of specific atoms.
+            D:      Dimension of the simulation system. Usually is 3.
         """
 
         if coordinate.shape[0] > 1:
@@ -130,28 +145,27 @@ class Position(AtomsBase):
 
 
 class BatchedPosition(Position):
-    r"""
-    Virtual atom(s) in fixed position(s) with batched coordinate
+    r"""Virtual atom(s) in fixed position(s) with batched coordinate
 
     Args:
+
         coordinate (Tensor):    Tensor of shape (B, a_1, a_2, ..., a_n, D). Data type is float.
                                 Position coordinate(s) of virtual atom(s).
 
         keep_in_box (bool):     Whether to displace the coordinate in PBC box.
-                                Default: ``False``.
+                                Default: False
 
-        dimension (int):        Space dimension of system. Default: 3
 
         name (str):             Name of the Colvar. Default: 'position'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
     def __init__(self,
                  coordinate: Union[Tensor, Parameter, ndarray],
                  keep_in_box: bool = False,
-                 dimension: int = 3,
                  name: str = 'position',
                  ):
 
@@ -159,6 +173,8 @@ class BatchedPosition(Position):
             coordinate=coordinate,
             batched=True,
             keep_in_box=keep_in_box,
-            dimension=dimension,
             name=name,
         )
+
+    def set_dimension(self, dimension: int = 3):
+        raise NotImplementedError('"BatchedPosition" cannot reset dimension!')

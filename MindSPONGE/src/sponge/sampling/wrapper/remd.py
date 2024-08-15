@@ -32,6 +32,7 @@ class ReplicaExchange(EnergyWrapper):
     r"""TODO: Replica exchange molecular dynamics (REMD).
 
     Args:
+
         num_walker (int):       Number of multiple walker (B). Default: 1
 
         dim_potential (int):    Dimension of potential energy (U). Default: 1
@@ -61,15 +62,15 @@ class ReplicaExchange(EnergyWrapper):
             potentials (Tensor):    Tensor of shape (B, U). Data type is float.
                                     Potential energies.
             biases (Tensor):        Tensor of shape (B, V). Data type is float.
-                                    Bias potential energies. Default: ``None``.
+                                    Bias potential energies. Default: None
 
-        Returns:
+        Return:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
                                 Total energy (potential energy and bias energy).
             bias (Tensor):      Tensor of shape (B, 1). Data type is float.
                                 Total bias potential used for reweighting calculation.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation.
             U:  Dimension of potential energy.
             V:  Dimension of bias potential.

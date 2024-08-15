@@ -37,23 +37,25 @@ class SimulationCell(WithEnergyCell):
         NOTE: This Cell will be removed a future release, Please use `WithEnergyCell` instead.
 
     Args:
+
         system (Molecule):              Simulation system.
 
         potential (PotentialCell):      Potential energy function cell.
 
-        bias (Union[Bias, List[Bias]]): Bias potential function cell: Default: ``None``.
+        bias (Union[Bias, List[Bias]]): Bias potential function cell: Default: None
 
         cutoff (float):                 Cut-off distance for neighbour list. If None is given, it will be assigned
                                         as the cutoff value of the of potential energy.
-                                        Default: ``None``.
+                                        Defulat: None
 
-        neighbour_list (NeighbourList): Neighbour list. Default: ``None``.
+        neighbour_list (NeighbourList): Neighbour list. Default: None
 
         wrapper (EnergyWrapper):        Network to wrap and process potential and bias.
-                                        Default: ``None``.
+                                        Default: None
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+
+        ``Ascend``
 
     """
 

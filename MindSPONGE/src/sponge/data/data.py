@@ -25,7 +25,6 @@ Base function for yaml
 """
 
 import os
-import stat
 from itertools import permutations
 import yaml
 import numpy as np
@@ -96,7 +95,7 @@ def write_yaml(data: dict, filename: str, directory: str = None):
 
     filename = os.path.join(directory, filename)
 
-    with os.fdopen(os.open(filename, os.O_WRONLY | os.O_CREAT, stat.S_IRWXU), 'w', encoding='utf-8') as file:
+    with open(filename, 'w', encoding="utf-8") as file:
         yaml.dump(data, file, sort_keys=False)
 
 

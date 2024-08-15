@@ -32,7 +32,7 @@ from ...system.molecule import Molecule
 from ...function import get_ms_array
 from ...function.units import Units, Length, GLOBAL_UNITS
 
-_ENERGY_BY_KEY = dict()
+_ENERGY_BY_KEY = {}
 
 
 def _energy_register(*aliases):
@@ -59,47 +59,22 @@ class EnergyCell(Cell):
     As the force field parameters usually has units, the units of the `EnergyCell` as an energy term
     should be the same as the units of the force field parameters, and not equal to the global units.
 
-    Note:
-        B:  Batchsize, i.e. number of walkers in simulation
-
     Args:
         name (str):         Name of energy. Default: 'energy'
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
                             Default: 'nm'
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
                             Default: 'kj/mol'
-        use_pbc (bool):     Whether to use periodic boundary condition. Default: ``None``.
-        kwargs (dict):      Other parameters dictionary.
+        use_pbc (bool):     Whether to use periodic boundary condition. Default: None
 
     Returns:
         Tensor of energy, Tensor of shape `(B, 1)`. Data type is float.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend``
 
-    Examples:
-        >>> from mindspore import Tensor
-        >>> from mindspore.nn import Adam
-        >>> from sponge.potential import EnergyCell, ForceFieldBase
-        >>> from sponge import WithEnergyCell, Sponge
-        >>> from sponge.callback import RunInfo
-        >>> class MyEnergy(EnergyCell):
-        ...     def construct(self, coordinate: Tensor, **kwargs):
-        ...         return coordinate.sum()[None, None]
-        >>> # system represents a custom molecular system
-        >>> potential = MyEnergy(system)
-        >>> forcefield = ForceFieldBase(potential)
-        >>> withenergy = WithEnergyCell(system, forcefield)
-        >>> opt = Adam(system.trainable_params(), 1e-3)
-        >>> mini = Sponge(withenergy, optimizer=opt)
-        >>> run_info = RunInfo(5)
-        >>> mini.run(10, callbacks=[run_info])
-        [MindSPONGE] Started simulation at 2024-03-22 11:08:34
-        [MindSPONGE] Step: 5, E_pot: 0.31788814
-        [MindSPONGE] Step: 10, E_pot: 0.13788882
-        [MindSPONGE] Finished simulation at 2024-03-22 11:08:35
-        [MindSPONGE] Simulation time: 0.98 seconds.
-        --------------------------------------------------------------------------------
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
     """
     def __init__(self,
                  name: str = 'energy',
@@ -121,7 +96,7 @@ class EnergyCell(Cell):
             energy_unit = GLOBAL_UNITS.energy_unit
         self.units = Units(length_unit, energy_unit)
 
-        self.input_unit_scale = 1
+        self.input_unit_scale = Tensor([1.], ms.float32)
         self.cutoff = None
         self.identity = ops.Identity()
 
@@ -167,26 +142,12 @@ class EnergyCell(Cell):
 
     @staticmethod
     def check_system(system: Molecule) -> bool:
-        """
-        Check if the system needs to calculate this energy term
-
-        Args:
-            system (Molecule): System.
-        """
+        """Check if the system needs to calculate this energy term"""
         #pylint:disable=unused-argument
         return True
 
     def set_units(self, length_unit: str = None, energy_unit: str = None, units: Units = None):
-        r"""
-        Set length and energy units.
-
-        Args:
-            length_unit (str):  Length unit. Only valid when `units` is ``None`` .
-                                Default: ``None``
-            energy_unit (str):  Energy unit. Only valid when `units` is ``None`` .
-                                Default: ``None``
-            units (Units):      `Units` object. Default: ``None``
-        """
+        r"""set length and energy units"""
         if units is None:
             if length_unit is None:
                 length_unit = GLOBAL_UNITS.length_unit
@@ -211,7 +172,7 @@ class EnergyCell(Cell):
             length_unit(Union[str, Units, Length]): The length unit for the input coordinates.
         """
         if length_unit is None:
-            self.input_unit_scale = 1
+            self.input_unit_scale = Tensor([1.], ms.float32)
         elif isinstance(length_unit, (str, Units, float)):
             self.input_unit_scale = Tensor(
                 self.units.convert_length_from(length_unit), ms.float32)
@@ -226,7 +187,7 @@ class EnergyCell(Cell):
 
         Args:
             cutoff(float):  Cutoff distances.
-            unit(str):      Length unit. Default: ``None``.
+            unit(str):      Length unit. Default: None
         """
         if cutoff is None:
             self.cutoff = None
@@ -283,20 +244,20 @@ class EnergyCell(Cell):
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: ``None``.
+                                            Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour index. Default: ``None``.
+                                            Mask for neighbour index. Default: None
             neighbour_vector (Tensor):       Tensor of shape (B, A, N). Data type is bool.
-                                            Vectors from central atom to neighbouring atoms. Default: ``None``.
+                                            Vectors from central atom to neighbouring atoms. Default: None
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: ``None``.
+                                            Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: ``None``.
+                                            Tensor of PBC box. Default: None
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.
@@ -309,9 +270,10 @@ class NonbondEnergy(EnergyCell):
     r"""Base cell for non-bonded energy terms.
 
     Args:
+
         name (str):             Name of energy.
 
-        cutoff (Union[float, Length, Tensor]):  cutoff distance. Default: ``None``.
+        cutoff (Union[float, Length, Tensor]):  cutoff distance. Default: None
 
         length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
                                 Default: 'nm'
@@ -319,7 +281,7 @@ class NonbondEnergy(EnergyCell):
         energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
                                 Default: 'kj/mol'
 
-        use_pbc (bool):         Whether to use periodic boundary condition. Default: ``None``.
+        use_pbc (bool):         Whether to use periodic boundary condition. Default: None
 
     """
     def __init__(self,
@@ -358,22 +320,22 @@ class NonbondEnergy(EnergyCell):
             coordinate (Tensor):            Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: ``None``.
+                                            Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour index. Default: ``None``.
+                                            Mask for neighbour index. Default: None
             neighbour_vector (Tensor):       Tensor of shape (B, A, N). Data type is bool.
-                                            Vectors from central atom to neighbouring atoms. Default: ``None``.
+                                            Vectors from central atom to neighbouring atoms. Default: None
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: ``None``.
+                                            Distance between neighbours atoms. Default: None
             inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.
-                                            Reciprocal of distances. Default: ``None``.
+                                            Reciprocal of distances. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: ``None``.
+                                            Tensor of PBC box. Default: None
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.

@@ -33,29 +33,32 @@ from ..colvar import Colvar
 
 
 class TransformCV(Colvar):
-    r"""
-    Transformation of the values of the a collective variable :math:`s(R)` using a specific functions :math:`f(x)`.
+    r"""Transformation of the values of the a collective variable :math:`s(R)` using a specific functions :math:`f(x)`.
+
+    Math:
 
     .. math::
 
         s' = f[s(R)]
 
     Args:
+
         colvar (Colvar): Collective variables (CVs) :math:`s(R)`.
 
         function (Callable): Transformation function :math:`f(x)`.
 
-        periodic (bool): Whether the transformed collective variables is periodic. Default: ``False``.
+        periodic (bool): Whether the transformed collective variables is periodic. Default: False
 
         shape (Tuple[int]): Shape of the transformed collective variables. If None is given,
-            then it will be assigned to the shape of the original `colvar`. Default: ``None``.
+            then it will be assigned to the shape of the original `colvar`. Default: None
 
-        unit (str): Unit of the collective variables. Default: ``None``.
+        unit (str): Unit of the collective variables. Default: None
             NOTE: This is not the `Units` Cell that wraps length and energy.
 
-        name (str): Name of the collective variables. Default: 'transform'.
+        name (str): Name of the collective variables. Default: 'transform'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -94,19 +97,22 @@ class TransformCV(Colvar):
         r"""return the cosine value of the collective variables (CVs).
 
         Args:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-                                    Position coordinate of colvar in system.
-                                    `B` means batchsize, i.e. number of walkers in simulation.
-                                    `A` means number of colvar in system.
-                                    `D` means dimension of the simulation system. Usually is 3.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+            coordinate (Tensor):Tensor of shape `(B, A, D)`. Data type is float.
+                Position coordinate of colvar in system
+            pbc_box (Tensor): Tensor of shape `(B, D)`. Data type is float.
+                Tensor of PBC box. Default: None
 
         Returns:
-            cos_cv (Tensor):        Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.
-                                    `{S_i}` means dimensions of collective variables.
+            cos_cv (Tensor):       Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.
+
+        Symbols:
+            B:      Batchsize, i.e. number of walkers in simulation
+            A:      Number of colvar in system.
+            {S_i}:  Dimensions of collective variables.
+            D:      Dimension of the simulation system. Usually is 3.
 
         """
+
         colvar = self.colvar(coordinate, pbc_box)
 
         return self.function(colvar)

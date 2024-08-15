@@ -35,19 +35,31 @@ class AllAtoms(AtomsBase):
     r"""All atoms of the simulation system.
 
     Args:
-        system (Molecule):  Simulation system. Default: ``None``.
+
+        system (Molecule):  Simulation system. Default: None
 
         num_atoms (int):    Number of atoms. The number of atoms must be given when `system` is None.
-                            Default: ``None``.
+                            Default: None
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: ``False``.
+                            Default: False
 
         dimension (int):    Spatial dimension of the simulation system. Default: 3
 
         name (str):         Name of the Colvar. Default: 'all_atoms'
 
+    Symbols:
+
+        B:  Batchsize, i.e. number of walkers in simulation
+
+        A:  Number of atoms in system.
+
+        G:  Number of the group of atoms to be averaged.
+
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -80,16 +92,18 @@ class AllAtoms(AtomsBase):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system.
-                                    B means Batchsize, i.e. number of walkers in simulation.
-                                    A means Number of colvar in system.
-                                    D means Dimension of the simulation system. Usually is 3.
+                                    Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+                                    Tensor of PBC box. Default: None
 
         Returns:
             center (Tensor):        Tensor of shape (B, ..., D). Data type is float.
                                     Position of the center of the atoms.
+
+        Symbols:
+            B:      Batchsize, i.e. number of walkers in simulation
+            A:      Number of atoms in system.
+            D:      Dimension of the simulation system. Usually is 3.
         """
 
         if self.do_reshape:

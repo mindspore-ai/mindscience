@@ -25,9 +25,18 @@ Callback to print the information of MD simulation
 """
 
 import time
+from datetime import datetime
+import numpy as np
 
 from mindspore.train.callback import Callback, RunContext
 from mindspore import Tensor
+from mindspore import log as logger
+try:
+    # MindSpore 1.X
+    from mindspore._checkparam import Validator
+except ImportError:
+    # MindSpore 2.X
+    from mindspore import _checkparam as Validator
 
 from ..optimizer import Updater
 
@@ -36,17 +45,35 @@ class RunInfo(Callback):
     r"""Callback to print the information of MD simulation
 
     Args:
+
         print_freq (int):   Frequency to print out the information
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
 
-    def __init__(self, print_freq: int = 1):
+    def __init__(self,
+                 per_steps: int = 1,
+                 per_epoch: int = 0,
+                 show_total_time: bool = True,
+                 show_single_time: bool = False,
+                 check_force: bool = False,
+                 **kwargs
+                 ):
         super().__init__()
 
-        self.print_freq = print_freq
+        if 'print_freq' in kwargs:
+            logger.info("`print_freq` will be removed in a future release, please use "
+                        "`per_steps` or `per_epoch` instead")
+            per_steps = kwargs['print_freq']
+
+        self.per_steps = Validator.check_non_negative_int(per_steps)
+        self.per_epoch = Validator.check_non_negative_int(per_epoch)
+
+        if self.per_steps > 0 and self.per_epoch > 0:
+            raise ValueError("`per_steps` and `per_epoch` cannot both be greater than zero.")
 
         self.potential = None
         self.kinetics = None
@@ -60,10 +87,14 @@ class RunInfo(Callback):
 
         self.crd = None
 
-        self.count = 0
+        self.begin_time = datetime.now()
+        self.step_begin_time = datetime.now()
+        self.epoch_begin_time = datetime.now()
+        self.print_time = time.time()
 
-        self.start_time = float(0)
-        self.compile_start_time = float(0)
+        self.show_total_time = show_total_time
+        self.show_single_time = show_single_time
+        self.check_force = check_force
 
     def __enter__(self):
         """Return the enter target."""
@@ -79,8 +110,20 @@ class RunInfo(Callback):
         Args:
             run_context (RunContext): Include some information of the model.
         """
-        self.count = 0
+
+        self.begin_time = datetime.now()
+        self.print_time = time.time()
+
+        if self.show_total_time:
+            print('[MindSPONGE] Started simulation at', self.begin_time.strftime('%Y-%m-%d %H:%M:%S'))
+
         cb_params = run_context.original_args()
+
+        if cb_params.sink_mode and self.per_steps > 0 and self.per_steps % cb_params.cycle_steps != 0:
+            raise ValueError(f"[RunInfo] For per-step output in sink mode, the per_steps must be "
+                             f"an integer multiple of the cycle steps ({cb_params.cycle_steps}), "
+                             f"but got: {self.per_steps}.")
+
         self.use_pbc = cb_params.pbc_box is not None
         if isinstance(cb_params.optimizer, Updater):
             self.use_updater = True
@@ -97,6 +140,8 @@ class RunInfo(Callback):
         Args:
             run_context (RunContext): Include some information of the model.
         """
+        #pylint: disable=unused-argument
+        self.epoch_begin_time = datetime.now()
 
     def epoch_end(self, run_context: RunContext):
         """
@@ -105,6 +150,10 @@ class RunInfo(Callback):
         Args:
             run_context (RunContext): Include some information of the model.
         """
+        if self.per_epoch > 0:
+            cb_params = run_context.original_args()
+            if cb_params.cur_epoch % self.per_epoch == 0:
+                self.call_end(run_context)
 
     def step_begin(self, run_context: RunContext):
         """
@@ -113,19 +162,8 @@ class RunInfo(Callback):
         Args:
             run_context (RunContext): Include some information of the model.
         """
-        if self.count == 0:
-            self.compile_start_time = time.time()
-        if self.count % self.print_freq == 0:
-            self.start_time = time.time()
-            cb_params = run_context.original_args()
-            if isinstance(cb_params.coordinate[0], Tensor):
-                self.crd = cb_params.coordinate[0].copy().asnumpy().squeeze()
-            else:
-                self.crd = cb_params.coordinate[0].squeeze()
-
-            if self.use_updater:
-                self.kinetics = cb_params.kinetics.copy().asnumpy().squeeze()
-                self.temperature = cb_params.temperature.copy().asnumpy().squeeze()
+        #pylint: disable=unused-argument
+        self.step_begin_time = datetime.now()
 
     def step_end(self, run_context: RunContext):
         """
@@ -135,37 +173,10 @@ class RunInfo(Callback):
             run_context (RunContext): Include some information of the model.
         """
 
-        if self.count == 0:
-            print('[MindSPONGE] Compilation Time: %1.2fs' % (time.time() - self.compile_start_time))
-        if self.count % self.print_freq == 0:
+        if self.per_steps > 0:
             cb_params = run_context.original_args()
-            step = cb_params.cur_step
-            self.potential = cb_params.potential.copy().asnumpy().squeeze()
-            if self.use_updater:
-                self.tot_energy = self.potential + self.kinetics
-            info = 'Step: '+str(step) + ', '
-            info += 'E_pot: ' + str(self.potential)
-            if self.use_updater:
-                info += ', '
-                self.tot_energy = self.potential + self.kinetics
-                info += 'E_kin: ' + str(self.kinetics) + ', '
-                info += 'E_tot: ' + str(self.tot_energy) + ', '
-                info += 'Temperature: ' + str(self.temperature)
-                if self.use_pbc:
-                    info += ', '
-                    self.pressure = cb_params.pressure.copy().asnumpy().squeeze()
-                    info += 'Pressure: ' + str(self.pressure) + ', '
-                    self.volume = cb_params.volume.copy().asnumpy().squeeze()
-                    info += 'Volume: ' + str(self.volume)
-            if cb_params.analyse is not None:
-                metrics = cb_params.analyse()
-                for k, v in metrics.items():
-                    info += ', '
-                    info += k + ': ' + str(v.squeeze())
-            info += ', Time: %1.2fms' % ((time.time() - self.start_time) * 1000)
-            print('[MindSPONGE]', info)
-
-        self.count += 1
+            if cb_params.cur_step % self.per_steps == 0:
+                self.call_end(run_context)
 
     def end(self, run_context: RunContext):
         """
@@ -174,3 +185,90 @@ class RunInfo(Callback):
         Args:
             run_context (RunContext): Include some information of the model.
         """
+        #pylint: disable=unused-argument
+
+        end_time = datetime.now()
+        if self.show_total_time:
+            print('[MindSPONGE] Finished simulation at', end_time.strftime('%Y-%m-%d %H:%M:%S'))
+            used_time = end_time - self.begin_time
+            d = used_time.days
+            s = used_time.seconds
+            m, s = divmod(s, 60)
+            h, m = divmod(m, 60)
+            if d >= 1:
+                print(f'[MindSPONGE] Simulation time: {d:d} days, {h:d} hours, {m:d} minutes and {s:d} seconds.')
+            elif h >= 1:
+                print(f'[MindSPONGE] Simulation time: {h:d} hours {m:d} minutes {s:d} seconds.')
+            elif m >= 1:
+                s += used_time.microseconds / 1e6
+                print(f'[MindSPONGE] Simulation time: {m:d} minutes {s:1.1f} seconds.')
+            else:
+                s += used_time.microseconds / 1e6
+                print(f'[MindSPONGE] Simulation time: {s:1.2f} seconds.')
+            print('-'*80)
+
+    def call_begin(self, run_context: RunContext):
+        """
+        Called before each epoch/step beginning.
+
+        Args:
+            run_context (RunContext): Include some information of the model.
+        """
+
+    def call_end(self, run_context: RunContext):
+        """
+        Called after each epoch/step finished.
+
+        Args:
+            run_context (RunContext): Include some information of the model.
+        """
+        cb_params = run_context.original_args()
+        step = cb_params.cur_step
+
+        if isinstance(cb_params.coordinate[0], Tensor):
+            self.crd = cb_params.coordinate[0].copy().asnumpy().squeeze()
+        else:
+            self.crd = cb_params.coordinate[0].squeeze()
+
+        if self.use_updater:
+            self.kinetics = cb_params.kinetics.copy().asnumpy().squeeze()
+            self.temperature = cb_params.temperature.copy().asnumpy().squeeze()
+
+        self.potential = cb_params.potential.copy().asnumpy().squeeze()
+        if self.use_updater:
+            self.tot_energy = self.potential + self.kinetics
+        info = 'Step: '+str(step) + ', '
+        info += 'E_pot: ' + str(self.potential)
+
+        if self.check_force:
+            force = cb_params.force.copy().asnumpy()
+            fnorm = np.linalg.norm(np.sum(force, axis=-2), ord=2, axis=-1).squeeze()
+            info += ', F_norm: ' + str(fnorm)
+
+        if self.use_updater:
+            info += ', '
+            self.tot_energy = self.potential + self.kinetics
+            info += 'E_kin: ' + str(self.kinetics) + ', '
+            info += 'E_tot: ' + str(self.tot_energy) + ', '
+            info += 'Temperature: ' + str(self.temperature)
+            if self.use_pbc:
+                info += ', '
+                self.pressure = cb_params.pressure.copy().asnumpy().squeeze()
+                info += 'Pressure: ' + str(self.pressure) + ', '
+                self.volume = cb_params.volume.copy().asnumpy().squeeze()
+                info += 'Volume: ' + str(self.volume)
+
+        if cb_params.analyse is not None:
+            metrics = cb_params.analyse()
+            for k, v in metrics.items():
+                info += ', '
+                info += k + ': ' + str(v.squeeze())
+
+        end_time = time.time()
+        if self.show_single_time:
+            used_time = end_time - self.print_time
+            info += ', Time: {:.2f}'.format(used_time) + 's'
+
+        self.print_time = end_time
+
+        print('[MindSPONGE]', info)

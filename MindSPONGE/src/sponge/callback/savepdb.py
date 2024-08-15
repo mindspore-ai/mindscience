@@ -40,19 +40,24 @@ class SaveLastPdb(Callback):
     Args:
         system (Molecule): The system to record.
         pdb_name (str):    The file name of pdb.
-        save_freq (int):   Frequency to save the information
+        save_freq (int):   Frequency to save the information.
+        save_bonds (bool): Decide to save contact information or not.
+        bonds (numpy.int32): The bond index need to store in the pdb file.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
 
-    def __init__(self, system: Molecule, pdb_name: str = None, save_freq: int = 10):
+    def __init__(self, system: Molecule, pdb_name: str = None, save_freq: int = 10, save_bonds=False, bonds=None):
         super().__init__()
 
         self.system = system
         self.last_pdb_name = pdb_name
         self.save_freq = save_freq
+        self.save_bonds = save_bonds
+        self.bonds = bonds
 
         self.convert_to_angstram = self.system.units.convert_length_to('A')
         self.count = 0
@@ -157,8 +162,23 @@ class SaveLastPdb(Callback):
         if os.path.exists(self.last_pdb_name):
             os.remove(self.last_pdb_name)
 
-        gen_pdb(self.system.coordinate.asnumpy() * self.convert_to_angstram,
-                self.system.atom_name[0],
-                np.take(last_resname, self.system.atom_resid),
-                self.system.atom_resid.asnumpy() + 1,
-                pdb_name=self.last_pdb_name)
+        if not self.save_bonds:
+            gen_pdb(self.system.coordinate.asnumpy()[0] * self.convert_to_angstram,
+                    self.system.atom_name[0],
+                    np.take(last_resname, self.system.atom_resid),
+                    self.system.atom_resid.asnumpy() + 1,
+                    pdb_name=self.last_pdb_name)
+        elif self.bonds is None:
+            gen_pdb(self.system.coordinate.asnumpy()[0] * self.convert_to_angstram,
+                    self.system.atom_name[0],
+                    np.take(last_resname, self.system.atom_resid),
+                    self.system.atom_resid.asnumpy() + 1,
+                    pdb_name=self.last_pdb_name,
+                    bonds=self.system.bonds[0])
+        else:
+            gen_pdb(self.system.coordinate.asnumpy()[0] * self.convert_to_angstram,
+                    self.system.atom_name[0],
+                    np.take(last_resname, self.system.atom_resid),
+                    self.system.atom_resid.asnumpy() + 1,
+                    pdb_name=self.last_pdb_name,
+                    bonds=self.bonds)

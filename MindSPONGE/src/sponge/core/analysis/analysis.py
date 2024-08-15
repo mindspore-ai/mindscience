@@ -39,13 +39,15 @@ class AnalysisCell(Cell):
     r"""Cell for analysis
 
     Args:
+
         system (Molecule):              Simulation system.
 
         potential (PotentialCell):      Potential energy.
 
-        neighbour_list (NeighbourList): Neighbour list. Default: ``None``.
+        neighbour_list (NeighbourList): Neighbour list. Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -91,9 +93,9 @@ class AnalysisCell(Cell):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system. Default: ``None``.
+                                    Position coordinate of atoms in system. Default: None
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+                                    Tensor of PBC box. Default: None
             energy (Tensor):        Tensor of shape (B, 1). Data type is float.
                                     Total potential energy of the simulation system. Default: 0
             force (Tensor):         Tensor of shape (B, A, D). Data type is float.
@@ -121,7 +123,7 @@ class AnalysisCell(Cell):
             biases (Tensor):        Tensor of shape (B, V). Data type is float
                                     Original bias potential energies from bias functions.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation.
             A:  Number of atoms of the simulation system.
             D:  Dimension of the space of the simulation system. Usually is 3.

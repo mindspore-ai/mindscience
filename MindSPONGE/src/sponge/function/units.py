@@ -167,7 +167,6 @@ class Length:
     Args:
         value (float):   length value.
         unit (str):      length value unit. Default: 'nm'
-        kwargs:          other arguments.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -305,18 +304,9 @@ class Energy:
     Args:
         value (float):   energy value.
         unit (str):      energy value unit. Default: 'kl/mol'
-        kwargs:          other arguments.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
-
-    Examples:
-        >>> from sponge.function import Energy
-        >>> ene = Energy(1.0, 'kcal/mol')
-        >>> ene.change_unit('kj/mol')
-        <sponge.function.units.Energy at 0x7f415483eac0>
-        >>> ene.value
-        4.184
     """
 
     def __init__(self, value: float, unit: str = 'kj/mol', **kwargs):
@@ -460,7 +450,7 @@ def get_length_ref(unit):
     if unit is None:
         return None
     if isinstance(unit, str):
-        if unit.lower() not in _LENGTH_REF.keys():
+        if unit.lower() not in _LENGTH_REF:
             raise KeyError('length unit "' + unit + '" is not recorded!')
         return _LENGTH_REF.get(unit.lower())
     if isinstance(unit, Units):
@@ -516,7 +506,7 @@ def get_length_unit_name(unit):
     if unit is None:
         return 'None'
     if isinstance(unit, str):
-        if unit.lower() not in _LENGTH_NAME.keys():
+        if unit.lower() not in _LENGTH_NAME:
             raise KeyError(f'Unknown length unit: {unit}')
         return _LENGTH_NAME.get(unit.lower())
     if isinstance(unit, Units):
@@ -544,7 +534,7 @@ def get_energy_ref(unit):
     if unit is None:
         return None
     if isinstance(unit, str):
-        if unit.lower() not in _ENERGY_REF.keys():
+        if unit.lower() not in _ENERGY_REF:
             raise KeyError(f'Unknown energy unit: {unit}')
         return _ENERGY_REF.get(unit.lower())
     if isinstance(unit, Units):
@@ -600,7 +590,7 @@ def get_energy_unit_name(unit):
     if unit is None:
         return 'None'
     if isinstance(unit, str):
-        if unit.lower() not in _ENERGY_NAME.keys():
+        if unit.lower() not in _ENERGY_NAME:
             raise KeyError('energy unit "' + unit + '" is not recorded!')
         return _ENERGY_NAME.get(unit.lower())
     if isinstance(unit, Units):
@@ -659,24 +649,11 @@ class Units:
     Unit class to record and convert the length and energy units.
 
     Args:
-        length_unit (str):  Length unit. Default: ``None``
-        energy_unit (str):  Energy unit. Default: ``None``
-        kwargs:  other arguments.
+        length_unit (str):  Length unit. Default: None
+        energy_unit (str):  Energy unit. Default: None
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
-
-    Examples:
-        >>> from sponge.function import Units
-        >>> unit = Units(length_unit='nm', energy_unit='kj/mol')
-        >>> unit.convert_energy_to('kcal/mol')
-        0.2390057361376673
-        >>> unit.convert_energy_from('kcal/mol')
-        4.184
-        >>> unit.convert_length_to('A')
-        10.0
-        >>> unit.convert_length_from('A')
-        0.1
     """
 
     def __init__(self,
@@ -922,25 +899,14 @@ class Units:
         return _BAR_DEFAULT_REF * self.__energy_ref / math.pow(self.__length_ref, 3)
 
     def get_boltzmann(self, energy_unit: str = None) -> float:
-        """
-        get the Boltzmann constant for a specific unit
-
-        Args:
-            energy_unit (str): Energy unit. Default: ``None`` .
-        """
+        """get the Boltzmann constant for a specific unit"""
         if energy_unit is None:
             return self.__boltzmann
         energy_ref = get_energy_ref(energy_unit)
         return _BOLTZMANN_DEFAULT_REF / energy_ref
 
     def get_coulomb(self, length_unit: str = None, energy_unit: str = None) -> float:
-        """
-        get the Coulomb constant for a specific unit
-
-        Args:
-            length_unit (str): Length unit. Default: ``None`` .
-            energy_unit (str): Energy unit. Default: ``None`` .
-        """
+        """get the Coulomb constant for a specific unit"""
         if length_unit is None and energy_unit is None:
             return self.__coulomb
         length_ref = get_length_ref(length_unit)
@@ -981,10 +947,10 @@ class Units:
 
         Args:
             length_unit (str):  Length unit. Only valid when `units` is None.
-                                Default: ``None``.
+                                Default: None
             energy_unit (str):  Energy unit. Only valid when `units` is None.
-                                Default: ``None``.
-            units (Units):      `Units` object. Default: ``None``.
+                                Default: None
+            units (Units):      `Units` object. Default: None
 
         """
         if units is None:
@@ -1091,16 +1057,7 @@ class Units:
 
 
 def get_length(length: Union[Length, float], unit: Union[str, Units] = None) -> float:
-    """
-    Get the tensor of length in specific unit
-
-    Args:
-        length (Union[Length, float]):  Length value.
-        unit (Union[str, Units], optional):   Length unit. Default: ``None``.
-
-    Returns:
-        Float, a tensor of length in specific unit.
-    """
+    """get Tensor of length in specific unit"""
     if isinstance(length, dict):
         length = Length(**length)
     if isinstance(length, Length):
@@ -1109,23 +1066,7 @@ def get_length(length: Union[Length, float], unit: Union[str, Units] = None) -> 
 
 
 def get_energy(energy: Union[Energy, float], unit: Union[str, Units] = None) -> float:
-    """
-    Get the tensor of energy in specific unit
-
-    Args:
-        energy (Union[Energy, float]):  Energy value.
-        unit (Union[str, Units], optional):   Energy unit. Default: ``None``.
-
-    Returns:
-        Float, a tensor of energy in specific unit.
-
-    Examples:
-        >>> from sponge.function import get_energy
-        >>> get_energy(ene)
-        4.184
-        >>> get_energy(ene, 'kcal/mol')
-        1.0
-    """
+    """get Tensor of energy in specific unit"""
     if isinstance(energy, dict):
         energy = Energy(**energy)
     if isinstance(energy, Energy):
@@ -1173,18 +1114,13 @@ def set_global_units(length_unit: Union[str, Units, Length, float, int] = None,
 
     Args:
         length_unit (Union[str, Units, Length, float, int]):
-                        Length unit. Only valid when `units` is None. Default: ``None``.
+                        Length unit. Only valid when `units` is None. Default: None
         energy_unit (Union[str, Units, Length, float, int]):
-                        Energy unit. Only valid when `units` is None. Default: ``None``.
-        units (Units):  `Units` object. Default: ``None``.
+                        Energy unit. Only valid when `units` is None. Default: None
+        units (Units):  `Units` object. Default: None
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
-
-    Examples:
-        >>> from sponge import set_global_units
-        >>> set_global_units('nm', 'kj/mol')
-
     """
     global GLOBAL_UNITS
     GLOBAL_UNITS.set_units(length_unit, energy_unit, units)

@@ -98,7 +98,7 @@ class SteepestDescent(Optimizer):
             shift distance each iteration in the optimizer. If the max shift is set to be None, we will do nothing to
             the shift. But if max_shift is a given float number, thus the bound of shift would be: [-max_shift,
             max_shift]
-            Default: ``None``.
+            Default: None
 
     Raises:
         TypeError: If `learning_rate` is not one of int, float, Tensor, Iterable, LearningRateSchedule.
@@ -113,8 +113,8 @@ class SteepestDescent(Optimizer):
         ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
-        >>> from mindsponge import Sponge, Molecule, ForceField
-        >>> from mindsponge.optimizer import SteepestDescent
+        >>> from sponge import Sponge, Molecule, ForceField
+        >>> from sponge.optimizer import SteepestDescent
         >>>
         >>> system = Molecule(template='water.tip3p.yaml')
         >>> potential = ForceField(system, parameters='SPCE')

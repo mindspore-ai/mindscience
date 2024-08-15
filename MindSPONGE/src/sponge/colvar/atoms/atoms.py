@@ -34,7 +34,7 @@ from mindspore.common import Tensor
 
 from ..colvar import Colvar
 from ...function import functions as func
-from ...function import get_ms_array, get_integer, Units
+from ...function import get_ms_array, Units
 
 __all__ = [
     'AtomsBase',
@@ -44,25 +44,33 @@ __all__ = [
 
 
 class AtomsBase(Colvar):
-    r"""
-    Base class for specific atoms group, used as the "atoms group module" in MindSPONGE.
+    r"""Base class for specific atoms group, used as the "atoms group module" in MindSPONGE.
 
-    The `AtomsBase` Cell is a special subclass of `Colvar`. It has the shape `(a_1, a_2, ... , a_n, D)`,
-    where `D` is the dimension of the atomic coordinates (usually 3). As with the Colvar Cell, when it takes
-    as input coordinates of shape `(B, A, D)`, it returns the shape of the Tensor with an extra dimension `B`,
-    i.e. `(B, a_1, a_2, ... , a_n, D)`. B means Batchsize, i.e. number of walkers in simulation.
-    {a_i} means Dimensions of the Atoms Cell.
+        The `AtomsBase` Cell is a special subclass of `Colvar`. It has the shape `(a_1, a_2, ... , a_n, D)`,
+        where `D` is the dimension of the atomic coordinates (usually 3). As with the Colvar Cell, when it takes
+        as input coordinates of shape `(B, A, D)`, it returns the shape of the Tensor with an extra dimension `B`,
+        i.e. `(B, a_1, a_2, ... , a_n, D)`.
 
     Args:
+
         keep_in_box (bool): Whether to keep the coordinate in PBC box.
-                            Default: ``False``.
+                            Default: False
 
         dimension (int):    Spatial dimension of the simulation system. Default: 3
 
         name (str):         Name of the Colvar. Default: 'atoms'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
+    Symbols:
+
+        B:      Batchsize, i.e. number of walkers in simulation
+
+        D:      Spatial dimension of the simulation system. Usually is 3.
+
+        {a_i}:  Dimensions of the Atoms Cell.
 
     """
     def __init__(self,
@@ -77,7 +85,6 @@ class AtomsBase(Colvar):
             name=name,
         )
 
-        self.dimension = get_integer(dimension)
         self.keep_in_box = keep_in_box
 
     @property
@@ -90,10 +97,14 @@ class AtomsBase(Colvar):
         """shape of the atoms"""
         return self._shape
 
+    @property
+    def dimension(self) -> int:
+        """spatial dimension of the Atoms"""
+        return self._shape[-1]
+
     def set_dimension(self, dimension: int = 3):
-        """set the spatial dimension of the simulation system"""
-        self.dimension = get_integer(dimension)
-        self._shape = self.shape[:-1] + (self.dimension,)
+        """set the spatial dimension of the Atoms"""
+        self._set_shape(self.shape[:-1] + (dimension,))
         return self
 
     def get_unit(self, units: Units = None) -> str:
@@ -122,10 +133,15 @@ class AtomsBase(Colvar):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
                                     Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+                                    Tensor of PBC box. Default: None
 
         Returns:
             position (Tensor):  Tensor of shape (B, ..., D). Data type is float.
+
+        Symbols:
+            B:      Batchsize, i.e. number of walkers in simulation
+            A:      Number of atoms in system.
+            D:      Dimension of the simulation system. Usually is 3.
         """
 
         # (B, a_1, a_2, ..., a_n, D)
@@ -133,63 +149,56 @@ class AtomsBase(Colvar):
 
     def _set_shape(self, shape: tuple):
         """set shape of Atoms"""
-        super()._set_shape(shape)
-        self.dimension = self._shape[-1]
+        self._shape = shape
+        self._ndim = len(self.shape)
+        self._periodic = F.fill(ms.bool_, shape, False)
         return self
 
 
 class Atoms(AtomsBase):
-    r"""
-    Specific atoms group initialized using an array of atomic indices. It is a subclass of `AtomsBase`.
+    r"""Specific atoms group initialized using an array of atomic indices. It is a subclass of `AtomsBase`.
 
-    When initializing, the Atoms Cell accepts as input an array of atomic indices, which can either be common
-    to all walkers or have a separate index for each walker.
+        When initializing, the Atoms Cell accepts as input an array of atomic indices, which can either be common
+        to all walkers or have a separate index for each walker.
 
-    To set a common atomic index, set `batched` to `False`, where the shape of the `index` is the same as
-    the shape of the `Atoms` Cell, which is `(a_1, a_2, ... , a_n)`, while the shape of the returned Tensor is
-    `(B, a_1, a_2, ... , a_n, D)`. `B` means Batchsize, i.e. number of walkers in simulation.
-    `{a_i}` means Dimensions of the Atoms Cell. `D` means Dimension of the simulation system. Usually is 3.
+        To set a common atomic index, set `batched` to `False`, where the shape of the `index` is the same as
+        the shape of the `Atoms` Cell, which is `(a_1, a_2, ... , a_n)`, while the shape of the returned Tensor is
+        `(B, a_1, a_2, ... , a_n, D)`.
 
-    To set a separate atomic index for each walker, set `Batched` to `True`. In this case, the shape of `index`
-    should be `(B, a_1, a_2, ... , a_n)`, while the shape of the `Atoms` Cell would be `(a_1, a_2, ... , a_n)`.
-    The batch size `B` of the atomic indices should be the same as the batch size of the simulation system.
-    The shape of the returned Tensor of the `Atoms` Cell is `(B, a_1, a_2, ... , a_n, D)`.
+        To set a separate atomic index for each walker, set `Batched` to `True`. In this case, the shape of `index`
+        should be `(B, a_1, a_2, ... , a_n)`, while the shape of the `Atoms` Cell would be `(a_1, a_2, ... , a_n)`.
+        The batch size `B` of the atomic indices should be the same as the batch size of the simulation system.
+        The shape of the returned Tensor of the `Atoms` Cell is `(B, a_1, a_2, ... , a_n, D)`.
 
     Args:
+
         index (Union[Tensor, ndarray, List[int]]):
                             Array of the indices of specific atoms.
                             The shape of tensor is (a_1, a_2, ..., a_n) or (B, a_1, a_2, ..., a_n), and the
                             data type is int.
 
         batched (bool):     Whether the first dimension of index is the batch size.
-                            Default: ``False``.
+                            Default: False
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: ``False``.
+                            Default: False
 
         dimension (int):    Spatial dimension of the simulation system. Default: 3
 
         name (str):         Name of the Colvar. Default: 'atoms'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Examples:
-        >>> import mindspore as ms
-        >>> import numpy as np
-        >>> from mindspore import Tensor
-        >>> from sponge.colvar import Atoms
-        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
-        >>> crd
-        Tensor(shape=[4, 3], dtype=Float32, value=
-        [[ 2.47492954e-01,  9.78153408e-01,  1.44034222e-01],
-         [ 2.36211464e-01,  3.35842371e-01,  8.39536846e-01],
-         [ 8.82235169e-01,  5.98322928e-01,  6.68052316e-01],
-         [ 7.17712820e-01,  4.72498119e-01,  1.69098437e-01]])
-        >>> atom_1 = Atoms(0)
-        >>> atom_1(crd)
-        Tensor(shape=[1, 3], dtype=Float32, value=
-        [[ 2.47492954e-01,  9.78153408e-01,  1.44034222e-01]])
+    Symbols:
+
+        B:      Batchsize, i.e. number of walkers in simulation
+
+        a_i:    Dimension of specific atoms.
+
+        D:      Dimension of the simulation system. Usually is 3.
+
     """
     def __init__(self,
                  index: Union[Tensor, ndarray, List[int]],
@@ -236,13 +245,18 @@ class Atoms(AtomsBase):
 
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
-                                    Position coordinate of atoms in system. `A` means Number of atoms in system.
+                                    Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+                                    Tensor of PBC box. Default: None
 
         Returns:
             position (Tensor):  Tensor of shape (B, a_1, a_2, ..., a_{n}, D). Data type is float.
 
+        Symbols:
+            B:      Batchsize, i.e. number of walkers in simulation
+            A:      Number of atoms in system.
+            a_{i}:  Dimension of specific atoms.
+            D:      Dimension of the simulation system. Usually is 3.
         """
         # (B, a_1, a_2, ..., a_{n}, D) <- (B, A, D)
         atoms = func.gather_vector(coordinate, self.index)
@@ -252,28 +266,34 @@ class Atoms(AtomsBase):
 
 
 class BatchedAtoms(Atoms):
-    r"""
-    A batched version of Atoms Cell. It is a subclass of `Atoms`.
+    r"""A batched version of Atoms Cell. It is a subclass of `Atoms`.
 
-    the shape of `index` should be `(B, a_1, a_2, ... , a_n)`, while the shape of the `Atoms` Cell would be
-    `(a_1, a_2, ... , a_n)`. The batch size `B` of the atomic indices should be the same as the batch size
-    of the simulation system. The shape of the returned Tensor of the `Atoms` Cell is `(B, a_1, a_2, ... , a_n, D)`.
-    `{a_i}` means Dimensions of the Atoms Cell. `D` means Dimension of the simulation system. Usually is 3.
+        the shape of `index` should be `(B, a_1, a_2, ... , a_n)`, while the shape of the `Atoms` Cell would be
+        `(a_1, a_2, ... , a_n)`. The batch size `B` of the atomic indices should be the same as the batch size
+        of the simulation system. The shape of the returned Tensor of the `Atoms` Cell is `(B, a_1, a_2, ... , a_n, D)`.
 
     Args:
+
         index (Union[Tensor, ndarray, List[int]]):
                             Array of the indices of specific atoms.
                             The shape of tensor is (B, a_1, a_2, ..., a_{n}), and the data type is int
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: ``False``.
+                            Default: False
 
         dimension (int):    Spatial dimension of the simulation system. Default: 3
 
         name (str):         Name of the Colvar. Default: 'atoms'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
+    Symbols:
+
+        a_{i}:  Dimension of specific atoms.
+
+        D:      Dimension of the simulation system. Usually is 3.
 
     """
     def __init__(self,

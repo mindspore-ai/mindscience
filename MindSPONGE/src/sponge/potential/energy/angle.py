@@ -51,6 +51,7 @@ class AngleEnergy(EnergyCell):
         E_{angle}(\theta_{ijk}) = \frac{1}{2} k_{ijk}^{\theta} (\theta_{ijk} - \theta_{ijk}^0) ^ 2
 
     Args:
+
         index (Union[Tensor, ndarray, List[int]]):
                             Array of the indices of the atoms forming the bond angles.
                             The shape of array is `(B, a, 3)`, and the data type is int.
@@ -63,7 +64,7 @@ class AngleEnergy(EnergyCell):
                             Array of the equilibrium value :math:`\theta^0` for the bond angles.
                             The shape of array is `(1, a)`, and the data type is float.
 
-        parameters (dict):  Force field parameters. Default: ``None``.
+        parameters (dict):  Force field parameters. Default: None
 
         use_pbc (bool):     Whether to use periodic boundary condition.
 
@@ -76,9 +77,10 @@ class AngleEnergy(EnergyCell):
         name (str):         Name of the energy. Default: 'angle'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
 
         B:  Batchsize, i.e. number of walkers in simulation
 
@@ -108,7 +110,7 @@ class AngleEnergy(EnergyCell):
             energy_unit=energy_unit,
         )
         self._kwargs = get_arguments(locals(), kwargs)
-        if 'exclude_index' in self._kwargs.keys():
+        if 'exclude_index' in self._kwargs:
             self._kwargs.pop('exclude_index')
 
         if parameters is not None:
@@ -118,7 +120,7 @@ class AngleEnergy(EnergyCell):
             energy_unit = parameters.get('energy_unit')
             self.units.set_units(length_unit, energy_unit)
             self._use_pbc = system.use_pbc
-            index, force_constant, bond_angle = self.get_parameters(system, parameters)
+            index, force_constant, bond_angle = self._get_parameters(system, parameters)
 
         # (1,a,3)
         index = get_ms_array(index, ms.int32)
@@ -162,7 +164,7 @@ class AngleEnergy(EnergyCell):
         return system.angles is not None
 
     @staticmethod
-    def get_parameters(system: Molecule, parameters: dict):
+    def _get_parameters(system: Molecule, parameters: dict):
         """
         Get the force field bond parameters.
 
@@ -239,12 +241,12 @@ class AngleEnergy(EnergyCell):
             inv_neigh_dis (Tensor):         Tensor of shape (B, A, N). Data type is float.
                                             Reciprocal of distances.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: ``None``.
+                                            Tensor of PBC box. Default: None
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.

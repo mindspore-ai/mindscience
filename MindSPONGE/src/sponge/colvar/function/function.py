@@ -32,15 +32,17 @@ from ..colvar import Colvar
 
 
 class FunctionCV(Colvar):
-    r"""
-    A composite Colvar that combines a set of collective variables (CVs) :math:`{s_i(R)}`
-    using a custom function :math:`f(s_1(R), s_2(R), ..., s_i(R))`.
+    r"""A composite Colvar that combines a set of collective variables (CVs) :math:`{s_i(R)}`
+        using a custom function :math:`f(s_1(R), s_2(R), ... s_i(R))`.
+
+    Math:
 
     .. math::
 
         S = f(s_1(R), s_2(R), ... s_i(R))
 
     Args:
+
         colvar (Union[Colvar, List[Colvar], Tuple[Colvar]]): Collective variables to be combined :math:`{s_i(R)}`.
 
         function (callable): Custom function :math:`f(s_1(R), s_2(R), ... s_i(R))`.
@@ -49,14 +51,15 @@ class FunctionCV(Colvar):
 
         shape (tuple): Shape of custom collective variables. If None is given and all CVs in the `colvar`
             have the same shape, then it will be assigned the shape. If the shape of each CV in `colvar`
-            is not exactly the same, the `shape` must be set. Default: ``None``.
+            is not exactly the same, the `shape` must be set. Default: None
 
-        unit (str): Unit of the collective variables. Default: ``None``.
+        unit (str): Unit of the collective variables. Default: None
             NOTE: This is not the `Units` Cell that wraps length and energy.
 
-        name (str): Name of the collective variables. Default: 'combine'.
+        name (str): Name of the collective variables. Default: 'combine'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -122,16 +125,18 @@ class FunctionCV(Colvar):
 
         Args:
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-                                    Position coordinate of colvar in system.
-                                    `B` means batchsize, i.e. number of walkers in simulation.
-                                    `A` means number of colvar in system.
-                                    `D` means dimension of the simulation system. Usually is 3.
+                                    Position coordinate of colvar in system
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+                                    Tensor of PBC box. Default: None
 
         Returns:
             combine (Tensor):       Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.
-                                    `{S_i}` means dimensions of collective variables.
+
+        Symbols:
+            B:      Batchsize, i.e. number of walkers in simulation
+            A:      Number of colvar in system.
+            {S_i}:  Dimensions of collective variables.
+            D:      Dimension of the simulation system. Usually is 3.
 
         """
         colvar = ()

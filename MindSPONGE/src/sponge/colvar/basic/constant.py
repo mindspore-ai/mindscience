@@ -38,11 +38,13 @@ class ConstantValue(Colvar):
     r"""Constant value.
 
     Args:
-        value (Union[Tensor, ndarray, list, tuple]): Constant value.
+
+        value (Union[Tensor, ndarray, list, tuple]): Constant value
 
         name (str): Name of the Colvar. Default: 'constant'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU`` ``CPU``
 
     """
@@ -67,10 +69,10 @@ class ConstantValue(Colvar):
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Default: ``None``.
+                                    Default: None
 
         Returns:
-            constant value (Tensor):         Tensor of shape (B, ...) or (B, ..., 1). Data type is float.
+            angle (Tensor):         Tensor of shape (B, ...) or (B, ..., 1). Data type is float.
 
         """
         #pylint: disable=unused-argument

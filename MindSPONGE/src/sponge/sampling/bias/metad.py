@@ -63,6 +63,7 @@ class Metadynamics(Bias):
         \omega (t) = w e ^ {-\frac{1}{\gamma - 1} \beta V[R(t)]}
 
     Args:
+
         colvar (Colvar):        Collective variables (CVs) :math:`s(R)`.
 
         update_pace (int):      Frequency for hill addition.
@@ -78,26 +79,27 @@ class Metadynamics(Bias):
         sigma (float):          Widths of the Gaussian hills :math:`\sigma`.
 
         bias_factor (float):    Well-tempered bias factor :math:`\gamma`.
-                                When None is given, WT-MetaD is not used. Default: ``None``.
+                                When None is given, WT-MetaD is not used. Default: None
 
         share_parameter (bool): Whether to share Metadynamics parameter for all walkers.
                                 If False is given, then num_walker must be given.
-                                Default: ``True``.
+                                Default: True
 
-        num_walker (int):       Number of multiple walkers. Default: ``None``.
+        num_walker (int):       Number of multiple walkers. Default: None
 
         use_cutoff (bool):      Whether to use cutoff when calculating gaussian from grids.
-                                Default: ``True``.
+                                Default: True
 
         dp2cutoff (float):      Cutoff for grids. Default: 6.25
 
         length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
-                                Default: ``None``.
+                                Default: None
 
         energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
-                                Default: ``None``.
+                                Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -328,7 +330,7 @@ class Metadynamics(Bias):
             index (Tensor):     Tensor of shape (B, N). Data type is int.
                                 Index hills.
                                 If None is given, weights of the full hills will be return.
-                                Default: ``None``.
+                                Default: None
 
         Returns:
             weight (Tensor):    Tensor of shape (B, N) or (B, G). Data type is float.
@@ -468,7 +470,7 @@ class Metadynamics(Bias):
     def calc_reweight_factor(self) -> Tensor:
         r"""calculate the reweighting factor :math:`c(t)` of metadynamics
 
-        Returns:
+        Return:
             rct (Tensor):   Tensor of shape `(B, 1)`. Data type is float.
                             Reweighting factor :math:`c(t)`.
         """
@@ -559,20 +561,20 @@ class Metadynamics(Bias):
             coordinate (Tensor):           Tensor of shape `(B, A, D)`. Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape `(B, A, N)`. Data type is int.
-                                            Index of neighbour atoms. Default: ``None``.
+                                            Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape `(B, A, N)`. Data type is bool.
-                                            Mask for neighbour atoms. Default: ``None``.
+                                            Mask for neighbour atoms. Default: None
             neighbour_vector (Tensor):       Tensor of shape `(B, A, N)`. Data type is bool.
                                             Vectors from central atom to neighbouring atoms.
             neighbour_distance (Tensor):   Tensor of shape `(B, A, N)`. Data type is float.
-                                            Distance between neigh_shift atoms. Default: ``None``.
+                                            Distance between neigh_shift atoms. Default: None
             pbc_box (Tensor):               Tensor of shape `(B, D)`. Data type is float.
-                                            Tensor of PBC box. Default: ``None``.
+                                            Tensor of PBC box. Default: None
 
         Returns:
             potential (Tensor): Tensor of shape `(B, 1)`. Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.

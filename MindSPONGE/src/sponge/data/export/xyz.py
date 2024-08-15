@@ -37,11 +37,11 @@ def export_xyz(filename: str, atom: ndarray, coordinate: ndarray, mol_name: str 
     if coordinate.shape[-2] != natom:
         raise ValueError(f'The penultimate dimension of coordinate ({coordinate.shape[-2]}) must be equal to '
                          f'the number of atoms ({natom})!')
-    with open(filename, mode='w+') as ofile:
+    with open(filename, encoding='utf-8', mode='w+') as ofile:
         ofile.write(str(natom)+os.linesep)
         ofile.write(' '+mol_name+os.linesep)
         for a, r in zip(atom, coordinate):
-            ofile.write('{:>3d}'.format(a))
+            ofile.write('{}'.format(a))
             for ri in r:
                 ofile.write(accuracy.format(ri))
             ofile.write(os.linesep)

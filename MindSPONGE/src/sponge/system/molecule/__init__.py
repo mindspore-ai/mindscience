@@ -27,6 +27,7 @@ Molecules
 from typing import Union, List, Tuple
 from numpy import ndarray
 from mindspore import Tensor
+
 from .molecule import Molecule, _MoleculeFromPDB, MoleculeFromMol2
 from .protein import Protein
 
@@ -54,7 +55,7 @@ def get_molecule(pdb_name: str, pbc_box: Union[Tensor, ndarray, List[float]] = N
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
         B:  Batchsize, i.e. number of walkers in simulation
         A:  Number of atoms.
         b:  Number of bonds.
@@ -66,8 +67,8 @@ def get_molecule(pdb_name: str, pbc_box: Union[Tensor, ndarray, List[float]] = N
                                 length_unit=length_unit,
                                 template=template,
                                 rebuild_hydrogen=rebuild_hydrogen)
-    else:
-        raise ValueError('Only pdb format is supported in this function, but got {}.'.format(pdb_name.split()[-1]))
+
+    raise ValueError(f'Only pdb format is supported in this function, but got {pdb_name.split()[-1]}.')
 
 
 __all__ = ['Molecule', 'Protein', 'MoleculeFromMol2', 'get_molecule']

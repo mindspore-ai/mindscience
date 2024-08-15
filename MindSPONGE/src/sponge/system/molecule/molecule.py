@@ -77,27 +77,22 @@ class Molecule(Cell):
 
     Args:
         atoms(Union[List[Union[str, int]], ndarray]):       Array of atoms. The data in array can be str of atom
-                                                            name or int of atomic number. Defulat: ``None``
-        atom_name(Union[List[str], ndarray]):               Array of atom name with data type `str`. Defulat: ``None``
+                                                            name or int of atomic number. Defulat: None
+        atom_name(Union[List[str], ndarray]):               Array of atom name with data type `str`. Defulat: None
         atom_type(Union[List[str], ndarray]):               Array of atom type with data type `str`. Defulat: None
-        atom_mass(Union[Tensor, ndarray, List[float]]):     Array of atom mass of shape :math:`(B, A)` with data type
-                                                            `float` where B represents the batchsize, i.e. the number
-                                                            of walker in the system, A represents the number of atoms.
-                                                            Defulat: ``None``
-        atom_charge(Union[Tensor, ndarray, List[float]]):   Array of atom charge of shape :math:`(B, A)` with data type
-                                                            `float`. Defulat: ``None``
-        atomic_number(Union[Tensor, ndarray, List[float]]): Array of atomic number of shape :math:`(B, A)` with data
-                                                            type `int`. Defulat: ``None``
-        bond(Union[Tensor, ndarray, List[int]]):            Array of bond connection of shape :math:`(B, b, 2)` with
-                                                            data type `int` where b represents the number of bonds.
-                                                            Defulat: ``None``
+        atom_mass(Union[Tensor, ndarray, List[float]]):     Array of atom mass of shape `(B, A)` with data type
+                                                            `float`. Defulat: None
+        atom_charge(Union[Tensor, ndarray, List[float]]):   Array of atom charge of shape `(B, A)` with data type
+                                                            `float`. Defulat: None
+        atomic_number(Union[Tensor, ndarray, List[float]]): Array of atomic number of shape `(B, A)` with data type
+                                                            `int`. Defulat: None
+        bond(Union[Tensor, ndarray, List[int]]):            Array of bond connection of shape `(B, b, 2)` with data
+                                                            type `int`. Defulat: None
         coordinate(Union[Tensor, ndarray, List[float]]):    Tensor of atomic coordinates :math:`R` of shape
-                                                            :math:`(B, A, D)` with data type `float` where D represents
-                                                            the spatial dimension of the simulation system,
-                                                            usually is 3. Default: ``None``
+                                                            `(B, A, D)` with data type `float`. Default: None
         pbc_box(Union[Tensor, ndarray, List[float]]):       Tensor of box size :math:`\vec{L}` of periodic boundary
-                                                            condition (PBC). The shape of tensor is :math:`(B, D)`
-                                                            and the data type is `float`. Default: ``None``
+                                                            condition (PBC). The shape of tensor is `(B, D)`,
+                                                            and the data type is `float`. Default: None
         template(Union[dict, str, List[Union[dict, str]]]): Template for molecule. It can be a `dict` in MindSPONGE
                                                             template format or a `str` for the filename of a
                                                             MindSPONGE template file. If a `str` is given,
@@ -105,13 +100,12 @@ class Molecule(Cell):
                                                             current directory. If the file does not exist, it will
                                                             search in the built-in template directory of
                                                             MindSPONGE (`mindsponge.data.template`).
-                                                            Default: ``None``.
-        residue(Union[Residue, List[Residue]]):             Residue or a list of residues. If template is not ``None``,
+                                                            Default: None.
+        residue(Union[Residue, List[Residue]]):             Residue or a list of residues. If template is not None,
                                                             only the residues in the template will be used.
-                                                            Default: ``None``.
-        length_unit(str):                                   Length unit. If ``None`` is given, the global length
-                                                            units will be used. Default: ``None``
-        kwargs(dict):                                       Other parameters for extension
+                                                            Default: None.
+        length_unit(str):                                   Length unit. If `None` is given, the global length
+                                                            units will be used. Default: None
 
     Outputs:
         - coordinate, Tensor of shape `(B, A, D)`. Data type is float.
@@ -120,34 +114,15 @@ class Molecule(Cell):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Examples:
-        >>> from sponge import Molecule
-        >>> system = Molecule(atoms=['O', 'H', 'H'],
-        ...                   coordinate=[[0, 0, 0], [0.1, 0, 0], [-0.0333, 0.0943, 0]],
-        ...                   bonds=[[[0, 1], [0, 2]]])
-        >>> print ('The number of atoms in the system is: ', system.num_atoms)
-        The number of atoms in the system is:  3
-        >>> print ('All the atom names in the system are: ', system.atom_name)
-        All the atom names in the system are:  [['O' 'H' 'H']]
-        >>> print ('The coordinates of atoms are: \n{}'.format(system.coordinate.asnumpy()))
-        The coordinates of atoms are:
-        [[[ 0.      0.      0.    ]
-          [ 0.1     0.      0.    ]
-          [-0.0333  0.0943  0.    ]]]
-        >>> system = Molecule(template='water.spce.yaml')
-        >>> print ('The number of atoms in the system is: ', system.num_atoms)
-        The number of atoms in the system is:  3
-        >>> print ('All the atom names in the system are: ', system.atom_name)
-        All the atom names in the system are:  [['O' 'H1' 'H2']]
-        >>> print ('The coordinates of atoms are: \n{}'.format(system.coordinate.asnumpy()))
-        The coordinates of atoms are:
-        [[[ 0.          0.          0.        ]
-          [ 0.08164904  0.0577359   0.        ]
-          [-0.08164904  0.0577359   0.        ]]]
-
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        A:  Number of atoms.
+        b:  Number of bonds.
+        D:  Spatial dimension of the simulation system. Usually is 3.
     """
 
     def __init__(self,
+                 mol2_file: str = None,
                  atoms: Union[List[Union[str, int]], ndarray] = None,
                  atom_name: Union[List[str], ndarray] = None,
                  atom_type: Union[List[str], ndarray] = None,
@@ -157,7 +132,7 @@ class Molecule(Cell):
                  bonds: Union[Tensor, ndarray, List[int]] = None,
                  coordinate: Union[Tensor, ndarray, List[float]] = None,
                  pbc_box: Union[Tensor, ndarray, List[float]] = None,
-                 template: Union[dict, str, List[Union[dict, str]]] = None,
+                 template: Union[dict, str] = None,
                  residue: Union[Residue, List[Residue]] = None,
                  length_unit: str = None,
                  **kwargs,
@@ -171,6 +146,13 @@ class Molecule(Cell):
 
         self.units = Units(length_unit, GLOBAL_UNITS.energy_unit)
         self.template = template
+
+        if mol2_file is not None:
+            mol2_obj = mol2parser(mol2_file)
+            atoms = mol2_obj.atom_types
+            bonds = mol2_obj.bond_indexes
+            atom_charge = mol2_obj.charges
+            coordinate = mol2_obj.crds
 
         if template is not None:
             molecule, template = get_molecule(template)
@@ -283,6 +265,9 @@ class Molecule(Cell):
         self.has_empty_atom = None
         self.system_natom = None
 
+        self.chain_id = None
+        self.atom_chain_id = None
+
         self.build_system()
         if self.residue is not None:
             self.build_space(coordinate, pbc_box)
@@ -356,7 +341,7 @@ class Molecule(Cell):
         Move the coordinate of the system.
 
         Args:
-            shift(Tensor): The displacement distance of the system. Default: ``None``.
+            shift(Tensor): The displacement distance of the system. Default: None
         """
         if shift is not None:
             self.update_coordinate(self.coordinate + Tensor(shift, ms.float32))
@@ -367,7 +352,7 @@ class Molecule(Cell):
         Return a Molecule that copy the parameters of this molecule.
 
         Args:
-            shift(Tensor): The displacement distance of the system. Default: ``None``.
+            shift(Tensor): The displacement distance of the system. Default: None
 
         Returns:
             class, class Molecule that copy the parameters of this molecule.
@@ -388,7 +373,7 @@ class Molecule(Cell):
 
         Args:
             residue(class): a Residue class of the residue added in the system.
-            coordinate(Tensor): The coordinate of the input residue. Default: ``None``.
+            coordinate(Tensor): The coordinate of the input residue. Default: None
         """
         if not isinstance(residue, list):
             if isinstance(residue, Residue):
@@ -413,7 +398,7 @@ class Molecule(Cell):
         Append a system to this molecule system.
 
         Args:
-            system(Molecule): Another molecule system that will be added to this molecule system.
+            system(class): Another molecule system that will be added to this molecule system.
         """
         if not isinstance(system, Molecule):
             raise TypeError(f'For append, the type of system must be "Molecule" but got: {type(system)}')
@@ -571,16 +556,17 @@ class Molecule(Cell):
         self.atom_name = np.concatenate(atom_name, axis=-1)
         self.atom_type = np.concatenate(atom_type, axis=-1)
         self.atom_mass = msnp.concatenate(atom_mass, axis=-1)
-        new_atom_mask = []
-        for small_t in atom_mask:
-            new_atom_mask.append(ops.Cast()(small_t, ms.int32))
-        self.atom_mask = msnp.concatenate(new_atom_mask, axis=-1).bool()
+        self.atom_mask = msnp.concatenate(atom_mask, axis=-1)
+        self._atom_mask = self.atom_mask.asnumpy()
         self.atomic_number = msnp.concatenate(atomic_number, axis=-1)
         self.inv_mass = msnp.concatenate(inv_mass, axis=-1)
         self.atom_charge = None
+
         if any_charge:
             atom_charge = msnp.concatenate(atom_charge, axis=-1)
             self.set_atom_charge(atom_charge)
+        # else:
+        #     self.atom_charge = None
 
         # (A)
         self.atom_resid = msnp.concatenate(atom_resid)
@@ -610,8 +596,8 @@ class Molecule(Cell):
             if self.bonds is None:
                 self.remaining_index = None
             else:
-                remaining_index = msnp.where(bonds_in(self.bonds, settle_bond_1) + bonds_in(self.bonds, settle_bond_2),
-                                             0, 1)
+                condition = bonds_in(self.bonds, settle_bond_1) + bonds_in(self.bonds, settle_bond_2)
+                remaining_index = Tensor(np.where(condition.asnumpy(), 0, 1))
                 self.remaining_index = ops.nonzero(remaining_index)
                 if self.remaining_index.size == 0:
                     self.remaining_index = None
@@ -651,7 +637,7 @@ class Molecule(Cell):
         self.system_mass = msnp.sum(self.atom_mass, -1, keepdims=True)
         self.has_empty_atom = (not self.atom_mask.all())
         # (B, 1) <- (B, A)
-        self.system_natom = msnp.sum(F.cast(self.atom_mask, ms.float32), -1, keepdims=True)
+        self.system_natom = np.sum(self._atom_mask, -1, keepdims=True)
 
         self.identity = ops.Identity()
 
@@ -677,7 +663,7 @@ class Molecule(Cell):
                                  f'the first dimension of "coordinate" ({self.dimension})!')
             self.pbc_box = Parameter(pbc_box, name='pbc_box')
 
-            self.image = Parameter(msnp.zeros_like(self.coordinate, ms.int32), name='coordinate_image',
+            self.image = Parameter(msnp.zeros_like(self.coordinate, ms.float32), name='coordinate_image',
                                    requires_grad=False)
             self.update_image()
 
@@ -934,18 +920,13 @@ class Molecule(Cell):
         return self
 
     def set_atom_charge(self, atom_charge: Tensor):
-        """
-        set atom charge
-
-        Args:
-            atom_charge(Tensor): Atom charge.
-        """
+        r"""set atom charge"""
         if atom_charge is None:
             self.atom_charge = atom_charge
-        elif self.atom_charge is None:
-            self.atom_charge = Parameter(atom_charge, name='atom_charge', requires_grad=False)
-        else:
+        elif self.atom_charge is not None and self.atom_charge.shape == atom_charge.shape:
             F.assign(self.atom_charge, atom_charge)
+        else:
+            self.atom_charge = Parameter(atom_charge, name='atom_charge', requires_grad=False)
         return self
 
     def set_bond_length(self, bond_length: Tensor):
@@ -1058,7 +1039,7 @@ class Molecule(Cell):
 
         Args:
             recurse(bool):  If true, yields parameters of this cell and all subcells. Otherwise, only yield parameters
-                            that are direct members of this cell. Default: ``True``.
+                            that are direct members of this cell. Default: True
 
         Returns:
             list, all trainable system parameters.
@@ -1147,7 +1128,7 @@ class Molecule(Cell):
 
         Args:
             pbc_box(Tensor):    Set the PBC box of the system. If it's None, the system won't use PBC box.
-                                Default: ``None``.
+                                Default: None
 
         Returns:
             Tensor, system PBC box.
@@ -1239,12 +1220,12 @@ class Molecule(Cell):
         return func.coordinate_in_pbc(coordinate, pbc_box, shift)
 
     def calc_image(self, shift: float = 0) -> Tensor:
-        r"""
+        """
         Calculate the image of coordinate.
 
         Args:
             shift(float):   Offset ratio :math:`c` relative to box size :math:`\vec{L}`.
-                Default: ``0`` .
+                            Default: 0
 
         Returns:
             Tensor, the image of coordinate.
@@ -1261,7 +1242,7 @@ class Molecule(Cell):
         Update the image of coordinate.
 
         Args:
-            image(Tensor):  The image of coordinate used to update the image of system coordinate. Default: ``None``.
+            image(Tensor):  The image of coordinate used to update the image of system coordinate. Default: None
 
         Returns:
             bool, whether successfully update the image of coordinate.
@@ -1291,7 +1272,7 @@ class Molecule(Cell):
         Calculate the value of specific collective variables in the system.
 
         Args:
-            colvar(Colvar):  Base class for generalized collective variables (CVs) :math:`s(R)`.
+            colvar(class):  Base class for generalized collective variables (CVs) :math:`s(R)`.
 
         Returns:
             Tensor, the value of a collective variables :math:`s(R)`.
@@ -1323,7 +1304,7 @@ class Molecule(Cell):
 
         Args:
             atoms(class):   Base class for specific atoms group, used as the "atoms group module" in MindSPONGE.
-                            Default: ``None``.
+                            Default: None
 
         Returns:
             Tensor. Coordinate. Data type is float.
@@ -1346,18 +1327,18 @@ class Molecule(Cell):
         return self.identity(self.pbc_box)
 
     def fill_water(self, edge: float = None, gap: float = None, box: ndarray = None, pdb_out: str = None,
-                   template: str = None):
+                   template: str = None, num_water=None):
         """ The inner function in Molecule class to add water in a given box.
-
         Args:
             edge(float): The water edge around the system.
             gap(float): The minimum gap between system atoms and water atoms.
             box(Tensor): The pbc box we want, default to be None.
             pdb_out(str): The string format pdb file name to store the information of system after filling water.
             template(str): The supplemental template of the water molecules filled.
+            num_water(int): The number of water molecules. default: None.
 
         Returns:
-            new_pbc_box(Tensor), this function will return a pbc_box after filling water.
+            new_pbc_box(Tensor): This function will return a pbc_box after filling water.
         """
         if template is None:
             raise ValueError('The template when filling water must be given!')
@@ -1394,18 +1375,17 @@ class Molecule(Cell):
         size_x = max_x - min_x
         size_y = max_y - min_y
         size_z = max_z - min_z
+        origin_size = np.array([size_x, size_y, size_z], np.float32)
 
         if box is None:
-            box = np.array([size_x + 2 * edge,
-                            size_y + 2 * edge,
-                            size_z + 2 * edge], np.float32)
+            box = origin_size + 2 * edge
         else:
             box = box * length_convert(self.length_unit, 'A')
         final_box = box + 0.5 * AVGDIS
         print('[MindSPONGE] The box size used when filling water is: {}'.format(final_box *
                                                                                 self.units.convert_length_from('A')))
 
-        if (final_box < size_x).any():
+        if (final_box < origin_size).any():
             raise ValueError("Please given a larger box for adding water molecules.")
 
         origin_x = min_x - edge * 0.9
@@ -1431,6 +1411,12 @@ class Molecule(Cell):
         filt = np.where((dis <= gap).sum(axis=-1) > 0)
 
         o_crd = np.delete(o_crd, filt, axis=0)
+        if num_water is not None:
+            if o_crd.shape[0] < num_water:
+                raise ValueError('The given num_water {} is too larger for normal water molecule density, please'
+                                 'enlarge the box size or edge size to fill water.'.format(num_water))
+            choices = np.random.choice(o_crd.shape[0], num_water, replace=False)
+            o_crd = o_crd[choices]
         print('[MindSPONGE] Totally {} waters is added to the system!'.format(o_crd.shape[0]))
         h1_crd = o_crd + np.array([0.079079641, 0.061207927, 0.0], np.float32) * 10
         h2_crd = o_crd + np.array([-0.079079641, 0.061207927, 0.0], np.float32) * 10
@@ -1445,6 +1431,18 @@ class Molecule(Cell):
         atom_names = np.concatenate((atom_names, water_names))
         res_names = np.concatenate((res_names, water_res))
         res_ids = np.concatenate((res_ids, max(res_ids) + 1 + water_resid))
+        if not self.chain_id:
+            chain_ids = np.hstack((np.zeros(res_names), np.ones(o_crd.shape[0])))
+        else:
+            chain_ids = np.hstack((self.chain_id, self.chain_id[-1] + np.ones(o_crd.shape[0])))
+        self.chain_id = chain_ids
+        if not self.atom_chain_id:
+            atom_chain_ids = np.hstack((np.zeros(atom_names.shape[0]),
+                                        np.ones(o_crd.shape[0]*3)))
+        else:
+            atom_chain_ids = np.hstack((self.atom_chain_id,
+                                        self.chain_id[-1] + np.ones(o_crd.shape[0])*3))
+        self.atom_chain_id = atom_chain_ids
         new_pbc_box = final_box * self.units.convert_length_from('A')
 
         self.init_resname = res_names
@@ -1459,17 +1457,17 @@ class Molecule(Cell):
         if isinstance(self.template, str):
             self.template = [self.template]
         self.template.append(template)
-        _template = get_template(self.template)
+        template_ = get_template(self.template)
 
         self.residue = []
         for i in range(num_residue):
             name = residue_name[i]
             atom_name = atom_names[residue_pointer[i]: residue_pointer[i + 1]][None, :]
             if name in RESIDUE_NAMES:
-                residue = AminoAcid(name=name, template=_template, atom_name=atom_name,
+                residue = AminoAcid(name=name, template=template_, atom_name=atom_name,
                                     length_unit=self.units.length_unit)
             else:
-                residue = Residue(name=name, template=_template, atom_name=atom_name,
+                residue = Residue(name=name, template=template_, atom_name=atom_name,
                                   length_unit=self.units.length_unit)
             self.residue.append(residue)
 
@@ -1479,10 +1477,34 @@ class Molecule(Cell):
         self.build_space(coordinate, new_pbc_box)
 
         if pdb_out is not None:
-            gen_pdb(new_crd[None, :], atom_names, res_names, res_ids, pdb_name=pdb_out)
+            gen_pdb(new_crd, atom_names, res_names, res_ids, chain_id=chain_ids, pdb_name=pdb_out)
 
         print('[MindSPONGE] Adding water molecule task finished!')
 
+        return self
+
+    def save_template(self):
+        return self
+
+    def batch(self, batch_num, coordinate=None, shift=None, pbc_box=None):
+        """batch"""
+        if shift.ndim == 1:
+            shift = shift[:, None, None]
+        if coordinate is not None and coordinate.shape[0] != batch_num:
+            raise ValueError("The input value of batch_num {} should be equal to the shape"
+                             "of 1st dim of coordinate {}.".format(batch_num, coordinate.shape[0]))
+        self.num_walker = batch_num
+        self.build_system()
+        if coordinate is None:
+            _coordinate = ()
+            for _ in range(batch_num):
+                _coordinate += (self.coordinate,)
+            coordinate = ops.concat(_coordinate, axis=0)
+
+        if shift is not None:
+            coordinate += shift
+
+        self.build_space(coordinate, pbc_box=pbc_box)
         return self
 
     def construct(self) -> Tuple[Tensor, Tensor]:
@@ -1492,7 +1514,7 @@ class Molecule(Cell):
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.
@@ -1522,7 +1544,7 @@ class MoleculeFromMol2(Molecule):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
         B:  Batchsize, i.e. number of walkers in simulation
         A:  Number of atoms.
         b:  Number of bonds.
@@ -1558,7 +1580,7 @@ class _MoleculeFromPDB(Molecule):
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
         B:  Batchsize, i.e. number of walkers in simulation
         A:  Number of atoms.
         b:  Number of bonds.
@@ -1582,8 +1604,12 @@ class _MoleculeFromPDB(Molecule):
         init_res_names = pdb_obj.init_res_names
         init_res_ids = pdb_obj.init_res_ids
         residue_in_amino = np.where(np.isin(residue_name, residue_names))[0]
-        residue_name[residue_in_amino.min()] = 'N' + residue_name[residue_in_amino.min()]
-        residue_name[residue_in_amino.max()] = 'C' + residue_name[residue_in_amino.max()]
+
+        if len(residue_in_amino) > 1:
+            if 'ACE' not in residue_name:
+                residue_name[residue_in_amino.min()] = 'N' + residue_name[residue_in_amino.min()]
+            if 'NME' not in residue_name:
+                residue_name[residue_in_amino.max()] = 'C' + residue_name[residue_in_amino.max()]
 
         self.init_resname = init_res_names
         self.init_resid = init_res_ids
@@ -1595,6 +1621,8 @@ class _MoleculeFromPDB(Molecule):
         self.residue = []
         for i in range(num_residue):
             name = residue_name[i]
+            if name == 'HIE':
+                name = 'HIS'
             atom_name = flatten_atoms[residue_pointer[i]: residue_pointer[i + 1]][None, :]
             if name in RESIDUE_NAMES:
                 residue = AminoAcid(name=name, template=template, atom_name=atom_name,
