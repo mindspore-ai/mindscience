@@ -15,9 +15,9 @@ mindchemistry.e3.o3.wigner_3j
         C_{ijk} C_{ijk} = 1
 
     参数：
-        - **l1** (int) - :math:`l_1`。
-        - **l2** (int) - :math:`l_2`。
-        - **l3** (int) - :math:`l_3`。
+        - **l1** (int) - ``wigner_3j`` 的 :math:`l_1` 参数。
+        - **l2** (int) - ``wigner_3j`` 的 :math:`l_2` 参数。
+        - **l3** (int) - ``wigner_3j`` 的 :math:`l_3` 参数。
         - **dtype** (mindspore.dtype) - 输入张量的类型。默认值：``mindspore.float32`` 。
 
     返回：

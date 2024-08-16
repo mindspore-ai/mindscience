@@ -105,10 +105,10 @@ class Gate(nn.Cell):
             Default: ``mindspore.float32``.
 
     Inputs:
-        - **input** (Tensor) - The shape of Tensor is :math:`(..., irreps_in.dim)`.
+        - **input** (Tensor) - The shape of Tensor is :math:`(..., irreps\_in.dim)`.
 
     Outputs:
-        - **output** (Tensor) - The shape of Tensor is :math:`(..., irreps_out.dim)`.
+        - **output** (Tensor) - The shape of Tensor is :math:`(..., irreps\_out.dim)`.
 
     Raises:
         ValueError: If `irreps_scalars` or `irreps_gates` contain non-scalar irrep.

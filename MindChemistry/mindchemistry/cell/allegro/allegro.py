@@ -66,11 +66,11 @@ class Allegro(Cell):
 
     Inputs:
         - **embedding_out** (tuple(Tensor)) - Tuple of tensor.
-        - **edge_index** (Tensor) - The shape of Tensor is :math:`(2, edge_num)`.
+        - **edge_index** (Tensor) - The shape of Tensor is :math:`(2, edge\_num)`.
         - **atom_types** (Tensor) - Tensor.
 
     Outputs:
-        - **output** (Tensor) - The shape of Tensor is :math:`(edge_num, final_latent_out)`.
+        - **output** (Tensor) - The shape of Tensor is :math:`(edge\_num, final\_latent\_out)`.
 
     Raises:
         ValueError: If irreps_in is None.

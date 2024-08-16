@@ -70,10 +70,10 @@ class Activation(nn.Cell):
         dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
 
     Inputs:
-        - **inputs** (Tensor) - The shape of Tensor is :math:`(*, irreps_in.dim)`.
+        - **inputs** (Tensor) - The shape of Tensor is :math:`(*, irreps\_in.dim)`.
 
     Outputs:
-        - **outputs** (Tensor) - The shape of Tensor is :math:`(*, irreps_in.dim)`.
+        - **outputs** (Tensor) - The shape of Tensor is :math:`(*, irreps\_in.dim)`.
 
     Raises:
         ValueError: If `irreps_in` contain non-scalar irrep.

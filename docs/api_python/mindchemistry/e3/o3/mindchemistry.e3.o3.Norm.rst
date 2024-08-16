@@ -12,7 +12,7 @@ mindchemistry.e3.o3.Norm
         - **ncon_dtype** (mindspore.dtype) - ncon 计算模块输入张量的类型。默认值：``mindspore.float32`` 。
 
     输入：
-        - **v** (Tensor) - 形状为 ``(..., irreps_in.dim)`` 的张量。
+        - **v** (Tensor) - 形状为 :math:`(..., irreps\_in.dim)` 的张量。
 
     输出：
-        - **output** (Tensor) - 形状为 ``(..., irreps_out.dim)`` 的张量。
+        - **output** (Tensor) - 形状为 :math:`(..., irreps\_out.dim)` 的张量。

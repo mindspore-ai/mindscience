@@ -218,9 +218,9 @@ def wigner_3j(l1, l2, l3, dtype=float32):
         C_{ijk} C_{ijk} = 1
 
     Args:
-        l1 (int): :math:`l_1`.
-        l2 (int): :math:`l_2`.
-        l3 (int): :math:`l_3`.
+        l1 (int): :math:`l_1` parameter of ``wigner_3j``.
+        l2 (int): :math:`l_2` parameter of ``wigner_3j``.
+        l3 (int): :math:`l_3` parameter of ``wigner_3j``.
         dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32`` .
 
     Returns:

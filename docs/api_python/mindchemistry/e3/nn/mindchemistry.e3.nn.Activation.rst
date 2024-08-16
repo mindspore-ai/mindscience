@@ -12,10 +12,10 @@ mindchemistry.e3.nn.Activation
         - **dtype** (mindspore.dtype) - 输入张量的类型。默认值：``mindspore.float32`` 。
 
     输入：
-        - **inputs** (Tensor) - 形状为 :math:`(*, irreps_in.dim)` 的张量。
+        - **inputs** (Tensor) - 形状为 :math:`(*, irreps\_in.dim)` 的张量。
 
     输出：
-        - **outputs** (Tensor) - 形状为 :math:`(*, irreps_in.dim)` 的张量。
+        - **outputs** (Tensor) - 形状为 :math:`(*, irreps\_in.dim)` 的张量。
 
     异常：
         - **ValueError**: 如果 `irreps_in` 包含非标量的不可约表示。

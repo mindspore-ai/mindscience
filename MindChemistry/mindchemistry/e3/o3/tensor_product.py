@@ -416,9 +416,9 @@ class TensorProduct(nn.Cell):
         ``CPU`` ``GPU`` ``Ascend``
 
     Examples:
-        Standard tensor product:
         >>> import mindspore as ms
         >>> from mindchemistry.e3.o3 import TensorProduct
+        Standard tensor product:
         >>> tp1 = TensorProduct('2x1o+4x0o', '1x1o+3x0e')
         TensorProduct [full] (2x1o+4x0o x 1x1o+3x0e -> 2x0e+12x0o+6x1o+2x1e+4x1e+2x2e)
         >>> v1 = ms.Tensor(np.linspace(1., 2., tp1.irreps_in1.dim), dtype=ms.float32)
