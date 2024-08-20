@@ -13,10 +13,10 @@ mindchemistry.e3.nn.FullyConnectedNet
         - **dtype** (mindspore.dtype) - 输入张量的类型。默认值：``mindspore.float32`` 。
 
     输入：
-        - **input** (Tensor) - 形状为 :math:`(h_list[0])` 的张量。
+        - **input** (Tensor) - 形状为 :math:`(h\_list[0])` 的张量。
 
     输出：
-        - **output** (Tensor) - 形状为 :math:`(h_list[-1])` 的张量。
+        - **output** (Tensor) - 形状为 :math:`(h\_list[-1])` 的张量。
 
     异常：
         - **TypeError**: 如果 `h_list` 的元素不是 `int`。

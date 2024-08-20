@@ -21,10 +21,10 @@ mindchemistry.e3.nn.Gate
         - **ncon_dtype** (mindspore.dtype) - ncon 计算模块输入张量的类型。默认值：``mindspore.float32`` 。
 
     输入：
-        - **input** (Tensor) - 形状为 :math:`(..., irreps_in.dim)` 的张量。
+        - **input** (Tensor) - 形状为 :math:`(..., irreps\_in.dim)` 的张量。
 
     输出：
-        - **output** (Tensor) - 形状为 :math:`(..., irreps_out.dim)` 的张量。
+        - **output** (Tensor) - 形状为 :math:`(..., irreps\_out.dim)` 的张量。
 
     异常：
         - **ValueError**: 如果 `irreps_scalars` 或 `irreps_gates` 包含非标量的不可约表示。

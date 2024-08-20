@@ -41,10 +41,10 @@ class NormActivation(nn.Cell):
             Default: ``mindspore.float32``.
 
     Inputs:
-        - **input** (Tensor) - The shape of Tensor is :math:`(..., irreps_in.dim)`.
+        - **input** (Tensor) - The shape of Tensor is :math:`(..., irreps\_in.dim)`.
 
     Outputs:
-        - **output** (Tensor) - The shape of Tensor is :math:`(..., irreps_in.dim)`.
+        - **output** (Tensor) - The shape of Tensor is :math:`(..., irreps\_in.dim)`.
 
     Raises:
         ValueError: If `epsilon` is not None and `normalize` is False.

@@ -60,10 +60,10 @@ class FullyConnectedNet(nn.SequentialCell):
         dtype (mindspore.dtype): The type of input tensor. Default: ``mindspore.float32``.
 
     Inputs:
-        - **input** (Tensor) - The shape of Tensor is :math:`(h_list[0])`.
+        - **input** (Tensor) - The shape of Tensor is :math:`(h\_list[0])`.
 
     Outputs:
-        - **output** (Tensor) - The shape of Tensor is :math:`(h_list[-1])`.
+        - **output** (Tensor) - The shape of Tensor is :math:`(h\_list[-1])`.
 
     Raises:
         TypeError: If the elements `h_list` are not `int`.

@@ -16,7 +16,7 @@ mindchemistry.e3.o3.SphericalHarmonics
         - **x** (Tensor) - 构造球面谐波的张量。形状为 :math:`(..., 3)` 的张量。
 
     输出：
-        - **output** (Tensor) - 张量,球面谐波 :math:`Y^l(x)`。形状为: ``(..., 2l+1)``。
+        - **output** (Tensor) - 张量,球面谐波 :math:`Y^l(x)`。形状为 :math:`(..., 2l+1)` 。
 
     异常：
         - **ValueError** - 如果 `normalization` 不在 {'integral', 'component', 'norm'} 中。

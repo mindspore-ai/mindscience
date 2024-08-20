@@ -19,11 +19,11 @@ mindchemistry.cell.Allegro
 
     输入：
         - **embedding_out** (tuple(Tensor)) - 张量元组。
-        - **edge_index** (Tensor) - 形状为 :math:`(2, edge_num)` 的张量。
+        - **edge_index** (Tensor) - 形状为 :math:`(2, edge\_num)` 的张量。
         - **atom_types** (Tensor) - 张量。
 
     输出：
-        - **output** (Tensor) - 形状为 :math:`(edge_num, final_latent_out)` 的张量。
+        - **output** (Tensor) - 形状为 :math:`(edge\_num, final\_latent\_out)` 的张量。
 
     异常：
         - **ValueError**: 如果 `irreps_in` 为 None。
