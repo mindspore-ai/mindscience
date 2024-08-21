@@ -226,24 +226,24 @@ class WeatherForecast:
 
     def compute_total_rmse_acc(self, dataset, generator_flag):
         """
-            Compute the total Root Mean Square Error (RMSE) and Accuracy for the dataset.
+        Compute the total Root Mean Square Error (RMSE) and Accuracy for the dataset.
 
-            This function iterates over the dataset, calculates the RMSE and accuracy for
-            each batch, and accumulates the results to compute the total RMSE and accuracy
-            over the entire dataset.
+        This function iterates over the dataset, calculates the RMSE and accuracy for
+        each batch, and accumulates the results to compute the total RMSE and accuracy
+        over the entire dataset.
 
-            Parameters:
-                dataset (Dataset): The dataset object to compute metrics for.
-                generator_flag (bool): A flag indicating whether to use a data generator or not.
+        Args:
+            dataset (Dataset): The dataset object to compute metrics for.
+            generator_flag (bool): A flag indicating whether to use a data generator or not.
 
-            Returns:
-                tuple: A tuple containing the total accuracy and RMSE for the dataset.
+        Returns:
+            A tuple containing the total accuracy and RMSE for the dataset.
 
-            Process:
-                - If `generator_flag` is False, use the dataset's iterator to access data.
-                - For each batch, calculate the metrics and accumulate them.
-                - Return the average accuracy and RMSE over the dataset.
-            """
+        Process:
+            - If `generator_flag` is False, use the dataset's iterator to access data.
+            - For each batch, calculate the metrics and accumulate them.
+            - Return the average accuracy and RMSE over the dataset.
+        """
         data_length = 0
         lat_weight_rmse = None
         lat_weight_acc = None
