@@ -24,7 +24,7 @@
 LINCS Constraint algorithm
 """
 
-from typing import Union, Tuple
+from typing import Union, Tuple, Dict
 import numpy as np
 
 import mindspore as ms
@@ -43,9 +43,11 @@ class EinsumWrapper(ms.nn.Cell):
     """Implement particular Einsum operation
 
     Args:
+
         equation (str):  en equation represent the operation.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -101,15 +103,17 @@ class Lincs(Constraint):
     """A LINCS (LINear Constraint Solver) constraint module, which is a subclass of `Constraint`.
 
     Args:
+
         system (Molecule):          Simulation system.
 
         bonds (Union[Tensor, str]): Bonds to be constraint.
                                     Tensor of shape (K, 2). Data type is int.
                                     Alternative: "h-bonds" or "all-bonds".
 
-        potential (PotentialCell):  Potential Cell. Default: ``None``.
+        potential (PotentialCell):  Potential Cell. Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -147,8 +151,8 @@ class Lincs(Constraint):
         else:
             try:
                 self.bonds = get_ms_array(bonds, ms.int32)
-            except TypeError:
-                raise TypeError(f'The type of "bonds" must be Tensor or str, but got: {type(bonds)}')
+            except TypeError as te:
+                raise TypeError(f'The type of "bonds" must be Tensor or str, but got: {type(bonds)}') from te
 
         if self.bonds.ndim != 2:
             if self.bonds.ndim != 3:
@@ -231,11 +235,11 @@ class Lincs(Constraint):
                   velocity: Tensor,
                   force: Tensor,
                   energy: Tensor,
-                  kinetics: Tensor,
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+                  **kwargs
+                  ) -> Dict[str, Tensor]:
         #pylint: disable=invalid-name
 
         # (B,A,D)
@@ -302,4 +306,10 @@ class Lincs(Constraint):
             # (B,D)<-(B,A,D)<-(B,A,D),(B,A,D)
             virial += -0.5 * (last_crd * constraint_force).sum(-2)
 
-        return coordinate, velocity, force, energy, kinetics, virial, pbc_box
+        return {'coordinate': coordinate,
+                'velocity': velocity,
+                'force': force,
+                'energy': energy,
+                'virial': virial,
+                'pbc_box': pbc_box,
+                }

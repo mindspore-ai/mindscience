@@ -34,9 +34,11 @@ class Volume(Colvar):
     r"""Volume of simulation system.
 
     Args:
-        name (str): Name of the Colvar. Default: 'volume'.
+
+        name (str): Name of the Colvar. Default: 'volume'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -63,10 +65,11 @@ class Volume(Colvar):
         Args:
             coordinate (Tensor):    Tensor of shape (B, A, D). Data type is float.
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
-                                    Default: ``None``.
+                                    Default: None
 
         Returns:
-            volume (Tensor):         Tensor of shape (B, ...) or (B, ..., 1). Data type is float.
+            angle (Tensor):         Tensor of shape (B, ...) or (B, ..., 1). Data type is float.
+
         """
         #pylint: disable=unused-argument
 

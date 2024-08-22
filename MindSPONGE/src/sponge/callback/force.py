@@ -34,7 +34,9 @@ class ForceEarlyStopping(Callback):
 
     Args:
 
+
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """

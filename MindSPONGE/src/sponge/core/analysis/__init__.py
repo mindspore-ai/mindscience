@@ -23,5 +23,6 @@
 """Analysis"""
 
 from .analysis import AnalysisCell
+from .histogram import Histogram
 
-__all__ = ['AnalysisCell']
+__all__ = ['AnalysisCell', 'Histogram']

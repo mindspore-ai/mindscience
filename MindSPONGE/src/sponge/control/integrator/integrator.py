@@ -24,7 +24,7 @@
 Integrator
 """
 
-from typing import Union, List, Tuple
+from typing import Union, List, Dict
 
 import mindspore as ms
 from mindspore import Tensor
@@ -37,7 +37,7 @@ from ..constraint import Constraint
 from ...system import Molecule
 from ...function import get_integer, get_arguments
 
-_INTEGRATOR_BY_KEY = dict()
+_INTEGRATOR_BY_KEY = {}
 
 
 def _integrator_register(*aliases):
@@ -63,17 +63,19 @@ class Integrator(Controller):
         The `Integrator` module used to control the atomic coordinates and velocities during the simulation process.
 
     Args:
+
         system (Molecule):          Simulation system
 
-        thermostat (Thermostat):    Thermostat for temperature coupling. Default: ``None``.
+        thermostat (Thermostat):    Thermostat for temperature coupling. Default: None
 
-        barostat (Barostat):        Barostat for pressure coupling. Default: ``None``.
+        barostat (Barostat):        Barostat for pressure coupling. Default: None
 
         constraint (Union[Constraint, list]):
-                                    Constraint algorithm. Default: ``None``.
+                                    Constraint algorithm. Default: None
 
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -233,33 +235,27 @@ class Integrator(Controller):
                   velocity: Tensor,
                   force: Tensor,
                   energy: Tensor,
-                  kinetics: Tensor,
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+                  **kwargs
+                  ) -> Dict[str, Tensor]:
         r"""update simulation step.
 
         Args:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-            step (int):             Simulation step. Default: 0
+            coordinate (Tensor): Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor): Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor): Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor): Tensor of shape `(B, 1)`. Data type is float.
+            virial (Tensor): Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor): Tensor of shape `(B, D)`. Data type is float.
+            step (int): Simulation step. Default: 0
 
         Returns:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
+            variables (Dict[str, Tensor]): Dictionary of controller variables with seven keys
+                'coordinate', 'velocity', 'force', 'energy', 'virial', and 'pbc_box'.
 
-        Note:
+        Symbols:
             B:  Number of walkers in simulation.
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.

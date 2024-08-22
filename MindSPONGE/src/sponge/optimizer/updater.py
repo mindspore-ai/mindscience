@@ -56,32 +56,28 @@ class Updater(Optimizer):
         system(Molecule):                                   Simulation system.
         controller(Union[Controller, List[Controller]]):    Controller or list of controllers to control the seven
                                                             variables (coordinate, velocity, force, energy, kinetics,
-                                                            virial and pbc_box) of the simulation system.
-                                                            Default: ``None``.
-        time_step(float):                                   Time step. Default: ``1e-3``.
+                                                            virial and pbc_box) of the simulation system. Default: None
+        time_step(float):                                   Time step. Defulat: 1e-3
         velocity(Union[Tensor, ndarray, List[float]]):      Array of atomic velocity. The shape of array is `(A, D)`
-                                                            or `(B, A, D)`, and the data type is float.
-                                                            Default: ``None``.
-        weight_decay(float):                                An value for the weight decay. Default: ``0.0``.
-        loss_scale(float):                                  A value for the loss scale. Default: ``1.0``.
-        kwargs(dict):                                       other args.
+                                                            or `(B, A, D)`, and the data type is float. Default: None
+        weight_decay(float):                                An value for the weight decay. Default: 0.0
+        loss_scale(float):                                  A value for the loss scale. Default: 1.0
 
     Inputs:
         - **energy** (Tensor) - Energy of the system. Tensor of shape `(B, A, D)`. Data type is float.
         - **force** (Tensor) - Force of the system. Tensor of shape `(B, A, D)`. Data type is float.
-        - **virial** (Tensor) - Virial of the system. Tensor of shape `(B, A, D)`. Data type is float.
-          Default: ``None``.
+        - **virial** (Tensor) - Virial of the system. Tensor of shape `(B, A, D)`. Data type is float. Default: None
 
     Outputs:
         bool, whether successfully finish the current optimization step and move to next step.
 
-    Note:
+    Supported Platforms:
+        ``Ascend``
+
+    Symbols:
         B:  Batchsize, i.e. number of walkers in simulation
         A:  Number of atoms.
         D:  Spatial dimension of the simulation system. Usually is 3.
-
-    Supported Platforms:
-        ``Ascend`` ``GPU``
     """
     @opt_init_args_register
     def __init__(self,
@@ -108,6 +104,13 @@ class Updater(Optimizer):
         self.system = system
         self.coordinate = self.system.coordinate
         self.pbc_box = self.system.pbc_box
+
+        self.identity = ops.Identity()
+
+        self.current_coordinate = Parameter(self.identity(self.coordinate), name='current_coordinate')
+        self.current_pbc_box = None
+        if self.pbc_box is not None:
+            self.current_pbc_box = Parameter(self.identity(self.pbc_box), name='current_pbc_box')
 
         # (B,A)
         self.atom_mass = self.system.atom_mass
@@ -153,8 +156,6 @@ class Updater(Optimizer):
         self.sys_dofs = system.degrees_of_freedom
         self.degrees_of_freedom = 0
         self.set_degrees_of_freedom(self.sys_dofs - self.num_constraints)
-
-        self.identity = ops.Identity()
 
         self.kinetics = None
         self.temperature = None
@@ -231,7 +232,7 @@ class Updater(Optimizer):
 
         Args:
             coordinate(Tensor): Tensor of atomic coordinates. Data type is float.
-            success(bool):      Whether to update the coordinate. Default: ``True``.
+            success(bool):      Whether to update the coordinate. Default: True
 
         Returns:
             bool, whether successfully update the coordinate.
@@ -244,7 +245,7 @@ class Updater(Optimizer):
 
         Args:
             pbc_box(Tensor):    Tensor of PBC box. Data type is float.
-            success(bool):      Whether to update the pbc_box. Default: ``True``.
+            success(bool):      Whether to update the pbc_box. Default: True
 
         Returns:
             bool, whether successfully update the parameters of PBC box.
@@ -259,20 +260,48 @@ class Updater(Optimizer):
 
         Args:
             velocity(Tensor):   Tensor of atomic velocities. Data type is float.
-            success(bool):      Whether to update the velocities. Default: ``True``.
+            success(bool):      Whether to update the velocities. Default: True
 
         Returns:
             bool, whether successfully update the parameters of atomic velocities.
         """
         return F.depend(success, F.assign(self.velocity, velocity))
 
-    def update_kinetics(self, kinetics: Tensor, success: bool = True) -> bool:
+    def record_coordinate(self, coordinate: Tensor, success: bool = True) -> bool:
         """
-        Update the parameters of kinetics.
+        Record the value of current coordinate
+
+        Args:
+            coordinate(Tensor): Tensor of atomic coordinates. Data type is float.
+            success(bool):      Whether to update the coordinate. Default: True
+
+        Returns:
+            bool, whether successfully update the coordinate.
+        """
+        return F.depend(success, F.assign(self.current_coordinate, coordinate))
+
+    def record_pbc_box(self, pbc_box: Tensor, success: bool = True) -> bool:
+        """
+        Record the value of current PBC box.
+
+        Args:
+            pbc_box(Tensor):    Tensor of PBC box. Data type is float.
+            success(bool):      Whether to update the pbc_box. Default: True
+
+        Returns:
+            bool, whether successfully update the parameters of PBC box.
+        """
+        if self.current_pbc_box is None:
+            return success
+        return F.depend(success, F.assign(self.current_pbc_box, pbc_box))
+
+    def record_kinetics(self, kinetics: Tensor, success: bool = True) -> bool:
+        """
+        Record the value of current kinetics.
 
         Args:
             kinetics(Tensor):   Tensor of kinetics. Data type is float.
-            success(bool):      Whether to update the kinetics. Default: ``True``.
+            success(bool):      Whether to update the kinetics. Default: True
 
         Returns:
             bool, whether successfully update the parameters of kinetics.
@@ -281,13 +310,13 @@ class Updater(Optimizer):
             return success
         return F.depend(success, F.assign(self.kinetics, kinetics))
 
-    def update_temperature(self, temperature: Tensor, success: bool = True) -> bool:
+    def record_temperature(self, temperature: Tensor, success: bool = True) -> bool:
         """
-        Update the parameters of temperature.
+        Record the value of current temperature.
 
         Args:
             temperature(Tensor):    Tensor of temperature. Data type is float.
-            success(bool):          Whether to update the temperature. Default: ``True``.
+            success(bool):          Whether to update the temperature. Default: True
 
         Returns:
             bool, whether successfully update the parameters of temperature.
@@ -296,13 +325,13 @@ class Updater(Optimizer):
             return success
         return F.depend(success, F.assign(self.temperature, temperature))
 
-    def update_virial(self, virial: Tensor, success: bool = True) -> bool:
+    def record_virial(self, virial: Tensor, success: bool = True) -> bool:
         """
-        Update the parameters of virial.
+        Record the value of current virial.
 
         Args:
             virial(Tensor): Tensor of virial. Data type is float.
-            success(bool):  Whether to update the virial. Default: ``True``.
+            success(bool):  Whether to update the virial. Default: True
 
         Returns:
             bool, whether successfully update the parameters of virial.
@@ -311,13 +340,13 @@ class Updater(Optimizer):
             return success
         return F.depend(success, F.assign(self.virial, virial))
 
-    def update_pressure(self, pressure: Tensor, success: bool = True) -> bool:
+    def record_pressure(self, pressure: Tensor, success: bool = True) -> bool:
         """
-        Update the parameters of pressure.
+        Record the value of current pressure.
 
         Args:
             pressure(Tensor):   Tensor of pressure. Data type is float.
-            success(bool):      Whether to update the pressure. Default: ``True``.
+            success(bool):      Whether to update the pressure. Default: True
 
         Returns:
             bool, whether successfully update the parameters of pressure.
@@ -358,7 +387,7 @@ class Updater(Optimizer):
         Get temperature.
 
         Args:
-            kinetics(Tensor):   Tensor of kinetics. Data type is float. Default: ``None``.
+            kinetics(Tensor):   Tensor of kinetics. Data type is float. Default: None
 
         Returns:
             Tensor, the temperature of the system.
@@ -400,7 +429,7 @@ class Updater(Optimizer):
         Finish the current optimization step and move to next step.
 
         Args:
-            success(bool):  Whether to finish the current optimization step and move to next step. Default: ``True``.
+            success(bool):  Whether to finish the current optimization step and move to next step. Default: True
 
         Returns:
             bool, whether successfully finish the current optimization step and move to next step.
@@ -413,7 +442,7 @@ class Updater(Optimizer):
 
         Args:
             force(Tensor):  Tensor of force. Data type is float.
-            virial(Tensor): Tensor of virial. Data type is float. Default: ``None``.
+            virial(Tensor): Tensor of virial. Data type is float. Default: None
 
         Returns:
             - Tensor, Tensor of force after weight decay and gradient scale.
@@ -440,27 +469,39 @@ class Updater(Optimizer):
 
         force, virial = self.decay_and_scale_grad(force, virial)
 
-        coordinate = self.coordinate
-        velocity = self.velocity
-        kinetics = self.kinetics
-        pbc_box = self.pbc_box
+        coordinate = self.identity(self.coordinate)
+        velocity = self.identity(self.velocity)
+        pbc_box = None
+        if self.pbc_box is not None:
+            pbc_box = self.identity(self.pbc_box)
+
+        variables = {'coordinate': coordinate,
+                     'velocity': velocity,
+                     'force': force,
+                     'energy': energy,
+                     'virial': virial,
+                     'pbc_box': pbc_box,
+                     }
 
         step = self.identity(self.step)
         if self.controller is not None:
             for i in range(self.num_controller):
-                coordinate, velocity, force, energy, kinetics, virial, pbc_box = \
-                    self.controller[i](coordinate, velocity, force, energy, kinetics, virial, pbc_box, step)
+                variables = self.controller[i](**variables, step=step)
 
+        kinetics = self.get_kinetics(variables['velocity'])
         temperature = self.get_temperature(kinetics)
         pressure = self.get_pressure(kinetics, virial, pbc_box)
 
         success = True
-        success = self.update_coordinate(coordinate, success)
-        success = self.update_velocity(velocity, success)
-        success = self.update_pbc_box(pbc_box, success)
-        success = self.update_kinetics(kinetics, success)
-        success = self.update_temperature(temperature, success)
-        success = self.update_virial(virial, success)
-        success = self.update_pressure(pressure, success)
+        success = self.record_coordinate(coordinate, success)
+        success = self.record_pbc_box(pbc_box, success)
+        success = self.record_kinetics(kinetics, success)
+        success = self.record_virial(virial, success)
+        success = self.record_temperature(temperature, success)
+        success = self.record_pressure(pressure, success)
+
+        success = self.update_coordinate(variables['coordinate'], success)
+        success = self.update_velocity(variables['velocity'], success)
+        success = self.update_pbc_box(variables['pbc_box'], success)
 
         return self.next_step(success)

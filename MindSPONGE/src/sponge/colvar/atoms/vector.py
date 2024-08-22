@@ -32,26 +32,27 @@ from ...function import get_integer, check_broadcast, all_none, any_not_none
 
 
 class Vector(AtomsBase):
-    r"""Vector between specific atoms or virtual atoms.
+    r"""Vector between specific atoms or virtual atoms
 
     Args:
+
         atoms (AtomsBase):  Atoms of shape `(..., 2, D)` to form a vector of shape `(..., D)` or `(..., 1, D)`.
                             Cannot be used with `atoms0` or `atoms1`.
-                            Default: ``None``. `D` means Spatial dimension of the simulation system. Usually is 3.
+                            Default: None
 
         atoms0 (AtomsBase): The initial point of atoms of shape `(..., D)` to form a vector of shape `(..., D)`.
                             Must be used with `atoms1`, and cannot be used with `atoms`.
-                            Default: ``None``.
+                            Default: None
 
         atoms1 (AtomsBase): The terminal point of atoms of shape `(..., D)` to form a vector of shape `(..., D)`.
                             Must be used with `atoms0`, and cannot be used with `atoms`.
-                            Default: ``None``.
+                            Default: None
 
         batched (bool):     Whether the first dimension of index is the batch size.
-                            Default: ``False``.
+                            Default: False
 
         use_pbc (bool):     Whether to calculate distance under periodic boundary condition.
-                            Default: ``None``.
+                            Default: None
 
         keepdims (bool):    If this is set to True, the axis which is take from the `atoms` will be left,
                             and the shape of the vector will be `(..., 1, D)`
@@ -59,33 +60,26 @@ class Vector(AtomsBase):
                             if None, its value will be determined according to the rank (number of dimension) of
                             the input atoms: False if the rank is greater than 2, otherwise True.
                             It only works when initialized with `atoms`.
-                            Default: ``None``.
+                            Default: None
 
         axis (int):         Axis along which the coordinate of atoms are take, of which the dimension must be 2.
                             It only works when initialized with `atoms`.
-                            Default: -2.
+                            Default: -2
 
-        name (str):         Name of the Colvar. Default: 'vector'.
+        name (str):         Name of the Colvar. Default: 'vector'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Examples:
-        >>> import mindspore as ms
-        >>> import numpy as np
-        >>> from mindspore import Tensor
-        >>> from sponge.colvar import Vector
-        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
-        >>> crd
-        Tensor(shape=[4, 3], dtype=Float32, value=
-        [[ 2.47492954e-01,  9.78153408e-01,  1.44034222e-01],
-         [ 2.36211464e-01,  3.35842371e-01,  8.39536846e-01],
-         [ 8.82235169e-01,  5.98322928e-01,  6.68052316e-01],
-         [ 7.17712820e-01,  4.72498119e-01,  1.69098437e-01]])
-        >>> vc02 = Vector(atoms0=[0], atoms1=[2])
-        >>> vc02(crd)
-        Tensor(shape=[1, 3], dtype=Float32, value=
-        [[ 6.34742200e-01, -3.79830480e-01,  5.24018109e-01]])
+    Symbols:
+
+        B:  Batchsize, i.e. number of walkers in simulation
+
+        A:  Number of atoms in system.
+
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
     def __init__(self,
                  atoms: AtomsBase = None,
@@ -175,15 +169,22 @@ class Vector(AtomsBase):
         """shape of the vector"""
         return self._shape
 
+    def set_dimension(self, dimension: int = 3):
+        """set the spatial dimension of the Vector"""
+        if self.atoms is None:
+            self.atoms0.set_dimension(dimension)
+            self.atoms1.set_dimension(dimension)
+        else:
+            self.atoms.set_dimension(dimension)
+        return self
+
     def construct(self, coordinate: Tensor, pbc_box: Tensor = None):
         r"""get vector between specific atoms or virtual atoms.
 
         Args:
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-                                    `B` means batchsize, i.e. number of walkers in simulation.
-                                    `A` means number of atoms in system.
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Default: ``None``.
+                                    Default: None
 
         Returns:
             vector (Tensor):        Tensor of shape `(B, ..., D)`. Data type is float.

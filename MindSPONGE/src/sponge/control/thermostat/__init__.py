@@ -44,10 +44,10 @@ def get_thermostat(cls_name: Union[str, dict, Thermostat],
         cls_name (Union[str, dict, Thermostat]): Class name, arguments or object of a thermostat.
         system (Molecule): Simulation system.
         temperature (float): Reference temperature for temperature coupling. If `None` is given and
-            the type of `cls_name` is `str`, `None` will be returned. Default: ``None``.
+            the type of `cls_name` is `str`, `None` will be returned. Default: None
         **kwargs: Other arguments
 
-    Returns:
+    Return:
         thermostat (Thermostat): Object of thermostat
 
     """
@@ -68,15 +68,15 @@ def get_thermostat(cls_name: Union[str, dict, Thermostat],
         if temperature is None:
             return None
 
-        if cls_name.lower() in _THERMOSTAT_BY_KEY.keys():
+        if cls_name.lower() in _THERMOSTAT_BY_KEY:
             return _THERMOSTAT_BY_KEY.get(cls_name.lower())(system=system,
                                                             temperature=temperature,
                                                             **kwargs)
-        if cls_name in _THERMOSTAT_BY_NAME.keys():
+        if cls_name in _THERMOSTAT_BY_NAME:
             return _THERMOSTAT_BY_NAME.get(cls_name.lower())(system=system,
                                                              temperature=temperature,
                                                              **kwargs)
 
-        raise ValueError("The thermostat corresponding to '{}' was not found.".format(cls_name))
+        raise ValueError(f"The thermostat corresponding to '{cls_name}' was not found.")
 
-    raise TypeError("Unsupported thermostat type '{}'.".format(type(cls_name)))
+    raise TypeError(f"Unsupported thermostat type '{type(cls_name)}'.")

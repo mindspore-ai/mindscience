@@ -24,7 +24,7 @@
 SETTLE Constraint algorithm
 """
 
-from typing import Union, List, Tuple
+from typing import Union, Tuple, List, Dict
 
 import numpy as np
 from numpy import ndarray
@@ -42,9 +42,11 @@ class EinsumWrapper(ms.nn.Cell):
     """Implement particular Einsum operation
 
     Args:
+
         equation (str):  en equation represent the operation.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -80,9 +82,9 @@ class SETTLE(Constraint):
     Args:
         system (Molecule): Simulation system.
         index (Union[Tensor, ndarray, List[int]]): Array of settle index of shape `(C, 3)` or `(B, C, 3)`,
-            and the type is int. If `None` is given, the `settle_index` in `system` will be used. Default: ``None``.
+            and the type is int. If `None` is given, the `settle_index` in `system` will be used. Default: None
         distance (Union[Tensor, ndarray, List[float]]): Array of settle distance of shape (C, 2) or `(B, C, 2)`,
-            and the type is float. If `None` is given, the `settle_dis` in `system` will be used. Default: ``None``.
+            and the type is float. If `None` is given, the `settle_dis` in `system` will be used. Default: None
 
     Inputs:
         - **coordinate** (Tensor) - The coordinates of the system.
@@ -90,16 +92,15 @@ class SETTLE(Constraint):
         - **force** (Tensor) - The force of the system.
         - **energy** (Tensor) - The energy of the system.
         - **kinetics** (Tensor) - The kinetics of the system.
-        - **virial** (Tensor) - The virial of the system. Default: ``None``.
-        - **pbc_box** (Tensor) - PBC box of the system. Default: ``None``.
+        - **virial** (Tensor) - The virial of the system. Default: None
+        - **pbc_box** (Tensor) - PBC box of the system. Default: None
         - **step** (int) - The step of the system. Default: 0
 
-    Returns:
+    Return:
         - coordinate (Tensor), Tensor of shape (B, A, D). Data type is float.
         - velocity (Tensor), Tensor of shape (B, A, D). Data type is float.
         - force (Tensor), Tensor of shape (B, A, D). Data type is float.
         - energy (Tensor), Tensor of shape (B, 1). Data type is float.
-        - kinetics (Tensor), Tensor of shape (B, D). Data type is float.
         - virial (Tensor), Tensor of shape (B, D). Data type is float.
         - pbc_box (Tensor), Tensor of shape (B, D). Data type is float.
 
@@ -112,7 +113,7 @@ class SETTLE(Constraint):
                  index: Union[Tensor, ndarray, List[int]] = None, # (B, C, 3)
                  distance: Union[Tensor, ndarray, List[float]] = None, # (B, C, 2)
                  ):
-        super(SETTLE, self).__init__(system, bonds='all-bonds')
+        super().__init__(system, bonds='all-bonds')
         print('[MindSPONGE] The settle constraint is used for the molecule system.')
 
         # pylint: disable=invalid-name
@@ -520,11 +521,11 @@ class SETTLE(Constraint):
                   velocity: Tensor,
                   force: Tensor,
                   energy: Tensor,
-                  kinetics: Tensor,
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ):
+                  **kwargs
+                  ) -> Dict[str, Tensor]:
         #pylint: disable=invalid-name
         # (B, A, D)
         crd_old_0_0 = msnp.take_along_axis(self._coordinate.copy(), self.settle_index[..., None], axis=-2)
@@ -570,5 +571,10 @@ class SETTLE(Constraint):
             # (B,D) <- (B,A,D,D) <- (B,A,D) x (B,A,D)
             virial += -0.5 * (df_b * vec_ab + df_c * vec_ac).sum(-2)
 
-
-        return coordinate, velocity, force, energy, kinetics, virial, pbc_box
+        return {'coordinate': coordinate,
+                'velocity': velocity,
+                'force': force,
+                'energy': energy,
+                'virial': virial,
+                'pbc_box': pbc_box,
+                }

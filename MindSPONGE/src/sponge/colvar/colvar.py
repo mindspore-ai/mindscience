@@ -38,52 +38,62 @@ from ..function import check_broadcast, get_ms_array, Units
 
 
 class Colvar(Cell):
-    r"""
-    Base class for generalized collective variables (CVs) :math:`s(R)`.
+    r"""Base class for generalized collective variables (CVs) :math:`s(R)`.
 
-    In mathematics, CVs :math:`s(R)` are defined as a low dimensional function of
-    the atomistic coordinate :math:`R` of the simulation system, which should refer to
-    the variable describing the slow motion in the process of interest.
+        In mathematics, CVs :math:`s(R)` are defined as a low dimensional function of
+        the atomistic coordinate :math:`R` of the simulation system, which should refer to
+        the variable describing the slow motion in the process of interest.
 
-    In MindSPONGE, Colvar Cell is the base class for ``"generalized"`` CVs. A narrow CV is
-    generally a vector, i.e., its rank (ndim) is 1. For example, a CV of shape `(S)`.
-    Whereas a Colvar Cell can be of higher rank (ndim), for example, a Colvar of
-    shape `(S_1, S_2, ..., S_n)`
+        In MindSPONGE, Colvar Cell is the base class for "generalized" CVs. A narrow CV is
+        generally a vector, i.e., its rank (ndim) is 1. For example, a CV of shape `(S)`.
+        Whereas a Colvar Cell can be of higher rank (ndim), for example, a Colvar of
+        shape `(S_1, S_2, ..., S_n)`
 
-    For a Colvar, multiple values can be calculated using multiple sets of coordinates.
-    Therefore, for a Colvar Cell of shape `(S_1, S_2, ... , S_n)`, a calculation using
-    the `B` set of atomic coordinates represented by a tensor with shape `(B, A, D)`
-    yields a Tensor with shape `(B, S_1, S_2, ... , S_n)`.
-    `B` means Batchsize, i.e. number of walkers in simulation.
-    `A` means Number of colvar in system.
-    `D` means Dimension of the simulation system. Usually is 3.
-    `{S_i}` means Dimensions of the collective variables.
+        For a Colvar, multiple values can be calculated using multiple sets of coordinates.
+        Therefore, for a Colvar Cell of shape `(S_1, S_2, ... , S_n)`, a calculation using
+        the `B` set of atomic coordinates represented by a tensor with shape `(B, A, D)`
+        yields a Tensor with shape `(B, S_1, S_2, ... , S_n)`.
 
     Reference:
+
         Yang, Y. I.; Shao, Q.; Zhang, J.; Yang, L.; Gao, Y. Q.
         Enhanced Sampling in Molecular Dynamics [J].
         The Journal of Chemical Physics, 2019, 151(7): 070902.
 
     Args:
-        shape (Tuple):      Shape of collective variables. Default: ()
 
-        periodic (bool):    Whether the collective variables is periodic. Default: ``False``.
+        shape (tuple):      Shape of collective variables. Default: ()
+
+        ndim (int):         Rank (number of dimensions) of collective variables. Default: 0
+
+        periodic (bool):    Whether the collective variables is periodic. Default: False
 
         use_pbc (bool):     Whether to use periodic boundary condition.
                             If `None` is given, it will determine whether to use periodic boundary
                             conditions based on whether the `pbc_box` is provided.
-                            Default: ``None``.
+                            Default: None
 
         name (str):         Name of the collective variables. Default: 'colvar'
 
         unit (str):         Unit of the collective variables.
                             NOTE: This is not the `Units` Cell that wraps length and energy.
-                            Default: ``None``.
+                            Default: None
 
         dtype (type):       Data type of the collective variables. Default: float32
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
+
+    Symbols:
+
+        B:      Batchsize, i.e. number of walkers in simulation
+
+        A:      Number of atoms in system.
+
+        D:      Spatial dimension of the simulation system. Usually is 3.
+
+        {S_i}:  Dimensions of the collective variables.
 
     """
 
@@ -123,8 +133,8 @@ class Colvar(Cell):
     def use_pbc(self) -> bool:
         """whether to use periodic boundary condition
 
-        Returns:
-            bool, whether to use periodic boundary condition.
+        Return:
+            bool, whether to use periodic boundary condition
 
         """
         return self._use_pbc
@@ -138,8 +148,8 @@ class Colvar(Cell):
     def shape(self) -> tuple:
         """shape of the collective variables (S_1, S_2, ..., S_n)
 
-        Returns:
-            shape (tuple),  Shape of the Colvar
+        Return:
+            shape (tuple):  Shape of the Colvar
 
         """
         return self._shape
@@ -153,7 +163,7 @@ class Colvar(Cell):
     def name(self) -> str:
         r"""name of the collective variables
 
-        Returns:
+        Return:
             str, name of the CV
 
         """
@@ -163,7 +173,7 @@ class Colvar(Cell):
     def ndim(self) -> int:
         r"""rank (number of dimensions) of the collective variables
 
-        Returns:
+        Return:
             int, rank of the CV
 
         """
@@ -173,7 +183,7 @@ class Colvar(Cell):
     def dtype(self) -> type:
         """data type of the collective variables.
 
-        Returns:
+        Return:
             type, data type of the Colvar
 
         """
@@ -196,7 +206,7 @@ class Colvar(Cell):
 
     @classmethod
     def vector_in_pbc(cls, vector: Tensor, pbc_box: Tensor) -> Tensor:
-        """Make the difference of vectors at the range from -0.5 box to 0.5 box"""
+        """Make the difference of vecters at the range from -0.5 box to 0.5 box"""
         return func.vector_in_pbc(vector, pbc_box)
 
     def set_name(self, name: str):
@@ -234,10 +244,16 @@ class Colvar(Cell):
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
                                     Position coordinate of atoms in system
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+                                    Tensor of PBC box. Default: None
 
         Returns:
             colvar (Tensor):        Tensor of shape `(B, S_1, S_2, ..., S_n)`.
+
+        Symbols:
+            B:      Batchsize, i.e. number of walkers in simulation
+            A:      Number of atoms in system.
+            D:      Spatial dimension of the simulation system. Usually is 3.
+            {S_i}:  Dimensions of the collective variables.
 
         """
 
@@ -249,7 +265,7 @@ class Colvar(Cell):
         self._shape = shape
         self._ndim = len(self.shape)
         if self._periodic.shape != self._shape:
-            if not check_broadcast(self._periodic.shape, self._shape):
+            if check_broadcast(self._periodic.shape, self._shape) != self._shape:
                 raise ValueError(f'The shape of periodic {self._periodic.shape} can not be broadcast to '
                                  f'the shape of CVs: {self._shape}')
             self._periodic = F.broadcast_to(self._periodic, self._shape)

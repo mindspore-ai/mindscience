@@ -37,21 +37,22 @@ def get_atoms(atoms: Union[AtomsBase, List[AtomsBase], Tuple[AtomsBase], Tensor,
               batched: bool = False,
               keep_in_box: bool = False,
               ) -> AtomsBase:
-    r"""
-    get atom(s) or group.
+    r"""get atom(s) or group
 
     Args:
+
         atoms (Union[list, tuple, AtomsBase, Tensor, Parameter, ndarray]):
                             List of atoms.
 
         batched (bool):     Whether the first dimension of index is the batch size.
-                            Default: ``False``.
+                            Default: False
 
         keep_in_box (bool): Whether to displace the coordinate in PBC box.
-                            Default: ``False``.
+                            Default: False
 
     Returns:
-        atoms (Union[Atoms, Group]), Atoms or group.
+
+        atoms (Union[Atoms, Group]): Atoms or group
 
     """
     #pylint: disable=bare-except

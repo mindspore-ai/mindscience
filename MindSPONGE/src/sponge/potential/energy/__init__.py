@@ -33,13 +33,14 @@ from .bond import BondEnergy
 from .angle import AngleEnergy
 from .dihedral import DihedralEnergy
 from .improper import ImproperEnergy
+from .cmap import CmapEnergy
 from .coulomb import CoulombEnergy
 from .lj import LennardJonesEnergy
 from .pairs import NonbondPairwiseEnergy
 
 __all__ = ['EnergyCell', 'NonbondEnergy', 'BondEnergy', 'AngleEnergy', 'DihedralEnergy',
            'ImproperEnergy', 'CoulombEnergy', 'LennardJonesEnergy', 'NonbondPairwiseEnergy',
-           'get_energy_cell']
+           'get_energy_cell', 'CmapEnergy']
 
 _ENERGY_BY_NAME = {cell.__name__: cell for cell in _ENERGY_BY_KEY.values()}
 
@@ -54,11 +55,11 @@ def get_energy_cell(cls_name: Union[str, dict, EnergyCell],
     Args:
         cls_name (Union[str, dict, Thermostat]): Class name, arguments or object of a energy cell.
         system (Molecule): Simulation system.
-        parameters (dict): Dict of force field parameters. Default: ``None``.
-        exclude_index (Tensor): Tensor of exclude index for neighbour list. Default: ``None``.
+        parameters (dict): Dict of force field parameters. Default: None
+        exclude_index (Tensor): Tensor of exclude index for neighbour list. Default: None
         **kwargs: Other arguments
 
-    Returns:
+    Return:
         energy (EnergyCell): Object of energy cell
 
     """
@@ -77,12 +78,12 @@ def get_energy_cell(cls_name: Union[str, dict, EnergyCell],
             return None
 
         #pylint: disable=invalid-name
-        if cls_name.lower() in _ENERGY_BY_KEY.keys():
+        if cls_name.lower() in _ENERGY_BY_KEY:
             EnergyCell_: EnergyCell = _ENERGY_BY_KEY.get(cls_name.lower())
-        elif cls_name in _ENERGY_BY_NAME.keys():
+        elif cls_name in _ENERGY_BY_NAME:
             EnergyCell_: EnergyCell = _ENERGY_BY_NAME.get(cls_name.lower())
         else:
-            raise ValueError("The energy cell corresponding to '{}' was not found.".format(cls_name))
+            raise ValueError(f"The energy cell corresponding to '{cls_name}' was not found.")
 
         if EnergyCell_.check_system(system):
             return EnergyCell_(system=system,
@@ -91,4 +92,4 @@ def get_energy_cell(cls_name: Union[str, dict, EnergyCell],
                                **kwargs)
         return None
 
-    raise TypeError("Unsupported energy cell type '{}'.".format(type(cls_name)))
+    raise TypeError(f"Unsupported energy cell type '{type(cls_name)}'.")

@@ -53,41 +53,36 @@ class Residue:
     such as a water molecule, an inorganic salt ion, etc. This means that the `Residue` Cell has
     a similar concept to the "residue" in a PDB file.
 
-    Note:
-        `Residue` Cell is only used to represent the atomic properties and bond connections,
-        but does NOT contain atomic coordinates.
+    NOTE: `Residue` Cell is only used to represent the atomic properties and bond connections,
+            but does NOT contain atomic coordinates.
 
     Args:
-        atom_name (Union[List[str], ndarray]): Array of atom name with data type `str`. Default: ``None``.
-        atom_type (Union[List[str], ndarray]): Array of atom type with data type `str`. Default: ``None``.
-        atom_mass (Union[Tensor, ndarray, List[float]]): Array of atom mass of shape :math:`(B, A)`
-            with data type `float`. Default: ``None``.
-        atom_charge (Union[Tensor, ndarray, List[float]]): Array of atom charge of shape :math:`(B, A)`
-            with data type `float`. Default: ``None``.
-        atomic_number (Union[Tensor, ndarray, List[float]]): Array of atomic number of shape :math:`(B, A)`
-            with data type `int`. Default: ``None``.
-        bonds (Union[Tensor, ndarray, List[int]]): Array of bond connection of shape :math:`(B, b, 2)`
-            with data type `int`. Default: ``None``.
+        atom_name (Union[List[str], ndarray]): Array of atom name with data type `str`. Defulat: None
+        atom_type (Union[List[str], ndarray]): Array of atom type with data type `str`. Defulat: None
+        atom_mass (Union[Tensor, ndarray, List[float]]): Array of atom mass of shape `(B, A)`
+            with data type `float`. Defulat: None
+        atom_charge (Union[Tensor, ndarray, List[float]]): Array of atom charge of shape `(B, A)
+            with data type `float`. Defulat: None
+        atomic_number (Union[Tensor, ndarray, List[float]]): Array of atomic number of shape `(B, A)`
+            with data type `int`. Defulat: None
+        bonds (Union[Tensor, ndarray, List[int]]): Array of bond connection of shape `(B, b, 2)`
+            with data type `int`. Defulat: None
         settle_index (Union[Tensor, ndarray, List[int]]): Array of atom indices for SETTLE constraint algorithm,
-            The shape of the array is :math:`(B, 3)` with data type `int`. The order of index is vertex atoms and two
-            base atoms. Default: ``None``.
+            The shape of the array is `(B, 3)` with data type `int`. The order of index is vertex atoms and two
+            base atoms. Defulat: None
         settle_length (Union[Tensor, ndarray, List[float]]): Array of length for SETTLE constraint algorithm,
-            The shape of the array is :math:`(B, 2)` with data type `int`. The order of length is leg and base.
-            Default: ``None``.
-        settle_unit (str): Unit value for SETTLE constraint algorithm. Default: ``None``.
-        head_atom (int): Index of the head atom to connect with the previous residue. Default: ``None``.
-        tail_atom (int): Index of the tail atom to connect with the next residue. Default: ``None``.
-        start_index (int): The start index of the first atom in this residue. Default: ``0``.
-        name (str): Name of the residue. Default: ``'MOL'``.
+            The shape of the array is `(B, 2)` with data type `int`. The order of length is leg and base. Defulat: None
+        head_atom (int): Index of the head atom to connect with the previous residue. Default: None
+        tail_atom (int): Index of the tail atom to connect with the next residue. Default: None
+        start_index (int): The start index of the first atom in this residue. Default: 0
+        name (str): Name of the residue. Default: 'MOL'
         template (Union[dict, str]): Template for residue. It can be a `dict` in MindSPONGE template
             format or a `str` for the filename of a MindSPONGE template file. If a `str` is given,
             it will first look for a file with the same name in the current directory. If file does
             not exist, it will search in the built-in template directory of MindSPONGE
-            (`mindsponge.data.template`). Default: ``None``.
-        length_unit (str): Unit of length. Default: ``None``.
-        kwargs (dict): Other parameters dictionary.
+            (`mindsponge.data.template`). Default: None.
 
-    Note:
+    Symbols:
         B:  Batchsize, i.e. number of walkers in simulation
         A:  Number of atoms.
         b:  Number of bonds.
@@ -100,12 +95,12 @@ class Residue:
                  atom_charge: Union[Tensor, ndarray, List[float]] = None,
                  atomic_number: Union[Tensor, ndarray, List[float]] = None,
                  bonds: Union[Tensor, ndarray, List[int]] = None,
-                 settle_index: Union[Tensor, ndarray, List[int]] = None,
-                 settle_length: Union[Tensor, ndarray, List[float]] = None,
-                 settle_unit: str = None,
                  head_atom: int = None,
                  tail_atom: int = None,
                  start_index: int = 0,
+                 settle_index: Union[Tensor, ndarray, List[int]] = None,
+                 settle_length: Union[Tensor, ndarray, List[float]] = None,
+                 settle_unit: str = None,
                  name: str = 'MOL',
                  template: Union[dict, str] = None,
                  length_unit: str = None,
@@ -114,7 +109,6 @@ class Residue:
         self._kwargs = get_arguments(locals(), kwargs)
 
         self._name = name
-        self.length_unit = None
 
         self.atom_name = None
         if atom_name is not None:
@@ -154,7 +148,7 @@ class Residue:
             if bonds is not None:
                 bonds = np.array(bonds, np.int32)
 
-            self.length_unit = template.get('length_unit')
+            length_unit = template.get('length_unit')
             settle: dict = template.get('settle')
 
             head_atom = template.get('head_atom')
@@ -183,6 +177,8 @@ class Residue:
 
                 if tail_atom is not None:
                     tail_atom = serial_list.index(tail_atom)
+
+        self.length_unit = length_unit
 
         if self.atom_name is None and atomic_number is None:
             raise ValueError('atom_name and atomic_number cannot both be None')
@@ -489,11 +485,11 @@ class Residue:
         Add an atom to the residue.
 
         Args:
-            atom_name(str):     Atom name. Default: ``None``.
-            atom_type(str):     Atom type. Default: ``None``.
-            atom_mass(float):   Atom mass. Default: ``None``.
-            atom_charge(float): Atom charge. Default: ``None``.
-            atomic_number(str): Atomic number. Default: ``None``.
+            atom_name(str):     Atom name. Default: None
+            atom_type(str):     Atom type. Default: None
+            atom_mass(float):   Atom mass. Default: None
+            atom_charge(float): Atom charge. Default: None
+            atomic_number(str): Atomic number. Default: None
         """
 
         if atom_name is None and atomic_number is None:

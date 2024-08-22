@@ -25,7 +25,6 @@ Atom group
 """
 
 from typing import Union, List, Tuple
-import mindspore
 from mindspore import ops
 from mindspore.ops import functional as F
 from mindspore import Tensor
@@ -39,16 +38,17 @@ class ColvarGroup(Colvar):
     r"""Concatenate a group of `Colvar` classes into one `Colvar` class
 
     Args:
-        colvar (list or tuple): Array of `Colvar` to be concatenated.
+
+        colvar (list or tuple):
+                    Array of `Colvar` to be concatenated.
 
         axis (int): Axis to be concatenated. NOTE: This refers to the axis of the output Tensor
-                    with the shape `(B, S_1, S_2, ..., S_n)`. Default: -1.
+                    with the shape `(B, S_1, S_2, ..., S_n)`. Default: -1
 
-        use_pbc (bool): Whether to use periodic boundary condition. Default: ``None``.
-
-        name (str): Name of the collective variables. Default: 'colvar_group'.
+        name (str): Name of the collective variables. Default: 'colvar_group'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -106,8 +106,7 @@ class ColvarGroup(Colvar):
 
         self.concat = ops.Concat(axis)
 
-        periodic_int = [p.astype(mindspore.int32) for p in periodic]
-        self._periodic = F.squeeze(self.concat(periodic_int), 0).astype(mindspore.bool_)
+        self._periodic = F.squeeze(self.concat(periodic), 0)
 
     def set_pbc(self, use_pbc: bool):
         """set whether to use periodic boundary condition"""
@@ -122,15 +121,18 @@ class ColvarGroup(Colvar):
 
         Args:
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-                                    B means Batchsize, i.e. number of walkers in simulation.
-                                    A means Number of colvar in system.
-                                    D means Dimension of the simulation system. Usually is 3.
-                                    Position coordinate of colvar in system.
+                                    Position coordinate of colvar in system
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+                                    Tensor of PBC box. Default: None
 
         Returns:
             position (Tensor):  Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.
+
+        Symbols:
+            B:      Batchsize, i.e. number of walkers in simulation
+            A:      Number of colvar in system.
+            {S_i}:  Dimensions of collective variables.
+            D:      Dimension of the simulation system. Usually is 3.
 
         """
         colvar = ()

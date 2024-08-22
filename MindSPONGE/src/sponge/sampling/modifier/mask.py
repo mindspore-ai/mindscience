@@ -36,18 +36,20 @@ class MaskedDriven(ForceModifier):
     r"""Only drive part of atoms via modifying atomic force.
 
     Args:
+
         mask (Union[Tensor, ndarray]): Array of atomic mask to calculate the force.
             The shape of array is `(A)` or `(B, A)`, and the type is bool.
 
         update_pace (int): Frequency for updating the modifier. Default: 0
 
         length_unit (str): Length unit. If None is given, it will be assigned with the global length unit.
-            Default: ``None``.
+            Default: None
 
         energy_unit (str): Energy unit. If None is given, it will be assigned with the global energy unit.
-            Default: ``None``.
+            Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -91,7 +93,7 @@ class MaskedDriven(ForceModifier):
             virial_ad (Tensor): Tensor of shape (B, D). Data type is float.
                                 Virial calculated calculated by automatic differentiation.
 
-        Returns:
+        Return:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
                                 Totoal potential energy for simulation.
             force (Tensor):     Tensor of shape (B, A, D). Data type is float.
@@ -99,7 +101,7 @@ class MaskedDriven(ForceModifier):
             virial (Tensor):    Tensor of shape (B, D). Data type is float.
                                 Total virial for simulation.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.

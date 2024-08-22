@@ -40,19 +40,21 @@ class AminoAcid(Residue):
     r"""Residue for amino acid
 
     Args:
+
         name (str):         Name of the residue. Default: ''
 
-        template (dict):    Template of Residue. Default: ``None``.
+        template (dict):    Template of Residue. Default: None
 
         atom_name (Union[str, List[str], ndarray]):
-                            Atom name. Can be ndarray or list of str. Default: ``None``.
+                            Atom name. Can be ndarray or list of str. Defulat: None
 
         start_index (int):  The start index of the first atom in this residue.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
 
         B:  Batchsize, i.e. number of walkers in simulation
 

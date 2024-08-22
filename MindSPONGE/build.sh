@@ -18,7 +18,7 @@ OUTPUT_PATH="${BASEPATH}/output/"
 PYTHON=$(which python3)
 
 mk_new_dir() {
-    local create_dir="$1"  # the target to make
+      local create_dir="$1"  # the target to make
 
     if [[ -d "${create_dir}" ]];then
         rm -rf "${create_dir}"

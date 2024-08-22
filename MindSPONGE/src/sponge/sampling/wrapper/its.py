@@ -57,33 +57,34 @@ class ITS(EnergyWrapper):
         U_{eff}(R) = -\frac{1}{\beta_0} \log{\sum_k ^ N {n_k e ^ {-\beta_k U(R)}}}
 
     Args:
+
         sim_temp (float):       Simulation temperature.
 
         temp_min (float):       Minimum temperature for integration.
                                 Only used when `temperature` is None.
-                                Default: ``None``.
+                                Default: None
 
         temp_max (float):       Minimum temperature for integration.
                                 Only used when `temperature` is None.
-                                Default: ``None``.
+                                Default: None
 
         temp_bin (int):         Number of temperatures for integrationintergration.
                                 Only used when `temperature` is None.
-                                Default: ``None``.
+                                Default: None
 
         unlinear_temp (bool)    Whether to generate unlinear integration temperatures
-                                Default: ``False``.
+                                Default: False
 
         temperatures (Tensor):  Temperatures for integration.
                                 The shape of tensor is `(B, T)`, the data type is float.
-                                Default: ``None``.
+                                Default: None
 
         update_pace (int):      Freuency for updating ITS. Default: 100
 
         num_walker (int):       Number of multiple walkers.
-                                Cannot be None when `share_parameter` is False. Default: ``None``.
+                                Cannot be None when `share_parameter` is False. Default: None
 
-        share_parameter (bool): Whether to share ITS parameters for all walkers. Default: ``True``.
+        share_parameter (bool): Whether to share ITS parameters for all walkers. Default: True
 
         energy_shift (float):   Initial shift value for potential energy. Default: 0
 
@@ -105,15 +106,16 @@ class ITS(EnergyWrapper):
                                 Defatul: 0
 
         length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
-                                Default: ``None``.
+                                Default: None
 
         energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
-                                Default: ``None``.
+                                Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
 
         B:  Batchsize, i.e. number of walkers in simulation.
 
@@ -294,6 +296,11 @@ class ITS(EnergyWrapper):
 
         self.step = Parameter(Tensor(0, ms.int32), name='iteration_step', requires_grad=False)
 
+        self._num_biases = 1
+        self._bias_names = ['its']
+        self._biases = Parameter(msnp.zeros((self.num_walker, self._num_biases), ms.float32),
+                                 name='biases', requires_grad=False)
+
     @property
     def sim_kbt(self):
         """:math:`k_b T` at simlation temperature"""
@@ -388,7 +395,7 @@ class ITS(EnergyWrapper):
             temperature (Tensor):   Tensor of shape `(B, ...)`. Data type is float.
                                     Temperature to reweight. If None is given,
                                     the simulation temperature will be used.
-                                    Default: ``None``.
+                                    Default: None
 
         Returns:
             rct (Tensor):   Tensor of shape `(B, ...)`. Data type is float.
@@ -523,15 +530,15 @@ class ITS(EnergyWrapper):
             potentials (Tensor):    Tensor of shape `(B, U)`. Data type is float.
                                     Potential energies.
             biases (Tensor):        The shape of tensor is `(B, V)`. The data type is float.
-                                    Bias potential energies. Default: ``None``.
+                                    Bias potential energies. Default: None
 
-        Returns:
+        Return:
             energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
                                 Total energy (potential energy and bias energy).
             bias (Tensor):      Tensor of shape `(B, 1)`. Data type is float.
                                 Total bias potential used for reweighting calculation.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation.
             U:  Dimension of potential energy.
             V:  Dimension of bias potential.
@@ -599,6 +606,8 @@ class ITS(EnergyWrapper):
         potential = func.keepdims_sum(potentials, -1) + self.energy_shift
         # (B, 1) - (B, 1) - (B, 1)
         bias = energy - potential - self.reweight_factor
+
+        bias = F.depend(bias, F.assign(self._biases, bias))
 
         return energy, bias
 

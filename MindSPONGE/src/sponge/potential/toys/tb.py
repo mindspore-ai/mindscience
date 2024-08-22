@@ -36,15 +36,16 @@ from ...function import get_ms_array, keepdims_sum
 
 
 class TiwaryBerne(PotentialCell):
-    r"""
-    Potential energy of a toy model developed by Tiwary and Berne.
+    r"""Potential energy of a toy model developed by Tiwary and Berne.
 
     Reference:
+
         Tiwary, P.; Berne, B. J.
         Predicting Reaction Coordinates in Energy Landscapes with Diffusion Anisotropy [J].
         The Journal of Chemical Physics, 2017, 147(15): 152701.
 
     Args:
+
         location: Union[Tensor, ndarray, List[float], Tuple[float]]:
             Array of location(s) of metastable state(s) on the potential energy surface (PES).
             The shape of the array is `(S, D)`, and the data type is float.
@@ -58,12 +59,15 @@ class TiwaryBerne(PotentialCell):
         name (str): Name of the energy. Default: 'tiwary_berne'
 
     Returns:
-        energy (Tensor), Tensor of shape `(B, 1)`. Data type is float.
+
+        energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
+
         S:  Number of metastable state(s).
         D:  Spatial dimension of the toy model. Usually is 2.
 
@@ -137,20 +141,20 @@ class TiwaryBerne(PotentialCell):
             coordinates (Tensor):           Tensor of shape (B, A, 2). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: ``None``.
+                                            Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour atoms. Default: ``None``.
+                                            Mask for neighbour atoms. Default: None
             neighbour_vector (Tensor):       Tensor of shape (B, A, N, 2). Data type is bool.
                                             Vectors from central atom to neighbouring atoms.
             neighbour_distances (Tensor):   Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: ``None``.
+                                            Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, 2). Data type is float.
-                                            Tensor of PBC box. Default: ``None``.
+                                            Tensor of PBC box. Default: None
 
         Returns:
             potential (Tensor): Tensor of shape (B, E). Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.

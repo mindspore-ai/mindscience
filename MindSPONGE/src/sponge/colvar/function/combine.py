@@ -37,15 +37,16 @@ from ...function import get_ms_array, any_none, any_not_none, check_broadcast
 
 
 class CombineCV(Colvar):
-    r"""
-    Polynomial combination of a set of Colvar :math:`{s_i}` with shape (S_1, S_2, ..., S_n).
-    `{S_i}` means dimensions of collective variables.
+    r"""Polynomial combination of a set of Colvar :math:`{s_i}` with shape (S_1, S_2, ..., S_n)
+
+    Math:
 
     .. math::
 
         S = \sum_i^n{w_i (s_i - o_i)^{p_i}}
 
     Args:
+
         colvar (Union[List[Colvar], Tuple[Colvar]]): Array of `Colvar` to be combined :math:`{s_i}`.
 
         weights (Union[List[float], Tuple[Float], float, Tensor]): Weights :math:`{w_i}` for each Colvar.
@@ -60,24 +61,24 @@ class CombineCV(Colvar):
             If a list or tuple is given, the number of the elements should be equal to the number of CVs.
             If a float or Tensor is given, the value will be used for all Colvar. Default: 1
 
-        normal (bool): Whether to normalize all weights to 1. Default: ``False``.
+        normal (bool): Whether to normalize all weights to 1. Default: False
 
         periodic_min (Union[float, ndarray, Tensor]): The periodic minimum of the output of the combination of the CVs.
-            If the output is not periodic, it should be None. Default: ``None``.
+            If the output is not periodic, it should be None. Default: None
 
         periodic_max (Union[float, ndarray, Tensor]): The periodic maximum of the output of the combination of the CVs.
-            If the output is not periodic, it should be None. Default: ``None``.
+            If the output is not periodic, it should be None. Default: None
 
-        periodic_mask (Union[Tensor, ndarray]): Mask for the periodicity of the outputs.
-            The shape of the tensor should be as the same as the outputs, i.e. `(S_1, S_2, ..., S_n)`.
-            Default: ``None``.
+        periodic_mask (Union[Tensor, ndarray): Mask for the periodicity of the outputs.
+            The shape of the tensor should be as the same as the outputs, i.e. `(S_1, S_2, ..., S_n)`. Default: None
 
         use_pbc (bool): Whether to use periodic boundary condition. If `None` is given, it will determine whether
-            to use periodic boundary conditions based on whether the `pbc_box` is provided. Default: ``None``.
+            to use periodic boundary conditions based on whether the `pbc_box` is provided. Default: None
 
         name (str): Name of the collective variables. Default: 'combine'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -138,31 +139,31 @@ class CombineCV(Colvar):
         for i, cv in enumerate(colvar):
             try:
                 shape = check_broadcast(shape, cv.shape)
-            except ValueError:
+            except ValueError as ve:
                 raise ValueError(f'The shape of the {i}-th colvar {cv.shape} cannot be '
-                                 f'broadcast to the shape of the output: {shape}')
+                                 f'broadcast to the shape of the output: {shape}') from ve
 
             wshape = self.weights[i].shape
             try:
                 check_broadcast(wshape, cv.shape)
-            except ValueError:
+            except ValueError as ve:
                 raise ValueError(f'The shape of the {i}-th weight {wshape} cannot be broadcast to '
-                                 f'the shape of the corresponding colvar: {cv.shape}')
+                                 f'the shape of the corresponding colvar: {cv.shape}') from ve
 
             oshape = self.offsets[i].shape
             try:
                 check_broadcast(oshape, cv.shape)
-            except ValueError:
+            except ValueError as ve:
                 raise ValueError(f'The shape of the {i}-th offset {oshape} cannot be broadcast to '
-                                 f'the shape of the corresponding colvar: {cv.shape}')
+                                 f'the shape of the corresponding colvar: {cv.shape}') from ve
 
             if self.exponents[i] is not None:
                 eshape = self.exponents[i].shape
                 try:
                     check_broadcast(eshape, cv.shape)
-                except ValueError:
+                except ValueError as ve:
                     raise ValueError(f'The shape of the {i}-th exponent {eshape} cannot be broadcast to '
-                                     f'the shape of the corresponding colvar: {cv.shape}')
+                                     f'the shape of the corresponding colvar: {cv.shape}') from ve
 
             if use_pbc is not None:
                 cv.set_pbc(use_pbc)
@@ -203,15 +204,18 @@ class CombineCV(Colvar):
 
         Args:
             coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-                                    Position coordinate of colvar in system.
-                                    `B` means batchsize, i.e. number of walkers in simulation.
-                                    `A` means number of colvar in system.
-                                    `D` means dimension of the simulation system. Usually is 3
+                                    Position coordinate of colvar in system
             pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-                                    Tensor of PBC box. Default: ``None``.
+                                    Tensor of PBC box. Default: None
 
         Returns:
             combine (Tensor):       Tensor of shape `(B, S_1, S_2, ..., S_n)`. Data type is float.
+
+        Symbols:
+            B:      Batchsize, i.e. number of walkers in simulation
+            A:      Number of colvar in system.
+            {S_i}:  Dimensions of collective variables.
+            D:      Dimension of the simulation system. Usually is 3.
 
         """
         colvar = 0
@@ -234,15 +238,18 @@ class CombineCV(Colvar):
 
 
 class ColvarCombine(CombineCV):
-    r"""
-    See `CombineCV`. NOTE: This module will be removed in a future release, please use `CombineCV` instead.
+    r"""See `CombineCV`. NOTE: This module will be removed in a future release, please use `CombineCV` instead.
+
+    Math:
 
     .. math::
 
         S = \sum_i^n{w_i (s_i - o_i)^{p_i}}
 
     Args:
-        colvar (list or tuple): Array of `Colvar` to be combined :math:`{s_i}`.
+
+        colvar (list or tuple):
+                        Array of `Colvar` to be combined :math:`{s_i}`.
 
         weights (list, tuple, float, Tensor):
                         Weights :math:`{w_i}` for each Colvar.
@@ -262,31 +269,32 @@ class ColvarCombine(CombineCV):
                         If a float or Tensor is given, the value will be used for all Colvar.
                         Default: 1
 
-        normal (bool):  Whether to normalize all weights to 1. Default: ``False``.
+        normal (bool):  Whether to normalize all weights to 1. Default: False
 
         periodic_min (float, ndarray, Tensor):
                         The periodic minimum of the output of the combination of the CVs.
                         If the output is not periodic, it should be None.
-                        Default: ``None``.
+                        Default: None
 
         periodic_max (float, ndarray, Tensor):
                         The periodic maximum of the output of the combination of the CVs.
                         If the output is not periodic, it should be None.
-                        Default: ``None``.
+                        Default: None
 
         periodic_mask (Tensor, ndarray):
                         Mask for the periodicity of the outputs.
                         The shape of the tensor should be as the same as the outputs, i.e. `(S_1, S_2, ..., S_n)`.
-                        Default: ``None``.
+                        Default: None
 
         use_pbc (bool): Whether to use periodic boundary condition.
                         If `None` is given, it will determine whether to use periodic boundary
                         conditions based on whether the `pbc_box` is provided.
-                        Default: ``None``.
+                        Default: None
 
         name (str):     Name of the collective variables. Default: 'colvar_combination'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """

@@ -38,9 +38,11 @@ class FullConnectNeighbours(Cell):
     r"""Full connected neighbour list
 
     Args:
+
         num_atoms (int):    Number of atoms
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -87,9 +89,10 @@ class FullConnectNeighbours(Cell):
         """Dummy"""
         return exclude_index
 
-    def check_neighbour_list(self):
+    def check_neighbour_list(self, raise_error: bool = True) -> bool:
         """check the number of neighbouring atoms in neighbour list"""
-        return self
+        # pylint: disable=unused-argument
+        return True
 
     def print_info(self):
         """print information"""
@@ -109,7 +112,7 @@ class FullConnectNeighbours(Cell):
             neighbours (Tensor):    Tensor of shape (B, A, N). Data type is int.
             neighbour_mask (Tensor) Tensor of shape (B, A, N). Data type is bool.
 
-        Note:
+        Symbols:
             B:  Batch size.
             A:  Number of atoms in system.
             N:  Number of neighbour atoms.

@@ -46,6 +46,7 @@ class WallBias(Bias):
     r"""Bias potential to limit the values of the collective variables (CVs) to a certain range.
 
     Args:
+
         colvar (Colvar):    Collective variables (CVs) :math:`s(R)` to be limited.
 
         depth (Union[float, Tensor, ndarray]):
@@ -55,16 +56,17 @@ class WallBias(Bias):
                             Force constant of the bias potential :math:`k`. Default: Energy(100, 'kj/mol')
 
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
-                            Default: ``None``.
+                            Default: None
 
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
-                            Default: ``None``.
+                            Default: None
 
         use_pbc (bool):     Whether to use periodic boundary condition.
 
         name (str):         Name of the bias potential. Default: 'wall'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -119,20 +121,20 @@ class WallBias(Bias):
             coordinate (Tensor):           Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: ``None``.
+                                            Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour atoms. Default: ``None``.
+                                            Mask for neighbour atoms. Default: None
             neighbour_vector (Tensor):       Tensor of shape (B, A, N). Data type is bool.
                                             Vectors from central atom to neighbouring atoms.
             neighbour_distance (Tensor):   Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: ``None``.
+                                            Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: ``None``.
+                                            Tensor of PBC box. Default: None
 
         Returns:
             potential (Tensor): Tensor of shape (B, 1). Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.
@@ -168,6 +170,7 @@ class UpperWall(WallBias):
         V(R) = k \log{\left [ 1 + e^{\frac{s(R) - s_0}{\sigma}} \right ]}
 
     Args:
+
         colvar (Colvar):    Collective variables (CVs) :math:`s(R)` to be limited.
 
         boundary (Union[float, Tensor, ndarray]):
@@ -180,16 +183,17 @@ class UpperWall(WallBias):
                             Force constant of the bias potential :math:`k`. Default: Energy(100, 'kj/mol')
 
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
-                            Default: ``None``.
+                            Default: None
 
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
-                            Default: ``None``.
+                            Default: None
 
         use_pbc (bool):     Whether to use periodic boundary condition.
 
         name (str):         Name of the bias potential. Default: 'upper_wall'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -231,6 +235,7 @@ class LowerWall(WallBias):
         V(R) = k \log{\left [ 1 + e^{\frac{s_0 - s(R)}{\sigma}} \right ]}
 
     Args:
+
         colvar (Colvar):    Collective variables (CVs) :math:`s(R)` to be limited.
 
         boundary (Union[float, Tensor, ndarray]):
@@ -243,16 +248,17 @@ class LowerWall(WallBias):
                             Force constant of the bias potential :math:`k`. Default: Energy(100, 'kj/mol')
 
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
-                            Default: ``None``.
+                            Default: None
 
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
-                            Default: ``None``.
+                            Default: None
 
         use_pbc (bool):     Whether to use periodic boundary condition.
 
         name (str):         Name of the bias potential. Default: 'lower_wall'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """

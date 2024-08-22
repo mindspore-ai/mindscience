@@ -48,6 +48,7 @@ class ImproperEnergy(DihedralEnergy):
         E_{dihedral}(\omega) = \sum_n \frac{1}{2} V_n [1 - \cos{(n \omega - \gamma_n)}]
 
     Args:
+
         index (Union[Tensor, ndarray, List[int]]):
                             Array of the indices of the atoms forming the dihedral angles.
                             The shape of array is `(B, d, 4)`, and the data type is int.
@@ -64,7 +65,7 @@ class ImproperEnergy(DihedralEnergy):
                             Array of the phase shift :math:`\gamma_n` for the dihedral angles.
                             The shape of array is `(B, d)`, and the data type is float.
 
-        parameters (dict):  Force field parameters. Default: ``None``.
+        parameters (dict):  Force field parameters. Default: None
 
         use_pbc (bool):     Whether to use periodic boundary condition.
 
@@ -77,9 +78,10 @@ class ImproperEnergy(DihedralEnergy):
         name (str):         Name of the energy. Default: 'dihedral'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
 
         B:  Batchsize, i.e. number of walkers in simulation
 
@@ -101,7 +103,6 @@ class ImproperEnergy(DihedralEnergy):
                  name: str = 'improper_energy',
                  **kwargs,
                  ):
-
         super().__init__(
             system=system,
             parameters=parameters,
@@ -115,7 +116,7 @@ class ImproperEnergy(DihedralEnergy):
             energy_unit=energy_unit,
         )
         self._kwargs = get_arguments(locals(), kwargs)
-        if 'exclude_index' in self._kwargs.keys():
+        if 'exclude_index' in self._kwargs:
             self._kwargs.pop('exclude_index')
 
     @staticmethod
@@ -124,7 +125,7 @@ class ImproperEnergy(DihedralEnergy):
         return system.improper_dihedrals is not None
 
     @staticmethod
-    def get_parameters(system: Molecule, parameters: dict):
+    def _get_parameters(system: Molecule, parameters: dict):
         """
         Get the force field dihedral parameters.
 

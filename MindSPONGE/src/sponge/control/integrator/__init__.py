@@ -45,7 +45,7 @@ def get_integrator(cls_name: Union[str, dict, Integrator],
         system (Molecule): Simulation system.
         **kwargs: Other arguments
 
-    Returns:
+    Return:
         integrator (Integrator): Object of integrator
 
     """
@@ -63,12 +63,11 @@ def get_integrator(cls_name: Union[str, dict, Integrator],
         if cls_name.lower() == 'none':
             return None
 
-        #pylint: disable=invalid-name
-        if cls_name.lower() in _INTEGRATOR_BY_KEY.keys():
+        if cls_name.lower() in _INTEGRATOR_BY_KEY:
             return _INTEGRATOR_BY_KEY.get(cls_name.lower())(system=system, **kwargs)
-        if cls_name in _INTEGRATOR_BY_NAME.keys():
+        if cls_name in _INTEGRATOR_BY_NAME:
             return _INTEGRATOR_BY_NAME.get(cls_name.lower())(system=system, **kwargs)
 
-        raise ValueError("The integrator corresponding to '{}' was not found.".format(cls_name))
+        raise ValueError(f"The integrator corresponding to '{cls_name}' was not found.")
 
-    raise TypeError("Unsupported integrator type '{}'.".format(type(cls_name)))
+    raise TypeError(f"Unsupported integrator type '{type(cls_name)}'.")

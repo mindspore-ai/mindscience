@@ -40,39 +40,38 @@ class PotentialCell(EnergyCell):
     the shape `(B, 1)`. And a `PotentialCell` can output multiple energy items, so it returns a Tensor
     of the shape `(B, E)`. Besides, by default the units of `PotentialCell` are equal to the global units.
 
-    Note:
-        B:  Batchsize, i.e. number of walkers in simulation.
-        E:  Number of energy terms.
-
     Args:
-        num_energies(int):                      Number of the outputs of energy terms. Default: ``1``.
-        energy_names(Union[str, List[str]]):    Names of energy terms. Default: ``"potential"``.
+        num_energies(int):                      Number of the outputs of energy terms. Default: 1
+        energy_names(Union[str, List[str]]):    Names of energy terms. Default: "potential".
         length_unit(str):                       Length unit. If None is given, it will be assigned
-                                                with the global length unit. Default: ``None``.
+                                                with the global length unit. Default: None
         energy_unit(str):                       Energy unit. If None is given, it will be assigned
-                                                with the global energy unit. Default: ``None``.
+                                                with the global energy unit. Default: None
         use_pbc(bool):                          Whether to use periodic boundary condition.
-        name(str):                              Name of energy. Default: ``"potential"``.
-        kwargs(dict):                           Other parameters dictionary.
+        name(str):                              Name of energy. Default: "potential"
 
     Inputs:
         - **coordinates** (Tensor) - Tensor of shape (B, A, D). Data type is float.
           Position coordinate of atoms in system.
         - **neighbour_index** (Tensor) - Tensor of shape (B, A, N). Data type is int.
-          Index of neighbour atoms. Default: ``None``.
+          Index of neighbour atoms. Default: None
         - **neighbour_mask** (Tensor) - Tensor of shape (B, A, N). Data type is bool.
-          Mask for neighbour atoms. Default: ``None``.
+          Mask for neighbour atoms. Default: None
         - **neighbour_vector** (Tensor) - Tensor of shape (B, A, N, D). Data type is bool.
-          Vectors from central atom to neighbouring atoms. Default: ``None``.
+          Vectors from central atom to neighbouring atoms. Default: None
         - **neighbour_distances** (Tensor) - Tensor of shape (B, A, N). Data type is float.
-          Distance between neighbours atoms. Default: ``None``.
-        - **pbc_box** (Tensor) - Tensor of shape (B, D). Data type is float. Tensor of PBC box. Default: ``None``.
+          Distance between neighbours atoms. Default: None
+        - **pbc_box** (Tensor) - Tensor of shape (B, D). Data type is float. Tensor of PBC box. Default: None
 
     Outputs:
         potential, Tensor of shape `(B, E)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation.
+        E:  Number of energy terms.
     """
 
     def __init__(self,
@@ -117,7 +116,7 @@ class PotentialCell(EnergyCell):
         """
         Exclude index.
 
-        Returns:
+        Return:
             Tensor, exclude index.
         """
         if self._exclude_index is None:
@@ -129,7 +128,7 @@ class PotentialCell(EnergyCell):
         """
         Number of energy components.
 
-        Returns:
+        Return:
             int, number of energy components.
         """
         return self._num_energies
@@ -139,7 +138,7 @@ class PotentialCell(EnergyCell):
         """
         List of strings of energy names.
 
-        Returns:
+        Return:
             List[str], strings of energy names.
         """
         return self._energy_names
@@ -151,7 +150,7 @@ class PotentialCell(EnergyCell):
         Args:
             exclude_index(Tensor):  Excluded index of the system.
 
-        Returns:
+        Return:
             Tensor, excluded index.
         """
         self._exclude_index = self._check_exclude_index(exclude_index)
@@ -183,20 +182,20 @@ class PotentialCell(EnergyCell):
             coordinates (Tensor):           Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: ``None``.
+                                            Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour atoms. Default: ``None``.
+                                            Mask for neighbour atoms. Default: None
             neighbour_vector (Tensor):       Tensor of shape (B, A, N, D). Data type is bool.
                                             Vectors from central atom to neighbouring atoms.
             neighbour_distances (Tensor):   Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: ``None``.
+                                            Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: ``None``.
+                                            Tensor of PBC box. Default: None
 
         Returns:
             potential (Tensor): Tensor of shape (B, E). Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.

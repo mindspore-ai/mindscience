@@ -44,10 +44,10 @@ def get_barostat(cls_name: Union[str, dict, Barostat],
         cls_name (Union[str, dict, Barostat]): Class name, arguments or object of a barostat.
         system (Molecule): Simulation system.
         pressure (float): Reference pressure for pressure coupling. If `None` is given and
-            the type of `cls_name` is `str`, `None` will be returned. Default: ``None``.
+            the type of `cls_name` is `str`, `None` will be returned. Default: None
         **kwargs:   Other arguments
 
-    Returns:
+    Return:
         barostat (Barostat): Object of barostat
 
     """
@@ -68,15 +68,15 @@ def get_barostat(cls_name: Union[str, dict, Barostat],
         if pressure is None:
             return None
 
-        if cls_name.lower() in _BAROSTAT_BY_KEY.keys():
+        if cls_name.lower() in _BAROSTAT_BY_KEY:
             return _BAROSTAT_BY_KEY.get(cls_name.lower())(system=system,
                                                           pressure=pressure,
                                                           **kwargs)
-        if cls_name in _BAROSTAT_BY_NAME.keys():
+        if cls_name in _BAROSTAT_BY_NAME:
             return _BAROSTAT_BY_NAME.get(cls_name.lower())(system=system,
                                                            pressure=pressure,
                                                            **kwargs)
 
-        raise ValueError("The barostat corresponding to '{}' was not found.".format(cls_name))
+        raise ValueError(f"The barostat corresponding to '{cls_name}' was not found.")
 
-    raise TypeError("Unsupported barostat type '{}'.".format(type(cls_name)))
+    raise TypeError(f"Unsupported barostat type '{type(cls_name)}'.")

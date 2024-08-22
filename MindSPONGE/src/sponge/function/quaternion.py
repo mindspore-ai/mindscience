@@ -23,18 +23,15 @@
 """
 Quaternion
 """
-
 from mindspore import numpy as msnp
 from mindspore import ops
 
 
 def hamiltonian_product(quaternion_1, tensor_2):
     """ Get the Hamiltonian-product of the given quaternion and tensor.
-
     Args:
-        quaternion_1 (Tensor): A tensor to calculate.
-        tensor_2 (Tensor): A tensor to calculate.
-
+        quaternion_1(Tensor): A tensor to calculate.
+        tensor_2(Tensor): A tensor to calculate
     Returns:
         The hamiltonian product result.
     """
@@ -51,11 +48,9 @@ def hamiltonian_product(quaternion_1, tensor_2):
 
 def quaternion_multiply(tensor_1, tensor_2):
     """ Get the quaternion multiplication of the given tensor.
-
     Args:
-        tensor_1 (Tensor): A tensor to calculate.
-        tensor_2 (Tensor): The other tensor to calculate.
-
+        tensor_1(Tensor): A tensor to calculate.
+        tensor_2(Tensor): A tensor to calculate
     Returns:
         The multiplication result.
     """
@@ -79,12 +74,10 @@ def quaternion_multiply(tensor_1, tensor_2):
 
 def quaternion_inverse(tensor_1):
     """ Get the quaternion conjugate of the given tensor.
-
     Args:
-        tensor_1 (Tensor): A tensor to calculate.
-
-    Returns:
-        tensor_2(Tensor), The multiplication result with shape (B, 4).
+        tensor_1(Tensor): A tensor to calculate.
+    Return:
+        tensor_2(Tensor): The multiplication result with shape (B, 4).
     """
     if tensor_1.ndim == 1:
         tensor_1 = tensor_1[None, :]
@@ -104,13 +97,11 @@ def quaternion_inverse(tensor_1):
 
 def _quaternion_multiply(tensor_1, tensor_2):
     """ Get the quaternion multiplication of the given tensor.
-
     Args:
-        tensor_1 (Tensor): A tensor with shape (B, 4).
-        tensor_2 (Tensor): A tensor with shape (B, 4).
-
+        tensor_1(Tensor): A tensor with shape (B, 4).
+        tensor_2(Tensor): A tensor with shape (B, 4).
     Returns:
-        q(Tensor), A tensor with shape (B, 4).
+        q(Tensor): A tensor with shape (B, 4).
     """
     if tensor_1.shape[-1] != 4 or tensor_2.shape[-1] != 4:
         raise ValueError('The input tensor shape for quaternion_multiply should be like (B, 4) or (4, ).')
@@ -132,11 +123,9 @@ def _quaternion_multiply(tensor_1, tensor_2):
 
 def _constant_multiply(tensor_1, constant):
     """ Get the quaternion multiplication of the given tensor and constant.
-
     Args:
-        tensor_1 (Tensor): A tensor with shape (B, 4).
-        constant (Tensor): A tensor with shape (B, 1).
-
+        tensor_1(Tensor): A tensor with shape (B, 4).
+        constant(Tensor): A tensor with shape (B, 1).
     Returns:
         A tensor with shape (B, 4).
     """

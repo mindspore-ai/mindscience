@@ -24,7 +24,7 @@
 Constraint
 """
 
-from typing import Tuple
+from typing import Dict
 
 from mindspore import Tensor
 
@@ -41,15 +41,17 @@ class Constraint(Controller):
         the atomic forces and the virial of the system during the simulation process.
 
     Args:
+
         system (Molecule):          Simulation system.
 
         bonds (Union[Tensor, str]): Bonds to be constraint.
                                     Tensor of shape (K, 2). Data type is int.
                                     Alternative: "h-bonds" or "all-bonds".
 
-        potential (PotentialCell):  Potential Cell. Default: ``None``.
+        potential (PotentialCell):  Potential Cell. Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -78,33 +80,27 @@ class Constraint(Controller):
                   velocity: Tensor,
                   force: Tensor,
                   energy: Tensor,
-                  kinetics: Tensor,
                   virial: Tensor = None,
                   pbc_box: Tensor = None,
                   step: int = 0,
-                  ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+                  **kwargs
+                  ) -> Dict[str, Tensor]:
         r""" constraint the bonds.
 
         Args:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
-            step (int):             Simulation step. Default: 0
+            coordinate (Tensor): Tensor of shape `(B, A, D)`. Data type is float.
+            velocity (Tensor): Tensor of shape `(B, A, D)`. Data type is float.
+            force (Tensor): Tensor of shape `(B, A, D)`. Data type is float.
+            energy (Tensor): Tensor of shape `(B, 1)`. Data type is float.
+            virial (Tensor): Tensor of shape `(B, D)`. Data type is float.
+            pbc_box (Tensor): Tensor of shape `(B, D)`. Data type is float.
+            step (int): Simulation step. Default: 0
 
         Returns:
-            coordinate (Tensor):    Tensor of shape `(B, A, D)`. Data type is float.
-            velocity (Tensor):      Tensor of shape `(B, A, D)`. Data type is float.
-            force (Tensor):         Tensor of shape `(B, A, D)`. Data type is float.
-            energy (Tensor):        Tensor of shape `(B, 1)`. Data type is float.
-            kinetics (Tensor):      Tensor of shape `(B, D)`. Data type is float.
-            virial (Tensor):        Tensor of shape `(B, D)`. Data type is float.
-            pbc_box (Tensor):       Tensor of shape `(B, D)`. Data type is float.
+            variables (Dict[str, Tensor]): Dictionary of controller variables with seven keys
+                'coordinate', 'velocity', 'force', 'energy', 'virial', and 'pbc_box'.
 
-        Note:
+        Symbols:
             B:  Number of walkers in simulation.
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.

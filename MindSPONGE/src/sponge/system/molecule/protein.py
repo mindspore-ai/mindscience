@@ -48,19 +48,20 @@ class Protein(Molecule):
         Protein Cell can be initialized by accepting a PDB file, thus creating a `Molecule` Cell for the protein.
 
     Args:
-        pdb (str):                  Filename of the PDB (Protein Data Bank) file. Default: ``None``.
 
-        sequence (List[str]):       Sequence of the protein moleulce. Default: ``None``.
+        pdb (str):                  Filename of the PDB (Protein Data Bank) file. Defulat: None
+
+        sequence (List[str]):       Sequence of the protein moleulce. Defulat: None
 
         coordinate (Union[Tensor, ndarray, List[float]]):
                                     Array of the position coordinates of atoms of the simulation system.
                                     The shape of the array is (A, D) or (B, A, D), and the data type is float.
-                                    Default: ``None``.
+                                    Default: None
 
         pbc_box (Union[Tensor, ndarray, List[float]]):
                                     Array of the Box of periodic boundary condition.
                                     The shape of the array is (D) or (B, D), and the data type is float.
-                                    Default: ``None``.
+                                    Default: None
 
         template (Union[dict, str]):
                                     Template for protein molecule. It can be a `dict` of template,
@@ -70,33 +71,20 @@ class Protein(Molecule):
                                     in MindSPONGE's built-in templates.
 
         rebuild_hydrogen (bool):    Whether to rebuild the hydrogen atoms of the protein molecule from PDB file.
-                                    Default: ``False``.
+                                    Default: False
 
         rebuild_suffix (str):       The suffix of the PDB file of the protetin module with rebuilt hydrogen.
                                     Default: '_addH'
 
-        length_unit (str):          Length unit for position coordinates. Default: ``None``.
+        length_unit (str):          Length unit for position coordinates. Default: None
 
-    Note:
+    Symbols:
 
         B:  Batchsize, i.e. number of walkers in simulation
 
         A:  Number of atoms.
 
         D:  Spatial dimension of the simulation system. Usually is 3.
-
-    Examples:
-        >>> from sponge import Protein
-        >>> system = Protein('case1.pdb', rebuild_hydrogen=True)
-        [MindSPONGE] Adding 57 hydrogen atoms for the protein molecule in 0.007 seconds.
-        >>> print ('The number of atoms in the system is: ', system.num_atoms)
-        The number of atoms in the system is:  57
-        >>> print ('All the atom names in the system are: ', system.atom_name)
-        All the atom names in the system are:  [['N' 'CA' 'CB' 'C' 'O' 'H1' 'H2' 'H3' 'HA' 'HB1' 'HB2' 'HB3' 'N' 'CA'
-        'CB' 'CG' 'CD' 'NE' 'CZ' 'NH1' 'NH2' 'C' 'O' 'H' 'HA' 'HB2' 'HB3' 'HG2'
-        'HG3' 'HD2' 'HD3' 'HE' 'HH11' 'HH12' 'HH21' 'HH22' 'N' 'CA' 'CB' 'C'
-        'O' 'H' 'HA' 'HB1' 'HB2' 'HB3' 'N' 'CA' 'CB' 'C' 'O' 'OXT' 'H' 'HA'
-        'HB1' 'HB2' 'HB3']]
 
     """
 
@@ -129,6 +117,7 @@ class Protein(Molecule):
             init_res_ids = pdb_obj.init_res_ids
             chain_id = pdb_obj.chain_id
             self.chain_id = chain_id
+            self.atom_chain_id = pdb_obj.atom_chain_id
 
             residue_names = np.array(RESIDUE_NAMES, np.str_)
             is_amino = np.isin(residue_name, residue_names)
@@ -143,7 +132,7 @@ class Protein(Molecule):
                 if i == 0:
                     residue_name[i] = 'N' * (res != 'ACE') + res
                     continue
-                elif i == len(residue_name) - 1:
+                if i == len(residue_name) - 1:
                     residue_name[i] = 'C' * (res != 'NME') + res
                     break
                 if chain_id[i] < chain_id[i + 1]:

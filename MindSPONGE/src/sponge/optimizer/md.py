@@ -47,18 +47,19 @@ class UpdaterMD(Updater):
         bond constraint.
 
     Args:
+
         system (Molecule): Simulation system.
 
-        time_step (float): Time step. Default: 1e-3
+        time_step (float): Time step. Defulat: 1e-3
 
         velocity (Union[Tensor, ndarray, List[float]]): Array of atomic velocity.
-            The shape of array is `(A, D)` or `(B, A, D)`, and the data type is float. Default: ``None``.
+            The shape of array is `(A, D)` or `(B, A, D)`, and the data type is float. Default: None
 
         temperature (float): Reference temperature for coupling. Only valid if `thermostat` is set to
-            type `str`. Default: ``None``.
+            type `str`. Default: None
 
         pressure (float): Reference pressure for temperature coupling. Only valid if `barostat` is set
-            to type `str`. Default: ``None``.
+            to type `str`. Default: None
 
         integrator (Union[Integrator, str]): Integrator for MD simulation. It can be an object of
             `Integrator` or the `str` of an integrator name. Default: 'leap_frog'
@@ -72,38 +73,26 @@ class UpdaterMD(Updater):
             valid if the `pressure` is not `None`. Default: 'berendsen'
 
         constraint (Union[Constraint, List[Constraint]]): Constraint controller(s) for bond constraint.
-            Default: ``None``.
+            Default: None
 
         controller (Union[Controller, List[Controller]]): Other controller(s). It will work after the
-            four specific controllers (integrator, thermostat, barostat and constraint). Default: ``None``.
+            four specific controllers (integrator, thermostat, barostat and constraint). Default: None
 
         weight_decay (float): An value for the weight decay. Default: 0
 
         loss_scale (float): A value for the loss scale. Default: 1
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
+    Symbols:
 
         B:  Batchsize, i.e. number of walkers in simulation
 
         A:  Number of atoms.
 
         D:  Spatial dimension of the simulation system. Usually is 3.
-
-    Examples:
-        >>> from sponge import UpdaterMD
-        >>> from sponge.function import VelocityGenerator
-        >>> vgen = VelocityGenerator(300)
-        >>> # system represents a custom molecular system
-        >>> velocity = vgen(system.shape, system.atom_mass)
-        >>> opt = UpdaterMD(system=system,
-        ...                 time_step=1e-3,
-        ...                 velocity=velocity,
-        ...                 integrator='velocity_verlet',
-        ...                 temperature=300,
-        ...                 thermostat='langevin')
 
     """
     @opt_init_args_register
@@ -217,30 +206,44 @@ class UpdaterMD(Updater):
 
         force, virial = self.decay_and_scale_grad(force, virial)
 
-        coordinate = self.coordinate
-        velocity = self.velocity
-        kinetics = self.kinetics
-        pbc_box = self.pbc_box
+        coordinate = self.identity(self.coordinate)
+        velocity = self.identity(self.velocity)
+        pbc_box = None
+        if self.pbc_box is not None:
+            pbc_box = self.identity(self.pbc_box)
 
         step = self.identity(self.step)
-        coordinate, velocity, force, energy, kinetics, virial, pbc_box = \
-            self.integrator(coordinate, velocity, force, energy, kinetics, virial, pbc_box, step)
+
+        variables = {'coordinate': coordinate,
+                     'velocity': velocity,
+                     'force': force,
+                     'energy': energy,
+                     'virial': virial,
+                     'pbc_box': pbc_box,
+                     }
+
+        variables = self.integrator(**variables, step=step)
 
         if self.controller is not None:
             for i in range(self.num_controller):
-                coordinate, velocity, force, energy, kinetics, virial, pbc_box = \
-                    self.controller[i](coordinate, velocity, force, energy, kinetics, virial, pbc_box, step)
+                variables = self.controller[i](**variables, step=step)
 
+        # For leap frog, the velocity is :math:`v(t + 0.5 dt)`
+        # For velocity verlet, the velocity is :math:`v(t)`
+        kinetics = self.get_kinetics(variables['velocity'])
         temperature = self.get_temperature(kinetics)
         pressure = self.get_pressure(kinetics, virial, pbc_box)
 
         success = True
-        success = self.update_coordinate(coordinate, success)
-        success = self.update_velocity(velocity, success)
-        success = self.update_pbc_box(pbc_box, success)
-        success = self.update_kinetics(kinetics, success)
-        success = self.update_temperature(temperature, success)
-        success = self.update_virial(virial, success)
-        success = self.update_pressure(pressure, success)
+        success = self.record_coordinate(coordinate, success)
+        success = self.record_pbc_box(pbc_box, success)
+        success = self.record_kinetics(kinetics, success)
+        success = self.record_virial(virial, success)
+        success = self.record_temperature(temperature, success)
+        success = self.record_pressure(pressure, success)
+
+        success = self.update_coordinate(variables['coordinate'], success)
+        success = self.update_velocity(variables['velocity'], success)
+        success = self.update_pbc_box(variables['pbc_box'], success)
 
         return self.next_step(success)

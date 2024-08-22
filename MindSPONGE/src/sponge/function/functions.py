@@ -96,7 +96,8 @@ __all__ = [
     'all_not_none',
     'get_arguments',
     'get_initializer',
-    'bonds_in'
+    'bonds_in',
+    'calc_gaussian'
 ]
 
 PI = 3.141592653589793238462643383279502884197169399375105820974944592307
@@ -126,10 +127,10 @@ def keepdims_sum(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Ten
     and the dimensions of the output and input are the same.
 
     Args:
-        x (Tensor[Number]): The input tensor. The dtype of the tensor to be reduced is number.
-            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
-            Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
+         - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
+           :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+         - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+           Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
 
     Outputs:
         Tensor, has the same dtype as the `x`.
@@ -147,10 +148,10 @@ def keepdims_mean(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Te
     and the dimensions of the output and input are the same.
 
     Args:
-        x (Tensor[Number]): The input tensor. The dtype of the tensor to be reduced is number.
-            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
-            Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
+         - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
+           :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+         - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+           Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
 
     Outputs:
         Tensor, has the same dtype as the `x`.
@@ -168,10 +169,10 @@ def keepdims_prod(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Te
     and the dimensions of the output and input are the same.
 
     Args:
-        x (Tensor[Number]): The input tensor. The dtype of the tensor to be reduced is number.
-            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
-            Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
+         - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
+           :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+         - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+           Only constant value is allowed. Must be in the range [-rank(`x`), rank(`x`)).
 
     Outputs:
         Tensor, has the same dtype as the `x`.
@@ -189,10 +190,10 @@ def reduce_any(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tenso
     reduce a dimension of `x` along the axis. See `mindspore.ops.ReduceAny` for detailed information.
 
     Args:
-        x (Tensor[bool]): The input tensor. The dtype of the tensor to be reduced is bool.
-            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
-            Only constant value is allowed. Must be in the range [-rank(x), rank(x)).
+        - **x** (Tensor[bool]) - The input tensor. The dtype of the tensor to be reduced is bool.
+          :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+          Only constant value is allowed. Must be in the range [-rank(x), rank(x)).
 
     Outputs:
         Tensor, the dtype is bool.
@@ -210,10 +211,10 @@ def reduce_all(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tenso
     reduce a dimension of `x` along the axis. See `mindspore.ops.ReduceAll` for detailed information.
 
     Args:
-        x (Tensor[bool]): The input tensor. The dtype of the tensor to be reduced is bool.
-            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
-            Only constant value is allowed. Must be in the range [-rank(x), rank(x)).
+        - **x** (Tensor[bool]) - The input tensor. The dtype of the tensor to be reduced is bool.
+          :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+          Only constant value is allowed. Must be in the range [-rank(x), rank(x)).
 
     Outputs:
         Tensor, the dtype is bool.
@@ -231,10 +232,10 @@ def reduce_prod(x: Tensor, axis: Union[int, Tuple[int], List[int]] = ()) -> Tens
     reduce a dimension of `x` along the axis. See `mindspore.ops.ReduceProd` for detailed information.
 
     Args:
-        x (Tensor[Number]): The input tensor. The dtype of the tensor to be reduced is number.
-            :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
-        axis (Union[int, tuple(int), list(int)]): The dimensions to reduce. Default: (), reduce all dimensions.
-            Only constant value is allowed. Must be in the range [-r, r).
+        - **x** (Tensor[Number]) - The input tensor. The dtype of the tensor to be reduced is number.
+          :math:`(N,*)` where :math:`*` means, any number of additional dimensions, its rank should be less than 8.
+        - **axis** (Union[int, tuple(int), list(int)]) - The dimensions to reduce. Default: (), reduce all dimensions.
+          Only constant value is allowed. Must be in the range [-r, r).
 
     Outputs:
         Tensor, has the same dtype as the `x`.
@@ -410,10 +411,10 @@ def identity(x: Tensor) -> Tensor:
     Returns a Tensor with the same shape and contents as input.
 
     Args:
-        x (Tensor): The shape of tensor is :math:`(x_1, x_2, ..., x_R)`. The data type is Number.
+        - **x** (Tensor) - The shape of tensor is :math:`(x_1, x_2, ..., x_R)`. The data type is Number.
 
     Returns:
-        Tensor, the shape of tensor and the data type are the same as `x`, :math:`(x_1, x_2, ..., x_R)`.
+        Tensor, the shape of tensor and the data type are the same as `input_x`, :math:`(x_1, x_2, ..., x_R)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -441,9 +442,8 @@ def periodic_variable(variable: Tensor,
                             Mask for the periodic variable.
 
     Returns:
-        period_value (Tensor), Tensor of shape `(...)`. Data type is float.
-        Variable with value in the periodic range.
-
+        period_value (Tensor):  Tensor of shape `(...)`. Data type is float.
+                                Variable with value in the periodic range.
     Supported Platforms:
         ``Ascend`` ``GPU``
 
@@ -477,8 +477,8 @@ def periodic_difference(difference: Tensor,
                             Default: -0.5
 
     Returns:
-        period_diff (Tensor), Tensor of shape `(...)`. Data type is float.
-        Variable with value in the periodic range.
+        period_diff (Tensor):   Tensor of shape `(...)`. Data type is float.
+                                Variable with value in the periodic range.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -498,15 +498,20 @@ def gather_vector(tensor: Tensor, index: Tensor) -> Tensor:
     r"""Gather vector from the penultimate axis (`axis=-2`) of the tensor according to index.
 
     Args:
-        tensor (Tensor):    Tensor of shape :math:`(B, X, D)`, where :math:`B` is batch size, :math:`X` is an
-                            arbitrary value., :math:`D` is spatial dimension of the simulation system, usually is 3.
-        index (Tensor):     Tensor of shape :math:`(B, ...,)`. Data type is int.
+        tensor (Tensor):    Tensor of shape `(B, X, D)`.
+        index (Tensor):     Tensor of shape `(B, ...,)`. Data type is int.
 
     Returns:
-        vector (Tensor), a tensor of shape :math:`(B, ..., D)`
+        vector (Tensor):    Tensor of shape `(B, ..., D)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation.
+        D:  Spatial dimension of the simulation system. Usually is 3.
+        X:  Arbitrary value.
+
     """
 
     if index.shape[0] == 1:
@@ -531,15 +536,19 @@ def gather_value(tensor: Tensor, index: Tensor) -> Tensor:
     r"""Gather value from the last axis (`axis=-1`) of the tensor according to index.
 
     Args:
-        tensor (Tensor):    Tensor of shape `(B, X)`, where :math:`B` is batch_size,
-                            and :math:`X` is an arbitrary value.
+        tensor (Tensor):    Tensor of shape `(B, X)`.
         index (Tensor):     Tensor of shape `(B, ...,)`. Data type is int.
 
     Returns:
-        value (Tensor), a tensor of shape `(B, ...,)` .
+        value (Tensor): Tensor of shape `(B, ...,)`.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation.
+        X:  Arbitrary value.
+
     """
 
     if index.shape[0] == 1:
@@ -562,16 +571,18 @@ def pbc_box_reshape(pbc_box: Tensor, ndim: int) -> Tensor:
     r"""Reshape the pbc_box as the same ndim.
 
     Args:
-        pbc_box (Tensor):   Tensor of shape :math:`(B, D)`. Data type is float.
-                            B is batchsize, i.e. number of walkers in simulation.
-                            D is spatial dimension of the simulation system. Usually is 3.
+        pbc_box (Tensor):   Tensor of shape `(B, D)`. Data type is float.
         ndim (int):         The rank (number of dimension) of the pbc_box
 
     Returns:
-        pbc_box (Tensor), a tensor of shape :math:`(B, 1, .., 1, D)`. Data type is float.
+        pbc_box (Tensor):   Tensor of shape `(B, 1, .., 1, D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
 
@@ -586,24 +597,26 @@ def pbc_image(position: Tensor, pbc_box: Tensor, offset: float = 0) -> Tensor:
     r"""calculate the periodic image of the PBC box
 
     Args:
-        position (Tensor):  Tensor of shape :math:`(B, ..., D)`. Data type is float.
-                            B is batchsize, i.e. number of walkers in simulation
-                            D is spatial dimension of the simulation system. Usually is 3.
-        pbc_box (Tensor):   Tensor of shape :math:`(B, D)`. Data type is float.
+        position (Tensor):  Tensor of shape `(B, ..., D)`. Data type is float.
+        pbc_box (Tensor):   Tensor of shape `(B, D)`. Data type is float.
         offset (float):     Offset ratio :math:`c` relative to box size :math:`\vec{L}`.
-                            Default: ``0``
+                            Default: 0
 
     Returns:
-        image (Tensor), a tensor of shape :math:`(B, ..., D)`. Data type is int32.
+        image (Tensor): Tensor of shape `(B, ..., D)`. Data type is int32.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
 
     pbc_box = pbc_box_reshape(F.stop_gradient(pbc_box), position.ndim)
     image = -F.floor(position / pbc_box - offset)
-    return F.cast(image, ms.int32)
+    return image
 
 
 @jit
@@ -613,65 +626,49 @@ def coordinate_in_pbc(position: Tensor, pbc_box: Tensor, offset: float = 0) -> T
     Args:
         position (Tensor):  Tensor of shape `(B, ..., D)`. Data type is float.
                             Position coordinate :math:`R`
-                            B means batchsize, i.e. number of walkers in simulation.
-                            D means spatial dimension of the simulation system. Usually is 3.
         pbc_box (Tensor):   Tensor of shape `(B, D)`. Data type is float.
                             Size of PBC box :math:`\vec{L}`
         offset (float):     Offset ratio :math:`c` relative to box size :math:`\vec{L}`.
                             Default: 0
 
     Returns:
-        coordinate (Tensor), Tensor of shape `(B, ..., D)`. Data type is float.
+        coordinate (Tensor):    Tensor of shape `(B, ..., D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Examples:
-        >>> import mindspore as ms
-        >>> import numpy as np
-        >>> from mindspore import Tensor
-        >>> from sponge.function import coordinate_in_pbc
-        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
-        >>> pbc_box = Tensor([[0.5, 0.5, 0.5]], ms.float32)
-        >>> crd
-        Tensor(shape=[4, 3], dtype=Float32, value=
-        [[ 4.94492769e-01,  4.85243529e-01,  1.63403198e-01],
-         [ 5.60526669e-01,  6.17091954e-01,  3.65307808e-01],
-         [ 7.81092644e-01,  3.17117482e-01,  1.41929969e-01],
-         [ 9.59174633e-01,  3.53236049e-02,  4.85624045e-01]])
-        >>> coordinate_in_pbc(crd, pbc_box)
-        Tensor(shape=[4, 3], dtype=Float32, value=
-        [[ 4.94492769e-01,  4.85243529e-01,  1.63403198e-01],
-         [ 6.05266690e-02,  1.17091954e-01,  3.65307808e-01],
-         [ 2.81092644e-01,  3.17117482e-01,  1.41929969e-01],
-         [ 4.59174633e-01,  3.53236049e-02,  4.85624045e-01]])
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
 
     pbc_box = pbc_box_reshape(F.stop_gradient(pbc_box), position.ndim)
     return position - pbc_box * F.floor(position / pbc_box - offset)
 
 
-@jit
 def vector_in_pbc(vector: Tensor, pbc_box: Tensor, offset: float = -0.5) -> Tensor:
-    r"""
-    Make the value of vector :math:`\vec{v}` at a single PBC box :math:`\vec{L}`.
+    r"""Make the value of vector :math:`\vec{v}` at a single PBC box :math:`\vec{L}`.
 
     Args:
         vector (Tensor):    Tensor of shape `(B, ..., D)`. Data type is float.
-                            Vector :math:`\vec{v}`.
-                            B means batchsize, i.e. number of walkers in simulation.
-                            D means spatial dimension of the simulation system. Usually is 3.
+                            Vector :math:`\vec{v}`
         pbc_box (Tensor):   Tensor of shape `(B, D)`. Data type is float.
-                            Size of PBC box :math:`\vec{L}`.
+                            Size of PBC box :math:`\vec{L}`
         offset (float):     Offset ratio :math:`c` of the vector relative to box size :math:`\vec{L}`.
-                            The value of vector will be between :math:`c \vec{L}` and
-                            :math:`(c+1) \vec{L}`. Default: ``-0.5``.
+                            The value of vector will be between :math:`c \vec{L}` and :math:`(c+1) \vec{L}`
+                            Default: -0.5
 
     Returns:
-        pbc_vector (Tensor), a tensor of shape `(B, ..., D)`. Data type is float.
+        pbc_vector (Tensor):    Tensor of shape `(B, ..., D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
 
     pbc_box = pbc_box_reshape(pbc_box, vector.ndim)
@@ -686,89 +683,73 @@ def calc_vector_nopbc(initial: Tensor, terminal: Tensor) -> Tensor:
     r"""Compute vector from initial point to terminal point without perodic bundary condition.
 
     Args:
-        initial (Tensor):   Tensor of shape :math:`(..., D)`, where :math:`D` is the spatial
-                            dimension of the simulation system (usually 3). Data type is float.
+        initial (Tensor):   Tensor of shape `(..., D)`. Data type is float.
                             Position coordinate of initial point
-        terminal (Tensor):  Tensor of shape :math:`(..., D)`. Data type is float.
+        terminal (Tensor):  Tensor of shape `(..., D)`. Data type is float.
                             Position coordinate of terminal point
 
     Returns:
-        vector (Tensor), a tensor of shape :math:`(..., D)`. Data type is float.
+        vector (Tensor):    Tensor of shape `(..., D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
 
     return terminal - initial
 
 
-@jit
 def calc_vector_pbc(initial: Tensor, terminal: Tensor, pbc_box: Tensor) -> Tensor:
     r"""Compute vector from initial point to terminal point at perodic bundary condition.
 
     Args:
-        initial (Tensor):   Tensor of shape :math:`(..., D)`, where :math:`D` is the spatial
-                            dimension of the simulation system (usually 3). Data type is float.
+        initial (Tensor):   Tensor of shape `(..., D)`. Data type is float.
                             Position coordinate of initial point
-        terminal (Tensor):  Tensor of shape :math:`(..., D)`. Data type is float.
+        terminal (Tensor):  Tensor of shape `(..., D)`. Data type is float.
                             Position coordinate of terminal point
-        pbc_box (Tensor):   Tensor of shape :math:`(D)` or :math:`(B, D)`, where :math:`B` is
-                            the batchsize (i.e., number of walkers in simulation). Data type is float.
+        pbc_box (Tensor):   Tensor of shape `(D)` or `(B, D)`. Data type is float.
                             Size of PBC box.
 
     Returns:
-        vector (Tensor), a tensor of shape :math:`(..., D)`. Data type is float.
+        vector (Tensor):    Tensor of shape `(..., D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Examples:
-        >>> import mindspore as ms
-        >>> import numpy as np
-        >>> from mindspore import Tensor
-        >>> from sponge.function import calc_vector_pbc
-        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
-        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
-        >>> calc_vector_pbc(crd[0], crd[1], pbc_box)
-        Tensor(shape=[1, 3], dtype=Float32, value=
-        [[ 6.60338998e-02,  1.31848425e-01,  2.01904625e-01]])
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
 
     return vector_in_pbc(terminal-initial, pbc_box)
 
-@jit
+
 def calc_vector(initial: Tensor, terminal: Tensor, pbc_box: Tensor = None) -> Tensor:
     r"""Compute vector from initial point to terminal point.
 
     Args:
-        initial (Tensor):   Tensor of shape :math:`(..., D)`, where :math:`D` is the spatial
-                            dimension of the simulation system (usually 3). Data type is float.
-                            Position coordinate of initial point
-        terminal (Tensor):  Tensor of shape :math:`(..., D)`. Data type is float.
+        initial (Tensor):   Tensor of shape `(..., D)`. Data type is float.
+                            Position coordinate of initial point.
+        terminal (Tensor):  Tensor of shape `(..., D)`. Data type is float.
                             Position coordinate of terminal point.
-        pbc_box (Tensor):   Tensor of shape :math:`(D)` or :math:`(B, D)`, where :math:`B` is
-                            the batchsize (i.e., number of walkers in simulation). Data type is float.
-                            Default: ``None``
+        pbc_box (Tensor):   Tensor of shape `(D)` or `(B, D)`. Data type is float.
+                            Default: None
 
     Returns:
-        vector (Tensor, a tensor of shape `(..., D)`). Data type is float.
+        vector (Tensor):    Tensor of shape `(..., D)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Examples:
-        >>> import mindspore as ms
-        >>> import numpy as np
-        >>> from mindspore import Tensor
-        >>> from sponge.function import calc_vector
-        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
-        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
-        >>> calc_vector(crd[0], crd[1])
-        Tensor(shape=[3], dtype=Float32, value= [ 6.60338998e-02,  1.31848425e-01,  2.01904610e-01])
-        >>> calc_vector(crd[0], crd[1], pbc_box)
-        Tensor(shape=[1, 3], dtype=Float32, value=
-        [[ 6.60338998e-02,  1.31848425e-01,  2.01904625e-01]])
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
 
     vector = terminal - initial
@@ -785,20 +766,22 @@ def calc_distance_nopbc(position_a: Tensor,
     r"""Compute distance between position A and B without perodic bundary condition.
 
     Args:
-        position_a (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
-                                D is spatial dimension of the simulation system. Usually is 3.
+        position_a (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`A`.
-        position_b (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_b (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
-        keepdims (bool):        If this is set to ``True``, the last axis will be left
+        keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: ``False``.
+                                Default: False
 
     Returns:
-        distance (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        distance (Tensor):      Tensor of shape `(...)` or `(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
 
@@ -815,23 +798,25 @@ def calc_distance_pbc(position_a: Tensor,
     r"""Compute distance between position :math:`A` and :math:`B` at perodic bundary condition.
 
     Args:
-        position_a (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
-                                D means spatial dimension of the simulation system. Usually is 3.
+        position_a (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`A`.
-        position_b (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_b (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
-        pbc_box (Tensor):       Tensor of shape :math:`(D)` or :math:`(B, D)`. Data type is float.
-                                B means batchsize, i.e. number of walkers in simulation
+        pbc_box (Tensor):       Tensor of shape `(D)` or `(B, D)`. Data type is float.
                                 Size of PBC box :math:`\vec{L}`
-        keepdims (bool):        If this is set to ``True``, the last axis will be left
+        keepdims (bool):        If this is set to `True`, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: ``False``.
+                                Default: False
 
     Returns:
-        distance (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        distance (Tensor):      Tensor of shape `(...)` or `(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     Examples:
         >>> import mindspore as ms
@@ -848,7 +833,6 @@ def calc_distance_pbc(position_a: Tensor,
     return msnp.norm(vec, axis=-1, keepdims=keepdims)
 
 
-@jit
 def calc_distance(position_a: Tensor,
                   position_b: Tensor,
                   pbc_box: Tensor = None,
@@ -857,21 +841,25 @@ def calc_distance(position_a: Tensor,
     r"""Compute distance between position :math:`A` and :math:`B`.
 
     Args:
-        position_a (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_a (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`A`.
-        position_b (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_b (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
-        pbc_box (Tensor):       Tensor of shape :math:`(D)` or :math:`(B, D)`. Data type is float.
+        pbc_box (Tensor):       Tensor of shape `(D)` or `(B, D)`. Data type is float.
                                 Size of PBC box :math:`\vec{L}`
-        keepdims (bool):        If this is set to ``True`` , the last axis will be left
+        keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: ``False`` .
+                                Default: False
 
     Returns:
-        distance (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)` . Data type is float.
+        distance (Tensor):      Tensor of shape `(...)` or `(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     Examples:
         >>> import mindspore as ms
@@ -897,10 +885,9 @@ def calc_angle_by_vectors(vector1: Tensor,
                           vector2: Tensor,
                           keepdims: bool = False
                           ) -> Tensor:
-    r"""
-    Compute angle between two vectors.
-    For vector :math:`\vec {v_1} = (x_1, x_2, x_3, ..., x_n)` and
-    :math:`\vec {v_2} = (y_1, y_2, y_3, ..., y_n)` , the formula is
+    r"""Compute angle between two vectors.
+        For vector :math:`\vec {v_1} = (x_1, x_2, x_3, ..., x_n)` and
+        :math:`\vec {v_2} = (y_1, y_2, y_3, ..., y_n)` , the formula is
 
     .. math::
 
@@ -908,20 +895,22 @@ def calc_angle_by_vectors(vector1: Tensor,
                  \cdots + x_n^2}\sqrt{y_1^2 + y_2^2 + \cdots + y_n^2}}}
 
     Args:
-        vector1 (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
-                             D means spatial dimension of the simulation system. Usually is 3.
+        vector1 (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                              Vector of :math:`\vec{v_1}`.
-        vector2 (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        vector2 (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                              Vector of :math:`\vec{v_2}`.
         keepdims (bool):     If this is set to True, the last axis will be left
                              in the result as dimensions with size one.
-                             Default: ``False``.
+                             Default: False
 
     Returns:
-        angle (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        angle (Tensor):      Tensor of shape `(...)` or `(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
 
@@ -940,13 +929,11 @@ def calc_angle_nopbc(position_a: Tensor,
                      position_c: Tensor,
                      keepdims: bool = False,
                      ) -> Tensor:
-    r"""
-    Compute angle :math:`\angle{ABC}` formed by the position coordinates of three positions
-    :math:`A`, :math:`B` and :math:`C` without periodic boundary condition.
+    r"""Compute angle :math:`\angle{ABC}` formed by the position coordinates of three positions
+        :math:`A`, :math:`B` and :math:`C` without periodic boundary condition.
 
     Args:
         position_a (Tensor):    Tensor of shape `(..., D)`. Data type is float.
-                                D means spatial dimension of the simulation system. Usually is 3.
                                 Position coordinate of point :math:`A`.
         position_b (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
@@ -954,15 +941,18 @@ def calc_angle_nopbc(position_a: Tensor,
                                 Position coordinate of point :math:`C`.
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: ``False``.
+                                Default: False
 
     Returns:
-        angle (Tensor), a tensor of shape `(...)` or `(..., 1)`. Data type is float.
-        Value of angle :math:`\angle{ABC}`.
+        angle (Tensor):         Tensor of shape `(...)` or `(..., 1)`. Data type is float.
+                                Value of angle :math:`\angle{ABC}`.
 
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
 
@@ -979,30 +969,31 @@ def calc_angle_pbc(position_a: Tensor,
                    pbc_box: Tensor,
                    keepdims: bool = False,
                    ) -> Tensor:
-    r"""
-    Compute angle :math:`\angle{ABC}` formed by the position coordinates of three positions
-    :math:`A`, :math:`B` and :math:`C` at periodic boundary condition.
+    r"""Compute angle :math:`\angle{ABC}` formed by the position coordinates of three positions
+        :math:`A`, :math:`B` and :math:`C` at periodic boundary condition.
 
     Args:
-        position_a (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
-                                D means spatial dimension of the simulation system. Usually is 3.
+        position_a (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`A`.
-        position_b (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
+        position_b (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
-        position_c (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
+        position_c (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`C`.
-        pbc_box (Tensor):       Tensor of shape :math:`(D)` or :math:`(B, D)` . Data type is float.
-                                B means batchsize, i.e. number of walkers in simulation
+        pbc_box (Tensor):       Tensor of shape `(D)` or `(B, D)`. Data type is float.
                                 Size of PBC box :math:`\vec{L}`
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: ``False`` .
+                                Default: False
 
     Returns:
-        angle (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)` . Data type is float.
+        angle (Tensor):         Tensor of shape (...) or (..., 1). Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     Examples:
         >>> import mindspore as ms
@@ -1028,30 +1019,31 @@ def calc_angle(position_a: Tensor,
                pbc_box: Tensor = None,
                keepdims: bool = False,
                ) -> Tensor:
-    r"""
-    Compute angle formed by three positions :math:`A`, :math:`B` and :math:`C`
-    with or without periodic boundary condition.
+    r"""Compute angle formed by three positions :math:`A`, :math:`B` and :math:`C`
+        with or without periodic boundary condition.
 
     Args:
-        position_a (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
-                                D means spatial dimension of the simulation system. Usually is 3.
+        position_a (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`A`.
-        position_b (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
+        position_b (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
-        position_c (Tensor):    Tensor of shape :math:`(..., D)` . Data type is float.
+        position_c (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`C`.
-        pbc_box (Tensor):       Tensor of shape :math:`(D)` or :math:`(B, D)` . Data type is float.
-                                B means batchsize, i.e. number of walkers in simulation
-                                Size of PBC box :math:`\vec{L}`. Default: ``None``.
+        pbc_box (Tensor):       Tensor of shape `(D)` or `(B, D)`. Data type is float.
+                                Size of PBC box :math:`\vec{L}`. Default: None
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: ``False``.
+                                Default: False
 
     Returns:
-        angle (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        angle (Tensor):         Tensor of shape `(...)` or `(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     Examples:
         >>> import mindspore as ms
@@ -1075,28 +1067,29 @@ def calc_torsion_by_vectors(vector1: Tensor,
                             axis_vector: Tensor = None,
                             keepdims: bool = False,
                             ) -> Tensor:
-    r"""
-    Compute torsion angle formed by two direction vectors :math:`\vec{v_1}` and :math:`\vec{v_2}`
-    and an axis vector :math:`\vec{v_{axis}}`.
+    r"""Compute torsion angle formed by two direction vectors :math:`\vec{v_1}` and :math:`\vec{v_2}`
+        and an axis vector :math:`\vec{v_{axis}}`.
 
     Args:
-        vector1 (Tensor):       Tensor of shape :math:`(..., D)`. Data type is float.
-                                D is spatial dimension of the simulation system. Usually is 3.
+        vector1 (Tensor):       Tensor of shape `(..., D)`. Data type is float.
                                 Direction vector :math:`\vec{v_1}`
-        vector2 (Tensor):       Tensor of shape :math:`(..., D)`. Data type is float.
+        vector2 (Tensor):       Tensor of shape `(..., D)`. Data type is float.
                                 Direction vector :math:`\vec{v_2}`
-        axis_vector (Tensor):   Tensor of shape :math:`(..., D)`. Data type is float.
+        axis_vector (Tensor):   Tensor of shape `(..., D)`. Data type is float.
                                 Axis vector :math:`\vec{v_{axis}}`.
-                                Default: ``None``.
+                                Default: None
         keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: ``False``.
+                                Default: False
 
     Returns:
-        torsion (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        torsion (Tensor):   Tensor of shape `(...)` or `(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
 
@@ -1127,29 +1120,30 @@ def calc_torsion_nopbc(position_a: Tensor,
                        position_d: Tensor,
                        keepdims: bool = False,
                        ) -> Tensor:
-    r"""
-    Compute torsion angle `A-B-C-D` formed by four positions :math:`A`, :math:`B`,
-    :math:`C` and :math:`D` without periodic boundary condition.
+    r"""Compute torsion angle :math:`A-B-C-D` formed by four positions :math:`A`, :math:`B`, :math:`C` and :math:`D`
+        without periodic boundary condition.
 
     Args:
-        position_a (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
-                                D is spatial dimension of the simulation system. Usually is 3.
+        position_a (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`A`.
-        position_b (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_b (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
-        position_c (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_c (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`C`.
-        position_d (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_d (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`D`.
-        keepdims (bool):        If this is set to ``True``, the last axis will be left
+        keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: ``False``.
+                                Default: False
 
     Returns:
-        torsion (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        torsion (Tensor):   Tensor of shape `(...)` or `(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
+
+    Symbols:
+        D:  Spatial dimension of the simulation system. Usually is 3.
 
     """
 
@@ -1167,42 +1161,34 @@ def calc_torsion_pbc(position_a: Tensor,
                      pbc_box: Tensor,
                      keepdims: bool = False,
                      ) -> Tensor:
-    r"""
-    Compute torsion angle `A-B-C-D` formed by four positions :math:`A`, :math:`B`,
-    :math:`C` and :math:`D` at periodic boundary condition.
+    r"""Compute torsion angle :math:`A-B-C-D` formed by four positions :math:`A`, :math:`B`, :math:`C` and :math:`D`
+        at periodic boundary condition.
 
     Args:
-        position_a (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
-                                D is spatial dimension of the simulation system. Usually is 3.
+        position_a (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`A`.
-        position_b (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_b (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
-        position_c (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_c (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`C`.
-        position_d (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_d (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`D`.
-        pbc_box (Tensor):       Tensor of shape :math:`(D)` or :math:`(B, D)`. Data type is float.
-                                B is batchsize, i.e. number of walkers in simulation
+        pbc_box (Tensor):       Tensor of shape `(D)` or `(B, D)`. Data type is float.
                                 Size of PBC box :math:`\vec{L}`.
-        keepdims (bool):        If this is set to ``True``, the last axis will be left
+        keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: ``False``.
+                                Default: False
 
     Returns:
-        torsion (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        torsion (Tensor):   Tensor of shape `(...)` or `(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Examples:
-        >>> import mindspore as ms
-        >>> import numpy as np
-        >>> from mindspore import Tensor
-        >>> from sponge.function import calc_torsion_pbc
-        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
-        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
-        >>> calc_torsion_pbc(crd[0], crd[1], crd[2], crd[3], pbc_box)
-        Tensor(shape=[1], dtype=Float32, value= [-2.33294296e+00])
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
 
     vec_ba = calc_vector_pbc(position_b, position_a, pbc_box)
@@ -1220,42 +1206,34 @@ def calc_torsion(position_a: Tensor,
                  keepdims: bool = False,
                  ) -> Tensor:
 
-    r"""
-    Compute torsion angle :math:`A-B-C-D` formed by four positions :math:`A`, :math:`B`, :math:`C` and :math:`D`
-    with or without periodic boundary condition.
+    r"""Compute torsion angle :math:`A-B-C-D` formed by four positions :math:`A`, :math:`B`, :math:`C` and :math:`D`
+        with or without periodic boundary condition.
 
     Args:
-        position_a (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
-                                D is spatial dimension of the simulation system. Usually is 3.
+        position_a (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`A`.
-        position_b (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_b (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`B`.
-        position_c (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_c (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`C`.
-        position_d (Tensor):    Tensor of shape :math:`(..., D)`. Data type is float.
+        position_d (Tensor):    Tensor of shape `(..., D)`. Data type is float.
                                 Position coordinate of point :math:`D`.
-        pbc_box (Tensor):       Tensor of shape :math:`(D)` or :math:`(B, D)`. Data type is float.
-                                B is batchsize, i.e. number of walkers in simulation.
-                                Size of PBC box :math:`\vec{L}`. Default: ``None``.
-        keepdims (bool):        If this is set to ``True`` , the last axis will be left
+        pbc_box (Tensor):       Tensor of shape `(D)` or `(B, D)`. Data type is float.
+                                Size of PBC box :math:`\vec{L}`. Default: None
+        keepdims (bool):        If this is set to True, the last axis will be left
                                 in the result as dimensions with size one.
-                                Default: ``False`` .
+                                Default: False
 
     Returns:
-        torsion (Tensor), a tensor of shape :math:`(...)` or :math:`(..., 1)`. Data type is float.
+        torsion (Tensor):   Tensor of shape `(...)` or `(..., 1)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
 
-    Examples:
-        >>> import mindspore as ms
-        >>> import numpy as np
-        >>> from mindspore import Tensor
-        >>> from sponge.function import calc_torsion
-        >>> crd = Tensor(np.random.random((4, 3)), ms.float32)
-        >>> pbc_box = Tensor([[3, 3, 3]], ms.float32)
-        >>> calc_torsion(crd[0], crd[1], crd[2], crd[3], pbc_box)
-        Tensor(shape=[1], dtype=Float32, value= [-2.33294296e+00])
+    Symbols:
+        B:  Batchsize, i.e. number of walkers in simulation
+        D:  Spatial dimension of the simulation system. Usually is 3.
+
     """
 
     if pbc_box is None:
@@ -1289,11 +1267,11 @@ def coulomb_interaction(q_i: Tensor,
         r_ij (Tensor):          Tensor of shape `(...)`. Data type is float.
                                 Distance :math:`r_{ij}` between atoms :math:`i` and :math:`i`.
         mask (Tensor):          Tensor of shape `(...)`. Data type is bool.
-                                Mask for distance :math:`r_{ij}`. Default: ``None``.
+                                Mask for distance :math:`r_{ij}`. Default: None
         coulomb_const (float):  Coulomb constant :math:`k`. Default: 1
 
     Returns:
-        E_coulomb (Tensor), Tensor of shape `(...)`. Data type is float.
+        E_coulomb (Tensor):     Tensor of shape `(...)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1327,10 +1305,10 @@ def lennard_jones_potential(epsilon: Tensor, sigma: Tensor, r_ij: Tensor, mask: 
         r_ij (Tensor):      Tensor of shape `(...)`. Data type is float.
                             Distance :math:`r_{ij}` between atoms :math:`i` and :math:`i`.
         mask (Tensor):      Tensor of shape `(...)`. Data type is bool.
-                            Mask for distances :math:`r_{ij}`. Default: ``None``.
+                            Mask for distances :math:`r_{ij}`. Default: None
 
     Returns:
-        E_coulomb (Tensor), Tensor of shape (...). Data type is float.
+        E_coulomb (Tensor):     Tensor of shape (...). Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1369,9 +1347,9 @@ def lennard_jones_potential2(epsilon: Tensor, r_0: Tensor, r_ij: Tensor, mask: T
         r_ij (Tensor):      Tensor of shape `(...)`. Data type is float.
                             Distance :math:`r_{ij}` between atoms :math:`i` and :math:`i`.
         mask (Tensor):      Tensor of shape `(...)`. Data type is bool.
-                            Mask for distances :math:`r_{ij}`. Default: ``None``.
+                            Mask for distances :math:`r_{ij}`. Default: None
     Returns:
-        E_coulomb (Tensor), Tensor of shape `(...)`. Data type is float.
+        E_coulomb (Tensor):     Tensor of shape `(...)`. Data type is float.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -1416,8 +1394,8 @@ def get_ndarray(value: Union[Tensor, Parameter, ndarray, List[float], Tuple[floa
     r"""get ndarray type of the input value
 
     Args:
-        value (Union[Tensor, Parameter, ndarray, List[float], Tuple[float]]):  Input value
-        dtype (type):                               Data type. Default: ``None``.
+        value (Union[Tensor, Parameter, ndarray]):  Input value
+        dtype (type):                               Data type. Default: None
 
     Returns:
         array (ndarray)
@@ -1444,7 +1422,7 @@ def get_tensor(value: Union[float, int, Tensor, Parameter, ndarray, List[float],
     Args:
         value (Union[float, int, Tensor, Parameter, ndarray, list, tuple]):
                         Input value
-        dtype (type):   Data type. Default: ``None``.
+        dtype (type):   Data type. Default: None
 
     Returns:
         tensor (Tensor)
@@ -1477,7 +1455,7 @@ def get_ms_array(value: Union[float, int, Tensor, Parameter, ndarray, list, tupl
     Args:
         value (Union[float, int, Tensor, Parameter, ndarray, list, tuple]):
                         Input value
-        dtype (type):   Data type. Default: ``None``.
+        dtype (type):   Data type. Default: None
 
     Returns:
         array (Tensor or Parameter)
@@ -1509,7 +1487,7 @@ def check_broadcast(shape0: tuple, shape1: tuple) -> tuple:
         shape1 (tuple): Second shape
 
     Returns:
-        shape (tuple), Shape after broadcast
+        shape (tuple):  Shape after broadcast
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -1547,13 +1525,13 @@ def any_none(iterable: Iterable) -> bool:
         iterable (Iterable): Iterable variable
 
     Returns:
-        any (bool), If any values x in the iterable is None
+        any (bool):  If any values x in the iterable is None
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
 
     """
-    return any([i is None for i in iterable])
+    return any(_ is None for _ in iterable)
 
 
 def all_none(iterable: Iterable) -> bool:
@@ -1563,13 +1541,13 @@ def all_none(iterable: Iterable) -> bool:
         iterable (Iterable): Iterable variable
 
     Returns:
-        all (bool), If all values `x` in the `iterable` is None
+        all (bool):  If all values `x` in the `iterable` is None
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
 
     """
-    return all([i is None for i in iterable])
+    return all(_ is None for _ in iterable)
 
 
 def any_not_none(iterable: Iterable) -> bool:
@@ -1579,13 +1557,13 @@ def any_not_none(iterable: Iterable) -> bool:
         iterable (Iterable): Iterable variable
 
     Returns:
-        any (bool), If any values `x` in the `iterable` is not None
+        any (bool):  If any values `x` in the `iterable` is not None
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
 
     """
-    return any([i is not None for i in iterable])
+    return any(_ is not None for _ in iterable)
 
 
 def all_not_none(iterable: Iterable) -> bool:
@@ -1595,24 +1573,24 @@ def all_not_none(iterable: Iterable) -> bool:
         iterable (Iterable): Iterable variable
 
     Returns:
-        all (bool), If all values `x` in the `iterable` is Not None
+        all (bool):  If all values `x` in the `iterable` is Not None
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
 
     """
-    return all([i is not None for i in iterable])
+    return all(_ is not None for _ in iterable)
 
 
 def get_arguments(locals_: dict, kwargs: dict = None) -> dict:
-    r"""get arguments of a class.
+    r"""get arguments of a class
 
     Args:
-        locals\_ (dict): Dictionary of the arguments from `locals()`.
+        locals_ (dict): Dictionary of the arguments from `locals()`.
         kwargs (dict): Dictionary of keyword arguments (kwargs) of the class.
 
     Returns:
-        args (dict), Dictionary of arguments.
+        args (dict): Dictionary of arguments
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -1682,14 +1660,14 @@ def get_arguments(locals_: dict, kwargs: dict = None) -> dict:
 
 
 def get_initializer(cls_name: Union[Initializer, str, dict, Tensor], **kwargs) -> Initializer:
-    r"""get initializer by name.
+    r"""get initializer by name
 
     Args:
         cls_name (Union[Initializer, str, dict, Tensor]): Class name of Initializer.
         kwargs (dict): Dictionary of keyword arguments (kwargs) of the class.
 
     Returns:
-        Initializer.
+        Initializer
 
     Supported Platforms:
         ``Ascend`` ``GPU`` ``CPU``
@@ -1720,12 +1698,17 @@ def _bonds_in(bonds, bond):
 
 def bonds_in(bonds, batch_bond):
     """ Return if batch_bond exists in bonds.
-
     Args:
-        bonds (Tensor): The total bonds set.
-        batch_bond (Tensor): The input bond set.
+        bonds: The total bonds set.
+        batch_bond: The input bond set.
 
     Returns:
         If batch_bond exists in bonds, the mask will be 1, else 0.
     """
     return ops.vmap(_bonds_in, in_axes=(None, -2), out_axes=0)(bonds, batch_bond).sum(axis=-3)
+
+
+@jit
+def calc_gaussian(x, mu=0):
+    """ Gaussian distribution function. """
+    return msnp.exp(-(x - mu) ** 2 / 2)

@@ -44,6 +44,7 @@ class SphericalRestrict(Bias):
         V(R) = k \log{\left ( 1 + e^{\frac{|R - R_0| - r_0}{\sigma}} \right )}
 
     Args:
+
         radius (float):         Radius of sphere (r_0).
 
         center (Tensor):        Coordinate of the center of sphere (R_0).
@@ -53,16 +54,17 @@ class SphericalRestrict(Bias):
         depth (float):          Wall depth of the restriction (\sigma). Default: Length(0.01, 'nm')
 
         length_unit (str):      Length unit. If None is given, it will be assigned with the global length unit.
-                                Default: ``None``.
+                                Default: None
 
         energy_unit (str):      Energy unit. If None is given, it will be assigned with the global energy unit.
-                                Default: ``None``.
+                                Default: None
 
         use_pbc (bool):         Whether to use periodic boundary condition.
 
         name (str):             Name of the bias potential. Default: 'spherical'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -114,20 +116,20 @@ class SphericalRestrict(Bias):
             coordinate (Tensor):           Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: ``None``.
+                                            Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour atoms. Default: ``None``.
+                                            Mask for neighbour atoms. Default: None
             neighbour_vector (Tensor):       Tensor of shape (B, A, N). Data type is bool.
                                             Vectors from central atom to neighbouring atoms.
             neighbour_distance (Tensor):   Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: ``None``.
+                                            Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: ``None``.
+                                            Tensor of PBC box. Default: None
 
         Returns:
             potential (Tensor): Tensor of shape (B, 1). Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.

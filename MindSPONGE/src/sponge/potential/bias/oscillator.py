@@ -25,6 +25,7 @@ Harmonic oscillator module.
 """
 import mindspore as ms
 from mindspore import Tensor
+
 from .bias import Bias
 
 
@@ -32,6 +33,7 @@ class OscillatorBias(Bias):
     """ Add a restraint for heavy atoms in a molecule.
 
     Args:
+
         old_crd(Tensor):    The origin coordinates of all atoms.
 
         k(float):           The elasticity coefficient of all atoms, assuming to be the same.
@@ -41,6 +43,7 @@ class OscillatorBias(Bias):
         name (str):         Name of the bias potential. Default: 'oscillator'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -56,7 +59,6 @@ class OscillatorBias(Bias):
         self.k = Tensor(k, ms.float32)
         self.nonh_mask = Tensor(1 - nonh_mask, ms.int32)
 
-    @ms.jit
     def construct(self,
                   coordinate: Tensor,
                   neighbour_index: Tensor = None,

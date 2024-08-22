@@ -1,0 +1,996 @@
+ACE:
+  CH3:
+  - H1
+  - H2
+  - H3
+ALA:
+  CA:
+  - HA
+  CB:
+  - HB1
+  - HB2
+  - HB3
+  N:
+  - H
+ARG:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD:
+  - HD2
+  - HD3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H
+  NE:
+  - HE
+  NH1:
+  - HH11
+  - HH12
+  NH2:
+  - HH21
+  - HH22
+ASN:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H
+  ND2:
+  - HD21
+  - HD22
+ASP:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H
+CALA:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB1
+  - HB2
+  - HB3
+  N:
+  - H
+CARG:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD:
+  - HD2
+  - HD3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H
+  NE:
+  - HE
+  NH1:
+  - HH11
+  - HH12
+  NH2:
+  - HH21
+  - HH22
+CASN:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H
+  ND2:
+  - HD21
+  - HD22
+CASP:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H
+CCYS:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H
+  SG:
+  - HG
+CGLN:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H
+  NE2:
+  - HE21
+  - HE22
+CGLU:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H
+CGLY:
+  C:
+  - OXT
+  CA:
+  - HA2
+  - HA3
+  N:
+  - H
+CHID:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  N:
+  - H
+  ND1:
+  - HD1
+CHIS:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  N:
+  - H
+  NE2:
+  - HE2
+CILE:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB
+  CD1:
+  - HD11
+  - HD12
+  - HD13
+  CG1:
+  - HG12
+  - HG13
+  CG2:
+  - HG21
+  - HG22
+  - HG23
+  N:
+  - H
+CLEU:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD11
+  - HD12
+  - HD13
+  CD2:
+  - HD21
+  - HD22
+  - HD23
+  CG:
+  - HG
+  N:
+  - H
+CLYS:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD:
+  - HD2
+  - HD3
+  CE:
+  - HE2
+  - HE3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H
+  NZ:
+  - HZ1
+  - HZ2
+  - HZ3
+CMET:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CE:
+  - HE1
+  - HE2
+  - HE3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H
+CPHE:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD1
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  CE2:
+  - HE2
+  CZ:
+  - HZ
+  N:
+  - H
+CPRO:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD:
+  - HD2
+  - HD3
+  CG:
+  - HG2
+  - HG3
+CSER:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H
+  OG:
+  - HG
+CTHR:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB
+  CG2:
+  - HG21
+  - HG22
+  - HG23
+  N:
+  - H
+  OG1:
+  - HG1
+CTRP:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD1
+  CE3:
+  - HE3
+  CH2:
+  - HH2
+  CZ2:
+  - HZ2
+  CZ3:
+  - HZ3
+  N:
+  - H
+  NE1:
+  - HE1
+CTYR:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD1
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  CE2:
+  - HE2
+  N:
+  - H
+  OH:
+  - HH
+CVAL:
+  C:
+  - OXT
+  CA:
+  - HA
+  CB:
+  - HB
+  CG1:
+  - HG11
+  - HG12
+  - HG13
+  CG2:
+  - HG21
+  - HG22
+  - HG23
+  N:
+  - H
+CYS:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H
+  SG:
+  - HG
+GLN:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H
+  NE2:
+  - HE21
+  - HE22
+GLU:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H
+GLY:
+  CA:
+  - HA2
+  - HA3
+  N:
+  - H
+HID:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  N:
+  - H
+  ND1:
+  - HD1
+HIS:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  N:
+  - H
+  NE2:
+  - HE2
+HOH:
+  O:
+  - H1
+  - H2
+ILE:
+  CA:
+  - HA
+  CB:
+  - HB
+  CD1:
+  - HD11
+  - HD12
+  - HD13
+  CG1:
+  - HG12
+  - HG13
+  CG2:
+  - HG21
+  - HG22
+  - HG23
+  N:
+  - H
+LEU:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD11
+  - HD12
+  - HD13
+  CD2:
+  - HD21
+  - HD22
+  - HD23
+  CG:
+  - HG
+  N:
+  - H
+LYS:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD:
+  - HD2
+  - HD3
+  CE:
+  - HE2
+  - HE3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H
+  NZ:
+  - HZ1
+  - HZ2
+  - HZ3
+MET:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CE:
+  - HE1
+  - HE2
+  - HE3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H
+NALA:
+  CA:
+  - HA
+  CB:
+  - HB1
+  - HB2
+  - HB3
+  N:
+  - H1
+  - H2
+  - H3
+NARG:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD:
+  - HD2
+  - HD3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H1
+  - H2
+  - H3
+  NE:
+  - HE
+  NH1:
+  - HH11
+  - HH12
+  NH2:
+  - HH21
+  - HH22
+NASN:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H1
+  - H2
+  - H3
+  ND2:
+  - HD21
+  - HD22
+NASP:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H1
+  - H2
+  - H3
+NCYS:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H1
+  - H2
+  - H3
+  SG:
+  - HG
+NGLN:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H1
+  - H2
+  - H3
+  NE2:
+  - HE21
+  - HE22
+NGLU:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H1
+  - H2
+  - H3
+NGLY:
+  CA:
+  - HA2
+  - HA3
+  N:
+  - H1
+  - H2
+  - H3
+NHID:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  N:
+  - H1
+  - H2
+  - H3
+  ND1:
+  - HD1
+NHIS:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  N:
+  - H1
+  - H2
+  - H3
+  NE2:
+  - HE2
+NILE:
+  CA:
+  - HA
+  CB:
+  - HB
+  CD1:
+  - HD11
+  - HD12
+  - HD13
+  CG1:
+  - HG12
+  - HG13
+  CG2:
+  - HG21
+  - HG22
+  - HG23
+  N:
+  - H1
+  - H2
+  - H3
+NLEU:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD11
+  - HD12
+  - HD13
+  CD2:
+  - HD21
+  - HD22
+  - HD23
+  CG:
+  - HG
+  N:
+  - H1
+  - H2
+  - H3
+NLYS:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD:
+  - HD2
+  - HD3
+  CE:
+  - HE2
+  - HE3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H1
+  - H2
+  - H3
+  NZ:
+  - HZ1
+  - HZ2
+  - HZ3
+NME:
+  CH3:
+  - HH31
+  - HH32
+  - HH33
+  N:
+  - H
+NMET:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CE:
+  - HE1
+  - HE2
+  - HE3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H1
+  - H2
+  - H3
+NPHE:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD1
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  CE2:
+  - HE2
+  CZ:
+  - HZ
+  N:
+  - H1
+  - H2
+  - H3
+NPRO:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD:
+  - HD2
+  - HD3
+  CG:
+  - HG2
+  - HG3
+  N:
+  - H2
+  - H3
+NSER:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H1
+  - H2
+  - H3
+  OG:
+  - HG
+NTHR:
+  CA:
+  - HA
+  CB:
+  - HB
+  CG2:
+  - HG21
+  - HG22
+  - HG23
+  N:
+  - H1
+  - H2
+  - H3
+  OG1:
+  - HG1
+NTRP:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD1
+  CE3:
+  - HE3
+  CH2:
+  - HH2
+  CZ2:
+  - HZ2
+  CZ3:
+  - HZ3
+  N:
+  - H1
+  - H2
+  - H3
+  NE1:
+  - HE1
+NTYR:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD1
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  CE2:
+  - HE2
+  N:
+  - H1
+  - H2
+  - H3
+  OH:
+  - HH
+NVAL:
+  CA:
+  - HA
+  CB:
+  - HB
+  CG1:
+  - HG11
+  - HG12
+  - HG13
+  CG2:
+  - HG21
+  - HG22
+  - HG23
+  N:
+  - H1
+  - H2
+  - H3
+PHE:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD1
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  CE2:
+  - HE2
+  CZ:
+  - HZ
+  N:
+  - H
+PRO:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD:
+  - HD2
+  - HD3
+  CG:
+  - HG2
+  - HG3
+SER:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  N:
+  - H
+  OG:
+  - HG
+THR:
+  CA:
+  - HA
+  CB:
+  - HB
+  CG2:
+  - HG21
+  - HG22
+  - HG23
+  N:
+  - H
+  OG1:
+  - HG1
+TRP:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD1
+  CE3:
+  - HE3
+  CH2:
+  - HH2
+  CZ2:
+  - HZ2
+  CZ3:
+  - HZ3
+  N:
+  - H
+  NE1:
+  - HE1
+TYR:
+  CA:
+  - HA
+  CB:
+  - HB2
+  - HB3
+  CD1:
+  - HD1
+  CD2:
+  - HD2
+  CE1:
+  - HE1
+  CE2:
+  - HE2
+  N:
+  - H
+  OH:
+  - HH
+VAL:
+  CA:
+  - HA
+  CB:
+  - HB
+  CG1:
+  - HG11
+  - HG12
+  - HG13
+  CG2:
+  - HG21
+  - HG22
+  - HG23
+  N:
+  - H
+WAT:
+  O:
+  - H1
+  - H2

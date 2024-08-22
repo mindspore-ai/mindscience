@@ -34,36 +34,38 @@ from ..function.units import Units, GLOBAL_UNITS
 
 
 class ForceCell(Cell):
-    r"""
-    Base Cell for calculating atomic forces. It returns three terms: energy, force and virial.
+    r"""Base Cell for calculating atomic forces. It returns three terms: energy, force and virial.
 
-    Note:
-        The `energy` cannot be None. If the `energy` cannot be calculated, it needs to be assigned to
-        a Tensor of shape `(B,1)` and value 0.
-        When under periodic boundary conditions, the `virial` cannot be None. If the `virial` cannot
-        be calculated, it needs to be assigned to a Tensor of shape (B,D) and value 0.
+        NOTE: The `energy` cannot be None. If the `energy` cannot be calculated, it needs to be assigned to
+              a Tensor of shape `(B,1)` and value 0.
+              When under periodic boundary conditions, the `virial` cannot be None. If the `virial` cannot
+              be calculated, it needs to be assigned to a Tensor of shape (B,D) and value 0.
 
     Args:
+
         length_unit (str):  Length unit. If None is given, it will be assigned with the global length unit.
-                            Default: 'nm'.
+                            Default: 'nm'
 
         energy_unit (str):  Energy unit. If None is given, it will be assigned with the global energy unit.
-                            Default: 'kj/mol'.
+                            Default: 'kj/mol'
 
         use_pbc (bool):     Whether to use periodic boundary condition.
 
     returns:
-        energy (Tensor), Tensor of shape `(B, 1)`. Data type is float.
 
-        force (Tensor), Tensor of shape `(B, A, D)`. Data type is float.
+        energy (Tensor):    Tensor of shape `(B, 1)`. Data type is float.
 
-        virial (Tensor), Tensor of shape `(B, D)`. Data type is float. Default: ``None``.
+        force (Tensor):     Tensor of shape `(B, A, D)`. Data type is float.
+
+        virial (Tensor):    Tensor of shape `(B, D)`. Data type is float. Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
-    Note:
-        B:  Batchsize, i.e. number of walkers in simulation.
+    Symbols:
+
+        B:  Batchsize, i.e. number of walkers in simulation
 
         A:  Number of atoms.
 
@@ -169,23 +171,23 @@ class ForceCell(Cell):
             coordinates (Tensor):           Tensor of shape (B, A, D). Data type is float.
                                             Position coordinate of atoms in system.
             neighbour_index (Tensor):       Tensor of shape (B, A, N). Data type is int.
-                                            Index of neighbour atoms. Default: ``None``.
+                                            Index of neighbour atoms. Default: None
             neighbour_mask (Tensor):        Tensor of shape (B, A, N). Data type is bool.
-                                            Mask for neighbour atoms. Default: ``None``.
+                                            Mask for neighbour atoms. Default: None
             neighbour_vector (Tensor):       Tensor of shape (B, A, N, D). Data type is bool.
                                             Vectors from central atom to neighbouring atoms.
             neighbour_distances (Tensor):   Tensor of shape (B, A, N). Data type is float.
-                                            Distance between neighbours atoms. Default: ``None``.
+                                            Distance between neighbours atoms. Default: None
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: ``None``.
+                                            Tensor of PBC box. Default: None
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
             force (Tensor):     Tensor of shape (B, A, D). Data type is float.
             virial (Tensor):    Tensor of shape (B, D). Data type is float.
-                                Default: ``None``.
+                                Default: None
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             N:  Maximum number of neighbour atoms.

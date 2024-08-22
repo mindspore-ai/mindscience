@@ -41,21 +41,21 @@ def _mindspore_version_check():
     try:
         import mindspore as ms
         from mindspore import log as logger
-    except ImportError:
+    except ImportError as ie:
         raise ImportError("Can not find MindSpore in current environment. Please install "
                           "MindSpore before using MindSpore Mindsponge, by following "
-                          "the instruction at https://www.mindspore.cn/install")
+                          "the instruction at https://www.mindspore.cn/install") from ie
 
     ms_version = ms.__version__
-    required_mindspore_version = '1.8.1'
-    logger.info("Current Mindspore version is {}".format(ms_version))
+    required_mindspore_version = '2.2.14'
+    logger.info(f"Current Mindspore version is {ms_version}")
     if LooseVersion(ms_version) < LooseVersion(required_mindspore_version):
-        logger.warning("Current version of MindSpore is not compatible with MindSPONGE. "
-                       "Some functions might not work or even raise error. Please install MindSpore "
-                       "version >= {} For more details about dependency setting, please check "
-                       "the instructions at MindSpore official website https://www.mindspore.cn/install "
-                       "or check the README.md at https://gitee.com/mindspore/mindscience"
-                       .format(required_mindspore_version))
+        logger.warning(f"Current version of MindSpore is not compatible with MindSPONGE. "
+                       f"Some functions might not work or even raise error. Please install MindSpore "
+                       f"version >= {required_mindspore_version} "
+                       f"For more details about dependency setting, please check "
+                       f"the instructions at MindSpore official website https://www.mindspore.cn/install "
+                       f"or check the README.md at https://gitee.com/mindspore/mindscience")
         warning_countdown = 3
         for i in range(warning_countdown, 0, -1):
             logger.warning(

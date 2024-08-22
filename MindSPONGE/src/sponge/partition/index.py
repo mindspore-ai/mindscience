@@ -48,11 +48,13 @@ class IndexColvar(Cell):
     r"""Collective variables based on index
 
     Args:
+
         use_pbc (bool):     Whether to calculate the CV at periodic boundary condition (PBC).
                             If `None` is given, it will be determined at runtime based on
-                            whether the `pbc_box` is given or not. Default: ``None``.
+                            whether the `pbc_box` is given or not. Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -85,7 +87,7 @@ class IndexDistances(IndexColvar):
     r"""Calculate distance between atoms by neighbour index
 
     Args:
-        use_pbc (bool):     Whether to use periodic boundary condition. Default: ``False``.
+        use_pbc (bool):     Whether to use periodic boundary condition. Default: False
 
         large_dis (float):  A large value that added to the distance equal to zero to
                             prevent them from becoming zero values after Norm operation,
@@ -95,6 +97,7 @@ class IndexDistances(IndexColvar):
                             dimensions with size one.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -127,12 +130,12 @@ class IndexDistances(IndexColvar):
                                     Mask of neighbour index
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
                                     Periodic boundary condition Box.
-                                    Default: ``None``.
+                                    Default: None
 
         Returns:
             distances (Tensor):     Tensor of shape (B, A, N). Data type is float.
 
-        Note:
+        Symbols:
 
             B:  Batchsize, i.e. number of simulation walker.
             A:  Number of atoms.
@@ -174,6 +177,7 @@ class Vector2Distance(Cell):
         keepdims (bool): If this is `True`, the last axis will be left in the result as dimensions with size one.
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -204,7 +208,7 @@ class Vector2Distance(Cell):
         Returns:
             distances (Tensor):     Tensor of shape (B, A, N). Data type is float.
 
-        Note:
+        Symbols:
 
             B:  Batchsize, i.e. number of simulation walker.
             A:  Number of atoms.
@@ -244,11 +248,12 @@ class IndexVectors(IndexColvar):
     r"""Get vectors by index
 
     Args:
-        use_pbc (bool):     Whether to use periodic boundary condition. Default: ``False``.
+        use_pbc (bool):     Whether to use periodic boundary condition. Default: False
 
-        length_unit (str):  Length unit. Default: ``None``.
+        length_unit (str):  Length unit. Default: None
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -269,12 +274,12 @@ class IndexVectors(IndexColvar):
                                     Mask of neighbour index
             pbc_box (Tensor):       Tensor of shape (B, D). Data type is float.
                                     Periodic boundary condition Box.
-                                    Default: ``None``.
+                                    Default: None
 
         Returns:
             vector (Tensor):        Tensor of shape (B, A, D). Data type is float.
 
-        Note:
+        Symbols:
 
             B:  Batchsize, i.e. number of simulation walker.
             A:  Number of atoms.

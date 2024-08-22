@@ -37,6 +37,8 @@ from mindspore.ops import functional as F
 from ...colvar import Distance
 from .energy import NonbondEnergy, _energy_register
 from ...function import functions as func
+from ...function import fft3d, ifft3d
+from ...function.custom import mw_is_vaild
 from ...function import gather_value, get_ms_array, get_arguments
 from ...function.units import Units, GLOBAL_UNITS, Length
 from ...system.molecule import Molecule
@@ -49,19 +51,20 @@ class CoulombEnergy(NonbondEnergy):
     Math:
 
     .. math::
-        E_{ele}(r_{ij}) = \sum_{ij} k_{coulomb} \frac{q_i q_j}{r_{ij}}
+        E_{ele}(r_{ij}) = \sum_{ij} k_{coulomb} \frac{q_i q_j}{r_ij}
 
     Args:
+
         atom_charge (Union[Tensor, ndarray, List[float]]):
             Array of atomic charge. The shape of array is `(B, A)`, and the data type is float.
 
-        cutoff (Union[float, Length, Tensor]):  Cut-off distance. Default: ``None``.
+        cutoff (Union[float, Length, Tensor]):  Cut-off distance. Default: None
 
         pbc_box (Union[Tensor, ndarray, List[float]]):
-            Array of PBC box with shape `(B, A, D)`, and the data type is float. Default: ``None``.
+            Array of PBC box with shape `(B, A, D)`, and the data type is float. Default: None
 
         exclude_index (Union[Tensor, ndarray, List[int]]):
-            Tensor of the exclude index, required by PME. Default: ``None``.
+            Tensor of the exclude index, required by PME. Default: None
 
         damp_dis (Union[float, Length, Tensor]):
             A distance :math:`l_{\alpha}` to calculate the damping factor :math:`\alpha = l_{\alpha}^-1`
@@ -71,9 +74,9 @@ class CoulombEnergy(NonbondEnergy):
 
         use_pme (bool): Whether to use particle mesh ewald (PME) method to calculate the coulomb interaction
             of the system in PBC box. If `False` is given, the damped shifted force (DSF) method
-            will be used for PBC. Default: ``True``.
+            will be used for PBC. Default: True
 
-        parameters (dict): Force field parameters. Default: ``None``.
+        parameters (dict): Force field parameters. Default: None
 
         length_unit (str): Length unit. If None is given, it will be assigned with the global length unit.
             Default: 'nm'
@@ -84,6 +87,7 @@ class CoulombEnergy(NonbondEnergy):
         name (str): Name of the energy. Default: 'coulomb'
 
     Supported Platforms:
+
         ``Ascend`` ``GPU``
 
     """
@@ -224,12 +228,12 @@ class CoulombEnergy(NonbondEnergy):
             neighbour_distance (Tensor):    Tensor of shape (B, A, N). Data type is float.
                                             Distance between neighbours atoms.
             pbc_box (Tensor):               Tensor of shape (B, D). Data type is float.
-                                            Tensor of PBC box. Default: ``None``.
+                                            Tensor of PBC box. Default: None
 
         Returns:
             energy (Tensor):    Tensor of shape (B, 1). Data type is float.
 
-        Note:
+        Symbols:
             B:  Batchsize, i.e. number of walkers in simulation
             A:  Number of atoms.
             D:  Spatial dimension of the simulation system. Usually is 3.
@@ -275,6 +279,7 @@ class DampedShiftedForceCoulomb(Cell):
         Computational Materials Science, 2016, 115: 60-71.
 
     Args:
+
         cutoff (Union[float, Length, Tensor]): Cutoff distance.
 
         damp_dis (Union[float, Length, Tensor]):
@@ -384,42 +389,6 @@ class DampedShiftedForceCoulomb(Cell):
         self.dsf_self = self.dsf_shift + a_pi * (exp_ac2 + 1)
 
 
-class RFFT3D(Cell):
-    r"""rfft3d"""
-
-    def __init__(self, fftx, ffty, fftz, fftc, inverse):
-        Cell.__init__(self)
-        self.cast = ops.Cast()
-        if ms.get_context("device_target") == "Ascend":
-            self.rfft3d = ops.FFTWithSize()
-            self.irfft3d = ops.FFTWithSize()
-        else:
-            from ...customops import FFTOP
-            fftop = FFTOP()
-            self.rfft3d, self.irfft3d = fftop.register()
-        self.inverse = inverse
-        if self.inverse:
-            self.norm = msnp.ones(fftc, dtype=ms.float32) * fftx * ffty * fftz
-            self.norm = 1 / self.norm
-            self.norm[1:-1] *= 2
-        else:
-            self.norm = msnp.ones(fftc, dtype=ms.float32) * fftx * ffty * fftz
-            self.norm[1:-1] /= 2
-
-    def construct(self, x):
-        if self.inverse:
-            return self.irfft3d(x)
-        return self.rfft3d(x)
-
-    def bprop(self, x, out, dout):
-        #pylint: disable=unused-argument
-        if self.inverse:
-            ans = self.rfft3d(dout)
-        else:
-            ans = self.irfft3d(dout)
-        return (ans,)
-
-
 class ParticleMeshEwaldCoulomb(Cell):
     r"""Particle mesh ewald algorithm for electronic interaction
 
@@ -430,14 +399,15 @@ class ParticleMeshEwaldCoulomb(Cell):
         The Journal of Chemical Physics, 1995, 103(19): 8577-8593.
 
     Args:
+
         pbc_box (Union[Tensor, ndarray, List[float]]):
-            Array of PBC box with shape `(B, A, D)`, and the data type is float. Default: ``None``.
+            Array of PBC box with shape `(B, A, D)`, and the data type is float. Default: None
 
         cutoff (Union[float, Length, Tensor]): Cutoff distance. Default: Length(1, 'nm')
 
         exclude_index (Union[Tensor, ndarray, List[int]]):
             Array of indexes of atoms that should be excluded from neighbour list.
-            The shape of the tensor is `(B, A, Ex)`. The data type is int. Default: ``None``.
+            The shape of the tensor is `(B, A, Ex)`. The data type is int. Default: None
 
         accuracy (float): Accuracy for PME. Default: 1e-4
 
@@ -595,19 +565,9 @@ class ParticleMeshEwaldCoulomb(Cell):
         bz = msnp.array([self._b(i, self.fftz) for i in range(self.fftc)])
         self.b = bx.reshape(-1, 1, 1) * by.reshape(1, -1, 1) * bz.reshape(1, 1, -1)
 
-        self.multi_batch_fft = None
-        if ms.get_context("device_target") == "Ascend":
-            # Ascend platform & mindspore version >= 2.0.0
-            self.multi_batch_fft = True
-            self.rfft3d = ops.FFTWithSize(signal_ndim=3, real=True, inverse=False)
-            self.irfft3d = ops.FFTWithSize(signal_ndim=3, real=True, inverse=True, norm="forward")
-        else:
-            # GPU platform
-            self.multi_batch_fft = False
-            self.rfft3d = RFFT3D(self.fftx, self.ffty,
-                                 self.fftz, self.fftc, inverse=False)
-            self.irfft3d = RFFT3D(self.fftx, self.ffty,
-                                  self.fftz, self.fftc, inverse=True)
+        self.rfft3d = fft3d
+        self.irfft3d = ifft3d
+        self.multi_batch_fft = mw_is_vaild
 
     def calculate_direct_energy(self,
                                 qi: Tensor,
@@ -644,7 +604,7 @@ class ParticleMeshEwaldCoulomb(Cell):
         qi_sum = F.reduce_sum(qi, 1)
 
         #pylint:disable=invalid-unary-operand-type
-        energy = (0 - self.alpha) / msnp.sqrt(msnp.pi) * qiqi_sum
+        energy = -self.alpha / msnp.sqrt(msnp.pi) * qiqi_sum
         energy -= qi_sum * 0.5 * msnp.pi / (self.alpha * self.alpha * self.reduce_prod(pbc_box, 1))
         return energy
 
@@ -689,7 +649,7 @@ class ParticleMeshEwaldCoulomb(Cell):
         neibor_grids = F.concat((self.batch_constant, neibor_grids), -1)
 
         # (B, fftx, ffty, fftz)
-        q_matrix = msnp.zeros([1, self.fftx, self.ffty, self.fftz], ms.float32)
+        q_matrix = ms.ops.zeros([1, self.fftx, self.ffty, self.fftz], ms.float32)
         q_matrix = F.tensor_scatter_add(
             q_matrix, neibor_grids.reshape(-1, 4), neibor_q.reshape(-1))
 
