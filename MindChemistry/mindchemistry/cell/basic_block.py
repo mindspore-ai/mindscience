@@ -242,7 +242,7 @@ class FCNet(nn.Cell):
         - **output** (Tensor) - The shape of Tensor is :math:`(*, channels[-1])`.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend``
 
     Examples:
         >>> import numpy as np
@@ -342,7 +342,7 @@ class MLPNet(nn.Cell):
         - **output** (Tensor) - The shape of Tensor is :math:`(*, channels[-1])`.
 
     Supported Platforms:
-        ``Ascend`` ``GPU``
+        ``Ascend``
 
     Examples:
         >>> import numpy as np
@@ -502,7 +502,7 @@ class AutoEncoder(nn.Cell):
         - **x_recon** (Tensor) - The shape of Tensor is :math:`(*, channels[0])`.
 
     Supported Platforms:
-        ``GPU``
+        ``Ascend``
 
     Examples:
         >>> import numpy as np

@@ -69,7 +69,7 @@ class FullyConnectedNet(nn.SequentialCell):
         TypeError: If the elements `h_list` are not `int`.
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> import mindspore as ms

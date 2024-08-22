@@ -413,7 +413,7 @@ class TensorProduct(nn.Cell):
         ValueError: If the number of input tensors is not match to the number of input irreps.
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> import mindspore as ms

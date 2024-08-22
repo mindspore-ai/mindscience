@@ -47,7 +47,7 @@ class BatchNorm(nn.Cell):
         ValueError: If `normalization` is not in ['component', 'norm'].
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.nn import BatchNorm

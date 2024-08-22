@@ -37,6 +37,9 @@ def soft_unit_step(x):
     Returns:
         Tensor, the output of the unit step function.
 
+    Supported Platforms:
+        ``Ascend``
+
     Examples:
         >>> from mindchemistry.e3.nn import soft_unit_step
         >>> from mindspore import ops, set_context, Tensor
@@ -108,7 +111,7 @@ class SoftOneHotLinspace(nn.Cell):
         ValueError: If `basis` is not in {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}.
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.nn import SoftOneHotLinspace
@@ -218,6 +221,9 @@ def soft_one_hot_linspace(x, start, end, number, basis='smooth_finite', cutoff=T
 
     Raises:
         ValueError: If `basis` is not in {'gaussian', 'cosine', 'smooth_finite', 'fourier', 'bessel'}.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.nn import soft_one_hot_linspace

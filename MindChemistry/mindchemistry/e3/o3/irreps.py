@@ -47,7 +47,7 @@ class Irrep:
         TypeError: If `l` is not int or str.
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import Irrep
@@ -283,7 +283,7 @@ class Irreps:
         TypeError: If the mul part of `irreps` part is not int.
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import Irreps
@@ -558,7 +558,9 @@ class Irreps:
 
         Returns:
             irreps (`Irreps`) - sorted `Irreps`
+
             p (tuple[int]) - permute orders. `p[old_index] = new_index`
+
             inv (tuple[int]) - inversed permute orders. `p[new_index] = old_index`
 
         Examples:

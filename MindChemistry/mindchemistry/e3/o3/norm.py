@@ -37,7 +37,7 @@ class Norm(nn.Cell):
         - **output** (Tensor) - The shape of Tensor is :math:`(..., irreps\_out.dim)` .
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> import mindspore as ms

@@ -42,7 +42,7 @@ class FullyConnectedTensorProduct(TensorProduct):
             Default: ``mindspore.float32`` .
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import FullyConnectedTensorProduct
@@ -86,7 +86,7 @@ class FullTensorProduct(TensorProduct):
             Default: ``mindspore.float32`` .
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import FullTensorProduct
@@ -130,7 +130,7 @@ class ElementwiseTensorProduct(TensorProduct):
             Default: ``mindspore.float32`` .
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import ElementwiseTensorProduct
@@ -172,7 +172,7 @@ class Linear(TensorProduct):
             Default: ``mindspore.float32`` .
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import Linear
@@ -278,7 +278,7 @@ class LinearBias(TensorProduct):
             Default: ``mindspore.float32`` .
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import LinearBias
@@ -465,7 +465,7 @@ class TensorSquare(TensorProduct):
         ValueError: If both `irreps_out` and `filter_ir_out` are not None.
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import TensorSquare

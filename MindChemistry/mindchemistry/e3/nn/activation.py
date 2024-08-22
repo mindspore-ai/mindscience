@@ -80,7 +80,7 @@ class Activation(nn.Cell):
         ValueError: If a irrep in `irreps_in` is odd, but the corresponding activation function is neither even nor odd.
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.nn import Activation
