@@ -30,7 +30,7 @@ import sys
 from mindspore import context, nn
 sys.path.insert(0, '../../src') # pylint: disable=C0413
 from sponge import ForceField
-from sponge.system import get_molecule
+from sponge.system import Protein
 from sponge import set_global_units, WithEnergyCell
 from sponge.core import Sponge
 from sponge.callback import WriteH5MD, RunInfo
@@ -60,7 +60,7 @@ set_global_units('nm', 'kj/mol')
 pdb_name = '../pdb/case1.pdb'
 out_pdb = 'case1_sol.pdb'
 
-mol = get_molecule(pdb_name, template=['protein0.yaml'], rebuild_hydrogen=True)
+mol = Protein(pdb_name, template=['protein0.yaml'], rebuild_hydrogen=True)
 mol.fill_water(edge=0.4, pdb_out=out_pdb, template='water.spce.yaml')
 
 if args.e == 'Ascend':
