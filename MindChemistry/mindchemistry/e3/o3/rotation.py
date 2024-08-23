@@ -39,12 +39,17 @@ def identity_angles(*shape, dtype=float32):
 
     Returns:
         alpha (Tensor) - The alpha Euler angles.
+
         beta (Tensor) - The beta Euler angles.
+
         gamma (Tensor) - The gamma Euler angles.
 
     Raises:
         TypeError: If dtype of 'shape' is not tuple.
         TypeError: If dtype of the element of 'shape' is not int.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import identity_angles
@@ -70,12 +75,17 @@ def rand_angles(*shape):
 
     Returns:
         alpha (Tensor) - The alpha Euler angles.
+
         beta (Tensor) - The beta Euler angles.
+
         gamma (Tensor) - The gamma Euler angles.
 
     Raises:
         TypeError: If dtype of 'shape' is not tuple.
         TypeError: If dtype of the element of 'shape' is not int.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import rand_angles
@@ -125,6 +135,9 @@ def compose_angles(a1, b1, c1, a2, b2, c2):
         - beta (Tensor), The composed beta Euler angles.
         - gamma (Tensor), The composed gamma Euler angles.
 
+    Supported Platforms:
+        ``Ascend``
+
     Examples:
         >>> from mindchemistry.e3.o3 import compose_angles
         >>> m = compose_angles(0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
@@ -149,6 +162,9 @@ def matrix_x(angle):
 
     Returns:
         Tensor, the rotation matrices around x axis. The shape of output is :math:`(..., 3, 3)`
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import matrix_x
@@ -180,6 +196,9 @@ def matrix_y(angle):
     Returns:
         Tensor, the rotation matrices around y axis. The shape of output is :math:`(..., 3, 3)`
 
+    Supported Platforms:
+        ``Ascend``
+
     Examples:
         >>> from mindchemistry.e3.o3 import matrix_y
         >>> m = matrix_y(0.5)
@@ -210,6 +229,9 @@ def matrix_z(angle):
 
     Returns:
         Tensor, the rotation matrices around z axis. The shape of output is :math:`(..., 3, 3)`.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import matrix_z
@@ -245,6 +267,9 @@ def angles_to_matrix(alpha, beta, gamma):
     Returns:
         Tensor, the rotation matrices. Matrices of shape :math:`(..., 3, 3)`.
 
+    Supported Platforms:
+        ``Ascend``
+
     Examples:
         >>> from mindchemistry.e3.o3 import angles_to_matrix
         >>> m = angles_to_matrix(0.4, 0.5, 0.6)
@@ -272,6 +297,9 @@ def matrix_to_angles(r_param):
 
     Raise:
         ValueError: If the det(R) is not equal to 1.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> import mindspore as ms
@@ -310,6 +338,9 @@ def angles_to_xyz(alpha, beta):
     Returns:
         Tensor, the point :math:`(x, y, z)` on the sphere. The shape of Tensor is :math:`(..., 3)`
 
+    Supported Platforms:
+        ``Ascend``
+
     Examples
         >>> import mindspore as ms
         >>> from mindchemistry.e3.o3 import angles_to_xyz
@@ -336,6 +367,9 @@ def xyz_to_angles(xyz):
     Returns:
         alpha (Tensor) - The alpha Euler angles. The shape of Tensor is :math:`(...)`.
         beta (Tensor) - The beta Euler angles. The shape of Tensor is :math:`(...)`.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> import mindspore as ms

@@ -421,7 +421,7 @@ class Ncon(nn.Cell):
         ValueError: If the number of commands is not match the number of operations.
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindspore import ops

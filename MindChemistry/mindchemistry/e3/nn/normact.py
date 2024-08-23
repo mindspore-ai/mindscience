@@ -51,7 +51,7 @@ class NormActivation(nn.Cell):
         ValueError: If `epsilon` is not positive.
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.nn import NormActivation

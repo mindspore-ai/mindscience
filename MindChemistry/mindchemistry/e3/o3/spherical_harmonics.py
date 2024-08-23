@@ -50,7 +50,7 @@ class SphericalHarmonics(nn.Cell):
         NotImplementedError: If `l` is larger than 11.
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import SphericalHarmonics

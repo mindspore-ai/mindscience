@@ -37,6 +37,9 @@ def change_basis_real_to_complex(l, dtype=float32):
     Returns:
         Tensor, the complex basis with dtype complex64 for `dtype` = float32 and complex128 for `dtype` = float64.
 
+    Supported Platforms:
+        ``Ascend``
+
     Examples:
         >>> from mindchemistry.e3.o3 import change_basis_real_to_complex
         >>> m = change_basis_real_to_complex(1)
@@ -78,29 +81,30 @@ def su2_generators(j, dtype=complex64):
     Raise:
         TypeError: If `j` is not int.
 
+    Supported Platforms:
+        ``Ascend``
+
     Examples:
         >>> from mindchemistry.e3.o3 import su2_generators
         >>> m = su2_generators(1)
         >>> print(m)
         [[[ 0.        +0.j          0.70710677+0.j
             0.        +0.j        ]
-        [-0.70710677+0.j          0.        +0.j
+          [-0.70710677+0.j          0.        +0.j
             0.70710677+0.j        ]
-        [ 0.        +0.j         -0.70710677+0.j
+          [ 0.        +0.j         -0.70710677+0.j
             0.        +0.j        ]]
-
-        [[-0.        -1.j          0.        +0.j
+         [[-0.        -1.j          0.        +0.j
             0.        +0.j        ]
-        [ 0.        +0.j          0.        +0.j
+          [ 0.        +0.j          0.        +0.j
             0.        +0.j        ]
-        [ 0.        +0.j          0.        +0.j
+          [ 0.        +0.j          0.        +0.j
             0.        +1.j        ]]
-
-        [[ 0.        -0.j          0.        +0.70710677j
+         [[ 0.        -0.j          0.        +0.70710677j
             0.        -0.j        ]
-        [ 0.        +0.70710677j  0.        -0.j
+          [ 0.        +0.70710677j  0.        -0.j
             0.        +0.70710677j]
-        [ 0.        -0.j          0.        +0.70710677j
+          [ 0.        -0.j          0.        +0.70710677j
             0.        -0.j        ]]]
     """
     if not isinstance(j, int):
@@ -135,21 +139,22 @@ def so3_generators(l, dtype=float32):
         TypeError: If `l` is not int.
         ValueError: If matrices data are inconsistent.
 
+    Supported Platforms:
+        ``Ascend``
+
     Examples:
         >>> from mindchemistry.e3.o3 import so3_generators
         >>> m = so3_generators(1)
         >>> print(m)
         [[[ 0.          0.          0.        ]
-        [ 0.          0.         -0.99999994]
-        [ 0.          0.99999994  0.        ]]
-
-        [[ 0.          0.          0.99999994]
-        [ 0.          0.          0.        ]
-        [-0.99999994  0.          0.        ]]
-
-        [[ 0.         -0.99999994  0.        ]
-        [ 0.99999994  0.          0.        ]
-        [ 0.          0.          0.        ]]]
+          [ 0.          0.         -0.99999994]
+          [ 0.          0.99999994  0.        ]]
+         [[ 0.          0.          0.99999994]
+          [ 0.          0.          0.        ]
+          [-0.99999994  0.          0.        ]]
+         [[ 0.         -0.99999994  0.        ]
+          [ 0.99999994  0.          0.        ]
+          [ 0.          0.          0.        ]]]
     """
     if not isinstance(l, int):
         raise TypeError
@@ -184,6 +189,9 @@ def wigner_D(l, alpha, beta, gamma):
 
     Returns:
         Tensor, Wigner D matrix :math:`D^l(\alpha, \beta, \gamma)`. The shape of Tensor is :math:`(2l+1, 2l+1)`.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import wigner_D
@@ -229,6 +237,9 @@ def wigner_3j(l1, l2, l3, dtype=float32):
     Raise:
         TypeError: If `l1`, `l2` or `l3` are not int.
         ValueError: If `l1`, `l2` and `l3` do not satisfy abs(l2 - l3) <= l1 <= l2 + l3.
+
+    Supported Platforms:
+        ``Ascend``
 
     Examples:
         >>> from mindchemistry.e3.o3 import wigner_3j

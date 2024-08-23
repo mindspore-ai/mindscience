@@ -116,7 +116,7 @@ class Gate(nn.Cell):
             `irreps_gated`.
 
     Supported Platforms:
-        ``CPU`` ``GPU`` ``Ascend``
+        ``Ascend``
 
     Examples:
         >>> from mindspore import ops
