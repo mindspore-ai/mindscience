@@ -160,6 +160,7 @@ class DeepHE3Kernel:
 
         backward = ms.value_and_grad(forward_train, None, weights=net.trainable_params(), has_aux=True)
 
+        @ms.jit
         def train_step(data_x, data_edge_index, data_edge_attr, data_label, data_mask, data_mask_length, batch_input_x,
                        mask_dim1, mask_dim2, mask_dim3):
             (mse_loss, h_pred), grads = backward(data_x, data_edge_index, data_edge_attr, data_label, data_mask,
@@ -171,6 +172,7 @@ class DeepHE3Kernel:
 
             return mse_loss, h_pred
 
+        @ms.jit
         def eval_test_step(data_x, data_edge_index, data_edge_attr, data_label, data_mask, data_mask_length,
                            batch_input_x, mask_dim1, mask_dim2, mask_dim3):
             mse_loss, h_pred = forward_val(data_x, data_edge_index, data_edge_attr, data_label, data_mask,

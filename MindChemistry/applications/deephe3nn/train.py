@@ -42,7 +42,7 @@ if args.n is not None:
     os.environ["OPENBLAS_NUM_THREADS"] = f"{args.n}"
     os.environ["VECLIB_MAXIMUM_THREADS"] = f"{args.n}"
 
-ms.set_context(device_target="Ascend", device_id=args.device_id, mode=ms.GRAPH_MODE, max_call_depth=3000)
+ms.set_context(device_target="Ascend", device_id=args.device_id, max_call_depth=3000)
 
 kernel = DeepHE3Kernel()
 kernel.train(args.config)
