@@ -42,9 +42,9 @@ def init_edge_rot_mat(edge_distance_vec):
     vec_dot_b = ops.abs(ops.sum(edge_vec_2b * norm_x, dim=1)).view(-1, 1)
     vec_dot_c = ops.abs(ops.sum(edge_vec_2c * norm_x, dim=1)).view(-1, 1)
     vec_dot = ops.abs(ops.sum(edge_vec_2 * norm_x, dim=1)).view(-1, 1)
-    edge_vec_2 = ops.where(ops.gt(vec_dot, vec_dot_b), edge_vec_2b, edge_vec_2)
+    edge_vec_2 = ops.where(ops.broadcast_to(ops.gt(vec_dot, vec_dot_b), edge_vec_2b.shape), edge_vec_2b, edge_vec_2)
     vec_dot = ops.abs(ops.sum(edge_vec_2 * norm_x, dim=1)).view(-1, 1)
-    edge_vec_2 = ops.where(ops.gt(vec_dot, vec_dot_c), edge_vec_2c, edge_vec_2)
+    edge_vec_2 = ops.where(ops.broadcast_to(ops.gt(vec_dot, vec_dot_c), edge_vec_2c.shape), edge_vec_2c, edge_vec_2)
     vec_dot = ops.abs(ops.sum(edge_vec_2 * norm_x, dim=1))
     # Check the vectors aren't aligned
 
