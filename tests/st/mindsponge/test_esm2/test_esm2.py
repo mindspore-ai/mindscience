@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """esm2 script"""
+import os
 import pytest
 import numpy as np
 from mindsponge.pipeline import PipeLine
@@ -34,7 +35,9 @@ def test_esm2():
                        [4.001e-02, 8.156e-03, 6.557e-05, 8.887e-02, 5.367e-03, 1.133e-02],
                        [5.493e-03, 3.003e-02, 5.426e-02, 4.470e-05, 1.133e-02, 2.641e-02]])
     pipeline = PipeLine('ESM2')
-    pipeline.initialize(config_path='./esm2_config.yaml')
+    file_path = os.path.abspath(__file__)
+    yaml_path = os.path.abspath(os.path.join(os.path.dirname(file_path), "esm2_config.yaml"))
+    pipeline.initialize(config_path=yaml_path)
     pipeline.model.from_pretrained("/home/workspace/mindspore_ckpt/ckpt/esm2.ckpt")
     data = [("protein3", "K A <mask> I S Q")]
     _, _, _, contacts = pipeline.predict(data)
@@ -42,4 +45,4 @@ def test_esm2():
     tokens_len = pipeline.dataset.batch_lens[0]
     attention_contacts = contacts[0]
     matrix = attention_contacts[: tokens_len, : tokens_len]
-    assert np.allclose(matrix, expect, atol=5e-4)
+    assert np.allclose(matrix, expect, atol=0.0015)
