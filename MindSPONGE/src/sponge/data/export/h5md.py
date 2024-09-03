@@ -427,9 +427,10 @@ class H5MD:
             edges['value'].attrs['unit'] = self.units.length_unit_name.encode('ascii', 'ignore')
         else:
             pbc_box *= self.length_unit_scale
-            edges = group['box'].create_dataset('edges', data=pbc_box, dtype='float32',
-                                                compression=self.compression,
-                                                compression_opts=self.compression_opts)
+            edges = group['box'].create_group('edges')
+            edges.create_dataset('value', data=pbc_box, dtype='float32',
+                                 compression=self.compression,
+                                 compression_opts=self.compression_opts)
             edges.attrs['unit'] = self.units.length_unit_name.encode(
                 'ascii', 'ignore')
         return edges
