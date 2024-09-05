@@ -132,6 +132,9 @@ class Era5Data(Data):
         data_params (dict): dataset-related configuration of the model.
         run_mode (str, optional): whether the dataset is used for training, evaluation or testing. Supports [“train”,
             “test”, “valid”]. Default: 'train'.
+        kno_patch (bool, optional): Indicates whether the data is already partitioned into patches. If True, the data
+            is assumed to be pre-processed and no further patching is performed. If False, the data will be processed
+            into patches as per the specified parameters. Default: False.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
