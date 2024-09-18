@@ -44,11 +44,11 @@ def radius(x, y, r, batch_x=None, batch_y=None, max_num_neighbors=32):
         max_num_neighbors (int): The maximum number of neighbors to return for each element in `y`. Dufault: ``32``.
 
     Returns:
-        edge_index (numpy.ndarray): including edges of source and destination.
+        edge_index (numpy.ndarray) - including edges of source and destination.
 
-        batch_x (numpy.ndarray): batch vector of x.
+        batch_x (numpy.ndarray) - batch vector of x.
 
-        batch_y (numpy.ndarray): batch vector of y.
+        batch_y (numpy.ndarray) - batch vector of y.
 
     Raises:
         ValueError: If the last dimension of `x` and `y` do not match.
@@ -111,9 +111,9 @@ def radius_graph(x, r, batch=None, loop=False, max_num_neighbors=32, flow='sourc
         ValueError: If `flow` is not in {'source_to_target', 'target_to_source'}.
 
     Returns:
-        edge_index (ndarray): including edges of source and destination.
+        edge_index (ndarray) - including edges of source and destination.
 
-        batch (ndarray): batch vector.
+        batch (ndarray) - batch vector.
 
     Supported Platforms:
         ``Ascend``
@@ -152,11 +152,11 @@ def radius_full(x, y, batch_x=None, batch_y=None):
         batch_y (ndarray): batch vector of y. If it is none, then calculate based on y and return. Default: ``None``.
 
     Returns:
-        edge_index (numpy.ndarray): including edges of source and destination.
+        edge_index (numpy.ndarray) - including edges of source and destination.
 
-        batch_x (numpy.ndarray): batch vector of x.
+        batch_x (numpy.ndarray) - batch vector of x.
 
-        batch_y (numpy.ndarray): batch vector of y.
+        batch_y (numpy.ndarray) - batch vector of y.
 
     Raises:
         ValueError: If the last dimension of `x` and `y` do not match.
@@ -215,9 +215,9 @@ def radius_graph_full(x, batch=None, loop=False, flow='source_to_target'):
             message passing. Dufault: ``'source_to_target'``.
 
     Returns:
-        edge_index (ndarray): including edges of source and destination.
+        edge_index (ndarray) - including edges of source and destination.
 
-        batch (ndarray): batch vector.
+        batch (ndarray) - batch vector.
 
     Raises:
         ValueError: If `flow` is not in {'source_to_target', 'target_to_source'}.
