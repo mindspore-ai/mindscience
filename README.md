@@ -16,6 +16,22 @@
 
 MindScience is a scientific computing industry toolkit based on the MindSpore framework, which contains the industry-leading datasets, foundational models, pretrained checkpoints high-precision models, and pre- and post-processing tools, accelerating the development of scientific computing applications.
 
+### AI + Scientific Computing
+
+The integration of AI with scientific computing, known as AI + scientific computing, refers to the use of artificial intelligence technologies such as machine learning and deep learning for the practical computation and analysis of scientific challenges. This combination allows scientific computing to transcend traditional mathematical models and algorithms, leveraging the powerful computational capabilities of AI to explore unknown territories, enhance computational efficiency and accuracy. The computational power of AI + scientific computing mainly stems from the support of big data and algorithm optimization. Through continuous learning and refinement, AI is better equipped to handle complex scientific computing problems.
+
+### Differentiable Functions
+
+In AI frameworks, differentiability plays a crucial role; only when all components of a model (such as layers, activation functions, etc.) are differentiable can the gradients be calculated. It is not only the foundation for implementing backpropagation algorithms but also expands the application scope of deep learning, enables advanced functionalities, improves model performance, and promotes the development of AI hardware.
+
+### Turing-Complete IR
+
+Turing completeness, in the context of computability theory, means that a set of rules for manipulating data (such as instruction sets, programming languages, cellular automata, etc.) can compute any result when followed in a certain sequence. It has the following characteristics:
+
+* Universality: A Turing-complete IR can express any computable function, thus possessing a high degree of universality. This means it can be used to compile multiple programming languages and support complex algorithms and data structures.
+* Expressiveness: Due to its universality, a Turing-complete IR can handle complex computational tasks, including conditional jumps, loops, recursion, and other advanced programming constructs. This makes it a key component in compiler optimizations and deep learning frameworks.
+* Abstraction: As an intermediate representation, IR sits between the source code and the target machine code. It provides an abstract form of representation, allowing compilers to optimize the code while maintaining compatibility with the target machine code.
+
 ### [MindEarth](https://gitee.com/mindspore/mindscience/tree/master/MindEarth)
 
 MindEarth, a suite in the field of Earth sciences, supports tasks such as multi-temporal-spatial-scale meteorological forecasting and data preprocessing, committed to efficiently enabling AI+meteorological/ocean fusion research.
