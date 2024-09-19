@@ -901,6 +901,10 @@ def get_aligned_seq(gt_seq, pr_seq):
         align_relationship = align_relationship + align_str[i + int(point[0])+1]
     for i in range(int(point[2])-int(point[1])-1):
         query = query + align_str[i + int(point[1])+1]
+    if target.startswith('target'):
+        target = target.split(' ')[-2]
+        align_relationship = align_relationship.split(' ')[-2]
+        query = query.split(' ')[-2]
     return target, align_relationship, query
 
 

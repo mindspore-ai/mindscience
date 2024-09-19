@@ -20,6 +20,7 @@ import mindspore.context as context
 import mindspore.common.dtype as mstype
 from mindspore import Tensor, nn
 from mindspore import load_checkpoint
+from mindsponge import PipeLine
 from mindsponge.common.config_load import load_config
 from mindsponge.cell.amp import amp_convert
 from model.fold import MegaFold, compute_confidence
@@ -73,8 +74,24 @@ def fold_infer(crop_size, predict_confidence, mixed_precision=False):
         print("confidence:", confidence)
         assert confidence > predict_confidence
 
+def fold_infer_pipe(predict_confidence):
+    """fold_infer using pipeline"""
+    file_path = os.path.abspath(__file__)
+    yaml_path = os.path.abspath(os.path.join(os.path.dirname(file_path), "config", "predict_256.yaml"))
+    fold_prediction = PipeLine(name="MEGAFold")
+    fold_prediction.initialize(config_path=yaml_path)
+    fold_prediction.model.from_pretrained(ckpt_path="/home/workspace/mindspore_ckpt/ckpt/MEGA_Fold_1.ckpt")
+    input_folder = os.path.abspath(os.path.join(os.path.dirname(file_path), "feature"))
+    seq_files = os.listdir(input_folder)
+    for seq_file in seq_files:
+        raw_feature = load_pkl(os.path.join(input_folder, seq_file))
+        res = fold_prediction.predict(raw_feature)
+        confidence = res[-2]
+        print("confidence:", confidence)
+        assert confidence > predict_confidence
+
 @pytest.mark.level0
-@pytest.mark.platfrom_arm_ascend910b_training
+@pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_megafold_ascend_seqlen_256():
     """
@@ -83,6 +100,5 @@ def test_megafold_ascend_seqlen_256():
     Expectation: cost_time <= predict_time, confidence >= predict_confidence.
     """
     context.set_context(mode=context.GRAPH_MODE,
-                        device_target="Ascend",
-                        max_device_memory="31GB")
-    fold_infer(256, 94, True)
+                        device_target="Ascend")
+    fold_infer_pipe(94)

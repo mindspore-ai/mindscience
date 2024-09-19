@@ -38,7 +38,7 @@ parser.add_argument('--checkpoint_path', default="./MEGA_Fold_1.ckpt", help='che
 parser.add_argument('--device_id', default=0, type=int, help='DEVICE_ID')
 parser.add_argument('--seq_len', type=int, help='Run pdb assessment.')
 parser.add_argument('--is_910a', type=bool, default=False, help='is is_910a or not')
-arguments = parser.parse_args()
+arguments = parser.parse_args([])
 
 if arguments.is_910a:
     TIME_DICT = {
