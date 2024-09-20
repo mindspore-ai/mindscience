@@ -57,3 +57,16 @@ mindearth.module.Trainer
     .. py:method:: mindearth.module.Trainer.train()
 
         执行模型训练。
+
+    .. py:method:: mindearth.module.Trainer.get_data_generator()
+        
+        生成用于训练和验证数据集的数据生成器。
+
+        该函数根据指定的天气数据源创建数据生成器。
+        支持 'ERA5' 和 'DemSR' 数据源，对于不支持的数据源将引发错误。
+
+        返回：
+            - 包含训练和验证数据生成器的元组。
+
+        异常：
+            - **NotImplementedError** - 如果指定了不支持的数据源。

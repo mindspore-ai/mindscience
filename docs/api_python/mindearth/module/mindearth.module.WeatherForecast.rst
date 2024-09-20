@@ -22,6 +22,7 @@ mindearth.module.WeatherForecast
 
         参数：
             - **dataset** (mindspore.dataset) - 模型推理数据集，包括输入值和样本值。
+            - **generator_flag** (bool, 可选) - 用于向 "compute_total_rmse_acc" 方法传递一个参数。指示是否使用数据生成器。
 
     .. py:method:: mindearth.module.WeatherForecast.forecast(inputs, labels=None)
         :staticmethod:
@@ -31,4 +32,20 @@ mindearth.module.WeatherForecast
         参数：
             - **inputs** (Tensor) - 模型的输入数据。
             - **labels** (Tensor) - 样本真实数据。默认值： ``None``。
+            
+    .. py:method:: mindearth.module.WeatherForecast.compute_total_rmse_acc(dataset, generator_flag)
 
+        计算数据集的总体均方根误差（RMSE）和准确率。
+
+        该函数遍历数据集，为每个批次计算RMSE和准确率，
+        并累加结果以计算整个数据集的总体RMSE和准确率。
+
+        参数：
+            - **dataset** (Dataset) - 用于计算指标的数据集对象。
+            - **generator_flag** (bool) - 一个标志，指示是否使用数据生成器。
+
+        返回：
+            - 包含数据集的总体准确率和RMSE的元组。
+
+        异常：
+            - **NotImplementedError** - 如果指定了不支持的数据源。

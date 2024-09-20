@@ -214,6 +214,8 @@ class WeatherForecast:
 
         Args:
             dataset (mindspore.dataset): The dataset for eval, including inputs and labels.
+            generator_flag (bool): "generator_flag" is used to pass a parameter to the "compute_total_rmse_acc" method.
+                A flag indicating whether to use a data generator or not.
         '''
         data_length = len(dataset) // self.batch_size
         self.logger.info("================================Start Evaluation================================")
@@ -239,10 +241,8 @@ class WeatherForecast:
         Returns:
             A tuple containing the total accuracy and RMSE for the dataset.
 
-        Process:
-            - If `generator_flag` is False, use the dataset's iterator to access data.
-            - For each batch, calculate the metrics and accumulate them.
-            - Return the average accuracy and RMSE over the dataset.
+        Raises:
+            NotImplementedError: If an unsupported data source is specified.
         """
         data_length = 0
         lat_weight_rmse = None
