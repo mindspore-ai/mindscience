@@ -1,0 +1,7 @@
+pymatgen==2023.8.10
+pandas
+scikit-learn
+p_tqdm
+matminer==0.7.3
+smact==2.2.1
+ruamel.yaml==0.17.19

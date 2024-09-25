@@ -63,6 +63,11 @@
     - **数据**：JARVIS-DFT 3D数据集。该数据集包含了晶体材料的原子位置、原子数等描述信息以及能量、力场等性质信息。
     - **任务**：晶体材料性质预测。我们集成了Matformer模型[5]，基于图神经网络和Transformer架构的模型，用于预测晶体材料的各种性质。
 
+- **晶体材料结构预测**：
+    - **体系**：材料化学
+    - **数据**：Perov-5是钙钛矿数据集，其中每个晶胞中都固定有五个原子，且结构上比较接近。Carbon-24是碳晶体数据集，每个晶体中含有6到24个碳原子，不同材料结构各异。MP-20是从MP数据集中收集到胞内不超过20个原子的实验结构，MPTS-52是它的进阶版本，将胞内原子数扩展到了52个，这两个数据集中的材料组分和结构都比较多样。
+    - **任务**：晶体材料结构预测。我们集成了DiffCSP模型[6]，基于图神经网络和扩散模型架构的模型，用于给定组分，预测晶体材料的结构。
+
 ### 功能模块
 
 - **等变计算库**
@@ -126,7 +131,7 @@ pip install -r requirements.txt
 
 感谢以下开发者做出的贡献：
 
-yufan, wangzidong, liuhongsheng, gongyue, gengchenhua, linghejing, yanchaojie, suyun, wujian, caowenbin
+yufan, wangzidong, liuhongsheng, gongyue, gengchenhua, linghejing, yanchaojie, suyun, wujian, caowenbin, Lin Peijia
 
 ## 贡献指南
 
@@ -147,3 +152,5 @@ yufan, wangzidong, liuhongsheng, gongyue, gengchenhua, linghejing, yanchaojie, s
 [4] Xiaoxun Gong, He Li, Nianlong Zou, et al. General framework for E(3)-equivariant neural network representation of density functional theory Hamiltonian[J]. Nature communications, 2023, 14: 2848.
 
 [5] Keqiang Yan, Yi Liu, Yuchao Lin, Shuiwang ji, et al. Periodic Graph Transformers for Crystal Material Property Prediction[J]. arXiv:2209.11807v1 [cs.LG] 23 sep 2022.
+
+[6] Jiao Rui and Huang Wenbing and Lin Peijia, et al. Crystal structure prediction by joint equivariant diffusion[J]. Advances in Neural Information Processing Systems, 2024, 36.
