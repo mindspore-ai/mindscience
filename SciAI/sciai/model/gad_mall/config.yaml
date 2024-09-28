@@ -1,0 +1,12 @@
+model_name: gadmall
+problem: gadmall
+description: gadmall
+load_data_path: ./data
+batch_size: 64
+lr: 0.000753014797772
+epochs: 500
+log_path: ./logs
+print_interval: 100 
+force_download: false
+amp_level: O3
+mode: 0
