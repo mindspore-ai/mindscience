@@ -1,0 +1,25 @@
+params:
+  model_name: 'NSFNet'
+  case: 'Three-dimensional-Beltrami-flow'
+  device: 'GPU'
+  device_id: '2'
+  load_params: False
+  load_params_test: True
+  second_path1: 'train'
+  network_size: [4, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 4]
+  learning_rate: [1.0e-03, 1.0e-04, 1.0e-05, 1.0e-06]
+  epochs: [5e3, 5e3, 5e4, 5e4]
+  batch_size: 10000
+  xmin: -1
+  xmax: 1
+  ymin: -1
+  ymax: 1
+  zmin: -1
+  zmax: 1
+  tmin: 0.
+  tmax: 1.
+  n_x: 16
+  n_y: 16 
+  n_z: 16
+  n_t: 21
+  re: 1
