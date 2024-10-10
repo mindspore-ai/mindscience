@@ -159,3 +159,5 @@
 "mindscience/MindSPONGE/tutorials/basic/tutorial_p03.py"                                        "wrong-import-position"
 "mindscience/MindSPONGE/tutorials/basic/tutorial_p04.py"                                        "wrong-import-position"
 "mindscience/MindSPONGE/tutorials/basic/tutorial_p05.py"                                        "wrong-import-position"
+"mindscience/tests/st/mindflow/cell/test_dft.py"                                            "wrong-import-position"
+"mindscience/tests/st/mindflow/cell/test_fno1d.py"                                          "wrong-import-position"
