@@ -107,13 +107,13 @@ def radius_graph(x, r, batch=None, loop=False, max_num_neighbors=32, flow='sourc
         flow (str): {'source_to_target', 'target_to_source'}, the flow direction when using in combination with
             message passing. Dufault: ``'source_to_target'``.
 
-    Raises:
-        ValueError: If `flow` is not in {'source_to_target', 'target_to_source'}.
-
     Returns:
         edge_index (ndarray) - including edges of source and destination.
 
         batch (ndarray) - batch vector.
+
+    Raises:
+        ValueError: If `flow` is not in {'source_to_target', 'target_to_source'}.
 
     Supported Platforms:
         ``Ascend``

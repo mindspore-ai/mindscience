@@ -13,9 +13,9 @@ mindchemistry.e3.utils.radius_graph
         - **max_num_neighbors** (int) - 返回每个 `y` 元素的最大邻居数量。默认值：``32``。
         - **flow** (str) - {'source_to_target', 'target_to_source'}，与消息传递结合使用时的流向。默认值：``'source_to_target'``。
 
-    异常：
-        - **ValueError** - 如果 `flow` 不是 {'source_to_target', 'target_to_source'} 之一。
-
     返回：
         - **edge_index** (ndarray) - 包括边的起点与终点。
         - **batch** (ndarray) - 批向量。
+
+    异常：
+        - **ValueError** - 如果 `flow` 不是 {'source_to_target', 'target_to_source'} 之一。
