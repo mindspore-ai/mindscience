@@ -154,7 +154,6 @@ class InferenceModule(WeatherForecast):
         self.std_all = np.concatenate([self.std, self.std_s], axis=-1)
 
         self.feature_dims = config['data']['feature_dims']
-        self.climate = np.load(os.path.join(statistic_dir, "climate_1.4.npy"))
 
     def forecast(self, inputs):
         pred_lst = []
@@ -185,8 +184,8 @@ class InferenceModule(WeatherForecast):
         # acc
         pred = pred * ms.Tensor(self.std_all, ms.float32) + ms.Tensor(self.mean_all, ms.float32)
         labels = labels * ms.Tensor(self.std_all, ms.float32) + ms.Tensor(self.mean_all, ms.float32)
-        pred = pred - ms.Tensor(self.climate, ms.float32)
-        labels = labels - ms.Tensor(self.climate, ms.float32)
+        pred = pred - ms.Tensor(self.climate_mean, ms.float32)
+        labels = labels - ms.Tensor(self.climate_mean, ms.float32)
 
         acc_numerator = pred * labels
         acc_numerator = acc_numerator.transpose(0, 1, 3, 2).reshape(
