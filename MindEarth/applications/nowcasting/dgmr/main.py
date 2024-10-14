@@ -22,8 +22,8 @@ import datetime
 
 from mindspore import context
 
-from mindearth.utils import load_yaml_config, create_logger
 from mindearth.data import RadarData, Dataset
+from mindearth.utils import load_yaml_config, create_logger
 
 from src import init_model, update_config, init_data_parallel
 from src import GenWithLossCell, DiscWithLossCell, DgmrTrainer, InferenceModule
@@ -40,14 +40,11 @@ def get_args():
     parser.add_argument('--amp_level', type=str, default='O2')
     parser.add_argument('--run_mode', type=str, choices=["train", "test"], default='train')
     parser.add_argument('--load_ckpt', type=bool, default=False)
-
-    parser.add_argument('--num_workers', type=int, default=1)
-
+    parser.add_argument('--num_workers', type=int, default=8)
     parser.add_argument('--eval_interval', type=int, default=10)
     parser.add_argument('--keep_checkpoint_max', type=int, default=1)
     parser.add_argument('--output_dir', type=str, default='./summary')
     parser.add_argument('--ckpt_path', type=str, default='')
-
     params = parser.parse_args()
     return params
 
@@ -77,9 +74,7 @@ if __name__ == '__main__':
     args = get_args()
     config = load_yaml_config(args.config_file_path)
     update_config(args, config)
-
     use_ascend = args.device_target == 'Ascend'
-
     logger = create_logger(path=os.path.join(config['summary']["summary_dir"], "results.log"))
     logger.info("pid: {}".format(os.getpid()))
     logger.info(config['train'])
@@ -87,13 +82,11 @@ if __name__ == '__main__':
     logger.info(config['data'])
     logger.info(config['optimizer'])
     logger.info(config['summary'])
-
     if config['train']['distribute']:
         init_data_parallel(use_ascend)
     else:
         context.set_context(mode=context.GRAPH_MODE, device_target=args.device_target,
                             device_id=config['train']['device_id'])
-
     g_model, d_model = init_model(config)
     g_loss_fn = GenWithLossCell(g_model, d_model, config["model"]["generation_steps"], config["model"]["grid_lambda"])
     d_loss_fn = DiscWithLossCell(g_model, d_model)

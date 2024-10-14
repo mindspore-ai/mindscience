@@ -13,6 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 """Evolution module"""
+import logging
 import numpy as np
 
 import mindspore as ms
@@ -20,6 +21,8 @@ import mindspore.numpy as mnp
 from mindspore.common.initializer import initializer, Normal
 from mindspore import nn, ops, Parameter, Tensor
 
+logging.basicConfig(level=logging.DEBUG, filename='app.log')
+logger = logging.getLogger(__name__)
 
 class SpectralNormal(nn.Cell):
     """Applies spectral normalization to a parameter in the given module.
@@ -30,7 +33,7 @@ class SpectralNormal(nn.Cell):
 
     Args:
         module (nn.Cell): containing module.
-        n_power_iterations (int): number of power iterations to calculate spectral norm.
+        n_power_iterations (int): number of power iterat ions to calculate spectral norm.
         dim (int): dimension corresponding to number of outputs.
         eps (float): epsilon for numerical stability in calculating norms.
 
@@ -41,8 +44,9 @@ class SpectralNormal(nn.Cell):
     Outputs:
         The forward propagation of containing module.
     """
-    def __init__(self, module, n_power_iterations=1, dim=0, eps=1e-12):
+    def __init__(self, module, n_power_iterations=1, dim=0, eps=1e-12, n1=1.0, n2=0, l=0):
         super(SpectralNormal, self).__init__()
+        self.l = l
         self.parametrizations = module
         self.weight = module.weight
         ndim = self.weight.ndim
@@ -62,9 +66,9 @@ class SpectralNormal(nn.Cell):
             self.n_power_iterations = n_power_iterations
             weight_mat = self._reshape_weight_to_matrix()
             h, w = weight_mat.shape
-            u = initializer(Normal(1.0, 0), [h]).init_data()
-            v = initializer(Normal(1.0, 0), [w]).init_data()
-            self._u = Parameter(self.l2_normalize(u), requires_grad=False)
+            u = initializer(Normal(n1, n2), [h]).init_data()
+            v = initializer(Normal(n1, n1), [w]).init_data()
+            self._u = Parameter(self.l2_normalize(u), requires_grad=False)  # 封装成Parameter对象
             self._v = Parameter(self.l2_normalize(v), requires_grad=False)
 
     def construct(self, *inputs, **kwargs):
@@ -80,17 +84,15 @@ class SpectralNormal(nn.Cell):
             # See above on why we need to clone
             u = self._u.copy()
             v = self._v.copy()
-
             sigma = ops.tensor_dot(u, mnp.multi_dot([weight_mat, self.expand_dims(v, -1)]), 1)
-
-            self.assign(self.parametrizations.weight, ops.div(self.weight, sigma))
-
+            self.assign(self.parametrizations.weight, self.weight / sigma)
         return self.parametrizations(*inputs, **kwargs)
 
     def _power_method(self, weight_mat, n_power_iterations):
         for _ in range(n_power_iterations):
             self._u = self.l2_normalize(mnp.multi_dot([weight_mat, self.expand_dims(self._v, -1)]).flatten())
-            self._v = self.l2_normalize(mnp.multi_dot([weight_mat.T, self.expand_dims(self._u, -1)]).flatten())
+            temp = mnp.multi_dot([weight_mat.T, self.expand_dims(self._u, -1)]).flatten()
+            self._v = self.l2_normalize(temp)
         return self._u, self._v
 
     def _reshape_weight_to_matrix(self):
@@ -152,10 +154,11 @@ class DoubleConv(nn.Cell):
 
 class Up(nn.Cell):
     """Up sample"""
-    def __init__(self, in_channels, out_channels, bilinear=True, kernel=3):
+    def __init__(self, in_channels, out_channels, size, bilinear=True, kernel=3):
         super(Up, self).__init__()
         if bilinear:
-            self.up = nn.Upsample(scale_factor=2.0, recompute_scale_factor=True, mode='bilinear', align_corners=True)
+            # self.up = nn.Upsample(scale_factor=2.0, recompute_scale_factor=True, mode='bilinear', align_corners=True)
+            self.up = nn.Upsample(size=size, mode='bilinear', align_corners=True)
             self.conv = DoubleConv(in_channels, out_channels, kernel=kernel, mid_channels=in_channels // 2)
         else:
             self.up = nn.Conv2dTranspose(in_channels,
@@ -172,7 +175,6 @@ class Up(nn.Cell):
         x = ops.cat([x2, x1], axis=1)
         return self.conv(x)
 
-
 class Down(nn.Cell):
     """Down sample"""
     def __init__(self, in_channels, out_channels, kernel=3):
@@ -188,6 +190,7 @@ class Down(nn.Cell):
 
 
 class OutConv(nn.Cell):
+    """Evolution network"""
     def __init__(self, in_channels, out_channels):
         super(OutConv, self).__init__()
         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=1, pad_mode='pad', has_bias=True)
@@ -198,7 +201,7 @@ class OutConv(nn.Cell):
 
 class EvolutionNet(nn.Cell):
     """Evolution network"""
-    def __init__(self, t_in, t_out, in_channels=32, bilinear=True):
+    def __init__(self, t_in, t_out, h_size, w_size, in_channels=32, bilinear=True):
         super(EvolutionNet, self).__init__()
         self.t_in = t_in
         factor = 2 if bilinear else 1
@@ -208,17 +211,26 @@ class EvolutionNet(nn.Cell):
         self.down3 = Down(in_channels * 4, in_channels * 8)
         self.down4 = Down(in_channels * 8, in_channels * 16 // factor)
 
-        self.up1 = Up(in_channels * 16, in_channels * 8 // factor, bilinear)
-        self.up2 = Up(in_channels * 8, in_channels * 4 // factor, bilinear)
-        self.up3 = Up(in_channels * 4, in_channels * 2 // factor, bilinear)
-        self.up4 = Up(in_channels * 2, in_channels, bilinear)
+        down_h_size = h_size // 16
+        down_w_size = w_size // 16
+
+        self.up1 = Up(in_channels * 16, in_channels * 8 // factor, size=(down_h_size * 2, down_w_size * 2),
+                      bilinear=bilinear)
+        self.up2 = Up(in_channels * 8, in_channels * 4 // factor, size=(down_h_size * 4, down_w_size * 4),
+                      bilinear=bilinear)
+        self.up3 = Up(in_channels * 4, in_channels * 2 // factor, size=(down_h_size * 8, down_w_size * 8),
+                      bilinear=bilinear)
+        self.up4 = Up(in_channels * 2, in_channels, size=(down_h_size * 16, down_w_size * 16), bilinear=bilinear)
         self.outc = OutConv(in_channels, t_out)
         self.gamma = Parameter(Tensor(np.zeros((1, t_out, 1, 1), dtype=np.float32), ms.float32), requires_grad=True)
 
-        self.up1_v = Up(in_channels * 16, in_channels * 8 // factor, bilinear)
-        self.up2_v = Up(in_channels * 8, in_channels * 4 // factor, bilinear)
-        self.up3_v = Up(in_channels * 4, in_channels * 2 // factor, bilinear)
-        self.up4_v = Up(in_channels * 2, in_channels, bilinear)
+        self.up1_v = Up(in_channels * 16, in_channels * 8 // factor, size=(down_h_size * 2, down_w_size * 2),
+                        bilinear=bilinear)
+        self.up2_v = Up(in_channels * 8, in_channels * 4 // factor, size=(down_h_size * 4, down_w_size * 4),
+                        bilinear=bilinear)
+        self.up3_v = Up(in_channels * 4, in_channels * 2 // factor, size=(down_h_size * 8, down_w_size * 8),
+                        bilinear=bilinear)
+        self.up4_v = Up(in_channels * 2, in_channels, size=(down_h_size * 16, down_w_size * 16), bilinear=bilinear)
         self.outc_v = OutConv(in_channels, t_out * 2)
 
     def construct(self, all_frames):

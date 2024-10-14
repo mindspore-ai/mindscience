@@ -52,7 +52,7 @@ def cal_csi(pred=None, target=None, tp=None, fp=None, fn=None, threshold=16):
         fp = cal_fp(pred=pred, target=target, th=threshold)
         fn = cal_fn(pred=pred, target=target, th=threshold)
     tp_fp_fn = tp + fp + fn
-    csi = ops.div(tp, ops.where(tp_fp_fn > 1e-5, tp_fp_fn, 1e-5 + Tensor(np.zeros(tp_fp_fn.shape))))
+    csi = tp / ops.where(tp_fp_fn > 1e-5, tp_fp_fn, 1e-5 + Tensor(np.zeros(tp_fp_fn.shape)))
     return csi.mean(axis=0)
 
 
@@ -118,9 +118,11 @@ class GenerationPredictor(nn.Cell):
                                               self.h_size // self.noise_scale,
                                               self.w_size // self.noise_scale)), inp.dtype)
             pred = self.generator(inp, evo_result, noise)
-            metrics = cal_csin(pred=pred, target=labels, threshold=self.threshold)
+            metrics = cal_csi(pred=pred, target=labels, threshold=7)
             np_metrics = metrics.asnumpy()
-            metrics_list.append(np_metrics)
+            np_metrics_avg = np.mean(np_metrics)
+            # print('np_metrics',np_metrics)
+            metrics_list.append(np_metrics_avg)
             self.print_csi_metrics(np_metrics, info_prefix=f'CSI Neighborhood threshold {self.threshold}')
             if self.summary_params.get("visual", True):
                 for j in range(self.batch_size):
@@ -173,12 +175,9 @@ class EvolutionPredictor:
 
     def get_dataset(self):
         test_dataset_generator = RadarData(self.data_params, run_mode='test', module_name='evolution')
-        test_dataset = NowcastDataset(test_dataset_generator,
-                                      module_name='evolution',
+        test_dataset = NowcastDataset(test_dataset_generator, module_name='evolution',
                                       distribute=self.train_params.get('distribute'),
-                                      num_workers=self.data_params.get('num_workers'),
-                                      shuffle=False
-                                      )
+                                      num_workers=self.data_params.get('num_workers'), shuffle=False)
         test_dataset = test_dataset.create_dataset(self.batch_size)
         return test_dataset
 
@@ -194,8 +193,9 @@ class EvolutionPredictor:
             inp = data.get("inputs")
             pred = self.forecast(inp)
             labels = inp[:, self.t_in:]
-            metrics = cal_csin(pred=pred, target=labels, threshold=self.threshold)
+            metrics = cal_csi(pred=pred, target=labels, threshold=7)
             np_metrics = metrics.asnumpy()
+            # print('np_metrics',np_metrics)
             metrics_list.append(np_metrics)
             self.print_csi_metrics(np_metrics, info_prefix=f'CSI Neighborhood threshold {self.threshold}')
             if self.summary_params.get("visual", True):
@@ -213,9 +213,11 @@ class EvolutionPredictor:
         intensity, motion = self.model(inputs)
         batch, _, height, width = inputs.shape
         motion_ = motion.reshape(batch, self.t_out, 2, height, width)
+        # (1, 20, 2, 512, 512)
         intensity_ = intensity.reshape(batch, self.t_out, 1, height, width)
         series = list()
         last_frames = inputs[:, (self.t_in - 1):self.t_in, :, :]
+        # # (1, 1, 512, 512)
         grid = self.grid.tile((batch, 1, 1, 1))
         for i in range(self.t_out):
             last_frames = warp(last_frames, motion_[:, i], grid, mode="nearest", padding_mode="border")

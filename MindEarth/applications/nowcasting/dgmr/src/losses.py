@@ -104,7 +104,6 @@ class DiscWithLossCell(nn.Cell):
     def construct(self, images, future_images):
         """DiscWithLossCell construct function"""
         predictions = self.generator(images)
-
         generated_sequence = self.concat_op1((images, predictions))
         real_sequence = self.concat_op1((images, future_images))
 

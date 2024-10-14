@@ -36,11 +36,9 @@ class ReflectPad(nn.Cell):
         self.padding = padding
 
     def construct(self, x):
-        out = ops.concat([x[..., 1:1 + self.padding][..., ::-1].copy(),
-                          x,
+        out = ops.concat([x[..., 1:1 + self.padding][..., ::-1].copy(), x,
                           x[..., -1 - self.padding:-1][..., ::-1].copy()], axis=3)
-        out = ops.concat([out[:, :, 1:1 + self.padding][:, :, ::-1].copy(),
-                          out,
+        out = ops.concat([out[:, :, 1:1 + self.padding][:, :, ::-1].copy(), out,
                           out[:, :, -1 - self.padding:-1][:, :, ::-1]], axis=2)
         return out
 
@@ -60,7 +58,7 @@ class GenBlock(nn.Cell):
                                 has_bias=True,
                                 dilation=dilation
                                 )
-        self.conv_0 = SpectralNormal(self.conv_0)
+        self.conv_0 = SpectralNormal(self.conv_0, l=0)
         self.norm_0 = SPADE(in_channels, data_params.get("t_out", 20))
         self.conv_1 = nn.Conv2d(mid_channels,
                                 out_channels,
@@ -69,11 +67,12 @@ class GenBlock(nn.Cell):
                                 has_bias=True,
                                 dilation=dilation
                                 )
-        self.conv_1 = SpectralNormal(self.conv_1)
+        self.conv_1 = SpectralNormal(self.conv_1, l=1)
         self.norm_1 = SPADE(mid_channels, data_params.get("t_out", 20))
         if self.learned_shortcut:
             self.conv_s = nn.Conv2d(in_channels, out_channels, kernel_size=1, pad_mode='pad')
-            self.conv_s = SpectralNormal(self.conv_s)
+            # self.conv_s = nn.Conv2d(in_channels, out_channels, kernel_size=1, pad_mode='valid')
+            self.conv_s = SpectralNormal(self.conv_s, l=0)
             self.norm_s = SPADE(in_channels, data_params.get("t_out", 20))
         self.leaky_relu = nn.LeakyReLU(2e-1)
 
@@ -100,12 +99,15 @@ class SPADE(nn.Cell):
         self.param_free_norm = nn.BatchNorm2d(norm_channels, affine=False)
         self.pad_head = ReflectPad(kernel_size // 2)
         self.mlp_shared = nn.SequentialCell(
+            # nn.Conv2d(label_nc, hidden, kernel_size=kernel_size, pad_mode='valid', has_bias=True),
             nn.Conv2d(label_nc, hidden, kernel_size=kernel_size, pad_mode='pad', has_bias=True),
             nn.ReLU()
         )
         self.pad = ReflectPad(kernel_size // 2)
         self.mlp_gamma = nn.Conv2d(hidden, norm_channels, kernel_size=kernel_size, pad_mode='pad', has_bias=True)
         self.mlp_beta = nn.Conv2d(hidden, norm_channels, kernel_size=kernel_size, pad_mode='pad', has_bias=True)
+        # self.mlp_gamma = nn.Conv2d(hidden, norm_channels, kernel_size=kernel_size, pad_mode='valid', has_bias=True)
+        # self.mlp_beta = nn.Conv2d(hidden, norm_channels, kernel_size=kernel_size, pad_mode='valid', has_bias=True)
 
     def construct(self, x, evo):
         normalized = self.param_free_norm(x)
@@ -128,7 +130,7 @@ class NoiseProjector(nn.Cell):
                                                    pad_mode='pad',
                                                    padding=1,
                                                    has_bias=True
-                                                   )
+                                                   ), l=2
                                          )
         self.block1 = ProjBlock(t_in * 2, t_in * 4)
         self.block2 = ProjBlock(t_in * 4, t_in * 8)
@@ -148,21 +150,18 @@ class ProjBlock(nn.Cell):
     """Projector block"""
     def __init__(self, in_channels, out_channels):
         super(ProjBlock, self).__init__()
-        self.one_conv = SpectralNormal(nn.Conv2d(in_channels, out_channels - in_channels, kernel_size=1, has_bias=True))
+        self.one_conv = SpectralNormal(nn.Conv2d(in_channels, out_channels - in_channels,
+                                                 kernel_size=1, has_bias=True), l=4)
+        # self.one_conv = nn.Conv2d(in_channels, out_channels - in_channels, kernel_size=1, has_bias=True)
         self.double_conv = nn.SequentialCell(
-            SpectralNormal(nn.Conv2d(in_channels,
-                                     out_channels,
-                                     kernel_size=3,
-                                     pad_mode='pad',
-                                     padding=1,
-                                     has_bias=True)),
+            SpectralNormal(nn.Conv2d(in_channels, out_channels, kernel_size=3, pad_mode='pad',
+                                     padding=1, has_bias=True), l=2),
             nn.ReLU(),
-            SpectralNormal(nn.Conv2d(out_channels,
-                                     out_channels,
-                                     kernel_size=3,
-                                     pad_mode='pad',
-                                     padding=1,
-                                     has_bias=True))
+            SpectralNormal(nn.Conv2d(out_channels, out_channels, kernel_size=3, pad_mode='pad',
+                                     padding=1, has_bias=True), l=2)
+            # nn.Conv2d(in_channels, out_channels, kernel_size=3, pad_mode='pad', padding=1, has_bias=True),
+            # nn.ReLU(),
+            # nn.Conv2d(out_channels, out_channels, kernel_size=3, pad_mode='pad', padding=1, has_bias=True)
         )
 
     def construct(self, x):
@@ -201,8 +200,8 @@ class GenerativeDecoder(nn.Cell):
         out_channels = data_params.get("t_out", 20)
         self.fc = nn.Conv2d(in_channels, 8 * nf, kernel_size=3, pad_mode='pad', padding=1, has_bias=True)
         self.head_0 = GenBlock(8 * nf, 8 * nf, data_params)
-        self.gen_middle_0 = GenBlock(8 * nf, 4 * nf, data_params, double_conv=True)
-        self.gen_middle_1 = GenBlock(4 * nf, 4 * nf, data_params, double_conv=True)
+        self.g_middle_0 = GenBlock(8 * nf, 4 * nf, data_params, double_conv=True)
+        self.g_middle_1 = GenBlock(4 * nf, 4 * nf, data_params, double_conv=True)
         self.up_0 = GenBlock(4 * nf, 2 * nf, data_params)
         self.up_1 = GenBlock(2 * nf, nf, data_params, double_conv=True)
         self.up_2 = GenBlock(nf, nf, data_params, double_conv=True)
@@ -215,8 +214,8 @@ class GenerativeDecoder(nn.Cell):
         x = self.head_0(x, evo)
         h, w = x.shape[2], x.shape[3]
         x = ops.interpolate(x, size=(h * 2, w * 2))
-        x = self.gen_middle_0(x, evo)
-        x = self.gen_middle_1(x, evo)
+        x = self.g_middle_0(x, evo)
+        x = self.g_middle_1(x, evo)
         h, w = x.shape[2], x.shape[3]
         x = ops.interpolate(x, size=(h * 2, w * 2))
         x = self.up_0(x, evo)
@@ -226,6 +225,7 @@ class GenerativeDecoder(nn.Cell):
         x = self.up_2(x, evo)
         out = self.conv_img(self.leaky_relu(x))
         return out
+        # return x
 
 
 class GenerationNet(nn.Cell):

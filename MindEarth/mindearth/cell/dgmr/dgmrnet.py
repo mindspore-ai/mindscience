@@ -133,28 +133,29 @@ class DgmrGenerator(Cell):
     """
     def __init__(
             self,
+            z,
             forecast_steps=18,
             in_channels=1,
             out_channels=256,
             conv_type="standard",
             latent_channels=768,
             context_channels=384,
-            generation_steps=1
+            generation_steps=1,
     ):
         super().__init__()
         self.latent_channels = latent_channels
         self.context_channels = context_channels
         self.in_channels = in_channels
         self.generation_steps = generation_steps
-
+        self.z = z
         self.conditioning_stack = ContextConditioningStack(
             in_channels=in_channels,
             conv_type=conv_type,
             out_channels=self.context_channels,
         )
-
+        self.shape = (8 * self.in_channels, out_channels // 32, out_channels // 32, 1)
         self.latent_stack = LatentConditioningStack(
-            shape=(8 * self.in_channels, out_channels // 32, out_channels // 32, 1),
+            shape=self.shape,
             out_channels=self.latent_channels,
         )
         self.sampler = Sampler(
@@ -166,6 +167,6 @@ class DgmrGenerator(Cell):
     def construct(self, x):
         """Dgmr generator forward function."""
         conditioning_states = self.conditioning_stack(x)
-        latent_dim = self.latent_stack(x)
+        latent_dim = self.latent_stack(x, self.z)
         output = self.sampler(conditioning_states, latent_dim)
         return output

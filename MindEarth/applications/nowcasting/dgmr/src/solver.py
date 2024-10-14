@@ -92,10 +92,8 @@ class DgmrTrainer:
 
     def get_solver(self):
         loss_scale = nn.FixedLossScaleUpdateCell(loss_scale_value=self.config.get("optimizer").get("loss_scale"))
-
         g_solver = nn.TrainOneStepWithLossScaleCell(self.g_loss_fn, self.g_optimizer, scale_sense=loss_scale)
         d_solver = nn.TrainOneStepWithLossScaleCell(self.d_loss_fn, self.d_optimizer, scale_sense=loss_scale)
-
         return g_solver, d_solver
 
     def train(self):

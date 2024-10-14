@@ -14,7 +14,6 @@
 # ==============================================================================
 """Temporal discriminator"""
 from mindspore import nn, ops
-
 from .evolution import SpectralNormal
 
 
@@ -34,10 +33,10 @@ class TemporalDiscriminator(nn.Cell):
         self.conv4 = SpectralNormal(nn.Conv2d(512, 1, kernel_size=3, pad_mode='pad', padding=1, has_bias=True))
 
     def construct(self, x):
-        """temporal discriminator construct"""
-        x1 = self.conv1(x)
-        x2 = self.conv2(x)
-        x3 = self.conv3(x)
+        "construct"
+        x1 = self.conv1(x)  # x1 shape: (1 64 252 252)
+        x2 = self.conv2(x)  # x2 shape: (1 64 252 252)
+        x3 = self.conv3(x)  # x3 shape: (1 64 252 252)
         out = ops.concat([x1, x2, x3], axis=1)
         out = self.block1(out)
         out = self.block2(out)
@@ -61,8 +60,9 @@ class DiscriminatorBlock(nn.Cell):
                                                      pad_mode='pad',
                                                      padding=1,
                                                      has_bias=True
-                                                     )
+                                                    )
                                            )
+
             self.double_conv = nn.SequentialCell(
                 SpectralNormal(nn.Conv2d(in_channels,
                                          out_channels,

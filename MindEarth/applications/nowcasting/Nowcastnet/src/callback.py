@@ -84,6 +84,8 @@ class NowcastCallBack:
         """print log when step end."""
         loss_d = float(res_d)
         loss_g = float(res_g)
+        print("loss_d", loss_d)
+        print("loss_g", loss_g)
         losses = "D_loss: {:.3f}, G_loss:{:.3f}".format(loss_d, loss_g)
         if step:
             step_cost = (time.time() - self.step_start_time) * 1000
@@ -124,10 +126,7 @@ class NowcastCallBack:
         """train summary at the end of epoch."""
         len_times = len(self.epoch_times)
         sum_times = sum(self.epoch_times)
-        try:
-            epoch_times = sum_times / len_times
-        except ZeroDivisionError:
-            self.logger.info('==========no epoch===============')
+        epoch_times = sum_times / len_times
         info = 'total {} epochs, cost {:.2f} ms, pre epoch cost {:.2f}'.format(len_times, sum_times, epoch_times)
         if self.run_distribute:
             info = "Rank[{}] {}".format(self.rank_id, info)

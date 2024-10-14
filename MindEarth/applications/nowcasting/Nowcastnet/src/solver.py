@@ -14,15 +14,16 @@
 # ==============================================================================
 """NowcastNet Trainer"""
 import math
-
+import pickle
 import numpy as np
+
 import mindspore as ms
-from mindspore import nn, Model
-from mindspore.train.callback import LossMonitor, TimeMonitor
+from mindspore import nn, Model, ops
 
 from .dataset import RadarData, NowcastDataset
 from .callback import NowcastCallBack, EvolutionCallBack
 from .forecast import GenerationPredictor
+
 
 
 class GenerationTrainer:
@@ -71,6 +72,9 @@ class GenerationTrainer:
                                         dataset_size=self.dataset_size,
                                         logger=self.logger)
         self.predictor = GenerationPredictor(config, self.g_model, logger)
+        self.g_grad_fn = ms.value_and_grad(self.g_forward_fn, None, self.g_optimizer.parameters)
+        self.d_grad_fn = ms.value_and_grad(self.d_forward_fn, None, self.d_optimizer.parameters)
+        self.i = 1
 
     @staticmethod
     def _get_cosine_annealing_lr(lr_init, steps_per_epoch, epochs, eta_min=1e-6):
@@ -78,12 +82,9 @@ class GenerationTrainer:
         total_steps = epochs * steps_per_epoch
         delta = 0.5 * (lr_init - eta_min)
         lr = []
-        try:
-            for i in range(total_steps):
-                tmp_epoch = min(math.floor(i / steps_per_epoch), epochs)
-                lr.append(eta_min + delta * (1 + math.cos(math.pi * tmp_epoch / epochs)))
-        except ZeroDivisionError:
-            return lr
+        for i in range(total_steps):
+            tmp_epoch = min(math.floor(i / steps_per_epoch), epochs)  # math.floor() 结果向下取整
+            lr.append(eta_min + delta * (1 + math.cos(math.pi * tmp_epoch / epochs)))
         return lr
 
     def get_dataset(self):
@@ -97,15 +98,12 @@ class GenerationTrainer:
         train_dataset_generator = RadarData(self.data_params, run_mode='train', module_name='generation')
         valid_dataset_generator = RadarData(self.data_params, run_mode='valid', module_name='generation')
 
-        train_dataset = NowcastDataset(train_dataset_generator,
-                                       module_name='generation',
+        train_dataset = NowcastDataset(train_dataset_generator, module_name='generation',
                                        distribute=self.train_params.get('distribute'),
                                        num_workers=self.data_params.get('num_workers'))
-        valid_dataset = NowcastDataset(valid_dataset_generator,
-                                       module_name='generation',
+        valid_dataset = NowcastDataset(valid_dataset_generator, module_name='generation',
                                        distribute=self.train_params.get('distribute'),
-                                       num_workers=self.data_params.get('num_workers'),
-                                       shuffle=False)
+                                       num_workers=self.data_params.get('num_workers'), shuffle=False)
         train_dataset = train_dataset.create_dataset(self.data_params.get('batch_size'))
         valid_dataset = valid_dataset.create_dataset(self.data_params.get('batch_size'))
         return train_dataset, valid_dataset
@@ -122,14 +120,12 @@ class GenerationTrainer:
         d_init_lr = float(self.optimizer_params.get("d_lr", 6e-5))
         g_lr = self._get_cosine_annealing_lr(g_init_lr, self.dataset_size, self.optimizer_params.get("epochs"))
         d_lr = self._get_cosine_annealing_lr(d_init_lr, self.dataset_size, self.optimizer_params.get("epochs"))
-        g_optimizer = nn.Adam(self.g_model.trainable_params(),
-                              learning_rate=g_lr,
-                              beta1=self.optimizer_params.get("beta1"),
-                              beta2=self.optimizer_params.get("beta2"))
-        d_optimizer = nn.Adam(self.d_model.trainable_params(),
-                              learning_rate=d_lr,
-                              beta1=self.optimizer_params.get("beta1"),
-                              beta2=self.optimizer_params.get("beta2"))
+        g_optimizer = nn.Adam(self.g_model.trainable_params(), learning_rate=g_lr,
+                              beta1=self.optimizer_params.get("beta1"), beta2=self.optimizer_params.get("beta2"))
+        d_optimizer = nn.Adam(self.d_model.trainable_params(), learning_rate=d_lr,
+                              beta1=self.optimizer_params.get("beta1"), beta2=self.optimizer_params.get("beta2"))
+        # print("g_optimizer:", g_optimizer)
+        # print("d_optimizer:", d_optimizer)
         return g_optimizer, d_optimizer
 
     def get_solver(self):
@@ -138,34 +134,21 @@ class GenerationTrainer:
         return g_solver, d_solver
 
     def train(self):
-        """Train."""
+        """ train """
         for epoch in range(self.epochs):
-            self.g_solver.set_train(True)
-            self.d_solver.set_train(True)
+            self.g_loss_fn.set_train(True)
+            self.d_loss_fn.set_train(True)
             epoch_g_loss, epoch_d_loss = 0.0, 0.0
             self.callback.epoch_start()
             for data in self.train_dataset.create_dict_iterator():
                 self.callback.step_start()
                 inp, evo_result, labels = data.get("inputs"), data.get("evo"), data.get("labels")
-                g_noise = ms.Tensor(np.random.randn(self.batch_size,
-                                                    self.ngf,
-                                                    self.h_size // self.noise_scale,
-                                                    self.w_size // self.noise_scale,
-                                                    self.pool_ensemble_num + 1), inp.dtype)
-                g_res = self.g_solver(inp, evo_result, g_noise, labels)
-                d_noise = ms.Tensor(np.random.randn(self.batch_size,
-                                                    self.ngf,
-                                                    self.h_size // self.noise_scale,
-                                                    self.w_size // self.noise_scale), inp.dtype)
-                d_res = self.d_solver(inp, evo_result, d_noise, labels)
-                self.callback.print_loss(g_res[0].asnumpy(), d_res[0].asnumpy(), step=True)
-                epoch_g_loss += g_res[0].asnumpy()
-                epoch_d_loss += d_res[0].asnumpy()
-            try:
-                epoch_g_loss = epoch_g_loss / self.dataset_size
-                epoch_d_loss = epoch_d_loss / self.dataset_size
-            except ZeroDivisionError:
-                self.logger.info('dataset size is 0')
+                weights = ops.where(labels > 23., 24., labels + 1)
+                g_loss, d_loss = self.train_step(inp, evo_result, labels, weights)
+                epoch_g_loss += g_loss.asnumpy()
+                epoch_d_loss += d_loss.asnumpy()
+            epoch_g_loss = epoch_g_loss / self.dataset_size
+            epoch_d_loss = epoch_d_loss / self.dataset_size
             self.callback.print_loss(epoch_g_loss, epoch_d_loss)
             if epoch % self.eval_interval == 0 or epoch == self.epochs - 1:
                 self.predictor.eval(self.valid_dataset)
@@ -174,6 +157,43 @@ class GenerationTrainer:
                 self.callback.save_generation_ckpt(self.g_solver)
             self.callback.epoch_end()
         self.callback.summary()
+
+    def g_forward_fn(self, inputs, evo_result, real_image, noise, weights):
+        loss = self.g_loss_fn(inputs, evo_result, noise, real_image, weights)
+        return loss
+
+    def d_forward_fn(self, inputs, evo_result, real_image, noise):
+        loss = self.d_loss_fn(inputs, evo_result, noise, real_image)
+        return loss
+
+    def savenp(self, loss):
+        if isinstance(loss, tuple):
+            with open('out_2.3_.pkl', 'wb') as f:
+                pickle.dump(loss, f)
+        else:
+            np_loss = loss.copy()
+            np_loss = np_loss.asnumpy()
+            np.save('./grads_{}.npy'.format('2.2'), np_loss)
+
+    def train_step(self, inputs, evo_result, real_image, weights):
+        """train step"""
+        g_noise = ms.Tensor(np.random.randn(self.batch_size,
+                                            self.ngf,
+                                            self.h_size // self.noise_scale,
+                                            self.w_size // self.noise_scale,
+                                            self.pool_ensemble_num + 1), inputs.dtype)
+        g_loss, g_grads = self.g_grad_fn(inputs, evo_result, real_image, g_noise, weights)
+        self.g_optimizer(g_grads)
+        print("generator done.", g_loss)
+        d_noise = ms.Tensor(np.random.randn(self.batch_size,
+                                            self.ngf,
+                                            self.h_size // self.noise_scale,
+                                            self.w_size // self.noise_scale), inputs.dtype)
+        d_loss, d_grads = self.d_grad_fn(inputs, evo_result, real_image, d_noise)
+        self.d_optimizer(d_grads)
+        print("discriminator done.", d_loss)
+        return g_loss, d_loss
+
 
 
 class EvolutionTrainer:
@@ -208,6 +228,7 @@ class EvolutionTrainer:
         self.solver = self.get_solver()
         self.pred_cb = self.get_callback()
         self.ckpt_cb = self.pred_cb.save_evolution_ckpt()
+        self.grad_fn = ms.value_and_grad(self.forward_fn, None, self.optimizer.parameters)
 
     def get_dataset(self):
         """
@@ -223,15 +244,12 @@ class EvolutionTrainer:
         train_dataset_generator = RadarData(self.data_params, run_mode='train', module_name='evolution')
         valid_dataset_generator = RadarData(self.data_params, run_mode='valid', module_name='evolution')
 
-        train_dataset = NowcastDataset(train_dataset_generator,
-                                       module_name='evolution',
+        train_dataset = NowcastDataset(train_dataset_generator, module_name='evolution',
                                        distribute=self.train_params.get('distribute', False),
                                        num_workers=self.data_params.get('num_workers', 1))
-        valid_dataset = NowcastDataset(valid_dataset_generator,
-                                       module_name='evolution',
+        valid_dataset = NowcastDataset(valid_dataset_generator, module_name='evolution',
                                        distribute=self.train_params.get('distribute', False),
-                                       num_workers=self.data_params.get('num_workers', 1),
-                                       shuffle=False)
+                                       num_workers=self.data_params.get('num_workers', 1), shuffle=False)
         train_dataset = train_dataset.create_dataset(self.data_params.get('batch_size', 8))
         valid_dataset = valid_dataset.create_dataset(self.data_params.get('batch_size', 8))
         return train_dataset, valid_dataset
@@ -268,9 +286,20 @@ class EvolutionTrainer:
         return pred_cb
 
     def train(self):
-        """Train."""
-        callback_lst = [LossMonitor(), TimeMonitor(), self.pred_cb, self.ckpt_cb]
-        self.solver.train(epoch=self.optimizer_params.get("epochs", 200),
-                          train_dataset=self.train_dataset,
-                          callbacks=callback_lst,
-                          dataset_sink_mode=self.data_params.get('data_sink'))
+        """ train """
+        for epoch in range(self.optimizer_params.get("epochs", 50)):
+            for i, data in enumerate(self.train_dataset.create_dict_iterator()):
+                inp = data.get("inputs")
+                weights = ops.where(inp[:, self.data_params.get("t_in", 9):] > 23., 24.,
+                                    inp[:, self.data_params.get("t_in", 9):] + 1)
+                loss = self.train_step(inp, weights)
+                print(f"epochs:{epoch + 1}, steps:{i + 1}, loss: {loss.asnumpy():>7f}")
+
+    def forward_fn(self, data, weights):
+        loss = self.loss_fn(data, weights)
+        return loss
+
+    def train_step(self, data, weights):
+        loss, grads = self.grad_fn(data, weights)
+        self.optimizer(grads)
+        return loss

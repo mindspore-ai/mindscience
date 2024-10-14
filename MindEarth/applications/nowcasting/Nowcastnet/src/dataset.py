@@ -53,9 +53,12 @@ class RadarData:
         data = np.load(self.case_list[item])
         if self.module_name == 'generation':
             inp, evo = data['ori'], data['evo'] / 128
-            return inp[0, :self.data_params.get("t_in", 9)], evo[0], inp[0, self.data_params.get("t_in", 9):]
-        return data['ori'][0, :self.data_params.get("t_in", 9) + self.data_params.get("t_out", 20)]
-
+            # inp, evo = data['inputs'], data['evo'] / 128
+            data_ = inp[0, :self.data_params.get("t_in", 9)], evo[0], inp[0, self.data_params.get("t_in", 9):]
+        else:
+            data_ = data['ori'][0, :self.data_params.get("t_in", 9) + self.data_params.get("t_out", 20)]
+            # return data['inputs'][0, :self.data_params.get("t_in", 9) + self.data_params.get("t_out", 20)]
+        return data_
 
 class NowcastDataset(Dataset):
     """

@@ -20,7 +20,7 @@ optimizer-gen:
   beta1: 0.01
   beta2: 0.9
   g_lr: 1.5e-5
-  d_lr: 6e-5
+  d_lr: 6e-6
   epochs: 15
 optimizer-evo:
   name: "adam"

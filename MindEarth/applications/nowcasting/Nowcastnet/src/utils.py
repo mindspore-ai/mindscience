@@ -72,7 +72,10 @@ def init_evolution_model(config, run_mode="train"):
     """Init evolution model """
     train_params = config.get("train")
     summary_params = config.get("summary")
-    model = EvolutionNet(config.get('data').get("t_in", 9), config.get('data').get("t_out", 20))
+    model = EvolutionNet(config.get('data').get("t_in", 9),
+                         config.get('data').get("t_out", 20),
+                         config.get('data').get("h_size", 512),
+                         config.get('data').get("w_size", 512))
     model.set_train(run_mode == 'train')
     if train_params['load_ckpt']:
         params = load_checkpoint(summary_params["evolution_ckpt_path"])
@@ -98,7 +101,7 @@ def make_grid(inputs):
 def warp(inputs, flow, grid, mode="bilinear", padding_mode="zeros"):
     width = inputs.shape[-1]
     vgrid = grid + flow
-    vgrid = 2.0 * ops.div(vgrid, max(width - 1, 1)) - 1.0
+    vgrid = 2.0 * vgrid / max(width - 1, 1) - 1.0
     vgrid = vgrid.transpose(0, 2, 3, 1)
     output = ops.grid_sample(inputs, vgrid, padding_mode=padding_mode, mode=mode, align_corners=True)
     return output
