@@ -64,6 +64,15 @@ The synergy between AI and chemistry offers unprecedented opportunities to overc
     - **Dataset**: JARVIS-DFT 3D dataset. The dataset contains descriptive information such as atomic position and atomic number of crystal materials, as well as property information such as energy and force field.
     - **Task**: Prediction of crystalline material properties. We integrate the Matformer model [5] based on graph neural networks and Transformer architectures, for predicting various properties of crystalline materials.
 
+- **Crystal Material Structure Prediction**:
+    - **Scenario**: Materials Chemistry
+    - **Dataset**:
+        - Perov-5: A perovskite dataset in which each unit cell contains five fixed atoms, and the structures are relatively similar.
+        - Carbon-24: A carbon crystal dataset, where each crystal contains between 6 and 24 carbon atoms, with various different material structures.
+        - MP-20: A dataset collected from the MP database, featuring experimental structures with up to 20 atoms per unit cell. The materials and structures are highly diverse.
+        - MPTS-52: An advanced version of MP-20, expanding the number of atoms per unit cell to 52. The materials and structures are highly diverse.
+    - **Task**: Crystal material structure prediction. We integrated the DiffCSP model[6], which is based on a graph neural network and diffusion model architecture, to predict the crystal material structures given their composition.
+
 ### Modules
 
 - **Equivariant Computing**
@@ -127,7 +136,7 @@ pip install -r requirements.txt
 
 Thanks goes to these wonderful people 🧑‍🤝‍🧑:
 
-yufan, wangzidong, liuhongsheng, gongyue, gengchenhua, linghejing, yanchaojie, suyun, wujian, caowenbin
+yufan, wangzidong, liuhongsheng, gongyue, gengchenhua, linghejing, yanchaojie, suyun, wujian, caowenbin, Lin Peijia
 
 ## Contribution Guide
 
@@ -148,3 +157,5 @@ yufan, wangzidong, liuhongsheng, gongyue, gengchenhua, linghejing, yanchaojie, s
 [4] Xiaoxun Gong, He Li, Nianlong Zou, et al. General framework for E(3)-equivariant neural network representation of density functional theory Hamiltonian[J]. Nature communications, 2023, 14: 2848.
 
 [5] Keqiang Yan, Yi Liu, Yuchao Lin, Shuiwang ji, et al. Periodic Graph Transformers for Crystal Material Property Prediction[J]. arXiv:2209.11807v1 [cs.LG] 23 sep 2022.
+
+[6] Jiao Rui and Huang Wenbing and Lin Peijia, et al. Crystal structure prediction by joint equivariant diffusion[J]. Advances in Neural Information Processing Systems, 2024, 36.
