@@ -179,7 +179,7 @@ class SpectralNorm(nn.Cell):
     ) -> None:
         super(SpectralNorm, self).__init__()
         self.parametrizations = module
-        self.weight = module.weight
+        self.weight = module.weight.astype("float16")
         self.use_weight_norm = True
         ndim = self.weight.ndim
         if dim >= ndim or dim < -ndim:
@@ -218,7 +218,7 @@ class SpectralNorm(nn.Cell):
             # See above on why we need to clone
             u = self._u.copy()
             v = self._v.copy()
-
+            weight_mat = weight_mat.astype("float32")
             sigma = ops.tensor_dot(u, msnp.multi_dot([weight_mat, self.expand_dims(v, -1)]), 1)
 
             self.assign(self.parametrizations.weight, self.weight / sigma)
@@ -230,8 +230,11 @@ class SpectralNorm(nn.Cell):
 
     def _power_method(self, weight_mat, n_power_iterations):
         for _ in range(n_power_iterations):
+            weight_mat = weight_mat.astype("float32")
             self._u = self.l2_normalize(msnp.multi_dot([weight_mat, self.expand_dims(self._v, -1)]).flatten())
-            self._v = self.l2_normalize(msnp.multi_dot([weight_mat.T, self.expand_dims(self._u, -1)]).flatten())
+            # +0
+            temp = msnp.multi_dot([weight_mat.T, self.expand_dims(self._u, -1)]).flatten()
+            self._v = self.l2_normalize(temp)
         return self._u, self._v
 
     def _reshape_weight_to_matrix(self):

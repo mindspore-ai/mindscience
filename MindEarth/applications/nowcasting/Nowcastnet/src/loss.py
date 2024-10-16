@@ -31,8 +31,10 @@ class GANLoss(nn.Cell):
 
     def get_target_tensor(self, inputs, target_is_real):
         if target_is_real:
-            return ops.ones(inputs.shape, inputs.dtype)
-        return ops.zeros(inputs.shape, inputs.dtype)
+            t_tensor = ops.ones(inputs.shape, inputs.dtype)
+        else:
+            t_tensor = ops.zeros(inputs.shape, inputs.dtype)
+        return t_tensor
 
     def construct(self, inputs, target_is_real):
         target_tensor = self.get_target_tensor(inputs, target_is_real)
@@ -61,7 +63,7 @@ class GenerateLoss(nn.Cell):
         self.weighted_distance = WeightDistance()
         self.pool_q = nn.MaxPool2d(kernel_size=4, stride=2)
 
-    def construct(self, inputs, evo_result, noise, real_image, beta=8., gamma=20., k=4):
+    def construct(self, inputs, evo_result, noise, real_image, weights, beta=8., gamma=20., k=4):
         """loss function"""
         fake_image = self.generator(inputs, evo_result, noise[..., 0])
         fake_inputs = ops.concat([inputs, fake_image], axis=1)
@@ -70,9 +72,9 @@ class GenerateLoss(nn.Cell):
         ensemble_image = 0.
         for i in range(k):
             ensemble_image += self.pool_q(self.generator(inputs, evo_result, noise[..., i + 1]))
-        ensemble_image = ops.div(ensemble_image, k)
+        ensemble_image = ensemble_image / k
         real_image = self.pool_q(real_image)
-        weights = ops.where(real_image > 23., 24., real_image + 1)
+        weights = self.pool_q(weights)
         pool = self.weighted_distance(real_image, ensemble_image, weights)
         g_losses = beta * adv + gamma * pool
         return g_losses
@@ -134,7 +136,7 @@ class MotionLossNet(nn.Cell):
     def custom_2d_conv_sobel(self, image, weights):
         motion_loss1 = self.calc_diff_v(image, weights)
         motion_loss2 = self.calc_diff_v(image, weights)
-        loss = ops.div(motion_loss1 + motion_loss2, image.shape[0] * image.shape[-1] * image.shape[-2])
+        loss = (motion_loss1 + motion_loss2) / (image.shape[0] * image.shape[-1] * image.shape[-2])
         return loss
 
     def construct(self, motion, weights):
@@ -153,14 +155,13 @@ class EvolutionLoss(nn.Cell):
         self.loss_fn_motion = MotionLossNet(in_channels=1, out_channels=1, kernel_size=3)
         self.t_in = self.config.get('data').get("t_in", 9)
         self.t_out = self.config.get('data').get('t_out', 20)
-        sample_tensor = np.zeros((1,
-                                  1,
-                                  self.config.get('data').get("h_size", 512),
-                                  self.config.get('data').get("w_size", 512))).astype(np.float32)
+        sample_tensor = np.zeros(
+            (1, 1, self.config.get('data').get("h_size", 512), self.config.get('data').get("w_size", 512))).astype(
+                np.float32)
         self.grid = Tensor(make_grid(sample_tensor), ms.float32)
         self.lamb = float(config.get('optimizer-evo').get("motion_lambda", 1e-2))
 
-    def construct(self, inputs):
+    def construct(self, inputs, weights):
         """last frame of inputs"""
         intensity, motion = self.model(inputs)
         batch, _, height, width = inputs.shape
@@ -172,13 +173,12 @@ class EvolutionLoss(nn.Cell):
         motion = 0
         for i in range(self.t_out):
             next_frame = inputs[:, self.t_in + i, :, :]
-            weights = ops.where(next_frame > 23., 24., next_frame + 1)
             xt_1 = warp(last_frame, motion_[:, i], grid, mode="bilinear", padding_mode="border")
-            accum += self.loss_fn_accum(next_frame, xt_1[:, 0], weights)
+            accum += self.loss_fn_accum(next_frame, xt_1[:, 0], weights[:, i])
             last_frame = warp(last_frame, motion_[:, i], grid, mode="nearest", padding_mode="border")
             last_frame = last_frame + intensity_[:, i]
-            accum += self.loss_fn_accum(next_frame, last_frame[:, 0], weights)
+            accum += self.loss_fn_accum(next_frame, last_frame[:, 0], weights[:, i])
             last_frame = ops.stop_gradient(last_frame)
-            motion += self.loss_fn_motion(motion_[:, i], weights)
-        loss = ops.div(accum + self.lamb * motion, self.t_out)
+            motion += self.loss_fn_motion(motion_[:, i], weights[:, i])
+        loss = (accum + self.lamb * motion) / self.t_out
         return loss

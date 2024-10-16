@@ -20,6 +20,7 @@ import time
 import numpy as np
 import properscoring as ps
 from scipy.stats import norm
+
 import mindspore as ms
 from mindspore import nn, ops, Tensor
 from mindspore.train.serialization import save_checkpoint
@@ -116,7 +117,6 @@ class EvaluateCallBack:
             os.makedirs(self.log_dir, exist_ok=True)
         if not os.path.exists(self.ckpts_dir):
             os.makedirs(self.ckpts_dir, exist_ok=True)
-
         rank_size, self.rank_id = _get_rank_info()
         if rank_size > 1:
             self.run_distribute = True
