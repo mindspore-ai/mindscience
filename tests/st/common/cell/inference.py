@@ -13,33 +13,52 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Test Inference"""
+"""inference"""
+import os
 import numpy as np
-
-from ais_bench.infer.interface import InferSession
+from mindspore import load_checkpoint, load_param_into_net
 
 from .utils import compare_output
 
 
-def validate_om_infer(inputs, omm_path, target_data_path, device_id=0, rtol: float = 1e-5,
-                      atol: float = 1e-5,):
+def validate_output_dtype(model, inputs, dtype):
     r"""
-    Validate if the inference output matches the target data within the specified tolerance
+    Validate model output dtype
     Args:
-        inputs (Tensor): Input data for inferenc
-        omm_path (str): Path to the OM model used for inference
-        target_data_path (str): Path to the target output data to compare against
-        device_id (int): Device ID, default is 0
+        model (nn.Cell): Network.
+        inputs (Tensor): Mindspore input tensor
+        dtype (nn.dtype): Data dtype
+
+    Returns:
+        bool: Whether the test passes (i.e., output matches the target data within the tolerance)
+    """
+    if isinstance(inputs, (list, tuple)):
+        output = model(*inputs)
+    else:
+        output = model(inputs)
+    assert output.dtype == dtype, f'output dtype is {output.dtype} not equal {dtype}'
+
+
+def validate_model_infer(model, inputs, ckpt_path, target_data_path, rtol, atol):
+    r"""
+    Validate model output is as expected
+    Args:
+        model (nn.Cell): Network.
+        inputs (Tensor): Mindspore input tensor
+        ckpt_path (str): Checkpoint path
+        target_data_path (str): Target data path
         rtol (float): Relative tolerance for allowed error, default is 1e-5
         atol (float): Absolute tolerance for allowed error, default is 1e-5
 
     Returns:
         bool: Whether the test passes (i.e., output matches the target data within the tolerance)
     """
-    model = InferSession(device_id, omm_path)
+    assert os.path.exists(ckpt_path)
+    params_dict = load_checkpoint(ckpt_path)
+    load_param_into_net(model, params_dict)
     if isinstance(inputs, (list, tuple)):
-        out = model.infer(inputs)
+        out = model(*inputs)
     else:
-        out = model.infer([inputs])
+        out = model(inputs)
     out_target = np.load(target_data_path)
-    return compare_output(out_target, out, rtol, atol)
+    return compare_output(out_target, out.numpy(), rtol, atol)

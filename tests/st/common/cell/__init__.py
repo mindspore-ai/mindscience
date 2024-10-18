@@ -17,9 +17,12 @@
 from .checkpoints import validate_checkpoint
 from .utils import check_path_exists, compare_output
 from .constant import FP16_RTOL, FP16_ATOL, FP32_RTOL, FP32_ATOL
+from .inference import validate_model_infer, validate_output_dtype
 
 __all__ = [
     "validate_checkpoint",
+    "validate_model_infer",
+    "validate_output_dtype",
     "check_path_exists",
     "compare_output",
     "FP16_RTOL",

@@ -27,8 +27,8 @@ from mindspore.ops.primitive import constexpr
 from .activation import get_activation
 from ..utils.check_func import check_param_type
 
-__all__ = ['LinearBlock', 'ResBlock', 'InputScale',
-           'FCSequential', 'MultiScaleFCSequential']
+__all__ = ['LinearBlock', 'ResBlock', 'InputScale', 'FCSequential',
+           'MultiScaleFCSequential', 'DropPath']
 
 
 @constexpr
@@ -506,4 +506,23 @@ class MultiScaleFCSequential(nn.Cell):
         for i in range(self.num_scales):
             x_s = x * self.scale_coef[i]
             out = out + self.cast(self.cell_list[i](x_s), mstype.float32)
+        return out
+
+
+class DropPath(nn.Cell):
+    """Drop paths (Stochastic Depth) per sample  (when applied in main path of residual blocks)."""
+
+    def __init__(self, dropout_rate=0.):
+        super().__init__()
+        self.drop = nn.Dropout(p=dropout_rate)
+        self.mask = ops.ones((1,), dtype=mstype.float32)
+        self.tile = ops.Tile()
+        self.mul = ops.Mul()
+
+    def construct(self, x):
+        if not self.training:
+            return x
+        mask = self.tile(self.mask, (x.shape[0],) + (1,) * (x.ndim-1))
+        out = self.drop(mask)
+        out = self.mul(out, x)
         return out

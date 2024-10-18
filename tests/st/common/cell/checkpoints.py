@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Test Validate Checkpoint"""
+"""validation with checkpoints"""
 from pathlib import Path
 
-import mindspore as ms
-from mindspore.train.serialization import load_checkpoint, load_param_into_net
+from mindspore import load_checkpoint, load_param_into_net, save_checkpoint
 
 from .utils import compare_output
+
 
 def validate_checkpoint(model_1, model_2, in_args, rtol: float = 1e-5,
                         atol: float = 1e-5,):
@@ -36,7 +36,7 @@ def validate_checkpoint(model_1, model_2, in_args, rtol: float = 1e-5,
         bool: Whether the test passes (i.e., output matches the target data within the tolerance)
     """
     try:
-        ms.save_checkpoint(model_1, "checkpoint.ckpt")
+        save_checkpoint(model_1, "checkpoint.ckpt")
     except IOError:
         pass
 
@@ -55,9 +55,9 @@ def validate_checkpoint(model_1, model_2, in_args, rtol: float = 1e-5,
     ), "Model outputs should initially be different"
 
     # Save checkpoint from model 1 and load it into model 2
-    ms.save_checkpoint(model_1, "checkpoint.ckpt")
+    save_checkpoint(model_1, "checkpoint.ckpt")
     params = load_checkpoint("checkpoint.ckpt")
-    ms.load_param_into_net(model_2, params)
+    load_param_into_net(model_2, params)
 
     # Forward with loaded checkpoint
     output_1 = model_1(*in_args).asnumpy()
@@ -65,5 +65,5 @@ def validate_checkpoint(model_1, model_2, in_args, rtol: float = 1e-5,
     loaded_checkpoint = compare_output(output_1, output_2, rtol, atol)
 
     # Delete checkpoint file (it should exist!)
-    Path("checkpoint.ckpt").unlink() # missing_ok=False
+    Path("checkpoint.ckpt").unlink()  # missing_ok=False
     return loaded_checkpoint
