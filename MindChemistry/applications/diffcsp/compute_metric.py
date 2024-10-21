@@ -288,9 +288,10 @@ def main(args):
             rms_np_strict.append(rms_np[i])
 
     rms_np = np.array(rms_np_strict)
+    rms_valid_index = np.array([x is not None for x in rms_np_strict])
 
-    match_rate = (rms_np is not None).sum() / len(gt_list)
-    rms = rms_np[rms_np is not None].mean()
+    match_rate = rms_valid_index.sum() / len(gt_list)
+    rms = rms_np[rms_valid_index].mean()
 
     print('match_rate: ', match_rate)
     print('rms: ', rms)
