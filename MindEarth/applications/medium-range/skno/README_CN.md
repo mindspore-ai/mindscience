@@ -12,12 +12,6 @@ $$\mathcal{F}[k\times u](l,m)=2\pi \sqrt{\frac{4\pi }{2l+1} }\mathcal{F}[u]\cdot
 利用可学习参数$\widetilde{k}_{\theta}(l)$替代固定算子$\mathcal{F}[k](l,0)$，则可以转换成：
 $$\mathcal{F}[ \mathcal{K}_{\theta}[u] ](l,m)=\widetilde{k}_{\theta}(l)\cdot \mathcal{F}[u](l,m)$$
 
-表 1-1：涉及的特性列表
-
-| *ISSUE编号* | *ISSUE标题*                                    | *特性等级*         | *支持后端*       | *支持模式*              | 支持平台          | *MindSpore支持版本* |  *规划版本* |
-| ------------- | ------------------------------------------------ | -------------------- | ------------------ | ------------------------- | ----------------- | ------------ |  ------------ |
-| *mindearth-2023Q4-2*    | *application-mindearth-skno*    | *STABLE* | *Ascend 910A*            | *Graph* | LINUX | *1.10.1*      | *0.2*      |
-
 ### 1.2 场景分析
 
 _总体目标：作为MindEarth套件的一部分，提供SKNO模型的训练和推理的场景供客户使用。_
@@ -25,12 +19,6 @@ _总体目标：作为MindEarth套件的一部分，提供SKNO模型的训练和
 - SKNO可以作为中长期气象预测模型。
 - SKNO中的SHT算子可以单独作为模型的组成部分，进行二次开发。
 - 提供多卡训练的接口。
-
-表 1-2：约束说明
-
-| *支持后端*       | *支持模式*              | 支持平台          |
-| ------------------ | ------------------------- | ----------------- |
-| *ASCEND 910A* | *Graph* | LINUX |
 
 ## 二、详细设计
 
@@ -138,39 +126,33 @@ train:
 
 ### 2.4 验收规格
 
-|        Parameter         |        NPU              |
-|:----------------------:|:--------------------------:|
-|     Hardware         |     Ascend memory 32G      |
-|     MindSpore version   |        2.2.0             |
-|     dataset      |      [ERA5_1_4_16yr](https://www.ecmwf.int/en/forecasts/dataset/ecmwf-reanalysis-v5)             |
-|     parameters      |          91214592         |
-|     training config    |        batch_size=1, steps_per_epoch=24834, epochs=200              |
-|     test config      |        batch_size=1,steps=39              |
-|     optimizer      |        AdamW              |
-|        training loss(MSE)      |        0.0857             |
-|        Z500(6h,72h,120h)(RMSE)      |        28, 164, 349             |
-|        T2M(6h,72h,120h)(RMSE)      |        0.86, 1.36, 1.78             |
-|        T850(6h,72h,120h)(RMSE)      |        0.61, 1.35, 2.01             |
-|        U10(6h,72h,120h)(RMSE)      |        0.66, 1.87, 2.87             |  
-|        speed(ms/step)          |     692ms       |
-|        total training time （h/m/s）         |     430332s       |
+|         参数          |                             NPU                              |                             NPU                              | GPU                                                          | NPU                                                          |
+| :-------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | ------------------------------------------------------------ | ------------------------------------------------------------ |
+|       硬件资源        |                      Ascend, Memory 64G                      |                      Ascend, Memory 32G                      | NVIDIA V100, Memory 32G                                      | Ascend, Memory 32G                                           |
+|     MindSpore版本     |                            2.2.0                             |                            2.2.0                             | 2.2.0                                                        | 2.2.0                                                        |
+|        数据集         | [ERA5_0_25_tiny400](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/ERA5_0_25_tiny400/) | [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/) | [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/) | [ERA5_1_4_16yr](https://gitee.com/link?target=https%3A%2F%2Fwww.ecmwf.int%2Fen%2Fforecasts%2Fdataset%2Fecmwf-reanalysis-v5) |
+|        参数量         |                           91 mil.                            |                           91 mil.                            | 91 mil.                                                      | 91 mil.                                                      |
+|       训练参数        |        batch_size=1, steps_per_epoch=202, epochs=400         |        batch_size=1, steps_per_epoch=408, epochs=200         | batch_size=1, steps_per_epoch=408, epochs=200                | batch_size=1, steps_per_epoch=24834, epochs=200              |
+|       测试参数        |                     batch_size=1 steps=9                     |                     batch_size=1 steps=8                     | batch_size=1 steps=8                                         | batch_size=1 steps=39                                        |
+|        优化器         |                            AdamW                             |                            AdamW                             | AdamW                                                        | AdamW                                                        |
+|     训练损失(MSE)     |                            0.0684                            |                            0.136                             | 0.093                                                        | 0.0857                                                       |
+| Z500  (6h, 72h, 120h) |                        133, 473, 703                         |                        150, 539, 772                         | 160, 605, 819                                                | 28, 164, 349                                                 |
+| T850  (6h, 72h, 120h) |                       0.96, 2.72, 3.65                       |                       1.33, 3.02, 3.57                       | 1.30, 3.31, 4.29                                             | 0.86, 1.36, 1.78                                             |
+| U10  (6h, 72h, 120h)  |                       1.08, 3.44, 4.35                       |                       1.26, 3.46, 4.35                       | 1.42, 3.82, 4.71                                             | 0.61, 1.35, 2.01                                             |
+| T2m  (6h, 72h, 120h)  |                       1.40, 2.84, 3.49                       |                       1.84, 3.19, 3.60                       | 1.86, 3.86, 4.63                                             | 0.66, 1.87, 2.87                                             |
+|       训练资源        |                         1Node 2NPUs                          |                          1Node 1NPU                          | 1Node 1GPU                                                   | 1Nodes 8NPUs                                                 |
+|       运行时间        |                           78 hours                           |                           14 hours                           | 8 hours                                                      | 120 hours                                                    |
+|     速度(ms/step)     |                             3056                             |                             640                              | 340                                                          | 692ms                                                        |
 
-#### tiny数据
+### 2.5 结果展示
 
-|        Parameter         |        NPU             |    GPU       |
-|:----------------------:|:--------------------------:|:---------------:|
-|     Hardware         |     Ascend memory 32G      |      NVIDIA V100 memory 32G       |
-|     MindSpore version   |        2.2.0             |      2.2.0       |
-|     dataset      |      [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)             |     [ERA5_1_4_tiny400](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)      |
-|     parameters      |       91214592         |     91214592    |
-|     training config    |        batch_size=1, steps_per_epoch=408, epochs=200             |     batch_size=1, steps_per_epoch=408, epochs=200       |
-|     optimizer      |        Adamw              |    Adamw     |
-|        training loss(Lp)      |        0.136             |    0.093   |
-|        Z500(6h,72h,120h)(RMSE)      |       150,539,772    |       160,605,819      |
-|        T2M(6h,72h,120h)(RMSE)      |      1.84,3.19,3.60       |       1.86,3.86.4.63      |
-|        T850(6h,72h,120h)(RMSE)      |     1.33,3.02,3.57           |       1.30,3.31,4.29      |
-|        U10(6h,72h,120h)(RMSE)      |       1.26,3.46,4.35         |       1.42,3.82,4.71      |
-|        speed(ms/step)          |       640       |      340     |
+下图展示了使用训练结果的第400个epoch进行推理绘制的地表、预测值和他们之间的误差。
+![epoch400](images/pred_result.PNG)
+
+#### 训练结果可视化
+
+![epoch400](images/msrun_log.rmse.png)
+![epoch400](images/msrun_log.loss.png)
 
 ## 三、快速开始
 
