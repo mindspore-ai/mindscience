@@ -1,0 +1,38 @@
+# config.yaml
+
+# file path configuration
+paths:
+  file_vocab_path: "pre/vocab.txt"
+  file_txt_path: "pre/6_3k.txt"
+  train_dataset_path: "data/train.tsv"
+  dev_dataset_path: "data/dev.tsv"
+  pretrained_checkpoint: "dnabert.ckpt"
+  checkpoint_dir: "checkpoints/"
+  final_model_path: "checkpoints/final_model.ckpt"
+
+# pre-training configuration
+pretrain:
+  batch_size: 8
+  max_seq_length: 512
+  mask_probability: 0.025
+  learning_rate: 2e-5
+  epsilon: 1e-8
+  betas: [0.9, 0.98]
+  weight_decay: 0.01
+  num_warmup_steps: 10000
+  total_training_steps: 200000
+  gradient_accumulation_steps: 25
+  mask_list: [-2, -1, 1, 2, 3]
+
+# Fine-tuning configuration
+finetune:
+  pretrained_checkpoint: "dnabert.ckpt"
+  batch_size: 8
+  max_seq_len: 128
+  learning_rate: 2e-5
+  epsilon: 1e-8
+  betas: [0.9, 0.98]
+  weight_decay: 0.01
+  epochs: 3
+  num_labels: 2
+
