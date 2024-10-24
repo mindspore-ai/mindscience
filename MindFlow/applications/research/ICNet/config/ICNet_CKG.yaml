@@ -1,0 +1,21 @@
+params:
+  model_name: 'ICNet'
+  case: 'Coupled Klein-Gordon equation'
+  data_name: 'Coupled-Klein-Gordon.mat'
+  second_path: 'pretrain'
+  device: 'GPU'
+  init_steps: 30
+  stop_steps: 200
+  time_steps: 40
+  device_id: 3
+  load_params: 'True'
+  second_path1: 'pretrain'
+  network_size: [3, 60, 60, 60, 60, 60, 60, 60, 60, 2] 
+  description_CKG_u: ['u_xx','u_yy','1','u', 'u*u', 'u*u*u', 'u*v', 'u*v*v', 'v', 'v*v', 'v*v*v', 'v*u*u']
+  description_CKG_v: ['v_xx','v_yy','1','u', 'u*u', 'u*u*u', 'u*v', 'u*v*v', 'v', 'v*v', 'v*v*v', 'v*u*u']
+  learning_rate: [0.001, 0.0005, 1.0e-04, 1.0e-05]
+  epochs: [3e5, 3e5, 1e4, 1e4]
+  BatchNo: 1
+  lam: 1e-5
+  d_tol: 1.0
+  
