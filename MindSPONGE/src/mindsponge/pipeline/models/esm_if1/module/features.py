@@ -346,11 +346,13 @@ class GVPGraphEmbedding(GVPInputFeaturizer):
         )
         e_vectors = x_src - x_dest
         # For the ones without coordinates, substitute in the average vector
-        e_coord_mask = ops.Cast()(e_coord_mask, ms.float32)
-        e_vector_mean = ops.ReduceSum(keep_dims=True) \
-                            (e_vectors * e_coord_mask, axis=1) / ops.ReduceSum(keep_dims=True)(e_coord_mask, axis=1)
-        e_coord_mask = ops.Cast()(e_coord_mask, ms.bool_)
-        e_vectors = e_vectors * e_coord_mask + e_vector_mean * ~(e_coord_mask)
+        e_coord_mask_fl = ops.Cast()(e_coord_mask, ms.float32)
+        e_vector_mean_top = ops.ReduceSum(keep_dims=True)(e_vectors * e_coord_mask_fl, axis=1)
+        e_vector_mean_bottom = ops.ReduceSum(keep_dims=True)(e_coord_mask_fl, axis=1)
+        e_vector_mean = e_vector_mean_top / e_vector_mean_bottom
+        e_vectors_factor1 = e_vectors * e_coord_mask_fl
+        e_vectors_factor2 = e_vector_mean * ~(e_coord_mask)
+        e_vectors = e_vectors_factor1 + e_vectors_factor2
         # Normalize and remove nans
         edge_s = ops.Concat(axis=-1)([d_rbf, pos_embeddings])
         edge_v = ops.ExpandDims()(normalize(e_vectors), -2)
