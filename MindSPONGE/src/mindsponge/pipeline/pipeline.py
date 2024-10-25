@@ -35,6 +35,8 @@ from .models import RASP, RASPDataSet, rasp_configuration
 from .models import Multimer, MultimerDataSet, multimer_configuration
 from .models import ProteinMpnn, ProteinMpnnDataset, proteinmpnn_configuration
 from .models import UFold, UFoldDataSet, ufold_configuration
+from .models import ProtT5, ProtT5TrainDataSet, prott5pretrain_configuration
+from .models import ProtT5DownstreamTasks, ProtT5TaskDataSet, prott5downtask_configuration
 
 
 model_card = {
@@ -53,6 +55,9 @@ model_card = {
     "Proteinmpnn": {"model": ProteinMpnn, "dataset": ProteinMpnnDataset, "config": proteinmpnn_configuration},
     "RASP": {"model": RASP, "dataset": RASPDataSet, "config": rasp_configuration},
     "UFold": {"model": UFold, "dataset": UFoldDataSet, "config": ufold_configuration},
+    "ProtT5": {"model": ProtT5, "dataset": ProtT5TrainDataSet, "config": prott5pretrain_configuration},
+    "ProtT5Downstream": {"model": ProtT5DownstreamTasks, "dataset": ProtT5TaskDataSet,
+                         "config": prott5downtask_configuration}
 }
 
 
