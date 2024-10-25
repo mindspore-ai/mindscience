@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2024 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,18 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""initialization for cells"""
-from .allegro import *
-from .nequip import Nequip
-from .basic_block import AutoEncoder, FCNet, MLPNet
-from .deephe3nn import *
-from .matformer import *
-from .gemnet import *
+"""gemnet"""
 
-__all__ = [
-    "Nequip", 'AutoEncoder', 'FCNet', 'MLPNet'
-]
-__all__.extend(deephe3nn.__all__)
-__all__.extend(matformer.__all__)
-__all__.extend(allegro.__all__)
-__all__.extend(gemnet.__all__)
+from .gemnet_wrap import GemNetWrap
+
+__all__ = ["GemNetWrap"]
