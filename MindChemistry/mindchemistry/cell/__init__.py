@@ -18,6 +18,8 @@ from .nequip import Nequip
 from .basic_block import AutoEncoder, FCNet, MLPNet
 from .deephe3nn import *
 from .matformer import *
+from .cdvae import *
+from .dimenet import *
 from .gemnet import *
 
 __all__ = [
@@ -26,4 +28,6 @@ __all__ = [
 __all__.extend(deephe3nn.__all__)
 __all__.extend(matformer.__all__)
 __all__.extend(allegro.__all__)
+__all__.extend(cdvae.__all__)
+__all__.extend(dimenet.__all__)
 __all__.extend(gemnet.__all__)

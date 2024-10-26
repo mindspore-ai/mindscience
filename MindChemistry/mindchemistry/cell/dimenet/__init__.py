@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""gemnet"""
+"""modules"""
+from .dimenet import DimeNetPlusPlus
+from .dimenet_wrap import DimeNetWrap
 
-from .gemnet_wrap import GemNetWrap
-from .gemnet import GemNetT
-
-__all__ = ["GemNetWrap", "GemNetT"]
+__all__ = ["DimeNetWrap", "DimeNetPlusPlus"]
