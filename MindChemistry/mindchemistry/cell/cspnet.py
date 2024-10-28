@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""GNN denoiser file"""
+"""DiffCSP denoiser file"""
 import math
 
 import numpy as np
@@ -20,8 +20,7 @@ import mindspore
 import mindspore.nn as nn
 import mindspore.ops as ops
 from mindspore import Tensor
-from mindchemistry.graph.graph import (AggregateEdgeToNode,
-                                       AggregateNodeToGlobal, LiftGlobalToNode)
+from ..graph.graph import (AggregateEdgeToNode, AggregateNodeToGlobal, LiftGlobalToNode)
 
 MAX_ATOMIC_NUM = 100
 
@@ -43,6 +42,13 @@ class SinusoidsEmbedding(nn.Cell):
         self.n_space = n_space
         self.frequencies = 2 * math.pi * np.arange(self.n_frequencies)
         self.dim = self.n_frequencies * 2 * self.n_space
+        self.frequencies_tensor = Tensor(self.frequencies, dtype=mindspore.float32).expand_dims(0).expand_dims(0)
+
+        self.reshape = ops.Reshape()
+        self.expand_dims = ops.ExpandDims()
+        self.concat = ops.Concat(axis=-1)
+        self.sin = ops.Sin()
+        self.cos = ops.Cos()
 
     def construct(self, x):
         """construct
@@ -53,11 +59,9 @@ class SinusoidsEmbedding(nn.Cell):
         Returns:
             Tensor: Fourier embedding
         """
-        emb = ops.ExpandDims()(x, -1) * Tensor(
-            self.frequencies,
-            dtype=mindspore.float32).expand_dims(0).expand_dims(0)
-        emb = ops.Reshape()(emb, (-1, self.n_frequencies * self.n_space))
-        emb = ops.Concat(axis=-1)((ops.Sin()(emb), ops.Cos()(emb)))
+        emb = self.expand_dims(x, -1) * self.frequencies_tensor
+        emb = self.reshape(emb, (-1, self.n_frequencies * self.n_space))
+        emb = self.concat((self.sin(emb), self.cos(emb)))
         return emb
 
 
@@ -109,8 +113,9 @@ class CSPLayer(nn.Cell):
             self.dis_dim = dis_emb.dim
         if act_fn is None:
             act_fn = nn.SiLU()
+        self.lattice_matrix_dim = 9
         self.edge_mlp = nn.SequentialCell([
-            nn.Dense(hidden_dim * 2 + 9 + self.dis_dim, hidden_dim), act_fn,
+            nn.Dense(hidden_dim * 2 + self.lattice_matrix_dim + self.dis_dim, hidden_dim), act_fn,
             nn.Dense(hidden_dim, hidden_dim), act_fn
         ])
         self.node_mlp = nn.SequentialCell([
@@ -133,7 +138,7 @@ class CSPLayer(nn.Cell):
         lattice_ips = ops.BatchMatMul()(lattices,
                                         lattices.transpose(0, -1, -2))
 
-        lattice_ips_flatten = ops.Reshape()(lattice_ips, (-1, 9))
+        lattice_ips_flatten = ops.Reshape()(lattice_ips, (-1, self.lattice_matrix_dim))
         lattice_ips_flatten_edges = ops.Gather()(lattice_ips_flatten,
                                                  edge2graph, 0)
 
