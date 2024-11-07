@@ -170,6 +170,7 @@ class TrainConfig(BaseConfig):
         self.save_dir = os.path.join(save_dir, str(time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime(time.time()))))
         if additional_folder_name:
             self.save_dir = self.save_dir + '_' + additional_folder_name
+        self.use_fp16 = self._config.get(index_basic, 'use_fp16')
 
     def get_train_section(self):
         """

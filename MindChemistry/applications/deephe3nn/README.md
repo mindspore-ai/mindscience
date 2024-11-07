@@ -51,7 +51,7 @@ deephe3nn
 
 ```txt
 pip install -r requirements.txt
-python train.py configs/Bilayer_graphene_train_numpy.ini
+python train.py configs/Bilayer_graphene_train.ini
 ```
 
 ### 推理
@@ -60,28 +60,26 @@ python train.py configs/Bilayer_graphene_train_numpy.ini
 
 ```txt
 pip install -r requirements.txt
-python predict.py configs/Bilayer_graphene_train_numpy.ini
+python predict.py configs/Bilayer_graphene_train.ini
 ```
 
 ### 训练推理过程日志
 
 ```log
-INFO:root:Loading from saved file...
-INFO:root:The model you built has 2786689 parameters.
 INFO:root:Starting new training process
-INFO:root:Start to initialise train_loader
-INFO:root:Start to initialise eval_loader
-INFO:root:+++++++++++++++ start traning +++++++++++++++++++++
-INFO:root:==============================step: 0 ,epoch: 0
-INFO:root:learning rate: 4e-05
-INFO:root:train mse loss: 0.97237825
-INFO:root:is_finite: True
-INFO:root:traning time: 60.6885781288147
+INFO:root:-------Begin training-------
+INFO:root:=================================epoch: 0
 .
 .
 .
-INFO:root:epoch 360 running time: 224.05996918678284
-INFO:root:epoch 360 average train mse loss: 0.0011379468
-INFO:root:epoch 360 average validation mse loss: 0.00875873
-INFO:root:epoch 360 average validation mae loss: 0.07289803
+INFO:root:----------------------eval epoch: 916-------step: 19
+INFO:root:evaluating time: 0.25410914421081543
+INFO:root:learning rate: 3.159372e-10
+INFO:root:val mse loss: 7.4168706e-06
+INFO:root:epoch: 916
+
+INFO:root:last train loss: 7.4168706e-06
+INFO:root:average eval loss: 6.1306587e-06
+INFO:root:Train finished, cost 63180.765609025955 s
+INFO:root:best loss: 6.1306587e-06
 ```

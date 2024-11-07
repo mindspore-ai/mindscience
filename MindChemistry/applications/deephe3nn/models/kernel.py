@@ -465,7 +465,8 @@ class DeepHE3Kernel:
                   use_sbf=config.use_sbf,
                   only_ij=config.only_ij,
                   if_sort_irreps=False,
-                  escn=True)
+                  escn=True,
+                  use_fp16=config.use_fp16)
 
         logging.info("Finished building model, cost %s seconds", time.time() - begin)
 

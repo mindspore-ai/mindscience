@@ -45,6 +45,7 @@ class MatformerConv(nn.Cell):
             edge_dim=None,
             bias=True,
             root_weight=True,
+            use_fp16=False
     ):
         """init"""
         super(MatformerConv, self).__init__()
@@ -55,28 +56,31 @@ class MatformerConv(nn.Cell):
         self.root_weight = root_weight
         self.concat = concat
         self.edge_dim = edge_dim
+        self.global_dtype = ms.float32
+        if use_fp16:
+            self.global_dtype = ms.float16
 
         if isinstance(in_channels, int):
             in_channels = (in_channels, in_channels)
 
-        self.lin_key = nn.Dense(in_channels[0], heads * out_channels).to_float(ms.float16)
-        self.lin_query = nn.Dense(in_channels[1], heads * out_channels).to_float(ms.float16)
-        self.lin_value = nn.Dense(in_channels[0], heads * out_channels).to_float(ms.float16)
+        self.lin_key = nn.Dense(in_channels[0], heads * out_channels).to_float(self.global_dtype)
+        self.lin_query = nn.Dense(in_channels[1], heads * out_channels).to_float(self.global_dtype)
+        self.lin_value = nn.Dense(in_channels[0], heads * out_channels).to_float(self.global_dtype)
 
         if edge_dim is not None:
-            self.lin_edge = nn.Dense(edge_dim, heads * out_channels, has_bias=False).to_float(ms.float16)
+            self.lin_edge = nn.Dense(edge_dim, heads * out_channels, has_bias=False).to_float(self.global_dtype)
 
         if concat:
-            self.lin_concate = nn.Dense(heads * out_channels, out_channels).to_float(ms.float16)
+            self.lin_concate = nn.Dense(heads * out_channels, out_channels).to_float(self.global_dtype)
 
-        self.lin_skip = nn.Dense(in_channels[1], out_channels, has_bias=bias).to_float(ms.float16)
+        self.lin_skip = nn.Dense(in_channels[1], out_channels, has_bias=bias).to_float(self.global_dtype)
         if self.beta:
-            self.lin_beta = nn.Dense(3 * out_channels, 1, has_bias=False).to_float(ms.float16)
+            self.lin_beta = nn.Dense(3 * out_channels, 1, has_bias=False).to_float(self.global_dtype)
 
-        self.lin_msg_update = nn.Dense(out_channels * 3, out_channels * 3).to_float(ms.float16)
+        self.lin_msg_update = nn.Dense(out_channels * 3, out_channels * 3).to_float(self.global_dtype)
 
-        self.msg_layer = nn.SequentialCell(nn.Dense(out_channels * 3, out_channels).to_float(ms.float16),
-                                           nn.LayerNorm((out_channels,), epsilon=0.00001).to_float(ms.float32))
+        self.msg_layer = nn.SequentialCell(nn.Dense(out_channels * 3, out_channels).to_float(self.global_dtype),
+                                           nn.LayerNorm((out_channels,), epsilon=0.00001).to_float(self.global_dtype))
 
         self.bn = BatchNormMask(out_channels).to_float(ms.float32)
         self.sigmoid = nn.Sigmoid()
