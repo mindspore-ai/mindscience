@@ -22,6 +22,7 @@ model:
   classification: False
   angle_lattice: False
   batch_size_max: 64
+  use_fp16 : False
 
 dataset:
   x_train_path: "./dataset/x_train.pkl"

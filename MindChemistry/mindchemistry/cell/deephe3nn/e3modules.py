@@ -33,16 +33,19 @@ class SkipConnection(nn.Cell):
     SkipConnection class
     """
 
-    def __init__(self, irreps_in, irreps_out):
+    def __init__(self, irreps_in, irreps_out, use_fp16=False):
         super().__init__()
         irreps_in = Irreps(irreps_in)
         irreps_out = Irreps(irreps_out)
         self.sc = None
+        self.global_dtype = ms.float32
+        if use_fp16:
+            self.global_dtype = ms.float16
 
         if irreps_in == irreps_out:
             self.sc = None
         else:
-            self.sc = Linear(irreps_in=irreps_in, irreps_out=irreps_out, ncon_dtype=ms.float16)
+            self.sc = Linear(irreps_in=irreps_in, irreps_out=irreps_out, ncon_dtype=self.global_dtype)
 
     def construct(self, old, new):
         """
@@ -214,10 +217,13 @@ class SeparateWeightTensorProduct(nn.Cell):
     SeparateWeightTensorProduct class
     """
 
-    def __init__(self, irreps_in1, irreps_in2, irreps_out, **kwargs):
+    def __init__(self, irreps_in1, irreps_in2, irreps_out, use_fp16=False, **kwargs):
         '''z_i = W'_{ij}x_j W''_{ik}y_k'''
         super().__init__()
 
+        self.global_dtype = ms.float32
+        if use_fp16:
+            self.global_dtype = ms.float16
         irreps_in1 = Irreps(irreps_in1).simplify()
         irreps_in2 = Irreps(irreps_in2).simplify()
         irreps_out = Irreps(irreps_out).simplify()
@@ -246,7 +252,7 @@ class SeparateWeightTensorProduct(nn.Cell):
                                 irreps_out,
                                 instr_tp,
                                 weight_mode='share',
-                                ncon_dtype=ms.float16,
+                                ncon_dtype=self.global_dtype,
                                 **kwargs)
 
         self.weights1 = ParameterTuple(weights1)
@@ -272,10 +278,13 @@ class SelfTp(nn.Cell):
     SelfTp class
     """
 
-    def __init__(self, irreps_in, irreps_out, **kwargs):
+    def __init__(self, irreps_in, irreps_out, use_fp16=False, **kwargs):
         '''z_i = W'_{ij}x_j W''_{ik}x_k (k>=j)'''
         super().__init__()
 
+        self.global_dtype = ms.float32
+        if use_fp16:
+            self.global_dtype = ms.float16
         irreps_in = Irreps(irreps_in).simplify()
         irreps_out = Irreps(irreps_out).simplify()
 
@@ -304,7 +313,7 @@ class SelfTp(nn.Cell):
                                 irreps_out,
                                 instr_tp,
                                 weight_mode='share',
-                                ncon_dtype=ms.float16,
+                                ncon_dtype=self.global_dtype,
                                 **kwargs)
 
         self.weights1 = nn.ParameterList(weights1)

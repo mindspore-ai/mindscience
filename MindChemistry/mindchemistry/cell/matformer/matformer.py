@@ -27,17 +27,23 @@ class Matformer(nn.Cell):
         """init"""
         super(Matformer, self).__init__()
 
+        use_fp16 = config['use_fp16']
         self.classification = config['classification']
         self.use_angle = config['use_angle']
+
+        self.global_dtype = ms.float32
+        if use_fp16:
+            self.global_dtype = ms.float16
+
         self.atom_embedding = nn.Dense(
             config['atom_input_features'], config['node_features']
-        ).to_float(ms.float16)
+        ).to_float(self.global_dtype)
 
         ##################
         self.rbf_0 = RBFExpansion(vmin=0, vmax=8.0, bins=config['edge_features'],)
-        self.rbf_1 = nn.Dense(config['edge_features'], config['node_features']).to_float(ms.float16)
+        self.rbf_1 = nn.Dense(config['edge_features'], config['node_features']).to_float(self.global_dtype)
         self.rbf_2 = ops.Softplus()
-        self.rbf_3 = nn.Dense(config['node_features'], config['node_features']).to_float(ms.float16)
+        self.rbf_3 = nn.Dense(config['node_features'], config['node_features']).to_float(self.global_dtype)
 
         self.angle_lattice = config["angle_lattice"]
 
@@ -50,7 +56,8 @@ class Matformer(nn.Cell):
         )
 
         self.fc = nn.SequentialCell(
-            nn.Dense(config['node_features'], config['fc_features']).to_float(ms.float16), Silu().to_float(ms.float32)
+            nn.Dense(config['node_features'], config['fc_features']).to_float(self.global_dtype),
+            Silu().to_float(ms.float32)
         )
 
         self.fc_out = nn.Dense(

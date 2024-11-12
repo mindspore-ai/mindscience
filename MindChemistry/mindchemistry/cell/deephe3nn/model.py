@@ -47,7 +47,8 @@ def get_gate_nonlin(irreps_in1,
                     act_gates={
                         1: ops.sigmoid,
                         -1: ops.tanh
-                    }):
+                    },
+                    global_dtype=ms.float32):
     """
     get gate nonlinearity after tensor product
     irreps_in1 and irreps_in2 are irreps to be multiplied in tensor product
@@ -81,7 +82,7 @@ def get_gate_nonlin(irreps_in1,
         irreps_gates,
         [act_gates.get(ir.p, None) for _, ir in irreps_gates],  # gates (scalars)
         irreps_gated,  # gated tensors
-        ncon_dtype=ms.float16)
+        ncon_dtype=global_dtype)
 
     return gate_nonlin
 
@@ -106,10 +107,14 @@ class EquiConv(nn.Cell):
                      1: ops.sigmoid,
                      -1: ops.tanh
                  },
-                 escn=False):
+                 escn=False,
+                 use_fp16=False):
         super(EquiConv, self).__init__()
 
         self.escn = escn
+        self.global_dtype = ms.float32
+        if use_fp16:
+            self.global_dtype = ms.float16
         irreps_in1 = Irreps(irreps_in1)
         irreps_in2 = Irreps(irreps_in2)
         irreps_out = Irreps(irreps_out)
@@ -117,7 +122,7 @@ class EquiConv(nn.Cell):
         self.nonlin = None
         if nonlin:
             self.nonlin = get_gate_nonlin(irreps_in1, irreps_in2, irreps_out,
-                                          act, act_gates)
+                                          act, act_gates, self.global_dtype)
             irreps_tp_out = self.nonlin.irreps_in
         else:
             irreps_tp_out = Irreps([
@@ -156,13 +161,13 @@ class EquiConv(nn.Cell):
             nn.Dense(fc_len_in,
                      64,
                      weight_init=weightinit1,
-                     bias_init=biasinit1).to_float(ms.float16), linear_act,
+                     bias_init=biasinit1).to_float(self.global_dtype), linear_act,
             nn.Dense(64, 64, weight_init=weightinit2,
-                     bias_init=biasinit2).to_float(ms.float16), linear_act,
+                     bias_init=biasinit2).to_float(self.global_dtype), linear_act,
             nn.Dense(64,
                      self.cfconv.len_weight,
                      weight_init=weightinit3,
-                     bias_init=biasinit3).to_float(ms.float16))
+                     bias_init=biasinit3).to_float(self.global_dtype))
 
         self.norm = None
         if norm:
@@ -176,7 +181,7 @@ class EquiConv(nn.Cell):
             self.so2_conv = SO2Convolution(str(irreps_in1), str(irreps_tp_out))
         else:
             self.tp = SeparateWeightTensorProduct(irreps_in1, irreps_in2,
-                                                  irreps_tp_out)
+                                                  irreps_tp_out, use_fp16)
 
     def construct(self,
                   fea_in1,
@@ -243,10 +248,14 @@ class NodeUpdateBlock(nn.Cell):
                  nonlin=False,
                  norm='e3LayerNorm',
                  if_sort_irreps=False,
-                 escn=False):
+                 escn=False,
+                 use_fp16=False):
         super(NodeUpdateBlock, self).__init__()
 
         self.escn = escn
+        self.global_dtype = ms.float32
+        if use_fp16:
+            self.global_dtype = ms.float16
         irreps_in_node = Irreps(irreps_in_node)
         irreps_sh = Irreps(irreps_sh)
         irreps_out_node = Irreps(irreps_out_node)
@@ -264,12 +273,13 @@ class NodeUpdateBlock(nn.Cell):
         self.lin_pre_node = LinearBias(irreps_in=irreps_in_node,
                                        irreps_out=irreps_in_node,
                                        has_bias=True,
-                                       ncon_dtype=ms.float16)
+                                       ncon_dtype=self.global_dtype)
 
         self.nonlin_node = None
         if nonlin:
             self.nonlin_node = get_gate_nonlin(irreps_in1, irreps_in2,
-                                               irreps_out_node, act, act_gates)
+                                               irreps_out_node, act, act_gates,
+                                               self.global_dtype)
             irreps_conv_out = self.nonlin_node.irreps_in
             conv_nonlin = False
         else:
@@ -283,11 +293,13 @@ class NodeUpdateBlock(nn.Cell):
                                   nonlin=conv_nonlin,
                                   act=act,
                                   act_gates=act_gates,
-                                  escn=self.escn)
+                                  escn=self.escn,
+                                  use_fp16=use_fp16)
+
         self.lin_post_node = LinearBias(irreps_in=self.conv_node.irreps_out,
                                         irreps_out=self.conv_node.irreps_out,
                                         has_bias=True,
-                                        ncon_dtype=ms.float16)
+                                        ncon_dtype=self.global_dtype)
 
         if nonlin:
             self.irreps_out = self.nonlin_node.irreps_out
@@ -300,7 +312,7 @@ class NodeUpdateBlock(nn.Cell):
                 irreps_in_node,
                 f'{num_species}x0e',
                 self.conv_node.irreps_out,
-                ncon_dtype=ms.float16)
+                ncon_dtype=self.global_dtype)
 
         self.norm_node = None
         if norm:
@@ -310,11 +322,11 @@ class NodeUpdateBlock(nn.Cell):
                 raise ValueError(f'unknown norm: {norm}')
 
         self.skip_connect_node = SkipConnection(irreps_in_node,
-                                                self.irreps_out)
+                                                self.irreps_out, use_fp16)
 
         self.self_tp = None
         if use_selftp:
-            self.self_tp = SelfTp(self.irreps_out, self.irreps_out)
+            self.self_tp = SelfTp(self.irreps_out, self.irreps_out, use_fp16)
 
         self.irreps_in_node = irreps_in_node
         self.use_sc = use_sc
@@ -382,8 +394,8 @@ class NodeUpdateBlock(nn.Cell):
                                              batch[edge_index[0]])
 
         node_fea = self.aggregrate.scatter_sum(
-            edge_update.astype(ms.float16), edge_index[0],
-            batch_input_x.astype(ms.float16)).astype(ms.float32)
+            edge_update.astype(self.global_dtype), edge_index[0],
+            batch_input_x.astype(self.global_dtype)).astype(ms.float32)
 
         node_fea = self.lin_post_node(node_fea)
 
@@ -422,10 +434,14 @@ class EdgeUpdateBlock(nn.Cell):
                  nonlin=False,
                  norm='e3LayerNorm',
                  if_sort_irreps=False,
-                 escn=False):
+                 escn=False,
+                 use_fp16=False):
         super(EdgeUpdateBlock, self).__init__()
 
         self.escn = escn
+        self.global_dtype = ms.float32
+        if use_fp16:
+            self.global_dtype = ms.float16
         irreps_in_node = Irreps(irreps_in_node)
         irreps_in_edge = Irreps(irreps_in_edge)
         irreps_out_edge = Irreps(irreps_out_edge)
@@ -439,13 +455,15 @@ class EdgeUpdateBlock(nn.Cell):
         self.lin_pre_edge = LinearBias(irreps_in=irreps_in_edge,
                                        irreps_out=irreps_in_edge,
                                        has_bias=True,
-                                       ncon_dtype=ms.float16)
+                                       ncon_dtype=self.global_dtype)
+
 
         self.nonlin_edge = None
         self.lin_post_edge = None
         if nonlin:
             self.nonlin_edge = get_gate_nonlin(irreps_in1, irreps_in2,
-                                               irreps_out_edge, act, act_gates)
+                                               irreps_out_edge, act, act_gates,
+                                               self.global_dtype)
             irreps_conv_out = self.nonlin_edge.irreps_in
             conv_nonlin = False
         else:
@@ -459,20 +477,20 @@ class EdgeUpdateBlock(nn.Cell):
                                   nonlin=conv_nonlin,
                                   act=act,
                                   act_gates=act_gates,
-                                  escn=self.escn)
+                                  escn=self.escn,
+                                  use_fp16=use_fp16)
 
         self.lin_post_edge = LinearBias(irreps_in=self.conv_edge.irreps_out,
                                         irreps_out=self.conv_edge.irreps_out,
                                         has_bias=True,
-                                        ncon_dtype=ms.float16)
+                                        ncon_dtype=self.global_dtype)
 
         if use_sc:
             self.sc_edge = FullyConnectedTensorProduct(
                 irreps_in_edge,
                 f'{num_species ** 2}x0e',
                 self.conv_edge.irreps_out,
-                ncon_dtype=ms.float16)
-
+                ncon_dtype=self.global_dtype)
         if nonlin:
             self.irreps_out = self.nonlin_edge.irreps_out
         else:
@@ -486,11 +504,11 @@ class EdgeUpdateBlock(nn.Cell):
                 raise ValueError(f'unknown norm: {norm}')
 
         self.skip_connect_edge = SkipConnection(
-            irreps_in_edge, self.irreps_out)  # ! consider init_edge
+            irreps_in_edge, self.irreps_out, use_fp16)  # ! consider init_edge
 
         self.self_tp = None
         if use_selftp:
-            self.self_tp = SelfTp(self.irreps_out, self.irreps_out)
+            self.self_tp = SelfTp(self.irreps_out, self.irreps_out, use_fp16)
 
         self.use_sc = use_sc
         self.init_edge = init_edge
@@ -598,18 +616,23 @@ class Net(nn.Cell):
                      -1: ops.tanh
                  },
                  if_sort_irreps=False,
-                 escn=False):
+                 escn=False,
+                 use_fp16=False):
 
         super(Net, self).__init__()
 
         self.escn = escn
+        self.global_type = ms.float32
+        if use_fp16:
+            self.global_type = ms.float16
         self.num_species = num_species
         self.only_ij = only_ij
 
         irreps_embed_node = Irreps(irreps_embed_node)
+
         self.embedding = Linear(irreps_in=f"{num_species}x0e",
                                 irreps_out=irreps_embed_node,
-                                ncon_dtype=ms.float16)
+                                ncon_dtype=self.global_type)
 
         self.basis = GaussianBasis(start=0.0,
                                    stop=r_max,
@@ -661,7 +684,8 @@ class Net(nn.Cell):
                     use_sc=use_sc,
                     only_ij=only_ij,
                     if_sort_irreps=if_sort_irreps,
-                    escn=self.escn)
+                    escn=self.escn,
+                    use_fp16=use_fp16)
                 edge_update_block = EdgeUpdateBlock(
                     num_species,
                     num_basis,
@@ -674,7 +698,8 @@ class Net(nn.Cell):
                     use_selftp=selftp,
                     use_sc=use_sc,
                     if_sort_irreps=if_sort_irreps,
-                    escn=self.escn)
+                    escn=self.escn,
+                    use_fp16=use_fp16)
             else:
                 node_update_block = NodeUpdateBlock(
                     num_species,
@@ -689,7 +714,8 @@ class Net(nn.Cell):
                     use_sc=use_sc,
                     only_ij=only_ij,
                     if_sort_irreps=if_sort_irreps,
-                    escn=self.escn)
+                    escn=self.escn,
+                    use_fp16=use_fp16)
                 edge_update_block = None
                 if edge_upd:
                     edge_update_block = EdgeUpdateBlock(
@@ -704,7 +730,8 @@ class Net(nn.Cell):
                         use_selftp=False,
                         use_sc=use_sc,
                         if_sort_irreps=if_sort_irreps,
-                        escn=self.escn)
+                        escn=self.escn,
+                        use_fp16=use_fp16)
 
             irreps_node_prev = node_update_block.irreps_out
             if edge_update_block is not None:
@@ -721,11 +748,11 @@ class Net(nn.Cell):
         self.lin_node = LinearBias(irreps_in=irreps_node_prev,
                                    irreps_out=irreps_out_node,
                                    has_bias=True,
-                                   ncon_dtype=ms.float16)
+                                   ncon_dtype=self.global_type)
         self.lin_edge = LinearBias(irreps_in=irreps_edge_prev,
                                    irreps_out=irreps_out_edge,
                                    has_bias=True,
-                                   ncon_dtype=ms.float16)
+                                   ncon_dtype=self.global_type)
 
     def __repr__(self):
         info = '===== DeepH-E3 model structure: ====='

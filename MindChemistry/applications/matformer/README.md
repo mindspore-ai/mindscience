@@ -63,22 +63,25 @@ python predict.py
 ### 训练过程日志
 
 ```log
-INFO:root:Loading from saved file...
 INFO:root:The model you built has 2786689 parameters.
 INFO:root:Starting new training process
-INFO:root:Start to initialise train_loader
-INFO:root:Start to initialise eval_loader
+INFO:root:Start to initialise train loader
+INFO:root:Start to initialise eval loader
 INFO:root:+++++++++++++++ start traning +++++++++++++++++++++
 INFO:root:==============================step: 0 ,epoch: 0
 INFO:root:learning rate: 4e-05
-INFO:root:train mse loss: 0.97237825
+INFO:root:train mse loss: 0.8999285
 INFO:root:is_finite: True
-INFO:root:traning time: 60.6885781288147
+INFO:root:training time: 51.66963744163513
 .
 .
 .
-INFO:root:epoch 360 running time: 224.05996918678284
-INFO:root:epoch 360 average train mse loss: 0.0011379468
-INFO:root:epoch 360 average validation mse loss: 0.00875873
-INFO:root:epoch 360 average validation mae loss: 0.07289803
+INFO:root:step:117, epoch: 499
+INFO:root:validation mse loss: 0.004059551
+INFO:root:validation mae loss: 0.034488887
+INFO:root:validation time: 0.041112422943115234
+INFO:root:epoch 499 running time: 137.772692
+INFO:root:epoch 499 average train mse loss: 0.0003474082
+INFO:root:epoch 499 average validation mse loss: 0.00414170
+INFO:root:epoch 499 average validation mae loss: 0.03259226
 ```
