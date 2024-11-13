@@ -12,9 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""gemnet"""
+"""glorot orthogonal initiallizers"""
 
-from .gemnet_wrap import GemNetWrap
-from .gemnet import GemNetT
+from mindspore.common.initializer import initializer
 
-__all__ = ["GemNetWrap", "GemNetT"]
+
+def glorot_orthogonal(x, scale):
+    """Glorot orthogonal initialization.
+
+    Args:
+        x (Parameter): Parameter need to be initialized. Any shape of Parameter.
+        scale (float): Scale
+
+    Returns:
+        (Parameter) Return a initialized parameter. The same shape as the input Parameter.
+    """
+
+    x_value = initializer("orthogonal", x.shape).init_data()
+    scale /= ((x.shape[-2] + x.shape[-1]) * x_value.var())
+    x_value *= scale.sqrt()
+    x.set_data(x_value)
+    return x
