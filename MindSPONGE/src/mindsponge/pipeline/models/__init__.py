@@ -35,3 +35,5 @@ from .multimer import Multimer, MultimerDataSet, multimer_configuration
 from .proteinmpnn import ProteinMpnn, ProteinMpnnDataset, proteinmpnn_configuration
 from .ufold import UFold, UFoldDataSet, ufold_configuration
 from .rasp import RASP, RASPDataSet, rasp_configuration
+from .prot_t5 import ProtT5, ProtT5TrainDataSet, prott5pretrain_configuration
+from .prot_t5 import ProtT5DownstreamTasks, ProtT5TaskDataSet, prott5downtask_configuration

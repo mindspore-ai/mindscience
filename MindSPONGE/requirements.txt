@@ -12,3 +12,5 @@ pyparsing >= 3.0.7
 rdkit
 bio
 scikit-learn
+mindformers >= 1.2.0
+sentencepiece >= 0.2.0
