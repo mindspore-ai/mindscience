@@ -229,6 +229,9 @@ class LayerNorm(nn.Cell):
         self.s, self.v = dims
         self.scalar_norm = nn.LayerNorm([self.s])
         self.eps = eps
+        self.cast = ms.ops.Cast()
+        self.reduce_sum = ops.ReduceSum(keep_dims=True)
+        self.sqrt = ops.Sqrt()
 
     def construct(self, x):
         """Layer normalization construction"""
@@ -240,14 +243,13 @@ class LayerNorm(nn.Cell):
         s, v = x
         vn = _norm_no_nan(v, axis=-1, keepdims=True, sqrt=False, eps=self.eps)
         nonzero_mask = (vn > 2 * self.eps)
-        vn = (vn * nonzero_mask)
-        nonzero_mask = ms.ops.Cast()(nonzero_mask, ms.float32)
-        v_1 = ops.ReduceSum(keep_dims=True)(vn, axis=-2)
-        v_2 = self.eps + ops.ReduceSum(keep_dims=True)(nonzero_mask, axis=-2)
+        nonzero_mask_fl = self.cast(nonzero_mask, ms.float32)
+        vn = (vn * nonzero_mask_fl)
+        v_1 = self.reduce_sum(vn, axis=-2)
+        v_2 = self.eps + self.reduce_sum(nonzero_mask_fl, axis=-2)
         vn = v_1 / v_2
-        sqrt = ops.Sqrt()
-        vn = sqrt(vn + self.eps)
-        v = nonzero_mask * (v / vn)
+        vn = self.sqrt(vn + self.eps)
+        v = nonzero_mask_fl * (v / vn)
         return self.scalar_norm(s), v
 
 
