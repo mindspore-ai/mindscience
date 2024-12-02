@@ -622,9 +622,8 @@ def parseandclean(paths):
             continue
         it = line.split(maxsplit=7)
         pdbid, log_kdki = it[0], it[3]
-        result = result.append(
-            pd.DataFrame({'pdbid': [pdbid], 'Kd_Ki': [log_kdki]}),
-            ignore_index=True)
+        new_entry = pd.DataFrame({'pdbid': [pdbid], 'Kd_Ki': [log_kdki]})
+        result = pd.concat([result, new_entry], ignore_index=True)
     result.to_csv('affinity_data.csv', sep=",", index=False)
     affinity_data = pd.read_csv('affinity_data.csv', comment='#')
 

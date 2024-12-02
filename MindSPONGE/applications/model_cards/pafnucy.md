@@ -10,15 +10,36 @@ Pafnucy模型由卷积模块和线性模块两部分组成，层与层之间的�
 
 该模型依赖于软件Open Babel，在使用前需提前安装openbabel-3.1.1，并且使用pip install的方式安装Open Babel对应版本python包。
 
-Open Babel依赖于低版本python，所以安装前请确保 `python <= 3.7.16`。
-
-可使用conda安装Open Babel软件，具体安装指令如下：
+低版本python环境`python <= 3.7.16`, 可直接通过conda指令安装安装Open Babel软件，具体安装指令如下：
 
 ```bash
 conda install conda-forge::openbabel
 ```
 
-可在终端使用如下指令验证Open Babel是否安装成功：
+如果是`python >= 3.8`, 需要自己下载源码编译`Open Babel`。从openbabel的官网上下载3.1.1的源码，如果机器上没有eigen，还需要下载eigen3.4的包，然后按照[openbabel文档](http://openbabel.org/docs/Installation/install.html)安装; 注意cmake的时候要用-DEIGEN3_INCLUDE_DIR参数指定eigen3.4的路径。
+
+如果想安装到指定的conda虚拟环境，可按照如下指令执行：
+
+```bash
+# 依赖swig
+conda install swig
+
+conda_env_path={想安装的conda env路径}
+
+cmake ../openbabel-3.1.1 \
+    -DPYTHON_BINDINGS=ON \
+    -DEIGEN3_INCLUDE_DIR=eigen-3.4.0 \
+    -DRUN_SWIG=ON \
+    -DCMAKE_INSTALL_PREFIX=${conda_env_path} \
+    -DPYTHON_INCLUDE_DIR=${conda_env_path}/include/python3.10 \
+    -DCMAKE_LIBRARY_PATH=${conda_env_path}/lib \
+    -DSWIG_DIR=${conda_env_path}/share/swig/4.0.2/ \
+    -DSWIG_EXECUTABLE=${conda_env_path}/bin/swig \
+    -DPYTHON_LIBRARY=${conda_env_path}/lib/libpython3.10.so \
+    -DCMAKE_BUILD_TYPE=DEBUG
+```
+
+在终端使用如下指令验证Open Babel是否安装成功：
 
 ```bash
 obabel --help
