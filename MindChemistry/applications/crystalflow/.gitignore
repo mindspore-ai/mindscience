@@ -1,0 +1,11 @@
+dataset/
+*.log
+*.npy
+ckpt/
+dataset.zip
+rank_0/
+test_mind_cspnet.py
+torch2ms_ckpt/
+*.ipynb
+*.ckpt
+ignore/
