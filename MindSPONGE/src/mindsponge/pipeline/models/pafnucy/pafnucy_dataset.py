@@ -219,7 +219,7 @@ class PAFNUCYDataSet(PDBBind):
         self.refine_pdbids = self.pdbs.get("refined")
 
         refined_shuffled = shuffle(self.refine_pdbids, random_state=123)
-        self.training_pdbids = self.general_pdbids + refined_shuffled[self.config.size_val:]
+        self.training_pdbids = shuffle(self.general_pdbids + refined_shuffled[self.config.size_val:], random_state=123)
         self.training_size = len(self.training_pdbids)
         self.training_pdbids *= (self.config.rotations + 1)
 

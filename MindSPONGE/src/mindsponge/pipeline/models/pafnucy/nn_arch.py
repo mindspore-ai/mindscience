@@ -24,11 +24,86 @@
 from math import ceil
 
 import numpy as np
-from mindspore import nn
+from mindspore import ops, Tensor, nn
 from mindspore.common import dtype as mstype
-from mindspore.common.initializer import TruncatedNormal
-from mindspore.common.tensor import Tensor
+from mindspore.common.initializer import TruncatedNormal, initializer
 from mindspore.ops import operations as P
+
+
+class Conv3DUsingConv2D(nn.Cell):
+    """Construct Conv3D using Conv2D"""
+
+    def __init__(self, in_channel, out_channel, conv_kernel, stride=1, pad_mode='same', has_bias=True, lmbda=0.001):
+        super(Conv3DUsingConv2D, self).__init__()
+
+        self.in_channel = in_channel
+        self.out_channel = out_channel
+
+        # Ensure kernel_size is a 3-tuple
+        if isinstance(conv_kernel, int):
+            self.kernel_size = (conv_kernel,) * 3
+        else:
+            self.kernel_size = conv_kernel
+
+        self.stride = stride
+        self.pad_mode = pad_mode
+
+        # Calculate 2D convolution parameters
+        # Use depth direction of 3D kernel as input channels
+        self.conv2d = nn.Conv2d(
+            in_channels=in_channel * self.kernel_size[0],  # input channels * depth kernel size
+            out_channels=out_channel,                      # output channels
+            kernel_size=(self.kernel_size[1], self.kernel_size[2]),  # height and width kernel size
+            stride=stride,
+            weight_init=TruncatedNormal(sigma=lmbda),
+            pad_mode=pad_mode,
+            bias_init=initializer(0.1, [out_channel]),
+            has_bias=has_bias
+        )
+
+    def construct(self, x):
+        """construct"""
+
+        # x shape: (batch, channels, depth, height, width)
+        batch_size, channels, depth, height, width = x.shape
+
+        # Padding for depth direction if 'same' padding is used
+        if self.pad_mode == 'same':
+            pad_size = (self.kernel_size[0] - 1) // 2
+            x = ops.pad(x, ((0, 0, 0, 0, pad_size, pad_size)))
+            _, _, new_depth, _, _ = x.shape
+
+        # Prepare output list for sliding window
+        output_list = []
+
+        # Sliding window operation in depth direction
+        for d in range(depth):
+            # Extract 3D patch at current position
+            d_start = d
+            d_end = d + self.kernel_size[0]
+            if d_end > new_depth:
+                break
+
+            # Extract data for current depth window
+            current_input = x[:, :, d_start:d_end, :, :]
+
+            # Reshape for 2D convolution
+            # (batch, channels, kernel_depth, height, width) -> (batch, channels*kernel_depth, height, width)
+            current_input = current_input.reshape(
+                batch_size,
+                channels * self.kernel_size[0],
+                height,
+                width
+            )
+
+            # Perform 2D convolution
+            current_output = self.conv2d(current_input)
+            output_list.append(current_output)
+
+        # Stack outputs along depth dimension
+        output = ops.stack(output_list, axis=2)
+
+        return output
 
 
 class HiddenConv3D(nn.Cell):
@@ -37,12 +112,16 @@ class HiddenConv3D(nn.Cell):
     def __init__(self, in_channel, out_channel, conv_kernel=5, pool_patch=2, lmbda=0.001):
         super(HiddenConv3D, self).__init__()
         self.bias_inits = Tensor(np.array([0.1 * out_channel]).astype(np.float32))
-        self.conv = nn.Conv3d(in_channels=in_channel,
-                              out_channels=out_channel,
-                              kernel_size=conv_kernel,
-                              stride=1,
-                              pad_mode='same', has_bias=True, weight_init=TruncatedNormal(sigma=lmbda),
-                              bias_init=0.1)
+        self.conv = Conv3DUsingConv2D(
+            in_channel,
+            out_channel,
+            conv_kernel=conv_kernel,
+            stride=1,
+            pad_mode='same',
+            has_bias=True,
+            lmbda=lmbda
+        )
+
         self.relu = nn.ReLU()
         self.maxpool3d = P.MaxPool3D(kernel_size=pool_patch, strides=pool_patch, pad_mode='SAME')
 
@@ -76,6 +155,8 @@ class Conv3DBlock(nn.Cell):
                                    lmbda=lmbda)
 
     def construct(self, x):
+        """construct"""
+
         x = self.layer1(x)
         x = self.layer2(x)
         out_c = self.layer3(x)

@@ -40,7 +40,7 @@ class PAFNUCY(Model):
         if context.get_context("device_target") == "GPU":
             self.mixed_precision = False
         else:
-            self.mixed_precision = True
+            self.mixed_precision = self.config.mixed_precision
         self.is_training = self.config.is_training
         self.checkpoint_url = 'https://download.mindspore.cn/mindscience/mindsponge/Pafnucy/checkpoint/pafnucy.ckpt'
         self.checkpoint_path = "./pafnucy.ckpt"
@@ -49,7 +49,9 @@ class PAFNUCY(Model):
                                      out_channel=self.config.conv_channels,
                                      dense_size=self.config.dense_sizes,
                                      lmbda=self.config.lmbda,
-                                     isize=self.config.isize, keep_prob=self.config.keep_prob)
+                                     isize=self.config.isize,
+                                     keep_prob=self.config.keep_prob,
+                                     is_training=True)
             self.lr = Tensor(float(self.config.lr), mstype.float32)
             optimizer = nn.Adam(params=self.network.trainable_params(),
                                 learning_rate=self.lr, weight_decay=self.config.weight_decay)
@@ -60,7 +62,9 @@ class PAFNUCY(Model):
                                      out_channel=config.conv_channels,
                                      dense_size=config.dense_sizes,
                                      lmbda=config.lmbda,
-                                     isize=config.isize, keep_prob=1.0)
+                                     isize=config.isize,
+                                     keep_prob=1.0,
+                                     is_training=False)
             self.network.set_train(False)
 
         super().__init__(self.checkpoint_url, self.checkpoint_path, self.network,
