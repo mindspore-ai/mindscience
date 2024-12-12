@@ -194,7 +194,7 @@ class EvolutionCallBack(Callback):
         else:
             ckpt_name = "evolution"
         ckpt_config = CheckpointConfig(
-            save_checkpoint_steps=self.summary_params.get("save_checkpoint_epochs", 2),
+            save_checkpoint_epochs=self.summary_params.get("save_checkpoint_epochs", 2),
             keep_checkpoint_max=self.summary_params.get("keep_checkpoint_max", 4))
         ckpt_cb = ModelCheckpoint(prefix=ckpt_name, directory=self.ckpt_dir, config=ckpt_config)
         return ckpt_cb

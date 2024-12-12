@@ -26,7 +26,7 @@ import numpy as np
 from mindspore import set_seed
 from mindspore import context
 from mindearth.utils import load_yaml_config
-from mindearth.data import Dataset, Era5Data
+from mindearth.data import Era5Data
 from src import init_model, init_data_parallel, SKNOTrainer, update_config, InferenceModule, get_logger, \
     CustomWithLossCell, Lploss
 
@@ -37,7 +37,7 @@ random.seed(0)
 def get_args():
     """Get user specified parameters."""
     parser = argparse.ArgumentParser(description='SKNO')
-    parser.add_argument('--yaml', type=str, default='configs/skno.yaml')
+    parser.add_argument('--config_file_path', type=str, default='/configs/skno.yaml')
     parser.add_argument('--device_target', '-d', type=str,
                         choices=["Ascend", "GPU"], default="Ascend")
     parser.add_argument("--mode", type=str, default="GRAPH", choices=["GRAPH", "PYNATIVE"],
@@ -64,17 +64,14 @@ def test(cfg, model, logger):
     cfg_data = cfg["data"]
     inference_module = InferenceModule(model, cfg, logger)
     test_dataset_generator = Era5Data(data_params=cfg_data, run_mode='valid')
-    test_dataset = Dataset(test_dataset_generator, distribute=False,
-                           num_workers=cfg_data['num_workers'], shuffle=False)
-    test_dataset = test_dataset.create_dataset(cfg_data['batch_size'])
-    inference_module.eval(test_dataset)
+    inference_module.eval(test_dataset_generator, generator_flag=True)
 
 
 if __name__ == '__main__':
     print("pid: {}".format(os.getpid()))
     print(datetime.datetime.now())
     args = get_args()
-    config = load_yaml_config(args.yaml)
+    config = load_yaml_config(args.config_file_path)
     update_config(args, config)
     use_ascend = args.device_target == 'Ascend'
     graph_path = os.path.join(config['summary']["output_dir"], "graphs")

@@ -16,18 +16,8 @@
 from mindspore import Model
 from mindspore.train.loss_scale_manager import DynamicLossScaleManager
 from mindearth.module import Trainer
-from mindearth.data import Era5Data, Dataset
-
+from mindearth.data import Era5Data
 from .callback import EvaluateCallBack
-
-
-class SKNOEra5Data(Era5Data):
-    def _patch(self, *args):
-        """ Partition the data into patches. """
-        x = args[0]
-        if self.run_mode == 'valid' or self.run_mode == 'test':
-            x = args[0].transpose(1, 0, 2, 3)
-        return x
 
 
 class SKNOTrainer(Trainer):
@@ -49,26 +39,23 @@ class SKNOTrainer(Trainer):
         super(SKNOTrainer, self).__init__(config, model, loss_fn, logger)
         self.pred_cb = self.get_callback()
 
-    def get_dataset(self):
+    def get_data_generator(self):
         """
-        define the dataset of the model, abstract method.
-        """
-        train_dataset_generator = SKNOEra5Data(data_params=self.data_params, run_mode='train')
-        valid_dataset_generator = SKNOEra5Data(data_params=self.data_params, run_mode='valid')
+        Get train and valid dataset.
 
-        train_dataset = Dataset(train_dataset_generator, distribute=self.train_params['distribute'],
-                                num_workers=self.data_params['num_workers'], shuffle=False)
-        valid_dataset = Dataset(valid_dataset_generator, distribute=False, num_workers=self.data_params['num_workers'],
-                                shuffle=False)
-        train_dataset = train_dataset.create_dataset(self.data_params['batch_size'])
-        valid_dataset = valid_dataset.create_dataset(self.data_params['batch_size'])
-        return train_dataset, valid_dataset
+        Returns:
+            Dataset, train dataset.
+            Dataset, valid dataset.
+        """
+        train_dataset_generator = Era5Data(data_params=self.data_params, run_mode='train', kno_patch=True)
+        valid_dataset_generator = Era5Data(data_params=self.data_params, run_mode='valid')
+        return train_dataset_generator, valid_dataset_generator
 
     def get_callback(self):
         """
         define the callback of the model, abstract method.
         """
-        pred_cb = EvaluateCallBack(self.model, self.valid_dataset, self.config, self.logger)
+        pred_cb = EvaluateCallBack(self.model, self.valid_dataset_generator, self.config, self.logger)
         return pred_cb
 
     def get_solver(self):

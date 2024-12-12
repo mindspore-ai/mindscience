@@ -23,7 +23,7 @@ optimizer:
   loss_scale: 512
 summary:
   csi_thresholds: 0.3
-  save_checkpoint_steps: 1
+  save_checkpoint_epochs: 1
   keep_checkpoint_max: 5
 train:
   name: "fp"
