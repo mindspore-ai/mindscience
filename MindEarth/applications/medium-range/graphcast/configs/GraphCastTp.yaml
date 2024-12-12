@@ -44,7 +44,7 @@ optimizer:
 summary:
   summary_dir: "./summary"
   eval_interval: 10
-  save_checkpoint_steps: 10
+  save_checkpoint_epochs: 10
   keep_checkpoint_max: 10
   save_rmse_acc: False
   plt_key_info: True

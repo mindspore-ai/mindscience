@@ -121,7 +121,7 @@ class Trainer:
         ...         'initial_lr': 0.0005
         ...     },
         ...     "summary": {
-        ...         'save_checkpoint_steps': 1,
+        ...         'save_checkpoint_epochs': 1,
         ...         'keep_checkpoint_max': 10,
         ...         'valid_frequency': 10,
         ...         'summary_dir': '/path/to/summary',
@@ -260,7 +260,7 @@ class Trainer:
         else:
             ckpt_name = model_name
         ckpt_config = CheckpointConfig(
-            save_checkpoint_steps=self.callback_params.get("save_checkpoint_steps") * self.steps_per_epoch,
+            save_checkpoint_epochs=self.callback_params.get("save_checkpoint_epochs") * self.steps_per_epoch,
             keep_checkpoint_max=self.callback_params.get("keep_checkpoint_max"))
         ckpt_cb = ModelCheckpoint(prefix=ckpt_name, directory=ckpt_dir, config=ckpt_config)
         return ckpt_cb

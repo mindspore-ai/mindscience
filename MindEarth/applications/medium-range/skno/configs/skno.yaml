@@ -43,7 +43,7 @@ optimizer:
   epochs: 200
 summary:
   output_dir: "./summary"
-  save_checkpoint_steps: 5
+  save_checkpoint_epochs: 5
   keep_checkpoint_max: 20
   valid_frequency: 10
   key_info_timestep: [6,72,120]

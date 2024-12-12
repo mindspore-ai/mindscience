@@ -115,7 +115,7 @@ class WeatherForecast:
         ...         'initial_lr': 0.0005
         ...     },
         ...     "summary": {
-        ...         'save_checkpoint_steps': 1,
+        ...         'save_checkpoint_epochs': 1,
         ...         'keep_checkpoint_max': 10,
         ...         'valid_frequency': 10,
         ...         'summary_dir': '/path/to/summary',
@@ -265,7 +265,7 @@ class WeatherForecast:
             else:
                 data = next(data_iterator)
                 inputs = data['inputs']
-                labels = data['labels'].asnumpy()
+                labels = data['labels']
             lat_weight_rmse_step, lat_weight_acc_step = self._get_metrics(inputs, labels)
             if data_length == 0:
                 lat_weight_rmse = lat_weight_rmse_step

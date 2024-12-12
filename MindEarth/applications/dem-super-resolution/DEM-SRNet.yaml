@@ -16,7 +16,7 @@ optimizer:
   finetune_lr: 0.00001
   epochs: 100
 summary:
-  save_checkpoint_steps: 1
+  save_checkpoint_epochs: 1
   keep_checkpoint_max: 1
 train:
   name: "oop"
