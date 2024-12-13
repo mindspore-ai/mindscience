@@ -132,7 +132,7 @@ class InferenceModule(WeatherForecast):
     """
 
     def __init__(self, model, config, logger):
-        super(InferenceModule, self).__init__()
+        super().__init__(model, config, logger)
         self.model = model
         self.config = config
         self.logger = logger

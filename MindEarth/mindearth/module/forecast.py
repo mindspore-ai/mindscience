@@ -161,7 +161,10 @@ class WeatherForecast:
         self.feature_dims = config['data'].get('feature_dims', 69)
         self.total_std = self._get_total_sample_description(config, "std")
         self.total_mean = self._get_total_sample_description(config, "mean")
-        self.climate_mean = self._get_history_climate_mean(config, self.w_size, self.adjust_size)
+        if config['model']['name'] == "GraphCastTp":
+            self.climate_mean = self._get_history_climate_mean(config)
+        else:
+            self.climate_mean = self._get_history_climate_mean(config, self.w_size, self.adjust_size)
         self.run_mode = config['train'].get("run_mode", 'train')
         if self.run_mode == 'train':
             self.t_out = config['data'].get("t_out_valid", 20)
@@ -186,7 +189,7 @@ class WeatherForecast:
         return total_sample_info
 
     @staticmethod
-    def _get_history_climate_mean(config, w_size, adjust_size=False):
+    def _get_history_climate_mean(config, w_size=None, adjust_size=False):
         """get history climate mean."""
         data_params = config.get('data')
         climate_mean = np.load(os.path.join(data_params.get("root_dir"), "statistic",
