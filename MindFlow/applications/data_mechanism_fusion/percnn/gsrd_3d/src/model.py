@@ -15,7 +15,7 @@
 # ============================================================================
 """3d model"""
 import numpy as np
-from mindspore import Parameter, Tensor, nn, ops
+from mindspore import Parameter, Tensor, nn, ops, float32
 
 from .constant import lap_3d_op
 
@@ -23,7 +23,7 @@ from .constant import lap_3d_op
 class UpScaler(nn.Cell):
     ''' Upscaler (ISG) to convert low-res to high-res initial state '''
 
-    def __init__(self, in_channels, out_channels, hidden_channels, kernel_size, stride, has_bias):
+    def __init__(self, in_channels, out_channels, hidden_channels, kernel_size, stride, has_bias, compute_dtype):
         super(UpScaler, self).__init__()
         self.up0 = nn.Conv3dTranspose(in_channels, hidden_channels, kernel_size=kernel_size, pad_mode='pad',
                                       padding=kernel_size // 2, stride=stride, output_padding=1,
@@ -35,12 +35,14 @@ class UpScaler(nn.Cell):
         self.out = nn.Conv3d(hidden_channels, out_channels,
                              kernel_size=1, pad_mode="valid", has_bias=has_bias)
 
+        self.compute_dtype = compute_dtype
+
     def construct(self, x):
-        x = self.up0(x)
-        x = ops.sigmoid(x)
-        x = self.conv(x)
-        x = self.out(x)
-        return x
+        x = self.up0(x.astype(self.compute_dtype))
+        x = ops.sigmoid(x.astype(self.compute_dtype))
+        x = self.conv(x.astype(self.compute_dtype))
+        x = self.out(x.astype(self.compute_dtype))
+        return x.astype(self.compute_dtype)
 
 
 class RecurrentCnn(nn.Cell):
@@ -64,9 +66,9 @@ class RecurrentCnn(nn.Cell):
 
         # Design the laplace_u term
         self.ca = Parameter(
-            Tensor(np.random.rand(), dtype=self.compute_dtype), requires_grad=True)
+            Tensor(np.random.rand(), dtype=float32), requires_grad=True) # note: must be float32, float16 leads to nan
         self.cb = Parameter(
-            Tensor(np.random.rand(), dtype=self.compute_dtype), requires_grad=True)
+            Tensor(np.random.rand(), dtype=float32), requires_grad=True) # note: must be float32, float16 leads to nan
 
         # padding_mode='replicate' not working for the test
         laplace = np.array(lap_3d_op)
@@ -109,10 +111,10 @@ class RecurrentCnn(nn.Cell):
         u_prev = h[:, 0:1, ...]
         v_prev = h[:, 1:2, ...]
 
-        u_res = self.mu_up*ops.sigmoid(self.ca)*ops.conv3d(u_pad, self.w_laplace) + self.wh4_u(
-            self.wh1_u(h)*self.wh2_u(h)*self.wh3_u(h))
-        v_res = self.mu_up*ops.sigmoid(self.cb)*ops.conv3d(v_pad, self.w_laplace) + self.wh4_v(
-            self.wh1_v(h)*self.wh2_v(h)*self.wh3_v(h))
+        u_res = self.mu_up * ops.sigmoid(self.ca).astype(self.compute_dtype) * ops.conv3d(
+            u_pad, self.w_laplace) + self.wh4_u(self.wh1_u(h)*self.wh2_u(h)*self.wh3_u(h))
+        v_res = self.mu_up * ops.sigmoid(self.cb).astype(self.compute_dtype) * ops.conv3d(
+            v_pad, self.w_laplace) + self.wh4_v(self.wh1_v(h)*self.wh2_v(h)*self.wh3_v(h))
 
         u_next = u_prev + u_res * self.dt
         v_next = v_prev + v_res * self.dt

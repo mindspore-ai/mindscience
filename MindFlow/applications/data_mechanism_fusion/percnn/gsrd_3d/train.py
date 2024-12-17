@@ -139,7 +139,8 @@ def train(input_args):
                       hidden_channels=upconv_config['hidden_channel'],
                       kernel_size=upconv_config['kernel_size'],
                       stride=upconv_config['stride'],
-                      has_bias=True)
+                      has_bias=True,
+                      compute_dtype=compute_dtype)
 
     if use_ascend:
         from mindspore.amp import auto_mixed_precision
