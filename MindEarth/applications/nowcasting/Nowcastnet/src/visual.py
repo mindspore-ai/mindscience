@@ -67,4 +67,5 @@ def plt_img(field, label, idx, plot_evo=False, evo=None, interval=10, fig_name="
         _ = axs[2][2].imshow(evo[idx[2]], alpha=alpha, vmin=vmin, vmax=vmax, cmap=cmap)
         axs[2][2].set_title(f"evo results {idx[2] * interval + interval} min")
     plt.savefig(fig_name, dpi=180)
+    plt.show()
     plt.close()

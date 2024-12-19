@@ -72,6 +72,7 @@ def train(cfg, logger):
 
 def test(cfg, logger):
     """test"""
+    cfg["train"]["load_ckpt"] = "True"
     train_params = cfg.get("train")
     data_params = cfg.get("data")
     module_name = cfg.get("model").get("module_name", "generation")

@@ -118,7 +118,7 @@ class GenerationPredictor(nn.Cell):
                                               self.h_size // self.noise_scale,
                                               self.w_size // self.noise_scale)), inp.dtype)
             pred = self.generator(inp, evo_result, noise)
-            metrics = cal_csi(pred=pred, target=labels, threshold=7)
+            metrics = cal_csin(pred=pred, target=labels, threshold=self.threshold)
             np_metrics = metrics.asnumpy()
             np_metrics_avg = np.mean(np_metrics)
             # print('np_metrics',np_metrics)
@@ -131,7 +131,7 @@ class GenerationPredictor(nn.Cell):
                             idx=plt_idx,
                             fig_name=os.path.join(self.vis_save_path, f"generation_{steps}_{j}.jpg"),
                             evo=evo_result[j].asnumpy() * 128,
-                            plot_evo=True)
+                            plot_evo=False)
             step_cost = (time.time() - t1) * 1000
             self.logger.info("step {}, cost: {:.2f} ms".format(steps, step_cost))
             steps += 1
@@ -193,9 +193,8 @@ class EvolutionPredictor:
             inp = data.get("inputs")
             pred = self.forecast(inp)
             labels = inp[:, self.t_in:]
-            metrics = cal_csi(pred=pred, target=labels, threshold=7)
+            metrics = cal_csin(pred=pred, target=labels, threshold=self.threshold)
             np_metrics = metrics.asnumpy()
-            # print('np_metrics',np_metrics)
             metrics_list.append(np_metrics)
             self.print_csi_metrics(np_metrics, info_prefix=f'CSI Neighborhood threshold {self.threshold}')
             if self.summary_params.get("visual", True):
