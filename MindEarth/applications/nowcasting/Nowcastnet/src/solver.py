@@ -14,11 +14,11 @@
 # ==============================================================================
 """NowcastNet Trainer"""
 import math
-import pickle
 import numpy as np
 
 import mindspore as ms
 from mindspore import nn, Model, ops
+from mindspore.train.callback import LossMonitor, TimeMonitor
 
 from .dataset import RadarData, NowcastDataset
 from .callback import NowcastCallBack, EvolutionCallBack
@@ -74,17 +74,19 @@ class GenerationTrainer:
         self.predictor = GenerationPredictor(config, self.g_model, logger)
         self.g_grad_fn = ms.value_and_grad(self.g_forward_fn, None, self.g_optimizer.parameters)
         self.d_grad_fn = ms.value_and_grad(self.d_forward_fn, None, self.d_optimizer.parameters)
-        self.i = 1
 
     @staticmethod
     def _get_cosine_annealing_lr(lr_init, steps_per_epoch, epochs, eta_min=1e-6):
-        """cosine annealing lr"""
+        "cosine annealing lr"
         total_steps = epochs * steps_per_epoch
         delta = 0.5 * (lr_init - eta_min)
         lr = []
-        for i in range(total_steps):
-            tmp_epoch = min(math.floor(i / steps_per_epoch), epochs)  # math.floor() 结果向下取整
-            lr.append(eta_min + delta * (1 + math.cos(math.pi * tmp_epoch / epochs)))
+        try:
+            for i in range(total_steps):
+                tmp_epoch = min(math.floor(i / steps_per_epoch), epochs)
+                lr.append(eta_min + delta * (1 + math.cos(math.pi * tmp_epoch / epochs)))
+        except ZeroDivisionError:
+            return lr
         return lr
 
     def get_dataset(self):
@@ -166,14 +168,6 @@ class GenerationTrainer:
         loss = self.d_loss_fn(inputs, evo_result, noise, real_image)
         return loss
 
-    def savenp(self, loss):
-        if isinstance(loss, tuple):
-            with open('out_2.3_.pkl', 'wb') as f:
-                pickle.dump(loss, f)
-        else:
-            np_loss = loss.copy()
-            np_loss = np_loss.asnumpy()
-            np.save('./grads_{}.npy'.format('2.2'), np_loss)
 
     def train_step(self, inputs, evo_result, real_image, weights):
         """train step"""
@@ -228,7 +222,6 @@ class EvolutionTrainer:
         self.solver = self.get_solver()
         self.pred_cb = self.get_callback()
         self.ckpt_cb = self.pred_cb.save_evolution_ckpt()
-        self.grad_fn = ms.value_and_grad(self.forward_fn, None, self.optimizer.parameters)
 
     def get_dataset(self):
         """
@@ -244,12 +237,15 @@ class EvolutionTrainer:
         train_dataset_generator = RadarData(self.data_params, run_mode='train', module_name='evolution')
         valid_dataset_generator = RadarData(self.data_params, run_mode='valid', module_name='evolution')
 
-        train_dataset = NowcastDataset(train_dataset_generator, module_name='evolution',
+        train_dataset = NowcastDataset(train_dataset_generator,
+                                       module_name='evolution',
                                        distribute=self.train_params.get('distribute', False),
                                        num_workers=self.data_params.get('num_workers', 1))
-        valid_dataset = NowcastDataset(valid_dataset_generator, module_name='evolution',
+        valid_dataset = NowcastDataset(valid_dataset_generator,
+                                       module_name='evolution',
                                        distribute=self.train_params.get('distribute', False),
-                                       num_workers=self.data_params.get('num_workers', 1), shuffle=False)
+                                       num_workers=self.data_params.get('num_workers', 1),
+                                       shuffle=False)
         train_dataset = train_dataset.create_dataset(self.data_params.get('batch_size', 8))
         valid_dataset = valid_dataset.create_dataset(self.data_params.get('batch_size', 8))
         return train_dataset, valid_dataset
@@ -287,19 +283,8 @@ class EvolutionTrainer:
 
     def train(self):
         """ train """
-        for epoch in range(self.optimizer_params.get("epochs", 50)):
-            for i, data in enumerate(self.train_dataset.create_dict_iterator()):
-                inp = data.get("inputs")
-                weights = ops.where(inp[:, self.data_params.get("t_in", 9):] > 23., 24.,
-                                    inp[:, self.data_params.get("t_in", 9):] + 1)
-                loss = self.train_step(inp, weights)
-                print(f"epochs:{epoch + 1}, steps:{i + 1}, loss: {loss.asnumpy():>7f}")
-
-    def forward_fn(self, data, weights):
-        loss = self.loss_fn(data, weights)
-        return loss
-
-    def train_step(self, data, weights):
-        loss, grads = self.grad_fn(data, weights)
-        self.optimizer(grads)
-        return loss
+        callback_lst = [LossMonitor(), TimeMonitor(), self.pred_cb, self.ckpt_cb]
+        self.solver.train(epoch=self.optimizer_params.get("epochs", 200),
+                          train_dataset=self.train_dataset,
+                          callbacks=callback_lst,
+                          dataset_sink_mode=self.data_params.get('data_sink'))

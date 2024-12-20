@@ -44,9 +44,8 @@ class SpectralNormal(nn.Cell):
     Outputs:
         The forward propagation of containing module.
     """
-    def __init__(self, module, n_power_iterations=1, dim=0, eps=1e-12, n1=1.0, n2=0, l=0):
+    def __init__(self, module, n_power_iterations=1, dim=0, eps=1e-12, n1=1.0, n2=0):
         super(SpectralNormal, self).__init__()
-        self.l = l
         self.parametrizations = module
         self.weight = module.weight
         ndim = self.weight.ndim
@@ -67,7 +66,7 @@ class SpectralNormal(nn.Cell):
             weight_mat = self._reshape_weight_to_matrix()
             h, w = weight_mat.shape
             u = initializer(Normal(n1, n2), [h]).init_data()
-            v = initializer(Normal(n1, n1), [w]).init_data()
+            v = initializer(Normal(n1, n2), [w]).init_data()
             self._u = Parameter(self.l2_normalize(u), requires_grad=False)  # 封装成Parameter对象
             self._v = Parameter(self.l2_normalize(v), requires_grad=False)
 
@@ -91,8 +90,8 @@ class SpectralNormal(nn.Cell):
     def _power_method(self, weight_mat, n_power_iterations):
         for _ in range(n_power_iterations):
             self._u = self.l2_normalize(mnp.multi_dot([weight_mat, self.expand_dims(self._v, -1)]).flatten())
-            temp = mnp.multi_dot([weight_mat.T, self.expand_dims(self._u, -1)]).flatten()
-            self._v = self.l2_normalize(temp)
+            self._u += 0
+            self._v = self.l2_normalize(mnp.multi_dot([weight_mat.T, self.expand_dims(self._u, -1)]).flatten())
         return self._u, self._v
 
     def _reshape_weight_to_matrix(self):

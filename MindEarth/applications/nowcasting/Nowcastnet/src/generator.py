@@ -58,7 +58,7 @@ class GenBlock(nn.Cell):
                                 has_bias=True,
                                 dilation=dilation
                                 )
-        self.conv_0 = SpectralNormal(self.conv_0, l=0)
+        self.conv_0 = SpectralNormal(self.conv_0)
         self.norm_0 = SPADE(in_channels, data_params.get("t_out", 20))
         self.conv_1 = nn.Conv2d(mid_channels,
                                 out_channels,
@@ -67,12 +67,12 @@ class GenBlock(nn.Cell):
                                 has_bias=True,
                                 dilation=dilation
                                 )
-        self.conv_1 = SpectralNormal(self.conv_1, l=1)
+        self.conv_1 = SpectralNormal(self.conv_1)
         self.norm_1 = SPADE(mid_channels, data_params.get("t_out", 20))
         if self.learned_shortcut:
             self.conv_s = nn.Conv2d(in_channels, out_channels, kernel_size=1, pad_mode='pad')
             # self.conv_s = nn.Conv2d(in_channels, out_channels, kernel_size=1, pad_mode='valid')
-            self.conv_s = SpectralNormal(self.conv_s, l=0)
+            self.conv_s = SpectralNormal(self.conv_s)
             self.norm_s = SPADE(in_channels, data_params.get("t_out", 20))
         self.leaky_relu = nn.LeakyReLU(2e-1)
 
@@ -99,15 +99,13 @@ class SPADE(nn.Cell):
         self.param_free_norm = nn.BatchNorm2d(norm_channels, affine=False)
         self.pad_head = ReflectPad(kernel_size // 2)
         self.mlp_shared = nn.SequentialCell(
-            # nn.Conv2d(label_nc, hidden, kernel_size=kernel_size, pad_mode='valid', has_bias=True),
             nn.Conv2d(label_nc, hidden, kernel_size=kernel_size, pad_mode='pad', has_bias=True),
             nn.ReLU()
         )
         self.pad = ReflectPad(kernel_size // 2)
         self.mlp_gamma = nn.Conv2d(hidden, norm_channels, kernel_size=kernel_size, pad_mode='pad', has_bias=True)
         self.mlp_beta = nn.Conv2d(hidden, norm_channels, kernel_size=kernel_size, pad_mode='pad', has_bias=True)
-        # self.mlp_gamma = nn.Conv2d(hidden, norm_channels, kernel_size=kernel_size, pad_mode='valid', has_bias=True)
-        # self.mlp_beta = nn.Conv2d(hidden, norm_channels, kernel_size=kernel_size, pad_mode='valid', has_bias=True)
+
 
     def construct(self, x, evo):
         normalized = self.param_free_norm(x)
@@ -130,7 +128,7 @@ class NoiseProjector(nn.Cell):
                                                    pad_mode='pad',
                                                    padding=1,
                                                    has_bias=True
-                                                   ), l=2
+                                                   ),
                                          )
         self.block1 = ProjBlock(t_in * 2, t_in * 4)
         self.block2 = ProjBlock(t_in * 4, t_in * 8)
@@ -151,17 +149,13 @@ class ProjBlock(nn.Cell):
     def __init__(self, in_channels, out_channels):
         super(ProjBlock, self).__init__()
         self.one_conv = SpectralNormal(nn.Conv2d(in_channels, out_channels - in_channels,
-                                                 kernel_size=1, has_bias=True), l=4)
-        # self.one_conv = nn.Conv2d(in_channels, out_channels - in_channels, kernel_size=1, has_bias=True)
+                                                 kernel_size=1, has_bias=True))
         self.double_conv = nn.SequentialCell(
             SpectralNormal(nn.Conv2d(in_channels, out_channels, kernel_size=3, pad_mode='pad',
-                                     padding=1, has_bias=True), l=2),
+                                     padding=1, has_bias=True),),
             nn.ReLU(),
             SpectralNormal(nn.Conv2d(out_channels, out_channels, kernel_size=3, pad_mode='pad',
-                                     padding=1, has_bias=True), l=2)
-            # nn.Conv2d(in_channels, out_channels, kernel_size=3, pad_mode='pad', padding=1, has_bias=True),
-            # nn.ReLU(),
-            # nn.Conv2d(out_channels, out_channels, kernel_size=3, pad_mode='pad', padding=1, has_bias=True)
+                                     padding=1, has_bias=True))
         )
 
     def construct(self, x):

@@ -155,13 +155,14 @@ class EvolutionLoss(nn.Cell):
         self.loss_fn_motion = MotionLossNet(in_channels=1, out_channels=1, kernel_size=3)
         self.t_in = self.config.get('data').get("t_in", 9)
         self.t_out = self.config.get('data').get('t_out', 20)
-        sample_tensor = np.zeros(
-            (1, 1, self.config.get('data').get("h_size", 512), self.config.get('data').get("w_size", 512))).astype(
-                np.float32)
+        sample_tensor = np.zeros((1,
+                                  1,
+                                  self.config.get('data').get("h_size", 512),
+                                  self.config.get('data').get("w_size", 512))).astype(np.float32)
         self.grid = Tensor(make_grid(sample_tensor), ms.float32)
         self.lamb = float(config.get('optimizer-evo').get("motion_lambda", 1e-2))
 
-    def construct(self, inputs, weights):
+    def construct(self, inputs):
         """last frame of inputs"""
         intensity, motion = self.model(inputs)
         batch, _, height, width = inputs.shape
@@ -173,12 +174,13 @@ class EvolutionLoss(nn.Cell):
         motion = 0
         for i in range(self.t_out):
             next_frame = inputs[:, self.t_in + i, :, :]
+            weights = ops.where(next_frame > 23., 24., next_frame + 1)
             xt_1 = warp(last_frame, motion_[:, i], grid, mode="bilinear", padding_mode="border")
-            accum += self.loss_fn_accum(next_frame, xt_1[:, 0], weights[:, i])
+            accum += self.loss_fn_accum(next_frame, xt_1[:, 0], weights)
             last_frame = warp(last_frame, motion_[:, i], grid, mode="nearest", padding_mode="border")
             last_frame = last_frame + intensity_[:, i]
-            accum += self.loss_fn_accum(next_frame, last_frame[:, 0], weights[:, i])
+            accum += self.loss_fn_accum(next_frame, last_frame[:, 0], weights)
             last_frame = ops.stop_gradient(last_frame)
-            motion += self.loss_fn_motion(motion_[:, i], weights[:, i])
+            motion += self.loss_fn_motion(motion_[:, i], weights)
         loss = (accum + self.lamb * motion) / self.t_out
         return loss

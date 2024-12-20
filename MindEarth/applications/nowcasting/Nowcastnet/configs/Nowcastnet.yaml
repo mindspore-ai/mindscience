@@ -11,7 +11,7 @@ data:
   h_size: 512
   w_size: 512
   data_frequency: 10
-  num_workers: 1
+  num_workers: 4
   data_sink: False
   batch_size: 1
   noise_scale: 32
@@ -20,7 +20,7 @@ optimizer-gen:
   beta1: 0.01
   beta2: 0.9
   g_lr: 1.5e-5
-  d_lr: 6e-6
+  d_lr: 1e-6
   epochs: 15
 optimizer-evo:
   name: "adam"
@@ -31,7 +31,7 @@ optimizer-evo:
   motion_lambda: 1e-2
 summary:
   summary_dir: "./summary/"
-  eval_interval: 2
+  eval_interval: 1
   save_checkpoint_epochs: 1
   keep_checkpoint_max: 4
   key_info_timestep: [10, 60, 120]
