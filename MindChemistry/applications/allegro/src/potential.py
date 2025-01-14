@@ -32,24 +32,6 @@ from src.allegro_embedding import AllegroEmbedding
 
 _cur_dir = os.getcwd()
 
-
-class PotentialForce(Cell):
-    """Potential_Force
-    """
-
-    def __init__(self, potential_net):
-        super().__init__()
-        self.potential_net = potential_net
-        self.grad = ms.grad(self.potential_net, grad_position=1)
-
-    def construct(self, x, pos, edge_index, batch, batch_size):
-        atom_types = x.reshape(-1, 1)
-        pos = pos.reshape(-1, 3)
-        total_energy = self.potential_net(atom_types, pos, edge_index, batch, batch_size)
-        forces = ops.neg(self.grad(atom_types, pos, edge_index, batch, batch_size))
-        return total_energy, forces
-
-
 class Potential(Cell):
     """Potential
     """

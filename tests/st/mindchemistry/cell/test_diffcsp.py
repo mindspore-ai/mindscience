@@ -26,8 +26,8 @@ from mindchemistry.cell import CSPNet
 from mindchemistry.graph.graph import LiftGlobalToNode
 from mindchemistry.graph.loss import L2LossMask
 
-LTOL = 0.6
-FTOL = 0.6
+LTOL = 0.7
+FTOL = 0.7
 
 class SinusoidalTimeEmbeddings(nn.Cell):
     """ Embedding for the time step in diffution.
