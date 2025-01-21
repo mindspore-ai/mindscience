@@ -399,10 +399,11 @@ class MaxwellianLR(nn.Cell):
 def f_sum_lowrank(ft, wt):
     fx, fy, fz = ft
     wx, wy, wz = wt
-    sx = ops.einsum("...ir,i->...r", fx, wx)
-    sy = ops.einsum("...jr,j->...r", fy, wy)
-    sz = ops.einsum("...kr,k->...r", fz, wz)
-    s = ops.einsum("...r,...r,...r->...", sx, sy, sz)
+    reduce_sum = ops.ReduceSum(keep_dims=False)
+    sx = reduce_sum(fx*wx.unsqueeze(-1), axis=-2)
+    sy = reduce_sum(fy*wy.unsqueeze(-1), axis=-2)
+    sz = reduce_sum(fz*wz.unsqueeze(-1), axis=-2)
+    s = reduce_sum(sx*sy*sz, axis=-1)
     return s
 
 
