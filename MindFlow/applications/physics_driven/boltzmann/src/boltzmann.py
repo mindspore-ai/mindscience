@@ -149,7 +149,10 @@ class FSMLAKernel(nn.Cell):
 
     def construct(self, x, kn_bzm=1.0):
         ff = x @ self.f
-        q = ops.einsum("...i,...j,ijk->...k", ff, ff, self.k)
+        reduce_sum = ops.ReduceSum(keep_dims=False)
+        tmp = ff.unsqueeze(-1)*ff.unsqueeze(-2)
+        q = reduce_sum(tmp.unsqueeze(-1)*self.k, axis=-2)
+        q = reduce_sum(q, axis=-2)
         qr = q @ self.g.T
         return qr / kn_bzm
 
