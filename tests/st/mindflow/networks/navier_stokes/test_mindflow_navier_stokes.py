@@ -29,6 +29,7 @@ np.random.seed(123456)
 
 class Net(nn.Cell):
     """MLP"""
+
     def __init__(self, in_channels=2, hidden_channels=128, out_channels=1, act=nn.Tanh()):
         super().__init__()
         self.act = act
@@ -43,7 +44,7 @@ class Net(nn.Cell):
         return self.layers(x)
 
 
-@pytest.mark.level1
+@pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_mindflow_navier_stokes():
@@ -52,7 +53,7 @@ def test_mindflow_navier_stokes():
     Description: test train
     Expectation: success
     """
-    context.set_context(mode=context.GRAPH_MODE)
+    context.set_context(mode=context.GRAPH_MODE, jit_config={"jit_level": "O2"})
     model = Net(in_channels=3, out_channels=3)
     optimizer = nn.Adam(model.trainable_params(), 0.0001)
     problem = NavierStokes2D(model)
@@ -115,7 +116,8 @@ def test_mindflow_navier_stokes():
         time_beg = time.time()
         train_loss = train_step(pde_data, bc_data, bc_label, ic_data, ic_label)
         epoch_time = time.time() - time_beg
-        print(f"epoch: {epoch} train loss: {train_loss} epoch time: {epoch_time}s")
+        print(
+            f"epoch: {epoch} train loss: {train_loss} epoch time: {epoch_time}s")
     model.set_train(False)
 
     assert epoch_time < 0.01
