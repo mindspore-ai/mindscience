@@ -1,0 +1,12 @@
+prop: energy_per_atom
+num_targets: 1
+niggli: true
+primitive: false
+graph_method: crystalnn
+lattice_scale_method: scale_length
+preprocess_workers: 30
+readout: mean
+max_atoms: 24
+otf_graph: false
+eval_model_name: carbon
+batch_size: 50
