@@ -132,7 +132,7 @@ class MLP(ms.nn.Cell):
         super().__init__()
         self.activation = activation
         self.last_activation = last_activation
-        self.in_layer = mint.nn.Linear(in_dim, hidden_dim, bias=False)
+        self.in_layer = mint.nn.Linear(in_dim, hidden_dim, bias=True)
         self.dense_mlp = ms.nn.SequentialCell(
             *[
                 mint.nn.Linear(
@@ -143,7 +143,7 @@ class MLP(ms.nn.Cell):
                 for _ in range(fc_num_layers)
             ]
         )
-        self.out_layer = mint.nn.Linear(hidden_dim, out_dim, bias=False)
+        self.out_layer = mint.nn.Linear(hidden_dim, out_dim, bias=True)
 
     def construct(self, x):
         """MLP construct"""
