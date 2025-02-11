@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-if [ $# != 4 ]
+if [ $# != 3 ]
 then
-    echo "Usage: bash run_distribute_train.sh [RANK_TABLE_FILE] [DEVICE_NUM] [DEVICE_START_ID] [CONFIG_FILE]"
+    echo "Usage: bash run_distribute_train.sh [RANK_TABLE_FILE] [CONFIG_FILE] [DEVICE_NUM]"
 exit 1
 fi
 
@@ -25,26 +25,25 @@ then
 exit 1
 fi
 
-RANK_TABLE_FILE=$(realpath $1)
-DEVICE_NUM=$2
+RANK_TABLE_FILE=$(realpath  $1)
+export MINDSPORE_HCCL_CONFIG_PATH=${RANK_TABLE_FILE}
 echo "RANK_TABLE_FILE=${RANK_TABLE_FILE}"
-DEVICE_START_ID=$3
-CONFIG_FILE=$(realpath $4)
+CONFIG_FILE=$(realpath $2)
 echo "CONFIG_FILE=${CONFIG_FILE}"
+DEVICE_NUM=$(realpath $3)
+echo "CONFIG_FILE=${DEVICE_NUM}"
 
-for((i=$DEVICE_START_ID;i<$[$DEVICE_NUM+$DEVICE_START_ID];i++))
-do
-    rm -rf device$i
-    mkdir device$i
-    cp ./main.py ./device$i
-    cp ${CONFIG_FILE} ./device$i
-    cp -r ./src ./device$i
-    cd ./device$i
-    export DEVICE_ID=$i
-    export RANK_ID=$[$i-$DEVICE_START_ID]
-    export GLOG_v=3
-    echo "start training for device $i"
-    env > env$i.log
-    nohup python -u main.py --device_id $i --config_file_path ${CONFIG_FILE} >train${i}.log 2>&1 &
-    cd ../
-done
+i=1
+rm -rf msrun
+mkdir msrun
+cp ./main.py ./msrun
+cp ${CONFIG_FILE} ./msrun
+cp -r ./src ./msrun
+cd ./msrun
+export DEVICE_ID=$i
+export RANK_ID=$[$i-$i]
+export GLOG_v=3
+echo "start training for msrun"
+env > env.log
+nohup msrun --worker_num=${DEVICE_NUM} --local_worker_num=${DEVICE_NUM} --master_port=8118 --log_dir=msrun_log --join=True --cluster_time_out=300 main.py --device_id $i --config_file_path ${CONFIG_FILE} >train${i}.log 2>&1 &
+cd ../

@@ -17,8 +17,8 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+import mindspore as ms
 import mindspore.common.dtype as mstype
-import mindspore.communication.management as D
 from mindspore.communication import init
 from mindspore import context, Tensor, ops, nn
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
@@ -63,12 +63,8 @@ def amp_convert(network, black_list=None):
 def init_data_parallel(use_ascend):
     """Init data parallel for model running"""
     if use_ascend:
+        ms.set_auto_parallel_context(parallel_mode=ms.ParallelMode.DATA_PARALLEL, gradients_mean=True)
         init()
-        device_num = D.get_group_size()
-        os.environ['HCCL_CONNECT_TIMEOUT'] = "7200"
-        context.reset_auto_parallel_context()
-        context.set_auto_parallel_context(parallel_mode=context.ParallelMode.DATA_PARALLEL, gradients_mean=True,
-                                          device_num=device_num, parameter_broadcast=False)
     else:
         init("nccl")
         context.reset_auto_parallel_context()

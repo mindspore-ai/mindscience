@@ -48,6 +48,8 @@ Where $tp$ represents the original value of `Total Precipitation`, in our experi
 
 ### Base Backbone
 
+choose mindspore2.4 to valid and test.
+
 Before running, it is necessary to prepare the training data, which can be downloaded in [1.40625°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/) or [0.25°](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/ERA5_0_25_tiny400/) as needed, and saved in the `./dataset`.
 
 #### Quick Start
@@ -74,21 +76,20 @@ You can use [Chinese](https://gitee.com/mindspore/mindscience/raw/master/MindEar
 
 #### Multi-Card Parallel
 
+use [msrun](https://www.mindspore.cn/docs/zh-CN/r2.4.10/model_train/parallel/msrun_launcher.html) for graphcast
 Running in Multi-Card parallel mode requires setting the `distribute` in the configuration file specified by `config_file_path` to `True`.
 
 ```shell
-bash ./scripts/run_distributed_train.sh $rank_table_file $device_num $device_start_id $config_file_path
+bash ./scripts/run_distributed_train.sh $rank_table_file $config_file_path $device_num
 ```
 
 where:
 
 `--rank_table_file` [path to the networking information file](https://www.mindspore.cn/tutorials/experts/zh-CN/r2.2/parallel/rank_table.html#%E6%A6%82%E8%BF%B0).
 
-`--device_num` the numbers of networking device.
-
-`--device_start_id` the start ID of networking device.
-
 `--config_file_path` the path of config file.
+
+`--device_num` the numbers of networking device.
 
 ### Medium-range Precipitation
 
