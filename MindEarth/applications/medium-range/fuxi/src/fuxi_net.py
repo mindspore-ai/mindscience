@@ -115,7 +115,7 @@ class FuXiNet(nn.Cell):
         """
         out = self.cube_embed(inputs)
         out_down_sample = self.down_sample(out)
-        batch_size, z_size, h_size, w_size = out_down_sample.shape
+        batch_size, z_size, h_size, w_size, _ = out_down_sample.shape
         out_skip = out_down_sample.reshape(batch_size, -1, self.out_channels)
         out_swin_block = out_skip
         for swin_block in self.swin_block:

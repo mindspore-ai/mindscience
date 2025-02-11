@@ -48,6 +48,8 @@ $$
 
 ### 基础Backbone
 
+本模型需要在mindspore2.4环境下运行。
+
 运行前需先准备训练使用的数据，可根据需要下载[1.40625°](https://download.mindspore.cn/mindscience/mindearth/dataset/WeatherBench_1.4_69/)或[0.25°](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/ERA5_0_25_tiny400/)数据并保存在`./dataset`。
 
 #### 快速开始
@@ -74,21 +76,23 @@ bash ./scripts/run_standalone_train.sh $device_id $device_target $config_file_pa
 
 #### 多卡并行
 
+采用[msrun启动方式](https://www.mindspore.cn/docs/zh-CN/r2.4.10/model_train/parallel/msrun_launcher.html)
+
 多卡并行需要将`config_file_path`指定的配置文件中`distribute`字段设置为`True`。
 
 ```shell
-bash ./scripts/run_distributed_train.sh $rank_table_file $device_num $device_start_id $config_file_path
+bash ./scripts/run_distributed_train.sh $rank_table_file $config_file_path $device_num
 ```
 
 其中：
 
 `--rank_table_file` [组网信息文件](https://www.mindspore.cn/tutorials/experts/zh-CN/r2.2/parallel/rank_table.html#%E6%A6%82%E8%BF%B0)。
 
+`--config_file_path` 配置文件的路径。
+
 `--device_num` 表示组网设备的数量。
 
-`--device_start_id` 表示组网设备起始ID。
-
-`--config_file_path` 配置文件的路径。
+之后在"msrun"文件夹中查看运行信息。
 
 ### 中期降水
 
