@@ -80,7 +80,7 @@ class Net(nn.Cell):
         return self.layers(x)
 
 
-@pytest.mark.level1
+@pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_mindflow_burgers_pinns():
@@ -89,7 +89,7 @@ def test_mindflow_burgers_pinns():
     Description: test train and eval
     Expectation: success
     """
-    context.set_context(mode=context.GRAPH_MODE)
+    context.set_context(mode=context.GRAPH_MODE, jit_config={"jit_level": "O2"})
     model = Net()
     optimizer = nn.Adam(model.trainable_params(), 0.0001)
     problem = Burgers1D(model)
