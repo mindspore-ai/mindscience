@@ -20,8 +20,12 @@ from .attention import Attention, MultiHeadAttention, AttentionBlock
 from .vit import ViT
 from .unet2d import UNet2D
 from .sno_utils import poly_data, get_poly_transform, interpolate_1d_dataset, interpolate_2d_dataset
+from .diffusion import DiffusionScheduler, DiffusionTrainer, DDPMScheduler, DDIMScheduler, DDPMPipeline, DDIMPipeline
+from .diffusion_transformer import DiffusionTransformer, ConditionDiffusionTransformer
 
 __all__ = ["get_activation", "FNO1D", "FNO2D", "FNO3D", "KNO1D", "KNO2D", "PDENet", "UNet2D", "PeRCNN",
-           "SNO1D", "SNO2D", "SNO3D", "Attention", "MultiHeadAttention", "AttentionBlock", "ViT"]
+           "SNO1D", "SNO2D", "SNO3D", "Attention", "MultiHeadAttention", "AttentionBlock", "ViT", "DDPMPipeline",
+           "DDIMPipeline", "DiffusionTrainer", "DiffusionScheduler", "DDPMScheduler", "DDIMScheduler",
+           "DiffusionTransformer", "ConditionDiffusionTransformer"]
 __all__.extend(basic_block.__all__)
 __all__.extend(sno_utils.__all__)
