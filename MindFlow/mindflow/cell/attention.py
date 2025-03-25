@@ -56,10 +56,29 @@ class Attention(nn.Cell):
             return attn
         return attn.astype(compute_dtype)
 
-    def mask_scores(self, scores, attn_mask=None):
+    def _mask_scores(self, scores, attn_mask=None, key_padding_mask=None):
+        """mask attention scores"""
+        batch, _, _, node = scores.shape
+        mask = ops.zeros_like(scores)
         if attn_mask is not None:
-            attn_mask = attn_mask.astype(mstype.float32)
-            return ops.masked_fill(scores, attn_mask != 0, Tensor(-1e10, scores.dtype))
+            attn_mask = attn_mask.astype(scores.dtype)
+            if len(attn_mask.shape) == 2:
+                attn_mask = attn_mask.reshape(1, 1, node, node)
+            elif len(attn_mask.shape) == 3:
+                attn_mask = attn_mask.unsqueeze(1)
+            else:
+                pass
+            mask += attn_mask
+        if key_padding_mask is not None:
+            key_padding_mask = key_padding_mask.astype(scores.dtype)
+            if len(key_padding_mask.shape) == 2:
+                key_padding_mask = ops.broadcast_to(key_padding_mask.unsqueeze(1), (batch, node, node)).unsqueeze(1)
+            elif len(key_padding_mask.shape) == 3:
+                key_padding_mask = key_padding_mask.unsqueeze(1)
+            else:
+                pass
+            mask += key_padding_mask
+        scores += mask * Tensor(-1e10, scores.dtype)
         return scores
 
     def get_qkv(self, x):
@@ -70,18 +89,20 @@ class Attention(nn.Cell):
         )
         return qkv[0], qkv[1], qkv[2]
 
-    def reshape_output(self, x):
+    def _reshape_output(self, x):
         b, _, n, _ = x.shape
         return x.transpose(0, 2, 1, 3).reshape(b, n, -1)
 
-    def construct(self, x, attn_mask=None):
+    def construct(self, x, attn_mask=None, key_padding_mask=None):
         """Attention network construction.
 
         Args:
             x (mindspore.Tensor): The input vector.
                 [batch_size, seq_len, in_channels]
-            attn_mask Optional[mindspore.Tensor]: The scores mask vector.
-                [batch_size, num_heads, seq_len, seq_len]
+            attn_mask Optional[mindspore.Tensor]: The score mask vector.
+                [batch_size, num_heads, seq_len, seq_len] or [batch_size, seq_len, seq_len] or [seq_len, seq_len]
+            key_padding_mask Optional[mindspore.Tensor]: The padding mask vector.
+                [batch_size, num_heads, seq_len, seq_len] or [batch_size, seq_len, seq_len] or [batch_size, seq_len]
 
         Returns:
             - **output** (mindspore.Tensor) - The output of attention.
@@ -137,15 +158,15 @@ class MultiHeadAttention(Attention):
             self.drop = DropPath(dropout_rate=dropout_rate)
             self.attn_drop = DropPath(dropout_rate=dropout_rate)
 
-    def construct(self, x, attn_mask=None):
+    def construct(self, x, attn_mask=None, key_padding_mask=None):
         """construct"""
         query, key, value = self.get_qkv(x)
         scores = self.matmul(query, key.swapaxes(-1, -2)) * self.scale
-        scores = self.mask_scores(scores, attn_mask)
+        scores = self._mask_scores(scores, attn_mask, key_padding_mask)
         attn = self.softmax(scores, self.compute_dtype)
         attn = self.attn_drop(attn)
         output = self.matmul(attn, value)
-        output = self.reshape_output(output)
+        output = self._reshape_output(output)
 
         output = self.proj(output)
         output = self.drop(output)
