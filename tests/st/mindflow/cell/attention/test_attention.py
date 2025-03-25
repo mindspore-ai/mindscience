@@ -75,6 +75,46 @@ def test_attention_dtype():
     assert v.dtype == mstype.float16
 
 
+# pylint: disable=W0212
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend910b_training
+@pytest.mark.env_onecard
+@pytest.mark.parametrize('compute_dtype', [mstype.float16, mstype.float32])
+def test_attention_mask1(compute_dtype):
+    """
+    Feature: attention
+    Description: test attention mask function
+    Expectation: success
+    """
+    net = Attention(IN_CHANNELS, NUM_HEADS, compute_dtype=mstype.float16)
+    scores = ops.randn([BATCH_SIZE, NUM_HEADS, SEQ_LEN, SEQ_LEN], dtype=compute_dtype)
+    attn_mask = ops.randint(0, 2, (BATCH_SIZE, SEQ_LEN, SEQ_LEN))
+    key_padding_mask = ops.randint(0, 2, (BATCH_SIZE, SEQ_LEN))
+    y = net._mask_scores(scores, attn_mask, key_padding_mask)
+    assert y.shape == (BATCH_SIZE, NUM_HEADS, SEQ_LEN, SEQ_LEN)
+    assert y.dtype == compute_dtype
+
+
+# pylint: disable=W0212
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend910b_training
+@pytest.mark.env_onecard
+@pytest.mark.parametrize('compute_dtype', [mstype.float16, mstype.float32])
+def test_attention_mask2(compute_dtype):
+    """
+    Feature: attention
+    Description: test attention mask function
+    Expectation: success
+    """
+    net = Attention(IN_CHANNELS, NUM_HEADS, compute_dtype=mstype.float16)
+    scores = ops.randn([BATCH_SIZE, NUM_HEADS, SEQ_LEN, SEQ_LEN], dtype=compute_dtype)
+    attn_mask = ops.randint(0, 2, (SEQ_LEN, SEQ_LEN))
+    key_padding_mask = ops.randint(0, 2, (BATCH_SIZE, SEQ_LEN, SEQ_LEN))
+    y = net._mask_scores(scores, attn_mask, key_padding_mask)
+    assert y.shape == (BATCH_SIZE, NUM_HEADS, SEQ_LEN, SEQ_LEN)
+    assert y.dtype == compute_dtype
+
+
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
