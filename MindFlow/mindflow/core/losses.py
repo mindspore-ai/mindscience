@@ -164,10 +164,10 @@ class MTLWeightedLoss(WeightedLossCell):
             is higher than certain constant given.
 
     Inputs:
-        - **input** - tuple of Tensors.
+        - **input** (tuple[Tensor]) - The input data.
 
     Outputs:
-        Tensor. losses for MTL weighted strategy.
+        Tensor. Losses for MTL weighted strategy.
 
     Supported Platforms:
         ``Ascend`` ``GPU``
@@ -220,7 +220,7 @@ class WaveletTransformLoss(nn.LossBase):
     The multi-level wavelet transformation losses.
 
     Args:
-        wave_level (int): The number of the wavelet transformation levels, should be positive integer.
+        wave_level (int): The number of the wavelet transformation levels, should be positive integer. Default: ``2``.
         regroup (bool): The regroup error combination form of the wavelet transformation losses. Default: ``"False"``.
 
     Inputs:
@@ -229,11 +229,7 @@ class WaveletTransformLoss(nn.LossBase):
           P denotes the patch size. C denots the feature channels.
 
     Outputs:
-        Tensor.
-
-    Raises:
-        TypeError: if `wave_level` is not an int.
-        TypeError: if `regroup` is not a bool.
+        Tensor. Losses for multi-level wavelet transformation.
 
     Supported Platforms:
         ``Ascend`` ``GPU``

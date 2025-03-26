@@ -1,7 +1,7 @@
-mindflow.common.get_multi_step_lr
+mindflow.core.get_multi_step_lr
 =================================
 
-.. py:function:: mindflow.common.get_multi_step_lr(lr_init, milestones, gamma, steps_per_epoch, last_epoch)
+.. py:function:: mindflow.core.get_multi_step_lr(lr_init, milestones, gamma, steps_per_epoch, last_epoch)
 
     epoch的数量到达其中一个milestone时，学习率按 `gamma` 进行衰减，生成学习率数组。
 
