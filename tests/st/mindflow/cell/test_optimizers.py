@@ -174,7 +174,7 @@ def test_adahessian_st(mode, model_option):
 
     assert ops.isfinite(loss)
 
-@pytest.mark.level0
+@pytest.mark.level1
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_adahessian_compare():

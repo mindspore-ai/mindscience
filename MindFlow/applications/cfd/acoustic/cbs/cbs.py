@@ -14,6 +14,7 @@
 # ==============================================================================
 """The CBS (convergen Born series) API"""
 from math import factorial
+from time import time as toc
 import numpy as np
 import mindspore as ms
 from mindspore import Tensor, nn, ops, numpy as mnp, lazy_inline
@@ -199,8 +200,9 @@ class CBS(nn.Cell):
             ui_init = ops.zeros_like(c_star, dtype=ms.float32) # (batch, 1, nz, nx)
 
         # pad initial field
+        # note: here u_init is conjugated, because the output is also conjugated
         ur = ops.pad(ur_init, padding=[n1] * 4, value=0) # note: better padding (with gradual damping) can be applied
-        ui = ops.pad(ui_init, padding=[n2] * 4, value=0) # (batch, 1, nz_padded, nx_padded)
+        ui = ops.pad(-1. * ui_init, padding=[n2] * 4, value=0) # (batch, 1, nz_padded, nx_padded)
 
         # start iteration
         errs_list = []
@@ -242,6 +244,8 @@ class CBS(nn.Cell):
         msg = 'PML layers cannot be removed during iteration, but can be removed for the final result'
         assert not self.remove_pml, msg
 
+        tic = toc()
+
         ur, ui, errs_list = self(c_star, f_star, ur_init, ui_init)
 
         for ep in range(max_iter // self.n_iter):
@@ -251,12 +255,14 @@ class CBS(nn.Cell):
 
             if print_info:
                 print(f'step {(ep + 1) * self.n_iter}, max error {err_max:.6f}', end=', ')
-                print(f'min error {err_min:.6f}, mean error {err_ave:.6f}')
+                print(f'min error {err_min:.6f}, mean error {err_ave:.6f}', end=', ')
+                print(f'mean step time {(toc() - tic) / self.n_iter:.4f}s')
+                tic = toc()
 
             if err_max < tol:
                 break
 
-            ur, ui, errs = self(c_star, f_star, ur, -ui)
+            ur, ui, errs = self(c_star, f_star, ur, ui)
             errs_list += errs
 
         if remove_pml and self.pml_size:

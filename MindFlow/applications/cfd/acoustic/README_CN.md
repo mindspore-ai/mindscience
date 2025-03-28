@@ -102,7 +102,7 @@ $$
 ### 运行方式一：`solve_acoustic.py` 脚本
 
 ```shell
-python solve_acoustic.py --config_file_path ./configs.yaml --device_id 0 --mode GRAPH
+python solve_acoustic.py --config_file_path ./config.yaml --device_id 0 --mode GRAPH
 ```
 
 其中，

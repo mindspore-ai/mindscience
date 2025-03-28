@@ -100,7 +100,7 @@ To facilitate direct verification by users, preset inputs are provided [here](ht
 ### Method 1: Running the `solve_acoustic.py` script
 
 ```shell
-python solve_acoustic.py --config_file_path ./configs.yaml --device_id 0 --mode GRAPH
+python solve_acoustic.py --config_file_path ./config.yaml --device_id 0 --mode GRAPH
 ```
 
 Where
