@@ -15,7 +15,7 @@
 ''' provide complex dft based on the real dft API in mindflow.dft '''
 import numpy as np
 import mindspore as ms
-from mindspore import nn, ops, numpy as mnp
+from mindspore import nn, ops, numpy as mnp, mint
 from mindflow.cell.neural_operators.dft import dft1, dft2, dft3
 
 
@@ -53,6 +53,24 @@ class MyDFTn(nn.Cell):
         self.mask_y0 = ms.Tensor(mask_y0, dtype=ms.float32, const_arg=True)
         self.mask_z0 = ms.Tensor(mask_z0, dtype=ms.float32, const_arg=True)
 
+        # bug note: ops.flip/mint.flip/mint.roll has bug for MS2.4.0 in PYNATIVE_MODE
+        # mnp.flip has bug after MS2.4.0 in GRAPH_MODE
+        # ops.roll only supports GPU, mnp.roll is ok but slow
+        msver = tuple([int(s) for s in ms.__version__.split('.')])
+        kwargs1 = (dict(axis=-1), dict(axis=-2), dict(axis=-3))
+        kwargs2 = (dict(dims=(-1,)), dict(dims=(-2,)), dict(dims=(-3,)))
+
+        if msver <= (2, 4, 0) and ms.get_context('mode') == ms.PYNATIVE_MODE:
+            self.fliper = mnp.flip
+            self.roller = mnp.roll
+            self.flipkw = kwargs1
+            self.rollkw = kwargs1
+        else:
+            self.fliper = mint.flip
+            self.roller = mint.roll
+            self.flipkw = kwargs2
+            self.rollkw = kwargs2
+
     def construct(self, ar, ai):
         shape = tuple(self.shape)
         n = shape[-1]
@@ -74,15 +92,21 @@ class MyDFTn(nn.Cell):
 
         br_half1 = ops.pad((brr - bii) * self.mask_xm, [0, n//2 - 1])
         bi_half1 = ops.pad((bri + bir) * self.mask_xm, [0, n//2 - 1])
-        # bug note: mnp.roll() & mnp.flip are ok, but ops.roll() only supports GPU, ops.flip() has bug in MS2.4.0
-        br_half2 = mnp.roll(mnp.flip(ops.pad((brr + bii) * self.mask_x0, [n//2 - 1, 0]), axis=-1), n//2, axis=-1)
-        bi_half2 = mnp.roll(mnp.flip(ops.pad((bir - bri) * self.mask_x0, [n//2 - 1, 0]), axis=-1), n//2, axis=-1)
+
+        br_half2 = self.roller(self.fliper(
+            ops.pad((brr + bii) * self.mask_x0, [n//2 - 1, 0]), **self.flipkw[0]), n//2, **self.rollkw[0])
+        bi_half2 = self.roller(self.fliper(
+            ops.pad((bir - bri) * self.mask_x0, [n//2 - 1, 0]), **self.flipkw[0]), n//2, **self.rollkw[0])
         if ndim > 1:
-            br_half2 = br_half2 * (1 - self.mask_y0) + mnp.roll(mnp.flip(br_half2 * self.mask_y0, axis=-2), 1, axis=-2)
-            bi_half2 = bi_half2 * (1 - self.mask_y0) + mnp.roll(mnp.flip(bi_half2 * self.mask_y0, axis=-2), 1, axis=-2)
+            br_half2 = br_half2 * (1 - self.mask_y0) + self.roller(self.fliper(
+                br_half2 * self.mask_y0, **self.flipkw[1]), 1, **self.rollkw[1])
+            bi_half2 = bi_half2 * (1 - self.mask_y0) + self.roller(self.fliper(
+                bi_half2 * self.mask_y0, **self.flipkw[1]), 1, **self.rollkw[1])
         if ndim > 2:
-            br_half2 = br_half2 * (1 - self.mask_z0) + mnp.roll(mnp.flip(br_half2 * self.mask_z0, axis=-3), 1, axis=-3)
-            bi_half2 = bi_half2 * (1 - self.mask_z0) + mnp.roll(mnp.flip(bi_half2 * self.mask_z0, axis=-3), 1, axis=-3)
+            br_half2 = br_half2 * (1 - self.mask_z0) + self.roller(self.fliper(
+                br_half2 * self.mask_z0, **self.flipkw[2]), 1, **self.rollkw[2])
+            bi_half2 = bi_half2 * (1 - self.mask_z0) + self.roller(self.fliper(
+                bi_half2 * self.mask_z0, **self.flipkw[2]), 1, **self.rollkw[2])
 
         br = br_half1 + br_half2
         bi = bi_half1 + bi_half2
