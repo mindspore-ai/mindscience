@@ -1,0 +1,56 @@
+# super parameters
+data:
+  dataset_start: 0
+  dataset_used: 4
+  te_dataset_start: 0
+  te_dataset_used: 9
+  time_start: 0
+  time_used: 2000
+  tr_window_size: 20
+  val_window_size: 20
+  te_window_size: 2000
+
+optim:
+  lr: 1.25e-4
+  steplr_size: 200
+  steplr_gamma: 0.96
+  start_epoch: 1
+  epochs: 1600
+  batch_size: 4
+  num_workers: 0
+  window_shuffle: true
+  val_freq: 2
+
+# network architecture
+network:
+  integral: 2
+  encoder_config:
+    node_encoder_layers: [8, 32, 64, 128]
+    edge_encoder_layers: [5, 32, 64, 128]
+
+  mpnn_block_config:
+    mpnn_layers:
+      - [384, 128, 128, 128, 128]
+      - [256, 128, 128, 128, 128]
+    mpnn_num: 5
+
+  decoder_config:
+    node_decoder_layers: [128, 64, 32, 2]
+
+  laplace_block_config:
+    in_dim: 4
+    h_dim: 24
+    out_dim: 2
+
+# experiment name
+experiment_name: "tmp"
+continuous_train: false
+
+path:
+  ckpt_path: ckpts/
+
+  # data path
+  data_root_dir: data/2d_cf
+  tr_raw_data: train_cf_4x2000x1598x2.h5
+  val_raw_data: train_cf_4x2000x1598x2.h5
+  te_raw_data: test_cf_9x2000x1598x2.h5
