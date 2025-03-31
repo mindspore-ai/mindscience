@@ -128,6 +128,8 @@ class DEMNet(nn.Cell):
         self.conv_up = nn.Conv2d(out_channels, out_channels, kernel_size, pad_mode='same')
         self.conv_out = nn.Conv2d(out_channels, in_channels, kernel_size, pad_mode='same')
         self.body = self.make_layer(ResBlock, num_blocks)
+        self.resizebilinear = ms.ops.ResizeBilinearV2()
+
 
     def make_layer(self, block, layers):
         res_block = []
@@ -141,6 +143,6 @@ class DEMNet(nn.Cell):
         out = self.conv2(out)
         out += x
         out = self.conv_up(out)
-        out = ms.nn.ResizeBilinear()(out, scale_factor=self.scale)
+        out = self.resizebilinear(out, (out.shape[2]*self.scale, out.shape[3]*self.scale))
         out = self.conv_out(out)
         return out

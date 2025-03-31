@@ -20,7 +20,7 @@ import numpy as np
 import mindspore as ms
 from mindspore import set_seed
 import mindspore.nn.probability.distribution as msd
-from mindspore import nn, ops, Tensor, Parameter
+from mindspore import nn, ops, Tensor, Parameter, mint
 
 from mindearth.cell.utils import SpectralNorm, PixelUnshuffle, PixelShuffle
 
@@ -35,7 +35,7 @@ def get_conv_layer(conv_type="standard"):
     elif conv_type == "coord":
         conv_layer = CoordConv
     elif conv_type == "3d":
-        conv_layer = nn.Conv3d
+        conv_layer = mint.nn.Conv3d
     else:
         raise ValueError(f"{conv_type} is not a recognized Conv method")
     return conv_layer
@@ -311,43 +311,74 @@ class DBlock(nn.Cell):
         conv2d = get_conv_layer(conv_type)
         if conv_type == "3d":
             # 3D Average pooling
-            self.pooling = ops.AvgPool3D(kernel_size=2, strides=2)
+            self.pooling = ops.MaxPool3D(kernel_size=2, strides=2)
+            self.conv_1x1 = conv2d(
+                in_channels=in_channels,
+                out_channels=out_channels,
+                kernel_size=1,
+                bias=True
+            )
+            if use_spectral_norm:
+                self.conv_1x1 = SpectralNorm(
+                    self.conv_1x1
+                )
+
+            self.first_conv_3x3 = conv2d(
+                in_channels=in_channels,
+                out_channels=out_channels,
+                kernel_size=3,
+                padding=1,
+                bias=True
+            )
+            if use_spectral_norm:
+                self.first_conv_3x3 = SpectralNorm(
+                    self.first_conv_3x3
+                )
+
+            self.last_conv_3x3 = conv2d(
+                in_channels=out_channels,
+                out_channels=out_channels,
+                kernel_size=3,
+                padding=1,
+                stride=1,
+                bias=True
+            )
         else:
             self.pooling = nn.AvgPool2d(kernel_size=2, stride=2)
 
-        self.conv_1x1 = conv2d(
-            in_channels=in_channels,
-            out_channels=out_channels,
-            kernel_size=1,
-            has_bias=True
-        )
-        if use_spectral_norm:
-            self.conv_1x1 = SpectralNorm(
-                self.conv_1x1
+            self.conv_1x1 = conv2d(
+                in_channels=in_channels,
+                out_channels=out_channels,
+                kernel_size=1,
+                has_bias=True
             )
+            if use_spectral_norm:
+                self.conv_1x1 = SpectralNorm(
+                    self.conv_1x1
+                )
 
-        self.first_conv_3x3 = conv2d(
-            in_channels=in_channels,
-            out_channels=out_channels,
-            kernel_size=3,
-            padding=1,
-            pad_mode="pad",
-            has_bias=True
-        )
-        if use_spectral_norm:
-            self.first_conv_3x3 = SpectralNorm(
-                self.first_conv_3x3
+            self.first_conv_3x3 = conv2d(
+                in_channels=in_channels,
+                out_channels=out_channels,
+                kernel_size=3,
+                padding=1,
+                pad_mode="pad",
+                has_bias=True
             )
+            if use_spectral_norm:
+                self.first_conv_3x3 = SpectralNorm(
+                    self.first_conv_3x3
+                )
 
-        self.last_conv_3x3 = conv2d(
-            in_channels=out_channels,
-            out_channels=out_channels,
-            kernel_size=3,
-            padding=1,
-            pad_mode="pad",
-            stride=1,
-            has_bias=True
-        )
+            self.last_conv_3x3 = conv2d(
+                in_channels=out_channels,
+                out_channels=out_channels,
+                kernel_size=3,
+                padding=1,
+                pad_mode="pad",
+                stride=1,
+                has_bias=True
+            )
 
         self.relu = nn.ReLU()
 
@@ -723,7 +754,7 @@ class UpsampleGBlock(nn.Cell):
                 eps=spectral_normalized_eps,
             )
 
-        self.upsample = nn.ResizeBilinear()
+        self.upsample = ops.ResizeBilinearV2(align_corners=True)
         # Upsample 2D conv
         self.first_conv_3x3 = conv2d(
             in_channels=in_channels,
@@ -751,12 +782,14 @@ class UpsampleGBlock(nn.Cell):
     def construct(self, x):
         """UpsampleGBlock forward function"""
         # Spectrally normalized 1x1 convolution
-        sc = self.upsample(x, scale_factor=2, align_corners=True)
+        shape = x.shape
+        sc = self.upsample(x, (2*shape[2], 2*shape[3]))
         sc = self.conv_1x1(sc)
         x2 = self.bn1(x)
         x2 = self.relu(x2)
         # Upsample
-        x2 = self.upsample(x2, scale_factor=2, align_corners=True)
+        shape = x2.shape
+        x2 = self.upsample(x2, (2*shape[2], 2*shape[3]))
         x2 = self.first_conv_3x3(x2)  # Make sure size is doubled
         x2 = self.bn2(x2)
         x2 = self.relu(x2)
@@ -935,7 +968,7 @@ class TemporalDiscriminator(nn.Cell):
                  conv_type="standard",
                  use_spectral_norm=True):
         super().__init__()
-        self.downsample = ops.AvgPool3D(kernel_size=(1, 2, 2), strides=(1, 2, 2))
+        self.downsample = ops.MaxPool3D(kernel_size=(1, 2, 2), strides=(1, 2, 2))
         self.space2depth = PixelUnshuffle(downscale_factor=2)
         hidden_channels = 48
         self.d1 = DBlock(
@@ -1025,7 +1058,7 @@ class SpatialDiscriminator(nn.Cell):
         super().__init__()
         self.num_timesteps = num_timesteps
         self.mean_pool = nn.AvgPool2d(kernel_size=2, stride=2)
-        self.downsample = ops.AvgPool3D(kernel_size=(1, 2, 2), strides=(1, 2, 2))
+        self.downsample = ops.MaxPool3D(kernel_size=(1, 2, 2), strides=(1, 2, 2))
         self.space2depth = PixelUnshuffle(downscale_factor=2)
         hidden_channels = 24
         self.d1 = DBlock(

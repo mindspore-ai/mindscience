@@ -46,6 +46,7 @@ summary:
   save_checkpoint_steps: 10
   keep_checkpoint_max: 10
   plt_key_info: False
+  save_checkpoint_epochs: 10
   key_info_timestep: [6,]
 train:
   name: "oop"
