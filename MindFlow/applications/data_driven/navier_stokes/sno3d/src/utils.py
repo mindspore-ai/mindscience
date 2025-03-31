@@ -21,8 +21,8 @@ from scipy.interpolate import interp2d
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from mindspore import jit_class, Tensor
-from mindflow.loss import RelativeRMSELoss
+from mindspore import jit_class, ops
+from mindflow.core import RelativeRMSELoss
 from mindflow.utils import print_log
 from mindflow.cell import poly_data
 
@@ -33,8 +33,8 @@ class UnitGaussianNormalizer():
     def __init__(self, x, eps=0.00001):
         super(UnitGaussianNormalizer, self).__init__()
 
-        self.mean = Tensor.mean(x)
-        self.std = Tensor.std(x)
+        self.mean = ops.mean(x)
+        self.std = ops.std(x)
         self.eps = eps
 
     def encode(self, x):
