@@ -87,7 +87,7 @@ def train(input_args):
     if use_ascend:
         from mindspore.amp import DynamicLossScaler, auto_mixed_precision, all_finite
         loss_scaler = DynamicLossScaler(1024, 2, 100)
-        auto_mixed_precision(model, 'O1')
+        auto_mixed_precision(model, 'O3')
     else:
         loss_scaler = None
 
