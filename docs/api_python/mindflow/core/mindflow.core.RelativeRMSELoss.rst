@@ -1,7 +1,7 @@
-mindflow.loss.RelativeRMSELoss
+mindflow.core.RelativeRMSELoss
 ==============================
 
-.. py:class:: mindflow.loss.RelativeRMSELoss(reduction="sum")
+.. py:class:: mindflow.core.RelativeRMSELoss(reduction="sum")
 
     相对均方根误差（RRMSE）是由均方根值归一化的均方根误差，其中每个残差都是根据实际值缩放的。
     Relative RMSELoss用来测量 :math:`x` 和 :math:`y` 之间的相对均方根误差，其中 :math:`x` 是预测值， :math:`y` 是目标值。
