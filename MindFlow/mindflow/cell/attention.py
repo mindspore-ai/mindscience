@@ -26,16 +26,30 @@ class Attention(nn.Cell):
     Args:
         in_channels (int): The dimension of input vector.
         num_heads (int): The number of attention heads.
-        compute_dtype (mindspore.dtype): Compute dtype. Default: mstype.float32.
+        compute_dtype (mindspore.dtype): Compute dtype. Default: ``mstype.float32``, indicates ``mindspore.float32``.
+
+    Inputs:
+        - **x** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
+        - **attn_mask** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, sequence\_len)` or
+          :math:`(sequence\_len, sequence\_len)` or :math:`(batch\_size, num_heads, sequence\_len, sequence\_len)`.
+        - **key_padding_mask** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len)` or
+          :math:`(batch\_size, sequence\_len, sequence\_len)` or
+          :math:`(batch\_size, num_heads, sequence\_len, sequence\_len)`.
+
+    Outputs:
+        - **output** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
+
+    Supported Platforms:
+        ``Ascend`` ``CPU``
 
     Examples:
         >>> from mindspore import ops
         >>> from mindflow.cell import Attention
         >>> model = Attention(in_channels=512, num_heads=4)
-        >>> x = ops.rand(2, 32, 512)
+        >>> x = ops.rand((2, 32, 512))
         >>> q, k, v = model.get_qkv(x)
         >>> print(q.shape)
-        # (2, 4, 32, 128)
+        (2, 4, 32, 128)
     """
 
     def __init__(self, in_channels, num_heads, compute_dtype=mstype.float32):
@@ -94,41 +108,39 @@ class Attention(nn.Cell):
         return x.transpose(0, 2, 1, 3).reshape(b, n, -1)
 
     def construct(self, x, attn_mask=None, key_padding_mask=None):
-        """Attention network construction.
-
-        Args:
-            x (mindspore.Tensor): The input vector.
-                [batch_size, seq_len, in_channels]
-            attn_mask Optional[mindspore.Tensor]: The score mask vector.
-                [batch_size, num_heads, seq_len, seq_len] or [batch_size, seq_len, seq_len] or [seq_len, seq_len]
-            key_padding_mask Optional[mindspore.Tensor]: The padding mask vector.
-                [batch_size, num_heads, seq_len, seq_len] or [batch_size, seq_len, seq_len] or [batch_size, seq_len]
-
-        Returns:
-            - **output** (mindspore.Tensor) - The output of attention.
-              [batch_size, seq_len, in_channels]
-        """
+        """Attention network construction."""
         raise NotImplementedError
 
 
 class MultiHeadAttention(Attention):
-    r"""Multi Head Attention proposed in "Attention Is All You Need"
-    .. math::
-
-        Attention(Q,K,V)=softmax(\frac{QK^T}{\sqrt{d_k}})V
+    r"""Multi Head Attention proposed in `Attention Is All You Need <https://arxiv.org/abs/1706.03762>`_.
 
     Args:
         in_channels (int): The input channels.
         num_heads (int): The number of attention heads.
-        drop_mode (str): Dropout method, `dropout` or `droppath`.
-        dropout_rate (float): The keep rate, greater than 0 and less equal than 1. Default: 0.
-        compute_dtype (mindspore.dtype): Compute dtype. Default: mstype.float32.
+        drop_mode (str): Dropout method, ``dropout`` or ``droppath``. Default: ``dropout``.
+        dropout_rate (float): The drop rate of dropout layer, greater than 0 and less equal than 1. Default: ``0.0``.
+        compute_dtype (mindspore.dtype): Compute dtype. Default: ``mstype.float32``, indicates ``mindspore.float32``.
+
+    Inputs:
+        - **x** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
+        - **attn_mask** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, sequence\_len)` or
+          :math:`(sequence\_len, sequence\_len)` or :math:`(batch\_size, num_heads, sequence\_len, sequence\_len)`.
+        - **key_padding_mask** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len)` or
+          :math:`(batch\_size, sequence\_len, sequence\_len)` or
+          :math:`(batch\_size, num_heads, sequence\_len, sequence\_len)`.
+
+    Outputs:
+        - **output** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
+
+    Supported Platforms:
+        ``Ascend`` ``CPU``
 
     Examples:
         >>> from mindspore import ops
         >>> from mindflow.cell import MultiHeadAttention
         >>> model = MultiHeadAttention(in_channels=512, num_heads=4)
-        >>> x = ops.rand(2, 32, 512)
+        >>> x = ops.rand((2, 32, 512))
         >>> mask_shape = (2, 4, 32, 32)
         >>> mask = ops.ones(mask_shape)
         >>> output = model(x, mask)
@@ -198,20 +210,32 @@ class Mlp(nn.Cell):
 
 
 class AttentionBlock(nn.Cell):
-    r"""AttentionBlock comprises an MLP and an MultiHeadAttention layer.
+    r"""
+    `AttentionBlock` comprises an `MultiHeadAttention` and an `MLP` layer.
 
     Args:
         in_channels (int): The input channels.
         num_heads (int): The number of attention heads.
-        dropout_rate (float): The keep rate, greater than 0 and less equal than 1. Default: 0.
-        drop_mode (str): Dropout method, `dropout` or `droppath`.
-        compute_dtype (mindspore.dtype): Compute dtype. Default: mstype.float32.
+        drop_mode (str): Dropout method. Default: ``dropout``. Support ``dropout`` or ``droppath``.
+        dropout_rate (float): The drop rate of dropout layer, greater than 0 and less equal than 1. Default: ``0.0``.
+        compute_dtype (mindspore.dtype): Compute dtype. Default: ``mstype.float32``, indicates ``mindspore.float32``.
+
+    Inputs:
+        - **x** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
+        - **mask** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, sequence\_len)` or
+          :math:`(sequence\_len, sequence\_len)` or :math:`(batch\_size, num_heads, sequence\_len, sequence\_len)`.
+
+    Outputs:
+        - **output** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
+
+    Supported Platforms:
+        ``Ascend`` ``CPU``
 
     Examples:
         >>> from mindspore import ops
         >>> from mindflow.cell import AttentionBlock
         >>> model = AttentionBlock(in_channels=256, num_heads=4)
-        >>> x = ops.rand(4, 100, 256)
+        >>> x = ops.rand((4, 100, 256))
         >>> output = model(x)
         >>> print(output.shape)
         (4, 100, 256)
@@ -222,7 +246,7 @@ class AttentionBlock(nn.Cell):
                  num_heads,
                  drop_mode="dropout",
                  dropout_rate=0.0,
-                 compute_dtype=mstype.float16,
+                 compute_dtype=mstype.float32,
                  ):
         super().__init__()
         self.compute_dtype = compute_dtype

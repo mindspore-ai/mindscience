@@ -24,7 +24,6 @@ from mindflow.cell import AttentionBlock
 
 class Mlp(nn.Cell):
     """MLP"""
-
     def __init__(self, in_channels, out_channels, dropout=0., compute_dtype=mstype.float32):
         super().__init__()
         self.fc1 = nn.Dense(
@@ -45,7 +44,6 @@ class Mlp(nn.Cell):
 
 class SinusoidalPosEmb(nn.Cell):
     """sinusoidal embedding model"""
-
     def __init__(self, dim, max_period=10000, compute_dtype=mstype.float32):
         super().__init__()
         half_dim = dim // 2
@@ -64,7 +62,6 @@ class SinusoidalPosEmb(nn.Cell):
 
 class Transformer(nn.Cell):
     """Transformer backbone model"""
-
     def __init__(self, hidden_channels, layers, heads, compute_dtype=mstype.float32):
         super().__init__()
         self.hidden_channels = hidden_channels
@@ -90,22 +87,39 @@ class DiffusionTransformer(nn.Cell):
     Diffusion model with Transformer backbone implementation.
 
     Args:
-        in_channels (`int`):
-            The number of input channel.
-        out_channels (`int`):
-            The number of output channel.
-        hidden_channels (`int`):
-            The number of hidden channel.
-        layers (`int`):
-            The number of transformer block layers.
-        heads (`int`):
-            The number of transformer heads.
-        time_token_cond (`bool`, defaults to `True`):
-            Whether to use timestep as condition token.
-        compute_dtype (`ms.dtype`, defaults to `"mstype.float32"`):
-            compute_dtype: the dtype of compute, it can be mstype.float32 or mstype.float16.
-            The default value is mstype.float32.
+        in_channels (int): The number of input channel.
+        out_channels (int): The number of output channel.
+        hidden_channels (int): The number of hidden channel.
+        layers (int): The number of transformer block layers.
+        heads (int): The number of transformer heads.
+        time_token_cond (bool): Whether to use timestep as condition token. Default: ``True``.
+        compute_dtype (mindspore.dtype): The dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
+            Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
+    Inputs:
+        - **x** (Tensor) - The input has a shape of :math:`(batch\_size, sequence\_len, in\_channels)`.
+        - **timestep** (Tensor) - The timestep input has a shape of :math:`(batch\_size,)`.
+
+    Outputs:
+        - **output** (Tensor) - The output has a shape of :math:`(batch\_size, sequence\_len, out\_channels)`.
+
+    Supported Platforms:
+        ``Ascend``
+
+    Examples:
+        >>> from mindspore import ops
+        >>> from mindflow.cell import DiffusionTransformer
+        >>> in_channels, out_channels, hidden_channels, layers, heads, batch_size, seq_len = 16, 16, 256, 3, 4, 8, 256
+        >>> model = DiffusionTransformer(in_channels=in_channels,
+        ...                              out_channels=out_channels,
+        ...                              hidden_channels=hidden_channels,
+        ...                              layers=layers,
+        ...                              heads=heads)
+        >>> x = ops.rand((batch_size, seq_len, in_channels))
+        >>> timestep = ops.randint(0, 1000, (batch_size,))
+        >>> output = model(x, timestep)
+        >>> print(output.shape)
+        (8, 256, 16)
     """
 
     def __init__(self,
@@ -144,31 +158,12 @@ class DiffusionTransformer(nn.Cell):
             hidden_channels, out_channels, weight_init='zeros', bias_init='zeros').to_float(compute_dtype)
 
     def construct(self, x, timestep):
-        """forward network with timestep input
-        Inputs:
-            x (`ms.Tensor`, a [B*N*C] shape tensor):
-                The input has a shape of [B*N*C]. B: batch_size N: sequence length C: input feature channels.
-            timestep (`ms.Tensor`, a [B] shape tensor):
-                Timestep inputs.
-        Outputs:
-            output: (`ms.Tensor`, a [B*N*C'] shape tensor):
-                The output has a shape of [B*N*C']. B: batch_size N: sequence length C': output feature channels.
-        """
+        """construct"""
         t_embed = self.time_embed(self.timestep_emb(timestep))
         return self._forward_with_cond(x, [(t_embed, self.time_token_cond)])
 
     def _forward_with_cond(self, x, cond_token_list):
-        """forward network with condition input
-        Inputs:
-            x (`ms.Tensor`, a [B*N*C] shape tensor):
-                The input has a shape of [B*N*C]. B: batch_size N: sequence length C: input feature channels.
-            cond_token_list (List[Tuple[Tensor, bool]]):
-                The condition and whether use condition as tokens.
-        Outputs:
-            output: (`ms.Tensor`, a [B*N*C'] shape tensor):
-                The output has a shape of [B*N*C']. B: batch_size N: sequence length C: output feature channels.
-        """
-
+        """forward network with condition input"""
         h = self.input_proj(x)
         extra_tokens = []
         for tokens, as_token in cond_token_list:
@@ -198,26 +193,45 @@ class ConditionDiffusionTransformer(DiffusionTransformer):
     Conditioned Diffusion Transformer implementation.
 
     Args:
-        in_channels (`int`):
-            The number of input channel.
-        out_channels (`int`):
-            The number of output channel.
-        hidden_channels (`int`):
-            The number of hidden channel.
-        cond_channels (`int`):
-            The number of condition channel.
-        layers (`int`):
-            The number of transformer block layers.
-        heads (`int`):
-            The number of transformer heads.
-        time_token_cond (`bool`, defaults to `True`):
-            Whether to use timestep as condition token.
-        cond_as_token (`bool`, defaults to `True`):
-            Whether to use condition as token.
-        compute_dtype (`ms.dtype`, defaults to `"mstype.float32"`):
-            compute_dtype: the dtype of compute, it can be mstype.float32 or mstype.float16.
-            The default value is mstype.float32.
+        in_channels (int): The number of input channel.
+        out_channels (int): The number of output channel.
+        hidden_channels (int): The number of hidden channel.
+        cond_channels (int): The number of condition channel.
+        layers (int): The number of transformer block layers.
+        heads (int): The number of transformer heads.
+        time_token_cond (bool): Whether to use timestep as condition token. Default: ``True``.
+        cond_as_token (bool): Whether to use condition as token. Default: ``True``.
+        compute_dtype (mindspore.dtype): the dtype of compute, it can be ``mstype.float32`` or ``mstype.float16``.
+            Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
+    Inputs:
+        - **x** (Tensor) - The input has a shape of :math:`(batch\_size, sequence\_len, in\_channels)`.
+        - **timestep** (Tensor) - The timestep input has a shape of :math:`(batch\_size,)`.
+        - **condition** (Tensor) - The condition input has a shape of :math:`(batch\_size, cond\_size)`.
+          Default: ``None``.
+
+    Outputs:
+        - **output** (Tensor) - The output has a shape of :math:`(batch\_size, sequence\_len, out\_channels)`.
+
+    Supported Platforms:
+        ``Ascend``
+
+    Examples:
+        >>> from mindspore import ops
+        >>> from mindflow.cell import DiffusionTransformer
+        >>> in_channels, out_channels, cond_channels, hidden_channels = 16, 16, 10, 256
+        >>> layers, heads, batch_size, seq_len = 3, 4, 8, 256
+        >>> model = DiffusionTransformer(in_channels=in_channels,
+        ...                              out_channels=out_channels,
+        ...                              hidden_channels=hidden_channels,
+        ...                              layers=layers,
+        ...                              heads=heads)
+        >>> x = ops.rand((batch_size, seq_len, in_channels))
+        >>> cond = ops.rand((batch_size, cond_channels))
+        >>> timestep = ops.randint(0, 1000, (batch_size,))
+        >>> output = model(x, timestep, cond)
+        >>> print(output.shape)
+        (8, 256, 16)
     """
 
     def __init__(self, in_channels,
@@ -241,24 +255,11 @@ class ConditionDiffusionTransformer(DiffusionTransformer):
             cond_channels, hidden_channels).to_float(compute_dtype)
 
     # pylint: disable=W0221
-    def construct(self, x, timestep, cond=None):
-        """forward network with timestep and condition input
-        Inputs:
-            x (`ms.Tensor`, a [B*N*C] shape tensor):
-                The input has a shape of [B*N*C]. B: batch_size N: sequence length C: input feature channels.
-            timestep (`ms.Tensor`, a [B] shape tensor):
-                Timestep inputs.
-            cond (`ms.Tensor`, a [B*C_c] shape tensor, defaults to `None`):
-                Condition input has a shape of [B*N*C_c]. B: batch_size N: sequence length
-                C_c: condition feature channels.
-
-        Outputs:
-            output: (`ms.Tensor`, a [B*N*C'] shape tensor):
-                The output has a shape of [B*N*C']. B: batch_size N: sequence length C': output feature channels.
-        """
+    def construct(self, x, timestep, condition=None):
+        """forward network with timestep and condition input """
         t_embed = self.time_embed(self.timestep_emb(timestep))
         full_cond = [(t_embed, self.time_token_cond)]
-        if cond is not None:
-            cond_emb = self.cond_embed(cond)
+        if condition is not None:
+            cond_emb = self.cond_embed(condition)
             full_cond.append((cond_emb, self.cond_as_token))
         return self._forward_with_cond(x, full_cond)

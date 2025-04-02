@@ -18,7 +18,7 @@ import sys
 import pytest
 
 import numpy as np
-from mindspore import Tensor, ops, load_checkpoint, load_param_into_net, jit_class
+from mindspore import Tensor, ops, load_checkpoint, load_param_into_net, jit_class, context
 from mindspore import dtype as mstype
 
 from mindflow.cell import Attention, MultiHeadAttention, AttentionBlock, DropPath, ViT
@@ -43,12 +43,14 @@ def load_inputs():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_attention_softmax_dtype():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_attention_softmax_dtype(mode):
     """
     Feature: attention softmax
     Description: test forward result dtype
     Expectation: success
     """
+    context.set_context(mode=mode)
     net = Attention(IN_CHANNELS, NUM_HEADS, compute_dtype=mstype.float32)
     x, _ = load_inputs()
     net_scores_32 = net.softmax(x, mstype.float32)
@@ -61,12 +63,14 @@ def test_attention_softmax_dtype():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_attention_dtype():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_attention_dtype(mode):
     """
     Feature: attention
     Description: test forward result dtype
     Expectation: success
     """
+    context.set_context(mode=mode)
     net = Attention(IN_CHANNELS, NUM_HEADS, compute_dtype=mstype.float16)
     x, _ = load_inputs()
     q, k, v = net.get_qkv(x)
@@ -79,13 +83,15 @@ def test_attention_dtype():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 @pytest.mark.parametrize('compute_dtype', [mstype.float16, mstype.float32])
-def test_attention_mask1(compute_dtype):
+def test_attention_mask1(mode, compute_dtype):
     """
     Feature: attention
     Description: test attention mask function
     Expectation: success
     """
+    context.set_context(mode=mode)
     net = Attention(IN_CHANNELS, NUM_HEADS, compute_dtype=mstype.float16)
     scores = ops.randn([BATCH_SIZE, NUM_HEADS, SEQ_LEN, SEQ_LEN], dtype=compute_dtype)
     attn_mask = ops.randint(0, 2, (BATCH_SIZE, SEQ_LEN, SEQ_LEN))
@@ -99,13 +105,15 @@ def test_attention_mask1(compute_dtype):
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 @pytest.mark.parametrize('compute_dtype', [mstype.float16, mstype.float32])
-def test_attention_mask2(compute_dtype):
+def test_attention_mask2(mode, compute_dtype):
     """
     Feature: attention
     Description: test attention mask function
     Expectation: success
     """
+    context.set_context(mode=mode)
     net = Attention(IN_CHANNELS, NUM_HEADS, compute_dtype=mstype.float16)
     scores = ops.randn([BATCH_SIZE, NUM_HEADS, SEQ_LEN, SEQ_LEN], dtype=compute_dtype)
     attn_mask = ops.randint(0, 2, (SEQ_LEN, SEQ_LEN))
@@ -118,12 +126,14 @@ def test_attention_mask2(compute_dtype):
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_multihead_attention_multi_dtype():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_multihead_attention_multi_dtype(mode):
     """
     Feature: MultiHeadAttention
     Description: test result dtype
     Expectation: success
     """
+    context.set_context(mode=mode)
     net_32 = MultiHeadAttention(
         IN_CHANNELS, NUM_HEADS, compute_dtype=mstype.float32)
     net_16 = MultiHeadAttention(
@@ -135,12 +145,14 @@ def test_multihead_attention_multi_dtype():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_multihead_attention():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_multihead_attention(mode):
     """
     Feature: MultiHeadAttention
     Description: test forward result shape
     Expectation: success
     """
+    context.set_context(mode=mode)
     net = MultiHeadAttention(in_channels=IN_CHANNELS, num_heads=NUM_HEADS)
     x, mask = load_inputs()
     validate_model_infer(net, (x, mask), './multihead.ckpt',
@@ -150,12 +162,14 @@ def test_multihead_attention():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_multihead_attention_dtype():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_multihead_attention_dtype(mode):
     """
     Feature: MultiHeadAttention
     Description: test forward result dtype
     Expectation: success
     """
+    context.set_context(mode=mode)
     net_16 = MultiHeadAttention(
         in_channels=IN_CHANNELS, num_heads=NUM_HEADS, compute_dtype=mstype.float16)
     x, mask = load_inputs()
@@ -165,12 +179,14 @@ def test_multihead_attention_dtype():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_attn_block():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_attn_block(mode):
     """
     Feature: AttentionBlock
     Description: test forward result
     Expectation: success
     """
+    context.set_context(mode=mode)
     net = AttentionBlock(in_channels=IN_CHANNELS, num_heads=NUM_HEADS)
     x, mask = load_inputs()
     validate_model_infer(net, (x, mask), './attention_block.ckpt',
@@ -180,12 +196,14 @@ def test_attn_block():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_vit_forward():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_vit_forward(mode):
     """
     Feature: ViT
     Description: test forward result dtype
     Expectation: success
     """
+    context.set_context(mode=mode)
     x = ops.rand(32, 3, 192, 384)
     model = ViT(in_channels=3,
                 out_channels=3,
@@ -205,12 +223,14 @@ def test_vit_forward():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_droppath():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_droppath(mode):
     """
     Feature: DropPath train eval mode
     Description: test forward result shape
     Expectation: success
     """
+    context.set_context(mode=mode)
     net = DropPath()
     x = np.random.rand(BATCH_SIZE, SEQ_LEN, IN_CHANNELS)
     net.set_train(True)
@@ -238,12 +258,14 @@ class Trainer:
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_multihead_attention_grad():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_multihead_attention_grad(mode):
     """
     Feature: MultiHeadAttention
     Description: test backward result
     Expectation: success
     """
+    context.set_context(mode=mode)
     ckpt_path = './multihead.ckpt'
     model = MultiHeadAttention(
         IN_CHANNELS, NUM_HEADS, compute_dtype=mstype.float32)
