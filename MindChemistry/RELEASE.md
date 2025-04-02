@@ -4,6 +4,35 @@
 
 MindSpore Chemistry is a toolkit built on MindSpore endeavoring to enable the joint research of AI and chemistry with high efficiency and to seek th facilitate an innovative paradigm of joint research between AI and chemistry.
 
+## MindSpore Chemistry 0.2.0 Release Notes
+
+### Major Features and Enhancement
+
+#### Force prediction
+
+* [STABLE] [NequIP](https://gitee.com/mindspore/mindscience/tree/master/MindChemistry/applications/nequip): Leveraging the equivariant computing library, the model is trained efficiently and achieves highly accurate inference of molecular energy based on atomic information.
+* [STABLE] [Allegro](https://gitee.com/mindspore/mindscience/tree/master/MindChemistry/applications/allegro): Leveraging the equivariant computing library, the model is trained efficiently and achieves highly accurate inference of molecular energy based on atomic information.
+
+#### DFT Prediction
+
+* [STABLE] [DeephE3nn](https://gitee.com/mindspore/mindscience/tree/master/MindChemistry/applications/deephe3nn): An equivariant neural network based on the E(3) group, designed to predict Hamiltonians using atomic structures.
+
+#### Property Prediction
+
+* [STABLE] [Matformer](https://gitee.com/mindspore/mindscience/tree/master/MindChemistry/applications/matformer): Leveraging graph neural networks and Transformer architectures to predict diverse properties of crystalline materials.
+
+#### Structure Generation
+
+* [STABLE] [DiffCSP](https://gitee.com/mindspore/mindscience/tree/master/MindChemistry/applications/diffcsp): New feature. This is a crystal structure prediction method based on diffusion models, specifically designed to learn structural distributions from stable crystal data. It predicts crystal structures by jointly generating lattice and atomic coordinates, and leverages a periodic E(3)-equivariant denoising model to better simulate the geometric properties of crystals. It is significantly more cost-effective in terms of computational resources compared to traditional methods based on Density Functional Theory (DFT) and performs remarkably well in crystal structure prediction tasks.
+
+### Contributors
+
+Thanks goes to these wonderful people:
+
+wujian, wangyuheng, Lin Peijia, gengchenhua, caowenbin，Siyu Yang
+
+------------------------------------------------
+
 ## MindSpore Chemistry 0.1.0 Release Notes
 
 ### Major Features

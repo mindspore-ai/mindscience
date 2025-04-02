@@ -288,7 +288,7 @@ def matrix_to_angles(r_param):
     Conversion from matrix to angles.
 
     Args:
-        R (Tensor): The rotation matrices. Matrices of shape :math:`(..., 3, 3)`.
+        r_param (Tensor): The rotation matrices. Matrices of shape :math:`(..., 3, 3)`.
 
     Returns:
         - alpha (Tensor), The alpha Euler angles. The shape of Tensor is :math:`(...)`.
