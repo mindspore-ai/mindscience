@@ -19,7 +19,7 @@ import sys
 import pytest
 
 import numpy as np
-from mindspore import Tensor, ops
+from mindspore import Tensor, ops, context
 from mindspore import dtype as mstype
 
 from mindflow.cell import DiffusionScheduler, DDPMPipeline, DDIMPipeline, DDPMScheduler, DDIMScheduler, \
@@ -106,18 +106,21 @@ def load_inputs(dtype=mstype.float32):
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_ddim_step():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_ddim_step(mode):
     """
     Feature: DDIM step
     Description: test DDIM step function
     Expectation: success
     """
+    context.set_context(mode=mode)
     compute_dtype = mstype.float32
     scheduler = DDIMScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
                               beta_start=0.0001,
                               beta_end=0.02,
                               beta_schedule="squaredcos_cap_v2",
-                              clip_sample_range=None,
+                              clip_sample=False,
+                              clip_sample_range=1.0,
                               thresholding=False,
                               prediction_type="epsilon",
                               dynamic_thresholding_ratio=None,
@@ -150,18 +153,21 @@ def test_ddim_step():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_ddpm_step():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_ddpm_step(mode):
     """
     Feature: DDPM step
     Description: test DDPM step function
     Expectation: success
     """
+    context.set_context(mode=mode)
     compute_dtype = mstype.float32
     scheduler = DDPMSchedulerMock(num_train_timesteps=TRAIN_TIMESTEPS,
                                   beta_start=0.0001,
                                   beta_end=0.02,
                                   beta_schedule="squaredcos_cap_v2",
-                                  clip_sample_range=None,
+                                  clip_sample=False,
+                                  clip_sample_range=1.0,
                                   thresholding=False,
                                   dynamic_thresholding_ratio=None,
                                   rescale_betas_zero_snr=False,
@@ -194,17 +200,20 @@ def test_ddpm_step():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_set_timestep():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_set_timestep(mode):
     """
     Feature: diffusion set inference timesteps
     Description: test diffusion set timesteps function
     Expectation: success
     """
+    context.set_context(mode=mode)
     compute_dtype = mstype.float32
     scheduler = DiffusionScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
                                    beta_start=0.0001,
                                    beta_end=0.02,
                                    beta_schedule="squaredcos_cap_v2",
+                                   clip_sample=True,
                                    clip_sample_range=1.0,
                                    thresholding=False,
                                    dynamic_thresholding_ratio=None,
@@ -224,18 +233,21 @@ def test_set_timestep():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_diffusion_pred_origin_sample():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_diffusion_pred_origin_sample(mode):
     """
     Feature: diffusion add noise
     Description: test diffusion pred origin sample
     Expectation: success
     """
+    context.set_context(mode=mode)
     compute_dtype = mstype.float32
     scheduler = DiffusionScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
                                    beta_start=0.0001,
                                    beta_end=0.02,
                                    beta_schedule="squaredcos_cap_v2",
-                                   clip_sample_range=None,
+                                   clip_sample=False,
+                                   clip_sample_range=1.0,
                                    thresholding=False,
                                    dynamic_thresholding_ratio=None,
                                    rescale_betas_zero_snr=False,
@@ -255,17 +267,20 @@ def test_diffusion_pred_origin_sample():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_ddpm_set_timestep():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_ddpm_set_timestep(mode):
     """
     Feature: DDPM set timesteps
     Description: test DDPM set timesteps function
     Expectation: success
     """
+    context.set_context(mode=mode)
     compute_dtype = mstype.float32
     scheduler = DDPMScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
                               beta_start=0.0001,
                               beta_end=0.02,
                               beta_schedule="squaredcos_cap_v2",
+                              clip_sample=True,
                               clip_sample_range=1.0,
                               thresholding=False,
                               dynamic_thresholding_ratio=None,
@@ -285,17 +300,20 @@ def test_ddpm_set_timestep():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_ddpm_pipe_no_cond():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_ddpm_pipe_no_cond(mode):
     """
     Feature: DDPM pipeline generation
     Description: test DDPM pipeline API with no condition input
     Expectation: success
     """
+    context.set_context(mode=mode)
     compute_dtype = mstype.float32
     scheduler = DDPMScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
                               beta_start=0.0001,
                               beta_end=0.02,
                               beta_schedule="squaredcos_cap_v2",
+                              clip_sample=True,
                               clip_sample_range=1.0,
                               thresholding=False,
                               dynamic_thresholding_ratio=None,
@@ -320,17 +338,20 @@ def test_ddpm_pipe_no_cond():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_ddpm_pipe_cond():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_ddpm_pipe_cond(mode):
     """
     Feature: DDPM pipeline generation
     Description: test DDPM pipeline API with condition input
     Expectation: success
     """
+    context.set_context(mode=mode)
     compute_dtype = mstype.float32
     scheduler = DDPMScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
                               beta_start=0.0001,
                               beta_end=0.02,
                               beta_schedule="squaredcos_cap_v2",
+                              clip_sample=True,
                               clip_sample_range=1.0,
                               thresholding=False,
                               dynamic_thresholding_ratio=None,
@@ -357,17 +378,20 @@ def test_ddpm_pipe_cond():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_ddim_pipe_no_cond():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_ddim_pipe_no_cond(mode):
     """
     Feature: DDIM pipeline generation
     Description: test DDIM pipeline API with no condition input
     Expectation: success
     """
+    context.set_context(mode=mode)
     compute_dtype = mstype.float32
     scheduler = DDIMScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
                               beta_start=0.0001,
                               beta_end=0.02,
                               beta_schedule="squaredcos_cap_v2",
+                              clip_sample=True,
                               clip_sample_range=1.0,
                               thresholding=False,
                               dynamic_thresholding_ratio=None,
@@ -392,17 +416,20 @@ def test_ddim_pipe_no_cond():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_ddim_pipe_cond():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_ddim_pipe_cond(mode):
     """
     Feature: DDIM pipeline generation
     Description: test DDIM pipeline API with condition input
     Expectation: success
     """
+    context.set_context(mode=mode)
     compute_dtype = mstype.float32
     scheduler = DDIMScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
                               beta_start=0.0001,
                               beta_end=0.02,
                               beta_schedule="squaredcos_cap_v2",
+                              clip_sample=True,
                               clip_sample_range=1.0,
                               thresholding=False,
                               dynamic_thresholding_ratio=None,
@@ -429,18 +456,21 @@ def test_ddim_pipe_cond():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_diffusion_addnoise_fp32():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_diffusion_addnoise_fp32(mode):
     """
     Feature: diffusion add noise
     Description: test diffusion-fp32 add noise
     Expectation: success
     """
+    context.set_context(mode=mode)
     compute_dtype = mstype.float32
     scheduler = DiffusionScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
                                    beta_start=0.0001,
                                    beta_end=0.02,
                                    beta_schedule="squaredcos_cap_v2",
                                    prediction_type='epsilon',
+                                   clip_sample=True,
                                    clip_sample_range=1.0,
                                    thresholding=False,
                                    sample_max_value=1.,
@@ -460,17 +490,20 @@ def test_diffusion_addnoise_fp32():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_diffusion_addnoise_fp16():
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_diffusion_addnoise_fp16(mode):
     """
     Feature: diffusion add noise
     Description: test diffusion-fp16 add noise
     Expectation: success
     """
+    context.set_context(mode=mode)
     compute_dtype = mstype.float16
     scheduler = DiffusionScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
                                    beta_start=0.0001,
                                    beta_end=0.02,
                                    beta_schedule="squaredcos_cap_v2",
+                                   clip_sample=True,
                                    clip_sample_range=1.0,
                                    thresholding=False,
                                    dynamic_thresholding_ratio=None,
@@ -487,13 +520,57 @@ def test_diffusion_addnoise_fp16():
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_ddim_pipeline_eta(mode):
+    """
+    Feature: DDIM inference
+    Description: test DDIM check eta
+    Expectation: success
+    """
+    context.set_context(mode=mode)
+    compute_dtype = mstype.float32
+    scheduler = DDIMScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
+                              beta_start=0.0001,
+                              beta_end=0.02,
+                              beta_schedule="squaredcos_cap_v2",
+                              clip_sample=True,
+                              clip_sample_range=1.0,
+                              thresholding=False,
+                              dynamic_thresholding_ratio=None,
+                              rescale_betas_zero_snr=False,
+                              timestep_spacing="leading",
+                              compute_dtype=compute_dtype)
+    net = DiffusionTransformer(in_channels=IN_CHANNELS,
+                               out_channels=IN_CHANNELS,
+                               hidden_channels=HIDDEN_CHANNELS,
+                               layers=LAYERS,
+                               heads=HEADS,
+                               time_token_cond=True,
+                               compute_dtype=compute_dtype)
+    pipe = DDIMPipeline(model=net, scheduler=scheduler,
+                        batch_size=BATCH_SIZE, seq_len=SEQ_LEN, num_inference_steps=50)
+
+    try:
+        _ = pipe(condition=None, eta=2)
+    except ValueError as e:
+        print(e)
+    else:
+        raise Exception(
+            "DDIM sample 0 <= eta <= 1. Expected ValueError")
+
+
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend910b_training
+@pytest.mark.env_onecard
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 @pytest.mark.parametrize('compute_dtype', [mstype.float16, mstype.float32])
-def test_diffusion_transfomer(compute_dtype):
+def test_diffusion_transfomer(mode, compute_dtype):
     """
     Feature: Diffusion transformer
     Description: test diffusion transformer dtype and shape
     Expectation: success
     """
+    context.set_context(mode=mode)
     net = DiffusionTransformer(in_channels=IN_CHANNELS,
                                out_channels=OUT_CHANNELS,
                                hidden_channels=HIDDEN_CHANNELS,
@@ -510,13 +587,15 @@ def test_diffusion_transfomer(compute_dtype):
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
 @pytest.mark.parametrize('compute_dtype', [mstype.float16, mstype.float32])
-def test_cond_diffusion_transfomer(compute_dtype):
+def test_cond_diffusion_transfomer(mode, compute_dtype):
     """
     Feature: Condition Diffusion transformer
     Description: test diffusion transformer dtype and shape
     Expectation: success
     """
+    context.set_context(mode=mode)
     net = ConditionDiffusionTransformer(in_channels=IN_CHANNELS,
                                         out_channels=OUT_CHANNELS,
                                         cond_channels=COND_CHANNELS,
@@ -530,3 +609,81 @@ def test_cond_diffusion_transfomer(compute_dtype):
     out = net(x, timesteps, condition)
     assert out.shape == (BATCH_SIZE, SEQ_LEN, OUT_CHANNELS)
     assert out.dtype == compute_dtype
+
+
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend910b_training
+@pytest.mark.env_onecard
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_ddim_pipe_type(mode):
+    """
+    Feature: DDIM pipeline generation
+    Description: test DDIM pipeline API with DDPMScheduler
+    Expectation: success
+    """
+    context.set_context(mode=mode)
+    compute_dtype = mstype.float32
+    scheduler = DDPMScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
+                              beta_start=0.0001,
+                              beta_end=0.02,
+                              beta_schedule="squaredcos_cap_v2",
+                              clip_sample=True,
+                              clip_sample_range=1.0,
+                              thresholding=False,
+                              dynamic_thresholding_ratio=None,
+                              rescale_betas_zero_snr=False,
+                              timestep_spacing="leading",
+                              compute_dtype=compute_dtype)
+    net = DiffusionTransformer(in_channels=IN_CHANNELS,
+                               out_channels=IN_CHANNELS,
+                               hidden_channels=HIDDEN_CHANNELS,
+                               layers=LAYERS,
+                               heads=HEADS,
+                               time_token_cond=True,
+                               compute_dtype=compute_dtype)
+    try:
+        _ = DDIMPipeline(model=net, scheduler=scheduler,
+                         batch_size=BATCH_SIZE, seq_len=SEQ_LEN, num_inference_steps=50)
+    except TypeError:
+        pass
+    else:
+        raise Exception("DDPMScheduler type. Expected TypeError")
+
+
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend910b_training
+@pytest.mark.env_onecard
+@pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
+def test_ddpm_pipe_type(mode):
+    """
+    Feature: DDPM pipeline generation
+    Description: test DDPM pipeline API with DDIMScheduler
+    Expectation: success
+    """
+    context.set_context(mode=mode)
+    compute_dtype = mstype.float32
+    scheduler = DDIMScheduler(num_train_timesteps=TRAIN_TIMESTEPS,
+                              beta_start=0.0001,
+                              beta_end=0.02,
+                              beta_schedule="squaredcos_cap_v2",
+                              clip_sample=True,
+                              clip_sample_range=1.0,
+                              thresholding=False,
+                              dynamic_thresholding_ratio=None,
+                              rescale_betas_zero_snr=False,
+                              timestep_spacing="leading",
+                              compute_dtype=compute_dtype)
+    net = DiffusionTransformer(in_channels=IN_CHANNELS,
+                               out_channels=IN_CHANNELS,
+                               hidden_channels=HIDDEN_CHANNELS,
+                               layers=LAYERS,
+                               heads=HEADS,
+                               time_token_cond=True,
+                               compute_dtype=compute_dtype)
+    try:
+        _ = DDPMPipeline(model=net, scheduler=scheduler,
+                         batch_size=BATCH_SIZE, seq_len=SEQ_LEN, num_inference_steps=50)
+    except TypeError:
+        pass
+    else:
+        raise Exception("DDIMScheduler type. Expected TypeError")

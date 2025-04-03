@@ -6,12 +6,21 @@ mindflow.cell
     :nosignatures:
     :template: classtemplate.rst
 
+    mindflow.cell.AttentionBlock
+    mindflow.cell.ConditionDiffusionTransformer
+    mindflow.cell.DiffusionTrainer
+    mindflow.cell.DiffusionTransformer
+    mindflow.cell.DDIMPipeline
+    mindflow.cell.DDIMScheduler
+    mindflow.cell.DDPMPipeline
+    mindflow.cell.DDPMScheduler
     mindflow.cell.FCSequential
     mindflow.cell.FNO1D
     mindflow.cell.FNO2D
     mindflow.cell.FNO3D
     mindflow.cell.InputScale
     mindflow.cell.LinearBlock
+    mindflow.cell.MultiHeadAttention
     mindflow.cell.MultiScaleFCSequential
     mindflow.cell.PDENet
     mindflow.cell.PeRCNN
