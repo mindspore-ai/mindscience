@@ -73,6 +73,9 @@ class MyTrainer(Trainer):
         dataset = ds.GeneratorDataset(source=MyIterable(), column_names=["inputs", "labels"])
         return dataset, dataset
 
+    def get_data_generator(self):
+        train_dataset_generator, valid_dataset_generator = self.get_dataset()
+        return train_dataset_generator, valid_dataset_generator
 
 @pytest.mark.level0
 @platform_arm_ascend910b_training

@@ -17,11 +17,6 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-import mindspore.nn.probability.distribution as msd
-from mindspore import ops
-
-
 from mindspore import context
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
 import mindspore.communication.management as D
@@ -50,12 +45,6 @@ def init_data_parallel(use_ascend):
 def init_model(config):
     r"""init model."""
     model_params = config["model"]
-
-    net = msd.Normal(0.0, 1.0, seed=42)
-    z = net.sample((8, 8, 8, 1))
-    z = ops.transpose(z, (3, 0, 1, 2))
-    print(z.shape)
-
     g_model = DgmrGenerator(
         forecast_steps=model_params["forecast_steps"],
         in_channels=model_params["in_channels"],
@@ -64,7 +53,6 @@ def init_model(config):
         latent_channels=model_params["latent_channels"],
         context_channels=model_params["context_channels"],
         generation_steps=model_params["generation_steps"],
-        z=z
     )
     d_model = DgmrDiscriminator(
         in_channels=model_params["in_channels"],

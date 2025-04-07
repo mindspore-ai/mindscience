@@ -68,7 +68,7 @@ class MyInference(WeatherForecast):
 
     def forecast(self, inputs):
         pred_lst = []
-        for _ in range(self.t_out_test):
+        for _ in range(self.t_out):
             pred = self.model(inputs)
             pred_lst.append(pred)
             inputs = pred
