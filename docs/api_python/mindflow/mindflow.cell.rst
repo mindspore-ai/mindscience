@@ -16,6 +16,10 @@ mindflow.cell
     mindflow.cell.PDENet
     mindflow.cell.PeRCNN
     mindflow.cell.ResBlock
+    mindflow.cell.SNO
+    mindflow.cell.SNO1D
+    mindflow.cell.SNO2D
+    mindflow.cell.SNO3D
     mindflow.cell.UNet2D
     mindflow.cell.ViT
     mindflow.cell.get_activation
