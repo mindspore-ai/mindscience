@@ -1045,7 +1045,7 @@ class PreDiffModule(LatentDiffusion):
             )
             self._in_slice = in_slice
             self._out_slice = out_slice
-        return self._in_slices
+        return self._in_slice
 
     @property
     def out_slice(self):
