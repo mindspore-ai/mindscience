@@ -6,6 +6,7 @@ mindflow.core
     :nosignatures:
     :template: classtemplate.rst
 
+    mindflow.core.AdaHessian
     mindflow.core.get_multi_step_lr
     mindflow.core.get_poly_lr
     mindflow.core.get_warmup_cosine_annealing_lr
