@@ -16,7 +16,6 @@
 - [安装教程](#安装教程)
     - [依赖安装](#依赖安装)
     - [硬件支持情况](#硬件支持情况)
-    - [pip安装](#pip安装)
     - [源码安装](#源码安装)
 - [社区](#社区)
   - [核心贡献者](#核心贡献者)
@@ -43,23 +42,27 @@ MindEarth是基于[昇思MindSpore](https://www.mindspore.cn/)开发的地球科
 
 ### 短临降水
 
-|        案例            |        数据集               |    模型架构       |  GPU    |  NPU  |
-|:----------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-| DGMs |          雷达数据            |     GAN、ConvGRU     |   ✔️     |   ✔️   |
+|        案例            |        数据集               |    模型架构       |  NPU  |
+|:----------------------:|:--------------------------:|:---------------:|:------:|
+| DGMs |          雷达数据            |     GAN、ConvGRU     |   ✔️   |
+| NowcastNet |          USA-MRMS数据集            |     GAN、two-path U-Net     |   ✔️   |
+| PreDiff |          SEVIR_LR数据集            |     LDM、 Earthformer   |   ✔️   |
 
 ### 中期气象预报
 
-|        案例            |        数据集               |    模型架构       |  GPU    |  NPU  |
-|:----------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-|FourCastNet                  |    ERA5再分析数据集    |     AFNO       |   ✔️     |   ✔️   |
-|ViT-KNO         | ERA5再分析数据集 |   ViT    |   ✔️     |   ✔️   |
-|GraphCast         | ERA5再分析数据集 |       GNN       |   ✔️     |   ✔️   |
+|        案例            |        数据集               |    模型架构       |  NPU  |
+|:----------------------:|:--------------------------:|:---------------:|:------:|
+|FourCastNet                  |    ERA5再分析数据集    |     AFNO       |   ✔️   |
+|ViT-KNO         | ERA5再分析数据集 |   ViT    |   ✔️   |
+|GraphCast         | ERA5再分析数据集 |       GNN       |   ✔️   |
+|FuXi         | ERA5再分析数据集 |       CNN、Swin Transformer V2       |   ✔️   |
+|SKNO       | ERA5再分析数据集 |       SKNO       |   ✔️   |
 
-### 数据前处理
+### 地震预警
 
-|          案例              |        数据集               |    模型架构       |  GPU    |  NPU  |
-|:-------------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-|   DEM超分辨率   | NASADEM、GEBCO_2021 |    SRGAN    |   ✔️     |   ✔️   |
+|        案例            |        数据集               |    模型架构       |  NPU  |
+|:----------------------:|:--------------------------:|:---------------:|:------:|
+|G-TEAM                  |    diting 2.0数据集   |     CNN、Transformer       |   ✔️   |
 
 ## **安装教程**
 
@@ -69,8 +72,10 @@ MindEarth是基于[昇思MindSpore](https://www.mindspore.cn/)开发的地球科
 
 | MindEarth |                                   分支                 |  MindSpore  | Python |
 |:--------:|:----------------------------------------------------------------------:|:-----------:|:------:|
-|  master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindEarth) |        \       | \>=3.7 |
-|  0.1.0  | [r0.5](https://gitee.com/mindspore/mindscience/tree/r0.5/MindEarth) |        >=1.8.1       | \>=3.7 |
+|  master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindEarth) |        >=2.5.0(在模型readme查看具体版本需求)       | >=3.11 |
+|  0.3.0  | [r0.7](https://gitee.com/mindspore/mindscience/tree/master/MindEarth) |        >=2.5.0       | >=3.11 |
+|  0.2.0  | [r0.6](https://gitee.com/mindspore/mindscience/tree/r0.6/MindEarth) |        >=2.2.0       | \>=3.9 |
+|  0.1.0  | [r0.5](https://gitee.com/mindspore/mindscience/tree/r0.5/MindEarth) |        >=1.8.1       | \>=3.9 |
 
 ### 依赖安装
 
@@ -82,20 +87,11 @@ pip install -r requirements.txt
 
 | 硬件平台      | 操作系统        | 状态 |
 | :------------ | :-------------- | :--- |
-| Ascend 910    | Ubuntu-x86      | ✔️ |
+| Ascend, 64G    | Ubuntu-x86      | ✔️ |
 |               | Ubuntu-aarch64  | ✔️ |
 |               | EulerOS-aarch64 | ✔️ |
 |               | CentOS-x86      | ✔️ |
 |               | CentOS-aarch64  | ✔️ |
-| GPU CUDA 11.1 | Ubuntu-x86      | ✔️ |
-
-### pip安装
-
-```bash
-# gpu and ascend are supported
-export DEVICE_NAME=gpu
-pip install mindearth_${DEVICE_NAME}
-```
 
 ### 源码安装
 
@@ -112,13 +108,6 @@ cd {PATH}/mindscience/MindEarth
 bash build.sh -e ascend -j8
 ```
 
-- 编译GPU后端源码。
-
-```bash
-export CUDA_PATH={your_cuda_path}
-bash build.sh -e gpu -j8
-```
-
 - 安装编译所得whl包。
 
 ```bash
@@ -132,7 +121,7 @@ pip install mindearth_*.whl
 
 感谢以下开发者做出的贡献 🧑‍🤝‍🧑：
 
-yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyonghan, zhouchuansai
+yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyonghan, zhouchuansai, liuruoyan
 
 ## **贡献指南**
 

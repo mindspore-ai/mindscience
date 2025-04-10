@@ -17,7 +17,6 @@
     - [Version Dependency](#Version-Dependency)
     - [Install Dependency](#Install-Dependency)
     - [Hardware](#Hardware)
-    - [pip install](#pip-install)
     - [source code install](#source-code-install)
 - [Community](#Community)
     - [Core Contributor](#Core-Contributor)
@@ -44,23 +43,27 @@ MindEarth is an earth science suite developed based on [MindSpore](https://www.m
 
 ### Precipitation Nowcasting
 
-|        Case            |        Dataset               |    Network       |  GPU    |  NPU  |
-|:----------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-|DGMs       |             Radar dataset             | GAN、ConvGRU |   ✔️     |   ✔️   |
+|        Case            |        Dataset               |    Network       |  NPU  |
+|:----------------------:|:--------------------------:|:---------------:|:------:|
+|DGMs       |             Radar dataset             | GAN、ConvGRU |   ✔️   |
+| NowcastNet |          USA-MRMS dataset           |     GAN、two-path U-Net     |   ✔️   |
+| PreDiff |          SEVIR_LR dataset          |     LDM、 Earthformer   |   ✔️   |
 
 ### Medium-range Forecast
 
-|        Case            |              Dataset                  |    Network       |  GPU    |  NPU  |
-|:----------------------:|:-------------------------------------:|:---------------:|:-------:|:------:|
-|FourCastNet        |       ERA5 Reanalysis Dataset       |      AFNO      |   ✔️     |   ✔️   |
-|ViT-KNO       | ERA5 Reanalysis Dataset     |       ViT       |   ✔️     |   ✔️   |
-|GraphCast        |      ERA5 Reanalysis Dataset      |       GNN       |   ✔️     |   ✔️   |
+|        Case            |              Dataset                  |    Network       |  NPU  |
+|:----------------------:|:-------------------------------------:|:---------------:|:------:|
+|FourCastNet        |       ERA5 Reanalysis Dataset       |      AFNO      |   ✔️   |
+|ViT-KNO       | ERA5 Reanalysis Dataset     |       ViT       |   ✔️   |
+|GraphCast        |      ERA5 Reanalysis Dataset      |       GNN       |   ✔️   |
+|FuXi         | ERA5 Reanalysis Dataset |       CNN、Swin Transformer V2       |   ✔️   |
+|SKNO       | ERA5 Reanalysis Dataset |       SKNO       |   ✔️   |
 
-### Data Preprocessing
+### Earthquake Early Warning
 
-|          Case              |        Dataset               |    Network       |  GPU    |  NPU  |
-|:--------------------------:|:--------------------------:|:---------------:|:-------:|:------:|
-|   DEM Super-resolution   | NASADEM、GEBCO_2021 |    SRGAN    |   ✔️     |   ✔️   |
+|        Case            |              Dataset                  |    Network       |  NPU  |
+|:----------------------:|:--------------------------:|:---------------:|:------:|
+|G-TEAM                  |    Diting 2.0 Dataset   |     CNN、Transformer       |   ✔️   |
 
 ## **Installation**
 
@@ -70,7 +73,9 @@ Because MindEarth is dependent on MindSpore, please click [MindSpore Download Pa
 
 | MindEarth |                                  Branch                                |  MindSpore  |Python |
 |:--------:|:----------------------------------------------------------------------:|:-----------:|:-------:|
-|  master  | [master](https://gitee.com/mindspore/mindscience/tree/master/MindEarth) |        \       | \>=3.7 |
+|  master | [master](https://gitee.com/mindspore/mindscience/tree/master/MindEarth) |        >=2.5.0(please read model's readme to choose the suitable version)       | \>=3.11 |
+|  0.3.0 | [r0.7](https://gitee.com/mindspore/mindscience/tree/master/MindEarth) |        >=2.5.0     | \>=3.11 |
+|  0.2.0  | [r0.6](https://gitee.com/mindspore/mindscience/tree/r0.6/MindEarth) |        >=2.2.0       | \>=3.9 |
 |  0.1.0  | [r0.5](https://gitee.com/mindspore/mindscience/tree/r0.5/MindEarth) |        >=1.8.1       | \>=3.7 |
 
 ### Install Dependency
@@ -83,20 +88,11 @@ pip install -r requirements.txt
 
 | Hardware      | OS              | Status |
 |:--------------| :-------------- | :--- |
-| Ascend 910    | Ubuntu-x86      | ✔️ |
+| Ascend, 64G    | Ubuntu-x86      | ✔️ |
 |               | Ubuntu-aarch64  | ✔️ |
 |               | EulerOS-aarch64 | ✔️ |
 |               | CentOS-x86      | ✔️ |
 |               | CentOS-aarch64  | ✔️ |
-| GPU CUDA 11.1 | Ubuntu-x86      | ✔️ |
-
-### **pip install**
-
-```bash
-# gpu and ascend are supported
-export DEVICE_NAME=gpu
-pip install mindearth_${DEVICE_NAME}
-```
 
 ### **source code install**
 
@@ -113,13 +109,6 @@ cd {PATH}/mindscience/MindEarth
 bash build.sh -e ascend -j8
 ```
 
-- Compile in GPU backend.
-
-```bash
-export CUDA_PATH={your_cuda_path}
-bash build.sh -e gpu -j8
-```
-
 - Install the compiled .whl file.
 
 ```bash
@@ -133,7 +122,7 @@ pip install mindearth_*.whl
 
 Thanks goes to these wonderful people 🧑‍🤝‍🧑:
 
-yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyonghan, zhouchuansai
+yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyonghan, zhouchuansai, liuruoyan
 
 ## **Contribution Guide**
 

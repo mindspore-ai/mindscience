@@ -4,6 +4,31 @@
 
 MindSpore Earth是基于昇思MindSpore开发的地球科学套件，支持多时空尺度气象预报、数据前后处理等任务，致力于高效使能AI+气象海洋的融合研究。
 
+## MindSpore Earth 0.3.0 Release Notes
+
+### 主要特性和增强
+
+#### 短临降水预测
+
+- [STABLE] [PreDiff](https://gitee.com/mindspore/mindscience/tree/master/MindEarth/applications/nowcasting/PreDiff): 新增PreDiff，是一种新颖的基于潜在扩散模型（LDM）的方法，用于降水短临预测。该方法提出了一个两阶段的pipeline，专门用于数据驱动的地球系统预测模型。同时，开发了知识控制（Knowledge control）机制，用于引导 PreDiff 在潜在空间中的去噪扩散过程。这一机制保证了生成的预测结果能更好地匹配领域相关知识，从而提高了模型预测的可信度。
+
+#### 地震预警
+
+- [RESEARCH]: 新增[G-TEAM](https://gitee.com/mindspore/mindscience/tree/master/MindEarth/applications/earthquake/G-TEAM)，是一种数据驱动的全国地震预警模型，其核心架构结合了Transformer 的序列建模能力和 GNN 的空间信息提取能力，使得模型既能捕捉地震波形的时序特征，又能利用地震波在台站网络中的传播关系，提升震级和震中位置的预测精度，能够在地震发生后 3 秒内迅速提供震中位置、震级及地震强度分布。
+
+#### 中期天气预报预测
+
+- [STABLE] [GraphCast](https://gitee.com/mindspore/mindscience/tree/master/MindEarth/applications/medium-range/graphcast): 新增graphcastTp模式，在下游的中期降水案例中，采用0.5°×0.5°，输入分辨率为360×720的ERA5数据进行训练。
+- [STABLE] [SKNO](https://gitee.com/mindspore/mindscience/tree/master/MindEarth/applications/medium-range/skno): 新增SKNO模型，融合了KNO模型和SHT算子。SKNO基于16年同化再分析数据集ERA5开发，能够对6小时时间分辨率和1.4度空间分辨率的全球气象进行预测，预测结果包括温度、湿度、风度等指标。
+
+### 贡献者
+
+感谢以下开发者做出的贡献:
+
+hsliu_ustc, hong-ye-zhou, liulei277, kevinli123, Zhou Chuansai, alancheng511, Cui Yinghao, xingzhongfan, cmy_melody, Liu Ruoyan
+
+欢迎任何形式的贡献！
+
 ## MindSpore Earth 0.2.0 Release Notes
 
 ### 主要特性和增强
@@ -16,7 +41,7 @@ MindSpore Earth是基于昇思MindSpore开发的地球科学套件，支持多�
 
 - [STABLE] [GraphCast](https://gitee.com/mindspore/mindscience/tree/master/MindEarth/applications/medium-range/graphcast): 新增支持0.25°高分辨率数据，GraphCast全尺度模型训练与推理。
 - [STABLE] [FuXi](https://gitee.com/mindspore/mindscience/tree/master/MindEarth/applications/medium-range/fuxi): 新增气象模型伏羲，支持中期预报模型的训练和推理。
-- [STABLE] [Medium Precipitation](https://gitee.com/mindspore/mindscience/tree/master/MindEarth/applications/medium-range/graphcast): 新增中期降水模块案例，支持中期的降水量预报，需要基于预训练的中期大模型做为backbone。
+- [STABLE] [Medium Precipitation](https://gitee.com/mindspore/mindscience/tree/master/MindEarth/applications/medium-range/graphcast): 新增中期降水模块案例，支持中期的降水量预报，需要基于预训练的中期大模型作为backbone。
 - [RESEARCH] [CTEFNet](https://gitee.com/mindspore/mindscience/tree/master/MindEarth/applications/climate-prediction/ensoforecast): 新增基于 CNN 与迁移学习的厄尔尼诺预测模型，将ENSO有效预报时长延长至19个月。
 
 ### 贡献者
