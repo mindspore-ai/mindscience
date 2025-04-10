@@ -41,9 +41,9 @@ class SNOKernelCell(nn.Cell):
         compute_dtype (dtype.Number): The computation type. Default: ``mstype.float32``.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(batch\_size, in\_channels, height, width)`.
+        - **x** (Tensor) - Tensor with shape :math:`(batch\_size, in\_channels, height, width)`.
     Outputs:
-        - **output** (Tensor) -Tensor of shape :math:`(batch\_size, out\_channels, height, width)`.
+        - **output** (Tensor) -Tensor with shape :math:`(batch\_size, out\_channels, height, width)`.
     Raises:
         TypeError: If `in_channels` is not an int.
         TypeError: If `out_channels` is not an int.
@@ -153,29 +153,28 @@ class SNO(nn.Cell):
     Args:
         in_channels (int): The number of channels in the input space.
         out_channels (int): The number of channels in the output space.
-        hidden_channels (int): The number of channels of the SNO layers input and output. Default: 64.
-        num_sno_layers (int): The number of spectral layers. Default: 3.
+        hidden_channels (int): The number of channels of the SNO layers input and output. Default: ``64``.
+        num_sno_layers (int): The number of spectral layers. Default: ``3``.
         data_format (str): The input data channel sequence. Default: ``channels_first``.
-
         transforms (list(list(mindspore.Tensor))): The list of direct and inverse polynomial transforms
-        on x, y and z axis, respectively. The list has the following structure: [[transform_x, inv_transform_x],
-        ... [transform_z, inv_transform_z]]. The shape of transformation matrix should be (n_modes, resolution),
-        where n_modes is the number of polynomial transform modes, resolution is spatial resolution of input
-        in the corresponding direction. The shape of inverse transformation is (resolution, n_modes). Default: None.
-
-        kernel_size (int): Specifies the height and width of the convolution kernel in SNO layers. Default: 5.
-        num_usno_layers (int): The number of spectral layers with UNet skip blocks. Default: 0.
-        num_unet_strides (int): The number of convolutional downsample blocks in UNet skip blocks. Default: 1.
+            on x, y and z axis, respectively. The list has the following structure: [[transform_x, inv_transform_x],
+            [transform_z, inv_transform_z]]. The shape of transformation matrix should be (n_modes, resolution),
+            where n_modes is the number of polynomial transform modes, resolution is spatial resolution of input
+            in the corresponding direction. The shape of inverse transformation is (resolution, n_modes).
+            Default: ``None``.
+        kernel_size (int): Specifies the height and width of the convolution kernel in SNO layers. Default: ``5``.
+        num_usno_layers (int): The number of spectral layers with UNet skip blocks. Default: ``0``.
+        num_unet_strides (int): The number of convolutional downsample blocks in UNet skip blocks. Default: ``1``.
         activation (Union[str, class]): The activation function, could be either str or class. Default: ``gelu``.
-        compute_dtype (dtype.Number): The computation type. Default: mstype.float32.
+        compute_dtype (dtype.Number): The computation type. Default: ``mstype.float32``.
             Should be ``mstype.float32`` or ``mstype.float16``. mstype.float32 is recommended for
             the GPU backend, mstype.float16 is recommended for the Ascend backend.
 
     Inputs:
-        - **x** (Tensor) - Tensor of shape :math:`(batch\_size, in_channels, resolution)`
+        - **x** (Tensor) - Tensor with shape :math:`(batch\_size, in_channels, resolution)`.
 
     Outputs:
-        Tensor of shape :math:`(batch\_size, out_channels, resolution)`.
+        Tensor with shape :math:`(batch\_size, out_channels, resolution)`.
 
     Raises:
         TypeError: If `in_channels` is not an int.
@@ -295,7 +294,7 @@ class SNO1D(SNO):
     r"""
     The 1D SNO, which contains a lifting layer (encoder),
     multiple spectral transform layers and a projection layer (decoder).
-    See documentation for base class, `SNO`.
+    See documentation for base class, :class:`mindflow.cell.SNO`.
 
     Example:
         >>> import numpy as np
@@ -339,7 +338,7 @@ class SNO2D(SNO):
     r"""
     The 2D SNO, which contains a lifting layer (encoder),
     multiple spectral transform layers and a projection layer (decoder).
-    See documentation for base class, `SNO`.
+    See documentation for base class, :class:`mindflow.cell.SNO`.
 
     Example:
         >>> import numpy as np
@@ -389,7 +388,7 @@ class SNO3D(SNO):
     r"""
     The 3D SNO, which contains a lifting layer (encoder),
     multiple spectral transform layers and a projection layer (decoder).
-    See documentation for base class, `SNO`.
+    See documentation for base class, :class:`mindflow.cell.SNO`.
 
     Example:
         >>> import numpy as np
