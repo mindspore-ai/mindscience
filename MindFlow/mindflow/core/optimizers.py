@@ -19,19 +19,25 @@ from mindspore import nn, ops
 
 
 class AdaHessian(nn.Adam):
-    """Implements Adahessian algorithm.
-    It has been proposed in `ADAHESSIAN: An Adaptive Second Order Optimizer for Machine Learning`.
-    See the (Torch implementation)[https://github.com/amirgholami/adahessian/blob/master/instruction/adahessian.py]
-    for reference.
+    r"""
+    The Adahessian optimizer.
+    It has been proposed in `ADAHESSIAN: An Adaptive Second Order Optimizer for Machine Learning
+    <https://arxiv.org/abs/2006.00719>`_ .
+    See the `Torch implementation
+    <https://github.com/amirgholami/adahessian/blob/master/instruction/adahessian.py>`_  for reference.
     The Hessian power here is fixed to 1, and the way of spatially averaging the Hessian traces follows the default
     behavior in the Torch implementation, that is
-        - for 1D: no spatial average
-        - for 2D: use the entire row as the spatial average
-        - for 3D (assume 1D Conv, can be customized): use the last dimension as spatial average
-        - for 4D (assume 2D Conv, can be customized): use the last 2 dimensions as spatial average
-    Arguments:
-        params (iterable): iterable of parameters to optimize
-        others: other arguments same to Adam
+
+    - for 1D: no spatial average.
+    - for 2D: use the entire row as the spatial average.
+    - for 3D (assume 1D Conv, can be customized): use the last dimension as spatial average.
+    - for 4D (assume 2D Conv, can be customized): use the last 2 dimensions as spatial average.
+
+    Args see `mindspore.nn.Adam <https://www.mindspore.cn/docs/en/master/api_python/nn/mindspore.nn.Adam.html>`_ .
+
+    Supported Platforms:
+        ``Ascend``
+
     Examples:
         >>> import numpy as np
         >>> import mindspore as ms
@@ -48,6 +54,7 @@ class AdaHessian(nn.Adam):
         >>> print(optimizer.moment2[0].shape)
         (4, 2, 3, 3)
     """
+
     def gen_rand_vecs(self, grads):
         return [(2 * ops.randint(0, 2, p.shape) - 1).astype(ms.float32) for p in grads]
 
