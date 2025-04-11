@@ -296,7 +296,7 @@ class SNO1D(SNO):
     multiple spectral transform layers and a projection layer (decoder).
     See documentation for base class, :class:`mindflow.cell.SNO`.
 
-    Example:
+    Examples:
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
@@ -340,7 +340,7 @@ class SNO2D(SNO):
     multiple spectral transform layers and a projection layer (decoder).
     See documentation for base class, :class:`mindflow.cell.SNO`.
 
-    Example:
+    Examples:
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype
@@ -390,7 +390,7 @@ class SNO3D(SNO):
     multiple spectral transform layers and a projection layer (decoder).
     See documentation for base class, :class:`mindflow.cell.SNO`.
 
-    Example:
+    Examples:
         >>> import numpy as np
         >>> from mindspore import Tensor
         >>> import mindspore.common.dtype as mstype

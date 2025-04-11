@@ -19,7 +19,7 @@ mindflow.cell.SNO
         - **num_unet_strides** (int) - UNet跳跃连接中卷积下采样块的数量。默认值： ``1``。
         - **activation** (Union[str, class]) - 激活函数，支持字符串或类形式。默认值： ``gelu``。
         - **compute_dtype** (dtype.Number) - 计算数据类型。默认值： ``mstype.float32``。
-          可选``mstype.float32``或``mstype.float16``。GPU后端推荐使用float32，Ascend后端推荐使用float16。
+          可选 ``mstype.float32`` 或 ``mstype.float16``。GPU后端推荐使用float32，Ascend后端推荐使用float16。
 
     输入：
         - **x** (Tensor) - shape为 :math:`(batch\_size, in_channels, resolution)` 的张量。

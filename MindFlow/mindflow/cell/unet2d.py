@@ -91,7 +91,7 @@ class UNet2D(nn.Cell):
     U-Net is a U-shaped convolutional neural network for biomedical image segmentation.
     It has a contracting path that captures context and an expansive path that enables
     precise localization. The details can be found in `U-Net: Convolutional Networks for
-    Biomedical Image Segmentation <https://arxiv.org/abs/1505.04597>`.
+    Biomedical Image Segmentation <https://arxiv.org/abs/1505.04597>`_ .
 
     Args:
         in_channels (int): The number of input channels.
