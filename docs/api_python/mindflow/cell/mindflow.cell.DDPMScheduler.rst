@@ -1,7 +1,7 @@
 mindflow.cell.DDPMScheduler
 ============================
 
-.. py:class:: mindflow.cell.DDPMScheduler(num_train_timesteps=1000, beta_start=0.0001, beta_end=0.02, beta_schedule="squaredcos_cap_v2", prediction_type='epsilon', variance_type='fixed_small_log', clip_sample=True, clip_sample_range=1.0, thresholding=False, sample_max_value=1., dynamic_thresholding_ratio=None, rescale_betas_zero_snr=False, timestep_spacing="leading", compute_dtype=mstype.float32)
+.. py:class:: mindflow.cell.DDPMScheduler(num_train_timesteps: int = 1000, beta_start: float = 0.0001, beta_end: float = 0.02, beta_schedule: str = "squaredcos_cap_v2", prediction_type: str = 'epsilon', variance_type: str = 'fixed_small_log', clip_sample: bool = True, clip_sample_range: float = 1.0, thresholding: bool = False, sample_max_value: float = 1.0, dynamic_thresholding_ratio: float=0.995, rescale_betas_zero_snr: bool = False, timestep_spacing: str = "leading", compute_dtype=mstype.float32)
 
     `DDPMScheduler` 实现了去噪扩散概率模型DDPM中介绍的去噪过程。具体细节见 `Denoising Diffusion Probabilistic Models <https://arxiv.org/abs/2006.11239>`_ 。
 
@@ -50,7 +50,7 @@ mindflow.cell.DDPMScheduler
         参数：
             - **model_output** (Tensor) - 扩散模型预测的噪声。
             - **sample** (Tensor) - 当前样本。
-            - **timesteps** (Tensor) - 当前时间步。
+            - **timestep** (Tensor) - 当前时间步。
             - **predicted_variance** (Tensor) - 预测的方差。默认值： ``None`` 。
 
         返回：

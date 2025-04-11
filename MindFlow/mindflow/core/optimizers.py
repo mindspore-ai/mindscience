@@ -58,7 +58,7 @@ class AdaHessian(nn.Adam):
     def gen_rand_vecs(self, grads):
         return [(2 * ops.randint(0, 2, p.shape) - 1).astype(ms.float32) for p in grads]
 
-    def modify_moments(self, grad_fn, inputs):
+    def _modify_moments(self, grad_fn, inputs):
         """ introduce Hutchinson trace by pre-adding its difference to grads' square into the second moment
         """
         # generate the function for 2nd-order derivative
@@ -104,7 +104,7 @@ class AdaHessian(nn.Adam):
             grad_fn (callable): the function that outputs 1st-order gradients
             inputs (Tensor): the inputs to the gradient function
         """
-        gradients = self.modify_moments(grad_fn, inputs)
+        gradients = self._modify_moments(grad_fn, inputs)
 
         params = self._parameters
         moment1 = self.moment1

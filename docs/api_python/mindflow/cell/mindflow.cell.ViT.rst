@@ -1,7 +1,7 @@
 mindflow.cell.ViT
 =========================
 
-.. py:class:: mindflow.cell.ViT(image_size=(192, 384), in_channels=7, out_channels=3, patch_size=16, encoder_depths=12, encoder_embed_dim=768, encoder_num_heads=12, decoder_depths=8, decoder_embed_dim=512, decoder_num_heads=16, mlp_ratio=4, dropout_rate=1.0, compute_dtype=mstype.float16)
+.. py:class:: mindflow.cell.ViT(image_size=(192, 384), in_channels=7, out_channels=3, patch_size=16, encoder_depths=12, encoder_embed_dim=768, encoder_num_heads=12, decoder_depths=8, decoder_embed_dim=512, decoder_num_heads=16, dropout_rate=0.0, compute_dtype=mstype.float16)
 
     该模块基于ViT，包括encoder层、decoding_embedding层、decoder层和dense层。
 
@@ -16,8 +16,7 @@ mindflow.cell.ViT
         - **decoder_depths** (int) - decoder层的解码器深度。默认值： ``8``。
         - **decoder_embed_dim** (int) - decoder层的解码器维度。默认值： ``512``。
         - **decoder_num_heads** (int) - decoder层的head数。默认值： ``16``。
-        - **mlp_ratio** (int) - mlp层的比例。默认值： ``4``。
-        - **dropout_rate** (float) - dropout层的速率。默认值： ``1.0``。
+        - **dropout_rate** (float) - dropout层的速率。默认值： ``0.0``。
         - **compute_dtype** (dtype) - encoder层、decoding_embedding层、decoder层和dense层的数据类型。默认值： ``mstype.float16``。
 
     输入：

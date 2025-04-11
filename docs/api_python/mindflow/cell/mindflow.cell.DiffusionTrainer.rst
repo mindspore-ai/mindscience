@@ -13,7 +13,10 @@ mindflow.cell.DiffusionTrainer
         - **p2_loss_weight_k** (float) - p2 loss权重 `k` ，具体信息查看 `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_ 。默认值： ``1`` 。
         - **loss_type** (str) - loss函数类型。默认值: ``l1`` 。支持以下类型： ``l1`` 和 ``l2`` 。
 
-    .. py:method:: get_loss(original_samples, noise, timesteps, condition=None)
+    异常：
+        - **TypeError** - 如果 `scheduler` 不是 `DiffusionScheduler` 类型。
+
+    .. py:method:: get_loss(original_samples: Tensor, noise: Tensor, timesteps: Tensor, condition: Tensor = None)
 
         计算扩散过程的前向loss。
 

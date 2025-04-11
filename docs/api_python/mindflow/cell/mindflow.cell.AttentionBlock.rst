@@ -1,7 +1,7 @@
 mindflow.cell.AttentionBlock
 ============================
 
-.. py:class:: mindflow.cell.AttentionBlock(in_channels, num_heads, drop_mode='dropout', dropout_rate='0.', compute_dtype=mstype.float32)
+.. py:class:: mindflow.cell.AttentionBlock(in_channels, num_heads, drop_mode='dropout', dropout_rate='0.0', compute_dtype=mstype.float32)
 
     `AttentionBlock` 包含 `MultiHeadAttention` 和 `MLP` 网络堆叠而成。
 
@@ -13,7 +13,7 @@ mindflow.cell.AttentionBlock
         - **compute_dtype** (mindspore.dtype) - 网络层的数据类型。默认值： ``mstype.float32`` ，表示 ``mindspore.float32`` 。
 
     输入：
-        - **input** (Tensor) - shape为 :math:`(batch\_size, sequence\_len, in\_channels)` 的Tensor。
+        - **x** (Tensor) - shape为 :math:`(batch\_size, sequence\_len, in\_channels)` 的Tensor。
         - **mask** (Tensor) - shape为 :math:`(batch\_size, sequence\_len, sequence\_len)` 或
           :math:`(sequence\_len, sequence\_len)` 或 :math:`(batch\_size, num_heads, sequence\_len, sequence\_len)` 的Tensor.
 
