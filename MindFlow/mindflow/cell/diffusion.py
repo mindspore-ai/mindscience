@@ -1139,7 +1139,7 @@ class DiffusionTrainer:
         Args:
             original_samples (Tensor): The direct output from learned diffusion model.
             noise (Tensor): A current instance of a noise sample created by the diffusion process.
-            timesteps (float): The current discrete timestep in the diffusion chain.
+            timesteps (Tensor): The current discrete timestep in the diffusion chain.
             condition (Tensor): The condition for desired outputs. Default: ``None``.
 
         Returns:

@@ -1,7 +1,7 @@
 mindflow.cell.DDIMScheduler
 ============================
 
-.. py:class:: mindflow.cell.DDIMScheduler(num_train_timesteps=1000, beta_start=0.0001, beta_end=0.02, beta_schedule="squaredcos_cap_v2", prediction_type='epsilon', clip_sample=True, clip_sample_range=1.0, thresholding=False, sample_max_value=1., dynamic_thresholding_ratio=0.995, rescale_betas_zero_snr=False, timestep_spacing="leading", compute_dtype=mstype.float32)
+.. py:class:: mindflow.cell.DDIMScheduler(num_train_timesteps: int = 1000, beta_start: float = 0.0001, beta_end: float = 0.02, beta_schedule: str = "squaredcos_cap_v2", prediction_type: str = 'epsilon', clip_sample: bool = True, clip_sample_range: float = 1.0, thresholding: bool = False, sample_max_value: float = 1.0, dynamic_thresholding_ratio: float = 0.995, rescale_betas_zero_snr: bool = False, timestep_spacing: str = "leading", compute_dtype=mstype.float32)
 
     `DDIMScheduler` 实现了去噪扩散概率模型DDIM中介绍的去噪过程。具体细节见 `Denoising Diffusion Implicit Models <https://arxiv.org/abs/2010.02502>`_ 。
 
@@ -49,7 +49,7 @@ mindflow.cell.DDIMScheduler
         参数：
             - **model_output** (Tensor) - 扩散模型预测的噪声。
             - **sample** (Tensor) - 当前样本。
-            - **timesteps** (Tensor) - 当前时间步。
+            - **timestep** (Tensor) - 当前时间步。
             - **eta** (float) - 去噪加入噪声的权重。必须满足 ``0 <= eta <=1`` 。默认值： ``0.0`` 。
             - **use_clipped_model_output** (bool) - 如果为 ``True`` ，则根据裁剪的预测原始样本计算校正后的model_output。这是必要的，因为当 `self.scheduler.clip_sample`` 为 `True`` 时，预测的原始样本被裁剪到 `[-1，1]`。如果没有裁剪，校正的 `model_output` 将与作为输入提供的输出冲突， `use_cliped_model_output` 无效。默认值： ``False`` 。
 

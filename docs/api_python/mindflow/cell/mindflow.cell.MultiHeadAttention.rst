@@ -1,14 +1,14 @@
 mindflow.cell.MultiHeadAttention
 =================================
 
-.. py:class:: mindflow.cell.MultiHeadAttention(in_channels, num_heads, drop_mode='dropout', dropout_rate='0.', compute_dtype=mstype.float32)
+.. py:class:: mindflow.cell.MultiHeadAttention(in_channels, num_heads, drop_mode='dropout', dropout_rate='0.0', compute_dtype=mstype.float32)
 
     多头注意力机制，具体细节可以参见 `Attention Is All You Need <https://arxiv.org/abs/1706.03762>`_ 。
 
     参数：
         - **in_channels** (int) - 输入的输入特征维度。
         - **num_heads** (int) - 输出的输出特征维度。
-        - **drop_mode** (int) - dropout方式。默认值： ``dropout`` 。支持以下类型： ``dropout`` 和 ``droppath`` 。
+        - **drop_mode** (str) - dropout方式。默认值： ``dropout`` 。支持以下类型： ``dropout`` 和 ``droppath`` 。
         - **dropout_rate** (float) - dropout层丢弃的比率。取值在 `[0, 1]` 。默认值： ``0.0`` 。
         - **compute_dtype** (mindspore.dtype) - 网络层的数据类型。默认值： ``mstype.float32`` ，表示 ``mindspore.float32`` 。
 
