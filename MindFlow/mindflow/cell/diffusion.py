@@ -584,7 +584,7 @@ class DDIMScheduler(DiffusionScheduler):
         rescale_betas_zero_snr (bool): Whether to rescale the betas to have zero terminal SNR. This enables the model to generate very bright and
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
-        compute_dtype: the dtype of compute, it can be `mstype.float32` or `mstype.float16`. Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        compute_dtype (mindspore.dtype): the dtype of compute, it can be `mstype.float32` or `mstype.float16`. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Supported Platforms:
         ``Ascend``

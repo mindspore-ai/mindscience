@@ -51,7 +51,7 @@ mindflow.cell.DDIMScheduler
             - **sample** (Tensor) - 当前样本。
             - **timestep** (Tensor) - 当前时间步。
             - **eta** (float) - 去噪加入噪声的权重。必须满足 ``0 <= eta <=1`` 。默认值： ``0.0`` 。
-            - **use_clipped_model_output** (bool) - 如果为 ``True`` ，则根据裁剪的预测原始样本计算校正后的model_output。这是必要的，因为当 `self.scheduler.clip_sample`` 为 `True`` 时，预测的原始样本被裁剪到 `[-1，1]`。如果没有裁剪，校正的 `model_output` 将与作为输入提供的输出冲突， `use_cliped_model_output` 无效。默认值： ``False`` 。
+            - **use_clipped_model_output** (bool) - 如果为 ``True`` ，则根据裁剪的预测原始样本计算校正后的model_output。这是必要的，因为当 `self.scheduler.clip_sample` 为 ``True`` 时，预测的原始样本被裁剪到 `[-1，1]`。如果没有裁剪，校正的 `model_output` 将与作为输入提供的输出冲突， `use_cliped_model_output` 无效。默认值： ``False`` 。
 
         异常：
             - **ValueError** - 如果不满足 ``0 <= eta <=1`` 条件。
