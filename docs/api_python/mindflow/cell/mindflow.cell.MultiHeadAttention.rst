@@ -1,7 +1,7 @@
 mindflow.cell.MultiHeadAttention
 =================================
 
-.. py:class:: mindflow.cell.MultiHeadAttention(in_channels, num_heads, drop_mode='dropout', dropout_rate='0.0', compute_dtype=mstype.float32)
+.. py:class:: mindflow.cell.MultiHeadAttention(in_channels, num_heads, drop_mode='dropout', dropout_rate=0.0, compute_dtype=mstype.float32)
 
     多头注意力机制，具体细节可以参见 `Attention Is All You Need <https://arxiv.org/abs/1706.03762>`_ 。
 

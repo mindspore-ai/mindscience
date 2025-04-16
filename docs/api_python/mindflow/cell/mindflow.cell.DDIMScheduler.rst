@@ -42,7 +42,7 @@ mindflow.cell.DDIMScheduler
         异常：
             - **ValueError** - 如果 `num_inference_steps` 大于 `num_train_timesteps` 。
 
-    .. py:method:: step(model_output, sample, timestep, eta=0.0, use_clipped_model_output=False)
+    .. py:method:: step(model_output: Tensor, sample: Tensor, timestep: Tensor, eta: float = 0.0, use_clipped_model_output: bool = False)
 
         DDIM反向去噪步骤。
 

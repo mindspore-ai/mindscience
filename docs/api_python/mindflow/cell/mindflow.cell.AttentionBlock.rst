@@ -1,7 +1,7 @@
 mindflow.cell.AttentionBlock
 ============================
 
-.. py:class:: mindflow.cell.AttentionBlock(in_channels, num_heads, drop_mode='dropout', dropout_rate='0.0', compute_dtype=mstype.float32)
+.. py:class:: mindflow.cell.AttentionBlock(in_channels, num_heads, drop_mode='dropout', dropout_rate=0.0, compute_dtype=mstype.float32)
 
     `AttentionBlock` 包含 `MultiHeadAttention` 和 `MLP` 网络堆叠而成。
 
