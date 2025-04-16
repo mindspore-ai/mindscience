@@ -407,7 +407,7 @@ class DDPMScheduler(DiffusionScheduler):
         rescale_betas_zero_snr (bool): Whether to rescale the betas to have zero terminal SNR. This enables the model to generate very bright and
             dark samples instead of limiting it to samples with medium brightness. Loosely related to
             `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_. Default: ``False``.
-        compute_dtype: the dtype of compute, it can be `mstype.float32` or `mstype.float16`. Default: ``mstype.float32``, indicates ``mindspore.float32``.
+        compute_dtype (mindspore.dtype): the dtype of compute, it can be `mstype.float32` or `mstype.float16`. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Supported Platforms:
         ``Ascend``
@@ -706,11 +706,11 @@ class DDIMScheduler(DiffusionScheduler):
                 clipping has happened, "corrected" `model_output` would coincide with the one provided as input and
                 `use_clipped_model_output` has no effect. Default: ``False.``.
 
-        Raises:
-            ValueError: If `eta` not in [0, 1].
-
         Returns:
             Tensor, Denoised output x_prev.
+
+        Raises:
+            ValueError: If `eta` not in [0, 1].
         """
         # See formulas (12) and (16) of DDIM paper `Denoising Diffusion Implicit Models <https://arxiv.org/abs/2010.02502>`_
         # Ideally, read DDIM paper in-detail understanding
@@ -1054,7 +1054,7 @@ class DiffusionTrainer:
         model (nn.Cell): The diffusion backbone model.
         scheduler (DiffusionScheduler): DDPM or DDIM scheduler.
         objective (str): Prediction type of the scheduler function;
-            can be `pred_noise` (predicts the noise of the diffusion process), `pred_x0` (predicts the original sample`) or
+            can be `pred_noise` (predicts the noise of the diffusion process), `pred_x0` (predicts the original sample) or
             `pred_v` (see section 2.4 of `Imagen Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``pred_noise``.
         p2_loss_weight_gamma (float): p2 loss weight gamma, from
             `Perception Prioritized Training of Diffusion Models <https://arxiv.org/abs/2204.00227>`_. Default: ``0``.

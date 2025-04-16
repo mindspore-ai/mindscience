@@ -21,7 +21,7 @@ mindflow.cell.DDPMScheduler
         - **rescale_betas_zero_snr** (bool) - 是否重新缩放 betas 以使其终端 SNR 为零。这使模型能够生成非常明亮和黑暗的样本，而不是将其限制为中等亮度的样本。与 `offset_noise <https://github.com/huggingface/diffusers/blob/74fd735eb073eb1d774b1ab4154a0876eb82f055/examples/dreambooth/train_dreambooth.py#L506>`_ 松散相关。默认值： ``False`` 。
         - **compute_dtype** (mindspore.dtype) - 数据类型。默认值： ``mstype.float32`` ，表示 ``mindspore.float32`` 。
 
-    .. py:method:: add_noise(original_samples, noise, timesteps)
+    .. py:method:: add_noise(original_samples: Tensor, noise: Tensor, timesteps: Tensor)
 
         DDPM前向加噪步骤。
 
