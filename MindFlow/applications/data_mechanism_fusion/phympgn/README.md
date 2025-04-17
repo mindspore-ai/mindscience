@@ -10,7 +10,9 @@ Physics-encoded Message Passing Graph Network (PhyMPGN) is capable to model spat
 - Considering the universality of diffusion processes in physical phenomena, a learnable Laplace Block is designed, which encodes the discrete Laplace-Beltrami operator
 - A novel padding strategy to encode different types of BCs into the learning model is proposed.
 
-Paper link: [https://arxiv.org/abs/2410.01337](https://gitee.com/link?target=https%3A%2F%2Farxiv.org%2Fabs%2F2410.01337)
+Paper link: [https://arxiv.org/abs/2410.01337](https://gitee.com/link?target=https%3A%2F%2Farxiv.org%2Fabs%2F2410.01337).
+
+This paper has been accepted as ICLR 2025 Spotlight, see https://openreview.net/forum?id=fU8H4lzkIm&noteId=wS5SaVKjWt.
 
 ## Problem Setup
 
@@ -107,7 +109,8 @@ $Re=480$
 | Dataset                               | Cylinder flow                  |
 | Model Parameters                      | 950k                           |
 | Training Configuration                | batch_size=4,<br />epochs=1600 |
-| Training Loss<br />(MSE)              |                                |
-| Inference Loss<br />(MSE)             |                                |
+| Training Loss<br />(MSE)              | 3.05e-5                        |
+| Validation Loss<br />(MSE)            | 5.58e-6                        |
+| Inference MSE                         | 4.88e-2                        |
 | Training Speed<br />(s / epoch)       | 420 s                          |
 | Inference Speed<br />(s / trajectory) | 174 s                          |
