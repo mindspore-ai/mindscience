@@ -8,7 +8,9 @@
 - 考虑到物理现象中普遍存在扩散过程，设计了一个可学习的Laplace Block，编码了离散拉普拉斯-贝尔特拉米算子（Laplace-Beltrami Operator）
 - 提出了一个新颖的填充策略在模型中编码不同类型的边界条件
 
-论文链接: [https://arxiv.org/abs/2410.01337](https://gitee.com/link?target=https%3A%2F%2Farxiv.org%2Fabs%2F2410.01337)
+论文链接: [https://arxiv.org/abs/2410.01337](https://gitee.com/link?target=https%3A%2F%2Farxiv.org%2Fabs%2F2410.01337)。
+
+该论文被接收为 ICLR 2025 Spotlight，详见 https://openreview.net/forum?id=fU8H4lzkIm&noteId=wS5SaVKjWt。
 
 ## 问题描述
 
@@ -105,7 +107,8 @@ $Re=480$
 | 数据集                         | Cylinder flow                  |
 | 参数量                         | 950k                           |
 | 训练参数                       | batch_size=4,<br />epochs=1600 |
-| 训练损失<br />(MSE)            |                                |
-| 推理损失<br />(MSE)            |                                |
+| 训练损失<br />(MSE)            | 3.05e-5                        |
+| 验证损失<br />(MSE)            | 5.58e-6                        |
+| 推理误差<br />(MSE)            | 4.88e-2                        |
 | 训练速度<br />(s / epoch)      | 420 s                          |
 | 推理速度<br />(s / trajectory) | 174 s                          |
