@@ -33,7 +33,7 @@ where:
 
 ### Run Option 2: Run Jupyter Notebook
 
-You can use [Chinese](https://gitee.com/mindspore/mindscience/raw/master/MindEarth/applications/medium-range/ensoforecast/ctefnet_CN.ipynb) or [English](https://gitee.com/mindspore/mindscience/raw/master/MindEarth/applications/medium-range/ensoforecast/ctefnet.ipynb) Jupyter Notebook to run the training and evaluation code line-by-line.
+You can use [Chinese](https://gitee.com/mindspore/mindscience/blob/master/MindEarth/applications/medium-range/fourcastnet/FourCastNet_CN.ipynb) or [English](https://gitee.com/mindspore/mindscience/blob/master/MindEarth/applications/medium-range/fourcastnet/FourCastNet.ipynb) Jupyter Notebook to run the training and evaluation code line-by-line.
 
 ## Performance
 
