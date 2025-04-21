@@ -18,8 +18,9 @@ from .kno1d import KNO1D
 from .kno2d import KNO2D
 from .pdenet import PDENet
 from .percnn import PeRCNN
-from .sno import SNO1D, SNO2D, SNO3D
+from .sno import SNO, SNO1D, SNO2D, SNO3D
 
-__all__ = ["FNOBlocks", "FNO1D", "FNO2D", "FNO3D", "KNO1D", "KNO2D", "PDENet", "PeRCNN", "SNO1D", "SNO2D", "SNO3D"]
+__all__ = ["FNOBlocks", "FNO1D", "FNO2D", "FNO3D", "KNO1D", "KNO2D", "PDENet", "PeRCNN",
+           "SNO", "SNO1D", "SNO2D", "SNO3D"]
 
 __all__.sort()
