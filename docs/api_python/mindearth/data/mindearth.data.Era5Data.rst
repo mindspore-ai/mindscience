@@ -1,7 +1,7 @@
 mindearth.data.Era5Data
 =========================
 
-.. py:class:: mindearth.data.Era5Data(data_params, run_mode='train')
+.. py:class:: mindearth.data.Era5Data(data_params, run_mode='train', kno_patch=False)
 
     Era5Data类通过MindSpore框架处理ERA5数据集生成数据生成器。Era5Data类继承了Data类。
 
