@@ -16,23 +16,22 @@ mindearth.module.WeatherForecast
     .. note::
         需要重写其中的成员函数 `forecast` 用于定义模型推理的前向过程。
 
-    .. py:method:: mindearth.module.WeatherForecast.eval(dataset)
-
-        根据验证集数据或测试集数据执行模型推理。
-
-        参数：
-            - **dataset** (mindspore.dataset) - 模型推理数据集，包括输入值和样本值。
-            - **generator_flag** (bool, 可选) - 用于向 "compute_total_rmse_acc" 方法传递一个参数。指示是否使用数据生成器。
-
     .. py:method:: mindearth.module.WeatherForecast.forecast(inputs, labels=None)
-        :staticmethod:
 
         模型的预测方法。
 
         参数：
             - **inputs** (Tensor) - 模型的输入数据。
             - **labels** (Tensor) - 样本真实数据。默认值： ``None``。
-            
+
+    .. py:method:: mindearth.module.WeatherForecast.eval(dataset, generator_flag=False)
+
+        根据验证集数据或测试集数据执行模型推理。
+
+        参数：
+            - **dataset** (mindspore.dataset) - 模型推理数据集，包括输入值和样本值。
+            - **generator_flag** (bool) - 用于向 "compute_total_rmse_acc" 方法传递一个参数。指示是否使用数据生成器。默认值： ``False``。
+
     .. py:method:: mindearth.module.WeatherForecast.compute_total_rmse_acc(dataset, generator_flag)
 
         计算数据集的总体均方根误差（RMSE）和准确率。
