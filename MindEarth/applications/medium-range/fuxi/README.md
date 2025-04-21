@@ -32,7 +32,7 @@ where:
 
 *Option 2: Run Jupyter Notebook*
 
-You can use [Chinese](https://gitee.com/mindspore/mindscience/blob/f93ea7a7f90d67c983256844a2bcab094a3c7084/MindEarth/applications/medium-range/fuxi/fuxi_CN.ipynb) or [English](https://gitee.com/mindspore/mindscience/raw/f93ea7a7f90d67c983256844a2bcab094a3c7084/MindEarth/applications/medium-range/fuxi/fuxi.ipynb) Jupyter Notebook to run the training and evaluation code line-by-line.
+You can use [Chinese](https://gitee.com/mindspore/mindscience/blob/master/MindEarth/applications/medium-range/fuxi/fuxi_CN.ipynb) or [English](https://gitee.com/mindspore/mindscience/blob/master/MindEarth/applications/medium-range/fuxi/fuxi.ipynb) Jupyter Notebook to run the training and evaluation code line-by-line.
 
 #### Multi-Card Parallel
 

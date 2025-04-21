@@ -33,7 +33,7 @@ python -u ./main.py \
 
 ### 运行方式二: 运行Jupyter Notebook
 
-使用[中文](https://gitee.com/mindspore/mindscience/raw/master/MindEarth/applications/medium-range/ensoforecast/ctefnet_CN.ipynb) 或[英文](https://gitee.com/mindspore/mindscience/raw/master/MindEarth/applications/medium-range/ensoforecast/ctefnet.ipynb) Jupyter Notebook可以逐行运行训练和推理代码
+使用[中文](https://gitee.com/mindspore/mindscience/blob/master/MindEarth/applications/medium-range/fourcastnet/FourCastNet_CN.ipynb) 或[英文](https://gitee.com/mindspore/mindscience/blob/master/MindEarth/applications/medium-range/fourcastnet/FourCastNet.ipynb) Jupyter Notebook可以逐行运行训练和推理代码
 
 ### 结果展示
 
