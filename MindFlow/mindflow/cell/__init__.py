@@ -15,7 +15,7 @@
 """init"""
 from .activation import get_activation
 from .basic_block import LinearBlock, ResBlock, InputScale, FCSequential, MultiScaleFCSequential, DropPath
-from .neural_operators import FNO1D, FNO2D, FNO3D, KNO1D, KNO2D, PDENet, PeRCNN, SNO1D, SNO2D, SNO3D
+from .neural_operators import FNO1D, FNO2D, FNO3D, KNO1D, KNO2D, PDENet, PeRCNN, SNO, SNO1D, SNO2D, SNO3D
 from .attention import Attention, MultiHeadAttention, AttentionBlock
 from .vit import ViT
 from .unet2d import UNet2D
@@ -24,7 +24,7 @@ from .diffusion import DiffusionScheduler, DiffusionTrainer, DDPMScheduler, DDIM
 from .diffusion_transformer import DiffusionTransformer, ConditionDiffusionTransformer
 
 __all__ = ["get_activation", "FNO1D", "FNO2D", "FNO3D", "KNO1D", "KNO2D", "PDENet", "UNet2D", "PeRCNN",
-           "SNO1D", "SNO2D", "SNO3D", "Attention", "MultiHeadAttention", "AttentionBlock", "ViT", "DDPMPipeline",
+           "SNO", "SNO1D", "SNO2D", "SNO3D", "Attention", "MultiHeadAttention", "AttentionBlock", "ViT", "DDPMPipeline",
            "DDIMPipeline", "DiffusionTrainer", "DiffusionScheduler", "DDPMScheduler", "DDIMScheduler",
            "DiffusionTransformer", "ConditionDiffusionTransformer"]
 __all__.extend(basic_block.__all__)
