@@ -391,7 +391,7 @@ class DDPMScheduler(DiffusionScheduler):
         beta_schedule (str): The beta schedule, a mapping from a beta range to a sequence of betas for stepping the model. Choose from
             `linear`, `scaled_linear`, or `squaredcos_cap_v2`. Default: ``squaredcos_cap_v2``.
         prediction_type (str): Prediction type of the scheduler function; can be `epsilon` (predicts the noise of the diffusion process),
-            `sample` (directly predicts the noisy sample`) or `v_prediction` (see section 2.4 of `Imagen
+            `sample` (directly predicts the noisy sample) or `v_prediction` (see section 2.4 of `Imagen
             Video <https://imagen.research.google/video/paper.pdf>`_ paper). Default: ``epsilon``.
         variance_type (str): Clip the variance when adding noise to the denoised sample. Choose from ``fixed_small``, ``fixed_small_log``,
             ``fixed_large``, ``fixed_large_log``, ``learned`` or ``learned_range``. Default: ``fixed_small_log``.
