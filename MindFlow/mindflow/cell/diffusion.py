@@ -591,7 +591,7 @@ class DDIMScheduler(DiffusionScheduler):
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDPMScheduler
+        >>> from mindflow.cell import DDIMScheduler
         >>> scheduler = DDIMScheduler(num_train_timesteps=1000,
         ...                           beta_start=0.0001,
         ...                           beta_end=0.02,
@@ -812,7 +812,7 @@ class DiffusionPipeline:
         ...                           clip_sample=True,
         ...                           clip_sample_range=1.0,
         ...                           thresholding=False,
-        ...                           dynamic_thresholding_ratio=None,
+        ...                           dynamic_thresholding_ratio=0.995,
         ...                           rescale_betas_zero_snr=False,
         ...                           timestep_spacing="leading",
         ...                           compute_dtype=mstype.float32)
@@ -918,7 +918,7 @@ class DDPMPipeline(DiffusionPipeline):
         ...                           clip_sample=True,
         ...                           clip_sample_range=1.0,
         ...                           thresholding=False,
-        ...                           dynamic_thresholding_ratio=None,
+        ...                           dynamic_thresholding_ratio=0.995,
         ...                           rescale_betas_zero_snr=False,
         ...                           timestep_spacing="leading",
         ...                           compute_dtype=mstype.float32)
@@ -962,7 +962,7 @@ class DDIMPipeline(DiffusionPipeline):
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDIMPipeline, DDPMScheduler, ConditionDiffusionTransformer
+        >>> from mindflow.cell import DDIMPipeline, DDIMScheduler, ConditionDiffusionTransformer
         >>> # init params
         >>> in_dim, out_dim, hidden_dim, cond_dim, layers, heads, seq_len, batch_size = 16, 16, 256, 4, 3, 4, 256, 8
         >>> # init condition
@@ -977,14 +977,16 @@ class DDIMPipeline(DiffusionPipeline):
         ...                                     time_token_cond=True,
         ...                                     compute_dtype=mstype.float32)
         >>> num_train_timesteps = 100
-        >>> scheduler = DDPMScheduler(num_train_timesteps=num_train_timesteps,
+        >>> scheduler = DDIMScheduler(num_train_timesteps=num_train_timesteps,
         ...                           beta_start=0.0001,
         ...                           beta_end=0.02,
         ...                           beta_schedule="squaredcos_cap_v2",
+        ...                           prediction_type='epsilon',
         ...                           clip_sample=True,
         ...                           clip_sample_range=1.0,
         ...                           thresholding=False,
-        ...                           dynamic_thresholding_ratio=None,
+        ...                           sample_max_value=1.,
+        ...                           dynamic_thresholding_ratio=0.995,
         ...                           rescale_betas_zero_snr=False,
         ...                           timestep_spacing="leading",
         ...                           compute_dtype=mstype.float32)
@@ -1093,7 +1095,7 @@ class DiffusionTrainer:
         ...                           clip_sample=True,
         ...                           clip_sample_range=1.0,
         ...                           thresholding=False,
-        ...                           dynamic_thresholding_ratio=None,
+        ...                           dynamic_thresholding_ratio=0.995,
         ...                           rescale_betas_zero_snr=False,
         ...                           timestep_spacing="leading",
         ...                           compute_dtype=mstype.float32)
