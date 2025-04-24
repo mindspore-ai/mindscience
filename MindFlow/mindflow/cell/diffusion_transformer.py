@@ -218,14 +218,15 @@ class ConditionDiffusionTransformer(DiffusionTransformer):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell import DiffusionTransformer
+        >>> from mindflow.cell import ConditionDiffusionTransformer
         >>> in_channels, out_channels, cond_channels, hidden_channels = 16, 16, 10, 256
         >>> layers, heads, batch_size, seq_len = 3, 4, 8, 256
-        >>> model = DiffusionTransformer(in_channels=in_channels,
-        ...                              out_channels=out_channels,
-        ...                              hidden_channels=hidden_channels,
-        ...                              layers=layers,
-        ...                              heads=heads)
+        >>> model = ConditionDiffusionTransformer(in_channels=in_channels,
+        ...                                       out_channels=out_channels,
+        ...                                       cond_channels=cond_channels,
+        ...                                       hidden_channels=hidden_channels,
+        ...                                       layers=layers,
+        ...                                       heads=heads)
         >>> x = ops.rand((batch_size, seq_len, in_channels))
         >>> cond = ops.rand((batch_size, cond_channels))
         >>> timestep = ops.randint(0, 1000, (batch_size,))
