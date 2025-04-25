@@ -1,7 +1,7 @@
 mindflow.core.AdaHessian
 =========================
 
-.. py:class:: mindflow.core.AdaHessian(*args, **kwargs)
+.. py:class:: mindflow.core.AdaHessian(params, learning_rate=1e-3, beta1=0.9, beta2=0.999, eps=1e-8, use_locking=False, use_nesterov=False, weight_decay=0.0, loss_scale=1.0, use_amsgrad=False, **kwargs)
 
     二阶优化器 AdaHessian，利用 Hessian 矩阵对角元信息进行二阶优化求解。
     有关更多详细信息，请参考论文 `ADAHESSIAN: An Adaptive Second Order Optimizer for Machine Learning <https://arxiv.org/abs/2006.00719>`_ 。
