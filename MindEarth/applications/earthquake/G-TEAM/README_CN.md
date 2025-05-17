@@ -56,6 +56,6 @@ python main.py --cfg_path ./config/config.yaml --device_id 0 --device_target Asc
 
 ## 贡献者
 
-gitee id: funfunplus
+gitee id: chengjie, longjundong, xujiabao, dinghongyang, funfunplus
 
 email: funniless@163.com

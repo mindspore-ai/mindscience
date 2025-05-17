@@ -75,6 +75,6 @@ Scatter plot compares predicted vs actual PGA values (x-axis vs y-axis). Closer 
 
 ## Contributors
 
-gitee id: funfunplus
+gitee id: chengjie, longjundong, xujiabao, dinghongyang, funfunplus
 
 email: funniless@163.com
