@@ -1,3 +1,0 @@
-./data/data1.npy ./data/model1.npy
-./data/data2.npy ./data/model2.npy
-./data/data3.npy ./data/model3.npy
