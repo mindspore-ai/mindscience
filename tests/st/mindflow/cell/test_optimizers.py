@@ -24,8 +24,8 @@ import numpy as np
 import mindspore as ms
 from mindspore import ops, set_seed, nn
 from mindspore import dtype as mstype
-from mindflow import UNet2D, AttentionBlock, AdaHessian
-from mindflow.cell.attention import Mlp
+from mindflow import UNet2D, TransformerBlock, AdaHessian
+from mindflow.cell.attention import FeedForward
 from mindflow.cell.unet2d import Down
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
@@ -44,6 +44,7 @@ random.seed(0)
 
 class TestAdaHessianAccuracy(AdaHessian):
     ''' Child class for testing the accuracy of AdaHessian optimizer '''
+
     def gen_rand_vecs(self, grads):
         ''' generate certain vector for accuracy test '''
         return [ms.Tensor(np.arange(p.size).reshape(p.shape) - p.size // 2, dtype=ms.float32) for p in grads]
@@ -51,6 +52,7 @@ class TestAdaHessianAccuracy(AdaHessian):
 
 class TestUNet2D(UNet2D):
     ''' Child class for testing optimizing UNet with AdaHessian '''
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -70,16 +72,17 @@ class TestUNet2D(UNet2D):
                                              activation=self.activation, enable_bn=self.enable_bn))
 
 
-class TestAttentionBlock(AttentionBlock):
+class TestAttentionBlock(TransformerBlock):
     ''' Child class for testing optimizing Attention with AdaHessian '''
+
     def __init__(self, in_channels, num_heads, drop_mode="dropout", dropout_rate=0.0, compute_dtype=mstype.float16):
         super().__init__(
             in_channels, num_heads, drop_mode=drop_mode, dropout_rate=dropout_rate, compute_dtype=compute_dtype)
 
-        class TestMlp(Mlp):
+        class TestMlp(FeedForward):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
-                self.act_fn = nn.ReLU() # replace `gelu` with `relu` to avoid `vjp` problem
+                self.act_fn = nn.ReLU()  # replace `gelu` with `relu` to avoid `vjp` problem
 
         self.ffn = TestMlp(in_channels=in_channels, dropout_rate=dropout_rate, compute_dtype=compute_dtype)
 
@@ -124,6 +127,7 @@ def test_adahessian_accuracy(mode):
     outputs_ref = np.load('/home/workspace/mindspore_dataset/mindscience/mindflow/optimizers/adahessian_output.npy')
     relative_error = np.max(np.abs(outputs - outputs_ref)) / np.max(np.abs(outputs_ref))
     assert relative_error < FP32_RTOL, "The verification of adahessian accuracy is not successful."
+
 
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
@@ -174,6 +178,7 @@ def test_adahessian_st(mode, model_option):
 
     assert ops.isfinite(loss)
 
+
 @pytest.mark.level1
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
@@ -181,7 +186,7 @@ def test_adahessian_compare():
     """
     Feature: AdaHessian compare with Adam
     Description: Compare the algorithm results of the AdaHessian optimizer with Adam.
-                The code runs in PYNATIVE_MODE and the network under comparison is AttentionBlock.
+                The code runs in PYNATIVE_MODE and the network under comparison is TransformerBlock.
                 The optimization runs 100 rounds to demonstrate an essential loss decrease.
     Expectation: The loss of AdaHessian outperforms Adam by 20% under the same configuration on an Attention network.
     """

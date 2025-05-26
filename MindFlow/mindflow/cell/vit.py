@@ -22,7 +22,7 @@ from mindspore.common.initializer import initializer, XavierUniform
 import mindspore.common.dtype as mstype
 
 from .utils import to_2tuple, get_2d_sin_cos_pos_embed
-from .attention import AttentionBlock
+from .attention import TransformerBlock
 
 
 class PatchEmbedding(nn.Cell):
@@ -132,7 +132,7 @@ class VitEncoder(nn.Cell):
             mstype.float32
         )
         for _ in range(depths):
-            layer = AttentionBlock(
+            layer = TransformerBlock(
                 in_channels=hidden_channels,
                 num_heads=num_heads,
                 dropout_rate=dropout_rate,
@@ -212,7 +212,7 @@ class VitDecoder(nn.Cell):
             mstype.float32
         )
         for _ in range(depths):
-            layer = AttentionBlock(
+            layer = TransformerBlock(
                 in_channels=hidden_channels,
                 num_heads=num_heads,
                 dropout_rate=dropout_rate,
