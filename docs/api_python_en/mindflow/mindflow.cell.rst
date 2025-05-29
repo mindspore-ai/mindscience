@@ -6,7 +6,6 @@ mindflow.cell
     :nosignatures:
     :template: classtemplate.rst
 
-    mindflow.cell.AttentionBlock
     mindflow.cell.ConditionDiffusionTransformer
     mindflow.cell.DiffusionTrainer
     mindflow.cell.DiffusionTransformer
@@ -29,6 +28,7 @@ mindflow.cell
     mindflow.cell.SNO1D
     mindflow.cell.SNO2D
     mindflow.cell.SNO3D
+    mindflow.cell.TransformerBlock
     mindflow.cell.UNet2D
     mindflow.cell.ViT
     mindflow.cell.get_activation
