@@ -19,11 +19,12 @@ import math
 import numpy as np
 from mindspore import nn, ops, Tensor
 from mindspore import dtype as mstype
-from mindflow.cell import AttentionBlock
+from mindflow.cell import TransformerBlock
 
 
 class Mlp(nn.Cell):
     """MLP"""
+
     def __init__(self, in_channels, out_channels, dropout=0., compute_dtype=mstype.float32):
         super().__init__()
         self.fc1 = nn.Dense(
@@ -44,6 +45,7 @@ class Mlp(nn.Cell):
 
 class SinusoidalPosEmb(nn.Cell):
     """sinusoidal embedding model"""
+
     def __init__(self, dim, max_period=10000, compute_dtype=mstype.float32):
         super().__init__()
         half_dim = dim // 2
@@ -62,12 +64,13 @@ class SinusoidalPosEmb(nn.Cell):
 
 class Transformer(nn.Cell):
     """Transformer backbone model"""
+
     def __init__(self, hidden_channels, layers, heads, compute_dtype=mstype.float32):
         super().__init__()
         self.hidden_channels = hidden_channels
         self.layers = layers
         self.blocks = nn.CellList([
-            AttentionBlock(
+            TransformerBlock(
                 in_channels=hidden_channels,
                 num_heads=heads,
                 drop_mode="dropout",

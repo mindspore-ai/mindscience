@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """Attention module"""
-
+from typing import Optional
 from mindspore import ops, nn, Tensor
 import mindspore.common.dtype as mstype
 
@@ -30,11 +30,10 @@ class Attention(nn.Cell):
 
     Inputs:
         - **x** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
-        - **attn_mask** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, sequence\_len)` or
-          :math:`(sequence\_len, sequence\_len)` or :math:`(batch\_size, num_heads, sequence\_len, sequence\_len)`.
-        - **key_padding_mask** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len)` or
-          :math:`(batch\_size, sequence\_len, sequence\_len)` or
-          :math:`(batch\_size, num_heads, sequence\_len, sequence\_len)`.
+        - **attn_mask** (Tensor, optional) - Tensor with shape :math:`(sequence\_len, sequence\_len)` or
+          or :math:`(batch\_size, 1, sequence\_len, sequence\_len)`. Default: ``None``.
+        - **key_padding_mask** (Tensor, optional) - Tensor with shape :math:`(batch\_size, sequence\_len)`.
+          Default: ``None``.
 
     Outputs:
         - **output** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
@@ -52,50 +51,48 @@ class Attention(nn.Cell):
         (2, 4, 32, 128)
     """
 
-    def __init__(self, in_channels, num_heads, compute_dtype=mstype.float32):
+    def __init__(self, in_channels: int, num_heads: int, compute_dtype: mstype = mstype.float32):
         super().__init__()
         self.num_heads = num_heads
         self.compute_dtype = compute_dtype
-        self.softmax_func = nn.Softmax(axis=-1)
-        self.matmul = ops.BatchMatMul()
         self.qkv = nn.Dense(
             in_channels, in_channels * 3, weight_init="XavierUniform"
         ).to_float(compute_dtype)
 
-    def softmax(self, scores, compute_dtype=mstype.float32):
-        if scores.dtype != mstype.float32:
-            scores = scores.astype(mstype.float32)
-        attn = self.softmax_func(scores)
-        if compute_dtype == mstype.float32:
-            return attn
-        return attn.astype(compute_dtype)
-
-    def _mask_scores(self, scores, attn_mask=None, key_padding_mask=None):
-        """mask attention scores"""
-        batch, _, _, node = scores.shape
-        mask = ops.zeros_like(scores)
+    @staticmethod
+    def merge_mask(attn_mask: Optional[Tensor] = None, key_padding_mask: Optional[Tensor] = None) -> Tensor:
+        """merge mask"""
+        if attn_mask is None and key_padding_mask is None:
+            return None
+        mask = Tensor(0, dtype=mstype.uint8)
         if attn_mask is not None:
-            attn_mask = attn_mask.astype(scores.dtype)
+            node = attn_mask.shape[-1]
             if len(attn_mask.shape) == 2:
                 attn_mask = attn_mask.reshape(1, 1, node, node)
-            elif len(attn_mask.shape) == 3:
-                attn_mask = attn_mask.unsqueeze(1)
-            else:
+            elif len(attn_mask.shape) == 4:
                 pass
-            mask += attn_mask
+            else:
+                raise Exception(f'attn_mask shape {attn_mask.shape} not support')
+            mask = mask + attn_mask.astype(mstype.uint8)
         if key_padding_mask is not None:
-            key_padding_mask = key_padding_mask.astype(scores.dtype)
+            batch, node = key_padding_mask.shape[0], key_padding_mask.shape[-1]
             if len(key_padding_mask.shape) == 2:
                 key_padding_mask = ops.broadcast_to(key_padding_mask.unsqueeze(1), (batch, node, node)).unsqueeze(1)
-            elif len(key_padding_mask.shape) == 3:
-                key_padding_mask = key_padding_mask.unsqueeze(1)
             else:
-                pass
-            mask += key_padding_mask
+                raise Exception(f'key_padding_mask shape {attn_mask.shape} not support')
+            mask = mask + key_padding_mask.astype(mstype.uint8)
+        return mask
+
+    @staticmethod
+    def mask_scores(scores: Tensor, mask: Optional[Tensor] = None) -> Tensor:
+        """mask attention scores"""
+        if mask is None:
+            return scores
         scores += mask * Tensor(-1e10, scores.dtype)
         return scores
 
-    def get_qkv(self, x):
+    def get_qkv(self, x: Tensor) -> tuple[Tensor]:
+        """get qkv value"""
         b, n, _ = x.shape
         qkv = (
             self.qkv(x).reshape(b, n, 3, self.num_heads, -
@@ -103,13 +100,80 @@ class Attention(nn.Cell):
         )
         return qkv[0], qkv[1], qkv[2]
 
-    def _reshape_output(self, x):
+    def _reshape_output(self, x: Tensor) -> Tensor:
         b, _, n, _ = x.shape
         return x.transpose(0, 2, 1, 3).reshape(b, n, -1)
 
-    def construct(self, x, attn_mask=None, key_padding_mask=None):
+    def construct(self, x: Tensor, attn_mask: Optional[Tensor] = None, key_padding_mask: Optional[Tensor] = None):
         """Attention network construction."""
         raise NotImplementedError
+
+
+class ScaledDot(nn.Cell):
+    """Scaled dot attention"""
+
+    def __init__(self, scale):
+        super().__init__()
+        self.scale = scale
+
+    def construct(self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[Tensor] = None):
+        scores = ops.matmul(query, key.swapaxes(-1, -2)) * self.scale
+        scores = Attention.mask_scores(scores, mask)
+        scores = scores.astype(mstype.float32)
+        attn = ops.softmax(scores, axis=-1)
+        attn = attn.astype(value.dtype)
+        output = ops.matmul(attn, value)
+        return output
+
+
+class FlashAttn(nn.Cell):
+    r"""FlashAttention proposed in `FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness <https://arxiv.org/abs/2205.14135>`_.
+
+    Args:
+        num_heads (int): The number of attention heads.
+        scale (float): The attention scale.
+        fa_dtype (mindspore.dtype, optional): FlashAttention compute dtype. Choose from `mstype.bfloat16`,
+            `mstype.float16`. Default: ``mstype.bfloat16``, indicates ``mindspore.bfloat16``.
+
+    Inputs:
+        - **query** (Tensor) - Tensor with shape :math:`(batch\_size, num\_heads, sequence\_len, in\_channels)`.
+        - **key** (Tensor) - Tensor with shape :math:`(batch\_size, num\_heads, sequence\_len, in\_channels)`.
+        - **value** (Tensor) - Tensor with shape :math:`(batch\_size, num\_heads, sequence\_len, in\_channels)`.
+        - **mask** (Tensor, optional) - Tensor with shape :math:`(sequence\_len, sequence\_len)` or
+          or :math:`(batch\_size, 1, sequence\_len, sequence\_len)`. Default: ``None``.
+
+    Outputs:
+        - **output** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
+
+    Supported Platforms:
+        ``Ascend``
+
+    Examples:
+        >>> from mindspore import ops
+        >>> from mindflow.cell import FlashAttn
+        >>> model = FlashAttn(num_heads=4, scale=0.25)
+        >>> in_shape = (2, 16, 32, 16)
+        >>> q, k, v = ops.rand(in_shape), ops.rand(in_shape), ops.rand(in_shape)
+        >>> mask_shape = (32, 32)
+        >>> mask = ops.randint(0, 2, mask_shape)
+        >>> output = model(q, k, v, mask)
+        >>> print(output.shape)
+        (2, 16, 32, 16)
+    """
+
+    def __init__(self, num_heads: int, scale: float, fa_dtype=mstype.bfloat16):
+        super().__init__()
+        self.fa_dtype = fa_dtype
+        self.num_heads = num_heads
+        self.scale = scale
+
+    def construct(self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[Tensor] = None):
+        query, key, value = query.astype(self.fa_dtype), key.astype(self.fa_dtype), value.astype(self.fa_dtype)
+        if mask is not None:
+            mask = mask.astype(mstype.uint8)
+        scores = ops.flash_attention_score(query, key, value, input_layout='BNSD', head_num=self.num_heads,
+                                           attn_mask=mask, scalar_value=self.scale)
+        return scores
 
 
 class MultiHeadAttention(Attention):
@@ -118,17 +182,21 @@ class MultiHeadAttention(Attention):
     Args:
         in_channels (int): The input channels.
         num_heads (int): The number of attention heads.
+        enable_flash_attn (bool): Whether use flash attention. FlashAttention only supports Ascend backend.
+            FlashAttention proposed in `FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness <https://arxiv.org/abs/2205.14135>`_.
+            Default: ``False``.
+        fa_dtype (mindspore.dtype): FlashAttention compute dtype. Choose from `mstype.bfloat16`, `mstype.float16`.
+            Default: ``mstype.bfloat16``, indicates ``mindspore.bfloat16``.
         drop_mode (str): Dropout method, ``dropout`` or ``droppath``. Default: ``dropout``.
         dropout_rate (float): The drop rate of dropout layer, greater than 0 and less equal than 1. Default: ``0.0``.
         compute_dtype (mindspore.dtype): Compute dtype. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Inputs:
         - **x** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
-        - **attn_mask** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, sequence\_len)` or
-          :math:`(sequence\_len, sequence\_len)` or :math:`(batch\_size, num_heads, sequence\_len, sequence\_len)`.
-        - **key_padding_mask** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len)` or
-          :math:`(batch\_size, sequence\_len, sequence\_len)` or
-          :math:`(batch\_size, num_heads, sequence\_len, sequence\_len)`.
+        - **attn_mask** (Tensor, optional) - Tensor with shape :math:`(sequence\_len, sequence\_len)` or
+          or :math:`(batch\_size, 1, sequence\_len, sequence\_len)`. Default: ``None``.
+        - **key_padding_mask** (Tensor, optional) - Tensor with shape :math:`(batch\_size, sequence\_len)`.
+          Default: ``None``.
 
     Outputs:
         - **output** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
@@ -141,65 +209,59 @@ class MultiHeadAttention(Attention):
         >>> from mindflow.cell import MultiHeadAttention
         >>> model = MultiHeadAttention(in_channels=512, num_heads=4)
         >>> x = ops.rand((2, 32, 512))
-        >>> mask_shape = (2, 4, 32, 32)
+        >>> mask_shape = (32, 32)
         >>> mask = ops.ones(mask_shape)
         >>> output = model(x, mask)
         >>> print(output.shape)
         (2, 32, 512)
     """
 
-    def __init__(self, in_channels,
-                 num_heads,
-                 drop_mode="dropout",
-                 dropout_rate=0.0,
-                 compute_dtype=mstype.float32,
+    def __init__(self, in_channels: int,
+                 num_heads: int,
+                 enable_flash_attn: bool = False,
+                 fa_dtype: mstype = mstype.bfloat16,
+                 drop_mode: str = "dropout",
+                 dropout_rate: float = 0.0,
+                 compute_dtype: mstype = mstype.float32,
                  ):
         super().__init__(in_channels, num_heads, compute_dtype)
         assert (
             in_channels % num_heads == 0
         ), "hidden channels must be divisible by number of heads"
-        self.scale = (in_channels // num_heads) ** -0.5
-        self.proj = nn.Dense(
-            in_channels, in_channels, weight_init="XavierUniform"
-        ).to_float(compute_dtype)
-
+        scale = (in_channels // num_heads) ** -0.5
+        self.proj = nn.Dense(in_channels, in_channels).to_float(compute_dtype)
+        if enable_flash_attn:
+            print('use flash attention')
+            self.attn = FlashAttn(num_heads=num_heads, scale=scale, fa_dtype=fa_dtype)
+        else:
+            self.attn = ScaledDot(scale=scale)
         if drop_mode == "dropout":
             self.drop = nn.Dropout(p=dropout_rate)
-            self.attn_drop = nn.Dropout(p=dropout_rate)
         else:
             self.drop = DropPath(dropout_rate=dropout_rate)
-            self.attn_drop = DropPath(dropout_rate=dropout_rate)
 
-    def construct(self, x, attn_mask=None, key_padding_mask=None):
+    def construct(self, x: Tensor, attn_mask: Optional[Tensor] = None, key_padding_mask: Optional[Tensor] = None):
         """construct"""
         query, key, value = self.get_qkv(x)
-        scores = self.matmul(query, key.swapaxes(-1, -2)) * self.scale
-        scores = self._mask_scores(scores, attn_mask, key_padding_mask)
-        attn = self.softmax(scores, self.compute_dtype)
-        attn = self.attn_drop(attn)
-        output = self.matmul(attn, value)
+        mask = self.merge_mask(attn_mask, key_padding_mask)
+        output = self.attn(query, key, value, mask)
+        output = output.astype(mstype.float32)
         output = self._reshape_output(output)
-
         output = self.proj(output)
         output = self.drop(output)
         return output
 
 
-class Mlp(nn.Cell):
-    """Mlp"""
-
+class FeedForward(nn.Cell):
+    """FeedForward"""
     def __init__(self, in_channels, dropout_rate=0.0, compute_dtype=mstype.float16):
         super().__init__()
-        self.fc1 = nn.Dense(
-            in_channels, in_channels * 4, weight_init="XavierUniform"
-        ).to_float(compute_dtype)
-        self.fc2 = nn.Dense(
-            in_channels * 4, in_channels, weight_init="XavierUniform"
-        ).to_float(compute_dtype)
+        self.fc1 = nn.Dense(in_channels, in_channels * 4).to_float(compute_dtype)
+        self.fc2 = nn.Dense(in_channels * 4, in_channels).to_float(compute_dtype)
         self.act_fn = nn.GELU()
         self.dropout = nn.Dropout(p=dropout_rate)
 
-    def construct(self, x):
+    def construct(self, x: Tensor):
         """construct"""
         x = self.fc1(x)
         x = self.act_fn(x)
@@ -209,21 +271,25 @@ class Mlp(nn.Cell):
         return x
 
 
-class AttentionBlock(nn.Cell):
-    r"""
-    `AttentionBlock` comprises an `MultiHeadAttention` and an `MLP` layer.
+class TransformerBlock(nn.Cell):
+    r""" `TransformerBlock` comprises an `MultiHeadAttention` and an `FeedForward` layer.
 
     Args:
         in_channels (int): The input channels.
         num_heads (int): The number of attention heads.
+        enable_flash_attn (bool): Whether use flash attention. FlashAttention only supports Ascend backend.
+            FlashAttention proposed in `FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness <https://arxiv.org/abs/2205.14135>`_.
+            Default: ``False``.
+        fa_dtype (mindspore.dtype): FlashAttention compute dtype. Choose from `mstype.bfloat16`, `mstype.float16`.
+            Default: ``mstype.bfloat16``, indicates ``mindspore.bfloat16``.
         drop_mode (str): Dropout method. Default: ``dropout``. Support ``dropout`` or ``droppath``.
         dropout_rate (float): The drop rate of dropout layer, greater than 0 and less equal than 1. Default: ``0.0``.
         compute_dtype (mindspore.dtype): Compute dtype. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Inputs:
         - **x** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
-        - **mask** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, sequence\_len)` or
-          :math:`(sequence\_len, sequence\_len)` or :math:`(batch\_size, num_heads, sequence\_len, sequence\_len)`.
+        - **mask** (Tensor, optional) - Tensor with shape :math:`(sequence\_len, sequence\_len)` or
+          :math:`(batch\_size, 1, sequence\_len, sequence\_len)`. Default: ``None``.
 
     Outputs:
         - **output** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
@@ -233,8 +299,8 @@ class AttentionBlock(nn.Cell):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell import AttentionBlock
-        >>> model = AttentionBlock(in_channels=256, num_heads=4)
+        >>> from mindflow.cell import TransformerBlock
+        >>> model = TransformerBlock(in_channels=256, num_heads=4)
         >>> x = ops.rand((4, 100, 256))
         >>> output = model(x)
         >>> print(output.shape)
@@ -242,11 +308,13 @@ class AttentionBlock(nn.Cell):
     """
 
     def __init__(self,
-                 in_channels,
-                 num_heads,
-                 drop_mode="dropout",
-                 dropout_rate=0.0,
-                 compute_dtype=mstype.float32,
+                 in_channels: int,
+                 num_heads: int,
+                 enable_flash_attn: bool = False,
+                 fa_dtype: mstype = mstype.bfloat16,
+                 drop_mode: str = "dropout",
+                 dropout_rate: float = 0.0,
+                 compute_dtype: mstype = mstype.float32,
                  ):
         super().__init__()
         self.compute_dtype = compute_dtype
@@ -256,7 +324,7 @@ class AttentionBlock(nn.Cell):
         self.ffn_norm = nn.LayerNorm([in_channels], epsilon=1e-6).to_float(
             mstype.float32
         )
-        self.ffn = Mlp(
+        self.ffn = FeedForward(
             in_channels=in_channels,
             dropout_rate=dropout_rate,
             compute_dtype=compute_dtype,
@@ -264,12 +332,14 @@ class AttentionBlock(nn.Cell):
         self.attention = MultiHeadAttention(
             in_channels=in_channels,
             num_heads=num_heads,
+            enable_flash_attn=enable_flash_attn,
+            fa_dtype=fa_dtype,
             drop_mode=drop_mode,
             dropout_rate=dropout_rate,
             compute_dtype=compute_dtype,
         )
 
-    def construct(self, x, mask=None):
+    def construct(self, x: Tensor, mask: Optional[Tensor] = None):
         """construct"""
         h = x
         x = self.attention_norm(x)
