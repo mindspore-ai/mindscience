@@ -15,7 +15,7 @@
 ## 快速入门
 
 > 1. 将Mindchemistry/mindchemistry文件包下载到当前目录
-> 2. 在[数据集链接](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/)下载相应的数据集
+> 2. 在[数据集链接](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/dataset/)下载相应的数据集
 > 3. 安装依赖包：`pip install -r requirement.txt`
 > 4. 训练命令： `python train.py`
 > 5. 预测命令： `python evaluate.py`
@@ -54,7 +54,7 @@ applications
 
 ## 下载数据集
 
-在[数据集链接](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/)中下载相应的数据集文件夹和dataset_prop.txt数据集属性文件放置于当前路径的dataset文件夹下（如果没有需要自己手动创建），文件路径参考：
+在[数据集链接](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/dataset/)中下载相应的数据集文件夹和dataset_prop.txt数据集属性文件放置于当前路径的dataset文件夹下（如果没有需要自己手动创建），文件路径参考：
 
 ```txt
 crystalflow
@@ -86,8 +86,6 @@ python train.py
 ```
 
 ### 推理
-
-将权重的path写入config文件的checkpoint.last_path中。预训练模型可以从[预训练模型链接](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/pre-train)中获取。
 
 更改config文件中的test字段来更改推理参数，特别是test.num_eval，它**决定了对于每个组分生成多少个样本**，对于后续的评估阶段很重要。
 
