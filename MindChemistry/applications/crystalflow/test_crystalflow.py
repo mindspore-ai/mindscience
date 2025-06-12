@@ -1,6 +1,7 @@
 """model test"""
 import math
 import os
+import urllib.request
 
 import mindspore as ms
 import mindspore.numpy as mnp
@@ -32,6 +33,10 @@ class SinusoidalTimeEmbeddings(nn.Cell):
         embeddings = ops.Concat(axis=-1)(
             (ops.Sin()(embeddings), ops.Cos()(embeddings)))
         return embeddings
+
+def download_file(url, filename):
+    urllib.request.urlretrieve(url, filename)
+    print(f"File downloaded successfully: {filename}")
 
 def test_cspnet():
     """test cspnet.py"""
@@ -153,7 +158,8 @@ def test_loss():
 
     cspnet = CSPNet(num_layers=6, hidden_dim=512, num_freqs=256)
     cspflow = CSPFlow(cspnet)
-    mindspore_ckpt = load_checkpoint("./torch2ms_ckpt/ms_flow.ckpt")
+    download_file('https://download-mindspore.osinfra.cn/mindscience/mindchemistry/crystalflow/ms_flow.ckpt', 'ms_flow.ckpt')
+    mindspore_ckpt = load_checkpoint("ms_flow.ckpt")
     load_param_into_net(cspflow, mindspore_ckpt)
 
     loss_func_mse = L2LossMask(reduction='mean')
