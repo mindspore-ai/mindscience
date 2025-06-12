@@ -18,7 +18,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sklearn.metrics as metrics
 
-
 def generate_true_pred_plot(pred_values, true_values, time, path, suffix=""):
     """
     Generate a plot comparing true values and predicted values, and calculate

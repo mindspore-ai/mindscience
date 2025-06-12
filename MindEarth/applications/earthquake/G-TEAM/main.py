@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"main function"
+"""main function"""
 import argparse
 
 import mindspore as ms
@@ -20,7 +20,7 @@ from mindspore import context
 from mindearth import load_yaml_config, make_dir
 
 from src.utils import init_model, get_logger
-from src.forcast import GTeamInference
+from src.forcast import GTeamInference, GTeamTrain
 
 
 def get_args():
@@ -32,7 +32,6 @@ def get_args():
     parse_args = parser.parse_args()
     return parse_args
 
-
 def test(cfg):
     """main test"""
     save_dir = cfg["summary"].get("summary_dir", "./summary")
@@ -43,9 +42,22 @@ def test(cfg):
     processor.test()
 
 
-if __name__ == "__main__":
+def train(cfg):
+    """main train"""
+    save_dir = cfg["summary"].get("summary_dir", "./summary")
+    make_dir(save_dir)
+    model = init_model(cfg)
+    logger_obj = get_logger(cfg)
+    processor = GTeamTrain(model, cfg, save_dir, logger_obj)
+    processor.train()
+
+
+if __name__ == '__main__':
     args = get_args()
     config = load_yaml_config(args.cfg_path)
     context.set_context(mode=ms.PYNATIVE_MODE)
     ms.set_device(device_target=args.device_target, device_id=args.device_id)
-    test(config)
+    if config['model']['istraining']:
+        train(config)
+    else:
+        test(config)
