@@ -147,7 +147,7 @@ class GVPInputFeaturizer(nn.Cell):
                 d_neighbors, e_idx = ops.Sort(axis=-1, descending=True)(d_adjust)
             else:
                 d_neighbors, e_idx = ops.TopK(sorted=True)(d_adjust, d_adjust.shape[-1])
-            d_neighbors, e_idx = d_neighbors[..., ::-1], e_idx[..., ::-1]
+            d_neighbors, e_idx = ms.mint.flip(d_neighbors, [-1]), ms.mint.flip(e_idx, [-1])
             d_neighbors, e_idx = d_neighbors[:, :, 0:int(min(top_k_neighbors, x.shape[1]))], \
                                  e_idx[:, :, 0:int(min(top_k_neighbors, x.shape[1]))]
         d_neighbors = ms.Tensor(d_neighbors, ms.float32)*1e4
