@@ -29,20 +29,31 @@ class MLP(nn.Cell):
         final_activation: The activation function for the final layer. Default is nn.ReLU.
     """
 
-    def __init__(self, input_shape, dims=(100, 50), final_activation=nn.ReLU()):
+    def __init__(self, input_shape, dims=(100, 50), final_activation=nn.ReLU(), is_mlp=False):
         super().__init__()
         layers = []
         in_dim = input_shape[0]
+        if is_mlp:
+            for dim in dims[:-1]:
+                layers.append(nn.Dense(in_dim, dim))
+                layers.append(nn.LayerNorm((dim,)))
+                layers.append(nn.ReLU())
+                in_dim = dim
+            layers.append(nn.Dense(in_dim, dims[-1]))
 
-        for dim in dims[:-1]:
-            layers.append(nn.Dense(in_dim, dim))
-            layers.append(nn.ReLU())
-            in_dim = dim
-        layers.append(nn.Dense(in_dim, dims[-1]))
+            if final_activation:
+                layers.append(final_activation)
+            self.model = nn.SequentialCell(*layers)
+        else:
+            for dim in dims[:-1]:
+                layers.append(nn.Dense(in_dim, dim))
+                layers.append(nn.ReLU())
+                in_dim = dim
+            layers.append(nn.Dense(in_dim, dims[-1]))
 
-        if final_activation:
-            layers.append(final_activation)
-        self.model = nn.SequentialCell(*layers)
+            if final_activation:
+                layers.append(final_activation)
+            self.model = nn.SequentialCell(*layers)
 
     def construct(self, x):
         """
@@ -61,7 +72,7 @@ class NormalizedScaleEmbedding(nn.Cell):
     convolutional and pooling layers, and processes the features through a multi-layer perceptron (MLP).
     """
 
-    def __init__(self, downsample=5, mlp_dims=(500, 300, 200, 150), eps=1e-8):
+    def __init__(self, downsample=5, mlp_dims=(500, 300, 200, 150), eps=1e-8, use_mlp=False):
         """
         Initialize the module with given parameters.
         Parameters:
@@ -98,8 +109,20 @@ class NormalizedScaleEmbedding(nn.Cell):
         self.conv1d_5 = nn.Conv1d(32, 16, kernel_size=4, has_bias=True, pad_mode="pad")
 
         self.flatten = nn.Flatten()
-        self.mlp = MLP((865,), dims=self.mlp_dims)
+        self.mlp = MLP((865,), dims=self.mlp_dims, is_mlp=use_mlp)
         self.leaky_relu = nn.LeakyReLU(alpha=0.01)
+        self._initialize_weights()
+
+    def _initialize_weights(self):
+        self.conv2d_1.bias.set_data(ms.numpy.zeros_like(self.conv2d_1.bias))
+        self.conv2d_2.bias.set_data(ms.numpy.zeros_like(self.conv2d_2.bias))
+
+        # For Conv1d layers
+        self.conv1d_1.bias.set_data(ms.numpy.zeros_like(self.conv1d_1.bias))
+        self.conv1d_2.bias.set_data(ms.numpy.zeros_like(self.conv1d_2.bias))
+        self.conv1d_3.bias.set_data(ms.numpy.zeros_like(self.conv1d_3.bias))
+        self.conv1d_4.bias.set_data(ms.numpy.zeros_like(self.conv1d_4.bias))
+        self.conv1d_5.bias.set_data(ms.numpy.zeros_like(self.conv1d_5.bias))
 
     def construct(self, x):
         """
@@ -213,6 +236,7 @@ class PositionEmbedding(nn.Cell):
         min_lat, max_lat = wavelengths[0]
         min_lon, max_lon = wavelengths[1]
         min_depth, max_depth = wavelengths[2]
+        assert emb_dim % 10 == 0
         lat_dim = emb_dim // 5
         lon_dim = emb_dim // 5
         depth_dim = emb_dim // 10
@@ -307,7 +331,43 @@ class AddEventToken(nn.Cell):
 
         return x
 
+class SingleStationModel(nn.Cell):
+    """
+    A neural network model for processing seismic waveforms from a single station.
+    This class implements a two-stage processing pipeline: waveform embedding followed by feature extraction.
+    """
+    def __init__(self, waveform_model_dims=(500, 500, 500),
+                 output_mlp_dims=(150, 100, 50, 30, 10), downsample=5, use_mlp=False):
+        """
+        Initialize the SingleStationModel.
 
+        Args:
+            waveform_model_dims (tuple): Dimensions of the MLP in the waveform embedding module.
+                Format: (input_dim, hidden_dim1, hidden_dim2, ...)
+            output_mlp_dims (tuple): Dimensions of the final MLP for feature extraction.
+                Format: (input_dim, hidden_dim1, hidden_dim2, ...)
+            downsample (int): Factor by which to downsample the input waveform data.
+        """
+        super().__init__()
+
+        self.waveform_model = NormalizedScaleEmbedding(downsample=downsample, mlp_dims=waveform_model_dims,
+                                                       use_mlp=use_mlp)
+        self.mlp_mag_single_station = MLP((self.waveform_model.mlp_dims[-1],), output_mlp_dims)
+
+    def construct(self, x):
+        """
+       Forward pass of the SingleStationModel.
+
+       Args:
+           x (Tensor): Input waveform data with shape (batch_size, time_steps, features)
+
+       Returns:
+           Tensor: Extracted features with shape (batch_size, output_features)
+       """
+        emb = self.waveform_model(x)
+        emb_mlp = self.mlp_mag_single_station(emb)
+
+        return emb_mlp
 def _init_pad_mask(waveforms, pga_targets):
     """
     _init_pad_mask function, used to initialize the padding mask.
@@ -344,10 +404,11 @@ class WaveformFullmodel(nn.Cell):
             hidden_dropout=0.0,
             n_pga_targets=0,
             downsample=5,
+            use_mlp=False
     ):
         super().__init__()
         self.waveform_model = NormalizedScaleEmbedding(
-            downsample=downsample, mlp_dims=waveform_model_dims
+            downsample=downsample, mlp_dims=waveform_model_dims, use_mlp=use_mlp
         )
         self.transformer = TransformerEncoder(
             d_model=waveform_model_dims[-1],
@@ -357,12 +418,12 @@ class WaveformFullmodel(nn.Cell):
             dropout=hidden_dropout,
         )
 
-        self.mlp_mag = MLP((waveform_model_dims[-1],), output_mlp_dims)
+        self.mlp_mag = MLP((waveform_model_dims[-1],), output_mlp_dims, is_mlp=use_mlp)
         self.mlp_loc = MLP(
-            (waveform_model_dims[-1],), output_location_dims, final_activation=None
+            (waveform_model_dims[-1],), output_location_dims, final_activation=None, is_mlp=use_mlp
         )
         self.mlp_pga = MLP(
-            (waveform_model_dims[-1],), output_mlp_dims, final_activation=None
+            (waveform_model_dims[-1],), output_mlp_dims, final_activation=None, is_mlp=use_mlp
         )
 
         self.position_embedding = PositionEmbedding(

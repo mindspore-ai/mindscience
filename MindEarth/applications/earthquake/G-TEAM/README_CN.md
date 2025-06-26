@@ -15,7 +15,7 @@
 
 本模型的训练数据来源于[谛听数据集2.0 -中国地震台网多功能大型人工智能训练数据集](http://www.esdc.ac.cn/article/137)，该数据集汇集了中国大陆及其邻近地区（15°-50°N，65°-140°E）1177 个中国地震台网固定台站的波形记录，覆盖时间范围为 2020 年 3 月至 2023 年 2 月。数据集包含研究区域内所有震级大于 0 的地方震事件，共计 264,298 个。我们在训练过程中仅选取了初至 P 波和 S 波震相，并且只保留至少被三个台站记录到的地震事件，以确保数据的可靠性和稳定性。
 
-目前本模型已开源推理部分，可使用提供的[ckpt](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/G-TEAM/)进行推理。
+本模型已全部开源推理和训练模块，其中推理部分使用提供的[ckpt](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/G-TEAM/)进行推理，训练部分使用提供的[hdf5](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/G-TEAM/)和[pkl](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/G-TEAM/)进行训练。
 
 ## 快速开始
 
@@ -23,7 +23,9 @@
 
 ### 运行方式： 在命令行调用`main`脚本
 
-### 推理
+需提前在config.yaml中配置istraining参数设定推理/训练
+istraining: false -- 推理
+istraining: true -- 训练
 
 ```python
 
@@ -33,7 +35,9 @@ python main.py --cfg_path ./config/config.yaml --device_id 0 --device_target Asc
 
 其中， --cfg_path表示配置文件路径，默认值"./config/config.yaml" --device_target 表示设备类型，默认Ascend。 --device_id 表示运行设备的编号，默认值0。
 
-### 结果可视化
+### 推理
+
+### 可视化结果
 
 ![](./images/pga.png)
 
@@ -54,8 +58,15 @@ python main.py --cfg_path ./config/config.yaml --device_id 0 --device_target Asc
 | 推理资源       |        1NPU                    |
 | 推理速度(ms/step)  |     556                 |
 
+### 训练
+
+### 结果展示
+
+![](./images/train_loss.png)
+正常情况Average Training Loss会持续收敛。
+
 ## 贡献者
 
-gitee id: chengjie, longjundong, xujiabao, dinghongyang, funfunplus
+gitee id: xujiabao, longjundong, dinghongyang, chengjie
 
 email: funniless@163.com

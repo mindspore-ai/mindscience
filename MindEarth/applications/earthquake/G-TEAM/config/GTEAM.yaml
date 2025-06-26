@@ -1,4 +1,6 @@
-model: 
+model:
+  istraining: false
+  use_mlp: False
   hidden_dim: 1000
   hidden_dropout: 0.0
   n_heads: 10
@@ -13,6 +15,7 @@ model:
   pga: true
   mode: test
   no_event_token : False
+  max_stations: 5
 data:
   root_dir: "./dataset"
   batch_size: 64
@@ -35,6 +38,39 @@ data:
   waveform_shape: [3000, 3]
   overwrite_sampling_rate: None
   noise_seconds: 5
+training_params:
+  seed: 42
+  clipnorm: 1.0
+  data_path: ./diting2_2020-2022_sc_abridged.hdf5
+  ensemble_rotation: true
+  epochs_full_model: 100
+  epochs_single_station: 5
+  filter_single_station_by_pick: true
+  generator_params:
+  - batch_size: 1
+    cutout_end: 25
+    cutout_start: -1
+    disable_station_foreshadowing: true
+    key: Mag
+    magnitude_resampling: 1.5
+    min_upsample_magnitude: 4
+    pga_from_inactive: true
+    pga_key: pga
+    pga_selection_skew: 1000
+    pos_offset: [30,102]
+    scale_metadata: false
+    selection_skew: 1000
+    shuffle_train_dev: true
+    transform_target_only: false
+    translate: false
+    trigger_based: true
+    upsample_high_station_events: 10
+  loss_weights:
+    location: 1
+    magnitude: 0.3
+    pga: 1
+  lr: 1e-5
+  workers: 1
 summary:
   summary_dir: "./summary"
   ckpt_path: "./dataset/ckpt/g_team.ckpt"

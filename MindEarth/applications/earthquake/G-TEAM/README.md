@@ -32,7 +32,7 @@ The model is trained using the [Diting Dataset 2.0 - Multifunctional Large AI Tr
 - Only retains initial P-wave and S-wave phases  
 - Includes events recorded by ≥3 stations for reliability  
 
-The inference module has been open-sourced and supports prediction using provided checkpoint files (.ckpt).
+This model has fully open-sourced both the inference and training modules. For the inference part, the provided [ckpt](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/G-TEAM/) is used for inference, while the training part utilizes the provided [hdf5](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/G-TEAM/) and [pkl](https://download-mindspore.osinfra.cn/mindscience/mindearth/dataset/G-TEAM/) files for training.
 
 ## Quick Start
 
@@ -41,6 +41,9 @@ You can download the required data and ckpt files for training and inference at 
 ### Execution
 
 Run via command line using the `main` script:
+It is necessary to configure the istraining parameter in the config.yaml file in advance to set up inference or training:
+istraining: false -- Inference
+istraining: true -- Training
 
 ```python
 python main.py --cfg_path ./config/config.yaml --device_id 0 --device_target Ascend
@@ -52,13 +55,15 @@ Parameters:
 --device_target: Hardware type (default: Ascend)
 --device_id: Device ID (default: 0)
 
+### Inference
+
 ### Visualization
 
 ![](./images/pga.png)
 
 Scatter plot compares predicted vs actual PGA values (x-axis vs y-axis). Closer alignment to y=x line indicates higher accuracy.
 
-### 结果展示
+### Results Presentation
 
 |   Parameter         |        NPU              |
 |:----------------------:|:--------------------------:|
@@ -73,8 +78,15 @@ Scatter plot compares predicted vs actual PGA values (x-axis vs y-axis). Closer 
 | Inference Resource       |        1NPU                    |
 | Inference Speed(ms/step)  |     556                 |
 
+### Training
+
+### Results Presentation
+
+![](./images/train_loss.png)
+Under normal circumstances, the Average Training Loss should continue to converge.
+
 ## Contributors
 
-gitee id: chengjie, longjundong, xujiabao, dinghongyang, funfunplus
+gitee id: xujiabao, longjundong, dinghongyang, chengjie
 
 email: funniless@163.com
