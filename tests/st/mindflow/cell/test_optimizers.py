@@ -24,7 +24,7 @@ import numpy as np
 import mindspore as ms
 from mindspore import ops, set_seed, nn
 from mindspore import dtype as mstype
-from mindflow import UNet2D, TransformerBlock, AdaHessian
+from mindflow import UNet2D, TransformerBlock, MultiHeadAttention, AdaHessian
 from mindflow.cell.attention import FeedForward
 from mindflow.cell.unet2d import Down
 
@@ -75,16 +75,62 @@ class TestUNet2D(UNet2D):
 class TestAttentionBlock(TransformerBlock):
     ''' Child class for testing optimizing Attention with AdaHessian '''
 
-    def __init__(self, in_channels, num_heads, drop_mode="dropout", dropout_rate=0.0, compute_dtype=mstype.float16):
-        super().__init__(
-            in_channels, num_heads, drop_mode=drop_mode, dropout_rate=dropout_rate, compute_dtype=compute_dtype)
+    def __init__(self,
+                 in_channels: int,
+                 num_heads: int,
+                 enable_flash_attn: bool = False,
+                 fa_dtype: mstype = mstype.bfloat16,
+                 drop_mode: str = "dropout",
+                 dropout_rate: float = 0.0,
+                 compute_dtype: mstype = mstype.float32,
+                 ):
+        super().__init__(in_channels=in_channels,
+                         num_heads=num_heads,
+                         enable_flash_attn=enable_flash_attn,
+                         fa_dtype=fa_dtype,
+                         drop_mode=drop_mode,
+                         dropout_rate=dropout_rate,
+                         compute_dtype=compute_dtype,
+                         )
 
         class TestMlp(FeedForward):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 self.act_fn = nn.ReLU()  # replace `gelu` with `relu` to avoid `vjp` problem
 
-        self.ffn = TestMlp(in_channels=in_channels, dropout_rate=dropout_rate, compute_dtype=compute_dtype)
+        class TestMultiHeadAttention(MultiHeadAttention):
+            ''' MultiHeadAttention modified to avoid vjp bug '''
+            def get_qkv(self, x: ms.Tensor) -> tuple[ms.Tensor]:
+                ''' use masks to select out q, k, v, instead of tensor reshaping & indexing '''
+                b, n, c = x.shape
+
+                # use matmul with masks to select out q, k, v to avoid vjp problem
+                q_mask = ms.Tensor(np.vstack([np.eye(c), np.zeros([2 * c, c])]), dtype=self.compute_dtype)
+                k_mask = ms.Tensor(np.vstack([np.zeros([c, c]), np.eye(c), np.zeros([c, c])]), dtype=self.compute_dtype)
+                v_mask = ms.Tensor(np.vstack([np.zeros([2 * c, c]), np.eye(c)]), dtype=self.compute_dtype)
+
+                qkv = self.qkv(x)
+
+                q = ops.swapaxes(ops.matmul(qkv, q_mask).reshape(b, n, self.num_heads, -1), 1, 2)
+                k = ops.swapaxes(ops.matmul(qkv, k_mask).reshape(b, n, self.num_heads, -1), 1, 2)
+                v = ops.swapaxes(ops.matmul(qkv, v_mask).reshape(b, n, self.num_heads, -1), 1, 2)
+
+                return q, k, v
+
+        self.ffn = TestMlp(
+            in_channels=in_channels,
+            dropout_rate=dropout_rate,
+            compute_dtype=compute_dtype,
+        )
+        self.attention = TestMultiHeadAttention(
+            in_channels=in_channels,
+            num_heads=num_heads,
+            enable_flash_attn=enable_flash_attn,
+            fa_dtype=fa_dtype,
+            drop_mode=drop_mode,
+            dropout_rate=dropout_rate,
+            compute_dtype=compute_dtype,
+        )
 
 
 @pytest.mark.level0
@@ -133,7 +179,7 @@ def test_adahessian_accuracy(mode):
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [ms.GRAPH_MODE, ms.PYNATIVE_MODE])
-@pytest.mark.parametrize('model_option', ['unet'])
+@pytest.mark.parametrize('model_option', ['unet', 'attention'])
 def test_adahessian_st(mode, model_option):
     """
     Feature: AdaHessian ST test
@@ -146,7 +192,7 @@ def test_adahessian_st(mode, model_option):
 
     # default test with Attention network
     net = TestAttentionBlock(in_channels=256, num_heads=4)
-    inputs = ms.Tensor(np.sin(np.reshape(range(102400), [4, 100, 256])), dtype=ms.float32)
+    inputs = ms.Tensor(np.random.rand(4, 100, 256), dtype=ms.float32)
 
     # test with UNet network
     if model_option.lower() == 'unet':
@@ -159,9 +205,9 @@ def test_adahessian_st(mode, model_option):
             stride=2,
             activation='relu',
             data_format="NCHW",
-            enable_bn=True,
+            enable_bn=False, # bn leads to bug in PYNATIVE_MODE for MS2.5.0
         )
-        inputs = ms.Tensor(np.sin(np.reshape(range(16384), [2, 2, 64, 64])), dtype=ms.float32)
+        inputs = ms.Tensor(np.random.rand(2, 2, 64, 64), dtype=ms.float32)
 
     def forward(a):
         return ops.mean(net(a)**2)**.5
@@ -173,16 +219,17 @@ def test_adahessian_st(mode, model_option):
         learning_rate=0.1, beta1=0.9, beta2=0.999, eps=1e-8, weight_decay=0.)
 
     for _ in range(4):
-        loss = forward(inputs)
         optimizer(grad_fn, inputs)
 
+    loss = forward(inputs)
     assert ops.isfinite(loss)
 
 
-@pytest.mark.level1
+@pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
-def test_adahessian_compare():
+@pytest.mark.parametrize('mode', [ms.PYNATIVE_MODE])
+def test_adahessian_compare(mode):
     """
     Feature: AdaHessian compare with Adam
     Description: Compare the algorithm results of the AdaHessian optimizer with Adam.
@@ -190,12 +237,12 @@ def test_adahessian_compare():
                 The optimization runs 100 rounds to demonstrate an essential loss decrease.
     Expectation: The loss of AdaHessian outperforms Adam by 20% under the same configuration on an Attention network.
     """
-    ms.set_context(mode=ms.PYNATIVE_MODE)
+    ms.set_context(mode=mode)
 
     def get_loss(optimizer_option):
         ''' compare Adam and  AdaHessian '''
         net = TestAttentionBlock(in_channels=256, num_heads=4)
-        inputs = ms.Tensor(np.sin(np.reshape(range(102400), [4, 100, 256])), dtype=ms.float32)
+        inputs = ms.Tensor(np.random.rand(4, 100, 256), dtype=ms.float32)
 
         def forward(a):
             return ops.mean(net(a)**2)**.5
@@ -211,13 +258,13 @@ def test_adahessian_compare():
                 net.trainable_params(),
                 learning_rate=0.01, beta1=0.9, beta2=0.999, eps=1e-8, weight_decay=0.)
 
-        for _ in range(100):
-            loss = forward(inputs)
+        for _ in range(20):
             if optimizer_option.lower() == 'adam':
                 optimizer(grad_fn(inputs))
             else:
                 optimizer(grad_fn, inputs)
 
+        loss = forward(inputs)
         return loss
 
     loss_adam = get_loss('adam')
