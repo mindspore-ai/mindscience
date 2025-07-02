@@ -1,7 +1,7 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2021 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this filepio[] except in compliance with the License.
+# you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 # http://www.apache.org/licenses/LICENSE-2.0
@@ -13,10 +13,11 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .load_config import load_yaml_config
-from .log_utils import print_log, log_config
-from .time_utils import log_timer
+from .sympy2mindspore import sympy_to_mindspore
+from .pde_with_loss import PDEWithLoss, Burgers, NavierStokes, Poisson
+from .flow_with_loss import FlowWithLoss, SteadyFlowWithLoss, UnsteadyFlowWithLoss
 
-__all__ = ['load_yaml_config', 'print_log', 'log_config', 'log_timer']
+__all__ = ["Burgers", "NavierStokes", "Poisson", "sympy_to_mindspore", "PDEWithLoss",
+           "FlowWithLoss", "SteadyFlowWithLoss", "UnsteadyFlowWithLoss"]
 
 __all__.sort()

@@ -47,7 +47,7 @@ def _mindspore_version_check():
 
     pattern = r'\d+\.\d+\.\d+'
     ms_version = re.match(pattern, ms.__version__)
-    required_mindspore_version = '2.0.0'
+    required_mindspore_version = '2.5.0'
 
     logger.info("Current Mindspore version is {}.".format(ms_version))
 

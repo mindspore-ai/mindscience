@@ -1,4 +1,4 @@
-# Copyright 2023 Huawei Technologies Co., Ltd
+# Copyright 2022 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,16 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ============================================================================
-"""init"""
-from .fno import FNOBlocks, FNO1D, FNO2D, FNO3D
-from .kno1d import KNO1D
-from .kno2d import KNO2D
-from .pdenet import PDENet
-from .percnn import PeRCNN
-from .sno import SNO, SNO1D, SNO2D, SNO3D
+# ==============================================================================
+"""euler integrator scheme"""
+from mindspore import jit_class
 
-__all__ = ["FNOBlocks", "FNO1D", "FNO2D", "FNO3D", "KNO1D", "KNO2D", "PDENet", "PeRCNN",
-           "SNO", "SNO1D", "SNO2D", "SNO3D"]
+from .base import Integrator
 
-__all__.sort()
+
+@jit_class
+class Euler(Integrator):
+    """Euler scheme"""
+
+    def __init__(self):
+        self.number_of_stages = 1
+
+    def integrate(self, con_var, init_con_var, rhs, timestep, stage):
+        res = None
+        if stage == 0:
+            res = con_var + timestep * rhs
+        return res

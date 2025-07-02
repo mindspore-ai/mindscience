@@ -15,19 +15,21 @@
 """
 init
 """
-from .data import *
-from .geometry import *
-from .core import *
+from .demnet import *
+from .dgmr import *
+from .diffusion import *
+from .GraphCast import *
+from .layers import *
+from .neural_operator import *
 from .pde import *
-from .cell import *
-from .cfd import *
-from .utils import *
+from .sharker import *
 
 __all__ = []
-__all__.extend(data.__all__)
-__all__.extend(geometry.__all__)
-__all__.extend(core.__all__)
+__all__.extend(demnet.__all__)
+__all__.extend(dgmr.__all__)
+__all__.extend(diffusion.__all__)
+__all__.extend(GraphCast.__all__)
+__all__.extend(layers.__all__)
+__all__.extend(neural_operator.__all__)
 __all__.extend(pde.__all__)
-__all__.extend(cell.__all__)
-__all__.extend(cfd.__all__)
-__all__.extend(utils.__all__)
+__all__.extend(sharker.__all__)

@@ -1,7 +1,7 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2021 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this filepio[] except in compliance with the License.
+# you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 # http://www.apache.org/licenses/LICENSE-2.0
@@ -13,10 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .load_config import load_yaml_config
-from .log_utils import print_log, log_config
-from .time_utils import log_timer
+from .parse_sympy import sympy_to_mindspore
 
-__all__ = ['load_yaml_config', 'print_log', 'log_config', 'log_timer']
-
-__all__.sort()
+__all__ = ['sympy_to_mindspore',
+           ]
