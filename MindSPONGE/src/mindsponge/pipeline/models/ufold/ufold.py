@@ -143,7 +143,7 @@ class UFold(Model):
         seq_embedding_batch = Tensor(ops.Cast()(seq_embeddings, mstype.float32))
         pred_contacts = self.network(seq_embedding_batch)
         contact_masks = ops.ZerosLike()(pred_contacts)
-        contact_masks[:, :seq_lens.item(0), :seq_lens.item(0)] = 1
+        contact_masks[:, :seq_lens[0].item(), :seq_lens[0].item()] = 1
         contact_masks = contact_masks.astype(ms.float32)
         feat = [seq_embedding_batch, contact_masks, contacts_batch]
         feat = mutable(feat)
