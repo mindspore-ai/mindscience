@@ -1,0 +1,222 @@
+# ============================================================================
+# Copyright 2025 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+"""atomic system"""
+
+from dataclasses import dataclass
+from typing import List, Optional
+
+import ase
+from ase import constraints
+from ase.calculators.singlepoint import SinglePointCalculator
+
+import mindspore as ms
+from mindspore import Tensor, mint
+
+from src import featurization_utilities
+from src.base import AtomGraphs
+
+
+@dataclass
+class SystemConfig:
+    """Config controlling how to featurize a system of atoms.
+
+    Args:
+        radius: radius for edge construction
+        max_num_neighbors: maximum number of neighbours each node can send messages to.
+        use_timestep_0: (unused - purely for compatibility with internal models)
+    """
+
+    radius: float
+    max_num_neighbors: int
+    use_timestep_0: bool = True
+
+
+def atom_graphs_to_ase_atoms(
+        graphs: AtomGraphs,
+        energy: Optional[Tensor] = None,
+        forces: Optional[Tensor] = None,
+        stress: Optional[Tensor] = None,
+) -> List[ase.Atoms]:
+    """Converts a list of graphs to a list of ase.Atoms."""
+    if "atomic_numbers_embedding" in graphs.node_features:
+        atomic_numbers = mint.argmax(
+            graphs.node_features["atomic_numbers_embedding"], dim=-1
+        )
+    else:
+        atomic_numbers = graphs.node_features["atomic_numbers"]
+    atomic_numbers_split = mint.split(atomic_numbers, graphs.n_node.tolist())
+    positions_split = mint.split(graphs.positions, graphs.n_node.tolist())
+    assert graphs.tags is not None and graphs.system_features is not None
+    tags = mint.split(graphs.tags, graphs.n_node.tolist())
+
+    calculations = {}
+    if energy is not None:
+        energy_list = mint.unbind(energy.detach())
+        assert len(energy_list) == len(atomic_numbers_split)
+        calculations["energy"] = energy_list
+    if forces is not None:
+        forces_list = mint.split(forces.detach(), graphs.n_node.tolist())
+        assert len(forces_list) == len(atomic_numbers_split)
+        calculations["forces"] = forces_list
+    if stress is not None:
+        stress_list = mint.unbind(stress.detach())
+        assert len(stress_list) == len(atomic_numbers_split)
+        calculations["stress"] = stress_list
+
+    atoms_list = []
+    for index, (n, p, c, t) in enumerate(
+            zip(atomic_numbers_split, positions_split, graphs.cell, tags)
+    ):
+        atoms = ase.Atoms(
+            numbers=n.detach(),
+            positions=p.detach(),
+            cell=c.detach(),
+            tags=t.detach(),
+            pbc=mint.any(c != 0),
+        )
+        if calculations != {}:
+            spc = SinglePointCalculator(
+                atoms=atoms,
+                **{
+                    key: (
+                        val[index].item()
+                        if val[index].nelement() == 1
+                        else val[index].numpy()
+                    )
+                    for key, val in calculations.items()
+                },
+            )
+            atoms.calc = spc
+        atoms_list.append(atoms)
+
+    return atoms_list
+
+
+def ase_atoms_to_atom_graphs(
+        atoms: ase.Atoms,
+        system_config: SystemConfig = SystemConfig(
+            radius=10.0, max_num_neighbors=20, use_timestep_0=True
+        ),
+        system_id: Optional[int] = None,
+        brute_force_knn: Optional[bool] = None,
+) -> AtomGraphs:
+    """Generate AtomGraphs from an ase.Atoms object.
+
+    Args:
+        atoms: ase.Atoms object
+        system_config: SystemConfig object
+        system_id: Optional system_id
+        brute_force_knn: whether to use a 'brute force' knn approach with torch.cdist for kdtree construction.
+            Defaults to None, in which case brute_force is used if we a GPU is available (2-6x faster),
+            but not on CPU (1.5x faster - 4x slower). For very large systems, brute_force may OOM on GPU,
+            so it is recommended to set to False in that case.
+        device: device to put the tensors on.
+
+    Returns:
+        AtomGraphs object
+    """
+    atomic_numbers = ms.from_numpy(atoms.numbers).long()
+    atom_type_embedding = mint.nn.functional.one_hot(
+        atomic_numbers, num_classes=118
+    ).type(ms.float32)
+
+    node_feats = {
+        "atomic_numbers": atomic_numbers.to(ms.int64),
+        "atomic_numbers_embedding": atom_type_embedding.to(ms.float32),
+        "positions": ms.from_numpy(atoms.positions).to(ms.float32),
+    }
+    system_feats = {"cell": Tensor(atoms.cell.array[None, ...]).to(ms.float32)}
+    edge_feats, senders, receivers = _get_edge_feats(
+        node_feats["positions"],
+        system_feats["cell"][0],
+        system_config.radius,
+        system_config.max_num_neighbors,
+        brute_force=brute_force_knn,
+    )
+
+    num_atoms = len(node_feats["positions"])
+    atom_graph = AtomGraphs(
+        senders=senders,
+        receivers=receivers,
+        n_node=Tensor([num_atoms]),
+        n_edge=Tensor([len(senders)]),
+        node_features=node_feats,
+        edge_features=edge_feats,
+        system_features=system_feats,
+        system_id=Tensor([system_id]) if system_id is not None else system_id,
+        fix_atoms=ase_fix_atoms_to_tensor(atoms),
+        tags=_get_ase_tags(atoms),
+        radius=system_config.radius,
+        max_num_neighbors=system_config.max_num_neighbors,
+    )
+    return atom_graph
+
+
+def _get_edge_feats(
+        positions: Tensor,
+        cell: Tensor,
+        radius: float,
+        max_num_neighbours: int,
+        brute_force: Optional[bool] = None,
+):
+    """Get edge features.
+
+    Args:
+        positions: (n_nodes, 3) positions tensor
+        cell: 3x3 tensor unit cell for a system
+        radius: radius for edge construction
+        max_num_neighbours: maximum number of neighbours each node can send messages to.
+        n_kdtree_workers: number of workers to use for kdtree construction.
+        brute_force: whether to use brute force for kdtree construction.
+    """
+    # Construct a graph from a 3x3 supercell (as opposed to an infinite supercell).
+    (
+        edge_index,
+        edge_vectors,
+    ) = featurization_utilities.compute_pbc_radius_graph(
+        positions=positions,
+        periodic_boundaries=cell,
+        radius=radius,
+        max_number_neighbors=max_num_neighbours,
+        brute_force=brute_force,
+    )
+    edge_feats = {
+        "vectors": edge_vectors.to(ms.float32),
+        "r": edge_vectors.norm(dim=-1),
+    }
+    senders, receivers = edge_index[0], edge_index[1]
+    return edge_feats, senders, receivers
+
+
+def _get_ase_tags(atoms: ase.Atoms) -> Tensor:
+    """Get tags from ase.Atoms object."""
+    tags = atoms.get_tags()
+    if tags is not None:
+        tags = Tensor(tags)
+    else:
+        tags = mint.zeros(len(atoms))
+    return tags
+
+
+def ase_fix_atoms_to_tensor(atoms: ase.Atoms) -> Optional[Tensor]:
+    """Get fixed atoms from ase.Atoms object."""
+    fixed_atoms = None
+    if atoms.constraints is not None and atoms.constraints:
+        constraint = atoms.constraints[0]
+        if isinstance(constraint, constraints.FixAtoms):
+            fixed_atoms = mint.zeros((len(atoms)), dtype=ms.bool_)
+            fixed_atoms[constraint.index] = True
+    return fixed_atoms
