@@ -1,0 +1,68 @@
+name: 🛠️ Installation
+description: Report an issue here when you hit errors during installation.
+title: "[Installation]: "
+labels: ["installation"]
+
+body:
+- type: markdown
+  attributes:
+    value: >
+      #### Before submitting an issue, please make sure the issue hasn't been already addressed by searching through [the existing and past issues](https://gitee.com/mindspore/mindscience/issues).
+- type: dropdown
+  id: domain
+  attributes:
+   label: Which domain the issue belongs to?
+   options:
+    - MindSpore Science Core
+    - applications-SPONGE
+    - applications-Flow
+    - applications-Energy
+    - applications-Chemistry
+    - applications-Earth
+    - Others
+  validations:
+   required: true
+
+- type: textarea
+  attributes:
+    label: Your current environment
+    description: |
+      Environment / 环境信息 (Mandatory / 必填)
+    value: |
+      - **Hardware Environment / 硬件环境(Mandatory / 必填)**:
+        Hardware (e.g.`Atlas 800T A2`)
+  
+        样例：
+  
+      | 后端类型| 硬件具体类别 |
+      | --- | --- |
+      | Server |  Atlas 800T A2 |
+      | CPU| Mac CPU/Win CPU/Linux CPU|
+
+
+      - **Software Environment / 软件环境 (Mandatory / 必填)**:
+        迭代版本新增问题样例：（根据实际修改和增删）
+
+      | Software | Version(根据实际修改，必填)|
+      | --- | --- |
+      | MindSpore | MindSpore 2.4.0 |
+      | CANN | 8.0.0.beta1  |
+      | Python | Python XXXXXX  |
+      | OS platform | Ubuntu XXXXXX  |
+      | GCC/Compiler version | XXXXXX |
+
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: How you are installing MindScience
+    description: |
+      Paste the full command you are trying to execute.
+    placeholder: |
+      ```sh
+      pip install mindsponge_*.whl
+      ```
+- type: markdown
+  attributes:
+    value: >
+      Thanks for contributing 🎉!

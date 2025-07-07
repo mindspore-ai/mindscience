@@ -1,0 +1,62 @@
+name: 📚 Documentation
+description: Request updates or additions to MindScience documentation
+title: "[Doc]: "
+labels: ["documentation"]
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      Thanks for taking the time to help MindScience and improve our documentation!
+      - If this is your first time, please read [our contributor guidelines](https://gitee.com/mindspore/mindscience/blob/master/CONTRIBUTION.md).
+      - You also confirm that you have searched the [open documentation issues](https://gitee.com/mindspore/mindscience/issues) and have found no duplicates for this request
+- type: dropdown
+  id: domain
+  attributes:
+   label: Which domain the issue belongs to?
+   options:
+    - MindSpore Science Core
+    - applications-SPONGE
+    - applications-Flow
+    - applications-Energy
+    - applications-Chemistry
+    - applications-Earth
+    - Others
+  validations:
+   required: true
+
+- type: dropdown
+  id: new_or_correction
+  attributes:
+    label: Is this for new documentation, or an update to existing docs?
+    options:
+      - New
+      - Update
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: 📚 The doc issue
+    description: >
+      Describe the incorrect/future/missing documentation.
+    value: |
+      1. 【Document Link】/【文档链接】
+
+      2. 【Issues Section】/【问题文档片段】
+
+      3. 【Existing Issues】/【存在的问题】
+
+      4. 【Expected Result】【预期结果】
+
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Suggest a potential alternative/fix
+    description: >
+      Tell us how we could improve the documentation in this regard.
+- type: markdown
+  attributes:
+    value: >
+      Thanks for contributing 🎉!

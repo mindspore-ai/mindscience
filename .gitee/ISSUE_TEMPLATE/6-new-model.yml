@@ -1,0 +1,46 @@
+name: 🤗 Support request for a new model of science
+description: Submit a proposal/request for a new model of science
+title: "[New Model]: "
+labels: ["new-model"]
+
+body:
+- type: markdown
+  attributes:
+    value: >
+      #### Before submitting an issue, please make sure the issue hasn't been already addressed by searching through [the existing and past issues](https://gitee.com/mindspore/mindscience/issues).
+- type: dropdown
+  id: domain
+  attributes:
+   label: Which domain the issue belongs to?
+   options:
+    - MindSpore Science Core
+    - applications-SPONGE
+    - applications-Flow
+    - applications-Energy
+    - applications-Chemistry
+    - applications-Earth
+    - Others
+  validations:
+   required: true
+
+- type: textarea
+  attributes:
+    label: The model to consider.
+    description: >
+      A url, pointing to the model, e.g. https://huggingface.co/openai-community/gpt2 .
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: The closest model MindScience already supports.
+    description: >
+      Here is the list of models already supported by MindScience: https://gitee.com/mindspore/mindscience#%E6%A6%82%E8%BF%B0 . Which model is the most similar to the model you want to add support for?
+- type: textarea
+  attributes:
+    label: What's your difficulty of supporting the model you want?
+    description: >
+      For example, any new operators or new architecture?
+- type: markdown
+  attributes:
+    value: >
+      Thanks for contributing 🎉!
