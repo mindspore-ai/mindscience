@@ -1,0 +1,8 @@
+python>=3.10
+cached_path>=1.6.7
+ase>=3.24.0
+numpy>=1.26.4
+scipy>=1.15.1
+dm-tree==0.1.8
+tqdm>=4.66.5
+mindspore==2.5.0
