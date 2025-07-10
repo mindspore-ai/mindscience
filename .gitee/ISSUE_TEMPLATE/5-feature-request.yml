@@ -9,16 +9,18 @@ body:
     value: >
       #### Before submitting an issue, please make sure the issue hasn't been already addressed by searching through [the existing and past issues](https://gitee.com/mindspore/mindscience/issues).
 - type: dropdown
-  id: domain
+  id: module
   attributes:
-   label: Which domain the issue belongs to?
+   label: Which module the issue belongs to?
    options:
-    - MindSpore Science Core
-    - applications-SPONGE
-    - applications-Flow
-    - applications-Energy
-    - applications-Chemistry
-    - applications-Earth
+    - MindScience data
+    - MindScience common
+    - MindScience e3nn
+    - MindScience models
+    - MindScience sciops
+    - MindScience solver
+    - MindScience sharker
+    - MindScience utils
     - Others
   validations:
    required: true
@@ -37,7 +39,7 @@ body:
   attributes:
     label: 🚀 The feature, motivation and pitch
     description: >
-      A clear and concise description of the feature proposal. Please outline the motivation for the proposal. Is your feature request related to a specific problem? e.g., *"I'm working on X and would like Y to be possible"*. If this is related to another GitHub issue, please link here too.
+      A clear and concise description of the feature proposal. Please outline the motivation for the proposal. Is your feature request related to a specific problem? e.g., *"I'm working on X and would like Y to be possible"*. If this is related to another GitHub issue, please link here too. For design design, you can refer to [feature design template](https://gitee.com/mindspore/mindscience/blob/br_refactor/docs/template/feature_design.md).
   validations:
     required: true
 - type: textarea
