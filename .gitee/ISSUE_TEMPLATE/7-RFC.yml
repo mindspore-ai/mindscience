@@ -1,0 +1,87 @@
+name: 💬 Request for comments (RFC).
+description: Ask for feedback on major architectural changes or design choices.
+title: "[RFC]: "
+labels: ["RFC"]
+
+body:
+- type: markdown
+  attributes:
+    value: >
+      #### Please take a look at previous [RFCs](https://gitee.com/mindspore/mindscience/issues) for reference.
+- type: dropdown
+  id: domain
+  attributes:
+   label: Which domain the issue belongs to?
+   options:
+    - MindSpore Science Core
+    - applications-SPONGE
+    - applications-Flow
+    - applications-Energy
+    - applications-Chemistry
+    - applications-Earth
+    - Others
+  validations:
+   required: true
+   
+- type: textarea
+  attributes:
+    label: Backgroud.
+    description: >
+      Backgroud（背景信息）
+    placeholder: |
+      - Describe/Explain the status of the problem you wish to solve.
+      - Attach relevant issues if there is any.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Origin
+    description: >
+      Origin（信息来源）
+    placeholder: |
+      - Explain which department/team made this request so that its priority can be given.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Benefit / Necessity
+    description: >
+      Benefit / Necessity （价值/作用）
+    placeholder: |
+      - Describe/Explain the key value by fulfilling the request.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Design
+    description: >
+      Design（设计方案）
+    placeholder: |
+      - Describe/Explain the general idea of the design. Pseudo-code is allowed
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Feedback Period.
+    description: >
+      The feedback period of the RFC. Usually at least one week.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: CC List.
+    description: >
+      The list of people you want to CC.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Any Other Things.
+    description: >
+      Any other things you would like to mention.
+  validations:
+    required: false
+- type: markdown
+  attributes:
+    value: >
+      Thanks for contributing 🎉!

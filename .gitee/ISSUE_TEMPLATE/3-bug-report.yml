@@ -1,0 +1,308 @@
+name: 🐛 Bug report
+description: Raise an issue here if you find a bug.
+title: "[Bug]: "
+labels: ["bug"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to help MindScience and fill out this bug report!
+        - If this is your first time, please read [our contributor guidelines](https://gitee.com/mindspore/mindscience/blob/master/CONTRIBUTION.md).
+        - You also confirm that you have searched the [open documentation issues](https://gitee.com/mindspore/mindscience/issues) and have found no duplicates for this request
+  - type: dropdown
+    id: domain
+    attributes:
+     label: Which domain the issue belongs to?
+     options:
+      - MindSpore Science Core
+      - applications-SPONGE
+      - applications-Flow
+      - applications-Energy
+      - applications-Chemistry
+      - applications-Earth
+      - Others
+    validations:
+     required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of MindScience are you running?
+      placeholder: "example: r0.7"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: installation-method
+      description: |
+        Paste the full command you are trying to execute.
+      placeholder: |
+        ```sh
+        pip install mindsponge_*.whl
+        ```
+
+  - type: textarea
+    attributes:
+      label: Your current environment
+      description: |
+        Environment / 环境信息 (Mandatory / 必填)
+      value: |
+        - **Hardware Environment / 硬件环境(Mandatory / 必填)**:
+          Hardware (e.g.`Atlas 800T A2`)
+
+          样例：
+
+        | 后端类型| 硬件具体类别 |
+        | --- | --- |
+        | Server |  Atlas 800T A2 |
+        | CPU| Mac CPU/Win CPU/Linux CPU|
+
+
+        - **Software Environment / 软件环境 (Mandatory / 必填)**:
+          迭代版本新增问题样例：（根据实际修改和增删）
+
+        | Software | Version(根据实际修改，必填)|
+        | --- | --- |
+        | MindSpore | MindSpore 2.4.0 |
+        | CANN | 8.0.0.beta1  |
+        | Python | Python XXXXXX  |
+        | OS platform | Ubuntu XXXXXX  |
+        | GCC/Compiler version | XXXXXX |
+
+
+          bugfix版本问题引入样例：（根据实际修改和增删）
+
+        | Software | Version(根据实际修改，必填)|
+        | --- | --- |
+        | MindSpore | MindSpore 2.4.0  （成功）master_202407131XXXXXX _a4230c71d（失败）|
+        | CANN | 8.0.0.beta1 |
+        | CANN 归档地址 |    |
+        | Python | Python XXXXXX  |
+        | OS platform | Ubuntu XXXXXX  |
+        |  GCC/Compiler version | XXXXXX  |
+
+    validations:
+      required: true
+
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the issue
+      description: |
+        Please provide a complete and succinct description of the problem, including what you expected to happen.
+      value: |
+        #### 1.Describe the current behavior / 问题描述 (Mandatory / 必填)
+
+        样例：  （根据实际修改和增删）
+
+        > sponge.colvar.Distance()报错，同时 sponge.metrics.Metric其子类的 .update() 报错
+
+        #### 2. / 关联用例 (Mandatory / 必填)Related testcase
+
+        ```python
+          from mindspore import Tensor
+          from sponge.colvar import Distance
+          from sponge.metrics import MetricCV
+          cv = Distance([0,1])
+          coordinate = Tensor([[[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]])
+          metric = MetricCV(cv)
+          metric.update(coordinate)
+          print(metric.eval())
+        ```
+
+        #### 3.Steps to reproduce the issue / 重现步骤 (Mandatory / 必填)
+
+        > 测试步骤：运行关联用例即可
+        > 用例执行命令：来自CI日志或者用户执行命令
+
+
+        #### 4.Describe the expected behavior / 预期结果 (Mandatory / 必填)
+
+        > **【预期结果】**：MindSpore 1.10.1 版本下，可正常运行。预期输出为 [1.]
+
+        #### 5.Related log / screenshot / 日志 / 截图 (Mandatory / 必填)
+
+        ```shell
+          ---------------------------------------------------------------------------
+          ValueError                                Traceback (most recent call last)
+          Cell In[4], line 7
+               5 coordinate = Tensor([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+               6 metric = MetricCV(cv)
+          ----> 7 metric.update(coordinate)
+               8 print(metric.eval())
+          
+          File ~/mindscience/MindSPONGE/./src/sponge/metrics/metrics.py:190, in MetricCV.update(self, coordinate, pbc_box, energy, force, potentials, total_bias, biases)
+             163 """
+             164 
+             165 Args:
+            (...)
+             186     V:  Number of bias potential energies.
+             187 """
+             188 #pylint: disable=unused-argument
+          --> 190 colvar = self.colvar(coordinate, pbc_box)
+             192 self._value = self._convert_data(colvar)
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/nn/cell.py:705, in Cell.__call__(self, *args, **kwargs)
+             703 except Exception as err:
+             704     _pynative_executor.clear_res()
+          --> 705     raise err
+             707 if isinstance(output, Parameter):
+             708     output = output.data
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/nn/cell.py:701, in Cell.__call__(self, *args, **kwargs)
+             699 try:
+             700     _pynative_executor.new_graph(self, *args, **kwargs)
+          --> 701     output = self._run_construct(args, kwargs)
+             702     _pynative_executor.end_graph(self, output, *args, **kwargs)
+             703 except Exception as err:
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/nn/cell.py:482, in Cell._run_construct(self, cast_inputs, kwargs)
+             480     output = self._shard_fn(*cast_inputs, **kwargs)
+             481 else:
+          --> 482     output = self.construct(*cast_inputs, **kwargs)
+             483 if self._enable_forward_hook:
+             484     output = self._run_forward_hook(cast_inputs, output)
+          
+          File ~/mindscience/MindSPONGE/./src/sponge/colvar/basic/distance.py:146, in Distance.construct(self, coordinate, pbc_box)
+             131 r"""calculate distance.
+             132 
+             133 Args:
+            (...)
+             142 
+             143 """
+             145 # (B, ..., D)
+          --> 146 vector = self.vector(coordinate, pbc_box)
+             148 # (B, ...) or (B, ..., 1)
+             149 if self.norm_last_dim is None:
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/nn/cell.py:705, in Cell.__call__(self, *args, **kwargs)
+             703 except Exception as err:
+             704     _pynative_executor.clear_res()
+          --> 705     raise err
+             707 if isinstance(output, Parameter):
+             708     output = output.data
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/nn/cell.py:701, in Cell.__call__(self, *args, **kwargs)
+             699 try:
+             700     _pynative_executor.new_graph(self, *args, **kwargs)
+          --> 701     output = self._run_construct(args, kwargs)
+             702     _pynative_executor.end_graph(self, output, *args, **kwargs)
+             703 except Exception as err:
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/nn/cell.py:482, in Cell._run_construct(self, cast_inputs, kwargs)
+             480     output = self._shard_fn(*cast_inputs, **kwargs)
+             481 else:
+          --> 482     output = self.construct(*cast_inputs, **kwargs)
+             483 if self._enable_forward_hook:
+             484     output = self._run_forward_hook(cast_inputs, output)
+          
+          File ~/mindscience/MindSPONGE/./src/sponge/colvar/atoms/vector.py:183, in Vector.construct(self, coordinate, pbc_box)
+             180     atoms1 = self.atoms1(coordinate, pbc_box)
+             181 else:
+             182     # (B, ..., 2, D)
+          --> 183     atoms = self.atoms(coordinate, pbc_box)
+             184     # (B, ..., 1, D) <- (B, ..., 2, D)
+             185     atoms0, atoms1 = self.split2(atoms)
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/nn/cell.py:705, in Cell.__call__(self, *args, **kwargs)
+             703 except Exception as err:
+             704     _pynative_executor.clear_res()
+          --> 705     raise err
+             707 if isinstance(output, Parameter):
+             708     output = output.data
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/nn/cell.py:701, in Cell.__call__(self, *args, **kwargs)
+             699 try:
+             700     _pynative_executor.new_graph(self, *args, **kwargs)
+          --> 701     output = self._run_construct(args, kwargs)
+             702     _pynative_executor.end_graph(self, output, *args, **kwargs)
+             703 except Exception as err:
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/nn/cell.py:482, in Cell._run_construct(self, cast_inputs, kwargs)
+             480     output = self._shard_fn(*cast_inputs, **kwargs)
+             481 else:
+          --> 482     output = self.construct(*cast_inputs, **kwargs)
+             483 if self._enable_forward_hook:
+             484     output = self._run_forward_hook(cast_inputs, output)
+          
+          File ~/mindscience/MindSPONGE/./src/sponge/colvar/atoms/atoms.py:232, in Atoms.construct(self, coordinate, pbc_box)
+             219 r"""get position coordinate(s) of specific atom(s)
+             220 
+             221 Args:
+            (...)
+             229 
+             230 """
+             231 # (B, a_1, a_2, ..., a_{n}, D) <- (B, A, D)
+          --> 232 atoms = func.gather_vector(coordinate, self.index)
+             233 if self.keep_in_box:
+             234     atoms = self.coordinate_in_pbc(atoms, pbc_box)
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/common/api.py:718, in jit.<locals>.wrap_mindspore.<locals>.staging_specialize(*args, **kwargs)
+             716 if _is_pynative_parallel() and func.__name__ == _PYNATIVE_PARALLEL_FUNC_NAME:
+             717     process_obj = hash_args
+          --> 718 out = _MindsporeFunctionExecutor(func, hash_obj, input_signature, process_obj, jit_config)(*args, **kwargs)
+             719 return out
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/common/api.py:121, in _wrap_func.<locals>.wrapper(*arg, **kwargs)
+             119 @wraps(fn)
+             120 def wrapper(*arg, **kwargs):
+          --> 121     results = fn(*arg, **kwargs)
+             122     return _convert_python_data(results)
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/common/api.py:350, in _MindsporeFunctionExecutor.__call__(self, *args, **kwargs)
+             348 except Exception as err:
+             349     _pynative_executor.clear_res()
+          --> 350     raise err
+             352 if context.get_context("precompile_only"):
+             353     return None
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/common/api.py:344, in _MindsporeFunctionExecutor.__call__(self, *args, **kwargs)
+             342 if context.get_context("mode") == context.PYNATIVE_MODE:
+             343     _pynative_executor.set_jit_compile_status(True, phase)
+          --> 344     phase = self.compile(self.fn.__name__, *args_list, **kwargs)
+             345     _pynative_executor.set_jit_compile_status(False, phase)
+             346 else:
+          
+          File ~/.local/lib/python3.8/site-packages/mindspore/common/api.py:435, in _MindsporeFunctionExecutor.compile(self, method_name, *args, **kwargs)
+             433 else:
+             434     setattr(self.fn, "__jit_function__", True)
+          --> 435 is_compile = self._graph_executor.compile(self.fn, compile_args, kwargs, phase, True)
+             436 if isinstance(self.fn, types.MethodType):
+             437     delattr(self.fn.__func__, "__jit_function__")
+          
+          ValueError: For primitive[BroadcastTo], the attribute[x shape] must be less than or equal to 1, but got 2.
+          
+          ----------------------------------------------------
+          - C++ Call Stack: (For framework developers)
+          ----------------------------------------------------
+          mindspore/core/utils/check_convert_utils.cc:675 Check
+        ```
+
+        ### 
+
+        #### 6.Special notes for this issue/备注 (Optional / 选填)
+
+        **【定位人】**吴某某（根据实际修改）
+
+    validations:
+      required: true
+
+
+  - type: textarea
+    id: mvr
+    attributes:
+      label: Minimum reproducible example
+      description: Please supply a [minimum reproducible code example](https://matthewrocklin.com/blog/work/2018/02/28/minimal-bug-reports) here.
+      render: shell
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please paste relevant error and log output here
+      render: shell
+
