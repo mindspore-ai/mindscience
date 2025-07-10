@@ -22,7 +22,7 @@ import pytest
 import numpy as np
 
 import mindspore as ms
-from mindspore import ops, set_seed, nn
+from mindspore import ops, set_seed, nn, mint
 from mindspore import dtype as mstype
 from mindflow import UNet2D, TransformerBlock, MultiHeadAttention, AdaHessian
 from mindflow.cell.attention import FeedForward
@@ -99,10 +99,11 @@ class TestAttentionBlock(TransformerBlock):
                 self.act_fn = nn.ReLU()  # replace `gelu` with `relu` to avoid `vjp` problem
 
         class TestMultiHeadAttention(MultiHeadAttention):
-            ''' MultiHeadAttention modified to avoid vjp bug '''
+            ''' MultiHeadAttention modified to support vjp '''
             def get_qkv(self, x: ms.Tensor) -> tuple[ms.Tensor]:
                 ''' use masks to select out q, k, v, instead of tensor reshaping & indexing '''
-                b, n, c = x.shape
+                b, n, c_full = x.shape
+                c = c_full // self.num_heads
 
                 # use matmul with masks to select out q, k, v to avoid vjp problem
                 q_mask = ms.Tensor(np.vstack([np.eye(c), np.zeros([2 * c, c])]), dtype=self.compute_dtype)
@@ -110,10 +111,11 @@ class TestAttentionBlock(TransformerBlock):
                 v_mask = ms.Tensor(np.vstack([np.zeros([2 * c, c]), np.eye(c)]), dtype=self.compute_dtype)
 
                 qkv = self.qkv(x)
+                qkv = qkv.reshape(b, n, self.num_heads, -1).swapaxes(1, 2)
 
-                q = ops.swapaxes(ops.matmul(qkv, q_mask).reshape(b, n, self.num_heads, -1), 1, 2)
-                k = ops.swapaxes(ops.matmul(qkv, k_mask).reshape(b, n, self.num_heads, -1), 1, 2)
-                v = ops.swapaxes(ops.matmul(qkv, v_mask).reshape(b, n, self.num_heads, -1), 1, 2)
+                q = mint.matmul(qkv, q_mask)
+                k = mint.matmul(qkv, k_mask)
+                v = mint.matmul(qkv, v_mask)
 
                 return q, k, v
 
@@ -156,7 +158,7 @@ def test_adahessian_accuracy(mode):
         in_channels=2, out_channels=4, kernel_size=3, has_bias=True, weight_init=weight_init, bias_init=bias_init)
 
     def forward(a):
-        return ops.mean(net(a)**2)**.5
+        return ops.sqrt(ops.mean(ops.square(net(a))))
 
     grad_fn = ms.grad(forward, grad_position=None, weights=net.trainable_params())
 
@@ -192,7 +194,7 @@ def test_adahessian_st(mode, model_option):
 
     # default test with Attention network
     net = TestAttentionBlock(in_channels=256, num_heads=4)
-    inputs = ms.Tensor(np.random.rand(4, 100, 256), dtype=ms.float32)
+    inputs = ms.Tensor(np.sin(np.arange(102400)).reshape(4, 100, 256), dtype=ms.float32)
 
     # test with UNet network
     if model_option.lower() == 'unet':
@@ -210,7 +212,7 @@ def test_adahessian_st(mode, model_option):
         inputs = ms.Tensor(np.random.rand(2, 2, 64, 64), dtype=ms.float32)
 
     def forward(a):
-        return ops.mean(net(a)**2)**.5
+        return ops.sqrt(ops.mean(ops.square(net(a))))
 
     grad_fn = ms.grad(forward, grad_position=None, weights=net.trainable_params())
 
@@ -242,10 +244,10 @@ def test_adahessian_compare(mode):
     def get_loss(optimizer_option):
         ''' compare Adam and  AdaHessian '''
         net = TestAttentionBlock(in_channels=256, num_heads=4)
-        inputs = ms.Tensor(np.random.rand(4, 100, 256), dtype=ms.float32)
+        inputs = ms.Tensor(np.sin(np.arange(102400)).reshape(4, 100, 256), dtype=ms.float32)
 
         def forward(a):
-            return ops.mean(net(a)**2)**.5
+            return ops.sqrt(ops.mean(ops.square(net(a))))
 
         grad_fn = ms.grad(forward, grad_position=None, weights=net.trainable_params())
 
