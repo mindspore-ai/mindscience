@@ -17,6 +17,7 @@ from .lr_scheduler import get_poly_lr, get_multi_step_lr, get_warmup_cosine_anne
 from .losses import get_loss_metric, WaveletTransformLoss, MTLWeightedLoss, RelativeRMSELoss
 from .derivatives import batched_hessian, batched_jacobian
 from .optimizers import AdaHessian
+from .fourier import DFTn, IDFTn, RDFTn, IRDFTn, DCT, IDCT, DST, IDST
 
 __all__ = ["get_poly_lr",
            "get_multi_step_lr",
@@ -28,6 +29,14 @@ __all__ = ["get_poly_lr",
            "batched_hessian",
            "batched_jacobian",
            "AdaHessian",
+           "DFTn",
+           "IDFTn",
+           "RDFTn",
+           "IRDFTn",
+           "DCT",
+           "IDCT",
+           "DST",
+           "IDST",
            ]
 
 __all__.sort()
