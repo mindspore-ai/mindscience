@@ -22,7 +22,7 @@ from mindspore import dtype as mstype
 from mindflow.cell import ViT
 
 
-@pytest.mark.level1
+@pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_vit_output():

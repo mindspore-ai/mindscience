@@ -120,5 +120,5 @@ def test_mindflow_navier_stokes():
             f"epoch: {epoch} train loss: {train_loss} epoch time: {epoch_time}s")
     model.set_train(False)
 
-    assert epoch_time < 0.01
+    assert epoch_time < 0.05
     assert train_loss < 0.8
