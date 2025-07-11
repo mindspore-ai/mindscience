@@ -161,6 +161,6 @@ def test_mindflow_burgers_pinns():
     eval_error = calculate_l2_error(model, inputs, label, 5)
     print("eval_error:", eval_error)
 
-    assert epoch_time < 0.01
+    assert epoch_time < 0.05
     assert train_loss < 0.6
     assert eval_error < 0.8

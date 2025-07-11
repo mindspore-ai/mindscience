@@ -25,7 +25,7 @@ from mindflow.cell.neural_operators.dft import SpectralConv1dDft, SpectralConv2d
 RTOL = 0.001
 set_seed(123456)
 
-@pytest.mark.level1
+@pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 def test_fno_output():

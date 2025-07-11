@@ -19,7 +19,7 @@ from scipy.linalg import dft
 
 import mindspore
 import mindspore.common.dtype as mstype
-from mindspore import nn, ops, Tensor, Parameter
+from mindspore import nn, ops, Tensor, Parameter, mint
 from mindspore.common.initializer import Zero
 from mindspore.ops import operations as P
 
@@ -112,7 +112,7 @@ class DFT1d(nn.Cell):
                     length = len(dims)
                     mat = self.mat
                     for i in range(length - 1, -1, -1):
-                        mat = mat.expand_dims(0).repeat(dims[i], 0)
+                        mat = mint.repeat_interleave(mat.expand_dims(0), dims[i], 0)
                     y_re = self.concat((y_re, mat, y_re2))
                     y_im = self.concat((y_im, mat, y_im2))
 
@@ -612,7 +612,7 @@ class SpectralConv2dDft(SpectralConvDft):
             x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_re2)
 
         batch_size = x.shape[0]
-        mat = self._mat.repeat(batch_size, 0)
+        mat = mint.repeat_interleave(self._mat, batch_size, 0)
         out_re = self._concat((out_ft_re1, mat, out_ft_re2))
         out_im = self._concat((out_ft_im1, mat, out_ft_im2))
 
@@ -708,8 +708,8 @@ class SpectralConv3dDft(SpectralConvDft):
                                                                       :self.n_modes[2]], self._w_re4)
 
         batch_size = x.shape[0]
-        mat_x = self._mat_x.repeat(batch_size, 0)
-        mat_y = self._mat_y.repeat(batch_size, 0)
+        mat_x = mint.repeat_interleave(self._mat_x, batch_size, 0)
+        mat_y = mint.repeat_interleave(self._mat_y, batch_size, 0)
 
         out_re1 = ops.concat((out_ft_re1, mat_x, out_ft_re2), -3)
         out_im1 = ops.concat((out_ft_im1, mat_x, out_ft_im2), -3)
