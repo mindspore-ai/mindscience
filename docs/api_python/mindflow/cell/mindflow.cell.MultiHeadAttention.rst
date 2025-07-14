@@ -10,7 +10,7 @@ mindflow.cell.MultiHeadAttention
         - **num_heads** (int) - 输出的输出特征维度。
         - **enable_flash_attn** (bool) - 是否使能FlashAttention。FlashAttention只支持 `Ascend` 后端。具体细节参见 `FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness <https://arxiv.org/abs/2205.14135>`_ 。
           默认值： ``False`` 。
-        - **fa_dtype** (mindspore.dtype): FlashAttention计算类型。支持以下类型： `mstype.bfloat16`、 `mstype.float16`。默认值： ``mstype.bfloat16`` ，表示 ``mindspore.bfloat16`` 。
+        - **fa_dtype** (mindspore.dtype) - FlashAttention计算类型。支持以下类型： `mstype.bfloat16`、 `mstype.float16`。默认值： ``mstype.bfloat16`` ，表示 ``mindspore.bfloat16`` 。
         - **drop_mode** (str) - dropout方式。默认值： ``dropout`` 。支持以下类型： ``dropout`` 和 ``droppath`` 。
         - **dropout_rate** (float) - dropout层丢弃的比率。取值在 `[0, 1]` 。默认值： ``0.0`` 。
         - **compute_dtype** (mindspore.dtype) - 网络层的数据类型。默认值： ``mstype.float32`` ，表示 ``mindspore.float32`` 。
