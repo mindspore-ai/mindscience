@@ -40,7 +40,13 @@ class Upsample(nn.Cell):
 
     def construct(self, x):
         '''upsample forward'''
-        assert x.shape[1] == self.channels
+        if x.shape[1] != self.channels:
+            raise ValueError(
+                f"Channel dimension mismatch: input has {x.shape[1]} channels, "
+                f"but layer expects {self.channels} channels. "
+                f"Input shape: {x.shape}, expected channels dimension: {self.channels}. "
+                "Please adjust your input data or layer configuration."
+            )
         if self.dims == 3:
             x = ops.interpolate(
                 x, (x.shape[2], x.shape[3] * 2, x.shape[4] * 2), mode="nearest"
@@ -78,11 +84,22 @@ class Downsample(nn.Cell):
                 padding=padding,
             )
         else:
-            assert self.channels == self.out_channels
+            if self.channels != self.out_channels:
+                raise ValueError(
+                    f"Channel configuration mismatch: input channels ({self.channels}) "
+                    f"must match output channels ({self.out_channels}) for this operation. "
+                    "Please adjust either the input channels or the layer configuration."
+                )
             self.op = avg_pool_nd(dims, kernel_size=stride, stride=stride)
 
     def construct(self, x):
-        assert x.shape[1] == self.channels
+        if x.shape[1] != self.channels:
+            raise ValueError(
+                f"Input channel mismatch: Expected {self.channels} channels, "
+                f"but received input with {x.shape[1]} channels. "
+                f"Full input shape: {x.shape}. "
+                "Please ensure your input data matches the layer's channel requirements."
+            )
         return self.op(x)
 
 
@@ -163,7 +180,12 @@ class TimeEmbedResBlock(nn.Cell):
         self.dropout = dropout
         self.use_embed = use_embed
         if use_embed:
-            assert isinstance(emb_channels, int)
+            if not isinstance(emb_channels, int):
+                raise TypeError(
+                    f"Invalid type for emb_channels: expected integer, got {type(emb_channels).__name__}. "
+                    f"Received value: {emb_channels}. "
+                    "Please provide an integer value for the embedding channels."
+                )
         self.emb_channels = emb_channels
         self.out_channels = out_channels or channels
         self.use_conv = use_conv

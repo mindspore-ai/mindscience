@@ -117,16 +117,29 @@ class CuboidTransformerUNet(nn.Cell):
                 for i in range(self.num_blocks)
             ]
         else:
-            assert len(block_units) == self.num_blocks and block_units[0] == base_units
+            if len(block_units) != self.num_blocks:
+                raise ValueError(
+                    f"Length of block_units ({len(block_units)}) does not match "
+                    f"num_blocks ({self.num_blocks}). They must be equal."
+                )
+            if block_units[0] != base_units:
+                raise ValueError(
+                    f"First block_units value ({block_units[0]}) does not match "
+                    f"base_units ({base_units}). The first unit must equal base_units."
+                )
         self.block_units = block_units
         self.hierarchical_pos_embed = hierarchical_pos_embed
         self.num_global_vectors = num_global_vectors
         use_global_vector = num_global_vectors > 0
         self.use_global_vector = use_global_vector
         if global_dim_ratio != 1:
-            assert (
-                separate_global_qkv is True
-            ), f"Setting global_dim_ratio != 1 requires separate_global_qkv == True."
+            if not separate_global_qkv:
+                raise ValueError(
+                    "Configuration conflict: When global_dim_ratio != 1, "
+                    "separate_global_qkv must be set to True. "
+                    f"Current values: global_dim_ratio={global_dim_ratio}, "
+                    f"separate_global_qkv={separate_global_qkv}"
+                )
         self.global_dim_ratio = global_dim_ratio
         self.use_global_vector_ffn = use_global_vector_ffn
 
@@ -143,7 +156,19 @@ class CuboidTransformerUNet(nn.Cell):
 
         t_in, h_in, w_in, c_in = input_shape
         t_out, h_out, w_out, c_out = target_shape
-        assert h_in == h_out and w_in == w_out and c_in == c_out
+        if h_in != h_out or w_in != w_out or c_in != c_out:
+            mismatched_dims = []
+            if h_in != h_out:
+                mismatched_dims.append(f"height ({h_in} vs {h_out})")
+            if w_in != w_out:
+                mismatched_dims.append(f"width ({w_in} vs {w_out})")
+            if c_in != c_out:
+                mismatched_dims.append(f"channels ({c_in} vs {c_out})")
+            raise ValueError(
+                f"Input and output dimensions mismatch. "
+                f"Mismatched dimensions: {', '.join(mismatched_dims)}. "
+                f"All dimensions must match for this operation."
+            )
         self.t_in = t_in
         self.t_out = t_out
         self.first_proj = TimeEmbedResBlock(
@@ -263,27 +288,37 @@ class CuboidTransformerUNet(nn.Cell):
             if not isinstance(block_cuboid_size[0][0], (list, tuple)):
                 block_cuboid_size = [block_cuboid_size for _ in range(self.num_blocks)]
             else:
-                assert (
-                    len(block_cuboid_size) == self.num_blocks
-                ), f"Incorrect input format! Received block_cuboid_size={block_cuboid_size}"
-
+                if len(block_cuboid_size) != self.num_blocks:
+                    raise ValueError(
+                        f"Block cuboid size dimension mismatch. Expected {self.num_blocks} blocks, "
+                        f"but got {len(block_cuboid_size)}. Received block_cuboid_size={block_cuboid_size}. "
+                        f"Please ensure the input matches the expected number of blocks."
+                    )
             if not isinstance(block_cuboid_strategy[0][0], (list, tuple)):
                 block_cuboid_strategy = [
                     block_cuboid_strategy for _ in range(self.num_blocks)
                 ]
             else:
-                assert (
-                    len(block_cuboid_strategy) == self.num_blocks
-                ), f"Incorrect input format! Received block_strategy={block_cuboid_strategy}"
+                if len(block_cuboid_strategy) != self.num_blocks:
+                    raise ValueError(
+                        f"Configuration error: Expected {self.num_blocks} block strategies, "
+                        f"but got {len(block_cuboid_strategy)}. "
+                        f"Received block_cuboid_strategy={block_cuboid_strategy}. "
+                        f"Please ensure the strategy list matches the number of blocks."
+                    )
 
             if not isinstance(block_cuboid_shift_size[0][0], (list, tuple)):
                 block_cuboid_shift_size = [
                     block_cuboid_shift_size for _ in range(self.num_blocks)
                 ]
             else:
-                assert (
-                    len(block_cuboid_shift_size) == self.num_blocks
-                ), f"Incorrect input format! Received block_shift_size={block_cuboid_shift_size}"
+                if len(block_cuboid_shift_size) != self.num_blocks:
+                    raise ValueError(
+                        f"Block shift size configuration error: Expected {self.num_blocks} shift sizes, "
+                        f"but received {len(block_cuboid_shift_size)}. "
+                        f"Invalid configuration: block_cuboid_shift_size={block_cuboid_shift_size}. "
+                        f"Please provide exactly {self.num_blocks} shift sizes in the list."
+                    )
         self.block_cuboid_size = block_cuboid_size
         self.block_cuboid_strategy = block_cuboid_strategy
         self.block_cuboid_shift_size = block_cuboid_shift_size
@@ -442,7 +477,20 @@ class CuboidTransformerUNet(nn.Cell):
         if not hasattr(self, "_data_shape"):
             t_in, h_in, w_in, c_in = self.input_shape
             t_out, h_out, w_out, c_out = self.target_shape
-            assert h_in == h_out and w_in == w_out and c_in == c_out
+            if not (h_in == h_out and w_in == w_out and c_in == c_out):
+                mismatches = []
+                if h_in != h_out:
+                    mismatches.append(f"height ({h_in} vs {h_out})")
+                if w_in != w_out:
+                    mismatches.append(f"width ({w_in} vs {w_out})")
+                if c_in != c_out:
+                    mismatches.append(f"channels ({c_in} vs {c_out})")
+                raise ValueError(
+                    f"Input-output dimension mismatch. Mismatched dimensions: {', '.join(mismatches)}. "
+                    f"All dimensions must match for this operation. "
+                    f"Input shape: (h={h_in}, w={w_in}, c={c_in}), "
+                    f"Output shape: (h={h_out}, w={w_out}, c={c_out})"
+                )
             self._data_shape = (
                 t_in + t_out,
                 h_in,

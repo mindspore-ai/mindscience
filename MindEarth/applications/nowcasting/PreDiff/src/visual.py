@@ -117,13 +117,30 @@ def vis_sevir_seq(
 
     if isinstance(seq, Sequence):
         seq_list = [ele.astype(np.float32) for ele in seq]
-        assert isinstance(label, Sequence) and len(label) == len(seq)
+        if not isinstance(label, Sequence):
+            raise TypeError(
+                f"label must be a Sequence (list, tuple, etc.), "
+                f"got {type(label).__name__}"
+            )
+
+        if len(label) != len(seq):
+            raise ValueError(
+                f"Length mismatch: label and seq must have same length\n"
+                f"• len(label) = {len(label)}\n"
+                f"• len(seq) = {len(seq)}"
+            )
         label_list = label
     elif isinstance(seq, np.ndarray):
         seq_list = [
             seq.astype(np.float32),
         ]
-        assert isinstance(label, str)
+        if not isinstance(label, str):
+            raise TypeError(
+                f"Invalid label type. Expected string, "
+                f"but got {type(label).__name__}. "
+                f"Value: {repr(label)}"
+            )
+
         label_list = [
             label,
         ]

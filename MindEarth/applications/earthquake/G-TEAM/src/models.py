@@ -236,7 +236,8 @@ class PositionEmbedding(nn.Cell):
         min_lat, max_lat = wavelengths[0]
         min_lon, max_lon = wavelengths[1]
         min_depth, max_depth = wavelengths[2]
-        assert emb_dim % 10 == 0
+        if emb_dim % 10 != 0:
+            raise ValueError(f"emb_dim must be divisible by 10, but got {emb_dim}")
         lat_dim = emb_dim // 5
         lon_dim = emb_dim // 5
         depth_dim = emb_dim // 10

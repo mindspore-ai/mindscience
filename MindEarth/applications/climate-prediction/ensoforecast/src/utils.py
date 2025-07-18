@@ -59,8 +59,10 @@ def init_dataloader(config):
     data_params = config.get('data')
     train_type = data_params.get('train_dataset')
     valid_type = data_params.get('valid_dataset')
-    assert train_type in ['CMIP5', 'Reanalysis'], 'Unexpected Data Type %s.' % train_type
-    assert valid_type in ['CMIP5', 'Reanalysis'], 'Unexpected Data Type %s.' % valid_type
+    if train_type not in ['CMIP5', 'Reanalysis']:
+        raise ValueError(f"Unexpected Data Type {train_type}.")
+    if valid_type not in ['CMIP5', 'Reanalysis']:
+        raise ValueError(f"Unexpected Data Type {valid_type}.")
     if train_type == 'CMIP5':
         train_dataset = CMIP5Data(data_params.get('root_dir'), data_params.get('train_period'),
                                   data_params.get('obs_time'), data_params.get('pred_time'))
