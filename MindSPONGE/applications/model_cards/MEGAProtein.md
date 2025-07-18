@@ -102,8 +102,8 @@ msa_feature['decoy_aatype'] = np.pad(aatype, (0, 256 - aatype.shape[0]))
 msa_feature['decoy_atom_positions'] = np.pad(final_atom_positions, ((0, 256 - final_atom_positions.shape[0]), (0, 0), (0, 0)))
 msa_feature['decoy_atom_mask'] = np.pad(final_atom_mask, ((0, 256 - final_atom_mask.shape[0]), (0, 0)))
 
-res = protein_assessment.predict(msa_feature)
-print("score is:", np.mean(res))
+res = protein_assessment.model.predict(msa_feature)
+print("score is:", np.mean(res[:msa_feature['num_residues']]))
 ```
 
 ### 使用场景
