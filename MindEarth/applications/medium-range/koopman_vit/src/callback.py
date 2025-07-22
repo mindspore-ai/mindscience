@@ -184,8 +184,8 @@ class Lploss(nn.LossBase):
     def __init__(self, p=2, size_average=True, reduction=True):
         super(Lploss, self).__init__()
         # Dimension and Lp-norm type are positive
-        assert p > 0
-
+        if p <= 0:
+            raise ValueError(f"p must be positive, but got {p}")
         self.p = p
         self.reduction = reduction
         self.size_average = size_average

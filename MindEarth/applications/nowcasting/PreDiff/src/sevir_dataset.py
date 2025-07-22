@@ -414,14 +414,22 @@ class SEVIRDataLoader:
         self.data_shape = SEVIR_DATA_SHAPE
 
         self.raw_seq_in = raw_seq_in
-        assert (
-            seq_in <= self.raw_seq_in
-        ), f"seq_in must not be larger than raw_seq_in = {raw_seq_in}, got {seq_in}."
+        if seq_in > self.raw_seq_in:
+            raise ValueError(
+                f"Sequence length violation: Input sequence length ({seq_in}) "
+                f"exceeds maximum allowed length ({self.raw_seq_in}).\n"
+                f"Technical constraints: Processed sequence length must be ≤ original length.\n"
+                "Please check your sequence trimming/padding operations."
+            )
         self.seq_in = seq_in
-        assert sample_mode in [
-            "random",
-            "sequent",
-        ], f"Invalid sample_mode = {sample_mode}, must be 'random' or 'sequent'."
+        if sample_mode not in ["random", "sequent"]:
+            raise ValueError(
+                f"Invalid sampling mode: '{sample_mode}'. "
+                f"Allowed options are: {['random', 'sequent']}\n"
+                "Please specify either:\n"
+                "- 'random' for stochastic sampling\n"
+                "- 'sequent' for sequential sampling"
+            )
         self.sample_mode = sample_mode
         self.stride = stride
         self.batch_size = batch_size
@@ -921,7 +929,13 @@ class SEVIRDataset:
         if data_types is None:
             data_types = SEVIR_DATA_TYPES
         else:
-            assert set(data_types).issubset(SEVIR_DATA_TYPES)
+            if not set(data_types).issubset(SEVIR_DATA_TYPES):
+                invalid_types = set(data_types) - set(SEVIR_DATA_TYPES)
+                raise ValueError(
+                    f"Invalid data type(s) detected: {sorted(invalid_types)}\n"
+                    f"Allowed SEVIR data types are: {sorted(SEVIR_DATA_TYPES)}\n"
+                    "Please remove or replace the unsupported data types."
+                )
 
         self.layout = layout
         self.data_types = data_types

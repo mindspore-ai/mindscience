@@ -179,7 +179,13 @@ class SEVIRSkillScore(Metric):
     ):
         super().__init__()
         self.layout = layout
-        assert preprocess_type == "sevir" or preprocess_type.startswith("sevir_pool")
+        if not (preprocess_type == "sevir" or preprocess_type.startswith("sevir_pool")):
+            raise ValueError(
+                f"Invalid preprocessing type: '{preprocess_type}'\n"
+                "Allowed options:\n"
+                "- 'sevir' for standard processing\n"
+                "- 'sevir_pool*' for pooled variants (e.g. 'sevir_pool4')"
+            )
         self.preprocess_type = preprocess_type
         self.threshold_list = threshold_list
         self.metrics_list = metrics_list
@@ -191,9 +197,11 @@ class SEVIRSkillScore(Metric):
             state_shape = (len(self.threshold_list),)
         elif mode in ("1", "2"):
             self.keep_seq_in_dim = True
-            assert isinstance(
-                self.seq_in, int
-            ), "seq_in must be provided when we need to keep seq_in dim."
+            if not isinstance(self.seq_in, int):
+                raise TypeError(
+                    f"Invalid type for seq_in: expected integer, got {type(self.seq_in).__name__}. "
+                    "This parameter is required when preserving the sequence dimension."
+                )
             state_shape = (len(self.threshold_list), self.seq_in)
 
         else:
@@ -572,8 +580,17 @@ def get_norm_layer(
     """
     if isinstance(norm_type, str):
         if norm_type == "layer_norm":
-            assert in_channels > 0
-            assert axis == -1
+            if in_channels <= 0:
+                raise ValueError(
+                    f"Invalid number of input channels: {in_channels}. "
+                    "in_channels must be a positive integer."
+                )
+
+            if axis != -1:
+                raise ValueError(
+                    f"Invalid axis specification: {axis}. "
+                    "This operation only supports axis=-1 (last dimension)."
+                )
             norm_layer = nn.LayerNorm(
                 normalized_shape=[in_channels], epsilon=epsilon, **kwargs
             )
@@ -606,7 +623,15 @@ def generalize_padding(x, pad_t, pad_h, pad_w, padding_type, t_pad_left=False):
     if pad_t == 0 and pad_h == 0 and pad_w == 0:
         return x
 
-    assert padding_type in ["zeros", "ignore", "nearest"]
+    if padding_type not in ["zeros", "ignore", "nearest"]:
+        raise ValueError(
+            f"Invalid padding type: '{padding_type}'. "
+            f"Allowed options are: {['zeros', 'ignore', 'nearest']}\n"
+            "Please specify one of:\n"
+            "- 'zeros': pad with zero values\n"
+            "- 'ignore': maintain original values\n"
+            "- 'nearest': replicate edge values"
+        )
     _, t, h, w, _ = x.shape
 
     if padding_type == "nearest":
@@ -634,7 +659,11 @@ def generalize_unpadding(x, pad_t, pad_h, pad_w, padding_type):
     Raises:
         AssertionError: If invalid padding_type is provided.
     """
-    assert padding_type in ["zeros", "ignore", "nearest"]
+    if padding_type not in ["zeros", "ignore", "nearest"]:
+        raise ValueError(
+            f"Invalid padding_type: '{padding_type}'. "
+            f"Supported padding types are: 'zeros', 'ignore', 'nearest'"
+        )
     _, t, h, w, _ = x.shape
     if pad_t == 0 and pad_h == 0 and pad_w == 0:
         return x

@@ -335,7 +335,11 @@ class Upsample3DLayer(nn.Cell):
     def construct(self, x):
         """Forward pass of the 3D Upsampling layer."""
         b, t, h, w, c = x.shape
-        assert self.target_size[0] == t
+        if self.target_size[0] != t:
+            raise ValueError(
+                f"Target size mismatch: expected first dimension to be {self.target_size[0]}, "
+                f"but got {t}. Please ensure consistent dimensions."
+            )
         x = x.reshape(b * t, h, w, c).permute(0, 3, 1, 2)
         x = self.up(x)
         return (
@@ -645,7 +649,11 @@ class CuboidSelfAttentionLayer(nn.Cell):
         self.ffn_linear_init_mode = ffn_linear_init_mode
         self.norm_init_mode = norm_init_mode
 
-        assert dim % num_heads == 0
+        if dim % num_heads != 0:
+            raise ValueError(
+                f"Dimension {dim} must be divisible by number of heads {num_heads}. "
+                f"Got dim={dim}, num_heads={num_heads}"
+            )
         self.num_heads = num_heads
         self.dim = dim
         self.cuboid_size = cuboid_size
@@ -659,7 +667,11 @@ class CuboidSelfAttentionLayer(nn.Cell):
         self.use_global_self_attn = use_global_self_attn
         self.separate_global_qkv = separate_global_qkv
         self.global_dim_ratio = global_dim_ratio
-        assert self.padding_type in ["ignore", "zeros", "nearest"]
+        if self.padding_type not in ["ignore", "zeros", "nearest"]:
+            raise ValueError(
+                f"Invalid padding_type: '{self.padding_type}'. "
+                f"Expected one of: ['ignore', 'zeros', 'nearest']"
+            )
         head_dim = dim // num_heads
         self.scale = qk_scale or head_dim**-0.5
 
@@ -767,7 +779,11 @@ class CuboidSelfAttentionLayer(nn.Cell):
         """
         x = self.norm(x)
         batch, time, height, width, channels = x.shape
-        assert channels == self.dim
+        if channels != self.dim:
+            raise ValueError(
+                f"Channel dimension mismatch: expected {self.dim}, got {channels}. "
+                f"Please ensure input channels match the layer's expected dimension."
+            )
         cuboid_size, shift_size = update_cuboid_size_shift_size(
             (time, height, width), self.cuboid_size, self.shift_size, self.strategy
         )

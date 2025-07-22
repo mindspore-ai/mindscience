@@ -79,7 +79,11 @@ class DiffusionTrainer(nn.Cell):
             epoch_start = time.time()
 
             iterator = self.traindataset.create_dict_iterator()
-            assert iterator, "dataset is empty"
+            if not iterator:
+                raise ValueError(
+                    "Empty dataset error: The provided dataset iterator contains no data. "
+                    "Please verify your data loading pipeline and ensure the dataset is properly populated."
+                )
             batch_idx = 0
             for batch_idx, batch in enumerate(iterator):
                 processed_data = self.datasetprocessing.process_data(batch["vil"])

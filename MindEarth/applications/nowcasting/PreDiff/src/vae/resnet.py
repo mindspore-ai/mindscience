@@ -120,7 +120,11 @@ class Upsample1D(nn.Cell):
 
     def construct(self, x):
         """forward"""
-        assert x.shape[1] == self.channels
+        if x.shape[1] != self.channels:
+            raise ValueError(
+                f"Input channels mismatch. Expected {self.channels} channels, "
+                f"but got {x.shape[1]} channels in dimension 1 of input tensor."
+            )
         if self.use_conv_transpose:
             return self.conv(x)
 
@@ -165,11 +169,14 @@ class Downsample1D(nn.Cell):
                 has_bias=True,
             )
         else:
-            assert self.channels == self.out_channels
+            if self.channels != self.out_channels:
+                raise RuntimeError(
+                    f"Channels mismatch. Expected channels and out_channels to be equal, "
+                    f"but got channels={self.channels}, out_channels={self.out_channels}."
+                )
             self.conv = AvgPool1d(kernel_size=stride, stride=stride)
 
     def construct(self, x):
-        assert x.shape[1] == self.channels
         return self.conv(x)
 
 
@@ -226,7 +233,14 @@ class Upsample2D(nn.Cell):
 
     def construct(self, hidden_states, output_size=None):
         """forward"""
-        assert hidden_states.shape[1] == self.channels
+        if hidden_states.shape[1] != self.channels:
+            raise ValueError(
+                f"Channel dimension mismatch in hidden states. "
+                f"Expected {self.channels} channels at dimension 1, "
+                f"but received {hidden_states.shape[1]} channels. "
+                f"Full shape: {tuple(hidden_states.shape)}"
+            )
+
 
         if self.use_conv_transpose:
             return self.conv(hidden_states)
@@ -292,7 +306,13 @@ class Downsample2D(nn.Cell):
                 has_bias=True,
             )
         else:
-            assert self.channels == self.out_channels
+            if self.channels != self.out_channels:
+                raise RuntimeError(
+                    f"Layer configuration conflict. channels ({self.channels}) "
+                    f"must equal out_channels ({self.out_channels}). "
+                    f"Check layer initialization parameters."
+                )
+
             conv = mint.nn.AvgPool2d(kernel_size=stride, stride=stride)
         if name == "conv":
             self.conv2d_0 = conv
@@ -304,12 +324,28 @@ class Downsample2D(nn.Cell):
 
     def construct(self, hidden_states):
         """forward"""
-        assert hidden_states.shape[1] == self.channels
+        if hidden_states.shape[1] != self.channels:
+            raise ValueError(
+                f"Channel dimension mismatch in hidden states. Expected {self.channels} channels at dimension 1, "
+                f"but received tensor with {hidden_states.shape[1]} channels. "
+                f"Full shape: {tuple(hidden_states.shape)}"
+            )
+
         if self.use_conv and self.padding == 0:
             pad = (0, 1, 0, 1)
             hidden_states = ops.pad(hidden_states, pad, mode="constant", value=None)
 
-        assert hidden_states.shape[1] == self.channels
+        if hidden_states.shape[1] != self.channels:
+            raise ValueError(
+                f"Channel dimension mismatch in hidden states. "
+                f"Layer expects {self.channels} channels at dimension 1, "
+                f"but received {hidden_states.shape[1]} channels. "
+                f"Full tensor shape: {tuple(hidden_states.shape)}\n"
+                f"Possible solutions:\n"
+                f"1. Check input data pipeline\n"
+                f"2. Verify layer configuration (current channels: {self.channels})\n"
+                f"3. Inspect preceding layer's output channels"
+            )
         hidden_states = self.conv(hidden_states)
 
         return hidden_states
@@ -356,7 +392,17 @@ class FirUpsample2D(nn.Cell):
         Core upsampling operation with optional convolution and FIR filtering.
         """
 
-        assert isinstance(factor, int) and factor >= 1
+        if not isinstance(factor, int):
+            raise TypeError(
+                f"Invalid type for 'factor'. Expected integer, "
+                f"but got {type(factor).__name__}."
+            )
+
+        if factor < 1:
+            raise ValueError(
+                f"Invalid value for 'factor'. Must be >= 1, "
+                f"but got {factor}."
+            )
 
         # Setup filter kernel.
         if kernel is None:
@@ -387,7 +433,25 @@ class FirUpsample2D(nn.Cell):
                 output_shape[0] - (hidden_states.shape[2] - 1) * stride[0] - convh,
                 output_shape[1] - (hidden_states.shape[3] - 1) * stride[1] - convw,
             )
-            assert output_padding[0] >= 0 and output_padding[1] >= 0
+            if len(output_padding) < 2:
+                raise IndexError(
+                    f"output_padding must have at least 2 elements, "
+                    f"but got {len(output_padding)} elements"
+                )
+
+            errors = []
+            if output_padding[0] < 0:
+                errors.append(f"output_padding[0] = {output_padding[0]} < 0")
+            if output_padding[1] < 0:
+                errors.append(f"output_padding[1] = {output_padding[1]} < 0")
+
+            if errors:
+                raise ValueError(
+                    f"Invalid output padding values:\n" +
+                    "\n".join(errors) +
+                    f"\nAll output padding values must be >= 0. "
+                    f"Full output_padding: {output_padding}"
+                )
             num_groups = hidden_states.shape[1] // in_c
 
             # Transpose weights.
@@ -477,7 +541,17 @@ class FirDownsample2D(nn.Cell):
         """
         Core downsampling operation with optional convolution and FIR filtering.
         """
-        assert isinstance(factor, int) and factor >= 1
+        if not isinstance(factor, int):
+            raise TypeError(
+                f"Invalid type for 'factor'. Expected integer, "
+                f"but got {type(factor).__name__} with value {repr(factor)}."
+            )
+
+        if factor < 1:
+            raise ValueError(
+                f"Invalid value for 'factor'. Must be a positive integer >= 1, "
+                f"but got {factor}."
+            )
         if kernel is None:
             kernel = [1] * factor
 
@@ -819,7 +893,17 @@ class ResidualTemporalBlock1D(nn.Cell):
 
 def upsample_2d(hidden_states, kernel=None, factor=2, gain=1):
     """Upsample2D a batch of 2D images with the given filter."""
-    assert isinstance(factor, int) and factor >= 1
+    if not isinstance(factor, int):
+        raise TypeError(
+            f"Invalid type for 'factor'. Expected integer, "
+            f"but got {type(factor).__name__} with value {repr(factor)}."
+        )
+
+    if factor < 1:
+        raise ValueError(
+            f"Invalid value for 'factor'. Must be a positive integer >= 1, "
+            f"but got {factor}."
+        )
     if kernel is None:
         kernel = [1] * factor
 
@@ -840,7 +924,12 @@ def upsample_2d(hidden_states, kernel=None, factor=2, gain=1):
 
 def downsample_2d(hidden_states, kernel=None, factor=2, gain=1):
     """Downsample2D a batch of 2D images with the given filter."""
-    assert isinstance(factor, int) and factor >= 1
+    if not isinstance(factor, int):
+        raise TypeError(f"factor must be an integer, got {type(factor).__name__}")
+
+    if factor < 1:
+        raise ValueError(f"factor must be >= 1, got {factor}")
+
     if kernel is None:
         kernel = [1] * factor
 

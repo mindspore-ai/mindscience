@@ -53,7 +53,13 @@ class QKVAttention(nn.Cell):
         :return: an [N x (H * C) x T] tensor after attention.
         """
         bs, width, length = qkv.shape
-        assert width % (3 * self.n_heads) == 0
+        if width % (3 * self.n_heads) != 0:
+            raise ValueError(
+                f"Dimension mismatch: width ({width}) must be divisible by {3 * self.n_heads} "
+                f"(3 * n_heads), but got remainder {width % (3 * self.n_heads)}. "
+                f"Current configuration: n_heads={self.n_heads}. "
+                "Please adjust either the input width or the number of attention heads."
+            )
         ch = width // (3 * self.n_heads)
         q, k, v = qkv.chunk(3, dim=1)
         scale = 1 / math.sqrt(math.sqrt(ch))
@@ -220,7 +226,17 @@ class NoisyCuboidTransformerEncoder(nn.Cell):
                 for i in range(self.num_blocks)
             ]
         else:
-            assert len(block_units) == self.num_blocks and block_units[0] == base_units
+            if len(block_units) != self.num_blocks:
+                raise ValueError(
+                    f"Block configuration mismatch: Expected {self.num_blocks} blocks, "
+                    f"but got {len(block_units)}. Received block_units: {block_units}"
+                )
+
+            if block_units[0] != base_units:
+                raise ValueError(
+                    f"First block units mismatch: Expected {base_units}, "
+                    f"but got {block_units[0]}. The first block must match base_units."
+                )
         self.block_units = block_units
         self.hierarchical_pos_embed = hierarchical_pos_embed
         self.num_global_vectors = num_global_vectors
@@ -321,27 +337,39 @@ class NoisyCuboidTransformerEncoder(nn.Cell):
             if not isinstance(block_cuboid_size[0][0], (list, tuple)):
                 block_cuboid_size = [block_cuboid_size for _ in range(self.num_blocks)]
             else:
-                assert (
-                    len(block_cuboid_size) == self.num_blocks
-                ), f"Incorrect input format! Received block_cuboid_size={block_cuboid_size}"
+                if len(block_cuboid_size) != self.num_blocks:
+                    raise ValueError(
+                        f"Block cuboid configuration error: Expected {self.num_blocks} blocks, "
+                        f"but received {len(block_cuboid_size)} block configurations. "
+                        f"Received block_cuboid_size: {block_cuboid_size}\n"
+                        "Please ensure the number of block configurations matches num_blocks."
+                    )
 
             if not isinstance(block_cuboid_strategy[0][0], (list, tuple)):
                 block_cuboid_strategy = [
                     block_cuboid_strategy for _ in range(self.num_blocks)
                 ]
             else:
-                assert (
-                    len(block_cuboid_strategy) == self.num_blocks
-                ), f"Incorrect input format! Received block_strategy={block_cuboid_strategy}"
+                if len(block_cuboid_strategy) != self.num_blocks:
+                    raise ValueError(
+                        f"Block strategy configuration error: Expected {self.num_blocks} strategies (one per block), "
+                        f"but received {len(block_cuboid_strategy)}. "
+                        f"Received strategies: {block_cuboid_strategy}\n"
+                        "Each cuboid block must have a corresponding processing strategy."
+                    )
 
             if not isinstance(block_cuboid_shift_size[0][0], (list, tuple)):
                 block_cuboid_shift_size = [
                     block_cuboid_shift_size for _ in range(self.num_blocks)
                 ]
             else:
-                assert (
-                    len(block_cuboid_shift_size) == self.num_blocks
-                ), f"Incorrect input format! Received block_shift_size={block_cuboid_shift_size}"
+                if len(block_cuboid_shift_size) != self.num_blocks:
+                    raise ValueError(
+                        f"Block shift configuration error: Expected {self.num_blocks} shift sizes (one per block), "
+                        f"but received {len(block_cuboid_shift_size)}. "
+                        f"Received shift sizes: {block_cuboid_shift_size}\n"
+                        "Each cuboid block must have a corresponding shift size configuration."
+                    )
         self.block_cuboid_size = block_cuboid_size
         self.block_cuboid_strategy = block_cuboid_strategy
         self.block_cuboid_shift_size = block_cuboid_shift_size

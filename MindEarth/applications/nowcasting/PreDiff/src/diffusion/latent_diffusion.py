@@ -211,9 +211,12 @@ class LatentDiffusion(nn.Cell):
         self.num_timesteps = int(timesteps)
         self.linear_start = linear_start
         self.linear_end = linear_end
-        assert (
-            alphas_cumprod.shape[0] == self.num_timesteps
-        ), "alphas have to be defined for each timestep"
+        if alphas_cumprod.shape[0] != self.num_timesteps:
+            raise ValueError(
+                f"Timestep dimension mismatch: alphas_cumprod has {alphas_cumprod.shape[0]} timesteps, "
+                f"but expected {self.num_timesteps}. "
+                "The alpha values must be defined for each diffusion timestep."
+            )
 
         to_mindspore = partial(Tensor, dtype=ms.float32)
         self.betas = Parameter(to_mindspore(betas), name="betas", requires_grad=False)
@@ -287,7 +290,12 @@ class LatentDiffusion(nn.Cell):
         self.lvlb_weights = Parameter(
             lvlb_weights, name="lvlb_weights", requires_grad=False
         )
-        assert not ops.isnan(self.lvlb_weights).all()
+        if ops.isnan(self.lvlb_weights).all():
+            raise ValueError(
+                "All lvlb_weights are NaN (Not a Number). "
+                "This indicates a numerical instability or uninitialized weights. "
+                "Please check the weight initialization or training process."
+            )
 
     def instantiate_first_stage(self, first_stage_model):
         """
@@ -298,8 +306,16 @@ class LatentDiffusion(nn.Cell):
         if isinstance(first_stage_model, nn.Cell):
             model = first_stage_model
         else:
-            assert first_stage_model is None
-            raise NotImplementedError("No default first_stage_model supported yet!")
+            if first_stage_model is not None:
+                raise ValueError(
+                    "Custom first_stage_model is not currently supported. "
+                    f"Received: {type(first_stage_model).__name__}. "
+                    "This functionality is planned for future implementation."
+                )
+            raise NotImplementedError(
+                "Automatic first_stage_model initialization is not yet implemented. "
+                "Please check for framework updates or consider contributing."
+            )
         self.first_stage_model = model.set_train(False)
         self.first_stage_model.train = disabled_train
         for param in self.first_stage_model.trainable_params():
@@ -356,7 +372,14 @@ class LatentDiffusion(nn.Cell):
     def einops_spatial_layout(self):
         """Generates spatial Einops pattern for 2D/3D data handling."""
         if not hasattr(self, "_einops_spatial_layout"):
-            assert len(self.layout) == 4 or len(self.layout) == 5
+            if len(self.layout) not in (4, 5):
+                raise ValueError(
+                    f"Invalid layout dimension: expected 4 or 5 dimensions, but got {len(self.layout)}. "
+                    f"Current layout: {self.layout}\n"
+                    "Possible solutions:\n"
+                    "1. For 2D data: use [batch, channel, height, width]\n"
+                    "2. For 3D data: use [batch, channel, depth, height, width]"
+                )
             self._einops_spatial_layout = (
                 "(N T) C H W" if self.layout.find("T") else "N C H W"
             )
@@ -718,8 +741,19 @@ class LatentDiffusion(nn.Cell):
         )
 
         if mask is not None:
-            assert x0 is not None
-            assert x0.shape[2:3] == mask.shape[2:3]  # spatial size has to match
+            if x0 is None:
+                raise ValueError(
+                    "Missing required input: x0 cannot be None. "
+                    "Please provide valid input data."
+                )
+
+            if x0.shape[2:3] != mask.shape[2:3]:
+                raise ValueError(
+                    f"Spatial dimension mismatch between input and mask. "
+                    f"Input spatial size: {x0.shape[2:3]}, "
+                    f"Mask spatial size: {mask.shape[2:3]}. "
+                    "The height and width dimensions must match exactly."
+                )
         for i in iterator:
             ts = ops.full((batch_size,), i, dtype=ms.int64)
             img = self.p_sample(
@@ -781,7 +815,11 @@ class LatentDiffusion(nn.Cell):
         if shape is None:
             shape = self.get_batch_latent_shape(batch_size=batch_size)
         if self.cond_stage_model is not None:
-            assert cond is not None
+            if cond is None:
+                raise ValueError(
+                    "Required condition is None. "
+                    "This parameter must be provided with a valid value."
+                )
             cond_tensor_slice = [
                 slice(None, None),
             ] * len(self.data_shape)
