@@ -626,8 +626,8 @@ class IDCT(nn.Cell):
         c = self.dft_cell(vr, vi) # (..., n)
         c1 = c[..., :(n + 1) // 2]
         c2 = self.fliper(c[..., (n + 1) // 2:], dims=-1)
-        d1 = ops.pad(c1[..., None], (0, 1)).reshape(*c1.shape[:-1], -1)
-        d2 = ops.pad(c2[..., None], (1, 0)).reshape(*c2.shape[:-1], -1)
+        d1 = ops.pad(c1.reshape(-1)[..., None], (0, 1)).reshape(*c1.shape[:-1], -1)
+        d2 = ops.pad(c2.reshape(-1)[..., None], (1, 0)).reshape(*c2.shape[:-1], -1)
         return d1 + d2
 
 
