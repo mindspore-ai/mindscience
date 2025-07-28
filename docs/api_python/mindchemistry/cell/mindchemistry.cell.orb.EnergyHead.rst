@@ -14,7 +14,7 @@ mindchemistry.cell.orb.EnergyHead
         - **reference_energy_name** (str，可选) - 用于偏移的参考能量名称，例如 ``"vasp-shifted"``。默认值： ``"mp-traj-d3"``。
         - **train_reference** (bool，可选) - 是否将参考能量训练为可学习参数。默认值： ``False``。
         - **dropout** (Optional[float]，可选) - MLP的dropout率。默认值： ``None``。
-        - **node_aggregation** (str，可选) - 节点预测的聚合方法，例如 ``"mean"``或 ``"sum"``。默认值： ``None``。
+        - **node_aggregation** (str，可选) - 节点预测的聚合方法，例如 ``"mean"`` 或 ``"sum"``。默认值： ``None``。
 
     输入：
         - **node_features** (dict) - 节点特征字典，必须包含键"feat"，形状为 :math:`(n_{nodes}, latent\_dim)`。
