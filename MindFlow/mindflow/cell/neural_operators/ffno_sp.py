@@ -19,7 +19,7 @@ import mindspore.common.dtype as mstype
 from mindspore import nn, ops, Tensor, Parameter, ParameterTuple, mint
 from mindspore.common.initializer import XavierNormal, initializer
 from ...core.math import get_grid_1d, get_grid_2d, get_grid_3d
-from .dft import dft1, idft1
+from ...core.fourier import RDFTn, IRDFTn
 
 
 class FeedForward(nn.Cell):
@@ -106,8 +106,8 @@ class SpectralConv(nn.Cell):
         """" n- shape - 3D: S1 S2 S3 / 2D: M N / 1D: C
             mode - output length - n//2 +1
             dim -  3D: -1 -2 -3 / 2D: -1 -2  / 1D: -1 """
-        dft_cell = dft1(shape=(n,), modes=mode, dim=(n_dim,), compute_dtype=self.compute_dtype)
-        idft_cell = idft1(shape=(n,), modes=mode, dim=(n_dim,), compute_dtype=self.compute_dtype)
+        dft_cell = RDFTn(shape=n, dim=n_dim, norm='ortho', modes=mode, compute_dtype=self.compute_dtype)
+        idft_cell = IRDFTn(shape=n, dim=n_dim, norm='ortho', modes=mode, compute_dtype=self.compute_dtype)
 
         return dft_cell, idft_cell
 
@@ -244,9 +244,8 @@ class SpectralConv1d(SpectralConv):
         x = ops.transpose(x, input_perm=self._output_perm)  # x shape: batch, in_dim, grid_size
 
         x_ft_re = x
-        x_ft_im = ops.zeros_like(x_ft_re)
 
-        x_ftx_re, x_ftx_im = self._dft1_x_cell((x_ft_re, x_ft_im))
+        x_ftx_re, x_ftx_im = self._dft1_x_cell(x_ft_re)
 
         x_ftx_re_part = x_ftx_re[:, :, :self.n_modes[0]]
         x_ftx_im_part = x_ftx_im[:, :, :self.n_modes[0]]
@@ -268,7 +267,7 @@ class SpectralConv1d(SpectralConv):
             out_ftx_re = ops.zeros_like(x_ftx_re)
             out_ftx_im = ops.zeros_like(x_ftx_im)
 
-        x, _ = self._idft1_x_cell((out_ftx_re, out_ftx_im))
+        x = self._idft1_x_cell(out_ftx_re, out_ftx_im)
         x = ops.transpose(x, input_perm=self._input_perm)
 
         return x
@@ -298,10 +297,9 @@ class SpectralConv2d(SpectralConv):
         x = ops.transpose(x, input_perm=self._output_perm)  # x shape: batch, in_dim, grid_size, grid_size
 
         x_ft_re = x
-        x_ft_im = ops.zeros_like(x_ft_re)
 
         # Dimesion Y
-        x_fty_re, x_fty_im = self._dft1_y_cell((x_ft_re, x_ft_im))
+        x_fty_re, x_fty_im = self._dft1_y_cell(x_ft_re)
 
         x_fty_re_part = x_fty_re[:, :, :, :self.n_modes[1]]
         x_fty_im_part = x_fty_im[:, :, :, :self.n_modes[1]]
@@ -323,10 +321,10 @@ class SpectralConv2d(SpectralConv):
             out_fty_re = ops.zeros_like(x_fty_re)
             out_fty_im = ops.zeros_like(x_fty_im)
 
-        xy, _ = self._idft1_y_cell((out_fty_re, out_fty_im))
+        xy = self._idft1_y_cell(out_fty_re, out_fty_im)
 
         # Dimesion X
-        x_ftx_re, x_ftx_im = self._dft1_x_cell((x_ft_re, x_ft_im))
+        x_ftx_re, x_ftx_im = self._dft1_x_cell(x_ft_re)
 
         x_ftx_re_part = x_ftx_re[:, :, :self.n_modes[0], :]
         x_ftx_im_part = x_ftx_im[:, :, :self.n_modes[0], :]
@@ -348,7 +346,7 @@ class SpectralConv2d(SpectralConv):
             out_ftx_re = ops.zeros_like(x_ftx_re)
             out_ftx_im = ops.zeros_like(x_ftx_im)
 
-        xx, _ = self._idft1_x_cell((out_ftx_re, out_ftx_im))
+        xx = self._idft1_x_cell(out_ftx_re, out_ftx_im)
 
         # Combining Dimensions
         x = xx + xy
@@ -383,10 +381,9 @@ class SpectralConv3d(SpectralConv):
         x = ops.transpose(x, input_perm=self._output_perm)  # x shape: batch, in_dim, grid_size, grid_size, grid_size
 
         x_ft_re = x
-        x_ft_im = ops.zeros_like(x_ft_re)
 
         # Dimesion Z
-        x_ftz_re, x_ftz_im = self._dft1_z_cell((x_ft_re, x_ft_im))
+        x_ftz_re, x_ftz_im = self._dft1_z_cell(x_ft_re)
 
         x_ftz_re_part = x_ftz_re[:, :, :, :, :self.n_modes[2]]
         x_ftz_im_part = x_ftz_im[:, :, :, :, :self.n_modes[2]]
@@ -408,10 +405,10 @@ class SpectralConv3d(SpectralConv):
             out_ftz_re = ops.zeros_like(x_ftz_re)
             out_ftz_im = ops.zeros_like(x_ftz_im)
 
-        xz, _ = self._idft1_z_cell((out_ftz_re, out_ftz_im))
+        xz = self._idft1_z_cell(out_ftz_re, out_ftz_im)
 
         # Dimesion Y
-        x_fty_re, x_fty_im = self._dft1_y_cell((x_ft_re, x_ft_im))
+        x_fty_re, x_fty_im = self._dft1_y_cell(x_ft_re)
 
         x_fty_re_part = x_fty_re[:, :, :, :self.n_modes[1], :]
         x_fty_im_part = x_fty_im[:, :, :, :self.n_modes[1], :]
@@ -433,10 +430,10 @@ class SpectralConv3d(SpectralConv):
             out_fty_re = ops.zeros_like(x_fty_re)
             out_fty_im = ops.zeros_like(x_fty_im)
 
-        xy, _ = self._idft1_y_cell((out_fty_re, out_fty_im))
+        xy = self._idft1_y_cell(out_fty_re, out_fty_im)
 
         # Dimesion X
-        x_ftx_re, x_ftx_im = self._dft1_x_cell((x_ft_re, x_ft_im))
+        x_ftx_re, x_ftx_im = self._dft1_x_cell(x_ft_re)
 
         x_ftx_re_part = x_ftx_re[:, :, :self.n_modes[0], :, :]
         x_ftx_im_part = x_ftx_im[:, :, :self.n_modes[0], :, :]
@@ -458,7 +455,7 @@ class SpectralConv3d(SpectralConv):
             out_ftx_re = ops.zeros_like(x_ftx_re)
             out_ftx_im = ops.zeros_like(x_ftx_im)
 
-        xx, _ = self._idft1_x_cell((out_ftx_re, out_ftx_im))
+        xx = self._idft1_x_cell(out_ftx_re, out_ftx_im)
 
         # Combining Dimensions
         x = xx + xy + xz

@@ -23,7 +23,7 @@ from mindspore.common.initializer import Zero
 
 from mindflow.utils.check_func import check_param_type
 from mindflow.core.math import get_grid_2d
-from mindflow.cell.neural_operators.dft import dft2, idft2
+from mindflow import RDFTn, IRDFTn
 
 
 class FNO2D(nn.Cell):
@@ -177,10 +177,10 @@ class SpectralConv2dDft(nn.Cell):
         self.w_im1 = Parameter(w_im1, requires_grad=True)
         self.w_re2 = Parameter(w_re2, requires_grad=True)
         self.w_im2 = Parameter(w_im2, requires_grad=True)
-        self.dft2_cell = dft2(shape=(column_resolution, raw_resolution),
-                              modes=(modes1, modes2), compute_dtype=self.compute_dtype)
-        self.idft2_cell = idft2(shape=(column_resolution, raw_resolution),
-                                modes=(modes1, modes2), compute_dtype=self.compute_dtype)
+        self.dft2_cell = RDFTn(shape=(column_resolution, raw_resolution), norm='ortho',
+                               modes=(modes1, modes2), compute_dtype=self.compute_dtype)
+        self.idft2_cell = IRDFTn(shape=(column_resolution, raw_resolution), norm='ortho',
+                                 modes=(modes1, modes2), compute_dtype=self.compute_dtype)
         self.mat = Tensor(shape=(1, out_channels, column_resolution - 2 * modes1, modes2),
                           dtype=self.compute_dtype, init=Zero())
         self.concat = ops.Concat(-2)
@@ -195,8 +195,7 @@ class SpectralConv2dDft(nn.Cell):
     def construct(self, x: Tensor):
         """forward"""
         x_re = x
-        x_im = ops.zeros_like(x_re)
-        x_ft_re, x_ft_im = self.dft2_cell((x_re, x_im))
+        x_ft_re, x_ft_im = self.dft2_cell(x_re)
 
         out_ft_re1 = \
             self.mul2d(x_ft_re[:, :, :self.modes1, :self.modes2], self.w_re1) \
@@ -217,5 +216,5 @@ class SpectralConv2dDft(nn.Cell):
         out_re = self.concat((out_ft_re1, mat, out_ft_re2))
         out_im = self.concat((out_ft_im1, mat, out_ft_im2))
 
-        x, _ = self.idft2_cell((out_re, out_im))
+        x = self.idft2_cell(out_re, out_im)
         return x

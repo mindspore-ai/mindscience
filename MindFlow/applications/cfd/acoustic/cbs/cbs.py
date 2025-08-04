@@ -19,7 +19,7 @@ import numpy as np
 import mindspore as ms
 from mindspore import Tensor, nn, ops, numpy as mnp, lazy_inline
 
-from .dft import MyDFTn, MyiDFTn
+from mindflow import DFTn, IDFTn
 
 
 class CBSBlock(nn.Cell):
@@ -32,8 +32,8 @@ class CBSBlock(nn.Cell):
             shape: tuple of int, only the spatial shape, not including the batch and channel dimensions
         '''
         super().__init__()
-        self.dft_cell = MyDFTn(shape)
-        self.idft_cell = MyiDFTn(shape)
+        self.dft_cell = DFTn(shape)
+        self.idft_cell = IDFTn(shape)
 
     # Scattering potential calculation for real and imaginary parts
     def op_v(self, ur, ui, vr, vi):

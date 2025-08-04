@@ -19,7 +19,7 @@
 from mindspore import nn, ops, Tensor, mint
 import mindspore.common.dtype as mstype
 
-from .dft import SpectralConv1dDft, SpectralConv2dDft, SpectralConv3dDft
+from .fno_sp import SpectralConv1dDft, SpectralConv2dDft, SpectralConv3dDft
 from ..activation import get_activation
 from ...core.math import get_grid_1d, get_grid_2d, get_grid_3d
 from ...utils.check_func import check_param_type

@@ -16,7 +16,7 @@
 import mindspore.common.dtype as mstype
 from mindspore import ops, nn, Tensor
 
-from .dft import SpectralConv1dDft
+from .fno_sp import SpectralConv1dDft
 from ...utils.check_func import check_param_type
 
 
