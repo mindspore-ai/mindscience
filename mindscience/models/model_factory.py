@@ -15,4 +15,23 @@
 """
 init
 """
+import os
 
+from mindspore import ops, Tensor, nn, load_param_into_net, load_checkpoint
+
+
+class SciModule(nn.Cell):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+
+    def load(self, ckpt_file):
+        assert ckpt_file.endswith('.ckpt') and os.path.exists(ckpt_file)
+        param_dict = load_checkpoint(ckpt_file)
+        load_param_into_net(self, param_dict)
+
+    def set_grad(self):
+        super.set_grad()
+
+    @property
+    def num_params(self):
+        return sum([i.numel() for i in self.trainable_params()])

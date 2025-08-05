@@ -5,7 +5,6 @@
 .vscode
 __pycache__/
 *.pyc
-*.so
 *.so.*
 *.o
 *.out

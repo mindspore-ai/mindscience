@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""
-init
-"""
+"""init"""
+from .sympy2mindspore import sympy_to_mindspore
+from .pde_with_loss import PDEWithLoss, Burgers, NavierStokes, Poisson
+from .flow_with_loss import FlowWithLoss, SteadyFlowWithLoss, UnsteadyFlowWithLoss
 
+__all__ = ["Burgers", "NavierStokes", "Poisson", "sympy_to_mindspore", "PDEWithLoss",
+           "FlowWithLoss", "SteadyFlowWithLoss", "UnsteadyFlowWithLoss"]
+
+__all__.sort()
