@@ -20,7 +20,7 @@ import numpy as np
 from mindspore import Tensor, ops, amp, nn, jit
 from mindspore import dtype as mstype
 
-from mindflow.cell import DiffusionTransformer, DiffusionTrainer, DDPMScheduler, DDIMScheduler, DDPMPipeline, \
+from mindscience.models import DiffusionTransformer, DiffusionTrainer, DDPMScheduler, DDIMScheduler, DDPMPipeline, \
     DDIMPipeline, ConditionDiffusionTransformer
 from dataset import get_latent_dataset
 from ae import LATENT_DIM, generate_image

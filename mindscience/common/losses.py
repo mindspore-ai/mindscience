@@ -25,7 +25,6 @@ from mindspore import nn, ops, Parameter, Tensor
 from mindspore.ops import operations as P
 from mindspore.ops import functional as F
 
-from ..cell.utils import unpatchify
 from ..utils.check_func import check_param_type, check_param_type_value
 
 _loss_metric = {
@@ -42,6 +41,37 @@ _loss_metric = {
     'smooth_l1_loss': nn.SmoothL1Loss,
     'smooth_l1': nn.SmoothL1Loss,
 }
+
+
+
+def unpatchify(labels, img_size=(192, 384), patch_size=16, nchw=False):
+    """
+    Args:
+        labels (Union[int, float]): output dimension for each position.
+        img_size (tuple(int)): Input image size. Default (192, 384).
+        patch_size (int): The patch size of image. Default: 16.
+        nchw (bool): If True, the unpatchify shape contains N, C, H, W.
+
+    Returns:
+        The tensor with shape of :math:`(N, H, W, C)`.
+    """
+    label_shape = labels.shape
+    output_dim = label_shape[-1] // (patch_size * patch_size)
+    labels = P.Reshape()(labels, (label_shape[0],
+                                  img_size[0] // patch_size,
+                                  img_size[1] // patch_size,
+                                  patch_size,
+                                  patch_size,
+                                  output_dim))
+
+    labels = P.Transpose()(labels, (0, 1, 3, 2, 4, 5))
+    labels = P.Reshape()(labels, (label_shape[0],
+                                  img_size[0],
+                                  img_size[1],
+                                  output_dim))
+    if nchw:
+        labels = P.Transpose()(labels, (0, 3, 1, 2))
+    return labels
 
 
 def get_loss_metric(name):

@@ -22,15 +22,15 @@ import numpy as np
 from mindspore import Tensor, ops, context
 from mindspore import dtype as mstype
 
-from mindflow.cell import DiffusionScheduler, DDPMPipeline, DDIMPipeline, DDPMScheduler, DDIMScheduler, \
+from mindscience.models import DiffusionScheduler, DDPMPipeline, DDIMPipeline, DDPMScheduler, DDIMScheduler, \
     DiffusionTransformer, ConditionDiffusionTransformer
 
 PROJECT_ROOT = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), "../../../"))
+    os.path.dirname(__file__), "../../"))
 sys.path.append(PROJECT_ROOT)
 
-from common.cell import FP32_RTOL, FP32_ATOL
-from common.cell import compare_output
+from tools import FP32_RTOL, FP32_ATOL
+from tools import compare_output
 
 from ddim_gt import DDIMScheduler as DDIMSchedulerGt
 from ddpm_gt import DDPMScheduler as DDPMSchedulerGt

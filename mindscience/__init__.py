@@ -71,12 +71,14 @@ def _mindspore_version_check():
 
 _mindspore_version_check()
 
-
 __all__ = []
+__all__.extend(common.__all__)
 __all__.extend(data.__all__)
-__all__.extend(geometry.__all__)
-__all__.extend(core.__all__)
+__all__.extend(distributed.__all__)
+__all__.extend(e3nn.__all__)
+__all__.extend(gnn.__all__)
+__all__.extend(models.__all__)
 __all__.extend(pde.__all__)
-__all__.extend(cell.__all__)
-__all__.extend(cfd.__all__)
+__all__.extend(sciops.__all__)
+__all__.extend(solvers.__all__)
 __all__.extend(utils.__all__)
