@@ -30,7 +30,7 @@ sys.path.append(PROJECT_ROOT)
 
 # pylint: disable=wrong-import-position
 
-from common.cell import FP32_RTOL
+from common.cell import FP32_RTOL, FP16_RTOL, FP32_ATOL, FP16_ATOL
 from common.cell.utils import compare_output
 
 # pylint: enable=wrong-import-position
@@ -57,7 +57,8 @@ def gen_input(shape=(5, 6, 4, 8), rand_test=True):
 @pytest.mark.parametrize('device_target', ['CPU', 'Ascend'])
 @pytest.mark.parametrize('mode', [ms.GRAPH_MODE, ms.PYNATIVE_MODE])
 @pytest.mark.parametrize('ndim', [1, 2, 3])
-def test_rdft_accuracy(device_target, mode, ndim):
+@pytest.mark.parametrize('compute_dtype', [ms.float32, ms.float16])
+def test_rdft_accuracy(device_target, mode, ndim, compute_dtype):
     """
     Feature: Test RDFTn & IRDFTn accuracy
     Description: Input random tensor, compare the results of RDFTn and IRDFTn with numpy results
@@ -68,12 +69,15 @@ def test_rdft_accuracy(device_target, mode, ndim):
     shape = a.shape
 
     b = np.fft.rfftn(a.real, s=a.shape[-ndim:], axes=range(-ndim, 0))
-    br, bi = RDFTn(shape[-ndim:])(ar)
-    cr = IRDFTn(shape[-ndim:])(br, bi)
+    br, bi = RDFTn(shape[-ndim:], compute_dtype=compute_dtype)(ar)
+    cr = IRDFTn(shape[-ndim:], compute_dtype=compute_dtype)(br, bi)
 
-    assert compare_output(b.real, br.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(b))
-    assert compare_output(b.imag, bi.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(b))
-    assert compare_output(a.real, cr.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(a))
+    rtol = FP32_RTOL if compute_dtype == ms.float32 else FP16_RTOL * 10
+    atol = FP32_ATOL if compute_dtype == ms.float32 else FP16_ATOL * 20
+
+    assert compare_output(br.numpy(), b.real, rtol, atol)
+    assert compare_output(bi.numpy(), b.imag, rtol, atol)
+    assert compare_output(cr.numpy(), a.real, rtol, atol)
 
 
 @pytest.mark.level0
@@ -82,7 +86,8 @@ def test_rdft_accuracy(device_target, mode, ndim):
 @pytest.mark.parametrize('device_target', ['CPU', 'Ascend'])
 @pytest.mark.parametrize('mode', [ms.GRAPH_MODE, ms.PYNATIVE_MODE])
 @pytest.mark.parametrize('ndim', [1, 2, 3])
-def test_dft_accuracy(device_target, mode, ndim):
+@pytest.mark.parametrize('compute_dtype', [ms.float32, ms.float16])
+def test_dft_accuracy(device_target, mode, ndim, compute_dtype):
     """
     Feature: Test DFTn & IDFTn accuracy
     Description: Input random tensor, compare the results of DFTn and IDFTn with numpy results
@@ -93,13 +98,16 @@ def test_dft_accuracy(device_target, mode, ndim):
     shape = a.shape
 
     b = np.fft.fftn(a, s=a.shape[-ndim:], axes=range(-ndim, 0))
-    br, bi = DFTn(shape[-ndim:])(ar, ai)
-    cr, ci = IDFTn(shape[-ndim:])(br, bi)
+    br, bi = DFTn(shape[-ndim:], compute_dtype=compute_dtype)(ar, ai)
+    cr, ci = IDFTn(shape[-ndim:], compute_dtype=compute_dtype)(br, bi)
 
-    assert compare_output(b.real, br.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(b))
-    assert compare_output(b.imag, bi.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(b))
-    assert compare_output(a.real, cr.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(a))
-    assert compare_output(a.imag, ci.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(a))
+    rtol = FP32_RTOL if compute_dtype == ms.float32 else FP16_RTOL * 10
+    atol = FP32_ATOL if compute_dtype == ms.float32 else FP16_ATOL * 20
+
+    assert compare_output(br.numpy(), b.real, rtol, atol)
+    assert compare_output(bi.numpy(), b.imag, rtol, atol)
+    assert compare_output(cr.numpy(), a.real, rtol, atol)
+    assert compare_output(ci.numpy(), a.imag, rtol, atol)
 
 
 @pytest.mark.level0
@@ -107,7 +115,8 @@ def test_dft_accuracy(device_target, mode, ndim):
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('device_target', ['CPU', 'Ascend'])
 @pytest.mark.parametrize('mode', [ms.GRAPH_MODE, ms.PYNATIVE_MODE])
-def test_dct_accuracy(device_target, mode):
+@pytest.mark.parametrize('compute_dtype', [ms.float32, ms.float16])
+def test_dct_accuracy(device_target, mode, compute_dtype):
     """
     Feature: Test DCT & IDCT accuracy
     Description: Input random tensor, compare the results of DCT and IDCT with numpy results
@@ -118,11 +127,14 @@ def test_dct_accuracy(device_target, mode):
     shape = a.shape
 
     b = dct(a.real)
-    br = DCT(shape[-1:])(ar)
-    cr = IDCT(shape[-1:])(br)
+    br = DCT(shape[-1:], compute_dtype=compute_dtype)(ar)
+    cr = IDCT(shape[-1:], compute_dtype=compute_dtype)(br)
 
-    assert compare_output(b.real, br.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(b))
-    assert compare_output(a.real, cr.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(a))
+    rtol = FP32_RTOL if compute_dtype == ms.float32 else FP16_RTOL * 10
+    atol = FP32_ATOL if compute_dtype == ms.float32 else FP16_ATOL * 20
+
+    assert compare_output(br.numpy(), b.real, rtol, atol)
+    assert compare_output(cr.numpy(), a.real, rtol, atol)
 
 
 @pytest.mark.level0
@@ -130,7 +142,8 @@ def test_dct_accuracy(device_target, mode):
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('device_target', ['CPU', 'Ascend'])
 @pytest.mark.parametrize('mode', [ms.GRAPH_MODE, ms.PYNATIVE_MODE])
-def test_dst_accuracy(device_target, mode):
+@pytest.mark.parametrize('compute_dtype', [ms.float32, ms.float16])
+def test_dst_accuracy(device_target, mode, compute_dtype):
     """
     Feature: Test DST & IDST accuracy
     Description: Input random tensor, compare the results of DST and IDST with numpy results
@@ -141,11 +154,14 @@ def test_dst_accuracy(device_target, mode):
     shape = a.shape
 
     b = dst(a.real)
-    br = DST(shape[-1:])(ar)
-    cr = IDST(shape[-1:])(br)
+    br = DST(shape[-1:], compute_dtype=compute_dtype)(ar)
+    cr = IDST(shape[-1:], compute_dtype=compute_dtype)(br)
 
-    assert compare_output(b.real, br.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(b))
-    assert compare_output(a.real, cr.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(a))
+    rtol = FP32_RTOL if compute_dtype == ms.float32 else FP16_RTOL * 10
+    atol = FP32_ATOL if compute_dtype == ms.float32 else FP16_ATOL * 20
+
+    assert compare_output(br.numpy(), b.real, rtol, atol)
+    assert compare_output(cr.numpy(), a.real, rtol, atol)
 
 
 @pytest.mark.level0
@@ -201,7 +217,8 @@ def test_dft_speed(device_target, mode, ndim):
 @pytest.mark.parametrize('device_target', ['CPU', 'Ascend'])
 @pytest.mark.parametrize('mode', [ms.GRAPH_MODE, ms.PYNATIVE_MODE])
 @pytest.mark.parametrize('ndim', [1, 2, 3])
-def test_dft_grad(device_target, mode, ndim):
+@pytest.mark.parametrize('compute_dtype', [ms.float32, ms.float16])
+def test_dft_grad(device_target, mode, ndim, compute_dtype):
     """
     Feature: Test the correctness of DFTn & IDFTn grad calculation
     Description: Input random tensor, compare the autograd results with theoretic solutions
@@ -211,7 +228,7 @@ def test_dft_grad(device_target, mode, ndim):
     a, ar, ai = gen_input()
     shape = a.shape
 
-    dft_cell = DFTn(shape[-ndim:])
+    dft_cell = DFTn(shape[-ndim:], compute_dtype=compute_dtype)
 
     def forward_fn(xr, xi):
         yr, yi = dft_cell(xr, xi)
@@ -224,5 +241,8 @@ def test_dft_grad(device_target, mode, ndim):
     b = np.fft.fftn(a, s=a.shape[-ndim:], axes=range(-ndim, 0))
     g = np.fft.ifftn(b, s=a.shape[-ndim:], axes=range(-ndim, 0)) * 2 * np.prod(a.shape[-ndim:])
 
-    assert compare_output(g.real, g1.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(g))
-    assert compare_output(g.imag, g2.numpy(), rtol=FP32_RTOL, atol=FP32_RTOL * np.linalg.norm(g))
+    rtol = FP32_RTOL if compute_dtype == ms.float32 else FP16_RTOL * 10
+    atol = FP32_ATOL if compute_dtype == ms.float32 else FP16_ATOL * 500 # grad func leads to larger error
+
+    assert compare_output(g1.numpy(), g.real, rtol, atol)
+    assert compare_output(g2.numpy(), g.imag, rtol, atol)

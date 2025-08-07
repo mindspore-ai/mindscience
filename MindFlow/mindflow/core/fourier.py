@@ -14,14 +14,14 @@
 # ==============================================================================
 ''' provide complex dft based on the real dft API in mindflow.dft '''
 import numpy as np
-from scipy.linalg import dft
+import scipy
 import mindspore as ms
 import mindspore.common.dtype as mstype
 from mindspore import nn, ops, Tensor, mint
 from mindspore.common.initializer import Zero
 from mindspore.ops import operations as P
 
-from ..utils.check_func import check_param_no_greater, check_param_value, check_param_type, check_param_even
+from ..utils.check_func import check_param_no_greater, check_param_value
 
 
 class MyRoll(nn.Cell):
@@ -76,88 +76,97 @@ class MyFlip(nn.Cell):
         return x
 
 
+def convert_shape(shape):
+    ''' convert shape to suitable format '''
+    if isinstance(shape, int):
+        n = shape
+    elif len(shape) == 1:
+        n, = shape
+    else:
+        raise TypeError("Only support 1D dct/dst, but got shape {}".format(shape))
+    return n
+
+
 def convert_params(shape, modes, dim):
     ''' convert input arguments to suitable format '''
+    shape = tuple(np.atleast_1d(shape).astype(int).tolist())
+    ndim = len(shape)
+
     if dim is None:
-        ndim = len(shape)
         dim = tuple([n - ndim for n in range(ndim)])
     else:
         dim = tuple(np.atleast_1d(dim).astype(int).tolist())
 
-    shape = tuple(np.atleast_1d(shape).astype(int).tolist())
-    modes = tuple(np.atleast_1d(modes).astype(int).tolist())
+    if modes is None or isinstance(modes, int):
+        modes = tuple([modes] * ndim)
+    else:
+        modes = tuple(np.atleast_1d(modes).astype(int).tolist())
 
     return shape, modes, dim
 
 
 def check_params(shape, modes, dim):
     ''' check lawfulness of input arguments '''
-    check_param_type(dim, "dim", data_type=tuple)
-    check_param_type(shape, "shape", data_type=tuple)
-    check_param_type(modes, "modes", data_type=tuple)
     check_param_no_greater(len(dim), "dim length", 3)
     check_param_value(len(shape), "shape length", len(dim))
     check_param_value(len(modes), "modes length", len(dim))
-    check_param_even(shape, "shape")
-    for i, (m, n) in enumerate(zip(modes, shape)):
-        check_param_no_greater(m, f'mode{i+1}', n // 2 + (i == len(dim) - 1))
+    if np.any(modes):
+        for i, (m, n) in enumerate(zip(modes, shape)):
+            # if for last axis mode need to be n//2+1, mode should be set to None
+            check_param_no_greater(m, f'mode{i+1}', n // 2)
 
 
 class _DFT1d(nn.Cell):
     '''One dimensional Discrete Fourier Transformation'''
 
-    def __init__(self, n, modes, last_index, idx=0, inv=False, compute_dtype=mstype.float32):
+    def __init__(self, n, mode, last_index, idx=0, scale='sqrtn', inv=False, compute_dtype=mstype.float32):
         super().__init__()
 
         self.n = n
-        self.dft_mat = dft(n, scale="sqrtn")
-        self.modes = modes
+        self.dft_mat = scipy.linalg.dft(n, scale=scale)
         self.last_index = last_index
         self.inv = inv
+        self.odd = bool(n % 2)
         self.idx = idx
+        self.mode_upper = mode if mode else n // 2 + (self.last_index or self.odd)
+        self.mode_lower = mode if mode else n - self.mode_upper
         self.compute_dtype = compute_dtype
 
-        self.dft_mode_mat_upper = self.dft_mat[:, :modes]
-        self.a_re_upper = Tensor(
-            self.dft_mode_mat_upper.real, dtype=compute_dtype)
-        self.a_im_upper = Tensor(
-            self.dft_mode_mat_upper.imag, dtype=compute_dtype)
+        # generate DFT matrix for positive and negative frequencies
+        dft_mat_mode = self.dft_mat[:, :self.mode_upper]
+        self.a_re_upper = Tensor(dft_mat_mode.real, dtype=compute_dtype)
+        self.a_im_upper = Tensor(dft_mat_mode.imag, dtype=compute_dtype)
 
-        self.dft_mode_mat_lower = self.dft_mat[:, -modes:]
-        self.a_re_lower = Tensor(
-            self.dft_mode_mat_lower.real, dtype=compute_dtype)
-        self.a_im_lower = Tensor(
-            self.dft_mode_mat_lower.imag, dtype=compute_dtype)
+        dft_mat_mode = self.dft_mat[:, -self.mode_lower:]
+        self.a_re_lower = Tensor(dft_mat_mode.real, dtype=compute_dtype)
+        self.a_im_lower = Tensor(dft_mat_mode.imag, dtype=compute_dtype)
+
+        # the zero matrix to fill the un-transformed modes
+        m = self.n - (self.mode_upper + self.mode_lower)
+        if m > 0:
+            self.mat = Tensor(shape=m, dtype=compute_dtype, init=Zero())
+
         self.concat = ops.Concat(axis=-1)
+        self.cast = P.Cast()
 
         if self.inv:
             self.a_re_upper = self.a_re_upper.T
             self.a_im_upper = -self.a_im_upper.T
+            self.a_re_lower = self.a_re_lower.T
+            self.a_im_lower = -self.a_im_lower.T
+
+            # last axis is real-transformed, so the inverse is conjugate of the positive frequencies
             if last_index:
-                if modes == n // 2 + 1:
-                    self.dft_mat_res = self.dft_mat[:, -modes + 2:]
-                else:
-                    self.dft_mat_res = self.dft_mat[:, -modes + 1:]
+                mode_res = min(self.mode_lower, self.mode_upper - 1)
+                dft_mat_res = self.dft_mat[:, -mode_res:]
+                a_re_res = MyFlip()(Tensor(dft_mat_res.real, dtype=compute_dtype), dims=-1)
+                a_im_res = MyFlip()(Tensor(dft_mat_res.imag, dtype=compute_dtype), dims=-1)
 
-                mat = Tensor(np.zeros(n,), dtype=compute_dtype).reshape(n, 1)
-                self.a_re_res = MyFlip()(Tensor(self.dft_mat_res.real, dtype=compute_dtype), dims=-1)
-                self.a_im_res = MyFlip()(Tensor(self.dft_mat_res.imag, dtype=compute_dtype), dims=-1)
-                if modes == n // 2 + 1:
-                    self.a_re_res = self.concat((mat, self.a_re_res, mat))
-                    self.a_im_res = self.concat((mat, self.a_im_res, mat))
-                else:
-                    self.a_re_res = self.concat((mat, self.a_re_res))
-                    self.a_im_res = self.concat((mat, self.a_im_res))
+                a_re_res = ops.pad(a_re_res, (1, self.mode_upper - mode_res - 1))
+                a_im_res = ops.pad(a_im_res, (1, self.mode_upper - mode_res - 1))
 
-                self.a_re_res = self.a_re_res.T
-                self.a_im_res = -self.a_im_res.T
-            else:
-                self.a_re_res = self.a_re_lower.T
-                self.a_im_res = -self.a_im_lower.T
-
-        if (self.n - 2 * self.modes) > 0:
-            self.mat = Tensor(shape=(self.n - 2 * self.modes),
-                              dtype=compute_dtype, init=Zero())
+                self.a_re_upper += a_re_res.T
+                self.a_im_upper += a_im_res.T
 
     def swap_axes(self, x_re, x_im):
         return x_re.swapaxes(-1, self.idx), x_im.swapaxes(-1, self.idx)
@@ -168,10 +177,9 @@ class _DFT1d(nn.Cell):
         return y_re, y_im
 
     def zero_mat(self, dims):
-        length = len(dims)
         mat = self.mat
-        for i in range(length - 1, -1, -1):
-            mat = mint.repeat_interleave(mat.expand_dims(0), dims[i], 0)
+        for n in dims[::-1]:
+            mat = mint.repeat_interleave(mat.expand_dims(0), n, 0)
         return mat
 
     def compute_forward(self, x_re, x_im):
@@ -185,7 +193,7 @@ class _DFT1d(nn.Cell):
         y_re2, y_im2 = self.complex_matmul(
             x_re=x_re, x_im=x_im, a_re=self.a_re_lower, a_im=self.a_im_lower)
 
-        if self.n == self.modes * 2:
+        if self.n == self.mode_upper + self.mode_lower:
             y_re = self.concat((y_re, y_re2))
             y_im = self.concat((y_im, y_im2))
         else:
@@ -197,26 +205,23 @@ class _DFT1d(nn.Cell):
 
     def compute_inverse(self, x_re, x_im):
         ''' Inverse transform for irdft '''
-        y_re, y_im = self.complex_matmul(x_re=x_re[..., :self.modes],
-                                         x_im=x_im[..., :self.modes],
+        y_re, y_im = self.complex_matmul(x_re=x_re[..., :self.mode_upper],
+                                         x_im=x_im[..., :self.mode_upper],
                                          a_re=self.a_re_upper,
                                          a_im=self.a_im_upper)
         if self.last_index:
-            y_re_res, y_im_res = self.complex_matmul(x_re=x_re,
-                                                     x_im=x_im,
-                                                     a_re=self.a_re_res,
-                                                     a_im=-self.a_im_res)
-        else:
-            y_re_res, y_im_res = self.complex_matmul(x_re=x_re[..., -self.modes:],
-                                                     x_im=x_im[..., -self.modes:],
-                                                     a_re=self.a_re_res,
-                                                     a_im=self.a_im_res)
+            return y_re, y_im
+
+        y_re_res, y_im_res = self.complex_matmul(x_re=x_re[..., -self.mode_lower:],
+                                                 x_im=x_im[..., -self.mode_lower:],
+                                                 a_re=self.a_re_lower,
+                                                 a_im=self.a_im_lower)
         return y_re + y_re_res, y_im + y_im_res
 
     def construct(self, x):
         ''' perform 1d rdft/irdft with matmul operations '''
         x_re, x_im = x
-        x_re, x_im = P.Cast()(x_re, self.compute_dtype), P.Cast()(x_im, self.compute_dtype)
+        x_re, x_im = self.cast(x_re, self.compute_dtype), self.cast(x_im, self.compute_dtype)
         x_re, x_im = self.swap_axes(x_re, x_im)
         if self.inv:
             y_re, y_im = self.compute_inverse(x_re, x_im)
@@ -227,52 +232,51 @@ class _DFT1d(nn.Cell):
 
 
 class _DFTn(nn.Cell):
-    r"""
-    N dimensional Discrete Fourier Transformation
-
-    Args:
-        shape (tuple): Dimension of the input 'x'.
-        modes (tuple): The length of the output transform axis. The `modes` must be no greater than half of the
-            dimension of input 'x'.
-        dim (tuple): Dimensions to be transformed. Default: None, the leading dimensions will be transformed.
-        inv (bool): Whether to compute inverse transformation. Default: False.
-        compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
-
-    Inputs:
-        - **x** (Tensor, Tensor): The input data. It's 3-D tuple of Tensor. It's a complex,
-          including x real and imaginary. Tensor of shape :math:`(*, *)`.
-
-    Returns:
-        Complex tensor with the same shape of input x.
-
-    Raises:
-        TypeError: If `shape` is not a tuple.
-        ValueError: If the length of `shape` is greater than 3.
-    """
-    def __init__(self, shape, modes, dim=None, inv=False, compute_dtype=mstype.float32):
+    ''' Base class for n-D DFT transform '''
+    def __init__(self, shape, dim=None, norm='backward', modes=None, compute_dtype=mstype.float32):
         super().__init__()
 
-        if dim is None:
-            dim = range(len(shape))
+        shape, modes, dim = convert_params(shape, modes, dim)
+        check_params(shape, modes, dim)
+
+        ndim = len(shape)
+        inv, scale, r2c_flags = self.set_options(ndim, norm)
         self.dft1_seq = nn.SequentialCell()
-        last_index = [False for _ in range(len(shape))]
-        last_index[-1] = True
-        for dim_id, idx in enumerate(dim):
-            self.dft1_seq.append(
-                _DFT1d(n=shape[dim_id], modes=modes[dim_id], last_index=last_index[dim_id], idx=idx, inv=inv,
-                       compute_dtype=compute_dtype))
+        for n, m, r, d in zip(shape, modes, r2c_flags, dim):
+            self.dft1_seq.append(_DFT1d(
+                n=n, mode=m, last_index=r, idx=d, scale=scale, inv=inv, compute_dtype=compute_dtype))
 
-    def construct(self, x):
-        return self.dft1_seq(x)
+    def set_options(self, ndim, norm):
+        '''
+        Choose the dimensions, normalization, and transformation mode (forward/backward).
+        Derivative APIs overwrite the options to achieve their specific goals.
+        '''
+        inv = False
+        scale = {
+            'backward': None,
+            'forward': 'n',
+            'ortho': 'sqrtn',
+        }[norm]
+        r2c_flags = np.zeros(ndim, dtype=bool).tolist()
+        r2c_flags[-1] = True
+        return inv, scale, r2c_flags
+
+    def construct(self, *args, **kwargs):
+        raise NotImplementedError
 
 
-class RDFTn(nn.Cell):
+class RDFTn(_DFTn):
     r"""
     1/2/3D discrete real Fourier transformation on real number. The results should be same as
     `scipy.fft.rfftn() <https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.rfftn.html>`_ .
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
+        dim (tuple): Dimensions to be transformed. Default: None, the leading dimensions will be transformed.
+        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
+            same as torch.fft.rfftn
+        modes (tuple, int, None): The length of the output transform axis. The `modes` must be no greater than half of the
+            dimension of input 'x'.
         compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
@@ -296,37 +300,25 @@ class RDFTn(nn.Cell):
         >>> print(br.shape)
         (2, 32, 257)
     """
-    def __init__(self, shape, compute_dtype=mstype.float32):
-        super().__init__()
-
-        n = shape[-1]
-        ndim = len(shape)
-        modes = tuple([_ // 2 for _ in shape[-ndim:-1]] + [n // 2 + 1]) if ndim > 1 else n // 2 + 1
-
-        shape, modes, dim = convert_params(shape, modes, dim=None)
-        check_params(shape, modes, dim)
-
-        self.n = n
-        self.ndim = ndim
-        self.shape = shape
-        self.scale = float(np.prod(shape) ** .5)
-
-        self.dft_cell = _DFTn(shape, modes, dim, inv=False, compute_dtype=compute_dtype)
-
     def construct(self, ar):
         ''' perform n-dimensional rDFT on real tensor '''
         # n-D Fourier transform with last axis being real-transformed, output dimension (..., m, n//2+1)
-        br, bi = self.dft_cell((ar, ar * 0)) # the last ndim dimensions of ar must accord with shape
-        return br * self.scale, bi * self.scale
+        # the last ndim dimensions of ar must accord with shape
+        return self.dft1_seq((ar, ar * 0))
 
 
-class IRDFTn(nn.Cell):
+class IRDFTn(_DFTn):
     r"""
     1/2/3D discrete inverse real Fourier transformation on complex number. The results should be same as
     `scipy.fft.irfftn() <https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.irfftn.html>`_ .
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
+        dim (tuple): Dimensions to be transformed. Default: None, the leading dimensions will be transformed.
+        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
+            same as torch.fft.irfftn
+        modes (tuple, int, None): The length of the output transform axis. The `modes` must be no greater than half of the
+            dimension of input 'x'.
         compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
@@ -351,36 +343,34 @@ class IRDFTn(nn.Cell):
         >>> print(br.shape)
         (2, 32, 512)
     """
-    def __init__(self, shape, compute_dtype=mstype.float32):
-        super().__init__()
-
-        n = shape[-1]
-        ndim = len(shape)
-        modes = tuple([_ // 2 for _ in shape[-ndim:-1]] + [n // 2 + 1]) if ndim > 1 else n // 2 + 1
-
-        shape, modes, dim = convert_params(shape, modes, dim=None)
-        check_params(shape, modes, dim)
-
-        self.n = n
-        self.ndim = ndim
-        self.shape = shape
-        self.scale = float(np.prod(self.shape) ** .5)
-
-        self.idft_cell = _DFTn(shape, modes, dim, inv=True, compute_dtype=compute_dtype)
+    def set_options(self, ndim, norm):
+        inv = True
+        scale = {
+            'forward': None,
+            'backward': 'n',
+            'ortho': 'sqrtn',
+        }[norm]
+        r2c_flags = np.zeros(ndim, dtype=bool).tolist()
+        r2c_flags[-1] = True
+        return inv, scale, r2c_flags
 
     def construct(self, ar, ai):
         ''' perform n-dimensional irDFT on complex tensor and output real tensor '''
-        br, _ = self.idft_cell((ar, ai))
-        return br / self.scale
+        return self.dft1_seq((ar, ai))[0]
 
 
-class DFTn(nn.Cell):
+class DFTn(_DFTn):
     r"""
     1/2/3D discrete Fourier transformation on complex number. The results should be same as
     `scipy.fft.fftn() <https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.fftn.html#scipy.fft.fftn>`_ .
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
+        dim (tuple): Dimensions to be transformed. Default: None, the leading dimensions will be transformed.
+        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
+            same as torch.fft.irfftn
+        modes (tuple, int, None): The length of the output transform axis. The `modes` must be no greater than half of the
+            dimension of input 'x'.
         compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
@@ -404,89 +394,34 @@ class DFTn(nn.Cell):
         >>> print(br.shape)
         (2, 32, 512)
     """
-    def __init__(self, shape, compute_dtype=mstype.float32):
-        super().__init__()
-
-        n = shape[-1]
-        ndim = len(shape)
-        modes = tuple([_ // 2 for _ in shape[-ndim:-1]] + [n // 2 + 1]) if ndim > 1 else n // 2 + 1
-
-        shape, modes, dim = convert_params(shape, modes, dim=None)
-        check_params(shape, modes, dim)
-
-        self.n = n
-        self.ndim = ndim
-        self.shape = shape
-        self.scale = float(np.prod(shape) ** .5)
-
-        self.dft_cell = RDFTn(shape, compute_dtype)
-
-        # use mask to assemble slices of Tensors, avoiding dynamic shape
-        mask_x0 = np.ones(self.n//2 + 1)
-        mask_xm = np.ones(self.n//2 + 1)
-        mask_y0 = np.ones(self.shape)
-        mask_z0 = np.ones(self.shape)
-        mask_x0[0] = 0
-        mask_xm[-1] = 0
-        if self.ndim > 1:
-            mask_y0[..., 0, :] = 0
-        if self.ndim > 2:
-            mask_z0[..., 0, :, :] = 0
-
-        self.mask_x0 = Tensor(mask_x0, dtype=compute_dtype, const_arg=True)
-        self.mask_xm = Tensor(mask_xm, dtype=compute_dtype, const_arg=True)
-        self.mask_y0 = Tensor(mask_y0, dtype=compute_dtype, const_arg=True)
-        self.mask_z0 = Tensor(mask_z0, dtype=compute_dtype, const_arg=True)
-
-        self.fliper = MyFlip()
-        self.roller = MyRoll()
+    def set_options(self, ndim, norm):
+        inv = False
+        scale = {
+            'forward': 'n',
+            'backward': None,
+            'ortho': 'sqrtn',
+        }[norm]
+        r2c_flags = np.zeros(ndim, dtype=bool).tolist()
+        return inv, scale, r2c_flags
 
     def construct(self, ar, ai):
         ''' perform n-dimensional DFT on complex tensor '''
         # n-D complex Fourier transform, output dimension (..., m, n)
-        # call dft for real & imag parts separately and then assemble
-        brr, bri = self.dft_cell(ar) # ar and ai must have same shape
-        bir, bii = self.dft_cell(ai) # the last ndim dimensions of ai must accord with shape
-
-        n = self.n
-
-        br_half1 = ops.pad((brr - bii) * self.mask_xm, [0, n//2 - 1])
-        bi_half1 = ops.pad((bri + bir) * self.mask_xm, [0, n//2 - 1])
-
-        br_half2 = ops.pad((brr + bii) * self.mask_x0, [n//2 - 1, 0])
-        bi_half2 = ops.pad((bir - bri) * self.mask_x0, [n//2 - 1, 0])
-        br_half2 = self.roller(self.fliper(br_half2, dims=-1), n//2, dims=-1)
-        bi_half2 = self.roller(self.fliper(bi_half2, dims=-1), n//2, dims=-1)
-
-        if self.ndim > 1:
-            br_half2_1 = br_half2 * (1 - self.mask_y0)
-            bi_half2_1 = bi_half2 * (1 - self.mask_y0)
-            br_half2_2 = br_half2 * self.mask_y0
-            bi_half2_2 = bi_half2 * self.mask_y0
-            br_half2 = br_half2_1 + self.roller(self.fliper(br_half2_2, dims=-2), 1, dims=-2)
-            bi_half2 = bi_half2_1 + self.roller(self.fliper(bi_half2_2, dims=-2), 1, dims=-2)
-
-        if self.ndim > 2:
-            br_half2_1 = br_half2 * (1 - self.mask_z0)
-            bi_half2_1 = bi_half2 * (1 - self.mask_z0)
-            br_half2_2 = br_half2 * self.mask_z0
-            bi_half2_2 = bi_half2 * self.mask_z0
-            br_half2 = br_half2_1 + self.roller(self.fliper(br_half2_2, dims=-3), 1, dims=-3)
-            bi_half2 = bi_half2_1 + self.roller(self.fliper(bi_half2_2, dims=-3), 1, dims=-3)
-
-        br = br_half1 + br_half2
-        bi = bi_half1 + bi_half2
-
-        return br, bi
+        return self.dft1_seq((ar, ai))
 
 
-class IDFTn(nn.Cell):
+class IDFTn(DFTn):
     r"""
     1/2/3D discrete inverse Fourier transformation on complex number. The results should be same as
     `scipy.fft.ifftn() <https://docs.scipy.org/doc/scipy/reference/generated/scipy.fft.ifftn.html#scipy.fft.ifftn>`_ .
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
+        dim (tuple): Dimensions to be transformed. Default: None, the leading dimensions will be transformed.
+        norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
+            same as torch.fft.irfftn
+        modes (tuple, int, None): The length of the output transform axis. The `modes` must be no greater than half of the
+            dimension of input 'x'.
         compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
@@ -510,15 +445,15 @@ class IDFTn(nn.Cell):
         >>> print(br.shape)
         (2, 32, 512)
     """
-    def __init__(self, shape, compute_dtype=mstype.float32):
-        super().__init__()
-        self.dft_cell = DFTn(shape, compute_dtype)
-
-    def construct(self, ar, ai):
-        ''' perform n-dimensional iDFT on complex tensor '''
-        scale = self.dft_cell.scale**2
-        br, bi = self.dft_cell(ar, -ai)
-        return br / scale, -bi / scale
+    def set_options(self, ndim, norm):
+        inv = True
+        scale = {
+            'forward': None,
+            'backward': 'n',
+            'ortho': 'sqrtn',
+        }[norm]
+        r2c_flags = np.zeros(ndim, dtype=bool).tolist()
+        return inv, scale, r2c_flags
 
 
 class DCT(nn.Cell):
@@ -552,9 +487,11 @@ class DCT(nn.Cell):
     """
     def __init__(self, shape, compute_dtype=mstype.float32):
         super().__init__()
-        self.dft_cell = DFTn(shape, compute_dtype)
-        assert self.dft_cell.ndim == 1, 'only support 1D dct'
-        n, = self.dft_cell.shape
+
+        n = convert_shape(shape)
+
+        self.dft_cell = DFTn(n, compute_dtype=compute_dtype)
+
         w = Tensor(np.arange(n) * np.pi / (2 * n), dtype=compute_dtype)
         self.cosw = ops.cos(w)
         self.sinw = ops.sin(w)
@@ -603,12 +540,13 @@ class IDCT(nn.Cell):
     def __init__(self, shape, compute_dtype=mstype.float32):
         super().__init__()
 
-        self.dft_cell = IRDFTn(shape, compute_dtype)
-        assert self.dft_cell.ndim == 1, 'only support 1D dct'
-        n, = self.dft_cell.shape
-        assert n % 2 == 0, 'only support even length' # n has to be even, or IRDFTn would fail
+        n = convert_shape(shape)
 
-        w = Tensor(np.arange(0, n // 2 + 1, 1) * np.pi / (2 * n), dtype=compute_dtype)
+        # assert n % 2 == 0, 'only support even length' # n has to be even, or IRDFTn would fail
+
+        self.dft_cell = IRDFTn(n, compute_dtype=compute_dtype)
+
+        w = Tensor(np.arange(n // 2 + 1) * np.pi / (2 * n), dtype=compute_dtype)
         self.cosw = ops.cos(w)
         self.sinw = ops.sin(w)
 
@@ -628,6 +566,9 @@ class IDCT(nn.Cell):
         c2 = self.fliper(c[..., (n + 1) // 2:], dims=-1)
         d1 = ops.pad(c1.reshape(-1)[..., None], (0, 1)).reshape(*c1.shape[:-1], -1)
         d2 = ops.pad(c2.reshape(-1)[..., None], (1, 0)).reshape(*c2.shape[:-1], -1)
+        # in case n is odd, d1 and d2 need to be aligned
+        d1 = d1[..., :n]
+        d2 = ops.pad(d2, (0, n % 2))
         return d1 + d2
 
 
@@ -662,8 +603,9 @@ class DST(nn.Cell):
     """
     def __init__(self, shape, compute_dtype=mstype.float32):
         super().__init__()
-        self.dft_cell = DCT(shape, compute_dtype)
-        multiplier = np.ones(shape)
+        n = convert_shape(shape)
+        self.dft_cell = DCT(n, compute_dtype=compute_dtype)
+        multiplier = np.ones(n)
         multiplier[..., 1::2] *= -1
         self.multiplier = Tensor(multiplier, dtype=compute_dtype)
 
@@ -703,8 +645,9 @@ class IDST(nn.Cell):
     """
     def __init__(self, shape, compute_dtype=mstype.float32):
         super().__init__()
-        self.dft_cell = IDCT(shape, compute_dtype)
-        multiplier = np.ones(shape)
+        n = convert_shape(shape)
+        self.dft_cell = IDCT(n, compute_dtype=compute_dtype)
+        multiplier = np.ones(n)
         multiplier[..., 1::2] *= -1
         self.multiplier = Tensor(multiplier, dtype=compute_dtype)
 

@@ -20,7 +20,7 @@ import numpy as np
 from mindspore import Tensor, context, set_seed, load_param_into_net, load_checkpoint
 from mindspore import dtype as mstype
 from mindflow.cell import FNO1D, FNO2D, FNO3D
-from mindflow.cell.neural_operators.dft import SpectralConv1dDft, SpectralConv2dDft, SpectralConv3dDft
+from mindflow.cell.neural_operators.fno_sp import SpectralConv1dDft, SpectralConv2dDft, SpectralConv3dDft
 
 RTOL = 0.001
 set_seed(123456)

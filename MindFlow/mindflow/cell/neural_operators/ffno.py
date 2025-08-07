@@ -339,7 +339,7 @@ class FFNO(nn.Cell):
         self.dft_compute_dtype = dft_compute_dtype
         self.ffno_compute_dtype = ffno_compute_dtype
         self._concat = ops.Concat(axis=-1)
-        self._positional_embedding, self._input_perm, self._output_perm = self._transpose(len(self.resolutions))
+        self._positional_embedding = self._transpose(len(self.resolutions))
         self._padding = self._pad(len(self.resolutions))
         if self.lifting_channels:
             self._lifting = nn.SequentialCell([
@@ -401,57 +401,50 @@ class FFNO(nn.Cell):
         """construct"""
         batch_size = x.shape[0]
         grid = mint.repeat_interleave(self._positional_embedding.astype(x.dtype), repeats=batch_size, dim=0)
+
         if self.data_format != "channels_last":
-            x = ops.transpose(x, input_perm=self._output_perm)
+            x = ops.movedim(x, 1, -1)
+
         if self.positional_embedding:
             x = self._concat((x, grid))
 
         x = self._lifting(x)
-        x = ops.transpose(x, input_perm=self._input_perm)
         if self.r_padding != 0:
-            x = ops.Pad(self._padding)(x)
-
-        x = ops.transpose(x, input_perm=self._output_perm)
+            x = ops.movedim(x, -1, 1)
+            x = ops.pad(x, self._padding)
+            x = ops.movedim(x, 1, -1)
 
         b = Tensor(0, dtype=mstype.float32)
         for block in self._ffno_blocks:
             x, b = block(x)
+
         if self.r_padding != 0:
             b = self._remove_padding(len(self.resolutions), b)
+
         x = self._projection(b)
+
         if self.data_format != "channels_last":
-            x = ops.transpose(x, input_perm=self._input_perm)
+            x = ops.movedim(x, -1, 1)
+
         return x
 
     def _transpose(self, n_dim):
         """transpose tensor"""
         if n_dim == 1:
             positional_embedding = Tensor(get_grid_1d(resolution=self.resolutions))
-            input_perm = (0, 2, 1)
-            output_perm = (0, 2, 1)
         elif n_dim == 2:
             positional_embedding = Tensor(get_grid_2d(resolution=self.resolutions))
-            input_perm = (0, 3, 1, 2)
-            output_perm = (0, 2, 3, 1)
         elif n_dim == 3:
             positional_embedding = Tensor(get_grid_3d(resolution=self.resolutions))
-            input_perm = (0, 4, 1, 2, 3)
-            output_perm = (0, 2, 3, 4, 1)
         else:
             raise ValueError(f"The length of input resolutions dimensions should be in [1, 2, 3], but got: {n_dim}")
-        return positional_embedding, input_perm, output_perm
+        return positional_embedding
 
     def _pad(self, n_dim):
         """pad the domain if input is non-periodic"""
-        if n_dim == 1:
-            pad = ([0, 0], [0, 0], [0, self.r_padding])
-        elif n_dim == 2:
-            pad = ([0, 0], [0, 0], [0, self.r_padding], [0, self.r_padding])
-        elif n_dim == 3:
-            pad = ([0, 0], [0, 0], [0, self.r_padding], [0, self.r_padding], [0, self.r_padding])
-        else:
+        if not n_dim in {1, 2, 3}:
             raise ValueError(f"The length of input resolutions dimensions should be in [1, 2, 3], but got: {n_dim}")
-        return pad
+        return n_dim * [0, self.r_padding]
 
     def _remove_padding(self, n_dim, b_input):
         """remove pad domain"""
