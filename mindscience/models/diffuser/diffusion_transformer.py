@@ -19,7 +19,7 @@ import math
 import numpy as np
 from mindspore import nn, ops, Tensor
 from mindspore import dtype as mstype
-from mindflow.cell import AttentionBlock
+from ..transformer import TransformerBlock
 
 
 class Mlp(nn.Cell):
@@ -67,7 +67,7 @@ class Transformer(nn.Cell):
         self.hidden_channels = hidden_channels
         self.layers = layers
         self.blocks = nn.CellList([
-            AttentionBlock(
+            TransformerBlock(
                 in_channels=hidden_channels,
                 num_heads=heads,
                 drop_mode="dropout",

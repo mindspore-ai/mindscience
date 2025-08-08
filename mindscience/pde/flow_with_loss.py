@@ -14,7 +14,7 @@
 # ==============================================================================
 """flow with loss"""
 from mindspore import nn, ops, jit_class
-from ..core import get_loss_metric
+from ..common import get_loss_metric
 from ..utils.check_func import check_param_type
 
 

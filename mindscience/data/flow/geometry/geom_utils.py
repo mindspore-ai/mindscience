@@ -18,7 +18,7 @@ import numpy as np
 from scipy.stats import qmc
 
 from .geometry_base import PartSamplingConfig, SamplingConfig, GEOM_TYPES, SAMPLER_TYPES
-from ..utils.check_func import check_param_type
+from ....utils import check_param_type
 
 
 def generate_sampling_config(dict_config):

@@ -18,7 +18,7 @@ from __future__ import absolute_import
 import numpy as np
 
 from .geometry_nd import HyperCube
-from ..utils.check_func import check_param_type
+from ....utils import check_param_type
 
 
 class Interval(HyperCube):

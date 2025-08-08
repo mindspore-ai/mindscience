@@ -15,20 +15,15 @@
 """
 init
 """
-from .demnet import *
-from .diffusion import *
+from .diffuser import *
 from .GraphCast import *
 from .layers import *
 from .neural_operator import *
-from .pde import *
 from .transformer import *
 
 __all__ = []
-__all__.extend(demnet.__all__)
-__all__.extend(dgmr.__all__)
-__all__.extend(diffusion.__all__)
+__all__.extend(diffuser.__all__)
 __all__.extend(GraphCast.__all__)
 __all__.extend(layers.__all__)
 __all__.extend(neural_operator.__all__)
-__all__.extend(pde.__all__)
 __all__.extend(transformer.__all__)

@@ -24,7 +24,7 @@ from .geometry_base import Geometry, DATA_TYPES, GEOM_TYPES, SamplingConfig
 from .geometry_nd import HyperCube
 from .geom_utils import sample, polar_sample, generate_mesh
 from .shapes import adapter, simplex, pentagon, polygon
-from ..utils.check_func import check_param_type, check_param_type_value
+from ....utils import check_param_type, check_param_type_value
 
 _SPACE = " "
 

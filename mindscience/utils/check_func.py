@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from mindspore import context
 
 _SPACE = " "
+__all__ = ["check_param_type", "check_param_type_value", "check_param_value", "check_dict_type_value", "check_dict_type"]
 
 
 def _convert_to_tuple(params):

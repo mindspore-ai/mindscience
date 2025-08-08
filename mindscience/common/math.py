@@ -17,7 +17,7 @@ math operators
 '''
 import numpy as np
 
-from ..cell.utils import to_2tuple, to_3tuple
+from .utils import to_2tuple, to_3tuple
 
 __all__ = ['get_grid_1d', 'get_grid_2d', 'get_grid_3d']
 

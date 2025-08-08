@@ -46,5 +46,3 @@ __all__ = [
     "CSGXOR",
     "generate_sampling_config",
 ]
-
-__all__.sort()

@@ -17,6 +17,9 @@ from .lr_scheduler import get_poly_lr, get_multi_step_lr, get_warmup_cosine_anne
 from .losses import get_loss_metric, WaveletTransformLoss, MTLWeightedLoss, RelativeRMSELoss
 from .derivatives import batched_hessian, batched_jacobian
 from .optimizers import AdaHessian
+from .math import get_grid_1d, get_grid_2d, get_grid_3d
+from .utils import to_2tuple, to_3tuple, unpatchify, patchify, get_2d_sin_cos_pos_embed, \
+    pixel_shuffle, pixel_unshuffle, PixelShuffle, PixelUnshuffle, SpectralNorm
 
 __all__ = ["get_poly_lr",
            "get_multi_step_lr",
@@ -28,6 +31,8 @@ __all__ = ["get_poly_lr",
            "batched_hessian",
            "batched_jacobian",
            "AdaHessian",
+           "get_grid_1d", "get_grid_2d", "get_grid_3d",
+           "to_2tuple", "to_3tuple", "unpatchify", "patchify", "get_2d_sin_cos_pos_embed",
+           "pixel_shuffle", "pixel_unshuffle", "PixelShuffle", "PixelUnshuffle",
+           "SpectralNorm"
            ]
-
-__all__.sort()

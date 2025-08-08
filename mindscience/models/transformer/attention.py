@@ -17,7 +17,7 @@ from typing import Optional
 from mindspore import ops, nn, Tensor
 import mindspore.common.dtype as mstype
 
-from .basic_block import DropPath
+from ..layers import DropPath
 
 
 class Attention(nn.Cell):

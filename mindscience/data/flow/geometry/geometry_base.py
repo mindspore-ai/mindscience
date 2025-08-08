@@ -19,7 +19,7 @@ from abc import abstractmethod
 
 import copy
 import numpy as np
-from ..utils.check_func import check_param_type, check_param_type_value, check_dict_type_value
+from ....utils import check_param_type, check_param_type_value, check_dict_type_value
 
 GEOM_TYPES = ["domain", "BC", "IC", "time"]
 DATA_TYPES = (np.int32, np.int64, np.float16, np.float32, np.float64)

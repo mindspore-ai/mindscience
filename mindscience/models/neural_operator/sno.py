@@ -17,8 +17,7 @@ import mindspore.common.dtype as mstype
 from mindspore import ops, nn
 
 from .sp_transform import ConvCell, TransformCell, Dim
-from ..activation import get_activation
-from ..unet2d import UNet2D
+from ..layers import get_activation, UNet2D
 from ...utils.check_func import check_param_type, check_param_type_value
 
 

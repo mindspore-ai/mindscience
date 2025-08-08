@@ -20,7 +20,7 @@ import mindspore.ops as ops
 from mindspore.ops import operations as P
 
 from .activation import get_activation
-from ..utils.check_func import check_param_type
+from ...utils.check_func import check_param_type
 
 
 class DoubleConv(nn.Cell):

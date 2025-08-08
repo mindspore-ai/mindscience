@@ -21,7 +21,7 @@ from mindspore import log as logger
 
 from .geometry_base import Geometry, GEOM_TYPES, SamplingConfig
 from .geom_utils import sample, generate_mesh
-from ..utils.check_func import check_param_type, check_param_type_value
+from ....utils import check_param_type, check_param_type_value
 
 _SPACE = " "
 

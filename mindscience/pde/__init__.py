@@ -19,5 +19,3 @@ from .flow_with_loss import FlowWithLoss, SteadyFlowWithLoss, UnsteadyFlowWithLo
 
 __all__ = ["Burgers", "NavierStokes", "Poisson", "sympy_to_mindspore", "PDEWithLoss",
            "FlowWithLoss", "SteadyFlowWithLoss", "UnsteadyFlowWithLoss"]
-
-__all__.sort()

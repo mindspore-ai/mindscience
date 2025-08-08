@@ -25,7 +25,7 @@ from mindspore import Tensor, Parameter
 from mindspore.ops.primitive import constexpr
 
 from .activation import get_activation
-from ..utils.check_func import check_param_type
+from ...utils.check_func import check_param_type
 
 __all__ = ['LinearBlock', 'ResBlock', 'InputScale', 'FCSequential',
            'MultiScaleFCSequential', 'DropPath']

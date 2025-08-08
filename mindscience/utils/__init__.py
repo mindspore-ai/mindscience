@@ -16,7 +16,9 @@
 from .load_config import load_yaml_config
 from .log_utils import print_log, log_config
 from .time_utils import log_timer
+from .check_func import check_dict_type, check_dict_value, check_param_type, check_param_type_value, check_param_value, check_dict_type_value
 
-__all__ = ['load_yaml_config', 'print_log', 'log_config', 'log_timer']
+__all__ = ["load_yaml_config", "print_log", "log_config", "log_timer", "check_param_type", "check_param_type_value",\
+    "check_param_value", "check_dict_type_value", "check_dict_type", "check_dict_value"]
 
-__all__.sort()
+
