@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """init"""
-from .attention import MultiHeadAttention, TransformerBlock
+from .attention import Attention, MultiHeadAttention, TransformerBlock
 from .vit import ViT
 
-__all__ = ["MultiHeadAttention", "TransformerBlock", "ViT"]
+__all__ = ["Attention", "MultiHeadAttention", "TransformerBlock", "ViT"]

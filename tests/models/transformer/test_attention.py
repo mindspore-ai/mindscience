@@ -22,7 +22,7 @@ from mindspore import Tensor, ops, load_checkpoint, load_param_into_net, jit_cla
 from mindspore import dtype as mstype
 
 from mindscience.models import Attention, MultiHeadAttention, TransformerBlock, DropPath, ViT
-from mindscience.models import RelativeRMSELoss
+from mindscience.common import RelativeRMSELoss
 
 PROJECT_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "../../"))
