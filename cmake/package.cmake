@@ -9,11 +9,11 @@ set(CPACK_TEMPORARY_PACKAGE_FILE_NAME ${CMAKE_SOURCE_DIR}/build/package/mindscie
 set(CPACK_TEMPORARY_INSTALL_DIRECTORY ${CMAKE_SOURCE_DIR}/build/package/mindscience)
 
 if(ENABLE_D)
-    set(CPACK_MS_PACKAGE_NAME "mindscience_ascend")
+    set(CPACK_MS_PACKAGE_NAME "mindscience")
 elseif(ENABLE_GPU)
     set(CPACK_MS_PACKAGE_NAME "mindscience_gpu")
 else()
-    set(CPACK_MS_PACKAGE_NAME "mindscience_ascend")
+    set(CPACK_MS_PACKAGE_NAME "mindscience")
 endif()
 include(CPack)
 
@@ -23,7 +23,7 @@ set(INSTALL_PY_DIR ".")
 # copy python files
 install(
         FILES
-	    ${CMAKE_SOURCE_DIR}/mindscience/__init__.py
+        ${CMAKE_SOURCE_DIR}/mindscience/__init__.py
             ${CMAKE_SOURCE_DIR}/setup.py
         DESTINATION ${INSTALL_PY_DIR}
         COMPONENT mindscience
