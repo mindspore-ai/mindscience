@@ -1,0 +1,38 @@
+ode:
+  h: 0.1
+  N: 80
+  method: 'BDF'
+model:
+  dyn_bn: 'no-bn' # no-bn, before, after
+  dyn_ln: 'no-ln' # no-ln, before, after
+  dyn_type: 'attention' # fnn, attention, Conv1D
+  unstacked: True
+  use_input_layer: False
+  dyn_width: 100
+  dyn_depth: 4
+  dyn_activation: 'sin'
+  dyn_weight: 64.0
+  alg_bn: 'no-bn' # no-bn, before, after
+  alg_ln: 'no-ln' # no-ln, before, after
+  alg_type: 'attention' # fnn, attention, Conv1D
+  alg_width: 40
+  alg_depth: 2
+  alg_activation: 'sin'
+  alg_weight: 1.0
+  num_IRK_stages: 100
+data:
+  data_dir: './data'
+  num_train: 6000
+  num_val: 100
+  num_test: 500
+  batch_size: 1048
+summary:
+  summary_dir: "./dae_pinns"
+  test_interval: 1000
+optimizer:
+  epochs: 30000
+  lr: 1e-4
+  use_scheduler: False
+  scheduler_type: 'plateau'  # step, plateau
+  patience: 2000
+  factor: .8

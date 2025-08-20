@@ -1,0 +1,5 @@
+matplotlib==3.7.0
+mindspore==2.5.0
+numpy==1.23.5
+scipy==1.10.0
+mindscience=0.1.0
