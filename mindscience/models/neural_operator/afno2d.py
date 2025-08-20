@@ -77,12 +77,20 @@ class Mlp(nn.Cell):
                  dropout_rate=1.0,
                  compute_dtype=mstype.float16):
         super(Mlp, self).__init__()
-        self.fc1 = nn.Dense(embed_dims, embed_dims * mlp_ratio,
-                            weight_init=initializer(Normal(sigma=0.02), shape=(embed_dims * mlp_ratio, embed_dims)),
-                            ).to_float(compute_dtype)
-        self.fc2 = nn.Dense(embed_dims * mlp_ratio, embed_dims,
-                            weight_init=initializer(Normal(sigma=0.02), shape=(embed_dims, embed_dims * mlp_ratio)),
-                            ).to_float(compute_dtype)
+        self.fc1 = nn.Dense(
+            embed_dims, embed_dims * mlp_ratio,
+            weight_init=initializer(
+                Normal(sigma=0.02),
+                shape=(embed_dims * mlp_ratio, embed_dims)
+            ),
+        ).to_float(compute_dtype)
+        self.fc2 = nn.Dense(
+            embed_dims * mlp_ratio, embed_dims,
+            weight_init=initializer(
+                Normal(sigma=0.02),
+                shape=(embed_dims, embed_dims * mlp_ratio)
+            ),
+        ).to_float(compute_dtype)
 
         self.act_fn = nn.GELU()
         self.dropout = nn.Dropout(dropout_rate)
@@ -130,12 +138,14 @@ class AFNOBlock(nn.Cell):
 
         self.ffn_norm = nn.LayerNorm([embed_dims], epsilon=1e-6).to_float(compute_dtype)
         self.mlp = Mlp(embed_dims, mlp_ratio, dropout_rate, compute_dtype=compute_dtype)
-        self.filter = AFNO2D(h_size=h_size // patch_size,
-                             w_size=w_size // patch_size,
-                             embed_dims=embed_dims,
-                             num_blocks=num_blocks,
-                             high_freq=high_freq,
-                             compute_dtype=compute_dtype)
+        self.filter = AFNO2D(
+            h_size=h_size // patch_size,
+            w_size=w_size // patch_size,
+            embed_dims=embed_dims,
+            num_blocks=num_blocks,
+            high_freq=high_freq,
+            compute_dtype=compute_dtype
+        )
         self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()
 
     def construct(self, x):
@@ -218,15 +228,27 @@ class ForwardFeatures(nn.Cell):
                  dropout_rate=1.0,
                  compute_dtype=mstype.float16):
         super(ForwardFeatures, self).__init__()
-        self.patch_embed = PatchEmbed(in_channels, embed_dims, patch_size, compute_dtype=compute_dtype)
+        self.patch_embed = PatchEmbed(
+            in_channels, embed_dims, patch_size, compute_dtype=compute_dtype
+        )
         self.pos_embed = Parameter(
-            initializer(TruncatedNormal(sigma=0.02), [1, grid_size[0] * grid_size[1], embed_dims], dtype=compute_dtype),
+            initializer(
+                TruncatedNormal(sigma=0.02),
+                [1, grid_size[0] * grid_size[1], embed_dims],
+                dtype=compute_dtype
+            ),
             requires_grad=True)
         self.layer = nn.CellList([])
         self.encoder_norm = nn.LayerNorm([embed_dims], epsilon=1e-6).to_float(compute_dtype)
         for _ in range(depth):
-            self.layer.append(AFNOBlock(embed_dims, mlp_ratio, dropout_rate, h_size=h_size, w_size=w_size,
-                                        patch_size=patch_size, compute_dtype=compute_dtype))
+            self.layer.append(
+                AFNOBlock(
+                    embed_dims, mlp_ratio, dropout_rate,
+                    h_size=h_size, w_size=w_size,
+                    patch_size=patch_size,
+                    compute_dtype=compute_dtype
+                )
+            )
 
         self.pos_drop = nn.Dropout(keep_prob=dropout_rate)
         self.h = grid_size[0]
@@ -283,22 +305,45 @@ class AFNO2D(nn.Cell):
         self.h_size = h_size
         self.w_size = w_size
 
-        self.dft2_cell = dft2(shape=(h_size, w_size), dim=(-3, -2),
-                              modes=(h_size // 2, w_size // 2 + 1), compute_dtype=compute_dtype)
-        self.idft2_cell = idft2(shape=(h_size, w_size), dim=(-3, -2),
-                                modes=(h_size // 2, w_size // 2 + 1), compute_dtype=compute_dtype)
+        self.dft2_cell = dft2(
+            shape=(h_size, w_size), dim=(-3, -2),
+            modes=(h_size // 2, w_size // 2 + 1), compute_dtype=compute_dtype
+        )
+        self.idft2_cell = idft2(
+            shape=(h_size, w_size), dim=(-3, -2),
+            modes=(h_size // 2, w_size // 2 + 1), compute_dtype=compute_dtype
+        )
 
         self.scale = 0.02
         self.num_blocks = num_blocks
         self.block_size = embed_dims // self.num_blocks
         self.hidden_size_factor = 1
-        w1 = self.scale * Tensor(np.random.randn(
-            2, self.num_blocks, self.block_size, self.block_size * self.hidden_size_factor), dtype=compute_dtype)
-        b1 = self.scale * Tensor(np.random.randn(2, self.num_blocks, self.block_size * self.hidden_size_factor),
-                                 dtype=compute_dtype)
-        w2 = self.scale * Tensor(np.random.randn(
-            2, self.num_blocks, self.block_size * self.hidden_size_factor, self.block_size), dtype=compute_dtype)
-        b2 = self.scale * Tensor(np.random.randn(2, self.num_blocks, self.block_size), dtype=compute_dtype)
+        w1 = self.scale * Tensor(
+            np.random.randn(
+                2, self.num_blocks, self.block_size,
+                self.block_size * self.hidden_size_factor
+            ),
+            dtype=compute_dtype
+        )
+        b1 = self.scale * Tensor(
+            np.random.randn(
+                2, self.num_blocks, self.block_size * self.hidden_size_factor
+            ),
+            dtype=compute_dtype
+        )
+        w2 = self.scale * Tensor(
+            np.random.randn(
+                2, self.num_blocks, self.block_size * self.hidden_size_factor,
+                self.block_size
+            ),
+            dtype=compute_dtype
+        )
+        b2 = self.scale * Tensor(
+            np.random.randn(
+                2, self.num_blocks, self.block_size
+            ),
+            dtype=compute_dtype
+        )
 
         self.w1 = Parameter(w1, requires_grad=True)
         self.b1 = Parameter(b1, requires_grad=True)
@@ -341,21 +386,43 @@ class AFNO2D(nn.Cell):
 
         x_ft_re, x_ft_im = self.dft2_cell((x_re, x_im))
 
-        x_ft_re = x_ft_re.reshape(b, x_ft_re.shape[1], x_ft_re.shape[2], self.num_blocks, self.block_size)
-        x_ft_im = x_ft_im.reshape(b, x_ft_im.shape[1], x_ft_im.shape[2], self.num_blocks, self.block_size)
+        x_ft_re = x_ft_re.reshape(
+            b, x_ft_re.shape[1], x_ft_re.shape[2],
+            self.num_blocks, self.block_size
+        )
+        x_ft_im = x_ft_im.reshape(
+            b, x_ft_im.shape[1], x_ft_im.shape[2],
+            self.num_blocks, self.block_size
+        )
 
         kept_modes = h // 2 + 1
 
-        o1_real = self.relu(self.mul2d(x_ft_re, self.w1[0]) - self.mul2d(x_ft_im, self.w1[1]) + self.b1[0])
+        o1_real = self.relu(
+            self.mul2d(x_ft_re, self.w1[0]) -
+            self.mul2d(x_ft_im, self.w1[1]) +
+            self.b1[0]
+        )
         o1_real[:, :, kept_modes:] = 0.0
 
-        o1_imag = self.relu(self.mul2d(x_ft_im, self.w1[0]) + self.mul2d(x_ft_re, self.w1[1]) + self.b1[1])
+        o1_imag = self.relu(
+            self.mul2d(x_ft_im, self.w1[0]) +
+            self.mul2d(x_ft_re, self.w1[1]) +
+            self.b1[1]
+        )
         o1_imag[:, :, kept_modes:] = 0.0
 
-        o2_real = (self.mul2d(o1_real, self.w2[0]) - self.mul2d(o1_imag, self.w2[1]) + self.b2[0])
+        o2_real = (
+            self.mul2d(o1_real, self.w2[0]) -
+            self.mul2d(o1_imag, self.w2[1]) +
+            self.b2[0]
+        )
         o2_real[:, :, kept_modes:] = 0.0
 
-        o2_imag = (self.mul2d(o1_imag, self.w2[0]) + self.mul2d(o1_real, self.w2[1]) + self.b2[1])
+        o2_imag = (
+            self.mul2d(o1_imag, self.w2[0]) +
+            self.mul2d(o1_real, self.w2[1]) +
+            self.b2[1]
+        )
         o2_imag[:, :, kept_modes:] = 0.0
 
         o2_real = self.cast(o2_real, self.compute_type)

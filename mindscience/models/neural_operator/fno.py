@@ -119,33 +119,21 @@ class FNOBlocks(nn.Cell):
             ).to_float(self.fno_compute_dtype)
         elif len(self.resolutions) == 2:
             self._convs = SpectralConv2dDft(
-                self.in_channels,
-                self.out_channels,
-                self.n_modes,
-                self.resolutions,
-                compute_dtype=self.dft_compute_dtype
+                self.in_channels, self.out_channels, self.n_modes,
+                self.resolutions, compute_dtype=self.dft_compute_dtype
             )
             self._fno_skips = nn.Conv2d(
-                self.in_channels,
-                self.out_channels,
-                kernel_size=1,
-                has_bias=False,
-                weight_init="HeUniform"
+                self.in_channels, self.out_channels, kernel_size=1,
+                has_bias=False, weight_init="HeUniform"
             ).to_float(self.fno_compute_dtype)
         elif len(self.resolutions) == 3:
             self._convs = SpectralConv3dDft(
-                self.in_channels,
-                self.out_channels,
-                self.n_modes,
-                self.resolutions,
-                compute_dtype=self.dft_compute_dtype
+                self.in_channels, self.out_channels, self.n_modes,
+                self.resolutions, compute_dtype=self.dft_compute_dtype
             )
             self._fno_skips = nn.Conv3d(
-                self.in_channels,
-                self.out_channels,
-                kernel_size=1,
-                has_bias=False,
-                weight_init="HeUniform"
+                self.in_channels, self.out_channels, kernel_size=1,
+                has_bias=False, weight_init="HeUniform"
             ).to_float(self.fno_compute_dtype)
         else:
             raise ValueError("The length of input resolutions dimensions should be in [1, 2, 3], but got: {}".format(
@@ -531,12 +519,14 @@ class FNO2D(FNO):
             resolutions = [resolutions, resolutions]
         if len(n_modes) != 2:
             raise ValueError(
-                "The dimension of n_modes should be equal to 2 when using FNO2D\
-                 but got dimension of n_modes {}".format(len(n_modes)))
+                "The dimension of n_modes should be equal to 2 when using FNO2D "
+                "but got dimension of n_modes {}".format(len(n_modes))
+            )
         if len(resolutions) != 2:
             raise ValueError(
-                "The dimension of resolutions should be equal to 2 when using FNO2D\
-                 but got dimension of resolutions {}".format(len(resolutions)))
+                "The dimension of resolutions should be equal to 2 when using FNO2D "
+                "but got dimension of resolutions {}".format(len(resolutions))
+            )
         super().__init__(
             in_channels,
             out_channels,
@@ -647,12 +637,14 @@ class FNO3D(FNO):
             resolutions = [resolutions, resolutions, resolutions]
         if len(n_modes) != 3:
             raise ValueError(
-                "The dimension of n_modes should be equal to 3 when using FNO3D\
-                 but got dimension of n_modes {}".format(len(n_modes)))
+                "The dimension of n_modes should be equal to 3 when using FNO3D "
+                "but got dimension of n_modes {}".format(len(n_modes))
+            )
         if len(resolutions) != 3:
             raise ValueError(
-                "The dimension of resolutions should be equal to 3 when using FNO3D\
-                 but got dimension of resolutions {}".format(len(resolutions)))
+                "The dimension of resolutions should be equal to 3 when using FNO3D "
+                "but got dimension of resolutions {}".format(len(resolutions))
+            )
         super().__init__(
             in_channels,
             out_channels,

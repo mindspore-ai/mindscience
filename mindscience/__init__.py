@@ -20,6 +20,7 @@ import time
 
 from .common import *
 from .data import *
+from .diffuser import *
 from .distributed import *
 from .e3nn import *
 from .gnn import *
@@ -74,6 +75,7 @@ _mindspore_version_check()
 __all__ = []
 __all__.extend(common.__all__)
 __all__.extend(data.__all__)
+__all__.extend(diffuser.__all__)
 __all__.extend(distributed.__all__)
 __all__.extend(e3nn.__all__)
 __all__.extend(gnn.__all__)

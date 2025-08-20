@@ -13,16 +13,18 @@
 # limitations under the License.
 # ============================================================================
 """
-init
+Models Package
+
+This package contains various neural network models and related components.
+It includes implementations of popular architectures such as Vision Transformer,
+Graph Neural Networks, and other domain-specific models.
 """
-from .diffuser import *
 from .GraphCast import *
 from .layers import *
 from .neural_operator import *
 from .transformer import *
 
 __all__ = []
-__all__.extend(diffuser.__all__)
 __all__.extend(GraphCast.__all__)
 __all__.extend(layers.__all__)
 __all__.extend(neural_operator.__all__)

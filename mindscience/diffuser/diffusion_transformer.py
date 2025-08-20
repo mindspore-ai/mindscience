@@ -19,7 +19,7 @@ import math
 import numpy as np
 from mindspore import nn, ops, Tensor
 from mindspore import dtype as mstype
-from ..transformer import TransformerBlock
+from ..models import TransformerBlock
 
 
 class Mlp(nn.Cell):

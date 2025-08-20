@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-
+"""
+DFT
+"""
 import numpy as np
 from scipy.linalg import dft
 
@@ -61,7 +63,7 @@ class DFT1d(nn.Cell):
                 else:
                     self.dft_mat_res = self.dft_mat[:, -modes + 1:]
 
-                mat = Tensor(np.zeros(n, ), dtype=compute_dtype).reshape(n, 1)
+                mat = Tensor(np.zeros(n,), dtype=compute_dtype).reshape(n, 1)
                 self.a_re_res = mindspore.numpy.flip(
                     Tensor(self.dft_mat_res.real, dtype=compute_dtype), axis=-1)
                 self.a_im_res = mindspore.numpy.flip(
@@ -92,6 +94,7 @@ class DFT1d(nn.Cell):
         return y_re, y_im
 
     def construct(self, x):
+        """construct"""
         x_re, x_im = x
         x_re, x_im = P.Cast()(x_re, self.compute_dtype), P.Cast()(x_im, self.compute_dtype)
         if not self.inv:
@@ -600,15 +603,27 @@ class SpectralConv2dDft(SpectralConvDft):
         x_im = ops.zeros_like(x_re)
         x_ft_re, x_ft_im = self._dft2_cell((x_re, x_im))
 
-        out_ft_re1 = self._einsum(x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_re1) - self._einsum(
-            x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_im1)
-        out_ft_im1 = self._einsum(x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_im1) + self._einsum(
-            x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_re1)
+        out_ft_re1 = self._einsum(
+            x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_re1
+        ) - self._einsum(
+            x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_im1
+        )
+        out_ft_im1 = self._einsum(
+            x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_im1
+        ) + self._einsum(
+            x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1]], self._w_re1
+        )
 
-        out_ft_re2 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_re2) - self._einsum(
-            x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_im2)
-        out_ft_im2 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_im2) + self._einsum(
-            x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_re2)
+        out_ft_re2 = self._einsum(
+            x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_re2
+        ) - self._einsum(
+            x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_im2
+        )
+        out_ft_im2 = self._einsum(
+            x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_im2
+        ) + self._einsum(
+            x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1]], self._w_re2
+        )
 
         batch_size = x.shape[0]
         mat = self._mat.repeat(batch_size, 0)
@@ -681,30 +696,62 @@ class SpectralConv3dDft(SpectralConvDft):
         x_im = ops.zeros_like(x_re)
         x_ft_re, x_ft_im = self._dft3_cell((x_re, x_im))
 
-        out_ft_re1 = self._einsum(x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1], :self.n_modes[2]],
-                                  self._w_re1) - self._einsum(x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1],
-                                                                      :self.n_modes[2]], self._w_im1)
-        out_ft_im1 = self._einsum(x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1], :self.n_modes[2]],
-                                  self._w_im1) + self._einsum(x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1],
-                                                                      :self.n_modes[2]], self._w_re1)
-        out_ft_re2 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1], :self.n_modes[2]],
-                                  self._w_re2) - self._einsum(x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1],
-                                                                      :self.n_modes[2]], self._w_im2)
-        out_ft_im2 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1], :self.n_modes[2]],
-                                  self._w_im2) + self._einsum(x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1],
-                                                                      :self.n_modes[2]], self._w_re2)
-        out_ft_re3 = self._einsum(x_ft_re[:, :, :self.n_modes[0], -self.n_modes[1]:, :self.n_modes[2]],
-                                  self._w_re3) - self._einsum(x_ft_im[:, :, :self.n_modes[0], -self.n_modes[1]:,
-                                                                      :self.n_modes[2]], self._w_im3)
-        out_ft_im3 = self._einsum(x_ft_re[:, :, :self.n_modes[0], -self.n_modes[1]:, :self.n_modes[2]],
-                                  self._w_im3) + self._einsum(x_ft_im[:, :, :self.n_modes[0], -self.n_modes[1]:,
-                                                                      :self.n_modes[2]], self._w_re3)
-        out_ft_re4 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, -self.n_modes[1]:, :self.n_modes[2]],
-                                  self._w_re4) - self._einsum(x_ft_im[:, :, -self.n_modes[0]:, -self.n_modes[1]:,
-                                                                      :self.n_modes[2]], self._w_im4)
-        out_ft_im4 = self._einsum(x_ft_re[:, :, -self.n_modes[0]:, -self.n_modes[1]:, :self.n_modes[2]],
-                                  self._w_im4) + self._einsum(x_ft_im[:, :, -self.n_modes[0]:, -self.n_modes[1]:,
-                                                                      :self.n_modes[2]], self._w_re4)
+        out_ft_re1 = self._einsum(
+            x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1], :self.n_modes[2]],
+            self._w_re1
+        ) - self._einsum(
+            x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1], :self.n_modes[2]],
+            self._w_im1
+        )
+        out_ft_im1 = self._einsum(
+            x_ft_re[:, :, :self.n_modes[0], :self.n_modes[1], :self.n_modes[2]],
+            self._w_im1
+        ) + self._einsum(
+            x_ft_im[:, :, :self.n_modes[0], :self.n_modes[1], :self.n_modes[2]],
+            self._w_re1
+        )
+        out_ft_re2 = self._einsum(
+            x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1], :self.n_modes[2]],
+            self._w_re2
+        ) - self._einsum(
+            x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1], :self.n_modes[2]],
+            self._w_im2
+        )
+        out_ft_im2 = self._einsum(
+            x_ft_re[:, :, -self.n_modes[0]:, :self.n_modes[1], :self.n_modes[2]],
+            self._w_im2
+        ) + self._einsum(
+            x_ft_im[:, :, -self.n_modes[0]:, :self.n_modes[1], :self.n_modes[2]],
+            self._w_re2
+        )
+        out_ft_re3 = self._einsum(
+            x_ft_re[:, :, :self.n_modes[0], -self.n_modes[1]:, :self.n_modes[2]],
+            self._w_re3
+        ) - self._einsum(
+            x_ft_im[:, :, :self.n_modes[0], -self.n_modes[1]:, :self.n_modes[2]],
+            self._w_im3
+        )
+        out_ft_im3 = self._einsum(
+            x_ft_re[:, :, :self.n_modes[0], -self.n_modes[1]:, :self.n_modes[2]],
+            self._w_im3
+        ) + self._einsum(
+            x_ft_im[:, :, :self.n_modes[0], -self.n_modes[1]:, :self.n_modes[2]],
+            self._w_re3
+        )
+        out_ft_re4 = self._einsum(
+            x_ft_re[:, :, -self.n_modes[0]:, -self.n_modes[1]:, :self.n_modes[2]],
+            self._w_re4
+        ) - self._einsum(
+            x_ft_im[:, :, -self.n_modes[0]:, -self.n_modes[1]:, :self.n_modes[2]],
+            self._w_im4
+        )
+        out_ft_im4 = self._einsum(
+            x_ft_re[:, :, -self.n_modes[0]:, -self.n_modes[1]:, :self.n_modes[2]],
+            self._w_im4
+        ) + self._einsum(
+            x_ft_im[:, :, -self.n_modes[0]:, -self.n_modes[1]:, :self.n_modes[2]],
+            self._w_re4
+        )
 
         batch_size = x.shape[0]
         mat_x = self._mat_x.repeat(batch_size, 0)

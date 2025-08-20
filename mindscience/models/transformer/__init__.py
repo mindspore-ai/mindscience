@@ -12,8 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""init"""
-from .attention import Attention, MultiHeadAttention, TransformerBlock
-from .vit import ViT
+"""
+Transformer Models Package
 
-__all__ = ["Attention", "MultiHeadAttention", "TransformerBlock", "ViT"]
+This package contains implementations of various Transformer architectures,
+including Vision Transformer (ViT) and related attention mechanisms.
+"""
+from .attention import Attention, MultiHeadAttention, TransformerBlock
+from .vit import VisionTransformer
+
+__all__ = ["Attention", "MultiHeadAttention", "TransformerBlock", "VisionTransformer"]

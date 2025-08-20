@@ -31,7 +31,8 @@ class Attention(nn.Cell):
     Inputs:
         - **x** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
         - **attn_mask** (Tensor, optional) - Tensor with shape :math:`(sequence\_len, sequence\_len)` or
-          or :math:`(batch\_size, 1, sequence\_len, sequence\_len)`. Default: ``None``.
+          or :math:`(batch\_size, 1, sequence\_len, sequence\_len)`.
+          Default: ``None``.
         - **key_padding_mask** (Tensor, optional) - Tensor with shape :math:`(batch\_size, sequence\_len)`.
           Default: ``None``.
 
@@ -72,14 +73,17 @@ class Attention(nn.Cell):
             elif len(attn_mask.shape) == 4:
                 pass
             else:
-                raise Exception(f'attn_mask shape {attn_mask.shape} not support')
+                raise Exception(
+                    f'attn_mask shape {attn_mask.shape} not support')
             mask = mask + attn_mask.astype(mstype.uint8)
         if key_padding_mask is not None:
             batch, node = key_padding_mask.shape[0], key_padding_mask.shape[-1]
             if len(key_padding_mask.shape) == 2:
-                key_padding_mask = ops.broadcast_to(key_padding_mask.unsqueeze(1), (batch, node, node)).unsqueeze(1)
+                key_padding_mask = ops.broadcast_to(
+                    key_padding_mask.unsqueeze(1), (batch, node, node)).unsqueeze(1)
             else:
-                raise Exception(f'key_padding_mask shape {attn_mask.shape} not support')
+                raise Exception(
+                    f'key_padding_mask shape {attn_mask.shape} not support')
             mask = mask + key_padding_mask.astype(mstype.uint8)
         return mask
 
@@ -95,8 +99,8 @@ class Attention(nn.Cell):
         """get qkv value"""
         b, n, _ = x.shape
         qkv = (
-            self.qkv(x).reshape(b, n, 3, self.num_heads, -
-                                1).transpose((2, 0, 3, 1, 4))
+            self.qkv(x).reshape(b, n, 3, self.num_heads,
+                                - 1).transpose((2, 0, 3, 1, 4))
         )
         return qkv[0], qkv[1], qkv[2]
 
@@ -168,7 +172,8 @@ class FlashAttn(nn.Cell):
         self.scale = scale
 
     def construct(self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[Tensor] = None):
-        query, key, value = query.astype(self.fa_dtype), key.astype(self.fa_dtype), value.astype(self.fa_dtype)
+        query, key, value = query.astype(self.fa_dtype), key.astype(
+            self.fa_dtype), value.astype(self.fa_dtype)
         if mask is not None:
             mask = mask.astype(mstype.uint8)
         scores = ops.flash_attention_score(query, key, value, input_layout='BNSD', head_num=self.num_heads,
@@ -183,18 +188,22 @@ class MultiHeadAttention(Attention):
         in_channels (int): The input channels.
         num_heads (int): The number of attention heads.
         enable_flash_attn (bool): Whether use flash attention. FlashAttention only supports Ascend backend.
-            FlashAttention proposed in `FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness <https://arxiv.org/abs/2205.14135>`_.
+            FlashAttention proposed in
+            `FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness
+            <https://arxiv.org/abs/2205.14135>`_.
             Default: ``False``.
         fa_dtype (mindspore.dtype): FlashAttention compute dtype. Choose from `mstype.bfloat16`, `mstype.float16`.
             Default: ``mstype.bfloat16``, indicates ``mindspore.bfloat16``.
-        drop_mode (str): Dropout method, ``dropout`` or ``droppath``. Default: ``dropout``.
+        drop_mode (str): Dropout method, ``dropout`` or ``droppath``.
+        Default: ``dropout``.
         dropout_rate (float): The drop rate of dropout layer, greater than 0 and less equal than 1. Default: ``0.0``.
         compute_dtype (mindspore.dtype): Compute dtype. Default: ``mstype.float32``, indicates ``mindspore.float32``.
 
     Inputs:
         - **x** (Tensor) - Tensor with shape :math:`(batch\_size, sequence\_len, in\_channels)`.
-        - **attn_mask** (Tensor, optional) - Tensor with shape :math:`(sequence\_len, sequence\_len)` or
-          or :math:`(batch\_size, 1, sequence\_len, sequence\_len)`. Default: ``None``.
+        - **attn_mask (Tensor, optional) - Tensor with shape :math:`(sequence\_len, sequence\_len)` or
+          :math:`(batch\_size, 1, sequence\_len, sequence\_len)`.
+          Default: ``None``.
         - **key_padding_mask** (Tensor, optional) - Tensor with shape :math:`(batch\_size, sequence\_len)`.
           Default: ``None``.
 
@@ -232,7 +241,8 @@ class MultiHeadAttention(Attention):
         self.proj = nn.Dense(in_channels, in_channels).to_float(compute_dtype)
         if enable_flash_attn:
             print('use flash attention')
-            self.attn = FlashAttn(num_heads=num_heads, scale=scale, fa_dtype=fa_dtype)
+            self.attn = FlashAttn(num_heads=num_heads,
+                                  scale=scale, fa_dtype=fa_dtype)
         else:
             self.attn = ScaledDot(scale=scale)
         if drop_mode == "dropout":
@@ -254,10 +264,13 @@ class MultiHeadAttention(Attention):
 
 class FeedForward(nn.Cell):
     """FeedForward"""
+
     def __init__(self, in_channels, dropout_rate=0.0, compute_dtype=mstype.float16):
         super().__init__()
-        self.fc1 = nn.Dense(in_channels, in_channels * 4).to_float(compute_dtype)
-        self.fc2 = nn.Dense(in_channels * 4, in_channels).to_float(compute_dtype)
+        self.fc1 = nn.Dense(in_channels, in_channels
+                            * 4).to_float(compute_dtype)
+        self.fc2 = nn.Dense(
+            in_channels * 4, in_channels).to_float(compute_dtype)
         self.act_fn = nn.GELU()
         self.dropout = nn.Dropout(p=dropout_rate)
 
@@ -278,7 +291,9 @@ class TransformerBlock(nn.Cell):
         in_channels (int): The input channels.
         num_heads (int): The number of attention heads.
         enable_flash_attn (bool): Whether use flash attention. FlashAttention only supports Ascend backend.
-            FlashAttention proposed in `FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness <https://arxiv.org/abs/2205.14135>`_.
+            FlashAttention proposed in
+            `FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness
+            <https://arxiv.org/abs/2205.14135>`_.
             Default: ``False``.
         fa_dtype (mindspore.dtype): FlashAttention compute dtype. Choose from `mstype.bfloat16`, `mstype.float16`.
             Default: ``mstype.bfloat16``, indicates ``mindspore.bfloat16``.

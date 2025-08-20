@@ -13,10 +13,16 @@
 # limitations under the License.
 # ============================================================================
 """
-init
+Layers Package
+
+This package contains various neural network layers and building blocks
+that are used across different models in the MindScience toolkit.
+It includes activation functions, basic blocks, and specialized layers
+like UNet2D.
 """
 from .activation import get_activation
 from .basic_block import LinearBlock, ResBlock, InputScale, FCSequential, MultiScaleFCSequential, DropPath
 from .unet2d import UNet2D
 
-__all__ = ["get_activation", "LinearBlock", "ResBlock", "InputScale", "FCSequential", "MultiScaleFCSequential", "DropPath", "UNet2D"]
+__all__ = ["get_activation", "LinearBlock", "ResBlock", "InputScale", "FCSequential",
+           "MultiScaleFCSequential", "DropPath", "UNet2D"]

@@ -1,4 +1,8 @@
-"""time utils"""
+"""Time Utilities
+
+This module provides utility functions for time-related operations in the MindScience toolkit.
+It includes a decorator for measuring execution time of functions.
+"""
 import time
 from .log_utils import print_log
 

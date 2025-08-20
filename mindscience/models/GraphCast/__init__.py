@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""init"""
+"""GraphCast Models Package
+
+This package contains implementations of GraphCast models for weather forecasting.
+GraphCast is a machine learning model for weather forecasting that uses graph neural networks.
+"""
 from .graphcastnet import GraphCastNet
 
 __all__ = ['GraphCastNet']

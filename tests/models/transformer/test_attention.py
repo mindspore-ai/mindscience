@@ -13,6 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """attention testcase"""
+# pylint: disable=C0413
 import os
 import sys
 import pytest
@@ -21,22 +22,35 @@ import numpy as np
 from mindspore import Tensor, ops, load_checkpoint, load_param_into_net, jit_class, context
 from mindspore import dtype as mstype
 
-from mindscience.models import Attention, MultiHeadAttention, TransformerBlock, DropPath, ViT
+from mindscience.models import (
+    Attention, MultiHeadAttention, TransformerBlock, DropPath, VisionTransformer
+)
 from mindscience.common import RelativeRMSELoss
 
 PROJECT_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "../../"))
 sys.path.append(PROJECT_ROOT)
 
-from tools import compare_output, validate_checkpoint, validate_model_infer, validate_output_dtype
-from tools import FP32_RTOL, FP32_ATOL, FP16_RTOL, FP16_ATOL
+from tools import (
+    compare_output, validate_checkpoint, validate_model_infer, validate_output_dtype,
+    FP16_ATOL, FP16_RTOL, FP32_ATOL, FP32_RTOL
+)
 
 BATCH_SIZE, NUM_HEADS, SEQ_LEN, IN_CHANNELS = 2, 4, 15, 64
+DATA_PATH = '/home/workspace/mindspore_dataset/mindscience/attention'
+MHA_CKPT_FILE = os.path.join(DATA_PATH, 'multihead.ckpt')
+ATB_CKPT_FILE = os.path.join(DATA_PATH, 'attention_block.ckpt')
+ATB_OUT_FILE = os.path.join(DATA_PATH, 'attention_block_output.npy')
+MHO_OUT_FILE = os.path.join(DATA_PATH, 'multihead_output.npy')
+INPUT_FILE = os.path.join(DATA_PATH, 'input.npy')
+MASK_FILE = os.path.join(DATA_PATH, 'mask.npy')
+LABEL_FILE = os.path.join(DATA_PATH, 'label.npy')
+GRAD_FILE = os.path.join(DATA_PATH, 'grads.npz')
 
 
 def load_inputs():
-    x = Tensor(np.load('input.npy').astype(np.float32))
-    mask = Tensor(np.load('mask.npy').astype(np.int32))
+    x = Tensor(np.load(INPUT_FILE).astype(np.float32))
+    mask = Tensor(np.load(MASK_FILE).astype(np.int32))
     return x, mask
 
 
@@ -57,7 +71,8 @@ def test_attention_qkv(mode, compute_dtype):
     qkv = net.get_qkv(x)
     for tensor in qkv:
         assert tensor.dtype == compute_dtype
-        assert tensor.shape == (BATCH_SIZE, NUM_HEADS, SEQ_LEN, IN_CHANNELS//NUM_HEADS)
+        assert tensor.shape == (BATCH_SIZE, NUM_HEADS,
+                                SEQ_LEN, IN_CHANNELS//NUM_HEADS)
 
 
 @pytest.mark.level0
@@ -73,9 +88,11 @@ def test_flash_attn(mode, fa_dtype):
     """
     context.set_context(mode=mode)
     in_shape = (BATCH_SIZE, NUM_HEADS, SEQ_LEN, IN_CHANNELS//NUM_HEADS)
-    query, key, value = ops.randn(in_shape), ops.randn(in_shape), ops.randn(in_shape)
+    query, key, value = ops.randn(in_shape), ops.randn(
+        in_shape), ops.randn(in_shape)
     mask = ops.randint(0, 2, (SEQ_LEN, SEQ_LEN))
-    net = MultiHeadAttention(IN_CHANNELS, NUM_HEADS, enable_flash_attn=True, fa_dtype=fa_dtype)
+    net = MultiHeadAttention(IN_CHANNELS, NUM_HEADS,
+                             enable_flash_attn=True, fa_dtype=fa_dtype)
     output = net.attn(query, key, value, mask)
     assert output.dtype == fa_dtype
     assert output.shape == in_shape
@@ -93,7 +110,8 @@ def test_multihead_fa(mode, fa_dtype):
     Expectation: success
     """
     context.set_context(mode=mode)
-    net = MultiHeadAttention(IN_CHANNELS, NUM_HEADS, enable_flash_attn=True, fa_dtype=fa_dtype)
+    net = MultiHeadAttention(IN_CHANNELS, NUM_HEADS,
+                             enable_flash_attn=True, fa_dtype=fa_dtype)
     in_shape = (BATCH_SIZE, SEQ_LEN, IN_CHANNELS)
     x = ops.randn(in_shape)
     mask = ops.randint(0, 2, (BATCH_SIZE, 1, SEQ_LEN, SEQ_LEN))
@@ -115,7 +133,8 @@ def test_fa_forward(mode, fa_dtype):
     """
     context.set_context(mode=mode)
     net = MultiHeadAttention(IN_CHANNELS, NUM_HEADS, enable_flash_attn=False)
-    fa_net = MultiHeadAttention(IN_CHANNELS, NUM_HEADS, enable_flash_attn=True, fa_dtype=fa_dtype)
+    fa_net = MultiHeadAttention(
+        IN_CHANNELS, NUM_HEADS, enable_flash_attn=True, fa_dtype=fa_dtype)
     batch_size, seq_len = 256, 512
     in_shape = (batch_size, seq_len, IN_CHANNELS)
     x = ops.randn(in_shape)
@@ -191,8 +210,8 @@ def test_multihead_attention(mode):
     context.set_context(mode=mode)
     net = MultiHeadAttention(in_channels=IN_CHANNELS, num_heads=NUM_HEADS)
     x, mask = load_inputs()
-    validate_model_infer(net, (x, mask), './multihead.ckpt',
-                         './multihead_output.npy', FP32_RTOL, FP32_ATOL)
+    validate_model_infer(net, (x, mask), MHA_CKPT_FILE,
+                         MHO_OUT_FILE, FP32_RTOL, FP32_ATOL)
 
 
 @pytest.mark.level0
@@ -226,32 +245,32 @@ def test_attn_block(mode):
     context.set_context(mode=mode)
     net = TransformerBlock(in_channels=IN_CHANNELS, num_heads=NUM_HEADS)
     x, mask = load_inputs()
-    validate_model_infer(net, (x, mask), './attention_block.ckpt',
-                         './attention_block_output.npy', FP32_RTOL, FP32_ATOL)
+    validate_model_infer(net, (x, mask), ATB_CKPT_FILE,
+                         ATB_OUT_FILE, FP32_RTOL, FP32_ATOL)
 
 
 @pytest.mark.level0
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [context.GRAPH_MODE, context.PYNATIVE_MODE])
-def test_vit_forward(mode):
+def test_vision_transformer_forward(mode):
     """
-    Feature: ViT
+    Feature: VisionTransformer
     Description: test forward result dtype
     Expectation: success
     """
     context.set_context(mode=mode)
     x = ops.rand(32, 3, 192, 384)
-    model = ViT(in_channels=3,
-                out_channels=3,
-                encoder_depths=6,
-                encoder_embed_dim=768,
-                encoder_num_heads=12,
-                decoder_depths=6,
-                decoder_embed_dim=512,
-                decoder_num_heads=16,
-                compute_dtype=mstype.float32
-                )
+    model = VisionTransformer(in_channels=3,
+                              out_channels=3,
+                              encoder_depths=6,
+                              encoder_embed_dim=768,
+                              encoder_num_heads=12,
+                              decoder_depths=6,
+                              decoder_embed_dim=512,
+                              decoder_num_heads=16,
+                              compute_dtype=mstype.float32
+                              )
     output = model(x)
     assert output.dtype == mstype.float32
     assert output.shape == (32, 288, 768)
@@ -303,14 +322,13 @@ def test_multihead_attention_grad(mode):
     Expectation: success
     """
     context.set_context(mode=mode)
-    ckpt_path = './multihead.ckpt'
     model = MultiHeadAttention(
         IN_CHANNELS, NUM_HEADS, compute_dtype=mstype.float32)
-    params = load_checkpoint(ckpt_path)
+    params = load_checkpoint(MHA_CKPT_FILE)
     load_param_into_net(model, params)
 
-    input_data = Tensor(np.load('./input.npy'))
-    input_label = Tensor(np.load('./label.npy'))
+    input_data = Tensor(np.load(INPUT_FILE))
+    input_label = Tensor(np.load(LABEL_FILE))
 
     trainer = Trainer(model, RelativeRMSELoss())
 
@@ -324,7 +342,7 @@ def test_multihead_attention_grad(mode):
     _, grads = grad_fn(input_data, input_label)
 
     convert_grads = tuple(grad.asnumpy() for grad in grads)
-    with np.load('./grads.npz') as data:
+    with np.load(GRAD_FILE) as data:
         output_target = tuple(data[key] for key in data.files)
 
     validate_ans = compare_output(

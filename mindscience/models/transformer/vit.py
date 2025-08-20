@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 """
-The ViT model
+The VisionTransformer model
 """
 
 from mindspore import ops, Parameter, Tensor, nn
@@ -62,9 +62,9 @@ class PatchEmbedding(nn.Cell):
         return x
 
 
-class VitEncoder(nn.Cell):
+class VisionTransformerEncoder(nn.Cell):
     r"""
-     ViT Encoder module with multi-layer stacked of `MultiHeadAttention`,
+     VisionTransformer Encoder module with multi-layer stacked of `MultiHeadAttention`,
      including multihead self attention and feedforward layer.
 
      Args:
@@ -76,7 +76,7 @@ class VitEncoder(nn.Cell):
           num_heads (int): The encoder heads' number of encoder layer. Default: ``16``.
           dropout_rate (float): The rate of dropout layer. Default: ``0.0``.
           compute_dtype (dtype): The data type for encoder, encoding_embedding, encoder and dense layer.
-                                Default: ``mstype.float16``.
+          Default: ``mstype.float16``.
 
      Inputs:
              - **input** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, image\_height, image\_width)`.
@@ -90,11 +90,11 @@ class VitEncoder(nn.Cell):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell.vit import VitEncoder
+        >>> from mindflow.cell.vision_transformer import VisionTransformerEncoder
         >>> input_tensor = ops.rand(32, 3, 192, 384)
         >>> print(input_tensor.shape)
         (32, 3, 192, 384)
-        >>>encoder = VitEncoder(grid_size=(192 // 16, 384 // 16),
+        >>>encoder = VisionTransformerEncoder(grid_size=(192 // 16, 384 // 16),
         >>>                     in_channels=3,
         >>>                     patch_size=16,
         >>>                     depths=6,
@@ -150,9 +150,9 @@ class VitEncoder(nn.Cell):
         return x
 
 
-class VitDecoder(nn.Cell):
+class VisionTransformerDecoder(nn.Cell):
     r"""
-    ViT Decoder module with multi-layer stacked of `MultiHeadAttention`,
+    VisionTransformer Decoder module with multi-layer stacked of `MultiHeadAttention`,
     including multihead self attention and feedforward layer.
 
     Args:
@@ -162,7 +162,7 @@ class VitDecoder(nn.Cell):
         num_heads (int): The decoder heads' number of decoder layer.
         dropout_rate (float): The rate of dropout layer. Default: ``0.0``.
         compute_dtype (dtype): The data type for encoder, decoding_embedding, decoder and dense layer.
-            Default: ``mstype.float16``.
+        Default: ``mstype.float16``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(batch\_size, patchify\_size, embed\_dim)`.
@@ -176,17 +176,17 @@ class VitDecoder(nn.Cell):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell.vit import VitDecoder
+        >>> from mindflow.cell.vision_transformer import VisionTransformerDecoder
         >>> input_tensor = ops.rand(32, 288, 512)
         >>> print(input_tensor.shape)
         (32, 288, 768)
-        >>> decoder = VitDecoder(grid_size=grid_size,
+        >>> decoder = VisionTransformerDecoder(grid_size=grid_size,
         >>>                      depths=6,
         >>>                      hidden_channels=512,
         >>>                      num_heads=16,
         >>>                      dropout_rate=0.0,
         >>>                      compute_dtype=mstype.float16)
-        >>> output_tensor = VitDecoder(input_tensor)
+        >>> output_tensor = VisionTransformerDecoder(input_tensor)
         >>> print("output_tensor:",output_tensor.shape)
         (32, 288, 512)
     """
@@ -229,9 +229,10 @@ class VitDecoder(nn.Cell):
         return x
 
 
-class ViT(nn.Cell):
+class VisionTransformer(nn.Cell):
     r"""
-    This module based on ViT backbone which including encoder, decoding_embedding, decoder and dense layer.
+    This module based on VisionTransformer backbone which including encoder, decoding_embedding,
+    decoder and dense layer.
 
     Args:
         image_size (tuple[int]): The image size of input. Default: ``(192, 384)``.
@@ -246,7 +247,7 @@ class ViT(nn.Cell):
         decoder_num_heads (int): The decoder heads' number of decoder layer. Default: ``16``.
         dropout_rate (float): The rate of dropout layer. Default: ``0.0``.
         compute_dtype (dtype): The data type for encoder, decoding_embedding, decoder and dense layer.
-            Default: ``mstype.float16``.
+        Default: ``mstype.float16``.
 
     Inputs:
         - **input** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, image\_height, image\_width)`.
@@ -260,11 +261,11 @@ class ViT(nn.Cell):
 
     Examples:
         >>> from mindspore import ops
-        >>> from mindflow.cell import ViT
+        >>> from mindflow.cell import VisionTransformer
         >>> input_tensor = ops.rand(32, 3, 192, 384)
         >>> print(input_tensor.shape)
         (32, 3, 192, 384)
-        >>> model = ViT(in_channels=3,
+        >>> model = VisionTransformer(in_channels=3,
         >>>             out_channels=3,
         >>>             encoder_depths=6,
         >>>             encoder_embed_dim=768,
@@ -310,7 +311,7 @@ class ViT(nn.Cell):
 
         self.transpose = ops.Transpose()
 
-        self.encoder = VitEncoder(
+        self.encoder = VisionTransformerEncoder(
             in_channels=in_channels,
             hidden_channels=encoder_embed_dim,
             patch_size=patch_size,
@@ -328,7 +329,7 @@ class ViT(nn.Cell):
             weight_init="XavierUniform",
         ).to_float(compute_dtype)
 
-        self.decoder = VitDecoder(
+        self.decoder = VisionTransformerDecoder(
             hidden_channels=decoder_embed_dim,
             grid_size=grid_size,
             depths=decoder_depths,

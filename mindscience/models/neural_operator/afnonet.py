@@ -38,8 +38,8 @@ class AFNONet(nn.Cell):
         encoder_embed_dim (int): The encoder embedding dimension of encoder layer. Default: 768.
         mlp_ratio (int): The rate of mlp layer. Default: 4.
         dropout_rate (float): The rate of dropout layer. Default: 1.0.
-        compute_dtype (dtype): The data type for encoder, decoding_embedding, decoder and dense layer.
-                Default: mindspore.float32.
+        compute_dtype (dtype): The data type for encoder, decoding_embedding,
+                decoder and dense layer. Default: mindspore.float32.
 
     Inputs:
         - **x** (Tensor) - Tensor of shape :math:`(batch\_size, feature\_size, image\_height, image\_width)`.
@@ -77,7 +77,8 @@ class AFNONet(nn.Cell):
         super(AFNONet, self).__init__()
         image_size = to_2tuple(image_size)
         try:
-            grid_size = (image_size[0] // patch_size, image_size[1] // patch_size)
+            grid_size = (image_size[0] // patch_size,
+                         image_size[1] // patch_size)
         except ZeroDivisionError:
             ops.Print()("Patch size can't be Zero")
 
@@ -91,25 +92,40 @@ class AFNONet(nn.Cell):
 
         self.transpose = ops.Transpose()
 
-        self.forward_features = ForwardFeatures(grid_size=grid_size,
-                                                h_size=image_size[0],
-                                                w_size=image_size[1],
-                                                in_channels=in_channels,
-                                                patch_size=patch_size,
-                                                depth=encoder_depths,
-                                                embed_dims=encoder_embed_dim,
-                                                mlp_ratio=mlp_ratio,
-                                                dropout_rate=dropout_rate,
-                                                compute_dtype=compute_dtype)
+        self.forward_features = ForwardFeatures(
+            grid_size=grid_size,
+            h_size=image_size[0],
+            w_size=image_size[1],
+            in_channels=in_channels,
+            patch_size=patch_size,
+            depth=encoder_depths,
+            embed_dims=encoder_embed_dim,
+            mlp_ratio=mlp_ratio,
+            dropout_rate=dropout_rate,
+            compute_dtype=compute_dtype
+        )
 
         self.compute_type = compute_dtype
 
-        self.head = nn.Dense(encoder_embed_dim, patch_size ** 2 * out_channels,
-                             weight_init=initializer(Normal(sigma=0.02),
-                                                     shape=(patch_size ** 2 * out_channels, encoder_embed_dim)),
-                             has_bias=False).to_float(compute_dtype)
+        self.head = nn.Dense(
+            encoder_embed_dim, patch_size ** 2 * out_channels,
+            weight_init=initializer(
+                Normal(sigma=0.02),
+                shape=(patch_size ** 2 * out_channels, encoder_embed_dim)
+            ),
+            has_bias=False
+        ).to_float(compute_dtype)
 
     def construct(self, x):
+        """
+        Forward pass of the AFNONet model.
+
+        Args:
+            x (Tensor): Input tensor of shape (batch_size, feature_size, image_height, image_width).
+
+        Returns:
+            Tensor: Output tensor of shape (batch_size, patch_size, embed_dim).
+        """
         x = self.forward_features(x)
         x = self.head(x)
 

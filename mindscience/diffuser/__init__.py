@@ -18,4 +18,5 @@ init
 from .diffusion import DDPMPipeline, DiffusionScheduler, DDPMScheduler, DDIMPipeline, DDIMScheduler, DiffusionTrainer
 from .diffusion_transformer import DiffusionTransformer, ConditionDiffusionTransformer
 
-__all__ = ["DiffusionScheduler", "DDPMPipeline", "DDPMScheduler", "DDIMPipeline", "DDIMScheduler", "DiffusionTrainer", "DiffusionTransformer", "ConditionDiffusionTransformer"]
+__all__ = ["DiffusionScheduler", "DDPMPipeline", "DDPMScheduler", "DDIMPipeline",
+           "DDIMScheduler", "DiffusionTrainer", "DiffusionTransformer", "ConditionDiffusionTransformer"]

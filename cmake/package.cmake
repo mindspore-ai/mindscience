@@ -34,6 +34,7 @@ install(
         ${CMAKE_SOURCE_DIR}/mindscience/ccsrc
         ${CMAKE_SOURCE_DIR}/mindscience/common
         ${CMAKE_SOURCE_DIR}/mindscience/data
+        ${CMAKE_SOURCE_DIR}/mindscience/diffuser
         ${CMAKE_SOURCE_DIR}/mindscience/distributed
         ${CMAKE_SOURCE_DIR}/mindscience/e3nn
         ${CMAKE_SOURCE_DIR}/mindscience/gnn

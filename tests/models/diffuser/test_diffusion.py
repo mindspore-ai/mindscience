@@ -22,7 +22,7 @@ import numpy as np
 from mindspore import Tensor, ops, context
 from mindspore import dtype as mstype
 
-from mindscience.models import DiffusionScheduler, DDPMPipeline, DDIMPipeline, DDPMScheduler, DDIMScheduler, \
+from mindscience.diffuser import DiffusionScheduler, DDPMPipeline, DDIMPipeline, DDPMScheduler, DDIMScheduler, \
     DiffusionTransformer, ConditionDiffusionTransformer
 
 PROJECT_ROOT = os.path.abspath(os.path.join(

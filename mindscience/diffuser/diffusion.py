@@ -28,7 +28,10 @@ def extract(a, t, x_shape):
     return out.reshape(b, *((1,) * (len(x_shape) - 1)))
 
 
-def betas_for_alpha_bar(num_diffusion_timesteps, max_beta=0.999, alpha_transform_type="cosine"):
+def betas_for_alpha_bar(
+        num_diffusion_timesteps,
+        max_beta=0.999,
+        alpha_transform_type="cosine"):
     """
     Create a beta schedule that discretizes the given alpha_t_bar function, which defines the cumulative product of
     (1-beta) over time from t = [0,1].
@@ -180,15 +183,19 @@ class DiffusionScheduler:
         posterior_variance = self.betas * \
             (1. - alphas_cumprod_prev) / (1. - alphas_cumprod)
 
-        # above: equal to 1. / (1. / (1. - alpha_cumprod_tm1) + alpha_t / beta_t)
+        # above: equal to 1. / (1. / (1. - alpha_cumprod_tm1) + alpha_t /
+        # beta_t)
         posterior_variance = np.clip(posterior_variance, 1e-20, None)
         self.posterior_variance = Tensor(
             posterior_variance, dtype=compute_dtype)
 
-        # below: log calculation clipped because the posterior variance is 0 at the beginning of the diffusion chain
-        self.posterior_log_variance_clipped = Tensor(np.log(
-            posterior_variance), dtype=compute_dtype)  # Tensor(np.log(posterior_variance))
-        # See formula (7) from `Denoising Diffusion Probabilistic Models <https://arxiv.org/abs/2006.11239>`_
+        # below: log calculation clipped because the posterior variance is 0 at
+        # the beginning of the diffusion chain
+        self.posterior_log_variance_clipped = Tensor(
+            np.log(posterior_variance),
+            dtype=compute_dtype)  # Tensor(np.log(posterior_variance))
+        # See formula (7) from `Denoising Diffusion Probabilistic Models
+        # <https://arxiv.org/abs/2006.11239>`_
         self.posterior_mean_coef1 = Tensor(
             self.betas * np.sqrt(alphas_cumprod_prev) / (1. - alphas_cumprod), dtype=compute_dtype)
         self.posterior_mean_coef2 = Tensor(
@@ -196,7 +203,10 @@ class DiffusionScheduler:
         self.num_inference_steps = None
         self.dynamic_thresholding_ratio = dynamic_thresholding_ratio
 
-    def _init_betas(self, beta_schedule="squaredcos_cap_v2", rescale_betas_zero_snr=False):
+    def _init_betas(
+            self,
+            beta_schedule="squaredcos_cap_v2",
+            rescale_betas_zero_snr=False):
         """init noise beta schedule
 
         Args:
@@ -218,7 +228,9 @@ class DiffusionScheduler:
         elif beta_schedule == "scaled_linear":
             # this schedule is very specific to the latent diffusion model.
             betas = np.linspace(
-                self.beta_start**0.5, self.beta_end**0.5, self.num_train_timesteps) ** 2
+                self.beta_start**0.5,
+                self.beta_end**0.5,
+                self.num_train_timesteps) ** 2
         elif beta_schedule == "squaredcos_cap_v2":
             # Glide cosine schedule
             betas = betas_for_alpha_bar(self.num_train_timesteps)
@@ -251,8 +263,7 @@ class DiffusionScheduler:
             raise ValueError(
                 f"`num_inference_steps`: {num_inference_steps} cannot be larger than `num_train_timesteps`:"
                 f" {self.num_train_timesteps} as the diffusion model trained with this scheduler can only handle"
-                f" maximal {self.num_train_timesteps} timesteps."
-            )
+                f" maximal {self.num_train_timesteps} timesteps.")
         self.num_inference_steps = num_inference_steps
         # "linspace", "leading", "trailing" corresponds to annotation of Table 2. of <https://arxiv.org/abs/2305.08891>
         if self.timestep_spacing == "linspace":
@@ -266,15 +277,17 @@ class DiffusionScheduler:
         elif self.timestep_spacing == "leading":
             step_ratio = self.num_train_timesteps // num_inference_steps
             # creates integer timesteps by multiplying by ratio
-            # casting to int to avoid issues when num_inference_step is power of 3
+            # casting to int to avoid issues when num_inference_step is power
+            # of 3
             timesteps = (np.arange(0, num_inference_steps) *
                          step_ratio).round()[::-1].astype(np.int32)
         elif self.timestep_spacing == "trailing":
             step_ratio = self.num_train_timesteps // num_inference_steps
             # creates integer timesteps by multiplying by ratio
-            # casting to int to avoid issues when num_inference_step is power of 3
-            timesteps = np.round(
-                np.arange(self.num_train_timesteps, 0, -step_ratio)).astype(np.int32)
+            # casting to int to avoid issues when num_inference_step is power
+            # of 3
+            timesteps = np.round(np.arange(
+                self.num_train_timesteps, 0, -step_ratio)).astype(np.int32)
             timesteps -= 1
         else:
             raise ValueError(
@@ -309,7 +322,11 @@ class DiffusionScheduler:
 
         return sample
 
-    def _pred_origin_sample(self, model_output: Tensor, sample: Tensor, timestep: Tensor):
+    def _pred_origin_sample(
+            self,
+            model_output: Tensor,
+            sample: Tensor,
+            timestep: Tensor):
         """
         Predict x_0 with x_t.
 
@@ -329,23 +346,26 @@ class DiffusionScheduler:
         elif self.prediction_type == "sample":
             pred_original_sample = model_output
         elif self.prediction_type == "v_prediction":
-            pred_original_sample = extract(self.sqrt_alphas_cumprod, timestep, sample.shape)*sample - \
-                extract(self.sqrt_one_minus_alphas_cumprod,
-                        timestep, sample.shape)*model_output
+            pred_original_sample = extract(
+                self.sqrt_alphas_cumprod, timestep, sample.shape) * sample - extract(
+                    self.sqrt_one_minus_alphas_cumprod, timestep, sample.shape) * model_output
         else:
             raise ValueError(
                 f"prediction_type given as {self.prediction_type} must be one of `epsilon`, `sample`, or"
-                " `v_prediction`"
-            )
+                " `v_prediction`")
         # 2. Clip or threshold "predicted x_0"
         if self.thresholding:
             pred_original_sample = self._threshold_sample(pred_original_sample)
         elif self.clip_sample:
-            pred_original_sample = pred_original_sample.clamp(-self.clip_sample_range,
-                                                              self.clip_sample_range)
+            pred_original_sample = pred_original_sample.clamp(
+                -self.clip_sample_range, self.clip_sample_range)
         return pred_original_sample
 
-    def add_noise(self, original_samples: Tensor, noise: Tensor, timesteps: Tensor):
+    def add_noise(
+            self,
+            original_samples: Tensor,
+            noise: Tensor,
+            timesteps: Tensor):
         """
         Diffusion add noise process.
 
@@ -357,8 +377,17 @@ class DiffusionScheduler:
         Returns:
             Tensor, the noised sample of the next step.
         """
-        return (extract(self.sqrt_alphas_cumprod, timesteps, original_samples.shape)*original_samples +
-                extract(self.sqrt_one_minus_alphas_cumprod, timesteps, original_samples.shape)*noise)
+        return (
+            extract(
+                self.sqrt_alphas_cumprod,
+                timesteps,
+                original_samples.shape) *
+            original_samples +
+            extract(
+                self.sqrt_one_minus_alphas_cumprod,
+                timesteps,
+                original_samples.shape) *
+            noise)
 
     def step(self, model_output: Tensor, sample: Tensor, timestep: Tensor):
         """
@@ -479,7 +508,8 @@ class DDPMScheduler(DiffusionScheduler):
         # hacks - were probably added for training stability
         if self.variance_type == "fixed_small":
             pass
-        # for rl-diffuser `Planning with Diffusion for Flexible Behavior Synthesis <https://arxiv.org/abs/2205.09991>`_
+        # for rl-diffuser `Planning with Diffusion for Flexible Behavior
+        # Synthesis <https://arxiv.org/abs/2205.09991>`_
         elif self.variance_type == "fixed_small_log":
             variance = ops.log(variance)
             variance = ops.exp(0.5 * variance)
@@ -534,11 +564,19 @@ class DDPMScheduler(DiffusionScheduler):
         pred_original_sample = self._pred_origin_sample(
             model_output, sample, timestep)
         # 2. Compute predicted previous sample µ_t
-        # See formula (7) from `Denoising Diffusion Probabilistic Models <https://arxiv.org/abs/2006.11239>`_
+        # See formula (7) from `Denoising Diffusion Probabilistic Models
+        # <https://arxiv.org/abs/2006.11239>`_
         pred_prev_sample = (
-            extract(self.posterior_mean_coef1, timestep, sample.shape)*pred_original_sample +
-            extract(self.posterior_mean_coef2, timestep, sample.shape)*sample
-        )
+            extract(
+                self.posterior_mean_coef1,
+                timestep,
+                sample.shape) *
+            pred_original_sample +
+            extract(
+                self.posterior_mean_coef2,
+                timestep,
+                sample.shape) *
+            sample)
 
         # 3. Add noise
         v = self._get_variance(sample, timestep, predicted_variance)
@@ -660,7 +698,11 @@ class DDIMScheduler(DiffusionScheduler):
 
         return variance
 
-    def _pred_epsilon(self, model_output: Tensor, sample: Tensor, timestep: Tensor):
+    def _pred_epsilon(
+            self,
+            model_output: Tensor,
+            sample: Tensor,
+            timestep: Tensor):
         """
         Predict epsilon.
 
@@ -748,17 +790,21 @@ class DDIMScheduler(DiffusionScheduler):
         std_dev_t = (eta * ops.sqrt(variance)).astype(dtype)
 
         if use_clipped_model_output:
-            # the pred_epsilon is always re-derived from the clipped x_0 in Glide
+            # the pred_epsilon is always re-derived from the clipped x_0 in
+            # Glide
             pred_epsilon = (
                 (sample - (alpha_prod_t ** (0.5)).astype(dtype) *
                  pred_original_sample) / beta_prod_t ** (0.5)
             ).astype(dtype)
 
-        # 5. compute "direction pointing to x_t" of formula (12) from `Denoising Diffusion Implicit Models <https://arxiv.org/abs/2010.02502>`_
-        pred_sample_direction = (
-            (1 - alpha_prod_t_prev - std_dev_t**2) ** (0.5)).reshape(batch_size, 1, 1) * pred_epsilon
+        # 5. compute "direction pointing to x_t" of formula (12) from
+        # `Denoising Diffusion Implicit Models
+        # <https://arxiv.org/abs/2010.02502>`_
+        pred_sample_direction = ((1 - alpha_prod_t_prev - std_dev_t**2)
+                                 ** (0.5)).reshape(batch_size, 1, 1) * pred_epsilon
 
-        # 6. compute x_t without "random noise" of formula (12) from `Denoising Diffusion Implicit Models <https://arxiv.org/abs/2010.02502>`_
+        # 6. compute x_t without "random noise" of formula (12) from `Denoising
+        # Diffusion Implicit Models <https://arxiv.org/abs/2010.02502>`_
         coef = ops.sqrt(alpha_prod_t_prev).reshape(batch_size, 1, 1)
         prev_sample = coef * pred_original_sample + pred_sample_direction
         if eta > 0:
@@ -826,7 +872,14 @@ class DiffusionPipeline:
 
     """
 
-    def __init__(self, model, scheduler, batch_size, seq_len, num_inference_steps=1000, compute_dtype=mstype.float32):
+    def __init__(
+            self,
+            model,
+            scheduler,
+            batch_size,
+            seq_len,
+            num_inference_steps=1000,
+            compute_dtype=mstype.float32):
         self.model = model
         self.scheduler = scheduler
         self.seq_len = seq_len
@@ -863,8 +916,12 @@ class DiffusionPipeline:
         Returns:
             Tensor, Predicted original samples.
         """
-        sample = Tensor(np.random.randn(self.batch_size, self.seq_len,
-                                        self.model.in_channels), dtype=self.compute_dtype)
+        sample = Tensor(
+            np.random.randn(
+                self.batch_size,
+                self.seq_len,
+                self.model.in_channels),
+            dtype=self.compute_dtype)
         if condition is not None:
             condition = condition.reshape(self.batch_size, -1)
 
@@ -932,11 +989,19 @@ class DDPMPipeline(DiffusionPipeline):
     """
     # pylint: disable=W0235
 
-    def __init__(self, model, scheduler, batch_size, seq_len, num_inference_steps=1000, compute_dtype=mstype.float32):
+    def __init__(
+            self,
+            model,
+            scheduler,
+            batch_size,
+            seq_len,
+            num_inference_steps=1000,
+            compute_dtype=mstype.float32):
         if not isinstance(scheduler, DDPMScheduler):
             raise TypeError('scheduler type must be DDPMScheduler')
         if num_inference_steps != scheduler.num_train_timesteps:
-            raise ValueError('num_inference_steps must equal to num_train_timesteps')
+            raise ValueError(
+                'num_inference_steps must equal to num_train_timesteps')
         super().__init__(model, scheduler, batch_size,
                          seq_len, num_inference_steps, compute_dtype)
 
@@ -1001,17 +1066,34 @@ class DDIMPipeline(DiffusionPipeline):
     """
     # pylint: disable=W0235
 
-    def __init__(self, model, scheduler, batch_size, seq_len, num_inference_steps=1000, compute_dtype=mstype.float32):
+    def __init__(
+            self,
+            model,
+            scheduler,
+            batch_size,
+            seq_len,
+            num_inference_steps=1000,
+            compute_dtype=mstype.float32):
         if not isinstance(scheduler, DDIMScheduler):
             raise TypeError('scheduler type must be DDIMScheduler')
         super().__init__(model, scheduler, batch_size,
                          seq_len, num_inference_steps, compute_dtype)
 
     # pylint: disable=W0221
-    def _sample_step(self, sample, condition, timesteps, eta, use_clipped_model_output):
+    def _sample_step(
+            self,
+            sample,
+            condition,
+            timesteps,
+            eta,
+            use_clipped_model_output):
         model_output = self._pred_noise(sample, condition, timesteps)
-        sample = self.scheduler.step(model_output=model_output, sample=sample, timestep=timesteps,
-                                     eta=eta, use_clipped_model_output=use_clipped_model_output)
+        sample = self.scheduler.step(
+            model_output=model_output,
+            sample=sample,
+            timestep=timesteps,
+            eta=eta,
+            use_clipped_model_output=use_clipped_model_output)
         return sample
 
     def __call__(self, condition=None, eta=0., use_clipped_model_output=False):
@@ -1034,15 +1116,23 @@ class DDIMPipeline(DiffusionPipeline):
         """
         if not 0 <= eta <= 1:
             raise ValueError('eta must in range [0, 1]')
-        sample = Tensor(np.random.randn(self.batch_size, self.seq_len,
-                                        self.model.in_channels), dtype=self.compute_dtype)
+        sample = Tensor(
+            np.random.randn(
+                self.batch_size,
+                self.seq_len,
+                self.model.in_channels),
+            dtype=self.compute_dtype)
         if condition is not None:
             condition = condition.reshape(self.batch_size, -1)
 
         for t in self.scheduler.num_timesteps:
             batched_times = ops.ones((self.batch_size,), mstype.int32) * int(t)
             sample = self._sample_step(
-                sample, condition, batched_times, eta, use_clipped_model_output)
+                sample,
+                condition,
+                batched_times,
+                eta,
+                use_clipped_model_output)
 
         return sample
 
@@ -1134,7 +1224,12 @@ class DiffusionTrainer:
         else:
             raise ValueError(f'invalid loss type {self.loss_type}')
 
-    def get_loss(self, original_samples: Tensor, noise: Tensor, timesteps: Tensor, condition: Tensor = None):
+    def get_loss(
+            self,
+            original_samples: Tensor,
+            noise: Tensor,
+            timesteps: Tensor,
+            condition: Tensor = None):
         r"""
         Calculate the forward loss of diffusion process.
 
@@ -1160,9 +1255,17 @@ class DiffusionTrainer:
         elif self.objective == 'pred_x0':
             target = original_samples
         elif self.objective == 'pred_v':
-            target = (extract(self.scheduler.sqrt_alphas_cumprod, timesteps, original_samples.shape)*noise -
-                      extract(self.scheduler.sqrt_one_minus_alphas_cumprod, timesteps,
-                              original_samples.shape)*original_samples)
+            target = (
+                extract(
+                    self.scheduler.sqrt_alphas_cumprod,
+                    timesteps,
+                    original_samples.shape) *
+                noise -
+                extract(
+                    self.scheduler.sqrt_one_minus_alphas_cumprod,
+                    timesteps,
+                    original_samples.shape) *
+                original_samples)
         else:
             target = noise
 

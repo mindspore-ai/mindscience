@@ -1,4 +1,9 @@
-"""log utils"""
+"""Logging Utilities
+
+This module provides utility functions for logging in the MindScience toolkit.
+It includes functions for configuring logging and printing messages to both
+standard output and log files.
+"""
 import logging
 import os
 
@@ -13,11 +18,12 @@ def log_config(log_dir='./logs', model_name="model", permission=0o644):
     if not os.path.exists(log_dir):
         os.mkdir(log_dir)
     log_path = os.path.join(log_dir, f"{model_name}.log")
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                        datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=log_path,
-                        filemode='w')
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+        datefmt='%a, %d %b %Y %H:%M:%S',
+        filename=log_path,
+        filemode='w')
     os.chmod(log_path, permission)
 
 
@@ -27,8 +33,8 @@ def print_log(*msg, level=logging.INFO, enable_log=True):
     Args:
         *msg (any): Message(s) to print and log.
         level (int): Log level. Default: logging.INFO.
-        enable_log (bool): Whether to log the message. In some cases, like before logging configuration, this flag would
-            be set as False. Default: ``True``.
+        enable_log (bool): Whether to log the message. In some cases, like before logging
+            configuration, this flag would be set as False. Default: ``True``.
     """
 
     def log_help_func(*messages):
