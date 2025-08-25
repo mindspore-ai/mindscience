@@ -1,0 +1,46 @@
+model:
+  name: "ice_simple"
+  include_background: True
+  num_classes: 1
+  num_channels: 1
+  filter_weight: ["outc.weight", "outc.bias"]
+  in_channels: [64, 128, 320, 512]
+
+data:
+  data_path: "./test_dataset"
+  dataset: "2km_ice"
+  crop: None
+  train_augment: False
+  batch_size: 1
+  cross_valid_ind: 1
+  eval_resize: False
+  data_shape: [3360, 3072]
+
+optimizer:
+  lr: 0.0001
+  weight_decay: 0.01
+  loss_scale: 1024.0
+  FixedLossScaleManager: 1024.0
+
+summary:
+  output_path: "./train"
+  checkpoint_path: "./output/ckpt"
+  keep_checkpoint_max: 1
+  show_eval: True
+  load_path: "./ckpt_0/best.ckpt"
+
+train:
+  device_target: "Ascend"
+  epochs: 300
+  repeat: 1
+  distribute_epochs: 300
+  run_distribute: False
+  resume: False
+  resume_ckpt: "./"
+  transfer_training: False
+  enable_profiling: False
+  amp_level: "O3"
+
+test:
+  model_checkpoint: "./ckpt"
+  output_path: "./output/"
