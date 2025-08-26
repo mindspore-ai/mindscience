@@ -16,10 +16,10 @@
 '''
 # pylint: disable=W0235
 
-from mindspore import nn, ops, Tensor
+from mindspore import nn, ops, Tensor, mint
 import mindspore.common.dtype as mstype
 
-from .dft import SpectralConv1dDft, SpectralConv2dDft, SpectralConv3dDft
+from .fno_sp import SpectralConv1dDft, SpectralConv2dDft, SpectralConv3dDft
 from ..layers.activation import get_activation
 from ...common.math import get_grid_1d, get_grid_2d, get_grid_3d
 from ...utils.check_func import check_param_type
@@ -294,7 +294,7 @@ class FNO(nn.Cell):
     def construct(self, x: Tensor):
         """construct"""
         batch_size = x.shape[0]
-        grid = self._positional_embedding.repeat(batch_size, axis=0).astype(x.dtype)
+        grid = mint.repeat_interleave(self._positional_embedding.astype(x.dtype), batch_size, dim=0)
         if self.data_format != "channels_last":
             x = ops.transpose(x, input_perm=self._output_perm)
         if self.positional_embedding:

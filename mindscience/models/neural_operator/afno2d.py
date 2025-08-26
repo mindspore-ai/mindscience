@@ -19,8 +19,7 @@ from mindspore import ops, nn, Tensor, Parameter
 from mindspore import dtype as mstype
 from mindspore.common.initializer import initializer, Normal, TruncatedNormal
 from mindspore.nn.probability.distribution import Bernoulli
-
-from .dft import dft2, idft2
+from ...sciops.fourier import RDFTn, IRDFTn
 
 
 class DropPath(nn.Cell):
@@ -305,13 +304,13 @@ class AFNO2D(nn.Cell):
         self.h_size = h_size
         self.w_size = w_size
 
-        self.dft2_cell = dft2(
+        self.dft2_cell = RDFTn(
             shape=(h_size, w_size), dim=(-3, -2),
-            modes=(h_size // 2, w_size // 2 + 1), compute_dtype=compute_dtype
+            norm='ortho', compute_dtype=compute_dtype
         )
-        self.idft2_cell = idft2(
+        self.idft2_cell = IRDFTn(
             shape=(h_size, w_size), dim=(-3, -2),
-            modes=(h_size // 2, w_size // 2 + 1), compute_dtype=compute_dtype
+            norm='ortho', compute_dtype=compute_dtype
         )
 
         self.scale = 0.02
@@ -381,10 +380,7 @@ class AFNO2D(nn.Cell):
             h, w = self.h_size, self.w_size
             x = x.reshape(b, h, w, c)
 
-        x_re = x
-        x_im = ops.zeros_like(x_re)
-
-        x_ft_re, x_ft_im = self.dft2_cell((x_re, x_im))
+        x_ft_re, x_ft_im = self.dft2_cell(x)
 
         x_ft_re = x_ft_re.reshape(
             b, x_ft_re.shape[1], x_ft_re.shape[2],
@@ -434,7 +430,7 @@ class AFNO2D(nn.Cell):
         o2_real = o2_real.reshape(b, o2_real.shape[1], o2_real.shape[2], c)
         o2_imag = o2_imag.reshape(b, o2_imag.shape[1], o2_imag.shape[2], c)
 
-        x, _ = self.idft2_cell((o2_real, o2_imag))
+        x = self.idft2_cell(o2_real, o2_imag)
 
         x = x.reshape(b, n, c)
         return x + bias
