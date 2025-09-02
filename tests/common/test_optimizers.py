@@ -1,0 +1,277 @@
+# ============================================================================
+# Copyright 2025 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+"""Optimizers Test Case"""
+import os
+import random
+import sys
+
+import pytest
+import numpy as np
+
+import mindspore as ms
+from mindspore import ops, set_seed, nn, mint
+from mindspore import dtype as mstype
+from mindscience.models.layers.unet2d import UNet2D, Down
+from mindscience.models.transformer.attention import TransformerBlock, MultiHeadAttention, FeedForward
+from mindscience.common.optimizers import AdaHessian
+
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
+sys.path.append(PROJECT_ROOT)
+
+# pylint: disable=wrong-import-position
+
+from tools import FP32_RTOL
+
+# pylint: enable=wrong-import-position
+
+set_seed(0)
+np.random.seed(0)
+random.seed(0)
+
+test_data_path = '/home/workspace/mindspore_dataset/mindscience/mindflow/optimizers'
+
+
+class TestAdaHessianAccuracy(AdaHessian):
+    ''' Child class for testing the accuracy of AdaHessian optimizer '''
+
+    def gen_rand_vecs(self, grads):
+        ''' generate certain vector for accuracy test '''
+        return [ms.Tensor(np.arange(p.size).reshape(p.shape) - p.size // 2, dtype=ms.float32) for p in grads]
+
+
+class TestUNet2D(UNet2D):
+    ''' Child class for testing optimizing UNet with AdaHessian '''
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        class TestDown(Down):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                in_channels = args[0]
+                kernel_size = kwargs['kernel_size']
+                stride = kwargs['stride']
+                # replace the `maxpool` layer in the original UNet with `conv` to avoid `vjp` problem
+                self.maxpool = nn.Conv2d(in_channels, in_channels, kernel_size=kernel_size, stride=stride)
+
+        self.layers_down = nn.CellList()
+        for i in range(self.n_layers):
+            self.layers_down.append(TestDown(self.base_channels * 2**i, self.base_channels * 2 ** (i+1),
+                                             kernel_size=self.kernel_size, stride=self.stride,
+                                             activation=self.activation, enable_bn=self.enable_bn))
+
+
+class TestAttentionBlock(TransformerBlock):
+    ''' Child class for testing optimizing Attention with AdaHessian '''
+
+    def __init__(self,
+                 in_channels: int,
+                 num_heads: int,
+                 enable_flash_attn: bool = False,
+                 fa_dtype: mstype = mstype.bfloat16,
+                 drop_mode: str = "dropout",
+                 dropout_rate: float = 0.0,
+                 compute_dtype: mstype = mstype.float32,
+                 ):
+        super().__init__(in_channels=in_channels,
+                         num_heads=num_heads,
+                         enable_flash_attn=enable_flash_attn,
+                         fa_dtype=fa_dtype,
+                         drop_mode=drop_mode,
+                         dropout_rate=dropout_rate,
+                         compute_dtype=compute_dtype,
+                         )
+
+        class TestMlp(FeedForward):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.act_fn = nn.ReLU()  # replace `gelu` with `relu` to avoid `vjp` problem
+
+        class TestMultiHeadAttention(MultiHeadAttention):
+            ''' MultiHeadAttention modified to support vjp '''
+            def get_qkv(self, x: ms.Tensor) -> tuple[ms.Tensor]:
+                ''' use masks to select out q, k, v, instead of tensor reshaping & indexing '''
+                b, n, c_full = x.shape
+                c = c_full // self.num_heads
+
+                # use matmul with masks to select out q, k, v to avoid vjp problem
+                q_mask = ms.Tensor(np.vstack([np.eye(c), np.zeros([2 * c, c])]), dtype=self.compute_dtype)
+                k_mask = ms.Tensor(np.vstack([np.zeros([c, c]), np.eye(c), np.zeros([c, c])]), dtype=self.compute_dtype)
+                v_mask = ms.Tensor(np.vstack([np.zeros([2 * c, c]), np.eye(c)]), dtype=self.compute_dtype)
+
+                qkv = self.qkv(x)
+                qkv = qkv.reshape(b, n, self.num_heads, -1).swapaxes(1, 2)
+
+                q = mint.matmul(qkv, q_mask)
+                k = mint.matmul(qkv, k_mask)
+                v = mint.matmul(qkv, v_mask)
+
+                return q, k, v
+
+        self.ffn = TestMlp(
+            in_channels=in_channels,
+            dropout_rate=dropout_rate,
+            compute_dtype=compute_dtype,
+        )
+        self.attention = TestMultiHeadAttention(
+            in_channels=in_channels,
+            num_heads=num_heads,
+            enable_flash_attn=enable_flash_attn,
+            fa_dtype=fa_dtype,
+            drop_mode=drop_mode,
+            dropout_rate=dropout_rate,
+            compute_dtype=compute_dtype,
+        )
+
+
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend910b_training
+@pytest.mark.env_onecard
+@pytest.mark.parametrize('mode', [ms.GRAPH_MODE, ms.PYNATIVE_MODE])
+def test_adahessian_accuracy(mode):
+    """
+    Feature: AdaHessian forward accuracy test
+    Description: Test the accuracy of the AdaHessian optimizer in both GRAPH_MODE and PYNATIVE_MODE
+                with input data specified in the code below.
+                The expected output is compared to a reference output stored in
+                './mindflow/core/optimizers/data/adahessian_output.npy'.
+    Expectation: The output should match the target data within the defined relative tolerance,
+                ensuring the AdaHessian computation is accurate.
+    """
+    ms.set_context(mode=mode)
+
+    weight_init = ms.Tensor(np.reshape(range(72), [4, 2, 3, 3]), dtype=ms.float32)
+    bias_init = ms.Tensor(np.arange(4), dtype=ms.float32)
+
+    net = nn.Conv2d(
+        in_channels=2, out_channels=4, kernel_size=3, has_bias=True, weight_init=weight_init, bias_init=bias_init)
+
+    def forward(a):
+        return ops.sqrt(ops.mean(ops.square(net(a))))
+
+    grad_fn = ms.grad(forward, grad_position=None, weights=net.trainable_params())
+
+    optimizer = TestAdaHessianAccuracy(
+        net.trainable_params(),
+        learning_rate=0.1, beta1=0.9, beta2=0.999, eps=1e-8, weight_decay=0.)
+
+    inputs = ms.Tensor(np.reshape(range(100), [2, 2, 5, 5]), dtype=ms.float32)
+
+    for _ in range(4):
+        optimizer(grad_fn, inputs)
+
+    outputs = net(inputs).numpy()
+    outputs_ref = np.load(os.path.join(test_data_path, 'adahessian_output.npy'))
+    relative_error = np.max(np.abs(outputs - outputs_ref)) / np.max(np.abs(outputs_ref))
+    assert relative_error < FP32_RTOL, "The verification of adahessian accuracy is not successful."
+
+
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend910b_training
+@pytest.mark.env_onecard
+@pytest.mark.parametrize('mode', [ms.GRAPH_MODE, ms.PYNATIVE_MODE])
+@pytest.mark.parametrize('model_option', ['unet', 'attention'])
+def test_adahessian_st(mode, model_option):
+    """
+    Feature: AdaHessian ST test
+    Description: Test the function of the AdaHessian optimizer in both GRAPH_MODE and PYNATIVE_MODE
+                on the complex network such as UNet. The input is a Tensor specified in the code
+                and the output is the loss after 4 rounds of optimization.
+    Expectation: The output should be finite, ensuring the AdaHessian runs successfully on UNet.
+    """
+    ms.set_context(mode=mode)
+
+    # default test with Attention network
+    net = TestAttentionBlock(in_channels=256, num_heads=4)
+    inputs = ms.Tensor(np.sin(np.arange(102400)).reshape(4, 100, 256), dtype=ms.float32)
+
+    # test with UNet network
+    if model_option.lower() == 'unet':
+        net = TestUNet2D(
+            in_channels=2,
+            out_channels=4,
+            base_channels=8,
+            n_layers=4,
+            kernel_size=2,
+            stride=2,
+            activation='relu',
+            data_format="NCHW",
+            enable_bn=False, # bn leads to bug in PYNATIVE_MODE for MS2.5.0
+        )
+        inputs = ms.Tensor(np.random.rand(2, 2, 64, 64), dtype=ms.float32)
+
+    def forward(a):
+        return ops.sqrt(ops.mean(ops.square(net(a))))
+
+    grad_fn = ms.grad(forward, grad_position=None, weights=net.trainable_params())
+
+    optimizer = AdaHessian(
+        net.trainable_params(),
+        learning_rate=0.1, beta1=0.9, beta2=0.999, eps=1e-8, weight_decay=0.)
+
+    for _ in range(4):
+        optimizer(grad_fn, inputs)
+
+    loss = forward(inputs)
+    assert ops.isfinite(loss)
+
+
+@pytest.mark.level0
+@pytest.mark.platform_arm_ascend910b_training
+@pytest.mark.env_onecard
+@pytest.mark.parametrize('mode', [ms.PYNATIVE_MODE])
+def test_adahessian_compare(mode):
+    """
+    Feature: AdaHessian compare with Adam
+    Description: Compare the algorithm results of the AdaHessian optimizer with Adam.
+                The code runs in PYNATIVE_MODE and the network under comparison is TransformerBlock.
+                The optimization runs 100 rounds to demonstrate an essential loss decrease.
+    Expectation: The loss of AdaHessian outperforms Adam by 20% under the same configuration on an Attention network.
+    """
+    ms.set_context(mode=mode)
+
+    def get_loss(optimizer_option):
+        ''' compare Adam and  AdaHessian '''
+        net = TestAttentionBlock(in_channels=256, num_heads=4)
+        inputs = ms.Tensor(np.sin(np.arange(102400)).reshape(4, 100, 256), dtype=ms.float32)
+
+        def forward(a):
+            return ops.sqrt(ops.mean(ops.square(net(a))))
+
+        grad_fn = ms.grad(forward, grad_position=None, weights=net.trainable_params())
+
+        if optimizer_option.lower() == 'adam':
+            optimizer = nn.Adam(
+                net.trainable_params(),
+                learning_rate=0.01, beta1=0.9, beta2=0.999, eps=1e-8, weight_decay=0.)
+        else:
+            optimizer = AdaHessian(
+                net.trainable_params(),
+                learning_rate=0.01, beta1=0.9, beta2=0.999, eps=1e-8, weight_decay=0.)
+
+        for _ in range(20):
+            if optimizer_option.lower() == 'adam':
+                optimizer(grad_fn(inputs))
+            else:
+                optimizer(grad_fn, inputs)
+
+        loss = forward(inputs)
+        return loss
+
+    loss_adam = get_loss('adam')
+    loss_adahessian = get_loss('adahessian')
+
+    assert loss_adam * 0.8 > loss_adahessian, (loss_adam, loss_adahessian)

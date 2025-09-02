@@ -15,5 +15,6 @@
 """
 init
 """
+from .fourier import RDFTn, IRDFTn, DFTn, IDFTn, DCT, IDCT, DST, IDST
 
-__all__ = []
+__all__ = ["RDFTn", "IRDFTn", "DFTn", "IDFTn", "DCT", "IDCT", "DST", "IDST"]
