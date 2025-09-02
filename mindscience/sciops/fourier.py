@@ -129,7 +129,7 @@ class _DFT1d(nn.Cell):
         super().__init__()
 
         self.n = n
-        self.dft_mat = scipy.linalg.dft(n, scale=scale)
+        dft_mat = scipy.linalg.dft(n, scale=scale)
         self.last_index = last_index
         self.inv = inv
         self.odd = bool(n % 2)
@@ -139,11 +139,11 @@ class _DFT1d(nn.Cell):
         self.compute_dtype = compute_dtype
 
         # generate DFT matrix for positive and negative frequencies
-        dft_mat_mode = self.dft_mat[:, :self.mode_upper]
+        dft_mat_mode = dft_mat[:, :self.mode_upper]
         self.a_re_upper = Tensor(dft_mat_mode.real, dtype=compute_dtype)
         self.a_im_upper = Tensor(dft_mat_mode.imag, dtype=compute_dtype)
 
-        dft_mat_mode = self.dft_mat[:, -self.mode_lower:]
+        dft_mat_mode = dft_mat[:, -self.mode_lower:]
         self.a_re_lower = Tensor(dft_mat_mode.real, dtype=compute_dtype)
         self.a_im_lower = Tensor(dft_mat_mode.imag, dtype=compute_dtype)
 
@@ -164,7 +164,7 @@ class _DFT1d(nn.Cell):
             # last axis is real-transformed, so the inverse is conjugate of the positive frequencies
             if last_index:
                 mode_res = min(self.mode_lower, self.mode_upper - 1)
-                dft_mat_res = self.dft_mat[:, -mode_res:]
+                dft_mat_res = dft_mat[:, -mode_res:]
                 a_re_res = MyFlip()(Tensor(dft_mat_res.real, dtype=compute_dtype), dims=-1)
                 a_im_res = MyFlip()(Tensor(dft_mat_res.imag, dtype=compute_dtype), dims=-1)
 
