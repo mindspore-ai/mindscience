@@ -1,0 +1,28 @@
+template:
+  base: water.tip3p.yaml
+parameters:
+  bond_energy:
+    length_unit: nm
+    energy_unit: kj/mol
+    parameter_names:
+      pattern: [bond_length, force_constant]
+    parameters:
+      OW-HW: [0.09572, 502416]
+  angle_energy:
+    length_unit: nm
+    energy_unit: kj/mol
+    parameter_names:
+      pattern: [bond_angle, force_constant]
+    parameters:
+      HW-OW-HW: [104.52, 628.02]
+  coulomb_energy:
+    length_unit: nm
+    energy_unit: kj/mol
+  vdw_energy:
+    length_unit: nm
+    energy_unit: kj/mol
+    parameter_names:
+      pattern: [sigma, epsilon]
+    parameters:
+      OW: [0.315061, 0.636386]
+      HW: [0.0, 0.0]

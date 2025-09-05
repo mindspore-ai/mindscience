@@ -1,0 +1,77 @@
+common:
+  crop_size: 256
+  max_msa_entry: 33554432  # 1 << 25
+  max_msa_clusters: 256
+  max_extra_msa: 1024
+  max_templates: 4
+  num_ensembles: 1
+  num_recycle: 3
+  profile_prob: 0.1
+  same_prob: 0.1
+  uniform_prob: 0.1
+  replace_fraction: 0.15
+  replace_proportion: 0.0
+  spatial_crop_prob: 0.5
+  ca_ca_threshold: 10.0
+  biased_msa_by_chain: True
+  distillation: False
+  use_templates: True
+  use_masked_msa: True
+  share_mask: True
+  msa_cluster_features: True
+  subsample_templates: True
+  use_template_torsion_angles: True
+  reduce_msa_clusters_by_max_templates: True
+  template_features:
+  - template_all_atom_positions
+  - template_sum_probs
+  - template_aatype
+  - template_all_atom_mask
+  unsupervised_features:
+  - aatype
+  - residue_index
+  - msa
+  - msa_chains
+  - num_alignments
+  - seq_length
+  - between_segment_residues
+  - deletion_matrix
+  - crop_and_fix_size_seed
+  recycling_features:
+  - msa_chains
+  - msa_mask
+  - msa_row_mask
+  - bert_mask
+  - true_msa
+  - msa_feat
+  - extra_msa_deletion_value
+  - extra_msa_has_deletion
+  - extra_msa
+  - extra_msa_mask
+  - extra_msa_row_mask
+  - is_distillation
+  multimer_features:
+  - assembly_num_chains
+  - asym_id
+  - sym_id
+  - num_sym
+  - entity_id
+  - asym_len
+  - cluster_bias_mask
+  supervised_features:
+  - all_atom_mask
+  - all_atom_positions
+  - resolution
+  - use_clamped_fape
+  - is_distillation
+
+
+eval:
+  crop_size: 256
+  fixed_size: True
+  masked_msa_replace_fraction: 0.15
+  max_msa_clusters: 512
+  max_templates: 4
+  num_ensemble: 1
+  subsample_templates: True
+  keep_extra: True

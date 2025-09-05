@@ -1,0 +1,13 @@
+template:
+  base: water_3p.yaml
+  WAT:
+    atom_mass: [15.9994, 1.008, 1.008]
+    atom_charge: [-0.8476, 0.4238, 0.4238]
+molecule:
+  residue:
+  - WAT
+  length_unit: nm
+  coordinate:
+  - [0.0, 0.0, 0.0]
+  - [0.081649043, 0.057735897, 0.0]
+  - [-0.081649043, 0.057735897, 0.0]
