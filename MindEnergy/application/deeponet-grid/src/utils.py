@@ -21,14 +21,14 @@ import os
 import re
 from typing import Dict, List, Optional, Tuple
 
+import yaml
 import matplotlib.pyplot as plt
 import mindspore as ms
 import numpy as np
-import yaml
 
 
 def _ensure_dir(path: str) -> None:
-    if path is None or len(path) == 0:
+    if path is None:
         return
     os.makedirs(path, exist_ok=True)
 
@@ -37,7 +37,9 @@ def plot_pred_UQ(
     sensors, u, y, s, s_mean, s_std, xlabel="$y$", ylabel="$s^\dagger(u)(y)$",
     size=10, save_path=None, metrics_text=None,
 ):
-    # plot prediction with confidence interval
+    """
+    plot prediction with confidence interval
+    """
     u = u.reshape(
         -1,
     )
@@ -162,13 +164,13 @@ def plot_loss_curves(
     Plot training and validation loss curves from log file
     """
     losses, epochs, steps = parse_loss_log(log_file_path)
-    val_losses, val_epochs, val_steps = parse_val_loss_log(log_file_path)
+    val_losses, _, val_steps = parse_val_loss_log(log_file_path)
 
     if not losses:
         print("No loss data found in log file")
         return
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
+    _, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize)
 
     ax1.plot(steps, losses, "b-", label="Training Loss", linewidth=1, alpha=0.8)
     ax1.set_xlabel("Training Steps")
@@ -218,14 +220,17 @@ def plot_loss_statistics(
     show_plot: bool = True,
     figsize: Tuple[int, int] = (15, 10),
 ) -> None:
+    """
+    Plot detailed loss statistics including histograms and moving averages
+    """
     # Parse loss data
     losses, epochs, steps = parse_loss_log(log_file_path)
-    val_losses, val_epochs, val_steps = parse_val_loss_log(log_file_path)
+    val_losses, _, val_steps = parse_val_loss_log(log_file_path)
     if not losses:
         print("No loss data found in log file")
         return
     # Create figure with subplots
-    fig = plt.figure(figsize=figsize)
+    _ = plt.figure(figsize=figsize)
     # 1. Training loss over steps
     ax1 = plt.subplot(2, 3, 1)
     ax1.plot(steps, losses, "b-", alpha=0.7, linewidth=0.8)
@@ -384,6 +389,9 @@ def load_trained_model(model, checkpoint_path: str):
 
 
 def extract_log(log_file: str, history_file: str):
+    """
+    Extract Log.
+    """
     print("DeepONet-Grid-UQ training log extraction")
     print("=" * 40)
 
@@ -391,7 +399,7 @@ def extract_log(log_file: str, history_file: str):
         print(f"Found log file: {log_file}")
 
         # Parse and print basic statistics
-        losses, epochs, steps = parse_loss_log(log_file)
+        losses, _, _ = parse_loss_log(log_file)
         if losses:
             print(f"Loss statistics:")
             print(f"  Total entries: {len(losses)}")
