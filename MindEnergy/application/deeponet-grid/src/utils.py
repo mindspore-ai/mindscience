@@ -279,20 +279,15 @@ def plot_loss_statistics(
         ax5.legend()
     else:
         ax5.text(
-            0.5,
-            0.5,
-            "No validation loss data",
-            ha="center",
-            va="center",
-            transform=ax5.transAxes,
+            0.5,0.5,"No validation loss data",
+            ha="center",va="center", transform=ax5.transAxes,
         )
         ax5.set_title("Validation Loss (No Data)")
     # 6. Loss statistics
     ax6 = plt.subplot(2, 3, 6)
     ax6.axis("off")
     stats_text = (
-        f"Loss Statistics:\n"
-        f"----------------\n"
+        f"Loss Statistics:\n----------------\n"
         f"Total Steps: {len(losses)}\n"
         f"Total Epochs: {max(epochs) if epochs else 0}\n"
         f"Min Loss: {min(losses):.6f}\n"
@@ -303,8 +298,7 @@ def plot_loss_statistics(
     )
     if val_losses:
         stats_text += (
-            f"\nValidation Stats:\n"
-            f"----------------\n"
+            f"\nValidation Stats:\n----------------\n"
             f"Val Steps: {len(val_losses)}\n"
             f"Min Val Loss: {min(val_losses):.6f}\n"
             f"Max Val Loss: {max(val_losses):.6f}\n"
@@ -313,13 +307,8 @@ def plot_loss_statistics(
         )
 
     ax6.text(
-        0.05,
-        0.95,
-        stats_text,
-        transform=ax6.transAxes,
-        fontsize=10,
-        verticalalignment="top",
-        fontfamily="monospace",
+        0.05, 0.95, stats_text, transform=ax6.transAxes,
+        fontsize=10, verticalalignment="top", fontfamily="monospace",
     )
     plt.tight_layout()
     # Save plot if specified
@@ -327,8 +316,7 @@ def plot_loss_statistics(
         plt.savefig(save_path, dpi=300, bbox_inches="tight")
         print(f"Loss statistics saved to: {save_path}")
     # Show plot if requested
-    if show_plot:
-        plt.show()
+    if show_plot: plt.show()
     plt.close()
 
 

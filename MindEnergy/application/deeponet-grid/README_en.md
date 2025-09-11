@@ -6,10 +6,10 @@ DeepONet-Grid network for power system fault prediction
 
 ### Source of Requirements and Value Overview
 
-This work build an efficient DeepONet that 
+This work build an efficient DeepONet that
 
-(i) takes as inputs the trajectories collected before and during the fault and 
-(ii) outputs the predicted post-fault trajectories. 
+(i) takes as inputs the trajectories collected before and during the fault and
+(ii) outputs the predicted post-fault trajectories.
 
 In addition, they also endow their method with the much-needed ability to balance efficiency with reliable/trustworthy predictions via Ucertainty Quantification.
 
@@ -45,6 +45,7 @@ deeponet-grid/
 ```
 
 ## Installation & Configuration
+
 ### Install MindSpore
 
  Install MindSpore framework:
@@ -150,14 +151,16 @@ python train.py
 ```
 
 ## More Information
+
 ### Model Architecture
 
 DeepONet consists of two main components:
 
 1. **Branch Network**: Processes input function `u(x)`
-2**Trunk Network**: Processes evaluation points `y`
+2. **Trunk Network**: Processes evaluation points `y`
 
 Output is calculated through dot product:
+
 ```
 G(u)(y) = Σᵢ bᵢ(u) tᵢ(y)
 ```
@@ -172,6 +175,7 @@ The model provides uncertainty quantification capabilities:
 - **Standard Deviation Prediction**: Uncertainty measure of predictions
 
 Supported loss functions:
+
 - **Negative Log Likelihood (NLL)**: For uncertainty quantification
 - **Mean Squared Error (MSE)**: Standard regression loss
 
