@@ -161,9 +161,7 @@ DeepONet consists of two main components:
 
 Output is calculated through dot product:
 
-```
 G(u)(y) = Σᵢ bᵢ(u) tᵢ(y)
-```
 
 Where `bᵢ(u)` is the branch network output and `tᵢ(y)` is the trunk network output.
 
