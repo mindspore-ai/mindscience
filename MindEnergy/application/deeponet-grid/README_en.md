@@ -7,16 +7,14 @@ DeepONet-Grid network for power system fault prediction
 ### Source of Requirements and Value Overview
 
 This work build an efficient DeepONet that 
-    
-    (i) takes as inputs the trajectories collected before and during the fault and 
-    (ii) outputs the predicted post-fault trajectories. 
+
+(i) takes as inputs the trajectories collected before and during the fault and 
+(ii) outputs the predicted post-fault trajectories. 
 
 In addition, they also endow their method with the much-needed ability to balance efficiency with reliable/trustworthy predictions via Ucertainty Quantification.
 
 Original Paper : [DeepONet-grid-UQ: A trustworthy deep operator framework for predicting the power grid’s post-fault trajectories](!https://www.sciencedirect.com/science/article/abs/pii/S0925231223002503)
 Original Code on torch: [Github](!https://github.com/cmoyacal/DeepONet-Grid-UQ)
-
-
 
 ### Research Background and Motivation
 
@@ -28,7 +26,7 @@ Existing machine learning methods mainly focus on binary classification problems
 
 ## Project Structure
 
-```
+```bash
 deeponet-grid/
 ├── configs/
 │   └── config.yaml          # Configuration file
@@ -50,20 +48,23 @@ deeponet-grid/
 ### Install MindSpore
 
  Install MindSpore framework:
-   ```bash
-   pip install mindspore
-   ```
+
+```bash
+pip install mindspore
+```
 
 ### Configuration File
 
 Edit the `configs/config.yaml` file to configure model parameters:
 
 #### Model Configuration
+
 - `branch`: Branch network configuration (processes input functions)
 - `trunk`: Trunk network configuration (processes evaluation points)
 - `use_bias`: Whether to use bias terms
 
 #### Training Configuration
+
 - `learning_rate`: Learning rate
 - `batch_size`: Batch size
 - `epochs`: Number of training epochs
@@ -71,6 +72,7 @@ Edit the `configs/config.yaml` file to configure model parameters:
 - `loss_type`: Loss function type (nll, mse)
 
 #### Data Configuration
+
 - `use_synthetic`: Whether to use synthetic data
 - `data_path`: Data file path
 
@@ -81,7 +83,6 @@ Edit the `configs/config.yaml` file to configure model parameters:
 You can use the data we provided: [dataset](https://download.mindspore.cn/mindscience/mindenergy/dataset/applications/DeepONet-grid/). Thanks to the provider: lzh9673@163.com.
 
 Make sure the `data_path` in `confis/config.yaml` is set correctly.
-
 
 ```bash
 python train.py
@@ -139,10 +140,10 @@ python inference.py --checkpoint outputs/best_model.ckpt \
                    --output_dir inference_results
 ```
 
-
 ### 6. Debug Mode
 
 Set environment variable to enable detailed logging:
+
 ```bash
 export MINDSPORE_LOG_LEVEL=DEBUG
 python train.py
@@ -174,7 +175,6 @@ Supported loss functions:
 - **Negative Log Likelihood (NLL)**: For uncertainty quantification
 - **Mean Squared Error (MSE)**: Standard regression loss
 
-
 ### Data Format
 
 Data files should be in `.npz` format with the following fields:
@@ -182,7 +182,6 @@ Data files should be in `.npz` format with the following fields:
 - `u`: Input function values, shape `(n_samples, n_sensors)`
 - `y`: Evaluation points, shape `(n_samples, n_points, n_dim)`
 - `s`: True solution values, shape `(n_samples, n_points, n_output)`
-
 
 ## Training results
 

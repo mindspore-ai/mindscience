@@ -7,9 +7,9 @@
 ### 需求来源及价值概述
 
 本工作构建了一个高效的网络DeepONet-Grid，用于对故障后的电力系统进行动态安全分析，该网络
-    
-    (i) 接收故障前和故障期间收集的轨迹作为输入，并且
-    (ii) 输出预测的故障后轨迹。
+
+(i) 接收故障前和故障期间收集的轨迹作为输入，并且
+(ii) 输出预测的故障后轨迹。
 
 此外，本网络还通过不确定性量化（Uncertainty Quantification）为其方法赋予了在效率与可靠/可信预测之间取得平衡的能力。
 
@@ -27,7 +27,7 @@
 
 ## 项目结构
 
-```
+```bash
 deeponet-grid/
 ├── configs/
 │   └── config.yaml          # 配置文件
@@ -50,20 +50,23 @@ deeponet-grid/
 ### 安装MindSpore
 
 安装MindSpore框架：
-   ```bash
-   pip install mindspore
-   ```
 
-## 配置文件
+```bash
+pip install mindspore
+```
+
+### 配置文件
 
 编辑 `configs/config.yaml` 文件来配置模型参数：
 
 #### 模型配置
+
 - `branch`: 分支网络配置（处理输入函数）
 - `trunk`: 主干网络配置（处理评估点）
 - `use_bias`: 是否使用偏置项
 
 #### 训练配置
+
 - `learning_rate`: 学习率
 - `batch_size`: 批次大小
 - `epochs`: 训练轮数
@@ -71,6 +74,7 @@ deeponet-grid/
 - `loss_type`: 损失函数类型（nll, mse）
 
 #### 数据配置
+
 - `data_path`: 数据文件路径
 
 ## 使用方法
@@ -114,14 +118,11 @@ msrun -worker_num 8 python train.py --distributed 1
 python train.py --resume outputs/best_model.ckpt
 ```
 
-
 ### 3. 仅运行评估
 
 ```bash
 python train.py --eval --resume outputs/best_model.ckpt
 ```
-
-
 
 ### 4. 打印loss log曲线
 
@@ -145,6 +146,7 @@ python inference.py --checkpoint outputs/best_model.ckpt \
 ### 6. 调试模式
 
 设置环境变量启用详细日志：
+
 ```bash
 export MINDSPORE_LOG_LEVEL=DEBUG
 python train.py
@@ -184,8 +186,6 @@ G(u)(y) = Σᵢ bᵢ(u) tᵢ(y)
 - `u`: 输入函数值，形状为 `(n_samples, n_sensors)`
 - `y`: 评估点，形状为 `(n_samples, n_points, n_dim)`
 - `s`: 真实解值，形状为 `(n_samples, n_points, n_output)`
-
- 
 
 ## 训练结果
 

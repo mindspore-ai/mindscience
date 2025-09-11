@@ -218,20 +218,14 @@ def plot_loss_statistics(
     show_plot: bool = True,
     figsize: Tuple[int, int] = (15, 10),
 ) -> None:
-    """
-    Plot detailed loss statistics including histograms and moving averages
-    """
     # Parse loss data
     losses, epochs, steps = parse_loss_log(log_file_path)
     val_losses, val_epochs, val_steps = parse_val_loss_log(log_file_path)
-
     if not losses:
         print("No loss data found in log file")
         return
-
     # Create figure with subplots
     fig = plt.figure(figsize=figsize)
-
     # 1. Training loss over steps
     ax1 = plt.subplot(2, 3, 1)
     ax1.plot(steps, losses, "b-", alpha=0.7, linewidth=0.8)
@@ -239,7 +233,6 @@ def plot_loss_statistics(
     ax1.set_ylabel("Loss (negated for display)")
     ax1.set_title("Training Loss")
     ax1.grid(True, alpha=0.3)
-
     # 2. Moving average of training loss
     ax2 = plt.subplot(2, 3, 2)
     window_size = min(50, len(losses) // 10)  # Adaptive window size
@@ -253,7 +246,6 @@ def plot_loss_statistics(
         ax2.set_ylabel("Moving Average Loss")
         ax2.set_title(f"Moving Average (window={window_size})")
         ax2.grid(True, alpha=0.3)
-
     # 3. Loss histogram
     ax3 = plt.subplot(2, 3, 3)
     ax3.hist(losses, bins=30, alpha=0.7, color="blue", edgecolor="black")
@@ -261,7 +253,6 @@ def plot_loss_statistics(
     ax3.set_ylabel("Frequency")
     ax3.set_title("Loss Distribution")
     ax3.grid(True, alpha=0.3)
-
     # 4. Loss vs epochs
     ax4 = plt.subplot(2, 3, 4)
     unique_epochs = list(set(epochs))
@@ -270,13 +261,11 @@ def plot_loss_statistics(
         epoch_indices = [i for i, e in enumerate(epochs) if e == epoch]
         epoch_loss = np.mean([losses[i] for i in epoch_indices])
         epoch_losses.append(epoch_loss)
-
     ax4.plot(unique_epochs, epoch_losses, "g-", linewidth=2, marker="o")
     ax4.set_xlabel("Epochs")
     ax4.set_ylabel("Average Loss")
     ax4.set_title("Average Loss per Epoch")
     ax4.grid(True, alpha=0.3)
-
     # 5. Validation loss (if available)
     ax5 = plt.subplot(2, 3, 5)
     if val_losses:
@@ -298,7 +287,6 @@ def plot_loss_statistics(
             transform=ax5.transAxes,
         )
         ax5.set_title("Validation Loss (No Data)")
-
     # 6. Loss statistics
     ax6 = plt.subplot(2, 3, 6)
     ax6.axis("off")
@@ -313,7 +301,6 @@ def plot_loss_statistics(
         f"Std Loss: {np.std(losses):.6f}\n"
         f"Final Loss: {losses[-1]:.6f}\n"
     )
-
     if val_losses:
         stats_text += (
             f"\nValidation Stats:\n"
@@ -334,18 +321,14 @@ def plot_loss_statistics(
         verticalalignment="top",
         fontfamily="monospace",
     )
-
     plt.tight_layout()
-
     # Save plot if specified
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches="tight")
         print(f"Loss statistics saved to: {save_path}")
-
     # Show plot if requested
     if show_plot:
         plt.show()
-
     plt.close()
 
 
