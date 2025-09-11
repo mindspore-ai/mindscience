@@ -42,8 +42,9 @@ def train(args, logger):
         device_id = context.get_context(attr_key="device_id")
     else:
         device_id = int(os.environ.get("MS_NODE_ID"))
-    is_main_process = (True if device_id ==
-                       0 or config["training"]["distributed"] == 0 else False)
+    is_main_process = (
+        True if device_id == 0 or config["training"]["distributed"] == 0 else False
+    )
 
     os.makedirs(config["output"]["save_dir"], exist_ok=True)
 
@@ -81,9 +82,8 @@ def train(args, logger):
     }
 
     model = Prob_DeepONet(
-        branch=branch_config,
-        trunk=trunk_config,
-        use_bias=model_config["use_bias"])
+        branch=branch_config, trunk=trunk_config, use_bias=model_config["use_bias"]
+    )
 
     trainer = create_trainer(
         model=model,
@@ -98,9 +98,7 @@ def train(args, logger):
     if args.eval:
         metrics = trainer.evaluate(datasets["test"])
 
-        results_path = os.path.join(
-            config["output"]["save_dir"],
-            "test_results.json")
+        results_path = os.path.join(config["output"]["save_dir"], "test_results.json")
         with open(results_path, "w") as f:
             json.dump(metrics, f, indent=2)
 
@@ -110,24 +108,19 @@ def train(args, logger):
         train_dataset=datasets["train"], val_dataset=datasets["val"]
     )
 
-    history_path = os.path.join(
-        config["output"]["save_dir"],
-        "training_history.json")
+    history_path = os.path.join(config["output"]["save_dir"], "training_history.json")
     with open(history_path, "w") as f:
         json.dump(history, f, indent=2)
 
     test_metrics = trainer.evaluate(datasets["test"])
 
-    test_results_path = os.path.join(
-        config["output"]["save_dir"],
-        "test_results.json")
+    test_results_path = os.path.join(config["output"]["save_dir"], "test_results.json")
     with open(test_results_path, "w") as f:
         json.dump(test_metrics, f, indent=2)
 
     if is_main_process:
         trainer.save_model("final_model.ckpt")
-    logger.info(
-        "Training completed successfully, model saved to final_model.ckpt")
+    logger.info("Training completed successfully, model saved to final_model.ckpt")
 
     logger.info("Final Results:")
     for metric, value in test_metrics.items():
@@ -135,8 +128,7 @@ def train(args, logger):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Train DeepONet-Grid-UQ model")
+    parser = argparse.ArgumentParser(description="Train DeepONet-Grid-UQ model")
     parser.add_argument(
         "--config",
         type=str,
@@ -144,10 +136,8 @@ if __name__ == "__main__":
         help="Path to configuration file",
     )
     parser.add_argument(
-        "--resume",
-        type=str,
-        default=None,
-        help="Resume training from checkpoint")
+        "--resume", type=str, default=None, help="Resume training from checkpoint"
+    )
     parser.add_argument(
         "--eval", action="store_true", help="Only run evaluation on test set"
     )

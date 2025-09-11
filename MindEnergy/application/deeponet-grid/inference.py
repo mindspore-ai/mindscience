@@ -136,9 +136,8 @@ def inference(args, logger):
     }
 
     model = Prob_DeepONet(
-        branch=branch_config,
-        trunk=trunk_config,
-        use_bias=model_config["use_bias"])
+        branch=branch_config, trunk=trunk_config, use_bias=model_config["use_bias"]
+    )
     model = load_trained_model(model, args.checkpoint)
     model.set_train(False)
 
@@ -155,8 +154,7 @@ def inference(args, logger):
         y_single = y[args.data_index]
         s_true = s[args.data_index]
 
-        predictions, std_predictions = trajectory_prediction(
-            u_single, y_single, model)
+        predictions, std_predictions = trajectory_prediction(u_single, y_single, model)
         s_mean = predictions.reshape(-1)
         s_std = std_predictions.reshape(-1)
 
@@ -173,9 +171,8 @@ def inference(args, logger):
         print(metrics_text)
 
         out_dir = (
-            args.output_dir if hasattr(
-                args,
-                "output_dir") else "inference_results")
+            args.output_dir if hasattr(args, "output_dir") else "inference_results"
+        )
         save_path = os.path.join(
             out_dir, f"trajectory_prediction_idx_{args.data_index}.png"
         )
@@ -198,11 +195,7 @@ def inference(args, logger):
             return
 
         # Perform inference on dataset
-        inference_on_dataset(
-            model,
-            args.data_path,
-            args.checkpoint,
-            args.output_dir)
+        inference_on_dataset(model, args.data_path, args.checkpoint, args.output_dir)
 
 
 if __name__ == "__main__":
