@@ -61,7 +61,7 @@ class CustomCallback(Callback):
         self.losses.append(float(loss))
 
         if self.step % self.log_interval == 0:
-            logger.info("Step %d, Loss: %.6f" % (self.step, float(loss)))
+            logger.info("Step %d, Loss: %.6f", self.step, float(loss))
 
 
 class ProbabilisticLoss(nn.Cell):
@@ -224,10 +224,10 @@ class DeepONetTrainer:
 
         if verbose:
             logger.info(
-                "\n***** Probabilistic Training for %d epochs *****\n" % epoch)
-            logger.info("Train data size: %d" % train_data_size)
+                "\n***** Probabilistic Training for %d epochs *****\n", epochs)
+            logger.info("Train data size: %d", train_data_size)
             steps_per_epoch = train_data_size // train_dataset.get_batch_size()
-            logger.info("Steps per epoch: %d" % steps_per_epoch)
+            logger.info("Steps per epoch: %d", steps_per_epoch)
 
         # Initialize best values and logger
         best = {}
@@ -276,7 +276,7 @@ class DeepONetTrainer:
                 avg_epoch_loss = epoch_loss / batch_count
             except ZeroDivisionError as e:
                 logger.error(
-                    "error: %s, batch size larger than number of training examples" % e
+                    "error: %s, batch size larger than number of training examples", e
                 )
                 continue
             logger_hist["prob loss"].append(avg_epoch_loss)
@@ -284,7 +284,8 @@ class DeepONetTrainer:
             if verbose:
                 # Negative log likelihood loss can be negative
                 logger.info(
-                    "Epoch %d/%d:  Train-Loss: %.6f Best-Loss: %.6f" % (epoch+1, epoch, float(avg_epoch_loss), float(best['prob loss']))
+                    "Epoch %d/%d:  Train-Loss: %.6f Best-Loss: %.6f", epoch+1, epoch,
+                    float(avg_epoch_loss), float(best['prob loss'])
                 )
         return logger_hist
 
@@ -292,16 +293,16 @@ class DeepONetTrainer:
         """Save model checkpoint"""
         save_path = os.path.join(self.save_dir, filename)
         ms.save_checkpoint(self.model, save_path)
-        logger.info("Model saved to: %s" % save_path)
+        logger.info("Model saved to: %s", save_path)
 
     def load_model(self, filename: str):
         """Load model checkpoint"""
         load_path = os.path.join(self.save_dir, filename)
         if os.path.exists(load_path):
             ms.load_checkpoint(load_path, self.model)
-            logger.info("Model loaded from: %s" % load_path)
+            logger.info("Model loaded from: %s", load_path)
         else:
-            logger.warning("Checkpoint not found: %s" % load_path)
+            logger.warning("Checkpoint not found: %s", load_path)
 
     def predict(self, u: ms.Tensor, y: ms.Tensor) -> Tuple[ms.Tensor, ms.Tensor]:
         """Make predictions"""
@@ -362,7 +363,7 @@ class DeepONetTrainer:
                 targets, predictions)
             metrics["trajectory_l1_error"] = l1_traj
             metrics["trajectory_l2_error"] = l2_traj
-        except (BaseException, RuntimeError):
+        except RuntimeError:
             pass
 
         return metrics

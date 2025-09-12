@@ -137,7 +137,7 @@ def compute_metrics(
             print(
                 f"l2-relative errors: max={out[1][0]:.3f}, min={out[1][1]:.3f}, mean={out[1][2]:.3f}"
             )
-        except (BaseException, IndexError, TypeError):
+        except (IndexError, TypeError):
             print("not the correct metrics")
 
     return out
