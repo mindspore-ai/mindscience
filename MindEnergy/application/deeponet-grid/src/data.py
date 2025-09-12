@@ -27,9 +27,11 @@ from mindspore.ops import operations as ops
 class DataGenerator:
     """Data generator for MindSpore training"""
 
-    def __init__(
-        self, u: np.ndarray, y: np.ndarray, s: np.ndarray, dtype: str = "float32"
-    ):
+    def __init__(self,
+                 u: np.ndarray,
+                 y: np.ndarray,
+                 s: np.ndarray,
+                 dtype: str = "float32"):
         self.u = u
         self.y = y
         self.s = s
@@ -57,9 +59,10 @@ class DataGenerator:
         return self.len
 
 
-def generate_synthetic_data(
-    n_samples: int = 1000, n_sensors: int = 33, n_points: int = 1, seed: int = 1234
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def generate_synthetic_data(n_samples: int = 1000,
+                            n_sensors: int = 33,
+                            n_points: int = 1,
+                            seed: int = 1234) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Generate synthetic data for testing"""
     np.random.seed(seed)
 
@@ -103,13 +106,11 @@ def load_real_data(data_path: str) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     return data["u"], data["y"], data["s"]
 
 
-def normalize_data(
-    u: np.ndarray,
-    y: np.ndarray,
-    s: np.ndarray,
-    method: str = "standard",
-    dtype: str = "float32",
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, Dict]:
+def normalize_data(u: np.ndarray,
+                   y: np.ndarray,
+                   s: np.ndarray,
+                   method: str = "standard",
+                   dtype: str = "float32") -> Tuple[np.ndarray, np.ndarray, np.ndarray, Dict]:
     """Normalize data
 
     Args:
@@ -185,15 +186,13 @@ def normalize_data(
     return u_norm, y_norm, s_norm, scalers
 
 
-def split_data(
-    u: np.ndarray,
-    y: np.ndarray,
-    s: np.ndarray,
-    train_ratio: float = 0.8,
-    val_ratio: float = 0.1,
-    test_ratio: float = 0.1,
-    random_state: int = 42,
-) -> Dict[str, Tuple]:
+def split_data(u: np.ndarray,
+               y: np.ndarray,
+               s: np.ndarray,
+               train_ratio: float = 0.8,
+               val_ratio: float = 0.1,
+               test_ratio: float = 0.1,
+               random_state: int = 42) -> Dict[str, Tuple]:
     """Split data into train, validation, and test sets
 
     Args:
@@ -234,9 +233,9 @@ def split_data(
     return data_splits
 
 
-def create_datasets(
-    data_splits: Dict[str, Tuple], batch_size: int = 32, distributed: int = 0
-) -> Dict[str, GeneratorDataset]:
+def create_datasets(data_splits: Dict[str, Tuple],
+                    batch_size: int = 32,
+                    distributed: int = 0) -> Dict[str, GeneratorDataset]:
     """Create datasets from data splits
 
     Args:

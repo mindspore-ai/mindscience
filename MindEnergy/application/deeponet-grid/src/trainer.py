@@ -103,13 +103,11 @@ class MSELoss(nn.Cell):
 class DeepONetTrainer:
     """Trainer class for DeepONet with uncertainty quantification"""
 
-    def __init__(
-        self,
-        model: nn.Cell,
-        config: Dict[str, Any],
-        save_dir: str = "outputs",
-        distributed: int = 0,
-    ):
+    def __init__(self,
+                 model: nn.Cell,
+                 config: Dict[str, Any],
+                 save_dir: str = "outputs",
+                 distributed: int = 0):
 
         self.model = model
         self.config = config
@@ -169,9 +167,10 @@ class DeepONetTrainer:
 
         self.exp = ops.Exp()
 
-    def train_step(
-        self, u: ms.Tensor, y: ms.Tensor, target: ms.Tensor
-    ) -> Tuple[ms.Tensor, ms.Tensor, ms.Tensor]:
+    def train_step(self,
+                   u: ms.Tensor,
+                   y: ms.Tensor,
+                   target: ms.Tensor) -> Tuple[ms.Tensor, ms.Tensor, ms.Tensor]:
         """Single training step"""
 
         def forward_fn():
@@ -204,11 +203,9 @@ class DeepONetTrainer:
         self.model.set_train(True)
         return total_loss / num_batches if num_batches > 0 else float("inf")
 
-    def train(
-        self,
-        train_dataset: GeneratorDataset,
-        val_dataset: Optional[GeneratorDataset] = None,
-    ) -> Dict[str, List[float]]:
+    def train(self,
+              train_dataset: GeneratorDataset,
+              val_dataset: Optional[GeneratorDataset] = None) -> Dict[str, List[float]]:
         """Train the model"""
 
         epochs = self.training_config["epochs"]
@@ -368,13 +365,11 @@ class DeepONetTrainer:
 
         return metrics
 
-    def compute_trajectory_metrics(
-        self,
-        s_test: List[ms.Tensor],
-        mean_predictions: List[ms.Tensor],
-        std_predictions: List[ms.Tensor],
-        verbose: bool = False,
-    ) -> Dict[str, Any]:
+    def compute_trajectory_metrics(self,
+                                   s_test: List[ms.Tensor],
+                                   mean_predictions: List[ms.Tensor],
+                                   std_predictions: List[ms.Tensor],
+                                   verbose: bool = False) -> Dict[str, Any]:
         """Compute metrics for trajectory predictions"""
         # Compute L1 and L2 relative errors
         metrics_state = compute_metrics(
@@ -401,11 +396,9 @@ class DeepONetTrainer:
         }
 
 
-def create_trainer(
-    model: nn.Cell,
-    config: Dict[str, Any],
-    save_dir: str = "outputs",
-    distributed: int = 0,
-) -> DeepONetTrainer:
+def create_trainer(model: nn.Cell,
+                   config: Dict[str, Any],
+                   save_dir: str = "outputs",
+                   distributed: int = 0) -> DeepONetTrainer:
     """Create trainer instance"""
     return DeepONetTrainer(model, config, save_dir, distributed)

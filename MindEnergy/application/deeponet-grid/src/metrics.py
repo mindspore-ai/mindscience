@@ -59,14 +59,12 @@ class MetricsCalculator:
             value = value.item()
         return float(value)
 
-    def fraction_in_ci(
-        self,
-        s: ms.Tensor,
-        s_mean: ms.Tensor,
-        s_std: ms.Tensor,
-        xi: float = 2.0,
-        verbose: bool = False,
-    ) -> float:
+    def fraction_in_ci(self,
+                       s: ms.Tensor,
+                       s_mean: ms.Tensor,
+                       s_std: ms.Tensor,
+                       xi: float = 2.0,
+                       verbose: bool = False) -> float:
         """Compute fraction of true trajectory in predicted confidence interval"""
         # Reshape to 1D if needed
         s = s.reshape(-1)
@@ -82,9 +80,10 @@ class MetricsCalculator:
 
         return ratio
 
-    def trajectory_rel_error(
-        self, s_true: ms.Tensor, s_pred: ms.Tensor, verbose: bool = False
-    ) -> Tuple[float, float]:
+    def trajectory_rel_error(self,
+                             s_true: ms.Tensor,
+                             s_pred: ms.Tensor,
+                             verbose: bool = False) -> Tuple[float, float]:
         """Compute trajectory relative errors"""
         s_true_flat = s_true.reshape(-1)
         s_pred_flat = s_pred.reshape(-1)
@@ -99,12 +98,10 @@ class MetricsCalculator:
         return l1_error, l2_error
 
 
-def compute_metrics(
-    s_true: List[ms.Tensor],
-    s_pred: List[ms.Tensor],
-    metrics: List[str],
-    verbose: bool = False,
-) -> List[List[float]]:
+def compute_metrics(s_true: List[ms.Tensor],
+                    s_pred: List[ms.Tensor],
+                    metrics: List[str],
+                    verbose: bool = False) -> List[List[float]]:
     """Compute metrics for multiple trajectories"""
     calculator = MetricsCalculator()
     out = []
@@ -143,9 +140,8 @@ def compute_metrics(
     return out
 
 
-def update_metrics_history(
-    history: Dict[str, List[float]], state: List[float]
-) -> Dict[str, List[float]]:
+def update_metrics_history(history: Dict[str, List[float]],
+                           state: List[float]) -> Dict[str, List[float]]:
     """Update metrics history"""
     if "max" not in history:
         history["max"] = []

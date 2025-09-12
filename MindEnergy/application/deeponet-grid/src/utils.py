@@ -33,10 +33,9 @@ def _ensure_dir(path: str) -> None:
     os.makedirs(path, exist_ok=True)
 
 
-def plot_pred_uq(
-    sensors, u, y, s, s_mean, s_std, xlabel="$y$", ylabel="$s^\dagger(u)(y)$",
-    size=10, save_path=None, metrics_text=None,
-):
+def plot_pred_uq(sensors, u, y, s, s_mean, s_std,
+                 xlabel="$y$", ylabel=r"$s^\dagger(u)(y)$",
+                 size=10, save_path=None, metrics_text=None):
     """
     plot prediction with confidence interval
     """
@@ -154,12 +153,10 @@ def parse_val_loss_log(log_file_path: str) -> Tuple[List[float], List[int], List
     return val_losses, epochs, steps
 
 
-def plot_loss_curves(
-    log_file_path: str,
-    save_path: Optional[str] = None,
-    show_plot: bool = True,
-    figsize: Tuple[int, int] = (12, 8),
-) -> None:
+def plot_loss_curves(log_file_path: str,
+                     save_path: Optional[str] = None,
+                     show_plot: bool = True,
+                     figsize: Tuple[int, int] = (12, 8)) -> None:
     """
     Plot training and validation loss curves from log file
     """
@@ -214,12 +211,10 @@ def plot_loss_curves(
     plt.close()
 
 
-def plot_loss_statistics(
-    log_file_path: str,
-    save_path: Optional[str] = None,
-    show_plot: bool = True,
-    figsize: Tuple[int, int] = (15, 10),
-) -> None:
+def plot_loss_statistics(log_file_path: str,
+                         save_path: Optional[str] = None,
+                         show_plot: bool = True,
+                         figsize: Tuple[int, int] = (15, 10)) -> None:
     """
     Plot detailed loss statistics including histograms and moving averages
     """
@@ -339,9 +334,9 @@ def load_training_history(history_file_path: str) -> Dict:
     return history
 
 
-def plot_training_history(
-    history_file_path: str, save_path: Optional[str] = None, show_plot: bool = True
-) -> None:
+def plot_training_history(history_file_path: str,
+                          save_path: Optional[str] = None,
+                          show_plot: bool = True) -> None:
     """Plot training history from JSON file"""
     history = load_training_history(history_file_path)
 

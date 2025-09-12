@@ -31,12 +31,12 @@ from src.trainer import create_trainer
 from src.utils import load_config
 
 
-def train(args, logger):
+def train(args_, logger_):
     """Main training function"""
 
-    config = load_config(args.config)
+    config = load_config(args_.config)
 
-    config["training"]["distributed"] = args.distributed
+    config["training"]["distributed"] = args_.distributed
 
     if config["training"]["distributed"] == 0:
         device_id = context.get_context(attr_key="device_id")
@@ -90,10 +90,10 @@ def train(args, logger):
         distributed=config["training"]["distributed"],
     )
 
-    if args.resume:
-        trainer.load_model(args.resume)
+    if args_.resume:
+        trainer.load_model(args_.resume)
 
-    if args.eval:
+    if args_.eval:
         metrics = trainer.evaluate(datasets["test"])
 
         results_path = os.path.join(config["output"]["save_dir"], "test_results.json")
@@ -118,11 +118,11 @@ def train(args, logger):
 
     if is_main_process:
         trainer.save_model("final_model.ckpt")
-    logger.info("Training completed successfully, model saved to final_model.ckpt")
+    logger_.info("Training completed successfully, model saved to final_model.ckpt")
 
-    logger.info("Final Results:")
+    logger_.info("Final Results:")
     for metric, value in test_metrics.items():
-        logger.info(f"  {metric.upper()}: {value:.6f}")
+        logger_.info(f"  {metric.upper()}: {value:.6f}")
 
 
 if __name__ == "__main__":

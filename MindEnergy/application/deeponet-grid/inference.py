@@ -37,11 +37,9 @@ from src.model import Prob_DeepONet
 from src.utils import load_config, load_trained_model, plot_pred_uq
 
 
-def inference_on_dataset(
-    model: Prob_DeepONet,
-    dataset_path: str,
-    output_dir: str = "inference_results",
-) -> None:
+def inference_on_dataset(model: Prob_DeepONet,
+                         dataset_path: str,
+                         output_dir: str = "inference_results") -> None:
     """Perform inference on entire dataset"""
     datasets, _ = load_and_preprocess_real_data(
         {
@@ -102,10 +100,10 @@ def inference_on_dataset(
         print(f"Inference results saved to: {results_path}")
 
 
-def inference(args, logger):
+def inference(args_, logger_):
     """Main inference function"""
 
-    config = load_config(args.config)
+    config = load_config(args_.config)
 
     model_config = config["model"]
 
@@ -137,30 +135,30 @@ def inference(args, logger):
     model = Prob_DeepONet(
         branch=branch_config, trunk=trunk_config, use_bias=model_config["use_bias"]
     )
-    model = load_trained_model(model, args.checkpoint)
+    model = load_trained_model(model, args_.checkpoint)
     model.set_train(False)
 
-    if args.trajectory_prediction:
+    if args_.trajectory_prediction:
         # Test single sample trajectory prediction
 
-        if args.data_path is None:
-            logger.error("For single inference, --data_path must be provided")
+        if args_.data_path is None:
+            logger_.error("For single inference, --data_path must be provided")
             return
 
-        u, y, s = load_real_data(args.data_path)
+        u, y, s = load_real_data(args_.data_path)
 
-        u_single = u[args.data_index]
-        y_single = y[args.data_index]
-        s_true = s[args.data_index]
+        u_single = u[args_.data_index]
+        y_single = y[args_.data_index]
+        s_true = s[args_.data_index]
 
         predictions, std_predictions = trajectory_prediction(u_single, y_single, model)
         s_mean = predictions.reshape(-1)
         s_std = std_predictions.reshape(-1)
 
         calculator = MetricsCalculator()
-        targets = ms.Tensor(s[args.data_index], ms.float32)
+        targets = ms.Tensor(s[args_.data_index], ms.float32)
         predicts = ms.Tensor(predictions, ms.float32)
-        print(f"    Targets: {s[args.data_index].flatten()}")
+        print(f"    Targets: {s[args_.data_index].flatten()}")
         print(f"    Predictions: {predictions.flatten()}")
 
         # Test L1 and L2 relative errors
@@ -170,10 +168,10 @@ def inference(args, logger):
         print(metrics_text)
 
         out_dir = (
-            args.output_dir if hasattr(args, "output_dir") else "inference_results"
+            args_.output_dir if hasattr(args_, "output_dir") else "inference_results"
         )
         save_path = os.path.join(
-            out_dir, f"trajectory_prediction_idx_{args.data_index}.png"
+            out_dir, f"trajectory_prediction_idx_{args_.data_index}.png"
         )
         test_y = [i + len(u_single) for i in range(len(targets))]
 
@@ -189,12 +187,12 @@ def inference(args, logger):
 
     else:
         # Dataset inference
-        if args.data_path is None:
-            logger.error("For dataset inference, --data_path must be provided")
+        if args_.data_path is None:
+            logger_.error("For dataset inference, --data_path must be provided")
             return
 
         # Perform inference on dataset
-        inference_on_dataset(model, args.data_path, args.checkpoint, args.output_dir)
+        inference_on_dataset(model, args_.data_path, args_.output_dir)
 
 
 if __name__ == "__main__":
