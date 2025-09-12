@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Data processing for deeponet-grid"""
+
 import os
 from typing import Dict, Tuple
 
-import mindspore as ms
 import numpy as np
-from mindspore import context
+import mindspore as ms
 from mindspore.communication import get_group_size, get_rank
 from mindspore.dataset import GeneratorDataset
 from mindspore.ops import operations as ops
-from scipy import stats
 
 
 class DataGenerator:
@@ -259,7 +259,7 @@ def create_datasets(
                 try:
                     rank_id = get_rank()
                     rank_size = get_group_size()
-                except Exception:
+                except RuntimeError:
                     rank_id = 0
                     rank_size = 1
                 dataset = GeneratorDataset(
@@ -285,7 +285,7 @@ def create_datasets(
     return datasets
 
 
-def prepare_deeponet_data(u, y, s, time_points=None):
+def prepare_deeponet_data(u, y, s):
     """
     Prepare data for DeepONet training from user's data format
     """
@@ -406,6 +406,9 @@ def batch_trajectory_prediction(model, u_batch, time_points):
 
 
 def load_and_preprocess_real_data(config: dict):
+    """
+    Load and split data, then create datasets for training and inference.
+    """
     data_path = config["data"]["data_path"]
 
     u, y, s = load_real_data(data_path)

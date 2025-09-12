@@ -33,7 +33,7 @@ def _ensure_dir(path: str) -> None:
     os.makedirs(path, exist_ok=True)
 
 
-def plot_pred_UQ(
+def plot_pred_uq(
     sensors, u, y, s, s_mean, s_std, xlabel="$y$", ylabel="$s^\dagger(u)(y)$",
     size=10, save_path=None, metrics_text=None,
 ):
@@ -284,8 +284,8 @@ def plot_loss_statistics(
         ax5.legend()
     else:
         ax5.text(
-            0.5,0.5,"No validation loss data",
-            ha="center",va="center", transform=ax5.transAxes,
+            0.5, 0.5, "No validation loss data",
+            ha="center", va="center", transform=ax5.transAxes,
         )
         ax5.set_title("Validation Loss (No Data)")
     # 6. Loss statistics
@@ -349,7 +349,7 @@ def plot_training_history(
         print("No training history data found")
         return
 
-    fig, axes = plt.subplots(1, len(history), figsize=(5 * len(history), 4))
+    _, axes = plt.subplots(1, len(history), figsize=(5 * len(history), 4))
     if len(history) == 1:
         axes = [axes]
 

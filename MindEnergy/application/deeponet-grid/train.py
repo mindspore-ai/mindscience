@@ -42,9 +42,7 @@ def train(args, logger):
         device_id = context.get_context(attr_key="device_id")
     else:
         device_id = int(os.environ.get("MS_NODE_ID"))
-    is_main_process = (
-        True if device_id == 0 or config["training"]["distributed"] == 0 else False
-    )
+    is_main_process = (device_id == 0 or config["training"]["distributed"] == 0)
 
     os.makedirs(config["output"]["save_dir"], exist_ok=True)
 

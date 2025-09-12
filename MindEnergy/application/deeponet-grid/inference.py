@@ -23,9 +23,8 @@ import logging
 import os
 import sys
 
-import matplotlib.pyplot as plt
-import mindspore as ms
 import numpy as np
+import mindspore as ms
 from mindspore import context
 
 from src.data import (
@@ -35,7 +34,7 @@ from src.data import (
 )
 from src.metrics import MetricsCalculator
 from src.model import Prob_DeepONet
-from src.utils import load_config, load_trained_model, plot_pred_UQ
+from src.utils import load_config, load_trained_model, plot_pred_uq
 
 
 def inference_on_dataset(
@@ -44,7 +43,7 @@ def inference_on_dataset(
     output_dir: str = "inference_results",
 ) -> None:
     """Perform inference on entire dataset"""
-    datasets, metadata = load_and_preprocess_real_data(
+    datasets, _ = load_and_preprocess_real_data(
         {
             "data": {
                 "data_path": dataset_path,
@@ -178,7 +177,7 @@ def inference(args, logger):
         )
         test_y = [i + len(u_single) for i in range(len(targets))]
 
-        plot_pred_UQ(
+        plot_pred_uq(
             sensors=np.arange(u_single.shape[0]),
             u=u_single,
             y=test_y,
@@ -199,7 +198,7 @@ def inference(args, logger):
 
 
 if __name__ == "__main__":
-    """Parse command line arguments"""
+    # Parse command line arguments
     parser = argparse.ArgumentParser(description="DeepONet-Grid-UQ Inference")
     parser.add_argument(
         "--config",

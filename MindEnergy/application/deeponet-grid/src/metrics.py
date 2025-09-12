@@ -16,10 +16,9 @@
 Evaluation metrics for DeepONet-Grid-UQ
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import mindspore as ms
-import mindspore.numpy as mnp
 import mindspore.ops as ops
 import numpy as np
 
@@ -35,6 +34,7 @@ class MetricsCalculator:
         self.exp = ops.Exp()
 
     def l2_relative_error(self, y_true: ms.Tensor, y_pred: ms.Tensor) -> float:
+        """Compute L2 relative error"""
         diff = (y_true - y_pred).reshape(-1)
         true = y_true.reshape(-1)
         numerator = ops.norm(diff, ord=2)
@@ -47,6 +47,7 @@ class MetricsCalculator:
         return float(value)
 
     def l1_relative_error(self, y_true: ms.Tensor, y_pred: ms.Tensor) -> float:
+        """Compute L1 relative error"""
         diff = (y_true - y_pred).reshape(-1)
         true = y_true.reshape(-1)
         numerator = ops.norm(diff, ord=1)
@@ -58,7 +59,7 @@ class MetricsCalculator:
             value = value.item()
         return float(value)
 
-    def fraction_in_CI(
+    def fraction_in_ci(
         self,
         s: ms.Tensor,
         s_mean: ms.Tensor,
@@ -73,8 +74,8 @@ class MetricsCalculator:
         s_std = s_std.reshape(-1)
 
         # Check if points are within confidence interval
-        within_CI = self.abs(s - s_mean) <= xi * s_std
-        ratio = float(self.reduce_mean(within_CI.astype(ms.float32)))
+        within_ci = self.abs(s - s_mean) <= xi * s_std
+        ratio = float(self.reduce_mean(within_ci.astype(ms.float32)))
 
         if verbose:
             print(f"% of the true traj. within the error bars is {100 * ratio:.3f}")
@@ -136,7 +137,7 @@ def compute_metrics(
             print(
                 f"l2-relative errors: max={out[1][0]:.3f}, min={out[1][1]:.3f}, mean={out[1][2]:.3f}"
             )
-        except BaseException:
+        except (BaseException, IndexError, TypeError):
             print("not the correct metrics")
 
     return out
