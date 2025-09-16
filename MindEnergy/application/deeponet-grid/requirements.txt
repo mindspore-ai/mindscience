@@ -1,0 +1,19 @@
+# MindSpore Framework
+mindspore>=2.5.0
+
+# Data processing
+numpy>=1.21.0
+pandas>=1.3.0
+scipy>=1.7.0
+
+# Configuration and utilities
+pyyaml>=6.0
+tqdm>=4.62.0
+
+# Optional: for visualization
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# Optional: for Jupyter notebooks
+jupyter>=1.0.0
+ipykernel>=6.0.0 

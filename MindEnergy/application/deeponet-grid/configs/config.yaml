@@ -1,0 +1,60 @@
+# DeepONet-Grid-UQ Configuration
+# MindSpore-based DeepONet-Grid-UQ configuration file
+
+# Model Configuration
+model:
+  # Network parameters
+  m: 33                    # Number of sensors (based on data u.shape[1])
+  dim: 1                   # Trunk network input dimension (always 1 for DeepONet)
+  width: 200               # Network width
+  depth: 3                 # Network depth (number of hidden layers)
+  n_basis: 100             # Number of basis functions
+  
+  # Network types
+  branch_type: "modified"  # Branch network type: "modified" or "MLP"
+  trunk_type: "modified"   # Trunk network type: "modified" or "MLP"
+  activation: "sin"        # Activation function
+  
+  # Other parameters
+  use_bias: true           # Whether to use bias
+
+# Training Configuration
+training:
+  learning_rate: 0.00005   # Learning rate (5e-5)
+  batch_size: 1024          # Batch size
+  epochs: 100              # Number of training epochs
+  log_interval: 100         # Print progress every N steps
+  eval_interval: 1000           # Evaluate every N steps
+  
+  # Learning rate scheduler
+  scheduler: "cosine"  
+  min_lr: 1e-7             # Minimum learning rate
+  max_lr: 5e-4             # Maximum learning rate
+  total_step: 50000        # Total number of steps
+  step_per_epoch: 1000     # Number of steps per epoch
+  decay_epoch: 10        # Number of epochs for decay
+  verbose: true            # Whether to output detailed information
+  loss_type: "nll"         # Loss function type: "nll" (negative log likelihood)
+  optimizer: "adam"        # Optimizer
+  weight_decay: 0.0        # Weight decay
+  amp_level: "O0"          # Mixed precision level: "O0", "O1", "O2"
+
+# Data Configuration
+data:
+  data_path: "data/train-data-voltage-m-33-Q-100-mix.npz"          # Real data path (if null, use synthetic data)
+  use_synthetic: true      # Whether to use synthetic data
+  train_ratio: 0.7         # Training set ratio
+  val_ratio: 0.1           # Validation set ratio
+  test_ratio: 0.2          # Test set ratio 
+  
+  # Synthetic data parameters (only used when use_synthetic=true)
+  n_samples: 1000          # Number of samples
+  n_sensors: 33            # Number of sensors
+  n_points: 100            # Number of time points
+  seed: 42                 # Random seed
+
+
+# Output Configuration
+output:
+  save_dir: "outputs"      # Output directory
+  save_best: true          # Whether to save best model
