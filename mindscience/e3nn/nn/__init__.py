@@ -12,12 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""init for e3 module"""
-from .o3 import *
-from .nn import *
-from .utils import *
+"""init"""
+from .activation import Activation
+from .gate import Gate
+from .fc import FullyConnectedNet
+from .normact import NormActivation
+from .scatter import Scatter
+from .one_hot import SoftOneHotLinspace, soft_one_hot_linspace, soft_unit_step, OneHot
+from .batchnorm import BatchNorm
 
-__all__ = []
-__all__.extend(o3.__all__)
-__all__.extend(nn.__all__)
-__all__.extend(utils.__all__)
+__all__ = [
+    "Activation",
+    "Gate",
+    "FullyConnectedNet",
+    "NormActivation",
+    "Scatter",
+    "SoftOneHotLinspace",
+    "soft_one_hot_linspace",
+    "soft_unit_step",
+    "OneHot",
+    "BatchNorm"
+]
