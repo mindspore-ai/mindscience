@@ -29,4 +29,11 @@ export HCCL_CONNECT_TIMEOUT=6000
 ulimit -u unlimited
 ulimit -s 102400
 ulimit -SHn 65535
-mpirun -n $count --output-filename ./log_distribute2 --merge-stderr-to-stdout --allow-run-as-root python infer_main.py --seq_len $2 --raw_feat $raw_feat --restr $restr --ckpt_path $ckpt_path --iter $iter --num_recycle $num_recycle --device_num $count > ./log_distribute2/test_distribute_log 2>&1
+
+FOLDER_PATH=./output
+if [ ! -d "$FOLDER_PATH" ]; then
+  mkdir -p "$FOLDER_PATH"
+  echo "Create '$FOLDER_PATH'."
+fi
+
+mpirun -n $count --output-filename ./output --merge-stderr-to-stdout --allow-run-as-root python infer_main.py --seq_len $2 --raw_feat $raw_feat --restr $restr --ckpt_path $ckpt_path --iter $iter --num_recycle $num_recycle --device_num $count > ./output/infer.log 2>&1
