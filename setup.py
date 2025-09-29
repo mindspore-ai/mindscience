@@ -51,6 +51,7 @@ package_data = {
         'include/*'
         'build_info.txt'
     ],
+    'mindscience.sciops.fft': ['*.cpp'],
     '_c_minddata': ['lib_c_minddata*.so']
 }
 
@@ -73,4 +74,3 @@ setup(
     include_package_data=True,
     install_requires=required_package,
     classifiers=['License :: OSI Approved :: Apache Software License'])
-
