@@ -1,0 +1,21 @@
+data:
+  root_dir: './dataset'
+  velocity_field: 'velocity_2d.npy'
+  velocity_dx: 16.          # Grid interval of the velocity matrix on x axis, that is resolution on x axis
+  velocity_dz: 16.          # Grid interval of the velocity matrix on z axis, that is resolution on z axis
+  source_wave: 'srcwaves_2d.csv'
+  source_locations: 'srclocs_2d.csv'
+
+solve:
+  dt: 0.02                   # Time interval of the output
+  nt: 300                    # Number of time points of the output, must be even (required by rfft)
+  coarsen_rate: 1            # Coarsen rate (<= space size) of velocity field and time point for NPU memory,
+                             # satisfy (dz, dx) <- (coarsen_rate*dz, coarsen_rate*dx)
+  pml_size: [60, 60, 60, 60] # Size of absorbing boundary layer. The order is [z_up, z_down, x_left, x_right]
+  btype: 'pml'               # Boundary type, choose one of pml, freesurface
+  downsample_mode: 'linear'  # Way to downsample the frequency points, options: linear, exp, square
+  downsample_rate: 1         # Only 1/downsample_rate frequency points will be solved
+  n_batches: 4               # Number of batches for frequencies to be diveded into
+
+summary:
+  root_dir: 'results'

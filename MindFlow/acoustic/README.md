@@ -1,10 +1,10 @@
-# 2D Acoustic Wave Equation CBS Solver
+# 2D/3D Acoustic Wave Equation CBS Solver
 
 ## Overview
 
 The solution of the acoustic wave equation is a core technology in fields such as medical ultrasound and geological exploration. Large-scale acoustic wave equation solving faces challenges in computing power and storage. Acoustic wave equation solvers generally use frequency domain solving algorithms and time domain solving algorithms. The representative of time domain solving algorithms is the Time Domain Finite Difference (TDFD) method, and the frequency domain solving algorithms include Frequency Domain Finite Difference (FDFD), Finite Element Method (FEM), and Convergent Born Series (CBS) iterative method. The CBS method is widely recognized in the engineering and academic communities due to its low memory requirements and the absence of dispersion errors. In particular, [Osnabrugge et al. (2016)](https://linkinghub.elsevier.com/retrieve/pii/S0021999116302595) solved the convergence problem of this method, making the application of the CBS method have broader prospects. The AI model based on the CBS computational structure is a typical representative of the dual-driven paradigm of physics and AI, including [Stanziola et al. (2022)](http://arxiv.org/abs/2212.04948), [Zeng et al. (2023)](http://arxiv.org/abs/2312.15575), etc.
 
-This case will demonstrate how to call the CBS API provided by MindFlow to solve the 2D acoustic wave equation.
+This case will demonstrate how to call the CBS API provided by MindFlow to solve the 2D/3D acoustic wave equation.
 
 ## Theoretical Background
 
@@ -12,7 +12,7 @@ This case will demonstrate how to call the CBS API provided by MindFlow to solve
 
 In the solution of the acoustic wave equation, the velocity field and source information are input parameters, and the output is the spatiotemporal distribution of the wavefield.
 
-The expression of the 2D acoustic wave equation is as follows:
+The expression of the 2D/3D acoustic wave equation is as follows:
 
 | Time Domain Expression                                | Frequency Domain Expression                       |
 | ----------------------------------------------------- | ------------------------------------------------- |
@@ -87,29 +87,31 @@ $$
 The content is translated into English as follows:
 
 - Non-dimensionalization of input parameters;
-- Non-dimensionalization of frequency domain 2D acoustic wave equation CBS solver;
+- Non-dimensionalization of frequency domain 2D/3D acoustic wave equation CBS solver;
 - Dimensional restoration of the solution;
 - Time-frequency transformation of the solution.
 
-The core solving process is parallelized for different source locations and different frequency points. Due to the large number of frequency points, it is divided into `n_batches` batches to solve sequentially along the frequency direction. The required input for the case is placed in the `dataset/` directory in the form of files, and the file names are passed in through `config.yaml`. The output results include the solution of the non-dimensionalized equation in the frequency domain `u_star.npy`, the dimensional final solution converted to the time domain `u_time.npy`, and the visualization animation of the time domain solution `wave.gif`.
+The core solving process is parallelized for different source locations and different frequency points. Due to the large number of frequency points, it is divided into `n_batches` batches to solve sequentially along the frequency direction. The required input for the case is placed in the `dataset/` directory in the form of files, and the file names are passed in through `config_2d.yaml` (2D) or `config_3d.yaml` (3D). The output results include the solution of the non-dimensionalized equation in the frequency domain `u_star.npy`, the dimensional final solution converted to the time domain `u_time.npy`, and the visualization animation of the time domain solution `wave.gif`.
+
+The case introduces two new user-configurable parameters: `pml_size` and `dxs`. The `pml_size` parameter defines the thickness of the absorbing boundary (which may vary by direction), while `dxs` specifies the spatial discretization step size (which may also vary by direction).
 
 ## Quick Start
 
-To facilitate direct verification by users, preset inputs are provided [here](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/cfd/acoustic). Please download the data and put them in `./dataset` in the case directory. The data include the velocity field `velocity.npy`, source location list `srclocs.csv`, and source waveform `srcwaves.csv`. Users can modify the input parameters according to the file format.
+To facilitate direct verification by users, preset inputs are provided [here](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/cfd/acoustic). Please download the data and put them in `./dataset` in the case directory. The data include the velocity field `velocity_2d.npy`, source location list `srclocs_2d.csv`, and source waveform `srcwaves_2d.csv` in 2D and `velocity_3d.npy`, `srclocs_3d.csv`, and `srcwaves_3d.csv` in 3D. Users can modify the input parameters according to the file format.
 
 ### Method 1: Running the `solve_acoustic.py` script
 
 ```shell
-python solve_acoustic.py --config_file_path ./config.yaml --device_id 0 --mode GRAPH
+python solve_acoustic.py --dim 2 --device_id 0 --mode GRAPH
 ```
 
 Where
 
-`--config_file_path` represents the path of the configuration file, with a default value of `./config.yaml`;
+`--dim` represents the dimension of space;
 
 `--device_id` represents the ID of the computing card used, which can be filled in according to the actual situation, and the most idle one will be automatically selected from all the computing cards by default;
 
-`--mode` represents the running mode, 'GRAPH' represents static graph mode, and 'PYNATIVE' represents dynamic graph mode.
+`--mode` represents the running mode, `GRAPH` represents static graph mode, and `PYNATIVE` represents dynamic graph mode.
 
 ### Method 2: Running Jupyter Notebook
 
@@ -117,28 +119,46 @@ You can use the [Chinese version](./acoustic_CN.ipynb) and the [English version]
 
 ## Result Display
 
+### 2D Model
+
 The evolution of the wave field excited by different source locations for the same velocity model over time is shown in the following figure.
 
-![wave.gif](images/wave.gif)
+![wave_2d.gif](images/wave_2d.gif)
 
 The iterative convergence process of the equation residual is shown in the following figure, with each line representing a frequency point. The number of iterations required to reach the convergence threshold varies for different frequency points, and the number of iterations in the same batch depends on the slowest converging frequency point.
 
-![errors.png](images/errors.png)
+![errors_2d.png](images/errors_2d.png)
+
+### 3D Model
+
+Due to the large scale of the 3D model, we manually partitioned the frequency points across NPU cards for the purpose of demonstrating the correctness of numerical results: they were divided into 5 parts and distributed across NPU cards 0 to 4. Each card's frequency points were further split into 50 batches (automatically handled by the program). If users run the program directly, they will obtain numerical results based on a small-scale (coarse grid points) execution on a single NPU card.
+
+Distribute the frequency points across 5 NPU cards. The CBS iteration error convergence curves for each card are as follows
+
+![errors_3d](images/errors_3d.png)
+
+From left to right are the wave speed distribution, X-T acoustic pressure distribution, and Y-T acoustic pressure distribution. The X-T plot depicts the propagation of acoustic waves along the X-axis over time (with the vertical coordinate increasing downward) on the Z=0 plane, while the Y-T plot describes the propagation along the Y-axis under the same conditions.
+
+![velocity_pressure_3d](images/velocity_pressure_3d.png)
+
+Below is an animated visualization of wave propagation over time at the X-Z cross-section of the 3D environment (a single source is shown for clarity of wave propagation and reflection patterns). The animation demonstrates both direct wave propagation through subsurface layers and reflected waves from geological interfaces.
+
+<img src="images/sound_pressure_3d.gif" alt="sound_pressure_3d" style="zoom:50%;" />
 
 ## Performance
 
-| Parameter              | Ascend               |
-|:----------------------:|:--------------------------:|
-| Hardware                | Ascend NPU            |
-| MindSpore Version      | >=2.3.0                 |
-| Dataset                  | [Marmousi velocity model](https://en.wikipedia.org/wiki/Marmousi_model) slices, included in the `dataset/` path of the case |
-| Number of Parameters     | No trainable parameters |
-| Solver Parameters         | batch_size=300, tol=1e-3, max_iter=10000 |
-| Convergence Iterations | batch 0: 1320, batch 1: 560, batch 2: 620, batch 3: 680|
-| Solver Speed (ms/iteration) | 500                 |
+| Parameter              | 2D              | 3D |
+|:----------------------:|:--------------------------:|:----------------------:|
+| Hardware                | Ascend NPU            | Ascend NPU |
+| MindSpore Version      | >=2.4.0                | >=2.4.0 |
+| Dataset                  | [Marmousi velocity model](https://en.wikipedia.org/wiki/Marmousi_model) slices, included in the `dataset/` path of the case | 3D SEAM Barrett model, included in the `dataset/` path of the case |
+| Number of Parameters     | No trainable parameters | No trainable parameters |
+| Solver Parameters         | batch_size=300, tol=1e-3, max_iter=10000 | batch_size=437, tol=1e-3, max_iter=10000 |
+| Convergence Iterations | batch 0: 1320, batch 1: 560, batch 2: 620, batch 3: 680| batch 0: 1180, batch 1: 540, batch 2: 460, batch 3: 460 |
+| Solver Speed (ms/iteration) | 500                 | 2800 |
 
 ## Contributors
 
-gitee id: [WhFanatic](https://gitee.com/WhFanatic)
+gitee id: [WhFanatic](https://gitee.com/WhFanatic), [zhaog6](https://gitee.com/zhaog6)
 
-email: hainingwang1995@gmail.com
+email: hainingwang1995@gmail.com, zhaog6@lsec.cc.ac.cn

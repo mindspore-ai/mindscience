@@ -1,10 +1,10 @@
-# 2D 声波方程 CBS 求解
+# 2D/3D 声波方程 CBS 求解
 
 ## 概述
 
 声波方程求解是医疗超声、地质勘探等领域中的核心技术，大规模声波方程求解面临算力和存储的挑战。声波方程求解器一般采用频域求解算法和时域求解算法，时域求解算法的代表是时域有限差分法 (TDFD)，频域求解算法包括频域有限差分法 (FDFD)、有限元法 (FEM) 和 CBS (Convergent Born series) 迭代法。CBS 方法由于不引入频散误差，且求解的内存需求低，因此受到工程和学术界的广泛关注。尤其是 [Osnabrugge et al. (2016)](https://linkinghub.elsevier.com/retrieve/pii/S0021999116302595) 解决了该方法的收敛性问题，使得 CBS 方法的应用具有更广阔的前景。基于 CBS 的计算结构所提出的 AI 模型也是物理与 AI 双驱动范式的典型代表，包括 [Stanziola et al. (2022)](http://arxiv.org/abs/2212.04948)，[Zeng et al. (2023)](http://arxiv.org/abs/2312.15575) 等。
 
-本案例将演示如何调用 MindFlow 提供的 CBS API 实现二维声波方程的求解。
+本案例将演示如何调用 MindFlow 提供的 CBS API 实现二维/三维声波方程的求解。
 
 ## 理论背景
 
@@ -12,7 +12,7 @@
 
 声波方程求解中，波速场和震源信息是输入参数，求解输出的是时空分布的波场。
 
-二维声波方程的表达式如下
+二维/三维声波方程的表达式如下
 
 | 时域表达式                                            | 频域表达式                                        |
 | ----------------------------------------------------- | ------------------------------------------------- |
@@ -87,31 +87,33 @@ $$
 具体包含以下步骤
 
 - 输入参数无量纲化；
-- 频域无量纲化 2D 声波方程 CBS 求解；
+- 频域无量纲化 2D/3D 声波方程 CBS 求解；
 - 求解结果恢复量纲化；
 - 求解结果时频转换。
 
 其中核心求解的过程针对不同震源位置和不同频点同时并行求解，由于频点数可能较多，因此沿频率方向分为 `n_batches` 个批次依次求解。
 
-案例所需的输入以文件的形式放置于 `dataset/` 中，文件名通过 `config.yaml` 传入。输出的结果为频域无量纲方程的解 `u_star.npy`、转换到时域的有量纲最终解 `u_time.npy`、针对时域解制作的可视化动图 `wave.gif`。
+案例所需的输入以文件的形式放置于 `dataset/` 中，文件名通过 `config_2d.yaml`（2D模型）和 `config_3d.yaml`（3D模型）传入。输出的结果为频域无量纲方程的解 `u_star.npy`、转换到时域的有量纲最终解 `u_time.npy`、针对时域解制作的可视化动图 `wave.gif`。
+
+案例新增可供用户指定的参数 `pml_size` 和 `dxs`，前者用于描述吸收边界厚度（各方向可不同），后者用于描述空间离散步长（各方向可不同）。
 
 ## 快速开始
 
-为了方便用户直接验证，本案例在本[链接](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/cfd/acoustic)中提供了预置的输入数据，请下载所需要的数据集，并保存在 `./dataset` 目录下。数据集包括速度场 `velocity.npy`、震源位置列表 `srclocs.csv`、震源波形 `srcwaves.csv`。用户可仿照输入文件格式自行修改输入参数。
+为了方便用户直接验证，本案例在本[链接](https://download-mindspore.osinfra.cn/mindscience/mindflow/dataset/applications/cfd/acoustic)中提供了预置的输入数据，请下载所需要的数据集，并保存在 `./dataset` 目录下。2D数据集包括速度场 `velocity_2d.npy`、震源位置列表 `srclocs_2d.csv`、震源波形 `srcwaves_2d.csv`，3D数据集包括速度场 `velocity_3d.npy`、震源位置列表 `srclocs_3d.csv`、震源波形 `srcwaves_3d.csv`。用户可仿照输入文件格式自行修改输入参数。
 
 ### 运行方式一：`solve_acoustic.py` 脚本
 
 ```shell
-python solve_acoustic.py --config_file_path ./config.yaml --device_id 0 --mode GRAPH
+python solve_acoustic.py --dim 2 --device_id 0 --mode GRAPH
 ```
 
 其中，
 
-`--config_file_path`表示配置文件的路径，默认值'./config.yaml'；
+`--dim`表示声波方程的维数，默认值为 `2`；
 
 `--device_id`表示使用的计算卡编号，可按照实际情况填写，默认从所有计算卡中自动选取最空闲的一张；
 
-`--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式。
+`--mode`表示运行的模式，`GRAPH`表示静态图模式, `PYNATIVE`表示动态图模式。
 
 ### 运行方式二：运行 Jupyter Notebook
 
@@ -119,28 +121,46 @@ python solve_acoustic.py --config_file_path ./config.yaml --device_id 0 --mode G
 
 ## 结果展示
 
+### 二维模型
+
 针对同一个速度模型，不同震源位置激发的波场随时间演化过程如下图所示。
 
-![wave.gif](images/wave.gif)
+![wave_2d.gif](images/wave_2d.gif)
 
 方程残差的迭代收敛过程如下图所示，每根线代表一个频点。不同频点达到收敛阈值所需的迭代次数不同，同一批次的迭代次数取决于收敛最慢的频点。
 
-![errors.png](images/errors.png)
+![errors_2d.png](images/errors_2d.png)
+
+### 三维模型
+
+由于3D模型规模较大，这里仅为了展示数值结果的正确性，我们暂对频点手动划分到NPU卡：将其划分为5份，分别放入NPU 0号到4号这5张卡中，再将每一张卡中的频点分为50个批次（程序自动分）。如果用户直接运行程序，得到的将是单张NPU卡上跑的小规模（粗网格点）下的数值结果。
+
+将频点分到5张NPU卡上，每张卡的CBS迭代误差收敛曲线图为
+
+![errors_3d](images/errors_3d.png)
+
+如下从左至右分别为波速分布图、X-T声压分布图、Y-T声压分布图。其中X-T声压图描述了Z=0平面上声波随时间（纵坐标向下）沿X轴的传播过程，Y-T声压图描述了Z=0平面上声波随时间（纵坐标向下）沿Y轴的传播过程。
+
+![velocity_pressure_3d](images/velocity_pressure_3d.png)
+
+如下为3D场景 X-Z 截面处的声波随时间演化动图（为看清声波的传播与反射，这里仅对一个震源进行演示），可以从中看到声波在地下的传播以及声波遇到地下介质的反射波。
+
+<img src="images/sound_pressure_3d.gif" alt="sound_pressure_3d" style="zoom:50%;" />
 
 ## 性能
 
-| 参数               | Ascend               |
-|:----------------------:|:--------------------------:|
-| 硬件资源                | 昇腾 NPU            |
-| MindSpore版本           | >=2.3.0                 |
-| 数据集                  | [Marmousi 速度模型](https://en.wikipedia.org/wiki/Marmousi_model)切片，包含在案例 `dataset/` 路径中 |
-| 参数量                  | 无可学习参数   |
-| 求解参数              | batch_size=300, tol=1e-3, max_iter=10000 |
-| 收敛所需迭代数  | batch 0: 1320, batch 1: 560, batch 2: 620, batch 3: 680|
-| 求解速度(ms/iteration) | 500                 |
+| 空间维数     | 2D              | 3D |
+|:----------------------:|:--------------------------:|:----------------------:|
+| 硬件资源                | 昇腾 NPU            | 昇腾 NPU |
+| MindSpore版本           | >=2.4.0                | >=2.4.0 |
+| 数据集                  | [Marmousi 速度模型](https://en.wikipedia.org/wiki/Marmousi_model)切片，包含在案例 `dataset/` 路径中 | 3D SEAM Barrett模型，包含在案例 `dataset/` 路径中 |
+| 参数量                  | 无可学习参数   | 无可学习参数 |
+| 求解参数              | batch_size=300, tol=1e-3, max_iter=10000 | batch_size=437, tol=1e-3, max_iter=10000 |
+| 收敛所需迭代数  | batch 0: 1320, batch 1: 560, batch 2: 620, batch 3: 680| batch 0: 1180, batch 1: 540, batch 2: 460, batch 3: 460 |
+| 求解速度(ms/iteration) | 500                 | 2800 |
 
 ## 贡献者
 
-gitee id: [WhFanatic](https://gitee.com/WhFanatic)
+gitee id: [WhFanatic](https://gitee.com/WhFanatic), [zhaog6](https://gitee.com/zhaog6)
 
-email: hainingwang1995@gmail.com
+email: hainingwang1995@gmail.com, zhaog6@lsec.cc.ac.cn
