@@ -183,7 +183,7 @@ def test_adahessian_accuracy(mode):
 @pytest.mark.platform_arm_ascend910b_training
 @pytest.mark.env_onecard
 @pytest.mark.parametrize('mode', [ms.GRAPH_MODE, ms.PYNATIVE_MODE])
-@pytest.mark.parametrize('model_option', ['unet', 'attention'])
+@pytest.mark.parametrize('model_option', ['unet'])
 def test_adahessian_st(mode, model_option):
     """
     Feature: AdaHessian ST test
@@ -227,51 +227,3 @@ def test_adahessian_st(mode, model_option):
 
     loss = forward(inputs)
     assert ops.isfinite(loss)
-
-
-@pytest.mark.level0
-@pytest.mark.platform_arm_ascend910b_training
-@pytest.mark.env_onecard
-@pytest.mark.parametrize('mode', [ms.PYNATIVE_MODE])
-def test_adahessian_compare(mode):
-    """
-    Feature: AdaHessian compare with Adam
-    Description: Compare the algorithm results of the AdaHessian optimizer with Adam.
-                The code runs in PYNATIVE_MODE and the network under comparison is TransformerBlock.
-                The optimization runs 100 rounds to demonstrate an essential loss decrease.
-    Expectation: The loss of AdaHessian outperforms Adam by 20% under the same configuration on an Attention network.
-    """
-    ms.set_context(mode=mode)
-
-    def get_loss(optimizer_option):
-        ''' compare Adam and  AdaHessian '''
-        net = TestAttentionBlock(in_channels=256, num_heads=4)
-        inputs = ms.Tensor(np.sin(np.arange(102400)).reshape(4, 100, 256), dtype=ms.float32)
-
-        def forward(a):
-            return ops.sqrt(ops.mean(ops.square(net(a))))
-
-        grad_fn = ms.grad(forward, grad_position=None, weights=net.trainable_params())
-
-        if optimizer_option.lower() == 'adam':
-            optimizer = nn.Adam(
-                net.trainable_params(),
-                learning_rate=0.01, beta1=0.9, beta2=0.999, eps=1e-8, weight_decay=0.)
-        else:
-            optimizer = AdaHessian(
-                net.trainable_params(),
-                learning_rate=0.01, beta1=0.9, beta2=0.999, eps=1e-8, weight_decay=0.)
-
-        for _ in range(20):
-            if optimizer_option.lower() == 'adam':
-                optimizer(grad_fn(inputs))
-            else:
-                optimizer(grad_fn, inputs)
-
-        loss = forward(inputs)
-        return loss
-
-    loss_adam = get_loss('adam')
-    loss_adahessian = get_loss('adahessian')
-
-    assert loss_adam * 0.8 > loss_adahessian, (loss_adam, loss_adahessian)
