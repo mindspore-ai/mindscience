@@ -22,14 +22,14 @@ from .metrics import (
     compute_mse,
     compute_r2_score,
 )
-from .model import DeepONet, Prob_DeepONet
+from .model import DeepONet, ProbDeepONet
 from .trainer import DeepONetTrainer
 
 __all__ = [
     "DeepONetTrainer",
     "DataGenerator",
     "DeepONet",
-    "Prob_DeepONet",
+    "ProbDeepONet",
     "MetricsCalculator",
     "compute_metrics",
     "compute_r2_score",

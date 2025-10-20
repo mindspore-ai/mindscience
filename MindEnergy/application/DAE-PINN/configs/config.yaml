@@ -19,7 +19,7 @@ model:
   alg_depth: 2
   alg_activation: 'sin'
   alg_weight: 1.0
-  num_IRK_stages: 100
+  num_irk_stages: 100
 data:
   data_dir: './data'
   num_train: 6000

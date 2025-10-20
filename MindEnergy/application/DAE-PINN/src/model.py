@@ -12,17 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-# pylint: disable-all
-from mindspore import nn, ops
+"""backbone model for DAE-PINN"""
+
 import numpy as np
-from .layer import fnn, attention, Conv1D
+from mindspore import nn, ops
+from .layer import Fnn, Attention, Conv1D
 
 
 def dyn_input_feature_layer(x):
     return ops.cat((x, ops.cos(np.pi * x), ops.sin(np.pi * x), ops.cos(2 * np.pi * x), ops.sin(2 * np.pi * x)), axis=-1)
 
 
-class three_bus_PN(nn.Cell):
+class ThreeBusPN(nn.Cell):
+    """ThreeBusPN network"""
+
     def __init__(self,
                  dynamic,
                  algebraic,
@@ -31,7 +34,7 @@ class three_bus_PN(nn.Cell):
         super().__init__()
         self.stacked = stacked
         self.dim = 4
-        self.num_IRK_stages = dynamic.num_IRK_stages
+        self.num_irk_stages = dynamic.num_irk_stages
         if stacked:
             num_layer = self.dim
         else:
@@ -41,8 +44,8 @@ class three_bus_PN(nn.Cell):
         alg_out_transform = ops.Softplus()
         alg_in_transform = None
         if dynamic.type == "fnn":
-            self.Y = nn.CellList([
-                fnn(
+            self.y_net = nn.CellList([
+                Fnn(
                     dynamic.layer_size,
                     dynamic.activation,
                     dynamic.initializer,
@@ -55,8 +58,8 @@ class three_bus_PN(nn.Cell):
             ])
 
         elif dynamic.type == "attention":
-            self.Y = nn.CellList([
-                attention(
+            self.y_net = nn.CellList([
+                Attention(
                     dynamic.layer_size,
                     dynamic.activation,
                     dynamic.initializer,
@@ -69,7 +72,7 @@ class three_bus_PN(nn.Cell):
             ])
 
         elif dynamic.type == "Conv1D":
-            self.Y = nn.CellList([
+            self.y_net = nn.CellList([
                 Conv1D(
                     dynamic.layer_size,
                     dynamic.activation,
@@ -84,7 +87,7 @@ class three_bus_PN(nn.Cell):
             raise ValueError(f"{dynamic.type} type on NN not implemented")
 
         if algebraic.type == "fnn":
-            self.Z = fnn(
+            self.z_net = Fnn(
                 algebraic.layer_size,
                 algebraic.activation,
                 algebraic.initializer,
@@ -95,7 +98,7 @@ class three_bus_PN(nn.Cell):
                 output_transform=alg_out_transform
             )
         elif algebraic.type == "attention":
-            self.Z = attention(
+            self.z_net = Attention(
                 algebraic.layer_size,
                 algebraic.activation,
                 algebraic.initializer,
@@ -106,7 +109,7 @@ class three_bus_PN(nn.Cell):
                 output_transform=alg_out_transform
             )
         elif algebraic.type == "Conv1D":
-            self.Z = Conv1D(
+            self.z_net = Conv1D(
                 algebraic.layer_size,
                 algebraic.activation,
                 dropout_rate=algebraic.dropout_rate,
@@ -119,19 +122,20 @@ class three_bus_PN(nn.Cell):
             raise ValueError(f"{algebraic.type} type on NN not implemented")
 
     def construct(self, inputs):
+        """construct for ThreeBusPN"""
         if self.stacked:
-            Y0 = self.Y[0](inputs)
-            Y1 = self.Y[1](inputs)
-            Y2 = self.Y[2](inputs)
-            Y3 = self.Y[3](inputs)
+            y0 = self.y_net[0](inputs)
+            y1 = self.y_net[1](inputs)
+            y2 = self.y_net[2](inputs)
+            y3 = self.y_net[3](inputs)
         else:
-            dim_out = self.num_IRK_stages + 1
-            Y = inputs
-            for layer in self.Y:
-                Y = layer(Y)
-            Y0 = Y[..., :dim_out]
-            Y1 = Y[..., dim_out:2 * dim_out]
-            Y2 = Y[..., 2 * dim_out:3 * dim_out]
-            Y3 = Y[..., 3 * dim_out:4 * dim_out]
-        Z = self.Z(inputs)
-        return Y0, Y1, Y2, Y3, Z
+            dim_out = self.num_irk_stages + 1
+            y = inputs
+            for layer in self.y_net:
+                y = layer(y)
+            y0 = y[..., :dim_out]
+            y1 = y[..., dim_out:2 * dim_out]
+            y2 = y[..., 2 * dim_out:3 * dim_out]
+            y3 = y[..., 3 * dim_out:4 * dim_out]
+        z = self.z_net(inputs)
+        return y0, y1, y2, y3, z

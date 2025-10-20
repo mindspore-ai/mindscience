@@ -26,7 +26,7 @@ from mindspore import context
 from mindspore.communication import init
 
 from src.data import load_and_preprocess_real_data
-from src.model import Prob_DeepONet
+from src.model import ProbDeepONet
 from src.trainer import create_trainer
 from src.utils import load_config
 
@@ -79,7 +79,7 @@ def train(args_, logger_):
         "activation": activation,
     }
 
-    model = Prob_DeepONet(
+    model = ProbDeepONet(
         branch=branch_config, trunk=trunk_config, use_bias=model_config["use_bias"]
     )
 

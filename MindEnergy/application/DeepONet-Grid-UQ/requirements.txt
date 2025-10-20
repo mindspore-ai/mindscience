@@ -16,4 +16,4 @@ seaborn>=0.11.0
 
 # Optional: for Jupyter notebooks
 jupyter>=1.0.0
-ipykernel>=6.0.0 
+ipykernel>=6.0.0

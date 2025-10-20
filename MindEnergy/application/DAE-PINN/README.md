@@ -1,81 +1,104 @@
 # DAE-PINN
 
-## Overview
+## 概述
 
-* **Dynamic Security Assessment Needs of Power Networks**: With the integration of distributed energy resources into power networks, market liberalization, and the adoption of complex communication and control algorithms, the operating conditions and potential fault scenarios of power networks are becoming more diverse, affecting their security. To evaluate the dynamic security of power networks, it is necessary to simulate their dynamic response when facing a single fault. This requires solving a set of nonlinear differential-algebraic equations (DAEs). Traditional explicit integration schemes fail to solve DAEs, and commercial solvers are computationally expensive and memory-intensive, limiting the online deployment of dynamic security assessment.
-* **The Potential and Challenges of Deep Learning in Scientific and Engineering Fields**: Despite the significant success of deep learning in computer vision and natural language processing, its application in learning scientific and engineering dynamic systems is limited. This is due to the high cost of data collection and the lack of robustness and generalization ability of most traditional deep learning methods when data is limited.
+* **电力网络动态安全评估需求** ：随着电力网络中分布式能源资源的整合、市场自由化以及复杂通信和控制算法的采用，电力网络的运行条件和潜在故障场景变得更加多样化，影响其安全性。为了评估电力网络的动态安全性，需要模拟其在面对单一故障时的动态响应，这需要求解一组非线性微分代数方程（DAE），而传统显式积分方案在求解 DAE 时会失败，商业求解器计算成本高、内存需求大，限制了动态安全评估的在线部署。
+* **深度学习在科学和工程领域的潜力与挑战** ：尽管深度学习在计算机视觉和自然语言处理等领域取得了巨大成功，但在学习科学和工程动态系统方面应用有限，因为数据收集成本高昂，且大多数传统深度学习方法在数据量有限的情况下缺乏鲁棒性和泛化能力。
 
-## How It Works
+## 工作原理
 
-* The DAE-PINNs framework combines an implicit Runge-Kutta time-stepping scheme (designed specifically for solving DAEs) with physics-informed neural networks (PINNs). During the time-stepping process, assuming integration has reached $(t_n, y_n, z_n)$, the goal is to advance to $(t_{n+1}, y_{n+1}, z_{n+1})$. After applying the implicit Runge-Kutta scheme, a series of equations are obtained, including update formulas for internal stages and final states.
-* The neural network is constrained to satisfy the DAE through a penalty method. During training, the residual of the DAE is used as part of the loss function. This enables the network to not only fit the data but also satisfy the DAE equations described by physical laws during the learning process, thereby incorporating physical information into the learning process of the neural network.
+* DAE-PINNs 框架结合了隐式龙格 - 库塔时间步进方案（专为求解 DAE 设计）和物理信息神经网络（PINN）。在时间步进过程中，假设已积分至 $(t_n, y_n, z_n)$，目标是推进至 $(t_{n+1}, y_{n+1}, z_{n+1})$，应用隐式龙格 - 库塔方案后，得到一系列方程，包括内部阶段的更新公式和最终状态的更新公式。
+* 通过惩罚方法强制神经网络满足 DAE 作为近似硬约束。在训练过程中，将 DAE 的残差作为损失函数的一部分，使得网络在学习过程中不仅拟合数据，还能满足物理定律所描述的 DAE 方程，从而将物理信息融入到神经网络的学习过程中。
 
-## Method Details
+## 方法细节
 
-* **Problem Setup**: The DAE is given in semi-explicit form, including dynamic states y and algebraic variables z, as well as f describing the differential equations and g describing the algebraic equations. It is assumed that f and g are sufficiently differentiable and that the DAE has an index of 1, i.e., the Jacobian matrix g_z is invertible and bounded near the exact solution. This ensures that the algebraic equations have a unique local solution $z = G(y)$, allowing the DAE to be transformed into a system of ordinary differential equations.
-* **Network Structure**: Similar to standard PINNs, DAE-PINNs typically consist of an input layer, multiple hidden layers, and an output layer. The input layer receives information such as time and dynamic states, the hidden layers extract and transform features through nonlinear activation functions, and the output layer predicts the values of algebraic variables.
-* **Loss Function**: The loss function consists of two parts. One part is the data loss, used to fit data from known points such as initial and boundary conditions. The other part is the physics loss, which is the residual loss of the DAE. By automatically differentiating the network's outputs with respect to time and state variables, the residual of the DAE equation is obtained and used as part of the physics loss. Optimizing these two parts of the loss function enables the network to both fit the data and satisfy the physical equations.
+* **问题设置** ：DAE 以半显式形式给出，包括动态状态 y 和代数变量 z，以及描述微分方程的 f 和代数方程的 g。假设 f 和 g 具有足够高的可微性，并且 DAE 的索引为 1，即雅可比矩阵 g_z 的逆存在且在精确解附近有界，这使得代数方程在局部有唯一解 $z = G(y)$，从而 DAE 可以转化为普通微分方程系统。
+* **网络结构** ：与标准的 PINN 类似，DAE-PINNs 通常由输入层、多个隐藏层和输出层组成。输入层接收时间和动态状态等信息，隐藏层通过非线性激活函数进行特征提取和转换，输出层预测代数变量的值。
+* **损失函数** ：损失函数由两部分组成，一部分是数据损失，用于拟合初始条件、边界条件等已知点的数据；另一部分是物理损失，即 DAE 的残差损失，通过自动微分计算网络输出对时间和状态变量的导数，代入 DAE 方程得到残差，并将其作为物理损失的一部分。通过优化这两个部分的损失函数，使得网络既能拟合数据，又能满足物理方程。
 
-![model](./images/model.png)
+<p align = "center">
+<img src="images/model.png" height="300" />
+</p>
 
-As shown in the figure above, the network structure of DAE-PINN differs from traditional neural networks in that it incorporates physical information. By constructing a specific loss function, the network not only fits the data during the learning process but also satisfies the DAE equations described by physical laws. This enhances the accuracy and generalization ability of the model. The overall network architecture includes two networks that separately process dynamic states and algebraic states. The network inputs include time information and dynamic state information, and the outputs are predictions of dynamic states and algebraic variables. For example, in the case of a power network, the network outputs predictions of dynamic states and algebraic variables to simulate the dynamic behavior of the power network. The network supports three types of backbones: `fnn`, `attention`, and `conv1d`. `fnn` is a multi-layer perceptron network, `attention` is a FFN network adopting a transformer-like attention mechanism, and `conv1d` is a FFN network utilizing `Conv1D`.
+[DAE-PINN](https://arxiv.org/abs/2109.04304)的网络结构如上图。
 
-## Advantages and Contributions
+与传统神经网络不同，DAE-PINN 在网络结构中融入了物理信息，通过构造特定的损失函数，使网络在学习过程中不仅拟合数据，还能满足物理定律所描述的 DAE 方程，从而提高了模型的准确性和泛化能力。整体的网络架构如上，分为两个网络分别处理动态状态和代数状态，网络的输入是包括时间信息和动态状态信息，网络的输出是对动态状态和代数状态的预测值，具体来说，会输出动态状态 y 和代数变量 z 的预测结果，如在电力网络案例中，输出动态状态和代数变量的预测以实现对电力网络动态行为的模拟。网络支持使用`fnn`、`attention`、`conv1d`3种backbone。`fnn`为多层感知机网络，`attention`为采用类似transformer attention形式的FFN网络，`conv1d`为使用了`Conv1D`的FFN网络。
 
-* **Advantages**: DAE-PINNs can effectively learn and simulate the solution trajectories of general power systems with a certain degree of stiffness. The generated simulations are suitable for long-time DAE simulations, filling the gap in deep learning methods for handling stiff dynamics. This provides a new efficient method for solving DAE problems in complex engineering systems.
-* **Contributions**: Through a three-node power network case, the authors have verified the ability of DAE-PINN to quickly learn the mapping from initial condition distributions to solution trajectories and to simulate DAEs over long periods. This demonstrates its effectiveness and accuracy, offering a potential online tool for power system dynamic security assessment.
+## 优势与贡献
 
-## Getting Started
+* **优势** ：DAE-PINNs 能够有效地学习和模拟具有一定程度刚性的通用电力系统的解轨迹，生成的模拟适用于长时间范围的 DAE 模拟，填补了深度学习方法在处理刚性动力学方面的空白，为解决复杂工程系统中的 DAE 问题提供了一种新的高效方法。
+* **贡献** ：作者通过三节点电力网络的案例，验证了 DAE-PINN 在短时间内学习初始条件分布到解轨迹的映射以及长时间模拟 DAE 的能力，展示了其有效性和准确性，为电力系统动态安全评估提供了一种潜在的在线工具。
 
-### Training Method One: Calling the `train.py` Script in the Command Line
+## 快速开始
+
+### 准备数据集
+
+从[数据下载地址](https://download.mindspore.cn/mindscience/mindenergy/dataset/applications/DAE-PINN/)获取数据集，并将其解压到`DAE-PINN/data`目录下，数据集目录结构如下：
+
+```shell
+DAE-PINN/data/
+├── IRK_weights
+│   ├── Butcher_IRK100.txt
+│   ├── Gauss-Legendre-tableau.npz
+│   ├── RK-3-8-tableau.npz
+│   └── RK-4-tableau.npz
+└── data.npz
+```
+
+### 训练方式一：在命令行中调用`train.py`脚本
 
 ```shell
 python -u train.py --config_file ./configs/config.yaml --device_target Ascend --device_id 1 --mode PYNATIVE
 ```
 
-Here,
+其中，
 
-`--config_file` indicates the path to the configuration file, with a default value of './configs/vit.yaml';
+`--config_file`表示配置文件的路径，默认值'./configs/vit.yaml'；
 
-`--device_target` indicates the type of computing platform, which can be 'Ascend' or 'CPU', with a default value of 'Ascend';
+`--device_target`表示使用的计算平台类型，可以选择'Ascend'或'CPU'，默认值'Ascend'；
 
-`--device_id` indicates the number of the computing card to be used, which can be filled in according to actual conditions, with a default value of 1;
+`--device_id`表示使用的计算卡编号，可按照实际情况填写，默认值 1；
 
-`--mode` indicates the running mode, 'GRAPH' for static graph mode and 'PYNATIVE' for dynamic graph mode, with a default value of 'PYNATIVE'.
+`--mode`表示运行的模式，'GRAPH'表示静态图模式, 'PYNATIVE'表示动态图模式，默认值'PYNATIVE'。
 
-### Training Method Two: Running Jupyter Notebook
+### 训练方式二：运行 Jupyter Notebook
 
-You can use the [Jupyter Notebook](./DAE-PINN.ipynb) to run the training and validation code line by line.
+您可以使用[Jupyter Notebook](./DAE-PINN.ipynb)逐行运行训练和验证代码。
 
-## Result Presentation
+## 结果展示
 
-The loss curve during training is shown in the figure below:
+训练的loss曲线如下图：
+<p align = "center">
+<img src="images/loss.png" height="400" />
+</p>
 
-![loss](images/loss.png)
+网络对于4个动态和1个代数变量预测的L2相对损失如下图:
+<p align = "center">
+<img src="images/L2relative_error_0.png" height="200" />
+<img src="images/L2relative_error_1.png" height="200" />
+</p>
+<p align = "center">
+<img src="images/L2relative_error_2.png" height="200" />
+<img src="images/L2relative_error_3.png" height="200" />
+<img src="images/L2relative_error_4.png" height="200" />
+</p>
 
-The L2 relative loss predicted by the network for 4 dynamic and 1 algebraic variable is shown in the following figure:
-![dynamic variable0 error image](./images/L2relative_error_0.png)
-![dynamic variable1 error image](./images/L2relative_error_1.png)
-![dynamic variable2 error image](./images/L2relative_error_2.png)
-![dynamic variable3 error image](./images/L2relative_error_3.png)
-![algebraic variable error image](./images/L2relative_error_4.png)
+## 性能
 
-## Performance
+|     参数      |                       指标                        |
+| :-----------: | :-----------------------------------------------: |
+|   硬件资源    |                   Atlas 800T A2                   |
+| MindSpore版本 |                      >=2.5.0                      |
+|    数据集     |                     HyperCube                     |
+|    优化器     |                       Adam                        |
+|   训练参数    | batch_size=1048, steps_per_epoch=6, epochs=30000 |
+|配置参数       |        [config.yaml](./configs/config.yaml)      |
+|    参数量     |                        7e4                        |
+| 训练损失(MSE) |                       5e-3                        |
+| 验证损失(MSE) |                       5e-3                        |
+| 速度(ms/step) |                        140                        |
 
-| Parameter | Metric |
-| :--------: | :-----------------------------------------------: |
-| Hardware Resources | Atlas 800T A2 |
-| MindSpore Version | >=2.5.0 |
-| Dataset | HyperCube |
-| Number of Parameters | 6e4 |
-| Training Parameters | batch_size=1048, steps_per_epoch=6, epochs=30000 |
-| Optimizer | Adam |
-|Config   |  [config.yaml](./configs/config.yaml) |
-| Training Loss (MSE) | 5e-3 |
-| Validation Loss (MSE) | 5e-3 |
-| Speed (ms/step) | 140 |
-
-## Contributors
+## 贡献者
 
 gitee id: [Brian-K](https://gitee.com/b_rookie)
 

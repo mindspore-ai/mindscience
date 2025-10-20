@@ -12,13 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-# pylint: disable-all
-from functools import wraps
+"""utils for DAE-PINN"""
 
 import numpy as np
 
-
-class dotdict(dict):
+class DotDict(dict):
     """
     dot.notation access to dictionary attributes.
     """
@@ -39,8 +37,9 @@ def list_to_str(nums, precision=3):
 
 
 def make_config(model_params):
-    dynamic = dotdict()
-    dynamic.num_IRK_stages = model_params['num_IRK_stages']
+    """make config for DAE-PINN training"""
+    dynamic = DotDict()
+    dynamic.num_irk_stages = model_params['num_irk_stages']
     dynamic.state_dim = 4
     dynamic.activation = model_params['dyn_activation']
     dynamic.initializer = "Glorot normal"
@@ -50,9 +49,9 @@ def make_config(model_params):
     dynamic.type = model_params['dyn_type']
 
     if model_params['unstacked']:
-        dim_out = dynamic.state_dim * (dynamic.num_IRK_stages + 1)
+        dim_out = dynamic.state_dim * (dynamic.num_irk_stages + 1)
     else:
-        dim_out = dynamic.num_IRK_stages + 1
+        dim_out = dynamic.num_irk_stages + 1
 
     if model_params['use_input_layer']:
         dynamic.layer_size = [dynamic.state_dim * 5] + \
@@ -61,9 +60,9 @@ def make_config(model_params):
         dynamic.layer_size = [dynamic.state_dim] + \
             [model_params['dyn_width']] * model_params['dyn_depth'] + [dim_out]
 
-    algebraic = dotdict()
-    algebraic.num_IRK_stages = model_params['num_IRK_stages']
-    dim_out_alg = algebraic.num_IRK_stages + 1
+    algebraic = DotDict()
+    algebraic.num_irk_stages = model_params['num_irk_stages']
+    dim_out_alg = algebraic.num_irk_stages + 1
     algebraic.layer_size = [dynamic.state_dim] + \
         [model_params['alg_width']] * model_params['alg_depth'] + [dim_out_alg]
     algebraic.activation = model_params['alg_activation']
