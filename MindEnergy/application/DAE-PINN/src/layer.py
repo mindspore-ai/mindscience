@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-# pylint: disable-all
+"""layer modules for DAE-PINN network"""
+
 import numpy as np
 import mindspore as ms
-from mindspore import ops, nn, Tensor
+from mindspore import ops, nn, Tensor, Parameter
 from mindspore.common.initializer import initializer
 
 
-class fnn(nn.Cell):
+class Fnn(nn.Cell):
     """
     feed-forward neural network.
     """
@@ -63,7 +64,7 @@ class fnn(nn.Cell):
         print(self.net)
 
     def construct(self, y):
-        """
+        r"""
         FNN forward pass.
         Args:
             :input (Tensor): \in [B, d_in]
@@ -98,17 +99,19 @@ class fnn(nn.Cell):
             m.gamma.data.fill(1.0)
 
     def build_standard(self):
+        """build standard module"""
         # FC - activation
         # input layer
         self.net.append(
             nn.Dense(self.layer_size[0], self.layer_size[1], has_bias=self.use_bias))
         for i in range(1, len(self.layer_size)-1):
             self.net.append(nn.Dense(self.layer_size[i], self.layer_size[i+1],
-                            has_bias=self.use_bias, activation=ops.Sin()))
+                                     has_bias=self.use_bias, activation=ops.Sin()))
             if self.dropout_rate > 0.0:
                 self.net.append(nn.Dropout(keep_prob=1 - self.dropout_rate))
 
     def build_before(self):
+        """build before module"""
         # FC - BN or LN - activation
         self.net.append(
             nn.Dense(self.layer_size[0], self.layer_size[1], has_bias=self.use_bias))
@@ -118,14 +121,15 @@ class fnn(nn.Cell):
             elif self.layer_normalization is not None:
                 self.net.append(nn.LayerNorm((self.layer_size[i],)))
             self.net.append(nn.Dense(self.layer_size[i], self.layer_size[i+1],
-                            has_bias=self.use_bias, activation=ops.Sin()))
+                                     has_bias=self.use_bias, activation=ops.Sin()))
             if self.dropout_rate > 0.0:
                 self.net.append(nn.Dropout(keep_prob=1 - self.dropout_rate))
 
     def build_after(self):
+        """build after module"""
         # FC - activation - BN or LN
         self.net.append(nn.Dense(self.layer_size[0], self.layer_size[1],
-                        has_bias=self.use_bias, activation=ops.Sin()))
+                                 has_bias=self.use_bias, activation=ops.Sin()))
         for i in range(1, len(self.layer_size)-1):
             if self.batch_normalization is not None:
                 self.net.append(nn.BatchNorm1d(self.layer_size[i]))
@@ -138,9 +142,6 @@ class fnn(nn.Cell):
 
 
 class Sin(nn.Cell):
-    def __init__(self, ):
-        super().__init__()
-
     def construct(self, x):
         return ops.sin(x)
 
@@ -182,7 +183,7 @@ class Conv1D(nn.Cell):
         print(self.net)
 
     def construct(self, y):
-        """
+        r"""
         FNN forward pass
         Args:
             :y (Tensor): \in [B, d_in]
@@ -198,6 +199,7 @@ class Conv1D(nn.Cell):
         return y
 
     def build_standard(self):
+        """build standard module"""
         # FC - activation
         # input layer
         self.net.append(
@@ -212,6 +214,7 @@ class Conv1D(nn.Cell):
         self.net.append(DenseConv1D(self.layer_size[-2], self.layer_size[-1]))
 
     def build_before(self):
+        """build before module"""
         # FC - BN or LN - activation
         self.net.append(DenseConv1D(self.layer_size[0], self.layer_size[1]))
         for i in range(1, len(self.layer_size)-1):
@@ -225,6 +228,7 @@ class Conv1D(nn.Cell):
                 self.net.append(nn.Dropout(keep_prob=1 - self.dropout_rate))
 
     def build_after(self):
+        """build after module"""
         # FC - activation - BN or LN
         self.net.append(
             DenseConv1D(self.layer_size[0], self.layer_size[1], activation=ops.Sin()))
@@ -246,7 +250,7 @@ class Conv1D(nn.Cell):
         self.net.append(DenseConv1D(self.layer_size[-2], self.layer_size[-1]))
 
 
-class attention(nn.Cell):
+class Attention(nn.Cell):
     """
     feed-forward neural network with attention-like architecture.
     """
@@ -279,19 +283,19 @@ class attention(nn.Cell):
         if (self.batch_normalization is None) and (self.layer_normalization is None):
             self.build_standard()
         elif self.batch_normalization == "before":
-            self.build_beforeBN()
+            self.build_before_bn()
         elif self.layer_normalization == "before":
-            self.build_beforeLN()
+            self.build_before_ln()
         elif self.batch_normalization == "after":
-            self.build_afterBN()
+            self.build_after_bn()
         elif self.layer_normalization == "after":
-            self.build_afterLN()
+            self.build_after_ln()
         else:
             raise ValueError("Neural net was not built")
         # initialize parameters
         self.net.apply(self._init_weights)
-        self.U.apply(self._init_weights)
-        self.V.apply(self._init_weights)
+        self.u_net.apply(self._init_weights)
+        self.v_net.apply(self._init_weights)
 
     def _init_weights(self, m):
         """
@@ -313,7 +317,7 @@ class attention(nn.Cell):
             m.gamma.data.fill(1.0)
 
     def construct(self, y):
-        """
+        r"""
         FNN forward pass
         Args:
             :y (Tensor): \in [B, d_in]
@@ -322,8 +326,8 @@ class attention(nn.Cell):
         """
         if self.input_transform is not None:
             y = self.input_transform(y)
-        u = self.U(y)
-        v = self.V(y)
+        u = self.u_net(y)
+        v = self.v_net(y)
 
         for i in range(len(self.net)-1):
             y = self.net[i](y)
@@ -334,15 +338,15 @@ class attention(nn.Cell):
         return y
 
     def build_standard(self):
-        # build U and V nets
-        self.U = nn.SequentialCell([
+        """build standard U and V nets"""
+        self.u_net = nn.SequentialCell([
             nn.Dense(self.layer_size[0],
                      self.layer_size[1], has_bias=self.use_bias),
             Sin(),
             nn.Dropout(
                 keep_prob=1 - self.dropout_rate) if self.dropout_rate > 0 else nn.Identity()
         ])
-        self.V = nn.SequentialCell([
+        self.v_net = nn.SequentialCell([
             nn.Dense(self.layer_size[0],
                      self.layer_size[1], has_bias=self.use_bias),
             Sin(),
@@ -352,17 +356,17 @@ class attention(nn.Cell):
         self.net = nn.CellList()
         for k in range(len(self.layer_size)-2):
             self.net.append(nn.Dense(self.layer_size[k], self.layer_size[k+1],
-                            has_bias=self.use_bias, activation=ops.Sin()))
+                                     has_bias=self.use_bias, activation=ops.Sin()))
             if self.dropout_rate > 0.0:
                 self.net.append(nn.Dropout(keep_prob=1 - self.dropout_rate))
         # output layer
         self.net.append(
             nn.Dense(self.layer_size[-2], self.layer_size[-1], has_bias=self.use_bias))
 
-    def build_beforeBN(self):
+    def build_before_bn(self):
+        """build U and V nets with before batch norm"""
         # FC -BN - activation
-        # build U and V nets
-        self.U = nn.SequentialCell([
+        self.u_net = nn.SequentialCell([
             nn.Dense(self.layer_size[0],
                      self.layer_size[1], has_bias=self.use_bias),
             nn.BatchNorm1d(self.layer_size[1]),
@@ -370,7 +374,7 @@ class attention(nn.Cell):
             nn.Dropout(
                 keep_prob=1 - self.dropout_rate) if self.dropout_rate > 0 else nn.Identity()
         ])
-        self.V = nn.SequentialCell([
+        self.v_net = nn.SequentialCell([
             nn.Dense(self.layer_size[0],
                      self.layer_size[1], has_bias=self.use_bias),
             nn.BatchNorm1d(self.layer_size[1]),
@@ -390,10 +394,10 @@ class attention(nn.Cell):
         self.net.append(
             nn.Dense(self.layer_size[-2], self.layer_size[-1], has_bias=self.use_bias))
 
-    def build_afterBN(self):
+    def build_after_bn(self):
+        """build U and V nets with after batch norm"""
         # FC - activation -BN
-        # build U and V nets
-        self.U = nn.SequentialCell([
+        self.u_net = nn.SequentialCell([
             nn.Dense(self.layer_size[0],
                      self.layer_size[1], has_bias=self.use_bias),
             Sin(),
@@ -401,7 +405,7 @@ class attention(nn.Cell):
             nn.Dropout(
                 keep_prob=1 - self.dropout_rate) if self.dropout_rate > 0 else nn.Identity()
         ])
-        self.V = nn.SequentialCell([
+        self.v_net = nn.SequentialCell([
             nn.Dense(self.layer_size[0],
                      self.layer_size[1], has_bias=self.use_bias),
             Sin(),
@@ -412,7 +416,7 @@ class attention(nn.Cell):
         self.net = nn.CellList()
         for k in range(len(self.layer_size)-2):
             self.net.append(nn.Dense(self.layer_size[k], self.layer_size[k+1],
-                            has_bias=self.use_bias, activation=ops.Sin()))
+                                     has_bias=self.use_bias, activation=ops.Sin()))
             self.net.append(nn.BatchNorm1d(self.layer_size[k+1]))
             if self.dropout_rate > 0.0:
                 self.net.append(nn.Dropout(keep_prob=1 - self.dropout_rate))
@@ -420,10 +424,10 @@ class attention(nn.Cell):
         self.net.append(
             nn.Dense(self.layer_size[-2], self.layer_size[-1], has_bias=self.use_bias))
 
-    def build_beforeLN(self):
+    def build_before_ln(self):
+        """build U and V nets with before layer norm"""
         # FC - LN - activation
-        # build U and V nets
-        self.U = nn.SequentialCell([
+        self.u_net = nn.SequentialCell([
             nn.Dense(self.layer_size[0],
                      self.layer_size[1], has_bias=self.use_bias),
             nn.LayerNorm((self.layer_size[1],)),
@@ -431,7 +435,7 @@ class attention(nn.Cell):
             nn.Dropout(
                 keep_prob=1 - self.dropout_rate) if self.dropout_rate > 0 else nn.Identity()
         ])
-        self.V = nn.SequentialCell([
+        self.v_net = nn.SequentialCell([
             nn.Dense(self.layer_size[0],
                      self.layer_size[1], has_bias=self.use_bias),
             nn.LayerNorm((self.layer_size[1],)),
@@ -451,10 +455,10 @@ class attention(nn.Cell):
         self.net.append(
             nn.Dense(self.layer_size[-2], self.layer_size[-1], has_bias=self.use_bias))
 
-    def build_afterLN(self):
+    def build_after_ln(self):
+        """build U and V nets with after layer norm"""
         # FC - activation - LN
-        # build U and V nets
-        self.U = nn.SequentialCell([
+        self.u_net = nn.SequentialCell([
             nn.Dense(self.layer_size[0],
                      self.layer_size[1], has_bias=self.use_bias),
             Sin(),
@@ -462,7 +466,7 @@ class attention(nn.Cell):
             nn.Dropout(
                 keep_prob=1 - self.dropout_rate) if self.dropout_rate > 0 else nn.Identity()
         ])
-        self.V = nn.SequentialCell([
+        self.v_net = nn.SequentialCell([
             nn.Dense(self.layer_size[0],
                      self.layer_size[1], has_bias=self.use_bias),
             Sin(),
@@ -473,7 +477,7 @@ class attention(nn.Cell):
         self.net = nn.CellList()
         for k in range(len(self.layer_size)-2):
             self.net.append(nn.Dense(self.layer_size[k], self.layer_size[k+1],
-                            has_bias=self.use_bias, activation=ops.Sin()))
+                                     has_bias=self.use_bias, activation=ops.Sin()))
             self.net.append(nn.LayerNorm((self.layer_size[k+1],)))
             if self.dropout_rate > 0.0:
                 self.net.append(nn.Dropout(keep_prob=1 - self.dropout_rate))

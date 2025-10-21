@@ -92,7 +92,7 @@ python train.py
 多卡：
 
 ```bash
-msrun -worker_num 8 python train.py --distributed 1
+msrun --worker_num 8 --local_worker_num 8 --log_dir msrun_log python train.py --distributed 1
 ```
 
 #### 输出文件

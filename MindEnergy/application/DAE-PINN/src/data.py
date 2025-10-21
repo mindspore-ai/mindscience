@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-# pylint: disable-all
+"""get dataset for DAE-PINN network"""
+
 import os
 import numpy as np
 from mindspore import dataset as ds

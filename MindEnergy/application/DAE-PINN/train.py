@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-# pylint: disable-all
+"""training DAE-PINN"""
+
 import time
 import os
 import argparse
@@ -25,7 +26,7 @@ import numpy as np
 from mindscience.utils import load_yaml_config
 
 from src.utils import make_config
-from src.model import three_bus_PN
+from src.model import ThreeBusPN
 from src.data import get_dataset
 from src.trainer import DaeTrainer
 
@@ -38,7 +39,7 @@ def main():
     os.makedirs(summary_dir, exist_ok=True)
 
     dynamic, algebraic = make_config(model_params)
-    net = three_bus_PN(
+    net = ThreeBusPN(
         dynamic,
         algebraic,
         use_input_layer=model_params['use_input_layer'],
@@ -47,15 +48,16 @@ def main():
 
     train_dataset, test_dataset, val_dataset = get_dataset(data_params)
 
-    num_IRK_stages = model_params['num_IRK_stages']
+    num_irk_stages = model_params['num_irk_stages']
     # collecting RK data
     data_dir = data_params['data_dir']
-    irk_data = np.loadtxt(os.path.join(data_dir, 'IRK_weights', f'Butcher_IRK{num_IRK_stages}.txt'), ndmin=2, dtype=np.float32)
-    IRK_weights = np.reshape(
-        irk_data[0:num_IRK_stages**2+num_IRK_stages], (num_IRK_stages+1, num_IRK_stages))
-    IRK_weights = Tensor(IRK_weights)
-    IRK_times = irk_data[num_IRK_stages**2 + num_IRK_stages:]
-    trainer = DaeTrainer(net, IRK_weights=IRK_weights, IRK_times=IRK_times, h=ode_params['h'],
+    irk_data = np.loadtxt(os.path.join(data_dir, 'IRK_weights', f'Butcher_IRK{num_irk_stages}.txt'),
+                          ndmin=2, dtype=np.float32)
+    irk_weights = np.reshape(
+        irk_data[0:num_irk_stages**2+num_irk_stages], (num_irk_stages+1, num_irk_stages))
+    irk_weights = Tensor(irk_weights)
+    irk_times = irk_data[num_irk_stages**2 + num_irk_stages:]
+    trainer = DaeTrainer(net, irk_weights=irk_weights, irk_times=irk_times, h=ode_params['h'],
                          dyn_weight=model_params['dyn_weight'], alg_weight=model_params['alg_weight'])
 
     optimizer = optim.Adam(net.trainable_params(), lr=float(optim_params['lr']))

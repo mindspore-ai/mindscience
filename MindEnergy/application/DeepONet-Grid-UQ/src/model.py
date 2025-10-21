@@ -42,9 +42,9 @@ class MLP(nn.Cell):
         return self.net(x)
 
 
-class modified_MLP(nn.Cell):
+class ModifiedMLP(nn.Cell):
     def __init__(self, layer_size: list, activation: str) -> None:
-        super(modified_MLP, self).__init__()
+        super(ModifiedMLP, self).__init__()
         layers = []
         for k in range(len(layer_size) - 1):
             layers.append(nn.Dense(layer_size[k], layer_size[k + 1], has_bias=True))
@@ -92,7 +92,7 @@ def get_activation(identifier: str) -> Any:
         "sigmoid": nn.Sigmoid(),
         "leaky": nn.LeakyReLU(),
         "tanh": nn.Tanh(),
-        "sin": sin_act(),
+        "sin": SinAct(),
         "Rrelu": nn.RReLU(),
         "gelu": nn.GELU(),
         "silu": nn.SiLU(),
@@ -100,10 +100,7 @@ def get_activation(identifier: str) -> Any:
     }[identifier]
 
 
-class sin_act(nn.Cell):
-    def __init__(self):
-        super(sin_act, self).__init__()
-
+class SinAct(nn.Cell):
     def construct(self, x: ms.Tensor):
         return mint.sin(x)
 
@@ -116,7 +113,7 @@ class DeepONet(nn.Cell):
         if branch["type"] == "MLP":
             self.branch = MLP(branch["layer_size"][:-2], branch["activation"])
         elif branch["type"] == "modified":
-            self.branch = modified_MLP(branch["layer_size"][:-2], branch["activation"])
+            self.branch = ModifiedMLP(branch["layer_size"][:-2], branch["activation"])
         else:
             raise ValueError(
                 f"Unsupported branch type: {branch['type']}. Supported: 'MLP', 'modified'."
@@ -125,7 +122,7 @@ class DeepONet(nn.Cell):
         if trunk["type"] == "MLP":
             self.trunk = MLP(trunk["layer_size"][:-2], trunk["activation"])
         elif trunk["type"] == "modified":
-            self.trunk = modified_MLP(trunk["layer_size"][:-2], trunk["activation"])
+            self.trunk = ModifiedMLP(trunk["layer_size"][:-2], trunk["activation"])
         else:
             raise ValueError(
                 f"Unsupported trunk type: {trunk['type']}. Supported: 'MLP', 'modified'."
@@ -146,9 +143,9 @@ class DeepONet(nn.Cell):
         raise NotImplementedError("construct method must be implemented by subclasses")
 
 
-class Prob_DeepONet(DeepONet):
+class ProbDeepONet(DeepONet):
     def __init__(self, branch: dict, trunk: dict, use_bias: bool = True) -> None:
-        super(Prob_DeepONet, self).__init__(branch, trunk, use_bias)
+        super(ProbDeepONet, self).__init__(branch, trunk, use_bias)
 
         # Add probabilistic components
         if use_bias:

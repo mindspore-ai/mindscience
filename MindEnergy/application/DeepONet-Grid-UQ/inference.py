@@ -33,11 +33,11 @@ from src.data import (
     trajectory_prediction,
 )
 from src.metrics import MetricsCalculator
-from src.model import Prob_DeepONet
+from src.model import ProbDeepONet
 from src.utils import load_config, load_trained_model, plot_pred_uq
 
 
-def inference_on_dataset(model: Prob_DeepONet,
+def inference_on_dataset(model: ProbDeepONet,
                          dataset_path: str,
                          output_dir: str = "inference_results") -> None:
     """Perform inference on entire dataset"""
@@ -132,7 +132,7 @@ def inference(args_, logger_):
         "activation": activation,
     }
 
-    model = Prob_DeepONet(
+    model = ProbDeepONet(
         branch=branch_config, trunk=trunk_config, use_bias=model_config["use_bias"]
     )
     model = load_trained_model(model, args_.checkpoint)

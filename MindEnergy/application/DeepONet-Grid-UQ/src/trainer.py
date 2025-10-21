@@ -281,7 +281,7 @@ class DeepONetTrainer:
             if verbose:
                 # Negative log likelihood loss can be negative
                 logger.info(
-                    "Epoch %d/%d:  Train-Loss: %.6f Best-Loss: %.6f", epoch+1, epoch,
+                    "Epoch %d/%d:  Train-Loss: %.6f Best-Loss: %.6f", epoch+1, epochs,
                     float(avg_epoch_loss), float(best['prob loss'])
                 )
         return logger_hist
