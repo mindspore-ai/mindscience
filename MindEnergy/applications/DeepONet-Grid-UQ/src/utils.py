@@ -80,7 +80,7 @@ def plot_pred_uq(sensors, u, y, s, s_mean, s_std,
             ha="right",
             va="bottom",
             fontsize=9,
-            bbox=dict(boxstyle="round", facecolor="white", alpha=0.6),
+            bbox={"boxstyle": "round", "facecolor": "white", "alpha": 0.6}
         )
 
     if save_path:
@@ -328,7 +328,7 @@ def load_training_history(history_file_path: str) -> Dict:
         print(f"History file not found: {history_file_path}")
         return {}
 
-    with open(history_file_path, "r") as f:
+    with open(history_file_path, "r", encoding="utf-8") as f:
         history = json.load(f)
 
     return history
@@ -396,7 +396,7 @@ def extract_log(log_file: str, history_file: str):
         # Parse and print basic statistics
         losses, _, _ = parse_loss_log(log_file)
         if losses:
-            print(f"Loss statistics:")
+            print("Loss statistics:")
             print(f"  Total entries: {len(losses)}")
             print(f"  Min loss: {min(losses):.6f}")
             print(f"  Max loss: {max(losses):.6f}")

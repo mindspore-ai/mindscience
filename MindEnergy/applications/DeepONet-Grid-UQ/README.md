@@ -13,9 +13,9 @@
 
 此外，本网络还通过不确定性量化（Uncertainty Quantification）为其方法赋予了在效率与可靠/可信预测之间取得平衡的能力。
 
-原始论文：[DeepONet-grid-UQ: A trustworthy deep operator framework for predicting the power grid's post-fault trajectories](!https://www.sciencedirect.com/science/article/abs/pii/S0925231223002503)
+原始论文：[DeepONet-grid-UQ: A trustworthy deep operator framework for predicting the power grid's post-fault trajectories](https://arxiv.org/pdf/2202.07176)
 
-原始代码仓：[Github Link](!https://github.com/cmoyacal/DeepONet-Grid-UQ)
+原始代码仓：[Github Link](https://github.com/cmoyacal/DeepONet-Grid-UQ)
 
 ### 研究背景与动机
 

@@ -94,7 +94,7 @@ def inference_on_dataset(model: ProbDeepONet,
         }
 
         results_path = os.path.join(output_dir, "inference_results.json")
-        with open(results_path, "w") as f:
+        with open(results_path, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
 
         print(f"Inference results saved to: {results_path}")

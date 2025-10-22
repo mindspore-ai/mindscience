@@ -13,8 +13,9 @@ This work build an efficient DeepONet that
 
 In addition, they also endow their method with the much-needed ability to balance efficiency with reliable/trustworthy predictions via Ucertainty Quantification.
 
-Original Paper : [DeepONet-grid-UQ: A trustworthy deep operator framework for predicting the power grid’s post-fault trajectories](!https://www.sciencedirect.com/science/article/abs/pii/S0925231223002503)
-Original Code on torch: [Github](!https://github.com/cmoyacal/DeepONet-Grid-UQ)
+Original Paper : [DeepONet-grid-UQ: A trustworthy deep operator framework for predicting the power grid’s post-fault trajectories](https://arxiv.org/pdf/2202.07176)
+
+Original Code on torch: [Github](https://github.com/cmoyacal/DeepONet-Grid-UQ)
 
 ### Research Background and Motivation
 

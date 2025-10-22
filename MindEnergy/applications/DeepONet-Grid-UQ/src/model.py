@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""models for DeepONet-Grid-UQ"""
+
 from typing import Any
 
 import mindspore as ms
@@ -21,8 +23,10 @@ from mindspore.common.initializer import XavierNormal, Zero, initializer
 
 
 class MLP(nn.Cell):
+    """MLP module"""
+
     def __init__(self, layer_size: list, activation: str) -> None:
-        super(MLP, self).__init__()
+        super().__init__()
         layers = []
         for k in range(len(layer_size) - 2):
             layers.append(nn.Dense(layer_size[k], layer_size[k + 1], has_bias=True))
@@ -43,24 +47,26 @@ class MLP(nn.Cell):
 
 
 class ModifiedMLP(nn.Cell):
+    """modified MLP module"""
+
     def __init__(self, layer_size: list, activation: str) -> None:
-        super(ModifiedMLP, self).__init__()
+        super().__init__()
         layers = []
         for k in range(len(layer_size) - 1):
             layers.append(nn.Dense(layer_size[k], layer_size[k + 1], has_bias=True))
         self.net = nn.SequentialCell(layers)
 
-        self.U = nn.SequentialCell(
+        self.u_net = nn.SequentialCell(
             [nn.Dense(layer_size[0], layer_size[1], has_bias=True)]
         )
-        self.V = nn.SequentialCell(
+        self.v_net = nn.SequentialCell(
             [nn.Dense(layer_size[0], layer_size[1], has_bias=True)]
         )
         self.activation = get_activation(activation)
 
         self.net.apply(self._init_weights)
-        self.U.apply(self._init_weights)
-        self.V.apply(self._init_weights)
+        self.u_net.apply(self._init_weights)
+        self.v_net.apply(self._init_weights)
 
         self.len = ms.Tensor(len(layer_size) - 1, ms.int32)
         self.ones = ops.OnesLike()
@@ -73,8 +79,8 @@ class ModifiedMLP(nn.Cell):
             m.bias.set_data(initializer(Zero(), m.bias.shape, m.bias.dtype))
 
     def construct(self, x: ms.Tensor):
-        u = self.activation(self.U(x))
-        v = self.activation(self.V(x))
+        u = self.activation(self.u_net(x))
+        v = self.activation(self.v_net(x))
         for k in range(self.len):
             y = self.net[k](x)
             y = self.activation(y)
@@ -109,7 +115,7 @@ class DeepONet(nn.Cell):
     """Base DeepONet class that serves as an interface for different DeepONet implementations."""
 
     def __init__(self, branch: dict, trunk: dict, use_bias: bool = True) -> None:
-        super(DeepONet, self).__init__()
+        super().__init__()
         if branch["type"] == "MLP":
             self.branch = MLP(branch["layer_size"][:-2], branch["activation"])
         elif branch["type"] == "modified":
@@ -144,8 +150,10 @@ class DeepONet(nn.Cell):
 
 
 class ProbDeepONet(DeepONet):
+    """ProbDeepONet inherit from DeepONet"""
+
     def __init__(self, branch: dict, trunk: dict, use_bias: bool = True) -> None:
-        super(ProbDeepONet, self).__init__(branch, trunk, use_bias)
+        super().__init__(branch, trunk, use_bias)
 
         # Add probabilistic components
         if use_bias:

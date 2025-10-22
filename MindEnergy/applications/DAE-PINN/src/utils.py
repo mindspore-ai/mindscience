@@ -32,9 +32,9 @@ def list_to_str(nums, precision=3):
     if nums is None:
         return ""
     if not isinstance(nums, (list, tuple, np.ndarray)):
-        return "{:.{}e}".format(nums, precision)
-    return "[{:s}]".format(", ".join(["{:.{}e}".format(x, precision) for x in nums]))
-
+        return f"{nums:.{precision}e}"
+    result = ", ".join([f"{x:.{precision}e}" for x in nums])
+    return f"[{result}]"
 
 def make_config(model_params):
     """make config for DAE-PINN training"""

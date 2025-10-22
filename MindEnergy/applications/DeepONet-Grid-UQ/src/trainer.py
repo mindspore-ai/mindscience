@@ -22,8 +22,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import mindspore as ms
-import mindspore.nn as nn
-import mindspore.ops as ops
+from mindspore import nn, ops
 from mindspore.dataset import GeneratorDataset
 from mindspore.train.callback import Callback
 
@@ -43,7 +42,7 @@ class CustomCallback(Callback):
     """Custom callback for training monitoring"""
 
     def __init__(self, log_interval: int = 10, eval_interval: int = 100):
-        super(CustomCallback, self).__init__()
+        super().__init__()
         self.log_interval = log_interval
         self.eval_interval = eval_interval
         self.step = 0
@@ -68,7 +67,7 @@ class ProbabilisticLoss(nn.Cell):
     """Negative log likelihood loss for probabilistic DeepONet"""
 
     def __init__(self):
-        super(ProbabilisticLoss, self).__init__()
+        super().__init__()
         self.log = ops.Log()
         self.exp = ops.Exp()
         self.square = ops.Square()
@@ -92,7 +91,7 @@ class MSELoss(nn.Cell):
     """Mean squared error loss"""
 
     def __init__(self):
-        super(MSELoss, self).__init__()
+        super().__init__()
         self.mse = nn.MSELoss()
 
     def construct(self, mean_pred, _, target):
@@ -380,10 +379,8 @@ class DeepONetTrainer:
         calculator = MetricsCalculator()
 
         ci_fractions = []
-        for i in range(len(s_test)):
-            ci_frac = calculator.fraction_in_ci(
-                s_test[i], mean_predictions[i], std_predictions[i]
-            )
+        for test, mean, std in zip(s_test, mean_predictions, std_predictions):
+            ci_frac = calculator.fraction_in_ci(test, mean, std)
             ci_fractions.append(ci_frac)
 
         avg_ci_fraction = np.mean(ci_fractions)
