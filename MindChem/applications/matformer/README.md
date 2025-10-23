@@ -23,7 +23,8 @@
 
 
 ## notebook案例
-详见`matformer_application.ipynb`
+详见`matformer_application.ipynb`  
+提供一个端到端的可直接运行的示例，包含自定义数据集如何构造等。
 
 
 ## 脚本说明
