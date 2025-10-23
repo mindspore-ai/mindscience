@@ -1,0 +1,36 @@
+pred_force: False
+profiling: False
+load_ckpt: False
+load_ckpt_path: "./checkpoints/NequIP_rmd.ckpt"
+save_ckpt: True
+save_ckpt_interval: 200
+save_ckpt_path: "./checkpoints"
+enable_mix_precision: False
+
+model:
+  irreps_embedding_out: 16x0e
+  irreps_conv_out: 64x0o+64x0e+64x1o+64x1e+64x2o+64x2e
+  chemical_embedding_irreps_out: 64x0e
+  num_layers: 5
+  num_type: 4
+  r_max: 4
+  hidden_mul: 64
+
+optimizer:
+  num_epoch: 2                                   # 为快速验证功能，设置较小的epoch数，具体使用时建议调整至800以上
+  eval_steps: 10
+  warmup_steps: 6400
+  learning_rate: 0.01                             # learning rate
+  use_amsgrad: True
+
+data:
+  name: "nequip"
+  path: "./dataset/MD17/npz_data/rmd17_uracil.npz"
+  save_path: "./results"
+  n_train: 950         # number of training data
+  n_val: 50            # number of validation data
+  batch_size: 5        # batch size
+  save_pred: True      # 是否保存预测值
+  save_true: True      # 是否保存真实标签
+  pred_file: "pred.npy"
+  true_file: "true.npy"
