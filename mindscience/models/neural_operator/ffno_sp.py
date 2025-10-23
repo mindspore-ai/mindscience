@@ -19,7 +19,7 @@ import mindspore.common.dtype as mstype
 from mindspore import nn, ops, Tensor, Parameter, ParameterTuple, mint
 from mindspore.common.initializer import XavierNormal, initializer
 from ...common.math import get_grid_1d, get_grid_2d, get_grid_3d
-from ...sciops.fourier import RDFTn, IRDFTn
+from ...sciops import RDFTn, IRDFTn
 
 
 class FeedForward(nn.Cell):

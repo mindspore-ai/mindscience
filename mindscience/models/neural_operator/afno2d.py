@@ -19,7 +19,7 @@ from mindspore import ops, nn, Tensor, Parameter
 from mindspore import dtype as mstype
 from mindspore.common.initializer import initializer, Normal, TruncatedNormal
 from mindspore.nn.probability.distribution import Bernoulli
-from ...sciops.fourier import RDFTn, IRDFTn
+from ...sciops import RDFTn, IRDFTn
 
 
 class DropPath(nn.Cell):

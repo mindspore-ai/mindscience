@@ -6,7 +6,6 @@
 __pycache__/
 *.pyc
 *.so.*
-*.o
 *.out
 *.gch
 build

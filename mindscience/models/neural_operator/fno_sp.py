@@ -21,7 +21,7 @@ from mindspore import nn, ops, Tensor, Parameter, mint
 from mindspore.common.initializer import Zero
 from mindspore.ops import operations as P
 
-from ...sciops.fourier import RDFTn, IRDFTn
+from ...sciops import RDFTn, IRDFTn
 
 
 class SpectralConvDft(nn.Cell):
