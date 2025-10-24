@@ -46,9 +46,7 @@ MindScience套件的核心框架为`MindSpore Science-Core`，`MindSpore Science
 
 - **注意**：`gnn`和`e3nn`库包含了数据接口/网络等，内容较多，作为独立模块统一开发管理更为合理，能对齐业界方式。
 - `MindSpore Science-Core`框架的底层为`speed`加速模块，包含了`sciops`和`distributed`。
-- `sciops`目录包含两部分，区别于MindSpore的ops库，使用方式：`from mindscience import sciops`。
-    - 对接了`speed`模块.so文件的自定义算子接口，对应ccsrc目录，使用AscendC实现了`EvoformerAttn`、`FFT`等底层加速算子，不开源的代码开放.so文件。
-    - Python算子接口为基于Python开发的算子，如自动微分、`FFT`、`Irreps`、`SSM`、`FA`等算子。
+- `sciops`为高性能算子库，提供高性能科学计算算子，如`enisum`、`evoformer_attentino`、`dft`和`fft`等算子。
 - `distributed`为并行加速模块，提供科学计算领域常用的并行接口，包括DP/OP/TP/PP等功能。
 - `gnn`模块包含了图数据接口和常用GNN网络。
 - `pde`模块包含了PINNs网络接口。
@@ -90,12 +88,6 @@ mindscience/
 │   │   ├── elec/               # 通用电磁数据接口
 │   │   ├── earth/              # 通用气象数据接口
 │   │   ├── flow/               # 通用流体数据接口
-│   ├── ccsrc/                  # 底层算子文件
-│   │   ├── api/                # api实现
-│   │   │   ├── python/         # 链接代码
-│   │   │   ├── so/             # 预编译so文件
-│   │   ├── include/            # 预编译so文件
-│   │   ├── CMakeLists.txt      # CMAKE
 │   ├── sciops/                 # 通用算子库（加速算子、融合算子等）
 │   │   ├── einsum.py           # einsum实现
 │   │   ├── differential.py     # gradient, divergence
