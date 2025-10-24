@@ -21,7 +21,7 @@ from mindspore import nn, ops, Tensor, mint
 from mindspore.common.initializer import Zero
 from mindspore.ops import operations as P
 
-from ..utils.check_func import check_param_no_greater, check_param_value
+from ...utils.check_func import check_param_no_greater, check_param_value
 
 
 class MyRoll(nn.Cell):

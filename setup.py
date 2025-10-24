@@ -48,8 +48,15 @@ package_data = {
         'bin/*',
         'lib/*.so*',
         'lib/*.a',
-        'include/*'
-        'build_info.txt'
+        'include/*',
+        'build_info.txt',
+        'sciops/evoformer_attention/evoformer_attention.cpp',
+        'sciops/evoformer_attention/binary/*/*/*',
+        'sciops/evoformer_attention/binary/*/*/*/*',
+        'sciops/evoformer_attention/binary/*/*/*/*/*',
+        'sciops/evoformer_attention/binary/*/*/*/*/*/*',
+        'sciops/evoformer_attention/binary/*/*/*/*/*/*/*',
+        'sciops/evoformer_attention/binary/*/*/*/*/*/*/*/*',
     ],
     'mindscience.sciops.fft': ['*.cpp'],
     '_c_minddata': ['lib_c_minddata*.so']

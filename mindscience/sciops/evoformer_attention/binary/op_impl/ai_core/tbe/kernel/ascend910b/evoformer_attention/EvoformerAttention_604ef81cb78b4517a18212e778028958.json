@@ -1,0 +1,317 @@
+{
+ "binFileName": "EvoformerAttention_604ef81cb78b4517a18212e778028958",
+ "binFileSuffix": ".o",
+ "blockDim": -1,
+ "coreType": "MIX",
+ "intercoreSync": 1,
+ "kernelName": "EvoformerAttention_604ef81cb78b4517a18212e778028958",
+ "magic": "RT_DEV_BINARY_MAGIC_ELF",
+ "memoryStamping": [],
+ "opParaSize": 2464,
+ "parameters": [
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+ ],
+ "sha256": "b27edcbcd00294a3e0ea3546ecc98e0894b1630dfe803984ee39c1a9b116be74",
+ "workspace": {
+  "num": 1,
+  "size": [
+   -1
+  ],
+  "type": [
+   0
+  ]
+ },
+ "taskRation": "1:2",
+ "kernelList": [
+  {
+   "kernelName": "EvoformerAttention_604ef81cb78b4517a18212e778028958_90"
+  },
+  {
+   "kernelName": "EvoformerAttention_604ef81cb78b4517a18212e778028958_92"
+  },
+  {
+   "kernelName": "EvoformerAttention_604ef81cb78b4517a18212e778028958_94"
+  },
+  {
+   "kernelName": "EvoformerAttention_604ef81cb78b4517a18212e778028958_10000001110220120943"
+  },
+  {
+   "kernelName": "EvoformerAttention_604ef81cb78b4517a18212e778028958_10000001110221120943"
+  },
+  {
+   "kernelName": "EvoformerAttention_604ef81cb78b4517a18212e778028958_10000011102200120953"
+  },
+  {
+   "kernelName": "EvoformerAttention_604ef81cb78b4517a18212e778028958_10000011102201120953"
+  },
+  {
+   "kernelName": "EvoformerAttention_604ef81cb78b4517a18212e778028958_10000001102200120953"
+  },
+  {
+   "kernelName": "EvoformerAttention_604ef81cb78b4517a18212e778028958_10000001102201120953"
+  }
+ ],
+ "optionalInputMode": "gen_placeholder",
+ "optionalOutputMode": "gen_placeholder",
+ "compileInfo": {},
+ "supportInfo": {
+  "implMode": "high_performance",
+  "int64Mode": false,
+  "simplifiedKeyMode": 0,
+  "simplifiedKey": [
+   "EvoformerAttention/d=0,p=1/27,2/27,2/27,2/0,2/0,2/27,2/27,2",
+   "EvoformerAttention/d=0,p=0/27,2/27,2/27,2/0,2/0,2/27,2/27,2",
+   "EvoformerAttention/d=1,p=1/27,2/27,2/27,2/0,2/0,2/27,2/27,2",
+   "EvoformerAttention/d=1,p=0/27,2/27,2/27,2/0,2/0,2/27,2/27,2"
+  ],
+  "optionalInputMode": "gen_placeholder",
+  "optionalOutputMode": "gen_placeholder",
+  "staticKey": "39db535179a9c6b1f1375e103ffdbd3489dcf222f4c99d281f9a21286bdeb320,aec08fcdf1213a0618b2ac29719f1314f00c26c850a63c3ea2ea25e79f9bef54",
+  "inputs": [
+   {
+    "name": "query",
+    "index": 0,
+    "dtype": "bfloat16",
+    "format": "ND",
+    "paramType": "required",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "key",
+    "index": 1,
+    "dtype": "bfloat16",
+    "format": "ND",
+    "paramType": "required",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "value",
+    "index": 2,
+    "dtype": "bfloat16",
+    "format": "ND",
+    "paramType": "required",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "real_shift",
+    "index": 3,
+    "dtype": "bfloat16",
+    "format": "ND",
+    "paramType": "optional",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "drop_mask",
+    "index": 4,
+    "dtype": "uint8",
+    "format": "ND",
+    "paramType": "optional",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "padding_mask",
+    "index": 5,
+    "dtype": "bfloat16",
+    "format": "ND",
+    "paramType": "optional",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "atten_mask",
+    "index": 6,
+    "dtype": "uint8",
+    "format": "ND",
+    "paramType": "optional",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "prefix",
+    "index": 7,
+    "dtype": "int64",
+    "format": "ND",
+    "paramType": "optional",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "actual_seq_qlen",
+    "index": 8,
+    "dtype": "int64",
+    "format": "ND",
+    "paramType": "optional",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "actual_seq_kvlen",
+    "index": 9,
+    "dtype": "int64",
+    "format": "ND",
+    "paramType": "optional",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "q_start_idx",
+    "index": 10,
+    "dtype": "int64",
+    "format": "ND",
+    "paramType": "optional",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "kv_start_idx",
+    "index": 11,
+    "dtype": "int64",
+    "format": "ND",
+    "paramType": "optional",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "softmax_max",
+    "index": 0,
+    "dtype": "float32",
+    "format": "ND",
+    "paramType": "required",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "softmax_sum",
+    "index": 1,
+    "dtype": "float32",
+    "format": "ND",
+    "paramType": "required",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "softmax_out",
+    "index": 2,
+    "dtype": "bfloat16",
+    "format": "ND",
+    "paramType": "required",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   },
+   {
+    "name": "attention_out",
+    "index": 3,
+    "dtype": "bfloat16",
+    "format": "ND",
+    "paramType": "required",
+    "shape": [
+     -2
+    ],
+    "format_match_mode": "FormatAgnostic"
+   }
+  ],
+  "attrs": [
+   {
+    "name": "scale_value",
+    "dtype": "float",
+    "value": 0.0
+   },
+   {
+    "name": "keep_prob",
+    "dtype": "float",
+    "value": 0.0
+   },
+   {
+    "name": "pre_tockens",
+    "dtype": "int",
+    "value": 0
+   },
+   {
+    "name": "next_tockens",
+    "dtype": "int",
+    "value": 0
+   },
+   {
+    "name": "head_num",
+    "dtype": "int",
+    "value": 0
+   },
+   {
+    "name": "input_layout",
+    "dtype": "str",
+    "value": ""
+   },
+   {
+    "name": "inner_precise",
+    "dtype": "int",
+    "value": 0
+   },
+   {
+    "name": "sparse_mode",
+    "dtype": "int",
+    "value": 0
+   },
+   {
+    "name": "pse_type",
+    "dtype": "int",
+    "value": 0
+   }
+  ],
+  "opMode": "dynamic",
+  "deterministic": "ignore"
+ },
+ "filePath": "ascend910b/bin/evoformer_attention/EvoformerAttention_604ef81cb78b4517a18212e778028958.json"
+}

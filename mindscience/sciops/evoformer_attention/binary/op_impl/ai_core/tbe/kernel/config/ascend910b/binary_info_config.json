@@ -1,0 +1,174 @@
+{
+  "EvoformerAttention": {
+    "dynamicRankSupport": true,
+    "simplifiedKeyMode": 0,
+    "optionalInputMode": "gen_placeholder",
+    "optionalOutputMode": "gen_placeholder",
+    "params": {
+      "inputs": [
+        {
+          "name": "query",
+          "index": 0,
+          "paramType": "required",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "key",
+          "index": 1,
+          "paramType": "required",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "value",
+          "index": 2,
+          "paramType": "required",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "real_shift",
+          "index": 3,
+          "paramType": "optional",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "drop_mask",
+          "index": 4,
+          "paramType": "optional",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "padding_mask",
+          "index": 5,
+          "paramType": "optional",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "atten_mask",
+          "index": 6,
+          "paramType": "optional",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "prefix",
+          "index": 7,
+          "paramType": "optional",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "actual_seq_qlen",
+          "index": 8,
+          "paramType": "optional",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "actual_seq_kvlen",
+          "index": 9,
+          "paramType": "optional",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "q_start_idx",
+          "index": 10,
+          "paramType": "optional",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "kv_start_idx",
+          "index": 11,
+          "paramType": "optional",
+          "formatMode": "static_nd_agnostic"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "softmax_max",
+          "index": 0,
+          "paramType": "required",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "softmax_sum",
+          "index": 1,
+          "paramType": "required",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "softmax_out",
+          "index": 2,
+          "paramType": "required",
+          "formatMode": "static_nd_agnostic"
+        },
+        {
+          "name": "attention_out",
+          "index": 3,
+          "paramType": "required",
+          "formatMode": "static_nd_agnostic"
+        }
+      ],
+      "attrs": [
+        {
+          "name": "scale_value"
+        },
+        {
+          "name": "keep_prob"
+        },
+        {
+          "name": "pre_tockens"
+        },
+        {
+          "name": "next_tockens"
+        },
+        {
+          "name": "head_num"
+        },
+        {
+          "name": "input_layout"
+        },
+        {
+          "name": "inner_precise"
+        },
+        {
+          "name": "sparse_mode"
+        },
+        {
+          "name": "pse_type"
+        }
+      ]
+    },
+    "binaryList": [
+      {
+        "coreType": 2,
+        "simplifiedKey": [
+          "EvoformerAttention/d=0,p=1/0,2/0,2/0,2/0,2/0,2/0,2/0,2",
+          "EvoformerAttention/d=0,p=0/0,2/0,2/0,2/0,2/0,2/0,2/0,2",
+          "EvoformerAttention/d=1,p=1/0,2/0,2/0,2/0,2/0,2/0,2/0,2",
+          "EvoformerAttention/d=1,p=0/0,2/0,2/0,2/0,2/0,2/0,2/0,2"
+        ],
+        "binPath": "ascend910b/evoformer_attention/EvoformerAttention_0260521b8ef16b74064256757404d984.o",
+        "jsonPath": "ascend910b/evoformer_attention/EvoformerAttention_0260521b8ef16b74064256757404d984.json"
+      },
+      {
+        "coreType": 0,
+        "simplifiedKey": [
+          "EvoformerAttention/d=0,p=1/27,2/27,2/27,2/0,2/0,2/27,2/27,2",
+          "EvoformerAttention/d=0,p=0/27,2/27,2/27,2/0,2/0,2/27,2/27,2",
+          "EvoformerAttention/d=1,p=1/27,2/27,2/27,2/0,2/0,2/27,2/27,2",
+          "EvoformerAttention/d=1,p=0/27,2/27,2/27,2/0,2/0,2/27,2/27,2"
+        ],
+        "binPath": "ascend910b/evoformer_attention/EvoformerAttention_604ef81cb78b4517a18212e778028958.o",
+        "jsonPath": "ascend910b/evoformer_attention/EvoformerAttention_604ef81cb78b4517a18212e778028958.json"
+      },
+      {
+        "coreType": 0,
+        "simplifiedKey": [
+          "EvoformerAttention/d=0,p=1/1,2/1,2/1,2/0,2/0,2/1,2/1,2",
+          "EvoformerAttention/d=0,p=0/1,2/1,2/1,2/0,2/0,2/1,2/1,2",
+          "EvoformerAttention/d=1,p=1/1,2/1,2/1,2/0,2/0,2/1,2/1,2",
+          "EvoformerAttention/d=1,p=0/1,2/1,2/1,2/0,2/0,2/1,2/1,2"
+        ],
+        "binPath": "ascend910b/evoformer_attention/EvoformerAttention_99cb40af1ded45fe1870ef31fe8ebc98.o",
+        "jsonPath": "ascend910b/evoformer_attention/EvoformerAttention_99cb40af1ded45fe1870ef31fe8ebc98.json"
+      }
+    ]
+  }
+}
