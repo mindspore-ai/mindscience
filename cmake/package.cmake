@@ -31,7 +31,6 @@ install(
 
 install(
     DIRECTORY
-        ${CMAKE_SOURCE_DIR}/mindscience/ccsrc
         ${CMAKE_SOURCE_DIR}/mindscience/common
         ${CMAKE_SOURCE_DIR}/mindscience/data
         ${CMAKE_SOURCE_DIR}/mindscience/diffuser
