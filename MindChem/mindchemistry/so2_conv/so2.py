@@ -17,7 +17,7 @@ so2 file
 """
 import mindspore as ms
 from mindspore import ops, nn
-from ..e3.o3 import Irreps
+from mindscience.e3nn.o3 import Irreps
 
 
 class Silu(nn.Cell):

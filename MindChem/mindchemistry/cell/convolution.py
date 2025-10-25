@@ -15,8 +15,8 @@
 """convolution"""
 from mindspore import nn, ops, float32
 from ..graph.graph import AggregateEdgeToNode
-from ..e3.o3 import TensorProduct, Irreps, Linear
-from ..e3.nn import FullyConnectedNet
+from mindscience.e3nn.o3 import TensorProduct, Irreps, Linear
+from mindscience.e3nn.nn import FullyConnectedNet
 
 softplus = ops.Softplus()
 

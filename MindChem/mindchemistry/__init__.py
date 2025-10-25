@@ -16,7 +16,7 @@
 import time
 from .cell import *
 from .utils import *
-from .e3 import *
+from mindscience.e3nn import *
 from .graph import *
 from .so2_conv import *
 

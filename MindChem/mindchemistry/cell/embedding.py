@@ -19,7 +19,7 @@ import math
 import numpy as np
 from mindspore import nn, ops, Tensor, Parameter, float32
 
-from ..e3.o3 import Irreps
+from mindscience.e3nn.o3 import Irreps
 
 
 def _poly_cutoff(x, factor, p=6.0):

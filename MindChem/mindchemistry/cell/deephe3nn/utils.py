@@ -25,7 +25,7 @@ import mindspore as ms
 import mindspore.nn as nn
 import mindspore.numpy as msnp
 from mindspore import ops
-from mindchemistry.e3.o3.irreps import Irreps, Irrep
+from mindscience.e3nn.o3.irreps import Irreps, Irrep
 
 from scipy.optimize import brentq
 from scipy import special as sp

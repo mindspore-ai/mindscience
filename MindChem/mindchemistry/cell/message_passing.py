@@ -15,8 +15,8 @@
 """MessagePassing"""
 from mindspore import nn, ops, float32
 
-from ..e3.o3 import Irreps
-from ..e3.nn import Gate, NormActivation
+from mindscience.e3nn.o3 import Irreps
+from mindscience.e3nn.nn import Gate, NormActivation
 from .convolution import Convolution, shift_softplus
 
 acts = {

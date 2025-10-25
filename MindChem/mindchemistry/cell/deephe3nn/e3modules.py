@@ -15,11 +15,11 @@
 """
 e3modules
 """
-from mindchemistry.e3.o3.irreps import Irreps
-from mindchemistry.e3.o3.tensor_product import TensorProduct
-from mindchemistry.e3.nn.gate import _Extract
-from mindchemistry.e3.o3.sub import Linear
-from mindchemistry.e3.o3.wigner import wigner_3j
+from mindscience.e3nn.o3.irreps import Irreps
+from mindscience.e3nn.o3.tensor_product import TensorProduct
+from mindscience.e3nn.nn.gate import _Extract
+from mindscience.e3nn.o3.sub import Linear
+from mindscience.e3nn.o3.wigner import wigner_3j
 from mindchemistry.graph.graph import AggregateNodeToGlobal, LiftGlobalToNode
 from mindchemistry.cell.deephe3nn.utils import irreps_from_l1l2
 from mindspore import Tensor, ops, Parameter, ParameterTuple, jit_class

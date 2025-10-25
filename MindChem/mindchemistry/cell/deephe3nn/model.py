@@ -20,10 +20,10 @@ model
 import warnings
 import os
 import math
-from mindchemistry.e3.nn.gate import Gate
-from mindchemistry.e3.o3.irreps import Irreps
-from mindchemistry.e3.o3.sub import Linear, FullyConnectedTensorProduct, LinearBias
-from mindchemistry.e3.o3.spherical_harmonics import SphericalHarmonics
+from mindscience.e3nn.nn.gate import Gate
+from mindscience.e3nn.o3.irreps import Irreps
+from mindscience.e3nn.o3.sub import Linear, FullyConnectedTensorProduct, LinearBias
+from mindscience.e3nn.o3.spherical_harmonics import SphericalHarmonics
 from mindchemistry.so2_conv import SO3Rotation, SO2Convolution
 from mindchemistry.so2_conv.init_edge_rot_mat import init_edge_rot_mat
 from mindchemistry.graph.graph import LiftNodeToEdge, Aggregate

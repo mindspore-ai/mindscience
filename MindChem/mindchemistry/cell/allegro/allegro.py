@@ -20,7 +20,7 @@ from mindspore import Tensor, ops, float16, float32
 from mindspore.nn import Cell, CellList, Identity
 
 from ...cell.basic_block import MLPMixPrecision as MLP
-from ...e3.o3 import Irreps, Irrep, Linear, SphericalHarmonics
+from mindscience.e3nn.o3 import Irreps, Irrep, Linear, SphericalHarmonics
 from ...graph.graph import AggregateEdgeToNode, LiftNodeToEdge
 from .strided import MakeWeightedChannels, Contractor, Allegro_Linear
 
