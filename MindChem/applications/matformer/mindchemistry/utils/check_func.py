@@ -43,7 +43,7 @@ def check_param_type(param, param_name, data_type=None, exclude_type=None):
         )
     if exclude_type and type(param) in exclude_type:
         raise TypeError(
-            f"The type of {param_name} should not be instance of {exclude_type}, but got {param} with type {type(param)}"
+            f"The type of {param_name} should not be instance of {exclude_type},but got {param} with type {type(param)}"
         )
 
 
