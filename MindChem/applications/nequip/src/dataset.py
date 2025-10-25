@@ -19,8 +19,15 @@ import numpy as np
 import mindspore as ms
 from mindchemistry.e3 import radius_graph_full
 
+"""Dataset utilities for NequIP-based molecular dynamics."""
 
 class RMD17:
+    """Represents the RMD17 dataset for molecular property prediction.
+
+    Attributes:
+        path (str): Path to dataset files.
+        dtype (torch.dtype): Data type for tensors.
+    """
     def __init__(self, rmd_data, start=None, end=None, get_force=False, dtype=ms.float32):
         _dtype = {
             ms.float16: np.float16,
@@ -35,7 +42,7 @@ class RMD17:
 
         allowed_species = np.unique(self.charges)
         self._num_type = allowed_species.shape[0]
-        self.charges = RMD17.data_Index(allowed_species, self.charges)
+        self.charges = RMD17.data_index(allowed_species, self.charges)
 
         dataset_statistics_stride = 1
         stats = RMD17.statistics(self, stride=dataset_statistics_stride, end=end)
@@ -56,6 +63,7 @@ class RMD17:
             self._label = np.concatenate((self._label, self._forces), axis=-1)
 
     def statistics(self, stride: int = 1, end=None):
+        """ """
         if end is not None:
             _indices = np.arange(end)
             selector = ms.Tensor(_indices)[::stride]
@@ -65,7 +73,7 @@ class RMD17:
         atom_number = self.charges.shape[0]
         data_size = self._forces_all.shape[0]
         batch = np.repeat(np.arange(data_size), atom_number).tolist()
-        node_selector = ms.Tensor(np.in1d(batch, selector.numpy()))
+        # node_selector = ms.Tensor(np.in1d(batch, selector.numpy()))
 
         out = []
         arr = self._energies
@@ -78,16 +86,17 @@ class RMD17:
 
         return out
 
-    def data_Index(allowed_species_np, atomic_nums):
+    def data_index(self,allowed_species_np, atomic_nums):
+        """ """
         num_species = allowed_species_np.shape[0]
-        _min_Z = np.amin(allowed_species_np)
-        _min_Z = _min_Z.astype(np.int64)
-        _max_Z = np.amax(allowed_species_np)
-        _max_Z = _max_Z.astype(np.int64)
+        _min_z = np.amin(allowed_species_np)
+        _min_z = _min_z.astype(np.int64)
+        _max_z = np.amax(allowed_species_np)
+        _max_z = _max_z.astype(np.int64)
         allowed_species = allowed_species_np
-        Z_to_index = np.full((1 + _max_Z - _min_Z,), -1, dtype=np.int32)
-        Z_to_index[allowed_species - _min_Z] = np.arange(num_species)
-        out = Z_to_index[atomic_nums - _min_Z]
+        z_to_index = np.full((1 + _max_z - _min_z,), -1, dtype=np.int32)
+        z_to_index[allowed_species - _min_z] = np.arange(num_species)
+        out = z_to_index[atomic_nums - _min_z]
         return out
 
     def __getitem__(self, index):
@@ -98,6 +107,7 @@ class RMD17:
 
 
 def generate_dataset(raw_data, batch_size=1, embed=False):
+    """ """
     dataset = ms.dataset.GeneratorDataset(raw_data, column_names=['x', 'pos', 'label'], shuffle=False)
     dataset = dataset.batch(batch_size=batch_size)
 
@@ -118,7 +128,7 @@ def generate_dataset(raw_data, batch_size=1, embed=False):
                 _force = label[:, 1:].reshape(-1, 3)
                 return x.flatten(), pos.reshape((-1, pos.shape[-1])), _energy, _force
 
-    _x, _pos, _label = next(dataset.create_tuple_iterator())
+    _, _pos, _ = next(dataset.create_tuple_iterator())
     edge_index, batch = radius_graph_full(_pos)
     dataset = dataset.map(operations=_reshape, input_columns=['x', 'pos', 'label'],
                           output_columns=['x', 'pos', 'energy', 'force'])
@@ -130,12 +140,14 @@ def _unpack(data):
 
 
 def get_num_type(rmd_data):
+    """ """
     charges = rmd_data['nuclear_charges'].astype(np.int32)
     num_type = np.unique(charges).shape[0]
     return num_type
 
 
 def create_training_dataset(config, dtype, pred_force):
+    """ """
     with np.load(config['path']) as rmd_data:
         num_type = get_num_type(rmd_data)
         trainset, train_edge_index, train_batch = generate_dataset(
