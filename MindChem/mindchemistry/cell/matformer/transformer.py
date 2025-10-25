@@ -24,7 +24,7 @@ class Silu(nn.Cell):
 
     def __init__(self):
         """init"""
-        super(Silu, self).__init__()
+        super().__init__()
         self.sigmoid = nn.Sigmoid()
 
     def construct(self, x):
@@ -48,7 +48,7 @@ class MatformerConv(nn.Cell):
             use_fp16=False
     ):
         """init"""
-        super(MatformerConv, self).__init__()
+        super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.heads = heads

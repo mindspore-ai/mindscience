@@ -54,7 +54,7 @@ class RBFExpansion(nn.Cell):
             lengthscale=None,
     ):
         """Register torch parameters for RBF expansion."""
-        super(RBFExpansion, self).__init__()
+        super().__init__()
         self.vmin = vmin
         self.vmax = vmax
         self.bins = bins

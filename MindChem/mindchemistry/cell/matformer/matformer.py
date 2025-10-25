@@ -25,7 +25,7 @@ class Matformer(nn.Cell):
 
     def __init__(self, config):
         """init"""
-        super(Matformer, self).__init__()
+        super().__init__()
 
         use_fp16 = config['use_fp16']
         self.classification = config['classification']

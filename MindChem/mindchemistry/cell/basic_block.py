@@ -18,8 +18,8 @@ from __future__ import absolute_import
 from collections.abc import Sequence
 from typing import Union
 
-import mindspore.nn as nn
-import mindspore.nn.layer.activation as activation
+from mindspore import nn
+from mindspore.nn.layer import activation
 from mindspore import ops, float16, float32, Tensor
 from mindspore.common.initializer import Initializer
 
@@ -269,7 +269,7 @@ class FCNet(nn.Cell):
             has_activation=True,
             act='relu'
     ):
-        super(FCNet, self).__init__()
+        super().__init__()
         self.channels = channels
         self.weight_init = weight_init
         self.has_bias = has_bias
@@ -372,7 +372,7 @@ class MLPNet(nn.Cell):
             has_activation=True,
             act='relu'
     ):
-        super(MLPNet, self).__init__()
+        super().__init__()
         self.channels = (in_channels,) + (layers - 2) * \
                         (neurons,) + (out_channels,)
         self.network = FCNet(
@@ -530,7 +530,7 @@ class AutoEncoder(nn.Cell):
             act='relu',
             out_act=None
     ):
-        super(AutoEncoder, self).__init__()
+        super().__init__()
         self.channels = channels
         self.weight_init = weight_init
         self.bias_init = bias_init

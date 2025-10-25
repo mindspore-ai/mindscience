@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""initialization for mindchemistry APIs"""
+"""Initialization for MindChemistry APIs."""
+
 import time
+import mindspore as ms
+from mindspore import log as logger
+from mindscience.e3nn import *
 from .cell import *
 from .utils import *
-from mindscience.e3nn import *
 from .graph import *
 from .so2_conv import *
-
 
 __all__ = []
 __all__.extend(cell.__all__)
@@ -29,37 +31,36 @@ __all__.extend(e3.__all__)
 
 def _mindspore_version_check():
     """
-       Do the MindSpore version check for MindChemistry. If the
-       MindSpore can not be imported, it will raise ImportError. If its
-       version is not compatibale with current MindChemistry verision,
-       it will print a warning.
+    Check MindSpore version for MindChemistry.
 
-       Raise:
-           ImportError: If the MindSpore can not be imported.
-       """
-
+    Raises:
+        ImportError: If MindSpore cannot be imported.
+    """
     try:
-        import mindspore as ms
-        from mindspore import log as logger
-    except ImportError:
-        raise ImportError("Can not find MindSpore in current environment. Please install "
-                          "MindSpore before using MindChemistry, by following "
-                          "the instruction at https://www.mindspore.cn/install")
+        _ = ms.__version__
+    except ImportError as exc:
+        raise ImportError(
+            "Cannot find MindSpore in the current environment. Please install "
+            "MindSpore before using MindChemistry, by following the instruction at "
+            "https://www.mindspore.cn/install"
+        ) from exc
 
     ms_version = ms.__version__[:5]
-    required_mindspore_verision = '1.8.1'
+    required_mindspore_version = "1.8.1"
 
-    if ms_version < required_mindspore_verision:
-        logger.warning("Current version of MindSpore is not compatible with MindChemistry. "
-                       "Some functions might not work or even raise error. Please install MindSpore "
-                       "version >= {} For more details about dependency setting, please check "
-                       "the instructions at MindSpore official website https://www.mindspore.cn/install "
-                       "or check the README.md at https://gitee.com/mindspore/mindscience"
-                       .format(required_mindspore_verision))
-        warning_countdown = 3
-        for i in range(warning_countdown, 0, -1):
-            logger.warning(
-                f"Please pay attention to the above warning, countdown: {i}")
+    if ms_version < required_mindspore_version:
+        logger.warning(
+            f"Current version of MindSpore ({ms_version}) is not compatible with MindChemistry. "
+            f"Some functions might not work or even raise errors. Please install MindSpore "
+            f"version >= {required_mindspore_version}. For more details about dependency settings, "
+            f"please check the instructions at the MindSpore official website "
+            f"https://www.mindspore.cn/install or check the README.md at "
+            f"https://gitee.com/mindspore/mindscience"
+        )
+
+        for i in range(3, 0, -1):
+            logger.warning(f"Please pay attention to the above warning, countdown: {i}")
             time.sleep(1)
+
 
 _mindspore_version_check()

@@ -26,7 +26,7 @@ class Silu(nn.Cell):
     """
 
     def __init__(self):
-        super(Silu, self).__init__()
+        super().__init__()
         self.sigmoid = nn.Sigmoid()
 
     def construct(self, x):
@@ -42,7 +42,7 @@ class SO2MConvolution(nn.Cell):
     """
 
     def __init__(self, in_channels, out_channels):
-        super(SO2MConvolution, self).__init__()
+        super().__init__()
         self.fc = nn.Dense(in_channels // 2, out_channels,
                            has_bias=False).to_float(ms.float16)
         self.out_channels = out_channels

@@ -44,7 +44,7 @@ class BatchNormMask(nn.Cell):
 
         if x.ndim != mask.ndim:
             if mask.size != mask.shape[0]:
-                raise ValueError(f"mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
+                raise ValueError("mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
             shape = [1] * x.ndim
             shape[0] = -1
             mask = ops.reshape(mask, shape).astype(x.dtype)
@@ -157,7 +157,7 @@ class GraphLayerNormMask(nn.Cell):
 
         if x.ndim != mask.ndim:
             if mask.size != mask.shape[0]:
-                raise ValueError(f"mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
+                raise ValueError("mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
             shape = [1] * x.ndim
             shape[0] = -1
             mask = ops.reshape(mask, shape).astype(x.dtype)
@@ -227,12 +227,12 @@ class GraphInstanceNormMask(nn.Cell):
 
         if x.ndim != mask.ndim:
             if mask.size != mask.shape[0]:
-                raise ValueError(f"mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
+                raise ValueError("mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
             shape = [1] * x.ndim
             shape[0] = -1
             mask = ops.reshape(mask, shape).astype(x.dtype)
         x = ops.mul(x, mask)
-
+        gamma = None # 后来添加，防止未定义报错
         if x.ndim > 2:
             norm_axis = []
             shape = [-1]

@@ -15,8 +15,8 @@
 """get activation function."""
 from __future__ import absolute_import
 
-import mindspore.ops as ops
-import mindspore.nn.layer.activation as activation
+from mindspore import ops
+from mindspore.nn.layer import activation
 
 _activation = {
     'softmax': activation.Softmax,

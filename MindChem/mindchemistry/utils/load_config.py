@@ -58,7 +58,7 @@ def load_yaml_config(file_path):
         >>> configs = load_yaml_config(config_file_path)
     """
     # Read YAML experiment definition file
-    with open(file_path, 'r') as stream:
+    with open(file_path, 'r', encoding='utf-8') as stream:
         config = yaml.safe_load(stream)
     config = _make_paths_absolute(os.path.join(
         os.path.dirname(file_path), ".."), config)
@@ -79,7 +79,7 @@ def load_yaml_config_from_path(file_path):
         ``Ascend`` ``CPU`` ``GPU``
     """
     # Read YAML experiment definition file
-    with open(file_path, 'r') as stream:
+    with open(file_path, 'r', encoding='utf-8') as stream:
         config = yaml.safe_load(stream)
 
     return config

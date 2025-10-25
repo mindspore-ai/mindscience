@@ -40,7 +40,7 @@ class LossMaskBase(nn.Cell):
                 raise ValueError(f"mask.shape[0] {mask.shape[0]} is not equal to input.shape[0] {x.shape[0]}")
             if x.ndim != mask.ndim:
                 if mask.size != mask.shape[0]:
-                    raise ValueError(f"mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
+                    raise ValueError("mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
                 shape = [1] * x.ndim
                 shape[0] = -1
                 mask = ops.reshape(mask, shape)

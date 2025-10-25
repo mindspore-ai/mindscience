@@ -70,7 +70,7 @@ class SO3Rotation:
         begins = [0] * inputs.ndim
         begins[axis] = start
 
-        sizes = [i for i in inputs.shape]
+        sizes = list(inputs.shape)
 
         sizes[axis] = length
         res = ops.slice(inputs, begins, sizes)

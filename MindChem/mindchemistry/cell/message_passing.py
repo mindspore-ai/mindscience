@@ -154,7 +154,7 @@ class MessagePassing(nn.Cell):
     def construct(self, node_input, node_attr, edge_src, edge_dst, edge_attr, edge_scalars):
         """construct"""
         layer_in = node_input
-        for i in range(len(self.layers)):
+        for i in enumerate(self.layers):
             layer_out = self.layers[i](
                 layer_in, node_attr, edge_src, edge_dst, edge_attr, edge_scalars)
 

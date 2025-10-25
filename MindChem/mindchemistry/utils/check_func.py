@@ -27,6 +27,8 @@ def _convert_to_tuple(params):
         params = (params,)
     if isinstance(params, list):
         params_out = tuple(params)
+    else:
+        params_out = params  # ✅ 防止未定义
     return params_out
 
 
@@ -36,20 +38,20 @@ def check_param_type(param, param_name, data_type=None, exclude_type=None):
     exclude_type = _convert_to_tuple(exclude_type)
 
     if data_type and not isinstance(param, data_type):
-        raise TypeError("The type of {} should be instance of {}, but got {} with type {}".format(
-            param_name, data_type, param, type(param)))
+        raise TypeError(
+            f"The type of {param_name} should be instance of {data_type}, but got {param} with type {type(param)}"
+        )
     if exclude_type and type(param) in exclude_type:
-        raise TypeError("The type of {} should not be instance of {}, but got {} with type {}".format(
-            param_name, exclude_type, param, type(param)))
-    return None
+        raise TypeError(
+            f"The type of {param_name} should not be instance of {exclude_type},but got {param} with type {type(param)}"
+        )
 
 
 def check_param_value(param, param_name, valid_value):
     """check parameter's value"""
     valid_value = _convert_to_tuple(valid_value)
     if param not in valid_value:
-        raise ValueError("The value of {} should be in {}, but got {}".format(
-            param_name, valid_value, param))
+        raise ValueError(f"The value of {param_name} should be in {valid_value}, but got {param}")
 
 
 def check_param_type_value(param, param_name, valid_value, data_type=None, exclude_type=None):
@@ -69,7 +71,6 @@ def check_dict_type(param_dict, param_name, key_type=None, value_type=None):
             values = _convert_to_tuple(param_dict[key])
             for value in values:
                 check_param_type(value, _SPACE.join(("value of", param_name)), data_type=value_type)
-    return None
 
 
 def check_dict_value(param_dict, param_name, key_value=None, value_value=None):
@@ -83,50 +84,45 @@ def check_dict_value(param_dict, param_name, key_value=None, value_value=None):
             values = _convert_to_tuple(param_dict[key])
             for value in values:
                 check_param_value(value, _SPACE.join(("value of", param_name)), value_value)
-    return None
 
 
 def check_dict_type_value(param_dict, param_name, key_type=None, value_type=None, key_value=None, value_value=None):
     """check values for key and value of specified dict"""
     check_dict_type(param_dict, param_name, key_type=key_type, value_type=value_type)
     check_dict_value(param_dict, param_name, key_value=key_value, value_value=value_value)
-    return None
 
 
 def check_mode(api_name):
     """check running mode"""
     if context.get_context("mode") == context.PYNATIVE_MODE:
-        raise RuntimeError("{} is only supported GRAPH_MODE now but got PYNATIVE_MODE".format(api_name))
+        raise RuntimeError(f"{api_name} is only supported GRAPH_MODE now but got PYNATIVE_MODE")
 
 
 def check_param_no_greater(param, param_name, compared_value):
     """ Check whether the param less than the given compared_value"""
     if param > compared_value:
-        raise ValueError("The value of {} should be no greater than {}, but got {}".format(
-            param_name, compared_value, param))
+        raise ValueError(f"The value of {param_name} should be no greater than {compared_value}, but got {param}")
 
 
 def check_param_odd(param, param_name):
     """ Check whether the param is an odd number"""
     if param % 2 == 0:
-        raise ValueError("The value of {} should be an odd number, but got {}".format(
-            param_name, param))
+        raise ValueError(f"The value of {param_name} should be an odd number, but got {param}")
 
 
 def check_param_even(param, param_name):
-    """ Check whether the param is an odd number"""
+    """ Check whether the param is an even number"""
     for value in param:
         if value % 2 != 0:
-            raise ValueError("The value of {} should be an even number, but got {}".format(
-                param_name, param))
+            raise ValueError(f"The value of {param_name} should be an even number, but got {param}")
 
 
 def check_lr_param_type_value(param, param_name, param_type, thresh_hold=0, restrict=False, exclude=None):
     if (exclude and isinstance(param, exclude)) or not isinstance(param, param_type):
-        raise TypeError("the type of {} should be {}, but got {}".format(param_name, param_type, type(param)))
+        raise TypeError(f"the type of {param_name} should be {param_type}, but got {type(param)}")
     if restrict:
         if param <= thresh_hold:
-            raise ValueError("the value of {} should be > {}, but got: {}".format(param_name, thresh_hold, param))
+            raise ValueError(f"the value of {param_name} should be > {thresh_hold}, but got: {param}")
     else:
         if param < thresh_hold:
-            raise ValueError("the value of {} should be >= {}, but got: {}".format(param_name, thresh_hold, param))
+            raise ValueError(f"the value of {param_name} should be >= {thresh_hold}, but got: {param}")

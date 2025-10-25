@@ -77,7 +77,7 @@ class Aggregate(nn.Cell):
         if index.shape[0] != src.shape[0]:
             raise ValueError(f"index.shape[0] {index.shape[0]} is not equal to src.shape[0] {src.shape[0]}")
         if out is None and dim_size is None:
-            raise ValueError(f"the out Tensor and out dim_size cannot be both None")
+            raise ValueError("the out Tensor and out dim_size cannot be both None")
 
         index = index.unsqueeze(-1)
 
@@ -91,7 +91,7 @@ class Aggregate(nn.Cell):
                 raise ValueError(f"mask.shape[0] {mask.shape[0]} is not equal to src.shape[0] {src.shape[0]}")
             if src.ndim != mask.ndim:
                 if mask.size != mask.shape[0]:
-                    raise ValueError(f"mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
+                    raise ValueError("mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
                 shape = [1] * src.ndim
                 shape[0] = -1
                 mask = ops.reshape(mask, shape)
@@ -105,7 +105,7 @@ class Aggregate(nn.Cell):
         Computes the scatter mean of a source tensor. The index should be one-dimensional
         """
         if out is None and dim_size is None:
-            raise ValueError(f"the out Tensor and out dim_size cannot be both None")
+            raise ValueError("the out Tensor and out dim_size cannot be both None")
 
         if dim_size is None:
             dim_size = out.shape[0]
@@ -212,7 +212,7 @@ class Lift(nn.Cell):
                 raise ValueError(f"mask.shape[0] {mask.shape[0]} is not equal to res.shape[0] {res.shape[0]}")
             if res.ndim != mask.ndim:
                 if mask.size != mask.shape[0]:
-                    raise ValueError(f"mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
+                    raise ValueError("mask.ndim dose not match src.ndim, and cannot be broadcasted to the same")
                 shape = [1] * res.ndim
                 shape[0] = -1
                 mask = ops.reshape(mask, shape)

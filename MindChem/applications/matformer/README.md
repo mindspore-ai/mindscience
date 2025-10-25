@@ -9,7 +9,7 @@
 
 ## 数据集
 
-> 从https://figshare.com/articles/dataset/jdft_3d-7-7-2018_json/6815699 下载 jdft_3d-12-12-2022.json 到当前目录，不需要修改其文件名。
+> 从<https://figshare.com/articles/dataset/jdft_3d-7-7-2018_json/6815699> 下载 jdft_3d-12-12-2022.json 到当前目录，不需要修改其文件名。
 
 ## 环境要求
 
@@ -21,11 +21,10 @@
 > 1. 将数据集下载到当前目录
 > 2. 训练命令： `python train.py`
 
-
 ## notebook案例
+
 详见`matformer_application.ipynb`  
 提供一个端到端的可直接运行的示例，包含自定义数据集如何构造等。
-
 
 ## 脚本说明
 
