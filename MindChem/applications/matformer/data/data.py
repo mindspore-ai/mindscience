@@ -297,7 +297,7 @@ def get_train_val_loaders(
         logging.info("Loading from saved file...")
         return
     logging.info("No existing saved file...Generate from scratch")
-    with open('jdft_3d-12-12-2022.json') as f:
+    with open('jdft_3d-12-12-2022.json', encoding='utf-8') as f:
         dataset_array = json.load(f)
     if not dataset_array:
         d = jdata(dataset)

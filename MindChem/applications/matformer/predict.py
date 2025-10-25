@@ -30,7 +30,7 @@ from mindchemistry.graph.dataloader import DataLoaderBase as DataLoader
 
 logging.basicConfig(level=logging.INFO)
 
-with open("config.yaml", 'r') as stream:
+with open("config.yaml", 'r', encoding='utf-8') as stream:
     config = yaml.safe_load(stream)
 
 ms.set_context(device_target=config['train']["device"], device_id=config['train']["device_id"])
