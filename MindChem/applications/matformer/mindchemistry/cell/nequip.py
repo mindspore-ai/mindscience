@@ -18,6 +18,9 @@ from mindscience.e3nn.o3 import Irreps, SphericalHarmonics, Linear
 from mindscience.e3nn.nn import OneHot
 from mindscience.e3nn.utils import radius_graph
 from ..graph.graph import AggregateNodeToGlobal
+from mindscience.e3nn.o3 import Irreps, SphericalHarmonics, Linear
+from mindscience.e3nn.nn import OneHot
+from mindscience.e3nn.utils import radius_graph
 from .message_passing import MessagePassing
 from .embedding import RadialEdgeEmbedding
 
