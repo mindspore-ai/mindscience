@@ -17,8 +17,6 @@ from mindspore import nn, ops, float32
 from mindscience.e3nn.o3 import TensorProduct, Irreps, Linear
 from mindscience.e3nn.nn import FullyConnectedNet
 from ..graph.graph import AggregateEdgeToNode
-from mindscience.e3nn.o3 import TensorProduct, Irreps, Linear
-from mindscience.e3nn.nn import FullyConnectedNet
 
 softplus = ops.Softplus()
 
