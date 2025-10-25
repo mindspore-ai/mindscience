@@ -42,7 +42,7 @@ class RMD17:
 
         allowed_species = np.unique(self.charges)
         self._num_type = allowed_species.shape[0]
-        self.charges = RMD17.data_index(allowed_species, self.charges)
+        self.charges = RMD17.data_index(self,allowed_species, self.charges)
 
         dataset_statistics_stride = 1
         stats = RMD17.statistics(self, stride=dataset_statistics_stride, end=end)
@@ -86,7 +86,7 @@ class RMD17:
 
         return out
 
-    def data_index(self,allowed_species_np, atomic_nums):
+    def data_index(self, allowed_species_np, atomic_nums):
         """ """
         num_species = allowed_species_np.shape[0]
         _min_z = np.amin(allowed_species_np)
