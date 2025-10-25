@@ -73,8 +73,8 @@ class Fnn(nn.Cell):
         """
         if self.input_transform is not None:
             y = self.input_transform(y)
-        for i in range(len(self.net)):
-            y = self.net[i](y)
+        for net in self.net:
+            y = net(y)
         if self.output_transform is not None:
             y = self.output_transform(y)
         return y
@@ -92,7 +92,7 @@ class Fnn(nn.Cell):
                     initializer('xavier_uniform', m.weight.shape).init_data())
             else:
                 raise ValueError(
-                    "initializer {} not implemented".format(self.initializer))
+                    f"initializer {self.initializer} not implemented")
             m.bias.data.fill(0.0)
         elif isinstance(m, nn.LayerNorm):
             m.beta.data.fill(0.0)
@@ -192,8 +192,8 @@ class Conv1D(nn.Cell):
         """
         if self.input_transform is not None:
             y = self.input_transform(y)
-        for i in range(len(self.net)):
-            y = self.net[i](y)
+        for net in self.net:
+            y = net(y)
         if self.output_transform is not None:
             y = self.output_transform(y)
         return y
@@ -310,7 +310,7 @@ class Attention(nn.Cell):
                     initializer('xavier_uniform', m.weight.shape).init_data())
             else:
                 raise ValueError(
-                    "initializer {} not implemented".format(self.initializer))
+                    f"initializer {self.initializer} not implemented")
             m.bias.data.fill(0.0)
         elif isinstance(m, nn.LayerNorm):
             m.beta.data.fill(0.0)

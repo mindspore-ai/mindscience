@@ -123,6 +123,7 @@ def normalize_data(u: np.ndarray,
         Tuple of (u_norm, y_norm, s_norm, scalers)
     """
     scalers = {}
+    u_norm, y_norm, s_norm = None, None, None
 
     if method == "none":
         return u, y, s, scalers

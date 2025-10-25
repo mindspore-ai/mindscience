@@ -19,7 +19,7 @@ Evaluation metrics for DeepONet-Grid-UQ
 from typing import Dict, List, Tuple
 
 import mindspore as ms
-import mindspore.ops as ops
+from mindspore import ops
 import numpy as np
 
 
@@ -108,11 +108,11 @@ def compute_metrics(s_true: List[ms.Tensor],
 
     for metric_name in metrics:
         temp = []
-        for k in range(len(s_true)):
+        for true, pred in zip(s_true, s_pred):
             if metric_name.lower() == "l1":
-                error = calculator.l1_relative_error(s_true[k], s_pred[k])
+                error = calculator.l1_relative_error(true, pred)
             elif metric_name.lower() == "l2":
-                error = calculator.l2_relative_error(s_true[k], s_pred[k])
+                error = calculator.l2_relative_error(true, pred)
             else:
                 raise ValueError(f"Unsupported metric: {metric_name}")
             temp.append(error)

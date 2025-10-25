@@ -97,7 +97,7 @@ def train(args_, logger_):
         metrics = trainer.evaluate(datasets["test"])
 
         results_path = os.path.join(config["output"]["save_dir"], "test_results.json")
-        with open(results_path, "w") as f:
+        with open(results_path, "w", encoding="utf-8") as f:
             json.dump(metrics, f, indent=2)
 
         return
@@ -107,13 +107,13 @@ def train(args_, logger_):
     )
 
     history_path = os.path.join(config["output"]["save_dir"], "training_history.json")
-    with open(history_path, "w") as f:
+    with open(history_path, "w", encoding="utf-8") as f:
         json.dump(history, f, indent=2)
 
     test_metrics = trainer.evaluate(datasets["test"])
 
     test_results_path = os.path.join(config["output"]["save_dir"], "test_results.json")
-    with open(test_results_path, "w") as f:
+    with open(test_results_path, "w", encoding="utf-8") as f:
         json.dump(test_metrics, f, indent=2)
 
     if is_main_process:

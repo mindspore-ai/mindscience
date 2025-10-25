@@ -23,16 +23,16 @@ from mindspore import context
 from mindspore.experimental import optim
 import numpy as np
 
-from mindscience.utils import load_yaml_config
-
 from src.utils import make_config
 from src.model import ThreeBusPN
 from src.data import get_dataset
 from src.trainer import DaeTrainer
 
+from mindscience.utils import load_yaml_config
 
-def main():
-    config = load_yaml_config(args.config_file)
+
+def main(config_file):
+    config = load_yaml_config(config_file)
     model_params, data_params, optim_params, ode_params, summary_params = config[
         'model'], config['data'], config['optimizer'], config['ode'], config['summary']
     summary_dir = summary_params['summary_dir']
@@ -133,4 +133,4 @@ if __name__ == "__main__":
     mode = context.PYNATIVE_MODE if args.mode.lower().startswith('graph') else context.GRAPH_MODE
     context.set_context(mode=mode, device_target=args.device_target,
                         device_id=args.device_id)
-    main()
+    main(args.config_file)
