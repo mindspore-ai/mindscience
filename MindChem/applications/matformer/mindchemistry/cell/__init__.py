@@ -23,4 +23,3 @@ __all__ = [
 ]
 
 __all__.extend(matformer.__all__)
-
