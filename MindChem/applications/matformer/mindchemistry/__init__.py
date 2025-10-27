@@ -26,7 +26,7 @@ from .so2_conv import *
 __all__ = []
 __all__.extend(cell.__all__)
 __all__.extend(utils.__all__)
-__all__.extend(e3.__all__)
+
 
 
 def _mindspore_version_check():
