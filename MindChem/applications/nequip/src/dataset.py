@@ -20,7 +20,7 @@ Provides data loading, preprocessing, and batching logic for the RMD17 dataset.
 
 import numpy as np
 import mindspore as ms
-from mindchemistry.e3 import radius_graph_full
+from mindscience.e3nn import radius_graph_full
 
 
 class RMD17:
@@ -178,7 +178,7 @@ def generate_dataset(raw_data, batch_size=1, embed=False):
     return dataset, ms.Tensor(edge_index), ms.Tensor(batch)
 
 
-def unpack(data):
+def _unpack(data):
     """Unpack dataset dictionary into model input/output tuples."""
     return (data['x'], data['pos']), (data['energy'], data['force'])
 

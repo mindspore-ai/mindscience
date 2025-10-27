@@ -26,11 +26,6 @@ from .so2_conv import *
 __all__ = []
 __all__.extend(cell.__all__)
 __all__.extend(utils.__all__)
-<<<<<<<< HEAD:MindChem/applications/matformer/mindchemistry/__init__.py
-
-========
->>>>>>>> 751df688 (修改目录结构):MindChem/applications/nequip/mindchemistry/__init__.py
-
 
 def _mindspore_version_check():
     """

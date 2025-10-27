@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2024 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,20 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ============================================================================
-"""initialization for cells"""
+# ==============================================================================
+"""initialization for matformer"""
 
-from .nequip import Nequip
-from .basic_block import AutoEncoder, FCNet, MLPNet
-from .matformer import *
+from .matformer import Matformer
 
-__all__ = [
-<<<<<<<< HEAD:MindChem/applications/matformer/mindchemistry/cell/__init__.py
-    "Nequip", 'AutoEncoder'
-]
-
-========
-    "Nequip"
-]
->>>>>>>> 751df688 (修改目录结构):MindChem/applications/nequip/mindchemistry/cell/__init__.py
-__all__.extend(matformer.__all__)
+__all__ = ['Matformer']

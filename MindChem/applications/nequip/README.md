@@ -14,7 +14,7 @@
 ## 环境要求
 
 > 1. 安装`mindspore`
-> 2. 安装`mindchemistry`
+> 2. 安装`mindscience`
 
 ## 快速入门
 
