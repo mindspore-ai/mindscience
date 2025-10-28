@@ -140,7 +140,7 @@ All configurations are managed via `config.yaml`
 
 ### Training Method 2: Jupyter Notebook
 
-You can run the training and evaluation code step-by-step using the provided Jupyter Notebooks (available in both Chinese and English versions).
+You can run the training and evaluation code step-by-step using the provided Jupyter Notebooks (available in both [Chinese](matformer_application.ipynb) and [English](matformer_application_EN.ipynb) versions).
 
 ## Results
 

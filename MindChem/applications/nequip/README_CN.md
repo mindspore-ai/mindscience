@@ -104,7 +104,7 @@ python predict.py --config_file_path ./rmd.yaml --mode GRAPH --device_target GPU
 
 ### 运行方式二：运行Jupyter Notebook
 
-您可以使用中文版和英文版Jupyter Notebook逐行运行训练和验证代码。
+您可以使用[中文版](nequip.ipynb)和[英文版](nequip_en.ipynb)Jupyter Notebook逐行运行训练和验证代码。
 
 ## 结果展示
 

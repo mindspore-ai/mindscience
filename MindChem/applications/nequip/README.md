@@ -114,7 +114,7 @@ Parameter meanings are the same as in train.py. See rmd.yaml for configuration d
 
 ### Option 2: Run via Jupyter Notebook
 
-You can execute the provided Jupyter Notebooks (both English and Chinese versions) step-by-step to train and validate the model interactively.
+You can execute the provided Jupyter Notebooks (both [English](nequip_en.ipynb) and [Chinese](nequip.ipynb) versions) step-by-step to train and validate the model interactively.
 
 ## Results
 
