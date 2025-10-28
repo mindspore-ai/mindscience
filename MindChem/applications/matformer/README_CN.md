@@ -135,6 +135,7 @@ python train.py
 ```bash
 python predict.py
 ```
+
 所需的参数配置都在config.yaml中存放。
 
 ### 运行方式二：运行Jupyter Notebook
