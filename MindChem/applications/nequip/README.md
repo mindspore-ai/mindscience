@@ -22,8 +22,8 @@ NequIP is built upon a **Message Passing Neural Network (MPNN)** framework and i
 ![alt text](image.png)
 
 1. **Input Embedding Layer**  
-   - Inputs atomic species (atomic numbers) and 3D coordinates.  
-   - Each atom is mapped to an initial feature vector; coordinates are used to compute pairwise distances.
+   Inputs atomic species (atomic numbers) and 3D coordinates.  
+   Each atom is mapped to an initial feature vector; coordinates are used to compute pairwise distances.
 
 2. **Message Passing Layers**  
    - Capture local interactions between neighboring atoms.  

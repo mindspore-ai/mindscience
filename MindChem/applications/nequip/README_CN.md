@@ -21,8 +21,8 @@ NequIP 的核心结构基于 消息传递神经网络 (Message Passing Neural Ne
 ![alt text](image.png)
 
 1. **Input Embedding 层**  
-   - 输入原子种类（原子序号）与坐标信息。  
-   - 原子被映射为初始特征向量，坐标用于计算原子对间距离。  
+   输入原子种类（原子序号）与坐标信息。  
+   原子被映射为初始特征向量，坐标用于计算原子对间距离。  
 
 2. **Message Passing Layers 消息传递层**  
    - 每一层对邻近原子间的相互作用进行更新。  
