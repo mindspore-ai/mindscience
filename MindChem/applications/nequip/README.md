@@ -9,6 +9,7 @@ Paper link: [NequIP](https://arxiv.org/abs/2101.03164).
 Its core idea is to ensure **physical consistency** — that the model’s predictions remain invariant under physical symmetries such as rotation, translation, and reflection.
 
 Compared with traditional atomic potential models (e.g., Behler–Parrinello networks or handcrafted feature methods like SOAP), NequIP offers the following advantages:  
+
 - **Physical Consistency**: Model outputs are equivariant under 3D spatial transformations.  
 - **High Data Efficiency**: Achieves quantum-chemical accuracy with very limited training samples.  
 - **Generalizability & Scalability**: Applicable to a wide range of molecular and material systems.
@@ -68,6 +69,7 @@ This dataset contains **molecular dynamics (MD)** trajectories of uracil, includ
 Compared to the original MD17, the RMD17 dataset fixes inconsistencies in energy and force labels.
 
 Each configuration shares the same atomic number array (`nuclear_charges`), making it suitable for:
+
 - Molecular potential energy surface (PES) modeling  
 - Machine learning force field (MLFF) training  
 - Graph neural network–based joint prediction of energy and forces

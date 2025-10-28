@@ -9,6 +9,7 @@
 其核心思想是利用物理对称性（旋转、平移、反射）保持模型的预测结果与实际分子体系的物理不变性一致。
 
 相比传统的原子势模型（如 Behler–Parrinello 网络或基于手工特征的 SOAP 方法），NequIP 具有以下显著优点：  
+
 - **物理一致性 (Physical Consistency)**：模型输出在三维空间的旋转和平移下保持等变性；  
 - **高数据效率 (Data Efficiency)**：在极少训练样本下即可达到量子化学精度；  
 - **通用性与可扩展性 (Generalizability)**：适用于多种分子或材料体系的势能预测。
@@ -16,7 +17,9 @@
 ## 模型架构
 
 NequIP 的核心结构基于 消息传递神经网络 (Message Passing Neural Network, MPNN)，并在特征空间中引入了 球谐张量表示 (Spherical Harmonic Tensor Representations)，从而在三维空间中实现 E(3) 群等变性。
+
 ![alt text](image.png)
+
 1. **Input Embedding 层**  
    - 输入原子种类（原子序号）与坐标信息。  
    - 原子被映射为初始特征向量，坐标用于计算原子对间距离。  
@@ -50,6 +53,7 @@ NequIP 的核心结构基于 消息传递神经网络 (Message Passing Neural Ne
 
 本实验使用的数据集为 **RMD17** 数据集中的 **Uracil 分子** 子集，文件路径：`dataset/RMD17/npz_data/rmd_uracil.npz`。
 > rmd数据集下载地址：[Revised MD17 dataset (rMD17)](https://figshare.com/articles/dataset/Revised_MD17_dataset_rMD17_/12672038)。
+
 - **数据集名称**：`rmd17_uracil.npz`
 - **数据来源**：[Revised MD-17 (RMD-17)](https://figshare.com/articles/dataset/Revised_MD17_dataset_rMD17_/12672038)
 - **目标分子**：**尿嘧啶（Uracil）**

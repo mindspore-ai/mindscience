@@ -35,16 +35,16 @@ Matformer 的整体流程如下：
 ### 1. 注意力机制（Attention Mechanism）
 
 - **Query (Q), Key (K), Value (V)**：
-  - 分别由 $f^*_i$ 和 $f^*_j$ 经过不同的线性变换 $\text{LN}_Q, \text{LN}_K, \text{LN}_V$ 得到。
-  - 边特征 $e_{ij}^h$ 经过 $\text{LN}_E$ 后也参与计算。
+    - 分别由 $f^*_i$ 和 $f^*_j$ 经过不同的线性变换 $\text{LN}_Q, \text{LN}_K, \text{LN}_V$ 得到。
+    - 边特征 $e_{ij}^h$ 经过 $\text{LN}_E$ 后也参与计算。
 
 - **多头注意力（Multi-head Attention）**：
-  - 图中展示了两个注意力头（Head1, Head2），实际可扩展。
-  - 使用 Hadamard 积（逐元素乘积）融合节点特征与边特征。
+    - 图中展示了两个注意力头（Head1, Head2），实际可扩展。
+    - 使用 Hadamard 积（逐元素乘积）融合节点特征与边特征。
 
 - **注意力权重计算**：
-  - Q 和 K 经过 LayerNorm、Sigmoid 和 Hadamard 操作生成注意力权重。
-  - 最终注意力输出为：
+    - Q 和 K 经过 LayerNorm、Sigmoid 和 Hadamard 操作生成注意力权重。
+    - 最终注意力输出为：
     $$
     \sum_{j \in N_i} \sum_h [\text{Head1}, \text{Head2}]
     $$
@@ -53,9 +53,9 @@ Matformer 的整体流程如下：
 
 - 将邻居节点的信息聚合为消息 $m_i$。
 - 具体操作包括：
-  - Concatenate 邻居信息。
-  - 线性变换。
-  - 通过两个注意力头（Head1, Head2）分别处理。
+    - Concatenate 邻居信息。
+    - 线性变换。
+    - 通过两个注意力头（Head1, Head2）分别处理。
 
 ### 3. 更新（Update）
 
@@ -121,7 +121,7 @@ Matformer 的整体流程如下：
 
 ## 快速入门
 
-### 运行方式一：
+### 运行方式一
 
 ```bash
 pip install -r requirements.txt

@@ -35,16 +35,16 @@ Each MatFormer Layer consists of the following core components:
 ### 1. Attention Mechanism
 
 - **Query (Q), Key (K), Value (V)**:
-  - Derived from \( f^*_i \) and \( f^*_j \) via distinct linear transformations \( \text{LN}_Q, \text{LN}_K, \text{LN}_V \).
-  - Edge features \( e_{ij}^h \) are also incorporated after transformation by \( \text{LN}_E \).
+    - Derived from \( f^*_i \) and \( f^*_j \) via distinct linear transformations \( \text{LN}_Q, \text{LN}_K, \text{LN}_V \).
+    - Edge features \( e_{ij}^h \) are also incorporated after transformation by \( \text{LN}_E \).
 
 - **Multi-head Attention**:
-  - The figure illustrates two attention heads (Head1, Head2); the number of heads is configurable.
-  - Hadamard (element-wise) products are used to fuse node and edge features.
+    - The figure illustrates two attention heads (Head1, Head2); the number of heads is configurable.
+    - Hadamard (element-wise) products are used to fuse node and edge features.
 
 - **Attention Weight Computation**:
-  - Q and K pass through LayerNorm, Sigmoid, and Hadamard operations to generate attention weights.
-  - The final attention output is:
+    - Q and K pass through LayerNorm, Sigmoid, and Hadamard operations to generate attention weights.
+    - The final attention output is:
     $$
     \sum_{j \in N_i} \sum_h [\text{Head1}, \text{Head2}]
     $$
@@ -53,9 +53,9 @@ Each MatFormer Layer consists of the following core components:
 
 - Neighbor information is aggregated into a message \( m_i \).
 - This involves:
-  - Concatenating neighbor representations.
-  - Applying linear transformations.
-  - Processing through multiple attention heads (e.g., Head1, Head2).
+    - Concatenating neighbor representations.
+    - Applying linear transformations.
+    - Processing through multiple attention heads (e.g., Head1, Head2).
 
 ### 3. Update
 
@@ -121,7 +121,7 @@ This dataset contains **3D bulk crystalline materials** with properties computed
 
 ## Quick Start
 
-### Training Method 1:
+### Training Method 1
 
 ```bash
 pip install -r requirements.txt
