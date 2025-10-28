@@ -84,7 +84,7 @@ NequIP 的核心结构基于 消息传递神经网络 (Message Passing Neural Ne
 
 ## 快速入门
 
-### 训练方式一：
+### 运行方式一：
 
 ```bash
 python train.py --config_file_path ./rmd.yaml --mode GRAPH --device_target Ascend --device_id 0 --dtype float32
