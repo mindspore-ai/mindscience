@@ -26,23 +26,23 @@ NequIP is built upon a **Message Passing Neural Network (MPNN)** framework and i
    Each atom is mapped to an initial feature vector; coordinates are used to compute pairwise distances.
 
 2. **Message Passing Layers**  
-   - Capture local interactions between neighboring atoms.  
-   - Messages are encoded as spherical tensors to maintain rotational equivariance.  
-   - Feature update rule:
+   Capture local interactions between neighboring atoms.  
+   Messages are encoded as spherical tensors to maintain rotational equivariance.  
+   Feature update rule:
 
      $$
      h_i^{(l+1)} = \sum_{j \in \mathcal{N}(i)} \Phi\left(h_i^{(l)}, h_j^{(l)}, r_{ij}\right)
      $$
 
-     where \( r_{ij} \) denotes the relative position between atoms, and \( \Phi \) is the equivariant linear transformation.
+     where $r_{ij}$ denotes the relative position between atoms, and $\Phi\ $ is the equivariant linear transformation.
 
 3. **Tensor Product Layers**  
-   - Maintain E(3)-equivariance during feature propagation.  
-   - Use tensor products between atomic features and spherical harmonics to encode directional dependencies.
+   Maintain E(3)-equivariance during feature propagation.  
+   Use tensor products between atomic features and spherical harmonics to encode directional dependencies.
 
 4. **Readout Layer**  
-   - Aggregate node features to output the **total molecular energy \( E \)**.  
-   - Atomic forces are derived from the energy gradient with respect to atomic positions:
+   Aggregate node features to output the **total molecular energy \( E \)**.  
+   Atomic forces are derived from the energy gradient with respect to atomic positions:
 
      $$
      \mathbf{F}_i = -\frac{\partial E}{\partial \mathbf{r}_i}
