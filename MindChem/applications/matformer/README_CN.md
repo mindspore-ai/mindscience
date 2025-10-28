@@ -121,7 +121,7 @@ Matformer 的整体流程如下：
 
 ## 快速入门
 
-### 训练方式一：
+### 运行方式一：
 
 ```bash
 pip install -r requirements.txt
