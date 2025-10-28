@@ -19,12 +19,6 @@ from .basic_block import AutoEncoder, FCNet, MLPNet
 from .matformer import *
 
 __all__ = [
-<<<<<<<< HEAD:MindChem/applications/matformer/mindchemistry/cell/__init__.py
-    "Nequip", 'AutoEncoder'
-]
-
-========
     "Nequip"
 ]
->>>>>>>> 751df688 (修改目录结构):MindChem/applications/nequip/mindchemistry/cell/__init__.py
 __all__.extend(matformer.__all__)
