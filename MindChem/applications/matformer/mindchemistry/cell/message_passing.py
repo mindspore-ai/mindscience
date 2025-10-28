@@ -154,15 +154,10 @@ class MessagePassing(nn.Cell):
     def construct(self, node_input, node_attr, edge_src, edge_dst, edge_attr, edge_scalars):
         """construct"""
         layer_in = node_input
+        for i in enumerate(self.layers):
+            layer_out = self.layers[i](
+                layer_in, node_attr, edge_src, edge_dst, edge_attr, edge_scalars)
 
-        # enumerate(self.layers) 会返回 (index, layer)
-        for i, layer in enumerate(self.layers):
-            # 正确调用当前层的前向计算
-            layer_out = layer(
-                layer_in, node_attr, edge_src, edge_dst, edge_attr, edge_scalars
-            )
-
-            # 如果当前层启用了残差连接
             if self.resnets[i]:
                 layer_in = layer_out + layer_in
             else:
