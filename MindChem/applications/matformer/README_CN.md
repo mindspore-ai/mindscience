@@ -6,7 +6,7 @@
 
 ### 背景
 
-> [Matformer](https://arxiv.org/abs/2209.11807) 是基于 **图神经网络 (GNN)** 和 **Transformer** 架构的 SOTA 模型，专门用于预测晶体材料的各种性质。  
+> [MatFormer](https://arxiv.org/abs/2209.11807) 是基于 **图神经网络 (GNN)** 和 **Transformer** 架构的 SOTA 模型，专门用于预测晶体材料的各种性质。  
 > 该模型能够处理晶体材料的周期性图结构（Periodic Graph），在捕捉局部与全局结构信息的同时保持对周期性的不变性。相比传统模型（如 CGCNN、SchNet、MEGNet），Matformer 在晶体材料能量、带隙、晶格常数等性质预测上表现更优。
 
 ### 模型架构
