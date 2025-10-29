@@ -11,7 +11,7 @@
 
 ### 模型架构
 
-![alt text](image.png)
+![alt text](images/architecture.png)
 
 Matformer 的整体流程如下：
 
@@ -116,7 +116,7 @@ Matformer 的整体流程如下：
 
 ## 环境要求
 
-> 1. 安装`mindspore`
+> 1. 安装`mindspore=2.7.0`
 > 2. 安装`mindscience`
 
 ## 快速入门
@@ -145,7 +145,7 @@ python predict.py
 ## 结果展示
 
 下图为经过充分训练的模型对晶体材料形成能的预测，可以看出预测的误差与真实值差距很小。
-![alt text](image-1.png)
+![alt text](images/result.png)
 
 ### 日志
 

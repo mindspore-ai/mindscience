@@ -18,7 +18,7 @@
 
 NequIP 的核心结构基于 消息传递神经网络 (Message Passing Neural Network, MPNN)，并在特征空间中引入了 球谐张量表示 (Spherical Harmonic Tensor Representations)，从而在三维空间中实现 E(3) 群等变性。
 
-![alt text](image.png)
+![alt text](images/architecture.png)
 
 1. **Input Embedding 层**  
    输入原子种类（原子序号）与坐标信息。  
@@ -84,7 +84,7 @@ NequIP 的核心结构基于 消息传递神经网络 (Message Passing Neural Ne
 
 ## 环境要求
 
-> 1. 安装`mindspore`
+> 1. 安装`mindspore=2.7.0`
 > 2. 安装`mindscience`
 
 ## 快速入门
@@ -114,7 +114,7 @@ python predict.py --config_file_path ./rmd.yaml --mode GRAPH --device_target GPU
 ## 结果展示
 
 下图是展示对分子能量预测的结果。从图中可以可以看出，预测的结果和真实结果走向基本一致
-![alt text](7861bdcd1f08c0fb3e6f937ee2bc7f5a.png)
+![alt text](images/result.png)
 
 ### 日志
 

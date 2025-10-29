@@ -11,7 +11,7 @@ ENFLISH | [简体中文](README_CN.md)
 
 ### Model Architecture
 
-![alt text](image.png)
+![alt text](images/architecture.png)
 
 The overall workflow of MatFormer is as follows:
 
@@ -116,7 +116,7 @@ This dataset contains **3D bulk crystalline materials** with properties computed
 
 ## Environment Requirements
 
-> 1. Install `mindspore`  
+> 1. Install `mindspore=2.7.0`  
 > 2. Install `mindscience`
 
 ## Quick Start
@@ -145,7 +145,7 @@ You can run the training and evaluation code step-by-step using the provided Jup
 ## Results
 
 The figure below shows the formation energy predictions from a fully trained MatFormer model. The predicted values closely match the ground truth, indicating low prediction error.
-![alt text](image-1.png)
+![alt text](images/result.png)
 
 ### Training Logs
 

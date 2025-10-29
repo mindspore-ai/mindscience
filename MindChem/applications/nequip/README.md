@@ -19,7 +19,7 @@ Compared with traditional atomic potential models (e.g., Behler–Parrinello net
 ## Model Architecture
 
 NequIP is built upon a **Message Passing Neural Network (MPNN)** framework and incorporates **Spherical Harmonic Tensor Representations** to achieve E(3)-equivariance in 3D space.  
-![alt text](image.png)
+![alt text](images/architecture.png)
 
 1. **Input Embedding Layer**  
    Inputs atomic species (atomic numbers) and 3D coordinates.  
@@ -89,7 +89,7 @@ Each configuration shares the same atomic number array (`nuclear_charges`), maki
 
 ## Environment Requirements
 
-> 1. Install `mindspore`  
+> 1. Install `mindspore=2.7.0`  
 > 2. Install `mindscience`
 
 ---
@@ -121,7 +121,7 @@ You can execute the provided Jupyter Notebooks (both [English](nequip_en.ipynb) 
 ## Results
 
 The following figure shows the molecular energy prediction results.The predicted curve closely follows the true energy profile, indicating strong model accuracy.
-![alt text](7861bdcd1f08c0fb3e6f937ee2bc7f5a.png)
+![alt text](images/result.png)
 
 ### logs
 
