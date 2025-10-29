@@ -1,0 +1,33 @@
+{
+  "milestone_num": 10,
+  "epochs": 500,
+  "learning_rate": 0.005,
+  "weight_decay": 0.5,
+  "save_every": 25,
+  "gamma": 0.96,
+  "num_data": 15,
+  "num_train": 5,
+  "num_test": 10,
+  "train_window": 20,
+  "pretrain_window": 0,
+  "pretrain_iters": 0,
+  "timesteps": 400,
+  "size": 104,
+  "delta_t": 0.001,
+  "model": {
+    "in_channels": 1,
+    "out_channels": 1,
+    "viscosity": 0.005,
+    "modes": 12,
+    "hidden_channels": 12,
+    "projection_channels": 50,
+    "depths": 2
+  },
+  "batch_size": 100,
+  "down": 4,
+  "time_down": 1,
+  "nolap": true,
+  "drop": true,
+  "inferstep": 1400,
+  "normalization": false
+}
