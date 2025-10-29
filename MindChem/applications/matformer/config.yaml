@@ -4,7 +4,7 @@ train:
   dataset_dir: "./dataset"
   ckpt_dir: "./ckpt"
   props: "formation_energy_peratom"
-  epoch_size: 500
+  epoch_size: 1
   batch_size: 64
   seed: 1234
 
