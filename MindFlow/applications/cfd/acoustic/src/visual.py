@@ -15,7 +15,7 @@
 """visualize the results and computing history"""
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+from matplotlib import animation
 
 
 def anim(velo, us, ts, figname):
