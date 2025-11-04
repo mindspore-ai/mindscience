@@ -1,16 +1,18 @@
 approvers:
-- hsliu_ustc
 - yi-zhang95
-- gongyue19941231
 - b_rookie
+- novigrad
+- wuzhf9
+- zhang-minyan
+- birfied
+
 
 reviewers:
-- hsliu_ustc
 - yi-zhang95
-- gongyue19941231
 - b_rookie
-- mengqinghe0909
 - wangbo572
-- zzzcseth
-- gemini524
-- yang-siyu9777
+- yanglong_unimelb
+- zhang-minyan
+- wuzhf9
+- birfied
+- novigrad
