@@ -23,6 +23,8 @@ from mindspore.ops import operations as P
 
 from ...utils.check_func import check_param_no_greater, check_param_value
 
+# pylint: disable=arguments-differ
+
 
 class MyRoll(nn.Cell):
     ''' Custom defined roll operator to avoid bug in MindSpore '''
@@ -89,7 +91,7 @@ def convert_shape(shape):
     elif len(shape) == 1:
         n, = shape
     else:
-        raise TypeError("Only support 1D dct/dst, but got shape {}".format(shape))
+        raise TypeError(f"Only support 1D dct/dst, but got shape {shape}")
     return n
 
 
@@ -99,7 +101,7 @@ def convert_params(shape, modes, dim):
     ndim = len(shape)
 
     if dim is None:
-        dim = tuple([n - ndim for n in range(ndim)])
+        dim = tuple(n - ndim for n in range(ndim))
     else:
         dim = tuple(np.atleast_1d(dim).astype(int).tolist())
 
@@ -278,11 +280,11 @@ class RDFTn(_DFTn):
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
-        dim (tuple): Dimensions to be transformed. Default: None, the leading dimensions will be transformed.
+        dim (tuple): Dimensions to be transformed. Default: None, the trailing dimensions will be transformed.
         norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
             same as torch.fft.rfftn
-        modes (tuple, int, None): The length of the output transform axis. The `modes` must be no greater than half of the
-            dimension of input 'x'.
+        modes (tuple, int, None): The length of the output transform axis.
+            The `modes` must be no greater than half of the dimension of input 'x'.
         compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
@@ -301,7 +303,7 @@ class RDFTn(_DFTn):
         >>> from mindspore import ops
         >>> from mindflow.core import RDFTn
         >>> ar = ops.rand((2, 32, 512))
-        >>> dft_cell = RDFTn(x.shape[-2:])
+        >>> dft_cell = RDFTn(ar.shape[-2:])
         >>> br, bi = dft_cell(ar)
         >>> print(br.shape)
         (2, 32, 257)
@@ -320,11 +322,11 @@ class IRDFTn(_DFTn):
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
-        dim (tuple): Dimensions to be transformed. Default: None, the leading dimensions will be transformed.
+        dim (tuple): Dimensions to be transformed. Default: None, the trailing dimensions will be transformed.
         norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
             same as torch.fft.irfftn
-        modes (tuple, int, None): The length of the output transform axis. The `modes` must be no greater than half of the
-            dimension of input 'x'.
+        modes (tuple, int, None): The length of the output transform axis.
+            The `modes` must be no greater than half of the dimension of input 'x'.
         compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
@@ -342,10 +344,11 @@ class IRDFTn(_DFTn):
     Examples:
         >>> from mindspore import ops
         >>> from mindflow.core import IRDFTn
+        >>> full_shape = (2, 32, 512)
         >>> ar = ops.rand((2, 32, 257))
         >>> ai = ops.rand((2, 32, 257))
-        >>> dft_cell = IRDFTn(x.shape[-2:])
-        >>> br = dft_cell(ar)
+        >>> dft_cell = IRDFTn(full_shape[-2:])
+        >>> br = dft_cell(ar, ai)
         >>> print(br.shape)
         (2, 32, 512)
     """
@@ -372,11 +375,11 @@ class DFTn(_DFTn):
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
-        dim (tuple): Dimensions to be transformed. Default: None, the leading dimensions will be transformed.
+        dim (tuple): Dimensions to be transformed. Default: None, the trailing dimensions will be transformed.
         norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
             same as torch.fft.irfftn
-        modes (tuple, int, None): The length of the output transform axis. The `modes` must be no greater than half of the
-            dimension of input 'x'.
+        modes (tuple, int, None): The length of the output transform axis.
+            The `modes` must be no greater than half of the dimension of input 'x'.
         compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
@@ -395,7 +398,7 @@ class DFTn(_DFTn):
         >>> from mindflow.cell import DFTn
         >>> ar = ops.rand((2, 32, 512))
         >>> ai = ops.rand((2, 32, 512))
-        >>> dft_cell = DFTn(x.shape[-2:])
+        >>> dft_cell = DFTn(ar.shape[-2:])
         >>> br, bi = dft_cell(ar, ai)
         >>> print(br.shape)
         (2, 32, 512)
@@ -423,11 +426,11 @@ class IDFTn(DFTn):
 
     Args:
         shape (tuple): The shape of the dimensions to be transformed, other dimensions need not be included.
-        dim (tuple): Dimensions to be transformed. Default: None, the leading dimensions will be transformed.
+        dim (tuple): Dimensions to be transformed. Default: None, the trailing dimensions will be transformed.
         norm (str): Normalization mode, should be one of 'forward', 'backward', 'ortho'. Default: 'backward',
             same as torch.fft.irfftn
-        modes (tuple, int, None): The length of the output transform axis. The `modes` must be no greater than half of the
-            dimension of input 'x'.
+        modes (tuple, int, None): The length of the output transform axis.
+            The `modes` must be no greater than half of the dimension of input 'x'.
         compute_dtype (mindspore.dtype): The type of input tensor. Default: mindspore.float32.
 
     Inputs:
@@ -446,7 +449,7 @@ class IDFTn(DFTn):
         >>> from mindflow.cell import DFTn
         >>> ar = ops.rand((2, 32, 512))
         >>> ai = ops.rand((2, 32, 512))
-        >>> dft_cell = DFTn(x.shape[-2:])
+        >>> dft_cell = DFTn(ar.shape[-2:])
         >>> br, bi = dft_cell(ar, ai)
         >>> print(br.shape)
         (2, 32, 512)
@@ -486,7 +489,7 @@ class DCT(nn.Cell):
         >>> from mindspore import ops
         >>> from mindflow.cell import DCT
         >>> a = ops.rand((2, 32, 512))
-        >>> dft_cell = DCT(x.shape[-1:])
+        >>> dft_cell = DCT(a.shape[-1:])
         >>> b = dft_cell(a)
         >>> print(b.shape)
         (2, 32, 512)
@@ -538,7 +541,7 @@ class IDCT(nn.Cell):
         >>> from mindspore import ops
         >>> from mindflow.cell import IDCT
         >>> a = ops.rand((2, 32, 512))
-        >>> dft_cell = IDCT(x.shape[-1:])
+        >>> dft_cell = IDCT(a.shape[-1:])
         >>> b = dft_cell(a)
         >>> print(b.shape)
         (2, 32, 512)
@@ -602,7 +605,7 @@ class DST(nn.Cell):
         >>> from mindspore import ops
         >>> from mindflow.cell import DST
         >>> a = ops.rand((2, 32, 512))
-        >>> dft_cell = DST(x.shape[-1:])
+        >>> dft_cell = DST(a.shape[-1:])
         >>> b = dft_cell(a)
         >>> print(b.shape)
         (2, 32, 512)
@@ -646,7 +649,7 @@ class IDST(nn.Cell):
         >>> from mindspore import ops
         >>> from mindflow.cell import IDST
         >>> a = ops.rand((2, 32, 512))
-        >>> dft_cell = IDST(x.shape[-1:])
+        >>> dft_cell = IDST(a.shape[-1:])
         >>> b = dft_cell(a)
         >>> print(b.shape)
         (2, 32, 512)

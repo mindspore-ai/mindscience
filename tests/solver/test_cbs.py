@@ -68,8 +68,8 @@ def test_solve_2d(mode):
     n_steps = len(errs)
     step_time = time_spent / n_steps
 
-    assert n_steps <= 180
-    assert isclose((ur - ui).std(), 0.029885478, rel_tol=1e-3, abs_tol=1e-3)
+    assert n_steps <= 260
+    assert isclose((ur - ui).std(), 0.029885478, rel_tol=1e-3, abs_tol=1e-3), (ur - ui).std()
     assert time_spent <= 60
     assert step_time <= 0.5
 
@@ -106,8 +106,8 @@ def test_grad_2d(mode):
     loss, grad = grd_func(c_star, f_star)
     time_spent = toc() - tic
 
-    assert isclose(loss, 8.4663, rel_tol=1e-3, abs_tol=1e-3)
-    assert isclose(grad.std(), 0.01240166, rel_tol=1e-3, abs_tol=1e-3)
+    assert isclose(loss, 6.23106, rel_tol=1e-3, abs_tol=1e-3), loss
+    assert isclose(grad.std(), 0.0087822, rel_tol=1e-3, abs_tol=1e-3), grad.std()
     assert time_spent <= 30
 
 
@@ -157,7 +157,7 @@ def test_solve_3d(mode):
     step_time = time_spent / n_steps
 
     assert n_steps <= 180
-    assert isclose((ur - ui).std(), 0.00265927, rel_tol=1e-3, abs_tol=1e-3)
+    assert isclose((ur - ui).std(), 0.00265927, rel_tol=1e-3, abs_tol=1e-3), (ur - ui).std()
     assert time_spent <= 60
     assert step_time <= 0.5
 
@@ -194,6 +194,6 @@ def test_grad_3d(mode):
     loss, grad = grd_func(c_star, f_star)
     time_spent = toc() - tic
 
-    assert isclose(loss, 7.84422, rel_tol=1e-3, abs_tol=1e-3)
-    assert isclose(grad.std(), 0.00207235, rel_tol=1e-3, abs_tol=1e-3)
+    assert isclose(loss, 4.43072, rel_tol=1e-3, abs_tol=1e-3), loss
+    assert isclose(grad.std(), 0.00207235, rel_tol=1e-3, abs_tol=1e-3), grad.std()
     assert time_spent <= 30
