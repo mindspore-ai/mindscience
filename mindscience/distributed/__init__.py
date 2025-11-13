@@ -16,4 +16,6 @@
 init
 """
 
-__all__ = []
+from .manager import initialize_parallel
+
+__all__ = ["initialize_parallel"]
