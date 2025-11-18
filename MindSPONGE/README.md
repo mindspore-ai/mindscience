@@ -37,6 +37,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 ## 重要消息
 
 - 🙌`[置顶]` `[进行中]` [**2025 MindScience开源实习任务**](https://gitee.com/mindspore/community/issues/ICIROO)火热进行中！持续发布新任务，欢迎大家认领~！！[[活动详情]](https://mp.weixin.qq.com/s/R-t8-u4ak2fN4gxe13m3Gw)
+- 🔥`2025.11.6` 基于MindSpore的RFdiffusion推理发布，支持抗体设计，性能持续提升中！[[代码]](./applications/rf_diffusion)
 - 🔥`2025.09.15` 昌平实验室、北京大学高毅勤、刘思睿团队发表基于MindSpore训练的[**GRASP**](https://www.nature.com/articles/s41592-025-02820-1)模型收录《Nature Methods》。该模型整合多源实验信息实现复合物建模，抗体预测超越 AlphaFold3。[[相关新闻]](https://mp.weixin.qq.com/s/OyqGvoIbtZaOTgEM5UFXJw)
 - 🔥`2025.7.26` 基于MindSpore的DeepMind版AlphaFold3推理发布，性能持续提升中！[[代码]](https://gitee.com/mindspore/mindscience/tree/legacy-master/MindSPONGE/applications/research/AlphaFold3)
 - 🔥`2025.8.18—2025.8.22` MindSpore SPONGE[**暑期学校第五季**](https://mp.weixin.qq.com/s/GAPyziaXcZyGPSB09BeMgg)圆满收官！[[活动回放]](https://mp.weixin.qq.com/s/loUBlJhIWYAn646w3n3wVA)
@@ -61,7 +62,7 @@ MindSpore SPONGE(Simulation Package tOwards Next GEneration molecular modelling)
 
 - 🔥AlphaFold3 [[Available]](https://gitee.com/mindspore/mindscience/tree/legacy-master/MindSPONGE/applications/research/AlphaFold3)
 - 🔥Protenix `In Progress`
-- 🔥RFdiffusion `In Progress`
+- 🔥RFdiffusion [[Available]](./applications/rf_diffusion)
 - Alphafold-Multimer [[Available]](https://gitee.com/mindspore/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/afmultimer.md)
 - MEGAProtein [[Available]](https://gitee.com/mindspore/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/MEGAProtein.md)
 - FAAST & RASP [[Available]](https://gitee.com/mindspore/mindscience/tree/legacy-master/MindSPONGE/applications/research/FAAST)
