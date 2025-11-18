@@ -290,7 +290,7 @@ class CBS(nn.Cell):
             return num_real, num_imag
 
         def den(x):
-            return sum([(alpha * x) ** i / float(factorial(i)) for i in range(rampup + 1)]) * factorial(rampup)
+            return sum((alpha * x) ** i / float(factorial(i)) for i in range(rampup + 1)) * factorial(rampup)
 
         def transform_fun(x):
             num_real, num_imag = num(x)
@@ -310,7 +310,7 @@ class CBS(nn.Cell):
 
         # Reference: https://github.com/ucl-bug/jwave/blob/9d114ac6acade3c866e78a9984be47833119a9f9/
         #            jwave/acoustics/time_harmonic.py#L153
-        diff *= (diff > 0).astype(ms.float32) / 4.
+        diff *= (diff > 0).astype(ms.float32)
 
         dist = ops.norm(diff, dim=0)
         k_k0_real, k_k0_imag = transform_fun(dist)
