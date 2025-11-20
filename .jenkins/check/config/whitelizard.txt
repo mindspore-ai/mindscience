@@ -6,13 +6,26 @@
 
 ## MindFlow
 mindscience/MindFlow/mindflow/cfd/space_solver/riemann_computer/roe.py:eigen_composition
-mindscience/MindChemistry/mindchemistry/e3/o3/spherical_harmonics.py:_spherical_harmonics
-mindscience/MindChemistry/mindchemistry/so2_conv/wigner.py:wigner_D
+mindscience/mindscience/e3nn/o3/spherical_harmonics.py:_spherical_harmonics
 
 # MindSPONGE
 mindscience/MindSPONGE/src/sponge/system/modelling/mol2_parser.py:mol2parser
 mindscience/MindSPONGE/src/sponge/system/modelling/hadder.py:add_hydrogen
 mindscience/MindSPONGE/src/sponge/system/molecule/molecule.py:build_system
+mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/inference/ab_util.py:apply_templating_scheme
+mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/inference/model_runners.py:initialize
+mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/inference/model_runners.py:sample_init
+mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/inference/utils.py:parse_pdb_lines
+mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/parsers.py:HLT_pdb_parser
+mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/parsers.py:chothia_pdb_parser
+mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/util.py:writepdb
+mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/util.py:acceptorBB0
+mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/contigs.py:__init__
+mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/contigs.py:expand_sampled_mask
+mindscience/MindSPONGE/applications/rf_diffusion/env/se3_transformer/model/layers/convolution.py:__init__
+mindscience/MindSPONGE/applications/rf_diffusion/env/se3_transformer/model/layers/convolution.py:construct
+mindscience/MindSPONGE/applications/rf_diffusion/run_inference.py:main
+mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/inference/ab_util.py:ab_write_pdblines
 
 #MindChem
 mindscience/MindChem/applications/deephe3nn/data/graph.py:get_graph

@@ -37,6 +37,7 @@ MindSpore SPONGE (Simulation Package tOwards Next GEneration molecular modelling
 ## News
 
 - 🙌`[Pinned]` `[In Progress]` [**2025 MindScience Open-source Internship**](https://gitee.com/mindspore/community/issues/ICIROO) is now open! Come apply your tasks! [[Link]](https://mp.weixin.qq.com/s/R-t8-u4ak2fN4gxe13m3Gw)
+- 🔥`2025.11.6` RFdiffusion inference on MindSpore released, supports antibody design, performance continuously improving! [[Code]](./applications/rf_diffusion)
 - 🔥`2025.09.15` The Changping Laboratory, along with Gao Yiqin and Liu Sirui's team from Peking University, published the [**GRASP**](https://www.nature.com/articles/s41592-025-02820-1) model, trained based on MindSpore, in *Nature Methods*. This model integrates multi-source experimental information to enable complex modeling, and its antibody predictions surpass AlphaFold3. [[Link]](https://mp.weixin.qq.com/s/OyqGvoIbtZaOTgEM5UFXJw)
 - 🔥`2025.7.26` Now support DeepMind's AlphaFold3 run on Mindspore! [[Try]](https://gitee.com/mindspore/mindscience/tree/legacy-master/MindSPONGE/applications/research/AlphaFold3)
 - 🔥`2025.8.18—2025.8.22` MindSpore SPONGE Summer School Season 5 [[Intro]](https://mp.weixin.qq.com/s/GAPyziaXcZyGPSB09BeMgg)  [[Review]](https://mp.weixin.qq.com/s/loUBlJhIWYAn646w3n3wVA)
@@ -60,7 +61,7 @@ MindSpore SPONGE (Simulation Package tOwards Next GEneration molecular modelling
 
 - 🔥AlphaFold3 [[Available]](https://gitee.com/mindspore/mindscience/tree/legacy-master/MindSPONGE/applications/research/AlphaFold3)
 - 🔥Protenix `In Progress`
-- 🔥RFdiffusion `In Progress`
+- 🔥RFdiffusion [[Available]](./applications/rf_diffusion)
 - Alphafold-Multimer [[Available]](https://gitee.com/mindspore/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/afmultimer.md)
 - MEGAProtein [[Available]](https://gitee.com/mindspore/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/MEGAProtein.md)
 - FAAST & RASP [[Available]](https://gitee.com/mindspore/mindscience/tree/legacy-master/MindSPONGE/applications/research/FAAST)

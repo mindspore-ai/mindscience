@@ -1,0 +1,17 @@
+# Config for sampling symmetric assemblies.
+
+defaults:
+  - base
+
+inference:
+  model_runner: AbSampler
+
+preprocess:
+  hotspot_dim: 23
+
+antibody:
+  target_pdb: null
+  framework_pdb: null
+  T_scheme: single_T
+  design_loops: ['H1:','H2:','H3:','L1:','L2:','L3:']
+  no_bugfix_t1d_mask: True
