@@ -44,7 +44,7 @@ Fourier Layer网络结构如下图所示。图中V表示输入向量，上框表
 
 ## 快速开始
 
-数据集下载地址：[data_driven/burgers/fno1d/dataset](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/dataset/). 将数据集保存在`./dataset`路径下.
+数据集下载地址：[data_driven/burgers/](https://download.mindspore.cn/mindscience/mindflow/dataset/applications/data_driven/burgers/). 将数据集保存在`./dataset`路径下.
 
 ### 训练方式一：在命令行中调用`train.py`脚本
 
