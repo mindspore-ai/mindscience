@@ -24,6 +24,7 @@ import mindspore as ms
 
 from ..kinematics import xyz_to_t2d
 from ..parsers import *
+from .. import util
 from ..util import reference_angles as REF_ANGLES
 from ..util import torsion_can_flip as TOR_CAN_FLIP
 from ..util import torsion_indices as TOR_INDICES
