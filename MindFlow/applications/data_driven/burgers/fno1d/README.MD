@@ -51,7 +51,7 @@ You can download dataset from [data_driven/burgers/](https://download.mindspore.
 
 ```shell
 export PYTHONPATH=$(cd ../../../../../ && pwd):$PYTHONPATH
-python train.py --config_file_path ./configs/fno1d.yaml --mode GRAPH --device_target Ascend --device_id 0
+python train.py --config_file_path ./configs/fno1d.yaml --device_target Ascend --device_id 0 --mode GRAPH
 ```
 
 where:
