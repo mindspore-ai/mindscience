@@ -18,7 +18,7 @@ from mindspore import nn, ops
 from mindspore.common.initializer import initializer, Normal
 from mindspore import dtype as mstype
 
-from mindearth.cell.utils import to_2tuple
+from mindscience.common.utils import to_2tuple
 from .afno2d import ForwardFeatures
 
 
@@ -74,7 +74,7 @@ class AFNONet(nn.Cell):
                  mlp_ratio=4,
                  dropout_rate=1.0,
                  compute_dtype=mindspore.float32):
-        super(AFNONet, self).__init__()
+        super().__init__()
         image_size = to_2tuple(image_size)
         try:
             grid_size = (image_size[0] // patch_size,
