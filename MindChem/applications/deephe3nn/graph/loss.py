@@ -14,7 +14,7 @@
 # ============================================================================
 """loss"""
 import mindspore as ms
-from mindspore import ops, nn
+from mindspore import nn, ops
 
 
 class LossMaskBase(nn.Cell):

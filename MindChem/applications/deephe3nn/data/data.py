@@ -27,7 +27,7 @@ from pathos.multiprocessing import ProcessingPool as Pool
 from pymatgen.core.structure import Structure
 
 from data.graph import get_graph, load_orbital_types
-from mindchemistry.cell.deephe3nn.utils import process_targets
+from models.utils import process_targets
 
 
 class AijData:

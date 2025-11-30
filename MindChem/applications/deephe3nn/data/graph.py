@@ -25,7 +25,7 @@ import warnings
 import h5py
 import numpy as np
 
-from mindchemistry.cell.deephe3nn.utils import convert2numpyt, flt2cplx
+from models.utils import convert2numpyt, flt2cplx
 
 
 def load_orbital_types(path, return_orbital_types=False):
@@ -64,15 +64,6 @@ def is_ij(edge_key):
         if edge_key[3] > edge_key[4]:
             out = False
     return out
-
-
-def convert_ijji(edge_key):
-    r"""convert edge key between ij and ji"""
-    if isinstance(edge_key, str):
-        edge_key = eval(edge_key)
-    out = [-edge_key[0], -edge_key[1], -edge_key[2], edge_key[4], edge_key[3]]
-    return out
-
 
 def get_edge_fea(cart_coords, lattice, default_dtype_np, edge_key):
     """

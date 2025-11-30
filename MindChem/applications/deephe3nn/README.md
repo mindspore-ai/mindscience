@@ -8,11 +8,11 @@
 
 ## 数据集
 
-> 从https://zenodo.org/records/7553640  下载  Bilayer_graphene_dataset.zip 到当前目录并解压， 不要修改其文件名。
+> 从https://zenodo.org/records/7553640 下载 Bilayer_graphene_dataset.zip 到当前目录并解压，不要修改其文件名。
 
 ## 环境要求
 
-> 1. 安装`mindspore`
+> 1. 安装`mindspore>=2.7.1`
 > 2. 安装`mindscience`
 > 2. 安装依赖包`pip install -r requirements.txt`
 
@@ -30,17 +30,23 @@
 
 ```txt
 deephe3nn
-    │  README.md    README文件
-    │  train.py     训练启动脚本
-    │  predictor.py     推理启动脚本
+    │       README.md  README文件
+    │       train.py  训练启动脚本
+    │       predictor.py  推理启动脚本
     │  
     └─data
-            data.py  数据集处理
-            graph.py   图数据结构
+    │       data.py  数据集处理
+    │       graph.py  图数据结构
     │  
     └─models
-            kernel.py 主执行流程
-            parse_configs.py  config处理文件
+    │       kernel.py 主执行流程
+    │       parse_configs.py  config处理文件
+    │       e3modules.py  e3模块
+    │       model.py  模型定义
+    │       utils.py  工具函数
+    └─graph
+    │       graph.py  图相关操作
+    │       loss.py  图损失函数
     └─configs
             Bilayer_graphene_train_numpy.ini  模型config文件
 ```
@@ -49,7 +55,7 @@ deephe3nn
 
 ### 训练
 
-```txt
+```bash
 pip install -r requirements.txt
 python train.py configs/Bilayer_graphene_train.ini
 ```
@@ -58,7 +64,7 @@ python train.py configs/Bilayer_graphene_train.ini
 
 将权重的path写入config文件的checkpoint_dir中
 
-```txt
+```bash
 pip install -r requirements.txt
 python predict.py configs/Bilayer_graphene_train.ini
 ```

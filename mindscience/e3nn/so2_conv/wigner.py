@@ -17,27 +17,23 @@ wigner file
 """
 
 # pylint: disable=C0103
+import os
 import pickle
 from mindspore import ops
 import mindspore as ms
 from mindscience.e3nn.utils.func import broadcast_args
 
+jd = None
+file_dir = os.path.dirname(os.path.abspath(__file__))
+pkl_path = os.path.join(file_dir, 'jd.pkl')
+
+with open(pkl_path, 'rb') as f:
+    jd = pickle.load(f)
 
 def wigner_D(lv, alpha, beta, gamma):
     """
-    # Borrowed from e3nn @ 0.4.0:
-    # https://github.com/e3nn/e3nn/blob/0.4.0/e3nn/o3/_wigner.py#L10
-    # jd is a list of tensors of shape (2l+1, 2l+1)
-
-    # Borrowed from e3nn @ 0.4.0:
-    # https://github.com/e3nn/e3nn/blob/0.4.0/e3nn/o3/_wigner.py#L37
-    #
-    # In 0.5.0, e3nn shifted to torch.matrix_exp which is significantly slower:
-    # https://github.com/e3nn/e3nn/blob/0.5.0/e3nn/o3/_wigner.py#L92
+    wigner_D function that complies with mindspore.jit compilation
     """
-    jd = None
-    with open("jd.pkl", "rb") as f:
-        jd = pickle.load(f)
     if not lv < len(jd):
         raise NotImplementedError(
             f"wigner D maximum l implemented is {len(jd) - 1}, send us an email to ask for more"

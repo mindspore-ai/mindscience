@@ -20,22 +20,6 @@ from mindspore import ops, nn
 from mindscience.e3nn.o3 import Irreps
 
 
-class Silu(nn.Cell):
-    """
-    silu activation class
-    """
-
-    def __init__(self):
-        super().__init__()
-        self.sigmoid = nn.Sigmoid()
-
-    def construct(self, x):
-        """
-        silu activation class construct process
-        """
-        return ops.mul(x, self.sigmoid(x))
-
-
 class SO2MConvolution(nn.Cell):
     """
     SO2 Convolution subnetwork

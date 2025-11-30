@@ -87,6 +87,12 @@ mindscience.e3nn/
 │   ├── normact.py         # Normalization-activation combinations
 │   ├── one_hot.py         # One-hot encoding
 │   └── scatter.py         # Scatter aggregation operations
+├── so2_conv/                # SO(2) convolution and edge-frame rotation
+│   ├── __init__.py         # Public API exports
+│   ├── so2.py              # SO2Convolution and submodules
+│   ├── so3.py              # SO3Rotation and embedding rotate/invert
+│   ├── wigner.py           # Wigner D block construction
+│   └── init_edge_rot_mat.py# Build edge rotation matrices from vectors
 └── utils/                   # Utility functions module
     ├── batch_dot.py        # Batch dot product operations
     ├── func.py             # General utility functions
@@ -128,6 +134,42 @@ mindscience.e3nn/
 - **ncon.py**: Tensor network contraction operations
 - **perm.py**: Permutation and transposition operations
 - **radius.py**: Utility functions for constructing radius graphs
+
+- **radius.py**: Utility functions for constructing radius graphs
+
+#### so2_conv Module - SO(2) Convolution
+
+- **Purpose**: Perform equivariant convolution over magnetic quantum number `m` channels in an edge-aligned local frame, preserving SO(2) symmetry around the edge axis.
+
+**Key Components**
+
+- `SO2Convolution`: m-wise mixing network for inputs/outputs defined by `Irreps`. Splits `m=0` (real) and `m>0` (pair channels) and assembles per-`l` outputs.
+- `SO3Rotation`: converts edge rotation matrices to Wigner D blocks and rotates embeddings to/from the local frame.
+- `init_edge_rot_mat`: robust construction of 3×3 edge rotation matrices from edge vectors.
+
+```python
+from mindscience.e3nn.so2_conv import SO2Convolution, SO3Rotation
+from mindscience.e3nn.so2_conv.init_edge_rot_mat import init_edge_rot_mat
+
+irreps_in = "2x0e + 1x1o"
+irreps_out = "1x0e + 1x1o"
+so2 = SO2Convolution(irreps_in, irreps_out)
+so3 = SO3Rotation(lmax=1, irreps_in=irreps_in, irreps_out=irreps_out)
+
+# edge_vecs: [num_edges, 3]
+edge_rot = init_edge_rot_mat(edge_vecs)              # [num_edges, 3, 3]
+wigner, wigner_inv = so3.set_wigner(edge_rot)
+
+embedding_local = so3.rotate(embedding_global, wigner)
+out_tuple = so2(embedding_local, edge_attrs)         # edge_attrs gives num_edges
+out_global = so3.rotate_inv(out_tuple, wigner_inv)
+```
+
+**Notes**
+
+- `SO2Convolution` expects rotated embedding as a tuple per input irreps and uses edge count from `x_edge` (`num_edges`).
+- `SO3Rotation.set_wigner` produces Wigner D blocks for `l ∈ [0, lmax]` based on edge rotations.
+- The pipeline is: build edge rotations → Wigner D → rotate to local frame → SO(2) convolution → rotate back.
 
 ## Core Components
 

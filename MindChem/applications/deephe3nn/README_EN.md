@@ -12,7 +12,7 @@ Download `Bilayer_graphene_dataset.zip` from https://zenodo.org/records/7553640 
 
 ## Environment Requirements
 
-1. Install `mindspore`
+1. Install `mindspore>=2.7.1`
 2. Install `mindscience`
 3. Install dependencies: `pip install -r requirements.txt`
 
@@ -30,20 +30,28 @@ Download `Bilayer_graphene_dataset.zip` from https://zenodo.org/records/7553640 
 
 ```txt
 deephe3nn
-    │  README.md                README (Chinese)
-    │  README_EN.md             README (English)
-    │  train.py                 Training entry
-    │  predictor.py             Inference entry
+    │  README.md                       README (Chinese)
+    │  README_EN.md                    README (English)
+    │  train.py                        Training entry
+    │  predict.py                      Inference entry
+    │  requirements.txt                Python dependencies
     │  
     └─data
-            data.py             Dataset processing
-            graph.py            Graph data structures
+    │      data.py                     Dataset processing
+    │      graph.py                    Graph data structures
     │  
     └─models
-            kernel.py           Main execution flow
-            parse_configs.py    Config processing
+    │      kernel.py                   Main execution flow
+    │      parse_configs.py            Config processing
+    │      e3modules.py                E3 modules
+    │      model.py                    Model definition
+    │      utils.py                    Utility functions
+    └─graph
+    │      graph.py                    Graph operations
+    │      loss.py                     Graph loss functions
+    │  
     └─configs
-            Bilayer_graphene_train_numpy.ini  Model config file
+           Bilayer_graphene_train.ini  Model config file
 ```
 
 ## Training and Inference

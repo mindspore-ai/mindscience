@@ -20,12 +20,11 @@ import os
 import random
 import shutil
 
-import mindspore as ms
-from mindspore import nn, ops
-import mindspore.numpy as msnp
-from mindspore.train import ReduceLROnPlateau
 import numpy as np
-import sympy as sym
+import mindspore as ms
+import mindspore.numpy as msnp
+from mindspore import nn, ops
+from mindspore.train import ReduceLROnPlateau
 from scipy import special as sp
 from scipy.optimize import brentq
 from mindscience.e3nn.o3.irreps import Irrep, Irreps
@@ -84,55 +83,36 @@ def jn_zeros(n, k):
     return zerosj
 
 
-def spherical_bessel_formulas(n):
+class LossRecord:
     """
-    Computes the sympy formulas for the spherical bessel functions up to order n (excluded)
+    LossRecord class
     """
-    x = sym.symbols("x")
 
-    if x != 0:
-        f = [sym.sin(x) / x]
-        a = sym.sin(x) / x
-    else:
-        raise ValueError
-    for i in range(1, n):
-        if x != 0:
-            b = sym.diff(a, x) / x
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        """
+        LossRecord class reset all the parameter
+        """
+        self.last_val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def update(self, val, num=1):
+        """
+        LossRecord class update all the parameter
+        """
+        self.last_val = val
+        self.sum += val * num
+        self.count += num
+        count_div = self.count
+        if count_div != 0:
+            self.avg = self.sum / count_div
         else:
             raise ValueError
-        f += [sym.simplify(b * (-x) ** i)]
-        a = sym.simplify(b)
-    return f
 
-
-def bessel_basis(n, k):
-    """
-    Compute the sympy formulas for the normalized and rescaled spherical bessel functions up to
-    order n (excluded) and maximum frequency k (excluded).
-    """
-
-    zeros = jn_zeros(n, k)
-    normalizer = []
-    for order in range(n):
-        normalizer_tmp = []
-        for i in range(k):
-            normalizer_tmp += [0.5 * jn(zeros[order, i], order + 1) ** 2]
-        normalizer_tmp = np.divide(1, np.array(normalizer_tmp) ** 0.5)
-        normalizer += [normalizer_tmp]
-
-    f = spherical_bessel_formulas(n)
-    x = sym.symbols("x")
-    bess_basis = []
-    for order in range(n):
-        bess_basis_tmp = []
-        for i in range(k):
-            bess_basis_tmp += [
-                sym.simplify(
-                    normalizer[order][i] * f[order].subs(x, zeros[order, i] * x)
-                )
-            ]
-        bess_basis += [bess_basis_tmp]
-    return bess_basis
 
 
 class GaussianBasis(nn.Cell):
@@ -185,77 +165,6 @@ class GaussianBasis(nn.Cell):
             diff = ops.unsqueeze(distances, -1)
         gauss = ops.exp(coeff * ops.pow(diff, 2))
         return gauss
-
-
-class MaskMSELoss(nn.Cell):
-    """
-    Masked MSELoss class
-    """
-
-    def __init__(self) -> None:
-        pass
-
-    def construct(
-        self, inputs: ms.Tensor, target: ms.Tensor, mask: ms.Tensor
-    ) -> ms.Tensor:
-        """
-        MaskMSELoss class construct process
-        """
-        mse = ops.pow(ops.abs(inputs - target), 2)
-        mse = ops.masked_select(mse, mask).mean()
-
-        return mse
-
-
-class MaskMAELoss(nn.Cell):
-    """
-    Masked MSELoss class
-    """
-
-    def __init__(self) -> None:
-        pass
-
-    def construct(
-        self, inputs: ms.Tensor, target: ms.Tensor, mask: ms.Tensor
-    ) -> ms.Tensor:
-        """
-        Masked MSELoss class construct process
-        """
-        mae = ops.abs(inputs - target)
-        mae = ops.masked_select(mae, mask).mean()
-
-        return mae
-
-
-class LossRecord:
-    """
-    LossRecord class
-    """
-
-    def __init__(self):
-        self.reset()
-
-    def reset(self):
-        """
-        LossRecord class reset all the parameter
-        """
-        self.last_val = 0
-        self.avg = 0
-        self.sum = 0
-        self.count = 0
-
-    def update(self, val, num=1):
-        """
-        LossRecord class update all the parameter
-        """
-        self.last_val = val
-        self.sum += val * num
-        self.count += num
-        count_div = self.count
-        if count_div != 0:
-            self.avg = self.sum / count_div
-        else:
-            raise ValueError
 
 
 def convert2numpyt(original_dtype):

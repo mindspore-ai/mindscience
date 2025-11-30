@@ -24,8 +24,9 @@ from configparser import ConfigParser
 
 import mindspore as ms
 import numpy as np
-from mindchemistry.cell.deephe3nn.utils import orbital_analysis
 from mindscience.e3nn.o3.irreps import Irreps
+
+from .utils import orbital_analysis
 
 
 class BaseConfig:

@@ -15,16 +15,19 @@
 """
 e3modules
 """
-import mindspore as ms
 import numpy as np
+import mindspore as ms
 from mindspore import Parameter, ParameterTuple, Tensor, jit_class, nn, ops
-from mindscience.e3nn.deephe3nn.utils import irreps_from_l1l2
-from mindscience.e3nn.graph import AggregateNodeToGlobal, LiftGlobalToNode
+
+from graph.graph import AggregateNodeToGlobal, LiftGlobalToNode
+
 from mindscience.e3nn.nn.gate import _Extract
 from mindscience.e3nn.o3.irreps import Irreps
 from mindscience.e3nn.o3.sub import Linear
 from mindscience.e3nn.o3.tensor_product import TensorProduct
 from mindscience.e3nn.o3.wigner import wigner_3j
+
+from .utils import irreps_from_l1l2
 
 
 class SkipConnection(nn.Cell):
