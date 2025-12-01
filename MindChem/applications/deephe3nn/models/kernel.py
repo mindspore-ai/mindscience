@@ -21,18 +21,17 @@ import time
 
 import mindspore as ms
 import mindspore.dataset as ds
+import numpy as np
 from mindspore import nn, ops
 from mindspore.amp import DynamicLossScaler
-import numpy as np
 
 from data.data import AijData
-from mindchemistry.cell.deephe3nn.e3modules import E3TensorDecompNet
-from mindchemistry.cell.deephe3nn.model import Net
-from mindchemistry.cell.deephe3nn.utils import (LossRecord, RevertDecayLR,
-                                                process_targets,
-                                                set_random_seed)
-from mindchemistry.graph.loss import L2LossMask
+from graph.loss import L2LossMask
 from models.parse_configs import BaseConfig, EvalConfig, TrainConfig
+
+from .e3modules import E3TensorDecompNet
+from .model import Net
+from .utils import LossRecord, RevertDecayLR, process_targets, set_random_seed
 
 
 class DatasetInfo:

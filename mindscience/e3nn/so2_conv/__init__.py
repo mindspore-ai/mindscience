@@ -12,4 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""graph"""
+"""
+init file
+"""
+from .so3 import SO3Rotation
+from .so2 import SO2Convolution
+
+__all__ = ["SO3Rotation", "SO2Convolution"]

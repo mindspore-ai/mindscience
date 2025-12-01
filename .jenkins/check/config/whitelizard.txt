@@ -29,5 +29,5 @@ mindscience/MindSPONGE/applications/rf_diffusion/rfdiffusion/inference/ab_util.p
 
 #MindChem
 mindscience/MindChem/applications/deephe3nn/data/graph.py:get_graph
-mindscience/MindChem/applications/deephe3nn/mindchemistry/cell/deephe3nn/model.py:__init__
+mindscience/MindChem/applications/deephe3nn/models/model.py:__init__
 mindscience/MindChem/applications/crystalflow/test_crystalflow.py:test_flow

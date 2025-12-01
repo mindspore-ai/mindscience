@@ -25,19 +25,20 @@ import mindspore as ms
 from mindspore import nn, ops
 from mindspore.common.initializer import Uniform
 
-from mindchemistry.graph.graph import Aggregate, LiftNodeToEdge
-from mindchemistry.so2_conv import SO2Convolution, SO3Rotation
-from mindchemistry.so2_conv.init_edge_rot_mat import init_edge_rot_mat
-from mindchemistry.cell.deephe3nn.e3modules import (
-    E3ElementWise, E3LayerNorm, SelfTp, SeparateWeightTensorProduct,
-    SkipConnection, SortIrreps)
-from mindchemistry.cell.deephe3nn.utils import GaussianBasis, tp_path_exists
+from graph.graph import Aggregate, LiftNodeToEdge
 
-from mindscience.e3nn.o3.sub import (FullyConnectedTensorProduct, Linear,
-                                     LinearBias)
 from mindscience.e3nn.nn.gate import Gate
 from mindscience.e3nn.o3.irreps import Irreps
 from mindscience.e3nn.o3.spherical_harmonics import SphericalHarmonics
+from mindscience.e3nn.o3.sub import (FullyConnectedTensorProduct, Linear,
+                                     LinearBias)
+from mindscience.e3nn.so2_conv import SO2Convolution, SO3Rotation
+from mindscience.e3nn.so2_conv.init_edge_rot_mat import init_edge_rot_mat
+
+from .e3modules import (E3ElementWise, E3LayerNorm, SelfTp,
+                        SeparateWeightTensorProduct, SkipConnection,
+                        SortIrreps)
+from .utils import GaussianBasis, tp_path_exists
 
 epsilon = 1e-8
 

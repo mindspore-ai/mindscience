@@ -38,8 +38,8 @@
 
 ## 最新消息
 
-- `2025.04.16` 增加CrystalFlow模型支持；
 - `2025.07.07` 增加Orb模型支持；
+- `2025.04.16` 增加CrystalFlow模型支持；
 - `2025.03.30` MindChemistry 0.2.0版本发布，包括多个应用案例，支持NequIP、DeephE3nn、Matformer以及DiffCSP模型；
 - `2024.07.30` MindChemistry 0.1.0版本发布；
 
@@ -56,13 +56,13 @@
 | 模型 | 体系 | 数据 | 任务 |
 |---------|------|------|------|
 | [NequIP](./applications/nequip/) | 小分子 | Revised Molecular Dynamics 17 (rMD17) 数据集 | 分子能量预测，基于等变计算与图神经网络 |
-| [Orb](https://gitee.com/mindspore/mindscience/tree/master/MindChemistry/applications/orb) | 分子与晶体材料体系 | 大规模三维原子结构数据集，DFT 计算结果 | 通用图神经网络势，预测能量、力、应力，用于分子动力学模拟等 |
+| [Orb](./applications/orb/) | 分子与晶体材料体系 | 大规模三维原子结构数据集，DFT 计算结果 | 通用图神经网络势，预测能量、力、应力，用于分子动力学模拟等 |
 
 ### 性质预测
 
 | 模型 | 体系 | 数据 | 任务 |
 |---------|------|------|------|
-| [DeephE3nn](https://gitee.com/mindspore/mindscience/tree/master/MindChemistry/applications/deephe3nn) | 材料体系 | 双层石墨烯数据集 | 基于 E(3)-等变神经网络预测电子哈密顿量 |
+| [DeephE3nn](./applications/deephe3nn/) | 材料体系 | 双层石墨烯数据集 | 基于 E(3)-等变神经网络预测电子哈密顿量 |
 | [Matformer](./applications/matformer/) | 晶体材料体系 | JARVIS-DFT 3D数据集 | 基于图神经网络 + Transformer 预测材料性质 |
 
 ### 结构生成
