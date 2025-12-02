@@ -60,14 +60,6 @@ class LossMaskBase(nn.Cell):
                 raise ValueError
         return ops.true_divide(sum, num)
 
-class L1LossMask(LossMaskBase):
-
-    def __init__(self, reduction='mean'):
-        super().__init__(reduction)
-
-    def loss(self, logits, labels):
-        return ops.abs(logits - labels)
-
 
 class L2LossMask(LossMaskBase):
 

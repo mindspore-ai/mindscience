@@ -18,7 +18,7 @@ from pathlib import Path
 
 import numpy as np
 
-from data.data_utils import StandardScaler, preprocess
+from .data_utils import StandardScaler, preprocess
 
 if Path("./dataset/dataset_prop.txt").exists():
     with open("./dataset/dataset_prop.txt", "r", encoding="utf-8") as file:

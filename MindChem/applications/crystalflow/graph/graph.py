@@ -150,27 +150,6 @@ class AggregateNodeToGlobal(Aggregate):
         return self.scatter(node_attr, batch, out=out, dim_size=dim_size, mask=mask)
 
 
-class AggregateEdgeToGlobal(Aggregate):
-    """AggregateEdgeToGlobal"""
-
-    def __init__(self, mode='add'):
-        super().__init__(mode=mode)
-
-    def construct(self, edge_attr, batch_edge, out=None, dim_size=None, mask=None):
-        r"""
-        Args:
-            edge_attr (Tensor): The source tensor of edge attributes.
-            batch_edge (Tensor): The indices of sample to scatter to.
-            out (Tensor): The destination tensor. Default: None.
-            dim_size (int): If `out` is not given, automatically create output with size `dim_size`. Default: None.
-                out and dim_size cannot be both None.
-            mask (Tensor): The mask of the node_attr tensor
-        Returns:
-            Tensor.
-        """
-        return self.scatter(edge_attr, batch_edge, out=out, dim_size=dim_size, mask=mask)
-
-
 class AggregateEdgeToNode(Aggregate):
     """AggregateEdgeToNode"""
 
@@ -251,44 +230,3 @@ class LiftGlobalToNode(Lift):
         if global_attr.shape[0] > 1 or self.mode == "multi_graph":
             return self.lift(global_attr, batch, mask=mask)
         return self.repeat(global_attr, num_node, max_len=max_len)
-
-
-class LiftGlobalToEdge(Lift):
-    """LiftGlobalToEdge"""
-
-    def __init__(self, mode="multi_graph"):
-        super().__init__(mode=mode)
-
-    def construct(self, global_attr, batch_edge=None, num_edge=None, mask=None, max_len=None):
-        r"""
-        Args:
-            global_attr (Tensor): The source tensor of global attributes.
-            batch_edge (Tensor): The indices of samples to get.
-            num_edge (Int): The number of edge in the graph, when there is only 1 graph.
-            mask (Tensor): The mask of the output tensor.
-            max_len (Int): The output length.
-        Returns:
-            Tensor.
-        """
-        if global_attr.shape[0] > 1 or self.mode == "multi_graph":
-            return self.lift(global_attr, batch_edge, mask=mask)
-        return self.repeat(global_attr, num_edge, max_len=max_len)
-
-
-class LiftNodeToEdge(Lift):
-    """LiftNodeToEdge"""
-
-    def __init__(self, dim=0):
-        super().__init__(mode="multi_graph")
-        self.dim = dim
-
-    def construct(self, global_attr, edge_index, mask=None):
-        r"""
-        Args:
-            global_attr (Tensor): The source tensor of global attributes.
-            edge_index (Tensor): The indices of nodes for each edge.
-            mask (Tensor): The mask of the output tensor.
-        Returns:
-            Tensor.
-        """
-        return self.lift(global_attr, edge_index[self.dim], mask=mask)

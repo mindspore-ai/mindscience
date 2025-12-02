@@ -17,7 +17,7 @@ import mindspore as ms
 import numpy as np
 from mindspore import Tensor, ops
 
-from mindchemistry.graph.dataloader import CommonData, DataLoaderBase
+from .dataloader import CommonData, DataLoaderBase
 
 
 class Crysloader(DataLoaderBase):
@@ -46,46 +46,24 @@ class Crysloader(DataLoaderBase):
         max_node=None,
         max_edge=None,
     ):
-        self.batch_size = batch_size
-        self.edge_index = edge_index
-        self.index = 0
-        self.step = 0
-        self.padding_std_ratio = padding_std_ratio
-        self.batch_change_num = 0
-        self.batch_exceeding_num = 0
-        self.dynamic_batch_size = dynamic_batch_size
-        self.shuffle_dataset = shuffle_dataset
+        super().__init__(
+            batch_size=batch_size,
+            edge_index=edge_index,
+            label=label,
+            node_attr=node_attr,
+            edge_attr=edge_attr,
+            padding_std_ratio=padding_std_ratio,
+            dynamic_batch_size=dynamic_batch_size,
+            shuffle_dataset=shuffle_dataset,
+            max_node=max_node,
+            max_edge=max_edge,
+        )
 
-        ## can be customized to specific dataset
-        self.label = label
-        self.node_attr = node_attr
         self.frac_coords = frac_coords
-        self.edge_attr = edge_attr
         self.lengths = lengths
         self.angles = angles
         self.lattice_polar = lattice_polar
         self.num_atoms = num_atoms
-        self.sample_num = len(self.node_attr)
-        batch_size_div = self.batch_size
-        if batch_size_div != 0:
-            self.step_num = int(self.sample_num / batch_size_div)
-        else:
-            print("The batch size cannot be set to 0")
-            raise ValueError
-
-        if dynamic_batch_size:
-            self.max_start_sample = self.sample_num
-        else:
-            self.max_start_sample = self.sample_num - self.batch_size + 1
-
-        self.set_global_max_node_edge_num(
-            self.node_attr,
-            self.edge_attr,
-            max_node,
-            max_edge,
-            shuffle_dataset,
-            dynamic_batch_size,
-        )
 
     def __iter__(self):
         if self.shuffle_dataset:

@@ -26,7 +26,7 @@ from mindspore.amp import all_finite
 
 from data.crysloader import Crysloader as DataLoader
 from data.dataset import fullconnect_dataset
-from mindchemistry.graph.loss import L2LossMask
+from graph.loss import L2LossMask
 from models.cspnet import CSPNet
 from models.flow import CSPFlow
 from models.train_utils import LossRecord
@@ -38,23 +38,12 @@ def parse_args():
     """Parse input args"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="config.yaml", help="The config file path")
-    parser.add_argument(
-        "--device_id", type=int, default=0, help="ID of the target device"
-    )
-    parser.add_argument(
-        "--device_target",
-        type=str,
-        default="CPU",
-        choices=["GPU", "Ascend", "CPU"],
-        help="The target device to run, support 'Ascend', 'GPU'",
-    )
     input_args = parser.parse_args()
     return input_args
 
 
 if __name__ == "__main__":
     args = parse_args()
-    ms.set_context(device_target=args.device_target, device_id=args.device_id)
 
     with open(args.config, "r", encoding="utf-8") as stream:
         config = yaml.safe_load(stream)

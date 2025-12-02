@@ -19,8 +19,8 @@ import mindspore
 from mindspore import nn, ops, Tensor
 import numpy as np
 
-from mindchemistry.graph.graph import (AggregateEdgeToNode,
-                                       AggregateNodeToGlobal, LiftGlobalToNode)
+from graph.graph import (AggregateEdgeToNode,
+                        AggregateNodeToGlobal, LiftGlobalToNode)
 
 MAX_ATOMIC_NUM = 100
 

@@ -12,7 +12,7 @@ from mindspore import (Tensor, load_checkpoint, load_param_into_net, mint, nn,
 
 from data.crysloader import Crysloader as DataLoader
 from data.dataset import fullconnect_dataset
-from mindchemistry.graph.loss import L2LossMask
+from graph.loss import L2LossMask
 from models.cspnet import CSPNet
 from models.flow import CSPFlow
 
