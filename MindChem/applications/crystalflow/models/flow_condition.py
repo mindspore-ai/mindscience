@@ -20,8 +20,8 @@ import mindspore.numpy as mnp
 import numpy as np
 from mindspore import nn, ops
 
-from mindchemistry.graph.graph import AggregateNodeToGlobal, LiftGlobalToNode
-from models.lattice import LatticePolarDecomp
+from graph.graph import AggregateNodeToGlobal, LiftGlobalToNode
+from .lattice import LatticePolarDecomp
 
 
 def replace_nan_with_zero(tensor):
