@@ -68,7 +68,7 @@ MindSpore SPONGE (Simulation Package tOwards Next GEneration molecular modelling
 
 #### Structure-Sequence Co-design
 
-- ProteinMPNN [[Available]](https://gitee.com/mindspore/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/ProteinMPNN.MD)
+- ProteinMPNN [[Available]](./applications/proteinmpnn/)
 - ESM-IF1 [[Available]](https://gitee.com/mindspore/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/ESM-IF1.md)
 - ColabDesign [[Available]](https://gitee.com/mindspore/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/ColabDesign.md)
 

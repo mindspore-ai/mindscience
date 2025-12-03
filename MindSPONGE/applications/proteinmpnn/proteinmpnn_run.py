@@ -1,0 +1,750 @@
+# Modified from ProteinMPNN (https://github.com/dauparas/ProteinMPNN)
+# Original license: MIT License
+#
+# Copyright 2025 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+"""
+Run ProteinMPNN
+"""
+
+import argparse
+import copy
+import json
+import os
+import os.path
+import pickle
+import random
+import sys
+import time
+
+import mindspore as ms
+import numpy as np
+
+from proteinmpnn.protein_mpnn import (ProteinMPNN, StructureDataset,
+                                      StructureDatasetPDB, _S_to_seq,
+                                      parse_fasta, parse_PDB, tied_featurize)
+from proteinmpnn.util_protein_mpnn import (
+    format4,
+    seq_with_slashes,
+    forward_scores,
+    ensure_output_dirs,
+)
+
+argparser = argparse.ArgumentParser(
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter
+)
+
+argparser.add_argument(
+    "--suppress_print", type=int, default=0, help="0 for False, 1 for True"
+)
+
+argparser.add_argument(
+    "--ca_only",
+    action="store_true",
+    default=False,
+    help="Parse CA-only structures and use CA-only models (default: false)",
+)
+argparser.add_argument(
+    "--path_to_model_weights",
+    type=str,
+    default="",
+    help="Path to model weights folder;",
+)
+argparser.add_argument(
+    "--model_name",
+    type=str,
+    default="v_48_020",
+    help="ProteinMPNN model name: v_48_002, v_48_010, v_48_020, v_48_030; v_48_010=version with 48 edges 0.10A noise",
+)
+argparser.add_argument(
+    "--use_soluble_model",
+    action="store_true",
+    default=False,
+    help="Flag to load ProteinMPNN weights trained on soluble proteins only.",
+)
+
+argparser.add_argument(
+    "--seed",
+    type=int,
+    default=0,
+    help="If set to 0 then a random seed will be picked;",
+)
+
+argparser.add_argument(
+    "--save_score",
+    type=int,
+    default=0,
+    help="0 for False, 1 for True; save score=-log_prob to npy files",
+)
+argparser.add_argument(
+    "--save_probs",
+    type=int,
+    default=0,
+    help="0 for False, 1 for True; save MPNN predicted probabilities per position",
+)
+
+argparser.add_argument(
+    "--score_only",
+    type=int,
+    default=0,
+    help="0 for False, 1 for True; score input backbone-sequence pairs",
+)
+argparser.add_argument(
+    "--path_to_fasta",
+    type=str,
+    default="",
+    help="score provided input sequence in a fasta format; \
+    e.g. GGGGGG/PPPPS/WWW for chains A, B, C sorted alphabetically and separated by /",
+)
+
+argparser.add_argument(
+    "--conditional_probs_only",
+    type=int,
+    default=0,
+    help="0 for False, 1 for True; output conditional probabilities p(s_i given the rest of the sequence and backbone)",
+)
+argparser.add_argument(
+    "--conditional_probs_only_backbone",
+    type=int,
+    default=0,
+    help="0 for False, 1 for True; if true output conditional probabilities p(s_i given backbone)",
+)
+argparser.add_argument(
+    "--unconditional_probs_only",
+    type=int,
+    default=0,
+    help="0 for False, 1 for True; output unconditional probabilities p(s_i given backbone) in one forward pass",
+)
+
+argparser.add_argument(
+    "--backbone_noise",
+    type=float,
+    default=0.00,
+    help="Standard deviation of Gaussian noise to add to backbone atoms",
+)
+argparser.add_argument(
+    "--num_seq_per_target",
+    type=int,
+    default=1,
+    help="Number of sequences to generate per target",
+)
+argparser.add_argument(
+    "--batch_size",
+    type=int,
+    default=1,
+    help="Batch size; can set higher for titan, quadro GPUs, reduce this if running out of GPU memory",
+)
+argparser.add_argument(
+    "--max_length", type=int, default=200000, help="Max sequence length"
+)
+argparser.add_argument(
+    "--sampling_temp",
+    type=str,
+    default="0.1",
+    help="A string of temperatures, 0.2 0.25 0.5. Sampling temperature for amino acids. \
+        Suggested values 0.1, 0.15, 0.2, 0.25, 0.3. Higher values will lead to more diversity.",
+)
+
+argparser.add_argument(
+    "--out_folder",
+    type=str,
+    help="Path to a folder to output sequences, e.g. /home/out/",
+)
+argparser.add_argument(
+    "--pdb_path", type=str, default="", help="Path to a single PDB to be designed"
+)
+argparser.add_argument(
+    "--pdb_path_chains",
+    type=str,
+    default="",
+    help="Define which chains need to be designed for a single PDB ",
+)
+argparser.add_argument(
+    "--jsonl_path", type=str, help="Path to a folder with parsed pdb into jsonl"
+)
+argparser.add_argument(
+    "--chain_id_jsonl",
+    type=str,
+    default="",
+    help="Path to a dictionary specifying which chains need to be designed and which ones are fixed, \
+        if not specified all chains will be designed.",
+)
+argparser.add_argument(
+    "--fixed_positions_jsonl",
+    type=str,
+    default="",
+    help="Path to a dictionary with fixed positions",
+)
+argparser.add_argument(
+    "--omit_AAs",
+    type=list,
+    default="X",
+    help="Specify which amino acids should be omitted in the generated sequence, \
+        e.g. 'AC' would omit alanine and cystine.",
+)
+argparser.add_argument(
+    "--bias_AA_jsonl",
+    type=str,
+    default="",
+    help="Path to a dictionary which specifies AA composion bias if neededi, \
+        e.g. {A: -1.1, F: 0.7} would make A less likely and F more likely.",
+)
+
+argparser.add_argument(
+    "--bias_by_res_jsonl",
+    default="",
+    help="Path to dictionary with per position bias.",
+)
+argparser.add_argument(
+    "--omit_AA_jsonl",
+    type=str,
+    default="",
+    help="Path to a dictionary which specifies which amino acids need to be omitted \
+        from design at specific chain indices",
+)
+argparser.add_argument(
+    "--pssm_jsonl", type=str, default="", help="Path to a dictionary with pssm"
+)
+argparser.add_argument(
+    "--pssm_multi",
+    type=float,
+    default=0.0,
+    help="A value between [0.0, 1.0], 0.0 means do not use pssm, 1.0 ignore MPNN predictions",
+)
+argparser.add_argument(
+    "--pssm_threshold",
+    type=float,
+    default=0.0,
+    help="A value between -inf + inf to restric per position AAs",
+)
+argparser.add_argument(
+    "--pssm_log_odds_flag", type=int, default=0, help="0 for False, 1 for True"
+)
+argparser.add_argument(
+    "--pssm_bias_flag", type=int, default=0, help="0 for False, 1 for True"
+)
+
+argparser.add_argument(
+    "--tied_positions_jsonl",
+    type=str,
+    default="",
+    help="Path to a dictionary with tied positions",
+)
+
+args = argparser.parse_args()
+
+if args.seed:
+    seed = args.seed
+else:
+    seed = int(np.random.randint(0, high=999, size=1, dtype=int)[0])
+
+ms.manual_seed(seed)
+random.seed(seed)
+np.random.seed(seed)
+
+hidden_dim = 128
+num_layers = 3
+
+if args.path_to_model_weights:
+    model_folder_path = args.path_to_model_weights
+    if model_folder_path[-1] != "/":
+        model_folder_path = model_folder_path + "/"
+else:
+    file_path = os.path.realpath(__file__)
+    k = file_path.rfind("/")
+    if args.ca_only:
+        print("Using CA-ProteinMPNN!")
+        model_folder_path = file_path[:k] + "/weights/ca_model_weights/"
+        if args.use_soluble_model:
+            print("WARNING: CA-SolubleMPNN is not available yet")
+            sys.exit()
+    else:
+        if args.use_soluble_model:
+            print("Using ProteinMPNN trained on soluble proteins only!")
+            model_folder_path = file_path[:k] + "/weights/soluble_model_weights/"
+        else:
+            model_folder_path = file_path[:k] + "/weights/vanilla_model_weights/"
+
+checkpoint_path = model_folder_path + f"{args.model_name}.ckpt"
+folder_for_outputs = args.out_folder
+
+NUM_BATCHES = args.num_seq_per_target // args.batch_size
+BATCH_COPIES = args.batch_size
+temperatures = [float(item) for item in args.sampling_temp.split()]
+omit_AAs_list = args.omit_AAs
+alphabet = "ACDEFGHIKLMNPQRSTVWYX"
+alphabet_dict = dict(zip(alphabet, range(21)))
+print_all = args.suppress_print == 0
+omit_AAs_np = np.array([AA in omit_AAs_list for AA in alphabet]).astype(np.float32)
+if os.path.isfile(args.chain_id_jsonl):
+    with open(args.chain_id_jsonl, "r", encoding="utf-8") as json_file:
+        json_list = list(json_file)
+    for json_str in json_list:
+        chain_id_dict = json.loads(json_str)
+else:
+    chain_id_dict = None
+    if print_all:
+        print(40 * "-")
+        print("chain_id_jsonl is NOT loaded")
+
+if os.path.isfile(args.fixed_positions_jsonl):
+    with open(args.fixed_positions_jsonl, "r", encoding="utf-8") as json_file:
+        json_list = list(json_file)
+    for json_str in json_list:
+        fixed_positions_dict = json.loads(json_str)
+else:
+    if print_all:
+        print(40 * "-")
+        print("fixed_positions_jsonl is NOT loaded")
+    fixed_positions_dict = None
+
+if os.path.isfile(args.pssm_jsonl):
+    with open(args.pssm_jsonl, "r", encoding='utf-8') as json_file:
+        json_list = list(json_file)
+    pssm_dict = {}
+    for json_str in json_list:
+        pssm_dict.update(json.loads(json_str))
+else:
+    if print_all:
+        print(40 * "-")
+        print("pssm_jsonl is NOT loaded")
+    pssm_dict = None
+
+if os.path.isfile(args.omit_AA_jsonl):
+    with open(args.omit_AA_jsonl, "r", encoding='utf-8') as json_file:
+        json_list = list(json_file)
+    for json_str in json_list:
+        omit_AA_dict = json.loads(json_str)
+else:
+    if print_all:
+        print(40 * "-")
+        print("omit_AA_jsonl is NOT loaded")
+    omit_AA_dict = None
+
+if os.path.isfile(args.bias_AA_jsonl):
+    with open(args.bias_AA_jsonl, "r", encoding='utf-8') as json_file:
+        json_list = list(json_file)
+    for json_str in json_list:
+        bias_AA_dict = json.loads(json_str)
+else:
+    if print_all:
+        print(40 * "-")
+        print("bias_AA_jsonl is NOT loaded")
+    bias_AA_dict = None
+
+if os.path.isfile(args.tied_positions_jsonl):
+    with open(args.tied_positions_jsonl, "r", encoding='utf-8') as json_file:
+        json_list = list(json_file)
+    for json_str in json_list:
+        tied_positions_dict = json.loads(json_str)
+else:
+    if print_all:
+        print(40 * "-")
+        print("tied_positions_jsonl is NOT loaded")
+    tied_positions_dict = None
+
+if os.path.isfile(args.bias_by_res_jsonl):
+    with open(args.bias_by_res_jsonl, "r", encoding='utf-8') as json_file:
+        json_list = list(json_file)
+
+    for json_str in json_list:
+        bias_by_res_dict = json.loads(json_str)
+    if print_all:
+        print("bias by residue dictionary is loaded")
+else:
+    if print_all:
+        print(40 * "-")
+        print("bias by residue dictionary is not loaded, or not provided")
+    bias_by_res_dict = None
+
+if print_all:
+    print(40 * "-")
+bias_AAs_np = np.zeros(len(alphabet))
+if bias_AA_dict:
+    for n, AA in enumerate(alphabet):
+        if AA in list(bias_AA_dict.keys()):
+            bias_AAs_np[n] = bias_AA_dict[AA]
+
+if args.pdb_path:
+    pdb_dict_list = parse_PDB(args.pdb_path, ca_only=args.ca_only)
+    dataset_valid = StructureDatasetPDB(
+        pdb_dict_list, truncate=None, max_length=args.max_length
+    )
+    all_chain_list = [
+        item[-1:] for item in list(pdb_dict_list[0]) if item[:9] == "seq_chain"
+    ]  # ['A','B', 'C',...]
+    if args.pdb_path_chains:
+        designed_chain_list = [str(item) for item in args.pdb_path_chains.split()]
+    else:
+        designed_chain_list = all_chain_list
+    fixed_chain_list = [
+        letter for letter in all_chain_list if letter not in designed_chain_list
+    ]
+    chain_id_dict = {}
+    chain_id_dict[pdb_dict_list[0]["name"]] = (
+        designed_chain_list,
+        fixed_chain_list,
+    )
+else:
+    dataset_valid = StructureDataset(
+        args.jsonl_path,
+        truncate=None,
+        max_length=args.max_length,
+        verbose=print_all,
+    )
+
+with open(checkpoint_path, "rb") as f:
+    checkpoint = pickle.load(f)
+noise_level_print = checkpoint["noise_level"]
+model = ProteinMPNN(
+    ca_only=args.ca_only,
+    num_letters=21,
+    node_features=hidden_dim,
+    edge_features=hidden_dim,
+    hidden_dim=hidden_dim,
+    num_encoder_layers=num_layers,
+    num_decoder_layers=num_layers,
+    augment_eps=args.backbone_noise,
+    k_neighbors=checkpoint["num_edges"],
+)
+model.load_state_dict(checkpoint["model_state_dict"])
+model.set_train(False)
+
+if print_all:
+    print(40 * "-")
+    print("Number of edges:", checkpoint["num_edges"])
+    print(f"Training noise level: {noise_level_print}A")
+
+# Build paths for experiment
+base_folder = ensure_output_dirs(
+    folder_for_outputs,
+    save_score=bool(args.save_score),
+    score_only=bool(args.score_only),
+    conditional_probs_only=bool(args.conditional_probs_only),
+    unconditional_probs_only=bool(args.unconditional_probs_only),
+    save_probs=bool(args.save_probs),
+)
+
+# Validation epoch
+for ix, protein in enumerate(dataset_valid):
+    score_list = []
+    global_score_list = []
+    all_probs_list = []
+    all_log_probs_list = []
+    S_sample_list = []
+    batch_clones = [copy.deepcopy(protein) for i in range(BATCH_COPIES)]
+    (
+        X,
+        S,
+        mask,
+        lengths,
+        chain_M,
+        chain_encoding_all,
+        chain_list_list,
+        visible_list_list,
+        masked_list_list,
+        masked_chain_length_list_list,
+        chain_M_pos,
+        omit_AA_mask,
+        residue_idx,
+        dihedral_mask,
+        tied_pos_list_of_lists_list,
+        pssm_coef,
+        pssm_bias,
+        pssm_log_odds_all,
+        bias_by_res_all,
+        tied_beta,
+    ) = tied_featurize(
+        batch_clones,
+        chain_id_dict,
+        fixed_positions_dict,
+        omit_AA_dict,
+        tied_positions_dict,
+        pssm_dict,
+        bias_by_res_dict,
+        ca_only=args.ca_only,
+    )
+    pssm_log_odds_mask = (
+        pssm_log_odds_all > args.pssm_threshold
+    ).float()  # 1.0 for true, 0.0 for false
+    name_ = batch_clones[0]["name"]
+    if args.score_only:
+        loop_c = 0
+        if args.path_to_fasta:
+            fasta_names, fasta_seqs = parse_fasta(args.path_to_fasta, omit=["/"])
+            loop_c = len(fasta_seqs)
+        for fc in range(1 + loop_c):
+            if fc == 0:
+                structure_sequence_score_file = (
+                    base_folder + "/score_only/" + batch_clones[0]["name"] + "_pdb"
+                )
+            else:
+                structure_sequence_score_file = (
+                    base_folder
+                    + "/score_only/"
+                    + batch_clones[0]["name"]
+                    + f"_fasta_{fc}"
+                )
+            native_score_list = []
+            global_native_score_list = []
+            if fc > 0:
+                input_seq_length = len(fasta_seqs[fc - 1])
+                S_input = ms.tensor(
+                    [alphabet_dict[AA] for AA in fasta_seqs[fc - 1]]
+                )[None, :].repeat(X.shape[0], 1)
+                S[:, :input_seq_length] = (
+                    S_input  # assumes that S and S_input are alphabetically sorted for masked_chains
+                )
+            for j in range(NUM_BATCHES):
+                randn_1 = ms.mint.randn(chain_M.shape)
+                native_score, global_native_score, _, _ = forward_scores(
+                    model, X, S, mask, chain_M, chain_M_pos, residue_idx, chain_encoding_all, randn_1
+                )
+                native_score_list.append(native_score)
+                global_native_score_list.append(global_native_score)
+            native_score = np.concatenate(native_score_list, 0)
+            global_native_score = np.concatenate(global_native_score_list, 0)
+            ns_mean_print = format4(native_score.mean())
+            ns_std_print = format4(native_score.std())
+            global_ns_mean_print = format4(global_native_score.mean())
+            global_ns_std_print = format4(global_native_score.std())
+
+            ns_sample_size = native_score.shape[0]
+            seq_str = _S_to_seq(S[0,], chain_M[0,])
+            np.savez(
+                structure_sequence_score_file,
+                score=native_score,
+                global_score=global_native_score,
+                S=S[0,].numpy(),
+                seq_str=seq_str,
+            )
+            if print_all:
+                if fc == 0:
+                    print(
+                        f"Score for {name_} from PDB, mean: {ns_mean_print}, std: {ns_std_print}, " +
+                        f"sample size: {ns_sample_size},  global score, mean: {global_ns_mean_print}, " +
+                        f"std: {global_ns_std_print}, sample size: {ns_sample_size}"
+                    )
+                else:
+                    print(
+                        f"Score for {name_}_{fc} from FASTA, mean: {ns_mean_print}, std: {ns_std_print}, " +
+                        f"sample size: {ns_sample_size},  global score, mean: {global_ns_mean_print}, " +
+                        f"std: {global_ns_std_print}, sample size: {ns_sample_size}"
+                    )
+    elif args.conditional_probs_only:
+        if print_all:
+            print(f"Calculating conditional probabilities for {name_}")
+        conditional_probs_only_file = (
+            base_folder + "/conditional_probs_only/" + batch_clones[0]["name"]
+        )
+        log_conditional_probs_list = []
+        for j in range(NUM_BATCHES):
+            randn_1 = ms.mint.randn(chain_M.shape)
+            log_conditional_probs = model.conditional_probs(
+                X,
+                S,
+                mask,
+                chain_M * chain_M_pos,
+                residue_idx,
+                chain_encoding_all,
+                randn_1,
+                args.conditional_probs_only_backbone,
+            )
+            log_conditional_probs_list.append(log_conditional_probs.numpy())
+        concat_log_p = np.concatenate(log_conditional_probs_list, 0)  # [B, L, 21]
+        mask_out = (chain_M * chain_M_pos * mask)[0,].numpy()
+        np.savez(
+            conditional_probs_only_file,
+            log_p=concat_log_p,
+            S=S[0,].numpy(),
+            mask=mask[0,].numpy(),
+            design_mask=mask_out,
+        )
+    elif args.unconditional_probs_only:
+        if print_all:
+            print(f"Calculating sequence unconditional probabilities for {name_}")
+        unconditional_probs_only_file = (
+            base_folder + "/unconditional_probs_only/" + batch_clones[0]["name"]
+        )
+        log_unconditional_probs_list = []
+        for j in range(NUM_BATCHES):
+            log_unconditional_probs = model.unconditional_probs(
+                X, mask, residue_idx, chain_encoding_all
+            )
+            log_unconditional_probs_list.append(log_unconditional_probs.numpy())
+        concat_log_p = np.concatenate(log_unconditional_probs_list, 0)  # [B, L, 21]
+        mask_out = (chain_M * chain_M_pos * mask)[0,].numpy()
+        np.savez(
+            unconditional_probs_only_file,
+            log_p=concat_log_p,
+            S=S[0,].numpy(),
+            mask=mask[0,].numpy(),
+            design_mask=mask_out,
+        )
+    else:
+        randn_1 = ms.mint.randn(chain_M.shape)
+        native_score, global_native_score, _, mask_for_loss = forward_scores(
+            model, X, S, mask, chain_M, chain_M_pos, residue_idx, chain_encoding_all, randn_1
+        )
+        # Generate some sequences
+        ali_file = base_folder + "/seqs/" + batch_clones[0]["name"] + ".fa"
+        score_file = base_folder + "/scores/" + batch_clones[0]["name"] + ".npz"
+        probs_file = base_folder + "/probs/" + batch_clones[0]["name"] + ".npz"
+        if print_all:
+            print(f"Generating sequences for: {name_}")
+        t0 = time.time()
+        with open(ali_file, "w", encoding='utf-8') as f:
+            for temp in temperatures:
+                for j in range(NUM_BATCHES):
+                    randn_2 = ms.mint.randn(chain_M.shape)
+                    if tied_positions_dict is None:
+                        sample_dict = model.sample(
+                            X,
+                            randn_2,
+                            S,
+                            chain_M,
+                            chain_encoding_all,
+                            residue_idx,
+                            mask=mask,
+                            temperature=temp,
+                            omit_AAs_np=omit_AAs_np,
+                            bias_AAs_np=bias_AAs_np,
+                            chain_M_pos=chain_M_pos,
+                            omit_AA_mask=omit_AA_mask,
+                            pssm_coef=pssm_coef,
+                            pssm_bias=pssm_bias,
+                            pssm_multi=args.pssm_multi,
+                            pssm_log_odds_flag=bool(args.pssm_log_odds_flag),
+                            pssm_log_odds_mask=pssm_log_odds_mask,
+                            pssm_bias_flag=bool(args.pssm_bias_flag),
+                            bias_by_res=bias_by_res_all,
+                        )
+                        S_sample = sample_dict["S"]
+                    else:
+                        sample_dict = model.tied_sample(
+                            X,
+                            randn_2,
+                            S,
+                            chain_M,
+                            chain_encoding_all,
+                            residue_idx,
+                            mask=mask,
+                            temperature=temp,
+                            omit_AAs_np=omit_AAs_np,
+                            bias_AAs_np=bias_AAs_np,
+                            chain_M_pos=chain_M_pos,
+                            omit_AA_mask=omit_AA_mask,
+                            pssm_coef=pssm_coef,
+                            pssm_bias=pssm_bias,
+                            pssm_multi=args.pssm_multi,
+                            pssm_log_odds_flag=bool(args.pssm_log_odds_flag),
+                            pssm_log_odds_mask=pssm_log_odds_mask,
+                            pssm_bias_flag=bool(args.pssm_bias_flag),
+                            tied_pos=tied_pos_list_of_lists_list[0],
+                            tied_beta=tied_beta,
+                            bias_by_res=bias_by_res_all,
+                        )
+                        # Compute scores
+                        S_sample = sample_dict["S"]
+                    scores, global_scores, log_probs, mask_for_loss = forward_scores(
+                        model, X, S_sample, mask, chain_M, chain_M_pos, residue_idx, chain_encoding_all, randn_2,
+                        use_input_decoding_order=True, decoding_order=sample_dict["decoding_order"]
+                    )
+
+                    all_probs_list.append(sample_dict["probs"].data.numpy())
+                    all_log_probs_list.append(log_probs.data.numpy())
+                    S_sample_list.append(S_sample.data.numpy())
+                    for b_ix in range(BATCH_COPIES):
+                        masked_chain_length_list = masked_chain_length_list_list[
+                            b_ix
+                        ]
+                        masked_list = masked_list_list[b_ix]
+                        seq_recovery_rate = ms.mint.sum(
+                            ms.mint.sum(
+                                ms.mint.nn.functional.one_hot(S[b_ix], 21)
+                                * ms.mint.nn.functional.one_hot(S_sample[b_ix], 21),
+                                dim=-1,
+                            )
+                            * mask_for_loss[b_ix]
+                        ) / ms.mint.sum(mask_for_loss[b_ix])
+                        seq = _S_to_seq(S_sample[b_ix], chain_M[b_ix])
+                        score = scores[b_ix]
+                        score_list.append(score)
+                        global_score = global_scores[b_ix]
+                        global_score_list.append(global_score)
+                        native_seq = _S_to_seq(S[b_ix], chain_M[b_ix])
+                        if b_ix == 0 and j == 0 and temp == temperatures[0]:
+                            native_seq = seq_with_slashes(native_seq, masked_chain_length_list, masked_list)
+                            sorted_masked_chain_letters = np.argsort(
+                                masked_list_list[0]
+                            )
+                            print_masked_chains = [
+                                masked_list_list[0][i]
+                                for i in sorted_masked_chain_letters
+                            ]
+                            sorted_visible_chain_letters = np.argsort(
+                                visible_list_list[0]
+                            )
+                            print_visible_chains = [
+                                visible_list_list[0][i]
+                                for i in sorted_visible_chain_letters
+                            ]
+                            native_score_print = format4(native_score.mean())
+                            global_native_score_print = format4(global_native_score.mean())
+                            script_dir = os.path.dirname(os.path.realpath(__file__))
+                            if args.ca_only:
+                                print_model_name = "CA_model_name"
+                            else:
+                                print_model_name = "model_name"
+                            f.write(
+                                f">{name_}, score={native_score_print}, global_score={global_native_score_print}, "
+                                f"fixed_chains={print_visible_chains}, designed_chains={print_masked_chains}, "
+                                f"{print_model_name}={args.model_name}, seed={seed}\n{native_seq}\n"
+                            )  # write the native sequence
+                        seq = seq_with_slashes(seq, masked_chain_length_list, masked_list)
+                        score_print = format4(score)
+                        global_score_print = format4(global_score)
+                        seq_rec_print = format4(seq_recovery_rate.numpy())
+                        sample_number = j * BATCH_COPIES + b_ix + 1
+                        f.write(
+                            f">T={temp}, sample={sample_number}, score={score_print}, " +
+                            f"global_score={global_score_print}, seq_recovery={seq_rec_print}\n{seq}\n"
+                        )  # write generated sequence
+        if args.save_score:
+            np.savez(
+                score_file,
+                score=np.array(score_list, np.float32),
+                global_score=np.array(global_score_list, np.float32),
+            )
+        if args.save_probs:
+            all_probs_concat = np.concatenate(all_probs_list)
+            all_log_probs_concat = np.concatenate(all_log_probs_list)
+            S_sample_concat = np.concatenate(S_sample_list)
+            np.savez(
+                probs_file,
+                probs=np.array(all_probs_concat, np.float32),
+                log_probs=np.array(all_log_probs_concat, np.float32),
+                S=np.array(S_sample_concat, np.int32),
+                mask=mask_for_loss.data.numpy(),
+                chain_order=chain_list_list,
+            )
+        t1 = time.time()
+        dt = round(float(t1 - t0), 4)
+        num_seqs = len(temperatures) * NUM_BATCHES * BATCH_COPIES
+        total_length = X.shape[1]
+        if print_all:
+            print(
+                f"{num_seqs} sequences of length {total_length} generated in {dt} seconds"
+            )
