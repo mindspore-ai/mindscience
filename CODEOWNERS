@@ -9,23 +9,23 @@
 # If the file in PR does not match rule, the default maintainer @novigad @yi-zhang95 will be designated to conduct code review.
 / @novigrad @yi-zhang95
 
-#The maintainer of MindChemistry
+# The maintainer of MindChemistry
 /MindChemistry/ @birfied
 
-#The maintainer of MindEarth
+# The maintainer of MindEarth
 /MindEarth/ @zhang-minyan
 
-#The maintainer of MindElec
+# The maintainer of MindElec
 /MindElec/ @wuzhf9
 
-#The maintainer of MindFlow
+# The maintainer of MindFlow
 /MindFlow/ @zhang-minyan
 
-#The maintainer of MindSPONGE
+# The maintainer of MindSPONGE
 /MindSPONGE @yanglong_unimelb
 
-#The maintainer of docs
+# The maintainer of docs
 /docs/ @wuzhf9 @zhang-minyan @birfied @yanglong_unimelb
 
-#The maintainer of tests
+# The maintainer of tests
 /tests/ @wuzhf9 @zhang-minyan @birfied @yanglong_unimelb
