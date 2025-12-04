@@ -1,0 +1,31 @@
+# The CODEOWNERS file is used to define the maintainer of a specific file or directory in the code repository.
+# Its main purpose is to automatically request designated maintainer to conduct code review in Pull Request (PR),
+# in order to clarify code ownership, improve code quality, and accelerate the review process.
+
+# The lines starting with # are comments.
+# Each line corresponds to a specified file or directory and maintainer by @ splitting.
+# The rules are applied from top to bottom, and the last matching rule will take effect.
+
+# If the file in PR does not match rule, the default maintainer @novigad @yi-zhang95 will be designated to conduct code review.
+/ @novigad @yi-zhang95
+
+#The maintainer of MindChemistry
+/MindChemistry/ @birfied
+
+#The maintainer of MindEarth
+/MindEarth/ @zhang-minyan
+
+#The maintainer of MindElec
+/MindElec/ @wuzhf9
+
+#The maintainer of MindFlow
+/MindFlow/ @zhang-minyan
+
+#The maintainer of MindSPONGE
+/MindSPONGE @yanglong_unimelb
+
+#The maintainer of docs
+/docs/ @wuzhf9 @zhang-minyan @birfied @yanglong_unimelb
+
+#The maintainer of tests
+/tests/ @wuzhf9 @zhang-minyan @birfied @yanglong_unimelb
