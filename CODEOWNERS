@@ -9,6 +9,9 @@
 # If the file in PR does not match rule, the default maintainer @novigad @yi-zhang95 will be designated to conduct code review.
 / @novigrad @yi-zhang95
 
+# The maintainer of MindScience
+/mindscience/ @wuzhf9 @novigrad @yi-zhang95
+
 # The maintainer of MindChemistry
 /MindChem/ @birfied @novigrad @yi-zhang95
 
