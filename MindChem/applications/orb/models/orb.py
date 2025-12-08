@@ -21,8 +21,8 @@ import numpy
 import mindspore as ms
 from mindspore import Parameter, ops, Tensor, mint
 
-from mindchemistry.cell.orb.gns import _KEY, MoleculeGNS
-from mindchemistry.cell.orb.utils import (
+from models.gns import _KEY, MoleculeGNS
+from models.utils import (
     aggregate_nodes,
     build_mlp,
     REFERENCE_ENERGIES,
@@ -123,7 +123,7 @@ class ScalarNormalizer(ms.nn.Cell):
         self.bn = mint.nn.BatchNorm1d(1, affine=False, momentum=None)
         self.bn.running_mean = Parameter(Tensor([0], ms.float32))
         self.bn.running_var = Parameter(Tensor([1], ms.float32))
-        self.bn.num_batches_tracked = Parameter(Tensor([1000], ms.float32))
+        self.bn.num_batches_tracked = Parameter(Tensor([1000], ms.float32), requires_grad=False)
         self.stastics = {
             "running_mean": init_mean if init_mean is not None else 0.0,
             "running_var": init_std**2 if init_std is not None else 1.0,
@@ -151,7 +151,6 @@ class ScalarNormalizer(ms.nn.Cell):
         if hasattr(self, "running_mean"):
             return x * mint.sqrt(self.running_var) + self.running_mean
         return x * mint.sqrt(self.bn.running_var) + self.bn.running_mean
-
 
 # pylint: disable=C0301
 class NodeHead(ms.nn.Cell):

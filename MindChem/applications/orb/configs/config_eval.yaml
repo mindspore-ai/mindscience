@@ -6,7 +6,7 @@ device_id: 0
 val_data_path: dataset/val_mptrj_ase.db
 num_workers: 8
 batch_size: 64
-checkpoint_path: orb_ckpts/orb-ft-checkpoint_epoch99.ckpt
+checkpoint_path: orb_ckpts/orb-mptraj-only-v2.ckpt
 random_seed: 1234
 output_dir: results/
 

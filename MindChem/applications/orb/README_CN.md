@@ -10,7 +10,7 @@
 
 ## 环境要求
 
-> 1. 安装`mindspore（2.5.0）`
+> 1. 安装`mindspore（2.7.0）`
 > 2. 安装依赖包：`pip install -r requirement.txt`
 
 ## 快速入门
@@ -28,32 +28,44 @@
 ```text
 代码主要模块在src文件夹下，其中dataset文件夹下是数据集，orb_ckpts文件夹下是预训练模型和训练好的模型权重文件，configs文件夹下是各代码的参数配置文件。
 
-orb_models                                           # 模型名
+orb_models                                           # ORB 预训练 / 微调工程
 ├── dataset
-  ├── train_mptrj_ase.db                             # 微调阶段训练数据集
-  └── val_mptrj_ase.db                               # 微调阶段测试数据集
-├── orb_ckpts
-  └── orb-mptraj-only-v2.ckpt               # 预训练模型checkpoint
-├── configs
-  ├── config.yaml                                    # 单卡训练参数配置文件
-  ├── config_parallel.yaml                           # 多卡并行训练参数配置文件
-  └── config_eval.yaml                               # 推理参数配置文件
-├── src
-  ├── __init__.py
-  ├── ase_dataset.py                                 # 处理和加载数据集
-  ├── atomic_system.py                               # 定义原子系统的数据结构
-  ├── base.py                                        # 基础类定义
-  ├── featurization_utilities.py                     # 提供将原子系统转换为特征向量的工具
-  ├── pretrained.py                                  # 预训练模型相关函数
-  ├── property_definitions.py                        # 定义原子系统中各种物理性质的计算方式和命名规则
-  ├── trainer.py                                     # 模型loss类定义
-  ├── segment_ops.py                                 # 提供对数据进行分段处理的工具
-  └── utils.py                                       # 工具模块
-├── finetune.py                                      # 模型微调代码
-├── evaluate.py                                      # 模型推理代码
-├── run.sh                                           # 单卡训练启动脚本
-├── run_parallel.sh                                  # 多卡并行训练启动脚本
-└── requirement.txt                                  # 环境
+│   ├── train_mptrj_ase.db                           # 微调训练集（ASE 轨迹，SQLite 格式）
+│   └── val_mptrj_ase.db                             # 微调验证 / 测试集
+│
+├── orb_ckpts                                        # 预训练 & 微调模型 ckpt 存放目录
+│   └── orb-mptraj-only-v2.ckpt                      # 仅 mptraj 任务的预训练 ORB 模型
+│
+├── configs                                          # 训练 / 推理配置
+│   ├── config.yaml                                  # 单卡训练配置（学习率、batch_size 等）
+│   ├── config_parallel.yaml                         # 多卡数据并行训练配置
+│   └── config_eval.yaml                             # 推理 / 评估配置
+│
+├── src                                              # 数据处理与训练核心源码
+│   ├── __init__.py                                  # src 包初始化
+│   ├── ase_dataset.py                               # ASE 数据集读取与封装（读 SQLite、组装原子图）
+│   ├── atomic_system.py                             # 原子系统数据结构定义（坐标、原子种类、晶胞信息等）
+│   ├── base.py                                      # 通用基类与工具（batch_graphs 等图数据打包）
+│   ├── featurization_utilities.py                   # 原子系统 → 模型输入特征张量的特征化工具
+│   ├── pretrained.py                                # 预训练 ORB 模型构造与加载接口
+│   ├── property_definitions.py                      # 能量 / 力 / 应力等物理量配置与命名
+│   ├── trainer.py                                   # 训练循环与 OrbLoss 等损失封装
+│   ├── segment_ops.py                               # segment_sum / mean / max 等分段归约算子
+│   └── utils.py                                     # 通用工具函数（随机种子、日志、优化器、LR scheduler 等）
+│
+├── models                                           # 模型结构定义（GNN / ORB 等）
+│   ├── __init__.py                          # orb 子包初始化
+│   ├── gns.py                               # GNS(Graph Network Simulator) 相关结构 / 接口
+│   ├── orb.py                               # ORB 主体网络（encoder + heads）
+│   └── utils.py                             # ORB 内部工具与辅助模块
+│
+├── finetune.py                                      # 模型微调入口脚本
+├── evaluate.py                                      # 推理 / 评估入口脚本
+│
+├── run.sh                                           # 单卡训练启动脚本（调用 finetune.py + config.yaml）
+├── run_parallel.sh                                  # 多卡并行训练启动脚本（msrun + config_parallel.yaml）
+└── requirement.txt                                  # Python 依赖列表（环境搭建用）
+
 ```  
 
 ## 下载数据集
