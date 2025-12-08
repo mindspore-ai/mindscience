@@ -53,7 +53,7 @@ def load_yaml_config(file_path):
         ``Ascend`` ``CPU`` ``GPU``
 
     Examples:
-        >>> from mindchemistry.utils import load_yaml_config
+        >>> from models.utils import load_yaml_config
         >>> config_file_path = 'xxx'    # 'xxx' is the file_path
         >>> configs = load_yaml_config(config_file_path)
     """

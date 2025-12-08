@@ -26,7 +26,7 @@ from mindspore import nn
 from src.dataset import create_training_dataset, _unpack
 from src.utils import training_bar
 
-from mindchemistry.cell import Nequip
+from models.nequip import Nequip
 
 
 def generate_learning_rate(learning_rate, warmup_steps, step_num):

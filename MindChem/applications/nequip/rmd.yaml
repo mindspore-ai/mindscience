@@ -17,7 +17,7 @@ model:
   hidden_mul: 64
 
 optimizer:
-  num_epoch: 2                                   # 为快速验证功能，设置较小的epoch数，具体使用时建议调整至800以上
+  num_epoch: 850                                   # It is recommended to adjust it to above 800 when in use
   eval_steps: 10
   warmup_steps: 6400
   learning_rate: 0.01                             # learning rate

@@ -21,7 +21,7 @@ import argparse
 import numpy as np
 import mindspore as ms
 
-from mindchemistry.utils.load_config import load_yaml_config_from_path
+from models.load_config import load_yaml_config_from_path
 from src import trainer
 from src.plot import plot_loss, plot_lr, print_configuration
 from src.utils import log_config
