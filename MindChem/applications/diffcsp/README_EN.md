@@ -8,7 +8,7 @@ DiffCSP is a diffusion-model-based deep learning framework for crystal structure
 
 ## Environment Requirements
 
-1. Install `mindspore (2.3.0)`
+1. Install `mindspore (2.7.0)`
 2. Install dependencies: `pip install -r requirement.txt`
 
 ## Quick Start
@@ -37,12 +37,15 @@ diffcsp
             data_utils.py       Dataset processing utilities
             dataset.py          Dataset reader
             crysloader.py       Dataset loader
+            dataloader.py       Dataset construction
     └─models
             cspnet.py           GNN-based denoiser module
             diffusion.py        Diffusion model module
             diff_utils.py       Utilities
             infer_utils.py      Inference utilities
             train_utils.py      Training utilities
+            graph.py            Utilities
+            loss.py             Loss
 ```
 
 ## Dataset Download
@@ -70,6 +73,7 @@ Download the `Mindchemistry/mindchemistry` package to the current directory.
 Edit the config file to set training parameters:
 
 - Set the training dataset (see the `dataset` field).
+- To set the training rounds (see the epoch_size field).
 - Configure the denoiser model (see the `model` field).
 - Set the directory and filename for saving checkpoints by editing `train.ckpt_dir` and `checkpoint.last_path`.
 - Other training settings are under the `train` field.

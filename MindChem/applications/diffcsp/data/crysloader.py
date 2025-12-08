@@ -17,7 +17,7 @@ import numpy as np
 from mindspore import Tensor, ops
 import mindspore as ms
 
-from mindchemistry.graph.dataloader import DataLoaderBase, CommonData
+from data.dataloader import DataLoaderBase, CommonData
 
 
 class Crysloader(DataLoaderBase):
@@ -42,6 +42,7 @@ class Crysloader(DataLoaderBase):
                  shuffle_dataset=True,
                  max_node=None,
                  max_edge=None):
+        super().__init__(batch_size, node_attr, edge_attr, edge_index)
         self.batch_size = batch_size
         self.edge_index = edge_index
         self.index = 0

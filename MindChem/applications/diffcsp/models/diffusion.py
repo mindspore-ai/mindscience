@@ -18,7 +18,7 @@ import math
 import mindspore as ms
 import mindspore.numpy as mnp
 from mindspore import nn, ops
-from mindchemistry.graph.graph import (AggregateNodeToGlobal, LiftGlobalToNode)
+from models.graph import (AggregateNodeToGlobal, LiftGlobalToNode)
 
 from models.diff_utils import (BetaScheduler, SigmaScheduler,
                                d_log_p_wrapped_normal_ms)
@@ -38,7 +38,7 @@ class SinusoidalTimeEmbeddings(nn.Cell):
         Referring the implementation details in the paper Attention is all you need. """
 
     def __init__(self, dim):
-        super(SinusoidalTimeEmbeddings, self).__init__()
+        super().__init__()
         self.dim = dim
 
     def construct(self, time):
@@ -118,7 +118,7 @@ class CSPDiffusion(nn.Cell):
             sigma_end (float): The ending sigma used in fractiaonal coordinates SDEs.
                 Defaults to 0.5.
         """
-        super(CSPDiffusion, self).__init__()
+        super().__init__()
         self.beta_scheduler = BetaScheduler(timesteps=timesteps,
                                             scheduler_mode=scheduler_mode)
         self.sigma_scheduler = SigmaScheduler(timesteps=timesteps,
