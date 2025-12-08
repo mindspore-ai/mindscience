@@ -23,6 +23,7 @@ like UNet2D.
 from .activation import get_activation
 from .basic_block import LinearBlock, ResBlock, InputScale, FCSequential, MultiScaleFCSequential, DropPath
 from .unet2d import UNet2D
+from .mask import MaskedLayerNorm
 
 __all__ = ["get_activation", "LinearBlock", "ResBlock", "InputScale", "FCSequential",
-           "MultiScaleFCSequential", "DropPath", "UNet2D"]
+           "MultiScaleFCSequential", "DropPath", "UNet2D", "MaskedLayerNorm"]

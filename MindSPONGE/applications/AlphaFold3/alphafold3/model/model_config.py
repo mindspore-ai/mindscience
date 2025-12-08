@@ -1,0 +1,30 @@
+# Copyright 2024 DeepMind Technologies Limited
+#
+# AlphaFold 3 source code is licensed under CC BY-NC-SA 4.0. To view a copy of
+# this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
+#
+# To request access to the AlphaFold 3 model parameters, follow the process set
+# out at https://github.com/google-deepmind/alphafold3. You may only use these
+# if received directly from Google. Use is subject to terms of use available at
+# https://github.com/google-deepmind/alphafold3/blob/main/WEIGHTS_TERMS_OF_USE.md
+
+"""Config for the protein folding model and experiment."""
+
+from collections.abc import Sequence
+from typing import Literal, TypeAlias, Optional, Tuple
+
+from alphafold3.model import base_config
+
+
+_Shape2DType: TypeAlias = Tuple[Optional[int], Optional[int]]
+
+
+class GlobalConfig(base_config.BaseConfig):
+    bfloat16: Literal['all', 'none', 'intermediate'] = 'none'
+    final_init: Literal['zeros', 'linear'] = 'zeros'
+    pair_attention_chunk_size: Sequence[_Shape2DType] = (
+        (1536, 128), (None, 32))
+    pair_transition_shard_spec: Sequence[_Shape2DType] = (
+        (2048, None),
+        (None, 1024),
+    )

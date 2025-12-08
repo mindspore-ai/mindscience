@@ -2,3 +2,14 @@
 "mindscience/MindElec/mindelec/ccsrc/api/python/pybind_register.cc"                                 "syntaxError"
 "mindscience/MindElec/mindelec/ccsrc/scientific_compute/pointcloud/material_analyse.cc"             "useStlAlgorithm"
 "mindscience/MindElec/mindelec/ccsrc/scientific_compute/pointcloud/tensor_initializer.cc"           "useStlAlgorithm"
+#MindSPONGE
+"mindscience/MindSPONGE/applications/AlphaFold3/alphafold3/parsers/cpp/cif_dict_lib.cc"             "shadowFunction"
+"mindscience/MindSPONGE/applications/AlphaFold3/alphafold3/parsers/cpp/cif_dict_lib.cc"             "useStlAlgorithm"
+"mindscience/MindSPONGE/applications/AlphaFold3/alphafold3/parsers/cpp/msa_conversion_pybind.cc"    "variableScope"
+"mindscience/MindSPONGE/applications/AlphaFold3/alphafold3/structure/cpp/mmcif_altlocs.cc"          "shadowVariable"
+"mindscience/MindSPONGE/applications/AlphaFold3/alphafold3/structure/cpp/mmcif_altlocs.cc"          "useStlAlgorithm"
+"mindscience/MindSPONGE/applications/AlphaFold3/alphafold3/structure/cpp/mmcif_struct_conn_lib.cc"  "unsignedLessThanZero"
+"mindscience/MindSPONGE/applications/AlphaFold3/alphafold3/structure/cpp/string_array_pybind.cc"    "shadowVariable"
+"mindscience/MindSPONGE/applications/AlphaFold3/alphafold3/structure/cpp/string_array_pybind.cc"    "useStlAlgorithm"
+"mindscience/MindSPONGE/applications/AlphaFold3/alphafold3/structure/cpp/string_array_pybind.cc"    "pointerSize"
+

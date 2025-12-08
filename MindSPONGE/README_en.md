@@ -59,7 +59,7 @@ MindSpore SPONGE (Simulation Package tOwards Next GEneration molecular modelling
 
 #### End2End
 
-- 🔥AlphaFold3 [[Available]](https://gitee.com/mindspore/mindscience/tree/legacy-master/MindSPONGE/applications/research/AlphaFold3)
+- 🔥AlphaFold3 [[Available]](./applications/AlphaFold3)
 - 🔥Protenix `In Progress`
 - 🔥RFdiffusion [[Available]](./applications/rf_diffusion)
 - Alphafold-Multimer [[Available]](https://gitee.com/mindspore/mindscience/blob/legacy-master/MindSPONGE/applications/model_cards/afmultimer.md)

@@ -5,3 +5,5 @@ https://api.colabfold.com
 https://a3m.mmseqs.com
 https://www.mindspore.cn/community/SIG/detail/?name=mindflow+SIG
 https://www.mindspore.cn/sig/MindSpore%20Science
+https://mmcif.wwpdb.org/dictionaries/mmcif_pdbx_v50.dic/Items/_entity.type.html
+https://gitee.com/mindspore/mindscience/tree/main/MindSPONGE/applications/AlphaFold3
