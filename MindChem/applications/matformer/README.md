@@ -152,16 +152,20 @@ The figure below shows the formation energy predictions from a fully trained Mat
 Log output from `train.py`:
 
 ```log
+INFO:root:Loading from saved file...
 INFO:root:The model you built has 2786689 parameters.
-INFO:root:Starting new training process
-INFO:root:Start to initialise train loader
-INFO:root:Start to initialise eval loader
+INFO:root:load from existing check point................
+INFO:root:finish load from existing checkpoint, start training from epoch: 1
+INFO:root:change learning rate to current step: 953
+INFO:root:current learning rate: 9.345746e-08
+INFO:root:Start to initialise train_loader
+INFO:root:Start to initialise eval_loader
 INFO:root:+++++++++++++++ start traning +++++++++++++++++++++
 INFO:root:==============================step: 0 ,epoch: 0
-INFO:root:learning rate: 4e-05
-INFO:root:train mse loss: 0.8999285
+INFO:root:learning rate: 9.345746e-08
+INFO:root:train mse loss: 0.09808009
 INFO:root:is_finite: True
-INFO:root:training time: 51.66963744163513
+INFO:root:traning time: 22.13266158103943
 .
 .
 .

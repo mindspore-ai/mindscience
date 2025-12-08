@@ -1,6 +1,6 @@
 train:
   device: Ascend
-  device_id: 0
+  device_id: 1
   dataset_dir: "./dataset"
   ckpt_dir: "./ckpt"
   props: "formation_energy_peratom"
