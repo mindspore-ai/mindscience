@@ -24,10 +24,10 @@ import mindspore as ms
 from mindspore import nn, set_seed
 from mindspore.amp import all_finite
 from data.generate import get_prop_model
-from mindchemistry.cell.matformer.matformer import Matformer
-from mindchemistry.cell.matformer.utils import LossRecord, OneCycleLr
-from mindchemistry.graph.loss import L1LossMask, L2LossMask
-from mindchemistry.graph.dataloader import DataLoaderBase as DataLoader
+from models.matformer import Matformer
+from models.utils import LossRecord, OneCycleLr
+from models.graph.loss import L1LossMask, L2LossMask
+from models.graph.dataloader import DataLoaderBase as DataLoader
 
 logging.basicConfig(level=logging.INFO)
 

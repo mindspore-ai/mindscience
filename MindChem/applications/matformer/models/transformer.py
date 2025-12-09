@@ -15,8 +15,8 @@
 """transformer file"""
 import mindspore as ms
 from mindspore import ops, Tensor, nn
-from mindchemistry.graph.graph import LiftNodeToEdge, AggregateEdgeToNode
-from mindchemistry.graph.normlization import BatchNormMask
+from models.graph.graph import LiftNodeToEdge, AggregateEdgeToNode
+from models.graph.normlization import BatchNormMask
 
 
 class Silu(nn.Cell):
