@@ -23,7 +23,7 @@ import mindspore as ms
 from mindspore import nn
 from src.dataset import create_training_dataset, _unpack
 
-from mindchemistry.cell import Nequip
+from models.nequip import Nequip
 
 
 def evaluation(dtype, configs):
