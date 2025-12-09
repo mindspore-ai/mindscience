@@ -10,7 +10,7 @@
 
 ## Environment Requirements
 
-> 1. Install `mindspore (2.5.0)`
+> 1. Install `mindspore (2.7.0)`
 > 2. Install dependencies: `pip install -r requirement.txt`
 
 ## Quick Start
@@ -28,32 +28,44 @@
 ```text
 The main code modules are in the src folder, with the dataset folder containing the datasets, the orb_ckpts folder containing pre-trained models and trained model weight files, and the configs folder containing parameter configuration files for each code.
 
-orb_models                                           # Model name
+orb_models                                           # ORB pre-training / fine-tuning project
 ├── dataset
-  ├── train_mptrj_ase.db                             # Training dataset for fine-tuning stage
-  └── val_mptrj_ase.db                               # Test dataset for fine-tuning stage
-├── orb_ckpts
-  └── orb-mptraj-only-v2.ckpt               # Pre-trained model checkpoint
-├── configs
-  ├── config.yaml                                    # Single-card training parameter configuration file
-  ├── config_parallel.yaml                           # Multi-card parallel training parameter configuration file
-  └── config_eval.yaml                               # Inference parameter configuration file
-├── src
-  ├── __init__.py
-  ├── ase_dataset.py                                 # Process and load datasets
-  ├── atomic_system.py                               # Define data structure for atomic systems
-  ├── base.py                                        # Base class definitions
-  ├── featurization_utilities.py                     # Provide tools to convert atomic systems into feature vectors
-  ├── pretrained.py                                  # Pre-trained model related functions
-  ├── property_definitions.py                        # Define calculation methods and naming rules for various physical properties in atomic systems
-  ├── trainer.py                                     # Model loss class definitions
-  ├── segment_ops.py                                 # Provide tools for segmenting data
-  └── utils.py                                       # Utility module
-├── finetune.py                                      # Model fine-tuning code
-├── evaluate.py                                      # Model inference code
-├── run.sh                                           # Single-card training startup script
-├── run_parallel.sh                                  # Multi-card parallel training startup script
-└── requirement.txt                                  # Environment
+│   ├── train_mptrj_ase.db                           # Training dataset for fine-tuning (ASE trajectories, SQLite)
+│   └── val_mptrj_ase.db                             # Validation / test dataset for fine-tuning
+│
+├── orb_ckpts                                        # Directory for pre-trained & fine-tuned checkpoints
+│   └── orb-mptraj-only-v2.ckpt                      # Pre-trained ORB checkpoint (mptraj-only task)
+│
+├── configs                                          # Config files for training / inference
+│   ├── config.yaml                                  # Single-card training configuration (lr, batch_size, etc.)
+│   ├── config_parallel.yaml                         # Multi-card data-parallel training configuration
+│   └── config_eval.yaml                             # Inference / evaluation configuration
+│
+├── src                                              # Core code for data processing and training
+│   ├── __init__.py                                  # Package initializer for src
+│   ├── ase_dataset.py                               # Load and wrap ASE datasets (read SQLite, build atomic graphs)
+│   ├── atomic_system.py                             # Data structures for atomic systems (positions, species, cell, etc.)
+│   ├── base.py                                      # Common base classes and utilities (e.g., batch_graphs)
+│   ├── featurization_utilities.py                   # Tools to convert atomic systems into model input features
+│   ├── pretrained.py                                # Interfaces for building and loading pre-trained ORB models
+│   ├── property_definitions.py                      # Config and naming rules for energy / forces / stress, etc.
+│   ├── trainer.py                                   # Training loop and loss wrappers (e.g., OrbLoss)
+│   ├── segment_ops.py                               # Segment-wise reduction ops (segment_sum / mean / max)
+│   └── utils.py                                     # Utility functions (seeding, logging, optimizer & LR scheduler)
+│
+├── models                                           # Model definitions (GNN / ORB networks)
+│    ├── __init__.py                          # Package initializer for orb
+│    ├── gns.py                               # GNS (Graph Network Simulator) related structures / APIs
+│    ├── orb.py                               # Main ORB architecture (encoder + heads)
+│    └── utils.py                             # Internal utilities and helper modules for ORB
+│
+├── finetune.py                                      # Entry script for model fine-tuning
+├── evaluate.py                                      # Entry script for model inference / evaluation
+│
+├── run.sh                                           # Single-card training launcher (wraps finetune.py + config.yaml)
+├── run_parallel.sh                                  # Multi-card training launcher (msrun + config_parallel.yaml)
+└── requirement.txt                                  # Python dependency list for environment setup
+
 ```  
 
 ## Download Dataset

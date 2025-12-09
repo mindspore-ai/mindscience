@@ -20,7 +20,7 @@ from typing import Optional
 
 from mindspore import nn, load_checkpoint, load_param_into_net
 
-from mindchemistry.cell import (
+from models import (
     EnergyHead,
     GraphHead,
     Orb,

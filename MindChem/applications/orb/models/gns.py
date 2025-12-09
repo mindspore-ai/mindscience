@@ -24,7 +24,7 @@ from mindspore import nn, ops, Tensor, mint
 from mindspore.common.initializer import Uniform
 import mindspore.ops.operations as P
 
-from mindchemistry.cell.orb.utils import build_mlp
+from models.utils import build_mlp
 
 _KEY = "feat"
 
