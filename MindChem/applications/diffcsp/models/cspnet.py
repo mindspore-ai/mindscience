@@ -17,10 +17,8 @@ import math
 
 import numpy as np
 import mindspore
-import mindspore.nn as nn
-import mindspore.ops as ops
-from mindspore import Tensor
-from mindchemistry.graph.graph import (AggregateEdgeToNode,
+from mindspore import Tensor,nn,ops
+from models.graph import (AggregateEdgeToNode,
                                        AggregateNodeToGlobal, LiftGlobalToNode)
 
 MAX_ATOMIC_NUM = 100
@@ -38,7 +36,7 @@ class SinusoidsEmbedding(nn.Cell):
     """
 
     def __init__(self, n_frequencies=10, n_space=3):
-        super(SinusoidsEmbedding, self).__init__()
+        super().__init__()
         self.n_frequencies = n_frequencies
         self.n_space = n_space
         self.frequencies = 2 * math.pi * np.arange(self.n_frequencies)
@@ -102,7 +100,7 @@ class CSPLayer(nn.Cell):
             act_fn (nn): The activation function used in the layer. Defaults to nn.SiLU().
             dis_emb (object): The embbing method used for edge features. Defaults to None.
         """
-        super(CSPLayer, self).__init__()
+        super().__init__()
         self.dis_dim = 3
         self.dis_emb = dis_emb
         if dis_emb is not None:
@@ -209,7 +207,7 @@ class CSPNet(nn.Cell):
             num_freqs (int): The number of frequencies for Fourier embedding for
                 edge features. Defaults to 128.
         """
-        super(CSPNet, self).__init__()
+        super().__init__()
         self.node_embedding = nn.Embedding(max_atoms, hidden_dim)
         self.atom_latent_emb = nn.Dense(hidden_dim + latent_dim, hidden_dim)
         self.act_fn = nn.SiLU()

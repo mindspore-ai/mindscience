@@ -9,7 +9,7 @@
 
 ## 环境要求
 
-> 1. 安装`mindspore（2.3.0）`
+> 1. 安装`mindspore（2.7.0）`
 > 2. 安装依赖包：`pip install -r requirement.txt`
 
 ## 快速入门
@@ -37,12 +37,16 @@ diffcsp
             data_utils.py  数据集处理工具
             dataset.py 读取数据集
             crysloader.py 数据集载入器
+            dataloader.py 构建数据集
     └─models
             cspnet.py  基于图神经网络的去噪器模块
             diffusion.py   扩散模型模块
             diff_utils.py  工具模块
             infer_utils.py  推理工具模块
             train_utils.py  训练工具模块
+            graph.py  工具
+            loss.py  损失模块
+
 
 ```
 
@@ -70,9 +74,10 @@ diffcsp
 
 更改config文件，设置训练参数:
 > 1. 设置训练的dataset，见dataset字段
-> 2. 设置去噪器模型的配置，见model字段
-> 3. 设置训练保存的权重文件，更改train.ckpt_dir文件夹名称和checkpoint.last_path权重文件名称
-> 4. 其它训练设置见train字段
+> 2. 设置训练的轮次，见epoch_size字段
+> 3. 设置去噪器模型的配置，见model字段
+> 4. 设置训练保存的权重文件，更改train.ckpt_dir文件夹名称和checkpoint.last_path权重文件名称
+> 5. 其它训练设置见train字段
 
 ```bash
 pip install -r requirement.txt

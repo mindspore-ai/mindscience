@@ -22,7 +22,7 @@ import numpy as np
 import mindspore as ms
 from mindspore import nn, set_seed
 from mindspore.amp import all_finite
-from mindchemistry.graph.loss import L2LossMask
+from models.loss import L2LossMask
 from models.cspnet import CSPNet
 from models.diffusion import CSPDiffusion
 from models.train_utils import LossRecord
@@ -46,7 +46,7 @@ def main():
     args = parse_args()
     ms.set_context(device_target=args.device_target, device_id=args.device_id)
 
-    with open(args.config, 'r') as stream:
+    with open(args.config, 'r', encoding="utf-8") as stream:
         config = yaml.safe_load(stream)
 
     ckpt_dir = config['train']["ckpt_dir"]
