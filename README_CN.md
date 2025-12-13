@@ -1,3 +1,4 @@
+# 通知: 本项目已经正式迁移至 [AomGit](https://atomgit.com/mindspore/mindscience) 平台
 # MindScience
 
 [View English](README.md)
