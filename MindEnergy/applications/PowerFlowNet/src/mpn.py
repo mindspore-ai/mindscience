@@ -15,7 +15,7 @@
 # This file is a derivative work based on the original PowerFlowNet implementation
 # (https://github.com/stavrosorf/poweflownet) which was licensed under the MIT License.
 # Significant modifications have been made to adapt the code for the MindSpore framework,
-# including replacement of PyTorch operations with MindSpore equivalents and
+# including MindSpore equivalents and
 # optimization for Ascend hardware acceleration.
 # ============================================================================
 """
@@ -23,26 +23,25 @@ PowerFlowNet Message Passing Network (MPN) - MindSpore Implementation.
 
 This module implements a comprehensive family of Message Passing Neural Networks
 for power flow prediction tasks. The implementation has been adapted from the
-original PyTorch version to leverage MindSpore's tensor operations and device
+original version to leverage MindSpore's tensor operations and device
 optimization capabilities, particularly for Ascend hardware acceleration.
 
 Architecture Overview:
 - Base MPN: Topology-aware aggregation using TAGConv with k-hop neighborhoods
 - SkipMPN: Enhanced with residual skip connections for improved gradient flow
-- MaskEmbdMPN: Masked embedding mechanism for selective feature processing
+- MaskEmbedMPN: Masked embedding mechanism for selective feature processing
 - MultiMPN: Multi-head message passing for diverse feature interactions
 - Advanced variants: Combinations of above features with architectural improvements
 
 Key Modifications for MindSpore:
-1. TAGConv replaced torch_geometric.nn.TAGConv with custom MindSpore implementation
+1. TAGConv replaced TAGConv with custom MindSpore implementation
 2. MessagePassing base class adapted for MindSpore tensor operations
 3. Device-specific operations (gather, scatter, where) optimized for Ascend
 4. Batch processing adapted to MindSpore DataLoader API
 
 Compatibility:
-- MindSpore 2.0+
+- MindSpore 2.7
 - CPU and Ascend device support
-- Numerical parity with PyTorch version verified
 """
 
 import numpy as np
@@ -99,8 +98,6 @@ class BaseMPN(nn.Cell):
 
 class EdgeAggregation(MessagePassing):
     """MessagePassing for aggregating edge features.
-
-    Equivalent to torch_geometric EdgeAggregation with 'add' aggregation.
     """
     def __init__(self, nfeature_dim, efeature_dim, hidden_dim, output_dim):
         super().__init__(aggr='add')
@@ -108,7 +105,7 @@ class EdgeAggregation(MessagePassing):
         self.efeature_dim = efeature_dim
         self.output_dim = output_dim
 
-        # MLP for edge aggregation - matches torch version structure
+        # MLP for edge aggregation
         self.edge_aggr = nn.SequentialCell([
             nn.Dense(nfeature_dim*2 + efeature_dim, hidden_dim),
             nn.ReLU(),
@@ -178,7 +175,7 @@ class MPN(BaseMPN):
     - One-time Message Passing to aggregate edge features into node features
     - Multiple TAGConv layers
 
-    Equivalent to torch_geometric version.
+    Equivalent to message passing version.
     """
     def __init__(self, nfeature_dim, efeature_dim, output_dim, hidden_dim,
                  n_gnn_layers, k, dropout_rate):
@@ -252,7 +249,7 @@ class SkipMPN(BaseMPN):
     - One-time Message Passing to aggregate edge features
     - Multiple TAGConv layers
 
-    Equivalent to torch_geometric SkipMPN version.
+    Equivalent to original SkipMPN version.
     """
     def __init__(self, nfeature_dim, efeature_dim, output_dim, hidden_dim,
                  n_gnn_layers, k, dropout_rate):
@@ -309,7 +306,7 @@ class SkipMPN(BaseMPN):
         return x
 
 
-class MaskEmbdMPN(BaseMPN):
+class MaskEmbedMPN(BaseMPN):
     """Wrapped Message Passing Network with Mask Embedding.
 
     Architecture:
@@ -317,7 +314,7 @@ class MaskEmbdMPN(BaseMPN):
     - One-time Message Passing to aggregate edge features
     - Multiple TAGConv layers
 
-    Equivalent to torch_geometric MaskEmbdMPN version.
+    Equivalent to original MaskEmbedMPN version.
     """
     def __init__(self, nfeature_dim, efeature_dim, output_dim, hidden_dim,
                  n_gnn_layers, k, dropout_rate):
@@ -331,11 +328,9 @@ class MaskEmbdMPN(BaseMPN):
         self.dropout_rate = dropout_rate
 
         # Embedding layer for mask: nfeature_dim -> hidden_dim -> nfeature_dim
-        # PyTorch: nn.Sequential(nn.Linear(nfeature_dim, hidden_dim), nn.ReLU(),
-        #                        nn.Linear(hidden_dim, nfeature_dim))
-        self.mask_embd_fc1 = nn.Dense(nfeature_dim, hidden_dim)
-        self.mask_embd_fc2 = nn.Dense(hidden_dim, nfeature_dim)
-        self.mask_embd_relu = nn.ReLU()
+        self.mask_embed_fc1 = nn.Dense(nfeature_dim, hidden_dim)
+        self.mask_embed_fc2 = nn.Dense(hidden_dim, nfeature_dim)
+        self.mask_embed_relu = nn.ReLU()
 
         self.edge_aggr = EdgeAggregation(nfeature_dim, efeature_dim, hidden_dim, hidden_dim)
 
@@ -356,8 +351,8 @@ class MaskEmbdMPN(BaseMPN):
         Expects 12D input: [one-hot bus_type(4) + features(4) + mask(4)]
         """
         assert data.x.shape[-1] == self.nfeature_dim * 2 + 4, (
-            f"MaskEmbdMPN expects 12D input [one-hot(4) + features({self.nfeature_dim}) + mask({self.nfeature_dim})], "
-            f"got {data.x.shape[-1]}D. Use mpn, gcn, mask_embd_multi_mpn, or mlp for 4D data."
+            f"MaskEmbedMPN expects 12D input [one-hot(4) + features({self.nfeature_dim}) + mask({self.nfeature_dim})], "
+            f"got {data.x.shape[-1]}D. Use mpn, gcn, mask_embed_multi_mpn, or mlp for 4D data."
         )
         x = data.x[:, 4:4+self.nfeature_dim]  # Extract features from 12D input
         mask = data.x[:, -self.nfeature_dim:]  # Extract mask from 12D input
@@ -365,10 +360,10 @@ class MaskEmbdMPN(BaseMPN):
         edge_features = data.edge_attr
 
         # Embed mask (nfeature_dim -> hidden_dim -> nfeature_dim) and add to features
-        mask_embd = self.mask_embd_fc1(mask)
-        mask_embd = self.mask_embd_relu(mask_embd)
-        mask_embd = self.mask_embd_fc2(mask_embd)
-        x = mask_embd + x
+        mask_embed = self.mask_embed_fc1(mask)
+        mask_embed = self.mask_embed_relu(mask_embed)
+        mask_embed = self.mask_embed_fc2(mask_embed)
+        x = mask_embed + x
 
         edge_index, edge_features = self.undirected_graph(edge_index, edge_features)
 
@@ -392,7 +387,7 @@ class MultiMPN(BaseMPN):
     - Multi-step EdgeAggregation + TAGConv layers
     - No final convolution layer, ends with EdgeAggregation
 
-    Equivalent to torch_geometric MultiMPN version.
+    Equivalent to original MultiMPN version.
     """
     def __init__(self, nfeature_dim, efeature_dim, output_dim, hidden_dim,
                  n_gnn_layers, k, dropout_rate):
@@ -454,7 +449,7 @@ class MultiMPN(BaseMPN):
         return x
 
 
-class MaskEmbdMultiMPN(BaseMPN):
+class MaskEmbedMultiMPN(BaseMPN):
     """Wrapped Message Passing Network with Mask Embedding + Multi-step MP+Conv.
 
     Architecture:
@@ -462,7 +457,7 @@ class MaskEmbdMultiMPN(BaseMPN):
     - Multi-step EdgeAggregation + TAGConv layers
     - No final convolution layer, ends with EdgeAggregation
 
-    Equivalent to torch_geometric MaskEmbdMultiMPN version.
+    Equivalent to original MaskEmbedMultiMPN version.
     """
     def __init__(self, nfeature_dim, efeature_dim, output_dim, hidden_dim,
                  n_gnn_layers, k, dropout_rate):
@@ -530,14 +525,14 @@ class MaskEmbdMultiMPN(BaseMPN):
         return x
 
 
-class MaskEmbdMultiMPNNoMP(BaseMPN):
+class MaskEmbedMultiMPNNoMP(BaseMPN):
     """Wrapped Message Passing Network with Mask Embedding, Multi-step MP+Conv, No MP.
 
     Architecture:
     - Mask embedding layer
     - Multi-step TAGConv layers (no EdgeAggregation except at end)
 
-    Equivalent to torch_geometric MaskEmbdMultiMPN_NoMP version.
+    Equivalent to original MaskEmbedMultiMPN_NoMP version.
     """
     def __init__(self, nfeature_dim, efeature_dim, output_dim, hidden_dim,
                  n_gnn_layers, k, dropout_rate):
@@ -576,9 +571,9 @@ class MaskEmbdMultiMPNNoMP(BaseMPN):
         Expects 12D input: [one-hot bus_type(4) + features(4) + mask(4)]
         """
         assert data.x.shape[-1] == self.nfeature_dim * 2 + 4, (
-            f"MaskEmbdMultiMPNNoMP expects 12D input "
+            f"MaskEmbedMultiMPNNoMP expects 12D input "
             f"[one-hot(4) + features({self.nfeature_dim}) + mask({self.nfeature_dim})], "
-            f"got {data.x.shape[-1]}D. Use mpn, gcn, mask_embd_multi_mpn, or mlp for 4D data."
+            f"got {data.x.shape[-1]}D. Use mpn, gcn, mask_embed_multi_mpn, or mlp for 4D data."
         )
         x = data.x[:, 4:4+self.nfeature_dim]  # Extract features from 12D input
         mask = data.x[:, -self.nfeature_dim:]  # Extract mask from 12D input (last nfeature_dim columns)
@@ -656,7 +651,7 @@ class MultiConvNet(BaseMPN):
     - No message passing to aggregate edge features
     - Multi-level parallel Conv layers for different edge features
 
-    Equivalent to torch_geometric MultiConvNet version.
+    Equivalent to original MultiConvNet version.
     """
     def __init__(self, nfeature_dim, efeature_dim, output_dim, hidden_dim,
                  n_gnn_layers, k, dropout_rate):
@@ -734,7 +729,7 @@ class MPNSimplenet(BaseMPN):
     - One-time Message Passing to aggregate edge features into node features
     - Multiple Conv layers
 
-    Equivalent to torch_geometric MPNSimplenet version.
+    Equivalent to original MPNSimplenet version.
     """
     def __init__(self, nfeature_dim, efeature_dim, output_dim, hidden_dim,
                  n_gnn_layers, k, dropout_rate):

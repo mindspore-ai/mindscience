@@ -15,7 +15,7 @@
 """
 MindSpore Evaluation Module
 
-Provides evaluation functions aligned with PyTorch version:
+Provides evaluation functions aligned with original PowerFlowNet version:
   - evaluate_epoch: Simple epoch evaluation with single loss value
   - evaluate_epoch_v2: Detailed evaluation with loss term breakdowns
   - load_model: Load trained model from checkpoint

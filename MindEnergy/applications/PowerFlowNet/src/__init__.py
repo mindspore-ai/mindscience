@@ -14,12 +14,11 @@
 # ============================================================================
 """
 PowerFlowNet MindSpore Network Implementations
-Aligned with original PyTorch/torch_geometric structure
 """
 
 from .mpn import (
-    MPN, SkipMPN, MaskEmbdMPN,
-    MultiMPN, MaskEmbdMultiMPN, MaskEmbdMultiMPNNoMP,
+    MPN, SkipMPN, MaskEmbedMPN,
+    MultiMPN, MaskEmbedMultiMPN, MaskEmbedMultiMPNNoMP,
     MultiConvNet, MPNSimplenet, WrappedMultiConv
 )
 from .gcn import GCNNet
@@ -46,8 +45,8 @@ from .power_flow_data import (
 )
 
 __all__ = [
-    'MPN', 'SkipMPN', 'MaskEmbdMPN',
-    'MultiMPN', 'MaskEmbdMultiMPN', 'MaskEmbdMultiMPNNoMP',
+    'MPN', 'SkipMPN', 'MaskEmbedMPN',
+    'MultiMPN', 'MaskEmbedMultiMPN', 'MaskEmbedMultiMPNNoMP',
     'MultiConvNet', 'MPNSimplenet', 'WrappedMultiConv',
     'GCNNet', 'MLPNet',
     'MessagePassing',
