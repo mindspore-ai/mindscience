@@ -59,7 +59,7 @@ def random_augmentation(rng_key, positions, mask):
         Transformed positions with the same shape as input positions.
     """
     center = utils.mask_mean(
-        mask.unsqueeze(-1), positions, axis=(-2, -3), keepdims=True, eps=1e-6
+        mask.unsqueeze(-1).unsqueeze(0), positions, axis=(-2, -3), keepdims=True, eps=1e-6
     ).astype(ms.float32)
     rot = random_rotation(rng_key)
     np.random.seed(rng_key)
@@ -106,6 +106,7 @@ class DiffusionHead(nn.Cell):
         in_shape (tuple): Input shape for the module.
         max_relative_chain (int): Maximum number of relative chains for positional encoding. Default: ``2``.
         max_relative_idx (int): Maximum relative index for positional encoding. Default: ``32``.
+        dtype (ms.type): the type of the input tensor.
 
     Inputs:
         - **positions_noisy** (Tensor) - Noisy atomic positions tensor.
@@ -140,6 +141,7 @@ class DiffusionHead(nn.Cell):
         super().__init__()
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
         self.dtype = dtype
         in_channel = in_shape[-1]
         self.max_relative_chain = max_relative_chain
@@ -155,11 +157,11 @@ class DiffusionHead(nn.Cell):
                                                      has_bias=False, dtype=ms.float32)
         self.transition_block1 = diffusion_transformer.TransitionBlock(
             in_channel, 2, with_single_cond=False,
-            dtype=dtype
+            use_einsum=use_einsum, dtype=dtype
         )
         self.transition_block2 = diffusion_transformer.TransitionBlock(
             in_channel, 2, with_single_cond=False,
-            dtype=dtype
+            use_einsum=use_einsum, dtype=dtype
         )
         in_channel_single = self.config.conditioning.seq_channel * 2 \
             + residue_names.POLYMER_TYPES_NUM_WITH_UNKNOWN_AND_GAP * 2 + 1
@@ -179,12 +181,12 @@ class DiffusionHead(nn.Cell):
         self.single_transition1 = diffusion_transformer.TransitionBlock(
             self.config.conditioning.seq_channel, 2,
             ndim=2, with_single_cond=False,
-            dtype=dtype
+            use_einsum=use_einsum, dtype=dtype
         )
         self.single_transition2 = diffusion_transformer.TransitionBlock(
             self.config.conditioning.seq_channel, 2,
             ndim=2, with_single_cond=False,
-            dtype=dtype
+            use_einsum=use_einsum, dtype=dtype
         )
 
         # modules
@@ -199,14 +201,14 @@ class DiffusionHead(nn.Cell):
             create_beta=False, gamma_init="ones",
             name='output_norm', dtype=dtype)
         self.atom_cross_att_encoder = atom_cross_attention.AtomCrossAttEncoder(
-            self.config, self.global_config, "", dtype=dtype
+            self.config, self.global_config, ndim=4, dtype=dtype
         )
         self.transformer = diffusion_transformer.Transformer(
             self.config.transformer, self.global_config, in_shape[:-1] + (self.config.conditioning.seq_channel * 2,),
             in_shape, using_pair_act=True, dtype=dtype
         )
         self.atom_cross_att_decoder = atom_cross_attention.AtomCrossAttDecoder(
-            self.config, self.global_config, '', dtype=dtype
+            self.config, self.global_config, dtype=dtype
         )
 
     def _conditioning(self, batch, embeddings, noise_level, use_conditioning):
@@ -322,12 +324,11 @@ def sample(denoising_step, batch, key, config, init_positions=None):
     init_positions *= noise_levels[0]
     init = (ms.Tensor([key + i for i in range(num_samples)]).reshape((-1, 1)),
             init_positions,
-            mint.tile(noise_levels[None, 0], (num_samples,)).reshape((-1, 1)))
+            noise_levels[None, 0])
     count = 0
     for noise_level in noise_levels[1:]:
-        for i in range(num_samples):
-            temp, _ = apply_denoising_step((count * 10 + i, init[1][i], init[2][i]), noise_level)
-            init[0][i], init[1][i], init[2][i] = temp
+        temp, _ = apply_denoising_step((count * 10, init[1], init[2]), noise_level)
+        init = temp
         count += 1
     _, positions_out, _ = init
 

@@ -62,6 +62,7 @@ class TriangleMultiplication(nn.Cell):
         super().__init__()
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
         self.num_intermediate_channel = num_intermediate_channel
         self.left_norm_input = LayerNorm(normalized_shape, dtype=ms.float32)
         self.center_norm = LayerNorm(normalized_shape, dtype=ms.float32)
@@ -71,10 +72,10 @@ class TriangleMultiplication(nn.Cell):
                              weight_init=self.global_config.final_init, has_bias=False, dtype=dtype)
         self.output_projection = CustomDense(
             normalized_shape[-1], num_intermediate_channel, weight_init=self.global_config.final_init,
-            ndim=3, dtype=dtype)
+            ndim=3, use_einsum=use_einsum, dtype=dtype)
         self.gating_linear = CustomDense(
             num_intermediate_channel, num_intermediate_channel, weight_init=self.global_config.final_init,
-            ndim=3, dtype=dtype)
+            ndim=3, use_einsum=use_einsum, dtype=dtype)
         self.weight_glu = mint.stack(
             [self.gate.weight.T, self.projection.weight.T], dim=1)
         if self.config.equation == "ikc,jkc->ijc":

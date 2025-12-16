@@ -1,63 +1,63 @@
 # AlphaFold3-MindSpore
 
-[**MindSpore版 AlphaFold3实现**] 一个基于MindSpore深度学习框架的AlphaFold3推理网络结构实现。
+[**MindSpore Implementation of AlphaFold3**] A MindSpore-based deep learning framework implementation of AlphaFold3 inference network architecture.
 
-> 📖 **语言版本**: [中文](README.md) | [English](README_EN.md)
+> 📖 **Language**: [中文](README.md) | [English](README_EN.md)
 
-## 📑 目录
+## 📑 Table of Contents
 
-- [项目简介](#项目简介)
-- [安装](#安装)
-- [快速开始](#快速开始)
-- [详细使用说明](#详细使用说明)
-- [许可证](#许可证)
-- [致谢](#致谢)
-- [参考文献](#参考文献)
+- [Project Overview](#project-overview)
+- [Update](#update)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+- [Reference](#reference)
 
-## 项目简介
+## Project Overview
 
-**项目背景**：
-AlphaFold3是DeepMind在2024年发布的革命性生物分子结构预测模型，能够预测蛋白质、DNA、RNA等生物大分子的三维结构。本项目基于Ascend NPU和MindSpore框架，实现了AlphaFold3的推理功能。
+**Project Background**:
+AlphaFold3 is a revolutionary biomolecular structure prediction model released by DeepMind in 2024, capable of predicting the three-dimensional structures of proteins, DNA, RNA, and other biological macromolecules. This project implements AlphaFold3's inference functionality based on Ascend NPU and MindSpore framework.
 
-AlphaFold3 的模型结构如下图所示：
+The model architecture is shown below:
 
-![AlphaFold3 模型结构](image/af3_structure.jpg)
+![AlphaFold3 Model Structure](image/af3_structure.jpg)
 
-- **推理流程**：首先输入的蛋白，核酸，配体等序列信息，经过模板搜索（Template Search）、多序列比对（Multiple Sequence Alignment, MSA）等预处理步骤，然后通过embeding部分对输入信息进行编码，之后通过Pairformer模块，获取序列及结构的关系，接着进入扩散模块生成三维结构，最后通过置信度模块给出预测的置信度评分
-- **生物分子结构预测**: 基于AlphaFold3算法的生物分子结构预测模型,支持包括蛋白质，DNA，RNA，小分子在内的多种输入形式；支持多链输入，预测相互作用和相对位置
-- **MindSpore支持**: 基于MindSpore对模型推理功能进行适配
+- **Inference Pipeline**：The workflow begins with the provision of sequence information for proteins, DNA, RNA, and ligands. This data undergoes preprocessing steps, including template search and multiple sequence alignment, before being fed into the model. Next, an embedding module encodes the input information. Subsequently, the Pairformer cycles analyze the relationships between the sequences and their structures. Following this, a diffusion module generates the 3D structures. Finally, a confidence module assigns a confidence score to the predictions, providing a measure of their reliability.
+- **Biomolecular Structure Prediction**: A biomolecular structure prediction model based on the AlphaFold3 algorithm, supporting various input forms including proteins, DNA, RNA, and small molecules; enabling multi-chain inputs and predicting interactions and relative positions.
+- **MindSpore Support**: Model Inference adaptation based on MindSpore.
 
-### 硬件要求
+### Hardware Requirements
 
 - Atlas 800T A2
 
-### 软件要求
+### Software Requirements
 
 - Python >= 3.11
 - MindSpore >= 2.5.0
 - CANN >= 8.0.0
 - cmake >= 3.28.1
 
-## 安装
+## Installation
 
-### 1. 克隆仓库
+### 1. Clone Repository
 
 ```bash
 git clone https://gitee.com/mindspore/mindscience
 cd mindsience/MindSPONGE/application/AlphaFold3
 ```
 
-### 2. 安装依赖
+### 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
-#`{PATH}` 为当前目录
+#`{PATH}` is the current path
 export PYTHONPATH={PATH}/mindscience
 ```
 
-### 3. 安装软件包
+### 3. Installing the Software Package
 
-[hmmer](http://eddylab.org/software/hmmer/) 在链接处下载安装包，如 `hmmer-3.4.tar.gz`，并放置在当前目录下，然后执行以下命令：
+Download the installation package from the link [hmmer](http://eddylab.org/software/hmmer/) , such as hmmer-3.4.tar.gz, and place it in the current directory.
 
 ```bash
 mkdir /path/to/hmmer_build /path/to/hmmer && \
@@ -71,9 +71,9 @@ export PATH=/hmmer/bin:$PATH
 which jackhmmer
 ```
 
-如果出现`/path/to/hmmer/bin/jackhmmer`则安装成功
+If the file `/path/to/hmmer/bin/jackhmmer` appears, the installation is successful.
 
-### 4. 编译
+### 4. Compile
 
 ```bash
 cd {PATH}/mindscience/MindSPONGE/applications/AlphaFold3
@@ -85,15 +85,15 @@ cp ./cpp.cpython-311-aarch64-linux-gnu.so ../alphafold
 cd ..
 ```
 
-生成数据文件：
+Then, we need to generate data file:
 
 ```bash
 python ./alphafold3/build_data.py
 ```
 
-如出现报错找不到components.cif,可以去[wwpdb](https://files.wwpdb.org/pub/pdb/data/monomers/components.cif)下载components.cif文件，放置在conda环境中的`{CONDA_ENV_DIR}/lib/python3.11/site-packages/share/libcifpp`文件夹下。如不存在`share/libcifpp`文件夹，则需要手动创建。
+if you see the error 'counld not find components.cif', download the file from [wwpdb](https://files.wwpdb.org/pub/pdb/data/monomers/components.cif)，then put this file in your conda environment, `{CONDA_ENV_DIR}/lib/python3.11/site-packages/share/libcifpp`. If there is no `share/libcifpp` directory, create the directory by yourself.
 
-下载随机数文件：
+Download random number files:
 
 ```bash
 cd ./alphafold3/model/diffusion
@@ -101,12 +101,13 @@ mkdir random
 cd random
 wget https://tools.mindspore.cn/dataset/workspace/mindspore_dataset/mindsponge_data/alphafold3/bias.npy
 wget https://tools.mindspore.cn/dataset/workspace/mindspore_dataset/mindsponge_data/alphafold3/weight.npy
+cd ../../../..
 ```
 
-### 5. 下载数据库
+### 5. Download DataBase
 
-可以从DeepMind官网下载测试用小数据库[miniature_databases](https://github.com/google-deepmind/alphafold3/tree/main/src/alphafold3/test_data/miniature_databases)（影响推理结果，仅测试使用！）
-下载后放置在统一文件夹中并修改文件名如下所示(如统一放置在`/mindscience/MindSPONGE/applications/AlphaFold3/public_databases`可省略`--db_dir=/PATH/TO/DB_DIR`)：
+You can download a small test database from DeepMind [miniature_databases](https://github.com/google-deepmind/alphafold3/tree/main/src/alphafold3/test_data/miniature_databases)(Only for test，have influence to inference result!)
+Download and put all the files in the same direction (No need to set `--db_dir=/PATH/TO/DB_DIR` if all the database are put in `/mindscience/MindSPONGE/applications/AlphaFold3/public_databases`) and rename the file like the example below:
 
 ```txt
 miniature_databases
@@ -121,10 +122,10 @@ miniature_databases
     │  rnacentral_active_seq_id_90_cov_80_linclust.fasta
 ```
 
-如果想要搜索完整的数据库，请从以下链接下载数据库，放置到同一文件夹中(如统一放置在`/mindscience/MindSPONGE/applications/AlphaFold3/public_databases`可省略`--db_dir=/PATH/TO/DB_DIR`):
+If you want to seearch the full database, download the following database, and put them in the same direction(No need to set `--db_dir=/PATH/TO/DB_DIR` if all the database are put in `/mindscience/MindSPONGE/applications/AlphaFold3/public_databases`):
 
 - [mmcif](https://storage.googleapis.com/alphafold-databases/v3.0/pdb_2022_09_28_mmcif_files.tar.zst)
-- [BFD](https://storage.googleapis.com/alphafold-databases/v3.0/bfd-first_non_consensus_sequences.fasta.zst)
+- [BFD small](https://storage.googleapis.com/alphafold-databases/v3.0/bfd-first_non_consensus_sequences.fasta.zst)
 - [MGnify](https://storage.googleapis.com/alphafold-databases/v3.0/mgy_clusters_2022_05.fa.zst)
 - [PDB seqres](https://storage.googleapis.com/alphafold-databases/v3.0/pdb_seqres_2022_09_28.fasta.zst)
 - [UniProt](https://storage.googleapis.com/alphafold-databases/v3.0/uniprot_all_2021_04.fa.zst)
@@ -133,7 +134,8 @@ miniature_databases
 - [RFam](https://storage.googleapis.com/alphafold-databases/v3.0/rfam_14_9_clust_seq_id_90_cov_80_rep_seq.fasta.zst)
 - [RNACentral](https://storage.googleapis.com/alphafold-databases/v3.0/rnacentral_active_seq_id_90_cov_80_linclust.fasta.zst)
 
-请确保磁盘中有足够空间：
+Make sure having enough space on disk:
+
 |   DataBase   |   Compressed Size   | Uncompressed Size|
 |--------------|---------------------|------------------|
 |    mmcif     |   233G              |    233G          |
@@ -147,7 +149,7 @@ miniature_databases
 |    RNACentral|   3.27G             |    12.9G         |
 |    total     |   402G              |    534G          |
 
-解压下载的数据文件：
+Uncompressing the following database file：
 
 ```bash
 cd /PATH/TO/YOUR/DATA_DIR
@@ -162,13 +164,13 @@ zstd -d rfam_14_9_clust_seq_id_90_cov_80_rep_seq.fasta.zst
 zstd -d rnacentral_active_seq_id_90_cov_80_linclust.fasta.zst
 ```
 
-如统一放置在`/mindscience/MindSPONGE/applications/AlphaFold3/public_databases`可在运行时省略`--db_dir=/PATH/TO/DB_DIR`
+If all the files are put under`/mindscience/MindSPONGE/applications/AlphaFold3/public_databases`, the setting `--db_dir=/PATH/TO/DB_DIR` can be ignored.
 
-## 快速开始
+## Quick Start
 
-### 输入数据格式
+### Input Structure
 
-示例输入JSON:
+Example Input JSON:
 
 ```json
 {
@@ -187,9 +189,9 @@ zstd -d rnacentral_active_seq_id_90_cov_80_linclust.fasta.zst
 }
 ```
 
-### 运行流程
+### Running Pipeline
 
-使用以下命令运行模型（计算精度float32）：
+AlphaFold3 can be run with the following command（Precision: float32）.
 
 ```bash
 source set_path.sh
@@ -199,69 +201,102 @@ python run_alphafold.py \
   --run_data_pipeline=true \
   --run_inference=true \
   --db_dir=/PATH/TO/DB_DIR \
-  --model_dir=/PATH/TO/MODEL_DIR\
+  --model_dir=/PATH/TO/MODEL_DIR \
   --buckets=256
 ```
 
-### 参数说明
+### Parameter Introduction
 
-- `--json_path`输入文件名称
-- `--output_dir`: 输出文件路径
-- `--run_data_pipeline`: 是否运行数据处理模块
-- `--run_inference`: 是否运行推理模块
-- `--db_dir`: 数据库存放路径, 默认 `{HOME}/public_databases`
-- `--model_dir`: 模型文件路径, 默认 `{HOME}/ckpt`
-- `--buckets`: 设定序列长度，如不设置会将序列长度padding到256的倍数，如传入则使用传入值作为序列长度
+- `--json_path`: Name of input json
+- `--output_dir`: Output direction
+- `--run_data_pipeline`: run data-pipeline or not
+- `--run_inference`: run inference or not
+- `--db_dir`: path to database, default `{HOME}/public_databases`
+- `--model_dir`: Path to ckpt, default `{HOME}/ckpt`
+- `--buckets`: Setting the sequence length，default：padding to N * 256
+- `--use_evo_attention`: Whether to use Evo-Attention for GridSelfAttention, default: False
+- `--use_einsum`:Whether to use Einsum for matrix multiplication, default: False
 
-### 输入与输出文件说明
+### Use Evo Attention
 
-- **JSON格式数据输入**: 包含蛋白质核酸等的序列信息。当前支持输入种类与DeepMind版本相同，支持蛋白质，DNA，RNA及Ligand作为输入，当前推理版本为单卡版本支持序列长度不超过1000
+Support 2K Sequence if using Evo Attention
 
-- **输出文件**: 5个标准的蛋白质结构文件，及置信度信息
+```bash
+source set_path.sh
+export ASCEND_CUSTOM_OPP_PATH="../../../mindscience/sciops/evoformer_attention/binary"
+python run_alphafold.py \
+  --json_path=example_input.json \
+  --output_dir=output \
+  --run_data_pipeline=true \
+  --run_inference=true \
+  --db_dir=/PATH/TO/DB_DIR \
+  --model_dir=/PATH/TO/MODEL_DIR \
+  --use_evo_attention=True
+```
+
+### Use Einsum
+
+```bash
+source set_path.sh
+python run_alphafold.py \
+  --json_path=example_input.json \
+  --output_dir=output \
+  --run_data_pipeline=true \
+  --run_inference=true \
+  --db_dir=/PATH/TO/DB_DIR \
+  --model_dir=/PATH/TO/MODEL_DIR \
+  --use_einsum=True
+```
+
+### Input & Output
+
+- **JSON Input**: Contains sequence information of proteins and other molecules. Support the following types of input (same as DeepMind version): Protein, DNA, RNA, Ligand, etc. Currently, only single NPU version and the max sequence length should be smaller than 1000.
+
+- **CIF Output**: 5 Standard protein structure files and confidence info.
 
 ```txt
 └─name_in_your_json
-    └─ seed-1_sample-0                # 第一个生成样本
-      │  confidence.json              # 第一个样本的详细置信度文件
-      │  model.cif                    # 第一个样本的结构文件
-      │  summary_confidence.json      # 第一个样本的总体置信度文件
-    └─ seed-1_sample-1                # 第二个生成样本
-    └─ seed-1_sample-2                # 第三个生成样本
-    └─ seed-1_sample-3                # 第四个生成样本
-    └─ seed-1_sample-4                # 第五个生成样本
-    │  {name}_confidences.json        # 最优样本的详细置信度文件
-    │  {name}_data.json               # 数据处理后的数据文件
-    │  {name}_model.cif               # 最优样本的结构文件
-    │  {name}_summary_confidence.json # 最优样本的总体置信度文件
-    │  ranking_scores.csv             # 五个样本的ranking score；ranking score越高，表明置信度越高
+    └─ seed-{random_seed}_sample-0      # First Sample
+      │  confidence.json                # Confidence of the first sample
+      │  model.cif                      # Predicted structure of the first sample
+      │  summary_confidence.json        # Summary confidence of the first sample
+    └─ seed-{random_seed}_sample-1      # Second Sample
+    └─ seed-{random_seed}_sample-2      # Third Sample
+    └─ seed-{random_seed}_sample-3      # Forth Sample
+    └─ seed-{random_seed}_sample-4      # Fifth Sample
+    │  {name}_confidences.json          # Confidence of the best sample
+    │  {name}_data.json                 # Data json file after data-processing
+    │  {name}_model.cif                 # Predicted structure of the best sample
+    │  {name}_summary_confidence.json   # Summary confidence of the best sample
+    │  ranking_scores.csv               # Ranking Score of all five samples, the higher of the ranking score, the higher of the confidence of the sample
 ```
 
-### 推理完成
+### End of Inference
 
-当看到如下日志，表明推理正常结束：
+When you see the following log，the inference finished correctly：
 
-```txt
+```text
 =======write output to /PATH/TO/OUTPUT/DIR/name_of_your_input==========
 Done processing fold input name_of_your_input.
 Done processing 1 fold inputs.
 ```
 
-## 许可证
+## License
 
-详情请参阅 [LICENSE](LICENSE) 文件。
+See the [LICENSE](LICENSE) file for details.
 
-## 致谢
+## Acknowledgments
 
-- `data`，`structure`，`common`，`constant`等模块使用了[DeepMind](https://deepmind.com/)实现
-- `model`，`utils`等模块基于[MindSpore](https://www.mindspore.cn/)实现
+- The implementation of Modules including: data，structure，common, constant refers to [DeepMind](https://github.com/google-deepmind/alphafold3).
+- The implementation of Modules including: model，utils are based on [MindScience](https://gitee.com/mindspore/mindscience/)
 
-## 联系我们
+## COntact Us
 
-如果您在使用过程中遇到任何问题或有任何建议，请通过以下方式与我们联系：
+If you encounter any issues or have any suggestions during use, please contact us through the following methods:
 
-- **Gitee仓库**：[AlphaFold3](https://gitee.com/mindspore/mindscience/tree/main/MindSPONGE/applications/AlphaFold3)
-- **问题跟踪**：[问题单跟踪](https://gitee.com/mindspore/mindscience/issues)
+- **Gitee Repository**: [AlphaFold3](https://gitee.com/mindspore/mindscience/tree/main/MindSPONGE/applications/AlphaFold3)
+- **Issue Tracking**: [Issue Tracking](https://gitee.com/mindspore/mindscience/issues)
 
-## 参考文献
+## Reference
 
 - Abramson J, Adler J, Dunger J, et al. Accurate structure prediction of biomolecular interactions with AlphaFold 3[J]. Nature, 2024, 630(8016): 493-500.

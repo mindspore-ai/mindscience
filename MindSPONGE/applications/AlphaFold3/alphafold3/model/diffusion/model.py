@@ -133,7 +133,8 @@ class CreateTargetFeatEmbedding(nn.Cell):
         self.global_config = global_config
         self.dtype = dtype
         self.atom_cross_att_encoder = atom_cross_attention.AtomCrossAttEncoder(
-            self.config.per_atom_conditioning, self.global_config, '', with_cond=False, dtype=dtype
+            self.config.per_atom_conditioning, self.global_config, with_cond=False,
+            single_ndim=3, dtype=dtype
         )
 
     def construct(self, batch):
@@ -236,15 +237,18 @@ class Diffuser(nn.Cell):
             self.config.heads.diffusion, self.global_config, pair_shape, dtype=ms.float32
         )
         self.embedding_module = Evoformer(self.config.evoformer, self.global_config,
-                                          feat_shape, act_shape, pair_shape, single_shape, num_templates, dtype=dtype)
+                                          feat_shape, act_shape, pair_shape, single_shape, num_templates,
+                                          dtype=dtype)
         self.create_target_feat_embedding = CreateTargetFeatEmbedding(
             self.embedding_module.config, self.global_config, dtype=ms.float32)
         self.confidence_head = confidence_head.ConfidenceHead(
             self.config.heads.confidence, self.global_config,
-            pair_shape, single_shape, atom_shape, feat_shape[-1], out_channel, dtype=dtype
+            pair_shape, single_shape, atom_shape, feat_shape[-1], out_channel,
+            dtype=dtype
         )
         self.distogram_head = distogram_head.DistogramHead(
-            self.config.heads.distogram, self.global_config, pair_shape[-1], dtype=ms.float32
+            self.config.heads.distogram, self.global_config, pair_shape[-1],
+            dtype=ms.float32
         )
 
     def _sample_diffusion(self, batch, embeddings, sample_config, key, init_positions=None):
@@ -570,24 +574,32 @@ class Evoformer(nn.Cell):
         super().__init__()
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
+        self.dtype = dtype
         in_channel = feat_shape[-1]
         position_activations_in = 4 * self.config.max_relative_idx + \
             4 + 2 * self.config.max_relative_chain + 2 + 1
         self.position_activations = bm.CustomDense(
-            position_activations_in, self.config.pair_channel, ndim=3, dtype=dtype)
+            position_activations_in, self.config.pair_channel, ndim=3,
+            use_einsum=use_einsum, dtype=dtype)
         self.left_single = bm.CustomDense(
-            in_channel, self.config.pair_channel, ndim=2, dtype=dtype)
+            in_channel, self.config.pair_channel, ndim=2,
+            use_einsum=use_einsum, dtype=dtype)
         self.right_single = bm.CustomDense(
-            in_channel, self.config.pair_channel, ndim=2, dtype=dtype)
+            in_channel, self.config.pair_channel, ndim=2,
+            use_einsum=use_einsum, dtype=dtype)
         self.bond_embedding = bm.CustomDense(
-            1, self.config.pair_channel, ndim=3, dtype=dtype)
+            1, self.config.pair_channel, ndim=3,
+            use_einsum=use_einsum, dtype=dtype)
         self.template_module = template_modules.TemplateEmbedding(
             self.config.template, self.global_config, num_templates, act_shape, dtype=dtype
         )
         self.msa_activations = bm.CustomDense(
-            residue_names.POLYMER_TYPES_NUM_WITH_UNKNOWN_AND_GAP + 3, self.config.msa_channel, ndim=3, dtype=dtype)
+            residue_names.POLYMER_TYPES_NUM_WITH_UNKNOWN_AND_GAP + 3, self.config.msa_channel, ndim=3,
+            use_einsum=use_einsum, dtype=dtype)
         self.extra_msa_target_feat = bm.CustomDense(
-            in_channel, self.config.msa_channel, ndim=2, dtype=dtype)
+            in_channel, self.config.msa_channel, ndim=2,
+            use_einsum=use_einsum, dtype=dtype)
         evofromer_act_shape = (self.config.num_msa,
                                act_shape[1], self.config.msa_channel)
         self.evoformer_stack = nn.CellList(
@@ -598,19 +610,21 @@ class Evoformer(nn.Cell):
             ]
         )
         self.prev_embedding = bm.CustomDense(
-            pair_shape[-1], pair_shape[-1], ndim=3, dtype=dtype)
+            pair_shape[-1], pair_shape[-1], ndim=3, use_einsum=use_einsum, dtype=dtype)
         self.prev_embedding_layer_norm = bm.LayerNorm(
             pair_shape, dtype=ms.float32)
         self.single_activations = bm.CustomDense(
-            in_channel, self.config.seq_channel, ndim=2, dtype=dtype)
+            in_channel, self.config.seq_channel, ndim=2, use_einsum=use_einsum, dtype=dtype)
         self.prev_single_embedding = bm.CustomDense(
-            self.config.seq_channel, self.config.seq_channel, ndim=2, dtype=dtype)
+            self.config.seq_channel, self.config.seq_channel, ndim=2,
+            use_einsum=use_einsum, dtype=dtype)
         self.prev_single_embedding_layer_norm = bm.LayerNorm(act_shape[:-1] +
                                                              (self.config.seq_channel,), dtype=ms.float32)
         self.pairformer_stack = nn.CellList(
             [
                 modules.PairFormerIteration(
-                    self.config.pairformer, self.global_config, pair_shape, single_shape, with_single=True, dtype=dtype
+                    self.config.pairformer, self.global_config, pair_shape, single_shape,
+                    with_single=True, dtype=dtype
                 ) for _ in range(self.config.pairformer.num_layer)
             ]
         )
@@ -626,8 +640,8 @@ class Evoformer(nn.Cell):
         return pair_activations
 
     def _seq_pair_embedding(self, token_features, target_feat):
-        left_single = self.left_single(target_feat)[:, None]
-        right_single = self.right_single(target_feat)[None]
+        left_single = self.left_single(target_feat.astype(self.dtype))[:, None]
+        right_single = self.right_single(target_feat.astype(self.dtype))[None]
         dtype = left_single.dtype
         pair_activations = left_single + right_single
         mask = token_features.mask

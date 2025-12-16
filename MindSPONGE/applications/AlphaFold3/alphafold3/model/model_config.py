@@ -20,6 +20,8 @@ _Shape2DType: TypeAlias = Tuple[Optional[int], Optional[int]]
 
 
 class GlobalConfig(base_config.BaseConfig):
+    """Global config for the protein folding model."""
+
     bfloat16: Literal['all', 'none', 'intermediate'] = 'none'
     final_init: Literal['zeros', 'linear'] = 'zeros'
     pair_attention_chunk_size: Sequence[_Shape2DType] = (
@@ -28,3 +30,5 @@ class GlobalConfig(base_config.BaseConfig):
         (2048, None),
         (None, 1024),
     )
+    use_evo_attention: bool = False
+    use_einsum: bool = False

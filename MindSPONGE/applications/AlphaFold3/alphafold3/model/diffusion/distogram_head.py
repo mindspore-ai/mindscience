@@ -60,8 +60,10 @@ class DistogramHead(nn.Cell):
         super().__init__()
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
         self.linear = bm.CustomDense(
-            in_channel, self.config.num_bins, weight_init=self.global_config.final_init, ndim=3, dtype=dtype)
+            in_channel, self.config.num_bins, weight_init=self.global_config.final_init, ndim=3,
+            use_einsum=use_einsum, dtype=dtype)
         self.ncon = Ncon([[-1, -2, 1], [1]])
 
     def construct(self, batch, embeddings):

@@ -16,6 +16,7 @@ import dataclasses
 import functools
 import mindspore as ms
 from mindspore import ops
+from mindscience.sciops.evoformer_attention import evo_attention
 
 
 def _softmax(x):
@@ -56,9 +57,20 @@ def cal_out(weights, v, use_bf16=False):
 
 def attention(
         q, k, v, *, logits_scale,
-        bias, mask
+        bias, mask, use_evo_attention=False
 ):
     """Compute attention."""
+    n = q.shape[-2]
+    if use_evo_attention:
+        if mask is not None:
+            if not isinstance(mask, Mask):
+                mask = Mask(mask)
+            mask = mask.as_array(q.shape[-3], k.shape[-3])
+            mask = (1 - mask).astype(ms.bool_)
+        out = evo_attention(
+            q.astype(ms.bfloat16), k.astype(ms.bfloat16), v.astype(ms.bfloat16),
+            n, bias.astype(ms.bfloat16), mask, logits_scale, input_layout="BSND")
+        return out
     logits = cal_logits(q, k)
 
     logits *= logits_scale

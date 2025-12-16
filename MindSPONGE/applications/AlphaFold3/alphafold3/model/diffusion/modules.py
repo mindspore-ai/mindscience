@@ -67,6 +67,7 @@ class TransitionBlock(nn.Cell):
         super().__init__()
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
         num_channels = normalized_shape[-1]
         self.num_intermediate = int(
             num_channels * self.config.num_intermediate_factor)
@@ -79,11 +80,12 @@ class TransitionBlock(nn.Cell):
                 num_channels, 2, self.num_intermediate))
         else:
             self.linear = bm.CustomDense(num_channels, self.num_intermediate * 2,
-                                         weight_init='zeros', ndim=ndim, dtype=dtype)
+                                         weight_init='zeros', ndim=ndim, use_einsum=use_einsum, dtype=dtype)
             self.linear.weight = bm.custom_initializer(
                 'zeros', self.linear.weight.shape, dtype=dtype)
         self.out_linear = bm.CustomDense(self.num_intermediate, num_channels,
-                                         weight_init=self.global_config.final_init, ndim=ndim, dtype=dtype)
+                                         weight_init=self.global_config.final_init, ndim=ndim,
+                                         use_einsum=use_einsum, dtype=dtype)
 
     def construct(self, act, broadcast_dim=0):
         """Transition Block"""
@@ -127,22 +129,24 @@ class MSAAttention(nn.Cell):
         super().__init__()
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
         self.actnorm = bm.LayerNorm(act_shape, dtype=ms.float32)
         self.pairnorm = bm.LayerNorm(pair_shape, dtype=ms.float32)
         num_channel = act_shape[-1]
         value_dim = num_channel // self.config.num_head
         self.pair_logits = bm.CustomDense(pair_shape[-1], self.config.num_head, use_bias=False,
-                                          weight_init='zeros', ndim=3, dtype=dtype)
+                                          weight_init='zeros', ndim=3, use_einsum=use_einsum, dtype=dtype)
         self.v_projection = bm.CustomDense(num_channel, (self.config.num_head, value_dim),
-                                           use_bias=False, ndim=len(act_shape), dtype=dtype)
+                                           use_bias=False, ndim=len(act_shape), use_einsum=use_einsum, dtype=dtype)
         ncon_list1 = [-3, -2, 1]
         ncon_list2 = [-1, 1, -3, -4]
         self.ncon = Ncon([ncon_list1, ncon_list2])
         self.gating_query = bm.CustomDense(
-            num_channel, self.config.num_head * value_dim, weight_init='zeros', use_bias=False, ndim=3, dtype=dtype)
+            num_channel, self.config.num_head * value_dim, weight_init='zeros', use_bias=False, ndim=3,
+            use_einsum=use_einsum, dtype=dtype)
         self.output_projection = bm.CustomDense(self.config.num_head * value_dim, num_channel,
                                                 weight_init=self.global_config.final_init,
-                                                use_bias=False, ndim=3, dtype=dtype)
+                                                use_bias=False, ndim=3, use_einsum=use_einsum, dtype=dtype)
 
     def construct(self, act, mask, pair_act):
         """MSA Attention"""
@@ -187,24 +191,29 @@ class GridSelfAttention(nn.Cell):
         super().__init__()
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
         self.transpose = transpose
+        self.use_evo_attention = global_config.use_evo_attention
         num_channels = normalized_shape[-1]
         in_shape = normalized_shape[-1]
         qkv_dim = max(num_channels // self.config.num_head, 16)
         qkv_shape = (self.config.num_head, qkv_dim)
         self.q_projection = bm.CustomDense(
-            in_shape, qkv_shape, use_bias=False, ndim=3, dtype=dtype)
+            in_shape, qkv_shape, use_bias=False, ndim=3, use_einsum=use_einsum, dtype=dtype)
         self.k_projection = bm.CustomDense(
-            in_shape, qkv_shape, use_bias=False, ndim=3, dtype=dtype)
+            in_shape, qkv_shape, use_bias=False, ndim=3, use_einsum=use_einsum, dtype=dtype)
         self.v_projection = bm.CustomDense(
-            in_shape, qkv_shape, use_bias=False, ndim=3, dtype=dtype)
+            in_shape, qkv_shape, use_bias=False, ndim=3, use_einsum=use_einsum, dtype=dtype)
         self.gating_query = bm.CustomDense(
-            num_channels, self.config.num_head * qkv_dim, weight_init='zeros', use_bias=False, ndim=3, dtype=dtype)
+            num_channels, self.config.num_head * qkv_dim, weight_init='zeros', use_bias=False, ndim=3,
+            use_einsum=use_einsum, dtype=dtype)
         self.output_projection = bm.CustomDense(self.config.num_head * qkv_dim, num_channels,
-                                                weight_init=self.global_config.final_init, ndim=3, dtype=dtype)
+                                                weight_init=self.global_config.final_init, ndim=3,
+                                                use_einsum=use_einsum, dtype=dtype)
         self.act_norm = bm.LayerNorm(normalized_shape, dtype=ms.float32)
         self.pair_bias_projection = bm.CustomDense(
-            num_channels, self.config.num_head, use_bias=False, weight_init='linear', ndim=3, dtype=dtype)
+            num_channels, self.config.num_head, use_bias=False, weight_init='linear', ndim=3,
+            use_einsum=use_einsum, dtype=dtype)
         num_residues = normalized_shape[0]
         self.chunk_size = get_shard_size(
             num_residues, self.global_config.pair_attention_chunk_size
@@ -222,8 +231,9 @@ class GridSelfAttention(nn.Cell):
             v,
             mask=mask,
             bias=bias,
-            logits_scale=1/ms.ops.sqrt(ms.Tensor(q.shape[-1]))
-        )
+            logits_scale=1/ms.ops.sqrt(ms.Tensor(q.shape[-1])),
+            use_evo_attention=self.use_evo_attention,
+        ).astype(q.dtype)
         weighted_avg = weighted_avg.reshape(weighted_avg.shape[:-2] + (-1,))
         gate_value = self.gating_query(act)
         weighted_avg *= mint.sigmoid(gate_value)
@@ -370,10 +380,12 @@ class PairFormerIteration(nn.Cell):
         )
         shard_transition_blocks: bool = True
 
-    def __init__(self, config, global_config, normalized_shape, single_shape=None, with_single=False, dtype=ms.float32):
+    def __init__(self, config, global_config, normalized_shape, single_shape=None,
+                 with_single=False, dtype=ms.float32):
         super().__init__()
         self.config = config
         self.global_config = global_config
+        use_einsum = self.global_config.use_einsum
         self.with_single = with_single
         num_channel = normalized_shape[-1]
         self.triangle_multiplication1 = TriangleMultiplication(
@@ -417,12 +429,14 @@ class PairFormerIteration(nn.Cell):
             )
         if self.with_single:
             self.single_pair_logits_projection = bm.CustomDense(
-                num_channel, self.config.single_attention.num_head, ndim=3, dtype=dtype
+                num_channel, self.config.single_attention.num_head, ndim=3,
+                use_einsum=use_einsum, dtype=dtype
             )
             self.single_pair_logits_norm = bm.LayerNorm(normalized_shape, dtype=ms.float32)
             self.single_attention = diffusion_transformer.SelfAttention(
                 self.config.single_attention, self.global_config,
-                single_shape[-1], with_single_cond=False, dtype=dtype)
+                single_shape[-1], with_single_cond=False, ndim=2,
+                use_einsum=use_einsum, dtype=dtype)
             self.single_transition = TransitionBlock(
                 self.config.single_transition,
                 self.global_config,
