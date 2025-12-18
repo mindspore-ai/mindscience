@@ -4,7 +4,7 @@
 
 [![PyPI](https://badge.fury.io/py/mindspore.svg)](https://badge.fury.io/py/mindspore)
 [![LICENSE](https://img.shields.io/github/license/mindspore-ai/mindspore.svg?style=flat-square)](https://github.com/mindspore-ai/mindspore/blob/master/LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://gitee.com/mindspore/mindscience/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://atomgit.com/mindspore-lab/mindscience/pulls)
 
 ---
 
@@ -55,22 +55,22 @@
 
 | 模型 | 体系 | 数据 | 任务 |
 |---------|------|------|------|
-| [NequIP](./applications/nequip/) | 小分子 | Revised Molecular Dynamics 17 (rMD17) 数据集 | 分子能量预测，基于等变计算与图神经网络 |
-| [Orb](./applications/orb/) | 分子与晶体材料体系 | 大规模三维原子结构数据集，DFT 计算结果 | 通用图神经网络势，预测能量、力、应力，用于分子动力学模拟等 |
+| [NequIP](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/nequip/) | 小分子 | Revised Molecular Dynamics 17 (rMD17) 数据集 | 分子能量预测，基于等变计算与图神经网络 |
+| [Orb](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/orb/) | 分子与晶体材料体系 | 大规模三维原子结构数据集，DFT 计算结果 | 通用图神经网络势，预测能量、力、应力，用于分子动力学模拟等 |
 
 ### 性质预测
 
 | 模型 | 体系 | 数据 | 任务 |
 |---------|------|------|------|
-| [DeephE3nn](./applications/deephe3nn/) | 材料体系 | 双层石墨烯数据集 | 基于 E(3)-等变神经网络预测电子哈密顿量 |
-| [Matformer](./applications/matformer/) | 晶体材料体系 | JARVIS-DFT 3D数据集 | 基于图神经网络 + Transformer 预测材料性质 |
+| [DeephE3nn](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/deephe3nn/) | 材料体系 | 双层石墨烯数据集 | 基于 E(3)-等变神经网络预测电子哈密顿量 |
+| [Matformer](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/matformer/) | 晶体材料体系 | JARVIS-DFT 3D数据集 | 基于图神经网络 + Transformer 预测材料性质 |
 
 ### 结构生成
 
 | 模型 | 体系 | 数据 | 任务 |
 |---------|------|------|------|
-| [DiffCSP](./applications/diffcsp/) | 晶体材料体系 | 稳定晶体结构数据集（MP-20、MPTS-52、Carbon-24等） | 基于联合扩散的晶体结构预测/生成 |
-| [CrystalFlow](./applications/crystalflow/) | 晶体材料体系 | 材料数据库晶体结构数据集（MP-20、Carbon-24、MPTS-52等） | 基于归一化流的晶体结构生成 |
+| [DiffCSP](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/diffcsp/) | 晶体材料体系 | 稳定晶体结构数据集（MP-20、MPTS-52、Carbon-24等） | 基于联合扩散的晶体结构预测/生成 |
+| [CrystalFlow](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/crystalflow/) | 晶体材料体系 | 材料数据库晶体结构数据集（MP-20、Carbon-24、MPTS-52等） | 基于归一化流的晶体结构生成 |
 
 ## 社区
 
@@ -90,17 +90,17 @@ Danyang Chen, Jianhuan Cen, Kunming Xu, wujian, wangyuheng, Lin Peijia, gengchen
 
 ## 引用
 
-[1] Batzner S, Musaelian A, Sun L, et al. E(3)-equivariant graph neural networks for data-efficient and accurate interatomic potentials[J]. Nature communications, 2022, 13(1): 2453.
+[1] Batzner S, Musaelian A, Sun L, et al. E(3)-equivariant graph neural networks for data-efficient and accurate interatomic potentials[J]. Nature Communications, 2022, 13(1): 2453.
 
 [2] Neumann M, Gin J, Rhodes B, Bennett S, Li Z, Choubisa H, Hussey A, Godwin J. Orb: A Fast, Scalable Neural Network Potential[J]. arXiv:2410.22570, 2024.
 
-[3] Xiaoxun Gong, He Li, Nianlong Zou, et al. General framework for E(3)-equivariant neural network representation of density functional theory Hamiltonian[J]. Nature communications, 2023, 14: 2848.
+[3] Xiaoxun Gong, He Li, Nianlong Zou, et al. General framework for E(3)-equivariant neural network representation of density functional theory Hamiltonian[J]. Nature Communications, 2023, 14: 2848.
 
 [4] Keqiang Yan, Yi Liu, Yuchao Lin, Shuiwang ji, et al. Periodic Graph Transformers for Crystal Material Property Prediction[J]. arXiv:2209.11807v1 [cs.LG] 23 sep 2022.
 
 [5] Jiao Rui and Huang Wenbing and Lin Peijia, et al. Crystal structure prediction by joint equivariant diffusion[J]. Advances in Neural Information Processing Systems, 2024, 36.
 
-[6] Luo X, Wang Z, Wang Q, et al. CrystalFlow: a flow-based generative model for crystalline materials[J]. Nature communications, 2025, 16: 9267.
+[6] Luo X, Wang Z, Wang Q, et al. CrystalFlow: a flow-based generative model for crystalline materials[J]. Nature Communications, 2025, 16: 9267.
 
 
 

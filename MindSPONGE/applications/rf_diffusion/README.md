@@ -1,85 +1,87 @@
 # RFdiffusion
 
+## Background
+
+RFdiffusion is an open-source protein structure generation method that can run with or without conditioning information (a motif, target, antibody frameworks, etc.). It can perform a wide range of protein design tasks; see:
+
+- [RFdiffusion paper](https://www.biorxiv.org/content/10.1101/2022.12.09.519842v1)
+- [RFantibody paper](https://www.biorxiv.org/content/10.1101/2024.03.14.585103v2)
+
+This repository provides a MindSpore implementation of RFdiffusion based on the original [RFdiffusion](https://github.com/RosettaCommons/RFdiffusion) repository and integrates antibody design modules from [RFantibody](https://github.com/RosettaCommons/RFantibody).
+
+**What RFdiffusion can do**
+
+- Unconditional protein generation
+- Motif scaffolding
+- Symmetric unconditional generation (currently supports cyclic, dihedral, and tetrahedral symmetries)
+- Symmetric motif scaffolding
+- Binder design
+- Antibody/nanobody design (RFantibody)
+- Design diversification ("partial diffusion", sampling around a design)
+
 <p align="center">
   <img src="./img/diffusion_protein_gradient_2.jpg" alt="alt text" width="1100px" align="middle"/>
 </p>
 
-图片来源：Ian C. Haydon / UW Institute for Protein Design
+Image: Ian C. Haydon / UW Institute for Protein Design
 
-## 模型介绍
+## Model Implementation
 
-RFdiffusion 是一种开源的蛋白质结构生成方法，可在有条件（如给定基序、目标、抗体框架等）或无条件的情况下运行。它能够完成多种蛋白质设计任务，详见论文：
+### Hardware Requirements
 
-- [RFdiffusion 论文](https://www.biorxiv.org/content/10.1101/2022.12.09.519842v1)
-- [RFantibody 论文](https://www.biorxiv.org/content/10.1101/2024.03.14.585103v2)
+- `Ascend` backend support.
 
-本仓库为RFdiffusion基于原仓库[RFdiffusion](https://github.com/RosettaCommons/RFdiffusion)在Mindspore上的实现，并集成了[RFantibody](https://github.com/RosettaCommons/RFantibody)中针对抗体设计的功能模块；
+### Version Requirements
 
-**RFdiffusion可以做的事情**
+- python >= 3.11
+- mindspore >= 2.7.0
+- CANN >= 8.2.RC1
+- mindscience >= 0.8.0
 
-- 无条件蛋白质生成
-- 基序支架（Motif Scaffolding）
-- 对称无条件生成（目前支持循环、二面体和四面体对称）
-- 对称基序支架
-- 结合体（Binder）设计
-- 抗体/纳米抗体设计（RFantibody）
-- 设计多样化（“部分扩散”，围绕某个设计进行采样）
+### Installation
 
----
+- Clone the repository and install `mindscience`:
 
-## 快速开始 / 安装
+  ```bash
+  git clone https://gitee.com/mindspore/mindscience.git
+  ```
 
-基础依赖：
+- Install dependencies:
 
-```text
-python >= 3.11
-mindspore >= 2.7.0
-CANN >= 8.2.RC1
-```
+  ```bash
+  cd mindscience/MindSPONGE/applications/rf_diffusion
+  pip install -r requirements.txt
+  ```
 
-克隆仓库：
+- Configure the Python environment:
+
+  RFdiffusion uses `se3_transformer` and the graph neural network library `sharker`. Download `sharker` with:
+
+  ```bash
+  git clone https://gitee.com/sunhaoneng/gnn.git
+  cp -r gnn/sharker env/
+  rm -r -f gnn
+  ```
+
+  Before each run, add the `env` directory to your `PYTHONPATH`:
+
+  ```bash
+  export PYTHONPATH=$PYTHONPATH:$(pwd)/env
+  ```
+
+### Datasets
+
+- Download model weights:
+
+Use the helper script to download model weights into the `RFdiffusion` directory:
 
 ```bash
-git clone https://gitee.com/mindspore/mindscience.git
-```
-
-使用权重下载脚本将模型权重下载到 `RFdiffusion` 目录中：
-
-```bash
-cd mindscience/MindSPONGE/applications/rf_diffusion
 bash scripts/download_models.sh
 ```
 
-### 配置Python运行环境
+- Get PPI scaffold examples:
 
-`RFdiffusion` 使用 `se3_transformer` 和图神经网络库 `sharker`，`sharker` 需要通过以下命令下载：
-
-```bash
-git clone https://gitee.com/sunhaoneng/gnn.git
-cp -r gnn/sharker env/
-rm -r -f gnn
-```
-
-每次运行前，请先将 `env` 文件夹配置到 `PYTHONPATH` 中
-
-```bash
-export PYTHONPATH=$PYTHONPATH:$(pwd)/env
-```
-
-安装运行依赖python库：
-
-```bash
-pip install -r requirements.txt
-```
-
-#### TODO
-
-- 待mindscience.gnn上库后将sharker依赖改为mindscience.gnn
-- se3_transformer迁移至mindscience.models.se3_transformer
-
-### 获取 PPI 支架示例
-
-要运行示例，我们提供了示例pdb文件和支架文件等。请先解压：
+To run the examples, we provide example PDB and scaffold files. Untar them with:
 
 ```bash
 tar -xvf examples/ppi_scaffolds_subset.tar.gz -C examples/
@@ -89,171 +91,259 @@ tar -xvf examples/target_folds.tar.gz -C examples/
 tar -xvf examples/tim_barrel_scaffold.tar.gz -C examples/
 ```
 
----
+### Core Code Structure
 
-## 用法
+The main modules are organized as follows:
 
-本节将演示如何运行扩散。
+```text
+MindSPONGE
+  └── applications
+        └── rf_diffusion                       # RFdiffusion implementation on MindSpore
+              ├── README.md                    # Chinese usage guide
+              ├── README_en.md                 # English usage guide
+              ├── run_inference.py             # Inference entry script (Hydra-config driven)
+              ├── requirements.txt             # Python dependency list
+              ├── config                       # Inference configuration (Hydra YAML)
+              │     └── inference
+              │           ├── base.yaml        # General inference configuration
+              │           ├── antibody.yaml    # Antibody / nanobody design configuration
+              │           └── symmetry.yaml    # Symmetric oligomer design configuration
+              ├── rfdiffusion                  # Core model and inference logic
+              │     ├── diffusion.py           # Diffusion process definition
+              │     ├── RoseTTAFoldModel.py    # Main network architecture
+              │     ├── SE3_network.py         # SE(3)-equivariant network
+              │     ├── contigs.py             # Contigmap parsing and handling
+              │     ├── igso3.py               # IGSO3-related precomputation
+              │     ├── inference              # Inference wrappers and utilities
+              │     │     ├── model_runners.py # Inference entry wrappers
+              │     │     ├── symmetry.py      # Symmetric diffusion utilities
+              │     │     └── ab_pose.py       # Antibody pose and structure utilities
+              │     ├── potentials             # Guiding potential implementations
+              │     │     ├── manager.py       # Potential manager
+              │     │     └── potentials.py    # Potential definitions
+              │     └── ...                    # Other network and utility modules
+              ├── env                          # Third-party dependencies (se3_transformer, etc.)
+              │     └── se3_transformer        # SE3 Transformer code
+              ├── examples                     # Task-level example scripts
+              │     ├── design_unconditional.sh        # Unconditional monomer generation
+              │     ├── design_motifscaffolding.sh     # Motif scaffolding
+              │     ├── design_ppi.sh                  # PPI binder design
+              │     ├── design_cyclic_oligos.sh        # Cyclic symmetric oligomer design
+              │     ├── design_tetrahedral_oligos.sh   # Tetrahedral symmetric oligomer design
+              │     ├── antibody_pdbdesign.sh          # Antibody interface design
+              │     ├── nanobody_pdbdesign.sh          # Nanobody interface design
+              │     └── ...                            # Other task example scripts
+              ├── scripts
+              │     └── download_models.sh      # One-click model weight download script
+              └── img                           # Figures used in this document
+```
+
+## Model Run Steps
+
+In this section we will demonstrate how to run diffusion.
 
 <p align="center">
   <img src="./img/main.png" alt="alt text" width="1100px" align="middle"/>
 </p>
 
-### 运行扩散脚本
-
-实际执行的脚本为 `run_inference.py`，其运行方式由 Hydra 配置决定。配置的默认值会直接从模型权重文件中读取。这意味着 `configs/inference/base.yml` 中的默认值可能与推理时实际使用的值不同，具体取决于所选的权重文件。
+The actual script you will execute is called `run_inference.py`. Default configs will be drawn *directly* from the model checkpoint. What this means is that the default values in `config/inference/base.yml` might not match the actual values used during inference, with a specific checkpoint.
 
 ---
 
-### 无条件单体设计
+### Basic execution - an unconditional monomer
 
 <img src="./img/cropped_uncond.png" alt="alt text" width="400px" align="middle"/>
 
-首先我们看看如何进行长度为 150aa 的无条件蛋白质设计。只需指定三件事：
+Let's first look at how you would do unconditional design of a protein of length 150aa.
+For this, we just need to specify three things:
 
-1. 蛋白质长度
-2. 输出文件写入的位置
-3. 设计的数量
+1. The length of the protein
+2. The location where we want to write files to
+3. The number of designs we want
 
 ```bash
 python run_inference.py 'contigmap.contigs=[150-150]' inference.output_prefix=test_outputs/test inference.num_designs=10
 ```
 
-contigmap.contigs 字符串允许指定长度范围，但此处我们只需要长度为 150aa 的蛋白质，因此指定 `[150-150]` 即可;
-这条命令将运行 10 条扩散轨迹，并将输出保存到你指定的输出文件夹。
+The contig string allows you to specify a length range, but here, we just want a protein of 150aa in length, so you just specify [150-150]. This will then run 10 diffusion trajectories, saving the outputs to your specified output folder.
 
-注意：第一次运行 RFdiffusion 时，会花一些时间在“Calculating IGSO3”。完成后结果会被缓存，之后运行会更快！更多无条件单体生成示例可在仓库中的 `./examples/design_unconditional.sh` 中查看。
+Note that for the first time you run RFdiffusion, it will take a while 'Calculating IGSO3'. Once it has done this, it'll be cached for future reference though! For an additional example of unconditional monomer generation, take a look at `./examples/design_unconditional.sh` in the repo!
 
-在固定随机种子（如 numpy.random）条件下，对无条件生成任务进行测试：将本实现与原版输出的最终 diffusion 步各张量对比，余弦相似度 >0.998，L1 误差 <0.001；每步 pLDDT 变化趋势完全一致，因此精度与原版持平。
+The example output is as follows (only the first step of diffusion)：
 
-| 输出张量  | state    | msa      | lddt     | pair     | logis_aa | xyz      |
-|-------|----------|----------|----------|----------|----------|----------|
-| 余弦相似度 | 0.998332 | 0.999854 | 0.999951 | 0.998851 | 0.998289 | 0.998529 |
-| L1距离    | -0.00051 | 0.000532 | -0.00053 | -0.00076 | -0.0009 | 0.000836 |
+```bash
+Reading models from xx/models
+[2025-12-15 19:03:15,424][rfdiffusion.inference.model_runners][INFO] - Reading checkpoint from xx/Base_ckpt.ckpt
+This is inf_conf.ckpt_path
+xx/models/Base_ckpt.ckpt
+Assembling -model, -diffuser and -preprocess configs from checkpoint
+USING MODEL CONFIG: self._conf[model][n_extra_block] = 4
+USING MODEL CONFIG: self._conf[model][n_main_block] = 32
+USING MODEL CONFIG: self._conf[model][n_ref_block] = 4
+USING MODEL CONFIG: self._conf[model][d_msa] = 256
+USING MODEL CONFIG: self._conf[model][d_msa_full] = 64
+USING MODEL CONFIG: self._conf[model][d_pair] = 128
+USING MODEL CONFIG: self._conf[model][d_templ] = 64
+USING MODEL CONFIG: self._conf[model][n_head_msa] = 8
+USING MODEL CONFIG: self._conf[model][n_head_pair] = 4
+USING MODEL CONFIG: self._conf[model][n_head_templ] = 4
+USING MODEL CONFIG: self._conf[model][d_hidden] = 32
+USING MODEL CONFIG: self._conf[model][d_hidden_templ] = 32
+USING MODEL CONFIG: self._conf[model][p_drop] = 0.15
+USING MODEL CONFIG: self._conf[model][SE3_param_full] = {'num_layers': 1, 'num_channels': 32, 'num_degrees': 2, 'n_heads': 4, 'div': 4, 'l0_in_features': 8, 'l0_out_features': 8, 'l1_in_features': 3, 'l1_out_features': 2, 'num_edge_features': 32}
+USING MODEL CONFIG: self._conf[model][SE3_param_topk] = {'num_layers': 1, 'num_channels': 32, 'num_degrees': 2, 'n_heads': 4, 'div': 4, 'l0_in_features': 64, 'l0_out_features': 64, 'l1_in_features': 3, 'l1_out_features': 2, 'num_edge_features': 64}
+USING MODEL CONFIG: self._conf[model][freeze_track_motif] = False
+USING MODEL CONFIG: self._conf[model][use_motif_timestep] = True
+USING MODEL CONFIG: self._conf[diffuser][T] = 50
+USING MODEL CONFIG: self._conf[diffuser][b_0] = 0.01
+USING MODEL CONFIG: self._conf[diffuser][b_T] = 0.07
+USING MODEL CONFIG: self._conf[diffuser][schedule_type] = linear
+USING MODEL CONFIG: self._conf[diffuser][so3_type] = igso3
+USING MODEL CONFIG: self._conf[diffuser][crd_scale] = 0.25
+USING MODEL CONFIG: self._conf[diffuser][so3_schedule_type] = linear
+USING MODEL CONFIG: self._conf[diffuser][min_b] = 1.5
+USING MODEL CONFIG: self._conf[diffuser][max_b] = 2.5
+USING MODEL CONFIG: self._conf[diffuser][min_sigma] = 0.02
+USING MODEL CONFIG: self._conf[diffuser][max_sigma] = 1.5
+USING MODEL CONFIG: self._conf[preprocess][sidechain_input] = False
+USING MODEL CONFIG: self._conf[preprocess][motif_sidechain_input] = True
+USING MODEL CONFIG: self._conf[preprocess][d_t1d] = 22
+USING MODEL CONFIG: self._conf[preprocess][d_t2d] = 44
+USING MODEL CONFIG: self._conf[preprocess][prob_self_cond] = 0.5
+USING MODEL CONFIG: self._conf[preprocess][str_self_cond] = True
+USING MODEL CONFIG: self._conf[preprocess][predict_previous] = False
+[2025-12-15 19:03:29,804][rfdiffusion.inference.model_runners][INFO] - Loading checkpoint.
+[2025-12-15 19:03:30,168][rfdiffusion.diffusion][INFO] - Calculating IGSO3.
+Successful diffuser __init__
+[2025-12-15 19:05:21,024][__main__][INFO] - Making design test_outputs/test_0
+[2025-12-15 19:05:21,036][rfdiffusion.inference.model_runners][INFO] - Using contig: ['150-150']
+With this beta schedule (linear schedule, beta_0 = 0.04, beta_T = 0.28), alpha_bar_T = 0.00013696055
+[2025-12-15 19:05:21,639][rfdiffusion.inference.model_runners][INFO] - Sequence init: ------------------------------------------------------------------------------------------------------------------------------------------------------
+...
+```
+
+Under fixed random seeds (e.g., numpy.random), we benchmarked the unconditional-generation task: comparing the final-diffusion-step tensors of this MindSpore implementation with the original PyTorch release.  
+All output tensors exhibit cosine similarity > 0.998 and L1 error < 0.001; per-step pLDDT curves are identical to the original, confirming matching accuracy.
+
+| Output tensor | state    | msa      | lddt     | pair     | logis_aa | xyz      |
+|---------------|----------|----------|----------|----------|----------|----------|
+| Cosine similarity | 0.998332 | 0.999854 | 0.999951 | 0.998851 | 0.998289 | 0.998529 |
+| L1 distance       | -0.00051 | 0.000532 | -0.00053 | -0.00076 | -0.0009  | 0.000836 |
 
 ![plddt](img/accuracy.png)
 
----
+### Motif Scaffolding
 
-### 基序支架
-
-RFdiffusion 可用于基序支架，其方式类似于[受限幻觉与 RFjoint Inpainting](https://www.science.org/doi/10.1126/science.abn2100#:~:text=The%20binding%20and%20catalytic%20functions%20of%20proteins%20are,the%20fold%20or%20secondary%20structure%20of%20the%20scaffold.)。总体而言，RFdiffusion 的效果显著优于受限幻觉与 RFjoint Inpainting。
+RFdiffusion can be used to scaffold motifs, in a manner akin to [Constrained Hallucination and RFjoint Inpainting](https://www.science.org/doi/10.1126/science.abn2100#:~:text=The%20binding%20and%20catalytic%20functions%20of%20proteins%20are,the%20fold%20or%20secondary%20structure%20of%20the%20scaffold.). In general, RFdiffusion significantly outperforms both Constrained Hallucination and RFjoint Inpainting.
 <p align="center">
   <img src="./img/motif.png" alt="alt text" width="700px" align="middle"/>
 </p>
 
-在进行蛋白质基序支架时，需要指定要支架的某些输入蛋白片段（来自 `.pdb` 文件的一段或多段），并能指定这些片段如何连接、连接残基数目以及在新的支架蛋白中如何组织。此外，我们通常事先并不精确知道连接残基需要多少，因此希望能对连接长度进行采样。上述输入的指定由 contigmap 完成。
-简要规则：
+When scaffolding protein motifs, we need a way of specifying that we want to scaffold some particular protein input (one or more segments from a `.pdb` file), and to be able to specify how we want these connected, and by how many residues, in the new scaffolded protein. What's more, we want to be able to sample different lengths of connecting protein, as we generally don't know *a priori* precisely how many residues we'll need to best scaffold a motif. This job of specifying inputs is handled by contigs, briefly:
 
-- 以字母为前缀表示该片段是基序，字母对应输入 pdb 文件中的链 ID。例如 `A10-25` 指输入 pdb 中链 A 的残基 10 到 25。
-- 没有字母前缀的片段表示需要“构建”的蛋白区间，可以以长度范围的形式输入。每次 RFdiffusion 推理迭代时，这些长度范围会随机采样。
-- 用 `/0` 指定链断裂（chain break）。
+- Anything prefixed by a letter indicates that this is a motif, with the letter corresponding to the chain letter in the input pdb files. E.g. A10-25 pertains to residues ('A',10),('A',11)...('A',25) in the corresponding input pdb
+- Anything not prefixed by a letter indicates protein *to be built*. This can be input as a length range. These length ranges are randomly sampled each iteration of RFdiffusion inference.
+- To specify chain breaks, we use `/0`.
 
-比如，如果希望支架输入 pdb 中链 A 的残基 10-25，可以这样写：`'contigmap.contigs=[5-15/A10-25/30-40]'`。这表示在 A10-25 前构建 5-15 个残基（每次推理随机采样），在其后构建 30-40 个残基（同样随机采样）。如果希望总长度始终为 55 个残基，可设置 `contigmap.length=55-55`。此外需要提供 pdb 路径：`inference.input_pdb=path/to/file.pdb`。需要注意的是，输入 pdb 中存在你不希望支架的残基并不重要——contig map 定义了哪些残基作为“基序”参与支架。换言之，即使 pdb 中有 B 链，以及 A 链上的其他残基，只有 A10-25 会被提供给 RFdiffusion。
+In more detail, if we want to scaffold a motif, the input is just like RFjoint Inpainting, except needing to navigate the hydra config input. If we want to scaffold residues 10-25 on chain A a pdb, this would be done with `'contigmap.contigs=[5-15/A10-25/30-40]'`. This asks RFdiffusion to build 5-15 residues (randomly sampled at each inference cycle) N-terminally of A10-25 from the input pdb, followed by 30-40 residues (again, randomly sampled) to its C-terminus. If we wanted to ensure the length was always e.g. 55 residues, this can be specified with `contigmap.length=55-55`. You need to obviously also provide a path to your pdb file: `inference.input_pdb=path/to/file.pdb`. It doesn't matter if your input pdb has residues you *don't* want to scaffold - the contig map defines which residues in the pdb are actually used as the "motif". In other words, even if your pdb files has a B chain, and other residues on the A chain, *only* A10-25 will be provided to RFdiffusion.
 
-如果要在存在另一条链的情况下进行 inpainting，可以如下指定：
+To specify that we want to inpaint in the presence of a separate chain, this can be done as follows:
 
 ```bash
 'contigmap.contigs=[5-15/A10-25/30-40/0 B1-100]'
 ```
 
-请仔细观察。`/0` 表示链断裂。注意这里的空格很重要。这会在输入中加入一个大的残基跳跃（200aa），使模型将第一条链视为与第二条链相互分离的独立链。
+Look at this carefully. `/0` is the indicator that we want a chain break. NOTE, the space is important here. This tells the diffusion model to add a big residue jump (200aa) to the input, so that the model sees the first chain as being on a separate chain to the second.
 
-基序支架示例可在 `./examples/design_motifscaffolding.sh` 中找到。
+An example of motif scaffolding can be found in `./examples/design_motifscaffolding.sh`.
 
-### “活性位点”模型可固定很小的基序
+### The "active site" model holds very small motifs in place
 
-在 RFdiffusion 预印本中我们提到，对于非常小的基序，RFdiffusion 倾向于无法将其在输出中完全保持固定。因此，对于如酶活性位点这样小的位点，我们针对相似任务微调了 RFdiffusion，使其更好地固定较小的基序并获得更好的计算成功率。如果你的功能性基序很小，建议使用该模型，设置方式如下：
+In the RFdiffusion preprint we noted that for very small motifs, RFdiffusion has the tendency to not keep them perfectly fixed in the output. Therefore, for scaffolding minimalist sites such as enzyme active sites, we fine-tuned RFdiffusion on examples similar to these tasks, allowing it to hold smaller motifs better in place, and better generate *in silico* successes. If your input functional motif is very small, we recommend using this model, which can easily be specified using the following syntax:
 `inference.ckpt_override_path=models/ActiveSite_ckpt.pt`
 
-### `inpaint_seq` 标记
+### The `inpaint_seq` flag
 
-对熟悉 RFjoint Inpainting 的用户而言，`contigmap.inpaint_seq` 的用法与其等价。其动机在于：例如当融合两个蛋白时，原本在蛋白表面的残基（通常是极性）可能需要在融合后被打包到蛋白核心中，因此我们希望它们转变为疏水残基。与其直接将这些残基突变为疏水，我们可以“掩蔽”它们的序列身份，让 RFdiffusion 隐式地推断它们的序列，从而更好地与之打包。这需要一个不同于“基础”扩散模型的模型（已针对这种范式进行训练），但推理脚本会自动处理（无需额外操作）。
+For those familiar with RFjoint Inpainting, the contigmap.inpaint_seq input is equivalent. The idea is that often, when, for example, fusing two proteins, residues that were on the surface of a protein (and are therefore likely polar), now need to be packed into the 'core' of the protein. We therefore want them to become hydrophobic residues. What we can do, rather than directly mutating them to hydrophobics, is to mask their sequence identity, and allow RFdiffusion to implicitly reason over their sequence, and better pack against them. This requires a different model than the 'base' diffusion model, that has been trained to understand this paradigm, but this is automatically handled by the inference script (you don't need to do anything).
 
-要指定需要隐藏序列的氨基酸，可使用如下语法：
+To specify amino acids whose sequence should be hidden, use the following syntax:
 
 ```bash
 'contigmap.inpaint_seq=[A1/A30-40]'
 ```
 
-此处我们掩蔽了 A 链第 1 个残基的序列身份，以及 A30 到 A40（包含端点）所有残基的序列身份。
+Here, we're masking the residue identity of residue A1, and all residues between A30 and A40 (inclusive).
 
-使用 `contigmap.inpaint_seq` 的基序支架示例位于 `./examples/design_motifscaffolding_inpaintseq.sh`。
+An example of executing motif scaffolding with the `contigmap.inpaint_seq` flag is located in `./examples/design_motifscaffolding_inpaintseq.sh`
 
-### 关于 `diffuser.T` 的说明
+### A note on diffuser.T
 
-RFdiffusion 最初在 200 个离散时间步上训练。然而最近的改进使我们在推理时可以减少时间步数。在很多情况下，使用约 20 个时间步即可获得与 200 步相当的计算质量（约 10 倍加速）。当前默认设置为 50 步。
+RFdiffusion was originally trained with 200 discrete timesteps. However, recent improvements have allowed us to reduce the number of timesteps we need to use at inference time. In many cases, running with as few as approximately 20 steps provides outputs of equivalent *in silico* quality to running with 200 steps (providing a 10X speedup). The default is now set to 50 steps.
 
----
+### Partial diffusion
 
-### 部分扩散
-
-我们可以对一个结构进行部分加噪和去噪，以围绕某个总体折叠产生多样性。该方法效果非常好（参见 [Vazquez-Torres 等，BioRxiv 2022](https://www.biorxiv.org/content/10.1101/2022.12.10.519862v4.abstract)）。
-该功能通过设置 `diffuser.partial_T`（即加噪的时间步）来实现。
+Something we can do with diffusion is to partially noise and de-noise a structure, to get some diversity around a general fold. This can work really nicely (see [Vazquez-Torres et al., BioRxiv 2022](https://www.biorxiv.org/content/10.1101/2022.12.10.519862v4.abstract)).
+This is specified by using the diffuser.partial_T input, and setting a timestep to 'noise' to.
 <p align="center">
   <img src="./img/partial.png" alt="alt text" width="800px" align="middle"/>
 </p>
-噪声越大，多样性越强。在 Vazquez-Torres 等（2022）中，我们通常使用 `diffuser.partial_T≈80`，当时总时间步为 200。现在默认 `diffuser.T=50`，需要相应调整 `diffuser.partial_T`。例如在 `diffuser.T=50` 时，等效于过去 80 步加噪的是 `diffuser.partial_T=20`。我们强烈建议针对你的具体问题对 `partial_T` 进行不同取值的采样，以找到最佳参数。
+More noise == more diversity. In Vazquez-Torres et al., 2022, we typically used `diffuser.partial_T` of approximately 80, but this was with respect to the 200 timesteps we were using. Now that the default `diffuser.T` is 50, you will need to adjust diffuser.partial_T accordingly. E.g. now that `diffuser.T=50`, the equivalent of 80 noising steps is `diffuser.partial_T=20`. We strongly recommend sampling different values for `partial_T` however, to find the best parameters for your specific problem.
 
-在进行部分扩散时，由于我们从一个已知结构出发，会引入某些约束。仍可使用 contig 输入，但其必须在长度上与输入蛋白质完全一致。例如，如果你有一个结合体：目标复合物，且希望多样化长度为 100、位于 A 链的结合体，则可输入：
+When doing partial diffusion, because we are now diffusing from a known structure, this creates certain constraints. You can still use the contig input, but *this has to yield a contig string exactly the same length as the input protein*. E.g. if you have a binder:target complex, and you want to diversify the binder (length 100, chain A), you would need to input something like this:
 
 ```bash
 'contigmap.contigs=[100-100/0 B1-150]' diffuser.partial_T=20
 ```
 
-原因在于，如果输入蛋白只有 80 个氨基酸，但你指定了 100 的目标长度，我们不知道额外 20 个氨基酸应该从何处进行扩散，因此它们将不会落在 RFdiffusion 学到的去噪分布中。
+The reason for this is that, if your input protein was only 80 amino acids, but you've specified a desired length of 100, we don't know where to diffuse those extra 20 amino acids from, and hence, they will not lie in the distribution that RFdiffusion has learned to denoise from.
 
-部分扩散示例可在 `./examples/design_partialdiffusion.sh` 中找到！
+An example of partial diffusion can be found in `./examples/design_partialdiffusion.sh`!
 
-你也可以在扩散的链上保持部分序列不变。例如在螺旋肽结合的场景中，如果你已经将肽序列套到理想螺旋上，并希望多样化该复合物（允许模型不再将该螺旋预测为理想螺旋），可以这样做：
+You can also keep parts of the sequence of the diffused chain fixed, if you want. An example of why you might want to do this is in the context of helical peptide binding. If you've threaded a helical peptide sequence onto an ideal helix, and now want to diversify the complex, allowing the helix to be predicted now not as an ideal helix, you might do something like:
 
 ```bash
 'contigmap.contigs=[100-100/0 20-20]' 'contigmap.provide_seq=[100-119]' diffuser.partial_T=10
 ```
 
-这里 20aa 的链是螺旋肽。`contigmap.provide_seq` 为 0 索引，可提供范围（如 100-119 是包含端点的范围，表示完全不掩蔽该肽的序列）。可以用逗号分隔多个范围，例如：`'contigmap.provide_seq=[172-177,200-205]'`。
+In this case, the 20aa chain is the helical peptide. The `contigmap.provide_seq` input is zero-indexed, and you can provide a range (so 100-119 is an inclusive range, unmasking the whole sequence of the peptide). Multiple sequence ranges can be provided separated by a comma, e.g. `'contigmap.provide_seq=[172-177,200-205]'`.
 
-注意：`provide_seq` 选项需要使用不同的模型检查点，但推理脚本会自动处理。
+Note that the provide_seq option requires using a different model checkpoint, but this is automatically handled by the inference script.
 
-提供序列的部分扩散示例见 `./examples/design_partialdiffusion_withseq.sh`。指定多个序列范围的示例见 `./examples/design_partialdiffusion_multipleseq.sh`。
+An example of partial diffusion with providing sequence in diffused regions can be found in `./examples/design_partialdiffusion_withseq.sh`. The same example specifying multiple sequence ranges can be found in `./examples/design_partialdiffusion_multipleseq.sh`.
 
----
+### Binder Design
 
-### 结合体设计
-
-RFdiffusion 在结合体设计上表现出色，无论在计算和实验上都能成功地设计全新结合体。
+Hopefully, it's now obvious how you might make a binder with diffusion! Indeed, RFdiffusion shows excellent *in silico* and experimental ability to design *de novo* binders.
 
 <p align="center">
   <img src="./img/binder.png" alt="alt text" width="950px" align="middle"/>
 </p>
 
-如果 B 链是你的目标，可以这样做：
+If chain B is your target, then you could do it like this:
 
 ```bash
 python run_inference.py 'contigmap.contigs=[B1-100/0 100-100]' inference.output_prefix=test_outputs/binder_test inference.num_designs=10
 ```
 
-这将生成长度为 100 的结合体，目标是 B 链的残基 1-100。
+This will generate 100 residue long binders to residues 1-100 of chain B.
 
-不过，这可能不是设计结合体的最佳方式。由于扩散计算量较大，我们需要尽可能加速。如果目标蛋白很大（很多目标如细胞表面受体都非常大），直接使用完整目标将使扩散非常慢。一个经过检验的加速方法是：围绕预期接口位置裁剪目标蛋白。但这会带来问题：若你裁剪了目标并暴露了原本埋在内部的疏水核心残基，如何保证设计出的结合体会去到目标蛋白表面的预期接口，而不是被你裁剪后“人工制造”的疏水斑块吸引？
+However, this probably isn't the best way of making binders. Because diffusion is somewhat computationally-intensive, we need to try and make it as fast as possible. Providing the whole of your target, uncropped, is going to make diffusion very slow if your target is big (and most targets-of-interest, such as cell-surface receptors tend to be *very* big). One tried-and-true method to speed up binder design is to crop the target protein around the desired interface location. BUT! This creates a problem: if you crop your target and potentially expose hydrophobic core residues which were buried before the crop, how can you guarantee the binder will go to the intended interface site on the surface of the target, and not target the tantalizing hydrophobic patch you have just artificially created?
 
-我们通过向模型提供“热点残基（hotspot residues）”来解决这个问题。前文提到的复合物模型都在训练中使用了热点残基：在每个训练样本中，模型会被告知目标蛋白上与结合体接触的某些残基（即接口的一部分）。模型会学习到应当构建包含这些热点残基的接口。在推理时，我们可以提供自己的热点残基来定义结合体必须接触的区域。指定方式如下：`'ppi.hotspot_res=[A30,A33,A34]'`，其中 `A` 是输入 pdb 中热点残基所在的链 ID，数字是热点残基在该 pdb 中的残基序号。
+We solve this issue by providing the model with what we call "hotspot residues". The complex models we refer to earlier in this README file have all been trained with hotspot residues, in this training regime, during each example, the model is told (some of) the residues on the target protein which contact the target (i.e., resides that are part of the interface). The model readily learns that it should be making an interface which involved these hotspot residues. At inference time then, we can provide our own hotspot residues to define a region which the binder must contact. These are specified like this: `'ppi.hotspot_res=[A30,A33,A34]'`, where `A` is the chain ID in the input pdb file of the hotspot residue and the number is the residue index in the input pdb file of the hotspot residue.
 
-最后，观察到默认 RFdiffusion 模型通常生成以螺旋为主的结合体。这类结构在计算与实验上都有很高的成功率。但在某些情况下，可能需要其他类型的拓扑。为此，我们提供了一个“beta”模型，它能生成更丰富的拓扑，但尚未得到广泛的实验验证，请谨慎尝试：
+Finally, it has been observed that the default RFdiffusion model often generates mostly helical binders. These have high computational and experimental success rates. However, there may be cases where other kinds of topologies may be desired. For this, we include a "beta" model, which generates a greater diversity of topologies, but has not been extensively experimentally validated. Try this at your own risk:
 
 ```bash
 inference.ckpt_override_path=models/Complex_beta_ckpt.pt
 ```
 
-RFdiffusion 结合体设计示例见 `./examples/design_ppi.sh`。
+An example of binder design with RFdiffusion can be found in `./examples/design_ppi.sh`.
 
----
+### RFantibody: Antibody/Nanobody Design
 
-### RFantibody 抗体/纳米抗体设计
+RFantibody extends RFdiffusion with a sampler (AbSampler) tailored for antibody Fv/VHH (nanobody) interface design and CDR loop redesign. It supports conditioning on a target structure (`antibody.target_pdb`) and an antibody framework (`antibody.framework_pdb`), selecting loops to redesign (`antibody.design_loops`), and combining hotspot constraints (`ppi.hotspot_res`) to guide interface orientation. The configuration is provided in `config/inference/antibody.yaml`.
 
-RFantibody 在 RFdiffusion 的基础上提供了针对抗体/纳米抗体专用的采样器（AbSampler），面向抗体 Fv/VHH（纳米抗体）接口设计与 CDR 环重设计。它支持在给定目标结构（`antibody.target_pdb`）与抗体框架结构（`antibody.framework_pdb`）的条件下，按需选择需要重设计的环段（`antibody.design_loops`），并可结合热点约束（`ppi.hotspot_res`）提升接口定向性。该配置位于 `config/inference/antibody.yaml`。
-
-基本用法示例（抗体 Fv）：
+Basic usage (antibody Fv):
 
 ```bash
 python run_inference.py \
@@ -269,7 +359,7 @@ python run_inference.py \
     inference.output_prefix=example_outputs/ab_des
 ```
 
-纳米抗体（VHH）示例：
+Nanobody (VHH) example:
 
 ```bash
 python run_inference.py \
@@ -285,189 +375,184 @@ python run_inference.py \
     inference.output_prefix=example_outputs/nb_des
 ```
 
-说明与建议：
+Notes and tips:
 
-- `antibody.framework_pdb` 指定抗体框架结构（Fv 或纳米抗体），`antibody.target_pdb` 指定结合的目标结构。
-- `antibody.design_loops` 用于选定与采样 CDR 环重设计的长度（如 `L1:8-13` 表示对 L1 采样 8–13 个残基；多个环以逗号分隔）。
-- `ppi.hotspot_res` 可以指定目标上的热点残基（链 ID+残基编号），用于引导接口定向。
-- 建议使用专用权重 `RFdiffusion_Ab.ckpt`（通过 `inference.ckpt_override_path` 设置）。
-- 完整脚本示例见 `./examples/antibody_pdbdesign.sh` 与 `./examples/nanobody_pdbdesign.sh`。
+- `antibody.framework_pdb` sets the antibody framework (Fv or nanobody), `antibody.target_pdb` sets the binding target.
+- `antibody.design_loops` selects and samples CDR loop redesign lengths (e.g., `L1:8-13`; multiple loops separated by commas).
+- `ppi.hotspot_res` specifies target hotspot residues (chain ID + residue index) to guide interface orientation.
+- Use the dedicated weights `RFdiffusion_Ab.ckpt` via `inference.ckpt_override_path`.
+- Full example scripts: `./examples/antibody_pdbdesign.sh` and `./examples/nanobody_pdbdesign.sh`.
 
----
+More examples of designing oligomers can be found here: `./examples/design_cyclic_oligos.sh`, `./examples/design_dihedral_oligos.sh`, `./examples/design_tetrahedral_oligos.sh`.
 
-### 折叠条件化（Fold Conditioning）
+### Fold Conditioning
 
-在特定拓扑上进行条件化的结合体设计（或单体生成）效果非常好。这通过向模型（需训练支持条件化）提供（部分）二级结构与块邻接信息实现。
+Something that works really well is conditioning binder design (or monomer generation) on particular topologies. This is achieved by providing (partial) secondary structure and block adjacency information (to a model that has been trained to condition on this).
 <p align="center">
   <img src="./img/fold_cond.png" alt="alt text" width="950px" align="middle"/>
 </p>
-推理时的使用示例如下：
+
+You can then use these at inference as follows:
 
 ```bash
 python run_inference.py inference.output_prefix=./scaffold_conditioned_test/test scaffoldguided.scaffoldguided=True scaffoldguided.target_pdb=False scaffoldguided.scaffold_dir=./examples/ppi_scaffolds_subset
 ```
 
-对于 PPI，需要提供目标蛋白以及其二级结构与块邻接文件。可通过追加以下参数实现：
+As mentioned above, for PPI, you will want to provide a target protein, along with its secondary structure and block adjacency. This can be done by adding:
 
 ```bash
 scaffoldguided.target_pdb=True scaffoldguided.target_path=input_pdbs/insulin_target.pdb inference.output_prefix=insulin_binder/jordi_ss_insulin_noise0_job0 'ppi.hotspot_res=[A59,A83,A91]' scaffoldguided.target_ss=target_folds/insulin_target_ss.ms scaffoldguided.target_adj=target_folds/insulin_target_adj.ms
 ```
 
-这将针对胰岛素目标生成三螺旋束（3HB）。
+To generate these block adjacency and secondary structure inputs, you can use the helper script.
 
-对于 PPI，建议加上以下标记：
+This will now generate 3-helix bundles to the insulin target.
+
+For ppi, it's probably also worth adding this flag:
 
 ```bash
 scaffoldguided.mask_loops=False
 ```
 
-这点非常重要。训练时，我们会掩蔽部分二级结构与块邻接。这很方便，因为在推理时可以轻松添加额外残基，而无需为每个残基精确定义二级结构。例如，如果你想构建一个很长的三螺旋束，可以掩蔽环并在该环上添加例如 20 个“掩蔽”标记。模型随后（可能）会选择将其中约 15 个残基设为螺旋（用于延长 3HB），并将约 5 个残基设为环。但你并不需要手动指定这些细节，十分便利。实现方式如下：
+This is quite important to understand. During training, we mask some of the secondary structure and block adjacency. This is convenient, because it allows us to, at inference, easily add extra residues without having to specify precise secondary structure for every residue. E.g. if you want to make a long 3 helix bundle, you could mask the loops, and add e.g. 20 more 'mask' tokens to that loop. The model will then (presumbly) choose to make e.g. 15 of these residues into helices (to extend the 3HB), and then make a 5aa loop. But, you didn't have to specify that, which is nice. The way this would be done would be like this:
 
 ```bash
 scaffoldguided.mask_loops=True scaffoldguided.sampled_insertion=15 scaffoldguided.sampled_N=5 scaffoldguided.sampled_C=5
 ```
 
-这将在每次推理运行时，在输入的 3HB 的环中最多插入 15 个残基，并在 N 端与 C 端各插入最多 5 个残基。
-如果你没有大量 pdb 来生成块邻接，该策略非常有用。例如我们展示了从单个起始 pdb 出发，通过该策略可以生成许多加长的 TIM 桶。然而对于 PPI，如果你使用提供的支架集合，则通常不必使用该策略（因为支架本身非常丰富，多样性已足够）。
+This will, at each run of inference, sample up to 15 residues to insert into loops in your 3HB input, and up to 5 additional residues at N and C terminus.
+This strategy is very useful if you don't have a large set of pdbs to make block adjacencies for. For example, we showed that we could generate loads of lengthened TIM barrels from a single starting pdb with this strategy. However, for PPI, if you're using the provided scaffold sets, it shouldn't be necessary (because there are so many scaffolds to start from, generating extra diversity isn't especially necessary).
 
-最后，如果你有一个很大的块邻接/二级结构文件目录，但并不想使用全部，可以创建一个包含要使用文件名的 `.txt` 列表，并传入：
+Finally, if you have a big directory of block adjacency/secondary structure files, but don't want to use all of them, you can make a `.txt` file of the ones you want to use, and pass:
 
 ```bash
 scaffoldguided.scaffold_list=path/to/list
 ```
 
-对于 PPI，我们持续观察到在推理中降低加入的噪声会改善设计质量。虽然会牺牲多样性，但鉴于支架集合体量很大，这通常影响不大。因此建议降低噪声，`0.5` 是一个不错的折中：
+For PPI, we've consistently seen that reducing the noise added at inference improves designs. This comes at the expense of diversity, but, given that the scaffold sets are huge, this probably doesn't matter too much. We therefore recommend lowering the noise. 0.5 is probably a good compromise:
 
 ```bash
 denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5
 ```
 
-该设置将我们在位移（`noise_scale_ca`）与旋转（`noise_scale_frame`）上加入的噪声缩放到此处的 0.5。
+This just scales the amount of noise we add to the translations (`noise_scale_ca`) and rotations (`noise_scale_frame`) by, in this case, 0.5.
 
-另一个关于折叠条件化的 PPI 示例见：`./examples/design_ppi_scaffolded.sh`
+An additional example of PPI with fold conditioning is available here: `./examples/design_ppi_scaffolded.sh`
 
-在 [Liu 等，2024](https://www.biorxiv.org/content/10.1101/2024.07.16.603789v1) 中，我们展示了 RFdiffusion 可用于设计与柔性肽结合的结合体，其中肽的 3D 坐标不需要指定，但其二级结构可以指定。这样用户可以设计与肽在螺旋或 β 构象下结合的结合体。
+In [Liu et al., 2024](https://www.biorxiv.org/content/10.1101/2024.07.16.603789v1), we demonstrate that RFdiffusion can be used to design binders to flexible peptides, where the 3D coordinates of the peptide *are not* specified, but the secondary structure can be. This allows a user to design binders to a peptide in e.g. either a helical or beta state.
 
-其原理是提供肽的输入 pdb 结构，但指定我们希望掩蔽其 3D 结构：
+The principle here is that we provide an input pdb structure of a peptide, but specify that we want to mask the 3D structure:
 
 ```bash
 inference.input_pdb=input_pdbs/tau_peptide.pdb 'contigmap.contigs=[70-100/0 B165-178]' 'contigmap.inpaint_str=[B165-178]'
 ```
 
-此处我们将针对 tau 肽（pdb 索引 B165-178）设计长度为 70-100 的结合体，并通过 `contigmap.inpaint_str` 掩蔽该肽的结构。随后可以指定其采用 β（链）二级结构：
+Here, we're making 70-100 amino acid binders to the tau peptide (pdb indices B165-178), and we mask the structure with `contigmap.inpaint_str` on this peptide. However, we can then specify that we want it to adopt a beta (strand) secondary structure:
 
 ```bash
 scaffoldguided.scaffoldguided=True 'contigmap.inpaint_str_strand=[B165-178]'
 ```
 
-或者也可以通过 `contigmap.inpaint_str_helix` 指定为螺旋！
-示例见 `examples/design_ppi_flexible_peptide_with_secondarystructure_specification.sh`。
+Alternatively, you could specify `contigmap.inpaint_str_helix` to make it a helix!
 
----
+See the example in `examples/design_ppi_flexible_peptide_with_secondarystructure_specification.sh`.
 
-### 对称寡聚体的生成
+### Generation of Symmetric Oligomers
 
-我们将从 PPI 切换到 RFdiffusion 在另一项任务上的表现：对称寡聚体设计。其方法是在 t=T 时对采样的噪声进行对称化，并在每个时间步对输入进行对称化。目前已实现并可用的类型如下：
+We're going to switch gears from discussing PPI and look at another task at which RFdiffusion performs well on: symmetric oligomer design. This is done by symmetrising the noise we sample at t=T, and symmetrising the input at every timestep. We have currently implemented the following for use (with the others coming soon!):
 
-- 循环对称（Cyclic）
-- 二面体对称（Dihedral）
-- 四面体对称（Tetrahedral）
+- Cyclic symmetry
+- Dihedral symmetry
+- Tetrahedral symmetry
 
 <p align="center">
   <img src="./img/olig2.png" alt="alt text" width="1000px" align="middle"/>
 </p>
 
-示例：
+Here's an example:
 
 ```bash
 python run_inference.py --config-name symmetry  inference.symmetry=tetrahedral 'contigmap.contigs=[360]' inference.output_prefix=test_sample/tetrahedral inference.num_designs=1
 ```
 
-此处我们通过 `--config-name symmetry` 指定了不同的配置文件。鉴于对称扩散与上文的扩散有较大差异，我们将大量与对称相关的配置放入新的文件（见 `configs/inference/symmetry.yml`）。使用该配置文件会让扩散进入“对称模式（symmetry-mode）”。
+Here, we've specified a different `config` file (with `--config-name symmetry`). Because symmetric diffusion is quite different from the diffusion described above, we packaged a whole load of symmetry-related configs into a new file (see `configs/inference/symmetry.yml`). Using this config file now puts diffusion in `symmetry-mode`.
 
-对称类型通过 `inference.symmetry=` 指定。这里选择的是四面体（`tetrahedral`），也可选择循环（如 `c4`）或二面体（如 `d2`）。
+The symmetry type is then specified with `inference.symmetry=`. Here, we're specifying tetrahedral symmetry, but you could also choose cyclic (e.g. `c4`) or dihedral (e.g. `d2`).
 
-`configmap.contigs` 的长度指寡聚体的“总长度”，因此它必须可以被链数 n 整除。
+The contigmap.contigs length refers to the *total* length of your oligomer. Therefore, it *must* be divisible by *n* chains.
 
-更多寡聚体设计示例见：`./examples/design_cyclic_oligos.sh`、`./examples/design_dihedral_oligos.sh`、`./examples/design_tetrahedral_oligos.sh`。
+### Using Auxiliary Potentials
 
----
+Performing diffusion with symmetrized noise may give you the idea that we could use other external interventions during the denoising process to guide diffusion. One such intervention that we have implemented is auxiliary potentials. Auxiliary potentials can be very useful for guiding the inference process. E.g. whereas in RFjoint inpainting, we have little/no control over the final shape of an output, in diffusion we can readily force the network to make, for example, a well-packed protein.
+This is achieved in the updates we make at each step.
 
-### 使用辅助势函数
+Let's go a little deeper into how the diffusion process works:
+At timestep T (the first step of the reverse-diffusion inference process), we sample noise from a known *prior* distribution. The model then makes a prediction of what the final structure should be, and we use these two states (noise at time T, prediction of the structure at time 0) to back-calculate where t=T-1 would have been. We therefore have a vector pointing from each coordinate at time T, to their corresponding, back-calculated position at time T-1.
+But, we want to be able to bias this update, to *push* the trajectory towards some desired state. This can be done by biasing that vector with another vector, which points towards a position where that residue would *reduce* the 'loss' as defined by your potential. E.g. if we want to use the `monomer_ROG` potential, which seeks to minimise the radius of gyration of the final protein, if the models prediction of t=0 is very elongated, each of those distant residues will have a larger gradient when we differentiate the `monomer_ROG` potential w.r.t. their positions. These gradients, along with the corresponding scale, can be combined into a vector, which is then combined with the original update vector to make a "biased update" at that timestep.
 
-看到用对称化噪声进行扩散，你可能会想到在去噪过程中加入其他外部干预以引导扩散。我们已实现的一项干预是“辅助势函数”。辅助势函数在引导推理过程中非常有用。例如，RFjoint inpainting 中我们几乎无法控制输出的最终形状，而在扩散中，我们可以很容易地强制网络生成一个装包良好的蛋白质。这通过在每个时间步的更新中加入偏置来实现。
+The exact parameters used when applying these potentials matter. If you weight them too strongly, you're not going to end up with a good protein. Too weak, and they'll have little effect. We've explored these potentials in a few different scenarios, and have set sensible defaults, if you want to use them. But, if you feel like they're too weak/strong, or you just fancy exploring, do play with the parameters (in the `potentials` part of the config file).
 
-简单回顾扩散过程：
-在时间步 T（反向扩散推理的第一步），我们从已知的先验分布中采样噪声。模型随后预测最终结构应是什么样，并用当前噪声（t=T）与该预测（t=0）来反算 t=T-1 的状态。因此我们得到一个向量，表示每个坐标从时间 T 指向反算得到的时间 T-1 的位置。
-但我们希望对该更新进行偏置，即将轨迹“推向”某个期望状态。这可以通过用另一个向量对该更新向量进行加权来实现，该向量指向一个能够减小你定义的“势函数损失”的位置。例如若希望使用 `monomer_ROG`（缩小蛋白的回转半径）势函数，当模型的 t=0 预测非常“拉长”时，越远的残基在对 `monomer_ROG` 相对于其位置求导时将具有更大的梯度。将这些梯度与相应缩放结合起来即可得到一个向量，然后与原更新向量结合，在该时间步形成一个“带偏置的更新”。
+Potentials are specified as a list of strings with each string corresponding to a potential. The argument for potentials is `potentials.guiding_potentials`. Within the string per-potential arguments may be specified in the following syntax: `arg_name1:arg_value1,arg_name2:arg_value2,...,arg_nameN:arg_valueN`. The only argument that is required for each potential is the name of the potential that you wish to apply, the name of this argument is `type` as-in the type of potential you wish to use. Some potentials such as `olig_contacts` and `substrate_contacts` take global options such as `potentials.substrate`, see `config/inference/base.yml` for all the global arguments associated with potentials. Additionally, it is useful to have the effect of the potential "decay" throughout the trajectory, such that in the beginning the effect of the potential is 1x strength, and by the end is much weaker. These decays (`constant`,`linear`,`quadratic`,`cubic`) can be set with the `potentials.guide_decay` argument.
 
-应用这些势函数时的具体参数非常重要。如果权重太大，最终不会得到一个好的蛋白；太小则几乎无效。我们在多个场景下探索过这些势函数，并给出了合理默认值，供你直接使用。但如果感觉太弱/太强，或想要探索，请在配置文件的 `potentials` 部分自行尝试调整参数。
-
-势函数以字符串列表的形式指定，每个字符串对应一个势函数。参数名为 `potentials.guiding_potentials`。在每个字符串中可按以下语法指定该势函数的参数：`arg_name1:arg_value1,arg_name2:arg_value2,...,arg_nameN:arg_valueN`。每个势函数必须指定的唯一参数是势函数名称（类型），参数名为 `type`。某些势函数如 `olig_contacts` 与 `substrate_contacts` 接受全局参数，如 `potentials.substrate`。所有与势函数相关的全局参数可在 `config/inference/base.yml` 中查看。此外，让势函数的作用随轨迹逐渐“衰减”也很有用，例如开始时作用强度为 1x，结束时更弱。该衰减类型（`constant`、`linear`、`quadratic`、`cubic`）由 `potentials.guide_decay` 指定。
-
-示例：
+Here's an example of how to specify a potential:
 
 ```bash
-potentials.guiding_potentials=["type:olig_contacts,weight_intra:1,weight_inter:0.1"] potentials.olig_intra_all=True potentials.olig_inter_all=True potentials.guide_scale=2 potentials.guide_decay='quadratic'
+potentials.guiding_potentials=[\"type:olig_contacts,weight_intra:1,weight_inter:0.1\"] potentials.olig_intra_all=True potentials.olig_inter_all=True potentials.guide_scale=2 potentials.guide_decay='quadratic'
 ```
 
-我们仍在系统地刻画何时/如何使用势函数，强烈建议你自行探索不同参数，因为它们显然与具体问题相关。目前来看，势函数对基序支架与对称寡聚体生成是有帮助的。但在 PPI 中，它们与热点残基之间的交互较为复杂，我们认为知道原因，并将在未来改进适用于 PPI 的更好势函数。请注意，通常的好做法是从“无势函数”作为基线开始，然后逐步增强其强度。对于寡聚体接触势函数，建议从示例提供的参数开始，并注意 `intra` 链的权重通常应高于 `inter` 链。
+We are still fully characterising how/when to use potentials, and we strongly recommend exploring different parameters yourself, as they are clearly somewhat case-dependent. So far, it is clear that they can be helpful for motif scaffolding and symmetric oligomer generation. However, they seem to interact weirdly with hotspot residues in PPI. We think we know why this is, and will work in the coming months to write better potentials for PPI. And please note, it is often good practice to start with *no potentials* as a baseline, then slowly increase their strength. For the oligomer contacts potentials, start with the ones provided in the examples, and note that the `intra` chain potential often should be higher than the `inter` chain potential.
 
-我们已经实现了多种势函数，但添加更多也很容易，只要你希望将设计推向某个特定目标。唯一的要求是所编写的势函数必须可微。可参考 `potentials.potentials.py` 中已实现势函数的示例。
+We have already implemented several potentials but it is relatively straightforward to add more, if you want to push your designs towards some specified goal. The *only* condition is that, whatever potential you write, it is differentiable. Take a look at `potentials.potentials.py` for examples of the potentials we have implemented so far.
 
----
+### Symmetric Motif Scaffolding
 
-### 对称基序支架
-
-可以将对称扩散与基序支架结合起来，在对称环境下进行基序支架。
-当前我们支持的一种方式是：相对于对称轴指定基序的位置。
+We can also combine symmetric diffusion with motif scaffolding to scaffold motifs symmetrically.
+Currently, we have one way for performing symmetric motif scaffolding. That is by specifying the position of the motif specified w.r.t. the symmetry axes.
 
 <p align="center">
   <img src="./img/sym_motif.png" alt="alt text" width="1000px" align="middle"/>
 </p>
 
-**输入 .pdb 与 contig 的特殊要求**
+**Special input .pdb and contigs requirements**
 
-目前要求用户在输入 pdb 中提供经过对称化的基序。原因有二：第一，模型的训练会将任何基序居中到原点，因此代码也会自动将基序居中。如果你的基序未对称化，这一步会导致非对称单元（asymmetric unit）与原点及对称轴重合（这会产生问题）。第二，扩散代码使用一组规范的对称轴（旋转矩阵）来传播基序的非对称单元。为防止在非预期的方式上传播基序，我们要求用户使用 RFdiffusion 的规范对称轴对输入进行对称化。
+For now, we require that a user have a symmetrized version of their motif in their input pdb for symmetric motif scaffolding. There are two main reasons for this. First, the model is trained by centering any motif at the origin, and thus the code also centers motifs at the origin automatically. Therefore, if your motif is not symmetrized, this centering action will result in an asymmetric unit that now has the origin and axes of symmetry running right through it (bad). Secondly, the diffusion code uses a canonical set of symmetry axes (rotation matrices) to propagate the asymmetric unit of a motif. In order to prevent accidentally running diffusion trajectories which are propagating your motif in ways you don't intend, we require that a user symmetrize an input using the RFdiffusion canonical symmetry axes.
 
-**RFdiffusion 规范对称轴**
+**RFdiffusion canonical symmetry axes**
 
-| 对称群 | 轴 |
-|:------:|:--:|
-| 循环 | Z |
-| 二面体（循环） | Z |
-| 二面体（翻转/反射） | X |
+| Group      |      Axis     |
+|:----------:|:-------------:|
+| Cyclic     |  Z |
+| Dihedral (cyclic) |    Z   |
+| Dihedral (flip/reflection) | X |
 
-**示例：相对于对称轴指定基序位置的对称基序支架输入**
+**Example: Inputs for symmetric motif scaffolding with motif position specified w.r.t the symmetry axes.**
 
-示例脚本 `examples/design_nickel.sh` 可用于支架论文中展示的 C4 对称的镍结合结构域。它结合了本文前述的多个概念，包括对称寡聚体生成、基序支架以及引导势函数的使用。
+This example script `examples/design_nickel.sh` can be used to scaffold the C4 symmetric Nickel binding domains shown in the RFdiffusion paper. It combines many concepts discussed earlier, including symmetric oligomer generation, motif scaffolding, and use of guiding potentials.
 
-注意：contigs 必须指定精确对称的结构。否则会出错。
+Note that the contigs should specify something that is precisely symmetric. Things will break if this is not the case.
 
----
+### Macrocyclic peptide design with RFpeptides
 
-### 使用 RFpeptides 设计大环肽
-
-<img src="./img/rfpeptides_fig1.png" alt="alt text" width="400px" align="right"/>
-可使用 RFdiffusion 以原子级精度设计能与目标蛋白结合的大环肽（Rettie、Juergens、Adebomi 等，2025）。本节简要说明如何运行该推理流程。我们提供了两个示例：一个用于单体设计，一个用于结合体设计。
+<img src="./img/rfpeptides_fig1.png" alt="alt text" width="400px" align="center"/>
+We have recently published the RFpeptides protocol for using RFdiffusion to design macrocyclic peptides that bind target proteins with atomic accuracy (Rettie, Juergens, Adebomi, et al., 2025). In this section we briefly outline how to run this inference protocol. We have added two examples for running macrocycle design with the RFpeptides protocol. One for monomeric design, and one for binder design.
 
 ```bash
 examples/design_macrocyclic_monomer.sh
 examples/design_macrocyclic_binder.sh
 ```
 
-#### RFpeptides 结合体设计
+### RFpeptides binder design
 
 <img src="./img/rfpeptides_binder.png" alt="alt text" width="1100" align="center"/>
 
-要设计与目标结合的大环肽，所需标记与经典结合体设计非常相似，但多了两个额外标记：
+To design a macrocyclic peptide to bind a target, the flags needed are very similar to classic binder design, but with two additional flags:
 
 ```bash
 #!/bin/bash
 
 prefix=./outputs/diffused_binder_cyclic2
 
-# 注意：该 pdb 文件中 A 链的索引相对于 pdbID 7zkr 已整体 +2。
+# Note that the indices in this pdb file have been shifted by +2 in chain A relative to pdbID 7zkr.
 
 pdb='./input_pdbs/7zkr_GABARAP.pdb'
 
@@ -481,30 +566,33 @@ inference.input_pdb=$pdb \
 inference.cyclic=True \
 diffuser.T=50 \
 inference.cyc_chains='a' \
-ppi.hotspot_res=['A51','A52','A50','A48','A62','A65'] \
+ppi.hotspot_res=[\'A51\',\'A52\',\'A50\',\'A48\',\'A62\',\'A65\'] \
 ```
 
-新增标记为 `inference.cyclic=True` 与 `inference.cyc_chains`。
+The new flags are `inference.cyclic=True` and `inference.cyc_chains`. Yes, they are somewhat redundant.
 
-`inference.cyclic` 仅表示用户希望至少将一条链设计为大环肽；`inference.cyc_chains` 是包含所有需要环化的链字母的字符串。在上述示例中，只有 A 链（`inference.cyc_chains='a'`）被环化；当然，如果 contigs 兼容，也可以指定为 `inference.cyc_chains='abcd'`。
+`inference.cyclic` simply notifies the program that the user would like to design at least one macrocycle, and `inference.cyc_chains` is just a string containing the letter of every chain you would like to design as a cyclic peptide. In the example above, only chain `A` (`inference.cyc_chains='a'`) is cyclized, but one could do `inference.cyc_chains='abcd'` if they so desired (and the contigs was compatible with this, which the above one is not).
 
-#### RFpeptides 单体设计
+### RFpeptides monomer design
 
-对于单体设计，只需将 contigs 调整为仅包含一条生成链，例如 `contigmap.contigs=[12-18]`，同时保留 `inference.cyclic=True` 与 `inference.cyc_chains='a'` 即可开始生成单体。
+For monomer design, you can simply adjust the contigs to only contain a single generated chain e.g., `contigmap.contigs=[12-18]`, keep the `inference.cyclic=True` and `inference.cyc_chains='a'`, and you're off to the races making monomers.
 
----
+### Understanding the output files
 
-### 输出文件说明
+We output several different files.
 
-我们会输出多种文件：
+1. The `.pdb` file. This is the final prediction out of the model. Note that every designed residue is output as a glycine (as we only designed the backbone), and no sidechains are output. This is because, even though RFdiffusion conditions on sidechains in an input motif, there is no loss applied to these predictions, so they can't strictly be trusted.
+2. The `.trb` file. This contains useful metadata associated with that specific run, including the specific contig used (if length ranges were sampled), as well as the full config used by RFdiffusion. There are also a few other convenient items in this file:
+    - details about mapping (i.e. how residues in the input map to residues in the output)
+        - `con_ref_pdb_idx`/`con_hal_pdb_idx` - These are two arrays including the input pdb indices (in con_ref_pdb_idx), and where they are in the output pdb (in con_hal_pdb_idx). This only contains the chains where inpainting took place (i.e. not any fixed receptor/target chains)
+        - `con_ref_idx0`/`con_hal_idx0` - These are the same as above, but 0 indexed, and without chain information. This is useful for splicing coordinates out (to assess alignment etc).
+        - `inpaint_seq` - This details any residues that were masked during inference.
+3. Trajectory files. By default, we output the full trajectories into the `/traj/` folder. These files can be opened in pymol, as multi-step pdbs. Note that these are ordered in reverse, so the first pdb is technically the last (t=1) prediction made by RFdiffusion during inference. We include both the `pX0` predictions (what the model predicted at each timestep) and the `Xt-1` trajectories (what went into the model at each timestep).
 
-1. `.pdb` 文件：模型的最终预测。注意所有设计残基输出为甘氨酸（仅设计主链），且不包含侧链。尽管 RFdiffusion 在输入基序中会对侧链进行条件化，但未对其预测施加损失，因此不应严格信赖。
-2. `.trb` 文件：包含与该次运行相关的元数据，包括具体使用的 contig（如采样的长度范围）以及 RFdiffusion 的完整配置。文件中还包含一些其他信息：
-    - 关于映射的细节（输入中的残基如何映射到输出）
-        - `con_ref_pdb_idx` / `con_hal_pdb_idx`：两个数组，分别包含输入 pdb 的索引（`con_ref_pdb_idx`）和其在输出 pdb 中的位置（`con_hal_pdb_idx`）。仅包含发生 inpainting 的链（不包括固定的受体/目标链）。
-        - `con_ref_idx0` / `con_hal_idx0`：与上类似，但为 0 索引且不含链信息。便于提取坐标以进行比对等。
-        - `inpaint_seq`：详细说明推理期间被掩蔽的残基。
-3. 轨迹文件：默认会将完整轨迹输出到 `/traj/` 文件夹。可用 PyMol 打开为多步 pdb。注意这些文件按“逆序”保存，因此第一个 pdb 实际上是最后一步（t=1）的预测。我们同时包含 `pX0` 预测（模型在每个时间步的预测）与 `Xt-1` 轨迹（每个时间步输入到模型的内容）。
+## References
 
-> Modified from RFdiffusion (https://github.com/RosettaCommons/RFdiffusion)
+- [RFdiffusion paper](https://www.biorxiv.org/content/10.1101/2022.12.09.519842v1)
+- [RFantibody paper](https://www.biorxiv.org/content/10.1101/2024.03.14.585103v2)
+
+> Modified from [RFdiffusion](https://github.com/RosettaCommons/RFdiffusion)  
 > Original license: BSD License

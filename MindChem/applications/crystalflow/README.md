@@ -1,129 +1,139 @@
+# CrystalFlow
 
-# 模型名称
+## Introduction
 
-> CrystalFlow
+Theoretical crystal structure prediction is an important approach for finding the most stable structures of materials under given external conditions via computation. Traditional structure prediction methods rely on wide random sampling over the potential energy surface to search for the most stable structure. However, such methods require local optimization on a large number of randomly generated structures, and local optimization typically incurs substantial first-principles computational cost. This cost becomes particularly significant when simulating complex multi-element systems, posing major challenges.
 
-## 介绍
+In recent years, deep learning–based generative methods for crystal structure generation have gained attention for their ability to sample plausible structures more efficiently on the potential energy surface. By learning from datasets of stable or locally stable structures, these methods generate reasonable crystal structures. Compared with random sampling, they reduce the cost of local optimization and can find the most stable structures of a system with fewer samples.
 
-> 理论晶体结构预测是通过计算的手段寻找物质在给定的外界条件下最稳定结构的重要手段。传统结构预测方法依赖在势能面上广泛的随机采样来寻找最稳定结构，然而，这种方法需要对大量随机生成的结构进行局域优化，而局域优化通常需要消耗巨大的第一性原理计算成本，尤其在模拟多元素复杂体系时，这种计算开销会显著增加，从而带来巨大的挑战。近年来，基于深度学习生成模型的晶体结构生成方法因其能够在势能面上更高效地采样合理结构而逐渐受到关注。这种方法通过从已有的稳定或局域稳定结构数据中学习，进而生成合理的晶体结构，与随机采样相比，不仅能够减少局域优化的计算成本，还能通过较少的采样找到体系的最稳定结构。采用神经常微分方程和连续变化建模概率密度的归一化流流模型，相比采用扩散模型方法的生成模型具有更加简洁、灵活、高效的优点。本方法基于流模型架构，发展了以CrystalFlow命名的晶体结构生成模型，在MP20等基准数据集上达到优秀的水平。
+Based on neural ordinary differential equations and continuous density modeling with normalizing flows, our flow-based approach is simpler, more flexible, and more efficient than diffusion-model-based generative methods. Building on a flow-model architecture, we develop CrystalFlow, a generative model for crystal structures that achieves competitive performance on benchmarks such as MP20.
 
-## 环境要求
+## Environment Requirements
 
-> 1. 安装依赖包：`pip install -r requirement.txt`
+1. Install dependencies: `pip install -r requirement.txt`
 
-## 快速入门
+## Quick Start
 
-> 1. 将mindscience/MindChem文件包下载到当前目录，并打开MindChem/applications/crystalflow
-> 2. 在[数据集链接](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/dataset/)下载相应的数据集
-> 3. 安装依赖包：`pip install -r requirement.txt`
-> 4. 训练命令： `python train.py`
-> 5. 预测命令： `python evaluate.py`
-> 6. 评估命令： `python compute_metric.py`
-> 7. 评估结果放在`config.yaml`中指定的`metric_dir`路径的json文件中
+1. Download the `mindscience/MindChem` package to the current directory and open `MindChem/applications/crystalflow`.
+2. Download the corresponding datasets from the Dataset Link: https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/dataset/
+3. Install dependencies: `pip install -r requirement.txt`
+4. Train: `python train.py`
+5. Inference: `python evaluate.py`
+6. Evaluation: `python compute_metric.py`
+7. Evaluation results are saved to a JSON file under the `metric_dir` specified in `config.yaml`.
 
-### 代码目录结构
+## Code Structure
+
+The main modules are under the `models` folder. `cspnet.py` contains the network layers, and `flow.py` contains the flow-model module. The `data` folder includes dataset processing modules.
 
 ```text
-代码主要模块在models文件夹下，其中cspnet.py是网络层，flow.py是流模型模块.data文件夹下是数据集处理模块。
-
 applications
-  └── crystalflow                                      # 模型名
-        ├── readme.md                                  # readme文件
-        ├── config.yaml                                # 配置文件
-        ├── train.py                                   # 训练启动脚本
-        ├── evaluate.py                                # 推理启动脚本
-        ├── compute_metric.py                          # 评估启动脚本
-        ├── requirement.txt                             # 环境依赖
-        ├── data                                       # 数据处理模块
-        |     ├── data_utils.py                        # 工具模块
-        |     ├── dataset.py                           # 构造数据集
-        |     └── crysloader.py                        # 构造数据加载器
+  └── crystalflow                                      # Model name
+        ├── README.md                                  # README (Chinese)
+        ├── README_EN.md                               # README (English)
+        ├── config.yaml                                # Configuration file
+        ├── train.py                                   # Training entry
+        ├── train_pressure.py                          # Training entry (with pressure)
+        ├── evaluate.py                                # Inference entry
+        ├── compute_metric.py                          # Evaluation entry
+        ├── requirement.txt                            # Environment dependencies
+        ├── test_crystalflow.py                        # Unit tests
+        ├── data                                       # Data processing modules
+        |     ├── data_utils.py                        # Utility module
+        |     ├── dataset.py                           # Build dataset
+        |     ├── dataloader.py                        # DataLoader wrapper
+        |     └── crysloader.py                        # Raw data loader
+        ├── graph                                      # Graph-related modules
+        |     ├── graph.py                             # Graph construction
+        |     └── loss.py                              # Graph loss functions
         └── models
-              ├── conditioning.py                      # 条件生成工具模块
-              ├── cspnet.py                            # 基于图神经网络的去噪器模块
-              ├── cspnet_condition.py                  # 条件生成的网络层
-              ├── diff_utils.py                        # 工具模块
-              ├── flow.py                              # 流模型模块
-              ├── flow_condition.py                    # 条件生成的流模型
-              ├── infer_utils.py                       # 推理工具模块
-              ├── lattice.py                           # 晶格矩阵处理工具
-              └── train_utils.py                       # 训练工具模块
+              ├── conditioning.py                      # Conditional generation utilities
+              ├── cspnet.py                            # GNN-based denoiser
+              ├── cspnet_condition.py                  # Conditional network layers
+              ├── diff_utils.py                        # Utilities
+              ├── flow.py                              # Flow-model module
+              ├── flow_condition.py                    # Conditional flow model
+              ├── infer_utils.py                       # Inference utilities
+              ├── lattice.py                           # Lattice matrix utilities
+              └── train_utils.py                       # Training utilities
+```
 
-```  
+## Dataset Download
 
-## 下载数据集
+Download the required dataset folders and the `dataset_prop.txt` property file from: https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/dataset/
 
-在[数据集链接](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/dataset/)中下载相应的数据集文件夹和dataset_prop.txt数据集属性文件放置于当前路径的dataset文件夹下（如果没有需要自己手动创建），文件路径参考：
+Place them under the `dataset` folder in the current path (create it manually if missing). Example structure:
 
-```txt
+```text
 crystalflow
     ...
     └─dataset
-            perov_5 钙钛矿数据集
-            carbon_24 碳晶体数据集
-            mp_20 晶胞内原子数最多为20的MP数据集
-            mpts_52 晶胞内原子数最多为52的MP数据集
-            dataset_prop.txt 数据集属性文件
+            perov_5      Perovskite dataset
+            carbon_24    Carbon crystal dataset
+            mp_20        MP dataset with up to 20 atoms per unit cell
+            mpts_52      MP dataset with up to 52 atoms per unit cell
+            dataset_prop.txt  Dataset property file
     ...
 ```
 
-## 训练过程
+## Training
 
-### 训练
+Download the `mindscience/MindChem` package to the current directory and open `MindChem/applications/crystalflow`.
 
-将mindscience/MindChem文件包下载到当前目录，并打开MindChem/applications/crystalflow文件夹;
+Edit the config file to set training parameters:
 
-更改config文件，设置训练参数:
-> 1. 设置训练的dataset，见dataset字段
-> 2. 设置去噪器模型的配置，见model字段
-> 3. 设置训练保存的权重文件，更改train.ckpt_dir文件夹名称和checkpoint.last_path权重文件名称
-> 4. 其它训练设置见train字段
+- Set the training `dataset` (see the `dataset` field).
+- Configure the denoiser model (see the `model` field).
+- Set the directory for saving checkpoints by editing `train.ckpt_dir` and the checkpoint filename in `checkpoint.last_path`.
+- Other training settings are under the `train` field.
+
+Commands:
 
 ```bash
 pip install -r requirement.txt
 python train.py
 ```
 
-### 推理
+## Inference
 
-更改config文件中的test字段来更改推理参数，特别是test.num_eval，它**决定了对于每个组分生成多少个样本**，对于后续的评估阶段很重要。
+Edit the `test` section in the config file to adjust inference parameters, especially `test.num_eval`, which determines how many samples to generate per composition. This is important for the subsequent evaluation stage.
 
 ```bash
 python evaluate.py
 ```
 
-推理得到的晶体将保存在test.eval_save_path指定的文件中
+Generated crystals are saved to the path specified by `test.eval_save_path`.
 
-文件中存储的内容为python字典，格式为：
+The saved file contains a Python dictionary with the following structure:
 
 ```python
 {
-        'pred': [
-                [晶体A sample 1, 晶体A sample 2, 晶体A sample 3, ... 晶体A sample num_eval],
-                [晶体B sample 1, 晶体B sample 2, 晶体B sample 3, ... 晶体B sample num_eval]
-                ...
-        ]
-        'gt': [
-                晶体A ground truth,
-                晶体B ground truth,
-                ...
-        ]
+    'pred': [
+        [crystal_A sample_1, crystal_A sample_2, ..., crystal_A sample_num_eval],
+        [crystal_B sample_1, crystal_B sample_2, ..., crystal_B sample_num_eval],
+        ...
+    ],
+    'gt': [
+        crystal_A ground_truth,
+        crystal_B ground_truth,
+        ...
+    ]
 }
 ```
 
-### 评估
+## Evaluation
 
-将推理得到的晶体文件的path写入config文件的test.eval_save_path中；
+Set the path to the generated crystal file in `test.eval_save_path` of the config.
 
-确保num_evals与进行推理时设置的对于每个组分生成样本的数量一致或更小。比如进行推理时，num_evals设置为1，那么评估时，num_evals只能设置为1；推理时，num_evals设置为20，那么评估时，num_evals可以设置为1-20的数字来进行评估。
+Ensure `num_evals` is consistent with or less than the number of samples per composition used during inference. For example, if `num_evals` was 1 in inference, it must be 1 in evaluation; if it was 20 during inference, `num_evals` can be set to any integer from 1 to 20 for evaluation.
 
-更改config文件中的test.metric_dir字段来设置评估结果的保存路径
+Set `test.metric_dir` in the config to specify where evaluation results are saved.
 
 ```bash
 python compute_metric.py
 ```
 
-得到的评估结果文件示例：
+Example of evaluation output:
 
 ```json
 {"match_rate": 0.6107671899181959, "rms_dist": 0.07492558322002925}

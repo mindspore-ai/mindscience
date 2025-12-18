@@ -1,34 +1,40 @@
 # Orb
 
-## Overview
+## Background
 
-> In materials science, designing novel functional materials has always been a key part of emerging technologies. However, traditional ab initio calculation methods are slow in designing new inorganic materials and difficult to scale to systems of practical size. In recent years, deep learning methods have demonstrated their powerful capabilities in multiple fields, capable of running efficiently through parallel architectures. The core innovation of the ORB model lies in applying this deep learning approach to materials modeling, learning the complexity of interatomic interactions through a scalable graph neural network architecture. The ORB model is a machine learning force field (MLFF) based on graph neural networks (GNNs), designed as a universal interatomic potential model suitable for various simulation tasks (geometry optimization, Monte Carlo simulations, and molecular dynamics simulations). The input to the model is a graph structure containing atomic positions, types, and system configuration (such as unit cell size and boundary conditions); the outputs include the total energy of the system, force vectors for each atom, and unit cell stress. Compared to existing open-source neural network potential models (such as MACE), the ORB model achieves a 3-6 times speed improvement at large system scales. In the Matbench Discovery benchmark, the ORB model reduced errors by 31% compared to other methods and became the state-of-the-art model on this benchmark at the time of release. The ORB model performs excellently in zero-shot evaluation, remaining stable even in molecular dynamics simulations of high-temperature aperiodic molecules without fine-tuning for specific tasks.
+In materials science, designing novel functional materials has always been a key part of emerging technologies. However, traditional ab initio calculation methods are slow in designing new inorganic materials and difficult to scale to systems of practical size. In recent years, deep learning methods have demonstrated their powerful capabilities in multiple fields, capable of running efficiently through parallel architectures. The core innovation of the ORB model lies in applying this deep learning approach to materials modeling, learning the complexity of interatomic interactions through a scalable graph neural network architecture. The ORB model is a machine learning force field (MLFF) based on graph neural networks (GNNs), designed as a universal interatomic potential model suitable for various simulation tasks (geometry optimization, Monte Carlo simulations, and molecular dynamics simulations). The input to the model is a graph structure containing atomic positions, types, and system configuration (such as unit cell size and boundary conditions); the outputs include the total energy of the system, force vectors for each atom, and unit cell stress. Compared to existing open-source neural network potential models (such as MACE), the ORB model achieves a 3-6 times speed improvement at large system scales. In the Matbench Discovery benchmark, the ORB model reduced errors by 31% compared to other methods and became the state-of-the-art model on this benchmark at the time of release. The ORB model performs excellently in zero-shot evaluation, remaining stable even in molecular dynamics simulations of high-temperature aperiodic molecules without fine-tuning for specific tasks.
 
 ![Orb model predicts free energy](docs/orb.png)
 
-> In the figure above: (a) Free energy surfaces of MACE + D3 (left) and Orb-D3 (right) obtained in Mg-MOF-74 using the Widom insertion method. The blue regions near open metal sites represent the lowest free energy, indicating these are the preferred adsorption sites for CO2. (b) Adsorption positions of CO2 in Mg-MOF-74, showing the two most favorable adsorption sites obtained via the Widom insertion method, with adsorption energies of -54.5 kJ/mol and -54.4 kJ/mol, respectively. Although the energy minimum positions predicted by Orb and MACE are similar, the free energy minimum of ORB is numerically closer to the experimentally measured adsorption heat (-44 kJ/mol).
+In the figure above: (a) Free energy surfaces of MACE + D3 (left) and Orb-D3 (right) obtained in Mg-MOF-74 using the Widom insertion method. The blue regions near open metal sites represent the lowest free energy, indicating these are the preferred adsorption sites for CO2. (b) Adsorption positions of CO2 in Mg-MOF-74, showing the two most favorable adsorption sites obtained via the Widom insertion method, with adsorption energies of -54.5 kJ/mol and -54.4 kJ/mol, respectively. Although the energy minimum positions predicted by Orb and MACE are similar, the free energy minimum of ORB is numerically closer to the experimentally measured adsorption heat (-44 kJ/mol).
 
-## Environment Requirements
+## Model Implementation
 
-> 1. Install `mindspore (2.7.0)`
-> 2. Install dependencies: `pip install -r requirement.txt`
+### Hardware Requirements
 
-## Quick Start
+- Runs on the MindSpore framework. The backend device can be selected via the `device_target` field in the config files (see `configs/config_eval.yaml` and `evaluate.py`), with `Ascend` as the default.
 
-> 1. Download the corresponding dataset from [dataset link](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/orb/dataset/) and place it in the `dataset` directory
-> 2. Download the orb pre-trained model ckpt from [model link](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/orb/orb_ckpts/) and place it in the `orb_ckpts` directory
-> 3. Install dependencies: `pip install -r requirement.txt`
-> 4. Single-card training command: `bash run.sh`
-> 5. Multi-card training command: `bash run_parallel.sh`
-> 6. Evaluation command: `python evaluate.py`
-> 7. Model prediction results will be stored in the `results` directory
+### Version Dependencies
 
-### Code Directory Structure
+- Requires `MindSpore == 2.7.0` (see `requirement.txt`).
+- Requires `MindScience` to provide foundational components for equivariant computations.
+- Other Python dependencies are listed in `requirement.txt`.
+
+### Installation
+
+- Install MindSpore: follow the official installation guide at `https://www.mindspore.cn/install`
+- Install MindScience: see `https://atomgit.com/mindspore-lab/mindscience`
+- Install Python dependencies: `pip install -r requirement.txt`
+
+### Dataset
+
+- Download the training and test datasets from the [dataset link](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/orb/dataset/) and place them under the `dataset` folder in the current path (create it manually if it does not exist).
+- Download the Orb pre-trained checkpoint `orb-mptraj-only-v2.ckpt` from the [model link](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/orb/orb_ckpts/) and place it under the `orb_ckpts` folder in the current path (create it manually if it does not exist).
+
+Example directory structure:
 
 ```text
-The main code modules are in the src folder, with the dataset folder containing the datasets, the orb_ckpts folder containing pre-trained models and trained model weight files, and the configs folder containing parameter configuration files for each code.
-
-orb_models                                           # ORB pre-training / fine-tuning project
+orb                                                 # ORB fine-tuning project
 ├── dataset
 │   ├── train_mptrj_ase.db                           # Training dataset for fine-tuning (ASE trajectories, SQLite)
 │   └── val_mptrj_ase.db                             # Validation / test dataset for fine-tuning
@@ -42,7 +48,6 @@ orb_models                                           # ORB pre-training / fine-t
 │   └── config_eval.yaml                             # Inference / evaluation configuration
 │
 ├── src                                              # Core code for data processing and training
-│   ├── __init__.py                                  # Package initializer for src
 │   ├── ase_dataset.py                               # Load and wrap ASE datasets (read SQLite, build atomic graphs)
 │   ├── atomic_system.py                             # Data structures for atomic systems (positions, species, cell, etc.)
 │   ├── base.py                                      # Common base classes and utilities (e.g., batch_graphs)
@@ -54,10 +59,10 @@ orb_models                                           # ORB pre-training / fine-t
 │   └── utils.py                                     # Utility functions (seeding, logging, optimizer & LR scheduler)
 │
 ├── models                                           # Model definitions (GNN / ORB networks)
-│    ├── __init__.py                          # Package initializer for orb
-│    ├── gns.py                               # GNS (Graph Network Simulator) related structures / APIs
-│    ├── orb.py                               # Main ORB architecture (encoder + heads)
-│    └── utils.py                             # Internal utilities and helper modules for ORB
+│    ├── __init__.py                                 # Package initializer for orb
+│    ├── gns.py                                      # GNS (Graph Network Simulator) related structures / APIs
+│    ├── orb.py                                      # Main ORB architecture (encoder + heads)
+│    └── utils.py                                    # Internal utilities and helper modules for ORB
 │
 ├── finetune.py                                      # Entry script for model fine-tuning
 ├── evaluate.py                                      # Entry script for model inference / evaluation
@@ -65,29 +70,27 @@ orb_models                                           # ORB pre-training / fine-t
 ├── run.sh                                           # Single-card training launcher (wraps finetune.py + config.yaml)
 ├── run_parallel.sh                                  # Multi-card training launcher (msrun + config_parallel.yaml)
 └── requirement.txt                                  # Python dependency list for environment setup
+```
 
-```  
+- The core model implementation is composed of modules under `src` and `models`: `OrbLoss` and the training loop are implemented in `finetune.py` and `src/trainer.py`, while `evaluate.py` provides the inference and evaluation entry point.
 
-## Download Dataset
+## Running the Model
 
-Download the training and test datasets from [dataset link](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/orb/dataset/) and place them in the dataset folder under the current path (create manually if it does not exist); download the orb pre-trained model `orb-mptraj-only-v2.ckpt` from [model link](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/orb/orb_ckpts/) and place it in the orb_ckpts folder under the current path (create manually if it does not exist); refer to [Code Directory Structure](#code-directory-structure) for file paths
+### Training
 
-## Training Process
+#### Single-card Training
 
-### Single-Card Training
-
-Modify the training parameters in the `configs/config.yaml` file:
-
-> 1. Set the training and test datasets for the fine-tuning stage, see the `data_path` field
-> 2. Set the pre-trained model weight file to load for training, modify the `checkpoint_path` path field
-> 3. Other training settings see the Training Configuration section
+- Modify the training parameters in `configs/config.yaml`:
+    - Set the training and validation datasets for the fine-tuning stage via `train_data_path` and `val_data_path`.
+    - Set the checkpoint directory to load the pre-trained model via `checkpoint_path`.
+- After configuration, run:
 
 ```bash
 pip install -r requirement.txt
 bash run.sh
 ```
 
-The code running results are as follows:
+The training logs will look similar to:
 
 ```log
 ==============================================================================================================
@@ -110,21 +113,20 @@ Checkpoint saved to orb_ckpts/
 Training time: 7333.08717 seconds
 ```
 
-### Multi-Card Parallel Training
+#### Multi-card Parallel Training
 
-Modify the training parameters in the `configs/config_parallel.yaml` and `run_parallel.sh` files:
-
-> 1. Set the training and test datasets for the fine-tuning stage, see the `data_path` field
-> 2. Set the pre-trained model weight file to load for training, modify the `checkpoint_path` path field
-> 3. Other training settings see the Training Configuration section
-> 4. Modify `--worker_num=4 --local_worker_num=4` in the `run_parallel.sh` file to set the number of cards to use
+- Modify the training parameters in `configs/config_parallel.yaml` and `run_parallel.sh`:
+    - Set the training and validation datasets for the fine-tuning stage via `train_data_path` and `val_data_path`.
+    - Set the checkpoint directory to load the pre-trained model via `checkpoint_path`.
+    - For other training settings, refer to the Training Configuration section.
+    - Modify `--worker_num` and `--local_worker_num` in `run_parallel.sh` to set the number of devices to use.
 
 ```bash
 pip install -r requirement.txt
 bash run_parallel.sh
 ```
 
-The code running results are as follows:
+The training logs will look similar to:
 
 ```log
 Loading datasets: dataset/train_mptrj_ase.dbTotal train dataset size: 800 samples
@@ -148,26 +150,27 @@ Training time: 2377.22778 seconds
 Training time: 2376.63176 seconds
 ```
 
-Under the same training configuration, parallel training achieved significant performance improvement compared to single-card training:
+Under the same training configuration, multi-card parallel training achieves significant performance improvement compared to single-card training (based on the example logs above):
 
-- Single-card training time: 7293.28995 seconds
-- 4-card parallel training time: 2377.22778 seconds
-- Performance improvement: 67.40%
-- Speedup ratio: 3.07x
+- Single-card training time: about 7,300 s
+- 4-card parallel training time: about 2,400 s
+- Performance improvement: about 67%
+- Speedup ratio: about 3×
 
-### Inference
+### Inference / Evaluation
 
-Modify the inference parameters in the `configs/config_eval.yaml` file:
+- Modify the inference / evaluation parameters in `configs/config_eval.yaml`:
+    - Set the test dataset via `val_data_path`.
+    - Set the pre-trained or fine-tuned checkpoint to load via `checkpoint_path`.
+    - For other evaluation settings, refer to the Evaluating Configuration section.
 
-> 1. Set the test dataset, see the `val_data_path` field
-> 2. Set the pre-trained model weight file to load for inference, modify the `checkpoint_path` path field
-> 3. Other training settings see the Evaluating Configuration section
+Run:
 
 ```bash
 python evaluate.py
 ```
 
-The code running results are as follows:
+The logs will look similar to:
 
 ```log
 Loading datasets: dataset/val_mptrj_ase.dbTotal train dataset size: 200 samples

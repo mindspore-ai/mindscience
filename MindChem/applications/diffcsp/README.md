@@ -1,132 +1,185 @@
+# DiffCSP
 
-# 模型名称
+## Background
 
-> DiffCSP
+DiffCSP is a diffusion-based deep generative framework for crystal structure
+prediction. It reformulates the search for stable crystal structures as a
+generative task: by learning the distribution of large-scale crystal
+datasets, the model can directly and efficiently generate plausible 3D atomic
+structures (including lattice and atomic coordinates) from only the chemical
+composition (atom types and ratios).
 
-## 介绍
+Compared with traditional structure-prediction methods that rely on extensive
+quantum-mechanical calculations, DiffCSP’s key innovation lies in using a
+periodic E(3)-equivariant graph neural network, explicitly incorporating
+translational, rotational, and periodic symmetries. This ensures that
+generated structures strictly obey physical constraints, enabling efficient
+exploration of the crystal configuration space and producing high-quality
+candidates at a much lower computational cost than first-principles methods.
+DiffCSP thus provides a powerful tool for accelerated materials discovery and
+design.
 
-> DiffCSP是一种基于扩散模型的深度学习框架，用于解决晶体结构预测这一基础科学难题。其核心思想是将寻找稳定晶体结构的过程转化为一个生成问题：模型通过学习海量已知晶体数据中的分布规律，能够仅根据材料的化学成分（原子种类与比例），直接、快速地生成合理的三维原子结构（包括晶格和原子坐标）。与传统依赖大量量子力学计算的方法相比，DiffCSP的关键创新在于采用了​​SE(3)-等变图神经网络​​并融入了​​周期性边界条件​​，确保了生成的结构严格遵守物理对称性，从而能以极高的效率探索材料的多态性，为新材料的加速发现与设计提供了强大工具。
+## Model Implementation
 
-## 环境要求
+### Hardware Requirements
 
-> 1. 安装`mindspore（2.7.0）`
-> 2. 安装依赖包：`pip install -r requirement.txt`
+- Supports the `Ascend` backend. The runtime device can be specified via
+  `--device_target` and defaults to `Ascend` (see `train.py`).
 
-## 快速入门
+### Version Requirements
 
-> 1. 将Mindchemistry/mindchemistry文件包下载到当前目录
-> 2. 在[数据集链接](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/)下载相应的数据集
-> 3. 安装依赖包：`pip install -r requirement.txt`
-> 4. 训练命令： `python train.py`
-> 5. 预测命令： `python evaluate.py`
-> 6. 评估命令： `python compute_metric.py`
-> 7. 评估结果放在`config.yaml`中指定的`metric_dir`路径的json文件中
+- Requires `MindSpore >= 2.7.0`.
+- Requires `MindScience >= 0.8.0` for equivariant computations.
 
-### 代码目录结构
+### Installation
 
-```txt
-diffcsp
-    │  README.md    README文件
-    │  config.yaml    配置文件
-    │  train.py     训练启动脚本
-    │  evaluate.py     推理启动脚本
-    │  compute_metric.py     评估启动脚本
-    │  requirement.txt    环境依赖
-    │  
-    └─data
-            data_utils.py  数据集处理工具
-            dataset.py 读取数据集
-            crysloader.py 数据集载入器
-            dataloader.py 构建数据集
-    └─models
-            cspnet.py  基于图神经网络的去噪器模块
-            diffusion.py   扩散模型模块
-            diff_utils.py  工具模块
-            infer_utils.py  推理工具模块
-            train_utils.py  训练工具模块
-            graph.py  工具
-            loss.py  损失模块
+- Install MindSpore: see the official guide at
+  `https://www.mindspore.cn/install`
+- Install MindScience: see `https://atomgit.com/mindspore-lab/mindscience`
+- Install Python dependencies:
+  `pip install -r requirement.txt`
 
+### Dataset
 
-```
+- Download the dataset folders and the `dataset_prop.txt` property file from
+  the dataset link:
+  https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/dataset/
+- Place them under the `dataset` folder in the current path (create it
+  manually if missing).
 
-## 下载数据集
-
-在[数据集链接](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/)中下载相应的数据集文件夹和dataset_prop.txt数据集属性文件放置于当前路径的dataset文件夹下（如果没有需要自己手动创建），文件路径参考：
+Example directory structure:
 
 ```txt
 diffcsp
-    ...
     └─dataset
-            perov_5 钙钛矿数据集
-            carbon_24 碳晶体数据集
-            mp_20 晶胞内原子数最多为20的MP数据集
-            mpts_52 晶胞内原子数最多为52的MP数据集
-            dataset_prop.txt 数据集属性文件
-    ...
+            perov_5        Perovskite dataset
+            carbon_24      Carbon crystal dataset
+            mp_20          MP dataset with up to 20 atoms per unit cell
+            mpts_52        MP dataset with up to 52 atoms per unit cell
+            dataset_prop.txt  Dataset property file
 ```
 
-## 训练过程
+### Core Code
 
-### 训练
+- The main modules are under the `models` and `data` folders:
 
-将Mindchemistry/mindchemistry文件包下载到当前目录;
+```text
+applications
+  └── diffcsp
+        ├── README.md                   # README (Chinese)
+        ├── README_EN.md                # README (English)
+        ├── config.yaml                 # Configuration file
+        ├── train.py                    # Training entry
+        ├── evaluate.py                 # Inference entry
+        ├── compute_metric.py           # Evaluation entry
+        ├── requirement.txt             # Environment dependencies
+        ├── data
+        |     ├── data_utils.py         # Dataset processing utilities
+        |     ├── dataset.py            # Dataset reading and construction
+        |     ├── dataloader.py         # DataLoader wrapper
+        |     └── crysloader.py         # Raw dataset loader
+        └── models
+              ├── cspnet.py             # GNN-based denoiser
+              ├── diffusion.py          # Diffusion model module
+              ├── diff_utils.py         # Model utilities
+              ├── infer_utils.py        # Inference utilities
+              ├── train_utils.py        # Training utilities
+              ├── graph.py              # Graph and adjacency construction
+              └── loss.py               # Loss functions
+```
 
-更改config文件，设置训练参数:
-> 1. 设置训练的dataset，见dataset字段
-> 2. 设置训练的轮次，见epoch_size字段
-> 3. 设置去噪器模型的配置，见model字段
-> 4. 设置训练保存的权重文件，更改train.ckpt_dir文件夹名称和checkpoint.last_path权重文件名称
-> 5. 其它训练设置见train字段
+- The main model is composed of `CSPNet` in `models/cspnet.py` and
+  `CSPDiffusion` in `models/diffusion.py`:
+- `CSPNet` is a periodic E(3)-equivariant denoising network that represents and denoises lattice
+  and atomic coordinates.
+- `CSPDiffusion` implements the forward/reverse diffusion process and crystal structure generation.
+- Training uses the `Adam` optimizer and the `L2LossMask` loss
+  (`models/loss.py`), and leverages `@ms.jit` to accelerate the forward pass
+  and training steps.
+
+## Running the Model
+
+### Training
+
+- Make sure the following preparations are completed:
+    - MindSpore and all dependencies are installed.
+    - The `dataset` directory is prepared as described above.
+    - Training parameters are configured in `config.yaml`:
+        - `dataset`: dataset name and path.
+        - `train.epoch_size`: number of training epochs.
+        - `model`: network configuration for the denoiser (number of layers,
+          hidden dimension, number of frequencies, etc.).
+        - `train.ckpt_dir` and `checkpoint.last_path`: directory and filename for
+          saving checkpoints.
+        - Other training settings are under `train`, `checkpoint`, etc.
+- Then run the following in the `diffcsp` directory:
 
 ```bash
-pip install -r requirement.txt
 python train.py
 ```
 
-### 推理
+### Inference
 
-将权重的path写入config文件的checkpoint.last_path中。预训练模型可以从[预训练模型链接](https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/pre-train)中获取。
-
-更改config文件中的test字段来更改推理参数，特别是test.num_eval，它**决定了对于每个组分生成多少个样本**，对于后续的评估阶段很重要。
+- Set the checkpoint path to load in the `checkpoint.last_path` field of
+  `config.yaml`. Pretrained models can be downloaded from:
+  https://download-mindspore.osinfra.cn/mindscience/mindchemistry/diffcsp/pre-train
+- Edit the `test` section in `config.yaml` to set inference parameters,
+  especially `test.num_eval`, which determines how many samples are generated
+  per composition and is crucial for the subsequent evaluation stage.
+- Run the following in the `diffcsp` directory:
 
 ```bash
 python evaluate.py
 ```
 
-推理得到的晶体将保存在test.eval_save_path指定的文件中
-
-文件中存储的内容为python字典，格式为：
+Generated crystals are saved to the file specified by `test.eval_save_path`.
+The file stores a Python dictionary with the following structure:
 
 ```python
 {
         'pred': [
-                [晶体A sample 1, 晶体A sample 2, 晶体A sample 3, ... 晶体A sample num_eval],
-                [晶体B sample 1, 晶体B sample 2, 晶体B sample 3, ... 晶体B sample num_eval]
+                [crystal_A sample_1, crystal_A sample_2, crystal_A sample_3, ... crystal_A sample_num_eval],
+                [crystal_B sample_1, crystal_B sample_2, crystal_B sample_3, ... crystal_B sample_num_eval]
                 ...
-        ]
+        ],
         'gt': [
-                晶体A ground truth,
-                晶体B ground truth,
+                crystal_A ground_truth,
+                crystal_B ground_truth,
                 ...
         ]
 }
 ```
 
-### 评估
+### Evaluation
 
-将推理得到的晶体文件的path写入config文件的test.eval_save_path中；
-
-确保num_evals与进行推理时设置的对于每个组分生成样本的数量一致或更小。比如进行推理时，num_evals设置为1，那么评估时，num_evals只能设置为1；推理时，num_evals设置为20，那么评估时，num_evals可以设置为1-20的数字来进行评估。
-
-更改config文件中的test.metric_dir字段来设置评估结果的保存路径
+- Set the path to the generated crystal file in the `test.eval_save_path`
+  field of `config.yaml`.
+- Ensure `num_evals` is consistent with or less than the number of samples
+  per composition used during inference. For example:
+    - If `num_evals = 1` during inference, it must also be 1 for evaluation.
+    - If `num_evals = 20` during inference, `num_evals` can be any integer
+      from 1 to 20 for evaluation.
+- Set `test.metric_dir` in the config to specify where evaluation results are
+  saved, then run in the `diffcsp` directory:
 
 ```bash
 python compute_metric.py
 ```
 
-得到的评估结果文件示例：
+Evaluation results are saved as JSON files under `metric_dir`, for example:
 
 ```json
 {"match_rate": 0.985997357992074, "rms_dist": 0.013073775170360118}
 ```
+
+## License
+
+- License: `Apache License 2.0`
+- License link: `http://www.apache.org/licenses/LICENSE-2.0`
+
+## Citation
+
+- If this project is helpful to your research, please cite, for example:
+    - Jiao R, Huang W, Lin P, et al. Crystal structure prediction by joint
+      equivariant diffusion\[J\]. Advances in Neural Information Processing
+      Systems, 2024, 36.

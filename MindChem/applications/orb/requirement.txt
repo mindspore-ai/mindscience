@@ -5,4 +5,4 @@ numpy>=1.26.4
 scipy>=1.15.1
 dm-tree==0.1.8
 tqdm>=4.66.5
-mindspore==2.5.0
+mindspore==2.7.0
