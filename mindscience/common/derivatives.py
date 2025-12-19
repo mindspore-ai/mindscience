@@ -26,7 +26,7 @@ class SimplifiedGradient(nn.Cell):
     def __init__(self, net, order=1):
         super().__init__()
         if not isinstance(order, int):
-            raise TypeError("The type of order should be int, but got {}".format(type(order)))
+            raise TypeError(f"The type of order should be int, but got {type(order)}")
         self.net = net
         self.axis = order - 1
         self.cast = ops.Cast()
@@ -58,7 +58,7 @@ def batched_jacobian(model):
         >>> import numpy as np
         >>> from mindspore import nn, ops, Tensor
         >>> from mindspore import dtype as mstype
-        >>> from mindflow.operators import batched_jacobian
+        >>> from mindscience.common import batched_jacobian
         >>> np.random.seed(123456)
         >>> class Net(nn.Cell):
         ...     def __init__(self, cin=2, cout=1, hidden=10):
@@ -106,7 +106,7 @@ def batched_hessian(model):
         >>> import numpy as np
         >>> from mindspore import nn, ops, Tensor
         >>> from mindspore import dtype as mstype
-        >>> from mindflow.operators import batched_hessian
+        >>> from mindscience.common import batched_hessian
         >>> np.random.seed(123456)
         >>> class Net(nn.Cell):
         ...     def __init__(self, cin=2, cout=1, hidden=10):

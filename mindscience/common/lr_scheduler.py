@@ -45,7 +45,7 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
         ``Ascend`` ``GPU``
 
     Examples:
-        >>> from mindflow.common import get_poly_lr
+        >>> from mindscience.common import get_poly_lr
         >>> learning_rate = get_poly_lr(100, 0.001, 0.1, 0.0001, 1000, 10000, 0.5)
         >>> print(learning_rate.shape)
         (9900,)
@@ -70,8 +70,7 @@ def get_poly_lr(global_step, lr_init, lr_end, lr_max, warmup_steps, total_steps,
             base = (1.0 - (float(i) - float(warmup_steps)) / (float(total_steps) - float(warmup_steps)))
             lr = float(lr_max - lr_end) * (base ** poly_power)
             lr = lr + lr_end
-            if lr < 0.0:
-                lr = 0.0
+            lr = max(lr, 0.0)
         lr_each_step.append(lr)
 
     learning_rate = np.array(lr_each_step).astype(np.float32)
@@ -113,7 +112,7 @@ def get_multi_step_lr(lr_init, milestones, gamma, steps_per_epoch, last_epoch):
         ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
-        >>> from mindflow import get_multi_step_lr
+        >>> from mindscience.common import get_multi_step_lr
         >>> lr_init = 0.001
         >>> milestones = [2, 4]
         >>> gamma = 0.1
@@ -205,7 +204,7 @@ def get_warmup_cosine_annealing_lr(lr_init, steps_per_epoch, last_epoch,
         ``Ascend`` ``GPU`` ``CPU``
 
     Examples:
-        >>> from mindflow import get_warmup_cosine_annealing_lr
+        >>> from mindscience.common import get_warmup_cosine_annealing_lr
         >>> lr_init = 0.001
         >>> steps_per_epoch = 3
         >>> last_epoch = 5

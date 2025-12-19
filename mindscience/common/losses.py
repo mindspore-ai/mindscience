@@ -89,7 +89,7 @@ def get_loss_metric(name):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.core import get_loss_metric
+        >>> from mindscience.common import get_loss_metric
         >>> import mindspore
         >>> from mindspore import Tensor
         >>> l1_loss = get_loss_metric('l1_loss')
@@ -100,10 +100,10 @@ def get_loss_metric(name):
         0.6666667
     """
     if not isinstance(name, str):
-        raise TypeError("the type of name should be str but got {}".format(type(name)))
+        raise TypeError(f"the type of name should be str but got {type(name)}")
 
     if name not in _loss_metric:
-        raise ValueError("Unknown loss function type: {}".format(name))
+        raise ValueError(f"Unknown loss function type: {name}")
     return _loss_metric.get(name)()
 
 
@@ -127,7 +127,7 @@ class RegularizedLossCell(nn.Cell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.core import RegularizedLossCell
+        >>> from mindscience.common import RegularizedLossCell
         >>> from mindspore import Parameter, Tensor
         >>> import mindspore.common.dtype as ms_type
         >>> latent_init = np.ones((2, 3))
@@ -139,12 +139,12 @@ class RegularizedLossCell(nn.Cell):
     """
 
     def __init__(self, reg_params, reg_factor=0.01, reg_mode="l2"):
-        super(RegularizedLossCell, self).__init__()
+        super().__init__()
         check_param_type(reg_params, "reg_params", data_type=Parameter)
         check_param_type_value(reg_mode, "reg_mode", data_type=str, valid_value=["l1", "l2"])
         check_param_type(reg_factor, "reg_factor", data_type=float)
         if reg_factor < 0.0:
-            raise ValueError("The reg_factor must be a non-negtive value, but got {}".format(reg_factor))
+            raise ValueError(f"The reg_factor must be a non-negtive value, but got {reg_factor}")
         self.reg_params = reg_params
         self.reg_mode = reg_mode
         self.reg_factor = reg_factor
@@ -169,7 +169,7 @@ class WeightedLossCell(nn.Cell):
     """
 
     def __init__(self):
-        super(WeightedLossCell, self).__init__()
+        super().__init__()
         self.type = type(self).__name__
         self.use_grads = False
 
@@ -204,7 +204,7 @@ class MTLWeightedLoss(WeightedLossCell):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.core import MTLWeightedLoss
+        >>> from mindscience.common import MTLWeightedLoss
         >>> import mindspore
         >>> from mindspore import Tensor
         >>> net = MTLWeightedLoss(num_losses=2)
@@ -216,10 +216,10 @@ class MTLWeightedLoss(WeightedLossCell):
     """
 
     def __init__(self, num_losses, bound_param=0.0):
-        super(MTLWeightedLoss, self).__init__()
+        super().__init__()
         check_param_type(num_losses, "num_losses", data_type=int, exclude_type=bool)
         if num_losses <= 0:
-            raise ValueError("the value of num_losses should be positive, but got {}".format(num_losses))
+            raise ValueError(f"the value of num_losses should be positive, but got {num_losses}")
         self.num_losses = num_losses
         check_param_type(bound_param, "bound_param", data_type=float)
         self.bounded = bound_param > 1.0e-6
@@ -266,7 +266,7 @@ class WaveletTransformLoss(nn.LossBase):
 
     Examples:
         >>> import numpy as np
-        >>> from mindflow.core import WaveletTransformLoss
+        >>> from mindscience.common import WaveletTransformLoss
         >>> import mindspore
         >>> from mindspore import Tensor
         >>> net = WaveletTransformLoss(wave_level=2)
@@ -280,7 +280,7 @@ class WaveletTransformLoss(nn.LossBase):
     def __init__(self, wave_level=2, regroup=False):
         check_param_type(param=wave_level, param_name="wave_level", data_type=int)
         check_param_type(param=regroup, param_name="regroup", data_type=bool)
-        super(WaveletTransformLoss, self).__init__()
+        super().__init__()
         self.abs = P.Abs()
         self.wave_level = wave_level
         self.regroup = regroup
@@ -392,7 +392,7 @@ class RelativeRMSELoss(nn.LossBase):
         >>> import numpy as np
         >>> import mindspore
         >>> from mindspore import Tensor
-        >>> from mindflow import RelativeRMSELoss
+        >>> from mindscience.common import RelativeRMSELoss
         >>> # Case: prediction.shape = labels.shape = (3, 3)
         >>> prediction = Tensor(np.array([[1, 2, 3],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
         >>> labels = Tensor(np.array([[1, 2, 2],[1, 2, 3],[1, 2, 3]]), mindspore.float32)
@@ -403,7 +403,7 @@ class RelativeRMSELoss(nn.LossBase):
     """
 
     def __init__(self, reduction="sum"):
-        super(RelativeRMSELoss, self).__init__(reduction=reduction)
+        super().__init__(reduction=reduction)
 
     def construct(self, prediction, labels):
         prediction = P.Cast()(prediction, mstype.float32)
