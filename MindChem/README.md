@@ -4,7 +4,7 @@
 
 [![PyPI](https://badge.fury.io/py/mindspore.svg)](https://badge.fury.io/py/mindspore)
 [![LICENSE](https://img.shields.io/github/license/mindspore-ai/mindspore.svg?style=flat-square)](https://github.com/mindspore-ai/mindspore/blob/master/LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://gitee.com/mindspore/mindscience/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://atomgit.com/mindspore-lab/mindscience/pulls)
 
 ---
 
@@ -44,28 +44,30 @@ The synergy between AI and chemistry offers unprecedented opportunities to overc
 
 ## Models & Applications
 
+Below is an overview of the currently supported main models and their purposes, for quick reference and example location:
+
 ---
 
 ### Machine Learning Force Fields
 
 | Model | System | Dataset | Task |
 |-------|--------|---------|------|
-| [NequIP](./applications/nequip/) | Small molecules | Revised Molecular Dynamics 17 (rMD17) dataset | Molecular energy prediction using E(3)-equivariant GNNs |
-| [Orb](https://gitee.com/mindspore/mindscience/tree/master/MindChemistry/applications/orb) | Molecular and crystalline materials | Large-scale 3D atomic-structure datasets; DFT calculations | General GNN interatomic potential for energy, forces, and stress; suitable for molecular dynamics simulation |
+| [NequIP](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/nequip/) | Small molecules | Revised Molecular Dynamics 17 (rMD17) dataset | Molecular energy prediction using E(3)-equivariant GNNs |
+| [Orb](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/orb/) | Molecular and crystalline materials | Large-scale 3D atomic-structure datasets; DFT calculations | General GNN interatomic potential for energy, forces, and stress; suitable for molecular dynamics simulation |
 
 ### Property Prediction
 
 | Model | System | Dataset | Task |
 |-------|--------|---------|------|
-| [DeephE3nn](https://gitee.com/mindspore/mindscience/tree/master/MindChemistry/applications/deephe3nn) | Materials systems | Bilayer graphene dataset | E(3)-equivariant neural network for electronic Hamiltonian prediction |
-| [Matformer](./applications/matformer/) | Crystalline materials | JARVIS-DFT 3D dataset | Graph + Transformer for materials property prediction |
+| [DeephE3nn](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/deephe3nn/) | Materials systems | Bilayer graphene dataset | E(3)-equivariant neural network for electronic Hamiltonian prediction |
+| [Matformer](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/matformer/) | Crystalline materials | JARVIS-DFT 3D dataset | Graph + Transformer for materials property prediction |
 
 ### Structure Generation
 
 | Model | System | Dataset | Task |
 |-------|--------|---------|------|
-| [DiffCSP](./applications/diffcsp/) | Crystalline materials | Stable crystal structure datasets (MP-20, MPTS-52, Carbon-24) | Crystal structure prediction/generation via joint diffusion |
-| [CrystalFlow](./applications/crystalflow/) | Crystalline materials | Materials database crystal structure datasets (MP-20, Carbon-24, MPTS-52) | Flow-based crystal structure generation |
+| [DiffCSP](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/diffcsp/) | Crystalline materials | Stable crystal structure datasets (MP-20, MPTS-52, Carbon-24) | Crystal structure prediction/generation via joint diffusion |
+| [CrystalFlow](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindChem/applications/crystalflow/) | Crystalline materials | Materials database crystal structure datasets (MP-20, Carbon-24, MPTS-52) | Flow-based crystal structure generation |
 
 ## Community
 
@@ -77,7 +79,7 @@ Danyang Chen, Jianhuan Cen, Kunming Xu, wujian, wangyuheng, Lin Peijia, gengchen
 
 ## Contribution Guide
 
-- Please click here to see how to contribute your code:[Contribution Guide](https://gitee.com/mindspore/mindscience/blob/master/CONTRIBUTION.md)
+- Please click here to see how to contribute your code: [Contribution Guide](https://gitee.com/mindspore/mindscience/blob/master/CONTRIBUTION.md)
 
 ## License
 
