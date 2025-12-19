@@ -7,8 +7,14 @@ import time
 from .log_utils import print_log
 
 def log_timer(func):
-    """
-    A decorator calculates End to End total time in the training step.
+    r"""
+    A decorator that calculates the end-to-end total time of the training step.
+
+    Args:
+        func (callable): The function to decorate. Should be a callable object.
+
+    Returns:
+        callable: The decorated function.
     """
     def wrapper(*args, **kwargs):
         start_time = time.time()

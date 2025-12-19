@@ -40,42 +40,80 @@ def _convert_to_tuple(params):
 
 
 def check_param_type(param, param_name, data_type=None, exclude_type=None):
-    """Check parameter's data type"""
+    r"""Check parameter's data type
+    
+    Args:
+        param (any): The parameter to check.
+        param_name (str): The name of the parameter.
+        data_type (Union[type, tuple[type], list[type], None], optional): The allowed data types. Default: None.
+        exclude_type (Union[type, tuple[type], list[type], None], optional): The excluded data types. Default: None.
+
+    Raises:
+        TypeError: If the data type of the parameter is not in the allowed data types.
+        TypeError: If the data type of the parameter is in the excluded data types.
+    """
     data_type = _convert_to_tuple(data_type)
     exclude_type = _convert_to_tuple(exclude_type)
 
     if data_type and not isinstance(param, data_type):
         raise TypeError(
-            "The type of {} should be instance of {}, but got {} "
-            "with type {}".format(param_name, data_type, param, type(param))
+            f"The type of {param_name} should be instance of {data_type}, but got {param} "
+            f"with type {type(param)}"
         )
     if exclude_type and type(param) in exclude_type:
         raise TypeError(
-            "The type of {} should not be instance of {}, but got {} "
-            "with type {}".format(param_name, exclude_type, param, type(param))
+            f"The type of {param_name} should not be instance of {exclude_type}, but got {param} "
+            f"with type {type(param)}"
         )
 
 
 def check_param_value(param, param_name, valid_value):
-    """check parameter's value"""
+    r"""check parameter's value
+    
+    Args:
+        param (any): The parameter to check.
+        param_name (str): The name of the parameter.
+        valid_value (any | tuple | list, optional): The allowed values. Default: None.
+
+    Raises:
+        ValueError: If the value of the parameter is not in the allowed values.
+    """
     valid_value = _convert_to_tuple(valid_value)
     if param not in valid_value:
         raise ValueError(
-            "The value of {} should be in {}, but got {}".format(
-                param_name, valid_value, param
-            )
+            f"The value of {param_name} should be in {valid_value}, but got {param}"
         )
 
 
 def check_param_type_value(param, param_name, valid_value, data_type=None, exclude_type=None):
-    """check both data type and value"""
+    r"""
+    check both data type and value
+    
+    Args:
+        param (any): The parameter to check.
+        param_name (str): The name of the parameter.
+        valid_value (any | tuple | list, optional): The allowed values. Default: None.
+        data_type (Union[type, tuple[type], list[type], None], optional): The allowed data types. Default: None.
+        exclude_type (Union[type, tuple[type], list[type], None], optional): The excluded data types. Default: None.
+
+    Raises:
+        TypeError: If the data type of the parameter is not in the allowed data types.
+        ValueError: If the value of the parameter is not in the allowed values.
+    """
     check_param_type(param, param_name, data_type=data_type,
                      exclude_type=exclude_type)
     check_param_value(param, param_name, valid_value)
 
 
 def check_dict_type(param_dict, param_name, key_type=None, value_type=None):
-    """check data type for key and value of the specified dict"""
+    r"""check data type for key and value of the specified dict
+    
+    Args:
+        param_dict (dict): The dictionary to check.
+        param_name (str): The name of the parameter.
+        key_type (Union[type, tuple[type], list[type], None], optional): The allowed key types. Default: None.
+        value_type (Union[type, tuple[type], list[type], None], optional): The allowed value types. Default: None.
+    """
     check_param_type(param_dict, param_name, data_type=dict)
 
     for key in param_dict.keys():
@@ -93,7 +131,18 @@ def check_dict_type(param_dict, param_name, key_type=None, value_type=None):
 
 
 def check_dict_value(param_dict, param_name, key_value=None, value_value=None):
-    """check values for key and value of specified dict"""
+    r"""check values for key and value of specified dict
+    
+    Args:
+        param_dict (dict): The dictionary to check.
+        param_name (str): The name of the parameter.
+        key_value (Union[any, tuple, list, None], optional): The allowed key values. Default: None.
+        value_value (Union[any, tuple, list, None], optional): The allowed value values. Default: None.
+
+    Raises:
+        TypeError: If the type of the parameter is not dict.
+        ValueError: If the value of the parameter is not in the allowed values.
+    """
     check_param_type(param_dict, param_name, data_type=dict)
 
     for key in param_dict.keys():
@@ -111,7 +160,21 @@ def check_dict_value(param_dict, param_name, key_value=None, value_value=None):
 
 
 def check_dict_type_value(param_dict, param_name, key_type=None, value_type=None, key_value=None, value_value=None):
-    """check values for key and value of specified dict"""
+    r"""
+    Check values for key and value of specified dict.
+    
+    Args:
+        param_dict (dict): The dictionary to check.
+        param_name (str): The name of the parameter.
+        key_type (Union[type, tuple[type], list[type], None], optional): The allowed key types. Default: None.
+        value_type (Union[type, tuple[type], list[type], None], optional): The allowed value types. Default: None.
+        key_value (Union[any, tuple, list, None], optional): The allowed key values. Default: None.
+        value_value (Union[any, tuple, list, None], optional): The allowed value values. Default: None.
+
+    Raises:
+        TypeError: If the type of the parameter is not dict.
+        ValueError: If the value of the parameter is not in the allowed values.
+    """
     check_dict_type(param_dict, param_name,
                     key_type=key_type, value_type=value_type)
     check_dict_value(param_dict, param_name,
@@ -122,16 +185,14 @@ def check_mode(api_name):
     """check running mode"""
     if context.get_context("mode") == context.PYNATIVE_MODE:
         raise RuntimeError(
-            "{} is only supported GRAPH_MODE now but got PYNATIVE_MODE".format(api_name))
+            f"{api_name} is only supported GRAPH_MODE now but got PYNATIVE_MODE")
 
 
 def check_param_no_greater(param, param_name, compared_value):
     """ Check whether the param less than the given compared_value"""
     if param > compared_value:
         raise ValueError(
-            "The value of {} should be no greater than {}, but got {}".format(
-                param_name, compared_value, param
-            )
+            f"The value of {param_name} should be no greater than {compared_value}, but got {param}"
         )
 
 
@@ -139,9 +200,7 @@ def check_param_odd(param, param_name):
     """ Check whether the param is an odd number"""
     if param % 2 == 0:
         raise ValueError(
-            "The value of {} should be an odd number, but got {}".format(
-                param_name, param
-            )
+            f"The value of {param_name} should be an odd number, but got {param}"
         )
 
 
@@ -150,9 +209,7 @@ def check_param_even(param, param_name):
     for value in param:
         if value % 2 != 0:
             raise ValueError(
-                "The value of {} should be an even number, but got {}".format(
-                    param_name, param
-                )
+                f"The value of {param_name} should be an even number, but got {param}"
             )
 
 
@@ -161,21 +218,15 @@ def check_lr_param_type_value(param, param_name, param_type, thresh_hold=0,
     """Check the type and value of the learning rate parameter."""
     if (exclude and isinstance(param, exclude)) or not isinstance(param, param_type):
         raise TypeError(
-            "the type of {} should be {}, but got {}".format(
-                param_name, param_type, type(param)
-            )
+            f"the type of {param_name} should be {param_type}, but got {type(param)}"
         )
     if restrict:
         if param <= thresh_hold:
             raise ValueError(
-                "the value of {} should be > {}, but got: {}".format(
-                    param_name, thresh_hold, param
-                )
+                f"the value of {param_name} should be > {thresh_hold}, but got: {param}"
             )
     else:
         if param < thresh_hold:
             raise ValueError(
-                "the value of {} should be >= {}, but got: {}".format(
-                    param_name, thresh_hold, param
-                )
+                f"the value of {param_name} should be >= {thresh_hold}, but got: {param}"
             )

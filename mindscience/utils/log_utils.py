@@ -11,9 +11,11 @@ import os
 def log_config(log_dir='./logs', model_name="model", permission=0o644):
     """
     Log configuration.
+
     Args:
-        log_dir (str): Directory to save log.
-        model_name (str): Project name as prefix of log. Default: "model".
+        log_dir (str, optional): Directory to save log. Default: './logs'.
+        model_name (str, optional): Project name as prefix of log. Default: "model".
+        permission (int): Permission of the log file. Default: 0o644.
     """
     if not os.path.exists(log_dir):
         os.mkdir(log_dir)
@@ -32,8 +34,8 @@ def print_log(*msg, level=logging.INFO, enable_log=True):
     Print in the standard output stream as well as into the log file.
     Args:
         *msg (any): Message(s) to print and log.
-        level (int): Log level. Default: logging.INFO.
-        enable_log (bool): Whether to log the message. In some cases, like before logging
+        level (int, optional): Log level. Default: logging.INFO.
+        enable_log (bool, optional): Whether to log the message. In some cases, like before logging
             configuration, this flag would be set as False. Default: ``True``.
     """
 
