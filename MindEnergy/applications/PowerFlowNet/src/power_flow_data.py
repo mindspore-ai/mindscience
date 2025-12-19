@@ -21,7 +21,7 @@
 """PowerFlow Data Processing Module for MindSpore.
 
 This module provides comprehensive data loading and processing utilities for PowerFlow
-networks, implementing a complete data pipeline adapted from the original PyTorch version
+networks, implementing a complete data pipeline adapted from the original version
 to leverage MindSpore's tensor operations and device optimization capabilities.
 
 Key Components:
@@ -50,7 +50,7 @@ Key Components:
    - Graph collation with proper edge index offset handling
 
 5. MindSpore Adaptations:
-   - Replaced PyTorch DataLoader with MindSpore-native implementation
+   - MindSpore-native implementation
    - Tensor operations using MindSpore ops and mint modules
    - Device-agnostic design (CPU/Ascend compatible)
    - Efficient memory management with numpy-based preprocessing
@@ -107,7 +107,7 @@ class PowerFlowData(InMemoryDataset):
     """PowerFlow dataset for graph neural network training - MindSpore Implementation.
 
     A comprehensive dataset class implementing the complete data pipeline for power flow
-    prediction tasks. Adapted from PyTorch version with major enhancements for MindSpore.
+    prediction tasks. Adapted from original version with major enhancements for MindSpore.
 
     Features:
     ---------
@@ -132,8 +132,8 @@ class PowerFlowData(InMemoryDataset):
 
     MindSpore Enhancements:
     ----------------------
-    - Replaced torch_geometric.data.InMemoryDataset with custom implementation
-    - MindSpore Tensor instead of PyTorch tensors
+    - Custom implementation InMemoryDataset
+    - MindSpore Tensor usage throughout data pipeline
     - MindSpore ops for normalization (mean, std, cat)
     - Device-agnostic design (automatic CPU/Ascend compatibility)
     - Efficient edge offset calculation in batch collation
@@ -404,11 +404,11 @@ class PowerFlowData(InMemoryDataset):
 
     def _setup_paths(self):
         """Setup raw and processed paths"""
-        # V2 datasets use mindspore/raw, legacy datasets use torch/raw
+        # V2 datasets use mindspore/raw, legacy datasets use mindspore/raw
         if self.case.endswith('v2'):
             self.raw_dir = os.path.join(self.root, 'mindspore', 'raw')
         else:
-            self.raw_dir = os.path.join(self.root, 'torch', 'raw')
+            self.raw_dir = os.path.join(self.root, 'mindspore', 'raw')
         self.processed_dir = os.path.join(self.root, 'mindspore', 'processed')
         os.makedirs(self.raw_dir, exist_ok=True)
         os.makedirs(self.processed_dir, exist_ok=True)
@@ -619,7 +619,7 @@ class PowerFlowDataLoader:
 
     A fully MindSpore-native data loader providing efficient batching and graph
     collation for power flow datasets. This is a custom implementation adapted
-    from PyTorch's DataLoader with MindSpore-specific optimizations.
+    from original DataLoader with MindSpore-specific optimizations.
 
     Key Features:
     =============

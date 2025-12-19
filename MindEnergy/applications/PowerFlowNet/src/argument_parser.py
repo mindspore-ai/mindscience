@@ -20,7 +20,7 @@
 Argument parser for MindSpore PowerFlowNet.
 
 This module implements a unified argument parser that supports both JSON configuration
-files and command-line arguments. It has been adapted from the original PyTorch version
+files and command-line arguments. It has been adapted from the original version
 to work seamlessly with MindSpore framework while maintaining API compatibility.
 
 Key features:
@@ -85,8 +85,8 @@ def argument_parser():
     parser.add_argument('--dropout_rate', type=float, default=0.2,
                        help='Dropout rate')
     parser.add_argument('--model', type=str, default='MPN',
-                       choices=['MLPNet', 'MPN', 'GCNNet', 'SkipMPN', 'MaskEmbdMPN',
-                               'MultiMPN', 'MaskEmbdMultiMPN', 'MPNSimplenet', 'MultiConvNet'],
+                       choices=['MLPNet', 'MPN', 'GCNNet', 'SkipMPN', 'MaskEmbedMPN',
+                               'MultiMPN', 'MaskEmbedMultiMPN', 'MPNSimplenet', 'MultiConvNet'],
                        help='Model architecture')
     parser.add_argument('--regularize', type=bool, default=True,
                        help='Include regularization in loss function')

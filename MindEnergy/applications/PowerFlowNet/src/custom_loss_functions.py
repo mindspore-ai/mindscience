@@ -15,7 +15,7 @@
 """
 Custom Loss Functions for MindSpore PowerFlowNet
 
-Implements aligned loss functions with PyTorch version:
+Implements aligned loss functions with MessagePassing version:
   - MaskedL2Loss: L2 loss with masking support
   - PowerMaskedLoss: Unified L1/L2 loss with per-feature breakdown
   - PowerImbalance: Physics-informed loss for power flow equations
@@ -279,7 +279,7 @@ class PowerImbalance(nn.Cell):
     def aggregate(self, messages: Tensor, edge_index: Tensor, num_nodes: int) -> Tensor:
         """Aggregate messages to source nodes (sum aggregation)
 
-        PyTorch MessagePassing with flow='target_to_source':
+        MessagePassing with flow='target_to_source':
         - The edge direction is REVERSED internally
         - x_i comes from edge_index[0] (original source, reversed target)
         - x_j comes from edge_index[1] (original target, reversed source)
@@ -328,7 +328,7 @@ class PowerImbalance(nn.Cell):
 
         num_nodes = x.shape[0]
 
-        # With flow='target_to_source', PyTorch reverses the edge direction internally:
+        # With flow='target_to_source', MessagePassing reverses the edge direction internally:
         # - x_i comes from edge_index[0] (original source)
         # - x_j comes from edge_index[1] (original target)
         src_idx = edge_index[0]  # i (original source, reversed target)

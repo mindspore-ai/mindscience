@@ -1,0 +1,8 @@
+# PowerFlowNet MindSpore Requirements
+# Core dependencies
+mindspore>=2.2.0
+numpy>=1.19.0
+tqdm
+
+# Optional: for visualization
+matplotlib>=3.0.0

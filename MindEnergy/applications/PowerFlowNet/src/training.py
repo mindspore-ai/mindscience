@@ -15,7 +15,7 @@
 """
 Training utilities for MindSpore PowerFlowNet.
 
-This module provides training functions aligned with PyTorch training utilities:
+This module provides training functions aligned with original training utilities:
   - train_epoch: Train model for one epoch with gradient updates
   - append_to_json: Append training results to JSON log file
 
