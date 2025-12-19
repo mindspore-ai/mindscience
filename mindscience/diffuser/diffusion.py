@@ -389,7 +389,7 @@ class DiffusionScheduler:
                 original_samples.shape) *
             noise)
 
-    def step(self, model_output: Tensor, sample: Tensor, timestep: Tensor):
+    def step(self, model_output: Tensor, sample: Tensor, timestep: Tensor):  # pylint: disable=unused-argument
         """
         Diffusion denoising step.
 
@@ -401,6 +401,7 @@ class DiffusionScheduler:
         Returns:
             Tensor, the denoised sample.
         """
+        _ = model_output, sample, timestep
         if not self.num_inference_steps:
             raise NotImplementedError(
                 f"num_inference_steps is not set for {self.__class__}.Need to set timesteps first.")
@@ -443,7 +444,7 @@ class DDPMScheduler(DiffusionScheduler):
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDPMScheduler
+        >>> from mindscience.diffuser import DDPMScheduler
         >>> scheduler = DDPMScheduler(num_train_timesteps=1000,
         ...                           beta_start=0.0001,
         ...                           beta_end=0.02,
@@ -629,7 +630,7 @@ class DDIMScheduler(DiffusionScheduler):
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDIMScheduler
+        >>> from mindscience.diffuser import DDIMScheduler
         >>> scheduler = DDIMScheduler(num_train_timesteps=1000,
         ...                           beta_start=0.0001,
         ...                           beta_end=0.02,
@@ -836,7 +837,7 @@ class DiffusionPipeline:
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DiffusionPipeline, DDPMScheduler, ConditionDiffusionTransformer
+        >>> from mindscience.diffuser import DiffusionPipeline, DDPMScheduler, ConditionDiffusionTransformer
         >>> # init params
         >>> in_dim, out_dim, hidden_dim, cond_dim, layers, heads, seq_len, batch_size = 16, 16, 256, 4, 3, 4, 256, 8
         >>> # init condition
@@ -953,7 +954,7 @@ class DDPMPipeline(DiffusionPipeline):
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDPMPipeline, DDPMScheduler, ConditionDiffusionTransformer
+        >>> from mindscience.diffuser import DDPMPipeline, DDPMScheduler, ConditionDiffusionTransformer
         >>> # init params
         >>> in_dim, out_dim, hidden_dim, cond_dim, layers, heads, seq_len, batch_size = 16, 16, 256, 4, 3, 4, 256, 8
         >>> # init condition
@@ -1027,7 +1028,7 @@ class DDIMPipeline(DiffusionPipeline):
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDIMPipeline, DDIMScheduler, ConditionDiffusionTransformer
+        >>> from mindscience.diffuser import DDIMPipeline, DDIMScheduler, ConditionDiffusionTransformer
         >>> # init params
         >>> in_dim, out_dim, hidden_dim, cond_dim, layers, heads, seq_len, batch_size = 16, 16, 256, 4, 3, 4, 256, 8
         >>> # init condition
@@ -1162,7 +1163,7 @@ class DiffusionTrainer:
 
     Examples:
         >>> from mindspore import ops, dtype as mstype
-        >>> from mindflow.cell import DDPMScheduler, ConditionDiffusionTransformer, DiffusionTrainer
+        >>> from mindscience.diffuser import DDPMScheduler, ConditionDiffusionTransformer, DiffusionTrainer
         >>> # init params
         >>> batch_size, seq_len, in_dim, cond_dim, num_train_timesteps = 4, 256, 16, 4, 100
         >>> original_samples = ops.randn([batch_size, seq_len, in_dim])
