@@ -7,15 +7,17 @@
 ### PDEWithLoss
 
 - 此模块被应用于神经网络求解单一方程的方法（如 PINNs）中；
-- **微分方程的定义：**将方程的数学符号串转化成可计算的 mindspore function；
+- **微分方程的定义**：将方程的数学符号串转化成可计算的 mindspore function；
 - 关键模块：`pde.sympy_to_mindspore` ，模块中定义了从特定 sympy 符号到 mindspore function 的接口类 Node（节点），对应于各种数学符号如加法、乘法、幂运算和偏导数等等；通过 `sympy_translation.py`  将符号串转换成节点图，随后翻译成完整可计算的 mindspore function；
 - 方程内部信息定义：`self.pde_nodes`：表示对应于 `pde` 的 mindspore function；`pde(self)`返回一个 sympy 数学符号串，表示了当前 PDE 问题在求解区域内部的方程左端，默认右端项为零；
 - 方程边界条件定义：`bc(self)`：返回一个 `sympy` 数学符号串，表示了当前 PDE 问题的边界条件表达式左端，默认右端项为零；注意此函数并非 `PDEWithLoss` 强制规定；`self.bc_nodes`：表示对应于 `bc` 的 mindspore function；注意此成员并非 `PDEWithLoss` 强制规定；
 
 #### 使用示例
+
 用户自定义一个 `PDEWithLoss` 子类，并包含以下信息：
 
 - 方程：定义在二维区域上的二阶椭圆型方程；
+
     $$
     \begin{align}
     -\Delta u + u &= f = 4,~x \in \Omega \subset \mathbb{R}^2,\\
@@ -24,9 +26,11 @@
     $$
 
 - 损失函数：基于两隐藏层全连接神经网络 $u_{\theta}$ 的 PINNs 损失函数；
+
     $$
     L(\theta) = \int_{\Omega} \left( -\Delta u_{\theta}(x) + u_{\theta}(x) -f(x) \right)^2 \mathrm{d}x + \int_{\partial \Omega}  \left( \nabla u_{\theta}(x) \cdot \mathbf{1} - g(x) \right)^2 \mathrm{d} S.
     $$
+
     注：积分形式的损失函数经过 Monte-Carlo 离散后（数值积分权值均为 1），等价于 MSE 形式。
 
   ```python
@@ -167,4 +171,5 @@ class IncompressibleNavierStokes(PDEWithLoss):
 - 可接入多种类型的神经网络以及自定义网络，目前该模块主要**被应用于算子学习**方法中，因此没有包含具体的方程定义。
 
 #### 使用示例
+
 采用 FNO 求解二维不可压 Navier-Stokes 方程：https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/data_driven/navier_stokes/fno2d/FNO2D.ipynb

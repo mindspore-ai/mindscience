@@ -10,7 +10,7 @@
 
 - **Definition of Differential Equations:** Convert the mathematical symbolic string representation of the equation into a computable mindspore function.
 
-- **Key Module: `pde.sympy_to_mindspore`**
+- **Key Module:** `pde.sympy_to_mindspore`
 
   This module defines the interface class `Node`(node) for converting specific `sympy `symbols into mindspore functions, representing various mathematical symbols such as addition, multiplication, exponentiation, partial derivatives, and more. Through `sympy_translation.py`, symbolic strings are transformed into a node graph, which is then translated into a fully computable mindspore function.
 
@@ -19,21 +19,25 @@
 - Definition of Equation Boundary Conditions: `bc(self)` returns a sympymathematical symbolic string representing the left-hand side of the boundary condition expression for the current PDE problem. The right-hand side defaults to zero. Note that this function is not mandatory for `PDEWithLoss`. `self.bc_nodes` represents the mindsporefunction corresponding to the boundary conditions. Note that this member is not mandatory for `PDEWithLoss`.
 
 #### Numerical Examples
+
 Users can define a custom subclass of `PDEWithLoss`containing the following information:
 
 - A second-order elliptic equation defined on a two-dimensional domain.
-    $$
-    \begin{align}
-    -\Delta u + u &= f = 4,~x \in \Omega \subset \mathbb{R}^2,\\
-    \nabla u \cdot \mathbf{1} &= g = 2,~x\in \partial \Omega.
-    \end{align}
-    $$
+
+  $$
+  \begin{align}
+  -\Delta u + u &= f = 4,~x \in \Omega \subset \mathbb{R}^2,\\
+  \nabla u \cdot \mathbf{1} &= g = 2,~x\in \partial \Omega.
+  \end{align}
+  $$
 
 - PINN loss function based on a fully connected neural network $u_\theta$ with two hidden layers.
-    $$
-    L(\theta) = \int_{\Omega} \left( -\Delta u_{\theta}(x) + u_{\theta}(x) -f(x) \right)^2 \mathrm{d}x + \int_{\partial \Omega}  \left( \nabla u_{\theta}(x) \cdot \mathbf{1} - g(x) \right)^2 \mathrm{d} S.
-    $$
-    Note that after discretization via Monte Carlo methods (with quadrature weights all set to 1), the integral form of the loss function is equivalent to the Mean Squared Error (MSE) form.
+
+  $$
+  L(\theta) = \int_{\Omega} \left( -\Delta u_{\theta}(x) + u_{\theta}(x) -f(x) \right)^2 \mathrm{d}x + \int_{\partial \Omega}  \left( \nabla u_{\theta}(x) \cdot \mathbf{1} - g(x) \right)^2 \mathrm{d} S.
+  $$
+
+  Note that after discretization via Monte Carlo methods (with quadrature weights all set to 1), the integral form of the loss function is equivalent to the Mean Squared Error (MSE) form.
 
   ```python
   import numpy as np
@@ -97,30 +101,30 @@ Users can define a custom subclass of `PDEWithLoss`containing the following info
 The equations currently supported by this module are as follows:
 
 - One-dimensional viscous Burgers' equation
-    $$
-    \frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} - \epsilon \frac{\partial^2 u}{\partial x^2} = 0.
-    $$
+  $$
+  \frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} - \epsilon \frac{\partial^2 u}{\partial x^2} = 0.
+  $$
 
-    ```python
-    class Burgers(PDEWithLoss):
-        def pde(self):
-              """
-              Define Burgers 1-D governing equations based on sympy, abstract method.
-              Returns:
-                  dict, user defined sympy symbolic equations.
-              """
-              burgers_eq = diff(self.u, (self.t, 1)) + self.u * diff(self.u, (self.x, 1)) - \
-                           self.mu * diff(self.u, (self.x, 2))
-              equations = {"burgers": burgers_eq}
-              return equations
-    ```
+  ```python
+  class Burgers(PDEWithLoss):
+      def pde(self):
+            """
+            Define Burgers 1-D governing equations based on sympy, abstract method.
+            Returns:
+                dict, user defined sympy symbolic equations.
+            """
+            burgers_eq = diff(self.u, (self.t, 1)) + self.u * diff(self.u, (self.x, 1)) - \
+                         self.mu * diff(self.u, (self.x, 2))
+            equations = {"burgers": burgers_eq}
+            return equations
+  ```
 
 - Two-dimensional incompressible Navier-Stokes equations
-    $$
-    \text{连续性方程：}\quad\quad  \frac{\partial u}{\partial x} + \frac{\partial u}{\partial y} = 0,\\
-    x~\text{方向动量守恒：} \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} + v\frac{\partial u}{\partial y} = -\frac{1}{\rho} \frac{\partial p}{\partial x} + \nu \left( \frac{\partial^2 u}{\partial x^2}+\frac{\partial^2 u}{\partial y^2} \right), \\
-    y~\text{方向动量守恒：} \frac{\partial v}{\partial t} + u\frac{\partial v}{\partial x} + v\frac{\partial v}{\partial y} = -\frac{1}{\rho}\frac{\partial p}{\partial y} + \nu \left( \frac{\partial^2 v}{\partial x^2}+\frac{\partial^2 v}{\partial y^2} \right).
-    $$
+  $$
+  \text{连续性方程：}\quad\quad  \frac{\partial u}{\partial x} + \frac{\partial u}{\partial y} = 0,\\
+  x~\text{方向动量守恒：} \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} + v\frac{\partial u}{\partial y} = -\frac{1}{\rho} \frac{\partial p}{\partial x} + \nu \left( \frac{\partial^2 u}{\partial x^2}+\frac{\partial^2 u}{\partial y^2} \right), \\
+  y~\text{方向动量守恒：} \frac{\partial v}{\partial t} + u\frac{\partial v}{\partial x} + v\frac{\partial v}{\partial y} = -\frac{1}{\rho}\frac{\partial p}{\partial y} + \nu \left( \frac{\partial^2 v}{\partial x^2}+\frac{\partial^2 v}{\partial y^2} \right).
+  $$
 
 ```python
 class IncompressibleNavierStokes(PDEWithLoss):
@@ -148,21 +152,21 @@ class IncompressibleNavierStokes(PDEWithLoss):
 ```
 
 - Two-dimensional Poisson's equation
-    $$
+  $$
   -\Delta u = f = 1.
   $$
 
     ```python
-    class Poisson(PDEWithLoss):
-        def pde(self):
-              """
-              Define Poisson 2-D governing equations based on sympy, abstract method.
-              Returns:
-                  dict, user defined sympy symbolic equations.
-              """
-              poisson = diff(self.u, (self.x, 2)) + diff(self.u, (self.y, 2)) + 1.0
-              equations = {"poisson": poisson}
-              return equations
+  class Poisson(PDEWithLoss):
+      def pde(self):
+            """
+            Define Poisson 2-D governing equations based on sympy, abstract method.
+            Returns:
+                dict, user defined sympy symbolic equations.
+            """
+            poisson = diff(self.u, (self.x, 2)) + diff(self.u, (self.y, 2)) + 1.0
+            equations = {"poisson": poisson}
+            return equations
     ```
 
 ### FlowWithLoss
@@ -175,5 +179,4 @@ class IncompressibleNavierStokes(PDEWithLoss):
 
 #### Numerical Examples
 
-Using FNO to solve the two-dimensional incompressible Navier-Stokes equations. https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/data_driven/navier_stokes/fno2d/FNO2D.ipynb
-
+Consider using FNO to solve the two-dimensional incompressible Navier-Stokes equations. https://atomgit.com/mindspore-lab/mindscience/blob/master/MindFlow/applications/data_driven/navier_stokes/fno2d/FNO2D.ipynb
