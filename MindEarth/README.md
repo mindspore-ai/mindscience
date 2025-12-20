@@ -4,18 +4,17 @@ English | [简体中文](https://atomgit.com/mindspore-lab/mindscience/blob/mast
 
 - [MindSpore Earth](#mindspore-earth)
 - [MindSpore Earth Introduction](#mindspore-earth-introduction)
-  - [Latest News](#latest-news)
-  - [Application Cases](#application-cases)
-    - [Ocean](#ocean)
-    - [DEM](#dem)
-    - [El Niño](#el-niño)
-    - [Nowcasting Precipitation](#nowcasting-precipitation)
-    - [Medium-range Weather Forecast](#medium-range-weather-forecast)
-    - [Earthquake Early Warning](#earthquake-early-warning)
-  - [Core Contributors](#core-contributors)
-  - [Contribution Guide](#contribution-guide)
-  - [License](#license)
-
+- [Latest News](#latest-news)
+- [Application Cases](#application-cases)
+- [Ocean](#ocean)
+- [DEM](#dem)
+- [El Niño](#el-niño)
+- [Nowcasting Precipitation](#nowcasting-precipitation)
+- [Medium-range Weather Forecast](#medium-range-weather-forecast)
+- [Earthquake Early Warning](#earthquake-early-warning)
+- [Core Contributors](#core-contributors)
+- [Contribution Guide](#contribution-guide)
+- [License](#license)
 
 ## MindSpore Earth Introduction
 
@@ -80,6 +79,7 @@ yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyo
 Welcome to contribute your code to MindSpore Earth by referring to the [Contribution Guide](https://atomgit.com/mindspore-lab/mindscience/blob/master/CONTRIBUTION.md)!
 
 ## License
+
 [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 [ensoforecast-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/climate-prediction/ensoforecast

@@ -5,18 +5,18 @@
 # MindSpore Earth
 
 - [MindSpore Earth](#mindspore-earth)
-  - [MindSpore Earth 介绍](#mindspore-earth-介绍)
-  - [最新消息](#最新消息)
-  - [应用案例](#应用案例)
-    - [海洋](#海洋)
-    - [DEM](#dem)
-    - [厄尔尼诺](#厄尔尼诺)
-    - [短临降水](#短临降水)
-    - [中期气象预报](#中期气象预报)
-    - [地震预警](#地震预警)
-  - [核心贡献者](#核心贡献者)
-  - [贡献指南](#贡献指南)
-  - [许可证](#许可证)
+- [MindSpore Earth 介绍](#mindspore-earth-介绍)
+- [最新消息](#最新消息)
+- [应用案例](#应用案例)
+- [海洋](#海洋)
+- [DEM](#dem)
+- [厄尔尼诺](#厄尔尼诺)
+- [短临降水](#短临降水)
+- [中期气象预报](#中期气象预报)
+- [地震预警](#地震预警)
+- [核心贡献者](#核心贡献者)
+- [贡献指南](#贡献指南)
+- [许可证](#许可证)
 
 ## MindSpore Earth 介绍
 
@@ -81,6 +81,7 @@ yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyo
 欢迎参考[贡献指南](https://atomgit.com/mindspore-lab/mindscience/blob/master/CONTRIBUTION.md)为 MindSpore Earth 贡献您的代码！
 
 ## 许可证
+
 [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 [ensoforecast-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/climate-prediction/ensoforecast
