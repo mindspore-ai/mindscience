@@ -30,45 +30,45 @@ MindSpore Earth 是基于[昇思 MindSpore](https://www.mindspore.cn/) 开发的
 
 ### 海洋
 
-|                             案例                             |           简介           |  数据集  |  模型架构   | NPU  |
-| :----------------------------------------------------------: | :----------------------: | :------: | :---------: | :--: |
-| [LeadFormer](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindEarth/applications/sea/LeadFormer) | 北极海冰高分辨率智能预报 | 暂不开源 | Transformer |  ✔️   |
+|                   案例                    |           简介           |  数据集  |  模型架构   |  NPU  |
+| :---------------------------------------: | :----------------------: | :------: | :---------: | :---: |
+| [LeadFormer](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindEarth/applications/sea/LeadFormer) | 北极海冰高分辨率智能预报 | 暂不开源 | Transformer |   ✔️   |
 
 ### DEM
 
-|                             案例                             |                   简介                   | 数据集  | 模型架构 | NPU  |
-| :----------------------------------------------------------: | :--------------------------------------: | :-----: | :------: | :--: |
-| [DEM-SRNet](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/dem-super-resolution) | 全球3弧秒（90m）海陆高分辨率数字高程模型 | nasadem |   EDSR   |  ✔️   |
+|                 案例                  |                   简介                   | 数据集  | 模型架构 |  NPU  |
+| :-----------------------------------: | :--------------------------------------: | :-----: | :------: | :---: |
+| [DEM-SRNet][dem-super-resolution-URL] | 全球3弧秒（90m）海陆高分辨率数字高程模型 | nasadem |   EDSR   |   ✔️   |
 
 ### 厄尔尼诺
 
-|                             案例                             |                 简介                  |   数据集    | 模型架构 | NPU  |
-| :----------------------------------------------------------: | :-----------------------------------: | :---------: | :------: | :--: |
-| [CTEFNet](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/climate-prediction/ensoforecast) | 基于 CNN 与迁移学习的厄尔尼诺预测模型 | CMIP5、SODA |   CNN    |  ✔️   |
+|             案例              |                 简介                  |   数据集    | 模型架构 |  NPU  |
+| :---------------------------: | :-----------------------------------: | :---------: | :------: | :---: |
+| [CTEFNet][ensoforecast-URL] | 基于 CNN 与迁移学习的厄尔尼诺预测模型 | CMIP5、SODA |   CNN    |   ✔️   |
 
 ### 短临降水
 
-|                             案例                             |                  简介                  |     数据集     |      模型架构       | NPU  |
-| :----------------------------------------------------------: | :------------------------------------: | :------------: | :-----------------: | :--: |
-| [DGMs](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/dgmr) | 基于深度生成模型的雷达数据气象短临预报 |    雷达数据    |    GAN、ConvGRU     |  ✔️   |
-| [NowcastNet](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/Nowcastnet) |  融入物理机制的生成式短临降水预报模型  | USA-MRMS数据集 | GAN、two-path U-Net |  ✔️   |
-| [PreDiff](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/PreDiff) |     基于潜在扩散模型的降水短时预报     | SEVIR_LR数据集 |  LDM、 Earthformer  |  ✔️   |
+|             案例             |                  简介                  |     数据集     |      模型架构       |  NPU  |
+| :--------------------------: | :------------------------------------: | :------------: | :-----------------: | :---: |
+|       [DGMs][dgmr-URL]       | 基于深度生成模型的雷达数据气象短临预报 |    雷达数据    |    GAN、ConvGRU     |   ✔️   |
+| [NowcastNet][Nowcastnet-URL] |  融入物理机制的生成式短临降水预报模型  | USA-MRMS数据集 | GAN、two-path U-Net |   ✔️   |
+|    [PreDiff][PreDiff-URL]    |     基于潜在扩散模型的降水短时预报     | SEVIR_LR数据集 |  LDM、 Earthformer  |   ✔️   |
 
 ### 中期气象预报
 
-|                             案例                             |                      简介                      |      数据集      |         模型架构         | NPU  |
-| :----------------------------------------------------------: | :--------------------------------------------: | :--------------: | :----------------------: | :--: |
-| [FourCastNet](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fourcastnet) |           数据驱动的全球气象预测模型           | ERA5再分析数据集 |           AFNO           |  ✔️   |
-| [ViT-KNO](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/koopman_vit) | 学习Koopman Operator算子预测非线性系统的动力学 | ERA5再分析数据集 |           ViT            |  ✔️   |
-| [GraphCast](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/graphcast) |        基于图神经网络的全球中期天气预报        | ERA5再分析数据集 |           GNN            |  ✔️   |
-| [FuXi](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fuxi) |         基于级联架构的全球中期天气预报         | ERA5再分析数据集 | CNN、Swin Transformer V2 |  ✔️   |
-| [SKNO](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/skno) |             融合了KNO模型和SHT算子             | ERA5再分析数据集 |           SKNO           |  ✔️   |
+|              案例              |                      简介                      |      数据集      |         模型架构         |  NPU  |
+| :----------------------------: | :--------------------------------------------: | :--------------: | :----------------------: | :---: |
+| [FourCastNet][fourcastnet-URL] |           数据驱动的全球气象预测模型           | ERA5再分析数据集 |           AFNO           |   ✔️   |
+|   [ViT-KNO][koopman_vit-URL]   | 学习Koopman Operator算子预测非线性系统的动力学 | ERA5再分析数据集 |           ViT            |   ✔️   |
+|   [GraphCast][graphcast-URL]   |        基于图神经网络的全球中期天气预报        | ERA5再分析数据集 |           GNN            |   ✔️   |
+|        [FuXi][fuxi-URL]        |         基于级联架构的全球中期天气预报         | ERA5再分析数据集 | CNN、Swin Transformer V2 |   ✔️   |
+|        [SKNO][skno-URL]        |             融合了KNO模型和SHT算子             | ERA5再分析数据集 |           SKNO           |   ✔️   |
 
 ### 地震预警
 
-|                             案例                             |            简介            |      数据集      |     模型架构     | NPU  |
-| :----------------------------------------------------------: | :------------------------: | :--------------: | :--------------: | :--: |
-| [G-TEAM](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/earthquake/G-TEAM) | 数据驱动的全国地震预警系统 | diting 2.0数据集 | CNN、Transformer |  ✔️   |
+|         案例         |            简介            |      数据集      |     模型架构     |  NPU  |
+| :------------------: | :------------------------: | :--------------: | :--------------: | :---: |
+| [G-TEAM][G-TEAM-URL] | 数据驱动的全国地震预警系统 | diting 2.0数据集 | CNN、Transformer |   ✔️   |
 
 ## 核心贡献者
 
@@ -81,5 +81,16 @@ yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyo
 欢迎参考[贡献指南](https://atomgit.com/mindspore-lab/mindscience/blob/master/CONTRIBUTION.md)为 MindSpore Earth 贡献您的代码！
 
 ## 许可证
-
 [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+[ensoforecast-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/climate-prediction/ensoforecast
+[dem-super-resolution-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/dem-super-resolution
+[dgmr-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/dgmr
+[Nowcastnet-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/Nowcastnet
+[PreDiff-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/PreDiff
+[koopman_vit-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/koopman_vit
+[graphcast-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/graphcast
+[fuxi-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fuxi
+[fourcastnet-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fourcastnet
+[skno-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/skno
+[G-TEAM-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/earthquake/G-TEAM

@@ -3,7 +3,7 @@
 English | [简体中文](https://atomgit.com/mindspore-lab/mindscience/blob/master/MindEarth/README_CN.md)
 
 - [MindSpore Earth](#mindspore-earth)
-  - [MindSpore Earth Introduction](#mindspore-earth-introduction)
+- [MindSpore Earth Introduction](#mindspore-earth-introduction)
   - [Latest News](#latest-news)
   - [Application Cases](#application-cases)
     - [Ocean](#ocean)
@@ -15,6 +15,7 @@ English | [简体中文](https://atomgit.com/mindspore-lab/mindscience/blob/mast
   - [Core Contributors](#core-contributors)
   - [Contribution Guide](#contribution-guide)
   - [License](#license)
+
 
 ## MindSpore Earth Introduction
 
@@ -28,45 +29,45 @@ MindSpore Earth is an Earth science toolkit developed based on [MindSpore](https
 
 ### Ocean
 
-|                             Case                             |                      Description                       |       Dataset       | Model Architecture | NPU  |
-| :----------------------------------------------------------: | :----------------------------------------------------: | :-----------------: | :----------------: | :--: |
-| [LeadFormer](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindEarth/applications/sea/LeadFormer) | High-resolution intelligent Arctic sea ice forecasting | Not yet open source |    Transformer     |  ✔️   |
+|                   Case                    |                 Description                 | Dataset | Model Architecture | NPU |
+| :---------------------------------------: | :---------------------------------------: | :-----: | :----------------: | :---: |
+| [LeadFormer](https://atomgit.com/mindspore-lab/mindscience/tree/master/MindEarth/applications/sea/LeadFormer) | High-resolution intelligent Arctic sea ice forecasting | Not yet open source | Transformer | ✔️ |
 
 ### DEM
 
-|                             Case                             |                         Description                          | Dataset | Model Architecture | NPU  |
-| :----------------------------------------------------------: | :----------------------------------------------------------: | :-----: | :----------------: | :--: |
-| [DEM-SRNet](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/dem-super-resolution) | Global 3-arc-second (90m) high-resolution land-sea digital elevation model | nasadem |        EDSR        |  ✔️   |
+|                   Case                   |                       Description                       | Dataset | Model Architecture | NPU |
+| :--------------------------------------: | :-----------------------------------------------------: | :-----: | :----------------: | :---: |
+| [DEM-SRNet][dem-super-resolution-URL] | Global 3-arc-second (90m) high-resolution land-sea digital elevation model | nasadem | EDSR | ✔️ |
 
 ### El Niño
 
-|                             Case                             |                       Description                        |   Dataset   | Model Architecture | NPU  |
-| :----------------------------------------------------------: | :------------------------------------------------------: | :---------: | :----------------: | :--: |
-| [CTEFNet](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/climate-prediction/ensoforecast) | CNN and Transfer Learning-based El Niño prediction model | CMIP5, SODA |        CNN         |  ✔️   |
+|                Case                 |                    Description                    |    Dataset     | Model Architecture | NPU |
+| :---------------------------------: | :---------------------------------------------: | :------------: | :----------------: | :---: |
+| [CTEFNet][ensoforecast-URL] | CNN and Transfer Learning-based El Niño prediction model | CMIP5, SODA | CNN | ✔️ |
 
 ### Nowcasting Precipitation
 
-|                             Case                             |                         Description                          |     Dataset      | Model Architecture  | NPU  |
-| :----------------------------------------------------------: | :----------------------------------------------------------: | :--------------: | :-----------------: | :--: |
-| [DGMs](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/dgmr) | Radar data meteorological nowcasting based on deep generative models |    Radar data    |    GAN, ConvGRU     |  ✔️   |
-| [NowcastNet](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/Nowcastnet) | Generative nowcasting precipitation model incorporating physical mechanisms | USA-MRMS dataset | GAN, two-path U-Net |  ✔️   |
-| [PreDiff](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/PreDiff) | Short-term precipitation forecasting based on latent diffusion models | SEVIR_LR dataset |  LDM, Earthformer   |  ✔️   |
+|              Case              |                    Description                     |      Dataset       |        Model Architecture        | NPU |
+| :----------------------------: | :-----------------------------------------------: | :----------------: | :------------------------------: | :---: |
+|       [DGMs][dgmr-URL]       | Radar data meteorological nowcasting based on deep generative models | Radar data | GAN, ConvGRU | ✔️ |
+| [NowcastNet][Nowcastnet-URL] | Generative nowcasting precipitation model incorporating physical mechanisms | USA-MRMS dataset | GAN, two-path U-Net | ✔️ |
+|    [PreDiff][PreDiff-URL]    | Short-term precipitation forecasting based on latent diffusion models | SEVIR_LR dataset | LDM, Earthformer | ✔️ |
 
 ### Medium-range Weather Forecast
 
-|                             Case                             |                         Description                          |         Dataset         |    Model Architecture    | NPU  |
-| :----------------------------------------------------------: | :----------------------------------------------------------: | :---------------------: | :----------------------: | :--: |
-| [FourCastNet](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fourcastnet) |         Data-driven global weather prediction model          | ERA5 reanalysis dataset |           AFNO           |  ✔️   |
-| [ViT-KNO](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/koopman_vit) | Learning Koopman Operator for predicting nonlinear system dynamics | ERA5 reanalysis dataset |           ViT            |  ✔️   |
-| [GraphCast](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/graphcast) | Global medium-range weather forecast based on graph neural networks | ERA5 reanalysis dataset |           GNN            |  ✔️   |
-| [FuXi](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fuxi) | Global medium-range weather forecast based on cascaded architecture | ERA5 reanalysis dataset | CNN, Swin Transformer V2 |  ✔️   |
-| [SKNO](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/skno) |          Integration of KNO model and SHT operator           | ERA5 reanalysis dataset |           SKNO           |  ✔️   |
+|               Case               |                     Description                      |       Dataset        |         Model Architecture         | NPU |
+| :------------------------------: | :--------------------------------------------------: | :------------------: | :--------------------------------: | :---: |
+| [FourCastNet][fourcastnet-URL] | Data-driven global weather prediction model | ERA5 reanalysis dataset | AFNO | ✔️ |
+|   [ViT-KNO][koopman_vit-URL]   | Learning Koopman Operator for predicting nonlinear system dynamics | ERA5 reanalysis dataset | ViT | ✔️ |
+|   [GraphCast][graphcast-URL]   | Global medium-range weather forecast based on graph neural networks | ERA5 reanalysis dataset | GNN | ✔️ |
+|        [FuXi][fuxi-URL]        | Global medium-range weather forecast based on cascaded architecture | ERA5 reanalysis dataset | CNN, Swin Transformer V2 | ✔️ |
+|        [SKNO][skno-URL]        | Integration of KNO model and SHT operator | ERA5 reanalysis dataset | SKNO | ✔️ |
 
 ### Earthquake Early Warning
 
-|                             Case                             |                         Description                          |      Dataset       | Model Architecture | NPU  |
-| :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------: | :----------------: | :--: |
-| [G-TEAM](https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/earthquake/G-TEAM) | Nationwide earthquake early warning system based on data-driven approach | Diting 2.0 dataset |  CNN, Transformer  |  ✔️   |
+|          Case          |                Description                |       Dataset        |     Model Architecture     | NPU |
+| :--------------------: | :---------------------------------------: | :------------------: | :------------------------: | :---: |
+| [G-TEAM][G-TEAM-URL] | Nationwide earthquake early warning system based on data-driven approach | Diting 2.0 dataset | CNN, Transformer | ✔️ |
 
 ## Core Contributors
 
@@ -79,5 +80,16 @@ yufan, wangzidong, liuhongsheng, zhouhongye, liulei, libokai, chengqiang, dongyo
 Welcome to contribute your code to MindSpore Earth by referring to the [Contribution Guide](https://atomgit.com/mindspore-lab/mindscience/blob/master/CONTRIBUTION.md)!
 
 ## License
-
 [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+[ensoforecast-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/climate-prediction/ensoforecast
+[dem-super-resolution-URL]: https://atomgit.com/mindspore-labe/mindscience/tree/legacy-master/MindEarth/applications/dem-super-resolution
+[dgmr-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/dgmr
+[Nowcastnet-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/Nowcastnet
+[PreDiff-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/nowcasting/PreDiff
+[koopman_vit-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/koopman_vit
+[graphcast-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/graphcast
+[fuxi-URL]: https://atomgit.com/mindspore-labe/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fuxi
+[fourcastnet-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/fourcastnet
+[skno-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/medium-range/skno
+[G-TEAM-URL]: https://atomgit.com/mindspore-lab/mindscience/tree/legacy-master/MindEarth/applications/earthquake/G-TEAM
