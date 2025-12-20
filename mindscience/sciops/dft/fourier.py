@@ -296,9 +296,6 @@ class RDFTn(_DFTn):
         - **bi** (Tensor) - Imag part of the output tensor, with trailing dimensions aligned with `shape`,
           except for the last dimension, which should be shape[-1] / 2 + 1.
 
-    Supported Platforms:
-        ``Ascend`` ``CPU``
-
     Examples:
         >>> from mindspore import ops
         >>> from mindflow.core import RDFTn
@@ -337,9 +334,6 @@ class IRDFTn(_DFTn):
 
     Outputs:
         - **br** (Tensor) - The output real tensor, with trailing dimensions aligned with `shape`.
-
-    Supported Platforms:
-        ``Ascend`` ``CPU``
 
     Examples:
         >>> from mindspore import ops
@@ -390,9 +384,6 @@ class DFTn(_DFTn):
         - **br** (Tensor) - Real part of the output tensor, with trailing dimensions aligned with `shape`.
         - **bi** (Tensor) - Imag part of the output tensor, with trailing dimensions aligned with `shape`.
 
-    Supported Platforms:
-        ``Ascend`` ``CPU``
-
     Examples:
         >>> from mindspore import ops
         >>> from mindflow.cell import DFTn
@@ -441,9 +432,6 @@ class IDFTn(DFTn):
         - **br** (Tensor) - Real part of the output tensor, with trailing dimensions aligned with `shape`.
         - **bi** (Tensor) - Imag part of the output tensor, with trailing dimensions aligned with `shape`.
 
-    Supported Platforms:
-        ``Ascend`` ``CPU``
-
     Examples:
         >>> from mindspore import ops
         >>> from mindflow.cell import DFTn
@@ -481,9 +469,6 @@ class DCT(nn.Cell):
 
     Outputs:
         - **b** (Tensor) - The output real tensor, with trailing dimensions aligned with `shape`.
-
-    Supported Platforms:
-        ``Ascend`` ``CPU``
 
     Examples:
         >>> from mindspore import ops
@@ -533,9 +518,6 @@ class IDCT(nn.Cell):
 
     Outputs:
         - **b** (Tensor) - The output real tensor, with trailing dimensions aligned with `shape`.
-
-    Supported Platforms:
-        ``Ascend`` ``CPU``
 
     Examples:
         >>> from mindspore import ops
@@ -598,9 +580,6 @@ class DST(nn.Cell):
     Outputs:
         - **b** (Tensor) - The output real tensor, with trailing dimensions aligned with `shape`.
 
-    Supported Platforms:
-        ``Ascend`` ``CPU``
-
     Examples:
         >>> from mindspore import ops
         >>> from mindflow.cell import DST
@@ -641,9 +620,6 @@ class IDST(nn.Cell):
 
     Outputs:
         - **b** (Tensor) - The output real tensor, with trailing dimensions aligned with `shape`.
-
-    Supported Platforms:
-        ``Ascend`` ``CPU``
 
     Examples:
         >>> from mindspore import ops

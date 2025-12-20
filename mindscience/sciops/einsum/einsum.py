@@ -258,9 +258,6 @@ class Einsum(nn.Cell):
     Outputs:
         - **out_tensor** (Tensor): The result of the einsum operation.
 
-    Supported Platforms:
-        ``Ascend`` ``CPU``
-
     Examples:
         >>> import mindspore as ms
         >>> from mindspore import nn, Tensor, ops
