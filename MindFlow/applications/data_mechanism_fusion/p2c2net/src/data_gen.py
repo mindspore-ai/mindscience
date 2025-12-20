@@ -265,6 +265,7 @@ def rand_gaussian_ic(num_a, num_b, nx, ny, random_seed, plot=True):
         plt.show()
 
     return ux, uy
+
 def createdata(ramdom_seed, n=104, n_simu_steps=2101, dt=0.001, re=200, data_save_dir='data/'):
     '''
     Create data for burgers equation
@@ -289,7 +290,7 @@ def createdata(ramdom_seed, n=104, n_simu_steps=2101, dt=0.001, re=200, data_sav
         u, v = update_rk4(u, v, re, dt, dx)  # [h,w]
 
         if (step + 1) % 1 == 0:
-            print(step, '\n')
+            # print(step, '\n')
             u_list.append(u[None, ...])
             v_list.append(v[None, ...])
 

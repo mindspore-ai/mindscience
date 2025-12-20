@@ -4,7 +4,8 @@ Neural network models.
 
 import numpy as np
 import mindspore.common.dtype as mstype
-from mindspore import nn, ms, Tensor, value_and_grad, jit, ops
+from mindspore import nn, Tensor, value_and_grad, ops
+import mindspore as ms
 from mindspore.amp import DynamicLossScaler, all_finite, auto_mixed_precision
 from mindscience.models import FNO2D
 
@@ -102,10 +103,10 @@ class RCNN(nn.Cell):
 
         u_cor = self.u_cor(u_prev)
         v_cor = self.v_cor(v_prev)
-
+        #print("u_cor", u_cor.shape, "v_cor", v_cor.shape)
         filter_u = self.filter(u_cor)  # (du/dx, du/dy, d2u/dx2, d2u/dy2)
         filter_v = self.filter(v_cor)  # (dv/dx, dv/dy, d2v/dx2, d2v/dy2)
-
+        #print("filter_u", filter_u.shape, "filter_v", filter_v.shape)
         # vis * (d2u/dx2 + d2u/dy2) - (du/dx * u_prev + du/dy * v_prev)
         u_res = (self.vis * (filter_u[:, 2:3, :, :] + filter_u[:, 3:4, :, :]) - (
                 u_prev * filter_u[:, 0:1, :, :] + v_prev * filter_u[:, 1:2, :, :]))
@@ -147,6 +148,7 @@ class RCNN(nn.Cell):
         internal_uv = init_uv
         for _ in range(self.steps - 1):
             internal_uv = self.call_cell(internal_uv)
+            # print(step, internal_uv.shape)
             if internal_uv.shape[0] > 1:
                 outputs_uv.append(ops.expand_dims(internal_uv, 0))
             else:  # infer
@@ -198,11 +200,12 @@ class P2N2Net(nn.Cell):
         Forward pass with loss computation.
         '''
         output_uv = self.model(inputs)
+        print("output_uv", output_uv.shape)
         logits = ops.transpose(output_uv, (1, 0, 2, 3, 4))
         loss = self.mse_loss(logits, targets) * 1e5
         return loss
 
-    @jit
+    # @jit
     def construct(self, batch_data):
         '''
         Training step with gradient computation and optimization.
@@ -212,6 +215,7 @@ class P2N2Net(nn.Cell):
 
         inputs = batch_data['data'].squeeze()
         targets = batch_data['labels']
+        print("inputs", inputs.shape, "targets", targets.shape)
         loss, grads = self.grad_fn(inputs, targets)
         if self.use_ascend:
             loss = self.loss_scaler.unscale(loss)
@@ -251,7 +255,7 @@ class Filter(nn.Cell):
         return x_pad
 
     def construct(self, x):
-        x = self.padMethod(x)
+        x = self.pad_method(x)
         dx = self.dx(x)
         dy = ops.transpose(self.dx(ops.transpose(x, (0, 1, 3, 2))), (0, 1, 3, 2))
         dxx = self.dxx(x)
